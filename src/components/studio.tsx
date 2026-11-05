@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
 import { AccountStrip } from "@/components/account-strip";
+import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
 import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
@@ -489,7 +490,10 @@ export function Studio() {
   return (
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
-        <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+          <VersionMark />
+        </div>
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip />
       </header>

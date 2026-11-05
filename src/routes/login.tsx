@@ -72,12 +72,12 @@ function LoginPage() {
 
   return (
     <main className="mx-auto flex h-dvh w-full max-w-lg flex-col bg-bg text-fg">
-      <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
         <div>
           <p className="text-xs font-medium tracking-wide text-accent">Tài khoản</p>
-          <h1 className="text-base font-semibold">{mode === "up" ? "Đăng ký" : "Đăng nhập"}</h1>
+          <h1 className="text-base leading-none font-semibold">{mode === "up" ? "Đăng ký" : "Đăng nhập"}</h1>
         </div>
-        <Link to="/" className="min-tap rounded-full border border-line px-3 text-sm text-muted">
+        <Link to="/" className="room-back">
           Về phòng dịch
         </Link>
       </header>

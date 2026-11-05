@@ -405,29 +405,65 @@
   position: relative;
   width: 5.5rem;
   height: 5.5rem;
-  filter: drop-shadow(0 0 18px rgb(231 182 58 / 35%));
-  animation: gate-breathe 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 5px rgb(231 182 58 / 28%));
+  animation: gate-breathe 2.8s ease-in-out infinite;
 }
 
 .gate-doc .gate-mark {
   width: 3.25rem;
   height: 3.25rem;
   flex: none;
+  filter: drop-shadow(0 0 3px rgb(231 182 58 / 22%));
 }
 
 .gate-plate {
-  fill: #16202a;
+  fill: #121a22;
 }
 
 .gate-frame {
   fill: none;
   stroke: var(--color-accent);
-  stroke-width: 3;
-  animation: gate-glow 2.4s ease-in-out infinite;
+  stroke-width: 2.5;
 }
 
 .gate-play {
-  fill: var(--color-fg);
+  fill: #f7f4ea;
+}
+
+.room-back {
+  display: inline-flex;
+  height: 2.25rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding-inline: 0.8rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.version-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  margin: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-bg));
+  padding: 0.15rem 0.5rem;
+  color: var(--color-fg);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.version-kind {
+  color: var(--color-accent);
+  font-weight: 650;
 }
 
 .gate-kicker {
@@ -573,15 +609,9 @@
   }
 }
 
-@keyframes gate-glow {
-  50% {
-    opacity: 0.45;
-  }
-}
-
 @keyframes gate-breathe {
   50% {
-    filter: drop-shadow(0 0 28px rgb(231 182 58 / 55%));
+    filter: drop-shadow(0 0 8px rgb(231 182 58 / 38%));
   }
 }
 

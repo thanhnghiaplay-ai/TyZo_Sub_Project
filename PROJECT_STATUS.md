@@ -291,7 +291,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-05 19:07 | Grok | **Sửa quyền Chủ.** Bỏ nút nhận quyền và bỏ Admin khỏi phòng người dùng. Chỉ email trong `ADMIN_EMAIL` hoặc `.grok/admin.json` mới là Chủ. Trang riêng là `/admin`. | Chưa ghi email Chủ. |
 | 2026-11-05 19:12 | Grok | **Đã ghi email Chủ** vào file máy chủ. Chủ đổi email ngay trên trang Admin. Mật khẩu người dùng gửi trong chat không lưu vào web. | Đăng nhập bằng email đó rồi mở `/admin`. |
 | 2026-11-05 19:21 | Grok | **Điều khoản `2026-11-05.4`.** Mục 8 tách dòng Khóa và Cấm. Câu không bị phạt và câu giữ lịch sử màu vàng. Việc bị cấm màu đỏ. | Người dùng phải đồng ý lại. |
-| 2026-11-05 21:19 | Grok | **Admin và logo.** Nút Về phòng thẳng hàng với tiêu đề. Tài khoản, sổ tiền, yêu cầu và nhật ký lên trước form nạp tiền. Logo điều khoản luôn hiện đủ và nhịp sáng liên tục. | Cần đẩy lên GitHub để Vercel đổi bản. |
+| 2026-11-05 21:54 | Grok | **v1.1.0.** Nút Về phòng dịch cùng kiểu với Admin. Logo điều khoản bớt sáng, nút phát giữ rõ. Nhãn `v1.1.0 · chức năng nhỏ` ở điều khoản, phòng dịch và Admin. | Số cuối là sửa chữ, số giữa là chức năng nhỏ, số đầu là chức năng lớn. |
 
 ---
 

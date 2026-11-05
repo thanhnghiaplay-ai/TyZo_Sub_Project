@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ROOM_PLANS } from "@/lib/room-plans";
+import { VersionMark } from "@/components/version-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
 export const TERMS_VERSION = "2026-11-05.4";
@@ -87,6 +88,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           <p className="gate-kicker">Phòng chiếu TyZo Sub</p>
           <h1 className="text-xl font-semibold">Điều khoản sử dụng</h1>
           <p className="text-sm text-muted">Phiên bản {TERMS_VERSION}. Đồng ý mới được dùng. Không đồng ý thì dừng ở đây.</p>
+          <VersionMark />
         </div>
       </header>
       <article className="gate-scroll">
