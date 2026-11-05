@@ -9,7 +9,7 @@ const PLANS = [
   {
     id: "ngay",
     name: "24 giờ",
-    price: 19_000,
+    price: 9_000,
     strike: null as number | null,
     save: null as number | null,
     note: "Một buổi. Trong 24 giờ không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
@@ -17,24 +17,24 @@ const PLANS = [
   {
     id: "tuan",
     name: "7 ngày",
-    price: 59_000,
-    strike: 133_000,
-    save: 74_000,
-    note: "Trong 7 ngày không giới hạn số tệp. Ba buổi lẻ gần bằng một tuần.",
+    price: 39_000,
+    strike: 63_000,
+    save: 24_000,
+    note: "Trong 7 ngày không giới hạn số tệp. Rẻ hơn mua bảy ngày lẻ.",
   },
   {
     id: "thang",
     name: "30 ngày",
-    price: 149_000,
-    strike: 570_000,
-    save: 421_000,
+    price: 99_000,
+    strike: 270_000,
+    save: 171_000,
     note: "Trong 30 ngày không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
   },
 ] as const;
 
 type PlanId = (typeof PLANS)[number]["id"];
 
-const NAP = [19_000, 59_000, 149_000];
+const NAP = [9_000, 39_000, 99_000];
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";

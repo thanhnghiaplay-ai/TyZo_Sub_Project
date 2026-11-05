@@ -291,7 +291,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-05 19:07 | Grok | **Sửa quyền Chủ.** Bỏ nút nhận quyền và bỏ Admin khỏi phòng người dùng. Chỉ email trong `ADMIN_EMAIL` hoặc `.grok/admin.json` mới là Chủ. Trang riêng là `/admin`. | Chưa ghi email Chủ. |
 | 2026-11-05 19:12 | Grok | **Đã ghi email Chủ** vào file máy chủ. Chủ đổi email ngay trên trang Admin. Mật khẩu người dùng gửi trong chat không lưu vào web. | Đăng nhập bằng email đó rồi mở `/admin`. |
 | 2026-11-05 19:21 | Grok | **Điều khoản `2026-11-05.4`.** Mục 8 tách dòng Khóa và Cấm. Câu không bị phạt và câu giữ lịch sử màu vàng. Việc bị cấm màu đỏ. | Người dùng phải đồng ý lại. |
-| 2026-11-06 00:50 | Grok | **v2.4.0.** Nút Quản lý cạnh Tài khoản khi có quyền. Lịch sử Admin chỉ hiện 6 dòng, có thể xem thêm. Đăng nhập nhớ email, không nhớ mật khẩu. Nghe và thuyết minh mặc định bật. | Giá gói chưa đổi, đang chờ chốt. |
+| 2026-11-06 00:53 | Grok | **v2.4.1.** Giá gói đã chốt: 9.000 đ một ngày, 39.000 đ một tuần, 99.000 đ một tháng. Bảng điều khoản đổi số phiên bản nên người dùng phải đồng ý lại. | |
 
 ---
 

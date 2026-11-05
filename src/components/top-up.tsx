@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPayOrder, getPayPublic, readPayOrder, syncCasso, type PayOrderView, type PayPublic } from "@/lib/pay-store";
 
-const AMOUNTS = [19_000, 59_000, 149_000];
+const AMOUNTS = [9_000, 39_000, 99_000];
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -10,7 +10,7 @@ function dong(n: number) {
 export function TopUp({ onPaid }: { onPaid: () => void }) {
   const [gates, setGates] = useState<PayPublic | null>(null);
   const [provider, setProvider] = useState<"sepay" | "casso">("sepay");
-  const [amount, setAmount] = useState(19_000);
+  const [amount, setAmount] = useState(9_000);
   const [order, setOrder] = useState<PayOrderView | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

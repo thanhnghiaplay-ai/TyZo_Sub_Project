@@ -6,7 +6,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-05.4";
+export const TERMS_VERSION = "2026-11-06.1";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {

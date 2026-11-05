@@ -1,9 +1,9 @@
-export const TRIAL_AMOUNTS = [19_000, 59_000, 149_000] as const;
+export const TRIAL_AMOUNTS = [9_000, 39_000, 99_000] as const;
 
 export const ROOM_PLANS = [
-  { id: "ngay", name: "24 giờ", price: 19_000, hours: 24, strike: null as number | null, save: null as number | null },
-  { id: "tuan", name: "7 ngày", price: 59_000, hours: 24 * 7, strike: 133_000, save: 74_000 },
-  { id: "thang", name: "30 ngày", price: 149_000, hours: 24 * 30, strike: 570_000, save: 421_000 },
+  { id: "ngay", name: "24 giờ", price: 9_000, hours: 24, strike: null as number | null, save: null as number | null },
+  { id: "tuan", name: "7 ngày", price: 39_000, hours: 24 * 7, strike: 63_000, save: 24_000 },
+  { id: "thang", name: "30 ngày", price: 99_000, hours: 24 * 30, strike: 270_000, save: 171_000 },
 ] as const;
 
 export type RoomPlanId = (typeof ROOM_PLANS)[number]["id"];
