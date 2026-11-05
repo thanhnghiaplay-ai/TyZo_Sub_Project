@@ -1894,7 +1894,7 @@ function Stage({
       {panel && full && panelNode}
     </div>
     {panel && !full && panelNode}
-    <p className="mt-4 px-2 text-center text-xs text-muted">Kéo ngang để tua · kéo dọc bên phải chỉnh tiếng · bên trái chỉnh sáng · chạm đúp hai mé để nhảy 10 giây</p>
+    <p className="gesture-hint">Kéo ngang để tua · kéo dọc bên phải chỉnh tiếng · bên trái chỉnh sáng · chạm đúp hai mé để nhảy 10 giây</p>
     </div>
   );
 }

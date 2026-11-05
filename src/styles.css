@@ -755,6 +755,38 @@
 .role-quan-ly { color: #e7b63a; }
 .role-chu { color: #f3d48a; }
 
+.gesture-hint {
+  margin: 1.75rem 0.5rem 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.org-owner {
+  border-color: #e7b63a;
+  background: color-mix(in srgb, #e7b63a 18%, var(--color-card));
+  box-shadow: 0 0 18px rgb(231 182 58 / 28%);
+}
+
+.stat-online { border-color: #3dbe7a; }
+.stat-online .stat-num { color: #3dbe7a; }
+.stat-rent { border-color: #6fbf9a; }
+.stat-rent .stat-num { color: #6fbf9a; }
+.stat-lead { border-color: #e7b63a; }
+.stat-lead .stat-num { color: #e7b63a; }
+.stat-staff { border-color: #8eb7ee; }
+.stat-staff .stat-num { color: #8eb7ee; }
+.stat-trial { border-color: #8eb7ee; }
+.stat-lock { border-color: #d98a3a; }
+.stat-lock .stat-num { color: #d98a3a; }
+.stat-ban { border-color: #e15b64; }
+.stat-ban .stat-num { color: #e15b64; }
+.stat-wait { border-color: #e39a3c; }
+.stat-wait .stat-num { color: #e39a3c; }
+
 .org-card {
   border: 1px solid var(--color-line);
   border-radius: 1rem;

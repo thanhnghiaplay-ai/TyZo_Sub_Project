@@ -27,7 +27,7 @@ export function OrgBoard({ owner }: { owner: boolean }) {
       {rows.map((role) => (
         <div key={role} className="grid gap-2">
           {cards.filter((card) => card.role === role).map((card) => (
-            <article key={card.id} className={"org-card role-" + card.role}>
+            <article key={card.id} className={"org-card role-" + card.role + (card.role === "chu" ? " org-owner" : "")}>
               <p className={"role-chip role-" + card.role}>{ROLE_LABEL[card.role === "user" ? "ho-tro" : card.role]}</p>
               <p className="font-medium">{card.nickname || card.name || "Chưa có tên"}</p>
               <p className="text-sm text-muted">{card.email}</p>

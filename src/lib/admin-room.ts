@@ -163,6 +163,8 @@ export type DeskStats = {
   locked: number;
   banned: number;
   waiting: number;
+  managers: number;
+  support: number;
 };
 
 export const getDeskStats = createServerFn({ method: "GET" })
@@ -181,7 +183,9 @@ export const getDeskStats = createServerFn({ method: "GET" })
         (select count(*)::int from room_accounts where plan is not null and plan_until <= now() and status = 'open') as expired,
         (select count(*)::int from room_accounts where status = 'locked') as locked,
         (select count(*)::int from room_accounts where status = 'banned') as banned,
-        (select count(*)::int from room_appeals where status = 'cho') as waiting
+        (select count(*)::int from room_appeals where status = 'cho') as waiting,
+        (select count(*)::int from room_staff where role = 'quan-ly') as managers,
+        (select count(*)::int from room_staff where role = 'ho-tro') as support
     `;
     const row = rows[0];
     return {
@@ -194,6 +198,8 @@ export const getDeskStats = createServerFn({ method: "GET" })
       locked: row?.locked ?? 0,
       banned: row?.banned ?? 0,
       waiting: row?.waiting ?? 0,
+      managers: row?.managers ?? 0,
+      support: row?.support ?? 0,
     };
   });
 
@@ -495,7 +501,9 @@ export const listAppeals = createServerFn({ method: "GET" })
       touched_at: unknown;
     }>`
       select id, email, body, status, reply, created_at, hold_role, touched_at
-      from room_appeals order by id desc limit 40
+      from room_appeals
+      where status = 'cho'
+      order by id desc limit 40
     `;
     const place = await placeOf(context.userId);
     return rows
@@ -517,6 +525,7 @@ export const replyAppeal = createServerFn({ method: "POST" })
   .validator((input: { id: number; status: string; reply: string }) => {
     if (input.status !== "mo" && input.status !== "tu-choi") throw new Error("Trạng thái không đúng.");
     const reply = clip(input.reply ?? "", 500);
+    if (input.status === "tu-choi" && reply.length < 8) throw new Error("Hãy ghi lý do từ chối, ít nhất 8 ký tự.");
     if (reply.length < 2) throw new Error("Hãy ghi câu trả lời.");
     return { id: Number(input.id), status: input.status, reply };
   })
@@ -539,7 +548,7 @@ export const replyAppeal = createServerFn({ method: "POST" })
         where user_id = ${userId} and status = 'locked'
       `;
     }
-    await writeNotice("user", data.status === "mo" ? "Đã mở lại tài khoản" : "Đã trả lời yêu cầu", data.reply, userId);
+    await writeNotice("user", data.status === "mo" ? "Đã mở lại tài khoản" : "Đã từ chối", data.reply, userId, data.id);
     await writeAudit(context.userId, `yeu-cau-${data.status}`, String(data.id), data.reply);
     return { ok: true };
   });
@@ -696,7 +705,7 @@ export const sendAppealReply = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const updated = await sql<{ user_id: string | null }>`
-      update room_appeals set reply = ${data.reply}, touched_at = now()
+      update room_appeals set status = 'xong', reply = ${data.reply}, touched_at = now()
       where id = ${data.id} and status = 'cho'
       returning user_id
     `;
@@ -713,8 +722,8 @@ export const escalateAppeal = createServerFn({ method: "POST" })
     const place = await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const rows = await sql<{ hold_role: string; status: string; email: string; body: string; reply: string }>`
-      select hold_role, status, email, body, reply from room_appeals where id = ${data}
+    const rows = await sql<{ hold_role: string; status: string; email: string; body: string; reply: string; user_id: string | null }>`
+      select hold_role, status, email, body, reply, user_id from room_appeals where id = ${data}
     `;
     if (!rows.length || rows[0].status !== "cho") throw new Error("Yêu cầu này không còn chờ.");
     const hold = isStaffRole(rows[0].hold_role) ? rows[0].hold_role : "ho-tro";
@@ -725,6 +734,7 @@ export const escalateAppeal = createServerFn({ method: "POST" })
     await sql`update room_appeals set hold_role = ${next}, touched_at = now() where id = ${data}`;
     const pack = `${rows[0].email}\n${rows[0].body}\nĐã trả lời: ${rows[0].reply || "chưa"}`;
     await writeNotice(next, "Việc chuyển lên", pack, null, data);
+    await writeNotice("user", "Đã báo cấp trên", "Yêu cầu của bạn đã được chuyển lên cấp cao hơn. Khi có trả lời, bạn sẽ thấy ở chuông.", rows[0].user_id, data);
     await writeAudit(context.userId, "bao-cap", String(data), pack);
     return { next };
   });
@@ -750,6 +760,9 @@ export const skipAppeal = createServerFn({ method: "POST" })
     await sql`update room_appeals set hold_role = 'chu', touched_at = now() where id = ${data}`;
     const pack = `${rows[0].email}\n${rows[0].body}\nĐã trả lời: ${rows[0].reply || "chưa"}`;
     await writeNotice("chu", "Báo vượt cấp", pack, null, data);
+    if (rows[0].user_id && rows[0].user_id !== context.userId) {
+      await writeNotice("user", "Đã báo Chủ", "Yêu cầu của bạn đã được chuyển thẳng tới Chủ.", rows[0].user_id, data);
+    }
     await writeAudit(context.userId, "bao-chu", String(data), pack);
     return { ok: true };
   });
