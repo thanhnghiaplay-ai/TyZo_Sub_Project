@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
+  getDeskStats,
   getMyPlace,
   grantPlan,
   listAppeals,
@@ -17,6 +18,7 @@ import {
   type AdminUser,
   type AppealRow,
   type AuditRow,
+  type DeskStats,
   type LedgerRow,
   type MyPlace,
 } from "@/lib/admin-room";
@@ -30,6 +32,7 @@ function dong(n: number) {
 
 export function AdminDesk() {
   const [place, setPlace] = useState<MyPlace | null>(null);
+  const [stats, setStats] = useState<DeskStats | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -47,6 +50,7 @@ export function AdminDesk() {
     const next = await getMyPlace();
     setPlace(next);
     if (next.role) {
+      setStats(await getDeskStats());
       setAppeals(await listAppeals());
       if (roleAtLeast(next.role, "chu")) setAudit(await listAudit());
     }
@@ -70,6 +74,7 @@ export function AdminDesk() {
       await task();
       setNotice(done);
       if (place?.role) {
+        setStats(await getDeskStats());
         setAppeals(await listAppeals());
         if (roleAtLeast(place.role, "chu")) setAudit(await listAudit());
       }
@@ -91,6 +96,19 @@ export function AdminDesk() {
         </Link>
       )}
       {place && !role && <p className="text-sm text-muted">Không có quyền vào trang này.</p>}
+      {role && stats && (
+        <section className="grid grid-cols-2 gap-2">
+          <Stat label="Đang online" value={stats.online} hint="3 phút qua" />
+          <Stat label="Tổng đăng ký" value={stats.users} />
+          <Stat label="Đăng ký 24 giờ" value={stats.joinedDay} />
+          <Stat label="Đang thuê" value={stats.renting} />
+          <Stat label="Còn lượt thử" value={stats.trial} />
+          <Stat label="Gói hết hạn" value={stats.expired} />
+          <Stat label="Đang khóa" value={stats.locked} />
+          <Stat label="Đang cấm" value={stats.banned} />
+          <Stat label="Yêu cầu chờ" value={stats.waiting} />
+        </section>
+      )}
       {role && (
         <>
           <h2 className="font-semibold">Tài khoản</h2>
@@ -290,6 +308,16 @@ export function AdminDesk() {
       )}
       {notice && <p className="text-sm text-muted">{notice}</p>}
     </div>
+  );
+}
+
+function Stat({ label, value, hint }: { label: string; value: number; hint?: string }) {
+  return (
+    <article className="rounded-xl border border-line bg-card px-3 py-2">
+      <p className="text-xs text-muted">{label}</p>
+      <p className="text-xl font-semibold">{value}</p>
+      {hint && <p className="text-xs text-muted">{hint}</p>}
+    </article>
   );
 }
 

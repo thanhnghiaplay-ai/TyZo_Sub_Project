@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
-import { getMyPlace, submitAppeal, type MyPlace } from "@/lib/admin-room";
+import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
 import { signOut } from "@/lib/auth/client";
 import {
@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
 import { AccountStrip } from "@/components/account-strip";
+import { BrandMark } from "@/components/brand-mark";
 import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
 import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
@@ -479,6 +480,10 @@ export function Studio() {
 
   useEffect(() => {
     void getMyPlace().then(setPlace).catch(() => setPlace(null));
+    const ping = () => void touchPresence().catch(() => undefined);
+    ping();
+    const timer = window.setInterval(ping, 60_000);
+    return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -491,7 +496,10 @@ export function Studio() {
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+          <div className="flex min-w-0 items-center gap-2">
+            <BrandMark small title="TyZo Sub" />
+            <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+          </div>
           <VersionMark />
         </div>
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>

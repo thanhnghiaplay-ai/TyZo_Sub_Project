@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { VersionMark } from "@/components/version-mark";
+import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
 export const TERMS_VERSION = "2026-11-05.4";
@@ -40,21 +41,10 @@ function acceptTerms(setPhase: (phase: "app") => void) {
   setPhase("app");
 }
 
-function Mark({ title }: { title?: string }) {
-  return (
-    <svg className="gate-mark" viewBox="0 0 80 80" aria-hidden={title ? undefined : true} role={title ? "img" : undefined}>
-      {title ? <title>{title}</title> : null}
-      <rect className="gate-plate" x="6" y="16" width="68" height="48" rx="8" />
-      <rect className="gate-frame" x="6" y="16" width="68" height="48" rx="8" />
-      <path className="gate-play" d="M34 30.5v19l16-9.5-16-9.5z" />
-    </svg>
-  );
-}
-
 function Splash() {
   return (
     <main className="gate-screen gate-splash" aria-live="polite">
-      <Mark title="TyZo Sub" />
+      <BrandMark title="TyZo Sub" />
       <p className="gate-kicker">Phòng chiếu</p>
       <h1 className="gate-title">TyZo Sub</h1>
       <p className="gate-wait">Đang mở phòng dịch</p>
@@ -83,7 +73,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
   return (
     <main className="gate-screen gate-doc">
       <header className="gate-doc-head">
-        <Mark />
+        <BrandMark title="TyZo Sub" />
         <div>
           <p className="gate-kicker">Phòng chiếu TyZo Sub</p>
           <h1 className="text-xl font-semibold">Điều khoản sử dụng</h1>
@@ -240,7 +230,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 function Declined({ onReview }: { onReview: () => void }) {
   return (
     <main className="gate-screen gate-splash">
-      <Mark />
+      <BrandMark title="TyZo Sub" />
       <h1 className="gate-title">Chưa vào phòng</h1>
       <p className="gate-wait">Bạn chưa đồng ý điều khoản nên không dùng được phòng dịch.</p>
       <button type="button" className="min-tap rounded-xl bg-accent px-4 text-sm font-semibold text-ink" onClick={onReview}>

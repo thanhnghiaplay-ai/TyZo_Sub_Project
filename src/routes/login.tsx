@@ -21,7 +21,7 @@ function LoginPage() {
     }
     if (saved !== TERMS_VERSION) void router.navigate({ to: "/" });
   }, [router]);
-  const [mode, setMode] = useState<"in" | "up">("up");
+  const [mode, setMode] = useState<"in" | "up">("in");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

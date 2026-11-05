@@ -401,31 +401,47 @@
   text-align: center;
 }
 
+.brand-mark,
 .gate-mark {
   position: relative;
   width: 5.5rem;
   height: 5.5rem;
-  filter: drop-shadow(0 0 5px rgb(231 182 58 / 28%));
+  flex: none;
+  filter: drop-shadow(0 0 4px rgb(231 182 58 / 30%));
   animation: gate-breathe 2.8s ease-in-out infinite;
 }
 
+.brand-mark-sm {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.gate-doc .brand-mark,
 .gate-doc .gate-mark {
   width: 3.25rem;
   height: 3.25rem;
-  flex: none;
-  filter: drop-shadow(0 0 3px rgb(231 182 58 / 22%));
+  filter: drop-shadow(0 0 3px rgb(231 182 58 / 24%));
 }
 
+.brand-halo {
+  fill: none;
+  stroke: #f4efe4;
+  stroke-width: 1.25;
+}
+
+.brand-plate,
 .gate-plate {
   fill: #121a22;
 }
 
+.brand-frame,
 .gate-frame {
   fill: none;
-  stroke: var(--color-accent);
+  stroke: #e7b63a;
   stroke-width: 2.5;
 }
 
+.brand-play,
 .gate-play {
   fill: #f7f4ea;
 }
@@ -631,8 +647,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .brand-mark,
   .gate-mark,
-  .gate-frame,
   .gate-kicker,
   .gate-title,
   .gate-wait,

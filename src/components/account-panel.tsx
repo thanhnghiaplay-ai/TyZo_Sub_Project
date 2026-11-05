@@ -70,7 +70,7 @@ export function AccountPanel() {
           </Link>
         </div>
       )}
-      {user && !user.isDevFallback && place?.status === "locked" && (
+      {user && !user.isDevFallback && (
         <form
           className="space-y-2 rounded-2xl border border-line bg-card p-4"
           onSubmit={(event) => {
@@ -79,15 +79,21 @@ export function AccountPanel() {
             void submitAppeal({ data: appeal })
               .then(() => {
                 setAppeal("");
-                setNotice("Đã gửi yêu cầu xem lại.");
+                setNotice("Đã gửi yêu cầu. Chủ hoặc Quản lý xem ở trang Admin.");
               })
               .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa gửi được."))
               .finally(() => setBusy(false));
           }}
         >
-          <h2 className="font-semibold">Tài khoản đang bị khóa</h2>
-          <p className="text-sm text-muted">{place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}</p>
-          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+          <h2 className="font-semibold">
+            {place?.status === "locked" ? "Tài khoản đang bị khóa" : place?.status === "banned" ? "Tài khoản đang bị cấm" : "Gửi yêu cầu"}
+          </h2>
+          <p className="text-sm text-muted">
+            {place?.status === "open" || !place
+              ? "Dùng khi cần hỏi về gói, nạp tiền, khóa hoặc cấm. Không gửi key Groq."
+              : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}
+          </p>
+          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
           <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
             Gửi yêu cầu
           </button>

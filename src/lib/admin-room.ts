@@ -102,7 +102,74 @@ async function writeAudit(actorId: string, action: string, targetId: string | nu
 
 export const getMyPlace = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<MyPlace> => placeOf(context.userId));
+  .handler(async ({ context }): Promise<MyPlace> => {
+    await markSeen(context.userId);
+    return placeOf(context.userId);
+  });
+
+export const touchPresence = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await markSeen(context.userId);
+    return { ok: true as const };
+  });
+
+export type DeskStats = {
+  online: number;
+  users: number;
+  joinedDay: number;
+  renting: number;
+  trial: number;
+  expired: number;
+  locked: number;
+  banned: number;
+  waiting: number;
+};
+
+export const getDeskStats = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<DeskStats> => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<DeskStats>`
+      select
+        (select count(*)::int from room_presence where seen_at > now() - interval '3 minutes') as online,
+        (select count(*)::int from "user") as users,
+        (select count(*)::int from "user" where "createdAt" > now() - interval '24 hours') as "joinedDay",
+        (select count(*)::int from room_accounts where plan_until > now() and status = 'open') as renting,
+        (select count(*)::int from room_accounts where status = 'open' and trial_left > 0 and (plan_until is null or plan_until <= now())) as trial,
+        (select count(*)::int from room_accounts where plan is not null and plan_until <= now() and status = 'open') as expired,
+        (select count(*)::int from room_accounts where status = 'locked') as locked,
+        (select count(*)::int from room_accounts where status = 'banned') as banned,
+        (select count(*)::int from room_appeals where status = 'cho') as waiting
+    `;
+    const row = rows[0];
+    return {
+      online: row?.online ?? 0,
+      users: row?.users ?? 0,
+      joinedDay: row?.joinedDay ?? 0,
+      renting: row?.renting ?? 0,
+      trial: row?.trial ?? 0,
+      expired: row?.expired ?? 0,
+      locked: row?.locked ?? 0,
+      banned: row?.banned ?? 0,
+      waiting: row?.waiting ?? 0,
+    };
+  });
+
+async function markSeen(userId: string) {
+  try {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      insert into room_presence (user_id, seen_at) values (${userId}, now())
+      on conflict (user_id) do update set seen_at = now()
+    `;
+  } catch {
+    // Bảng có sau lần xây mới. Lần này bỏ qua, không chặn đăng nhập.
+  }
+}
 
 export const setOwnerEmail = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
