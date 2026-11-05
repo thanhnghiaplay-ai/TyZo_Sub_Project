@@ -291,7 +291,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-05 19:07 | Grok | **Sửa quyền Chủ.** Bỏ nút nhận quyền và bỏ Admin khỏi phòng người dùng. Chỉ email trong `ADMIN_EMAIL` hoặc `.grok/admin.json` mới là Chủ. Trang riêng là `/admin`. | Chưa ghi email Chủ. |
 | 2026-11-05 19:12 | Grok | **Đã ghi email Chủ** vào file máy chủ. Chủ đổi email ngay trên trang Admin. Mật khẩu người dùng gửi trong chat không lưu vào web. | Đăng nhập bằng email đó rồi mở `/admin`. |
 | 2026-11-05 19:21 | Grok | **Điều khoản `2026-11-05.4`.** Mục 8 tách dòng Khóa và Cấm. Câu không bị phạt và câu giữ lịch sử màu vàng. Việc bị cấm màu đỏ. | Người dùng phải đồng ý lại. |
-| 2026-11-05 22:12 | Grok | **v1.2.0.** Sau điều khoản vào form đăng nhập. Tài khoản luôn có ô gửi yêu cầu. Admin có số online, tổng đăng ký, thuê, thử, hết hạn, khóa, cấm, yêu cầu chờ. Phòng dịch có logo nền tối viền sáng, đọc được trên nền tối và sáng. | Online tính người có phiên trong 3 phút. |
+| 2026-11-05 22:30 | Grok | **v1.3.0.** Logo bỏ quầng sáng, nút phát màu vàng trên nền tối. Thông báo thao tác nổi phía trên. Chuông ở phòng dịch và Admin. Nhãn phiên bản chỉ còn số. Dòng hướng dẫn cử chỉ cách xa video hơn. | Admin trả lời thì chuông người dùng có số. |
 
 ---
 

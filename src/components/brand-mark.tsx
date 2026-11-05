@@ -7,10 +7,9 @@ export function BrandMark({ title, small = false }: { title?: string; small?: bo
       role={title ? "img" : undefined}
     >
       {title ? <title>{title}</title> : null}
-      <rect className="brand-halo" x="4" y="14" width="72" height="52" rx="10" />
-      <rect className="brand-plate" x="8" y="18" width="64" height="44" rx="7" />
-      <rect className="brand-frame" x="8" y="18" width="64" height="44" rx="7" />
-      <path className="brand-play" d="M34 31v18l15-9-15-9z" />
+      <rect className="brand-plate" x="8" y="18" width="64" height="44" rx="8" />
+      <rect className="brand-frame" x="8" y="18" width="64" height="44" rx="8" />
+      <path className="brand-play" d="M33 30.5v19l17-9.5-17-9.5z" />
     </svg>
   );
 }

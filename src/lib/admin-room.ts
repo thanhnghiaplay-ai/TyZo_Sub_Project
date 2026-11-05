@@ -473,17 +473,16 @@ export const replyAppeal = createServerFn({ method: "POST" })
       returning id
     `;
     if (!updated.length) throw new Error("Yêu cầu này đã được trả lời.");
-    if (data.status === "mo") {
-      const appeal = await sql<{ user_id: string | null }>`select user_id from room_appeals where id = ${data.id}`;
-      const userId = appeal[0]?.user_id;
-      if (userId) {
-        await sql`
-          update room_accounts
-          set status = 'open', status_reason = ''
-          where user_id = ${userId} and status = 'locked'
-        `;
-      }
+    const appeal = await sql<{ user_id: string | null }>`select user_id from room_appeals where id = ${data.id}`;
+    const userId = appeal[0]?.user_id ?? null;
+    if (data.status === "mo" && userId) {
+      await sql`
+        update room_accounts
+        set status = 'open', status_reason = ''
+        where user_id = ${userId} and status = 'locked'
+      `;
     }
+    await writeNotice("user", data.status === "mo" ? "Đã mở lại tài khoản" : "Đã trả lời yêu cầu", data.reply, userId);
     await writeAudit(context.userId, `yeu-cau-${data.status}`, String(data.id), data.reply);
     return { ok: true };
   });
@@ -506,6 +505,59 @@ export const listAudit = createServerFn({ method: "GET" })
     }));
   });
 
+export type NoticeRow = { id: number; title: string; body: string; createdAt: string; read: boolean };
+
+export const listMyNotices = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<{ unread: number; items: NoticeRow[] }> => {
+    const place = await placeOf(context.userId);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const staff = Boolean(place.role);
+    const rows = await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown }>`
+      select id, title, body, created_at, read_at from room_notices
+      where (kind = 'user' and user_id = ${context.userId})
+         or (${staff} and kind = 'staff')
+      order by id desc
+      limit 20
+    `;
+    const items = rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      body: row.body,
+      createdAt: stamp(row.created_at),
+      read: Boolean(row.read_at),
+    }));
+    return { unread: items.filter((item) => !item.read).length, items };
+  });
+
+export const markNoticesRead = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const place = await placeOf(context.userId);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const staff = Boolean(place.role);
+    await sql`
+      update room_notices set read_at = now()
+      where read_at is null and ((kind = 'user' and user_id = ${context.userId}) or (${staff} and kind = 'staff'))
+    `;
+    return { ok: true as const };
+  });
+
+async function writeNotice(kind: "user" | "staff", title: string, body: string, userId: string | null) {
+  try {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      insert into room_notices (user_id, kind, title, body)
+      values (${userId}, ${kind}, ${title.slice(0, 120)}, ${body.slice(0, 500)})
+    `;
+  } catch {
+    // Bảng có sau lần xây mới.
+  }
+}
+
 async function insertAppeal(email: string, body: string, userId: string | null) {
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();
@@ -517,6 +569,7 @@ async function insertAppeal(email: string, body: string, userId: string | null) 
     insert into room_appeals (user_id, email, body)
     values (${userId}, ${email}, ${body})
   `;
+  await writeNotice("staff", "Yêu cầu mới", `${email}: ${body.slice(0, 140)}`, null);
 }
 
 export const submitAppeal = createServerFn({ method: "POST" })

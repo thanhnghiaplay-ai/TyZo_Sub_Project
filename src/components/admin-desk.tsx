@@ -25,6 +25,7 @@ import {
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
 import { PaySettings } from "@/components/pay-settings";
+import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -66,6 +67,12 @@ export function AdminDesk() {
   useEffect(() => {
     if (place?.role === "chu" && place.email) setOwnerEmailInput(place.email);
   }, [place]);
+
+  useEffect(() => {
+    if (!notice || !place) return;
+    pushToast(notice, /chưa|không|hãy|lỗi/i.test(notice) ? "bad" : "ok");
+    setNotice(null);
+  }, [notice, place]);
 
   async function run(task: () => Promise<unknown>, done: string) {
     setBusy(true);
@@ -306,7 +313,6 @@ export function AdminDesk() {
           {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}
-      {notice && <p className="text-sm text-muted">{notice}</p>}
     </div>
   );
 }

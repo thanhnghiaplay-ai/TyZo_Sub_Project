@@ -24,6 +24,7 @@ import {
 import { usePipeline } from "@/components/use-pipeline";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
+import { NoticeBell } from "@/components/notice-bell";
 import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
 import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
@@ -500,7 +501,10 @@ export function Studio() {
             <BrandMark small title="TyZo Sub" />
             <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
           </div>
-          <VersionMark />
+          <div className="flex items-center gap-2">
+            <VersionMark />
+            <NoticeBell />
+          </div>
         </div>
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip />
@@ -1890,7 +1894,7 @@ function Stage({
       {panel && full && panelNode}
     </div>
     {panel && !full && panelNode}
-    <p className="text-center text-xs text-muted">Kéo ngang để tua · kéo dọc bên phải chỉnh tiếng · bên trái chỉnh sáng · chạm đúp hai mé để nhảy 10 giây</p>
+    <p className="mt-4 px-2 text-center text-xs text-muted">Kéo ngang để tua · kéo dọc bên phải chỉnh tiếng · bên trái chỉnh sáng · chạm đúp hai mé để nhảy 10 giây</p>
     </div>
   );
 }

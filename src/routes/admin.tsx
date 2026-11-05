@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminDesk } from "@/components/admin-desk";
 import { VersionMark } from "@/components/version-mark";
+import { NoticeBell } from "@/components/notice-bell";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -12,9 +13,12 @@ function AdminPage() {
           <h1 className="text-base leading-none font-semibold">Admin</h1>
           <VersionMark />
         </div>
-        <Link to="/" className="room-back">
-          Về phòng
-        </Link>
+        <div className="flex items-center gap-2">
+          <NoticeBell />
+          <Link to="/" className="room-back">
+            Về phòng
+          </Link>
+        </div>
       </header>
       <AdminDesk />
     </main>

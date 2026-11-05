@@ -7,6 +7,7 @@ import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
+import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -28,6 +29,12 @@ export function AccountPanel() {
   useEffect(() => {
     if (user?.displayName) setName(user.displayName);
   }, [user]);
+
+  useEffect(() => {
+    if (!notice) return;
+    pushToast(notice, /chưa|không|hãy|lỗi/i.test(notice) ? "bad" : "ok");
+    setNotice(null);
+  }, [notice]);
 
   useEffect(() => {
     if (!user || user.isDevFallback) return;
@@ -225,7 +232,6 @@ export function AccountPanel() {
           )}
         </>
       )}
-      {notice && <p className="text-sm text-muted">{notice}</p>}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "1.2.0";
+export const APP_VERSION = "1.3.0";
 
 export function versionKind(version = APP_VERSION) {
   const [major, minor, patch] = version.split(".").map((part) => Number(part) || 0);
