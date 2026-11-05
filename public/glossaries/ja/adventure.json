@@ -1,0 +1,285 @@
+[
+  {
+    "source": "宝物",
+    "target": "kho báu"
+  },
+  {
+    "source": "宝の地図",
+    "target": "bản đồ kho báu"
+  },
+  {
+    "source": "遺跡",
+    "target": "di tích",
+    "note": "Cách khác: di tích cổ"
+  },
+  {
+    "source": "洞窟",
+    "target": "hang động"
+  },
+  {
+    "source": "仕掛けられた罠",
+    "target": "cái bẫy đã giăng"
+  },
+  {
+    "source": "冒険",
+    "target": "phiêu lưu",
+    "note": "Cách khác: phiêu lưu, mạo hiểm"
+  },
+  {
+    "source": "伝説",
+    "target": "truyền thuyết"
+  },
+  {
+    "source": "羅針盤",
+    "target": "la bàn"
+  },
+  {
+    "source": "秘宝",
+    "target": "bảo vật"
+  },
+  {
+    "source": "呪い",
+    "target": "lời nguyền"
+  },
+  {
+    "source": "探検",
+    "target": "thám hiểm"
+  },
+  {
+    "source": "未開の地",
+    "target": "vùng đất chưa ai đặt chân"
+  },
+  {
+    "source": "航海",
+    "target": "hải trình",
+    "note": "Cách khác: đi biển"
+  },
+  {
+    "source": "嵐が来る",
+    "target": "bão sắp tới"
+  },
+  {
+    "source": "船出",
+    "target": "ra khơi"
+  },
+  {
+    "source": "守護者",
+    "target": "người canh giữ"
+  },
+  {
+    "source": "試練",
+    "target": "thử thách"
+  },
+  {
+    "source": "古代文明",
+    "target": "nền văn minh cổ"
+  },
+  {
+    "source": "秘境",
+    "target": "vùng bí ẩn"
+  },
+  {
+    "source": "仲間割れ",
+    "target": "đồng đội chia rẽ"
+  },
+  {
+    "source": "遭難",
+    "target": "lạc nạn"
+  },
+  {
+    "source": "コンパス",
+    "target": "la bàn"
+  },
+  {
+    "source": "宝物庫",
+    "target": "kho báu"
+  },
+  {
+    "source": "落とし穴",
+    "target": "hố bẫy"
+  },
+  {
+    "source": "毒矢",
+    "target": "tên độc"
+  },
+  {
+    "source": "地図の断片",
+    "target": "mảnh bản đồ"
+  },
+  {
+    "source": "伝説の剣",
+    "target": "thanh kiếm truyền thuyết"
+  },
+  {
+    "source": "封印された扉",
+    "target": "cánh cửa bị phong ấn"
+  },
+  {
+    "source": "道標",
+    "target": "cột mốc"
+  },
+  {
+    "source": "オアシス",
+    "target": "ốc đảo"
+  },
+  {
+    "source": "遭難信号",
+    "target": "tín hiệu cầu cứu"
+  },
+  {
+    "source": "生還",
+    "target": "sống sót trở về"
+  },
+  {
+    "source": "獣道",
+    "target": "đường thú"
+  },
+  {
+    "source": "断崖",
+    "target": "vách đá"
+  },
+  {
+    "source": "密林",
+    "target": "rừng rậm"
+  },
+  {
+    "source": "宝探し",
+    "target": "tìm kho báu",
+    "note": "Hán Việt: tầm bảo"
+  },
+  {
+    "source": "古墳",
+    "target": "mộ cổ",
+    "note": "Hán Việt: cổ mộ"
+  },
+  {
+    "source": "仕掛け",
+    "target": "cơ quan, bẫy",
+    "note": "Hán Việt: cơ quan. Không dịch \"cơ quan nhà nước\""
+  },
+  {
+    "source": "地図",
+    "target": "bản đồ",
+    "note": "Hán Việt: địa đồ"
+  },
+  {
+    "source": "方位磁針",
+    "target": "kim chỉ nam",
+    "note": "Hán Việt: chỉ nam châm"
+  },
+  {
+    "source": "荒野",
+    "target": "vùng hoang dã",
+    "note": "Hán Việt: hoang dã"
+  },
+  {
+    "source": "ジャングル",
+    "target": "rừng rậm",
+    "note": "Hán Việt: tùng lâm"
+  },
+  {
+    "source": "砂漠",
+    "target": "sa mạc",
+    "note": "Hán Việt: sa mạc"
+  },
+  {
+    "source": "雪山",
+    "target": "núi tuyết",
+    "note": "Hán Việt: tuyết sơn"
+  },
+  {
+    "source": "峡谷",
+    "target": "hẻm núi",
+    "note": "Hán Việt: hiệp cốc"
+  },
+  {
+    "source": "深淵",
+    "target": "vực sâu",
+    "note": "Hán Việt: thâm uyên"
+  },
+  {
+    "source": "迷宮",
+    "target": "mê cung",
+    "note": "Hán Việt: mê cung"
+  },
+  {
+    "source": "神器",
+    "target": "thần khí",
+    "note": "Hán Việt: thần khí"
+  },
+  {
+    "source": "手がかり",
+    "target": "manh mối",
+    "note": "Hán Việt: tuyến sách"
+  },
+  {
+    "source": "道を探る",
+    "target": "dò đường",
+    "note": "Hán Việt: thám lộ"
+  },
+  {
+    "source": "ガイド",
+    "target": "người dẫn đường",
+    "note": "Hán Việt: hướng đạo"
+  },
+  {
+    "source": "仲間",
+    "target": "đồng đội, bạn đồng hành",
+    "note": "Hán Việt: đồng bạn"
+  },
+  {
+    "source": "パーティー",
+    "target": "đội nhóm",
+    "note": "Hán Việt: đội ngũ"
+  },
+  {
+    "source": "キャンプ地",
+    "target": "trại, điểm cắm trại",
+    "note": "Hán Việt: doanh địa"
+  },
+  {
+    "source": "補給",
+    "target": "tiếp tế",
+    "note": "Hán Việt: bổ cấp"
+  },
+  {
+    "source": "携行食",
+    "target": "lương khô",
+    "note": "Hán Việt: can lương"
+  },
+  {
+    "source": "海賊",
+    "target": "hải tặc",
+    "note": "Hán Việt: hải đạo"
+  },
+  {
+    "source": "孤島",
+    "target": "đảo hoang",
+    "note": "Hán Việt: cô đảo"
+  },
+  {
+    "source": "沈没船",
+    "target": "tàu đắm",
+    "note": "Hán Việt: trầm thuyền"
+  },
+  {
+    "source": "冒険する",
+    "target": "trải qua hiểm nguy",
+    "note": "Hán Việt: lịch hiểm"
+  },
+  {
+    "source": "関門突破",
+    "target": "vượt ải",
+    "note": "Hán Việt: sấm quan"
+  },
+  {
+    "source": "危機を脱する",
+    "target": "thoát hiểm",
+    "note": "Hán Việt: thoát hiểm"
+  },
+  {
+    "source": "出発する",
+    "target": "lên đường",
+    "note": "Hán Việt: khải trình"
+  }
+]

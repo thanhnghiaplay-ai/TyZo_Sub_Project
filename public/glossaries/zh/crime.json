@@ -1,0 +1,442 @@
+[
+  {
+    "source": "老大",
+    "target": "đại ca, trùm",
+    "renders": {
+      "vi": "đại ca, trùm",
+      "ko": "두목",
+      "ja": "ボス",
+      "en": "boss"
+    },
+    "note": "Hán Việt: lão đại"
+  },
+  {
+    "source": "大哥",
+    "target": "đại ca",
+    "renders": {
+      "vi": "đại ca",
+      "ko": "형님",
+      "ja": "兄貴",
+      "en": "big brother"
+    },
+    "note": "Hán Việt: đại ca"
+  },
+  {
+    "source": "小弟",
+    "target": "đàn em",
+    "renders": {
+      "vi": "đàn em",
+      "ko": "부하",
+      "ja": "子分",
+      "en": "underling"
+    },
+    "note": "Hán Việt: tiểu đệ"
+  },
+  {
+    "source": "手下",
+    "target": "thuộc hạ, tay chân",
+    "renders": {
+      "vi": "thuộc hạ, tay chân",
+      "ko": "수하",
+      "ja": "手下",
+      "en": "henchman"
+    },
+    "note": "Hán Việt: thủ hạ"
+  },
+  {
+    "source": "帮派",
+    "target": "băng đảng",
+    "renders": {
+      "vi": "băng đảng",
+      "ko": "조직",
+      "ja": "組織",
+      "en": "gang"
+    },
+    "note": "Hán Việt: bang phái"
+  },
+  {
+    "source": "黑帮",
+    "target": "xã hội đen",
+    "renders": {
+      "vi": "xã hội đen",
+      "ko": "조폭",
+      "ja": "暴力団",
+      "en": "mob"
+    },
+    "note": "Hán Việt: hắc bang"
+  },
+  {
+    "source": "道上",
+    "target": "giới giang hồ",
+    "renders": {
+      "vi": "giới giang hồ",
+      "ko": "업계",
+      "ja": "裏社会",
+      "en": "the underworld"
+    },
+    "note": "Hán Việt: đạo thượng. Không dịch \"trên đường\""
+  },
+  {
+    "source": "地盘",
+    "target": "địa bàn",
+    "renders": {
+      "vi": "địa bàn",
+      "ko": "구역",
+      "ja": "縄張り",
+      "en": "turf"
+    },
+    "note": "Hán Việt: địa bàn"
+  },
+  {
+    "source": "势力",
+    "target": "thế lực",
+    "renders": {
+      "vi": "thế lực",
+      "ko": "세력",
+      "ja": "勢力",
+      "en": "influence"
+    },
+    "note": "Hán Việt: thế lực"
+  },
+  {
+    "source": "火拼",
+    "target": "thanh toán nhau, đấu súng",
+    "renders": {
+      "vi": "thanh toán nhau, đấu súng",
+      "ko": "총격전",
+      "ja": "抗争",
+      "en": "gang fight"
+    },
+    "note": "Hán Việt: hỏa bính"
+  },
+  {
+    "source": "做掉",
+    "target": "thủ tiêu, xử lý",
+    "renders": {
+      "vi": "thủ tiêu, xử lý",
+      "ko": "처리하다",
+      "ja": "始末する",
+      "en": "take out"
+    },
+    "note": "Hán Việt: tố điệu"
+  },
+  {
+    "source": "灭口",
+    "target": "bịt miệng, giết người diệt khẩu",
+    "renders": {
+      "vi": "bịt miệng, giết người diệt khẩu",
+      "ko": "입막음",
+      "ja": "口封じ",
+      "en": "silence a witness"
+    },
+    "note": "Hán Việt: diệt khẩu"
+  },
+  {
+    "source": "砍人",
+    "target": "chém người",
+    "renders": {
+      "vi": "chém người",
+      "ko": "칼로 베다",
+      "ja": "斬りつける",
+      "en": "slash someone"
+    },
+    "note": "Hán Việt: khản nhân"
+  },
+  {
+    "source": "保护费",
+    "target": "tiền bảo kê",
+    "renders": {
+      "vi": "tiền bảo kê",
+      "ko": "보호비",
+      "ja": "みかじめ料",
+      "en": "protection money"
+    },
+    "note": "Hán Việt: bảo hộ phí"
+  },
+  {
+    "source": "走私",
+    "target": "buôn lậu",
+    "renders": {
+      "vi": "buôn lậu",
+      "ko": "밀수",
+      "ja": "密輸",
+      "en": "smuggling"
+    },
+    "note": "Hán Việt: tẩu tư"
+  },
+  {
+    "source": "贩毒",
+    "target": "buôn ma túy",
+    "renders": {
+      "vi": "buôn ma túy",
+      "ko": "마약 밀매",
+      "ja": "麻薬密売",
+      "en": "drug trafficking"
+    },
+    "note": "Hán Việt: phản độc"
+  },
+  {
+    "source": "洗钱",
+    "target": "rửa tiền",
+    "renders": {
+      "vi": "rửa tiền",
+      "ko": "돈세탁",
+      "ja": "マネーロンダリング",
+      "en": "money laundering"
+    },
+    "note": "Hán Việt: tẩy tiền"
+  },
+  {
+    "source": "赃款",
+    "target": "tiền tang",
+    "renders": {
+      "vi": "tiền tang",
+      "ko": "장물 자금",
+      "ja": "不正資金",
+      "en": "ill-gotten money"
+    },
+    "note": "Hán Việt: tang khoản"
+  },
+  {
+    "source": "赃物",
+    "target": "tang vật",
+    "renders": {
+      "vi": "tang vật",
+      "ko": "장물",
+      "ja": "盗品",
+      "en": "stolen goods"
+    },
+    "note": "Hán Việt: tang vật"
+  },
+  {
+    "source": "绑架",
+    "target": "bắt cóc",
+    "renders": {
+      "vi": "bắt cóc",
+      "ko": "납치",
+      "ja": "誘拐",
+      "en": "kidnapping"
+    },
+    "note": "Hán Việt: bảng giá"
+  },
+  {
+    "source": "勒索",
+    "target": "tống tiền",
+    "renders": {
+      "vi": "tống tiền",
+      "ko": "갈취",
+      "ja": "恐喝",
+      "en": "extortion"
+    },
+    "note": "Hán Việt: lặc sách"
+  },
+  {
+    "source": "抢劫",
+    "target": "cướp",
+    "renders": {
+      "vi": "cướp",
+      "ko": "강도",
+      "ja": "強盗",
+      "en": "robbery"
+    },
+    "note": "Hán Việt: thưởng kiếp"
+  },
+  {
+    "source": "盗窃",
+    "target": "trộm cắp",
+    "renders": {
+      "vi": "trộm cắp",
+      "ko": "절도",
+      "ja": "窃盗",
+      "en": "theft"
+    },
+    "note": "Hán Việt: đạo thiết"
+  },
+  {
+    "source": "诈骗",
+    "target": "lừa đảo",
+    "renders": {
+      "vi": "lừa đảo",
+      "ko": "사기",
+      "ja": "詐欺",
+      "en": "fraud"
+    },
+    "note": "Hán Việt: trá phiến"
+  },
+  {
+    "source": "黑钱",
+    "target": "tiền bẩn",
+    "renders": {
+      "vi": "tiền bẩn",
+      "ko": "검은돈",
+      "ja": "裏金",
+      "en": "dirty money"
+    },
+    "note": "Hán Việt: hắc tiền"
+  },
+  {
+    "source": "通缉",
+    "target": "truy nã",
+    "renders": {
+      "vi": "truy nã",
+      "ko": "수배",
+      "ja": "指名手配",
+      "en": "wanted"
+    },
+    "note": "Hán Việt: thông tập"
+  },
+  {
+    "source": "逃犯",
+    "target": "tội phạm trốn chạy",
+    "renders": {
+      "vi": "tội phạm trốn chạy",
+      "ko": "도주범",
+      "ja": "逃亡犯",
+      "en": "fugitive"
+    },
+    "note": "Hán Việt: đào phạm"
+  },
+  {
+    "source": "警察",
+    "target": "cảnh sát",
+    "renders": {
+      "vi": "cảnh sát",
+      "ko": "경찰",
+      "ja": "警察",
+      "en": "police"
+    },
+    "note": "Hán Việt: cảnh sát"
+  },
+  {
+    "source": "条子",
+    "target": "cớm (tiếng lóng)",
+    "renders": {
+      "vi": "cớm (tiếng lóng)",
+      "ko": "짭새",
+      "ja": "サツ",
+      "en": "cops (slang)"
+    },
+    "note": "Hán Việt: điều tử"
+  },
+  {
+    "source": "卧底",
+    "target": "nằm vùng",
+    "renders": {
+      "vi": "nằm vùng",
+      "ko": "잠입 수사관",
+      "ja": "潜入捜査官",
+      "en": "undercover agent"
+    },
+    "note": "Hán Việt: ngọa để"
+  },
+  {
+    "source": "线人",
+    "target": "tay trong, người cung cấp tin",
+    "renders": {
+      "vi": "tay trong, người cung cấp tin",
+      "ko": "정보원",
+      "ja": "情報屋",
+      "en": "informant"
+    },
+    "note": "Hán Việt: tuyến nhân"
+  },
+  {
+    "source": "证据",
+    "target": "chứng cứ",
+    "renders": {
+      "vi": "chứng cứ",
+      "ko": "증거",
+      "ja": "証拠",
+      "en": "evidence"
+    },
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "审讯",
+    "target": "thẩm vấn",
+    "renders": {
+      "vi": "thẩm vấn",
+      "ko": "심문",
+      "ja": "尋問",
+      "en": "interrogation"
+    },
+    "note": "Hán Việt: thẩm tấn"
+  },
+  {
+    "source": "坐牢",
+    "target": "ngồi tù",
+    "renders": {
+      "vi": "ngồi tù",
+      "ko": "감옥에 가다",
+      "ja": "服役する",
+      "en": "go to prison"
+    },
+    "note": "Hán Việt: tọa lao"
+  },
+  {
+    "source": "判刑",
+    "target": "kết án",
+    "renders": {
+      "vi": "kết án",
+      "ko": "형을 선고하다",
+      "ja": "判決を下す",
+      "en": "sentence"
+    },
+    "note": "Hán Việt: phán hình"
+  },
+  {
+    "source": "自首",
+    "target": "ra đầu thú",
+    "renders": {
+      "vi": "ra đầu thú",
+      "ko": "자수",
+      "ja": "自首",
+      "en": "turn oneself in"
+    },
+    "note": "Hán Việt: tự thú"
+  },
+  {
+    "source": "同伙",
+    "target": "đồng bọn",
+    "renders": {
+      "vi": "đồng bọn",
+      "ko": "공범",
+      "ja": "共犯",
+      "en": "accomplice"
+    },
+    "note": "Hán Việt: đồng hỏa"
+  },
+  {
+    "source": "内鬼",
+    "target": "nội gián",
+    "renders": {
+      "vi": "nội gián",
+      "ko": "내부 첩자",
+      "ja": "内通者",
+      "en": "mole"
+    },
+    "note": "Hán Việt: nội quỷ"
+  },
+  {
+    "source": "黑吃黑",
+    "target": "băng đảng ăn hiếp nhau",
+    "renders": {
+      "vi": "băng đảng ăn hiếp nhau",
+      "ko": "조직끼리 싸움",
+      "ja": "組織同士の食い合い",
+      "en": "crooks preying on crooks"
+    },
+    "note": "Hán Việt: hắc ngật hắc"
+  },
+  {
+    "source": "金盆洗手",
+    "target": "rửa tay gác kiếm, rút lui khỏi giang hồ",
+    "renders": {
+      "vi": "rửa tay gác kiếm, rút lui khỏi giang hồ",
+      "ko": "손을 씻다",
+      "ja": "足を洗う",
+      "en": "quit the underworld"
+    },
+    "note": "Hán Việt: kim bồn tẩy thủ"
+  }
+]

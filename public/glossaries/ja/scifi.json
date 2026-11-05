@@ -1,0 +1,295 @@
+[
+  {
+    "source": "宇宙船",
+    "target": "tàu vũ trụ",
+    "note": "Cách khác: phi thuyền"
+  },
+  {
+    "source": "人工知能",
+    "target": "trí tuệ nhân tạo"
+  },
+  {
+    "source": "アンドロイド",
+    "target": "người máy hình người"
+  },
+  {
+    "source": "ワープ",
+    "target": "nhảy không gian"
+  },
+  {
+    "source": "異星人",
+    "target": "người ngoài hành tinh"
+  },
+  {
+    "source": "クローン",
+    "target": "bản sao sinh học"
+  },
+  {
+    "source": "タイムパラドックス",
+    "target": "nghịch lý thời gian"
+  },
+  {
+    "source": "宇宙ステーション",
+    "target": "trạm không gian"
+  },
+  {
+    "source": "生命維持装置",
+    "target": "hệ thống duy trì sự sống"
+  },
+  {
+    "source": "エネルギーコア",
+    "target": "lõi năng lượng"
+  },
+  {
+    "source": "シールド",
+    "target": "lá chắn năng lượng"
+  },
+  {
+    "source": "光速",
+    "target": "tốc độ ánh sáng"
+  },
+  {
+    "source": "転送装置",
+    "target": "máy dịch chuyển"
+  },
+  {
+    "source": "星系",
+    "target": "hệ sao"
+  },
+  {
+    "source": "量子コンピュータ",
+    "target": "máy tính lượng tử"
+  },
+  {
+    "source": "異星言語",
+    "target": "ngôn ngữ ngoài hành tinh"
+  },
+  {
+    "source": "魔法陣",
+    "target": "trận pháp"
+  },
+  {
+    "source": "魔力",
+    "target": "ma lực"
+  },
+  {
+    "source": "魔王",
+    "target": "ma vương"
+  },
+  {
+    "source": "勇者",
+    "target": "dũng giả",
+    "note": "Cách khác: dũng sĩ"
+  },
+  {
+    "source": "呪文",
+    "target": "thần chú"
+  },
+  {
+    "source": "召喚獣",
+    "target": "thú triệu hồi"
+  },
+  {
+    "source": "異世界",
+    "target": "dị giới"
+  },
+  {
+    "source": "ギルド",
+    "target": "hội"
+  },
+  {
+    "source": "レベルアップ",
+    "target": "lên cấp"
+  },
+  {
+    "source": "スキル",
+    "target": "kỹ năng"
+  },
+  {
+    "source": "封印魔法",
+    "target": "phép phong ấn"
+  },
+  {
+    "source": "宇宙艦隊",
+    "target": "hạm đội không gian"
+  },
+  {
+    "source": "ブラックホール",
+    "target": "hố đen"
+  },
+  {
+    "source": "テラフォーミング",
+    "target": "cải tạo hành tinh"
+  },
+  {
+    "source": "ナノマシン",
+    "target": "cỗ máy nano"
+  },
+  {
+    "source": "冷凍睡眠",
+    "target": "ngủ đông"
+  },
+  {
+    "source": "反乱軍",
+    "target": "quân nổi dậy"
+  },
+  {
+    "source": "母船",
+    "target": "tàu mẹ"
+  },
+  {
+    "source": "異能",
+    "target": "dị năng, năng lực đặc biệt",
+    "note": "Hán Việt: dị năng"
+  },
+  {
+    "source": "超能力",
+    "target": "siêu năng lực",
+    "note": "Hán Việt: siêu năng lực"
+  },
+  {
+    "source": "異世界転生",
+    "target": "xuyên không",
+    "note": "Hán Việt: xuyên việt"
+  },
+  {
+    "source": "回帰",
+    "target": "trọng sinh, sống lại",
+    "note": "Hán Việt: trọng sinh"
+  },
+  {
+    "source": "並行世界",
+    "target": "thế giới song song",
+    "note": "Hán Việt: bình hành thế giới"
+  },
+  {
+    "source": "時空",
+    "target": "không-thời gian",
+    "note": "Hán Việt: thời không"
+  },
+  {
+    "source": "タイムトラベル",
+    "target": "du hành thời gian",
+    "note": "Hán Việt: thời gian lữ hành"
+  },
+  {
+    "source": "星間",
+    "target": "liên sao, giữa các vì sao",
+    "note": "Hán Việt: tinh tế"
+  },
+  {
+    "source": "宇宙人",
+    "target": "người ngoài hành tinh",
+    "note": "Hán Việt: ngoại tinh nhân"
+  },
+  {
+    "source": "ロボット",
+    "target": "người máy, robot",
+    "note": "Hán Việt: cơ khí nhân"
+  },
+  {
+    "source": "遺伝子",
+    "target": "gen",
+    "note": "Hán Việt: cơ nhân"
+  },
+  {
+    "source": "変異",
+    "target": "biến dị",
+    "note": "Hán Việt: biến dị"
+  },
+  {
+    "source": "終末",
+    "target": "tận thế",
+    "note": "Hán Việt: mạt thế"
+  },
+  {
+    "source": "荒廃した大地",
+    "target": "vùng đất hoang tàn",
+    "note": "Hán Việt: phế thổ"
+  },
+  {
+    "source": "ゾンビ",
+    "target": "zombie",
+    "note": "Hán Việt: tang thi"
+  },
+  {
+    "source": "ウイルス",
+    "target": "virus",
+    "note": "Hán Việt: bệnh độc"
+  },
+  {
+    "source": "魔法",
+    "target": "phép thuật, ma pháp",
+    "note": "Hán Việt: ma pháp"
+  },
+  {
+    "source": "魔法使い",
+    "target": "pháp sư",
+    "note": "Hán Việt: pháp sư"
+  },
+  {
+    "source": "魔術師",
+    "target": "phù thủy nam",
+    "note": "Hán Việt: vu sư"
+  },
+  {
+    "source": "エルフ",
+    "target": "yêu tinh, elf",
+    "note": "Hán Việt: tinh linh. Không dịch \"tinh thần linh\""
+  },
+  {
+    "source": "ドワーフ",
+    "target": "người lùn",
+    "note": "Hán Việt: ải nhân"
+  },
+  {
+    "source": "ドラゴン",
+    "target": "rồng",
+    "note": "Hán Việt: long"
+  },
+  {
+    "source": "結界",
+    "target": "kết giới, kết giới ma thuật",
+    "note": "Hán Việt: kết giới"
+  },
+  {
+    "source": "召喚",
+    "target": "triệu hồi",
+    "note": "Hán Việt: triệu hoán"
+  },
+  {
+    "source": "契約",
+    "target": "khế ước",
+    "note": "Hán Việt: khế ước"
+  },
+  {
+    "source": "システム",
+    "target": "hệ thống (game/nhiệm vụ)",
+    "note": "Hán Việt: hệ thống. Hay gặp trong truyện hệ thống"
+  },
+  {
+    "source": "ダンジョン",
+    "target": "phó bản, dungeon",
+    "note": "Hán Việt: phó bản"
+  },
+  {
+    "source": "レベル",
+    "target": "cấp độ",
+    "note": "Hán Việt: đẳng cấp"
+  },
+  {
+    "source": "装備",
+    "target": "trang bị",
+    "note": "Hán Việt: trang bị"
+  },
+  {
+    "source": "ボス",
+    "target": "trùm cuối",
+    "note": "Hán Việt: boss"
+  },
+  {
+    "source": "クエスト",
+    "target": "nhiệm vụ",
+    "note": "Hán Việt: nhiệm vụ"
+  }
+]

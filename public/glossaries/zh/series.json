@@ -1,0 +1,431 @@
+[
+  {
+    "source": "大结局",
+    "target": "tập cuối",
+    "renders": {
+      "vi": "tập cuối",
+      "ko": "마지막 회",
+      "ja": "最終回",
+      "en": "finale"
+    },
+    "note": "Hán Việt: đại kết cục"
+  },
+  {
+    "source": "首播",
+    "target": "công chiếu lần đầu",
+    "renders": {
+      "vi": "công chiếu lần đầu",
+      "ko": "첫 방송",
+      "ja": "初回放送",
+      "en": "premiere"
+    },
+    "note": "Hán Việt: thủ bá"
+  },
+  {
+    "source": "热播",
+    "target": "đang phát sóng hot",
+    "renders": {
+      "vi": "đang phát sóng hot",
+      "ko": "인기 방영",
+      "ja": "大ヒット放送中",
+      "en": "hit airing"
+    },
+    "note": "Hán Việt: nhiệt bá"
+  },
+  {
+    "source": "收视率",
+    "target": "tỷ suất người xem",
+    "renders": {
+      "vi": "tỷ suất người xem",
+      "ko": "시청률",
+      "ja": "視聴率",
+      "en": "ratings"
+    },
+    "note": "Hán Việt: thu thị suất"
+  },
+  {
+    "source": "口碑",
+    "target": "danh tiếng, đánh giá",
+    "renders": {
+      "vi": "danh tiếng, đánh giá",
+      "ko": "평판",
+      "ja": "評判",
+      "en": "word of mouth"
+    },
+    "note": "Hán Việt: khẩu bi"
+  },
+  {
+    "source": "评分",
+    "target": "điểm đánh giá",
+    "renders": {
+      "vi": "điểm đánh giá",
+      "ko": "평점",
+      "ja": "評価",
+      "en": "rating score"
+    },
+    "note": "Hán Việt: bình phân"
+  },
+  {
+    "source": "番外",
+    "target": "ngoại truyện",
+    "renders": {
+      "vi": "ngoại truyện",
+      "ko": "외전",
+      "ja": "番外編",
+      "en": "side story"
+    },
+    "note": "Hán Việt: phiên ngoại"
+  },
+  {
+    "source": "前情提要",
+    "target": "tóm tắt tập trước",
+    "renders": {
+      "vi": "tóm tắt tập trước",
+      "ko": "이전 줄거리",
+      "ja": "前回のあらすじ",
+      "en": "previously on"
+    },
+    "note": "Hán Việt: tiền tình đề yếu"
+  },
+  {
+    "source": "预告",
+    "target": "trailer, tập tiếp theo",
+    "renders": {
+      "vi": "trailer, tập tiếp theo",
+      "ko": "예고편",
+      "ja": "予告",
+      "en": "preview"
+    },
+    "note": "Hán Việt: dự cáo"
+  },
+  {
+    "source": "花絮",
+    "target": "hậu trường",
+    "renders": {
+      "vi": "hậu trường",
+      "ko": "메이킹 영상",
+      "ja": "メイキング",
+      "en": "behind the scenes"
+    },
+    "note": "Hán Việt: hoa tự"
+  },
+  {
+    "source": "剧情",
+    "target": "cốt truyện",
+    "renders": {
+      "vi": "cốt truyện",
+      "ko": "줄거리",
+      "ja": "ストーリー",
+      "en": "plot"
+    },
+    "note": "Hán Việt: kịch tình"
+  },
+  {
+    "source": "剧本",
+    "target": "kịch bản",
+    "renders": {
+      "vi": "kịch bản",
+      "ko": "대본",
+      "ja": "脚本",
+      "en": "script"
+    },
+    "note": "Hán Việt: kịch bản"
+  },
+  {
+    "source": "编剧",
+    "target": "biên kịch",
+    "renders": {
+      "vi": "biên kịch",
+      "ko": "작가",
+      "ja": "脚本家",
+      "en": "screenwriter"
+    },
+    "note": "Hán Việt: biên kịch"
+  },
+  {
+    "source": "导演",
+    "target": "đạo diễn",
+    "renders": {
+      "vi": "đạo diễn",
+      "ko": "감독",
+      "ja": "監督",
+      "en": "director"
+    },
+    "note": "Hán Việt: đạo diễn"
+  },
+  {
+    "source": "主演",
+    "target": "diễn viên chính",
+    "renders": {
+      "vi": "diễn viên chính",
+      "ko": "주연",
+      "ja": "主演",
+      "en": "lead actor"
+    },
+    "note": "Hán Việt: chủ diễn"
+  },
+  {
+    "source": "配角",
+    "target": "vai phụ",
+    "renders": {
+      "vi": "vai phụ",
+      "ko": "조연",
+      "ja": "脇役",
+      "en": "supporting role"
+    },
+    "note": "Hán Việt: phối giác"
+  },
+  {
+    "source": "男主",
+    "target": "nam chính",
+    "renders": {
+      "vi": "nam chính",
+      "ko": "남주",
+      "ja": "男性主人公",
+      "en": "male lead"
+    },
+    "note": "Hán Việt: nam chủ"
+  },
+  {
+    "source": "女主",
+    "target": "nữ chính",
+    "renders": {
+      "vi": "nữ chính",
+      "ko": "여주",
+      "ja": "女性主人公",
+      "en": "female lead"
+    },
+    "note": "Hán Việt: nữ chủ"
+  },
+  {
+    "source": "男二",
+    "target": "nam phụ",
+    "renders": {
+      "vi": "nam phụ",
+      "ko": "서브 남주",
+      "ja": "男性サブ主人公",
+      "en": "second male lead"
+    },
+    "note": "Hán Việt: nam nhị"
+  },
+  {
+    "source": "女二",
+    "target": "nữ phụ",
+    "renders": {
+      "vi": "nữ phụ",
+      "ko": "서브 여주",
+      "ja": "女性サブ主人公",
+      "en": "second female lead"
+    },
+    "note": "Hán Việt: nữ nhị"
+  },
+  {
+    "source": "反派",
+    "target": "nhân vật phản diện",
+    "renders": {
+      "vi": "nhân vật phản diện",
+      "ko": "악역",
+      "ja": "悪役",
+      "en": "villain"
+    },
+    "note": "Hán Việt: phản phái"
+  },
+  {
+    "source": "客串",
+    "target": "đóng vai khách mời",
+    "renders": {
+      "vi": "đóng vai khách mời",
+      "ko": "카메오",
+      "ja": "ゲスト出演",
+      "en": "cameo"
+    },
+    "note": "Hán Việt: khách xuyến"
+  },
+  {
+    "source": "特邀",
+    "target": "diễn viên đặc biệt",
+    "renders": {
+      "vi": "diễn viên đặc biệt",
+      "ko": "특별 출연",
+      "ja": "特別出演",
+      "en": "special guest"
+    },
+    "note": "Hán Việt: đặc mời"
+  },
+  {
+    "source": "演技",
+    "target": "diễn xuất",
+    "renders": {
+      "vi": "diễn xuất",
+      "ko": "연기",
+      "ja": "演技",
+      "en": "acting"
+    },
+    "note": "Hán Việt: diễn kỹ"
+  },
+  {
+    "source": "台词",
+    "target": "lời thoại",
+    "renders": {
+      "vi": "lời thoại",
+      "ko": "대사",
+      "ja": "セリフ",
+      "en": "lines"
+    },
+    "note": "Hán Việt: đài từ"
+  },
+  {
+    "source": "字幕",
+    "target": "phụ đề",
+    "renders": {
+      "vi": "phụ đề",
+      "ko": "자막",
+      "ja": "字幕",
+      "en": "subtitles"
+    },
+    "note": "Hán Việt: tự mạc"
+  },
+  {
+    "source": "配音",
+    "target": "lồng tiếng",
+    "renders": {
+      "vi": "lồng tiếng",
+      "ko": "더빙",
+      "ja": "吹き替え",
+      "en": "dubbing"
+    },
+    "note": "Hán Việt: phối âm"
+  },
+  {
+    "source": "原声",
+    "target": "nhạc phim",
+    "renders": {
+      "vi": "nhạc phim",
+      "ko": "OST",
+      "ja": "サントラ",
+      "en": "soundtrack"
+    },
+    "note": "Hán Việt: nguyên thanh"
+  },
+  {
+    "source": "片头曲",
+    "target": "nhạc mở đầu",
+    "renders": {
+      "vi": "nhạc mở đầu",
+      "ko": "오프닝곡",
+      "ja": "オープニング曲",
+      "en": "opening theme"
+    },
+    "note": "Hán Việt: phiến đầu khúc"
+  },
+  {
+    "source": "片尾曲",
+    "target": "nhạc kết thúc",
+    "renders": {
+      "vi": "nhạc kết thúc",
+      "ko": "엔딩곡",
+      "ja": "エンディング曲",
+      "en": "ending theme"
+    },
+    "note": "Hán Việt: phiến vĩ khúc"
+  },
+  {
+    "source": "翻拍",
+    "target": "làm lại, remake",
+    "renders": {
+      "vi": "làm lại, remake",
+      "ko": "리메이크",
+      "ja": "リメイク",
+      "en": "remake"
+    },
+    "note": "Hán Việt: phiên phách"
+  },
+  {
+    "source": "改编",
+    "target": "chuyển thể",
+    "renders": {
+      "vi": "chuyển thể",
+      "ko": "각색",
+      "ja": "脚色",
+      "en": "adaptation"
+    },
+    "note": "Hán Việt: cải biên"
+  },
+  {
+    "source": "原著",
+    "target": "nguyên tác",
+    "renders": {
+      "vi": "nguyên tác",
+      "ko": "원작",
+      "ja": "原作",
+      "en": "original work"
+    },
+    "note": "Hán Việt: nguyên trứ"
+  },
+  {
+    "source": "续集",
+    "target": "phần tiếp theo",
+    "renders": {
+      "vi": "phần tiếp theo",
+      "ko": "속편",
+      "ja": "続編",
+      "en": "sequel"
+    },
+    "note": "Hán Việt: tục tập"
+  },
+  {
+    "source": "第一季",
+    "target": "phần 1",
+    "renders": {
+      "vi": "phần 1",
+      "ko": "시즌 1",
+      "ja": "シーズン1",
+      "en": "season 1"
+    },
+    "note": "Hán Việt: đệ nhất quý"
+  },
+  {
+    "source": "更新",
+    "target": "cập nhật tập mới",
+    "renders": {
+      "vi": "cập nhật tập mới",
+      "ko": "업데이트",
+      "ja": "更新",
+      "en": "new episode"
+    },
+    "note": "Hán Việt: canh tân"
+  },
+  {
+    "source": "追剧",
+    "target": "cày phim",
+    "renders": {
+      "vi": "cày phim",
+      "ko": "드라마 정주행",
+      "ja": "ドラマ視聴",
+      "en": "binge-watch"
+    },
+    "note": "Hán Việt: truy kịch"
+  },
+  {
+    "source": "烂尾",
+    "target": "kết thúc dở tệ",
+    "renders": {
+      "vi": "kết thúc dở tệ",
+      "ko": "용두사미",
+      "ja": "尻すぼみ",
+      "en": "botched ending"
+    },
+    "note": "Hán Việt: lạn vĩ"
+  },
+  {
+    "source": "神剧",
+    "target": "phim thần thánh",
+    "renders": {
+      "vi": "phim thần thánh",
+      "ko": "명작 드라마",
+      "ja": "神ドラマ",
+      "en": "legendary show"
+    },
+    "note": "Hán Việt: thần kịch"
+  }
+]

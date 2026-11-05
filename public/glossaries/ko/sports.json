@@ -1,0 +1,261 @@
+[
+  {
+    "source": "경기",
+    "target": "trận đấu"
+  },
+  {
+    "source": "우승",
+    "target": "vô địch"
+  },
+  {
+    "source": "결승",
+    "target": "chung kết",
+    "note": "Cách khác: trận chung kết"
+  },
+  {
+    "source": "준결승",
+    "target": "bán kết"
+  },
+  {
+    "source": "연장전",
+    "target": "hiệp phụ"
+  },
+  {
+    "source": "득점",
+    "target": "ghi điểm",
+    "note": "Cách khác: ghi bàn"
+  },
+  {
+    "source": "반칙",
+    "target": "phạm lỗi"
+  },
+  {
+    "source": "퇴장",
+    "target": "bị đuổi",
+    "note": "Cách khác: rời sân"
+  },
+  {
+    "source": "감독",
+    "target": "huấn luyện viên"
+  },
+  {
+    "source": "에이스",
+    "target": "chủ lực"
+  },
+  {
+    "source": "역전",
+    "target": "lật ngược"
+  },
+  {
+    "source": "동점",
+    "target": "hòa điểm"
+  },
+  {
+    "source": "특훈",
+    "target": "luyện đặc biệt"
+  },
+  {
+    "source": "부상",
+    "target": "chấn thương"
+  },
+  {
+    "source": "홈런",
+    "target": "cú home run"
+  },
+  {
+    "source": "오프사이드",
+    "target": "việt vị"
+  },
+  {
+    "source": "승부차기",
+    "target": "đá luân lưu"
+  },
+  {
+    "source": "프리킥",
+    "target": "đá phạt"
+  },
+  {
+    "source": "녹아웃",
+    "target": "hạ đo ván"
+  },
+  {
+    "source": "금메달",
+    "target": "huy chương vàng"
+  },
+  {
+    "source": "단체전",
+    "target": "đồng đội"
+  },
+  {
+    "source": "개인전",
+    "target": "cá nhân"
+  },
+  {
+    "source": "신기록",
+    "target": "kỷ lục mới"
+  },
+  {
+    "source": "선발",
+    "target": "đá chính",
+    "note": "Cách khác: đá chính, ra sân từ đầu"
+  },
+  {
+    "source": "교체",
+    "target": "thay người"
+  },
+  {
+    "source": "추가시간",
+    "target": "phút bù giờ"
+  },
+  {
+    "source": "연패",
+    "target": "vô địch liên tiếp"
+  },
+  {
+    "source": "탈락",
+    "target": "bị loại"
+  },
+  {
+    "source": "재활",
+    "target": "phục hồi"
+  },
+  {
+    "source": "멘탈",
+    "target": "tinh thần"
+  },
+  {
+    "source": "교체 선수",
+    "target": "dự bị",
+    "note": "Hán Việt: thế bổ"
+  },
+  {
+    "source": "출전",
+    "target": "vào sân",
+    "note": "Hán Việt: thượng trường"
+  },
+  {
+    "source": "선수 교체",
+    "target": "thay người",
+    "note": "Hán Việt: hoán nhân"
+  },
+  {
+    "source": "주장",
+    "target": "đội trưởng",
+    "note": "Hán Việt: đội trưởng"
+  },
+  {
+    "source": "심판",
+    "target": "trọng tài",
+    "note": "Hán Việt: tài phán"
+  },
+  {
+    "source": "리그",
+    "target": "giải đấu liên đoàn",
+    "note": "Hán Việt: liên tái"
+  },
+  {
+    "source": "우승자",
+    "target": "nhà vô địch",
+    "note": "Hán Việt: quán quân"
+  },
+  {
+    "source": "준우승",
+    "target": "á quân",
+    "note": "Hán Việt: á quân"
+  },
+  {
+    "source": "우승하다",
+    "target": "giành chức vô địch",
+    "note": "Hán Việt: đoạt quán"
+  },
+  {
+    "source": "타이틀 방어",
+    "target": "bảo vệ chức vô địch",
+    "note": "Hán Việt: vệ miện"
+  },
+  {
+    "source": "진출",
+    "target": "vào vòng trong",
+    "note": "Hán Việt: tấn cấp"
+  },
+  {
+    "source": "페널티킥",
+    "target": "đá phạt đền",
+    "note": "Hán Việt: điểm cầu"
+  },
+  {
+    "source": "극장골",
+    "target": "ghi bàn quyết định phút cuối",
+    "note": "Hán Việt: tuyệt sát"
+  },
+  {
+    "source": "도움",
+    "target": "kiến tạo",
+    "note": "Hán Việt: trợ công"
+  },
+  {
+    "source": "방어",
+    "target": "phòng ngự",
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "레드카드",
+    "target": "thẻ đỏ",
+    "note": "Hán Việt: hồng bài"
+  },
+  {
+    "source": "옐로카드",
+    "target": "thẻ vàng",
+    "note": "Hán Việt: hoàng bài"
+  },
+  {
+    "source": "자유투 / 페널티",
+    "target": "ném phạt/đá phạt",
+    "note": "Hán Việt: phạt cầu"
+  },
+  {
+    "source": "덩크",
+    "target": "úp rổ",
+    "note": "Hán Việt: khấu lam"
+  },
+  {
+    "source": "3점슛",
+    "target": "cú ba điểm",
+    "note": "Hán Việt: tam phân cầu"
+  },
+  {
+    "source": "리바운드",
+    "target": "bóng bật bảng",
+    "note": "Hán Việt: lam bản"
+  },
+  {
+    "source": "서브",
+    "target": "giao bóng",
+    "note": "Hán Việt: phát cầu"
+  },
+  {
+    "source": "서브 리시브",
+    "target": "đỡ giao bóng",
+    "note": "Hán Việt: tiếp phát cầu"
+  },
+  {
+    "source": "스파이크",
+    "target": "đập bóng",
+    "note": "Hán Việt: khấu sát"
+  },
+  {
+    "source": "워밍업",
+    "target": "khởi động",
+    "note": "Hán Việt: nhiệt thân"
+  },
+  {
+    "source": "훈련",
+    "target": "tập luyện",
+    "note": "Hán Việt: huấn luyện"
+  },
+  {
+    "source": "올림픽",
+    "target": "Thế vận hội",
+    "note": "Hán Việt: Áo vận hội"
+  }
+]

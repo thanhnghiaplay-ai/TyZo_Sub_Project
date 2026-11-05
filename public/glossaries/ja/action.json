@@ -1,0 +1,329 @@
+[
+  {
+    "source": "隊長",
+    "target": "đội trưởng"
+  },
+  {
+    "source": "撤退",
+    "target": "rút lui"
+  },
+  {
+    "source": "砲撃",
+    "target": "pháo kích"
+  },
+  {
+    "source": "狙撃",
+    "target": "bắn tỉa"
+  },
+  {
+    "source": "弾薬",
+    "target": "đạn dược"
+  },
+  {
+    "source": "敵軍",
+    "target": "quân địch"
+  },
+  {
+    "source": "味方",
+    "target": "quân mình"
+  },
+  {
+    "source": "掩護",
+    "target": "yểm hộ"
+  },
+  {
+    "source": "突入",
+    "target": "đột nhập"
+  },
+  {
+    "source": "作戦",
+    "target": "chiến dịch"
+  },
+  {
+    "source": "本部",
+    "target": "sở chỉ huy"
+  },
+  {
+    "source": "無線",
+    "target": "bộ đàm"
+  },
+  {
+    "source": "了解した",
+    "target": "đã rõ"
+  },
+  {
+    "source": "撃つな",
+    "target": "đừng bắn"
+  },
+  {
+    "source": "武装",
+    "target": "vũ trang"
+  },
+  {
+    "source": "爆弾",
+    "target": "bom"
+  },
+  {
+    "source": "人質",
+    "target": "con tin"
+  },
+  {
+    "source": "増援",
+    "target": "viện binh",
+    "note": "Cách khác: chi viện"
+  },
+  {
+    "source": "包囲",
+    "target": "bao vây"
+  },
+  {
+    "source": "負傷",
+    "target": "bị thương"
+  },
+  {
+    "source": "応急手当",
+    "target": "sơ cứu"
+  },
+  {
+    "source": "戦闘",
+    "target": "chiến đấu"
+  },
+  {
+    "source": "戦場",
+    "target": "chiến trường"
+  },
+  {
+    "source": "前線",
+    "target": "tiền tuyến"
+  },
+  {
+    "source": "司令部",
+    "target": "bộ tư lệnh"
+  },
+  {
+    "source": "特殊部隊",
+    "target": "lực lượng đặc nhiệm"
+  },
+  {
+    "source": "標的",
+    "target": "mục tiêu"
+  },
+  {
+    "source": "ミサイル",
+    "target": "tên lửa"
+  },
+  {
+    "source": "手榴弾",
+    "target": "lựu đạn"
+  },
+  {
+    "source": "防弾チョッキ",
+    "target": "áo chống đạn"
+  },
+  {
+    "source": "停戦",
+    "target": "ngừng bắn"
+  },
+  {
+    "source": "降伏",
+    "target": "đầu hàng"
+  },
+  {
+    "source": "急げ",
+    "target": "mau lên"
+  },
+  {
+    "source": "掩護射撃",
+    "target": "hỏa lực yểm trợ"
+  },
+  {
+    "source": "偵察",
+    "target": "trinh sát"
+  },
+  {
+    "source": "弾薬切れ",
+    "target": "hết đạn"
+  },
+  {
+    "source": "味方撃ち",
+    "target": "bắn nhầm quân mình"
+  },
+  {
+    "source": "空爆",
+    "target": "không kích"
+  },
+  {
+    "source": "装甲車",
+    "target": "xe bọc thép"
+  },
+  {
+    "source": "手を出す",
+    "target": "ra tay",
+    "note": "Hán Việt: xuất thủ. Không dịch \"đưa tay ra\""
+  },
+  {
+    "source": "攻撃する",
+    "target": "ra tay đánh",
+    "note": "Hán Việt: động thủ"
+  },
+  {
+    "source": "交戦する",
+    "target": "giao đấu",
+    "note": "Hán Việt: giao thủ"
+  },
+  {
+    "source": "対決",
+    "target": "đối đầu, quyết đấu",
+    "note": "Hán Việt: đối quyết"
+  },
+  {
+    "source": "不意打ち",
+    "target": "đánh lén",
+    "note": "Hán Việt: thâu tập"
+  },
+  {
+    "source": "奇襲",
+    "target": "tập kích bất ngờ",
+    "note": "Hán Việt: đột tập"
+  },
+  {
+    "source": "待ち伏せ",
+    "target": "mai phục",
+    "note": "Hán Việt: mai phục"
+  },
+  {
+    "source": "伏兵",
+    "target": "phục kích",
+    "note": "Hán Việt: phục kích"
+  },
+  {
+    "source": "包囲攻撃",
+    "target": "vây đánh",
+    "note": "Hán Việt: vi công"
+  },
+  {
+    "source": "包囲突破",
+    "target": "phá vòng vây",
+    "note": "Hán Việt: đột vi"
+  },
+  {
+    "source": "援護",
+    "target": "yểm trợ, che chắn",
+    "note": "Hán Việt: yểm hộ"
+  },
+  {
+    "source": "支援",
+    "target": "hỗ trợ",
+    "note": "Hán Việt: chi viện"
+  },
+  {
+    "source": "反撃",
+    "target": "phản công",
+    "note": "Hán Việt: phản kích"
+  },
+  {
+    "source": "攻撃",
+    "target": "tấn công",
+    "note": "Hán Việt: tiến công"
+  },
+  {
+    "source": "守備",
+    "target": "phòng thủ",
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "受け止める",
+    "target": "đỡ đòn",
+    "note": "Hán Việt: cách đáng"
+  },
+  {
+    "source": "回避",
+    "target": "né tránh",
+    "note": "Hán Việt: thiểm tị"
+  },
+  {
+    "source": "連続攻撃",
+    "target": "đòn liên hoàn",
+    "note": "Hán Việt: liên kích"
+  },
+  {
+    "source": "強打",
+    "target": "đòn nặng",
+    "note": "Hán Việt: trọng kích"
+  },
+  {
+    "source": "一撃必殺",
+    "target": "một đòn chí mạng",
+    "note": "Hán Việt: nhất kích tất sát"
+  },
+  {
+    "source": "発砲",
+    "target": "nổ súng",
+    "note": "Hán Việt: khai hỏa"
+  },
+  {
+    "source": "射撃",
+    "target": "bắn",
+    "note": "Hán Việt: xạ kích"
+  },
+  {
+    "source": "狙う",
+    "target": "nhắm bắn",
+    "note": "Hán Việt: miêu chuẩn"
+  },
+  {
+    "source": "爆発",
+    "target": "nổ",
+    "note": "Hán Việt: bạo tạc"
+  },
+  {
+    "source": "追撃",
+    "target": "truy đuổi đánh",
+    "note": "Hán Việt: truy kích"
+  },
+  {
+    "source": "追跡逮捕",
+    "target": "truy bắt",
+    "note": "Hán Việt: truy bộ"
+  },
+  {
+    "source": "逃れる",
+    "target": "thoát thân",
+    "note": "Hán Việt: đào thoát"
+  },
+  {
+    "source": "白兵戦",
+    "target": "đánh giáp lá cà",
+    "note": "Hán Việt: nhục bác"
+  },
+  {
+    "source": "逮捕術",
+    "target": "khóa tay, bắt giữ",
+    "note": "Hán Việt: cầm nã"
+  },
+  {
+    "source": "蹴る",
+    "target": "đá",
+    "note": "Hán Việt: dịch"
+  },
+  {
+    "source": "負傷する",
+    "target": "bị thương",
+    "note": "Hán Việt: thọ thương"
+  },
+  {
+    "source": "致命的",
+    "target": "chí mạng",
+    "note": "Hán Việt: trí mệnh"
+  },
+  {
+    "source": "命中",
+    "target": "trúng đích",
+    "note": "Hán Việt: mệnh trung"
+  },
+  {
+    "source": "制圧",
+    "target": "áp chế",
+    "note": "Hán Việt: áp chế"
+  }
+]

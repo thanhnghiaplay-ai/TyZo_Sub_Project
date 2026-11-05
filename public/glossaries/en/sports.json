@@ -1,0 +1,279 @@
+[
+  {
+    "source": "championship",
+    "target": "chức vô địch"
+  },
+  {
+    "source": "final",
+    "target": "chung kết",
+    "note": "Cách khác: trận chung kết"
+  },
+  {
+    "source": "semifinal",
+    "target": "bán kết"
+  },
+  {
+    "source": "extra time",
+    "target": "hiệp phụ"
+  },
+  {
+    "source": "score",
+    "target": "tỷ số"
+  },
+  {
+    "source": "foul",
+    "target": "phạm lỗi"
+  },
+  {
+    "source": "red card",
+    "target": "thẻ đỏ"
+  },
+  {
+    "source": "coach",
+    "target": "huấn luyện viên"
+  },
+  {
+    "source": "ace",
+    "target": "chủ lực"
+  },
+  {
+    "source": "comeback win",
+    "target": "lật ngược thắng"
+  },
+  {
+    "source": "tied game",
+    "target": "trận hòa"
+  },
+  {
+    "source": "injury",
+    "target": "chấn thương"
+  },
+  {
+    "source": "home run",
+    "target": "cú home run"
+  },
+  {
+    "source": "offside",
+    "target": "việt vị"
+  },
+  {
+    "source": "penalty kick",
+    "target": "quả phạt đền",
+    "note": "Cách khác: đá phạt đền"
+  },
+  {
+    "source": "free kick",
+    "target": "quả đá phạt"
+  },
+  {
+    "source": "knockout",
+    "target": "hạ đo ván"
+  },
+  {
+    "source": "gold medal",
+    "target": "huy chương vàng"
+  },
+  {
+    "source": "team event",
+    "target": "nội dung đồng đội"
+  },
+  {
+    "source": "personal best",
+    "target": "kỷ lục cá nhân"
+  },
+  {
+    "source": "starting lineup",
+    "target": "đội hình chính"
+  },
+  {
+    "source": "substitution",
+    "target": "thay người"
+  },
+  {
+    "source": "stoppage time",
+    "target": "phút bù"
+  },
+  {
+    "source": "title defense",
+    "target": "bảo vệ ngôi"
+  },
+  {
+    "source": "eliminated",
+    "target": "bị loại"
+  },
+  {
+    "source": "rehab",
+    "target": "tập phục hồi"
+  },
+  {
+    "source": "draft pick",
+    "target": "lượt tuyển"
+  },
+  {
+    "source": "scout",
+    "target": "người xem giò"
+  },
+  {
+    "source": "overtime",
+    "target": "hiệp phụ"
+  },
+  {
+    "source": "hat trick",
+    "target": "cú hat-trick"
+  },
+  {
+    "source": "starter",
+    "target": "đá chính, ra sân từ đầu",
+    "note": "Hán Việt: thủ phát"
+  },
+  {
+    "source": "substitute",
+    "target": "dự bị",
+    "note": "Hán Việt: thế bổ"
+  },
+  {
+    "source": "take the field",
+    "target": "vào sân",
+    "note": "Hán Việt: thượng trường"
+  },
+  {
+    "source": "leave the field",
+    "target": "rời sân",
+    "note": "Hán Việt: hạ trường"
+  },
+  {
+    "source": "captain",
+    "target": "đội trưởng",
+    "note": "Hán Việt: đội trưởng"
+  },
+  {
+    "source": "referee",
+    "target": "trọng tài",
+    "note": "Hán Việt: tài phán"
+  },
+  {
+    "source": "match",
+    "target": "trận đấu",
+    "note": "Hán Việt: tỷ tái"
+  },
+  {
+    "source": "league",
+    "target": "giải đấu liên đoàn",
+    "note": "Hán Việt: liên tái"
+  },
+  {
+    "source": "champion",
+    "target": "nhà vô địch",
+    "note": "Hán Việt: quán quân"
+  },
+  {
+    "source": "runner-up",
+    "target": "á quân",
+    "note": "Hán Việt: á quân"
+  },
+  {
+    "source": "win the title",
+    "target": "giành chức vô địch",
+    "note": "Hán Việt: đoạt quán"
+  },
+  {
+    "source": "defend the title",
+    "target": "bảo vệ chức vô địch",
+    "note": "Hán Việt: vệ miện"
+  },
+  {
+    "source": "advance",
+    "target": "vào vòng trong",
+    "note": "Hán Việt: tấn cấp"
+  },
+  {
+    "source": "last-minute winner",
+    "target": "ghi bàn quyết định phút cuối",
+    "note": "Hán Việt: tuyệt sát"
+  },
+  {
+    "source": "goal",
+    "target": "ghi bàn",
+    "note": "Hán Việt: tiến cầu"
+  },
+  {
+    "source": "assist",
+    "target": "kiến tạo",
+    "note": "Hán Việt: trợ công"
+  },
+  {
+    "source": "defend",
+    "target": "phòng ngự",
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "yellow card",
+    "target": "thẻ vàng",
+    "note": "Hán Việt: hoàng bài"
+  },
+  {
+    "source": "penalty",
+    "target": "ném phạt/đá phạt",
+    "note": "Hán Việt: phạt cầu"
+  },
+  {
+    "source": "free throw",
+    "target": "ném phạt/đá phạt",
+    "note": "Hán Việt: phạt cầu"
+  },
+  {
+    "source": "dunk",
+    "target": "úp rổ",
+    "note": "Hán Việt: khấu lam"
+  },
+  {
+    "source": "three-pointer",
+    "target": "cú ba điểm",
+    "note": "Hán Việt: tam phân cầu"
+  },
+  {
+    "source": "rebound",
+    "target": "bóng bật bảng",
+    "note": "Hán Việt: lam bản"
+  },
+  {
+    "source": "serve",
+    "target": "giao bóng",
+    "note": "Hán Việt: phát cầu"
+  },
+  {
+    "source": "serve return",
+    "target": "đỡ giao bóng",
+    "note": "Hán Việt: tiếp phát cầu"
+  },
+  {
+    "source": "smash",
+    "target": "đập bóng",
+    "note": "Hán Việt: khấu sát"
+  },
+  {
+    "source": "spike",
+    "target": "đập bóng",
+    "note": "Hán Việt: khấu sát"
+  },
+  {
+    "source": "warm-up",
+    "target": "khởi động",
+    "note": "Hán Việt: nhiệt thân"
+  },
+  {
+    "source": "training",
+    "target": "tập luyện",
+    "note": "Hán Việt: huấn luyện"
+  },
+  {
+    "source": "fan",
+    "target": "người hâm mộ",
+    "note": "Hán Việt: phấn ti"
+  },
+  {
+    "source": "olympics",
+    "target": "Thế vận hội",
+    "note": "Hán Việt: Áo vận hội"
+  }
+]

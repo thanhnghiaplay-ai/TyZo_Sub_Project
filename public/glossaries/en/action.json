@@ -1,0 +1,317 @@
+[
+  {
+    "source": "copy that",
+    "target": "đã rõ"
+  },
+  {
+    "source": "cover me",
+    "target": "yểm trợ tôi"
+  },
+  {
+    "source": "fall back",
+    "target": "rút lui"
+  },
+  {
+    "source": "hostile",
+    "target": "quân địch"
+  },
+  {
+    "source": "civilians",
+    "target": "thường dân"
+  },
+  {
+    "source": "exfil",
+    "target": "rút khỏi vùng"
+  },
+  {
+    "source": "breach",
+    "target": "đột nhập"
+  },
+  {
+    "source": "all clear",
+    "target": "khu vực an toàn"
+  },
+  {
+    "source": "lock on",
+    "target": "khóa mục tiêu"
+  },
+  {
+    "source": "stand down",
+    "target": "hạ vũ khí"
+  },
+  {
+    "source": "rules of engagement",
+    "target": "quy tắc nổ súng"
+  },
+  {
+    "source": "friendly fire",
+    "target": "bắn nhầm quân mình"
+  },
+  {
+    "source": "medevac",
+    "target": "trực thăng cứu thương"
+  },
+  {
+    "source": "sitrep",
+    "target": "báo cáo tình hình"
+  },
+  {
+    "source": "watch your six",
+    "target": "coi chừng sau lưng"
+  },
+  {
+    "source": "suppressive fire",
+    "target": "hỏa lực chế áp"
+  },
+  {
+    "source": "flashbang",
+    "target": "lựu đạn choáng"
+  },
+  {
+    "source": "hostage",
+    "target": "con tin"
+  },
+  {
+    "source": "perimeter",
+    "target": "vành đai"
+  },
+  {
+    "source": "extraction point",
+    "target": "điểm rút"
+  },
+  {
+    "source": "ammo check",
+    "target": "kiểm tra đạn"
+  },
+  {
+    "source": "man down",
+    "target": "có người ngã"
+  },
+  {
+    "source": "hold your fire",
+    "target": "ngừng bắn"
+  },
+  {
+    "source": "on my mark",
+    "target": "theo hiệu lệnh của tôi"
+  },
+  {
+    "source": "move out",
+    "target": "xuất phát"
+  },
+  {
+    "source": "regroup",
+    "target": "tập hợp lại"
+  },
+  {
+    "source": "sniper",
+    "target": "lính bắn tỉa"
+  },
+  {
+    "source": "command post",
+    "target": "sở chỉ huy"
+  },
+  {
+    "source": "air support",
+    "target": "yểm trợ trên không"
+  },
+  {
+    "source": "surrender",
+    "target": "đầu hàng"
+  },
+  {
+    "source": "make a move",
+    "target": "ra tay",
+    "note": "Hán Việt: xuất thủ. Không dịch \"đưa tay ra\""
+  },
+  {
+    "source": "start fighting",
+    "target": "ra tay đánh",
+    "note": "Hán Việt: động thủ"
+  },
+  {
+    "source": "cross swords",
+    "target": "giao đấu",
+    "note": "Hán Việt: giao thủ"
+  },
+  {
+    "source": "showdown",
+    "target": "đối đầu, quyết đấu",
+    "note": "Hán Việt: đối quyết"
+  },
+  {
+    "source": "sneak attack",
+    "target": "đánh lén",
+    "note": "Hán Việt: thâu tập"
+  },
+  {
+    "source": "surprise raid",
+    "target": "tập kích bất ngờ",
+    "note": "Hán Việt: đột tập"
+  },
+  {
+    "source": "ambush",
+    "target": "mai phục",
+    "note": "Hán Việt: mai phục"
+  },
+  {
+    "source": "ambush attack",
+    "target": "phục kích",
+    "note": "Hán Việt: phục kích"
+  },
+  {
+    "source": "besiege",
+    "target": "vây đánh",
+    "note": "Hán Việt: vi công"
+  },
+  {
+    "source": "surround",
+    "target": "bao vây",
+    "note": "Hán Việt: bao vi"
+  },
+  {
+    "source": "break out",
+    "target": "phá vòng vây",
+    "note": "Hán Việt: đột vi"
+  },
+  {
+    "source": "retreat",
+    "target": "rút lui",
+    "note": "Hán Việt: triệt thoái"
+  },
+  {
+    "source": "cover",
+    "target": "yểm trợ, che chắn",
+    "note": "Hán Việt: yểm hộ"
+  },
+  {
+    "source": "reinforcements",
+    "target": "chi viện",
+    "note": "Hán Việt: tăng viện"
+  },
+  {
+    "source": "support",
+    "target": "hỗ trợ",
+    "note": "Hán Việt: chi viện"
+  },
+  {
+    "source": "counterattack",
+    "target": "phản công",
+    "note": "Hán Việt: phản kích"
+  },
+  {
+    "source": "attack",
+    "target": "tấn công",
+    "note": "Hán Việt: tiến công"
+  },
+  {
+    "source": "defend",
+    "target": "phòng thủ",
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "block",
+    "target": "đỡ đòn",
+    "note": "Hán Việt: cách đáng"
+  },
+  {
+    "source": "dodge",
+    "target": "né tránh",
+    "note": "Hán Việt: thiểm tị"
+  },
+  {
+    "source": "combo",
+    "target": "đòn liên hoàn",
+    "note": "Hán Việt: liên kích"
+  },
+  {
+    "source": "heavy blow",
+    "target": "đòn nặng",
+    "note": "Hán Việt: trọng kích"
+  },
+  {
+    "source": "one-hit kill",
+    "target": "một đòn chí mạng",
+    "note": "Hán Việt: nhất kích tất sát"
+  },
+  {
+    "source": "open fire",
+    "target": "nổ súng",
+    "note": "Hán Việt: khai hỏa"
+  },
+  {
+    "source": "shoot",
+    "target": "bắn",
+    "note": "Hán Việt: xạ kích"
+  },
+  {
+    "source": "aim",
+    "target": "nhắm bắn",
+    "note": "Hán Việt: miêu chuẩn"
+  },
+  {
+    "source": "snipe",
+    "target": "bắn tỉa",
+    "note": "Hán Việt: tỷ kích"
+  },
+  {
+    "source": "explosion",
+    "target": "nổ",
+    "note": "Hán Việt: bạo tạc"
+  },
+  {
+    "source": "pursue",
+    "target": "truy đuổi đánh",
+    "note": "Hán Việt: truy kích"
+  },
+  {
+    "source": "hunt down",
+    "target": "truy bắt",
+    "note": "Hán Việt: truy bộ"
+  },
+  {
+    "source": "escape",
+    "target": "thoát thân",
+    "note": "Hán Việt: đào thoát"
+  },
+  {
+    "source": "hand-to-hand combat",
+    "target": "đánh giáp lá cà",
+    "note": "Hán Việt: nhục bác"
+  },
+  {
+    "source": "grapple and restrain",
+    "target": "khóa tay, bắt giữ",
+    "note": "Hán Việt: cầm nã"
+  },
+  {
+    "source": "kick",
+    "target": "đá",
+    "note": "Hán Việt: dịch"
+  },
+  {
+    "source": "fist",
+    "target": "nắm đấm",
+    "note": "Hán Việt: quyền đầu"
+  },
+  {
+    "source": "get injured",
+    "target": "bị thương",
+    "note": "Hán Việt: thọ thương"
+  },
+  {
+    "source": "fatal",
+    "target": "chí mạng",
+    "note": "Hán Việt: trí mệnh"
+  },
+  {
+    "source": "hit the target",
+    "target": "trúng đích",
+    "note": "Hán Việt: mệnh trung"
+  },
+  {
+    "source": "suppress",
+    "target": "áp chế",
+    "note": "Hán Việt: áp chế"
+  }
+]

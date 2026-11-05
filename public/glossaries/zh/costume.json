@@ -1,0 +1,519 @@
+[
+  {
+    "source": "在下",
+    "target": "tại hạ",
+    "renders": {
+      "vi": "tại hạ",
+      "ko": "소생",
+      "ja": "拙者",
+      "en": "your humble servant"
+    },
+    "note": "Hán Việt: tại hạ"
+  },
+  {
+    "source": "阁下",
+    "target": "các hạ",
+    "renders": {
+      "vi": "các hạ",
+      "ko": "귀하",
+      "ja": "貴殿",
+      "en": "Your Honor"
+    },
+    "note": "Hán Việt: các hạ"
+  },
+  {
+    "source": "姑娘",
+    "target": "cô nương",
+    "renders": {
+      "vi": "cô nương",
+      "ko": "아가씨",
+      "ja": "お嬢さん",
+      "en": "miss"
+    },
+    "note": "Hán Việt: cô nương"
+  },
+  {
+    "source": "公子",
+    "target": "công tử",
+    "renders": {
+      "vi": "công tử",
+      "ko": "공자",
+      "ja": "公子",
+      "en": "young master"
+    },
+    "note": "Hán Việt: công tử"
+  },
+  {
+    "source": "少爷",
+    "target": "thiếu gia",
+    "renders": {
+      "vi": "thiếu gia",
+      "ko": "도련님",
+      "ja": "若旦那",
+      "en": "young master"
+    },
+    "note": "Hán Việt: thiếu gia"
+  },
+  {
+    "source": "小姐",
+    "target": "tiểu thư",
+    "renders": {
+      "vi": "tiểu thư",
+      "ko": "아가씨",
+      "ja": "お嬢様",
+      "en": "young lady"
+    },
+    "note": "Hán Việt: tiểu thư"
+  },
+  {
+    "source": "夫人",
+    "target": "phu nhân",
+    "renders": {
+      "vi": "phu nhân",
+      "ko": "부인",
+      "ja": "奥様",
+      "en": "madam"
+    },
+    "note": "Hán Việt: phu nhân"
+  },
+  {
+    "source": "前辈",
+    "target": "tiền bối",
+    "renders": {
+      "vi": "tiền bối",
+      "ko": "선배",
+      "ja": "先輩",
+      "en": "senior"
+    },
+    "note": "Hán Việt: tiền bối"
+  },
+  {
+    "source": "晚辈",
+    "target": "vãn bối",
+    "renders": {
+      "vi": "vãn bối",
+      "ko": "후배",
+      "ja": "後輩",
+      "en": "junior"
+    },
+    "note": "Hán Việt: vãn bối"
+  },
+  {
+    "source": "师父",
+    "target": "sư phụ",
+    "renders": {
+      "vi": "sư phụ",
+      "ko": "스승님",
+      "ja": "師匠",
+      "en": "master"
+    },
+    "note": "Hán Việt: sư phụ"
+  },
+  {
+    "source": "师兄",
+    "target": "sư huynh",
+    "renders": {
+      "vi": "sư huynh",
+      "ko": "사형",
+      "ja": "兄弟子",
+      "en": "senior brother-disciple"
+    },
+    "note": "Hán Việt: sư huynh"
+  },
+  {
+    "source": "师弟",
+    "target": "sư đệ",
+    "renders": {
+      "vi": "sư đệ",
+      "ko": "사제",
+      "ja": "弟弟子",
+      "en": "junior brother-disciple"
+    },
+    "note": "Hán Việt: sư đệ"
+  },
+  {
+    "source": "师姐",
+    "target": "sư tỷ",
+    "renders": {
+      "vi": "sư tỷ",
+      "ko": "사저",
+      "ja": "姉弟子",
+      "en": "senior sister-disciple"
+    },
+    "note": "Hán Việt: sư tỷ"
+  },
+  {
+    "source": "师妹",
+    "target": "sư muội",
+    "renders": {
+      "vi": "sư muội",
+      "ko": "사매",
+      "ja": "妹弟子",
+      "en": "junior sister-disciple"
+    },
+    "note": "Hán Việt: sư muội"
+  },
+  {
+    "source": "掌门",
+    "target": "chưởng môn",
+    "renders": {
+      "vi": "chưởng môn",
+      "ko": "장문인",
+      "ja": "掌門",
+      "en": "sect leader"
+    },
+    "note": "Hán Việt: chưởng môn"
+  },
+  {
+    "source": "门派",
+    "target": "môn phái",
+    "renders": {
+      "vi": "môn phái",
+      "ko": "문파",
+      "ja": "門派",
+      "en": "sect"
+    },
+    "note": "Hán Việt: môn phái"
+  },
+  {
+    "source": "江湖",
+    "target": "giang hồ",
+    "renders": {
+      "vi": "giang hồ",
+      "ko": "강호",
+      "ja": "江湖",
+      "en": "jianghu"
+    },
+    "note": "Hán Việt: giang hồ"
+  },
+  {
+    "source": "武林",
+    "target": "võ lâm",
+    "renders": {
+      "vi": "võ lâm",
+      "ko": "무림",
+      "ja": "武林",
+      "en": "martial world"
+    },
+    "note": "Hán Việt: võ lâm"
+  },
+  {
+    "source": "武功",
+    "target": "võ công",
+    "renders": {
+      "vi": "võ công",
+      "ko": "무공",
+      "ja": "武功",
+      "en": "martial arts"
+    },
+    "note": "Hán Việt: võ công"
+  },
+  {
+    "source": "内力",
+    "target": "nội lực",
+    "renders": {
+      "vi": "nội lực",
+      "ko": "내공",
+      "ja": "内力",
+      "en": "inner energy"
+    },
+    "note": "Hán Việt: nội lực"
+  },
+  {
+    "source": "轻功",
+    "target": "khinh công",
+    "renders": {
+      "vi": "khinh công",
+      "ko": "경공",
+      "ja": "軽功",
+      "en": "qinggong (lightness skill)"
+    },
+    "note": "Hán Việt: khinh công"
+  },
+  {
+    "source": "剑法",
+    "target": "kiếm pháp",
+    "renders": {
+      "vi": "kiếm pháp",
+      "ko": "검법",
+      "ja": "剣術",
+      "en": "swordsmanship"
+    },
+    "note": "Hán Việt: kiếm pháp"
+  },
+  {
+    "source": "招式",
+    "target": "chiêu thức",
+    "renders": {
+      "vi": "chiêu thức",
+      "ko": "초식",
+      "ja": "技",
+      "en": "move"
+    },
+    "note": "Hán Việt: chiêu thức"
+  },
+  {
+    "source": "秘籍",
+    "target": "bí kíp",
+    "renders": {
+      "vi": "bí kíp",
+      "ko": "비급",
+      "ja": "秘伝書",
+      "en": "secret manual"
+    },
+    "note": "Hán Việt: bí tịch"
+  },
+  {
+    "source": "暗器",
+    "target": "ám khí",
+    "renders": {
+      "vi": "ám khí",
+      "ko": "암기",
+      "ja": "暗器",
+      "en": "hidden weapon"
+    },
+    "note": "Hán Việt: ám khí"
+  },
+  {
+    "source": "毒药",
+    "target": "thuốc độc",
+    "renders": {
+      "vi": "thuốc độc",
+      "ko": "독약",
+      "ja": "毒薬",
+      "en": "poison"
+    },
+    "note": "Hán Việt: độc dược"
+  },
+  {
+    "source": "解药",
+    "target": "thuốc giải",
+    "renders": {
+      "vi": "thuốc giải",
+      "ko": "해독제",
+      "ja": "解毒薬",
+      "en": "antidote"
+    },
+    "note": "Hán Việt: giải dược"
+  },
+  {
+    "source": "走火入魔",
+    "target": "tẩu hỏa nhập ma",
+    "renders": {
+      "vi": "tẩu hỏa nhập ma",
+      "ko": "주화입마",
+      "ja": "走火入魔",
+      "en": "qi deviation"
+    },
+    "note": "Hán Việt: tẩu hỏa nhập ma"
+  },
+  {
+    "source": "闭关",
+    "target": "bế quan",
+    "renders": {
+      "vi": "bế quan",
+      "ko": "폐관",
+      "ja": "籠もる",
+      "en": "seclusion"
+    },
+    "note": "Hán Việt: bế quan"
+  },
+  {
+    "source": "下山",
+    "target": "xuống núi",
+    "renders": {
+      "vi": "xuống núi",
+      "ko": "하산",
+      "ja": "下山",
+      "en": "descend the mountain"
+    },
+    "note": "Hán Việt: hạ sơn"
+  },
+  {
+    "source": "比武",
+    "target": "tỷ thí",
+    "renders": {
+      "vi": "tỷ thí",
+      "ko": "비무",
+      "ja": "試合",
+      "en": "martial contest"
+    },
+    "note": "Hán Việt: tỷ võ"
+  },
+  {
+    "source": "切磋",
+    "target": "giao lưu võ nghệ",
+    "renders": {
+      "vi": "giao lưu võ nghệ",
+      "ko": "겨루다",
+      "ja": "手合わせ",
+      "en": "spar"
+    },
+    "note": "Hán Việt: thiết tha"
+  },
+  {
+    "source": "拜师",
+    "target": "bái sư",
+    "renders": {
+      "vi": "bái sư",
+      "ko": "입문",
+      "ja": "弟子入り",
+      "en": "take a master"
+    },
+    "note": "Hán Việt: bái sư"
+  },
+  {
+    "source": "结义",
+    "target": "kết nghĩa",
+    "renders": {
+      "vi": "kết nghĩa",
+      "ko": "의형제를 맺다",
+      "ja": "義兄弟の契り",
+      "en": "sworn brotherhood"
+    },
+    "note": "Hán Việt: kết nghĩa"
+  },
+  {
+    "source": "恩怨",
+    "target": "ân oán",
+    "renders": {
+      "vi": "ân oán",
+      "ko": "은원",
+      "ja": "恩讐",
+      "en": "grudges and favors"
+    },
+    "note": "Hán Việt: ân oán"
+  },
+  {
+    "source": "报仇",
+    "target": "báo thù",
+    "renders": {
+      "vi": "báo thù",
+      "ko": "복수",
+      "ja": "仇討ち",
+      "en": "take revenge"
+    },
+    "note": "Hán Việt: báo cừu"
+  },
+  {
+    "source": "侠客",
+    "target": "hiệp khách",
+    "renders": {
+      "vi": "hiệp khách",
+      "ko": "협객",
+      "ja": "侠客",
+      "en": "knight-errant"
+    },
+    "note": "Hán Việt: hiệp khách"
+  },
+  {
+    "source": "大侠",
+    "target": "đại hiệp",
+    "renders": {
+      "vi": "đại hiệp",
+      "ko": "대협",
+      "ja": "大侠",
+      "en": "great hero"
+    },
+    "note": "Hán Việt: đại hiệp"
+  },
+  {
+    "source": "魔教",
+    "target": "ma giáo",
+    "renders": {
+      "vi": "ma giáo",
+      "ko": "마교",
+      "ja": "魔教",
+      "en": "demonic sect"
+    },
+    "note": "Hán Việt: ma giáo"
+  },
+  {
+    "source": "正派",
+    "target": "chính phái",
+    "renders": {
+      "vi": "chính phái",
+      "ko": "정파",
+      "ja": "正派",
+      "en": "orthodox sect"
+    },
+    "note": "Hán Việt: chính phái"
+  },
+  {
+    "source": "邪派",
+    "target": "tà phái",
+    "renders": {
+      "vi": "tà phái",
+      "ko": "사파",
+      "ja": "邪派",
+      "en": "heterodox sect"
+    },
+    "note": "Hán Việt: tà phái"
+  },
+  {
+    "source": "盟主",
+    "target": "minh chủ",
+    "renders": {
+      "vi": "minh chủ",
+      "ko": "맹주",
+      "ja": "盟主",
+      "en": "alliance leader"
+    },
+    "note": "Hán Việt: minh chủ"
+  },
+  {
+    "source": "镖局",
+    "target": "tiêu cục",
+    "renders": {
+      "vi": "tiêu cục",
+      "ko": "표국",
+      "ja": "鏢局",
+      "en": "escort agency"
+    },
+    "note": "Hán Việt: tiêu cục"
+  },
+  {
+    "source": "客栈",
+    "target": "quán trọ",
+    "renders": {
+      "vi": "quán trọ",
+      "ko": "객잔",
+      "ja": "宿屋",
+      "en": "inn"
+    },
+    "note": "Hán Việt: khách sạn. Không dịch \"khách sạn\""
+  },
+  {
+    "source": "酒楼",
+    "target": "tửu lâu",
+    "renders": {
+      "vi": "tửu lâu",
+      "ko": "주루",
+      "ja": "酒楼",
+      "en": "tavern"
+    },
+    "note": "Hán Việt: tửu lâu"
+  },
+  {
+    "source": "告辞",
+    "target": "xin cáo từ",
+    "renders": {
+      "vi": "xin cáo từ",
+      "ko": "작별을 고하다",
+      "ja": "失礼する",
+      "en": "take my leave"
+    },
+    "note": "Hán Việt: cáo từ"
+  },
+  {
+    "source": "请教",
+    "target": "xin chỉ giáo",
+    "renders": {
+      "vi": "xin chỉ giáo",
+      "ko": "가르침을 청하다",
+      "ja": "教えを請う",
+      "en": "seek advice"
+    },
+    "note": "Hán Việt: thỉnh giáo"
+  }
+]

@@ -1,0 +1,274 @@
+[
+  {
+    "source": "culprit",
+    "target": "thủ phạm"
+  },
+  {
+    "source": "motive",
+    "target": "động cơ"
+  },
+  {
+    "source": "locked room",
+    "target": "phòng kín",
+    "note": "Cách khác: căn phòng kín"
+  },
+  {
+    "source": "clue",
+    "target": "manh mối"
+  },
+  {
+    "source": "deduction",
+    "target": "suy luận"
+  },
+  {
+    "source": "detective",
+    "target": "thám tử"
+  },
+  {
+    "source": "murder weapon",
+    "target": "hung khí"
+  },
+  {
+    "source": "cause of death",
+    "target": "nguyên nhân cái chết",
+    "note": "Cách khác: nguyên nhân tử vong"
+  },
+  {
+    "source": "forensic",
+    "target": "giám định"
+  },
+  {
+    "source": "trick",
+    "target": "thủ thuật"
+  },
+  {
+    "source": "red herring",
+    "target": "manh mối giả"
+  },
+  {
+    "source": "real killer",
+    "target": "thủ phạm thật"
+  },
+  {
+    "source": "body double",
+    "target": "thế thân"
+  },
+  {
+    "source": "perfect crime",
+    "target": "tội ác hoàn hảo"
+  },
+  {
+    "source": "truth",
+    "target": "sự thật"
+  },
+  {
+    "source": "testimony",
+    "target": "lời khai"
+  },
+  {
+    "source": "perjury",
+    "target": "khai man"
+  },
+  {
+    "source": "statute of limitations",
+    "target": "hết thời hiệu"
+  },
+  {
+    "source": "bloodstain",
+    "target": "vết máu"
+  },
+  {
+    "source": "eyewitness",
+    "target": "nhân chứng"
+  },
+  {
+    "source": "contradiction",
+    "target": "mâu thuẫn"
+  },
+  {
+    "source": "alibi broken",
+    "target": "phá chứng cứ ngoại phạm"
+  },
+  {
+    "source": "dying message",
+    "target": "lời nhắn trước khi chết"
+  },
+  {
+    "source": "staged scene",
+    "target": "hiện trường ngụy tạo"
+  },
+  {
+    "source": "whodunit",
+    "target": "ai là thủ phạm"
+  },
+  {
+    "source": "suspect",
+    "target": "nghi phạm",
+    "note": "Hán Việt: hiềm nghi nhân"
+  },
+  {
+    "source": "murderer",
+    "target": "hung thủ",
+    "note": "Hán Việt: hung thủ"
+  },
+  {
+    "source": "the deceased",
+    "target": "nạn nhân tử vong",
+    "note": "Hán Việt: tử giả"
+  },
+  {
+    "source": "victim",
+    "target": "nạn nhân",
+    "note": "Hán Việt: thụ hại giả"
+  },
+  {
+    "source": "witness",
+    "target": "nhân chứng",
+    "note": "Hán Việt: chứng nhân"
+  },
+  {
+    "source": "evidence",
+    "target": "chứng cứ",
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "physical evidence",
+    "target": "vật chứng",
+    "note": "Hán Việt: vật chứng"
+  },
+  {
+    "source": "fingerprint",
+    "target": "dấu vân tay",
+    "note": "Hán Việt: chỉ văn"
+  },
+  {
+    "source": "footprint",
+    "target": "dấu chân",
+    "note": "Hán Việt: cước ấn"
+  },
+  {
+    "source": "crime scene",
+    "target": "hiện trường",
+    "note": "Hán Việt: hiện trường"
+  },
+  {
+    "source": "scene investigation",
+    "target": "khám nghiệm hiện trường",
+    "note": "Hán Việt: khám tra"
+  },
+  {
+    "source": "autopsy",
+    "target": "khám nghiệm tử thi",
+    "note": "Hán Việt: thi kiểm"
+  },
+  {
+    "source": "forensic examiner",
+    "target": "pháp y",
+    "note": "Hán Việt: pháp y"
+  },
+  {
+    "source": "commit a crime",
+    "target": "gây án",
+    "note": "Hán Việt: tác án"
+  },
+  {
+    "source": "alibi",
+    "target": "chứng cứ ngoại phạm",
+    "note": "Hán Việt: bất tại trường chứng minh"
+  },
+  {
+    "source": "solve a case",
+    "target": "phá án",
+    "note": "Hán Việt: phá án"
+  },
+  {
+    "source": "police detective",
+    "target": "cảnh sát hình sự",
+    "note": "Hán Việt: hình cảnh"
+  },
+  {
+    "source": "investigate",
+    "target": "điều tra",
+    "note": "Hán Việt: điều tra"
+  },
+  {
+    "source": "interrogate",
+    "target": "thẩm vấn",
+    "note": "Hán Việt: thẩm vấn"
+  },
+  {
+    "source": "statement",
+    "target": "lời khai",
+    "note": "Hán Việt: khẩu cung"
+  },
+  {
+    "source": "lie",
+    "target": "lời nói dối",
+    "note": "Hán Việt: hoang ngôn"
+  },
+  {
+    "source": "the truth",
+    "target": "sự thật",
+    "note": "Hán Việt: chân tướng"
+  },
+  {
+    "source": "mystery",
+    "target": "bí ẩn",
+    "note": "Hán Việt: mê đoàn"
+  },
+  {
+    "source": "cold case",
+    "target": "vụ án treo",
+    "note": "Hán Việt: huyền án"
+  },
+  {
+    "source": "serial killer",
+    "target": "kẻ giết người hàng loạt",
+    "note": "Hán Việt: liên hoàn sát thủ"
+  },
+  {
+    "source": "missing-person case",
+    "target": "vụ mất tích",
+    "note": "Hán Việt: thất tung án"
+  },
+  {
+    "source": "surveillance camera",
+    "target": "camera giám sát",
+    "note": "Hán Việt: giám khống"
+  },
+  {
+    "source": "recording",
+    "target": "ghi âm",
+    "note": "Hán Việt: lục âm"
+  },
+  {
+    "source": "suicide note",
+    "target": "thư tuyệt mệnh/di thư",
+    "note": "Hán Việt: di thư"
+  },
+  {
+    "source": "will",
+    "target": "thư tuyệt mệnh/di thư",
+    "note": "Hán Việt: di thư"
+  },
+  {
+    "source": "disguise",
+    "target": "ngụy tạo, cải trang",
+    "note": "Hán Việt: ngụy trang"
+  },
+  {
+    "source": "stage",
+    "target": "ngụy tạo, cải trang",
+    "note": "Hán Việt: ngụy trang"
+  },
+  {
+    "source": "frame someone",
+    "target": "vu oan, gài bằng chứng",
+    "note": "Hán Việt: tài tang"
+  },
+  {
+    "source": "set up",
+    "target": "hãm hại",
+    "note": "Hán Việt: hãm hại"
+  }
+]

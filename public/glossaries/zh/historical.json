@@ -1,0 +1,453 @@
+[
+  {
+    "source": "朕",
+    "target": "trẫm",
+    "renders": {
+      "vi": "trẫm",
+      "ko": "짐",
+      "ja": "朕",
+      "en": "royal \"I\""
+    },
+    "note": "Hán Việt: trẫm"
+  },
+  {
+    "source": "陛下",
+    "target": "bệ hạ",
+    "renders": {
+      "vi": "bệ hạ",
+      "ko": "폐하",
+      "ja": "陛下",
+      "en": "Your Majesty"
+    },
+    "note": "Hán Việt: bệ hạ"
+  },
+  {
+    "source": "皇上",
+    "target": "hoàng thượng",
+    "renders": {
+      "vi": "hoàng thượng",
+      "ko": "황상",
+      "ja": "皇帝陛下",
+      "en": "the emperor"
+    },
+    "note": "Hán Việt: hoàng thượng"
+  },
+  {
+    "source": "皇后",
+    "target": "hoàng hậu",
+    "renders": {
+      "vi": "hoàng hậu",
+      "ko": "황후",
+      "ja": "皇后",
+      "en": "empress"
+    },
+    "note": "Hán Việt: hoàng hậu"
+  },
+  {
+    "source": "太后",
+    "target": "thái hậu",
+    "renders": {
+      "vi": "thái hậu",
+      "ko": "태후",
+      "ja": "皇太后",
+      "en": "empress dowager"
+    },
+    "note": "Hán Việt: thái hậu"
+  },
+  {
+    "source": "太子",
+    "target": "thái tử",
+    "renders": {
+      "vi": "thái tử",
+      "ko": "태자",
+      "ja": "皇太子",
+      "en": "crown prince"
+    },
+    "note": "Hán Việt: thái tử"
+  },
+  {
+    "source": "公主",
+    "target": "công chúa",
+    "renders": {
+      "vi": "công chúa",
+      "ko": "공주",
+      "ja": "姫",
+      "en": "princess"
+    },
+    "note": "Hán Việt: công chúa"
+  },
+  {
+    "source": "皇子",
+    "target": "hoàng tử",
+    "renders": {
+      "vi": "hoàng tử",
+      "ko": "황자",
+      "ja": "皇子",
+      "en": "prince"
+    },
+    "note": "Hán Việt: hoàng tử"
+  },
+  {
+    "source": "贵妃",
+    "target": "quý phi",
+    "renders": {
+      "vi": "quý phi",
+      "ko": "귀비",
+      "ja": "貴妃",
+      "en": "imperial noble consort"
+    },
+    "note": "Hán Việt: quý phi"
+  },
+  {
+    "source": "嫔妃",
+    "target": "phi tần",
+    "renders": {
+      "vi": "phi tần",
+      "ko": "후궁",
+      "ja": "側室",
+      "en": "concubine"
+    },
+    "note": "Hán Việt: tần phi"
+  },
+  {
+    "source": "太监",
+    "target": "thái giám",
+    "renders": {
+      "vi": "thái giám",
+      "ko": "환관",
+      "ja": "宦官",
+      "en": "eunuch"
+    },
+    "note": "Hán Việt: thái giám"
+  },
+  {
+    "source": "宫女",
+    "target": "cung nữ",
+    "renders": {
+      "vi": "cung nữ",
+      "ko": "궁녀",
+      "ja": "宮女",
+      "en": "palace maid"
+    },
+    "note": "Hán Việt: cung nữ"
+  },
+  {
+    "source": "丞相",
+    "target": "thừa tướng",
+    "renders": {
+      "vi": "thừa tướng",
+      "ko": "승상",
+      "ja": "宰相",
+      "en": "chancellor"
+    },
+    "note": "Hán Việt: thừa tướng"
+  },
+  {
+    "source": "大臣",
+    "target": "đại thần",
+    "renders": {
+      "vi": "đại thần",
+      "ko": "대신",
+      "ja": "大臣",
+      "en": "minister"
+    },
+    "note": "Hán Việt: đại thần"
+  },
+  {
+    "source": "将军",
+    "target": "tướng quân",
+    "renders": {
+      "vi": "tướng quân",
+      "ko": "장군",
+      "ja": "将軍",
+      "en": "general"
+    },
+    "note": "Hán Việt: tướng quân"
+  },
+  {
+    "source": "元帅",
+    "target": "nguyên soái",
+    "renders": {
+      "vi": "nguyên soái",
+      "ko": "원수",
+      "ja": "元帥",
+      "en": "marshal"
+    },
+    "note": "Hán Việt: nguyên soái"
+  },
+  {
+    "source": "朝廷",
+    "target": "triều đình",
+    "renders": {
+      "vi": "triều đình",
+      "ko": "조정",
+      "ja": "朝廷",
+      "en": "imperial court"
+    },
+    "note": "Hán Việt: triều đình"
+  },
+  {
+    "source": "早朝",
+    "target": "buổi chầu sáng",
+    "renders": {
+      "vi": "buổi chầu sáng",
+      "ko": "조회",
+      "ja": "朝議",
+      "en": "morning court"
+    },
+    "note": "Hán Việt: tảo triều"
+  },
+  {
+    "source": "圣旨",
+    "target": "thánh chỉ",
+    "renders": {
+      "vi": "thánh chỉ",
+      "ko": "성지",
+      "ja": "勅旨",
+      "en": "imperial edict"
+    },
+    "note": "Hán Việt: thánh chỉ"
+  },
+  {
+    "source": "奏折",
+    "target": "tấu chương",
+    "renders": {
+      "vi": "tấu chương",
+      "ko": "상소문",
+      "ja": "上奏文",
+      "en": "memorial to the throne"
+    },
+    "note": "Hán Việt: tấu chiết"
+  },
+  {
+    "source": "登基",
+    "target": "lên ngôi",
+    "renders": {
+      "vi": "lên ngôi",
+      "ko": "즉위",
+      "ja": "即位",
+      "en": "ascend the throne"
+    },
+    "note": "Hán Việt: đăng cơ"
+  },
+  {
+    "source": "退位",
+    "target": "thoái vị",
+    "renders": {
+      "vi": "thoái vị",
+      "ko": "퇴위",
+      "ja": "退位",
+      "en": "abdicate"
+    },
+    "note": "Hán Việt: thoái vị"
+  },
+  {
+    "source": "驾崩",
+    "target": "băng hà",
+    "renders": {
+      "vi": "băng hà",
+      "ko": "붕어",
+      "ja": "崩御",
+      "en": "emperor's death"
+    },
+    "note": "Hán Việt: giá băng"
+  },
+  {
+    "source": "谋反",
+    "target": "mưu phản",
+    "renders": {
+      "vi": "mưu phản",
+      "ko": "모반",
+      "ja": "謀反",
+      "en": "treason"
+    },
+    "note": "Hán Việt: mưu phản"
+  },
+  {
+    "source": "造反",
+    "target": "nổi loạn",
+    "renders": {
+      "vi": "nổi loạn",
+      "ko": "반란",
+      "ja": "反乱",
+      "en": "rebel"
+    },
+    "note": "Hán Việt: tạo phản"
+  },
+  {
+    "source": "灭门",
+    "target": "diệt cả nhà",
+    "renders": {
+      "vi": "diệt cả nhà",
+      "ko": "멸문",
+      "ja": "一族皆殺し",
+      "en": "exterminate a clan"
+    },
+    "note": "Hán Việt: diệt môn"
+  },
+  {
+    "source": "流放",
+    "target": "lưu đày",
+    "renders": {
+      "vi": "lưu đày",
+      "ko": "유배",
+      "ja": "流刑",
+      "en": "exile"
+    },
+    "note": "Hán Việt: lưu phóng"
+  },
+  {
+    "source": "斩首",
+    "target": "chém đầu",
+    "renders": {
+      "vi": "chém đầu",
+      "ko": "참수",
+      "ja": "斬首",
+      "en": "beheading"
+    },
+    "note": "Hán Việt: trảm thủ"
+  },
+  {
+    "source": "科举",
+    "target": "khoa cử",
+    "renders": {
+      "vi": "khoa cử",
+      "ko": "과거",
+      "ja": "科挙",
+      "en": "imperial exam"
+    },
+    "note": "Hán Việt: khoa cử"
+  },
+  {
+    "source": "状元",
+    "target": "trạng nguyên",
+    "renders": {
+      "vi": "trạng nguyên",
+      "ko": "장원",
+      "ja": "状元",
+      "en": "top scholar"
+    },
+    "note": "Hán Việt: trạng nguyên"
+  },
+  {
+    "source": "进士",
+    "target": "tiến sĩ",
+    "renders": {
+      "vi": "tiến sĩ",
+      "ko": "진사",
+      "ja": "進士",
+      "en": "metropolitan graduate"
+    },
+    "note": "Hán Việt: tiến sĩ"
+  },
+  {
+    "source": "县令",
+    "target": "tri huyện",
+    "renders": {
+      "vi": "tri huyện",
+      "ko": "현령",
+      "ja": "県令",
+      "en": "county magistrate"
+    },
+    "note": "Hán Việt: huyện lệnh"
+  },
+  {
+    "source": "知府",
+    "target": "tri phủ",
+    "renders": {
+      "vi": "tri phủ",
+      "ko": "지부",
+      "ja": "知府",
+      "en": "prefect"
+    },
+    "note": "Hán Việt: tri phủ"
+  },
+  {
+    "source": "百姓",
+    "target": "dân chúng",
+    "renders": {
+      "vi": "dân chúng",
+      "ko": "백성",
+      "ja": "民衆",
+      "en": "common people"
+    },
+    "note": "Hán Việt: bách tính"
+  },
+  {
+    "source": "天下",
+    "target": "thiên hạ",
+    "renders": {
+      "vi": "thiên hạ",
+      "ko": "천하",
+      "ja": "天下",
+      "en": "all under heaven"
+    },
+    "note": "Hán Việt: thiên hạ"
+  },
+  {
+    "source": "江山",
+    "target": "giang sơn",
+    "renders": {
+      "vi": "giang sơn",
+      "ko": "강산",
+      "ja": "国土",
+      "en": "the realm"
+    },
+    "note": "Hán Việt: giang sơn"
+  },
+  {
+    "source": "社稷",
+    "target": "xã tắc",
+    "renders": {
+      "vi": "xã tắc",
+      "ko": "사직",
+      "ja": "社稷",
+      "en": "the state"
+    },
+    "note": "Hán Việt: xã tắc. Anh: the state / nation"
+  },
+  {
+    "source": "王朝",
+    "target": "vương triều",
+    "renders": {
+      "vi": "vương triều",
+      "ko": "왕조",
+      "ja": "王朝",
+      "en": "dynasty"
+    },
+    "note": "Hán Việt: vương triều"
+  },
+  {
+    "source": "战乱",
+    "target": "chiến loạn",
+    "renders": {
+      "vi": "chiến loạn",
+      "ko": "전란",
+      "ja": "戦乱",
+      "en": "war turmoil"
+    },
+    "note": "Hán Việt: chiến loạn"
+  },
+  {
+    "source": "出征",
+    "target": "xuất chinh",
+    "renders": {
+      "vi": "xuất chinh",
+      "ko": "출정",
+      "ja": "出征",
+      "en": "march to war"
+    },
+    "note": "Hán Việt: xuất chinh"
+  },
+  {
+    "source": "兵符",
+    "target": "binh phù",
+    "renders": {
+      "vi": "binh phù",
+      "ko": "병부",
+      "ja": "兵符",
+      "en": "military tally"
+    },
+    "note": "Hán Việt: binh phù"
+  }
+]

@@ -1,0 +1,310 @@
+[
+  {
+    "source": "最終回",
+    "target": "tập cuối"
+  },
+  {
+    "source": "次回予告",
+    "target": "xem trước tập sau"
+  },
+  {
+    "source": "スピンオフ",
+    "target": "ngoại truyện"
+  },
+  {
+    "source": "打ち切り",
+    "target": "bị cắt sóng"
+  },
+  {
+    "source": "視聴率",
+    "target": "tỷ suất người xem"
+  },
+  {
+    "source": "リアタイ",
+    "target": "xem trực tiếp lúc phát"
+  },
+  {
+    "source": "ネタバレ",
+    "target": "spoil"
+  },
+  {
+    "source": "考察",
+    "target": "thuyết fan"
+  },
+  {
+    "source": "神回",
+    "target": "tập đỉnh"
+  },
+  {
+    "source": "クソ回",
+    "target": "tập tệ"
+  },
+  {
+    "source": "地上波",
+    "target": "sóng truyền hình"
+  },
+  {
+    "source": "配信限定",
+    "target": "chỉ phát mạng"
+  },
+  {
+    "source": "シーズン",
+    "target": "mùa"
+  },
+  {
+    "source": "クロスオーバー",
+    "target": "giao nhau vũ trụ"
+  },
+  {
+    "source": "主演",
+    "target": "vai chính",
+    "note": "Cách khác: diễn viên chính"
+  },
+  {
+    "source": "脇役",
+    "target": "vai phụ"
+  },
+  {
+    "source": "台本",
+    "target": "kịch bản"
+  },
+  {
+    "source": "共演",
+    "target": "đóng chung"
+  },
+  {
+    "source": "撮影現場",
+    "target": "phim trường"
+  },
+  {
+    "source": "アドリブ",
+    "target": "ứng biến"
+  },
+  {
+    "source": "続編",
+    "target": "phần tiếp",
+    "note": "Cách khác: phần tiếp theo"
+  },
+  {
+    "source": "完結",
+    "target": "kết thúc trọn bộ"
+  },
+  {
+    "source": "原作",
+    "target": "tác phẩm gốc",
+    "note": "Cách khác: nguyên tác"
+  },
+  {
+    "source": "実写化",
+    "target": "chuyển thể người đóng"
+  },
+  {
+    "source": "アニメ化",
+    "target": "chuyển thể hoạt hình"
+  },
+  {
+    "source": "声優",
+    "target": "diễn viên lồng tiếng"
+  },
+  {
+    "source": "主題歌",
+    "target": "bài hát chủ đề"
+  },
+  {
+    "source": "挿入歌",
+    "target": "nhạc trong phim"
+  },
+  {
+    "source": "番宣",
+    "target": "quảng bá phim"
+  },
+  {
+    "source": "特番",
+    "target": "chương trình đặc biệt"
+  },
+  {
+    "source": "再放送",
+    "target": "phát lại"
+  },
+  {
+    "source": "見逃し配信",
+    "target": "xem bù trên mạng"
+  },
+  {
+    "source": "同時視聴",
+    "target": "xem cùng lúc"
+  },
+  {
+    "source": "伏線回収",
+    "target": "thu hồi manh mối"
+  },
+  {
+    "source": "キャラ崩壊",
+    "target": "nhân vật mất chất"
+  },
+  {
+    "source": "初回放送",
+    "target": "công chiếu lần đầu",
+    "note": "Hán Việt: thủ bá"
+  },
+  {
+    "source": "大ヒット放送中",
+    "target": "đang phát sóng hot",
+    "note": "Hán Việt: nhiệt bá"
+  },
+  {
+    "source": "評判",
+    "target": "danh tiếng, đánh giá",
+    "note": "Hán Việt: khẩu bi"
+  },
+  {
+    "source": "評価",
+    "target": "điểm đánh giá",
+    "note": "Hán Việt: bình phân"
+  },
+  {
+    "source": "番外編",
+    "target": "ngoại truyện",
+    "note": "Hán Việt: phiên ngoại"
+  },
+  {
+    "source": "前回のあらすじ",
+    "target": "tóm tắt tập trước",
+    "note": "Hán Việt: tiền tình đề yếu"
+  },
+  {
+    "source": "予告",
+    "target": "trailer, tập tiếp theo",
+    "note": "Hán Việt: dự cáo"
+  },
+  {
+    "source": "メイキング",
+    "target": "hậu trường",
+    "note": "Hán Việt: hoa tự"
+  },
+  {
+    "source": "ストーリー",
+    "target": "cốt truyện",
+    "note": "Hán Việt: kịch tình"
+  },
+  {
+    "source": "脚本",
+    "target": "kịch bản",
+    "note": "Hán Việt: kịch bản"
+  },
+  {
+    "source": "脚本家",
+    "target": "biên kịch",
+    "note": "Hán Việt: biên kịch"
+  },
+  {
+    "source": "監督",
+    "target": "đạo diễn",
+    "note": "Hán Việt: đạo diễn"
+  },
+  {
+    "source": "男性主人公",
+    "target": "nam chính",
+    "note": "Hán Việt: nam chủ"
+  },
+  {
+    "source": "女性主人公",
+    "target": "nữ chính",
+    "note": "Hán Việt: nữ chủ"
+  },
+  {
+    "source": "男性サブ主人公",
+    "target": "nam phụ",
+    "note": "Hán Việt: nam nhị"
+  },
+  {
+    "source": "女性サブ主人公",
+    "target": "nữ phụ",
+    "note": "Hán Việt: nữ nhị"
+  },
+  {
+    "source": "悪役",
+    "target": "nhân vật phản diện",
+    "note": "Hán Việt: phản phái"
+  },
+  {
+    "source": "ゲスト出演",
+    "target": "đóng vai khách mời",
+    "note": "Hán Việt: khách xuyến"
+  },
+  {
+    "source": "特別出演",
+    "target": "diễn viên đặc biệt",
+    "note": "Hán Việt: đặc mời"
+  },
+  {
+    "source": "演技",
+    "target": "diễn xuất",
+    "note": "Hán Việt: diễn kỹ"
+  },
+  {
+    "source": "セリフ",
+    "target": "lời thoại",
+    "note": "Hán Việt: đài từ"
+  },
+  {
+    "source": "字幕",
+    "target": "phụ đề",
+    "note": "Hán Việt: tự mạc"
+  },
+  {
+    "source": "吹き替え",
+    "target": "lồng tiếng",
+    "note": "Hán Việt: phối âm"
+  },
+  {
+    "source": "サントラ",
+    "target": "nhạc phim",
+    "note": "Hán Việt: nguyên thanh"
+  },
+  {
+    "source": "オープニング曲",
+    "target": "nhạc mở đầu",
+    "note": "Hán Việt: phiến đầu khúc"
+  },
+  {
+    "source": "エンディング曲",
+    "target": "nhạc kết thúc",
+    "note": "Hán Việt: phiến vĩ khúc"
+  },
+  {
+    "source": "リメイク",
+    "target": "làm lại, remake",
+    "note": "Hán Việt: phiên phách"
+  },
+  {
+    "source": "脚色",
+    "target": "chuyển thể",
+    "note": "Hán Việt: cải biên"
+  },
+  {
+    "source": "シーズン1",
+    "target": "phần 1",
+    "note": "Hán Việt: đệ nhất quý"
+  },
+  {
+    "source": "更新",
+    "target": "cập nhật tập mới",
+    "note": "Hán Việt: canh tân"
+  },
+  {
+    "source": "ドラマ視聴",
+    "target": "cày phim",
+    "note": "Hán Việt: truy kịch"
+  },
+  {
+    "source": "尻すぼみ",
+    "target": "kết thúc dở tệ",
+    "note": "Hán Việt: lạn vĩ"
+  },
+  {
+    "source": "神ドラマ",
+    "target": "phim thần thánh",
+    "note": "Hán Việt: thần kịch"
+  }
+]

@@ -1,0 +1,38 @@
+Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo_Sub_Project (tên cũ: phudedep).
+Trả lời bằng tiếng Việt, ngắn gọn.
+
+TRƯỚC KHI LÀM
+1. Đọc toàn bộ PROJECT_STATUS.md (nguồn sự thật chung) và file này.
+2. Kiểm tra mã nguồn thật. Không mặc định tài liệu đúng. Nếu tài liệu sai so với code, sửa tài liệu và ghi rõ.
+3. Với file code lớn, dùng grep và đọc đúng đoạn liên quan, không đọc lại cả file.
+
+PHẠM VI
+4. Không viết lại cả ứng dụng. Không sửa chức năng không liên quan đến bước đang làm. Ưu tiên giữ nguyên chức năng đang chạy.
+5. Nếu phát hiện lỗi hoặc xung đột ngoài phạm vi bước: phân tích nguyên nhân, ghi vào mục "Vấn đề còn tồn tại" trong PROJECT_STATUS.md, KHÔNG tự sửa. Chỉ sửa ngay khi lỗi đó chặn chính bước đang làm, và nói rõ.
+6. Không xóa mục "Vấn đề hiện tại" cho đến khi tôi xác nhận hết lỗi.
+
+QUY TRÌNH TỪNG BƯỚC
+7. Làm theo hàng đợi ở mục 10 của PROJECT_STATUS.md. Mỗi lượt chỉ làm MỘT bước. Khi hàng đợi hết, đề xuất bước mới và chờ tôi duyệt, không tự thêm việc.
+8. Không tự làm bước kế tiếp khi tôi chưa xác nhận.
+
+KIỂM TRA (bắt buộc)
+9. Chạy npm run typecheck và npm test. Dán kết quả thật. Nếu không chạy được, nói rõ lý do, không ghi "pass".
+10. Lỗi đã sửa phải có test lặp lại được. Thêm test vào script "test" trong package.json.
+11. Ghi trạng thái đúng mức độ: "code xong", "đã có test", hoặc "đã được user thử trên máy thật". Không ghi "xong" khi chỉ mới viết code.
+
+CẬP NHẬT TÀI LIỆU
+12. Cập nhật PROJECT_STATUS.md: bảng trạng thái (mục 2), lịch sử (mục 6), hàng đợi (mục 10), vấn đề còn tồn tại, việc tiếp theo.
+13. Thư mục attachments/ trong gói để rỗng và không có file HTML standalone. Không tạo lại trừ khi tôi đưa file đó. Sửa bản React.
+
+BÀN GIAO
+14. Đóng gói toàn bộ dự án thành MỘT file zip, tên dạng TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip (vd TyZo_Sub_Project-2026-11-04-0815.zip), không kèm node_modules, PROJECT_STATUS.md ở gốc, rồi gửi lại.
+15. Báo cáo cuối ngắn gọn: đã làm gì, kết quả test, điều chưa kiểm chứng được, các bước còn lại.
+16. Hỏi tôi có muốn tiếp tục bước kế tiếp không.
+
+THỜI ĐIỂM GHI TÀI LIỆU
+17. Khi ghi thời điểm vào PROJECT_STATUS.md (cột "Thời điểm" mục 6 và dòng "Cập nhật lần cuối"), dùng định dạng YYYY-MM-DD HH:MM (UTC+7).
+    Lấy giờ thật bằng lệnh: TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M'. Không đoán giờ.
+    Nếu không chạy được lệnh, ghi chỉ ngày kèm chú thích "không rõ giờ".
+
+MỤC TIÊU
+Phát triển liên tục, có kiểm soát, không mất tiến độ, không phá chức năng đã hoàn thành.

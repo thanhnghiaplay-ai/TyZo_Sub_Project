@@ -1,0 +1,313 @@
+[
+  {
+    "source": "임금",
+    "target": "vua"
+  },
+  {
+    "source": "상감",
+    "target": "thánh thượng"
+  },
+  {
+    "source": "대비",
+    "target": "đại phi"
+  },
+  {
+    "source": "세자",
+    "target": "thế tử"
+  },
+  {
+    "source": "영의정",
+    "target": "lãnh nghị chính"
+  },
+  {
+    "source": "사헌부",
+    "target": "tư hiến phủ"
+  },
+  {
+    "source": "과거시험",
+    "target": "khoa cử"
+  },
+  {
+    "source": "유배",
+    "target": "đi đày",
+    "note": "Cách khác: lưu đày"
+  },
+  {
+    "source": "사약",
+    "target": "thuốc độc ban chết"
+  },
+  {
+    "source": "역모",
+    "target": "mưu phản"
+  },
+  {
+    "source": "왜란",
+    "target": "loạn Nhật"
+  },
+  {
+    "source": "호란",
+    "target": "loạn Mãn"
+  },
+  {
+    "source": "개화",
+    "target": "khai hóa"
+  },
+  {
+    "source": "독립운동",
+    "target": "phong trào độc lập"
+  },
+  {
+    "source": "의병",
+    "target": "nghĩa binh"
+  },
+  {
+    "source": "순국",
+    "target": "tuẫn quốc"
+  },
+  {
+    "source": "조약",
+    "target": "hiệp ước"
+  },
+  {
+    "source": "식민",
+    "target": "thuộc địa"
+  },
+  {
+    "source": "해방",
+    "target": "giải phóng"
+  },
+  {
+    "source": "휴전",
+    "target": "đình chiến"
+  },
+  {
+    "source": "피란",
+    "target": "sơ tán"
+  },
+  {
+    "source": "배급",
+    "target": "tem phiếu"
+  },
+  {
+    "source": "징집",
+    "target": "trưng binh"
+  },
+  {
+    "source": "제헌",
+    "target": "lập hiến"
+  },
+  {
+    "source": "왕조",
+    "target": "vương triều"
+  },
+  {
+    "source": "실록",
+    "target": "thực lục"
+  },
+  {
+    "source": "어명",
+    "target": "khẩu dụ của vua"
+  },
+  {
+    "source": "사도",
+    "target": "sự đồ"
+  },
+  {
+    "source": "반정",
+    "target": "lật ngôi"
+  },
+  {
+    "source": "국상",
+    "target": "quốc tang"
+  },
+  {
+    "source": "폐하",
+    "target": "bệ hạ",
+    "note": "Hán Việt: bệ hạ"
+  },
+  {
+    "source": "황상",
+    "target": "hoàng thượng",
+    "note": "Hán Việt: hoàng thượng"
+  },
+  {
+    "source": "황후",
+    "target": "hoàng hậu",
+    "note": "Hán Việt: hoàng hậu"
+  },
+  {
+    "source": "태후",
+    "target": "thái hậu",
+    "note": "Hán Việt: thái hậu"
+  },
+  {
+    "source": "태자",
+    "target": "thái tử",
+    "note": "Hán Việt: thái tử"
+  },
+  {
+    "source": "공주",
+    "target": "công chúa",
+    "note": "Hán Việt: công chúa"
+  },
+  {
+    "source": "황자",
+    "target": "hoàng tử",
+    "note": "Hán Việt: hoàng tử"
+  },
+  {
+    "source": "귀비",
+    "target": "quý phi",
+    "note": "Hán Việt: quý phi"
+  },
+  {
+    "source": "후궁",
+    "target": "phi tần",
+    "note": "Hán Việt: tần phi"
+  },
+  {
+    "source": "환관",
+    "target": "thái giám",
+    "note": "Hán Việt: thái giám"
+  },
+  {
+    "source": "궁녀",
+    "target": "cung nữ",
+    "note": "Hán Việt: cung nữ"
+  },
+  {
+    "source": "승상",
+    "target": "thừa tướng",
+    "note": "Hán Việt: thừa tướng"
+  },
+  {
+    "source": "대신",
+    "target": "đại thần",
+    "note": "Hán Việt: đại thần"
+  },
+  {
+    "source": "장군",
+    "target": "tướng quân",
+    "note": "Hán Việt: tướng quân"
+  },
+  {
+    "source": "원수",
+    "target": "nguyên soái",
+    "note": "Hán Việt: nguyên soái"
+  },
+  {
+    "source": "조정",
+    "target": "triều đình",
+    "note": "Hán Việt: triều đình"
+  },
+  {
+    "source": "조회",
+    "target": "buổi chầu sáng",
+    "note": "Hán Việt: tảo triều"
+  },
+  {
+    "source": "성지",
+    "target": "thánh chỉ",
+    "note": "Hán Việt: thánh chỉ"
+  },
+  {
+    "source": "상소문",
+    "target": "tấu chương",
+    "note": "Hán Việt: tấu chiết"
+  },
+  {
+    "source": "즉위",
+    "target": "lên ngôi",
+    "note": "Hán Việt: đăng cơ"
+  },
+  {
+    "source": "퇴위",
+    "target": "thoái vị",
+    "note": "Hán Việt: thoái vị"
+  },
+  {
+    "source": "붕어",
+    "target": "băng hà",
+    "note": "Hán Việt: giá băng"
+  },
+  {
+    "source": "모반",
+    "target": "mưu phản",
+    "note": "Hán Việt: mưu phản"
+  },
+  {
+    "source": "반란",
+    "target": "nổi loạn",
+    "note": "Hán Việt: tạo phản"
+  },
+  {
+    "source": "멸문",
+    "target": "diệt cả nhà",
+    "note": "Hán Việt: diệt môn"
+  },
+  {
+    "source": "참수",
+    "target": "chém đầu",
+    "note": "Hán Việt: trảm thủ"
+  },
+  {
+    "source": "과거",
+    "target": "khoa cử",
+    "note": "Hán Việt: khoa cử"
+  },
+  {
+    "source": "장원",
+    "target": "trạng nguyên",
+    "note": "Hán Việt: trạng nguyên"
+  },
+  {
+    "source": "진사",
+    "target": "tiến sĩ",
+    "note": "Hán Việt: tiến sĩ"
+  },
+  {
+    "source": "현령",
+    "target": "tri huyện",
+    "note": "Hán Việt: huyện lệnh"
+  },
+  {
+    "source": "지부",
+    "target": "tri phủ",
+    "note": "Hán Việt: tri phủ"
+  },
+  {
+    "source": "백성",
+    "target": "dân chúng",
+    "note": "Hán Việt: bách tính"
+  },
+  {
+    "source": "천하",
+    "target": "thiên hạ",
+    "note": "Hán Việt: thiên hạ"
+  },
+  {
+    "source": "강산",
+    "target": "giang sơn",
+    "note": "Hán Việt: giang sơn"
+  },
+  {
+    "source": "사직",
+    "target": "xã tắc",
+    "note": "Hán Việt: xã tắc"
+  },
+  {
+    "source": "전란",
+    "target": "chiến loạn",
+    "note": "Hán Việt: chiến loạn"
+  },
+  {
+    "source": "출정",
+    "target": "xuất chinh",
+    "note": "Hán Việt: xuất chinh"
+  },
+  {
+    "source": "병부",
+    "target": "binh phù",
+    "note": "Hán Việt: binh phù"
+  }
+]

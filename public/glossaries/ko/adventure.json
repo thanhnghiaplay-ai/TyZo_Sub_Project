@@ -1,0 +1,237 @@
+[
+  {
+    "source": "보물",
+    "target": "kho báu"
+  },
+  {
+    "source": "보물지도",
+    "target": "bản đồ kho báu"
+  },
+  {
+    "source": "유적",
+    "target": "di tích",
+    "note": "Cách khác: di tích cổ"
+  },
+  {
+    "source": "동굴",
+    "target": "hang động"
+  },
+  {
+    "source": "함정",
+    "target": "cái bẫy",
+    "note": "Cách khác: cạm bẫy"
+  },
+  {
+    "source": "모험",
+    "target": "phiêu lưu",
+    "note": "Cách khác: phiêu lưu, mạo hiểm"
+  },
+  {
+    "source": "전설",
+    "target": "truyền thuyết"
+  },
+  {
+    "source": "나침반",
+    "target": "la bàn",
+    "note": "Cách khác: kim chỉ nam"
+  },
+  {
+    "source": "비밀의 보물",
+    "target": "bảo vật"
+  },
+  {
+    "source": "저주",
+    "target": "lời nguyền"
+  },
+  {
+    "source": "탐험",
+    "target": "thám hiểm"
+  },
+  {
+    "source": "미지의 땅",
+    "target": "vùng đất chưa ai tới"
+  },
+  {
+    "source": "항해",
+    "target": "hải trình",
+    "note": "Cách khác: đi biển"
+  },
+  {
+    "source": "폭풍",
+    "target": "cơn bão"
+  },
+  {
+    "source": "수호자",
+    "target": "người canh giữ"
+  },
+  {
+    "source": "시련",
+    "target": "thử thách"
+  },
+  {
+    "source": "고대 문명",
+    "target": "nền văn minh cổ"
+  },
+  {
+    "source": "밀림",
+    "target": "rừng rậm"
+  },
+  {
+    "source": "조난",
+    "target": "lạc nạn"
+  },
+  {
+    "source": "생환",
+    "target": "sống sót trở về"
+  },
+  {
+    "source": "비밀 통로",
+    "target": "đường bí mật"
+  },
+  {
+    "source": "독화살",
+    "target": "tên độc"
+  },
+  {
+    "source": "절벽",
+    "target": "vách đá"
+  },
+  {
+    "source": "오아시스",
+    "target": "ốc đảo"
+  },
+  {
+    "source": "보물창고",
+    "target": "kho báu"
+  },
+  {
+    "source": "보물찾기",
+    "target": "tìm kho báu",
+    "note": "Hán Việt: tầm bảo"
+  },
+  {
+    "source": "고분",
+    "target": "mộ cổ",
+    "note": "Hán Việt: cổ mộ"
+  },
+  {
+    "source": "장치",
+    "target": "cơ quan, bẫy",
+    "note": "Hán Việt: cơ quan. Không dịch \"cơ quan nhà nước\""
+  },
+  {
+    "source": "지도",
+    "target": "bản đồ",
+    "note": "Hán Việt: địa đồ"
+  },
+  {
+    "source": "황야",
+    "target": "vùng hoang dã",
+    "note": "Hán Việt: hoang dã"
+  },
+  {
+    "source": "사막",
+    "target": "sa mạc",
+    "note": "Hán Việt: sa mạc"
+  },
+  {
+    "source": "설산",
+    "target": "núi tuyết",
+    "note": "Hán Việt: tuyết sơn"
+  },
+  {
+    "source": "협곡",
+    "target": "hẻm núi",
+    "note": "Hán Việt: hiệp cốc"
+  },
+  {
+    "source": "심연",
+    "target": "vực sâu",
+    "note": "Hán Việt: thâm uyên"
+  },
+  {
+    "source": "미궁",
+    "target": "mê cung",
+    "note": "Hán Việt: mê cung"
+  },
+  {
+    "source": "신기",
+    "target": "thần khí",
+    "note": "Hán Việt: thần khí"
+  },
+  {
+    "source": "열쇠",
+    "target": "chìa khóa",
+    "note": "Hán Việt: thược thi"
+  },
+  {
+    "source": "단서",
+    "target": "manh mối",
+    "note": "Hán Việt: tuyến sách"
+  },
+  {
+    "source": "길 탐색",
+    "target": "dò đường",
+    "note": "Hán Việt: thám lộ"
+  },
+  {
+    "source": "안내인",
+    "target": "người dẫn đường",
+    "note": "Hán Việt: hướng đạo"
+  },
+  {
+    "source": "동료",
+    "target": "đồng đội, bạn đồng hành",
+    "note": "Hán Việt: đồng bạn"
+  },
+  {
+    "source": "야영지",
+    "target": "trại, điểm cắm trại",
+    "note": "Hán Việt: doanh địa"
+  },
+  {
+    "source": "보급",
+    "target": "tiếp tế",
+    "note": "Hán Việt: bổ cấp"
+  },
+  {
+    "source": "건량",
+    "target": "lương khô",
+    "note": "Hán Việt: can lương"
+  },
+  {
+    "source": "해적",
+    "target": "hải tặc",
+    "note": "Hán Việt: hải đạo"
+  },
+  {
+    "source": "외딴섬",
+    "target": "đảo hoang",
+    "note": "Hán Việt: cô đảo"
+  },
+  {
+    "source": "침몰선",
+    "target": "tàu đắm",
+    "note": "Hán Việt: trầm thuyền"
+  },
+  {
+    "source": "모험을 겪다",
+    "target": "trải qua hiểm nguy",
+    "note": "Hán Việt: lịch hiểm"
+  },
+  {
+    "source": "관문 돌파",
+    "target": "vượt ải",
+    "note": "Hán Việt: sấm quan"
+  },
+  {
+    "source": "위기 탈출",
+    "target": "thoát hiểm",
+    "note": "Hán Việt: thoát hiểm"
+  },
+  {
+    "source": "출발하다",
+    "target": "lên đường",
+    "note": "Hán Việt: khải trình"
+  }
+]

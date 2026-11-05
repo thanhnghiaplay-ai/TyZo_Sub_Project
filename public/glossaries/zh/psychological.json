@@ -1,0 +1,442 @@
+[
+  {
+    "source": "抑郁",
+    "target": "trầm cảm",
+    "renders": {
+      "vi": "trầm cảm",
+      "ko": "우울증",
+      "ja": "うつ病",
+      "en": "depression"
+    },
+    "note": "Hán Việt: ức uất"
+  },
+  {
+    "source": "焦虑",
+    "target": "lo âu",
+    "renders": {
+      "vi": "lo âu",
+      "ko": "불안",
+      "ja": "不安",
+      "en": "anxiety"
+    },
+    "note": "Hán Việt: tiêu lự"
+  },
+  {
+    "source": "恐慌",
+    "target": "hoảng loạn",
+    "renders": {
+      "vi": "hoảng loạn",
+      "ko": "공황",
+      "ja": "パニック",
+      "en": "panic"
+    },
+    "note": "Hán Việt: khủng hoảng"
+  },
+  {
+    "source": "强迫症",
+    "target": "rối loạn ám ảnh cưỡng chế",
+    "renders": {
+      "vi": "rối loạn ám ảnh cưỡng chế",
+      "ko": "강박증",
+      "ja": "強迫性障害",
+      "en": "OCD"
+    },
+    "note": "Hán Việt: cưỡng bách chứng"
+  },
+  {
+    "source": "失眠",
+    "target": "mất ngủ",
+    "renders": {
+      "vi": "mất ngủ",
+      "ko": "불면증",
+      "ja": "不眠症",
+      "en": "insomnia"
+    },
+    "note": "Hán Việt: thất miên"
+  },
+  {
+    "source": "创伤",
+    "target": "chấn thương tâm lý",
+    "renders": {
+      "vi": "chấn thương tâm lý",
+      "ko": "트라우마",
+      "ja": "トラウマ",
+      "en": "trauma"
+    },
+    "note": "Hán Việt: sang thương"
+  },
+  {
+    "source": "心结",
+    "target": "khúc mắc trong lòng",
+    "renders": {
+      "vi": "khúc mắc trong lòng",
+      "ko": "응어리",
+      "ja": "わだかまり",
+      "en": "emotional knot"
+    },
+    "note": "Hán Việt: tâm kết"
+  },
+  {
+    "source": "执念",
+    "target": "chấp niệm",
+    "renders": {
+      "vi": "chấp niệm",
+      "ko": "집념",
+      "ja": "執念",
+      "en": "obsession"
+    },
+    "note": "Hán Việt: chấp niệm"
+  },
+  {
+    "source": "潜意识",
+    "target": "tiềm thức",
+    "renders": {
+      "vi": "tiềm thức",
+      "ko": "잠재의식",
+      "ja": "潜在意識",
+      "en": "subconscious"
+    },
+    "note": "Hán Việt: tiềm ý thức"
+  },
+  {
+    "source": "自卑",
+    "target": "tự ti",
+    "renders": {
+      "vi": "tự ti",
+      "ko": "열등감",
+      "ja": "劣等感",
+      "en": "inferiority complex"
+    },
+    "note": "Hán Việt: tự ti"
+  },
+  {
+    "source": "自责",
+    "target": "tự trách",
+    "renders": {
+      "vi": "tự trách",
+      "ko": "자책",
+      "ja": "自責",
+      "en": "self-blame"
+    },
+    "note": "Hán Việt: tự trách"
+  },
+  {
+    "source": "愧疚",
+    "target": "áy náy",
+    "renders": {
+      "vi": "áy náy",
+      "ko": "죄책감",
+      "ja": "罪悪感",
+      "en": "guilt"
+    },
+    "note": "Hán Việt: quý cữu"
+  },
+  {
+    "source": "内疚",
+    "target": "day dứt",
+    "renders": {
+      "vi": "day dứt",
+      "ko": "가책",
+      "ja": "良心の呵責",
+      "en": "remorse"
+    },
+    "note": "Hán Việt: nội cữu"
+  },
+  {
+    "source": "孤独",
+    "target": "cô đơn",
+    "renders": {
+      "vi": "cô đơn",
+      "ko": "외로움",
+      "ja": "孤独",
+      "en": "loneliness"
+    },
+    "note": "Hán Việt: cô độc"
+  },
+  {
+    "source": "空虚",
+    "target": "trống rỗng",
+    "renders": {
+      "vi": "trống rỗng",
+      "ko": "공허",
+      "ja": "空虚",
+      "en": "emptiness"
+    },
+    "note": "Hán Việt: không hư"
+  },
+  {
+    "source": "麻木",
+    "target": "tê dại",
+    "renders": {
+      "vi": "tê dại",
+      "ko": "무감각",
+      "ja": "麻痺",
+      "en": "numb"
+    },
+    "note": "Hán Việt: ma mộc"
+  },
+  {
+    "source": "崩溃",
+    "target": "suy sụp",
+    "renders": {
+      "vi": "suy sụp",
+      "ko": "붕괴",
+      "ja": "崩壊",
+      "en": "breakdown"
+    },
+    "note": "Hán Việt: băng hội"
+  },
+  {
+    "source": "挣扎",
+    "target": "giằng xé, vùng vẫy",
+    "renders": {
+      "vi": "giằng xé, vùng vẫy",
+      "ko": "발버둥",
+      "ja": "もがく",
+      "en": "struggle"
+    },
+    "note": "Hán Việt: tránh trát"
+  },
+  {
+    "source": "纠结",
+    "target": "day dứt, rối rắm",
+    "renders": {
+      "vi": "day dứt, rối rắm",
+      "ko": "갈등",
+      "ja": "葛藤",
+      "en": "conflicted"
+    },
+    "note": "Hán Việt: củ kết"
+  },
+  {
+    "source": "矛盾",
+    "target": "mâu thuẫn trong lòng",
+    "renders": {
+      "vi": "mâu thuẫn trong lòng",
+      "ko": "모순",
+      "ja": "矛盾",
+      "en": "contradiction"
+    },
+    "note": "Hán Việt: mâu thuẫn"
+  },
+  {
+    "source": "压抑",
+    "target": "kìm nén",
+    "renders": {
+      "vi": "kìm nén",
+      "ko": "억압",
+      "ja": "抑圧",
+      "en": "repression"
+    },
+    "note": "Hán Việt: áp ức"
+  },
+  {
+    "source": "情绪",
+    "target": "cảm xúc",
+    "renders": {
+      "vi": "cảm xúc",
+      "ko": "감정",
+      "ja": "感情",
+      "en": "emotions"
+    },
+    "note": "Hán Việt: tình tự"
+  },
+  {
+    "source": "情商",
+    "target": "trí tuệ cảm xúc",
+    "renders": {
+      "vi": "trí tuệ cảm xúc",
+      "ko": "감성 지능",
+      "ja": "EQ",
+      "en": "emotional intelligence"
+    },
+    "note": "Hán Việt: tình thương"
+  },
+  {
+    "source": "心理医生",
+    "target": "bác sĩ tâm lý",
+    "renders": {
+      "vi": "bác sĩ tâm lý",
+      "ko": "심리 상담사",
+      "ja": "精神科医",
+      "en": "psychologist"
+    },
+    "note": "Hán Việt: tâm lý y sinh"
+  },
+  {
+    "source": "咨询",
+    "target": "tư vấn",
+    "renders": {
+      "vi": "tư vấn",
+      "ko": "상담",
+      "ja": "カウンセリング",
+      "en": "counseling"
+    },
+    "note": "Hán Việt: tư tuân"
+  },
+  {
+    "source": "治疗",
+    "target": "điều trị",
+    "renders": {
+      "vi": "điều trị",
+      "ko": "치료",
+      "ja": "治療",
+      "en": "treatment"
+    },
+    "note": "Hán Việt: trị liệu"
+  },
+  {
+    "source": "催眠",
+    "target": "thôi miên",
+    "renders": {
+      "vi": "thôi miên",
+      "ko": "최면",
+      "ja": "催眠",
+      "en": "hypnosis"
+    },
+    "note": "Hán Việt: thôi miên"
+  },
+  {
+    "source": "人格分裂",
+    "target": "đa nhân cách",
+    "renders": {
+      "vi": "đa nhân cách",
+      "ko": "다중 인격",
+      "ja": "解離性同一性障害",
+      "en": "dissociative identity"
+    },
+    "note": "Hán Việt: nhân cách phân liệt"
+  },
+  {
+    "source": "幻听",
+    "target": "ảo thanh",
+    "renders": {
+      "vi": "ảo thanh",
+      "ko": "환청",
+      "ja": "幻聴",
+      "en": "auditory hallucination"
+    },
+    "note": "Hán Việt: ảo thính"
+  },
+  {
+    "source": "妄想",
+    "target": "hoang tưởng",
+    "renders": {
+      "vi": "hoang tưởng",
+      "ko": "망상",
+      "ja": "妄想",
+      "en": "delusion"
+    },
+    "note": "Hán Việt: vọng tưởng"
+  },
+  {
+    "source": "偏执",
+    "target": "cố chấp, hoang tưởng bị hại (paranoid)",
+    "renders": {
+      "vi": "cố chấp, hoang tưởng bị hại (paranoid)",
+      "ko": "편집증",
+      "ja": "偏執",
+      "en": "paranoid"
+    },
+    "note": "Hán Việt: thiên chấp. Tùy ngữ cảnh tâm lý"
+  },
+  {
+    "source": "占有欲",
+    "target": "lòng chiếm hữu",
+    "renders": {
+      "vi": "lòng chiếm hữu",
+      "ko": "소유욕",
+      "ja": "独占欲",
+      "en": "possessiveness"
+    },
+    "note": "Hán Việt: chiếm hữu dục"
+  },
+  {
+    "source": "控制欲",
+    "target": "ham muốn kiểm soát",
+    "renders": {
+      "vi": "ham muốn kiểm soát",
+      "ko": "통제욕",
+      "ja": "支配欲",
+      "en": "need to control"
+    },
+    "note": "Hán Việt: khống chế dục"
+  },
+  {
+    "source": "安全感",
+    "target": "cảm giác an toàn",
+    "renders": {
+      "vi": "cảm giác an toàn",
+      "ko": "안정감",
+      "ja": "安心感",
+      "en": "sense of security"
+    },
+    "note": "Hán Việt: an toàn cảm"
+  },
+  {
+    "source": "依赖",
+    "target": "phụ thuộc",
+    "renders": {
+      "vi": "phụ thuộc",
+      "ko": "의존",
+      "ja": "依存",
+      "en": "dependence"
+    },
+    "note": "Hán Việt: y lại"
+  },
+  {
+    "source": "释怀",
+    "target": "buông bỏ, nguôi ngoai",
+    "renders": {
+      "vi": "buông bỏ, nguôi ngoai",
+      "ko": "마음을 풀다",
+      "ja": "吹っ切れる",
+      "en": "let go"
+    },
+    "note": "Hán Việt: thích hoài"
+  },
+  {
+    "source": "放下",
+    "target": "buông xuống",
+    "renders": {
+      "vi": "buông xuống",
+      "ko": "내려놓다",
+      "ja": "手放す",
+      "en": "put down"
+    },
+    "note": "Hán Việt: phóng hạ"
+  },
+  {
+    "source": "走出",
+    "target": "vượt qua",
+    "renders": {
+      "vi": "vượt qua",
+      "ko": "극복하다",
+      "ja": "乗り越える",
+      "en": "get through"
+    },
+    "note": "Hán Việt: tẩu xuất"
+  },
+  {
+    "source": "自愈",
+    "target": "tự chữa lành",
+    "renders": {
+      "vi": "tự chữa lành",
+      "ko": "자가 치유",
+      "ja": "自己治癒",
+      "en": "self-healing"
+    },
+    "note": "Hán Việt: tự dũ"
+  },
+  {
+    "source": "原生家庭",
+    "target": "gia đình gốc",
+    "renders": {
+      "vi": "gia đình gốc",
+      "ko": "원가족",
+      "ja": "原家族",
+      "en": "family of origin"
+    },
+    "note": "Hán Việt: nguyên sinh gia đình"
+  }
+]

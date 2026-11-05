@@ -1,0 +1,420 @@
+[
+  {
+    "source": "辛苦了",
+    "target": "vất vả rồi",
+    "renders": {
+      "vi": "vất vả rồi",
+      "ko": "수고하셨어요",
+      "ja": "お疲れ様",
+      "en": "thanks for your hard work"
+    },
+    "note": "Hán Việt: tân khổ liễu. Không dịch \"khó khăn\""
+  },
+  {
+    "source": "麻烦你了",
+    "target": "phiền bạn rồi",
+    "renders": {
+      "vi": "phiền bạn rồi",
+      "ko": "부탁드려요",
+      "ja": "お手数をおかけします",
+      "en": "sorry to trouble you"
+    },
+    "note": "Hán Việt: ma phiền nhĩ liễu"
+  },
+  {
+    "source": "随便",
+    "target": "sao cũng được",
+    "renders": {
+      "vi": "sao cũng được",
+      "ko": "아무거나",
+      "ja": "何でもいい",
+      "en": "whatever"
+    },
+    "note": "Hán Việt: tùy tiện. Không dịch \"tùy tiện\" cho cả câu"
+  },
+  {
+    "source": "加油",
+    "target": "cố lên",
+    "renders": {
+      "vi": "cố lên",
+      "ko": "파이팅",
+      "ja": "頑張れ",
+      "en": "go for it"
+    },
+    "note": "Hán Việt: gia du. Không dịch \"thêm dầu\""
+  },
+  {
+    "source": "没事",
+    "target": "không sao",
+    "renders": {
+      "vi": "không sao",
+      "ko": "괜찮아요",
+      "ja": "大丈夫",
+      "en": "no worries"
+    },
+    "note": "Hán Việt: một sự"
+  },
+  {
+    "source": "没问题",
+    "target": "không sao đâu",
+    "renders": {
+      "vi": "không sao đâu",
+      "ko": "문제없어요",
+      "ja": "問題ない",
+      "en": "no problem"
+    },
+    "note": "Hán Việt: một vấn đề. Việt: không sao đâu / ổn cả"
+  },
+  {
+    "source": "太好了",
+    "target": "tuyệt quá",
+    "renders": {
+      "vi": "tuyệt quá",
+      "ko": "너무 좋아요",
+      "ja": "よかった",
+      "en": "great"
+    },
+    "note": "Hán Việt: thái hảo liễu. Việt: tuyệt quá / hay quá"
+  },
+  {
+    "source": "真的吗",
+    "target": "thật sao?",
+    "renders": {
+      "vi": "thật sao?",
+      "ko": "정말요?",
+      "ja": "本当に?",
+      "en": "really?"
+    },
+    "note": "Hán Việt: chân đích ma. Việt: thật sao? / thật hả?"
+  },
+  {
+    "source": "怎么了",
+    "target": "sao vậy?",
+    "renders": {
+      "vi": "sao vậy?",
+      "ko": "무슨 일이에요",
+      "ja": "どうしたの",
+      "en": "what's wrong"
+    },
+    "note": "Hán Việt: chẩm ma liễu. Việt: sao vậy? / chuyện gì thế?"
+  },
+  {
+    "source": "慢走",
+    "target": "đi cẩn thận nhé",
+    "renders": {
+      "vi": "đi cẩn thận nhé",
+      "ko": "조심히 가세요",
+      "ja": "お気をつけて",
+      "en": "take care on your way"
+    },
+    "note": "Hán Việt: mạn tẩu"
+  },
+  {
+    "source": "再见",
+    "target": "tạm biệt",
+    "renders": {
+      "vi": "tạm biệt",
+      "ko": "안녕히 가세요",
+      "ja": "さようなら",
+      "en": "goodbye"
+    },
+    "note": "Hán Việt: tái kiến"
+  },
+  {
+    "source": "欢迎",
+    "target": "chào mừng",
+    "renders": {
+      "vi": "chào mừng",
+      "ko": "환영합니다",
+      "ja": "ようこそ",
+      "en": "welcome"
+    },
+    "note": "Hán Việt: hoan nghênh"
+  },
+  {
+    "source": "请坐",
+    "target": "mời ngồi",
+    "renders": {
+      "vi": "mời ngồi",
+      "ko": "앉으세요",
+      "ja": "お座りください",
+      "en": "please sit"
+    },
+    "note": "Hán Việt: thỉnh tọa"
+  },
+  {
+    "source": "请问",
+    "target": "xin hỏi",
+    "renders": {
+      "vi": "xin hỏi",
+      "ko": "말씀 좀 여쭐게요",
+      "ja": "お尋ねします",
+      "en": "excuse me, may I ask"
+    },
+    "note": "Hán Việt: thỉnh vấn. Việt: xin hỏi / cho hỏi một chút"
+  },
+  {
+    "source": "借过",
+    "target": "cho mình đi qua",
+    "renders": {
+      "vi": "cho mình đi qua",
+      "ko": "지나갈게요",
+      "ja": "通ります",
+      "en": "excuse me (passing)"
+    },
+    "note": "Hán Việt: tá quá. Việt: cho mình đi qua / xin lỗi"
+  },
+  {
+    "source": "拜托",
+    "target": "làm ơn",
+    "renders": {
+      "vi": "làm ơn",
+      "ko": "부탁해요",
+      "ja": "お願い",
+      "en": "please"
+    },
+    "note": "Hán Việt: bái thác. Việt: làm ơn / nhờ bạn"
+  },
+  {
+    "source": "小心",
+    "target": "cẩn thận",
+    "renders": {
+      "vi": "cẩn thận",
+      "ko": "조심해",
+      "ja": "気をつけて",
+      "en": "be careful"
+    },
+    "note": "Hán Việt: tiểu tâm"
+  },
+  {
+    "source": "注意",
+    "target": "chú ý",
+    "renders": {
+      "vi": "chú ý",
+      "ko": "주의",
+      "ja": "注意",
+      "en": "pay attention"
+    },
+    "note": "Hán Việt: chú ý"
+  },
+  {
+    "source": "久仰",
+    "target": "ngưỡng mộ đã lâu",
+    "renders": {
+      "vi": "ngưỡng mộ đã lâu",
+      "ko": "말씀 많이 들었습니다",
+      "ja": "お噂はかねがね",
+      "en": "heard much about you"
+    },
+    "note": "Hán Việt: cửu ngưỡng"
+  },
+  {
+    "source": "幸会",
+    "target": "rất vui được gặp",
+    "renders": {
+      "vi": "rất vui được gặp",
+      "ko": "만나서 반갑습니다",
+      "ja": "お会いできて光栄です",
+      "en": "pleased to meet you"
+    },
+    "note": "Hán Việt: hạnh hội"
+  },
+  {
+    "source": "吃饭了吗",
+    "target": "bạn ăn cơm chưa",
+    "renders": {
+      "vi": "bạn ăn cơm chưa",
+      "ko": "식사하셨어요",
+      "ja": "ご飯食べた?",
+      "en": "have you eaten"
+    },
+    "note": "Hán Việt: ngật phạn liễu ma. Câu hỏi thăm xã giao"
+  },
+  {
+    "source": "早安",
+    "target": "chào buổi sáng",
+    "renders": {
+      "vi": "chào buổi sáng",
+      "ko": "좋은 아침",
+      "ja": "おはよう",
+      "en": "good morning"
+    },
+    "note": "Hán Việt: tảo an"
+  },
+  {
+    "source": "晚安",
+    "target": "chúc ngủ ngon",
+    "renders": {
+      "vi": "chúc ngủ ngon",
+      "ko": "잘 자요",
+      "ja": "おやすみ",
+      "en": "good night"
+    },
+    "note": "Hán Việt: vãn an"
+  },
+  {
+    "source": "回家",
+    "target": "về nhà",
+    "renders": {
+      "vi": "về nhà",
+      "ko": "집에 가다",
+      "ja": "帰宅する",
+      "en": "go home"
+    },
+    "note": "Hán Việt: hồi gia"
+  },
+  {
+    "source": "上班",
+    "target": "đi làm",
+    "renders": {
+      "vi": "đi làm",
+      "ko": "출근",
+      "ja": "出勤",
+      "en": "go to work"
+    },
+    "note": "Hán Việt: thượng ban"
+  },
+  {
+    "source": "下班",
+    "target": "tan làm",
+    "renders": {
+      "vi": "tan làm",
+      "ko": "퇴근",
+      "ja": "退勤",
+      "en": "get off work"
+    },
+    "note": "Hán Việt: hạ ban"
+  },
+  {
+    "source": "请假",
+    "target": "xin nghỉ phép",
+    "renders": {
+      "vi": "xin nghỉ phép",
+      "ko": "휴가를 내다",
+      "ja": "休みを取る",
+      "en": "ask for leave"
+    },
+    "note": "Hán Việt: thỉnh giả"
+  },
+  {
+    "source": "加班",
+    "target": "tăng ca",
+    "renders": {
+      "vi": "tăng ca",
+      "ko": "야근",
+      "ja": "残業",
+      "en": "work overtime"
+    },
+    "note": "Hán Việt: gia ban"
+  },
+  {
+    "source": "堵车",
+    "target": "kẹt xe",
+    "renders": {
+      "vi": "kẹt xe",
+      "ko": "교통체증",
+      "ja": "渋滞",
+      "en": "traffic jam"
+    },
+    "note": "Hán Việt: đổ xa"
+  },
+  {
+    "source": "打车",
+    "target": "gọi xe",
+    "renders": {
+      "vi": "gọi xe",
+      "ko": "택시를 타다",
+      "ja": "タクシーを呼ぶ",
+      "en": "hail a ride"
+    },
+    "note": "Hán Việt: đả xa"
+  },
+  {
+    "source": "外卖",
+    "target": "đồ ăn giao tận nơi",
+    "renders": {
+      "vi": "đồ ăn giao tận nơi",
+      "ko": "배달 음식",
+      "ja": "出前",
+      "en": "takeout"
+    },
+    "note": "Hán Việt: ngoại mại"
+  },
+  {
+    "source": "快递",
+    "target": "chuyển phát nhanh",
+    "renders": {
+      "vi": "chuyển phát nhanh",
+      "ko": "택배",
+      "ja": "宅配便",
+      "en": "courier"
+    },
+    "note": "Hán Việt: khoái đệ"
+  },
+  {
+    "source": "手机",
+    "target": "điện thoại",
+    "renders": {
+      "vi": "điện thoại",
+      "ko": "휴대폰",
+      "ja": "携帯",
+      "en": "mobile phone"
+    },
+    "note": "Hán Việt: thủ cơ"
+  },
+  {
+    "source": "微信",
+    "target": "WeChat",
+    "renders": {
+      "vi": "WeChat",
+      "ko": "위챗",
+      "ja": "WeChat",
+      "en": "WeChat"
+    },
+    "note": "Hán Việt: vi tín"
+  },
+  {
+    "source": "红包",
+    "target": "bao lì xì",
+    "renders": {
+      "vi": "bao lì xì",
+      "ko": "세뱃돈 봉투",
+      "ja": "お年玉袋",
+      "en": "red envelope"
+    },
+    "note": "Hán Việt: hồng bao"
+  },
+  {
+    "source": "买单",
+    "target": "thanh toán",
+    "renders": {
+      "vi": "thanh toán",
+      "ko": "계산하다",
+      "ja": "会計",
+      "en": "pay the bill"
+    },
+    "note": "Hán Việt: mãi đơn"
+  },
+  {
+    "source": "打折",
+    "target": "giảm giá",
+    "renders": {
+      "vi": "giảm giá",
+      "ko": "할인",
+      "ja": "割引",
+      "en": "discount"
+    },
+    "note": "Hán Việt: đả chiết"
+  },
+  {
+    "source": "麻烦",
+    "target": "phiền phức",
+    "renders": {
+      "vi": "phiền phức",
+      "ko": "귀찮다",
+      "ja": "面倒",
+      "en": "troublesome"
+    },
+    "note": "Hán Việt: ma phiền"
+  }
+]

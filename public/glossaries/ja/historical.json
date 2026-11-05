@@ -1,0 +1,327 @@
+[
+  {
+    "source": "天皇",
+    "target": "thiên hoàng"
+  },
+  {
+    "source": "勅令",
+    "target": "sắc lệnh"
+  },
+  {
+    "source": "内閣",
+    "target": "nội các"
+  },
+  {
+    "source": "条約",
+    "target": "hiệp ước"
+  },
+  {
+    "source": "植民地",
+    "target": "thuộc địa"
+  },
+  {
+    "source": "終戦",
+    "target": "kết thúc chiến tranh"
+  },
+  {
+    "source": "空襲",
+    "target": "không kích"
+  },
+  {
+    "source": "疎開",
+    "target": "sơ tán"
+  },
+  {
+    "source": "配給",
+    "target": "tem phiếu"
+  },
+  {
+    "source": "憲兵隊",
+    "target": "hiến binh"
+  },
+  {
+    "source": "陸軍",
+    "target": "lục quân"
+  },
+  {
+    "source": "海軍",
+    "target": "hải quân"
+  },
+  {
+    "source": "元帥",
+    "target": "nguyên soái"
+  },
+  {
+    "source": "陛下",
+    "target": "bệ hạ"
+  },
+  {
+    "source": "閣議",
+    "target": "họp nội các"
+  },
+  {
+    "source": "詔書",
+    "target": "chiếu chỉ"
+  },
+  {
+    "source": "明治維新",
+    "target": "Minh Trị duy tân"
+  },
+  {
+    "source": "廃藩置県",
+    "target": "phế phiên lập huyện"
+  },
+  {
+    "source": "黒船",
+    "target": "hắc thuyền"
+  },
+  {
+    "source": "開国",
+    "target": "mở cửa thông thương"
+  },
+  {
+    "source": "攘夷",
+    "target": "đuổi người ngoài"
+  },
+  {
+    "source": "元号",
+    "target": "niên hiệu"
+  },
+  {
+    "source": "玉音放送",
+    "target": "bản tuyên bố đầu hàng"
+  },
+  {
+    "source": "特攻",
+    "target": "cảm tử"
+  },
+  {
+    "source": "防空壕",
+    "target": "hầm tránh bom"
+  },
+  {
+    "source": "召集令状",
+    "target": "lệnh gọi nhập ngũ"
+  },
+  {
+    "source": "復員",
+    "target": "giải ngũ trở về"
+  },
+  {
+    "source": "占領軍",
+    "target": "quân chiếm đóng"
+  },
+  {
+    "source": "新憲法",
+    "target": "hiến pháp mới"
+  },
+  {
+    "source": "財閥",
+    "target": "tài phiệt"
+  },
+  {
+    "source": "華族",
+    "target": "hoa tộc"
+  },
+  {
+    "source": "士族",
+    "target": "sĩ tộc"
+  },
+  {
+    "source": "地租改正",
+    "target": "cải cách thuế ruộng"
+  },
+  {
+    "source": "日清戦争",
+    "target": "chiến tranh Thanh-Nhật"
+  },
+  {
+    "source": "日露戦争",
+    "target": "chiến tranh Nga-Nhật"
+  },
+  {
+    "source": "皇帝陛下",
+    "target": "hoàng thượng",
+    "note": "Hán Việt: hoàng thượng"
+  },
+  {
+    "source": "皇后",
+    "target": "hoàng hậu",
+    "note": "Hán Việt: hoàng hậu"
+  },
+  {
+    "source": "皇太后",
+    "target": "thái hậu",
+    "note": "Hán Việt: thái hậu"
+  },
+  {
+    "source": "皇太子",
+    "target": "thái tử",
+    "note": "Hán Việt: thái tử"
+  },
+  {
+    "source": "皇子",
+    "target": "hoàng tử",
+    "note": "Hán Việt: hoàng tử"
+  },
+  {
+    "source": "貴妃",
+    "target": "quý phi",
+    "note": "Hán Việt: quý phi"
+  },
+  {
+    "source": "側室",
+    "target": "phi tần",
+    "note": "Hán Việt: tần phi"
+  },
+  {
+    "source": "宦官",
+    "target": "thái giám",
+    "note": "Hán Việt: thái giám"
+  },
+  {
+    "source": "宮女",
+    "target": "cung nữ",
+    "note": "Hán Việt: cung nữ"
+  },
+  {
+    "source": "宰相",
+    "target": "thừa tướng",
+    "note": "Hán Việt: thừa tướng"
+  },
+  {
+    "source": "大臣",
+    "target": "đại thần",
+    "note": "Hán Việt: đại thần"
+  },
+  {
+    "source": "将軍",
+    "target": "tướng quân",
+    "note": "Hán Việt: tướng quân"
+  },
+  {
+    "source": "朝廷",
+    "target": "triều đình",
+    "note": "Hán Việt: triều đình"
+  },
+  {
+    "source": "朝議",
+    "target": "buổi chầu sáng",
+    "note": "Hán Việt: tảo triều"
+  },
+  {
+    "source": "勅旨",
+    "target": "thánh chỉ",
+    "note": "Hán Việt: thánh chỉ"
+  },
+  {
+    "source": "上奏文",
+    "target": "tấu chương",
+    "note": "Hán Việt: tấu chiết"
+  },
+  {
+    "source": "即位",
+    "target": "lên ngôi",
+    "note": "Hán Việt: đăng cơ"
+  },
+  {
+    "source": "退位",
+    "target": "thoái vị",
+    "note": "Hán Việt: thoái vị"
+  },
+  {
+    "source": "崩御",
+    "target": "băng hà",
+    "note": "Hán Việt: giá băng"
+  },
+  {
+    "source": "謀反",
+    "target": "mưu phản",
+    "note": "Hán Việt: mưu phản"
+  },
+  {
+    "source": "反乱",
+    "target": "nổi loạn",
+    "note": "Hán Việt: tạo phản"
+  },
+  {
+    "source": "一族皆殺し",
+    "target": "diệt cả nhà",
+    "note": "Hán Việt: diệt môn"
+  },
+  {
+    "source": "流刑",
+    "target": "lưu đày",
+    "note": "Hán Việt: lưu phóng"
+  },
+  {
+    "source": "斬首",
+    "target": "chém đầu",
+    "note": "Hán Việt: trảm thủ"
+  },
+  {
+    "source": "科挙",
+    "target": "khoa cử",
+    "note": "Hán Việt: khoa cử"
+  },
+  {
+    "source": "状元",
+    "target": "trạng nguyên",
+    "note": "Hán Việt: trạng nguyên"
+  },
+  {
+    "source": "進士",
+    "target": "tiến sĩ",
+    "note": "Hán Việt: tiến sĩ"
+  },
+  {
+    "source": "県令",
+    "target": "tri huyện",
+    "note": "Hán Việt: huyện lệnh"
+  },
+  {
+    "source": "知府",
+    "target": "tri phủ",
+    "note": "Hán Việt: tri phủ"
+  },
+  {
+    "source": "民衆",
+    "target": "dân chúng",
+    "note": "Hán Việt: bách tính"
+  },
+  {
+    "source": "天下",
+    "target": "thiên hạ",
+    "note": "Hán Việt: thiên hạ"
+  },
+  {
+    "source": "国土",
+    "target": "giang sơn",
+    "note": "Hán Việt: giang sơn"
+  },
+  {
+    "source": "社稷",
+    "target": "xã tắc",
+    "note": "Hán Việt: xã tắc"
+  },
+  {
+    "source": "王朝",
+    "target": "vương triều",
+    "note": "Hán Việt: vương triều"
+  },
+  {
+    "source": "戦乱",
+    "target": "chiến loạn",
+    "note": "Hán Việt: chiến loạn"
+  },
+  {
+    "source": "出征",
+    "target": "xuất chinh",
+    "note": "Hán Việt: xuất chinh"
+  },
+  {
+    "source": "兵符",
+    "target": "binh phù",
+    "note": "Hán Việt: binh phù"
+  }
+]

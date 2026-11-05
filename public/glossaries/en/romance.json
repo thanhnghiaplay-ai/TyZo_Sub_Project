@@ -1,0 +1,274 @@
+[
+  {
+    "source": "i love you",
+    "target": "anh yêu em"
+  },
+  {
+    "source": "will you go out with me",
+    "target": "hẹn hò với anh/em nhé"
+  },
+  {
+    "source": "boyfriend",
+    "target": "bạn trai"
+  },
+  {
+    "source": "girlfriend",
+    "target": "bạn gái"
+  },
+  {
+    "source": "confession",
+    "target": "tỏ tình",
+    "note": "Cách khác: thổ lộ, tỏ tình"
+  },
+  {
+    "source": "crush",
+    "target": "người thầm thích"
+  },
+  {
+    "source": "first love",
+    "target": "mối tình đầu"
+  },
+  {
+    "source": "soulmate",
+    "target": "tri kỷ"
+  },
+  {
+    "source": "marry me",
+    "target": "cưới anh/em nhé"
+  },
+  {
+    "source": "cheating",
+    "target": "ngoại tình"
+  },
+  {
+    "source": "let's break up",
+    "target": "chia tay đi"
+  },
+  {
+    "source": "get back together",
+    "target": "nối lại",
+    "note": "Cách khác: quay lại"
+  },
+  {
+    "source": "jealous",
+    "target": "ghen"
+  },
+  {
+    "source": "date night",
+    "target": "buổi hẹn"
+  },
+  {
+    "source": "engaged",
+    "target": "đính hôn"
+  },
+  {
+    "source": "wedding",
+    "target": "đám cưới"
+  },
+  {
+    "source": "long distance",
+    "target": "yêu xa"
+  },
+  {
+    "source": "love triangle",
+    "target": "tình tay ba"
+  },
+  {
+    "source": "my ex",
+    "target": "người cũ"
+  },
+  {
+    "source": "mixed signals",
+    "target": "tín hiệu mập mờ"
+  },
+  {
+    "source": "butterflies",
+    "target": "hồi hộp vì thích"
+  },
+  {
+    "source": "rejected",
+    "target": "bị từ chối"
+  },
+  {
+    "source": "kiss me",
+    "target": "hôn em đi"
+  },
+  {
+    "source": "forever",
+    "target": "cả đời"
+  },
+  {
+    "source": "meet the parents",
+    "target": "ra mắt bố mẹ"
+  },
+  {
+    "source": "secret crush",
+    "target": "thầm thương, thích mà không dám nói ra",
+    "note": "Hán Việt: ám luyến"
+  },
+  {
+    "source": "confess love",
+    "target": "tỏ tình, nói ra tình cảm",
+    "note": "Hán Việt: biểu bạch"
+  },
+  {
+    "source": "heart flutter",
+    "target": "tim đập loạn, xao xuyến",
+    "note": "Hán Việt: tâm động"
+  },
+  {
+    "source": "like",
+    "target": "thích",
+    "note": "Hán Việt: hỷ hoan"
+  },
+  {
+    "source": "fall in love",
+    "target": "yêu, đổ",
+    "note": "Hán Việt: ái thượng"
+  },
+  {
+    "source": "romance",
+    "target": "yêu đương",
+    "note": "Hán Việt: luyến ái"
+  },
+  {
+    "source": "ex",
+    "target": "người yêu cũ",
+    "note": "Hán Việt: tiền nhiệm"
+  },
+  {
+    "source": "partner",
+    "target": "người yêu",
+    "note": "Hán Việt: đối tượng"
+  },
+  {
+    "source": "husband",
+    "target": "chồng",
+    "note": "Hán Việt: lão công"
+  },
+  {
+    "source": "wife",
+    "target": "vợ",
+    "note": "Hán Việt: lão bà"
+  },
+  {
+    "source": "arranged date",
+    "target": "xem mắt",
+    "note": "Hán Việt: tương thân"
+  },
+  {
+    "source": "engagement",
+    "target": "đính hôn",
+    "note": "Hán Việt: đính hôn"
+  },
+  {
+    "source": "marry",
+    "target": "kết hôn, cưới",
+    "note": "Hán Việt: kết hôn"
+  },
+  {
+    "source": "divorce",
+    "target": "ly hôn",
+    "note": "Hán Việt: ly hôn"
+  },
+  {
+    "source": "break up",
+    "target": "chia tay",
+    "note": "Hán Việt: phân thủ"
+  },
+  {
+    "source": "get jealous",
+    "target": "ghen",
+    "note": "Hán Việt: ngật thố. Không dịch \"ăn giấm\""
+  },
+  {
+    "source": "act cute",
+    "target": "làm nũng",
+    "note": "Hán Việt: tát kiều"
+  },
+  {
+    "source": "flirt",
+    "target": "tán tỉnh, trêu chọc",
+    "note": "Hán Việt: liêu"
+  },
+  {
+    "source": "pursue",
+    "target": "theo đuổi",
+    "note": "Hán Việt: truy cầu"
+  },
+  {
+    "source": "date",
+    "target": "hẹn hò",
+    "note": "Hán Việt: ước hội"
+  },
+  {
+    "source": "hold hands",
+    "target": "nắm tay",
+    "note": "Hán Việt: khiên thủ"
+  },
+  {
+    "source": "hug",
+    "target": "ôm",
+    "note": "Hán Việt: ủng bão"
+  },
+  {
+    "source": "kiss",
+    "target": "hôn",
+    "note": "Hán Việt: thân vẫn"
+  },
+  {
+    "source": "longing",
+    "target": "nhớ nhung",
+    "note": "Hán Việt: tư niệm"
+  },
+  {
+    "source": "ache for",
+    "target": "xót, thương",
+    "note": "Hán Việt: tâm đông. Không dịch \"đau tim\""
+  },
+  {
+    "source": "dote on",
+    "target": "cưng chiều",
+    "note": "Hán Việt: sủng"
+  },
+  {
+    "source": "protect",
+    "target": "bảo vệ, che chở",
+    "note": "Hán Việt: thủ hộ"
+  },
+  {
+    "source": "ambiguous relationship",
+    "target": "mập mờ",
+    "note": "Hán Việt: ái muội"
+  },
+  {
+    "source": "sweet",
+    "target": "ngọt ngào",
+    "note": "Hán Việt: điềm mật"
+  },
+  {
+    "source": "heart-wrenching",
+    "target": "đau lòng, ngược tâm",
+    "note": "Hán Việt: ngược tâm"
+  },
+  {
+    "source": "unforgettable first love",
+    "target": "ánh trăng sáng, mối tình đẹp không với tới",
+    "note": "Hán Việt: bạch nguyệt quang"
+  },
+  {
+    "source": "fake-innocent type",
+    "target": "người giả vờ ngây thơ",
+    "note": "Hán Việt: lục trà"
+  },
+  {
+    "source": "scumbag guy",
+    "target": "tên đàn ông tệ bạc",
+    "note": "Hán Việt: tra nam"
+  },
+  {
+    "source": "simp",
+    "target": "kẻ si tình hèn mọn",
+    "note": "Hán Việt: thiểm cẩu"
+  }
+]

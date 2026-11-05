@@ -1,0 +1,313 @@
+[
+  {
+    "source": "your majesty",
+    "target": "bệ hạ"
+  },
+  {
+    "source": "your highness",
+    "target": "điện hạ"
+  },
+  {
+    "source": "empress",
+    "target": "hoàng hậu"
+  },
+  {
+    "source": "princess",
+    "target": "công chúa"
+  },
+  {
+    "source": "crown prince",
+    "target": "thái tử"
+  },
+  {
+    "source": "general",
+    "target": "tướng quân"
+  },
+  {
+    "source": "martial arts",
+    "target": "võ công"
+  },
+  {
+    "source": "inner power",
+    "target": "nội lực"
+  },
+  {
+    "source": "lightness skill",
+    "target": "khinh công"
+  },
+  {
+    "source": "sect",
+    "target": "môn phái"
+  },
+  {
+    "source": "sect leader",
+    "target": "chưởng môn"
+  },
+  {
+    "source": "jianghu",
+    "target": "giang hồ"
+  },
+  {
+    "source": "sworn enemy",
+    "target": "kẻ thù"
+  },
+  {
+    "source": "master",
+    "target": "sư phụ"
+  },
+  {
+    "source": "junior brother",
+    "target": "sư đệ"
+  },
+  {
+    "source": "sword art",
+    "target": "kiếm pháp"
+  },
+  {
+    "source": "secret manual",
+    "target": "bí kíp"
+  },
+  {
+    "source": "hidden weapon",
+    "target": "ám khí"
+  },
+  {
+    "source": "poison",
+    "target": "độc",
+    "note": "Cách khác: thuốc độc"
+  },
+  {
+    "source": "treasure",
+    "target": "bảo vật"
+  },
+  {
+    "source": "number one under heaven",
+    "target": "thiên hạ đệ nhất"
+  },
+  {
+    "source": "revenge",
+    "target": "báo thù"
+  },
+  {
+    "source": "imperial court",
+    "target": "triều đình"
+  },
+  {
+    "source": "imperial edict",
+    "target": "thánh chỉ"
+  },
+  {
+    "source": "rebellion",
+    "target": "mưu phản"
+  },
+  {
+    "source": "dragon throne",
+    "target": "ngai rồng"
+  },
+  {
+    "source": "concubine",
+    "target": "phi tần"
+  },
+  {
+    "source": "palace guard",
+    "target": "cấm quân"
+  },
+  {
+    "source": "duel",
+    "target": "quyết đấu"
+  },
+  {
+    "source": "pressure point",
+    "target": "điểm huyệt"
+  },
+  {
+    "source": "your humble servant",
+    "target": "tại hạ",
+    "note": "Hán Việt: tại hạ"
+  },
+  {
+    "source": "your honor",
+    "target": "các hạ",
+    "note": "Hán Việt: các hạ"
+  },
+  {
+    "source": "miss",
+    "target": "cô nương",
+    "note": "Hán Việt: cô nương"
+  },
+  {
+    "source": "young master",
+    "target": "công tử",
+    "note": "Hán Việt: công tử. Cách khác: thiếu gia"
+  },
+  {
+    "source": "young lady",
+    "target": "tiểu thư",
+    "note": "Hán Việt: tiểu thư"
+  },
+  {
+    "source": "madam",
+    "target": "phu nhân",
+    "note": "Hán Việt: phu nhân"
+  },
+  {
+    "source": "senior",
+    "target": "tiền bối",
+    "note": "Hán Việt: tiền bối"
+  },
+  {
+    "source": "junior",
+    "target": "vãn bối",
+    "note": "Hán Việt: vãn bối"
+  },
+  {
+    "source": "senior brother-disciple",
+    "target": "sư huynh",
+    "note": "Hán Việt: sư huynh"
+  },
+  {
+    "source": "junior brother-disciple",
+    "target": "sư đệ",
+    "note": "Hán Việt: sư đệ"
+  },
+  {
+    "source": "senior sister-disciple",
+    "target": "sư tỷ",
+    "note": "Hán Việt: sư tỷ"
+  },
+  {
+    "source": "junior sister-disciple",
+    "target": "sư muội",
+    "note": "Hán Việt: sư muội"
+  },
+  {
+    "source": "martial world",
+    "target": "võ lâm",
+    "note": "Hán Việt: võ lâm"
+  },
+  {
+    "source": "inner energy",
+    "target": "nội lực",
+    "note": "Hán Việt: nội lực"
+  },
+  {
+    "source": "qinggong (lightness skill)",
+    "target": "khinh công",
+    "note": "Hán Việt: khinh công"
+  },
+  {
+    "source": "swordsmanship",
+    "target": "kiếm pháp",
+    "note": "Hán Việt: kiếm pháp"
+  },
+  {
+    "source": "move",
+    "target": "chiêu thức",
+    "note": "Hán Việt: chiêu thức"
+  },
+  {
+    "source": "antidote",
+    "target": "thuốc giải",
+    "note": "Hán Việt: giải dược"
+  },
+  {
+    "source": "qi deviation",
+    "target": "tẩu hỏa nhập ma",
+    "note": "Hán Việt: tẩu hỏa nhập ma"
+  },
+  {
+    "source": "seclusion",
+    "target": "bế quan",
+    "note": "Hán Việt: bế quan"
+  },
+  {
+    "source": "descend the mountain",
+    "target": "xuống núi",
+    "note": "Hán Việt: hạ sơn"
+  },
+  {
+    "source": "martial contest",
+    "target": "tỷ thí",
+    "note": "Hán Việt: tỷ võ"
+  },
+  {
+    "source": "spar",
+    "target": "giao lưu võ nghệ",
+    "note": "Hán Việt: thiết tha"
+  },
+  {
+    "source": "take a master",
+    "target": "bái sư",
+    "note": "Hán Việt: bái sư"
+  },
+  {
+    "source": "sworn brotherhood",
+    "target": "kết nghĩa",
+    "note": "Hán Việt: kết nghĩa"
+  },
+  {
+    "source": "grudges and favors",
+    "target": "ân oán",
+    "note": "Hán Việt: ân oán"
+  },
+  {
+    "source": "take revenge",
+    "target": "báo thù",
+    "note": "Hán Việt: báo cừu"
+  },
+  {
+    "source": "knight-errant",
+    "target": "hiệp khách",
+    "note": "Hán Việt: hiệp khách"
+  },
+  {
+    "source": "great hero",
+    "target": "đại hiệp",
+    "note": "Hán Việt: đại hiệp"
+  },
+  {
+    "source": "demonic sect",
+    "target": "ma giáo",
+    "note": "Hán Việt: ma giáo"
+  },
+  {
+    "source": "orthodox sect",
+    "target": "chính phái",
+    "note": "Hán Việt: chính phái"
+  },
+  {
+    "source": "heterodox sect",
+    "target": "tà phái",
+    "note": "Hán Việt: tà phái"
+  },
+  {
+    "source": "alliance leader",
+    "target": "minh chủ",
+    "note": "Hán Việt: minh chủ"
+  },
+  {
+    "source": "escort agency",
+    "target": "tiêu cục",
+    "note": "Hán Việt: tiêu cục"
+  },
+  {
+    "source": "inn",
+    "target": "quán trọ",
+    "note": "Hán Việt: khách sạn. Không dịch \"khách sạn\""
+  },
+  {
+    "source": "tavern",
+    "target": "tửu lâu",
+    "note": "Hán Việt: tửu lâu"
+  },
+  {
+    "source": "take my leave",
+    "target": "xin cáo từ",
+    "note": "Hán Việt: cáo từ"
+  },
+  {
+    "source": "seek advice",
+    "target": "xin chỉ giáo",
+    "note": "Hán Việt: thỉnh giáo"
+  }
+]

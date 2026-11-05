@@ -1,0 +1,420 @@
+[
+  {
+    "source": "然后",
+    "target": "rồi sau đó",
+    "renders": {
+      "vi": "rồi sau đó",
+      "ko": "그리고 나서",
+      "ja": "それから",
+      "en": "then"
+    },
+    "note": "Hán Việt: nhiên hậu. Không dịch \"và sau đó\" lặp mãi"
+  },
+  {
+    "source": "但是",
+    "target": "nhưng mà",
+    "renders": {
+      "vi": "nhưng mà",
+      "ko": "하지만",
+      "ja": "しかし",
+      "en": "but"
+    },
+    "note": "Hán Việt: đãn thị. Việt: nhưng mà / có điều. Tùy văn cảnh: \"tuy nhiên\", \"có điều\""
+  },
+  {
+    "source": "其实",
+    "target": "thật ra thì",
+    "renders": {
+      "vi": "thật ra thì",
+      "ko": "사실",
+      "ja": "実は",
+      "en": "actually"
+    },
+    "note": "Hán Việt: kỳ thực. Không dịch \"thực tế là\" cứng"
+  },
+  {
+    "source": "终于",
+    "target": "cuối cùng cũng (sau khi chờ đợi)",
+    "renders": {
+      "vi": "cuối cùng cũng (sau khi chờ đợi)",
+      "ko": "드디어",
+      "ja": "ついに",
+      "en": "finally"
+    },
+    "note": "Hán Việt: chung vu. Có sắc thái mong chờ, khác 最后"
+  },
+  {
+    "source": "竟然",
+    "target": "thế mà lại",
+    "renders": {
+      "vi": "thế mà lại",
+      "ko": "뜻밖에도",
+      "ja": "なんと",
+      "en": "unexpectedly"
+    },
+    "note": "Hán Việt: cánh nhiên. Việt: thế mà lại / không ngờ là. Diễn tả bất ngờ, không dịch \"thậm chí\""
+  },
+  {
+    "source": "居然",
+    "target": "vậy mà lại",
+    "renders": {
+      "vi": "vậy mà lại",
+      "ko": "의외로",
+      "ja": "意外にも",
+      "en": "surprisingly"
+    },
+    "note": "Hán Việt: cư nhiên. Việt: vậy mà lại / bất ngờ quá. Như 竟然, nhấn mạnh sự bất ngờ"
+  },
+  {
+    "source": "果然",
+    "target": "quả nhiên",
+    "renders": {
+      "vi": "quả nhiên",
+      "ko": "과연",
+      "ja": "やはり",
+      "en": "sure enough"
+    },
+    "note": "Hán Việt: quả nhiên. Việt: quả nhiên / đúng như dự đoán. Không dịch \"kết quả là\""
+  },
+  {
+    "source": "难道",
+    "target": "chẳng lẽ",
+    "renders": {
+      "vi": "chẳng lẽ",
+      "ko": "설마",
+      "ja": "まさか",
+      "en": "could it be that"
+    },
+    "note": "Hán Việt: nan đạo. Việt: chẳng lẽ / không lẽ nào. Câu hỏi tu từ"
+  },
+  {
+    "source": "反正",
+    "target": "dù sao thì",
+    "renders": {
+      "vi": "dù sao thì",
+      "ko": "어차피",
+      "ja": "どうせ",
+      "en": "anyway"
+    },
+    "note": "Hán Việt: phản chính. Việt: dù sao thì / thế nào cũng vậy. Không dịch \"ngược lại\""
+  },
+  {
+    "source": "究竟",
+    "target": "rốt cuộc",
+    "renders": {
+      "vi": "rốt cuộc",
+      "ko": "도대체",
+      "ja": "いったい",
+      "en": "what on earth"
+    },
+    "note": "Hán Việt: cứu cánh. Việt: rốt cuộc / cuối cùng là gì. Dùng trong câu hỏi"
+  },
+  {
+    "source": "到底",
+    "target": "rốt cuộc",
+    "renders": {
+      "vi": "rốt cuộc",
+      "ko": "결국",
+      "ja": "結局",
+      "en": "in the end"
+    },
+    "note": "Hán Việt: đáo để. Việt: rốt cuộc / đến cùng. Gặng hỏi, khác 终于"
+  },
+  {
+    "source": "既然",
+    "target": "đã vậy thì",
+    "renders": {
+      "vi": "đã vậy thì",
+      "ko": "이왕",
+      "ja": "~以上は",
+      "en": "since"
+    },
+    "note": "Hán Việt: ký nhiên. Việt: đã vậy thì / một khi đã. Mở đầu vế điều kiện"
+  },
+  {
+    "source": "毕竟",
+    "target": "dù sao cũng",
+    "renders": {
+      "vi": "dù sao cũng",
+      "ko": "어쨌든",
+      "ja": "しょせん",
+      "en": "after all"
+    },
+    "note": "Hán Việt: tất cánh. Việt: dù sao cũng / suy cho cùng. Nhấn mạnh lý do"
+  },
+  {
+    "source": "本来",
+    "target": "vốn dĩ",
+    "renders": {
+      "vi": "vốn dĩ",
+      "ko": "원래",
+      "ja": "もともと",
+      "en": "originally"
+    },
+    "note": "Hán Việt: bản lai. Việt: vốn dĩ / lẽ ra. Có thể là \"ban đầu\""
+  },
+  {
+    "source": "明明",
+    "target": "rõ ràng là",
+    "renders": {
+      "vi": "rõ ràng là",
+      "ko": "분명히",
+      "ja": "明らかに",
+      "en": "clearly (yet)"
+    },
+    "note": "Hán Việt: minh minh. Việt: rõ ràng là / hiển nhiên. Hàm ý trái với kết quả"
+  },
+  {
+    "source": "简直",
+    "target": "quả thật, đúng là",
+    "renders": {
+      "vi": "quả thật, đúng là",
+      "ko": "그야말로",
+      "ja": "まるで",
+      "en": "simply"
+    },
+    "note": "Hán Việt: giản trực. Cường điệu"
+  },
+  {
+    "source": "根本",
+    "target": "hoàn toàn, vốn dĩ (phủ định)",
+    "renders": {
+      "vi": "hoàn toàn, vốn dĩ (phủ định)",
+      "ko": "도무지",
+      "ja": "そもそも",
+      "en": "at all"
+    },
+    "note": "Hán Việt: căn bản. 根本不 = hoàn toàn không"
+  },
+  {
+    "source": "一直",
+    "target": "luôn, suốt",
+    "renders": {
+      "vi": "luôn, suốt",
+      "ko": "계속",
+      "ja": "ずっと",
+      "en": "always"
+    },
+    "note": "Hán Việt: nhất trực. Không dịch \"thẳng\""
+  },
+  {
+    "source": "一起",
+    "target": "cùng nhau",
+    "renders": {
+      "vi": "cùng nhau",
+      "ko": "함께",
+      "ja": "一緒に",
+      "en": "together"
+    },
+    "note": "Hán Việt: nhất khởi"
+  },
+  {
+    "source": "马上",
+    "target": "lập tức",
+    "renders": {
+      "vi": "lập tức",
+      "ko": "곧",
+      "ja": "すぐに",
+      "en": "right away"
+    },
+    "note": "Hán Việt: mã thượng. Không dịch \"trên ngựa\""
+  },
+  {
+    "source": "刚才",
+    "target": "vừa nãy",
+    "renders": {
+      "vi": "vừa nãy",
+      "ko": "방금",
+      "ja": "さっき",
+      "en": "just now"
+    },
+    "note": "Hán Việt: cương tài"
+  },
+  {
+    "source": "等一下",
+    "target": "đợi chút",
+    "renders": {
+      "vi": "đợi chút",
+      "ko": "잠깐만",
+      "ja": "ちょっと待って",
+      "en": "wait a moment"
+    },
+    "note": "Hán Việt: đẳng nhất hạ"
+  },
+  {
+    "source": "怎么办",
+    "target": "làm sao đây",
+    "renders": {
+      "vi": "làm sao đây",
+      "ko": "어떡해",
+      "ja": "どうしよう",
+      "en": "what should I do"
+    },
+    "note": "Hán Việt: chẩm ma biện"
+  },
+  {
+    "source": "没关系",
+    "target": "không sao",
+    "renders": {
+      "vi": "không sao",
+      "ko": "괜찮아요",
+      "ja": "大丈夫",
+      "en": "it's okay"
+    },
+    "note": "Hán Việt: một quan hệ. Không dịch \"không quan hệ\""
+  },
+  {
+    "source": "不好意思",
+    "target": "ngại quá",
+    "renders": {
+      "vi": "ngại quá",
+      "ko": "죄송해요",
+      "ja": "すみません",
+      "en": "sorry"
+    },
+    "note": "Hán Việt: bất hảo ý tư. Việt: ngại quá / xin lỗi. Anh: sorry / excuse me. Không dịch \"không ý tốt\""
+  },
+  {
+    "source": "对不起",
+    "target": "xin lỗi",
+    "renders": {
+      "vi": "xin lỗi",
+      "ko": "미안해요",
+      "ja": "ごめんなさい",
+      "en": "I'm sorry"
+    },
+    "note": "Hán Việt: đối bất khởi"
+  },
+  {
+    "source": "谢谢",
+    "target": "cảm ơn",
+    "renders": {
+      "vi": "cảm ơn",
+      "ko": "감사합니다",
+      "ja": "ありがとう",
+      "en": "thank you"
+    },
+    "note": "Hán Việt: tạ tạ"
+  },
+  {
+    "source": "当然",
+    "target": "đương nhiên, dĩ nhiên",
+    "renders": {
+      "vi": "đương nhiên, dĩ nhiên",
+      "ko": "당연히",
+      "ja": "もちろん",
+      "en": "of course"
+    },
+    "note": "Hán Việt: đương nhiên"
+  },
+  {
+    "source": "可能",
+    "target": "có thể",
+    "renders": {
+      "vi": "có thể",
+      "ko": "아마",
+      "ja": "かもしれない",
+      "en": "maybe"
+    },
+    "note": "Hán Việt: khả năng"
+  },
+  {
+    "source": "应该",
+    "target": "nên, chắc là",
+    "renders": {
+      "vi": "nên, chắc là",
+      "ko": "~해야 한다",
+      "ja": "はずだ",
+      "en": "should"
+    },
+    "note": "Hán Việt: ưng cai"
+  },
+  {
+    "source": "必须",
+    "target": "phải",
+    "renders": {
+      "vi": "phải",
+      "ko": "반드시",
+      "ja": "必ず",
+      "en": "must"
+    },
+    "note": "Hán Việt: tất tu"
+  },
+  {
+    "source": "一定",
+    "target": "nhất định",
+    "renders": {
+      "vi": "nhất định",
+      "ko": "꼭",
+      "ja": "きっと",
+      "en": "definitely"
+    },
+    "note": "Hán Việt: nhất định"
+  },
+  {
+    "source": "也许",
+    "target": "có lẽ",
+    "renders": {
+      "vi": "có lẽ",
+      "ko": "어쩌면",
+      "ja": "もしかすると",
+      "en": "perhaps"
+    },
+    "note": "Hán Việt: dã hử"
+  },
+  {
+    "source": "大概",
+    "target": "đại khái, có lẽ",
+    "renders": {
+      "vi": "đại khái, có lẽ",
+      "ko": "대략",
+      "ja": "だいたい",
+      "en": "roughly"
+    },
+    "note": "Hán Việt: đại khái"
+  },
+  {
+    "source": "一般",
+    "target": "thông thường",
+    "renders": {
+      "vi": "thông thường",
+      "ko": "보통",
+      "ja": "普通",
+      "en": "generally"
+    },
+    "note": "Hán Việt: nhất ban"
+  },
+  {
+    "source": "特别",
+    "target": "đặc biệt, vô cùng",
+    "renders": {
+      "vi": "đặc biệt, vô cùng",
+      "ko": "특별히",
+      "ja": "特に",
+      "en": "especially"
+    },
+    "note": "Hán Việt: đặc biệt"
+  },
+  {
+    "source": "非常",
+    "target": "vô cùng, rất",
+    "renders": {
+      "vi": "vô cùng, rất",
+      "ko": "매우",
+      "ja": "非常に",
+      "en": "very"
+    },
+    "note": "Hán Việt: phi thường"
+  },
+  {
+    "source": "稍微",
+    "target": "hơi, một chút",
+    "renders": {
+      "vi": "hơi, một chút",
+      "ko": "약간",
+      "ja": "少し",
+      "en": "slightly"
+    },
+    "note": "Hán Việt: sảo vi"
+  }
+]

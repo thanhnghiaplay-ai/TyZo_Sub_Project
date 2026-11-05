@@ -1,0 +1,285 @@
+[
+  {
+    "source": "犯人",
+    "target": "thủ phạm",
+    "note": "Cách khác: hung thủ"
+  },
+  {
+    "source": "動機",
+    "target": "động cơ"
+  },
+  {
+    "source": "密室",
+    "target": "phòng kín",
+    "note": "Cách khác: căn phòng kín"
+  },
+  {
+    "source": "手がかり",
+    "target": "manh mối"
+  },
+  {
+    "source": "推理",
+    "target": "suy luận"
+  },
+  {
+    "source": "名探偵",
+    "target": "thám tử nổi tiếng"
+  },
+  {
+    "source": "凶器",
+    "target": "hung khí"
+  },
+  {
+    "source": "死因",
+    "target": "nguyên nhân cái chết",
+    "note": "Cách khác: nguyên nhân tử vong"
+  },
+  {
+    "source": "鑑識",
+    "target": "giám định"
+  },
+  {
+    "source": "トリック",
+    "target": "thủ thuật"
+  },
+  {
+    "source": "伏線",
+    "target": "manh mối cài sẵn"
+  },
+  {
+    "source": "真犯人",
+    "target": "thủ phạm thật"
+  },
+  {
+    "source": "身代わり",
+    "target": "thế thân"
+  },
+  {
+    "source": "密室殺人",
+    "target": "án mạng phòng kín"
+  },
+  {
+    "source": "完全犯罪",
+    "target": "tội ác hoàn hảo"
+  },
+  {
+    "source": "探偵",
+    "target": "thám tử"
+  },
+  {
+    "source": "真相",
+    "target": "sự thật"
+  },
+  {
+    "source": "謎解き",
+    "target": "giải mật"
+  },
+  {
+    "source": "証言",
+    "target": "lời khai"
+  },
+  {
+    "source": "偽証",
+    "target": "khai man"
+  },
+  {
+    "source": "時効",
+    "target": "hết thời hiệu"
+  },
+  {
+    "source": "血痕",
+    "target": "vết máu"
+  },
+  {
+    "source": "目撃証言",
+    "target": "lời nhân chứng"
+  },
+  {
+    "source": "矛盾点",
+    "target": "điểm mâu thuẫn"
+  },
+  {
+    "source": "アリバイ崩し",
+    "target": "phá chứng cứ ngoại phạm"
+  },
+  {
+    "source": "ダイイングメッセージ",
+    "target": "lời nhắn trước khi chết"
+  },
+  {
+    "source": "密室の鍵",
+    "target": "chìa khóa phòng kín"
+  },
+  {
+    "source": "容疑が晴れる",
+    "target": "được gỡ nghi"
+  },
+  {
+    "source": "推論",
+    "target": "suy đoán"
+  },
+  {
+    "source": "逆転",
+    "target": "lật ngược vụ án"
+  },
+  {
+    "source": "証拠品",
+    "target": "vật chứng"
+  },
+  {
+    "source": "剖検",
+    "target": "khám nghiệm tử thi"
+  },
+  {
+    "source": "足跡",
+    "target": "dấu chân"
+  },
+  {
+    "source": "偽装工作",
+    "target": "ngụy tạo hiện trường"
+  },
+  {
+    "source": "結末",
+    "target": "kết cục"
+  },
+  {
+    "source": "容疑者",
+    "target": "nghi phạm",
+    "note": "Hán Việt: hiềm nghi nhân"
+  },
+  {
+    "source": "死者",
+    "target": "nạn nhân tử vong",
+    "note": "Hán Việt: tử giả"
+  },
+  {
+    "source": "被害者",
+    "target": "nạn nhân",
+    "note": "Hán Việt: thụ hại giả"
+  },
+  {
+    "source": "目撃者",
+    "target": "nhân chứng",
+    "note": "Hán Việt: mục kích giả"
+  },
+  {
+    "source": "証人",
+    "target": "nhân chứng",
+    "note": "Hán Việt: chứng nhân"
+  },
+  {
+    "source": "証拠",
+    "target": "chứng cứ",
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "物証",
+    "target": "vật chứng",
+    "note": "Hán Việt: vật chứng"
+  },
+  {
+    "source": "指紋",
+    "target": "dấu vân tay",
+    "note": "Hán Việt: chỉ văn"
+  },
+  {
+    "source": "現場",
+    "target": "hiện trường",
+    "note": "Hán Việt: hiện trường"
+  },
+  {
+    "source": "現場検証",
+    "target": "khám nghiệm hiện trường",
+    "note": "Hán Việt: khám tra"
+  },
+  {
+    "source": "検視",
+    "target": "khám nghiệm tử thi",
+    "note": "Hán Việt: thi kiểm"
+  },
+  {
+    "source": "法医学者",
+    "target": "pháp y",
+    "note": "Hán Việt: pháp y"
+  },
+  {
+    "source": "犯行",
+    "target": "gây án",
+    "note": "Hán Việt: tác án"
+  },
+  {
+    "source": "アリバイ",
+    "target": "chứng cứ ngoại phạm",
+    "note": "Hán Việt: bất tại trường chứng minh"
+  },
+  {
+    "source": "事件解決",
+    "target": "phá án",
+    "note": "Hán Việt: phá án"
+  },
+  {
+    "source": "刑事",
+    "target": "cảnh sát hình sự",
+    "note": "Hán Việt: hình cảnh"
+  },
+  {
+    "source": "捜査",
+    "target": "điều tra",
+    "note": "Hán Việt: điều tra"
+  },
+  {
+    "source": "尋問",
+    "target": "thẩm vấn",
+    "note": "Hán Việt: thẩm vấn"
+  },
+  {
+    "source": "供述",
+    "target": "lời khai",
+    "note": "Hán Việt: khẩu cung"
+  },
+  {
+    "source": "未解決事件",
+    "target": "vụ án treo",
+    "note": "Hán Việt: huyền án"
+  },
+  {
+    "source": "連続殺人犯",
+    "target": "kẻ giết người hàng loạt",
+    "note": "Hán Việt: liên hoàn sát thủ"
+  },
+  {
+    "source": "失踪事件",
+    "target": "vụ mất tích",
+    "note": "Hán Việt: thất tung án"
+  },
+  {
+    "source": "監視カメラ",
+    "target": "camera giám sát",
+    "note": "Hán Việt: giám khống"
+  },
+  {
+    "source": "録音",
+    "target": "ghi âm",
+    "note": "Hán Việt: lục âm"
+  },
+  {
+    "source": "遺書",
+    "target": "thư tuyệt mệnh/di thư",
+    "note": "Hán Việt: di thư"
+  },
+  {
+    "source": "偽装",
+    "target": "ngụy tạo, cải trang",
+    "note": "Hán Việt: ngụy trang"
+  },
+  {
+    "source": "濡れ衣を着せる",
+    "target": "vu oan, gài bằng chứng",
+    "note": "Hán Việt: tài tang"
+  },
+  {
+    "source": "陥れる",
+    "target": "hãm hại",
+    "note": "Hán Việt: hãm hại"
+  }
+]

@@ -1,0 +1,290 @@
+[
+  {
+    "source": "최종회",
+    "target": "tập cuối"
+  },
+  {
+    "source": "다음 주 예고",
+    "target": "xem trước tuần sau"
+  },
+  {
+    "source": "스핀오프",
+    "target": "ngoại truyện"
+  },
+  {
+    "source": "조기종영",
+    "target": "cắt sóng sớm"
+  },
+  {
+    "source": "시청률",
+    "target": "tỷ suất người xem"
+  },
+  {
+    "source": "본방사수",
+    "target": "xem đúng giờ phát"
+  },
+  {
+    "source": "스포일러",
+    "target": "spoil"
+  },
+  {
+    "source": "고증",
+    "target": "khảo chứng"
+  },
+  {
+    "source": "명장면",
+    "target": "cảnh đỉnh"
+  },
+  {
+    "source": "망회",
+    "target": "tập tệ"
+  },
+  {
+    "source": "본방송",
+    "target": "phát sóng chính"
+  },
+  {
+    "source": "웹드라마",
+    "target": "phim mạng"
+  },
+  {
+    "source": "시즌",
+    "target": "mùa"
+  },
+  {
+    "source": "크로스오버",
+    "target": "giao nhau vũ trụ"
+  },
+  {
+    "source": "주연",
+    "target": "vai chính",
+    "note": "Cách khác: diễn viên chính"
+  },
+  {
+    "source": "조연",
+    "target": "vai phụ"
+  },
+  {
+    "source": "대본",
+    "target": "kịch bản"
+  },
+  {
+    "source": "합류",
+    "target": "vào đoàn"
+  },
+  {
+    "source": "촬영장",
+    "target": "phim trường"
+  },
+  {
+    "source": "애드리브",
+    "target": "ứng biến"
+  },
+  {
+    "source": "속편",
+    "target": "phần tiếp",
+    "note": "Cách khác: phần tiếp theo"
+  },
+  {
+    "source": "완결",
+    "target": "kết thúc"
+  },
+  {
+    "source": "원작",
+    "target": "tác phẩm gốc",
+    "note": "Cách khác: nguyên tác"
+  },
+  {
+    "source": "실사화",
+    "target": "chuyển thể người đóng"
+  },
+  {
+    "source": "성우",
+    "target": "diễn viên lồng tiếng"
+  },
+  {
+    "source": "주제곡",
+    "target": "nhạc chủ đề"
+  },
+  {
+    "source": "재방송",
+    "target": "phát lại"
+  },
+  {
+    "source": "다시보기",
+    "target": "xem lại"
+  },
+  {
+    "source": "동시시청",
+    "target": "xem cùng lúc"
+  },
+  {
+    "source": "캐릭터 붕괴",
+    "target": "nhân vật mất chất"
+  },
+  {
+    "source": "마지막 회",
+    "target": "tập cuối",
+    "note": "Hán Việt: đại kết cục"
+  },
+  {
+    "source": "첫 방송",
+    "target": "công chiếu lần đầu",
+    "note": "Hán Việt: thủ bá"
+  },
+  {
+    "source": "인기 방영",
+    "target": "đang phát sóng hot",
+    "note": "Hán Việt: nhiệt bá"
+  },
+  {
+    "source": "평판",
+    "target": "danh tiếng, đánh giá",
+    "note": "Hán Việt: khẩu bi"
+  },
+  {
+    "source": "평점",
+    "target": "điểm đánh giá",
+    "note": "Hán Việt: bình phân"
+  },
+  {
+    "source": "외전",
+    "target": "ngoại truyện",
+    "note": "Hán Việt: phiên ngoại"
+  },
+  {
+    "source": "이전 줄거리",
+    "target": "tóm tắt tập trước",
+    "note": "Hán Việt: tiền tình đề yếu"
+  },
+  {
+    "source": "예고편",
+    "target": "trailer, tập tiếp theo",
+    "note": "Hán Việt: dự cáo"
+  },
+  {
+    "source": "메이킹 영상",
+    "target": "hậu trường",
+    "note": "Hán Việt: hoa tự"
+  },
+  {
+    "source": "줄거리",
+    "target": "cốt truyện",
+    "note": "Hán Việt: kịch tình"
+  },
+  {
+    "source": "작가",
+    "target": "biên kịch",
+    "note": "Hán Việt: biên kịch"
+  },
+  {
+    "source": "감독",
+    "target": "đạo diễn",
+    "note": "Hán Việt: đạo diễn"
+  },
+  {
+    "source": "남주",
+    "target": "nam chính",
+    "note": "Hán Việt: nam chủ"
+  },
+  {
+    "source": "여주",
+    "target": "nữ chính",
+    "note": "Hán Việt: nữ chủ"
+  },
+  {
+    "source": "서브 남주",
+    "target": "nam phụ",
+    "note": "Hán Việt: nam nhị"
+  },
+  {
+    "source": "서브 여주",
+    "target": "nữ phụ",
+    "note": "Hán Việt: nữ nhị"
+  },
+  {
+    "source": "악역",
+    "target": "nhân vật phản diện",
+    "note": "Hán Việt: phản phái"
+  },
+  {
+    "source": "카메오",
+    "target": "đóng vai khách mời",
+    "note": "Hán Việt: khách xuyến"
+  },
+  {
+    "source": "특별 출연",
+    "target": "diễn viên đặc biệt",
+    "note": "Hán Việt: đặc mời"
+  },
+  {
+    "source": "연기",
+    "target": "diễn xuất",
+    "note": "Hán Việt: diễn kỹ"
+  },
+  {
+    "source": "대사",
+    "target": "lời thoại",
+    "note": "Hán Việt: đài từ"
+  },
+  {
+    "source": "자막",
+    "target": "phụ đề",
+    "note": "Hán Việt: tự mạc"
+  },
+  {
+    "source": "더빙",
+    "target": "lồng tiếng",
+    "note": "Hán Việt: phối âm"
+  },
+  {
+    "source": "OST",
+    "target": "nhạc phim",
+    "note": "Hán Việt: nguyên thanh"
+  },
+  {
+    "source": "오프닝곡",
+    "target": "nhạc mở đầu",
+    "note": "Hán Việt: phiến đầu khúc"
+  },
+  {
+    "source": "엔딩곡",
+    "target": "nhạc kết thúc",
+    "note": "Hán Việt: phiến vĩ khúc"
+  },
+  {
+    "source": "리메이크",
+    "target": "làm lại, remake",
+    "note": "Hán Việt: phiên phách"
+  },
+  {
+    "source": "각색",
+    "target": "chuyển thể",
+    "note": "Hán Việt: cải biên"
+  },
+  {
+    "source": "시즌 1",
+    "target": "phần 1",
+    "note": "Hán Việt: đệ nhất quý"
+  },
+  {
+    "source": "업데이트",
+    "target": "cập nhật tập mới",
+    "note": "Hán Việt: canh tân"
+  },
+  {
+    "source": "드라마 정주행",
+    "target": "cày phim",
+    "note": "Hán Việt: truy kịch"
+  },
+  {
+    "source": "용두사미",
+    "target": "kết thúc dở tệ",
+    "note": "Hán Việt: lạn vĩ"
+  },
+  {
+    "source": "명작 드라마",
+    "target": "phim thần thánh",
+    "note": "Hán Việt: thần kịch"
+  }
+]

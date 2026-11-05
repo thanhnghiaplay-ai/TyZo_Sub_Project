@@ -1,0 +1,442 @@
+[
+  {
+    "source": "首发",
+    "target": "đá chính, ra sân từ đầu",
+    "renders": {
+      "vi": "đá chính, ra sân từ đầu",
+      "ko": "선발",
+      "ja": "スタメン",
+      "en": "starter"
+    },
+    "note": "Hán Việt: thủ phát"
+  },
+  {
+    "source": "替补",
+    "target": "dự bị",
+    "renders": {
+      "vi": "dự bị",
+      "ko": "교체 선수",
+      "ja": "控え",
+      "en": "substitute"
+    },
+    "note": "Hán Việt: thế bổ"
+  },
+  {
+    "source": "上场",
+    "target": "vào sân",
+    "renders": {
+      "vi": "vào sân",
+      "ko": "출전",
+      "ja": "出場",
+      "en": "take the field"
+    },
+    "note": "Hán Việt: thượng trường"
+  },
+  {
+    "source": "下场",
+    "target": "rời sân",
+    "renders": {
+      "vi": "rời sân",
+      "ko": "퇴장",
+      "ja": "退場",
+      "en": "leave the field"
+    },
+    "note": "Hán Việt: hạ trường"
+  },
+  {
+    "source": "换人",
+    "target": "thay người",
+    "renders": {
+      "vi": "thay người",
+      "ko": "선수 교체",
+      "ja": "選手交代",
+      "en": "substitution"
+    },
+    "note": "Hán Việt: hoán nhân"
+  },
+  {
+    "source": "教练",
+    "target": "huấn luyện viên",
+    "renders": {
+      "vi": "huấn luyện viên",
+      "ko": "감독",
+      "ja": "監督",
+      "en": "coach"
+    },
+    "note": "Hán Việt: giáo luyện"
+  },
+  {
+    "source": "队长",
+    "target": "đội trưởng",
+    "renders": {
+      "vi": "đội trưởng",
+      "ko": "주장",
+      "ja": "キャプテン",
+      "en": "captain"
+    },
+    "note": "Hán Việt: đội trưởng"
+  },
+  {
+    "source": "裁判",
+    "target": "trọng tài",
+    "renders": {
+      "vi": "trọng tài",
+      "ko": "심판",
+      "ja": "審判",
+      "en": "referee"
+    },
+    "note": "Hán Việt: tài phán"
+  },
+  {
+    "source": "比赛",
+    "target": "trận đấu",
+    "renders": {
+      "vi": "trận đấu",
+      "ko": "경기",
+      "ja": "試合",
+      "en": "match"
+    },
+    "note": "Hán Việt: tỷ tái"
+  },
+  {
+    "source": "联赛",
+    "target": "giải đấu liên đoàn",
+    "renders": {
+      "vi": "giải đấu liên đoàn",
+      "ko": "리그",
+      "ja": "リーグ",
+      "en": "league"
+    },
+    "note": "Hán Việt: liên tái"
+  },
+  {
+    "source": "决赛",
+    "target": "trận chung kết",
+    "renders": {
+      "vi": "trận chung kết",
+      "ko": "결승",
+      "ja": "決勝",
+      "en": "final"
+    },
+    "note": "Hán Việt: quyết tái"
+  },
+  {
+    "source": "半决赛",
+    "target": "bán kết",
+    "renders": {
+      "vi": "bán kết",
+      "ko": "준결승",
+      "ja": "準決勝",
+      "en": "semifinal"
+    },
+    "note": "Hán Việt: bán quyết tái"
+  },
+  {
+    "source": "冠军",
+    "target": "nhà vô địch",
+    "renders": {
+      "vi": "nhà vô địch",
+      "ko": "우승자",
+      "ja": "優勝者",
+      "en": "champion"
+    },
+    "note": "Hán Việt: quán quân"
+  },
+  {
+    "source": "亚军",
+    "target": "á quân",
+    "renders": {
+      "vi": "á quân",
+      "ko": "준우승",
+      "ja": "準優勝",
+      "en": "runner-up"
+    },
+    "note": "Hán Việt: á quân"
+  },
+  {
+    "source": "夺冠",
+    "target": "giành chức vô địch",
+    "renders": {
+      "vi": "giành chức vô địch",
+      "ko": "우승하다",
+      "ja": "優勝する",
+      "en": "win the title"
+    },
+    "note": "Hán Việt: đoạt quán"
+  },
+  {
+    "source": "卫冕",
+    "target": "bảo vệ chức vô địch",
+    "renders": {
+      "vi": "bảo vệ chức vô địch",
+      "ko": "타이틀 방어",
+      "ja": "連覇",
+      "en": "defend the title"
+    },
+    "note": "Hán Việt: vệ miện"
+  },
+  {
+    "source": "晋级",
+    "target": "vào vòng trong",
+    "renders": {
+      "vi": "vào vòng trong",
+      "ko": "진출",
+      "ja": "進出",
+      "en": "advance"
+    },
+    "note": "Hán Việt: tấn cấp"
+  },
+  {
+    "source": "淘汰",
+    "target": "bị loại",
+    "renders": {
+      "vi": "bị loại",
+      "ko": "탈락",
+      "ja": "敗退",
+      "en": "eliminated"
+    },
+    "note": "Hán Việt: đào thải"
+  },
+  {
+    "source": "加时",
+    "target": "hiệp phụ",
+    "renders": {
+      "vi": "hiệp phụ",
+      "ko": "연장전",
+      "ja": "延長戦",
+      "en": "extra time"
+    },
+    "note": "Hán Việt: gia thời"
+  },
+  {
+    "source": "点球",
+    "target": "đá phạt đền",
+    "renders": {
+      "vi": "đá phạt đền",
+      "ko": "페널티킥",
+      "ja": "PK",
+      "en": "penalty kick"
+    },
+    "note": "Hán Việt: điểm cầu"
+  },
+  {
+    "source": "绝杀",
+    "target": "ghi bàn quyết định phút cuối",
+    "renders": {
+      "vi": "ghi bàn quyết định phút cuối",
+      "ko": "극장골",
+      "ja": "劇的決勝弾",
+      "en": "last-minute winner"
+    },
+    "note": "Hán Việt: tuyệt sát"
+  },
+  {
+    "source": "进球",
+    "target": "ghi bàn",
+    "renders": {
+      "vi": "ghi bàn",
+      "ko": "득점",
+      "ja": "ゴール",
+      "en": "goal"
+    },
+    "note": "Hán Việt: tiến cầu"
+  },
+  {
+    "source": "助攻",
+    "target": "kiến tạo",
+    "renders": {
+      "vi": "kiến tạo",
+      "ko": "도움",
+      "ja": "アシスト",
+      "en": "assist"
+    },
+    "note": "Hán Việt: trợ công"
+  },
+  {
+    "source": "防守",
+    "target": "phòng ngự",
+    "renders": {
+      "vi": "phòng ngự",
+      "ko": "방어",
+      "ja": "守備",
+      "en": "defend"
+    },
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "犯规",
+    "target": "phạm lỗi",
+    "renders": {
+      "vi": "phạm lỗi",
+      "ko": "반칙",
+      "ja": "反則",
+      "en": "foul"
+    },
+    "note": "Hán Việt: phạm quy"
+  },
+  {
+    "source": "红牌",
+    "target": "thẻ đỏ",
+    "renders": {
+      "vi": "thẻ đỏ",
+      "ko": "레드카드",
+      "ja": "レッドカード",
+      "en": "red card"
+    },
+    "note": "Hán Việt: hồng bài"
+  },
+  {
+    "source": "黄牌",
+    "target": "thẻ vàng",
+    "renders": {
+      "vi": "thẻ vàng",
+      "ko": "옐로카드",
+      "ja": "イエローカード",
+      "en": "yellow card"
+    },
+    "note": "Hán Việt: hoàng bài"
+  },
+  {
+    "source": "越位",
+    "target": "việt vị",
+    "renders": {
+      "vi": "việt vị",
+      "ko": "오프사이드",
+      "ja": "オフサイド",
+      "en": "offside"
+    },
+    "note": "Hán Việt: việt vị"
+  },
+  {
+    "source": "罚球",
+    "target": "ném phạt/đá phạt",
+    "renders": {
+      "vi": "ném phạt/đá phạt",
+      "ko": "자유투",
+      "ja": "フリースロー",
+      "en": "penalty"
+    },
+    "note": "Hán Việt: phạt cầu. Hàn: 자유투 / 페널티. Anh: penalty / free throw"
+  },
+  {
+    "source": "扣篮",
+    "target": "úp rổ",
+    "renders": {
+      "vi": "úp rổ",
+      "ko": "덩크",
+      "ja": "ダンク",
+      "en": "dunk"
+    },
+    "note": "Hán Việt: khấu lam"
+  },
+  {
+    "source": "三分球",
+    "target": "cú ba điểm",
+    "renders": {
+      "vi": "cú ba điểm",
+      "ko": "3점슛",
+      "ja": "スリーポイント",
+      "en": "three-pointer"
+    },
+    "note": "Hán Việt: tam phân cầu"
+  },
+  {
+    "source": "篮板",
+    "target": "bóng bật bảng",
+    "renders": {
+      "vi": "bóng bật bảng",
+      "ko": "리바운드",
+      "ja": "リバウンド",
+      "en": "rebound"
+    },
+    "note": "Hán Việt: lam bản"
+  },
+  {
+    "source": "发球",
+    "target": "giao bóng",
+    "renders": {
+      "vi": "giao bóng",
+      "ko": "서브",
+      "ja": "サーブ",
+      "en": "serve"
+    },
+    "note": "Hán Việt: phát cầu"
+  },
+  {
+    "source": "接发球",
+    "target": "đỡ giao bóng",
+    "renders": {
+      "vi": "đỡ giao bóng",
+      "ko": "서브 리시브",
+      "ja": "サーブレシーブ",
+      "en": "serve return"
+    },
+    "note": "Hán Việt: tiếp phát cầu"
+  },
+  {
+    "source": "扣杀",
+    "target": "đập bóng",
+    "renders": {
+      "vi": "đập bóng",
+      "ko": "스파이크",
+      "ja": "スパイク",
+      "en": "smash"
+    },
+    "note": "Hán Việt: khấu sát. Anh: smash / spike"
+  },
+  {
+    "source": "热身",
+    "target": "khởi động",
+    "renders": {
+      "vi": "khởi động",
+      "ko": "워밍업",
+      "ja": "ウォームアップ",
+      "en": "warm-up"
+    },
+    "note": "Hán Việt: nhiệt thân"
+  },
+  {
+    "source": "伤病",
+    "target": "chấn thương",
+    "renders": {
+      "vi": "chấn thương",
+      "ko": "부상",
+      "ja": "怪我",
+      "en": "injury"
+    },
+    "note": "Hán Việt: thương bệnh"
+  },
+  {
+    "source": "训练",
+    "target": "tập luyện",
+    "renders": {
+      "vi": "tập luyện",
+      "ko": "훈련",
+      "ja": "トレーニング",
+      "en": "training"
+    },
+    "note": "Hán Việt: huấn luyện"
+  },
+  {
+    "source": "粉丝",
+    "target": "người hâm mộ",
+    "renders": {
+      "vi": "người hâm mộ",
+      "ko": "팬",
+      "ja": "ファン",
+      "en": "fan"
+    },
+    "note": "Hán Việt: phấn ti"
+  },
+  {
+    "source": "奥运会",
+    "target": "Thế vận hội",
+    "renders": {
+      "vi": "Thế vận hội",
+      "ko": "올림픽",
+      "ja": "オリンピック",
+      "en": "Olympics"
+    },
+    "note": "Hán Việt: Áo vận hội"
+  }
+]

@@ -1,0 +1,298 @@
+[
+  {
+    "source": "series finale",
+    "target": "tập cuối của loạt"
+  },
+  {
+    "source": "next episode",
+    "target": "tập sau"
+  },
+  {
+    "source": "spin-off",
+    "target": "ngoại truyện"
+  },
+  {
+    "source": "cancelled",
+    "target": "bị cắt sóng"
+  },
+  {
+    "source": "ratings",
+    "target": "tỷ suất người xem"
+  },
+  {
+    "source": "live tweet",
+    "target": "bình luận lúc đang chiếu"
+  },
+  {
+    "source": "spoiler",
+    "target": "spoil"
+  },
+  {
+    "source": "fan theory",
+    "target": "thuyết của fan"
+  },
+  {
+    "source": "best episode",
+    "target": "tập đỉnh"
+  },
+  {
+    "source": "filler episode",
+    "target": "tập cho có"
+  },
+  {
+    "source": "streaming only",
+    "target": "chỉ phát mạng"
+  },
+  {
+    "source": "season",
+    "target": "mùa"
+  },
+  {
+    "source": "crossover",
+    "target": "giao nhau vũ trụ"
+  },
+  {
+    "source": "lead role",
+    "target": "vai chính"
+  },
+  {
+    "source": "supporting role",
+    "target": "vai phụ"
+  },
+  {
+    "source": "script",
+    "target": "kịch bản"
+  },
+  {
+    "source": "on set",
+    "target": "ở phim trường"
+  },
+  {
+    "source": "improv",
+    "target": "ứng biến"
+  },
+  {
+    "source": "sequel",
+    "target": "phần tiếp",
+    "note": "Cách khác: phần tiếp theo"
+  },
+  {
+    "source": "series finale cut",
+    "target": "kết thúc loạt"
+  },
+  {
+    "source": "source material",
+    "target": "tác phẩm gốc"
+  },
+  {
+    "source": "live action",
+    "target": "bản người đóng"
+  },
+  {
+    "source": "voice actor",
+    "target": "diễn viên lồng tiếng"
+  },
+  {
+    "source": "theme song",
+    "target": "nhạc chủ đề"
+  },
+  {
+    "source": "rerun",
+    "target": "phát lại"
+  },
+  {
+    "source": "watch party",
+    "target": "xem cùng"
+  },
+  {
+    "source": "character assassination",
+    "target": "phá nát nhân vật"
+  },
+  {
+    "source": "post-credits",
+    "target": "cảnh sau danh đề"
+  },
+  {
+    "source": "canon",
+    "target": "cốt chính thức"
+  },
+  {
+    "source": "showrunner",
+    "target": "người cầm trịch phim"
+  },
+  {
+    "source": "finale",
+    "target": "tập cuối",
+    "note": "Hán Việt: đại kết cục"
+  },
+  {
+    "source": "premiere",
+    "target": "công chiếu lần đầu",
+    "note": "Hán Việt: thủ bá"
+  },
+  {
+    "source": "hit airing",
+    "target": "đang phát sóng hot",
+    "note": "Hán Việt: nhiệt bá"
+  },
+  {
+    "source": "word of mouth",
+    "target": "danh tiếng, đánh giá",
+    "note": "Hán Việt: khẩu bi"
+  },
+  {
+    "source": "rating score",
+    "target": "điểm đánh giá",
+    "note": "Hán Việt: bình phân"
+  },
+  {
+    "source": "side story",
+    "target": "ngoại truyện",
+    "note": "Hán Việt: phiên ngoại"
+  },
+  {
+    "source": "previously on",
+    "target": "tóm tắt tập trước",
+    "note": "Hán Việt: tiền tình đề yếu"
+  },
+  {
+    "source": "preview",
+    "target": "trailer, tập tiếp theo",
+    "note": "Hán Việt: dự cáo"
+  },
+  {
+    "source": "behind the scenes",
+    "target": "hậu trường",
+    "note": "Hán Việt: hoa tự"
+  },
+  {
+    "source": "plot",
+    "target": "cốt truyện",
+    "note": "Hán Việt: kịch tình"
+  },
+  {
+    "source": "screenwriter",
+    "target": "biên kịch",
+    "note": "Hán Việt: biên kịch"
+  },
+  {
+    "source": "director",
+    "target": "đạo diễn",
+    "note": "Hán Việt: đạo diễn"
+  },
+  {
+    "source": "lead actor",
+    "target": "diễn viên chính",
+    "note": "Hán Việt: chủ diễn"
+  },
+  {
+    "source": "male lead",
+    "target": "nam chính",
+    "note": "Hán Việt: nam chủ"
+  },
+  {
+    "source": "female lead",
+    "target": "nữ chính",
+    "note": "Hán Việt: nữ chủ"
+  },
+  {
+    "source": "second male lead",
+    "target": "nam phụ",
+    "note": "Hán Việt: nam nhị"
+  },
+  {
+    "source": "second female lead",
+    "target": "nữ phụ",
+    "note": "Hán Việt: nữ nhị"
+  },
+  {
+    "source": "villain",
+    "target": "nhân vật phản diện",
+    "note": "Hán Việt: phản phái"
+  },
+  {
+    "source": "cameo",
+    "target": "đóng vai khách mời",
+    "note": "Hán Việt: khách xuyến"
+  },
+  {
+    "source": "special guest",
+    "target": "diễn viên đặc biệt",
+    "note": "Hán Việt: đặc mời"
+  },
+  {
+    "source": "acting",
+    "target": "diễn xuất",
+    "note": "Hán Việt: diễn kỹ"
+  },
+  {
+    "source": "lines",
+    "target": "lời thoại",
+    "note": "Hán Việt: đài từ"
+  },
+  {
+    "source": "subtitles",
+    "target": "phụ đề",
+    "note": "Hán Việt: tự mạc"
+  },
+  {
+    "source": "dubbing",
+    "target": "lồng tiếng",
+    "note": "Hán Việt: phối âm"
+  },
+  {
+    "source": "soundtrack",
+    "target": "nhạc phim",
+    "note": "Hán Việt: nguyên thanh"
+  },
+  {
+    "source": "opening theme",
+    "target": "nhạc mở đầu",
+    "note": "Hán Việt: phiến đầu khúc"
+  },
+  {
+    "source": "ending theme",
+    "target": "nhạc kết thúc",
+    "note": "Hán Việt: phiến vĩ khúc"
+  },
+  {
+    "source": "remake",
+    "target": "làm lại, remake",
+    "note": "Hán Việt: phiên phách"
+  },
+  {
+    "source": "adaptation",
+    "target": "chuyển thể",
+    "note": "Hán Việt: cải biên"
+  },
+  {
+    "source": "original work",
+    "target": "nguyên tác",
+    "note": "Hán Việt: nguyên trứ"
+  },
+  {
+    "source": "season 1",
+    "target": "phần 1",
+    "note": "Hán Việt: đệ nhất quý"
+  },
+  {
+    "source": "new episode",
+    "target": "cập nhật tập mới",
+    "note": "Hán Việt: canh tân"
+  },
+  {
+    "source": "binge-watch",
+    "target": "cày phim",
+    "note": "Hán Việt: truy kịch"
+  },
+  {
+    "source": "botched ending",
+    "target": "kết thúc dở tệ",
+    "note": "Hán Việt: lạn vĩ"
+  },
+  {
+    "source": "legendary show",
+    "target": "phim thần thánh",
+    "note": "Hán Việt: thần kịch"
+  }
+]

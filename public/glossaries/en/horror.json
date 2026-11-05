@@ -1,0 +1,263 @@
+[
+  {
+    "source": "ghost",
+    "target": "ma",
+    "note": "Cách khác: hồn ma"
+  },
+  {
+    "source": "evil spirit",
+    "target": "ác linh",
+    "note": "Cách khác: ác quỷ"
+  },
+  {
+    "source": "possessed",
+    "target": "bị nhập"
+  },
+  {
+    "source": "exorcism",
+    "target": "lễ trừ tà",
+    "note": "Cách khác: trừ tà"
+  },
+  {
+    "source": "sacrifice",
+    "target": "vật tế"
+  },
+  {
+    "source": "bloodstained",
+    "target": "dính đầy máu"
+  },
+  {
+    "source": "scream",
+    "target": "tiếng thét",
+    "note": "Cách khác: tiếng kêu thảm"
+  },
+  {
+    "source": "graveyard",
+    "target": "nghĩa địa"
+  },
+  {
+    "source": "coffin",
+    "target": "quan tài"
+  },
+  {
+    "source": "zombie",
+    "target": "xác sống"
+  },
+  {
+    "source": "vampire",
+    "target": "ma cà rồng"
+  },
+  {
+    "source": "werewolf",
+    "target": "người sói"
+  },
+  {
+    "source": "cursed object",
+    "target": "vật bị nguyền"
+  },
+  {
+    "source": "seance",
+    "target": "gọi hồn"
+  },
+  {
+    "source": "barrier",
+    "target": "kết giới"
+  },
+  {
+    "source": "talisman",
+    "target": "bùa",
+    "note": "Cách khác: bùa chú"
+  },
+  {
+    "source": "break the seal",
+    "target": "phá phong ấn"
+  },
+  {
+    "source": "other side",
+    "target": "cõi bên kia"
+  },
+  {
+    "source": "nightmare",
+    "target": "ác mộng"
+  },
+  {
+    "source": "corpse",
+    "target": "xác chết",
+    "note": "Cách khác: thi thể"
+  },
+  {
+    "source": "missing person",
+    "target": "người mất tích"
+  },
+  {
+    "source": "basement",
+    "target": "tầng hầm"
+  },
+  {
+    "source": "bloody handprint",
+    "target": "dấu tay máu"
+  },
+  {
+    "source": "don't look back",
+    "target": "đừng ngoái lại"
+  },
+  {
+    "source": "it's in the walls",
+    "target": "nó ở trong tường"
+  },
+  {
+    "source": "vengeful spirit",
+    "target": "oan hồn, linh hồn oán hận",
+    "note": "Hán Việt: oán linh"
+  },
+  {
+    "source": "malevolent ghost",
+    "target": "lệ quỷ, hung hồn",
+    "note": "Hán Việt: lệ quỷ"
+  },
+  {
+    "source": "wronged soul",
+    "target": "oan hồn",
+    "note": "Hán Việt: oan hồn"
+  },
+  {
+    "source": "possession",
+    "target": "nhập, ám vào người",
+    "note": "Hán Việt: phụ thân"
+  },
+  {
+    "source": "curse",
+    "target": "lời nguyền",
+    "note": "Hán Việt: trớ chú"
+  },
+  {
+    "source": "grudge curse",
+    "target": "oán niệm, lời nguyền hận thù",
+    "note": "Hán Việt: chú oán"
+  },
+  {
+    "source": "yin energy",
+    "target": "âm khí",
+    "note": "Hán Việt: âm khí"
+  },
+  {
+    "source": "yang energy",
+    "target": "dương khí",
+    "note": "Hán Việt: dương khí"
+  },
+  {
+    "source": "underworld",
+    "target": "âm phủ",
+    "note": "Hán Việt: âm gian"
+  },
+  {
+    "source": "world of the living",
+    "target": "dương gian",
+    "note": "Hán Việt: dương gian"
+  },
+  {
+    "source": "gate of ghosts",
+    "target": "cửa quỷ môn",
+    "note": "Hán Việt: quỷ môn quan"
+  },
+  {
+    "source": "summon a soul",
+    "target": "gọi hồn",
+    "note": "Hán Việt: chiêu hồn"
+  },
+  {
+    "source": "deliver a soul",
+    "target": "siêu độ",
+    "note": "Hán Việt: siêu độ"
+  },
+  {
+    "source": "taoist priest",
+    "target": "đạo sĩ",
+    "note": "Hán Việt: đạo sĩ"
+  },
+  {
+    "source": "ritual ceremony",
+    "target": "làm lễ, pháp sự",
+    "note": "Hán Việt: pháp sự"
+  },
+  {
+    "source": "grave",
+    "target": "mộ",
+    "note": "Hán Việt: phần mộ"
+  },
+  {
+    "source": "jiangshi (hopping vampire)",
+    "target": "cương thi",
+    "note": "Hán Việt: cương thi"
+  },
+  {
+    "source": "skeleton",
+    "target": "xương sọ, bộ xương",
+    "note": "Hán Việt: khô lâu"
+  },
+  {
+    "source": "bloodstain",
+    "target": "vết máu",
+    "note": "Hán Việt: huyết tích"
+  },
+  {
+    "source": "eerie",
+    "target": "rùng rợn, lạnh lẽo",
+    "note": "Hán Việt: âm sâm"
+  },
+  {
+    "source": "hair-raising",
+    "target": "sởn gai ốc, rợn người",
+    "note": "Hán Việt: mao cốt tủng nhiên"
+  },
+  {
+    "source": "ghost wall (lost in loops)",
+    "target": "ma dẫn đường (lạc mãi)",
+    "note": "Hán Việt: quỷ đả tường. Thành ngữ dân gian"
+  },
+  {
+    "source": "haunted",
+    "target": "bị ma ám",
+    "note": "Hán Việt: náo quỷ"
+  },
+  {
+    "source": "haunted house",
+    "target": "nhà có ma",
+    "note": "Hán Việt: hung trạch"
+  },
+  {
+    "source": "bizarre",
+    "target": "kỳ quái, quái dị",
+    "note": "Hán Việt: quỷ dị"
+  },
+  {
+    "source": "hallucination",
+    "target": "ảo giác",
+    "note": "Hán Việt: ảo giác"
+  },
+  {
+    "source": "disappearance",
+    "target": "mất tích",
+    "note": "Hán Việt: thất tung"
+  },
+  {
+    "source": "thrilling",
+    "target": "kinh hãi",
+    "note": "Hán Việt: kinh tủng"
+  },
+  {
+    "source": "horrifying",
+    "target": "kinh hãi",
+    "note": "Hán Việt: kinh tủng"
+  },
+  {
+    "source": "fear",
+    "target": "nỗi sợ",
+    "note": "Hán Việt: khủng cụ"
+  },
+  {
+    "source": "shriek",
+    "target": "hét lên",
+    "note": "Hán Việt: tiêm khiếu"
+  }
+]

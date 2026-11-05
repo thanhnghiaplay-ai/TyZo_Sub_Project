@@ -1,0 +1,387 @@
+[
+  {
+    "source": "吐槽",
+    "target": "cà khịa, chê bai",
+    "renders": {
+      "vi": "cà khịa, chê bai",
+      "ko": "태클 걸다",
+      "ja": "ツッコミ",
+      "en": "roast"
+    },
+    "note": "Hán Việt: thổ tào"
+  },
+  {
+    "source": "梗",
+    "target": "trò đùa, meme",
+    "renders": {
+      "vi": "trò đùa, meme",
+      "ko": "밈",
+      "ja": "ネタ",
+      "en": "meme"
+    },
+    "note": "Hán Việt: ngạnh"
+  },
+  {
+    "source": "段子",
+    "target": "mẩu chuyện cười",
+    "renders": {
+      "vi": "mẩu chuyện cười",
+      "ko": "개그",
+      "ja": "小ネタ",
+      "en": "joke"
+    },
+    "note": "Hán Việt: đoạn tử"
+  },
+  {
+    "source": "搞笑",
+    "target": "hài hước",
+    "renders": {
+      "vi": "hài hước",
+      "ko": "웃기다",
+      "ja": "笑える",
+      "en": "funny"
+    },
+    "note": "Hán Việt: cảo tiếu"
+  },
+  {
+    "source": "逗",
+    "target": "trêu, chọc cười",
+    "renders": {
+      "vi": "trêu, chọc cười",
+      "ko": "웃기다",
+      "ja": "からかう",
+      "en": "tease"
+    },
+    "note": "Hán Việt: đậu"
+  },
+  {
+    "source": "扯",
+    "target": "bốc phét, nói nhảm",
+    "renders": {
+      "vi": "bốc phét, nói nhảm",
+      "ko": "헛소리하다",
+      "ja": "でたらめを言う",
+      "en": "talk nonsense"
+    },
+    "note": "Hán Việt: xả"
+  },
+  {
+    "source": "无语",
+    "target": "cạn lời",
+    "renders": {
+      "vi": "cạn lời",
+      "ko": "말문이 막히다",
+      "ja": "言葉が出ない",
+      "en": "speechless"
+    },
+    "note": "Hán Việt: vô ngữ"
+  },
+  {
+    "source": "尴尬",
+    "target": "ngượng ngùng, khó xử",
+    "renders": {
+      "vi": "ngượng ngùng, khó xử",
+      "ko": "민망하다",
+      "ja": "気まずい",
+      "en": "awkward"
+    },
+    "note": "Hán Việt: giám giới"
+  },
+  {
+    "source": "社死",
+    "target": "quê độ, chết xã hội",
+    "renders": {
+      "vi": "quê độ, chết xã hội",
+      "ko": "사회적 죽음",
+      "ja": "社会的死",
+      "en": "social death"
+    },
+    "note": "Hán Việt: xã tử"
+  },
+  {
+    "source": "翻车",
+    "target": "lật xe, thất bại ê chề",
+    "renders": {
+      "vi": "lật xe, thất bại ê chề",
+      "ko": "망하다",
+      "ja": "大失敗",
+      "en": "epic fail"
+    },
+    "note": "Hán Việt: phiên xa"
+  },
+  {
+    "source": "打脸",
+    "target": "vả mặt",
+    "renders": {
+      "vi": "vả mặt",
+      "ko": "면박",
+      "ja": "顔に泥を塗る",
+      "en": "slap in the face"
+    },
+    "note": "Hán Việt: đả kiểm"
+  },
+  {
+    "source": "沙雕",
+    "target": "ngố tàu, ngớ ngẩn",
+    "renders": {
+      "vi": "ngố tàu, ngớ ngẩn",
+      "ko": "멍청하고 웃긴",
+      "ja": "アホ",
+      "en": "goofy"
+    },
+    "note": "Hán Việt: sa điêu"
+  },
+  {
+    "source": "二货",
+    "target": "đồ ngốc dễ thương",
+    "renders": {
+      "vi": "đồ ngốc dễ thương",
+      "ko": "바보",
+      "ja": "アホ",
+      "en": "dummy"
+    },
+    "note": "Hán Việt: nhị hóa"
+  },
+  {
+    "source": "憨憨",
+    "target": "ngố ngố",
+    "renders": {
+      "vi": "ngố ngố",
+      "ko": "멍뭉미",
+      "ja": "天然",
+      "en": "goofball"
+    },
+    "note": "Hán Việt: hám hám"
+  },
+  {
+    "source": "抠门",
+    "target": "keo kiệt",
+    "renders": {
+      "vi": "keo kiệt",
+      "ko": "짠돌이",
+      "ja": "ケチ",
+      "en": "stingy"
+    },
+    "note": "Hán Việt: khẩu môn"
+  },
+  {
+    "source": "装逼",
+    "target": "làm màu",
+    "renders": {
+      "vi": "làm màu",
+      "ko": "허세 부리다",
+      "ja": "カッコつける",
+      "en": "show off"
+    },
+    "note": "Hán Việt: trang bức"
+  },
+  {
+    "source": "卖萌",
+    "target": "làm nũng đáng yêu",
+    "renders": {
+      "vi": "làm nũng đáng yêu",
+      "ko": "귀여운 척",
+      "ja": "かわい子ぶる",
+      "en": "act cute"
+    },
+    "note": "Hán Việt: mại manh"
+  },
+  {
+    "source": "腹黑",
+    "target": "mặt ngoài hiền, bên trong xấu tính",
+    "renders": {
+      "vi": "mặt ngoài hiền, bên trong xấu tính",
+      "ko": "속이 검다",
+      "ja": "腹黒い",
+      "en": "scheming"
+    },
+    "note": "Hán Việt: phúc hắc"
+  },
+  {
+    "source": "傲娇",
+    "target": "miệng cứng lòng mềm",
+    "renders": {
+      "vi": "miệng cứng lòng mềm",
+      "ko": "츤데레",
+      "ja": "ツンデレ",
+      "en": "tsundere"
+    },
+    "note": "Hán Việt: ngạo kiều"
+  },
+  {
+    "source": "中二",
+    "target": "trung nhị bệnh",
+    "renders": {
+      "vi": "trung nhị bệnh",
+      "ko": "중2병",
+      "ja": "中二病",
+      "en": "chuunibyou"
+    },
+    "note": "Hán Việt: trung nhị"
+  },
+  {
+    "source": "奇葩",
+    "target": "kỳ cục, dị hợm",
+    "renders": {
+      "vi": "kỳ cục, dị hợm",
+      "ko": "괴짜",
+      "ja": "変わり者",
+      "en": "weirdo"
+    },
+    "note": "Hán Việt: kỳ ba"
+  },
+  {
+    "source": "脑补",
+    "target": "tự tưởng tượng thêm",
+    "renders": {
+      "vi": "tự tưởng tượng thêm",
+      "ko": "상상으로 채우다",
+      "ja": "脳内補完",
+      "en": "fill in with imagination"
+    },
+    "note": "Hán Việt: não bổ"
+  },
+  {
+    "source": "内涵",
+    "target": "ý nhị, ám chỉ",
+    "renders": {
+      "vi": "ý nhị, ám chỉ",
+      "ko": "함축",
+      "ja": "含み",
+      "en": "implication"
+    },
+    "note": "Hán Việt: nội hàm"
+  },
+  {
+    "source": "黑历史",
+    "target": "quá khứ xấu hổ",
+    "renders": {
+      "vi": "quá khứ xấu hổ",
+      "ko": "흑역사",
+      "ja": "黒歴史",
+      "en": "cringe past"
+    },
+    "note": "Hán Việt: hắc lịch sử"
+  },
+  {
+    "source": "笑死我了",
+    "target": "cười chết mất",
+    "renders": {
+      "vi": "cười chết mất",
+      "ko": "웃겨 죽겠다",
+      "ja": "笑い死ぬ",
+      "en": "dying of laughter"
+    },
+    "note": "Hán Việt: tiếu tử ngã liễu"
+  },
+  {
+    "source": "我服了",
+    "target": "chịu thua",
+    "renders": {
+      "vi": "chịu thua",
+      "ko": "졌다",
+      "ja": "参った",
+      "en": "I give up"
+    },
+    "note": "Hán Việt: ngã phục liễu"
+  },
+  {
+    "source": "离谱",
+    "target": "quá lố, hết nói nổi",
+    "renders": {
+      "vi": "quá lố, hết nói nổi",
+      "ko": "말도 안 돼",
+      "ja": "ありえない",
+      "en": "ridiculous"
+    },
+    "note": "Hán Việt: ly phổ"
+  },
+  {
+    "source": "绝了",
+    "target": "đỉnh quá/tuyệt vời",
+    "renders": {
+      "vi": "đỉnh quá/tuyệt vời",
+      "ko": "대박",
+      "ja": "最高",
+      "en": "insane (good or bad)"
+    },
+    "note": "Hán Việt: tuyệt liễu. Có thể khen hoặc chê tùy văn cảnh"
+  },
+  {
+    "source": "真香",
+    "target": "ngửi thấy thơm thật",
+    "renders": {
+      "vi": "ngửi thấy thơm thật",
+      "ko": "진짜 좋네",
+      "ja": "やっぱり最高",
+      "en": "eating one's words"
+    },
+    "note": "Hán Việt: chân hương. Nghĩa: tự vả vì đổi ý"
+  },
+  {
+    "source": "躺平",
+    "target": "nằm im, buông xuôi",
+    "renders": {
+      "vi": "nằm im, buông xuôi",
+      "ko": "누워 버리다",
+      "ja": "寝そべり",
+      "en": "lying flat"
+    },
+    "note": "Hán Việt: nằm bình"
+  },
+  {
+    "source": "摸鱼",
+    "target": "lười biếng, chây ì",
+    "renders": {
+      "vi": "lười biếng, chây ì",
+      "ko": "농땡이",
+      "ja": "サボる",
+      "en": "slack off"
+    },
+    "note": "Hán Việt: mô ngư"
+  },
+  {
+    "source": "打工人",
+    "target": "dân lao động",
+    "renders": {
+      "vi": "dân lao động",
+      "ko": "직장인",
+      "ja": "社畜",
+      "en": "worker bee"
+    },
+    "note": "Hán Việt: đả công nhân"
+  },
+  {
+    "source": "内卷",
+    "target": "cạnh tranh khốc liệt",
+    "renders": {
+      "vi": "cạnh tranh khốc liệt",
+      "ko": "과열 경쟁",
+      "ja": "過当競争",
+      "en": "rat race"
+    },
+    "note": "Hán Việt: nội quyển"
+  },
+  {
+    "source": "吃瓜",
+    "target": "hóng chuyện",
+    "renders": {
+      "vi": "hóng chuyện",
+      "ko": "구경하다",
+      "ja": "野次馬",
+      "en": "watch the drama"
+    },
+    "note": "Hán Việt: ngật qua"
+  },
+  {
+    "source": "皮一下",
+    "target": "nghịch một chút",
+    "renders": {
+      "vi": "nghịch một chút",
+      "ko": "장난치다",
+      "ja": "ちょっとふざける",
+      "en": "goof around"
+    },
+    "note": "Hán Việt: bì nhất hạ"
+  }
+]

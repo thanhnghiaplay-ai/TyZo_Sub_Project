@@ -1,0 +1,362 @@
+[
+  {
+    "source": "殿様",
+    "target": "đại nhân"
+  },
+  {
+    "source": "お姫様",
+    "target": "công chúa"
+  },
+  {
+    "source": "将軍",
+    "target": "tướng quân"
+  },
+  {
+    "source": "大名",
+    "target": "đại danh"
+  },
+  {
+    "source": "浪人",
+    "target": "lãng nhân"
+  },
+  {
+    "source": "侍として",
+    "target": "với tư cách samurai"
+  },
+  {
+    "source": "切腹",
+    "target": "mổ bụng tự sát"
+  },
+  {
+    "source": "仇討ち",
+    "target": "báo thù"
+  },
+  {
+    "source": "主君",
+    "target": "chủ quân"
+  },
+  {
+    "source": "家臣",
+    "target": "gia thần"
+  },
+  {
+    "source": "腰元",
+    "target": "thị nữ"
+  },
+  {
+    "source": "花魁",
+    "target": "oiran"
+  },
+  {
+    "source": "遊郭",
+    "target": "khu thanh lâu"
+  },
+  {
+    "source": "武士道",
+    "target": "võ sĩ đạo"
+  },
+  {
+    "source": "日本刀",
+    "target": "kiếm Nhật"
+  },
+  {
+    "source": "居合",
+    "target": "cư hợp"
+  },
+  {
+    "source": "城下町",
+    "target": "phố dưới thành"
+  },
+  {
+    "source": "合戦",
+    "target": "trận chiến"
+  },
+  {
+    "source": "落ち武者",
+    "target": "võ sĩ bại trận"
+  },
+  {
+    "source": "天下統一",
+    "target": "thống nhất thiên hạ"
+  },
+  {
+    "source": "謀反",
+    "target": "mưu phản"
+  },
+  {
+    "source": "拙者",
+    "target": "tại hạ"
+  },
+  {
+    "source": "畏まりました",
+    "target": "tuân lệnh"
+  },
+  {
+    "source": "かたじけない",
+    "target": "đội ơn"
+  },
+  {
+    "source": "介錯",
+    "target": "người chém phụ"
+  },
+  {
+    "source": "御前",
+    "target": "ngự tiền"
+  },
+  {
+    "source": "若君",
+    "target": "tiểu gia"
+  },
+  {
+    "source": "奥方",
+    "target": "phu nhân"
+  },
+  {
+    "source": "家老",
+    "target": "gia lão"
+  },
+  {
+    "source": "斬り合い",
+    "target": "giao kiếm"
+  },
+  {
+    "source": "決闘",
+    "target": "quyết đấu"
+  },
+  {
+    "source": "恩賞",
+    "target": "ban thưởng"
+  },
+  {
+    "source": "領地",
+    "target": "lãnh địa"
+  },
+  {
+    "source": "年貢",
+    "target": "tô thuế"
+  },
+  {
+    "source": "関所",
+    "target": "ải kiểm soát"
+  },
+  {
+    "source": "貴殿",
+    "target": "các hạ",
+    "note": "Hán Việt: các hạ"
+  },
+  {
+    "source": "お嬢さん",
+    "target": "cô nương",
+    "note": "Hán Việt: cô nương"
+  },
+  {
+    "source": "公子",
+    "target": "công tử",
+    "note": "Hán Việt: công tử"
+  },
+  {
+    "source": "若旦那",
+    "target": "thiếu gia",
+    "note": "Hán Việt: thiếu gia"
+  },
+  {
+    "source": "お嬢様",
+    "target": "tiểu thư",
+    "note": "Hán Việt: tiểu thư"
+  },
+  {
+    "source": "奥様",
+    "target": "phu nhân",
+    "note": "Hán Việt: phu nhân"
+  },
+  {
+    "source": "先輩",
+    "target": "tiền bối",
+    "note": "Hán Việt: tiền bối"
+  },
+  {
+    "source": "後輩",
+    "target": "vãn bối",
+    "note": "Hán Việt: vãn bối"
+  },
+  {
+    "source": "師匠",
+    "target": "sư phụ",
+    "note": "Hán Việt: sư phụ"
+  },
+  {
+    "source": "兄弟子",
+    "target": "sư huynh",
+    "note": "Hán Việt: sư huynh"
+  },
+  {
+    "source": "弟弟子",
+    "target": "sư đệ",
+    "note": "Hán Việt: sư đệ"
+  },
+  {
+    "source": "姉弟子",
+    "target": "sư tỷ",
+    "note": "Hán Việt: sư tỷ"
+  },
+  {
+    "source": "妹弟子",
+    "target": "sư muội",
+    "note": "Hán Việt: sư muội"
+  },
+  {
+    "source": "掌門",
+    "target": "chưởng môn",
+    "note": "Hán Việt: chưởng môn"
+  },
+  {
+    "source": "門派",
+    "target": "môn phái",
+    "note": "Hán Việt: môn phái"
+  },
+  {
+    "source": "江湖",
+    "target": "giang hồ",
+    "note": "Hán Việt: giang hồ"
+  },
+  {
+    "source": "武林",
+    "target": "võ lâm",
+    "note": "Hán Việt: võ lâm"
+  },
+  {
+    "source": "武功",
+    "target": "võ công",
+    "note": "Hán Việt: võ công"
+  },
+  {
+    "source": "内力",
+    "target": "nội lực",
+    "note": "Hán Việt: nội lực"
+  },
+  {
+    "source": "軽功",
+    "target": "khinh công",
+    "note": "Hán Việt: khinh công"
+  },
+  {
+    "source": "剣術",
+    "target": "kiếm pháp",
+    "note": "Hán Việt: kiếm pháp"
+  },
+  {
+    "source": "秘伝書",
+    "target": "bí kíp",
+    "note": "Hán Việt: bí tịch"
+  },
+  {
+    "source": "暗器",
+    "target": "ám khí",
+    "note": "Hán Việt: ám khí"
+  },
+  {
+    "source": "毒薬",
+    "target": "thuốc độc",
+    "note": "Hán Việt: độc dược"
+  },
+  {
+    "source": "解毒薬",
+    "target": "thuốc giải",
+    "note": "Hán Việt: giải dược"
+  },
+  {
+    "source": "走火入魔",
+    "target": "tẩu hỏa nhập ma",
+    "note": "Hán Việt: tẩu hỏa nhập ma"
+  },
+  {
+    "source": "籠もる",
+    "target": "bế quan",
+    "note": "Hán Việt: bế quan"
+  },
+  {
+    "source": "下山",
+    "target": "xuống núi",
+    "note": "Hán Việt: hạ sơn"
+  },
+  {
+    "source": "試合",
+    "target": "tỷ thí",
+    "note": "Hán Việt: tỷ võ"
+  },
+  {
+    "source": "手合わせ",
+    "target": "giao lưu võ nghệ",
+    "note": "Hán Việt: thiết tha"
+  },
+  {
+    "source": "弟子入り",
+    "target": "bái sư",
+    "note": "Hán Việt: bái sư"
+  },
+  {
+    "source": "義兄弟の契り",
+    "target": "kết nghĩa",
+    "note": "Hán Việt: kết nghĩa"
+  },
+  {
+    "source": "恩讐",
+    "target": "ân oán",
+    "note": "Hán Việt: ân oán"
+  },
+  {
+    "source": "侠客",
+    "target": "hiệp khách",
+    "note": "Hán Việt: hiệp khách"
+  },
+  {
+    "source": "大侠",
+    "target": "đại hiệp",
+    "note": "Hán Việt: đại hiệp"
+  },
+  {
+    "source": "魔教",
+    "target": "ma giáo",
+    "note": "Hán Việt: ma giáo"
+  },
+  {
+    "source": "正派",
+    "target": "chính phái",
+    "note": "Hán Việt: chính phái"
+  },
+  {
+    "source": "邪派",
+    "target": "tà phái",
+    "note": "Hán Việt: tà phái"
+  },
+  {
+    "source": "盟主",
+    "target": "minh chủ",
+    "note": "Hán Việt: minh chủ"
+  },
+  {
+    "source": "鏢局",
+    "target": "tiêu cục",
+    "note": "Hán Việt: tiêu cục"
+  },
+  {
+    "source": "宿屋",
+    "target": "quán trọ",
+    "note": "Hán Việt: khách sạn. Không dịch \"khách sạn\""
+  },
+  {
+    "source": "酒楼",
+    "target": "tửu lâu",
+    "note": "Hán Việt: tửu lâu"
+  },
+  {
+    "source": "失礼する",
+    "target": "xin cáo từ",
+    "note": "Hán Việt: cáo từ"
+  },
+  {
+    "source": "教えを請う",
+    "target": "xin chỉ giáo",
+    "note": "Hán Việt: thỉnh giáo"
+  }
+]

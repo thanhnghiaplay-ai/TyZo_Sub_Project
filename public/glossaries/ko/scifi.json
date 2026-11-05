@@ -1,0 +1,265 @@
+[
+  {
+    "source": "우주선",
+    "target": "tàu vũ trụ",
+    "note": "Cách khác: phi thuyền"
+  },
+  {
+    "source": "인공지능",
+    "target": "trí tuệ nhân tạo"
+  },
+  {
+    "source": "안드로이드",
+    "target": "người máy hình người"
+  },
+  {
+    "source": "워프",
+    "target": "nhảy không gian"
+  },
+  {
+    "source": "외계인",
+    "target": "người ngoài hành tinh"
+  },
+  {
+    "source": "클론",
+    "target": "bản sao"
+  },
+  {
+    "source": "타임 패러독스",
+    "target": "nghịch lý thời gian"
+  },
+  {
+    "source": "우주정거장",
+    "target": "trạm không gian"
+  },
+  {
+    "source": "생명유지장치",
+    "target": "hệ duy trì sự sống"
+  },
+  {
+    "source": "에너지 코어",
+    "target": "lõi năng lượng"
+  },
+  {
+    "source": "보호막",
+    "target": "lá chắn"
+  },
+  {
+    "source": "순간이동",
+    "target": "dịch chuyển tức thời"
+  },
+  {
+    "source": "양자컴퓨터",
+    "target": "máy tính lượng tử"
+  },
+  {
+    "source": "마법진",
+    "target": "trận pháp"
+  },
+  {
+    "source": "마력",
+    "target": "ma lực"
+  },
+  {
+    "source": "마왕",
+    "target": "ma vương"
+  },
+  {
+    "source": "용자",
+    "target": "dũng giả"
+  },
+  {
+    "source": "주문",
+    "target": "thần chú"
+  },
+  {
+    "source": "소환수",
+    "target": "thú triệu hồi"
+  },
+  {
+    "source": "이세계",
+    "target": "dị giới"
+  },
+  {
+    "source": "길드",
+    "target": "hội"
+  },
+  {
+    "source": "레벨업",
+    "target": "lên cấp"
+  },
+  {
+    "source": "스킬",
+    "target": "kỹ năng"
+  },
+  {
+    "source": "봉인",
+    "target": "phong ấn"
+  },
+  {
+    "source": "블랙홀",
+    "target": "hố đen"
+  },
+  {
+    "source": "냉동수면",
+    "target": "ngủ đông"
+  },
+  {
+    "source": "모선",
+    "target": "tàu mẹ"
+  },
+  {
+    "source": "함대",
+    "target": "hạm đội"
+  },
+  {
+    "source": "이능",
+    "target": "dị năng, năng lực đặc biệt",
+    "note": "Hán Việt: dị năng"
+  },
+  {
+    "source": "초능력",
+    "target": "siêu năng lực",
+    "note": "Hán Việt: siêu năng lực"
+  },
+  {
+    "source": "시간 이동",
+    "target": "xuyên không",
+    "note": "Hán Việt: xuyên việt"
+  },
+  {
+    "source": "회귀",
+    "target": "trọng sinh, sống lại",
+    "note": "Hán Việt: trọng sinh"
+  },
+  {
+    "source": "평행 세계",
+    "target": "thế giới song song",
+    "note": "Hán Việt: bình hành thế giới"
+  },
+  {
+    "source": "시공간",
+    "target": "không-thời gian",
+    "note": "Hán Việt: thời không"
+  },
+  {
+    "source": "시간 여행",
+    "target": "du hành thời gian",
+    "note": "Hán Việt: thời gian lữ hành"
+  },
+  {
+    "source": "성간",
+    "target": "liên sao, giữa các vì sao",
+    "note": "Hán Việt: tinh tế"
+  },
+  {
+    "source": "로봇",
+    "target": "người máy, robot",
+    "note": "Hán Việt: cơ khí nhân"
+  },
+  {
+    "source": "유전자",
+    "target": "gen",
+    "note": "Hán Việt: cơ nhân"
+  },
+  {
+    "source": "변이",
+    "target": "biến dị",
+    "note": "Hán Việt: biến dị"
+  },
+  {
+    "source": "종말",
+    "target": "tận thế",
+    "note": "Hán Việt: mạt thế"
+  },
+  {
+    "source": "황무지",
+    "target": "vùng đất hoang tàn",
+    "note": "Hán Việt: phế thổ"
+  },
+  {
+    "source": "좀비",
+    "target": "zombie",
+    "note": "Hán Việt: tang thi"
+  },
+  {
+    "source": "바이러스",
+    "target": "virus",
+    "note": "Hán Việt: bệnh độc"
+  },
+  {
+    "source": "마법",
+    "target": "phép thuật, ma pháp",
+    "note": "Hán Việt: ma pháp"
+  },
+  {
+    "source": "마법사",
+    "target": "pháp sư",
+    "note": "Hán Việt: pháp sư"
+  },
+  {
+    "source": "주술사",
+    "target": "phù thủy nam",
+    "note": "Hán Việt: vu sư"
+  },
+  {
+    "source": "엘프",
+    "target": "yêu tinh, elf",
+    "note": "Hán Việt: tinh linh. Không dịch \"tinh thần linh\""
+  },
+  {
+    "source": "드워프",
+    "target": "người lùn",
+    "note": "Hán Việt: ải nhân"
+  },
+  {
+    "source": "용사",
+    "target": "dũng sĩ",
+    "note": "Hán Việt: dũng giả"
+  },
+  {
+    "source": "결계",
+    "target": "kết giới, kết giới ma thuật",
+    "note": "Hán Việt: kết giới"
+  },
+  {
+    "source": "소환",
+    "target": "triệu hồi",
+    "note": "Hán Việt: triệu hoán"
+  },
+  {
+    "source": "계약",
+    "target": "khế ước",
+    "note": "Hán Việt: khế ước"
+  },
+  {
+    "source": "시스템",
+    "target": "hệ thống (game/nhiệm vụ)",
+    "note": "Hán Việt: hệ thống. Hay gặp trong truyện hệ thống"
+  },
+  {
+    "source": "던전",
+    "target": "phó bản, dungeon",
+    "note": "Hán Việt: phó bản"
+  },
+  {
+    "source": "레벨",
+    "target": "cấp độ",
+    "note": "Hán Việt: đẳng cấp"
+  },
+  {
+    "source": "장비",
+    "target": "trang bị",
+    "note": "Hán Việt: trang bị"
+  },
+  {
+    "source": "보스",
+    "target": "trùm cuối",
+    "note": "Hán Việt: boss"
+  },
+  {
+    "source": "퀘스트",
+    "target": "nhiệm vụ",
+    "note": "Hán Việt: nhiệm vụ"
+  }
+]

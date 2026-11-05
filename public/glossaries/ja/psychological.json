@@ -1,0 +1,288 @@
+[
+  {
+    "source": "トラウマ",
+    "target": "chấn thương tâm lý"
+  },
+  {
+    "source": "抑圧",
+    "target": "kìm nén"
+  },
+  {
+    "source": "本音",
+    "target": "lòng thật"
+  },
+  {
+    "source": "建前",
+    "target": "vẻ bề ngoài"
+  },
+  {
+    "source": "自己嫌悪",
+    "target": "ghét chính mình"
+  },
+  {
+    "source": "生きる意味",
+    "target": "ý nghĩa của việc sống"
+  },
+  {
+    "source": "不安障害",
+    "target": "rối loạn lo âu"
+  },
+  {
+    "source": "うつ病",
+    "target": "trầm cảm"
+  },
+  {
+    "source": "パニック発作",
+    "target": "cơn hoảng loạn"
+  },
+  {
+    "source": "解離",
+    "target": "phân ly"
+  },
+  {
+    "source": "幻覚",
+    "target": "ảo giác"
+  },
+  {
+    "source": "妄想",
+    "target": "hoang tưởng"
+  },
+  {
+    "source": "カウンセリング",
+    "target": "trị liệu tâm lý",
+    "note": "Cách khác: tư vấn"
+  },
+  {
+    "source": "精神科",
+    "target": "khoa tâm thần"
+  },
+  {
+    "source": "記憶喪失",
+    "target": "mất trí nhớ"
+  },
+  {
+    "source": "二重人格",
+    "target": "hai nhân cách"
+  },
+  {
+    "source": "強迫観念",
+    "target": "ám ảnh"
+  },
+  {
+    "source": "罪悪感",
+    "target": "mặc cảm tội lỗi",
+    "note": "Cách khác: áy náy"
+  },
+  {
+    "source": "孤独感",
+    "target": "cảm giác cô đơn"
+  },
+  {
+    "source": "空虚",
+    "target": "trống rỗng"
+  },
+  {
+    "source": "心の声",
+    "target": "tiếng lòng"
+  },
+  {
+    "source": "仮面を被る",
+    "target": "đeo mặt nạ"
+  },
+  {
+    "source": "感情が死んだ",
+    "target": "cảm xúc đã chết"
+  },
+  {
+    "source": "本当の自分",
+    "target": "con người thật"
+  },
+  {
+    "source": "境界線",
+    "target": "ranh giới"
+  },
+  {
+    "source": "依存",
+    "target": "lệ thuộc",
+    "note": "Cách khác: phụ thuộc"
+  },
+  {
+    "source": "拒絶",
+    "target": "từ chối"
+  },
+  {
+    "source": "投影",
+    "target": "phóng chiếu"
+  },
+  {
+    "source": "フラッシュバック",
+    "target": "hồi tưởng đột ngột"
+  },
+  {
+    "source": "無感覚",
+    "target": "tê liệt cảm xúc"
+  },
+  {
+    "source": "自己否定",
+    "target": "phủ nhận bản thân"
+  },
+  {
+    "source": "安心感",
+    "target": "cảm giác an toàn"
+  },
+  {
+    "source": "不安",
+    "target": "lo âu",
+    "note": "Hán Việt: tiêu lự"
+  },
+  {
+    "source": "パニック",
+    "target": "hoảng loạn",
+    "note": "Hán Việt: khủng hoảng"
+  },
+  {
+    "source": "強迫性障害",
+    "target": "rối loạn ám ảnh cưỡng chế",
+    "note": "Hán Việt: cưỡng bách chứng"
+  },
+  {
+    "source": "不眠症",
+    "target": "mất ngủ",
+    "note": "Hán Việt: thất miên"
+  },
+  {
+    "source": "わだかまり",
+    "target": "khúc mắc trong lòng",
+    "note": "Hán Việt: tâm kết"
+  },
+  {
+    "source": "執念",
+    "target": "chấp niệm",
+    "note": "Hán Việt: chấp niệm"
+  },
+  {
+    "source": "潜在意識",
+    "target": "tiềm thức",
+    "note": "Hán Việt: tiềm ý thức"
+  },
+  {
+    "source": "劣等感",
+    "target": "tự ti",
+    "note": "Hán Việt: tự ti"
+  },
+  {
+    "source": "自責",
+    "target": "tự trách",
+    "note": "Hán Việt: tự trách"
+  },
+  {
+    "source": "良心の呵責",
+    "target": "day dứt",
+    "note": "Hán Việt: nội cữu"
+  },
+  {
+    "source": "孤独",
+    "target": "cô đơn",
+    "note": "Hán Việt: cô độc"
+  },
+  {
+    "source": "麻痺",
+    "target": "tê dại",
+    "note": "Hán Việt: ma mộc"
+  },
+  {
+    "source": "崩壊",
+    "target": "suy sụp",
+    "note": "Hán Việt: băng hội"
+  },
+  {
+    "source": "もがく",
+    "target": "giằng xé, vùng vẫy",
+    "note": "Hán Việt: tránh trát"
+  },
+  {
+    "source": "葛藤",
+    "target": "day dứt, rối rắm",
+    "note": "Hán Việt: củ kết"
+  },
+  {
+    "source": "矛盾",
+    "target": "mâu thuẫn trong lòng",
+    "note": "Hán Việt: mâu thuẫn"
+  },
+  {
+    "source": "感情",
+    "target": "cảm xúc",
+    "note": "Hán Việt: tình tự"
+  },
+  {
+    "source": "EQ",
+    "target": "trí tuệ cảm xúc",
+    "note": "Hán Việt: tình thương"
+  },
+  {
+    "source": "精神科医",
+    "target": "bác sĩ tâm lý",
+    "note": "Hán Việt: tâm lý y sinh"
+  },
+  {
+    "source": "治療",
+    "target": "điều trị",
+    "note": "Hán Việt: trị liệu"
+  },
+  {
+    "source": "催眠",
+    "target": "thôi miên",
+    "note": "Hán Việt: thôi miên"
+  },
+  {
+    "source": "解離性同一性障害",
+    "target": "đa nhân cách",
+    "note": "Hán Việt: nhân cách phân liệt"
+  },
+  {
+    "source": "幻聴",
+    "target": "ảo thanh",
+    "note": "Hán Việt: ảo thính"
+  },
+  {
+    "source": "偏執",
+    "target": "cố chấp, hoang tưởng bị hại (paranoid)",
+    "note": "Hán Việt: thiên chấp. Tùy ngữ cảnh tâm lý"
+  },
+  {
+    "source": "独占欲",
+    "target": "lòng chiếm hữu",
+    "note": "Hán Việt: chiếm hữu dục"
+  },
+  {
+    "source": "支配欲",
+    "target": "ham muốn kiểm soát",
+    "note": "Hán Việt: khống chế dục"
+  },
+  {
+    "source": "吹っ切れる",
+    "target": "buông bỏ, nguôi ngoai",
+    "note": "Hán Việt: thích hoài"
+  },
+  {
+    "source": "手放す",
+    "target": "buông xuống",
+    "note": "Hán Việt: phóng hạ"
+  },
+  {
+    "source": "乗り越える",
+    "target": "vượt qua",
+    "note": "Hán Việt: tẩu xuất"
+  },
+  {
+    "source": "自己治癒",
+    "target": "tự chữa lành",
+    "note": "Hán Việt: tự dũ"
+  },
+  {
+    "source": "原家族",
+    "target": "gia đình gốc",
+    "note": "Hán Việt: nguyên sinh gia đình"
+  }
+]

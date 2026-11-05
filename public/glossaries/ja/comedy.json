@@ -1,0 +1,288 @@
+[
+  {
+    "source": "ツッコミ",
+    "target": "vai phản",
+    "note": "Cách khác: cà khịa, chê bai"
+  },
+  {
+    "source": "ボケ",
+    "target": "vai chọc"
+  },
+  {
+    "source": "スベった",
+    "target": "câu đùa chết"
+  },
+  {
+    "source": "爆笑",
+    "target": "cười vỡ bụng"
+  },
+  {
+    "source": "どっきり",
+    "target": "chơi khăm"
+  },
+  {
+    "source": "漫才",
+    "target": "hài đôi"
+  },
+  {
+    "source": "コント",
+    "target": "tiểu phẩm"
+  },
+  {
+    "source": "オチ",
+    "target": "cái kết của câu chuyện"
+  },
+  {
+    "source": "フリ",
+    "target": "câu dẫn"
+  },
+  {
+    "source": "大喜利",
+    "target": "đối đáp hài"
+  },
+  {
+    "source": "勘違い",
+    "target": "hiểu nhầm"
+  },
+  {
+    "source": "寒すぎる",
+    "target": "câu đùa lạnh tanh"
+  },
+  {
+    "source": "わろた",
+    "target": "cười chết"
+  },
+  {
+    "source": "草生える",
+    "target": "cười ra nước mắt"
+  },
+  {
+    "source": "ノリツッコミ",
+    "target": "nhập luôn vào trò"
+  },
+  {
+    "source": "天丼",
+    "target": "nhại lại trò cũ"
+  },
+  {
+    "source": "空気を読むな",
+    "target": "đừng có biết điều"
+  },
+  {
+    "source": "シュール",
+    "target": "kiểu siêu thực khó đỡ"
+  },
+  {
+    "source": "ピン芸",
+    "target": "diễn một mình"
+  },
+  {
+    "source": "ネタ切れ",
+    "target": "hết trò"
+  },
+  {
+    "source": "滑り芸",
+    "target": "diễn kiểu trượt"
+  },
+  {
+    "source": "アドリブ",
+    "target": "ứng biến"
+  },
+  {
+    "source": "観客席",
+    "target": "khán giả"
+  },
+  {
+    "source": "笑い死に",
+    "target": "cười chết mất"
+  },
+  {
+    "source": "無茶振り",
+    "target": "bắt diễn không báo trước"
+  },
+  {
+    "source": "被り",
+    "target": "trùng trò"
+  },
+  {
+    "source": "鉄板ネタ",
+    "target": "trò chắc thắng"
+  },
+  {
+    "source": "逆張り",
+    "target": "cố tình đi ngược"
+  },
+  {
+    "source": "自爆ギャグ",
+    "target": "tự đùa mình"
+  },
+  {
+    "source": "間が悪い",
+    "target": "nhịp sai"
+  },
+  {
+    "source": "ネタ",
+    "target": "trò đùa, meme",
+    "note": "Hán Việt: ngạnh"
+  },
+  {
+    "source": "小ネタ",
+    "target": "mẩu chuyện cười",
+    "note": "Hán Việt: đoạn tử"
+  },
+  {
+    "source": "笑える",
+    "target": "hài hước",
+    "note": "Hán Việt: cảo tiếu"
+  },
+  {
+    "source": "からかう",
+    "target": "trêu, chọc cười",
+    "note": "Hán Việt: đậu"
+  },
+  {
+    "source": "でたらめを言う",
+    "target": "bốc phét, nói nhảm",
+    "note": "Hán Việt: xả"
+  },
+  {
+    "source": "言葉が出ない",
+    "target": "cạn lời",
+    "note": "Hán Việt: vô ngữ"
+  },
+  {
+    "source": "気まずい",
+    "target": "ngượng ngùng, khó xử",
+    "note": "Hán Việt: giám giới"
+  },
+  {
+    "source": "社会的死",
+    "target": "quê độ, chết xã hội",
+    "note": "Hán Việt: xã tử"
+  },
+  {
+    "source": "大失敗",
+    "target": "lật xe, thất bại ê chề",
+    "note": "Hán Việt: phiên xa"
+  },
+  {
+    "source": "顔に泥を塗る",
+    "target": "vả mặt",
+    "note": "Hán Việt: đả kiểm"
+  },
+  {
+    "source": "アホ",
+    "target": "ngố tàu, ngớ ngẩn",
+    "note": "Hán Việt: sa điêu. Cách khác: đồ ngốc dễ thương"
+  },
+  {
+    "source": "天然",
+    "target": "ngố ngố",
+    "note": "Hán Việt: hám hám"
+  },
+  {
+    "source": "ケチ",
+    "target": "keo kiệt",
+    "note": "Hán Việt: khẩu môn"
+  },
+  {
+    "source": "カッコつける",
+    "target": "làm màu",
+    "note": "Hán Việt: trang bức"
+  },
+  {
+    "source": "かわい子ぶる",
+    "target": "làm nũng đáng yêu",
+    "note": "Hán Việt: mại manh"
+  },
+  {
+    "source": "腹黒い",
+    "target": "mặt ngoài hiền, bên trong xấu tính",
+    "note": "Hán Việt: phúc hắc"
+  },
+  {
+    "source": "ツンデレ",
+    "target": "miệng cứng lòng mềm",
+    "note": "Hán Việt: ngạo kiều"
+  },
+  {
+    "source": "中二病",
+    "target": "trung nhị bệnh",
+    "note": "Hán Việt: trung nhị"
+  },
+  {
+    "source": "変わり者",
+    "target": "kỳ cục, dị hợm",
+    "note": "Hán Việt: kỳ ba"
+  },
+  {
+    "source": "脳内補完",
+    "target": "tự tưởng tượng thêm",
+    "note": "Hán Việt: não bổ"
+  },
+  {
+    "source": "含み",
+    "target": "ý nhị, ám chỉ",
+    "note": "Hán Việt: nội hàm"
+  },
+  {
+    "source": "黒歴史",
+    "target": "quá khứ xấu hổ",
+    "note": "Hán Việt: hắc lịch sử"
+  },
+  {
+    "source": "笑い死ぬ",
+    "target": "cười chết mất",
+    "note": "Hán Việt: tiếu tử ngã liễu"
+  },
+  {
+    "source": "参った",
+    "target": "chịu thua",
+    "note": "Hán Việt: ngã phục liễu"
+  },
+  {
+    "source": "ありえない",
+    "target": "quá lố, hết nói nổi",
+    "note": "Hán Việt: ly phổ"
+  },
+  {
+    "source": "最高",
+    "target": "đỉnh quá/tuyệt vời",
+    "note": "Hán Việt: tuyệt liễu. Có thể khen hoặc chê tùy văn cảnh"
+  },
+  {
+    "source": "やっぱり最高",
+    "target": "ngửi thấy thơm thật",
+    "note": "Hán Việt: chân hương. Nghĩa: tự vả vì đổi ý"
+  },
+  {
+    "source": "寝そべり",
+    "target": "nằm im, buông xuôi",
+    "note": "Hán Việt: nằm bình"
+  },
+  {
+    "source": "サボる",
+    "target": "lười biếng, chây ì",
+    "note": "Hán Việt: mô ngư"
+  },
+  {
+    "source": "社畜",
+    "target": "dân lao động",
+    "note": "Hán Việt: đả công nhân"
+  },
+  {
+    "source": "過当競争",
+    "target": "cạnh tranh khốc liệt",
+    "note": "Hán Việt: nội quyển"
+  },
+  {
+    "source": "野次馬",
+    "target": "hóng chuyện",
+    "note": "Hán Việt: ngật qua"
+  },
+  {
+    "source": "ちょっとふざける",
+    "target": "nghịch một chút",
+    "note": "Hán Việt: bì nhất hạ"
+  }
+]

@@ -1,0 +1,261 @@
+[
+  {
+    "source": "트라우마",
+    "target": "chấn thương tâm lý"
+  },
+  {
+    "source": "억압",
+    "target": "kìm nén"
+  },
+  {
+    "source": "본심",
+    "target": "lòng thật"
+  },
+  {
+    "source": "자기혐오",
+    "target": "ghét chính mình"
+  },
+  {
+    "source": "우울증",
+    "target": "trầm cảm"
+  },
+  {
+    "source": "공황발작",
+    "target": "cơn hoảng loạn"
+  },
+  {
+    "source": "해리",
+    "target": "phân ly"
+  },
+  {
+    "source": "환각",
+    "target": "ảo giác"
+  },
+  {
+    "source": "망상",
+    "target": "hoang tưởng"
+  },
+  {
+    "source": "상담",
+    "target": "trị liệu",
+    "note": "Cách khác: tư vấn"
+  },
+  {
+    "source": "정신과",
+    "target": "khoa tâm thần"
+  },
+  {
+    "source": "기억상실",
+    "target": "mất trí nhớ"
+  },
+  {
+    "source": "이중인격",
+    "target": "hai nhân cách"
+  },
+  {
+    "source": "강박",
+    "target": "ám ảnh"
+  },
+  {
+    "source": "죄책감",
+    "target": "mặc cảm tội lỗi",
+    "note": "Cách khác: áy náy"
+  },
+  {
+    "source": "공허",
+    "target": "trống rỗng"
+  },
+  {
+    "source": "가면",
+    "target": "mặt nạ"
+  },
+  {
+    "source": "감정이 죽었다",
+    "target": "cảm xúc đã chết"
+  },
+  {
+    "source": "진짜 나",
+    "target": "con người thật"
+  },
+  {
+    "source": "의존",
+    "target": "lệ thuộc",
+    "note": "Cách khác: phụ thuộc"
+  },
+  {
+    "source": "플래시백",
+    "target": "hồi tưởng đột ngột"
+  },
+  {
+    "source": "무감각",
+    "target": "tê liệt cảm xúc",
+    "note": "Cách khác: tê dại"
+  },
+  {
+    "source": "자기부정",
+    "target": "phủ nhận bản thân"
+  },
+  {
+    "source": "불안장애",
+    "target": "rối loạn lo âu"
+  },
+  {
+    "source": "경계",
+    "target": "ranh giới"
+  },
+  {
+    "source": "불안",
+    "target": "lo âu",
+    "note": "Hán Việt: tiêu lự"
+  },
+  {
+    "source": "공황",
+    "target": "hoảng loạn",
+    "note": "Hán Việt: khủng hoảng"
+  },
+  {
+    "source": "강박증",
+    "target": "rối loạn ám ảnh cưỡng chế",
+    "note": "Hán Việt: cưỡng bách chứng"
+  },
+  {
+    "source": "불면증",
+    "target": "mất ngủ",
+    "note": "Hán Việt: thất miên"
+  },
+  {
+    "source": "응어리",
+    "target": "khúc mắc trong lòng",
+    "note": "Hán Việt: tâm kết"
+  },
+  {
+    "source": "집념",
+    "target": "chấp niệm",
+    "note": "Hán Việt: chấp niệm"
+  },
+  {
+    "source": "잠재의식",
+    "target": "tiềm thức",
+    "note": "Hán Việt: tiềm ý thức"
+  },
+  {
+    "source": "열등감",
+    "target": "tự ti",
+    "note": "Hán Việt: tự ti"
+  },
+  {
+    "source": "자책",
+    "target": "tự trách",
+    "note": "Hán Việt: tự trách"
+  },
+  {
+    "source": "가책",
+    "target": "day dứt",
+    "note": "Hán Việt: nội cữu"
+  },
+  {
+    "source": "외로움",
+    "target": "cô đơn",
+    "note": "Hán Việt: cô độc"
+  },
+  {
+    "source": "붕괴",
+    "target": "suy sụp",
+    "note": "Hán Việt: băng hội"
+  },
+  {
+    "source": "발버둥",
+    "target": "giằng xé, vùng vẫy",
+    "note": "Hán Việt: tránh trát"
+  },
+  {
+    "source": "갈등",
+    "target": "day dứt, rối rắm",
+    "note": "Hán Việt: củ kết"
+  },
+  {
+    "source": "모순",
+    "target": "mâu thuẫn trong lòng",
+    "note": "Hán Việt: mâu thuẫn"
+  },
+  {
+    "source": "감정",
+    "target": "cảm xúc",
+    "note": "Hán Việt: tình tự"
+  },
+  {
+    "source": "감성 지능",
+    "target": "trí tuệ cảm xúc",
+    "note": "Hán Việt: tình thương"
+  },
+  {
+    "source": "심리 상담사",
+    "target": "bác sĩ tâm lý",
+    "note": "Hán Việt: tâm lý y sinh"
+  },
+  {
+    "source": "치료",
+    "target": "điều trị",
+    "note": "Hán Việt: trị liệu"
+  },
+  {
+    "source": "최면",
+    "target": "thôi miên",
+    "note": "Hán Việt: thôi miên"
+  },
+  {
+    "source": "다중 인격",
+    "target": "đa nhân cách",
+    "note": "Hán Việt: nhân cách phân liệt"
+  },
+  {
+    "source": "환청",
+    "target": "ảo thanh",
+    "note": "Hán Việt: ảo thính"
+  },
+  {
+    "source": "편집증",
+    "target": "cố chấp, hoang tưởng bị hại (paranoid)",
+    "note": "Hán Việt: thiên chấp. Tùy ngữ cảnh tâm lý"
+  },
+  {
+    "source": "소유욕",
+    "target": "lòng chiếm hữu",
+    "note": "Hán Việt: chiếm hữu dục"
+  },
+  {
+    "source": "통제욕",
+    "target": "ham muốn kiểm soát",
+    "note": "Hán Việt: khống chế dục"
+  },
+  {
+    "source": "안정감",
+    "target": "cảm giác an toàn",
+    "note": "Hán Việt: an toàn cảm"
+  },
+  {
+    "source": "마음을 풀다",
+    "target": "buông bỏ, nguôi ngoai",
+    "note": "Hán Việt: thích hoài"
+  },
+  {
+    "source": "내려놓다",
+    "target": "buông xuống",
+    "note": "Hán Việt: phóng hạ"
+  },
+  {
+    "source": "극복하다",
+    "target": "vượt qua",
+    "note": "Hán Việt: tẩu xuất"
+  },
+  {
+    "source": "자가 치유",
+    "target": "tự chữa lành",
+    "note": "Hán Việt: tự dũ"
+  },
+  {
+    "source": "원가족",
+    "target": "gia đình gốc",
+    "note": "Hán Việt: nguyên sinh gia đình"
+  }
+]

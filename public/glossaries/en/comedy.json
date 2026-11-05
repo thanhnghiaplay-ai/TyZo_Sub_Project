@@ -1,0 +1,273 @@
+[
+  {
+    "source": "punchline",
+    "target": "câu chốt"
+  },
+  {
+    "source": "dad joke",
+    "target": "câu đùa bố"
+  },
+  {
+    "source": "bad timing",
+    "target": "nhịp sai"
+  },
+  {
+    "source": "improv",
+    "target": "ứng biến"
+  },
+  {
+    "source": "deadpan",
+    "target": "mặt lạnh pha trò"
+  },
+  {
+    "source": "callback",
+    "target": "nhắc lại trò cũ"
+  },
+  {
+    "source": "bit",
+    "target": "đoạn hài"
+  },
+  {
+    "source": "crowd work",
+    "target": "chọc khán giả"
+  },
+  {
+    "source": "bombing",
+    "target": "diễn chết"
+  },
+  {
+    "source": "killed it",
+    "target": "diễn bùng"
+  },
+  {
+    "source": "setup",
+    "target": "câu dẫn"
+  },
+  {
+    "source": "misunderstanding",
+    "target": "hiểu nhầm"
+  },
+  {
+    "source": "prank",
+    "target": "chơi khăm"
+  },
+  {
+    "source": "overacting",
+    "target": "diễn quá"
+  },
+  {
+    "source": "audience",
+    "target": "khán giả"
+  },
+  {
+    "source": "self-own",
+    "target": "tự đùa mình"
+  },
+  {
+    "source": "running gag",
+    "target": "trò lặp lại"
+  },
+  {
+    "source": "awkward silence",
+    "target": "im lặng cứng"
+  },
+  {
+    "source": "one-liner",
+    "target": "câu một dòng"
+  },
+  {
+    "source": "roast",
+    "target": "chế giễu",
+    "note": "Cách khác: cà khịa, chê bai"
+  },
+  {
+    "source": "blooper",
+    "target": "cảnh hỏng"
+  },
+  {
+    "source": "comic relief",
+    "target": "vai giải tỏa"
+  },
+  {
+    "source": "witty",
+    "target": "nhạy miệng"
+  },
+  {
+    "source": "sarcasm",
+    "target": "mỉa"
+  },
+  {
+    "source": "inside joke",
+    "target": "câu đùa nội bộ"
+  },
+  {
+    "source": "meme",
+    "target": "trò đùa, meme",
+    "note": "Hán Việt: ngạnh"
+  },
+  {
+    "source": "joke",
+    "target": "mẩu chuyện cười",
+    "note": "Hán Việt: đoạn tử"
+  },
+  {
+    "source": "funny",
+    "target": "hài hước",
+    "note": "Hán Việt: cảo tiếu"
+  },
+  {
+    "source": "tease",
+    "target": "trêu, chọc cười",
+    "note": "Hán Việt: đậu"
+  },
+  {
+    "source": "talk nonsense",
+    "target": "bốc phét, nói nhảm",
+    "note": "Hán Việt: xả"
+  },
+  {
+    "source": "speechless",
+    "target": "cạn lời",
+    "note": "Hán Việt: vô ngữ"
+  },
+  {
+    "source": "awkward",
+    "target": "ngượng ngùng, khó xử",
+    "note": "Hán Việt: giám giới"
+  },
+  {
+    "source": "social death",
+    "target": "quê độ, chết xã hội",
+    "note": "Hán Việt: xã tử"
+  },
+  {
+    "source": "epic fail",
+    "target": "lật xe, thất bại ê chề",
+    "note": "Hán Việt: phiên xa"
+  },
+  {
+    "source": "slap in the face",
+    "target": "vả mặt",
+    "note": "Hán Việt: đả kiểm"
+  },
+  {
+    "source": "goofy",
+    "target": "ngố tàu, ngớ ngẩn",
+    "note": "Hán Việt: sa điêu"
+  },
+  {
+    "source": "dummy",
+    "target": "đồ ngốc dễ thương",
+    "note": "Hán Việt: nhị hóa"
+  },
+  {
+    "source": "goofball",
+    "target": "ngố ngố",
+    "note": "Hán Việt: hám hám"
+  },
+  {
+    "source": "stingy",
+    "target": "keo kiệt",
+    "note": "Hán Việt: khẩu môn"
+  },
+  {
+    "source": "show off",
+    "target": "làm màu",
+    "note": "Hán Việt: trang bức"
+  },
+  {
+    "source": "act cute",
+    "target": "làm nũng đáng yêu",
+    "note": "Hán Việt: mại manh"
+  },
+  {
+    "source": "scheming",
+    "target": "mặt ngoài hiền, bên trong xấu tính",
+    "note": "Hán Việt: phúc hắc"
+  },
+  {
+    "source": "tsundere",
+    "target": "miệng cứng lòng mềm",
+    "note": "Hán Việt: ngạo kiều"
+  },
+  {
+    "source": "chuunibyou",
+    "target": "trung nhị bệnh",
+    "note": "Hán Việt: trung nhị"
+  },
+  {
+    "source": "weirdo",
+    "target": "kỳ cục, dị hợm",
+    "note": "Hán Việt: kỳ ba"
+  },
+  {
+    "source": "fill in with imagination",
+    "target": "tự tưởng tượng thêm",
+    "note": "Hán Việt: não bổ"
+  },
+  {
+    "source": "implication",
+    "target": "ý nhị, ám chỉ",
+    "note": "Hán Việt: nội hàm"
+  },
+  {
+    "source": "cringe past",
+    "target": "quá khứ xấu hổ",
+    "note": "Hán Việt: hắc lịch sử"
+  },
+  {
+    "source": "dying of laughter",
+    "target": "cười chết mất",
+    "note": "Hán Việt: tiếu tử ngã liễu"
+  },
+  {
+    "source": "i give up",
+    "target": "chịu thua",
+    "note": "Hán Việt: ngã phục liễu"
+  },
+  {
+    "source": "ridiculous",
+    "target": "quá lố, hết nói nổi",
+    "note": "Hán Việt: ly phổ"
+  },
+  {
+    "source": "insane (good or bad)",
+    "target": "đỉnh quá/tuyệt vời",
+    "note": "Hán Việt: tuyệt liễu. Có thể khen hoặc chê tùy văn cảnh"
+  },
+  {
+    "source": "eating one's words",
+    "target": "ngửi thấy thơm thật",
+    "note": "Hán Việt: chân hương. Nghĩa: tự vả vì đổi ý"
+  },
+  {
+    "source": "lying flat",
+    "target": "nằm im, buông xuôi",
+    "note": "Hán Việt: nằm bình"
+  },
+  {
+    "source": "slack off",
+    "target": "lười biếng, chây ì",
+    "note": "Hán Việt: mô ngư"
+  },
+  {
+    "source": "worker bee",
+    "target": "dân lao động",
+    "note": "Hán Việt: đả công nhân"
+  },
+  {
+    "source": "rat race",
+    "target": "cạnh tranh khốc liệt",
+    "note": "Hán Việt: nội quyển"
+  },
+  {
+    "source": "watch the drama",
+    "target": "hóng chuyện",
+    "note": "Hán Việt: ngật qua"
+  },
+  {
+    "source": "goof around",
+    "target": "nghịch một chút",
+    "note": "Hán Việt: bì nhất hạ"
+  }
+]

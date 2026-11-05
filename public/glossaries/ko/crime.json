@@ -1,0 +1,310 @@
+[
+  {
+    "source": "형사",
+    "target": "thanh tra hình sự"
+  },
+  {
+    "source": "용의자",
+    "target": "nghi phạm"
+  },
+  {
+    "source": "알리바이",
+    "target": "chứng cứ ngoại phạm"
+  },
+  {
+    "source": "증거인멸",
+    "target": "phi tang"
+  },
+  {
+    "source": "살인사건",
+    "target": "vụ giết người"
+  },
+  {
+    "source": "피해자",
+    "target": "nạn nhân"
+  },
+  {
+    "source": "조직폭력배",
+    "target": "xã hội đen"
+  },
+  {
+    "source": "보쌈",
+    "target": "bắt cóc cưỡng ép"
+  },
+  {
+    "source": "전과",
+    "target": "tiền án"
+  },
+  {
+    "source": "묵비권",
+    "target": "quyền im lặng"
+  },
+  {
+    "source": "체포영장",
+    "target": "lệnh bắt"
+  },
+  {
+    "source": "수사본부",
+    "target": "ban chuyên án"
+  },
+  {
+    "source": "범행현장",
+    "target": "hiện trường"
+  },
+  {
+    "source": "지문",
+    "target": "vân tay"
+  },
+  {
+    "source": "권총",
+    "target": "súng ngắn"
+  },
+  {
+    "source": "마약거래",
+    "target": "buôn ma túy"
+  },
+  {
+    "source": "암거래",
+    "target": "giao dịch chợ đen"
+  },
+  {
+    "source": "배신자",
+    "target": "kẻ phản bội"
+  },
+  {
+    "source": "진술조서",
+    "target": "biên bản lời khai"
+  },
+  {
+    "source": "변호사",
+    "target": "luật sư"
+  },
+  {
+    "source": "검사",
+    "target": "công tố"
+  },
+  {
+    "source": "징역",
+    "target": "án tù"
+  },
+  {
+    "source": "보석금",
+    "target": "tiền tại ngoại"
+  },
+  {
+    "source": "사기꾼",
+    "target": "kẻ lừa đảo"
+  },
+  {
+    "source": "협박",
+    "target": "đe dọa"
+  },
+  {
+    "source": "공범",
+    "target": "đồng phạm",
+    "note": "Cách khác: đồng bọn"
+  },
+  {
+    "source": "자수",
+    "target": "tự thú",
+    "note": "Cách khác: ra đầu thú"
+  },
+  {
+    "source": "도청",
+    "target": "nghe lén"
+  },
+  {
+    "source": "장물",
+    "target": "đồ gian",
+    "note": "Cách khác: tang vật"
+  },
+  {
+    "source": "구치소",
+    "target": "nhà tạm giam"
+  },
+  {
+    "source": "두목",
+    "target": "đại ca, trùm",
+    "note": "Hán Việt: lão đại"
+  },
+  {
+    "source": "형님",
+    "target": "đại ca",
+    "note": "Hán Việt: đại ca"
+  },
+  {
+    "source": "부하",
+    "target": "đàn em",
+    "note": "Hán Việt: tiểu đệ"
+  },
+  {
+    "source": "수하",
+    "target": "thuộc hạ, tay chân",
+    "note": "Hán Việt: thủ hạ"
+  },
+  {
+    "source": "조직",
+    "target": "băng đảng",
+    "note": "Hán Việt: bang phái"
+  },
+  {
+    "source": "조폭",
+    "target": "xã hội đen",
+    "note": "Hán Việt: hắc bang"
+  },
+  {
+    "source": "업계",
+    "target": "giới giang hồ",
+    "note": "Hán Việt: đạo thượng. Không dịch \"trên đường\""
+  },
+  {
+    "source": "구역",
+    "target": "địa bàn",
+    "note": "Hán Việt: địa bàn"
+  },
+  {
+    "source": "세력",
+    "target": "thế lực",
+    "note": "Hán Việt: thế lực"
+  },
+  {
+    "source": "총격전",
+    "target": "thanh toán nhau, đấu súng",
+    "note": "Hán Việt: hỏa bính"
+  },
+  {
+    "source": "처리하다",
+    "target": "thủ tiêu, xử lý",
+    "note": "Hán Việt: tố điệu"
+  },
+  {
+    "source": "입막음",
+    "target": "bịt miệng, giết người diệt khẩu",
+    "note": "Hán Việt: diệt khẩu"
+  },
+  {
+    "source": "칼로 베다",
+    "target": "chém người",
+    "note": "Hán Việt: khản nhân"
+  },
+  {
+    "source": "보호비",
+    "target": "tiền bảo kê",
+    "note": "Hán Việt: bảo hộ phí"
+  },
+  {
+    "source": "밀수",
+    "target": "buôn lậu",
+    "note": "Hán Việt: tẩu tư"
+  },
+  {
+    "source": "마약 밀매",
+    "target": "buôn ma túy",
+    "note": "Hán Việt: phản độc"
+  },
+  {
+    "source": "돈세탁",
+    "target": "rửa tiền",
+    "note": "Hán Việt: tẩy tiền"
+  },
+  {
+    "source": "장물 자금",
+    "target": "tiền tang",
+    "note": "Hán Việt: tang khoản"
+  },
+  {
+    "source": "납치",
+    "target": "bắt cóc",
+    "note": "Hán Việt: bảng giá"
+  },
+  {
+    "source": "갈취",
+    "target": "tống tiền",
+    "note": "Hán Việt: lặc sách"
+  },
+  {
+    "source": "강도",
+    "target": "cướp",
+    "note": "Hán Việt: thưởng kiếp"
+  },
+  {
+    "source": "절도",
+    "target": "trộm cắp",
+    "note": "Hán Việt: đạo thiết"
+  },
+  {
+    "source": "사기",
+    "target": "lừa đảo",
+    "note": "Hán Việt: trá phiến"
+  },
+  {
+    "source": "검은돈",
+    "target": "tiền bẩn",
+    "note": "Hán Việt: hắc tiền"
+  },
+  {
+    "source": "수배",
+    "target": "truy nã",
+    "note": "Hán Việt: thông tập"
+  },
+  {
+    "source": "도주범",
+    "target": "tội phạm trốn chạy",
+    "note": "Hán Việt: đào phạm"
+  },
+  {
+    "source": "경찰",
+    "target": "cảnh sát",
+    "note": "Hán Việt: cảnh sát"
+  },
+  {
+    "source": "짭새",
+    "target": "cớm (tiếng lóng)",
+    "note": "Hán Việt: điều tử"
+  },
+  {
+    "source": "잠입 수사관",
+    "target": "nằm vùng",
+    "note": "Hán Việt: ngọa để"
+  },
+  {
+    "source": "정보원",
+    "target": "tay trong, người cung cấp tin",
+    "note": "Hán Việt: tuyến nhân"
+  },
+  {
+    "source": "증거",
+    "target": "chứng cứ",
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "심문",
+    "target": "thẩm vấn",
+    "note": "Hán Việt: thẩm tấn"
+  },
+  {
+    "source": "감옥에 가다",
+    "target": "ngồi tù",
+    "note": "Hán Việt: tọa lao"
+  },
+  {
+    "source": "형을 선고하다",
+    "target": "kết án",
+    "note": "Hán Việt: phán hình"
+  },
+  {
+    "source": "내부 첩자",
+    "target": "nội gián",
+    "note": "Hán Việt: nội quỷ"
+  },
+  {
+    "source": "조직끼리 싸움",
+    "target": "băng đảng ăn hiếp nhau",
+    "note": "Hán Việt: hắc ngật hắc"
+  },
+  {
+    "source": "손을 씻다",
+    "target": "rửa tay gác kiếm, rút lui khỏi giang hồ",
+    "note": "Hán Việt: kim bồn tẩy thủ"
+  }
+]

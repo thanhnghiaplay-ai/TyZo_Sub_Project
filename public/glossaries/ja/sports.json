@@ -1,0 +1,298 @@
+[
+  {
+    "source": "試合",
+    "target": "trận đấu"
+  },
+  {
+    "source": "優勝",
+    "target": "vô địch"
+  },
+  {
+    "source": "決勝戦",
+    "target": "chung kết"
+  },
+  {
+    "source": "準決勝",
+    "target": "bán kết"
+  },
+  {
+    "source": "延長戦",
+    "target": "hiệp phụ"
+  },
+  {
+    "source": "得点",
+    "target": "ghi điểm"
+  },
+  {
+    "source": "反則",
+    "target": "phạm lỗi"
+  },
+  {
+    "source": "退場",
+    "target": "bị đuổi",
+    "note": "Cách khác: rời sân"
+  },
+  {
+    "source": "監督",
+    "target": "huấn luyện viên"
+  },
+  {
+    "source": "エース",
+    "target": "chủ lực"
+  },
+  {
+    "source": "逆転勝利",
+    "target": "lật ngược thắng"
+  },
+  {
+    "source": "同点",
+    "target": "hòa điểm"
+  },
+  {
+    "source": "特訓",
+    "target": "luyện đặc biệt"
+  },
+  {
+    "source": "怪我",
+    "target": "chấn thương"
+  },
+  {
+    "source": "ホームラン",
+    "target": "cú home run"
+  },
+  {
+    "source": "オフサイド",
+    "target": "việt vị"
+  },
+  {
+    "source": "ペナルティキック",
+    "target": "quả phạt đền"
+  },
+  {
+    "source": "フリーキック",
+    "target": "quả đá phạt"
+  },
+  {
+    "source": "ノックアウト",
+    "target": "hạ đo ván"
+  },
+  {
+    "source": "金メダル",
+    "target": "huy chương vàng"
+  },
+  {
+    "source": "団体戦",
+    "target": "nội dung đồng đội"
+  },
+  {
+    "source": "個人戦",
+    "target": "nội dung cá nhân"
+  },
+  {
+    "source": "記録更新",
+    "target": "phá kỷ lục"
+  },
+  {
+    "source": "ゾーンに入る",
+    "target": "vào trạng thái"
+  },
+  {
+    "source": "ベンチ入り",
+    "target": "được vào ghế dự bị"
+  },
+  {
+    "source": "先発",
+    "target": "đá chính"
+  },
+  {
+    "source": "途中交代",
+    "target": "thay người giữa chừng"
+  },
+  {
+    "source": "ロスタイム",
+    "target": "phút bù giờ"
+  },
+  {
+    "source": "セットポイント",
+    "target": "điểm set"
+  },
+  {
+    "source": "エースキラー",
+    "target": "người chuyên trị chủ lực"
+  },
+  {
+    "source": "メンタルトレーニング",
+    "target": "luyện tinh thần"
+  },
+  {
+    "source": "リハビリ",
+    "target": "tập phục hồi"
+  },
+  {
+    "source": "ドラフト",
+    "target": "vòng tuyển quân"
+  },
+  {
+    "source": "スカウティング",
+    "target": "xem giò"
+  },
+  {
+    "source": "連覇",
+    "target": "vô địch liên tiếp",
+    "note": "Cách khác: bảo vệ chức vô địch"
+  },
+  {
+    "source": "敗退",
+    "target": "bị loại"
+  },
+  {
+    "source": "スタメン",
+    "target": "đá chính, ra sân từ đầu",
+    "note": "Hán Việt: thủ phát"
+  },
+  {
+    "source": "控え",
+    "target": "dự bị",
+    "note": "Hán Việt: thế bổ"
+  },
+  {
+    "source": "出場",
+    "target": "vào sân",
+    "note": "Hán Việt: thượng trường"
+  },
+  {
+    "source": "選手交代",
+    "target": "thay người",
+    "note": "Hán Việt: hoán nhân"
+  },
+  {
+    "source": "キャプテン",
+    "target": "đội trưởng",
+    "note": "Hán Việt: đội trưởng"
+  },
+  {
+    "source": "審判",
+    "target": "trọng tài",
+    "note": "Hán Việt: tài phán"
+  },
+  {
+    "source": "リーグ",
+    "target": "giải đấu liên đoàn",
+    "note": "Hán Việt: liên tái"
+  },
+  {
+    "source": "決勝",
+    "target": "trận chung kết",
+    "note": "Hán Việt: quyết tái"
+  },
+  {
+    "source": "優勝者",
+    "target": "nhà vô địch",
+    "note": "Hán Việt: quán quân"
+  },
+  {
+    "source": "準優勝",
+    "target": "á quân",
+    "note": "Hán Việt: á quân"
+  },
+  {
+    "source": "優勝する",
+    "target": "giành chức vô địch",
+    "note": "Hán Việt: đoạt quán"
+  },
+  {
+    "source": "進出",
+    "target": "vào vòng trong",
+    "note": "Hán Việt: tấn cấp"
+  },
+  {
+    "source": "PK",
+    "target": "đá phạt đền",
+    "note": "Hán Việt: điểm cầu"
+  },
+  {
+    "source": "劇的決勝弾",
+    "target": "ghi bàn quyết định phút cuối",
+    "note": "Hán Việt: tuyệt sát"
+  },
+  {
+    "source": "ゴール",
+    "target": "ghi bàn",
+    "note": "Hán Việt: tiến cầu"
+  },
+  {
+    "source": "アシスト",
+    "target": "kiến tạo",
+    "note": "Hán Việt: trợ công"
+  },
+  {
+    "source": "守備",
+    "target": "phòng ngự",
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "レッドカード",
+    "target": "thẻ đỏ",
+    "note": "Hán Việt: hồng bài"
+  },
+  {
+    "source": "イエローカード",
+    "target": "thẻ vàng",
+    "note": "Hán Việt: hoàng bài"
+  },
+  {
+    "source": "フリースロー",
+    "target": "ném phạt/đá phạt",
+    "note": "Hán Việt: phạt cầu"
+  },
+  {
+    "source": "ダンク",
+    "target": "úp rổ",
+    "note": "Hán Việt: khấu lam"
+  },
+  {
+    "source": "スリーポイント",
+    "target": "cú ba điểm",
+    "note": "Hán Việt: tam phân cầu"
+  },
+  {
+    "source": "リバウンド",
+    "target": "bóng bật bảng",
+    "note": "Hán Việt: lam bản"
+  },
+  {
+    "source": "サーブ",
+    "target": "giao bóng",
+    "note": "Hán Việt: phát cầu"
+  },
+  {
+    "source": "サーブレシーブ",
+    "target": "đỡ giao bóng",
+    "note": "Hán Việt: tiếp phát cầu"
+  },
+  {
+    "source": "スパイク",
+    "target": "đập bóng",
+    "note": "Hán Việt: khấu sát"
+  },
+  {
+    "source": "ウォームアップ",
+    "target": "khởi động",
+    "note": "Hán Việt: nhiệt thân"
+  },
+  {
+    "source": "トレーニング",
+    "target": "tập luyện",
+    "note": "Hán Việt: huấn luyện"
+  },
+  {
+    "source": "ファン",
+    "target": "người hâm mộ",
+    "note": "Hán Việt: phấn ti"
+  },
+  {
+    "source": "オリンピック",
+    "target": "Thế vận hội",
+    "note": "Hán Việt: Áo vận hội"
+  }
+]

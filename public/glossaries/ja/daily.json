@@ -1,0 +1,479 @@
+[
+  {
+    "source": "既読無視",
+    "target": "xem rồi không trả lời"
+  },
+  {
+    "source": "既読スルー",
+    "target": "xem mà lờ đi"
+  },
+  {
+    "source": "未読",
+    "target": "chưa xem"
+  },
+  {
+    "source": "インスタ",
+    "target": "Instagram"
+  },
+  {
+    "source": "ストーリー",
+    "target": "story"
+  },
+  {
+    "source": "バズる",
+    "target": "viral"
+  },
+  {
+    "source": "エモい",
+    "target": "xúc động kiểu bây giờ"
+  },
+  {
+    "source": "ワンチャン",
+    "target": "có khi được"
+  },
+  {
+    "source": "タピオカ",
+    "target": "trân châu"
+  },
+  {
+    "source": "リモートワーク",
+    "target": "làm từ xa"
+  },
+  {
+    "source": "在宅勤務",
+    "target": "làm ở nhà"
+  },
+  {
+    "source": "推し活",
+    "target": "đi theo người mình đẩy"
+  },
+  {
+    "source": "課金",
+    "target": "nạp tiền"
+  },
+  {
+    "source": "無課金",
+    "target": "không nạp"
+  },
+  {
+    "source": "ガチャ",
+    "target": "gacha"
+  },
+  {
+    "source": "サブスク",
+    "target": "gói thuê bao"
+  },
+  {
+    "source": "マウントを取る",
+    "target": "khoe hơn người khác"
+  },
+  {
+    "source": "空気を読む",
+    "target": "biết điều"
+  },
+  {
+    "source": "通知オフ",
+    "target": "tắt thông báo"
+  },
+  {
+    "source": "終電",
+    "target": "chuyến tàu cuối"
+  },
+  {
+    "source": "コンビニ",
+    "target": "cửa hàng tiện lợi"
+  },
+  {
+    "source": "ワンオペ",
+    "target": "một người gánh cả ca"
+  },
+  {
+    "source": "ブラック企業",
+    "target": "công ty bóc lột"
+  },
+  {
+    "source": "有給",
+    "target": "phép năm"
+  },
+  {
+    "source": "残業",
+    "target": "tăng ca"
+  },
+  {
+    "source": "シフト",
+    "target": "ca làm"
+  },
+  {
+    "source": "バイト",
+    "target": "làm thêm"
+  },
+  {
+    "source": "就活",
+    "target": "đi xin việc"
+  },
+  {
+    "source": "マッチングアプリ",
+    "target": "app hẹn hò"
+  },
+  {
+    "source": "ピン留め",
+    "target": "ghim tin"
+  },
+  {
+    "source": "ブロックされた",
+    "target": "bị chặn"
+  },
+  {
+    "source": "タイパ",
+    "target": "đáng thời gian"
+  },
+  {
+    "source": "コスパ",
+    "target": "đáng tiền"
+  },
+  {
+    "source": "リスケ",
+    "target": "dời lịch"
+  },
+  {
+    "source": "宅配",
+    "target": "giao tận nhà"
+  },
+  {
+    "source": "置き配",
+    "target": "để đồ trước cửa"
+  },
+  {
+    "source": "自撮り",
+    "target": "ảnh tự sướng"
+  },
+  {
+    "source": "盛れる",
+    "target": "lên hình"
+  },
+  {
+    "source": "加工",
+    "target": "chỉnh ảnh"
+  },
+  {
+    "source": "インスタ映え",
+    "target": "đẹp đăng mạng"
+  },
+  {
+    "source": "フォロワー",
+    "target": "người theo dõi"
+  },
+  {
+    "source": "いいね",
+    "target": "lượt thích"
+  },
+  {
+    "source": "副業",
+    "target": "nghề tay trái"
+  },
+  {
+    "source": "フリーランス",
+    "target": "làm tự do"
+  },
+  {
+    "source": "一人暮らし",
+    "target": "ở một mình"
+  },
+  {
+    "source": "シェアハウス",
+    "target": "nhà ở ghép"
+  },
+  {
+    "source": "家賃",
+    "target": "tiền nhà"
+  },
+  {
+    "source": "ギガ不足",
+    "target": "hết data"
+  },
+  {
+    "source": "ミュート",
+    "target": "tắt mic"
+  },
+  {
+    "source": "画面共有",
+    "target": "chia sẻ màn hình"
+  },
+  {
+    "source": "充電切れ",
+    "target": "hết pin"
+  },
+  {
+    "source": "二段階認証",
+    "target": "xác minh hai bước"
+  },
+  {
+    "source": "バグった",
+    "target": "bị lỗi"
+  },
+  {
+    "source": "再起動",
+    "target": "khởi động lại"
+  },
+  {
+    "source": "既読つけない",
+    "target": "không bật đã xem"
+  },
+  {
+    "source": "プロフ",
+    "target": "profile"
+  },
+  {
+    "source": "マッチした",
+    "target": "khớp nhau rồi"
+  },
+  {
+    "source": "陽キャ",
+    "target": "người hướng ngoại"
+  },
+  {
+    "source": "陰キャ",
+    "target": "người hướng nội"
+  },
+  {
+    "source": "飯テロ",
+    "target": "khoe đồ ăn"
+  },
+  {
+    "source": "期間限定",
+    "target": "bán có hạn"
+  },
+  {
+    "source": "売り切れ",
+    "target": "hết hàng"
+  },
+  {
+    "source": "キャッシュレス",
+    "target": "không dùng tiền mặt"
+  },
+  {
+    "source": "QR決済",
+    "target": "quét mã thanh toán"
+  },
+  {
+    "source": "出前",
+    "target": "gọi đồ ăn về",
+    "note": "Cách khác: đồ ăn giao tận nơi"
+  },
+  {
+    "source": "グループライン",
+    "target": "nhóm LINE"
+  },
+  {
+    "source": "スタンプ",
+    "target": "stamp"
+  },
+  {
+    "source": "尊い",
+    "target": "đáng yêu muốn chết"
+  },
+  {
+    "source": "沼った",
+    "target": "bị nghiện mất"
+  },
+  {
+    "source": "チル",
+    "target": "chill"
+  },
+  {
+    "source": "寝落ち",
+    "target": "ngủ quên lúc đang xem"
+  },
+  {
+    "source": "低速モード",
+    "target": "bị bóp tốc độ mạng"
+  },
+  {
+    "source": "確定申告",
+    "target": "quyết toán thuế"
+  },
+  {
+    "source": "奨学金",
+    "target": "nợ học bổng"
+  },
+  {
+    "source": "お疲れ様",
+    "target": "vất vả rồi",
+    "note": "Hán Việt: tân khổ liễu. Không dịch \"khó khăn\""
+  },
+  {
+    "source": "お手数をおかけします",
+    "target": "phiền bạn rồi",
+    "note": "Hán Việt: ma phiền nhĩ liễu"
+  },
+  {
+    "source": "何でもいい",
+    "target": "sao cũng được",
+    "note": "Hán Việt: tùy tiện. Không dịch \"tùy tiện\" cho cả câu"
+  },
+  {
+    "source": "頑張れ",
+    "target": "cố lên",
+    "note": "Hán Việt: gia du. Không dịch \"thêm dầu\""
+  },
+  {
+    "source": "大丈夫",
+    "target": "không sao",
+    "note": "Hán Việt: một sự"
+  },
+  {
+    "source": "問題ない",
+    "target": "không sao đâu",
+    "note": "Hán Việt: một vấn đề. Việt: không sao đâu / ổn cả"
+  },
+  {
+    "source": "よかった",
+    "target": "tuyệt quá",
+    "note": "Hán Việt: thái hảo liễu. Việt: tuyệt quá / hay quá"
+  },
+  {
+    "source": "本当に?",
+    "target": "thật sao?",
+    "note": "Hán Việt: chân đích ma. Việt: thật sao? / thật hả?"
+  },
+  {
+    "source": "どうしたの",
+    "target": "sao vậy?",
+    "note": "Hán Việt: chẩm ma liễu. Việt: sao vậy? / chuyện gì thế?"
+  },
+  {
+    "source": "お気をつけて",
+    "target": "đi cẩn thận nhé",
+    "note": "Hán Việt: mạn tẩu"
+  },
+  {
+    "source": "さようなら",
+    "target": "tạm biệt",
+    "note": "Hán Việt: tái kiến"
+  },
+  {
+    "source": "ようこそ",
+    "target": "chào mừng",
+    "note": "Hán Việt: hoan nghênh"
+  },
+  {
+    "source": "お座りください",
+    "target": "mời ngồi",
+    "note": "Hán Việt: thỉnh tọa"
+  },
+  {
+    "source": "お尋ねします",
+    "target": "xin hỏi",
+    "note": "Hán Việt: thỉnh vấn. Việt: xin hỏi / cho hỏi một chút"
+  },
+  {
+    "source": "通ります",
+    "target": "cho mình đi qua",
+    "note": "Hán Việt: tá quá. Việt: cho mình đi qua / xin lỗi"
+  },
+  {
+    "source": "お願い",
+    "target": "làm ơn",
+    "note": "Hán Việt: bái thác. Việt: làm ơn / nhờ bạn"
+  },
+  {
+    "source": "気をつけて",
+    "target": "cẩn thận",
+    "note": "Hán Việt: tiểu tâm"
+  },
+  {
+    "source": "注意",
+    "target": "chú ý",
+    "note": "Hán Việt: chú ý"
+  },
+  {
+    "source": "お噂はかねがね",
+    "target": "ngưỡng mộ đã lâu",
+    "note": "Hán Việt: cửu ngưỡng"
+  },
+  {
+    "source": "お会いできて光栄です",
+    "target": "rất vui được gặp",
+    "note": "Hán Việt: hạnh hội"
+  },
+  {
+    "source": "ご飯食べた?",
+    "target": "bạn ăn cơm chưa",
+    "note": "Hán Việt: ngật phạn liễu ma. Câu hỏi thăm xã giao"
+  },
+  {
+    "source": "おはよう",
+    "target": "chào buổi sáng",
+    "note": "Hán Việt: tảo an"
+  },
+  {
+    "source": "おやすみ",
+    "target": "chúc ngủ ngon",
+    "note": "Hán Việt: vãn an"
+  },
+  {
+    "source": "帰宅する",
+    "target": "về nhà",
+    "note": "Hán Việt: hồi gia"
+  },
+  {
+    "source": "出勤",
+    "target": "đi làm",
+    "note": "Hán Việt: thượng ban"
+  },
+  {
+    "source": "退勤",
+    "target": "tan làm",
+    "note": "Hán Việt: hạ ban"
+  },
+  {
+    "source": "休みを取る",
+    "target": "xin nghỉ phép",
+    "note": "Hán Việt: thỉnh giả"
+  },
+  {
+    "source": "渋滞",
+    "target": "kẹt xe",
+    "note": "Hán Việt: đổ xa"
+  },
+  {
+    "source": "タクシーを呼ぶ",
+    "target": "gọi xe",
+    "note": "Hán Việt: đả xa"
+  },
+  {
+    "source": "宅配便",
+    "target": "chuyển phát nhanh",
+    "note": "Hán Việt: khoái đệ"
+  },
+  {
+    "source": "携帯",
+    "target": "điện thoại",
+    "note": "Hán Việt: thủ cơ"
+  },
+  {
+    "source": "WeChat",
+    "target": "WeChat",
+    "note": "Hán Việt: vi tín"
+  },
+  {
+    "source": "お年玉袋",
+    "target": "bao lì xì",
+    "note": "Hán Việt: hồng bao"
+  },
+  {
+    "source": "会計",
+    "target": "thanh toán",
+    "note": "Hán Việt: mãi đơn"
+  },
+  {
+    "source": "割引",
+    "target": "giảm giá",
+    "note": "Hán Việt: đả chiết"
+  },
+  {
+    "source": "面倒",
+    "target": "phiền phức",
+    "note": "Hán Việt: ma phiền"
+  }
+]

@@ -1,0 +1,292 @@
+[
+  {
+    "source": "幽霊",
+    "target": "ma",
+    "note": "Cách khác: hồn ma"
+  },
+  {
+    "source": "悪霊",
+    "target": "ác linh",
+    "note": "Cách khác: lệ quỷ, hung hồn"
+  },
+  {
+    "source": "心霊現象",
+    "target": "hiện tượng tâm linh"
+  },
+  {
+    "source": "憑依",
+    "target": "nhập",
+    "note": "Cách khác: nhập, ám vào người"
+  },
+  {
+    "source": "除霊",
+    "target": "trừ tà"
+  },
+  {
+    "source": "生贄",
+    "target": "vật tế"
+  },
+  {
+    "source": "血まみれ",
+    "target": "đẫm máu"
+  },
+  {
+    "source": "悲鳴",
+    "target": "tiếng thét",
+    "note": "Cách khác: tiếng kêu thảm"
+  },
+  {
+    "source": "墓場",
+    "target": "nghĩa địa"
+  },
+  {
+    "source": "棺桶",
+    "target": "quan tài"
+  },
+  {
+    "source": "ゾンビ",
+    "target": "xác sống"
+  },
+  {
+    "source": "吸血鬼",
+    "target": "ma cà rồng"
+  },
+  {
+    "source": "人狼",
+    "target": "người sói"
+  },
+  {
+    "source": "呪物",
+    "target": "vật bị nguyền"
+  },
+  {
+    "source": "祟り",
+    "target": "bị ám"
+  },
+  {
+    "source": "霊媒師",
+    "target": "đồng cốt"
+  },
+  {
+    "source": "結界",
+    "target": "kết giới"
+  },
+  {
+    "source": "お札",
+    "target": "lá bùa"
+  },
+  {
+    "source": "封印を解く",
+    "target": "phá phong ấn"
+  },
+  {
+    "source": "異界",
+    "target": "cõi khác"
+  },
+  {
+    "source": "儀式",
+    "target": "nghi lễ"
+  },
+  {
+    "source": "心霊スポット",
+    "target": "nơi có ma"
+  },
+  {
+    "source": "うなされる",
+    "target": "mơ thấy ác mộng"
+  },
+  {
+    "source": "肖像画の目",
+    "target": "mắt trong tranh"
+  },
+  {
+    "source": "鏡の向こう",
+    "target": "phía sau gương"
+  },
+  {
+    "source": "人魂",
+    "target": "hồn ma"
+  },
+  {
+    "source": "死体",
+    "target": "xác chết",
+    "note": "Cách khác: thi thể"
+  },
+  {
+    "source": "失踪",
+    "target": "mất tích"
+  },
+  {
+    "source": "夜鳴き",
+    "target": "kêu giữa đêm"
+  },
+  {
+    "source": "呪いの言葉",
+    "target": "lời nguyền"
+  },
+  {
+    "source": "供養",
+    "target": "cúng siêu"
+  },
+  {
+    "source": "成仏",
+    "target": "siêu thoát"
+  },
+  {
+    "source": "悪霊払い",
+    "target": "trừ tà"
+  },
+  {
+    "source": "血の手形",
+    "target": "dấu bàn tay máu"
+  },
+  {
+    "source": "地下室",
+    "target": "tầng hầm"
+  },
+  {
+    "source": "怨霊",
+    "target": "oan hồn, linh hồn oán hận",
+    "note": "Hán Việt: oán linh. Cách khác: oan hồn"
+  },
+  {
+    "source": "悪鬼",
+    "target": "ác quỷ",
+    "note": "Hán Việt: ác quỷ"
+  },
+  {
+    "source": "呪い",
+    "target": "lời nguyền",
+    "note": "Hán Việt: trớ chú"
+  },
+  {
+    "source": "呪怨",
+    "target": "oán niệm, lời nguyền hận thù",
+    "note": "Hán Việt: chú oán"
+  },
+  {
+    "source": "陰の気",
+    "target": "âm khí",
+    "note": "Hán Việt: âm khí"
+  },
+  {
+    "source": "陽の気",
+    "target": "dương khí",
+    "note": "Hán Việt: dương khí"
+  },
+  {
+    "source": "あの世",
+    "target": "âm phủ",
+    "note": "Hán Việt: âm gian"
+  },
+  {
+    "source": "この世",
+    "target": "dương gian",
+    "note": "Hán Việt: dương gian"
+  },
+  {
+    "source": "鬼門",
+    "target": "cửa quỷ môn",
+    "note": "Hán Việt: quỷ môn quan"
+  },
+  {
+    "source": "招魂",
+    "target": "gọi hồn",
+    "note": "Hán Việt: chiêu hồn"
+  },
+  {
+    "source": "成仏させる",
+    "target": "siêu độ",
+    "note": "Hán Việt: siêu độ"
+  },
+  {
+    "source": "お祓い",
+    "target": "trừ tà",
+    "note": "Hán Việt: khu tà"
+  },
+  {
+    "source": "護符",
+    "target": "bùa chú",
+    "note": "Hán Việt: phù chú"
+  },
+  {
+    "source": "道士",
+    "target": "đạo sĩ",
+    "note": "Hán Việt: đạo sĩ"
+  },
+  {
+    "source": "法要",
+    "target": "làm lễ, pháp sự",
+    "note": "Hán Việt: pháp sự"
+  },
+  {
+    "source": "キョンシー",
+    "target": "cương thi",
+    "note": "Hán Việt: cương thi"
+  },
+  {
+    "source": "髑髏",
+    "target": "xương sọ, bộ xương",
+    "note": "Hán Việt: khô lâu"
+  },
+  {
+    "source": "血痕",
+    "target": "vết máu",
+    "note": "Hán Việt: huyết tích"
+  },
+  {
+    "source": "不気味な",
+    "target": "rùng rợn, lạnh lẽo",
+    "note": "Hán Việt: âm sâm"
+  },
+  {
+    "source": "身の毛がよだつ",
+    "target": "sởn gai ốc, rợn người",
+    "note": "Hán Việt: mao cốt tủng nhiên"
+  },
+  {
+    "source": "幽霊に惑わされる",
+    "target": "ma dẫn đường (lạc mãi)",
+    "note": "Hán Việt: quỷ đả tường. Thành ngữ dân gian"
+  },
+  {
+    "source": "幽霊が出る",
+    "target": "bị ma ám",
+    "note": "Hán Việt: náo quỷ"
+  },
+  {
+    "source": "幽霊屋敷",
+    "target": "nhà có ma",
+    "note": "Hán Việt: hung trạch"
+  },
+  {
+    "source": "奇怪な",
+    "target": "kỳ quái, quái dị",
+    "note": "Hán Việt: quỷ dị"
+  },
+  {
+    "source": "悪夢",
+    "target": "ác mộng",
+    "note": "Hán Việt: ác mộng"
+  },
+  {
+    "source": "幻覚",
+    "target": "ảo giác",
+    "note": "Hán Việt: ảo giác"
+  },
+  {
+    "source": "戦慄",
+    "target": "kinh hãi",
+    "note": "Hán Việt: kinh tủng"
+  },
+  {
+    "source": "恐怖",
+    "target": "nỗi sợ",
+    "note": "Hán Việt: khủng cụ"
+  },
+  {
+    "source": "叫ぶ",
+    "target": "hét lên",
+    "note": "Hán Việt: tiêm khiếu"
+  }
+]

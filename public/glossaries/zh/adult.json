@@ -1,0 +1,332 @@
+[
+  {
+    "source": "暧昧",
+    "target": "mập mờ",
+    "renders": {
+      "vi": "mập mờ",
+      "ko": "썸",
+      "ja": "曖昧な関係",
+      "en": "ambiguous relationship"
+    },
+    "note": "Hán Việt: ái muội"
+  },
+  {
+    "source": "调情",
+    "target": "tán tỉnh, thả thính",
+    "renders": {
+      "vi": "tán tỉnh, thả thính",
+      "ko": "꼬시기",
+      "ja": "いちゃつく",
+      "en": "flirt"
+    },
+    "note": "Hán Việt: điều tình"
+  },
+  {
+    "source": "撩拨",
+    "target": "trêu ghẹo, khơi gợi",
+    "renders": {
+      "vi": "trêu ghẹo, khơi gợi",
+      "ko": "자극하다",
+      "ja": "からかう",
+      "en": "tease"
+    },
+    "note": "Hán Việt: liêu bát"
+  },
+  {
+    "source": "诱惑",
+    "target": "quyến rũ",
+    "renders": {
+      "vi": "quyến rũ",
+      "ko": "유혹",
+      "ja": "誘惑",
+      "en": "seduce"
+    },
+    "note": "Hán Việt: dụ hoặc"
+  },
+  {
+    "source": "挑逗",
+    "target": "trêu chọc",
+    "renders": {
+      "vi": "trêu chọc",
+      "ko": "도발",
+      "ja": "挑発",
+      "en": "provoke"
+    },
+    "note": "Hán Việt: khiêu đậu"
+  },
+  {
+    "source": "亲密",
+    "target": "thân mật",
+    "renders": {
+      "vi": "thân mật",
+      "ko": "친밀",
+      "ja": "親密",
+      "en": "intimate"
+    },
+    "note": "Hán Việt: thân mật"
+  },
+  {
+    "source": "缠绵",
+    "target": "quấn quýt",
+    "renders": {
+      "vi": "quấn quýt",
+      "ko": "애틋함",
+      "ja": "情が深い",
+      "en": "lingering affection"
+    },
+    "note": "Hán Việt: triền miên"
+  },
+  {
+    "source": "温存",
+    "target": "âu yếm",
+    "renders": {
+      "vi": "âu yếm",
+      "ko": "다정함",
+      "ja": "優しさ",
+      "en": "tenderness"
+    },
+    "note": "Hán Việt: ôn tồn"
+  },
+  {
+    "source": "激情",
+    "target": "đam mê",
+    "renders": {
+      "vi": "đam mê",
+      "ko": "열정",
+      "ja": "情熱",
+      "en": "passion"
+    },
+    "note": "Hán Việt: kích tình"
+  },
+  {
+    "source": "情欲",
+    "target": "dục vọng",
+    "renders": {
+      "vi": "dục vọng",
+      "ko": "욕정",
+      "ja": "情欲",
+      "en": "lust"
+    },
+    "note": "Hán Việt: tình dục"
+  },
+  {
+    "source": "欲望",
+    "target": "ham muốn",
+    "renders": {
+      "vi": "ham muốn",
+      "ko": "욕망",
+      "ja": "欲望",
+      "en": "desire"
+    },
+    "note": "Hán Việt: dục vọng"
+  },
+  {
+    "source": "禁忌",
+    "target": "điều cấm kỵ",
+    "renders": {
+      "vi": "điều cấm kỵ",
+      "ko": "금기",
+      "ja": "タブー",
+      "en": "taboo"
+    },
+    "note": "Hán Việt: cấm kỵ"
+  },
+  {
+    "source": "越界",
+    "target": "vượt giới hạn",
+    "renders": {
+      "vi": "vượt giới hạn",
+      "ko": "선을 넘다",
+      "ja": "一線を越える",
+      "en": "cross the line"
+    },
+    "note": "Hán Việt: việt giới"
+  },
+  {
+    "source": "危险关系",
+    "target": "mối quan hệ nguy hiểm",
+    "renders": {
+      "vi": "mối quan hệ nguy hiểm",
+      "ko": "위험한 관계",
+      "ja": "危険な関係",
+      "en": "dangerous liaison"
+    },
+    "note": "Hán Việt: nguy hiểm quan hệ"
+  },
+  {
+    "source": "一夜情",
+    "target": "tình một đêm",
+    "renders": {
+      "vi": "tình một đêm",
+      "ko": "원나이트",
+      "ja": "一夜限りの関係",
+      "en": "one-night stand"
+    },
+    "note": "Hán Việt: nhất dạ tình"
+  },
+  {
+    "source": "同居",
+    "target": "sống chung",
+    "renders": {
+      "vi": "sống chung",
+      "ko": "동거",
+      "ja": "同棲",
+      "en": "live together"
+    },
+    "note": "Hán Việt: đồng cư"
+  },
+  {
+    "source": "包养",
+    "target": "bao nuôi",
+    "renders": {
+      "vi": "bao nuôi",
+      "ko": "후원하며 만나다",
+      "ja": "愛人にする",
+      "en": "keep as a kept partner"
+    },
+    "note": "Hán Việt: bao dưỡng"
+  },
+  {
+    "source": "出轨",
+    "target": "ngoại tình",
+    "renders": {
+      "vi": "ngoại tình",
+      "ko": "바람피우다",
+      "ja": "浮気",
+      "en": "cheat"
+    },
+    "note": "Hán Việt: xuất quỹ"
+  },
+  {
+    "source": "劈腿",
+    "target": "bắt cá hai tay",
+    "renders": {
+      "vi": "bắt cá hai tay",
+      "ko": "양다리",
+      "ja": "二股",
+      "en": "two-time"
+    },
+    "note": "Hán Việt: phách thối"
+  },
+  {
+    "source": "小三",
+    "target": "người thứ ba",
+    "renders": {
+      "vi": "người thứ ba",
+      "ko": "불륜 상대",
+      "ja": "愛人",
+      "en": "the other woman"
+    },
+    "note": "Hán Việt: tiểu tam"
+  },
+  {
+    "source": "情人",
+    "target": "người tình",
+    "renders": {
+      "vi": "người tình",
+      "ko": "정부",
+      "ja": "愛人",
+      "en": "lover"
+    },
+    "note": "Hán Việt: tình nhân"
+  },
+  {
+    "source": "偷情",
+    "target": "vụng trộm",
+    "renders": {
+      "vi": "vụng trộm",
+      "ko": "불륜",
+      "ja": "不倫",
+      "en": "illicit affair"
+    },
+    "note": "Hán Việt: thâu tình"
+  },
+  {
+    "source": "婚外情",
+    "target": "tình ngoài hôn nhân",
+    "renders": {
+      "vi": "tình ngoài hôn nhân",
+      "ko": "혼외 관계",
+      "ja": "不倫",
+      "en": "extramarital affair"
+    },
+    "note": "Hán Việt: hôn ngoại tình"
+  },
+  {
+    "source": "脸红",
+    "target": "đỏ mặt",
+    "renders": {
+      "vi": "đỏ mặt",
+      "ko": "얼굴이 붉어지다",
+      "ja": "顔が赤くなる",
+      "en": "blush"
+    },
+    "note": "Hán Việt: kiểm hồng"
+  },
+  {
+    "source": "心跳加速",
+    "target": "tim đập nhanh",
+    "renders": {
+      "vi": "tim đập nhanh",
+      "ko": "심장이 빨리 뛰다",
+      "ja": "ドキドキする",
+      "en": "heart racing"
+    },
+    "note": "Hán Việt: tâm khiêu gia tốc"
+  },
+  {
+    "source": "呼吸急促",
+    "target": "thở gấp",
+    "renders": {
+      "vi": "thở gấp",
+      "ko": "숨이 가빠지다",
+      "ja": "息が荒くなる",
+      "en": "breathe fast"
+    },
+    "note": "Hán Việt: hô hấp cấp xúc"
+  },
+  {
+    "source": "耳鬓厮磨",
+    "target": "kề tai áp má",
+    "renders": {
+      "vi": "kề tai áp má",
+      "ko": "뺨을 맞대다",
+      "ja": "寄り添う",
+      "en": "nuzzle close"
+    },
+    "note": "Hán Việt: nhĩ mấn tư ma"
+  },
+  {
+    "source": "肌肤之亲",
+    "target": "gần gũi thân thể",
+    "renders": {
+      "vi": "gần gũi thân thể",
+      "ko": "스킨십",
+      "ja": "肌の触れ合い",
+      "en": "physical intimacy"
+    },
+    "note": "Hán Việt: cơ phu chi thân"
+  },
+  {
+    "source": "洞房花烛",
+    "target": "đêm động phòng",
+    "renders": {
+      "vi": "đêm động phòng",
+      "ko": "신방",
+      "ja": "初夜",
+      "en": "wedding night"
+    },
+    "note": "Hán Việt: động phòng hoa chúc"
+  },
+  {
+    "source": "春宵",
+    "target": "đêm xuân",
+    "renders": {
+      "vi": "đêm xuân",
+      "ko": "봄밤",
+      "ja": "春の夜",
+      "en": "spring night"
+    },
+    "note": "Hán Việt: xuân tiêu"
+  }
+]

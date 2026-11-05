@@ -1,0 +1,431 @@
+[
+  {
+    "source": "出手",
+    "target": "ra tay",
+    "renders": {
+      "vi": "ra tay",
+      "ko": "손을 쓰다",
+      "ja": "手を出す",
+      "en": "make a move"
+    },
+    "note": "Hán Việt: xuất thủ. Không dịch \"đưa tay ra\""
+  },
+  {
+    "source": "动手",
+    "target": "ra tay đánh",
+    "renders": {
+      "vi": "ra tay đánh",
+      "ko": "손을 대다",
+      "ja": "攻撃する",
+      "en": "start fighting"
+    },
+    "note": "Hán Việt: động thủ"
+  },
+  {
+    "source": "交手",
+    "target": "giao đấu",
+    "renders": {
+      "vi": "giao đấu",
+      "ko": "겨루다",
+      "ja": "交戦する",
+      "en": "cross swords"
+    },
+    "note": "Hán Việt: giao thủ"
+  },
+  {
+    "source": "对决",
+    "target": "đối đầu, quyết đấu",
+    "renders": {
+      "vi": "đối đầu, quyết đấu",
+      "ko": "대결",
+      "ja": "対決",
+      "en": "showdown"
+    },
+    "note": "Hán Việt: đối quyết"
+  },
+  {
+    "source": "偷袭",
+    "target": "đánh lén",
+    "renders": {
+      "vi": "đánh lén",
+      "ko": "기습",
+      "ja": "不意打ち",
+      "en": "sneak attack"
+    },
+    "note": "Hán Việt: thâu tập"
+  },
+  {
+    "source": "突袭",
+    "target": "tập kích bất ngờ",
+    "renders": {
+      "vi": "tập kích bất ngờ",
+      "ko": "급습",
+      "ja": "奇襲",
+      "en": "surprise raid"
+    },
+    "note": "Hán Việt: đột tập"
+  },
+  {
+    "source": "埋伏",
+    "target": "mai phục",
+    "renders": {
+      "vi": "mai phục",
+      "ko": "매복",
+      "ja": "待ち伏せ",
+      "en": "ambush"
+    },
+    "note": "Hán Việt: mai phục"
+  },
+  {
+    "source": "伏击",
+    "target": "phục kích",
+    "renders": {
+      "vi": "phục kích",
+      "ko": "매복 공격",
+      "ja": "伏兵",
+      "en": "ambush attack"
+    },
+    "note": "Hán Việt: phục kích"
+  },
+  {
+    "source": "围攻",
+    "target": "vây đánh",
+    "renders": {
+      "vi": "vây đánh",
+      "ko": "포위 공격",
+      "ja": "包囲攻撃",
+      "en": "besiege"
+    },
+    "note": "Hán Việt: vi công"
+  },
+  {
+    "source": "包围",
+    "target": "bao vây",
+    "renders": {
+      "vi": "bao vây",
+      "ko": "포위",
+      "ja": "包囲",
+      "en": "surround"
+    },
+    "note": "Hán Việt: bao vi"
+  },
+  {
+    "source": "突围",
+    "target": "phá vòng vây",
+    "renders": {
+      "vi": "phá vòng vây",
+      "ko": "포위 돌파",
+      "ja": "包囲突破",
+      "en": "break out"
+    },
+    "note": "Hán Việt: đột vi"
+  },
+  {
+    "source": "撤退",
+    "target": "rút lui",
+    "renders": {
+      "vi": "rút lui",
+      "ko": "철수",
+      "ja": "撤退",
+      "en": "retreat"
+    },
+    "note": "Hán Việt: triệt thoái"
+  },
+  {
+    "source": "掩护",
+    "target": "yểm trợ, che chắn",
+    "renders": {
+      "vi": "yểm trợ, che chắn",
+      "ko": "엄호",
+      "ja": "援護",
+      "en": "cover"
+    },
+    "note": "Hán Việt: yểm hộ"
+  },
+  {
+    "source": "增援",
+    "target": "chi viện",
+    "renders": {
+      "vi": "chi viện",
+      "ko": "증원",
+      "ja": "増援",
+      "en": "reinforcements"
+    },
+    "note": "Hán Việt: tăng viện"
+  },
+  {
+    "source": "支援",
+    "target": "hỗ trợ",
+    "renders": {
+      "vi": "hỗ trợ",
+      "ko": "지원",
+      "ja": "支援",
+      "en": "support"
+    },
+    "note": "Hán Việt: chi viện"
+  },
+  {
+    "source": "反击",
+    "target": "phản công",
+    "renders": {
+      "vi": "phản công",
+      "ko": "반격",
+      "ja": "反撃",
+      "en": "counterattack"
+    },
+    "note": "Hán Việt: phản kích"
+  },
+  {
+    "source": "进攻",
+    "target": "tấn công",
+    "renders": {
+      "vi": "tấn công",
+      "ko": "공격",
+      "ja": "攻撃",
+      "en": "attack"
+    },
+    "note": "Hán Việt: tiến công"
+  },
+  {
+    "source": "防守",
+    "target": "phòng thủ",
+    "renders": {
+      "vi": "phòng thủ",
+      "ko": "방어",
+      "ja": "守備",
+      "en": "defend"
+    },
+    "note": "Hán Việt: phòng thủ"
+  },
+  {
+    "source": "格挡",
+    "target": "đỡ đòn",
+    "renders": {
+      "vi": "đỡ đòn",
+      "ko": "막다",
+      "ja": "受け止める",
+      "en": "block"
+    },
+    "note": "Hán Việt: cách đáng"
+  },
+  {
+    "source": "闪避",
+    "target": "né tránh",
+    "renders": {
+      "vi": "né tránh",
+      "ko": "회피",
+      "ja": "回避",
+      "en": "dodge"
+    },
+    "note": "Hán Việt: thiểm tị"
+  },
+  {
+    "source": "连击",
+    "target": "đòn liên hoàn",
+    "renders": {
+      "vi": "đòn liên hoàn",
+      "ko": "연타",
+      "ja": "連続攻撃",
+      "en": "combo"
+    },
+    "note": "Hán Việt: liên kích"
+  },
+  {
+    "source": "重击",
+    "target": "đòn nặng",
+    "renders": {
+      "vi": "đòn nặng",
+      "ko": "강타",
+      "ja": "強打",
+      "en": "heavy blow"
+    },
+    "note": "Hán Việt: trọng kích"
+  },
+  {
+    "source": "一击必杀",
+    "target": "một đòn chí mạng",
+    "renders": {
+      "vi": "một đòn chí mạng",
+      "ko": "일격필살",
+      "ja": "一撃必殺",
+      "en": "one-hit kill"
+    },
+    "note": "Hán Việt: nhất kích tất sát"
+  },
+  {
+    "source": "开火",
+    "target": "nổ súng",
+    "renders": {
+      "vi": "nổ súng",
+      "ko": "발포",
+      "ja": "発砲",
+      "en": "open fire"
+    },
+    "note": "Hán Việt: khai hỏa"
+  },
+  {
+    "source": "射击",
+    "target": "bắn",
+    "renders": {
+      "vi": "bắn",
+      "ko": "사격",
+      "ja": "射撃",
+      "en": "shoot"
+    },
+    "note": "Hán Việt: xạ kích"
+  },
+  {
+    "source": "瞄准",
+    "target": "nhắm bắn",
+    "renders": {
+      "vi": "nhắm bắn",
+      "ko": "조준",
+      "ja": "狙う",
+      "en": "aim"
+    },
+    "note": "Hán Việt: miêu chuẩn"
+  },
+  {
+    "source": "狙击",
+    "target": "bắn tỉa",
+    "renders": {
+      "vi": "bắn tỉa",
+      "ko": "저격",
+      "ja": "狙撃",
+      "en": "snipe"
+    },
+    "note": "Hán Việt: tỷ kích"
+  },
+  {
+    "source": "爆炸",
+    "target": "nổ",
+    "renders": {
+      "vi": "nổ",
+      "ko": "폭발",
+      "ja": "爆発",
+      "en": "explosion"
+    },
+    "note": "Hán Việt: bạo tạc"
+  },
+  {
+    "source": "追击",
+    "target": "truy đuổi đánh",
+    "renders": {
+      "vi": "truy đuổi đánh",
+      "ko": "추격",
+      "ja": "追撃",
+      "en": "pursue"
+    },
+    "note": "Hán Việt: truy kích"
+  },
+  {
+    "source": "追捕",
+    "target": "truy bắt",
+    "renders": {
+      "vi": "truy bắt",
+      "ko": "추적 체포",
+      "ja": "追跡逮捕",
+      "en": "hunt down"
+    },
+    "note": "Hán Việt: truy bộ"
+  },
+  {
+    "source": "逃脱",
+    "target": "thoát thân",
+    "renders": {
+      "vi": "thoát thân",
+      "ko": "탈출",
+      "ja": "逃れる",
+      "en": "escape"
+    },
+    "note": "Hán Việt: đào thoát"
+  },
+  {
+    "source": "肉搏",
+    "target": "đánh giáp lá cà",
+    "renders": {
+      "vi": "đánh giáp lá cà",
+      "ko": "백병전",
+      "ja": "白兵戦",
+      "en": "hand-to-hand combat"
+    },
+    "note": "Hán Việt: nhục bác"
+  },
+  {
+    "source": "擒拿",
+    "target": "khóa tay, bắt giữ",
+    "renders": {
+      "vi": "khóa tay, bắt giữ",
+      "ko": "제압 기술",
+      "ja": "逮捕術",
+      "en": "grapple and restrain"
+    },
+    "note": "Hán Việt: cầm nã"
+  },
+  {
+    "source": "踢",
+    "target": "đá",
+    "renders": {
+      "vi": "đá",
+      "ko": "차다",
+      "ja": "蹴る",
+      "en": "kick"
+    },
+    "note": "Hán Việt: dịch"
+  },
+  {
+    "source": "拳头",
+    "target": "nắm đấm",
+    "renders": {
+      "vi": "nắm đấm",
+      "ko": "주먹",
+      "ja": "拳",
+      "en": "fist"
+    },
+    "note": "Hán Việt: quyền đầu"
+  },
+  {
+    "source": "受伤",
+    "target": "bị thương",
+    "renders": {
+      "vi": "bị thương",
+      "ko": "부상당하다",
+      "ja": "負傷する",
+      "en": "get injured"
+    },
+    "note": "Hán Việt: thọ thương"
+  },
+  {
+    "source": "致命",
+    "target": "chí mạng",
+    "renders": {
+      "vi": "chí mạng",
+      "ko": "치명적",
+      "ja": "致命的",
+      "en": "fatal"
+    },
+    "note": "Hán Việt: trí mệnh"
+  },
+  {
+    "source": "命中",
+    "target": "trúng đích",
+    "renders": {
+      "vi": "trúng đích",
+      "ko": "명중",
+      "ja": "命中",
+      "en": "hit the target"
+    },
+    "note": "Hán Việt: mệnh trung"
+  },
+  {
+    "source": "压制",
+    "target": "áp chế",
+    "renders": {
+      "vi": "áp chế",
+      "ko": "제압",
+      "ja": "制圧",
+      "en": "suppress"
+    },
+    "note": "Hán Việt: áp chế"
+  }
+]

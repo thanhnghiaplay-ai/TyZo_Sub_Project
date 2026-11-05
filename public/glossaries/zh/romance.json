@@ -1,0 +1,431 @@
+[
+  {
+    "source": "暗恋",
+    "target": "thầm thương, thích mà không dám nói ra",
+    "renders": {
+      "vi": "thầm thương, thích mà không dám nói ra",
+      "ko": "짝사랑",
+      "ja": "片思い",
+      "en": "secret crush"
+    },
+    "note": "Hán Việt: ám luyến"
+  },
+  {
+    "source": "表白",
+    "target": "tỏ tình, nói ra tình cảm",
+    "renders": {
+      "vi": "tỏ tình, nói ra tình cảm",
+      "ko": "고백",
+      "ja": "告白",
+      "en": "confess love"
+    },
+    "note": "Hán Việt: biểu bạch"
+  },
+  {
+    "source": "告白",
+    "target": "thổ lộ, tỏ tình",
+    "renders": {
+      "vi": "thổ lộ, tỏ tình",
+      "ko": "고백",
+      "ja": "告白",
+      "en": "confession"
+    },
+    "note": "Hán Việt: cáo bạch"
+  },
+  {
+    "source": "心动",
+    "target": "tim đập loạn, xao xuyến",
+    "renders": {
+      "vi": "tim đập loạn, xao xuyến",
+      "ko": "설레다",
+      "ja": "ときめく",
+      "en": "heart flutter"
+    },
+    "note": "Hán Việt: tâm động"
+  },
+  {
+    "source": "喜欢",
+    "target": "thích",
+    "renders": {
+      "vi": "thích",
+      "ko": "좋아하다",
+      "ja": "好き",
+      "en": "like"
+    },
+    "note": "Hán Việt: hỷ hoan"
+  },
+  {
+    "source": "爱上",
+    "target": "yêu, đổ",
+    "renders": {
+      "vi": "yêu, đổ",
+      "ko": "사랑에 빠지다",
+      "ja": "好きになる",
+      "en": "fall in love"
+    },
+    "note": "Hán Việt: ái thượng"
+  },
+  {
+    "source": "恋爱",
+    "target": "yêu đương",
+    "renders": {
+      "vi": "yêu đương",
+      "ko": "연애",
+      "ja": "恋愛",
+      "en": "romance"
+    },
+    "note": "Hán Việt: luyến ái"
+  },
+  {
+    "source": "初恋",
+    "target": "mối tình đầu",
+    "renders": {
+      "vi": "mối tình đầu",
+      "ko": "첫사랑",
+      "ja": "初恋",
+      "en": "first love"
+    },
+    "note": "Hán Việt: sơ luyến"
+  },
+  {
+    "source": "前任",
+    "target": "người yêu cũ",
+    "renders": {
+      "vi": "người yêu cũ",
+      "ko": "전 애인",
+      "ja": "元恋人",
+      "en": "ex"
+    },
+    "note": "Hán Việt: tiền nhiệm"
+  },
+  {
+    "source": "男朋友",
+    "target": "bạn trai",
+    "renders": {
+      "vi": "bạn trai",
+      "ko": "남자친구",
+      "ja": "彼氏",
+      "en": "boyfriend"
+    },
+    "note": "Hán Việt: nam bằng hữu"
+  },
+  {
+    "source": "女朋友",
+    "target": "bạn gái",
+    "renders": {
+      "vi": "bạn gái",
+      "ko": "여자친구",
+      "ja": "彼女",
+      "en": "girlfriend"
+    },
+    "note": "Hán Việt: nữ bằng hữu"
+  },
+  {
+    "source": "对象",
+    "target": "người yêu",
+    "renders": {
+      "vi": "người yêu",
+      "ko": "연인",
+      "ja": "恋人",
+      "en": "partner"
+    },
+    "note": "Hán Việt: đối tượng"
+  },
+  {
+    "source": "老公",
+    "target": "chồng",
+    "renders": {
+      "vi": "chồng",
+      "ko": "남편",
+      "ja": "旦那",
+      "en": "husband"
+    },
+    "note": "Hán Việt: lão công"
+  },
+  {
+    "source": "老婆",
+    "target": "vợ",
+    "renders": {
+      "vi": "vợ",
+      "ko": "아내",
+      "ja": "妻",
+      "en": "wife"
+    },
+    "note": "Hán Việt: lão bà"
+  },
+  {
+    "source": "相亲",
+    "target": "xem mắt",
+    "renders": {
+      "vi": "xem mắt",
+      "ko": "맞선",
+      "ja": "お見合い",
+      "en": "arranged date"
+    },
+    "note": "Hán Việt: tương thân"
+  },
+  {
+    "source": "订婚",
+    "target": "đính hôn",
+    "renders": {
+      "vi": "đính hôn",
+      "ko": "약혼",
+      "ja": "婚約",
+      "en": "engagement"
+    },
+    "note": "Hán Việt: đính hôn"
+  },
+  {
+    "source": "结婚",
+    "target": "kết hôn, cưới",
+    "renders": {
+      "vi": "kết hôn, cưới",
+      "ko": "결혼",
+      "ja": "結婚",
+      "en": "marry"
+    },
+    "note": "Hán Việt: kết hôn"
+  },
+  {
+    "source": "离婚",
+    "target": "ly hôn",
+    "renders": {
+      "vi": "ly hôn",
+      "ko": "이혼",
+      "ja": "離婚",
+      "en": "divorce"
+    },
+    "note": "Hán Việt: ly hôn"
+  },
+  {
+    "source": "分手",
+    "target": "chia tay",
+    "renders": {
+      "vi": "chia tay",
+      "ko": "이별",
+      "ja": "別れる",
+      "en": "break up"
+    },
+    "note": "Hán Việt: phân thủ"
+  },
+  {
+    "source": "复合",
+    "target": "quay lại",
+    "renders": {
+      "vi": "quay lại",
+      "ko": "재결합",
+      "ja": "よりを戻す",
+      "en": "get back together"
+    },
+    "note": "Hán Việt: phục hợp"
+  },
+  {
+    "source": "吃醋",
+    "target": "ghen",
+    "renders": {
+      "vi": "ghen",
+      "ko": "질투하다",
+      "ja": "嫉妬する",
+      "en": "get jealous"
+    },
+    "note": "Hán Việt: ngật thố. Không dịch \"ăn giấm\""
+  },
+  {
+    "source": "撒娇",
+    "target": "làm nũng",
+    "renders": {
+      "vi": "làm nũng",
+      "ko": "애교 부리다",
+      "ja": "甘える",
+      "en": "act cute"
+    },
+    "note": "Hán Việt: tát kiều"
+  },
+  {
+    "source": "撩",
+    "target": "tán tỉnh, trêu chọc",
+    "renders": {
+      "vi": "tán tỉnh, trêu chọc",
+      "ko": "꼬시다",
+      "ja": "口説く",
+      "en": "flirt"
+    },
+    "note": "Hán Việt: liêu"
+  },
+  {
+    "source": "追求",
+    "target": "theo đuổi",
+    "renders": {
+      "vi": "theo đuổi",
+      "ko": "구애",
+      "ja": "アプローチ",
+      "en": "pursue"
+    },
+    "note": "Hán Việt: truy cầu"
+  },
+  {
+    "source": "约会",
+    "target": "hẹn hò",
+    "renders": {
+      "vi": "hẹn hò",
+      "ko": "데이트",
+      "ja": "デート",
+      "en": "date"
+    },
+    "note": "Hán Việt: ước hội"
+  },
+  {
+    "source": "牵手",
+    "target": "nắm tay",
+    "renders": {
+      "vi": "nắm tay",
+      "ko": "손을 잡다",
+      "ja": "手をつなぐ",
+      "en": "hold hands"
+    },
+    "note": "Hán Việt: khiên thủ"
+  },
+  {
+    "source": "拥抱",
+    "target": "ôm",
+    "renders": {
+      "vi": "ôm",
+      "ko": "포옹",
+      "ja": "抱擁",
+      "en": "hug"
+    },
+    "note": "Hán Việt: ủng bão"
+  },
+  {
+    "source": "亲吻",
+    "target": "hôn",
+    "renders": {
+      "vi": "hôn",
+      "ko": "키스",
+      "ja": "キス",
+      "en": "kiss"
+    },
+    "note": "Hán Việt: thân vẫn"
+  },
+  {
+    "source": "思念",
+    "target": "nhớ nhung",
+    "renders": {
+      "vi": "nhớ nhung",
+      "ko": "그리움",
+      "ja": "恋しさ",
+      "en": "longing"
+    },
+    "note": "Hán Việt: tư niệm"
+  },
+  {
+    "source": "心疼",
+    "target": "xót, thương",
+    "renders": {
+      "vi": "xót, thương",
+      "ko": "마음 아파하다",
+      "ja": "心が痛む",
+      "en": "ache for"
+    },
+    "note": "Hán Việt: tâm đông. Không dịch \"đau tim\""
+  },
+  {
+    "source": "宠",
+    "target": "cưng chiều",
+    "renders": {
+      "vi": "cưng chiều",
+      "ko": "아끼다",
+      "ja": "可愛がる",
+      "en": "dote on"
+    },
+    "note": "Hán Việt: sủng"
+  },
+  {
+    "source": "守护",
+    "target": "bảo vệ, che chở",
+    "renders": {
+      "vi": "bảo vệ, che chở",
+      "ko": "지키다",
+      "ja": "守る",
+      "en": "protect"
+    },
+    "note": "Hán Việt: thủ hộ"
+  },
+  {
+    "source": "暧昧",
+    "target": "mập mờ",
+    "renders": {
+      "vi": "mập mờ",
+      "ko": "썸",
+      "ja": "曖昧な関係",
+      "en": "ambiguous relationship"
+    },
+    "note": "Hán Việt: ái muội"
+  },
+  {
+    "source": "甜蜜",
+    "target": "ngọt ngào",
+    "renders": {
+      "vi": "ngọt ngào",
+      "ko": "달콤하다",
+      "ja": "甘い",
+      "en": "sweet"
+    },
+    "note": "Hán Việt: điềm mật"
+  },
+  {
+    "source": "虐心",
+    "target": "đau lòng, ngược tâm",
+    "renders": {
+      "vi": "đau lòng, ngược tâm",
+      "ko": "마음 아픈",
+      "ja": "切ない",
+      "en": "heart-wrenching"
+    },
+    "note": "Hán Việt: ngược tâm"
+  },
+  {
+    "source": "白月光",
+    "target": "ánh trăng sáng, mối tình đẹp không với tới",
+    "renders": {
+      "vi": "ánh trăng sáng, mối tình đẹp không với tới",
+      "ko": "첫사랑 같은 존재",
+      "ja": "忘れられない人",
+      "en": "unforgettable first love"
+    },
+    "note": "Hán Việt: bạch nguyệt quang"
+  },
+  {
+    "source": "绿茶",
+    "target": "người giả vờ ngây thơ",
+    "renders": {
+      "vi": "người giả vờ ngây thơ",
+      "ko": "내숭녀",
+      "ja": "ぶりっ子",
+      "en": "fake-innocent type"
+    },
+    "note": "Hán Việt: lục trà"
+  },
+  {
+    "source": "渣男",
+    "target": "tên đàn ông tệ bạc",
+    "renders": {
+      "vi": "tên đàn ông tệ bạc",
+      "ko": "쓰레기 남자",
+      "ja": "クズ男",
+      "en": "scumbag guy"
+    },
+    "note": "Hán Việt: tra nam"
+  },
+  {
+    "source": "舔狗",
+    "target": "kẻ si tình hèn mọn",
+    "renders": {
+      "vi": "kẻ si tình hèn mọn",
+      "ko": "호구",
+      "ja": "尽くすだけの男",
+      "en": "simp"
+    },
+    "note": "Hán Việt: thiểm cẩu"
+  }
+]

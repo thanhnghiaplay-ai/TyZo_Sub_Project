@@ -1,0 +1,1914 @@
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import { AccountPanel } from "@/components/account-panel";
+import { getMyPlace, submitAppeal, type MyPlace } from "@/lib/admin-room";
+import { Link } from "@tanstack/react-router";
+import { signOut } from "@/lib/auth/client";
+import {
+  ClipboardPaste,
+  Clapperboard,
+  Eye,
+  EyeOff,
+  FileAudio,
+  Link2,
+  Loader2,
+  Pause,
+  Play,
+  RefreshCw,
+  RotateCw,
+  Settings,
+  Square,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
+import { usePipeline } from "@/components/use-pipeline";
+import { AccountStrip } from "@/components/account-strip";
+import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
+import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
+import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
+import { edgeVoice } from "@/lib/sub/edge-voice";
+import { narrationChoice } from "@/lib/sub/cast-voice";
+import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechLang } from "@/lib/sub/text";
+import { termsToCsv } from "@/lib/sub/glossary";
+import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
+import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/asr-retry";
+import type { FilterRetryReport } from "@/lib/sub/filter-retry";
+import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
+
+const FIELD =
+  "min-tap w-full rounded-xl border border-line bg-bg px-3 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
+
+function stamp(seconds: number | null): string {
+  if (seconds == null || !Number.isFinite(seconds)) return "—";
+  const s = Math.max(0, seconds);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const rem = (s % 60).toFixed(1).padStart(4, "0");
+  return (h ? `${h}:${String(m).padStart(2, "0")}` : String(m)) + ":" + rem;
+}
+
+function scoreBit(value: number | undefined): string {
+  return typeof value === "number" ? value.toFixed(2) : "—";
+}
+
+function AsrDiag({
+  raw,
+  rejects,
+  kept,
+  fileName,
+  retry,
+  filterRetry,
+  onPlay,
+  onKeep,
+  onDrop,
+}: {
+  raw: RawAsrPart[];
+  rejects: RejectEntry[];
+  kept: number;
+  fileName?: string;
+  retry: AsrRetryReport | null;
+  filterRetry: FilterRetryReport | null;
+  onPlay: (row: RejectEntry) => void;
+  onKeep: (index: number) => void;
+  onDrop: (index: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  if (!raw.length && !rejects.length && !retry?.missing.length && !(retry && retry.usedSeconds > 0) && !(filterRetry && (filterRetry.sent > 0 || filterRetry.deferred > 0))) return null;
+  const summary = summarizeDiagnostics(rejects, raw);
+  const download = () => {
+    const doc = { exportedAt: new Date().toISOString(), ...buildDiagnosticsExport({ rejects, raw, kept }) };
+    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json;charset=utf-8" });
+    const link = document.createElement("a");
+    const href = URL.createObjectURL(blob);
+    link.href = href;
+    link.download = ((fileName || "phu-de").replace(/\.[^.]+$/, "") || "phu-de") + "-chan-doan.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(href), 1000);
+  };
+  return (
+    <div className="grid gap-3 rounded-2xl border border-line bg-bg p-3">
+      <div>
+        <h3 className="font-semibold">Chẩn đoán câu bị loại</h3>
+        <p className="text-sm text-muted">Không đổi phụ đề. Phân biệt đoạn Whisper không trả câu với câu app tự lọc.</p>
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-sm">
+        <p className="rounded-xl border border-line px-3 py-2">
+          <span className="block text-muted">Whisper không trả câu</span>
+          <span className="font-semibold">{summary.whisperEmptyParts} đoạn</span>
+        </p>
+        <p className="rounded-xl border border-line px-3 py-2">
+          <span className="block text-muted">App lọc bỏ</span>
+          <span className="font-semibold">{summary.appFiltered} câu</span>
+        </p>
+        <p className="rounded-xl border border-line px-3 py-2">
+          <span className="block text-muted">Im lặng, không gửi</span>
+          <span className="font-semibold">{summary.silenceParts} đoạn</span>
+        </p>
+        <p className="rounded-xl border border-line px-3 py-2">
+          <span className="block text-muted">Không giải mã được</span>
+          <span className="font-semibold">{summary.decodeFailParts} đoạn</span>
+        </p>
+      </div>
+      <p className="text-sm text-muted">
+        Giữ lại {kept} câu. Whisper có chữ ở {summary.whisperParts} đoạn.
+      </p>
+      {retry && (retry.usedSeconds > 0 || retry.missing.length > 0) && (
+        <div className="grid gap-1 text-sm">
+          <p>
+            Thử lại đoạn lỗi: đã dùng {formatSeconds(retry.usedSeconds)} (ngân sách {formatSeconds(retry.budgetSeconds)}, mỗi đoạn một lần).
+          </p>
+          {retry.missing.length === 0 ? (
+            <p className="text-muted">Các đoạn lỗi đã nhận dạng lại được.</p>
+          ) : (
+            <ul className="grid gap-1">
+              {retry.missing.map((part) => (
+                <li key={part.index}>
+                  {formatPartSpan(part)}
+                  {part.retried ? " — vẫn chưa nhận dạng được" : " — chưa thử lại vì hết ngân sách"}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+      {filterRetry && (filterRetry.sent > 0 || filterRetry.deferred > 0) && (
+        <p className="text-sm">
+          Thử lại câu không chắc: đã gửi {filterRetry.sent} đoạn, dùng {formatSeconds(filterRetry.usedSeconds)} (ngân sách {formatSeconds(filterRetry.budgetSeconds)}).
+          {filterRetry.deferred > 0 ? ` Còn ${filterRetry.deferred} đoạn vì hết ngân sách.` : ""} Không gửi câu đã bấm Bỏ, và không dùng ngân sách thử lại lỗi giải mã.
+        </p>
+      )}
+      {summary.byReason.length > 0 && (
+        <ul className="grid gap-1 text-sm">
+          {summary.byReason.map((row) => (
+            <li key={row.reason} className="flex justify-between gap-3">
+              <span>{row.label}</span>
+              <span className="text-muted">{row.count}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {summary.byLanguage.length > 0 && (
+        <ul className="grid gap-1 text-sm text-muted">
+          {summary.byLanguage.map((row) => (
+            <li key={row.language}>
+              {row.language}: {row.rawParts} đoạn · Whisper trống {row.whisperEmptyParts} · app lọc {row.appFiltered} · im lặng {row.silenceParts}
+              {row.decodeFailParts ? ` · không giải mã ${row.decodeFailParts}` : ""}
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="grid grid-cols-2 gap-2">
+        <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => setOpen((value) => !value)}>
+          {open ? "Thu gọn" : "Xem danh sách"}
+        </button>
+        <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={download}>
+          Xuất JSON
+        </button>
+      </div>
+      {open && (
+        <div className="grid max-h-64 gap-2 overflow-auto text-sm">
+          {rejects.length === 0 && <p className="text-muted">Chưa có câu nào bị app lọc. Các đoạn trống nằm ở phần tóm tắt phía trên.</p>}
+          {rejects.map((row, index) => (
+            <div key={`${row.partIndex}-${row.start}-${index}`} className="grid gap-2 border-b border-line pb-2">
+              <p>
+                <span className="text-muted">
+                  {stamp(row.start)} · đoạn {row.partIndex + 1} · {row.language} · {REJECT_LABEL[row.reason]}
+                </span>
+                <span className="block">{row.text || "(trống)"}</span>
+                <span className="text-muted">
+                  no_speech {scoreBit(row.no_speech_prob)} · logprob {scoreBit(row.avg_logprob)} · nén {scoreBit(row.compression_ratio)}
+                </span>
+              </p>
+              {row.dismissed ? (
+                <p className="text-muted">Đã bỏ. Không đưa vào phụ đề.</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => onPlay(row)} disabled={row.start == null || row.end == null}>
+                    Nghe
+                  </button>
+                  <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => onKeep(index)} disabled={row.start == null || row.end == null}>
+                    Giữ
+                  </button>
+                  <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => onDrop(index)}>
+                    Bỏ
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
+  const [src, setSrc] = useState("");
+  const [tgt, setTgt] = useState("");
+  const [note, setNote] = useState("");
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const add = () => {
+    app.addUserTerm(src, tgt);
+    setSrc("");
+    setTgt("");
+    setNote(`Đã thêm «${src.trim()}».`);
+  };
+  return (
+    <div className="grid gap-2 pb-2">
+      <p className="text-muted text-xs">
+        Term của bạn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại đang chọn, và ghi đè file của thể loại đó khi trùng. File không dùng chung giữa các thể loại. Tiếng Nhật khớp thêm đuôi nói thường gặp (ます / た / ない / する). CSV: cột source, target (hoặc mỗi dòng «gốc = dịch»).
+      </p>
+      <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
+        <input className={FIELD} placeholder="Từ gốc" value={src} onChange={(e) => setSrc(e.target.value)} />
+        <input className={FIELD} placeholder="Cách dịch" value={tgt} onChange={(e) => setTgt(e.target.value)} />
+        <button type="button" className="min-tap rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={add} disabled={!src.trim()}>
+          Thêm
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" className="min-tap rounded-xl border border-line px-3 text-sm" onClick={() => fileRef.current?.click()}>
+          Nhập CSV
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".csv,.txt,text/csv,text/plain"
+          className="hidden"
+          onChange={async (event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (!file) return;
+            const text = await file.text();
+            const n = app.importUserCsv(text);
+            setNote(n ? `Đã nhập ${n} dòng.` : "Không đọc được dòng nào.");
+          }}
+        />
+        <button
+          type="button"
+          className="min-tap rounded-xl border border-line px-3 text-sm"
+          disabled={!app.userTerms.length}
+          onClick={() => {
+            const blob = new Blob([termsToCsv(app.userTerms)], { type: "text/csv;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "glossary.csv";
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+        >
+          Xuất CSV
+        </button>
+        <button
+          type="button"
+          className="min-tap rounded-xl border border-line px-3 text-sm"
+          disabled={!app.userTerms.length}
+          onClick={() => {
+            app.clearUserTerms();
+            setNote("Đã xóa thuật ngữ bạn thêm cho cặp này.");
+          }}
+        >
+          Xóa của tôi
+        </button>
+      </div>
+      {note ? <p className="text-xs text-muted">{note}</p> : null}
+      <div className="grid max-h-48 gap-1 overflow-auto text-sm">
+        {(app.glossaryInfo?.terms || []).map((t: { source: string; target: string; user?: boolean }, i: number) => (
+          <div key={t.user ? "u-" + t.source : "f-" + i} className="flex items-center gap-2 border-b border-line/50 py-0.5">
+            <span className="min-w-0 flex-1 truncate font-medium">{t.source}</span>
+            <span className="text-muted">→</span>
+            <span className="min-w-0 flex-1 truncate">{t.target}</span>
+            {t.user ? (
+              <button type="button" className="shrink-0 text-xs text-muted" onClick={() => app.removeUserTerm(t.source)} aria-label="Xóa">
+                xóa
+              </button>
+            ) : (
+              <span className="shrink-0 text-xs text-muted">file</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+const FONTS = [
+  '"Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif',
+  'Georgia, "Times New Roman", serif',
+  '"Courier New", monospace',
+  'Impact, "Arial Black", sans-serif',
+  '"Segoe Print", cursive',
+];
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+const ARS: Array<[string, string | number]> = [
+  ["Vừa khung", "contain"],
+  ["Lấp đầy", "cover"],
+  ["Kéo giãn", "fill"],
+  ["16:9", 16 / 9],
+  ["4:3", 4 / 3],
+  ["21:9", 21 / 9],
+];
+
+type SubStyle = { on: boolean; font: string; size: number; col: string; bgm: string; op: number; pos: number; off: number };
+const SUB_LEGACY: SubStyle = { on: true, font: "0", size: 100, col: "#ffffff", bgm: "box", op: 70, pos: 12, off: 0 };
+const SUB_DEF: SubStyle = { on: true, font: "0", size: 50, col: "#ffffff", bgm: "box", op: 0, pos: 3, off: 0 };
+const STYLE_KEYS = ["on", "font", "size", "col", "bgm", "op", "pos", "off"] as const;
+
+function loadSub(): SubStyle {
+  try {
+    const raw = localStorage.getItem("gset");
+    if (!raw) return SUB_DEF;
+    const parsed = JSON.parse(raw) as Partial<SubStyle>;
+    if (localStorage.getItem("gset_v") === "2") return { ...SUB_DEF, ...parsed };
+    localStorage.setItem("gset_v", "2");
+    const untouched = STYLE_KEYS.every((key) => parsed[key] === undefined || parsed[key] === SUB_LEGACY[key]);
+    return untouched ? SUB_DEF : { ...SUB_DEF, ...parsed };
+  } catch {
+    return SUB_DEF;
+  }
+}
+
+function loadNarration(): NarrationSettings {
+  try {
+    const raw = localStorage.getItem("gnarr");
+    if (!raw) return NARRATION_DEFAULT;
+    const parsed = JSON.parse(raw) as Partial<NarrationSettings>;
+    const merged = { ...NARRATION_DEFAULT, ...parsed };
+    if (merged.engine === "edge" && merged.gender === "any") merged.gender = "female";
+    const version = localStorage.getItem("gnarr_v");
+    if (version === "3") return merged;
+    localStorage.setItem("gnarr_v", "3");
+    if (version !== "2") {
+      const untouched =
+        (parsed.engine === "browser" || parsed.engine === undefined) &&
+        (parsed.rate === undefined || parsed.rate === 1) &&
+        (parsed.pitch === undefined || parsed.pitch === 1) &&
+        !parsed.voiceURI &&
+        (parsed.volume === undefined || parsed.volume === 1) &&
+        !parsed.enabled;
+      if (untouched) merged.engine = "edge";
+    }
+    // lead từng có nghĩa «đọc sớm hơn hình». Giá trị cũ làm thuyết minh chạy trước câu đang chiếu.
+    merged.lead = 0;
+    if (parsed.matchCast === undefined) merged.matchCast = true;
+    return merged;
+  } catch {
+    return NARRATION_DEFAULT;
+  }
+}
+
+const TOOLS = [
+  ["key", "Key Sub"],
+  ["phim", "Phim"],
+  ["cast", "Nhân vật"],
+  ["voice", "Nghe"],
+  ["check", "Kiểm tra"],
+] as const;
+
+export function Studio() {
+  const app = usePipeline();
+  const [showKey, setShowKey] = useState(false);
+  const [editing, setEditing] = useState<number | null>(null);
+  const [draft, setDraft] = useState("");
+  const [rule, setRule] = useState("");
+  const [narration, setNarration] = useState<NarrationSettings>(NARRATION_DEFAULT);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [sub, setSub] = useState<SubStyle>(SUB_DEF);
+  const [current, setCurrent] = useState(-1);
+  const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
+  const [product, setProduct] = useState<"sub" | "account">("sub");
+  const [place, setPlace] = useState<MyPlace | null>(null);
+  const [appeal, setAppeal] = useState("");
+  const [appealNotice, setAppealNotice] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(true);
+  const statusRef = useRef<HTMLDialogElement>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const narrator = useRef(createNarrator());
+  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible });
+  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible };
+
+  useEffect(() => {
+    setNarration(loadNarration());
+    setSub(loadSub());
+    setHydrated(true);
+  }, []);
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem("gnarr", JSON.stringify(narration));
+    } catch {
+      /* ignore */
+    }
+  }, [narration, hydrated]);
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem("gset", JSON.stringify(sub));
+    } catch {
+      /* ignore */
+    }
+  }, [sub, hydrated]);
+  useEffect(() => {
+    const load = () => setVoices(window.speechSynthesis?.getVoices() || []);
+    load();
+    window.speechSynthesis?.addEventListener("voiceschanged", load);
+    return () => window.speechSynthesis?.removeEventListener("voiceschanged", load);
+  }, []);
+  useEffect(() => {
+    if (!narration.enabled) narrator.current.stop(app.videoRef.current);
+  }, [narration.enabled, app.videoRef]);
+
+  const pasteKey = async () => {
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      app.setKey(text);
+    } catch {
+      document.getElementById("key")?.focus();
+    }
+  };
+
+  const speakAt = (index: number) => {
+    const { segs, narration: settings, key, target } = live.current;
+    const video = app.videoRef.current;
+    if (!settings.enabled || !video || video.paused || index < 0) {
+      if (!settings.enabled || video?.paused) narrator.current.stop(video);
+      return;
+    }
+    const seg = segs[index];
+    if (!seg) return;
+    const choice = seg.voiceLock
+      ? { gender: seg.voiceLock, locked: true }
+      : narrationChoice(settings.matchCast, settings.gender, seg.original, cueText(seg), seg.voice, live.current.bible);
+    void narrator.current.speak({
+      text: cueText(seg),
+      settings: {
+        ...settings,
+        gender: choice.gender,
+        matchCast: choice.locked,
+      },
+      target,
+      key: key.trim(),
+      video,
+      playbackRate: video.playbackRate || 1,
+    });
+  };
+
+  const previewVoice = () => {
+    void narrator.current.speak({
+      text: sampleLine(app.target),
+      settings: { ...narration, enabled: true, matchCast: false },
+      target: app.target,
+      key: app.key.trim(),
+      video: app.videoRef.current,
+      playbackRate: 1,
+    });
+  };
+
+  const patchNarration = (patch: Partial<NarrationSettings>) => setNarration((prev) => ({ ...prev, ...patch }));
+  const cloud = orpheusReady(app.target);
+  const prefix = speechLang(app.target).slice(0, 2).toLowerCase();
+  const langVoices = voices.filter((voice) => voice.lang.replace("_", "-").toLowerCase().startsWith(prefix));
+  const shownVoices = (langVoices.length ? langVoices : voices).filter(
+    (voice) => narration.gender === "any" || guessGender(voice) === "any" || guessGender(voice) === narration.gender,
+  );
+  const pickTool = (id: (typeof TOOLS)[number][0]) => {
+    const narrow = window.matchMedia("(max-width: 699px)").matches;
+    setSheetOpen((open) => (narrow && id === toolTab ? !open : true));
+    setToolTab(id);
+  };
+
+  useEffect(() => {
+    void getMyPlace().then(setPlace).catch(() => setPlace(null));
+  }, []);
+
+  useEffect(() => {
+    if (!app.reviewHold) return;
+    setToolTab("cast");
+    setSheetOpen(true);
+  }, [app.reviewHold]);
+
+  return (
+    <main className="studio-shell">
+      <header className="grid shrink-0 gap-1">
+        <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+        <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
+        <AccountStrip />
+      </header>
+
+      <nav aria-label="Chức năng" className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          data-product="sub"
+          aria-current={product === "sub" ? "page" : undefined}
+          className={"min-tap rounded-full px-4 text-sm font-semibold " + (product === "sub" ? "bg-accent text-ink" : "border border-line")}
+          onClick={() => setProduct("sub")}
+        >
+          Phụ đề
+        </button>
+        <button
+          type="button"
+          data-product="account"
+          aria-current={product === "account" ? "page" : undefined}
+          className={"min-tap rounded-full px-4 text-sm font-semibold " + (product === "account" ? "bg-accent text-ink" : "border border-line")}
+          onClick={() => setProduct("account")}
+        >
+          Tài khoản
+        </button>
+      </nav>
+
+      {place?.status === "banned" ? (
+        <div className="grid gap-3 p-4">
+          <p className="text-sm">Tài khoản đã bị cấm{place.reason ? `: ${place.reason}` : ""}.</p>
+          <Link to="/yeu-cau" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
+            Gửi yêu cầu xem lại
+          </Link>
+          <button type="button" className="min-tap w-fit rounded-full border border-line px-4 text-sm" onClick={() => void signOut("/login")}>
+            Đăng xuất
+          </button>
+        </div>
+      ) : product === "account" ? (
+        <AccountPanel />
+      ) : (
+      <div className="contents">
+      {place?.status === "locked" && (
+        <form
+          className="grid gap-2 rounded-xl border border-line bg-card p-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void submitAppeal({ data: appeal })
+              .then(() => {
+                setAppeal("");
+                setAppealNotice("Đã gửi yêu cầu xem lại.");
+              })
+              .catch(() => setAppealNotice("Chưa gửi được yêu cầu."));
+          }}
+        >
+          <p className="text-sm">Tài khoản đang bị khóa{place.reason ? `: ${place.reason}` : ""}. Bạn vẫn gửi được yêu cầu, nhưng không dịch và không xuất file.</p>
+          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do cần mở lại" />
+          <button type="submit" className="min-tap w-fit rounded-full border border-line px-4 text-sm">
+            Gửi yêu cầu
+          </button>
+          {appealNotice && <p className="text-sm text-muted">{appealNotice}</p>}
+        </form>
+      )}
+
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <button
+          type="button"
+          role="status"
+          className={"line-clamp-2 h-10 min-w-0 flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
+          onClick={() => statusRef.current?.showModal()}
+        >
+          {app.status}
+        </button>
+        <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
+          Xuất file Vietsub
+        </button>
+        {app.reviewHold && (
+          <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
+            Dịch tiếp
+          </button>
+        )}
+      </div>
+      <dialog ref={statusRef} className="studio-note">
+        <p className="text-sm">{app.status}</p>
+        <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
+          Đóng
+        </button>
+      </dialog>
+
+      <div
+        role="tablist"
+        aria-label="Công cụ phụ đề"
+        className="studio-tabs"
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") return;
+          event.preventDefault();
+          const index = TOOLS.findIndex((tool) => tool[0] === toolTab);
+          const next =
+            event.key === "Home"
+              ? TOOLS[0][0]
+              : event.key === "End"
+                ? TOOLS[TOOLS.length - 1][0]
+                : TOOLS[(index + (event.key === "ArrowRight" ? 1 : TOOLS.length - 1)) % TOOLS.length][0];
+          if (next !== toolTab) pickTool(next);
+          (event.currentTarget.querySelector(`#tool-tab-${next}`) as HTMLButtonElement | null)?.focus();
+        }}
+      >
+        {TOOLS.map(([id, label]) => (
+          <button
+            key={id}
+            id={`tool-tab-${id}`}
+            type="button"
+            role="tab"
+            aria-selected={toolTab === id}
+            aria-controls={`tool-${id}`}
+            tabIndex={toolTab === id ? 0 : -1}
+            className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (toolTab === id ? "bg-accent text-ink" : "border border-line")}
+            onClick={() => pickTool(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>
+      <section data-workspace className="studio-workspace">
+        <div className="studio-video">
+        <Stage
+          videoRef={app.videoRef}
+          segs={app.segs}
+          sub={sub}
+          setSub={setSub}
+          narrationOn={narration.enabled}
+          lead={narration.lead}
+          onCue={setCurrent}
+          onSpeak={speakAt}
+          onPause={() => narrator.current.stop(app.videoRef.current)}
+        />
+        </div>
+        <section className="studio-cues grid gap-2 rounded-2xl border border-line bg-card p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-semibold">Bản dịch</h2>
+          </div>
+          <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh và thêm thuật ngữ.</p>
+          <div className="studio-cue-scroll">
+            {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}
+            {app.segs.map((seg, index) => (
+              <div key={`${seg.start}-${index}`} className={"grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3 " + (index === current ? "rounded-xl bg-raised px-2" : "")}>
+                <button type="button" className="grid gap-1 text-left" onClick={() => jump(app.videoRef.current, seg.start)}>
+                  <span className="text-xs font-semibold text-accent">
+                    {fmt(seg.start)}
+                    {seg.model ? ` · ${modelLabel(seg.model)}` : ""}
+                    {seg.voiceLock === "male" ? " · khóa nam" : seg.voiceLock === "female" ? " · khóa nữ" : seg.voice === "male" ? " · đo nam" : seg.voice === "female" ? " · đo nữ" : ""}
+                  </span>
+                  <span className={seg.translationFailed ? "font-medium text-danger" : seg.translation === null ? "text-muted italic" : "font-medium"}>
+                    {seg.translationFailed ? "Không dịch được" : seg.translation === null ? "Đang chờ dịch…" : seg.translation}
+                  </span>
+                  <span className="text-sm text-muted">{seg.original}</span>
+                </button>
+                <div className="grid gap-2">
+                <button
+                  type="button"
+                  className="min-tap self-start rounded-full border border-line px-3 text-sm"
+                  onClick={() => {
+                    setEditing(index);
+                    setDraft(seg.translation && !seg.translationFailed ? seg.translation : "");
+                    setRule("");
+                  }}
+                >
+                  Sửa
+                </button>
+                <button
+                  type="button"
+                  className="min-tap self-start rounded-full border border-line px-3 text-sm"
+                  onClick={() => app.cycleVoiceLock(index)}
+                >
+                  Đổi giọng
+                </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </section>
+
+      <div className={"studio-tools" + (sheetOpen ? " is-open" : "")}>
+        <div className="studio-tool-card">
+        <div className="studio-sheet-bar">
+          <button type="button" className="studio-sheet-close" aria-label="Đóng tab" onClick={() => setSheetOpen(false)}>
+            <X className="size-4" />
+          </button>
+        </div>
+      <section id="tool-key" role="tabpanel" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
+        <label className="grid gap-1 text-sm text-muted" htmlFor="key">
+          Groq API key
+          <span className="flex gap-2">
+            <input
+              id="key"
+              className={FIELD}
+              type={showKey ? "text" : "password"}
+              placeholder="gsk_… chỉ lưu trên máy này"
+              autoComplete="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              value={app.key}
+              onChange={(event) => app.setKey(event.target.value)}
+            />
+            <IconButton label="Dán API key" onClick={() => void pasteKey()}>
+              <ClipboardPaste />
+            </IconButton>
+            <IconButton label={showKey ? "Ẩn API key" : "Hiện API key"} onClick={() => setShowKey((value) => !value)}>
+              {showKey ? <EyeOff /> : <Eye />}
+            </IconButton>
+          </span>
+        </label>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-muted">Cách chọn model</span>
+          <button
+            type="button"
+            className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
+            onClick={() => void app.refreshModels()}
+            disabled={app.modelBusy}
+          >
+            {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+            Đồng bộ key
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Choice on={app.mode === "manual"} onClick={() => app.setMode("manual")} title="Tự chọn" text="Một model cho cả phim" />
+          <Choice on={app.mode === "auto"} onClick={() => app.setMode("auto")} title="Tự động" text="Cân tốc độ và độ chính xác" />
+        </div>
+        {app.mode === "manual" ? (
+          <ModelPicker models={app.catalog} value={app.modelId} remote={app.remoteIds} board={app.board} onChange={app.setModelId} />
+        ) : (
+          <div className="grid gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              <Choice on={app.profile === "fast"} onClick={() => app.setProfile("fast")} title="Nhanh" text="20B trước" />
+              <Choice on={app.profile === "balanced"} onClick={() => app.setProfile("balanced")} title="Cân bằng" text="120B là chính" />
+              <Choice on={app.profile === "accurate"} onClick={() => app.setProfile("accurate")} title="Chính xác" text="Model mạnh hơn" />
+            </div>
+            <p className="text-sm text-muted">
+              Câu ngắn đi model nhanh. Hội thoại dùng GPT-OSS 120B. Câu khó hoặc bản dịch lỗi chuyển sang Qwen, hoặc model Enterprise nếu key có.
+              Khi nâng cấp key, bấm Đồng bộ key — Auto chỉ gọi model mà key mở được.
+            </p>
+            <label className="flex min-tap items-center gap-2 text-sm">
+              <input type="checkbox" checked={app.allowEnterprise} onChange={(event) => app.setAllowEnterprise(event.target.checked)} />
+              Dùng model Enterprise khi key có quyền
+            </label>
+            {Object.keys(app.uses).length > 0 && (
+              <p className="text-sm text-fg">
+                Đã chia: {Object.entries(app.uses).map(([id, count]) => `${modelLabel(id)} × ${count}`).join(" · ")}
+              </p>
+            )}
+          </div>
+        )}
+        <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
+          <option value="whisper-large-v3-turbo">Whisper Turbo · {whisperPrice(app.board, "whisper-large-v3-turbo")}</option>
+          <option value="whisper-large-v3">Whisper Large · {whisperPrice(app.board, "whisper-large-v3")}</option>
+        </Select>
+        <p className="text-sm text-muted">{whisperDetail(app.board, app.asrModel)}</p>
+        <p className="text-sm text-muted">{boardCaption(app.board, app.boardNote)}</p>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
+          Chỉ gửi đoạn có tiếng người
+        </label>
+        <p className="text-sm text-muted">
+          Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
+        </p>
+        <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
+          <option value="1">Ổn định · 1 luồng</option>
+          <option value="3">Cân bằng · 3 luồng</option>
+          <option value="4">Nhanh · 4 luồng</option>
+          <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
+          <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
+        </Select>
+        {app.threads >= 6 && (
+          <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
+        )}
+      </section>
+
+      <section id="tool-phim" role="tabpanel" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
+            {SRC_LANGS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+          <Select label="Dịch sang tiếng" value={app.target} onChange={app.setTarget}>
+            {LANGS.filter(([value]) => value === "Vietnamese").map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
+          <option value="auto">Tự động</option>
+          <option value="action">Hành động</option>
+          <option value="adventure">Phiêu lưu</option>
+          <option value="crime">Hình sự / giang hồ</option>
+          <option value="scifi">Viễn tưởng / giả tưởng</option>
+          <option value="horror">Kinh dị</option>
+          <option value="romance">Tình cảm / lãng mạn</option>
+          <option value="psychological">Tâm lý</option>
+          <option value="comedy">Hài</option>
+          <option value="costume">Cổ trang / kiếm hiệp</option>
+          <option value="historical">Lịch sử / thời kỳ</option>
+          <option value="mystery">Trinh thám / bí ẩn</option>
+          <option value="sports">Thể thao</option>
+          <option value="adult">Người lớn (18+)</option>
+          <option value="sex">Sex (18+)</option>
+          <option value="series">Phim bộ / phim mới chiếu</option>
+          <option value="daily">Hằng ngày</option>
+        </Select>
+        <p className="text-sm text-muted">
+          {app.glossaryInfo?.count > 0 ? (
+            <>
+              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ của thể loại này.
+            </>
+          ) : (
+            "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
+          )}
+        </p>
+        <details className="rounded-xl border border-line bg-raised px-3 py-2">
+          <summary className="min-tap cursor-pointer text-sm font-medium">
+            Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
+          </summary>
+          <p className="pb-2 text-sm text-muted">
+            Mỗi thể loại một bộ riêng, không dùng chung. Thêm tay hoặc nhập CSV vẫn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại.
+            {app.glossaryInfo?.userCount ? ` Trong đó ${app.glossaryInfo.userCount} do bạn thêm.` : ""}
+            {app.glossaryInfo?.sources?.length ? ` ${app.glossaryInfo.sources.map((s: string) => s.replace(/^\/glossaries\//, "")).join(", ")}.` : ""}
+          </p>
+          <GlossaryEditor app={app} />
+        </details>
+
+        <div className="grid gap-2 sm:grid-cols-2">
+          <FileTile icon={<Clapperboard className="size-5" />} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
+          <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
+        </div>
+        <label className="grid gap-1 text-sm text-muted">
+          Hoặc link file trực tiếp
+          <span className="relative">
+            <Link2 className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
+            <input className={FIELD + " pl-9"} type="url" placeholder="https://…/phim.mp4" value={app.url} onChange={(event) => app.setUrl(event.target.value)} />
+          </span>
+        </label>
+        <details className="text-sm text-muted">
+          <summary className="min-tap cursor-pointer">File lớn hơn 1 GB, MKV, AC3/DTS?</summary>
+          <p className="pb-2">
+            Tách âm thanh nhỏ bằng ffmpeg rồi chọn vào Âm thanh riêng. Video vẫn phát từ file gốc. Lệnh:{" "}
+            <code className="text-fg">ffmpeg -i phim.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
+          </p>
+        </details>
+
+        <div className="grid gap-2">
+          <button
+            type="button"
+            className={"min-tap rounded-xl font-semibold " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+            onClick={() => (app.running ? app.cancel() : void app.start())}
+          >
+            {app.buttonLabel}
+          </button>
+          <button type="button" className="min-tap rounded-xl border border-line" onClick={app.reset}>
+            Làm lại
+          </button>
+        </div>
+      </section>
+
+      <section id="tool-cast" role="tabpanel" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
+          <details className="rounded-xl border border-line bg-raised px-3 py-2">
+            <summary className="min-tap cursor-pointer text-sm font-medium">Ngữ cảnh phim</summary>
+            <div className="grid gap-2 pb-2">
+              <input className={FIELD} placeholder="Tên phim + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
+              <textarea className={FIELD} rows={3} placeholder="Dàn diễn viên hoặc tóm tắt cốt truyện" value={app.notes} onChange={(event) => app.setNotes(event.target.value)} />
+              <textarea className={FIELD} rows={4} placeholder="Bảng thuật ngữ, mỗi dòng: tên gốc = cách dịch" value={app.gloss} onChange={(event) => app.setGloss(event.target.value)} />
+            </div>
+          </details>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold">Phân tích phim</h2>
+              <p className="text-sm text-muted">Bước riêng, trước khi dịch. Bảng nhân vật khóa tên, giới và cách xưng hô.</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={app.pre}
+              className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (app.pre ? "bg-accent text-ink" : "border border-line")}
+              onClick={() => app.setPre(!app.pre)}
+            >
+              {app.pre ? "Đang bật" : "Tắt"}
+            </button>
+          </div>
+          <label className="flex items-start gap-2 text-sm">
+            <input className="mt-1" type="checkbox" checked={app.reviewBefore} onChange={(event) => app.setReviewBefore(event.target.checked)} />
+            Dừng lại để xem và sửa bảng nhân vật trước khi dịch.
+          </label>
+          <div className="grid gap-2">
+            <button
+              type="button"
+              className="min-tap rounded-xl border border-line text-sm disabled:opacity-50"
+              disabled={app.running || app.segs.length === 0}
+              onClick={() => (app.analyzing ? app.cancel() : void app.analyzeNow())}
+            >
+              {app.analyzing ? "Hủy phân tích" : "Phân tích ngay"}
+            </button>
+            {!app.segs.length && <p className="text-xs text-muted">Chưa có lời thoại. Bật phân tích rồi bấm Tải và dịch — app sẽ dừng để bạn xem bảng trước khi dịch.</p>}
+          </div>
+          {app.bible?.failed && <p className="text-sm text-danger">Không tạo được bảng: {app.bible.failed}</p>}
+          {app.bible && !app.bible.failed && (
+            <div className="grid gap-2">
+              <label className="grid gap-1 text-sm text-muted">
+                Tóm tắt
+                <textarea className={FIELD} rows={3} value={app.bible.summary || ""} onChange={(event) => app.patchSummary(event.target.value)} />
+              </label>
+              <div className="grid max-h-80 gap-2 overflow-auto">
+                {(app.bible.characters || []).map((character, index) => (
+                  // key chỉ theo vị trí: key có tên thì gõ một chữ là hàng bị dựng lại, mất focus, bàn phím ảo tắt
+                  <div key={`character-${index}`} className="grid gap-2 rounded-xl border border-line bg-card p-3">
+                    <p className="text-xs font-semibold text-muted">Nhân vật {index + 1}</p>
+                    <label className="grid gap-1 text-xs text-muted">
+                      Tên nhân vật
+                      <input
+                        className={FIELD}
+                        aria-label="Tên nhân vật"
+                        placeholder="Tên nhân vật"
+                        value={character.name || ""}
+                        onChange={(event) => app.patchCharacter(index, { name: event.target.value })}
+                      />
+                    </label>
+                    <label className="grid gap-1 text-xs text-muted">
+                      Nam / nữ
+                      <select
+                        className={FIELD}
+                        aria-label="Giới"
+                        value={character.gender === "male" || character.gender === "female" ? character.gender : "unknown"}
+                        onChange={(event) => app.patchCharacter(index, { gender: event.target.value })}
+                      >
+                        <option value="female">Nữ</option>
+                        <option value="male">Nam</option>
+                        <option value="unknown">Chưa rõ</option>
+                      </select>
+                    </label>
+                    <p className="text-xs text-muted">Giới này được giữ khi phân tích lại, và thắng cao độ lúc đọc.</p>
+                    <label className="grid gap-1 text-xs text-muted">
+                      Tự xưng
+                      <input
+                        className={FIELD}
+                        aria-label="Tự xưng"
+                        placeholder="Tự xưng, ví dụ: tôi / em"
+                        value={character.self || ""}
+                        onChange={(event) => app.patchCharacter(index, { self: event.target.value })}
+                      />
+                    </label>
+                    <label className="grid gap-1 text-xs text-muted">
+                      Được gọi
+                      <input
+                        className={FIELD}
+                        aria-label="Được gọi"
+                        placeholder="Được gọi, ví dụ: anh / chị"
+                        value={character.addressed || ""}
+                        onChange={(event) => app.patchCharacter(index, { addressed: event.target.value })}
+                      />
+                    </label>
+                  </div>
+                ))}
+              </div>
+              {(app.bible.terms || []).length > 0 && (
+                <div className="grid gap-2">
+                  <p className="text-sm text-muted">Thuật ngữ trong phim</p>
+                  {(app.bible.terms || []).slice(0, 24).map((term, index) => (
+                    <label key={`${term.src || "t"}-${index}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-2 text-sm">
+                      <span className="truncate text-muted">{term.src}</span>
+                      <input className={FIELD} aria-label="Cách dịch" value={term.tgt || ""} onChange={(event) => app.patchTerm(index, event.target.value)} />
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+      <section id="tool-voice" role="tabpanel" aria-labelledby="tool-tab-voice" hidden={toolTab !== "voice"} className="grid gap-3 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold">Thuyết minh bản dịch</h2>
+            <p className="text-sm text-muted">Giọng neural miễn phí đọc tự nhiên hơn. Lỗi mạng thì máy đọc bằng giọng có sẵn.</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={narration.enabled}
+            className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (narration.enabled ? "bg-accent text-ink" : "border border-line")}
+            onClick={() => patchNarration({ enabled: !narration.enabled })}
+          >
+            {narration.enabled ? "Đang bật" : "Tắt"}
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <Choice on={narration.engine === "edge"} onClick={() => patchNarration({ engine: "edge", gender: narration.gender === "any" ? "female" : narration.gender })} title="Neural" text="Miễn phí, tự nhiên" />
+          <Choice on={narration.engine === "browser"} onClick={() => patchNarration({ engine: "browser" })} title="Giọng máy" text="Có sẵn trên máy" />
+          <Choice
+            on={narration.engine === "orpheus"}
+            onClick={() => patchNarration({ engine: "orpheus", orpheusVoice: defaultOrpheusVoice(app.target, narration.gender) })}
+            title="Orpheus"
+            text={cloud ? "Có phí" : "Anh, Ả Rập"}
+          />
+        </div>
+        {narration.engine === "edge" && (
+          <p className="text-sm text-muted">
+            {narration.matchCast
+              ? `Theo tiếng trong video: ${edgeVoice(app.target, "female").label} (nữ) và ${edgeVoice(app.target, "male").label} (nam). `
+              : `Giọng ${edgeVoice(app.target, narration.gender === "any" ? "female" : narration.gender).label}. `}
+            Không cần API key. Nếu dịch vụ giọng tắt, app tự chuyển sang giọng máy khoảng 20 giây.
+          </p>
+        )}
+        {narration.engine === "orpheus" && !cloud && <p className="text-sm text-danger">Orpheus chưa đọc tiếng này. Máy sẽ dùng giọng có sẵn.</p>}
+        <p className="text-sm text-muted">Giọng dự phòng khi không đo được cao độ, hoặc khi tắt đọc theo video.</p>
+        <div className={"grid gap-2 " + (narration.engine === "edge" ? "grid-cols-2" : "grid-cols-3")}>
+          {(
+            [
+              ["female", "Nữ"],
+              ["male", "Nam"],
+              ["any", "Bất kỳ"],
+            ] as const
+          )
+            .filter(([id]) => narration.engine === "browser" || narration.engine === "orpheus" || id !== "any")
+            .map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={"min-tap rounded-xl border text-sm " + (narration.gender === id ? "border-accent bg-accent text-ink" : "border-line")}
+              onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id) })}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {narration.engine === "browser" ? (
+          <Select label="Giọng trên máy" value={narration.voiceURI} onChange={(voiceURI) => patchNarration({ voiceURI })}>
+            <option value="">Tự chọn theo ngôn ngữ</option>
+            {(shownVoices.length ? shownVoices : voices).map((voice) => (
+              <option key={voice.voiceURI} value={voice.voiceURI}>
+                {voice.name} · {voice.lang}
+              </option>
+            ))}
+          </Select>
+        ) : narration.engine === "orpheus" ? (
+          <Select label="Giọng Orpheus" value={narration.orpheusVoice} onChange={(orpheusVoice) => patchNarration({ orpheusVoice })}>
+            {orpheusVoices(app.target)
+              .filter((voice) => narration.gender === "any" || voice.gender === narration.gender)
+              .map((voice) => (
+                <option key={voice.id} value={voice.id}>
+                  {voice.name} · {voice.gender === "female" ? "nữ" : "nam"}
+                </option>
+              ))}
+          </Select>
+        ) : null}
+        <Slider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} text={`${narration.rate.toFixed(1)}×`} onChange={(rate) => patchNarration({ rate })} />
+        {narration.engine !== "orpheus" && (
+          <Slider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} text={narration.pitch.toFixed(1)} onChange={(pitch) => patchNarration({ pitch })} />
+        )}
+        <Slider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} text={`${Math.round(narration.volume * 100)}%`} onChange={(volume) => patchNarration({ volume })} />
+        <Slider label="Chờ sau khi câu hiện" value={narration.lead} min={0} max={1.2} step={0.1} text={`${narration.lead.toFixed(1)} giây`} onChange={(lead) => patchNarration({ lead })} />
+        <p className="text-sm text-muted">0 giây = đọc đúng lúc phụ đề hiện. Không đọc câu chưa tới trên hình.</p>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={narration.matchCast} onChange={(event) => patchNarration({ matchCast: event.target.checked })} />
+          Đọc theo nhân vật, rồi theo cao độ
+        </label>
+        <p className="text-sm text-muted">
+          Câu có tên hoặc tự xưng rõ trong bảng nhân vật thì dùng giới đó. Không chắc thì so cao độ trong video: nhóm thấp là nam, nhóm cao là nữ. Bấm Đổi giọng trên một câu để khóa nam hoặc nữ. Không đoán anh/em.
+        </p>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={narration.duck} onChange={(event) => patchNarration({ duck: event.target.checked })} />
+          Hạ tiếng phim khi đang đọc
+        </label>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={narration.muteVideo} onChange={(event) => patchNarration({ muteVideo: event.target.checked })} />
+          Tắt hẳn tiếng gốc lúc thuyết minh
+        </label>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={narration.followPlayback} onChange={(event) => patchNarration({ followPlayback: event.target.checked })} />
+          Bám tốc độ phát của video
+        </label>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={narration.skipCues} onChange={(event) => patchNarration({ skipCues: event.target.checked })} />
+          Bỏ qua chú thích trong ngoặc, ví dụ [nhạc]
+        </label>
+        <button type="button" className="min-tap rounded-xl border border-line" onClick={previewVoice}>
+          Nghe thử một câu
+        </button>
+      </section>
+
+      <section id="tool-check" role="tabpanel" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="min-tap rounded-xl border border-line px-3 text-sm" disabled={app.running || app.segs.length === 0} onClick={() => void app.scanGaps()}>
+            Dò khoảng trống
+          </button>
+          {app.segs.some((seg) => seg.translationFailed) && (
+            <button type="button" className="min-tap rounded-xl border border-danger px-3 text-sm font-semibold text-danger" onClick={app.retryFailed}>
+              Dịch lại các câu lỗi
+            </button>
+          )}
+        </div>
+        {app.gapPlan && (app.gapPlan.selected.length > 0 || app.gapPlan.deferred.length > 0) && (
+          <div className="grid gap-2 rounded-xl border border-line bg-bg p-3 text-sm">
+            <p>
+              {app.gapPlan.selected.length
+                ? `${app.gapPlan.selected.length} khoảng có tiếng nhưng chưa có câu, ${app.gapPlan.audioSeconds.toFixed(1)} giây, ước tính ${gapCost(app.board, app.gapPlan.cost)}. Chưa gửi.`
+                : "Không còn khoảng nào vừa ngân sách."}
+              {app.gapPlan.deferred.length ? ` ${app.gapPlan.deferred.length} khoảng vượt ngân sách ${app.gapPlan.budgetSeconds} giây, không gửi.` : ""}
+            </p>
+            {app.gapPlan.selected.length > 0 && (
+              <ul className="grid gap-1 text-muted">
+                {app.gapPlan.selected.slice(0, 6).map((span) => (
+                  <li key={`${span.start}-${span.end}`}>
+                    {fmt(span.start)}–{fmt(span.end)}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {app.gapPlan.selected.length > 0 && (
+              <button type="button" className="min-tap rounded-xl bg-accent font-semibold text-ink" disabled={app.running} onClick={() => void app.fillGaps()}>
+                Nhận dạng các khoảng này
+              </button>
+            )}
+          </div>
+        )}
+        <AsrDiag
+          raw={app.diag.raw}
+          rejects={app.diag.rejects}
+          kept={app.segs.length}
+          fileName={app.file?.name || app.audioFile?.name}
+          retry={app.asrRetry}
+          filterRetry={app.filterRetry}
+          onPlay={app.playReject}
+          onKeep={app.keepReject}
+          onDrop={app.dropReject}
+        />
+        {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một phim trước.</p>}
+      </section>
+        </div>
+      </div>
+      </div>
+
+      {editing !== null && app.segs[editing] && (
+        <div className="fixed inset-0 z-50 flex items-end bg-bg/80" onClick={() => setEditing(null)}>
+          <form
+            className="mx-auto grid w-full max-w-3xl gap-3 rounded-t-2xl border border-line bg-card p-4"
+            onClick={(event) => event.stopPropagation()}
+            onSubmit={(event) => {
+              event.preventDefault();
+              app.editSeg(editing, draft, rule);
+              setEditing(null);
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Sửa câu</h3>
+              <button type="button" aria-label="Đóng" className="min-tap rounded-full border border-line px-3" onClick={() => setEditing(null)}>
+                <X className="size-4" />
+              </button>
+            </div>
+            <p className="text-sm text-muted">{app.segs[editing].original}</p>
+            <textarea className={FIELD} rows={3} value={draft} onChange={(event) => setDraft(event.target.value)} />
+            <input className={FIELD} placeholder="Áp cho cả phim: tên gốc = cách dịch" value={rule} onChange={(event) => setRule(event.target.value)} />
+            <button type="submit" className="min-tap rounded-xl bg-accent font-semibold text-ink">
+              Lưu
+            </button>
+          </form>
+        </div>
+      )}
+      </div>
+      )}
+    </main>
+  );
+}
+
+function jump(video: HTMLVideoElement | null, start: number) {
+  if (!video) return;
+  video.currentTime = start;
+  void video.play().catch(() => {});
+}
+
+function IconButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" aria-label={label} className="inline-flex min-tap w-11 shrink-0 items-center justify-center rounded-xl border border-line [&_svg]:size-5" onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text: string }) {
+  return (
+    <button type="button" onClick={onClick} className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
+      <span className="block text-sm font-semibold">{title}</span>
+      <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{text}</span>
+    </button>
+  );
+}
+
+function Select({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
+  return (
+    <label className="grid gap-1 text-sm text-muted">
+      {label}
+      <select className={FIELD} value={value} onChange={(event) => onChange(event.target.value)}>
+        {children}
+      </select>
+    </label>
+  );
+}
+
+function Slider({ label, value, min, max, step, text, onChange }: { label: string; value: number; min: number; max: number; step: number; text: string; onChange: (value: number) => void }) {
+  return (
+    <label className="grid gap-1 text-sm text-muted">
+      <span className="flex justify-between">
+        {label}
+        <b className="font-medium text-fg">{text}</b>
+      </span>
+      <input className="accent-accent" type="range" min={min} max={max} step={step} value={value} onChange={(event) => onChange(Number(event.target.value))} />
+    </label>
+  );
+}
+
+function FileTile({ icon, title, name, hint, accept, onFile }: { icon: ReactNode; title: string; name?: string; hint: string; accept: string; onFile: (file: File | null) => void }) {
+  return (
+    <label
+      className="relative grid min-tap cursor-pointer grid-cols-[auto_1fr] items-center gap-3 rounded-xl border border-dashed border-line bg-bg px-3 py-3"
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={(event) => {
+        event.preventDefault();
+        onFile(event.dataTransfer.files?.[0] || null);
+      }}
+    >
+      <span className="text-accent">{icon}</span>
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold text-fg">{title}</span>
+        <span className="block truncate text-xs text-muted">{name || hint}</span>
+      </span>
+      <input
+        className="absolute inset-0 cursor-pointer opacity-0"
+        type="file"
+        accept={accept}
+        onChange={(event) => {
+          onFile(event.target.files?.[0] || null);
+          event.currentTarget.blur();
+          window.scrollTo(0, 0);
+        }}
+      />
+    </label>
+  );
+}
+
+function ModelPicker({
+  models,
+  value,
+  remote,
+  board,
+  onChange,
+}: {
+  models: ChatModel[];
+  value: string;
+  remote: string[] | null;
+  board: GroqBoard | null;
+  onChange: (id: string) => void;
+}) {
+  const remoteSet = remote ? new Set(remote) : null;
+  const groups = ["standard", "preview", "enterprise", "safety", "key"] as const;
+  return (
+    <div className="grid gap-3">
+      {groups.map((tier) => {
+        const list = models.filter((model) => model.tier === tier);
+        if (!list.length) return null;
+        return (
+          <div key={tier} className="grid gap-2">
+            <p className="text-xs font-semibold tracking-wide text-muted uppercase">{TIER_LABEL[tier]}</p>
+            <div className="grid gap-2">
+              {list.map((model) => {
+                const on = value === model.id;
+                const missing = remoteSet ? !remoteSet.has(model.id) : false;
+                const facts = modelFacts(board, model.id, model.note);
+                return (
+                  <button
+                    key={model.id}
+                    type="button"
+                    onClick={() => onChange(model.id)}
+                    className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg") + (missing ? " opacity-50" : "")}
+                  >
+                    <span className="block text-sm font-semibold">{model.name}</span>
+                    <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{facts.price}</span>
+                    {facts.detail ? <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>{facts.detail}</span> : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+      <label className="grid gap-1 text-sm text-muted">
+        Hoặc nhập mã model khác
+        <input className={FIELD} value={value} spellCheck={false} autoCapitalize="off" onChange={(event) => onChange(event.target.value.trim())} />
+      </label>
+    </div>
+  );
+}
+
+function modelFacts(board: GroqBoard | null, id: string, note: string): { price: string; detail: string } {
+  const row = board?.rows.find((item) => item.id === id);
+  if (!board) return { price: "Đang lấy giá từ Groq…", detail: "" };
+  if (!row) return { price: "Không thấy model này trong bảng Groq vừa tải", detail: note };
+  return { price: formatLivePrice(row, board.rate), detail: formatLiveDetail(row) };
+}
+
+function whisperRow(board: GroqBoard | null, id: string): GroqLiveRow | undefined {
+  return board?.rows.find((item) => item.id === id);
+}
+
+function whisperPrice(board: GroqBoard | null, id: string): string {
+  const row = whisperRow(board, id);
+  if (!board) return "đang lấy giá";
+  if (!row) return "chưa có trong bảng Groq";
+  return formatLivePrice(row, board.rate);
+}
+
+function whisperDetail(board: GroqBoard | null, id: string): string {
+  const row = whisperRow(board, id);
+  if (!row) return "";
+  return formatLiveDetail(row);
+}
+
+function boardCaption(board: GroqBoard | null, note: string): string {
+  if (board) {
+    const when = board.rateDate ? ` Tỷ giá ngày ${board.rateDate}, 1 đô = ${new Intl.NumberFormat("vi-VN").format(Math.round(board.rate))} đ.` : "";
+    return `Giá lấy trực tiếp từ trang model của Groq.${when} Hạn mức trên trang đó là gói Developer. Key miễn phí thường thấp hơn. Số đúng của key nằm ở trang Limits trong tài khoản Groq.`;
+  }
+  return note || "Đang lấy giá, hạn mức và số token từ Groq…";
+}
+
+function gapCost(board: GroqBoard | null, usd: number): string {
+  return board ? formatUsdCost(usd, board.rate).replace(/^khoảng /, "") : `$${usd.toFixed(3)}`;
+}
+
+function Stage({
+  videoRef,
+  segs,
+  sub,
+  setSub,
+  narrationOn,
+  lead,
+  onCue,
+  onSpeak,
+  onPause,
+}: {
+  videoRef: RefObject<HTMLVideoElement | null>;
+  segs: Seg[];
+  sub: SubStyle;
+  setSub: (next: SubStyle) => void;
+  narrationOn: boolean;
+  lead: number;
+  onCue: (index: number) => void;
+  onSpeak: (index: number) => void;
+  onPause: () => void;
+}) {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const panelBoxRef = useRef<HTMLDivElement>(null);
+  const seekRef = useRef<HTMLInputElement>(null);
+  const tcRef = useRef<HTMLSpanElement>(null);
+  const tdRef = useRef<HTMLSpanElement>(null);
+  const [ui, setUi] = useState(true);
+  const [panel, setPanel] = useState(false);
+  const [paused, setPaused] = useState(true);
+  const [muted, setMuted] = useState(false);
+  const [rate, setRate] = useState(1);
+  const [idx, setIdx] = useState(-1);
+  const [ar, setAr] = useState(0);
+  const [full, setFull] = useState(false);
+  const [hasMedia, setHasMedia] = useState(false);
+  const [fit, setFit] = useState<CSSProperties>({});
+  const [bright, setBright] = useState(1);
+  const segsRef = useRef(segs);
+  const subRef = useRef(sub);
+  const leadRef = useRef(lead);
+  const narrRef = useRef(narrationOn);
+  const onCueRef = useRef(onCue);
+  const onSpeakRef = useRef(onSpeak);
+  const onPauseRef = useRef(onPause);
+  segsRef.current = segs;
+  subRef.current = sub;
+  leadRef.current = lead;
+  narrRef.current = narrationOn;
+  onCueRef.current = onCue;
+  onSpeakRef.current = onSpeak;
+  onPauseRef.current = onPause;
+  const idxRef = useRef(-1);
+  const speakRef = useRef("");
+  const hideT = useRef(0);
+  const mediaRef = useRef(false);
+  const drag = useRef(false);
+  const panelRef = useRef(panel);
+  panelRef.current = panel;
+  const brightRef = useRef(1);
+  brightRef.current = bright;
+  const hudRef = useRef<HTMLDivElement>(null);
+  const hudT = useRef(0);
+  const tapT = useRef(0);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    let raf = 0;
+    const paint = () => {
+      const duration = Number.isFinite(video.duration) ? video.duration : 0;
+      if (tcRef.current) tcRef.current.textContent = fmt(video.currentTime);
+      if (tdRef.current) tdRef.current.textContent = fmt(duration);
+      if (!drag.current && seekRef.current) seekRef.current.value = duration ? String((video.currentTime / duration) * 100000) : "0";
+      if (video.currentSrc && !mediaRef.current) {
+        mediaRef.current = true;
+        setHasMedia(true);
+      }
+      const clock = video.currentTime - subRef.current.off;
+      const shown = findCueIndex(segsRef.current, clock);
+      if (shown !== idxRef.current) {
+        idxRef.current = shown;
+        setIdx(shown);
+        onCueRef.current(shown);
+      }
+      if (narrRef.current && !video.paused) {
+        const delay = Math.max(0, leadRef.current);
+        const seg = shown >= 0 ? segsRef.current[shown] : undefined;
+        const ready = Boolean(seg && clock + 0.001 >= seg.start + delay);
+        const spoken = ready ? shown : -1;
+        if (spoken >= 0 && seg) {
+          const text = cueText(seg);
+          const token = text ? `${spoken}\n${text}` : "";
+          if (token && token !== speakRef.current) {
+            speakRef.current = token;
+            onSpeakRef.current(spoken);
+          }
+        } else if (spoken < 0 && shown < 0 && speakRef.current !== "-") {
+          speakRef.current = "-";
+        }
+      }
+    };
+    const loop = () => {
+      paint();
+      raf = requestAnimationFrame(loop);
+    };
+    const show = () => {
+      setUi(true);
+      clearTimeout(hideT.current);
+      if (!video.paused && !panelRef.current) hideT.current = window.setTimeout(() => setUi(false), 3200);
+    };
+    const onPlay = () => {
+      setPaused(false);
+      setHasMedia(Boolean(video.currentSrc));
+      cancelAnimationFrame(raf);
+      loop();
+      show();
+    };
+    const onPauseVideo = () => {
+      setPaused(true);
+      cancelAnimationFrame(raf);
+      paint();
+      speakRef.current = "";
+      onPauseRef.current();
+      show();
+    };
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPauseVideo);
+    video.addEventListener("ended", onPauseVideo);
+    video.addEventListener("timeupdate", paint);
+    video.addEventListener("loadedmetadata", paint);
+    video.addEventListener("volumechange", () => setMuted(video.muted || video.volume === 0));
+    video.addEventListener("ratechange", () => setRate(video.playbackRate));
+    return () => {
+      cancelAnimationFrame(raf);
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPauseVideo);
+      video.removeEventListener("ended", onPauseVideo);
+      video.removeEventListener("timeupdate", paint);
+      video.removeEventListener("loadedmetadata", paint);
+    };
+  }, [videoRef]);
+
+  const applyAspect = () => {
+    const stage = stageRef.current;
+    const video = videoRef.current;
+    if (!stage || !video) return;
+    const mode = ARS[ar][1];
+    if (typeof mode === "string") setFit({ objectFit: mode as CSSProperties["objectFit"], width: "100%", height: "100%" });
+    else {
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      if (w / h > mode) setFit({ objectFit: "fill", height: h, width: h * mode });
+      else setFit({ objectFit: "fill", width: w, height: w / mode });
+    }
+  };
+
+  useEffect(() => {
+    applyAspect();
+    const onFs = () => setFull(document.fullscreenElement === stageRef.current);
+    document.addEventListener("fullscreenchange", onFs);
+    window.addEventListener("resize", applyAspect);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFs);
+      window.removeEventListener("resize", applyAspect);
+    };
+  }, [ar]);
+
+  useEffect(() => {
+    if (panel && !full) panelBoxRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [panel, full]);
+
+  const toggleFull = async () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    try {
+      if (document.fullscreenElement === stage || full) {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        setFull(false);
+        return;
+      }
+      await stage.requestFullscreen();
+    } catch {
+      setFull((value) => !value);
+    }
+  };
+
+  const currentSeg = idx >= 0 ? segs[idx] : undefined;
+  const line = currentSeg ? (currentSeg.translationFailed ? "Không dịch được" : cueText(currentSeg)) : panel ? "Đây là phụ đề xem thử" : "";
+  const renderedCue = cueStyle(sub, full);
+  type Gesture = {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    left: boolean;
+    rx: number;
+    t0: number;
+    v0: number;
+    b0: number;
+    mode: "" | "seek" | "vol" | "bri";
+    tgt: number;
+  };
+  const gesture = useRef<Gesture | null>(null);
+  const showHud = (text: string) => {
+    const el = hudRef.current;
+    if (!el) return;
+    el.textContent = text;
+    el.dataset.on = "1";
+    clearTimeout(hudT.current);
+    hudT.current = window.setTimeout(() => {
+      el.dataset.on = "0";
+    }, 900);
+  };
+  const armUi = () => {
+    setUi(true);
+    clearTimeout(hideT.current);
+    const video = videoRef.current;
+    if (video && !video.paused && !panelRef.current) hideT.current = window.setTimeout(() => setUi(false), 3200);
+  };
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const el = event.target as HTMLElement | null;
+      if (el?.closest("input,textarea,select,[contenteditable=true]")) return;
+      const video = videoRef.current;
+      if (!video?.currentSrc) return;
+      const key = event.key;
+      if (key === " " || key === "k") {
+        if (el?.closest("button,a")) return;
+        event.preventDefault();
+        video.paused ? void video.play().catch(() => {}) : video.pause();
+      } else if (key === "ArrowLeft") {
+        event.preventDefault();
+        video.currentTime = Math.max(0, video.currentTime - 5);
+        showHud(`Tua −5 giây · ${fmt(video.currentTime)}`);
+      } else if (key === "ArrowRight") {
+        event.preventDefault();
+        const duration = Number.isFinite(video.duration) ? video.duration : 1e9;
+        video.currentTime = Math.min(duration, video.currentTime + 5);
+        showHud(`Tua +5 giây · ${fmt(video.currentTime)}`);
+      } else if (key === "ArrowUp") {
+        event.preventDefault();
+        video.muted = false;
+        video.volume = Math.min(1, video.volume + 0.05);
+        showHud(`Âm lượng ${Math.round(video.volume * 100)}%`);
+      } else if (key === "ArrowDown") {
+        event.preventDefault();
+        video.volume = Math.max(0, video.volume - 0.05);
+        showHud(`Âm lượng ${Math.round(video.volume * 100)}%`);
+      } else if (key === "f") {
+        event.preventDefault();
+        void toggleFull();
+      } else if (key === "m") {
+        event.preventDefault();
+        video.muted = !video.muted;
+      } else if (key === "[") {
+        event.preventDefault();
+        const next = Math.max(0.3, Math.round((brightRef.current - 0.1) * 100) / 100);
+        brightRef.current = next;
+        setBright(next);
+        showHud(`Độ sáng ${Math.round(next * 100)}%`);
+      } else if (key === "]") {
+        event.preventDefault();
+        const next = Math.min(2, Math.round((brightRef.current + 0.1) * 100) / 100);
+        brightRef.current = next;
+        setBright(next);
+        showHud(`Độ sáng ${Math.round(next * 100)}%`);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [videoRef, full]);
+
+  const panelNode = (
+      <div
+        ref={panelBoxRef}
+        data-nogesture
+        className={
+          full
+            ? "absolute inset-x-0 bottom-0 z-30 flex max-h-[75%] touch-auto flex-col overflow-hidden rounded-t-2xl border-t border-line bg-card"
+            : "flex max-h-[80dvh] touch-auto flex-col overflow-hidden rounded-2xl border border-line bg-card"
+        }
+      >
+          <div className="flex items-center justify-between px-4 pt-3">
+            <h3 className="font-semibold">Phụ đề</h3>
+            <button type="button" aria-label="Đóng" className="min-tap rounded-full border border-line px-3" onClick={() => setPanel(false)}>
+              <X className="size-4" />
+            </button>
+          </div>
+          <div className="mx-4 mt-2 shrink-0 overflow-hidden rounded-xl border border-accent/50 bg-black shadow-lg">
+            <p className="px-3 pt-2 text-xs text-muted">Mẫu nổi — nằm yên khi kéo các thanh bên dưới</p>
+            <div className="relative h-28">
+              <div className="absolute inset-x-[6%] text-center" style={{ bottom: sampleBottom(sub.pos) }}>
+                <span className="rounded-md px-2" style={{ ...cueStyle(sub, false), opacity: sub.on ? 1 : 0.4 }}>
+                  Đây là phụ đề xem thử
+                </span>
+              </div>
+            </div>
+            {!sub.on && <p className="px-3 pb-2 text-xs text-muted">Phụ đề đang tắt trên video. Mẫu vẫn hiện để xem kiểu chữ.</p>}
+          </div>
+          <div className="grid flex-1 grid-cols-2 gap-3 overflow-auto px-4 pt-3 pb-4" style={{ overflowAnchor: "none", overscrollBehavior: "contain" }}>
+            <label className="col-span-2 flex min-tap items-center gap-2 text-sm">
+              <input type="checkbox" checked={sub.on} onChange={(event) => setSub({ ...sub, on: event.target.checked })} />
+              Hiện phụ đề
+            </label>
+            <Select label="Phông" value={sub.font} onChange={(font) => setSub({ ...sub, font })}>
+              <option value="0">Mặc định</option>
+              <option value="1">Có chân</option>
+              <option value="2">Đơn cách</option>
+              <option value="3">Đậm</option>
+              <option value="4">Viết tay</option>
+            </Select>
+            <Select label="Màu chữ" value={sub.col} onChange={(col) => setSub({ ...sub, col })}>
+              <option value="#ffffff">Trắng</option>
+              <option value="#ffe14d">Vàng</option>
+              <option value="#7cfc9a">Xanh lá</option>
+              <option value="#6fe7ff">Xanh lơ</option>
+              <option value="#ff9ecb">Hồng</option>
+            </Select>
+            <label className="col-span-2 grid gap-1 text-sm text-muted">
+              Kiểu nền
+              <select className={FIELD} value={sub.bgm} onChange={(event) => setSub({ ...sub, bgm: event.target.value })}>
+                <option value="box">Hộp nền mờ</option>
+                <option value="solid">Hộp nền đen</option>
+                <option value="none">Không nền</option>
+                <option value="outline">Viền chữ</option>
+              </select>
+            </label>
+            <div className="col-span-2">
+              <Slider label="Độ mờ nền" value={sub.op} min={0} max={100} step={5} text={`${sub.op}%`} onChange={(op) => setSub({ ...sub, op })} />
+              <Slider label="Cỡ chữ" value={sub.size} min={50} max={250} step={10} text={`${sub.size}%`} onChange={(size) => setSub({ ...sub, size })} />
+              <Slider label="Vị trí từ đáy" value={sub.pos} min={2} max={85} step={1} text={`${sub.pos}%`} onChange={(pos) => setSub({ ...sub, pos })} />
+              <Slider label="Lệch thời gian" value={sub.off} min={-10} max={10} step={0.1} text={`${sub.off > 0 ? "+" : ""}${sub.off.toFixed(1)} giây`} onChange={(off) => setSub({ ...sub, off })} />
+            </div>
+            <button type="button" className="col-span-2 min-tap rounded-xl border border-line" onClick={() => setSub(SUB_DEF)}>
+              Đặt lại mặc định
+            </button>
+          </div>
+        </div>
+  );
+
+  return (
+    <div className="grid gap-2">
+    <div
+      ref={stageRef}
+      className={"relative touch-none overflow-hidden bg-black select-none " + (full ? "fixed inset-0 z-40 h-dvh rounded-none" : "aspect-video rounded-2xl")}
+      onPointerDown={(event) => {
+        if ((event.target as HTMLElement).closest("button,input,select,textarea,label,a,[data-nogesture]")) return;
+        const rect = stageRef.current?.getBoundingClientRect();
+        const video = videoRef.current;
+        if (!rect || !video) return;
+        if (event.cancelable) event.preventDefault();
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+          /* một số trình duyệt từ chối capture */
+        }
+        gesture.current = {
+          x: event.clientX,
+          y: event.clientY,
+          w: rect.width,
+          h: rect.height,
+          left: event.clientX < rect.left + rect.width / 2,
+          rx: (event.clientX - rect.left) / rect.width,
+          t0: video.currentTime || 0,
+          v0: video.muted ? 0 : video.volume,
+          b0: brightRef.current,
+          mode: "",
+          tgt: video.currentTime || 0,
+        };
+      }}
+      onPointerMove={(event) => {
+        const g = gesture.current;
+        const video = videoRef.current;
+        if (!g || !video) {
+          if (event.pointerType === "mouse") armUi();
+          return;
+        }
+        const dx = event.clientX - g.x;
+        const dy = event.clientY - g.y;
+        if (!g.mode) {
+          if (Math.hypot(dx, dy) < 14) return;
+          g.mode = Math.abs(dx) > Math.abs(dy) ? "seek" : g.left ? "bri" : "vol";
+        }
+        if (event.cancelable) event.preventDefault();
+        if (g.mode === "seek") {
+          const duration = Number.isFinite(video.duration) ? video.duration : 0;
+          const span = Math.min(180, Math.max(30, (duration || 60) / 10));
+          g.tgt = Math.max(0, Math.min(duration || 1e9, g.t0 + (dx / Math.max(g.w, 1)) * span));
+          const diff = Math.round(g.tgt - g.t0);
+          if (tcRef.current) tcRef.current.textContent = fmt(g.tgt);
+          showHud(`${diff >= 0 ? "Tua tới" : "Tua lui"} ${fmt(g.tgt)} (${diff >= 0 ? "+" : "−"}${Math.abs(diff)} giây)`);
+        } else if (g.mode === "vol") {
+          video.muted = false;
+          video.volume = Math.max(0, Math.min(1, g.v0 - dy / (g.h * 0.7)));
+          showHud(`Âm lượng ${Math.round(video.volume * 100)}%`);
+        } else {
+          const next = Math.max(0.3, Math.min(2, g.b0 - (dy / (g.h * 0.7)) * 1.5));
+          brightRef.current = next;
+          setBright(next);
+          showHud(`Độ sáng ${Math.round(next * 100)}%`);
+        }
+      }}
+      onPointerUp={(event) => {
+        const stage = stageRef.current;
+        if (stage?.hasPointerCapture?.(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+        const g = gesture.current;
+        gesture.current = null;
+        const video = videoRef.current;
+        if (!g || !video) return;
+        if (g.mode === "seek") {
+          video.currentTime = g.tgt;
+          return;
+        }
+        if (g.mode) return;
+        const now = Date.now();
+        const last = Number(stageRef.current?.dataset.tap || 0);
+        if (now - last < 300) {
+          clearTimeout(tapT.current);
+          if (g.rx < 0.33) {
+            video.currentTime = Math.max(0, video.currentTime - 10);
+            showHud(`−10 giây · ${fmt(video.currentTime)}`);
+          } else if (g.rx > 0.67) {
+            video.currentTime = video.currentTime + 10;
+            showHud(`+10 giây · ${fmt(video.currentTime)}`);
+          } else video.paused ? void video.play().catch(() => {}) : video.pause();
+          if (stageRef.current) stageRef.current.dataset.tap = "0";
+          return;
+        }
+        if (stageRef.current) stageRef.current.dataset.tap = String(now);
+        clearTimeout(tapT.current);
+        tapT.current = window.setTimeout(() => setUi((open) => !open), 280);
+      }}
+      onPointerCancel={(event) => {
+        const stage = stageRef.current;
+        if (stage?.hasPointerCapture?.(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+        gesture.current = null;
+      }}
+    >
+      <video
+        ref={videoRef}
+        className="absolute inset-0 z-0 m-auto bg-black"
+        style={{ ...fit, filter: bright === 1 ? undefined : `brightness(${bright})` }}
+        playsInline
+        preload="metadata"
+      />
+      {sub.on && line && (
+        <div className="pointer-events-none absolute inset-x-[4%] z-10 text-center" style={{ bottom: `${sub.pos}%` }}>
+          <span className="rounded-md px-2" style={renderedCue}>
+            {line}
+          </span>
+        </div>
+      )}
+      <div
+        ref={hudRef}
+        data-on="0"
+        className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
+      />
+      {!hasMedia && paused && (
+        <p className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
+      )}
+      <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
+        <div className="flex justify-end gap-2 p-2">
+          <Tiny label="Tỷ lệ khung hình" onClick={() => setAr((n) => (n + 1) % ARS.length)}>
+            {ARS[ar][0]}
+          </Tiny>
+          <Tiny
+            label="Xoay"
+            onClick={() => {
+              const next = full && ar % 2 === 0 ? "portrait" : "landscape";
+              const orientation = screen.orientation as ScreenOrientation & { lock?: (type: string) => Promise<void> };
+              void orientation.lock?.(next).catch(() => {});
+            }}
+          >
+            <RotateCw className="size-4" />
+          </Tiny>
+          <Tiny label="Cài đặt phụ đề" onClick={() => setPanel((open) => !open)}>
+            <Settings className="size-4" />
+          </Tiny>
+          <Tiny label="Toàn màn hình" onClick={() => void toggleFull()}>
+            <Square className="size-4" />
+          </Tiny>
+        </div>
+        <button
+          type="button"
+          aria-label={paused ? "Phát" : "Tạm dừng"}
+          className="absolute top-1/2 left-1/2 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/60 text-white"
+          onClick={() => {
+            const video = videoRef.current;
+            if (!video) return;
+            video.paused ? void video.play().catch(() => {}) : video.pause();
+          }}
+        >
+          {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
+        </button>
+        <div className="flex items-center gap-2 px-3 pb-3">
+          <span ref={tcRef} className="w-12 text-center text-xs text-white">
+            0:00
+          </span>
+          <input
+            ref={seekRef}
+            className="min-tap flex-1 accent-accent"
+            type="range"
+            min={0}
+            max={100000}
+            defaultValue={0}
+            aria-label="Tua video"
+            onInput={(event) => {
+              drag.current = true;
+              const video = videoRef.current;
+              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+              if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
+            }}
+            onChange={(event) => {
+              const video = videoRef.current;
+              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+              if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
+              drag.current = false;
+            }}
+          />
+          <span ref={tdRef} className="w-12 text-center text-xs text-white">
+            0:00
+          </span>
+          <Tiny
+            label="Tắt hoặc bật tiếng"
+            onClick={() => {
+              const video = videoRef.current;
+              if (video) video.muted = !video.muted;
+            }}
+          >
+            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+          </Tiny>
+          <Tiny
+            label="Tốc độ phát"
+            onClick={() => {
+              const video = videoRef.current;
+              if (!video) return;
+              video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
+            }}
+          >
+            {rate}×
+          </Tiny>
+        </div>
+      </div>
+      {panel && full && panelNode}
+    </div>
+    {panel && !full && panelNode}
+    <p className="text-center text-xs text-muted">Kéo ngang để tua · kéo dọc bên phải chỉnh tiếng · bên trái chỉnh sáng · chạm đúp hai mé để nhảy 10 giây</p>
+    </div>
+  );
+}
+
+const SAMPLE_STROKE = "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000";
+
+function sampleBottom(pos: number) {
+  return `${Math.min(62, Math.max(8, pos))}%`;
+}
+
+function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
+  const background = sub.bgm === "box" ? `rgba(0,0,0,${sub.op / 100})` : sub.bgm === "solid" ? "#000" : "transparent";
+  const textShadow = sub.bgm === "outline" ? SAMPLE_STROKE : sub.bgm === "none" ? "0 1px 4px #000, 0 0 8px #000" : "0 1px 2px #000";
+  return {
+    fontFamily: FONTS[Number(sub.font)] || FONTS[0],
+    fontWeight: sub.font === "3" ? 400 : 700,
+    fontSize: `calc(${sub.size / 100} * ${full ? "clamp(18px, 3.4vw, 44px)" : "clamp(15px, 4.4vw, 26px)"})`,
+    color: sub.col,
+    background,
+    textShadow,
+    lineHeight: 1.4,
+    boxDecorationBreak: "clone",
+    WebkitBoxDecorationBreak: "clone",
+  };
+}
+
+function Tiny({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" aria-label={label} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
+      {children}
+    </button>
+  );
+}

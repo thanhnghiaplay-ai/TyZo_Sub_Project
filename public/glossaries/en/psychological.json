@@ -1,0 +1,261 @@
+[
+  {
+    "source": "trauma",
+    "target": "chấn thương tâm lý"
+  },
+  {
+    "source": "repression",
+    "target": "kìm nén"
+  },
+  {
+    "source": "true feelings",
+    "target": "lòng thật"
+  },
+  {
+    "source": "self-loathing",
+    "target": "ghét chính mình"
+  },
+  {
+    "source": "depression",
+    "target": "trầm cảm"
+  },
+  {
+    "source": "panic attack",
+    "target": "cơn hoảng loạn"
+  },
+  {
+    "source": "dissociation",
+    "target": "phân ly"
+  },
+  {
+    "source": "hallucination",
+    "target": "ảo giác"
+  },
+  {
+    "source": "delusion",
+    "target": "hoang tưởng"
+  },
+  {
+    "source": "therapy",
+    "target": "trị liệu"
+  },
+  {
+    "source": "psych ward",
+    "target": "khoa tâm thần"
+  },
+  {
+    "source": "memory loss",
+    "target": "mất trí nhớ"
+  },
+  {
+    "source": "split personality",
+    "target": "hai nhân cách"
+  },
+  {
+    "source": "obsession",
+    "target": "ám ảnh",
+    "note": "Cách khác: chấp niệm"
+  },
+  {
+    "source": "guilt",
+    "target": "mặc cảm tội lỗi",
+    "note": "Cách khác: áy náy"
+  },
+  {
+    "source": "emptiness",
+    "target": "trống rỗng"
+  },
+  {
+    "source": "mask",
+    "target": "mặt nạ"
+  },
+  {
+    "source": "numb",
+    "target": "tê liệt cảm xúc",
+    "note": "Cách khác: tê dại"
+  },
+  {
+    "source": "real self",
+    "target": "con người thật"
+  },
+  {
+    "source": "dependency",
+    "target": "lệ thuộc"
+  },
+  {
+    "source": "flashback",
+    "target": "hồi tưởng đột ngột"
+  },
+  {
+    "source": "self-denial",
+    "target": "phủ nhận bản thân"
+  },
+  {
+    "source": "anxiety",
+    "target": "rối loạn lo âu",
+    "note": "Cách khác: lo âu"
+  },
+  {
+    "source": "boundaries",
+    "target": "ranh giới"
+  },
+  {
+    "source": "coping",
+    "target": "cách đối mặt"
+  },
+  {
+    "source": "panic",
+    "target": "hoảng loạn",
+    "note": "Hán Việt: khủng hoảng"
+  },
+  {
+    "source": "ocd",
+    "target": "rối loạn ám ảnh cưỡng chế",
+    "note": "Hán Việt: cưỡng bách chứng"
+  },
+  {
+    "source": "insomnia",
+    "target": "mất ngủ",
+    "note": "Hán Việt: thất miên"
+  },
+  {
+    "source": "emotional knot",
+    "target": "khúc mắc trong lòng",
+    "note": "Hán Việt: tâm kết"
+  },
+  {
+    "source": "subconscious",
+    "target": "tiềm thức",
+    "note": "Hán Việt: tiềm ý thức"
+  },
+  {
+    "source": "inferiority complex",
+    "target": "tự ti",
+    "note": "Hán Việt: tự ti"
+  },
+  {
+    "source": "self-blame",
+    "target": "tự trách",
+    "note": "Hán Việt: tự trách"
+  },
+  {
+    "source": "remorse",
+    "target": "day dứt",
+    "note": "Hán Việt: nội cữu"
+  },
+  {
+    "source": "loneliness",
+    "target": "cô đơn",
+    "note": "Hán Việt: cô độc"
+  },
+  {
+    "source": "breakdown",
+    "target": "suy sụp",
+    "note": "Hán Việt: băng hội"
+  },
+  {
+    "source": "struggle",
+    "target": "giằng xé, vùng vẫy",
+    "note": "Hán Việt: tránh trát"
+  },
+  {
+    "source": "conflicted",
+    "target": "day dứt, rối rắm",
+    "note": "Hán Việt: củ kết"
+  },
+  {
+    "source": "contradiction",
+    "target": "mâu thuẫn trong lòng",
+    "note": "Hán Việt: mâu thuẫn"
+  },
+  {
+    "source": "emotions",
+    "target": "cảm xúc",
+    "note": "Hán Việt: tình tự"
+  },
+  {
+    "source": "emotional intelligence",
+    "target": "trí tuệ cảm xúc",
+    "note": "Hán Việt: tình thương"
+  },
+  {
+    "source": "psychologist",
+    "target": "bác sĩ tâm lý",
+    "note": "Hán Việt: tâm lý y sinh"
+  },
+  {
+    "source": "counseling",
+    "target": "tư vấn",
+    "note": "Hán Việt: tư tuân"
+  },
+  {
+    "source": "treatment",
+    "target": "điều trị",
+    "note": "Hán Việt: trị liệu"
+  },
+  {
+    "source": "hypnosis",
+    "target": "thôi miên",
+    "note": "Hán Việt: thôi miên"
+  },
+  {
+    "source": "dissociative identity",
+    "target": "đa nhân cách",
+    "note": "Hán Việt: nhân cách phân liệt"
+  },
+  {
+    "source": "auditory hallucination",
+    "target": "ảo thanh",
+    "note": "Hán Việt: ảo thính"
+  },
+  {
+    "source": "paranoid",
+    "target": "cố chấp, hoang tưởng bị hại (paranoid)",
+    "note": "Hán Việt: thiên chấp. Tùy ngữ cảnh tâm lý"
+  },
+  {
+    "source": "possessiveness",
+    "target": "lòng chiếm hữu",
+    "note": "Hán Việt: chiếm hữu dục"
+  },
+  {
+    "source": "need to control",
+    "target": "ham muốn kiểm soát",
+    "note": "Hán Việt: khống chế dục"
+  },
+  {
+    "source": "sense of security",
+    "target": "cảm giác an toàn",
+    "note": "Hán Việt: an toàn cảm"
+  },
+  {
+    "source": "dependence",
+    "target": "phụ thuộc",
+    "note": "Hán Việt: y lại"
+  },
+  {
+    "source": "let go",
+    "target": "buông bỏ, nguôi ngoai",
+    "note": "Hán Việt: thích hoài"
+  },
+  {
+    "source": "put down",
+    "target": "buông xuống",
+    "note": "Hán Việt: phóng hạ"
+  },
+  {
+    "source": "get through",
+    "target": "vượt qua",
+    "note": "Hán Việt: tẩu xuất"
+  },
+  {
+    "source": "self-healing",
+    "target": "tự chữa lành",
+    "note": "Hán Việt: tự dũ"
+  },
+  {
+    "source": "family of origin",
+    "target": "gia đình gốc",
+    "note": "Hán Việt: nguyên sinh gia đình"
+  }
+]

@@ -1,0 +1,423 @@
+[
+  {
+    "source": "읽씹",
+    "target": "xem rồi không trả lời"
+  },
+  {
+    "source": "안읽씹",
+    "target": "không xem không trả"
+  },
+  {
+    "source": "카톡",
+    "target": "KakaoTalk"
+  },
+  {
+    "source": "인스타",
+    "target": "Instagram"
+  },
+  {
+    "source": "스토리",
+    "target": "story"
+  },
+  {
+    "source": "짤방",
+    "target": "ảnh meme"
+  },
+  {
+    "source": "갓생",
+    "target": "sống chỉn chu"
+  },
+  {
+    "source": "소확행",
+    "target": "hạnh phúc nhỏ"
+  },
+  {
+    "source": "혼밥",
+    "target": "ăn một mình"
+  },
+  {
+    "source": "혼술",
+    "target": "nhậu một mình"
+  },
+  {
+    "source": "월세",
+    "target": "tiền thuê tháng"
+  },
+  {
+    "source": "전세",
+    "target": "thuê trả trước"
+  },
+  {
+    "source": "알바",
+    "target": "làm thêm"
+  },
+  {
+    "source": "야근",
+    "target": "tăng ca"
+  },
+  {
+    "source": "칼퇴",
+    "target": "tan đúng giờ"
+  },
+  {
+    "source": "워라밸",
+    "target": "cân bằng việc và đời"
+  },
+  {
+    "source": "번아웃",
+    "target": "kiệt sức"
+  },
+  {
+    "source": "현타",
+    "target": "tỉnh ra thì chán"
+  },
+  {
+    "source": "팩폭",
+    "target": "nói thẳng sự thật đau"
+  },
+  {
+    "source": "눈치",
+    "target": "biết ý"
+  },
+  {
+    "source": "갑분싸",
+    "target": "tự nhiên không khí chết"
+  },
+  {
+    "source": "인싸",
+    "target": "dân hội nhập"
+  },
+  {
+    "source": "아싸",
+    "target": "dân ngoài cuộc"
+  },
+  {
+    "source": "잠수",
+    "target": "biến mất"
+  },
+  {
+    "source": "배민",
+    "target": "app giao đồ ăn"
+  },
+  {
+    "source": "쿠팡",
+    "target": "Coupang"
+  },
+  {
+    "source": "로켓배송",
+    "target": "giao siêu tốc"
+  },
+  {
+    "source": "넷플",
+    "target": "Netflix"
+  },
+  {
+    "source": "정주행",
+    "target": "xem một mạch"
+  },
+  {
+    "source": "스포주의",
+    "target": "coi chừng spoil"
+  },
+  {
+    "source": "존잼",
+    "target": "hay cực"
+  },
+  {
+    "source": "노잼",
+    "target": "chán"
+  },
+  {
+    "source": "오운완",
+    "target": "hôm nay tập xong"
+  },
+  {
+    "source": "헬창",
+    "target": "dân gym"
+  },
+  {
+    "source": "재택",
+    "target": "làm ở nhà"
+  },
+  {
+    "source": "취준",
+    "target": "chuẩn bị xin việc"
+  },
+  {
+    "source": "자소서",
+    "target": "thư xin việc"
+  },
+  {
+    "source": "연봉",
+    "target": "lương năm"
+  },
+  {
+    "source": "회식",
+    "target": "liên hoan công ty"
+  },
+  {
+    "source": "카공",
+    "target": "học ở quán cà phê"
+  },
+  {
+    "source": "얼죽아",
+    "target": "chết cũng uống đá"
+  },
+  {
+    "source": "맛집",
+    "target": "quán ngon"
+  },
+  {
+    "source": "오픈런",
+    "target": "lao vào lúc mở cửa"
+  },
+  {
+    "source": "품절",
+    "target": "hết hàng"
+  },
+  {
+    "source": "당근",
+    "target": "chợ đồ cũ"
+  },
+  {
+    "source": "릴스",
+    "target": "Reels"
+  },
+  {
+    "source": "구독",
+    "target": "đăng ký theo dõi"
+  },
+  {
+    "source": "언팔",
+    "target": "bỏ theo dõi"
+  },
+  {
+    "source": "악플",
+    "target": "bình luận độc"
+  },
+  {
+    "source": "맞팔",
+    "target": "theo dõi lại"
+  },
+  {
+    "source": "알림",
+    "target": "thông báo"
+  },
+  {
+    "source": "방해금지",
+    "target": "không làm phiền"
+  },
+  {
+    "source": "데이터",
+    "target": "data"
+  },
+  {
+    "source": "버퍼링",
+    "target": "xoay chờ tải"
+  },
+  {
+    "source": "렉걸림",
+    "target": "bị giật lag"
+  },
+  {
+    "source": "튕김",
+    "target": "văng app"
+  },
+  {
+    "source": "캡처",
+    "target": "chụp màn hình"
+  },
+  {
+    "source": "인증",
+    "target": "xác minh"
+  },
+  {
+    "source": "비번",
+    "target": "mật khẩu"
+  },
+  {
+    "source": "수고하셨어요",
+    "target": "vất vả rồi",
+    "note": "Hán Việt: tân khổ liễu. Không dịch \"khó khăn\""
+  },
+  {
+    "source": "부탁드려요",
+    "target": "phiền bạn rồi",
+    "note": "Hán Việt: ma phiền nhĩ liễu"
+  },
+  {
+    "source": "아무거나",
+    "target": "sao cũng được",
+    "note": "Hán Việt: tùy tiện. Không dịch \"tùy tiện\" cho cả câu"
+  },
+  {
+    "source": "파이팅",
+    "target": "cố lên",
+    "note": "Hán Việt: gia du. Không dịch \"thêm dầu\""
+  },
+  {
+    "source": "괜찮아요",
+    "target": "không sao",
+    "note": "Hán Việt: một sự"
+  },
+  {
+    "source": "문제없어요",
+    "target": "không sao đâu",
+    "note": "Hán Việt: một vấn đề. Việt: không sao đâu / ổn cả"
+  },
+  {
+    "source": "너무 좋아요",
+    "target": "tuyệt quá",
+    "note": "Hán Việt: thái hảo liễu. Việt: tuyệt quá / hay quá"
+  },
+  {
+    "source": "정말요?",
+    "target": "thật sao?",
+    "note": "Hán Việt: chân đích ma. Việt: thật sao? / thật hả?"
+  },
+  {
+    "source": "무슨 일이에요",
+    "target": "sao vậy?",
+    "note": "Hán Việt: chẩm ma liễu. Việt: sao vậy? / chuyện gì thế?"
+  },
+  {
+    "source": "조심히 가세요",
+    "target": "đi cẩn thận nhé",
+    "note": "Hán Việt: mạn tẩu"
+  },
+  {
+    "source": "안녕히 가세요",
+    "target": "tạm biệt",
+    "note": "Hán Việt: tái kiến"
+  },
+  {
+    "source": "환영합니다",
+    "target": "chào mừng",
+    "note": "Hán Việt: hoan nghênh"
+  },
+  {
+    "source": "앉으세요",
+    "target": "mời ngồi",
+    "note": "Hán Việt: thỉnh tọa"
+  },
+  {
+    "source": "말씀 좀 여쭐게요",
+    "target": "xin hỏi",
+    "note": "Hán Việt: thỉnh vấn. Việt: xin hỏi / cho hỏi một chút"
+  },
+  {
+    "source": "지나갈게요",
+    "target": "cho mình đi qua",
+    "note": "Hán Việt: tá quá. Việt: cho mình đi qua / xin lỗi"
+  },
+  {
+    "source": "부탁해요",
+    "target": "làm ơn",
+    "note": "Hán Việt: bái thác. Việt: làm ơn / nhờ bạn"
+  },
+  {
+    "source": "조심해",
+    "target": "cẩn thận",
+    "note": "Hán Việt: tiểu tâm"
+  },
+  {
+    "source": "주의",
+    "target": "chú ý",
+    "note": "Hán Việt: chú ý"
+  },
+  {
+    "source": "말씀 많이 들었습니다",
+    "target": "ngưỡng mộ đã lâu",
+    "note": "Hán Việt: cửu ngưỡng"
+  },
+  {
+    "source": "만나서 반갑습니다",
+    "target": "rất vui được gặp",
+    "note": "Hán Việt: hạnh hội"
+  },
+  {
+    "source": "식사하셨어요",
+    "target": "bạn ăn cơm chưa",
+    "note": "Hán Việt: ngật phạn liễu ma. Câu hỏi thăm xã giao"
+  },
+  {
+    "source": "좋은 아침",
+    "target": "chào buổi sáng",
+    "note": "Hán Việt: tảo an"
+  },
+  {
+    "source": "잘 자요",
+    "target": "chúc ngủ ngon",
+    "note": "Hán Việt: vãn an"
+  },
+  {
+    "source": "집에 가다",
+    "target": "về nhà",
+    "note": "Hán Việt: hồi gia"
+  },
+  {
+    "source": "출근",
+    "target": "đi làm",
+    "note": "Hán Việt: thượng ban"
+  },
+  {
+    "source": "퇴근",
+    "target": "tan làm",
+    "note": "Hán Việt: hạ ban"
+  },
+  {
+    "source": "휴가를 내다",
+    "target": "xin nghỉ phép",
+    "note": "Hán Việt: thỉnh giả"
+  },
+  {
+    "source": "교통체증",
+    "target": "kẹt xe",
+    "note": "Hán Việt: đổ xa"
+  },
+  {
+    "source": "택시를 타다",
+    "target": "gọi xe",
+    "note": "Hán Việt: đả xa"
+  },
+  {
+    "source": "배달 음식",
+    "target": "đồ ăn giao tận nơi",
+    "note": "Hán Việt: ngoại mại"
+  },
+  {
+    "source": "택배",
+    "target": "chuyển phát nhanh",
+    "note": "Hán Việt: khoái đệ"
+  },
+  {
+    "source": "휴대폰",
+    "target": "điện thoại",
+    "note": "Hán Việt: thủ cơ"
+  },
+  {
+    "source": "위챗",
+    "target": "WeChat",
+    "note": "Hán Việt: vi tín"
+  },
+  {
+    "source": "세뱃돈 봉투",
+    "target": "bao lì xì",
+    "note": "Hán Việt: hồng bao"
+  },
+  {
+    "source": "계산하다",
+    "target": "thanh toán",
+    "note": "Hán Việt: mãi đơn"
+  },
+  {
+    "source": "할인",
+    "target": "giảm giá",
+    "note": "Hán Việt: đả chiết"
+  },
+  {
+    "source": "귀찮다",
+    "target": "phiền phức",
+    "note": "Hán Việt: ma phiền"
+  }
+]

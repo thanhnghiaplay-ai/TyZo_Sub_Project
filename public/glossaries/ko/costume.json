@@ -1,0 +1,289 @@
+[
+  {
+    "source": "폐하",
+    "target": "bệ hạ"
+  },
+  {
+    "source": "황후",
+    "target": "hoàng hậu"
+  },
+  {
+    "source": "왕자",
+    "target": "hoàng tử"
+  },
+  {
+    "source": "공주",
+    "target": "công chúa"
+  },
+  {
+    "source": "장군",
+    "target": "tướng quân"
+  },
+  {
+    "source": "협객",
+    "target": "hiệp khách"
+  },
+  {
+    "source": "무공",
+    "target": "võ công"
+  },
+  {
+    "source": "내공",
+    "target": "nội công",
+    "note": "Cách khác: nội lực"
+  },
+  {
+    "source": "경공",
+    "target": "khinh công"
+  },
+  {
+    "source": "문파",
+    "target": "môn phái"
+  },
+  {
+    "source": "장문인",
+    "target": "chưởng môn"
+  },
+  {
+    "source": "강호",
+    "target": "giang hồ"
+  },
+  {
+    "source": "원수",
+    "target": "kẻ thù"
+  },
+  {
+    "source": "사부",
+    "target": "sư phụ"
+  },
+  {
+    "source": "사제",
+    "target": "sư đệ"
+  },
+  {
+    "source": "검법",
+    "target": "kiếm pháp"
+  },
+  {
+    "source": "비급",
+    "target": "bí kíp"
+  },
+  {
+    "source": "중원",
+    "target": "trung nguyên"
+  },
+  {
+    "source": "암기",
+    "target": "ám khí"
+  },
+  {
+    "source": "독약",
+    "target": "độc dược",
+    "note": "Cách khác: thuốc độc"
+  },
+  {
+    "source": "보패",
+    "target": "bảo bối"
+  },
+  {
+    "source": "천하제일",
+    "target": "thiên hạ đệ nhất"
+  },
+  {
+    "source": "무림맹",
+    "target": "võ lâm minh"
+  },
+  {
+    "source": "배신",
+    "target": "phản bội"
+  },
+  {
+    "source": "복수",
+    "target": "báo thù"
+  },
+  {
+    "source": "선비",
+    "target": "kẻ sĩ"
+  },
+  {
+    "source": "궁궐",
+    "target": "cung điện"
+  },
+  {
+    "source": "상소",
+    "target": "sớ tấu"
+  },
+  {
+    "source": "반역",
+    "target": "mưu phản"
+  },
+  {
+    "source": "옥좌",
+    "target": "ngai vàng"
+  },
+  {
+    "source": "소생",
+    "target": "tại hạ",
+    "note": "Hán Việt: tại hạ"
+  },
+  {
+    "source": "귀하",
+    "target": "các hạ",
+    "note": "Hán Việt: các hạ"
+  },
+  {
+    "source": "아가씨",
+    "target": "cô nương",
+    "note": "Hán Việt: cô nương. Cách khác: tiểu thư"
+  },
+  {
+    "source": "공자",
+    "target": "công tử",
+    "note": "Hán Việt: công tử"
+  },
+  {
+    "source": "도련님",
+    "target": "thiếu gia",
+    "note": "Hán Việt: thiếu gia"
+  },
+  {
+    "source": "부인",
+    "target": "phu nhân",
+    "note": "Hán Việt: phu nhân"
+  },
+  {
+    "source": "선배",
+    "target": "tiền bối",
+    "note": "Hán Việt: tiền bối"
+  },
+  {
+    "source": "후배",
+    "target": "vãn bối",
+    "note": "Hán Việt: vãn bối"
+  },
+  {
+    "source": "스승님",
+    "target": "sư phụ",
+    "note": "Hán Việt: sư phụ"
+  },
+  {
+    "source": "사형",
+    "target": "sư huynh",
+    "note": "Hán Việt: sư huynh"
+  },
+  {
+    "source": "사저",
+    "target": "sư tỷ",
+    "note": "Hán Việt: sư tỷ"
+  },
+  {
+    "source": "사매",
+    "target": "sư muội",
+    "note": "Hán Việt: sư muội"
+  },
+  {
+    "source": "무림",
+    "target": "võ lâm",
+    "note": "Hán Việt: võ lâm"
+  },
+  {
+    "source": "초식",
+    "target": "chiêu thức",
+    "note": "Hán Việt: chiêu thức"
+  },
+  {
+    "source": "해독제",
+    "target": "thuốc giải",
+    "note": "Hán Việt: giải dược"
+  },
+  {
+    "source": "주화입마",
+    "target": "tẩu hỏa nhập ma",
+    "note": "Hán Việt: tẩu hỏa nhập ma"
+  },
+  {
+    "source": "폐관",
+    "target": "bế quan",
+    "note": "Hán Việt: bế quan"
+  },
+  {
+    "source": "하산",
+    "target": "xuống núi",
+    "note": "Hán Việt: hạ sơn"
+  },
+  {
+    "source": "비무",
+    "target": "tỷ thí",
+    "note": "Hán Việt: tỷ võ"
+  },
+  {
+    "source": "겨루다",
+    "target": "giao lưu võ nghệ",
+    "note": "Hán Việt: thiết tha"
+  },
+  {
+    "source": "입문",
+    "target": "bái sư",
+    "note": "Hán Việt: bái sư"
+  },
+  {
+    "source": "의형제를 맺다",
+    "target": "kết nghĩa",
+    "note": "Hán Việt: kết nghĩa"
+  },
+  {
+    "source": "은원",
+    "target": "ân oán",
+    "note": "Hán Việt: ân oán"
+  },
+  {
+    "source": "대협",
+    "target": "đại hiệp",
+    "note": "Hán Việt: đại hiệp"
+  },
+  {
+    "source": "마교",
+    "target": "ma giáo",
+    "note": "Hán Việt: ma giáo"
+  },
+  {
+    "source": "정파",
+    "target": "chính phái",
+    "note": "Hán Việt: chính phái"
+  },
+  {
+    "source": "사파",
+    "target": "tà phái",
+    "note": "Hán Việt: tà phái"
+  },
+  {
+    "source": "맹주",
+    "target": "minh chủ",
+    "note": "Hán Việt: minh chủ"
+  },
+  {
+    "source": "표국",
+    "target": "tiêu cục",
+    "note": "Hán Việt: tiêu cục"
+  },
+  {
+    "source": "객잔",
+    "target": "quán trọ",
+    "note": "Hán Việt: khách sạn. Không dịch \"khách sạn\""
+  },
+  {
+    "source": "주루",
+    "target": "tửu lâu",
+    "note": "Hán Việt: tửu lâu"
+  },
+  {
+    "source": "작별을 고하다",
+    "target": "xin cáo từ",
+    "note": "Hán Việt: cáo từ"
+  },
+  {
+    "source": "가르침을 청하다",
+    "target": "xin chỉ giáo",
+    "note": "Hán Việt: thỉnh giáo"
+  }
+]

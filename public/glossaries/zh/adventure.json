@@ -1,0 +1,420 @@
+[
+  {
+    "source": "探险",
+    "target": "thám hiểm",
+    "renders": {
+      "vi": "thám hiểm",
+      "ko": "탐험",
+      "ja": "探検",
+      "en": "expedition"
+    },
+    "note": "Hán Việt: thám hiểm"
+  },
+  {
+    "source": "冒险",
+    "target": "phiêu lưu, mạo hiểm",
+    "renders": {
+      "vi": "phiêu lưu, mạo hiểm",
+      "ko": "모험",
+      "ja": "冒険",
+      "en": "adventure"
+    },
+    "note": "Hán Việt: mạo hiểm"
+  },
+  {
+    "source": "寻宝",
+    "target": "tìm kho báu",
+    "renders": {
+      "vi": "tìm kho báu",
+      "ko": "보물찾기",
+      "ja": "宝探し",
+      "en": "treasure hunt"
+    },
+    "note": "Hán Việt: tầm bảo"
+  },
+  {
+    "source": "宝藏",
+    "target": "kho báu",
+    "renders": {
+      "vi": "kho báu",
+      "ko": "보물",
+      "ja": "宝物",
+      "en": "treasure"
+    },
+    "note": "Hán Việt: bảo tàng"
+  },
+  {
+    "source": "遗迹",
+    "target": "di tích cổ",
+    "renders": {
+      "vi": "di tích cổ",
+      "ko": "유적",
+      "ja": "遺跡",
+      "en": "ruins"
+    },
+    "note": "Hán Việt: di tích"
+  },
+  {
+    "source": "古墓",
+    "target": "mộ cổ",
+    "renders": {
+      "vi": "mộ cổ",
+      "ko": "고분",
+      "ja": "古墳",
+      "en": "ancient tomb"
+    },
+    "note": "Hán Việt: cổ mộ"
+  },
+  {
+    "source": "机关",
+    "target": "cơ quan, bẫy",
+    "renders": {
+      "vi": "cơ quan, bẫy",
+      "ko": "장치",
+      "ja": "仕掛け",
+      "en": "mechanism"
+    },
+    "note": "Hán Việt: cơ quan. Anh: mechanism / trap. Không dịch \"cơ quan nhà nước\""
+  },
+  {
+    "source": "陷阱",
+    "target": "cạm bẫy",
+    "renders": {
+      "vi": "cạm bẫy",
+      "ko": "함정",
+      "ja": "罠",
+      "en": "trap"
+    },
+    "note": "Hán Việt: hãm tỉnh"
+  },
+  {
+    "source": "地图",
+    "target": "bản đồ",
+    "renders": {
+      "vi": "bản đồ",
+      "ko": "지도",
+      "ja": "地図",
+      "en": "map"
+    },
+    "note": "Hán Việt: địa đồ"
+  },
+  {
+    "source": "罗盘",
+    "target": "la bàn",
+    "renders": {
+      "vi": "la bàn",
+      "ko": "나침반",
+      "ja": "羅針盤",
+      "en": "compass"
+    },
+    "note": "Hán Việt: la bàn"
+  },
+  {
+    "source": "指南针",
+    "target": "kim chỉ nam",
+    "renders": {
+      "vi": "kim chỉ nam",
+      "ko": "나침반",
+      "ja": "方位磁針",
+      "en": "compass needle"
+    },
+    "note": "Hán Việt: chỉ nam châm"
+  },
+  {
+    "source": "荒野",
+    "target": "vùng hoang dã",
+    "renders": {
+      "vi": "vùng hoang dã",
+      "ko": "황야",
+      "ja": "荒野",
+      "en": "wilderness"
+    },
+    "note": "Hán Việt: hoang dã"
+  },
+  {
+    "source": "丛林",
+    "target": "rừng rậm",
+    "renders": {
+      "vi": "rừng rậm",
+      "ko": "밀림",
+      "ja": "ジャングル",
+      "en": "jungle"
+    },
+    "note": "Hán Việt: tùng lâm"
+  },
+  {
+    "source": "沙漠",
+    "target": "sa mạc",
+    "renders": {
+      "vi": "sa mạc",
+      "ko": "사막",
+      "ja": "砂漠",
+      "en": "desert"
+    },
+    "note": "Hán Việt: sa mạc"
+  },
+  {
+    "source": "雪山",
+    "target": "núi tuyết",
+    "renders": {
+      "vi": "núi tuyết",
+      "ko": "설산",
+      "ja": "雪山",
+      "en": "snow mountain"
+    },
+    "note": "Hán Việt: tuyết sơn"
+  },
+  {
+    "source": "峡谷",
+    "target": "hẻm núi",
+    "renders": {
+      "vi": "hẻm núi",
+      "ko": "협곡",
+      "ja": "峡谷",
+      "en": "canyon"
+    },
+    "note": "Hán Việt: hiệp cốc"
+  },
+  {
+    "source": "洞穴",
+    "target": "hang động",
+    "renders": {
+      "vi": "hang động",
+      "ko": "동굴",
+      "ja": "洞窟",
+      "en": "cave"
+    },
+    "note": "Hán Việt: động huyệt"
+  },
+  {
+    "source": "深渊",
+    "target": "vực sâu",
+    "renders": {
+      "vi": "vực sâu",
+      "ko": "심연",
+      "ja": "深淵",
+      "en": "abyss"
+    },
+    "note": "Hán Việt: thâm uyên"
+  },
+  {
+    "source": "迷宫",
+    "target": "mê cung",
+    "renders": {
+      "vi": "mê cung",
+      "ko": "미궁",
+      "ja": "迷宮",
+      "en": "labyrinth"
+    },
+    "note": "Hán Việt: mê cung"
+  },
+  {
+    "source": "传说",
+    "target": "truyền thuyết",
+    "renders": {
+      "vi": "truyền thuyết",
+      "ko": "전설",
+      "ja": "伝説",
+      "en": "legend"
+    },
+    "note": "Hán Việt: truyền thuyết"
+  },
+  {
+    "source": "神器",
+    "target": "thần khí",
+    "renders": {
+      "vi": "thần khí",
+      "ko": "신기",
+      "ja": "神器",
+      "en": "divine artifact"
+    },
+    "note": "Hán Việt: thần khí"
+  },
+  {
+    "source": "钥匙",
+    "target": "chìa khóa",
+    "renders": {
+      "vi": "chìa khóa",
+      "ko": "열쇠",
+      "ja": "鍵",
+      "en": "key"
+    },
+    "note": "Hán Việt: thược thi"
+  },
+  {
+    "source": "线索",
+    "target": "manh mối",
+    "renders": {
+      "vi": "manh mối",
+      "ko": "단서",
+      "ja": "手がかり",
+      "en": "clue"
+    },
+    "note": "Hán Việt: tuyến sách"
+  },
+  {
+    "source": "探路",
+    "target": "dò đường",
+    "renders": {
+      "vi": "dò đường",
+      "ko": "길 탐색",
+      "ja": "道を探る",
+      "en": "scout the way"
+    },
+    "note": "Hán Việt: thám lộ"
+  },
+  {
+    "source": "向导",
+    "target": "người dẫn đường",
+    "renders": {
+      "vi": "người dẫn đường",
+      "ko": "안내인",
+      "ja": "ガイド",
+      "en": "guide"
+    },
+    "note": "Hán Việt: hướng đạo"
+  },
+  {
+    "source": "同伴",
+    "target": "đồng đội, bạn đồng hành",
+    "renders": {
+      "vi": "đồng đội, bạn đồng hành",
+      "ko": "동료",
+      "ja": "仲間",
+      "en": "companion"
+    },
+    "note": "Hán Việt: đồng bạn"
+  },
+  {
+    "source": "队伍",
+    "target": "đội nhóm",
+    "renders": {
+      "vi": "đội nhóm",
+      "ko": "팀",
+      "ja": "パーティー",
+      "en": "party"
+    },
+    "note": "Hán Việt: đội ngũ. Anh: party / team"
+  },
+  {
+    "source": "营地",
+    "target": "trại, điểm cắm trại",
+    "renders": {
+      "vi": "trại, điểm cắm trại",
+      "ko": "야영지",
+      "ja": "キャンプ地",
+      "en": "camp"
+    },
+    "note": "Hán Việt: doanh địa"
+  },
+  {
+    "source": "补给",
+    "target": "tiếp tế",
+    "renders": {
+      "vi": "tiếp tế",
+      "ko": "보급",
+      "ja": "補給",
+      "en": "supplies"
+    },
+    "note": "Hán Việt: bổ cấp"
+  },
+  {
+    "source": "干粮",
+    "target": "lương khô",
+    "renders": {
+      "vi": "lương khô",
+      "ko": "건량",
+      "ja": "携行食",
+      "en": "dry rations"
+    },
+    "note": "Hán Việt: can lương"
+  },
+  {
+    "source": "航海",
+    "target": "đi biển",
+    "renders": {
+      "vi": "đi biển",
+      "ko": "항해",
+      "ja": "航海",
+      "en": "sailing"
+    },
+    "note": "Hán Việt: hàng hải"
+  },
+  {
+    "source": "海盗",
+    "target": "hải tặc",
+    "renders": {
+      "vi": "hải tặc",
+      "ko": "해적",
+      "ja": "海賊",
+      "en": "pirate"
+    },
+    "note": "Hán Việt: hải đạo"
+  },
+  {
+    "source": "孤岛",
+    "target": "đảo hoang",
+    "renders": {
+      "vi": "đảo hoang",
+      "ko": "외딴섬",
+      "ja": "孤島",
+      "en": "deserted island"
+    },
+    "note": "Hán Việt: cô đảo"
+  },
+  {
+    "source": "沉船",
+    "target": "tàu đắm",
+    "renders": {
+      "vi": "tàu đắm",
+      "ko": "침몰선",
+      "ja": "沈没船",
+      "en": "shipwreck"
+    },
+    "note": "Hán Việt: trầm thuyền"
+  },
+  {
+    "source": "历险",
+    "target": "trải qua hiểm nguy",
+    "renders": {
+      "vi": "trải qua hiểm nguy",
+      "ko": "모험을 겪다",
+      "ja": "冒険する",
+      "en": "go through perils"
+    },
+    "note": "Hán Việt: lịch hiểm"
+  },
+  {
+    "source": "闯关",
+    "target": "vượt ải",
+    "renders": {
+      "vi": "vượt ải",
+      "ko": "관문 돌파",
+      "ja": "関門突破",
+      "en": "clear a stage"
+    },
+    "note": "Hán Việt: sấm quan"
+  },
+  {
+    "source": "脱险",
+    "target": "thoát hiểm",
+    "renders": {
+      "vi": "thoát hiểm",
+      "ko": "위기 탈출",
+      "ja": "危機を脱する",
+      "en": "escape danger"
+    },
+    "note": "Hán Việt: thoát hiểm"
+  },
+  {
+    "source": "启程",
+    "target": "lên đường",
+    "renders": {
+      "vi": "lên đường",
+      "ko": "출발하다",
+      "ja": "出発する",
+      "en": "set out"
+    },
+    "note": "Hán Việt: khải trình"
+  }
+]

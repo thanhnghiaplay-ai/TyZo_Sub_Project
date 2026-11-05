@@ -1,0 +1,309 @@
+[
+  {
+    "source": "suspect",
+    "target": "nghi phạm"
+  },
+  {
+    "source": "alibi",
+    "target": "chứng cứ ngoại phạm"
+  },
+  {
+    "source": "crime scene",
+    "target": "hiện trường"
+  },
+  {
+    "source": "murder weapon",
+    "target": "hung khí"
+  },
+  {
+    "source": "witness",
+    "target": "nhân chứng"
+  },
+  {
+    "source": "detective",
+    "target": "thám tử"
+  },
+  {
+    "source": "search warrant",
+    "target": "lệnh khám xét"
+  },
+  {
+    "source": "miranda rights",
+    "target": "quyền im lặng khi bị bắt"
+  },
+  {
+    "source": "plea deal",
+    "target": "thỏa thuận nhận tội"
+  },
+  {
+    "source": "undercover",
+    "target": "nằm vùng"
+  },
+  {
+    "source": "money laundering",
+    "target": "rửa tiền"
+  },
+  {
+    "source": "drug deal",
+    "target": "phi vụ ma túy"
+  },
+  {
+    "source": "getaway car",
+    "target": "xe tẩu thoát"
+  },
+  {
+    "source": "informant",
+    "target": "chỉ điểm",
+    "note": "Cách khác: tay trong, người cung cấp tin"
+  },
+  {
+    "source": "ballistics",
+    "target": "giám định đạn"
+  },
+  {
+    "source": "forensics",
+    "target": "giám định pháp y"
+  },
+  {
+    "source": "accomplice",
+    "target": "đồng phạm",
+    "note": "Cách khác: đồng bọn"
+  },
+  {
+    "source": "turn yourself in",
+    "target": "ra tự thú"
+  },
+  {
+    "source": "statute of limitations",
+    "target": "hết thời hiệu"
+  },
+  {
+    "source": "perp",
+    "target": "thủ phạm"
+  },
+  {
+    "source": "case closed",
+    "target": "khép vụ"
+  },
+  {
+    "source": "double cross",
+    "target": "phản bội"
+  },
+  {
+    "source": "black market",
+    "target": "chợ đen"
+  },
+  {
+    "source": "ransom",
+    "target": "tiền chuộc"
+  },
+  {
+    "source": "safe house",
+    "target": "nhà an toàn"
+  },
+  {
+    "source": "wiretap",
+    "target": "nghe lén"
+  },
+  {
+    "source": "felony",
+    "target": "trọng tội"
+  },
+  {
+    "source": "parole",
+    "target": "án treo có điều kiện"
+  },
+  {
+    "source": "inmate",
+    "target": "tù nhân"
+  },
+  {
+    "source": "shakedown",
+    "target": "bảo kê"
+  },
+  {
+    "source": "boss",
+    "target": "đại ca, trùm",
+    "note": "Hán Việt: lão đại"
+  },
+  {
+    "source": "big brother",
+    "target": "đại ca",
+    "note": "Hán Việt: đại ca"
+  },
+  {
+    "source": "underling",
+    "target": "đàn em",
+    "note": "Hán Việt: tiểu đệ"
+  },
+  {
+    "source": "henchman",
+    "target": "thuộc hạ, tay chân",
+    "note": "Hán Việt: thủ hạ"
+  },
+  {
+    "source": "gang",
+    "target": "băng đảng",
+    "note": "Hán Việt: bang phái"
+  },
+  {
+    "source": "mob",
+    "target": "xã hội đen",
+    "note": "Hán Việt: hắc bang"
+  },
+  {
+    "source": "the underworld",
+    "target": "giới giang hồ",
+    "note": "Hán Việt: đạo thượng. Không dịch \"trên đường\""
+  },
+  {
+    "source": "turf",
+    "target": "địa bàn",
+    "note": "Hán Việt: địa bàn"
+  },
+  {
+    "source": "influence",
+    "target": "thế lực",
+    "note": "Hán Việt: thế lực"
+  },
+  {
+    "source": "gang fight",
+    "target": "thanh toán nhau, đấu súng",
+    "note": "Hán Việt: hỏa bính"
+  },
+  {
+    "source": "take out",
+    "target": "thủ tiêu, xử lý",
+    "note": "Hán Việt: tố điệu"
+  },
+  {
+    "source": "silence a witness",
+    "target": "bịt miệng, giết người diệt khẩu",
+    "note": "Hán Việt: diệt khẩu"
+  },
+  {
+    "source": "slash someone",
+    "target": "chém người",
+    "note": "Hán Việt: khản nhân"
+  },
+  {
+    "source": "protection money",
+    "target": "tiền bảo kê",
+    "note": "Hán Việt: bảo hộ phí"
+  },
+  {
+    "source": "smuggling",
+    "target": "buôn lậu",
+    "note": "Hán Việt: tẩu tư"
+  },
+  {
+    "source": "drug trafficking",
+    "target": "buôn ma túy",
+    "note": "Hán Việt: phản độc"
+  },
+  {
+    "source": "ill-gotten money",
+    "target": "tiền tang",
+    "note": "Hán Việt: tang khoản"
+  },
+  {
+    "source": "stolen goods",
+    "target": "tang vật",
+    "note": "Hán Việt: tang vật"
+  },
+  {
+    "source": "kidnapping",
+    "target": "bắt cóc",
+    "note": "Hán Việt: bảng giá"
+  },
+  {
+    "source": "extortion",
+    "target": "tống tiền",
+    "note": "Hán Việt: lặc sách"
+  },
+  {
+    "source": "robbery",
+    "target": "cướp",
+    "note": "Hán Việt: thưởng kiếp"
+  },
+  {
+    "source": "theft",
+    "target": "trộm cắp",
+    "note": "Hán Việt: đạo thiết"
+  },
+  {
+    "source": "fraud",
+    "target": "lừa đảo",
+    "note": "Hán Việt: trá phiến"
+  },
+  {
+    "source": "dirty money",
+    "target": "tiền bẩn",
+    "note": "Hán Việt: hắc tiền"
+  },
+  {
+    "source": "wanted",
+    "target": "truy nã",
+    "note": "Hán Việt: thông tập"
+  },
+  {
+    "source": "fugitive",
+    "target": "tội phạm trốn chạy",
+    "note": "Hán Việt: đào phạm"
+  },
+  {
+    "source": "police",
+    "target": "cảnh sát",
+    "note": "Hán Việt: cảnh sát"
+  },
+  {
+    "source": "cops (slang)",
+    "target": "cớm (tiếng lóng)",
+    "note": "Hán Việt: điều tử"
+  },
+  {
+    "source": "undercover agent",
+    "target": "nằm vùng",
+    "note": "Hán Việt: ngọa để"
+  },
+  {
+    "source": "evidence",
+    "target": "chứng cứ",
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "interrogation",
+    "target": "thẩm vấn",
+    "note": "Hán Việt: thẩm tấn"
+  },
+  {
+    "source": "go to prison",
+    "target": "ngồi tù",
+    "note": "Hán Việt: tọa lao"
+  },
+  {
+    "source": "sentence",
+    "target": "kết án",
+    "note": "Hán Việt: phán hình"
+  },
+  {
+    "source": "turn oneself in",
+    "target": "ra đầu thú",
+    "note": "Hán Việt: tự thú"
+  },
+  {
+    "source": "mole",
+    "target": "nội gián",
+    "note": "Hán Việt: nội quỷ"
+  },
+  {
+    "source": "crooks preying on crooks",
+    "target": "băng đảng ăn hiếp nhau",
+    "note": "Hán Việt: hắc ngật hắc"
+  },
+  {
+    "source": "quit the underworld",
+    "target": "rửa tay gác kiếm, rút lui khỏi giang hồ",
+    "note": "Hán Việt: kim bồn tẩy thủ"
+  }
+]

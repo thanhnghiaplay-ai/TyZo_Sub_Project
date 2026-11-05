@@ -1,0 +1,420 @@
+[
+  {
+    "source": "异能",
+    "target": "dị năng, năng lực đặc biệt",
+    "renders": {
+      "vi": "dị năng, năng lực đặc biệt",
+      "ko": "이능",
+      "ja": "異能",
+      "en": "special ability"
+    },
+    "note": "Hán Việt: dị năng"
+  },
+  {
+    "source": "超能力",
+    "target": "siêu năng lực",
+    "renders": {
+      "vi": "siêu năng lực",
+      "ko": "초능력",
+      "ja": "超能力",
+      "en": "superpower"
+    },
+    "note": "Hán Việt: siêu năng lực"
+  },
+  {
+    "source": "穿越",
+    "target": "xuyên không",
+    "renders": {
+      "vi": "xuyên không",
+      "ko": "시간 이동",
+      "ja": "異世界転生",
+      "en": "transmigration"
+    },
+    "note": "Hán Việt: xuyên việt"
+  },
+  {
+    "source": "重生",
+    "target": "trọng sinh, sống lại",
+    "renders": {
+      "vi": "trọng sinh, sống lại",
+      "ko": "회귀",
+      "ja": "回帰",
+      "en": "rebirth"
+    },
+    "note": "Hán Việt: trọng sinh"
+  },
+  {
+    "source": "平行世界",
+    "target": "thế giới song song",
+    "renders": {
+      "vi": "thế giới song song",
+      "ko": "평행 세계",
+      "ja": "並行世界",
+      "en": "parallel world"
+    },
+    "note": "Hán Việt: bình hành thế giới"
+  },
+  {
+    "source": "时空",
+    "target": "không-thời gian",
+    "renders": {
+      "vi": "không-thời gian",
+      "ko": "시공간",
+      "ja": "時空",
+      "en": "spacetime"
+    },
+    "note": "Hán Việt: thời không"
+  },
+  {
+    "source": "时间旅行",
+    "target": "du hành thời gian",
+    "renders": {
+      "vi": "du hành thời gian",
+      "ko": "시간 여행",
+      "ja": "タイムトラベル",
+      "en": "time travel"
+    },
+    "note": "Hán Việt: thời gian lữ hành"
+  },
+  {
+    "source": "飞船",
+    "target": "phi thuyền",
+    "renders": {
+      "vi": "phi thuyền",
+      "ko": "우주선",
+      "ja": "宇宙船",
+      "en": "spaceship"
+    },
+    "note": "Hán Việt: phi thuyền"
+  },
+  {
+    "source": "星际",
+    "target": "liên sao, giữa các vì sao",
+    "renders": {
+      "vi": "liên sao, giữa các vì sao",
+      "ko": "성간",
+      "ja": "星間",
+      "en": "interstellar"
+    },
+    "note": "Hán Việt: tinh tế"
+  },
+  {
+    "source": "外星人",
+    "target": "người ngoài hành tinh",
+    "renders": {
+      "vi": "người ngoài hành tinh",
+      "ko": "외계인",
+      "ja": "宇宙人",
+      "en": "alien"
+    },
+    "note": "Hán Việt: ngoại tinh nhân"
+  },
+  {
+    "source": "机器人",
+    "target": "người máy, robot",
+    "renders": {
+      "vi": "người máy, robot",
+      "ko": "로봇",
+      "ja": "ロボット",
+      "en": "robot"
+    },
+    "note": "Hán Việt: cơ khí nhân"
+  },
+  {
+    "source": "人工智能",
+    "target": "trí tuệ nhân tạo",
+    "renders": {
+      "vi": "trí tuệ nhân tạo",
+      "ko": "인공지능",
+      "ja": "人工知能",
+      "en": "artificial intelligence"
+    },
+    "note": "Hán Việt: nhân công trí năng"
+  },
+  {
+    "source": "基因",
+    "target": "gen",
+    "renders": {
+      "vi": "gen",
+      "ko": "유전자",
+      "ja": "遺伝子",
+      "en": "gene"
+    },
+    "note": "Hán Việt: cơ nhân"
+  },
+  {
+    "source": "变异",
+    "target": "biến dị",
+    "renders": {
+      "vi": "biến dị",
+      "ko": "변이",
+      "ja": "変異",
+      "en": "mutation"
+    },
+    "note": "Hán Việt: biến dị"
+  },
+  {
+    "source": "末世",
+    "target": "tận thế",
+    "renders": {
+      "vi": "tận thế",
+      "ko": "종말",
+      "ja": "終末",
+      "en": "apocalypse"
+    },
+    "note": "Hán Việt: mạt thế"
+  },
+  {
+    "source": "废土",
+    "target": "vùng đất hoang tàn",
+    "renders": {
+      "vi": "vùng đất hoang tàn",
+      "ko": "황무지",
+      "ja": "荒廃した大地",
+      "en": "wasteland"
+    },
+    "note": "Hán Việt: phế thổ"
+  },
+  {
+    "source": "丧尸",
+    "target": "zombie",
+    "renders": {
+      "vi": "zombie",
+      "ko": "좀비",
+      "ja": "ゾンビ",
+      "en": "zombie"
+    },
+    "note": "Hán Việt: tang thi"
+  },
+  {
+    "source": "病毒",
+    "target": "virus",
+    "renders": {
+      "vi": "virus",
+      "ko": "바이러스",
+      "ja": "ウイルス",
+      "en": "virus"
+    },
+    "note": "Hán Việt: bệnh độc"
+  },
+  {
+    "source": "魔法",
+    "target": "phép thuật, ma pháp",
+    "renders": {
+      "vi": "phép thuật, ma pháp",
+      "ko": "마법",
+      "ja": "魔法",
+      "en": "magic"
+    },
+    "note": "Hán Việt: ma pháp"
+  },
+  {
+    "source": "法师",
+    "target": "pháp sư",
+    "renders": {
+      "vi": "pháp sư",
+      "ko": "마법사",
+      "ja": "魔法使い",
+      "en": "mage"
+    },
+    "note": "Hán Việt: pháp sư"
+  },
+  {
+    "source": "巫师",
+    "target": "phù thủy nam",
+    "renders": {
+      "vi": "phù thủy nam",
+      "ko": "주술사",
+      "ja": "魔術師",
+      "en": "wizard"
+    },
+    "note": "Hán Việt: vu sư"
+  },
+  {
+    "source": "精灵",
+    "target": "yêu tinh, elf",
+    "renders": {
+      "vi": "yêu tinh, elf",
+      "ko": "엘프",
+      "ja": "エルフ",
+      "en": "elf"
+    },
+    "note": "Hán Việt: tinh linh. Không dịch \"tinh thần linh\""
+  },
+  {
+    "source": "矮人",
+    "target": "người lùn",
+    "renders": {
+      "vi": "người lùn",
+      "ko": "드워프",
+      "ja": "ドワーフ",
+      "en": "dwarf"
+    },
+    "note": "Hán Việt: ải nhân"
+  },
+  {
+    "source": "龙",
+    "target": "rồng",
+    "renders": {
+      "vi": "rồng",
+      "ko": "용",
+      "ja": "ドラゴン",
+      "en": "dragon"
+    },
+    "note": "Hán Việt: long"
+  },
+  {
+    "source": "魔王",
+    "target": "ma vương",
+    "renders": {
+      "vi": "ma vương",
+      "ko": "마왕",
+      "ja": "魔王",
+      "en": "demon lord"
+    },
+    "note": "Hán Việt: ma vương"
+  },
+  {
+    "source": "勇者",
+    "target": "dũng sĩ",
+    "renders": {
+      "vi": "dũng sĩ",
+      "ko": "용사",
+      "ja": "勇者",
+      "en": "hero"
+    },
+    "note": "Hán Việt: dũng giả"
+  },
+  {
+    "source": "咒语",
+    "target": "thần chú",
+    "renders": {
+      "vi": "thần chú",
+      "ko": "주문",
+      "ja": "呪文",
+      "en": "incantation"
+    },
+    "note": "Hán Việt: chú ngữ"
+  },
+  {
+    "source": "魔力",
+    "target": "ma lực",
+    "renders": {
+      "vi": "ma lực",
+      "ko": "마력",
+      "ja": "魔力",
+      "en": "mana"
+    },
+    "note": "Hán Việt: ma lực"
+  },
+  {
+    "source": "结界",
+    "target": "kết giới, kết giới ma thuật",
+    "renders": {
+      "vi": "kết giới, kết giới ma thuật",
+      "ko": "결계",
+      "ja": "結界",
+      "en": "barrier"
+    },
+    "note": "Hán Việt: kết giới"
+  },
+  {
+    "source": "召唤",
+    "target": "triệu hồi",
+    "renders": {
+      "vi": "triệu hồi",
+      "ko": "소환",
+      "ja": "召喚",
+      "en": "summon"
+    },
+    "note": "Hán Việt: triệu hoán"
+  },
+  {
+    "source": "契约",
+    "target": "khế ước",
+    "renders": {
+      "vi": "khế ước",
+      "ko": "계약",
+      "ja": "契約",
+      "en": "contract"
+    },
+    "note": "Hán Việt: khế ước. Anh: contract / pact"
+  },
+  {
+    "source": "系统",
+    "target": "hệ thống (game/nhiệm vụ)",
+    "renders": {
+      "vi": "hệ thống (game/nhiệm vụ)",
+      "ko": "시스템",
+      "ja": "システム",
+      "en": "system"
+    },
+    "note": "Hán Việt: hệ thống. Hay gặp trong truyện hệ thống"
+  },
+  {
+    "source": "副本",
+    "target": "phó bản, dungeon",
+    "renders": {
+      "vi": "phó bản, dungeon",
+      "ko": "던전",
+      "ja": "ダンジョン",
+      "en": "dungeon"
+    },
+    "note": "Hán Việt: phó bản. Anh: dungeon / instance"
+  },
+  {
+    "source": "等级",
+    "target": "cấp độ",
+    "renders": {
+      "vi": "cấp độ",
+      "ko": "레벨",
+      "ja": "レベル",
+      "en": "level"
+    },
+    "note": "Hán Việt: đẳng cấp"
+  },
+  {
+    "source": "技能",
+    "target": "kỹ năng",
+    "renders": {
+      "vi": "kỹ năng",
+      "ko": "스킬",
+      "ja": "スキル",
+      "en": "skill"
+    },
+    "note": "Hán Việt: kỹ năng"
+  },
+  {
+    "source": "装备",
+    "target": "trang bị",
+    "renders": {
+      "vi": "trang bị",
+      "ko": "장비",
+      "ja": "装備",
+      "en": "equipment"
+    },
+    "note": "Hán Việt: trang bị"
+  },
+  {
+    "source": "boss",
+    "target": "trùm cuối",
+    "renders": {
+      "vi": "trùm cuối",
+      "ko": "보스",
+      "ja": "ボス",
+      "en": "boss"
+    },
+    "note": "Hán Việt: boss"
+  },
+  {
+    "source": "任务",
+    "target": "nhiệm vụ",
+    "renders": {
+      "vi": "nhiệm vụ",
+      "ko": "퀘스트",
+      "ja": "クエスト",
+      "en": "quest"
+    },
+    "note": "Hán Việt: nhiệm vụ"
+  }
+]

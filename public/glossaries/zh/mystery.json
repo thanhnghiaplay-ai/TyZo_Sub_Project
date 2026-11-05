@@ -1,0 +1,442 @@
+[
+  {
+    "source": "嫌疑人",
+    "target": "nghi phạm",
+    "renders": {
+      "vi": "nghi phạm",
+      "ko": "용의자",
+      "ja": "容疑者",
+      "en": "suspect"
+    },
+    "note": "Hán Việt: hiềm nghi nhân"
+  },
+  {
+    "source": "凶手",
+    "target": "hung thủ",
+    "renders": {
+      "vi": "hung thủ",
+      "ko": "범인",
+      "ja": "犯人",
+      "en": "murderer"
+    },
+    "note": "Hán Việt: hung thủ"
+  },
+  {
+    "source": "死者",
+    "target": "nạn nhân tử vong",
+    "renders": {
+      "vi": "nạn nhân tử vong",
+      "ko": "사망자",
+      "ja": "死者",
+      "en": "the deceased"
+    },
+    "note": "Hán Việt: tử giả"
+  },
+  {
+    "source": "受害者",
+    "target": "nạn nhân",
+    "renders": {
+      "vi": "nạn nhân",
+      "ko": "피해자",
+      "ja": "被害者",
+      "en": "victim"
+    },
+    "note": "Hán Việt: thụ hại giả"
+  },
+  {
+    "source": "目击者",
+    "target": "nhân chứng",
+    "renders": {
+      "vi": "nhân chứng",
+      "ko": "목격자",
+      "ja": "目撃者",
+      "en": "eyewitness"
+    },
+    "note": "Hán Việt: mục kích giả"
+  },
+  {
+    "source": "证人",
+    "target": "nhân chứng",
+    "renders": {
+      "vi": "nhân chứng",
+      "ko": "증인",
+      "ja": "証人",
+      "en": "witness"
+    },
+    "note": "Hán Việt: chứng nhân"
+  },
+  {
+    "source": "线索",
+    "target": "manh mối",
+    "renders": {
+      "vi": "manh mối",
+      "ko": "단서",
+      "ja": "手がかり",
+      "en": "clue"
+    },
+    "note": "Hán Việt: tuyến sách"
+  },
+  {
+    "source": "证据",
+    "target": "chứng cứ",
+    "renders": {
+      "vi": "chứng cứ",
+      "ko": "증거",
+      "ja": "証拠",
+      "en": "evidence"
+    },
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "物证",
+    "target": "vật chứng",
+    "renders": {
+      "vi": "vật chứng",
+      "ko": "물증",
+      "ja": "物証",
+      "en": "physical evidence"
+    },
+    "note": "Hán Việt: vật chứng"
+  },
+  {
+    "source": "指纹",
+    "target": "dấu vân tay",
+    "renders": {
+      "vi": "dấu vân tay",
+      "ko": "지문",
+      "ja": "指紋",
+      "en": "fingerprint"
+    },
+    "note": "Hán Việt: chỉ văn"
+  },
+  {
+    "source": "脚印",
+    "target": "dấu chân",
+    "renders": {
+      "vi": "dấu chân",
+      "ko": "발자국",
+      "ja": "足跡",
+      "en": "footprint"
+    },
+    "note": "Hán Việt: cước ấn"
+  },
+  {
+    "source": "现场",
+    "target": "hiện trường",
+    "renders": {
+      "vi": "hiện trường",
+      "ko": "현장",
+      "ja": "現場",
+      "en": "crime scene"
+    },
+    "note": "Hán Việt: hiện trường"
+  },
+  {
+    "source": "勘查",
+    "target": "khám nghiệm hiện trường",
+    "renders": {
+      "vi": "khám nghiệm hiện trường",
+      "ko": "현장 감식",
+      "ja": "現場検証",
+      "en": "scene investigation"
+    },
+    "note": "Hán Việt: khám tra"
+  },
+  {
+    "source": "尸检",
+    "target": "khám nghiệm tử thi",
+    "renders": {
+      "vi": "khám nghiệm tử thi",
+      "ko": "부검",
+      "ja": "検視",
+      "en": "autopsy"
+    },
+    "note": "Hán Việt: thi kiểm"
+  },
+  {
+    "source": "法医",
+    "target": "pháp y",
+    "renders": {
+      "vi": "pháp y",
+      "ko": "법의관",
+      "ja": "法医学者",
+      "en": "forensic examiner"
+    },
+    "note": "Hán Việt: pháp y"
+  },
+  {
+    "source": "死因",
+    "target": "nguyên nhân tử vong",
+    "renders": {
+      "vi": "nguyên nhân tử vong",
+      "ko": "사인",
+      "ja": "死因",
+      "en": "cause of death"
+    },
+    "note": "Hán Việt: tử nhân"
+  },
+  {
+    "source": "作案",
+    "target": "gây án",
+    "renders": {
+      "vi": "gây án",
+      "ko": "범행",
+      "ja": "犯行",
+      "en": "commit a crime"
+    },
+    "note": "Hán Việt: tác án"
+  },
+  {
+    "source": "动机",
+    "target": "động cơ",
+    "renders": {
+      "vi": "động cơ",
+      "ko": "동기",
+      "ja": "動機",
+      "en": "motive"
+    },
+    "note": "Hán Việt: động cơ"
+  },
+  {
+    "source": "不在场证明",
+    "target": "chứng cứ ngoại phạm",
+    "renders": {
+      "vi": "chứng cứ ngoại phạm",
+      "ko": "알리바이",
+      "ja": "アリバイ",
+      "en": "alibi"
+    },
+    "note": "Hán Việt: bất tại trường chứng minh"
+  },
+  {
+    "source": "推理",
+    "target": "suy luận",
+    "renders": {
+      "vi": "suy luận",
+      "ko": "추리",
+      "ja": "推理",
+      "en": "deduction"
+    },
+    "note": "Hán Việt: suy lý"
+  },
+  {
+    "source": "破案",
+    "target": "phá án",
+    "renders": {
+      "vi": "phá án",
+      "ko": "사건 해결",
+      "ja": "事件解決",
+      "en": "solve a case"
+    },
+    "note": "Hán Việt: phá án"
+  },
+  {
+    "source": "侦探",
+    "target": "thám tử",
+    "renders": {
+      "vi": "thám tử",
+      "ko": "탐정",
+      "ja": "探偵",
+      "en": "detective"
+    },
+    "note": "Hán Việt: trinh thám"
+  },
+  {
+    "source": "刑警",
+    "target": "cảnh sát hình sự",
+    "renders": {
+      "vi": "cảnh sát hình sự",
+      "ko": "형사",
+      "ja": "刑事",
+      "en": "police detective"
+    },
+    "note": "Hán Việt: hình cảnh"
+  },
+  {
+    "source": "调查",
+    "target": "điều tra",
+    "renders": {
+      "vi": "điều tra",
+      "ko": "수사",
+      "ja": "捜査",
+      "en": "investigate"
+    },
+    "note": "Hán Việt: điều tra"
+  },
+  {
+    "source": "审问",
+    "target": "thẩm vấn",
+    "renders": {
+      "vi": "thẩm vấn",
+      "ko": "심문",
+      "ja": "尋問",
+      "en": "interrogate"
+    },
+    "note": "Hán Việt: thẩm vấn"
+  },
+  {
+    "source": "口供",
+    "target": "lời khai",
+    "renders": {
+      "vi": "lời khai",
+      "ko": "진술",
+      "ja": "供述",
+      "en": "statement"
+    },
+    "note": "Hán Việt: khẩu cung"
+  },
+  {
+    "source": "谎言",
+    "target": "lời nói dối",
+    "renders": {
+      "vi": "lời nói dối",
+      "ko": "거짓말",
+      "ja": "嘘",
+      "en": "lie"
+    },
+    "note": "Hán Việt: hoang ngôn"
+  },
+  {
+    "source": "真相",
+    "target": "sự thật",
+    "renders": {
+      "vi": "sự thật",
+      "ko": "진상",
+      "ja": "真相",
+      "en": "the truth"
+    },
+    "note": "Hán Việt: chân tướng"
+  },
+  {
+    "source": "谜团",
+    "target": "bí ẩn",
+    "renders": {
+      "vi": "bí ẩn",
+      "ko": "수수께끼",
+      "ja": "謎",
+      "en": "mystery"
+    },
+    "note": "Hán Việt: mê đoàn"
+  },
+  {
+    "source": "密室",
+    "target": "căn phòng kín",
+    "renders": {
+      "vi": "căn phòng kín",
+      "ko": "밀실",
+      "ja": "密室",
+      "en": "locked room"
+    },
+    "note": "Hán Việt: mật thất"
+  },
+  {
+    "source": "悬案",
+    "target": "vụ án treo",
+    "renders": {
+      "vi": "vụ án treo",
+      "ko": "미제 사건",
+      "ja": "未解決事件",
+      "en": "cold case"
+    },
+    "note": "Hán Việt: huyền án"
+  },
+  {
+    "source": "连环杀手",
+    "target": "kẻ giết người hàng loạt",
+    "renders": {
+      "vi": "kẻ giết người hàng loạt",
+      "ko": "연쇄살인범",
+      "ja": "連続殺人犯",
+      "en": "serial killer"
+    },
+    "note": "Hán Việt: liên hoàn sát thủ"
+  },
+  {
+    "source": "失踪案",
+    "target": "vụ mất tích",
+    "renders": {
+      "vi": "vụ mất tích",
+      "ko": "실종 사건",
+      "ja": "失踪事件",
+      "en": "missing-person case"
+    },
+    "note": "Hán Việt: thất tung án"
+  },
+  {
+    "source": "监控",
+    "target": "camera giám sát",
+    "renders": {
+      "vi": "camera giám sát",
+      "ko": "CCTV",
+      "ja": "監視カメラ",
+      "en": "surveillance camera"
+    },
+    "note": "Hán Việt: giám khống"
+  },
+  {
+    "source": "录音",
+    "target": "ghi âm",
+    "renders": {
+      "vi": "ghi âm",
+      "ko": "녹음",
+      "ja": "録音",
+      "en": "recording"
+    },
+    "note": "Hán Việt: lục âm"
+  },
+  {
+    "source": "遗书",
+    "target": "thư tuyệt mệnh/di thư",
+    "renders": {
+      "vi": "thư tuyệt mệnh/di thư",
+      "ko": "유서",
+      "ja": "遺書",
+      "en": "suicide note"
+    },
+    "note": "Hán Việt: di thư. Anh: suicide note / will"
+  },
+  {
+    "source": "伪装",
+    "target": "ngụy tạo, cải trang",
+    "renders": {
+      "vi": "ngụy tạo, cải trang",
+      "ko": "위장",
+      "ja": "偽装",
+      "en": "disguise"
+    },
+    "note": "Hán Việt: ngụy trang. Anh: disguise / stage"
+  },
+  {
+    "source": "栽赃",
+    "target": "vu oan, gài bằng chứng",
+    "renders": {
+      "vi": "vu oan, gài bằng chứng",
+      "ko": "누명을 씌우다",
+      "ja": "濡れ衣を着せる",
+      "en": "frame someone"
+    },
+    "note": "Hán Việt: tài tang"
+  },
+  {
+    "source": "陷害",
+    "target": "hãm hại",
+    "renders": {
+      "vi": "hãm hại",
+      "ko": "모함",
+      "ja": "陥れる",
+      "en": "set up"
+    },
+    "note": "Hán Việt: hãm hại"
+  },
+  {
+    "source": "凶器",
+    "target": "hung khí",
+    "renders": {
+      "vi": "hung khí",
+      "ko": "흉기",
+      "ja": "凶器",
+      "en": "murder weapon"
+    },
+    "note": "Hán Việt: hung khí"
+  }
+]

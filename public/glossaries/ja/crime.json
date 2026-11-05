@@ -1,0 +1,340 @@
+[
+  {
+    "source": "刑事",
+    "target": "thanh tra hình sự"
+  },
+  {
+    "source": "容疑者",
+    "target": "nghi phạm"
+  },
+  {
+    "source": "アリバイ",
+    "target": "chứng cứ ngoại phạm"
+  },
+  {
+    "source": "証拠隠滅",
+    "target": "phi tang"
+  },
+  {
+    "source": "殺人事件",
+    "target": "vụ giết người"
+  },
+  {
+    "source": "被害者",
+    "target": "nạn nhân"
+  },
+  {
+    "source": "組長",
+    "target": "đại ca"
+  },
+  {
+    "source": "ヤクザ",
+    "target": "yakuza"
+  },
+  {
+    "source": "みかじめ料",
+    "target": "tiền bảo kê"
+  },
+  {
+    "source": "刑務所",
+    "target": "nhà tù"
+  },
+  {
+    "source": "前科",
+    "target": "tiền án"
+  },
+  {
+    "source": "黙秘権",
+    "target": "quyền im lặng"
+  },
+  {
+    "source": "逮捕状",
+    "target": "lệnh bắt"
+  },
+  {
+    "source": "捜査本部",
+    "target": "ban chuyên án"
+  },
+  {
+    "source": "犯行現場",
+    "target": "hiện trường"
+  },
+  {
+    "source": "指紋",
+    "target": "vân tay"
+  },
+  {
+    "source": "拳銃",
+    "target": "súng ngắn"
+  },
+  {
+    "source": "麻薬取引",
+    "target": "buôn ma túy"
+  },
+  {
+    "source": "闇取引",
+    "target": "giao dịch chợ đen"
+  },
+  {
+    "source": "裏切り者",
+    "target": "kẻ phản bội"
+  },
+  {
+    "source": "供述調書",
+    "target": "biên bản lời khai"
+  },
+  {
+    "source": "弁護士",
+    "target": "luật sư"
+  },
+  {
+    "source": "検察官",
+    "target": "công tố viên"
+  },
+  {
+    "source": "懲役刑",
+    "target": "án tù giam"
+  },
+  {
+    "source": "保釈金",
+    "target": "tiền tại ngoại"
+  },
+  {
+    "source": "窃盗",
+    "target": "trộm cắp"
+  },
+  {
+    "source": "詐欺師",
+    "target": "kẻ lừa đảo"
+  },
+  {
+    "source": "脅迫状",
+    "target": "thư đe dọa"
+  },
+  {
+    "source": "口止め料",
+    "target": "tiền bịt miệng"
+  },
+  {
+    "source": "シマ",
+    "target": "địa bàn"
+  },
+  {
+    "source": "鉄砲玉",
+    "target": "quân cảm tử"
+  },
+  {
+    "source": "組織犯罪",
+    "target": "tội phạm có tổ chức"
+  },
+  {
+    "source": "密告",
+    "target": "chỉ điểm"
+  },
+  {
+    "source": "盗聴",
+    "target": "nghe lén"
+  },
+  {
+    "source": "口座凍結",
+    "target": "phong tỏa tài khoản"
+  },
+  {
+    "source": "換金",
+    "target": "rửa tiền mặt"
+  },
+  {
+    "source": "盗品",
+    "target": "đồ gian",
+    "note": "Cách khác: tang vật"
+  },
+  {
+    "source": "自首",
+    "target": "tự thú",
+    "note": "Cách khác: ra đầu thú"
+  },
+  {
+    "source": "共犯",
+    "target": "đồng phạm",
+    "note": "Cách khác: đồng bọn"
+  },
+  {
+    "source": "留置場",
+    "target": "buồng tạm giam"
+  },
+  {
+    "source": "ボス",
+    "target": "đại ca, trùm",
+    "note": "Hán Việt: lão đại"
+  },
+  {
+    "source": "兄貴",
+    "target": "đại ca",
+    "note": "Hán Việt: đại ca"
+  },
+  {
+    "source": "子分",
+    "target": "đàn em",
+    "note": "Hán Việt: tiểu đệ"
+  },
+  {
+    "source": "手下",
+    "target": "thuộc hạ, tay chân",
+    "note": "Hán Việt: thủ hạ"
+  },
+  {
+    "source": "組織",
+    "target": "băng đảng",
+    "note": "Hán Việt: bang phái"
+  },
+  {
+    "source": "暴力団",
+    "target": "xã hội đen",
+    "note": "Hán Việt: hắc bang"
+  },
+  {
+    "source": "裏社会",
+    "target": "giới giang hồ",
+    "note": "Hán Việt: đạo thượng. Không dịch \"trên đường\""
+  },
+  {
+    "source": "縄張り",
+    "target": "địa bàn",
+    "note": "Hán Việt: địa bàn"
+  },
+  {
+    "source": "勢力",
+    "target": "thế lực",
+    "note": "Hán Việt: thế lực"
+  },
+  {
+    "source": "抗争",
+    "target": "thanh toán nhau, đấu súng",
+    "note": "Hán Việt: hỏa bính"
+  },
+  {
+    "source": "始末する",
+    "target": "thủ tiêu, xử lý",
+    "note": "Hán Việt: tố điệu"
+  },
+  {
+    "source": "口封じ",
+    "target": "bịt miệng, giết người diệt khẩu",
+    "note": "Hán Việt: diệt khẩu"
+  },
+  {
+    "source": "斬りつける",
+    "target": "chém người",
+    "note": "Hán Việt: khản nhân"
+  },
+  {
+    "source": "密輸",
+    "target": "buôn lậu",
+    "note": "Hán Việt: tẩu tư"
+  },
+  {
+    "source": "麻薬密売",
+    "target": "buôn ma túy",
+    "note": "Hán Việt: phản độc"
+  },
+  {
+    "source": "マネーロンダリング",
+    "target": "rửa tiền",
+    "note": "Hán Việt: tẩy tiền"
+  },
+  {
+    "source": "不正資金",
+    "target": "tiền tang",
+    "note": "Hán Việt: tang khoản"
+  },
+  {
+    "source": "誘拐",
+    "target": "bắt cóc",
+    "note": "Hán Việt: bảng giá"
+  },
+  {
+    "source": "恐喝",
+    "target": "tống tiền",
+    "note": "Hán Việt: lặc sách"
+  },
+  {
+    "source": "強盗",
+    "target": "cướp",
+    "note": "Hán Việt: thưởng kiếp"
+  },
+  {
+    "source": "詐欺",
+    "target": "lừa đảo",
+    "note": "Hán Việt: trá phiến"
+  },
+  {
+    "source": "裏金",
+    "target": "tiền bẩn",
+    "note": "Hán Việt: hắc tiền"
+  },
+  {
+    "source": "指名手配",
+    "target": "truy nã",
+    "note": "Hán Việt: thông tập"
+  },
+  {
+    "source": "逃亡犯",
+    "target": "tội phạm trốn chạy",
+    "note": "Hán Việt: đào phạm"
+  },
+  {
+    "source": "警察",
+    "target": "cảnh sát",
+    "note": "Hán Việt: cảnh sát"
+  },
+  {
+    "source": "サツ",
+    "target": "cớm (tiếng lóng)",
+    "note": "Hán Việt: điều tử"
+  },
+  {
+    "source": "潜入捜査官",
+    "target": "nằm vùng",
+    "note": "Hán Việt: ngọa để"
+  },
+  {
+    "source": "情報屋",
+    "target": "tay trong, người cung cấp tin",
+    "note": "Hán Việt: tuyến nhân"
+  },
+  {
+    "source": "証拠",
+    "target": "chứng cứ",
+    "note": "Hán Việt: chứng cứ"
+  },
+  {
+    "source": "尋問",
+    "target": "thẩm vấn",
+    "note": "Hán Việt: thẩm tấn"
+  },
+  {
+    "source": "服役する",
+    "target": "ngồi tù",
+    "note": "Hán Việt: tọa lao"
+  },
+  {
+    "source": "判決を下す",
+    "target": "kết án",
+    "note": "Hán Việt: phán hình"
+  },
+  {
+    "source": "内通者",
+    "target": "nội gián",
+    "note": "Hán Việt: nội quỷ"
+  },
+  {
+    "source": "組織同士の食い合い",
+    "target": "băng đảng ăn hiếp nhau",
+    "note": "Hán Việt: hắc ngật hắc"
+  },
+  {
+    "source": "足を洗う",
+    "target": "rửa tay gác kiếm, rút lui khỏi giang hồ",
+    "note": "Hán Việt: kim bồn tẩy thủ"
+  }
+]

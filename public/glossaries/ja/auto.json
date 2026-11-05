@@ -1,0 +1,192 @@
+[
+  {
+    "source": "それから",
+    "target": "rồi sau đó",
+    "note": "Hán Việt: nhiên hậu. Không dịch \"và sau đó\" lặp mãi"
+  },
+  {
+    "source": "しかし",
+    "target": "nhưng mà",
+    "note": "Hán Việt: đãn thị. Việt: nhưng mà / có điều. Tùy văn cảnh: \"tuy nhiên\", \"có điều\""
+  },
+  {
+    "source": "実は",
+    "target": "thật ra thì",
+    "note": "Hán Việt: kỳ thực. Không dịch \"thực tế là\" cứng"
+  },
+  {
+    "source": "ついに",
+    "target": "cuối cùng cũng (sau khi chờ đợi)",
+    "note": "Hán Việt: chung vu. Có sắc thái mong chờ, khác 最后"
+  },
+  {
+    "source": "なんと",
+    "target": "thế mà lại",
+    "note": "Hán Việt: cánh nhiên. Việt: thế mà lại / không ngờ là. Diễn tả bất ngờ, không dịch \"thậm chí\""
+  },
+  {
+    "source": "意外にも",
+    "target": "vậy mà lại",
+    "note": "Hán Việt: cư nhiên. Việt: vậy mà lại / bất ngờ quá. Như 竟然, nhấn mạnh sự bất ngờ"
+  },
+  {
+    "source": "やはり",
+    "target": "quả nhiên",
+    "note": "Hán Việt: quả nhiên. Việt: quả nhiên / đúng như dự đoán. Không dịch \"kết quả là\""
+  },
+  {
+    "source": "まさか",
+    "target": "chẳng lẽ",
+    "note": "Hán Việt: nan đạo. Việt: chẳng lẽ / không lẽ nào. Câu hỏi tu từ"
+  },
+  {
+    "source": "どうせ",
+    "target": "dù sao thì",
+    "note": "Hán Việt: phản chính. Việt: dù sao thì / thế nào cũng vậy. Không dịch \"ngược lại\""
+  },
+  {
+    "source": "いったい",
+    "target": "rốt cuộc",
+    "note": "Hán Việt: cứu cánh. Việt: rốt cuộc / cuối cùng là gì. Dùng trong câu hỏi"
+  },
+  {
+    "source": "結局",
+    "target": "rốt cuộc",
+    "note": "Hán Việt: đáo để. Việt: rốt cuộc / đến cùng. Gặng hỏi, khác 终于"
+  },
+  {
+    "source": "~以上は",
+    "target": "đã vậy thì",
+    "note": "Hán Việt: ký nhiên. Việt: đã vậy thì / một khi đã. Mở đầu vế điều kiện"
+  },
+  {
+    "source": "しょせん",
+    "target": "dù sao cũng",
+    "note": "Hán Việt: tất cánh. Việt: dù sao cũng / suy cho cùng. Nhấn mạnh lý do"
+  },
+  {
+    "source": "もともと",
+    "target": "vốn dĩ",
+    "note": "Hán Việt: bản lai. Việt: vốn dĩ / lẽ ra. Có thể là \"ban đầu\""
+  },
+  {
+    "source": "明らかに",
+    "target": "rõ ràng là",
+    "note": "Hán Việt: minh minh. Việt: rõ ràng là / hiển nhiên. Hàm ý trái với kết quả"
+  },
+  {
+    "source": "まるで",
+    "target": "quả thật, đúng là",
+    "note": "Hán Việt: giản trực. Cường điệu"
+  },
+  {
+    "source": "そもそも",
+    "target": "hoàn toàn, vốn dĩ (phủ định)",
+    "note": "Hán Việt: căn bản. 根本不 = hoàn toàn không"
+  },
+  {
+    "source": "ずっと",
+    "target": "luôn, suốt",
+    "note": "Hán Việt: nhất trực. Không dịch \"thẳng\""
+  },
+  {
+    "source": "一緒に",
+    "target": "cùng nhau",
+    "note": "Hán Việt: nhất khởi"
+  },
+  {
+    "source": "すぐに",
+    "target": "lập tức",
+    "note": "Hán Việt: mã thượng. Không dịch \"trên ngựa\""
+  },
+  {
+    "source": "さっき",
+    "target": "vừa nãy",
+    "note": "Hán Việt: cương tài"
+  },
+  {
+    "source": "ちょっと待って",
+    "target": "đợi chút",
+    "note": "Hán Việt: đẳng nhất hạ"
+  },
+  {
+    "source": "どうしよう",
+    "target": "làm sao đây",
+    "note": "Hán Việt: chẩm ma biện"
+  },
+  {
+    "source": "大丈夫",
+    "target": "không sao",
+    "note": "Hán Việt: một quan hệ. Không dịch \"không quan hệ\""
+  },
+  {
+    "source": "すみません",
+    "target": "ngại quá",
+    "note": "Hán Việt: bất hảo ý tư. Việt: ngại quá / xin lỗi. Không dịch \"không ý tốt\""
+  },
+  {
+    "source": "ごめんなさい",
+    "target": "xin lỗi",
+    "note": "Hán Việt: đối bất khởi"
+  },
+  {
+    "source": "ありがとう",
+    "target": "cảm ơn",
+    "note": "Hán Việt: tạ tạ"
+  },
+  {
+    "source": "もちろん",
+    "target": "đương nhiên, dĩ nhiên",
+    "note": "Hán Việt: đương nhiên"
+  },
+  {
+    "source": "かもしれない",
+    "target": "có thể",
+    "note": "Hán Việt: khả năng"
+  },
+  {
+    "source": "はずだ",
+    "target": "nên, chắc là",
+    "note": "Hán Việt: ưng cai"
+  },
+  {
+    "source": "必ず",
+    "target": "phải",
+    "note": "Hán Việt: tất tu"
+  },
+  {
+    "source": "きっと",
+    "target": "nhất định",
+    "note": "Hán Việt: nhất định"
+  },
+  {
+    "source": "もしかすると",
+    "target": "có lẽ",
+    "note": "Hán Việt: dã hử"
+  },
+  {
+    "source": "だいたい",
+    "target": "đại khái, có lẽ",
+    "note": "Hán Việt: đại khái"
+  },
+  {
+    "source": "普通",
+    "target": "thông thường",
+    "note": "Hán Việt: nhất ban"
+  },
+  {
+    "source": "特に",
+    "target": "đặc biệt, vô cùng",
+    "note": "Hán Việt: đặc biệt"
+  },
+  {
+    "source": "非常に",
+    "target": "vô cùng, rất",
+    "note": "Hán Việt: phi thường"
+  },
+  {
+    "source": "少し",
+    "target": "hơi, một chút",
+    "note": "Hán Việt: sảo vi"
+  }
+]

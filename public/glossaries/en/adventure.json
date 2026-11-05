@@ -1,0 +1,278 @@
+[
+  {
+    "source": "treasure map",
+    "target": "bản đồ kho báu"
+  },
+  {
+    "source": "hidden temple",
+    "target": "đền bị chôn"
+  },
+  {
+    "source": "booby trap",
+    "target": "bẫy"
+  },
+  {
+    "source": "ancient ruins",
+    "target": "di tích cổ"
+  },
+  {
+    "source": "compass",
+    "target": "la bàn"
+  },
+  {
+    "source": "uncharted",
+    "target": "chưa ai thám hiểm"
+  },
+  {
+    "source": "set sail",
+    "target": "ra khơi"
+  },
+  {
+    "source": "quest",
+    "target": "hành trình"
+  },
+  {
+    "source": "guardian",
+    "target": "người canh giữ"
+  },
+  {
+    "source": "trial",
+    "target": "thử thách"
+  },
+  {
+    "source": "lost civilization",
+    "target": "nền văn minh đã mất"
+  },
+  {
+    "source": "jungle",
+    "target": "rừng rậm"
+  },
+  {
+    "source": "shipwreck",
+    "target": "tàu đắm"
+  },
+  {
+    "source": "cave in",
+    "target": "sập hang"
+  },
+  {
+    "source": "secret passage",
+    "target": "đường bí mật"
+  },
+  {
+    "source": "curse",
+    "target": "lời nguyền"
+  },
+  {
+    "source": "relic",
+    "target": "thánh tích"
+  },
+  {
+    "source": "expedition",
+    "target": "đoàn thám hiểm",
+    "note": "Cách khác: thám hiểm"
+  },
+  {
+    "source": "survivor",
+    "target": "người sống sót"
+  },
+  {
+    "source": "cliff edge",
+    "target": "mép vách"
+  },
+  {
+    "source": "oasis",
+    "target": "ốc đảo"
+  },
+  {
+    "source": "treasure vault",
+    "target": "kho báu"
+  },
+  {
+    "source": "poison dart",
+    "target": "tên độc"
+  },
+  {
+    "source": "storm coming",
+    "target": "bão sắp tới"
+  },
+  {
+    "source": "mark the trail",
+    "target": "đánh dấu đường"
+  },
+  {
+    "source": "adventure",
+    "target": "phiêu lưu, mạo hiểm",
+    "note": "Hán Việt: mạo hiểm"
+  },
+  {
+    "source": "treasure hunt",
+    "target": "tìm kho báu",
+    "note": "Hán Việt: tầm bảo"
+  },
+  {
+    "source": "treasure",
+    "target": "kho báu",
+    "note": "Hán Việt: bảo tàng"
+  },
+  {
+    "source": "ruins",
+    "target": "di tích cổ",
+    "note": "Hán Việt: di tích"
+  },
+  {
+    "source": "ancient tomb",
+    "target": "mộ cổ",
+    "note": "Hán Việt: cổ mộ"
+  },
+  {
+    "source": "mechanism",
+    "target": "cơ quan, bẫy",
+    "note": "Hán Việt: cơ quan. Không dịch \"cơ quan nhà nước\""
+  },
+  {
+    "source": "trap",
+    "target": "cơ quan, bẫy",
+    "note": "Hán Việt: cơ quan. Không dịch \"cơ quan nhà nước\". Cách khác: cạm bẫy"
+  },
+  {
+    "source": "map",
+    "target": "bản đồ",
+    "note": "Hán Việt: địa đồ"
+  },
+  {
+    "source": "compass needle",
+    "target": "kim chỉ nam",
+    "note": "Hán Việt: chỉ nam châm"
+  },
+  {
+    "source": "wilderness",
+    "target": "vùng hoang dã",
+    "note": "Hán Việt: hoang dã"
+  },
+  {
+    "source": "desert",
+    "target": "sa mạc",
+    "note": "Hán Việt: sa mạc"
+  },
+  {
+    "source": "snow mountain",
+    "target": "núi tuyết",
+    "note": "Hán Việt: tuyết sơn"
+  },
+  {
+    "source": "canyon",
+    "target": "hẻm núi",
+    "note": "Hán Việt: hiệp cốc"
+  },
+  {
+    "source": "cave",
+    "target": "hang động",
+    "note": "Hán Việt: động huyệt"
+  },
+  {
+    "source": "abyss",
+    "target": "vực sâu",
+    "note": "Hán Việt: thâm uyên"
+  },
+  {
+    "source": "labyrinth",
+    "target": "mê cung",
+    "note": "Hán Việt: mê cung"
+  },
+  {
+    "source": "legend",
+    "target": "truyền thuyết",
+    "note": "Hán Việt: truyền thuyết"
+  },
+  {
+    "source": "divine artifact",
+    "target": "thần khí",
+    "note": "Hán Việt: thần khí"
+  },
+  {
+    "source": "key",
+    "target": "chìa khóa",
+    "note": "Hán Việt: thược thi"
+  },
+  {
+    "source": "clue",
+    "target": "manh mối",
+    "note": "Hán Việt: tuyến sách"
+  },
+  {
+    "source": "scout the way",
+    "target": "dò đường",
+    "note": "Hán Việt: thám lộ"
+  },
+  {
+    "source": "guide",
+    "target": "người dẫn đường",
+    "note": "Hán Việt: hướng đạo"
+  },
+  {
+    "source": "companion",
+    "target": "đồng đội, bạn đồng hành",
+    "note": "Hán Việt: đồng bạn"
+  },
+  {
+    "source": "party",
+    "target": "đội nhóm",
+    "note": "Hán Việt: đội ngũ"
+  },
+  {
+    "source": "team",
+    "target": "đội nhóm",
+    "note": "Hán Việt: đội ngũ"
+  },
+  {
+    "source": "camp",
+    "target": "trại, điểm cắm trại",
+    "note": "Hán Việt: doanh địa"
+  },
+  {
+    "source": "supplies",
+    "target": "tiếp tế",
+    "note": "Hán Việt: bổ cấp"
+  },
+  {
+    "source": "dry rations",
+    "target": "lương khô",
+    "note": "Hán Việt: can lương"
+  },
+  {
+    "source": "sailing",
+    "target": "đi biển",
+    "note": "Hán Việt: hàng hải"
+  },
+  {
+    "source": "pirate",
+    "target": "hải tặc",
+    "note": "Hán Việt: hải đạo"
+  },
+  {
+    "source": "deserted island",
+    "target": "đảo hoang",
+    "note": "Hán Việt: cô đảo"
+  },
+  {
+    "source": "go through perils",
+    "target": "trải qua hiểm nguy",
+    "note": "Hán Việt: lịch hiểm"
+  },
+  {
+    "source": "clear a stage",
+    "target": "vượt ải",
+    "note": "Hán Việt: sấm quan"
+  },
+  {
+    "source": "escape danger",
+    "target": "thoát hiểm",
+    "note": "Hán Việt: thoát hiểm"
+  },
+  {
+    "source": "set out",
+    "target": "lên đường",
+    "note": "Hán Việt: khải trình"
+  }
+]

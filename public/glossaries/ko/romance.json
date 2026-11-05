@@ -1,0 +1,275 @@
+[
+  {
+    "source": "사랑해",
+    "target": "anh yêu em"
+  },
+  {
+    "source": "사귀자",
+    "target": "hẹn hò nhé"
+  },
+  {
+    "source": "남자친구",
+    "target": "bạn trai"
+  },
+  {
+    "source": "여자친구",
+    "target": "bạn gái"
+  },
+  {
+    "source": "고백",
+    "target": "tỏ tình",
+    "note": "Cách khác: tỏ tình, nói ra tình cảm. Cách khác: thổ lộ, tỏ tình"
+  },
+  {
+    "source": "짝사랑",
+    "target": "thầm thích",
+    "note": "Cách khác: thầm thương, thích mà không dám nói ra"
+  },
+  {
+    "source": "첫사랑",
+    "target": "mối tình đầu"
+  },
+  {
+    "source": "운명의 사람",
+    "target": "người định mệnh"
+  },
+  {
+    "source": "프로포즈",
+    "target": "cầu hôn"
+  },
+  {
+    "source": "바람",
+    "target": "ngoại tình"
+  },
+  {
+    "source": "헤어지자",
+    "target": "chia tay đi"
+  },
+  {
+    "source": "재회",
+    "target": "gặp lại"
+  },
+  {
+    "source": "질투",
+    "target": "ghen"
+  },
+  {
+    "source": "데이트",
+    "target": "buổi hẹn",
+    "note": "Cách khác: hẹn hò"
+  },
+  {
+    "source": "약혼",
+    "target": "đính hôn"
+  },
+  {
+    "source": "결혼식",
+    "target": "đám cưới"
+  },
+  {
+    "source": "썸타다",
+    "target": "đang để ý nhau"
+  },
+  {
+    "source": "밀당",
+    "target": "kéo đẩy"
+  },
+  {
+    "source": "환승이별",
+    "target": "đá người này qua người kia"
+  },
+  {
+    "source": "어장관리",
+    "target": "nuôi nhiều người"
+  },
+  {
+    "source": "금사빠",
+    "target": "yêu nhanh"
+  },
+  {
+    "source": "장거리 연애",
+    "target": "yêu xa"
+  },
+  {
+    "source": "삼각관계",
+    "target": "tình tay ba"
+  },
+  {
+    "source": "전 여친",
+    "target": "bạn gái cũ"
+  },
+  {
+    "source": "전 남친",
+    "target": "bạn trai cũ"
+  },
+  {
+    "source": "스킨십",
+    "target": "âu yếm"
+  },
+  {
+    "source": "설레",
+    "target": "hồi hộp vì thích"
+  },
+  {
+    "source": "마음이 있어",
+    "target": "có cảm xúc"
+  },
+  {
+    "source": "차이다",
+    "target": "bị từ chối"
+  },
+  {
+    "source": "마음에 들다",
+    "target": "thấy thích"
+  },
+  {
+    "source": "설레다",
+    "target": "tim đập loạn, xao xuyến",
+    "note": "Hán Việt: tâm động"
+  },
+  {
+    "source": "좋아하다",
+    "target": "thích",
+    "note": "Hán Việt: hỷ hoan"
+  },
+  {
+    "source": "사랑에 빠지다",
+    "target": "yêu, đổ",
+    "note": "Hán Việt: ái thượng"
+  },
+  {
+    "source": "연애",
+    "target": "yêu đương",
+    "note": "Hán Việt: luyến ái"
+  },
+  {
+    "source": "전 애인",
+    "target": "người yêu cũ",
+    "note": "Hán Việt: tiền nhiệm"
+  },
+  {
+    "source": "연인",
+    "target": "người yêu",
+    "note": "Hán Việt: đối tượng"
+  },
+  {
+    "source": "남편",
+    "target": "chồng",
+    "note": "Hán Việt: lão công"
+  },
+  {
+    "source": "아내",
+    "target": "vợ",
+    "note": "Hán Việt: lão bà"
+  },
+  {
+    "source": "맞선",
+    "target": "xem mắt",
+    "note": "Hán Việt: tương thân"
+  },
+  {
+    "source": "결혼",
+    "target": "kết hôn, cưới",
+    "note": "Hán Việt: kết hôn"
+  },
+  {
+    "source": "이혼",
+    "target": "ly hôn",
+    "note": "Hán Việt: ly hôn"
+  },
+  {
+    "source": "이별",
+    "target": "chia tay",
+    "note": "Hán Việt: phân thủ"
+  },
+  {
+    "source": "재결합",
+    "target": "quay lại",
+    "note": "Hán Việt: phục hợp"
+  },
+  {
+    "source": "질투하다",
+    "target": "ghen",
+    "note": "Hán Việt: ngật thố. Không dịch \"ăn giấm\""
+  },
+  {
+    "source": "애교 부리다",
+    "target": "làm nũng",
+    "note": "Hán Việt: tát kiều"
+  },
+  {
+    "source": "꼬시다",
+    "target": "tán tỉnh, trêu chọc",
+    "note": "Hán Việt: liêu"
+  },
+  {
+    "source": "구애",
+    "target": "theo đuổi",
+    "note": "Hán Việt: truy cầu"
+  },
+  {
+    "source": "손을 잡다",
+    "target": "nắm tay",
+    "note": "Hán Việt: khiên thủ"
+  },
+  {
+    "source": "포옹",
+    "target": "ôm",
+    "note": "Hán Việt: ủng bão"
+  },
+  {
+    "source": "키스",
+    "target": "hôn",
+    "note": "Hán Việt: thân vẫn"
+  },
+  {
+    "source": "그리움",
+    "target": "nhớ nhung",
+    "note": "Hán Việt: tư niệm"
+  },
+  {
+    "source": "마음 아파하다",
+    "target": "xót, thương",
+    "note": "Hán Việt: tâm đông. Không dịch \"đau tim\""
+  },
+  {
+    "source": "아끼다",
+    "target": "cưng chiều",
+    "note": "Hán Việt: sủng"
+  },
+  {
+    "source": "지키다",
+    "target": "bảo vệ, che chở",
+    "note": "Hán Việt: thủ hộ"
+  },
+  {
+    "source": "달콤하다",
+    "target": "ngọt ngào",
+    "note": "Hán Việt: điềm mật"
+  },
+  {
+    "source": "마음 아픈",
+    "target": "đau lòng, ngược tâm",
+    "note": "Hán Việt: ngược tâm"
+  },
+  {
+    "source": "첫사랑 같은 존재",
+    "target": "ánh trăng sáng, mối tình đẹp không với tới",
+    "note": "Hán Việt: bạch nguyệt quang"
+  },
+  {
+    "source": "내숭녀",
+    "target": "người giả vờ ngây thơ",
+    "note": "Hán Việt: lục trà"
+  },
+  {
+    "source": "쓰레기 남자",
+    "target": "tên đàn ông tệ bạc",
+    "note": "Hán Việt: tra nam"
+  },
+  {
+    "source": "호구",
+    "target": "kẻ si tình hèn mọn",
+    "note": "Hán Việt: thiểm cẩu"
+  }
+]

@@ -1,0 +1,396 @@
+[
+  {
+    "source": "left on read",
+    "target": "xem rồi không trả lời"
+  },
+  {
+    "source": "on read",
+    "target": "đã xem"
+  },
+  {
+    "source": "ghosted",
+    "target": "bị biến mất không nhắn"
+  },
+  {
+    "source": "sliding into dms",
+    "target": "nhắn tin riêng"
+  },
+  {
+    "source": "close friends",
+    "target": "danh sách bạn thân trên story"
+  },
+  {
+    "source": "for you page",
+    "target": "trang dành cho bạn"
+  },
+  {
+    "source": "going viral",
+    "target": "bị viral"
+  },
+  {
+    "source": "ratioed",
+    "target": "bị bình luận lấn át"
+  },
+  {
+    "source": "main character energy",
+    "target": "tự cho mình là trung tâm"
+  },
+  {
+    "source": "no cap",
+    "target": "không nói đùa"
+  },
+  {
+    "source": "lowkey",
+    "target": "hơi ngầm"
+  },
+  {
+    "source": "rent free",
+    "target": "ám ảnh trong đầu"
+  },
+  {
+    "source": "the ick",
+    "target": "tự nhiên mất hứng"
+  },
+  {
+    "source": "situationship",
+    "target": "mối lửng lơ"
+  },
+  {
+    "source": "talking stage",
+    "target": "giai đoạn đang nói chuyện"
+  },
+  {
+    "source": "red flag",
+    "target": "dấu hiệu nguy"
+  },
+  {
+    "source": "green flag",
+    "target": "dấu hiệu tốt"
+  },
+  {
+    "source": "love bombing",
+    "target": "tấn công bằng sự ngọt ngào"
+  },
+  {
+    "source": "breadcrumbing",
+    "target": "cho hy vọng nhỏ giọt"
+  },
+  {
+    "source": "soft launch",
+    "target": "hé mối quan hệ"
+  },
+  {
+    "source": "hard launch",
+    "target": "công khai mối quan hệ"
+  },
+  {
+    "source": "delulu",
+    "target": "ảo tưởng"
+  },
+  {
+    "source": "doomscrolling",
+    "target": "lướt tin tới chán"
+  },
+  {
+    "source": "brain rot",
+    "target": "não mục vì lướt"
+  },
+  {
+    "source": "quiet quitting",
+    "target": "làm đúng việc không cống hiến thêm"
+  },
+  {
+    "source": "burnout",
+    "target": "kiệt sức"
+  },
+  {
+    "source": "work from home",
+    "target": "làm ở nhà"
+  },
+  {
+    "source": "you're on mute",
+    "target": "anh đang tắt mic"
+  },
+  {
+    "source": "circle back",
+    "target": "bàn lại sau"
+  },
+  {
+    "source": "side hustle",
+    "target": "nghề tay trái"
+  },
+  {
+    "source": "paycheck to paycheck",
+    "target": "lương tới đâu hết tới đó"
+  },
+  {
+    "source": "buy now pay later",
+    "target": "mua trước trả sau"
+  },
+  {
+    "source": "meal prep",
+    "target": "chuẩn bị cơm cả tuần"
+  },
+  {
+    "source": "photo dump",
+    "target": "đăng một loạt ảnh"
+  },
+  {
+    "source": "fit check",
+    "target": "khoe bộ đồ"
+  },
+  {
+    "source": "group chat",
+    "target": "nhóm chat"
+  },
+  {
+    "source": "voice note",
+    "target": "tin nhắn thoại"
+  },
+  {
+    "source": "read receipt",
+    "target": "báo đã xem"
+  },
+  {
+    "source": "do not disturb",
+    "target": "không làm phiền"
+  },
+  {
+    "source": "low battery",
+    "target": "sắp hết pin"
+  },
+  {
+    "source": "notification",
+    "target": "thông báo"
+  },
+  {
+    "source": "algorithm",
+    "target": "thuật toán gợi ý"
+  },
+  {
+    "source": "spoiler alert",
+    "target": "coi chừng spoil"
+  },
+  {
+    "source": "binge",
+    "target": "xem một mạch"
+  },
+  {
+    "source": "bed rotting",
+    "target": "nằm lì trên giường"
+  },
+  {
+    "source": "touch grass",
+    "target": "ra ngoài đời đi"
+  },
+  {
+    "source": "roommate",
+    "target": "bạn cùng nhà"
+  },
+  {
+    "source": "cost of living",
+    "target": "chi phí sinh hoạt"
+  },
+  {
+    "source": "delivery fee",
+    "target": "phí giao hàng"
+  },
+  {
+    "source": "two factor",
+    "target": "xác minh hai bước"
+  },
+  {
+    "source": "out of office",
+    "target": "đang nghỉ phép"
+  },
+  {
+    "source": "thanks for your hard work",
+    "target": "vất vả rồi",
+    "note": "Hán Việt: tân khổ liễu. Không dịch \"khó khăn\""
+  },
+  {
+    "source": "sorry to trouble you",
+    "target": "phiền bạn rồi",
+    "note": "Hán Việt: ma phiền nhĩ liễu"
+  },
+  {
+    "source": "whatever",
+    "target": "sao cũng được",
+    "note": "Hán Việt: tùy tiện. Không dịch \"tùy tiện\" cho cả câu"
+  },
+  {
+    "source": "go for it",
+    "target": "cố lên",
+    "note": "Hán Việt: gia du. Không dịch \"thêm dầu\""
+  },
+  {
+    "source": "no worries",
+    "target": "không sao",
+    "note": "Hán Việt: một sự"
+  },
+  {
+    "source": "no problem",
+    "target": "không sao đâu",
+    "note": "Hán Việt: một vấn đề. Việt: không sao đâu / ổn cả"
+  },
+  {
+    "source": "great",
+    "target": "tuyệt quá",
+    "note": "Hán Việt: thái hảo liễu. Việt: tuyệt quá / hay quá"
+  },
+  {
+    "source": "really?",
+    "target": "thật sao?",
+    "note": "Hán Việt: chân đích ma. Việt: thật sao? / thật hả?"
+  },
+  {
+    "source": "what's wrong",
+    "target": "sao vậy?",
+    "note": "Hán Việt: chẩm ma liễu. Việt: sao vậy? / chuyện gì thế?"
+  },
+  {
+    "source": "take care on your way",
+    "target": "đi cẩn thận nhé",
+    "note": "Hán Việt: mạn tẩu"
+  },
+  {
+    "source": "goodbye",
+    "target": "tạm biệt",
+    "note": "Hán Việt: tái kiến"
+  },
+  {
+    "source": "welcome",
+    "target": "chào mừng",
+    "note": "Hán Việt: hoan nghênh"
+  },
+  {
+    "source": "please sit",
+    "target": "mời ngồi",
+    "note": "Hán Việt: thỉnh tọa"
+  },
+  {
+    "source": "excuse me, may i ask",
+    "target": "xin hỏi",
+    "note": "Hán Việt: thỉnh vấn. Việt: xin hỏi / cho hỏi một chút"
+  },
+  {
+    "source": "excuse me (passing)",
+    "target": "cho mình đi qua",
+    "note": "Hán Việt: tá quá. Việt: cho mình đi qua / xin lỗi"
+  },
+  {
+    "source": "please",
+    "target": "làm ơn",
+    "note": "Hán Việt: bái thác. Việt: làm ơn / nhờ bạn"
+  },
+  {
+    "source": "be careful",
+    "target": "cẩn thận",
+    "note": "Hán Việt: tiểu tâm"
+  },
+  {
+    "source": "pay attention",
+    "target": "chú ý",
+    "note": "Hán Việt: chú ý"
+  },
+  {
+    "source": "heard much about you",
+    "target": "ngưỡng mộ đã lâu",
+    "note": "Hán Việt: cửu ngưỡng"
+  },
+  {
+    "source": "pleased to meet you",
+    "target": "rất vui được gặp",
+    "note": "Hán Việt: hạnh hội"
+  },
+  {
+    "source": "have you eaten",
+    "target": "bạn ăn cơm chưa",
+    "note": "Hán Việt: ngật phạn liễu ma. Câu hỏi thăm xã giao"
+  },
+  {
+    "source": "good morning",
+    "target": "chào buổi sáng",
+    "note": "Hán Việt: tảo an"
+  },
+  {
+    "source": "good night",
+    "target": "chúc ngủ ngon",
+    "note": "Hán Việt: vãn an"
+  },
+  {
+    "source": "go home",
+    "target": "về nhà",
+    "note": "Hán Việt: hồi gia"
+  },
+  {
+    "source": "go to work",
+    "target": "đi làm",
+    "note": "Hán Việt: thượng ban"
+  },
+  {
+    "source": "get off work",
+    "target": "tan làm",
+    "note": "Hán Việt: hạ ban"
+  },
+  {
+    "source": "ask for leave",
+    "target": "xin nghỉ phép",
+    "note": "Hán Việt: thỉnh giả"
+  },
+  {
+    "source": "work overtime",
+    "target": "tăng ca",
+    "note": "Hán Việt: gia ban"
+  },
+  {
+    "source": "traffic jam",
+    "target": "kẹt xe",
+    "note": "Hán Việt: đổ xa"
+  },
+  {
+    "source": "hail a ride",
+    "target": "gọi xe",
+    "note": "Hán Việt: đả xa"
+  },
+  {
+    "source": "takeout",
+    "target": "đồ ăn giao tận nơi",
+    "note": "Hán Việt: ngoại mại"
+  },
+  {
+    "source": "courier",
+    "target": "chuyển phát nhanh",
+    "note": "Hán Việt: khoái đệ"
+  },
+  {
+    "source": "mobile phone",
+    "target": "điện thoại",
+    "note": "Hán Việt: thủ cơ"
+  },
+  {
+    "source": "wechat",
+    "target": "WeChat",
+    "note": "Hán Việt: vi tín"
+  },
+  {
+    "source": "red envelope",
+    "target": "bao lì xì",
+    "note": "Hán Việt: hồng bao"
+  },
+  {
+    "source": "pay the bill",
+    "target": "thanh toán",
+    "note": "Hán Việt: mãi đơn"
+  },
+  {
+    "source": "discount",
+    "target": "giảm giá",
+    "note": "Hán Việt: đả chiết"
+  },
+  {
+    "source": "troublesome",
+    "target": "phiền phức",
+    "note": "Hán Việt: ma phiền"
+  }
+]

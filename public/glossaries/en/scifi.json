@@ -1,0 +1,295 @@
+[
+  {
+    "source": "warp drive",
+    "target": "động cơ nhảy không gian"
+  },
+  {
+    "source": "artificial intelligence",
+    "target": "trí tuệ nhân tạo"
+  },
+  {
+    "source": "android",
+    "target": "người máy hình người"
+  },
+  {
+    "source": "alien",
+    "target": "người ngoài hành tinh"
+  },
+  {
+    "source": "clone",
+    "target": "bản sao"
+  },
+  {
+    "source": "time paradox",
+    "target": "nghịch lý thời gian"
+  },
+  {
+    "source": "space station",
+    "target": "trạm không gian"
+  },
+  {
+    "source": "life support",
+    "target": "duy trì sự sống"
+  },
+  {
+    "source": "energy core",
+    "target": "lõi năng lượng"
+  },
+  {
+    "source": "shields up",
+    "target": "bật lá chắn"
+  },
+  {
+    "source": "teleport",
+    "target": "dịch chuyển"
+  },
+  {
+    "source": "quantum computer",
+    "target": "máy tính lượng tử"
+  },
+  {
+    "source": "spell",
+    "target": "thần chú"
+  },
+  {
+    "source": "mana",
+    "target": "năng lượng phép",
+    "note": "Cách khác: ma lực"
+  },
+  {
+    "source": "dark lord",
+    "target": "chúa tể bóng tối"
+  },
+  {
+    "source": "summon",
+    "target": "triệu hồi"
+  },
+  {
+    "source": "another world",
+    "target": "dị giới"
+  },
+  {
+    "source": "level up",
+    "target": "lên cấp"
+  },
+  {
+    "source": "skill tree",
+    "target": "cây kỹ năng"
+  },
+  {
+    "source": "sealed away",
+    "target": "bị phong ấn"
+  },
+  {
+    "source": "black hole",
+    "target": "hố đen"
+  },
+  {
+    "source": "cryosleep",
+    "target": "ngủ đông"
+  },
+  {
+    "source": "mothership",
+    "target": "tàu mẹ"
+  },
+  {
+    "source": "fleet",
+    "target": "hạm đội"
+  },
+  {
+    "source": "terraform",
+    "target": "cải tạo hành tinh"
+  },
+  {
+    "source": "nanobots",
+    "target": "cỗ máy nano"
+  },
+  {
+    "source": "rebel fleet",
+    "target": "hạm đội nổi dậy"
+  },
+  {
+    "source": "prime directive",
+    "target": "nguyên tắc tối thượng"
+  },
+  {
+    "source": "special ability",
+    "target": "dị năng, năng lực đặc biệt",
+    "note": "Hán Việt: dị năng"
+  },
+  {
+    "source": "superpower",
+    "target": "siêu năng lực",
+    "note": "Hán Việt: siêu năng lực"
+  },
+  {
+    "source": "transmigration",
+    "target": "xuyên không",
+    "note": "Hán Việt: xuyên việt"
+  },
+  {
+    "source": "rebirth",
+    "target": "trọng sinh, sống lại",
+    "note": "Hán Việt: trọng sinh"
+  },
+  {
+    "source": "parallel world",
+    "target": "thế giới song song",
+    "note": "Hán Việt: bình hành thế giới"
+  },
+  {
+    "source": "spacetime",
+    "target": "không-thời gian",
+    "note": "Hán Việt: thời không"
+  },
+  {
+    "source": "time travel",
+    "target": "du hành thời gian",
+    "note": "Hán Việt: thời gian lữ hành"
+  },
+  {
+    "source": "spaceship",
+    "target": "phi thuyền",
+    "note": "Hán Việt: phi thuyền"
+  },
+  {
+    "source": "interstellar",
+    "target": "liên sao, giữa các vì sao",
+    "note": "Hán Việt: tinh tế"
+  },
+  {
+    "source": "robot",
+    "target": "người máy, robot",
+    "note": "Hán Việt: cơ khí nhân"
+  },
+  {
+    "source": "gene",
+    "target": "gen",
+    "note": "Hán Việt: cơ nhân"
+  },
+  {
+    "source": "mutation",
+    "target": "biến dị",
+    "note": "Hán Việt: biến dị"
+  },
+  {
+    "source": "apocalypse",
+    "target": "tận thế",
+    "note": "Hán Việt: mạt thế"
+  },
+  {
+    "source": "wasteland",
+    "target": "vùng đất hoang tàn",
+    "note": "Hán Việt: phế thổ"
+  },
+  {
+    "source": "zombie",
+    "target": "zombie",
+    "note": "Hán Việt: tang thi"
+  },
+  {
+    "source": "virus",
+    "target": "virus",
+    "note": "Hán Việt: bệnh độc"
+  },
+  {
+    "source": "magic",
+    "target": "phép thuật, ma pháp",
+    "note": "Hán Việt: ma pháp"
+  },
+  {
+    "source": "mage",
+    "target": "pháp sư",
+    "note": "Hán Việt: pháp sư"
+  },
+  {
+    "source": "wizard",
+    "target": "phù thủy nam",
+    "note": "Hán Việt: vu sư"
+  },
+  {
+    "source": "elf",
+    "target": "yêu tinh, elf",
+    "note": "Hán Việt: tinh linh. Không dịch \"tinh thần linh\""
+  },
+  {
+    "source": "dwarf",
+    "target": "người lùn",
+    "note": "Hán Việt: ải nhân"
+  },
+  {
+    "source": "dragon",
+    "target": "rồng",
+    "note": "Hán Việt: long"
+  },
+  {
+    "source": "demon lord",
+    "target": "ma vương",
+    "note": "Hán Việt: ma vương"
+  },
+  {
+    "source": "hero",
+    "target": "dũng sĩ",
+    "note": "Hán Việt: dũng giả"
+  },
+  {
+    "source": "incantation",
+    "target": "thần chú",
+    "note": "Hán Việt: chú ngữ"
+  },
+  {
+    "source": "barrier",
+    "target": "kết giới, kết giới ma thuật",
+    "note": "Hán Việt: kết giới"
+  },
+  {
+    "source": "contract",
+    "target": "khế ước",
+    "note": "Hán Việt: khế ước"
+  },
+  {
+    "source": "pact",
+    "target": "khế ước",
+    "note": "Hán Việt: khế ước"
+  },
+  {
+    "source": "system",
+    "target": "hệ thống (game/nhiệm vụ)",
+    "note": "Hán Việt: hệ thống. Hay gặp trong truyện hệ thống"
+  },
+  {
+    "source": "dungeon",
+    "target": "phó bản, dungeon",
+    "note": "Hán Việt: phó bản"
+  },
+  {
+    "source": "instance",
+    "target": "phó bản, dungeon",
+    "note": "Hán Việt: phó bản"
+  },
+  {
+    "source": "level",
+    "target": "cấp độ",
+    "note": "Hán Việt: đẳng cấp"
+  },
+  {
+    "source": "skill",
+    "target": "kỹ năng",
+    "note": "Hán Việt: kỹ năng"
+  },
+  {
+    "source": "equipment",
+    "target": "trang bị",
+    "note": "Hán Việt: trang bị"
+  },
+  {
+    "source": "boss",
+    "target": "trùm cuối",
+    "note": "Hán Việt: boss"
+  },
+  {
+    "source": "quest",
+    "target": "nhiệm vụ",
+    "note": "Hán Việt: nhiệm vụ"
+  }
+]

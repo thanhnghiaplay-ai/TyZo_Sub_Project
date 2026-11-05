@@ -1,0 +1,303 @@
+[
+  {
+    "source": "emperor",
+    "target": "hoàng đế"
+  },
+  {
+    "source": "empress dowager",
+    "target": "thái hậu"
+  },
+  {
+    "source": "chancellor",
+    "target": "thừa tướng"
+  },
+  {
+    "source": "imperial exam",
+    "target": "khoa cử"
+  },
+  {
+    "source": "exile",
+    "target": "đi đày",
+    "note": "Cách khác: lưu đày"
+  },
+  {
+    "source": "ordered to die",
+    "target": "bị ban chết"
+  },
+  {
+    "source": "treason",
+    "target": "mưu phản"
+  },
+  {
+    "source": "treaty",
+    "target": "hiệp ước"
+  },
+  {
+    "source": "colony",
+    "target": "thuộc địa"
+  },
+  {
+    "source": "armistice",
+    "target": "đình chiến"
+  },
+  {
+    "source": "evacuate",
+    "target": "sơ tán"
+  },
+  {
+    "source": "ration",
+    "target": "tem phiếu"
+  },
+  {
+    "source": "conscription",
+    "target": "trưng binh"
+  },
+  {
+    "source": "dynasty",
+    "target": "vương triều"
+  },
+  {
+    "source": "edict",
+    "target": "chiếu chỉ"
+  },
+  {
+    "source": "coup",
+    "target": "đảo chính"
+  },
+  {
+    "source": "state funeral",
+    "target": "quốc tang"
+  },
+  {
+    "source": "opium war",
+    "target": "chiến tranh nha phiến"
+  },
+  {
+    "source": "warlord",
+    "target": "quân phiệt"
+  },
+  {
+    "source": "concession",
+    "target": "tô giới"
+  },
+  {
+    "source": "reform",
+    "target": "biến pháp"
+  },
+  {
+    "source": "move the capital",
+    "target": "dời đô"
+  },
+  {
+    "source": "occupation",
+    "target": "chiếm đóng"
+  },
+  {
+    "source": "surrender document",
+    "target": "văn bản đầu hàng"
+  },
+  {
+    "source": "home front",
+    "target": "hậu phương"
+  },
+  {
+    "source": "blackout",
+    "target": "che đèn phòng không"
+  },
+  {
+    "source": "air raid",
+    "target": "không kích"
+  },
+  {
+    "source": "veteran",
+    "target": "cựu binh"
+  },
+  {
+    "source": "reconstruction",
+    "target": "tái thiết"
+  },
+  {
+    "source": "occupation forces",
+    "target": "quân chiếm đóng"
+  },
+  {
+    "source": "royal \"i\"",
+    "target": "trẫm",
+    "note": "Hán Việt: trẫm"
+  },
+  {
+    "source": "your majesty",
+    "target": "bệ hạ",
+    "note": "Hán Việt: bệ hạ"
+  },
+  {
+    "source": "the emperor",
+    "target": "hoàng thượng",
+    "note": "Hán Việt: hoàng thượng"
+  },
+  {
+    "source": "empress",
+    "target": "hoàng hậu",
+    "note": "Hán Việt: hoàng hậu"
+  },
+  {
+    "source": "crown prince",
+    "target": "thái tử",
+    "note": "Hán Việt: thái tử"
+  },
+  {
+    "source": "princess",
+    "target": "công chúa",
+    "note": "Hán Việt: công chúa"
+  },
+  {
+    "source": "prince",
+    "target": "hoàng tử",
+    "note": "Hán Việt: hoàng tử"
+  },
+  {
+    "source": "imperial noble consort",
+    "target": "quý phi",
+    "note": "Hán Việt: quý phi"
+  },
+  {
+    "source": "concubine",
+    "target": "phi tần",
+    "note": "Hán Việt: tần phi"
+  },
+  {
+    "source": "eunuch",
+    "target": "thái giám",
+    "note": "Hán Việt: thái giám"
+  },
+  {
+    "source": "palace maid",
+    "target": "cung nữ",
+    "note": "Hán Việt: cung nữ"
+  },
+  {
+    "source": "minister",
+    "target": "đại thần",
+    "note": "Hán Việt: đại thần"
+  },
+  {
+    "source": "general",
+    "target": "tướng quân",
+    "note": "Hán Việt: tướng quân"
+  },
+  {
+    "source": "marshal",
+    "target": "nguyên soái",
+    "note": "Hán Việt: nguyên soái"
+  },
+  {
+    "source": "imperial court",
+    "target": "triều đình",
+    "note": "Hán Việt: triều đình"
+  },
+  {
+    "source": "morning court",
+    "target": "buổi chầu sáng",
+    "note": "Hán Việt: tảo triều"
+  },
+  {
+    "source": "imperial edict",
+    "target": "thánh chỉ",
+    "note": "Hán Việt: thánh chỉ"
+  },
+  {
+    "source": "memorial to the throne",
+    "target": "tấu chương",
+    "note": "Hán Việt: tấu chiết"
+  },
+  {
+    "source": "ascend the throne",
+    "target": "lên ngôi",
+    "note": "Hán Việt: đăng cơ"
+  },
+  {
+    "source": "abdicate",
+    "target": "thoái vị",
+    "note": "Hán Việt: thoái vị"
+  },
+  {
+    "source": "emperor's death",
+    "target": "băng hà",
+    "note": "Hán Việt: giá băng"
+  },
+  {
+    "source": "rebel",
+    "target": "nổi loạn",
+    "note": "Hán Việt: tạo phản"
+  },
+  {
+    "source": "exterminate a clan",
+    "target": "diệt cả nhà",
+    "note": "Hán Việt: diệt môn"
+  },
+  {
+    "source": "beheading",
+    "target": "chém đầu",
+    "note": "Hán Việt: trảm thủ"
+  },
+  {
+    "source": "top scholar",
+    "target": "trạng nguyên",
+    "note": "Hán Việt: trạng nguyên"
+  },
+  {
+    "source": "metropolitan graduate",
+    "target": "tiến sĩ",
+    "note": "Hán Việt: tiến sĩ"
+  },
+  {
+    "source": "county magistrate",
+    "target": "tri huyện",
+    "note": "Hán Việt: huyện lệnh"
+  },
+  {
+    "source": "prefect",
+    "target": "tri phủ",
+    "note": "Hán Việt: tri phủ"
+  },
+  {
+    "source": "common people",
+    "target": "dân chúng",
+    "note": "Hán Việt: bách tính"
+  },
+  {
+    "source": "all under heaven",
+    "target": "thiên hạ",
+    "note": "Hán Việt: thiên hạ"
+  },
+  {
+    "source": "the realm",
+    "target": "giang sơn",
+    "note": "Hán Việt: giang sơn"
+  },
+  {
+    "source": "the state",
+    "target": "xã tắc",
+    "note": "Hán Việt: xã tắc"
+  },
+  {
+    "source": "nation",
+    "target": "xã tắc",
+    "note": "Hán Việt: xã tắc"
+  },
+  {
+    "source": "war turmoil",
+    "target": "chiến loạn",
+    "note": "Hán Việt: chiến loạn"
+  },
+  {
+    "source": "march to war",
+    "target": "xuất chinh",
+    "note": "Hán Việt: xuất chinh"
+  },
+  {
+    "source": "military tally",
+    "target": "binh phù",
+    "note": "Hán Việt: binh phù"
+  }
+]

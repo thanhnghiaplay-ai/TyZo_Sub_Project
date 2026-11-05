@@ -1,0 +1,198 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { describe, it } from "node:test";
+
+const source = readFileSync(new URL("./studio.tsx", import.meta.url), "utf8");
+const phim = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="tool-cast"'));
+
+describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
+  it("ngôn ngữ, thể loại, file và nút chạy đứng trước phần thu gọn", () => {
+    const markers = ["Nhận diện ngôn ngữ", "Dịch sang tiếng", "Thể loại", "Thuật ngữ thể loại", 'title="Video"', "{app.buttonLabel}"];
+    const at = markers.map((marker) => phim.indexOf(marker));
+    assert.ok(at.every((index) => index >= 0), at.join(","));
+    assert.deepEqual(at, [...at].sort((a, b) => a - b));
+    assert.equal(phim.includes("Ngôn ngữ lời nói"), false);
+    assert.equal(phim.includes("Ngôn ngữ đích"), false);
+    assert.match(phim, /Dịch sang tiếng[\s\S]*value === "Vietnamese"/);
+    const lists = readFileSync(new URL("../lib/sub/text.ts", import.meta.url), "utf8");
+    const src = lists.slice(lists.indexOf("export const SRC_LANGS"), lists.indexOf("export function speechLang"));
+    assert.deepEqual(
+      [...src.matchAll(/\["(zh|ko|ja|en|vi|th)"/g)].map((match) => match[1]),
+      ["zh", "ko", "ja", "en"],
+    );
+    assert.equal(src.includes("Tự nhận dạng"), false);
+  });
+
+  it("thuật ngữ thể loại đóng mặc định", () => {
+    const gloss = phim.indexOf("Thuật ngữ thể loại");
+    const details = phim.lastIndexOf("<details", gloss);
+    assert.ok(gloss - details < 250);
+    assert.equal(/<details[^>]*\sopen/.test(phim.slice(details, gloss)), false);
+  });
+});
+
+describe("Bước 6.2 — khung Phụ đề", () => {
+  it("video và bảng câu đứng ngoài tab, chỉ có một player", () => {
+    const markers = ['data-product="sub"', 'role="tablist"', "data-workspace", "<Stage", "Bản dịch", 'id="tool-phim"'];
+    const at = markers.map((marker) => source.indexOf(marker));
+    assert.ok(at.every((index) => index >= 0));
+    assert.deepEqual(at, [...at].sort((a, b) => a - b));
+    const workspace = source.slice(source.indexOf("data-workspace"), source.indexOf('id="tool-key"'));
+    assert.match(workspace, /<Stage/);
+    assert.match(workspace, /Bản dịch/);
+    assert.equal(workspace.includes("Groq API key"), false);
+    assert.equal(source.split("<Stage").length - 1, 1);
+  });
+
+  it("mỗi tab trỏ tới một vùng, không dựng player theo tab", () => {
+    for (const id of ["tool-key", "tool-phim", "tool-cast", "tool-voice", "tool-check"]) {
+      assert.match(source, new RegExp(`id="${id}"`));
+    }
+    assert.equal(/toolTab === [\s\S]{0,80}<Stage/.test(source), false);
+  });
+});
+
+describe("Bước 6.3 — mỗi tab một phần", () => {
+  it("năm tab ẩn lẫn nhau và vẫn gắn trong cây", () => {
+    for (const id of ["key", "phim", "cast", "voice", "check"]) {
+      assert.match(source, new RegExp(`id="tool-${id}"[\\s\\S]{0,160}hidden=\\{toolTab !== "${id}"\\}`));
+    }
+    assert.equal(source.includes('{toolTab === "phim" &&'), false);
+  });
+
+  it("một nút Dịch tiếp, khoảng trống nằm ở Kiểm tra", () => {
+    assert.equal(source.split("Dịch tiếp").length - 1, 1);
+    const check = source.slice(source.indexOf('id="tool-check"'));
+    assert.match(check, /Dò khoảng trống/);
+    const workspace = source.slice(source.indexOf("data-workspace"), source.indexOf('id="tool-phim"'));
+    assert.equal(workspace.includes("Dò khoảng trống"), false);
+  });
+});
+
+describe("Bước 6.4 — ba cỡ màn hình", () => {
+  it("video bị giới hạn chiều cao, chừa tai thỏ, ô chữ 16px, nút 44px", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(css, /safe-area-inset-top/);
+    assert.match(css, /max-width: 699px/);
+    assert.match(css, /min-width: 700px/);
+    assert.match(css, /min-width: 1024px/);
+    assert.match(css, /33dvh/);
+    assert.match(css, /42dvh/);
+    assert.match(source, /studio-shell/);
+    assert.match(source, /text-base/);
+    assert.match(css, /min-height: 2\.75rem/);
+  });
+});
+
+describe("Bước 6.5 — chuyển tab", () => {
+  it("animation ngắn, tắt khi giảm chuyển động, và chọn bằng bàn phím", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(css, /@keyframes studio-tab-in/);
+    assert.match(css, /prefers-reduced-motion:\s*reduce/);
+    const reduced = css.slice(css.indexOf("prefers-reduced-motion"));
+    assert.match(reduced, /animation:\s*none/);
+    assert.match(reduced, /transition:\s*none/);
+    assert.match(source, /ArrowLeft/);
+    assert.match(source, /ArrowRight/);
+    assert.match(source, /"Home"/);
+    assert.match(source, /"End"/);
+  });
+});
+
+describe("Bước 6.6 — không API một hãng", () => {
+  it("dvh và vùng tai thỏ có đường lùi, không có tiền tố một hãng", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(css, /height:\s*100vh;/);
+    assert.match(css, /height:\s*100dvh;/);
+    assert.match(css, /max-height:\s*33vh;/);
+    assert.match(css, /max-height:\s*42vh;/);
+    assert.match(css, /env\(safe-area-inset-top,\s*0px\)/);
+    assert.equal(/-webkit-|-moz-|-ms-/.test(css), false);
+    assert.equal(source.includes("Hãy dùng Chrome"), false);
+  });
+
+  it("ghi máy đã chạy và máy chưa chạy", () => {
+    const status = readFileSync(new URL("../../PROJECT_STATUS.md", import.meta.url), "utf8");
+    assert.match(status, /Chromium/);
+    assert.match(status, /Firefox/);
+    assert.match(status, /Safari iPhone/);
+    assert.match(status, /Chưa chạy/);
+  });
+});
+
+describe("Bước 7.1 — không chồng khung", () => {
+  it("video không nổi lên tab, màn thấp không dùng tấm phủ", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.equal(css.includes("z-index:"), false);
+    assert.equal(css.includes("position: absolute"), false);
+    assert.match(css, /max-height:\s*520px/);
+    assert.match(source, /studio-stage/);
+    assert.match(source, /is-sheet/);
+    const phone = css.slice(css.indexOf("@media (max-width: 699px)"), css.indexOf("@media (min-width: 700px)"));
+    assert.match(phone, /position:\s*static/);
+    const short = css.slice(css.indexOf("@media (max-height: 520px)"));
+    assert.match(short, /position:\s*static/);
+    assert.match(short, /display:\s*flex/);
+  });
+});
+
+describe("Bước 7.2 — tab theo thứ tự dùng", () => {
+  it("Key Sub, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
+    const labels = ["Key Sub", "Phim", "Nhân vật", "Nghe", "Kiểm tra"];
+    const at = labels.map((label) => source.indexOf(`"${label}"`));
+    assert.ok(at.every((index) => index >= 0), at.join(","));
+    assert.deepEqual(at, [...at].sort((a, b) => a - b));
+    assert.equal(source.includes('id="tool-chat"'), false);
+    const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
+    assert.match(key, /Groq API key/);
+    assert.match(key, /Đồng bộ key/);
+    assert.match(key, /Nhận dạng giọng/);
+    assert.equal(key.includes("Ngữ cảnh phim"), false);
+    const cast = source.slice(source.indexOf('id="tool-cast"'), source.indexOf('id="tool-voice"'));
+    const context = cast.indexOf("Ngữ cảnh phim");
+    const details = cast.lastIndexOf("<details", context);
+    assert.ok(context >= 0 && context < cast.indexOf("Phân tích phim"));
+    assert.equal(/<details[^>]*\sopen/.test(cast.slice(details, context)), false);
+    assert.match(cast, /app\.setTitle/);
+    assert.match(cast, /app\.setNotes/);
+    assert.match(cast, /app\.setGloss/);
+    assert.match(source, /if \(!app\.reviewHold\) return;\s*setToolTab\("cast"\);\s*setSheetOpen\(true\);/);
+  });
+});
+
+describe("Bước 7.3 — không giật khi chọn file và khi báo trạng thái", () => {
+  it("khóa trang, nút đóng là dấu X, trạng thái đúng hai hàng", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(css, /html,\s*body\s*\{[^}]*overflow:\s*hidden/);
+    assert.match(source, /aria-label="Đóng tab"/);
+    assert.match(source, /<X /);
+    assert.equal(source.includes(">Đóng</button>\n        <section id=\"tool-key\""), false);
+    const phone = css.slice(css.indexOf("@media (max-width: 699px)"), css.indexOf("@media (min-width: 700px)"));
+    assert.match(phone, /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
+    assert.equal(/\.studio-sheet-bar\s*\{[^}]*display:\s*flex/.test(css.slice(0, css.indexOf("@media"))), false);
+    assert.match(source, /role="status"/);
+    assert.match(source, /line-clamp-2 h-10/);
+    assert.match(source, /showModal\(\)/);
+    assert.match(source, /currentTarget\.blur\(\)/);
+    assert.match(source, /scrollTo\(0, 0\)/);
+    assert.equal(source.includes('className="sr-only" type="file"'), false);
+  });
+});
+
+describe("Bước 7.4 — số thuật ngữ nổi, nút X nằm trong khung", () => {
+  it("viên vàng chữ đen, và nút đóng nằm trong khung tab", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    const count = css.slice(css.indexOf(".studio-count"), css.indexOf(".studio-note"));
+    assert.match(count, /background:\s*var\(--color-accent\)/);
+    assert.match(count, /color:\s*var\(--color-ink\)/);
+    assert.equal(source.includes('className="text-ink">{app.glossaryInfo.count}'), false);
+    assert.equal(source.split("studio-count").length - 1, 2);
+    const card = source.slice(source.indexOf('className="studio-tool-card"'), source.indexOf('id="tool-key"'));
+    assert.match(card, /aria-label="Đóng tab"/);
+    assert.ok(source.indexOf('className="studio-tool-card"') < source.indexOf('id="tool-check"'));
+  });
+});
+
+
+
+

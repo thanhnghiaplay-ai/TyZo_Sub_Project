@@ -1,0 +1,420 @@
+[
+  {
+    "source": "怨灵",
+    "target": "oan hồn, linh hồn oán hận",
+    "renders": {
+      "vi": "oan hồn, linh hồn oán hận",
+      "ko": "원령",
+      "ja": "怨霊",
+      "en": "vengeful spirit"
+    },
+    "note": "Hán Việt: oán linh"
+  },
+  {
+    "source": "鬼魂",
+    "target": "hồn ma",
+    "renders": {
+      "vi": "hồn ma",
+      "ko": "귀신",
+      "ja": "幽霊",
+      "en": "ghost"
+    },
+    "note": "Hán Việt: quỷ hồn"
+  },
+  {
+    "source": "恶鬼",
+    "target": "ác quỷ",
+    "renders": {
+      "vi": "ác quỷ",
+      "ko": "악귀",
+      "ja": "悪鬼",
+      "en": "evil spirit"
+    },
+    "note": "Hán Việt: ác quỷ"
+  },
+  {
+    "source": "厉鬼",
+    "target": "lệ quỷ, hung hồn",
+    "renders": {
+      "vi": "lệ quỷ, hung hồn",
+      "ko": "원귀",
+      "ja": "悪霊",
+      "en": "malevolent ghost"
+    },
+    "note": "Hán Việt: lệ quỷ"
+  },
+  {
+    "source": "冤魂",
+    "target": "oan hồn",
+    "renders": {
+      "vi": "oan hồn",
+      "ko": "원혼",
+      "ja": "怨霊",
+      "en": "wronged soul"
+    },
+    "note": "Hán Việt: oan hồn"
+  },
+  {
+    "source": "附身",
+    "target": "nhập, ám vào người",
+    "renders": {
+      "vi": "nhập, ám vào người",
+      "ko": "빙의",
+      "ja": "憑依",
+      "en": "possession"
+    },
+    "note": "Hán Việt: phụ thân"
+  },
+  {
+    "source": "诅咒",
+    "target": "lời nguyền",
+    "renders": {
+      "vi": "lời nguyền",
+      "ko": "저주",
+      "ja": "呪い",
+      "en": "curse"
+    },
+    "note": "Hán Việt: trớ chú"
+  },
+  {
+    "source": "咒怨",
+    "target": "oán niệm, lời nguyền hận thù",
+    "renders": {
+      "vi": "oán niệm, lời nguyền hận thù",
+      "ko": "원한의 저주",
+      "ja": "呪怨",
+      "en": "grudge curse"
+    },
+    "note": "Hán Việt: chú oán"
+  },
+  {
+    "source": "阴气",
+    "target": "âm khí",
+    "renders": {
+      "vi": "âm khí",
+      "ko": "음기",
+      "ja": "陰の気",
+      "en": "yin energy"
+    },
+    "note": "Hán Việt: âm khí"
+  },
+  {
+    "source": "阳气",
+    "target": "dương khí",
+    "renders": {
+      "vi": "dương khí",
+      "ko": "양기",
+      "ja": "陽の気",
+      "en": "yang energy"
+    },
+    "note": "Hán Việt: dương khí"
+  },
+  {
+    "source": "阴间",
+    "target": "âm phủ",
+    "renders": {
+      "vi": "âm phủ",
+      "ko": "저승",
+      "ja": "あの世",
+      "en": "underworld"
+    },
+    "note": "Hán Việt: âm gian"
+  },
+  {
+    "source": "阳间",
+    "target": "dương gian",
+    "renders": {
+      "vi": "dương gian",
+      "ko": "이승",
+      "ja": "この世",
+      "en": "world of the living"
+    },
+    "note": "Hán Việt: dương gian"
+  },
+  {
+    "source": "鬼门关",
+    "target": "cửa quỷ môn",
+    "renders": {
+      "vi": "cửa quỷ môn",
+      "ko": "귀문관",
+      "ja": "鬼門",
+      "en": "gate of ghosts"
+    },
+    "note": "Hán Việt: quỷ môn quan"
+  },
+  {
+    "source": "招魂",
+    "target": "gọi hồn",
+    "renders": {
+      "vi": "gọi hồn",
+      "ko": "초혼",
+      "ja": "招魂",
+      "en": "summon a soul"
+    },
+    "note": "Hán Việt: chiêu hồn"
+  },
+  {
+    "source": "超度",
+    "target": "siêu độ",
+    "renders": {
+      "vi": "siêu độ",
+      "ko": "천도",
+      "ja": "成仏させる",
+      "en": "deliver a soul"
+    },
+    "note": "Hán Việt: siêu độ"
+  },
+  {
+    "source": "驱邪",
+    "target": "trừ tà",
+    "renders": {
+      "vi": "trừ tà",
+      "ko": "퇴마",
+      "ja": "お祓い",
+      "en": "exorcism"
+    },
+    "note": "Hán Việt: khu tà"
+  },
+  {
+    "source": "符咒",
+    "target": "bùa chú",
+    "renders": {
+      "vi": "bùa chú",
+      "ko": "부적",
+      "ja": "護符",
+      "en": "talisman"
+    },
+    "note": "Hán Việt: phù chú"
+  },
+  {
+    "source": "道士",
+    "target": "đạo sĩ",
+    "renders": {
+      "vi": "đạo sĩ",
+      "ko": "도사",
+      "ja": "道士",
+      "en": "Taoist priest"
+    },
+    "note": "Hán Việt: đạo sĩ"
+  },
+  {
+    "source": "法事",
+    "target": "làm lễ, pháp sự",
+    "renders": {
+      "vi": "làm lễ, pháp sự",
+      "ko": "법회",
+      "ja": "法要",
+      "en": "ritual ceremony"
+    },
+    "note": "Hán Việt: pháp sự"
+  },
+  {
+    "source": "棺材",
+    "target": "quan tài",
+    "renders": {
+      "vi": "quan tài",
+      "ko": "관",
+      "ja": "棺",
+      "en": "coffin"
+    },
+    "note": "Hán Việt: quan tài"
+  },
+  {
+    "source": "坟墓",
+    "target": "mộ",
+    "renders": {
+      "vi": "mộ",
+      "ko": "무덤",
+      "ja": "墓",
+      "en": "grave"
+    },
+    "note": "Hán Việt: phần mộ"
+  },
+  {
+    "source": "尸体",
+    "target": "thi thể",
+    "renders": {
+      "vi": "thi thể",
+      "ko": "시체",
+      "ja": "死体",
+      "en": "corpse"
+    },
+    "note": "Hán Việt: thi thể"
+  },
+  {
+    "source": "僵尸",
+    "target": "cương thi",
+    "renders": {
+      "vi": "cương thi",
+      "ko": "강시",
+      "ja": "キョンシー",
+      "en": "jiangshi (hopping vampire)"
+    },
+    "note": "Hán Việt: cương thi"
+  },
+  {
+    "source": "骷髅",
+    "target": "xương sọ, bộ xương",
+    "renders": {
+      "vi": "xương sọ, bộ xương",
+      "ko": "해골",
+      "ja": "髑髏",
+      "en": "skeleton"
+    },
+    "note": "Hán Việt: khô lâu"
+  },
+  {
+    "source": "血迹",
+    "target": "vết máu",
+    "renders": {
+      "vi": "vết máu",
+      "ko": "핏자국",
+      "ja": "血痕",
+      "en": "bloodstain"
+    },
+    "note": "Hán Việt: huyết tích"
+  },
+  {
+    "source": "惨叫",
+    "target": "tiếng kêu thảm",
+    "renders": {
+      "vi": "tiếng kêu thảm",
+      "ko": "비명",
+      "ja": "悲鳴",
+      "en": "scream"
+    },
+    "note": "Hán Việt: thảm khiếu"
+  },
+  {
+    "source": "阴森",
+    "target": "rùng rợn, lạnh lẽo",
+    "renders": {
+      "vi": "rùng rợn, lạnh lẽo",
+      "ko": "으스스한",
+      "ja": "不気味な",
+      "en": "eerie"
+    },
+    "note": "Hán Việt: âm sâm"
+  },
+  {
+    "source": "毛骨悚然",
+    "target": "sởn gai ốc, rợn người",
+    "renders": {
+      "vi": "sởn gai ốc, rợn người",
+      "ko": "소름 끼치다",
+      "ja": "身の毛がよだつ",
+      "en": "hair-raising"
+    },
+    "note": "Hán Việt: mao cốt tủng nhiên"
+  },
+  {
+    "source": "鬼打墙",
+    "target": "ma dẫn đường (lạc mãi)",
+    "renders": {
+      "vi": "ma dẫn đường (lạc mãi)",
+      "ko": "귀신에 홀려 헤매다",
+      "ja": "幽霊に惑わされる",
+      "en": "ghost wall (lost in loops)"
+    },
+    "note": "Hán Việt: quỷ đả tường. Thành ngữ dân gian"
+  },
+  {
+    "source": "闹鬼",
+    "target": "bị ma ám",
+    "renders": {
+      "vi": "bị ma ám",
+      "ko": "귀신이 나오다",
+      "ja": "幽霊が出る",
+      "en": "haunted"
+    },
+    "note": "Hán Việt: náo quỷ"
+  },
+  {
+    "source": "凶宅",
+    "target": "nhà có ma",
+    "renders": {
+      "vi": "nhà có ma",
+      "ko": "흉가",
+      "ja": "幽霊屋敷",
+      "en": "haunted house"
+    },
+    "note": "Hán Việt: hung trạch"
+  },
+  {
+    "source": "诡异",
+    "target": "kỳ quái, quái dị",
+    "renders": {
+      "vi": "kỳ quái, quái dị",
+      "ko": "기괴한",
+      "ja": "奇怪な",
+      "en": "bizarre"
+    },
+    "note": "Hán Việt: quỷ dị"
+  },
+  {
+    "source": "噩梦",
+    "target": "ác mộng",
+    "renders": {
+      "vi": "ác mộng",
+      "ko": "악몽",
+      "ja": "悪夢",
+      "en": "nightmare"
+    },
+    "note": "Hán Việt: ác mộng"
+  },
+  {
+    "source": "幻觉",
+    "target": "ảo giác",
+    "renders": {
+      "vi": "ảo giác",
+      "ko": "환각",
+      "ja": "幻覚",
+      "en": "hallucination"
+    },
+    "note": "Hán Việt: ảo giác"
+  },
+  {
+    "source": "失踪",
+    "target": "mất tích",
+    "renders": {
+      "vi": "mất tích",
+      "ko": "실종",
+      "ja": "失踪",
+      "en": "disappearance"
+    },
+    "note": "Hán Việt: thất tung"
+  },
+  {
+    "source": "惊悚",
+    "target": "kinh hãi",
+    "renders": {
+      "vi": "kinh hãi",
+      "ko": "공포",
+      "ja": "戦慄",
+      "en": "thrilling"
+    },
+    "note": "Hán Việt: kinh tủng. Anh: thrilling / horrifying"
+  },
+  {
+    "source": "恐惧",
+    "target": "nỗi sợ",
+    "renders": {
+      "vi": "nỗi sợ",
+      "ko": "공포",
+      "ja": "恐怖",
+      "en": "fear"
+    },
+    "note": "Hán Việt: khủng cụ"
+  },
+  {
+    "source": "尖叫",
+    "target": "hét lên",
+    "renders": {
+      "vi": "hét lên",
+      "ko": "비명을 지르다",
+      "ja": "叫ぶ",
+      "en": "shriek"
+    },
+    "note": "Hán Việt: tiêm khiếu"
+  }
+]
