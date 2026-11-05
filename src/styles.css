@@ -731,9 +731,56 @@
   }
 }
 
+.admin-boot {
+  display: grid;
+  min-height: 40vh;
+  place-items: center;
+  align-content: center;
+  gap: 0.6rem;
+}
+
+.role-chip {
+  width: fit-content;
+  margin: 0;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  animation: role-glow 2.8s ease-in-out infinite;
+}
+
+.role-user { color: #9aa6b2; }
+.role-ho-tro { color: #8eb7ee; }
+.role-quan-ly { color: #e7b63a; }
+.role-chu { color: #f3d48a; }
+
+.org-card {
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  padding: 0.8rem;
+  animation: toast-in 0.35s ease;
+}
+
+.stat-num {
+  animation: stat-in 0.35s ease;
+}
+
+@keyframes role-glow {
+  50% { opacity: 0.62; }
+}
+
+@keyframes stat-in {
+  from { opacity: 0.35; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .brand-mark,
   .brand-frame,
+  .role-chip,
+  .org-card,
+  .stat-num,
   .gate-mark,
   .gate-kicker,
   .gate-title,

@@ -13,6 +13,28 @@ export function isStaffRole(value: string | null | undefined): value is StaffRol
   return value === "ho-tro" || value === "quan-ly" || value === "chu";
 }
 
+export function outranks(actor: StaffRole | null, target: StaffRole | null) {
+  if (!actor) return false;
+  if (!target) return true;
+  return RANK[actor] > RANK[target];
+}
+
+export function nextHold(current: StaffRole, managerCount: number): StaffRole {
+  if (current === "quan-ly" || current === "chu") return "chu";
+  return managerCount > 0 ? "quan-ly" : "chu";
+}
+
+export function canSkipToOwner(touchedAt: number, now: number, hold: string) {
+  if (hold === "chu") return false;
+  return now - touchedAt >= 2 * 60 * 60 * 1000;
+}
+
+export function canSeeLog(viewer: StaffRole, actorRole: string) {
+  if (viewer === "chu") return true;
+  if (viewer === "quan-ly") return actorRole === "ho-tro" || actorRole === "user";
+  return actorRole === "user";
+}
+
 export function roleAtLeast(role: StaffRole | null, need: StaffRole) {
   if (!role) return false;
   return RANK[role] >= RANK[need];

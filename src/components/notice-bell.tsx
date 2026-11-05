@@ -52,9 +52,20 @@ export function NoticeBell() {
           {items.length === 0 && <p className="mt-2 text-sm text-muted">Chưa có thông báo.</p>}
           <ul className="mt-2 space-y-2">
             {items.map((item) => (
-              <li key={item.id} className="rounded-xl border border-line px-2 py-2">
-                <p className="text-sm font-medium">{item.title}</p>
-                <p className="text-sm text-muted">{item.body}</p>
+              <li key={item.id}>
+                <button
+                  type="button"
+                  className="w-full rounded-xl border border-line px-2 py-2 text-left"
+                  onClick={() => {
+                    const first = item.body.split("\n")[0] ?? "";
+                    const email = (first.includes("@") ? first.split(":")[0] : "").trim();
+                    if (email.includes("@")) window.dispatchEvent(new CustomEvent("tyzo-open-user", { detail: email }));
+                    setOpen(false);
+                  }}
+                >
+                  <p className="text-sm font-medium">{item.title}</p>
+                  <p className="text-sm text-muted">{item.body}</p>
+                </button>
               </li>
             ))}
           </ul>

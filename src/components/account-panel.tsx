@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient, signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { getMyPlace, submitAppeal, type MyPlace } from "@/lib/admin-room";
+import { getMyPlace, listOwnAppeals, skipAppeal, submitAppeal, type MyPlace } from "@/lib/admin-room";
+import { canSkipToOwner } from "@/lib/staff-role";
 import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
@@ -24,6 +25,7 @@ export function AccountPanel() {
   const [leaving, setLeaving] = useState(false);
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
+  const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export function AccountPanel() {
     let gone = false;
     const id = deviceId();
     void getMyPlace().then((next) => { if (!gone) setPlace(next); }).catch(() => {});
+    void listOwnAppeals().then((rows) => { if (!gone) setOwnAppeals(rows); }).catch(() => {});
     void (id ? claimTrialDevice({ data: id }) : getRoomAccount())
       .then((next) => {
         if (!gone) setState(next);
@@ -104,6 +107,23 @@ export function AccountPanel() {
           <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
             Gửi yêu cầu
           </button>
+          {ownAppeals.filter((item) => item.status === "cho" && canSkipToOwner(new Date(item.touchedAt).getTime(), Date.now(), item.holdRole)).map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              disabled={busy}
+              className="min-tap w-full rounded-full border border-line disabled:opacity-40"
+              onClick={() => {
+                setBusy(true);
+                void skipAppeal({ data: item.id })
+                  .then(() => setNotice("Đã báo Chủ. Chủ sẽ thấy đủ nội dung."))
+                  .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa báo được."))
+                  .finally(() => setBusy(false));
+              }}
+            >
+              Đã 2 giờ không ai xử lý, báo Chủ
+            </button>
+          ))}
         </form>
       )}
       {user && !user.isDevFallback && (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
+  escalateAppeal,
   getDeskStats,
   getMyPlace,
   grantPlan,
@@ -10,6 +11,8 @@ import {
   replyAppeal,
   saveStaffNote,
   searchUsers,
+  sendAppealReply,
+  skipAppeal,
   listUserLedger,
   setOwnerEmail,
   setStaffRole,
@@ -23,7 +26,9 @@ import {
   type MyPlace,
 } from "@/lib/admin-room";
 import { ROOM_PLANS } from "@/lib/room-plans";
-import { ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
+import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
+import { BrandMark } from "@/components/brand-mark";
+import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PaySettings } from "@/components/pay-settings";
 import { pushToast } from "@/components/toast";
 
@@ -46,6 +51,8 @@ export function AdminDesk() {
   const [appeals, setAppeals] = useState<AppealRow[]>([]);
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
+  const [tab, setTab] = useState<"viec" | "so-do" | "tien">("viec");
+  const [replyText, setReplyText] = useState("");
 
   async function refreshPlace() {
     const next = await getMyPlace();
@@ -53,7 +60,7 @@ export function AdminDesk() {
     if (next.role) {
       setStats(await getDeskStats());
       setAppeals(await listAppeals());
-      if (roleAtLeast(next.role, "chu")) setAudit(await listAudit());
+      setAudit(await listAudit());
     }
   }
 
@@ -83,7 +90,7 @@ export function AdminDesk() {
       if (place?.role) {
         setStats(await getDeskStats());
         setAppeals(await listAppeals());
-        if (roleAtLeast(place.role, "chu")) setAudit(await listAudit());
+        setAudit(await listAudit());
       }
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Không thực hiện được.");
@@ -94,16 +101,55 @@ export function AdminDesk() {
 
   const role = place?.role ?? null;
 
+  async function openByEmail(email: string) {
+    const found = await searchUsers({ data: email });
+    setUsers(found);
+    const user = found.find((item) => item.email.toLowerCase() === email.toLowerCase()) ?? found[0];
+    if (!user) return;
+    setPicked(user);
+    setNote(user.note);
+    setReason(user.reason);
+    setLedger(await listUserLedger({ data: user.id }));
+    setTab("viec");
+  }
+
+  useEffect(() => {
+    function onOpen(event: Event) {
+      const email = (event as CustomEvent<string>).detail;
+      if (!email) return;
+      void openByEmail(email).catch(() => undefined);
+    }
+    window.addEventListener("tyzo-open-user", onOpen);
+    return () => window.removeEventListener("tyzo-open-user", onOpen);
+  }, []);
+
+  if (!place) {
+    return (
+      <div className="admin-boot">
+        <BrandMark small title="TyZo Sub" />
+        <p className="text-sm text-muted">Đang mở trang Admin</p>
+        {notice && (
+          <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
+            Đăng nhập
+          </Link>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-1 py-2">
-      <p className="text-sm text-muted">{role ? `Quyền của bạn: ${ROLE_LABEL[role]}` : "Trang Admin tách khỏi phòng dịch."}</p>
-      {!place && notice && (
-        <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
-          Đăng nhập
-        </Link>
+      {role ? <RoleChip role={role} /> : <p className="text-sm text-muted">Không có quyền vào trang này.</p>}
+      {role && (
+        <div className="flex gap-2">
+          <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
+          <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
+          <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>
+        </div>
       )}
-      {place && !role && <p className="text-sm text-muted">Không có quyền vào trang này.</p>}
-      {role && stats && (
+      {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
+      {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
+      {role && tab === "viec" && stats && (
         <section className="grid grid-cols-2 gap-2">
           <Stat label="Đang online" value={stats.online} hint="3 phút qua" />
           <Stat label="Tổng đăng ký" value={stats.users} />
@@ -116,7 +162,7 @@ export function AdminDesk() {
           <Stat label="Yêu cầu chờ" value={stats.waiting} />
         </section>
       )}
-      {role && (
+      {role && tab === "viec" && (
         <>
           <h2 className="font-semibold">Tài khoản</h2>
           <p className="text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Chủ được cấm.</p>
@@ -188,15 +234,15 @@ export function AdminDesk() {
               <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => saveStaffNote({ data: { userId: picked.id, note } }), "Đã lưu ghi chú.")}>
                 Lưu ghi chú
               </button>
-              <label className="grid gap-1 text-sm">
-                Mật khẩu tạm
-                <input value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-              </label>
-              <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setTempPassword({ data: { userId: picked.id, password } }), "Đã đặt mật khẩu tạm. Hãy gửi cho họ.")}>
-                Đặt mật khẩu tạm
-              </button>
               {roleAtLeast(role, "quan-ly") && (
                 <>
+                  <label className="grid gap-1 text-sm">
+                    Mật khẩu tạm
+                    <input value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                  </label>
+                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setTempPassword({ data: { userId: picked.id, password } }), "Đã đặt mật khẩu tạm. Hãy gửi cho họ.")}>
+                    Đặt mật khẩu tạm
+                  </button>
                   <label className="grid gap-1 text-sm">
                     Lý do khóa hoặc cấm
                     <input value={reason} onChange={(event) => setReason(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
@@ -255,39 +301,57 @@ export function AdminDesk() {
           )}
           <section className="space-y-2">
             <h2 className="font-semibold">Yêu cầu</h2>
-            {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu.</p>}
+            {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}
             {appeals.map((item) => (
               <article key={item.id} className="rounded-xl border border-line px-3 py-2 text-sm">
-                <p className="font-medium">{item.email}</p>
-                <p className="mt-1">{item.body}</p>
-                <p className="mt-1 text-muted">{item.status === "cho" ? "Đang chờ" : item.status === "mo" ? "Đã mở lại" : "Đã từ chối"}{item.reply ? ` · ${item.reply}` : ""}</p>
-                {item.status === "cho" && roleAtLeast(role, "quan-ly") && (
-                  <div className="mt-2 flex gap-2">
-                    <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => replyAppeal({ data: { id: item.id, status: "mo", reply: "Đã mở lại tài khoản." } }), "Đã ghi là mở lại.")}>
-                      Mở lại
-                    </button>
-                    <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => replyAppeal({ data: { id: item.id, status: "tu-choi", reply: "Chưa đủ lý do để mở." } }), "Đã từ chối.")}>
-                      Từ chối
-                    </button>
+                <button type="button" className="w-full text-left" onClick={() => void openByEmail(item.email)}>
+                  <span className="block font-medium">{item.email}</span>
+                  <span className="mt-1 block">{item.body}</span>
+                  <span className="mt-1 block text-muted">
+                    {item.status === "cho" ? "Đang chờ" : item.status === "mo" ? "Đã mở lại" : "Đã từ chối"}
+                    {item.reply ? ` · ${item.reply}` : ""} · {ROLE_LABEL[item.holdRole as "ho-tro"] || "Hỗ trợ"}
+                  </span>
+                </button>
+                {item.status === "cho" && (
+                  <div className="mt-2 grid gap-2">
+                    <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => sendAppealReply({ data: { id: item.id, reply: replyText } }), "Đã gửi câu trả lời.")}>
+                        Trả lời
+                      </button>
+                      <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => escalateAppeal({ data: item.id }), "Đã chuyển cấp trên.")}>
+                        Báo cấp trên
+                      </button>
+                      {canSkipToOwner(new Date(item.touchedAt).getTime(), Date.now(), item.holdRole) && (
+                        <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => skipAppeal({ data: item.id }), "Đã báo Chủ.")}>
+                          Báo Chủ
+                        </button>
+                      )}
+                      {roleAtLeast(role, "quan-ly") && (
+                        <>
+                          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => replyAppeal({ data: { id: item.id, status: "mo", reply: replyText || "Đã mở lại tài khoản." } }), "Đã mở lại.")}>
+                            Mở lại
+                          </button>
+                          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => replyAppeal({ data: { id: item.id, status: "tu-choi", reply: replyText || "Chưa thể làm việc này." } }), "Đã từ chối.")}>
+                            Từ chối
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 )}
               </article>
             ))}
           </section>
-          {roleAtLeast(role, "chu") && (
-            <section className="space-y-2">
-              <h2 className="font-semibold">Nhật ký</h2>
-              {audit.length === 0 && <p className="text-sm text-muted">Chưa có thao tác.</p>}
-              <ul className="space-y-1 text-sm text-muted">
-                {audit.map((item) => (
-                  <li key={item.id}>
-                    {item.action} · {item.note}
-                    {item.createdAt ? ` · ${new Date(item.createdAt).toLocaleString("vi-VN")}` : ""}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <section className="space-y-2">
+            <h2 className="font-semibold">Lịch sử</h2>
+            {audit.length === 0 && <p className="text-sm text-muted">Chưa có thao tác ở cấp bạn được xem.</p>}
+            <ul className="space-y-1 text-sm text-muted">
+              {audit.map((item) => (
+                <li key={item.id}>{logLine(item)}</li>
+              ))}
+            </ul>
+          </section>
           {roleAtLeast(role, "chu") && (
             <form
               className="grid gap-2 rounded-2xl border border-line bg-card p-4"
@@ -317,11 +381,42 @@ export function AdminDesk() {
   );
 }
 
+function RoleChip({ role }: { role: "ho-tro" | "quan-ly" | "chu" }) {
+  return <p className={"role-chip role-" + role}>{ROLE_LABEL[role]}</p>;
+}
+
+function TabButton({
+  current,
+  id,
+  onPick,
+  children,
+}: {
+  current: string;
+  id: "viec" | "so-do" | "tien";
+  onPick: (id: "viec" | "so-do" | "tien") => void;
+  children: string;
+}) {
+  return (
+    <button type="button" className={"min-tap rounded-full px-3 text-sm " + (current === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => onPick(id)}>
+      {children}
+    </button>
+  );
+}
+
+function logLine(item: AuditRow) {
+  const time = item.createdAt ? new Date(item.createdAt) : null;
+  const clock = time && !Number.isNaN(time.getTime())
+    ? time.toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", day: "2-digit", month: "2-digit", year: "numeric" })
+    : "";
+  const rank = item.actorRole === "ho-tro" || item.actorRole === "quan-ly" || item.actorRole === "chu" ? ROLE_LABEL[item.actorRole] : "Người dùng";
+  return [clock, rank, item.actorEmail, item.action, item.targetEmail, item.note].filter(Boolean).join(" · ");
+}
+
 function Stat({ label, value, hint }: { label: string; value: number; hint?: string }) {
   return (
     <article className="rounded-xl border border-line bg-card px-3 py-2">
       <p className="text-xs text-muted">{label}</p>
-      <p className="text-xl font-semibold">{value}</p>
+      <p key={value} className="stat-num text-xl font-semibold">{value}</p>
       {hint && <p className="text-xs text-muted">{hint}</p>}
     </article>
   );

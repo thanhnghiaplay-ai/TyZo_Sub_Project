@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
-import { isStaffRole, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
+import { canSeeLog, isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 
 export type MyPlace = {
   role: StaffRole | null;
@@ -39,6 +39,8 @@ export type AppealRow = {
   status: string;
   reply: string;
   createdAt: string;
+  holdRole: string;
+  touchedAt: string;
 };
 
 export type AuditRow = {
@@ -47,6 +49,9 @@ export type AuditRow = {
   targetId: string | null;
   note: string;
   createdAt: string;
+  actorEmail: string;
+  actorRole: string;
+  targetEmail: string;
 };
 
 function stamp(value: unknown) {
@@ -92,12 +97,46 @@ async function requireRole(userId: string, need: StaffRole) {
 }
 
 async function writeAudit(actorId: string, action: string, targetId: string | null, note: string) {
+  const place = await placeOf(actorId);
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();
+  let targetEmail = "";
+  if (targetId) {
+    const people = await sql<{ email: string }>`select email from "user" where id = ${targetId}`;
+    targetEmail = people[0]?.email ?? "";
+    if (!targetEmail && /^\d+$/.test(targetId)) {
+      const appeal = await sql<{ email: string }>`select email from room_appeals where id = ${Number(targetId)}`;
+      targetEmail = appeal[0]?.email ?? "";
+    }
+  }
   await sql`
-    insert into room_audit (actor_id, action, target_id, note)
-    values (${actorId}, ${action}, ${targetId}, ${note.slice(0, 500)})
+    insert into room_audit (actor_id, action, target_id, note, actor_email, actor_role, target_email)
+    values (
+      ${actorId},
+      ${action},
+      ${targetId},
+      ${note.slice(0, 500)},
+      ${place.email},
+      ${place.role ?? "user"},
+      ${targetEmail}
+    )
   `;
+}
+
+async function assertLower(actorId: string, targetUserId: string) {
+  const actor = await placeOf(actorId);
+  const { getSql } = await import("@/lib/db");
+  const { emailIsOwner } = await import("@/lib/admin-allow.server");
+  const sql = await getSql();
+  const target = await sql<{ email: string; role: string | null }>`
+    select u.email, s.role from "user" u
+    left join room_staff s on s.user_id = u.id
+    where u.id = ${targetUserId}
+  `;
+  if (!target.length) throw new Error("Không thấy tài khoản.");
+  if (emailIsOwner(target[0].email)) throw new Error("Không xử lý tài khoản Chủ.");
+  const targetRole = isStaffRole(target[0].role) ? target[0].role : null;
+  if (!outranks(actor.role, targetRole)) throw new Error("Không xử lý người cùng cấp hoặc cấp trên.");
 }
 
 export const getMyPlace = createServerFn({ method: "GET" })
@@ -271,6 +310,7 @@ export const saveStaffNote = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     if (!data.userId) throw new Error("Thiếu tài khoản.");
     await requireRole(context.userId, "ho-tro");
+    await assertLower(context.userId, data.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`insert into room_accounts (user_id) values (${data.userId}) on conflict (user_id) do nothing`;
@@ -288,7 +328,8 @@ export const setTempPassword = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }) => {
     if (!data.userId) throw new Error("Thiếu tài khoản.");
-    await requireRole(context.userId, "ho-tro");
+    await requireRole(context.userId, "quan-ly");
+    await assertLower(context.userId, data.userId);
     const { hashPassword } = await import("better-auth/crypto");
     const hash = await hashPassword(data.password);
     const { getSql } = await import("@/lib/db");
@@ -330,7 +371,7 @@ export const setUserStatus = createServerFn({ method: "POST" })
     if (!target.length) throw new Error("Không thấy tài khoản.");
     if (emailIsOwner(target[0].email)) throw new Error("Không xử lý tài khoản Chủ.");
     const targetRole = isStaffRole(target[0].role) ? target[0].role : null;
-    if (targetRole && actor.role && !roleAtLeast(actor.role, targetRole)) throw new Error("Không xử lý người có quyền cao hơn.");
+    if (!outranks(actor.role, targetRole)) throw new Error("Không xử lý người cùng cấp hoặc cấp trên.");
     if (targetRole === "chu") throw new Error("Không khóa hoặc cấm Chủ.");
     const current = asStanding(target[0].status);
     if (data.status === "banned" || current === "banned") {
@@ -356,6 +397,7 @@ export const grantPlan = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     if (!data.userId) throw new Error("Thiếu tài khoản.");
     await requireRole(context.userId, "quan-ly");
+    await assertLower(context.userId, data.userId);
     const plan = roomPlan(data.planId)!;
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -442,17 +484,32 @@ export const listAppeals = createServerFn({ method: "GET" })
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const rows = await sql<{ id: number; email: string; body: string; status: string; reply: string; created_at: unknown }>`
-      select id, email, body, status, reply, created_at from room_appeals order by id desc limit 30
+    const rows = await sql<{
+      id: number;
+      email: string;
+      body: string;
+      status: string;
+      reply: string;
+      created_at: unknown;
+      hold_role: string;
+      touched_at: unknown;
+    }>`
+      select id, email, body, status, reply, created_at, hold_role, touched_at
+      from room_appeals order by id desc limit 40
     `;
-    return rows.map((row) => ({
-      id: row.id,
-      email: row.email,
-      body: row.body,
-      status: row.status,
-      reply: row.reply,
-      createdAt: stamp(row.created_at),
-    }));
+    const place = await placeOf(context.userId);
+    return rows
+      .filter((row) => place.role === "chu" || row.hold_role === "ho-tro" || (place.role === "quan-ly" && row.hold_role !== "chu"))
+      .map((row) => ({
+        id: row.id,
+        email: row.email,
+        body: row.body,
+        status: row.status,
+        reply: row.reply,
+        createdAt: stamp(row.created_at),
+        holdRole: row.hold_role || "ho-tro",
+        touchedAt: stamp(row.touched_at || row.created_at),
+      }));
   });
 
 export const replyAppeal = createServerFn({ method: "POST" })
@@ -468,7 +525,7 @@ export const replyAppeal = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const updated = await sql<{ id: number }>`
-      update room_appeals set status = ${data.status}, reply = ${data.reply}
+      update room_appeals set status = ${data.status}, reply = ${data.reply}, touched_at = now()
       where id = ${data.id} and status = 'cho'
       returning id
     `;
@@ -490,22 +547,38 @@ export const replyAppeal = createServerFn({ method: "POST" })
 export const listAudit = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<AuditRow[]> => {
-    await requireRole(context.userId, "chu");
+    await requireRole(context.userId, "ho-tro");
+    const place = await placeOf(context.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const rows = await sql<{ id: number; action: string; target_id: string | null; note: string; created_at: unknown }>`
-      select id, action, target_id, note, created_at from room_audit order by id desc limit 30
+    const rows = await sql<{
+      id: number;
+      action: string;
+      target_id: string | null;
+      note: string;
+      created_at: unknown;
+      actor_email: string;
+      actor_role: string;
+      target_email: string;
+    }>`
+      select id, action, target_id, note, created_at, actor_email, actor_role, target_email
+      from room_audit order by id desc limit 80
     `;
-    return rows.map((row) => ({
-      id: row.id,
-      action: row.action,
-      targetId: row.target_id,
-      note: row.note,
-      createdAt: stamp(row.created_at),
-    }));
+    return rows
+      .filter((row) => place.role && canSeeLog(place.role, row.actor_role || "user"))
+      .map((row) => ({
+        id: row.id,
+        action: row.action,
+        targetId: row.target_id,
+        note: row.note,
+        createdAt: stamp(row.created_at),
+        actorEmail: row.actor_email || "",
+        actorRole: row.actor_role || "user",
+        targetEmail: row.target_email || "",
+      }));
   });
 
-export type NoticeRow = { id: number; title: string; body: string; createdAt: string; read: boolean };
+export type NoticeRow = { id: number; title: string; body: string; createdAt: string; read: boolean; appealId: number | null };
 
 export const listMyNotices = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -514,10 +587,12 @@ export const listMyNotices = createServerFn({ method: "GET" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const staff = Boolean(place.role);
-    const rows = await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown }>`
-      select id, title, body, created_at, read_at from room_notices
+    const rank = place.role ?? "";
+    const rows = await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null }>`
+      select id, title, body, created_at, read_at, appeal_id from room_notices
       where (kind = 'user' and user_id = ${context.userId})
          or (${staff} and kind = 'staff')
+         or (kind = ${rank})
       order by id desc
       limit 20
     `;
@@ -527,6 +602,7 @@ export const listMyNotices = createServerFn({ method: "GET" })
       body: row.body,
       createdAt: stamp(row.created_at),
       read: Boolean(row.read_at),
+      appealId: row.appeal_id,
     }));
     return { unread: items.filter((item) => !item.read).length, items };
   });
@@ -538,20 +614,25 @@ export const markNoticesRead = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const staff = Boolean(place.role);
+    const rank = place.role ?? "";
     await sql`
       update room_notices set read_at = now()
-      where read_at is null and ((kind = 'user' and user_id = ${context.userId}) or (${staff} and kind = 'staff'))
+      where read_at is null and (
+        (kind = 'user' and user_id = ${context.userId})
+        or (${staff} and kind = 'staff')
+        or kind = ${rank}
+      )
     `;
     return { ok: true as const };
   });
 
-async function writeNotice(kind: "user" | "staff", title: string, body: string, userId: string | null) {
+async function writeNotice(kind: string, title: string, body: string, userId: string | null, appealId: number | null = null) {
   try {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`
-      insert into room_notices (user_id, kind, title, body)
-      values (${userId}, ${kind}, ${title.slice(0, 120)}, ${body.slice(0, 500)})
+      insert into room_notices (user_id, kind, title, body, appeal_id)
+      values (${userId}, ${kind}, ${title.slice(0, 120)}, ${body.slice(0, 500)}, ${appealId})
     `;
   } catch {
     // Bảng có sau lần xây mới.
@@ -569,7 +650,7 @@ async function insertAppeal(email: string, body: string, userId: string | null) 
     insert into room_appeals (user_id, email, body)
     values (${userId}, ${email}, ${body})
   `;
-  await writeNotice("staff", "Yêu cầu mới", `${email}: ${body.slice(0, 140)}`, null);
+  await writeNotice("ho-tro", "Yêu cầu mới", `${email}: ${body.slice(0, 140)}`, null);
 }
 
 export const submitAppeal = createServerFn({ method: "POST" })
@@ -583,6 +664,7 @@ export const submitAppeal = createServerFn({ method: "POST" })
     const place = await placeOf(context.userId);
     if (!place.email) throw new Error("Không thấy email.");
     await insertAppeal(place.email, data, context.userId);
+    await writeAudit(context.userId, "gui-yeu-cau", context.userId, data);
     return { ok: true };
   });
 
@@ -601,3 +683,212 @@ export const submitPublicAppeal = createServerFn({ method: "POST" })
     await insertAppeal(data.email, data.body, user[0]?.id ?? null);
     return { ok: true };
   });
+
+export const sendAppealReply = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { id: number; reply: string }) => {
+    const reply = clip(input.reply ?? "", 500);
+    if (reply.length < 2) throw new Error("Hãy ghi câu trả lời.");
+    return { id: Number(input.id), reply };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const updated = await sql<{ user_id: string | null }>`
+      update room_appeals set reply = ${data.reply}, touched_at = now()
+      where id = ${data.id} and status = 'cho'
+      returning user_id
+    `;
+    if (!updated.length) throw new Error("Yêu cầu này đã được trả lời.");
+    await writeNotice("user", "Đã có trả lời", data.reply, updated[0].user_id, data.id);
+    await writeAudit(context.userId, "tra-loi", String(data.id), data.reply);
+    return { ok: true };
+  });
+
+export const escalateAppeal = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: number) => Number(id))
+  .handler(async ({ context, data }) => {
+    const place = await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ hold_role: string; status: string; email: string; body: string; reply: string }>`
+      select hold_role, status, email, body, reply from room_appeals where id = ${data}
+    `;
+    if (!rows.length || rows[0].status !== "cho") throw new Error("Yêu cầu này không còn chờ.");
+    const hold = isStaffRole(rows[0].hold_role) ? rows[0].hold_role : "ho-tro";
+    if (hold === "chu") throw new Error("Việc đang ở Chủ.");
+    if (place.role === "ho-tro" && hold !== "ho-tro") throw new Error("Việc này đã chuyển cấp trên.");
+    const managers = await sql<{ n: number }>`select count(*)::int as n from room_staff where role = 'quan-ly'`;
+    const next = place.role === "ho-tro" ? nextHold(hold, managers[0]?.n ?? 0) : "chu";
+    await sql`update room_appeals set hold_role = ${next}, touched_at = now() where id = ${data}`;
+    const pack = `${rows[0].email}\n${rows[0].body}\nĐã trả lời: ${rows[0].reply || "chưa"}`;
+    await writeNotice(next, "Việc chuyển lên", pack, null, data);
+    await writeAudit(context.userId, "bao-cap", String(data), pack);
+    return { next };
+  });
+
+export const skipAppeal = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: number) => Number(id))
+  .handler(async ({ context, data }) => {
+    const place = await placeOf(context.userId);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ hold_role: string; status: string; email: string; body: string; reply: string; user_id: string | null; touched_at: unknown }>`
+      select hold_role, status, email, body, reply, user_id, touched_at from room_appeals where id = ${data}
+    `;
+    if (!rows.length || rows[0].status !== "cho") throw new Error("Yêu cầu này không còn chờ.");
+    const hold = rows[0].hold_role || "ho-tro";
+    const touched = new Date(stamp(rows[0].touched_at)).getTime();
+    const { canSkipToOwner } = await import("@/lib/staff-role");
+    if (!canSkipToOwner(touched, Date.now(), hold)) throw new Error("Chưa đủ 2 giờ kể từ lần xử lý gần nhất.");
+    const mine = rows[0].user_id === context.userId || rows[0].email.toLowerCase() === place.email.toLowerCase();
+    const staff = place.role === "chu" || place.role === hold || (place.role != null && outranks(place.role, isStaffRole(hold) ? hold : "ho-tro"));
+    if (!mine && !staff) throw new Error("Không đủ quyền để báo Chủ.");
+    await sql`update room_appeals set hold_role = 'chu', touched_at = now() where id = ${data}`;
+    const pack = `${rows[0].email}\n${rows[0].body}\nĐã trả lời: ${rows[0].reply || "chưa"}`;
+    await writeNotice("chu", "Báo vượt cấp", pack, null, data);
+    await writeAudit(context.userId, "bao-chu", String(data), pack);
+    return { ok: true };
+  });
+
+export const listOwnAppeals = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const place = await placeOf(context.userId);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ id: number; status: string; hold_role: string; touched_at: unknown; reply: string }>`
+      select id, status, hold_role, touched_at, reply from room_appeals
+      where user_id = ${context.userId} or lower(email) = ${place.email.toLowerCase()}
+      order by id desc limit 5
+    `;
+    return rows.map((row) => ({
+      id: row.id,
+      status: row.status,
+      holdRole: row.hold_role || "ho-tro",
+      touchedAt: stamp(row.touched_at),
+      reply: row.reply,
+    }));
+  });
+
+export type OrgCard = {
+  id: string;
+  email: string;
+  name: string;
+  nickname: string;
+  role: StaffRole | "user";
+  actions: number;
+};
+
+export const getOrg = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<{ cards: OrgCard[]; users: number }> => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const { ownerEmails } = await import("@/lib/admin-allow.server");
+    const sql = await getSql();
+    const owners = new Set(ownerEmails().map((email) => email.toLowerCase()));
+    const people = await sql<{ id: string; email: string; name: string; role: string | null; nickname: string | null }>`
+      select u.id, u.email, u.name, s.role, s.nickname
+      from "user" u
+      left join room_staff s on s.user_id = u.id
+    `;
+    const counts = await sql<{ actor_id: string; n: number }>`
+      select actor_id, count(*)::int as n from room_audit
+      where created_at > date_trunc('month', now())
+      group by actor_id
+    `;
+    const byActor = new Map(counts.map((row) => [row.actor_id, row.n]));
+    const cards = people
+      .filter((person) => isStaffRole(person.role) || owners.has(person.email.toLowerCase()))
+      .map((person) => ({
+        id: person.id,
+        email: person.email,
+        name: person.name,
+        nickname: person.nickname || "",
+        role: (owners.has(person.email.toLowerCase()) ? "chu" : isStaffRole(person.role) ? person.role : "user") as OrgCard["role"],
+        actions: byActor.get(person.id) ?? 0,
+      }));
+    return { cards, users: Math.max(0, people.length - cards.length) };
+  });
+
+export const setNickname = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { userId: string; nickname: string }) => ({
+    userId: input.userId?.trim(),
+    nickname: clip(input.nickname ?? "", 40),
+  }))
+  .handler(async ({ context, data }) => {
+    if (!data.userId) throw new Error("Thiếu tài khoản.");
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const existing = await sql<{ role: string }>`select role from room_staff where user_id = ${data.userId}`;
+    if (existing.length) {
+      await sql`update room_staff set nickname = ${data.nickname} where user_id = ${data.userId}`;
+    } else {
+      await sql`insert into room_staff (user_id, role, nickname) values (${data.userId}, 'chu', ${data.nickname})`;
+    }
+    await writeAudit(context.userId, "ten-goi-nho", data.userId, data.nickname || "Xóa tên gợi nhớ");
+    return { ok: true };
+  });
+
+export type MoneyPoint = { bucket: string; revenue: number; cost: number };
+
+export const getMoney = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((span: string) => (span === "week" || span === "month" || span === "year" ? span : "day"))
+  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number }> => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
+    const revenue = await sql<{ bucket: string; amount: number }>`
+      select to_char(date_trunc(${data}, created_at), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      from room_ledger
+      where kind = 'nap' and created_at > now() - ${window}::interval
+      group by 1 order by 1
+    `;
+    const costs = await sql<{ bucket: string; amount: number }>`
+      select to_char(date_trunc(${data}, spent_on), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      from room_costs
+      where spent_on > now() - ${window}::interval
+      group by 1 order by 1
+    `;
+    const buckets = new Map<string, MoneyPoint>();
+    for (const row of revenue) buckets.set(row.bucket, { bucket: row.bucket, revenue: row.amount, cost: 0 });
+    for (const row of costs) {
+      const point = buckets.get(row.bucket) ?? { bucket: row.bucket, revenue: 0, cost: 0 };
+      point.cost = row.amount;
+      buckets.set(row.bucket, point);
+    }
+    const points = [...buckets.values()];
+    return {
+      points,
+      revenue: points.reduce((sum, point) => sum + point.revenue, 0),
+      cost: points.reduce((sum, point) => sum + point.cost, 0),
+    };
+  });
+
+export const addCost = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { day: string; label: string; amount: number }) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input.day || "")) throw new Error("Ngày không đúng.");
+    const label = clip(input.label ?? "", 80);
+    if (label.length < 2) throw new Error("Hãy ghi khoản chi.");
+    const amount = Math.round(Number(input.amount));
+    if (!Number.isFinite(amount) || amount < 1) throw new Error("Số tiền không đúng.");
+    return { day: input.day, label, amount };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`insert into room_costs (spent_on, label, amount) values (${data.day}, ${data.label}, ${data.amount})`;
+    await writeAudit(context.userId, "chi-phi", null, `${data.day} ${data.label} ${data.amount}`);
+    return { ok: true };
+  });
+
