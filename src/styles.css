@@ -787,6 +787,157 @@
 .stat-wait { border-color: #e39a3c; }
 .stat-wait .stat-num { color: #e39a3c; }
 
+.account-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.account-card[data-rank="user"] { --badge: #9aa6b2; --badge-ink: #10161c; }
+.account-card[data-rank="ho-tro"] { --badge: #8eb7ee; --badge-ink: #10161c; }
+.account-card[data-rank="quan-ly"] { --badge: #e7b63a; --badge-ink: #1c1608; }
+.account-card[data-rank="chu"] { --badge: #f3d48a; --badge-ink: #1c1608; }
+
+.account-card[data-badge="ribbon"],
+.account-card[data-badge="pill"],
+.account-card[data-badge="stamp"],
+.account-card[data-badge="fold"],
+.account-card[data-badge="frame"] {
+  padding-right: 5.4rem;
+}
+
+.account-card[data-badge="rail"] { padding-left: 2.5rem; }
+.account-card[data-badge="sash"] { padding-right: 2.5rem; }
+.account-card[data-badge="banner"] { padding-top: 2.35rem; }
+.account-card[data-badge="ticket"] { padding-bottom: 2.5rem; }
+
+.account-card[data-badge="frame"] {
+  border-color: var(--badge);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--badge) 45%, transparent);
+}
+
+.role-mark {
+  position: absolute;
+  z-index: 1;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.15;
+  pointer-events: none;
+}
+
+.role-mark b { font-weight: 700; }
+
+.role-mark-ribbon {
+  top: 1.15rem;
+  right: -0.35rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 0.4rem;
+  background: var(--badge);
+  color: var(--badge-ink);
+  transform: rotate(12deg);
+  box-shadow: 0 6px 14px rgb(0 0 0 / 28%);
+}
+
+.account-card[data-rank="chu"] .role-mark-ribbon,
+.account-card[data-rank="chu"] .role-mark-stamp {
+  box-shadow: 0 0 16px rgb(231 182 58 / 42%);
+}
+
+.role-mark-pill {
+  top: 0.8rem;
+  right: 0.75rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  background: var(--badge);
+  color: var(--badge-ink);
+}
+
+.role-mark-stamp {
+  top: 0.45rem;
+  right: 0.4rem;
+  display: grid;
+  width: 4.3rem;
+  height: 4.3rem;
+  place-items: center;
+  border: 2px solid var(--badge);
+  border-radius: 999px;
+  color: var(--badge);
+  text-align: center;
+  transform: rotate(-12deg);
+}
+
+.role-mark-stamp b { font-size: 0.68rem; }
+
+.role-mark-rail,
+.role-mark-sash {
+  top: 0;
+  bottom: 0;
+  display: grid;
+  width: 1.7rem;
+  place-items: center;
+  background: var(--badge);
+  color: var(--badge-ink);
+  writing-mode: vertical-rl;
+}
+
+.role-mark-rail { left: 0; }
+.role-mark-sash { right: 0; }
+
+.role-mark-fold {
+  top: 0;
+  right: 0;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: linear-gradient(225deg, var(--badge) 50%, transparent 50%);
+  color: var(--badge-ink);
+}
+
+.role-mark-fold b {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.05rem;
+  font-size: 0.62rem;
+  transform: rotate(45deg);
+}
+
+.role-mark-banner {
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid;
+  height: 1.7rem;
+  place-items: center;
+  background: var(--badge);
+  color: var(--badge-ink);
+}
+
+.role-mark-chip {
+  position: static;
+  display: inline-flex;
+  margin-bottom: 0.45rem;
+  border: 1px solid var(--badge);
+  border-radius: 999px;
+  padding: 0.22rem 0.55rem;
+  color: var(--badge);
+}
+
+.role-mark-frame {
+  top: 0.75rem;
+  right: 0.7rem;
+  border: 1px solid var(--badge);
+  border-radius: 0.45rem;
+  padding: 0.28rem 0.5rem;
+  color: var(--badge);
+}
+
+.role-mark-ticket {
+  right: 0.75rem;
+  bottom: 0.7rem;
+  border-radius: 0.35rem 0.75rem;
+  background: var(--badge);
+  padding: 0.3rem 0.6rem;
+  color: var(--badge-ink);
+}
+
 .org-card {
   border: 1px solid var(--color-line);
   border-radius: 1rem;

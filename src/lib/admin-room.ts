@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
 import { canSeeLog, isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
+import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
 
 export type MyPlace = {
   role: StaffRole | null;
@@ -904,4 +905,37 @@ export const addCost = createServerFn({ method: "POST" })
     await writeAudit(context.userId, "chi-phi", null, `${data.day} ${data.label} ${data.amount}`);
     return { ok: true };
   });
+
+export const getBadgeStyle = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async () => {
+    try {
+      const { getSql } = await import("@/lib/db");
+      const { badgeStyle: readBadge } = await import("@/lib/badge-styles");
+      const sql = await getSql();
+      const rows = await sql<{ value: string }>`select value from room_settings where key = 'badge'`;
+      return readBadge(rows[0]?.value);
+    } catch {
+      return "ribbon" as const;
+    }
+  });
+
+export const setBadgeStyle = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    if (!BADGE_STYLES.some((item) => item.id === id)) throw new Error("Kiểu thẻ không có.");
+    return badgeStyle(id);
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      insert into room_settings (key, value) values ('badge', ${data})
+      on conflict (key) do update set value = ${data}
+    `;
+    await writeAudit(context.userId, "doi-the-quyen", null, data);
+    return { ok: true as const, style: data };
+  });
+
 

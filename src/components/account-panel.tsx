@@ -2,7 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient, signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { getMyPlace, listOwnAppeals, skipAppeal, submitAppeal, type MyPlace } from "@/lib/admin-room";
+import { getBadgeStyle, getMyPlace, listOwnAppeals, skipAppeal, submitAppeal, type MyPlace } from "@/lib/admin-room";
+import { AccountCard } from "@/components/role-mark";
+import type { BadgeStyleId } from "@/lib/badge-styles";
 import { canSkipToOwner } from "@/lib/staff-role";
 import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
@@ -24,6 +26,7 @@ export function AccountPanel() {
   const [name, setName] = useState("");
   const [leaving, setLeaving] = useState(false);
   const [place, setPlace] = useState<MyPlace | null>(null);
+  const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [appeal, setAppeal] = useState("");
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
   const [reload, setReload] = useState(0);
@@ -43,6 +46,7 @@ export function AccountPanel() {
     let gone = false;
     const id = deviceId();
     void getMyPlace().then((next) => { if (!gone) setPlace(next); }).catch(() => {});
+    void getBadgeStyle().then((next) => { if (!gone) setBadge(next); }).catch(() => {});
     void listOwnAppeals().then((rows) => { if (!gone) setOwnAppeals(rows); }).catch(() => {});
     void (id ? claimTrialDevice({ data: id }) : getRoomAccount())
       .then((next) => {
@@ -128,7 +132,7 @@ export function AccountPanel() {
       )}
       {user && !user.isDevFallback && (
         <>
-          <article className="rounded-2xl border border-line bg-card p-4">
+          <AccountCard rank={place?.role ?? null} styleId={badge}>
             <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>
@@ -150,7 +154,7 @@ export function AccountPanel() {
             >
               {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
             </button>
-          </article>
+          </AccountCard>
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>

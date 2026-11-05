@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   escalateAppeal,
+  getBadgeStyle,
   getDeskStats,
   getMyPlace,
   grantPlan,
@@ -14,6 +15,7 @@ import {
   sendAppealReply,
   skipAppeal,
   listUserLedger,
+  setBadgeStyle,
   setOwnerEmail,
   setStaffRole,
   setTempPassword,
@@ -27,7 +29,10 @@ import {
 } from "@/lib/admin-room";
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
+import { BadgeBoard } from "@/components/badge-board";
+import { AccountCard } from "@/components/role-mark";
 import { BrandMark } from "@/components/brand-mark";
+import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PaySettings } from "@/components/pay-settings";
 import { pushToast } from "@/components/toast";
@@ -51,6 +56,7 @@ export function AdminDesk() {
   const [appeals, setAppeals] = useState<AppealRow[]>([]);
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
+  const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [tab, setTab] = useState<"viec" | "so-do" | "tien">("viec");
   const [replyText, setReplyText] = useState("");
   const [rejectReason, setRejectReason] = useState("");
@@ -62,6 +68,7 @@ export function AdminDesk() {
       setStats(await getDeskStats());
       setAppeals(await listAppeals());
       setAudit(await listAudit());
+      setBadge(badgeStyle(await getBadgeStyle()));
     }
   }
 
@@ -177,6 +184,18 @@ export function AdminDesk() {
           </div>
         </section>
       )}
+      {role === "chu" && tab === "viec" && (
+        <BadgeBoard
+          current={badge}
+          busy={busy}
+          onPick={(id) => {
+            void run(async () => {
+              await setBadgeStyle({ data: id });
+              setBadge(id);
+            }, "Đã đổi kiểu thẻ quyền.");
+          }}
+        />
+      )}
       {role && tab === "viec" && (
         <>
           <h2 className="font-semibold">Tài khoản</h2>
@@ -226,7 +245,7 @@ export function AdminDesk() {
             ))}
           </ul>
           {picked && (
-            <article className="space-y-3 rounded-2xl border border-line bg-card p-4">
+            <AccountCard rank={picked.role} styleId={badge} className="space-y-3">
               <h2 className="font-semibold">{picked.email}</h2>
               <p className="text-sm text-muted">
                 Số dư {dong(picked.balance)}. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
@@ -312,7 +331,7 @@ export function AdminDesk() {
                   </button>
                 </div>
               )}
-            </article>
+            </AccountCard>
           )}
           <section className="space-y-2">
             <h2 className="font-semibold">Yêu cầu</h2>
