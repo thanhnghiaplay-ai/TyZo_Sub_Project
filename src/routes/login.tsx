@@ -9,6 +9,7 @@ import { COMMON_DOMAINS, mailProblem, withDomain } from "@/lib/mail-domains";
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
 const BEARER_KEY = "grok-auth.bearer-token";
+const REMEMBER_EMAIL = "tyzo-remember-email";
 
 function LoginPage() {
   const router = useRouter();
@@ -20,6 +21,15 @@ function LoginPage() {
       saved = "";
     }
     if (saved !== TERMS_VERSION) void router.navigate({ to: "/" });
+    try {
+      const savedEmail = localStorage.getItem(REMEMBER_EMAIL) || "";
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRemember(true);
+      }
+    } catch {
+      /* máy không cho lưu */
+    }
   }, [router]);
   const [mode, setMode] = useState<"in" | "up">("in");
   const [name, setName] = useState("");
@@ -27,6 +37,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [again, setAgain] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -48,6 +59,12 @@ function LoginPage() {
       setBusy(false);
       setNotice("Mật khẩu nhập lại chưa khớp.");
       return;
+    }
+    try {
+      if (remember) localStorage.setItem(REMEMBER_EMAIL, email.trim());
+      else localStorage.removeItem(REMEMBER_EMAIL);
+    } catch {
+      /* máy không cho lưu */
     }
     const result =
       mode === "up"
@@ -143,6 +160,23 @@ function LoginPage() {
               {showPassword ? "Ẩn" : "Hiện"}
             </button>
           </span>
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(event) => {
+              const next = event.target.checked;
+              setRemember(next);
+              try {
+                if (next) localStorage.setItem(REMEMBER_EMAIL, email.trim());
+                else localStorage.removeItem(REMEMBER_EMAIL);
+              } catch {
+                /* máy không cho lưu */
+              }
+            }}
+          />
+          Ghi nhớ email trên máy này
         </label>
         {mode === "up" && (
           <>

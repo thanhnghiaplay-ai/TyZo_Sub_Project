@@ -58,7 +58,7 @@ export type NarrationSettings = {
 };
 
 export const NARRATION_DEFAULT: NarrationSettings = {
-  enabled: false,
+  enabled: true,
   engine: "edge",
   rate: 1,
   pitch: 1,

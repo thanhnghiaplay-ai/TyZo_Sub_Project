@@ -60,6 +60,7 @@ export function AdminDesk() {
   const [tab, setTab] = useState<"viec" | "so-do" | "tien">("viec");
   const [replyText, setReplyText] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+  const [auditOpen, setAuditOpen] = useState(false);
 
   async function refreshPlace() {
     const next = await getMyPlace();
@@ -386,10 +387,17 @@ export function AdminDesk() {
             ))}
           </section>
           <section className="space-y-2">
-            <h2 className="font-semibold">Lịch sử</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-semibold">Lịch sử</h2>
+              {audit.length > 6 && (
+                <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => setAuditOpen((value) => !value)}>
+                  {auditOpen ? "Thu gọn" : `Xem thêm ${audit.length - 6}`}
+                </button>
+              )}
+            </div>
             {audit.length === 0 && <p className="text-sm text-muted">Chưa có thao tác ở cấp bạn được xem.</p>}
-            <ul className="space-y-1 text-sm text-muted">
-              {audit.map((item) => (
+            <ul className="max-h-52 space-y-1 overflow-y-auto text-sm text-muted">
+              {(auditOpen ? audit.slice(0, 24) : audit.slice(0, 6)).map((item) => (
                 <li key={item.id}>{logLine(item)}</li>
               ))}
             </ul>

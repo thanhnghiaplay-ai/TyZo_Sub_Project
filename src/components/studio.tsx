@@ -338,19 +338,9 @@ function loadNarration(): NarrationSettings {
     const merged = { ...NARRATION_DEFAULT, ...parsed };
     if (merged.engine === "edge" && merged.gender === "any") merged.gender = "female";
     const version = localStorage.getItem("gnarr_v");
-    if (version === "3") return merged;
-    localStorage.setItem("gnarr_v", "3");
-    if (version !== "2") {
-      const untouched =
-        (parsed.engine === "browser" || parsed.engine === undefined) &&
-        (parsed.rate === undefined || parsed.rate === 1) &&
-        (parsed.pitch === undefined || parsed.pitch === 1) &&
-        !parsed.voiceURI &&
-        (parsed.volume === undefined || parsed.volume === 1) &&
-        !parsed.enabled;
-      if (untouched) merged.engine = "edge";
-    }
-    // lead từng có nghĩa «đọc sớm hơn hình». Giá trị cũ làm thuyết minh chạy trước câu đang chiếu.
+    if (version === "4") return merged;
+    localStorage.setItem("gnarr_v", "4");
+    merged.enabled = true;
     merged.lead = 0;
     if (parsed.matchCast === undefined) merged.matchCast = true;
     return merged;
@@ -529,6 +519,11 @@ export function Studio() {
         >
           Tài khoản
         </button>
+        {place?.role && (
+          <Link to="/admin" className="min-tap rounded-full border border-line px-4 text-sm font-semibold">
+            Quản lý
+          </Link>
+        )}
       </nav>
 
       {place?.status === "banned" ? (
