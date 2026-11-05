@@ -500,12 +500,12 @@ export function Studio() {
         <AccountStrip />
       </header>
 
-      <nav aria-label="Chức năng" className="flex shrink-0 gap-2">
+      <nav aria-label="Chức năng" className="flex shrink-0 items-center gap-2">
         <button
           type="button"
           data-product="sub"
           aria-current={product === "sub" ? "page" : undefined}
-          className={"min-tap rounded-full px-4 text-sm font-semibold " + (product === "sub" ? "bg-accent text-ink" : "border border-line")}
+          className={"inline-flex min-tap items-center justify-center rounded-full px-4 text-sm font-semibold " + (product === "sub" ? "bg-accent text-ink" : "border border-line")}
           onClick={() => setProduct("sub")}
         >
           Phụ đề
@@ -514,13 +514,13 @@ export function Studio() {
           type="button"
           data-product="account"
           aria-current={product === "account" ? "page" : undefined}
-          className={"min-tap rounded-full px-4 text-sm font-semibold " + (product === "account" ? "bg-accent text-ink" : "border border-line")}
+          className={"inline-flex min-tap items-center justify-center rounded-full px-4 text-sm font-semibold " + (product === "account" ? "bg-accent text-ink" : "border border-line")}
           onClick={() => setProduct("account")}
         >
           Tài khoản
         </button>
         {place?.role && (
-          <Link to="/admin" className="min-tap rounded-full border border-line px-4 text-sm font-semibold">
+          <Link to="/admin" className="inline-flex min-tap items-center justify-center rounded-full border border-line px-4 text-sm leading-none font-semibold">
             Quản lý
           </Link>
         )}

@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 01:01 (UTC+7) — Đối chiếu tài liệu với app v2.4.1 |
+| **Cập nhật lần cuối** | 2026-11-06 01:09 (UTC+7) — Chữ Quản lý thẳng hàng với hai nút cạnh |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.4.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.4.2** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 (key của chủ, tính theo phút, dán link) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -89,7 +89,7 @@
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
 | 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9 khi xoay ngang và khi bật chế độ máy tính. Câu hướng dẫn xuống dòng dưới khung. Cần user xem lại trên điện thoại. |
 | 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
-| 51 | Nút Quản lý | 🟡 Đã gắn | Hiện cạnh Tài khoản khi tài khoản có quyền Hỗ trợ, Quản lý hoặc Chủ. |
+| 51 | Nút Quản lý | 🟡 Đã gắn | Hiện cạnh Tài khoản khi có quyền. Chữ căn giữa cùng hàng với Phụ đề và Tài khoản. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 
 ---
@@ -309,6 +309,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 00:52 | Grok | **v2.4.0.** Nút Quản lý cạnh Tài khoản khi có quyền. Lịch sử Admin ngắn. Đăng nhập nhớ email. Nghe mặc định bật. | |
 | 2026-11-06 00:54 | Grok | **v2.4.1.** Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Điều khoản `2026-11-06.1`. | |
 | 2026-11-06 01:01 | Grok | **Chỉ tài liệu.** Viết lại `huongdan.txt` và đối chiếu mục 2, mục 7, mục 13.5 với app đang chạy. Không đổi `src/`. | |
+| 2026-11-06 01:09 | Grok | **v2.4.2.** Chữ Quản lý căn giữa, cùng hàng với Phụ đề và Tài khoản. | |
 
 ---
 
