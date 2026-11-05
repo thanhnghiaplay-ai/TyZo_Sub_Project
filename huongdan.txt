@@ -1,38 +1,51 @@
 Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo_Sub_Project (tên cũ: phudedep).
 Trả lời bằng tiếng Việt, ngắn gọn.
+App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
+
+ĐANG CHẠY (2026-11-06 01:01 UTC+7)
+- Số phiên bản người dùng thấy: v2.4.1, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x, không hiện chữ «sửa chữ» hay «chức năng nhỏ».
+- Điều khoản: TERMS_VERSION = 2026-11-06.1 trong src/components/entry-gate.tsx.
+- Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
+- Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.
+- Nghe / thuyết minh mặc định bật. Khách tắt thì lần sau giữ tắt.
+- Có quyền Hỗ trợ, Quản lý hoặc Chủ thì thấy nút Quản lý cạnh Tài khoản. Trang Admin là /admin, không nằm trong phòng người dùng thường.
+- Kho GitHub: thanhnghiaplay-ai/TyZo_Sub_Project, nhánh main. Vercel tự build từ kho đó. Không ghi token vào file.
 
 TRƯỚC KHI LÀM
-1. Đọc toàn bộ PROJECT_STATUS.md (nguồn sự thật chung) và file này.
-2. Kiểm tra mã nguồn thật. Không mặc định tài liệu đúng. Nếu tài liệu sai so với code, sửa tài liệu và ghi rõ.
-3. Với file code lớn, dùng grep và đọc đúng đoạn liên quan, không đọc lại cả file.
+1. Đọc PROJECT_STATUS.md và file này. Đối chiếu mã nguồn. Tài liệu sai thì sửa tài liệu và ghi lịch sử. Không mặc định tài liệu đúng.
+2. Với file code lớn, dùng grep và đọc đúng đoạn liên quan, không đọc lại cả file.
+3. Làm đúng việc user vừa yêu cầu trong lượt này. Không tự làm bước kế. Hàng đợi mục 10 đã đánh dấu xong thì không làm lại.
+4. Mục 13.2 (chủ web giữ key Groq, tính tiền theo phút, dán link tải video) không được code trừ khi user yêu cầu đúng phần đó. Mục 13.5 (thuê phòng, key của khách) đã gắn vào app. Sửa webapp đang chạy ưu tiên trước.
 
 PHẠM VI
-4. Không viết lại cả ứng dụng. Không sửa chức năng không liên quan đến bước đang làm. Ưu tiên giữ nguyên chức năng đang chạy.
-5. Nếu phát hiện lỗi hoặc xung đột ngoài phạm vi bước: phân tích nguyên nhân, ghi vào mục "Vấn đề còn tồn tại" trong PROJECT_STATUS.md, KHÔNG tự sửa. Chỉ sửa ngay khi lỗi đó chặn chính bước đang làm, và nói rõ.
-6. Không xóa mục "Vấn đề hiện tại" cho đến khi tôi xác nhận hết lỗi.
+5. Không viết lại cả ứng dụng. Không sửa chức năng không liên quan. Ưu tiên giữ nguyên chức năng đang chạy.
+6. Nếu phát hiện lỗi ngoài phạm vi: ghi vào PROJECT_STATUS.md, không tự sửa, trừ khi lỗi đó chặn đúng việc đang làm. Nói rõ.
+7. Không xóa mục «Vấn đề hiện tại» cho đến khi user xác nhận hết lỗi.
+8. Không ghi đè cả file CSS hoặc file lớn bằng nội dung mới. Chỉ sửa đúng đoạn. Nếu lỡ ghi đè, khôi phục từ git ngay.
+9. Không đưa mật khẩu, token GitHub, DATABASE_URL, khóa SePay hay Casso vào code hoặc vào file này.
 
-QUY TRÌNH TỪNG BƯỚC
-7. Làm theo hàng đợi ở mục 10 của PROJECT_STATUS.md. Mỗi lượt chỉ làm MỘT bước. Khi hàng đợi hết, đề xuất bước mới và chờ tôi duyệt, không tự thêm việc.
-8. Không tự làm bước kế tiếp khi tôi chưa xác nhận.
+SAU MỖI LẦN SỬA CODE
+10. Nâng APP_VERSION rồi mới đẩy:
+    - Sửa chữ, tiêu đề, câu hiện trên màn hình, hoặc giá: tăng số cuối. Ví dụ 2.4.1 thành 2.4.2.
+    - Thêm chức năng nhỏ: tăng số giữa, số cuối về 0. Ví dụ 2.4.1 thành 2.5.0.
+    - Thêm chức năng lớn: tăng số đầu, hai số sau về 0. Ví dụ 2.4.1 thành 3.0.0.
+    - Chỉ sửa tài liệu, không đổi cái người dùng thấy: không nâng số phiên bản.
+11. VersionMark đã đọc APP_VERSION. Số hiện ở góc điều khoản, phòng dịch và trang Admin. Không thêm chỗ thứ tư nếu chưa được yêu cầu.
+12. Đổi câu điều khoản hoặc bảng giá thì nâng TERMS_VERSION. Người dùng phải đồng ý lại. Không đổi số này khi chỉ sửa phòng dịch.
+13. Cập nhật PROJECT_STATUS.md: dòng «Cập nhật lần cuối», một dòng lịch sử mục 6, và hàng liên quan ở mục 2. Giờ lấy bằng lệnh TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M'. Không đoán giờ.
+14. Có sửa src/: chạy npx tsc --noEmit. Đụng logic đã có test thì chạy npm test. Dán kết quả thật. Không ghi pass khi chưa chạy.
+15. Đẩy nhánh main lên GitHub để Vercel build. Không đóng zip mỗi lần, trừ khi user yêu cầu bàn giao zip. Tên zip nếu cần: TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip, không kèm node_modules.
+16. Bản mới làm hỏng chức năng đã chạy thì quay lại commit ngay trước đó. Không vá tiếp trên bản hỏng. Nói rõ commit đã quay lại.
 
-KIỂM TRA (bắt buộc)
-9. Chạy npm run typecheck và npm test. Dán kết quả thật. Nếu không chạy được, nói rõ lý do, không ghi "pass".
-10. Lỗi đã sửa phải có test lặp lại được. Thêm test vào script "test" trong package.json.
-11. Ghi trạng thái đúng mức độ: "code xong", "đã có test", hoặc "đã được user thử trên máy thật". Không ghi "xong" khi chỉ mới viết code.
+CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
+17. Ngôn ngữ nguồn chỉ Trung, Hàn, Nhật, Anh. Dịch sang chỉ tiếng Việt.
+18. Thư mục attachments/ để rỗng. Không tạo HTML standalone.
+19. Không lưu mật khẩu vào ô «ghi nhớ». Chỉ được nhớ email trên máy khách.
+20. Lịch sử Admin không trải hết trang. Giữ khung ngắn, có nút xem thêm.
+21. Thẻ quyền do Chủ chọn trong Admin. Màu theo cấp (Người dùng xám, Hỗ trợ xanh, Quản lý vàng, Chủ vàng sáng), không theo kiểu thẻ.
+22. Video luôn tỷ lệ 16:9. Câu hướng dẫn nằm dưới khung, xuống dòng, không đè video hay bảng dịch.
+23. Không xem key Groq và không xem video của khách trong trang Admin.
 
-CẬP NHẬT TÀI LIỆU
-12. Cập nhật PROJECT_STATUS.md: bảng trạng thái (mục 2), lịch sử (mục 6), hàng đợi (mục 10), vấn đề còn tồn tại, việc tiếp theo.
-13. Thư mục attachments/ trong gói để rỗng và không có file HTML standalone. Không tạo lại trừ khi tôi đưa file đó. Sửa bản React.
-
-BÀN GIAO
-14. Đóng gói toàn bộ dự án thành MỘT file zip, tên dạng TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip (vd TyZo_Sub_Project-2026-11-04-0815.zip), không kèm node_modules, PROJECT_STATUS.md ở gốc, rồi gửi lại.
-15. Báo cáo cuối ngắn gọn: đã làm gì, kết quả test, điều chưa kiểm chứng được, các bước còn lại.
-16. Hỏi tôi có muốn tiếp tục bước kế tiếp không.
-
-THỜI ĐIỂM GHI TÀI LIỆU
-17. Khi ghi thời điểm vào PROJECT_STATUS.md (cột "Thời điểm" mục 6 và dòng "Cập nhật lần cuối"), dùng định dạng YYYY-MM-DD HH:MM (UTC+7).
-    Lấy giờ thật bằng lệnh: TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M'. Không đoán giờ.
-    Nếu không chạy được lệnh, ghi chỉ ngày kèm chú thích "không rõ giờ".
-
-MỤC TIÊU
-Phát triển liên tục, có kiểm soát, không mất tiến độ, không phá chức năng đã hoàn thành.
+BÁO CÁO
+24. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
+25. Hỏi user trước khi làm việc tiếp theo.

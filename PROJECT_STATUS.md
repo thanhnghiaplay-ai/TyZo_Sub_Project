@@ -7,10 +7,10 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-05 19:31 (UTC+7) — Đăng xuất không bị vào lại, nạp Sepay và Casso chờ API |
+| **Cập nhật lần cuối** | 2026-11-06 01:01 (UTC+7) — Đối chiếu tài liệu với app v2.4.1 |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | React là app đang chạy. HTML standalone không có trong bản giao gần đây. |
-| **Trạng thái tổng** | Webapp đang chạy như mục 2. Mục 13 là phương án kinh doanh, chỉ ghi, chưa code. Sửa webapp ưu tiên trước. Kinh doanh chỉ làm khi user yêu cầu. |
+| **Phiên bản code** | **v2.4.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 (key của chủ, tính theo phút, dán link) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
 
@@ -82,9 +82,15 @@
 | 41 | Số nổi và nút X trong khung (Bước 7.4) | 🟡 Đã có test | Số thuật ngữ nằm trong viên vàng, chữ đen. Nút X nằm trong khung tab, chỉ hiện trên điện thoại và màn thấp. |
 | 42 | Giọng theo cao độ (Bước 7.5) | 🟡 Đã có test | Lúc nhận dạng, mỗi câu đo cao độ. Dưới 160 Hz là nam, trên 190 Hz là nữ, khoảng giữa hoặc ít tiếng thì giữ giọng dự phòng. Không hỏi model, không chọn tay. |
 | 43 | Giọng so trong video (Bước 7.6) | 🟡 Đã có test | Bỏ mốc Hz cố định. So các câu trong cùng video: nhóm thấp là nam, nhóm cao là nữ, câu nằm giữa hoặc cả phim một nhóm thì giữ giọng dự phòng. Bỏ hai đầu mỗi câu. Chưa nghe trên phim thật. |
-| 44 | Kinh doanh | 🟡 Tài khoản thử, chưa thu tiền | Đăng ký email, ví tiền thử, hạn gói hiện trong phòng, không khóa người chưa mua. Ngân hàng, SePay, MoMo, VNPay chưa nối. Chi tiết mục 13. |
-| 45 | Cửa vào điều khoản | 🟡 Đã có test | Mỗi lần mở có màn chờ logo TyZo Sub. Chưa đồng ý phiên bản `2026-11-05.1` thì không vào phòng. Lưu `gterms` trên máy. Đổi `TERMS_VERSION` thì phải đồng ý lại. Đây là điều khoản của phòng đang chạy, chưa phải mục 13. |
-| 46 | Giá model bằng đồng | 🟡 Đã có test bộ đọc bảng | Lúc mở app, máy chủ đọc trang model Groq và tỷ giá đô. Thẻ model và Whisper hiện giá đồng, cửa sổ token, hạn mức tiếng Việt. Hạn mức là gói Developer trên trang Groq, không phải số riêng của từng key. Ước tính nhận dạng cũng ra đồng. |
+| 44 | Thuê phòng | 🟡 Đã gắn, chưa thu tiền thật | Đăng ký email, không đăng nhập Google. Dùng thử: 1 tệp, 10 phút, không quá 100 MB, không xuất file. Gói còn hạn thì không giới hạn số tệp và được xuất file. Giá đã chốt: 9.000 / 39.000 / 99.000 đ. SePay và Casso có khung nhập API ở Admin. Chưa nhập API thì trang khách hiện bảo trì. Key Groq vẫn của khách. |
+| 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-06.1`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. |
+| 46 | Giá model bằng đồng | 🟡 Đã gắn | Lúc mở app, máy chủ đọc trang model Groq và tỷ giá đô. Thẻ model hiện giá đồng, cửa sổ token, hạn mức tiếng Việt. Hạn mức là gói công khai, không phải số riêng của từng key. |
+| 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. Sơ đồ và doanh thu chỉ Chủ sửa. Lịch sử chỉ 6 dòng, có xem thêm. |
+| 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
+| 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9 khi xoay ngang và khi bật chế độ máy tính. Câu hướng dẫn xuống dòng dưới khung. Cần user xem lại trên điện thoại. |
+| 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
+| 51 | Nút Quản lý | 🟡 Đã gắn | Hiện cạnh Tài khoản khi tài khoản có quyền Hỗ trợ, Quản lý hoặc Chủ. |
+| 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 
 ---
 
@@ -291,21 +297,32 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-05 19:07 | Grok | **Sửa quyền Chủ.** Bỏ nút nhận quyền và bỏ Admin khỏi phòng người dùng. Chỉ email trong `ADMIN_EMAIL` hoặc `.grok/admin.json` mới là Chủ. Trang riêng là `/admin`. | Chưa ghi email Chủ. |
 | 2026-11-05 19:12 | Grok | **Đã ghi email Chủ** vào file máy chủ. Chủ đổi email ngay trên trang Admin. Mật khẩu người dùng gửi trong chat không lưu vào web. | Đăng nhập bằng email đó rồi mở `/admin`. |
 | 2026-11-05 19:21 | Grok | **Điều khoản `2026-11-05.4`.** Mục 8 tách dòng Khóa và Cấm. Câu không bị phạt và câu giữ lịch sử màu vàng. Việc bị cấm màu đỏ. | Người dùng phải đồng ý lại. |
-| 2026-11-06 00:53 | Grok | **v2.4.1.** Giá gói đã chốt: 9.000 đ một ngày, 39.000 đ một tuần, 99.000 đ một tháng. Bảng điều khoản đổi số phiên bản nên người dùng phải đồng ý lại. | |
+| 2026-11-05 21:04 | Grok | **Đưa phòng, đăng nhập và Admin lên kho.** | Giờ lấy từ git. |
+| 2026-11-05 21:21 | Grok | **Nút về phòng, logo điều khoản, sổ tiền Admin.** | |
+| 2026-11-05 21:56 | Grok | **v1.1.0.** Nút về phòng thẳng hàng. Logo chạy liên tục. Có số phiên bản. | |
+| 2026-11-05 22:14 | Grok | **v1.2.0.** Mặc định form đăng nhập. Admin có số người online và tổng đăng ký. Khách gửi được yêu cầu. | |
+| 2026-11-05 22:33 | Grok | **v1.3.0.** Logo đỡ chói. Thông báo nổi và chuông. Số phiên bản chỉ còn Vx.x.x. | |
+| 2026-11-05 23:18 | Grok | **v2.0.0.** Bốn cấp. Báo cấp trên sau 2 giờ. Sơ đồ và doanh thu. | |
+| 2026-11-05 23:46 | Grok | **v2.1.0.** Ô số có màu. Trả lời hoặc từ chối thì đóng yêu cầu. Từ chối bắt buộc có lý do. | |
+| 2026-11-06 00:03 | Grok | **v2.2.0.** Mười kiểu thẻ quyền. Chủ chọn trong Admin. | |
+| 2026-11-06 00:26 | Grok | **v2.3.0.** Video giữ 16:9. Đăng ký nhập lại mật khẩu và thanh mạnh yếu. Thẻ quyền thu gọn. | |
+| 2026-11-06 00:52 | Grok | **v2.4.0.** Nút Quản lý cạnh Tài khoản khi có quyền. Lịch sử Admin ngắn. Đăng nhập nhớ email. Nghe mặc định bật. | |
+| 2026-11-06 00:54 | Grok | **v2.4.1.** Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Điều khoản `2026-11-06.1`. | |
+| 2026-11-06 01:01 | Grok | **Chỉ tài liệu.** Viết lại `huongdan.txt` và đối chiếu mục 2, mục 7, mục 13.5 với app đang chạy. Không đổi `src/`. | |
 
 ---
 
 ## 7. Quy tắc làm việc bắt buộc cho AI tiếp theo
 
-1. **Đọc toàn bộ file này trước** khi bắt đầu bất kỳ việc gì.
-2. Khi sửa xong một mục → **cập nhật bảng trạng thái (mục 2) + lịch sử (mục 6)** ngay trong file này. Gói zip gửi đi gồm `PROJECT_STATUS.md` ở gốc. Thư mục `attachments/` để rỗng, không có file HTML standalone trong gói giao.
+1. **Đọc file này và `huongdan.txt` trước** khi sửa code.
+2. Khi sửa code: nâng `APP_VERSION` theo `huongdan.txt` mục 10, cập nhật mục 2 và mục 6, chạy `npx tsc --noEmit` nếu đụng `src/`. Đẩy GitHub nhánh main. Chỉ đóng zip khi user yêu cầu.
 3. Nếu phát hiện nguyên nhân gốc khác với mục 4 → ghi rõ kèm cách đã chọn.
 4. **Không xóa** các mục “Vấn đề hiện tại” cho đến khi user xác nhận đã hết lỗi.
-5. Đừng siết `isNonSpeech` thêm nếu chưa có ví dụ câu bị nuốt. Lời một chữ (“Ừ”, “Em”) phải sống. Hàm này **chưa có test đơn vị**.
-6. Khi đụng ASR, prompt dịch hoặc cử chỉ: sửa bản React. File HTML không có trong gói giao, không tạo lại trừ khi user đưa file đó.
-7. Mỗi lần bàn giao cho AI khác: **gửi kèm file này**.
-8. Độ sáng là filter trên video, không phải độ sáng OS. Nói rõ cho user nếu họ tưởng chỉnh được đèn máy.
-9. **Mục 13 không được code** trừ khi user yêu cầu đúng phần đó. Yêu cầu sửa webapp hiện tại làm trước. Phương án kinh doanh để sau.
+5. Đừng siết `isNonSpeech` thêm nếu chưa có ví dụ câu bị nuốt. Lời một chữ (“Ừ”, “Em”) phải sống.
+6. Khi đụng ASR, prompt dịch hoặc cử chỉ: sửa bản React. Không tạo lại file HTML.
+7. Mỗi lần bàn giao cho AI khác: file này và `huongdan.txt` phải khớp code. Không ghi token hay mật khẩu vào hai file đó.
+8. Độ sáng là filter trên video, không phải độ sáng OS.
+9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
 
 ---
 
@@ -375,6 +392,8 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 ---
 
 ## 10. Hàng đợi từ báo cáo bản v4 (2026-11-03)
+
+> **2026-11-06 01:01:** Các bước 1–7 dưới đây là lịch sử. Không làm lại. Việc mới chỉ bắt đầu khi user yêu cầu trong lượt chat đó. Quy tắc phiên bản và cách đẩy code nằm ở `huongdan.txt`.
 
 Làm **từng bước**. Sau mỗi bước: cập nhật file này, đóng gói zip, liệt kê bước còn lại, hỏi trước khi làm tiếp. Quy tắc cùng nội dung nằm trong `huongdan.txt`.
 
@@ -472,7 +491,7 @@ Làm **từng bước**. Sau mỗi bước: cập nhật file này, đóng gói 
 | 6.4 | Ba cỡ màn hình. Video không bị cuộn mất. Điện thoại: tab không che kín video. Safe area, ô chữ ≥ 16px, nút ≥ 44px | 🟡 Đã có test 2026-11-04 20:48. Chưa Safari iPhone |
 | 6.5 | Chuyển tab có animation ngắn. prefers-reduced-motion thì đứng yên. Chọn tab bằng bàn phím | 🟡 Đã có test 2026-11-04 20:55 |
 | 6.6 | Không API chỉ một trình duyệt. Ghi máy đã chạy và máy cần user thử | 🟡 Đã có test 2026-11-04 20:58. Firefox và Safari iPhone chưa chạy |
-| **7** | **Hết chồng khung, xếp tab, hết giật, số nổi, giọng so trong video** | 🟡 7.1–7.6 đã có test. Giọng chưa nghe trên phim thật |
+| **7** | **Hết chồng khung, xếp tab, hết giật, số nổi, giọng so trong video** | 🟡 7.1–7.6 đã có test. Giọng chưa nghe trên phim thật. Không làm lại nếu user không yêu cầu |
 | 7.1 | Video không đè tab. Bảng câu không bị tab phủ. Màn thấp không dùng lưới máy tính | 🟡 Đã có test 2026-11-04 21:48. Chưa điện thoại thật |
 | 7.2 | Tab: Key Sub, Phim, Nhân vật, Nghe, Kiểm tra. Ba ô ngữ cảnh sang Nhân vật, không xóa | 🟡 Đã có test 2026-11-04 21:53 |
 | 7.3 | Chọn file không kéo trang. Nút đóng là dấu X. Trạng thái khóa hai hàng | 🟡 Đã có test 2026-11-04 22:43 |
@@ -762,9 +781,11 @@ Bước 1 đến 4 đã làm. Không siết `isNonSpeech`.
 
 ---
 
-## 13. Phương án kinh doanh — chỉ ghi, chưa làm
+## 13. Phương án kinh doanh
 
-> **User chốt 2026-11-05 13:42:** Chỉ ghi để sau này phát triển. Không code phần này trừ khi user yêu cầu rõ. Các lần sửa webapp sau này ưu tiên làm trước, vì webapp còn phải nâng cấp. Phương án kinh doanh để sau. Điều khoản đang gắn ở cửa vào (hàng 45) là của phòng dịch hiện tại, không thay mục này.
+> **2026-11-06 01:01:** Mục 13.5 đã gắn vào app đang chạy, bản **v2.4.1**. Mục 13.2 vẫn chỉ là ghi chú, không được code trừ khi user yêu cầu đúng phần đó.
+>
+> User chốt 2026-11-05 13:42: sửa webapp đang chạy ưu tiên trước. Phần kinh doanh chỉ làm khi user yêu cầu.
 
 Thảo luận cùng ngày, hai lượt. Lượt đầu hỏi đăng nhập Google để tạo key Groq. Lượt sau đổi sang tài khoản webapp và Google, ví tiền, giá bằng chi phí Groq cộng chênh, và dán link tính theo phút tiếng.
 
@@ -825,9 +846,9 @@ Nhận dạng turbo trong code là 0,04 USD mỗi giờ tiếng (`ASR_PRICE` tro
 
 ### 13.5 Hướng mới — thuê phòng theo ngày, key Groq của khách
 
-> User nêu 2026-11-05 14:33. Chưa bảo code cổng nạp. Hướng này hợp app đang chạy hơn mục 13.2, vì trình duyệt đã gọi Groq bằng key khách dán.
+> User nêu 2026-11-05 14:33. Hướng này hợp app đang chạy hơn mục 13.2, vì trình duyệt gọi Groq bằng key khách dán.
 >
-> **2026-11-05 17:46:** User chốt không làm tiếp phòng dịch. Chỉ hoàn thiện demo kinh doanh (`/goi`, `/login`, `/tai-khoan`). Demo được duyệt rồi mới gắn vào code chính. Ngân hàng và SePay làm sau.
+> **2026-11-06 01:01:** Đã gắn. Giá đã chốt bên dưới. SePay và Casso chưa có API thì nút nạp hiện bảo trì.
 
 **Khách trả tiền cho cái gì**
 
@@ -864,18 +885,16 @@ Nhận dạng turbo trong code là 0,04 USD mỗi giờ tiếng (`ASR_PRICE` tro
 4. Điều khoản bản thuê.
 5. Gói 7 ngày hoặc 30 ngày, nếu gói một ngày đã có người mua.
 
-**Giá đề xuất 2026-11-05, chưa chốt**
+**Giá đã chốt 2026-11-06 00:54**
 
-Người dùng đăng ký, nạp đúng giá gói, rồi chọn gói. Không nạp số lẻ để khỏi thừa vài nghìn trong ví.
+Bảng 19.000 / 59.000 / 149.000 và bảng 39.000 / 129.000 / 299.000 đều bỏ. Không dùng lại.
 
-Mức 39.000 / 129.000 / 299.000 bỏ. Đa số người vào chỉ để xem phòng chạy. Một lần ngồi thường 1–2 giờ vì phải tải video, chờ nhận dạng và chờ hạn mức key Groq miễn phí. Bán 39.000 đ cho một buổi như vậy thì người tò mò không mua, người làm một phim cũng thấy đắt.
-
-| Gói | Giá bán | Nếu mua lẻ từng ngày | Ưu đãi ghi trên bảng |
+| Gói | Giá bán | Nếu mua lẻ từng ngày | Ưu đãi |
 | --- | --- | --- | --- |
-| Xem thử | 0 đ | — | Một video ngắn, đủ thấy phòng chạy. Hết lượt thì mới hiện giá. |
-| 24 giờ | 19.000 đ | 19.000 đ | Một buổi, kể cả lúc phải chờ Groq. Đồng hồ 24 giờ để lúc chờ hạn mức không bị cắt giữa chừng. |
-| 7 ngày | 59.000 đ | 133.000 đ | Tiết kiệm 74.000 đ. Ba buổi lẻ là 57.000 đ, buổi thứ tư thì tuần lời hơn. |
-| 30 ngày | 149.000 đ | 570.000 đ | Tiết kiệm 421.000 đ. |
+| Xem thử | 0 đ | — | 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file |
+| 24 giờ | 9.000 đ | 9.000 đ | Một buổi |
+| 7 ngày | 39.000 đ | 63.000 đ | Rẻ hơn bảy ngày lẻ |
+| 30 ngày | 99.000 đ | 270.000 đ | Rẻ hơn ba mươi ngày lẻ |
 
 VEED và Kapwing khoảng 16–25 đô một tháng, tức trên 400.000 đ, và giá đó đã gồm phần nhận dạng. Phòng này không gồm tiền Groq, nên tháng nên ở dưới 150.000 đ, ngang hoặc thấp hơn CapCut. 149.000 đ nằm đúng khoảng đó.
 

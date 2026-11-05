@@ -1,5 +1,7 @@
 # TyZo_Sub_Project — Phụ đề video
 
-Trước khi sửa code, đọc **`PROJECT_STATUS.md`** (nguồn sự thật chung, nằm ở gốc gói) và **`huongdan.txt`** (quy trình làm việc). Hai file này thay cho mọi hướng dẫn cũ.
+Trước khi sửa code, đọc **`PROJECT_STATUS.md`** và **`huongdan.txt`**. Hai file này thay cho mọi hướng dẫn cũ.
 
-App đang chạy là bản React (`src/components/studio.tsx`, `src/components/use-pipeline.ts`, `src/lib/sub/*`). Không có file HTML standalone trong gói giao.
+App đang chạy là bản React. Số phiên bản người dùng thấy nằm ở `src/lib/app-version.ts`. Điều khoản nằm ở `src/components/entry-gate.tsx`. Không có file HTML standalone.
+
+Đang chạy: **v2.4.1**, điều khoản `2026-11-06.1`, giá 9.000 / 39.000 / 99.000 đồng. Key Groq là của khách. Không code mục 13.2 trừ khi user yêu cầu đúng phần đó. Không ghi token hay mật khẩu vào file.
