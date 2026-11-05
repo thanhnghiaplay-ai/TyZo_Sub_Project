@@ -1689,7 +1689,7 @@ function Stage({
   );
 
   return (
-    <div className="grid gap-2">
+    <div className="player-stack">
     <div
       ref={stageRef}
       className={"relative touch-none overflow-hidden bg-black select-none " + (full ? "fixed inset-0 z-40 h-dvh rounded-none" : "aspect-video rounded-2xl")}
@@ -1894,7 +1894,7 @@ function Stage({
       {panel && full && panelNode}
     </div>
     {panel && !full && panelNode}
-    <p className="gesture-hint">Kéo ngang để tua · kéo dọc bên phải chỉnh tiếng · bên trái chỉnh sáng · chạm đúp hai mé để nhảy 10 giây</p>
+    <p className="gesture-hint">Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy 10 giây.</p>
     </div>
   );
 }

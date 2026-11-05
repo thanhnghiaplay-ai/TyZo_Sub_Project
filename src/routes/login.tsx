@@ -25,6 +25,7 @@ function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [again, setAgain] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -41,6 +42,11 @@ function LoginPage() {
     if (rejected) {
       setBusy(false);
       setNotice(rejected);
+      return;
+    }
+    if (mode === "up" && password !== again) {
+      setBusy(false);
+      setNotice("Mật khẩu nhập lại chưa khớp.");
       return;
     }
     const result =
@@ -138,6 +144,24 @@ function LoginPage() {
             </button>
           </span>
         </label>
+        {mode === "up" && (
+          <>
+            <PasswordMeter password={password} />
+            <label className="block text-sm">
+              Nhập lại mật khẩu
+              <span className="relative mt-1 block">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={again}
+                  onChange={(event) => setAgain(event.target.value)}
+                  required
+                  minLength={8}
+                  className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                />
+              </span>
+            </label>
+          </>
+        )}
         <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">
           {busy ? "Đang xử lý…" : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
         </button>
@@ -146,6 +170,7 @@ function LoginPage() {
           className="min-tap w-full rounded-full border border-line"
           onClick={() => {
             setMode(mode === "up" ? "in" : "up");
+            setAgain("");
             setNotice(null);
           }}
         >
@@ -154,5 +179,30 @@ function LoginPage() {
         {notice && <p className="text-sm text-danger">{notice}</p>}
       </form>
     </main>
+  );
+}
+
+function passwordScore(password: string) {
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (password.length >= 12) score += 1;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+  if (/\d/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+  return Math.min(4, score);
+}
+
+function PasswordMeter({ password }: { password: string }) {
+  const score = password ? passwordScore(password) : 0;
+  const label = ["", "Yếu", "Trung bình", "Khá", "Mạnh"][score] ?? "";
+  return (
+    <div className={"pw-meter" + (score ? " is-" + score : "")} aria-hidden={!password}>
+      <span className="pw-bars">
+        {[1, 2, 3, 4].map((step) => (
+          <i key={step} className={score >= step ? "on" : ""} />
+        ))}
+      </span>
+      <span className="pw-label">{password ? label : "Mật khẩu mạnh nên có chữ hoa, số và ký tự."}</span>
+    </div>
   );
 }

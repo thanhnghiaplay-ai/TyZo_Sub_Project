@@ -271,10 +271,11 @@
   }
 
   .studio-video .aspect-video {
-    width: 100%;
-    height: 100%;
-    max-height: none;
-    aspect-ratio: auto;
+    width: min(100%, 100%);
+    max-width: 100%;
+    height: auto;
+    max-height: calc(100% - 3rem);
+    aspect-ratio: 16 / 9;
   }
 
   .studio-cues {
@@ -334,24 +335,22 @@
 
   .studio-video {
     height: auto;
-    max-height: 16vh;
-    max-height: 16dvh;
+    max-height: none;
+    overflow: visible;
   }
 
   .studio-video .aspect-video {
-    width: min(100%, calc(16vh * 16 / 9));
-    width: min(100%, calc(16dvh * 16 / 9));
+    width: min(100%, calc(34dvh * 16 / 9));
     height: auto;
-    max-height: 16vh;
-    max-height: 16dvh;
+    max-height: 34dvh;
     aspect-ratio: 16 / 9;
   }
 
   .studio-cues {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     height: auto;
-    max-height: 3.5rem;
-    min-height: 0;
+    max-height: none;
+    min-height: 4.5rem;
     padding: 0.35rem 0.75rem;
   }
 
@@ -756,13 +755,16 @@
 .role-chu { color: #f3d48a; }
 
 .gesture-hint {
-  margin: 1.75rem 0.5rem 0.75rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--color-line);
+  width: 100%;
+  max-width: 40rem;
+  margin: 0;
+  padding: 0 0.25rem;
+  border: 0;
   color: var(--color-muted);
   font-size: 0.75rem;
   line-height: 1.45;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .org-owner {
@@ -978,3 +980,161 @@
   }
 }
 
+
+.player-stack {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.studio-video {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+}
+
+@media (min-width: 1024px) and (max-height: 700px) {
+  .studio-stage,
+  .studio-workspace {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .studio-video,
+  .studio-cues,
+  .studio-tools {
+    grid-column: auto;
+    grid-row: auto;
+    height: auto;
+    max-height: none;
+  }
+}
+
+@media (min-width: 1024px) and (min-height: 701px) {
+  .studio-video {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .player-stack {
+    height: 100%;
+    min-height: 0;
+    justify-content: center;
+  }
+
+  .player-stack .aspect-video {
+    width: auto;
+    max-width: 100%;
+    max-height: calc(100% - 3.4rem);
+  }
+}
+
+.pw-meter {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.pw-bars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.3rem;
+}
+
+.pw-bars i {
+  display: block;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: #2a3542;
+  transform: scaleX(0.3);
+  transform-origin: left center;
+  transition: transform 0.28s ease, background 0.28s ease;
+}
+
+.pw-bars i.on {
+  transform: scaleX(1);
+}
+
+.pw-meter.is-1 i.on { background: #e15b64; }
+.pw-meter.is-2 i.on { background: #e39a3c; }
+.pw-meter.is-3 i.on { background: #8eb7ee; }
+.pw-meter.is-4 i.on { background: #3dbe7a; }
+
+.pw-label {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.org-card.role-user { border-color: #9aa6b2; }
+.org-card.role-ho-tro { border-color: #8eb7ee; box-shadow: 0 0 12px rgb(142 183 238 / 18%); }
+.org-card.role-quan-ly { border-color: #e7b63a; box-shadow: 0 0 14px rgb(231 182 58 / 20%); }
+
+.account-card[data-rank="user"] .role-mark {
+  animation: none;
+}
+
+.account-card[data-rank="ho-tro"] .role-mark-ribbon,
+.account-card[data-rank="ho-tro"] .role-mark-pill,
+.account-card[data-rank="ho-tro"] .role-mark-banner,
+.account-card[data-rank="ho-tro"] .role-mark-ticket,
+.account-card[data-rank="ho-tro"] .role-mark-rail,
+.account-card[data-rank="ho-tro"] .role-mark-sash,
+.account-card[data-rank="quan-ly"] .role-mark-ribbon,
+.account-card[data-rank="quan-ly"] .role-mark-pill,
+.account-card[data-rank="quan-ly"] .role-mark-banner,
+.account-card[data-rank="quan-ly"] .role-mark-ticket,
+.account-card[data-rank="quan-ly"] .role-mark-rail,
+.account-card[data-rank="quan-ly"] .role-mark-sash,
+.account-card[data-rank="chu"] .role-mark-ribbon,
+.account-card[data-rank="chu"] .role-mark-pill,
+.account-card[data-rank="chu"] .role-mark-banner,
+.account-card[data-rank="chu"] .role-mark-ticket,
+.account-card[data-rank="chu"] .role-mark-rail,
+.account-card[data-rank="chu"] .role-mark-sash {
+  background-size: 180% 100%;
+  animation: rank-sheen 3.8s ease-in-out infinite;
+}
+
+.account-card[data-rank="ho-tro"] .role-mark-ribbon,
+.account-card[data-rank="ho-tro"] .role-mark-pill,
+.account-card[data-rank="ho-tro"] .role-mark-banner,
+.account-card[data-rank="ho-tro"] .role-mark-ticket,
+.account-card[data-rank="ho-tro"] .role-mark-rail,
+.account-card[data-rank="ho-tro"] .role-mark-sash {
+  background-image: linear-gradient(110deg, #6ea2e4, #d7e8ff 45%, #8eb7ee);
+}
+
+.account-card[data-rank="quan-ly"] .role-mark-ribbon,
+.account-card[data-rank="quan-ly"] .role-mark-pill,
+.account-card[data-rank="quan-ly"] .role-mark-banner,
+.account-card[data-rank="quan-ly"] .role-mark-ticket,
+.account-card[data-rank="quan-ly"] .role-mark-rail,
+.account-card[data-rank="quan-ly"] .role-mark-sash {
+  background-image: linear-gradient(110deg, #b88922, #f0d78c 42%, #e7b63a);
+}
+
+.account-card[data-rank="chu"] .role-mark-ribbon,
+.account-card[data-rank="chu"] .role-mark-pill,
+.account-card[data-rank="chu"] .role-mark-banner,
+.account-card[data-rank="chu"] .role-mark-ticket,
+.account-card[data-rank="chu"] .role-mark-rail,
+.account-card[data-rank="chu"] .role-mark-sash {
+  background-image: linear-gradient(110deg, #c9962e, #fff4cc 40%, #e7b63a 70%, #f3d48a);
+}
+
+@keyframes rank-sheen {
+  50% { background-position: 100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pw-bars i,
+  .account-card .role-mark,
+  .role-chip,
+  .org-card {
+    animation: none;
+    transition: none;
+  }
+}
