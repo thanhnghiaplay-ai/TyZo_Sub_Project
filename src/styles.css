@@ -406,14 +406,13 @@
   width: 5.5rem;
   height: 5.5rem;
   filter: drop-shadow(0 0 18px rgb(231 182 58 / 35%));
-  animation: gate-rise 0.7s ease both, gate-breathe 2.4s ease-in-out 0.8s infinite;
+  animation: gate-breathe 2.4s ease-in-out infinite;
 }
 
 .gate-doc .gate-mark {
-  width: 3rem;
-  height: 3rem;
-  animation: none;
-  filter: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: none;
 }
 
 .gate-plate {
@@ -424,15 +423,11 @@
   fill: none;
   stroke: var(--color-accent);
   stroke-width: 3;
-  stroke-dasharray: 240;
-  stroke-dashoffset: 240;
-  animation: gate-draw 1s ease 0.15s forwards;
+  animation: gate-glow 2.4s ease-in-out infinite;
 }
 
 .gate-play {
   fill: var(--color-fg);
-  opacity: 0;
-  animation: gate-rise 0.45s ease 0.7s forwards;
 }
 
 .gate-kicker {
@@ -578,9 +573,9 @@
   }
 }
 
-@keyframes gate-draw {
-  to {
-    stroke-dashoffset: 0;
+@keyframes gate-glow {
+  50% {
+    opacity: 0.45;
   }
 }
 
@@ -608,7 +603,6 @@
 @media (prefers-reduced-motion: reduce) {
   .gate-mark,
   .gate-frame,
-  .gate-play,
   .gate-kicker,
   .gate-title,
   .gate-wait,
@@ -616,14 +610,8 @@
     animation: none;
   }
 
-  .gate-frame {
-    stroke-dashoffset: 0;
-  }
-
-  .gate-play,
-  .gate-kicker,
-  .gate-title,
-  .gate-wait {
+  .gate-frame,
+  .gate-play {
     opacity: 1;
   }
 }

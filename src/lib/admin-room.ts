@@ -24,6 +24,14 @@ export type AdminUser = {
   role: StaffRole | null;
 };
 
+export type LedgerRow = {
+  id: number;
+  kind: string;
+  amount: number;
+  note: string;
+  createdAt: string;
+};
+
 export type AppealRow = {
   id: number;
   email: string;
@@ -158,6 +166,32 @@ export const searchUsers = createServerFn({ method: "POST" })
       reason: row.status_reason ?? "",
       note: row.staff_note ?? "",
       role: emailIsOwner(row.email) ? "chu" : isStaffRole(row.role) ? row.role : null,
+    }));
+  });
+
+export const listUserLedger = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((userId: string) => {
+    const id = userId?.trim();
+    if (!id) throw new Error("Thiếu tài khoản.");
+    return id;
+  })
+  .handler(async ({ context, data }): Promise<LedgerRow[]> => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ id: number; kind: string; amount: number; note: string; created_at: unknown }>`
+      select id, kind, amount, note, created_at from room_ledger
+      where user_id = ${data}
+      order by id desc
+      limit 30
+    `;
+    return rows.map((row) => ({
+      id: row.id,
+      kind: row.kind,
+      amount: row.amount,
+      note: row.note,
+      createdAt: stamp(row.created_at),
     }));
   });
 

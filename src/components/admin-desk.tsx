@@ -9,6 +9,7 @@ import {
   replyAppeal,
   saveStaffNote,
   searchUsers,
+  listUserLedger,
   setOwnerEmail,
   setStaffRole,
   setTempPassword,
@@ -16,6 +17,7 @@ import {
   type AdminUser,
   type AppealRow,
   type AuditRow,
+  type LedgerRow,
   type MyPlace,
 } from "@/lib/admin-room";
 import { ROOM_PLANS } from "@/lib/room-plans";
@@ -32,6 +34,7 @@ export function AdminDesk() {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [picked, setPicked] = useState<AdminUser | null>(null);
+  const [ledger, setLedger] = useState<LedgerRow[]>([]);
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
   const [password, setPassword] = useState("");
@@ -90,29 +93,8 @@ export function AdminDesk() {
       {place && !role && <p className="text-sm text-muted">Không có quyền vào trang này.</p>}
       {role && (
         <>
-          {roleAtLeast(role, "chu") && (
-            <form
-              className="grid gap-2 rounded-2xl border border-line bg-card p-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                void run(() => setOwnerEmail({ data: ownerEmail }), "Đã đổi email Chủ. Email cũ không còn vào trang này.");
-              }}
-            >
-              <h2 className="font-semibold">Email Chủ</h2>
-              <p className="text-sm text-muted">Chỉ email này vào được trang Admin với quyền Chủ. Đổi xong, hãy đăng nhập bằng email mới.</p>
-              <input
-                type="email"
-                required
-                value={ownerEmail}
-                onChange={(event) => setOwnerEmailInput(event.target.value)}
-                className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
-              />
-              <button type="submit" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 disabled:opacity-40">
-                Lưu email Chủ
-              </button>
-            </form>
-          )}
-          {roleAtLeast(role, "chu") && <PaySettings />}
+          <h2 className="font-semibold">Tài khoản</h2>
+          <p className="text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Chủ được cấm.</p>
           <form
             className="flex gap-2"
             onSubmit={(event) => {
@@ -144,6 +126,8 @@ export function AdminDesk() {
                     setPicked(user);
                     setNote(user.note);
                     setReason(user.reason);
+                    setLedger([]);
+                    void listUserLedger({ data: user.id }).then(setLedger).catch(() => setLedger([]));
                   }}
                 >
                   <span className="block font-medium">{user.email}</span>
@@ -159,8 +143,19 @@ export function AdminDesk() {
             <article className="space-y-3 rounded-2xl border border-line bg-card p-4">
               <h2 className="font-semibold">{picked.email}</h2>
               <p className="text-sm text-muted">
-                Số dư {dong(picked.balance)}. {picked.plan ? `Gói ${picked.plan}` : "Chưa có gói"}. Còn {picked.trialLeft} lượt thử.
+                Số dư {dong(picked.balance)}. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
               </p>
+              <div>
+                <h3 className="text-sm font-semibold">Sổ tiền</h3>
+                {ledger.length === 0 && <p className="text-sm text-muted">Chưa có dòng tiền.</p>}
+                <ul className="mt-1 space-y-1 text-sm text-muted">
+                  {ledger.map((item) => (
+                    <li key={item.id}>
+                      {item.note || item.kind} · {dong(item.amount)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
               <label className="grid gap-1 text-sm">
                 Ghi chú nội bộ
                 <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
@@ -262,16 +257,49 @@ export function AdminDesk() {
                 {audit.map((item) => (
                   <li key={item.id}>
                     {item.action} · {item.note}
+                    {item.createdAt ? ` · ${new Date(item.createdAt).toLocaleString("vi-VN")}` : ""}
                   </li>
                 ))}
               </ul>
             </section>
           )}
+          {roleAtLeast(role, "chu") && (
+            <form
+              className="grid gap-2 rounded-2xl border border-line bg-card p-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void run(() => setOwnerEmail({ data: ownerEmail }), "Đã đổi email Chủ. Email cũ không còn vào trang này.");
+              }}
+            >
+              <h2 className="font-semibold">Email Chủ</h2>
+              <p className="text-sm text-muted">Chỉ email này vào được trang Admin với quyền Chủ. Đổi xong, hãy đăng nhập bằng email mới.</p>
+              <input
+                type="email"
+                required
+                value={ownerEmail}
+                onChange={(event) => setOwnerEmailInput(event.target.value)}
+                className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              />
+              <button type="submit" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 disabled:opacity-40">
+                Lưu email Chủ
+              </button>
+            </form>
+          )}
+          {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}
       {notice && <p className="text-sm text-muted">{notice}</p>}
     </div>
   );
+}
+
+function planLine(user: AdminUser) {
+  if (!user.plan || !user.planUntil) return "Chưa mua gói. Hết hạn không phải bị khóa.";
+  const until = new Date(user.planUntil);
+  const name = ROOM_PLANS.find((plan) => plan.id === user.plan)?.name ?? user.plan;
+  if (Number.isNaN(until.getTime())) return `Gói ${name}.`;
+  if (until.getTime() <= Date.now()) return `Gói ${name} đã hết hạn. Hết hạn không phải bị khóa.`;
+  return `Gói ${name} còn đến ${until.toLocaleString("vi-VN")}.`;
 }
 
 function foundNotice(query: string) {
