@@ -7,7 +7,7 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 13:04 (UTC+7) — Chốt cách viết dòng cập nhật: đủ ý, có mốc thời gian |
+| **Cập nhật lần cuối** | 2026-11-06 13:09 (UTC+7) — Chốt: việc đụng dịch vụ phải sửa điều khoản cùng lúc |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v2.5.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 (key của chủ, tính theo phút, dán link) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
@@ -83,7 +83,7 @@
 | 42 | Giọng theo cao độ (Bước 7.5) | 🟡 Đã có test | Lúc nhận dạng, mỗi câu đo cao độ. Dưới 160 Hz là nam, trên 190 Hz là nữ, khoảng giữa hoặc ít tiếng thì giữ giọng dự phòng. Không hỏi model, không chọn tay. |
 | 43 | Giọng so trong video (Bước 7.6) | 🟡 Đã có test | Bỏ mốc Hz cố định. So các câu trong cùng video: nhóm thấp là nam, nhóm cao là nữ, câu nằm giữa hoặc cả phim một nhóm thì giữ giọng dự phòng. Bỏ hai đầu mỗi câu. Chưa nghe trên phim thật. |
 | 44 | Thuê phòng | 🟡 Đã gắn, chưa thu tiền thật | Đăng ký email, không đăng nhập Google. Dùng thử: 1 tệp, 10 phút, không quá 100 MB, không xuất file. Gói còn hạn thì không giới hạn số tệp và được xuất file. Giá đã chốt: 9.000 / 39.000 / 99.000 đ. SePay và Casso có khung nhập API ở Admin. Chưa nhập API thì trang khách hiện bảo trì. Key Groq vẫn của khách. |
-| 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-06.1`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. |
+| 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-06.1`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. Từ 2026-11-06 13:09, việc nào đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục liên quan trong cùng lần đó (`huongdan.txt` mục 12b). |
 | 46 | Giá model bằng đồng | 🟡 Đã gắn | Lúc mở app, máy chủ đọc trang model Groq và tỷ giá đô. Thẻ model hiện giá đồng, cửa sổ token, hạn mức tiếng Việt. Hạn mức là gói công khai, không phải số riêng của từng key. |
 | 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. Sơ đồ và doanh thu chỉ Chủ sửa. Lịch sử chỉ 6 dòng, có xem thêm. |
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
@@ -313,6 +313,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 01:09 | Grok | **v2.4.2.** Chữ Quản lý căn giữa, cùng hàng với Phụ đề và Tài khoản. | |
 | 2026-11-06 10:02 | Grok | **v2.5.0.** Bấm hoặc rê chuột vào số phiên bản thì thấy tóm tắt cập nhật. Có bản chưa xem thì số sáng nhẹ. Quy tắc ghi thêm câu vào `CHANGELOG` mỗi lần nâng số. | |
 | 2026-11-06 13:04 | Grok | **Chỉ tài liệu.** Chốt mục 10c trong `huongdan.txt`: từ mốc này, mọi dòng cập nhật phải nêu đủ phần nâng cấp, chỉnh sửa, thay đổi và bổ sung, viết câu chuyên môn, kèm mốc thời gian. Không đổi `src/`. Câu trên màn hình vẫn là v2.5.0. | |
+| 2026-11-06 13:09 | Grok | **Chỉ tài liệu.** Chốt mục 12b trong `huongdan.txt`: từ mốc này, nâng cấp, cập nhật, bổ sung, chỉnh sửa hoặc chức năng nào làm đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục điều khoản liên quan trong cùng lần đó, rồi nâng `TERMS_VERSION`. Không đổi `src/`. | |
 
 ---
 
