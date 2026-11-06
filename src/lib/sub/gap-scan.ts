@@ -167,7 +167,7 @@ export async function spansFromBlocks(
   return mergeSpans(found);
 }
 
-export function formatGapConfirm(plan: GapPlan, money?: (usd: number) => string): string {
+export function formatGapConfirm(plan: GapPlan): string {
   const list = plan.selected
     .slice(0, 6)
     .map((span) => `${fmt(span.start)}–${fmt(span.end)}`)
@@ -176,6 +176,5 @@ export function formatGapConfirm(plan: GapPlan, money?: (usd: number) => string)
   const deferred = plan.deferred.length
     ? ` ${plan.deferred.length} khoảng không vừa ngân sách ${plan.budgetSeconds} giây nên không gửi.`
     : "";
-  const shown = money ? money(plan.cost) : `$${plan.cost.toFixed(3)}`;
-  return `Sẽ gửi ${plan.selected.length} khoảng (${plan.audioSeconds.toFixed(1)} giây), ước tính ${shown}. Không gửi cả phim.${deferred} ${list}${extra}. Gửi lên Groq?`;
+  return `Sẽ gửi ${plan.selected.length} khoảng (${plan.audioSeconds.toFixed(1)} giây). Không gửi cả phim.${deferred} ${list}${extra}. Gửi không?`;
 }

@@ -1,22 +1,26 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { checkRunDesk, dayStartIso, parseRunDesk } from "./run-desk.ts";
+import { checkRunDesk, dayStartIso, parseRunDesk, quoteVnd } from "./run-desk.ts";
 
 describe("bàn trả theo lượt", () => {
-  it("thiếu dữ liệu thì cửa đóng và chưa có giá", () => {
+  it("mặc định cửa mở, chưa tăng giá", () => {
     const desk = parseRunDesk(null);
-    assert.equal(desk.open, false);
-    assert.equal(desk.turbo, 0);
-    assert.equal(desk.large, 0);
+    assert.equal(desk.maintenance, false);
+    assert.equal(desk.markup, 0);
   });
 
-  it("câu đóng cũ được đổi sang câu tạm ngưng", () => {
-    const desk = parseRunDesk(JSON.stringify({ turbo: 0, large: 0, open: false, note: "Cửa trả theo lượt chưa mở.", cap: 0 }));
-    assert.match(desk.note, /tạm ngưng để hoàn thiện/);
+  it("câu đóng cũ không giữ cửa ở trạng thái bảo trì", () => {
+    const desk = parseRunDesk(JSON.stringify({ open: false, note: "Cửa trả theo lượt chưa mở.", turbo: 0, large: 0, cap: 0 }));
+    assert.equal(desk.maintenance, false);
   });
-  it("mở cửa được khi chưa niêm yết, để xem khung", () => {
-    const desk = checkRunDesk({ turbo: 0, large: 0, open: true, note: "xem khung", cap: 0 });
-    assert.equal(desk.open, true);
+
+  it("bảo trì phải có nội dung", () => {
+    assert.throws(() => checkRunDesk({ maintenance: true, note: "ngắn", cap: 0, markup: 0, custom: {} }), /bảo trì/);
+  });
+
+  it("giá riêng thắng phần trăm, không có giá riêng thì cộng phần trăm", () => {
+    assert.equal(quoteVnd(1000, 25, 0), 1250);
+    assert.equal(quoteVnd(1000, 25, 1800), 1800);
   });
 
   it("mốc ngày theo giờ Việt Nam", () => {

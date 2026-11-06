@@ -83,9 +83,10 @@ describe("dò khoảng trống có tiếng", () => {
     assert.equal(plan.billedSeconds, Math.max(10, plan.audioSeconds));
     assert.equal(plan.cost, plan.billedSeconds * price);
     const text = formatGapConfirm(plan);
-    assert.match(text, /ước tính \$/);
+    assert.match(text, /Sẽ gửi/);
+    assert.equal(text.includes("$"), false);
     assert.match(text, /Không gửi cả phim/);
-    assert.match(text, /Gửi lên Groq\?/);
+    assert.match(text, /Gửi không\?/);
   });
 
   it("ngân sách không cắt khoảng và không nhận phần vượt", () => {

@@ -3,7 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
 import { canSeeLog, isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
-import { checkRunDesk, dayStartIso, parseRunDesk, RUN_DESK_DEFAULT, type RunDesk } from "@/lib/run-desk";
+import { checkRunDesk, dayStartIso, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
 
 export type MyPlace = {
   role: StaffRole | null;
@@ -1161,17 +1161,18 @@ export const refundRun = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export type RunDoorView = { open: boolean; note: string; turbo: number; large: number };
+export type RunDoorView = { open: boolean; note: string; markup: number; custom: Record<string, PriceOverride> };
 
 export const getRunDoor = createServerFn({ method: "GET" }).handler(async (): Promise<RunDoorView> => {
+  const closed = { open: true, note: "", markup: 0, custom: {} as Record<string, PriceOverride> };
   try {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
     const desk = parseRunDesk(saved[0]?.value);
-    return { open: desk.open, note: desk.note, turbo: desk.turbo, large: desk.large };
+    return { open: !desk.maintenance, note: desk.maintenance ? desk.note : "", markup: desk.markup, custom: desk.custom };
   } catch {
-    return { open: false, note: RUN_DESK_DEFAULT.note, turbo: 0, large: 0 };
+    return closed;
   }
 });
 

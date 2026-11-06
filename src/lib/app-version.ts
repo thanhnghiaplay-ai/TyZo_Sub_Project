@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.6.1";
+export const APP_VERSION = "2.7.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.7.0",
+    time: "21:47 ngày 06/11/2026",
+    text: "Cửa trả theo lượt mặc định mở. Bảo trì chỉ hiện khi quản trị nhập nội dung và lưu. Giá biểu có nút cập nhật riêng: lấy giá gốc, tăng theo phần trăm, hoặc đặt giá riêng từng model. Khung chọn model dùng đúng đơn giá đã lưu khi khách chọn trả theo lượt. Khi dùng key của khách thì không hiện giá. Câu giải thích giá không còn dẫn khách so với bảng giá bên ngoài.",
+  },
   {
     version: "2.6.1",
     time: "21:11 ngày 06/11/2026",

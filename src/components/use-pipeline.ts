@@ -20,7 +20,7 @@ import {
   translateWithRepair,
 } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
-import { formatUsdCost, liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
+import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
@@ -281,10 +281,6 @@ export function usePipeline() {
   const [boardNote, setBoardNote] = useState("");
   const boardRef = useRef<GroqBoard | null>(null);
   const asrUsd = (model: AsrModel) => liveAsrPerSecond(boardRef.current?.rows || [], model, ASR_PRICE[model]);
-  const dong = (usd: number) => {
-    const rate = boardRef.current?.rate;
-    return rate ? formatUsdCost(usd, rate) : `$${usd.toFixed(3)}`;
-  };
   const [modelBusy, setModelBusy] = useState(false);
   const [uses, setUses] = useState<Record<string, number>>({});
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -400,7 +396,7 @@ export function usePipeline() {
     const done = j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0);
     const modelBit = mode === "auto" && j.lastModel ? ` · Auto ${modelLabel(j.lastModel)}` : "";
     say(
-      `Nhận dạng ${Math.min(j.nextPart, j.parts.length)}/${j.parts.length} đoạn · dịch ${done}/${j.segs.length} câu · ước tính ${dong(j.asrCost)}${modelBit}${j.note ? " · " + j.note : ""}`,
+      `Nhận dạng ${Math.min(j.nextPart, j.parts.length)}/${j.parts.length} đoạn · dịch ${done}/${j.segs.length} câu${modelBit}${j.note ? " · " + j.note : ""}`,
     );
   }, [mode, say]);
 
@@ -1373,7 +1369,7 @@ export function usePipeline() {
                 .map(([id, count]) => `${modelLabel(id)} × ${count}`)
                 .join(", ")
             : "";
-        say(`Hoàn tất: ${j.segs.length} câu · nhận dạng ${dong(j.asrCost)} · bỏ qua ${j.skipped} đoạn im lặng${mix}.${retryBit}`);
+        say(`Hoàn tất: ${j.segs.length} câu · bỏ qua ${j.skipped} đoạn im lặng${mix}.${retryBit}`);
       }
     } catch (error) {
       if (my !== j.runId) return;
@@ -1676,7 +1672,7 @@ export function usePipeline() {
         return;
       }
       say(
-        `Tìm thấy ${plan.selected.length} khoảng, ${plan.audioSeconds.toFixed(1)} giây, ước tính ${dong(plan.cost)}. Chưa gửi. Bấm «Nhận dạng các khoảng này» nếu muốn.`,
+        `Tìm thấy ${plan.selected.length} khoảng, ${plan.audioSeconds.toFixed(1)} giây. Chưa gửi. Bấm «Nhận dạng các khoảng này» nếu muốn.`,
       );
     } catch (error) {
       if (my !== job.current.runId) return;
@@ -1700,13 +1696,12 @@ export function usePipeline() {
     if (!plan?.selected.length) return say("Chưa có khoảng trống để gửi. Hãy dò trước.", true);
     const token = key.trim();
     if (!token) return say("Nhập API key trước khi gửi.", true);
-    if (!confirm(formatGapConfirm(plan, dong))) return;
+    if (!confirm(formatGapConfirm(plan))) return;
     const controller = new AbortController();
     const my = ++job.current.runId;
     job.current.abort = controller;
     const signal = controller.signal;
     setRunning(true);
-    const costBefore = job.current.asrCost;
     const before = job.current.segs.length;
     let sent = 0;
     try {
@@ -1753,13 +1748,12 @@ export function usePipeline() {
       }
       if (my !== job.current.runId) return;
       const added = job.current.segs.length - before;
-      const spent = job.current.asrCost - costBefore;
       gapPlanRef.current = null;
       setGapPlanState(null);
       say(
         added
-          ? `Đã thêm ${added} câu từ khoảng trống, ước tính ${dong(spent)}. Bấm Tiếp tục để dịch phần mới. Không nhận dạng lại cả phim.`
-          : `Đã gửi ${sent} khoảng (ước tính ${dong(spent)}) nhưng không thêm câu mới. Không gửi thêm.`,
+          ? `Đã thêm ${added} câu từ khoảng trống. Bấm Tiếp tục để dịch phần mới. Không nhận dạng lại cả phim.`
+          : `Đã gửi ${sent} khoảng nhưng không thêm câu mới. Không gửi thêm.`,
       );
     } catch (error) {
       if (my !== job.current.runId) return;

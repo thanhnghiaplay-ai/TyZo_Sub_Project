@@ -1,36 +1,28 @@
 import { useEffect, useState } from "react";
 import { getRunDoor, type RunDoorView } from "@/lib/admin-room";
-import { RUN_DESK_DEFAULT } from "@/lib/run-desk";
+import type { PriceOverride } from "@/lib/run-desk";
 
-const CLOSED: RunDoorView = { open: false, note: RUN_DESK_DEFAULT.note, turbo: 0, large: 0 };
+export const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {} };
 
 export function useRunDoor() {
-  const [door, setDoor] = useState<RunDoorView>(CLOSED);
+  const [door, setDoor] = useState<RunDoorView>(DOOR_OPEN);
   useEffect(() => {
     void getRunDoor()
       .then(setDoor)
-      .catch(() => setDoor(CLOSED));
+      .catch(() => setDoor(DOOR_OPEN));
   }, []);
   return door;
-}
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
 export function RunDoorClosed({ note }: { note: string }) {
   return (
     <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
       <h2 className="text-sm font-semibold">Trả theo lượt</h2>
-      <p className="text-sm text-muted">{note || RUN_DESK_DEFAULT.note}</p>
+      <p className="text-sm text-muted">{note}</p>
     </section>
   );
 }
 
-export function RunDoorPrices({ turbo, large }: { turbo: number; large: number }) {
-  return (
-    <p className="text-sm text-muted">
-      Turbo {turbo > 0 ? dong(turbo) : "chưa niêm yết"} mỗi phút. Large {large > 0 ? dong(large) : "chưa niêm yết"} mỗi phút.
-    </p>
-  );
+export function roomCustom(custom: Record<string, PriceOverride>, id: string): PriceOverride | undefined {
+  return custom[id];
 }

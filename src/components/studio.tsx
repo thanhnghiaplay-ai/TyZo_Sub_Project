@@ -26,10 +26,11 @@ import { usePipeline } from "@/components/use-pipeline";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
-import { RunDoorClosed, RunDoorPrices, useRunDoor } from "@/components/run-door";
+import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
 import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
-import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
+import { type GroqBoard } from "@/lib/sub/groq-board";
+import { formatRoomPrice } from "@/lib/run-desk";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
@@ -505,6 +506,8 @@ export function Studio() {
     setSheetOpen(true);
   }, [app.reviewHold]);
 
+  const showRoomPrice = runDoor.open && payByRoom;
+
   return (
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
@@ -743,7 +746,9 @@ export function Studio() {
                 Trả theo lượt
               </button>
             </div>
-            {payByRoom && <RunDoorPrices turbo={runDoor.turbo} large={runDoor.large} />}
+            {payByRoom && (
+              <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng cho lần trả theo lượt, đã gồm phần vận hành. Số này không dùng để so với bảng giá bên ngoài.</p>
+            )}
           </div>
         ) : (
           <RunDoorClosed note={runDoor.note} />
@@ -789,7 +794,14 @@ export function Studio() {
           <Choice on={app.mode === "auto"} onClick={() => app.setMode("auto")} title="Tự động" text="Cân tốc độ và độ chính xác" />
         </div>
         {app.mode === "manual" ? (
-          <ModelPicker models={app.catalog} value={app.modelId} remote={app.remoteIds} board={app.board} onChange={app.setModelId} />
+          <ModelPicker
+            models={app.catalog}
+            value={app.modelId}
+            remote={app.remoteIds}
+            board={showRoomPrice ? app.board : null}
+            door={showRoomPrice ? runDoor : null}
+            onChange={app.setModelId}
+          />
         ) : (
           <div className="grid gap-2">
             <div className="grid grid-cols-3 gap-2">
@@ -813,11 +825,10 @@ export function Studio() {
           </div>
         )}
         <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          <option value="whisper-large-v3-turbo">Whisper Turbo · {whisperPrice(app.board, "whisper-large-v3-turbo")}</option>
-          <option value="whisper-large-v3">Whisper Large · {whisperPrice(app.board, "whisper-large-v3")}</option>
+          <option value="whisper-large-v3-turbo">Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}</option>
+          <option value="whisper-large-v3">Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}</option>
         </Select>
-        <p className="text-sm text-muted">{whisperDetail(app.board, app.asrModel)}</p>
-        <p className="text-sm text-muted">{boardCaption(app.board, app.boardNote)}</p>
+        {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
         <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
           Chỉ gửi đoạn có tiếng người
@@ -1167,7 +1178,7 @@ export function Studio() {
           <div className="grid gap-2 rounded-xl border border-line bg-bg p-3 text-sm">
             <p>
               {app.gapPlan.selected.length
-                ? `${app.gapPlan.selected.length} khoảng có tiếng nhưng chưa có câu, ${app.gapPlan.audioSeconds.toFixed(1)} giây, ước tính ${gapCost(app.board, app.gapPlan.cost)}. Chưa gửi.`
+                ? `${app.gapPlan.selected.length} khoảng có tiếng nhưng chưa có câu, ${app.gapPlan.audioSeconds.toFixed(1)} giây. Chưa gửi.`
                 : "Không còn khoảng nào vừa ngân sách."}
               {app.gapPlan.deferred.length ? ` ${app.gapPlan.deferred.length} khoảng vượt ngân sách ${app.gapPlan.budgetSeconds} giây, không gửi.` : ""}
             </p>
@@ -1316,12 +1327,14 @@ function ModelPicker({
   value,
   remote,
   board,
+  door,
   onChange,
 }: {
   models: ChatModel[];
   value: string;
   remote: string[] | null;
   board: GroqBoard | null;
+  door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }> } | null;
   onChange: (id: string) => void;
 }) {
   const remoteSet = remote ? new Set(remote) : null;
@@ -1338,7 +1351,7 @@ function ModelPicker({
               {list.map((model) => {
                 const on = value === model.id;
                 const missing = remoteSet ? !remoteSet.has(model.id) : false;
-                const facts = modelFacts(board, model.id, model.note);
+                const facts = modelFacts(board, door, model.id, model.note);
                 return (
                   <button
                     key={model.id}
@@ -1347,7 +1360,7 @@ function ModelPicker({
                     className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg") + (missing ? " opacity-50" : "")}
                   >
                     <span className="block text-sm font-semibold">{model.name}</span>
-                    <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{facts.price}</span>
+                    {facts.price ? <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{facts.price}</span> : null}
                     {facts.detail ? <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>{facts.detail}</span> : null}
                   </button>
                 );
@@ -1364,40 +1377,24 @@ function ModelPicker({
   );
 }
 
-function modelFacts(board: GroqBoard | null, id: string, note: string): { price: string; detail: string } {
+function modelFacts(
+  board: GroqBoard | null,
+  door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }> } | null,
+  id: string,
+  note: string,
+): { price: string; detail: string } {
+  if (!door) return { price: "", detail: "" };
   const row = board?.rows.find((item) => item.id === id);
-  if (!board) return { price: "Đang lấy giá từ Groq…", detail: "" };
-  if (!row) return { price: "Không thấy model này trong bảng Groq vừa tải", detail: note };
-  return { price: formatLivePrice(row, board.rate), detail: formatLiveDetail(row) };
+  if (!board) return { price: "Đang lấy đơn giá phòng…", detail: "" };
+  if (!row) return { price: "Chưa niêm yết", detail: note };
+  return { price: formatRoomPrice(row, board.rate, door.markup, roomCustom(door.custom, id)), detail: "" };
 }
 
-function whisperRow(board: GroqBoard | null, id: string): GroqLiveRow | undefined {
-  return board?.rows.find((item) => item.id === id);
-}
-
-function whisperPrice(board: GroqBoard | null, id: string): string {
-  const row = whisperRow(board, id);
-  if (!board) return "đang lấy giá";
-  if (!row) return "chưa có trong bảng Groq";
-  return formatLivePrice(row, board.rate);
-}
-
-function whisperDetail(board: GroqBoard | null, id: string): string {
-  const row = whisperRow(board, id);
-  if (!row) return "";
-  return formatLiveDetail(row);
-}
-
-function boardCaption(board: GroqBoard | null, note: string): string {
-  if (board) {
-    const when = board.rateDate ? ` Tỷ giá ngày ${board.rateDate}, 1 đô = ${new Intl.NumberFormat("vi-VN").format(Math.round(board.rate))} đ.` : "";
-    return `Giá lấy trực tiếp từ trang model của Groq.${when} Hạn mức trên trang đó là gói Developer. Key miễn phí thường thấp hơn. Số đúng của key nằm ở trang Limits trong tài khoản Groq.`;
-  }
-  return note || "Đang lấy giá, hạn mức và số token từ Groq…";
-}
-
-function gapCost(board: GroqBoard | null, usd: number): string {
-  return board ? formatUsdCost(usd, board.rate).replace(/^khoảng /, "") : `$${usd.toFixed(3)}`;
+function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }> }, id: string): string {
+  const row = board?.rows.find((item) => item.id === id);
+  if (!board) return "đang lấy đơn giá";
+  if (!row) return "chưa niêm yết";
+  return formatRoomPrice(row, board.rate, door.markup, roomCustom(door.custom, id));
 }
 
 function Stage({

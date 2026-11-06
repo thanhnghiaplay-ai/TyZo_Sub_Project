@@ -10,7 +10,7 @@ import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
-import { RunDoorClosed, RunDoorPrices, useRunDoor } from "@/components/run-door";
+import { RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
@@ -160,8 +160,7 @@ export function AccountPanel() {
           {runDoor.open ? (
             <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
               <h2 className="text-sm font-semibold">Trả theo lượt</h2>
-              <RunDoorPrices turbo={runDoor.turbo} large={runDoor.large} />
-              <p className="text-sm text-muted">Số dư dùng ví phía trên. Phiếu từng lần chạy sẽ hiện tại đây.</p>
+              <p className="text-sm text-muted">Đơn giá nằm ở tab Key khi chọn Trả theo lượt. Đó là giá dịch vụ của phòng, không phải bảng giá để so với key riêng.</p>
             </section>
           ) : (
             <RunDoorClosed note={runDoor.note} />
