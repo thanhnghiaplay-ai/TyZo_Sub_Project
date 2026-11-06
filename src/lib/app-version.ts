@@ -1,8 +1,9 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.5.0";
+export const APP_VERSION = "2.5.1";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Một câu, không ghi tên file. */
 export const CHANGELOG: { version: string; text: string }[] = [
+  { version: "2.5.1", text: "Thông báo về tài khoản và yêu cầu dùng câu rõ, trang trọng hơn." },
   { version: "2.5.0", text: "Bấm số phiên bản để xem các lần cập nhật. Số sáng nhẹ khi có bản bạn chưa xem." },
   { version: "2.4.2", text: "Chữ Quản lý thẳng hàng với Phụ đề và Tài khoản." },
   { version: "2.4.1", text: "Giá gói: 9.000 đ một ngày, 39.000 đ một tuần, 99.000 đ một tháng." },

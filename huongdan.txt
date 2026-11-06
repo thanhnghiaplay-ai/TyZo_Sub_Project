@@ -2,8 +2,8 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-06 10:01 UTC+7)
-- Số phiên bản người dùng thấy: v2.5.0, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG.
+ĐANG CHẠY (2026-11-06 11:27 UTC+7)
+- Số phiên bản người dùng thấy: v2.5.1, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG.
 - Điều khoản: TERMS_VERSION = 2026-11-06.1 trong src/components/entry-gate.tsx.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.
@@ -50,3 +50,5 @@ CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
 BÁO CÁO
 24. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
 25. Hỏi user trước khi làm việc tiếp theo.
+
+26. Văn phong thông báo, chốt 2026-11-06: câu người dùng thấy trong mục Thông báo, ô xác nhận gửi yêu cầu và trang yêu cầu xem lại phải đủ ý, trang trọng, nói rõ việc đã xảy ra và nơi xem phản hồi. Không viết «chuông», «báo Chủ», «cấp trên», không viết câu cụt. Dùng «Thông báo», «yêu cầu», «tài khoản», «chủ sở hữu», «cấp quản lý», «phản hồi». Tên cấp nội bộ trong trang Quản lý vẫn là Hỗ trợ, Quản lý, Chủ. Không đổi giọng trạng thái phòng dịch trừ khi user yêu cầu đúng phần đó.
