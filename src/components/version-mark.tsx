@@ -70,6 +70,7 @@ export function VersionMark({ align = "end" }: { align?: "start" | "end" }) {
             {CHANGELOG.map((item) => (
               <li key={item.version}>
                 <strong>v{item.version}</strong>
+                <time>{item.time}</time>
                 <span>{item.text}</span>
               </li>
             ))}
