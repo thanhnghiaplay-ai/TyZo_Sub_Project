@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getRunDoor, type RunDoorView } from "@/lib/admin-room";
 import type { PriceOverride } from "@/lib/run-desk";
 
-export const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {} };
+export const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {}, offered: null };
 
 export function useRunDoor() {
   const [door, setDoor] = useState<RunDoorView>(DOOR_OPEN);

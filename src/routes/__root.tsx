@@ -2,6 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ToastHost } from "@/components/toast";
+import { UpdateBanner } from "@/components/update-banner";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Dịch phụ đề";
@@ -35,6 +36,7 @@ export const Route = createRootRoute({
         <PreviewHostBridge />
         <AuthProvider>
           <Outlet />
+          <UpdateBanner />
           <ToastHost />
         </AuthProvider>
         <Scripts />

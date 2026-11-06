@@ -797,7 +797,7 @@ export function Studio() {
           <ModelPicker
             models={app.catalog}
             value={app.modelId}
-            remote={app.remoteIds}
+            remote={showRoomPrice ? null : app.remoteIds}
             board={showRoomPrice ? app.board : null}
             door={showRoomPrice ? runDoor : null}
             onChange={app.setModelId}
@@ -825,8 +825,12 @@ export function Studio() {
           </div>
         )}
         <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          <option value="whisper-large-v3-turbo">Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}</option>
-          <option value="whisper-large-v3">Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}</option>
+          <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
+            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
+          </option>
+          <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
+            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
+          </option>
         </Select>
         {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
         <label className="flex min-tap items-center gap-2 text-sm">
@@ -1334,7 +1338,7 @@ function ModelPicker({
   value: string;
   remote: string[] | null;
   board: GroqBoard | null;
-  door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }> } | null;
+  door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }>; offered: string[] | null } | null;
   onChange: (id: string) => void;
 }) {
   const remoteSet = remote ? new Set(remote) : null;
@@ -1351,13 +1355,15 @@ function ModelPicker({
               {list.map((model) => {
                 const on = value === model.id;
                 const missing = remoteSet ? !remoteSet.has(model.id) : false;
-                const facts = modelFacts(board, door, model.id, model.note);
+                const held = Boolean(door?.offered && !door.offered.includes(model.id));
+                const facts = held ? { price: "Chưa cập nhật", detail: "" } : modelFacts(board, door, model.id, model.note);
                 return (
                   <button
                     key={model.id}
                     type="button"
+                    disabled={held}
                     onClick={() => onChange(model.id)}
-                    className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg") + (missing ? " opacity-50" : "")}
+                    className={"min-tap rounded-xl border px-3 py-2 text-left disabled:opacity-60 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg") + (missing ? " opacity-50" : "")}
                   >
                     <span className="block text-sm font-semibold">{model.name}</span>
                     {facts.price ? <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{facts.price}</span> : null}
@@ -1379,7 +1385,7 @@ function ModelPicker({
 
 function modelFacts(
   board: GroqBoard | null,
-  door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }> } | null,
+  door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }>; offered: string[] | null } | null,
   id: string,
   note: string,
 ): { price: string; detail: string } {
@@ -1390,7 +1396,12 @@ function modelFacts(
   return { price: formatRoomPrice(row, board.rate, door.markup, roomCustom(door.custom, id)), detail: "" };
 }
 
-function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }> }, id: string): string {
+function roomHeld(door: { offered: string[] | null }, id: string) {
+  return Boolean(door.offered && !door.offered.includes(id));
+}
+
+function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }>; offered: string[] | null }, id: string): string {
+  if (roomHeld(door, id)) return "Chưa cập nhật";
   const row = board?.rows.find((item) => item.id === id);
   if (!board) return "đang lấy đơn giá";
   if (!row) return "chưa niêm yết";

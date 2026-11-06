@@ -3,7 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
 import { canSeeLog, isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
-import { checkRunDesk, dayStartIso, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
+import { checkRunDesk, dayStartIso, parseModelList, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
 
 export type MyPlace = {
   role: StaffRole | null;
@@ -956,6 +956,7 @@ export type RunTicket = {
 
 export type RunDeskView = {
   desk: RunDesk;
+  models: string[] | null;
   holding: number;
   charged: number;
   errors: number;
@@ -999,6 +1000,7 @@ export const getRunDesk = createServerFn({ method: "GET" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
+    const models = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
     const start = dayStartIso();
     const totals = await sql<{ holding: number; charged: number; errors: number }>`
       select
@@ -1031,6 +1033,7 @@ export const getRunDesk = createServerFn({ method: "GET" })
     const row = totals[0];
     return {
       desk: parseRunDesk(saved[0]?.value),
+      models: parseModelList(models[0]?.value),
       holding: Number(row?.holding ?? 0),
       charged: Number(row?.charged ?? 0),
       errors: Number(row?.errors ?? 0),
@@ -1161,20 +1164,48 @@ export const refundRun = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export type RunDoorView = { open: boolean; note: string; markup: number; custom: Record<string, PriceOverride> };
+export type RunDoorView = { open: boolean; note: string; markup: number; custom: Record<string, PriceOverride>; offered: string[] | null };
 
 export const getRunDoor = createServerFn({ method: "GET" }).handler(async (): Promise<RunDoorView> => {
-  const closed = { open: true, note: "", markup: 0, custom: {} as Record<string, PriceOverride> };
+  const closed = { open: true, note: "", markup: 0, custom: {} as Record<string, PriceOverride>, offered: null };
   try {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
+    const models = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
     const desk = parseRunDesk(saved[0]?.value);
-    return { open: !desk.maintenance, note: desk.maintenance ? desk.note : "", markup: desk.markup, custom: desk.custom };
+    return {
+      open: !desk.maintenance,
+      note: desk.maintenance ? desk.note : "",
+      markup: desk.markup,
+      custom: desk.custom,
+      offered: parseModelList(models[0]?.value),
+    };
   } catch {
     return closed;
   }
 });
+
+export const saveRunModels = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((ids: string[]) => {
+    if (!Array.isArray(ids)) throw new Error("Danh sách model không đúng.");
+    const next = ids.filter((id) => typeof id === "string" && /^[a-z0-9./_-]{2,80}$/i.test(id)).slice(0, 400);
+    return next;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const value = JSON.stringify(data);
+    await sql`
+      insert into room_settings (key, value) values ('run_models', ${value})
+      on conflict (key) do update set value = ${value}
+    `;
+    await writeAudit(context.userId, "key-model", null, `${data.length} model`);
+    return data;
+  });
+
 
 
 

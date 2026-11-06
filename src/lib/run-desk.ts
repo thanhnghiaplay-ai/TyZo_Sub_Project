@@ -132,6 +132,16 @@ export function checkRunDesk(input: RunDesk): RunDesk {
   };
 }
 
+export function parseModelList(raw: string | null | undefined): string[] | null {
+  if (!raw) return null;
+  try {
+    const data = JSON.parse(raw) as unknown;
+    if (!Array.isArray(data)) return null;
+    return data.filter((id): id is string => typeof id === "string" && /^[a-z0-9./_-]{2,80}$/i.test(id)).slice(0, 400);
+  } catch {
+    return null;
+  }
+}
 export function dayStartIso(now = new Date()) {
   const day = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Ho_Chi_Minh",

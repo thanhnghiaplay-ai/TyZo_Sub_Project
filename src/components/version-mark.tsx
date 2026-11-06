@@ -67,7 +67,7 @@ export function VersionMark({ align = "end" }: { align?: "start" | "end" }) {
         <div className="version-log" role="dialog" aria-label="Các lần cập nhật">
           <p className="version-log-title">Cập nhật</p>
           <ol>
-            {CHANGELOG.map((item) => (
+            {CHANGELOG.slice(0, 8).map((item) => (
               <li key={item.version}>
                 <strong>v{item.version}</strong>
                 <time>{item.time}</time>

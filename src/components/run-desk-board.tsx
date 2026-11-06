@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { getRunDesk, saveRunDesk, type RunDeskView, type RunTicket } from "@/lib/admin-room";
+import { getRunDesk, saveRunDesk, saveRunModels, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
-import { type GroqBoard } from "@/lib/sub/groq-board";
+import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
+import { listModelIds } from "@/lib/sub/groq";
 import { emptyOverride, formatRoomPrice, RUN_STATUS_LABEL, type PriceOverride, type RunDesk, type RunStatus } from "@/lib/run-desk";
 
 function dong(n: number) {
@@ -27,6 +28,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   const [view, setView] = useState<RunDeskView | null>(null);
   const [form, setForm] = useState<RunDesk | null>(null);
   const [board, setBoard] = useState<GroqBoard | null>(null);
+  const [models, setModels] = useState<string[] | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -35,6 +37,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       .then((next) => {
         setView(next);
         setForm(next.desk);
+        setModels(next.models);
       })
       .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt."));
     void loadGroqBoard()
@@ -52,6 +55,24 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         setNotice(done);
       })
       .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa lưu được."))
+      .finally(() => setBusy(false));
+  }
+
+  function syncKey() {
+    const token = localStorage.getItem("gk")?.trim() || "";
+    if (!token) {
+      setNotice("Hãy dán key Groq ở tab Key trên máy này, rồi đồng bộ lại. Key không được gửi lên máy chủ.");
+      return;
+    }
+    setBusy(true);
+    setNotice(null);
+    void listModelIds(token)
+      .then((ids) => saveRunModels({ data: ids }))
+      .then((ids) => {
+        setModels(ids);
+        setNotice(`Đã lưu ${ids.length} model key này gọi được. Trang khách không thấy danh sách này.`);
+      })
+      .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa đồng bộ được key."))
       .finally(() => setBusy(false));
   }
 
@@ -120,15 +141,26 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
             className="rounded-xl border border-line bg-raised px-3 py-3 outline-none disabled:opacity-60"
           />
         </label>
+        <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây. Khách không thấy.</p>
+        {owner && (
+          <button type="button" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={syncKey}>
+            Đồng bộ key trên máy này
+          </button>
+        )}
+        <p className="text-xs text-muted">{models ? `Key đang gọi được ${models.length} model.` : "Chưa đồng bộ key. Chưa biết model nào dùng được."}</p>
         <div className="grid gap-2">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);
             const custom = form?.custom[model.id] ?? emptyOverride();
+            const base = row && board ? formatLivePrice(row, board.rate) : "Chưa có giá gốc";
             const shown = row && board && form ? formatRoomPrice(row, board.rate, form.markup, custom) : "Chưa có giá gốc";
+            const usable = models ? models.includes(model.id) : null;
             return (
               <div key={model.id} className="grid gap-1 rounded-xl bg-raised px-3 py-2">
                 <p className="text-sm font-medium">{model.name}</p>
+                <p className="text-xs text-muted">Giá gốc: {base}</p>
                 <p className="text-xs text-muted">Khách trả theo lượt sẽ thấy: {shown}</p>
+                <p className="text-xs text-muted">{usable == null ? "Key: chưa đồng bộ" : usable ? "Key dùng được" : "Key không dùng được"}</p>
                 {model.kind === "hour" ? (
                   <input
                     inputMode="numeric"
