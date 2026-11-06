@@ -7,10 +7,10 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 18:40 (UTC+7) — Ghi kế hoạch nâng cấp nhận dạng và dịch, chưa code |
+| **Cập nhật lần cuối** | 2026-11-06 20:10 (UTC+7) — Ghi cửa trả theo lượt và sổ hỗ trợ, chưa code |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v2.5.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
-| **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 (key của chủ, tính theo phút, dán link) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
+| **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
 
@@ -93,6 +93,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
+| 55 | Trả theo lượt | ⚪ Để sau | User chốt 2026-11-06: hai cửa trong cùng phòng. Chi tiết giao diện, phiếu, quyền Hỗ trợ, Quản lý và Chủ nằm ở mục 15. Chưa code. Chưa nhận link. Không bán key Groq. |
 
 ---
 
@@ -317,6 +318,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 13:09 | Grok | **Chỉ tài liệu.** Chốt mục 12b trong `huongdan.txt`: từ mốc này, nâng cấp, cập nhật, bổ sung, chỉnh sửa hoặc chức năng nào làm đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục điều khoản liên quan trong cùng lần đó, rồi nâng `TERMS_VERSION`. Không đổi `src/`. | |
 | 2026-11-06 13:12 | Grok | **v2.5.1.** Viết lại các dòng trong hộp cập nhật cho đủ ý, thêm mốc thời gian phát hành. Không đổi điều khoản vì không đổi dịch vụ. | |
 | 2026-11-06 18:40 | Grok | **Chỉ tài liệu.** Ghi mục 14: kế hoạch nâng cấp nhận dạng và dịch để làm sau. Không đổi `src/`. App vẫn **v2.5.1**. | |
+| 2026-11-06 20:10 | Grok | **Chỉ tài liệu.** Ghi mục 15: cửa trả theo lượt, phiếu tiền, và quyền hỗ trợ. Không đổi `src/`. App vẫn **v2.5.1**. | |
 
 ---
 
@@ -332,6 +334,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 8. Độ sáng là filter trên video, không phải độ sáng OS.
 9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
 10. **Mục 14 chưa được code** cho đến khi user yêu cầu đúng một việc trong mục 14.2 hoặc 14.3. Không đổi model nhận dạng trước khi có số đo.
+11. **Mục 15 chưa được code** cho đến khi user yêu cầu đúng phần đó. Không bán hoặc cho thuê key Groq. Không nhận link video trong lát cắt này.
 
 ---
 
@@ -990,3 +993,62 @@ Chưa làm cả ba cổng một lúc. Làm email, ví, hạn gói trước. Nạ
 
 ---
 *File này nên được commit hoặc gửi kèm mỗi lần chuyển model AI.*
+
+---
+
+## 15. Trả theo lượt — để sau, chưa code
+
+User chốt ngày 2026-11-06, buổi tối. Đây là lát cắt đầu của mục 13.2, không thay mục 13.2. Dán link, đơn giá link, và đăng nhập Google vẫn để sau. Không sửa `src/` cho đến khi user yêu cầu đúng mục này.
+
+Không làm cổng cho thuê API. Điều khoản Groq, sửa ngày 22/06/2026, cho gắn Groq vào ứng dụng của phòng cho người dùng cuối, và cấm bán lại hoặc cho thuê tài khoản Groq nếu chưa có chấp thuận bằng văn bản. Khách không nhận key. Không có khóa cho lập trình viên.
+
+### 15.1. Hai cửa
+
+Một lần chạy chỉ một cửa. Không cộng gói ngày và ví vào cùng một lần.
+
+| | Cửa 1, đang chạy | Cửa 2, trả theo lượt |
+|---|---|---|
+| Key | Của khách, trên trình duyệt | Của chủ, chỉ ở máy chủ |
+| Tiền phòng | 9.000 / 39.000 / 99.000 đ | Không bán gói ngày cho lần này |
+| Tiền Groq | Groq tính khách | Khách trả phòng, bằng đồng |
+| Tệp | Chọn trên máy khách | Vẫn chọn trên máy khách |
+
+Dùng thử không đi qua cửa 2. Cửa 2 chỉ mở khi SePay hoặc Casso đã cộng tiền thật. Hết hạn mức Groq thì Chủ đóng cửa 2. Cửa 1 vẫn chạy.
+
+Khách thấy một đơn giá mỗi phút tiếng, đã gồm nhận dạng, dịch và phần chênh. Không hiện hóa đơn gốc của Groq. Turbo và Large có hai ô giá, vì cước Groq khác nhau. Nội bộ vẫn ghi giờ tiếng và token để đối soát. Phim dài thì tiền dịch có thể lớn hơn tiền nhận dạng, nên đơn giá phải có đệm. Đổi đơn giá không sửa phiếu cũ.
+
+Trước khi gửi Groq, hiện thời lượng, đơn giá, số giữ chỗ và số dư còn lại. Khách bấm giữ chỗ thì mới chạy. Hết số đã giữ thì dừng ở đoạn kế. Phần đã dịch trên máy khách không xóa. Đoạn Groq lỗi không tính tiền. Xong thì trừ số thực, nhả phần giữ thừa. Khách xuất được file của đúng lần đã trả, kể cả khi không có gói ngày.
+
+### 15.2. Chỗ trên màn hình
+
+Tab Key Sub có hai lựa chọn: **Key của tôi** và **Trả theo lượt**. Cửa 2 thì ẩn ô key, hiện số dư, đơn giá của model đang chọn, và nút nạp tiền.
+
+Trong Tài khoản thêm số dư, đơn giá đang áp, và sổ phiếu. Có nút xem thêm. Không thêm trang mới.
+
+### 15.3. Phiếu
+
+Mỗi lần chạy một phiếu. Ghi giờ, tên tệp, cửa đã chọn, phút tiếng, đơn giá lúc chạy, số giữ, số trừ, số nhả. Không ghi lời thoại, không ghi video, không ghi key.
+
+Trạng thái chỉ dùng: Đang giữ, Đã trừ, Đã nhả, Dừng vì hết tiền, Lỗi nhận dạng, Đã hoàn vào ví.
+
+Nút **Hỏi về lần này** tạo yêu cầu kèm mã phiếu. Phòng không giữ tệp, nên không chạy lại giúp. Khách muốn chạy tiếp thì chọn lại tệp trên máy.
+
+### 15.4. Quyền trên sổ lượt
+
+Hỗ trợ, khi tìm email, thấy sổ lượt của người đó. Được trả lời và ghi chú. Không khóa, không hoàn tiền, không đổi giá. Không thấy key, phụ đề, hay video. Việc hỏi về tiền chuyển thẳng cho Quản lý, không chờ hai giờ.
+
+Câu trả lời sẵn: lần này trừ đúng số phút đã chạy, đơn giá là giá lúc bấm chạy. Phần giữ thừa đã về số dư. Đoạn lỗi không tính tiền. Tệp không còn trên phòng. Cửa trả theo lượt đang đóng thì key của khách vẫn dùng được.
+
+Quản lý, trên một phiếu, được nhả khoản đang giữ nếu phiếu kẹt, và được hoàn vào ví một phần hoặc toàn bộ số đã trừ của đúng phiếu đó. Bắt buộc có lý do. Không hoàn quá số đã trừ. Không hoàn ra ngân hàng ở bản này. Khóa, mở hạn và mật khẩu tạm giữ như hiện tại. Quản lý không xem sổ của Chủ.
+
+Chủ sửa hai đơn giá, đóng hoặc mở cửa 2, và viết câu khách thấy khi cửa đóng. Đặt hạn mức đồng mỗi khách mỗi ngày. Đủ hạn thì chỉ khách đó dừng. Ba số trong ngày: tổng đang giữ, tổng đã trừ, số phiếu lỗi. Không có nội dung phim. Trang Quản lý không hiện key của phòng. Key chỉ là biến môi trường của máy chủ, không bắt đầu bằng `VITE_`.
+
+Nhân viên không chấm phụ đề đúng hay sai. Phòng không giữ lời thoại. Chất lượng nằm ở mục 14.3.
+
+### 15.5. Điều khoản khi bật
+
+Phải nâng `TERMS_VERSION`. Viết rõ tiếng và chữ đi qua máy chủ rồi tới Groq, chỉ giữ lúc xử lý rồi xóa. Giá là ước tính, số trừ là số thực. Khách đồng ý bản mới trước lần trả tiền đầu của cửa 2. Không hứa dịch đúng hết.
+
+### 15.6. Chưa làm trong lát cắt này
+
+Không nhận link video. Không có khóa API cho lập trình viên. Không hiện hóa đơn Groq. Không cộng tiền gói ngày vào lần trả theo lượt. Không hoàn ra ngân hàng.
