@@ -78,7 +78,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           <p className="gate-kicker">Phòng chiếu TyZo Sub</p>
           <h1 className="text-xl font-semibold">Điều khoản sử dụng</h1>
           <p className="text-sm text-muted">Phiên bản {TERMS_VERSION}. Đồng ý mới được dùng. Không đồng ý thì dừng ở đây.</p>
-          <VersionMark />
+          <VersionMark align="start" />
         </div>
       </header>
       <article className="gate-scroll">

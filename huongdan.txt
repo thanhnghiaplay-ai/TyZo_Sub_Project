@@ -2,8 +2,8 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-06 01:01 UTC+7)
-- Số phiên bản người dùng thấy: v2.4.2, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x, không hiện chữ «sửa chữ» hay «chức năng nhỏ».
+ĐANG CHẠY (2026-11-06 10:01 UTC+7)
+- Số phiên bản người dùng thấy: v2.5.0, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG.
 - Điều khoản: TERMS_VERSION = 2026-11-06.1 trong src/components/entry-gate.tsx.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.
@@ -30,7 +30,8 @@ SAU MỖI LẦN SỬA CODE
     - Thêm chức năng nhỏ: tăng số giữa, số cuối về 0. Ví dụ 2.4.1 thành 2.5.0.
     - Thêm chức năng lớn: tăng số đầu, hai số sau về 0. Ví dụ 2.4.1 thành 3.0.0.
     - Chỉ sửa tài liệu, không đổi cái người dùng thấy: không nâng số phiên bản.
-11. VersionMark đã đọc APP_VERSION. Số hiện ở góc điều khoản, phòng dịch và trang Admin. Không thêm chỗ thứ tư nếu chưa được yêu cầu.
+10b. Mỗi lần nâng APP_VERSION phải thêm một dòng vào CHANGELOG trong src/lib/app-version.ts, đứng đầu danh sách. Một câu tiếng Việt, người dùng đọc được. Không ghi tên file, không ghi commit. Không xóa dòng cũ. Bản chỉ sửa tài liệu thì không thêm dòng.
+11. VersionMark đã đọc APP_VERSION và CHANGELOG. Số hiện ở góc điều khoản, phòng dịch và trang Admin. Bấm hoặc rê chuột vào số thì mở tóm tắt cập nhật. Có bản chưa xem thì số sáng nhẹ. Không thêm chỗ thứ tư nếu chưa được yêu cầu.
 12. Đổi câu điều khoản hoặc bảng giá thì nâng TERMS_VERSION. Người dùng phải đồng ý lại. Không đổi số này khi chỉ sửa phòng dịch.
 13. Cập nhật PROJECT_STATUS.md: dòng «Cập nhật lần cuối», một dòng lịch sử mục 6, và hàng liên quan ở mục 2. Giờ lấy bằng lệnh TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M'. Không đoán giờ.
 14. Có sửa src/: chạy npx tsc --noEmit. Đụng logic đã có test thì chạy npm test. Dán kết quả thật. Không ghi pass khi chưa chạy.

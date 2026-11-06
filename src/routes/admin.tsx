@@ -11,7 +11,7 @@ function AdminPage() {
       <header className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line py-3">
         <div className="grid gap-1">
           <h1 className="text-base leading-none font-semibold">Admin</h1>
-          <VersionMark />
+          <VersionMark align="start" />
         </div>
         <div className="flex items-center gap-2">
           <NoticeBell />
