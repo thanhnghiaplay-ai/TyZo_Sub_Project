@@ -10,7 +10,7 @@ import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
-import { LaterFrame } from "@/components/later-frame";
+import { RunDoorClosed, RunDoorPrices, useRunDoor } from "@/components/run-door";
 import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
@@ -31,6 +31,7 @@ export function AccountPanel() {
   const [appeal, setAppeal] = useState("");
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
   const [reload, setReload] = useState(0);
+  const runDoor = useRunDoor();
 
   useEffect(() => {
     if (user?.displayName) setName(user.displayName);
@@ -156,10 +157,15 @@ export function AccountPanel() {
               {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
             </button>
           </AccountCard>
-          <LaterFrame title="Trả theo lượt">
-            <p className="text-sm text-muted">Số dư lượt, đơn giá mỗi phút và phiếu từng lần chạy sẽ hiện ở đây khi cửa này mở.</p>
-            <p className="text-sm">Số dư lượt: chưa có. Đơn giá: chưa có. Phiếu: chưa có.</p>
-          </LaterFrame>
+          {runDoor.open ? (
+            <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
+              <h2 className="text-sm font-semibold">Trả theo lượt</h2>
+              <RunDoorPrices turbo={runDoor.turbo} large={runDoor.large} />
+              <p className="text-sm text-muted">Số dư dùng ví phía trên. Phiếu từng lần chạy sẽ hiện tại đây.</p>
+            </section>
+          ) : (
+            <RunDoorClosed note={runDoor.note} />
+          )}
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>

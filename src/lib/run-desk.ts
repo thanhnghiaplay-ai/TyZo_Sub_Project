@@ -6,11 +6,13 @@ export type RunDesk = {
   cap: number;
 };
 
+export const RUN_CLOSED_NOTE = "Cửa trả theo lượt đang tạm ngưng để hoàn thiện. Bạn vẫn dùng key Groq của mình.";
+
 export const RUN_DESK_DEFAULT: RunDesk = {
   turbo: 0,
   large: 0,
   open: false,
-  note: "Cửa trả theo lượt chưa mở.",
+  note: RUN_CLOSED_NOTE,
   cap: 0,
 };
 
@@ -36,11 +38,15 @@ export function parseRunDesk(raw: string | null | undefined): RunDesk {
   if (!raw) return { ...RUN_DESK_DEFAULT };
   try {
     const data = JSON.parse(raw) as Partial<RunDesk>;
+    const note = (typeof data.note === "string" ? data.note : RUN_DESK_DEFAULT.note).replace(
+      "Cửa trả theo lượt chưa mở.",
+      RUN_CLOSED_NOTE,
+    );
     return checkRunDesk({
       turbo: data.turbo ?? 0,
       large: data.large ?? 0,
       open: Boolean(data.open),
-      note: typeof data.note === "string" ? data.note : RUN_DESK_DEFAULT.note,
+      note,
       cap: data.cap ?? 0,
     });
   } catch {
@@ -57,7 +63,6 @@ export function checkRunDesk(input: RunDesk): RunDesk {
     note,
     cap: money(input.cap),
   };
-  if (next.open && (next.turbo < 1 || next.large < 1)) throw new Error("Hãy đặt đơn giá Turbo và Large trước khi mở cửa.");
   return next;
 }
 

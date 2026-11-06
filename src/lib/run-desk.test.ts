@@ -10,8 +10,13 @@ describe("bàn trả theo lượt", () => {
     assert.equal(desk.large, 0);
   });
 
-  it("không mở cửa khi chưa có đơn giá", () => {
-    assert.throws(() => checkRunDesk({ turbo: 0, large: 1000, open: true, note: "đóng", cap: 0 }), /đơn giá/);
+  it("câu đóng cũ được đổi sang câu tạm ngưng", () => {
+    const desk = parseRunDesk(JSON.stringify({ turbo: 0, large: 0, open: false, note: "Cửa trả theo lượt chưa mở.", cap: 0 }));
+    assert.match(desk.note, /tạm ngưng để hoàn thiện/);
+  });
+  it("mở cửa được khi chưa niêm yết, để xem khung", () => {
+    const desk = checkRunDesk({ turbo: 0, large: 0, open: true, note: "xem khung", cap: 0 });
+    assert.equal(desk.open, true);
   });
 
   it("mốc ngày theo giờ Việt Nam", () => {

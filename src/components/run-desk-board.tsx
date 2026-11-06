@@ -39,7 +39,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       .then((desk) => {
         setForm(desk);
         setView((current) => (current ? { ...current, desk } : current));
-        setNotice("Đã lưu. Khách chưa chạy được cửa này.");
+        setNotice("Đã lưu. Trang khách đổi theo trạng thái cửa.");
       })
       .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa lưu được."))
       .finally(() => setBusy(false));
@@ -51,7 +51,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         <h2 className="font-semibold">Trả theo lượt</h2>
         <p className="text-xs font-medium text-muted">{form?.open ? "Đã lưu là mở" : "Đang đóng"}</p>
       </div>
-      <p className="text-sm text-muted">Khách chưa chạy được cửa này. Chỉ Chủ sửa đơn giá, hạn mức và câu báo đóng cửa.</p>
+      <p className="text-sm text-muted">Đóng thì trang khách chỉ hiện câu tạm ngưng và vẫn dùng key của họ. Mở thì khung trả theo lượt hiện để xem bố cục. Lần chạy chưa trừ ví.</p>
       <div className="grid grid-cols-3 gap-2">
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
@@ -104,7 +104,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           checked={Boolean(form?.open)}
           onChange={(event) => setForm((current) => (current ? { ...current, open: event.target.checked } : current))}
         />
-        Lưu trạng thái cửa là đang mở
+        Lưu trạng thái: mở cửa trên trang khách
       </label>
       {owner && (
         <button type="submit" disabled={busy || !form} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40">

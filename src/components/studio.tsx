@@ -26,7 +26,7 @@ import { usePipeline } from "@/components/use-pipeline";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
-import { LaterFrame } from "@/components/later-frame";
+import { RunDoorClosed, RunDoorPrices, useRunDoor } from "@/components/run-door";
 import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
 import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
@@ -372,7 +372,9 @@ export function Studio() {
   const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [payByRoom, setPayByRoom] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const runDoor = useRunDoor();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
@@ -730,15 +732,23 @@ export function Studio() {
           </button>
         </div>
       <section id="tool-key" role="tabpanel" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
-        <LaterFrame title="Cách trả Groq">
-          <div className="grid grid-cols-2 gap-2">
-            <p className="flex min-tap items-center justify-center rounded-xl bg-accent text-center text-sm font-semibold text-ink">Key của tôi</p>
-            <button type="button" className="min-tap rounded-xl border border-line text-sm font-semibold disabled:opacity-50" disabled>
-              Trả theo lượt
-            </button>
+        {runDoor.open ? (
+          <div className="grid gap-2">
+            <h2 className="text-sm font-semibold">Cách trả Groq</h2>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => setPayByRoom(false)}>
+                Key của tôi
+              </button>
+              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => setPayByRoom(true)}>
+                Trả theo lượt
+              </button>
+            </div>
+            {payByRoom && <RunDoorPrices turbo={runDoor.turbo} large={runDoor.large} />}
           </div>
-          <p className="text-xs text-muted">Đang dùng key của bạn. Cửa trả theo lượt chưa mở.</p>
-        </LaterFrame>
+        ) : (
+          <RunDoorClosed note={runDoor.note} />
+        )}
+        {!(runDoor.open && payByRoom) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
           Groq API key
           <span className="flex gap-2">
@@ -761,6 +771,7 @@ export function Studio() {
             </IconButton>
           </span>
         </label>
+        )}
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted">Cách chọn model</span>
           <button
