@@ -1,18 +1,6 @@
 import { useEffect, useState } from "react";
 import { listMyNotices, markNoticesRead, type NoticeRow } from "@/lib/admin-room";
 
-function noticeWhen(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
 export function NoticeBell() {
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -39,7 +27,7 @@ export function NoticeBell() {
       <button
         type="button"
         className="notice-bell-btn"
-        aria-label={unread ? `${unread} thông báo chưa đọc` : "Thông báo"}
+        aria-label={unread ? `${unread} thông báo mới` : "Thông báo"}
         aria-expanded={open}
         onClick={() => {
           const next = !open;
@@ -61,7 +49,7 @@ export function NoticeBell() {
       {open && (
         <div className="notice-panel">
           <p className="text-sm font-semibold">Thông báo</p>
-          {items.length === 0 && <p className="mt-2 text-sm leading-relaxed text-muted">Hiện chưa có thông báo.</p>}
+          {items.length === 0 && <p className="mt-2 text-sm text-muted">Chưa có thông báo.</p>}
           <ul className="mt-2 space-y-2">
             {items.map((item) => (
               <li key={item.id}>
@@ -76,10 +64,7 @@ export function NoticeBell() {
                   }}
                 >
                   <p className="text-sm font-medium">{item.title}</p>
-                  {noticeWhen(item.createdAt) && (
-                    <p className="mt-0.5 text-xs text-muted">{noticeWhen(item.createdAt)}</p>
-                  )}
-                  <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-muted">{item.body}</p>
+                  <p className="text-sm text-muted">{item.body}</p>
                 </button>
               </li>
             ))}

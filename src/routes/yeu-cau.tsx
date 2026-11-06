@@ -25,9 +25,9 @@ function AppealPage() {
           void submitPublicAppeal({ data: { email, body } })
             .then(() => {
               setBody("");
-              setNotice("Đã gửi yêu cầu. Nếu bạn đăng nhập lại được, phản hồi sẽ xuất hiện trong mục Thông báo của tài khoản.");
+              setNotice("Đã gửi. Phòng sẽ trả lời trong tài khoản nếu bạn đăng nhập lại được.");
             })
-            .catch((error) => setNotice(error instanceof Error ? error.message : "Không gửi được yêu cầu. Vui lòng thử lại."))
+            .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa gửi được."))
             .finally(() => setBusy(false));
         }}
       >
@@ -43,7 +43,7 @@ function AppealPage() {
           required
           value={body}
           onChange={(event) => setBody(event.target.value)}
-          placeholder="Mô tả việc đã xảy ra và lý do cần xem xét lại"
+          placeholder="Việc đã xảy ra và vì sao cần mở lại"
           rows={5}
           className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
         />
