@@ -266,7 +266,7 @@ export function AdminDesk() {
                 Ghi chú nội bộ
                 <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
               </label>
-              <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => saveStaffNote({ data: { userId: picked.id, note } }), "Đã lưu ghi chú.")}> 
+              <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => saveStaffNote({ data: { userId: picked.id, note } }), "Đã lưu ghi chú.")}>
                 Lưu ghi chú
               </button>
               {roleAtLeast(role, "quan-ly") && (
@@ -275,7 +275,7 @@ export function AdminDesk() {
                     Mật khẩu tạm
                     <input value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
                   </label>
-                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setTempPassword({ data: { userId: picked.id, password } }), "Đã đặt mật khẩu tạm. Hãy gửi cho họ.")}> 
+                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setTempPassword({ data: { userId: picked.id, password } }), "Đã đặt mật khẩu tạm. Hãy gửi cho họ.")}>
                     Đặt mật khẩu tạm
                   </button>
                   <label className="grid gap-1 text-sm">
@@ -283,21 +283,21 @@ export function AdminDesk() {
                     <input value={reason} onChange={(event) => setReason(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "locked", reason } }), "Đã khóa.")}> 
+                    <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "locked", reason } }), "Đã khóa.")}>
                       Khóa
                     </button>
-                    <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "open", reason: "" } }), "Đã mở lại.")}> 
+                    <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "open", reason: "" } }), "Đã mở lại.")}>
                       Mở lại
                     </button>
                     {roleAtLeast(role, "chu") && (
-                      <button type="button" disabled={busy} className="min-tap rounded-full border border-danger px-4 text-danger disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "banned", reason } }), "Đã cấm.")}> 
+                      <button type="button" disabled={busy} className="min-tap rounded-full border border-danger px-4 text-danger disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "banned", reason } }), "Đã cấm.")}>
                         Cấm
                       </button>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {ROOM_PLANS.map((plan) => (
-                      <button key={plan.id} type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => void run(() => grantPlan({ data: { userId: picked.id, planId: plan.id } }), `Đã mở gói ${plan.name}.`)}> 
+                      <button key={plan.id} type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => void run(() => grantPlan({ data: { userId: picked.id, planId: plan.id } }), `Đã mở gói ${plan.name}.`)}>
                         Mở {plan.name}
                       </button>
                     ))}
@@ -306,13 +306,13 @@ export function AdminDesk() {
               )}
               {roleAtLeast(role, "chu") && picked.role !== "chu" && (
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "ho-tro" } }), "Đã cho quyền Hỗ trợ.")}> 
+                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "ho-tro" } }), "Đã cho quyền Hỗ trợ.")}>
                     Cho Hỗ trợ
                   </button>
-                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "quan-ly" } }), "Đã cho quyền Quản lý.")}> 
+                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "quan-ly" } }), "Đã cho quyền Quản lý.")}>
                     Cho Quản lý
                   </button>
-                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "none" } }), "Đã gỡ quyền.")}> 
+                  <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "none" } }), "Đã gỡ quyền.")}>
                     Gỡ quyền
                   </button>
                   <button
@@ -476,9 +476,9 @@ function planLine(user: AdminUser) {
   if (!user.plan || !user.planUntil) return "Chưa mua gói. Hết hạn không phải bị khóa.";
   const until = new Date(user.planUntil);
   const name = ROOM_PLANS.find((plan) => plan.id === user.plan)?.name ?? user.plan;
-  if (Number.isNaN(until.getTime())) return `Đã gói ${name}.`;
-  if (until.getTime() <= Date.now()) return `Đã gói ${name} đã hết hạn. Hết hạn không phải bị khóa.`;
-  return `Đã gói ${name} còn đến ${until.toLocaleString("vi-VN")}.`;
+  if (Number.isNaN(until.getTime())) return `Gói ${name}.`;
+  if (until.getTime() <= Date.now()) return `Gói ${name} đã hết hạn. Hết hạn không phải bị khóa.`;
+  return `Gói ${name} còn đến ${until.toLocaleString("vi-VN")}.`;
 }
 
 function foundNotice(query: string) {
