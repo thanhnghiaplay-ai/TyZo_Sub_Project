@@ -35,6 +35,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PaySettings } from "@/components/pay-settings";
+import { LaterFrame } from "@/components/later-frame";
 import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
@@ -161,6 +162,12 @@ export function AdminDesk() {
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>
         </div>
+      )}
+      {role && (
+        <LaterFrame title="Trả theo lượt">
+          <p className="text-sm text-muted">Cửa đang đóng. Đơn giá Turbo, đơn giá Large, hạn mức ngày và sổ phiếu sẽ hiện ở đây khi cửa này mở. Chỉ Chủ được sửa.</p>
+          <p className="text-sm">Đơn giá: chưa có. Hạn mức: chưa có. Phiếu lỗi trong ngày: chưa có.</p>
+        </LaterFrame>
       )}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}

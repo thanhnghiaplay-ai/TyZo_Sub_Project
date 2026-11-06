@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 20:10 (UTC+7) — Ghi cửa trả theo lượt và sổ hỗ trợ, chưa code |
+| **Cập nhật lần cuối** | 2026-11-06 20:54 (UTC+7) — v2.5.2: nút danh sách và khung trả theo lượt, chưa dùng được |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.5.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.5.2** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -89,11 +89,11 @@
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
 | 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9 khi xoay ngang và khi bật chế độ máy tính. Câu hướng dẫn xuống dòng dưới khung. Cần user xem lại trên điện thoại. |
 | 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
-| 51 | Nút Quản lý | 🟡 Đã gắn | Hiện cạnh Tài khoản khi có quyền. Chữ căn giữa cùng hàng với Phụ đề và Tài khoản. |
+| 51 | Nút Quản lý | 🟡 Đã gắn | Nằm trong danh sách của nút ba gạch, chỉ hiện khi có quyền. Tên mục đang mở hiện cạnh nút. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 55 | Trả theo lượt | ⚪ Để sau | User chốt 2026-11-06: hai cửa trong cùng phòng. Chi tiết giao diện, phiếu, quyền Hỗ trợ, Quản lý và Chủ nằm ở mục 15. Chưa code. Chưa nhận link. Không bán key Groq. |
+| 55 | Trả theo lượt | ⚪ Khung, chưa dùng | v2.5.2 có khung ở tab Key, Tài khoản và trang quản trị, ghi «Sẽ cập nhật sau». Chưa trừ tiền, chưa gọi Groq bằng key của chủ. Chi tiết khi làm thật nằm ở mục 15. |
 
 ---
 
@@ -319,6 +319,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 13:12 | Grok | **v2.5.1.** Viết lại các dòng trong hộp cập nhật cho đủ ý, thêm mốc thời gian phát hành. Không đổi điều khoản vì không đổi dịch vụ. | |
 | 2026-11-06 18:40 | Grok | **Chỉ tài liệu.** Ghi mục 14: kế hoạch nâng cấp nhận dạng và dịch để làm sau. Không đổi `src/`. App vẫn **v2.5.1**. | |
 | 2026-11-06 20:10 | Grok | **Chỉ tài liệu.** Ghi mục 15: cửa trả theo lượt, phiếu tiền, và quyền hỗ trợ. Không đổi `src/`. App vẫn **v2.5.1**. | |
+| 2026-11-06 20:54 | Grok | **v2.5.2.** Nút ba gạch thay hàng Phụ đề, Tài khoản, Quản lý. Tên mục đang mở hiện cạnh nút. Khung Trả theo lượt hiện ở tab Key, Tài khoản và trang quản trị, ghi sẽ cập nhật sau. Chưa trừ tiền. Không đổi điều khoản. | |
 
 ---
 
@@ -334,7 +335,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 8. Độ sáng là filter trên video, không phải độ sáng OS.
 9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
 10. **Mục 14 chưa được code** cho đến khi user yêu cầu đúng một việc trong mục 14.2 hoặc 14.3. Không đổi model nhận dạng trước khi có số đo.
-11. **Mục 15 chưa được code** cho đến khi user yêu cầu đúng phần đó. Không bán hoặc cho thuê key Groq. Không nhận link video trong lát cắt này.
+11. **Mục 15 chưa được mở.** Khung v2.5.2 chỉ để nhìn. Không trừ tiền, không gọi Groq bằng key của chủ, không bán key, không nhận link, cho đến khi user yêu cầu đúng phần đó.
 
 ---
 
@@ -996,9 +997,13 @@ Chưa làm cả ba cổng một lúc. Làm email, ví, hạn gói trước. Nạ
 
 ---
 
-## 15. Trả theo lượt — để sau, chưa code
+## 15. Trả theo lượt — khung đã dựng, chưa dùng được
 
-User chốt ngày 2026-11-06, buổi tối. Đây là lát cắt đầu của mục 13.2, không thay mục 13.2. Dán link, đơn giá link, và đăng nhập Google vẫn để sau. Không sửa `src/` cho đến khi user yêu cầu đúng mục này.
+User chốt ngày 2026-11-06, buổi tối. Đây là lát cắt đầu của mục 13.2, không thay mục 13.2. Dán link, đơn giá link, và đăng nhập Google vẫn để sau.
+
+Từ **v2.5.2**, khung đã hiện ở tab Key, mục Tài khoản và trang quản trị. Dòng trên khung là «Sẽ cập nhật sau». Bấm «Trả theo lượt» chưa được. Key của khách vẫn là đường đang chạy. Không trừ ví, không gọi Groq bằng key của chủ, không mở điều khoản mới.
+
+Phần dưới là việc sẽ làm khi user yêu cầu đúng mục này. Không coi khung là cửa đã mở.
 
 Không làm cổng cho thuê API. Điều khoản Groq, sửa ngày 22/06/2026, cho gắn Groq vào ứng dụng của phòng cho người dùng cuối, và cấm bán lại hoặc cho thuê tài khoản Groq nếu chưa có chấp thuận bằng văn bản. Khách không nhận key. Không có khóa cho lập trình viên.
 

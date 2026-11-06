@@ -11,6 +11,7 @@ import {
   FileAudio,
   Link2,
   Loader2,
+  Menu,
   Pause,
   Play,
   RefreshCw,
@@ -25,6 +26,7 @@ import { usePipeline } from "@/components/use-pipeline";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
+import { LaterFrame } from "@/components/later-frame";
 import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
 import { formatLiveDetail, formatLivePrice, formatUsdCost, type GroqBoard, type GroqLiveRow } from "@/lib/sub/groq-board";
@@ -369,6 +371,8 @@ export function Studio() {
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
@@ -470,6 +474,22 @@ export function Studio() {
   };
 
   useEffect(() => {
+    if (!menuOpen) return;
+    const close = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
     void getMyPlace().then(setPlace).catch(() => setPlace(null));
     const ping = () => void touchPresence().catch(() => undefined);
     ping();
@@ -500,30 +520,49 @@ export function Studio() {
         <AccountStrip />
       </header>
 
-      <nav aria-label="Chức năng" className="flex shrink-0 items-center gap-2">
-        <button
-          type="button"
-          data-product="sub"
-          aria-current={product === "sub" ? "page" : undefined}
-          className={"inline-flex min-tap items-center justify-center rounded-full px-4 text-sm font-semibold " + (product === "sub" ? "bg-accent text-ink" : "border border-line")}
-          onClick={() => setProduct("sub")}
-        >
-          Phụ đề
-        </button>
-        <button
-          type="button"
-          data-product="account"
-          aria-current={product === "account" ? "page" : undefined}
-          className={"inline-flex min-tap items-center justify-center rounded-full px-4 text-sm font-semibold " + (product === "account" ? "bg-accent text-ink" : "border border-line")}
-          onClick={() => setProduct("account")}
-        >
-          Tài khoản
-        </button>
-        {place?.role && (
-          <Link to="/admin" className="inline-flex min-tap items-center justify-center rounded-full border border-line px-4 text-sm leading-none font-semibold">
-            Quản lý
-          </Link>
-        )}
+      <nav aria-label="Chức năng" className="room-nav">
+        <div data-product="sub" ref={menuRef} className="room-menu">
+          <button
+            type="button"
+            className="room-menu-button"
+            aria-expanded={menuOpen}
+            aria-controls="room-menu-list"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <Menu className="size-4" aria-hidden="true" />
+            <span>{product === "account" ? "Tài khoản" : "Phụ đề"}</span>
+          </button>
+          {menuOpen && (
+            <div id="room-menu-list" role="tablist" className="room-menu-list">
+            <button
+              type="button"
+              aria-current={product === "sub" ? "page" : undefined}
+              onClick={() => {
+                setProduct("sub");
+                setMenuOpen(false);
+              }}
+            >
+              Phụ đề
+            </button>
+            <button
+              type="button"
+              data-product="account"
+              aria-current={product === "account" ? "page" : undefined}
+              onClick={() => {
+                setProduct("account");
+                setMenuOpen(false);
+              }}
+            >
+              Tài khoản
+            </button>
+            {place?.role && (
+              <Link to="/admin" onClick={() => setMenuOpen(false)}>
+                Quản lý
+              </Link>
+            )}
+          </div>
+          )}
+        </div>
       </nav>
 
       {place?.status === "banned" ? (
@@ -691,6 +730,15 @@ export function Studio() {
           </button>
         </div>
       <section id="tool-key" role="tabpanel" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
+        <LaterFrame title="Cách trả Groq">
+          <div className="grid grid-cols-2 gap-2">
+            <p className="flex min-tap items-center justify-center rounded-xl bg-accent text-center text-sm font-semibold text-ink">Key của tôi</p>
+            <button type="button" className="min-tap rounded-xl border border-line text-sm font-semibold disabled:opacity-50" disabled>
+              Trả theo lượt
+            </button>
+          </div>
+          <p className="text-xs text-muted">Đang dùng key của bạn. Cửa trả theo lượt chưa mở.</p>
+        </LaterFrame>
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
           Groq API key
           <span className="flex gap-2">

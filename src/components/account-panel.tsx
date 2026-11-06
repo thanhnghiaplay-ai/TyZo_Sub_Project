@@ -10,6 +10,7 @@ import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
+import { LaterFrame } from "@/components/later-frame";
 import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
@@ -155,6 +156,10 @@ export function AccountPanel() {
               {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
             </button>
           </AccountCard>
+          <LaterFrame title="Trả theo lượt">
+            <p className="text-sm text-muted">Số dư lượt, đơn giá mỗi phút và phiếu từng lần chạy sẽ hiện ở đây khi cửa này mở.</p>
+            <p className="text-sm">Số dư lượt: chưa có. Đơn giá: chưa có. Phiếu: chưa có.</p>
+          </LaterFrame>
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>
