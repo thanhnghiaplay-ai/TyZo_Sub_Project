@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunModels, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
@@ -29,7 +31,8 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   const [form, setForm] = useState<RunDesk | null>(null);
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [models, setModels] = useState<string[] | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [adminKey, setAdminKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -39,41 +42,52 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         setForm(next.desk);
         setModels(next.models);
       })
-      .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt."));
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt.", "bad"));
     void loadGroqBoard()
       .then(setBoard)
-      .catch(() => setNotice("Chưa lấy được giá gốc. Phần trăm và giá riêng vẫn lưu được."));
+      .catch(() => pushToast("Chưa lấy được giá gốc. Phần trăm và giá riêng vẫn lưu được.", "bad"));
   }, []);
 
   function save(next: RunDesk, done: string) {
     setBusy(true);
-    setNotice(null);
     void saveRunDesk({ data: next })
       .then((desk) => {
         setForm(desk);
         setView((current) => (current ? { ...current, desk } : current));
-        setNotice(done);
+        pushToast(done);
       })
-      .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa lưu được."))
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
       .finally(() => setBusy(false));
   }
 
   function syncKey() {
-    const token = localStorage.getItem("gk")?.trim() || "";
+    const token = adminKey.trim();
     if (!token) {
-      setNotice("Hãy dán key Groq ở tab Key trên máy này, rồi đồng bộ lại. Key không được gửi lên máy chủ.");
+      pushToast("Hãy nhập hoặc dán key, rồi đồng bộ.", "bad");
       return;
     }
     setBusy(true);
-    setNotice(null);
     void listModelIds(token)
       .then((ids) => saveRunModels({ data: ids }))
       .then((ids) => {
         setModels(ids);
-        setNotice(`Đã lưu ${ids.length} model key này gọi được. Trang khách không thấy danh sách này.`);
+        pushToast(`Đã lưu ${ids.length} model key này gọi được. Trang khách không thấy danh sách này.`);
       })
-      .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa đồng bộ được key."))
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đồng bộ được key.", "bad"))
       .finally(() => setBusy(false));
+  }
+
+  async function pasteKey() {
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      if (!text) {
+        pushToast("Bộ nhớ tạm không có nội dung để dán.", "bad");
+        return;
+      }
+      setAdminKey(text);
+    } catch {
+      pushToast("Chưa dán được. Hãy cho phép dán, hoặc nhập tay.", "bad");
+    }
   }
 
   function setCustom(id: string, patch: Partial<PriceOverride>) {
@@ -143,8 +157,31 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         </label>
         <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây. Khách không thấy.</p>
         {owner && (
+          <label className="grid gap-1 text-sm">
+            Key Groq để đồng bộ
+            <span className="flex gap-2">
+              <input
+                type={showKey ? "text" : "password"}
+                value={adminKey}
+                autoComplete="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                placeholder="Nhập hoặc dán key, chỉ nằm trên máy này"
+                onChange={(event) => setAdminKey(event.target.value)}
+                className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              />
+              <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => void pasteKey()}>
+                Dán
+              </button>
+              <button type="button" className="min-tap rounded-full border border-line px-3" aria-label={showKey ? "Ẩn key" : "Hiện key"} onClick={() => setShowKey((value) => !value)}>
+                {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </span>
+          </label>
+        )}
+        {owner && (
           <button type="button" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={syncKey}>
-            Đồng bộ key trên máy này
+            Đồng bộ key
           </button>
         )}
         <p className="text-xs text-muted">{models ? `Key đang gọi được ${models.length} model.` : "Chưa đồng bộ key. Chưa biết model nào dùng được."}</p>
@@ -201,7 +238,6 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         )}
       </div>
 
-      {notice && <p className="text-sm text-muted">{notice}</p>}
       <div>
         <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
         {!view?.recent.length && <p className="text-sm text-muted">Chưa có phiếu.</p>}

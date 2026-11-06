@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 22:04 (UTC+7) — v2.8.0: giá gốc, key admin, báo bản mới |
+| **Cập nhật lần cuối** | 2026-11-06 22:22 (UTC+7) — v2.9.0: key ở trang quản trị, đổi tên thể loại |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.8.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.9.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -93,7 +93,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 55 | Trả theo lượt | 🟡 Giá gốc và key admin | v2.8.0: Quản trị thấy giá gốc và model key gọi được. Khách không thấy. Model chưa đưa ra chỉ ghi chưa cập nhật. Có báo bản mới, nút để sau, rời trang 5 phút thì tự tải lại. Chưa trừ ví khi chạy. |
+| 55 | Trả theo lượt | 🟡 Key đồng bộ tại quản trị | v2.9.0: Chủ nhập hoặc dán key ngay trên trang quản trị. Khách trả theo lượt không bấm đồng bộ key. Thể loại hiện «Phim gắn nhãn 18+» và «Phim thoại kín», mã và thuật ngữ không đổi. Lưu ở quản trị có thông báo nổi. Chưa trừ ví khi chạy. |
 
 ---
 
@@ -324,6 +324,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 21:11 | Grok | **v2.6.1.** Đóng thì trang khách chỉ thấy câu tạm ngưng. Mở thì khung Key của tôi hoặc Trả theo lượt hiện lại. Chưa trừ ví. Không đổi điều khoản. | |
 | 2026-11-06 21:47 | Grok | **v2.7.0.** Cửa mặc định mở. Bảo trì bằng nội dung đã lưu. Giá biểu cập nhật riêng, tăng phần trăm hoặc giá riêng, khung model đồng bộ. Key của khách không hiện giá. Chưa trừ ví. Không đổi điều khoản. | |
 | 2026-11-06 22:04 | Grok | **v2.8.0.** Giá gốc và model key admin chỉ ở trang quản trị. Khách chỉ thấy «Chưa cập nhật» nếu model chưa đưa ra. Bảng phiên bản còn 8 lần. Có báo bản mới. Không đổi điều khoản. | |
+| 2026-11-06 22:22 | Grok | **v2.9.0.** Ô key ngay trên trang quản trị. Trả theo lượt không cần đồng bộ key. Đổi tên hiển thị hai thể loại, mã và thuật ngữ giữ. Thông báo nổi khi lưu ở quản trị. Không đổi điều khoản. | |
 
 ---
 

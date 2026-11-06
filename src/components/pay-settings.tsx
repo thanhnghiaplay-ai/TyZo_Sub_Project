@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { pushToast } from "@/components/toast";
 import { getPaySettings, savePaySettings, type PaySettingsView } from "@/lib/pay-store";
 
 const BLANK: PaySettingsView = {
@@ -20,7 +21,6 @@ export function PaySettings() {
   const [sepayKey, setSepayKey] = useState("");
   const [cassoToken, setCassoToken] = useState("");
   const [cassoKey, setCassoKey] = useState("");
-  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [origin, setOrigin] = useState("");
 
@@ -28,13 +28,12 @@ export function PaySettings() {
     setOrigin(window.location.origin);
     void getPaySettings()
       .then(setView)
-      .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa đọc được cấu hình."));
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được cấu hình.", "bad"));
   }, []);
 
   function save(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);
-    setNotice(null);
     void savePaySettings({
       data: {
         sepay_key: sepayKey,
@@ -53,9 +52,9 @@ export function PaySettings() {
         setSepayKey("");
         setCassoToken("");
         setCassoKey("");
-        setNotice("Đã lưu. Cổng nào đủ API, ngân hàng và số tài khoản thì người dùng nạp được ngay.");
+        pushToast("Đã lưu cổng nạp.");
       })
-      .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa lưu được."))
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
       .finally(() => setBusy(false));
   }
 
@@ -83,7 +82,6 @@ export function PaySettings() {
       <button type="submit" disabled={busy} className="min-tap rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">
         Lưu cổng nạp
       </button>
-      {notice && <p className="text-sm text-muted">{notice}</p>}
     </form>
   );
 }

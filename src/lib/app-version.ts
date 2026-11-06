@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.8.0";
+export const APP_VERSION = "2.9.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.9.0",
+    time: "22:22 ngày 06/11/2026",
+    text: "Trang quản trị có ô nhập, dán, hiện và ẩn key để đồng bộ model. Key không gửi lên máy chủ. Khách chọn trả theo lượt thì không cần bấm đồng bộ key. Hai thể loại đổi tên hiển thị thành Phim gắn nhãn 18+ và Phim thoại kín. Thuật ngữ và cách dịch giữ nguyên. Việc lưu ở trang quản trị hiện thông báo nổi.",
+  },
   {
     version: "2.8.0",
     time: "22:04 ngày 06/11/2026",

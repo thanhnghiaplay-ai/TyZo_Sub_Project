@@ -779,15 +779,17 @@ export function Studio() {
         )}
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted">Cách chọn model</span>
-          <button
-            type="button"
-            className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
-            onClick={() => void app.refreshModels()}
-            disabled={app.modelBusy}
-          >
-            {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-            Đồng bộ key
-          </button>
+          {!showRoomPrice && (
+            <button
+              type="button"
+              className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
+              onClick={() => void app.refreshModels()}
+              disabled={app.modelBusy}
+            >
+              {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+              Đồng bộ key
+            </button>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-2">
           <Choice on={app.mode === "manual"} onClick={() => app.setMode("manual")} title="Tự chọn" text="Một model cho cả phim" />
@@ -810,13 +812,16 @@ export function Studio() {
               <Choice on={app.profile === "accurate"} onClick={() => app.setProfile("accurate")} title="Chính xác" text="Model mạnh hơn" />
             </div>
             <p className="text-sm text-muted">
-              Câu ngắn đi model nhanh. Hội thoại dùng GPT-OSS 120B. Câu khó hoặc bản dịch lỗi chuyển sang Qwen, hoặc model Enterprise nếu key có.
-              Khi nâng cấp key, bấm Đồng bộ key — Auto chỉ gọi model mà key mở được.
+              {showRoomPrice
+                ? "Câu ngắn đi model nhanh. Hội thoại dùng model chính. Câu khó chuyển sang model mạnh hơn đã được phòng đưa ra."
+                : "Câu ngắn đi model nhanh. Hội thoại dùng GPT-OSS 120B. Câu khó hoặc bản dịch lỗi chuyển sang Qwen, hoặc model Enterprise nếu key có. Khi nâng cấp key, bấm Đồng bộ key — Auto chỉ gọi model mà key mở được."}
             </p>
-            <label className="flex min-tap items-center gap-2 text-sm">
-              <input type="checkbox" checked={app.allowEnterprise} onChange={(event) => app.setAllowEnterprise(event.target.checked)} />
-              Dùng model Enterprise khi key có quyền
-            </label>
+            {!showRoomPrice && (
+              <label className="flex min-tap items-center gap-2 text-sm">
+                <input type="checkbox" checked={app.allowEnterprise} onChange={(event) => app.setAllowEnterprise(event.target.checked)} />
+                Dùng model Enterprise khi key có quyền
+              </label>
+            )}
             {Object.keys(app.uses).length > 0 && (
               <p className="text-sm text-fg">
                 Đã chia: {Object.entries(app.uses).map(([id, count]) => `${modelLabel(id)} × ${count}`).join(" · ")}
@@ -884,8 +889,8 @@ export function Studio() {
           <option value="historical">Lịch sử / thời kỳ</option>
           <option value="mystery">Trinh thám / bí ẩn</option>
           <option value="sports">Thể thao</option>
-          <option value="adult">Người lớn (18+)</option>
-          <option value="sex">Sex (18+)</option>
+          <option value="adult">Phim gắn nhãn 18+</option>
+          <option value="sex">Phim thoại kín</option>
           <option value="series">Phim bộ / phim mới chiếu</option>
           <option value="daily">Hằng ngày</option>
         </Select>
