@@ -7,7 +7,7 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 13:12 (UTC+7) — v2.5.1: dòng cập nhật viết đủ ý và có mốc thời gian |
+| **Cập nhật lần cuối** | 2026-11-06 18:40 (UTC+7) — Ghi kế hoạch nâng cấp nhận dạng và dịch, chưa code |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v2.5.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 (key của chủ, tính theo phút, dán link) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
@@ -92,6 +92,7 @@
 | 51 | Nút Quản lý | 🟡 Đã gắn | Hiện cạnh Tài khoản khi có quyền. Chữ căn giữa cùng hàng với Phụ đề và Tài khoản. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
+| 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
 
 ---
 
@@ -315,6 +316,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 13:04 | Grok | **Chỉ tài liệu.** Chốt mục 10c trong `huongdan.txt`: từ mốc này, mọi dòng cập nhật phải nêu đủ phần nâng cấp, chỉnh sửa, thay đổi và bổ sung, viết câu chuyên môn, kèm mốc thời gian. Không đổi `src/`. Câu trên màn hình vẫn là v2.5.0. | |
 | 2026-11-06 13:09 | Grok | **Chỉ tài liệu.** Chốt mục 12b trong `huongdan.txt`: từ mốc này, nâng cấp, cập nhật, bổ sung, chỉnh sửa hoặc chức năng nào làm đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục điều khoản liên quan trong cùng lần đó, rồi nâng `TERMS_VERSION`. Không đổi `src/`. | |
 | 2026-11-06 13:12 | Grok | **v2.5.1.** Viết lại các dòng trong hộp cập nhật cho đủ ý, thêm mốc thời gian phát hành. Không đổi điều khoản vì không đổi dịch vụ. | |
+| 2026-11-06 18:40 | Grok | **Chỉ tài liệu.** Ghi mục 14: kế hoạch nâng cấp nhận dạng và dịch để làm sau. Không đổi `src/`. App vẫn **v2.5.1**. | |
 
 ---
 
@@ -329,6 +331,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 7. Mỗi lần bàn giao cho AI khác: file này và `huongdan.txt` phải khớp code. Không ghi token hay mật khẩu vào hai file đó.
 8. Độ sáng là filter trên video, không phải độ sáng OS.
 9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
+10. **Mục 14 chưa được code** cho đến khi user yêu cầu đúng một việc trong mục 14.2 hoặc 14.3. Không đổi model nhận dạng trước khi có số đo.
 
 ---
 
@@ -937,6 +940,41 @@ Trang `/goi` chỉ là màn bấm thử. Không tạo tài khoản, không giữ
 Trang của khách, khi làm: tên, email, số dư, hạn gói, lịch sử nạp và mua, đổi mật khẩu, đăng xuất. Key Groq không hiện và không lưu trên máy chủ.
 
 Nạp tiền chưa có cổng. Không cộng hạn gói chỉ vì trang báo đã trả. Cổng phải gửi thông báo có chữ ký, máy chủ kiểm tra xong mới cộng. Chưa chọn MoMo, VNPay hay chuyển khoản. Chưa có chỗ gửi thư đặt lại mật khẩu.
+
+---
+
+## 14. Nâng cấp nhận dạng và dịch — để sau, chưa code
+
+User chốt ngày 2026-11-06: chất lượng nhận dạng và dịch là cốt lõi của phòng, sẽ nâng dần. Phiên này chỉ ghi kế hoạch. Không sửa `src/` cho đến khi user yêu cầu đúng một việc trong mục 14.2.
+
+Key của chủ web và ví trả trước vẫn là mục 13.2. Không nằm trong mục này.
+
+### 14.1. Không lấy làm đường nâng cấp của phòng này
+
+Bản đặc tả «Nhận diện lời thoại + Dịch thuật video» 1.1, ngày 2026-11-06, mô tả sản phẩm khác: `pipeline_asr.py`, API Dola, Qwen3-ASR trên GPU thuê, key không ở trình duyệt, video luyện nghe, pinyin, HSK, Anki. App đang chạy là Whisper qua Groq, key của khách, xuất `.srt`. Không gắn đặc tả đó lên **v2.5.1**.
+
+Không làm trong các lần tới, trừ khi user yêu cầu lại và đã có số đo của mục 14.3: thuê GPU, Qwen, ghép hai ASR, denoise mặc định, diarization, OCR chữ cứng, pinyin, HSK, Anki, chạy nhận dạng trên Vercel, đưa Dola làm mặc định.
+
+### 14.2. Thứ tự khi được yêu cầu
+
+Mỗi lần chỉ một việc. Xong, đo, rồi mới sang việc sau.
+
+1. **Ngắt dòng file `.srt`.** Tối đa hai dòng, khoảng 42 ký tự một dòng. Chỉ dùng thuật toán trên câu đã dịch. Không dịch lại, không gọi thêm Groq. Vẫn là `.srt` đã hứa, không đổi điều khoản.
+2. **Hồ sơ xưng hô cho cả phim**, chỉ điền khi ô tự xưng của nhân vật còn trống. Bảng nhân vật giữ nguyên. Bốn hồ sơ: thầy trò (tôi / em, thầy / cô), bạn bè (mình / cậu), cấp trên (tôi / anh / chị), trung tính (tôi / bạn). Đổi hồ sơ thì dịch lại, không vá từng đại từ. Không ghi vào điều khoản là bản dịch sẽ đúng xưng hô.
+
+Chưa làm xuất VTT hoặc JSON. Thêm định dạng là thêm lời hứa, phải sửa điều khoản.
+
+### 14.3. Công cụ đo, làm trước khi đổi model
+
+Công cụ nội bộ, chưa đưa ra trang khách. Một bộ câu cố định, có lời đúng và bản dịch đã chấm. Không dùng file của khách. Không lấy số benchmark của hãng để ghi lên trang.
+
+Sau mỗi lần nâng cấp, chạy lại bộ đó và ghi ba số, gắn với `APP_VERSION`:
+
+- Số câu nghe sai.
+- Số câu sai xưng hô, sai tên hoặc sai số.
+- Số câu phụ đề quá dài so với thời gian hiện.
+
+Whisper Turbo vẫn là mặc định cho đến khi ba số này cho thấy bản mới hơn bản đang chạy, và không có loại câu chính nào tệ đi rõ. Một phim nghe có vẻ ổn thì chưa đủ để đổi model.
 
 Bật cơ sở dữ liệu mà vẫn tắt đăng nhập thì app cố ý chặn. Hai thứ phải bật cùng lúc. Lối dán key hiện tại giữ đến khi cửa trả tiền chạy được.
 
