@@ -13,6 +13,7 @@ import {
   applyNameFixes,
   contextBlock,
   listModelIds,
+  ROOM_KEY,
   sleep,
   throwIfAborted,
   transcribe,
@@ -226,6 +227,10 @@ export function usePipeline() {
   const job = useRef<Job>(emptyJob());
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
   const [key, setKey] = useState("");
+  const roomPayRef = useRef(false);
+  const keyRef = useRef("");
+  keyRef.current = key;
+  const activeKey = () => (roomPayRef.current ? ROOM_KEY : keyRef.current.trim());
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
   const [genre, setGenre] = useState("auto");
@@ -436,7 +441,7 @@ export function usePipeline() {
   }, [pullBoard]);
 
   const refreshModels = useCallback(async () => {
-    const token = key.trim();
+    const token = activeKey();
     void pullBoard();
     if (!token) {
       say("Nhập API key trước khi đồng bộ model. Giá Groq vẫn được cập nhật.", true);
@@ -446,13 +451,18 @@ export function usePipeline() {
     try {
       const ids = await listModelIds(token);
       setRemoteIds(ids);
-      say(`Key này dùng được ${ids.length} model Groq. Model không có trên key sẽ bị làm mờ.`);
+      say(token === ROOM_KEY ? `Đã đồng bộ với key của phòng. Dùng được ${ids.length} model.` : `Key này dùng được ${ids.length} model Groq. Model không có trên key sẽ bị làm mờ.`);
     } catch (error) {
       say((error as Error).message || "Không đọc được danh sách model.", true);
     } finally {
       setModelBusy(false);
     }
-  }, [key, pullBoard, say]);
+  }, [pullBoard, say]);
+
+  const setRoomPay = useCallback((on: boolean) => {
+    roomPayRef.current = on;
+    if (on) void refreshModels();
+  }, [refreshModels]);
 
   const clearJob = useCallback(() => {
     const j = job.current;
@@ -611,7 +621,7 @@ export function usePipeline() {
   }, []);
 
   const start = useCallback(async () => {
-    const token = key.trim();
+    const token = activeKey();
     const link = url.trim();
     const chosen = modelId.trim();
     if (!token) return say("Vui lòng nhập Groq API key.", true);
@@ -623,6 +633,7 @@ export function usePipeline() {
     if (!AudioContextClass) return say("Trình duyệt này không hỗ trợ xử lý âm thanh. Hãy cập nhật trình duyệt.", true);
     const access = await guardRoom(null);
     if (!access) return;
+    if (roomPayRef.current && access.kind !== "paid") return say("Cửa trả theo lượt chỉ dùng khi gói còn hạn. Bản dùng thử vẫn nhập key của bạn.", true);
     if (access.kind !== "paid") {
       const chosenFile = audioFile || file;
       if (!chosenFile) return say("Bản dùng thử không nhận link. Hãy chọn một tệp trên máy.", true);
@@ -641,7 +652,7 @@ export function usePipeline() {
       }
     }
 
-    writeStore("gk", token);
+    if (token !== ROOM_KEY) writeStore("gk", token);
     writeStore("glang", target);
     writeStore("gsrc", source);
     writeStore("gmdl", chosen);
@@ -1499,7 +1510,7 @@ export function usePipeline() {
   );
 
   const analyzeNow = useCallback(async () => {
-    const token = key.trim();
+    const token = activeKey();
     if (!token) return say("Nhập API key trước khi phân tích.", true);
     const lines = job.current.segs.map((seg) => seg.original).filter(Boolean);
     if (!lines.length) return say("Chưa có lời thoại. Hãy nhận dạng trước, rồi phân tích.", true);
@@ -1694,7 +1705,7 @@ export function usePipeline() {
     if (running) return say("Đang chạy. Hãy đợi xong rồi mới gửi khoảng trống.", true);
     const plan = gapPlanRef.current;
     if (!plan?.selected.length) return say("Chưa có khoảng trống để gửi. Hãy dò trước.", true);
-    const token = key.trim();
+    const token = activeKey();
     if (!token) return say("Nhập API key trước khi gửi.", true);
     if (!confirm(formatGapConfirm(plan))) return;
     const controller = new AbortController();
@@ -1858,6 +1869,7 @@ export function usePipeline() {
   return {
     key,
     setKey,
+    setRoomPay,
     target,
     setTarget,
     source,

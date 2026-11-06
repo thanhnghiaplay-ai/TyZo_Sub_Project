@@ -35,7 +35,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PaySettings } from "@/components/pay-settings";
-import { RunDeskBoard, ticketLine } from "@/components/run-desk-board";
+import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
 import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
 
@@ -275,8 +275,8 @@ export function AdminDesk() {
                 {runs.length === 0 && <p className="text-sm text-muted">Chưa có phiếu.</p>}
                 <ul className="mt-1 space-y-2 text-sm">
                   {runs.map((ticket) => (
-                    <li key={ticket.id} className="rounded-xl border border-line px-3 py-2">
-                      <p>{ticketLine(ticket)}</p>
+                    <li key={ticket.id}>
+                      <TicketCard ticket={ticket}>
                       {roleAtLeast(role, "quan-ly") && ticket.status === "dang-giu" && ticket.held > 0 && (
                         <button
                           type="button"
@@ -292,6 +292,7 @@ export function AdminDesk() {
                           Nhả khoản giữ
                         </button>
                       )}
+                      </TicketCard>
                     </li>
                   ))}
                 </ul>

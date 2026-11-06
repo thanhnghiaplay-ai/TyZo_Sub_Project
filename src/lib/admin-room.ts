@@ -862,15 +862,15 @@ export const getMoney = createServerFn({ method: "POST" })
     const sql = await getSql();
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
     const revenue = await sql<{ bucket: string; amount: number }>`
-      select to_char(date_trunc(${data}, created_at), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      select to_char(date_trunc(${data}::text, created_at), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
       from room_ledger
       where kind = 'nap' and created_at > now() - ${window}::interval
       group by 1 order by 1
     `;
     const costs = await sql<{ bucket: string; amount: number }>`
-      select to_char(date_trunc(${data}, spent_on), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      select to_char(date_trunc(${data}::text, spent_on::timestamp), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
       from room_costs
-      where spent_on > now() - ${window}::interval
+      where spent_on::timestamp > now() - ${window}::interval
       group by 1 order by 1
     `;
     const buckets = new Map<string, MoneyPoint>();
@@ -957,6 +957,7 @@ export type RunTicket = {
 export type RunDeskView = {
   desk: RunDesk;
   models: string[] | null;
+  key: string;
   holding: number;
   charged: number;
   errors: number;
@@ -1001,6 +1002,8 @@ export const getRunDesk = createServerFn({ method: "GET" })
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
     const models = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
+    const storedKey = await sql<{ value: string }>`select value from room_settings where key = 'run_key'`;
+    const place = await placeOf(context.userId);
     const start = dayStartIso();
     const totals = await sql<{ holding: number; charged: number; errors: number }>`
       select
@@ -1034,6 +1037,7 @@ export const getRunDesk = createServerFn({ method: "GET" })
     return {
       desk: parseRunDesk(saved[0]?.value),
       models: parseModelList(models[0]?.value),
+      key: place.role === "chu" ? storedKey[0]?.value || "" : "",
       holding: Number(row?.holding ?? 0),
       charged: Number(row?.charged ?? 0),
       errors: Number(row?.errors ?? 0),
@@ -1204,6 +1208,32 @@ export const saveRunModels = createServerFn({ method: "POST" })
     `;
     await writeAudit(context.userId, "key-model", null, `${data.length} model`);
     return data;
+  });
+
+export const saveRunKey = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: string) => {
+    const key = input?.trim() ?? "";
+    if (key.length < 20 || key.length > 200 || /\s/.test(key)) throw new Error("Key không đúng.");
+    return key;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { listModelIds } = await import("@/lib/sub/groq");
+    const ids = await listModelIds(data);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const models = JSON.stringify(ids);
+    await sql`
+      insert into room_settings (key, value) values ('run_key', ${data})
+      on conflict (key) do update set value = ${data}
+    `;
+    await sql`
+      insert into room_settings (key, value) values ('run_models', ${models})
+      on conflict (key) do update set value = ${models}
+    `;
+    await writeAudit(context.userId, "key-phong", null, `${ids.length} model`);
+    return ids;
   });
 
 

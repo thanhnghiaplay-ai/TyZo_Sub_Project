@@ -12,18 +12,26 @@ export function OrgBoard({ owner }: { owner: boolean }) {
   const [users, setUsers] = useState(0);
   const [nick, setNick] = useState<Record<string, string>>({});
 
+  const [fault, setFault] = useState("");
+
   useEffect(() => {
     void getOrg().then((next) => {
       setCards(next.cards);
       setUsers(next.users);
       setNick(Object.fromEntries(next.cards.map((card) => [card.id, card.nickname])));
-    }).catch((error) => pushToast(error instanceof Error ? error.message : "Chưa mở được sơ đồ.", "bad"));
+      setFault("");
+    }).catch((error) => {
+      const message = error instanceof Error ? error.message : "Chưa mở được sơ đồ.";
+      setFault(message);
+      pushToast(message, "bad");
+    });
   }, []);
 
   const rows: Array<OrgCard["role"]> = ["chu", "quan-ly", "ho-tro"];
 
   return (
     <section className="org-tree space-y-3">
+      {fault && <p className="text-sm text-danger">{fault}</p>}
       {rows.map((role) => (
         <div key={role} className="grid gap-2">
           {cards.filter((card) => card.role === role).map((card) => (
@@ -68,12 +76,19 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
 
+  const [fault, setFault] = useState("");
+
   function load(next = span) {
     void getMoney({ data: next }).then((result) => {
       setPoints(result.points);
       setRevenue(result.revenue);
       setCost(result.cost);
-    }).catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được doanh thu.", "bad"));
+      setFault("");
+    }).catch((error) => {
+      const message = error instanceof Error ? error.message : "Chưa đọc được doanh thu.";
+      setFault(message);
+      pushToast(message, "bad");
+    });
   }
 
   useEffect(() => {
@@ -89,6 +104,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           </button>
         ))}
       </div>
+      {fault && <p className="text-sm text-danger">{fault}</p>}
       <div className="grid grid-cols-3 gap-2">
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>

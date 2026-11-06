@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 22:22 (UTC+7) — v2.9.0: key ở trang quản trị, đổi tên thể loại |
+| **Cập nhật lần cuối** | 2026-11-06 22:43 (UTC+7) — v2.10.0: key phòng được lưu, trả theo lượt dùng key đó |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.9.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.10.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -93,7 +93,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 55 | Trả theo lượt | 🟡 Key đồng bộ tại quản trị | v2.9.0: Chủ nhập hoặc dán key ngay trên trang quản trị. Khách trả theo lượt không bấm đồng bộ key. Thể loại hiện «Phim gắn nhãn 18+» và «Phim thoại kín», mã và thuật ngữ không đổi. Lưu ở quản trị có thông báo nổi. Chưa trừ ví khi chạy. |
+| 55 | Trả theo lượt | 🟡 Đã nối key phòng, chưa trừ ví | v2.10.0: Chủ bấm Lưu key thì key nằm trên máy chủ và còn sau khi tải lại. Chỉ Chủ đọc lại được key. Khách chọn trả theo lượt thì phòng gọi Groq bằng key đó, khách không thấy key. Gói còn hạn mới chạy cửa này. Chưa trừ ví. |
 
 ---
 
@@ -325,6 +325,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 21:47 | Grok | **v2.7.0.** Cửa mặc định mở. Bảo trì bằng nội dung đã lưu. Giá biểu cập nhật riêng, tăng phần trăm hoặc giá riêng, khung model đồng bộ. Key của khách không hiện giá. Chưa trừ ví. Không đổi điều khoản. | |
 | 2026-11-06 22:04 | Grok | **v2.8.0.** Giá gốc và model key admin chỉ ở trang quản trị. Khách chỉ thấy «Chưa cập nhật» nếu model chưa đưa ra. Bảng phiên bản còn 8 lần. Có báo bản mới. Không đổi điều khoản. | |
 | 2026-11-06 22:22 | Grok | **v2.9.0.** Ô key ngay trên trang quản trị. Trả theo lượt không cần đồng bộ key. Đổi tên hiển thị hai thể loại, mã và thuật ngữ giữ. Thông báo nổi khi lưu ở quản trị. Không đổi điều khoản. | |
+| 2026-11-06 22:43 | Grok | **v2.10.0.** Key phòng lưu trên máy chủ, tải lại không mất. Khách chọn trả theo lượt thì dùng key đó. Phiếu hiện giờ và trạng thái. Doanh thu đọc được cột ngày. Chưa trừ ví. Không đổi điều khoản. | |
 
 ---
 
@@ -340,7 +341,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 8. Độ sáng là filter trên video, không phải độ sáng OS.
 9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
 10. **Mục 14 chưa được code** cho đến khi user yêu cầu đúng một việc trong mục 14.2 hoặc 14.3. Không đổi model nhận dạng trước khi có số đo.
-11. **Mục 15 chưa được mở cho khách.** Bàn quản trị v2.6.0 được lưu. Không gọi Groq bằng key của chủ, không bán key, không nhận link, cho đến khi user yêu cầu đúng phần chạy của khách.
+11. **Mục 15, v2.10.0:** Khách còn hạn gói, chọn trả theo lượt, thì phòng gọi Groq bằng key Chủ đã lưu. Khách không nhận key. Chưa trừ ví, chưa bán key, chưa nhận link. Hoàn vào ví và sửa giá vẫn theo quyền đã chốt.
 
 ---
 
@@ -1006,7 +1007,7 @@ Chưa làm cả ba cổng một lúc. Làm email, ví, hạn gói trước. Nạ
 
 User chốt ngày 2026-11-06, buổi tối. Đây là lát cắt đầu của mục 13.2, không thay mục 13.2. Dán link, đơn giá link, và đăng nhập Google vẫn để sau.
 
-Từ **v2.7.0**, cửa trả theo lượt mặc định mở. Chủ nhập nội dung và bấm lưu thì trang khách thấy bảo trì. Nút cập nhật giá riêng với nút bảo trì. Giá bán bằng giá gốc cộng phần trăm, hoặc giá riêng từng model. Khách dùng key của mình không thấy giá. Khách chọn trả theo lượt thì thấy đơn giá phòng trên khung model. Lần chạy vẫn chưa trừ ví và vẫn gọi bằng key của khách.
+Từ **v2.10.0**, Chủ bấm Lưu key thì key nằm trong `room_settings`, không đưa ra trang khách. Khách còn hạn, chọn trả theo lượt, thì trình duyệt gọi đường của phòng và máy chủ gắn key đó khi nói chuyện với Groq. Tải lại trang quản trị thì Chủ thấy lại key. Chưa trừ ví.
 
 Phần dưới là việc sẽ làm khi user yêu cầu đúng mục này. Không coi khung là cửa đã mở.
 

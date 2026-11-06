@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.9.0";
+export const APP_VERSION = "2.10.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.10.0",
+    time: "22:43 ngày 06/11/2026",
+    text: "Key ở trang quản trị được giữ sau khi tải lại trang. Khách chọn trả theo lượt thì phòng tự dùng key đó, khách không cần nhập. Phiếu gần đây hiện giờ, trạng thái và số tiền. Sơ đồ và doanh thu đọc lại được.",
+  },
   {
     version: "2.9.0",
     time: "22:22 ngày 06/11/2026",

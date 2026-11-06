@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { pushToast } from "@/components/toast";
-import { getRunDesk, saveRunDesk, saveRunModels, type RunDeskView, type RunTicket } from "@/lib/admin-room";
+import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
-import { listModelIds } from "@/lib/sub/groq";
 import { emptyOverride, formatRoomPrice, RUN_STATUS_LABEL, type PriceOverride, type RunDesk, type RunStatus } from "@/lib/run-desk";
 
 function dong(n: number) {
@@ -17,8 +16,25 @@ function label(status: string) {
 }
 
 export function ticketLine(ticket: RunTicket) {
-  const minutes = ticket.seconds > 0 ? `${Math.round(ticket.seconds / 60)} phút` : "0 phút";
-  return `${ticket.fileName || "Không tên"} · ${minutes} · giữ ${dong(ticket.held)} · trừ ${dong(ticket.charged)} · ${label(ticket.status)}`;
+  const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút` : "Chưa có thời lượng";
+  const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "";
+  return `${when} · ${minutes} · giữ ${dong(ticket.held)} · trừ ${dong(ticket.charged)} · ${label(ticket.status)}`;
+}
+
+export function TicketCard({ ticket, children }: { ticket: RunTicket; children?: ReactNode }) {
+  const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "Chưa có giờ";
+  const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút tiếng` : "Chưa có thời lượng";
+  return (
+    <article className="rounded-xl border border-line px-3 py-2">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium">{ticket.fileName || "Không tên tệp"}</p>
+        <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
+      </div>
+      <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
+      <p className="text-sm text-muted">{minutes} · Giữ {dong(ticket.held)} · Trừ {dong(ticket.charged)}{ticket.refunded > 0 ? ` · Hoàn ${dong(ticket.refunded)}` : ""}</p>
+      {children}
+    </article>
+  );
 }
 
 const PRICE_ROWS = [
@@ -41,6 +57,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         setView(next);
         setForm(next.desk);
         setModels(next.models);
+        setAdminKey(next.key || "");
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt.", "bad"));
     void loadGroqBoard()
@@ -67,11 +84,10 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       return;
     }
     setBusy(true);
-    void listModelIds(token)
-      .then((ids) => saveRunModels({ data: ids }))
+    void saveRunKey({ data: token })
       .then((ids) => {
         setModels(ids);
-        pushToast(`Đã lưu ${ids.length} model key này gọi được. Trang khách không thấy danh sách này.`);
+        pushToast(`Đã lưu key. Key này gọi được ${ids.length} model. Khách chọn trả theo lượt sẽ dùng đúng key này.`);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đồng bộ được key.", "bad"))
       .finally(() => setBusy(false));
@@ -166,7 +182,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
                 autoComplete="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                placeholder="Nhập hoặc dán key, chỉ nằm trên máy này"
+                placeholder={form && adminKey ? "Key đã lưu. Gõ key khác nếu muốn đổi" : "Nhập hoặc dán key. Bấm lưu thì key được giữ trên máy chủ"}
                 onChange={(event) => setAdminKey(event.target.value)}
                 className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
               />
@@ -181,10 +197,10 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         )}
         {owner && (
           <button type="button" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={syncKey}>
-            Đồng bộ key
+            Lưu key
           </button>
         )}
-        <p className="text-xs text-muted">{models ? `Key đang gọi được ${models.length} model.` : "Chưa đồng bộ key. Chưa biết model nào dùng được."}</p>
+        <p className="text-xs text-muted">{adminKey ? "Key này còn sau khi tải lại trang. Chỉ Chủ thấy key." : "Chưa lưu key."}</p>
         <div className="grid gap-2">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);
@@ -238,16 +254,14 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         )}
       </div>
 
-      <div>
+      <div className="grid gap-2">
         <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
         {!view?.recent.length && <p className="text-sm text-muted">Chưa có phiếu.</p>}
-        <ul className="mt-1 space-y-1 text-sm text-muted">
+        <div className="grid max-h-80 gap-2 overflow-y-auto">
           {view?.recent.map((ticket) => (
-            <li key={ticket.id}>
-              {ticket.email || ticket.userId} · {ticketLine(ticket)}
-            </li>
+            <TicketCard key={ticket.id} ticket={ticket} />
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

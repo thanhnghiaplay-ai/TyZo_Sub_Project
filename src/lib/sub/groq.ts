@@ -15,6 +15,16 @@ import {
 import type { AsrModel } from "@/lib/sub/types";
 
 export const API = "https://api.groq.com/openai/v1";
+export const ROOM_KEY = "room";
+
+export function roomFetchTarget(url: string, init: RequestInit): { url: string; init: RequestInit } {
+  const headers = new Headers(init.headers);
+  if (headers.get("Authorization") !== `Bearer ${ROOM_KEY}`) return { url, init };
+  const path = url.startsWith(API) ? url.slice(API.length) : "";
+  headers.delete("Authorization");
+  headers.set("x-groq-path", path);
+  return { url: "/api/room-groq", init: { ...init, headers } };
+}
 
 export function abortError() {
   const error = new Error("Đã hủy.");
@@ -81,7 +91,8 @@ export async function requestWithRetry(
     if (gate.blockedUntil > Date.now()) await sleep(gate.blockedUntil - Date.now(), signal);
     let response: Response | null = null;
     try {
-      response = await fetch(url, { ...makeInit(), signal });
+      const next = roomFetchTarget(url, makeInit());
+      response = await fetch(next.url, { ...next.init, signal });
     } catch (error) {
       if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
       lastError = new Error(`${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`);
@@ -109,10 +120,8 @@ export async function requestWithRetry(
 }
 
 export async function listModelIds(key: string, signal?: AbortSignal): Promise<string[]> {
-  const response = await fetch(`${API}/models`, {
-    headers: { Authorization: `Bearer ${key}` },
-    signal,
-  });
+  const next = roomFetchTarget(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } });
+  const response = await fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal });
   if (!response.ok) throw new Error(await readApiError(response, ""));
   const data = (await response.json()) as { data?: Array<{ id?: string }> };
   return (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
@@ -418,7 +427,7 @@ export async function speakOrpheus(input: {
   arabic: boolean;
   signal?: AbortSignal;
 }): Promise<Blob> {
-  const response = await fetch(`${API}/audio/speech`, {
+  const next = roomFetchTarget(`${API}/audio/speech`, {
     method: "POST",
     headers: { Authorization: `Bearer ${input.key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -427,8 +436,8 @@ export async function speakOrpheus(input: {
       voice: input.voice,
       response_format: "wav",
     }),
-    signal: input.signal,
   });
+  const response = await fetch(next.url, { ...next.init, signal: input.signal });
   if (!response.ok) throw new Error(await readApiError(response, "Orpheus"));
   return response.blob();
 }

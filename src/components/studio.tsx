@@ -446,7 +446,7 @@ export function Studio() {
         matchCast: choice.locked,
       },
       target,
-      key: key.trim(),
+      key: payByRoom ? "room" : key.trim(),
       video,
       playbackRate: video.playbackRate || 1,
     });
@@ -457,7 +457,7 @@ export function Studio() {
       text: sampleLine(app.target),
       settings: { ...narration, enabled: true, matchCast: false },
       target: app.target,
-      key: app.key.trim(),
+      key: payByRoom ? "room" : app.key.trim(),
       video: app.videoRef.current,
       playbackRate: 1,
     });
@@ -739,15 +739,15 @@ export function Studio() {
           <div className="grid gap-2">
             <h2 className="text-sm font-semibold">Cách trả Groq</h2>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => setPayByRoom(false)}>
+              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
               </button>
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => setPayByRoom(true)}>
+              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(true); app.setRoomPay(true); }}>
                 Trả theo lượt
               </button>
             </div>
             {payByRoom && (
-              <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng cho lần trả theo lượt, đã gồm phần vận hành. Số này không dùng để so với bảng giá bên ngoài.</p>
+              <p className="text-sm text-muted">Lần chạy này dùng key đã lưu ở trang quản trị. Bạn không cần nhập key và không cần bấm đồng bộ.</p>
             )}
           </div>
         ) : (
