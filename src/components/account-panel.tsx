@@ -93,9 +93,9 @@ export function AccountPanel() {
             void submitAppeal({ data: appeal })
               .then(() => {
                 setAppeal("");
-                setNotice("Đã gửi yêu cầu. Chủ hoặc Quản lý xem ở trang Admin.");
+                setNotice("Đã gửi yêu cầu. Bộ phận phụ trách sẽ xem và phản hồi trong mục Thông báo.");
               })
-              .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa gửi được."))
+              .catch((error) => setNotice(error instanceof Error ? error.message : "Không gửi được yêu cầu. Vui lòng thử lại."))
               .finally(() => setBusy(false));
           }}
         >
@@ -107,7 +107,7 @@ export function AccountPanel() {
               ? "Dùng khi cần hỏi về gói, nạp tiền, khóa hoặc cấm. Không gửi key Groq."
               : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}
           </p>
-          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
+          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Mô tả việc cần được xem xét, tối thiểu 10 ký tự" />
           <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
             Gửi yêu cầu
           </button>
@@ -120,12 +120,12 @@ export function AccountPanel() {
               onClick={() => {
                 setBusy(true);
                 void skipAppeal({ data: item.id })
-                  .then(() => setNotice("Đã báo Chủ. Chủ sẽ thấy đủ nội dung."))
-                  .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa báo được."))
+                  .then(() => setNotice("Đã chuyển yêu cầu tới chủ sở hữu. Nội dung đầy đủ được giữ nguyên."))
+                  .catch((error) => setNotice(error instanceof Error ? error.message : "Không chuyển được yêu cầu. Vui lòng thử lại."))
                   .finally(() => setBusy(false));
               }}
             >
-              Đã 2 giờ không ai xử lý, báo Chủ
+              Quá 2 giờ chưa được xử lý — chuyển tới chủ sở hữu
             </button>
           ))}
         </form>
