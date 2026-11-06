@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 20:54 (UTC+7) — v2.5.2: nút danh sách và khung trả theo lượt, chưa dùng được |
+| **Cập nhật lần cuối** | 2026-11-06 21:04 (UTC+7) — v2.6.0: bàn quản lý trả theo lượt dùng được, khách chưa chạy |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.5.2** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.6.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -93,7 +93,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 55 | Trả theo lượt | ⚪ Khung, chưa dùng | v2.5.2 có khung ở tab Key, Tài khoản và trang quản trị, ghi «Sẽ cập nhật sau». Chưa trừ tiền, chưa gọi Groq bằng key của chủ. Chi tiết khi làm thật nằm ở mục 15. |
+| 55 | Trả theo lượt | 🟡 Bàn quản trị đã dùng | v2.6.0: Chủ lưu đơn giá, hạn mức và câu đóng cửa. Quản lý nhả giữ và hoàn ví khi có phiếu. Khách vẫn thấy khung «Sẽ cập nhật sau», chưa gọi Groq bằng key của chủ. |
 
 ---
 
@@ -320,6 +320,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 18:40 | Grok | **Chỉ tài liệu.** Ghi mục 14: kế hoạch nâng cấp nhận dạng và dịch để làm sau. Không đổi `src/`. App vẫn **v2.5.1**. | |
 | 2026-11-06 20:10 | Grok | **Chỉ tài liệu.** Ghi mục 15: cửa trả theo lượt, phiếu tiền, và quyền hỗ trợ. Không đổi `src/`. App vẫn **v2.5.1**. | |
 | 2026-11-06 20:54 | Grok | **v2.5.2.** Nút ba gạch thay hàng Phụ đề, Tài khoản, Quản lý. Tên mục đang mở hiện cạnh nút. Khung Trả theo lượt hiện ở tab Key, Tài khoản và trang quản trị, ghi sẽ cập nhật sau. Chưa trừ tiền. Không đổi điều khoản. | |
+| 2026-11-06 21:04 | Grok | **v2.6.0.** Bàn quản lý trả theo lượt: đơn giá, hạn mức, câu đóng cửa, số trong ngày, phiếu theo tài khoản, nhả giữ và hoàn ví. Hỗ trợ có câu trả lời sẵn. Khách chưa chạy cửa này. Không đổi điều khoản. | |
 
 ---
 
@@ -335,7 +336,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 8. Độ sáng là filter trên video, không phải độ sáng OS.
 9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
 10. **Mục 14 chưa được code** cho đến khi user yêu cầu đúng một việc trong mục 14.2 hoặc 14.3. Không đổi model nhận dạng trước khi có số đo.
-11. **Mục 15 chưa được mở.** Khung v2.5.2 chỉ để nhìn. Không trừ tiền, không gọi Groq bằng key của chủ, không bán key, không nhận link, cho đến khi user yêu cầu đúng phần đó.
+11. **Mục 15 chưa được mở cho khách.** Bàn quản trị v2.6.0 được lưu. Không gọi Groq bằng key của chủ, không bán key, không nhận link, cho đến khi user yêu cầu đúng phần chạy của khách.
 
 ---
 
@@ -1001,7 +1002,7 @@ Chưa làm cả ba cổng một lúc. Làm email, ví, hạn gói trước. Nạ
 
 User chốt ngày 2026-11-06, buổi tối. Đây là lát cắt đầu của mục 13.2, không thay mục 13.2. Dán link, đơn giá link, và đăng nhập Google vẫn để sau.
 
-Từ **v2.5.2**, khung đã hiện ở tab Key, mục Tài khoản và trang quản trị. Dòng trên khung là «Sẽ cập nhật sau». Bấm «Trả theo lượt» chưa được. Key của khách vẫn là đường đang chạy. Không trừ ví, không gọi Groq bằng key của chủ, không mở điều khoản mới.
+Từ **v2.5.2**, khung khách đã hiện ở tab Key và mục Tài khoản, ghi «Sẽ cập nhật sau». Từ **v2.6.0**, bàn quản trị dùng được: Chủ lưu đơn giá Turbo, đơn giá Large, hạn mức ngày và câu khi cửa đóng. Hỗ trợ xem số trong ngày và phiếu. Quản lý nhả khoản giữ và hoàn vào ví khi đã có phiếu. Khách vẫn chưa chạy cửa này, chưa gọi Groq bằng key của chủ, chưa đổi điều khoản.
 
 Phần dưới là việc sẽ làm khi user yêu cầu đúng mục này. Không coi khung là cửa đã mở.
 

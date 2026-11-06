@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.5.2";
+export const APP_VERSION = "2.6.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.6.0",
+    time: "21:04 ngày 06/11/2026",
+    text: "Hoàn thiện bàn quản lý cửa trả theo lượt. Chủ lưu đơn giá Turbo, đơn giá Large, hạn mức ngày và câu khi cửa đóng. Trang quản trị hiện số đang giữ, số đã trừ và phiếu lỗi trong ngày. Quản lý được nhả khoản giữ và hoàn vào ví khi đã có phiếu. Hỗ trợ có câu trả lời sẵn. Khách chưa chạy được cửa này.",
+  },
   {
     version: "2.5.2",
     time: "20:54 ngày 06/11/2026",

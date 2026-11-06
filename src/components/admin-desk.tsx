@@ -35,8 +35,9 @@ import { BrandMark } from "@/components/brand-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PaySettings } from "@/components/pay-settings";
-import { LaterFrame } from "@/components/later-frame";
+import { RunDeskBoard, ticketLine } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
+import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -50,6 +51,9 @@ export function AdminDesk() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [picked, setPicked] = useState<AdminUser | null>(null);
   const [ledger, setLedger] = useState<LedgerRow[]>([]);
+  const [runs, setRuns] = useState<RunTicket[]>([]);
+  const [refundAmount, setRefundAmount] = useState("");
+  const [refundReason, setRefundReason] = useState("");
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
   const [password, setPassword] = useState("");
@@ -163,12 +167,7 @@ export function AdminDesk() {
           <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>
         </div>
       )}
-      {role && (
-        <LaterFrame title="Trả theo lượt">
-          <p className="text-sm text-muted">Cửa đang đóng. Đơn giá Turbo, đơn giá Large, hạn mức ngày và sổ phiếu sẽ hiện ở đây khi cửa này mở. Chỉ Chủ được sửa.</p>
-          <p className="text-sm">Đơn giá: chưa có. Hạn mức: chưa có. Phiếu lỗi trong ngày: chưa có.</p>
-        </LaterFrame>
-      )}
+      {role && <RunDeskBoard owner={role === "chu"} />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "viec" && stats && (
@@ -240,7 +239,9 @@ export function AdminDesk() {
                     setNote(user.note);
                     setReason(user.reason);
                     setLedger([]);
+                    setRuns([]);
                     void listUserLedger({ data: user.id }).then(setLedger).catch(() => setLedger([]));
+                    void listUserRuns({ data: user.id }).then(setRuns).catch(() => setRuns([]));
                   }}
                 >
                   <span className="block font-medium">{user.email}</span>
@@ -268,6 +269,58 @@ export function AdminDesk() {
                     </li>
                   ))}
                 </ul>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold">Phiếu trả theo lượt</h3>
+                {runs.length === 0 && <p className="text-sm text-muted">Chưa có phiếu.</p>}
+                <ul className="mt-1 space-y-2 text-sm">
+                  {runs.map((ticket) => (
+                    <li key={ticket.id} className="rounded-xl border border-line px-3 py-2">
+                      <p>{ticketLine(ticket)}</p>
+                      {roleAtLeast(role, "quan-ly") && ticket.status === "dang-giu" && ticket.held > 0 && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          className="mt-2 min-tap rounded-full border border-line px-3 disabled:opacity-40"
+                          onClick={() =>
+                            void run(async () => {
+                              await releaseRunHold({ data: ticket.id });
+                              setRuns(await listUserRuns({ data: picked.id }));
+                            }, "Đã nhả khoản đang giữ vào ví.")
+                          }
+                        >
+                          Nhả khoản giữ
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                {roleAtLeast(role, "quan-ly") && runs.some((ticket) => ticket.charged > ticket.refunded) && (
+                  <div className="mt-2 grid gap-2">
+                    <input value={refundAmount} onChange={(event) => setRefundAmount(event.target.value)} inputMode="numeric" placeholder="Số hoàn, đồng" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                    <input value={refundReason} onChange={(event) => setRefundReason(event.target.value)} placeholder="Lý do hoàn, ít nhất 8 ký tự" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                    {runs
+                      .filter((ticket) => ticket.charged > ticket.refunded)
+                      .map((ticket) => (
+                        <button
+                          key={ticket.id}
+                          type="button"
+                          disabled={busy || refundReason.trim().length < 8}
+                          className="min-tap rounded-full border border-line px-3 text-left disabled:opacity-40"
+                          onClick={() =>
+                            void run(async () => {
+                              await refundRun({ data: { id: ticket.id, amount: Number(refundAmount), reason: refundReason.trim() } });
+                              setRefundAmount("");
+                              setRefundReason("");
+                              setRuns(await listUserRuns({ data: picked.id }));
+                            }, "Đã hoàn vào ví.")
+                          }
+                        >
+                          Hoàn phiếu {ticket.fileName || ticket.id}
+                        </button>
+                      ))}
+                  </div>
+                )}
               </div>
               <label className="grid gap-1 text-sm">
                 Ghi chú nội bộ
@@ -357,6 +410,19 @@ export function AdminDesk() {
                 {item.status === "cho" && (
                   <div className="mt-2 grid gap-2">
                     <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Lần này trừ đúng số phút đã chạy. Đơn giá là giá tại lúc bấm chạy.",
+                        "Phần giữ thừa đã trả vào số dư.",
+                        "Đoạn lỗi không tính tiền.",
+                        "Tệp không còn trên phòng. Hãy chọn lại tệp trên máy nếu muốn chạy tiếp.",
+                        "Cửa trả theo lượt đang đóng. Key của bạn vẫn dùng được.",
+                      ].map((line) => (
+                        <button key={line} type="button" className="rounded-full border border-line px-3 py-1 text-left text-xs" onClick={() => setReplyText(line)}>
+                          {line}
+                        </button>
+                      ))}
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(async () => { await sendAppealReply({ data: { id: item.id, reply: replyText } }); setReplyText(""); }, "Đã trả lời và đóng yêu cầu.")}>
                         Trả lời

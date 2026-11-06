@@ -3,6 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
 import { canSeeLog, isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
+import { checkRunDesk, dayStartIso, parseRunDesk, type RunDesk } from "@/lib/run-desk";
 
 export type MyPlace = {
   role: StaffRole | null;
@@ -936,6 +937,228 @@ export const setBadgeStyle = createServerFn({ method: "POST" })
     `;
     await writeAudit(context.userId, "doi-the-quyen", null, data);
     return { ok: true as const, style: data };
+  });
+
+export type RunTicket = {
+  id: string;
+  userId: string;
+  email: string;
+  fileName: string;
+  seconds: number;
+  rate: number;
+  held: number;
+  charged: number;
+  released: number;
+  refunded: number;
+  status: string;
+  createdAt: string;
+};
+
+export type RunDeskView = {
+  desk: RunDesk;
+  holding: number;
+  charged: number;
+  errors: number;
+  recent: RunTicket[];
+};
+
+function ticketOf(row: {
+  id: string;
+  user_id: string;
+  email: string | null;
+  file_name: string;
+  seconds: number;
+  rate: number;
+  held: number;
+  charged: number;
+  released: number;
+  refunded: number;
+  status: string;
+  created_at: unknown;
+}): RunTicket {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    email: row.email ?? "",
+    fileName: row.file_name,
+    seconds: row.seconds,
+    rate: row.rate,
+    held: row.held,
+    charged: row.charged,
+    released: row.released,
+    refunded: row.refunded,
+    status: row.status,
+    createdAt: stamp(row.created_at),
+  };
+}
+
+export const getRunDesk = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<RunDeskView> => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
+    const start = dayStartIso();
+    const totals = await sql<{ holding: number; charged: number; errors: number }>`
+      select
+        coalesce(sum(case when status = 'dang-giu' then held else 0 end), 0)::int as holding,
+        coalesce(sum(charged), 0)::int as charged,
+        coalesce(sum(case when status = 'loi' then 1 else 0 end), 0)::int as errors
+      from run_tickets
+      where created_at >= ${start}
+    `;
+    const recent = await sql<{
+      id: string;
+      user_id: string;
+      email: string | null;
+      file_name: string;
+      seconds: number;
+      rate: number;
+      held: number;
+      charged: number;
+      released: number;
+      refunded: number;
+      status: string;
+      created_at: unknown;
+    }>`
+      select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.created_at
+      from run_tickets t
+      left join "user" u on u.id = t.user_id
+      order by t.created_at desc
+      limit 20
+    `;
+    const row = totals[0];
+    return {
+      desk: parseRunDesk(saved[0]?.value),
+      holding: Number(row?.holding ?? 0),
+      charged: Number(row?.charged ?? 0),
+      errors: Number(row?.errors ?? 0),
+      recent: recent.map(ticketOf),
+    };
+  });
+
+export const saveRunDesk = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: RunDesk) => checkRunDesk(input))
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const value = JSON.stringify(data);
+    await sql`
+      insert into room_settings (key, value) values ('run_desk', ${value})
+      on conflict (key) do update set value = ${value}
+    `;
+    await writeAudit(context.userId, "gia-luot", null, value);
+    return data;
+  });
+
+export const listUserRuns = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((userId: string) => {
+    const id = userId?.trim();
+    if (!id) throw new Error("Thiếu tài khoản.");
+    return id;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "ho-tro");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      user_id: string;
+      email: string | null;
+      file_name: string;
+      seconds: number;
+      rate: number;
+      held: number;
+      charged: number;
+      released: number;
+      refunded: number;
+      status: string;
+      created_at: unknown;
+    }>`
+      select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.created_at
+      from run_tickets t
+      left join "user" u on u.id = t.user_id
+      where t.user_id = ${data}
+      order by t.created_at desc
+      limit 20
+    `;
+    return rows.map(ticketOf);
+  });
+
+export const releaseRunHold = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    const ticket = id?.trim();
+    if (!ticket) throw new Error("Thiếu phiếu.");
+    return ticket;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "quan-ly");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ user_id: string; held: number; status: string }>`
+      select user_id, held, status from run_tickets where id = ${data}
+    `;
+    const ticket = rows[0];
+    if (!ticket) throw new Error("Không có phiếu này.");
+    if (ticket.status !== "dang-giu" || ticket.held < 1) throw new Error("Phiếu này không còn khoản đang giữ.");
+    await assertLower(context.userId, ticket.user_id);
+    await sql`insert into room_accounts (user_id) values (${ticket.user_id}) on conflict (user_id) do nothing`;
+    await sql`update room_accounts set balance = balance + ${ticket.held} where user_id = ${ticket.user_id}`;
+    await sql`
+      update run_tickets
+      set released = released + held, held = 0, status = 'da-nha'
+      where id = ${data}
+    `;
+    await sql`
+      insert into room_ledger (user_id, kind, amount, note)
+      values (${ticket.user_id}, 'nha', ${ticket.held}, ${"Nhả khoản giữ phiếu " + data})
+    `;
+    await writeAudit(context.userId, "nha-giu", ticket.user_id, data);
+    return { ok: true };
+  });
+
+export const refundRun = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { id: string; amount: number; reason: string }) => {
+    const id = input.id?.trim();
+    if (!id) throw new Error("Thiếu phiếu.");
+    const amount = Math.round(Number(input.amount));
+    if (!Number.isFinite(amount) || amount < 1) throw new Error("Số hoàn không đúng.");
+    const reason = clip(input.reason ?? "", 180);
+    if (reason.length < 8) throw new Error("Hãy ghi lý do, ít nhất 8 ký tự.");
+    return { id, amount, reason };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "quan-ly");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ user_id: string; charged: number; refunded: number }>`
+      select user_id, charged, refunded from run_tickets where id = ${data.id}
+    `;
+    const ticket = rows[0];
+    if (!ticket) throw new Error("Không có phiếu này.");
+    const left = ticket.charged - ticket.refunded;
+    if (data.amount > left) throw new Error("Không hoàn quá số đã trừ.");
+    await assertLower(context.userId, ticket.user_id);
+    const done = ticket.refunded + data.amount >= ticket.charged;
+    await sql`insert into room_accounts (user_id) values (${ticket.user_id}) on conflict (user_id) do nothing`;
+    await sql`update room_accounts set balance = balance + ${data.amount} where user_id = ${ticket.user_id}`;
+    if (done) {
+      await sql`update run_tickets set refunded = refunded + ${data.amount}, status = 'da-hoan' where id = ${data.id}`;
+    } else {
+      await sql`update run_tickets set refunded = refunded + ${data.amount} where id = ${data.id}`;
+    }
+    await sql`
+      insert into room_ledger (user_id, kind, amount, note)
+      values (${ticket.user_id}, 'hoan', ${data.amount}, ${data.reason})
+    `;
+    await writeAudit(context.userId, "hoan-vi", ticket.user_id, `${data.id} ${data.amount} ${data.reason}`);
+    return { ok: true };
   });
 
 
