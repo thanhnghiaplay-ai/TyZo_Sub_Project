@@ -7,7 +7,7 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 10:02 (UTC+7) — Bấm số phiên bản để xem tóm tắt cập nhật |
+| **Cập nhật lần cuối** | 2026-11-06 13:04 (UTC+7) — Chốt cách viết dòng cập nhật: đủ ý, có mốc thời gian |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v2.5.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 (key của chủ, tính theo phút, dán link) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
@@ -91,7 +91,7 @@
 | 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
 | 51 | Nút Quản lý | 🟡 Đã gắn | Hiện cạnh Tài khoản khi có quyền. Chữ căn giữa cùng hàng với Phụ đề và Tài khoản. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
-| 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Bản chưa xem thì số sáng nhẹ. |
+| 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Bản chưa xem thì số sáng nhẹ. Từ 2026-11-06 13:04, mỗi dòng mới phải đủ ý và có mốc thời gian (`huongdan.txt` mục 10c). Câu đang hiện trên màn hình vẫn là bản v2.5.0, chưa viết lại. |
 
 ---
 
@@ -312,6 +312,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 01:01 | Grok | **Chỉ tài liệu.** Viết lại `huongdan.txt` và đối chiếu mục 2, mục 7, mục 13.5 với app đang chạy. Không đổi `src/`. | |
 | 2026-11-06 01:09 | Grok | **v2.4.2.** Chữ Quản lý căn giữa, cùng hàng với Phụ đề và Tài khoản. | |
 | 2026-11-06 10:02 | Grok | **v2.5.0.** Bấm hoặc rê chuột vào số phiên bản thì thấy tóm tắt cập nhật. Có bản chưa xem thì số sáng nhẹ. Quy tắc ghi thêm câu vào `CHANGELOG` mỗi lần nâng số. | |
+| 2026-11-06 13:04 | Grok | **Chỉ tài liệu.** Chốt mục 10c trong `huongdan.txt`: từ mốc này, mọi dòng cập nhật phải nêu đủ phần nâng cấp, chỉnh sửa, thay đổi và bổ sung, viết câu chuyên môn, kèm mốc thời gian. Không đổi `src/`. Câu trên màn hình vẫn là v2.5.0. | |
 
 ---
 
