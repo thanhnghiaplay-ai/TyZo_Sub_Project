@@ -1,1 +1,1 @@
-@/tmp/admin_room_from_payload.ts
+file:///tmp/admin_room_from_payload.ts
