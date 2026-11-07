@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.12.0";
+export const APP_VERSION = "2.13.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.13.0",
+    time: "19:20 ngày 07/11/2026",
+    text: "Gói 7 ngày và 30 ngày hiện giá gốc gạch ngang, giá mua thật và dòng đã tiết kiệm nổi bật. Mã QR nạp ghi rõ là bản demo cho đến khi gắn cổng thật. Đơn nạp có nút Hủy xác nhận khi khách báo giả. Chủ có nút Reset về 0 cho toàn bộ số liệu tiền test và Reset số dư từng tài khoản.",
+  },
   {
     version: "2.12.0",
     time: "18:50 ngày 07/11/2026",
