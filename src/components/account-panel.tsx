@@ -180,16 +180,23 @@ export function AccountPanel() {
               key={plan.id}
               type="button"
               disabled={busy}
-              className="flex min-tap w-full items-center justify-between rounded-2xl border border-line bg-card px-4 text-left disabled:opacity-40"
+              className="flex min-tap w-full items-center justify-between gap-3 rounded-2xl border border-line bg-card px-4 py-3 text-left disabled:opacity-40"
               onClick={() => void run(() => buyRoomPlan({ data: plan.id }), "Đã mở gói.")}
             >
               <span className="min-w-0">
-                <span className="block">{plan.name}</span>
-                <span className="block text-xs text-muted">
-                  {plan.save != null ? `Đã tiết kiệm ${dong(plan.save)} so với mua từng ngày` : "Giá một ngày. Gói dài hơn sẽ tiết kiệm hơn"}
-                </span>
+                <span className="block font-medium">{plan.name}</span>
+                {plan.strike != null && plan.save != null ? (
+                  <span className="mt-1 block text-xs">
+                    <span className="text-muted line-through">{dong(plan.strike)}</span>
+                    <span className="mt-0.5 block font-semibold text-accent">Đã tiết kiệm {dong(plan.save)}</span>
+                  </span>
+                ) : (
+                  <span className="mt-1 block text-xs text-muted">Giá một ngày. Gói dài hơn sẽ tiết kiệm hơn</span>
+                )}
               </span>
-              <span className="font-semibold text-accent">{dong(plan.price)}</span>
+              <span className="shrink-0 text-right">
+                <span className="block text-lg font-semibold text-accent">{dong(plan.price)}</span>
+              </span>
             </button>
           ))}
           <form
