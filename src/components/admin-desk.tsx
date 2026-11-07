@@ -34,7 +34,7 @@ import { AccountCard } from "@/components/role-mark";
 import { BrandMark } from "@/components/brand-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
-import { PaySettings } from "@/components/pay-settings";
+import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
 import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
@@ -161,7 +161,7 @@ export function AdminDesk() {
         <p className="text-sm text-muted">Không có quyền vào trang này.</p>
       )}
       {role && (
-        <div className="sticky top-0 z-20 -mx-1 flex gap-2 bg-bg px-1 py-2">
+        <div className="flex flex-wrap gap-2 border-b border-line bg-bg py-2">
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>
@@ -498,6 +498,7 @@ export function AdminDesk() {
               </button>
             </form>
           )}
+          {roleAtLeast(role, "quan-ly") && <PayQueue />}
           {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}

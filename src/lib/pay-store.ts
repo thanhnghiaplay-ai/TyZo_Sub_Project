@@ -1,11 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { randomBytes } from "node:crypto";
+import { toDataURL } from "qrcode";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { cassoHits, codesIn, makePayCode, sameSecret, sepayHit, type PayHit } from "@/lib/pay-match";
 
 export type PayPublic = { sepay: boolean; casso: boolean };
 
 export type PaySettingsView = PayPublic & {
+  sepayOn: boolean;
+  cassoOn: boolean;
   sepayBank: string;
   sepayAccount: string;
   sepayName: string;
@@ -39,6 +42,8 @@ type Settings = {
   casso_bank: string;
   casso_account: string;
   casso_name: string;
+  sepay_on: boolean;
+  casso_on: boolean;
 };
 
 const EMPTY: Settings = {
@@ -51,6 +56,8 @@ const EMPTY: Settings = {
   casso_bank: "",
   casso_account: "",
   casso_name: "",
+  sepay_on: true,
+  casso_on: true,
 };
 
 function ready(bank: string, account: string, secret: string) {
@@ -59,8 +66,10 @@ function ready(bank: string, account: string, secret: string) {
 
 function viewOf(row: Settings): PaySettingsView {
   return {
-    sepay: ready(row.sepay_bank, row.sepay_account, row.sepay_key),
-    casso: ready(row.casso_bank, row.casso_account, row.casso_token || row.casso_key),
+    sepay: row.sepay_on && ready(row.sepay_bank, row.sepay_account, row.sepay_key),
+    casso: row.casso_on && ready(row.casso_bank, row.casso_account, row.casso_token || row.casso_key),
+    sepayOn: row.sepay_on,
+    cassoOn: row.casso_on,
     sepayBank: row.sepay_bank,
     sepayAccount: row.sepay_account,
     sepayName: row.sepay_name,
@@ -76,18 +85,13 @@ function viewOf(row: Settings): PaySettingsView {
 async function readSettings(): Promise<Settings> {
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();
-  const rows = await sql<Settings>`select sepay_key, sepay_bank, sepay_account, sepay_name, casso_token, casso_key, casso_bank, casso_account, casso_name from pay_settings where id = 1`;
+  const rows = await sql<Settings>`select sepay_key, sepay_bank, sepay_account, sepay_name, casso_token, casso_key, casso_bank, casso_account, casso_name, sepay_on, casso_on from pay_settings where id = 1`;
   return rows[0] ?? EMPTY;
 }
 
-function qrUrl(bank: string, account: string, amount: number, code: string) {
-  const query = new URLSearchParams({
-    acc: account.trim(),
-    bank: bank.trim(),
-    amount: String(amount),
-    des: code,
-  });
-  return `https://qr.sepay.vn/img?${query.toString()}`;
+async function qrUrl(bank: string, account: string, amount: number, code: string) {
+  const text = ["Chuyen khoan", bank.trim(), account.trim(), String(amount), code].filter(Boolean).join(" ");
+  return toDataURL(text, { margin: 1, width: 280, errorCorrectionLevel: "M" });
 }
 
 async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
@@ -97,7 +101,7 @@ async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
   const sql = await getSql();
   const orders = await sql<{ id: string; user_id: string; amount: number; code: string }>`
     select id, user_id, amount, code from pay_orders
-    where status = 'pending' and provider = ${provider} and code in (${codes[0]}, ${codes[1] ?? codes[0]}, ${codes[2] ?? codes[0]})
+    where status in ('pending', 'claimed') and provider = ${provider} and code in (${codes[0]}, ${codes[1] ?? codes[0]}, ${codes[2] ?? codes[0]})
   `;
   const order = orders.find((item) => codes.includes(item.code) && hit.amount >= item.amount);
   if (!order) return false;
@@ -110,7 +114,7 @@ async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
     paid as (
       update pay_orders
       set status = 'paid', provider_ref = ${hit.ref}
-      where id = ${order.id} and status = 'pending' and exists (select 1 from seen)
+      where id = ${order.id} and status in ('pending', 'claimed') and exists (select 1 from seen)
       returning user_id, amount
     ),
     account as (
@@ -167,16 +171,19 @@ export const savePaySettings = createServerFn({ method: "POST" })
       casso_bank: (data.casso_bank ?? current.casso_bank).trim(),
       casso_account: (data.casso_account ?? current.casso_account).trim(),
       casso_name: (data.casso_name ?? current.casso_name).trim(),
+      sepay_on: current.sepay_on,
+      casso_on: current.casso_on,
     };
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`
       insert into pay_settings (
         id, sepay_key, sepay_bank, sepay_account, sepay_name,
-        casso_token, casso_key, casso_bank, casso_account, casso_name
+        casso_token, casso_key, casso_bank, casso_account, casso_name, sepay_on, casso_on
       ) values (
         1, ${next.sepay_key}, ${next.sepay_bank}, ${next.sepay_account}, ${next.sepay_name},
-        ${next.casso_token}, ${next.casso_key}, ${next.casso_bank}, ${next.casso_account}, ${next.casso_name}
+        ${next.casso_token}, ${next.casso_key}, ${next.casso_bank}, ${next.casso_account}, ${next.casso_name},
+        ${next.sepay_on}, ${next.casso_on}
       )
       on conflict (id) do update set
         sepay_key = excluded.sepay_key,
@@ -187,7 +194,9 @@ export const savePaySettings = createServerFn({ method: "POST" })
         casso_key = excluded.casso_key,
         casso_bank = excluded.casso_bank,
         casso_account = excluded.casso_account,
-        casso_name = excluded.casso_name
+        casso_name = excluded.casso_name,
+        sepay_on = excluded.sepay_on,
+        casso_on = excluded.casso_on
     `;
     return viewOf(next);
   });
@@ -226,7 +235,7 @@ export const createPayOrder = createServerFn({ method: "POST" })
       bank,
       account,
       name,
-      qr: qrUrl(bank, account, data.amount, code),
+      qr: await qrUrl(bank, account, data.amount, code),
     };
   });
 
@@ -257,9 +266,170 @@ export const syncCasso = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const pending = await sql<{ id: string }>`
-      select id from pay_orders where user_id = ${context.userId} and provider = 'casso' and status = 'pending' order by created_at desc limit 1
+      select id from pay_orders where user_id = ${context.userId} and provider = 'casso' and status in ('pending', 'claimed') order by created_at desc limit 1
     `;
     return { checked: true, pending: pending.length > 0 };
+  });
+
+export type PayClaim = {
+  id: string;
+  email: string;
+  name: string;
+  provider: string;
+  amount: number;
+  code: string;
+  status: string;
+  createdAt: string;
+};
+
+async function requireStaff(userId: string, lead: boolean) {
+  const { emailIsOwner } = await import("@/lib/admin-allow.server");
+  const { getSql } = await import("@/lib/db");
+  const sql = await getSql();
+  const rows = await sql<{ email: string; role: string | null }>`
+    select u.email, s.role from "user" u left join room_staff s on s.user_id = u.id where u.id = ${userId}
+  `;
+  const email = rows[0]?.email ?? "";
+  const role = rows[0]?.role;
+  if (emailIsOwner(email) || role === "chu") return;
+  if (!lead && role === "quan-ly") return;
+  throw new Error(lead ? "Chỉ Chủ được sửa cổng nạp." : "Chỉ Quản lý hoặc Chủ được xem đơn nạp.");
+}
+
+export const claimPayOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    const value = id?.trim();
+    if (!value) throw new Error("Thiếu đơn nạp.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      update pay_orders set status = 'claimed'
+      where id = ${data} and user_id = ${context.userId} and status = 'pending'
+    `;
+    return { ok: true };
+  });
+
+export const listPayOrders = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<PayClaim[]> => {
+    await requireStaff(context.userId, false);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      email: string | null;
+      name: string | null;
+      provider: string;
+      amount: number;
+      code: string;
+      status: string;
+      created_at: Date | string;
+    }>`
+      select o.id, u.email, u.name, o.provider, o.amount, o.code, o.status, o.created_at
+      from pay_orders o
+      left join "user" u on u.id = o.user_id
+      order by o.created_at desc
+      limit 40
+    `;
+    return rows.map((row) => ({
+      id: row.id,
+      email: row.email ?? "",
+      name: row.name ?? "",
+      provider: row.provider,
+      amount: row.amount,
+      code: row.code,
+      status: row.status,
+      createdAt: new Date(row.created_at).toISOString(),
+    }));
+  });
+
+export const confirmPayOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    const value = id?.trim();
+    if (!value) throw new Error("Thiếu đơn nạp.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
+    await requireStaff(context.userId, false);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const paid = await sql<{ user_id: string; amount: number; code: string }>`
+      update pay_orders
+      set status = 'paid', provider_ref = 'thu-cong'
+      where id = ${data} and status in ('pending', 'claimed')
+      returning user_id, amount, code
+    `;
+    const order = paid[0];
+    if (!order) throw new Error("Đơn này đã xử lý hoặc không còn.");
+    await sql`
+      insert into room_accounts (user_id, balance)
+      values (${order.user_id}, ${order.amount})
+      on conflict (user_id) do update set balance = room_accounts.balance + ${order.amount}
+    `;
+    await sql`
+      insert into room_ledger (user_id, kind, amount, note)
+      values (${order.user_id}, 'nap', ${order.amount}, ${"Nạp thủ công " + order.code})
+    `;
+    return { ok: true };
+  });
+
+export const setPayGate = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { provider: string; on?: boolean; clear?: boolean }) => {
+    const provider = input.provider === "casso" ? "casso" : input.provider === "sepay" ? "sepay" : "";
+    if (!provider) throw new Error("Cổng không đúng.");
+    return { provider, on: Boolean(input.on), clear: Boolean(input.clear) };
+  })
+  .handler(async ({ context, data }) => {
+    await requireOwner(context.userId);
+    const current = await readSettings();
+    const next = { ...current };
+    if (data.clear) {
+      if (data.provider === "sepay") {
+        next.sepay_key = "";
+        next.sepay_bank = "";
+        next.sepay_account = "";
+        next.sepay_name = "";
+        next.sepay_on = false;
+      } else {
+        next.casso_token = "";
+        next.casso_key = "";
+        next.casso_bank = "";
+        next.casso_account = "";
+        next.casso_name = "";
+        next.casso_on = false;
+      }
+    } else if (data.provider === "sepay") next.sepay_on = data.on;
+    else next.casso_on = data.on;
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      insert into pay_settings (
+        id, sepay_key, sepay_bank, sepay_account, sepay_name, sepay_on,
+        casso_token, casso_key, casso_bank, casso_account, casso_name, casso_on
+      ) values (
+        1, ${next.sepay_key}, ${next.sepay_bank}, ${next.sepay_account}, ${next.sepay_name}, ${next.sepay_on},
+        ${next.casso_token}, ${next.casso_key}, ${next.casso_bank}, ${next.casso_account}, ${next.casso_name}, ${next.casso_on}
+      )
+      on conflict (id) do update set
+        sepay_key = excluded.sepay_key,
+        sepay_bank = excluded.sepay_bank,
+        sepay_account = excluded.sepay_account,
+        sepay_name = excluded.sepay_name,
+        sepay_on = excluded.sepay_on,
+        casso_token = excluded.casso_token,
+        casso_key = excluded.casso_key,
+        casso_bank = excluded.casso_bank,
+        casso_account = excluded.casso_account,
+        casso_name = excluded.casso_name,
+        casso_on = excluded.casso_on
+    `;
+    return viewOf(next);
   });
 
 function headerSecret(request: Request) {

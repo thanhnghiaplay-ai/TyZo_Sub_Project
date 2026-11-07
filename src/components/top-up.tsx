@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createPayOrder, getPayPublic, readPayOrder, syncCasso, type PayOrderView, type PayPublic } from "@/lib/pay-store";
+import { claimPayOrder, createPayOrder, getPayPublic, readPayOrder, syncCasso, type PayOrderView, type PayPublic } from "@/lib/pay-store";
 
 const QUICK = [10_000, 50_000, 100_000, 200_000, 500_000];
 const MIN = 10_000;
@@ -68,6 +68,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     setNotice(null);
     try {
       if (order.provider === "casso") await syncCasso();
+      await claimPayOrder({ data: order.id });
       const next = await readPayOrder({ data: order.id });
       if (next.status === "paid") {
         setNotice("Đã cộng tiền vào số dư.");
@@ -149,7 +150,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
       </button>
       {order && (
         <div className="grid gap-2 text-sm">
-          <img src={order.qr} alt="Mã QR chuyển khoản" className="mx-auto w-52 rounded-xl bg-white p-2" />
+          <img src={order.qr} alt="Mã QR chuyển khoản" className="mx-auto h-52 w-52 rounded-xl bg-white p-2" />
           <p>Ngân hàng: {order.bank}</p>
           <p>Số tài khoản: {order.account}</p>
           <p>Chủ tài khoản: {order.name || "Theo tài khoản ngân hàng"}</p>

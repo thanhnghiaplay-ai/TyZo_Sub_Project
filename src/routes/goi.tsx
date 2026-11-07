@@ -106,12 +106,14 @@ function GoiDemo() {
                   <div>
                     <h2 className="font-semibold">{plan.name}</h2>
                     <p className="mt-1 text-2xl font-semibold text-accent">{dong(plan.price)}</p>
-                    {plan.strike != null && (
+                    {plan.save != null ? (
                       <p className="text-sm text-muted">
-                        <span className="line-through">{dong(plan.strike)}</span>
-                        {" · tiết kiệm "}
-                        {dong(plan.save!)}
+                        <span className="line-through">{dong(plan.strike!)}</span>
+                        {" · đã tiết kiệm "}
+                        {dong(plan.save)}
                       </p>
+                    ) : (
+                      <p className="text-sm text-muted">Giá một ngày. Gói 7 ngày và 30 ngày tiết kiệm hơn.</p>
                     )}
                   </div>
                   <button

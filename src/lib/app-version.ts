@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.11.0";
+export const APP_VERSION = "2.12.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.12.0",
+    time: "18:50 ngày 07/11/2026",
+    text: "Tab Việc, Sơ đồ và Doanh thu không còn đè nội dung phía dưới. Mã QR nạp tiền được vẽ ngay trên trang, không phụ thuộc ảnh bên ngoài. Khách báo đã chuyển khoản thì trang quản trị thấy đơn và có thể xác nhận cộng tiền khi webhook lỗi. Mỗi cổng nạp bật tắt hoặc xóa được, kèm chấm xanh đỏ. Gói 24 giờ, 7 ngày và 30 ngày ghi rõ khoản đã tiết kiệm.",
+  },
   {
     version: "2.11.0",
     time: "18:14 ngày 07/11/2026",

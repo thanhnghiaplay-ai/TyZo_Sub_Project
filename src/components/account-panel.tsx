@@ -183,9 +183,11 @@ export function AccountPanel() {
               className="flex min-tap w-full items-center justify-between rounded-2xl border border-line bg-card px-4 text-left disabled:opacity-40"
               onClick={() => void run(() => buyRoomPlan({ data: plan.id }), "Đã mở gói.")}
             >
-              <span>
-                {plan.name}
-                {plan.save != null ? ` · tiết kiệm ${dong(plan.save)}` : ""}
+              <span className="min-w-0">
+                <span className="block">{plan.name}</span>
+                <span className="block text-xs text-muted">
+                  {plan.save != null ? `Đã tiết kiệm ${dong(plan.save)} so với mua từng ngày` : "Giá một ngày. Gói dài hơn sẽ tiết kiệm hơn"}
+                </span>
               </span>
               <span className="font-semibold text-accent">{dong(plan.price)}</span>
             </button>
