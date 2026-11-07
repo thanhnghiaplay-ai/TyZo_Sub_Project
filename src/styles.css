@@ -468,6 +468,7 @@
 
 .notice-bell {
   position: relative;
+  z-index: 5;
 }
 
 .notice-bell-btn {
@@ -494,8 +495,9 @@
 
 .notice-badge {
   position: absolute;
-  top: -0.2rem;
-  right: -0.2rem;
+  z-index: 6;
+  top: -0.15rem;
+  right: -0.15rem;
   min-width: 1rem;
   border-radius: 999px;
   background: #e15b64;
@@ -503,6 +505,25 @@
   color: white;
   font-size: 0.62rem;
   line-height: 1rem;
+  text-align: center;
+}
+
+.notice-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0.35rem;
+  flex: none;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.notice-dot.on {
+  background: #e15b64;
+}
+
+.pay-flash {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .notice-panel {

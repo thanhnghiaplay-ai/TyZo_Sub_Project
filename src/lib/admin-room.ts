@@ -617,22 +617,32 @@ export const listAudit = createServerFn({ method: "GET" })
 
 export type NoticeRow = { id: number; title: string; body: string; createdAt: string; read: boolean; appealId: number | null };
 
-export const listMyNotices = createServerFn({ method: "GET" })
+export const listMyNotices = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<{ unread: number; items: NoticeRow[] }> => {
+  .validator((input: { desk?: boolean } | undefined) => ({ desk: Boolean(input?.desk) }))
+  .handler(async ({ context, data }): Promise<{ unread: number; items: NoticeRow[] }> => {
     const place = await placeOf(context.userId);
+    if (data.desk && !place.role) return { unread: 0, items: [] };
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const staff = Boolean(place.role);
     const rank = place.role ?? "";
-    const rows = await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null }>`
-      select id, title, body, created_at, read_at, appeal_id from room_notices
-      where (kind = 'user' and user_id = ${context.userId})
-         or (${staff} and kind = 'staff')
-         or (kind = ${rank})
-      order by id desc
-      limit 20
-    `;
+    const rows = data.desk
+      ? await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null }>`
+          select id, title, body, created_at, read_at, appeal_id from room_notices
+          where (
+            (${rank} = 'chu' and kind in ('ho-tro', 'quan-ly', 'chu', 'viec'))
+            or (${rank} = 'quan-ly' and kind in ('ho-tro', 'quan-ly', 'viec'))
+            or (${rank} = 'ho-tro' and kind = 'ho-tro')
+          )
+          order by id desc
+          limit 20
+        `
+      : await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null }>`
+          select id, title, body, created_at, read_at, appeal_id from room_notices
+          where kind = 'user' and user_id = ${context.userId}
+          order by id desc
+          limit 20
+        `;
     const items = rows.map((row) => ({
       id: row.id,
       title: row.title,
@@ -644,20 +654,25 @@ export const listMyNotices = createServerFn({ method: "GET" })
     return { unread: items.filter((item) => !item.read).length, items };
   });
 
-export const markNoticesRead = createServerFn({ method: "POST" })
+export const markNoticeRead = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => {
+  .validator((id: number) => {
+    const value = Number(id);
+    if (!Number.isInteger(value) || value <= 0) throw new Error("Thiếu thông báo.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
     const place = await placeOf(context.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const staff = Boolean(place.role);
     const rank = place.role ?? "";
     await sql`
       update room_notices set read_at = now()
-      where read_at is null and (
+      where id = ${data} and read_at is null and (
         (kind = 'user' and user_id = ${context.userId})
-        or (${staff} and kind = 'staff')
-        or kind = ${rank}
+        or (${rank} = 'chu' and kind in ('ho-tro', 'quan-ly', 'chu', 'viec'))
+        or (${rank} = 'quan-ly' and kind in ('ho-tro', 'quan-ly', 'viec'))
+        or (${rank} = 'ho-tro' and kind = 'ho-tro')
       )
     `;
     return { ok: true as const };
@@ -683,11 +698,12 @@ async function insertAppeal(email: string, body: string, userId: string | null) 
     select count(*)::int as n from room_appeals where email = ${email} and status = 'cho'
   `;
   if ((waiting[0]?.n ?? 0) >= 3) throw new Error("Đã có yêu cầu đang chờ.");
-  await sql`
+  const inserted = await sql<{ id: number }>`
     insert into room_appeals (user_id, email, body)
     values (${userId}, ${email}, ${body})
+    returning id
   `;
-  await writeNotice("ho-tro", "Yêu cầu mới", `${email}: ${body.slice(0, 140)}`, null);
+  await writeNotice("ho-tro", "Yêu cầu mới", `${email}: ${body.slice(0, 140)}`, null, inserted[0]?.id ?? null);
 }
 
 export const submitAppeal = createServerFn({ method: "POST" })

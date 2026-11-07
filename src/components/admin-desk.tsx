@@ -39,7 +39,7 @@ import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
-import { ConfirmCodeDialog } from "@/components/confirm-code";
+import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
 import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
 
@@ -74,6 +74,7 @@ export function AdminDesk() {
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
+  const [dropOpen, setDropOpen] = useState(false);
 
   async function refreshPlace() {
     const next = await getMyPlace();
@@ -141,20 +142,34 @@ export function AdminDesk() {
       if (!email) return;
       void openByEmail(email).catch(() => undefined);
     }
+    function flash(el: Element | null) {
+      if (!(el instanceof HTMLElement)) return;
+      el.classList.add("pay-flash");
+      window.setTimeout(() => el.classList.remove("pay-flash"), 2500);
+    }
     function onOpenPay(event: Event) {
       const detail = (event as CustomEvent<{ code?: string; email?: string }>).detail;
-      if (detail?.email) void openByEmail(detail.email).catch(() => undefined);
       setTab("viec");
-      // Scroll to pay queue or highlight by code if possible
       window.setTimeout(() => {
-        const el = document.querySelector("[data-pay-queue]");
-        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const code = detail?.code ?? "";
+        const el = code ? document.querySelector(`[data-pay-code="${CSS.escape(code)}"]`) : document.querySelector("[data-pay-queue]");
+        (el ?? document.querySelector("[data-pay-queue]"))?.scrollIntoView({ behavior: "smooth", block: "center" });
+        flash(el);
       }, 300);
     }
     function onOpenAppeal(event: Event) {
       const detail = (event as CustomEvent<{ id?: number; email?: string }>).detail;
-      if (detail?.email) void openByEmail(detail.email).catch(() => undefined);
       setTab("viec");
+      window.setTimeout(() => {
+        const el = detail?.id
+          ? document.querySelector(`[data-appeal-id="${detail.id}"]`)
+          : detail?.email
+            ? document.querySelector("[data-appeals]")
+            : null;
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+        flash(el);
+        if (!detail?.id && detail?.email) void openByEmail(detail.email).catch(() => undefined);
+      }, 300);
     }
     window.addEventListener("tyzo-open-user", onOpenUser);
     window.addEventListener("tyzo-open-pay", onOpenPay);
@@ -466,14 +481,7 @@ export function AdminDesk() {
                     type="button"
                     disabled={busy}
                     className="min-tap rounded-full border border-danger px-4 text-danger disabled:opacity-40"
-                    onClick={() => {
-                      if (!confirm(`Xóa tài khoản ${picked.email}? Việc này không hoàn lại.`)) return;
-                      void run(async () => {
-                        await removeUser({ data: picked.id });
-                        setUsers((list) => list.filter((item) => item.id !== picked.id));
-                        setPicked(null);
-                      }, "Đã xóa tài khoản.");
-                    }}
+                    onClick={() => setDropOpen(true)}
                   >
                     Xóa tài khoản
                   </button>
@@ -481,11 +489,11 @@ export function AdminDesk() {
               )}
             </AccountCard>
           )}
-          <section className="space-y-2">
+          <section className="space-y-2" data-appeals>
             <h2 className="font-semibold">Yêu cầu</h2>
             {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}
             {appeals.map((item) => (
-              <article key={item.id} className="rounded-xl border border-line px-3 py-2 text-sm">
+              <article key={item.id} data-appeal-id={item.id} className="rounded-xl border border-line px-3 py-2 text-sm">
                 <button type="button" className="w-full text-left" onClick={() => void openByEmail(item.email)}>
                   <span className="block font-medium">{item.email}</span>
                   <span className="mt-1 block">{item.body}</span>
@@ -606,6 +614,23 @@ export function AdminDesk() {
             const next = found.find((item) => item.id === picked.id);
             if (next) setPicked(next);
           }, "Đã đưa số dư về 0.");
+        }}
+      />
+      <ConfirmDialog
+        open={dropOpen}
+        title="Xóa tài khoản"
+        message={`Xóa tài khoản ${picked?.email ?? ""}? Việc này không hoàn lại.`}
+        confirmLabel="Xóa"
+        danger
+        onCancel={() => setDropOpen(false)}
+        onConfirm={() => {
+          setDropOpen(false);
+          if (!picked) return;
+          void run(async () => {
+            await removeUser({ data: picked.id });
+            setUsers((list) => list.filter((item) => item.id !== picked.id));
+            setPicked(null);
+          }, "Đã xóa tài khoản.");
         }}
       />
     </div>

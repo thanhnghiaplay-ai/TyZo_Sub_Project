@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-07 22:12 (UTC+7) — v2.15.0: hộp mã 6 ký tự đẹp, định dạng tiền 100.000, chuông dẫn đúng đơn, ẩn/hiện giá biểu |
+| **Cập nhật lần cuối** | 2026-11-07 23:44 (UTC+7) — v2.16.0: chuông quản trị chỉ việc cần xử lý, chấm chưa xem, ẩn giá biểu, hộp xác nhận đồng bộ |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.14.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.16.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -217,6 +217,9 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 ---
 
 ## 6. Lịch sử thay đổi / Tiến độ
+
+- 2026-11-07 23:44 — v2.16.0: chuông Admin chỉ yêu cầu hỗ trợ, chuyển cấp và khách báo đã chuyển; số mới và chấm đỏ từng dòng; hộp hủy đơn và xóa tài khoản đồng bộ giao diện; giá biểu trả theo lượt ẩn hiện được.
+
 
 - 2026-11-07 22:12 — v2.15.0: hộp xác nhận mã 6 ký tự đồng bộ giao diện; ô nhập tiền có dấu chấm nghìn; chuông dẫn đúng đơn nạp/yêu cầu; khung giá biểu gói trên Admin có ẩn hiện.
 

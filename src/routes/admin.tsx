@@ -14,7 +14,7 @@ function AdminPage() {
           <VersionMark align="start" />
         </div>
         <div className="flex items-center gap-2">
-          <NoticeBell />
+          <NoticeBell desk />
           <Link to="/" className="room-back">
             Về phòng
           </Link>

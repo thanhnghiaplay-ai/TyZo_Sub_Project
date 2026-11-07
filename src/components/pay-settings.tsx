@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DoorDot } from "@/components/run-door";
+import { ConfirmDialog } from "@/components/confirm-code";
 import { pushToast } from "@/components/toast";
 import {
   cancelPayOrder,
@@ -42,6 +43,7 @@ function statusLabel(status: string) {
 export function PayQueue() {
   const [rows, setRows] = useState<PayClaim[]>([]);
   const [busy, setBusy] = useState(false);
+  const [cancelId, setCancelId] = useState<string | null>(null);
 
   function load() {
     void listPayOrders()
@@ -65,7 +67,7 @@ export function PayQueue() {
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có đơn nạp.</p>}
       <ul className="grid max-h-80 gap-2 overflow-y-auto">
         {rows.map((row) => (
-          <li key={row.id} className="rounded-xl border border-line px-3 py-2 text-sm">
+          <li key={row.id} data-pay-code={row.code} className="rounded-xl border border-line px-3 py-2 text-sm">
             <p className="font-medium">{row.email || "Không rõ email"}</p>
             <p className="text-muted">
               {row.provider} · {dong(row.amount)} · {row.code}
@@ -96,17 +98,7 @@ export function PayQueue() {
                   type="button"
                   disabled={busy}
                   className="min-tap rounded-full border border-danger px-3 text-sm text-danger disabled:opacity-40"
-                  onClick={() => {
-                    if (!confirm("Hủy xác nhận đơn này? Dùng khi khách báo giả hoặc lợi dụng, không cộng tiền.")) return;
-                    setBusy(true);
-                    void cancelPayOrder({ data: row.id })
-                      .then(() => {
-                        pushToast("Đã hủy xác nhận, không cộng tiền.");
-                        load();
-                      })
-                      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa hủy được.", "bad"))
-                      .finally(() => setBusy(false));
-                  }}
+                  onClick={() => setCancelId(row.id)}
                 >
                   Hủy xác nhận
                 </button>
@@ -115,6 +107,27 @@ export function PayQueue() {
           </li>
         ))}
       </ul>
+      <ConfirmDialog
+        open={cancelId != null}
+        title="Hủy xác nhận"
+        message="Hủy xác nhận đơn này? Dùng khi khách báo giả hoặc lợi dụng, không cộng tiền."
+        confirmLabel="Hủy xác nhận"
+        danger
+        onCancel={() => setCancelId(null)}
+        onConfirm={() => {
+          const id = cancelId;
+          setCancelId(null);
+          if (!id) return;
+          setBusy(true);
+          void cancelPayOrder({ data: id })
+            .then(() => {
+              pushToast("Đã hủy xác nhận, không cộng tiền.");
+              load();
+            })
+            .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa hủy được.", "bad"))
+            .finally(() => setBusy(false));
+        }}
+      />
     </section>
   );
 }

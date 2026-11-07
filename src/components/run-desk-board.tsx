@@ -51,6 +51,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   const [adminKey, setAdminKey] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [priceOpen, setPriceOpen] = useState(true);
 
   useEffect(() => {
     void getRunDesk()
@@ -154,7 +155,14 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       </div>
 
       <div className="grid gap-2 rounded-xl border border-line p-3">
-        <h3 className="text-sm font-semibold">Giá biểu</h3>
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold">Giá biểu</h3>
+          <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => setPriceOpen((open) => !open)}>
+            {priceOpen ? "Ẩn giá biểu" : "Hiện giá biểu"}
+          </button>
+        </div>
+        {priceOpen && (
+          <>
         <label className="grid gap-1 text-sm">
           Tăng thêm trên giá gốc, phần trăm
           <input
@@ -255,6 +263,8 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           <button type="button" disabled={busy} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => save(form, "Đã cập nhật giá.")}>
             Cập nhật giá
           </button>
+        )}
+          </>
         )}
       </div>
 
