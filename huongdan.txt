@@ -2,8 +2,8 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-06 22:43 UTC+7)
-- Số phiên bản người dùng thấy: v2.10.0, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG, tám lần gần nhất, mỗi dòng có mốc thời gian.
+ĐANG CHẠY (2026-11-07 07:41 UTC+7)
+- Số phiên bản người dùng thấy: v2.10.1, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG, tám lần gần nhất, mỗi dòng có mốc thời gian.
 - Điều khoản: TERMS_VERSION = 2026-11-06.1 trong src/components/entry-gate.tsx.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.

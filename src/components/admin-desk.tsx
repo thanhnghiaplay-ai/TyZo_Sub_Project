@@ -161,13 +161,13 @@ export function AdminDesk() {
         <p className="text-sm text-muted">Không có quyền vào trang này.</p>
       )}
       {role && (
-        <div className="flex gap-2">
+        <div className="sticky top-0 z-20 -mx-1 flex gap-2 bg-bg px-1 py-2">
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>
         </div>
       )}
-      {role && <RunDeskBoard owner={role === "chu"} />}
+      {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "viec" && stats && (

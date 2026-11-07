@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { claimTrialDevice } from "@/lib/room-account";
-import { roomAccess } from "@/lib/room-plans";
+import { payTurnNotice, roomAccess } from "@/lib/room-plans";
 import { deviceId } from "@/lib/device-id";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
-export function AccountStrip() {
+export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
   const { user, isPending } = useCurrentUserState();
   const [text, setText] = useState<string | null>(null);
 
@@ -18,7 +18,10 @@ export function AccountStrip() {
     }
     void claimTrialDevice({ data: id })
       .then((state) => {
-        if (!gone) setText(roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text);
+        if (!gone) {
+          const input = { plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft };
+          setText(payByRoom ? payTurnNotice(input) : roomAccess(input).text);
+        }
       })
       .catch(() => {
         if (!gone) setText("Chưa đọc được hạn gói.");
@@ -26,7 +29,7 @@ export function AccountStrip() {
     return () => {
       gone = true;
     };
-  }, [isPending, user]);
+  }, [isPending, payByRoom, user]);
 
   if (isPending || !user || user.isDevFallback) return null;
   return <p className="text-xs text-muted">{text ?? "Đang xem hạn gói…"}</p>;

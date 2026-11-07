@@ -45,6 +45,19 @@ export function roomAccess(
   return { kind: "locked" as const, text: "Hết lượt dùng thử. Hãy mua gói để tải và dịch tiếp." };
 }
 
+export function payTurnNotice(
+  input: { plan: string | null; planUntil: string | null; trialLeft: number },
+  now = Date.now(),
+) {
+  const access = roomAccess(input, now);
+  const until = input.planUntil ? new Date(input.planUntil) : null;
+  const expired = Boolean(input.plan && until && !Number.isNaN(until.getTime()) && until.getTime() <= now);
+  if (access.kind === "paid") return "Đang chọn trả theo lượt. Lần chạy dùng key của phòng. Hạn gói thuê không bị trừ.";
+  if (expired) return "Gói thuê đã hết hạn. Cửa trả theo lượt vẫn mở: lần chạy dùng key của phòng, không tính theo hạn gói.";
+  if (access.kind === "trial") return "Bản dùng thử không dùng cửa trả theo lượt. Hãy chọn key của bạn, hoặc mua gói thuê phòng.";
+  return "Chưa có hạn dùng. Cửa trả theo lượt chưa mở cho tài khoản này.";
+}
+
 export function exportNotice(
   input: { plan: string | null; planUntil: string | null; trialLeft: number },
   now = Date.now(),

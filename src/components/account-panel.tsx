@@ -30,6 +30,7 @@ export function AccountPanel() {
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [appeal, setAppeal] = useState("");
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
+  const [ledgerOpen, setLedgerOpen] = useState(false);
   const [reload, setReload] = useState(0);
   const runDoor = useRunDoor();
 
@@ -252,17 +253,25 @@ export function AccountPanel() {
             <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
               Đổi mật khẩu
             </button>
+            <p className="text-xs text-muted">Quên mật khẩu chưa gửi được thư.</p>
           </form>
-          <p className="text-sm text-muted">Quên mật khẩu chưa gửi được thư. Phần đó cần dịch vụ gửi thư, chưa gắn.</p>
           {state && state.ledger.length > 0 && (
-            <ul className="space-y-2 text-sm">
-              {state.ledger.map((item) => (
-                <li key={item.id} className="flex justify-between gap-3 rounded-xl border border-line px-3 py-2">
-                  <span>{item.note}</span>
-                  <span className={item.amount < 0 ? "text-muted" : "text-accent"}>{dong(item.amount)}</span>
-                </li>
-              ))}
-            </ul>
+            <section className="rounded-2xl border border-line bg-card p-3">
+              <h2 className="text-sm font-semibold">Sổ gần đây</h2>
+              <ul className="mt-2 max-h-36 space-y-1 overflow-y-auto text-sm">
+                {(ledgerOpen ? state.ledger.slice(0, 12) : state.ledger.slice(0, 3)).map((item) => (
+                  <li key={item.id} className="flex justify-between gap-3">
+                    <span className="min-w-0 truncate">{item.note}</span>
+                    <span className={item.amount < 0 ? "shrink-0 text-muted" : "shrink-0 text-accent"}>{dong(item.amount)}</span>
+                  </li>
+                ))}
+              </ul>
+              {state.ledger.length > 3 && (
+                <button type="button" className="mt-2 text-sm text-muted underline" onClick={() => setLedgerOpen((open) => !open)}>
+                  {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(state.ledger.length, 12) - 3} dòng`}
+                </button>
+              )}
+            </section>
           )}
         </>
       )}

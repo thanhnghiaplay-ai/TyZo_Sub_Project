@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { exportNotice, roomAccess, trialFileProblem } from "./room-plans.ts";
+import { exportNotice, payTurnNotice, roomAccess, trialFileProblem } from "./room-plans.ts";
 
 const now = Date.parse("2026-11-05T10:00:00.000Z");
 
@@ -35,5 +35,11 @@ describe("hạn gói", () => {
       "Gói đã hết hạn. Không xuất được file Vietsub.",
     );
     assert.equal(exportNotice({ plan: "tuan", planUntil: "2026-11-06T10:00:00.000Z", trialLeft: 0 }, now), null);
+  });
+
+  it("trả theo lượt không lấy câu của gói hết hạn", () => {
+    assert.match(payTurnNotice({ plan: "ngay", planUntil: "2026-11-05T09:00:00.000Z", trialLeft: 0 }, now), /không tính theo hạn gói/);
+    assert.match(payTurnNotice({ plan: "tuan", planUntil: "2026-11-06T10:00:00.000Z", trialLeft: 0 }, now), /Hạn gói thuê không bị trừ/);
+    assert.match(payTurnNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), /Bản dùng thử/);
   });
 });

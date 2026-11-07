@@ -1000,8 +1000,20 @@
   animation: stat-in 0.35s ease;
 }
 
-@keyframes role-glow {
-  50% { opacity: 0.62; }
+.account-card[data-rank="chu"] .role-mark-fold,
+.account-card[data-rank="quan-ly"] .role-mark-fold,
+.account-card[data-rank="ho-tro"] .role-mark-fold,
+.account-card[data-rank="chu"] .role-mark-stamp,
+.account-card[data-rank="quan-ly"] .role-mark-stamp,
+.account-card[data-rank="ho-tro"] .role-mark-stamp,
+.account-card[data-rank="chu"] .role-mark-frame,
+.account-card[data-rank="quan-ly"] .role-mark-frame,
+.account-card[data-rank="ho-tro"] .role-mark-frame,
+.account-card[data-rank="chu"] .role-mark-chip,
+.account-card[data-rank="quan-ly"] .role-mark-chip,
+.account-card[data-rank="ho-tro"] .role-mark-chip {
+  animation: role-glow 2.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--badge) 70%, transparent));
 }
 
 @keyframes stat-in {

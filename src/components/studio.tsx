@@ -522,7 +522,7 @@ export function Studio() {
           </div>
         </div>
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
-        <AccountStrip />
+        <AccountStrip payByRoom={payByRoom} />
       </header>
 
       <nav aria-label="Chức năng" className="room-nav">

@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-06 22:43 (UTC+7) — v2.10.0: key phòng được lưu, trả theo lượt dùng key đó |
+| **Cập nhật lần cuối** | 2026-11-07 07:41 (UTC+7) — v2.10.1: tab admin tách riêng, câu trả theo lượt |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.10.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.10.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -93,7 +93,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 55 | Trả theo lượt | 🟡 Đã nối key phòng, chưa trừ ví | v2.10.0: Chủ bấm Lưu key thì key nằm trên máy chủ và còn sau khi tải lại. Chỉ Chủ đọc lại được key. Khách chọn trả theo lượt thì phòng gọi Groq bằng key đó, khách không thấy key. Gói còn hạn mới chạy cửa này. Chưa trừ ví. |
+| 55 | Trả theo lượt | 🟡 Đã nối key phòng, chưa trừ ví | v2.10.1: Chọn trả theo lượt thì câu trên phòng nói đúng cửa đó. Gói hết hạn vẫn chạy cửa này. Bản dùng thử thì không. Tab Việc, Sơ đồ, Doanh thu tách riêng. Chưa trừ ví. |
 
 ---
 
@@ -326,6 +326,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 22:04 | Grok | **v2.8.0.** Giá gốc và model key admin chỉ ở trang quản trị. Khách chỉ thấy «Chưa cập nhật» nếu model chưa đưa ra. Bảng phiên bản còn 8 lần. Có báo bản mới. Không đổi điều khoản. | |
 | 2026-11-06 22:22 | Grok | **v2.9.0.** Ô key ngay trên trang quản trị. Trả theo lượt không cần đồng bộ key. Đổi tên hiển thị hai thể loại, mã và thuật ngữ giữ. Thông báo nổi khi lưu ở quản trị. Không đổi điều khoản. | |
 | 2026-11-06 22:43 | Grok | **v2.10.0.** Key phòng lưu trên máy chủ, tải lại không mất. Khách chọn trả theo lượt thì dùng key đó. Phiếu hiện giờ và trạng thái. Doanh thu đọc được cột ngày. Chưa trừ ví. Không đổi điều khoản. | |
+| 2026-11-07 07:41 | Grok | **v2.10.1.** Tab Việc, Sơ đồ, Doanh thu tách riêng. Câu hạn gói đổi khi chọn trả theo lượt. Thẻ quyền có hiệu ứng. Sổ gần đây thu gọn. Không đổi điều khoản. | |
 
 ---
 

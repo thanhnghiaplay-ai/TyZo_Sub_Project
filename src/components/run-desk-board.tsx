@@ -256,7 +256,12 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
 
       <div className="grid gap-2">
         <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
-        {!view?.recent.length && <p className="text-sm text-muted">Chưa có phiếu.</p>}
+        {!view?.recent.length && (
+          <div className="rounded-xl border border-dashed border-line px-3 py-3">
+            <p className="text-sm font-medium">Chưa có phiếu trả theo lượt</p>
+            <p className="mt-1 text-sm text-muted">Phiếu xuất hiện sau lần chạy đầu tiên. Mỗi phiếu ghi tên tệp, giờ, trạng thái, số phút, số đang giữ và số đã trừ.</p>
+          </div>
+        )}
         <div className="grid max-h-80 gap-2 overflow-y-auto">
           {view?.recent.map((ticket) => (
             <TicketCard key={ticket.id} ticket={ticket} />

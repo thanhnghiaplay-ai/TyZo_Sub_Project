@@ -536,6 +536,15 @@ export function usePipeline() {
       }
       const state = await claimTrialDevice({ data: id });
       const access = roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
+      if (roomPayRef.current) {
+        const until = state.planUntil ? new Date(state.planUntil).getTime() : 0;
+        const hadPlan = Boolean(state.plan && until);
+        if (!hadPlan && access.kind !== "paid") {
+          say("Bản dùng thử không dùng cửa trả theo lượt. Hãy chọn key của bạn, hoặc mua gói thuê phòng.", true);
+          return null;
+        }
+        return access;
+      }
       if (paidOnly && access.kind !== "paid") {
         say(paidOnly, true);
         return null;
@@ -633,8 +642,7 @@ export function usePipeline() {
     if (!AudioContextClass) return say("Trình duyệt này không hỗ trợ xử lý âm thanh. Hãy cập nhật trình duyệt.", true);
     const access = await guardRoom(null);
     if (!access) return;
-    if (roomPayRef.current && access.kind !== "paid") return say("Cửa trả theo lượt chỉ dùng khi gói còn hạn. Bản dùng thử vẫn nhập key của bạn.", true);
-    if (access.kind !== "paid") {
+    if (!roomPayRef.current && access.kind !== "paid") {
       const chosenFile = audioFile || file;
       if (!chosenFile) return say("Bản dùng thử không nhận link. Hãy chọn một tệp trên máy.", true);
       let seconds = 0;
