@@ -233,6 +233,17 @@ export const setOwnerEmail = createServerFn({ method: "POST" })
     return { owners };
   });
 
+
+/** Bỏ dấu tiếng Việt để tìm tên thiếu dấu / gần đúng. */
+function foldVi(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}
+
 export const searchUsers = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((q: string) => {
@@ -245,7 +256,11 @@ export const searchUsers = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const { emailIsOwner } = await import("@/lib/admin-allow.server");
     const sql = await getSql();
-    const like = `%${data.replace(/[%_]/g, "")}%`;
+    const safe = data.replace(/[%_]/g, "");
+    const like = `%${safe}%`;
+    const folded = foldVi(safe);
+    const foldLike = `%${folded}%`;
+    // translate bỏ dấu phổ biến trong Postgres khi không có extension unaccent
     const rows = await sql<{
       id: string;
       email: string;
@@ -264,7 +279,18 @@ export const searchUsers = createServerFn({ method: "POST" })
       from "user" u
       left join room_accounts a on a.user_id = u.id
       left join room_staff s on s.user_id = u.id
-      where u.email ilike ${like} or u.name ilike ${like}
+      where u.email ilike ${like}
+         or u.name ilike ${like}
+         or translate(
+              lower(coalesce(u.name, '')),
+              'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ',
+              'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd'
+            ) like ${foldLike}
+         or translate(
+              lower(coalesce(u.email, '')),
+              'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ',
+              'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd'
+            ) like ${foldLike}
       order by u."createdAt" desc
       limit 20
     `;
@@ -852,15 +878,24 @@ export const setNickname = createServerFn({ method: "POST" })
   });
 
 export type MoneyPoint = { bucket: string; revenue: number; cost: number };
+export type MoneyBreakdown = {
+  nap: number;
+  goi: number;
+  luot: number;
+  hoan: number;
+  nha: number;
+  chi: number;
+};
 
 export const getMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((span: string) => (span === "week" || span === "month" || span === "year" ? span : "day"))
-  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number }> => {
+  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number; breakdown: MoneyBreakdown }> => {
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
+    // Doanh thu thực nhận = tiền nạp qua cổng (Sepay/Casso). Không tính tiền thử.
     const revenue = await sql<{ bucket: string; amount: number }>`
       select to_char(date_trunc(${data}::text, created_at), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
       from room_ledger
@@ -873,6 +908,19 @@ export const getMoney = createServerFn({ method: "POST" })
       where spent_on::timestamp > now() - ${window}::interval
       group by 1 order by 1
     `;
+    const kinds = await sql<{ kind: string; amount: number }>`
+      select kind, coalesce(sum(amount), 0)::int as amount
+      from room_ledger
+      where created_at > now() - ${window}::interval
+        and kind in ('nap', 'goi', 'hoan', 'nha')
+      group by kind
+    `;
+    const runSum = await sql<{ charged: number; refunded: number }>`
+      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded
+      from run_tickets
+      where created_at > now() - ${window}::interval
+    `;
+    const byKind = Object.fromEntries(kinds.map((row) => [row.kind, row.amount]));
     const buckets = new Map<string, MoneyPoint>();
     for (const row of revenue) buckets.set(row.bucket, { bucket: row.bucket, revenue: row.amount, cost: 0 });
     for (const row of costs) {
@@ -881,10 +929,21 @@ export const getMoney = createServerFn({ method: "POST" })
       buckets.set(row.bucket, point);
     }
     const points = [...buckets.values()];
+    const costTotal = points.reduce((sum, point) => sum + point.cost, 0);
+    const charged = Number(runSum[0]?.charged ?? 0);
+    const refundedRun = Number(runSum[0]?.refunded ?? 0);
     return {
       points,
       revenue: points.reduce((sum, point) => sum + point.revenue, 0),
-      cost: points.reduce((sum, point) => sum + point.cost, 0),
+      cost: costTotal,
+      breakdown: {
+        nap: Number(byKind.nap ?? 0),
+        goi: Math.abs(Number(byKind.goi ?? 0)),
+        luot: Math.max(0, charged - refundedRun),
+        hoan: Number(byKind.hoan ?? 0),
+        nha: Number(byKind.nha ?? 0),
+        chi: costTotal,
+      },
     };
   });
 

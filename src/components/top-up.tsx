@@ -1,19 +1,23 @@
 import { useEffect, useState } from "react";
 import { createPayOrder, getPayPublic, readPayOrder, syncCasso, type PayOrderView, type PayPublic } from "@/lib/pay-store";
 
-const AMOUNTS = [9_000, 39_000, 99_000];
+const QUICK = [10_000, 50_000, 100_000, 200_000, 500_000];
+const MIN = 10_000;
+const MAX = 1_000_000;
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
-export function TopUp({ onPaid }: { onPaid: () => void }) {
+export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact?: boolean }) {
   const [gates, setGates] = useState<PayPublic | null>(null);
   const [provider, setProvider] = useState<"sepay" | "casso">("sepay");
-  const [amount, setAmount] = useState(9_000);
+  const [amount, setAmount] = useState(50_000);
+  const [draft, setDraft] = useState("50000");
   const [order, setOrder] = useState<PayOrderView | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState(!compact);
 
   useEffect(() => {
     void getPayPublic()
@@ -25,6 +29,12 @@ export function TopUp({ onPaid }: { onPaid: () => void }) {
       .catch(() => setGates({ sepay: false, casso: false }));
   }, []);
 
+  function setAmountSafe(value: number) {
+    const next = Math.round(value);
+    setAmount(next);
+    setDraft(String(next || ""));
+  }
+
   if (!gates) return <p className="text-sm text-muted">Đang xem cổng nạp…</p>;
   if (!gates.sepay && !gates.casso) {
     return (
@@ -35,10 +45,16 @@ export function TopUp({ onPaid }: { onPaid: () => void }) {
   }
 
   async function makeOrder() {
+    const value = Math.round(Number(draft.replace(/\D/g, "") || 0));
+    if (!Number.isFinite(value) || value < MIN || value > MAX) {
+      setNotice(`Số tiền từ ${dong(MIN)} đến ${dong(MAX)}.`);
+      return;
+    }
+    setAmount(value);
     setBusy(true);
     setNotice(null);
     try {
-      setOrder(await createPayOrder({ data: { provider, amount } }));
+      setOrder(await createPayOrder({ data: { provider, amount: value } }));
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Chưa tạo được đơn.");
     } finally {
@@ -65,9 +81,28 @@ export function TopUp({ onPaid }: { onPaid: () => void }) {
     }
   }
 
+  if (compact && !open) {
+    return (
+      <button
+        type="button"
+        className="min-tap rounded-full border border-line px-4 text-sm"
+        onClick={() => setOpen(true)}
+      >
+        Nạp tiền
+      </button>
+    );
+  }
+
   return (
     <section className="space-y-3 rounded-2xl border border-line bg-card p-4">
-      <h2 className="font-semibold">Nạp tiền</h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-semibold">Nạp tiền</h2>
+        {compact && (
+          <button type="button" className="text-sm text-muted underline" onClick={() => setOpen(false)}>
+            Đóng
+          </button>
+        )}
+      </div>
       <div className="flex flex-wrap gap-2">
         {gates.sepay && (
           <button type="button" className={"min-tap rounded-full px-4 text-sm " + (provider === "sepay" ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setProvider("sepay")}>
@@ -80,21 +115,35 @@ export function TopUp({ onPaid }: { onPaid: () => void }) {
           </button>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-2">
-        {AMOUNTS.map((value) => (
-          <button key={value} type="button" className={"min-tap rounded-2xl border text-sm " + (amount === value ? "border-accent text-accent" : "border-line")} onClick={() => setAmount(value)}>
+      <p className="text-sm text-muted">Nhập số tiền từ {dong(MIN)} đến {dong(MAX)}. Có thể chọn nhanh bên dưới.</p>
+      <div className="flex flex-wrap gap-2">
+        {QUICK.map((value) => (
+          <button
+            key={value}
+            type="button"
+            className={"min-tap rounded-full border px-3 text-sm " + (amount === value ? "border-accent text-accent" : "border-line")}
+            onClick={() => setAmountSafe(value)}
+          >
             {dong(value)}
           </button>
         ))}
       </div>
-      <input
-        type="number"
-        min={10000}
-        max={5000000}
-        value={amount}
-        onChange={(event) => setAmount(Number(event.target.value))}
-        className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
-      />
+      <label className="grid gap-1 text-sm">
+        Số tiền muốn nạp (đồng)
+        <input
+          type="text"
+          inputMode="numeric"
+          value={draft}
+          onChange={(event) => {
+            const raw = event.target.value.replace(/\D/g, "").slice(0, 7);
+            setDraft(raw);
+            setAmount(Number(raw || 0));
+          }}
+          className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+          placeholder={`${MIN} – ${MAX}`}
+        />
+      </label>
+      <p className="text-xs text-muted">Sẽ nạp: {dong(Math.round(Number(draft.replace(/\D/g, "") || 0)))}</p>
       <button type="button" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40" onClick={() => void makeOrder()}>
         Tạo mã chuyển khoản
       </button>

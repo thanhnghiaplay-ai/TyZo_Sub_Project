@@ -10,7 +10,7 @@ import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
-import { RunDoorClosed, useRunDoor } from "@/components/run-door";
+import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
@@ -143,24 +143,30 @@ export function AccountPanel() {
             <p className="mt-2 text-sm">
               {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>
-            <button
-              type="button"
-              disabled={leaving}
-              className="mt-3 text-sm text-muted underline disabled:opacity-40"
-              onClick={() => {
-                setLeaving(true);
-                void signOut("/login").catch(() => {
-                  setLeaving(false);
-                  setNotice("Chưa đăng xuất được. Thử lại.");
-                });
-              }}
-            >
-              {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
-            </button>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <TopUp compact onPaid={() => setReload((value) => value + 1)} />
+              <button
+                type="button"
+                disabled={leaving}
+                className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
+                onClick={() => {
+                  setLeaving(true);
+                  void signOut("/login").catch(() => {
+                    setLeaving(false);
+                    setNotice("Chưa đăng xuất được. Thử lại.");
+                  });
+                }}
+              >
+                {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
+              </button>
+            </div>
           </AccountCard>
           {runDoor.open ? (
             <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
-              <h2 className="text-sm font-semibold">Trả theo lượt</h2>
+              <h2 className="flex items-center gap-2 text-sm font-semibold">
+                <DoorDot open />
+                Trả theo lượt
+              </h2>
               <p className="text-sm text-muted">Đơn giá nằm ở tab Key khi chọn Trả theo lượt. Đó là giá dịch vụ của phòng, không phải bảng giá để so với key riêng.</p>
             </section>
           ) : (
@@ -169,7 +175,6 @@ export function AccountPanel() {
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>
-          <TopUp onPaid={() => setReload((value) => value + 1)} />
           {ROOM_PLANS.map((plan) => (
             <button
               key={plan.id}

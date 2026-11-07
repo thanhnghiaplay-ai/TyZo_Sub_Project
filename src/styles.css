@@ -866,6 +866,24 @@
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--badge) 45%, transparent);
 }
 
+
+.door-dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 12%, transparent);
+}
+.door-dot-open {
+  background: #3ecf8e;
+  box-shadow: 0 0 8px rgb(62 207 142 / 55%);
+}
+.door-dot-closed {
+  background: #ef5f5f;
+  box-shadow: 0 0 8px rgb(239 95 95 / 45%);
+}
+
 .role-mark {
   position: absolute;
   z-index: 1;
@@ -878,14 +896,17 @@
 .role-mark b { font-weight: 700; }
 
 .role-mark-ribbon {
-  top: 1.15rem;
-  right: -0.35rem;
-  padding: 0.32rem 0.7rem;
+  top: 1.05rem;
+  right: -0.2rem;
+  padding: 0.34rem 0.72rem;
   border-radius: 0.4rem;
   background: var(--badge);
   color: var(--badge-ink);
   transform: rotate(12deg);
   box-shadow: 0 6px 14px rgb(0 0 0 / 28%);
+  white-space: nowrap;
+  text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .account-card[data-rank="chu"] .role-mark-ribbon,
@@ -896,38 +917,55 @@
 .role-mark-pill {
   top: 0.8rem;
   right: 0.75rem;
-  padding: 0.32rem 0.65rem;
+  padding: 0.34rem 0.7rem;
   border-radius: 999px;
   background: var(--badge);
   color: var(--badge-ink);
+  white-space: nowrap;
+  text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .role-mark-stamp {
   top: 0.45rem;
-  right: 0.4rem;
+  right: 0.45rem;
   display: grid;
-  width: 4.3rem;
-  height: 4.3rem;
+  width: 4.4rem;
+  height: 4.4rem;
   place-items: center;
+  place-content: center;
   border: 2px solid var(--badge);
   border-radius: 999px;
   color: var(--badge);
   text-align: center;
   transform: rotate(-12deg);
+  line-height: 1.1;
+  padding: 0.25rem;
+  box-sizing: border-box;
 }
 
-.role-mark-stamp b { font-size: 0.68rem; }
+.role-mark-stamp b {
+  font-size: 0.66rem;
+  white-space: normal;
+  text-align: center;
+  display: block;
+  max-width: 3.6rem;
+}
 
 .role-mark-rail,
 .role-mark-sash {
   top: 0;
   bottom: 0;
   display: grid;
-  width: 1.7rem;
+  width: 1.75rem;
   place-items: center;
+  place-content: center;
   background: var(--badge);
   color: var(--badge-ink);
   writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
 }
 
 .role-mark-rail { left: 0; }
@@ -944,10 +982,15 @@
 
 .role-mark-fold b {
   position: absolute;
-  top: 0.85rem;
-  right: 0.05rem;
+  top: 0.9rem;
+  right: 0.12rem;
+  left: auto;
   font-size: 0.62rem;
   transform: rotate(45deg);
+  transform-origin: center;
+  white-space: nowrap;
+  text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .role-mark-banner {
@@ -955,20 +998,27 @@
   right: 0;
   left: 0;
   display: grid;
-  height: 1.7rem;
+  height: 1.75rem;
   place-items: center;
+  place-content: center;
   background: var(--badge);
   color: var(--badge-ink);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 .role-mark-chip {
   position: static;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 0.45rem;
   border: 1px solid var(--badge);
   border-radius: 999px;
-  padding: 0.22rem 0.55rem;
+  padding: 0.24rem 0.6rem;
   color: var(--badge);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 .role-mark-frame {
@@ -976,8 +1026,11 @@
   right: 0.7rem;
   border: 1px solid var(--badge);
   border-radius: 0.45rem;
-  padding: 0.28rem 0.5rem;
+  padding: 0.3rem 0.55rem;
   color: var(--badge);
+  white-space: nowrap;
+  text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .role-mark-ticket {
@@ -985,8 +1038,11 @@
   bottom: 0.7rem;
   border-radius: 0.35rem 0.75rem;
   background: var(--badge);
-  padding: 0.3rem 0.6rem;
+  padding: 0.32rem 0.65rem;
   color: var(--badge-ink);
+  white-space: nowrap;
+  text-align: center;
+  letter-spacing: 0.01em;
 }
 
 .org-card {

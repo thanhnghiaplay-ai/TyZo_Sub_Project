@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, getMoney, getOrg, setNickname, type MoneyPoint, type OrgCard } from "@/lib/admin-room";
+import { addCost, getMoney, getOrg, setNickname, type MoneyBreakdown, type MoneyPoint, type OrgCard } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 
@@ -72,6 +72,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [points, setPoints] = useState<MoneyPoint[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
+  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0 });
   const [day, setDay] = useState(() => new Date().toISOString().slice(0, 10));
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -83,6 +84,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       setPoints(result.points);
       setRevenue(result.revenue);
       setCost(result.cost);
+      setBreakdown(result.breakdown);
       setFault("");
     }).catch((error) => {
       const message = error instanceof Error ? error.message : "Chưa đọc được doanh thu.";
@@ -116,7 +118,21 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         ))}
         {points.length === 0 && <li>Chưa có tiền nạp thật trong khoảng này.</li>}
       </ul>
-      <p className="text-sm text-muted">Doanh thu chỉ tính tiền nạp qua Sepay hoặc Casso. Tiền thử và gói mở tay không tính. Groq là tiền của khách.</p>
+      <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
+        <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
+        <ul className="space-y-1 text-muted">
+          <li className="flex justify-between gap-2"><span>Nạp qua cổng (Sepay/Casso)</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
+          <li className="flex justify-between gap-2"><span>Khách mua gói từ số dư</span><span className="font-medium text-fg">{dong(breakdown.goi)}</span></li>
+          <li className="flex justify-between gap-2"><span>Đã trừ trả theo lượt (sau hoàn)</span><span className="font-medium text-fg">{dong(breakdown.luot)}</span></li>
+          <li className="flex justify-between gap-2"><span>Hoàn vào ví</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
+          <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
+          <li className="flex justify-between gap-2"><span>Chi phí vận hành (ghi tay)</span><span className="font-medium text-fg">{dong(breakdown.chi)}</span></li>
+        </ul>
+        <p className="text-xs text-muted">
+          Doanh thu thực nhận = tiền nạp qua cổng. Mua gói và trả theo lượt là dùng số dư đã nạp, không cộng thêm doanh thu.
+          Tiền thử và gói mở tay không tính. Key Groq của khách không đi qua sổ này. Khoản chi phí do Chủ ghi để đối soát lời lỗ.
+        </p>
+      </div>
       {owner && (
         <form
           className="grid gap-2 rounded-2xl border border-line p-3"

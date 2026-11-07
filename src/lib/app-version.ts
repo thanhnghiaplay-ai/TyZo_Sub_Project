@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.10.1";
+export const APP_VERSION = "2.11.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.11.0",
+    time: "18:14 ngày 07/11/2026",
+    text: "Thêm chấm xanh đỏ cho trạng thái cửa trả theo lượt trên phòng và trang quản trị. Canh chỉnh chữ thẻ quyền trên mọi kiểu. Nạp tiền nằm cạnh đăng xuất trong khung tài khoản, cho nhập số từ 10.000 đến 1.000.000 đồng. Tự đăng xuất sau 30 phút không dùng. Doanh thu tách rõ nạp cổng, mua gói, trả theo lượt, hoàn, nhả giữ và chi phí. Form đăng nhập gợi ý email đầy đủ từ phần trước @. Tìm người dùng trên trang quản trị nhận tên thiếu dấu.",
+  },
   {
     version: "2.10.1",
     time: "07:41 ngày 07/11/2026",

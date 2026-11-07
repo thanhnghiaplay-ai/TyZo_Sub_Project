@@ -14,10 +14,24 @@ export function useRunDoor() {
   return door;
 }
 
+/** Chấm trạng thái cửa: xanh = mở, đỏ = đóng/bảo trì. */
+export function DoorDot({ open, className = "" }: { open: boolean; className?: string }) {
+  return (
+    <span
+      className={"door-dot " + (open ? "door-dot-open" : "door-dot-closed") + (className ? " " + className : "")}
+      title={open ? "Cửa đang mở" : "Cửa đang đóng"}
+      aria-label={open ? "Cửa đang mở" : "Cửa đang đóng"}
+    />
+  );
+}
+
 export function RunDoorClosed({ note }: { note: string }) {
   return (
     <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
-      <h2 className="text-sm font-semibold">Trả theo lượt</h2>
+      <h2 className="flex items-center gap-2 text-sm font-semibold">
+        <DoorDot open={false} />
+        Trả theo lượt
+      </h2>
       <p className="text-sm text-muted">{note}</p>
     </section>
   );

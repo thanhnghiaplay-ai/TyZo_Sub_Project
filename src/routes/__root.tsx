@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ToastHost } from "@/components/toast";
 import { UpdateBanner } from "@/components/update-banner";
+import { IdleSignOut } from "@/components/idle-sign-out";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Dịch phụ đề";
@@ -35,6 +36,7 @@ export const Route = createRootRoute({
       <body>
         <PreviewHostBridge />
         <AuthProvider>
+          <IdleSignOut />
           <Outlet />
           <UpdateBanner />
           <ToastHost />

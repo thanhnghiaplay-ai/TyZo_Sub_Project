@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { mailProblem, withDomain } from "./mail-domains.ts";
+import { mailProblem, mailSuggestions, withDomain } from "./mail-domains.ts";
 
 describe("email đăng ký", () => {
   it("gắn đuôi phổ biến và chặn email tạm", () => {
@@ -8,5 +8,12 @@ describe("email đăng ký", () => {
     assert.equal(withDomain("ten@yahoo.com", "icloud.com"), "ten@icloud.com");
     assert.equal(mailProblem("a@gmail.com"), null);
     assert.match(mailProblem("a@yopmail.com") || "", /email tạm/);
+  });
+
+  it("gợi ý email đầy đủ từ phần local", () => {
+    const list = mailSuggestions("nghia");
+    assert.ok(list.includes("nghia@gmail.com"));
+    assert.ok(list.includes("nghia@icloud.com"));
+    assert.equal(mailSuggestions("").length, 0);
   });
 });

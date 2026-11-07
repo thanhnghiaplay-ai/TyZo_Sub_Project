@@ -6,6 +6,7 @@ import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { emptyOverride, formatRoomPrice, RUN_STATUS_LABEL, type PriceOverride, type RunDesk, type RunStatus } from "@/lib/run-desk";
+import { DoorDot } from "@/components/run-door";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -118,7 +119,10 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
     <section className="grid gap-3 rounded-2xl border border-line bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Trả theo lượt</h2>
-        <p className="text-xs font-medium text-muted">{form?.maintenance ? "Đang bảo trì" : "Đang mở"}</p>
+        <p className="flex items-center gap-2 text-xs font-medium text-muted">
+          <DoorDot open={!form?.maintenance} />
+          {form?.maintenance ? "Đang bảo trì" : "Đang mở"}
+        </p>
       </div>
       <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
       <div className="grid grid-cols-3 gap-2">

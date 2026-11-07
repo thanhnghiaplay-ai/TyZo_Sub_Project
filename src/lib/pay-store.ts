@@ -198,7 +198,7 @@ export const createPayOrder = createServerFn({ method: "POST" })
     const provider = input.provider;
     if (provider !== "sepay" && provider !== "casso") throw new Error("Cổng không đúng.");
     const amount = Math.round(Number(input.amount));
-    if (!Number.isFinite(amount) || amount < 10_000 || amount > 5_000_000) throw new Error("Số tiền từ 10.000 đến 5.000.000 đồng.");
+    if (!Number.isFinite(amount) || amount < 10_000 || amount > 1_000_000) throw new Error("Số tiền từ 10.000 đến 1.000.000 đồng.");
     return { provider, amount };
   })
   .handler(async ({ context, data }): Promise<PayOrderView> => {

@@ -25,6 +25,18 @@ export function withDomain(value: string, domain: string) {
   return local ? `${local}@${domain}` : "";
 }
 
+/** Phần trước @; nếu đã có @ thì lấy local, không bắt gõ đuôi. */
+export function mailLocal(value: string) {
+  return value.trim().split("@")[0]?.trim() || "";
+}
+
+/** Gợi ý email đầy đủ từ phần local đang gõ. */
+export function mailSuggestions(value: string) {
+  const local = mailLocal(value);
+  if (!local || local.length < 1) return [] as string[];
+  return COMMON_DOMAINS.filter((d) => d !== "me.com" && d !== "live.com").map((d) => `${local}@${d}`);
+}
+
 export function mailProblem(email: string) {
   const domain = email.trim().toLowerCase().split("@")[1] || "";
   if (!domain || domain.includes("@") || !email.includes("@")) return "Email không đúng.";

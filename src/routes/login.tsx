@@ -4,7 +4,7 @@ import { getMyPlace } from "@/lib/admin-room";
 import { authClient, authEnabled, signOut } from "@/lib/auth/client";
 import { TERMS_VERSION } from "@/components/entry-gate";
 import { clearSignedOut } from "@/lib/auth/signed-out";
-import { COMMON_DOMAINS, mailProblem, withDomain } from "@/lib/mail-domains";
+import { mailProblem, mailSuggestions } from "@/lib/mail-domains";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
@@ -120,25 +120,32 @@ function LoginPage() {
         <label className="block text-sm">
           Email
           <input
-            type="email"
+            type="text"
+            inputMode="email"
+            autoComplete="username"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            placeholder="ten@gmail.com"
+            placeholder="Nhập tên trước @, rồi chọn gợi ý"
             className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
           />
-          <span className="mt-2 flex flex-wrap gap-2">
-            {COMMON_DOMAINS.filter((domain) => domain !== "me.com" && domain !== "live.com").map((domain) => (
-              <button
-                key={domain}
-                type="button"
-                className="rounded-full border border-line px-3 py-1 text-xs"
-                onClick={() => setEmail((value) => withDomain(value, domain))}
-              >
-                @{domain}
-              </button>
-            ))}
-          </span>
+          {mailSuggestions(email).length > 0 && !email.includes("@") && (
+            <span className="mt-2 grid gap-1">
+              {mailSuggestions(email).map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className="rounded-xl border border-line px-3 py-2 text-left text-sm"
+                  onClick={() => setEmail(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </span>
+          )}
+          {email.includes("@") && (
+            <span className="mt-1 block text-xs text-muted">Đã chọn: {email}</span>
+          )}
         </label>
         <label className="block text-sm">
           Mật khẩu
