@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { DoorDot } from "@/components/run-door";
 import { pushToast } from "@/components/toast";
 import {
+  cancelPayOrder,
   confirmPayOrder,
   getPaySettings,
   listPayOrders,
@@ -34,6 +35,7 @@ function dong(n: number) {
 function statusLabel(status: string) {
   if (status === "paid") return "Đã cộng tiền";
   if (status === "claimed") return "Khách báo đã chuyển";
+  if (status === "cancelled") return "Đã hủy xác nhận";
   return "Chờ chuyển khoản";
 }
 
@@ -71,24 +73,44 @@ export function PayQueue() {
             <p className="text-muted">
               {statusLabel(row.status)} · {row.createdAt ? new Date(row.createdAt).toLocaleString("vi-VN") : ""}
             </p>
-            {row.status !== "paid" && (
-              <button
-                type="button"
-                disabled={busy}
-                className="mt-2 min-tap rounded-full bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40"
-                onClick={() => {
-                  setBusy(true);
-                  void confirmPayOrder({ data: row.id })
-                    .then(() => {
-                      pushToast("Đã cộng tiền vào số dư.");
-                      load();
-                    })
-                    .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa xác nhận được.", "bad"))
-                    .finally(() => setBusy(false));
-                }}
-              >
-                Xác nhận đã nhận tiền
-              </button>
+            {(row.status === "pending" || row.status === "claimed") && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={busy}
+                  className="min-tap rounded-full bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40"
+                  onClick={() => {
+                    setBusy(true);
+                    void confirmPayOrder({ data: row.id })
+                      .then(() => {
+                        pushToast("Đã cộng tiền vào số dư.");
+                        load();
+                      })
+                      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa xác nhận được.", "bad"))
+                      .finally(() => setBusy(false));
+                  }}
+                >
+                  Xác nhận đã nhận tiền
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  className="min-tap rounded-full border border-danger px-3 text-sm text-danger disabled:opacity-40"
+                  onClick={() => {
+                    if (!confirm("Hủy xác nhận đơn này? Dùng khi khách báo giả hoặc lợi dụng, không cộng tiền.")) return;
+                    setBusy(true);
+                    void cancelPayOrder({ data: row.id })
+                      .then(() => {
+                        pushToast("Đã hủy xác nhận, không cộng tiền.");
+                        load();
+                      })
+                      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa hủy được.", "bad"))
+                      .finally(() => setBusy(false));
+                  }}
+                >
+                  Hủy xác nhận
+                </button>
+              </div>
             )}
           </li>
         ))}
