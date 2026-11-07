@@ -94,6 +94,20 @@ async function qrUrl(bank: string, account: string, amount: number, code: string
   return toDataURL(text, { margin: 1, width: 280, errorCorrectionLevel: "M" });
 }
 
+
+async function writePayNotice(userId: string | null, kind: string, title: string, body: string) {
+  try {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      insert into room_notices (user_id, kind, title, body, appeal_id)
+      values (${userId}, ${kind}, ${title.slice(0, 120)}, ${body.slice(0, 500)}, ${null})
+    `;
+  } catch {
+    /* bảng notice có sau lần xây mới */
+  }
+}
+
 async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
   const codes = codesIn(hit.text);
   if (!codes.length) return false;
@@ -127,6 +141,11 @@ async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
     select user_id, 'nap', ${hit.amount}, ${"Nap " + provider + " " + order.code} from account
     returning user_id
   `;
+  if (applied.length > 0) {
+    const uid = applied[0].user_id;
+    await writePayNotice(uid, "user", "Đã cộng tiền nạp", `Đã cộng ${hit.amount} đ vào số dư (mã ${order.code}).`);
+    await writePayNotice(null, "staff", "Nạp tự động", `Đơn ${order.code}: +${hit.amount} đ qua ${provider}.`);
+  }
   return applied.length > 0;
 }
 
@@ -226,6 +245,10 @@ export const createPayOrder = createServerFn({ method: "POST" })
       insert into pay_orders (id, user_id, provider, amount, code)
       values (${id}, ${context.userId}, ${data.provider}, ${data.amount}, ${code})
     `;
+    const who = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
+    const email = who[0]?.email ?? context.userId;
+    await writePayNotice(null, "staff", "Đơn nạp mới", `${email} tạo đơn ${data.amount} đ · mã ${code} · ${data.provider}`);
+    await writePayNotice(context.userId, "user", "Đã tạo đơn nạp", `Đơn ${code}: ${data.amount} đ qua ${data.provider}. Chờ xác nhận hoặc chuyển khoản.`);
     return {
       id,
       provider: data.provider as "sepay" | "casso",
@@ -375,6 +398,8 @@ export const confirmPayOrder = createServerFn({ method: "POST" })
       insert into room_ledger (user_id, kind, amount, note)
       values (${order.user_id}, 'nap', ${order.amount}, ${"Nap thu cong " + order.code})
     `;
+    await writePayNotice(order.user_id, "user", "Đã cộng tiền nạp", `Đã cộng ${order.amount} đ vào số dư (mã ${order.code}).`);
+    await writePayNotice(null, "staff", "Đã xác nhận nạp", `Đơn ${order.code}: +${order.amount} đ.`);
     return { ok: true };
   });
 
@@ -389,14 +414,21 @@ export const cancelPayOrder = createServerFn({ method: "POST" })
     await requireStaff(context.userId, false);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const rows = await sql<{ id: string; status: string; code: string }>`
+    const rows = await sql<{ id: string; status: string; code: string; user_id: string; amount: number }>`
       update pay_orders
       set status = 'cancelled', provider_ref = coalesce(provider_ref, 'huy-xac-nhan')
       where id = ${data} and status in ('pending', 'claimed')
-      returning id, status, code
+      returning id, status, code, user_id, amount
     `;
     if (!rows.length) throw new Error("Don nay da xu ly hoac khong con de huy.");
-    return { ok: true as const, code: rows[0].code };
+    const order = rows[0];
+    await sql`
+      insert into room_ledger (user_id, kind, amount, note)
+      values (${order.user_id}, 'huy-nap', 0, ${"Từ chối nạp " + order.code + " (" + order.amount + " đ)"})
+    `;
+    await writePayNotice(order.user_id, "user", "Từ chối đơn nạp", `Đơn ${order.code} (${order.amount} đ) đã bị từ chối. Không cộng tiền.`);
+    await writePayNotice(null, "staff", "Đã từ chối nạp", `Đơn ${order.code}: ${order.amount} đ — không cộng tiền.`);
+    return { ok: true as const, code: order.code };
   });
 
 export const setPayGate = createServerFn({ method: "POST" })
