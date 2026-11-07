@@ -1022,6 +1022,34 @@ export const resetUserBalance = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+export const setUserBalance = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { userId: string; balance: number }) => {
+    const userId = input.userId?.trim();
+    if (!userId) throw new Error("Thiếu tài khoản.");
+    const balance = Math.round(Number(input.balance));
+    if (!Number.isFinite(balance) || balance < 0 || balance > 100_000_000) {
+      throw new Error("Số dư từ 0 đến 100.000.000 đồng.");
+    }
+    return { userId, balance };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    await assertLower(context.userId, data.userId);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const before = await sql<{ balance: number | null }>`select balance from room_accounts where user_id = ${data.userId}`;
+    const prev = before[0]?.balance ?? 0;
+    const delta = data.balance - prev;
+    await sql`insert into room_accounts (user_id, balance) values (${data.userId}, ${data.balance}) on conflict (user_id) do update set balance = ${data.balance}`;
+    await sql`
+      insert into room_ledger (user_id, kind, amount, note)
+      values (${data.userId}, 'dieu-chinh', ${delta}, ${"Admin đặt số dư " + data.balance + " đ"})
+    `;
+    await writeAudit(context.userId, "dat-so-du", data.userId, `Đặt số dư ${data.balance} (trước ${prev})`);
+    return { ok: true as const };
+  });
+
 export const getBadgeStyle = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async () => {
