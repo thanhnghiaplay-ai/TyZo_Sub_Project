@@ -39,6 +39,8 @@ import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
+import { ConfirmCodeDialog } from "@/components/confirm-code";
+import { formatMoney, parseMoney } from "@/lib/money-format";
 import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
 
 function dong(n: number) {
@@ -69,6 +71,9 @@ export function AdminDesk() {
   const [replyText, setReplyText] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [auditOpen, setAuditOpen] = useState(false);
+  const [priceOpen, setPriceOpen] = useState(true);
+  const [resetCode, setResetCode] = useState("");
+  const [resetOpen, setResetOpen] = useState(false);
 
   async function refreshPlace() {
     const next = await getMyPlace();
@@ -131,13 +136,34 @@ export function AdminDesk() {
   }
 
   useEffect(() => {
-    function onOpen(event: Event) {
+    function onOpenUser(event: Event) {
       const email = (event as CustomEvent<string>).detail;
       if (!email) return;
       void openByEmail(email).catch(() => undefined);
     }
-    window.addEventListener("tyzo-open-user", onOpen);
-    return () => window.removeEventListener("tyzo-open-user", onOpen);
+    function onOpenPay(event: Event) {
+      const detail = (event as CustomEvent<{ code?: string; email?: string }>).detail;
+      if (detail?.email) void openByEmail(detail.email).catch(() => undefined);
+      setTab("viec");
+      // Scroll to pay queue or highlight by code if possible
+      window.setTimeout(() => {
+        const el = document.querySelector("[data-pay-queue]");
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+    function onOpenAppeal(event: Event) {
+      const detail = (event as CustomEvent<{ id?: number; email?: string }>).detail;
+      if (detail?.email) void openByEmail(detail.email).catch(() => undefined);
+      setTab("viec");
+    }
+    window.addEventListener("tyzo-open-user", onOpenUser);
+    window.addEventListener("tyzo-open-pay", onOpenPay);
+    window.addEventListener("tyzo-open-appeal", onOpenAppeal);
+    return () => {
+      window.removeEventListener("tyzo-open-user", onOpenUser);
+      window.removeEventListener("tyzo-open-pay", onOpenPay);
+      window.removeEventListener("tyzo-open-appeal", onOpenAppeal);
+    };
   }, []);
 
   if (!place) {
@@ -241,7 +267,7 @@ export function AdminDesk() {
                     setPicked(user);
                     setNote(user.note);
                     setReason(user.reason);
-                    setBalanceEdit(String(user.balance ?? 0));
+                    setBalanceEdit(formatMoney(user.balance ?? 0));
                     setLedger([]);
                     setRuns([]);
                     void listUserLedger({ data: user.id }).then(setLedger).catch(() => setLedger([]));
@@ -302,7 +328,7 @@ export function AdminDesk() {
                 </ul>
                 {roleAtLeast(role, "quan-ly") && runs.some((ticket) => ticket.charged > ticket.refunded) && (
                   <div className="mt-2 grid gap-2">
-                    <input value={refundAmount} onChange={(event) => setRefundAmount(event.target.value)} inputMode="numeric" placeholder="Số hoàn, đồng" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                    <input value={refundAmount} onChange={(event) => setRefundAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số hoàn, đồng" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
                     <input value={refundReason} onChange={(event) => setRefundReason(event.target.value)} placeholder="Lý do hoàn, ít nhất 8 ký tự" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
                     {runs
                       .filter((ticket) => ticket.charged > ticket.refunded)
@@ -314,7 +340,7 @@ export function AdminDesk() {
                           className="min-tap rounded-full border border-line px-3 text-left disabled:opacity-40"
                           onClick={() =>
                             void run(async () => {
-                              await refundRun({ data: { id: ticket.id, amount: Number(refundAmount), reason: refundReason.trim() } });
+                              await refundRun({ data: { id: ticket.id, amount: parseMoney(refundAmount), reason: refundReason.trim() } });
                               setRefundAmount("");
                               setRefundReason("");
                               setRuns(await listUserRuns({ data: picked.id }));
@@ -360,12 +386,19 @@ export function AdminDesk() {
                       </button>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {ROOM_PLANS.map((plan) => (
-                      <button key={plan.id} type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => void run(() => grantPlan({ data: { userId: picked.id, planId: plan.id } }), `Đã mở gói ${plan.name}.`)}>
-                        Mở {plan.name}
-                      </button>
-                    ))}
+                  <div>
+                    <button type="button" className="text-sm text-muted underline" onClick={() => setPriceOpen((v) => !v)}>
+                      {priceOpen ? "Ẩn giá biểu gói" : "Hiện giá biểu gói"}
+                    </button>
+                    {priceOpen && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {ROOM_PLANS.map((plan) => (
+                          <button key={plan.id} type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => void run(() => grantPlan({ data: { userId: picked.id, planId: plan.id } }), `Đã mở gói ${plan.name}.`)}>
+                            Mở {plan.name} · {formatMoney(plan.price)} đ
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {roleAtLeast(role, "chu") && (
                     <>
@@ -373,7 +406,7 @@ export function AdminDesk() {
                         Số dư (đồng)
                         <input
                           value={balanceEdit}
-                          onChange={(event) => setBalanceEdit(event.target.value.replace(/\D/g, "").slice(0, 12))}
+                          onChange={(event) => setBalanceEdit(formatMoney(parseMoney(event.target.value)))}
                           inputMode="numeric"
                           className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
                         />
@@ -383,7 +416,7 @@ export function AdminDesk() {
                         disabled={busy}
                         className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
                         onClick={() => {
-                          const value = Math.round(Number(balanceEdit || 0));
+                          const value = Math.round(parseMoney(balanceEdit || "0"));
                           if (!Number.isFinite(value) || value < 0) {
                             setNotice("Số dư phải từ 0 trở lên.");
                             return;
@@ -394,7 +427,7 @@ export function AdminDesk() {
                             const next = found.find((item) => item.id === picked.id);
                             if (next) {
                               setPicked(next);
-                              setBalanceEdit(String(next.balance ?? 0));
+                              setBalanceEdit(formatMoney(next.balance ?? 0));
                             }
                             setLedger(await listUserLedger({ data: picked.id }));
                           }, "Đã cập nhật số dư.");
@@ -408,19 +441,8 @@ export function AdminDesk() {
                         className="min-tap rounded-full border border-danger px-4 text-sm text-danger disabled:opacity-40"
                         onClick={() => {
                           const code = Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
-                          const typed = window.prompt(`Đưa số dư và sổ tiền của ${picked.email} về 0?\n\nNhập mã xác nhận: ${code}`);
-                          if (!typed || typed.trim().toUpperCase() !== code) {
-                            setNotice("Chưa khớp mã, không reset.");
-                            return;
-                          }
-                          void run(async () => {
-                            await resetUserBalance({ data: picked.id });
-                            setLedger([]);
-                            setBalanceEdit("0");
-                            const found = await searchUsers({ data: picked.email });
-                            const next = found.find((item) => item.id === picked.id);
-                            if (next) setPicked(next);
-                          }, "Đã đưa số dư về 0.");
+                          setResetCode(code);
+                          setResetOpen(true);
                         }}
                       >
                         Reset số dư về 0
@@ -562,10 +584,30 @@ export function AdminDesk() {
               </button>
             </form>
           )}
-          {roleAtLeast(role, "quan-ly") && <PayQueue />}
+          {roleAtLeast(role, "quan-ly") && <div data-pay-queue><PayQueue /></div>}
           {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}
+
+      <ConfirmCodeDialog
+        open={resetOpen}
+        title="Reset số dư về 0"
+        message={`Đưa số dư và sổ tiền của ${picked?.email ?? ""} về 0? Việc này không hoàn lại.`}
+        code={resetCode}
+        onCancel={() => setResetOpen(false)}
+        onConfirm={() => {
+          setResetOpen(false);
+          if (!picked) return;
+          void run(async () => {
+            await resetUserBalance({ data: picked.id });
+            setLedger([]);
+            setBalanceEdit(formatMoney(0));
+            const found = await searchUsers({ data: picked.email });
+            const next = found.find((item) => item.id === picked.id);
+            if (next) setPicked(next);
+          }, "Đã đưa số dư về 0.");
+        }}
+      />
     </div>
   );
 }

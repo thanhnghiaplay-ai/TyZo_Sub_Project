@@ -1,8 +1,14 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.14.0";
+export const APP_VERSION = "2.15.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.15.0",
+    time: "22:12 ngày 07/11/2026",
+    text: "Hộp xác nhận mã 6 ký tự khi reset số dư và reset tiền test dùng giao diện đồng bộ thay vì cửa sổ trình duyệt thô. Các ô nhập số tiền (nạp, chỉnh số dư, hoàn, chi phí) hiện dấu chấm nghìn như 100.000. Chuông thông báo khi bấm vào đơn nạp hoặc yêu cầu sẽ mở đúng tài khoản và khung đơn nạp để xác nhận. Khung giá biểu gói trên trang quản trị có nút ẩn hiện.",
+  },
+
   {
     version: "2.14.0",
     time: "21:05 ngày 07/11/2026",

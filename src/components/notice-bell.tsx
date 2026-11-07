@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
 import { listMyNotices, markNoticesRead, type NoticeRow } from "@/lib/admin-room";
+import { formatMoney } from "@/lib/money-format";
+
+function formatBody(body: string) {
+  // Format số tiền trong body nếu có dạng "100000 đ" hoặc số lớn
+  return body.replace(/(\d{4,})/g, (m) => formatMoney(m));
+}
 
 export function NoticeBell() {
   const [open, setOpen] = useState(false);
@@ -21,6 +27,23 @@ export function NoticeBell() {
     const timer = window.setInterval(() => void load(), 20000);
     return () => window.clearInterval(timer);
   }, []);
+
+  function openNotice(item: NoticeRow) {
+    // Parse for order code (mã XXXXXXX) or appeal
+    const codeMatch = item.body.match(/mã\s+([A-Z0-9]{6,})/i) || item.title.match(/đơn\s+([A-Z0-9]{6,})/i);
+    const orderCode = codeMatch ? codeMatch[1] : null;
+    const emailMatch = item.body.match(/([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/i);
+    const email = emailMatch ? emailMatch[1] : "";
+
+    if (orderCode) {
+      window.dispatchEvent(new CustomEvent("tyzo-open-pay", { detail: { code: orderCode, email } }));
+    } else if (item.appealId) {
+      window.dispatchEvent(new CustomEvent("tyzo-open-appeal", { detail: { id: item.appealId, email } }));
+    } else if (email) {
+      window.dispatchEvent(new CustomEvent("tyzo-open-user", { detail: email }));
+    }
+    setOpen(false);
+  }
 
   return (
     <div className="notice-bell">
@@ -55,16 +78,11 @@ export function NoticeBell() {
               <li key={item.id}>
                 <button
                   type="button"
-                  className="w-full rounded-xl border border-line px-2 py-2 text-left"
-                  onClick={() => {
-                    const first = item.body.split("\n")[0] ?? "";
-                    const email = (first.includes("@") ? first.split(":")[0] : "").trim();
-                    if (email.includes("@")) window.dispatchEvent(new CustomEvent("tyzo-open-user", { detail: email }));
-                    setOpen(false);
-                  }}
+                  className="w-full rounded-xl border border-line px-2 py-2 text-left hover:bg-raised"
+                  onClick={() => openNotice(item)}
                 >
                   <p className="text-sm font-medium">{item.title}</p>
-                  <p className="text-sm text-muted">{item.body}</p>
+                  <p className="text-sm text-muted">{formatBody(item.body)}</p>
                 </button>
               </li>
             ))}

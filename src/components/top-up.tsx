@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { claimPayOrder, createPayOrder, getPayPublic, readPayOrder, syncCasso, type PayOrderView, type PayPublic } from "@/lib/pay-store";
+import { formatMoney, parseMoney } from "@/lib/money-format";
 
 const QUICK = [10_000, 50_000, 100_000, 200_000, 500_000];
 const MIN = 10_000;
@@ -13,7 +14,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   const [gates, setGates] = useState<PayPublic | null>(null);
   const [provider, setProvider] = useState<"sepay" | "casso">("sepay");
   const [amount, setAmount] = useState(50_000);
-  const [draft, setDraft] = useState("50000");
+  const [draft, setDraft] = useState(formatMoney(50000));
   const [order, setOrder] = useState<PayOrderView | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -32,7 +33,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   function setAmountSafe(value: number) {
     const next = Math.round(value);
     setAmount(next);
-    setDraft(String(next || ""));
+    setDraft(formatMoney(next));
   }
 
   if (!gates) return <p className="text-sm text-muted">Đang xem cổng nạp…</p>;
@@ -45,7 +46,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   }
 
   async function makeOrder() {
-    const value = Math.round(Number(draft.replace(/\D/g, "") || 0));
+    const value = Math.round(parseMoney(draft));
     if (!Number.isFinite(value) || value < MIN || value > MAX) {
       setNotice(`Số tiền từ ${dong(MIN)} đến ${dong(MAX)}.`);
       return;
@@ -136,15 +137,16 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
           inputMode="numeric"
           value={draft}
           onChange={(event) => {
-            const raw = event.target.value.replace(/\D/g, "").slice(0, 7);
-            setDraft(raw);
-            setAmount(Number(raw || 0));
+            const raw = event.target.value.replace(/[^\d.]/g, "");
+            const num = parseMoney(raw);
+            setDraft(formatMoney(num) || "");
+            setAmount(num);
           }}
           className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
           placeholder={`${MIN} – ${MAX}`}
         />
       </label>
-      <p className="text-xs text-muted">Sẽ nạp: {dong(Math.round(Number(draft.replace(/\D/g, "") || 0)))}</p>
+      <p className="text-xs text-muted">Sẽ nạp: {dong(parseMoney(draft))}</p>
       <button type="button" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40" onClick={() => void makeOrder()}>
         Tạo mã chuyển khoản
       </button>

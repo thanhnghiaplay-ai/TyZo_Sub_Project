@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { addCost, getMoney, getOrg, resetTestMoney, setNickname, type MoneyBreakdown, type MoneyPoint, type OrgCard } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
+import { ConfirmCodeDialog } from "@/components/confirm-code";
+import { formatMoney, parseMoney } from "@/lib/money-format";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -78,6 +80,8 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [amount, setAmount] = useState("");
 
   const [fault, setFault] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [resetOpen, setResetOpen] = useState(false);
 
   function load(next = span) {
     void getMoney({ data: next }).then((result) => {
@@ -138,7 +142,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           className="grid gap-2 rounded-2xl border border-line p-3"
           onSubmit={(event) => {
             event.preventDefault();
-            void addCost({ data: { day, label, amount: Number(amount) } })
+            void addCost({ data: { day, label, amount: parseMoney(amount) } })
               .then(() => {
                 setLabel("");
                 setAmount("");
@@ -151,7 +155,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <h2 className="font-semibold">Ghi chi phí</h2>
           <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Vercel, Neon, phí cổng" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <input value={amount} onChange={(event) => setAmount(event.target.value)} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+          <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <button type="submit" className="min-tap rounded-full bg-accent font-semibold text-ink">Lưu chi phí</button>
         </form>
       )}
@@ -166,23 +170,31 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
             className="min-tap rounded-full border border-danger px-4 text-sm font-semibold text-danger"
             onClick={() => {
               const code = Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
-              const typed = window.prompt("Xóa hết số liệu tiền test? Không hoàn lại.\n\nNhập mã xác nhận: " + code);
-              if (!typed || typed.trim().toUpperCase() !== code) {
-                pushToast("Chưa khớp mã, không reset.", "bad");
-                return;
-              }
-              void resetTestMoney()
-                .then(() => {
-                  pushToast("Đã reset tiền test về 0.");
-                  load();
-                })
-                .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa reset được.", "bad"));
+              setResetCode(code);
+              setResetOpen(true);
             }}
           >
             Reset về 0
           </button>
         </div>
       )}
+
+      <ConfirmCodeDialog
+        open={resetOpen}
+        title="Reset tiền test"
+        message="Xóa hết số liệu tiền test? Không hoàn lại. Đưa toàn bộ số dư về 0, xóa sổ cái, đơn nạp, chi phí ghi tay và phiếu tiền test."
+        code={resetCode}
+        onCancel={() => setResetOpen(false)}
+        onConfirm={() => {
+          setResetOpen(false);
+          void resetTestMoney()
+            .then(() => {
+              pushToast("Đã reset tiền test về 0.");
+              load();
+            })
+            .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa reset được.", "bad"));
+        }}
+      />
     </section>
   );
 }
