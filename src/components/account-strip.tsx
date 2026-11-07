@@ -7,6 +7,15 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
   const { user, isPending } = useCurrentUserState();
   const [text, setText] = useState<string | null>(null);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    function onRefresh() {
+      setTick((value) => value + 1);
+    }
+    window.addEventListener("tyzo-room-refresh", onRefresh);
+    return () => window.removeEventListener("tyzo-room-refresh", onRefresh);
+  }, []);
 
   useEffect(() => {
     if (isPending || !user || user.isDevFallback) return;
@@ -29,7 +38,7 @@ export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
     return () => {
       gone = true;
     };
-  }, [isPending, payByRoom, user]);
+  }, [isPending, payByRoom, user, tick]);
 
   if (isPending || !user || user.isDevFallback) return null;
   return <p className="text-xs text-muted">{text ?? "Đang xem hạn gói…"}</p>;
