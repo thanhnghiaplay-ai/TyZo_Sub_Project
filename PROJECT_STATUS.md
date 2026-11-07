@@ -7,9 +7,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-07 18:50 (UTC+7) — v2.12.0: tab admin, QR nạp, xác nhận thủ công, bật tắt cổng, tiết kiệm gói |
+| **Cập nhật lần cuối** | 2026-11-07 19:37 (UTC+7) — v2.13.0: tiết kiệm gói gạch ngang, QR demo, hủy xác nhận nạp, reset tiền test |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.12.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
+| **Phiên bản code** | **v2.13.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -217,6 +217,8 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 ---
 
 ## 6. Lịch sử thay đổi / Tiến độ
+
+- 2026-11-07 19:37 — v2.13.0: gói hiện giá gạch ngang + tiết kiệm nổi bật; QR nạp ghi demo; hủy xác nhận đơn nạp; reset tiền test (toàn cục + từng user).
 
 - 2026-11-07 18:50 — v2.12.0: bỏ tab dính đè; QR nạp vẽ trên trang; đơn nạp và xác nhận tay; bật/tắt/xóa cổng có chấm; gói hiện số tiết kiệm.
 
