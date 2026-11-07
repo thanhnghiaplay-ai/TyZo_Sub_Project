@@ -16,6 +16,7 @@ import {
   skipAppeal,
   listUserLedger,
   resetUserBalance,
+  setUserBalance,
   setBadgeStyle,
   setOwnerEmail,
   setStaffRole,
@@ -55,6 +56,7 @@ export function AdminDesk() {
   const [runs, setRuns] = useState<RunTicket[]>([]);
   const [refundAmount, setRefundAmount] = useState("");
   const [refundReason, setRefundReason] = useState("");
+  const [balanceEdit, setBalanceEdit] = useState("");
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
   const [password, setPassword] = useState("");
@@ -239,6 +241,7 @@ export function AdminDesk() {
                     setPicked(user);
                     setNote(user.note);
                     setReason(user.reason);
+                    setBalanceEdit(String(user.balance ?? 0));
                     setLedger([]);
                     setRuns([]);
                     void listUserLedger({ data: user.id }).then(setLedger).catch(() => setLedger([]));
@@ -365,23 +368,64 @@ export function AdminDesk() {
                     ))}
                   </div>
                   {roleAtLeast(role, "chu") && (
-                    <button
-                      type="button"
-                      disabled={busy}
-                      className="min-tap rounded-full border border-danger px-4 text-sm text-danger disabled:opacity-40"
-                      onClick={() => {
-                        if (!confirm(`Đưa số dư và sổ tiền của ${picked.email} về 0?`)) return;
-                        void run(async () => {
-                          await resetUserBalance({ data: picked.id });
-                          setLedger([]);
-                          const found = await searchUsers({ data: picked.email });
-                          const next = found.find((item) => item.id === picked.id);
-                          if (next) setPicked(next);
-                        }, "Đã đưa số dư về 0.");
-                      }}
-                    >
-                      Reset số dư về 0
-                    </button>
+                    <>
+                      <label className="grid gap-1 text-sm">
+                        Số dư (đồng)
+                        <input
+                          value={balanceEdit}
+                          onChange={(event) => setBalanceEdit(event.target.value.replace(/\D/g, "").slice(0, 12))}
+                          inputMode="numeric"
+                          className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
+                        onClick={() => {
+                          const value = Math.round(Number(balanceEdit || 0));
+                          if (!Number.isFinite(value) || value < 0) {
+                            setNotice("Số dư phải từ 0 trở lên.");
+                            return;
+                          }
+                          void run(async () => {
+                            await setUserBalance({ data: { userId: picked.id, balance: value } });
+                            const found = await searchUsers({ data: picked.email });
+                            const next = found.find((item) => item.id === picked.id);
+                            if (next) {
+                              setPicked(next);
+                              setBalanceEdit(String(next.balance ?? 0));
+                            }
+                            setLedger(await listUserLedger({ data: picked.id }));
+                          }, "Đã cập nhật số dư.");
+                        }}
+                      >
+                        Lưu số dư
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        className="min-tap rounded-full border border-danger px-4 text-sm text-danger disabled:opacity-40"
+                        onClick={() => {
+                          const code = Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
+                          const typed = window.prompt(`Đưa số dư và sổ tiền của ${picked.email} về 0?\n\nNhập mã xác nhận: ${code}`);
+                          if (!typed || typed.trim().toUpperCase() !== code) {
+                            setNotice("Chưa khớp mã, không reset.");
+                            return;
+                          }
+                          void run(async () => {
+                            await resetUserBalance({ data: picked.id });
+                            setLedger([]);
+                            setBalanceEdit("0");
+                            const found = await searchUsers({ data: picked.email });
+                            const next = found.find((item) => item.id === picked.id);
+                            if (next) setPicked(next);
+                          }, "Đã đưa số dư về 0.");
+                        }}
+                      >
+                        Reset số dư về 0
+                      </button>
+                    </>
                   )}
                 </>
               )}
