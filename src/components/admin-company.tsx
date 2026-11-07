@@ -110,7 +110,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       <div className="grid grid-cols-3 gap-2">
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className="text-sm font-semibold">{dong(revenue - cost)}</p></article>
+        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((revenue - cost) > 0 ? "text-accent" : (revenue - cost) < 0 ? "text-danger" : "")}>{(revenue - cost) > 0 ? "+" : ""}{dong(revenue - cost)}</p></article>
       </div>
       <ul className="space-y-1 text-sm text-muted">
         {points.map((point) => (
@@ -165,7 +165,12 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
             type="button"
             className="min-tap rounded-full border border-danger px-4 text-sm font-semibold text-danger"
             onClick={() => {
-              if (!confirm("Xóa hết số liệu tiền test? Không hoàn lại.")) return;
+              const code = Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
+              const typed = window.prompt("Xóa hết số liệu tiền test? Không hoàn lại.\n\nNhập mã xác nhận: " + code);
+              if (!typed || typed.trim().toUpperCase() !== code) {
+                pushToast("Chưa khớp mã, không reset.", "bad");
+                return;
+              }
               void resetTestMoney()
                 .then(() => {
                   pushToast("Đã reset tiền test về 0.");
