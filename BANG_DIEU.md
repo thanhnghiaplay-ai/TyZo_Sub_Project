@@ -15,8 +15,7 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | v2.19.1 trên nhánh `main` |
-| Bản đang làm | v2.19.2 trên nhánh `work`: Chủ vào lại được Admin khi phòng chưa gửi được thư |
+| Bản khách đang dùng | v2.19.2 trên nhánh `main`, từ 2026-11-08 20:41 |
 | Điều khoản | 2026-11-08.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -24,7 +23,7 @@ Thứ tự khi các câu khác nhau:
 | Kho | `thanhnghiaplay-ai/TyZo_Sub_Project`. Bản nén không làm gốc. Trước khi sửa, số phiên bản trong máy phải khớp `main` |
 | Nhánh | Sửa trên `work`. Nhánh `main` chỉ đổi khi người dùng nói đúng câu «đẩy chính thức» |
 
-Quy trình này đang nằm trên nhánh `work`. Bản khách trên `main` chưa có bảng này cho đến khi người dùng nói «đẩy chính thức».
+Bảng này đã ở trên `main` cùng v2.19.2.
 
 ## Ba vai
 
@@ -40,13 +39,15 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc code đang mở. Vai Làm vừa ghi quy trình này, ngày 2026-11-08 20:03.
+Không có việc code đang mở. v2.19.2 đã lên `main` lúc 2026-11-08 20:41.
 
 ## Ý đã nêu
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
-| 2026-11-08 20:03 | Người dùng chốt | Một đường cho ba vai. Làm, Thẩm định, Cố vấn. Nhìn bảng này là đủ | Làm ngay | Đã ghi trên `work`, chưa vào `main` |
+| 2026-11-08 20:41 | Người dùng chốt | Đẩy v2.19.2 lên bản chính | Làm ngay | Đã vào `main` |
+| 2026-11-08 20:28 | Làm | Chủ vào lại Admin khi phòng chưa gửi được thư | Làm ngay | Đã vào `main` trong v2.19.2 |
+| 2026-11-08 20:03 | Người dùng chốt | Một đường cho ba vai. Làm, Thẩm định, Cố vấn. Nhìn bảng này là đủ | Làm ngay | Đã vào `main` |
 | 2026-11-08 19:21 | Làm | Không khóa lượt thử theo máy thật. Không viết bộ giải HE-AAC. Không thêm captcha giả | Không làm | Đã chốt |
 
 Ý mới của Cố vấn hoặc Thẩm định phải thêm một dòng vào bảng này. Không chèn việc mới vào bản đang đóng.
@@ -68,7 +69,7 @@ Chỉ mở lại khi người dùng yêu cầu đúng việc đó.
 
 ## Chờ người dùng
 
-- Câu «đẩy chính thức» thì mới đưa nhánh `work` vào `main`.
+- Trên Vercel, `ADMIN_EMAIL` phải là đúng email tài khoản Chủ thì `/admin` mới mở.
 - Bật trên GitHub, nếu muốn khóa cứng: nhánh `main` chỉ nhận bản hợp nhất, model không có quyền xóa kho. Không bật thì luật này chỉ là lời nhắc.
 
 ## Khi một bản hoàn thành
