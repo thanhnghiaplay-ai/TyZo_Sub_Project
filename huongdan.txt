@@ -2,9 +2,9 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-07 07:41 UTC+7)
-- Số phiên bản người dùng thấy: v2.10.1, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG, tám lần gần nhất, mỗi dòng có mốc thời gian.
-- Điều khoản: TERMS_VERSION = 2026-11-06.1 trong src/components/entry-gate.tsx.
+ĐANG CHẠY (2026-11-08 19:29 UTC+7)
+- Số phiên bản người dùng thấy: v2.19.1, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG, tám lần gần nhất, mỗi dòng có mốc thời gian.
+- Điều khoản: TERMS_VERSION = 2026-11-08.3 trong src/components/entry-gate.tsx.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.
 - Nghe / thuyết minh mặc định bật. Khách tắt thì lần sau giữ tắt.
@@ -48,7 +48,8 @@ CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
 21. Thẻ quyền do Chủ chọn trong Admin. Màu theo cấp (Người dùng xám, Hỗ trợ xanh, Quản lý vàng, Chủ vàng sáng), không theo kiểu thẻ.
 22. Video luôn tỷ lệ 16:9. Câu hướng dẫn nằm dưới khung, xuống dòng, không đè video hay bảng dịch.
 23. Không xem key Groq và không xem video của khách trong trang Admin.
+24. Đã chốt không làm, trừ khi user yêu cầu đúng việc đó: không khóa lượt thử theo máy thật (mã máy do trình duyệt tự sinh, không bịa fingerprint); không viết bộ giải HE-AAC và không đọc hết mọi bản elst (HE-AAC để trình duyệt giải); không thêm captcha giả cho yêu cầu công khai.
 
 BÁO CÁO
-24. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
-25. Hỏi user trước khi làm việc tiếp theo.
+25. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
+26. Hỏi user trước khi làm việc tiếp theo.

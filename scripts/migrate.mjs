@@ -18,8 +18,17 @@ import { dirname, join } from "node:path";
 import pg from "pg";
 import { pendingMigrations } from "./migration-plan.mjs";
 
-const databaseUrl = process.env.DATABASE_URL;
+const vercelEnv = process.env.VERCEL_ENV || "";
+const databaseUrl = process.env.DATABASE_URL?.trim() || "";
+if (vercelEnv && vercelEnv !== "production") {
+  console.log(`[migrate] skip — VERCEL_ENV=${vercelEnv}, không chạy migration trên preview.`);
+  process.exit(0);
+}
 if (!databaseUrl) {
+  if (vercelEnv === "production") {
+    console.error("[migrate] DATABASE_URL trống trên production. Dừng deploy để khỏi lên bản không có schema.");
+    process.exit(1);
+  }
   console.log(
     "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
   );
@@ -44,7 +53,9 @@ async function main() {
 
   const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
   const client = await pool.connect();
+  const lockKey = 84201911;
   try {
+    await client.query("SELECT pg_advisory_lock($1)", [lockKey]);
     await client.query(
       "CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())",
     );
@@ -55,6 +66,9 @@ async function main() {
     let count = 0;
     for (const { name } of pendingMigrations(entries, applied)) {
       const text = await readFile(join(migrationsDir, name), "utf8");
+      if (/^\s*(begin|commit|rollback)\b/im.test(text)) {
+        throw new Error(`${name} chứa BEGIN, COMMIT hoặc ROLLBACK. Để migrate.mjs bọc giao dịch.`);
+      }
       try {
         await client.query("BEGIN");
         // pg's simple-query protocol runs a whole multi-statement file at once.
@@ -75,6 +89,11 @@ async function main() {
     }
     console.log(count ? `[migrate] done — ${count} migration(s) applied.` : "[migrate] up to date.");
   } finally {
+    try {
+      await client.query("SELECT pg_advisory_unlock($1)", [lockKey]);
+    } catch {
+      /* kết nối có thể đã chết */
+    }
     client.release();
     await pool.end();
   }

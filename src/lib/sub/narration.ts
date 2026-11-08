@@ -32,12 +32,34 @@ export function defaultOrpheusVoice(target: string, gender: NarrationSettings["g
   return list.find((voice) => voice.gender === gender)?.id ?? list[0].id;
 }
 
+function hasWord(name: string, word: string) {
+  return new RegExp(`(?:^|[^a-z0-9])${word}(?:[^a-z0-9]|$)`).test(name);
+}
+
 export function guessGender(voice: SpeechSynthesisVoice): "female" | "male" | "any" {
   const name = `${voice.name} ${voice.voiceURI}`.toLowerCase();
   if (/female|woman|girl|nữ|samantha|victoria|zira|karen|moira|fiona|tessa|veena|susan|allison|ava|serena|hoaimy/.test(name))
     return "female";
-  if (/male|man|nam|david|daniel|alex|fred|tom|rishi|lee|jorge|diego|thomas|aaron|namminh/.test(name)) return "male";
+  const maleWord = ["male", "man", "boy", "nam", "tom", "lee"].some((word) => hasWord(name, word));
+  if (maleWord || /david|daniel|fred|rishi|jorge|diego|thomas|aaron|namminh/.test(name) || hasWord(name, "alex")) return "male";
   return "any";
+}
+
+/** Orpheus chỉ nhận câu ngắn. Cắt theo dấu câu, mỗi mảnh tối đa 180 ký tự. */
+export function orpheusPieces(text: string, max = 180): string[] {
+  const parts: string[] = [];
+  let rest = text.trim();
+  while (rest.length > max) {
+    const window = rest.slice(0, max);
+    let cut = Math.max(window.lastIndexOf(". "), window.lastIndexOf("! "), window.lastIndexOf("? "), window.lastIndexOf(", "), window.lastIndexOf(" "));
+    if (cut < 40) cut = max - 1;
+    const piece = rest.slice(0, cut + 1).trim();
+    if (!piece) break;
+    parts.push(piece);
+    rest = rest.slice(cut + 1).trim();
+  }
+  if (rest) parts.push(rest);
+  return parts;
 }
 
 export function speakable(text: string, skipCues: boolean) {
@@ -122,28 +144,39 @@ export function createNarrator() {
       try {
         const cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
         if (settings.engine === "orpheus" && cloud && opts.key) {
-          const voice = settings.matchCast
-            ? defaultOrpheusVoice(opts.target, settings.gender)
-            : orpheusVoices(opts.target).some((item) => item.id === settings.orpheusVoice)
-              ? settings.orpheusVoice
-              : defaultOrpheusVoice(opts.target, settings.gender);
-          const cacheKey = `${cloud}|${voice}|${line}`;
-          let url = cache.get(cacheKey);
-          if (!url) {
-            const blob = await speakOrpheus({
-              key: opts.key,
-              text: line,
-              voice,
-              arabic: cloud === "ar",
-            });
+          try {
+            const voice = settings.matchCast
+              ? defaultOrpheusVoice(opts.target, settings.gender)
+              : orpheusVoices(opts.target).some((item) => item.id === settings.orpheusVoice)
+                ? settings.orpheusVoice
+                : defaultOrpheusVoice(opts.target, settings.gender);
+            const pieces = orpheusPieces(line);
+            for (let i = 0; i < pieces.length; i++) {
+              if (mine !== token) return;
+              const piece = pieces[i];
+              const cacheKey = `${cloud}|${voice}|${piece}`;
+              let url = cache.get(cacheKey);
+              if (!url) {
+                const blob = await speakOrpheus({
+                  key: opts.key,
+                  text: piece,
+                  voice,
+                  arabic: cloud === "ar",
+                });
+                if (mine !== token) return;
+                url = URL.createObjectURL(blob);
+                remember(cacheKey, url);
+              }
+              if (mine !== token) return;
+              if (!audio) audio = new Audio();
+              const last = i === pieces.length - 1;
+              await playUrl(audio, url, settings, opts.playbackRate, last ? done : () => {});
+            }
+            return;
+          } catch (error) {
+            if ((error as { name?: string })?.name === "AbortError") throw error;
             if (mine !== token) return;
-            url = URL.createObjectURL(blob);
-            remember(cacheKey, url);
           }
-          if (mine !== token) return;
-          if (!audio) audio = new Audio();
-          await playUrl(audio, url, settings, opts.playbackRate, done);
-          return;
         }
         if (settings.engine === "edge" && Date.now() >= edgeCoolUntil) {
           try {
@@ -184,8 +217,14 @@ function playUrl(audio: HTMLAudioElement, url: string, settings: NarrationSettin
   audio.volume = Math.max(0, Math.min(1, settings.volume));
   const rate = settings.rate * (settings.followPlayback ? playbackRate : 1);
   audio.playbackRate = Math.max(0.5, Math.min(2, rate));
-  audio.onended = done;
-  return audio.play();
+  return new Promise<void>((resolve, reject) => {
+    audio.onended = () => {
+      done();
+      resolve();
+    };
+    audio.onerror = () => reject(new Error("Không phát được âm thanh."));
+    audio.play().catch(reject);
+  });
 }
 
 function base64ToBlob(audio: string) {

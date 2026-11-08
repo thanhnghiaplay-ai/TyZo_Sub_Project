@@ -9,6 +9,10 @@ function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
+function vnDay(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+}
+
 export function OrgBoard({ owner }: { owner: boolean }) {
   const [cards, setCards] = useState<OrgCard[]>([]);
   const [users, setUsers] = useState(0);
@@ -75,7 +79,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
   const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0 });
-  const [day, setDay] = useState(() => new Date().toISOString().slice(0, 10));
+  const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
 
@@ -187,7 +191,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
           setResetOpen(false);
-          void resetTestMoney()
+          void resetTestMoney({ data: resetCode })
             .then(() => {
               pushToast("Đã reset tiền test về 0.");
               load();

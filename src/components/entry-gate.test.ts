@@ -8,7 +8,7 @@ const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
 
 describe("Cửa vào điều khoản", () => {
   it("màn chờ rồi mới tới phòng, chưa đồng ý thì không vào", () => {
-    assert.match(gate, /export const TERMS_VERSION = "2026-11-05.4"/);
+    assert.match(gate, /export const TERMS_VERSION = "\d{4}-\d{2}-\d{2}\.\d+";/);
     assert.match(gate, /localStorage\.getItem\(TERMS_KEY\)/);
     assert.match(gate, /saved === TERMS_VERSION \? "app" : "terms"/);
     assert.match(gate, /Bảng giá/);

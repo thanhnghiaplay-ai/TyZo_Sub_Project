@@ -3,6 +3,10 @@ import { SR, streamParts } from "@/lib/sub/text";
 
 const u16 = (b: Uint8Array, o: number) => (b[o] << 8) | b[o + 1];
 const u32 = (b: Uint8Array, o: number) => b[o] * 16777216 + (b[o + 1] << 16) + (b[o + 2] << 8) + b[o + 3];
+const i32 = (b: Uint8Array, o: number) => {
+  const v = u32(b, o);
+  return v > 0x7fffffff ? v - 0x100000000 : v;
+};
 const u64 = (b: Uint8Array, o: number) => u32(b, o) * 4294967296 + u32(b, o + 4);
 const tag = (b: Uint8Array, o: number) => String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
 
@@ -26,6 +30,29 @@ function boxes(b: Uint8Array, start: number, end: number): Box[] {
 }
 const child = (b: Uint8Array, box: Box | undefined, type: string) =>
   box ? boxes(b, box.s, box.e).find((x) => x.type === type) : undefined;
+
+/** Độ trễ đầu từ elst. skip: giây âm thanh đầu bị bỏ. delay: khoảng trống trước khi tiếng bắt đầu. */
+function trackShift(moov: Uint8Array, root: Box, trak: Box, mediaScale: number) {
+  const none = { skip: 0, delay: 0 };
+  if (!(mediaScale > 0)) return none;
+  const elst = child(moov, child(moov, trak, "edts"), "elst");
+  if (!elst || moov[elst.s] !== 0 || elst.s + 20 > elst.e) return none;
+  const count = u32(moov, elst.s + 4);
+  if (!count) return none;
+  const segment = u32(moov, elst.s + 8);
+  const media = i32(moov, elst.s + 12);
+  if (media === -1) {
+    const mvhd = child(moov, root, "mvhd");
+    const movieScale = mvhd ? u32(moov, mvhd.s + (moov[mvhd.s] === 1 ? 20 : 12)) : 0;
+    const delay = movieScale > 0 ? segment / movieScale : 0;
+    return { skip: 0, delay: Number.isFinite(delay) && delay > 0 && delay < 5 ? delay : 0 };
+  }
+  if (media > 0) {
+    const skip = media / mediaScale;
+    return { skip: Number.isFinite(skip) && skip > 0 && skip < 2 ? skip : 0, delay: 0 };
+  }
+  return none;
+}
 
 function parseEsds(b: Uint8Array, s: number, e: number) {
   let p = s + 4;
@@ -74,10 +101,7 @@ function parseAsc(a: Uint8Array) {
   const fi = rd(4);
   if (fi === 15 || fi > 12) return null;
   const ch = rd(4);
-  if (type === 5 || type === 29) {
-    rd(4);
-    type = rd(5);
-  }
+  if (type === 5 || type === 29) return null;
   return type >= 1 && type <= 4 && ch >= 1 && ch <= 7 ? { type, fi, ch } : null;
 }
 
@@ -122,6 +146,7 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
     const cfg = asc && parseAsc(asc);
     if (!cfg) continue;
     const ts = u32(moov, mdhd.s + (moov[mdhd.s] ? 20 : 12));
+    const shift = trackShift(moov, root, trak, ts);
     const stts = child(moov, stbl, "stts");
     const stsz = child(moov, stbl, "stsz");
     const stsc = child(moov, stbl, "stsc");
@@ -150,14 +175,15 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
     let total = 0;
     const nst = u32(moov, stts.s + 4);
     for (let i = 0; i < nst; i++) total += u32(moov, stts.s + 8 + i * 8) * u32(moov, stts.s + 12 + i * 8);
-    const dur = total / ts;
-    const sdur = dur / count;
+    const mediaDur = total / ts;
+    const sdur = mediaDur / count;
+    const dur = Math.max(0.2, mediaDur - shift.skip + shift.delay);
     const profile = cfg.type - 1;
     return {
       dur,
       async adts(a, b, sig) {
-        const i0 = Math.max(0, Math.floor(a / sdur) - 2);
-        const i1 = Math.min(count, Math.ceil(b / sdur) + 1);
+        const i0 = Math.max(0, Math.floor((a + shift.skip - shift.delay) / sdur) - 2);
+        const i1 = Math.min(count, Math.ceil((b + shift.skip - shift.delay) / sdur) + 1);
         const runs: Array<{ s: number; e: number; buf?: Uint8Array }> = [];
         const runOf: number[] = [];
         for (let i = i0; i < i1; i++) {
@@ -188,7 +214,7 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
           out.set(r.buf!.subarray(o, o + sizes[i]), w + 7);
           w += L;
         }
-        return { bytes: out, t0: i0 * sdur };
+        return { bytes: out, t0: i0 * sdur - shift.skip + shift.delay };
       },
     };
   }

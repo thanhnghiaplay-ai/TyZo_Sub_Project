@@ -13,16 +13,19 @@ import {
   type Bible,
 } from "@/lib/sub/text";
 import type { AsrModel } from "@/lib/sub/types";
+import { roomTicketId } from "@/lib/sub/room-ticket";
 
 export const API = "https://api.groq.com/openai/v1";
 export const ROOM_KEY = "room";
 
-export function roomFetchTarget(url: string, init: RequestInit): { url: string; init: RequestInit } {
+export function roomFetchTarget(url: string, init: RequestInit, ticketId?: string | null): { url: string; init: RequestInit } {
   const headers = new Headers(init.headers);
   if (headers.get("Authorization") !== `Bearer ${ROOM_KEY}`) return { url, init };
   const path = url.startsWith(API) ? url.slice(API.length) : "";
   headers.delete("Authorization");
   headers.set("x-groq-path", path);
+  const ticket = ticketId === undefined ? roomTicketId() : ticketId;
+  if (ticket) headers.set("x-run-ticket", ticket);
   return { url: "/api/room-groq", init: { ...init, headers } };
 }
 
@@ -83,6 +86,7 @@ export async function requestWithRetry(
   gate: { blockedUntil: number },
   onWait?: (message: string) => void,
   modelName = "",
+  ticket?: string | null,
 ) {
   let lastError: Error | undefined;
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -91,7 +95,7 @@ export async function requestWithRetry(
     if (gate.blockedUntil > Date.now()) await sleep(gate.blockedUntil - Date.now(), signal);
     let response: Response | null = null;
     try {
-      const next = roomFetchTarget(url, makeInit());
+      const next = roomFetchTarget(url, makeInit(), ticket);
       response = await fetch(next.url, { ...next.init, signal });
     } catch (error) {
       if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
@@ -120,7 +124,7 @@ export async function requestWithRetry(
 }
 
 export async function listModelIds(key: string, signal?: AbortSignal): Promise<string[]> {
-  const next = roomFetchTarget(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } });
+  const next = roomFetchTarget(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } }, null);
   const response = await fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal });
   if (!response.ok) throw new Error(await readApiError(response, ""));
   const data = (await response.json()) as { data?: Array<{ id?: string }> };
@@ -136,12 +140,13 @@ export async function transcribe(
   signal: AbortSignal,
   gate: { blockedUntil: number },
   onWait?: (message: string) => void,
+  ticket?: string | null,
 ) {
   try {
-    return await transcribeOnce(packed, key, language, prompt, asrModel, signal, gate, onWait);
+    return await transcribeOnce(packed, key, language, prompt, asrModel, signal, gate, onWait, ticket);
   } catch (error) {
     if (packed.wav && /lỗi 400/.test((error as Error)?.message || ""))
-      return transcribeOnce({ blob: packed.wav(), name: "audio.wav" }, key, language, prompt, asrModel, signal, gate, onWait);
+      return transcribeOnce({ blob: packed.wav(), name: "audio.wav" }, key, language, prompt, asrModel, signal, gate, onWait, ticket);
     throw error;
   }
 }
@@ -155,6 +160,7 @@ async function transcribeOnce(
   signal: AbortSignal,
   gate: { blockedUntil: number },
   onWait?: (message: string) => void,
+  ticket?: string | null,
 ) {
   const response = await requestWithRetry(
     `${API}/audio/transcriptions`,
@@ -173,6 +179,7 @@ async function transcribeOnce(
     gate,
     onWait,
     asrModel,
+    ticket,
   );
   return response.json() as Promise<{
     language?: string;
@@ -191,6 +198,7 @@ async function translateOnce(
   gate: { blockedUntil: number },
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
+  ticket?: string | null,
 ) {
   if (!model) throw new Error("Bạn chưa nhập model dịch.");
   const messages = translationMessages(texts, language, opts);
@@ -221,6 +229,7 @@ async function translateOnce(
         gate,
         onWait,
         model,
+        ticket,
       );
       const data = (await response.json()) as {
         choices?: Array<{ finish_reason?: string; message?: { content?: string } }>;
@@ -252,9 +261,10 @@ export async function translateBatch(
   gate: { blockedUntil: number },
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
+  ticket?: string | null,
 ): Promise<string[]> {
   try {
-    return await translateOnce(texts, language, key, model, signal, gate, opts, onWait);
+    return await translateOnce(texts, language, key, model, signal, gate, opts, onWait, ticket);
   } catch (error) {
     if ((error as { name?: string })?.name === "AbortError") throw error;
     const retryable = /hết token|nội dung trống|JSON không hợp lệ|không đúng định dạng|thiếu câu/.test((error as Error).message || "");
@@ -270,6 +280,7 @@ export async function translateBatch(
       gate,
       optsForRange(opts, texts, 0, mid),
       onWait,
+      ticket,
     );
     let right: string[];
     try {
@@ -283,9 +294,12 @@ export async function translateBatch(
         gate,
         optsForRange(opts, texts, mid, texts.length, known),
         onWait,
+        ticket,
       );
     } catch (error) {
       if ((error as { name?: string })?.name === "AbortError") throw error;
+      const message = (error as Error).message || "";
+      if (/401|403|429|không hợp lệ|giới hạn|chưa được cấp/.test(message)) throw error;
       right = texts.slice(mid).map(() => "");
     }
     return left.concat(right);
@@ -304,6 +318,7 @@ export async function translateIndexes(
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
   known?: Array<string | null | undefined>,
+  ticket?: string | null,
 ): Promise<string[]> {
   const runs = contiguousRuns(indexes);
   const byIndex = new Map<number, string>();
@@ -319,6 +334,7 @@ export async function translateIndexes(
       gate,
       { ...optsForRange(opts, texts, start, end, known), fix: opts.fix },
       onWait,
+      ticket,
     );
     run.forEach((index) => {
       byIndex.set(index, fix[index - start] || "");
@@ -336,12 +352,13 @@ export async function translateWithRepair(
   gate: { blockedUntil: number },
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
+  ticket?: string | null,
 ) {
-  const out = await translateBatch(texts, language, key, model, signal, gate, opts, onWait);
+  const out = await translateBatch(texts, language, key, model, signal, gate, opts, onWait, ticket);
   const bad = out.map((line, i) => (untranslated(texts[i], line) ? i : -1)).filter((i) => i >= 0);
   if (bad.length) {
     try {
-      const fix = await translateIndexes(texts, bad, language, key, model, signal, gate, { ...opts, fix: true }, onWait, out);
+      const fix = await translateIndexes(texts, bad, language, key, model, signal, gate, { ...opts, fix: true }, onWait, out, ticket);
       bad.forEach((i, k) => {
         if (fix[k] && fix[k].trim()) out[i] = fix[k];
       });
@@ -363,11 +380,12 @@ export async function analyzeFilm(input: {
   signal: AbortSignal;
   gate: { blockedUntil: number };
   onWait?: (message: string) => void;
+  ticket?: string | null;
 }): Promise<Bible> {
   let text = input.lines.join("\n");
-  if (text.length > 120000) {
+  if (text.length > 40000) {
     const h = Math.floor(text.length / 2);
-    text = text.slice(0, 40000) + "\n[...]\n" + text.slice(h - 20000, h + 20000) + "\n[...]\n" + text.slice(-40000);
+    text = text.slice(0, 12000) + "\n[...]\n" + text.slice(h - 6000, h + 6000) + "\n[...]\n" + text.slice(-12000);
   }
   const sys = `You are a film analyst preparing a subtitle translation into ${input.language}. The input is a raw speech-recognition transcript; names are often misspelled. Return only JSON: {"summary":"3-5 sentences in ${input.language}","characters":[{"name":"canonical spelling","variants":["misspellings of this name that appear in the transcript"],"gender":"male|female|unknown","self":"pronoun this person uses for themselves in ${input.language}","addressed":"how others address this person in ${input.language}","note":"role and relationships"}],"terms":[{"src":"place/organization/item/term as in transcript","tgt":"best rendering in ${input.language}, or the same if it should stay"}]}. Include only names and terms actually present, at most 30 characters and 40 terms, and unify spelling variants of the same name. Infer gender from names, grammar and how people speak; do not leave gender unknown when the transcript makes it clear. self and addressed must be concrete address forms in ${input.language} (Vietnamese examples: "tự xưng tôi, được gọi là anh"), or empty strings if truly unknown.`;
   const glossPairs = glossaryList(input.gloss)
@@ -398,6 +416,7 @@ export async function analyzeFilm(input: {
     input.gate,
     input.onWait,
     input.model,
+    input.ticket,
   );
   const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   return JSON.parse(stripFence(data.choices?.[0]?.message?.content || "")) as Bible;

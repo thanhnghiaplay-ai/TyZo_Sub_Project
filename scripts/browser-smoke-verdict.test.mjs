@@ -345,6 +345,11 @@ test("derivedPaths handles .png, .PNG, and extensionless inputs", () => {
   });
 });
 
+test("exitCodeFor: a blank page with no canvas is a failure", () => {
+  assert.equal(exitCodeFor(verdict({ bodyTextLen: 0, hasCanvas: false }).viewports), 1);
+  assert.equal(exitCodeFor(verdict({ bodyTextLen: 0, hasCanvas: true }).viewports), 0);
+});
+
 test("exitCodeFor: clean run exits 0", () => {
   assert.equal(exitCodeFor(verdict().viewports), 0);
 });

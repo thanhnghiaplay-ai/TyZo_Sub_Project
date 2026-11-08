@@ -5,6 +5,14 @@ export const CHUNK_PAD_SECONDS = 0.3;
 
 export type TimeSpan = { start: number; end: number };
 
+/** Ngưỡng im lặng. File nói nhỏ hơn mốc cố định thì lấy 20% đỉnh, khỏi coi cả tệp là im. */
+export function energyThreshold(levels: number[], floor = SILENCE_RMS): number {
+  let peak = 0;
+  for (const level of levels) if (level > peak) peak = level;
+  if (!(peak > 0) || peak >= floor) return floor;
+  return peak * 0.2;
+}
+
 /** Cửa sổ có năng lượng thành các đoạn. Cửa sổ im không vào đoạn. */
 export function spansFromEnergy(levels: number[], windowSeconds = 1, threshold = SILENCE_RMS): TimeSpan[] {
   const spans: TimeSpan[] = [];

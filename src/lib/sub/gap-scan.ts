@@ -103,12 +103,15 @@ export function budgetSpeechGaps(spans: SpeechSpan[], pricePerSecond: number, bu
   const selected: SpeechSpan[] = [];
   const deferred: SpeechSpan[] = [];
   let audioSeconds = 0;
+  let billedUsed = 0;
   for (const span of mergeSpans(spans)) {
     const seconds = span.end - span.start;
-    if (audioSeconds + seconds > budgetSeconds + 1e-6) deferred.push(span);
+    const billed = Math.max(10, seconds);
+    if (billedUsed + billed > budgetSeconds + 1e-6) deferred.push(span);
     else {
       selected.push(span);
       audioSeconds += seconds;
+      billedUsed += billed;
     }
   }
   const billedSeconds = selected.reduce((total, span) => total + Math.max(10, span.end - span.start), 0);
@@ -176,5 +179,5 @@ export function formatGapConfirm(plan: GapPlan): string {
   const deferred = plan.deferred.length
     ? ` ${plan.deferred.length} khoảng không vừa ngân sách ${plan.budgetSeconds} giây nên không gửi.`
     : "";
-  return `Sẽ gửi ${plan.selected.length} khoảng (${plan.audioSeconds.toFixed(1)} giây). Không gửi cả phim.${deferred} ${list}${extra}. Gửi không?`;
+  return `Sẽ gửi ${plan.selected.length} khoảng (${plan.audioSeconds.toFixed(1)} giây tiếng, tính tiền ${plan.billedSeconds.toFixed(1)} giây). Không gửi cả phim.${deferred} ${list}${extra}. Gửi không?`;
 }

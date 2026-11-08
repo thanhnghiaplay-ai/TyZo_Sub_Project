@@ -96,13 +96,12 @@ describe("dò khoảng trống có tiếng", () => {
       { start: 40, end: 70 },
     ];
     const plan = budgetSpeechGaps(spans, price, 10);
-    assert.deepEqual(plan.selected, [
-      { start: 0, end: 4 },
+    assert.deepEqual(plan.selected, [{ start: 0, end: 4 }]);
+    assert.deepEqual(plan.deferred, [
       { start: 20, end: 24 },
+      { start: 40, end: 70 },
     ]);
-    assert.deepEqual(plan.deferred, [{ start: 40, end: 70 }]);
-    assert.equal(plan.audioSeconds, 8);
-    assert.ok(plan.audioSeconds <= 10);
+    assert.equal(plan.billedSeconds, 10);
   });
 
   it("khoảng dài hơn ngân sách thì để nguyên, không cắt", () => {

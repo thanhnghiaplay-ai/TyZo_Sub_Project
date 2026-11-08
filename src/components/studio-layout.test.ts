@@ -123,8 +123,13 @@ describe("Bước 6.6 — không API một hãng", () => {
 describe("Bước 7.1 — không chồng khung", () => {
   it("video không nổi lên tab, màn thấp không dùng tấm phủ", () => {
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
-    assert.equal(css.includes("z-index:"), false);
-    assert.equal(css.includes("position: absolute"), false);
+    // Chuông, thông báo, huy hiệu vai trò và nhật ký phiên bản là lớp nổi riêng, không thuộc khung video.
+    const stageRules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).filter((rule) => /studio|stage|player|video|sheet/.test(rule.split("{")[0]));
+    assert.ok(stageRules.length > 0);
+    for (const rule of stageRules) {
+      assert.equal(rule.includes("z-index:"), false, rule);
+      assert.equal(rule.includes("position: absolute"), false, rule);
+    }
     assert.match(css, /max-height:\s*520px/);
     assert.match(source, /studio-stage/);
     assert.match(source, /is-sheet/);

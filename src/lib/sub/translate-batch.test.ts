@@ -13,12 +13,9 @@ import {
 } from "./text.ts";
 import type { Seg } from "./types.ts";
 
-describe("parseTranslations chấp nhận batch thiếu câu", () => {
-  it("giữ câu đã trả và chừa ô trống cho câu thiếu, không ném lỗi cả batch", () => {
-    const lines = parseTranslations(JSON.stringify({ t: ["một", "hai", "ba", "bốn", "năm", "sáu"] }), 8);
-    assert.equal(lines.length, 8);
-    assert.deepEqual(lines.slice(0, 6), ["một", "hai", "ba", "bốn", "năm", "sáu"]);
-    assert.deepEqual(blankTranslationIndexes(lines), [6, 7]);
+describe("parseTranslations bắt đúng số câu", () => {
+  it("thiếu câu thì lỗi cả lần gọi để dịch lại, không gắn lệch hàng", () => {
+    assert.throws(() => parseTranslations(JSON.stringify({ t: ["một", "hai", "ba", "bốn", "năm", "sáu"] }), 8), /thiếu câu/);
   });
 
   it("ô không phải chuỗi là câu lỗi, các câu khác giữ nguyên", () => {
@@ -27,10 +24,8 @@ describe("parseTranslations chấp nhận batch thiếu câu", () => {
     assert.deepEqual(blankTranslationIndexes(lines), [1]);
   });
 
-  it("dài hơn thì cắt đúng số câu, không tính là lỗi", () => {
-    const lines = parseTranslations(JSON.stringify({ t: ["một", "hai", "ba"] }), 2);
-    assert.deepEqual(lines, ["một", "hai"]);
-    assert.deepEqual(blankTranslationIndexes(lines), []);
+  it("dài hơn số câu thì cũng lỗi, không cắt lấy phần đầu", () => {
+    assert.throws(() => parseTranslations(JSON.stringify({ t: ["một", "hai", "ba"] }), 2), /thiếu câu/);
   });
 
   it("JSON hỏng hoặc không có mảng vẫn lỗi cả lần gọi", () => {

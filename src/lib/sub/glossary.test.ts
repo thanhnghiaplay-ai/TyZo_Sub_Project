@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
+  findMatches,
   glossaryTarget,
   hasLeftoverPlaceholder,
   restoreTerms,
@@ -47,6 +48,15 @@ describe("thuật ngữ Sex theo ngôn ngữ nguồn", () => {
     assert.equal(action.find((term: { source: string }) => term.source === "copy that").target, "đã rõ");
     assert.equal(action.find((term: { source: string }) => term.source === "make a move").target, "ra tay");
     assert.ok(action.length >= 60);
+  });
+});
+
+describe("từ một ký tự", () => {
+  it("tiếng Trung giữ, tiếng Anh bỏ", () => {
+    const zh = findMatches("朕知道", [{ source: "朕", target: "trẫm" }], "zh");
+    assert.equal(zh.length, 1);
+    assert.equal(zh[0]?.term.target, "trẫm");
+    assert.equal(findMatches("I am here", [{ source: "I", target: "tôi" }], "en").length, 0);
   });
 });
 

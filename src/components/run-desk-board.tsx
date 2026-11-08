@@ -49,6 +49,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [models, setModels] = useState<string[] | null>(null);
   const [adminKey, setAdminKey] = useState("");
+  const [keyTail, setKeyTail] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
@@ -59,7 +60,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         setView(next);
         setForm(next.desk);
         setModels(next.models);
-        setAdminKey(next.key || "");
+        setKeyTail(next.keyTail || "");
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt.", "bad"));
     void loadGroqBoard()
@@ -89,6 +90,9 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
     void saveRunKey({ data: token })
       .then((ids) => {
         setModels(ids);
+        setKeyTail(token.slice(-4));
+        setAdminKey("");
+        setShowKey(false);
         pushToast(`Đã lưu key. Key này gọi được ${ids.length} model. Khách chọn trả theo lượt sẽ dùng đúng key này.`);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đồng bộ được key.", "bad"))
@@ -194,7 +198,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
                 autoComplete="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                placeholder={form && adminKey ? "Key đã lưu. Gõ key khác nếu muốn đổi" : "Nhập hoặc dán key. Bấm lưu thì key được giữ trên máy chủ"}
+                placeholder={keyTail ? "Key đã lưu. Dán key mới nếu muốn đổi" : "Nhập hoặc dán key. Bấm lưu thì key được giữ trên máy chủ"}
                 onChange={(event) => setAdminKey(event.target.value)}
                 className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
               />
@@ -212,7 +216,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
             Lưu key
           </button>
         )}
-        <p className="text-xs text-muted">{adminKey ? "Key này còn sau khi tải lại trang. Chỉ Chủ thấy key." : "Chưa lưu key."}</p>
+        <p className="text-xs text-muted">{keyTail ? `Đã lưu key, kết thúc bằng ${keyTail}. Key không hiện lại trên trang này.` : "Chưa lưu key."}</p>
         <div className="grid gap-2">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);

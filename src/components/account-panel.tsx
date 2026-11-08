@@ -51,7 +51,8 @@ export function AccountPanel() {
     void getMyPlace().then((next) => { if (!gone) setPlace(next); }).catch(() => {});
     void getBadgeStyle().then((next) => { if (!gone) setBadge(next); }).catch(() => {});
     void listOwnAppeals().then((rows) => { if (!gone) setOwnAppeals(rows); }).catch(() => {});
-    void (id ? claimTrialDevice({ data: id }) : getRoomAccount())
+    // Tài khoản bị khóa thì claimTrialDevice bị máy chủ chặn (403) nhưng vẫn phải xem được ví để gửi yêu cầu.
+    void (id ? claimTrialDevice({ data: id }).catch(() => getRoomAccount()) : getRoomAccount())
       .then((next) => {
         if (!gone) setState(next);
       })
@@ -268,7 +269,7 @@ export function AccountPanel() {
             <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
               Đổi mật khẩu
             </button>
-            <p className="text-xs text-muted">Quên mật khẩu chưa gửi được thư.</p>
+            <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
           </form>
           {state && state.ledger.length > 0 && (
             <section className="rounded-2xl border border-line bg-card p-3">

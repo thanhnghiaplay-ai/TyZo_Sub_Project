@@ -1,8 +1,38 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.16.0";
+export const APP_VERSION = "2.19.1";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.19.1",
+    time: "19:13 ngày 08/11/2026",
+    text: "Sang tab Tài khoản rồi quay lại thì video còn nguyên, không phải chọn lại tệp. Mốc thời gian không còn hiện 0:60 khi sắp sang phút. Ngày ghi chi phí và cột doanh thu theo giờ Việt Nam. Cửa trả theo lượt chỉ bật sau khi cửa đã mở. Tắt thuyết minh ở lần đầu thì lần sau không bị bật lại. Khi đang ở tab hoặc hộp thoại, phím mũi tên không tua video. Xuất CSV không bị hủy giữa chừng. Hai lần chạy trả theo lượt không dùng nhầm một phiếu. Yêu cầu công khai thêm trần theo địa chỉ mạng khi máy chủ thấy địa chỉ.",
+  },
+  {
+    version: "2.19.0",
+    time: "18:52 ngày 08/11/2026",
+    text: "File nói nhỏ không còn bị coi là im cả tệp, và khoảng trống được tính tiền theo giây bị tính chứ không theo giây tiếng. Câu đã sửa tay giữ nguyên khi đổi model hoặc ngôn ngữ. Từ điển tiếng Trung nhận từ một chữ. Giọng Orpheus cắt câu dài và đọc bằng giọng máy nếu lỗi. Xóa tài khoản không xóa sổ tiền, hủy đơn nạp đang chờ và nhả khoản đang giữ. Bản dựng thử không chạy migration lên database thật; bản chính thiếu địa chỉ database thì dừng. Mã chuyển khoản là VietQR khi nhận ra ngân hàng, không thì chuyển thủ công, và chỉ cộng khi số tài khoản nhận khớp. Đồng ý điều khoản được ghi theo tài khoản. Khóa giọng bám thời điểm câu nên câu bị nối dài không mất khóa; khóa lưu từ bản cũ cần chọn lại. Điều khoản đổi sang bản 2026-11-08.3 nên cần đồng ý lại.",
+  },
+  {
+    version: "2.18.0",
+    time: "18:15 ngày 08/11/2026",
+    text: "Lượt dùng thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt, và bấm Tiếp tục trên đúng tệp vẫn được. Hoàn tiền và nhả khoản giữ không còn cộng hai lần khi hai người bấm cùng lúc. Bản dịch thiếu hoặc thừa câu thì dịch lại, không gắn lệch hàng. Key phòng không hiện lại trên trang quản trị, chỉ còn 4 ký tự cuối. Điều khoản đổi sang bản 2026-11-08.2 nên cần đồng ý lại.",
+  },
+  {
+    version: "2.17.1",
+    time: "17:20 ngày 08/11/2026",
+    text: "Tài khoản bị khóa vẫn xem được số dư và gửi được yêu cầu. Quản lý không còn thấy nút xác nhận tay đơn nạp, vì chỉ Chủ được cộng tiền tay; Quản lý vẫn xem và hủy được đơn.",
+  },
+  {
+    version: "2.17.0",
+    time: "08:16 ngày 08/11/2026",
+    text: "Cửa trả theo lượt giờ tính tiền thật theo giá Groq cộng phần chênh phòng niêm yết: giữ trước một khoản ước tính trong ví, trừ số thực khi xong và trả lại phần thừa, đoạn Groq báo lỗi thì không tính tiền. Đăng ký bằng email có thể bắt buộc xác minh thư khi phòng đã cấu hình gửi thư. Quyền Chủ nay nằm trong cơ sở dữ liệu và chỉ tính khi email đã xác minh. Chỉ Chủ được xác nhận tay đơn nạp, mỗi khách tối đa số đơn chờ nhất định. Điều khoản đổi sang bản 2026-11-08.1 nên cần đồng ý lại.",
+  },
+  {
+    version: "2.16.1",
+    time: "01:35 ngày 08/11/2026",
+    text: "Tài khoản bị khóa hoặc cấm giờ bị chặn ngay ở máy chủ khi tạo đơn nạp, mua gói, dùng lượt thử, dùng cửa trả theo lượt và đọc thuyết minh, không chỉ ở trình duyệt. Giọng đọc neural có giới hạn số lần mỗi phút và cần đăng nhập. Đã gỡ chức năng cộng tiền thử mà ai đăng nhập cũng gọi được.",
+  },
   {
     version: "2.16.0",
     time: "23:44 ngày 07/11/2026",

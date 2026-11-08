@@ -119,8 +119,11 @@ function frameHz(mono: Float32Array, start: number, frame: number, minLag: numbe
   return rate / bestLag;
 }
 
-export function lineLockId(seg: { start: number; original: string }) {
-  return `${Math.round(seg.start * 10) / 10}|${seg.original}`;
+/** Khóa theo mốc thời gian, không theo chữ gốc. Câu bị nối dài vẫn giữ giọng đã chọn. */
+export function lineLockId(seg: { start: number; end?: number; original?: string }) {
+  const start = Math.round(seg.start * 10) / 10;
+  if (typeof seg.end === "number" && Number.isFinite(seg.end)) return `${start}|${Math.round(seg.end * 10) / 10}`;
+  return `${start}`;
 }
 
 /** Khóa đã lưu thắng kết quả vừa đo. */

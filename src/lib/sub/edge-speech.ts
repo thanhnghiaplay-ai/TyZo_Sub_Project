@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "@/lib/auth/middleware";
 
 type EdgeRequest = {
   text: string;
@@ -22,9 +23,16 @@ function clean(input: EdgeRequest): EdgeRequest {
   return { text, voice, rate, pitch };
 }
 
+/** Tối đa số lần đọc mỗi phút cho một tài khoản. */
+const EDGE_LIMIT_PER_MINUTE = 120;
+
 export const synthesizeEdge = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: EdgeRequest) => clean(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ context, data }) => {
+    const { requireOpenAccount, takeRate } = await import("@/lib/guard.server");
+    await requireOpenAccount(context.userId);
+    await takeRate(`edge:${context.userId}`, EDGE_LIMIT_PER_MINUTE, 60);
     const { EdgeTTS } = await import("node-edge-tts");
     const lang = data.voice.split("-").slice(0, 2).join("-");
     const tts = new EdgeTTS({

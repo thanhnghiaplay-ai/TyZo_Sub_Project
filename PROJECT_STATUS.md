@@ -7,10 +7,10 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-07 23:44 (UTC+7) — v2.16.0: chuông quản trị chỉ việc cần xử lý, chấm chưa xem, ẩn giá biểu, hộp xác nhận đồng bộ |
+| **Cập nhật lần cuối** | 2026-11-08 19:29 (UTC+7) — đẩy v2.19.1 lên nhánh main, nối tiếp v2.16.0, làm bản chính thức. Không nâng số. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.16.0** (`src/lib/app-version.ts`). Điều khoản `2026-11-06.1`. React là app đang chạy. Không có HTML standalone. |
-| **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn với nhau. Giá đã chốt 9.000 / 39.000 / 99.000 đ. Mục 13.2 và mục 15 (trả theo lượt, key của chủ) vẫn chưa code. Quy trình cho AI nằm ở `huongdan.txt`. |
+| **Phiên bản code** | **v2.19.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-08.3`. React là app đang chạy. Không có HTML standalone. |
+| **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
 
@@ -83,7 +83,7 @@
 | 42 | Giọng theo cao độ (Bước 7.5) | 🟡 Đã có test | Lúc nhận dạng, mỗi câu đo cao độ. Dưới 160 Hz là nam, trên 190 Hz là nữ, khoảng giữa hoặc ít tiếng thì giữ giọng dự phòng. Không hỏi model, không chọn tay. |
 | 43 | Giọng so trong video (Bước 7.6) | 🟡 Đã có test | Bỏ mốc Hz cố định. So các câu trong cùng video: nhóm thấp là nam, nhóm cao là nữ, câu nằm giữa hoặc cả phim một nhóm thì giữ giọng dự phòng. Bỏ hai đầu mỗi câu. Chưa nghe trên phim thật. |
 | 44 | Thuê phòng | 🟡 Đã gắn, chưa thu tiền thật | Đăng ký email, không đăng nhập Google. Dùng thử: 1 tệp, 10 phút, không quá 100 MB, không xuất file. Gói còn hạn thì không giới hạn số tệp và được xuất file. Giá đã chốt: 9.000 / 39.000 / 99.000 đ. SePay và Casso có khung nhập API ở Admin. Chưa nhập API thì trang khách hiện bảo trì. Key Groq vẫn của khách. |
-| 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-06.1`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. Từ 2026-11-06 13:09, việc nào đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục liên quan trong cùng lần đó (`huongdan.txt` mục 12b). |
+| 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-08.3`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. Khi đã đăng nhập, máy chủ ghi `room_accounts.terms_version`. Từ 2026-11-06 13:09, việc nào đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục liên quan trong cùng lần đó (`huongdan.txt` mục 12b). |
 | 46 | Giá model bằng đồng | 🟡 Đã gắn | Lúc mở app, máy chủ đọc trang model Groq và tỷ giá đô. Thẻ model hiện giá đồng, cửa sổ token, hạn mức tiếng Việt. Hạn mức là gói công khai, không phải số riêng của từng key. |
 | 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. Sơ đồ và doanh thu chỉ Chủ sửa. Lịch sử chỉ 6 dòng, có xem thêm. |
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
@@ -93,7 +93,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 55 | Trả theo lượt | 🟡 Đã nối key phòng, chưa trừ ví | v2.10.1: Chọn trả theo lượt thì câu trên phòng nói đúng cửa đó. Gói hết hạn vẫn chạy cửa này. Bản dùng thử thì không. Tab Việc, Sơ đồ, Doanh thu tách riêng. Chưa trừ ví. |
+| 55 | Trả theo lượt | 🟡 Đã trừ ví theo giá Groq cộng chênh | Từ v2.17.0 giữ tiền trước, trừ số thực, nhả phần thừa. v2.18.0: hoàn và nhả giữ không cộng hai lần. Key phòng không trả nguyên văn về trình duyệt. |
 
 ---
 
@@ -176,6 +176,9 @@ Giữ nguyên mô tả gốc để đối chiếu. Phần **đã xử lý** ghi 
 - Glossary: không nhúng kuromoji. Đuôi nói thường gặp xử lý bằng luật (`jaVerbSurfaces` + đuôi danh từ). Biến thể kính ngữ hiếm vẫn có thể trượt.
 - Piper-WASM.
 - File HTML không có trong gói giao. Không tạo lại HTML. Prompt dịch lần 2026-11-04 chỉ sửa trong React (`text.ts`).
+- **T6, đã chốt 2026-11-08 19:21, không làm:** không khóa lượt thử theo máy thật. Mã máy do trình duyệt tự sinh. Xóa dữ liệu trang hoặc ẩn danh là máy mới. Không bịa fingerprint, cookie hay captcha. Khóa thật chỉ có khi thư đã xác minh, và gửi thư chỉ bật khi phòng đã cấu hình nhà cung cấp thư.
+- **S9, đã chốt 2026-11-08 19:21, không làm:** không viết bộ giải HE-AAC, không đọc hết mọi bản `elst`. Chỉ bù mục đầu, bản 0. AAC-LC vẫn đọc. HE-AAC để trình duyệt giải.
+- **Captcha yêu cầu công khai, không làm.** Đã có trần email, trần chung và trần IP khi máy chủ thấy địa chỉ.
 
 ---
 
@@ -218,6 +221,12 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 ## 6. Lịch sử thay đổi / Tiến độ
 
+- 2026-11-08 19:29 — Đẩy v2.19.1 lên GitHub nhánh main, nối tiếp commit v2.16.0, không ghi đè lịch sử. Vercel build từ bản này. Không nâng số phiên bản.
+- 2026-11-08 18:52 — v2.19.0: Nhóm 3 và 4. Ngưỡng năng lượng theo đỉnh file; khoảng trống chọn theo giây tính tiền. Dịch nửa lô không nuốt 401/403/429. Xóa tài khoản giữ sổ, hủy đơn chờ, nhả giữ, dọn thiết bị/chuông/hiện diện. Yêu cầu công khai có trần chung; chỉ email đã xác minh đọc được trả lời của người khác. Webhook so số tài khoản khi payload có số; so khóa bằng hash. Casso 1 lần / 15 giây. Câu sửa tay không bị dịch đè. Tên riêng tối đa 4 từ không bị coi là chưa dịch. Migration bỏ qua khi `VERCEL_ENV` khác production, thiếu `DATABASE_URL` trên production thì thoát 1. Orpheus cắt 180 ký tự và rơi về giọng máy. Đã chép `ort-wasm-simd-threaded.mjs`, chưa chạy thử VAD. Từ điển không dấu cách nhận 1 ký tự. Đoán giới tính theo ranh giới từ. Hạ tần số lấy trung bình cửa sổ. Phân tích phim tối đa khoảng 40.000 ký tự. `known()` chỉ nhận model trong danh mục. Xóa mã P2P không được gọi. Phụ đề kẹp thời gian không đè câu sau. Khóa giọng theo thời điểm. MP4 bù elst bản 0; HE-AAC trả về đường giải mã của trình duyệt. VietQR khi nhận ra BIN; điều khoản `2026-11-08.3` và ghi `terms_version`. Test phụ thuộc `.grok/skills` được bỏ qua nếu thư mục không có. Chưa làm T6 (không bịa khóa thiết bị). `tsc` sạch. Test nhóm vừa sửa: 1 fail do test Orpheus nhập alias `@/` rồi đã bỏ file đó; các test còn lại trong lượt đó pass.
+- 2026-11-08 17:20 — v2.17.1: `claimTrialDevice` bị chặn 403 với tài khoản khóa nên ví không hiện: `account-panel.tsx` rơi về `getRoomAccount()`. `PayQueue` nhận `owner`, chỉ Chủ thấy nút «Xác nhận đã nhận tiền». SQL webhook nạp, mua gói, hoàn tiền tách thành `src/lib/pay-flow.ts` (`creditHitWith`, `buyPlanWith`, `refundRunWith`), logic giữ nguyên, để test được (`money-flow.test.ts`). Test đồng thời hoàn tiền đang đánh dấu todo vì tái hiện lỗi C2.
+- 2026-11-08 18:15 — v2.18.0: C1 trừ lượt thử sau lần nhận dạng gọi được máy dịch, Tiếp tục cùng tệp không bị chặn. C2 `refundRunWith` và `releaseHoldWith` một câu SQL có điều kiện. C6 `parseTranslations` bắt đúng số câu. C7 `getRunDesk` chỉ trả 4 ký tự cuối key. Điều khoản `2026-11-08.2`. `tsc` sạch. Test tiền và dịch 44/44.
+- 2026-11-08 08:16 — v2.17.0: **N2** `/api/room-groq` kiểm tra same-site, đăng nhập, status='open', tần suất 240/phút, trần body (25 MB nhận dạng, 512 KB dịch, 20 KB đọc), model phải nằm trong `run_models`, trả lỗi JSON `{error:{message}}` và chuyển tiếp `retry-after`. Tiền: `openRunTicket` giữ nguyên tử (UPDATE có điều kiện balance >= số giữ, `run-ticket.ts`), mỗi yêu cầu gắn `x-run-ticket`, `chargeWith` (`run-gate.ts`) trừ số thực theo giá Groq cộng chênh (`run-bill.ts`: nhận dạng theo giây âm thanh, tối thiểu 10 giây; dịch theo token; đọc theo ký tự), `closeRunTicket` nhả phần thừa; Groq lỗi không tính tiền; phiếu giữ quá 6 giờ tự nhả. Bảng giá lấy từ trang Groq và tỷ giá, lưu `room_settings.run_board`. **N3/C4** quyền Chủ ở bảng `room_staff` role='chu' và chỉ tính khi `user.emailVerified`; bỏ email ghi cứng và file `.grok/admin.json`; biến `ADMIN_EMAIL` chỉ khởi tạo Chủ đầu tiên khi chưa có Chủ đã xác minh. Gửi thư qua HTTP (`auth/mailer.ts`): Resend, SendGrid, Brevo, Mailgun, Postmark hoặc webhook, cần `MAIL_FROM` và một khóa; có thì bật `requireEmailVerification`, chưa có thì không bật (nếu không không ai đăng nhập được). Chưa có SMTP trực tiếp. **C5 (một phần)** `confirmPayOrder` chỉ Chủ, ghi người xác nhận vào sổ và nhật ký, tối đa 3 đơn chờ mỗi khách, giới hạn tần suất báo đã chuyển. Điều khoản đổi sang `2026-11-08.1` vì cửa trả theo lượt có thu tiền. Sửa 2 test cũ (entry-gate, studio-layout).
+- 2026-11-08 01:35 — v2.16.1: N1 xóa `creditTrial` (ai đăng nhập cũng tự cộng tiền được). N5 thêm `requireOpenAccount()` ở `src/lib/guard.server.ts` (logic ở `guard.ts`, có test) dùng trong createPayOrder, buyRoomPlan, spendTrial, claimTrialDevice, synthesizeEdge và room-groq; trả 403 khi status khác 'open'. N4 `synthesizeEdge` có authMiddleware và giới hạn 120 lần/phút/tài khoản bằng bảng `rate_hits` (migration 0013, `takeRate()`). Còn chờ: N2 (chốt cách tính tiền), N3 (chốt nhà cung cấp email).
 - 2026-11-07 23:44 — v2.16.0: chuông Admin chỉ yêu cầu hỗ trợ, chuyển cấp và khách báo đã chuyển; số mới và chấm đỏ từng dòng; hộp hủy đơn và xóa tài khoản đồng bộ giao diện; giá biểu trả theo lượt ẩn hiện được.
 
 
@@ -340,6 +349,9 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 | 2026-11-06 22:22 | Grok | **v2.9.0.** Ô key ngay trên trang quản trị. Trả theo lượt không cần đồng bộ key. Đổi tên hiển thị hai thể loại, mã và thuật ngữ giữ. Thông báo nổi khi lưu ở quản trị. Không đổi điều khoản. | |
 | 2026-11-06 22:43 | Grok | **v2.10.0.** Key phòng lưu trên máy chủ, tải lại không mất. Khách chọn trả theo lượt thì dùng key đó. Phiếu hiện giờ và trạng thái. Doanh thu đọc được cột ngày. Chưa trừ ví. Không đổi điều khoản. | |
 | 2026-11-07 07:41 | Grok | **v2.10.1.** Tab Việc, Sơ đồ, Doanh thu tách riêng. Câu hạn gói đổi khi chọn trả theo lượt. Thẻ quyền có hiệu ứng. Sổ gần đây thu gọn. Không đổi điều khoản. | |
+| 2026-11-08 18:15 | Grok | **v2.18.0.** Lượt thử trừ sau khi nhận dạng gọi được máy dịch. Hoàn tiền và nhả giữ không cộng hai lần. Dịch thiếu hoặc thừa câu thì dịch lại. Key phòng chỉ hiện 4 ký tự cuối. Điều khoản `2026-11-08.2`. | |
+| 2026-11-08 19:13 | Grok | **v2.19.1.** Video không mất khi sang Tài khoản. Mốc thời gian không còn 0:60. Chi phí và doanh thu theo giờ Việt Nam. Cửa trả theo lượt chờ cửa mở. Thuyết minh không bị ép bật lại. Hai lần chạy không dùng nhầm phiếu. Điều khoản không đổi. | |
+| 2026-11-08 18:52 | Grok | **v2.19.0.** Sửa nhóm 3 và 4 của báo cáo lỗi. Điều khoản `2026-11-08.3` vì mã nạp có thể là VietQR và lần đồng ý được ghi theo tài khoản. T6 chưa làm. T14 chưa chạy thử trên trình duyệt. | |
 
 ---
 

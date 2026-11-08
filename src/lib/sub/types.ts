@@ -11,8 +11,10 @@ export type Seg = {
   pitchHz?: number;
   /** Nam hoặc nữ sau khi so với các câu khác. Không có thì dùng giọng dự phòng. */
   voice?: "female" | "male";
-  /** Người dùng khóa giọng câu này. Lần gán sau không ghi đè. */
+  /** Người dùng khóa nam hoặc nữ cho đúng câu này. */
   voiceLock?: "female" | "male";
+  /** Người dùng đã sửa tay. Đổi model hoặc ngôn ngữ đích không xóa câu này. */
+  edited?: boolean;
 };
 
 export type ChatTier = "standard" | "preview" | "enterprise" | "safety" | "key";

@@ -40,7 +40,7 @@ function statusLabel(status: string) {
   return "Chờ chuyển khoản";
 }
 
-export function PayQueue() {
+export function PayQueue({ owner = false }: { owner?: boolean }) {
   const [rows, setRows] = useState<PayClaim[]>([]);
   const [busy, setBusy] = useState(false);
   const [cancelId, setCancelId] = useState<string | null>(null);
@@ -63,7 +63,7 @@ export function PayQueue() {
           Tải lại
         </button>
       </div>
-      <p className="text-sm text-muted">Khách bấm «Tôi đã chuyển khoản» thì đơn chuyển sang chờ kiểm tra. Webhook lỗi thì bấm xác nhận để cộng tiền tay.</p>
+      <p className="text-sm text-muted">Khách bấm «Tôi đã chuyển khoản» thì đơn chuyển sang chờ kiểm tra. Webhook lỗi thì Chủ bấm xác nhận để cộng tiền tay. Quản lý chỉ xem và hủy.</p>
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có đơn nạp.</p>}
       <ul className="grid max-h-80 gap-2 overflow-y-auto">
         {rows.map((row) => (
@@ -77,6 +77,7 @@ export function PayQueue() {
             </p>
             {(row.status === "pending" || row.status === "claimed") && (
               <div className="mt-2 flex flex-wrap gap-2">
+                {owner && (
                 <button
                   type="button"
                   disabled={busy}
@@ -94,6 +95,7 @@ export function PayQueue() {
                 >
                   Xác nhận đã nhận tiền
                 </button>
+                )}
                 <button
                   type="button"
                   disabled={busy}

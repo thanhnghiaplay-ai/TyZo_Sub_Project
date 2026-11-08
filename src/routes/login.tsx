@@ -72,10 +72,19 @@ function LoginPage() {
         : await authClient.signIn.email({ email: email.trim(), password });
     setBusy(false);
     if (result.error) {
-      setNotice(result.error.message || "Không vào được.");
+      const unverified = result.error.code === "EMAIL_NOT_VERIFIED" || /not verified/i.test(result.error.message || "");
+      setNotice(
+        unverified
+          ? "Email này chưa được xác minh. Hãy mở thư xác minh trong hộp thư (kể cả mục Spam) rồi đăng nhập lại."
+          : result.error.message || "Không vào được.",
+      );
       return;
     }
     const token = result.data && "token" in result.data ? result.data.token : null;
+    if (mode === "up" && !token) {
+      setNotice("Đã gửi thư xác minh tới email của bạn. Hãy bấm liên kết trong thư (kể cả mục Spam) rồi đăng nhập.");
+      return;
+    }
     if (token) {
       try {
         sessionStorage.setItem(BEARER_KEY, token);

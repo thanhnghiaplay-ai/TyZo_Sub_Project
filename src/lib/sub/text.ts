@@ -142,7 +142,7 @@ export function toSrt(items: Seg[]): string {
     .map((seg, index) => {
       let end = seg.end > seg.start ? seg.end : seg.start + 0.4;
       const nx = items[index + 1];
-      if (nx && end > nx.start) end = Math.max(seg.start + 0.3, nx.start - 0.02);
+      if (nx && end > nx.start - 0.02) end = Math.max(seg.start + 0.02, Math.min(end, nx.start - 0.02));
       const pending = seg.translation === null || !seg.translation.trim();
       const text = (seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg))
         .replace(/\s*\n\s*/g, " ")
@@ -167,6 +167,7 @@ export function parseTranslations(content: string, count: number): string[] {
   }
   const arr = parsed && Array.isArray(parsed.t) ? parsed.t : null;
   if (!arr) throw new Error("Kết quả dịch không đúng định dạng.");
+  if (arr.length !== count) throw new Error("Model dịch trả thiếu câu.");
   const lines: string[] = [];
   for (let i = 0; i < count; i++) {
     const item = arr[i];
@@ -399,7 +400,8 @@ export function untranslated(original: string, translated: string): boolean {
   if (!n) return true;
   if (n !== norm(original)) return false;
   if (CJK.test(original)) return true;
-  return /\p{L}{4,}/u.test(original) && !/^[A-Z][\p{L}]+[!?.]*$/u.test(original.trim());
+  const proper = /^(?:[A-Z][\p{L}'’.-]*)(?:\s+[A-Z][\p{L}'’.-]*){0,3}[!?.]*$/u.test(original.trim());
+  return /\p{L}{4,}/u.test(original) && !proper;
 }
 
 export function glossaryList(raw: string): Array<[string, string]> {

@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { confirmOrderWith } from "@/lib/pay-confirm";
+import { creditHitWith } from "@/lib/pay-flow";
 import { randomBytes } from "node:crypto";
 import { toDataURL } from "qrcode";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { cassoHits, codesIn, makePayCode, sameSecret, sepayHit, type PayHit } from "@/lib/pay-match";
+import { accountMatches, cassoHits, makePayCode, sameSecret, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
 
 export type PayPublic = { sepay: boolean; casso: boolean };
 
@@ -30,6 +32,8 @@ export type PayOrderView = {
   account: string;
   name: string;
   qr: string;
+  /** true khi mã quét được bằng ứng dụng ngân hàng. */
+  qrLive: boolean;
 };
 
 type Settings = {
@@ -90,8 +94,9 @@ async function readSettings(): Promise<Settings> {
 }
 
 async function qrUrl(bank: string, account: string, amount: number, code: string) {
-  const text = ["Chuyen khoan", bank.trim(), account.trim(), String(amount), code].filter(Boolean).join(" ");
-  return toDataURL(text, { margin: 1, width: 280, errorCorrectionLevel: "M" });
+  const live = vietqrPayload({ bank, account, amount, info: code });
+  const text = live || ["Chuyen khoan", bank.trim(), account.trim(), String(amount), code].filter(Boolean).join(" ");
+  return { qr: await toDataURL(text, { margin: 1, width: 280, errorCorrectionLevel: "M" }), qrLive: Boolean(live) };
 }
 
 
@@ -109,55 +114,16 @@ async function writePayNotice(userId: string | null, kind: string, title: string
 }
 
 async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
-  const codes = codesIn(hit.text);
-  if (!codes.length) return false;
   const { getSql } = await import("@/lib/db");
-  const sql = await getSql();
-  const orders = await sql<{ id: string; user_id: string; amount: number; code: string }>`
-    select id, user_id, amount, code from pay_orders
-    where status in ('pending', 'claimed') and provider = ${provider} and code in (${codes[0]}, ${codes[1] ?? codes[0]}, ${codes[2] ?? codes[0]})
-  `;
-  const order = orders.find((item) => codes.includes(item.code) && hit.amount >= item.amount);
-  if (!order) return false;
-  const applied = await sql<{ user_id: string }>`
-    with seen as (
-      insert into pay_seen (provider, provider_ref) values (${provider}, ${hit.ref})
-      on conflict do nothing
-      returning provider_ref
-    ),
-    paid as (
-      update pay_orders
-      set status = 'paid', provider_ref = ${hit.ref}
-      where id = ${order.id} and status in ('pending', 'claimed') and exists (select 1 from seen)
-      returning user_id, amount
-    ),
-    account as (
-      insert into room_accounts (user_id, balance)
-      select user_id, ${hit.amount} from paid
-      on conflict (user_id) do update set balance = room_accounts.balance + ${hit.amount}
-      returning user_id
-    )
-    insert into room_ledger (user_id, kind, amount, note)
-    select user_id, 'nap', ${hit.amount}, ${"Nap " + provider + " " + order.code} from account
-    returning user_id
-  `;
-  if (applied.length > 0) {
-    const uid = applied[0].user_id;
-    await writePayNotice(uid, "user", "Đã cộng tiền nạp", `Đã cộng ${hit.amount} đ vào số dư (mã ${order.code}).`);
-  }
-  return applied.length > 0;
+  const done = await creditHitWith(await getSql(), provider, hit);
+  if (done) await writePayNotice(done.userId, "user", "Đã cộng tiền nạp", `Đã cộng ${done.amount} đ vào số dư (mã ${done.code}).`);
+  return Boolean(done);
 }
 
 async function requireOwner(userId: string) {
-  const { emailIsOwner } = await import("@/lib/admin-allow.server");
+  const { isOwnerId } = await import("@/lib/admin-allow.server");
   const { getSql } = await import("@/lib/db");
-  const sql = await getSql();
-  const rows = await sql<{ email: string; role: string | null }>`
-    select u.email, s.role from "user" u left join room_staff s on s.user_id = u.id where u.id = ${userId}
-  `;
-  const email = rows[0]?.email ?? "";
-  const role = rows[0]?.role;
-  if (!emailIsOwner(email) && role !== "chu") throw new Error("Chi Chu duoc sua cong thanh toan.");
+  if (!(await isOwnerId(await getSql(), userId))) throw new Error("Chi Chu duoc sua cong thanh toan.");
 }
 
 export const getPayPublic = createServerFn({ method: "GET" }).handler(async (): Promise<PayPublic> => {
@@ -219,6 +185,9 @@ export const savePaySettings = createServerFn({ method: "POST" })
     return viewOf(next);
   });
 
+/** Số đơn nạp chưa xong tối đa của một tài khoản. */
+const MAX_PENDING_ORDERS = 3;
+
 export const createPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { provider: string; amount: number }) => {
@@ -229,6 +198,8 @@ export const createPayOrder = createServerFn({ method: "POST" })
     return { provider, amount };
   })
   .handler(async ({ context, data }): Promise<PayOrderView> => {
+    const { requireOpenAccount } = await import("@/lib/guard.server");
+    await requireOpenAccount(context.userId);
     const settings = await readSettings();
     const view = viewOf(settings);
     if (data.provider === "sepay" && !view.sepay) throw new Error("Sepay dang bao tri.");
@@ -240,11 +211,17 @@ export const createPayOrder = createServerFn({ method: "POST" })
     const code = makePayCode(randomBytes(8).toString("hex"));
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    await sql`
+    const { takeRate } = await import("@/lib/guard.server");
+    await takeRate(`pay-create:${context.userId}`, 10, 3600);
+    const made = await sql<{ id: string }>`
       insert into pay_orders (id, user_id, provider, amount, code)
-      values (${id}, ${context.userId}, ${data.provider}, ${data.amount}, ${code})
+      select ${id}::text, ${context.userId}::text, ${data.provider}::text, ${data.amount}::int, ${code}::text
+      where (select count(*) from pay_orders where user_id = ${context.userId} and status in ('pending', 'claimed')) < ${MAX_PENDING_ORDERS}
+      returning id
     `;
+    if (!made.length) throw new Error(`Bạn đang có ${MAX_PENDING_ORDERS} đơn nạp chưa xong. Hãy chuyển khoản hoặc hủy bớt rồi tạo đơn mới.`);
     await writePayNotice(context.userId, "user", "Đã tạo đơn nạp", `Đơn ${code}: ${data.amount} đ qua ${data.provider}. Chờ xác nhận hoặc chuyển khoản.`);
+    const picture = await qrUrl(bank, account, data.amount, code);
     return {
       id,
       provider: data.provider as "sepay" | "casso",
@@ -254,7 +231,8 @@ export const createPayOrder = createServerFn({ method: "POST" })
       bank,
       account,
       name,
-      qr: await qrUrl(bank, account, data.amount, code),
+      qr: picture.qr,
+      qrLive: picture.qrLive,
     };
   });
 
@@ -274,6 +252,8 @@ export const readPayOrder = createServerFn({ method: "POST" })
 export const syncCasso = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
+    const { takeRate } = await import("@/lib/guard.server");
+    await takeRate(`casso-sync:${context.userId}`, 1, 15);
     const settings = await readSettings();
     if (!settings.casso_key) return { checked: false };
     const response = await fetch("https://oauth.casso.vn/v2/transactions?pageSize=20&sort=DESC", {
@@ -281,7 +261,9 @@ export const syncCasso = createServerFn({ method: "POST" })
     });
     if (!response.ok) throw new Error("Casso chua tra danh sach giao dich.");
     const body = (await response.json()) as unknown;
-    for (const hit of cassoHits(body)) await creditHit("casso", hit);
+    for (const hit of cassoHits(body)) {
+      if (accountMatches(hit.account, settings.casso_account)) await creditHit("casso", hit);
+    }
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const pending = await sql<{ id: string }>`
@@ -302,16 +284,12 @@ export type PayClaim = {
 };
 
 async function requireStaff(userId: string, lead: boolean) {
-  const { emailIsOwner } = await import("@/lib/admin-allow.server");
+  const { isOwnerId } = await import("@/lib/admin-allow.server");
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();
-  const rows = await sql<{ email: string; role: string | null }>`
-    select u.email, s.role from "user" u left join room_staff s on s.user_id = u.id where u.id = ${userId}
-  `;
-  const email = rows[0]?.email ?? "";
-  const role = rows[0]?.role;
-  if (emailIsOwner(email) || role === "chu") return;
-  if (!lead && role === "quan-ly") return;
+  if (await isOwnerId(sql, userId)) return;
+  const rows = await sql<{ role: string | null }>`select role from room_staff where user_id = ${userId}`;
+  if (!lead && rows[0]?.role === "quan-ly") return;
   throw new Error(lead ? "Chi Chu duoc sua cong nap." : "Chi Quan ly hoac Chu duoc xem don nap.");
 }
 
@@ -323,6 +301,8 @@ export const claimPayOrder = createServerFn({ method: "POST" })
     return value;
   })
   .handler(async ({ context, data }) => {
+    const { takeRate } = await import("@/lib/guard.server");
+    await takeRate(`pay-claim:${context.userId}`, 10, 3600);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const claimed = await sql<{ amount: number; code: string; provider: string }>`
@@ -386,27 +366,15 @@ export const confirmPayOrder = createServerFn({ method: "POST" })
     return value;
   })
   .handler(async ({ context, data }) => {
-    await requireStaff(context.userId, false);
+    // Chỉ Chủ được xác nhận thủ công, vì việc này cộng tiền thật vào ví.
+    await requireStaff(context.userId, true);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const paid = await sql<{ user_id: string; amount: number; code: string }>`
-      update pay_orders
-      set status = 'paid', provider_ref = 'thu-cong'
-      where id = ${data} and status in ('pending', 'claimed')
-      returning user_id, amount, code
-    `;
-    const order = paid[0];
-    if (!order) throw new Error("Don nay da xu ly hoac khong con.");
-    await sql`
-      insert into room_accounts (user_id, balance)
-      values (${order.user_id}, ${order.amount})
-      on conflict (user_id) do update set balance = room_accounts.balance + ${order.amount}
-    `;
-    await sql`
-      insert into room_ledger (user_id, kind, amount, note)
-      values (${order.user_id}, 'nap', ${order.amount}, ${"Nap thu cong " + order.code})
-    `;
-    await writePayNotice(order.user_id, "user", "Đã cộng tiền nạp", `Đã cộng ${order.amount} đ vào số dư (mã ${order.code}).`);
+    const who = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
+    const actorEmail = who[0]?.email ?? "";
+    const done = await confirmOrderWith(sql, data, context.userId, actorEmail);
+    if (!done) throw new Error("Don nay da xu ly hoac khong con.");
+    await writePayNotice(done.userId, "user", "Đã cộng tiền nạp", `Đã cộng ${done.amount} đ vào số dư (mã ${done.code}).`);
     return { ok: true };
   });
 
@@ -429,9 +397,15 @@ export const cancelPayOrder = createServerFn({ method: "POST" })
     `;
     if (!rows.length) throw new Error("Don nay da xu ly hoac khong con de huy.");
     const order = rows[0];
+    const who = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
+    const actor = who[0]?.email ?? "";
     await sql`
       insert into room_ledger (user_id, kind, amount, note)
-      values (${order.user_id}, 'huy-nap', 0, ${"Từ chối nạp " + order.code + " (" + order.amount + " đ)"})
+      values (${order.user_id}, 'huy-nap', 0, ${"Từ chối nạp " + order.code + " (" + order.amount + " đ) bởi " + actor})
+    `;
+    await sql`
+      insert into room_audit (actor_id, action, target_id, note, actor_email, actor_role, target_email)
+      values (${context.userId}, 'huy-nap', ${order.user_id}, ${order.code}, ${actor}, 'nhan-vien', ${""})
     `;
     await writePayNotice(order.user_id, "user", "Từ chối đơn nạp", `Đơn ${order.code} (${order.amount} đ) đã bị từ chối. Không cộng tiền.`);
     return { ok: true as const, code: order.code };
@@ -504,8 +478,9 @@ export async function handleSepay(request: Request) {
   if (!settings.sepay_key || !sameSecret(apikey, settings.sepay_key)) {
     return Response.json({ success: false }, { status: 401 });
   }
-  const hit = sepayHit(await request.json().catch(() => null));
-  if (hit) await creditHit("sepay", hit);
+  const body = await request.json().catch(() => null);
+  const hit = sepayHit(body);
+  if (hit && accountMatches(hit.account, settings.sepay_account)) await creditHit("sepay", hit);
   return Response.json({ success: true });
 }
 
@@ -515,6 +490,9 @@ export async function handleCasso(request: Request) {
   const tokenOk = Boolean(settings.casso_token) && sameSecret(secure, settings.casso_token);
   const keyOk = Boolean(settings.casso_key) && sameSecret(apikey, settings.casso_key);
   if (!tokenOk && !keyOk) return Response.json({ success: false }, { status: 401 });
-  for (const hit of cassoHits(await request.json().catch(() => null))) await creditHit("casso", hit);
+  const body = await request.json().catch(() => null);
+  for (const hit of cassoHits(body)) {
+    if (accountMatches(hit.account, settings.casso_account)) await creditHit("casso", hit);
+  }
   return Response.json({ success: true });
 }

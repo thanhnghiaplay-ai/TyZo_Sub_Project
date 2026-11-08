@@ -592,7 +592,7 @@ export function AdminDesk() {
               </button>
             </form>
           )}
-          {roleAtLeast(role, "quan-ly") && <div data-pay-queue><PayQueue /></div>}
+          {roleAtLeast(role, "quan-ly") && <div data-pay-queue><PayQueue owner={role === "chu"} /></div>}
           {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}
@@ -688,5 +688,6 @@ function planLine(user: AdminUser) {
 }
 
 function foundNotice(query: string) {
-  return query.trim() ? "Đã tìm." : "Đã tìm.";
+  const text = query.trim();
+  return text ? `Đã tìm «${text}».` : "Đã tìm toàn bộ.";
 }

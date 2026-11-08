@@ -1,16 +1,18 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { recordTermsConsent } from "@/lib/room-account";
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-06.1";
+export const TERMS_VERSION = "2026-11-08.3";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<"splash" | "terms" | "declined" | "app">("splash");
+  const { user, isPending } = useCurrentUserState();
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -25,6 +27,11 @@ export function EntryGate({ children }: { children: ReactNode }) {
     }, reduce ? 400 : 1700);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (phase !== "app" || isPending || !user || user.isDevFallback) return;
+    void recordTermsConsent({ data: TERMS_VERSION }).catch(() => {});
+  }, [phase, isPending, user]);
 
   if (phase === "app") return children;
   if (phase === "declined") return <Declined onReview={() => setPhase("terms")} />;
@@ -115,7 +122,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         </table>
 
         <h2>Bảng giá</h2>
-        <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
+        <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
         <table className="gate-table">
           <thead>
             <tr>
@@ -144,7 +151,8 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p>
           Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
-        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Key Groq và cước Groq vẫn là của bạn. Chưa thu qua ngân hàng.</p>
+        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản khi Chủ đã bật cổng. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
+        <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá Groq công bố cộng phần chênh phòng niêm yết: nhận dạng theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn Groq báo lỗi thì không tính tiền.</p>
 
         <h2>2. Điều kiện để dùng</h2>
         <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq là của bạn. Groq tính cước cho tài khoản của bạn, không phải phí của phòng.</p>
@@ -154,12 +162,12 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p>
           Không cam kết nhận dạng hết câu, dịch đúng ý, giữ đúng tên hay giọng nam nữ, hoặc không mất câu. Kết quả là bản để bạn xem và sửa. Bạn tự kiểm tra trước khi đăng, phát hoặc giao cho người khác.
         </p>
-        <p>Key sai, hết hạn mức Groq, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó, vì phòng không thu tiền sử dụng.</p>
+        <p>Key sai, hết hạn mức Groq, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị tính tiền và khoản giữ thừa được trả lại ví.</p>
         <p>Phòng không phải Groq, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
 
         <h2>4. Dữ liệu đi những đâu</h2>
         <p>
-          Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm, giọng đã khóa và lần đồng ý điều khoản được lưu trên máy bạn, trong trình duyệt. Xóa dữ liệu trang là mất các mục đó.
+          Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy, và khi bạn đã đăng nhập thì máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
         </p>
         <p>Lời thoại được gửi tới Groq để nhận dạng và dịch, theo điều khoản của Groq. File video xử lý trên máy bạn.</p>
         <p>

@@ -78,7 +78,7 @@ export async function loadGenreGlossary(sourceLang: string, genre: string, targe
     if (terms?.length) {
       sources.push(path);
       for (const t of terms) {
-        if (!t?.source?.trim() || t.source.trim().length < 2) continue;
+        if (!keepTerm(t.source, lang)) continue;
         const term: GlossaryTerm = {
           source: t.source.trim(),
           target: (t.target ?? t.source).trim(),
@@ -180,7 +180,14 @@ function extendJaTail(text: string, end: number): number {
   return end;
 }
 
-function esc(s: string): string {
+function keepTerm(source: string, lang: string) {
+  const text = source.trim();
+  if (!text) return false;
+  if (SPACELESS.has(normalizeLang(lang))) return text.length >= 1;
+  return text.length >= 2;
+}
+
+function esc(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
@@ -195,7 +202,7 @@ export function findMatches(text: string, terms: GlossaryTerm[], langHint = ""):
   const ja = lang === "ja";
   const items: Array<{ surface: string; term: GlossaryTerm; extend: boolean }> = [];
   for (const term of terms) {
-    if (!term.source || term.source.length < 2) continue;
+    if (!keepTerm(term.source, lang)) continue;
     const surfaces = ja ? jaVerbSurfaces(term.source) : [];
     items.push({ surface: term.source, term, extend: ja && surfaces.length === 0 });
     for (const surface of surfaces) items.push({ surface, term, extend: false });

@@ -480,6 +480,7 @@ test("filters non-document paths", () => {
 
 test("strips install params from the app link", () => {
   assert.equal(stripInstallParams("/?install=1&platform=ios"), "/");
+  assert.equal(stripInstallParams("//evil.com"), "/");
   assert.equal(stripInstallParams("/app?install=1&platform=ios&tab=2"), "/app?tab=2");
 });
 

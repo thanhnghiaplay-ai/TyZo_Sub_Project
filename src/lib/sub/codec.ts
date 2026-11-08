@@ -280,6 +280,22 @@ export function linearResample(audioBuffer: AudioBuffer): Float32Array {
   const data: Float32Array[] = [];
   for (let channel = 0; channel < channels; channel++) data.push(audioBuffer.getChannelData(channel));
   const ratio = from / SR;
+  if (ratio > 1.01) {
+    for (let i = 0; i < outLen; i++) {
+      const start = Math.min(length - 1, Math.floor(i * ratio));
+      const end = Math.min(length, Math.max(start + 1, Math.floor((i + 1) * ratio)));
+      let sample = 0;
+      let count = 0;
+      for (let channel = 0; channel < channels; channel++) {
+        for (let j = start; j < end; j++) {
+          sample += data[channel][j];
+          count++;
+        }
+      }
+      out[i] = count ? sample / count : 0;
+    }
+    return out;
+  }
   for (let i = 0; i < outLen; i++) {
     const x = i * ratio;
     const i0 = Math.min(length - 1, Math.floor(x));

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { isTrialAmount, roomPlan, type RoomPlanId } from "@/lib/room-plans";
+import { roomPlan, type RoomPlanId } from "@/lib/room-plans";
 
 export type RoomState = {
   balance: number;
@@ -47,28 +47,6 @@ export const getRoomAccount = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<RoomState> => readState(context.userId));
 
-export const creditTrial = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((amount: number) => {
-    if (!isTrialAmount(amount)) throw new Error("Số tiền không đúng gói.");
-    return amount;
-  })
-  .handler(async ({ context, data }): Promise<RoomState> => {
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    await sql`
-      with upsert as (
-        insert into room_accounts (user_id, balance)
-        values (${context.userId}, ${data})
-        on conflict (user_id) do update set balance = room_accounts.balance + ${data}
-        returning user_id
-      )
-      insert into room_ledger (user_id, kind, amount, note)
-      select user_id, 'thu', ${data}, 'Tiền thử, không phải ngân hàng' from upsert
-    `;
-    return readState(context.userId);
-  });
-
 export const buyRoomPlan = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
@@ -78,30 +56,20 @@ export const buyRoomPlan = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }): Promise<RoomState> => {
     const plan = roomPlan(data)!;
+    const { requireOpenAccount } = await import("@/lib/guard.server");
+    await requireOpenAccount(context.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    await sql`insert into room_accounts (user_id) values (${context.userId}) on conflict (user_id) do nothing`;
-    const updated = await sql<{ balance: number }>`
-      with upd as (
-        update room_accounts
-        set balance = balance - ${plan.price},
-            plan = ${plan.id},
-            plan_until = (case when plan_until > now() then plan_until else now() end)
-              + make_interval(hours => ${plan.hours})
-        where user_id = ${context.userId} and balance >= ${plan.price}
-        returning user_id, balance
-      )
-      insert into room_ledger (user_id, kind, amount, note)
-      select user_id, 'goi', ${-plan.price}, ${"Mua gói " + plan.name} from upd
-      returning user_id
-    `;
-    if (!updated.length) throw new Error("Số dư chưa đủ.");
+    const { buyPlanWith } = await import("@/lib/pay-flow");
+    await buyPlanWith(sql, context.userId, plan);
     return readState(context.userId);
   });
 
 export const spendTrial = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<RoomState> => {
+    const { requireOpenAccount } = await import("@/lib/guard.server");
+    await requireOpenAccount(context.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`insert into room_accounts (user_id) values (${context.userId}) on conflict (user_id) do nothing`;
@@ -136,6 +104,8 @@ export const claimTrialDevice = createServerFn({ method: "POST" })
     return clean;
   })
   .handler(async ({ context, data }): Promise<RoomState> => {
+    const { requireOpenAccount } = await import("@/lib/guard.server");
+    await requireOpenAccount(context.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`insert into room_accounts (user_id) values (${context.userId}) on conflict (user_id) do nothing`;
@@ -160,6 +130,22 @@ export const claimTrialDevice = createServerFn({ method: "POST" })
       `;
     }
     return readState(context.userId);
+  });
+
+/** Ghi phiên bản điều khoản người dùng đã đồng ý. Máy khách vẫn lưu bản sao. */
+export const recordTermsConsent = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((version: string) => {
+    const value = version?.trim() ?? "";
+    if (!/^\d{4}-\d{2}-\d{2}\.\d+$/.test(value)) throw new Error("Phiên bản điều khoản không đúng.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`insert into room_accounts (user_id) values (${context.userId}) on conflict (user_id) do nothing`;
+    await sql`update room_accounts set terms_version = ${data} where user_id = ${context.userId}`;
+    return { ok: true as const };
   });
 
 export type { RoomPlanId };

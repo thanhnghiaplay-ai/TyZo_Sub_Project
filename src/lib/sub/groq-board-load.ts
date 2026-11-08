@@ -4,7 +4,7 @@ import { parseGroqModelsHtml, type GroqBoard } from "@/lib/sub/groq-board";
 const MODELS_PAGE = "https://console.groq.com/docs/models";
 const FX_PAGE = "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json";
 
-export const loadGroqBoard = createServerFn({ method: "POST" }).handler(async (): Promise<GroqBoard> => {
+export async function fetchGroqBoard(): Promise<GroqBoard> {
   const page = await fetch(MODELS_PAGE, {
     headers: { accept: "text/html", "user-agent": "TyZoSub" },
     signal: AbortSignal.timeout(15000),
@@ -18,4 +18,6 @@ export const loadGroqBoard = createServerFn({ method: "POST" }).handler(async ()
   const rate = Number(fx.usd?.vnd);
   if (!Number.isFinite(rate) || rate < 1000) throw new Error("Tỷ giá đô không hợp lệ.");
   return { rate, rateDate: fx.date || "", rows };
-});
+}
+
+export const loadGroqBoard = createServerFn({ method: "POST" }).handler(async (): Promise<GroqBoard> => fetchGroqBoard());

@@ -4,4 +4,4 @@ Trước khi sửa code, đọc **`PROJECT_STATUS.md`** và **`huongdan.txt`**. 
 
 App đang chạy là bản React. Số phiên bản người dùng thấy nằm ở `src/lib/app-version.ts`. Điều khoản nằm ở `src/components/entry-gate.tsx`. Không có file HTML standalone.
 
-Đang chạy: **v2.10.1**, điều khoản `2026-11-06.1`, giá 9.000 / 39.000 / 99.000 đồng. Key của khách vẫn dùng được. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Mỗi lần nâng số phiên bản phải thêm một câu vào `CHANGELOG` trong `src/lib/app-version.ts`. Không code mục 14 trừ khi user yêu cầu đúng một việc. Không ghi token hay mật khẩu vào file.
+Đang chạy: **v2.19.1**, điều khoản `2026-11-08.3`, giá 9.000 / 39.000 / 99.000 đồng. Key của khách vẫn dùng được. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Mỗi lần nâng số phiên bản phải thêm một câu vào `CHANGELOG` trong `src/lib/app-version.ts`. Không code mục 14 trừ khi user yêu cầu đúng một việc. Không ghi token hay mật khẩu vào file.

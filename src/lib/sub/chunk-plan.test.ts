@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { chunkOverlapsPrevious, chunksFromSpans, spansFromEnergy } from "./chunk-plan.ts";
+import { chunkOverlapsPrevious, chunksFromSpans, energyThreshold, spansFromEnergy } from "./chunk-plan.ts";
 
 describe("cắt theo khoảng ngừng", () => {
   it("hai đoạn cách xa thành hai phần, không còn một khối 60 giây", () => {
@@ -26,5 +26,11 @@ describe("cắt theo khoảng ngừng", () => {
     assert.equal(long.length, 2);
     assert.ok(long[1][0] < 60);
     assert.equal(chunkOverlapsPrevious([[0, 16000 * 60], [16000 * 58, 16000 * 90]], 1), true);
+  });
+
+  it("file nói nhỏ hơn mốc cố định vẫn có đoạn", () => {
+    const levels = [0.001, 0.001, 0, 0, 0.0008];
+    const spans = spansFromEnergy(levels, 1, energyThreshold(levels));
+    assert.ok(spans.length >= 1);
   });
 });

@@ -6,6 +6,10 @@ import { deviceId } from "@/lib/device-id";
 import { exportNotice, roomAccess, trialFileProblem } from "@/lib/room-plans";
 import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
+import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
+import { formatMoney } from "@/lib/money-format";
+
+const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
 import { audioBufferTo16k, packAudio } from "@/lib/sub/codec";
 import {
   abortError,
@@ -26,7 +30,7 @@ import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { applyLineLocks, assignVoices, lineLockId, measurePitch } from "@/lib/sub/pitch-voice";
-import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, spansFromEnergy } from "@/lib/sub/chunk-plan";
+import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, energyThreshold, spansFromEnergy } from "@/lib/sub/chunk-plan";
 import { FILTER_RETRY_BUDGET_SECONDS, filterRejectKey, planFilterRetries, type FilterRetryReport } from "@/lib/sub/filter-retry";
 import { ingestAsrPart, keepRejectedCue, slicePcm, type AsrPartResult, type RawAsrPart, type RejectEntry } from "@/lib/sub/diagnostics";
 import {
@@ -228,6 +232,7 @@ export function usePipeline() {
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
   const [key, setKey] = useState("");
   const roomPayRef = useRef(false);
+  const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
   keyRef.current = key;
   const activeKey = () => (roomPayRef.current ? ROOM_KEY : keyRef.current.trim());
@@ -516,7 +521,7 @@ export function usePipeline() {
     say("Đã xóa. Bấm Tải và dịch để chạy lại.");
   }, [clearJob, say]);
 
-  const guardRoom = useCallback(async (paidOnly: string | null) => {
+  const guardRoom = useCallback(async (paidOnly: string | null, allowSpentTrial = false) => {
     const session = await authClient.getSession().catch(() => null);
     if (!session?.data?.user) {
       say("Chưa đăng nhập. Hãy đăng ký hoặc đăng nhập rồi mới tải và dịch.", true);
@@ -550,6 +555,7 @@ export function usePipeline() {
         return null;
       }
       if (access.kind === "locked") {
+        if (allowSpentTrial) return access;
         say(access.text, true);
         return null;
       }
@@ -602,6 +608,7 @@ export function usePipeline() {
       if (translation.trim()) {
         seg.translation = translation.trim();
         seg.translationFailed = false;
+        seg.edited = true;
       }
       let related = 0;
       if (rule.trim()) {
@@ -640,25 +647,32 @@ export function usePipeline() {
     if (analyzing) return say("Đang phân tích phim, chờ một chút.", true);
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return say("Trình duyệt này không hỗ trợ xử lý âm thanh. Hãy cập nhật trình duyệt.", true);
-    const access = await guardRoom(null);
+    const idNow = mediaId();
+    const continuingTrial = trialLease.current.spent && trialLease.current.media === idNow;
+    const access = await guardRoom(null, continuingTrial);
     if (!access) return;
+    let trialArm = false;
     if (!roomPayRef.current && access.kind !== "paid") {
-      const chosenFile = audioFile || file;
-      if (!chosenFile) return say("Bản dùng thử không nhận link. Hãy chọn một tệp trên máy.", true);
-      let seconds = 0;
-      try {
-        seconds = await readMediaSeconds(chosenFile);
-      } catch (error) {
-        return say(error instanceof Error ? error.message : "Không đọc được thời lượng tệp.", true);
-      }
-      const problem = trialFileProblem(seconds, chosenFile.size);
-      if (problem) return say(problem, true);
-      try {
-        await spendTrial();
-      } catch (error) {
-        return say(error instanceof Error ? error.message : "Hết lượt dùng thử.", true);
+      if (!continuingTrial) {
+        if (access.kind !== "trial") return say(access.text, true);
+        const chosenFile = audioFile || file;
+        if (!chosenFile) return say("Bản dùng thử không nhận link. Hãy chọn một tệp trên máy.", true);
+        let seconds = 0;
+        try {
+          seconds = await readMediaSeconds(chosenFile);
+        } catch (error) {
+          return say(error instanceof Error ? error.message : "Không đọc được thời lượng tệp.", true);
+        }
+        const problem = trialFileProblem(seconds, chosenFile.size);
+        if (problem) return say(problem, true);
+        trialArm = true;
       }
     }
+    const ensureTrial = async () => {
+      if (!trialArm || trialLease.current.spent) return;
+      await spendTrial();
+      trialLease.current = { media: idNow, spent: true };
+    };
 
     if (token !== ROOM_KEY) writeStore("gk", token);
     writeStore("glang", target);
@@ -672,6 +686,27 @@ export function usePipeline() {
     writeStore("gasr", asrModel);
     writeStore("gpre", pre ? "1" : "0");
     saveGloss(title, notes, gloss);
+
+    let ticketId: string | null = null;
+    let ticketFailed = false;
+    let releasePlayback = () => {};
+    if (roomPayRef.current) {
+      const chosenFile = audioFile || file;
+      if (!chosenFile) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
+      try {
+        const opened = await openRoomTicket({
+          fileName: chosenFile.name,
+          seconds: await readMediaSeconds(chosenFile),
+          asrModel,
+          chatModel: mode === "manual" ? chosen : "auto",
+        });
+        ticketId = opened.id;
+        releasePlayback = claimPlayback(ticketId);
+        say(`Đã giữ ${moneyText(opened.held)} (ước tính, số trừ là số thực, phần thừa trả lại). Số dư còn ${moneyText(opened.balance)}.`);
+      } catch (error) {
+        return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
+      }
+    }
 
     const j = job.current;
     const my = ++j.runId;
@@ -726,6 +761,7 @@ export function usePipeline() {
           signal,
           gate: j.gate,
           onWait,
+          ticket: ticketId,
         })
           .then((next) => {
             applyNameFixes(j.segs, next);
@@ -835,7 +871,8 @@ export function usePipeline() {
               j.note = `đoạn ${index + 1}: đang gửi ${Math.max(1, Math.round(packed.blob.size / 1024))} KB`;
               progress();
               const prompt = asrPrompt(title, gloss);
-              const res = await transcribe(packed, token, source, prompt, asrModel, signal, j.gate, onWait);
+              const res = await transcribe(packed, token, source, prompt, asrModel, signal, j.gate, onWait, ticketId);
+              await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, clip.length / SR) * asrUsd(asrModel);
               j.asrBuf.set(index, res);
@@ -899,7 +936,8 @@ export function usePipeline() {
               progress();
               const packed = await packAudio(heard, signal);
               throwIfAborted(signal);
-              const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait);
+              const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
+              await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, heard.length / SR) * asrUsd(asrModel);
               res = result;
@@ -962,7 +1000,8 @@ export function usePipeline() {
           j.filterRetryUsed += seconds;
           const packed = await packAudio(gated.samples, signal);
           throwIfAborted(signal);
-          const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait);
+          const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
+          await ensureTrial();
           if (my !== j.runId) return;
           j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
           const before = j.segs.length;
@@ -1010,6 +1049,7 @@ export function usePipeline() {
       const sig = `${target}|${modelSig}`;
       if (j.appliedSig && j.appliedSig !== sig) {
         for (const seg of j.segs) {
+          if (seg.edited) continue;
           seg.translation = null;
           seg.translationFailed = false;
         }
@@ -1133,6 +1173,7 @@ export function usePipeline() {
                   j.gate,
                   opts,
                   onWait,
+                  ticketId,
                 );
                 break;
               } catch (error) {
@@ -1161,6 +1202,7 @@ export function usePipeline() {
                   { ...opts, fix: true },
                   onWait,
                   settled.lines,
+                  ticketId,
                 );
                 const restored = restoreTerms(redo, again.restoreMap).map((line) => stripLeftoverPlaceholders(line));
                 settled.retryIndexes.forEach((index, k) => {
@@ -1311,7 +1353,7 @@ export function usePipeline() {
             if ((error as { name?: string })?.name === "AbortError") throw error;
             return streamParts(duration);
           }
-          let spans = spansFromEnergy(levels);
+          let spans = spansFromEnergy(levels, 1, energyThreshold(levels));
           if (j.pcm && vadRef.current) {
             try {
               j.note = "đang tìm đoạn có lời";
@@ -1323,6 +1365,10 @@ export function usePipeline() {
               if ((error as { name?: string })?.name === "AbortError") throw error;
               warnVad();
             }
+          }
+          if (!spans.length) {
+            j.note = "không thấy đoạn có tiếng, vẫn thử cả file. Hãy tăng âm lượng hoặc bật lọc tiếng người";
+            say("Không thấy đoạn nào có tiếng. File có thể thu quá nhỏ. Hãy tăng âm lượng hoặc bật lọc tiếng người rồi chạy lại.", true);
           }
           const planned = chunksToSamples(chunksFromSpans(spans, duration), totalSamples);
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
@@ -1398,10 +1444,13 @@ export function usePipeline() {
         say(canResume ? "Đã hủy. Bấm Tiếp tục để làm nốt. Phần đã nhận dạng không bị gửi lại." : "Đã hủy.");
         return;
       }
+      ticketFailed = true;
       if (j.forceOld && /giải mã được âm thanh theo đoạn/.test(err?.message || "")) clearJob();
       const why = j.streamWhy && /lớn hơn|dài hơn/.test(err?.message || "") ? ` (Đọc theo đoạn không dùng được vì: ${j.streamWhy}.)` : "";
       say(`Lỗi: ${err?.message || String(error)}${why}`, true);
     } finally {
+      releasePlayback();
+      await closeRoomTicket(ticketId, ticketFailed);
       try {
         await audioContext.close();
       } catch {
@@ -1540,10 +1589,22 @@ export function usePipeline() {
             escalate: true,
           }).id;
     if (!analysisModel) return say("Chưa chọn model dịch.", true);
+    let ticketId: string | null = null;
+    let releasePlayback = () => {};
+    if (roomPayRef.current) {
+      try {
+        const spanSeconds = Math.max(60, Math.ceil(Math.max(0, ...job.current.segs.map((seg) => seg.end))));
+        ticketId = (await openRoomTicket({ fileName: "Phân tích phim", seconds: spanSeconds, asrModel, chatModel: analysisModel })).id;
+        releasePlayback = claimPlayback(ticketId);
+      } catch (error) {
+        return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần phân tích.", true);
+      }
+    }
     setAnalyzing(true);
     say("Đang phân tích phim…");
     const controller = new AbortController();
     job.current.abort = controller;
+    let analysisFailed = false;
     try {
       const next = await analyzeFilm({
         key: token,
@@ -1556,6 +1617,7 @@ export function usePipeline() {
         signal: controller.signal,
         gate: job.current.gate,
         onWait: (message) => say(message),
+        ticket: ticketId,
       });
       applyNameFixes(job.current.segs, next);
       overlayCastLocks(next, title);
@@ -1572,15 +1634,18 @@ export function usePipeline() {
         say("Đã hủy phân tích.");
         return;
       }
+      analysisFailed = true;
       const failed: Bible = { failed: err?.message || String(error) };
       job.current.bible = failed;
       setBible(failed);
       say(`Không phân tích được: ${failed.failed}`, true);
     } finally {
+      releasePlayback();
+      await closeRoomTicket(ticketId, analysisFailed);
       if (job.current.abort === controller) job.current.abort = null;
       setAnalyzing(false);
     }
-  }, [allowEnterprise, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
+  }, [allowEnterprise, asrModel, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
 
   const retryFailed = useCallback(() => {
     void (async () => {
@@ -1716,6 +1781,19 @@ export function usePipeline() {
     const token = activeKey();
     if (!token) return say("Nhập API key trước khi gửi.", true);
     if (!confirm(formatGapConfirm(plan))) return;
+    let ticketId: string | null = null;
+    let gapFailed = false;
+    let releasePlayback = () => {};
+    if (roomPayRef.current) {
+      try {
+        ticketId = (
+          await openRoomTicket({ fileName: "Khoảng trống", seconds: Math.max(10, Math.ceil(plan.audioSeconds)), asrModel, chatModel: "auto" })
+        ).id;
+        releasePlayback = claimPlayback(ticketId);
+      } catch (error) {
+        return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần gửi khoảng trống.", true);
+      }
+    }
     const controller = new AbortController();
     const my = ++job.current.runId;
     job.current.abort = controller;
@@ -1745,10 +1823,10 @@ export function usePipeline() {
         say(`Đang nhận dạng ${fmt(start)}–${fmt(start + seconds)}. Chỉ khoảng đã xác nhận.`);
         const packed = await packAudio(gated.samples, signal);
         throwIfAborted(signal);
-        const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, (message) => say(message));
+        const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, (message) => say(message), ticketId);
         if (my !== j.runId) return;
         j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
-        j.gapSpent += seconds;
+        j.gapSpent += Math.max(10, seconds);
         sent++;
         const ingested = ingestAsrPart({
           partIndex: -1,
@@ -1781,8 +1859,11 @@ export function usePipeline() {
         say(sent ? "Đã hủy. Khoảng chưa gửi thì không bị tính thêm." : "Đã hủy. Chưa gửi khoảng nào.");
         return;
       }
+      gapFailed = true;
       say(err?.message || "Không nhận dạng được khoảng trống.", true);
     } finally {
+      releasePlayback();
+      await closeRoomTicket(ticketId, gapFailed);
       if (sent) {
         gapPlanRef.current = null;
         setGapPlanState(null);

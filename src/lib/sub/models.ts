@@ -119,7 +119,7 @@ export type PickInput = {
 };
 
 function known(id: string): boolean {
-  return BY_ID.has(id) || id.length > 0;
+  return BY_ID.has(id);
 }
 
 function allowed(id: string, input: PickInput, now: number): boolean {

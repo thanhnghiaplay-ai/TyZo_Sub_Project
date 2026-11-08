@@ -12,9 +12,10 @@
  * copying would have to land its temp in the target's directory, which is the
  * one thing a staged path is not allowed to do.
  */
-import { existsSync, mkdirSync, renameSync } from "node:fs";
+import { existsSync, mkdirSync, realpathSync, renameSync } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
+import { isMainModule } from "./with-app-env.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -32,6 +33,21 @@ function isInside(dir, file) {
   return rel !== "" && !rel.startsWith("..") && !isAbsolute(rel);
 }
 
+function located(file) {
+  const lexical = resolve(file);
+  try {
+    return [lexical, realpathSync(file)];
+  } catch {
+    return [lexical];
+  }
+}
+
+function isInsideEither(dir, file) {
+  const dirs = located(dir);
+  const files = located(file);
+  return files.some((item) => dirs.some((root) => isInside(root, item)));
+}
+
 /**
  * Why a staged path can be refused: `vite build` copies public/ verbatim into
  * the deployed app, so a temp that lands there ships (and an interrupted run
@@ -39,7 +55,7 @@ function isInside(dir, file) {
  */
 export function stagingError({ staged, target, publicDir }) {
   if (staged === target) return `staged file and target are the same path: ${target}`;
-  if (isInside(publicDir, staged)) {
+  if (isInsideEither(publicDir, staged)) {
     return `stage outside ${publicDir} (vite build ships that directory verbatim): ${staged}`;
   }
   return null;
@@ -68,7 +84,7 @@ export function handOver(staged, target, { rename = renameSync } = {}) {
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isMainModule(import.meta.url)) {
   const args = parseWriteAtomicArgs(process.argv.slice(2));
   if (args.error) {
     console.error(`[write-atomic] ${args.error}`);

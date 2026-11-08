@@ -154,7 +154,9 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
         <div className="grid gap-2 text-sm">
           <img src={order.qr} alt="Mã QR chuyển khoản" className="mx-auto h-52 w-52 rounded-xl bg-white p-2" />
           <p className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
-            Mã QR này là bản demo để xem giao diện. Chưa kết nối cổng thanh toán thật. Khi gắn cổng thật (Sepay/Casso đầy đủ), hệ thống sẽ dùng mã QR thật do cổng phát hành.
+            {order.qrLive
+              ? "Quét mã bằng ứng dụng ngân hàng. Nội dung chuyển khoản phải đúng mã bên dưới thì tiền mới tự cộng."
+              : "Ngân hàng này chưa lập được mã VietQR. Hãy chuyển khoản thủ công theo số tài khoản và nội dung bên dưới."}
           </p>
           <p>Ngân hàng: {order.bank}</p>
           <p>Số tài khoản: {order.account}</p>

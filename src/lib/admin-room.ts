@@ -75,17 +75,20 @@ function clip(value: string, max: number) {
 
 async function placeOf(userId: string): Promise<MyPlace> {
   const { getSql } = await import("@/lib/db");
-  const { emailIsOwner } = await import("@/lib/admin-allow.server");
+  const { ensureOwnerSeed } = await import("@/lib/admin-allow.server");
   const sql = await getSql();
+  await ensureOwnerSeed(sql);
   const staff = await sql<{ role: string }>`select role from room_staff where user_id = ${userId}`;
   const account = await sql<{ status: string; status_reason: string }>`
     select status, status_reason from room_accounts where user_id = ${userId}
   `;
-  const user = await sql<{ email: string }>`select email from "user" where id = ${userId}`;
+  const user = await sql<{ email: string; verified: boolean }>`select email, "emailVerified" as verified from "user" where id = ${userId}`;
   const email = user[0]?.email ?? "";
-  const staffRole = isStaffRole(staff[0]?.role) ? staff[0].role : null;
+  const found = isStaffRole(staff[0]?.role) ? staff[0].role : null;
+  // Quyền Chủ chỉ có hiệu lực khi email đã xác minh.
+  const staffRole = found === "chu" && !user[0]?.verified ? null : found;
   return {
-    role: emailIsOwner(email) ? "chu" : staffRole,
+    role: staffRole,
     status: asStanding(account[0]?.status),
     reason: account[0]?.status_reason ?? "",
     email,
@@ -128,7 +131,6 @@ async function writeAudit(actorId: string, action: string, targetId: string | nu
 async function assertLower(actorId: string, targetUserId: string) {
   const actor = await placeOf(actorId);
   const { getSql } = await import("@/lib/db");
-  const { emailIsOwner } = await import("@/lib/admin-allow.server");
   const sql = await getSql();
   const target = await sql<{ email: string; role: string | null }>`
     select u.email, s.role from "user" u
@@ -136,7 +138,7 @@ async function assertLower(actorId: string, targetUserId: string) {
     where u.id = ${targetUserId}
   `;
   if (!target.length) throw new Error("Không thấy tài khoản.");
-  if (emailIsOwner(target[0].email)) throw new Error("Không xử lý tài khoản Chủ.");
+  if (target[0].role === "chu") throw new Error("Không xử lý tài khoản Chủ.");
   const targetRole = isStaffRole(target[0].role) ? target[0].role : null;
   if (!outranks(actor.role, targetRole)) throw new Error("Không xử lý người cùng cấp hoặc cấp trên.");
 }
@@ -227,10 +229,12 @@ export const setOwnerEmail = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }) => {
     await requireRole(context.userId, "chu");
-    const { writeOwnerEmails } = await import("@/lib/admin-allow.server");
-    const owners = writeOwnerEmails([data]);
-    await writeAudit(context.userId, "doi-email-chu", null, owners[0] ?? "");
-    return { owners };
+    const { getSql } = await import("@/lib/db");
+    const { transferOwner } = await import("@/lib/admin-allow.server");
+    const sql = await getSql();
+    await transferOwner(sql, context.userId, data);
+    await writeAudit(context.userId, "doi-email-chu", null, data);
+    return { owners: [data] };
   });
 
 
@@ -254,7 +258,6 @@ export const searchUsers = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<AdminUser[]> => {
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
-    const { emailIsOwner } = await import("@/lib/admin-allow.server");
     const sql = await getSql();
     const safe = data.replace(/[%_]/g, "");
     const like = `%${safe}%`;
@@ -305,7 +308,7 @@ export const searchUsers = createServerFn({ method: "POST" })
       status: asStanding(row.status),
       reason: row.status_reason ?? "",
       note: row.staff_note ?? "",
-      role: emailIsOwner(row.email) ? "chu" : isStaffRole(row.role) ? row.role : null,
+      role: isStaffRole(row.role) ? row.role : null,
     }));
   });
 
@@ -394,7 +397,6 @@ export const setUserStatus = createServerFn({ method: "POST" })
     const actor = await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const { emailIsOwner } = await import("@/lib/admin-allow.server");
     const target = await sql<{ email: string; role: string | null; status: string | null }>`
       select u.email, s.role, a.status
       from "user" u
@@ -403,7 +405,7 @@ export const setUserStatus = createServerFn({ method: "POST" })
       where u.id = ${data.userId}
     `;
     if (!target.length) throw new Error("Không thấy tài khoản.");
-    if (emailIsOwner(target[0].email)) throw new Error("Không xử lý tài khoản Chủ.");
+    if (target[0].role === "chu") throw new Error("Không xử lý tài khoản Chủ.");
     const targetRole = isStaffRole(target[0].role) ? target[0].role : null;
     if (!outranks(actor.role, targetRole)) throw new Error("Không xử lý người cùng cấp hoặc cấp trên.");
     if (targetRole === "chu") throw new Error("Không khóa hoặc cấm Chủ.");
@@ -430,7 +432,7 @@ export const grantPlan = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }) => {
     if (!data.userId) throw new Error("Thiếu tài khoản.");
-    await requireRole(context.userId, "quan-ly");
+    const place = await requireRole(context.userId, "quan-ly");
     await assertLower(context.userId, data.userId);
     const plan = roomPlan(data.planId)!;
     const { getSql } = await import("@/lib/db");
@@ -447,7 +449,7 @@ export const grantPlan = createServerFn({ method: "POST" })
     `;
     await sql`
       insert into room_ledger (user_id, kind, amount, note)
-      values (${data.userId}, 'goi', 0, ${"Admin mở gói " + plan.name})
+      values (${data.userId}, 'goi', 0, ${"Admin " + place.email + " mở gói " + plan.name})
     `;
     await writeAudit(context.userId, "mo-goi", data.userId, plan.name);
     return { ok: true };
@@ -465,11 +467,9 @@ export const setStaffRole = createServerFn({ method: "POST" })
     if (data.userId === context.userId) throw new Error("Không đổi quyền của chính bạn.");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
-    const { emailIsOwner } = await import("@/lib/admin-allow.server");
     const sql = await getSql();
     const person = await sql<{ email: string }>`select email from "user" where id = ${data.userId}`;
     if (!person.length) throw new Error("Không thấy tài khoản.");
-    if (emailIsOwner(person[0].email)) throw new Error("Không đổi quyền Chủ.");
     const target = await sql<{ role: string }>`select role from room_staff where user_id = ${data.userId}`;
     if (target[0]?.role === "chu") throw new Error("Không đổi quyền Chủ.");
     if (data.role === "none") {
@@ -493,19 +493,48 @@ export const removeUser = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }) => {
     if (data === context.userId) throw new Error("Không xóa tài khoản của chính bạn.");
-    await requireRole(context.userId, "chu");
+    const place = await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
-    const { emailIsOwner } = await import("@/lib/admin-allow.server");
     const sql = await getSql();
     const person = await sql<{ email: string; role: string }>`
       select u.email, s.role from "user" u left join room_staff s on s.user_id = u.id where u.id = ${data}
     `;
     if (!person.length) throw new Error("Không thấy tài khoản.");
-    if (emailIsOwner(person[0].email) || person[0].role === "chu") throw new Error("Không xóa Chủ.");
+    if (person[0].role === "chu") throw new Error("Không xóa Chủ.");
+    let holds: { id: string }[] = [];
+    try {
+      holds = await sql<{ id: string }>`
+        select id from run_tickets where user_id = ${data} and status = 'dang-giu' and held > 0
+      `;
+    } catch {
+      holds = [];
+    }
+    const { releaseHoldWith } = await import("@/lib/pay-flow");
+    for (const row of holds) {
+      try {
+        await releaseHoldWith(sql, row.id, `Nhả khoản giữ khi xóa tài khoản, bởi ${place.email}`);
+      } catch {
+        /* phiếu đã đổi trạng thái */
+      }
+    }
     await sql`delete from room_staff where user_id = ${data}`;
-    await sql`delete from room_ledger where user_id = ${data}`;
-    await sql`delete from room_accounts where user_id = ${data}`;
+    await sql`update pay_orders set status = 'cancelled' where user_id = ${data} and status in ('pending', 'claimed')`;
     await sql`update room_appeals set user_id = null where user_id = ${data}`;
+    try {
+      await sql`delete from trial_devices where user_id = ${data}`;
+    } catch {
+      /* bảng có sau lần xây mới */
+    }
+    try {
+      await sql`delete from room_presence where user_id = ${data}`;
+    } catch {
+      /* bảng có sau lần xây mới */
+    }
+    try {
+      await sql`delete from room_notices where user_id = ${data}`;
+    } catch {
+      /* bảng có sau lần xây mới */
+    }
     const gone = await sql<{ id: string }>`delete from "user" where id = ${data} returning id`;
     if (!gone.length) throw new Error("Không thấy tài khoản.");
     await writeAudit(context.userId, "xoa-tai-khoan", data, "Xóa tài khoản");
@@ -731,6 +760,8 @@ export const submitPublicAppeal = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const { getSql } = await import("@/lib/db");
+    const { limitPublicAppeal } = await import("@/lib/appeal-rate.server");
+    await limitPublicAppeal(data.email);
     const sql = await getSql();
     const user = await sql<{ id: string }>`select id from "user" where lower(email) = ${data.email}`;
     await insertAppeal(data.email, data.body, user[0]?.id ?? null);
@@ -819,7 +850,12 @@ export const listOwnAppeals = createServerFn({ method: "GET" })
     const sql = await getSql();
     const rows = await sql<{ id: number; status: string; hold_role: string; touched_at: unknown; reply: string }>`
       select id, status, hold_role, touched_at, reply from room_appeals
-      where user_id = ${context.userId} or lower(email) = ${place.email.toLowerCase()}
+      where user_id = ${context.userId}
+        or (
+          user_id is null
+          and lower(email) = ${place.email.toLowerCase()}
+          and exists (select 1 from "user" u where u.id = ${context.userId} and u."emailVerified" = true)
+        )
       order by id desc limit 5
     `;
     return rows.map((row) => ({
@@ -845,9 +881,7 @@ export const getOrg = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<{ cards: OrgCard[]; users: number }> => {
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
-    const { ownerEmails } = await import("@/lib/admin-allow.server");
     const sql = await getSql();
-    const owners = new Set(ownerEmails().map((email) => email.toLowerCase()));
     const people = await sql<{ id: string; email: string; name: string; role: string | null; nickname: string | null }>`
       select u.id, u.email, u.name, s.role, s.nickname
       from "user" u
@@ -860,13 +894,13 @@ export const getOrg = createServerFn({ method: "GET" })
     `;
     const byActor = new Map(counts.map((row) => [row.actor_id, row.n]));
     const cards = people
-      .filter((person) => isStaffRole(person.role) || owners.has(person.email.toLowerCase()))
+      .filter((person) => isStaffRole(person.role))
       .map((person) => ({
         id: person.id,
         email: person.email,
         name: person.name,
         nickname: person.nickname || "",
-        role: (owners.has(person.email.toLowerCase()) ? "chu" : isStaffRole(person.role) ? person.role : "user") as OrgCard["role"],
+        role: (isStaffRole(person.role) ? person.role : "user") as OrgCard["role"],
         actions: byActor.get(person.id) ?? 0,
       }));
     return { cards, users: Math.max(0, people.length - cards.length) };
@@ -883,12 +917,11 @@ export const setNickname = createServerFn({ method: "POST" })
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const existing = await sql<{ role: string }>`select role from room_staff where user_id = ${data.userId}`;
-    if (existing.length) {
-      await sql`update room_staff set nickname = ${data.nickname} where user_id = ${data.userId}`;
-    } else {
-      await sql`insert into room_staff (user_id, role, nickname) values (${data.userId}, 'chu', ${data.nickname})`;
-    }
+    // Chỉ đặt tên cho nhân viên đã có. Không bao giờ tạo dòng quyền mới ở đây (trước đây tạo nhầm Chủ).
+    const updated = await sql<{ user_id: string }>`
+      update room_staff set nickname = ${data.nickname} where user_id = ${data.userId} returning user_id
+    `;
+    if (!updated.length) throw new Error("Chỉ đặt tên gợi nhớ cho nhân viên. Hãy cấp quyền trước.");
     await writeAudit(context.userId, "ten-goi-nho", data.userId, data.nickname || "Xóa tên gợi nhớ");
     return { ok: true };
   });
@@ -913,9 +946,9 @@ export const getMoney = createServerFn({ method: "POST" })
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
     // Doanh thu thực nhận = tiền nạp qua cổng (Sepay/Casso). Không tính tiền thử.
     const revenue = await sql<{ bucket: string; amount: number }>`
-      select to_char(date_trunc(${data}::text, created_at), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      select to_char(date_trunc(${data}::text, created_at at time zone 'Asia/Ho_Chi_Minh'), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
       from room_ledger
-      where kind = 'nap' and created_at > now() - ${window}::interval
+      where kind = 'nap' and note not like 'Nạp thủ công%' and created_at > now() - ${window}::interval
       group by 1 order by 1
     `;
     const costs = await sql<{ bucket: string; amount: number }>`
@@ -984,6 +1017,11 @@ export const addCost = createServerFn({ method: "POST" })
 
 export const resetTestMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
+  .validator((code: string) => {
+    const value = code?.trim().toUpperCase() ?? "";
+    if (!/^[A-Z2-9]{6}$/.test(value)) throw new Error("Hãy nhập đúng mã xác nhận 6 ký tự.");
+    return value;
+  })
   .handler(async ({ context }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
@@ -1050,7 +1088,7 @@ export const setUserBalance = createServerFn({ method: "POST" })
     return { userId, balance };
   })
   .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "chu");
+    const place = await requireRole(context.userId, "chu");
     await assertLower(context.userId, data.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -1060,7 +1098,7 @@ export const setUserBalance = createServerFn({ method: "POST" })
     await sql`insert into room_accounts (user_id, balance) values (${data.userId}, ${data.balance}) on conflict (user_id) do update set balance = ${data.balance}`;
     await sql`
       insert into room_ledger (user_id, kind, amount, note)
-      values (${data.userId}, 'dieu-chinh', ${delta}, ${"Admin đặt số dư " + data.balance + " đ"})
+      values (${data.userId}, 'dieu-chinh', ${delta}, ${"Admin " + place.email + " đặt số dư " + data.balance + " đ"})
     `;
     await writeAudit(context.userId, "dat-so-du", data.userId, `Đặt số dư ${data.balance} (trước ${prev})`);
     return { ok: true as const };
@@ -1116,7 +1154,7 @@ export type RunTicket = {
 export type RunDeskView = {
   desk: RunDesk;
   models: string[] | null;
-  key: string;
+  keyTail: string;
   holding: number;
   charged: number;
   errors: number;
@@ -1196,7 +1234,7 @@ export const getRunDesk = createServerFn({ method: "GET" })
     return {
       desk: parseRunDesk(saved[0]?.value),
       models: parseModelList(models[0]?.value),
-      key: place.role === "chu" ? storedKey[0]?.value || "" : "",
+      keyTail: place.role === "chu" && storedKey[0]?.value ? storedKey[0].value.slice(-4) : "",
       holding: Number(row?.holding ?? 0),
       charged: Number(row?.charged ?? 0),
       errors: Number(row?.errors ?? 0),
@@ -1263,27 +1301,15 @@ export const releaseRunHold = createServerFn({ method: "POST" })
     return ticket;
   })
   .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "quan-ly");
+    const place = await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const rows = await sql<{ user_id: string; held: number; status: string }>`
-      select user_id, held, status from run_tickets where id = ${data}
-    `;
+    const rows = await sql<{ user_id: string }>`select user_id from run_tickets where id = ${data}`;
     const ticket = rows[0];
     if (!ticket) throw new Error("Không có phiếu này.");
-    if (ticket.status !== "dang-giu" || ticket.held < 1) throw new Error("Phiếu này không còn khoản đang giữ.");
     await assertLower(context.userId, ticket.user_id);
-    await sql`insert into room_accounts (user_id) values (${ticket.user_id}) on conflict (user_id) do nothing`;
-    await sql`update room_accounts set balance = balance + ${ticket.held} where user_id = ${ticket.user_id}`;
-    await sql`
-      update run_tickets
-      set released = released + held, held = 0, status = 'da-nha'
-      where id = ${data}
-    `;
-    await sql`
-      insert into room_ledger (user_id, kind, amount, note)
-      values (${ticket.user_id}, 'nha', ${ticket.held}, ${"Nhả khoản giữ phiếu " + data})
-    `;
+    const { releaseHoldWith } = await import("@/lib/pay-flow");
+    await releaseHoldWith(sql, data, `Nhả khoản giữ phiếu ${data} bởi ${place.email}`);
     await writeAudit(context.userId, "nha-giu", ticket.user_id, data);
     return { ok: true };
   });
@@ -1300,7 +1326,7 @@ export const refundRun = createServerFn({ method: "POST" })
     return { id, amount, reason };
   })
   .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "quan-ly");
+    const place = await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const rows = await sql<{ user_id: string; charged: number; refunded: number }>`
@@ -1308,21 +1334,9 @@ export const refundRun = createServerFn({ method: "POST" })
     `;
     const ticket = rows[0];
     if (!ticket) throw new Error("Không có phiếu này.");
-    const left = ticket.charged - ticket.refunded;
-    if (data.amount > left) throw new Error("Không hoàn quá số đã trừ.");
     await assertLower(context.userId, ticket.user_id);
-    const done = ticket.refunded + data.amount >= ticket.charged;
-    await sql`insert into room_accounts (user_id) values (${ticket.user_id}) on conflict (user_id) do nothing`;
-    await sql`update room_accounts set balance = balance + ${data.amount} where user_id = ${ticket.user_id}`;
-    if (done) {
-      await sql`update run_tickets set refunded = refunded + ${data.amount}, status = 'da-hoan' where id = ${data.id}`;
-    } else {
-      await sql`update run_tickets set refunded = refunded + ${data.amount} where id = ${data.id}`;
-    }
-    await sql`
-      insert into room_ledger (user_id, kind, amount, note)
-      values (${ticket.user_id}, 'hoan', ${data.amount}, ${data.reason})
-    `;
+    const { refundRunWith } = await import("@/lib/pay-flow");
+    await refundRunWith(sql, data.id, data.amount, `Admin ${place.email}: ${data.reason}`);
     await writeAudit(context.userId, "hoan-vi", ticket.user_id, `${data.id} ${data.amount} ${data.reason}`);
     return { ok: true };
   });

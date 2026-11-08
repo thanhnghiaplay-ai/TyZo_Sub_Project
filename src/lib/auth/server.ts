@@ -37,6 +37,7 @@ import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
 import { ensureDbReady, getPglite } from "../db";
 import { emailAndPasswordEnabled } from "./email-password";
+import { mailerName, sendMail, verificationMail } from "./mailer";
 import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
 import { pgliteDialect } from "./pglite-dialect";
@@ -199,6 +200,11 @@ const grokOAuthPlugin = authConfigured
     })
   : null;
 
+const mailReady = mailerName(process.env) !== null;
+if (emailAndPasswordEnabled && !mailReady && process.env.DATABASE_URL?.trim()) {
+  console.error("[auth] Chưa cấu hình gửi thư (MAIL_FROM và một khóa nhà cung cấp): email đăng ký chưa được xác minh, và không ai là Chủ qua đăng nhập mật khẩu.");
+}
+
 export const auth = betterAuth({
   baseURL,
   // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
@@ -239,7 +245,23 @@ export const auth = betterAuth({
   session: { cookieCache: { enabled: true, maxAge: 300 } },
 
   // Local email/password — toggled only via `./email-password` (not a plugin).
-  ...(emailAndPasswordEnabled ? { emailAndPassword: { enabled: true } } : {}),
+  // Bắt buộc xác minh email khi đã cấu hình nhà cung cấp gửi thư (xem ./mailer). Chưa cấu hình thì không
+  // thể bắt buộc, nếu không không ai đăng nhập bằng mật khẩu được; lúc đó quyền Chủ vẫn đòi email đã xác minh.
+  ...(emailAndPasswordEnabled
+    ? { emailAndPassword: { enabled: true, requireEmailVerification: mailReady } }
+    : {}),
+  ...(mailReady
+    ? {
+        emailVerification: {
+          sendOnSignUp: true,
+          sendOnSignIn: true,
+          autoSignInAfterVerification: true,
+          sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
+            await sendMail(verificationMail(user.email, url));
+          },
+        },
+      }
+    : {}),
 
   // `__Host-` prefixed cookies: the browser REFUSES any same-named cookie that
   // carries a `Domain` attribute, so a sibling `*.grok.me` app cannot "toss" a

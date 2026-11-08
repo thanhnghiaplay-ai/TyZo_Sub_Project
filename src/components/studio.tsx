@@ -46,10 +46,10 @@ const FIELD =
 
 function stamp(seconds: number | null): string {
   if (seconds == null || !Number.isFinite(seconds)) return "—";
-  const s = Math.max(0, seconds);
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const rem = (s % 60).toFixed(1).padStart(4, "0");
+  const total = Math.max(0, Math.round(seconds * 10) / 10);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const rem = (total % 60).toFixed(1).padStart(4, "0");
   return (h ? `${h}:${String(m).padStart(2, "0")}` : String(m)) + ":" + rem;
 }
 
@@ -260,7 +260,7 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
             a.href = url;
             a.download = "glossary.csv";
             a.click();
-            URL.revokeObjectURL(url);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
           }}
         >
           Xuất CSV
@@ -336,15 +336,18 @@ function loadSub(): SubStyle {
 function loadNarration(): NarrationSettings {
   try {
     const raw = localStorage.getItem("gnarr");
-    if (!raw) return NARRATION_DEFAULT;
+    const version = localStorage.getItem("gnarr_v");
+    if (!raw) {
+      localStorage.setItem("gnarr_v", "4");
+      return NARRATION_DEFAULT;
+    }
     const parsed = JSON.parse(raw) as Partial<NarrationSettings>;
     const merged = { ...NARRATION_DEFAULT, ...parsed };
     if (merged.engine === "edge" && merged.gender === "any") merged.gender = "female";
-    const version = localStorage.getItem("gnarr_v");
     if (version === "4") return merged;
     localStorage.setItem("gnarr_v", "4");
-    merged.enabled = true;
-    merged.lead = 0;
+    if (parsed.enabled === undefined) merged.enabled = true;
+    if (parsed.lead === undefined) merged.lead = 0;
     if (parsed.matchCast === undefined) merged.matchCast = true;
     return merged;
   } catch {
@@ -416,6 +419,19 @@ export function Studio() {
   useEffect(() => {
     if (!narration.enabled) narrator.current.stop(app.videoRef.current);
   }, [narration.enabled, app.videoRef]);
+  useEffect(() => {
+    const voice = narrator.current;
+    return () => voice.stop(app.videoRef.current);
+  }, [app.videoRef]);
+  useEffect(() => {
+    if (product !== "account") return;
+    app.videoRef.current?.pause();
+  }, [product, app.videoRef]);
+  useEffect(() => {
+    if (!runDoor.ready || runDoor.open) return;
+    setPayByRoom(false);
+    app.setRoomPay(false);
+  }, [runDoor.ready, runDoor.open, app.setRoomPay]);
 
   const pasteKey = async () => {
     try {
@@ -580,10 +596,9 @@ export function Studio() {
             Đăng xuất
           </button>
         </div>
-      ) : product === "account" ? (
-        <AccountPanel />
       ) : (
-      <div className="contents">
+      <>
+      <div className={product === "account" ? "hidden" : "contents"}>
       {place?.status === "locked" && (
         <form
           className="grid gap-2 rounded-xl border border-line bg-card p-3"
@@ -594,7 +609,7 @@ export function Studio() {
                 setAppeal("");
                 setAppealNotice("Đã gửi yêu cầu xem lại.");
               })
-              .catch(() => setAppealNotice("Chưa gửi được yêu cầu."));
+              .catch((error) => setAppealNotice(error instanceof Error && error.message ? error.message : "Chưa gửi được yêu cầu."));
           }}
         >
           <p className="text-sm">Tài khoản đang bị khóa{place.reason ? `: ${place.reason}` : ""}. Bạn vẫn gửi được yêu cầu, nhưng không dịch và không xuất file.</p>
@@ -735,14 +750,16 @@ export function Studio() {
           </button>
         </div>
       <section id="tool-key" role="tabpanel" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
-        {runDoor.open ? (
+        {!runDoor.ready ? (
+          <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
+        ) : runDoor.open ? (
           <div className="grid gap-2">
             <h2 className="text-sm font-semibold">Cách trả Groq</h2>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
               </button>
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(true); app.setRoomPay(true); }}>
+              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
                 Trả theo lượt
               </button>
             </div>
@@ -1251,6 +1268,8 @@ export function Studio() {
         </div>
       )}
       </div>
+      {product === "account" && <AccountPanel />}
+      </>
       )}
     </main>
   );
@@ -1538,13 +1557,15 @@ function Stage({
       onPauseRef.current();
       show();
     };
+    const onVolume = () => setMuted(video.muted || video.volume === 0);
+    const onRate = () => setRate(video.playbackRate);
     video.addEventListener("play", onPlay);
     video.addEventListener("pause", onPauseVideo);
     video.addEventListener("ended", onPauseVideo);
     video.addEventListener("timeupdate", paint);
     video.addEventListener("loadedmetadata", paint);
-    video.addEventListener("volumechange", () => setMuted(video.muted || video.volume === 0));
-    video.addEventListener("ratechange", () => setRate(video.playbackRate));
+    video.addEventListener("volumechange", onVolume);
+    video.addEventListener("ratechange", onRate);
     return () => {
       cancelAnimationFrame(raf);
       video.removeEventListener("play", onPlay);
@@ -1552,6 +1573,8 @@ function Stage({
       video.removeEventListener("ended", onPauseVideo);
       video.removeEventListener("timeupdate", paint);
       video.removeEventListener("loadedmetadata", paint);
+      video.removeEventListener("volumechange", onVolume);
+      video.removeEventListener("ratechange", onRate);
     };
   }, [videoRef]);
 
@@ -1637,7 +1660,8 @@ function Stage({
     const onKey = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       const el = event.target as HTMLElement | null;
-      if (el?.closest("input,textarea,select,[contenteditable=true]")) return;
+      if (el?.closest("input,textarea,select,[contenteditable=true],button,a,[role=tab],[role=tablist],dialog")) return;
+      if (document.querySelector("dialog[open]")) return;
       const video = videoRef.current;
       if (!video?.currentSrc) return;
       const key = event.key;
@@ -1884,8 +1908,8 @@ function Stage({
             label="Xoay"
             onClick={() => {
               const next = full && ar % 2 === 0 ? "portrait" : "landscape";
-              const orientation = screen.orientation as ScreenOrientation & { lock?: (type: string) => Promise<void> };
-              void orientation.lock?.(next).catch(() => {});
+              const orientation = typeof screen !== "undefined" ? (screen.orientation as (ScreenOrientation & { lock?: (type: string) => Promise<void> }) | undefined) : undefined;
+              void orientation?.lock?.(next).catch(() => {});
             }}
           >
             <RotateCw className="size-4" />

@@ -5,11 +5,11 @@ import type { PriceOverride } from "@/lib/run-desk";
 export const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {}, offered: null };
 
 export function useRunDoor() {
-  const [door, setDoor] = useState<RunDoorView>(DOOR_OPEN);
+  const [door, setDoor] = useState<RunDoorView & { ready: boolean }>({ ...DOOR_OPEN, ready: false });
   useEffect(() => {
     void getRunDoor()
-      .then(setDoor)
-      .catch(() => setDoor(DOOR_OPEN));
+      .then((next) => setDoor({ ...next, ready: true }))
+      .catch(() => setDoor({ ...DOOR_OPEN, ready: true }));
   }, []);
   return door;
 }
