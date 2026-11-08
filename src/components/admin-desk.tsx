@@ -47,6 +47,73 @@ function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
+function AppealForm({
+  item,
+  role,
+  busy,
+  run,
+}: {
+  item: AppealRow;
+  role: NonNullable<MyPlace["role"]>;
+  busy: boolean;
+  run: (task: () => Promise<unknown>, done: string) => Promise<void>;
+}) {
+  const [replyText, setReplyText] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const dot = item.tone === "red" ? "#e15b64" : item.tone === "yellow" ? "#e0a100" : "#2f9e6b";
+  return (
+    <div className="mt-2 grid gap-2">
+      <p className="text-xs" style={{ color: dot }}>
+        {item.waitLabel}
+      </p>
+      <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
+      <div className="flex flex-wrap gap-2">
+        {["Lần này trừ đúng số phút đã chạy. Đơn giá là giá tại lúc bấm chạy.", "Phần giữ thừa đã trả vào số dư.", "Đoạn lỗi không tính tiền.", "Tệp không còn trên phòng. Hãy chọn lại tệp trên máy nếu muốn chạy tiếp.", "Cửa trả theo lượt đang đóng. Key của bạn vẫn dùng được."].map((line) => (
+          <button key={line} type="button" className="rounded-full border border-line px-3 py-1 text-left text-xs" onClick={() => setReplyText(line)}>
+            {line}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {mayReply(role, item.holdRole) && (
+          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(async () => { await sendAppealReply({ data: { id: item.id, reply: replyText } }); setReplyText(""); }, "Đã trả lời và đóng yêu cầu.")}>
+            Trả lời
+          </button>
+        )}
+        {role !== "chu" && (
+          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => escalateAppeal({ data: item.id }), "Đã báo cấp trên. Yêu cầu vẫn mở.")}>
+            Báo cấp trên
+          </button>
+        )}
+        {canSkipToOwner(new Date(item.touchedAt).getTime(), Date.now(), item.holdRole) && (
+          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => skipAppeal({ data: item.id }), "Đã báo Chủ.")}>
+            Báo Chủ
+          </button>
+        )}
+        {roleAtLeast(role, "quan-ly") && mayReply(role, item.holdRole) && (
+          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => replyAppeal({ data: { id: item.id, status: "mo", reply: replyText || "Đã mở lại tài khoản." } }), "Đã mở lại và đóng yêu cầu.")}>
+            Mở lại
+          </button>
+        )}
+      </div>
+      {roleAtLeast(role, "quan-ly") && mayReply(role, item.holdRole) && (
+        <div className="grid gap-2">
+          <textarea value={rejectReason} onChange={(event) => setRejectReason(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do từ chối, bắt buộc" />
+          <button type="button" disabled={rejectReason.trim().length < 8} className="min-tap w-fit rounded-full border border-line px-3 disabled:opacity-40" onClick={() => void run(async () => { await replyAppeal({ data: { id: item.id, status: "tu-choi", reply: rejectReason.trim() } }); setRejectReason(""); }, "Đã từ chối và gửi lý do cho khách.")}>
+            Từ chối
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function mayReply(role: string, hold: string) {
+  if (role === "chu") return true;
+  if (role === "quan-ly") return hold === "quan-ly";
+  return hold === "ho-tro";
+}
+
 export function AdminDesk() {
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [stats, setStats] = useState<DeskStats | null>(null);
@@ -68,8 +135,6 @@ export function AdminDesk() {
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [tab, setTab] = useState<"viec" | "so-do" | "tien">("viec");
-  const [replyText, setReplyText] = useState("");
-  const [rejectReason, setRejectReason] = useState("");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -208,7 +273,7 @@ export function AdminDesk() {
         <div className="flex flex-wrap gap-2 border-b border-line bg-bg py-2">
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
-          <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>
+          {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
         </div>
       )}
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
@@ -401,6 +466,7 @@ export function AdminDesk() {
                       </button>
                     )}
                   </div>
+                  {role === "chu" && (
                   <div>
                     <button type="button" className="text-sm text-muted underline" onClick={() => setPriceOpen((v) => !v)}>
                       {priceOpen ? "Ẩn giá biểu gói" : "Hiện giá biểu gói"}
@@ -415,6 +481,7 @@ export function AdminDesk() {
                       </div>
                     )}
                   </div>
+                  )}
                   {roleAtLeast(role, "chu") && (
                     <>
                       <label className="grid gap-1 text-sm">
@@ -493,7 +560,7 @@ export function AdminDesk() {
             <h2 className="font-semibold">Yêu cầu</h2>
             {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}
             {appeals.map((item) => (
-              <article key={item.id} data-appeal-id={item.id} className="rounded-xl border border-line px-3 py-2 text-sm">
+              <article key={item.id} data-appeal-id={item.id} className={"rounded-xl border border-line px-3 py-2 text-sm" + (role === "chu" && item.holdRole !== "chu" ? " opacity-70" : "")}>
                 <button type="button" className="w-full text-left" onClick={() => void openByEmail(item.email)}>
                   <span className="block font-medium">{item.email}</span>
                   <span className="mt-1 block">{item.body}</span>
@@ -502,55 +569,7 @@ export function AdminDesk() {
                     {item.reply ? ` · ${item.reply}` : ""} · {ROLE_LABEL[item.holdRole as "ho-tro"] || "Hỗ trợ"}
                   </span>
                 </button>
-                {item.status === "cho" && (
-                  <div className="mt-2 grid gap-2">
-                    <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "Lần này trừ đúng số phút đã chạy. Đơn giá là giá tại lúc bấm chạy.",
-                        "Phần giữ thừa đã trả vào số dư.",
-                        "Đoạn lỗi không tính tiền.",
-                        "Tệp không còn trên phòng. Hãy chọn lại tệp trên máy nếu muốn chạy tiếp.",
-                        "Cửa trả theo lượt đang đóng. Key của bạn vẫn dùng được.",
-                      ].map((line) => (
-                        <button key={line} type="button" className="rounded-full border border-line px-3 py-1 text-left text-xs" onClick={() => setReplyText(line)}>
-                          {line}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(async () => { await sendAppealReply({ data: { id: item.id, reply: replyText } }); setReplyText(""); }, "Đã trả lời và đóng yêu cầu.")}>
-                        Trả lời
-                      </button>
-                      <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => escalateAppeal({ data: item.id }), "Đã báo cấp trên. Yêu cầu vẫn mở.")}>
-                        Báo cấp trên
-                      </button>
-                      {canSkipToOwner(new Date(item.touchedAt).getTime(), Date.now(), item.holdRole) && (
-                        <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => skipAppeal({ data: item.id }), "Đã báo Chủ.")}>
-                          Báo Chủ
-                        </button>
-                      )}
-                      {roleAtLeast(role, "quan-ly") && (
-                        <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => replyAppeal({ data: { id: item.id, status: "mo", reply: replyText || "Đã mở lại tài khoản." } }), "Đã mở lại và đóng yêu cầu.")}>
-                          Mở lại
-                        </button>
-                      )}
-                    </div>
-                    {roleAtLeast(role, "quan-ly") && (
-                      <div className="grid gap-2">
-                        <textarea value={rejectReason} onChange={(event) => setRejectReason(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do từ chối, bắt buộc" />
-                        <button
-                          type="button"
-                          disabled={rejectReason.trim().length < 8}
-                          className="min-tap w-fit rounded-full border border-line px-3 disabled:opacity-40"
-                          onClick={() => void run(async () => { await replyAppeal({ data: { id: item.id, status: "tu-choi", reply: rejectReason.trim() } }); setRejectReason(""); }, "Đã từ chối và gửi lý do cho khách.")}
-                        >
-                          Từ chối
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {item.status === "cho" && role && <AppealForm item={item} role={role} busy={busy} run={run} />}
               </article>
             ))}
           </section>

@@ -52,8 +52,8 @@ export function payTurnNotice(
   const access = roomAccess(input, now);
   const until = input.planUntil ? new Date(input.planUntil) : null;
   const expired = Boolean(input.plan && until && !Number.isNaN(until.getTime()) && until.getTime() <= now);
-  if (access.kind === "paid") return "Đang chọn trả theo lượt. Lần chạy dùng key của phòng. Hạn gói thuê không bị trừ.";
-  if (expired) return "Gói thuê đã hết hạn. Cửa trả theo lượt vẫn mở: lần chạy dùng key của phòng, không tính theo hạn gói.";
+  if (access.kind === "paid") return "Đang chọn trả theo lượt. Tiền trừ trong ví. Số ngày của gói thuê không bị trừ.";
+  if (expired) return "Gói thuê đã hết hạn. Cửa trả theo lượt vẫn mở, tiền trừ trong ví, không trừ vào số ngày của gói.";
   if (access.kind === "trial") return "Bản dùng thử không dùng cửa trả theo lượt. Hãy chọn key của bạn, hoặc mua gói thuê phòng.";
   return "Chưa có hạn dùng. Cửa trả theo lượt chưa mở cho tài khoản này.";
 }

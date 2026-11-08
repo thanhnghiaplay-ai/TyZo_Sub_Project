@@ -1,8 +1,13 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.19.2";
+export const APP_VERSION = "2.20.0";
 
 /** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
 export const CHANGELOG: { version: string; time: string; text: string }[] = [
+  {
+    version: "2.20.0",
+    time: "06:40 ngày 09/11/2026",
+    text: "Giá biểu, doanh thu và mở gói chỉ Chủ thấy. Mỗi yêu cầu có ô trả lời riêng. Số trong email không còn bị chèn dấu chấm. Câu trả theo lượt nói rõ tiền trừ trong ví, không trừ ngày gói. Số dư hiện khoản đang giữ. Yêu cầu quá hạn tự chuyển cấp: Hỗ trợ 30 phút, Quản lý 90 phút, rồi tới Chủ. Câu trả lời có chức vụ và tên gợi nhớ. Máy chủ đặt ở Singapore.",
+  },
   {
     version: "2.19.2",
     time: "20:28 ngày 08/11/2026",

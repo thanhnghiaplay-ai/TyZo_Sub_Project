@@ -3,7 +3,7 @@ import { listMyNotices, markNoticeRead, type NoticeRow } from "@/lib/admin-room"
 import { formatMoney } from "@/lib/money-format";
 
 function formatBody(body: string) {
-  return body.replace(/(\d{4,})/g, (match) => formatMoney(match));
+  return body.replace(/(?<![\p{L}\d.])(\d{4,})(?![\p{L}\d@])/gu, (match) => formatMoney(match));
 }
 
 export function NoticeBell({ desk = false }: { desk?: boolean }) {
@@ -23,7 +23,7 @@ export function NoticeBell({ desk = false }: { desk?: boolean }) {
 
   useEffect(() => {
     void load();
-    const timer = window.setInterval(() => void load(), 20000);
+    const timer = window.setInterval(() => void load(), 45000);
     return () => window.clearInterval(timer);
   }, [desk]);
 
@@ -75,7 +75,7 @@ export function NoticeBell({ desk = false }: { desk?: boolean }) {
               <li key={item.id}>
                 <button
                   type="button"
-                  className="flex w-full items-start gap-2 rounded-xl border border-line px-2 py-2 text-left hover:bg-raised"
+                  className={"flex w-full items-start gap-2 rounded-xl border border-line px-2 py-2 text-left hover:bg-raised" + (desk && item.kind !== "chu" && item.kind !== "viec" && item.kind !== "user" ? " opacity-60" : "")}
                   onClick={() => openNotice(item)}
                 >
                   <span className={"notice-dot" + (item.read ? "" : " on")} aria-hidden="true" />

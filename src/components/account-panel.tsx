@@ -142,6 +142,9 @@ export function AccountPanel() {
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>
             <p className="text-2xl font-semibold text-accent">{dong(state?.balance ?? 0)}</p>
+            {(state?.holding ?? 0) > 0 && (
+              <p className="text-sm text-muted">Đang giữ {dong(state?.holding ?? 0)} cho lần chạy chưa xong. Quá 6 giờ không chạy tiếp thì số này trả về số dư.</p>
+            )}
             <p className="mt-2 text-sm">
               {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>

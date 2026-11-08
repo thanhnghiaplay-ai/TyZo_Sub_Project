@@ -38,8 +38,8 @@ describe("hạn gói", () => {
   });
 
   it("trả theo lượt không lấy câu của gói hết hạn", () => {
-    assert.match(payTurnNotice({ plan: "ngay", planUntil: "2026-11-05T09:00:00.000Z", trialLeft: 0 }, now), /không tính theo hạn gói/);
-    assert.match(payTurnNotice({ plan: "tuan", planUntil: "2026-11-06T10:00:00.000Z", trialLeft: 0 }, now), /Hạn gói thuê không bị trừ/);
+    assert.match(payTurnNotice({ plan: "ngay", planUntil: "2026-11-05T09:00:00.000Z", trialLeft: 0 }, now), /tiền trừ trong ví/);
+    assert.match(payTurnNotice({ plan: "tuan", planUntil: "2026-11-06T10:00:00.000Z", trialLeft: 0 }, now), /Số ngày của gói thuê không bị trừ/);
     assert.match(payTurnNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), /Bản dùng thử/);
   });
 });

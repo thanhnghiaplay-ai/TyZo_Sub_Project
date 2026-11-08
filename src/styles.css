@@ -531,9 +531,10 @@
   z-index: 30;
   top: 2.6rem;
   right: 0;
-  width: min(18rem, 70vw);
-  max-height: 16rem;
+  width: min(18rem, calc(100vw - 1.5rem));
+  max-height: min(16rem, 50dvh);
   overflow: auto;
+  overflow-wrap: anywhere;
   border: 1px solid var(--color-line);
   border-radius: 1rem;
   background: var(--color-card);

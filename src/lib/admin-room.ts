@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
-import { canSeeLog, isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
+import { isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
 import { checkRunDesk, dayStartIso, parseModelList, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
 
@@ -43,6 +43,9 @@ export type AppealRow = {
   createdAt: string;
   holdRole: string;
   touchedAt: string;
+  leftMin: number;
+  tone: "green" | "yellow" | "red";
+  waitLabel: string;
 };
 
 export type AuditRow = {
@@ -431,7 +434,7 @@ export const grantPlan = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }) => {
     if (!data.userId) throw new Error("Thiếu tài khoản.");
-    const place = await requireRole(context.userId, "quan-ly");
+    const place = await requireRole(context.userId, "chu");
     await assertLower(context.userId, data.userId);
     const plan = roomPlan(data.planId)!;
     const { getSql } = await import("@/lib/db");
@@ -540,12 +543,68 @@ export const removeUser = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+function holdWindowMin(hold: string, hasManager: boolean) {
+  if (hold === "quan-ly") return 90;
+  if (hold === "ho-tro") return hasManager ? 30 : 120;
+  return 0;
+}
+
+function appealPace(hold: string, touchedAt: string, hasManager: boolean): { leftMin: number; tone: "green" | "yellow" | "red"; waitLabel: string } {
+  const windowMin = holdWindowMin(hold, hasManager);
+  if (!windowMin) return { leftMin: 0, tone: "red" as const, waitLabel: "Cần Chủ xử lý" };
+  const left = Math.max(0, windowMin - Math.floor((Date.now() - new Date(touchedAt).getTime()) / 60000));
+  const tone = left === 0 ? "red" : left * 3 <= windowMin ? "yellow" : "green";
+  const who = hold === "quan-ly" ? "Quản lý" : "Hỗ trợ";
+  return { leftMin: left, tone, waitLabel: `Đang ở: ${who} · còn ${left} phút` };
+}
+
+function mayAnswer(role: string | null, hold: string) {
+  if (role === "chu") return true;
+  if (role === "quan-ly") return hold === "quan-ly";
+  if (role === "ho-tro") return hold === "ho-tro";
+  return false;
+}
+
+async function signedReply(sql: Awaited<ReturnType<typeof import("@/lib/db").getSql>>, userId: string, role: string, text: string) {
+  const rows = await sql<{ nickname: string }>`select nickname from room_staff where user_id = ${userId}`;
+  const nick = rows[0]?.nickname?.trim() ?? "";
+  const label = role === "chu" ? "ADMIN" : role === "quan-ly" ? "QUẢN LÝ" : "HỖ TRỢ";
+  const who = nick ? `${label} · ${nick}` : label;
+  return `${text}\n— ${who}`.slice(0, 500);
+}
+
+async function sweepAppeals(sql: Awaited<ReturnType<typeof import("@/lib/db").getSql>>) {
+  const managers = await sql<{ n: number }>`select count(*)::int as n from room_staff where role = 'quan-ly'`;
+  const hasManager = Number(managers[0]?.n ?? 0) > 0;
+  const hoMinutes = hasManager ? 30 : 120;
+  const moved = await sql<{ id: number; email: string; body: string; user_id: string | null; hold_role: string }>`
+    update room_appeals
+    set hold_role = case when hold_role = 'ho-tro' and ${hasManager ? 1 : 0} = 1 then 'quan-ly' else 'chu' end,
+        touched_at = now()
+    where status = 'cho'
+      and (
+        (hold_role = 'ho-tro' and touched_at < now() - make_interval(mins => ${hoMinutes}::int))
+        or (hold_role = 'quan-ly' and touched_at < now() - make_interval(mins => 90))
+      )
+    returning id, email, body, user_id, hold_role
+  `;
+  for (const row of moved) {
+    await writeNotice(row.hold_role, "Việc chuyển lên", `${row.email}\n${row.body}`, null, row.id);
+    await writeNotice("user", "Đã báo cấp trên", "Yêu cầu của bạn đã được chuyển lên cấp cao hơn. Khi có trả lời, bạn sẽ thấy ở chuông.", row.user_id, row.id);
+  }
+}
+
 export const listAppeals = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<AppealRow[]> => {
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
+    await sweepAppeals(sql);
+    const place = await placeOf(context.userId);
+    const role = place.role ?? "";
+    const managers = await sql<{ n: number }>`select count(*)::int as n from room_staff where role = 'quan-ly'`;
+    const hasManager = Number(managers[0]?.n ?? 0) > 0;
     const rows = await sql<{
       id: number;
       email: string;
@@ -559,12 +618,18 @@ export const listAppeals = createServerFn({ method: "GET" })
       select id, email, body, status, reply, created_at, hold_role, touched_at
       from room_appeals
       where status = 'cho'
-      order by id desc limit 40
+        and (
+          ${role} = 'chu'
+          or (${role} = 'ho-tro' and coalesce(hold_role, 'ho-tro') = 'ho-tro')
+          or (${role} = 'quan-ly' and hold_role = 'quan-ly')
+        )
+      order by case when coalesce(hold_role, 'ho-tro') = 'chu' then 0 else 1 end, id desc
+      limit 40
     `;
-    const place = await placeOf(context.userId);
-    return rows
-      .filter((row) => place.role === "chu" || row.hold_role === "ho-tro" || (place.role === "quan-ly" && row.hold_role !== "chu"))
-      .map((row) => ({
+    return rows.map((row) => {
+      const touchedAt = stamp(row.touched_at || row.created_at);
+      const pace = appealPace(row.hold_role || "ho-tro", touchedAt, hasManager);
+      return {
         id: row.id,
         email: row.email,
         body: row.body,
@@ -572,8 +637,12 @@ export const listAppeals = createServerFn({ method: "GET" })
         reply: row.reply,
         createdAt: stamp(row.created_at),
         holdRole: row.hold_role || "ho-tro",
-        touchedAt: stamp(row.touched_at || row.created_at),
-      }));
+        touchedAt,
+        leftMin: pace.leftMin,
+        tone: pace.tone,
+        waitLabel: pace.waitLabel,
+      };
+    });
   });
 
 export const replyAppeal = createServerFn({ method: "POST" })
@@ -586,12 +655,17 @@ export const replyAppeal = createServerFn({ method: "POST" })
     return { id: Number(input.id), status: input.status, reply };
   })
   .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "quan-ly");
+    const place = await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
+    const current = await sql<{ hold_role: string }>`select hold_role from room_appeals where id = ${data.id} and status = 'cho'`;
+    if (!current.length) throw new Error("Yêu cầu này đã được trả lời.");
+    const hold = current[0].hold_role || "ho-tro";
+    if (!mayAnswer(place.role, hold)) throw new Error("Việc này không nằm ở cấp của bạn.");
+    const reply = await signedReply(sql, context.userId, place.role ?? "quan-ly", data.reply);
     const updated = await sql<{ id: number }>`
-      update room_appeals set status = ${data.status}, reply = ${data.reply}, touched_at = now()
-      where id = ${data.id} and status = 'cho'
+      update room_appeals set status = ${data.status}, reply = ${reply}, touched_at = now()
+      where id = ${data.id} and status = 'cho' and coalesce(hold_role, 'ho-tro') = ${hold}
       returning id
     `;
     if (!updated.length) throw new Error("Yêu cầu này đã được trả lời.");
@@ -604,8 +678,8 @@ export const replyAppeal = createServerFn({ method: "POST" })
         where user_id = ${userId} and status = 'locked'
       `;
     }
-    await writeNotice("user", data.status === "mo" ? "Đã mở lại tài khoản" : "Đã từ chối", data.reply, userId, data.id);
-    await writeAudit(context.userId, `yeu-cau-${data.status}`, String(data.id), data.reply);
+    await writeNotice("user", data.status === "mo" ? "Đã mở lại tài khoản" : "Đã từ chối", reply, userId, data.id);
+    await writeAudit(context.userId, `yeu-cau-${data.status}`, String(data.id), reply);
     return { ok: true };
   });
 
@@ -627,11 +701,16 @@ export const listAudit = createServerFn({ method: "GET" })
       target_email: string;
     }>`
       select id, action, target_id, note, created_at, actor_email, actor_role, target_email
-      from room_audit order by id desc limit 80
+      from room_audit
+      where (
+        ${place.role ?? ""} = 'chu'
+        or (${place.role ?? ""} = 'quan-ly' and actor_role in ('ho-tro', 'user'))
+        or (${place.role ?? ""} = 'ho-tro' and coalesce(actor_role, 'user') = 'user')
+      )
+      order by id desc
+      limit 80
     `;
-    return rows
-      .filter((row) => place.role && canSeeLog(place.role, row.actor_role || "user"))
-      .map((row) => ({
+    return rows.map((row) => ({
         id: row.id,
         action: row.action,
         targetId: row.target_id,
@@ -643,7 +722,7 @@ export const listAudit = createServerFn({ method: "GET" })
       }));
   });
 
-export type NoticeRow = { id: number; title: string; body: string; createdAt: string; read: boolean; appealId: number | null };
+export type NoticeRow = { id: number; title: string; body: string; createdAt: string; read: boolean; appealId: number | null; kind: string };
 
 export const listMyNotices = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -653,20 +732,21 @@ export const listMyNotices = createServerFn({ method: "POST" })
     if (data.desk && !place.role) return { unread: 0, items: [] };
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
+    if (data.desk && place.role) await sweepAppeals(sql);
     const rank = place.role ?? "";
     const rows = data.desk
-      ? await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null }>`
-          select id, title, body, created_at, read_at, appeal_id from room_notices
+      ? await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null; kind: string }>`
+          select id, title, body, created_at, read_at, appeal_id, kind from room_notices
           where (
             (${rank} = 'chu' and kind in ('ho-tro', 'quan-ly', 'chu', 'viec'))
-            or (${rank} = 'quan-ly' and kind in ('ho-tro', 'quan-ly', 'viec'))
+            or (${rank} = 'quan-ly' and kind in ('quan-ly', 'viec'))
             or (${rank} = 'ho-tro' and kind = 'ho-tro')
           )
           order by id desc
           limit 20
         `
-      : await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null }>`
-          select id, title, body, created_at, read_at, appeal_id from room_notices
+      : await sql<{ id: number; title: string; body: string; created_at: unknown; read_at: unknown; appeal_id: number | null; kind: string }>`
+          select id, title, body, created_at, read_at, appeal_id, kind from room_notices
           where kind = 'user' and user_id = ${context.userId}
           order by id desc
           limit 20
@@ -678,8 +758,10 @@ export const listMyNotices = createServerFn({ method: "POST" })
       createdAt: stamp(row.created_at),
       read: Boolean(row.read_at),
       appealId: row.appeal_id,
+      kind: row.kind,
     }));
-    return { unread: items.filter((item) => !item.read).length, items };
+    const unread = items.filter((item) => !item.read && (rank !== "chu" || item.kind === "chu" || item.kind === "viec")).length;
+    return { unread, items };
   });
 
 export const markNoticeRead = createServerFn({ method: "POST" })
@@ -775,17 +857,22 @@ export const sendAppealReply = createServerFn({ method: "POST" })
     return { id: Number(input.id), reply };
   })
   .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "ho-tro");
+    const place = await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
+    const current = await sql<{ hold_role: string }>`select hold_role from room_appeals where id = ${data.id} and status = 'cho'`;
+    if (!current.length) throw new Error("Yêu cầu này đã được trả lời.");
+    const hold = current[0].hold_role || "ho-tro";
+    if (!mayAnswer(place.role, hold)) throw new Error("Việc này không nằm ở cấp của bạn.");
+    const reply = await signedReply(sql, context.userId, place.role ?? "ho-tro", data.reply);
     const updated = await sql<{ user_id: string | null }>`
-      update room_appeals set status = 'xong', reply = ${data.reply}, touched_at = now()
-      where id = ${data.id} and status = 'cho'
+      update room_appeals set status = 'xong', reply = ${reply}, touched_at = now()
+      where id = ${data.id} and status = 'cho' and coalesce(hold_role, 'ho-tro') = ${hold}
       returning user_id
     `;
     if (!updated.length) throw new Error("Yêu cầu này đã được trả lời.");
-    await writeNotice("user", "Đã có trả lời", data.reply, updated[0].user_id, data.id);
-    await writeAudit(context.userId, "tra-loi", String(data.id), data.reply);
+    await writeNotice("user", "Đã có trả lời", reply, updated[0].user_id, data.id);
+    await writeAudit(context.userId, "tra-loi", String(data.id), reply);
     return { ok: true };
   });
 
@@ -939,7 +1026,7 @@ export const getMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((span: string) => (span === "week" || span === "month" || span === "year" ? span : "day"))
   .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number; breakdown: MoneyBreakdown }> => {
-    await requireRole(context.userId, "ho-tro");
+    await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
@@ -1229,13 +1316,15 @@ export const getRunDesk = createServerFn({ method: "GET" })
       order by t.created_at desc
       limit 20
     `;
+    const owner = place.role === "chu";
     const row = totals[0];
+    const desk = parseRunDesk(saved[0]?.value);
     return {
-      desk: parseRunDesk(saved[0]?.value),
-      models: parseModelList(models[0]?.value),
-      keyTail: place.role === "chu" && storedKey[0]?.value ? storedKey[0].value.slice(-4) : "",
-      holding: Number(row?.holding ?? 0),
-      charged: Number(row?.charged ?? 0),
+      desk: owner ? desk : { maintenance: desk.maintenance, note: desk.note, cap: 0, markup: 0, custom: {} },
+      models: owner ? parseModelList(models[0]?.value) : [],
+      keyTail: owner && storedKey[0]?.value ? storedKey[0].value.slice(-4) : "",
+      holding: owner ? Number(row?.holding ?? 0) : 0,
+      charged: owner ? Number(row?.charged ?? 0) : 0,
       errors: Number(row?.errors ?? 0),
       recent: recent.map(ticketOf),
     };
