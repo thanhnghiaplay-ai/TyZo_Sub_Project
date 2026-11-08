@@ -24,15 +24,28 @@ async function user(id: string, email: string, verified: boolean) {
 
 describe("quyền Chủ nằm trong database", () => {
   const previous = process.env.ADMIN_EMAIL;
+  const previousFrom = process.env.MAIL_FROM;
+  const previousKey = process.env.RESEND_API_KEY;
   beforeEach(async () => {
     await sql`delete from room_staff`;
     await sql`delete from "user"`;
     delete process.env.ADMIN_EMAIL;
+    delete process.env.MAIL_FROM;
+    delete process.env.RESEND_API_KEY;
   });
   afterEach(() => {
     if (previous == null) delete process.env.ADMIN_EMAIL;
     else process.env.ADMIN_EMAIL = previous;
+    if (previousFrom == null) delete process.env.MAIL_FROM;
+    else process.env.MAIL_FROM = previousFrom;
+    if (previousKey == null) delete process.env.RESEND_API_KEY;
+    else process.env.RESEND_API_KEY = previousKey;
   });
+
+  function mailOn() {
+    process.env.MAIL_FROM = "TyZo <a@b.vn>";
+    process.env.RESEND_API_KEY = "test";
+  }
 
   it("không có dòng role chu thì không ai là Chủ, kể cả khi email giống biến môi trường cũ", async () => {
     await user("a", "chu@tyzo.test", true);
@@ -40,7 +53,14 @@ describe("quyền Chủ nằm trong database", () => {
     assert.deepEqual(await ownerEmails(sql), []);
   });
 
-  it("có dòng chu nhưng email chưa xác minh thì không phải Chủ", async () => {
+  it("chưa gửi được thư thì Chủ chưa xác minh vẫn vào được", async () => {
+    await user("a", "chu@tyzo.test", false);
+    await sql`insert into room_staff (user_id, role) values ('a', 'chu')`;
+    assert.equal(await isOwnerId(sql, "a"), true);
+  });
+
+  it("đã gửi được thư thì Chủ chưa xác minh không được tính", async () => {
+    mailOn();
     await user("a", "chu@tyzo.test", false);
     await sql`insert into room_staff (user_id, role) values ('a', 'chu')`;
     assert.equal(await isOwnerId(sql, "a"), false);
@@ -53,7 +73,14 @@ describe("quyền Chủ nằm trong database", () => {
     assert.deepEqual(await ownerEmails(sql), ["chu@tyzo.test"]);
   });
 
-  it("ADMIN_EMAIL chỉ khởi tạo khi chưa có Chủ và phải đã xác minh", async () => {
+  it("chưa gửi được thư thì ADMIN_EMAIL khởi tạo cả email chưa xác minh", async () => {
+    process.env.ADMIN_EMAIL = "Chu@TyZo.test";
+    await user("a", "chu@tyzo.test", false);
+    assert.equal(await isOwnerId(sql, "a"), true);
+  });
+
+  it("đã gửi được thư thì ADMIN_EMAIL chỉ khởi tạo email đã xác minh", async () => {
+    mailOn();
     process.env.ADMIN_EMAIL = "Chu@TyZo.test";
     await user("a", "chu@tyzo.test", false);
     assert.equal(await isOwnerId(sql, "a"), false);
@@ -71,7 +98,8 @@ describe("quyền Chủ nằm trong database", () => {
     assert.equal(await isOwnerId(sql, "a"), false);
   });
 
-  it("chuyển quyền cho email chưa đăng ký hoặc chưa xác minh thì báo lỗi", async () => {
+  it("đã gửi được thư thì chuyển quyền cho email chưa đăng ký hoặc chưa xác minh thì báo lỗi", async () => {
+    mailOn();
     await user("a", "chu@tyzo.test", true);
     await user("c", "chua@tyzo.test", false);
     await assert.rejects(transferOwner(sql, "a", "khong-co@tyzo.test"), /Chưa có tài khoản/);

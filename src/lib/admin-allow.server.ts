@@ -1,11 +1,13 @@
 import type { Sql } from "./db.ts";
+import { mailerName } from "./auth/mailer.ts";
 
 /**
- * Quyền Chủ nằm trong database: bảng room_staff, role = 'chu', và email của tài khoản đó phải
- * đã xác minh. Không còn email ghi cứng trong mã và không còn file .grok/admin.json.
+ * Quyền Chủ nằm trong database: bảng room_staff, role = 'chu'.
+ * Khi phòng đã cấu hình gửi thư, email Chủ phải đã xác minh.
+ * Khi chưa gửi được thư thì không ai xác minh được, nên Chủ vẫn được tính để không khóa cửa Admin.
  *
- * Biến môi trường ADMIN_EMAIL chỉ dùng để khởi tạo lần đầu: khi CHƯA có Chủ nào đã xác minh, tài khoản
- * đã xác minh có đúng email đó được ghi vào room_staff. Chuyển quyền xong thì biến này không đòi lại quyền.
+ * Biến môi trường ADMIN_EMAIL chỉ dùng để khởi tạo lần đầu: khi CHƯA có Chủ nào,
+ * tài khoản có đúng email đó được ghi vào room_staff. Chuyển quyền xong thì biến này không đòi lại quyền.
  */
 
 export function bootstrapEmail() {
@@ -13,38 +15,67 @@ export function bootstrapEmail() {
   return value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? value : "";
 }
 
+/** Đã cấu hình gửi thư thì Chủ phải có email đã xác minh. */
+export function ownerMustBeVerified() {
+  return mailerName(process.env) !== null;
+}
+
 export async function ensureOwnerSeed(sql: Sql) {
   const email = bootstrapEmail();
   if (!email) return;
-  const existing = await sql<{ n: number }>`
-    select count(*)::int as n from room_staff s join "user" u on u.id = s.user_id
-    where s.role = 'chu' and u."emailVerified" = true
-  `;
+  const verifiedOnly = ownerMustBeVerified();
+  const existing = verifiedOnly
+    ? await sql<{ n: number }>`
+        select count(*)::int as n from room_staff s join "user" u on u.id = s.user_id
+        where s.role = 'chu' and u."emailVerified" = true
+      `
+    : await sql<{ n: number }>`
+        select count(*)::int as n from room_staff s join "user" u on u.id = s.user_id
+        where s.role = 'chu'
+      `;
   if (Number(existing[0]?.n ?? 0) > 0) return;
+  if (verifiedOnly) {
+    await sql`
+      insert into room_staff (user_id, role)
+      select u.id, 'chu' from "user" u where lower(u.email) = ${email} and u."emailVerified" = true
+      on conflict (user_id) do update set role = 'chu'
+    `;
+    return;
+  }
   await sql`
     insert into room_staff (user_id, role)
-    select u.id, 'chu' from "user" u where lower(u.email) = ${email} and u."emailVerified" = true
+    select u.id, 'chu' from "user" u where lower(u.email) = ${email}
     on conflict (user_id) do update set role = 'chu'
   `;
 }
 
-/** Tài khoản này là Chủ không: có dòng role='chu' và email đã xác minh. */
+/** Tài khoản này là Chủ không. */
 export async function isOwnerId(sql: Sql, userId: string) {
   await ensureOwnerSeed(sql);
-  const rows = await sql<{ ok: boolean }>`
-    select true as ok from room_staff s join "user" u on u.id = s.user_id
-    where s.user_id = ${userId} and s.role = 'chu' and u."emailVerified" = true
-  `;
+  const rows = ownerMustBeVerified()
+    ? await sql<{ ok: boolean }>`
+        select true as ok from room_staff s join "user" u on u.id = s.user_id
+        where s.user_id = ${userId} and s.role = 'chu' and u."emailVerified" = true
+      `
+    : await sql<{ ok: boolean }>`
+        select true as ok from room_staff s join "user" u on u.id = s.user_id
+        where s.user_id = ${userId} and s.role = 'chu'
+      `;
   return rows.length > 0;
 }
 
-/** Email các Chủ đã xác minh. */
+/** Email các Chủ. Khi đã gửi được thư thì chỉ lấy email đã xác minh. */
 export async function ownerEmails(sql: Sql) {
   await ensureOwnerSeed(sql);
-  const rows = await sql<{ email: string }>`
-    select lower(u.email) as email from room_staff s join "user" u on u.id = s.user_id
-    where s.role = 'chu' and u."emailVerified" = true
-  `;
+  const rows = ownerMustBeVerified()
+    ? await sql<{ email: string }>`
+        select lower(u.email) as email from room_staff s join "user" u on u.id = s.user_id
+        where s.role = 'chu' and u."emailVerified" = true
+      `
+    : await sql<{ email: string }>`
+        select lower(u.email) as email from room_staff s join "user" u on u.id = s.user_id
+        where s.role = 'chu'
+      `;
   return rows.map((row) => row.email);
 }
 
@@ -57,7 +88,7 @@ export async function transferOwner(sql: Sql, fromUserId: string, email: string)
     select id, "emailVerified" as verified from "user" where lower(email) = ${email.trim().toLowerCase()}
   `;
   if (!target.length) throw new Error("Chưa có tài khoản nào dùng email này.");
-  if (!target[0].verified) throw new Error("Email này chưa xác minh, chưa thể làm Chủ.");
+  if (!target[0].verified && ownerMustBeVerified()) throw new Error("Email này chưa xác minh, chưa thể làm Chủ.");
   await sql`
     insert into room_staff (user_id, role) values (${target[0].id}, 'chu')
     on conflict (user_id) do update set role = 'chu'

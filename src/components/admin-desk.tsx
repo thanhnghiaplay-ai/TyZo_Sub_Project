@@ -202,7 +202,7 @@ export function AdminDesk() {
           <RoleChip role={role} />
         </div>
       ) : (
-        <p className="text-sm text-muted">Không có quyền vào trang này.</p>
+        <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
       {role && (
         <div className="flex flex-wrap gap-2 border-b border-line bg-bg py-2">

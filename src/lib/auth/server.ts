@@ -246,7 +246,7 @@ export const auth = betterAuth({
 
   // Local email/password — toggled only via `./email-password` (not a plugin).
   // Bắt buộc xác minh email khi đã cấu hình nhà cung cấp gửi thư (xem ./mailer). Chưa cấu hình thì không
-  // thể bắt buộc, nếu không không ai đăng nhập bằng mật khẩu được; lúc đó quyền Chủ vẫn đòi email đã xác minh.
+  // thể bắt buộc, nếu không không ai đăng nhập bằng mật khẩu được. Lúc chưa gửi được thư, quyền Chủ không đòi email đã xác minh.
   ...(emailAndPasswordEnabled
     ? { emailAndPassword: { enabled: true, requireEmailVerification: mailReady } }
     : {}),

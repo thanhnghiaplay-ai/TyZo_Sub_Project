@@ -16,6 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.19.1 trên nhánh `main` |
+| Bản đang làm | v2.19.2 trên nhánh `work`: Chủ vào lại được Admin khi phòng chưa gửi được thư |
 | Điều khoản | 2026-11-08.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |

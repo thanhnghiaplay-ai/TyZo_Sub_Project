@@ -75,7 +75,7 @@ function clip(value: string, max: number) {
 
 async function placeOf(userId: string): Promise<MyPlace> {
   const { getSql } = await import("@/lib/db");
-  const { ensureOwnerSeed } = await import("@/lib/admin-allow.server");
+  const { ensureOwnerSeed, ownerMustBeVerified } = await import("@/lib/admin-allow.server");
   const sql = await getSql();
   await ensureOwnerSeed(sql);
   const staff = await sql<{ role: string }>`select role from room_staff where user_id = ${userId}`;
@@ -85,8 +85,7 @@ async function placeOf(userId: string): Promise<MyPlace> {
   const user = await sql<{ email: string; verified: boolean }>`select email, "emailVerified" as verified from "user" where id = ${userId}`;
   const email = user[0]?.email ?? "";
   const found = isStaffRole(staff[0]?.role) ? staff[0].role : null;
-  // Quyền Chủ chỉ có hiệu lực khi email đã xác minh.
-  const staffRole = found === "chu" && !user[0]?.verified ? null : found;
+  const staffRole = found === "chu" && ownerMustBeVerified() && !user[0]?.verified ? null : found;
   return {
     role: staffRole,
     status: asStanding(account[0]?.status),
