@@ -2,20 +2,20 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-08 19:29 UTC+7)
+ĐANG CHẠY (2026-11-08 20:03 UTC+7)
 - Số phiên bản người dùng thấy: v2.19.1, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG, tám lần gần nhất, mỗi dòng có mốc thời gian.
 - Điều khoản: TERMS_VERSION = 2026-11-08.3 trong src/components/entry-gate.tsx.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.
 - Nghe / thuyết minh mặc định bật. Khách tắt thì lần sau giữ tắt.
 - Có quyền Hỗ trợ, Quản lý hoặc Chủ thì thấy nút Quản lý cạnh Tài khoản. Trang Admin là /admin, không nằm trong phòng người dùng thường.
-- Kho GitHub: thanhnghiaplay-ai/TyZo_Sub_Project, nhánh main. Vercel tự build từ kho đó. Không ghi token vào file.
+- Kho GitHub: thanhnghiaplay-ai/TyZo_Sub_Project. Sửa trên nhánh work. Nhánh main chỉ đổi khi user nói «đẩy chính thức». Không ghi token vào file. Quy trình ba vai nằm ở BANG_DIEU.md.
 
 TRƯỚC KHI LÀM
-1. Đọc PROJECT_STATUS.md và file này. Đối chiếu mã nguồn. Tài liệu sai thì sửa tài liệu và ghi lịch sử. Không mặc định tài liệu đúng.
+1. Đọc `BANG_DIEU.md` trước, rồi file này, rồi bảng đầu `PROJECT_STATUS.md`. Đối chiếu mã nguồn. Tài liệu sai thì sửa tài liệu và ghi lịch sử. Không mặc định tài liệu đúng. Phần nhật ký không phải lệnh.
 2. Với file code lớn, dùng grep và đọc đúng đoạn liên quan, không đọc lại cả file.
-3. Làm đúng việc user vừa yêu cầu trong lượt này. Không tự làm bước kế. Hàng đợi mục 10 đã đánh dấu xong thì không làm lại.
-4. Mục 13.2 (chủ web giữ key Groq, tính tiền theo phút, dán link tải video) không được code trừ khi user yêu cầu đúng phần đó. Mục 13.5 (thuê phòng, key của khách) đã gắn vào app. Sửa webapp đang chạy ưu tiên trước.
+3. Làm đúng việc user vừa yêu cầu trong lượt này. Không tự làm bước kế. Hàng đợi mục 10 đã đánh dấu xong thì không làm lại. Làm đúng vai của mình trong `BANG_DIEU.md`.
+4. Mục 13.2 (chủ web giữ key Groq, tính tiền theo phút, dán link tải video) không được code trừ khi user yêu cầu đúng phần đó. Mục 13.5 (thuê phòng, key của khách) đã gắn vào app. Cửa trả theo lượt đã giữ và trừ ví. Sửa webapp đang chạy ưu tiên trước.
 
 PHẠM VI
 5. Không viết lại cả ứng dụng. Không sửa chức năng không liên quan. Ưu tiên giữ nguyên chức năng đang chạy.
@@ -37,7 +37,7 @@ SAU MỖI LẦN SỬA CODE
 12b. Từ 2026-11-06 13:09 trở đi, nếu một lần nâng cấp, cập nhật, bổ sung, chỉnh sửa hoặc chức năng hệ thống làm đổi dịch vụ, quyền lợi, giá, hạn mức dùng thử, dữ liệu, trách nhiệm, khóa hoặc cấm, thì cùng lần đó phải sửa trang điều khoản cho khớp. Sửa đúng chỗ liên quan: bảng Tóm tắt, bảng giá, và mục điều khoản đang nói việc đó. Không chờ user nhắc riêng. Câu thêm vào điều khoản viết chuyên môn, đủ ý, đúng việc vừa đổi. Rồi nâng TERMS_VERSION. Việc chỉ đổi giao diện, không đổi dịch vụ, thì không sửa điều khoản.
 13. Cập nhật PROJECT_STATUS.md: dòng «Cập nhật lần cuối», một dòng lịch sử mục 6, và hàng liên quan ở mục 2. Giờ lấy bằng lệnh TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M'. Không đoán giờ.
 14. Có sửa src/: chạy npx tsc --noEmit. Đụng logic đã có test thì chạy npm test. Dán kết quả thật. Không ghi pass khi chưa chạy.
-15. Đẩy nhánh main lên GitHub để Vercel build. Không đóng zip mỗi lần, trừ khi user yêu cầu bàn giao zip. Tên zip nếu cần: TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip, không kèm node_modules.
+15. Đẩy nhánh `work` lên GitHub. Không đẩy `main` cho đến khi user nói đúng câu «đẩy chính thức». Không đóng zip mỗi lần, trừ khi user yêu cầu bàn giao zip. Tên zip nếu cần: TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip, không kèm node_modules. Bản nén không làm gốc nếu GitHub mới hơn.
 16. Bản mới làm hỏng chức năng đã chạy thì quay lại commit ngay trước đó. Không vá tiếp trên bản hỏng. Nói rõ commit đã quay lại.
 
 CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
@@ -49,7 +49,8 @@ CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
 22. Video luôn tỷ lệ 16:9. Câu hướng dẫn nằm dưới khung, xuống dòng, không đè video hay bảng dịch.
 23. Không xem key Groq và không xem video của khách trong trang Admin.
 24. Đã chốt không làm, trừ khi user yêu cầu đúng việc đó: không khóa lượt thử theo máy thật (mã máy do trình duyệt tự sinh, không bịa fingerprint); không viết bộ giải HE-AAC và không đọc hết mọi bản elst (HE-AAC để trình duyệt giải); không thêm captcha giả cho yêu cầu công khai.
+25. Ba vai nằm ở `BANG_DIEU.md`. Grok là vai Làm. Claude là vai Thẩm định, không sửa code trừ khi user nói «Claude sửa». ChatGPT là vai Cố vấn, không sửa code và không đẩy kho. Ý mới ghi vào bảng «Ý đã nêu».
 
 BÁO CÁO
-25. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
-26. Hỏi user trước khi làm việc tiếp theo.
+26. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
+27. Hỏi user trước khi làm việc tiếp theo.

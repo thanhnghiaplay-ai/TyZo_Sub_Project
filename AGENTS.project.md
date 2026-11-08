@@ -1,6 +1,6 @@
 # TyZo_Sub_Project — Phụ đề video
 
-Trước khi sửa code, đọc **`PROJECT_STATUS.md`** và **`huongdan.txt`**. Hai file này thay cho mọi hướng dẫn cũ.
+Trước khi sửa code, đọc **`BANG_DIEU.md`**, rồi **`huongdan.txt`**, rồi bảng đầu **`PROJECT_STATUS.md`**. Nhật ký cũ không phải lệnh.
 
 App đang chạy là bản React. Số phiên bản người dùng thấy nằm ở `src/lib/app-version.ts`. Điều khoản nằm ở `src/components/entry-gate.tsx`. Không có file HTML standalone.
 

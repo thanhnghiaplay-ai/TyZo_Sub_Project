@@ -1,13 +1,10 @@
 # PROJECT STATUS — Dịch phụ đề video (TyZo_Sub_Project, tên cũ: phudedep)
 
-> **Đây là nguồn sự thật chung (Single Source of Truth)** cho mọi AI / model đang tham gia dự án.  
-> **Bắt buộc đọc toàn bộ file này trước khi sửa bất kỳ dòng code nào.**  
-> Sau mỗi lần thay đổi quan trọng: cập nhật bảng trạng thái + lịch sử ngay trong file này.  
-> Mục tiêu: tránh làm lại việc, tránh conflict logic, dễ so sánh chéo khi có lỗi.
+> **Nhìn nhanh:** đọc `BANG_DIEU.md` trước. File này là hồ sơ. Bảng đầu là trạng thái hiện tại. Từ mục 6 trở đi là nhật ký, không được làm theo.
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-08 19:29 (UTC+7) — đẩy v2.19.1 lên nhánh main, nối tiếp v2.16.0, làm bản chính thức. Không nâng số. |
+| **Cập nhật lần cuối** | 2026-11-08 20:03 (UTC+7) — ghi quy trình một đường, ba vai, vào `BANG_DIEU.md`. Không đổi code, không nâng phiên bản, chưa vào `main`. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v2.19.1** (`src/lib/app-version.ts`). Điều khoản `2026-11-08.3`. React là app đang chạy. Không có HTML standalone. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
@@ -221,7 +218,9 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 ## 6. Lịch sử thay đổi / Tiến độ
 
-- 2026-11-08 19:29 — Đẩy v2.19.1 lên GitHub nhánh main, nối tiếp commit v2.16.0, không ghi đè lịch sử. Vercel build từ bản này. Không nâng số phiên bản.
+> Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
+
+- 2026-11-08 20:03 — Ghi quy trình một đường: vai Làm, Thẩm định, Cố vấn. Sửa trên nhánh `work`, `main` chỉ khi user nói «đẩy chính thức». Sửa câu cũ ở mục 7 vì cửa trả theo lượt đã trừ ví từ v2.17.0. Không đổi code, không nâng phiên bản.
 - 2026-11-08 18:52 — v2.19.0: Nhóm 3 và 4. Ngưỡng năng lượng theo đỉnh file; khoảng trống chọn theo giây tính tiền. Dịch nửa lô không nuốt 401/403/429. Xóa tài khoản giữ sổ, hủy đơn chờ, nhả giữ, dọn thiết bị/chuông/hiện diện. Yêu cầu công khai có trần chung; chỉ email đã xác minh đọc được trả lời của người khác. Webhook so số tài khoản khi payload có số; so khóa bằng hash. Casso 1 lần / 15 giây. Câu sửa tay không bị dịch đè. Tên riêng tối đa 4 từ không bị coi là chưa dịch. Migration bỏ qua khi `VERCEL_ENV` khác production, thiếu `DATABASE_URL` trên production thì thoát 1. Orpheus cắt 180 ký tự và rơi về giọng máy. Đã chép `ort-wasm-simd-threaded.mjs`, chưa chạy thử VAD. Từ điển không dấu cách nhận 1 ký tự. Đoán giới tính theo ranh giới từ. Hạ tần số lấy trung bình cửa sổ. Phân tích phim tối đa khoảng 40.000 ký tự. `known()` chỉ nhận model trong danh mục. Xóa mã P2P không được gọi. Phụ đề kẹp thời gian không đè câu sau. Khóa giọng theo thời điểm. MP4 bù elst bản 0; HE-AAC trả về đường giải mã của trình duyệt. VietQR khi nhận ra BIN; điều khoản `2026-11-08.3` và ghi `terms_version`. Test phụ thuộc `.grok/skills` được bỏ qua nếu thư mục không có. Chưa làm T6 (không bịa khóa thiết bị). `tsc` sạch. Test nhóm vừa sửa: 1 fail do test Orpheus nhập alias `@/` rồi đã bỏ file đó; các test còn lại trong lượt đó pass.
 - 2026-11-08 17:20 — v2.17.1: `claimTrialDevice` bị chặn 403 với tài khoản khóa nên ví không hiện: `account-panel.tsx` rơi về `getRoomAccount()`. `PayQueue` nhận `owner`, chỉ Chủ thấy nút «Xác nhận đã nhận tiền». SQL webhook nạp, mua gói, hoàn tiền tách thành `src/lib/pay-flow.ts` (`creditHitWith`, `buyPlanWith`, `refundRunWith`), logic giữ nguyên, để test được (`money-flow.test.ts`). Test đồng thời hoàn tiền đang đánh dấu todo vì tái hiện lỗi C2.
 - 2026-11-08 18:15 — v2.18.0: C1 trừ lượt thử sau lần nhận dạng gọi được máy dịch, Tiếp tục cùng tệp không bị chặn. C2 `refundRunWith` và `releaseHoldWith` một câu SQL có điều kiện. C6 `parseTranslations` bắt đúng số câu. C7 `getRunDesk` chỉ trả 4 ký tự cuối key. Điều khoản `2026-11-08.2`. `tsc` sạch. Test tiền và dịch 44/44.
@@ -357,17 +356,17 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 ## 7. Quy tắc làm việc bắt buộc cho AI tiếp theo
 
-1. **Đọc file này và `huongdan.txt` trước** khi sửa code.
-2. Khi sửa code: nâng `APP_VERSION` theo `huongdan.txt` mục 10, thêm một câu vào `CHANGELOG` trong `src/lib/app-version.ts`, cập nhật mục 2 và mục 6, chạy `npx tsc --noEmit` nếu đụng `src/`. Đẩy GitHub nhánh main. Chỉ đóng zip khi user yêu cầu.
+1. **Đọc `BANG_DIEU.md` trước**, rồi `huongdan.txt`, rồi bảng đầu file này. Mục 6 trở đi không phải lệnh.
+2. Khi sửa code: nâng `APP_VERSION` theo `huongdan.txt` mục 10, thêm một câu vào `CHANGELOG` trong `src/lib/app-version.ts`, cập nhật mục 2 và mục 6, chạy `npx tsc --noEmit` nếu đụng `src/`. Đẩy nhánh `work`. Chỉ vào `main` khi user nói «đẩy chính thức». Chỉ đóng zip khi user yêu cầu.
 3. Nếu phát hiện nguyên nhân gốc khác với mục 4 → ghi rõ kèm cách đã chọn.
 4. **Không xóa** các mục “Vấn đề hiện tại” cho đến khi user xác nhận đã hết lỗi.
 5. Đừng siết `isNonSpeech` thêm nếu chưa có ví dụ câu bị nuốt. Lời một chữ (“Ừ”, “Em”) phải sống.
 6. Khi đụng ASR, prompt dịch hoặc cử chỉ: sửa bản React. Không tạo lại file HTML.
-7. Mỗi lần bàn giao cho AI khác: file này và `huongdan.txt` phải khớp code. Không ghi token hay mật khẩu vào hai file đó.
+7. Mỗi lần bàn giao cho AI khác: `BANG_DIEU.md`, file này và `huongdan.txt` phải khớp code. Không ghi token hay mật khẩu vào các file đó.
 8. Độ sáng là filter trên video, không phải độ sáng OS.
 9. **Mục 13.2 không được code** trừ khi user yêu cầu đúng phần đó. Mục 13.5 đã gắn. Giá đang bán là 9.000 / 39.000 / 99.000 đ, không dùng bảng giá cũ 19.000 / 59.000 / 149.000.
 10. **Mục 14 chưa được code** cho đến khi user yêu cầu đúng một việc trong mục 14.2 hoặc 14.3. Không đổi model nhận dạng trước khi có số đo.
-11. **Mục 15, v2.10.0:** Khách còn hạn gói, chọn trả theo lượt, thì phòng gọi Groq bằng key Chủ đã lưu. Khách không nhận key. Chưa trừ ví, chưa bán key, chưa nhận link. Hoàn vào ví và sửa giá vẫn theo quyền đã chốt.
+11. **Mục 15, từ v2.17.0:** Khách còn hạn gói, chọn trả theo lượt, thì phòng gọi Groq bằng key Chủ đã lưu. Khách không thấy key. Cửa đã giữ khoản ước tính và trừ số thực khi xong, trả phần thừa. Không bán key. Không nhận link video. Hoàn vào ví và sửa giá vẫn theo quyền đã chốt. Câu «chưa trừ ví» ở các đoạn cũ là quá khứ, không được làm theo.
 
 ---
 

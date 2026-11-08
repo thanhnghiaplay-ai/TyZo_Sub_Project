@@ -1,5 +1,7 @@
 # HANDOFF — TyZo_Sub_Project, bản 2.19.1 (08/11/2026 19:13 giờ VN)
 
+Phiếu bàn giao một lần. Không phải bộ luật. Luật hiện tại nằm ở `BANG_DIEU.md`. Đoạn cũ phía dưới chỉ để tra.
+
 Gốc: v2.19.0. Bản này ghi các lỗi còn mở rồi sửa.
 
 ## ĐÃ LÀM Ở 2.19.1
