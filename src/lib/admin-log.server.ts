@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.7.1",
+    time: "21:39 ngày 09/11/2026",
+    area: "khac",
+    text: "Tab Thư: hai ô số xếp dọc, không tràn khung. Xem trước thư ghim phía trên khi kéo form.",
+  },
+  {
     version: "3.7.0",
     time: "21:10 ngày 09/11/2026",
     area: "khac",
