@@ -174,12 +174,12 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         {points.map((point) => (
           <li key={point.bucket}>{point.bucket} · thu {dong(point.revenue)} · chi {dong(point.cost)}</li>
         ))}
-        {points.length === 0 && <li>{ready ? "Chưa có tiền nạp thật trong khoảng này." : "Đang tải…"}</li>}
+        {points.length === 0 && <li>{ready ? "Chưa có tiền nạp trong khoảng này." : "Đang tải…"}</li>}
       </ul>
       <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
         <ul className="space-y-1 text-muted">
-          <li className="flex justify-between gap-2"><span>Nạp qua cổng (Sepay/Casso)</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
+          <li className="flex justify-between gap-2"><span>Tiền nạp đã xác nhận</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
           <li className="flex justify-between gap-2"><span>Khách mua gói từ số dư</span><span className="font-medium text-fg">{dong(breakdown.goi)}</span></li>
           <li className="flex justify-between gap-2"><span>Đã trừ trả theo lượt (sau hoàn)</span><span className="font-medium text-fg">{dong(breakdown.luot)}</span></li>
           <li className="flex justify-between gap-2"><span>Hoàn vào ví</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>

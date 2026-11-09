@@ -1062,11 +1062,11 @@ export const getMoney = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
-    // Doanh thu thực nhận = tiền nạp qua cổng (Sepay/Casso). Không tính tiền thử.
+    // Doanh thu = mọi tiền nạp đã vào ví, kể cả Chủ xác nhận tay khi cổng chưa tự cộng. Không tính tiền thử.
     const revenue = await sql<{ bucket: string; amount: number }>`
       select to_char(date_trunc(${data}::text, created_at at time zone 'Asia/Ho_Chi_Minh'), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
       from room_ledger
-      where kind = 'nap' and note not like 'Nạp thủ công%' and created_at > now() - ${window}::interval
+      where kind = 'nap' and created_at > now() - ${window}::interval
       group by 1 order by 1
     `;
     const costs = await sql<{ bucket: string; amount: number }>`
