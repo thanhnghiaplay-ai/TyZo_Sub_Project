@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-09 06:40 (UTC+7) — v2.20.0 trên nhánh work. Main vẫn v2.19.2. |
+| **Cập nhật lần cuối** | 2026-11-09 08:09 (UTC+7) — đẩy chính thức v2.20.0 lên `main`. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v2.20.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.19.2**. Điều khoản `2026-11-08.3`. |
+| **Phiên bản code** | **v2.20.0** trên `main` (`src/lib/app-version.ts`). Điều khoản `2026-11-08.3`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -220,7 +220,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
-- 2026-11-09 06:40 — v2.20.0 trên work, theo chốt của Claude: giá, tiền và mở gói chỉ Chủ; ô trả lời tách từng yêu cầu; leo thang 30 phút rồi 90 phút; chữ ký chức vụ; số dư hiện khoản giữ; vùng sin1. Chưa gộp truy vấn trang Admin thành một lần gọi. Chưa đẩy main. Điều khoản không đổi. `tsc` sạch. Test câu trả theo lượt 6/6.
+- 2026-11-09 08:09 — Đẩy chính thức v2.20.0 lên `main`. Giá, tiền và mở gói chỉ Chủ. Yêu cầu tự chuyển cấp. Số dư hiện khoản giữ. Điều khoản không đổi.
 - 2026-11-08 18:52 — v2.19.0: Nhóm 3 và 4. Ngưỡng năng lượng theo đỉnh file; khoảng trống chọn theo giây tính tiền. Dịch nửa lô không nuốt 401/403/429. Xóa tài khoản giữ sổ, hủy đơn chờ, nhả giữ, dọn thiết bị/chuông/hiện diện. Yêu cầu công khai có trần chung; chỉ email đã xác minh đọc được trả lời của người khác. Webhook so số tài khoản khi payload có số; so khóa bằng hash. Casso 1 lần / 15 giây. Câu sửa tay không bị dịch đè. Tên riêng tối đa 4 từ không bị coi là chưa dịch. Migration bỏ qua khi `VERCEL_ENV` khác production, thiếu `DATABASE_URL` trên production thì thoát 1. Orpheus cắt 180 ký tự và rơi về giọng máy. Đã chép `ort-wasm-simd-threaded.mjs`, chưa chạy thử VAD. Từ điển không dấu cách nhận 1 ký tự. Đoán giới tính theo ranh giới từ. Hạ tần số lấy trung bình cửa sổ. Phân tích phim tối đa khoảng 40.000 ký tự. `known()` chỉ nhận model trong danh mục. Xóa mã P2P không được gọi. Phụ đề kẹp thời gian không đè câu sau. Khóa giọng theo thời điểm. MP4 bù elst bản 0; HE-AAC trả về đường giải mã của trình duyệt. VietQR khi nhận ra BIN; điều khoản `2026-11-08.3` và ghi `terms_version`. Test phụ thuộc `.grok/skills` được bỏ qua nếu thư mục không có. Chưa làm T6 (không bịa khóa thiết bị). `tsc` sạch. Test nhóm vừa sửa: 1 fail do test Orpheus nhập alias `@/` rồi đã bỏ file đó; các test còn lại trong lượt đó pass.
 - 2026-11-08 17:20 — v2.17.1: `claimTrialDevice` bị chặn 403 với tài khoản khóa nên ví không hiện: `account-panel.tsx` rơi về `getRoomAccount()`. `PayQueue` nhận `owner`, chỉ Chủ thấy nút «Xác nhận đã nhận tiền». SQL webhook nạp, mua gói, hoàn tiền tách thành `src/lib/pay-flow.ts` (`creditHitWith`, `buyPlanWith`, `refundRunWith`), logic giữ nguyên, để test được (`money-flow.test.ts`). Test đồng thời hoàn tiền đang đánh dấu todo vì tái hiện lỗi C2.
 - 2026-11-08 18:15 — v2.18.0: C1 trừ lượt thử sau lần nhận dạng gọi được máy dịch, Tiếp tục cùng tệp không bị chặn. C2 `refundRunWith` và `releaseHoldWith` một câu SQL có điều kiện. C6 `parseTranslations` bắt đúng số câu. C7 `getRunDesk` chỉ trả 4 ký tự cuối key. Điều khoản `2026-11-08.2`. `tsc` sạch. Test tiền và dịch 44/44.
