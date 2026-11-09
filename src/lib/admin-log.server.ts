@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.8.0",
+    time: "02:44 ngày 10/11/2026",
+    area: "khac",
+    text: "Bốn lối dịch thay danh sách model. resolveVoiceLane không nhảy sang lối khác. Câu ngắn ở profile cân bằng không còn ưu tiên model 20B. Auto đã lưu được đưa về một model cho cả phim.",
+  },
+  {
     version: "3.7.1",
     time: "21:39 ngày 09/11/2026",
     area: "khac",

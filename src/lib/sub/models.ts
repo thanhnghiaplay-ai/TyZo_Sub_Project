@@ -148,7 +148,6 @@ function trivialBatch(input: PickInput, hard: boolean): boolean {
 
 export function rankAuto(input: PickInput): string[] {
   const hard = hardBatch(input);
-  const trivial = trivialBatch(input, hard);
   const cjk = /^(zh|ja|ko)$/.test(input.sourceLang) || input.genre === "costume";
   let order: string[];
   if (input.profile === "fast") {
@@ -172,8 +171,6 @@ export function rankAuto(input: PickInput): string[] {
           "meta-models/muse-spark-open",
           "openai/gpt-oss-20b",
         ];
-  } else if (trivial) {
-    order = ["openai/gpt-oss-20b", "llama-3.1-8b-instant", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
   } else if (hard) {
     order = [
       "openai/gpt-oss-120b",
@@ -214,7 +211,7 @@ export function pickAutoModel(input: PickInput): { id: string; via: string } {
           ? "câu ngắn, dùng model nhanh"
           : hard
             ? "câu khó, dùng model chắc"
-            : "cân bằng tốc độ và nghĩa";
+            : "xem là hiểu";
   return { id, via };
 }
 
@@ -245,3 +242,63 @@ export const TIER_LABEL: Record<ChatModel["tier"], string> = {
   safety: "An toàn",
   key: "Thêm từ key",
 };
+
+export type VoiceLaneId = "fast" | "clear" | "cjk" | "soul";
+
+export type VoiceLane = {
+  id: VoiceLaneId;
+  title: string;
+  fit: string;
+  pace: string;
+  models: readonly string[];
+};
+
+/** Bốn lối người dùng đọc được. Tên model chỉ là dòng phụ. */
+export const VOICE_LANES: readonly VoiceLane[] = [
+  {
+    id: "fast",
+    title: "Cho nhanh",
+    fit: "Hợp nếu bạn chỉ muốn xem thử. Câu ngắn, cảm xúc yếu.",
+    pace: "Nhanh, rẻ hơn",
+    models: ["openai/gpt-oss-20b", "llama-3.1-8b-instant"],
+  },
+  {
+    id: "clear",
+    title: "Xem là hiểu",
+    fit: "Hợp phim thường. Xem, đọc và nghe là hiểu ngay.",
+    pace: "Vừa. Nên dùng",
+    models: ["openai/gpt-oss-120b"],
+  },
+  {
+    id: "cjk",
+    title: "Phim Trung, Nhật, Hàn",
+    fit: "Hợp khi lời gốc là tiếng Trung, Nhật hoặc Hàn.",
+    pace: "Chậm hơn, đắt hơn",
+    models: ["qwen/qwen3.8-27b"],
+  },
+  {
+    id: "soul",
+    title: "Có hồn hơn",
+    fit: "Hợp khi bạn muốn lời tự nhiên hơn. Key phải mở được model này.",
+    pace: "Chậm hơn",
+    models: ["llama-3.3-70b-versatile", "minimaxai/minimax-m2.7"],
+  },
+];
+
+export function voiceLaneOf(modelId: string): VoiceLaneId | null {
+  return VOICE_LANES.find((lane) => lane.models.includes(modelId))?.id ?? null;
+}
+
+/** Model sẽ dùng cho cả lần dịch. Không nhảy sang lối khác. */
+export function resolveVoiceLane(laneId: VoiceLaneId, available: Set<string> | null, allowEnterprise: boolean): string | null {
+  const lane = VOICE_LANES.find((item) => item.id === laneId);
+  if (!lane) return null;
+  for (const id of lane.models) {
+    const meta = BY_ID.get(id);
+    if (!meta || meta.tier === "safety") continue;
+    if (meta.tier === "enterprise" && !allowEnterprise) continue;
+    if (available && !available.has(id)) continue;
+    return id;
+  }
+  return null;
+}

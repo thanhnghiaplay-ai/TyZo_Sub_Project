@@ -29,7 +29,7 @@ import { NoticeBell } from "@/components/notice-bell";
 import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
 import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
-import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
+import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomPrice } from "@/lib/run-desk";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
@@ -819,7 +819,7 @@ export function Studio() {
         </label>
         )}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-muted">Cách chọn model</span>
+          <span className="text-sm text-muted">Cách dịch</span>
           {!showRoomPrice && (
             <button
               type="button"
@@ -832,44 +832,32 @@ export function Studio() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Choice on={app.mode === "manual"} onClick={() => app.setMode("manual")} title="Tự chọn" text="Một model cho cả phim" />
-          <Choice on={app.mode === "auto"} onClick={() => app.setMode("auto")} title="Tự động" text="Cân tốc độ và độ chính xác" />
-        </div>
-        {app.mode === "manual" ? (
-          <ModelPicker
-            models={app.catalog}
-            value={app.modelId}
-            remote={showRoomPrice ? null : app.remoteIds}
-            board={showRoomPrice ? app.board : null}
-            door={showRoomPrice ? runDoor : null}
-            onChange={app.setModelId}
-          />
-        ) : (
-          <div className="grid gap-2">
-            <div className="grid grid-cols-3 gap-2">
-              <Choice on={app.profile === "fast"} onClick={() => app.setProfile("fast")} title="Nhanh" text="20B trước" />
-              <Choice on={app.profile === "balanced"} onClick={() => app.setProfile("balanced")} title="Cân bằng" text="120B là chính" />
-              <Choice on={app.profile === "accurate"} onClick={() => app.setProfile("accurate")} title="Chính xác" text="Model mạnh hơn" />
-            </div>
-            <p className="text-sm text-muted">
-              {showRoomPrice
-                ? "Câu ngắn đi model nhanh. Hội thoại dùng model chính. Câu khó chuyển sang model mạnh hơn đã được phòng đưa ra."
-                : "Câu ngắn đi model nhanh. Hội thoại dùng GPT-OSS 120B. Câu khó hoặc bản dịch lỗi chuyển sang Qwen, hoặc model Enterprise nếu key có. Khi nâng cấp key, bấm Đồng bộ key — Auto chỉ gọi model mà key mở được."}
-            </p>
-            {!showRoomPrice && (
-              <label className="flex min-tap items-center gap-2 text-sm">
-                <input type="checkbox" checked={app.allowEnterprise} onChange={(event) => app.setAllowEnterprise(event.target.checked)} />
-                Dùng model Enterprise khi key có quyền
-              </label>
-            )}
-            {Object.keys(app.uses).length > 0 && (
-              <p className="text-sm text-fg">
-                Đã chia: {Object.entries(app.uses).map(([id, count]) => `${modelLabel(id)} × ${count}`).join(" · ")}
-              </p>
-            )}
+        <VoiceLanes
+          modelId={app.modelId}
+          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
+          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
+          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
+          priceFor={(id) =>
+            showRoomPrice
+              ? modelFacts(app.board, runDoor, id, "").price
+              : ownModelPrice(app.board, id)
+          }
+          onPick={(id) => app.chooseVoice(id)}
+        />
+        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
+        <details className="text-sm text-muted">
+          <summary className="cursor-pointer">Nhập mã model khác</summary>
+          <div className="pt-2">
+            <ModelPicker
+              models={app.catalog}
+              value={app.modelId}
+              remote={showRoomPrice ? null : app.remoteIds}
+              board={showRoomPrice ? app.board : null}
+              door={showRoomPrice ? runDoor : null}
+              onChange={app.chooseVoice}
+            />
           </div>
-        )}
+        </details>
         <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
           <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
             Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
@@ -1322,6 +1310,60 @@ function IconButton({ label, onClick, children }: { label: string; onClick: () =
     <button type="button" aria-label={label} className="inline-flex min-tap w-11 shrink-0 items-center justify-center rounded-xl border border-line [&_svg]:size-5" onClick={onClick}>
       {children}
     </button>
+  );
+}
+
+function ownModelPrice(board: GroqBoard | null, id: string) {
+  const row = board?.rows.find((item) => item.id === id);
+  if (!board || !row) return board ? "Chưa niêm yết" : "";
+  return formatRoomPrice(row, board.rate, 0);
+}
+
+function VoiceLanes({
+  modelId,
+  available,
+  allowEnterprise,
+  known,
+  priceFor,
+  onPick,
+}: {
+  modelId: string;
+  available: Set<string> | null;
+  allowEnterprise: boolean;
+  known: boolean;
+  priceFor: (id: string) => string;
+  onPick: (id: string) => void;
+}) {
+  const selected = voiceLaneOf(modelId);
+  return (
+    <div className="grid min-w-0 gap-2">
+      {VOICE_LANES.map((lane) => {
+        const id = resolveVoiceLane(lane.id, available, allowEnterprise);
+        const closed = known && !id;
+        const on = selected === lane.id;
+        const price = id ? priceFor(id) : "";
+        return (
+          <button
+            key={lane.id}
+            type="button"
+            disabled={closed}
+            onClick={() => id && onPick(id)}
+            className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
+          >
+            <span className="block text-sm font-semibold">{lane.title}</span>
+            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
+            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>
+              {lane.pace}
+              {price ? ` · ${price}` : ""}
+            </span>
+            <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>
+              {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
+            </span>
+          </button>
+        );
+      })}
+      {!known && <p className="text-xs text-muted">Bấm Đồng bộ key để tắt lối mà key không mở được.</p>}
+    </div>
   );
 }
 

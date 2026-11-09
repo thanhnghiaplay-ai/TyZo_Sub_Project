@@ -318,10 +318,13 @@ export function usePipeline() {
     const par = Number(readStore("gpar"));
     if ([1, 3, 4, 6, 8].includes(par)) setThreads(par);
     const savedMode = readStore("gmode");
-    if (savedMode === "auto" || savedMode === "manual") setMode(savedMode);
     const savedProfile = readStore("gprofile");
-    if (savedProfile === "fast" || savedProfile === "balanced" || savedProfile === "accurate") setProfile(savedProfile);
     const savedModel = readStore("gmdl");
+    if (savedMode === "auto") {
+      setMode("manual");
+      if (!savedModel) setModelId(savedProfile === "fast" ? "openai/gpt-oss-20b" : "openai/gpt-oss-120b");
+    } else if (savedMode === "manual") setMode("manual");
+    if (savedProfile === "fast" || savedProfile === "balanced" || savedProfile === "accurate") setProfile(savedProfile);
     if (savedModel) setModelId(savedModel);
     if (readStore("genter") === "0") setAllowEnterprise(false);
     const whisper = readStore("gasr");
@@ -1968,6 +1971,15 @@ export function usePipeline() {
     publish(true);
   }, [publish, title]);
 
+  const chooseVoice = useCallback((next: string) => {
+    const id = next.trim();
+    if (!id) return;
+    setMode("manual");
+    setModelId(id);
+    writeStore("gmode", "manual");
+    writeStore("gmdl", id);
+  }, []);
+
   return {
     key,
     setKey,
@@ -1986,6 +1998,7 @@ export function usePipeline() {
     setProfile,
     modelId,
     setModelId,
+    chooseVoice,
     allowEnterprise,
     setAllowEnterprise,
     asrModel,
