@@ -42,6 +42,18 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 Không có việc đã đẩy. v3.7.1 đang trên `work`, chưa lên `main`.
 
+## Thư — còn lại
+
+Làm lần lượt khi người dùng yêu cầu. Mục nào xong thì xóa khỏi danh sách này, không gạch và không giữ lại.
+
+1. Gắn tên miền gửi trên Resend. Chưa gắn thì thư chỉ tới email đã đăng ký Resend.
+2. Thử xác minh, chưa bật chặn. Bật gửi thư xác minh, nhận thư, bấm liên kết, đăng nhập lại.
+3. Thử quên mật khẩu. Bật công tắc, nhận thư, đặt mật khẩu mới, đăng nhập bằng mật khẩu đó.
+4. Bật chặn chỉ sau khi email Chủ đã xác minh. Bật sớm thì tài khoản chưa xác minh không vào được.
+5. Thư báo đổi mật khẩu trong trang tài khoản. Công tắc hiện chỉ chạy khi đặt lại qua thư quên mật khẩu.
+
+Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này.
+
 ## Ý đã nêu
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
