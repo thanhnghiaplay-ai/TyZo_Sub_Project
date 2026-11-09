@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-09.4";
+export const TERMS_VERSION = "2026-11-09.5";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -165,7 +165,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 
         <h2>2. Điều kiện để dùng</h2>
         <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq là của bạn. Groq tính cước cho tài khoản của bạn, không phải phí của phòng.</p>
-        <p>Bạn phải đọc và bấm đồng ý bản điều khoản đang hiện. Không đồng ý thì không mở được phòng dịch.</p>
+        <p>Bạn phải đọc và bấm đồng ý bản điều khoản đang hiện. Không đồng ý thì không mở được phòng dịch. Khi phòng bật, email dùng để xác minh tài khoản và lấy lại mật khẩu. Liên kết trong thư có thời hạn. Phòng không gửi mật khẩu.</p>
 
         <h2>3. Phòng không cam kết</h2>
         <p>

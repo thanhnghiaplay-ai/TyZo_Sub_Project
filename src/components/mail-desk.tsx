@@ -76,6 +76,14 @@ export function MailDesk() {
             ))}
           </select>
         </label>
+        {view.provider === "resend" && (
+          <p className="text-sm text-muted">Chưa gắn tên miền thì dùng địa chỉ thử. Thư chỉ tới đúng email đã đăng ký Resend.</p>
+        )}
+        {view.provider === "resend" && (
+          <button type="button" className="inline-flex min-h-11 w-fit items-center justify-center rounded-full border border-line px-4" onClick={() => setView({ ...view, from: "TyZo Sub <onboarding@resend.dev>" })}>
+            Dùng địa chỉ thử
+          </button>
+        )}
         <input
           value={view.from}
           onChange={(event) => setView({ ...view, from: event.target.value })}

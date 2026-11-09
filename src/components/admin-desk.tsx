@@ -40,6 +40,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
+import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
@@ -312,7 +313,12 @@ export function AdminDesk() {
       {role && tab === "nhat-ky" && <AdminNotes />}
       {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
       {role === "chu" && tab === "ctv" && <AffiliateBoard />}
-      {role === "chu" && tab === "thu" && <MailDesk />}
+      {role === "chu" && tab === "thu" && (
+        <div className="grid gap-3">
+          <MailDesk />
+          <MailPolicyBoard />
+        </div>
+      )}
       {role && tab === "viec" && stats && (
         <section className="grid gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
