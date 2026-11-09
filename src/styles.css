@@ -929,54 +929,143 @@
 .role-mark[data-rank="ctv"] { --badge: #6ed0b0; --badge-ink: #10211c; }
 
 .role-row {
-  position: absolute;
+  position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-flow: row wrap;
+  align-items: center;
   justify-content: flex-end;
   gap: 0.35rem;
-  max-width: calc(100% - 0.8rem);
+  margin-bottom: 0.7rem;
   pointer-events: none;
 }
-.role-row .role-mark { position: static; }
-.role-row-ribbon,
-.role-row-pill,
-.role-row-stamp,
-.role-row-frame,
-.role-row-fold { top: 0.65rem; right: 0.4rem; }
-.role-row-ticket { top: auto; right: 0.5rem; bottom: 0.5rem; }
-.role-row-banner { top: 0; right: 0; left: 0; height: 1.75rem; align-items: center; padding-right: 0.45rem; }
-.role-row-rail { top: 0; right: auto; bottom: 0; left: 0; align-items: stretch; }
-.role-row-sash { top: 0; right: 0; bottom: 0; left: auto; align-items: stretch; }
-.role-row .role-mark-banner { width: auto; height: auto; padding: 0.15rem 0.5rem; }
-.role-row .role-mark-fold { width: 4.4rem; height: 4.4rem; }
-.role-row .role-mark-stamp { width: 3.7rem; height: 3.7rem; }
-
-.account-card[data-marks="2"][data-badge="ribbon"],
-.account-card[data-marks="2"][data-badge="pill"],
-.account-card[data-marks="2"][data-badge="stamp"],
-.account-card[data-marks="2"][data-badge="fold"],
-.account-card[data-marks="2"][data-badge="frame"] { padding-right: 10.4rem; }
-.account-card[data-marks="2"][data-badge="rail"] { padding-left: 4.1rem; }
-.account-card[data-marks="2"][data-badge="sash"] { padding-right: 4.1rem; }
-
-.account-card[data-badge="ribbon"],
-.account-card[data-badge="pill"],
-.account-card[data-badge="stamp"],
-.account-card[data-badge="fold"],
-.account-card[data-badge="frame"] {
-  padding-right: 5.4rem;
+.role-row-rail,
+.role-row-chip { justify-content: flex-start; }
+.role-row-banner {
+  margin: -1rem -1rem 0.75rem;
+  padding: 0.45rem 0.8rem;
+  background: color-mix(in srgb, var(--badge) 16%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--badge) 35%, transparent);
 }
-
-.account-card[data-badge="rail"] { padding-left: 2.5rem; }
-.account-card[data-badge="sash"] { padding-right: 2.5rem; }
-.account-card[data-badge="banner"] { padding-top: 2.35rem; }
-.account-card[data-badge="ticket"] { padding-bottom: 2.5rem; }
+.role-row-ticket {
+  margin: 0.75rem -1rem -1rem;
+  padding: 0.45rem 0.8rem;
+  border-top: 1px solid color-mix(in srgb, var(--badge) 35%, transparent);
+}
 
 .account-card[data-badge="frame"] {
   border-color: var(--badge);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--badge) 45%, transparent);
+}
+
+.role-mark {
+  position: static;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.role-mark b { font-weight: 700; }
+
+.role-mark-ribbon {
+  padding: 0.34rem 0.72rem 0.34rem 0.55rem;
+  background: var(--badge);
+  color: var(--badge-ink);
+  clip-path: polygon(0.38rem 0, 100% 0, calc(100% - 0.38rem) 50%, 100% 100%, 0.38rem 100%, 0 50%);
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 28%));
+}
+
+.role-mark-pill {
+  padding: 0.32rem 0.72rem;
+  border-radius: 999px;
+  background: var(--badge);
+  color: var(--badge-ink);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 28%), 0 4px 10px rgb(0 0 0 / 18%);
+}
+
+.role-mark-stamp {
+  min-width: 0;
+  padding: 0.28rem 0.58rem;
+  border: 1.5px dashed var(--badge);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--badge) 14%, transparent);
+  color: var(--badge);
+}
+
+.role-mark-stamp b {
+  font-size: 0.66rem;
+  white-space: nowrap;
+}
+
+.role-mark-rail,
+.role-mark-sash {
+  width: auto;
+  height: auto;
+  padding: 0.3rem 0.62rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, var(--badge) 14%, transparent);
+  color: var(--badge);
+  writing-mode: horizontal-tb;
+}
+
+.role-mark-rail { box-shadow: inset 3px 0 0 var(--badge); }
+.role-mark-sash { box-shadow: inset -3px 0 0 var(--badge); }
+
+.role-mark-fold {
+  width: auto;
+  height: auto;
+  padding: 0.32rem 0.62rem;
+  border-radius: 0.15rem 0.7rem 0.15rem 0.7rem;
+  background: var(--badge);
+  color: var(--badge-ink);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--badge) 45%, #000);
+}
+
+.role-mark-fold b {
+  position: static;
+  transform: none;
+  font-size: inherit;
+}
+
+.role-mark-banner {
+  height: auto;
+  padding: 0.28rem 0.62rem;
+  border-radius: 999px;
+  background: var(--badge);
+  color: var(--badge-ink);
+}
+
+.role-mark-chip {
+  margin: 0;
+  border: 1px solid var(--badge);
+  border-radius: 999px;
+  padding: 0.26rem 0.6rem;
+  background: color-mix(in srgb, var(--badge) 12%, transparent);
+  color: var(--badge);
+}
+
+.role-mark-frame {
+  border: 1px solid var(--badge);
+  border-radius: 0.45rem;
+  padding: 0.28rem 0.55rem;
+  background: color-mix(in srgb, var(--badge) 10%, transparent);
+  color: var(--badge);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--badge) 35%, transparent);
+}
+
+.role-mark-ticket {
+  padding: 0.32rem 0.7rem;
+  background: var(--badge);
+  color: var(--badge-ink);
+  clip-path: polygon(0.32rem 0, calc(100% - 0.32rem) 0, 100% 0.32rem, 100% calc(100% - 0.32rem), calc(100% - 0.32rem) 100%, 0.32rem 100%, 0 calc(100% - 0.32rem), 0 0.32rem);
 }
 
 
@@ -995,167 +1084,6 @@
 .door-dot-closed {
   background: #ef5f5f;
   box-shadow: 0 0 8px rgb(239 95 95 / 45%);
-}
-
-.role-mark {
-  position: absolute;
-  z-index: 1;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.15;
-  pointer-events: none;
-}
-
-.role-mark b { font-weight: 700; }
-
-.role-mark-ribbon {
-  top: 1.05rem;
-  right: -0.2rem;
-  padding: 0.34rem 0.72rem;
-  border-radius: 0.4rem;
-  background: var(--badge);
-  color: var(--badge-ink);
-  transform: rotate(12deg);
-  box-shadow: 0 6px 14px rgb(0 0 0 / 28%);
-  white-space: nowrap;
-  text-align: center;
-  letter-spacing: 0.01em;
-}
-
-.role-mark[data-rank="chu"].role-mark-ribbon,
-.role-mark[data-rank="chu"].role-mark-stamp {
-  box-shadow: 0 0 16px rgb(231 182 58 / 42%);
-}
-
-.role-mark-pill {
-  top: 0.8rem;
-  right: 0.75rem;
-  padding: 0.34rem 0.7rem;
-  border-radius: 999px;
-  background: var(--badge);
-  color: var(--badge-ink);
-  white-space: nowrap;
-  text-align: center;
-  letter-spacing: 0.01em;
-}
-
-.role-mark-stamp {
-  top: 0.45rem;
-  right: 0.45rem;
-  display: grid;
-  width: 4.4rem;
-  height: 4.4rem;
-  place-items: center;
-  place-content: center;
-  border: 2px solid var(--badge);
-  border-radius: 999px;
-  color: var(--badge);
-  text-align: center;
-  transform: rotate(-12deg);
-  line-height: 1.1;
-  padding: 0.25rem;
-  box-sizing: border-box;
-}
-
-.role-mark-stamp b {
-  font-size: 0.66rem;
-  white-space: normal;
-  text-align: center;
-  display: block;
-  max-width: 3.6rem;
-}
-
-.role-mark-rail,
-.role-mark-sash {
-  top: 0;
-  bottom: 0;
-  display: grid;
-  width: 1.75rem;
-  place-items: center;
-  place-content: center;
-  background: var(--badge);
-  color: var(--badge-ink);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-
-.role-mark-rail { left: 0; }
-.role-mark-sash { right: 0; }
-
-.role-mark-fold {
-  top: 0;
-  right: 0;
-  width: 5.5rem;
-  height: 5.5rem;
-  background: linear-gradient(225deg, var(--badge) 50%, transparent 50%);
-  color: var(--badge-ink);
-}
-
-.role-mark-fold b {
-  position: absolute;
-  top: 0.9rem;
-  right: 0.12rem;
-  left: auto;
-  font-size: 0.62rem;
-  transform: rotate(45deg);
-  transform-origin: center;
-  white-space: nowrap;
-  text-align: center;
-  letter-spacing: 0.01em;
-}
-
-.role-mark-banner {
-  top: 0;
-  right: 0;
-  left: 0;
-  display: grid;
-  height: 1.75rem;
-  place-items: center;
-  place-content: center;
-  background: var(--badge);
-  color: var(--badge-ink);
-  white-space: nowrap;
-  letter-spacing: 0.02em;
-}
-
-.role-mark-chip {
-  position: static;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.45rem;
-  border: 1px solid var(--badge);
-  border-radius: 999px;
-  padding: 0.24rem 0.6rem;
-  color: var(--badge);
-  white-space: nowrap;
-  letter-spacing: 0.01em;
-}
-
-.role-mark-frame {
-  top: 0.75rem;
-  right: 0.7rem;
-  border: 1px solid var(--badge);
-  border-radius: 0.45rem;
-  padding: 0.3rem 0.55rem;
-  color: var(--badge);
-  white-space: nowrap;
-  text-align: center;
-  letter-spacing: 0.01em;
-}
-
-.role-mark-ticket {
-  right: 0.75rem;
-  bottom: 0.7rem;
-  border-radius: 0.35rem 0.75rem;
-  background: var(--badge);
-  padding: 0.32rem 0.65rem;
-  color: var(--badge-ink);
-  white-space: nowrap;
-  text-align: center;
-  letter-spacing: 0.01em;
 }
 
 .org-card {
@@ -1314,20 +1242,14 @@
 .role-mark[data-rank="ho-tro"].role-mark-pill,
 .role-mark[data-rank="ho-tro"].role-mark-banner,
 .role-mark[data-rank="ho-tro"].role-mark-ticket,
-.role-mark[data-rank="ho-tro"].role-mark-rail,
-.role-mark[data-rank="ho-tro"].role-mark-sash,
 .role-mark[data-rank="quan-ly"].role-mark-ribbon,
 .role-mark[data-rank="quan-ly"].role-mark-pill,
 .role-mark[data-rank="quan-ly"].role-mark-banner,
 .role-mark[data-rank="quan-ly"].role-mark-ticket,
-.role-mark[data-rank="quan-ly"].role-mark-rail,
-.role-mark[data-rank="quan-ly"].role-mark-sash,
 .role-mark[data-rank="chu"].role-mark-ribbon,
 .role-mark[data-rank="chu"].role-mark-pill,
 .role-mark[data-rank="chu"].role-mark-banner,
-.role-mark[data-rank="chu"].role-mark-ticket,
-.role-mark[data-rank="chu"].role-mark-rail,
-.role-mark[data-rank="chu"].role-mark-sash {
+.role-mark[data-rank="chu"].role-mark-ticket {
   background-size: 180% 100%;
   animation: rank-sheen 3.8s ease-in-out infinite;
 }
@@ -1335,27 +1257,21 @@
 .role-mark[data-rank="ho-tro"].role-mark-ribbon,
 .role-mark[data-rank="ho-tro"].role-mark-pill,
 .role-mark[data-rank="ho-tro"].role-mark-banner,
-.role-mark[data-rank="ho-tro"].role-mark-ticket,
-.role-mark[data-rank="ho-tro"].role-mark-rail,
-.role-mark[data-rank="ho-tro"].role-mark-sash {
+.role-mark[data-rank="ho-tro"].role-mark-ticket {
   background-image: linear-gradient(110deg, #6ea2e4, #d7e8ff 45%, #8eb7ee);
 }
 
 .role-mark[data-rank="quan-ly"].role-mark-ribbon,
 .role-mark[data-rank="quan-ly"].role-mark-pill,
 .role-mark[data-rank="quan-ly"].role-mark-banner,
-.role-mark[data-rank="quan-ly"].role-mark-ticket,
-.role-mark[data-rank="quan-ly"].role-mark-rail,
-.role-mark[data-rank="quan-ly"].role-mark-sash {
+.role-mark[data-rank="quan-ly"].role-mark-ticket {
   background-image: linear-gradient(110deg, #b88922, #f0d78c 42%, #e7b63a);
 }
 
 .role-mark[data-rank="chu"].role-mark-ribbon,
 .role-mark[data-rank="chu"].role-mark-pill,
 .role-mark[data-rank="chu"].role-mark-banner,
-.role-mark[data-rank="chu"].role-mark-ticket,
-.role-mark[data-rank="chu"].role-mark-rail,
-.role-mark[data-rank="chu"].role-mark-sash {
+.role-mark[data-rank="chu"].role-mark-ticket {
   background-image: linear-gradient(110deg, #c9962e, #fff4cc 40%, #e7b63a 70%, #f3d48a);
 }
 

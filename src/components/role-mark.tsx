@@ -38,16 +38,16 @@ export function AccountCard({
   const style: BadgeStyleId = badgeStyle(styleId);
   const ranks = orderedMarks([rank, ...(extra ?? [])]);
   const top = ranks[0] ?? "user";
+  const shown = ranks.length ? ranks : [null];
+  const row = (
+    <div className={"role-row role-row-" + style}>
+      {shown.map((item) => <RoleMark key={item ?? "user"} rank={item} styleId={style} />)}
+    </div>
+  );
   return (
-    <article data-badge={style} data-rank={top} data-marks={ranks.length > 1 ? ranks.length : 1} className={"account-card rounded-2xl border border-line bg-card p-4 " + className}>
-      {ranks.length > 1 ? (
-        <div className={"role-row role-row-" + style}>
-          {ranks.map((item) => <RoleMark key={item} rank={item} styleId={style} />)}
-        </div>
-      ) : (
-        <RoleMark rank={ranks[0] ?? null} styleId={style} />
-      )}
-      {children}
+    <article data-badge={style} data-rank={top} data-marks={shown.length} className={"account-card rounded-2xl border border-line bg-card p-4 " + className}>
+      {style === "ticket" ? children : row}
+      {style === "ticket" ? row : children}
     </article>
   );
 }
