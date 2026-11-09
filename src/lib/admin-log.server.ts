@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.4.2",
+    time: "18:41 ngày 09/11/2026",
+    area: "tien",
+    text: "Gỡ cổng /api/pay/rieng, pay-own và ô khóa trên tab Doanh thu. Sepay và Casso giữ nguyên. Điều khoản 2026-11-09.4.",
+  },
+  {
     version: "3.4.1",
     time: "14:42 ngày 09/11/2026",
     area: "quyen",

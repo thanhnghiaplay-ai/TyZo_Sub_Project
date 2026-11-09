@@ -16,8 +16,8 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.20.0 trên nhánh `main` |
-| Bản đang làm | v3.4.1 trên nhánh `work`: kiểu thẻ gọn để xếp nhiều thẻ |
-| Điều khoản | 2026-11-09.3 |
+| Bản đang làm | v3.4.2 trên nhánh `work`: nạp chỉ còn Sepay và Casso |
+| Điều khoản | 2026-11-09.4 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa |
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đã đẩy. v3.4.1 đang trên `work`, chưa lên `main`.
+Không có việc đã đẩy. v3.4.2 đang trên `work`, chưa lên `main`.
 
 ## Ý đã nêu
 

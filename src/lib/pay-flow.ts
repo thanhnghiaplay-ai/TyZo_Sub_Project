@@ -43,39 +43,6 @@ export async function creditHitWith(sql: Sql, provider: "sepay" | "casso", hit: 
   return applied.length > 0 ? { userId: order.user_id, amount: hit.amount, code: order.code } : null;
 }
 
-/** Cổng riêng: khớp đúng mã và đúng số tiền của đơn đang chờ. Không khớp thì không cộng. */
-export async function confirmOwnWith(sql: Sql, code: string, amount: number, ref: string): Promise<CreditResult> {
-  const orders = await sql<{ id: string; user_id: string; amount: number; code: string }>`
-    select id, user_id, amount, code from pay_orders
-    where status in ('pending', 'claimed') and code = ${code} and amount = ${amount}
-  `;
-  const order = orders[0];
-  if (!order) return null;
-  const applied = await sql<{ user_id: string }>`
-    with seen as (
-      insert into pay_seen (provider, provider_ref) values ('rieng', ${ref})
-      on conflict do nothing
-      returning provider_ref
-    ),
-    paid as (
-      update pay_orders
-      set status = 'paid', provider_ref = ${ref}
-      where id = ${order.id} and status in ('pending', 'claimed') and exists (select 1 from seen)
-      returning user_id, amount
-    ),
-    account as (
-      insert into room_accounts (user_id, balance)
-      select user_id, ${amount}::int from paid
-      on conflict (user_id) do update set balance = room_accounts.balance + ${amount}::int
-      returning user_id
-    )
-    insert into room_ledger (user_id, kind, amount, note)
-    select user_id, 'nap', ${amount}::int, ${"Nap rieng " + order.code} from account
-    returning user_id
-  `;
-  return applied.length > 0 ? { userId: order.user_id, amount, code: order.code } : null;
-}
-
 /** Mua gói từ số dư: trừ có điều kiện balance >= giá, cộng hạn, ghi sổ, trong một câu. */
 export async function buyPlanWith(sql: Sql, userId: string, plan: { id: string; name: string; price: number; hours: number }) {
   await sql`insert into room_accounts (user_id) values (${userId}) on conflict (user_id) do nothing`;

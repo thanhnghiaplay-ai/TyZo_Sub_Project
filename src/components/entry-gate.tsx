@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-09.3";
+export const TERMS_VERSION = "2026-11-09.4";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -160,7 +160,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p>
           Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
-        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản khi Chủ đã bật cổng. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
+        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
         <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá Groq công bố cộng phần chênh phòng niêm yết: nhận dạng theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn Groq báo lỗi thì không tính tiền.</p>
 
         <h2>2. Điều kiện để dùng</h2>
@@ -225,7 +225,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p className="gate-key">Gỡ khóa hoặc gỡ cấm không xóa lịch sử xử lý.</p>
         <h2>9. Giới thiệu</h2>
         <p>
-          Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã. Cổng xác nhận nạp riêng chỉ cộng khi khớp đúng đơn đang chờ. Sai khóa hoặc không khớp thì không cộng.
+          Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã.
         </p>
       </article>
       <footer className="gate-actions">

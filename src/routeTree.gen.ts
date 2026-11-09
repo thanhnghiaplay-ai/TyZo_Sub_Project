@@ -19,7 +19,6 @@ import { Route as YeuCauRouteImport } from './routes/yeu-cau'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPayCassoRouteImport } from './routes/api/pay/casso'
-import { Route as ApiPayRiengRouteImport } from './routes/api/pay/rieng'
 import { Route as ApiPaySepayRouteImport } from './routes/api/pay/sepay'
 
 const IndexRoute = IndexRouteImport.update({
@@ -72,11 +71,6 @@ const ApiPayCassoRoute = ApiPayCassoRouteImport.update({
   path: '/api/pay/casso',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPayRiengRoute = ApiPayRiengRouteImport.update({
-  id: '/api/pay/rieng',
-  path: '/api/pay/rieng',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPaySepayRoute = ApiPaySepayRouteImport.update({
   id: '/api/pay/sepay',
   path: '/api/pay/sepay',
@@ -94,7 +88,6 @@ export interface FileRoutesByFullPath {
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
-  '/api/pay/rieng': typeof ApiPayRiengRoute
   '/api/pay/sepay': typeof ApiPaySepayRoute
 }
 export interface FileRoutesByTo {
@@ -108,7 +101,6 @@ export interface FileRoutesByTo {
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
-  '/api/pay/rieng': typeof ApiPayRiengRoute
   '/api/pay/sepay': typeof ApiPaySepayRoute
 }
 export interface FileRoutesById {
@@ -123,7 +115,6 @@ export interface FileRoutesById {
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
-  '/api/pay/rieng': typeof ApiPayRiengRoute
   '/api/pay/sepay': typeof ApiPaySepayRoute
 }
 export interface FileRouteTypes {
@@ -139,7 +130,6 @@ export interface FileRouteTypes {
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
-    | '/api/pay/rieng'
     | '/api/pay/sepay'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -153,7 +143,6 @@ export interface FileRouteTypes {
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
-    | '/api/pay/rieng'
     | '/api/pay/sepay'
   id:
     | '__root__'
@@ -167,7 +156,6 @@ export interface FileRouteTypes {
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
-    | '/api/pay/rieng'
     | '/api/pay/sepay'
   fileRoutesById: FileRoutesById
 }
@@ -182,7 +170,6 @@ export interface RootRouteChildren {
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPayCassoRoute: typeof ApiPayCassoRoute
-  ApiPayRiengRoute: typeof ApiPayRiengRoute
   ApiPaySepayRoute: typeof ApiPaySepayRoute
 }
 
@@ -258,13 +245,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPayCassoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/pay/rieng': {
-      id: '/api/pay/rieng'
-      path: '/api/pay/rieng'
-      fullPath: '/api/pay/rieng'
-      preLoaderRoute: typeof ApiPayRiengRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/pay/sepay': {
       id: '/api/pay/sepay'
       path: '/api/pay/sepay'
@@ -286,7 +266,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRoomGroqRoute: ApiRoomGroqRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPayCassoRoute: ApiPayCassoRoute,
-  ApiPayRiengRoute: ApiPayRiengRoute,
   ApiPaySepayRoute: ApiPaySepayRoute,
 }
 export const routeTree = rootRouteImport

@@ -3,42 +3,7 @@ import { addCost, deleteCost, getMoney, getOrg, resetTestMoney, setNickname, upd
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
-import { ownPayStatus, saveOwnPaySecret } from "@/lib/pay-own";
 import { formatMoney, parseMoney } from "@/lib/money-format";
-
-function OwnPayBox() {
-  const [secret, setSecret] = useState("");
-  const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    void ownPayStatus().then((row) => setOpen(row.open)).catch(() => setOpen(false));
-  }, []);
-  return (
-    <form
-      className="grid gap-2 rounded-2xl border border-line p-3"
-      onSubmit={(event) => {
-        event.preventDefault();
-        if (busy) return;
-        setBusy(true);
-        void saveOwnPaySecret({ data: secret.trim() })
-          .then((row) => {
-            setOpen(row.open);
-            setSecret("");
-            pushToast(row.open ? "Đã mở cổng xác nhận riêng." : "Đã đóng cổng xác nhận riêng.");
-          })
-          .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
-          .finally(() => setBusy(false));
-      }}
-    >
-      <h2 className="font-semibold">Cổng xác nhận riêng</h2>
-      <p className="text-xs text-muted">
-        {open ? "Đang mở." : "Đang đóng."} API của bạn gửi POST /api/pay/rieng, header x-tyzo-secret, nội dung mã đơn, số tiền và mã giao dịch. Không khớp đơn đang chờ thì không cộng.
-      </p>
-      <input value={secret} onChange={(event) => setSecret(event.target.value)} type="password" autoComplete="off" placeholder="Khóa mới, ít nhất 16 ký tự. Để trống là đóng." className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-      <button type="submit" className="min-tap rounded-full border border-line disabled:opacity-40" disabled={busy}>{busy ? "Đang lưu…" : "Lưu khóa"}</button>
-    </form>
-  );
-}
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -296,7 +261,6 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           </div>
         </form>
       )}
-      {owner && <OwnPayBox />}
       {owner && (
         <div className="grid gap-2 rounded-2xl border border-danger/40 bg-danger/5 p-3">
           <h2 className="font-semibold text-danger">Reset tiền (chỉ khi test)</h2>
