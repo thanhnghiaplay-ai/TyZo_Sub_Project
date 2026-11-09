@@ -15,6 +15,26 @@ const files = import.meta.glob("/data/glossaries/*/*.json", {
   eager: true,
 }) as Record<string, string>;
 
+export function fileTerms(lang?: string, genre?: string) {
+  const rows: { lang: string; genre: string; source: string; target: string }[] = [];
+  for (const [path, raw] of Object.entries(files)) {
+    const match = path.match(/glossaries\/([^/]+)\/([^/]+)\.json$/i);
+    if (!match) continue;
+    const fileLang = match[1].toLowerCase();
+    const fileGenre = match[2].toLowerCase();
+    if (lang && lang !== fileLang) continue;
+    if (genre && genre !== fileGenre) continue;
+    const data = JSON.parse(raw) as RawTerm[] | { terms?: RawTerm[] };
+    const terms = Array.isArray(data) ? data : (data.terms ?? []);
+    for (const term of terms) {
+      const source = term.source?.trim();
+      if (!source) continue;
+      rows.push({ lang: fileLang, genre: fileGenre, source, target: (term.target ?? source).trim() });
+    }
+  }
+  return rows;
+}
+
 let seeding: Promise<void> | null = null;
 
 export function ensureGlossarySeed(sql: Sql): Promise<void> {

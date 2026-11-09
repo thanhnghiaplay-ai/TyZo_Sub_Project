@@ -936,7 +936,9 @@ export function Studio() {
           <option value="daily">Hằng ngày</option>
         </Select>
         <p className="text-sm text-muted">
-          {app.glossaryInfo?.count > 0 ? (
+          {app.glossaryInfo?.failed ? (
+            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
+          ) : app.glossaryInfo?.count > 0 ? (
             <>
               Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ của thể loại này.
             </>

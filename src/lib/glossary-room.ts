@@ -70,9 +70,10 @@ export const suggestTerms = createServerFn({ method: "POST" })
 
 export const listGlossary = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { lang: string; genre: string; q?: string }) => ({
+  .validator((input: { lang: string; genre: string; q?: string; offset?: number }) => ({
     ...glossaryPair(input?.lang ?? "", input?.genre ?? ""),
     q: (input?.q ?? "").trim().slice(0, 40),
+    offset: Math.max(0, Math.min(5000, Math.floor(Number(input?.offset) || 0))),
   }))
   .handler(async ({ context, data }) => {
     await ownerOnly(context.userId);
@@ -81,13 +82,18 @@ export const listGlossary = createServerFn({ method: "GET" })
     const pack = await sql<{ hidden: boolean }>`
       select hidden from glossary_packs where lang = ${data.lang} and genre = ${data.genre}
     `;
+    const counted = await sql<{ n: number }>`
+      select count(*)::int as n from glossary_terms
+      where lang = ${data.lang} and genre = ${data.genre}
+        and (${data.q} = '' or source ilike ${like} or target ilike ${like})
+    `;
     const terms = await sql<TermRow>`
       select id, source, target, hidden, note
       from glossary_terms
       where lang = ${data.lang} and genre = ${data.genre}
         and (${data.q} = '' or source ilike ${like} or target ilike ${like})
       order by hidden, length(source) desc
-      limit 40
+      limit 50 offset ${data.offset}
     `;
     const suggestions = await sql<{ id: number; source: string; target: string; status: string }>`
       select id, source, target, status
@@ -96,7 +102,7 @@ export const listGlossary = createServerFn({ method: "GET" })
       order by id desc
       limit 20
     `;
-    return { hidden: Boolean(pack[0]?.hidden), terms, suggestions };
+    return { hidden: Boolean(pack[0]?.hidden), total: counted[0]?.n ?? 0, terms, suggestions };
   });
 
 export const saveGlossaryTerm = createServerFn({ method: "POST" })
@@ -203,3 +209,64 @@ async function audit(userId: string, action: string, note: string) {
     values (${userId}, ${action}, ${null}, ${note.slice(0, 500)}, ${""}, ${"chu"}, ${""})
   `;
 }
+
+export const setGlossaryPacks = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { lang?: string; hidden: boolean }) => {
+    const lang = (input?.lang ?? "").trim().toLowerCase();
+    if (lang && !["ja", "ko", "zh", "en"].includes(lang)) throw new Error("Ngôn ngữ không đúng.");
+    return { lang, hidden: Boolean(input?.hidden) };
+  })
+  .handler(async ({ context, data }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const rows = await sql<{ n: number }>`
+      with u as (
+        update glossary_packs set hidden = ${data.hidden}, updated_at = now()
+        where (${data.lang} = '' or lang = ${data.lang}) and hidden <> ${data.hidden}
+        returning 1
+      )
+      select count(*)::int as n from u
+    `;
+    await audit(context.userId, data.hidden ? "an-tat-ca-thuat-ngu" : "mo-tat-ca-thuat-ngu", `${data.lang || "tat-ca"}: ${rows[0]?.n ?? 0}`);
+    return { changed: rows[0]?.n ?? 0 };
+  });
+
+export const restoreGlossary = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { lang: string; genre: string }) => glossaryPair(input?.lang ?? "", input?.genre ?? ""))
+  .handler(async ({ context, data }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const { fileTerms } = await import("@/lib/glossary-seed.server");
+    const rows = fileTerms(data.lang, data.genre);
+    let added = 0;
+    for (let i = 0; i < rows.length; i += 80) {
+      const chunk = rows.slice(i, i + 80);
+      const values: unknown[] = [];
+      const parts = chunk.map((row, index) => {
+        const base = index * 4;
+        values.push(row.lang, row.genre, row.source, row.target);
+        return `($${base + 1},$${base + 2},$${base + 3},$${base + 4})`;
+      });
+      const inserted = await sql.query<{ id: number }>(
+        `insert into glossary_terms (lang, genre, source, target) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing returning id`,
+        values,
+      );
+      added += inserted.length;
+    }
+    await audit(context.userId, "khoi-phuc-thuat-ngu", `${data.lang}/${data.genre}: ${added}`);
+    return { added };
+  });
+
+export const glossaryHealth = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const { fileTerms } = await import("@/lib/glossary-seed.server");
+    const files = fileTerms().length;
+    const rows = await sql<{ n: number }>`select count(*)::int as n from glossary_terms`;
+    const hidden = await sql<{ n: number }>`select count(*)::int as n from glossary_packs where hidden`;
+    return { files, stored: rows[0]?.n ?? 0, hiddenPacks: hidden[0]?.n ?? 0 };
+  });

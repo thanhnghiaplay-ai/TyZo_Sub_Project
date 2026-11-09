@@ -266,6 +266,7 @@ export function usePipeline() {
     sources: string[];
     terms: Array<{ source: string; target: string; user?: boolean }>;
     userCount: number;
+    failed?: boolean;
   }>({
     count: 0,
     sources: [],
@@ -362,6 +363,7 @@ export function usePipeline() {
           count: merged.length,
           userCount: userTerms.length,
           sources: pack.sources,
+          failed: Boolean(pack.error),
           terms: [
             ...userTerms.map((t) => ({ source: t.source, target: t.target, user: true })),
             ...merged
@@ -376,6 +378,7 @@ export function usePipeline() {
             count: userTerms.length,
             userCount: userTerms.length,
             sources: [],
+            failed: true,
             terms: userTerms.map((t) => ({ source: t.source, target: t.target, user: true })),
           });
       }

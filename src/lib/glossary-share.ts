@@ -19,6 +19,26 @@ const GENRES = new Set([
   "auto",
 ]);
 
+export const GENRE_LABELS: Record<string, string> = {
+  auto: "Tự động",
+  action: "Hành động",
+  adventure: "Phiêu lưu",
+  crime: "Hình sự / giang hồ",
+  scifi: "Viễn tưởng / giả tưởng",
+  horror: "Kinh dị",
+  romance: "Tình cảm / lãng mạn",
+  psychological: "Tâm lý",
+  comedy: "Hài",
+  costume: "Cổ trang / kiếm hiệp",
+  historical: "Lịch sử / thời kỳ",
+  mystery: "Trinh thám / bí ẩn",
+  sports: "Thể thao",
+  adult: "Phim gắn nhãn 18+",
+  sex: "Phim thoại kín",
+  series: "Phim bộ / phim mới chiếu",
+  daily: "Hằng ngày",
+};
+
 export function glossaryPair(lang: string, genre: string) {
   const nextLang = lang.trim().toLowerCase();
   const nextGenre = (genre || "auto").trim().toLowerCase();

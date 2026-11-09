@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "2.23.0",
+    time: "12:19 ngày 09/11/2026",
+    area: "du-lieu",
+    text: "Danh sách thuật ngữ phân trang 50. Ẩn hoặc mở mọi bộ. Khôi phục từ thiếu không ghi đè từ đã sửa. Lỗi tải không còn bị nuốt thành bộ trống.",
+  },
+  {
     version: "2.22.0",
     time: "11:46 ngày 09/11/2026",
     area: "du-lieu",

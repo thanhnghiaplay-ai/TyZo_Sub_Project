@@ -84,6 +84,8 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [amount, setAmount] = useState("");
 
   const [fault, setFault] = useState("");
+  const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
 
@@ -94,6 +96,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       setCost(result.cost);
       setBreakdown(result.breakdown);
       setFault("");
+      setReady(true);
     }).catch((error) => {
       const message = error instanceof Error ? error.message : "Chưa đọc được doanh thu.";
       setFault(message);
@@ -124,7 +127,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         {points.map((point) => (
           <li key={point.bucket}>{point.bucket} · thu {dong(point.revenue)} · chi {dong(point.cost)}</li>
         ))}
-        {points.length === 0 && <li>Chưa có tiền nạp thật trong khoảng này.</li>}
+        {points.length === 0 && <li>{ready ? "Chưa có tiền nạp thật trong khoảng này." : "Đang tải…"}</li>}
       </ul>
       <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
@@ -146,6 +149,8 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           className="grid gap-2 rounded-2xl border border-line p-3"
           onSubmit={(event) => {
             event.preventDefault();
+            if (saving) return;
+            setSaving(true);
             void addCost({ data: { day, label, amount: parseMoney(amount) } })
               .then(() => {
                 setLabel("");
@@ -153,14 +158,15 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
                 pushToast("Đã ghi chi phí.");
                 load();
               })
-              .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa ghi được.", "bad"));
+              .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa ghi được.", "bad"))
+              .finally(() => setSaving(false));
           }}
         >
           <h2 className="font-semibold">Ghi chi phí</h2>
           <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Vercel, Neon, phí cổng" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <button type="submit" className="min-tap rounded-full bg-accent font-semibold text-ink">Lưu chi phí</button>
+          <button type="submit" className="min-tap rounded-full bg-accent font-semibold text-ink disabled:opacity-40" disabled={saving}>{saving ? "Đang lưu…" : "Lưu chi phí"}</button>
         </form>
       )}
       {owner && (

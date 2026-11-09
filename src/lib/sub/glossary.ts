@@ -18,7 +18,8 @@ export type GlossaryTerm = {
 
 export type GlossaryPack = {
   terms: GlossaryTerm[];
-  sources: string[]; // which files contributed
+  sources: string[];
+  error?: boolean;
 };
 
 const cache = new Map<string, GlossaryPack>();
@@ -37,13 +38,13 @@ function normalizeLang(code: string): string {
   return lower.slice(0, 2);
 }
 
-async function fetchJson(lang: string, genre: string): Promise<{ terms: GlossaryTerm[] | null; keep: boolean }> {
+async function fetchJson(lang: string, genre: string): Promise<{ terms: GlossaryTerm[] | null; keep: boolean; error?: boolean }> {
   try {
     const { getGlossaryPack } = await import("@/lib/glossary-room");
     const pack = await getGlossaryPack({ data: { lang, genre } });
     return { terms: pack.terms as GlossaryTerm[], keep: true };
   } catch {
-    return { terms: null, keep: false };
+    return { terms: null, keep: false, error: true };
   }
 }
 
@@ -68,6 +69,7 @@ export async function loadGenreGlossary(sourceLang: string, genre: string, targe
   const map = new Map<string, GlossaryTerm>();
   if (lang && g) {
     const loaded = await fetchJson(lang, g);
+    if (loaded.error) return { terms: [], sources: [], error: true };
     if (!loaded.keep) return { terms: [], sources: [] };
     const terms = loaded.terms;
     if (terms?.length) {
