@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.5.0",
+    time: "20:11 ngày 09/11/2026",
+    area: "khac",
+    text: "Tab Thư chỉ Chủ. Khóa nằm ở room_settings mail_desk, không trả ra màn hình. Gửi thử dùng khóa đã lưu, không có thì dùng biến môi trường. Chưa bật xác minh email hay quên mật khẩu.",
+  },
+  {
     version: "3.4.2",
     time: "18:41 ngày 09/11/2026",
     area: "tien",

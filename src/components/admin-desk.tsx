@@ -39,6 +39,7 @@ import { AccountCard } from "@/components/role-mark";
 import { BrandMark } from "@/components/brand-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
+import { MailDesk } from "@/components/mail-desk";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { pushToast } from "@/components/toast";
@@ -159,7 +160,7 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv">("viec");
+  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu">("viec");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -301,6 +302,7 @@ export function AdminDesk() {
           {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
           {role === "chu" && <TabButton current={tab} id="thuat-ngu" onPick={setTab}>Thuật ngữ</TabButton>}
           {role === "chu" && <TabButton current={tab} id="ctv" onPick={setTab}>Cộng tác</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="thu" onPick={setTab}>Thư</TabButton>}
           <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
         </div>
       )}
@@ -310,6 +312,7 @@ export function AdminDesk() {
       {role && tab === "nhat-ky" && <AdminNotes />}
       {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
       {role === "chu" && tab === "ctv" && <AffiliateBoard />}
+      {role === "chu" && tab === "thu" && <MailDesk />}
       {role && tab === "viec" && stats && (
         <section className="grid gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
@@ -700,8 +703,8 @@ function TabButton({
   children,
 }: {
   current: string;
-  id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv";
-  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv") => void;
+  id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu";
+  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu") => void;
   children: string;
 }) {
   return (
