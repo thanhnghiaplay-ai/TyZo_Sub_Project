@@ -5,6 +5,8 @@ import {
   listGlossary,
   restoreGlossary,
   saveGlossaryTerm,
+  exportGlossary,
+  importGlossary,
   setGlossaryHidden,
   setGlossaryPacks,
   setSuggestionStatus,
@@ -137,6 +139,47 @@ export function GlossaryBoard() {
         >
           Khôi phục từ gốc
         </button>
+        <button
+          type="button"
+          className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
+          disabled={busy}
+          onClick={() =>
+            void run(async () => {
+              const result = await exportGlossary({ data: { lang, genre } });
+              const blob = new Blob([JSON.stringify(result.rows, null, 2)], { type: "application/json" });
+              const link = document.createElement("a");
+              link.href = URL.createObjectURL(blob);
+              link.download = `thuat-ngu-${lang}-${genre}.json`;
+              link.click();
+              URL.revokeObjectURL(link.href);
+              setNote(`Đã xuất ${result.rows.length} từ.`);
+            })
+          }
+        >
+          Xuất file
+        </button>
+        <label className={"min-tap rounded-full border border-line px-4 text-sm " + (busy ? "opacity-40" : "")}>
+          Nhập file
+          <input
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            disabled={busy}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (!file) return;
+              void run(async () => {
+                const text = await file.text();
+                const parsed = JSON.parse(text) as { source?: string; target?: string }[];
+                if (!Array.isArray(parsed)) throw new Error("File phải là danh sách từ.");
+                const result = await importGlossary({ data: { lang, genre, rows: parsed.map((row) => ({ source: row.source ?? "", target: row.target ?? "" })) } });
+                setNote(`Đã ghi ${result.added} từ.`);
+                await load();
+              });
+            }}
+          />
+        </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
         <input className="min-tap rounded-xl border border-line bg-bg px-3" placeholder="Từ gốc" value={source} onChange={(event) => setSource(event.target.value)} />

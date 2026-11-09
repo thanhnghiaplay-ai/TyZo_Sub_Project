@@ -3,7 +3,42 @@ import { addCost, getMoney, getOrg, resetTestMoney, setNickname, type MoneyBreak
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
+import { ownPayStatus, saveOwnPaySecret } from "@/lib/pay-own";
 import { formatMoney, parseMoney } from "@/lib/money-format";
+
+function OwnPayBox() {
+  const [secret, setSecret] = useState("");
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    void ownPayStatus().then((row) => setOpen(row.open)).catch(() => setOpen(false));
+  }, []);
+  return (
+    <form
+      className="grid gap-2 rounded-2xl border border-line p-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (busy) return;
+        setBusy(true);
+        void saveOwnPaySecret({ data: secret.trim() })
+          .then((row) => {
+            setOpen(row.open);
+            setSecret("");
+            pushToast(row.open ? "Đã mở cổng xác nhận riêng." : "Đã đóng cổng xác nhận riêng.");
+          })
+          .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
+          .finally(() => setBusy(false));
+      }}
+    >
+      <h2 className="font-semibold">Cổng xác nhận riêng</h2>
+      <p className="text-xs text-muted">
+        {open ? "Đang mở." : "Đang đóng."} API của bạn gửi POST /api/pay/rieng, header x-tyzo-secret, nội dung mã đơn, số tiền và mã giao dịch. Không khớp đơn đang chờ thì không cộng.
+      </p>
+      <input value={secret} onChange={(event) => setSecret(event.target.value)} type="password" autoComplete="off" placeholder="Khóa mới, ít nhất 16 ký tự. Để trống là đóng." className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+      <button type="submit" className="min-tap rounded-full border border-line disabled:opacity-40" disabled={busy}>{busy ? "Đang lưu…" : "Lưu khóa"}</button>
+    </form>
+  );
+}
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -78,7 +113,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [points, setPoints] = useState<MoneyPoint[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
-  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0 });
+  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0, hoa: 0 });
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -121,7 +156,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       <div className="grid grid-cols-3 gap-2">
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((breakdown.lai - cost) > 0 ? "text-accent" : (breakdown.lai - cost) < 0 ? "text-danger" : "")}>{(breakdown.lai - cost) > 0 ? "+" : ""}{dong(breakdown.lai - cost)}</p></article>
+        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((breakdown.lai - cost - breakdown.hoa) > 0 ? "text-accent" : (breakdown.lai - cost - breakdown.hoa) < 0 ? "text-danger" : "")}>{(breakdown.lai - cost - breakdown.hoa) > 0 ? "+" : ""}{dong(breakdown.lai - cost - breakdown.hoa)}</p></article>
       </div>
       <ul className="space-y-1 text-sm text-muted">
         {points.map((point) => (
@@ -139,10 +174,11 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
           <li className="flex justify-between gap-2"><span>Giá vốn lượt (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
           <li className="flex justify-between gap-2"><span>Lãi gộp (gói + lượt − giá vốn)</span><span className="font-medium text-fg">{dong(breakdown.lai)}</span></li>
+          <li className="flex justify-between gap-2"><span>Hoa hồng đã ghi</span><span className="font-medium text-fg">{dong(breakdown.hoa)}</span></li>
           <li className="flex justify-between gap-2"><span>Chi phí vận hành (ghi tay)</span><span className="font-medium text-fg">{dong(breakdown.chi)}</span></li>
         </ul>
         <p className="text-xs text-muted">
-          Lời lỗ = lãi gộp trừ chi phí ghi tay. Lượt trước bản này chưa lưu giá vốn nên có thể làm lời lỗ cao hơn thực tế.
+          Lời lỗ = lãi gộp trừ hoa hồng và chi phí ghi tay. Lượt trước bản này chưa lưu giá vốn nên có thể làm lời lỗ cao hơn thực tế.
           Tiền thử và gói mở tay không tính. Key của khách không đi qua sổ này.
         </p>
       </div>
@@ -171,6 +207,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <button type="submit" className="min-tap rounded-full bg-accent font-semibold text-ink disabled:opacity-40" disabled={saving}>{saving ? "Đang lưu…" : "Lưu chi phí"}</button>
         </form>
       )}
+      {owner && <OwnPayBox />}
       {owner && (
         <div className="grid gap-2 rounded-2xl border border-danger/40 bg-danger/5 p-3">
           <h2 className="font-semibold text-danger">Reset tiền (chỉ khi test)</h2>

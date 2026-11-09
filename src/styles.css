@@ -211,6 +211,54 @@
   }
 }
 
+@media (orientation: landscape) and (max-height: 720px) {
+  .studio-stage {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .studio-workspace {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .studio-video,
+  .studio-cues {
+    height: auto;
+    max-height: none;
+    min-height: 0;
+  }
+
+  .studio-video {
+    flex: 1 1 55%;
+  }
+
+  .studio-cues {
+    flex: 1 1 45%;
+  }
+
+  .studio-tools {
+    position: static;
+    flex: 0 0 42%;
+    max-height: 42%;
+  }
+}
+
+.room-frame {
+  width: 100%;
+  max-width: 32rem;
+}
+
+@media (min-width: 700px) {
+  .room-frame {
+    max-width: 52rem;
+  }
+}
+
 @media (max-width: 699px) {
   .studio-tools {
     position: static;

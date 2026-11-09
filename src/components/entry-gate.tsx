@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-09.2";
+export const TERMS_VERSION = "2026-11-09.3";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -225,7 +225,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p className="gate-key">Gỡ khóa hoặc gỡ cấm không xóa lịch sử xử lý.</p>
         <h2>9. Giới thiệu</h2>
         <p>
-          Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã. Cổng nạp tự xác nhận do phòng viết riêng, chưa nằm trong bản này.
+          Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã. Cổng xác nhận nạp riêng chỉ cộng khi khớp đúng đơn đang chờ. Sai khóa hoặc không khớp thì không cộng.
         </p>
       </article>
       <footer className="gate-actions">

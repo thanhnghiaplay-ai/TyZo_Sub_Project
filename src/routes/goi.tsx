@@ -78,7 +78,7 @@ function GoiDemo() {
   }
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-lg flex-col bg-bg text-fg">
+    <main className="room-frame mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
         <div>
           <p className="text-xs font-medium tracking-wide text-accent">Bản xem thử giá</p>

@@ -270,3 +270,47 @@ export const glossaryHealth = createServerFn({ method: "GET" })
     const hidden = await sql<{ n: number }>`select count(*)::int as n from glossary_packs where hidden`;
     return { files, stored: rows[0]?.n ?? 0, hiddenPacks: hidden[0]?.n ?? 0 };
   });
+
+export const exportGlossary = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { lang: string; genre: string }) => glossaryPair(input?.lang ?? "", input?.genre ?? ""))
+  .handler(async ({ context, data }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const rows = await sql<{ source: string; target: string }>`
+      select source, target from glossary_terms
+      where lang = ${data.lang} and genre = ${data.genre} and hidden = false
+      order by source
+      limit 5000
+    `;
+    return { rows };
+  });
+
+export const importGlossary = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { lang: string; genre: string; rows: { source: string; target: string }[] }) => {
+    const pair = glossaryPair(input?.lang ?? "", input?.genre ?? "");
+    const rows = (input?.rows ?? [])
+      .slice(0, 400)
+      .map((row) => ({ source: String(row?.source ?? "").trim().slice(0, 80), target: String(row?.target ?? "").trim().slice(0, 80) }))
+      .filter((row) => row.source && row.target);
+    if (!rows.length) throw new Error("Không có dòng nào dùng được.");
+    return { ...pair, rows };
+  })
+  .handler(async ({ context, data }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    await sql`insert into glossary_packs (lang, genre) values (${data.lang}, ${data.genre}) on conflict do nothing`;
+    let added = 0;
+    for (const row of data.rows) {
+      const inserted = await sql<{ id: number }>`
+        insert into glossary_terms (lang, genre, source, target)
+        values (${data.lang}, ${data.genre}, ${row.source}, ${row.target})
+        on conflict (lang, genre, lower(source)) do update set target = ${row.target}, hidden = false, updated_at = now()
+        returning id
+      `;
+      if (inserted.length) added += 1;
+    }
+    await audit(context.userId, "nhap-thuat-ngu", `${data.lang}/${data.genre}: ${added}`);
+    return { added };
+  });

@@ -1022,6 +1022,7 @@ export type MoneyBreakdown = {
   chi: number;
   von: number;
   lai: number;
+  hoa: number;
 };
 
 export const getMoney = createServerFn({ method: "POST" })
@@ -1057,6 +1058,10 @@ export const getMoney = createServerFn({ method: "POST" })
       from run_tickets
       where created_at > now() - ${window}::interval
     `;
+    const hoaRows = await sql<{ hoa: number }>`
+      select coalesce(sum(amount), 0)::int as hoa from commission_events
+      where status <> 'huy' and created_at > now() - ${window}::interval
+    `;
     const byKind = Object.fromEntries(kinds.map((row) => [row.kind, row.amount]));
     const buckets = new Map<string, MoneyPoint>();
     for (const row of revenue) buckets.set(row.bucket, { bucket: row.bucket, revenue: row.amount, cost: 0 });
@@ -1070,6 +1075,7 @@ export const getMoney = createServerFn({ method: "POST" })
     const charged = Number(runSum[0]?.charged ?? 0);
     const refundedRun = Number(runSum[0]?.refunded ?? 0);
     const von = Number(runSum[0]?.von ?? 0);
+    const hoa = Number(hoaRows[0]?.hoa ?? 0);
     const luot = Math.max(0, charged - refundedRun);
     const goi = Math.abs(Number(byKind.goi ?? 0));
     const lai = goi + luot - von;
@@ -1086,6 +1092,7 @@ export const getMoney = createServerFn({ method: "POST" })
         chi: costTotal,
         von,
         lai,
+        hoa,
       },
     };
   });

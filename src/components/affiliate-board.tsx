@@ -9,6 +9,7 @@ export function AffiliateBoard() {
   const [windowDays, setWindowDays] = useState("0");
   const [minPay, setMinPay] = useState("200000");
   const [paid, setPaid] = useState("");
+  const [saving, setSaving] = useState(false);
   const [people, setPeople] = useState<{ user_id: string; email: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }[]>([]);
   const [payouts, setPayouts] = useState<{ id: number; email: string; amount: number }[]>([]);
 
@@ -43,8 +44,10 @@ export function AffiliateBoard() {
       </div>
       <button
         type="button"
-        className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink"
-        onClick={() =>
+        className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40"
+        disabled={saving}
+        onClick={() => {
+          setSaving(true);
           void saveAffiliateRules({
             data: {
               ratePlanBp: Math.round(Number(plan) * 100),
@@ -59,9 +62,10 @@ export function AffiliateBoard() {
               load();
             })
             .catch((error: Error) => setNote(error.message))
-        }
+            .finally(() => setSaving(false));
+        }}
       >
-        Lưu tỷ lệ
+        {saving ? "Đang lưu…" : "Lưu tỷ lệ"}
       </button>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
       <div className="space-y-2">
@@ -73,6 +77,29 @@ export function AffiliateBoard() {
               <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void setAffiliateState({ data: { userId: person.user_id, status: "hoat-dong", ratePlanBp: person.rate_plan_bp, rateRunBp: person.rate_run_bp } }).then(load)}>Mở</button>
               <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void setAffiliateState({ data: { userId: person.user_id, status: "tam-khoa", ratePlanBp: person.rate_plan_bp, rateRunBp: person.rate_run_bp } }).then(load)}>Tạm khóa</button>
             </div>
+            <form
+              className="mt-2 flex flex-wrap items-end gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const data = new FormData(event.currentTarget);
+                void setAffiliateState({
+                  data: {
+                    userId: person.user_id,
+                    ratePlanBp: Math.round(Number(data.get("plan")) * 100),
+                    rateRunBp: Math.round(Number(data.get("run")) * 100),
+                  },
+                })
+                  .then(() => {
+                    setNote("Đã lưu tỷ lệ riêng.");
+                    load();
+                  })
+                  .catch((error: Error) => setNote(error.message));
+              }}
+            >
+              <label className="text-xs">Gói %<input name="plan" defaultValue={String(person.rate_plan_bp / 100)} className="min-tap w-20 rounded-xl border border-line bg-bg px-2" /></label>
+              <label className="text-xs">Lượt %<input name="run" defaultValue={String(person.rate_run_bp / 100)} className="min-tap w-20 rounded-xl border border-line bg-bg px-2" /></label>
+              <button type="submit" className="min-tap rounded-full border border-line px-3">Lưu tỷ lệ riêng</button>
+            </form>
           </article>
         ))}
       </div>

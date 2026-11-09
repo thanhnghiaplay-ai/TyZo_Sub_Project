@@ -94,10 +94,14 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
     const pool = new Pool({ connectionString: databaseUrl });
-    return toSql(async <T>(text: string, params: unknown[]) => {
+    const sql = toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
     });
+    void import("@/lib/glossary-seed.server")
+      .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
+      .catch(() => undefined);
+    return sql;
   })().catch((err) => {
     globalRef.__pgSqlPromise__ = undefined;
     throw err;
@@ -160,11 +164,14 @@ async function createPgliteSql(): Promise<Sql> {
     .then(migrate);
   globalRef.__pgliteMigrateChain__ = pass;
   await pass;
-
-  return toSql(async <T>(text: string, params: unknown[]) => {
+  const sql = toSql(async <T>(text: string, params: unknown[]) => {
     const result = await pg.query<T>(text, params);
     return result.rows;
   });
+  void import("@/lib/glossary-seed.server")
+    .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
+    .catch(() => undefined);
+  return sql;
 }
 
 let sqlPromise: Promise<Sql> | null = null;
