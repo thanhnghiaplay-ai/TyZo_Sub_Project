@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, getMoney, getOrg, resetTestMoney, setNickname, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
+import { addCost, deleteCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
@@ -129,6 +129,8 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
+  const [costs, setCosts] = useState<CostRow[]>([]);
+  const [editing, setEditing] = useState<number | null>(null);
 
   const [fault, setFault] = useState("");
   const [ready, setReady] = useState(false);
@@ -142,6 +144,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       setRevenue(result.revenue);
       setCost(result.cost);
       setBreakdown(result.breakdown);
+      setCosts(result.costs);
       setFault("");
       setReady(true);
     }).catch((error) => {
@@ -201,22 +204,90 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
             event.preventDefault();
             if (saving) return;
             setSaving(true);
-            void addCost({ data: { day, label, amount: parseMoney(amount) } })
+            const task = editing
+              ? updateCost({ data: { id: editing, day, label, amount: parseMoney(amount) } })
+              : addCost({ data: { day, label, amount: parseMoney(amount) } });
+            void task
               .then(() => {
+                setEditing(null);
                 setLabel("");
                 setAmount("");
-                pushToast("Đã ghi chi phí.");
+                pushToast(editing ? "Đã sửa khoản chi." : "Đã ghi chi phí.");
                 load();
               })
               .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa ghi được.", "bad"))
               .finally(() => setSaving(false));
           }}
         >
-          <h2 className="font-semibold">Ghi chi phí</h2>
+          <h2 className="font-semibold">{editing ? "Sửa khoản chi" : "Ghi chi phí"}</h2>
           <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Vercel, Neon, phí cổng" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+          <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Tên khoản chi" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <button type="submit" className="min-tap rounded-full bg-accent font-semibold text-ink disabled:opacity-40" disabled={saving}>{saving ? "Đang lưu…" : "Lưu chi phí"}</button>
+          <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent font-semibold text-ink disabled:opacity-40" disabled={saving}>{saving ? "Đang lưu…" : editing ? "Lưu thay đổi" : "Lưu chi phí"}</button>
+          {editing && (
+            <button
+              type="button"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-line"
+              onClick={() => {
+                setEditing(null);
+                setLabel("");
+                setAmount("");
+              }}
+            >
+              Hủy sửa
+            </button>
+          )}
+          <div className="grid gap-2">
+            {costs.map((row) => (
+              <article key={row.id} className="grid gap-2 border-t border-line pt-2 text-sm">
+                <p className="font-medium">{row.label}</p>
+                <p className="text-muted">{row.day.split("-").reverse().join("/")} · {dong(row.amount)}</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
+                    onClick={() => {
+                      setEditing(row.id);
+                      setDay(row.day);
+                      setLabel(row.label);
+                      setAmount(formatMoney(row.amount));
+                    }}
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
+                    onClick={() => {
+                      setEditing(null);
+                      setLabel(row.label);
+                      setAmount(formatMoney(row.amount));
+                      setDay(vnDay());
+                    }}
+                  >
+                    Dùng lại
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
+                    onClick={() => {
+                      if (!window.confirm(`Xóa khoản «${row.label}»?`)) return;
+                      void deleteCost({ data: row.id })
+                        .then(() => {
+                          if (editing === row.id) setEditing(null);
+                          pushToast("Đã xóa khoản chi.");
+                          load();
+                        })
+                        .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa xóa được.", "bad"));
+                    }}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </article>
+            ))}
+            {ready && costs.length === 0 && <p className="text-sm text-muted">Chưa có khoản chi trong khoảng đang xem.</p>}
+          </div>
         </form>
       )}
       {owner && <OwnPayBox />}

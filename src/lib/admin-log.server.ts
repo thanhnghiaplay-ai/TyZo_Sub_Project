@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.3.0",
+    time: "14:16 ngày 09/11/2026",
+    area: "tien",
+    text: "room_costs hiện tối đa 80 dòng trong khoảng đang xem. Chủ sửa hoặc xóa từng dòng. Dùng lại chỉ chép tên và số tiền sang khoản mới.",
+  },
+  {
     version: "3.2.1",
     time: "14:13 ngày 09/11/2026",
     area: "tien",

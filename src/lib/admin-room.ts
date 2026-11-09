@@ -1042,6 +1042,7 @@ export const setNickname = createServerFn({ method: "POST" })
   });
 
 export type MoneyPoint = { bucket: string; revenue: number; cost: number };
+export type CostRow = { id: number; day: string; label: string; amount: number };
 export type MoneyBreakdown = {
   nap: number;
   goi: number;
@@ -1057,7 +1058,7 @@ export type MoneyBreakdown = {
 export const getMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((span: string) => (span === "week" || span === "month" || span === "year" ? span : "day"))
-  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number; breakdown: MoneyBreakdown }> => {
+  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number; breakdown: MoneyBreakdown; costs: CostRow[] }> => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -1068,6 +1069,13 @@ export const getMoney = createServerFn({ method: "POST" })
       from room_ledger
       where kind = 'nap' and created_at > now() - ${window}::interval
       group by 1 order by 1
+    `;
+    const savedCosts = await sql<CostRow>`
+      select id, to_char(spent_on, 'YYYY-MM-DD') as day, label, amount
+      from room_costs
+      where spent_on::timestamp > now() - ${window}::interval
+      order by spent_on desc, id desc
+      limit 80
     `;
     const costs = await sql<{ bucket: string; amount: number }>`
       select to_char(date_trunc(${data}::text, spent_on::timestamp), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
@@ -1123,6 +1131,7 @@ export const getMoney = createServerFn({ method: "POST" })
         lai,
         hoa,
       },
+      costs: savedCosts,
     };
   });
 
@@ -1142,6 +1151,49 @@ export const addCost = createServerFn({ method: "POST" })
     const sql = await getSql();
     await sql`insert into room_costs (spent_on, label, amount) values (${data.day}, ${data.label}, ${data.amount})`;
     await writeAudit(context.userId, "chi-phi", null, `${data.day} ${data.label} ${data.amount}`);
+    return { ok: true };
+  });
+
+export const updateCost = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { id: number; day: string; label: string; amount: number }) => {
+    const id = Math.round(Number(input.id));
+    if (!Number.isFinite(id) || id < 1) throw new Error("Thiếu khoản chi.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input.day || "")) throw new Error("Ngày không đúng.");
+    const label = clip(input.label ?? "", 80);
+    if (label.length < 2) throw new Error("Hãy ghi khoản chi.");
+    const amount = Math.round(Number(input.amount));
+    if (!Number.isFinite(amount) || amount < 1) throw new Error("Số tiền không đúng.");
+    return { id, day: input.day, label, amount };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const updated = await sql<{ id: number }>`
+      update room_costs set spent_on = ${data.day}, label = ${data.label}, amount = ${data.amount}
+      where id = ${data.id}
+      returning id
+    `;
+    if (!updated.length) throw new Error("Không thấy khoản chi.");
+    await writeAudit(context.userId, "sua-chi-phi", null, `${data.id} ${data.day} ${data.label} ${data.amount}`);
+    return { ok: true };
+  });
+
+export const deleteCost = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: number) => {
+    const value = Math.round(Number(id));
+    if (!Number.isFinite(value) || value < 1) throw new Error("Thiếu khoản chi.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const removed = await sql<{ label: string }>`delete from room_costs where id = ${data} returning label`;
+    if (!removed.length) throw new Error("Không thấy khoản chi.");
+    await writeAudit(context.userId, "xoa-chi-phi", null, `${data} ${removed[0].label}`);
     return { ok: true };
   });
 
