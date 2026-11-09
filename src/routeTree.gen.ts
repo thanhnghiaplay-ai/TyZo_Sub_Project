@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as CtvRouteImport } from './routes/ctv'
 import { Route as GoiRouteImport } from './routes/goi'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
@@ -28,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CtvRoute = CtvRouteImport.update({
+  id: '/ctv',
+  path: '/ctv',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GoiRoute = GoiRouteImport.update({
@@ -74,6 +80,7 @@ const ApiPaySepayRoute = ApiPaySepayRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ctv': typeof CtvRoute
   '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ctv': typeof CtvRoute
   '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ctv': typeof CtvRoute
   '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/ctv'
     | '/goi'
     | '/login'
     | '/tai-khoan'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/ctv'
     | '/goi'
     | '/login'
     | '/tai-khoan'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/ctv'
     | '/goi'
     | '/login'
     | '/tai-khoan'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  CtvRoute: typeof CtvRoute
   GoiRoute: typeof GoiRoute
   LoginRoute: typeof LoginRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ctv': {
+      id: '/ctv'
+      path: '/ctv'
+      fullPath: '/ctv'
+      preLoaderRoute: typeof CtvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/goi': {
@@ -238,6 +258,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  CtvRoute: CtvRoute,
   GoiRoute: GoiRoute,
   LoginRoute: LoginRoute,
   TaiKhoanRoute: TaiKhoanRoute,

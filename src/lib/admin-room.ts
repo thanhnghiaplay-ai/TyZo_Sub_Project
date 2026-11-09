@@ -1020,6 +1020,8 @@ export type MoneyBreakdown = {
   hoan: number;
   nha: number;
   chi: number;
+  von: number;
+  lai: number;
 };
 
 export const getMoney = createServerFn({ method: "POST" })
@@ -1050,8 +1052,8 @@ export const getMoney = createServerFn({ method: "POST" })
         and kind in ('nap', 'goi', 'hoan', 'nha')
       group by kind
     `;
-    const runSum = await sql<{ charged: number; refunded: number }>`
-      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded
+    const runSum = await sql<{ charged: number; refunded: number; von: number }>`
+      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded, coalesce(sum(base_cost), 0)::int as von
       from run_tickets
       where created_at > now() - ${window}::interval
     `;
@@ -1067,17 +1069,23 @@ export const getMoney = createServerFn({ method: "POST" })
     const costTotal = points.reduce((sum, point) => sum + point.cost, 0);
     const charged = Number(runSum[0]?.charged ?? 0);
     const refundedRun = Number(runSum[0]?.refunded ?? 0);
+    const von = Number(runSum[0]?.von ?? 0);
+    const luot = Math.max(0, charged - refundedRun);
+    const goi = Math.abs(Number(byKind.goi ?? 0));
+    const lai = goi + luot - von;
     return {
       points,
       revenue: points.reduce((sum, point) => sum + point.revenue, 0),
       cost: costTotal,
       breakdown: {
         nap: Number(byKind.nap ?? 0),
-        goi: Math.abs(Number(byKind.goi ?? 0)),
-        luot: Math.max(0, charged - refundedRun),
+        goi,
+        luot,
         hoan: Number(byKind.hoan ?? 0),
         nha: Number(byKind.nha ?? 0),
         chi: costTotal,
+        von,
+        lai,
       },
     };
   });

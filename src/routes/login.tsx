@@ -4,6 +4,7 @@ import { getMyPlace } from "@/lib/admin-room";
 import { authClient, authEnabled, signOut } from "@/lib/auth/client";
 import { TERMS_VERSION } from "@/components/entry-gate";
 import { clearSignedOut } from "@/lib/auth/signed-out";
+import { attachReferral } from "@/lib/affiliate-room";
 import { mailProblem, mailSuggestions } from "@/lib/mail-domains";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
@@ -93,6 +94,12 @@ function LoginPage() {
       }
     }
     clearSignedOut();
+    try {
+      const code = localStorage.getItem("tyzo-ref") || "";
+      if (code) await attachReferral({ data: code }).catch(() => {});
+    } catch {
+      /* máy không cho đọc */
+    }
     await authClient.getSession();
     const place = await getMyPlace().catch(() => null);
     if (place?.status === "banned") {

@@ -7,12 +7,21 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-09.1";
+export const TERMS_VERSION = "2026-11-09.2";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<"splash" | "terms" | "declined" | "app">("splash");
   const { user, isPending } = useCurrentUserState();
+
+  useEffect(() => {
+    try {
+      const code = new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase() ?? "";
+      if (/^[A-Z2-9]{8}$/.test(code)) localStorage.setItem("tyzo-ref", code);
+    } catch {
+      /* máy không cho lưu */
+    }
+  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -214,6 +223,10 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           <li>Tiếp tục đưa nội dung không có quyền sau khi đã được báo.</li>
         </ul>
         <p className="gate-key">Gỡ khóa hoặc gỡ cấm không xóa lịch sử xử lý.</p>
+        <h2>9. Giới thiệu</h2>
+        <p>
+          Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã. Cổng nạp tự xác nhận do phòng viết riêng, chưa nằm trong bản này.
+        </p>
       </article>
       <footer className="gate-actions">
         <label className="flex items-start gap-2 text-sm">

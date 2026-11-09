@@ -59,18 +59,19 @@ export async function chargeWith(input: {
 
   if (path === "/audio/speech") {
     const cost = speechCost(book, model, input.chars);
+    const base = speechCost({ ...book, desk: { markup: 0, custom: {} } }, model, input.chars) ?? 0;
     if (cost == null || speechPerMillionChars(book, model) == null) return { kind: "reject", status: 422, message: "Model này chưa có giá niêm yết." };
     const key = dayKey();
-    const ok = await chargeSpeechWith(sql, userId, cost, key, input.cap, dayStartIso());
+    const ok = await chargeSpeechWith(sql, userId, cost, key, input.cap, dayStartIso(), base);
     if (!ok) return { kind: "reject", status: 402, message: "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm." };
     let response: Response;
     try {
       response = await input.send();
     } catch (error) {
-      await refundSpeechWith(sql, userId, cost, key);
+      await refundSpeechWith(sql, userId, cost, key, base);
       throw error;
     }
-    if (!response.ok) await refundSpeechWith(sql, userId, cost, key);
+    if (!response.ok) await refundSpeechWith(sql, userId, cost, key, base);
     return { kind: "pass", response };
   }
 
@@ -85,6 +86,8 @@ export async function chargeWith(input: {
 
   const text = await response.text();
   let cost: number | null = null;
+  let base = 0;
+  const bare = { ...book, desk: { markup: 0, custom: {} } };
   try {
     const data = JSON.parse(text) as {
       duration?: unknown;
@@ -92,18 +95,22 @@ export async function chargeWith(input: {
       usage?: { prompt_tokens?: number; completion_tokens?: number };
     };
     if (path === "/audio/transcriptions") {
-      cost = asrCost(book, model, billedSecondsOf(data));
+      const seconds = billedSecondsOf(data);
+      cost = asrCost(book, model, seconds);
+      base = asrCost(bare, model, seconds) ?? 0;
     } else {
       const prompt = Number(data.usage?.prompt_tokens);
       const completion = Number(data.usage?.completion_tokens);
-      cost = Number.isFinite(prompt) && Number.isFinite(completion)
-        ? chatCost(book, model, prompt, completion)
-        : chatCost(book, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS);
+      const inn = Number.isFinite(prompt) ? prompt : Math.ceil(input.body.byteLength / 3);
+      const out = Number.isFinite(completion) ? completion : MAX_COMPLETION_TOKENS;
+      cost = chatCost(book, model, inn, out);
+      base = chatCost(bare, model, inn, out) ?? 0;
     }
   } catch {
     cost = path === "/audio/transcriptions" ? asrCost(book, model, 0) : chatCost(book, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS);
+    base = path === "/audio/transcriptions" ? asrCost(bare, model, 0) ?? 0 : chatCost(bare, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS) ?? 0;
   }
-  if (cost && cost > 0) await chargeTicketWith(sql, input.ticketId, userId, cost);
+  if (cost && cost > 0) await chargeTicketWith(sql, input.ticketId, userId, cost, base);
   const out = new Headers();
   const type = response.headers.get("content-type");
   if (type) out.set("content-type", type);

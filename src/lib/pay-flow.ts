@@ -61,6 +61,12 @@ export async function buyPlanWith(sql: Sql, userId: string, plan: { id: string; 
     returning user_id
   `;
   if (!updated.length) throw new Error("Số dư chưa đủ.");
+  try {
+    const { accruePlan } = await import("@/lib/affiliate-flow");
+    await accruePlan(sql, userId, `goi:${userId}:${plan.id}:${Date.now()}`, plan.price);
+  } catch {
+    /* mua gói vẫn xong nếu hoa hồng lỗi */
+  }
 }
 
 /**
@@ -85,7 +91,17 @@ export async function refundRunWith(sql: Sql, id: string, amount: number, reason
     select user_id, 'hoan', ${amount}, ${reason} from acct
     returning user_id
   `;
-  if (applied.length) return applied[0].user_id;
+  if (applied.length) {
+    try {
+      const { clawback, accrueRun } = await import("@/lib/affiliate-flow");
+      await clawback(sql, "luot", id);
+      const owner = applied[0].user_id;
+      if (owner) await accrueRun(sql, owner, id);
+    } catch {
+      /* hoàn tiền vẫn xong */
+    }
+    return applied[0].user_id;
+  }
   const rows = await sql<{ id: string }>`select id from run_tickets where id = ${id}`;
   if (!rows.length) throw new Error("Không có phiếu này.");
   throw new Error("Không hoàn quá số đã trừ.");

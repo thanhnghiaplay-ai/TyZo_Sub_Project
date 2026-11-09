@@ -78,7 +78,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [points, setPoints] = useState<MoneyPoint[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
-  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0 });
+  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0 });
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -121,7 +121,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       <div className="grid grid-cols-3 gap-2">
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((revenue - cost) > 0 ? "text-accent" : (revenue - cost) < 0 ? "text-danger" : "")}>{(revenue - cost) > 0 ? "+" : ""}{dong(revenue - cost)}</p></article>
+        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((breakdown.lai - cost) > 0 ? "text-accent" : (breakdown.lai - cost) < 0 ? "text-danger" : "")}>{(breakdown.lai - cost) > 0 ? "+" : ""}{dong(breakdown.lai - cost)}</p></article>
       </div>
       <ul className="space-y-1 text-sm text-muted">
         {points.map((point) => (
@@ -137,11 +137,13 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <li className="flex justify-between gap-2"><span>Đã trừ trả theo lượt (sau hoàn)</span><span className="font-medium text-fg">{dong(breakdown.luot)}</span></li>
           <li className="flex justify-between gap-2"><span>Hoàn vào ví</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
           <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
+          <li className="flex justify-between gap-2"><span>Giá vốn lượt (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
+          <li className="flex justify-between gap-2"><span>Lãi gộp (gói + lượt − giá vốn)</span><span className="font-medium text-fg">{dong(breakdown.lai)}</span></li>
           <li className="flex justify-between gap-2"><span>Chi phí vận hành (ghi tay)</span><span className="font-medium text-fg">{dong(breakdown.chi)}</span></li>
         </ul>
         <p className="text-xs text-muted">
-          Doanh thu thực nhận = tiền nạp qua cổng. Mua gói và trả theo lượt là dùng số dư đã nạp, không cộng thêm doanh thu.
-          Tiền thử và gói mở tay không tính. Key Groq của khách không đi qua sổ này. Khoản chi phí do Chủ ghi để đối soát lời lỗ.
+          Lời lỗ = lãi gộp trừ chi phí ghi tay. Lượt trước bản này chưa lưu giá vốn nên có thể làm lời lỗ cao hơn thực tế.
+          Tiền thử và gói mở tay không tính. Key của khách không đi qua sổ này.
         </p>
       </div>
       {owner && (

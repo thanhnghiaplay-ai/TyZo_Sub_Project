@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { GlossaryBoard } from "@/components/glossary-board";
+import { AffiliateBoard } from "@/components/affiliate-board";
 import {
   escalateAppeal,
   getBadgeStyle,
@@ -158,7 +159,7 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu">("viec");
+  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv">("viec");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -299,6 +300,7 @@ export function AdminDesk() {
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
           {role === "chu" && <TabButton current={tab} id="thuat-ngu" onPick={setTab}>Thuật ngữ</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="ctv" onPick={setTab}>Cộng tác</TabButton>}
           <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
         </div>
       )}
@@ -307,6 +309,7 @@ export function AdminDesk() {
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "nhat-ky" && <AdminNotes />}
       {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
+      {role === "chu" && tab === "ctv" && <AffiliateBoard />}
       {role && tab === "viec" && stats && (
         <section className="grid gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
@@ -695,8 +698,8 @@ function TabButton({
   children,
 }: {
   current: string;
-  id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu";
-  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu") => void;
+  id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv";
+  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu" | "ctv") => void;
   children: string;
 }) {
   return (
