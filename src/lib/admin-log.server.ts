@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.1.1",
+    time: "13:10 ngày 09/11/2026",
+    area: "ha-tang",
+    text: "Preview cũng chạy migration vì dùng chung Neon. Neon áp file SQL còn thiếu lúc mở kết nối, không chỉ lúc build production.",
+  },
+  {
     version: "3.1.0",
     time: "12:40 ngày 09/11/2026",
     area: "tien",

@@ -2,6 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { AFFILIATE_DEFAULT, maskEmail, parseAffiliateRules, referralCode, type AffiliateRules } from "@/lib/affiliate";
 
+function missingTable(error: unknown): never {
+  const message = error instanceof Error ? error.message : "";
+  if (message.includes("does not exist")) throw new Error("Bảng cộng tác viên chưa được tạo. Hãy tải lại sau ít giây.");
+  throw error instanceof Error ? error : new Error("Chưa mở được.");
+}
+
 async function owner(userId: string) {
   const { requireRole } = await import("@/lib/admin-room");
   await requireRole(userId, "chu");
@@ -19,30 +25,34 @@ export const getAffiliateDesk = createServerFn({ method: "GET" })
     await owner(context.userId);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const { settleAffiliate } = await import("@/lib/affiliate-flow");
-    await settleAffiliate(sql);
-    const saved = await sql<{ value: string }>`select value from room_settings where key = 'affiliate'`;
-    const rules = parseAffiliateRules(saved[0]?.value);
-    const people = await sql<{ user_id: string; email: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }>`
-      select a.user_id, u.email, a.code, a.status, a.rate_plan_bp, a.rate_run_bp,
-        coalesce(sum(case when e.status = 'treo' then e.amount else 0 end), 0)::int as waiting,
-        coalesce(sum(case when e.status = 'da-duyet' then e.amount else 0 end), 0)::int as ready
-      from affiliates a
-      join "user" u on u.id = a.user_id
-      left join commission_events e on e.affiliate_id = a.user_id
-      group by a.user_id, u.email, a.code, a.status, a.rate_plan_bp, a.rate_run_bp
-      order by a.created_at desc
-      limit 40
-    `;
-    const payouts = await sql<{ id: number; email: string; amount: number }>`
-      select p.id, u.email, p.amount
-      from affiliate_payouts p
-      join "user" u on u.id = p.affiliate_id
-      where p.status = 'cho-chi'
-      order by p.requested_at
-      limit 20
-    `;
-    return { rules, people, payouts };
+    try {
+      const { settleAffiliate } = await import("@/lib/affiliate-flow");
+      await settleAffiliate(sql);
+      const saved = await sql<{ value: string }>`select value from room_settings where key = 'affiliate'`;
+      const rules = parseAffiliateRules(saved[0]?.value);
+      const people = await sql<{ user_id: string; email: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }>`
+        select a.user_id, u.email, a.code, a.status, a.rate_plan_bp, a.rate_run_bp,
+          coalesce(sum(case when e.status = 'treo' then e.amount else 0 end), 0)::int as waiting,
+          coalesce(sum(case when e.status = 'da-duyet' then e.amount else 0 end), 0)::int as ready
+        from affiliates a
+        join "user" u on u.id = a.user_id
+        left join commission_events e on e.affiliate_id = a.user_id
+        group by a.user_id, u.email, a.code, a.status, a.rate_plan_bp, a.rate_run_bp
+        order by a.created_at desc
+        limit 40
+      `;
+      const payouts = await sql<{ id: number; email: string; amount: number }>`
+        select p.id, u.email, p.amount
+        from affiliate_payouts p
+        join "user" u on u.id = p.affiliate_id
+        where p.status = 'cho-chi'
+        order by p.requested_at
+        limit 20
+      `;
+      return { rules, people, payouts };
+    } catch (error) {
+      missingTable(error);
+    }
   });
 
 export const saveAffiliateRules = createServerFn({ method: "POST" })
@@ -113,18 +123,22 @@ export const applyAffiliate = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const existing = await sql<{ code: string; status: string }>`select code, status from affiliates where user_id = ${context.userId}`;
-    if (existing.length) return existing[0];
-    for (let i = 0; i < 5; i += 1) {
-      const code = freshCode();
-      const rows = await sql<{ code: string; status: string }>`
-        insert into affiliates (user_id, code) values (${context.userId}, ${code})
-        on conflict (user_id) do nothing
-        returning code, status
-      `;
-      if (rows.length) return rows[0];
+    try {
+      const existing = await sql<{ code: string; status: string }>`select code, status from affiliates where user_id = ${context.userId}`;
+      if (existing.length) return existing[0];
+      for (let i = 0; i < 5; i += 1) {
+        const code = freshCode();
+        const rows = await sql<{ code: string; status: string }>`
+          insert into affiliates (user_id, code) values (${context.userId}, ${code})
+          on conflict (user_id) do nothing
+          returning code, status
+        `;
+        if (rows.length) return rows[0];
+      }
+      throw new Error("Chưa tạo được mã.");
+    } catch (error) {
+      missingTable(error);
     }
-    throw new Error("Chưa tạo được mã.");
   });
 
 export const attachReferral = createServerFn({ method: "POST" })
@@ -156,10 +170,11 @@ export const myAffiliate = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const { settleAffiliate } = await import("@/lib/affiliate-flow");
-    await settleAffiliate(sql);
-    const mine = await sql<{ code: string; status: string }>`select code, status from affiliates where user_id = ${context.userId}`;
-    if (!mine.length) return { joined: false as const, rules: AFFILIATE_DEFAULT };
+    try {
+      const { settleAffiliate } = await import("@/lib/affiliate-flow");
+      await settleAffiliate(sql);
+      const mine = await sql<{ code: string; status: string }>`select code, status from affiliates where user_id = ${context.userId}`;
+      if (!mine.length) return { joined: false as const, rules: AFFILIATE_DEFAULT };
     const sums = await sql<{ status: string; amount: number }>`
       select status, coalesce(sum(amount), 0)::int as amount from commission_events
       where affiliate_id = ${context.userId} group by status
@@ -180,6 +195,9 @@ export const myAffiliate = createServerFn({ method: "GET" })
       guests: guests.map((row) => ({ email: maskEmail(row.email), at: row.attached_at })),
       rules: parseAffiliateRules(saved[0]?.value),
     };
+    } catch (error) {
+      missingTable(error);
+    }
   });
 
 export const requestPayout = createServerFn({ method: "POST" })

@@ -9,8 +9,9 @@
  * The read is non-recursive, so the opt-in auth schema under migrations/auth/
  * is not applied to an app that never asked for sign-in.
  *
- * No DATABASE_URL (local / preview builds) -> skip; the PGLite fallback applies
+ * No DATABASE_URL (local builds) -> skip; the PGLite fallback applies
  * the same files at startup instead (see src/lib/db.ts).
+ * Preview applies them too, because the preview site uses the same database.
  */
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -20,10 +21,6 @@ import { pendingMigrations } from "./migration-plan.mjs";
 
 const vercelEnv = process.env.VERCEL_ENV || "";
 const databaseUrl = process.env.DATABASE_URL?.trim() || "";
-if (vercelEnv && vercelEnv !== "production") {
-  console.log(`[migrate] skip — VERCEL_ENV=${vercelEnv}, không chạy migration trên preview.`);
-  process.exit(0);
-}
 if (!databaseUrl) {
   if (vercelEnv === "production") {
     console.error("[migrate] DATABASE_URL trống trên production. Dừng deploy để khỏi lên bản không có schema.");
