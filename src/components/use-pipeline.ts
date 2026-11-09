@@ -69,6 +69,7 @@ import {
   parseGlossaryCsv,
   type GlossaryTerm,
 } from "@/lib/sub/glossary";
+import { suggestTerms } from "@/lib/glossary-room";
 import {
   budgetSpeechGaps,
   formatGapConfirm,
@@ -210,6 +211,15 @@ function writeStore(key: string, value: string) {
   } catch {
     /* private mode */
   }
+}
+
+function shareUserTerms(source: string, genre: string, terms: GlossaryTerm[]) {
+  try {
+    if (localStorage.getItem("gshare") !== "1") return;
+  } catch {
+    return;
+  }
+  void suggestTerms({ data: { lang: source, genre, terms } }).catch(() => {});
 }
 
 function userGlossKey(source: string, genre: string) {
@@ -2012,6 +2022,7 @@ export function usePipeline() {
           [{ source: sourceTextTrim, target: targetTextTrim || sourceTextTrim }],
         );
         writeStore(userGlossKey(source, genre), JSON.stringify(next));
+        shareUserTerms(source, genre, next);
         return next;
       });
     },
@@ -2029,6 +2040,7 @@ export function usePipeline() {
       setUserTerms((prev) => {
         const next = overlayUserTerms(prev, parsed);
         writeStore(userGlossKey(source, genre), JSON.stringify(next));
+        shareUserTerms(source, genre, next);
         return next;
       });
       return parsed.length;

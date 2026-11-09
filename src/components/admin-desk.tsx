@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { GlossaryBoard } from "@/components/glossary-board";
 import {
   escalateAppeal,
   getBadgeStyle,
@@ -157,7 +158,7 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky">("viec");
+  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu">("viec");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -297,6 +298,7 @@ export function AdminDesk() {
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="thuat-ngu" onPick={setTab}>Thuật ngữ</TabButton>}
           <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
         </div>
       )}
@@ -304,6 +306,7 @@ export function AdminDesk() {
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "nhat-ky" && <AdminNotes />}
+      {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
       {role && tab === "viec" && stats && (
         <section className="grid gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
@@ -692,8 +695,8 @@ function TabButton({
   children,
 }: {
   current: string;
-  id: "viec" | "so-do" | "tien" | "nhat-ky";
-  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky") => void;
+  id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu";
+  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky" | "thuat-ngu") => void;
   children: string;
 }) {
   return (

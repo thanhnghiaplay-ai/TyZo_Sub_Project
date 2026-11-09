@@ -97,7 +97,7 @@ async function placeOf(userId: string): Promise<MyPlace> {
   };
 }
 
-async function requireRole(userId: string, need: StaffRole) {
+export async function requireRole(userId: string, need: StaffRole) {
   const place = await placeOf(userId);
   if (!roleAtLeast(place.role, need)) throw new Error("Không đủ quyền.");
   return place;

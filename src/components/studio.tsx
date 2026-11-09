@@ -213,6 +213,14 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
   const [src, setSrc] = useState("");
   const [tgt, setTgt] = useState("");
   const [note, setNote] = useState("");
+  const [share, setShare] = useState(false);
+  useEffect(() => {
+    try {
+      setShare(localStorage.getItem("gshare") === "1");
+    } catch {
+      setShare(false);
+    }
+  }, []);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const add = () => {
     app.addUserTerm(src, tgt);
@@ -278,10 +286,25 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
           Xóa của tôi
         </button>
       </div>
+      <label className="flex items-start gap-2 text-xs text-muted">
+        <input
+          type="checkbox"
+          checked={share}
+          onChange={(event) => {
+            const on = event.target.checked;
+            setShare(on);
+            localStorage.setItem("gshare", on ? "1" : "0");
+            setNote(on ? "Sẽ gửi bản sao thuật ngữ của bạn khi bạn thêm." : "Không gửi thuật ngữ lên phòng.");
+          }}
+        />
+        Gửi thuật ngữ của tôi để phòng xem. Mặc định tắt. Phòng chưa dùng cho người khác cho đến khi Chủ nhận.
+      </label>
       {note ? <p className="text-xs text-muted">{note}</p> : null}
       <div className="grid max-h-48 gap-1 overflow-auto text-sm">
-        {(app.glossaryInfo?.terms || []).map((t: { source: string; target: string; user?: boolean }, i: number) => (
-          <div key={t.user ? "u-" + t.source : "f-" + i} className="flex items-center gap-2 border-b border-line/50 py-0.5">
+        {(app.glossaryInfo?.terms || [])
+          .filter((t: { user?: boolean }) => t.user)
+          .map((t: { source: string; target: string; user?: boolean }) => (
+            <div key={"u-" + t.source} className="flex items-center gap-2 border-b border-line/50 py-0.5">
             <span className="min-w-0 flex-1 truncate font-medium">{t.source}</span>
             <span className="text-muted">→</span>
             <span className="min-w-0 flex-1 truncate">{t.target}</span>
@@ -289,9 +312,7 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
               <button type="button" className="shrink-0 text-xs text-muted" onClick={() => app.removeUserTerm(t.source)} aria-label="Xóa">
                 xóa
               </button>
-            ) : (
-              <span className="shrink-0 text-xs text-muted">file</span>
-            )}
+            ) : null}
           </div>
         ))}
       </div>

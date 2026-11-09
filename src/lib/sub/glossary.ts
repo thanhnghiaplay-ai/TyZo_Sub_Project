@@ -37,15 +37,11 @@ function normalizeLang(code: string): string {
   return lower.slice(0, 2);
 }
 
-async function fetchJson(path: string): Promise<{ terms: GlossaryTerm[] | null; keep: boolean }> {
+async function fetchJson(lang: string, genre: string): Promise<{ terms: GlossaryTerm[] | null; keep: boolean }> {
   try {
-    const res = await fetch(path, { cache: "force-cache" });
-    if (res.status === 404) return { terms: null, keep: true };
-    if (!res.ok) return { terms: null, keep: false };
-    const data = await res.json();
-    if (Array.isArray(data)) return { terms: data as GlossaryTerm[], keep: true };
-    if (data && Array.isArray(data.terms)) return { terms: data.terms as GlossaryTerm[], keep: true };
-    return { terms: null, keep: true };
+    const { getGlossaryPack } = await import("@/lib/glossary-room");
+    const pack = await getGlossaryPack({ data: { lang, genre } });
+    return { terms: pack.terms as GlossaryTerm[], keep: true };
   } catch {
     return { terms: null, keep: false };
   }
@@ -71,12 +67,11 @@ export async function loadGenreGlossary(sourceLang: string, genre: string, targe
   const sources: string[] = [];
   const map = new Map<string, GlossaryTerm>();
   if (lang && g) {
-    const path = `/glossaries/${lang}/${g}.json`;
-    const loaded = await fetchJson(path);
+    const loaded = await fetchJson(lang, g);
     if (!loaded.keep) return { terms: [], sources: [] };
     const terms = loaded.terms;
     if (terms?.length) {
-      sources.push(path);
+      sources.push(`${lang}/${g}`);
       for (const t of terms) {
         if (!keepTerm(t.source, lang)) continue;
         const term: GlossaryTerm = {
