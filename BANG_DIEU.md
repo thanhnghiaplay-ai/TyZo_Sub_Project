@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.20.0 trên nhánh `main` |
-| Bản đang làm | v3.1.1 trên nhánh `work`: bản xem trước tự tạo bảng cộng tác viên |
+| Bản đang làm | v3.1.4 trên nhánh `work`: đã bỏ v3.1.2 và v3.1.3, sửa nhẹ cộng tác viên |
 | Điều khoản | 2026-11-09.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đã đẩy. v3.1.1 đang trên `work`, chưa lên `main`.
+Không có việc đã đẩy. v3.1.4 đang trên `work`, chưa lên `main`. v3.1.2 và v3.1.3 đã gỡ vì làm lệch bố cục.
 
 ## Ý đã nêu
 

@@ -150,10 +150,13 @@ export function AccountPanel() {
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <TopUp compact onPaid={() => { setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />
+              <Link to="/ctv" className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm">
+                Cộng tác viên
+              </Link>
               <button
                 type="button"
                 disabled={leaving}
-                className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm disabled:opacity-40"
                 onClick={() => {
                   setLeaving(true);
                   void signOut("/login").catch(() => {

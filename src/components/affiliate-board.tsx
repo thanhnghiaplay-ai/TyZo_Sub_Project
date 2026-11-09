@@ -36,11 +36,11 @@ export function AffiliateBoard() {
       <h2 className="font-semibold">Cộng tác viên</h2>
       <p className="text-sm text-muted">0 ngày là hưởng cả đời. Đổi số ngày chỉ chặn hoa hồng mới. Tỷ lệ 0 ở từng người là dùng tỷ lệ chung.</p>
       <div className="grid gap-2 sm:grid-cols-2">
-        <label className="text-sm">Tỷ lệ gói (%)<input className="min-tap w-full rounded-xl border border-line bg-bg px-3" value={plan} onChange={(event) => setPlan(event.target.value)} /></label>
-        <label className="text-sm">Tỷ lệ lượt (%)<input className="min-tap w-full rounded-xl border border-line bg-bg px-3" value={run} onChange={(event) => setRun(event.target.value)} /></label>
-        <label className="text-sm">Ngày chờ<input className="min-tap w-full rounded-xl border border-line bg-bg px-3" value={hold} onChange={(event) => setHold(event.target.value)} /></label>
-        <label className="text-sm">Số ngày được hưởng (0 = cả đời)<input className="min-tap w-full rounded-xl border border-line bg-bg px-3" value={windowDays} onChange={(event) => setWindowDays(event.target.value)} /></label>
-        <label className="text-sm sm:col-span-2">Rút tối thiểu (đồng)<input className="min-tap w-full rounded-xl border border-line bg-bg px-3" value={minPay} onChange={(event) => setMinPay(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Tỷ lệ gói (%)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={plan} onChange={(event) => setPlan(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Tỷ lệ lượt (%)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={run} onChange={(event) => setRun(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Ngày chờ</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={hold} onChange={(event) => setHold(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Số ngày được hưởng (0 = cả đời)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={windowDays} onChange={(event) => setWindowDays(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm sm:col-span-2"><span>Rút tối thiểu (đồng)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={minPay} onChange={(event) => setMinPay(event.target.value)} /></label>
       </div>
       <button
         type="button"
@@ -71,14 +71,25 @@ export function AffiliateBoard() {
       <div className="space-y-2">
         {people.map((person) => (
           <article key={person.user_id} className="rounded-xl border border-line p-3 text-sm">
-            <p className="font-medium">{person.email}</p>
-            <p className="text-muted">Mã {person.code} · {person.status} · chờ {person.waiting} · sẵn {person.ready}</p>
+            <p className="break-all font-medium">{person.email}</p>
+            <p className="text-muted">Mã {person.code} · {person.status === "hoat-dong" ? "Đang mở" : person.status === "tam-khoa" ? "Tạm khóa" : "Chờ duyệt"}</p>
+            <p className="text-muted">Đang chờ {person.waiting.toLocaleString("vi-VN")} đ · Rút được {person.ready.toLocaleString("vi-VN")} đ</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void setAffiliateState({ data: { userId: person.user_id, status: "hoat-dong", ratePlanBp: person.rate_plan_bp, rateRunBp: person.rate_run_bp } }).then(load)}>Mở</button>
-              <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void setAffiliateState({ data: { userId: person.user_id, status: "tam-khoa", ratePlanBp: person.rate_plan_bp, rateRunBp: person.rate_run_bp } }).then(load)}>Tạm khóa</button>
+              <button type="button" className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3" onClick={() => void setAffiliateState({ data: { userId: person.user_id, status: "hoat-dong", ratePlanBp: person.rate_plan_bp, rateRunBp: person.rate_run_bp } }).then(load)}>Mở</button>
+              <button type="button" className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3" onClick={() => void setAffiliateState({ data: { userId: person.user_id, status: "tam-khoa", ratePlanBp: person.rate_plan_bp, rateRunBp: person.rate_run_bp } }).then(load)}>Tạm khóa</button>
+              <button
+                type="button"
+                className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3"
+                onClick={() => {
+                  const link = `${window.location.origin}/?ref=${person.code}`;
+                  void navigator.clipboard?.writeText(link).then(() => setNote("Đã chép đường dẫn.")).catch(() => setNote(link));
+                }}
+              >
+                Chép đường dẫn
+              </button>
             </div>
             <form
-              className="mt-2 flex flex-wrap items-end gap-2"
+              className="mt-3 grid gap-2"
               onSubmit={(event) => {
                 event.preventDefault();
                 const data = new FormData(event.currentTarget);
@@ -96,9 +107,15 @@ export function AffiliateBoard() {
                   .catch((error: Error) => setNote(error.message));
               }}
             >
-              <label className="text-xs">Gói %<input name="plan" defaultValue={String(person.rate_plan_bp / 100)} className="min-tap w-20 rounded-xl border border-line bg-bg px-2" /></label>
-              <label className="text-xs">Lượt %<input name="run" defaultValue={String(person.rate_run_bp / 100)} className="min-tap w-20 rounded-xl border border-line bg-bg px-2" /></label>
-              <button type="submit" className="min-tap rounded-full border border-line px-3">Lưu tỷ lệ riêng</button>
+              <label className="grid gap-1 text-sm">
+                <span>Gói riêng (%). Điền 0 để dùng tỷ lệ chung</span>
+                <input name="plan" defaultValue={String(person.rate_plan_bp / 100)} className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" />
+              </label>
+              <label className="grid gap-1 text-sm">
+                <span>Lượt riêng (%). Điền 0 để dùng tỷ lệ chung</span>
+                <input name="run" defaultValue={String(person.rate_run_bp / 100)} className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" />
+              </label>
+              <button type="submit" className="inline-flex min-h-11 w-fit items-center justify-center rounded-full border border-line px-3">Lưu tỷ lệ riêng</button>
             </form>
           </article>
         ))}

@@ -37,10 +37,19 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [again, setAgain] = useState("");
+  const [refCode, setRefCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    try {
+      const savedRef = localStorage.getItem("tyzo-ref") || "";
+      if (savedRef) setRefCode(savedRef);
+    } catch {
+      /* máy không cho lưu */
+    }
+  }, []);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -95,7 +104,9 @@ function LoginPage() {
     }
     clearSignedOut();
     try {
-      const code = localStorage.getItem("tyzo-ref") || "";
+      const typed = mode === "up" ? refCode.trim().toUpperCase() : "";
+      if (typed) localStorage.setItem("tyzo-ref", typed);
+      const code = typed || localStorage.getItem("tyzo-ref") || "";
       if (code) await attachReferral({ data: code }).catch(() => {});
     } catch {
       /* máy không cho đọc */
@@ -163,6 +174,19 @@ function LoginPage() {
             <span className="mt-1 block text-xs text-muted">Đã chọn: {email}</span>
           )}
         </label>
+        {mode === "up" && (
+          <label className="block text-sm">
+            Mã giới thiệu, nếu có
+            <input
+              value={refCode}
+              onChange={(event) => setRefCode(event.target.value.toUpperCase())}
+              maxLength={8}
+              autoCapitalize="characters"
+              placeholder="Bỏ trống nếu không có"
+              className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            />
+          </label>
+        )}
         <label className="block text-sm">
           Mật khẩu
           <span className="relative mt-1 block">

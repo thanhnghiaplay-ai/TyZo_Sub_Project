@@ -295,7 +295,7 @@ export function AdminDesk() {
         <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
       {role && (
-        <div className="flex flex-wrap gap-2 border-b border-line bg-bg py-2">
+        <div className="flex gap-2 overflow-x-auto border-b border-line bg-bg py-2">
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
@@ -703,7 +703,7 @@ function TabButton({
   children: string;
 }) {
   return (
-    <button type="button" className={"min-tap rounded-full px-3 text-sm " + (current === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => onPick(id)}>
+    <button type="button" className={"inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap " + (current === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => onPick(id)}>
       {children}
     </button>
   );
