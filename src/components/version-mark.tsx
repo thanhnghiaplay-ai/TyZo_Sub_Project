@@ -71,7 +71,12 @@ export function VersionMark({ align = "end" }: { align?: "start" | "end" }) {
               <li key={item.version}>
                 <strong>v{item.version}</strong>
                 <time>{item.time}</time>
-                <span>{item.text}</span>
+                <p className="version-title">{item.title}</p>
+                <ul className="version-points">
+                  {item.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ol>

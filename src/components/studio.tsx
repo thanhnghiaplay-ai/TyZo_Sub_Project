@@ -27,6 +27,7 @@ import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
 import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
+import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
 import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
@@ -34,7 +35,7 @@ import { formatRoomPrice } from "@/lib/run-desk";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
-import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechLang } from "@/lib/sub/text";
+import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
 import { termsToCsv } from "@/lib/sub/glossary";
 import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
 import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/asr-retry";
@@ -348,6 +349,7 @@ function loadNarration(): NarrationSettings {
     localStorage.setItem("gnarr_v", "4");
     if (parsed.enabled === undefined) merged.enabled = true;
     if (parsed.lead === undefined) merged.lead = 0;
+    merged.lead = Math.min(2, Math.max(-1.5, Number(merged.lead) || 0));
     if (parsed.matchCast === undefined) merged.matchCast = true;
     return merged;
   } catch {
@@ -693,6 +695,7 @@ export function Studio() {
           lead={narration.lead}
           onCue={setCurrent}
           onSpeak={speakAt}
+          speechBusy={() => narrator.current.busy()}
           onPause={() => narrator.current.stop(app.videoRef.current)}
         />
         </div>
@@ -1154,13 +1157,23 @@ export function Studio() {
               ))}
           </Select>
         ) : null}
-        <Slider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} text={`${narration.rate.toFixed(1)}×`} onChange={(rate) => patchNarration({ rate })} />
+        <DragSlider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} defaultValue={1} marks={[1]} format={(value) => `${value.toFixed(1)}×`} onCommit={(rate) => patchNarration({ rate })} />
         {narration.engine !== "orpheus" && (
-          <Slider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} text={narration.pitch.toFixed(1)} onChange={(pitch) => patchNarration({ pitch })} />
+          <DragSlider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} defaultValue={1} marks={[1]} format={(value) => value.toFixed(1)} onCommit={(pitch) => patchNarration({ pitch })} />
         )}
-        <Slider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} text={`${Math.round(narration.volume * 100)}%`} onChange={(volume) => patchNarration({ volume })} />
-        <Slider label="Chờ sau khi câu hiện" value={narration.lead} min={0} max={1.2} step={0.1} text={`${narration.lead.toFixed(1)} giây`} onChange={(lead) => patchNarration({ lead })} />
-        <p className="text-sm text-muted">0 giây = đọc đúng lúc phụ đề hiện. Không đọc câu chưa tới trên hình.</p>
+        <DragSlider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} defaultValue={1} format={(value) => `${Math.round(value * 100)}%`} onCommit={(volume) => patchNarration({ volume })} />
+        <DragSlider
+          label="Đọc trước / sau phụ đề"
+          value={narration.lead}
+          min={-1.5}
+          max={2}
+          step={0.1}
+          defaultValue={0}
+          marks={[0]}
+          format={(value) => (value === 0 ? "Đúng lúc" : value < 0 ? `Trước ${(-value).toFixed(1)} giây` : `Sau ${value.toFixed(1)} giây`)}
+          onCommit={(lead) => patchNarration({ lead })}
+        />
+        <p className="text-sm text-muted">Kéo núm để chỉnh. Đúng lúc là đọc khi câu hiện. Trước là đọc sớm, sau là đọc muộn.</p>
         <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={narration.matchCast} onChange={(event) => patchNarration({ matchCast: event.target.checked })} />
           Đọc theo nhân vật, rồi theo cao độ
@@ -1309,18 +1322,6 @@ function Select({ label, value, onChange, children }: { label: string; value: st
   );
 }
 
-function Slider({ label, value, min, max, step, text, onChange }: { label: string; value: number; min: number; max: number; step: number; text: string; onChange: (value: number) => void }) {
-  return (
-    <label className="grid gap-1 text-sm text-muted">
-      <span className="flex justify-between">
-        {label}
-        <b className="font-medium text-fg">{text}</b>
-      </span>
-      <input className="accent-accent" type="range" min={min} max={max} step={step} value={value} onChange={(event) => onChange(Number(event.target.value))} />
-    </label>
-  );
-}
-
 function FileTile({ icon, title, name, hint, accept, onFile }: { icon: ReactNode; title: string; name?: string; hint: string; accept: string; onFile: (file: File | null) => void }) {
   return (
     <label
@@ -1441,6 +1442,7 @@ function Stage({
   lead,
   onCue,
   onSpeak,
+  speechBusy,
   onPause,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>;
@@ -1451,6 +1453,7 @@ function Stage({
   lead: number;
   onCue: (index: number) => void;
   onSpeak: (index: number) => void;
+  speechBusy: () => boolean;
   onPause: () => void;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -1475,6 +1478,7 @@ function Stage({
   const narrRef = useRef(narrationOn);
   const onCueRef = useRef(onCue);
   const onSpeakRef = useRef(onSpeak);
+  const busyRef = useRef(speechBusy);
   const onPauseRef = useRef(onPause);
   segsRef.current = segs;
   subRef.current = sub;
@@ -1482,6 +1486,7 @@ function Stage({
   narrRef.current = narrationOn;
   onCueRef.current = onCue;
   onSpeakRef.current = onSpeak;
+  busyRef.current = speechBusy;
   onPauseRef.current = onPause;
   const idxRef = useRef(-1);
   const speakRef = useRef("");
@@ -1517,11 +1522,11 @@ function Stage({
         onCueRef.current(shown);
       }
       if (narrRef.current && !video.paused) {
-        const delay = Math.max(0, leadRef.current);
-        const seg = shown >= 0 ? segsRef.current[shown] : undefined;
-        const ready = Boolean(seg && clock + 0.001 >= seg.start + delay);
-        const spoken = ready ? shown : -1;
-        if (spoken >= 0 && seg) {
+        const offset = leadRef.current;
+        const spoken = speechIndex(segsRef.current, clock, offset);
+        const seg = spoken >= 0 ? segsRef.current[spoken] : undefined;
+        const waitEarly = Boolean(seg && offset < 0 && busyRef.current() && clock < seg.start);
+        if (spoken >= 0 && seg && !waitEarly) {
           const text = cueText(seg);
           const token = text ? `${spoken}\n${text}` : "";
           if (token && token !== speakRef.current) {
@@ -1767,10 +1772,10 @@ function Stage({
               </select>
             </label>
             <div className="col-span-2">
-              <Slider label="Độ mờ nền" value={sub.op} min={0} max={100} step={5} text={`${sub.op}%`} onChange={(op) => setSub({ ...sub, op })} />
-              <Slider label="Cỡ chữ" value={sub.size} min={50} max={250} step={10} text={`${sub.size}%`} onChange={(size) => setSub({ ...sub, size })} />
-              <Slider label="Vị trí từ đáy" value={sub.pos} min={2} max={85} step={1} text={`${sub.pos}%`} onChange={(pos) => setSub({ ...sub, pos })} />
-              <Slider label="Lệch thời gian" value={sub.off} min={-10} max={10} step={0.1} text={`${sub.off > 0 ? "+" : ""}${sub.off.toFixed(1)} giây`} onChange={(off) => setSub({ ...sub, off })} />
+              <DragSlider label="Độ mờ nền" value={sub.op} min={0} max={100} step={5} defaultValue={0} format={(value) => `${value}%`} onCommit={(op) => setSub({ ...sub, op })} />
+              <DragSlider label="Cỡ chữ" value={sub.size} min={50} max={250} step={10} defaultValue={50} format={(value) => `${value}%`} onCommit={(size) => setSub({ ...sub, size })} />
+              <DragSlider label="Vị trí từ đáy" value={sub.pos} min={2} max={85} step={1} defaultValue={3} format={(value) => `${value}%`} onCommit={(pos) => setSub({ ...sub, pos })} />
+              <DragSlider label="Lệch thời gian" value={sub.off} min={-10} max={10} step={0.1} defaultValue={0} marks={[0]} format={(value) => `${value > 0 ? "+" : ""}${value.toFixed(1)} giây`} onCommit={(off) => setSub({ ...sub, off })} />
             </div>
             <button type="button" className="col-span-2 min-tap rounded-xl border border-line" onClick={() => setSub(SUB_DEF)}>
               Đặt lại mặc định

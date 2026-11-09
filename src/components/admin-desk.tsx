@@ -4,6 +4,7 @@ import {
   escalateAppeal,
   getBadgeStyle,
   getDeskStats,
+  getAdminLog,
   getMyPlace,
   grantPlan,
   listAppeals,
@@ -114,6 +115,28 @@ function mayReply(role: string, hold: string) {
   return hold === "ho-tro";
 }
 
+function AdminNotes() {
+  const [rows, setRows] = useState<{ version: string; time: string; area: string; text: string }[]>([]);
+  useEffect(() => {
+    void getAdminLog()
+      .then(setRows)
+      .catch(() => setRows([]));
+  }, []);
+  return (
+    <section className="space-y-2">
+      <h2 className="font-semibold">Nhật ký nội bộ</h2>
+      {rows.length === 0 && <p className="text-sm text-muted">Chưa có dòng nội bộ.</p>}
+      {rows.map((row) => (
+        <article key={`${row.version}-${row.area}`} className="rounded-xl border border-line px-3 py-2 text-sm">
+          <p className="font-medium text-accent">v{row.version}</p>
+          <p className="text-xs text-muted">{row.time}</p>
+          <p className="mt-1">{row.text}</p>
+        </article>
+      ))}
+    </section>
+  );
+}
+
 export function AdminDesk() {
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [stats, setStats] = useState<DeskStats | null>(null);
@@ -134,7 +157,7 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<"viec" | "so-do" | "tien">("viec");
+  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "nhat-ky">("viec");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -274,11 +297,13 @@ export function AdminDesk() {
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
+          <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
         </div>
       )}
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
+      {role && tab === "nhat-ky" && <AdminNotes />}
       {role && tab === "viec" && stats && (
         <section className="grid gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
@@ -667,8 +692,8 @@ function TabButton({
   children,
 }: {
   current: string;
-  id: "viec" | "so-do" | "tien";
-  onPick: (id: "viec" | "so-do" | "tien") => void;
+  id: "viec" | "so-do" | "tien" | "nhat-ky";
+  onPick: (id: "viec" | "so-do" | "tien" | "nhat-ky") => void;
   children: string;
 }) {
   return (

@@ -1,163 +1,233 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "2.20.0";
+export const APP_VERSION = "2.21.0";
 
-/** Tóm tắt cho người dùng. Dòng mới luôn đứng đầu. Câu đủ ý, có mốc thời gian. Không ghi tên file. */
-export const CHANGELOG: { version: string; time: string; text: string }[] = [
+export type ReleaseNote = {
+  version: string;
+  time: string;
+  title: string;
+  points: string[];
+};
+
+/** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
+export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "2.21.0",
+    time: "09:33 ngày 09/11/2026",
+    title: "Chỉnh nghe bằng núm kéo, và đọc sớm hoặc muộn hơn phụ đề.",
+    points: [
+      "Chạm thân thanh không đổi tốc độ, cao độ hay âm lượng.",
+      "Có thể đọc thuyết minh trước hoặc sau lúc câu hiện.",
+      "Bảng cập nhật viết ngắn, mỗi việc một dòng.",
+    ],
+  },
   {
     version: "2.20.0",
     time: "06:40 ngày 09/11/2026",
-    text: "Giá biểu, doanh thu và mở gói chỉ Chủ thấy. Mỗi yêu cầu có ô trả lời riêng. Số trong email không còn bị chèn dấu chấm. Câu trả theo lượt nói rõ tiền trừ trong ví, không trừ ngày gói. Số dư hiện khoản đang giữ. Yêu cầu quá hạn tự chuyển cấp: Hỗ trợ 30 phút, Quản lý 90 phút, rồi tới Chủ. Câu trả lời có chức vụ và tên gợi nhớ. Máy chủ đặt ở Singapore.",
+    title: "Số dư và câu trả theo lượt dễ hiểu hơn.",
+    points: [
+      "Số dư hiện khoản đang giữ cho lần chạy.",
+      "Trả theo lượt ghi rõ tiền trừ trong ví, không trừ ngày gói.",
+      "Số trong email thông báo hiển thị đúng.",
+      "Mỗi yêu cầu có ô trả lời riêng.",
+    ],
   },
   {
     version: "2.19.2",
     time: "20:28 ngày 08/11/2026",
-    text: "Tài khoản Chủ vào lại được trang quản trị khi phòng chưa cấu hình gửi thư. Trước đó email chưa xác minh bị coi là không có quyền, nên tài khoản Chủ cũ không mở được trang Admin.",
+    title: "Tài khoản điều hành vào lại được khi chưa gửi thư.",
+    points: ["Email chưa xác minh không còn bị chặn khỏi trang điều hành."],
   },
   {
     version: "2.19.1",
     time: "19:13 ngày 08/11/2026",
-    text: "Sang tab Tài khoản rồi quay lại thì video còn nguyên, không phải chọn lại tệp. Mốc thời gian không còn hiện 0:60 khi sắp sang phút. Ngày ghi chi phí và cột doanh thu theo giờ Việt Nam. Cửa trả theo lượt chỉ bật sau khi cửa đã mở. Tắt thuyết minh ở lần đầu thì lần sau không bị bật lại. Khi đang ở tab hoặc hộp thoại, phím mũi tên không tua video. Xuất CSV không bị hủy giữa chừng. Hai lần chạy trả theo lượt không dùng nhầm một phiếu. Yêu cầu công khai thêm trần theo địa chỉ mạng khi máy chủ thấy địa chỉ.",
+    title: "Video còn nguyên khi đổi tab.",
+    points: [
+      "Sang tài khoản rồi quay lại không phải chọn lại tệp.",
+      "Mốc thời gian không còn hiện 0:60.",
+      "Tắt nghe ở lần đầu thì lần sau không bị bật lại.",
+      "Hai lần trả theo lượt không dùng nhầm một phiếu.",
+    ],
   },
   {
     version: "2.19.0",
     time: "18:52 ngày 08/11/2026",
-    text: "File nói nhỏ không còn bị coi là im cả tệp, và khoảng trống được tính tiền theo giây bị tính chứ không theo giây tiếng. Câu đã sửa tay giữ nguyên khi đổi model hoặc ngôn ngữ. Từ điển tiếng Trung nhận từ một chữ. Giọng Orpheus cắt câu dài và đọc bằng giọng máy nếu lỗi. Xóa tài khoản không xóa sổ tiền, hủy đơn nạp đang chờ và nhả khoản đang giữ. Bản dựng thử không chạy migration lên database thật; bản chính thiếu địa chỉ database thì dừng. Mã chuyển khoản là VietQR khi nhận ra ngân hàng, không thì chuyển thủ công, và chỉ cộng khi số tài khoản nhận khớp. Đồng ý điều khoản được ghi theo tài khoản. Khóa giọng bám thời điểm câu nên câu bị nối dài không mất khóa; khóa lưu từ bản cũ cần chọn lại. Điều khoản đổi sang bản 2026-11-08.3 nên cần đồng ý lại.",
+    title: "Câu đã sửa tay được giữ, chuyển khoản khớp tài khoản.",
+    points: [
+      "File nói nhỏ không còn bị coi là im cả tệp.",
+      "Câu đã sửa tay giữ nguyên khi đổi model.",
+      "Từ điển tiếng Trung nhận từ một chữ.",
+      "Chỉ cộng tiền khi đúng tài khoản nhận.",
+    ],
   },
   {
     version: "2.18.0",
     time: "18:15 ngày 08/11/2026",
-    text: "Lượt dùng thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt, và bấm Tiếp tục trên đúng tệp vẫn được. Hoàn tiền và nhả khoản giữ không còn cộng hai lần khi hai người bấm cùng lúc. Bản dịch thiếu hoặc thừa câu thì dịch lại, không gắn lệch hàng. Key phòng không hiện lại trên trang quản trị, chỉ còn 4 ký tự cuối. Điều khoản đổi sang bản 2026-11-08.2 nên cần đồng ý lại.",
+    title: "Lượt dùng thử chỉ trừ khi đã gọi được máy dịch.",
+    points: [
+      "Lỗi trước bước dịch không mất lượt dùng thử.",
+      "Hoàn tiền không còn cộng hai lần khi bấm cùng lúc.",
+      "Bản dịch thiếu hoặc thừa câu thì dịch lại, không lệch hàng.",
+    ],
   },
   {
     version: "2.17.1",
     time: "17:20 ngày 08/11/2026",
-    text: "Tài khoản bị khóa vẫn xem được số dư và gửi được yêu cầu. Quản lý không còn thấy nút xác nhận tay đơn nạp, vì chỉ Chủ được cộng tiền tay; Quản lý vẫn xem và hủy được đơn.",
+    title: "Tài khoản bị khóa vẫn xem được số dư.",
+    points: ["Tài khoản bị khóa vẫn gửi được yêu cầu hỗ trợ."],
   },
   {
     version: "2.17.0",
     time: "08:16 ngày 08/11/2026",
-    text: "Cửa trả theo lượt giờ tính tiền thật theo giá Groq cộng phần chênh phòng niêm yết: giữ trước một khoản ước tính trong ví, trừ số thực khi xong và trả lại phần thừa, đoạn Groq báo lỗi thì không tính tiền. Đăng ký bằng email có thể bắt buộc xác minh thư khi phòng đã cấu hình gửi thư. Quyền Chủ nay nằm trong cơ sở dữ liệu và chỉ tính khi email đã xác minh. Chỉ Chủ được xác nhận tay đơn nạp, mỗi khách tối đa số đơn chờ nhất định. Điều khoản đổi sang bản 2026-11-08.1 nên cần đồng ý lại.",
+    title: "Trả theo lượt giữ tiền trước, trừ số thực khi xong.",
+    points: [
+      "Giữ một khoản ước tính, trừ số thực và trả phần thừa.",
+      "Đoạn báo lỗi không tính tiền.",
+      "Đăng ký có thể cần mở thư xác minh.",
+    ],
   },
   {
     version: "2.16.1",
     time: "01:35 ngày 08/11/2026",
-    text: "Tài khoản bị khóa hoặc cấm giờ bị chặn ngay ở máy chủ khi tạo đơn nạp, mua gói, dùng lượt thử, dùng cửa trả theo lượt và đọc thuyết minh, không chỉ ở trình duyệt. Giọng đọc neural có giới hạn số lần mỗi phút và cần đăng nhập. Đã gỡ chức năng cộng tiền thử mà ai đăng nhập cũng gọi được.",
+    title: "Tài khoản bị khóa bị chặn ngay khi nạp hoặc chạy.",
+    points: ["Khóa hoặc cấm có hiệu lực ngay khi nạp hoặc chạy, không chỉ trên trình duyệt."],
   },
   {
     version: "2.16.0",
     time: "23:44 ngày 07/11/2026",
-    text: "Chuông trang quản trị chỉ còn yêu cầu hỗ trợ, việc chuyển cấp và khách báo đã chuyển, không còn đơn nạp đã xử lý. Số thông báo mới hiện trên chuông quản trị, từng dòng có chấm đỏ khi chưa xem và mất chấm khi bấm. Hộp hủy xác nhận đơn và xóa tài khoản dùng giao diện của phòng thay cho cửa sổ trình duyệt. Khung giá biểu trả theo lượt có nút ẩn hiện.",
+    title: "Chuông chỉ còn việc cần xử lý.",
+    points: ["Thông báo chưa xem có chấm đỏ và mất chấm khi bấm."],
   },
   {
     version: "2.15.0",
     time: "22:12 ngày 07/11/2026",
-    text: "Hộp xác nhận mã 6 ký tự khi reset số dư và reset tiền test dùng giao diện đồng bộ thay vì cửa sổ trình duyệt thô. Các ô nhập số tiền (nạp, chỉnh số dư, hoàn, chi phí) hiện dấu chấm nghìn như 100.000. Chuông thông báo khi bấm vào đơn nạp hoặc yêu cầu sẽ mở đúng tài khoản và khung đơn nạp để xác nhận. Khung giá biểu gói trên trang quản trị có nút ẩn hiện.",
+    title: "Số tiền hiện dấu chấm nghìn.",
+    points: ["Ô nhập tiền hiện dạng 100.000.", "Bấm thông báo mở đúng đơn cần xử lý."],
   },
-
   {
     version: "2.14.0",
     time: "21:05 ngày 07/11/2026",
-    text: "Lời lỗ trên doanh thu hiện dấu cộng màu xanh khi lời và dấu trừ màu đỏ khi lỗ. Reset số dư và reset tiền test yêu cầu nhập mã xác nhận 6 ký tự. Chủ chỉnh được số dư từng tài khoản. Tạo đơn nạp, cộng tiền và từ chối đều gửi thông báo chuông; từ chối ghi lịch sử Nạp/Mua gói chữ đỏ, không cộng tiền. Lịch sử Nạp/Mua gói tối đa 9 dòng. Hạn gói phía trên cập nhật ngay sau mua gói hoặc nạp.",
+    title: "Lời lỗ có màu, và số dư cần mã xác nhận khi đưa về 0.",
+    points: ["Lời hiện xanh, lỗ hiện đỏ.", "Đưa số dư về 0 phải nhập mã 6 ký tự."],
   },
   {
     version: "2.13.0",
     time: "19:37 ngày 07/11/2026",
-    text: "Gói 7 ngày và 30 ngày hiện giá gốc gạch ngang, giá mua thật và dòng đã tiết kiệm nổi bật. Mã QR nạp ghi rõ là bản demo cho đến khi gắn cổng thật. Đơn nạp có nút Hủy xác nhận khi khách báo giả. Chủ có nút Reset về 0 cho toàn bộ số liệu tiền test và Reset số dư từng tài khoản.",
+    title: "Gói dài hiện giá đã tiết kiệm.",
+    points: ["Gói 7 ngày và 30 ngày hiện giá gốc gạch ngang và số đã tiết kiệm."],
   },
   {
     version: "2.12.0",
     time: "18:50 ngày 07/11/2026",
-    text: "Tab Việc, Sơ đồ và Doanh thu không còn đè nội dung phía dưới. Mã QR nạp tiền được vẽ ngay trên trang, không phụ thuộc ảnh bên ngoài. Khách báo đã chuyển khoản thì trang quản trị thấy đơn và có thể xác nhận cộng tiền khi webhook lỗi. Mỗi cổng nạp bật tắt hoặc xóa được, kèm chấm xanh đỏ. Gói 24 giờ, 7 ngày và 30 ngày ghi rõ khoản đã tiết kiệm.",
+    title: "Mã nạp hiện ngay trên trang.",
+    points: ["Mã QR được vẽ trên trang, không phụ thuộc ảnh bên ngoài.", "Có thể hủy đơn nạp khi báo chuyển nhầm."],
   },
   {
     version: "2.11.0",
     time: "18:14 ngày 07/11/2026",
-    text: "Thêm chấm xanh đỏ cho trạng thái cửa trả theo lượt trên phòng và trang quản trị. Canh chỉnh chữ thẻ quyền trên mọi kiểu. Nạp tiền nằm cạnh đăng xuất trong khung tài khoản, cho nhập số từ 10.000 đến 1.000.000 đồng. Tự đăng xuất sau 30 phút không dùng. Doanh thu tách rõ nạp cổng, mua gói, trả theo lượt, hoàn, nhả giữ và chi phí. Form đăng nhập gợi ý email đầy đủ từ phần trước @. Tìm người dùng trên trang quản trị nhận tên thiếu dấu.",
+    title: "Nạp tiền nằm trong khung tài khoản.",
+    points: ["Nhập từ 10.000 đến 1.000.000 đồng.", "Tự đăng xuất sau 30 phút không dùng."],
   },
   {
     version: "2.10.1",
     time: "07:41 ngày 07/11/2026",
-    text: "Phiếu gần đây ghi rõ khi chưa có phiếu. Chọn trả theo lượt thì câu hạn gói nói đúng cửa đó. Thẻ quyền trên tài khoản có hiệu ứng như bản đã chọn. Sơ đồ và doanh thu nằm ở tab riêng. Sổ gần đây chỉ hiện vài dòng, bấm xem thêm nếu cần.",
+    title: "Phiếu trả theo lượt và hạn gói nói đúng trạng thái.",
+    points: ["Chưa có phiếu thì ghi rõ chưa có.", "Sổ gần đây chỉ hiện vài dòng."],
   },
   {
     version: "2.10.0",
     time: "22:43 ngày 06/11/2026",
-    text: "Key ở trang quản trị được giữ sau khi tải lại trang. Khách chọn trả theo lượt thì phòng tự dùng key đó, khách không cần nhập. Phiếu gần đây hiện giờ, trạng thái và số tiền. Sơ đồ và doanh thu đọc lại được.",
+    title: "Chọn trả theo lượt thì không cần nhập lại key.",
+    points: ["Key đã lưu được giữ sau khi tải lại trang.", "Phiếu hiện giờ, trạng thái và số tiền."],
   },
   {
     version: "2.9.0",
     time: "22:22 ngày 06/11/2026",
-    text: "Trang quản trị có ô nhập, dán, hiện và ẩn key để đồng bộ model. Key không gửi lên máy chủ. Khách chọn trả theo lượt thì không cần bấm đồng bộ key. Hai thể loại đổi tên hiển thị thành Phim gắn nhãn 18+ và Phim thông thường.",
+    title: "Hai thể loại phim đổi tên cho dễ hiểu.",
+    points: ["Tên hiển thị thành Phim gắn nhãn 18+ và Phim thông thường."],
   },
   {
     version: "2.8.0",
     time: "22:05 ngày 06/11/2026",
-    text: "Trang quản trị hiện model đang dùng và mức giá đang áp dụng cho cửa trả theo lượt. Model chưa được đưa ra chỉ hiện chưa cập nhật. Bảng phiên bản chỉ còn tám lần gần nhất. Khi có bản mới, trang báo tải lại. Đang làm việc thì chọn để sau. Rời trang khoảng năm phút thì lần quay lại tự tải bản mới.",
+    title: "Có bản mới thì trang báo tải lại.",
+    points: ["Bảng cập nhật chỉ hiện tám lần gần nhất.", "Đang làm việc thì có thể để sau."],
   },
   {
     version: "2.7.0",
     time: "21:47 ngày 06/11/2026",
-    text: "Cửa trả theo lượt mặc định mở. Bảo trì chỉ hiện khi quản trị nhập nội dung và lưu. Giá biểu có nút cập nhật riêng: lấy giá gốc, tăng theo phần trăm, hoặc đặt giá riêng từng model. Khung chọn model dùng đúng đơn giá đã lưu khi khách chọn trả theo lượt. Khi dùng key của khách thì không hiện giá. Câu giải thích giá không còn dẫn khách so với bảng giá bên ngoài.",
+    title: "Cửa trả theo lượt mặc định mở.",
+    points: ["Dùng key của bạn thì không hiện giá.", "Có thể đặt giá riêng cho từng model."],
   },
   {
     version: "2.6.1",
     time: "21:11 ngày 06/11/2026",
-    text: "Thêm đóng và mở cửa trả theo lượt trên trang khách. Khi đóng, tab Key và Tài khoản chỉ hiện câu tạm ngưng, và khách vẫn dùng key của mình. Khi mở, khung chọn Key của tôi hoặc Trả theo lượt hiện lại để xem bố cục. Lần chạy chưa trừ ví.",
+    title: "Đóng cửa trả theo lượt thì vẫn dùng key của bạn.",
+    points: ["Khi đóng, chỉ hiện câu tạm ngưng."],
   },
   {
     version: "2.6.0",
     time: "21:04 ngày 06/11/2026",
-    text: "Hoàn thiện bàn quản lý cửa trả theo lượt. Chủ lưu đơn giá Turbo, đơn giá Large, hạn mức ngày và câu khi cửa đóng. Trang quản trị hiện số đang giữ, số đã trừ và phiếu lỗi trong ngày. Quản lý được nhả khoản giữ và hoàn vào ví khi đã có phiếu. Hỗ trợ có câu trả lời sẵn. Khách chưa chạy được cửa này.",
+    title: "Trang điều hành xem được phiếu trả theo lượt.",
+    points: ["Hiện số đang giữ, số đã trừ và phiếu lỗi trong ngày."],
   },
   {
     version: "2.5.2",
     time: "20:54 ngày 06/11/2026",
-    text: "Thay hàng Phụ đề, Tài khoản và Quản lý bằng nút danh sách. Tên mục đang mở hiện cạnh nút. Thêm khung Trả theo lượt tại tab Key, Tài khoản và trang quản trị, ghi rõ sẽ cập nhật sau vì chưa dùng được.",
+    title: "Menu phòng gọn thành một nút danh sách.",
+    points: ["Tên mục đang mở hiện cạnh nút."],
   },
   {
     version: "2.5.1",
     time: "13:12 ngày 06/11/2026",
-    text: "Điều chỉnh nội dung các lần cập nhật. Mỗi lần được viết bằng câu chuyên môn và nêu đủ phần đã nâng cấp, đã chỉnh sửa, đã thay đổi và đã bổ sung. Mỗi lần hiển thị mốc thời gian phát hành.",
+    title: "Mỗi lần cập nhật có mốc thời gian.",
+    points: ["Nội dung cập nhật viết bằng câu đủ ý."],
   },
   {
     version: "2.5.0",
     time: "10:02 ngày 06/11/2026",
-    text: "Bổ sung bảng tóm tắt cập nhật khi chọn số phiên bản, tại điều khoản, phòng dịch và trang quản trị. Phiên bản chưa xem được đánh dấu bằng số sáng nhẹ.",
+    title: "Bấm số phiên bản để xem các lần cập nhật.",
+    points: ["Phiên bản chưa xem được đánh dấu nhẹ."],
   },
   {
     version: "2.4.2",
     time: "01:09 ngày 06/11/2026",
-    text: "Chỉnh nhãn Quản lý thẳng hàng và cùng hàng với Phụ đề và Tài khoản.",
+    title: "Nhãn menu thẳng hàng.",
+    points: ["Các mục menu nằm cùng một hàng."],
   },
   {
     version: "2.4.1",
     time: "00:54 ngày 06/11/2026",
-    text: "Chốt bảng giá: 9.000 đồng mỗi 24 giờ, 39.000 đồng mỗi 7 ngày, 99.000 đồng mỗi 30 ngày. Điều khoản sử dụng được cập nhật thành bản 2026-11-06.1.",
+    title: "Chốt bảng giá thuê phòng.",
+    points: ["9.000 đồng mỗi 24 giờ, 39.000 đồng mỗi 7 ngày, 99.000 đồng mỗi 30 ngày."],
   },
   {
     version: "2.4.0",
     time: "00:52 ngày 06/11/2026",
-    text: "Thêm nút Quản lý cạnh Tài khoản đối với tài khoản được cấp quyền. Thu gọn lịch sử trên trang quản trị. Đăng nhập có thể ghi nhớ email. Nghe và thuyết minh được bật mặc định.",
+    title: "Nghe và thuyết minh được bật sẵn.",
+    points: ["Đăng nhập có thể ghi nhớ email.", "Tài khoản được cấp quyền thấy nút điều hành."],
   },
   {
     version: "2.3.0",
     time: "00:26 ngày 06/11/2026",
-    text: "Giữ khung video đúng tỷ lệ 16:9 khi xoay thiết bị. Đăng ký yêu cầu nhập lại mật khẩu và hiển thị mức độ mạnh yếu. Thu gọn thẻ quyền.",
+    title: "Video giữ đúng tỷ lệ khi xoay máy.",
+    points: ["Đăng ký phải nhập lại mật khẩu và thấy mức mạnh yếu."],
   },
   {
     version: "2.2.0",
     time: "00:03 ngày 06/11/2026",
-    text: "Bổ sung mười kiểu thẻ quyền. Chủ tài khoản chọn kiểu thẻ trên trang quản trị. Ô tài khoản hiển thị cấp của người dùng.",
+    title: "Ô tài khoản hiện cấp của người dùng.",
+    points: ["Có mười kiểu thẻ quyền để chọn."],
   },
   {
     version: "2.1.0",
     time: "23:46 ngày 05/11/2026",
-    text: "Ô số lượng được phân màu. Yêu cầu được đóng sau khi trả lời hoặc từ chối. Từ chối bắt buộc kèm lý do.",
+    title: "Từ chối yêu cầu phải có lý do.",
+    points: ["Yêu cầu được đóng sau khi trả lời hoặc từ chối."],
   },
   {
     version: "2.0.0",
     time: "23:18 ngày 05/11/2026",
-    text: "Thiết lập bốn cấp quyền: Người dùng, Hỗ trợ, Quản lý và Chủ. Yêu cầu quá 2 giờ được chuyển lên cấp trên. Bổ sung sơ đồ cấp và trang doanh thu.",
+    title: "Phòng có bốn cấp xử lý yêu cầu.",
+    points: ["Yêu cầu quá 2 giờ được chuyển lên cấp trên.", "Có sơ đồ cấp và trang theo dõi tiền."],
   },
 ];
 

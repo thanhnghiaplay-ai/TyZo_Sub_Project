@@ -1497,6 +1497,14 @@ export const saveRunKey = createServerFn({ method: "POST" })
     return ids;
   });
 
+export const getAdminLog = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await requireRole(context.userId, "ho-tro");
+    const { ADMIN_LOG } = await import("@/lib/admin-log.server");
+    return ADMIN_LOG;
+  });
+
 
 
 

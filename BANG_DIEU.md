@@ -15,7 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | v2.20.0 trên nhánh `main`, từ 2026-11-09 08:09 |
+| Bản khách đang dùng | v2.20.0 trên nhánh `main` |
+| Bản đang làm | v2.21.0 trên nhánh `work`: nhật ký khách ngắn, thanh kéo núm, đọc trước hoặc sau |
 | Điều khoản | 2026-11-08.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -39,13 +40,14 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc code đang mở. v2.20.0 đã lên `main` lúc 2026-11-09 08:09.
+Không có việc đã đẩy. v2.21.0 đang trên `work`, chưa lên `main`.
 
 ## Ý đã nêu
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
-| 2026-11-09 08:09 | Người dùng chốt | Đẩy v2.20.0 lên bản chính | Làm ngay | Đã vào `main` |
+| 2026-11-09 09:33 | Làm | Nhật ký khách 3 lớp. Thanh chỉ kéo núm. Đọc trước hoặc sau | Làm ngay | Đã vào `work` trong v2.21.0 |
+| 2026-11-09 09:33 | Thẩm định | Đưa thuật ngữ vào Postgres, chỉ Chủ sửa, khách gửi thuật ngữ riêng | Làm sau | Chưa làm. Đổi điều khoản, chờ người dùng chốt |
 | 2026-11-09 06:40 | Làm | Giá và tiền chỉ Chủ. Yêu cầu tự chuyển cấp. Số dư hiện khoản giữ | Làm ngay | Đã vào `main` trong v2.20.0 |
 | 2026-11-08 20:28 | Làm | Chủ vào lại Admin khi phòng chưa gửi được thư | Làm ngay | Đã vào `main` trong v2.19.2 |
 | 2026-11-08 20:03 | Người dùng chốt | Một đường cho ba vai. Làm, Thẩm định, Cố vấn. Nhìn bảng này là đủ | Làm ngay | Đã vào `main` |
@@ -77,7 +79,7 @@ Chỉ mở lại khi người dùng yêu cầu đúng việc đó.
 
 Vai Làm tự làm các mục dưới đây trước khi báo xong. Không chờ nhắc.
 
-- Đổi cái khách nhìn thấy thì nâng `APP_VERSION` theo `huongdan.txt` mục 10, và thêm một dòng `CHANGELOG`: tiếng Việt, đủ ý, có giờ Việt Nam lấy từ lệnh `date`. Không ghi tên file, không ghi commit.
+- Đổi cái khách nhìn thấy thì nâng `APP_VERSION` theo `huongdan.txt` mục 10, và thêm một mục `CHANGELOG` theo 3 lớp: một câu tiêu đề, 1 đến 4 dòng, không ghi việc nội bộ. Việc nội bộ vào `ADMIN_LOG`. Giờ Việt Nam lấy từ lệnh `date`. `app-version.test.ts` phải xanh.
 - Đổi giá, quyền, hạn mức, dữ liệu, trách nhiệm, khóa hoặc cấm thì sửa điều khoản đúng chỗ rồi nâng `TERMS_VERSION`. Chỉ đổi giao diện thì không sửa điều khoản.
 - Chỉ sửa tài liệu thì không nâng số phiên bản.
 - Sửa bảng này, dòng «Đang chạy» trong `huongdan.txt`, bảng đầu `PROJECT_STATUS.md`, và một dòng nhật ký. Phiếu bàn giao ghi đã làm, chưa làm, cố ý không làm.

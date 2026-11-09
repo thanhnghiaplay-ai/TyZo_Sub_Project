@@ -97,8 +97,10 @@ export function createNarrator() {
     else if (settings.duck) video.volume = Math.min(savedVolume, 0.16);
   };
 
+  let speaking = false;
   const stop = (video?: HTMLVideoElement | null) => {
     token++;
+    speaking = false;
     try {
       window.speechSynthesis?.cancel();
     } catch {
@@ -125,6 +127,7 @@ export function createNarrator() {
 
   return {
     stop,
+    busy: () => speaking,
     async speak(opts: {
       text: string;
       settings: NarrationSettings;
@@ -135,11 +138,15 @@ export function createNarrator() {
     }) {
       const line = speakable(opts.text, opts.settings.skipCues);
       if (!line) return;
+      speaking = true;
       const mine = ++token;
       const { settings } = opts;
       duck(opts.video, settings);
       const done = () => {
-        if (mine === token) restore(opts.video);
+        if (mine === token) {
+          speaking = false;
+          restore(opts.video);
+        }
       };
       try {
         const cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
