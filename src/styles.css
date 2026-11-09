@@ -922,6 +922,45 @@
 .account-card[data-rank="chu"] { --badge: #f3d48a; --badge-ink: #1c1608; }
 .account-card[data-rank="ctv"] { --badge: #6ed0b0; --badge-ink: #10211c; }
 
+.role-mark[data-rank="user"] { --badge: #9aa6b2; --badge-ink: #10161c; }
+.role-mark[data-rank="ho-tro"] { --badge: #8eb7ee; --badge-ink: #10161c; }
+.role-mark[data-rank="quan-ly"] { --badge: #e7b63a; --badge-ink: #1c1608; }
+.role-mark[data-rank="chu"] { --badge: #f3d48a; --badge-ink: #1c1608; }
+.role-mark[data-rank="ctv"] { --badge: #6ed0b0; --badge-ink: #10211c; }
+
+.role-row {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  max-width: calc(100% - 0.8rem);
+  pointer-events: none;
+}
+.role-row .role-mark { position: static; }
+.role-row-ribbon,
+.role-row-pill,
+.role-row-stamp,
+.role-row-frame,
+.role-row-fold { top: 0.65rem; right: 0.4rem; }
+.role-row-ticket { top: auto; right: 0.5rem; bottom: 0.5rem; }
+.role-row-banner { top: 0; right: 0; left: 0; height: 1.75rem; align-items: center; padding-right: 0.45rem; }
+.role-row-rail { top: 0; right: auto; bottom: 0; left: 0; align-items: stretch; }
+.role-row-sash { top: 0; right: 0; bottom: 0; left: auto; align-items: stretch; }
+.role-row .role-mark-banner { width: auto; height: auto; padding: 0.15rem 0.5rem; }
+.role-row .role-mark-fold { width: 4.4rem; height: 4.4rem; }
+.role-row .role-mark-stamp { width: 3.7rem; height: 3.7rem; }
+
+.account-card[data-marks="2"][data-badge="ribbon"],
+.account-card[data-marks="2"][data-badge="pill"],
+.account-card[data-marks="2"][data-badge="stamp"],
+.account-card[data-marks="2"][data-badge="fold"],
+.account-card[data-marks="2"][data-badge="frame"] { padding-right: 10.4rem; }
+.account-card[data-marks="2"][data-badge="rail"] { padding-left: 4.1rem; }
+.account-card[data-marks="2"][data-badge="sash"] { padding-right: 4.1rem; }
+
 .account-card[data-badge="ribbon"],
 .account-card[data-badge="pill"],
 .account-card[data-badge="stamp"],
@@ -983,8 +1022,8 @@
   letter-spacing: 0.01em;
 }
 
-.account-card[data-rank="chu"] .role-mark-ribbon,
-.account-card[data-rank="chu"] .role-mark-stamp {
+.role-mark[data-rank="chu"].role-mark-ribbon,
+.role-mark[data-rank="chu"].role-mark-stamp {
   box-shadow: 0 0 16px rgb(231 182 58 / 42%);
 }
 
@@ -1130,18 +1169,22 @@
   animation: stat-in 0.35s ease;
 }
 
-.account-card[data-rank="chu"] .role-mark-fold,
-.account-card[data-rank="quan-ly"] .role-mark-fold,
-.account-card[data-rank="ho-tro"] .role-mark-fold,
-.account-card[data-rank="chu"] .role-mark-stamp,
-.account-card[data-rank="quan-ly"] .role-mark-stamp,
-.account-card[data-rank="ho-tro"] .role-mark-stamp,
-.account-card[data-rank="chu"] .role-mark-frame,
-.account-card[data-rank="quan-ly"] .role-mark-frame,
-.account-card[data-rank="ho-tro"] .role-mark-frame,
-.account-card[data-rank="chu"] .role-mark-chip,
-.account-card[data-rank="quan-ly"] .role-mark-chip,
-.account-card[data-rank="ho-tro"] .role-mark-chip {
+.role-mark[data-rank="chu"].role-mark-fold,
+.role-mark[data-rank="quan-ly"].role-mark-fold,
+.role-mark[data-rank="ho-tro"].role-mark-fold,
+.role-mark[data-rank="ctv"].role-mark-fold,
+.role-mark[data-rank="chu"].role-mark-stamp,
+.role-mark[data-rank="quan-ly"].role-mark-stamp,
+.role-mark[data-rank="ho-tro"].role-mark-stamp,
+.role-mark[data-rank="ctv"].role-mark-stamp,
+.role-mark[data-rank="chu"].role-mark-frame,
+.role-mark[data-rank="quan-ly"].role-mark-frame,
+.role-mark[data-rank="ho-tro"].role-mark-frame,
+.role-mark[data-rank="ctv"].role-mark-frame,
+.role-mark[data-rank="chu"].role-mark-chip,
+.role-mark[data-rank="quan-ly"].role-mark-chip,
+.role-mark[data-rank="ho-tro"].role-mark-chip,
+.role-mark[data-rank="ctv"].role-mark-chip {
   animation: role-glow 2.8s ease-in-out infinite;
   filter: drop-shadow(0 0 8px color-mix(in srgb, var(--badge) 70%, transparent));
 }
@@ -1263,56 +1306,56 @@
 .org-card.role-ho-tro { border-color: #8eb7ee; box-shadow: 0 0 12px rgb(142 183 238 / 18%); }
 .org-card.role-quan-ly { border-color: #e7b63a; box-shadow: 0 0 14px rgb(231 182 58 / 20%); }
 
-.account-card[data-rank="user"] .role-mark {
+.role-mark[data-rank="user"] {
   animation: none;
 }
 
-.account-card[data-rank="ho-tro"] .role-mark-ribbon,
-.account-card[data-rank="ho-tro"] .role-mark-pill,
-.account-card[data-rank="ho-tro"] .role-mark-banner,
-.account-card[data-rank="ho-tro"] .role-mark-ticket,
-.account-card[data-rank="ho-tro"] .role-mark-rail,
-.account-card[data-rank="ho-tro"] .role-mark-sash,
-.account-card[data-rank="quan-ly"] .role-mark-ribbon,
-.account-card[data-rank="quan-ly"] .role-mark-pill,
-.account-card[data-rank="quan-ly"] .role-mark-banner,
-.account-card[data-rank="quan-ly"] .role-mark-ticket,
-.account-card[data-rank="quan-ly"] .role-mark-rail,
-.account-card[data-rank="quan-ly"] .role-mark-sash,
-.account-card[data-rank="chu"] .role-mark-ribbon,
-.account-card[data-rank="chu"] .role-mark-pill,
-.account-card[data-rank="chu"] .role-mark-banner,
-.account-card[data-rank="chu"] .role-mark-ticket,
-.account-card[data-rank="chu"] .role-mark-rail,
-.account-card[data-rank="chu"] .role-mark-sash {
+.role-mark[data-rank="ho-tro"].role-mark-ribbon,
+.role-mark[data-rank="ho-tro"].role-mark-pill,
+.role-mark[data-rank="ho-tro"].role-mark-banner,
+.role-mark[data-rank="ho-tro"].role-mark-ticket,
+.role-mark[data-rank="ho-tro"].role-mark-rail,
+.role-mark[data-rank="ho-tro"].role-mark-sash,
+.role-mark[data-rank="quan-ly"].role-mark-ribbon,
+.role-mark[data-rank="quan-ly"].role-mark-pill,
+.role-mark[data-rank="quan-ly"].role-mark-banner,
+.role-mark[data-rank="quan-ly"].role-mark-ticket,
+.role-mark[data-rank="quan-ly"].role-mark-rail,
+.role-mark[data-rank="quan-ly"].role-mark-sash,
+.role-mark[data-rank="chu"].role-mark-ribbon,
+.role-mark[data-rank="chu"].role-mark-pill,
+.role-mark[data-rank="chu"].role-mark-banner,
+.role-mark[data-rank="chu"].role-mark-ticket,
+.role-mark[data-rank="chu"].role-mark-rail,
+.role-mark[data-rank="chu"].role-mark-sash {
   background-size: 180% 100%;
   animation: rank-sheen 3.8s ease-in-out infinite;
 }
 
-.account-card[data-rank="ho-tro"] .role-mark-ribbon,
-.account-card[data-rank="ho-tro"] .role-mark-pill,
-.account-card[data-rank="ho-tro"] .role-mark-banner,
-.account-card[data-rank="ho-tro"] .role-mark-ticket,
-.account-card[data-rank="ho-tro"] .role-mark-rail,
-.account-card[data-rank="ho-tro"] .role-mark-sash {
+.role-mark[data-rank="ho-tro"].role-mark-ribbon,
+.role-mark[data-rank="ho-tro"].role-mark-pill,
+.role-mark[data-rank="ho-tro"].role-mark-banner,
+.role-mark[data-rank="ho-tro"].role-mark-ticket,
+.role-mark[data-rank="ho-tro"].role-mark-rail,
+.role-mark[data-rank="ho-tro"].role-mark-sash {
   background-image: linear-gradient(110deg, #6ea2e4, #d7e8ff 45%, #8eb7ee);
 }
 
-.account-card[data-rank="quan-ly"] .role-mark-ribbon,
-.account-card[data-rank="quan-ly"] .role-mark-pill,
-.account-card[data-rank="quan-ly"] .role-mark-banner,
-.account-card[data-rank="quan-ly"] .role-mark-ticket,
-.account-card[data-rank="quan-ly"] .role-mark-rail,
-.account-card[data-rank="quan-ly"] .role-mark-sash {
+.role-mark[data-rank="quan-ly"].role-mark-ribbon,
+.role-mark[data-rank="quan-ly"].role-mark-pill,
+.role-mark[data-rank="quan-ly"].role-mark-banner,
+.role-mark[data-rank="quan-ly"].role-mark-ticket,
+.role-mark[data-rank="quan-ly"].role-mark-rail,
+.role-mark[data-rank="quan-ly"].role-mark-sash {
   background-image: linear-gradient(110deg, #b88922, #f0d78c 42%, #e7b63a);
 }
 
-.account-card[data-rank="chu"] .role-mark-ribbon,
-.account-card[data-rank="chu"] .role-mark-pill,
-.account-card[data-rank="chu"] .role-mark-banner,
-.account-card[data-rank="chu"] .role-mark-ticket,
-.account-card[data-rank="chu"] .role-mark-rail,
-.account-card[data-rank="chu"] .role-mark-sash {
+.role-mark[data-rank="chu"].role-mark-ribbon,
+.role-mark[data-rank="chu"].role-mark-pill,
+.role-mark[data-rank="chu"].role-mark-banner,
+.role-mark[data-rank="chu"].role-mark-ticket,
+.role-mark[data-rank="chu"].role-mark-rail,
+.role-mark[data-rank="chu"].role-mark-sash {
   background-image: linear-gradient(110deg, #c9962e, #fff4cc 40%, #e7b63a 70%, #f3d48a);
 }
 

@@ -140,7 +140,7 @@ export function AccountPanel() {
       )}
       {user && !user.isDevFallback && (
         <>
-          <AccountCard rank={place?.role ?? (partner ? "ctv" : null)} styleId={badge}>
+          <AccountCard rank={place?.role ?? null} extra={partner ? ["ctv"] : []} styleId={badge}>
             <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>

@@ -24,6 +24,7 @@ export type AdminUser = {
   reason: string;
   note: string;
   role: StaffRole | null;
+  partner: boolean;
 };
 
 export type LedgerRow = {
@@ -287,9 +288,11 @@ export const searchUsers = createServerFn({ method: "POST" })
       status_reason: string | null;
       staff_note: string | null;
       role: string | null;
+      partner: boolean | null;
     }>`
       select u.id, u.email, u.name, a.balance, a.plan, a.plan_until, a.trial_left,
-             a.status, a.status_reason, a.staff_note, s.role
+             a.status, a.status_reason, a.staff_note, s.role,
+             exists (select 1 from affiliates f where f.user_id = u.id) as partner
       from "user" u
       left join room_accounts a on a.user_id = u.id
       left join room_staff s on s.user_id = u.id
@@ -320,6 +323,7 @@ export const searchUsers = createServerFn({ method: "POST" })
       reason: row.status_reason ?? "",
       note: row.staff_note ?? "",
       role: isStaffRole(row.role) ? row.role : null,
+      partner: Boolean(row.partner),
     }));
   });
 

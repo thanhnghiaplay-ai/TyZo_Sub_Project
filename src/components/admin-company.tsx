@@ -70,19 +70,24 @@ export function OrgBoard({ owner }: { owner: boolean }) {
     });
   }, []);
 
-  const rows: Array<OrgCard["role"]> = ["chu", "quan-ly", "ho-tro"];
+  const partnerById = new Map(partners.map((person) => [person.id, person]));
 
   return (
     <section className="org-tree space-y-3">
       {fault && <p className="text-sm text-danger">{fault}</p>}
-      {rows.map((role) => (
+      {(["chu", "quan-ly", "ho-tro"] as const).map((role) => (
         <div key={role} className="grid gap-2">
-          {cards.filter((card) => card.role === role).map((card) => (
-            <article key={card.id} className={"org-card role-" + card.role + (card.role === "chu" ? " org-owner" : "")}>
-              <p className={"role-chip role-" + card.role}>{ROLE_LABEL[card.role === "user" ? "ho-tro" : card.role]}</p>
+          {cards.filter((card) => card.role === role).map((card) => {
+            const partner = partnerById.get(card.id);
+            return (
+            <article key={card.id} className={"org-card role-" + role + (role === "chu" ? " org-owner" : "")}>
+              <div className="mb-1 flex flex-wrap items-center gap-1">
+                <p className={"role-chip role-" + role}>{ROLE_LABEL[role]}</p>
+                {partner && <p className="role-chip role-ctv">Cộng tác</p>}
+              </div>
               <p className="font-medium">{card.nickname || card.name || "Chưa có tên"}</p>
               <p className="text-sm text-muted">{card.email}</p>
-              <p className="text-sm text-muted">{card.actions} việc trong tháng</p>
+              <p className="text-sm text-muted">{partner ? `Mã ${partner.code} · ` : ""}{card.actions} việc trong tháng</p>
               {owner && (
                 <form
                   className="mt-2 flex gap-2"
@@ -98,11 +103,12 @@ export function OrgBoard({ owner }: { owner: boolean }) {
                 </form>
               )}
             </article>
-          ))}
+            );
+          })}
         </div>
       ))}
       <div className="grid gap-2">
-        {partners.map((person) => (
+        {partners.filter((person) => !cards.some((card) => card.id === person.id)).map((person) => (
           <article key={person.id} className="org-card role-ctv">
             <p className="role-chip role-ctv">Cộng tác</p>
             <p className="font-medium">{person.name || "Chưa có tên"}</p>

@@ -390,13 +390,14 @@ export function AdminDesk() {
                   <span className="text-sm text-muted">
                     {user.name} · {user.status === "open" ? "Đang mở" : user.status === "locked" ? "Đang khóa" : "Đang cấm"}
                     {user.role ? ` · ${ROLE_LABEL[user.role]}` : ""}
+                    {user.partner ? " · Cộng tác" : ""}
                   </span>
                 </button>
               </li>
             ))}
           </ul>
           {picked && (
-            <AccountCard rank={picked.role} styleId={badge} className="space-y-3">
+            <AccountCard rank={picked.role} extra={picked.partner ? ["ctv"] : []} styleId={badge} className="space-y-3">
               <h2 className="font-semibold">{picked.email}</h2>
               <p className="text-sm text-muted">
                 Số dư {dong(picked.balance)}. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
