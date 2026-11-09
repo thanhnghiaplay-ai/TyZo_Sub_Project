@@ -30,16 +30,16 @@ export const getAffiliateDesk = createServerFn({ method: "GET" })
       await settleAffiliate(sql);
       const saved = await sql<{ value: string }>`select value from room_settings where key = 'affiliate'`;
       const rules = parseAffiliateRules(saved[0]?.value);
-      const people = await sql<{ user_id: string; email: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }>`
-        select a.user_id, u.email, a.code, a.status, a.rate_plan_bp, a.rate_run_bp,
+      const people = await sql<{ user_id: string; email: string; name: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }>`
+        select a.user_id, u.email, u.name, a.code, a.status, a.rate_plan_bp, a.rate_run_bp,
           coalesce(sum(case when e.status = 'treo' then e.amount else 0 end), 0)::int as waiting,
           coalesce(sum(case when e.status = 'da-duyet' then e.amount else 0 end), 0)::int as ready
         from affiliates a
         join "user" u on u.id = a.user_id
         left join commission_events e on e.affiliate_id = a.user_id
-        group by a.user_id, u.email, a.code, a.status, a.rate_plan_bp, a.rate_run_bp
+        group by a.user_id, u.email, u.name, a.code, a.status, a.rate_plan_bp, a.rate_run_bp
         order by a.created_at desc
-        limit 40
+        limit 200
       `;
       const payouts = await sql<{ id: number; email: string; amount: number }>`
         select p.id, u.email, p.amount

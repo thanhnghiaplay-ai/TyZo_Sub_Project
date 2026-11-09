@@ -171,6 +171,7 @@ export type DeskStats = {
   waiting: number;
   managers: number;
   support: number;
+  partners: number;
 };
 
 export const getDeskStats = createServerFn({ method: "GET" })
@@ -194,6 +195,13 @@ export const getDeskStats = createServerFn({ method: "GET" })
         (select count(*)::int from room_staff where role = 'ho-tro') as support
     `;
     const row = rows[0];
+    let partners = 0;
+    try {
+      const counted = await sql<{ n: number }>`select count(*)::int as n from affiliates`;
+      partners = counted[0]?.n ?? 0;
+    } catch {
+      partners = 0;
+    }
     return {
       online: row?.online ?? 0,
       users: row?.users ?? 0,
@@ -206,6 +214,7 @@ export const getDeskStats = createServerFn({ method: "GET" })
       waiting: row?.waiting ?? 0,
       managers: row?.managers ?? 0,
       support: row?.support ?? 0,
+      partners,
     };
   });
 
@@ -962,9 +971,17 @@ export type OrgCard = {
   actions: number;
 };
 
+export type OrgPartner = {
+  id: string;
+  email: string;
+  name: string;
+  code: string;
+  status: string;
+};
+
 export const getOrg = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<{ cards: OrgCard[]; users: number }> => {
+  .handler(async ({ context }): Promise<{ cards: OrgCard[]; users: number; partners: OrgPartner[] }> => {
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -989,7 +1006,19 @@ export const getOrg = createServerFn({ method: "GET" })
         role: (isStaffRole(person.role) ? person.role : "user") as OrgCard["role"],
         actions: byActor.get(person.id) ?? 0,
       }));
-    return { cards, users: Math.max(0, people.length - cards.length) };
+    let partners: OrgPartner[] = [];
+    try {
+      partners = await sql<OrgPartner>`
+        select u.id, u.email, u.name, a.code, a.status
+        from affiliates a
+        join "user" u on u.id = a.user_id
+        order by a.created_at desc
+        limit 80
+      `;
+    } catch {
+      partners = [];
+    }
+    return { cards, users: Math.max(0, people.length - cards.length), partners };
   });
 
 export const setNickname = createServerFn({ method: "POST" })

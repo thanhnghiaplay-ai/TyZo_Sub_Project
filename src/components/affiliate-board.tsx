@@ -10,8 +10,9 @@ export function AffiliateBoard() {
   const [minPay, setMinPay] = useState("200000");
   const [paid, setPaid] = useState("");
   const [saving, setSaving] = useState(false);
-  const [people, setPeople] = useState<{ user_id: string; email: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }[]>([]);
+  const [people, setPeople] = useState<{ user_id: string; email: string; name: string; code: string; status: string; rate_plan_bp: number; rate_run_bp: number; waiting: number; ready: number }[]>([]);
   const [payouts, setPayouts] = useState<{ id: number; email: string; amount: number }[]>([]);
+  const [q, setQ] = useState("");
 
   function load() {
     void getAffiliateDesk()
@@ -68,10 +69,20 @@ export function AffiliateBoard() {
         {saving ? "Đang lưu…" : "Lưu tỷ lệ"}
       </button>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
+      <label className="grid gap-1 text-sm">
+        <span>Tìm theo tên, email hoặc mã</span>
+        <input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={q} onChange={(event) => setQ(event.target.value)} />
+      </label>
       <div className="space-y-2">
-        {people.map((person) => (
+        {people.filter((person) => {
+          const needle = q.trim().toLowerCase();
+          if (!needle) return true;
+          const status = person.status === "hoat-dong" ? "đang mở" : person.status === "tam-khoa" ? "tạm khóa" : "chờ duyệt";
+          return [person.name, person.email, person.code, status].join(" ").toLowerCase().includes(needle);
+        }).map((person) => (
           <article key={person.user_id} className="rounded-xl border border-line p-3 text-sm">
-            <p className="break-all font-medium">{person.email}</p>
+            <p className="break-all font-medium">{person.name || person.email}</p>
+            <p className="break-all text-muted">{person.email}</p>
             <p className="text-muted">Mã {person.code} · {person.status === "hoat-dong" ? "Đang mở" : person.status === "tam-khoa" ? "Tạm khóa" : "Chờ duyệt"}</p>
             <p className="text-muted">Đang chờ {person.waiting.toLocaleString("vi-VN")} đ · Rút được {person.ready.toLocaleString("vi-VN")} đ</p>
             <div className="mt-2 flex flex-wrap gap-2">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, getMoney, getOrg, resetTestMoney, setNickname, type MoneyBreakdown, type MoneyPoint, type OrgCard } from "@/lib/admin-room";
+import { addCost, getMoney, getOrg, resetTestMoney, setNickname, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
@@ -50,6 +50,7 @@ function vnDay(now = new Date()) {
 
 export function OrgBoard({ owner }: { owner: boolean }) {
   const [cards, setCards] = useState<OrgCard[]>([]);
+  const [partners, setPartners] = useState<OrgPartner[]>([]);
   const [users, setUsers] = useState(0);
   const [nick, setNick] = useState<Record<string, string>>({});
 
@@ -58,6 +59,7 @@ export function OrgBoard({ owner }: { owner: boolean }) {
   useEffect(() => {
     void getOrg().then((next) => {
       setCards(next.cards);
+      setPartners(next.partners);
       setUsers(next.users);
       setNick(Object.fromEntries(next.cards.map((card) => [card.id, card.nickname])));
       setFault("");
@@ -99,10 +101,20 @@ export function OrgBoard({ owner }: { owner: boolean }) {
           ))}
         </div>
       ))}
+      <div className="grid gap-2">
+        {partners.map((person) => (
+          <article key={person.id} className="org-card role-ctv">
+            <p className="role-chip role-ctv">Cộng tác</p>
+            <p className="font-medium">{person.name || "Chưa có tên"}</p>
+            <p className="text-sm text-muted">{person.email}</p>
+            <p className="text-sm text-muted">Mã {person.code} · {person.status === "hoat-dong" ? "Đang mở" : person.status === "tam-khoa" ? "Tạm khóa" : "Chờ duyệt"}</p>
+          </article>
+        ))}
+      </div>
       <article className="org-card role-user">
         <p className="role-chip role-user">Người dùng</p>
         <p className="font-medium">{users} tài khoản dùng phòng</p>
-        <p className="text-sm text-muted">Không vào Admin. Hoa hồng giới thiệu để sau.</p>
+        <p className="text-sm text-muted">Không vào Admin.</p>
       </article>
     </section>
   );

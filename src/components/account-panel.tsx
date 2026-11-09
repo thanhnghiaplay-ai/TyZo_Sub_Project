@@ -11,6 +11,7 @@ import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
+import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
 
 function dong(n: number) {
@@ -27,6 +28,7 @@ export function AccountPanel() {
   const [name, setName] = useState("");
   const [leaving, setLeaving] = useState(false);
   const [place, setPlace] = useState<MyPlace | null>(null);
+  const [partner, setPartner] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [appeal, setAppeal] = useState("");
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
@@ -49,6 +51,7 @@ export function AccountPanel() {
     let gone = false;
     const id = deviceId();
     void getMyPlace().then((next) => { if (!gone) setPlace(next); }).catch(() => {});
+    void myAffiliate().then((next) => { if (!gone) setPartner(next.joined); }).catch(() => {});
     void getBadgeStyle().then((next) => { if (!gone) setBadge(next); }).catch(() => {});
     void listOwnAppeals().then((rows) => { if (!gone) setOwnAppeals(rows); }).catch(() => {});
     // Tài khoản bị khóa thì claimTrialDevice bị máy chủ chặn (403) nhưng vẫn phải xem được ví để gửi yêu cầu.
@@ -137,7 +140,7 @@ export function AccountPanel() {
       )}
       {user && !user.isDevFallback && (
         <>
-          <AccountCard rank={place?.role ?? null} styleId={badge}>
+          <AccountCard rank={place?.role ?? (partner ? "ctv" : null)} styleId={badge}>
             <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>

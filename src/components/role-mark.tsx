@@ -2,10 +2,17 @@ import type { ReactNode } from "react";
 import { ROLE_LABEL, type StaffRole } from "@/lib/staff-role";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 
-export function RoleMark({ rank, styleId }: { rank: StaffRole | null; styleId: string }) {
+export type MarkRank = StaffRole | "ctv";
+
+function markLabel(rank: MarkRank | null) {
+  if (rank === "ctv") return "Cộng tác";
+  if (rank) return ROLE_LABEL[rank];
+  return "Người dùng";
+}
+
+export function RoleMark({ rank, styleId }: { rank: MarkRank | null; styleId: string }) {
   const style = badgeStyle(styleId);
-  const label = rank ? ROLE_LABEL[rank] : "Người dùng";
-  return <span className={"role-mark role-mark-" + style}><b>{label}</b></span>;
+  return <span className={"role-mark role-mark-" + style}><b>{markLabel(rank)}</b></span>;
 }
 
 export function AccountCard({
@@ -14,7 +21,7 @@ export function AccountCard({
   className = "",
   children,
 }: {
-  rank: StaffRole | null;
+  rank: MarkRank | null;
   styleId: string;
   className?: string;
   children: ReactNode;

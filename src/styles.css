@@ -872,6 +872,7 @@
 .role-ho-tro { color: #8eb7ee; }
 .role-quan-ly { color: #e7b63a; }
 .role-chu { color: #f3d48a; }
+.role-ctv { color: #6ed0b0; }
 
 .gesture-hint {
   width: 100%;
@@ -900,6 +901,8 @@
 .stat-lead .stat-num { color: #e7b63a; }
 .stat-staff { border-color: #8eb7ee; }
 .stat-staff .stat-num { color: #8eb7ee; }
+.stat-partner { border-color: #6ed0b0; }
+.stat-partner .stat-num { color: #6ed0b0; }
 .stat-trial { border-color: #8eb7ee; }
 .stat-lock { border-color: #d98a3a; }
 .stat-lock .stat-num { color: #d98a3a; }
@@ -917,6 +920,7 @@
 .account-card[data-rank="ho-tro"] { --badge: #8eb7ee; --badge-ink: #10161c; }
 .account-card[data-rank="quan-ly"] { --badge: #e7b63a; --badge-ink: #1c1608; }
 .account-card[data-rank="chu"] { --badge: #f3d48a; --badge-ink: #1c1608; }
+.account-card[data-rank="ctv"] { --badge: #6ed0b0; --badge-ink: #10211c; }
 
 .account-card[data-badge="ribbon"],
 .account-card[data-badge="pill"],

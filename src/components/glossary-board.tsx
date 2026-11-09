@@ -158,7 +158,7 @@ export function GlossaryBoard() {
         >
           Xuất file
         </button>
-        <label className={"min-tap rounded-full border border-line px-4 text-sm " + (busy ? "opacity-40" : "")}>
+        <label className={"inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm " + (busy ? "pointer-events-none opacity-40" : "")}>
           Nhập file
           <input
             type="file"

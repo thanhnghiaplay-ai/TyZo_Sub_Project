@@ -320,6 +320,7 @@ export function AdminDesk() {
             <Stat label="Đang thuê" value={stats.renting} tone="rent" />
             <Stat label="Quản lý" value={stats.managers} tone="lead" />
             <Stat label="Hỗ trợ" value={stats.support} tone="staff" />
+            <Stat label="Cộng tác viên" value={stats.partners} tone="partner" />
           </div>
           <h2 className="mt-2 text-sm font-semibold">Gói và việc</h2>
           <div className="grid grid-cols-2 gap-2">
