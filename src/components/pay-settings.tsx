@@ -37,6 +37,7 @@ function statusLabel(status: string) {
   if (status === "paid") return "Đã cộng tiền";
   if (status === "claimed") return "Khách báo đã chuyển";
   if (status === "cancelled") return "Đã từ chối";
+  if (status === "void") return "Khách hủy";
   if (status === "expired") return "Hết hạn";
   return "Chờ chuyển khoản";
 }

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { claimPayOrder, createPayOrder, getPayDesk, getPayPublic, readPayOrder, syncCasso, type PayHistoryItem, type PayOrderView, type PayPublic } from "@/lib/pay-store";
+import { claimPayOrder, cancelMyPayOrder, createPayOrder, getPayDesk, getPayPublic, readPayOrder, syncCasso, type PayHistoryItem, type PayOrderView, type PayPublic } from "@/lib/pay-store";
 import { PAY_MINUTES } from "@/lib/pay-match";
 import { pushToast } from "@/components/toast";
+import { BrandMark } from "@/components/brand-mark";
 import { formatMoney, parseMoney } from "@/lib/money-format";
 
 const QUICK = [10_000, 50_000, 100_000, 200_000, 500_000];
@@ -23,16 +24,17 @@ function chip(status: string) {
   if (status === "paid") return { label: "Đã cộng", className: "border-emerald-400/40 bg-emerald-400/10 text-emerald-200" };
   if (status === "expired") return { label: "Hết hạn", className: "border-red-400/40 bg-red-400/10 text-red-200" };
   if (status === "cancelled") return { label: "Đã từ chối", className: "border-red-400/40 bg-red-400/10 text-red-200" };
+  if (status === "void") return { label: "Đã hủy", className: "border-red-400/40 bg-red-400/10 text-red-200" };
   return { label: "Đang chờ", className: "border-amber-300/40 bg-amber-300/10 text-amber-100" };
 }
 
 function CopyLine({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
   const [done, setDone] = useState(false);
   return (
-    <div className="flex items-center justify-between gap-2 rounded-xl border border-line bg-bg/40 px-3 py-2">
-      <span className="min-w-0">
+    <div className="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-line bg-bg/40 px-3 py-2">
+      <span className="min-w-0 flex-1">
         <span className="block text-xs text-muted">{label}</span>
-        <span className={"block truncate " + (strong ? "text-base font-semibold tracking-wide text-accent" : "text-sm font-medium")}>{value}</span>
+        <span className={"block break-words " + (strong ? "text-base font-semibold tracking-wide text-accent" : "text-sm font-medium")}>{value}</span>
       </span>
       <button
         type="button"
@@ -86,6 +88,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   const [open, setOpen] = useState(!compact);
   const [told, setTold] = useState(false);
   const [paid, setPaid] = useState(false);
+  const [askCancel, setAskCancel] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
   function remember(desk: { live: PayOrderView | null; history: PayHistoryItem[] }) {
@@ -152,7 +155,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
       setTold(false);
       paidNotice.current();
       void getPayDesk().then(remember).catch(() => undefined);
-    }, 2000);
+    }, 2600);
     return () => window.clearTimeout(timer);
   }, [paid]);
 
@@ -208,6 +211,25 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     }
   }
 
+  async function cancelOrder() {
+    if (!order) return;
+    setBusy(true);
+    setNotice(null);
+    try {
+      await cancelMyPayOrder({ data: order.id });
+      setOrder(null);
+      setAskCancel(false);
+      setTold(false);
+      pushToast("Đã hủy đơn nạp.");
+      const desk = await getPayDesk();
+      setHistory(desk.history);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Chưa hủy được đơn.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!gates) return <p className="text-sm text-muted">Đang xem cổng nạp…</p>;
   if (!gates.sepay && !gates.casso) {
     return (
@@ -230,7 +252,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
           <div className="h-1 overflow-hidden rounded-full bg-line">
             <div className="h-full rounded-full bg-accent transition-[width] duration-1000" style={{ width: `${Math.min(100, (left / (PAY_MINUTES * 60)) * 100)}%` }} />
           </div>
-          <img src={order.qr} alt="Mã QR chuyển khoản" className="pay-ring mx-auto h-52 w-52 rounded-2xl bg-white p-2" />
+          <img src={order.qr} alt="Mã QR chuyển khoản" className="pay-ring mx-auto h-auto w-52 max-w-full rounded-2xl bg-white p-2" />
           <p className="text-center text-xs text-muted">
             {order.qrLive ? "Mở ứng dụng ngân hàng và quét mã." : "Ngân hàng này chưa lập được mã quét. Chuyển theo số bên dưới."}
           </p>
@@ -244,9 +266,27 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
               ? "Thường cộng sau 10–30 giây nếu nội dung chuyển khoản đúng mã."
               : "Cổng này có thể chậm hơn một chút. Trang vẫn tự kiểm tra."}
           </p>
-          <button type="button" disabled={busy} className="min-tap rounded-full border border-line text-sm disabled:opacity-40" onClick={() => void refresh()}>
-            {told ? "Đang chờ ngân hàng" : "Tôi đã chuyển khoản"}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" disabled={busy} className="min-tap rounded-full border border-line text-sm disabled:opacity-40" onClick={() => void refresh()}>
+              {told ? "Đang chờ ngân hàng" : "Tôi đã chuyển khoản"}
+            </button>
+            <button type="button" disabled={busy} className="min-tap rounded-full border border-red-400/40 text-sm text-red-200 disabled:opacity-40" onClick={() => setAskCancel(true)}>
+              Hủy đơn
+            </button>
+          </div>
+          {askCancel && (
+            <div className="grid gap-2 rounded-xl border border-red-400/30 bg-red-400/10 p-3 text-sm">
+              <p>Hủy đơn này? Nếu đã chuyển khoản, tiền sẽ không tự cộng.</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" className="min-tap rounded-full border border-line" onClick={() => setAskCancel(false)}>
+                  Giữ đơn
+                </button>
+                <button type="button" disabled={busy} className="min-tap rounded-full bg-red-400/80 font-semibold text-ink disabled:opacity-40" onClick={() => void cancelOrder()}>
+                  Hủy đơn
+                </button>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <p className="text-sm text-red-200">{order.status === "cancelled" ? "Đơn đã bị từ chối. Không cộng tiền." : "Hết 15 phút. Đơn đã đóng. Hãy tạo mã mới nếu vẫn muốn nạp."}</p>
@@ -255,17 +295,16 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   );
 
   const success = paid && (
-    <div className="pay-pop grid place-items-center gap-2 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-8 text-center">
-      <span className="grid size-12 place-items-center rounded-full bg-emerald-400 text-ink">
-        <Check className="size-6" />
-      </span>
-      <p className="text-base font-semibold text-emerald-100">Đã cộng tiền vào số dư</p>
+    <div className="pay-thanks absolute inset-0 grid place-items-center gap-3 px-4 text-center">
+      <BrandMark title="TyZo Sub" />
+      <p className="text-lg font-semibold text-fg">Xin cảm ơn</p>
+      <p className="text-sm text-muted">Đã cộng tiền vào số dư</p>
     </div>
   );
 
   if (compact && !open && !paid) {
     return (
-      <div className="grid w-full basis-full gap-3">
+      <div className="grid min-w-0 max-w-full gap-3">
         <button type="button" className="min-tap w-fit rounded-full border border-accent/50 bg-accent/10 px-4 text-sm font-medium" onClick={() => setOpen(true)}>
           Nạp tiền
         </button>
@@ -275,67 +314,65 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   }
 
   return (
-    <section className="w-full space-y-3 rounded-2xl border border-line bg-card p-4">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold">Nạp tiền</h2>
-        {compact && !paid && (
-          <button type="button" className="text-sm text-muted underline" onClick={() => setOpen(false)}>
-            Đóng
-          </button>
-        )}
+    <section className={"relative min-w-0 max-w-full overflow-hidden rounded-2xl border border-line bg-card p-4 " + (paid ? "min-h-72" : "")}>
+      <div className={"space-y-3 " + (paid ? "pay-bye pointer-events-none" : "")}>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="font-semibold">Nạp tiền</h2>
+          {compact && !paid && (
+            <button type="button" className="text-sm text-muted underline" onClick={() => setOpen(false)}>
+              Đóng
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {gates.sepay && (
+            <button type="button" className={"min-tap rounded-full px-4 text-sm " + (provider === "sepay" ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setProvider("sepay")}>
+              {gates.casso ? "Sepay" : "Chuyển khoản"}
+            </button>
+          )}
+          {gates.casso && (
+            <button type="button" className={"min-tap rounded-full px-4 text-sm " + (provider === "casso" ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setProvider("casso")}>
+              {gates.sepay ? "Casso" : "Chuyển khoản"}
+            </button>
+          )}
+        </div>
+        <p className="text-sm text-muted">Từ {dong(MIN)} đến {dong(MAX)}. Mã có hiệu lực {PAY_MINUTES} phút.</p>
+        <div className="flex flex-wrap gap-2">
+          {QUICK.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={"min-tap rounded-full border px-3 text-sm " + (amount === value ? "border-accent bg-accent/15 text-accent" : "border-line")}
+              onClick={() => setAmountSafe(value)}
+            >
+              {dong(value)}
+            </button>
+          ))}
+        </div>
+        <label className="grid gap-1 text-sm">
+          Số tiền muốn nạp
+          <input
+            type="text"
+            inputMode="numeric"
+            value={draft}
+            onChange={(event) => {
+              const raw = event.target.value.replace(/[^\d.]/g, "");
+              const num = parseMoney(raw);
+              setDraft(formatMoney(num) || "");
+              setAmount(num);
+            }}
+            className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            placeholder={`${MIN} – ${MAX}`}
+          />
+        </label>
+        <button type="button" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40" onClick={() => void makeOrder()}>
+          Tạo mã chuyển khoản
+        </button>
+        {sheet}
+        {notice && <p className="text-sm text-muted">{notice}</p>}
+        <History rows={history} />
       </div>
       {success}
-      {!paid && (
-        <>
-          <div className="flex flex-wrap gap-2">
-            {gates.sepay && (
-              <button type="button" className={"min-tap rounded-full px-4 text-sm " + (provider === "sepay" ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setProvider("sepay")}>
-                {gates.casso ? "Sepay" : "Chuyển khoản"}
-              </button>
-            )}
-            {gates.casso && (
-              <button type="button" className={"min-tap rounded-full px-4 text-sm " + (provider === "casso" ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setProvider("casso")}>
-                {gates.sepay ? "Casso" : "Chuyển khoản"}
-              </button>
-            )}
-          </div>
-          <p className="text-sm text-muted">Từ {dong(MIN)} đến {dong(MAX)}. Mã có hiệu lực {PAY_MINUTES} phút.</p>
-          <div className="flex flex-wrap gap-2">
-            {QUICK.map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={"min-tap rounded-full border px-3 text-sm " + (amount === value ? "border-accent bg-accent/15 text-accent" : "border-line")}
-                onClick={() => setAmountSafe(value)}
-              >
-                {dong(value)}
-              </button>
-            ))}
-          </div>
-          <label className="grid gap-1 text-sm">
-            Số tiền muốn nạp
-            <input
-              type="text"
-              inputMode="numeric"
-              value={draft}
-              onChange={(event) => {
-                const raw = event.target.value.replace(/[^\d.]/g, "");
-                const num = parseMoney(raw);
-                setDraft(formatMoney(num) || "");
-                setAmount(num);
-              }}
-              className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
-              placeholder={`${MIN} – ${MAX}`}
-            />
-          </label>
-          <button type="button" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40" onClick={() => void makeOrder()}>
-            Tạo mã chuyển khoản
-          </button>
-          {sheet}
-        </>
-      )}
-      {notice && <p className="text-sm text-muted">{notice}</p>}
-      <History rows={history} />
     </section>
   );
 }

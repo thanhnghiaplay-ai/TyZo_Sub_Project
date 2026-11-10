@@ -82,7 +82,7 @@ export function AccountPanel() {
   }
 
   return (
-    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-1 py-2">
+    <div className="min-h-0 min-w-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto px-1 py-2">
       {isPending && <p className="text-sm text-muted">Đang kiểm tra phiên…</p>}
       {!isPending && (!user || user.isDevFallback) && (
         <div className="space-y-3">
@@ -152,7 +152,6 @@ export function AccountPanel() {
               {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <TopUp compact onPaid={() => { setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />
               <Link to="/ctv" className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm">
                 Cộng tác viên
               </Link>
@@ -171,6 +170,7 @@ export function AccountPanel() {
                 {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
               </button>
             </div>
+            <TopUp compact onPaid={() => { setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />
           </AccountCard>
           {runDoor.open ? (
             <section className="grid gap-1 rounded-xl border border-line bg-card p-3">

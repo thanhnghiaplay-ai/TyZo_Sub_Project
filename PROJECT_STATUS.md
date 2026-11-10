@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-10 07:00 (UTC+7) — v3.9.0 trên nhánh work. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-10 07:15 (UTC+7) — v3.10.0 trên nhánh work. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.9.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-09.5`. |
+| **Phiên bản code** | **v3.10.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-09.5`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -220,6 +220,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-10 07:15 — v3.10.0 trên work: thẻ nạp vừa khung điện thoại, khách hủy được đơn, cộng tiền thì hiện lời cảm ơn. `tsc` sạch.
 - 2026-11-10 07:00 — v3.9.0 trên work: thẻ chuyển khoản có sao chép, đếm 15 phút, tự kiểm tra và lịch sử theo màu. Đơn quá 15 phút không được webhook cộng. `tsc` sạch.
 - 2026-11-10 02:44 — v3.8.0 trên work: bốn lối dịch. Một lần dịch một model. `tsc` sạch.
 - 2026-11-10 01:35 — Chỉ tài liệu. Ghi 5 mục thư còn lại vào `BANG_DIEU.md`. Xong mục nào thì xóa mục đó.

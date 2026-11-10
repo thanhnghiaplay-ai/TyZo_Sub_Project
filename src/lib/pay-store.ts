@@ -265,6 +265,26 @@ export const readPayOrder = createServerFn({ method: "POST" })
     return { status: row.status, amount: row.amount, createdAt: new Date(row.created_at).toISOString() };
   });
 
+export const cancelMyPayOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    const value = id?.trim();
+    if (!value) throw new Error("Thieu don nap.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ id: string }>`
+      update pay_orders
+      set status = 'void', provider_ref = coalesce(provider_ref, 'khach-huy')
+      where id = ${data} and user_id = ${context.userId} and status in ('pending', 'claimed')
+      returning id
+    `;
+    if (!rows.length) throw new Error("Đơn này không còn để hủy.");
+    return { ok: true as const };
+  });
+
 export type PayHistoryItem = {
   id: string;
   provider: string;

@@ -82,6 +82,30 @@
   animation: pay-pop 0.4s ease;
 }
 
+@keyframes pay-bye {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pay-thanks {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pay-bye {
+  animation: pay-bye 0.55s ease forwards;
+}
+
+.pay-thanks {
+  animation: pay-thanks 0.9s ease 0.4s both;
+}
+
 /* Bước 6.4 — một màn hình, video không bị cuộn mất */
 .studio-shell {
   box-sizing: border-box;
