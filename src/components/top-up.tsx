@@ -76,7 +76,7 @@ function History({ rows }: { rows: PayHistoryItem[] }) {
   );
 }
 
-export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact?: boolean }) {
+export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { onPaid: () => void; compact?: boolean; opened?: boolean; onOpened?: (open: boolean) => void }) {
   const [gates, setGates] = useState<PayPublic | null>(null);
   const [provider, setProvider] = useState<"sepay" | "casso">("sepay");
   const [amount, setAmount] = useState(50_000);
@@ -87,13 +87,19 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(!compact);
   const [told, setTold] = useState(false);
-  const [paid, setPaid] = useState(false);
+  const [ending, setEnding] = useState<null | "thanks" | "sorry">(null);
   const [askCancel, setAskCancel] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
+  const openedRef = useRef(onOpened);
+  openedRef.current = onOpened;
+
   function remember(desk: { live: PayOrderView | null; history: PayHistoryItem[] }) {
     setHistory(desk.history);
-    if (desk.live) setOrder(desk.live);
+    if (desk.live) {
+      setOrder(desk.live);
+      openedRef.current?.(true);
+    }
   }
 
   useEffect(() => {
@@ -112,8 +118,9 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     return () => window.clearInterval(timer);
   }, []);
 
+  const shown = compact ? opened : open;
   const left = order ? Math.max(0, Math.ceil((new Date(order.createdAt).getTime() + WINDOW - now) / 1000)) : 0;
-  const waiting = Boolean(order && !paid && order.status !== "expired" && order.status !== "cancelled" && left > 0);
+  const waiting = Boolean(order && !ending && order.status !== "expired" && order.status !== "cancelled" && left > 0);
 
   useEffect(() => {
     if (!waiting || !order) return;
@@ -124,11 +131,11 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
         const next = await readPayOrder({ data: order.id });
         if (stop) return;
         if (next.status === "paid") {
-          setPaid(true);
+          setEnding("thanks");
           pushToast("Đã cộng tiền vào số dư.");
           return;
         }
-        if (next.status === "expired" || next.status === "cancelled") setOrder({ ...order, status: next.status });
+        if (next.status === "expired" || next.status === "cancelled") setEnding("sorry");
       } catch {
         /* lần sau hỏi lại */
       }
@@ -143,21 +150,29 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     };
   }, [waiting, order]);
 
-  const paidNotice = useRef(onPaid);
-  paidNotice.current = onPaid;
+  useEffect(() => {
+    if (!order || ending) return;
+    if (order.status === "expired" || order.status === "cancelled" || left <= 0) setEnding("sorry");
+  }, [order, ending, left]);
 
   useEffect(() => {
-    if (!paid) return;
+    if (!ending) return;
+    const thanks = ending === "thanks";
     const timer = window.setTimeout(() => {
-      setPaid(false);
+      setEnding(null);
       setOrder(null);
       setOpen(false);
+      openedRef.current?.(false);
       setTold(false);
-      paidNotice.current();
-      void getPayDesk().then(remember).catch(() => undefined);
+      setAskCancel(false);
+      if (thanks) paidNotice.current();
+      void getPayDesk().then((desk) => setHistory(desk.history)).catch(() => undefined);
     }, 2600);
     return () => window.clearTimeout(timer);
-  }, [paid]);
+  }, [ending]);
+
+  const paidNotice = useRef(onPaid);
+  paidNotice.current = onPaid;
 
   function setAmountSafe(value: number) {
     const next = Math.round(value);
@@ -174,7 +189,7 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     setAmount(value);
     setBusy(true);
     setNotice(null);
-    setPaid(false);
+    setEnding(null);
     setTold(false);
     try {
       setOrder(await createPayOrder({ data: { provider, amount: value } }));
@@ -191,7 +206,8 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     if (!order || told) {
       if (!order) return;
       const next = await readPayOrder({ data: order.id });
-      if (next.status === "paid") setPaid(true);
+      if (next.status === "paid") setEnding("thanks");
+      else if (next.status === "expired" || next.status === "cancelled") setEnding("sorry");
       else setNotice("Chưa thấy tiền. Trang vẫn tự kiểm tra.");
       return;
     }
@@ -202,7 +218,8 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
       await claimPayOrder({ data: order.id });
       setTold(true);
       const next = await readPayOrder({ data: order.id });
-      if (next.status === "paid") setPaid(true);
+      if (next.status === "paid") setEnding("thanks");
+      else if (next.status === "expired" || next.status === "cancelled") setEnding("sorry");
       else setNotice("Đã ghi nhận. Tiền sẽ tự cộng khi ngân hàng báo về.");
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Chưa kiểm tra được.");
@@ -239,15 +256,15 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     );
   }
 
-  const sheet = order && !paid && (
-    <div className="pay-rise grid gap-3 rounded-2xl border border-accent/30 bg-gradient-to-b from-accent/10 to-transparent p-3">
+  const sheet = order && (
+    <div className="pay-sheet pay-rise grid gap-3 rounded-2xl border border-accent/30 bg-gradient-to-b from-accent/10 to-transparent p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold">Chuyển khoản</p>
         <p className={"rounded-full border px-2.5 py-1 text-xs font-semibold tabular-nums " + (left > 0 && order.status !== "expired" && order.status !== "cancelled" ? chip("pending").className : chip(order.status === "cancelled" ? "cancelled" : "expired").className)}>
           {left > 0 && order.status !== "expired" && order.status !== "cancelled" ? `Còn ${clock(left)}` : chip(order.status === "cancelled" ? "cancelled" : "expired").label}
         </p>
       </div>
-      {left > 0 && order.status !== "expired" && order.status !== "cancelled" ? (
+      {ending || (left > 0 && order.status !== "expired" && order.status !== "cancelled") ? (
         <>
           <div className="h-1 overflow-hidden rounded-full bg-line">
             <div className="h-full rounded-full bg-accent transition-[width] duration-1000" style={{ width: `${Math.min(100, (left / (PAY_MINUTES * 60)) * 100)}%` }} />
@@ -267,13 +284,17 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
               : "Cổng này có thể chậm hơn một chút. Trang vẫn tự kiểm tra."}
           </p>
           <div className="grid grid-cols-2 gap-2">
-            <button type="button" disabled={busy} className="min-tap rounded-full border border-line text-sm disabled:opacity-40" onClick={() => void refresh()}>
+            <button type="button" disabled={busy} className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-line px-2 text-center text-xs leading-none whitespace-nowrap disabled:opacity-40" onClick={() => void refresh()}>
               {told ? "Đang chờ ngân hàng" : "Tôi đã chuyển khoản"}
             </button>
-            <button type="button" disabled={busy} className="min-tap rounded-full border border-red-400/40 text-sm text-red-200 disabled:opacity-40" onClick={() => setAskCancel(true)}>
+            <button type="button" disabled={busy} className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-red-400/40 px-2 text-center text-xs leading-none whitespace-nowrap text-red-200 disabled:opacity-40" onClick={() => setAskCancel(true)}>
               Hủy đơn
             </button>
           </div>
+          <p className="pay-stay">
+            <span className="pay-spin" aria-hidden="true" />
+            Vui lòng không rời đi hoặc tải lại trang
+          </p>
           {askCancel && (
             <div className="grid gap-2 rounded-xl border border-red-400/30 bg-red-400/10 p-3 text-sm">
               <p>Hủy đơn này? Nếu đã chuyển khoản, tiền sẽ không tự cộng.</p>
@@ -294,32 +315,36 @@ export function TopUp({ onPaid, compact = false }: { onPaid: () => void; compact
     </div>
   );
 
-  const success = paid && (
+  const success = ending && (
     <div className="pay-thanks absolute inset-0 grid place-items-center gap-3 px-4 text-center">
       <BrandMark title="TyZo Sub" />
-      <p className="text-lg font-semibold text-fg">Xin cảm ơn</p>
-      <p className="text-sm text-muted">Đã cộng tiền vào số dư</p>
+      <p className="pay-end-title font-semibold text-fg">{ending === "thanks" ? "Xin cảm ơn" : "Xin lỗi vì sự bất tiện này"}</p>
+      {ending === "thanks" && <p className="text-sm text-muted">Đã cộng tiền vào số dư</p>}
     </div>
   );
 
-  if (compact && !open && !paid) {
-    return (
-      <div className="grid min-w-0 max-w-full gap-3">
-        <button type="button" className="min-tap w-fit rounded-full border border-accent/50 bg-accent/10 px-4 text-sm font-medium" onClick={() => setOpen(true)}>
-          Nạp tiền
-        </button>
+  if (compact && !shown && !ending) {
+    return history.length ? (
+      <div className="mt-3 min-w-0 max-w-full">
         <History rows={history} />
       </div>
-    );
+    ) : null;
   }
 
   return (
-    <section className={"relative min-w-0 max-w-full overflow-hidden rounded-2xl border border-line bg-card p-4 " + (paid ? "min-h-72" : "")}>
-      <div className={"space-y-3 " + (paid ? "pay-bye pointer-events-none" : "")}>
+    <section className={"pay-sheet relative min-w-0 max-w-full overflow-hidden rounded-2xl border border-line bg-card p-4 " + (ending ? "min-h-72" : "")}>
+      <div className={"space-y-3 " + (ending ? "pay-bye pointer-events-none" : "")}>
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-semibold">Nạp tiền</h2>
-          {compact && !paid && (
-            <button type="button" className="text-sm text-muted underline" onClick={() => setOpen(false)}>
+          {compact && !ending && (
+            <button
+              type="button"
+              className="text-sm text-muted underline"
+              onClick={() => {
+                setOpen(false);
+                openedRef.current?.(false);
+              }}
+            >
               Đóng
             </button>
           )}

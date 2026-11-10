@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.10.1",
+    time: "07:45 ngày 10/11/2026",
+    area: "khac",
+    text: "Nút Nạp tiền cùng hàng, cùng cỡ với hai nút kia. Dòng chờ không xuống hàng. Hết 15 phút hoặc nhân viên từ chối thì mờ nội dung, hiện xin lỗi, rồi đóng thẻ.",
+  },
+  {
     version: "3.10.0",
     time: "07:15 ngày 10/11/2026",
     area: "khac",
