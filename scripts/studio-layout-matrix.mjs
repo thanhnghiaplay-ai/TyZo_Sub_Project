@@ -30,7 +30,7 @@ function findCss(arg) {
   return join(dir, file);
 }
 
-export function pageHtml(css, sheetOpen) {
+export function pageHtml(css, sheetOpen, panelOpen = false) {
   const cues = Array.from({ length: 30 }, (_, i) => `<div class="grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3"><button class="grid gap-1 text-left"><span class="text-xs">0:${String(i).padStart(2, "0")}</span><span class="font-medium">Câu dịch số ${i} khá dài để thử xuống dòng trên màn hình hẹp</span><span class="text-sm">Original ${i}</span></button><div class="grid gap-2"><button class="min-tap rounded-full border px-3 text-sm">Sửa</button><button class="min-tap rounded-full border px-3 text-sm">Đổi giọng</button></div></div>`).join("");
   const fields = Array.from({ length: 14 }, (_, i) => `<label class="grid gap-1 text-sm">Trường ${i}<input class="min-tap rounded-xl border px-3"/></label>`).join("");
   const tabs = ["Key Sub", "Phim", "Nhân vật", "Nghe", "Kiểm tra"].map((t) => `<button class="min-tap shrink-0 rounded-full border px-4 text-sm">${t}</button>`).join("");
@@ -39,7 +39,7 @@ export function pageHtml(css, sheetOpen) {
 <nav class="room-nav"><button class="min-tap rounded-full border px-4 text-sm">Tài khoản</button></nav>
 <div class="flex shrink-0 flex-wrap items-center gap-2"><button class="min-tap rounded-xl border px-3 text-sm">Chọn video</button><button class="min-tap rounded-xl border px-3 text-sm">Xuất SRT</button><button class="min-tap rounded-xl px-3 text-sm">Tải và dịch</button></div>
 <div role="tablist" class="studio-tabs">${tabs}</div>
-<div class="studio-stage${sheetOpen ? " is-sheet" : ""}"><section class="studio-workspace"><div class="studio-video"><div class="player-stack"><div class="relative aspect-video rounded-2xl bg-black"></div><p class="gesture-hint">Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy.</p></div></div>
+<div class="studio-stage${sheetOpen ? " is-sheet" : ""}"><section class="studio-workspace"><div class="studio-video"><div class="player-stack"><div class="relative aspect-video rounded-2xl bg-black"></div>${panelOpen ? '<div class="rounded-2xl border p-4" style="height:520px;width:100%">Cài đặt phụ đề</div>' : ""}<p class="gesture-hint">Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy.</p></div></div>
 <section class="studio-cues grid gap-2 rounded-2xl border p-4"><h2 class="font-semibold">Bản dịch</h2><p class="text-sm">Chạm một câu để tua.</p><div class="studio-cue-scroll">${cues}</div></section></section>
 <div class="studio-tools${sheetOpen ? " is-open" : ""}"><div class="studio-tool-card"><div class="studio-sheet-bar"><button class="studio-sheet-close">X</button></div><section class="grid gap-3 p-4">${fields}</section></div></div></div>
 </main></div></body></html>`;
@@ -94,10 +94,11 @@ async function main() {
   // CHROMIUM_PATH: dùng Chromium có sẵn khi bản Playwright của dự án chưa tải trình duyệt của nó.
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
   let bad = 0;
-  for (const mode of ["closed", "open"]) {
+  // panel: bảng cài đặt phụ đề mở trong khung video, công cụ đóng.
+  for (const mode of ["closed", "open", "panel"]) {
     for (const [w, h] of VIEWPORTS) {
       const page = await browser.newPage({ viewport: { width: w, height: h } });
-      await page.setContent(pageHtml(css, mode === "open"));
+      await page.setContent(pageHtml(css, mode === "open", mode === "panel"));
       const m = await page.evaluate(MEASURE);
       await page.close();
       const list = problems(m, mode, [w, h]);

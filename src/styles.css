@@ -329,14 +329,20 @@
   min-height: calc(var(--video-box) + var(--video-extra) + var(--cues-min) + 0.5rem);
 }
 
+/* Khung video co lại được và tự cuộn: mở bảng cài đặt phụ đề thì bảng cuộn trong khung,
+   không bóp méo video và không đè lên bản dịch. */
 .studio-video {
   position: relative;
   display: flex;
-  flex: none;
+  flex: 0 1 auto;
   justify-content: center;
   min-width: 0;
-  max-height: calc(var(--video-box) + var(--video-extra));
+  min-height: 0;
   overflow-y: auto;
+}
+
+.studio-video .player-stack > * {
+  flex-shrink: 0;
 }
 
 .studio-video .aspect-video {
@@ -409,7 +415,6 @@
     grid-row: 1;
     align-items: flex-start;
     min-height: 0;
-    max-height: none;
   }
 
   .studio-video .aspect-video {
@@ -452,7 +457,7 @@
   }
 
   .studio-stage.is-sheet .studio-workspace {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
     min-height: var(--video-box);
   }
 
@@ -497,7 +502,6 @@
     grid-row: 1;
     align-items: flex-start;
     min-height: 0;
-    max-height: none;
   }
 
   .studio-video .aspect-video {

@@ -163,6 +163,10 @@ describe("Bước 7.1 — không chồng khung", () => {
     // Mọi mức tối thiểu cộng vào min-height của khung, để thiếu chỗ thì cuộn chứ không chồng.
     assert.match(css, /\.studio-stage\s*\{[^}]*min-height:\s*calc\(/);
     assert.match(css, /\.studio-shell\s*\{[^}]*overflow-y:\s*auto/);
+    // Bảng cài đặt phụ đề nằm trong khung video: khung phải co và cuộn, ruột không bị bóp méo.
+    assert.match(css, /\.studio-video\s*\{[^}]*flex:\s*0 1 auto[^}]*overflow-y:\s*auto/);
+    assert.match(css, /\.studio-video \.player-stack > \*\s*\{[^}]*flex-shrink:\s*0/);
+    assert.equal(/\.studio-video\s*\{[^}]*max-height:\s*calc/.test(css), false);
   });
 });
 

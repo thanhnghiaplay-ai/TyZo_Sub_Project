@@ -76,10 +76,22 @@ async function deliver(kind: LetterKind, to: string, url?: string) {
   await sendMail({ to, subject: letter.subject, text: letter.text, html: letter.html }, env);
 }
 
+const pendingLetters: Promise<unknown>[] = [];
+
+/** Gửi thư không chặn luồng đăng nhập, nhưng lưu lời hứa lại để route chờ xong rồi mới trả lời.
+ *  Trên Vercel, hàm bị đóng băng ngay khi trả lời, thư chưa gửi xong sẽ không bao giờ đi. */
 export function sendAuthLetter(kind: LetterKind, to: string, url?: string) {
-  void deliver(kind, to, url).catch((error) => {
+  const job = deliver(kind, to, url).catch((error) => {
     console.error("[auth] gửi thư lỗi", error instanceof Error ? error.message : error);
   });
+  pendingLetters.push(job);
+}
+
+/** Chờ các thư đang gửi, tối đa `limitMs`. Gọi trước khi trả lời yêu cầu đăng nhập. */
+export async function flushAuthLetters(limitMs = 8000) {
+  if (!pendingLetters.length) return;
+  const jobs = pendingLetters.splice(0, pendingLetters.length);
+  await Promise.race([Promise.allSettled(jobs), new Promise((resolve) => setTimeout(resolve, limitMs))]);
 }
 
 export const getMailFace = createServerFn({ method: "GET" }).handler(async (): Promise<MailFace> => {

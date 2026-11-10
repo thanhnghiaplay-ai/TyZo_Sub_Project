@@ -8,6 +8,18 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.10.6",
+    time: "18:10 ngày 10/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.10.5, không có lưới nhiều cột. Thư xác minh và thư đặt lại không tới dù Gửi thư thử chạy. Nguyên nhân khả dĩ: sendAuthLetter chạy nền (void) và better-auth không có backgroundTasks, nên trên Vercel hàm bị đóng băng trước khi SMTP xong. Nay sendAuthLetter lưu lời hứa, route /api/auth/$ gọi flushAuthLetters (tối đa 8 giây) trước khi trả lời. Chờ đọc công tắc thư tối đa 4 giây thay vì 1,5 giây. Chưa thử trên Vercel thật. Nếu vẫn không có thư, xem nhật ký hàm Vercel dòng [auth] gửi thư lỗi.",
+  },
+  {
+    version: "3.10.5",
+    time: "17:10 ngày 10/11/2026",
+    area: "khac",
+    text: "Sửa lỗi do v3.10.3: .studio-video bị đặt max-height nên khi mở bảng cài đặt phụ đề, video bị bóp còn khoảng 95px. Nay khung video co được và tự cuộn, phần tử con trong .player-stack không co. Còn lỗi treo ở thẻ nạp, hạn gói và trang admin trên bản Vercel chưa tìm ra nguyên nhân, cần nhật ký hàm của Vercel.",
+  },
+  {
     version: "3.10.4",
     time: "16:40 ngày 10/11/2026",
     area: "ha-tang",

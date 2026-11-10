@@ -117,3 +117,7 @@ Chưa làm: chưa thử trên điện thoại hoặc máy tính bảng thật, S
 ## v3.10.4 — email cá nhân làm nhà gửi thư (10/11/2026 16:40 giờ VN)
 Đã làm: nhà gửi thư mới «smtp» trong mục Thư của trang Chủ (`mail-desk.tsx`), lưu như các nhà khác. `src/lib/auth/mailer.ts` thêm `smtpTarget` (Gmail, Yahoo tự nhận máy chủ), `smtp.server.ts` gửi bằng nodemailer. Thêm phụ thuộc `nodemailer` và `@types/nodemailer`, nhớ `npm install`. 14 test thư qua.
 Chưa làm: chưa gửi thử thật tới Gmail, cần Chủ nhập mật khẩu ứng dụng rồi bấm Gửi thư thử trên bản chạy thật. Outlook và Hotmail không có sẵn máy chủ vì Microsoft hạn chế đăng nhập bằng mật khẩu.
+
+## v3.10.5 — sửa bảng cài đặt phụ đề (10/11/2026 17:10 giờ VN)
+Đã làm: `.studio-video` co và cuộn được, `.player-stack > *` không co; trên bản dev mở bảng cài đặt ở 5 cỡ màn hình thì video giữ 16:9 và không đè bản dịch. Lỗi này do v3.10.3 gây ra.
+Chưa làm: lỗi trên bản Vercel (ảnh chụp 16:49, 16:50): thẻ QR nạp tiền không hiện, «Truy cập admin» chỉ báo đang truy cập, hạn gói và cổng nạp kẹt ở «Đang xem…». Các dòng đó chỉ kẹt khi lời gọi máy chủ không trả lời hẳn (lỗi thì đã hiện câu lỗi). Trên bản dev local các lời gọi trả 200 nên chưa tái hiện được. Cần nhật ký hàm Vercel và biết bản đang xem là preview hay production, DATABASE_URL có đặt cho môi trường đó không.
