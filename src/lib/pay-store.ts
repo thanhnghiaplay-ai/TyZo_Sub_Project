@@ -5,7 +5,7 @@ import { randomBytes } from "node:crypto";
 import { toDataURL } from "qrcode";
 import type { Sql } from "@/lib/db";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { accountMatches, cassoHits, makePayCode, PAY_MINUTES, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
+import { accountMatches, cassoHits, randomPayCode, PAY_MINUTES, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
 
 export type PayPublic = { sepay: boolean; casso: boolean };
 
@@ -220,7 +220,7 @@ export const createPayOrder = createServerFn({ method: "POST" })
     const account = data.provider === "sepay" ? settings.sepay_account : settings.casso_account;
     const name = data.provider === "sepay" ? settings.sepay_name : settings.casso_name;
     const id = randomBytes(12).toString("hex");
-    const code = makePayCode(randomBytes(8).toString("hex"));
+    const code = randomPayCode(randomBytes(6));
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await expireMine(sql, context.userId);

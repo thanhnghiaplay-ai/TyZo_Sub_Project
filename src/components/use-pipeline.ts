@@ -742,6 +742,7 @@ export function usePipeline() {
     const signal = inner.signal;
     const pauseForNewBible = { current: true };
     setRunning(true);
+    document.documentElement.dataset.tyzoBusy = "1";
     try {
       audioContext.resume?.();
     } catch {
@@ -1240,6 +1241,8 @@ export function usePipeline() {
             let failedInGroup = 0;
             let changed = 0;
             group.forEach((seg, offset) => {
+              // Người dùng vừa sửa tay câu này trong lúc máy đang dịch: giữ câu của người dùng.
+              if (seg.edited && seg.translation !== null) return;
               if (seg.original !== origs[offset]) {
                 seg.translation = null;
                 seg.translationFailed = false;
@@ -1467,6 +1470,7 @@ export function usePipeline() {
       say(`Lỗi: ${err?.message || String(error)}${why}`, true);
     } finally {
       outerSignal.removeEventListener("abort", onAbort);
+      if (my === j.runId) delete document.documentElement.dataset.tyzoBusy;
       releasePlayback();
       await closeRoomTicket(ticketId, ticketFailed);
       try {

@@ -4,7 +4,7 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-11 04:19 (UTC+7) — v3.10.8 trên nhánh work. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-11 04:58 (UTC+7) — v3.10.9 trên nhánh work. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v3.10.7** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-09.5`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
@@ -220,6 +220,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-11 04:58 — v3.10.9 trên work (Claude sửa theo lệnh user, kiểm tra toàn bộ): (1) `studio.tsx`: danh sách bản dịch tách thành `CueRow` có memo và `content-visibility`, ô sửa nhớ câu theo nội dung chứ không theo số thứ tự. (2) `use-pipeline.ts`: bản dịch máy không ghi đè câu người dùng vừa sửa tay; đặt cờ `data-tyzo-busy` khi đang chạy. (3) `idle-sign-out.tsx`: không đăng xuất khi đang phát video hoặc đang chạy. (4) `pay-match.ts`, `pay-store.ts`: mã đơn nạp lấy trọn byte ngẫu nhiên (32^6 mã thay vì khoảng 16 triệu). Chưa chạy `tsc` đầy đủ và 9 file test cần pglite, jose, nodemailer, tanstack vì thiếu node_modules và không có mạng. Chi tiết: `BAO_CAO_KIEM_TRA.md`.
 - 2026-11-11 04:19 — v3.10.8 trên work (Claude sửa theo lệnh user): lỗi đứng máy. (1) `use-pipeline.ts`: nhận dạng và dịch dùng chung một tín hiệu hủy, một bên lỗi thì bên kia dừng; trước đó `inner` tạo ra mà không luồng nào dùng, nên dịch chờ nhận dạng mãi. (2) `groq.ts`, `mp4.ts`: fetch Groq chờ tối đa 120 giây, tải Range 60 giây, quá hạn thì thử lại hoặc báo. (3) `update-banner.tsx`: bỏ tự `reload` khi quay lại tab sau 5 phút. Chưa chạy `tsc` và `npm test` vì gói không có node_modules và không có mạng. Chưa làm: giải mã quá 25 giây vẫn tính đoạn lỗi; kết quả nhận dạng vẫn hiện theo thứ tự đoạn.
 - 2026-11-11 03:28 — v3.10.7 trên work: sửa layout lệch theo ảnh chụp. Ô tick và ô màu tab Thư, chữ đè nút phát, tiêu đề Gmail vô hình, khoảng trống thẻ Trả theo lượt, nửa phải trống ở Sơ đồ, Doanh thu, Thuật ngữ, Cộng tác, Nhật ký, nút Lọc, ô thống kê lẻ. Dựng thử CSS trong Chromium. `tsc` và `npm test` đủ chưa chạy được (thiếu node_modules); test chạy được pass như bản gốc.
 - 2026-11-10 07:56 — v3.10.2 trên work: bỏ v3.10.1, lấy lại mã v3.10.0 rồi làm lại nút nạp, dòng chờ và lời xin lỗi. `tsc` sạch.

@@ -28,6 +28,13 @@ export function IdleSignOut() {
       clear();
       timer.current = setTimeout(() => {
         if (leaving.current) return;
+        // Đang xem phim hoặc đang dịch thì không phải là bỏ đi: tính lại 30 phút, không đăng xuất giữa phim.
+        const video = document.querySelector("video");
+        const watching = Boolean(video && !video.paused && !video.ended);
+        if (watching || document.documentElement.dataset.tyzoBusy === "1") {
+          arm();
+          return;
+        }
         leaving.current = true;
         void signOut("/login").finally(() => {
           leaving.current = false;

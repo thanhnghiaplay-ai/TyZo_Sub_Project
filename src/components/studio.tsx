@@ -1,5 +1,5 @@
 import { isStudioSheet } from "@/lib/studio-layout";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
@@ -390,9 +390,17 @@ const TOOLS = [
 export function Studio() {
   const app = usePipeline();
   const [showKey, setShowKey] = useState(false);
-  const [editing, setEditing] = useState<number | null>(null);
+  // Câu đang sửa nhớ theo nội dung, không theo số thứ tự: câu mới chen vào danh sách thì ô sửa không nhảy sang câu khác.
+  const [editKey, setEditKey] = useState<{ start: number; end: number; original: string } | null>(null);
   const [draft, setDraft] = useState("");
   const [rule, setRule] = useState("");
+  const editing = editKey ? app.segs.findIndex((item) => item.start === editKey.start && item.end === editKey.end && item.original === editKey.original) : -1;
+  const openEdit = useCallback((seg: { start: number; end: number; original: string; translation: string | null; translationFailed?: boolean }) => {
+    setEditKey({ start: seg.start, end: seg.end, original: seg.original });
+    setDraft(seg.translation && !seg.translationFailed ? seg.translation : "");
+    setRule("");
+  }, []);
+  const jumpTo = useCallback((start: number) => jump(app.videoRef.current, start), [app.videoRef]);
   const [narration, setNarration] = useState<NarrationSettings>(NARRATION_DEFAULT);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [sub, setSub] = useState<SubStyle>(SUB_DEF);
@@ -729,39 +737,7 @@ export function Studio() {
           <div className="studio-cue-scroll">
             {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}
             {app.segs.map((seg, index) => (
-              <div key={`${seg.start}-${index}`} className={"grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3 " + (index === current ? "rounded-xl bg-raised px-2" : "")}>
-                <button type="button" className="grid gap-1 text-left" onClick={() => jump(app.videoRef.current, seg.start)}>
-                  <span className="text-xs font-semibold text-accent">
-                    {fmt(seg.start)}
-                    {seg.model ? ` · ${modelLabel(seg.model)}` : ""}
-                    {seg.voiceLock === "male" ? " · khóa nam" : seg.voiceLock === "female" ? " · khóa nữ" : seg.voice === "male" ? " · đo nam" : seg.voice === "female" ? " · đo nữ" : ""}
-                  </span>
-                  <span className={seg.translationFailed ? "font-medium text-danger" : seg.translation === null ? "text-muted italic" : "font-medium"}>
-                    {seg.translationFailed ? "Không dịch được" : seg.translation === null ? "Đang chờ dịch…" : seg.translation}
-                  </span>
-                  <span className="text-sm text-muted">{seg.original}</span>
-                </button>
-                <div className="grid gap-2">
-                <button
-                  type="button"
-                  className="min-tap self-start rounded-full border border-line px-3 text-sm"
-                  onClick={() => {
-                    setEditing(index);
-                    setDraft(seg.translation && !seg.translationFailed ? seg.translation : "");
-                    setRule("");
-                  }}
-                >
-                  Sửa
-                </button>
-                <button
-                  type="button"
-                  className="min-tap self-start rounded-full border border-line px-3 text-sm"
-                  onClick={() => app.cycleVoiceLock(index)}
-                >
-                  Đổi giọng
-                </button>
-                </div>
-              </div>
+              <CueRow key={`${seg.start}-${seg.end}-${index}`} seg={seg} index={index} active={index === current} onJump={jumpTo} onEdit={openEdit} onVoice={app.cycleVoiceLock} />
             ))}
           </div>
         </section>
@@ -1266,20 +1242,20 @@ export function Studio() {
       </div>
       </div>
 
-      {editing !== null && app.segs[editing] && (
-        <div className="fixed inset-0 z-50 flex items-end bg-bg/80" onClick={() => setEditing(null)}>
+      {editing >= 0 && app.segs[editing] && (
+        <div className="fixed inset-0 z-50 flex items-end bg-bg/80" onClick={() => setEditKey(null)}>
           <form
             className="mx-auto grid w-full max-w-3xl gap-3 rounded-t-2xl border border-line bg-card p-4"
             onClick={(event) => event.stopPropagation()}
             onSubmit={(event) => {
               event.preventDefault();
               app.editSeg(editing, draft, rule);
-              setEditing(null);
+              setEditKey(null);
             }}
           >
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Sửa câu</h3>
-              <button type="button" aria-label="Đóng" className="min-tap rounded-full border border-line px-3" onClick={() => setEditing(null)}>
+              <button type="button" aria-label="Đóng" className="min-tap rounded-full border border-line px-3" onClick={() => setEditKey(null)}>
                 <X className="size-4" />
               </button>
             </div>
@@ -1299,6 +1275,61 @@ export function Studio() {
     </main>
   );
 }
+
+type CueRowProps = {
+  seg: Seg;
+  index: number;
+  active: boolean;
+  onJump: (start: number) => void;
+  onEdit: (seg: Seg) => void;
+  onVoice: (index: number) => void;
+};
+
+/** Một câu trong bản dịch. Chỉ vẽ lại khi chính câu đó đổi, nên phim dài không còn giật mỗi lần có câu mới. */
+const CueRow = memo(
+  function CueRow({ seg, index, active, onJump, onEdit, onVoice }: CueRowProps) {
+    return (
+      <div
+        className={"grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3 " + (active ? "rounded-xl bg-raised px-2" : "")}
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 96px" }}
+      >
+        <button type="button" className="grid gap-1 text-left" onClick={() => onJump(seg.start)}>
+          <span className="text-xs font-semibold text-accent">
+            {fmt(seg.start)}
+            {seg.model ? ` · ${modelLabel(seg.model)}` : ""}
+            {seg.voiceLock === "male" ? " · khóa nam" : seg.voiceLock === "female" ? " · khóa nữ" : seg.voice === "male" ? " · đo nam" : seg.voice === "female" ? " · đo nữ" : ""}
+          </span>
+          <span className={seg.translationFailed ? "font-medium text-danger" : seg.translation === null ? "text-muted italic" : "font-medium"}>
+            {seg.translationFailed ? "Không dịch được" : seg.translation === null ? "Đang chờ dịch…" : seg.translation}
+          </span>
+          <span className="text-sm text-muted">{seg.original}</span>
+        </button>
+        <div className="grid gap-2">
+          <button type="button" className="min-tap self-start rounded-full border border-line px-3 text-sm" onClick={() => onEdit(seg)}>
+            Sửa
+          </button>
+          <button type="button" className="min-tap self-start rounded-full border border-line px-3 text-sm" onClick={() => onVoice(index)}>
+            Đổi giọng
+          </button>
+        </div>
+      </div>
+    );
+  },
+  (a, b) =>
+    a.active === b.active &&
+    a.index === b.index &&
+    a.onJump === b.onJump &&
+    a.onEdit === b.onEdit &&
+    a.onVoice === b.onVoice &&
+    a.seg.start === b.seg.start &&
+    a.seg.end === b.seg.end &&
+    a.seg.original === b.seg.original &&
+    a.seg.translation === b.seg.translation &&
+    a.seg.translationFailed === b.seg.translationFailed &&
+    a.seg.model === b.seg.model &&
+    a.seg.voice === b.seg.voice &&
+    a.seg.voiceLock === b.seg.voiceLock,
+);
 
 function jump(video: HTMLVideoElement | null, start: number) {
   if (!video) return;
