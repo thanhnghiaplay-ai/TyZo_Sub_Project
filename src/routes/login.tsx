@@ -8,11 +8,15 @@ import { attachReferral } from "@/lib/affiliate-room";
 import { mailProblem, mailSuggestions } from "@/lib/mail-domains";
 import { getMailFace } from "@/lib/mail-runtime";
 import { MAIL_POLICY, type MailFace } from "@/lib/mail-letter";
+import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
 const BEARER_KEY = "grok-auth.bearer-token";
 const REMEMBER_EMAIL = "tyzo-remember-email";
+const SIGN_UP_WAIT_MS = 30_000;
+const SIGN_IN_WAIT_MS = 20_000;
+const FOLLOW_UP_WAIT_MS = 8_000;
 
 function LoginPage() {
   const router = useRouter();
@@ -90,10 +94,12 @@ function LoginPage() {
     } catch {
       /* máy không cho lưu */
     }
+    // Có hạn chờ: không có thì một lần máy chủ không trả lời làm nút kẹt «Đang xử lý…» mãi.
+    // Đăng ký chờ lâu hơn vì máy chủ gửi xong thư xác minh rồi mới trả lời.
     const result =
       mode === "up"
-        ? await authClient.signUp.email({ name: name.trim(), email: email.trim(), password })
-        : await authClient.signIn.email({ email: email.trim(), password });
+        ? await withTimeout(authClient.signUp.email({ name: name.trim(), email: email.trim(), password }), SIGN_UP_WAIT_MS)
+        : await withTimeout(authClient.signIn.email({ email: email.trim(), password }), SIGN_IN_WAIT_MS);
     if (result.error) {
       const unverified = result.error.code === "EMAIL_NOT_VERIFIED" || /not verified/i.test(result.error.message || "");
       setNotice(unverified ? face.unverified : result.error.message || "Không vào được.");
@@ -116,19 +122,28 @@ function LoginPage() {
       const typed = mode === "up" ? refCode.trim().toUpperCase() : "";
       if (typed) localStorage.setItem("tyzo-ref", typed);
       const code = typed || localStorage.getItem("tyzo-ref") || "";
-      if (code) await attachReferral({ data: code }).catch(() => {});
+      if (code) await withTimeout(attachReferral({ data: code }), FOLLOW_UP_WAIT_MS).catch(() => {});
     } catch {
       /* máy không cho đọc */
     }
-    await authClient.getSession();
-    const place = await getMyPlace().catch(() => null);
+    // Hai bước sau chỉ là phụ. Tài khoản đã vào được rồi nên không để chúng giữ người dùng lại.
+    await withTimeout(authClient.getSession(), FOLLOW_UP_WAIT_MS).catch(() => null);
+    const place = await withTimeout(getMyPlace(), FOLLOW_UP_WAIT_MS).catch(() => null);
     if (place?.status === "banned") {
       await signOut("/yeu-cau");
       return;
     }
     await router.navigate({ to: "/" });
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Không vào được.");
+      if (error instanceof TimeoutError) {
+        setNotice(
+          mode === "up"
+            ? "Phòng chưa trả lời kịp. Tài khoản có thể đã tạo và thư xác minh có thể đã gửi. Hãy xem hộp thư, rồi đăng nhập. Đừng đăng ký lại."
+            : "Phòng chưa trả lời. Kiểm tra mạng rồi thử lại.",
+        );
+      } else {
+        setNotice(error instanceof Error ? error.message : "Không vào được.");
+      }
     } finally {
       setBusy(false);
     }
@@ -267,8 +282,11 @@ function LoginPage() {
           </>
         )}
         <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">
-          {busy ? "Đang xử lý…" : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
+          {busy ? (mode === "up" ? "Đang tạo tài khoản…" : "Đang đăng nhập…") : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
         </button>
+        {busy && mode === "up" && face.verifyOn && (
+          <p className="text-sm text-muted" aria-live="polite">Đang gửi thư xác minh, có thể mất vài giây. Đừng bấm lại.</p>
+        )}
         <button
           type="button"
           className="min-tap w-full rounded-full border border-line"

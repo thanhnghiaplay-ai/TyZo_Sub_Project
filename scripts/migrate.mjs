@@ -17,6 +17,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import pg from "pg";
+import { applyMigrations } from "./migration-lock.mjs";
 import { pendingMigrations } from "./migration-plan.mjs";
 
 const vercelEnv = process.env.VERCEL_ENV || "";
@@ -48,49 +49,22 @@ async function main() {
     return;
   }
 
-  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
+  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1, connectionTimeoutMillis: 15_000 });
+  pool.on("error", (err) => console.error("[migrate] kết nối rảnh bị ngắt:", err.message));
   const client = await pool.connect();
-  const lockKey = 84201911;
   try {
-    await client.query("SELECT pg_advisory_lock($1)", [lockKey]);
-    await client.query(
-      "CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())",
+    const files = await Promise.all(
+      pendingMigrations(entries, []).map(async ({ name }) => ({
+        name,
+        text: await readFile(join(migrationsDir, name), "utf8"),
+      })),
     );
-    const applied = (await client.query("SELECT name FROM _migrations")).rows.map(
-      (r) => r.name,
-    );
-
-    let count = 0;
-    for (const { name } of pendingMigrations(entries, applied)) {
-      const text = await readFile(join(migrationsDir, name), "utf8");
-      if (/^\s*(begin|commit|rollback)\b/im.test(text)) {
-        throw new Error(`${name} chứa BEGIN, COMMIT hoặc ROLLBACK. Để migrate.mjs bọc giao dịch.`);
-      }
-      try {
-        await client.query("BEGIN");
-        // pg's simple-query protocol runs a whole multi-statement file at once.
-        await client.query(text);
-        await client.query("INSERT INTO _migrations (name) VALUES ($1)", [name]);
-        await client.query("COMMIT");
-      } catch (err) {
-        console.error(`[migrate] error applying ${name}`);
-        try {
-          await client.query("ROLLBACK");
-        } catch {
-          // ROLLBACK fails when the connection died — keep the original error.
-        }
-        throw err;
-      }
-      console.log(`[migrate] applied ${name}`);
-      count += 1;
-    }
+    // Khóa mức giao dịch có chờ hạn, xem scripts/migration-lock.mjs.
+    const count = await applyMigrations(client, files, {
+      onApplied: (name) => console.log(`[migrate] applied ${name}`),
+    });
     console.log(count ? `[migrate] done — ${count} migration(s) applied.` : "[migrate] up to date.");
   } finally {
-    try {
-      await client.query("SELECT pg_advisory_unlock($1)", [lockKey]);
-    } catch {
-      /* kết nối có thể đã chết */
-    }
     client.release();
     await pool.end();
   }
