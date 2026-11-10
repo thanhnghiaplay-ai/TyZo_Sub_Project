@@ -25,6 +25,7 @@ Ngày 11/11/2026 04:58 (giờ VN). Người sửa: Claude, theo lệnh «Claude 
 | 12 | Hệ thống | Thấp | `groq.ts` | Giới hạn 120 giây chỉ tính tới khi có đầu phản hồi, đọc nội dung trả về chưa có giới hạn | Chưa sửa |
 | 13 | Giao diện | Thấp | `pay-store.ts` | Một số câu lỗi nạp tiền thiếu dấu tiếng Việt («Cong khong dung», «Khong thay don nap») | Chưa sửa |
 | 14 | Hệ thống | Thấp | `migrations/` | `0001_auth.sql` có hai bản giống hệt. Vô hại vì máy chạy không đọc thư mục con | Chưa sửa, ghi nhận |
+| 15 | Giao diện | Nặng | `account-panel.tsx` | Trang Tài khoản trên điện thoại mất đầu trang, trống giữa, cụt đáy (cột kiểu báo bị ép chiều cao, từ v3.10.6) | Đã sửa v3.10.10 theo ảnh chụp |
 
 ## Việc cần Chủ quyết (mục 9)
 Cho phép cộng tiền khi chuyển khoản trễ (ví dụ trong 24 giờ sau khi đơn hết hạn) là đổi quyền lợi tiền của khách. Theo luật 12b phải sửa điều khoản và nâng `TERMS_VERSION`, nên chưa tự làm.
