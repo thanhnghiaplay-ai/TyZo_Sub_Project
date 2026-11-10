@@ -153,20 +153,16 @@ export function AccountPanel() {
               {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none"
-                onClick={() => setPayOpen(true)}
-              >
+              <button type="button" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none" onClick={() => setPayOpen(true)}>
                 Nạp tiền
               </button>
-              <Link to="/ctv" className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
+              <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
                 Cộng tác viên
               </Link>
               <button
                 type="button"
                 disabled={leaving}
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none disabled:opacity-40"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none disabled:opacity-40"
                 onClick={() => {
                   setLeaving(true);
                   void signOut("/login").catch(() => {

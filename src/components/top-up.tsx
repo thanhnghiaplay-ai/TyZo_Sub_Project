@@ -93,13 +93,12 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
 
   const openedRef = useRef(onOpened);
   openedRef.current = onOpened;
+  const paidNotice = useRef(onPaid);
+  paidNotice.current = onPaid;
 
   function remember(desk: { live: PayOrderView | null; history: PayHistoryItem[] }) {
     setHistory(desk.history);
-    if (desk.live) {
-      setOrder(desk.live);
-      openedRef.current?.(true);
-    }
+    if (desk.live) setOrder(desk.live);
   }
 
   useEffect(() => {
@@ -120,7 +119,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
 
   const shown = compact ? opened : open;
   const left = order ? Math.max(0, Math.ceil((new Date(order.createdAt).getTime() + WINDOW - now) / 1000)) : 0;
-  const waiting = Boolean(order && !ending && order.status !== "expired" && order.status !== "cancelled" && left > 0);
+  const waiting = Boolean(shown && order && !ending && order.status !== "expired" && order.status !== "cancelled" && left > 0);
 
   useEffect(() => {
     if (!waiting || !order) return;
@@ -151,9 +150,9 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
   }, [waiting, order]);
 
   useEffect(() => {
-    if (!order || ending) return;
+    if (!shown || !order || ending) return;
     if (order.status === "expired" || order.status === "cancelled" || left <= 0) setEnding("sorry");
-  }, [order, ending, left]);
+  }, [shown, order, ending, left]);
 
   useEffect(() => {
     if (!ending) return;
@@ -170,9 +169,6 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
     }, 2600);
     return () => window.clearTimeout(timer);
   }, [ending]);
-
-  const paidNotice = useRef(onPaid);
-  paidNotice.current = onPaid;
 
   function setAmountSafe(value: number) {
     const next = Math.round(value);
@@ -256,6 +252,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
     );
   }
 
+  const alive = Boolean(order && (ending || (left > 0 && order.status !== "expired" && order.status !== "cancelled")));
   const sheet = order && (
     <div className="pay-sheet pay-rise grid gap-3 rounded-2xl border border-accent/30 bg-gradient-to-b from-accent/10 to-transparent p-3">
       <div className="flex items-center justify-between gap-2">
@@ -264,7 +261,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
           {left > 0 && order.status !== "expired" && order.status !== "cancelled" ? `Còn ${clock(left)}` : chip(order.status === "cancelled" ? "cancelled" : "expired").label}
         </p>
       </div>
-      {ending || (left > 0 && order.status !== "expired" && order.status !== "cancelled") ? (
+      {alive ? (
         <>
           <div className="h-1 overflow-hidden rounded-full bg-line">
             <div className="h-full rounded-full bg-accent transition-[width] duration-1000" style={{ width: `${Math.min(100, (left / (PAY_MINUTES * 60)) * 100)}%` }} />
@@ -283,11 +280,11 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
               ? "Thường cộng sau 10–30 giây nếu nội dung chuyển khoản đúng mã."
               : "Cổng này có thể chậm hơn một chút. Trang vẫn tự kiểm tra."}
           </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" disabled={busy} className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-line px-2 text-center text-xs leading-none whitespace-nowrap disabled:opacity-40" onClick={() => void refresh()}>
+          <div className="grid grid-cols-2 items-stretch gap-2">
+            <button type="button" disabled={busy} className="inline-flex h-full min-h-11 items-center justify-center rounded-full border border-line px-3 text-center text-sm leading-snug disabled:opacity-40" onClick={() => void refresh()}>
               {told ? "Đang chờ ngân hàng" : "Tôi đã chuyển khoản"}
             </button>
-            <button type="button" disabled={busy} className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-red-400/40 px-2 text-center text-xs leading-none whitespace-nowrap text-red-200 disabled:opacity-40" onClick={() => setAskCancel(true)}>
+            <button type="button" disabled={busy} className="inline-flex h-full min-h-11 items-center justify-center rounded-full border border-red-400/40 px-3 text-center text-sm leading-snug text-red-200 disabled:opacity-40" onClick={() => setAskCancel(true)}>
               Hủy đơn
             </button>
           </div>
@@ -332,7 +329,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
   }
 
   return (
-    <section className={"pay-sheet relative min-w-0 max-w-full overflow-hidden rounded-2xl border border-line bg-card p-4 " + (ending ? "min-h-72" : "")}>
+    <section className={"pay-sheet relative mt-3 min-w-0 max-w-full overflow-hidden rounded-2xl border border-line bg-card p-4 " + (ending ? "min-h-72" : "")}>
       <div className={"space-y-3 " + (ending ? "pay-bye pointer-events-none" : "")}>
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-semibold">Nạp tiền</h2>
