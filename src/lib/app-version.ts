@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.10.6";
+export const APP_VERSION = "3.10.8";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,24 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.10.8",
+    time: "04:19 ngày 11/11/2026",
+    title: "Sửa lỗi đứng máy khi dịch và trang tự tải lại làm mất việc đang làm.",
+    points: [
+      "Nhận dạng hoặc dịch báo lỗi thì bên còn lại dừng theo, không quay mãi nữa.",
+      "Mạng không trả lời quá 2 phút thì báo và thử lại, không đứng im.",
+      "Quay lại tab sau khi đi xa, trang không tự tải lại. Có bản mới thì hiện nút Tải lại.",
+    ],
+  },
+  {
+    version: "3.10.7",
+    time: "03:28 ngày 11/11/2026",
+    title: "Sửa chữ hướng dẫn đè lên nút phát khi chưa chọn video.",
+    points: [
+      "Câu «Chọn video để phát ở đây» nay nằm dưới nút phát, không còn chồng lên nhau.",
+    ],
+  },
   {
     version: "3.10.6",
     time: "18:10 ngày 10/11/2026",

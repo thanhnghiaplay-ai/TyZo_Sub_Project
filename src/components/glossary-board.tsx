@@ -64,7 +64,8 @@ export function GlossaryBoard() {
   }
 
   return (
-    <section className="space-y-3">
+    <section className="admin-flow admin-wide">
+      <div className="space-y-3">
       <h2 className="font-semibold">Thuật ngữ</h2>
       {health ? <p className="text-sm text-muted">{health}</p> : null}
       <div className="grid gap-2 sm:grid-cols-2">
@@ -201,20 +202,24 @@ export function GlossaryBoard() {
           Lưu
         </button>
       </div>
-      <input
-        className="min-tap w-full rounded-xl border border-line bg-bg px-3"
-        placeholder="Lọc trong bộ đang mở"
-        value={q}
-        onChange={(event) => {
-          const next = event.target.value;
-          setQ(next);
-        }}
-      />
-      <button type="button" className="min-tap text-sm underline disabled:opacity-40" disabled={busy} onClick={() => void run(() => load(lang, genre, q, 0))}>
-        Lọc
-      </button>
+      <div className="flex gap-2">
+        <input
+          className="min-tap min-w-0 flex-1 rounded-xl border border-line bg-bg px-3"
+          placeholder="Lọc trong bộ đang mở"
+          value={q}
+          onChange={(event) => {
+            const next = event.target.value;
+            setQ(next);
+          }}
+        />
+        <button type="button" className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" disabled={busy} onClick={() => void run(() => load(lang, genre, q, 0))}>
+          Lọc
+        </button>
+      </div>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
       <p className="text-xs text-muted">Đang thấy {terms.length} / {total} mục. {hidden ? "Bộ này đang ẩn với khách." : "Bộ này đang mở cho khách."}</p>
+      </div>
+      <div className="space-y-3">
       <div className="space-y-2">
         {terms.map((term) => (
           <div key={term.id} className="flex flex-wrap items-center gap-2 text-sm">
@@ -256,6 +261,7 @@ export function GlossaryBoard() {
           ))}
         </div>
       )}
+      </div>
     </section>
   );
 }

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.10.7",
+    time: "03:28 ngày 11/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.10.6. Chỉ giao diện, không đổi logic. Sửa theo ảnh chụp 10/11 lúc 18:23: (1) styles.css: luật label > input {width:100%} kéo giãn ô tick và làm teo ô màu ở tab Thư; nay loại checkbox, radio, color, range, ô tick 1,15rem, ô màu 2,5rem. (2) Thêm .admin-flow: khối một thẻ tự chia cột theo khối con (Sơ đồ, Doanh thu, Thuật ngữ, Cộng tác); Nhật ký xếp lưới .plan-grid. (3) Thẻ Trả theo lượt bỏ .admin-trio: Bảo trì và Phiếu gần đây chung một cột, Giá biểu một cột, hết khoảng trống; bỏ vùng cuộn lồng trong danh sách model. (4) .stat-grid dùng flex, ô cuối giãn đầy hàng. (5) Thuật ngữ: nút Lọc nằm cạnh ô lọc, có viền như nút khác. (6) mail-desk: tiêu đề hướng dẫn Gmail đổi text-ink thành text-fg (chữ tối trên nền tối), placeholder SMTP rút ngắn cho khỏi bị cắt. (7) studio: câu «Chọn video để phát ở đây» nằm dưới nút phát. Đã kiểm: dựng CSS cũ và mới trong Chromium, ô tick từ 245px còn 18px, ô màu từ 12px lên 40px, khối chia hai cột đúng; cú pháp 7 file TSX; app-version.test và studio-layout.test pass. Chưa chạy tsc và npm test đủ vì gói không có node_modules (9 test cần pglite, jose, nodemailer, react-start, bản gốc cũng lỗi y vậy). Chưa xem trên Vercel thật. Chưa làm: trang Tài khoản vẫn chia hai cột có thể lệch chiều cao cuối cột; nút Lưu trên thẻ Chủ ở Sơ đồ nhạt viền, chưa rõ nguyên nhân.",
+  },
+  {
     version: "3.10.6",
     time: "18:10 ngày 10/11/2026",
     area: "khac",

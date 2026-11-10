@@ -8,7 +8,6 @@ import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
 import { formatMoney } from "@/lib/money-format";
-import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 
 const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
 import { audioBufferTo16k, packAudio } from "@/lib/sub/codec";
@@ -79,14 +78,6 @@ import {
   type GapPlan,
 } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
-
-/** Hỏi tài khoản trước khi chạy hoặc xuất. Không có hạn thì máy chủ im lặng làm nút «Tải và dịch» kẹt mãi. */
-const ACCOUNT_WAIT_MS = 15_000;
-function accountProblem(error: unknown) {
-  return error instanceof TimeoutError
-    ? "Phòng chưa trả lời. Đợi vài giây rồi bấm lại. Nếu vẫn vậy, báo Chủ phòng."
-    : "Chưa đọc được tài khoản. Hãy đăng nhập lại.";
-}
 
 type AsrResult = AsrPartResult;
 
@@ -558,13 +549,13 @@ export function usePipeline() {
       return null;
     }
     try {
-      const place = await withTimeout(getMyPlace(), ACCOUNT_WAIT_MS, "Phòng");
+      const place = await getMyPlace();
       const blocked = standingBlock(place.status, place.reason);
       if (blocked) {
         say(blocked, true);
         return null;
       }
-      const state = await withTimeout(claimTrialDevice({ data: id }), ACCOUNT_WAIT_MS, "Phòng");
+      const state = await claimTrialDevice({ data: id });
       const access = roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
       if (roomPayRef.current) {
         const until = state.planUntil ? new Date(state.planUntil).getTime() : 0;
@@ -585,8 +576,8 @@ export function usePipeline() {
         return null;
       }
       return access;
-    } catch (error) {
-      say(accountProblem(error), true);
+    } catch {
+      say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
       return null;
     }
   }, [say]);
@@ -597,14 +588,14 @@ export function usePipeline() {
     const id = deviceId();
     if (!id) return say("Trình duyệt không cho lưu máy này, không mở được lượt thử.", true);
     try {
-      const place = await withTimeout(getMyPlace(), ACCOUNT_WAIT_MS, "Phòng");
+      const place = await getMyPlace();
       const blocked = standingBlock(place.status, place.reason);
       if (blocked) return say(blocked, true);
-      const state = await withTimeout(claimTrialDevice({ data: id }), ACCOUNT_WAIT_MS, "Phòng");
+      const state = await claimTrialDevice({ data: id });
       const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
       if (notice) return say(notice, true);
-    } catch (error) {
-      return say(accountProblem(error), true);
+    } catch {
+      return say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
     }
     if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
     const blob = new Blob([toSrt(job.current.segs)], { type: "text/plain;charset=utf-8" });
@@ -742,7 +733,13 @@ export function usePipeline() {
       audioContext = new AudioContextClass();
     }
     j.abort = new AbortController();
-    const signal = j.abort.signal;
+    // Một tín hiệu chung cho nhận dạng và dịch: một bên lỗi thì bên kia dừng theo, không chờ vô hạn.
+    const inner = new AbortController();
+    const outerSignal = j.abort.signal;
+    const onAbort = () => inner.abort();
+    if (outerSignal.aborted) inner.abort();
+    else outerSignal.addEventListener("abort", onAbort, { once: true });
+    const signal = inner.signal;
     const pauseForNewBible = { current: true };
     setRunning(true);
     try {
@@ -1406,10 +1403,6 @@ export function usePipeline() {
 
       pauseForNewBible.current = !(j.bible && !j.bible.failed);
       let asrFinished = j.nextPart >= j.parts.length;
-      const inner = new AbortController();
-      const onAbort = () => inner.abort();
-      if (signal.aborted) inner.abort();
-      else signal.addEventListener("abort", onAbort, { once: true });
       const fail = (error: unknown) => {
         inner.abort();
         throw error;
@@ -1422,7 +1415,6 @@ export function usePipeline() {
       );
       const tr = translateRemaining(() => asrFinished).catch(fail);
       const results = await Promise.allSettled([asr, tr]);
-      signal.removeEventListener("abort", onAbort);
       const errors = results.filter((item): item is PromiseRejectedResult => item.status === "rejected").map((item) => item.reason as Error);
       const real = errors.find((error) => error?.name !== "AbortError");
       if (real) throw real;
@@ -1474,6 +1466,7 @@ export function usePipeline() {
       const why = j.streamWhy && /lớn hơn|dài hơn/.test(err?.message || "") ? ` (Đọc theo đoạn không dùng được vì: ${j.streamWhy}.)` : "";
       say(`Lỗi: ${err?.message || String(error)}${why}`, true);
     } finally {
+      outerSignal.removeEventListener("abort", onAbort);
       releasePlayback();
       await closeRoomTicket(ticketId, ticketFailed);
       try {

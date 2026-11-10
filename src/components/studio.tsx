@@ -1968,7 +1968,7 @@ function Stage({
         className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
       />
       {!hasMedia && paused && (
-        <p className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
+        <p className="pointer-events-none absolute inset-x-0 top-[calc(50%+2.75rem)] z-10 px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
       )}
       <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
         <div className="flex justify-end gap-2 p-2">

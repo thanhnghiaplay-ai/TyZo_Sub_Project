@@ -3,12 +3,10 @@ import { claimTrialDevice } from "@/lib/room-account";
 import { payTurnNotice, roomAccess } from "@/lib/room-plans";
 import { deviceId } from "@/lib/device-id";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { withTimeout } from "@/lib/with-timeout";
 
 export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
   const { user, isPending } = useCurrentUserState();
   const [text, setText] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -27,8 +25,7 @@ export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
       setText("Trình duyệt không cho lưu máy này, không mở được lượt thử.");
       return;
     }
-    setFailed(false);
-    void withTimeout(claimTrialDevice({ data: id }), 12_000, "Phòng")
+    void claimTrialDevice({ data: id })
       .then((state) => {
         if (!gone) {
           const input = { plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft };
@@ -36,10 +33,7 @@ export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
         }
       })
       .catch(() => {
-        if (!gone) {
-          setText("Chưa đọc được hạn gói.");
-          setFailed(true);
-        }
+        if (!gone) setText("Chưa đọc được hạn gói.");
       });
     return () => {
       gone = true;
@@ -47,17 +41,5 @@ export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
   }, [isPending, payByRoom, user, tick]);
 
   if (isPending || !user || user.isDevFallback) return null;
-  return (
-    <p className="text-xs text-muted">
-      {text ?? "Đang xem hạn gói…"}
-      {failed && (
-        <>
-          {" "}
-          <button type="button" className="underline" onClick={() => { setText(null); setTick((value) => value + 1); }}>
-            Thử lại
-          </button>
-        </>
-      )}
-    </p>
-  );
+  return <p className="text-xs text-muted">{text ?? "Đang xem hạn gói…"}</p>;
 }

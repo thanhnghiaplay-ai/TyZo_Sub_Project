@@ -78,6 +78,9 @@ async function readApiError(response: Response, modelName: string) {
   return `API trả về lỗi ${response.status}: ${detail || response.statusText}`;
 }
 
+/** Chờ tối đa bấy nhiêu cho tới khi máy chủ trả đầu phản hồi. Quá hạn thì thử lại, không đứng mãi. */
+const REQUEST_TIMEOUT_MS = 120_000;
+
 export async function requestWithRetry(
   url: string,
   makeInit: () => RequestInit,
@@ -94,12 +97,23 @@ export async function requestWithRetry(
     throwIfAborted(signal);
     if (gate.blockedUntil > Date.now()) await sleep(gate.blockedUntil - Date.now(), signal);
     let response: Response | null = null;
+    const guard = new AbortController();
+    const relay = () => guard.abort();
+    signal?.addEventListener("abort", relay, { once: true });
+    const timer = setTimeout(() => guard.abort(), REQUEST_TIMEOUT_MS);
     try {
       const next = roomFetchTarget(url, makeInit(), ticket);
-      response = await fetch(next.url, { ...next.init, signal });
+      response = await fetch(next.url, { ...next.init, signal: guard.signal });
     } catch (error) {
-      if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
-      lastError = new Error(`${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`);
+      if (signal?.aborted) throw abortError();
+      lastError = new Error(
+        guard.signal.aborted
+          ? `${label}: máy chủ không trả lời sau ${REQUEST_TIMEOUT_MS / 1000} giây.`
+          : `${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`,
+      );
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", relay);
     }
     if (response) {
       if (response.ok) return response;

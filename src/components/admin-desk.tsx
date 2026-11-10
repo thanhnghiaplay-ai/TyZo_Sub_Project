@@ -127,16 +127,18 @@ function AdminNotes() {
       .catch(() => setRows([]));
   }, []);
   return (
-    <section className="space-y-2">
+    <section className="admin-wide space-y-3">
       <h2 className="font-semibold">Nhật ký nội bộ</h2>
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có dòng nội bộ.</p>}
-      {rows.map((row) => (
-        <article key={`${row.version}-${row.area}`} className="rounded-xl border border-line px-3 py-2 text-sm">
-          <p className="font-medium text-accent">v{row.version}</p>
-          <p className="text-xs text-muted">{row.time}</p>
-          <p className="mt-1">{row.text}</p>
-        </article>
-      ))}
+      <div className="plan-grid">
+        {rows.map((row) => (
+          <article key={`${row.version}-${row.area}`} className="rounded-xl border border-line px-3 py-2 text-sm">
+            <p className="font-medium text-accent">v{row.version}</p>
+            <p className="text-xs text-muted">{row.time}</p>
+            <p className="mt-1">{row.text}</p>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }

@@ -79,7 +79,7 @@ export function MailDesk() {
         </label>
         {view.provider === "smtp" && (
           <div className="grid gap-1 rounded-xl border border-line p-3 text-sm text-muted">
-            <p className="font-semibold text-ink">Dùng Gmail của bạn để gửi thư xác minh</p>
+            <p className="font-semibold text-fg">Dùng Gmail của bạn để gửi thư xác minh</p>
             <p>1. Bật xác minh 2 bước cho Gmail.</p>
             <p>2. Vào myaccount.google.com/apppasswords, tạo mật khẩu ứng dụng, chép 16 ký tự.</p>
             <p>3. Ô địa chỉ gửi gõ đúng Gmail đó, ô cuối dán mật khẩu ứng dụng. Không dùng mật khẩu đăng nhập Gmail.</p>
@@ -112,7 +112,8 @@ export function MailDesk() {
           <input
             value={view.domain}
             onChange={(event) => setView({ ...view, domain: event.target.value })}
-            placeholder="Máy chủ SMTP, chỉ cần nếu không phải Gmail hoặc Yahoo (smtp.ten-mien.vn:465)"
+            placeholder="SMTP riêng, ví dụ smtp.ten-mien.vn:465"
+            title="Chỉ cần khi không dùng Gmail hoặc Yahoo"
             className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
           />
         )}
