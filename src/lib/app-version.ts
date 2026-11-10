@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.10.6";
+export const APP_VERSION = "3.10.7";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.10.7",
+    time: "21:50 ngày 10/11/2026",
+    title: "Căn chỉnh giao diện Admin và phòng dịch cho thẳng và đều.",
+    points: [
+      "Checkbox và ô màu không bị kéo rộng, chữ hướng dẫn Gmail hiện rõ.",
+      "Chữ chọn video không đè lên nút phát, các thẻ Admin cân đối hơn.",
+    ],
+  },
   {
     version: "3.10.6",
     time: "18:10 ngày 10/11/2026",

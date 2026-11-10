@@ -13,7 +13,6 @@ import { TopUp } from "@/components/top-up";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
-import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -35,7 +34,6 @@ export function AccountPanel() {
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [reload, setReload] = useState(0);
-  const [stateFailed, setStateFailed] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
   const runDoor = useRunDoor();
 
@@ -58,15 +56,12 @@ export function AccountPanel() {
     void getBadgeStyle().then((next) => { if (!gone) setBadge(next); }).catch(() => {});
     void listOwnAppeals().then((rows) => { if (!gone) setOwnAppeals(rows); }).catch(() => {});
     // Tài khoản bị khóa thì claimTrialDevice bị máy chủ chặn (403) nhưng vẫn phải xem được ví để gửi yêu cầu.
-    setStateFailed(false);
-    void withTimeout(id ? claimTrialDevice({ data: id }).catch(() => getRoomAccount()) : getRoomAccount(), 15_000, "Phòng")
+    void (id ? claimTrialDevice({ data: id }).catch(() => getRoomAccount()) : getRoomAccount())
       .then((next) => {
         if (!gone) setState(next);
       })
-      .catch((error) => {
-        if (gone) return;
-        setStateFailed(true);
-        setNotice(error instanceof TimeoutError ? "Phòng chưa trả lời. Bấm Thử lại ở dòng hạn gói." : "Chưa đọc được ví. Hãy đăng nhập lại.");
+      .catch(() => {
+        if (!gone) setNotice("Chưa đọc được ví. Hãy đăng nhập lại.");
       });
     return () => {
       gone = true;
@@ -155,15 +150,7 @@ export function AccountPanel() {
               <p className="text-sm text-muted">Đang giữ {dong(state?.holding ?? 0)} cho lần chạy chưa xong. Quá 6 giờ không chạy tiếp thì số này trả về số dư.</p>
             )}
             <p className="mt-2 text-sm">
-              {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : stateFailed ? "Chưa đọc được hạn gói." : "Đang xem hạn gói…"}
-              {!state && stateFailed && (
-                <>
-                  {" "}
-                  <button type="button" className="underline" onClick={() => setReload((value) => value + 1)}>
-                    Thử lại
-                  </button>
-                </>
-              )}
+              {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <button type="button" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none" onClick={() => setPayOpen(true)}>

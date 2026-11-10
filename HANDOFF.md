@@ -1,4 +1,7 @@
 # HANDOFF — TyZo_Sub_Project, bản 2.19.1 (08/11/2026 19:13 giờ VN)
+# Cập nhật 3.10.7 (10/11/2026 21:50)
+Đã căn chỉnh giao diện: loại checkbox/radio/color khỏi width 100%, đẩy chữ chọn video xuống dưới nút play, đổi text-ink thành text-fg ở hướng dẫn Gmail, cân bằng cột admin-grid, nút Lọc đồng bộ style, rút gọn placeholder SMTP.
+
 
 Phiếu bàn giao một lần. Không phải bộ luật. Luật hiện tại nằm ở `BANG_DIEU.md`. Đoạn cũ phía dưới chỉ để tra.
 

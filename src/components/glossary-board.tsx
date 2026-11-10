@@ -210,7 +210,7 @@ export function GlossaryBoard() {
           setQ(next);
         }}
       />
-      <button type="button" className="min-tap text-sm underline disabled:opacity-40" disabled={busy} onClick={() => void run(() => load(lang, genre, q, 0))}>
+      <button type="button" className="min-tap inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm disabled:opacity-40" disabled={busy} onClick={() => void run(() => load(lang, genre, q, 0))}>
         Lọc
       </button>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
