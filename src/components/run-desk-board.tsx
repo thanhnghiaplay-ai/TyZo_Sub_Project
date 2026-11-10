@@ -121,23 +121,24 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   }
 
   return (
-    <section className="admin-wide admin-trio rounded-2xl border border-line bg-card p-4">
-      <div className="admin-span flex items-center justify-between gap-2">
+    <section className="admin-wide space-y-3 rounded-2xl border border-line bg-card p-4">
+      <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Trả theo lượt</h2>
         <p className="flex items-center gap-2 text-xs font-medium text-muted">
           <DoorDot open={!form?.maintenance} />
           {form?.maintenance ? "Đang bảo trì" : "Đang mở"}
         </p>
       </div>
-      <p className="admin-span text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
+      <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
       {owner && (
-      <div className="admin-span grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
       </div>
       )}
 
+      <div className="admin-flow">
       <div className="admin-pane rounded-xl border border-line p-3">
         <h3 className="text-sm font-semibold">Bảo trì</h3>
         <textarea
@@ -158,6 +159,21 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="admin-pane">
+        <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
+        {!view?.recent.length && (
+          <div className="rounded-xl border border-dashed border-line px-3 py-3">
+            <p className="text-sm font-medium">Chưa có phiếu trả theo lượt</p>
+            <p className="mt-1 text-sm text-muted">Phiếu xuất hiện sau lần chạy đầu tiên. Mỗi phiếu ghi tên tệp, giờ, trạng thái, số phút, số đang giữ và số đã trừ.</p>
+          </div>
+        )}
+        <div className="grid max-h-80 gap-2 overflow-y-auto">
+          {view?.recent.map((ticket) => (
+            <TicketCard key={ticket.id} ticket={ticket} />
+          ))}
+        </div>
       </div>
 
       {owner && (
@@ -220,7 +236,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           </button>
         )}
         <p className="text-xs text-muted">{keyTail ? `Đã lưu key, kết thúc bằng ${keyTail}. Key không hiện lại trên trang này.` : "Chưa lưu key."}</p>
-        <div className="grid max-h-[28rem] gap-2 overflow-y-auto">
+        <div className="grid gap-2">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);
             const custom = form?.custom[model.id] ?? emptyOverride();
@@ -275,20 +291,6 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         )}
       </div>
       )}
-
-      <div className="admin-pane">
-        <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
-        {!view?.recent.length && (
-          <div className="rounded-xl border border-dashed border-line px-3 py-3">
-            <p className="text-sm font-medium">Chưa có phiếu trả theo lượt</p>
-            <p className="mt-1 text-sm text-muted">Phiếu xuất hiện sau lần chạy đầu tiên. Mỗi phiếu ghi tên tệp, giờ, trạng thái, số phút, số đang giữ và số đã trừ.</p>
-          </div>
-        )}
-        <div className="grid max-h-80 gap-2 overflow-y-auto">
-          {view?.recent.map((ticket) => (
-            <TicketCard key={ticket.id} ticket={ticket} />
-          ))}
-        </div>
       </div>
     </section>
   );

@@ -38,7 +38,7 @@ export function OrgBoard({ owner }: { owner: boolean }) {
   const partnerById = new Map(partners.map((person) => [person.id, person]));
 
   return (
-    <section className="org-tree space-y-3">
+    <section className="org-tree admin-flow admin-wide">
       {fault && <p className="text-sm text-danger">{fault}</p>}
       {(["chu", "quan-ly", "ho-tro"] as const).map((role) => (
         <div key={role} className="grid gap-2">
@@ -130,7 +130,8 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   }, [span]);
 
   return (
-    <section className="space-y-3">
+    <section className="admin-flow admin-wide">
+      <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {([["day", "Ngày"], ["week", "Tuần"], ["month", "Tháng"], ["year", "Năm"]] as const).map(([id, name]) => (
           <button key={id} type="button" className={"min-tap rounded-full px-3 text-sm " + (span === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setSpan(id)}>
@@ -150,6 +151,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         ))}
         {points.length === 0 && <li>{ready ? "Chưa có tiền nạp trong khoảng này." : "Đang tải…"}</li>}
       </ul>
+      </div>
       <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
         <ul className="space-y-1 text-muted">

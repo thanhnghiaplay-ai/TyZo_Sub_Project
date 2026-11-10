@@ -33,7 +33,8 @@ export function AffiliateBoard() {
   }, []);
 
   return (
-    <section className="space-y-3">
+    <section className="admin-flow admin-wide">
+      <div className="space-y-3">
       <h2 className="font-semibold">Cộng tác viên</h2>
       <p className="text-sm text-muted">0 ngày là hưởng cả đời. Đổi số ngày chỉ chặn hoa hồng mới. Tỷ lệ 0 ở từng người là dùng tỷ lệ chung.</p>
       <div className="grid gap-2 sm:grid-cols-2">
@@ -69,6 +70,8 @@ export function AffiliateBoard() {
         {saving ? "Đang lưu…" : "Lưu tỷ lệ"}
       </button>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
+      </div>
+      <div className="space-y-3">
       <label className="grid gap-1 text-sm">
         <span>Tìm theo tên, email hoặc mã</span>
         <input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={q} onChange={(event) => setQ(event.target.value)} />
@@ -143,6 +146,7 @@ export function AffiliateBoard() {
           ))}
         </div>
       )}
+      </div>
     </section>
   );
 }

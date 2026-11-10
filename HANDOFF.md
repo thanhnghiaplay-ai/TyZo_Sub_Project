@@ -1,7 +1,4 @@
 # HANDOFF — TyZo_Sub_Project, bản 2.19.1 (08/11/2026 19:13 giờ VN)
-# Cập nhật 3.10.7 (10/11/2026 21:50)
-Đã căn chỉnh giao diện: loại checkbox/radio/color khỏi width 100%, đẩy chữ chọn video xuống dưới nút play, đổi text-ink thành text-fg ở hướng dẫn Gmail, cân bằng cột admin-grid, nút Lọc đồng bộ style, rút gọn placeholder SMTP.
-
 
 Phiếu bàn giao một lần. Không phải bộ luật. Luật hiện tại nằm ở `BANG_DIEU.md`. Đoạn cũ phía dưới chỉ để tra.
 
@@ -128,3 +125,8 @@ Chưa làm: lỗi trên bản Vercel (ảnh chụp 16:49, 16:50): thẻ QR nạp
 ## v3.10.6 — Admin và Tài khoản nhiều cột (10/11/2026 18:00 giờ VN)
 Đã làm: `.room-wide`, `.admin-grid`, `.account-grid`, `.stat-grid` trong `styles.css`; bọc nhóm «Tài khoản» của tab Việc thành `.admin-wide`; tab Thư xếp hai thẻ cạnh nhau; trang Tài khoản chia thẻ, sổ tiền chiếm cả hàng. `npm run check:layout` đo thêm khung mô phỏng admin và tài khoản ở 20 cỡ màn hình, đúng 1, 2, 3 cột và không tràn ngang.
 Chưa làm: chưa xem trang admin có dữ liệu thật (chưa đăng nhập được tài khoản Chủ trên máy chủ thử cục bộ). Các tab Sơ đồ, Doanh thu, Thuật ngữ, Cộng tác, Nhật ký vẫn một khối rộng cả hàng, chưa chia cột bên trong. Trang /goi, /ctv, /yeu-cau, /login giữ khung hẹp.
+
+## v3.10.7 — Sửa layout lệch (2026-11-11 03:28 giờ VN)
+Đã làm: ô tick và ô chọn màu không còn bị `width:100%` (tab Thư); `.admin-flow` chia cột cho Sơ đồ, Doanh thu, Thuật ngữ, Cộng tác; Nhật ký xếp lưới; thẻ Trả theo lượt xếp lại hết khoảng trống; `.stat-grid` hàng cuối giãn đầy; nút Lọc cạnh ô lọc; tiêu đề Gmail đúng màu; placeholder SMTP gọn; chữ hướng dẫn dưới nút phát.
+Chưa làm: chưa xem trên Vercel thật hay điện thoại thật, mới dựng thử CSS trong Chromium. `tsc --noEmit` và 9 test cần gói cài đặt chưa chạy được ở bản này. Trang Tài khoản còn chia hai cột, cuối cột có thể lệch chiều cao. Nút Lưu trên thẻ Chủ ở Sơ đồ viền nhạt, chưa tìm ra nguyên nhân.
+Cố ý không làm: không đổi logic, không đổi điều khoản (chỉ giao diện).

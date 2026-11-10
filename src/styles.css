@@ -250,7 +250,6 @@
 .account-grid {
   min-width: 0;
   column-width: 22rem;
-  column-fill: balance;
   column-gap: 1rem;
 }
 
@@ -272,9 +271,44 @@
   max-width: 100%;
 }
 
-.admin-grid :where(label > input:not([type="checkbox"]):not([type="radio"]):not([type="color"]), label > textarea, label > select),
-.account-grid :where(label > input:not([type="checkbox"]):not([type="radio"]):not([type="color"]), label > textarea, label > select) {
+.admin-grid :where(label > input:not([type="checkbox"], [type="radio"], [type="color"], [type="range"]), label > textarea, label > select),
+.account-grid :where(label > input:not([type="checkbox"], [type="radio"], [type="color"], [type="range"]), label > textarea, label > select) {
   width: 100%;
+}
+
+/* Ô tick và ô chọn màu giữ cỡ riêng, luôn đứng trước chữ, không bị co hay kéo giãn. */
+.admin-grid :where(input[type="checkbox"], input[type="radio"]),
+.account-grid :where(input[type="checkbox"], input[type="radio"]) {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.admin-grid :where(input[type="color"]) {
+  flex: none;
+  width: 2.5rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 0.5rem;
+  background: transparent;
+}
+
+/* Khối một thẻ của tab Admin: tự chia cột theo các khối con, không dồn hết vào cột trái. */
+.admin-flow {
+  min-width: 0;
+  column-width: 22rem;
+  column-gap: 1rem;
+}
+
+.admin-flow > * {
+  min-width: 0;
+  margin: 0 0 1rem;
+  break-inside: avoid;
+}
+
+.admin-flow > :empty {
+  display: none;
 }
 
 /* Khối Tài khoản của Admin: cột trái tìm và chọn, cột phải chi tiết người được chọn. */
@@ -381,9 +415,14 @@
 }
 
 .stat-grid {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+
+.stat-grid > * {
+  flex: 1 1 8.5rem;
+  min-width: 0;
 }
 
 .h-dvh {

@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.20.0 trên nhánh `main` |
-| Bản đang làm | v3.10.7 trên nhánh `work`: căn chỉnh giao diện Admin và phòng dịch |
+| Bản đang làm | v3.10.7 trên nhánh `work`: sửa layout lệch ở Admin và phòng dịch |
 | Điều khoản | 2026-11-09.5 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đã đẩy. v3.10.6 đang trên `work`, chưa lên `main`.
+Không có việc đã đẩy. v3.10.7 đang trên `work`, chưa lên `main`.
 
 ## Thư — còn lại
 
@@ -58,6 +58,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-11 03:28 | Người dùng chốt | Sửa layout lệch, hiển thị chưa chính xác ở Admin và phòng dịch. Câu «Claude sửa» | Làm ngay | Đã vào `work` trong v3.10.7 |
 | 2026-11-09 09:33 | Làm | Nhật ký khách 3 lớp. Thanh chỉ kéo núm. Đọc trước hoặc sau | Làm ngay | Đã vào `work` trong v2.21.0 |
 | 2026-11-09 12:19 | Làm | Thuật ngữ admin có tên Việt, phân trang, ẩn/mở tất cả, khôi phục từ thiếu | Làm ngay | Đã vào `work` trong v2.23.0 |
 | 2026-11-09 12:28 | Người dùng chốt | Lời lỗ tách giá vốn. Giữ nguyên 807 câu. Cộng tác viên cả đời, tỷ lệ sửa được, hai cửa. Cổng nạp riêng để sau | Làm ngay | Đã vào `work` trong v3.0.0 |

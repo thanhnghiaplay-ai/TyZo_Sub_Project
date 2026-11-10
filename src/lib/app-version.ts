@@ -12,11 +12,10 @@ export type ReleaseNote = {
 export const CHANGELOG: ReleaseNote[] = [
   {
     version: "3.10.7",
-    time: "21:50 ngày 10/11/2026",
-    title: "Căn chỉnh giao diện Admin và phòng dịch cho thẳng và đều.",
+    time: "03:28 ngày 11/11/2026",
+    title: "Sửa chữ hướng dẫn đè lên nút phát khi chưa chọn video.",
     points: [
-      "Checkbox và ô màu không bị kéo rộng, chữ hướng dẫn Gmail hiện rõ.",
-      "Chữ chọn video không đè lên nút phát, các thẻ Admin cân đối hơn.",
+      "Câu «Chọn video để phát ở đây» nay nằm dưới nút phát, không còn chồng lên nhau.",
     ],
   },
   {

@@ -112,7 +112,8 @@ export function MailDesk() {
           <input
             value={view.domain}
             onChange={(event) => setView({ ...view, domain: event.target.value })}
-            placeholder="Máy chủ SMTP (chỉ nếu không Gmail/Yahoo)"
+            placeholder="SMTP riêng, ví dụ smtp.ten-mien.vn:465"
+            title="Chỉ cần khi không dùng Gmail hoặc Yahoo"
             className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
           />
         )}
@@ -124,7 +125,7 @@ export function MailDesk() {
           placeholder={view.keySet ? "Khóa đã lưu, gõ để đổi" : view.provider === "smtp" ? "Mật khẩu ứng dụng (16 ký tự)" : "Khóa API"}
           className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
         />
-        <button type="submit" disabled={busy} className="inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-accent px-4 font-semibold text-fg disabled:opacity-40">
+        <button type="submit" disabled={busy} className="inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">
           {busy ? "Đang lưu…" : "Lưu"}
         </button>
       </form>
