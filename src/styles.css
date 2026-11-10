@@ -38,6 +38,50 @@
   min-height: 2.75rem;
 }
 
+@keyframes pay-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pay-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+@keyframes pay-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pay-rise {
+  animation: pay-rise 0.45s ease;
+}
+
+.pay-ring {
+  animation: pay-ring 2.6s ease-out infinite;
+}
+
+.pay-pop {
+  animation: pay-pop 0.4s ease;
+}
+
 /* Bước 6.4 — một màn hình, video không bị cuộn mất */
 .studio-shell {
   box-sizing: border-box;

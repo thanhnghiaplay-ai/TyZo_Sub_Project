@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.8.0";
+export const APP_VERSION = "3.9.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.9.0",
+    time: "07:00 ngày 10/11/2026",
+    title: "Thẻ chuyển khoản có sao chép, đếm giờ và tự cộng tiền.",
+    points: [
+      "Sao chép số tài khoản, số tiền và mã nội dung.",
+      "Đơn còn 15 phút. Hết giờ thì đóng. Đúng mã thì tự cộng rồi đóng thẻ.",
+      "Lịch sử: đang chờ màu cam, đã cộng màu xanh, hết hạn hoặc bị từ chối màu đỏ.",
+    ],
+  },
   {
     version: "3.8.0",
     time: "02:44 ngày 10/11/2026",

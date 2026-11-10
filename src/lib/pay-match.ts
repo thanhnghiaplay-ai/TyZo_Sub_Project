@@ -4,6 +4,9 @@ export type PayHit = { ref: string; amount: number; text: string; account?: stri
 
 const CODE = /^TZ[A-Z0-9]{6}$/;
 
+/** Đơn chuyển khoản còn hiệu lực bao lâu, tính từ lúc tạo. */
+export const PAY_MINUTES = 15;
+
 export function makePayCode(seed: string) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "TZ";

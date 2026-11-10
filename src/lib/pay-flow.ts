@@ -1,5 +1,5 @@
 import type { Sql } from "./db.ts";
-import { codesIn, type PayHit } from "./pay-match.ts";
+import { codesIn, PAY_MINUTES, type PayHit } from "./pay-match.ts";
 
 export type CreditResult = { userId: string; amount: number; code: string } | null;
 
@@ -14,6 +14,7 @@ export async function creditHitWith(sql: Sql, provider: "sepay" | "casso", hit: 
   const orders = await sql<{ id: string; user_id: string; amount: number; code: string }>`
     select id, user_id, amount, code from pay_orders
     where status in ('pending', 'claimed') and provider = ${provider}
+      and created_at > now() - (${PAY_MINUTES} * interval '1 minute')
       and code in (${slot(0)}, ${slot(1)}, ${slot(2)}, ${slot(3)}, ${slot(4)}, ${slot(5)}, ${slot(6)}, ${slot(7)})
   `;
   const order = orders.find((item) => found.includes(item.code) && hit.amount >= item.amount);

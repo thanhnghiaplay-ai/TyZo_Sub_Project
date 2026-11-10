@@ -3,8 +3,9 @@ import { confirmOrderWith } from "@/lib/pay-confirm";
 import { creditHitWith } from "@/lib/pay-flow";
 import { randomBytes } from "node:crypto";
 import { toDataURL } from "qrcode";
+import type { Sql } from "@/lib/db";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { accountMatches, cassoHits, makePayCode, sameSecret, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
+import { accountMatches, cassoHits, makePayCode, PAY_MINUTES, sameSecret, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
 
 export type PayPublic = { sepay: boolean; casso: boolean };
 
@@ -34,6 +35,7 @@ export type PayOrderView = {
   qr: string;
   /** true khi mã quét được bằng ứng dụng ngân hàng. */
   qrLive: boolean;
+  createdAt: string;
 };
 
 type Settings = {
@@ -97,6 +99,16 @@ async function qrUrl(bank: string, account: string, amount: number, code: string
   const live = vietqrPayload({ bank, account, amount, info: code });
   const text = live || ["Chuyen khoan", bank.trim(), account.trim(), String(amount), code].filter(Boolean).join(" ");
   return { qr: await toDataURL(text, { margin: 1, width: 280, errorCorrectionLevel: "M" }), qrLive: Boolean(live) };
+}
+
+async function expireMine(sql: Sql, userId: string) {
+  await sql`
+    update pay_orders
+    set status = 'expired', provider_ref = coalesce(provider_ref, 'het-han')
+    where user_id = ${userId}
+      and status in ('pending', 'claimed')
+      and created_at <= now() - (${PAY_MINUTES} * interval '1 minute')
+  `;
 }
 
 
@@ -211,13 +223,14 @@ export const createPayOrder = createServerFn({ method: "POST" })
     const code = makePayCode(randomBytes(8).toString("hex"));
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
+    await expireMine(sql, context.userId);
     const { takeRate } = await import("@/lib/guard.server");
     await takeRate(`pay-create:${context.userId}`, 10, 3600);
-    const made = await sql<{ id: string }>`
+    const made = await sql<{ id: string; created_at: Date | string }>`
       insert into pay_orders (id, user_id, provider, amount, code)
       select ${id}::text, ${context.userId}::text, ${data.provider}::text, ${data.amount}::int, ${code}::text
       where (select count(*) from pay_orders where user_id = ${context.userId} and status in ('pending', 'claimed')) < ${MAX_PENDING_ORDERS}
-      returning id
+      returning id, created_at
     `;
     if (!made.length) throw new Error(`Bạn đang có ${MAX_PENDING_ORDERS} đơn nạp chưa xong. Hãy chuyển khoản hoặc hủy bớt rồi tạo đơn mới.`);
     await writePayNotice(context.userId, "user", "Đã tạo đơn nạp", `Đơn ${code}: ${data.amount} đ qua ${data.provider}. Chờ xác nhận hoặc chuyển khoản.`);
@@ -233,6 +246,7 @@ export const createPayOrder = createServerFn({ method: "POST" })
       name,
       qr: picture.qr,
       qrLive: picture.qrLive,
+      createdAt: new Date(made[0].created_at).toISOString(),
     };
   });
 
@@ -242,11 +256,75 @@ export const readPayOrder = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    const rows = await sql<{ status: string; amount: number }>`
-      select status, amount from pay_orders where id = ${data} and user_id = ${context.userId}
+    await expireMine(sql, context.userId);
+    const rows = await sql<{ status: string; amount: number; created_at: Date | string }>`
+      select status, amount, created_at from pay_orders where id = ${data} and user_id = ${context.userId}
     `;
     if (!rows.length) throw new Error("Khong thay don nap.");
-    return rows[0];
+    const row = rows[0];
+    return { status: row.status, amount: row.amount, createdAt: new Date(row.created_at).toISOString() };
+  });
+
+export type PayHistoryItem = {
+  id: string;
+  provider: string;
+  amount: number;
+  code: string;
+  status: string;
+  createdAt: string;
+};
+
+export const getPayDesk = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<{ live: PayOrderView | null; history: PayHistoryItem[] }> => {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await expireMine(sql, context.userId);
+    const settings = await readSettings();
+    const rows = await sql<{
+      id: string;
+      provider: string;
+      amount: number;
+      code: string;
+      status: string;
+      created_at: Date | string;
+    }>`
+      select id, provider, amount, code, status, created_at
+      from pay_orders
+      where user_id = ${context.userId}
+      order by created_at desc
+      limit 8
+    `;
+    const history = rows.map((row) => ({
+      id: row.id,
+      provider: row.provider,
+      amount: row.amount,
+      code: row.code,
+      status: row.status,
+      createdAt: new Date(row.created_at).toISOString(),
+    }));
+    const open = rows.find((row) => row.status === "pending" || row.status === "claimed");
+    if (!open || (open.provider !== "sepay" && open.provider !== "casso")) return { live: null, history };
+    const bank = open.provider === "sepay" ? settings.sepay_bank : settings.casso_bank;
+    const account = open.provider === "sepay" ? settings.sepay_account : settings.casso_account;
+    const name = open.provider === "sepay" ? settings.sepay_name : settings.casso_name;
+    const picture = await qrUrl(bank, account, open.amount, open.code);
+    return {
+      live: {
+        id: open.id,
+        provider: open.provider,
+        amount: open.amount,
+        code: open.code,
+        status: open.status,
+        bank,
+        account,
+        name,
+        qr: picture.qr,
+        qrLive: picture.qrLive,
+        createdAt: new Date(open.created_at).toISOString(),
+      },
+      history,
+    };
   });
 
 export const syncCasso = createServerFn({ method: "POST" })
@@ -330,6 +408,12 @@ export const listPayOrders = createServerFn({ method: "GET" })
     await requireStaff(context.userId, false);
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
+    await sql`
+      update pay_orders
+      set status = 'expired', provider_ref = coalesce(provider_ref, 'het-han')
+      where status in ('pending', 'claimed')
+        and created_at <= now() - (${PAY_MINUTES} * interval '1 minute')
+    `;
     const rows = await sql<{
       id: string;
       email: string | null;
