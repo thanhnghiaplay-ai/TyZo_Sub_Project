@@ -73,7 +73,7 @@ export function AffiliateBoard() {
         <span>Tìm theo tên, email hoặc mã</span>
         <input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={q} onChange={(event) => setQ(event.target.value)} />
       </label>
-      <div className="space-y-2">
+      <div className="affiliate-list">
         {people.filter((person) => {
           const needle = q.trim().toLowerCase();
           if (!needle) return true;

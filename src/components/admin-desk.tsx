@@ -307,6 +307,7 @@ export function AdminDesk() {
           <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
         </div>
       )}
+      <div className="admin-grid">
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
@@ -314,15 +315,16 @@ export function AdminDesk() {
       {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
       {role === "chu" && tab === "ctv" && <AffiliateBoard />}
       {role === "chu" && tab === "thu" && (
-        <div className="grid gap-3">
+        <div className="admin-grid admin-wide">
           <MailDesk />
           <MailPolicyBoard />
         </div>
       )}
       {role && tab === "viec" && stats && (
-        <section className="grid gap-2">
+        <section className="admin-wide admin-stats">
+          <div className="grid content-start gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="stat-grid">
             <Stat label="Đang online" value={stats.online} hint="3 phút qua" tone="online" />
             <Stat label="Tổng đăng ký" value={stats.users} />
             <Stat label="Đăng ký 24 giờ" value={stats.joinedDay} />
@@ -331,32 +333,25 @@ export function AdminDesk() {
             <Stat label="Hỗ trợ" value={stats.support} tone="staff" />
             <Stat label="Cộng tác viên" value={stats.partners} tone="partner" />
           </div>
-          <h2 className="mt-2 text-sm font-semibold">Gói và việc</h2>
-          <div className="grid grid-cols-2 gap-2">
+          </div>
+          <div className="grid content-start gap-2">
+          <h2 className="text-sm font-semibold">Gói và việc</h2>
+          <div className="stat-grid">
             <Stat label="Còn lượt thử" value={stats.trial} tone="trial" />
             <Stat label="Gói hết hạn" value={stats.expired} />
             <Stat label="Đang khóa" value={stats.locked} tone="lock" />
             <Stat label="Đang cấm" value={stats.banned} tone="ban" />
             <Stat label="Yêu cầu chờ" value={stats.waiting} tone="wait" />
           </div>
+          </div>
         </section>
-      )}
-      {role === "chu" && tab === "viec" && (
-        <BadgeBoard
-          current={badge}
-          busy={busy}
-          onPick={(id) => {
-            void run(async () => {
-              await setBadgeStyle({ data: id });
-              setBadge(id);
-            }, "Đã đổi kiểu thẻ quyền.");
-          }}
-        />
       )}
       {role && tab === "viec" && (
         <>
-          <h2 className="font-semibold">Tài khoản</h2>
-          <p className="text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Chủ được cấm.</p>
+          <div className="admin-wide admin-split">
+          <h2 className="admin-span font-semibold">Tài khoản</h2>
+          <p className="admin-span text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Chủ được cấm.</p>
+          <div className="admin-find">
           <form
             className="flex gap-2"
             onSubmit={(event) => {
@@ -405,10 +400,11 @@ export function AdminDesk() {
               </li>
             ))}
           </ul>
+          </div>
           {picked && (
-            <AccountCard rank={picked.role} extra={picked.partner ? ["ctv"] : []} styleId={badge} className="space-y-3">
-              <h2 className="font-semibold">{picked.email}</h2>
-              <p className="text-sm text-muted">
+            <AccountCard rank={picked.role} extra={picked.partner ? ["ctv"] : []} styleId={badge} className="admin-detail">
+              <h2 className="admin-span font-semibold">{picked.email}</h2>
+              <p className="admin-span text-sm text-muted">
                 Số dư {dong(picked.balance)}. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
               </p>
               <div>
@@ -475,6 +471,7 @@ export function AdminDesk() {
                   </div>
                 )}
               </div>
+              <div className="admin-pane">
               <label className="grid gap-1 text-sm">
                 Ghi chú nội bộ
                 <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
@@ -482,8 +479,10 @@ export function AdminDesk() {
               <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => saveStaffNote({ data: { userId: picked.id, note } }), "Đã lưu ghi chú.")}>
                 Lưu ghi chú
               </button>
+              </div>
               {roleAtLeast(role, "quan-ly") && (
                 <>
+                  <div className="admin-pane">
                   <label className="grid gap-1 text-sm">
                     Mật khẩu tạm
                     <input value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
@@ -491,6 +490,8 @@ export function AdminDesk() {
                   <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setTempPassword({ data: { userId: picked.id, password } }), "Đã đặt mật khẩu tạm. Hãy gửi cho họ.")}>
                     Đặt mật khẩu tạm
                   </button>
+                  </div>
+                  <div className="admin-pane">
                   <label className="grid gap-1 text-sm">
                     Lý do khóa hoặc cấm
                     <input value={reason} onChange={(event) => setReason(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
@@ -524,8 +525,9 @@ export function AdminDesk() {
                     )}
                   </div>
                   )}
+                  </div>
                   {roleAtLeast(role, "chu") && (
-                    <>
+                    <div className="admin-pane">
                       <label className="grid gap-1 text-sm">
                         Số dư (đồng)
                         <input
@@ -571,12 +573,12 @@ export function AdminDesk() {
                       >
                         Reset số dư về 0
                       </button>
-                    </>
+                    </div>
                   )}
                 </>
               )}
               {roleAtLeast(role, "chu") && picked.role !== "chu" && (
-                <div className="flex flex-wrap gap-2">
+                <div className="admin-span flex flex-wrap gap-2">
                   <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "ho-tro" } }), "Đã cho quyền Hỗ trợ.")}>
                     Cho Hỗ trợ
                   </button>
@@ -598,6 +600,19 @@ export function AdminDesk() {
               )}
             </AccountCard>
           )}
+          </div>
+          {role === "chu" && (
+        <BadgeBoard
+          current={badge}
+          busy={busy}
+          onPick={(id) => {
+            void run(async () => {
+              await setBadgeStyle({ data: id });
+              setBadge(id);
+            }, "Đã đổi kiểu thẻ quyền.");
+          }}
+        />
+      )}
           <section className="space-y-2" data-appeals>
             <h2 className="font-semibold">Yêu cầu</h2>
             {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}
@@ -657,6 +672,7 @@ export function AdminDesk() {
           {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}
+      </div>
 
       <ConfirmCodeDialog
         open={resetOpen}

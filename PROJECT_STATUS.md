@@ -4,7 +4,7 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-10 17:10 (UTC+7) — v3.10.6 trên nhánh work. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-10 18:00 (UTC+7) — v3.10.6 trên nhánh work. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v3.10.6** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-09.5`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |

@@ -121,3 +121,7 @@ Chưa làm: chưa gửi thử thật tới Gmail, cần Chủ nhập mật khẩ
 ## v3.10.5 — sửa bảng cài đặt phụ đề (10/11/2026 17:10 giờ VN)
 Đã làm: `.studio-video` co và cuộn được, `.player-stack > *` không co; trên bản dev mở bảng cài đặt ở 5 cỡ màn hình thì video giữ 16:9 và không đè bản dịch. Lỗi này do v3.10.3 gây ra.
 Chưa làm: lỗi trên bản Vercel (ảnh chụp 16:49, 16:50): thẻ QR nạp tiền không hiện, «Truy cập admin» chỉ báo đang truy cập, hạn gói và cổng nạp kẹt ở «Đang xem…». Các dòng đó chỉ kẹt khi lời gọi máy chủ không trả lời hẳn (lỗi thì đã hiện câu lỗi). Trên bản dev local các lời gọi trả 200 nên chưa tái hiện được. Cần nhật ký hàm Vercel và biết bản đang xem là preview hay production, DATABASE_URL có đặt cho môi trường đó không.
+
+## v3.10.6 — Admin và Tài khoản nhiều cột (10/11/2026 18:00 giờ VN)
+Đã làm: `.room-wide`, `.admin-grid`, `.account-grid`, `.stat-grid` trong `styles.css`; bọc nhóm «Tài khoản» của tab Việc thành `.admin-wide`; tab Thư xếp hai thẻ cạnh nhau; trang Tài khoản chia thẻ, sổ tiền chiếm cả hàng. `npm run check:layout` đo thêm khung mô phỏng admin và tài khoản ở 20 cỡ màn hình, đúng 1, 2, 3 cột và không tràn ngang.
+Chưa làm: chưa xem trang admin có dữ liệu thật (chưa đăng nhập được tài khoản Chủ trên máy chủ thử cục bộ). Các tab Sơ đồ, Doanh thu, Thuật ngữ, Cộng tác, Nhật ký vẫn một khối rộng cả hàng, chưa chia cột bên trong. Trang /goi, /ctv, /yeu-cau, /login giữ khung hẹp.

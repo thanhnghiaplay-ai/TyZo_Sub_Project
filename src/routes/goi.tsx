@@ -78,7 +78,7 @@ function GoiDemo() {
   }
 
   return (
-    <main className="room-frame mx-auto flex h-dvh flex-col bg-bg text-fg">
+    <main className="room-wide mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
         <div>
           <p className="text-xs font-medium tracking-wide text-accent">Bản xem thử giá</p>
@@ -94,7 +94,7 @@ function GoiDemo() {
         </p>
 
         {phase === "gia" && (
-          <section className="mt-4 space-y-3">
+          <section className="plan-grid mt-4">
             <article className="rounded-2xl border border-line bg-raised p-4">
               <p className="text-sm text-muted">Xem thử</p>
               <p className="mt-1 text-2xl font-semibold">0 đ</p>
@@ -132,7 +132,7 @@ function GoiDemo() {
 
         {phase === "dangky" && (
           <form
-            className="mt-4 space-y-3"
+            className="mt-4 max-w-xl space-y-3"
             onSubmit={(event) => {
               event.preventDefault();
               const cleanName = name.trim();

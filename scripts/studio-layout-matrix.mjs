@@ -89,6 +89,42 @@ export function problems(m, mode, shellViewport) {
   return out;
 }
 
+/** Trang rộng (admin, tài khoản): thẻ xếp 1, 2 hoặc 3 cột tùy bề rộng, thẻ rộng chiếm cả hàng. */
+export function widePageHtml(css, kind) {
+  const card = (n, tall) => `<section class="grid gap-3 rounded-2xl border p-4"><h2 class="font-semibold">Thẻ ${n}</h2>${Array.from({ length: tall ? 9 : 3 }, (_, i) => `<label class="grid gap-1 text-sm">Trường dài để thử xuống dòng ${i}<input class="min-tap rounded-xl border px-3"/></label>`).join("")}<button class="min-tap rounded-full border px-4">Lưu</button></section>`;
+  const grid = kind === "admin" ? "admin-grid" : "account-grid";
+  const wide = kind === "admin" ? "admin-wide" : "account-wide";
+  const stats = `<section class="grid gap-2"><div class="stat-grid">${Array.from({ length: 7 }, (_, i) => `<div class="rounded-xl border p-3">Chỉ số ${i}<b>12</b></div>`).join("")}</div></section>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body><main class="room-wide mx-auto flex h-dvh flex-col px-4"><header class="py-3"><h1>Trang</h1></header><div class="${grid} min-h-0 flex-1 overflow-y-auto px-1 py-2">${card(1, true)}${stats}${card(2, false)}<div class="${wide} space-y-3">${card(3, true)}</div>${card(4, false)}${card(5, true)}</div></main></body></html>`;
+}
+
+const PAGE_MEASURE = () => {
+  const grid = document.querySelector(".admin-grid, .account-grid");
+  const cards = [...grid.children].filter((el) => !/wide/.test(el.className));
+  const xs = new Set(cards.map((el) => Math.round(el.getBoundingClientRect().x)));
+  const over = [...grid.querySelectorAll("*")].some((el) => el.getBoundingClientRect().right > innerWidth + 1);
+  return { columns: xs.size, xOverflow: document.documentElement.scrollWidth > innerWidth || over };
+};
+
+async function checkWidePages(browser, css) {
+  let bad = 0;
+  for (const kind of ["admin", "account"]) {
+    for (const [w, h] of VIEWPORTS) {
+      const page = await browser.newPage({ viewport: { width: w, height: h } });
+      await page.setContent(widePageHtml(css, kind));
+      const m = await page.evaluate(PAGE_MEASURE);
+      await page.close();
+      const want = w < 720 ? 1 : w < 1090 ? 2 : 3;
+      const list = [];
+      if (m.xOverflow) list.push("tràn ngang");
+      if (m.columns !== want) list.push(`${m.columns} cột, cần ${want}`);
+      if (list.length) bad += 1;
+      console.log(`${list.length ? "LỖI " : "ok   "} ${kind.padEnd(7)} ${w}x${h}  ${m.columns} cột${list.length ? "  <- " + list.join("; ") : ""}`);
+    }
+  }
+  return bad;
+}
+
 async function main() {
   const css = readFileSync(findCss(process.argv[2]), "utf8");
   // CHROMIUM_PATH: dùng Chromium có sẵn khi bản Playwright của dự án chưa tải trình duyệt của nó.
@@ -107,6 +143,7 @@ async function main() {
       console.log(`${list.length ? "LỖI " : "ok   "} ${mode.padEnd(6)} ${w}x${h}  video=${fmt(m.player)} bản dịch=${fmt(m.cues)} công cụ=${fmt(m.tools)}${m.shell.scrolls ? " (khung cuộn)" : ""}${list.length ? "  <- " + list.join("; ") : ""}`);
     }
   }
+  bad += await checkWidePages(browser, css);
   await browser.close();
   console.log(bad ? `\n${bad} cỡ màn hình có lỗi.` : "\nTất cả cỡ màn hình đạt.");
   process.exit(bad ? 1 : 0);

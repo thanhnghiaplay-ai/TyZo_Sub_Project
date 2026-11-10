@@ -11,7 +11,7 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "3.10.6",
     time: "18:10 ngày 10/11/2026",
     area: "khac",
-    text: "Làm trên nền v3.10.5, không có lưới nhiều cột. Thư xác minh và thư đặt lại không tới dù Gửi thư thử chạy. Nguyên nhân khả dĩ: sendAuthLetter chạy nền (void) và better-auth không có backgroundTasks, nên trên Vercel hàm bị đóng băng trước khi SMTP xong. Nay sendAuthLetter lưu lời hứa, route /api/auth/$ gọi flushAuthLetters (tối đa 8 giây) trước khi trả lời. Chờ đọc công tắc thư tối đa 4 giây thay vì 1,5 giây. Chưa thử trên Vercel thật. Nếu vẫn không có thư, xem nhật ký hàm Vercel dòng [auth] gửi thư lỗi.",
+    text: "Làm trên nền v3.10.5. Giao diện: .admin-grid và .account-grid dùng cột kiểu gạch (column-width 22rem), .room-wide 120rem, thêm .admin-split, .admin-detail, .admin-pane, .admin-trio, .admin-stats, .plan-grid, .affiliate-list. Khối Trả theo lượt thành 3 ô, thẻ quyền xuống dưới khối Tài khoản. Không đổi logic. Kiểm bằng dữ liệu giả ở 390, 820, 1280, 1920 px. Thư: thư xác minh và đặt lại không tới dù Gửi thư thử chạy; nguyên nhân khả dĩ là sendAuthLetter chạy nền nên trên Vercel hàm bị đóng băng trước khi SMTP xong. Nay route /api/auth/$ gọi flushAuthLetters (tối đa 8 giây) trước khi trả lời, chờ đọc công tắc thư tối đa 4 giây. Chưa thử trên Vercel thật. Nếu vẫn không có thư, xem nhật ký hàm dòng [auth] gửi thư lỗi.",
   },
   {
     version: "3.10.5",

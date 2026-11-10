@@ -13,9 +13,11 @@ export const CHANGELOG: ReleaseNote[] = [
   {
     version: "3.10.6",
     time: "18:10 ngày 10/11/2026",
-    title: "Sửa thư xác minh và thư quên mật khẩu không tới hộp thư.",
+    title: "Trang quản lý lấp đầy màn hình, chia nhiều cột. Sửa thư xác minh không tới.",
     points: [
-      "Đăng ký hoặc bấm quên mật khẩu, thư nay được gửi xong rồi mới trả lời.",
+      "Màn rộng xếp nhiều cột, máy tính bảng hai cột, điện thoại một cột.",
+      "Tìm tài khoản và chi tiết nằm cạnh nhau, trang thuê phòng và cộng tác viên cũng xếp lưới.",
+      "Đăng ký hoặc quên mật khẩu, thư nay được gửi xong rồi mới trả lời.",
     ],
   },
   {

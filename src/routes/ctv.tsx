@@ -23,7 +23,7 @@ function PartnerPage() {
 
   const [link, setLink] = useState("");
   return (
-    <main className="room-frame mx-auto flex min-h-dvh flex-col gap-4 bg-bg px-4 py-6 text-fg">
+    <main className="room-wide mx-auto flex min-h-dvh flex-col gap-4 bg-bg px-4 py-6 text-fg">
       <div className="flex items-center justify-between">
         <h1 className="text-base font-semibold">Cộng tác viên</h1>
         <Link to="/" className="text-sm text-muted">Về phòng</Link>

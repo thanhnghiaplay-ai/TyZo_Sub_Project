@@ -239,6 +239,152 @@
   }
 }
 
+/* Trang rộng (admin, tài khoản): lấp đầy màn hình. Các thẻ xếp theo cột (kiểu gạch xây),
+   số cột tự tăng theo bề rộng: 1 cột trên điện thoại, 2 trên máy tính bảng, 3 đến 5 trên màn rộng. */
+.room-wide {
+  width: 100%;
+  max-width: 120rem;
+}
+
+.admin-grid,
+.account-grid {
+  min-width: 0;
+  column-width: 22rem;
+  column-gap: 1rem;
+}
+
+.admin-grid > *,
+.account-grid > * {
+  min-width: 0;
+  margin-bottom: 1rem;
+  break-inside: avoid;
+}
+
+.admin-grid > .admin-wide,
+.account-grid > .account-wide {
+  column-span: all;
+}
+
+.admin-grid :where(input, select, textarea):not([type="checkbox"], [type="radio"], [type="range"]),
+.account-grid :where(input, select, textarea):not([type="checkbox"], [type="radio"], [type="range"]) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.admin-grid :where(label > input, label > textarea, label > select),
+.account-grid :where(label > input, label > textarea, label > select) {
+  width: 100%;
+}
+
+/* Khối Tài khoản của Admin: cột trái tìm và chọn, cột phải chi tiết người được chọn. */
+.admin-split {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+
+.admin-split > .admin-span,
+.admin-trio > .admin-span,
+.admin-detail > .admin-span {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.admin-find {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.admin-find ul {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 32rem;
+  overflow-y: auto;
+}
+
+.admin-detail {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+
+.admin-pane {
+  display: grid;
+  min-width: 0;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.admin-pane > button {
+  justify-self: start;
+}
+
+.admin-pane label,
+.admin-detail label {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-pane > *,
+.admin-find > * {
+  min-width: 0;
+}
+
+.admin-trio {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-stats {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 48rem) {
+  .admin-stats {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+  .admin-trio {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 84rem) {
+  .admin-trio {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr) minmax(0, 0.9fr);
+  }
+}
+
+@media (min-width: 56rem) {
+  .admin-split {
+    grid-template-columns: minmax(16rem, 21rem) minmax(0, 1fr);
+  }
+}
+
+.plan-grid,
+.affiliate-list {
+  display: grid;
+  gap: 0.75rem;
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+
+.affiliate-list > * {
+  min-width: 0;
+}
+
+.stat-grid {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+
 .h-dvh {
   height: 100vh;
   height: 100dvh;

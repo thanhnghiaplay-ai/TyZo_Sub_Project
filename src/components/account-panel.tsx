@@ -83,7 +83,7 @@ export function AccountPanel() {
   }
 
   return (
-    <div className="min-h-0 min-w-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto px-1 py-2">
+    <div className="account-grid min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
       {isPending && <p className="text-sm text-muted">Đang kiểm tra phiên…</p>}
       {!isPending && (!user || user.isDevFallback) && (
         <div className="space-y-3">
@@ -192,6 +192,7 @@ export function AccountPanel() {
           ) : (
             <RunDoorClosed note={runDoor.note} />
           )}
+          <div className="grid gap-2">
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>
@@ -219,6 +220,7 @@ export function AccountPanel() {
               </span>
             </button>
           ))}
+          </div>
           <form
             className="space-y-2 rounded-2xl border border-line bg-card p-4"
             onSubmit={(event) => {
@@ -290,7 +292,7 @@ export function AccountPanel() {
             <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
           </form>
           {state && state.ledger.length > 0 && (
-            <section className="rounded-2xl border border-line bg-card p-3">
+            <section className="account-wide rounded-2xl border border-line bg-card p-3">
               <h2 className="text-sm font-semibold">Lịch sử Nạp/Mua gói</h2>
               <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
                 {(ledgerOpen ? state.ledger.slice(0, 9) : state.ledger.slice(0, 3)).map((item) => {

@@ -163,6 +163,16 @@ describe("Bước 7.1 — không chồng khung", () => {
     // Mọi mức tối thiểu cộng vào min-height của khung, để thiếu chỗ thì cuộn chứ không chồng.
     assert.match(css, /\.studio-stage\s*\{[^}]*min-height:\s*calc\(/);
     assert.match(css, /\.studio-shell\s*\{[^}]*overflow-y:\s*auto/);
+    // Trang rộng: admin và tài khoản xếp thẻ theo cột tự tăng, thẻ rộng chiếm cả hàng.
+    assert.match(css, /\.admin-grid,\s*\.account-grid\s*\{[^}]*column-width:\s*22rem/);
+    assert.match(css, /\.admin-wide[^{]*\{[^}]*column-span:\s*all/);
+    assert.match(css, /\.admin-split\s*\{[^}]*display:\s*grid/);
+    const adminRoute = readFileSync(new URL("../routes/admin.tsx", import.meta.url), "utf8");
+    const accountRoute = readFileSync(new URL("../routes/tai-khoan.tsx", import.meta.url), "utf8");
+    assert.match(adminRoute, /room-wide/);
+    assert.match(accountRoute, /room-wide/);
+    assert.match(readFileSync(new URL("./admin-desk.tsx", import.meta.url), "utf8"), /className="admin-grid"/);
+    assert.match(readFileSync(new URL("./account-panel.tsx", import.meta.url), "utf8"), /account-grid/);
     // Bảng cài đặt phụ đề nằm trong khung video: khung phải co và cuộn, ruột không bị bóp méo.
     assert.match(css, /\.studio-video\s*\{[^}]*flex:\s*0 1 auto[^}]*overflow-y:\s*auto/);
     assert.match(css, /\.studio-video \.player-stack > \*\s*\{[^}]*flex-shrink:\s*0/);
