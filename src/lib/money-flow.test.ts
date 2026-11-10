@@ -69,6 +69,12 @@ describe("webhook nạp tiền", () => {
     assert.equal(await balanceOf("k"), 120000);
   });
 
+  it("đơn quá 15 phút thì webhook không cộng", async () => {
+    await sql`update pay_orders set created_at = now() - interval '16 minutes' where id = 'o1'`;
+    assert.equal(await creditHitWith(sql, "sepay", { ref: "S8", amount: 100000, text: "TZABC234" }), null);
+    assert.equal(await balanceOf("k"), 0);
+    assert.equal(await orderStatus("o1"), "pending");
+  });
   it("đơn khách báo đã chuyển (claimed) vẫn được webhook cộng", async () => {
     await sql`update pay_orders set status = 'claimed' where id = 'o1'`;
     assert.ok(await creditHitWith(sql, "sepay", { ref: "S6", amount: 100000, text: "TZABC234" }));

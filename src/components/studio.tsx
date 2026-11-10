@@ -1,3 +1,4 @@
+import { isStudioSheet } from "@/lib/studio-layout";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
@@ -27,14 +28,15 @@ import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
 import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
+import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
-import { TIER_LABEL, modelLabel } from "@/lib/sub/models";
+import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomPrice } from "@/lib/run-desk";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
-import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechLang } from "@/lib/sub/text";
+import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
 import { termsToCsv } from "@/lib/sub/glossary";
 import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
 import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/asr-retry";
@@ -212,6 +214,14 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
   const [src, setSrc] = useState("");
   const [tgt, setTgt] = useState("");
   const [note, setNote] = useState("");
+  const [share, setShare] = useState(false);
+  useEffect(() => {
+    try {
+      setShare(localStorage.getItem("gshare") === "1");
+    } catch {
+      setShare(false);
+    }
+  }, []);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const add = () => {
     app.addUserTerm(src, tgt);
@@ -277,10 +287,25 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
           Xóa của tôi
         </button>
       </div>
+      <label className="flex items-start gap-2 text-xs text-muted">
+        <input
+          type="checkbox"
+          checked={share}
+          onChange={(event) => {
+            const on = event.target.checked;
+            setShare(on);
+            localStorage.setItem("gshare", on ? "1" : "0");
+            setNote(on ? "Sẽ gửi bản sao thuật ngữ của bạn khi bạn thêm." : "Không gửi thuật ngữ lên phòng.");
+          }}
+        />
+        Gửi thuật ngữ của tôi để phòng xem. Mặc định tắt. Phòng chưa dùng cho người khác cho đến khi Chủ nhận.
+      </label>
       {note ? <p className="text-xs text-muted">{note}</p> : null}
       <div className="grid max-h-48 gap-1 overflow-auto text-sm">
-        {(app.glossaryInfo?.terms || []).map((t: { source: string; target: string; user?: boolean }, i: number) => (
-          <div key={t.user ? "u-" + t.source : "f-" + i} className="flex items-center gap-2 border-b border-line/50 py-0.5">
+        {(app.glossaryInfo?.terms || [])
+          .filter((t: { user?: boolean }) => t.user)
+          .map((t: { source: string; target: string; user?: boolean }) => (
+            <div key={"u-" + t.source} className="flex items-center gap-2 border-b border-line/50 py-0.5">
             <span className="min-w-0 flex-1 truncate font-medium">{t.source}</span>
             <span className="text-muted">→</span>
             <span className="min-w-0 flex-1 truncate">{t.target}</span>
@@ -288,9 +313,7 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
               <button type="button" className="shrink-0 text-xs text-muted" onClick={() => app.removeUserTerm(t.source)} aria-label="Xóa">
                 xóa
               </button>
-            ) : (
-              <span className="shrink-0 text-xs text-muted">file</span>
-            )}
+            ) : null}
           </div>
         ))}
       </div>
@@ -348,6 +371,7 @@ function loadNarration(): NarrationSettings {
     localStorage.setItem("gnarr_v", "4");
     if (parsed.enabled === undefined) merged.enabled = true;
     if (parsed.lead === undefined) merged.lead = 0;
+    merged.lead = Math.min(2, Math.max(-1.5, Number(merged.lead) || 0));
     if (parsed.matchCast === undefined) merged.matchCast = true;
     return merged;
   } catch {
@@ -487,8 +511,8 @@ export function Studio() {
     (voice) => narration.gender === "any" || guessGender(voice) === "any" || guessGender(voice) === narration.gender,
   );
   const pickTool = (id: (typeof TOOLS)[number][0]) => {
-    const narrow = window.matchMedia("(max-width: 699px)").matches;
-    setSheetOpen((open) => (narrow && id === toolTab ? !open : true));
+    const sheet = isStudioSheet();
+    setSheetOpen((open) => (sheet && id === toolTab ? !open : true));
     setToolTab(id);
   };
 
@@ -693,6 +717,7 @@ export function Studio() {
           lead={narration.lead}
           onCue={setCurrent}
           onSpeak={speakAt}
+          speechBusy={() => narrator.current.busy()}
           onPause={() => narrator.current.stop(app.videoRef.current)}
         />
         </div>
@@ -795,7 +820,7 @@ export function Studio() {
         </label>
         )}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-muted">Cách chọn model</span>
+          <span className="text-sm text-muted">Cách dịch</span>
           {!showRoomPrice && (
             <button
               type="button"
@@ -808,44 +833,32 @@ export function Studio() {
             </button>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Choice on={app.mode === "manual"} onClick={() => app.setMode("manual")} title="Tự chọn" text="Một model cho cả phim" />
-          <Choice on={app.mode === "auto"} onClick={() => app.setMode("auto")} title="Tự động" text="Cân tốc độ và độ chính xác" />
-        </div>
-        {app.mode === "manual" ? (
-          <ModelPicker
-            models={app.catalog}
-            value={app.modelId}
-            remote={showRoomPrice ? null : app.remoteIds}
-            board={showRoomPrice ? app.board : null}
-            door={showRoomPrice ? runDoor : null}
-            onChange={app.setModelId}
-          />
-        ) : (
-          <div className="grid gap-2">
-            <div className="grid grid-cols-3 gap-2">
-              <Choice on={app.profile === "fast"} onClick={() => app.setProfile("fast")} title="Nhanh" text="20B trước" />
-              <Choice on={app.profile === "balanced"} onClick={() => app.setProfile("balanced")} title="Cân bằng" text="120B là chính" />
-              <Choice on={app.profile === "accurate"} onClick={() => app.setProfile("accurate")} title="Chính xác" text="Model mạnh hơn" />
-            </div>
-            <p className="text-sm text-muted">
-              {showRoomPrice
-                ? "Câu ngắn đi model nhanh. Hội thoại dùng model chính. Câu khó chuyển sang model mạnh hơn đã được phòng đưa ra."
-                : "Câu ngắn đi model nhanh. Hội thoại dùng GPT-OSS 120B. Câu khó hoặc bản dịch lỗi chuyển sang Qwen, hoặc model Enterprise nếu key có. Khi nâng cấp key, bấm Đồng bộ key — Auto chỉ gọi model mà key mở được."}
-            </p>
-            {!showRoomPrice && (
-              <label className="flex min-tap items-center gap-2 text-sm">
-                <input type="checkbox" checked={app.allowEnterprise} onChange={(event) => app.setAllowEnterprise(event.target.checked)} />
-                Dùng model Enterprise khi key có quyền
-              </label>
-            )}
-            {Object.keys(app.uses).length > 0 && (
-              <p className="text-sm text-fg">
-                Đã chia: {Object.entries(app.uses).map(([id, count]) => `${modelLabel(id)} × ${count}`).join(" · ")}
-              </p>
-            )}
+        <VoiceLanes
+          modelId={app.modelId}
+          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
+          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
+          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
+          priceFor={(id) =>
+            showRoomPrice
+              ? modelFacts(app.board, runDoor, id, "").price
+              : ownModelPrice(app.board, id)
+          }
+          onPick={(id) => app.chooseVoice(id)}
+        />
+        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
+        <details className="text-sm text-muted">
+          <summary className="cursor-pointer">Nhập mã model khác</summary>
+          <div className="pt-2">
+            <ModelPicker
+              models={app.catalog}
+              value={app.modelId}
+              remote={showRoomPrice ? null : app.remoteIds}
+              board={showRoomPrice ? app.board : null}
+              door={showRoomPrice ? runDoor : null}
+              onChange={app.chooseVoice}
+            />
           </div>
-        )}
+        </details>
         <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
           <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
             Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
@@ -912,7 +925,9 @@ export function Studio() {
           <option value="daily">Hằng ngày</option>
         </Select>
         <p className="text-sm text-muted">
-          {app.glossaryInfo?.count > 0 ? (
+          {app.glossaryInfo?.failed ? (
+            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
+          ) : app.glossaryInfo?.count > 0 ? (
             <>
               Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ của thể loại này.
             </>
@@ -1154,13 +1169,23 @@ export function Studio() {
               ))}
           </Select>
         ) : null}
-        <Slider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} text={`${narration.rate.toFixed(1)}×`} onChange={(rate) => patchNarration({ rate })} />
+        <DragSlider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} defaultValue={1} marks={[1]} format={(value) => `${value.toFixed(1)}×`} onCommit={(rate) => patchNarration({ rate })} />
         {narration.engine !== "orpheus" && (
-          <Slider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} text={narration.pitch.toFixed(1)} onChange={(pitch) => patchNarration({ pitch })} />
+          <DragSlider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} defaultValue={1} marks={[1]} format={(value) => value.toFixed(1)} onCommit={(pitch) => patchNarration({ pitch })} />
         )}
-        <Slider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} text={`${Math.round(narration.volume * 100)}%`} onChange={(volume) => patchNarration({ volume })} />
-        <Slider label="Chờ sau khi câu hiện" value={narration.lead} min={0} max={1.2} step={0.1} text={`${narration.lead.toFixed(1)} giây`} onChange={(lead) => patchNarration({ lead })} />
-        <p className="text-sm text-muted">0 giây = đọc đúng lúc phụ đề hiện. Không đọc câu chưa tới trên hình.</p>
+        <DragSlider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} defaultValue={1} format={(value) => `${Math.round(value * 100)}%`} onCommit={(volume) => patchNarration({ volume })} />
+        <DragSlider
+          label="Đọc trước / sau phụ đề"
+          value={narration.lead}
+          min={-1.5}
+          max={2}
+          step={0.1}
+          defaultValue={0}
+          marks={[0]}
+          format={(value) => (value === 0 ? "Đúng lúc" : value < 0 ? `Trước ${(-value).toFixed(1)} giây` : `Sau ${value.toFixed(1)} giây`)}
+          onCommit={(lead) => patchNarration({ lead })}
+        />
+        <p className="text-sm text-muted">Kéo núm để chỉnh. Đúng lúc là đọc khi câu hiện. Trước là đọc sớm, sau là đọc muộn.</p>
         <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={narration.matchCast} onChange={(event) => patchNarration({ matchCast: event.target.checked })} />
           Đọc theo nhân vật, rồi theo cao độ
@@ -1289,6 +1314,60 @@ function IconButton({ label, onClick, children }: { label: string; onClick: () =
   );
 }
 
+function ownModelPrice(board: GroqBoard | null, id: string) {
+  const row = board?.rows.find((item) => item.id === id);
+  if (!board || !row) return board ? "Chưa niêm yết" : "";
+  return formatRoomPrice(row, board.rate, 0);
+}
+
+function VoiceLanes({
+  modelId,
+  available,
+  allowEnterprise,
+  known,
+  priceFor,
+  onPick,
+}: {
+  modelId: string;
+  available: Set<string> | null;
+  allowEnterprise: boolean;
+  known: boolean;
+  priceFor: (id: string) => string;
+  onPick: (id: string) => void;
+}) {
+  const selected = voiceLaneOf(modelId);
+  return (
+    <div className="grid min-w-0 gap-2">
+      {VOICE_LANES.map((lane) => {
+        const id = resolveVoiceLane(lane.id, available, allowEnterprise);
+        const closed = known && !id;
+        const on = selected === lane.id;
+        const price = id ? priceFor(id) : "";
+        return (
+          <button
+            key={lane.id}
+            type="button"
+            disabled={closed}
+            onClick={() => id && onPick(id)}
+            className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
+          >
+            <span className="block text-sm font-semibold">{lane.title}</span>
+            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
+            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>
+              {lane.pace}
+              {price ? ` · ${price}` : ""}
+            </span>
+            <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>
+              {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
+            </span>
+          </button>
+        );
+      })}
+      {!known && <p className="text-xs text-muted">Bấm Đồng bộ key để tắt lối mà key không mở được.</p>}
+    </div>
+  );
+}
+
 function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text: string }) {
   return (
     <button type="button" onClick={onClick} className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
@@ -1305,18 +1384,6 @@ function Select({ label, value, onChange, children }: { label: string; value: st
       <select className={FIELD} value={value} onChange={(event) => onChange(event.target.value)}>
         {children}
       </select>
-    </label>
-  );
-}
-
-function Slider({ label, value, min, max, step, text, onChange }: { label: string; value: number; min: number; max: number; step: number; text: string; onChange: (value: number) => void }) {
-  return (
-    <label className="grid gap-1 text-sm text-muted">
-      <span className="flex justify-between">
-        {label}
-        <b className="font-medium text-fg">{text}</b>
-      </span>
-      <input className="accent-accent" type="range" min={min} max={max} step={step} value={value} onChange={(event) => onChange(Number(event.target.value))} />
     </label>
   );
 }
@@ -1441,6 +1508,7 @@ function Stage({
   lead,
   onCue,
   onSpeak,
+  speechBusy,
   onPause,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>;
@@ -1451,6 +1519,7 @@ function Stage({
   lead: number;
   onCue: (index: number) => void;
   onSpeak: (index: number) => void;
+  speechBusy: () => boolean;
   onPause: () => void;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -1475,6 +1544,7 @@ function Stage({
   const narrRef = useRef(narrationOn);
   const onCueRef = useRef(onCue);
   const onSpeakRef = useRef(onSpeak);
+  const busyRef = useRef(speechBusy);
   const onPauseRef = useRef(onPause);
   segsRef.current = segs;
   subRef.current = sub;
@@ -1482,6 +1552,7 @@ function Stage({
   narrRef.current = narrationOn;
   onCueRef.current = onCue;
   onSpeakRef.current = onSpeak;
+  busyRef.current = speechBusy;
   onPauseRef.current = onPause;
   const idxRef = useRef(-1);
   const speakRef = useRef("");
@@ -1517,11 +1588,11 @@ function Stage({
         onCueRef.current(shown);
       }
       if (narrRef.current && !video.paused) {
-        const delay = Math.max(0, leadRef.current);
-        const seg = shown >= 0 ? segsRef.current[shown] : undefined;
-        const ready = Boolean(seg && clock + 0.001 >= seg.start + delay);
-        const spoken = ready ? shown : -1;
-        if (spoken >= 0 && seg) {
+        const offset = leadRef.current;
+        const spoken = speechIndex(segsRef.current, clock, offset);
+        const seg = spoken >= 0 ? segsRef.current[spoken] : undefined;
+        const waitEarly = Boolean(seg && offset < 0 && busyRef.current() && clock < seg.start);
+        if (spoken >= 0 && seg && !waitEarly) {
           const text = cueText(seg);
           const token = text ? `${spoken}\n${text}` : "";
           if (token && token !== speakRef.current) {
@@ -1767,10 +1838,10 @@ function Stage({
               </select>
             </label>
             <div className="col-span-2">
-              <Slider label="Độ mờ nền" value={sub.op} min={0} max={100} step={5} text={`${sub.op}%`} onChange={(op) => setSub({ ...sub, op })} />
-              <Slider label="Cỡ chữ" value={sub.size} min={50} max={250} step={10} text={`${sub.size}%`} onChange={(size) => setSub({ ...sub, size })} />
-              <Slider label="Vị trí từ đáy" value={sub.pos} min={2} max={85} step={1} text={`${sub.pos}%`} onChange={(pos) => setSub({ ...sub, pos })} />
-              <Slider label="Lệch thời gian" value={sub.off} min={-10} max={10} step={0.1} text={`${sub.off > 0 ? "+" : ""}${sub.off.toFixed(1)} giây`} onChange={(off) => setSub({ ...sub, off })} />
+              <DragSlider label="Độ mờ nền" value={sub.op} min={0} max={100} step={5} defaultValue={0} format={(value) => `${value}%`} onCommit={(op) => setSub({ ...sub, op })} />
+              <DragSlider label="Cỡ chữ" value={sub.size} min={50} max={250} step={10} defaultValue={50} format={(value) => `${value}%`} onCommit={(size) => setSub({ ...sub, size })} />
+              <DragSlider label="Vị trí từ đáy" value={sub.pos} min={2} max={85} step={1} defaultValue={3} format={(value) => `${value}%`} onCommit={(pos) => setSub({ ...sub, pos })} />
+              <DragSlider label="Lệch thời gian" value={sub.off} min={-10} max={10} step={0.1} defaultValue={0} marks={[0]} format={(value) => `${value > 0 ? "+" : ""}${value.toFixed(1)} giây`} onCommit={(off) => setSub({ ...sub, off })} />
             </div>
             <button type="button" className="col-span-2 min-tap rounded-xl border border-line" onClick={() => setSub(SUB_DEF)}>
               Đặt lại mặc định

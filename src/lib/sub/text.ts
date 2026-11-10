@@ -95,6 +95,10 @@ export function streamParts(dur: number): Array<[number, number]> {
   return out;
 }
 
+export function speechIndex(items: Seg[], clock: number, offset: number): number {
+  return findCueIndex(items, clock - offset);
+}
+
 export function findCueIndex(items: Seg[], time: number): number {
   let lo = 0;
   let hi = items.length - 1;

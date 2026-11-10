@@ -1,8 +1,23 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { STUDIO_SHEET_QUERY } from "../lib/studio-layout.ts";
 
 const source = readFileSync(new URL("./studio.tsx", import.meta.url), "utf8");
+
+const [SHEET_PORTRAIT, SHEET_LANDSCAPE] = [
+  "(max-width: 699px) and (orientation: portrait), (max-height: 520px) and (orientation: portrait)",
+  "(orientation: landscape) and (max-height: 720px)",
+];
+
+/** Text of one top-level @media block, from its header to the next top-level @media. */
+function mediaBlock(css: string, query: string): string {
+  const header = `@media ${query}`;
+  const start = css.indexOf(header);
+  if (start < 0) return "";
+  const next = css.indexOf("\n@media", start + header.length);
+  return css.slice(start, next < 0 ? css.length : next);
+}
 const phim = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="tool-cast"'));
 
 describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
@@ -76,8 +91,10 @@ describe("Bước 6.4 — ba cỡ màn hình", () => {
     assert.match(css, /max-width: 699px/);
     assert.match(css, /min-width: 700px/);
     assert.match(css, /min-width: 1024px/);
-    assert.match(css, /33dvh/);
-    assert.match(css, /42dvh/);
+    // Chiều cao video tính theo biến --vh (dvh, lùi về vh), mỗi chế độ một cỡ.
+    assert.match(css, /--video-h:\s*calc\(33 \* var\(--vh\)\)/);
+    assert.match(css, /--video-h:\s*calc\(32 \* var\(--vh\)\)/);
+    assert.match(css, /--video-h:\s*calc\(24 \* var\(--vh\)\)/);
     assert.match(source, /studio-shell/);
     assert.match(source, /text-base/);
     assert.match(css, /min-height: 2\.75rem/);
@@ -102,10 +119,9 @@ describe("Bước 6.5 — chuyển tab", () => {
 describe("Bước 6.6 — không API một hãng", () => {
   it("dvh và vùng tai thỏ có đường lùi, không có tiền tố một hãng", () => {
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
-    assert.match(css, /height:\s*100vh;/);
-    assert.match(css, /height:\s*100dvh;/);
-    assert.match(css, /max-height:\s*33vh;/);
-    assert.match(css, /max-height:\s*42vh;/);
+    assert.match(css, /--vh:\s*1vh;/);
+    assert.match(css, /@supports \(height: 1dvh\)[\s\S]{0,40}--vh:\s*1dvh;/);
+    assert.match(css, /height:\s*calc\(100 \* var\(--vh\)\);/);
     assert.match(css, /env\(safe-area-inset-top,\s*0px\)/);
     assert.equal(/-webkit-|-moz-|-ms-/.test(css), false);
     assert.equal(source.includes("Hãy dùng Chrome"), false);
@@ -133,11 +149,34 @@ describe("Bước 7.1 — không chồng khung", () => {
     assert.match(css, /max-height:\s*520px/);
     assert.match(source, /studio-stage/);
     assert.match(source, /is-sheet/);
-    const phone = css.slice(css.indexOf("@media (max-width: 699px)"), css.indexOf("@media (min-width: 700px)"));
-    assert.match(phone, /position:\s*static/);
-    const short = css.slice(css.indexOf("@media (max-height: 520px)"));
-    assert.match(short, /position:\s*static/);
-    assert.match(short, /display:\s*flex/);
+    // Chuỗi điều kiện của CSS và của mã (isStudioSheet) phải là một.
+    assert.equal(STUDIO_SHEET_QUERY, `${SHEET_PORTRAIT}, ${SHEET_LANDSCAPE}`);
+    const portrait = mediaBlock(css, SHEET_PORTRAIT);
+    const landscape = mediaBlock(css, SHEET_LANDSCAPE);
+    assert.match(portrait, /\.studio-tools:not\(\.is-open\)\s*\{[^}]*display:\s*none/);
+    assert.match(landscape, /\.studio-tools:not\(\.is-open\)\s*\{[^}]*display:\s*none/);
+    assert.match(landscape, /display:\s*grid/);
+    assert.match(portrait, /\.is-sheet \.studio-cues\s*\{[^}]*display:\s*none/);
+    // Mỗi cỡ màn hình rơi vào đúng một chế độ: không còn khối điều kiện chồng lên nhau.
+    assert.equal(css.includes("@media (min-width: 1024px) and (max-height: 700px)"), false);
+    assert.equal(css.includes("@media (max-width: 699px) {\n  .studio-tools"), false);
+    // Mọi mức tối thiểu cộng vào min-height của khung, để thiếu chỗ thì cuộn chứ không chồng.
+    assert.match(css, /\.studio-stage\s*\{[^}]*min-height:\s*calc\(/);
+    assert.match(css, /\.studio-shell\s*\{[^}]*overflow-y:\s*auto/);
+    // Trang rộng: admin và tài khoản xếp thẻ theo cột tự tăng, thẻ rộng chiếm cả hàng.
+    assert.match(css, /\.admin-grid,\s*\.account-grid\s*\{[^}]*column-width:\s*22rem/);
+    assert.match(css, /\.admin-wide[^{]*\{[^}]*column-span:\s*all/);
+    assert.match(css, /\.admin-split\s*\{[^}]*display:\s*grid/);
+    const adminRoute = readFileSync(new URL("../routes/admin.tsx", import.meta.url), "utf8");
+    const accountRoute = readFileSync(new URL("../routes/tai-khoan.tsx", import.meta.url), "utf8");
+    assert.match(adminRoute, /room-wide/);
+    assert.match(accountRoute, /room-wide/);
+    assert.match(readFileSync(new URL("./admin-desk.tsx", import.meta.url), "utf8"), /className="admin-grid"/);
+    assert.match(readFileSync(new URL("./account-panel.tsx", import.meta.url), "utf8"), /account-grid/);
+    // Bảng cài đặt phụ đề nằm trong khung video: khung phải co và cuộn, ruột không bị bóp méo.
+    assert.match(css, /\.studio-video\s*\{[^}]*flex:\s*0 1 auto[^}]*overflow-y:\s*auto/);
+    assert.match(css, /\.studio-video \.player-stack > \*\s*\{[^}]*flex-shrink:\s*0/);
+    assert.equal(/\.studio-video\s*\{[^}]*max-height:\s*calc/.test(css), false);
   });
 });
 
@@ -172,8 +211,8 @@ describe("Bước 7.3 — không giật khi chọn file và khi báo trạng th�
     assert.match(source, /aria-label="Đóng tab"/);
     assert.match(source, /<X /);
     assert.equal(source.includes(">Đóng</button>\n        <section id=\"tool-key\""), false);
-    const phone = css.slice(css.indexOf("@media (max-width: 699px)"), css.indexOf("@media (min-width: 700px)"));
-    assert.match(phone, /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
+    assert.match(mediaBlock(css, SHEET_PORTRAIT), /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
+    assert.match(mediaBlock(css, SHEET_LANDSCAPE), /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
     assert.equal(/\.studio-sheet-bar\s*\{[^}]*display:\s*flex/.test(css.slice(0, css.indexOf("@media"))), false);
     assert.match(source, /role="status"/);
     assert.match(source, /line-clamp-2 h-10/);

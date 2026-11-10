@@ -3,6 +3,7 @@ import { execFile } from "node:child_process";
 import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { existsSync } from "node:fs";
 import { test } from "node:test";
 import { promisify } from "node:util";
 import {
@@ -15,6 +16,10 @@ import {
 
 const execFileAsync = promisify(execFile);
 const WRAPPER = join(projectRoot(), "scripts/with-app-env.mjs");
+// `.grok/` is gitignored, so a clean checkout or a zip has no shipped app-env.
+const skipNoAppEnv = existsSync(join(projectRoot(), APP_ENV_REL_PATH))
+  ? false
+  : "thiếu .grok/app-env.json, bỏ qua trên kho sạch";
 const PRINT_FLAG = "process.stdout.write(String(process.env.VITE_AUTH_ENABLED));";
 
 function makeWorkspace(appEnvJson) {
@@ -73,7 +78,7 @@ test("vite loadEnv resolves the wrapped value", () => {
   assert.equal(merged.VITE_AUTH_ENABLED, "false");
 });
 
-test("the wrapped command runs with the app env applied", async () => {
+test("the wrapped command runs with the app env applied", { skip: skipNoAppEnv }, async () => {
   const { stdout } = await execFileAsync(process.execPath, [
     WRAPPER,
     process.execPath,
@@ -113,7 +118,7 @@ test("a signal-killed command is never reported as success", async () => {
   );
 });
 
-test("the CLI still runs when invoked through a symlinked path", async () => {
+test("the CLI still runs when invoked through a symlinked path", { skip: skipNoAppEnv }, async () => {
   // node realpaths import.meta.url but not process.argv[1], so a raw comparison
   // turns the wrapper into a no-op that exits 0 without starting anything.
   const link = join(mkdtempSync(join(tmpdir(), "app-env-link-")), "scripts");

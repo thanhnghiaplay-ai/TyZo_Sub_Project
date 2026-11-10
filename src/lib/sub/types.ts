@@ -53,7 +53,7 @@ export type NarrationSettings = {
   orpheusVoice: string;
   duck: boolean;
   muteVideo: boolean;
-  /** Giây chờ sau khi câu hiện. 0 = đọc đúng lúc phụ đề hiện, không đọc trước hình. */
+  /** Giây lệch lúc đọc. Âm là đọc trước, dương là đọc sau, 0 là đúng lúc câu hiện. */
   lead: number;
   followPlayback: boolean;
   skipCues: boolean;

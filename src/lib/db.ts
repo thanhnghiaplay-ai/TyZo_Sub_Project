@@ -1,4 +1,5 @@
-import { pendingMigrations } from "../../scripts/migration-plan.mjs";
+import { applyMigrations } from "../../scripts/migration-lock.mjs";
+import { migrationName, pendingMigrations } from "../../scripts/migration-plan.mjs";
 
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
@@ -93,11 +94,47 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
-    return toSql(async <T>(text: string, params: unknown[]) => {
+    // Mọi chờ đều có hạn. Không có hạn thì một kết nối kẹt làm mọi hàm máy chủ treo mãi,
+    // màn hình chỉ thấy «Đang xem…» và không có câu lỗi nào.
+    const pool = new Pool({
+      connectionString: databaseUrl,
+      connectionTimeoutMillis: 10_000,
+      query_timeout: 25_000,
+    });
+    // Kết nối rảnh bị Neon ngắt phát sự kiện lỗi. Không có người nghe thì cả tiến trình sập.
+    pool.on("error", (error) => console.error("[db] kết nối rảnh bị ngắt:", error.message));
+    const migrations = import.meta.glob("/migrations/*.sql", {
+      query: "?raw",
+      import: "default",
+      eager: true,
+    }) as Record<string, string>;
+    try {
+      const client = await pool.connect();
+      let failed = false;
+      try {
+        // Khóa mức giao dịch có chờ hạn, xem scripts/migration-lock.mjs.
+        await applyMigrations(
+          client,
+          Object.entries(migrations).map(([path, text]) => ({ name: migrationName(path), text })),
+        );
+      } catch (error) {
+        failed = true;
+        throw error;
+      } finally {
+        client.release(failed);
+      }
+    } catch (error) {
+      await pool.end().catch(() => undefined);
+      throw error;
+    }
+    const sql = toSql(async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
     });
+    void import("@/lib/glossary-seed.server")
+      .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
+      .catch(() => undefined);
+    return sql;
   })().catch((err) => {
     globalRef.__pgSqlPromise__ = undefined;
     throw err;
@@ -160,11 +197,14 @@ async function createPgliteSql(): Promise<Sql> {
     .then(migrate);
   globalRef.__pgliteMigrateChain__ = pass;
   await pass;
-
-  return toSql(async <T>(text: string, params: unknown[]) => {
+  const sql = toSql(async <T>(text: string, params: unknown[]) => {
     const result = await pg.query<T>(text, params);
     return result.rows;
   });
+  void import("@/lib/glossary-seed.server")
+    .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
+    .catch(() => undefined);
+  return sql;
 }
 
 let sqlPromise: Promise<Sql> | null = null;

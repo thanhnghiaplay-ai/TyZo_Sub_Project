@@ -8,6 +8,7 @@ import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
 import { formatMoney } from "@/lib/money-format";
+import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 
 const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
 import { audioBufferTo16k, packAudio } from "@/lib/sub/codec";
@@ -69,6 +70,7 @@ import {
   parseGlossaryCsv,
   type GlossaryTerm,
 } from "@/lib/sub/glossary";
+import { suggestTerms } from "@/lib/glossary-room";
 import {
   budgetSpeechGaps,
   formatGapConfirm,
@@ -77,6 +79,14 @@ import {
   type GapPlan,
 } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
+
+/** Hỏi tài khoản trước khi chạy hoặc xuất. Không có hạn thì máy chủ im lặng làm nút «Tải và dịch» kẹt mãi. */
+const ACCOUNT_WAIT_MS = 15_000;
+function accountProblem(error: unknown) {
+  return error instanceof TimeoutError
+    ? "Phòng chưa trả lời. Đợi vài giây rồi bấm lại. Nếu vẫn vậy, báo Chủ phòng."
+    : "Chưa đọc được tài khoản. Hãy đăng nhập lại.";
+}
 
 type AsrResult = AsrPartResult;
 
@@ -212,6 +222,15 @@ function writeStore(key: string, value: string) {
   }
 }
 
+function shareUserTerms(source: string, genre: string, terms: GlossaryTerm[]) {
+  try {
+    if (localStorage.getItem("gshare") !== "1") return;
+  } catch {
+    return;
+  }
+  void suggestTerms({ data: { lang: source, genre, terms } }).catch(() => {});
+}
+
 function userGlossKey(source: string, genre: string) {
   return "guser_" + (source || "_") + "_" + (genre || "auto");
 }
@@ -256,6 +275,7 @@ export function usePipeline() {
     sources: string[];
     terms: Array<{ source: string; target: string; user?: boolean }>;
     userCount: number;
+    failed?: boolean;
   }>({
     count: 0,
     sources: [],
@@ -307,10 +327,13 @@ export function usePipeline() {
     const par = Number(readStore("gpar"));
     if ([1, 3, 4, 6, 8].includes(par)) setThreads(par);
     const savedMode = readStore("gmode");
-    if (savedMode === "auto" || savedMode === "manual") setMode(savedMode);
     const savedProfile = readStore("gprofile");
-    if (savedProfile === "fast" || savedProfile === "balanced" || savedProfile === "accurate") setProfile(savedProfile);
     const savedModel = readStore("gmdl");
+    if (savedMode === "auto") {
+      setMode("manual");
+      if (!savedModel) setModelId(savedProfile === "fast" ? "openai/gpt-oss-20b" : "openai/gpt-oss-120b");
+    } else if (savedMode === "manual") setMode("manual");
+    if (savedProfile === "fast" || savedProfile === "balanced" || savedProfile === "accurate") setProfile(savedProfile);
     if (savedModel) setModelId(savedModel);
     if (readStore("genter") === "0") setAllowEnterprise(false);
     const whisper = readStore("gasr");
@@ -352,6 +375,7 @@ export function usePipeline() {
           count: merged.length,
           userCount: userTerms.length,
           sources: pack.sources,
+          failed: Boolean(pack.error),
           terms: [
             ...userTerms.map((t) => ({ source: t.source, target: t.target, user: true })),
             ...merged
@@ -366,6 +390,7 @@ export function usePipeline() {
             count: userTerms.length,
             userCount: userTerms.length,
             sources: [],
+            failed: true,
             terms: userTerms.map((t) => ({ source: t.source, target: t.target, user: true })),
           });
       }
@@ -533,13 +558,13 @@ export function usePipeline() {
       return null;
     }
     try {
-      const place = await getMyPlace();
+      const place = await withTimeout(getMyPlace(), ACCOUNT_WAIT_MS, "Phòng");
       const blocked = standingBlock(place.status, place.reason);
       if (blocked) {
         say(blocked, true);
         return null;
       }
-      const state = await claimTrialDevice({ data: id });
+      const state = await withTimeout(claimTrialDevice({ data: id }), ACCOUNT_WAIT_MS, "Phòng");
       const access = roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
       if (roomPayRef.current) {
         const until = state.planUntil ? new Date(state.planUntil).getTime() : 0;
@@ -560,8 +585,8 @@ export function usePipeline() {
         return null;
       }
       return access;
-    } catch {
-      say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
+    } catch (error) {
+      say(accountProblem(error), true);
       return null;
     }
   }, [say]);
@@ -572,14 +597,14 @@ export function usePipeline() {
     const id = deviceId();
     if (!id) return say("Trình duyệt không cho lưu máy này, không mở được lượt thử.", true);
     try {
-      const place = await getMyPlace();
+      const place = await withTimeout(getMyPlace(), ACCOUNT_WAIT_MS, "Phòng");
       const blocked = standingBlock(place.status, place.reason);
       if (blocked) return say(blocked, true);
-      const state = await claimTrialDevice({ data: id });
+      const state = await withTimeout(claimTrialDevice({ data: id }), ACCOUNT_WAIT_MS, "Phòng");
       const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
       if (notice) return say(notice, true);
-    } catch {
-      return say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
+    } catch (error) {
+      return say(accountProblem(error), true);
     }
     if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
     const blob = new Blob([toSrt(job.current.segs)], { type: "text/plain;charset=utf-8" });
@@ -1955,6 +1980,15 @@ export function usePipeline() {
     publish(true);
   }, [publish, title]);
 
+  const chooseVoice = useCallback((next: string) => {
+    const id = next.trim();
+    if (!id) return;
+    setMode("manual");
+    setModelId(id);
+    writeStore("gmode", "manual");
+    writeStore("gmdl", id);
+  }, []);
+
   return {
     key,
     setKey,
@@ -1973,6 +2007,7 @@ export function usePipeline() {
     setProfile,
     modelId,
     setModelId,
+    chooseVoice,
     allowEnterprise,
     setAllowEnterprise,
     asrModel,
@@ -2012,6 +2047,7 @@ export function usePipeline() {
           [{ source: sourceTextTrim, target: targetTextTrim || sourceTextTrim }],
         );
         writeStore(userGlossKey(source, genre), JSON.stringify(next));
+        shareUserTerms(source, genre, next);
         return next;
       });
     },
@@ -2029,6 +2065,7 @@ export function usePipeline() {
       setUserTerms((prev) => {
         const next = overlayUserTerms(prev, parsed);
         writeStore(userGlossKey(source, genre), JSON.stringify(next));
+        shareUserTerms(source, genre, next);
         return next;
       });
       return parsed.length;

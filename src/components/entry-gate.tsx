@@ -7,12 +7,21 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-08.3";
+export const TERMS_VERSION = "2026-11-09.5";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<"splash" | "terms" | "declined" | "app">("splash");
   const { user, isPending } = useCurrentUserState();
+
+  useEffect(() => {
+    try {
+      const code = new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase() ?? "";
+      if (/^[A-Z2-9]{8}$/.test(code)) localStorage.setItem("tyzo-ref", code);
+    } catch {
+      /* máy không cho lưu */
+    }
+  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -151,12 +160,12 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p>
           Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
-        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản khi Chủ đã bật cổng. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
+        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
         <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá Groq công bố cộng phần chênh phòng niêm yết: nhận dạng theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn Groq báo lỗi thì không tính tiền.</p>
 
         <h2>2. Điều kiện để dùng</h2>
         <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq là của bạn. Groq tính cước cho tài khoản của bạn, không phải phí của phòng.</p>
-        <p>Bạn phải đọc và bấm đồng ý bản điều khoản đang hiện. Không đồng ý thì không mở được phòng dịch.</p>
+        <p>Bạn phải đọc và bấm đồng ý bản điều khoản đang hiện. Không đồng ý thì không mở được phòng dịch. Khi phòng bật, email dùng để xác minh tài khoản và lấy lại mật khẩu. Liên kết trong thư có thời hạn. Phòng không gửi mật khẩu.</p>
 
         <h2>3. Phòng không cam kết</h2>
         <p>
@@ -170,6 +179,9 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy, và khi bạn đã đăng nhập thì máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
         </p>
         <p>Lời thoại được gửi tới Groq để nhận dạng và dịch, theo điều khoản của Groq. File video xử lý trên máy bạn.</p>
+        <p>
+          Thuật ngữ bạn tự thêm chỉ nằm trên máy của bạn. Nếu bạn bật gửi thuật ngữ, phòng nhận một bản sao để xem. Phòng không áp bản đó cho người khác nếu Chủ chưa nhận vào bộ chính thức. Không gửi tên người thật, số điện thoại hay địa chỉ.
+        </p>
         <p>
           Khi bật thuyết minh Neural, câu chữ được gửi qua máy chủ của phòng tới dịch vụ đọc giọng. Giọng máy của trình duyệt đọc trên thiết bị của bạn. Orpheus dùng key Groq của bạn.
         </p>
@@ -211,6 +223,10 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           <li>Tiếp tục đưa nội dung không có quyền sau khi đã được báo.</li>
         </ul>
         <p className="gate-key">Gỡ khóa hoặc gỡ cấm không xóa lịch sử xử lý.</p>
+        <h2>9. Giới thiệu</h2>
+        <p>
+          Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã.
+        </p>
       </article>
       <footer className="gate-actions">
         <label className="flex items-start gap-2 text-sm">

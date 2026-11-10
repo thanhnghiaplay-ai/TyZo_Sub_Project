@@ -24,6 +24,7 @@ export type AdminUser = {
   reason: string;
   note: string;
   role: StaffRole | null;
+  partner: boolean;
 };
 
 export type LedgerRow = {
@@ -97,7 +98,7 @@ async function placeOf(userId: string): Promise<MyPlace> {
   };
 }
 
-async function requireRole(userId: string, need: StaffRole) {
+export async function requireRole(userId: string, need: StaffRole) {
   const place = await placeOf(userId);
   if (!roleAtLeast(place.role, need)) throw new Error("Không đủ quyền.");
   return place;
@@ -171,6 +172,7 @@ export type DeskStats = {
   waiting: number;
   managers: number;
   support: number;
+  partners: number;
 };
 
 export const getDeskStats = createServerFn({ method: "GET" })
@@ -194,6 +196,13 @@ export const getDeskStats = createServerFn({ method: "GET" })
         (select count(*)::int from room_staff where role = 'ho-tro') as support
     `;
     const row = rows[0];
+    let partners = 0;
+    try {
+      const counted = await sql<{ n: number }>`select count(*)::int as n from affiliates`;
+      partners = counted[0]?.n ?? 0;
+    } catch {
+      partners = 0;
+    }
     return {
       online: row?.online ?? 0,
       users: row?.users ?? 0,
@@ -206,6 +215,7 @@ export const getDeskStats = createServerFn({ method: "GET" })
       waiting: row?.waiting ?? 0,
       managers: row?.managers ?? 0,
       support: row?.support ?? 0,
+      partners,
     };
   });
 
@@ -278,9 +288,11 @@ export const searchUsers = createServerFn({ method: "POST" })
       status_reason: string | null;
       staff_note: string | null;
       role: string | null;
+      partner: boolean | null;
     }>`
       select u.id, u.email, u.name, a.balance, a.plan, a.plan_until, a.trial_left,
-             a.status, a.status_reason, a.staff_note, s.role
+             a.status, a.status_reason, a.staff_note, s.role,
+             exists (select 1 from affiliates f where f.user_id = u.id) as partner
       from "user" u
       left join room_accounts a on a.user_id = u.id
       left join room_staff s on s.user_id = u.id
@@ -311,6 +323,7 @@ export const searchUsers = createServerFn({ method: "POST" })
       reason: row.status_reason ?? "",
       note: row.staff_note ?? "",
       role: isStaffRole(row.role) ? row.role : null,
+      partner: Boolean(row.partner),
     }));
   });
 
@@ -962,9 +975,17 @@ export type OrgCard = {
   actions: number;
 };
 
+export type OrgPartner = {
+  id: string;
+  email: string;
+  name: string;
+  code: string;
+  status: string;
+};
+
 export const getOrg = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<{ cards: OrgCard[]; users: number }> => {
+  .handler(async ({ context }): Promise<{ cards: OrgCard[]; users: number; partners: OrgPartner[] }> => {
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -989,7 +1010,19 @@ export const getOrg = createServerFn({ method: "GET" })
         role: (isStaffRole(person.role) ? person.role : "user") as OrgCard["role"],
         actions: byActor.get(person.id) ?? 0,
       }));
-    return { cards, users: Math.max(0, people.length - cards.length) };
+    let partners: OrgPartner[] = [];
+    try {
+      partners = await sql<OrgPartner>`
+        select u.id, u.email, u.name, a.code, a.status
+        from affiliates a
+        join "user" u on u.id = a.user_id
+        order by a.created_at desc
+        limit 80
+      `;
+    } catch {
+      partners = [];
+    }
+    return { cards, users: Math.max(0, people.length - cards.length), partners };
   });
 
 export const setNickname = createServerFn({ method: "POST" })
@@ -1013,6 +1046,7 @@ export const setNickname = createServerFn({ method: "POST" })
   });
 
 export type MoneyPoint = { bucket: string; revenue: number; cost: number };
+export type CostRow = { id: number; day: string; label: string; amount: number };
 export type MoneyBreakdown = {
   nap: number;
   goi: number;
@@ -1020,22 +1054,32 @@ export type MoneyBreakdown = {
   hoan: number;
   nha: number;
   chi: number;
+  von: number;
+  lai: number;
+  hoa: number;
 };
 
 export const getMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((span: string) => (span === "week" || span === "month" || span === "year" ? span : "day"))
-  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number; breakdown: MoneyBreakdown }> => {
+  .handler(async ({ context, data }): Promise<{ points: MoneyPoint[]; revenue: number; cost: number; breakdown: MoneyBreakdown; costs: CostRow[] }> => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
-    // Doanh thu thực nhận = tiền nạp qua cổng (Sepay/Casso). Không tính tiền thử.
+    // Doanh thu = mọi tiền nạp đã vào ví, kể cả Chủ xác nhận tay khi cổng chưa tự cộng. Không tính tiền thử.
     const revenue = await sql<{ bucket: string; amount: number }>`
       select to_char(date_trunc(${data}::text, created_at at time zone 'Asia/Ho_Chi_Minh'), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
       from room_ledger
-      where kind = 'nap' and note not like 'Nạp thủ công%' and created_at > now() - ${window}::interval
+      where kind = 'nap' and created_at > now() - ${window}::interval
       group by 1 order by 1
+    `;
+    const savedCosts = await sql<CostRow>`
+      select id, to_char(spent_on, 'YYYY-MM-DD') as day, label, amount
+      from room_costs
+      where spent_on::timestamp > now() - ${window}::interval
+      order by spent_on desc, id desc
+      limit 80
     `;
     const costs = await sql<{ bucket: string; amount: number }>`
       select to_char(date_trunc(${data}::text, spent_on::timestamp), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
@@ -1050,10 +1094,14 @@ export const getMoney = createServerFn({ method: "POST" })
         and kind in ('nap', 'goi', 'hoan', 'nha')
       group by kind
     `;
-    const runSum = await sql<{ charged: number; refunded: number }>`
-      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded
+    const runSum = await sql<{ charged: number; refunded: number; von: number }>`
+      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded, coalesce(sum(base_cost), 0)::int as von
       from run_tickets
       where created_at > now() - ${window}::interval
+    `;
+    const hoaRows = await sql<{ hoa: number }>`
+      select coalesce(sum(amount), 0)::int as hoa from commission_events
+      where status <> 'huy' and created_at > now() - ${window}::interval
     `;
     const byKind = Object.fromEntries(kinds.map((row) => [row.kind, row.amount]));
     const buckets = new Map<string, MoneyPoint>();
@@ -1067,18 +1115,27 @@ export const getMoney = createServerFn({ method: "POST" })
     const costTotal = points.reduce((sum, point) => sum + point.cost, 0);
     const charged = Number(runSum[0]?.charged ?? 0);
     const refundedRun = Number(runSum[0]?.refunded ?? 0);
+    const von = Number(runSum[0]?.von ?? 0);
+    const hoa = Number(hoaRows[0]?.hoa ?? 0);
+    const luot = Math.max(0, charged - refundedRun);
+    const goi = Math.abs(Number(byKind.goi ?? 0));
+    const lai = goi + luot - von;
     return {
       points,
       revenue: points.reduce((sum, point) => sum + point.revenue, 0),
       cost: costTotal,
       breakdown: {
         nap: Number(byKind.nap ?? 0),
-        goi: Math.abs(Number(byKind.goi ?? 0)),
-        luot: Math.max(0, charged - refundedRun),
+        goi,
+        luot,
         hoan: Number(byKind.hoan ?? 0),
         nha: Number(byKind.nha ?? 0),
         chi: costTotal,
+        von,
+        lai,
+        hoa,
       },
+      costs: savedCosts,
     };
   });
 
@@ -1098,6 +1155,49 @@ export const addCost = createServerFn({ method: "POST" })
     const sql = await getSql();
     await sql`insert into room_costs (spent_on, label, amount) values (${data.day}, ${data.label}, ${data.amount})`;
     await writeAudit(context.userId, "chi-phi", null, `${data.day} ${data.label} ${data.amount}`);
+    return { ok: true };
+  });
+
+export const updateCost = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { id: number; day: string; label: string; amount: number }) => {
+    const id = Math.round(Number(input.id));
+    if (!Number.isFinite(id) || id < 1) throw new Error("Thiếu khoản chi.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input.day || "")) throw new Error("Ngày không đúng.");
+    const label = clip(input.label ?? "", 80);
+    if (label.length < 2) throw new Error("Hãy ghi khoản chi.");
+    const amount = Math.round(Number(input.amount));
+    if (!Number.isFinite(amount) || amount < 1) throw new Error("Số tiền không đúng.");
+    return { id, day: input.day, label, amount };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const updated = await sql<{ id: number }>`
+      update room_costs set spent_on = ${data.day}, label = ${data.label}, amount = ${data.amount}
+      where id = ${data.id}
+      returning id
+    `;
+    if (!updated.length) throw new Error("Không thấy khoản chi.");
+    await writeAudit(context.userId, "sua-chi-phi", null, `${data.id} ${data.day} ${data.label} ${data.amount}`);
+    return { ok: true };
+  });
+
+export const deleteCost = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: number) => {
+    const value = Math.round(Number(id));
+    if (!Number.isFinite(value) || value < 1) throw new Error("Thiếu khoản chi.");
+    return value;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const removed = await sql<{ label: string }>`delete from room_costs where id = ${data} returning label`;
+    if (!removed.length) throw new Error("Không thấy khoản chi.");
+    await writeAudit(context.userId, "xoa-chi-phi", null, `${data} ${removed[0].label}`);
     return { ok: true };
   });
 
@@ -1495,6 +1595,14 @@ export const saveRunKey = createServerFn({ method: "POST" })
     `;
     await writeAudit(context.userId, "key-phong", null, `${ids.length} model`);
     return ids;
+  });
+
+export const getAdminLog = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await requireRole(context.userId, "ho-tro");
+    const { ADMIN_LOG } = await import("@/lib/admin-log.server");
+    return ADMIN_LOG;
   });
 
 

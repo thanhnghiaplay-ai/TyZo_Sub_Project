@@ -86,13 +86,15 @@ export async function ticketLive(sql: Sql, id: string, userId: string) {
  * Trừ một đoạn đã chạy xong vào phiếu, không bao giờ trừ quá số đang giữ.
  * Trả số thực trừ (có thể nhỏ hơn cost nếu phiếu hết tiền giữ).
  */
-export async function chargeTicketWith(sql: Sql, id: string, userId: string, cost: number) {
+export async function chargeTicketWith(sql: Sql, id: string, userId: string, cost: number, base = 0) {
+  const safeBase = Math.max(0, Math.round(base));
   const rows = await sql<{ taken: number; left_held: number }>`
     with o as (
       select id, held as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' for update
     )
     update run_tickets
     set charged = charged + least(${cost}::int, o.h),
+        base_cost = base_cost + case when ${cost}::int > 0 then round(${safeBase}::numeric * least(${cost}::int, o.h) / ${cost}::int) else 0 end,
         held = held - least(${cost}::int, o.h),
         status = case when held - least(${cost}::int, o.h) <= 0 then 'dung-tien' else status end
     from o where run_tickets.id = o.id
@@ -123,12 +125,22 @@ export async function closeTicketWith(sql: Sql, id: string, userId: string, fail
     select freed, charged, status from t
   `;
   if (!rows.length) return null;
-  return { freed: Number(rows[0].freed), charged: Number(rows[0].charged), status: rows[0].status };
+  const closed = { freed: Number(rows[0].freed), charged: Number(rows[0].charged), status: rows[0].status };
+  if (closed.charged > 0) {
+    try {
+      const { accrueRun } = await import("@/lib/affiliate-flow");
+      await accrueRun(sql, userId, id);
+    } catch {
+      /* hoa hồng không được chặn việc nhả tiền */
+    }
+  }
+  return closed;
 }
 
 /** Trừ thẳng ví cho một lần đọc thuyết minh (biết trước số ký tự nên không cần giữ chỗ). */
-export async function chargeSpeechWith(sql: Sql, userId: string, cost: number, dayKey: string, cap: number, dayStartIso: string) {
+export async function chargeSpeechWith(sql: Sql, userId: string, cost: number, dayKey: string, cap: number, dayStartIso: string, base = 0) {
   const ticket = `tts-${userId}-${dayKey}`;
+  const safeBase = Math.max(0, Math.round(base));
   const rows = await sql<{ user_id: string }>`
     with upd as (
       update room_accounts set balance = balance - ${cost}::int
@@ -144,23 +156,42 @@ export async function chargeSpeechWith(sql: Sql, userId: string, cost: number, d
       select user_id, 'luot', -${cost}::int, 'Đọc thuyết minh' from upd returning 1
     ),
     tk as (
-      insert into run_tickets (id, user_id, file_name, charged, status)
-      select ${ticket}::text, user_id, 'Đọc thuyết minh', ${cost}::int, 'da-tru' from upd
-      on conflict (id) do update set charged = run_tickets.charged + ${cost}::int
+      insert into run_tickets (id, user_id, file_name, charged, base_cost, status)
+      select ${ticket}::text, user_id, 'Đọc thuyết minh', ${cost}::int, ${safeBase}::int, 'da-tru' from upd
+      on conflict (id) do update set charged = run_tickets.charged + ${cost}::int, base_cost = run_tickets.base_cost + ${safeBase}::int
       returning 1
     )
     select user_id from upd
   `;
-  return rows.length > 0;
+  if (!rows.length) return false;
+  try {
+    const { accrueRun } = await import("@/lib/affiliate-flow");
+    await accrueRun(sql, userId, ticket);
+  } catch {
+    /* hoa hồng không chặn lần đọc */
+  }
+  return true;
 }
 
 /** Hoàn lại khoản đã trừ cho lần đọc khi Groq báo lỗi. */
-export async function refundSpeechWith(sql: Sql, userId: string, cost: number, dayKey: string) {
+export async function refundSpeechWith(sql: Sql, userId: string, cost: number, dayKey: string, base = 0) {
   const ticket = `tts-${userId}-${dayKey}`;
+  const safeBase = Math.max(0, Math.round(base));
   await sql`
     with acc as (update room_accounts set balance = balance + ${cost}::int where user_id = ${userId} returning user_id),
-    tk as (update run_tickets set charged = greatest(0, charged - ${cost}::int) where id = ${ticket} returning 1)
+    tk as (
+      update run_tickets
+      set charged = greatest(0, charged - ${cost}::int), base_cost = greatest(0, base_cost - ${safeBase}::int)
+      where id = ${ticket} returning 1
+    )
     insert into room_ledger (user_id, kind, amount, note)
     select user_id, 'nha', ${cost}::int, 'Hoàn đoạn đọc lỗi' from acc
   `;
+  try {
+    const { clawback, accrueRun } = await import("@/lib/affiliate-flow");
+    await clawback(sql, "luot", ticket);
+    await accrueRun(sql, userId, ticket);
+  } catch {
+    /* hoàn tiền vẫn xong nếu hoa hồng lỗi */
+  }
 }

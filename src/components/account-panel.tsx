@@ -11,7 +11,9 @@ import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
+import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
+import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -27,11 +29,14 @@ export function AccountPanel() {
   const [name, setName] = useState("");
   const [leaving, setLeaving] = useState(false);
   const [place, setPlace] = useState<MyPlace | null>(null);
+  const [partner, setPartner] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [appeal, setAppeal] = useState("");
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [reload, setReload] = useState(0);
+  const [stateFailed, setStateFailed] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
   const runDoor = useRunDoor();
 
   useEffect(() => {
@@ -49,15 +54,19 @@ export function AccountPanel() {
     let gone = false;
     const id = deviceId();
     void getMyPlace().then((next) => { if (!gone) setPlace(next); }).catch(() => {});
+    void myAffiliate().then((next) => { if (!gone) setPartner(next.joined); }).catch(() => {});
     void getBadgeStyle().then((next) => { if (!gone) setBadge(next); }).catch(() => {});
     void listOwnAppeals().then((rows) => { if (!gone) setOwnAppeals(rows); }).catch(() => {});
     // Tài khoản bị khóa thì claimTrialDevice bị máy chủ chặn (403) nhưng vẫn phải xem được ví để gửi yêu cầu.
-    void (id ? claimTrialDevice({ data: id }).catch(() => getRoomAccount()) : getRoomAccount())
+    setStateFailed(false);
+    void withTimeout(id ? claimTrialDevice({ data: id }).catch(() => getRoomAccount()) : getRoomAccount(), 15_000, "Phòng")
       .then((next) => {
         if (!gone) setState(next);
       })
-      .catch(() => {
-        if (!gone) setNotice("Chưa đọc được ví. Hãy đăng nhập lại.");
+      .catch((error) => {
+        if (gone) return;
+        setStateFailed(true);
+        setNotice(error instanceof TimeoutError ? "Phòng chưa trả lời. Bấm Thử lại ở dòng hạn gói." : "Chưa đọc được ví. Hãy đăng nhập lại.");
       });
     return () => {
       gone = true;
@@ -79,7 +88,7 @@ export function AccountPanel() {
   }
 
   return (
-    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-1 py-2">
+    <div className="account-grid min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
       {isPending && <p className="text-sm text-muted">Đang kiểm tra phiên…</p>}
       {!isPending && (!user || user.isDevFallback) && (
         <div className="space-y-3">
@@ -137,7 +146,7 @@ export function AccountPanel() {
       )}
       {user && !user.isDevFallback && (
         <>
-          <AccountCard rank={place?.role ?? null} styleId={badge}>
+          <AccountCard rank={place?.role ?? null} extra={partner ? ["ctv"] : []} styleId={badge}>
             <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>
@@ -146,14 +155,27 @@ export function AccountPanel() {
               <p className="text-sm text-muted">Đang giữ {dong(state?.holding ?? 0)} cho lần chạy chưa xong. Quá 6 giờ không chạy tiếp thì số này trả về số dư.</p>
             )}
             <p className="mt-2 text-sm">
-              {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
+              {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : stateFailed ? "Chưa đọc được hạn gói." : "Đang xem hạn gói…"}
+              {!state && stateFailed && (
+                <>
+                  {" "}
+                  <button type="button" className="underline" onClick={() => setReload((value) => value + 1)}>
+                    Thử lại
+                  </button>
+                </>
+              )}
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <TopUp compact onPaid={() => { setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />
+              <button type="button" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none" onClick={() => setPayOpen(true)}>
+                Nạp tiền
+              </button>
+              <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
+                Cộng tác viên
+              </Link>
               <button
                 type="button"
                 disabled={leaving}
-                className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none disabled:opacity-40"
                 onClick={() => {
                   setLeaving(true);
                   void signOut("/login").catch(() => {
@@ -165,6 +187,12 @@ export function AccountPanel() {
                 {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
               </button>
             </div>
+            <TopUp
+              compact
+              opened={payOpen}
+              onOpened={setPayOpen}
+              onPaid={() => { setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }}
+            />
           </AccountCard>
           {runDoor.open ? (
             <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
@@ -177,6 +205,7 @@ export function AccountPanel() {
           ) : (
             <RunDoorClosed note={runDoor.note} />
           )}
+          <div className="grid gap-2">
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>
@@ -204,6 +233,7 @@ export function AccountPanel() {
               </span>
             </button>
           ))}
+          </div>
           <form
             className="space-y-2 rounded-2xl border border-line bg-card p-4"
             onSubmit={(event) => {
@@ -275,7 +305,7 @@ export function AccountPanel() {
             <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
           </form>
           {state && state.ledger.length > 0 && (
-            <section className="rounded-2xl border border-line bg-card p-3">
+            <section className="account-wide rounded-2xl border border-line bg-card p-3">
               <h2 className="text-sm font-semibold">Lịch sử Nạp/Mua gói</h2>
               <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
                 {(ledgerOpen ? state.ledger.slice(0, 9) : state.ledger.slice(0, 3)).map((item) => {

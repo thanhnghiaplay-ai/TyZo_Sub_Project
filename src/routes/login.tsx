@@ -4,12 +4,19 @@ import { getMyPlace } from "@/lib/admin-room";
 import { authClient, authEnabled, signOut } from "@/lib/auth/client";
 import { TERMS_VERSION } from "@/components/entry-gate";
 import { clearSignedOut } from "@/lib/auth/signed-out";
+import { attachReferral } from "@/lib/affiliate-room";
 import { mailProblem, mailSuggestions } from "@/lib/mail-domains";
+import { getMailFace } from "@/lib/mail-runtime";
+import { MAIL_POLICY, type MailFace } from "@/lib/mail-letter";
+import { TimeoutError, withTimeout } from "@/lib/with-timeout";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
 const BEARER_KEY = "grok-auth.bearer-token";
 const REMEMBER_EMAIL = "tyzo-remember-email";
+const SIGN_UP_WAIT_MS = 30_000;
+const SIGN_IN_WAIT_MS = 20_000;
+const FOLLOW_UP_WAIT_MS = 8_000;
 
 function LoginPage() {
   const router = useRouter();
@@ -31,15 +38,37 @@ function LoginPage() {
       /* máy không cho lưu */
     }
   }, [router]);
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const [mode, setMode] = useState<"in" | "up" | "forgot" | "reset">("in");
+  const [face, setFace] = useState<MailFace>(MAIL_POLICY);
+  const [resetToken, setResetToken] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [again, setAgain] = useState("");
+  const [refCode, setRefCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    try {
+      const savedRef = localStorage.getItem("tyzo-ref") || "";
+      if (savedRef) setRefCode(savedRef);
+    } catch {
+      /* máy không cho lưu */
+    }
+  }, []);
+
+  useEffect(() => {
+    void getMailFace().then(setFace).catch(() => {});
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token") || "";
+    if (token) {
+      setResetToken(token);
+      setMode("reset");
+    }
+    if (params.get("error")) setNotice(MAIL_POLICY.resetBad);
+  }, []);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -49,14 +78,13 @@ function LoginPage() {
     }
     setBusy(true);
     setNotice(null);
+    try {
     const rejected = mailProblem(email);
     if (rejected) {
-      setBusy(false);
       setNotice(rejected);
       return;
     }
     if (mode === "up" && password !== again) {
-      setBusy(false);
       setNotice("Mật khẩu nhập lại chưa khớp.");
       return;
     }
@@ -66,23 +94,20 @@ function LoginPage() {
     } catch {
       /* máy không cho lưu */
     }
+    // Có hạn chờ: không có thì một lần máy chủ không trả lời làm nút kẹt «Đang xử lý…» mãi.
+    // Đăng ký chờ lâu hơn vì máy chủ gửi xong thư xác minh rồi mới trả lời.
     const result =
       mode === "up"
-        ? await authClient.signUp.email({ name: name.trim(), email: email.trim(), password })
-        : await authClient.signIn.email({ email: email.trim(), password });
-    setBusy(false);
+        ? await withTimeout(authClient.signUp.email({ name: name.trim(), email: email.trim(), password }), SIGN_UP_WAIT_MS)
+        : await withTimeout(authClient.signIn.email({ email: email.trim(), password }), SIGN_IN_WAIT_MS);
     if (result.error) {
       const unverified = result.error.code === "EMAIL_NOT_VERIFIED" || /not verified/i.test(result.error.message || "");
-      setNotice(
-        unverified
-          ? "Email này chưa được xác minh. Hãy mở thư xác minh trong hộp thư (kể cả mục Spam) rồi đăng nhập lại."
-          : result.error.message || "Không vào được.",
-      );
+      setNotice(unverified ? face.unverified : result.error.message || "Không vào được.");
       return;
     }
     const token = result.data && "token" in result.data ? result.data.token : null;
     if (mode === "up" && !token) {
-      setNotice("Đã gửi thư xác minh tới email của bạn. Hãy bấm liên kết trong thư (kể cả mục Spam) rồi đăng nhập.");
+      setNotice(face.sent);
       return;
     }
     if (token) {
@@ -93,26 +118,57 @@ function LoginPage() {
       }
     }
     clearSignedOut();
-    await authClient.getSession();
-    const place = await getMyPlace().catch(() => null);
+    try {
+      const typed = mode === "up" ? refCode.trim().toUpperCase() : "";
+      if (typed) localStorage.setItem("tyzo-ref", typed);
+      const code = typed || localStorage.getItem("tyzo-ref") || "";
+      if (code) await withTimeout(attachReferral({ data: code }), FOLLOW_UP_WAIT_MS).catch(() => {});
+    } catch {
+      /* máy không cho đọc */
+    }
+    // Hai bước sau chỉ là phụ. Tài khoản đã vào được rồi nên không để chúng giữ người dùng lại.
+    await withTimeout(authClient.getSession(), FOLLOW_UP_WAIT_MS).catch(() => null);
+    const place = await withTimeout(getMyPlace(), FOLLOW_UP_WAIT_MS).catch(() => null);
     if (place?.status === "banned") {
       await signOut("/yeu-cau");
       return;
     }
     await router.navigate({ to: "/" });
+    } catch (error) {
+      if (error instanceof TimeoutError) {
+        setNotice(
+          mode === "up"
+            ? "Phòng chưa trả lời kịp. Tài khoản có thể đã tạo và thư xác minh có thể đã gửi. Hãy xem hộp thư, rồi đăng nhập. Đừng đăng ký lại."
+            : "Phòng chưa trả lời. Kiểm tra mạng rồi thử lại.",
+        );
+      } else {
+        setNotice(error instanceof Error ? error.message : "Không vào được.");
+      }
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-lg flex-col bg-bg text-fg">
+    <main className="room-frame mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
         <div>
           <p className="text-xs font-medium tracking-wide text-accent">Tài khoản</p>
-          <h1 className="text-base leading-none font-semibold">{mode === "up" ? "Đăng ký" : "Đăng nhập"}</h1>
+          <h1 className="text-base leading-none font-semibold">{mode === "up" ? "Đăng ký" : mode === "forgot" ? "Quên mật khẩu" : mode === "reset" ? "Đặt lại mật khẩu" : "Đăng nhập"}</h1>
         </div>
         <Link to="/" className="room-back">
           Về phòng dịch
         </Link>
       </header>
+      {mode === "forgot" || mode === "reset" ? (
+        <div className="space-y-3 overflow-y-auto px-4 py-4">
+          {mode === "forgot" ? (
+            <ForgotBox email={email} setEmail={setEmail} busy={busy} sent={face.resetSent} onBusy={setBusy} onBack={() => { setMode("in"); setNotice(null); }} />
+          ) : (
+            <ResetBox token={resetToken} busy={busy} done={face.resetDone} bad={face.resetBad} onBusy={setBusy} onDone={(text) => { setNotice(text); setMode("in"); setResetToken(""); }} />
+          )}
+        </div>
+      ) : (
       <form className="space-y-3 overflow-y-auto px-4 py-4" onSubmit={(event) => void submit(event)}>
         <p className="text-sm text-muted">Email và mật khẩu của phòng này. Không dùng Google. Mật khẩu ít nhất 8 ký tự.</p>
         {mode === "up" && (
@@ -156,6 +212,19 @@ function LoginPage() {
             <span className="mt-1 block text-xs text-muted">Đã chọn: {email}</span>
           )}
         </label>
+        {mode === "up" && (
+          <label className="block text-sm">
+            Mã giới thiệu, nếu có
+            <input
+              value={refCode}
+              onChange={(event) => setRefCode(event.target.value.toUpperCase())}
+              maxLength={8}
+              autoCapitalize="characters"
+              placeholder="Bỏ trống nếu không có"
+              className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            />
+          </label>
+        )}
         <label className="block text-sm">
           Mật khẩu
           <span className="relative mt-1 block">
@@ -213,8 +282,11 @@ function LoginPage() {
           </>
         )}
         <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">
-          {busy ? "Đang xử lý…" : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
+          {busy ? (mode === "up" ? "Đang tạo tài khoản…" : "Đang đăng nhập…") : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
         </button>
+        {busy && mode === "up" && face.verifyOn && (
+          <p className="text-sm text-muted" aria-live="polite">Đang gửi thư xác minh, có thể mất vài giây. Đừng bấm lại.</p>
+        )}
         <button
           type="button"
           className="min-tap w-full rounded-full border border-line"
@@ -227,8 +299,108 @@ function LoginPage() {
           {mode === "up" ? "Đã có tài khoản, đăng nhập" : "Chưa có tài khoản, đăng ký"}
         </button>
         {notice && <p className="text-sm text-danger">{notice}</p>}
+        {face.verifyOn && notice === face.unverified && (
+          <button
+            type="button"
+            className="min-tap w-full rounded-full border border-line"
+            onClick={() => {
+              void authClient.sendVerificationEmail({ email: email.trim(), callbackURL: "/" }).then((result) => {
+                setNotice(result.error ? result.error.message || "Chưa gửi lại được." : face.sent);
+              });
+            }}
+          >
+            Gửi lại thư xác minh
+          </button>
+        )}
+        {mode === "in" && face.resetOn && (
+          <button type="button" className="min-tap w-full rounded-full border border-line" onClick={() => { setMode("forgot"); setNotice(null); }}>
+            Quên mật khẩu
+          </button>
+        )}
       </form>
+      )}
     </main>
+  );
+}
+
+function ForgotBox({
+  email,
+  setEmail,
+  busy,
+  sent,
+  onBusy,
+  onBack,
+}: {
+  email: string;
+  setEmail: (value: string) => void;
+  busy: boolean;
+  sent: string;
+  onBusy: (value: boolean) => void;
+  onBack: () => void;
+}) {
+  const [asked, setAsked] = useState(false);
+  return (
+    <form
+      className="space-y-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onBusy(true);
+        void authClient.requestPasswordReset({ email: email.trim(), redirectTo: `${window.location.origin}/login` }).finally(() => {
+          onBusy(false);
+          setAsked(true);
+        });
+      }}
+    >
+      <p className="text-sm text-muted">Nhập email đã đăng ký. Phòng không cho biết email đó có tài khoản hay không.</p>
+      <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang gửi…" : "Gửi thư đặt lại"}</button>
+      <button type="button" className="min-tap w-full rounded-full border border-line" onClick={onBack}>Về đăng nhập</button>
+      {asked && <p className="text-sm text-muted">{sent}</p>}
+    </form>
+  );
+}
+
+function ResetBox({
+  token,
+  busy,
+  done,
+  bad,
+  onBusy,
+  onDone,
+}: {
+  token: string;
+  busy: boolean;
+  done: string;
+  bad: string;
+  onBusy: (value: boolean) => void;
+  onDone: (text: string) => void;
+}) {
+  const [next, setNext] = useState("");
+  const [again, setAgain] = useState("");
+  return (
+    <form
+      className="space-y-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!token || next !== again) return;
+        onBusy(true);
+        void authClient.resetPassword({ newPassword: next, token }).then((result) => {
+          onBusy(false);
+          onDone(result.error ? bad : done);
+        }).catch(() => {
+          onBusy(false);
+          onDone(bad);
+        });
+      }}
+    >
+      <p className="text-sm text-muted">Chọn mật khẩu mới, ít nhất 8 ký tự.</p>
+      <PasswordMeter password={next} />
+      <input value={next} onChange={(event) => setNext(event.target.value)} type="password" required minLength={8} className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={again} onChange={(event) => setAgain(event.target.value)} type="password" required minLength={8} placeholder="Nhập lại" className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      {next && again && next !== again && <p className="text-sm text-danger">Mật khẩu nhập lại chưa khớp.</p>}
+      {!token && <p className="text-sm text-danger">{bad}</p>}
+      <button type="submit" disabled={busy || !token || next !== again} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang lưu…" : "Lưu mật khẩu mới"}</button>
+    </form>
   );
 }
 

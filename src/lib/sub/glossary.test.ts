@@ -33,18 +33,18 @@ describe("glossaryTarget", () => {
 describe("thuật ngữ Sex theo ngôn ngữ nguồn", () => {
   it("Anh, Hàn, Nhật có bản Sex dịch sang tiếng Việt", () => {
     for (const lang of ["en", "ja", "ko"] as const) {
-      const terms = JSON.parse(readFileSync(new URL(`../../../public/glossaries/${lang}/sex.json`, import.meta.url), "utf8"));
+      const terms = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/sex.json`, import.meta.url), "utf8"));
       assert.ok(terms.length >= 90, lang);
       assert.ok(terms.every((term: { source: string; target: string }) => term.source.length >= 2 && term.target));
     }
-    const en = JSON.parse(readFileSync(new URL("../../../public/glossaries/en/sex.json", import.meta.url), "utf8"));
+    const en = JSON.parse(readFileSync(new URL("../../../data/glossaries/en/sex.json", import.meta.url), "utf8"));
     assert.equal(en.find((term: { source: string }) => term.source === "orgasm").target, "lên đỉnh");
     assert.equal(en.find((term: { source: string }) => term.source === "cum").target, "lên đỉnh");
     for (const lang of ["en", "ja", "ko"] as const) {
-      const auto = JSON.parse(readFileSync(new URL(`../../../public/glossaries/${lang}/auto.json`, import.meta.url), "utf8"));
+      const auto = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/auto.json`, import.meta.url), "utf8"));
       assert.ok(auto.length >= 30, lang);
     }
-    const action = JSON.parse(readFileSync(new URL("../../../public/glossaries/en/action.json", import.meta.url), "utf8"));
+    const action = JSON.parse(readFileSync(new URL("../../../data/glossaries/en/action.json", import.meta.url), "utf8"));
     assert.equal(action.find((term: { source: string }) => term.source === "copy that").target, "đã rõ");
     assert.equal(action.find((term: { source: string }) => term.source === "make a move").target, "ra tay");
     assert.ok(action.length >= 60);

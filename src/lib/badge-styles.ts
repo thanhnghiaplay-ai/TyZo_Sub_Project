@@ -1,9 +1,9 @@
 export const BADGE_STYLES = [
-  { id: "ribbon", name: "Dải góc nghiêng" },
+  { id: "ribbon", name: "Ruy băng" },
   { id: "pill", name: "Nhãn thẳng" },
   { id: "stamp", name: "Con dấu" },
-  { id: "rail", name: "Thanh trái" },
-  { id: "sash", name: "Thanh phải" },
+  { id: "rail", name: "Nhãn trái" },
+  { id: "sash", name: "Nhãn phải" },
   { id: "fold", name: "Góc gấp" },
   { id: "banner", name: "Dải trên" },
   { id: "chip", name: "Nhãn dưới tên" },

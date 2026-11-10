@@ -5,7 +5,7 @@ export const Route = createFileRoute("/tai-khoan")({ component: AccountPage });
 
 function AccountPage() {
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-lg flex-col bg-bg text-fg">
+    <main className="room-wide mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
         <div>
           <p className="text-xs font-medium tracking-wide text-accent">Quản lý</p>
@@ -17,6 +17,7 @@ function AccountPage() {
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
         <AccountPanel />
+        <Link to="/ctv" className="mt-4 inline-block text-sm text-accent">Cộng tác viên</Link>
       </div>
     </main>
   );

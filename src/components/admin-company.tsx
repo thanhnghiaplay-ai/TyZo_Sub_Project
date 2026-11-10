@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, getMoney, getOrg, resetTestMoney, setNickname, type MoneyBreakdown, type MoneyPoint, type OrgCard } from "@/lib/admin-room";
+import { addCost, deleteCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
@@ -15,6 +15,7 @@ function vnDay(now = new Date()) {
 
 export function OrgBoard({ owner }: { owner: boolean }) {
   const [cards, setCards] = useState<OrgCard[]>([]);
+  const [partners, setPartners] = useState<OrgPartner[]>([]);
   const [users, setUsers] = useState(0);
   const [nick, setNick] = useState<Record<string, string>>({});
 
@@ -23,6 +24,7 @@ export function OrgBoard({ owner }: { owner: boolean }) {
   useEffect(() => {
     void getOrg().then((next) => {
       setCards(next.cards);
+      setPartners(next.partners);
       setUsers(next.users);
       setNick(Object.fromEntries(next.cards.map((card) => [card.id, card.nickname])));
       setFault("");
@@ -33,19 +35,24 @@ export function OrgBoard({ owner }: { owner: boolean }) {
     });
   }, []);
 
-  const rows: Array<OrgCard["role"]> = ["chu", "quan-ly", "ho-tro"];
+  const partnerById = new Map(partners.map((person) => [person.id, person]));
 
   return (
     <section className="org-tree space-y-3">
       {fault && <p className="text-sm text-danger">{fault}</p>}
-      {rows.map((role) => (
+      {(["chu", "quan-ly", "ho-tro"] as const).map((role) => (
         <div key={role} className="grid gap-2">
-          {cards.filter((card) => card.role === role).map((card) => (
-            <article key={card.id} className={"org-card role-" + card.role + (card.role === "chu" ? " org-owner" : "")}>
-              <p className={"role-chip role-" + card.role}>{ROLE_LABEL[card.role === "user" ? "ho-tro" : card.role]}</p>
+          {cards.filter((card) => card.role === role).map((card) => {
+            const partner = partnerById.get(card.id);
+            return (
+            <article key={card.id} className={"org-card role-" + role + (role === "chu" ? " org-owner" : "")}>
+              <div className="mb-1 flex flex-wrap items-center gap-1">
+                <p className={"role-chip role-" + role}>{ROLE_LABEL[role]}</p>
+                {partner && <p className="role-chip role-ctv">Cộng tác</p>}
+              </div>
               <p className="font-medium">{card.nickname || card.name || "Chưa có tên"}</p>
               <p className="text-sm text-muted">{card.email}</p>
-              <p className="text-sm text-muted">{card.actions} việc trong tháng</p>
+              <p className="text-sm text-muted">{partner ? `Mã ${partner.code} · ` : ""}{card.actions} việc trong tháng</p>
               {owner && (
                 <form
                   className="mt-2 flex gap-2"
@@ -61,13 +68,24 @@ export function OrgBoard({ owner }: { owner: boolean }) {
                 </form>
               )}
             </article>
-          ))}
+            );
+          })}
         </div>
       ))}
+      <div className="grid gap-2">
+        {partners.filter((person) => !cards.some((card) => card.id === person.id)).map((person) => (
+          <article key={person.id} className="org-card role-ctv">
+            <p className="role-chip role-ctv">Cộng tác</p>
+            <p className="font-medium">{person.name || "Chưa có tên"}</p>
+            <p className="text-sm text-muted">{person.email}</p>
+            <p className="text-sm text-muted">Mã {person.code} · {person.status === "hoat-dong" ? "Đang mở" : person.status === "tam-khoa" ? "Tạm khóa" : "Chờ duyệt"}</p>
+          </article>
+        ))}
+      </div>
       <article className="org-card role-user">
         <p className="role-chip role-user">Người dùng</p>
         <p className="font-medium">{users} tài khoản dùng phòng</p>
-        <p className="text-sm text-muted">Không vào Admin. Hoa hồng giới thiệu để sau.</p>
+        <p className="text-sm text-muted">Không vào Admin.</p>
       </article>
     </section>
   );
@@ -78,12 +96,16 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [points, setPoints] = useState<MoneyPoint[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
-  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0 });
+  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0, hoa: 0 });
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
+  const [costs, setCosts] = useState<CostRow[]>([]);
+  const [editing, setEditing] = useState<number | null>(null);
 
   const [fault, setFault] = useState("");
+  const [ready, setReady] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
 
@@ -93,7 +115,9 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       setRevenue(result.revenue);
       setCost(result.cost);
       setBreakdown(result.breakdown);
+      setCosts(result.costs);
       setFault("");
+      setReady(true);
     }).catch((error) => {
       const message = error instanceof Error ? error.message : "Chưa đọc được doanh thu.";
       setFault(message);
@@ -118,27 +142,30 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       <div className="grid grid-cols-3 gap-2">
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
         <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((revenue - cost) > 0 ? "text-accent" : (revenue - cost) < 0 ? "text-danger" : "")}>{(revenue - cost) > 0 ? "+" : ""}{dong(revenue - cost)}</p></article>
+        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((breakdown.lai - cost - breakdown.hoa) > 0 ? "text-accent" : (breakdown.lai - cost - breakdown.hoa) < 0 ? "text-danger" : "")}>{(breakdown.lai - cost - breakdown.hoa) > 0 ? "+" : ""}{dong(breakdown.lai - cost - breakdown.hoa)}</p></article>
       </div>
       <ul className="space-y-1 text-sm text-muted">
         {points.map((point) => (
           <li key={point.bucket}>{point.bucket} · thu {dong(point.revenue)} · chi {dong(point.cost)}</li>
         ))}
-        {points.length === 0 && <li>Chưa có tiền nạp thật trong khoảng này.</li>}
+        {points.length === 0 && <li>{ready ? "Chưa có tiền nạp trong khoảng này." : "Đang tải…"}</li>}
       </ul>
       <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
         <ul className="space-y-1 text-muted">
-          <li className="flex justify-between gap-2"><span>Nạp qua cổng (Sepay/Casso)</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
+          <li className="flex justify-between gap-2"><span>Tiền nạp đã xác nhận</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
           <li className="flex justify-between gap-2"><span>Khách mua gói từ số dư</span><span className="font-medium text-fg">{dong(breakdown.goi)}</span></li>
           <li className="flex justify-between gap-2"><span>Đã trừ trả theo lượt (sau hoàn)</span><span className="font-medium text-fg">{dong(breakdown.luot)}</span></li>
           <li className="flex justify-between gap-2"><span>Hoàn vào ví</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
           <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
+          <li className="flex justify-between gap-2"><span>Giá vốn lượt (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
+          <li className="flex justify-between gap-2"><span>Lãi gộp (gói + lượt − giá vốn)</span><span className="font-medium text-fg">{dong(breakdown.lai)}</span></li>
+          <li className="flex justify-between gap-2"><span>Hoa hồng đã ghi</span><span className="font-medium text-fg">{dong(breakdown.hoa)}</span></li>
           <li className="flex justify-between gap-2"><span>Chi phí vận hành (ghi tay)</span><span className="font-medium text-fg">{dong(breakdown.chi)}</span></li>
         </ul>
         <p className="text-xs text-muted">
-          Doanh thu thực nhận = tiền nạp qua cổng. Mua gói và trả theo lượt là dùng số dư đã nạp, không cộng thêm doanh thu.
-          Tiền thử và gói mở tay không tính. Key Groq của khách không đi qua sổ này. Khoản chi phí do Chủ ghi để đối soát lời lỗ.
+          Lời lỗ = lãi gộp trừ hoa hồng và chi phí ghi tay. Lượt trước bản này chưa lưu giá vốn nên có thể làm lời lỗ cao hơn thực tế.
+          Tiền thử và gói mở tay không tính. Key của khách không đi qua sổ này.
         </p>
       </div>
       {owner && (
@@ -146,21 +173,92 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           className="grid gap-2 rounded-2xl border border-line p-3"
           onSubmit={(event) => {
             event.preventDefault();
-            void addCost({ data: { day, label, amount: parseMoney(amount) } })
+            if (saving) return;
+            setSaving(true);
+            const task = editing
+              ? updateCost({ data: { id: editing, day, label, amount: parseMoney(amount) } })
+              : addCost({ data: { day, label, amount: parseMoney(amount) } });
+            void task
               .then(() => {
+                setEditing(null);
                 setLabel("");
                 setAmount("");
-                pushToast("Đã ghi chi phí.");
+                pushToast(editing ? "Đã sửa khoản chi." : "Đã ghi chi phí.");
                 load();
               })
-              .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa ghi được.", "bad"));
+              .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa ghi được.", "bad"))
+              .finally(() => setSaving(false));
           }}
         >
-          <h2 className="font-semibold">Ghi chi phí</h2>
+          <h2 className="font-semibold">{editing ? "Sửa khoản chi" : "Ghi chi phí"}</h2>
           <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Vercel, Neon, phí cổng" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+          <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Tên khoản chi" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <button type="submit" className="min-tap rounded-full bg-accent font-semibold text-ink">Lưu chi phí</button>
+          <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent font-semibold text-ink disabled:opacity-40" disabled={saving}>{saving ? "Đang lưu…" : editing ? "Lưu thay đổi" : "Lưu chi phí"}</button>
+          {editing && (
+            <button
+              type="button"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-line"
+              onClick={() => {
+                setEditing(null);
+                setLabel("");
+                setAmount("");
+              }}
+            >
+              Hủy sửa
+            </button>
+          )}
+          <div className="grid gap-2">
+            {costs.map((row) => (
+              <article key={row.id} className="grid gap-2 border-t border-line pt-2 text-sm">
+                <p className="font-medium">{row.label}</p>
+                <p className="text-muted">{row.day.split("-").reverse().join("/")} · {dong(row.amount)}</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
+                    onClick={() => {
+                      setEditing(row.id);
+                      setDay(row.day);
+                      setLabel(row.label);
+                      setAmount(formatMoney(row.amount));
+                    }}
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
+                    onClick={() => {
+                      setEditing(null);
+                      setLabel(row.label);
+                      setAmount(formatMoney(row.amount));
+                      setDay(vnDay());
+                    }}
+                  >
+                    Dùng lại
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
+                    onClick={() => {
+                      if (!window.confirm(`Xóa khoản «${row.label}»?`)) return;
+                      void deleteCost({ data: row.id })
+                        .then(() => {
+                          if (editing === row.id) setEditing(null);
+                          pushToast("Đã xóa khoản chi.");
+                          load();
+                        })
+                        .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa xóa được.", "bad"));
+                    }}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </article>
+            ))}
+            {ready && costs.length === 0 && <p className="text-sm text-muted">Chưa có khoản chi trong khoảng đang xem.</p>}
+          </div>
         </form>
       )}
       {owner && (

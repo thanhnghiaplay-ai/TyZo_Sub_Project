@@ -121,24 +121,24 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   }
 
   return (
-    <section className="grid gap-3 rounded-2xl border border-line bg-card p-4">
-      <div className="flex items-center justify-between gap-2">
+    <section className="admin-wide admin-trio rounded-2xl border border-line bg-card p-4">
+      <div className="admin-span flex items-center justify-between gap-2">
         <h2 className="font-semibold">Trả theo lượt</h2>
         <p className="flex items-center gap-2 text-xs font-medium text-muted">
           <DoorDot open={!form?.maintenance} />
           {form?.maintenance ? "Đang bảo trì" : "Đang mở"}
         </p>
       </div>
-      <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
+      <p className="admin-span text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
       {owner && (
-      <div className="grid grid-cols-3 gap-2">
+      <div className="admin-span grid grid-cols-3 gap-2">
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
       </div>
       )}
 
-      <div className="grid gap-2 rounded-xl border border-line p-3">
+      <div className="admin-pane rounded-xl border border-line p-3">
         <h3 className="text-sm font-semibold">Bảo trì</h3>
         <textarea
           disabled={!owner}
@@ -161,7 +161,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       </div>
 
       {owner && (
-      <div className="grid gap-2 rounded-xl border border-line p-3">
+      <div className="admin-pane rounded-xl border border-line p-3">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-semibold">Giá biểu</h3>
           <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => setPriceOpen((open) => !open)}>
@@ -220,7 +220,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           </button>
         )}
         <p className="text-xs text-muted">{keyTail ? `Đã lưu key, kết thúc bằng ${keyTail}. Key không hiện lại trên trang này.` : "Chưa lưu key."}</p>
-        <div className="grid gap-2">
+        <div className="grid max-h-[28rem] gap-2 overflow-y-auto">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);
             const custom = form?.custom[model.id] ?? emptyOverride();
@@ -243,7 +243,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
                     className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none disabled:opacity-60"
                   />
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid min-w-0 grid-cols-2 gap-2">
                     <input
                       inputMode="numeric"
                       disabled={!owner}
@@ -276,7 +276,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       </div>
       )}
 
-      <div className="grid gap-2">
+      <div className="admin-pane">
         <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
         {!view?.recent.length && (
           <div className="rounded-xl border border-dashed border-line px-3 py-3">

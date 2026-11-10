@@ -37,7 +37,8 @@ import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
 import { ensureDbReady, getPglite } from "../db";
 import { emailAndPasswordEnabled } from "./email-password";
-import { mailerName, sendMail, verificationMail } from "./mailer";
+import { mailerName } from "./mailer";
+import { authMail, sendAuthLetter } from "../mail-runtime";
 import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
 import { pgliteDialect } from "./pglite-dialect";
@@ -248,16 +249,40 @@ export const auth = betterAuth({
   // Bắt buộc xác minh email khi đã cấu hình nhà cung cấp gửi thư (xem ./mailer). Chưa cấu hình thì không
   // thể bắt buộc, nếu không không ai đăng nhập bằng mật khẩu được. Lúc chưa gửi được thư, quyền Chủ không đòi email đã xác minh.
   ...(emailAndPasswordEnabled
-    ? { emailAndPassword: { enabled: true, requireEmailVerification: mailReady } }
+    ? {
+        emailAndPassword: {
+          enabled: true,
+          get requireEmailVerification() {
+            return authMail.requireEmailVerification;
+          },
+          get resetPasswordTokenExpiresIn() {
+            return authMail.resetPasswordTokenExpiresIn;
+          },
+          revokeSessionsOnPasswordReset: true,
+          sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
+            sendAuthLetter("reset", user.email, url);
+          },
+          onPasswordReset: async ({ user }: { user: { email: string } }) => {
+            sendAuthLetter("changed", user.email);
+          },
+        },
+      }
     : {}),
-  ...(mailReady
+  ...(emailAndPasswordEnabled
     ? {
         emailVerification: {
-          sendOnSignUp: true,
-          sendOnSignIn: true,
+          get sendOnSignUp() {
+            return authMail.sendOnSignUp;
+          },
+          get sendOnSignIn() {
+            return authMail.sendOnSignIn;
+          },
+          get expiresIn() {
+            return authMail.expiresIn;
+          },
           autoSignInAfterVerification: true,
           sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
-            await sendMail(verificationMail(user.email, url));
+            sendAuthLetter("verify", user.email, url);
           },
         },
       }

@@ -11,7 +11,7 @@ function AppealPage() {
   const [busy, setBusy] = useState(false);
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-lg flex-col bg-bg px-4 text-fg">
+    <main className="room-frame mx-auto flex h-dvh flex-col bg-bg px-4 text-fg">
       <header className="border-b border-line py-3">
         <h1 className="text-base font-semibold">Yêu cầu xem lại</h1>
         <p className="mt-1 text-sm text-muted">Dùng khi tài khoản bị khóa hoặc bị cấm. Không cần đăng nhập.</p>

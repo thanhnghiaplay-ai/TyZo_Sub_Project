@@ -15,8 +15,9 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | v2.20.0 trên nhánh `main`, từ 2026-11-09 08:09 |
-| Điều khoản | 2026-11-08.3 |
+| Bản khách đang dùng | v2.20.0 trên nhánh `main` |
+| Bản đang làm | v3.10.6 trên nhánh `work`: trang Admin và Tài khoản xếp nhiều cột |
+| Điều khoản | 2026-11-09.5 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa |
@@ -39,13 +40,27 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc code đang mở. v2.20.0 đã lên `main` lúc 2026-11-09 08:09.
+Không có việc đã đẩy. v3.10.6 đang trên `work`, chưa lên `main`.
+
+## Thư — còn lại
+
+Làm lần lượt khi người dùng yêu cầu. Mục nào xong thì xóa khỏi danh sách này, không gạch và không giữ lại.
+
+1. Gắn tên miền gửi trên Resend. Chưa gắn thì thư chỉ tới email đã đăng ký Resend.
+2. Thử xác minh, chưa bật chặn. Bật gửi thư xác minh, nhận thư, bấm liên kết, đăng nhập lại.
+3. Thử quên mật khẩu. Bật công tắc, nhận thư, đặt mật khẩu mới, đăng nhập bằng mật khẩu đó.
+4. Bật chặn chỉ sau khi email Chủ đã xác minh. Bật sớm thì tài khoản chưa xác minh không vào được.
+5. Thư báo đổi mật khẩu trong trang tài khoản. Công tắc hiện chỉ chạy khi đặt lại qua thư quên mật khẩu.
+
+Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này.
 
 ## Ý đã nêu
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
-| 2026-11-09 08:09 | Người dùng chốt | Đẩy v2.20.0 lên bản chính | Làm ngay | Đã vào `main` |
+| 2026-11-09 09:33 | Làm | Nhật ký khách 3 lớp. Thanh chỉ kéo núm. Đọc trước hoặc sau | Làm ngay | Đã vào `work` trong v2.21.0 |
+| 2026-11-09 12:19 | Làm | Thuật ngữ admin có tên Việt, phân trang, ẩn/mở tất cả, khôi phục từ thiếu | Làm ngay | Đã vào `work` trong v2.23.0 |
+| 2026-11-09 12:28 | Người dùng chốt | Lời lỗ tách giá vốn. Giữ nguyên 807 câu. Cộng tác viên cả đời, tỷ lệ sửa được, hai cửa. Cổng nạp riêng để sau | Làm ngay | Đã vào `work` trong v3.0.0 |
 | 2026-11-09 06:40 | Làm | Giá và tiền chỉ Chủ. Yêu cầu tự chuyển cấp. Số dư hiện khoản giữ | Làm ngay | Đã vào `main` trong v2.20.0 |
 | 2026-11-08 20:28 | Làm | Chủ vào lại Admin khi phòng chưa gửi được thư | Làm ngay | Đã vào `main` trong v2.19.2 |
 | 2026-11-08 20:03 | Người dùng chốt | Một đường cho ba vai. Làm, Thẩm định, Cố vấn. Nhìn bảng này là đủ | Làm ngay | Đã vào `main` |
@@ -77,7 +92,7 @@ Chỉ mở lại khi người dùng yêu cầu đúng việc đó.
 
 Vai Làm tự làm các mục dưới đây trước khi báo xong. Không chờ nhắc.
 
-- Đổi cái khách nhìn thấy thì nâng `APP_VERSION` theo `huongdan.txt` mục 10, và thêm một dòng `CHANGELOG`: tiếng Việt, đủ ý, có giờ Việt Nam lấy từ lệnh `date`. Không ghi tên file, không ghi commit.
+- Đổi cái khách nhìn thấy thì nâng `APP_VERSION` theo `huongdan.txt` mục 10, và thêm một mục `CHANGELOG` theo 3 lớp: một câu tiêu đề, 1 đến 4 dòng, không ghi việc nội bộ. Việc nội bộ vào `ADMIN_LOG`. Giờ Việt Nam lấy từ lệnh `date`. `app-version.test.ts` phải xanh.
 - Đổi giá, quyền, hạn mức, dữ liệu, trách nhiệm, khóa hoặc cấm thì sửa điều khoản đúng chỗ rồi nâng `TERMS_VERSION`. Chỉ đổi giao diện thì không sửa điều khoản.
 - Chỉ sửa tài liệu thì không nâng số phiên bản.
 - Sửa bảng này, dòng «Đang chạy» trong `huongdan.txt`, bảng đầu `PROJECT_STATUS.md`, và một dòng nhật ký. Phiếu bàn giao ghi đã làm, chưa làm, cố ý không làm.
