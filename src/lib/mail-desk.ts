@@ -37,10 +37,12 @@ export const saveMailDesk = createServerFn({ method: "POST" })
     const provider = input.provider?.trim() ?? "";
     if (!isMailProvider(provider)) throw new Error("Hãy chọn nhà gửi thư.");
     const from = checkFrom(input.from ?? "");
-    const key = (input.key ?? "").trim();
-    if (key && (key.length < 8 || key.length > 200)) throw new Error("Khóa không đúng.");
+    // Mật khẩu ứng dụng Google hiện thành 4 nhóm cách nhau bằng dấu cách, bỏ khoảng trắng khi lưu.
+    const key = provider === "smtp" ? (input.key ?? "").replace(/\s+/g, "") : (input.key ?? "").trim();
+    if (key && (key.length < 8 || key.length > 200)) throw new Error(provider === "smtp" ? "Mật khẩu ứng dụng không đúng." : "Khóa không đúng.");
     const domain = (input.domain ?? "").trim();
     if (provider === "mailgun" && !/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(domain)) throw new Error("Tên miền Mailgun không đúng.");
+    if (provider === "smtp" && domain && !/^[a-z0-9.-]+\.[a-z]{2,}(:\d{2,5})?$/i.test(domain)) throw new Error("Máy chủ SMTP không đúng. Ví dụ smtp.ten-mien.vn:465.");
     return { provider, from, key, domain };
   })
   .handler(async ({ context, data }) => {
@@ -53,10 +55,12 @@ export const saveMailDesk = createServerFn({ method: "POST" })
       provider: data.provider,
       from: data.from,
       key,
-      domain: data.provider === "mailgun" ? data.domain : "",
+      domain: data.provider === "mailgun" || data.provider === "smtp" ? data.domain : "",
       testedAt: stored?.testedAt ?? 0,
     };
-    if (mailerName(deskToEnv(next)) !== next.provider) throw new Error("Chưa đủ thông tin để gửi.");
+    if (mailerName(deskToEnv(next)) !== next.provider) {
+      throw new Error(next.provider === "smtp" ? "Chưa nhận ra máy chủ của email này. Hãy nhập máy chủ SMTP." : "Chưa đủ thông tin để gửi.");
+    }
     const value = JSON.stringify(next);
     await sql`
       insert into room_settings (key, value) values (${KEY}, ${value})

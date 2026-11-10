@@ -8,6 +8,18 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.10.4",
+    time: "16:40 ngày 10/11/2026",
+    area: "ha-tang",
+    text: "Thêm nhà gửi thư «smtp» (email cá nhân) cạnh Resend, Brevo, SendGrid, Mailgun, Postmark. Dùng thư viện nodemailer, nạp động trong src/lib/auth/smtp.server.ts, chạy trên Node của Vercel. Gmail và Yahoo tự nhận máy chủ theo đuôi email, đuôi khác nhập smtp.host:cổng vào ô máy chủ (lưu ở trường domain). Mật khẩu ứng dụng lưu trong room_settings.mail_desk như khóa API khác, bỏ khoảng trắng khi lưu, không trả ra màn hình. Thứ tự ưu tiên: các nhà HTTP trước, SMTP sau, webhook cuối. Gmail giới hạn khoảng 500 thư mỗi ngày. Chưa thử gửi thật tới Gmail.",
+  },
+  {
+    version: "3.10.3",
+    time: "12:00 ngày 10/11/2026",
+    area: "khac",
+    text: "Viết lại khung phòng chiếu trong styles.css thành ba chế độ loại trừ nhau (TALL, SHEET_PORTRAIT, SHEET_LANDSCAPE), mọi mức tối thiểu cộng vào min-height của khung và khung cuộn được. Điều kiện tấm trượt dùng chung với mã qua src/lib/studio-layout.ts. Thêm scripts/studio-layout-matrix.mjs (npm run check:layout) đo 20 cỡ màn hình. Tách PAY_MINUTES sang pay-minutes.ts và sameSecret sang pay-secret.server.ts để node:crypto không vào gói trình duyệt (trang chủ bản dev báo Something went wrong). Sửa stripInstallParams chặn đường dẫn //host. Sửa 7 test lỗi: 3 test thiếu .grok/app-env.json nay bỏ qua trên kho sạch, test migration và 2 test studio-layout viết lại cho đúng thực tế.",
+  },
+  {
     version: "3.10.2",
     time: "07:56 ngày 10/11/2026",
     area: "khac",

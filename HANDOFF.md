@@ -108,3 +108,12 @@ Lint 7 lỗi, 14 cảnh báo (`studio.tsx` 3 lỗi `no-unused-expressions`, `use
 - Thông báo đăng nhập sai bằng tiếng Anh ("Invalid email or password"), nên Việt hóa.
 - Form đăng nhập gửi được trước khi trang tải xong JS (dev), khi đó chỉ tải lại `/login?`, không rò mật khẩu vì ô nhập không có thuộc tính `name`.
 - Google Fonts và `grok.com/.../extensions.js` bị chặn do mạng sandbox, không phải lỗi mã.
+
+## v3.10.3 — bố cục phòng chiếu (10/11/2026 12:00 giờ VN)
+Đã làm: viết lại khung phòng chiếu trong `src/styles.css` thành ba chế độ loại trừ nhau; `src/lib/studio-layout.ts` giữ chuỗi điều kiện tấm trượt dùng chung với `studio.tsx`; `scripts/studio-layout-matrix.mjs` (`npm run check:layout`, cần `CHROMIUM_PATH` nếu Playwright chưa tải trình duyệt) đo 20 cỡ màn hình, bản cũ lỗi 35/40 trường hợp, bản mới 0/40. Tách `PAY_MINUTES` và `sameSecret` khỏi `pay-match.ts` để `node:crypto` không vào gói trình duyệt. Sửa `stripInstallParams` chặn `//host`. Sửa 7 test lỗi.
+Kiểm tra thật: `tsc` sạch, `npm test` 454 pass 0 fail 7 bỏ qua (3 test thiếu `.grok/app-env.json` bỏ qua trên kho sạch, cùng 4 test sẵn có), `npm run build` qua, bản dev tải được studio ở 9 cỡ màn hình.
+Chưa làm: chưa thử trên điện thoại hoặc máy tính bảng thật, Safari iPhone, Firefox. Ở màn thấp ≤520px, nút «Tài khoản» (nav) vẫn bị ẩn như cũ. Lỗi eslint sẵn có trong `studio.tsx` (3 `no-unused-expressions`) chưa đụng.
+
+## v3.10.4 — email cá nhân làm nhà gửi thư (10/11/2026 16:40 giờ VN)
+Đã làm: nhà gửi thư mới «smtp» trong mục Thư của trang Chủ (`mail-desk.tsx`), lưu như các nhà khác. `src/lib/auth/mailer.ts` thêm `smtpTarget` (Gmail, Yahoo tự nhận máy chủ), `smtp.server.ts` gửi bằng nodemailer. Thêm phụ thuộc `nodemailer` và `@types/nodemailer`, nhớ `npm install`. 14 test thư qua.
+Chưa làm: chưa gửi thử thật tới Gmail, cần Chủ nhập mật khẩu ứng dụng rồi bấm Gửi thư thử trên bản chạy thật. Outlook và Hotmail không có sẵn máy chủ vì Microsoft hạn chế đăng nhập bằng mật khẩu.

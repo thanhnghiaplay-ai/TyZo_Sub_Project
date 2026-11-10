@@ -1,11 +1,8 @@
-import { createHash, timingSafeEqual } from "node:crypto";
-
 export type PayHit = { ref: string; amount: number; text: string; account?: string };
 
 const CODE = /^TZ[A-Z0-9]{6}$/;
 
-/** Đơn chuyển khoản còn hiệu lực bao lâu, tính từ lúc tạo. */
-export const PAY_MINUTES = 15;
+export { PAY_MINUTES } from "./pay-minutes.ts";
 
 export function makePayCode(seed: string) {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -58,13 +55,6 @@ export function cassoHits(body: unknown): PayHit[] {
     });
   }
   return hits;
-}
-
-export function sameSecret(given: string, expected: string) {
-  if (!expected || !given) return false;
-  const left = createHash("sha256").update(given).digest();
-  const right = createHash("sha256").update(expected).digest();
-  return timingSafeEqual(left, right);
 }
 
 function digits(value: string) {

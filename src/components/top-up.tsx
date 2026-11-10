@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { claimPayOrder, cancelMyPayOrder, createPayOrder, getPayDesk, getPayPublic, readPayOrder, syncCasso, type PayHistoryItem, type PayOrderView, type PayPublic } from "@/lib/pay-store";
-import { PAY_MINUTES } from "@/lib/pay-match";
+import { PAY_MINUTES } from "@/lib/pay-minutes";
 import { pushToast } from "@/components/toast";
 import { BrandMark } from "@/components/brand-mark";
 import { formatMoney, parseMoney } from "@/lib/money-format";

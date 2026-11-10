@@ -1,6 +1,6 @@
 import { mailerName, type MailEnv, type MailerName } from "./auth/mailer.ts";
 
-export const MAIL_PROVIDERS = ["resend", "brevo", "sendgrid", "mailgun", "postmark"] as const;
+export const MAIL_PROVIDERS = ["resend", "brevo", "sendgrid", "mailgun", "postmark", "smtp"] as const;
 export type MailProvider = (typeof MAIL_PROVIDERS)[number];
 
 export type MailDeskView = {
@@ -47,7 +47,17 @@ export function deskToEnv(desk: { provider: MailProvider; from: string; key: str
     env.MAILGUN_DOMAIN = desk.domain;
   }
   if (desk.provider === "postmark") env.POSTMARK_TOKEN = desk.key;
+  if (desk.provider === "smtp") {
+    // Email cá nhân: tài khoản đăng nhập là chính địa chỉ gửi. `domain` giữ máy chủ nếu không phải Gmail hay Yahoo.
+    env.SMTP_USER = bareAddress(desk.from);
+    env.SMTP_PASS = desk.key;
+    if (desk.domain) env.SMTP_HOST = desk.domain;
+  }
   return env;
+}
+
+export function bareAddress(from: string) {
+  return (from.match(/<([^>]+)>/)?.[1] ?? from).trim();
 }
 
 export function mailDeskView(stored: MailStored | null, serverName: MailerName | null, email: string): MailDeskView {

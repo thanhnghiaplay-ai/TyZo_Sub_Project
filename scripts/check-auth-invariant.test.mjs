@@ -12,7 +12,13 @@ import {
   compareAuthInvariant,
   probeDevAuthEnabled,
 } from "./check-auth-invariant.mjs";
-import { projectRoot } from "./with-app-env.mjs";
+import { existsSync } from "node:fs";
+import { APP_ENV_REL_PATH, projectRoot } from "./with-app-env.mjs";
+
+// `.grok/` is gitignored, so a clean checkout or a zip has no shipped app-env.
+const skipNoAppEnv = existsSync(join(projectRoot(), APP_ENV_REL_PATH))
+  ? false
+  : "thiếu .grok/app-env.json, bỏ qua trên kho sạch";
 
 /**
  * The JSON body `/__app-env` would serve. Do not start a real Vite server —
@@ -90,7 +96,7 @@ test("only a divergence warns the smoke verdict", () => {
   }
 });
 
-test("the build side resolves the template's shipped app-env", () => {
+test("the build side resolves the template's shipped app-env", { skip: skipNoAppEnv }, () => {
   assert.equal(buildAuthEnabled(projectRoot(), {}), false);
   assert.equal(buildAuthEnabled(projectRoot(), { VITE_AUTH_ENABLED: "true" }), true);
 });

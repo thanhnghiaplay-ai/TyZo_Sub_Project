@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.10.2";
+export const APP_VERSION = "3.10.4";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,25 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.10.4",
+    time: "16:40 ngày 10/11/2026",
+    title: "Gửi thư xác minh bằng Gmail cá nhân, không cần tên miền.",
+    points: [
+      "Chủ phòng chọn Email cá nhân ở mục Thư, dán mật khẩu ứng dụng Gmail là gửi được.",
+      "Dùng cho xác minh email và quên mật khẩu, có nút gửi thư thử.",
+    ],
+  },
+  {
+    version: "3.10.3",
+    time: "12:00 ngày 10/11/2026",
+    title: "Sửa bố cục phòng chiếu trên điện thoại nằm ngang, màn thấp và máy tính bảng.",
+    points: [
+      "Điện thoại nằm ngang: video một bên, bản dịch hoặc công cụ bên kia, không còn mất bản dịch.",
+      "Màn laptop thấp và máy tính bảng đứng: các khung không còn chồng lên nhau hay bị bóp nhỏ.",
+      "Thiếu chỗ thì cả khung cuộn được thay vì bị cắt.",
+    ],
+  },
   {
     version: "3.10.2",
     time: "07:56 ngày 10/11/2026",

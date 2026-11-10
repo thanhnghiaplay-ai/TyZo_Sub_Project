@@ -5,7 +5,7 @@ import { randomBytes } from "node:crypto";
 import { toDataURL } from "qrcode";
 import type { Sql } from "@/lib/db";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { accountMatches, cassoHits, makePayCode, PAY_MINUTES, sameSecret, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
+import { accountMatches, cassoHits, makePayCode, PAY_MINUTES, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
 
 export type PayPublic = { sepay: boolean; casso: boolean };
 
@@ -577,6 +577,7 @@ function headerSecret(request: Request) {
 }
 
 export async function handleSepay(request: Request) {
+  const { sameSecret } = await import("@/lib/pay-secret.server");
   const settings = await readSettings();
   const { apikey } = headerSecret(request);
   if (!settings.sepay_key || !sameSecret(apikey, settings.sepay_key)) {
@@ -589,6 +590,7 @@ export async function handleSepay(request: Request) {
 }
 
 export async function handleCasso(request: Request) {
+  const { sameSecret } = await import("@/lib/pay-secret.server");
   const settings = await readSettings();
   const { apikey, secure } = headerSecret(request);
   const tokenOk = Boolean(settings.casso_token) && sameSecret(secure, settings.casso_token);

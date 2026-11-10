@@ -1,16 +1,53 @@
 /**
  * Gửi thư qua HTTP, không thêm thư viện. Chọn nhà cung cấp theo biến môi trường đã đặt,
- * theo thứ tự: Resend, SendGrid, Brevo, Mailgun, Postmark, rồi webhook chung.
+ * theo thứ tự: Resend, SendGrid, Brevo, Mailgun, Postmark, email cá nhân qua SMTP, rồi webhook chung.
  * Luôn cần MAIL_FROM, ví dụ "TyZo <no-reply@ten-mien-cua-ban.vn>".
+ * Email cá nhân (Gmail, Yahoo...) không cần tên miền: cần SMTP_USER và SMTP_PASS (mật khẩu ứng dụng),
+ * máy chủ tự nhận theo đuôi email hoặc đặt SMTP_HOST ("host" hoặc "host:cổng").
  * Không có nhà cung cấp nào thì mailerName() trả null và không bật bắt buộc xác minh email.
  */
 export type Mail = { to: string; subject: string; text: string; html: string };
 export type MailEnv = Record<string, string | undefined>;
 export type MailRequest = { url: string; init: { method: "POST"; headers: Record<string, string>; body: string } };
 
-export type MailerName = "resend" | "sendgrid" | "brevo" | "mailgun" | "postmark" | "webhook";
+export type MailerName = "resend" | "sendgrid" | "brevo" | "mailgun" | "postmark" | "smtp" | "webhook";
 
 const clean = (value: string | undefined) => (value && value.trim() ? value.trim() : "");
+
+/** Máy chủ SMTP của các hộp thư cá nhân hay dùng, tra theo đuôi email. */
+const SMTP_PRESETS: Record<string, { host: string; port: number }> = {
+  "gmail.com": { host: "smtp.gmail.com", port: 465 },
+  "googlemail.com": { host: "smtp.gmail.com", port: 465 },
+  "yahoo.com": { host: "smtp.mail.yahoo.com", port: 465 },
+  "yahoo.com.vn": { host: "smtp.mail.yahoo.com", port: 465 },
+  "ymail.com": { host: "smtp.mail.yahoo.com", port: 465 },
+};
+
+export type SmtpTarget = { host: string; port: number; secure: boolean; user: string; pass: string };
+
+/** Cổng 465 nối TLS ngay, cổng khác (thường 587) nâng lên TLS sau khi chào. */
+export function smtpTarget(env: MailEnv): SmtpTarget | null {
+  const user = clean(env.SMTP_USER);
+  const pass = clean(env.SMTP_PASS).replace(/\s+/g, "");
+  if (!user || !pass) return null;
+  let host = "";
+  let port = Number(clean(env.SMTP_PORT)) || 0;
+  const given = clean(env.SMTP_HOST);
+  if (given) {
+    const [name, rawPort] = given.split(":");
+    host = name.toLowerCase();
+    if (rawPort) port = Number(rawPort) || 0;
+  } else {
+    const preset = SMTP_PRESETS[user.split("@")[1]?.toLowerCase() ?? ""];
+    if (!preset) return null;
+    host = preset.host;
+    port = port || preset.port;
+  }
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(host)) return null;
+  if (!port) port = 465;
+  if (!Number.isInteger(port) || port < 1 || port > 65535) return null;
+  return { host, port, secure: port === 465, user, pass };
+}
 
 export function mailerName(env: MailEnv): MailerName | null {
   if (!clean(env.MAIL_FROM)) return null;
@@ -19,6 +56,7 @@ export function mailerName(env: MailEnv): MailerName | null {
   if (clean(env.BREVO_API_KEY)) return "brevo";
   if (clean(env.MAILGUN_API_KEY) && clean(env.MAILGUN_DOMAIN)) return "mailgun";
   if (clean(env.POSTMARK_TOKEN)) return "postmark";
+  if (smtpTarget(env)) return "smtp";
   if (clean(env.MAIL_WEBHOOK_URL)) return "webhook";
   return null;
 }
@@ -30,7 +68,7 @@ function parseFrom(from: string) {
 
 export function buildMailRequest(env: MailEnv, mail: Mail): MailRequest | null {
   const name = mailerName(env);
-  if (!name) return null;
+  if (!name || name === "smtp") return null;
   const from = clean(env.MAIL_FROM);
   const json = { "content-type": "application/json" };
   if (name === "resend") {
@@ -91,7 +129,15 @@ export function buildMailRequest(env: MailEnv, mail: Mail): MailRequest | null {
   };
 }
 
-export async function sendMail(mail: Mail, env: MailEnv = process.env, doFetch: typeof fetch = fetch) {
+export type SmtpSender = (env: MailEnv, mail: Mail) => Promise<void>;
+
+async function defaultSmtpSend(env: MailEnv, mail: Mail) {
+  const { sendSmtp } = await import("./smtp.server.ts");
+  await sendSmtp(env, mail);
+}
+
+export async function sendMail(mail: Mail, env: MailEnv = process.env, doFetch: typeof fetch = fetch, smtpSend: SmtpSender = defaultSmtpSend) {
+  if (mailerName(env) === "smtp") return smtpSend(env, mail);
   const request = buildMailRequest(env, mail);
   if (!request) throw new Error("Chưa cấu hình nhà cung cấp gửi thư.");
   const response = await doFetch(request.url, { ...request.init, signal: AbortSignal.timeout(15000) });

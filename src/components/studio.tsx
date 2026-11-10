@@ -1,3 +1,4 @@
+import { isStudioSheet } from "@/lib/studio-layout";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
@@ -510,8 +511,8 @@ export function Studio() {
     (voice) => narration.gender === "any" || guessGender(voice) === "any" || guessGender(voice) === narration.gender,
   );
   const pickTool = (id: (typeof TOOLS)[number][0]) => {
-    const narrow = window.matchMedia("(max-width: 699px)").matches;
-    setSheetOpen((open) => (narrow && id === toolTab ? !open : true));
+    const sheet = isStudioSheet();
+    setSheetOpen((open) => (sheet && id === toolTab ? !open : true));
     setToolTab(id);
   };
 

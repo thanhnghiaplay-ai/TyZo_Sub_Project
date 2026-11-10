@@ -18,4 +18,17 @@ describe("bàn gửi thư", () => {
     assert.equal(view.savedReady, false);
     assert.equal(view.serverName, "resend");
   });
+
+  it("email cá nhân: tài khoản là địa chỉ gửi, Gmail đủ để gửi, đuôi lạ phải có máy chủ", () => {
+    const gmail = { provider: "smtp" as const, from: "TyZo Sub <ban@gmail.com>", key: "abcdefghijklmnop", domain: "" };
+    const env = deskToEnv(gmail);
+    assert.equal(env.SMTP_USER, "ban@gmail.com");
+    assert.equal(env.SMTP_PASS, "abcdefghijklmnop");
+    assert.equal(env.SMTP_HOST, undefined);
+    assert.equal(mailDeskView({ ...gmail, testedAt: 0 }, null, "a@b.vn").savedReady, true);
+    const custom = { ...gmail, from: "ban@congty.vn" };
+    assert.equal(mailDeskView({ ...custom, testedAt: 0 }, null, "a@b.vn").savedReady, false);
+    assert.equal(mailDeskView({ ...custom, domain: "smtp.congty.vn:587", testedAt: 0 }, null, "a@b.vn").savedReady, true);
+    assert.equal(JSON.stringify(mailDeskView({ ...gmail, testedAt: 0 }, null, "a@b.vn")).includes("abcdefghijklmnop"), false);
+  });
 });

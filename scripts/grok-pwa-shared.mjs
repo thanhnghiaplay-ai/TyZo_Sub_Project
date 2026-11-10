@@ -143,7 +143,10 @@ export function acceptsHtml(accept) {
 
 /** The same URL without the install-tutorial params (used as the app link). */
 export function stripInstallParams(url) {
-  const [path = "/", query = ""] = String(url ?? "/").split("?", 2);
+  const [rawPath = "/", query = ""] = String(url ?? "/").split("?", 2);
+  // Only a same-origin path may become the app link: "//host" and "/\\host"
+  // are read by browsers as another site, so they fall back to "/".
+  const path = /^\/(?![/\\])/.test(rawPath) ? rawPath : "/";
   const params = new URLSearchParams(query);
   params.delete("install");
   params.delete("platform");

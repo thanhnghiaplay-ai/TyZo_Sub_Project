@@ -147,97 +147,6 @@
 }
 
 /* Bước 6.4 — một màn hình, video không bị cuộn mất */
-.studio-shell {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  width: min(100%, 72rem);
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  margin-inline: auto;
-  gap: 0.5rem;
-  overflow: hidden;
-  padding-top: 0.75rem;
-  padding-right: 1rem;
-  padding-bottom: 0.75rem;
-  padding-left: 1rem;
-  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
-  padding-right: max(1rem, env(safe-area-inset-right, 0px));
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
-  padding-left: max(1rem, env(safe-area-inset-left, 0px));
-}
-
-.studio-tabs {
-  display: flex;
-  flex: none;
-  gap: 0.5rem;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-
-.studio-stage {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.studio-workspace {
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.studio-video {
-  position: relative;
-  display: flex;
-  flex: none;
-  justify-content: center;
-  min-width: 0;
-  max-height: 33vh;
-  max-height: 33dvh;
-}
-
-.studio-video .aspect-video {
-  width: min(100%, calc(33vh * 16 / 9));
-  width: min(100%, calc(33dvh * 16 / 9));
-  max-width: 100%;
-  height: auto;
-  max-height: 33vh;
-  max-height: 33dvh;
-  margin-inline: auto;
-}
-
-.studio-cues {
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.studio-cue-scroll {
-  min-height: 0;
-  flex: 1;
-  overflow: auto;
-}
-
-.studio-tools {
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
-  overscroll-behavior: contain;
-}
-
 .studio-tool-card {
   border: 1px solid var(--color-line);
   border-radius: 1rem;
@@ -319,43 +228,6 @@
   }
 }
 
-@media (orientation: landscape) and (max-height: 720px) {
-  .studio-stage {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .studio-workspace {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: row;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .studio-video,
-  .studio-cues {
-    height: auto;
-    max-height: none;
-    min-height: 0;
-  }
-
-  .studio-video {
-    flex: 1 1 55%;
-  }
-
-  .studio-cues {
-    flex: 1 1 45%;
-  }
-
-  .studio-tools {
-    position: static;
-    flex: 0 0 42%;
-    max-height: 42%;
-  }
-}
-
 .room-frame {
   width: 100%;
   max-width: 32rem;
@@ -364,86 +236,6 @@
 @media (min-width: 700px) {
   .room-frame {
     max-width: 52rem;
-  }
-}
-
-@media (max-width: 699px) {
-  .studio-tools {
-    position: static;
-    flex: 0 1 46%;
-    max-height: 46%;
-    min-height: 0;
-  }
-
-  .studio-stage.is-sheet .studio-video,
-  .studio-stage.is-sheet .studio-video .aspect-video {
-    max-height: 24vh;
-    max-height: 24dvh;
-  }
-
-  .studio-tools:not(.is-open) {
-    display: none;
-  }
-
-  .studio-sheet-bar {
-    display: flex;
-  }
-}
-
-@media (min-width: 700px) {
-  .studio-video {
-    max-height: 42vh;
-    max-height: 42dvh;
-  }
-
-  .studio-video .aspect-video {
-    width: min(100%, calc(42vh * 16 / 9));
-    width: min(100%, calc(42dvh * 16 / 9));
-    max-height: 42vh;
-    max-height: 42dvh;
-  }
-
-  .studio-tools {
-    flex: 0 0 38%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .studio-stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    grid-template-rows: minmax(0, 1fr) minmax(8rem, 32%);
-  }
-
-  .studio-workspace {
-    display: contents;
-  }
-
-  .studio-video {
-    grid-column: 1;
-    grid-row: 1;
-    max-height: none;
-    height: 100%;
-  }
-
-  .studio-video .aspect-video {
-    width: min(100%, 100%);
-    max-width: 100%;
-    height: auto;
-    max-height: calc(100% - 3rem);
-    aspect-ratio: 16 / 9;
-  }
-
-  .studio-cues {
-    grid-column: 2;
-    grid-row: 1;
-    height: 100%;
-  }
-
-  .studio-tools {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    flex: none;
   }
 }
 
@@ -457,9 +249,278 @@
   max-height: 80dvh;
 }
 
-/* Màn thấp: không dùng lưới máy tính, video không đè tab */
+/* ===== Khung studio =====
+   Ba chế độ, loại trừ nhau. Mỗi cỡ màn hình chỉ rơi vào MỘT chế độ, nên không có
+   hai khối cùng chỉnh một thuộc tính và không còn chuyện thắng thua theo thứ tự dòng.
+
+   A. TALL     rộng >= 700px và cao >= 721px, hoặc đứng và cao >= 521px: tab công cụ luôn hiện.
+               - từ 1024px: lưới, video và bản dịch ở trên, công cụ ở dưới.
+               - dưới 1024px: một cột (máy tính bảng đứng).
+   B. SHEET_PORTRAIT   đứng và (hẹp < 700px hoặc thấp <= 520px): một cột, công cụ là tấm trượt.
+   C. SHEET_LANDSCAPE  ngang và thấp <= 720px: hai cột, công cụ thay chỗ bản dịch khi mở.
+
+   Chuỗi điều kiện của B và C phải khớp STUDIO_SHEET_QUERY trong src/lib/studio-layout.ts
+   (test studio-layout.test.ts kiểm tra). Mọi mức tối thiểu được cộng vào min-height của
+   .studio-stage, nên khi không đủ chỗ thì cả khung cuộn chứ không bị bóp hay chồng lên nhau. */
+
+:root {
+  --vh: 1vh;
+}
+
+@supports (height: 1dvh) {
+  :root {
+    --vh: 1dvh;
+  }
+}
+
+.studio-shell {
+  --chrome: 17rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 72rem);
+  height: calc(100 * var(--vh));
+  max-height: calc(100 * var(--vh));
+  margin-inline: auto;
+  gap: 0.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-top: 0.75rem;
+  padding-right: 1rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+}
+
+.studio-tabs {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+/* Nền: một cột (điện thoại đứng khi tab công cụ đóng). */
+.studio-stage {
+  --video-h: calc(33 * var(--vh));
+  --video-box: min(var(--video-h), calc((min(100vw, 72rem) - 2rem) * 9 / 16));
+  --video-extra: 0rem;
+  --cues-min: 9rem;
+  --tools-min: 8rem;
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: calc(var(--video-box) + var(--video-extra) + var(--cues-min) + 0.5rem);
+}
+
+.studio-workspace {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: calc(var(--video-box) + var(--video-extra) + var(--cues-min) + 0.5rem);
+}
+
+.studio-video {
+  position: relative;
+  display: flex;
+  flex: none;
+  justify-content: center;
+  min-width: 0;
+  max-height: calc(var(--video-box) + var(--video-extra));
+  overflow-y: auto;
+}
+
+.studio-video .aspect-video {
+  width: min(100%, calc(var(--video-box) * 16 / 9));
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.studio-cues {
+  display: flex;
+  min-width: 0;
+  min-height: var(--cues-min);
+  flex: 1 1 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.studio-cue-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.studio-tools {
+  min-width: 0;
+  min-height: 0;
+  flex: none;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* Chrome và Firefox cũ không có dvh: --vh rơi về vh ở trên. */
+
+/* A. TALL, dưới 1024px: máy tính bảng đứng, công cụ luôn hiện dưới bản dịch. */
+@media (min-width: 700px) and (min-height: 721px), (min-width: 700px) and (orientation: portrait) and (min-height: 521px) {
+  .studio-stage {
+    --video-h: calc(32 * var(--vh));
+    --video-extra: 4rem;
+    min-height: calc(var(--video-box) + var(--video-extra) + var(--cues-min) + var(--tools-min) + 1rem);
+  }
+
+  .studio-workspace {
+    min-height: calc(var(--video-box) + var(--video-extra) + var(--cues-min) + 0.5rem);
+  }
+
+  .studio-tools {
+    flex: 0 1 auto;
+    min-height: var(--tools-min);
+    max-height: calc(36 * var(--vh));
+  }
+}
+
+/* A. TALL, từ 1024px: lưới hai cột trên, công cụ ở dưới. */
+@media (min-width: 1024px) and (min-height: 721px) {
+  .studio-stage {
+    --stage-h: calc(100 * var(--vh) - var(--chrome));
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    grid-template-rows: minmax(0, 1fr) clamp(8rem, 32%, 18rem);
+    min-height: 24rem;
+  }
+
+  .studio-workspace {
+    display: contents;
+  }
+
+  .studio-video {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: flex-start;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .studio-video .aspect-video {
+    width: min(100%, calc((var(--stage-h) * 0.68 - 4.5rem) * 16 / 9));
+  }
+
+  .studio-cues {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 0;
+  }
+
+  .studio-tools {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex: none;
+    min-height: 0;
+    max-height: none;
+  }
+}
+
+/* B. SHEET_PORTRAIT: một cột, công cụ là tấm mở ra khi chọn tab. */
+@media (max-width: 699px) and (orientation: portrait), (max-height: 520px) and (orientation: portrait) {
+  .gesture-hint {
+    display: none;
+  }
+
+  .studio-tools:not(.is-open) {
+    display: none;
+  }
+
+  .studio-sheet-bar {
+    display: flex;
+  }
+
+  /* Tấm đang mở: video nhỏ lại, bản dịch nhường chỗ cho công cụ. */
+  .studio-stage.is-sheet {
+    --video-h: calc(24 * var(--vh));
+    min-height: calc(var(--video-box) + var(--tools-min) + 0.5rem);
+  }
+
+  .studio-stage.is-sheet .studio-workspace {
+    flex: 0 0 auto;
+    min-height: var(--video-box);
+  }
+
+  .studio-stage.is-sheet .studio-cues {
+    display: none;
+  }
+
+  .studio-stage.is-sheet .studio-tools {
+    min-height: var(--tools-min);
+    flex: 1 1 0;
+  }
+}
+
+/* C. SHEET_LANDSCAPE: hai cột, video bên trái, bản dịch hoặc công cụ bên phải. */
+@media (orientation: landscape) and (max-height: 720px) {
+  .gesture-hint {
+    display: none;
+  }
+
+  .studio-tools:not(.is-open) {
+    display: none;
+  }
+
+  .studio-sheet-bar {
+    display: flex;
+  }
+
+  .studio-stage {
+    --stage-h: calc(100 * var(--vh) - var(--chrome));
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 11rem;
+  }
+
+  .studio-workspace {
+    display: contents;
+  }
+
+  .studio-video {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: flex-start;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .studio-video .aspect-video {
+    width: min(100%, calc(var(--stage-h) * 16 / 9));
+  }
+
+  .studio-cues,
+  .studio-tools {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .studio-stage.is-sheet .studio-cues {
+    display: none;
+  }
+}
+
+/* Màn thấp (<= 520px, đứng hoặc ngang): thu gọn đầu trang để dành chỗ. */
 @media (max-height: 520px) {
   .studio-shell {
+    --chrome: 11rem;
     gap: 0.35rem;
     padding-top: max(0.35rem, env(safe-area-inset-top, 0px));
     padding-bottom: max(0.35rem, env(safe-area-inset-bottom, 0px));
@@ -475,59 +536,12 @@
     line-height: 1.2;
   }
 
-  .studio-stage {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .studio-workspace {
-    display: flex;
-    flex: 0 0 auto;
-    flex-direction: column;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .studio-video {
-    height: auto;
-    max-height: none;
-    overflow: visible;
-  }
-
-  .studio-video .aspect-video {
-    width: min(100%, calc(34dvh * 16 / 9));
-    height: auto;
-    max-height: 34dvh;
-    aspect-ratio: 16 / 9;
-  }
-
   .studio-cues {
-    flex: 1 1 auto;
-    height: auto;
-    max-height: none;
-    min-height: 4.5rem;
     padding: 0.35rem 0.75rem;
   }
 
   .studio-cues > p {
     display: none;
-  }
-
-  .studio-tools {
-    position: static;
-    flex: 1 1 0;
-    max-height: none;
-    min-height: 0;
-    overflow: auto;
-  }
-
-  .studio-tools:not(.is-open) {
-    display: none;
-  }
-
-  .studio-sheet-bar {
-    display: flex;
   }
 }
 
@@ -1258,49 +1272,6 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-}
-
-.studio-video {
-  height: auto;
-  max-height: none;
-  overflow: visible;
-}
-
-@media (min-width: 1024px) and (max-height: 700px) {
-  .studio-stage,
-  .studio-workspace {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-  }
-
-  .studio-video,
-  .studio-cues,
-  .studio-tools {
-    grid-column: auto;
-    grid-row: auto;
-    height: auto;
-    max-height: none;
-  }
-}
-
-@media (min-width: 1024px) and (min-height: 701px) {
-  .studio-video {
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .player-stack {
-    height: 100%;
-    min-height: 0;
-    justify-content: center;
-  }
-
-  .player-stack .aspect-video {
-    width: auto;
-    max-width: 100%;
-    max-height: calc(100% - 3.4rem);
-  }
 }
 
 .pw-meter {
