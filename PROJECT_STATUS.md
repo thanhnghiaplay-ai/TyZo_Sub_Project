@@ -4,7 +4,7 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-11 09:15 (UTC+7) — v3.10.11 trên nhánh work (Claude sửa: nút Quản lý/Admin mất sau khi dịch, thử lại khi lỗi tạm; chưa tái hiện trên Vercel). Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-11 09:40 (UTC+7) — v3.11.0 trên nhánh work (thêm nút Lưu bản Whisper). Trước đó v3.10.11  (Claude sửa: nút Quản lý/Admin mất sau khi dịch, thử lại khi lỗi tạm; chưa tái hiện trên Vercel). Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v3.10.7** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-09.5`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |

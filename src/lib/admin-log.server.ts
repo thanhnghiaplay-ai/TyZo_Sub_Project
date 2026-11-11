@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.11.0",
+    time: "09:40 ngày 11/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.10.11, theo yêu cầu người dùng. Thêm nút «Lưu bản Whisper» cạnh «Xuất file Vietsub». Seg có thêm trường raw (chữ Whisper sau khi cắt lặp, trước applyNameFixes của bước phân tích phim; applyNameFixes sửa original nên không dùng original được). raw ghi ở acceptSegment, lúc nối câu dài hơn, và keepRejectedCue. Bản lưu cũ không có raw thì dùng original. Xuất qua toRawSrt, tên file .whisper.srt. Dùng chung cửa với xuất Vietsub (exportAllowed): dùng thử vẫn không xuất. Không đổi điều khoản. Test: raw-srt.test.ts.",
+  },
+  {
     version: "3.10.11",
     time: "09:15 ngày 11/11/2026",
     area: "khac",

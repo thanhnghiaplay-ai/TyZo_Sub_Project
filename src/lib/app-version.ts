@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.10.11";
+export const APP_VERSION = "3.11.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.11.0",
+    time: "09:40 ngày 11/11/2026",
+    title: "Thêm nút Lưu bản Whisper: lưu chữ gốc nhận ra từ tiếng nói, chưa dịch.",
+    points: [
+      "Nút nằm cạnh Xuất file Vietsub. Ra file .whisper.srt, từng câu theo giờ.",
+      "Chữ giữ đúng như nhận dạng, không bị sửa tên nhân vật hay dịch.",
+    ],
+  },
   {
     version: "3.10.11",
     time: "09:15 ngày 11/11/2026",

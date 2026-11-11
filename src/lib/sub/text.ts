@@ -141,19 +141,30 @@ export function cueText(seg: Seg): string {
   return seg.translation.trim();
 }
 
-export function toSrt(items: Seg[]): string {
+function srtBlocks(items: Seg[], textOf: (seg: Seg) => string): string {
   return items
     .map((seg, index) => {
       let end = seg.end > seg.start ? seg.end : seg.start + 0.4;
       const nx = items[index + 1];
       if (nx && end > nx.start - 0.02) end = Math.max(seg.start + 0.02, Math.min(end, nx.start - 0.02));
-      const pending = seg.translation === null || !seg.translation.trim();
-      const text = (seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg))
+      const text = textOf(seg)
         .replace(/\s*\n\s*/g, " ")
         .trim();
       return `${index + 1}\n${srtTimestamp(seg.start)} --> ${srtTimestamp(end)}\n${text}\n`;
     })
     .join("\n");
+}
+
+export function toSrt(items: Seg[]): string {
+  return srtBlocks(items, (seg) => {
+    const pending = seg.translation === null || !seg.translation.trim();
+    return seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg);
+  });
+}
+
+/** Bản nhận dạng gốc của Whisper, từng câu theo giờ, trước khi qua bước phân tích phim và dịch. */
+export function toRawSrt(items: Seg[]): string {
+  return srtBlocks(items, (seg) => seg.raw ?? seg.original);
 }
 
 export function stripFence(content: string): string {
@@ -334,6 +345,7 @@ export function acceptSegment(
     if (!((timeOverlap && (same || extendable)) || sameBreath)) continue;
     if (timeOverlap && extendable && key.length > pk.length) {
       prev.original = cleaned;
+      prev.raw = cleaned;
       prev.start = Math.min(prev.start, absStart);
       prev.end = Math.max(prev.end, end);
       if (prev.translation) {
@@ -354,6 +366,7 @@ export function acceptSegment(
     start: absStart,
     end,
     original: cleaned,
+    raw: cleaned,
     translation: null,
     ...(typeof heard === "number" ? { pitchHz: heard } : {}),
   });

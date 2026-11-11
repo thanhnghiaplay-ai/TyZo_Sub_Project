@@ -220,7 +220,7 @@ export function keepRejectedCue(segs: Seg[], row: RejectEntry): boolean {
   const start = row.start;
   const end = Math.max(row.end, start + 0.2);
   if (segs.some((seg) => seg.original === text && start < seg.end && end > seg.start)) return false;
-  segs.push({ start, end, original: text, translation: null });
+  segs.push({ start, end, original: text, raw: text, translation: null });
   segs.sort((a, b) => a.start - b.start || a.end - b.end);
   return true;
 }

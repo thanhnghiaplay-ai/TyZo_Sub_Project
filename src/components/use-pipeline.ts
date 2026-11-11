@@ -54,6 +54,7 @@ import {
   splitAudio,
   SR,
   toSrt,
+  toRawSrt,
   untranslated,
   windowRms,
   type Bible,
@@ -582,30 +583,65 @@ export function usePipeline() {
     }
   }, [say]);
 
+  /** Cùng một cửa cho mọi nút xuất file: đăng nhập, tình trạng tài khoản, gói. Trả true khi được xuất. */
+  const exportAllowed = useCallback(
+    async (what: string) => {
+      const session = await authClient.getSession().catch(() => null);
+      if (!session?.data?.user) {
+        say(`Chưa đăng nhập. Hãy đăng ký hoặc đăng nhập rồi mới xuất ${what}.`, true);
+        return false;
+      }
+      const id = deviceId();
+      if (!id) {
+        say("Trình duyệt không cho lưu máy này, không mở được lượt thử.", true);
+        return false;
+      }
+      try {
+        const place = await getMyPlace();
+        const blocked = standingBlock(place.status, place.reason);
+        if (blocked) {
+          say(blocked, true);
+          return false;
+        }
+        const state = await claimTrialDevice({ data: id });
+        const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
+        if (notice) {
+          say(notice, true);
+          return false;
+        }
+      } catch {
+        say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
+        return false;
+      }
+      return true;
+    },
+    [say],
+  );
+
+  const saveText = useCallback(
+    (text: string, suffix: string) => {
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      const href = URL.createObjectURL(blob);
+      link.href = href;
+      link.download = ((file?.name || audioFile?.name || "phu-de").replace(/\.[^.]+$/, "") || "phu-de") + suffix;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(href), 1000);
+    },
+    [file, audioFile],
+  );
+
   const exportSrt = useCallback(async () => {
-    const session = await authClient.getSession().catch(() => null);
-    if (!session?.data?.user) return say("Chưa đăng nhập. Hãy đăng ký hoặc đăng nhập rồi mới xuất file Vietsub.", true);
-    const id = deviceId();
-    if (!id) return say("Trình duyệt không cho lưu máy này, không mở được lượt thử.", true);
-    try {
-      const place = await getMyPlace();
-      const blocked = standingBlock(place.status, place.reason);
-      if (blocked) return say(blocked, true);
-      const state = await claimTrialDevice({ data: id });
-      const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
-      if (notice) return say(notice, true);
-    } catch {
-      return say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
-    }
+    if (!(await exportAllowed("file Vietsub"))) return;
     if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
-    const blob = new Blob([toSrt(job.current.segs)], { type: "text/plain;charset=utf-8" });
-    const link = document.createElement("a");
-    const href = URL.createObjectURL(blob);
-    link.href = href;
-    link.download = ((file?.name || "phu-de").replace(/\.[^.]+$/, "") || "phu-de") + ".srt";
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(href), 1000);
-  }, [file, say]);
+    saveText(toSrt(job.current.segs), ".srt");
+  }, [exportAllowed, saveText, say]);
+
+  const exportRaw = useCallback(async () => {
+    if (!(await exportAllowed("bản nhận dạng gốc"))) return;
+    if (!job.current.segs.length) return say("Chưa có bản nhận dạng để xuất.", true);
+    saveText(toRawSrt(job.current.segs), ".whisper.srt");
+  }, [exportAllowed, saveText, say]);
 
   const saveGloss = useCallback(
     (nextTitle: string, nextNotes: string, nextGloss: string) => {
@@ -2110,6 +2146,7 @@ export function usePipeline() {
     cancel,
     reset,
     exportSrt,
+    exportRaw,
     editSeg,
     cycleVoiceLock,
     retryFailed,

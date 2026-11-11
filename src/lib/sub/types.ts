@@ -2,6 +2,8 @@ export type Seg = {
   start: number;
   end: number;
   original: string;
+  /** Chữ Whisper nhận ra, chưa qua sửa tên của bước phân tích phim. Không có (bản lưu cũ) thì dùng original. */
+  raw?: string;
   translation: string | null;
   /** Model không trả câu này sau khi đã thử lại riêng. UI phải hiện lỗi, không hiện câu gốc như bản dịch. */
   translationFailed?: boolean;

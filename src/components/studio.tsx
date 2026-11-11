@@ -684,13 +684,21 @@ export function Studio() {
         <button
           type="button"
           role="status"
-          className={"line-clamp-2 h-10 min-w-0 flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
+          className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
           onClick={() => statusRef.current?.showModal()}
         >
           {app.status}
         </button>
         <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
           Xuất file Vietsub
+        </button>
+        <button
+          type="button"
+          title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
+          className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
+          onClick={() => void app.exportRaw()}
+        >
+          Lưu bản Whisper
         </button>
         {app.reviewHold && (
           <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
