@@ -1717,13 +1717,13 @@ function VoiceLanes({
             onClick={() => id && onPick(id)}
             className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
           >
-            <span className="block text-sm font-semibold">{lane.title}</span>
-            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
-            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>
+            <span className="block text-sm font-semibold leading-tight">{lane.title}</span>
+            <span className={"mt-0.5 block text-xs leading-snug " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
+            <span className={"mt-0.5 block text-xs leading-snug " + (on ? "text-ink/75" : "text-muted")}>
               {lane.pace}
-              {price ? ` · ${price}` : ""}
+              {price ? <span className="font-medium"> · {price}</span> : null}
             </span>
-            <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>
+            <span className={"mt-1 block text-[0.7rem] leading-tight opacity-80 " + (on ? "text-ink/70" : "text-muted")}>
               {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
             </span>
           </button>
