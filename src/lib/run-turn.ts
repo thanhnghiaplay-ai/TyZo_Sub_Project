@@ -89,6 +89,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       hold,
       cap: desk.cap,
       dayStartIso: dayStartIso(),
+      scope: data.scope === "translate" ? "translate" : "full",
     });
     if ("error" in result) {
       throw new Error(

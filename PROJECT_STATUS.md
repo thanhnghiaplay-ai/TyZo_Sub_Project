@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 03:48 (UTC+7) — v3.16.0 trên nhánh work (xem không xóa nhầm, dịch lại không tính nhận dạng, phụ đề còn trên máy). Trước đó v3.15.0. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-12 04:25 (UTC+7) — v3.16.1 trên nhánh work (phiếu dịch lại không cho nhận dạng). Trước đó v3.16.0. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.16.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.16.1** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -222,6 +222,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-12 04:25 — v3.16.1 trên work: phiếu dịch lại ghi loại và cổng từ chối nhận dạng trước khi gọi nhà cung cấp. Chat trên phiếu đó vẫn trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 03:48 — v3.16.0 trên work: đang xem thì không còn nút xóa phụ đề cạnh phát. Đổi file hoặc ngôn ngữ nguồn phải hỏi. Dịch lại chỉ tính phần dịch, giữ câu đã sửa, câu cũ còn đến khi câu mới về. Đóng trang lưu phụ đề trên máy khách, chọn lại đúng file là xem tiếp. Điều khoản 2026-11-12.2. Chưa xem trên điện thoại thật.
 - 2026-11-12 02:44 — v3.15.0 trên work: xếp lại phòng dịch theo đường người dùng. Thẻ Bắt đầu gộp key và phim; Nâng cao đóng sẵn. Nút chạy và trạng thái dưới khung video. Có câu rồi thì ẩn chuẩn bị, xuất file cạnh danh sách. Player thêm tua ±10, công tắc đọc, nút Aa. Không đổi điều khoản. Chưa xem trên điện thoại thật.
 - 2026-11-11 18:18 — v3.12.1 và v3.13.0 trên work (lệnh «Claude sửa», Chủ duyệt: báo cả key riêng lẫn key phòng, hiện riêng từng loại và tổng, chỉ Chủ xem, không xem video và key). v3.12.1: `src/lib/sub/quality.ts` (độ tin từ `avg_logprob`: cao từ -0,5, thấp dưới -0,8 hoặc nén trên 2,4; đèn xanh/vàng/đỏ theo ngưỡng ước lượng đặt thành hằng số), khối «Chất lượng» và «Kiểm tra ngôn ngữ» trong tab Kiểm tra, thêm vào Xuất JSON, `components/quality-view.tsx`. v3.13.0: bảng `quality_runs` (migration 0019, chỉ số, không có mã tài khoản, tên tệp, chữ, key), `src/lib/quality-room.ts` (`reportQuality` kiểm tra và giới hạn 30 lần/giờ/tài khoản, `getQualityBoard` chỉ Chủ), `src/lib/quality-board.ts` (kiểm tra bản báo, gộp số, gợi ý chỉnh), tab Admin «Chất lượng» (`quality-board.tsx`), `use-pipeline.ts` gửi một bản sau khi nhận dạng xong mọi đoạn (một lần mỗi lần chạy, lỗi thì bỏ qua). Điều khoản nâng `2026-11-11.1`, thêm hai đoạn ở mục 4. Đã chạy: `tsc` sạch, `npm test` 191 + 310 đạt, `npm run build` được, truy vấn SQL thử trên PGLite, kết xuất thử HealthPill và BandBar. Chưa thử: đăng nhập thật, gửi từ trình duyệt thật, hiển thị tab Chất lượng, Postgres thật. Số do trình duyệt khách báo nên không kiểm chứng được; ngưỡng đèn chưa chỉnh theo số đo.

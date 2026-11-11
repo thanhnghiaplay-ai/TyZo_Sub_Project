@@ -83,6 +83,24 @@ describe("cổng tính tiền", () => {
     assert.equal(called, 0);
   });
 
+  it("phiếu dịch lại từ chối nhận dạng trước khi gọi, vẫn cho dịch", async () => {
+    const redo = "c".repeat(24);
+    await openTicketWith(sql, { id: redo, userId: "g", fileName: "f", seconds: 30, rate: 1, hold: 2000, cap: 0, dayStartIso: "2020-01-01T00:00:00Z", scope: "translate" });
+    let called = 0;
+    const send = async () => {
+      called += 1;
+      return new Response("{}");
+    };
+    const blocked = await call({ ticketId: redo, path: "/audio/transcriptions", model: "asr", send });
+    assert.equal(blocked.kind, "reject");
+    assert.equal(blocked.kind === "reject" && blocked.status, 402);
+    assert.equal(called, 0);
+    assert.equal((await t(redo)).charged, 0);
+    const chat = await call({ ticketId: redo, send: json({ usage: { prompt_tokens: 1000, completion_tokens: 100 } }) });
+    assert.equal(chat.kind, "pass");
+    assert.ok((await t(redo)).charged > 0);
+  });
+
   it("model chưa có giá bị từ chối, không gọi Groq", async () => {
     let called = false;
     const out = await call({ model: "la", send: async () => { called = true; return new Response("{}"); } });

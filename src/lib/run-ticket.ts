@@ -36,9 +36,10 @@ export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {
  */
 export async function openTicketWith(
   sql: Sql,
-  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; cap: number; dayStartIso: string },
+  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; cap: number; dayStartIso: string; scope?: "full" | "translate" },
 ): Promise<OpenResult> {
   const { id, userId, fileName, seconds, rate, hold, cap, dayStartIso } = input;
+  const scope = input.scope === "translate" ? "translate" : "full";
   await sql`insert into room_accounts (user_id) values (${userId}) on conflict (user_id) do nothing`;
   await releaseStaleWith(sql, userId);
   const rows = await sql<{ id: string }>`
@@ -52,8 +53,8 @@ export async function openTicketWith(
       returning user_id
     ),
     ins as (
-      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status)
-      select ${id}::text, user_id, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu' from acc
+      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status, scope)
+      select ${id}::text, user_id, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu', ${scope}::text from acc
       returning id
     ),
     led as (
@@ -80,6 +81,15 @@ export async function ticketLive(sql: Sql, id: string, userId: string) {
     select held from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' and held > 0
   `;
   return rows.length > 0;
+}
+
+/** Loại phiếu còn sống. null khi phiếu không còn để trừ. Phiếu cũ không có loại thì là cả lần chạy. */
+export async function ticketKind(sql: Sql, id: string, userId: string): Promise<"full" | "translate" | null> {
+  const rows = await sql<{ scope: string | null }>`
+    select scope from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' and held > 0
+  `;
+  if (!rows.length) return null;
+  return rows[0].scope === "translate" ? "translate" : "full";
 }
 
 /**

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.16.1",
+    time: "04:25 ngày 12/11/2026",
+    area: "tien",
+    text: "Vá lỗ phiếu v3.16.0. run_tickets.scope (migration 0020, mặc định full). openRunTicket ghi scope lúc giữ tiền. chargeWith đọc ticketKind và từ chối /audio/transcriptions trên phiếu translate trước khi gọi Groq, nên phòng không trả nhà cung cấp rồi chỉ thu được phần giữ. Chat trên phiếu đó vẫn trừ như cũ. Điều khoản không đổi vì lời hứa 2026-11-12.2 đã nói dịch lại không tính nhận dạng.",
+  },
+  {
     version: "3.16.0",
     time: "03:48 ngày 12/11/2026",
     area: "tien",

@@ -1,7 +1,7 @@
 import type { Sql } from "./db.ts";
 import { asrPerSecond, billedSecondsOf, asrCost, chatCost, chatPerMillion, speechCost, speechPerMillionChars, type PriceBook } from "./run-bill.ts";
 import { dayStartIso } from "./run-desk.ts";
-import { chargeSpeechWith, chargeTicketWith, refundSpeechWith, ticketLive } from "./run-ticket.ts";
+import { chargeSpeechWith, chargeTicketWith, refundSpeechWith, ticketKind } from "./run-ticket.ts";
 
 export const MAX_COMPLETION_TOKENS = 8192;
 
@@ -78,8 +78,12 @@ export async function chargeWith(input: {
   const priced = path === "/audio/transcriptions" ? asrPerSecond(book, model) != null : chatPerMillion(book, model) != null;
   if (!priced) return { kind: "reject", status: 422, message: "Model này chưa có giá niêm yết." };
   if (!/^[a-f0-9]{24}$/.test(input.ticketId)) return { kind: "reject", status: 402, message: "Thiếu phiếu giữ chỗ. Hãy bấm chạy lại để giữ chỗ." };
-  if (!(await ticketLive(sql, input.ticketId, userId))) {
+  const kind = await ticketKind(sql, input.ticketId, userId);
+  if (!kind) {
     return { kind: "reject", status: 402, message: "Số tiền đã giữ cho lần chạy này đã hết hoặc phiếu đã đóng. Phần đã dịch vẫn còn. Hãy nạp thêm và chạy tiếp." };
+  }
+  if (kind === "translate" && path === "/audio/transcriptions") {
+    return { kind: "reject", status: 402, message: "Phiếu dịch lại không dùng để nhận dạng." };
   }
   const response = await input.send();
   if (!response.ok) return { kind: "pass", response };
