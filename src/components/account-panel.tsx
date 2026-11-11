@@ -116,7 +116,7 @@ export function AccountPanel() {
           <p className="text-sm text-muted">
             {place?.status === "open" || !place
               ? "Dùng khi cần hỏi về gói, nạp tiền, khóa hoặc cấm. Không gửi key Groq."
-              : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}
+              : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất phụ đề."}
           </p>
           <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
           <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
@@ -196,7 +196,7 @@ export function AccountPanel() {
           )}
           <div className="grid gap-2">
           <p className="text-sm text-muted">
-            Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
+            Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất phụ đề. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>
           {ROOM_PLANS.map((plan) => (
             <button
