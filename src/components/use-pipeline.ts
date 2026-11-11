@@ -8,9 +8,11 @@ import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
 import { formatMoney } from "@/lib/money-format";
+import { providersIn, type ServicePack } from "@/lib/service-pack";
+import type { ProviderId } from "@/lib/sub/provider";
 
 const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
-import { audioBufferTo16k, packAudio } from "@/lib/sub/codec";
+import { audioBufferTo16k, packAudio, type PackedAudio } from "@/lib/sub/codec";
 import {
   abortError,
   analyzeFilm,
@@ -29,6 +31,11 @@ import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
+import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
+import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
+import { reportFromSummary } from "@/lib/quality-board";
+import { reportQuality } from "@/lib/quality-room";
+import { APP_VERSION } from "@/lib/app-version";
 import { applyLineLocks, assignVoices, lineLockId, measurePitch } from "@/lib/sub/pitch-voice";
 import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, energyThreshold, spansFromEnergy } from "@/lib/sub/chunk-plan";
 import { FILTER_RETRY_BUDGET_SECONDS, filterRejectKey, planFilterRetries, type FilterRetryReport } from "@/lib/sub/filter-retry";
@@ -102,6 +109,10 @@ type Job = {
   retryReport: AsrRetryReport | null;
   filterRetried: Set<string>;
   filterRetryUsed: number;
+  langRetryUsed: number;
+  langSuspect: number;
+  langEvents: LangEvent[];
+  qualitySent: boolean;
   filterRetryReport: FilterRetryReport | null;
   gapSpent: number;
   rawParts: RawAsrPart[];
@@ -175,6 +186,10 @@ const emptyJob = (): Job => ({
   retryReport: null,
   filterRetried: new Set(),
   filterRetryUsed: 0,
+  langRetryUsed: 0,
+  langSuspect: 0,
+  langEvents: [],
+  qualitySent: false,
   filterRetryReport: null,
   gapSpent: 0,
   rawParts: [],
@@ -246,7 +261,18 @@ export function usePipeline() {
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
   keyRef.current = key;
+  const packRef = useRef<ServicePack | null>(null);
+  const [servicePack, setServicePackState] = useState<ServicePack | null>(null);
+  const [alibabaKey, setAlibabaKey] = useState("");
+  const alibabaKeyRef = useRef("");
+  alibabaKeyRef.current = alibabaKey;
+  useEffect(() => {
+    if (alibabaKey) writeStore("gali", alibabaKey);
+  }, [alibabaKey]);
+  const billNarrationRef = useRef(false);
+  const packRequiredRef = useRef(false);
   const activeKey = () => (roomPayRef.current ? ROOM_KEY : keyRef.current.trim());
+  const keyOf = (provider: ProviderId) => (roomPayRef.current ? ROOM_KEY : provider === "alibaba" ? alibabaKeyRef.current.trim() : keyRef.current.trim());
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
   const [genre, setGenre] = useState("auto");
@@ -259,6 +285,9 @@ export function usePipeline() {
   const [speechVad, setSpeechVadState] = useState(false);
   const vadRef = useRef(false);
   vadRef.current = speechVad;
+  const [langCheck, setLangCheckState] = useState(false);
+  const langRef = useRef(false);
+  langRef.current = langCheck;
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [gloss, setGloss] = useState("");
@@ -293,6 +322,7 @@ export function usePipeline() {
   const [diag, setDiag] = useState<{ rejects: RejectEntry[]; raw: RawAsrPart[] }>({ rejects: [], raw: [] });
   const [asrRetry, setAsrRetry] = useState<AsrRetryReport | null>(null);
   const [filterRetry, setFilterRetry] = useState<FilterRetryReport | null>(null);
+  const [langReport, setLangReport] = useState<LangCheckReport | null>(null);
   const [gapPlan, setGapPlanState] = useState<GapPlan | null>(null);
   const gapPlanRef = useRef<GapPlan | null>(null);
   const [status, setStatus] = useState("Sẵn sàng. Chọn video rồi bấm Tải và dịch.");
@@ -307,10 +337,10 @@ export function usePipeline() {
   const [uses, setUses] = useState<Record<string, number>>({});
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const publishTimer = useRef(0);
-  const isErrorRef = useRef(false);
 
   useEffect(() => {
     setKey(readStore("gk"));
+    setAlibabaKey(readStore("gali"));
     const lang = readStore("glang");
     setTarget(lang === "Vietnamese" ? lang : "Vietnamese");
     const src = readStore("gsrc");
@@ -332,6 +362,7 @@ export function usePipeline() {
     const whisper = readStore("gasr");
     if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo") setAsrModel(whisper);
     if (readStore("gvad") === "1") setSpeechVadState(true);
+    if (readStore("glang") === "1") setLangCheckState(true);
     setTitle(readStore("gtitle"));
     setNotes(readStore("gnotes"));
     const glossKey = "gl_" + (readStore("gtitle").trim().toLowerCase() || "_");
@@ -405,6 +436,18 @@ export function usePipeline() {
       setDiag({ rejects: job.current.rejects.slice(), raw: job.current.rawParts.slice() });
       setAsrRetry(job.current.retryReport);
       setFilterRetry(job.current.filterRetryReport);
+      setLangReport(
+        job.current.langSuspect || job.current.langEvents.length
+          ? {
+              suspect: job.current.langSuspect,
+              resent: job.current.langEvents.length,
+              swapped: job.current.langEvents.filter((e) => e.swapped).length,
+              usedSeconds: job.current.langRetryUsed,
+              budgetSeconds: LANG_RETRY_BUDGET_SECONDS,
+              events: job.current.langEvents,
+            }
+          : null,
+      );
     };
     if (immediate) {
       clearTimeout(publishTimer.current);
@@ -417,7 +460,6 @@ export function usePipeline() {
   const say = useCallback((message: string, error = false) => {
     setStatus(message);
     setIsError(error);
-    isErrorRef.current = error;
   }, []);
 
   const progress = useCallback(() => {
@@ -490,6 +532,7 @@ export function usePipeline() {
 
   const clearJob = useCallback(() => {
     const j = job.current;
+    j.qualitySent = false;
     j.segs = [];
     j.pcm = null;
     j.stream = null;
@@ -691,11 +734,18 @@ export function usePipeline() {
   }, []);
 
   const start = useCallback(async () => {
-    const token = activeKey();
+    const pack = packRef.current;
+    const token = pack ? keyOf(pack.roles.asr?.provider ?? "groq") : activeKey();
     const link = url.trim();
-    const chosen = modelId.trim();
-    if (!token) return say("Vui lòng nhập Groq API key.", true);
-    if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
+    const chosen = pack?.roles.translate?.model || modelId.trim();
+    if (packRequiredRef.current && !pack) return say("Hãy chọn một gói dịch trước khi chạy.", true);
+    if (!pack && !token) return say("Vui lòng nhập Groq API key.", true);
+    if (pack) {
+      const missing = providersIn(pack).find((provider) => !keyOf(provider));
+      if (missing) return say(missing === "alibaba" ? "Gói này cần key Alibaba của bạn, hoặc hãy chọn trả theo lượt." : "Gói này cần key Groq của bạn.", true);
+      if (!pack.roles.asr || !pack.roles.translate) return say("Gói chưa đủ model nhận dạng và dịch.", true);
+    }
+    if (!pack && mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
     if (analyzing) return say("Đang phân tích phim, chờ một chút.", true);
@@ -751,8 +801,10 @@ export function usePipeline() {
         const opened = await openRoomTicket({
           fileName: chosenFile.name,
           seconds: await readMediaSeconds(chosenFile),
-          asrModel,
-          chatModel: mode === "manual" ? chosen : "auto",
+          asrModel: pack?.roles.asr?.model ?? asrModel,
+          chatModel: pack?.roles.translate?.model ?? (mode === "manual" ? chosen : "auto"),
+          packId: pack?.id,
+          narration: billNarrationRef.current && Boolean(pack?.roles.narration),
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
@@ -787,6 +839,10 @@ export function usePipeline() {
       /* resume có thể không có */
     }
 
+    const asrProvider = pack?.roles.asr?.provider ?? "groq";
+    const asrKey = pack ? keyOf(asrProvider) : token;
+    const asrId = pack?.roles.asr?.model ?? asrModel;
+
     const onWait = (message: string) => {
       if (my === j.runId) say(message);
     };
@@ -796,8 +852,10 @@ export function usePipeline() {
         j.note = "đang phân tích phim…";
         setAnalyzing(true);
         progress();
-        const analysisModel =
-          mode === "manual"
+        const cAssign = pack?.roles.context ?? pack?.roles.translate;
+        const analysisModel = cAssign
+          ? cAssign.model
+          : mode === "manual"
             ? chosen
             : pickAutoModel({
                 profile: "accurate",
@@ -811,8 +869,9 @@ export function usePipeline() {
                 blocked: j.blocked,
                 escalate: true,
               }).id;
+        const analysisKey = cAssign ? keyOf(cAssign.provider) : token;
         j.analysisP = analyzeFilm({
-          key: token,
+          key: analysisKey,
           model: analysisModel,
           language: target,
           title,
@@ -823,8 +882,32 @@ export function usePipeline() {
           gate: j.gate,
           onWait,
           ticket: ticketId,
+          provider: cAssign?.provider ?? "groq",
         })
-          .then((next) => {
+          .then(async (next) => {
+            const summary = pack?.roles.summary;
+            const context = pack?.roles.context;
+            if (summary && (!context || summary.provider !== context.provider || summary.model !== context.model)) {
+              try {
+                const extra = await analyzeFilm({
+                  key: keyOf(summary.provider),
+                  model: summary.model,
+                  language: target,
+                  title,
+                  notes,
+                  gloss,
+                  lines: j.segs.map((seg) => seg.original),
+                  signal,
+                  gate: j.gate,
+                  onWait,
+                  ticket: ticketId,
+                  provider: summary.provider,
+                });
+                if (extra.summary) next.summary = extra.summary;
+              } catch (error) {
+                if ((error as Error)?.name === "AbortError") throw error;
+              }
+            }
             applyNameFixes(j.segs, next);
             overlayCastLocks(next, title);
             j.bible = next;
@@ -891,6 +974,42 @@ export function usePipeline() {
       say("Không tải được bộ lọc tiếng người. Đoạn này gửi theo mức năng lượng.");
     };
 
+    /** Chỉ khi bật công tắc. Đoạn nghi lệch ngôn ngữ thì gửi lại không ép ngôn ngữ, một lần, có ngân sách. Lỗi thì giữ kết quả cũ. */
+    const checkLanguage = async (
+      res: Exclude<AsrResult, "skip" | "fail">,
+      packed: PackedAudio,
+      seconds: number,
+      partIndex: number,
+      startAt: number,
+    ): Promise<AsrResult> => {
+      if (!langRef.current || !source || !needsLangCheck(source, res)) return res;
+      j.langSuspect++;
+      if (j.langRetryUsed + seconds > LANG_RETRY_BUDGET_SECONDS) return res;
+      j.langRetryUsed += seconds;
+      let again: Awaited<ReturnType<typeof transcribe>>;
+      try {
+        again = await transcribe(packed, asrKey, "", "", asrId, signal, j.gate, onWait, ticketId, asrProvider);
+      } catch (error) {
+        if (signal.aborted || (error as { name?: string })?.name === "AbortError") throw error;
+        return res;
+      }
+      await ensureTrial();
+      j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
+      const pick = chooseBetter(source, res, again);
+      j.langEvents.push({
+        partIndex,
+        start: startAt,
+        requested: source,
+        detected: normalizeLang(again.language),
+        swapped: pick === "auto",
+        logprobBefore: meanLogprob(res),
+        logprobAfter: meanLogprob(again),
+        before: resultText(res).slice(0, 80),
+        after: resultText(again).slice(0, 80),
+      });
+      return pick === "auto" ? again : res;
+    };
+
     const transcribeRemaining = async () => {
       let next = j.nextPart;
       j.decodeFail = 0;
@@ -932,10 +1051,12 @@ export function usePipeline() {
               j.note = `đoạn ${index + 1}: đang gửi ${Math.max(1, Math.round(packed.blob.size / 1024))} KB`;
               progress();
               const prompt = asrPrompt(title, gloss);
-              const res = await transcribe(packed, token, source, prompt, asrModel, signal, j.gate, onWait, ticketId);
+              const first = await transcribe(packed, asrKey, source, prompt, asrId, signal, j.gate, onWait, ticketId, asrProvider);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, clip.length / SR) * asrUsd(asrModel);
+              const res = await checkLanguage(first, packed, clip.length / SR, index, startAt / SR + gated.offset);
+              if (my !== j.runId) return;
               j.asrBuf.set(index, res);
               j.heard.set(index, clip);
               j.heardOffset.set(index, gated.offset);
@@ -945,6 +1066,8 @@ export function usePipeline() {
         }
       };
       await Promise.all(Array.from({ length: Math.max(1, threads) }, worker));
+      const swappedN = j.langEvents.filter((e) => e.swapped).length;
+      if (swappedN) say(`Đã nhận dạng lại ${swappedN} đoạn có ngôn ngữ khác ngôn ngữ đã chọn.`);
       await retryDecodeFails();
       await retryFilterMisses();
     };
@@ -997,7 +1120,7 @@ export function usePipeline() {
               progress();
               const packed = await packAudio(heard, signal);
               throwIfAborted(signal);
-              const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
+              const result = await transcribe(packed, asrKey, source, asrPrompt(title, gloss), asrId, signal, j.gate, onWait, ticketId, asrProvider);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, heard.length / SR) * asrUsd(asrModel);
@@ -1061,7 +1184,7 @@ export function usePipeline() {
           j.filterRetryUsed += seconds;
           const packed = await packAudio(gated.samples, signal);
           throwIfAborted(signal);
-          const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
+          const result = await transcribe(packed, asrKey, source, asrPrompt(title, gloss), asrId, signal, j.gate, onWait, ticketId, asrProvider);
           await ensureTrial();
           if (my !== j.runId) return;
           j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
@@ -1200,12 +1323,14 @@ export function usePipeline() {
                 .join("\n\n"),
             };
             let translated: string[] | null = null;
-            let used = mode === "manual" ? chosen : "";
+            const tAssign = pack?.roles.translate;
+            let used = tAssign ? tAssign.model : mode === "manual" ? chosen : "";
             let lastError: Error | undefined;
-            const attempts = mode === "manual" ? 1 : 3;
+            const attempts = tAssign || mode === "manual" ? 1 : 3;
             for (let attempt = 0; attempt < attempts; attempt++) {
-              const picked =
-                mode === "manual"
+              const picked = tAssign
+                ? { id: tAssign.model, via: pack?.name || "gói dịch" }
+                : mode === "manual"
                   ? { id: chosen, via: "chọn tay" }
                   : pickAutoModel({
                       profile,
@@ -1224,17 +1349,19 @@ export function usePipeline() {
               j.note = picked.via;
               progress();
               try {
-                // Send protected lines (terms → placeholders) so LLM cannot rewrite forced terms
+                const review = pack?.roles.review;
                 translated = await translateWithRepair(
                   protectedOrigs,
                   target,
-                  token,
+                  tAssign ? keyOf(tAssign.provider) : token,
                   used,
                   signal,
                   j.gate,
                   opts,
                   onWait,
                   ticketId,
+                  tAssign?.provider ?? "groq",
+                  review ? { key: keyOf(review.provider), model: review.model, provider: review.provider } : null,
                 );
                 break;
               } catch (error) {
@@ -1243,7 +1370,7 @@ export function usePipeline() {
                 const message = lastError.message || "";
                 if (/429|giới hạn/.test(message)) j.cooling.set(used, Date.now() + 20000);
                 if (/404|không tìm thấy model|decommissioned|model .* not found/i.test(message)) j.blocked.add(used);
-                if (mode === "manual") throw lastError;
+                if (tAssign || mode === "manual") throw lastError;
               }
             }
             if (!translated) throw lastError || new Error("Dịch văn bản thất bại.");
@@ -1376,6 +1503,10 @@ export function usePipeline() {
         j.retryReport = null;
         j.filterRetried = new Set();
         j.filterRetryUsed = 0;
+        j.langRetryUsed = 0;
+        j.langSuspect = 0;
+        j.langEvents = [];
+        j.qualitySent = false;
         j.filterRetryReport = null;
         j.heardOffset.clear();
         j.gapSpent = 0;
@@ -1466,6 +1597,38 @@ export function usePipeline() {
         j.pcm = null;
         j.stream = null;
       }
+      if (j.nextPart >= j.parts.length && !j.qualitySent && ["zh", "ko", "ja", "en"].includes(source) && j.rawParts.length) {
+        j.qualitySent = true;
+        // Chỉ gửi các con số, không gửi chữ, tên tệp, video hay khóa. Lỗi ở đây không được làm hỏng lần dịch.
+        try {
+          const summary = summarizeQuality({
+            raw: j.rawParts,
+            rejects: j.rejects,
+            kept: j.segs.length,
+            lang: langRef.current
+              ? {
+                  suspect: j.langSuspect,
+                  resent: j.langEvents.length,
+                  swapped: j.langEvents.filter((e) => e.swapped).length,
+                  usedSeconds: j.langRetryUsed,
+                  budgetSeconds: LANG_RETRY_BUDGET_SECONDS,
+                  events: j.langEvents,
+                }
+              : null,
+          });
+          const report = reportFromSummary(summary, {
+            appVersion: APP_VERSION,
+            keySource: token === ROOM_KEY ? "room" : "own",
+            asrModel,
+            sourceLang: source,
+            seconds: j.parts.reduce((n, [a, b]) => n + (b - a), 0) / SR,
+            langCheck: langRef.current,
+          });
+          void reportQuality({ data: report }).catch(() => {});
+        } catch {
+          /* bỏ qua */
+        }
+      }
       const retryBit =
         j.retryReport && (j.retryReport.usedSeconds > 0 || j.retryReport.missing.length > 0) ? ` ${formatRetryStatus(j.retryReport)}` : "";
       if (!j.segs.length) {
@@ -1477,13 +1640,13 @@ export function usePipeline() {
       }
       const pending = j.segs.some((seg) => seg.translation === null);
       const failedN = j.segs.filter((seg) => seg.translationFailed).length;
-      if (pending) say(`Còn câu chưa dịch. Bấm Tiếp tục — không phải nhận dạng lại.${retryBit}`);
+      if (pending) say(`Còn câu chưa dịch. Bấm Tiếp tục — không phải nhận dạng lại.${retryBit}`, true);
       else if (failedN || j.failedParts.length || j.retryReport?.missing.length) {
         const bits = [
           failedN ? `${failedN} câu không dịch được` : "",
           j.retryReport?.missing.length ? formatRetryStatus(j.retryReport) : j.failedParts.length ? `${j.failedParts.length} đoạn không giải mã được` : "",
         ].filter(Boolean);
-        say(`Hoàn tất nhưng ${bits.join(". ")}. Câu đã dịch không bị gửi lại.`);
+        say(`Hoàn tất nhưng ${bits.join(". ")}. Câu đã dịch không bị gửi lại.`, true);
       } else {
         const mix =
           mode === "auto"
@@ -1627,14 +1790,17 @@ export function usePipeline() {
   );
 
   const analyzeNow = useCallback(async () => {
-    const token = activeKey();
+    const pack = packRef.current;
+    const cAssign = pack?.roles.context ?? pack?.roles.translate;
+    const token = cAssign ? keyOf(cAssign.provider) : activeKey();
     if (!token) return say("Nhập API key trước khi phân tích.", true);
     const lines = job.current.segs.map((seg) => seg.original).filter(Boolean);
     if (!lines.length) return say("Chưa có lời thoại. Hãy nhận dạng trước, rồi phân tích.", true);
     if (running) return say("Đang chạy. Hãy hủy hoặc đợi xong rồi phân tích lại.", true);
     const chosen = modelId.trim();
-    const analysisModel =
-      mode === "manual"
+    const analysisModel = cAssign
+      ? cAssign.model
+      : mode === "manual"
         ? chosen
         : pickAutoModel({
             profile: "accurate",
@@ -1654,7 +1820,16 @@ export function usePipeline() {
     if (roomPayRef.current) {
       try {
         const spanSeconds = Math.max(60, Math.ceil(Math.max(0, ...job.current.segs.map((seg) => seg.end))));
-        ticketId = (await openRoomTicket({ fileName: "Phân tích phim", seconds: spanSeconds, asrModel, chatModel: analysisModel })).id;
+        ticketId = (
+          await openRoomTicket({
+            fileName: "Phân tích phim",
+            seconds: spanSeconds,
+            asrModel: pack?.roles.asr?.model ?? asrModel,
+            chatModel: analysisModel,
+            packId: pack?.id,
+            narration: false,
+          })
+        ).id;
         releasePlayback = claimPlayback(ticketId);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần phân tích.", true);
@@ -1678,6 +1853,7 @@ export function usePipeline() {
         gate: job.current.gate,
         onWait: (message) => say(message),
         ticket: ticketId,
+        provider: cAssign?.provider ?? "groq",
       });
       applyNameFixes(job.current.segs, next);
       overlayCastLocks(next, title);
@@ -1838,8 +2014,9 @@ export function usePipeline() {
     if (running) return say("Đang chạy. Hãy đợi xong rồi mới gửi khoảng trống.", true);
     const plan = gapPlanRef.current;
     if (!plan?.selected.length) return say("Chưa có khoảng trống để gửi. Hãy dò trước.", true);
-    const token = activeKey();
-    if (!token) return say("Nhập API key trước khi gửi.", true);
+    const pack = packRef.current;
+    const token = pack ? keyOf(pack.roles.asr?.provider ?? "groq") : activeKey();
+    if (!token) return say(pack?.roles.asr?.provider === "alibaba" ? "Gói này cần key Alibaba của bạn." : "Nhập API key trước khi gửi.", true);
     if (!confirm(formatGapConfirm(plan))) return;
     let ticketId: string | null = null;
     let gapFailed = false;
@@ -1847,7 +2024,14 @@ export function usePipeline() {
     if (roomPayRef.current) {
       try {
         ticketId = (
-          await openRoomTicket({ fileName: "Khoảng trống", seconds: Math.max(10, Math.ceil(plan.audioSeconds)), asrModel, chatModel: "auto" })
+          await openRoomTicket({
+            fileName: "Khoảng trống",
+            seconds: Math.max(10, Math.ceil(plan.audioSeconds)),
+            asrModel: pack?.roles.asr?.model ?? asrModel,
+            chatModel: pack?.roles.translate?.model ?? "auto",
+            packId: pack?.id,
+            narration: false,
+          })
         ).id;
         releasePlayback = claimPlayback(ticketId);
       } catch (error) {
@@ -1883,7 +2067,18 @@ export function usePipeline() {
         say(`Đang nhận dạng ${fmt(start)}–${fmt(start + seconds)}. Chỉ khoảng đã xác nhận.`);
         const packed = await packAudio(gated.samples, signal);
         throwIfAborted(signal);
-        const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, (message) => say(message), ticketId);
+        const result = await transcribe(
+          packed,
+          token,
+          source,
+          asrPrompt(title, gloss),
+          pack?.roles.asr?.model ?? asrModel,
+          signal,
+          j.gate,
+          (message) => say(message),
+          ticketId,
+          pack?.roles.asr?.provider ?? "groq",
+        );
         if (my !== j.runId) return;
         j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
         j.gapSpent += Math.max(10, seconds);
@@ -2027,6 +2222,26 @@ export function usePipeline() {
   return {
     key,
     setKey,
+    alibabaKey,
+    setAlibabaKey,
+    servicePack,
+    setServicePack: (pack: ServicePack | null) => {
+      packRef.current = pack;
+      setServicePackState(pack);
+      const chat = pack?.roles.translate;
+      if (chat) {
+        setMode("manual");
+        setModelId(chat.model);
+        writeStore("gmode", "manual");
+        writeStore("gmdl", chat.model);
+      }
+    },
+    setBillNarration: (value: boolean) => {
+      billNarrationRef.current = value;
+    },
+    setPackRequired: (value: boolean) => {
+      packRequiredRef.current = value;
+    },
     setRoomPay,
     target,
     setTarget,
@@ -2052,6 +2267,12 @@ export function usePipeline() {
       vadRef.current = value;
       setSpeechVadState(value);
       writeStore("gvad", value ? "1" : "0");
+    },
+    langCheck,
+    setLangCheck: (value: boolean) => {
+      langRef.current = value;
+      setLangCheckState(value);
+      writeStore("glang", value ? "1" : "0");
     },
     title,
     setTitle: (value: string) => {
@@ -2131,6 +2352,7 @@ export function usePipeline() {
     diag,
     asrRetry,
     filterRetry,
+    langReport,
     gapPlan,
     status,
     isError,

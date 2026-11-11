@@ -83,7 +83,9 @@ export function AccountPanel() {
   }
 
   return (
-    <div className="account-grid min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
+    <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
+    {/* Chia cột phải nằm trong khung không bị ép chiều cao, nếu không phần dư bị đẩy sang cột ẩn bên phải. */}
+    <div className="account-grid">
       {isPending && <p className="text-sm text-muted">Đang kiểm tra phiên…</p>}
       {!isPending && (!user || user.isDevFallback) && (
         <div className="space-y-3">
@@ -317,6 +319,7 @@ export function AccountPanel() {
           )}
         </>
       )}
+    </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { acceptSegment, type AcceptReject } from "./text.ts";
 import { assignVoices } from "./pitch-voice.ts";
+import { refineTimes, type AsrWord } from "./word-time.ts";
 import type { Seg } from "./types.ts";
 
 export type RejectReason = AcceptReject;
@@ -60,6 +61,7 @@ export type AsrPartResult =
   | "fail"
   | {
       language?: string;
+      words?: Array<AsrWord | null>;
       segments?: Array<{
         text?: string;
         start?: number;
@@ -171,11 +173,12 @@ export function ingestAsrPart(input: {
   const rejects: RejectEntry[] = [];
   for (const item of input.result.segments || []) {
     if (!item || typeof item.text !== "string") continue;
+    const timing = refineTimes(Number(item.start), Number(item.end), input.result.words);
     const decision = acceptSegment(
       input.segs,
       input.chunkStart,
-      Number(item.start),
-      Number(item.end),
+      timing.start,
+      timing.end,
       item.text,
       input.partIndex,
       item,
@@ -220,7 +223,7 @@ export function keepRejectedCue(segs: Seg[], row: RejectEntry): boolean {
   const start = row.start;
   const end = Math.max(row.end, start + 0.2);
   if (segs.some((seg) => seg.original === text && start < seg.end && end > seg.start)) return false;
-  segs.push({ start, end, original: text, translation: null });
+  segs.push({ start, end, original: text, raw: text, translation: null });
   segs.sort((a, b) => a.start - b.start || a.end - b.end);
   return true;
 }

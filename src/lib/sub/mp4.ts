@@ -259,17 +259,30 @@ export async function openStream(
       if (!head.ok || !size) throw new Error("máy chủ không cho biết dung lượng file");
       gap = 24 * 1024 * 1024;
       read = async (a, b, sig) => {
-        const r = await fetch(url, {
-          headers: { Range: `bytes=${a}-${b - 1}` },
-          signal: sig,
-          mode: "cors",
-          credentials: "omit",
-        });
-        if (r.status !== 206) {
-          r.body?.cancel().catch(() => {});
-          throw new Error("máy chủ không hỗ trợ tải theo đoạn (Range)");
+        const guard = new AbortController();
+        const relay = () => guard.abort();
+        sig?.addEventListener("abort", relay, { once: true });
+        const timer = setTimeout(() => guard.abort(), 60_000);
+        try {
+          const r = await fetch(url, {
+            headers: { Range: `bytes=${a}-${b - 1}` },
+            signal: guard.signal,
+            mode: "cors",
+            credentials: "omit",
+          });
+          if (r.status !== 206) {
+            r.body?.cancel().catch(() => {});
+            throw new Error("máy chủ không hỗ trợ tải theo đoạn (Range)");
+          }
+          return new Uint8Array(await r.arrayBuffer());
+        } catch (error) {
+          if (sig?.aborted) throw error;
+          if (guard.signal.aborted) throw new Error("tải đoạn video quá 60 giây không xong");
+          throw error;
+        } finally {
+          clearTimeout(timer);
+          sig?.removeEventListener("abort", relay);
         }
-        return new Uint8Array(await r.arrayBuffer());
       };
     }
     const first = await read(0, Math.min(size, 12), signal);

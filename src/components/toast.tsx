@@ -14,29 +14,19 @@ export function ToastHost() {
   useEffect(() => {
     listen = (toast) => {
       setItems((list) => [...list.slice(-2), toast]);
-      const ms = toast.tone === "bad" ? 6500 : 3400;
       window.setTimeout(() => {
         setItems((list) => list.filter((item) => item.id !== toast.id));
-      }, ms);
+      }, 3400);
     };
     return () => {
       listen = null;
     };
   }, []);
 
-  const dismiss = (id: number) => {
-    setItems((list) => list.filter((item) => item.id !== id));
-  };
-
   return (
     <div className="toast-stack" aria-live="polite">
       {items.map((item) => (
-        <p
-          key={item.id}
-          className={item.tone === "bad" ? "toast toast-bad" : "toast"}
-          onClick={() => dismiss(item.id)}
-          role="status"
-        >
+        <p key={item.id} className={item.tone === "bad" ? "toast toast-bad" : "toast"}>
           {item.text}
         </p>
       ))}

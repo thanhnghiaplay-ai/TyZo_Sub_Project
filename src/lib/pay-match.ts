@@ -14,6 +14,17 @@ export function makePayCode(seed: string) {
   return out;
 }
 
+/**
+ * Mã đơn từ byte ngẫu nhiên: mỗi ký tự lấy trọn một byte, đủ 32^6 mã.
+ * Cách cũ chỉ dùng 6 ký tự hex đầu nên chỉ còn khoảng 16 triệu mã và dễ trùng sớm hơn.
+ */
+export function randomPayCode(bytes: Uint8Array) {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "TZ";
+  for (let i = 0; i < 6; i += 1) out += alphabet[bytes[i % bytes.length] % alphabet.length];
+  return out;
+}
+
 export function isPayCode(value: string) {
   return CODE.test(value);
 }

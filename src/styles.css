@@ -625,9 +625,7 @@
 /* B. SHEET_PORTRAIT: một cột, công cụ là tấm mở ra khi chọn tab. */
 @media (max-width: 699px) and (orientation: portrait), (max-height: 520px) and (orientation: portrait) {
   .gesture-hint {
-    display: block;
-    font-size: 0.7rem;
-    padding: 0.15rem 0.5rem;
+    display: none;
   }
 
   .studio-tools:not(.is-open) {
@@ -650,14 +648,7 @@
   }
 
   .studio-stage.is-sheet .studio-cues {
-    display: flex;
-    max-height: 6.5rem;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .studio-stage.is-sheet .studio-cue-scroll {
-    max-height: 4.5rem;
+    display: none;
   }
 
   .studio-stage.is-sheet .studio-tools {
@@ -669,8 +660,7 @@
 /* C. SHEET_LANDSCAPE: hai cột, video bên trái, bản dịch hoặc công cụ bên phải. */
 @media (orientation: landscape) and (max-height: 720px) {
   .gesture-hint {
-    display: block;
-    font-size: 0.65rem;
+    display: none;
   }
 
   .studio-tools:not(.is-open) {
@@ -713,8 +703,7 @@
   }
 
   .studio-stage.is-sheet .studio-cues {
-    display: flex;
-    max-height: 40%;
+    display: none;
   }
 }
 
@@ -830,8 +819,6 @@
   font-size: 0.85rem;
   text-align: center;
   animation: toast-in 0.28s ease;
-  pointer-events: auto;
-  cursor: pointer;
 }
 
 .toast-bad {

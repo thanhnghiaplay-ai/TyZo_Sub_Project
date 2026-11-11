@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.10.7";
+export const APP_VERSION = "3.14.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,92 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.14.0",
+    time: "01:40 ngày 12/11/2026",
+    title: "Chọn gói dịch thay vì chọn từng model.",
+    points: [
+      "Mỗi gói ghi rõ hợp việc gì, và ai nhận dạng, dịch, đối chiếu.",
+      "Có tệp rồi thì thấy giá gốc, giá phòng và khoản giữ trước khi chạy.",
+      "Cửa thuê phòng và cửa trả theo lượt cùng dùng các gói này.",
+    ],
+  },
+  {
+    version: "3.13.0",
+    time: "18:15 ngày 11/11/2026",
+    title: "Điều khoản mới: app báo số liệu chất lượng về cho Chủ.",
+    points: [
+      "Mỗi lần nhận dạng xong, app gửi lên các con số về độ tin và đoạn lỗi.",
+      "Không gửi phụ đề, tên tệp, video, âm thanh, key hay tài khoản.",
+      "Cần đồng ý lại điều khoản để tiếp tục dùng.",
+    ],
+  },
+  {
+    version: "3.12.1",
+    time: "12:36 ngày 11/11/2026",
+    title: "Tab Kiểm tra hiện thêm mức tin cậy của bản nhận dạng.",
+    points: [
+      "Có đèn Tốt, Cần chú ý, Kém, kèm thanh ba màu cao, cần kiểm tra, thấp.",
+      "Mỗi ngôn ngữ có độ tin trung bình riêng. Xuất JSON có thêm các số này.",
+      "Nếu bật Kiểm tra ngôn ngữ, hiện số đoạn đã nhận lại và độ tin trước, sau.",
+    ],
+  },
+  {
+    version: "3.12.0",
+    time: "12:16 ngày 11/11/2026",
+    title: "Thêm ô Kiểm tra ngôn ngữ từng đoạn, hợp phim lẫn nhiều thứ tiếng.",
+    points: [
+      "Ô nằm cạnh Chỉ gửi đoạn có tiếng người, mặc định tắt.",
+      "Đoạn nghe lệch ngôn ngữ đã chọn được nhận dạng lại một lần, chỉ đổi khi tốt hơn rõ.",
+      "Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy.",
+    ],
+  },
+  {
+    version: "3.11.0",
+    time: "09:40 ngày 11/11/2026",
+    title: "Thêm nút Lưu bản Whisper: lưu chữ gốc nhận ra từ tiếng nói, chưa dịch.",
+    points: [
+      "Nút nằm cạnh Xuất file Vietsub. Ra file .whisper.srt, từng câu theo giờ.",
+      "Chữ giữ đúng như nhận dạng, không bị sửa tên nhân vật hay dịch.",
+    ],
+  },
+  {
+    version: "3.10.11",
+    time: "09:15 ngày 11/11/2026",
+    title: "Sửa nút Quản lý biến mất sau khi bấm dịch, phải tải lại trang mới hiện.",
+    points: [
+      "Nút Quản lý không còn biến mất khi mạng chậm một lúc.",
+      "Trang Quản lý tự thử lại khi mạng chậm, không báo lỗi ngay.",
+    ],
+  },
+  {
+    version: "3.10.10",
+    time: "05:20 ngày 11/11/2026",
+    title: "Sửa trang Tài khoản trên điện thoại bị mất đầu trang, trống giữa và cụt đáy.",
+    points: [
+      "Trang Tài khoản hiện đủ các thẻ từ trên xuống, kéo xuống được tới Lịch sử Nạp/Mua gói.",
+    ],
+  },
+  {
+    version: "3.10.9",
+    time: "04:58 ngày 11/11/2026",
+    title: "Sửa giật khi dịch phim dài, ô sửa câu nhảy câu khác, và bị đăng xuất giữa phim.",
+    points: [
+      "Danh sách bản dịch không còn giật mỗi khi có câu mới, kể cả phim dài.",
+      "Ô sửa câu giữ đúng câu đang sửa. Câu bạn sửa tay không bị bản dịch máy ghi đè.",
+      "Đang xem phim hoặc đang dịch thì không bị đăng xuất sau 30 phút.",
+    ],
+  },
+  {
+    version: "3.10.8",
+    time: "04:19 ngày 11/11/2026",
+    title: "Sửa lỗi đứng máy khi dịch và trang tự tải lại làm mất việc đang làm.",
+    points: [
+      "Nhận dạng hoặc dịch báo lỗi thì bên còn lại dừng theo, không quay mãi nữa.",
+      "Mạng không trả lời quá 2 phút thì báo và thử lại, không đứng im.",
+      "Quay lại tab sau khi đi xa, trang không tự tải lại. Có bản mới thì hiện nút Tải lại.",
+    ],
+  },
   {
     version: "3.10.7",
     time: "03:28 ngày 11/11/2026",

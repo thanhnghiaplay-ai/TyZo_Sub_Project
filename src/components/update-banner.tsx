@@ -2,14 +2,11 @@ import { useEffect, useState } from "react";
 import { APP_VERSION } from "@/lib/app-version";
 import { getLiveVersion } from "@/lib/live-version";
 
-const AWAY_MS = 5 * 60 * 1000;
-
 export function UpdateBanner() {
   const [live, setLive] = useState(APP_VERSION);
   const [later, setLater] = useState(false);
 
   useEffect(() => {
-    let hiddenAt = 0;
     let gone = false;
     const look = () => {
       void getLiveVersion()
@@ -22,20 +19,7 @@ export function UpdateBanner() {
     look();
     const timer = window.setInterval(look, 60_000);
     const onHide = () => {
-      if (document.hidden) hiddenAt = Date.now();
-      else {
-        const away = hiddenAt ? Date.now() - hiddenAt : 0;
-        hiddenAt = 0;
-        if (away >= AWAY_MS) {
-          void getLiveVersion()
-            .then((next) => {
-              if (next && next !== APP_VERSION) window.location.reload();
-            })
-            .catch(() => undefined);
-          return;
-        }
-        look();
-      }
+      if (!document.hidden) look();
     };
     document.addEventListener("visibilitychange", onHide);
     return () => {

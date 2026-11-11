@@ -1,5 +1,6 @@
 import { reasoningOpts } from "@/lib/sub/models";
 import type { PackedAudio } from "@/lib/sub/codec";
+import { ALIBABA_API, GROQ_API, providerApi, type ProviderId } from "@/lib/sub/provider";
 import {
   contiguousRuns,
   filmContext,
@@ -12,21 +13,31 @@ import {
   untranslated,
   type Bible,
 } from "@/lib/sub/text";
-import type { AsrModel } from "@/lib/sub/types";
 import { roomTicketId } from "@/lib/sub/room-ticket";
 
-export const API = "https://api.groq.com/openai/v1";
+export const API = GROQ_API;
 export const ROOM_KEY = "room";
 
 export function roomFetchTarget(url: string, init: RequestInit, ticketId?: string | null): { url: string; init: RequestInit } {
   const headers = new Headers(init.headers);
-  if (headers.get("Authorization") !== `Bearer ${ROOM_KEY}`) return { url, init };
-  const path = url.startsWith(API) ? url.slice(API.length) : "";
-  headers.delete("Authorization");
-  headers.set("x-groq-path", path);
-  const ticket = ticketId === undefined ? roomTicketId() : ticketId;
-  if (ticket) headers.set("x-run-ticket", ticket);
-  return { url: "/api/room-groq", init: { ...init, headers } };
+  const auth = headers.get("Authorization");
+  const alibaba = url.startsWith(ALIBABA_API);
+  const groq = url.startsWith(API);
+  if (auth === `Bearer ${ROOM_KEY}` && (alibaba || groq)) {
+    const path = url.slice((alibaba ? ALIBABA_API : API).length);
+    headers.delete("Authorization");
+    headers.set(alibaba ? "x-alibaba-path" : "x-groq-path", path);
+    const ticket = ticketId === undefined ? roomTicketId() : ticketId;
+    if (ticket) headers.set("x-run-ticket", ticket);
+    return { url: alibaba ? "/api/room-alibaba" : "/api/room-groq", init: { ...init, headers } };
+  }
+  if (alibaba && auth?.startsWith("Bearer ") && typeof window !== "undefined") {
+    headers.delete("Authorization");
+    headers.set("x-alibaba-path", url.slice(ALIBABA_API.length));
+    headers.set("x-user-key", auth.slice("Bearer ".length));
+    return { url: "/api/relay-alibaba", init: { ...init, headers } };
+  }
+  return { url, init };
 }
 
 export function abortError() {
@@ -61,7 +72,7 @@ function errorMessage(data: unknown, fallback: string) {
   return fallback;
 }
 
-async function readApiError(response: Response, modelName: string) {
+async function readApiError(response: Response, modelName: string, vendor = "Groq") {
   const raw = await response.text().catch(() => "");
   let detail = raw;
   try {
@@ -74,9 +85,12 @@ async function readApiError(response: Response, modelName: string) {
   if (response.status === 404)
     return `Không tìm thấy model hoặc API (404). Hãy kiểm tra tên model: ${modelName}. Chi tiết: ${detail}`;
   if (response.status === 429)
-    return `Groq đang giới hạn lượt gọi hoặc hết hạn mức (429). Hãy chờ rồi thử lại. ${detail}`;
+    return `${vendor} đang giới hạn lượt gọi hoặc hết hạn mức (429). Hãy chờ rồi thử lại. ${detail}`;
   return `API trả về lỗi ${response.status}: ${detail || response.statusText}`;
 }
+
+/** Chờ tối đa bấy nhiêu cho tới khi máy chủ trả đầu phản hồi. Quá hạn thì thử lại, không đứng mãi. */
+const REQUEST_TIMEOUT_MS = 120_000;
 
 export async function requestWithRetry(
   url: string,
@@ -94,16 +108,28 @@ export async function requestWithRetry(
     throwIfAborted(signal);
     if (gate.blockedUntil > Date.now()) await sleep(gate.blockedUntil - Date.now(), signal);
     let response: Response | null = null;
+    const guard = new AbortController();
+    const relay = () => guard.abort();
+    signal?.addEventListener("abort", relay, { once: true });
+    const timer = setTimeout(() => guard.abort(), REQUEST_TIMEOUT_MS);
     try {
       const next = roomFetchTarget(url, makeInit(), ticket);
-      response = await fetch(next.url, { ...next.init, signal });
+      response = await fetch(next.url, { ...next.init, signal: guard.signal });
     } catch (error) {
-      if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
-      lastError = new Error(`${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`);
+      if (signal?.aborted) throw abortError();
+      lastError = new Error(
+        guard.signal.aborted
+          ? `${label}: máy chủ không trả lời sau ${REQUEST_TIMEOUT_MS / 1000} giây.`
+          : `${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`,
+      );
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", relay);
     }
     if (response) {
+      const vendor = vendorOf(url);
       if (response.ok) return response;
-      const message = await readApiError(response, modelName);
+      const message = await readApiError(response, modelName, vendor);
       const err = new Error(message);
       if (response.status !== 429 && response.status < 500) throw err;
       lastError = err;
@@ -111,11 +137,11 @@ export async function requestWithRetry(
         const ra = Number(response.headers.get("retry-after")) || 0;
         if (ra > 90)
           throw new Error(
-            `Hết hạn mức Groq, cần chờ khoảng ${Math.ceil(ra / 60)} phút. Bấm Tiếp tục sau đó, phần đã nhận dạng không bị mất.`,
+            `Hết hạn mức ${vendor}, cần chờ khoảng ${Math.ceil(ra / 60)} phút. Bấm Tiếp tục sau đó, phần đã nhận dạng không bị mất.`,
           );
         pause = Math.max(pause, (ra || 10 * (attempt + 1)) * 1000);
         gate.blockedUntil = Date.now() + pause;
-        if (attempt < 4) onWait?.(`Groq đang giới hạn tốc độ, chờ ${Math.round(pause / 1000)} giây rồi thử lại…`);
+        if (attempt < 4) onWait?.(`${vendor} đang giới hạn tốc độ, chờ ${Math.round(pause / 1000)} giây rồi thử lại…`);
       }
     }
     if (attempt < 4) await sleep(pause, signal);
@@ -123,10 +149,15 @@ export async function requestWithRetry(
   throw lastError || new Error(`${label}: không thể kết nối máy chủ.`);
 }
 
-export async function listModelIds(key: string, signal?: AbortSignal): Promise<string[]> {
-  const next = roomFetchTarget(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } }, null);
+function vendorOf(url: string) {
+  return url.includes("dashscope") ? "Alibaba" : "Groq";
+}
+
+export async function listModelIds(key: string, signal?: AbortSignal, provider: ProviderId = "groq"): Promise<string[]> {
+  const root = providerApi(provider);
+  const next = roomFetchTarget(`${root}/models`, { headers: { Authorization: `Bearer ${key}` } }, null);
   const response = await fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal });
-  if (!response.ok) throw new Error(await readApiError(response, ""));
+  if (!response.ok) throw new Error(await readApiError(response, "", vendorOf(root)));
   const data = (await response.json()) as { data?: Array<{ id?: string }> };
   return (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
 }
@@ -136,19 +167,34 @@ export async function transcribe(
   key: string,
   language: string,
   prompt: string,
-  asrModel: AsrModel,
+  asrModel: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
   onWait?: (message: string) => void,
   ticket?: string | null,
+  provider: ProviderId = "groq",
 ) {
-  try {
-    return await transcribeOnce(packed, key, language, prompt, asrModel, signal, gate, onWait, ticket);
-  } catch (error) {
-    if (packed.wav && /lỗi 400/.test((error as Error)?.message || ""))
-      return transcribeOnce({ blob: packed.wav(), name: "audio.wav" }, key, language, prompt, asrModel, signal, gate, onWait, ticket);
-    throw error;
+  // Mốc từ là phần thêm. Groq từ chối (400) thì gửi lại như cũ, không có mốc từ, để không mất câu.
+  let words = true;
+  let usable = packed;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await transcribeOnce(usable, key, language, prompt, asrModel, signal, gate, onWait, ticket, words, provider);
+    } catch (error) {
+      const message = (error as Error)?.message || "";
+      if (!/lỗi 400/.test(message)) throw error;
+      if (words) {
+        words = false;
+        continue;
+      }
+      if (usable === packed && packed.wav) {
+        usable = { blob: packed.wav(), name: "audio.wav" };
+        continue;
+      }
+      throw error;
+    }
   }
+  throw new Error("Nhận dạng giọng nói: không gửi được.");
 }
 
 async function transcribeOnce(
@@ -156,20 +202,26 @@ async function transcribeOnce(
   key: string,
   language: string,
   prompt: string,
-  asrModel: AsrModel,
+  asrModel: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
   onWait?: (message: string) => void,
   ticket?: string | null,
+  withWords = true,
+  provider: ProviderId = "groq",
 ) {
   const response = await requestWithRetry(
-    `${API}/audio/transcriptions`,
+    `${providerApi(provider)}/audio/transcriptions`,
     () => {
       const form = new FormData();
       form.append("file", packed.blob, packed.name);
       form.append("model", asrModel);
       form.append("response_format", "verbose_json");
       form.append("temperature", "0");
+      if (withWords) {
+        form.append("timestamp_granularities[]", "word");
+        form.append("timestamp_granularities[]", "segment");
+      }
       if (language) form.append("language", language);
       if (prompt) form.append("prompt", prompt);
       return { method: "POST", headers: { Authorization: `Bearer ${key}` }, body: form };
@@ -184,6 +236,7 @@ async function transcribeOnce(
   return response.json() as Promise<{
     language?: string;
     segments?: Array<{ text?: string; start?: number; end?: number; no_speech_prob?: number; avg_logprob?: number; compression_ratio?: number }>;
+    words?: Array<{ word?: string; start?: number; end?: number }>;
   }>;
 }
 
@@ -199,6 +252,7 @@ async function translateOnce(
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
   ticket?: string | null,
+  provider: ProviderId = "groq",
 ) {
   if (!model) throw new Error("Bạn chưa nhập model dịch.");
   const messages = translationMessages(texts, language, opts);
@@ -218,7 +272,7 @@ async function translateOnce(
   for (let index = 0; index < payloads.length; index++) {
     try {
       const response = await requestWithRetry(
-        `${API}/chat/completions`,
+        `${providerApi(provider)}/chat/completions`,
         () => ({
           method: "POST",
           headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
@@ -262,9 +316,10 @@ export async function translateBatch(
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
   ticket?: string | null,
+  provider: ProviderId = "groq",
 ): Promise<string[]> {
   try {
-    return await translateOnce(texts, language, key, model, signal, gate, opts, onWait, ticket);
+    return await translateOnce(texts, language, key, model, signal, gate, opts, onWait, ticket, provider);
   } catch (error) {
     if ((error as { name?: string })?.name === "AbortError") throw error;
     const retryable = /hết token|nội dung trống|JSON không hợp lệ|không đúng định dạng|thiếu câu/.test((error as Error).message || "");
@@ -281,6 +336,7 @@ export async function translateBatch(
       optsForRange(opts, texts, 0, mid),
       onWait,
       ticket,
+      provider,
     );
     let right: string[];
     try {
@@ -295,6 +351,7 @@ export async function translateBatch(
         optsForRange(opts, texts, mid, texts.length, known),
         onWait,
         ticket,
+        provider,
       );
     } catch (error) {
       if ((error as { name?: string })?.name === "AbortError") throw error;
@@ -319,6 +376,7 @@ export async function translateIndexes(
   onWait?: (message: string) => void,
   known?: Array<string | null | undefined>,
   ticket?: string | null,
+  provider: ProviderId = "groq",
 ): Promise<string[]> {
   const runs = contiguousRuns(indexes);
   const byIndex = new Map<number, string>();
@@ -335,6 +393,7 @@ export async function translateIndexes(
       { ...optsForRange(opts, texts, start, end, known), fix: opts.fix },
       onWait,
       ticket,
+      provider,
     );
     run.forEach((index) => {
       byIndex.set(index, fix[index - start] || "");
@@ -353,12 +412,27 @@ export async function translateWithRepair(
   opts: Parameters<typeof translationMessages>[2],
   onWait?: (message: string) => void,
   ticket?: string | null,
+  provider: ProviderId = "groq",
+  review?: { key: string; model: string; provider: ProviderId } | null,
 ) {
-  const out = await translateBatch(texts, language, key, model, signal, gate, opts, onWait, ticket);
+  const out = await translateBatch(texts, language, key, model, signal, gate, opts, onWait, ticket, provider);
   const bad = out.map((line, i) => (untranslated(texts[i], line) ? i : -1)).filter((i) => i >= 0);
   if (bad.length) {
     try {
-      const fix = await translateIndexes(texts, bad, language, key, model, signal, gate, { ...opts, fix: true }, onWait, out, ticket);
+      const fix = await translateIndexes(
+        texts,
+        bad,
+        language,
+        review?.key || key,
+        review?.model || model,
+        signal,
+        gate,
+        { ...opts, fix: true },
+        onWait,
+        out,
+        ticket,
+        review?.provider || provider,
+      );
       bad.forEach((i, k) => {
         if (fix[k] && fix[k].trim()) out[i] = fix[k];
       });
@@ -381,6 +455,7 @@ export async function analyzeFilm(input: {
   gate: { blockedUntil: number };
   onWait?: (message: string) => void;
   ticket?: string | null;
+  provider?: ProviderId;
 }): Promise<Bible> {
   let text = input.lines.join("\n");
   if (text.length > 40000) {
@@ -398,7 +473,7 @@ export async function analyzeFilm(input: {
     { role: "user", content: user },
   ];
   const res = await requestWithRetry(
-    `${API}/chat/completions`,
+    `${providerApi(input.provider ?? "groq")}/chat/completions`,
     () => ({
       method: "POST",
       headers: { Authorization: `Bearer ${input.key}`, "Content-Type": "application/json" },
@@ -437,6 +512,30 @@ export function applyNameFixes(lines: Array<{ original: string; translation: str
 
 export function contextBlock(input: { title: string; notes: string; gloss: string; bible: Bible | null }) {
   return filmContext(input);
+}
+
+export async function speakCloud(input: {
+  key: string;
+  text: string;
+  model: string;
+  voice?: string;
+  provider?: ProviderId;
+  signal?: AbortSignal;
+}): Promise<Blob> {
+  const provider = input.provider ?? "groq";
+  const next = roomFetchTarget(`${providerApi(provider)}/audio/speech`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${input.key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: input.model,
+      input: input.text,
+      voice: input.voice || "alloy",
+      response_format: "wav",
+    }),
+  });
+  const response = await fetch(next.url, { ...next.init, signal: input.signal });
+  if (!response.ok) throw new Error(await readApiError(response, input.model, provider === "alibaba" ? "Alibaba" : "Groq"));
+  return response.blob();
 }
 
 export async function speakOrpheus(input: {

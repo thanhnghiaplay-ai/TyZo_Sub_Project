@@ -25,6 +25,10 @@ import {
   X,
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
+import { PackPicker } from "@/components/pack-picker";
+import { getServiceMenu, type ServiceMenu } from "@/lib/pack-room";
+import { providersIn } from "@/lib/service-pack";
+import { readMediaSeconds } from "@/lib/trial-media";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
@@ -40,6 +44,8 @@ import { narrationChoice } from "@/lib/sub/cast-voice";
 import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
 import { termsToCsv } from "@/lib/sub/glossary";
 import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
+import { summarizeQuality, type LangCheckReport } from "@/lib/sub/quality";
+import { BandBar, HealthPill, pct } from "@/components/quality-view";
 import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/asr-retry";
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
@@ -67,6 +73,7 @@ function AsrDiag({
   fileName,
   retry,
   filterRetry,
+  lang,
   onPlay,
   onKeep,
   onDrop,
@@ -77,6 +84,7 @@ function AsrDiag({
   fileName?: string;
   retry: AsrRetryReport | null;
   filterRetry: FilterRetryReport | null;
+  lang: LangCheckReport | null;
   onPlay: (row: RejectEntry) => void;
   onKeep: (index: number) => void;
   onDrop: (index: number) => void;
@@ -84,8 +92,9 @@ function AsrDiag({
   const [open, setOpen] = useState(false);
   if (!raw.length && !rejects.length && !retry?.missing.length && !(retry && retry.usedSeconds > 0) && !(filterRetry && (filterRetry.sent > 0 || filterRetry.deferred > 0))) return null;
   const summary = summarizeDiagnostics(rejects, raw);
+  const quality = summarizeQuality({ raw, rejects, kept, lang });
   const download = () => {
-    const doc = { exportedAt: new Date().toISOString(), ...buildDiagnosticsExport({ rejects, raw, kept }) };
+    const doc = { exportedAt: new Date().toISOString(), ...buildDiagnosticsExport({ rejects, raw, kept }), quality, langCheck: lang };
     const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json;charset=utf-8" });
     const link = document.createElement("a");
     const href = URL.createObjectURL(blob);
@@ -100,6 +109,47 @@ function AsrDiag({
         <h3 className="font-semibold">Chẩn đoán câu bị loại</h3>
         <p className="text-sm text-muted">Không đổi phụ đề. Phân biệt đoạn Whisper không trả câu với câu app tự lọc.</p>
       </div>
+      <div className="grid gap-2 rounded-xl border border-line p-3">
+        <HealthPill health={quality.health} reason={quality.healthReason} />
+        <p className="text-sm">
+          Độ tin trung bình: <span className="font-semibold">{pct(quality.meanConfidence)}</span>
+          <span className="text-muted"> · {quality.segments} câu Whisper trả về</span>
+        </p>
+        <BandBar bands={quality.bands} />
+        {quality.byLanguage.length > 0 && (
+          <ul className="grid gap-1 text-sm text-muted">
+            {quality.byLanguage.map((row) => (
+              <li key={row.language}>
+                {row.language}: {row.segments} câu · độ tin {pct(row.meanConfidence)}
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="text-sm text-muted">Độ tin là mức Whisper tự tin vào chữ nó viết. Không phải tỷ lệ đúng.</p>
+      </div>
+      {lang && (lang.suspect > 0 || lang.resent > 0) && (
+        <div className="grid gap-1 rounded-xl border border-line p-3 text-sm">
+          <p className="font-semibold">Kiểm tra ngôn ngữ từng đoạn</p>
+          <p>
+            Nghi lệch {lang.suspect} đoạn · gửi lại {lang.resent} · đổi sang bản mới {lang.swapped} · dùng {Math.round(lang.usedSeconds)} / {lang.budgetSeconds} giây
+          </p>
+          {quality.langCheck.meanBefore !== null && quality.langCheck.meanAfter !== null && (
+            <p className="text-muted">
+              Độ tin các đoạn đã đổi: {pct(quality.langCheck.meanBefore)} → {pct(quality.langCheck.meanAfter)}
+            </p>
+          )}
+          {lang.suspect > lang.resent && <p className="text-muted">{lang.suspect - lang.resent} đoạn chưa gửi lại vì hết ngân sách.</p>}
+          {lang.events.length > 0 && (
+            <ul className="grid max-h-40 gap-1 overflow-auto text-muted">
+              {lang.events.map((e, i) => (
+                <li key={`${e.partIndex}-${i}`}>
+                  {stamp(e.start)} · chọn {e.requested} → đoán {e.detected || "?"} · {e.swapped ? "đã đổi" : "giữ bản cũ"} · {pct(Math.exp(e.logprobBefore ?? NaN))} → {pct(Math.exp(e.logprobAfter ?? NaN))}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-2 text-sm">
         <p className="rounded-xl border border-line px-3 py-2">
           <span className="block text-muted">Whisper không trả câu</span>
@@ -410,6 +460,8 @@ export function Studio() {
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [menuOpen, setMenuOpen] = useState(false);
   const [payByRoom, setPayByRoom] = useState(false);
+  const [menu, setMenu] = useState<ServiceMenu | null>(null);
+  const [mediaSeconds, setMediaSeconds] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const runDoor = useRunDoor();
   const [place, setPlace] = useState<MyPlace | null>(null);
@@ -419,14 +471,61 @@ export function Studio() {
   const statusRef = useRef<HTMLDialogElement>(null);
   const [hydrated, setHydrated] = useState(false);
   const narrator = useRef(createNarrator());
-  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible });
-  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible };
+  const door: "turn" | "rent" = payByRoom ? "turn" : "rent";
+  const doorPacks = (menu?.packs ?? []).filter((pack) => pack.enabled && pack.doors.includes(door));
+  const packOn = Boolean(app.servicePack && doorPacks.some((pack) => pack.id === app.servicePack?.id));
+  const narrationAssign = packOn ? app.servicePack?.roles.narration : undefined;
+  app.setBillNarration(Boolean(narration.enabled && narrationAssign));
+  app.setPackRequired(doorPacks.length > 0);
+  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible, ali: app.alibabaKey, cloud: narrationAssign ?? null });
+  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible, ali: app.alibabaKey, cloud: narrationAssign ?? null };
 
   useEffect(() => {
     setNarration(loadNarration());
     setSub(loadSub());
     setHydrated(true);
   }, []);
+  useEffect(() => {
+    void getServiceMenu()
+      .then(setMenu)
+      .catch(() => setMenu({ packs: [], alibaba: { markup: 0, custom: {}, models: null } }));
+  }, []);
+  useEffect(() => {
+    if (!menu || !app.servicePack) return;
+    const doorNow = payByRoom ? "turn" : "rent";
+    const ok = menu.packs.some((pack) => pack.enabled && pack.id === app.servicePack?.id && pack.doors.includes(doorNow));
+    if (!ok) app.setServicePack(null);
+  }, [app.servicePack, menu, payByRoom]);
+  useEffect(() => {
+    const file = app.audioFile || app.file;
+    if (!file) return;
+    let stop = false;
+    void readMediaSeconds(file)
+      .then((seconds) => {
+        if (!stop) setMediaSeconds(seconds);
+      })
+      .catch(() => {
+        if (!stop) setMediaSeconds(0);
+      });
+    return () => {
+      stop = true;
+    };
+  }, [app.audioFile, app.file]);
+  useEffect(() => {
+    const video = app.videoRef.current;
+    if (!video) return;
+    const read = () => {
+      if (app.file || app.audioFile) return;
+      if (Number.isFinite(video.duration) && video.duration > 0) setMediaSeconds(video.duration);
+    };
+    video.addEventListener("durationchange", read);
+    video.addEventListener("loadedmetadata", read);
+    read();
+    return () => {
+      video.removeEventListener("durationchange", read);
+      video.removeEventListener("loadedmetadata", read);
+    };
+  }, [app.audioFile, app.file, app.url, app.videoRef]);
   useEffect(() => {
     if (!hydrated) return;
     try {
@@ -475,6 +574,13 @@ export function Studio() {
     }
   };
 
+  const speakCloud = () => {
+    const assign = live.current.cloud;
+    if (!assign || !live.current.narration.enabled) return null;
+    const key = payByRoom ? "room" : assign.provider === "alibaba" ? live.current.ali.trim() : live.current.key.trim();
+    return key ? { key, model: assign.model, provider: assign.provider } : null;
+  };
+
   const speakAt = (index: number) => {
     const { segs, narration: settings, key, target } = live.current;
     const video = app.videoRef.current;
@@ -498,6 +604,7 @@ export function Studio() {
       key: payByRoom ? "room" : key.trim(),
       video,
       playbackRate: video.playbackRate || 1,
+      cloud: speakCloud(),
     });
   };
 
@@ -509,6 +616,7 @@ export function Studio() {
       key: payByRoom ? "room" : app.key.trim(),
       video: app.videoRef.current,
       playbackRate: 1,
+      cloud: speakCloud(),
     });
   };
 
@@ -790,7 +898,7 @@ export function Studio() {
           <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
         ) : runDoor.open ? (
           <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cách trả Groq</h2>
+            <h2 className="text-sm font-semibold">Cửa dịch</h2>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
@@ -806,7 +914,7 @@ export function Studio() {
         ) : (
           <RunDoorClosed note={runDoor.note} />
         )}
-        {!(runDoor.open && payByRoom) && (
+        {!(runDoor.open && payByRoom) && (!packOn || Boolean(app.servicePack && providersIn(app.servicePack).includes("groq"))) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
           Groq API key
           <span className="flex gap-2">
@@ -830,6 +938,37 @@ export function Studio() {
           </span>
         </label>
         )}
+        {!(runDoor.open && payByRoom) && packOn && app.servicePack && providersIn(app.servicePack).includes("alibaba") && (
+          <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key">
+            Key Alibaba
+            <input
+              id="ali-key"
+              className={FIELD}
+              type={showKey ? "text" : "password"}
+              placeholder="sk-… chỉ lưu trên máy này"
+              autoComplete="off"
+              value={app.alibabaKey}
+              onChange={(event) => app.setAlibabaKey(event.target.value)}
+            />
+          </label>
+        )}
+        {menu && (
+          <PackPicker
+            door={door}
+            packs={menu.packs}
+            seconds={mediaSeconds}
+            narration={Boolean(narration.enabled && narrationAssign)}
+            board={app.board}
+            groqMarkup={runDoor.markup}
+            groqCustom={runDoor.custom}
+            aliMarkup={menu.alibaba.markup}
+            aliCustom={menu.alibaba.custom}
+            selectedId={packOn ? app.servicePack?.id ?? null : null}
+            onSelect={(pack) => app.setServicePack(pack)}
+          />
+        )}
+        {doorPacks.length === 0 && (
+        <>
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted">Cách dịch</span>
           {!showRoomPrice && (
@@ -879,12 +1018,21 @@ export function Studio() {
           </option>
         </Select>
         {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
+        </>
+        )}
         <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
           Chỉ gửi đoạn có tiếng người
         </label>
         <p className="text-sm text-muted">
           Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
+        </p>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
+          Kiểm tra ngôn ngữ từng đoạn
+        </label>
+        <p className="text-sm text-muted">
+          Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.
         </p>
         <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
           <option value="1">Ổn định · 1 luồng</option>
@@ -1267,6 +1415,7 @@ export function Studio() {
           fileName={app.file?.name || app.audioFile?.name}
           retry={app.asrRetry}
           filterRetry={app.filterRetry}
+          lang={app.langReport}
           onPlay={app.playReject}
           onKeep={app.keepReject}
           onDrop={app.dropReject}
@@ -1784,7 +1933,7 @@ function Stage({
     clearTimeout(hudT.current);
     hudT.current = window.setTimeout(() => {
       el.dataset.on = "0";
-    }, 1800);
+    }, 900);
   };
   const armUi = () => {
     setUi(true);

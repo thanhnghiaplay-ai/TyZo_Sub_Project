@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-09.5";
+export const TERMS_VERSION = "2026-11-12.1";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -158,10 +158,10 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 
         <h2>1. Phòng này làm gì</h2>
         <p>
-          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
+          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng. Bạn có thể dùng key của mình, hoặc chọn gói dịch của phòng. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
         <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
-        <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá Groq công bố cộng phần chênh phòng niêm yết: nhận dạng theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn Groq báo lỗi thì không tính tiền.</p>
+        <p>Cửa trả theo lượt dùng key của phòng. Bạn chọn một gói dịch. Gói có thể là một model, hoặc nhiều model chia việc: nhận dạng, dịch, ngữ cảnh, đối chiếu, tóm tắt, thuyết minh. Tiền trừ trong ví theo giá gốc cộng phần chênh phòng niêm yết. Trước khi chạy, phòng hiện số cần trả và giữ tạm một khoản lớn hơn ước tính. Khi xong, phòng trừ số thực và trả phần giữ thừa. Đoạn lỗi không tính tiền. Thuyết minh trừ lúc đọc, không nằm trong khoản giữ. Cửa thuê phòng vẫn dùng key của bạn và không giữ ví; app chỉ hiện ước tính trên key đó.</p>
 
         <h2>2. Điều kiện để dùng</h2>
         <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq là của bạn. Groq tính cước cho tài khoản của bạn, không phải phí của phòng.</p>
@@ -178,7 +178,13 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p>
           Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy, và khi bạn đã đăng nhập thì máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
         </p>
-        <p>Lời thoại được gửi tới Groq để nhận dạng và dịch, theo điều khoản của Groq. File video xử lý trên máy bạn.</p>
+        <p>Lời thoại được gửi tới nhà cung cấp trong gói bạn chọn để nhận dạng và dịch. File video xử lý trên máy bạn.</p>
+        <p>
+          Mỗi lần nhận dạng xong, app gửi lên máy chủ của phòng một bản số liệu chất lượng để Chủ biết hệ thống chạy tốt hay kém. Bản này chỉ có số: phiên bản app, bạn dùng key riêng hay key của phòng, tên model, ngôn ngữ nguồn đã chọn, độ dài âm thanh, số đoạn và số câu, mức tin cậy Whisper tự báo, số đoạn lỗi, và kết quả kiểm tra ngôn ngữ nếu bạn bật. Việc này áp dụng cả khi bạn dùng key riêng và không có công tắc tắt riêng.
+        </p>
+        <p>
+          Không gửi phụ đề, lời thoại, tên file, tên phim, video, âm thanh hay key. Bản số liệu lưu trên máy chủ không có mã hay email tài khoản của bạn. Máy chủ chỉ dùng tài khoản để giới hạn số lần gửi. Chỉ Chủ xem được các số đã gộp, không xem được từng người.
+        </p>
         <p>
           Thuật ngữ bạn tự thêm chỉ nằm trên máy của bạn. Nếu bạn bật gửi thuật ngữ, phòng nhận một bản sao để xem. Phòng không áp bản đó cho người khác nếu Chủ chưa nhận vào bộ chính thức. Không gửi tên người thật, số điện thoại hay địa chỉ.
         </p>

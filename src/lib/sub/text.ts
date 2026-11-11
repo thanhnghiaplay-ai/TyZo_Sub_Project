@@ -141,19 +141,30 @@ export function cueText(seg: Seg): string {
   return seg.translation.trim();
 }
 
-export function toSrt(items: Seg[]): string {
+function srtBlocks(items: Seg[], textOf: (seg: Seg) => string): string {
   return items
     .map((seg, index) => {
       let end = seg.end > seg.start ? seg.end : seg.start + 0.4;
       const nx = items[index + 1];
       if (nx && end > nx.start - 0.02) end = Math.max(seg.start + 0.02, Math.min(end, nx.start - 0.02));
-      const pending = seg.translation === null || !seg.translation.trim();
-      const text = (seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg))
+      const text = textOf(seg)
         .replace(/\s*\n\s*/g, " ")
         .trim();
       return `${index + 1}\n${srtTimestamp(seg.start)} --> ${srtTimestamp(end)}\n${text}\n`;
     })
     .join("\n");
+}
+
+export function toSrt(items: Seg[]): string {
+  return srtBlocks(items, (seg) => {
+    const pending = seg.translation === null || !seg.translation.trim();
+    return seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg);
+  });
+}
+
+/** Bản nhận dạng gốc của Whisper, từng câu theo giờ, trước khi qua bước phân tích phim và dịch. */
+export function toRawSrt(items: Seg[]): string {
+  return srtBlocks(items, (seg) => seg.raw ?? seg.original);
 }
 
 export function stripFence(content: string): string {
@@ -304,6 +315,8 @@ export function acceptSegment(
   if (!cleaned) return rejected("empty", absStart, absEnd, "");
   if (!/[\p{L}\p{N}]/u.test(cleaned)) return rejected("no_letters", absStart, absEnd, cleaned);
   if (isNonSpeech(cleaned)) return rejected("non_speech", absStart, absEnd, cleaned);
+  // Câu "cảm ơn đã xem" kéo dài nhiều giây mà chỉ có vài chữ là ảo giác, dù độ tin cậy trông cao.
+  if (cleaned.length < 90 && HALLU.test(cleaned) && relEnd - relStart >= 6) return rejected("hallucination", absStart, absEnd, cleaned);
   if (cleaned.length < 90 && HALLU.test(cleaned) && ((item.no_speech_prob ?? 0) > 0.3 || (item.avg_logprob ?? 0) < -0.6))
     return rejected("hallucination", absStart, absEnd, cleaned);
   if ((item.compression_ratio ?? 0) > 2.4 && (item.avg_logprob ?? 0) < -0.5) return rejected("compression", absStart, absEnd, cleaned);
@@ -334,6 +347,7 @@ export function acceptSegment(
     if (!((timeOverlap && (same || extendable)) || sameBreath)) continue;
     if (timeOverlap && extendable && key.length > pk.length) {
       prev.original = cleaned;
+      prev.raw = cleaned;
       prev.start = Math.min(prev.start, absStart);
       prev.end = Math.max(prev.end, end);
       if (prev.translation) {
@@ -354,6 +368,7 @@ export function acceptSegment(
     start: absStart,
     end,
     original: cleaned,
+    raw: cleaned,
     translation: null,
     ...(typeof heard === "number" ? { pitchHz: heard } : {}),
   });
@@ -513,6 +528,7 @@ export function translationMessages(texts: string[], language: string, opts: Tra
     "Preserve subject continuity and pronoun consistency across consecutive lines. Infer who is speaking to whom from context_before and keep the same address forms (pronouns, names, titles) throughout the scene.",
     ADDRESS_RULE,
     "Translate everything that is real speech: fragments, interjections, numbers and sung lyrics. Leave proper names, brands and titles unchanged. Do not invent words for breaths, moans or other non-speech. Never answer in the source language.",
+    "The source lines come from speech recognition and may contain homophone or near-sound errors (for example 吐/脱, 目向き/前向き) or stray Latin letters in place of a word. Use the neighbouring lines to pick the reading that makes sense, but never invent content that is not suggested by the sounds.",
     "One subtitle per line, concise (about 40 characters per row, at most 2 rows). Do not merge, split, repeat, omit or explain lines.",
     "Glossary tokens look like {{G0}} or {{G12}}. If a line contains one, copy that exact token into the translation: same braces, the full number, and the same place in the sentence. Do not translate, delete, reorder or change the digits. {{G1}} is a different token from {{G10}}. Leave the spaces around the token as they are.",
     'Use "context_before" (earlier original lines + their translations when available) only to understand relationships, pronouns and ongoing topics. Do not translate the context itself.',
