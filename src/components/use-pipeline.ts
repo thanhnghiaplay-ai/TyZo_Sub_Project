@@ -421,7 +421,8 @@ export function usePipeline() {
   }, []);
 
   const progress = useCallback(() => {
-    if (isErrorRef.current) return;
+    // Chỉ chặn khi đang có lỗi cứng trong lúc chạy; tin nhắn tiến độ bình thường vẫn được ghi.
+    if (isErrorRef.current && document.documentElement.dataset.tyzoBusy === "1") return;
     const j = job.current;
     const done = j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0);
     const modelBit = mode === "auto" && j.lastModel ? ` · Auto ${modelLabel(j.lastModel)}` : "";

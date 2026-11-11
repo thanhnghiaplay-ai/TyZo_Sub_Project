@@ -582,9 +582,12 @@ export function Studio() {
   }, [app.reviewHold]);
 
   useEffect(() => {
-    if (app.isError && statusRef.current && !statusRef.current.open) {
-      statusRef.current.showModal();
-    }
+    if (!app.isError || !statusRef.current || statusRef.current.open) return;
+    // Chỉ tự mở khi lỗi mới; không mở lại mỗi lần status đổi.
+    const key = app.status;
+    if (statusRef.current.dataset.last === key) return;
+    statusRef.current.dataset.last = key;
+    statusRef.current.showModal();
   }, [app.isError, app.status]);
 
   const showRoomPrice = runDoor.open && payByRoom;
