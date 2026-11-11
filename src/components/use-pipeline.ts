@@ -421,8 +421,6 @@ export function usePipeline() {
   }, []);
 
   const progress = useCallback(() => {
-    // Chỉ chặn khi đang có lỗi cứng trong lúc chạy; tin nhắn tiến độ bình thường vẫn được ghi.
-    if (isErrorRef.current && document.documentElement.dataset.tyzoBusy === "1") return;
     const j = job.current;
     const done = j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0);
     const modelBit = mode === "auto" && j.lastModel ? ` · Auto ${modelLabel(j.lastModel)}` : "";
@@ -1479,13 +1477,13 @@ export function usePipeline() {
       }
       const pending = j.segs.some((seg) => seg.translation === null);
       const failedN = j.segs.filter((seg) => seg.translationFailed).length;
-      if (pending) say(`Còn câu chưa dịch. Bấm Tiếp tục — không phải nhận dạng lại.${retryBit}`, true);
+      if (pending) say(`Còn câu chưa dịch. Bấm Tiếp tục — không phải nhận dạng lại.${retryBit}`);
       else if (failedN || j.failedParts.length || j.retryReport?.missing.length) {
         const bits = [
           failedN ? `${failedN} câu không dịch được` : "",
           j.retryReport?.missing.length ? formatRetryStatus(j.retryReport) : j.failedParts.length ? `${j.failedParts.length} đoạn không giải mã được` : "",
         ].filter(Boolean);
-        say(`Hoàn tất nhưng ${bits.join(". ")}. Câu đã dịch không bị gửi lại.`, true);
+        say(`Hoàn tất nhưng ${bits.join(". ")}. Câu đã dịch không bị gửi lại.`);
       } else {
         const mix =
           mode === "auto"
