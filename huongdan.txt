@@ -3,7 +3,7 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
 ĐANG CHẠY (2026-11-10 07:56 UTC+7)
-- Số phiên bản người dùng thấy: v2.20.0 trên main. Bản đang làm trên work là v3.10.7, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG.
+- Số phiên bản người dùng thấy: v2.20.0 trên main. Bản đang làm trên work là v3.10.11, trong src/lib/app-version.ts. Chỉ hiện Vx.x.x. Bấm hoặc rê chuột vào số thì hiện CHANGELOG.
 - Điều khoản: TERMS_VERSION = 2026-11-09.5 trong src/components/entry-gate.tsx.
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.

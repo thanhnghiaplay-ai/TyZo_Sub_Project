@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { retryLoad } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
 import {
@@ -171,7 +172,7 @@ export function AdminDesk() {
   const [dropOpen, setDropOpen] = useState(false);
 
   async function refreshPlace() {
-    const next = await getMyPlace();
+    const next = await retryLoad(() => getMyPlace());
     setPlace(next);
     if (next.role) {
       setStats(await getDeskStats());

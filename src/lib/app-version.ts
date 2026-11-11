@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.10.10";
+export const APP_VERSION = "3.10.11";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.10.11",
+    time: "09:15 ngày 11/11/2026",
+    title: "Sửa nút Quản lý biến mất sau khi bấm dịch, phải tải lại trang mới hiện.",
+    points: [
+      "Nút Quản lý không còn biến mất khi mạng chậm một lúc.",
+      "Trang Quản lý tự thử lại khi mạng chậm, không báo lỗi ngay.",
+    ],
+  },
   {
     version: "3.10.10",
     time: "05:20 ngày 11/11/2026",

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.10.11",
+    time: "09:15 ngày 11/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.10.10. Lỗi: nút Quản lý và /admin mất sau khi dịch, phải tải lại. Nguyên nhân: getMyPlace chỉ gọi một lần khi mở trang, lỗi tạm thì studio.tsx gán place=null và không đọc lại; admin-desk.tsx cũng chỉ thử một lần. Sửa: thêm src/lib/retry-load.ts (thử lại 1,5 s và 4 s, có test); studio.tsx đọc lại khi quay lại tab và khi dịch xong, lỗi thì giữ quyền cũ; admin-desk.tsx dùng retryLoad. Chưa tái hiện trên Vercel vì không có log máy chủ.",
+  },
+  {
     version: "3.10.7",
     time: "03:28 ngày 11/11/2026",
     area: "khac",

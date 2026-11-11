@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, typ
 import { AccountPanel } from "@/components/account-panel";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
+import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
 import {
   ClipboardPaste,
@@ -540,13 +541,39 @@ export function Studio() {
     };
   }, [menuOpen]);
 
+  // Đọc quyền có thử lại. Lỗi tạm thời thì giữ quyền đã biết, không xóa nút Quản lý.
+  const placeSeq = useRef(0);
+  const loadPlace = useCallback(async () => {
+    const my = ++placeSeq.current;
+    try {
+      const next = await retryLoad(() => getMyPlace());
+      if (my === placeSeq.current) setPlace(next);
+    } catch {
+      /* giữ nguyên quyền cũ; lần sau (quay lại tab, dịch xong) sẽ đọc lại */
+    }
+  }, []);
+
   useEffect(() => {
-    void getMyPlace().then(setPlace).catch(() => setPlace(null));
+    void loadPlace();
     const ping = () => void touchPresence().catch(() => undefined);
     ping();
     const timer = window.setInterval(ping, 60_000);
-    return () => window.clearInterval(timer);
-  }, []);
+    const onShow = () => {
+      if (document.visibilityState === "visible") void loadPlace();
+    };
+    document.addEventListener("visibilitychange", onShow);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
+      placeSeq.current++;
+    };
+  }, [loadPlace]);
+
+  const wasRunning = useRef(false);
+  useEffect(() => {
+    if (wasRunning.current && !app.running) void loadPlace();
+    wasRunning.current = app.running;
+  }, [app.running, loadPlace]);
 
   useEffect(() => {
     if (!app.reviewHold) return;
