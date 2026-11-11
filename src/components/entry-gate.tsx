@@ -108,7 +108,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           </thead>
           <tbody>
             <tr>
-              <td>Nhận dạng lời, dịch, chiếu phụ đề, thuyết minh, xuất file</td>
+              <td>Nhận dạng lời, dịch, chiếu phụ đề, thuyết minh, xuất phụ đề</td>
               <td>Phòng cung cấp công cụ</td>
             </tr>
             <tr>
@@ -131,7 +131,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         </table>
 
         <h2>Bảng giá</h2>
-        <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
+        <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất phụ đề Vietsub (.srt). Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
         <table className="gate-table">
           <thead>
             <tr>
@@ -144,13 +144,13 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
             <tr>
               <td>Dùng thử</td>
               <td>0 đ</td>
-              <td>1 tệp, 10 phút, không xuất file</td>
+              <td>1 tệp, 10 phút, không xuất phụ đề</td>
             </tr>
             {ROOM_PLANS.map((plan) => (
               <tr key={plan.id}>
                 <td>{plan.name}</td>
                 <td>{new Intl.NumberFormat("vi-VN").format(plan.price)} đ</td>
-                <td>Không giới hạn số tệp trong hạn, được xuất file</td>
+                <td>Không giới hạn số tệp trong hạn, được xuất phụ đề</td>
               </tr>
             ))}
           </tbody>
@@ -158,7 +158,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 
         <h2>1. Phòng này làm gì</h2>
         <p>
-          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
+          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất phụ đề phụ đề .srt.
         </p>
         <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
         <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá Groq công bố cộng phần chênh phòng niêm yết: nhận dạng theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn Groq báo lỗi thì không tính tiền.</p>
@@ -210,7 +210,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <h2>8. Khi nào bị khóa hoặc bị cấm</h2>
         <p className="gate-key">Hết hạn gói, hết lượt dùng thử, dịch chưa đúng, hoặc đăng nhập sai không phải lý do để khóa hay cấm. Những lúc đó bạn vẫn đăng nhập được.</p>
         <p className="gate-label gate-label-lock">Khóa</p>
-        <p>Bạn vẫn vào phòng để gửi yêu cầu xem lại, nhưng không dịch và không xuất file.</p>
+        <p>Bạn vẫn vào phòng để gửi yêu cầu xem lại, nhưng không dịch và không xuất phụ đề.</p>
         <p className="gate-label gate-label-ban">Cấm</p>
         <p>Bạn không đăng nhập được. Người bị cấm vẫn gửi được yêu cầu từ trang không cần đăng nhập.</p>
         <p className="gate-key">Mỗi lần khóa hoặc cấm đều có lý do được ghi lại.</p>
