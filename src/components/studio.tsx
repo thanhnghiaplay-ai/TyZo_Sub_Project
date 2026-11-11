@@ -26,7 +26,10 @@ import {
 import { usePipeline } from "@/components/use-pipeline";
 import { PackPicker } from "@/components/pack-picker";
 import { getServiceMenu, type ServiceMenu } from "@/lib/pack-room";
-import { providersIn } from "@/lib/service-pack";
+import { providersIn, quotePack } from "@/lib/service-pack";
+import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
+import { estimateTranslateHold, HOLD_BUFFER } from "@/lib/run-bill";
+import { loadWatch, sameWatchFile, saveWatch, slimSeg, type WatchProject } from "@/lib/watch-save";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
@@ -467,6 +470,8 @@ export function Studio() {
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(true);
   const statusRef = useRef<HTMLDialogElement>(null);
+  const [urlDraft, setUrlDraft] = useState("");
+  const [savedWatch, setSavedWatch] = useState<(WatchProject & { savedAt: number }) | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const narrator = useRef(createNarrator());
   const door: "turn" | "rent" = payByRoom ? "turn" : "rent";
@@ -482,7 +487,37 @@ export function Studio() {
     setNarration(loadNarration());
     setSub(loadSub());
     setHydrated(true);
+    void loadWatch()
+      .then((row) => {
+        if (row) setSavedWatch(row);
+      })
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    setUrlDraft(app.url);
+  }, [app.url]);
+
+  useEffect(() => {
+    if (!app.segs.length || app.buttonLabel === "Nhận dạng lại") return;
+    const file = app.file;
+    const timer = window.setTimeout(() => {
+      const project: WatchProject = {
+        fileName: file?.name || "",
+        fileSize: file?.size || 0,
+        fileModified: file?.lastModified || 0,
+        url: app.url,
+        source: app.source,
+        position: app.videoRef.current?.currentTime || 0,
+        appliedSig: app.appliedSig,
+        segs: app.segs.map(slimSeg),
+      };
+      void saveWatch(project)
+        .then(() => setSavedWatch({ ...project, savedAt: Date.now() }))
+        .catch(() => {});
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [app.segs, app.file, app.url, app.source, app.appliedSig, app.buttonLabel, app.videoRef]);
   useEffect(() => {
     void getServiceMenu()
       .then(setMenu)
@@ -562,6 +597,69 @@ export function Studio() {
     setPayByRoom(false);
     app.setRoomPay(false);
   }, [runDoor.ready, runDoor.open, app.setRoomPay]);
+
+  const askReplace = (what: string) => {
+    if (!app.segs.length) return true;
+    const edited = app.segs.filter((seg) => seg.edited).length;
+    const tail = edited ? `, kể cả ${edited} câu đã sửa` : "";
+    return confirm(`${what} sẽ tính là nhận dạng lại. Phụ đề hiện tại sẽ bị xóa khi bạn bấm Nhận dạng lại${tail}. Đổi chứ?`);
+  };
+  const pickVideo = (file: File | null) => {
+    if (!file) {
+      if (app.file && !askReplace("Bỏ file")) return;
+      app.setFile(null);
+      return;
+    }
+    if (!app.segs.length && savedWatch && sameWatchFile(savedWatch, file)) {
+      app.setFile(file);
+      app.restoreWatch(file, { source: savedWatch.source, position: savedWatch.position, segs: savedWatch.segs, appliedSig: savedWatch.appliedSig });
+      return;
+    }
+    if (!askReplace("Đổi file")) return;
+    app.setFile(file);
+  };
+  const pickAudio = (file: File | null) => {
+    if (!file) {
+      if (app.audioFile && !askReplace("Bỏ âm thanh")) return;
+      app.setAudioFile(null);
+      return;
+    }
+    if (!askReplace("Đổi âm thanh")) return;
+    app.setAudioFile(file);
+  };
+  const redoNote = () => {
+    if (app.buttonLabel !== "Dịch lại") return "";
+    const kept = app.segs.filter((seg) => seg.edited).length;
+    const lead = kept ? `Giữ ${kept} câu đã sửa tay. ` : "Giữ câu đã sửa tay. ";
+    const tail = "Chỉ gửi phần còn lại, không tính nhận dạng.";
+    const seconds = app.redoSeconds;
+    if (!(seconds > 0) || !app.board) return `${lead}${tail}`;
+    const money = (value: number) => `${new Intl.NumberFormat("vi-VN").format(value)} đ`;
+    if (app.servicePack) {
+      const quote = quotePack({
+        pack: app.servicePack,
+        seconds,
+        door,
+        narration: false,
+        scope: "translate",
+        books: {
+          groq: { rate: app.board.rate, rows: app.board.rows, desk: { markup: runDoor.markup, custom: runDoor.custom } },
+          alibaba: { rate: app.board.rate, rows: ALIBABA_ROWS, desk: { markup: menu?.alibaba.markup ?? 0, custom: menu?.alibaba.custom ?? {} } },
+        },
+      });
+      if (quote.ready && quote.marked != null) {
+        return door === "turn" ? `${lead}${tail} Giữ ${money(quote.hold)}.` : `${lead}${tail} Ước tính trên key của bạn ${money(quote.marked)}.`;
+      }
+    } else if (app.modelId) {
+      const hold = estimateTranslateHold(
+        { rate: app.board.rate, rows: app.board.rows, desk: { markup: door === "turn" ? runDoor.markup : 0, custom: door === "turn" ? runDoor.custom : {} } },
+        app.modelId,
+        seconds,
+      );
+      if (hold != null) return door === "turn" ? `${lead}${tail} Giữ ${money(hold)}.` : `${lead}${tail} Ước tính trên key của bạn ${money(Math.round(hold / HOLD_BUFFER))}.`;
+    }
+    return `${lead}${tail}`;
+  };
 
   const pasteKey = async () => {
     try {
@@ -855,16 +953,15 @@ export function Studio() {
           >
             {app.status}
           </button>
+          {app.buttonLabel ? (
           <button
             type="button"
-            className={"min-tap shrink-0 rounded-xl px-3 text-sm font-semibold " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+            className={"min-tap shrink-0 rounded-xl px-3 text-sm font-semibold " + (app.running || app.buttonLabel === "Nhận dạng lại" ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
             onClick={() => (app.running ? app.cancel() : void app.start())}
           >
             {app.buttonLabel}
           </button>
-          <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={app.reset}>
-            Làm lại
-          </button>
+          ) : null}
           {app.reviewHold && (
             <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
               Dịch tiếp
@@ -887,6 +984,10 @@ export function Studio() {
             <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => setSetupOpen(false)}>
               Xem video
             </button>
+          )}
+          {redoNote() && <p className="w-full text-sm text-muted">{redoNote()}</p>}
+          {savedWatch && app.segs.length === 0 && (
+            <p className="w-full text-sm text-muted">Còn bản dịch của {savedWatch.fileName || "lần trước"}. Chọn lại đúng file để xem tiếp, không nhận dạng lại.</p>
           )}
         </div>
         <dialog ref={statusRef} className="studio-note">
@@ -1007,7 +1108,10 @@ export function Studio() {
           />
         )}
         <div className="grid gap-3 sm:grid-cols-2">
-          <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
+          <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={(value) => {
+            if (value === app.source || !askReplace("Đổi ngôn ngữ nguồn")) return;
+            app.setSource(value);
+          }}>
             {SRC_LANGS.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -1066,14 +1170,28 @@ export function Studio() {
         </details>
 
         <div className="grid gap-2 sm:grid-cols-2">
-          <FileTile icon={<Clapperboard className="size-5" />} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
-          <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
+          <FileTile icon={<Clapperboard className="size-5" />} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={pickVideo} />
+          <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={pickAudio} />
         </div>
         <label className="grid gap-1 text-sm text-muted">
           Hoặc link file trực tiếp
           <span className="relative">
             <Link2 className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
-            <input className={FIELD + " pl-9"} type="url" placeholder="https://…/phim.mp4" value={app.url} onChange={(event) => app.setUrl(event.target.value)} />
+            <input
+              className={FIELD + " pl-9"}
+              type="url"
+              placeholder="https://…/phim.mp4"
+              value={urlDraft}
+              onChange={(event) => setUrlDraft(event.target.value)}
+              onBlur={() => {
+                if (urlDraft.trim() === app.url.trim()) return;
+                if (!askReplace("Đổi link")) {
+                  setUrlDraft(app.url);
+                  return;
+                }
+                app.setUrl(urlDraft);
+              }}
+            />
           </span>
         </label>
         <details className="text-sm text-muted">
@@ -1164,6 +1282,10 @@ export function Studio() {
         {app.threads >= 6 && (
           <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
         )}
+        <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={app.reset}>
+          Nhận dạng lại từ đầu
+        </button>
+        <p className="text-sm text-muted">Xóa phụ đề hiện tại, kể cả câu đã sửa, rồi nghe lại. Việc này tính phí thêm một lần.</p>
           </div>
         </details>
       </section>
@@ -1653,6 +1775,7 @@ function FileTile({ icon, title, name, hint, accept, onFile }: { icon: ReactNode
         accept={accept}
         onChange={(event) => {
           onFile(event.target.files?.[0] || null);
+          event.currentTarget.value = "";
           event.currentTarget.blur();
           window.scrollTo(0, 0);
         }}

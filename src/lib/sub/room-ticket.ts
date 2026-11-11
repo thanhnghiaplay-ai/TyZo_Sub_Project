@@ -22,6 +22,7 @@ export async function openRoomTicket(input: {
   chatModel: string;
   packId?: string;
   narration?: boolean;
+  scope?: "full" | "translate";
 }): Promise<RunTicketOpen> {
   return openRunTicket({ data: input });
 }

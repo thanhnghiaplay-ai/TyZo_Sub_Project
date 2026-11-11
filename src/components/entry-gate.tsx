@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-12.1";
+export const TERMS_VERSION = "2026-11-12.2";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -124,8 +124,8 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
               <td>Bạn</td>
             </tr>
             <tr>
-              <td>Đúng hết câu, đúng ý, đúng giọng</td>
-              <td>Không cam kết</td>
+              <td>Dịch lại phim đã nhận dạng</td>
+              <td>Chỉ tính phần dịch của câu chưa sửa tay</td>
             </tr>
           </tbody>
         </table>
@@ -161,7 +161,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng. Bạn có thể dùng key của mình, hoặc chọn gói dịch của phòng. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
         <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
-        <p>Cửa trả theo lượt dùng key của phòng. Bạn chọn một gói dịch. Gói có thể là một model, hoặc nhiều model chia việc: nhận dạng, dịch, ngữ cảnh, đối chiếu, tóm tắt, thuyết minh. Tiền trừ trong ví theo giá gốc cộng phần chênh phòng niêm yết. Trước khi chạy, phòng hiện số cần trả và giữ tạm một khoản lớn hơn ước tính. Khi xong, phòng trừ số thực và trả phần giữ thừa. Đoạn lỗi không tính tiền. Thuyết minh trừ lúc đọc, không nằm trong khoản giữ. Cửa thuê phòng vẫn dùng key của bạn và không giữ ví; app chỉ hiện ước tính trên key đó.</p>
+        <p>Cửa trả theo lượt dùng key của phòng. Bạn chọn một gói dịch. Gói có thể là một model, hoặc nhiều model chia việc: nhận dạng, dịch, ngữ cảnh, đối chiếu, tóm tắt, thuyết minh. Tiền trừ trong ví theo giá gốc cộng phần chênh phòng niêm yết. Trước khi chạy, phòng hiện số cần trả và giữ tạm một khoản lớn hơn ước tính. Khi xong, phòng trừ số thực và trả phần giữ thừa. Đoạn lỗi không tính tiền. Thuyết minh trừ lúc đọc, không nằm trong khoản giữ. Dịch lại phim đã nhận dạng chỉ tính phần dịch của câu chưa sửa tay, không tính thêm lần nhận dạng. Câu đã sửa tay được giữ. Câu cũ chỉ được thay khi câu mới của dòng đó đã có. Cửa thuê phòng vẫn dùng key của bạn và không giữ ví; app chỉ hiện ước tính trên key đó.</p>
 
         <h2>2. Điều kiện để dùng</h2>
         <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq là của bạn. Groq tính cước cho tài khoản của bạn, không phải phí của phòng.</p>

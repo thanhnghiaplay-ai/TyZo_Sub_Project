@@ -9,6 +9,7 @@ import { readMediaSeconds } from "@/lib/trial-media";
 import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
 import { formatMoney } from "@/lib/money-format";
 import { providersIn, type ServicePack } from "@/lib/service-pack";
+import { resendSeconds, watchIntent } from "@/lib/watch-run";
 import type { ProviderId } from "@/lib/sub/provider";
 
 const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
@@ -478,16 +479,29 @@ export function usePipeline() {
     return "";
   }, [file, audioFile, url]);
 
-  const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}` : `${modelId}|${genre}`;
+  const translateSig = useCallback(() => {
+    const pack = servicePack;
+    const model = pack?.roles.translate?.model || (mode === "manual" ? modelId : "auto");
+    const cast = (bible?.characters || []).map((item) => `${item.name}|${item.gender}|${item.self}|${item.addressed}`).join(";");
+    return `${target}|${model}|${genre}|${pack?.id || ""}|${gloss}|${cast}`;
+  }, [bible, genre, gloss, mode, modelId, servicePack, target]);
+
+  const redoSeconds = useMemo(() => resendSeconds(segs, job.current.appliedSig, translateSig()), [segs, translateSig]);
 
   const buttonLabel = useMemo(() => {
-    if (running) return "Hủy";
-    const id = mediaId();
-    const known = Boolean(id) && job.current.pcmId === id;
-    const unfinished = known && (job.current.nextPart < job.current.parts.length || segs.some((seg) => seg.translation === null));
-    const retarget = known && segs.length > 0 && job.current.appliedSig && job.current.appliedSig !== `${target}|${modelSig}`;
-    return unfinished || retarget ? "Tiếp tục" : "Tải và dịch";
-  }, [running, mediaId, segs, target, modelSig]);
+    const j = job.current;
+    return watchIntent({
+      running,
+      segs,
+      pcmId: j.pcmId,
+      mediaId: mediaId(),
+      doneSource: j.doneSource,
+      source,
+      appliedSig: j.appliedSig,
+      sig: translateSig(),
+      asrLeft: j.parts.length > 0 && j.nextPart < j.parts.length,
+    });
+  }, [running, mediaId, segs, source, translateSig]);
 
   const catalog: ChatModel[] = useMemo(() => mergeCatalog(remoteIds || []), [remoteIds]);
 
@@ -715,16 +729,15 @@ export function usePipeline() {
         const src = rule.split(/=>|→|=/)[0]?.trim().toLowerCase() || "";
         if (src) {
           for (const item of job.current.segs) {
-            if (item !== seg && item.translation !== null && item.original.toLowerCase().includes(src)) {
-              item.translation = null;
-              item.translationFailed = false;
+            if (item !== seg && !item.edited && item.translation && item.original.toLowerCase().includes(src)) {
+              item.stale = true;
               related++;
             }
           }
         }
       }
       publish(true);
-      say(related ? `Đã thêm thuật ngữ. ${related} câu liên quan sẽ dịch lại khi bấm Tiếp tục.` : "Đã sửa câu.");
+      say(related ? `Đã thêm thuật ngữ. ${related} câu liên quan vẫn hiện chữ cũ cho đến khi câu mới về.` : "Đã sửa câu.");
     },
     [gloss, notes, publish, saveGloss, say, title],
   );
@@ -794,24 +807,48 @@ export function usePipeline() {
     let ticketId: string | null = null;
     let ticketFailed = false;
     let releasePlayback = () => {};
+    const sigNow = translateSig();
+    const mediaNow = mediaId();
+    const j0 = job.current;
+    const retranslate =
+      watchIntent({
+        running: false,
+        segs: j0.segs,
+        pcmId: j0.pcmId,
+        mediaId: mediaNow,
+        doneSource: j0.doneSource,
+        source,
+        appliedSig: j0.appliedSig,
+        sig: sigNow,
+        asrLeft: j0.parts.length > 0 && j0.nextPart < j0.parts.length,
+      }) === "Dịch lại";
+    const redo = Math.ceil(resendSeconds(j0.segs, j0.appliedSig, sigNow));
+    if (retranslate && redo < 1) return say("Không còn câu nào cần dịch lại.", true);
     if (roomPayRef.current) {
       const chosenFile = audioFile || file;
       if (!chosenFile) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
           fileName: chosenFile.name,
-          seconds: await readMediaSeconds(chosenFile),
+          seconds: retranslate ? redo : await readMediaSeconds(chosenFile),
           asrModel: pack?.roles.asr?.model ?? asrModel,
           chatModel: pack?.roles.translate?.model ?? (mode === "manual" ? chosen : "auto"),
           packId: pack?.id,
-          narration: billNarrationRef.current && Boolean(pack?.roles.narration),
+          narration: retranslate ? false : billNarrationRef.current && Boolean(pack?.roles.narration),
+          scope: retranslate ? "translate" : "full",
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
-        say(`Đã giữ ${moneyText(opened.held)} (ước tính, số trừ là số thực, phần thừa trả lại). Số dư còn ${moneyText(opened.balance)}.`);
+        say(
+          retranslate
+            ? `Đã giữ ${moneyText(opened.held)} cho phần dịch lại, không tính nhận dạng. Câu đã sửa được giữ. Số dư còn ${moneyText(opened.balance)}.`
+            : `Đã giữ ${moneyText(opened.held)} (ước tính, số trừ là số thực, phần thừa trả lại). Số dư còn ${moneyText(opened.balance)}.`,
+        );
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
       }
+    } else if (retranslate) {
+      say("Đang dịch lại trên key của bạn. Câu đã sửa được giữ. Câu cũ còn đến khi câu mới về.");
     }
 
     const j = job.current;
@@ -1230,24 +1267,25 @@ export function usePipeline() {
     };
 
     const translateRemaining = async (asrDone: () => boolean) => {
-      const sig = `${target}|${modelSig}`;
+      const sig = translateSig();
       if (j.appliedSig && j.appliedSig !== sig) {
         for (const seg of j.segs) {
           if (seg.edited) continue;
-          seg.translation = null;
-          seg.translationFailed = false;
+          if (seg.translation !== null) seg.stale = true;
         }
         publish(true);
+        say("Đang dịch lại. Câu đã sửa được giữ. Câu cũ còn trên hình đến khi câu mới về.");
       }
       j.appliedSig = sig;
       const take = (done: boolean) => {
         const limit = done ? j.segs.length : Math.max(0, j.segs.length - 2);
+        const waiting = (seg: Seg) => Boolean(seg.busy || seg.edited || (seg.translation !== null && !seg.stale));
         let start = 0;
-        while (start < limit && (j.segs[start].translation !== null || j.segs[start].busy)) start++;
+        while (start < limit && waiting(j.segs[start])) start++;
         const out: Seg[] = [];
         for (let i = start; i < limit && out.length < BATCH; i++) {
           const seg = j.segs[i];
-          if (seg.translation !== null || seg.busy) break;
+          if (waiting(seg)) break;
           out.push(seg);
         }
         return out;
@@ -1257,7 +1295,7 @@ export function usePipeline() {
           throwIfAborted(signal);
           if (my !== j.runId) return;
           const done = asrDone();
-          if (preRef.current && reviewRef.current && pauseForNewBible.current && !j.bibleGo) {
+          if (preRef.current && reviewRef.current && pauseForNewBible.current && !j.bibleGo && !retranslate) {
             if (!done) {
               await sleep(500, signal);
               continue;
@@ -1274,7 +1312,7 @@ export function usePipeline() {
               await sleep(300, signal);
               continue;
             }
-          } else if (preRef.current && !j.bible) {
+          } else if (preRef.current && !j.bible && !retranslate) {
             if (!done) {
               await sleep(500, signal);
               continue;
@@ -1416,10 +1454,15 @@ export function usePipeline() {
               }
               const line = (translated![offset] || "").trim();
               seg.model = used;
+              seg.stale = false;
               if (!line || untranslated(seg.original, line)) {
-                seg.translation = "";
-                seg.translationFailed = true;
-                failedInGroup++;
+                if (seg.translation) {
+                  failedInGroup++;
+                } else {
+                  seg.translation = "";
+                  seg.translationFailed = true;
+                  failedInGroup++;
+                }
               } else {
                 seg.translation = translated![offset];
                 seg.translationFailed = false;
@@ -1444,7 +1487,7 @@ export function usePipeline() {
       j.diagLang = source;
       const id = mediaId();
       const havePcm = Boolean((j.pcm || j.stream) && j.pcmId === id);
-      if (j.pcmId !== id || j.doneSource !== source) {
+      if (!retranslate && (j.pcmId !== id || j.doneSource !== source)) {
         if (!havePcm) {
           say("Đang đọc cấu trúc file…");
           const primary = audioFile || file;
@@ -1574,23 +1617,31 @@ export function usePipeline() {
       }
 
       pauseForNewBible.current = !(j.bible && !j.bible.failed);
-      let asrFinished = j.nextPart >= j.parts.length;
       const fail = (error: unknown) => {
         inner.abort();
         throw error;
       };
-      const asr = transcribeRemaining().then(
-        () => {
-          asrFinished = true;
-        },
-        fail,
-      );
-      const tr = translateRemaining(() => asrFinished).catch(fail);
-      const results = await Promise.allSettled([asr, tr]);
-      const errors = results.filter((item): item is PromiseRejectedResult => item.status === "rejected").map((item) => item.reason as Error);
-      const real = errors.find((error) => error?.name !== "AbortError");
-      if (real) throw real;
-      if (errors.length) throw errors[0];
+      if (retranslate) {
+        try {
+          await translateRemaining(() => true);
+        } catch (error) {
+          fail(error);
+        }
+      } else {
+        let asrFinished = j.nextPart >= j.parts.length;
+        const asr = transcribeRemaining().then(
+          () => {
+            asrFinished = true;
+          },
+          fail,
+        );
+        const tr = translateRemaining(() => asrFinished).catch(fail);
+        const results = await Promise.allSettled([asr, tr]);
+        const errors = results.filter((item): item is PromiseRejectedResult => item.status === "rejected").map((item) => item.reason as Error);
+        const real = errors.find((error) => error?.name !== "AbortError");
+        if (real) throw real;
+        if (errors.length) throw errors[0];
+      }
       publish(true);
       if (my !== j.runId) return;
       if (j.nextPart >= j.parts.length) {
@@ -1701,7 +1752,7 @@ export function usePipeline() {
     mediaId,
     mode,
     modelId,
-    modelSig,
+    translateSig,
     notes,
     pre,
     profile,
@@ -1742,6 +1793,37 @@ export function usePipeline() {
     setReviewHold(false);
     say("Đang dịch theo bảng nhân vật…");
   }, [say]);
+
+  const restoreWatch = useCallback(
+    (next: File, saved: { source: string; position: number; segs: Seg[]; appliedSig?: string }) => {
+      const j = job.current;
+      j.segs = saved.segs.map((seg) => ({ ...seg, busy: false }));
+      j.pcmId = `file:${next.name}:${next.size}:${next.lastModified}|`;
+      j.doneSource = saved.source;
+      j.appliedSig = saved.appliedSig || translateSig();
+      j.parts = [];
+      j.nextPart = 0;
+      j.pcm = null;
+      j.stream = null;
+      j.bibleGo = true;
+      setAudioFile(null);
+      if (saved.source) setSource(saved.source);
+      publish(true);
+      const video = videoRef.current;
+      if (video) {
+        if (j.videoUrl) URL.revokeObjectURL(j.videoUrl);
+        j.videoUrl = URL.createObjectURL(next);
+        video.src = j.videoUrl;
+        const seek = () => {
+          if (saved.position > 0 && Number.isFinite(video.duration)) video.currentTime = Math.min(saved.position, Math.max(0, video.duration - 0.25));
+        };
+        video.addEventListener("loadedmetadata", seek, { once: true });
+        video.load();
+      }
+      say(`Đã gắn lại bản dịch của ${next.name}. Không nhận dạng lại.`);
+    },
+    [publish, say, translateSig],
+  );
 
   const mutateBible = useCallback((recipe: (current: Bible) => void) => {
     const current = job.current.bible;
@@ -2358,6 +2440,9 @@ export function usePipeline() {
     isError,
     running,
     buttonLabel,
+    appliedSig: job.current.appliedSig,
+    redoSeconds,
+    restoreWatch,
     catalog,
     board,
     boardNote,

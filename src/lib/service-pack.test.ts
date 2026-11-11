@@ -170,4 +170,34 @@ describe("báo giá gói dịch", () => {
     assert.equal(parseServicePacks(JSON.stringify(saved))[0]?.name, "Gói thử");
     assert.throws(() => checkServicePacks([{ ...saved[0], roles: { asr: saved[0].roles.asr } }]), /nhận dạng và model dịch/);
   });
+
+  it("dịch lại không tính nhận dạng và không giữ tiền thuyết minh", () => {
+    const roles = {
+      asr: { provider: "groq" as const, model: "whisper-large-v3-turbo" },
+      translate: { provider: "groq" as const, model: "chat-model" },
+      review: { provider: "groq" as const, model: "review-model" },
+      narration: { provider: "alibaba" as const, model: "qwen3-tts-flash" },
+    };
+    const full = quotePack({
+      pack: pack(roles),
+      seconds: 600,
+      door: "turn",
+      narration: true,
+      books: { groq: book(0), alibaba: book(0) },
+    });
+    const again = quotePack({
+      pack: pack(roles),
+      seconds: 600,
+      door: "turn",
+      narration: true,
+      scope: "translate",
+      books: { groq: book(0), alibaba: book(0) },
+    });
+    assert.equal(again.ready, true);
+    assert.equal(again.lines.some((line) => line.role === "asr"), false);
+    assert.equal(again.lines.some((line) => line.role === "narration"), false);
+    assert.equal(again.narration, 0);
+    assert.ok((again.hold ?? 0) > 0);
+    assert.ok((again.hold ?? 0) < (full.hold ?? 0));
+  });
 });

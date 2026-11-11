@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.16.0",
+    time: "03:48 ngày 12/11/2026",
+    area: "tien",
+    text: "Làm trên nền v3.15.0. Gỡ nút Làm lại khỏi thanh xem; nhận dạng lại từ đầu nằm trong Nâng cao và vẫn hỏi. Đổi file, âm thanh, link hoặc ngôn ngữ nguồn khi đang có phụ đề phải xác nhận, chưa đồng ý thì không đổi ô. Nút chạy khi đã xong thì ẩn. Dịch lại giữ câu sửa tay, không xóa câu cũ trước khi câu mới về, phiếu cửa trả theo lượt dùng scope translate (không cộng nhận dạng, không giữ thuyết minh). Điều khoản 2026-11-12.2. Phụ đề, tên file, kích thước và chỗ phát lưu trên máy khách (IndexedDB), không lưu video.",
+  },
+  {
     version: "3.15.0",
     time: "02:44 ngày 12/11/2026",
     area: "khac",

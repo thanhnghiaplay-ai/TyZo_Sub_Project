@@ -11,14 +11,15 @@ const MODEL_RE = /^[a-z0-9./_-]{2,80}$|^auto$/i;
 /** Mở phiếu cho một lần chạy: giữ tiền trước, trả mã phiếu. Mọi yêu cầu sau gắn mã này. */
 export const openRunTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { fileName: string; seconds: number; asrModel: string; chatModel: string; packId?: string; narration?: boolean }) => {
+  .validator((input: { fileName: string; seconds: number; asrModel: string; chatModel: string; packId?: string; narration?: boolean; scope?: string }) => {
     const seconds = Math.ceil(Number(input.seconds));
     if (!Number.isFinite(seconds) || seconds < 1 || seconds > MAX_RUN_SECONDS) throw new Error("Thời lượng tệp không đúng.");
     if (!MODEL_RE.test(input.asrModel || "") || !MODEL_RE.test(input.chatModel || "")) throw new Error("Tên model không đúng.");
     const fileName = String(input.fileName || "").trim().slice(0, 120);
     const packId = String(input.packId || "").trim();
     if (packId && !/^pack_[a-z0-9]{4,24}$/.test(packId)) throw new Error("Gói không đúng.");
-    return { fileName, seconds, asrModel: input.asrModel, chatModel: input.chatModel, packId, narration: Boolean(input.narration) };
+    const scope = input.scope === "translate" ? "translate" : "full";
+    return { fileName, seconds, asrModel: input.asrModel, chatModel: input.chatModel, packId, narration: Boolean(input.narration), scope };
   })
   .handler(async ({ context, data }): Promise<RunTicketOpen> => {
     const { randomBytes } = await import("node:crypto");
@@ -27,7 +28,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
     const { parseRunDesk, parseModelList, dayStartIso } = await import("@/lib/run-desk");
-    const { estimateHold } = await import("@/lib/run-bill");
+    const { estimateHold, estimateTranslateHold } = await import("@/lib/run-bill");
     const { loadPriceBook } = await import("@/lib/run-board.server");
     const { openTicketWith } = await import("@/lib/run-ticket");
     const sql = await getSql();
@@ -54,7 +55,8 @@ export const openRunTicket = createServerFn({ method: "POST" })
         pack,
         seconds: data.seconds,
         door: "turn",
-        narration: data.narration,
+        narration: data.scope === "translate" ? false : data.narration,
+        scope: data.scope === "translate" ? "translate" : "full",
         books: {
           groq: book,
           alibaba: { rate: book.rate, rows: ALIBABA_ROWS, desk: { markup: aliDesk.markup, custom: aliDesk.custom } },
@@ -67,7 +69,14 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const auto = data.chatModel === "auto";
       if (!models.includes(data.asrModel) || (!auto && !models.includes(data.chatModel))) throw new Error("Model này không có trong cửa trả theo lượt.");
       const chatModel = auto ? dearestChatModel(book, models) : data.chatModel;
-      hold = chatModel ? estimateHold(book, data.asrModel, chatModel, data.seconds) : null;
+      hold =
+        data.scope === "translate"
+          ? chatModel
+            ? estimateTranslateHold(book, chatModel, data.seconds)
+            : null
+          : chatModel
+            ? estimateHold(book, data.asrModel, chatModel, data.seconds)
+            : null;
       if (hold == null) throw new Error("Model này chưa có giá niêm yết ở cửa trả theo lượt.");
     }
     const id = randomBytes(12).toString("hex");

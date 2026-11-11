@@ -106,11 +106,14 @@ export function quotePack(input: {
   door: ServiceDoor;
   narration: boolean;
   books: Partial<Record<ProviderId, PriceBook>>;
+  /** full: cả lần chạy. translate: chỉ dịch lại, không tính nhận dạng hay thuyết minh. */
+  scope?: "full" | "translate";
 }): PackQuote {
   const seconds = Math.max(0, input.seconds);
   const bookFor = (provider: ProviderId) => input.books[provider];
   const roles = input.pack.roles;
   const lines: QuoteLine[] = [];
+  const scope = input.scope ?? "full";
 
   const push = (role: PackRole, assign: RoleAssign, inn = 0, out = 0) => {
     const book = bookFor(assign.provider);
@@ -123,7 +126,7 @@ export function quotePack(input: {
     lines.push({ role, provider: assign.provider, model: assign.model, base: priced.base, marked: priced.marked });
   };
 
-  if (roles.asr) push("asr", roles.asr);
+  if (scope === "full" && roles.asr) push("asr", roles.asr);
 
   const spoken = translateTokens(seconds);
   const review = reviewTokens(seconds);
@@ -138,11 +141,11 @@ export function quotePack(input: {
     out += review.out;
   }
   if (roles.translate) push("translate", roles.translate, inn, out);
-  if (roles.context) push("context", roles.context, CONTEXT_TOKENS.inn, CONTEXT_TOKENS.out);
+  if (scope === "full" && roles.context) push("context", roles.context, CONTEXT_TOKENS.inn, CONTEXT_TOKENS.out);
   if (roles.review) push("review", roles.review, review.inn, review.out);
-  if (roles.summary && !sameAssign(roles.summary, roles.context)) push("summary", roles.summary, SUMMARY_TOKENS.inn, SUMMARY_TOKENS.out);
+  if (scope === "full" && roles.summary && !sameAssign(roles.summary, roles.context)) push("summary", roles.summary, SUMMARY_TOKENS.inn, SUMMARY_TOKENS.out);
 
-  const narrationOn = input.narration && Boolean(roles.narration);
+  const narrationOn = scope === "full" && input.narration && Boolean(roles.narration);
   if (narrationOn && roles.narration) push("narration", roles.narration);
 
   const narrationLine = lines.find((line) => line.role === "narration") ?? null;
@@ -153,7 +156,10 @@ export function quotePack(input: {
   };
   const marked = sum(ticketLines, "marked");
   const base = sum(lines, "base");
-  const ready = Boolean(roles.asr && roles.translate && ticketLines.length > 0 && marked != null && marked > 0 && (!narrationOn || narrationLine?.marked != null));
+  const ready =
+    scope === "translate"
+      ? Boolean(roles.translate && ticketLines.length > 0 && marked != null && marked > 0)
+      : Boolean(roles.asr && roles.translate && ticketLines.length > 0 && marked != null && marked > 0 && (!narrationOn || narrationLine?.marked != null));
   const hold = input.door === "turn" && ready && marked != null ? Math.ceil(marked * HOLD_BUFFER) : 0;
   return {
     lines,
