@@ -108,7 +108,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           </thead>
           <tbody>
             <tr>
-              <td>Nhận dạng lời, dịch, chiếu phụ đề, thuyết minh, xuất file</td>
+              <td>Nhận dạng lời, dịch, chiếu phụ đề, thuyết minh, xuất phụ đề</td>
               <td>Phòng cung cấp công cụ</td>
             </tr>
             <tr>
@@ -131,7 +131,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         </table>
 
         <h2>Bảng giá</h2>
-        <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
+        <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất phụ đề Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
         <table className="gate-table">
           <thead>
             <tr>
@@ -144,13 +144,13 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
             <tr>
               <td>Dùng thử</td>
               <td>0 đ</td>
-              <td>1 tệp, 10 phút, không xuất file</td>
+              <td>1 tệp, 10 phút, không xuất phụ đề</td>
             </tr>
             {ROOM_PLANS.map((plan) => (
               <tr key={plan.id}>
                 <td>{plan.name}</td>
                 <td>{new Intl.NumberFormat("vi-VN").format(plan.price)} đ</td>
-                <td>Không giới hạn số tệp trong hạn, được xuất file</td>
+                <td>Không giới hạn số tệp trong hạn, được xuất phụ đề</td>
               </tr>
             ))}
           </tbody>
@@ -158,7 +158,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 
         <h2>1. Phòng này làm gì</h2>
         <p>
-          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng. Bạn có thể dùng key của mình, hoặc chọn gói dịch của phòng. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
+          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng. Bạn có thể dùng key của mình, hoặc chọn gói dịch của phòng. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất phụ đề phụ đề .srt.
         </p>
         <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
         <p>Cửa trả theo lượt dùng key của phòng. Bạn chọn một gói dịch. Gói có thể là một model, hoặc nhiều model chia việc: nhận dạng, dịch, ngữ cảnh, đối chiếu, tóm tắt, thuyết minh. Tiền trừ trong ví theo giá gốc cộng phần chênh phòng niêm yết. Trước khi chạy, phòng hiện số cần trả và giữ tạm một khoản lớn hơn ước tính. Khi xong, phòng trừ số thực và trả phần giữ thừa. Đoạn lỗi không tính tiền. Thuyết minh trừ lúc đọc, không nằm trong khoản giữ. Dịch lại phim đã nhận dạng chỉ tính phần dịch của câu chưa sửa tay, không tính thêm lần nhận dạng. Câu đã sửa tay được giữ. Câu cũ chỉ được thay khi câu mới của dòng đó đã có. Cửa thuê phòng vẫn dùng key của bạn và không giữ ví; app chỉ hiện ước tính trên key đó.</p>
@@ -210,7 +210,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <h2>8. Khi nào bị khóa hoặc bị cấm</h2>
         <p className="gate-key">Hết hạn gói, hết lượt dùng thử, dịch chưa đúng, hoặc đăng nhập sai không phải lý do để khóa hay cấm. Những lúc đó bạn vẫn đăng nhập được.</p>
         <p className="gate-label gate-label-lock">Khóa</p>
-        <p>Bạn vẫn vào phòng để gửi yêu cầu xem lại, nhưng không dịch và không xuất file.</p>
+        <p>Bạn vẫn vào phòng để gửi yêu cầu xem lại, nhưng không dịch và không xuất phụ đề.</p>
         <p className="gate-label gate-label-ban">Cấm</p>
         <p>Bạn không đăng nhập được. Người bị cấm vẫn gửi được yêu cầu từ trang không cần đăng nhập.</p>
         <p className="gate-key">Mỗi lần khóa hoặc cấm đều có lý do được ghi lại.</p>
