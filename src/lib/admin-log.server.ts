@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.15.0",
+    time: "02:44 ngày 12/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.14.0. Chỉ xếp lại phòng dịch, không đổi đường nhận dạng, dịch, hai cửa tiền hay điều khoản. Thẻ Bắt đầu gộp key và phim; model, luồng, lọc tiếng nằm trong Nâng cao đóng sẵn. Nút chạy và trạng thái xuống dưới khung video. Khi đã có câu và không đang chạy, ẩn tab chuẩn bị (is-watch), xuất file sang cạnh danh sách câu. Player thêm tua ±10 giây, công tắc thuyết minh và nút Aa. Gợi ý cử chỉ chỉ hiện đến khi bấm Đã hiểu.",
+  },
+  {
     version: "3.11.0",
     time: "09:40 ngày 11/11/2026",
     area: "khac",

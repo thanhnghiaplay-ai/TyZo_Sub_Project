@@ -520,8 +520,9 @@
 .studio-video {
   position: relative;
   display: flex;
+  flex-direction: column;
   flex: 0 1 auto;
-  justify-content: center;
+  align-items: center;
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
@@ -559,6 +560,14 @@
   flex: none;
   overflow: auto;
   overscroll-behavior: contain;
+}
+
+.studio-stage.is-watch {
+  --video-h: calc(42 * var(--vh));
+}
+
+.studio-stage.is-watch .studio-tools {
+  display: none;
 }
 
 /* Chrome và Firefox cũ không có dvh: --vh rơi về vh ở trên. */
@@ -619,6 +628,10 @@
     flex: none;
     min-height: 0;
     max-height: none;
+  }
+
+  .studio-stage.is-watch {
+    grid-template-rows: minmax(0, 1fr);
   }
 }
 

@@ -18,7 +18,6 @@ import {
   Play,
   RefreshCw,
   RotateCw,
-  Settings,
   Square,
   Volume2,
   VolumeX,
@@ -431,8 +430,7 @@ function loadNarration(): NarrationSettings {
 }
 
 const TOOLS = [
-  ["key", "Key Sub"],
-  ["phim", "Phim"],
+  ["key", "Bắt đầu"],
   ["cast", "Nhân vật"],
   ["voice", "Nghe"],
   ["check", "Kiểm tra"],
@@ -689,6 +687,13 @@ export function Studio() {
     setSheetOpen(true);
   }, [app.reviewHold]);
 
+  const [setupOpen, setSetupOpen] = useState(true);
+  const showSetup = setupOpen || app.reviewHold || app.segs.length === 0;
+  useEffect(() => {
+    if (app.reviewHold || app.segs.length === 0) setSetupOpen(true);
+    else if (!app.running) setSetupOpen(false);
+  }, [app.reviewHold, app.segs.length, app.running]);
+
   const showRoomPrice = runDoor.open && payByRoom;
 
   return (
@@ -788,42 +793,10 @@ export function Studio() {
         </form>
       )}
 
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <button
-          type="button"
-          role="status"
-          className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
-          onClick={() => statusRef.current?.showModal()}
-        >
-          {app.status}
-        </button>
-        <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
-          Xuất file Vietsub
-        </button>
-        <button
-          type="button"
-          title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
-          className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
-          onClick={() => void app.exportRaw()}
-        >
-          Lưu bản Whisper
-        </button>
-        {app.reviewHold && (
-          <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
-            Dịch tiếp
-          </button>
-        )}
-      </div>
-      <dialog ref={statusRef} className="studio-note">
-        <p className="text-sm">{app.status}</p>
-        <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
-          Đóng
-        </button>
-      </dialog>
-
       <div
         role="tablist"
         aria-label="Công cụ phụ đề"
+        hidden={!showSetup}
         className="studio-tabs"
         onKeyDown={(event) => {
           if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") return;
@@ -856,7 +829,7 @@ export function Studio() {
         ))}
       </div>
 
-      <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>
+      <div className={"studio-stage" + (sheetOpen && showSetup ? " is-sheet" : "") + (showSetup ? "" : " is-watch")}>
       <section data-workspace className="studio-workspace">
         <div className="studio-video">
         <Stage
@@ -870,11 +843,77 @@ export function Studio() {
           onSpeak={speakAt}
           speechBusy={() => narrator.current.busy()}
           onPause={() => narrator.current.stop(app.videoRef.current)}
+          narrationEnabled={narration.enabled}
+          onNarration={() => patchNarration({ enabled: !narration.enabled })}
         />
+        <div className="flex w-full flex-wrap items-center gap-2 px-1 pt-2">
+          <button
+            type="button"
+            role="status"
+            className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
+            onClick={() => statusRef.current?.showModal()}
+          >
+            {app.status}
+          </button>
+          <button
+            type="button"
+            className={"min-tap shrink-0 rounded-xl px-3 text-sm font-semibold " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+            onClick={() => (app.running ? app.cancel() : void app.start())}
+          >
+            {app.buttonLabel}
+          </button>
+          <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={app.reset}>
+            Làm lại
+          </button>
+          {app.reviewHold && (
+            <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
+              Dịch tiếp
+            </button>
+          )}
+          {!showSetup && (
+            <button
+              type="button"
+              className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
+              onClick={() => {
+                setSetupOpen(true);
+                setToolTab("key");
+                setSheetOpen(true);
+              }}
+            >
+              Sửa lần chạy
+            </button>
+          )}
+          {showSetup && app.segs.length > 0 && !app.running && !app.reviewHold && (
+            <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => setSetupOpen(false)}>
+              Xem video
+            </button>
+          )}
+        </div>
+        <dialog ref={statusRef} className="studio-note">
+          <p className="text-sm">{app.status}</p>
+          <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
+            Đóng
+          </button>
+        </dialog>
         </div>
         <section className="studio-cues grid gap-2 rounded-2xl border border-line bg-card p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Bản dịch</h2>
+            {app.segs.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
+                  Xuất file Vietsub
+                </button>
+                <button
+                  type="button"
+                  title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
+                  className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
+                  onClick={() => void app.exportRaw()}
+                >
+                  Lưu bản Whisper
+                </button>
+              </div>
+            )}
           </div>
           <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh và thêm thuật ngữ.</p>
           <div className="studio-cue-scroll">
@@ -886,7 +925,7 @@ export function Studio() {
         </section>
       </section>
 
-      <div className={"studio-tools" + (sheetOpen ? " is-open" : "")}>
+      <div className={"studio-tools" + (sheetOpen && showSetup ? " is-open" : "")}>
         <div className="studio-tool-card">
         <div className="studio-sheet-bar">
           <button type="button" className="studio-sheet-close" aria-label="Đóng tab" onClick={() => setSheetOpen(false)}>
@@ -967,86 +1006,6 @@ export function Studio() {
             onSelect={(pack) => app.setServicePack(pack)}
           />
         )}
-        {doorPacks.length === 0 && (
-        <>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-muted">Cách dịch</span>
-          {!showRoomPrice && (
-            <button
-              type="button"
-              className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
-              onClick={() => void app.refreshModels()}
-              disabled={app.modelBusy}
-            >
-              {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-              Đồng bộ key
-            </button>
-          )}
-        </div>
-        <VoiceLanes
-          modelId={app.modelId}
-          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
-          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
-          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
-          priceFor={(id) =>
-            showRoomPrice
-              ? modelFacts(app.board, runDoor, id, "").price
-              : ownModelPrice(app.board, id)
-          }
-          onPick={(id) => app.chooseVoice(id)}
-        />
-        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
-        <details className="text-sm text-muted">
-          <summary className="cursor-pointer">Nhập mã model khác</summary>
-          <div className="pt-2">
-            <ModelPicker
-              models={app.catalog}
-              value={app.modelId}
-              remote={showRoomPrice ? null : app.remoteIds}
-              board={showRoomPrice ? app.board : null}
-              door={showRoomPrice ? runDoor : null}
-              onChange={app.chooseVoice}
-            />
-          </div>
-        </details>
-        <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
-            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
-          </option>
-          <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
-            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
-          </option>
-        </Select>
-        {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
-        </>
-        )}
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
-          Chỉ gửi đoạn có tiếng người
-        </label>
-        <p className="text-sm text-muted">
-          Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
-        </p>
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
-          Kiểm tra ngôn ngữ từng đoạn
-        </label>
-        <p className="text-sm text-muted">
-          Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.
-        </p>
-        <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
-          <option value="1">Ổn định · 1 luồng</option>
-          <option value="3">Cân bằng · 3 luồng</option>
-          <option value="4">Nhanh · 4 luồng</option>
-          <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
-          <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
-        </Select>
-        {app.threads >= 6 && (
-          <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
-        )}
-      </section>
-
-      <section id="tool-phim" role="tabpanel" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
             {SRC_LANGS.map(([value, label]) => (
@@ -1124,19 +1083,89 @@ export function Studio() {
             <code className="text-fg">ffmpeg -i phim.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
           </p>
         </details>
-
-        <div className="grid gap-2">
-          <button
-            type="button"
-            className={"min-tap rounded-xl font-semibold " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
-            onClick={() => (app.running ? app.cancel() : void app.start())}
-          >
-            {app.buttonLabel}
-          </button>
-          <button type="button" className="min-tap rounded-xl border border-line" onClick={app.reset}>
-            Làm lại
-          </button>
+        <p className="text-sm text-muted">Nút Tải và dịch nằm dưới khung video.</p>
+        <details className="rounded-xl border border-line bg-raised px-3 py-2">
+          <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao</summary>
+          <div className="grid gap-3 pt-2">
+        {doorPacks.length === 0 && (
+        <>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-muted">Cách dịch</span>
+          {!showRoomPrice && (
+            <button
+              type="button"
+              className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
+              onClick={() => void app.refreshModels()}
+              disabled={app.modelBusy}
+            >
+              {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+              Đồng bộ key
+            </button>
+          )}
         </div>
+        <VoiceLanes
+          modelId={app.modelId}
+          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
+          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
+          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
+          priceFor={(id) =>
+            showRoomPrice
+              ? modelFacts(app.board, runDoor, id, "").price
+              : ownModelPrice(app.board, id)
+          }
+          onPick={(id) => app.chooseVoice(id)}
+        />
+        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
+        <details className="text-sm text-muted">
+          <summary className="cursor-pointer">Nhập mã model khác</summary>
+          <div className="pt-2">
+            <ModelPicker
+              models={app.catalog}
+              value={app.modelId}
+              remote={showRoomPrice ? null : app.remoteIds}
+              board={showRoomPrice ? app.board : null}
+              door={showRoomPrice ? runDoor : null}
+              onChange={app.chooseVoice}
+            />
+          </div>
+        </details>
+        <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
+          <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
+            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
+          </option>
+          <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
+            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
+          </option>
+        </Select>
+        {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
+        </>
+        )}
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
+          Chỉ gửi đoạn có tiếng người
+        </label>
+        <p className="text-sm text-muted">
+          Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
+        </p>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
+          Kiểm tra ngôn ngữ từng đoạn
+        </label>
+        <p className="text-sm text-muted">
+          Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.
+        </p>
+        <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
+          <option value="1">Ổn định · 1 luồng</option>
+          <option value="3">Cân bằng · 3 luồng</option>
+          <option value="4">Nhanh · 4 luồng</option>
+          <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
+          <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
+        </Select>
+        {app.threads >= 6 && (
+          <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
+        )}
+          </div>
+        </details>
       </section>
 
       <section id="tool-cast" role="tabpanel" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
@@ -1725,6 +1754,8 @@ function Stage({
   onSpeak,
   speechBusy,
   onPause,
+  narrationEnabled,
+  onNarration,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>;
   segs: Seg[];
@@ -1736,6 +1767,8 @@ function Stage({
   onSpeak: (index: number) => void;
   speechBusy: () => boolean;
   onPause: () => void;
+  narrationEnabled: boolean;
+  onNarration: () => void;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const panelBoxRef = useRef<HTMLDivElement>(null);
@@ -1753,6 +1786,7 @@ function Stage({
   const [hasMedia, setHasMedia] = useState(false);
   const [fit, setFit] = useState<CSSProperties>({});
   const [bright, setBright] = useState(1);
+  const [hint, setHint] = useState(false);
   const segsRef = useRef(segs);
   const subRef = useRef(sub);
   const leadRef = useRef(lead);
@@ -1769,6 +1803,21 @@ function Stage({
   onSpeakRef.current = onSpeak;
   busyRef.current = speechBusy;
   onPauseRef.current = onPause;
+  useEffect(() => {
+    try {
+      setHint(localStorage.getItem("ggest_hint") !== "1");
+    } catch {
+      setHint(true);
+    }
+  }, []);
+  const dismissHint = () => {
+    setHint(false);
+    try {
+      localStorage.setItem("ggest_hint", "1");
+    } catch {
+      /* máy không cho lưu */
+    }
+  };
   const idxRef = useRef(-1);
   const speakRef = useRef("");
   const hideT = useRef(0);
@@ -2200,8 +2249,11 @@ function Stage({
           >
             <RotateCw className="size-4" />
           </Tiny>
+          <Tiny label={narrationEnabled ? "Tắt thuyết minh" : "Bật thuyết minh"} onClick={onNarration}>
+            {narrationEnabled ? "Đọc" : "Im"}
+          </Tiny>
           <Tiny label="Cài đặt phụ đề" onClick={() => setPanel((open) => !open)}>
-            <Settings className="size-4" />
+            Aa
           </Tiny>
           <Tiny label="Toàn màn hình" onClick={() => void toggleFull()}>
             <Square className="size-4" />
@@ -2220,6 +2272,17 @@ function Stage({
           {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
         </button>
         <div className="flex items-center gap-2 px-3 pb-3">
+          <Tiny
+            label="Tua lui 10 giây"
+            onClick={() => {
+              const video = videoRef.current;
+              if (!video) return;
+              video.currentTime = Math.max(0, video.currentTime - 10);
+              showHud(`−10 giây · ${fmt(video.currentTime)}`);
+            }}
+          >
+            −10
+          </Tiny>
           <span ref={tcRef} className="w-12 text-center text-xs text-white">
             0:00
           </span>
@@ -2248,6 +2311,18 @@ function Stage({
             0:00
           </span>
           <Tiny
+            label="Tua tới 10 giây"
+            onClick={() => {
+              const video = videoRef.current;
+              if (!video) return;
+              const duration = Number.isFinite(video.duration) ? video.duration : video.currentTime + 10;
+              video.currentTime = Math.min(duration, video.currentTime + 10);
+              showHud(`+10 giây · ${fmt(video.currentTime)}`);
+            }}
+          >
+            +10
+          </Tiny>
+          <Tiny
             label="Tắt hoặc bật tiếng"
             onClick={() => {
               const video = videoRef.current;
@@ -2271,7 +2346,14 @@ function Stage({
       {panel && full && panelNode}
     </div>
     {panel && !full && panelNode}
-    <p className="gesture-hint">Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy 10 giây.</p>
+    {hint && (
+      <p className="gesture-hint">
+        Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy 10 giây.{" "}
+        <button type="button" className="underline" onClick={dismissHint}>
+          Đã hiểu
+        </button>
+      </p>
+    )}
     </div>
   );
 }

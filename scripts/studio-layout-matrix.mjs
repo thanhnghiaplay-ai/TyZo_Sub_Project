@@ -33,7 +33,7 @@ function findCss(arg) {
 export function pageHtml(css, sheetOpen, panelOpen = false) {
   const cues = Array.from({ length: 30 }, (_, i) => `<div class="grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3"><button class="grid gap-1 text-left"><span class="text-xs">0:${String(i).padStart(2, "0")}</span><span class="font-medium">Câu dịch số ${i} khá dài để thử xuống dòng trên màn hình hẹp</span><span class="text-sm">Original ${i}</span></button><div class="grid gap-2"><button class="min-tap rounded-full border px-3 text-sm">Sửa</button><button class="min-tap rounded-full border px-3 text-sm">Đổi giọng</button></div></div>`).join("");
   const fields = Array.from({ length: 14 }, (_, i) => `<label class="grid gap-1 text-sm">Trường ${i}<input class="min-tap rounded-xl border px-3"/></label>`).join("");
-  const tabs = ["Key Sub", "Phim", "Nhân vật", "Nghe", "Kiểm tra"].map((t) => `<button class="min-tap shrink-0 rounded-full border px-4 text-sm">${t}</button>`).join("");
+  const tabs = ["Bắt đầu", "Nhân vật", "Nghe", "Kiểm tra"].map((t) => `<button class="min-tap shrink-0 rounded-full border px-4 text-sm">${t}</button>`).join("");
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>${css}</style></head><body><div id="root"><main class="studio-shell">
 <header class="grid shrink-0 gap-1"><div class="flex items-start justify-between gap-2"><p class="text-xs font-semibold">Phòng chiếu TyZo Sub</p><span>v3.10.2 🔔</span></div><h1 class="text-xl font-semibold">Phụ đề video</h1><p class="text-sm">Mô tả ngắn của phòng chiếu.</p></header>
 <nav class="room-nav"><button class="min-tap rounded-full border px-4 text-sm">Tài khoản</button></nav>
