@@ -104,7 +104,7 @@ export async function requireRole(userId: string, need: StaffRole) {
   return place;
 }
 
-async function writeAudit(actorId: string, action: string, targetId: string | null, note: string) {
+export async function writeAudit(actorId: string, action: string, targetId: string | null, note: string) {
   const place = await placeOf(actorId);
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();

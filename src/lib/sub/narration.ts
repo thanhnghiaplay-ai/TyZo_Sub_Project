@@ -1,8 +1,9 @@
-import { speakOrpheus } from "@/lib/sub/groq";
+import { speakCloud, speakOrpheus } from "@/lib/sub/groq";
 import { synthesizeEdge } from "@/lib/sub/edge-speech";
 import { edgeVoice, prosodyPitch, prosodyRate } from "@/lib/sub/edge-voice";
 import { orpheusReady, SPEAK_SAMPLE, speechLang } from "@/lib/sub/text";
 import type { NarrationSettings } from "@/lib/sub/types";
+import type { ProviderId } from "@/lib/sub/provider";
 
 export const EN_VOICES = [
   { id: "hannah", name: "Hannah", gender: "female" },
@@ -135,6 +136,7 @@ export function createNarrator() {
       key: string;
       video: HTMLVideoElement | null;
       playbackRate: number;
+      cloud?: { key: string; model: string; provider: ProviderId } | null;
     }) {
       const line = speakable(opts.text, opts.settings.skipCues);
       if (!line) return;
@@ -149,6 +151,30 @@ export function createNarrator() {
         }
       };
       try {
+        if (opts.cloud?.key && opts.cloud.model) {
+          try {
+            const cacheKey = `cloud|${opts.cloud.provider}|${opts.cloud.model}|${line}`;
+            let url = cache.get(cacheKey);
+            if (!url) {
+              const blob = await speakCloud({
+                key: opts.cloud.key,
+                text: line,
+                model: opts.cloud.model,
+                provider: opts.cloud.provider,
+              });
+              if (mine !== token) return;
+              url = URL.createObjectURL(blob);
+              remember(cacheKey, url);
+            }
+            if (mine !== token) return;
+            if (!audio) audio = new Audio();
+            await playUrl(audio, url, settings, opts.playbackRate, done);
+            return;
+          } catch (error) {
+            if ((error as { name?: string })?.name === "AbortError") throw error;
+            if (mine !== token) return;
+          }
+        }
         const cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
         if (settings.engine === "orpheus" && cloud && opts.key) {
           try {

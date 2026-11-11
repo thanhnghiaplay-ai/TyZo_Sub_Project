@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.13.0";
+export const APP_VERSION = "3.16.2";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,50 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.16.2",
+    time: "05:06 ngày 12/11/2026",
+    title: "Hết tiền giữ thì không gọi thêm.",
+    points: ["Mỗi đoạn chỉ chạy khi khoản giữ còn đủ cho đoạn đó.", "Hết khoản giữ thì phần đã dịch vẫn còn."],
+  },
+  {
+    version: "3.16.1",
+    time: "04:25 ngày 12/11/2026",
+    title: "Dịch lại không bị tính thêm lần nghe.",
+    points: ["Phiếu dành cho dịch lại chỉ trừ phần dịch.", "Cùng phiếu đó không nhận dạng thêm."],
+  },
+  {
+    version: "3.16.0",
+    time: "03:48 ngày 12/11/2026",
+    title: "Xem phim không sợ mất bản dịch vừa chạy.",
+    points: [
+      "Đang xem không còn nút xóa phụ đề cạnh nút phát.",
+      "Đổi file hoặc ngôn ngữ nguồn phải hỏi. Chưa đồng ý thì phim giữ nguyên.",
+      "Dịch lại chỉ tính phần dịch, giữ câu đã sửa, không xóa chữ cũ trước.",
+      "Đóng trang vẫn còn phụ đề. Chọn lại đúng file là xem tiếp, không nghe lại.",
+    ],
+  },
+  {
+    version: "3.15.0",
+    time: "02:44 ngày 12/11/2026",
+    title: "Phòng dịch gọn hơn: chuẩn bị một chỗ, xem là chính.",
+    points: [
+      "Key, ngôn ngữ, thể loại và file nằm cùng thẻ Bắt đầu. Model và số luồng ở Nâng cao.",
+      "Nút chạy và dòng trạng thái nằm sát dưới khung video.",
+      "Có phụ đề rồi thì giấu phần chuẩn bị. Xuất file nằm cạnh danh sách câu.",
+      "Trên hình có nút tua 10 giây, bật tắt đọc và nút chữ Aa.",
+    ],
+  },
+  {
+    version: "3.14.0",
+    time: "01:40 ngày 12/11/2026",
+    title: "Chọn gói dịch thay vì chọn từng model.",
+    points: [
+      "Mỗi gói ghi rõ hợp việc gì, và ai nhận dạng, dịch, đối chiếu.",
+      "Có tệp rồi thì thấy giá gốc, giá phòng và khoản giữ trước khi chạy.",
+      "Cửa thuê phòng và cửa trả theo lượt cùng dùng các gói này.",
+    ],
+  },
   {
     version: "3.13.0",
     time: "18:15 ngày 11/11/2026",

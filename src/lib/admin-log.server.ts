@@ -8,6 +8,30 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.16.2",
+    time: "05:06 ngày 12/11/2026",
+    area: "tien",
+    text: "Vá lỗ giây khai báo. Giây lúc mở phiếu chỉ là ước tính giữ, không phải trần chi. chargeWith tự tính trần xấu nhất của đúng request rồi chargeTicketWith trước khi gọi: dịch lấy cả body làm token vào và max_completion_tokens nếu từ 1 đến 8192, không thì 8192; nhận dạng WAV PCM lấy đúng giây trong header, file khác lấy byte×8/6000 (không tin Duration của WebM). Trần lớn hơn phần giữ còn lại thì restoreTicketWith và không gọi. Xong chỉ giữ số thật, không quá phần đã giữ. HTTP lỗi hoặc ném lỗi thì trả lại cả khoản vừa giữ. Hai request song song vẫn khóa FOR UPDATE. Multipart thì đo phần file khi có content-type. Opus 20 kbps × 60 giây trần khoảng 200 giây, vẫn nằm trong khoản giữ phim thường (1,5 lần nhận dạng cộng dịch). File bitrate cao có thể bị từ chối dù phim ngắn: chấp nhận, không ghi cho khách. Không migration mới. Điều khoản không đổi, vẫn 2026-11-12.2.",
+  },
+  {
+    version: "3.16.1",
+    time: "04:25 ngày 12/11/2026",
+    area: "tien",
+    text: "Vá lỗ phiếu v3.16.0. run_tickets.scope (migration 0020, mặc định full). openRunTicket ghi scope lúc giữ tiền. chargeWith đọc ticketKind và từ chối /audio/transcriptions trên phiếu translate trước khi gọi Groq, nên phòng không trả nhà cung cấp rồi chỉ thu được phần giữ. Chat trên phiếu đó vẫn trừ như cũ. Điều khoản không đổi vì lời hứa 2026-11-12.2 đã nói dịch lại không tính nhận dạng.",
+  },
+  {
+    version: "3.16.0",
+    time: "03:48 ngày 12/11/2026",
+    area: "tien",
+    text: "Làm trên nền v3.15.0. Gỡ nút Làm lại khỏi thanh xem; nhận dạng lại từ đầu nằm trong Nâng cao và vẫn hỏi. Đổi file, âm thanh, link hoặc ngôn ngữ nguồn khi đang có phụ đề phải xác nhận, chưa đồng ý thì không đổi ô. Nút chạy khi đã xong thì ẩn. Dịch lại giữ câu sửa tay, không xóa câu cũ trước khi câu mới về, phiếu cửa trả theo lượt dùng scope translate (không cộng nhận dạng, không giữ thuyết minh). Điều khoản 2026-11-12.2. Phụ đề, tên file, kích thước và chỗ phát lưu trên máy khách (IndexedDB), không lưu video.",
+  },
+  {
+    version: "3.15.0",
+    time: "02:44 ngày 12/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.14.0. Chỉ xếp lại phòng dịch, không đổi đường nhận dạng, dịch, hai cửa tiền hay điều khoản. Thẻ Bắt đầu gộp key và phim; model, luồng, lọc tiếng nằm trong Nâng cao đóng sẵn. Nút chạy và trạng thái xuống dưới khung video. Khi đã có câu và không đang chạy, ẩn tab chuẩn bị (is-watch), xuất file sang cạnh danh sách câu. Player thêm tua ±10 giây, công tắc thuyết minh và nút Aa. Gợi ý cử chỉ chỉ hiện đến khi bấm Đã hiểu.",
+  },
+  {
     version: "3.11.0",
     time: "09:40 ngày 11/11/2026",
     area: "khac",

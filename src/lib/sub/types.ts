@@ -17,6 +17,8 @@ export type Seg = {
   voiceLock?: "female" | "male";
   /** Người dùng đã sửa tay. Đổi model hoặc ngôn ngữ đích không xóa câu này. */
   edited?: boolean;
+  /** Cần dịch lại nhưng vẫn hiện câu cũ cho đến khi câu mới của đúng dòng này về. */
+  stale?: boolean;
 };
 
 export type ChatTier = "standard" | "preview" | "enterprise" | "safety" | "key";

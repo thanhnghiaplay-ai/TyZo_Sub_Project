@@ -45,6 +45,7 @@ import { QualityBoard } from "@/components/quality-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
+import { ServicePackBoard } from "@/components/service-pack-board";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
@@ -314,6 +315,7 @@ export function AdminDesk() {
       )}
       <div className="admin-grid">
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
+      {role === "chu" && tab === "viec" && <ServicePackBoard />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "nhat-ky" && <AdminNotes />}
