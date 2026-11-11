@@ -28,7 +28,7 @@ export function TicketCard({ ticket, children }: { ticket: RunTicket; children?:
   return (
     <article className="rounded-xl border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium">{ticket.fileName || "Không tên tệp"}</p>
+        <p className="text-sm font-medium truncate" title={ticket.fileName || "Không tên tệp"}>{ticket.fileName || "Không tên tệp"}</p>
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
