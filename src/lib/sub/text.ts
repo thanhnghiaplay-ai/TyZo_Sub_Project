@@ -315,6 +315,8 @@ export function acceptSegment(
   if (!cleaned) return rejected("empty", absStart, absEnd, "");
   if (!/[\p{L}\p{N}]/u.test(cleaned)) return rejected("no_letters", absStart, absEnd, cleaned);
   if (isNonSpeech(cleaned)) return rejected("non_speech", absStart, absEnd, cleaned);
+  // Câu "cảm ơn đã xem" kéo dài nhiều giây mà chỉ có vài chữ là ảo giác, dù độ tin cậy trông cao.
+  if (cleaned.length < 90 && HALLU.test(cleaned) && relEnd - relStart >= 6) return rejected("hallucination", absStart, absEnd, cleaned);
   if (cleaned.length < 90 && HALLU.test(cleaned) && ((item.no_speech_prob ?? 0) > 0.3 || (item.avg_logprob ?? 0) < -0.6))
     return rejected("hallucination", absStart, absEnd, cleaned);
   if ((item.compression_ratio ?? 0) > 2.4 && (item.avg_logprob ?? 0) < -0.5) return rejected("compression", absStart, absEnd, cleaned);
@@ -526,6 +528,7 @@ export function translationMessages(texts: string[], language: string, opts: Tra
     "Preserve subject continuity and pronoun consistency across consecutive lines. Infer who is speaking to whom from context_before and keep the same address forms (pronouns, names, titles) throughout the scene.",
     ADDRESS_RULE,
     "Translate everything that is real speech: fragments, interjections, numbers and sung lyrics. Leave proper names, brands and titles unchanged. Do not invent words for breaths, moans or other non-speech. Never answer in the source language.",
+    "The source lines come from speech recognition and may contain homophone or near-sound errors (for example 吐/脱, 目向き/前向き) or stray Latin letters in place of a word. Use the neighbouring lines to pick the reading that makes sense, but never invent content that is not suggested by the sounds.",
     "One subtitle per line, concise (about 40 characters per row, at most 2 rows). Do not merge, split, repeat, omit or explain lines.",
     "Glossary tokens look like {{G0}} or {{G12}}. If a line contains one, copy that exact token into the translation: same braces, the full number, and the same place in the sentence. Do not translate, delete, reorder or change the digits. {{G1}} is a different token from {{G10}}. Leave the spaces around the token as they are.",
     'Use "context_before" (earlier original lines + their translations when available) only to understand relationships, pronouns and ongoing topics. Do not translate the context itself.',

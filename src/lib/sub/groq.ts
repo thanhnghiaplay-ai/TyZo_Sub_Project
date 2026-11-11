@@ -156,13 +156,27 @@ export async function transcribe(
   onWait?: (message: string) => void,
   ticket?: string | null,
 ) {
-  try {
-    return await transcribeOnce(packed, key, language, prompt, asrModel, signal, gate, onWait, ticket);
-  } catch (error) {
-    if (packed.wav && /lỗi 400/.test((error as Error)?.message || ""))
-      return transcribeOnce({ blob: packed.wav(), name: "audio.wav" }, key, language, prompt, asrModel, signal, gate, onWait, ticket);
-    throw error;
+  // Mốc từ là phần thêm. Groq từ chối (400) thì gửi lại như cũ, không có mốc từ, để không mất câu.
+  let words = true;
+  let usable = packed;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await transcribeOnce(usable, key, language, prompt, asrModel, signal, gate, onWait, ticket, words);
+    } catch (error) {
+      const message = (error as Error)?.message || "";
+      if (!/lỗi 400/.test(message)) throw error;
+      if (words) {
+        words = false;
+        continue;
+      }
+      if (usable === packed && packed.wav) {
+        usable = { blob: packed.wav(), name: "audio.wav" };
+        continue;
+      }
+      throw error;
+    }
   }
+  throw new Error("Nhận dạng giọng nói: không gửi được.");
 }
 
 async function transcribeOnce(
@@ -175,6 +189,7 @@ async function transcribeOnce(
   gate: { blockedUntil: number },
   onWait?: (message: string) => void,
   ticket?: string | null,
+  withWords = true,
 ) {
   const response = await requestWithRetry(
     `${API}/audio/transcriptions`,
@@ -184,6 +199,10 @@ async function transcribeOnce(
       form.append("model", asrModel);
       form.append("response_format", "verbose_json");
       form.append("temperature", "0");
+      if (withWords) {
+        form.append("timestamp_granularities[]", "word");
+        form.append("timestamp_granularities[]", "segment");
+      }
       if (language) form.append("language", language);
       if (prompt) form.append("prompt", prompt);
       return { method: "POST", headers: { Authorization: `Bearer ${key}` }, body: form };
@@ -198,6 +217,7 @@ async function transcribeOnce(
   return response.json() as Promise<{
     language?: string;
     segments?: Array<{ text?: string; start?: number; end?: number; no_speech_prob?: number; avg_logprob?: number; compression_ratio?: number }>;
+    words?: Array<{ word?: string; start?: number; end?: number }>;
   }>;
 }
 

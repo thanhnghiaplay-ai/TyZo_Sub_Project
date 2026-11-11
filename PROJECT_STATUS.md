@@ -1098,3 +1098,12 @@ Phải nâng `TERMS_VERSION`. Viết rõ tiếng và chữ đi qua máy chủ r�
 ### 15.6. Chưa làm trong lát cắt này
 
 Không nhận link video. Không có khóa API cho lập trình viên. Không hiện hóa đơn Groq. Không cộng tiền gói ngày vào lần trả theo lượt. Không hoàn ra ngân hàng.
+
+---
+
+## Ghi chú sửa nhận dạng (2026-11-11, Claude)
+- `groq.ts`: xin thêm mốc từng từ (`timestamp_granularities[]` word + segment). Groq trả 400 thì tự gửi lại không có mốc từ, rồi mới thử WAV.
+- `word-time.ts` + `diagnostics.ts`: giờ câu lấy theo từ đầu tiên/cuối cùng, chỉ dịch vào trong câu. Sửa lỗi câu đầu đoạn sớm 0,7–1,2 giây.
+- `text.ts`: câu «cảm ơn đã xem» kéo dài từ 6 giây bị loại; thoại lặp thật vẫn giữ. Prompt dịch có dòng cảnh báo lỗi đồng âm.
+- `scripts/asr-eval.mjs`: đo CER/WER và lệch giờ theo bảng đáp án `doi-chieu.txt`.
+- Chưa chạy trên Groq thật. Chữ nhận sai ZH/JA là lỗi của Whisper, chưa sửa bằng mã.
