@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 04:25 (UTC+7) — v3.16.1 trên nhánh work (phiếu dịch lại không cho nhận dạng). Trước đó v3.16.0. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-12 05:06 (UTC+7) — v3.16.2 trên nhánh work (hết khoản giữ thì không gọi thêm). Trước đó v3.16.1. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.16.1** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.16.2** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -92,7 +92,7 @@
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
 | 57 | Số liệu chất lượng về Admin | 🟡 Đã có test và build, chưa thử đăng nhập thật | v3.13.0. Tab «Chất lượng» (Chủ): đèn, thanh ba màu, theo ngày, ngôn ngữ, model, phiên bản, riêng key riêng/key phòng và tổng. Điều khoản 2026-11-11.1. |
 | 56 | Kiểm tra ngôn ngữ từng đoạn | 🟡 Đã có test, chưa chạy phim thật | v3.12.0. Ô tùy chọn, mặc định tắt. Đoạn nghi lệch ngôn ngữ hoặc độ tin thấp được nhận dạng lại một lần không ép ngôn ngữ, ngân sách 120 giây, chỉ đổi khi tốt hơn rõ. Test: `lang-check.test.ts`. Chưa đo trên phim lẫn tiếng. |
-| 55 | Trả theo lượt | 🟡 Đã trừ ví theo giá Groq cộng chênh | Từ v2.17.0 giữ tiền trước, trừ số thực, nhả phần thừa. v2.18.0: hoàn và nhả giữ không cộng hai lần. Key phòng không trả nguyên văn về trình duyệt. |
+| 55 | Trả theo lượt | 🟡 Đã trừ ví theo giá Groq cộng chênh | Từ v2.17.0 giữ tiền trước, trừ số thực, nhả phần thừa. v2.18.0: hoàn và nhả giữ không cộng hai lần. Key phòng không trả nguyên văn về trình duyệt. v3.16.1: phiếu dịch lại không nhận dạng. v3.16.2: mỗi đoạn giữ trần của chính nó trước khi gọi; hết phần giữ thì không gọi thêm. |
 
 ---
 
@@ -222,6 +222,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-12 05:06 — v3.16.2 trên work: mỗi đoạn nhận dạng hoặc dịch tự tính trần của chính nó và giữ trước khi gọi. Trần lớn hơn phần còn giữ thì không gọi. Gọi xong chỉ trừ số thật, không quá phần đã giữ. Lỗi thì không trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 04:25 — v3.16.1 trên work: phiếu dịch lại ghi loại và cổng từ chối nhận dạng trước khi gọi nhà cung cấp. Chat trên phiếu đó vẫn trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 03:48 — v3.16.0 trên work: đang xem thì không còn nút xóa phụ đề cạnh phát. Đổi file hoặc ngôn ngữ nguồn phải hỏi. Dịch lại chỉ tính phần dịch, giữ câu đã sửa, câu cũ còn đến khi câu mới về. Đóng trang lưu phụ đề trên máy khách, chọn lại đúng file là xem tiếp. Điều khoản 2026-11-12.2. Chưa xem trên điện thoại thật.
 - 2026-11-12 02:44 — v3.15.0 trên work: xếp lại phòng dịch theo đường người dùng. Thẻ Bắt đầu gộp key và phim; Nâng cao đóng sẵn. Nút chạy và trạng thái dưới khung video. Có câu rồi thì ẩn chuẩn bị, xuất file cạnh danh sách. Player thêm tua ±10, công tắc đọc, nút Aa. Không đổi điều khoản. Chưa xem trên điện thoại thật.

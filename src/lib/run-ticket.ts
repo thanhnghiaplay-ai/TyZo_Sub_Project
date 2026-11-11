@@ -113,6 +113,21 @@ export async function chargeTicketWith(sql: Sql, id: string, userId: string, cos
   return Number(rows[0]?.taken ?? 0);
 }
 
+/** Trả một khoản vừa trừ về phần đang giữ. Không đụng ví. Phiếu đã đóng thì bỏ qua. */
+export async function restoreTicketWith(sql: Sql, id: string, userId: string, amount: number, base = 0) {
+  const back = Math.max(0, Math.round(amount));
+  const bare = Math.max(0, Math.round(base));
+  if (!back && !bare) return;
+  await sql`
+    update run_tickets
+    set charged = greatest(0, charged - ${back}::int),
+        base_cost = greatest(0, base_cost - ${bare}::int),
+        held = held + ${back}::int,
+        status = case when status = 'dung-tien' then 'dang-giu' else status end
+    where id = ${id} and user_id = ${userId} and status in ('dang-giu', 'dung-tien')
+  `;
+}
+
 /** Kết thúc phiếu: nhả phần giữ thừa về ví. Chạy lại lần hai không làm gì. */
 export async function closeTicketWith(sql: Sql, id: string, userId: string, failed: boolean) {
   const rows = await sql<{ freed: number; charged: number; status: string }>`

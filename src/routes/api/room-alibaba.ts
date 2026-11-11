@@ -95,6 +95,7 @@ export const Route = createFileRoute("/api/room-alibaba")({
           userId: user.id,
           ticketId: request.headers.get("x-run-ticket") || "",
           body: body!,
+          contentType,
           cap: desk.cap,
           send: () => fetch(`${ALIBABA_API}${path}`, { method: "POST", headers, body: body! }),
         });

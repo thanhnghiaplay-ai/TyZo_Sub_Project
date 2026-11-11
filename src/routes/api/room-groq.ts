@@ -94,6 +94,7 @@ export const Route = createFileRoute("/api/room-groq")({
           userId: user.id,
           ticketId: request.headers.get("x-run-ticket") || "",
           body: body!,
+          contentType,
           cap: desk.cap,
           send: () => fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: body! }),
         });

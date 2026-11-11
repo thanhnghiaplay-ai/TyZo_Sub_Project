@@ -4,7 +4,8 @@ import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
 import type { PriceBook } from "./run-bill.ts";
-import { chargeWith, readRequest } from "./run-gate.ts";
+import { asrCost, chatCost, estimateHold } from "./run-bill.ts";
+import { asrSecondsCeiling, chargeWith, chatCeiling, readRequest, wavSeconds } from "./run-gate.ts";
 import { openTicketWith } from "./run-ticket.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 
@@ -41,6 +42,56 @@ const json = (body: unknown, status = 200) => async () => new Response(JSON.stri
 const call = (over: Partial<Parameters<typeof chargeWith>[0]>) =>
   chargeWith({ sql, book, path: "/chat/completions", model: "chat", chars: 0, userId: "g", ticketId: TID, body: new ArrayBuffer(300), cap: 0, send: json({}), ...over });
 
+function pcmWav(seconds: number, rate = 16000, bits = 16, channels = 1) {
+  const dataBytes = rate * channels * (bits / 8) * seconds;
+  const bytes = new Uint8Array(44 + dataBytes);
+  const view = new DataView(bytes.buffer);
+  const write = (offset: number, text: string) => {
+    for (let i = 0; i < text.length; i += 1) bytes[offset + i] = text.charCodeAt(i);
+  };
+  write(0, "RIFF");
+  view.setUint32(4, 36 + dataBytes, true);
+  write(8, "WAVE");
+  write(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, channels, true);
+  view.setUint32(24, rate, true);
+  view.setUint32(28, rate * channels * (bits / 8), true);
+  view.setUint16(32, channels * (bits / 8), true);
+  view.setUint16(34, bits, true);
+  write(36, "data");
+  view.setUint32(40, dataBytes, true);
+  return bytes;
+}
+
+describe("trần của từng đoạn", () => {
+  it("WAV PCM lấy đúng giây; file khác dùng bitrate sàn", () => {
+    const wav = pcmWav(85);
+    assert.equal(wavSeconds(wav), 85);
+    const floor = (wav.length * 8) / 6_000;
+    assert.ok(floor > 3600);
+    assert.ok(asrCost(book, "asr", 85)! <= 2000);
+    assert.ok(asrCost(book, "asr", floor)! > 2000);
+    const opus = new Uint8Array((20_000 * 60) / 8);
+    assert.equal(asrSecondsCeiling(opus), 200);
+    const chunk = asrCost(book, "asr", 200)!;
+    const hold = estimateHold(book, "asr", "chat", 600)!;
+    assert.ok(chunk <= hold);
+    assert.ok(asrCost(book, "asr", 60)! * 10 <= hold);
+  });
+
+  it("dịch: đầu vào là cả body, câu trả lời không vượt mức đã chặn", () => {
+    const body = new TextEncoder().encode(JSON.stringify({ max_completion_tokens: 200, x: "a".repeat(30) })).buffer as ArrayBuffer;
+    const cap = chatCeiling(body);
+    assert.equal(cap.completion, 200);
+    assert.equal(cap.prompt, Math.ceil(body.byteLength / 3));
+    const open = chatCeiling(new ArrayBuffer(9));
+    assert.equal(open.prompt, 3);
+    assert.equal(open.completion, 8192);
+  });
+});
+
 describe("cổng tính tiền", () => {
   beforeEach(async () => {
     await sql`delete from run_tickets where user_id = 'g'`;
@@ -50,37 +101,161 @@ describe("cổng tính tiền", () => {
     await openTicketWith(sql, { id: TID, userId: "g", fileName: "f", seconds: 600, rate: 1, hold: 2000, cap: 0, dayStartIso: "2020-01-01T00:00:00Z" });
   });
 
-  it("dịch thành công: trừ theo token thật trong usage", async () => {
-    // vào 1.875×2=3.750 đ/triệu, ra 7.500×2=15.000 đ/triệu; 100.000 vào + 100.000 ra = 375 + 1.500
-    const out = await call({ send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 100_000 } }) });
+  it("dịch thành công: trừ theo token thật, không quá trần của body", async () => {
+    const body = new TextEncoder().encode(JSON.stringify({ model: "chat", max_completion_tokens: 200, pad: "x".repeat(9000) })).buffer as ArrayBuffer;
+    const ceiling = chatCeiling(body);
+    const prompt = Math.min(3000, ceiling.prompt);
+    const completion = Math.min(100, ceiling.completion);
+    const expectCost = chatCost(book, "chat", prompt, completion)!;
+    assert.ok(expectCost > 0 && expectCost < 2000);
+    const out = await call({ body, send: json({ usage: { prompt_tokens: prompt, completion_tokens: completion } }) });
     assert.equal(out.kind, "pass");
-    assert.equal((await t(TID)).charged, 1875);
-    assert.equal((await t(TID)).held, 125);
+    assert.equal((await t(TID)).charged, expectCost);
+    assert.equal((await t(TID)).held, 2000 - expectCost);
   });
 
-  it("Groq trả lỗi thì không tính tiền", async () => {
+  it("Groq trả lỗi thì không tính tiền và trả lại phần vừa giữ", async () => {
     const out = await call({ send: json({ error: { message: "boom" } }, 429) });
     assert.equal(out.kind === "pass" && out.response.status, 429);
     assert.equal((await t(TID)).charged, 0);
+    assert.equal((await t(TID)).held, 2000);
+    assert.equal((await t(TID)).status, "dang-giu");
   });
 
-  it("nhận dạng: trừ theo duration thật, tối thiểu 10 giây", async () => {
-    await call({ path: "/audio/transcriptions", model: "asr", send: json({ duration: 3600, segments: [] }) });
-    assert.equal((await t(TID)).charged, 2000); // 1.000 đ/giờ × (1+100%) = 2.000
+  it("nhà cung cấp không trả lời thì trả lại phần vừa giữ", async () => {
+    await assert.rejects(() => call({ send: async () => { throw new Error("net"); } }));
+    assert.equal((await t(TID)).charged, 0);
+    assert.equal((await t(TID)).held, 2000);
   });
 
-  it("thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq", async () => {
+  it("nhận dạng: trừ theo duration thật, không quá trần của file", async () => {
+    const bytes = new Uint8Array(60 * 750);
+    const cap = asrCost(book, "asr", asrSecondsCeiling(bytes))!;
+    await call({ path: "/audio/transcriptions", model: "asr", body: bytes.buffer, send: json({ duration: 3600, segments: [] }) });
+    assert.equal((await t(TID)).charged, cap);
+    assert.ok(cap < 2000);
+    assert.equal((await t(TID)).held, 2000 - cap);
+  });
+
+  it("WAV dài vẫn gọi được vì lấy đúng giây, file cùng cỡ thì không gọi", async () => {
+    const wav = pcmWav(85);
     let called = 0;
-    const send = async () => { called++; return new Response("{}"); };
+    const out = await call({
+      path: "/audio/transcriptions",
+      model: "asr",
+      body: wav.buffer,
+      send: async () => {
+        called += 1;
+        return json({ duration: 85 })();
+      },
+    });
+    assert.equal(out.kind, "pass");
+    assert.equal(called, 1);
+    assert.equal((await t(TID)).charged, asrCost(book, "asr", 85));
+    const raw = "e".repeat(24);
+    await openTicketWith(sql, { id: raw, userId: "g", fileName: "f", seconds: 600, rate: 1, hold: 2000, cap: 0, dayStartIso: "2020-01-01T00:00:00Z" });
+    const stripped = new Uint8Array(wav.byteLength);
+    stripped.set(wav);
+    stripped[0] = 0;
+    let rawCalled = 0;
+    const again = await call({
+      ticketId: raw,
+      path: "/audio/transcriptions",
+      model: "asr",
+      body: stripped.buffer,
+      send: async () => {
+        rawCalled += 1;
+        return new Response("{}");
+      },
+    });
+    assert.equal(again.kind, "reject");
+    assert.equal(rawCalled, 0);
+    assert.equal((await t(raw)).charged, 0);
+    assert.equal((await t(raw)).held, 2000);
+  });
+
+  it("file nhận dạng lớn hơn phần giữ thì không gọi", async () => {
+    let called = 0;
+    const out = await call({
+      path: "/audio/transcriptions",
+      model: "asr",
+      body: new ArrayBuffer(3_000_000),
+      send: async () => {
+        called += 1;
+        return new Response("{}");
+      },
+    });
+    assert.equal(out.kind, "reject");
+    assert.equal(out.kind === "reject" && out.status, 402);
+    assert.equal(called, 0);
+    assert.equal((await t(TID)).charged, 0);
+    assert.equal((await t(TID)).held, 2000);
+  });
+
+  it("multipart tính theo file, không tính phần đệm", async () => {
+    const file = new Uint8Array(1000);
+    const form = new FormData();
+    form.append("model", "asr");
+    form.append("file", new Blob([file]), "a.webm");
+    form.append("junk", "x".repeat(3_000_000));
+    const packed = new Response(form);
+    const body = await packed.arrayBuffer();
+    const contentType = packed.headers.get("content-type");
+    let called = 0;
+    const out = await call({
+      path: "/audio/transcriptions",
+      model: "asr",
+      body,
+      contentType,
+      send: async () => {
+        called += 1;
+        return json({ duration: 10 })();
+      },
+    });
+    assert.equal(out.kind, "pass");
+    assert.equal(called, 1);
+    assert.equal((await t(TID)).charged, asrCost(book, "asr", 10));
+  });
+
+  it("thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi", async () => {
+    let called = 0;
+    const send = async () => {
+      called += 1;
+      return new Response("{}");
+    };
     for (const ticketId of ["", "b".repeat(24)]) {
       const out = await call({ ticketId, send });
       assert.equal(out.kind, "reject");
       assert.equal(out.kind === "reject" && out.status, 402);
     }
-    await call({ send: json({ usage: { prompt_tokens: 10_000_000, completion_tokens: 0 } }) });
-    assert.equal((await t(TID)).status, "dung-tien");
-    assert.equal((await call({ send })).kind, "reject");
+    const body = new ArrayBuffer(300);
+    const tokens = chatCeiling(body);
+    const ceiling = chatCost(book, "chat", tokens.prompt, tokens.completion)!;
+    const id = "d".repeat(24);
+    await openTicketWith(sql, { id, userId: "g", fileName: "f", seconds: 30, rate: 1, hold: ceiling, cap: 0, dayStartIso: "2020-01-01T00:00:00Z" });
+    await call({ ticketId: id, body, send: json({ usage: { prompt_tokens: tokens.prompt, completion_tokens: tokens.completion } }) });
+    assert.equal((await t(id)).status, "dung-tien");
+    assert.equal((await t(id)).held, 0);
+    assert.equal((await call({ ticketId: id, body, send })).kind, "reject");
     assert.equal(called, 0);
+  });
+
+  it("hai yêu cầu cùng lúc không tiêu quá một trần", async () => {
+    const body = new ArrayBuffer(300);
+    const tokens = chatCeiling(body);
+    const ceiling = chatCost(book, "chat", tokens.prompt, tokens.completion)!;
+    const id = "f".repeat(24);
+    await openTicketWith(sql, { id, userId: "g", fileName: "f", seconds: 30, rate: 1, hold: ceiling, cap: 0, dayStartIso: "2020-01-01T00:00:00Z" });
+    let called = 0;
+    const send = async () => {
+      called += 1;
+      return json({ usage: { prompt_tokens: tokens.prompt, completion_tokens: tokens.completion } })();
+    };
+    const [a, b] = await Promise.all([call({ ticketId: id, body, send }), call({ ticketId: id, body, send })]);
+    assert.equal(called, 1);
+    assert.equal([a.kind, b.kind].filter((kind) => kind === "pass").length, 1);
+    assert.equal((await t(id)).charged, ceiling);
+    assert.equal((await t(id)).held, 0);
   });
 
   it("phiếu dịch lại từ chối nhận dạng trước khi gọi, vẫn cho dịch", async () => {

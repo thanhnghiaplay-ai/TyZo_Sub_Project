@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.16.2",
+    time: "05:06 ngày 12/11/2026",
+    area: "tien",
+    text: "Vá lỗ giây khai báo. Giây lúc mở phiếu chỉ là ước tính giữ, không phải trần chi. chargeWith tự tính trần xấu nhất của đúng request rồi chargeTicketWith trước khi gọi: dịch lấy cả body làm token vào và max_completion_tokens nếu từ 1 đến 8192, không thì 8192; nhận dạng WAV PCM lấy đúng giây trong header, file khác lấy byte×8/6000 (không tin Duration của WebM). Trần lớn hơn phần giữ còn lại thì restoreTicketWith và không gọi. Xong chỉ giữ số thật, không quá phần đã giữ. HTTP lỗi hoặc ném lỗi thì trả lại cả khoản vừa giữ. Hai request song song vẫn khóa FOR UPDATE. Multipart thì đo phần file khi có content-type. Opus 20 kbps × 60 giây trần khoảng 200 giây, vẫn nằm trong khoản giữ phim thường (1,5 lần nhận dạng cộng dịch). File bitrate cao có thể bị từ chối dù phim ngắn: chấp nhận, không ghi cho khách. Không migration mới. Điều khoản không đổi, vẫn 2026-11-12.2.",
+  },
+  {
     version: "3.16.1",
     time: "04:25 ngày 12/11/2026",
     area: "tien",
