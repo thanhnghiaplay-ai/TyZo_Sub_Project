@@ -1,6 +1,7 @@
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
+import { SideRail, RailToggle, AppShell, type RailItem } from "@/components/side-rail";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
@@ -13,7 +14,6 @@ import {
   FileAudio,
   Link2,
   Loader2,
-  Menu,
   Pause,
   Play,
   RefreshCw,
@@ -459,11 +459,9 @@ export function Studio() {
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [payByRoom, setPayByRoom] = useState(false);
   const [menu, setMenu] = useState<ServiceMenu | null>(null);
   const [mediaSeconds, setMediaSeconds] = useState(0);
-  const menuRef = useRef<HTMLDivElement>(null);
   const runDoor = useRunDoor();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
@@ -729,22 +727,6 @@ export function Studio() {
     setToolTab(id);
   };
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("pointerdown", close);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", close);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [menuOpen]);
-
   // Đọc quyền có thử lại. Lỗi tạm thời thì giữ quyền đã biết, không xóa nút Quản lý.
   const placeSeq = useRef(0);
   const loadPlace = useCallback(async () => {
@@ -793,14 +775,22 @@ export function Studio() {
   }, [app.reviewHold, app.segs.length, app.running]);
 
   const showRoomPrice = runDoor.open && payByRoom;
+  const railItems: RailItem[] = [
+    { id: "sub", label: "Phụ đề", current: product === "sub", onPick: () => setProduct("sub") },
+    { id: "account", label: "Tài khoản", current: product === "account", onPick: () => setProduct("account") },
+  ];
+  if (place?.role) railItems.push({ id: "admin", label: "Quản lý", href: "/admin" });
 
   return (
+    <AppShell data-product="sub">
+    <SideRail label="Chức năng phòng" items={railItems} />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-1">
+            <RailToggle />
             <BrandMark small title="TyZo Sub" />
-            <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+            <p className="min-w-0 truncate text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
           </div>
           <div className="flex items-center gap-2">
             <VersionMark />
@@ -810,51 +800,6 @@ export function Studio() {
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip payByRoom={payByRoom} />
       </header>
-
-      <nav aria-label="Chức năng" className="room-nav">
-        <div data-product="sub" ref={menuRef} className="room-menu">
-          <button
-            type="button"
-            className="room-menu-button"
-            aria-expanded={menuOpen}
-            aria-controls="room-menu-list"
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <Menu className="size-4" aria-hidden="true" />
-            <span>{product === "account" ? "Tài khoản" : "Phụ đề"}</span>
-          </button>
-          {menuOpen && (
-            <div id="room-menu-list" role="tablist" className="room-menu-list">
-            <button
-              type="button"
-              aria-current={product === "sub" ? "page" : undefined}
-              onClick={() => {
-                setProduct("sub");
-                setMenuOpen(false);
-              }}
-            >
-              Phụ đề
-            </button>
-            <button
-              type="button"
-              data-product="account"
-              aria-current={product === "account" ? "page" : undefined}
-              onClick={() => {
-                setProduct("account");
-                setMenuOpen(false);
-              }}
-            >
-              Tài khoản
-            </button>
-            {place?.role && (
-              <Link to="/admin" onClick={() => setMenuOpen(false)}>
-                Quản lý
-              </Link>
-            )}
-          </div>
-          )}
-        </div>
-      </nav>
 
       {place?.status === "banned" ? (
         <div className="grid gap-3 p-4">
@@ -1608,6 +1553,7 @@ export function Studio() {
       </>
       )}
     </main>
+    </AppShell>
   );
 }
 
@@ -1715,15 +1661,15 @@ function VoiceLanes({
             type="button"
             disabled={closed}
             onClick={() => id && onPick(id)}
-            className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
+            className={"min-tap h-auto min-w-0 whitespace-normal rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "choice-on" : "border-line bg-bg")}
           >
             <span className="block text-sm font-semibold leading-tight">{lane.title}</span>
-            <span className={"mt-0.5 block text-xs leading-snug " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
-            <span className={"mt-0.5 block text-xs leading-snug " + (on ? "text-ink/75" : "text-muted")}>
+            <span className={"choice-sub mt-0.5 block text-xs leading-snug " + (on ? "" : "text-muted")}>{lane.fit}</span>
+            <span className={"choice-sub mt-0.5 block text-xs leading-snug " + (on ? "" : "text-muted")}>
               {lane.pace}
               {price ? <span className="font-medium"> · {price}</span> : null}
             </span>
-            <span className={"mt-1 block text-[0.7rem] leading-tight opacity-80 " + (on ? "text-ink/70" : "text-muted")}>
+            <span className={"choice-sub mt-1 block text-[0.7rem] leading-tight " + (on ? "" : "text-muted opacity-80")}>
               {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
             </span>
           </button>
@@ -1736,9 +1682,9 @@ function VoiceLanes({
 
 function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text: string }) {
   return (
-    <button type="button" onClick={onClick} className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
+    <button type="button" onClick={onClick} className={"min-tap h-auto whitespace-normal rounded-xl border px-3 py-2 text-left " + (on ? "choice-on" : "border-line bg-bg")}>
       <span className="block text-sm font-semibold">{title}</span>
-      <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{text}</span>
+      <span className={"choice-sub block text-xs " + (on ? "" : "text-muted")}>{text}</span>
     </button>
   );
 }
@@ -2354,11 +2300,8 @@ function Stage({
         data-on="0"
         className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
       />
-      {!hasMedia && paused && (
-        <p className="pointer-events-none absolute inset-x-0 top-[calc(50%+2.75rem)] z-10 px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
-      )}
       <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
-        <div className="flex justify-end gap-2 p-2">
+        <div className="flex flex-wrap justify-end gap-1.5 p-2">
           <Tiny label="Tỷ lệ khung hình" onClick={() => setAr((n) => (n + 1) % ARS.length)}>
             {ARS[ar][0]}
           </Tiny>
@@ -2394,80 +2337,85 @@ function Stage({
         >
           {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
         </button>
-        <div className="flex items-center gap-2 px-3 pb-3">
-          <Tiny
-            label="Tua lui 10 giây"
-            onClick={() => {
-              const video = videoRef.current;
-              if (!video) return;
-              video.currentTime = Math.max(0, video.currentTime - 10);
-              showHud(`−10 giây · ${fmt(video.currentTime)}`);
-            }}
-          >
-            −10
-          </Tiny>
-          <span ref={tcRef} className="w-12 text-center text-xs text-white">
-            0:00
-          </span>
-          <input
-            ref={seekRef}
-            className="min-tap flex-1 accent-accent"
-            type="range"
-            min={0}
-            max={100000}
-            defaultValue={0}
-            aria-label="Tua video"
-            onInput={(event) => {
-              drag.current = true;
-              const video = videoRef.current;
-              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
-              if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
-            }}
-            onChange={(event) => {
-              const video = videoRef.current;
-              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
-              if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
-              drag.current = false;
-            }}
-          />
-          <span ref={tdRef} className="w-12 text-center text-xs text-white">
-            0:00
-          </span>
-          <Tiny
-            label="Tua tới 10 giây"
-            onClick={() => {
-              const video = videoRef.current;
-              if (!video) return;
-              const duration = Number.isFinite(video.duration) ? video.duration : video.currentTime + 10;
-              video.currentTime = Math.min(duration, video.currentTime + 10);
-              showHud(`+10 giây · ${fmt(video.currentTime)}`);
-            }}
-          >
-            +10
-          </Tiny>
-          <Tiny
-            label="Tắt hoặc bật tiếng"
-            onClick={() => {
-              const video = videoRef.current;
-              if (video) video.muted = !video.muted;
-            }}
-          >
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-          </Tiny>
-          <Tiny
-            label="Tốc độ phát"
-            onClick={() => {
-              const video = videoRef.current;
-              if (!video) return;
-              video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
-            }}
-          >
-            {rate}×
-          </Tiny>
+        <div className="grid gap-0.5 px-2.5 pb-2">
+          <div className="flex items-center gap-2">
+            <span ref={tcRef} className="w-11 shrink-0 text-center text-xs text-white tabular-nums">
+              0:00
+            </span>
+            <input
+              ref={seekRef}
+              className="min-h-11 min-w-0 flex-1 accent-accent"
+              type="range"
+              min={0}
+              max={100000}
+              defaultValue={0}
+              aria-label="Tua video"
+              onInput={(event) => {
+                drag.current = true;
+                const video = videoRef.current;
+                const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+                if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
+              }}
+              onChange={(event) => {
+                const video = videoRef.current;
+                const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+                if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
+                drag.current = false;
+              }}
+            />
+            <span ref={tdRef} className="w-11 shrink-0 text-center text-xs text-white tabular-nums">
+              0:00
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5">
+            <Tiny
+              label="Tua lui 10 giây"
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                video.currentTime = Math.max(0, video.currentTime - 10);
+                showHud(`−10 giây · ${fmt(video.currentTime)}`);
+              }}
+            >
+              −10
+            </Tiny>
+            <Tiny
+              label="Tua tới 10 giây"
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                const duration = Number.isFinite(video.duration) ? video.duration : video.currentTime + 10;
+                video.currentTime = Math.min(duration, video.currentTime + 10);
+                showHud(`+10 giây · ${fmt(video.currentTime)}`);
+              }}
+            >
+              +10
+            </Tiny>
+            <Tiny
+              label="Tắt hoặc bật tiếng"
+              onClick={() => {
+                const video = videoRef.current;
+                if (video) video.muted = !video.muted;
+              }}
+            >
+              {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+            </Tiny>
+            <Tiny
+              label="Tốc độ phát"
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
+              }}
+            >
+              {rate}×
+            </Tiny>
+          </div>
         </div>
       </div>
       {panel && full && panelNode}
     </div>
+    {!hasMedia && paused && !full && <p className="frame-hint">Chọn video để phát ở đây</p>}
     {panel && !full && panelNode}
     {hint && (
       <p className="gesture-hint">
@@ -2505,7 +2453,7 @@ function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
 
 function Tiny({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" aria-label={label} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
+    <button type="button" aria-label={label} className="inline-flex min-tap shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
       {children}
     </button>
   );

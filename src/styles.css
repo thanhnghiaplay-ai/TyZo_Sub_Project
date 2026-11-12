@@ -1767,3 +1767,377 @@ button.is-loading::after {
 .status-line {
   letter-spacing: -0.01em;
 }
+
+/* Cột trái dùng chung phòng dịch và trang quản lý.
+   Tên lớp không chứa studio, stage, player, video, sheet. */
+.app-shell {
+  --bar: max(0.75rem, env(safe-area-inset-top, 0px));
+  display: flex;
+  width: 100%;
+  height: calc(100 * var(--vh));
+  max-height: calc(100 * var(--vh));
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+.app-main {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-shell > .studio-shell {
+  flex: 1 1 auto;
+  width: auto;
+  max-width: none;
+  height: auto;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin-inline: 0;
+}
+
+.app-head {
+  display: grid;
+  flex: none;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-line);
+  padding-top: var(--bar);
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+  padding-bottom: 0.7rem;
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+}
+
+.rail-toggle {
+  position: relative;
+  z-index: 50;
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.1rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--color-fg);
+}
+
+.rail-toggle:hover {
+  background: color-mix(in srgb, var(--color-fg) 8%, transparent);
+}
+
+.rail-bars,
+.rail-bars::before,
+.rail-bars::after {
+  display: block;
+  width: 1.05rem;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform 180ms ease, top 180ms ease, opacity 180ms ease;
+}
+
+.rail-bars {
+  position: relative;
+}
+
+.rail-bars::before,
+.rail-bars::after {
+  position: absolute;
+  left: 0;
+  content: "";
+}
+
+.rail-bars::before {
+  top: -6px;
+}
+
+.rail-bars::after {
+  top: 6px;
+}
+
+.rail-toggle[aria-expanded="true"] .rail-bars {
+  background: transparent;
+}
+
+.rail-toggle[aria-expanded="true"] .rail-bars::before {
+  top: 0;
+  transform: rotate(40deg);
+}
+
+.rail-toggle[aria-expanded="true"] .rail-bars::after {
+  top: 0;
+  transform: rotate(-40deg);
+}
+
+.rail-backdrop {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  border: 0;
+  background: rgb(6 10 14 / 46%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.rail-backdrop.is-open {
+  background: rgb(4 8 12 / 62%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.app-rail {
+  position: fixed;
+  z-index: 45;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  box-sizing: border-box;
+  width: min(17.5rem, calc(100vw - 3.25rem));
+  flex-direction: column;
+  border-right: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-card) 72%, var(--color-bg));
+  padding-right: 0.55rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  padding-left: 0.55rem;
+  transform: translateX(-105%);
+  visibility: hidden;
+  transition: transform 200ms ease, visibility 200ms ease;
+}
+
+.app-rail.is-open {
+  transform: none;
+  visibility: visible;
+  box-shadow: 16px 0 40px rgb(0 0 0 / 28%);
+}
+
+.rail-nav {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.15rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-top: calc(var(--bar) + 3.15rem);
+}
+
+.rail-link {
+  position: relative;
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  padding: 0 0.7rem 0 0.95rem;
+  color: color-mix(in srgb, var(--color-fg) 82%, var(--color-muted));
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.011em;
+  text-align: left;
+  text-decoration: none;
+}
+
+.rail-link:hover {
+  background: color-mix(in srgb, var(--color-fg) 6%, transparent);
+  color: var(--color-fg);
+}
+
+.rail-link[aria-current="page"] {
+  background: transparent;
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.rail-link[aria-current="page"]::before {
+  position: absolute;
+  top: 50%;
+  left: 0.2rem;
+  width: 2px;
+  height: 0.95rem;
+  border-radius: 2px;
+  background: var(--color-accent);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.rail-link[aria-current="page"]:hover {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.rail-link:focus-visible,
+.rail-out:focus-visible,
+.rail-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.rail-foot {
+  flex: none;
+  margin-top: 0.35rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.45rem;
+}
+
+.rail-out {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  align-items: center;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  padding: 0 0.8rem;
+  color: var(--color-danger);
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.011em;
+  text-align: left;
+}
+
+.rail-out:hover {
+  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
+}
+
+.rail-out:disabled {
+  opacity: 0.45;
+}
+
+@media (min-width: 1024px) {
+  .rail-toggle,
+  .rail-backdrop {
+    display: none;
+  }
+
+  .app-rail,
+  .app-rail.is-open {
+    position: static;
+    z-index: auto;
+    display: flex;
+    width: 14.25rem;
+    flex: none;
+    padding-top: 0.35rem;
+    transform: none;
+    visibility: visible;
+    box-shadow: none;
+    transition: none;
+  }
+
+  .rail-nav {
+    padding-top: var(--bar);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-rail,
+  .rail-backdrop,
+  .rail-bars,
+  .rail-bars::before,
+  .rail-bars::after {
+    transition: none;
+  }
+}
+
+/* Hàng thẻ cao bằng nội dung cao nhất của hàng đó. Một thẻ thì trải hết ngang.
+   Chỉ nhật ký và danh sách thuật ngữ tự cuộn, không nhốt mọi thẻ vào một cỡ. */
+.admin-grid,
+.account-grid,
+.admin-flow,
+.plan-grid,
+.tile-row {
+  display: grid;
+  column-width: unset;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.admin-grid > *,
+.account-grid > *,
+.admin-flow > *,
+.plan-grid > *,
+.tile-row > * {
+  min-width: 0;
+  margin: 0;
+  break-inside: auto;
+}
+
+.admin-grid > .admin-wide,
+.account-grid > .account-wide,
+.admin-flow > .admin-wide {
+  grid-column: 1 / -1;
+}
+
+.note-card {
+  max-height: 18rem;
+  overflow: auto;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.term-list {
+  max-height: 26rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.15rem;
+}
+
+.frame-hint {
+  margin: 0.4rem auto 0;
+  max-width: 28rem;
+  padding: 0 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 0.5rem;
+}
+
+.stat-grid > * {
+  flex: none;
+  min-width: 0;
+}
+
+.choice-on {
+  height: auto;
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: #1a1400;
+}
+
+.choice-on .choice-sub {
+  color: #1a1400;
+  line-height: 1.45;
+}
+
+.mail-preview {
+  height: 11rem;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.mail-preview-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
