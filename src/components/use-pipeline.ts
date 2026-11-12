@@ -336,6 +336,7 @@ export function usePipeline() {
 
   useEffect(() => {
     setKey(readStore("gk"));
+    setAlibabaKey(readStore("gali"));
     const lang = readStore("glang");
     setTarget(lang === "Vietnamese" ? lang : "Vietnamese");
     const src = readStore("gsrc");
@@ -355,7 +356,7 @@ export function usePipeline() {
     if (savedModel) setModelId(savedModel);
     if (readStore("genter") === "0") setAllowEnterprise(false);
     const whisper = readStore("gasr");
-    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo") setAsrModel(whisper);
+    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo" || whisper === "qwen-audio-3.0-asr-flash-filetrans") setAsrModel(whisper);
     if (readStore("gvad") === "1") setSpeechVadState(true);
     if (readStore("glang") === "1") setLangCheckState(true);
     setTitle(readStore("gtitle"));

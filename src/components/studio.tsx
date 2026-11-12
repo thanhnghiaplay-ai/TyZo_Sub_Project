@@ -875,7 +875,8 @@ export function Studio() {
             </IconButton>
           </span>
         </label>
-        {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
+        )}
+        {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && !(runDoor.open && payByRoom) && (
           <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key">
             Key Alibaba
             <input
@@ -888,7 +889,6 @@ export function Studio() {
               onChange={(event) => app.setAlibabaKey(event.target.value)}
             />
           </label>
-        )}
         )}
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted">Cách dịch</span>
