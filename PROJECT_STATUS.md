@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 08:41 (UTC+7) — v3.17.0 trên nhánh work (cột trái, thẻ cùng hàng, sửa hiển thị). Trước đó v3.16.2. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-12 09:15 (UTC+7) — v3.17.1 trên nhánh work (cột trái và thẻ vừa nội dung). Trước đó v3.17.0. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.17.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.17.1** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -222,7 +222,8 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
-- 2026-11-12 08:41 — v3.17.0 trên work: cột trái cho phòng dịch và trang quản lý. Điện thoại mở bằng ba gạch. Đăng xuất cuối cột, chữ đỏ. Thẻ cùng hàng cao bằng nhau, nội dung dài cuộn trong thẻ. Sửa chỗ chữ đè thanh tua, xem trước thư tràn, biểu đồ ngày, nhật ký bị cắt, nút mở cửa khi cửa đang mở, giá riêng thấp hơn giá gốc, số thuật ngữ file gốc, dòng trạng thái thư, chữ lựa chọn giọng. Điều khoản không đổi. Chưa xem trên điện thoại thật.
+- 2026-11-12 09:15 — v3.17.1 trên work: cột trái và các thẻ bớt cứng. Ba gạch cùng hàng với tên phòng. Mục đang chọn có vạch vàng. Thẻ cao theo nội dung của hàng, không nhốt một cỡ. Thanh tua một hàng, nút đủ chỗ bấm. Điều khoản không đổi. Chưa xem trên điện thoại thật.
+- 2026-11-12 08:41 — v3.17.0 trên work: cột trái cho phòng dịch và trang quản lý. Điện thoại mở bằng ba gạch. Đăng xuất cuối cột, chữ đỏ. Sửa mười chỗ hiển thị. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 05:06 — v3.16.2 trên work: mỗi đoạn nhận dạng hoặc dịch tự tính trần của chính nó và giữ trước khi gọi. Trần lớn hơn phần còn giữ thì không gọi. Gọi xong chỉ trừ số thật, không quá phần đã giữ. Lỗi thì không trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 04:25 — v3.16.1 trên work: phiếu dịch lại ghi loại và cổng từ chối nhận dạng trước khi gọi nhà cung cấp. Chat trên phiếu đó vẫn trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 03:48 — v3.16.0 trên work: đang xem thì không còn nút xóa phụ đề cạnh phát. Đổi file hoặc ngôn ngữ nguồn phải hỏi. Dịch lại chỉ tính phần dịch, giữ câu đã sửa, câu cũ còn đến khi câu mới về. Đóng trang lưu phụ đề trên máy khách, chọn lại đúng file là xem tiếp. Điều khoản 2026-11-12.2. Chưa xem trên điện thoại thật.

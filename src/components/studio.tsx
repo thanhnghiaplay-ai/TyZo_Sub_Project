@@ -1,7 +1,7 @@
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
-import { SideRail, type RailItem } from "@/components/side-rail";
+import { SideRail, RailToggle, AppShell, type RailItem } from "@/components/side-rail";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
@@ -782,14 +782,15 @@ export function Studio() {
   if (place?.role) railItems.push({ id: "admin", label: "Quản lý", href: "/admin" });
 
   return (
-    <div className="app-shell" data-product="sub">
+    <AppShell data-product="sub">
     <SideRail label="Chức năng phòng" items={railItems} />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-1">
+            <RailToggle />
             <BrandMark small title="TyZo Sub" />
-            <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+            <p className="min-w-0 truncate text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
           </div>
           <div className="flex items-center gap-2">
             <VersionMark />
@@ -1552,7 +1553,7 @@ export function Studio() {
       </>
       )}
     </main>
-    </div>
+    </AppShell>
   );
 }
 
@@ -2300,7 +2301,7 @@ function Stage({
         className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
       />
       <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
-        <div className="flex justify-end gap-2 p-2">
+        <div className="flex flex-wrap justify-end gap-1.5 p-2">
           <Tiny label="Tỷ lệ khung hình" onClick={() => setAr((n) => (n + 1) % ARS.length)}>
             {ARS[ar][0]}
           </Tiny>
@@ -2336,87 +2337,85 @@ function Stage({
         >
           {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
         </button>
-        <div className="flex flex-wrap items-center gap-1 px-2 pb-2">
-          <Tiny
-            compact
-            label="Tua lui 10 giây"
-            onClick={() => {
-              const video = videoRef.current;
-              if (!video) return;
-              video.currentTime = Math.max(0, video.currentTime - 10);
-              showHud(`−10 giây · ${fmt(video.currentTime)}`);
-            }}
-          >
-            −10
-          </Tiny>
-          <span ref={tcRef} className="w-9 shrink-0 text-center text-[11px] text-white">
-            0:00
-          </span>
-          <input
-            ref={seekRef}
-            className="min-tap min-w-16 flex-1 accent-accent"
-            type="range"
-            min={0}
-            max={100000}
-            defaultValue={0}
-            aria-label="Tua video"
-            onInput={(event) => {
-              drag.current = true;
-              const video = videoRef.current;
-              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
-              if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
-            }}
-            onChange={(event) => {
-              const video = videoRef.current;
-              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
-              if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
-              drag.current = false;
-            }}
-          />
-          <span ref={tdRef} className="w-9 shrink-0 text-center text-[11px] text-white">
-            0:00
-          </span>
-          <Tiny
-            compact
-            label="Tua tới 10 giây"
-            onClick={() => {
-              const video = videoRef.current;
-              if (!video) return;
-              const duration = Number.isFinite(video.duration) ? video.duration : video.currentTime + 10;
-              video.currentTime = Math.min(duration, video.currentTime + 10);
-              showHud(`+10 giây · ${fmt(video.currentTime)}`);
-            }}
-          >
-            +10
-          </Tiny>
-          <Tiny
-            compact
-            label="Tắt hoặc bật tiếng"
-            onClick={() => {
-              const video = videoRef.current;
-              if (video) video.muted = !video.muted;
-            }}
-          >
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-          </Tiny>
-          <Tiny
-            compact
-            label="Tốc độ phát"
-            onClick={() => {
-              const video = videoRef.current;
-              if (!video) return;
-              video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
-            }}
-          >
-            {rate}×
-          </Tiny>
+        <div className="grid gap-0.5 px-2.5 pb-2">
+          <div className="flex items-center gap-2">
+            <span ref={tcRef} className="w-11 shrink-0 text-center text-xs text-white tabular-nums">
+              0:00
+            </span>
+            <input
+              ref={seekRef}
+              className="min-h-11 min-w-0 flex-1 accent-accent"
+              type="range"
+              min={0}
+              max={100000}
+              defaultValue={0}
+              aria-label="Tua video"
+              onInput={(event) => {
+                drag.current = true;
+                const video = videoRef.current;
+                const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+                if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
+              }}
+              onChange={(event) => {
+                const video = videoRef.current;
+                const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+                if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
+                drag.current = false;
+              }}
+            />
+            <span ref={tdRef} className="w-11 shrink-0 text-center text-xs text-white tabular-nums">
+              0:00
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-1.5">
+            <Tiny
+              label="Tua lui 10 giây"
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                video.currentTime = Math.max(0, video.currentTime - 10);
+                showHud(`−10 giây · ${fmt(video.currentTime)}`);
+              }}
+            >
+              −10
+            </Tiny>
+            <Tiny
+              label="Tua tới 10 giây"
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                const duration = Number.isFinite(video.duration) ? video.duration : video.currentTime + 10;
+                video.currentTime = Math.min(duration, video.currentTime + 10);
+                showHud(`+10 giây · ${fmt(video.currentTime)}`);
+              }}
+            >
+              +10
+            </Tiny>
+            <Tiny
+              label="Tắt hoặc bật tiếng"
+              onClick={() => {
+                const video = videoRef.current;
+                if (video) video.muted = !video.muted;
+              }}
+            >
+              {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+            </Tiny>
+            <Tiny
+              label="Tốc độ phát"
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
+              }}
+            >
+              {rate}×
+            </Tiny>
+          </div>
         </div>
       </div>
       {panel && full && panelNode}
     </div>
-    {!hasMedia && paused && !full && (
-      <p className="w-full px-2 pt-2 text-center text-sm text-muted">Chọn video để phát ở đây</p>
-    )}
+    {!hasMedia && paused && !full && <p className="frame-hint">Chọn video để phát ở đây</p>}
     {panel && !full && panelNode}
     {hint && (
       <p className="gesture-hint">
@@ -2452,18 +2451,9 @@ function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
   };
 }
 
-function Tiny({ label, onClick, children, compact }: { label: string; onClick: () => void; children: ReactNode; compact?: boolean }) {
+function Tiny({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      className={
-        compact
-          ? "inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/50 px-2 text-xs text-white"
-          : "inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white"
-      }
-      onClick={onClick}
-    >
+    <button type="button" aria-label={label} className="inline-flex min-tap shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
       {children}
     </button>
   );

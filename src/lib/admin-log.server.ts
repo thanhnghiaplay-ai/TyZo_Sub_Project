@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.17.1",
+    time: "09:15 ngày 12/11/2026",
+    area: "khac",
+    text: "Chỉnh lại v3.17.0 cho đỡ cứng. Ba gạch nằm trong hàng đầu, không nổi đè logo. Cột trượt ra, mục đang chọn chỉ có vạch vàng. Bỏ khuôn 11–22rem: thẻ cao theo nội dung cao nhất của hàng, một thẻ thì trải hết ngang. Chỉ nhật ký và danh sách thuật ngữ tự cuộn. Thanh tua tách một hàng, nút giữ đủ 44px. Khôi phục dòng nhật ký khách 3.16.2 bị sót. Điều khoản không đổi. Chưa xem trên điện thoại thật.",
+  },
+  {
     version: "3.17.0",
     time: "08:41 ngày 12/11/2026",
     area: "khac",

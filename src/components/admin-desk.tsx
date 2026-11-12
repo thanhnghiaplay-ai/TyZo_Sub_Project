@@ -39,7 +39,7 @@ import { BadgeBoard } from "@/components/badge-board";
 import { AccountCard } from "@/components/role-mark";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
-import { SideRail, type RailItem } from "@/components/side-rail";
+import { SideRail, RailToggle, AppShell, type RailItem } from "@/components/side-rail";
 import { VersionMark } from "@/components/version-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
@@ -138,7 +138,7 @@ function AdminNotes() {
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có dòng nội bộ.</p>}
       <div className="plan-grid">
         {rows.map((row) => (
-          <article key={`${row.version}-${row.area}`} className="rounded-xl border border-line px-3 py-2 text-sm">
+          <article key={`${row.version}-${row.area}`} className="note-card rounded-xl border border-line px-3 py-2 text-sm">
             <p className="font-medium text-accent">v{row.version}</p>
             <p className="text-xs text-muted">{row.time}</p>
             <p className="mt-1">{row.text}</p>
@@ -283,17 +283,19 @@ export function AdminDesk() {
 
   if (!place) {
     return (
-      <div className="app-main">
-        <div className="admin-boot">
-          <BrandMark small title="TyZo Sub" />
-          <p className="text-sm text-muted">Đang mở trang Admin</p>
-          {notice && (
-            <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
-              Đăng nhập
-            </Link>
-          )}
+      <AppShell>
+        <div className="app-main">
+          <div className="admin-boot">
+            <BrandMark small title="TyZo Sub" />
+            <p className="text-sm text-muted">Đang mở trang quản lý</p>
+            {notice && (
+              <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
+                Đăng nhập
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
+      </AppShell>
     );
   }
 
@@ -317,13 +319,16 @@ export function AdminDesk() {
   }
 
   return (
-    <>
+    <AppShell>
       <SideRail label="Mục quản lý" items={railItems} />
       <div className="app-main">
       <header className="app-head">
-        <div className="grid gap-1">
-          <h1 className="text-base leading-none font-semibold">Quản lý</h1>
-          <VersionMark align="start" />
+        <div className="flex min-w-0 items-center gap-1">
+          <RailToggle />
+          <div className="grid min-w-0 gap-1">
+            <h1 className="text-base leading-none font-semibold">Quản lý</h1>
+            <VersionMark align="start" />
+          </div>
         </div>
         <NoticeBell desk />
       </header>
@@ -742,7 +747,7 @@ export function AdminDesk() {
       />
     </div>
       </div>
-    </>
+    </AppShell>
   );
 }
 

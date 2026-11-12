@@ -51,7 +51,7 @@ function DayChart({ rows }: { rows: BoardRow[] }) {
       <div className="flex h-40 items-end gap-1 overflow-x-auto" role="img" aria-label="Phân bố độ tin theo ngày">
         {days.map(({ key, rollup: r }) => {
           const known = r.bands.high + r.bands.check + r.bands.low;
-          const scale = (known / maxKnown) * 100;
+          const scale = known ? Math.max(8, (known / maxKnown) * 100) : 0;
           const part = (n: number) => (known ? (n / known) * 100 : 0);
           return (
             <div key={key} className="flex h-full min-w-6 flex-1 flex-col justify-end" title={`${key}: ${r.runs} lần chạy, ${known} câu, độ tin ${pct(r.meanConfidence)}`}>

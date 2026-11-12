@@ -5,7 +5,7 @@ export const Route = createFileRoute("/admin")({ component: AdminPage });
 
 function AdminPage() {
   return (
-    <div className="room-wide app-shell mx-auto bg-bg text-fg">
+    <div className="room-wide mx-auto bg-bg text-fg">
       <AdminDesk />
     </div>
   );

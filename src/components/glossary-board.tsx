@@ -228,7 +228,7 @@ export function GlossaryBoard() {
       </p>
       </div>
       <div className="space-y-3">
-      <div className="space-y-2">
+      <div className="term-list space-y-2">
         {terms.map((term) => (
           <div key={term.id} className="flex flex-wrap items-center gap-2 text-sm">
             <span className={"min-w-0 flex-1 break-words " + (term.hidden ? "text-muted line-through" : "")}>{term.source} → {term.target}</span>
