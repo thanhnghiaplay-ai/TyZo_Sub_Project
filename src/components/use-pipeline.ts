@@ -88,6 +88,7 @@ import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 import { alibabaAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
+import { getRentShow, rentUseProblem } from "@/lib/rent-show";
 
 type AsrResult = AsrPartResult;
 
@@ -740,6 +741,11 @@ export function usePipeline() {
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
       if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
     } else if (!token) return say("Vui lòng nhập Groq API key.", true);
+    if (!roomPayRef.current) {
+      const opened = await getRentShow().catch(() => null);
+      const blocked = rentUseProblem(opened, { asr: asrModel, chat: chosen });
+      if (blocked) return say(blocked, true);
+    }
     if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);

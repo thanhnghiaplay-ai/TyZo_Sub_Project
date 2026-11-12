@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
 import { groqListHolds } from "@/lib/sub/asr-house";
+import { ownKeyAvailable, rentOpen } from "@/lib/rent-show";
+import { useRentShow } from "@/components/rent-show-board";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
@@ -459,6 +461,7 @@ export function Studio() {
   const [payByRoom, setPayByRoom] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const runDoor = useRunDoor();
+  const rentShow = useRentShow();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
@@ -629,6 +632,9 @@ export function Studio() {
   }, [app.reviewHold]);
 
   const showRoomPrice = runDoor.open && payByRoom;
+  const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
+  const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
+  const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
 
   return (
     <main className="studio-shell">
@@ -907,9 +913,9 @@ export function Studio() {
         </div>
         <VoiceLanes
           modelId={app.modelId}
-          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
+          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : ownVoice.ids}
           allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
-          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
+          known={showRoomPrice ? Boolean(runDoor.offered) : ownVoice.known}
           priceFor={(id) =>
             showRoomPrice
               ? modelFacts(app.board, runDoor, id, "").price
@@ -924,7 +930,7 @@ export function Studio() {
             <ModelPicker
               models={app.catalog}
               value={app.modelId}
-              remote={showRoomPrice ? null : app.remoteIds}
+              remote={showRoomPrice ? null : ownVoice.ids ? [...ownVoice.ids] : app.remoteIds}
               board={showRoomPrice ? app.board : null}
               door={showRoomPrice ? runDoor : null}
               onChange={app.chooseVoice}
@@ -932,18 +938,21 @@ export function Studio() {
           </div>
         </details>
         <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
-            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
+          <option value="whisper-large-v3-turbo" disabled={showRoomPrice ? roomHeld(runDoor, "whisper-large-v3-turbo") : !rentOpen(groqAllow, "whisper-large-v3-turbo")}>
+            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : groqAllow && !groqAllow.includes("whisper-large-v3-turbo") ? " · Chủ chưa mở" : ""}
           </option>
-          <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
-            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
+          <option value="whisper-large-v3" disabled={showRoomPrice ? roomHeld(runDoor, "whisper-large-v3") : !rentOpen(groqAllow, "whisper-large-v3")}>
+            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : groqAllow && !groqAllow.includes("whisper-large-v3") ? " · Chủ chưa mở" : ""}
           </option>
-          <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice}>
-            Alibaba Filetrans{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : ""}
+          <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice || !rentOpen(aliAllow, "qwen-audio-3.0-asr-flash-filetrans")}>
+            Alibaba Filetrans{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : aliAllow && !aliAllow.includes("qwen-audio-3.0-asr-flash-filetrans") ? " · Chủ chưa mở" : ""}
           </option>
         </Select>
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
           <p className="text-sm text-muted">Alibaba nhận cả file từ link trực tiếp. Cần key Alibaba và link file công khai (không phải trang xem). Không cắt đoạn trên máy.</p>
+        )}
+        {(groqAllow || aliAllow) && (
+          <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Dịch vẫn dùng model Groq đã mở.</p>
         )}
         {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
         <label className="flex min-tap items-center gap-2 text-sm">
