@@ -938,7 +938,7 @@ export function Studio() {
             Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
           </option>
           <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice && roomHeld(runDoor, "qwen-audio-3.0-asr-flash-filetrans")}>
-            Alibaba Filetrans{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "qwen-audio-3.0-asr-flash-filetrans")}` : ""}
+            Alibaba Filetrans{showRoomPrice ? ` · ${roomHeld(runDoor, "qwen-audio-3.0-asr-flash-filetrans") ? "Chủ chưa mở" : roomAsrPrice(app.board, runDoor, "qwen-audio-3.0-asr-flash-filetrans")}` : ""}
           </option>
         </Select>
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
