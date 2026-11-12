@@ -875,6 +875,20 @@ export function Studio() {
             </IconButton>
           </span>
         </label>
+        {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
+          <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key">
+            Key Alibaba
+            <input
+              id="ali-key"
+              className={FIELD}
+              type={showKey ? "text" : "password"}
+              placeholder="sk-… chỉ lưu trên máy này"
+              autoComplete="off"
+              value={app.alibabaKey}
+              onChange={(event) => app.setAlibabaKey(event.target.value)}
+            />
+          </label>
+        )}
         )}
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted">Cách dịch</span>
@@ -923,7 +937,13 @@ export function Studio() {
           <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
             Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
           </option>
+          <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice && roomHeld(runDoor, "qwen-audio-3.0-asr-flash-filetrans")}>
+            Alibaba Filetrans{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "qwen-audio-3.0-asr-flash-filetrans")}` : ""}
+          </option>
         </Select>
+        {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
+          <p className="text-sm text-muted">Alibaba nhận cả file từ link trực tiếp. Cần key Alibaba và link file công khai (không phải trang xem). Không cắt đoạn trên máy.</p>
+        )}
         {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
         <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />

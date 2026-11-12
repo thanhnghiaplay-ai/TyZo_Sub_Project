@@ -84,6 +84,9 @@ import {
   type GapPlan,
 } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
+import { recognizeFileUrl } from "@/lib/sub/ali-run";
+import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
+import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 
 type AsrResult = AsrPartResult;
 
@@ -255,6 +258,12 @@ export function usePipeline() {
   const job = useRef<Job>(emptyJob());
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
   const [key, setKey] = useState("");
+  const [alibabaKey, setAlibabaKey] = useState("");
+  const alibabaKeyRef = useRef("");
+  alibabaKeyRef.current = alibabaKey;
+  useEffect(() => {
+    if (alibabaKey) writeStore("gali", alibabaKey);
+  }, [alibabaKey]);
   const roomPayRef = useRef(false);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
@@ -723,7 +732,11 @@ export function usePipeline() {
     const token = activeKey();
     const link = url.trim();
     const chosen = modelId.trim();
-    if (!token) return say("Vui lòng nhập Groq API key.", true);
+    if (asrModel === ALI_FILETRANS_MODEL) {
+      const aliKey = alibabaKeyRef.current.trim();
+      if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
+      if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
+    } else if (!token) return say("Vui lòng nhập Groq API key.", true);
     if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
@@ -1509,6 +1522,29 @@ export function usePipeline() {
           const planned = chunksToSamples(chunksFromSpans(spans, duration), totalSamples);
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
         };
+        if (asrModel === ALI_FILETRANS_MODEL) {
+          const aliKey = alibabaKeyRef.current.trim();
+          say("Đang gửi file tới Alibaba…");
+          const result = await recognizeFileUrl({
+            url: link,
+            language: source,
+            key: aliKey,
+            signal,
+            onWait: (m) => { if (my === j.runId) say(m); },
+          });
+          if (my !== j.runId) return;
+          j.segs = segsFromAli(result.sentences);
+          j.parts = [];
+          j.nextPart = 0;
+          j.doneSource = source;
+          publish(true);
+          await translateRemaining(() => true);
+          publish(true);
+          say(j.segs.length ? `Nhận dạng Alibaba xong: ${j.segs.length} câu.` : "Alibaba không trả câu nào.", !j.segs.length);
+          setRunning(false);
+          delete document.documentElement.dataset.tyzoBusy;
+          return;
+        }
         j.parts = await planRecognitionParts();
         j.doneSource = source;
         j.appliedSig = "";
@@ -2132,6 +2168,8 @@ export function usePipeline() {
   return {
     key,
     setKey,
+    alibabaKey,
+    setAlibabaKey,
     setRoomPay,
     target,
     setTarget,

@@ -35,11 +35,12 @@ export type ChatModel = {
 export type AutoProfile = "fast" | "balanced" | "accurate";
 export type ModelMode = "manual" | "auto";
 
-export type AsrModel = "whisper-large-v3-turbo" | "whisper-large-v3";
+export type AsrModel = "whisper-large-v3-turbo" | "whisper-large-v3" | "qwen-audio-3.0-asr-flash-filetrans";
 
 export const ASR_PRICE: Record<AsrModel, number> = {
   "whisper-large-v3-turbo": 0.04 / 3600,
   "whisper-large-v3": 0.111 / 3600,
+  "qwen-audio-3.0-asr-flash-filetrans": 0.000035,
 };
 
 export type NarrationSettings = {
