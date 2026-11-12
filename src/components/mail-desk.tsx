@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMailDesk, MAIL_PROVIDERS, saveMailDesk, sendTestMail, type MailDeskView, type MailProvider } from "@/lib/mail-desk";
+import { getMailPolicy } from "@/lib/mail-runtime";
+import type { MailPolicy } from "@/lib/mail-letter";
 import { pushToast } from "@/components/toast";
 
 const NAMES: Record<MailProvider, string> = {
@@ -23,6 +25,7 @@ const BLANK: MailDeskView = {
 
 export function MailDesk() {
   const [view, setView] = useState<MailDeskView>(BLANK);
+  const [policy, setPolicy] = useState<MailPolicy | null>(null);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -34,9 +37,22 @@ export function MailDesk() {
 
   useEffect(() => {
     load();
+    const pull = () => {
+      void getMailPolicy().then(setPolicy).catch(() => setPolicy(null));
+    };
+    pull();
+    window.addEventListener("tyzo-mail-policy", pull);
+    return () => window.removeEventListener("tyzo-mail-policy", pull);
   }, []);
 
   const canTest = view.savedReady || Boolean(view.serverName);
+  const verify = policy?.verifyOn ? "Xác minh email đang bật" : "Xác minh email đang tắt";
+  const reset = policy?.resetOn ? "quên mật khẩu đang bật" : "quên mật khẩu đang tắt";
+  const status = !view.savedReady
+    ? "Chưa lưu đủ khóa. Xác minh email và quên mật khẩu đang tắt."
+    : policy
+      ? `Đã lưu khóa. ${verify}, ${reset}.`
+      : "Đã lưu khóa. Đang đọc công tắc thư.";
 
   return (
     <section className="grid gap-3">
@@ -58,9 +74,7 @@ export function MailDesk() {
       >
         <h2 className="font-semibold">Thư</h2>
         <p className="text-sm text-muted">
-          {view.savedReady
-            ? "Đã lưu khóa. Xác minh email và quên mật khẩu chưa bật."
-            : "Chưa lưu đủ khóa. Xác minh email và quên mật khẩu đang tắt."}
+          {status}
           {view.serverName ? ` Máy chủ đang có ${NAMES[view.serverName as MailProvider] ?? view.serverName}.` : ""}
         </p>
         <label className="grid gap-1 text-sm">

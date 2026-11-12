@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.20.0 trên nhánh `main` |
-| Bản đang làm | v3.16.2 trên nhánh `work`: hết khoản giữ thì không gọi thêm. Điều khoản `2026-11-12.2` |
+| Bản đang làm | v3.17.0 trên nhánh `work`: cột trái, thẻ cùng hàng, sửa hiển thị. Điều khoản `2026-11-12.2` |
 | Điều khoản | 2026-11-12.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đã đẩy. v3.13.0 đang trên `work`, chưa lên `main`.
+v3.17.0 đang trên `work`, chưa lên `main`. Không đẩy `main` cho đến khi người dùng nói đúng câu «đẩy chính thức».
 
 ## Thư — còn lại
 

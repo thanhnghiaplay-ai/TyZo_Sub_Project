@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { authClient, signOut } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getBadgeStyle, getMyPlace, listOwnAppeals, skipAppeal, submitAppeal, type MyPlace } from "@/lib/admin-room";
 import { AccountCard } from "@/components/role-mark";
@@ -26,7 +26,6 @@ export function AccountPanel() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [nextPassword, setNextPassword] = useState("");
   const [name, setName] = useState("");
-  const [leaving, setLeaving] = useState(false);
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [partner, setPartner] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
@@ -161,20 +160,6 @@ export function AccountPanel() {
               <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
                 Cộng tác viên
               </Link>
-              <button
-                type="button"
-                disabled={leaving}
-                className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none disabled:opacity-40"
-                onClick={() => {
-                  setLeaving(true);
-                  void signOut("/login").catch(() => {
-                    setLeaving(false);
-                    setNotice("Chưa đăng xuất được. Thử lại.");
-                  });
-                }}
-              >
-                {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
-              </button>
             </div>
             <TopUp
               compact

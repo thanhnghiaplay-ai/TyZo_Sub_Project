@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 05:06 (UTC+7) — v3.16.2 trên nhánh work (hết khoản giữ thì không gọi thêm). Trước đó v3.16.1. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-12 08:41 (UTC+7) — v3.17.0 trên nhánh work (cột trái, thẻ cùng hàng, sửa hiển thị). Trước đó v3.16.2. Main vẫn v2.20.0. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.16.2** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.17.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -68,7 +68,7 @@
 | 30 | Dò khoảng trống (Bước 5 Pha 2) | 🟡 Đã có test | Sau khi có phụ đề, nút «Dò khoảng trống» chỉ chạy trên máy. Khoảng ≥ 2 giây có tiếng mà không có câu được liệt kê kèm ước tính $. Ngân sách 120 giây cho cả lần chạy, không cắt khoảng. Nút «Nhận dạng các khoảng này» mới gửi, và còn hộp xác nhận. Không tự gửi khi nhận dạng xong. Test: `src/lib/sub/gap-scan.test.ts`. **Chưa chạy trên phim thật.** |
 | 31 | Đánh giá Silero (Bước 5 Pha 3) | 🟡 Bước 2 đã gắn, tắt mặc định | Model int8 nằm ở `public/models`, WASM 15 MB ở `public/vad`. Không nằm trong JS lúc mở app. Bật ô thì mới tải. Lỗi tải thì dùng RMS. Test: `vad.test.ts`. Chưa chạy trên phim thật. |
 | 32 | Xếp lại màn hình (Bước 6.1) | 🟡 Đã có test | Key, ngôn ngữ, thể loại, file và nút chạy đứng trước trong thẻ Phim. Trạng thái và Xuất file Vietsub nằm trên khung xem. «Tốc độ và chi phí» và «Thuật ngữ thể loại» đóng sẵn. Test: `src/components/studio-layout.test.ts`. |
-| 33 | Khung Phụ đề (Bước 6.2) | 🟡 Đã có test | Thanh chức năng chỉ có Phụ đề. Video và bảng câu nằm trong `data-workspace`, một player, không nằm trong tab. |
+| 33 | Khung Phụ đề (Bước 6.2) | 🟡 Đã có test | v3.17.0: Phụ đề, Tài khoản và Quản lý nằm ở cột trái. Video và bảng câu vẫn trong `data-workspace`, một player. |
 | 34 | Tab công cụ (Bước 6.3) | 🟡 Đã có test | Chỉ một tab hiện: Phim, Chất lượng, Nhân vật, Nghe, Kiểm tra. Đổi tab không gỡ form. Một nút Dịch tiếp trên khung xem. Dò khoảng trống và câu lỗi nằm ở Kiểm tra. |
 | 35 | Ba cỡ màn hình (Bước 6.4) | 🟡 Đã có test | Dưới 700px: video tối đa 33dvh, tab là tấm dưới không đè hình, có nút Đóng. 700–1023px: video ghim, tối đa 42dvh. Từ 1024px: video và bảng câu cạnh nhau. Chừa tai thỏ. Ô chữ 16px, nút 44px. |
 | 36 | Chuyển tab (Bước 6.5) | 🟡 Đã có test | Panel hiện ra trượt nhẹ 180ms. Nút tab đổi màu 160ms. `prefers-reduced-motion` thì tắt cả hai. Mũi tên trái/phải, Home và End chọn tab. Test: `src/components/studio-layout.test.ts`. |
@@ -82,11 +82,11 @@
 | 44 | Thuê phòng | 🟡 Đã gắn, chưa thu tiền thật | Đăng ký email, không đăng nhập Google. Dùng thử: 1 tệp, 10 phút, không quá 100 MB, không xuất file. Gói còn hạn thì không giới hạn số tệp và được xuất file. Giá đã chốt: 9.000 / 39.000 / 99.000 đ. SePay và Casso có khung nhập API ở Admin. Chưa nhập API thì trang khách hiện bảo trì. Key Groq vẫn của khách. |
 | 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-08.3`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. Khi đã đăng nhập, máy chủ ghi `room_accounts.terms_version`. Từ 2026-11-06 13:09, việc nào đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục liên quan trong cùng lần đó (`huongdan.txt` mục 12b). |
 | 46 | Giá model bằng đồng | 🟡 Đã gắn | Lúc mở app, máy chủ đọc trang model Groq và tỷ giá đô. Thẻ model hiện giá đồng, cửa sổ token, hạn mức tiếng Việt. Hạn mức là gói công khai, không phải số riêng của từng key. |
-| 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. Sơ đồ và doanh thu chỉ Chủ sửa. Lịch sử chỉ 6 dòng, có xem thêm. |
+| 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Cột trái giống phòng dịch. Điện thoại mở bằng ba gạch. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. |
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
-| 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9 khi xoay ngang và khi bật chế độ máy tính. Câu hướng dẫn xuống dòng dưới khung. Cần user xem lại trên điện thoại. |
+| 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9. Câu hướng dẫn xuống dòng dưới khung. Nút tốc độ nằm trong khung. Cần user xem lại trên điện thoại. |
 | 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
-| 51 | Nút Quản lý | 🟡 Đã gắn | Nằm trong danh sách của nút ba gạch, chỉ hiện khi có quyền. Tên mục đang mở hiện cạnh nút. |
+| 51 | Nút Quản lý | 🟡 Đã gắn | Nằm trong cột trái, chỉ hiện khi có quyền. Điện thoại mở cột bằng ba gạch. Đăng xuất ở cuối cột, chữ đỏ. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
@@ -222,6 +222,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-12 08:41 — v3.17.0 trên work: cột trái cho phòng dịch và trang quản lý. Điện thoại mở bằng ba gạch. Đăng xuất cuối cột, chữ đỏ. Thẻ cùng hàng cao bằng nhau, nội dung dài cuộn trong thẻ. Sửa chỗ chữ đè thanh tua, xem trước thư tràn, biểu đồ ngày, nhật ký bị cắt, nút mở cửa khi cửa đang mở, giá riêng thấp hơn giá gốc, số thuật ngữ file gốc, dòng trạng thái thư, chữ lựa chọn giọng. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 05:06 — v3.16.2 trên work: mỗi đoạn nhận dạng hoặc dịch tự tính trần của chính nó và giữ trước khi gọi. Trần lớn hơn phần còn giữ thì không gọi. Gọi xong chỉ trừ số thật, không quá phần đã giữ. Lỗi thì không trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 04:25 — v3.16.1 trên work: phiếu dịch lại ghi loại và cổng từ chối nhận dạng trước khi gọi nhà cung cấp. Chat trên phiếu đó vẫn trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 03:48 — v3.16.0 trên work: đang xem thì không còn nút xóa phụ đề cạnh phát. Đổi file hoặc ngôn ngữ nguồn phải hỏi. Dịch lại chỉ tính phần dịch, giữ câu đã sửa, câu cũ còn đến khi câu mới về. Đóng trang lưu phụ đề trên máy khách, chọn lại đúng file là xem tiếp. Điều khoản 2026-11-12.2. Chưa xem trên điện thoại thật.

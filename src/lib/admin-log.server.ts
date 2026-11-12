@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.17.0",
+    time: "08:41 ngày 12/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.16.2. Cột trái dùng chung phòng dịch và trang quản lý: từ 1024px hiện sẵn, hẹp hơn thì ba gạch mở ngăn. Đăng xuất rời khỏi thẻ tài khoản, nằm cuối cột, chữ đỏ. Thẻ trong hàng cao bằng nhau, nội dung dài cuộn trong thẻ. Sửa 10 chỗ hiển thị: câu chọn video xuống dưới khung 16:9, nút tốc độ gọn trong khung, xem trước thư không tràn chữ, cột chất lượng theo ngày cao theo số câu, nhật ký nội bộ cuộn trong thẻ, nút mở cửa không còn vàng khi cửa đang mở, giá riêng không được thấp hơn giá gốc, thuật ngữ hiện số mục trong file gốc khi phòng đang 0, dòng thư đọc đúng công tắc xác minh và quên mật khẩu, dòng phụ của lựa chọn giọng là chữ đen trên nền vàng. Không đổi điều khoản, vẫn 2026-11-12.2. Chưa xem trên điện thoại thật.",
+  },
+  {
     version: "3.16.2",
     time: "05:06 ngày 12/11/2026",
     area: "tien",

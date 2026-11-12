@@ -38,6 +38,9 @@ import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
 import { BadgeBoard } from "@/components/badge-board";
 import { AccountCard } from "@/components/role-mark";
 import { BrandMark } from "@/components/brand-mark";
+import { NoticeBell } from "@/components/notice-bell";
+import { SideRail, type RailItem } from "@/components/side-rail";
+import { VersionMark } from "@/components/version-mark";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
@@ -280,38 +283,57 @@ export function AdminDesk() {
 
   if (!place) {
     return (
-      <div className="admin-boot">
-        <BrandMark small title="TyZo Sub" />
-        <p className="text-sm text-muted">Đang mở trang Admin</p>
-        {notice && (
-          <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
-            Đăng nhập
-          </Link>
-        )}
+      <div className="app-main">
+        <div className="admin-boot">
+          <BrandMark small title="TyZo Sub" />
+          <p className="text-sm text-muted">Đang mở trang Admin</p>
+          {notice && (
+            <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
+              Đăng nhập
+            </Link>
+          )}
+        </div>
       </div>
     );
   }
 
+  const railItems: RailItem[] = [{ id: "room", label: "Về phòng", href: "/" }];
+  if (role) {
+    const tabs: RailItem[] = [
+      { id: "viec", label: "Việc", current: tab === "viec", onPick: () => setTab("viec") },
+      { id: "so-do", label: "Sơ đồ", current: tab === "so-do", onPick: () => setTab("so-do") },
+    ];
+    if (role === "chu") {
+      tabs.push(
+        { id: "tien", label: "Doanh thu", current: tab === "tien", onPick: () => setTab("tien") },
+        { id: "chat-luong", label: "Chất lượng", current: tab === "chat-luong", onPick: () => setTab("chat-luong") },
+        { id: "thuat-ngu", label: "Thuật ngữ", current: tab === "thuat-ngu", onPick: () => setTab("thuat-ngu") },
+        { id: "ctv", label: "Cộng tác", current: tab === "ctv", onPick: () => setTab("ctv") },
+        { id: "thu", label: "Thư", current: tab === "thu", onPick: () => setTab("thu") },
+      );
+    }
+    tabs.push({ id: "nhat-ky", label: "Nhật ký", current: tab === "nhat-ky", onPick: () => setTab("nhat-ky") });
+    railItems.unshift(...tabs);
+  }
+
   return (
-    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
+    <>
+      <SideRail label="Mục quản lý" items={railItems} />
+      <div className="app-main">
+      <header className="app-head">
+        <div className="grid gap-1">
+          <h1 className="text-base leading-none font-semibold">Quản lý</h1>
+          <VersionMark align="start" />
+        </div>
+        <NoticeBell desk />
+      </header>
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
       {role ? (
         <div className="pb-2">
           <RoleChip role={role} />
         </div>
       ) : (
         <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
-      )}
-      {role && (
-        <div className="flex gap-2 overflow-x-auto border-b border-line bg-bg py-2">
-          <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
-          <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
-          {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="chat-luong" onPick={setTab}>Chất lượng</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="thuat-ngu" onPick={setTab}>Thuật ngữ</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="ctv" onPick={setTab}>Cộng tác</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="thu" onPick={setTab}>Thư</TabButton>}
-          <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
-        </div>
       )}
       <div className="admin-grid">
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
@@ -719,29 +741,13 @@ export function AdminDesk() {
         }}
       />
     </div>
+      </div>
+    </>
   );
 }
 
 function RoleChip({ role }: { role: "ho-tro" | "quan-ly" | "chu" }) {
   return <p className={"role-chip role-" + role}>{ROLE_LABEL[role]}</p>;
-}
-
-function TabButton({
-  current,
-  id,
-  onPick,
-  children,
-}: {
-  current: string;
-  id: "viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu";
-  onPick: (id: "viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu") => void;
-  children: string;
-}) {
-  return (
-    <button type="button" className={"inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap " + (current === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => onPick(id)}>
-      {children}
-    </button>
-  );
 }
 
 function logLine(item: AuditRow) {

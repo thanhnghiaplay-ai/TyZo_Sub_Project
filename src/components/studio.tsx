@@ -1,6 +1,7 @@
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
+import { SideRail, type RailItem } from "@/components/side-rail";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
@@ -13,7 +14,6 @@ import {
   FileAudio,
   Link2,
   Loader2,
-  Menu,
   Pause,
   Play,
   RefreshCw,
@@ -459,11 +459,9 @@ export function Studio() {
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [payByRoom, setPayByRoom] = useState(false);
   const [menu, setMenu] = useState<ServiceMenu | null>(null);
   const [mediaSeconds, setMediaSeconds] = useState(0);
-  const menuRef = useRef<HTMLDivElement>(null);
   const runDoor = useRunDoor();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
@@ -729,22 +727,6 @@ export function Studio() {
     setToolTab(id);
   };
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("pointerdown", close);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", close);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [menuOpen]);
-
   // Đọc quyền có thử lại. Lỗi tạm thời thì giữ quyền đã biết, không xóa nút Quản lý.
   const placeSeq = useRef(0);
   const loadPlace = useCallback(async () => {
@@ -793,8 +775,15 @@ export function Studio() {
   }, [app.reviewHold, app.segs.length, app.running]);
 
   const showRoomPrice = runDoor.open && payByRoom;
+  const railItems: RailItem[] = [
+    { id: "sub", label: "Phụ đề", current: product === "sub", onPick: () => setProduct("sub") },
+    { id: "account", label: "Tài khoản", current: product === "account", onPick: () => setProduct("account") },
+  ];
+  if (place?.role) railItems.push({ id: "admin", label: "Quản lý", href: "/admin" });
 
   return (
+    <div className="app-shell" data-product="sub">
+    <SideRail label="Chức năng phòng" items={railItems} />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">
@@ -810,51 +799,6 @@ export function Studio() {
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip payByRoom={payByRoom} />
       </header>
-
-      <nav aria-label="Chức năng" className="room-nav">
-        <div data-product="sub" ref={menuRef} className="room-menu">
-          <button
-            type="button"
-            className="room-menu-button"
-            aria-expanded={menuOpen}
-            aria-controls="room-menu-list"
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <Menu className="size-4" aria-hidden="true" />
-            <span>{product === "account" ? "Tài khoản" : "Phụ đề"}</span>
-          </button>
-          {menuOpen && (
-            <div id="room-menu-list" role="tablist" className="room-menu-list">
-            <button
-              type="button"
-              aria-current={product === "sub" ? "page" : undefined}
-              onClick={() => {
-                setProduct("sub");
-                setMenuOpen(false);
-              }}
-            >
-              Phụ đề
-            </button>
-            <button
-              type="button"
-              data-product="account"
-              aria-current={product === "account" ? "page" : undefined}
-              onClick={() => {
-                setProduct("account");
-                setMenuOpen(false);
-              }}
-            >
-              Tài khoản
-            </button>
-            {place?.role && (
-              <Link to="/admin" onClick={() => setMenuOpen(false)}>
-                Quản lý
-              </Link>
-            )}
-          </div>
-          )}
-        </div>
-      </nav>
 
       {place?.status === "banned" ? (
         <div className="grid gap-3 p-4">
@@ -1608,6 +1552,7 @@ export function Studio() {
       </>
       )}
     </main>
+    </div>
   );
 }
 
@@ -1715,15 +1660,15 @@ function VoiceLanes({
             type="button"
             disabled={closed}
             onClick={() => id && onPick(id)}
-            className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
+            className={"min-tap h-auto min-w-0 whitespace-normal rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "choice-on" : "border-line bg-bg")}
           >
             <span className="block text-sm font-semibold leading-tight">{lane.title}</span>
-            <span className={"mt-0.5 block text-xs leading-snug " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
-            <span className={"mt-0.5 block text-xs leading-snug " + (on ? "text-ink/75" : "text-muted")}>
+            <span className={"choice-sub mt-0.5 block text-xs leading-snug " + (on ? "" : "text-muted")}>{lane.fit}</span>
+            <span className={"choice-sub mt-0.5 block text-xs leading-snug " + (on ? "" : "text-muted")}>
               {lane.pace}
               {price ? <span className="font-medium"> · {price}</span> : null}
             </span>
-            <span className={"mt-1 block text-[0.7rem] leading-tight opacity-80 " + (on ? "text-ink/70" : "text-muted")}>
+            <span className={"choice-sub mt-1 block text-[0.7rem] leading-tight " + (on ? "" : "text-muted opacity-80")}>
               {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
             </span>
           </button>
@@ -1736,9 +1681,9 @@ function VoiceLanes({
 
 function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text: string }) {
   return (
-    <button type="button" onClick={onClick} className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
+    <button type="button" onClick={onClick} className={"min-tap h-auto whitespace-normal rounded-xl border px-3 py-2 text-left " + (on ? "choice-on" : "border-line bg-bg")}>
       <span className="block text-sm font-semibold">{title}</span>
-      <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{text}</span>
+      <span className={"choice-sub block text-xs " + (on ? "" : "text-muted")}>{text}</span>
     </button>
   );
 }
@@ -2354,9 +2299,6 @@ function Stage({
         data-on="0"
         className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
       />
-      {!hasMedia && paused && (
-        <p className="pointer-events-none absolute inset-x-0 top-[calc(50%+2.75rem)] z-10 px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
-      )}
       <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
         <div className="flex justify-end gap-2 p-2">
           <Tiny label="Tỷ lệ khung hình" onClick={() => setAr((n) => (n + 1) % ARS.length)}>
@@ -2394,8 +2336,9 @@ function Stage({
         >
           {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
         </button>
-        <div className="flex items-center gap-2 px-3 pb-3">
+        <div className="flex flex-wrap items-center gap-1 px-2 pb-2">
           <Tiny
+            compact
             label="Tua lui 10 giây"
             onClick={() => {
               const video = videoRef.current;
@@ -2406,12 +2349,12 @@ function Stage({
           >
             −10
           </Tiny>
-          <span ref={tcRef} className="w-12 text-center text-xs text-white">
+          <span ref={tcRef} className="w-9 shrink-0 text-center text-[11px] text-white">
             0:00
           </span>
           <input
             ref={seekRef}
-            className="min-tap flex-1 accent-accent"
+            className="min-tap min-w-16 flex-1 accent-accent"
             type="range"
             min={0}
             max={100000}
@@ -2430,10 +2373,11 @@ function Stage({
               drag.current = false;
             }}
           />
-          <span ref={tdRef} className="w-12 text-center text-xs text-white">
+          <span ref={tdRef} className="w-9 shrink-0 text-center text-[11px] text-white">
             0:00
           </span>
           <Tiny
+            compact
             label="Tua tới 10 giây"
             onClick={() => {
               const video = videoRef.current;
@@ -2446,6 +2390,7 @@ function Stage({
             +10
           </Tiny>
           <Tiny
+            compact
             label="Tắt hoặc bật tiếng"
             onClick={() => {
               const video = videoRef.current;
@@ -2455,6 +2400,7 @@ function Stage({
             {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
           </Tiny>
           <Tiny
+            compact
             label="Tốc độ phát"
             onClick={() => {
               const video = videoRef.current;
@@ -2468,6 +2414,9 @@ function Stage({
       </div>
       {panel && full && panelNode}
     </div>
+    {!hasMedia && paused && !full && (
+      <p className="w-full px-2 pt-2 text-center text-sm text-muted">Chọn video để phát ở đây</p>
+    )}
     {panel && !full && panelNode}
     {hint && (
       <p className="gesture-hint">
@@ -2503,9 +2452,18 @@ function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
   };
 }
 
-function Tiny({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+function Tiny({ label, onClick, children, compact }: { label: string; onClick: () => void; children: ReactNode; compact?: boolean }) {
   return (
-    <button type="button" aria-label={label} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
+    <button
+      type="button"
+      aria-label={label}
+      className={
+        compact
+          ? "inline-flex h-9 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/50 px-2 text-xs text-white"
+          : "inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white"
+      }
+      onClick={onClick}
+    >
       {children}
     </button>
   );

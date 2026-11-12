@@ -25,7 +25,14 @@ export function MailPolicyBoard() {
     <div className="grid min-w-0 gap-2">
       <div className="sticky top-0 z-10 rounded-2xl border border-line bg-card p-2">
         <p className="mb-1 text-xs text-muted">Xem trước. Sửa chữ hoặc màu thì thấy ngay, không cần kéo xuống.</p>
-        <iframe title="Xem trước thư" sandbox="" className="h-44 w-full rounded-xl border border-line bg-white" srcDoc={preview.html} />
+        <div className="mail-preview">
+          <iframe
+            title="Xem trước thư"
+            sandbox=""
+            className="mail-preview-frame"
+            srcDoc={"<!doctype html><html><head><meta charset=\"utf-8\"><style>html,body{margin:0;background:#fff;color:#111;font:14px/1.45 sans-serif;}body{overflow:auto;overflow-wrap:anywhere;}</style></head><body>" + preview.html + "</body></html>"}
+          />
+        </div>
       </div>
     <form
       className="grid min-w-0 gap-2 rounded-2xl border border-line bg-card p-4"
@@ -37,6 +44,7 @@ export function MailPolicyBoard() {
           .then((next) => {
             setPolicy(next);
             pushToast("Đã lưu phần thư.");
+            window.dispatchEvent(new Event("tyzo-mail-policy"));
           })
           .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
           .finally(() => setBusy(false));
