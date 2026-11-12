@@ -12,6 +12,10 @@ export function providerApi(id: ProviderId) {
   return id === "alibaba" ? ALIBABA_API : GROQ_API;
 }
 
+export function modelListUrl(id: ProviderId) {
+  return `${providerApi(id)}/models`;
+}
+
 export function isProviderId(value: string): value is ProviderId {
   return value === "groq" || value === "alibaba";
 }

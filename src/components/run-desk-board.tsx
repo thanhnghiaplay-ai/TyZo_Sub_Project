@@ -210,7 +210,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây. Khách không thấy.</p>
         {owner && (
           <label className="grid gap-1 text-sm">
-            Key Groq để đồng bộ
+            Key Groq của phòng
             <span className="flex gap-2">
               <input
                 type={showKey ? "text" : "password"}

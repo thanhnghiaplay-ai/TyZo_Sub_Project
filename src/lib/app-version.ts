@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.19.0";
+export const APP_VERSION = "3.20.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.20.0",
+    time: "23:55 ngày 12/11/2026",
+    title: "Chủ lưu key Alibaba riêng, không đè key Groq.",
+    points: [
+      "Trang quản lý có ô key Alibaba, tách khỏi ô key Groq.",
+      "Chỉ thấy 4 ký tự cuối. Key đã lưu không hiện lại.",
+      "Cửa trả theo lượt vẫn chỉ nhận dạng bằng Whisper.",
+    ],
+  },
   {
     version: "3.19.0",
     time: "23:44 ngày 12/11/2026",

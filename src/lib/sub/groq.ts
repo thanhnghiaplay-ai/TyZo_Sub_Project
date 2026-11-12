@@ -1,4 +1,5 @@
 import { reasoningOpts } from "@/lib/sub/models";
+import { modelListUrl, type ProviderId } from "@/lib/sub/provider";
 import type { PackedAudio } from "@/lib/sub/codec";
 import {
   contiguousRuns,
@@ -137,8 +138,8 @@ export async function requestWithRetry(
   throw lastError || new Error(`${label}: không thể kết nối máy chủ.`);
 }
 
-export async function listModelIds(key: string, signal?: AbortSignal): Promise<string[]> {
-  const next = roomFetchTarget(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } }, null);
+export async function listModelIds(key: string, signal?: AbortSignal, provider: ProviderId = "groq"): Promise<string[]> {
+  const next = roomFetchTarget(modelListUrl(provider), { headers: { Authorization: `Bearer ${key}` } }, null);
   const response = await fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal });
   if (!response.ok) throw new Error(await readApiError(response, ""));
   const data = (await response.json()) as { data?: Array<{ id?: string }> };
