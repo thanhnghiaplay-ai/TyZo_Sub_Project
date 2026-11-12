@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 09:15 (UTC+7) — v3.17.1 trên nhánh work (cột trái và thẻ vừa nội dung). Trước đó v3.17.0. Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-12 13:32 (UTC+7) — đẩy chính thức v3.17.1 từ work lên main. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.17.1** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.17.1** trên `main` và `work`. Điều khoản `2026-11-12.2`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -222,6 +222,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-12 13:32 — Đẩy chính thức: v3.17.1 từ work lên main. Điều khoản không đổi.
 - 2026-11-12 09:15 — v3.17.1 trên work: cột trái và các thẻ bớt cứng. Ba gạch cùng hàng với tên phòng. Mục đang chọn có vạch vàng. Thẻ cao theo nội dung của hàng, không nhốt một cỡ. Thanh tua một hàng, nút đủ chỗ bấm. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 08:41 — v3.17.0 trên work: cột trái cho phòng dịch và trang quản lý. Điện thoại mở bằng ba gạch. Đăng xuất cuối cột, chữ đỏ. Sửa mười chỗ hiển thị. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 05:06 — v3.16.2 trên work: mỗi đoạn nhận dạng hoặc dịch tự tính trần của chính nó và giữ trước khi gọi. Trần lớn hơn phần còn giữ thì không gọi. Gọi xong chỉ trừ số thật, không quá phần đã giữ. Lỗi thì không trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
