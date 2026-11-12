@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
-import { chargeSpeechWith, chargeTicketWith, closeTicketWith, openTicketWith, refundSpeechWith, releaseStaleWith, ticketKind, ticketLive } from "./run-ticket.ts";
+import { chargeSpeechWith, chargeTicketWith, closeTicketWith, openTicketWith, refundSpeechWith, releaseStaleWith, ticketLive } from "./run-ticket.ts";
 
 let sql: Sql;
 const DAY = "2026-11-08";
@@ -45,14 +45,6 @@ describe("giữ tiền nguyên tử", () => {
     assert.equal((await ticket("t1")).status, "dang-giu");
     assert.equal(await ticketLive(sql, "t1", "u1"), true);
     assert.equal(await ticketLive(sql, "t1", "nguoi-khac"), false);
-    assert.equal(await ticketKind(sql, "t1", "u1"), "full");
-  });
-
-  it("phiếu dịch lại ghi loại translate", async () => {
-    const result = await openTicketWith(sql, { id: "t-tr", userId: "u1", fileName: "a.mp4", seconds: 30, rate: 1, hold: 50, cap: 0, dayStartIso: START, scope: "translate" });
-    assert.deepEqual(result, { id: "t-tr", held: 50 });
-    assert.equal(await ticketKind(sql, "t-tr", "u1"), "translate");
-    assert.equal((await sql<{ scope: string }>`select scope from run_tickets where id = 't-tr'`)[0].scope, "translate");
   });
 
   it("không đủ số dư thì không tạo phiếu và không đổi ví", async () => {

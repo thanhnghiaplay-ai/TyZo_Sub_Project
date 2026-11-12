@@ -20,9 +20,6 @@ export async function openRoomTicket(input: {
   seconds: number;
   asrModel: string;
   chatModel: string;
-  packId?: string;
-  narration?: boolean;
-  scope?: "full" | "translate";
 }): Promise<RunTicketOpen> {
   return openRunTicket({ data: input });
 }

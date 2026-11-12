@@ -77,13 +77,6 @@ export function estimateHold(book: PriceBook, asrModel: string, chatModel: strin
   return Math.ceil((asr + chat) * HOLD_BUFFER);
 }
 
-/** Giữ chỗ khi chỉ dịch lại: không cộng tiền nhận dạng. */
-export function estimateTranslateHold(book: PriceBook, chatModel: string, seconds: number): number | null {
-  const chat = chatCost(book, chatModel, Math.ceil(seconds * 12) + 1500, Math.ceil(seconds * 8) + 500);
-  if (chat == null) return null;
-  return Math.ceil(chat * HOLD_BUFFER);
-}
-
 /** Số giây Groq tính tiền cho một kết quả nhận dạng verbose_json. */
 export function billedSecondsOf(result: { duration?: unknown; segments?: Array<{ end?: unknown }> } | null | undefined) {
   const duration = Number(result?.duration);

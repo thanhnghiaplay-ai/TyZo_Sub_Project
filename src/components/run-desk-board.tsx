@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
+import { asrHouse } from "@/lib/sub/asr-house";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { emptyOverride, formatRoomPrice, RUN_STATUS_LABEL, type PriceOverride, type RunDesk, type RunStatus } from "@/lib/run-desk";
@@ -28,7 +29,7 @@ export function TicketCard({ ticket, children }: { ticket: RunTicket; children?:
   return (
     <article className="rounded-xl border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium truncate" title={ticket.fileName || "Không tên tệp"}>{ticket.fileName || "Không tên tệp"}</p>
+        <p className="text-sm font-medium">{ticket.fileName || "Không tên tệp"}</p>
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
@@ -39,7 +40,7 @@ export function TicketCard({ ticket, children }: { ticket: RunTicket; children?:
 }
 
 const PRICE_ROWS = [
-  ...ASR_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "hour" as const })),
+  ...ASR_MODELS.filter((model) => asrHouse(model.id) === "groq").map((model) => ({ id: model.id, name: model.name, kind: "hour" as const })),
   ...CHAT_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "token" as const })),
 ];
 
@@ -131,7 +132,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       </div>
       <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
       {owner && (
-      <div className="stat-grid">
+      <div className="grid grid-cols-3 gap-2">
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
@@ -149,13 +150,12 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           onChange={(event) => setForm((current) => (current ? { ...current, note: event.target.value } : current))}
           className="rounded-xl border border-line bg-raised px-3 py-2 outline-none disabled:opacity-60"
         />
-        <p className="text-xs text-muted">{form?.maintenance ? "Khách đang thấy câu này." : "Câu này chỉ hiện khi cửa đang bảo trì."}</p>
         {owner && form && (
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={() => save({ ...form, maintenance: true }, "Đã bật bảo trì.")}>
               Lưu và báo bảo trì
             </button>
-            <button type="button" disabled={busy || !form.maintenance} className={"min-tap rounded-full px-4 text-sm font-semibold disabled:opacity-40 " + (form.maintenance ? "bg-accent text-ink" : "border border-line")} onClick={() => save({ ...form, maintenance: false }, "Đã mở lại cửa.")}>
+            <button type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => save({ ...form, maintenance: false }, "Đã mở lại cửa.")}>
               Mở lại cửa
             </button>
           </div>
@@ -210,7 +210,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
         <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây. Khách không thấy.</p>
         {owner && (
           <label className="grid gap-1 text-sm">
-            Key Groq để đồng bộ
+            Key Groq của phòng
             <span className="flex gap-2">
               <input
                 type={showKey ? "text" : "password"}
@@ -237,6 +237,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           </button>
         )}
         <p className="text-xs text-muted">{keyTail ? `Đã lưu key, kết thúc bằng ${keyTail}. Key không hiện lại trên trang này.` : "Chưa lưu key."}</p>
+        <p className="text-xs text-muted">Bảng này chỉ model Groq. Nhận dạng Alibaba không dùng key Groq. Giá Alibaba đặt ở mục Gói dịch.</p>
         <div className="grid gap-2">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { retryLoad } from "./retry-load.ts";
+import { openAdminPlace, retryLoad, withDeadline } from "./retry-load.ts";
 
 const noWait = () => Promise.resolve();
 
@@ -41,25 +41,28 @@ test("thành công ngay thì chỉ gọi một lần", async () => {
   assert.equal(calls, 1);
 });
 
-test("lời gọi treo không trả lời thì hết hạn chờ rồi thử lại", async () => {
-  let calls = 0;
-  const value = await retryLoad(
-    () => {
-      calls++;
-      if (calls === 1) return new Promise<string>(() => {}); // treo vĩnh viễn
-      return Promise.resolve("ok");
-    },
-    [1],
-    noWait,
-    20,
-  );
-  assert.equal(value, "ok");
-  assert.equal(calls, 2);
+test("quá hạn thì báo máy chủ chưa trả lời, không đứng im", async () => {
+  await assert.rejects(withDeadline(new Promise(() => undefined), 20), /chưa trả lời/);
+  assert.equal(await withDeadline(Promise.resolve("xong"), 50), "xong");
 });
 
-test("treo ở mọi lần thì ném lỗi hết hạn chờ", async () => {
+test("chưa đăng nhập thì không thử lại, máy chủ lạnh thì thử lại", async () => {
+  let cold = 0;
+  const place = await openAdminPlace(async () => {
+    cold++;
+    if (cold < 2) throw new Error("Máy chủ chưa trả lời.");
+    return { role: "chu" };
+  });
+  assert.equal(place.role, "chu");
+  assert.equal(cold, 2);
+
+  let signedOut = 0;
   await assert.rejects(
-    retryLoad(() => new Promise<string>(() => {}), [1], noWait, 10),
-    /chưa trả lời/,
+    openAdminPlace(async () => {
+      signedOut++;
+      throw new Error("Unauthorized");
+    }),
+    /Unauthorized/,
   );
+  assert.equal(signedOut, 1);
 });

@@ -8,9 +8,6 @@ import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
 import { formatMoney } from "@/lib/money-format";
-import { providersIn, type ServicePack } from "@/lib/service-pack";
-import { resendSeconds, watchIntent } from "@/lib/watch-run";
-import type { ProviderId } from "@/lib/sub/provider";
 
 const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
 import { audioBufferTo16k, packAudio, type PackedAudio } from "@/lib/sub/codec";
@@ -87,6 +84,13 @@ import {
   type GapPlan,
 } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
+import { recognizeFileUrl } from "@/lib/sub/ali-run";
+import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
+import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
+import { alibabaAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
+import { getRentShow, rentUseProblem } from "@/lib/rent-show";
+import { getServiceMenu } from "@/lib/pack-room";
+import { turnPackProblem } from "@/lib/turn-pack";
 
 type AsrResult = AsrPartResult;
 
@@ -258,22 +262,17 @@ export function usePipeline() {
   const job = useRef<Job>(emptyJob());
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
   const [key, setKey] = useState("");
-  const roomPayRef = useRef(false);
-  const trialLease = useRef({ media: "", spent: false });
-  const keyRef = useRef("");
-  keyRef.current = key;
-  const packRef = useRef<ServicePack | null>(null);
-  const [servicePack, setServicePackState] = useState<ServicePack | null>(null);
   const [alibabaKey, setAlibabaKey] = useState("");
   const alibabaKeyRef = useRef("");
   alibabaKeyRef.current = alibabaKey;
   useEffect(() => {
     if (alibabaKey) writeStore("gali", alibabaKey);
   }, [alibabaKey]);
-  const billNarrationRef = useRef(false);
-  const packRequiredRef = useRef(false);
+  const roomPayRef = useRef(false);
+  const trialLease = useRef({ media: "", spent: false });
+  const keyRef = useRef("");
+  keyRef.current = key;
   const activeKey = () => (roomPayRef.current ? ROOM_KEY : keyRef.current.trim());
-  const keyOf = (provider: ProviderId) => (roomPayRef.current ? ROOM_KEY : provider === "alibaba" ? alibabaKeyRef.current.trim() : keyRef.current.trim());
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
   const [genre, setGenre] = useState("auto");
@@ -361,7 +360,7 @@ export function usePipeline() {
     if (savedModel) setModelId(savedModel);
     if (readStore("genter") === "0") setAllowEnterprise(false);
     const whisper = readStore("gasr");
-    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo") setAsrModel(whisper);
+    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo" || whisper === "qwen-audio-3.0-asr-flash-filetrans") setAsrModel(whisper);
     if (readStore("gvad") === "1") setSpeechVadState(true);
     if (readStore("glang") === "1") setLangCheckState(true);
     setTitle(readStore("gtitle"));
@@ -479,29 +478,16 @@ export function usePipeline() {
     return "";
   }, [file, audioFile, url]);
 
-  const translateSig = useCallback(() => {
-    const pack = servicePack;
-    const model = pack?.roles.translate?.model || (mode === "manual" ? modelId : "auto");
-    const cast = (bible?.characters || []).map((item) => `${item.name}|${item.gender}|${item.self}|${item.addressed}`).join(";");
-    return `${target}|${model}|${genre}|${pack?.id || ""}|${gloss}|${cast}`;
-  }, [bible, genre, gloss, mode, modelId, servicePack, target]);
-
-  const redoSeconds = useMemo(() => resendSeconds(segs, job.current.appliedSig, translateSig()), [segs, translateSig]);
+  const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}` : `${modelId}|${genre}`;
 
   const buttonLabel = useMemo(() => {
-    const j = job.current;
-    return watchIntent({
-      running,
-      segs,
-      pcmId: j.pcmId,
-      mediaId: mediaId(),
-      doneSource: j.doneSource,
-      source,
-      appliedSig: j.appliedSig,
-      sig: translateSig(),
-      asrLeft: j.parts.length > 0 && j.nextPart < j.parts.length,
-    });
-  }, [running, mediaId, segs, source, translateSig]);
+    if (running) return "Hủy";
+    const id = mediaId();
+    const known = Boolean(id) && job.current.pcmId === id;
+    const unfinished = known && (job.current.nextPart < job.current.parts.length || segs.some((seg) => seg.translation === null));
+    const retarget = known && segs.length > 0 && job.current.appliedSig && job.current.appliedSig !== `${target}|${modelSig}`;
+    return unfinished || retarget ? "Tiếp tục" : "Tải và dịch";
+  }, [running, mediaId, segs, target, modelSig]);
 
   const catalog: ChatModel[] = useMemo(() => mergeCatalog(remoteIds || []), [remoteIds]);
 
@@ -729,15 +715,16 @@ export function usePipeline() {
         const src = rule.split(/=>|→|=/)[0]?.trim().toLowerCase() || "";
         if (src) {
           for (const item of job.current.segs) {
-            if (item !== seg && !item.edited && item.translation && item.original.toLowerCase().includes(src)) {
-              item.stale = true;
+            if (item !== seg && item.translation !== null && item.original.toLowerCase().includes(src)) {
+              item.translation = null;
+              item.translationFailed = false;
               related++;
             }
           }
         }
       }
       publish(true);
-      say(related ? `Đã thêm thuật ngữ. ${related} câu liên quan vẫn hiện chữ cũ cho đến khi câu mới về.` : "Đã sửa câu.");
+      say(related ? `Đã thêm thuật ngữ. ${related} câu liên quan sẽ dịch lại khi bấm Tiếp tục.` : "Đã sửa câu.");
     },
     [gloss, notes, publish, saveGloss, say, title],
   );
@@ -747,18 +734,26 @@ export function usePipeline() {
   }, []);
 
   const start = useCallback(async () => {
-    const pack = packRef.current;
-    const token = pack ? keyOf(pack.roles.asr?.provider ?? "groq") : activeKey();
+    const token = activeKey();
     const link = url.trim();
-    const chosen = pack?.roles.translate?.model || modelId.trim();
-    if (packRequiredRef.current && !pack) return say("Hãy chọn một gói dịch trước khi chạy.", true);
-    if (!pack && !token) return say("Vui lòng nhập Groq API key.", true);
-    if (pack) {
-      const missing = providersIn(pack).find((provider) => !keyOf(provider));
-      if (missing) return say(missing === "alibaba" ? "Gói này cần key Alibaba của bạn, hoặc hãy chọn trả theo lượt." : "Gói này cần key Groq của bạn.", true);
-      if (!pack.roles.asr || !pack.roles.translate) return say("Gói chưa đủ model nhận dạng và dịch.", true);
+    const chosen = modelId.trim();
+    if (roomPayRef.current) {
+      const menu = await getServiceMenu().catch(() => null);
+      const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });
+      if (packed) return say(packed, true);
     }
-    if (!pack && mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
+    if (asrModel === ALI_FILETRANS_MODEL) {
+      if (roomPayRef.current) return say(alibabaAsrOnRoomPayProblem(), true);
+      const aliKey = alibabaKeyRef.current.trim();
+      if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
+      if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
+    } else if (!token) return say("Vui lòng nhập Groq API key.", true);
+    if (!roomPayRef.current) {
+      const opened = await getRentShow().catch(() => null);
+      const blocked = rentUseProblem(opened, { asr: asrModel, chat: chosen });
+      if (blocked) return say(blocked, true);
+    }
+    if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
     if (analyzing) return say("Đang phân tích phim, chờ một chút.", true);
@@ -807,48 +802,22 @@ export function usePipeline() {
     let ticketId: string | null = null;
     let ticketFailed = false;
     let releasePlayback = () => {};
-    const sigNow = translateSig();
-    const mediaNow = mediaId();
-    const j0 = job.current;
-    const retranslate =
-      watchIntent({
-        running: false,
-        segs: j0.segs,
-        pcmId: j0.pcmId,
-        mediaId: mediaNow,
-        doneSource: j0.doneSource,
-        source,
-        appliedSig: j0.appliedSig,
-        sig: sigNow,
-        asrLeft: j0.parts.length > 0 && j0.nextPart < j0.parts.length,
-      }) === "Dịch lại";
-    const redo = Math.ceil(resendSeconds(j0.segs, j0.appliedSig, sigNow));
-    if (retranslate && redo < 1) return say("Không còn câu nào cần dịch lại.", true);
     if (roomPayRef.current) {
       const chosenFile = audioFile || file;
       if (!chosenFile) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
           fileName: chosenFile.name,
-          seconds: retranslate ? redo : await readMediaSeconds(chosenFile),
-          asrModel: pack?.roles.asr?.model ?? asrModel,
-          chatModel: pack?.roles.translate?.model ?? (mode === "manual" ? chosen : "auto"),
-          packId: pack?.id,
-          narration: retranslate ? false : billNarrationRef.current && Boolean(pack?.roles.narration),
-          scope: retranslate ? "translate" : "full",
+          seconds: await readMediaSeconds(chosenFile),
+          asrModel,
+          chatModel: mode === "manual" ? chosen : "auto",
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
-        say(
-          retranslate
-            ? `Đã giữ ${moneyText(opened.held)} cho phần dịch lại, không tính nhận dạng. Câu đã sửa được giữ. Số dư còn ${moneyText(opened.balance)}.`
-            : `Đã giữ ${moneyText(opened.held)} (ước tính, số trừ là số thực, phần thừa trả lại). Số dư còn ${moneyText(opened.balance)}.`,
-        );
+        say(`Đã giữ ${moneyText(opened.held)} (ước tính, số trừ là số thực, phần thừa trả lại). Số dư còn ${moneyText(opened.balance)}.`);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
       }
-    } else if (retranslate) {
-      say("Đang dịch lại trên key của bạn. Câu đã sửa được giữ. Câu cũ còn đến khi câu mới về.");
     }
 
     const j = job.current;
@@ -876,10 +845,6 @@ export function usePipeline() {
       /* resume có thể không có */
     }
 
-    const asrProvider = pack?.roles.asr?.provider ?? "groq";
-    const asrKey = pack ? keyOf(asrProvider) : token;
-    const asrId = pack?.roles.asr?.model ?? asrModel;
-
     const onWait = (message: string) => {
       if (my === j.runId) say(message);
     };
@@ -889,10 +854,8 @@ export function usePipeline() {
         j.note = "đang phân tích phim…";
         setAnalyzing(true);
         progress();
-        const cAssign = pack?.roles.context ?? pack?.roles.translate;
-        const analysisModel = cAssign
-          ? cAssign.model
-          : mode === "manual"
+        const analysisModel =
+          mode === "manual"
             ? chosen
             : pickAutoModel({
                 profile: "accurate",
@@ -906,9 +869,8 @@ export function usePipeline() {
                 blocked: j.blocked,
                 escalate: true,
               }).id;
-        const analysisKey = cAssign ? keyOf(cAssign.provider) : token;
         j.analysisP = analyzeFilm({
-          key: analysisKey,
+          key: token,
           model: analysisModel,
           language: target,
           title,
@@ -919,32 +881,8 @@ export function usePipeline() {
           gate: j.gate,
           onWait,
           ticket: ticketId,
-          provider: cAssign?.provider ?? "groq",
         })
-          .then(async (next) => {
-            const summary = pack?.roles.summary;
-            const context = pack?.roles.context;
-            if (summary && (!context || summary.provider !== context.provider || summary.model !== context.model)) {
-              try {
-                const extra = await analyzeFilm({
-                  key: keyOf(summary.provider),
-                  model: summary.model,
-                  language: target,
-                  title,
-                  notes,
-                  gloss,
-                  lines: j.segs.map((seg) => seg.original),
-                  signal,
-                  gate: j.gate,
-                  onWait,
-                  ticket: ticketId,
-                  provider: summary.provider,
-                });
-                if (extra.summary) next.summary = extra.summary;
-              } catch (error) {
-                if ((error as Error)?.name === "AbortError") throw error;
-              }
-            }
+          .then((next) => {
             applyNameFixes(j.segs, next);
             overlayCastLocks(next, title);
             j.bible = next;
@@ -1025,7 +963,7 @@ export function usePipeline() {
       j.langRetryUsed += seconds;
       let again: Awaited<ReturnType<typeof transcribe>>;
       try {
-        again = await transcribe(packed, asrKey, "", "", asrId, signal, j.gate, onWait, ticketId, asrProvider);
+        again = await transcribe(packed, token, "", "", asrModel, signal, j.gate, onWait, ticketId);
       } catch (error) {
         if (signal.aborted || (error as { name?: string })?.name === "AbortError") throw error;
         return res;
@@ -1088,7 +1026,7 @@ export function usePipeline() {
               j.note = `đoạn ${index + 1}: đang gửi ${Math.max(1, Math.round(packed.blob.size / 1024))} KB`;
               progress();
               const prompt = asrPrompt(title, gloss);
-              const first = await transcribe(packed, asrKey, source, prompt, asrId, signal, j.gate, onWait, ticketId, asrProvider);
+              const first = await transcribe(packed, token, source, prompt, asrModel, signal, j.gate, onWait, ticketId);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, clip.length / SR) * asrUsd(asrModel);
@@ -1157,7 +1095,7 @@ export function usePipeline() {
               progress();
               const packed = await packAudio(heard, signal);
               throwIfAborted(signal);
-              const result = await transcribe(packed, asrKey, source, asrPrompt(title, gloss), asrId, signal, j.gate, onWait, ticketId, asrProvider);
+              const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, heard.length / SR) * asrUsd(asrModel);
@@ -1221,7 +1159,7 @@ export function usePipeline() {
           j.filterRetryUsed += seconds;
           const packed = await packAudio(gated.samples, signal);
           throwIfAborted(signal);
-          const result = await transcribe(packed, asrKey, source, asrPrompt(title, gloss), asrId, signal, j.gate, onWait, ticketId, asrProvider);
+          const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
           await ensureTrial();
           if (my !== j.runId) return;
           j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
@@ -1267,25 +1205,24 @@ export function usePipeline() {
     };
 
     const translateRemaining = async (asrDone: () => boolean) => {
-      const sig = translateSig();
+      const sig = `${target}|${modelSig}`;
       if (j.appliedSig && j.appliedSig !== sig) {
         for (const seg of j.segs) {
           if (seg.edited) continue;
-          if (seg.translation !== null) seg.stale = true;
+          seg.translation = null;
+          seg.translationFailed = false;
         }
         publish(true);
-        say("Đang dịch lại. Câu đã sửa được giữ. Câu cũ còn trên hình đến khi câu mới về.");
       }
       j.appliedSig = sig;
       const take = (done: boolean) => {
         const limit = done ? j.segs.length : Math.max(0, j.segs.length - 2);
-        const waiting = (seg: Seg) => Boolean(seg.busy || seg.edited || (seg.translation !== null && !seg.stale));
         let start = 0;
-        while (start < limit && waiting(j.segs[start])) start++;
+        while (start < limit && (j.segs[start].translation !== null || j.segs[start].busy)) start++;
         const out: Seg[] = [];
         for (let i = start; i < limit && out.length < BATCH; i++) {
           const seg = j.segs[i];
-          if (waiting(seg)) break;
+          if (seg.translation !== null || seg.busy) break;
           out.push(seg);
         }
         return out;
@@ -1295,7 +1232,7 @@ export function usePipeline() {
           throwIfAborted(signal);
           if (my !== j.runId) return;
           const done = asrDone();
-          if (preRef.current && reviewRef.current && pauseForNewBible.current && !j.bibleGo && !retranslate) {
+          if (preRef.current && reviewRef.current && pauseForNewBible.current && !j.bibleGo) {
             if (!done) {
               await sleep(500, signal);
               continue;
@@ -1312,7 +1249,7 @@ export function usePipeline() {
               await sleep(300, signal);
               continue;
             }
-          } else if (preRef.current && !j.bible && !retranslate) {
+          } else if (preRef.current && !j.bible) {
             if (!done) {
               await sleep(500, signal);
               continue;
@@ -1361,14 +1298,12 @@ export function usePipeline() {
                 .join("\n\n"),
             };
             let translated: string[] | null = null;
-            const tAssign = pack?.roles.translate;
-            let used = tAssign ? tAssign.model : mode === "manual" ? chosen : "";
+            let used = mode === "manual" ? chosen : "";
             let lastError: Error | undefined;
-            const attempts = tAssign || mode === "manual" ? 1 : 3;
+            const attempts = mode === "manual" ? 1 : 3;
             for (let attempt = 0; attempt < attempts; attempt++) {
-              const picked = tAssign
-                ? { id: tAssign.model, via: pack?.name || "gói dịch" }
-                : mode === "manual"
+              const picked =
+                mode === "manual"
                   ? { id: chosen, via: "chọn tay" }
                   : pickAutoModel({
                       profile,
@@ -1387,19 +1322,17 @@ export function usePipeline() {
               j.note = picked.via;
               progress();
               try {
-                const review = pack?.roles.review;
+                // Send protected lines (terms → placeholders) so LLM cannot rewrite forced terms
                 translated = await translateWithRepair(
                   protectedOrigs,
                   target,
-                  tAssign ? keyOf(tAssign.provider) : token,
+                  token,
                   used,
                   signal,
                   j.gate,
                   opts,
                   onWait,
                   ticketId,
-                  tAssign?.provider ?? "groq",
-                  review ? { key: keyOf(review.provider), model: review.model, provider: review.provider } : null,
                 );
                 break;
               } catch (error) {
@@ -1408,7 +1341,7 @@ export function usePipeline() {
                 const message = lastError.message || "";
                 if (/429|giới hạn/.test(message)) j.cooling.set(used, Date.now() + 20000);
                 if (/404|không tìm thấy model|decommissioned|model .* not found/i.test(message)) j.blocked.add(used);
-                if (tAssign || mode === "manual") throw lastError;
+                if (mode === "manual") throw lastError;
               }
             }
             if (!translated) throw lastError || new Error("Dịch văn bản thất bại.");
@@ -1454,15 +1387,10 @@ export function usePipeline() {
               }
               const line = (translated![offset] || "").trim();
               seg.model = used;
-              seg.stale = false;
               if (!line || untranslated(seg.original, line)) {
-                if (seg.translation) {
-                  failedInGroup++;
-                } else {
-                  seg.translation = "";
-                  seg.translationFailed = true;
-                  failedInGroup++;
-                }
+                seg.translation = "";
+                seg.translationFailed = true;
+                failedInGroup++;
               } else {
                 seg.translation = translated![offset];
                 seg.translationFailed = false;
@@ -1487,7 +1415,7 @@ export function usePipeline() {
       j.diagLang = source;
       const id = mediaId();
       const havePcm = Boolean((j.pcm || j.stream) && j.pcmId === id);
-      if (!retranslate && (j.pcmId !== id || j.doneSource !== source)) {
+      if (j.pcmId !== id || j.doneSource !== source) {
         if (!havePcm) {
           say("Đang đọc cấu trúc file…");
           const primary = audioFile || file;
@@ -1610,6 +1538,29 @@ export function usePipeline() {
           const planned = chunksToSamples(chunksFromSpans(spans, duration), totalSamples);
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
         };
+        if (asrModel === ALI_FILETRANS_MODEL) {
+          const aliKey = alibabaKeyRef.current.trim();
+          say("Đang gửi file tới Alibaba…");
+          const result = await recognizeFileUrl({
+            url: link,
+            language: source,
+            key: aliKey,
+            signal,
+            onWait: (m) => { if (my === j.runId) say(m); },
+          });
+          if (my !== j.runId) return;
+          j.segs = segsFromAli(result.sentences);
+          j.parts = [];
+          j.nextPart = 0;
+          j.doneSource = source;
+          publish(true);
+          await translateRemaining(() => true);
+          publish(true);
+          say(j.segs.length ? `Nhận dạng Alibaba xong: ${j.segs.length} câu.` : "Alibaba không trả câu nào.", !j.segs.length);
+          setRunning(false);
+          delete document.documentElement.dataset.tyzoBusy;
+          return;
+        }
         j.parts = await planRecognitionParts();
         j.doneSource = source;
         j.appliedSig = "";
@@ -1617,31 +1568,23 @@ export function usePipeline() {
       }
 
       pauseForNewBible.current = !(j.bible && !j.bible.failed);
+      let asrFinished = j.nextPart >= j.parts.length;
       const fail = (error: unknown) => {
         inner.abort();
         throw error;
       };
-      if (retranslate) {
-        try {
-          await translateRemaining(() => true);
-        } catch (error) {
-          fail(error);
-        }
-      } else {
-        let asrFinished = j.nextPart >= j.parts.length;
-        const asr = transcribeRemaining().then(
-          () => {
-            asrFinished = true;
-          },
-          fail,
-        );
-        const tr = translateRemaining(() => asrFinished).catch(fail);
-        const results = await Promise.allSettled([asr, tr]);
-        const errors = results.filter((item): item is PromiseRejectedResult => item.status === "rejected").map((item) => item.reason as Error);
-        const real = errors.find((error) => error?.name !== "AbortError");
-        if (real) throw real;
-        if (errors.length) throw errors[0];
-      }
+      const asr = transcribeRemaining().then(
+        () => {
+          asrFinished = true;
+        },
+        fail,
+      );
+      const tr = translateRemaining(() => asrFinished).catch(fail);
+      const results = await Promise.allSettled([asr, tr]);
+      const errors = results.filter((item): item is PromiseRejectedResult => item.status === "rejected").map((item) => item.reason as Error);
+      const real = errors.find((error) => error?.name !== "AbortError");
+      if (real) throw real;
+      if (errors.length) throw errors[0];
       publish(true);
       if (my !== j.runId) return;
       if (j.nextPart >= j.parts.length) {
@@ -1752,7 +1695,7 @@ export function usePipeline() {
     mediaId,
     mode,
     modelId,
-    translateSig,
+    modelSig,
     notes,
     pre,
     profile,
@@ -1793,37 +1736,6 @@ export function usePipeline() {
     setReviewHold(false);
     say("Đang dịch theo bảng nhân vật…");
   }, [say]);
-
-  const restoreWatch = useCallback(
-    (next: File, saved: { source: string; position: number; segs: Seg[]; appliedSig?: string }) => {
-      const j = job.current;
-      j.segs = saved.segs.map((seg) => ({ ...seg, busy: false }));
-      j.pcmId = `file:${next.name}:${next.size}:${next.lastModified}|`;
-      j.doneSource = saved.source;
-      j.appliedSig = saved.appliedSig || translateSig();
-      j.parts = [];
-      j.nextPart = 0;
-      j.pcm = null;
-      j.stream = null;
-      j.bibleGo = true;
-      setAudioFile(null);
-      if (saved.source) setSource(saved.source);
-      publish(true);
-      const video = videoRef.current;
-      if (video) {
-        if (j.videoUrl) URL.revokeObjectURL(j.videoUrl);
-        j.videoUrl = URL.createObjectURL(next);
-        video.src = j.videoUrl;
-        const seek = () => {
-          if (saved.position > 0 && Number.isFinite(video.duration)) video.currentTime = Math.min(saved.position, Math.max(0, video.duration - 0.25));
-        };
-        video.addEventListener("loadedmetadata", seek, { once: true });
-        video.load();
-      }
-      say(`Đã gắn lại bản dịch của ${next.name}. Không nhận dạng lại.`);
-    },
-    [publish, say, translateSig],
-  );
 
   const mutateBible = useCallback((recipe: (current: Bible) => void) => {
     const current = job.current.bible;
@@ -1872,17 +1784,14 @@ export function usePipeline() {
   );
 
   const analyzeNow = useCallback(async () => {
-    const pack = packRef.current;
-    const cAssign = pack?.roles.context ?? pack?.roles.translate;
-    const token = cAssign ? keyOf(cAssign.provider) : activeKey();
+    const token = activeKey();
     if (!token) return say("Nhập API key trước khi phân tích.", true);
     const lines = job.current.segs.map((seg) => seg.original).filter(Boolean);
     if (!lines.length) return say("Chưa có lời thoại. Hãy nhận dạng trước, rồi phân tích.", true);
     if (running) return say("Đang chạy. Hãy hủy hoặc đợi xong rồi phân tích lại.", true);
     const chosen = modelId.trim();
-    const analysisModel = cAssign
-      ? cAssign.model
-      : mode === "manual"
+    const analysisModel =
+      mode === "manual"
         ? chosen
         : pickAutoModel({
             profile: "accurate",
@@ -1902,16 +1811,7 @@ export function usePipeline() {
     if (roomPayRef.current) {
       try {
         const spanSeconds = Math.max(60, Math.ceil(Math.max(0, ...job.current.segs.map((seg) => seg.end))));
-        ticketId = (
-          await openRoomTicket({
-            fileName: "Phân tích phim",
-            seconds: spanSeconds,
-            asrModel: pack?.roles.asr?.model ?? asrModel,
-            chatModel: analysisModel,
-            packId: pack?.id,
-            narration: false,
-          })
-        ).id;
+        ticketId = (await openRoomTicket({ fileName: "Phân tích phim", seconds: spanSeconds, asrModel, chatModel: analysisModel })).id;
         releasePlayback = claimPlayback(ticketId);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần phân tích.", true);
@@ -1935,7 +1835,6 @@ export function usePipeline() {
         gate: job.current.gate,
         onWait: (message) => say(message),
         ticket: ticketId,
-        provider: cAssign?.provider ?? "groq",
       });
       applyNameFixes(job.current.segs, next);
       overlayCastLocks(next, title);
@@ -2096,9 +1995,8 @@ export function usePipeline() {
     if (running) return say("Đang chạy. Hãy đợi xong rồi mới gửi khoảng trống.", true);
     const plan = gapPlanRef.current;
     if (!plan?.selected.length) return say("Chưa có khoảng trống để gửi. Hãy dò trước.", true);
-    const pack = packRef.current;
-    const token = pack ? keyOf(pack.roles.asr?.provider ?? "groq") : activeKey();
-    if (!token) return say(pack?.roles.asr?.provider === "alibaba" ? "Gói này cần key Alibaba của bạn." : "Nhập API key trước khi gửi.", true);
+    const token = activeKey();
+    if (!token) return say("Nhập API key trước khi gửi.", true);
     if (!confirm(formatGapConfirm(plan))) return;
     let ticketId: string | null = null;
     let gapFailed = false;
@@ -2106,14 +2004,7 @@ export function usePipeline() {
     if (roomPayRef.current) {
       try {
         ticketId = (
-          await openRoomTicket({
-            fileName: "Khoảng trống",
-            seconds: Math.max(10, Math.ceil(plan.audioSeconds)),
-            asrModel: pack?.roles.asr?.model ?? asrModel,
-            chatModel: pack?.roles.translate?.model ?? "auto",
-            packId: pack?.id,
-            narration: false,
-          })
+          await openRoomTicket({ fileName: "Khoảng trống", seconds: Math.max(10, Math.ceil(plan.audioSeconds)), asrModel, chatModel: "auto" })
         ).id;
         releasePlayback = claimPlayback(ticketId);
       } catch (error) {
@@ -2149,18 +2040,7 @@ export function usePipeline() {
         say(`Đang nhận dạng ${fmt(start)}–${fmt(start + seconds)}. Chỉ khoảng đã xác nhận.`);
         const packed = await packAudio(gated.samples, signal);
         throwIfAborted(signal);
-        const result = await transcribe(
-          packed,
-          token,
-          source,
-          asrPrompt(title, gloss),
-          pack?.roles.asr?.model ?? asrModel,
-          signal,
-          j.gate,
-          (message) => say(message),
-          ticketId,
-          pack?.roles.asr?.provider ?? "groq",
-        );
+        const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, (message) => say(message), ticketId);
         if (my !== j.runId) return;
         j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
         j.gapSpent += Math.max(10, seconds);
@@ -2306,24 +2186,6 @@ export function usePipeline() {
     setKey,
     alibabaKey,
     setAlibabaKey,
-    servicePack,
-    setServicePack: (pack: ServicePack | null) => {
-      packRef.current = pack;
-      setServicePackState(pack);
-      const chat = pack?.roles.translate;
-      if (chat) {
-        setMode("manual");
-        setModelId(chat.model);
-        writeStore("gmode", "manual");
-        writeStore("gmdl", chat.model);
-      }
-    },
-    setBillNarration: (value: boolean) => {
-      billNarrationRef.current = value;
-    },
-    setPackRequired: (value: boolean) => {
-      packRequiredRef.current = value;
-    },
     setRoomPay,
     target,
     setTarget,
@@ -2440,9 +2302,6 @@ export function usePipeline() {
     isError,
     running,
     buttonLabel,
-    appliedSig: job.current.appliedSig,
-    redoSeconds,
-    restoreWatch,
     catalog,
     board,
     boardNote,

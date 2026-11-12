@@ -30,7 +30,6 @@ export function GlossaryBoard() {
   const [busy, setBusy] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [total, setTotal] = useState(0);
-  const [fileCount, setFileCount] = useState(0);
   const [offset, setOffset] = useState(0);
   const [health, setHealth] = useState("");
   const [terms, setTerms] = useState<{ id: number; source: string; target: string; hidden: boolean }[]>([]);
@@ -51,7 +50,6 @@ export function GlossaryBoard() {
     const pack = await listGlossary({ data: { lang: nextLang, genre: nextGenre, q: nextQ, offset: nextOffset } });
     setHidden(pack.hidden);
     setTotal(pack.total);
-    setFileCount(pack.fileCount);
     setOffset(nextOffset);
     setTerms(pack.terms);
     setIdeas(pack.suggestions);
@@ -219,16 +217,10 @@ export function GlossaryBoard() {
         </button>
       </div>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
-      <p className="text-xs text-muted">
-        Đang thấy {terms.length} / {total} mục trong phòng.
-        {fileCount > 0 ? ` File gốc bộ này có ${fileCount} mục.` : ""}
-        {total === 0 && fileCount > 0 ? " Bấm Khôi phục từ gốc để đưa vào phòng." : ""}
-        {" "}
-        {hidden ? "Bộ này đang ẩn với khách." : "Bộ này đang mở cho khách."}
-      </p>
+      <p className="text-xs text-muted">Đang thấy {terms.length} / {total} mục. {hidden ? "Bộ này đang ẩn với khách." : "Bộ này đang mở cho khách."}</p>
       </div>
       <div className="space-y-3">
-      <div className="term-list space-y-2">
+      <div className="space-y-2">
         {terms.map((term) => (
           <div key={term.id} className="flex flex-wrap items-center gap-2 text-sm">
             <span className={"min-w-0 flex-1 break-words " + (term.hidden ? "text-muted line-through" : "")}>{term.source} → {term.target}</span>

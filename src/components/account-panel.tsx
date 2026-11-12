@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth/client";
+import { authClient, signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getBadgeStyle, getMyPlace, listOwnAppeals, skipAppeal, submitAppeal, type MyPlace } from "@/lib/admin-room";
 import { AccountCard } from "@/components/role-mark";
@@ -26,6 +26,7 @@ export function AccountPanel() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [nextPassword, setNextPassword] = useState("");
   const [name, setName] = useState("");
+  const [leaving, setLeaving] = useState(false);
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [partner, setPartner] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
@@ -115,7 +116,7 @@ export function AccountPanel() {
           <p className="text-sm text-muted">
             {place?.status === "open" || !place
               ? "Dùng khi cần hỏi về gói, nạp tiền, khóa hoặc cấm. Không gửi key Groq."
-              : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất phụ đề."}
+              : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}
           </p>
           <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
           <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
@@ -160,6 +161,20 @@ export function AccountPanel() {
               <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
                 Cộng tác viên
               </Link>
+              <button
+                type="button"
+                disabled={leaving}
+                className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none disabled:opacity-40"
+                onClick={() => {
+                  setLeaving(true);
+                  void signOut("/login").catch(() => {
+                    setLeaving(false);
+                    setNotice("Chưa đăng xuất được. Thử lại.");
+                  });
+                }}
+              >
+                {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
+              </button>
             </div>
             <TopUp
               compact
@@ -181,7 +196,7 @@ export function AccountPanel() {
           )}
           <div className="grid gap-2">
           <p className="text-sm text-muted">
-            Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất phụ đề. Gói đã mua thì trong hạn không giới hạn số tệp.
+            Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
           </p>
           {ROOM_PLANS.map((plan) => (
             <button

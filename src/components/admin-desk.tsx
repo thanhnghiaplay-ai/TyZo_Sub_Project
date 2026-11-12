@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { retryLoad } from "@/lib/retry-load";
-import { readPlace, savePlace } from "@/lib/place-cache";
+import { openAdminPlace } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
 import {
@@ -38,18 +36,18 @@ import { ROOM_PLANS } from "@/lib/room-plans";
 import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
 import { BadgeBoard } from "@/components/badge-board";
 import { AccountCard } from "@/components/role-mark";
-import { BrandMark } from "@/components/brand-mark";
-import { NoticeBell } from "@/components/notice-bell";
-import { SideRail, RailToggle, AppShell, type RailItem } from "@/components/side-rail";
-import { VersionMark } from "@/components/version-mark";
+import { AdminBoot } from "@/components/admin-boot";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
 import { QualityBoard } from "@/components/quality-board";
+import { ThemeBoard } from "@/components/theme-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
+import { AlibabaKeyBoard } from "@/components/alibaba-key-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
+import { RentShowBoard } from "@/components/rent-show-board";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
@@ -139,7 +137,7 @@ function AdminNotes() {
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có dòng nội bộ.</p>}
       <div className="plan-grid">
         {rows.map((row) => (
-          <article key={`${row.version}-${row.area}`} className="note-card rounded-xl border border-line px-3 py-2 text-sm">
+          <article key={`${row.version}-${row.area}`} className="rounded-xl border border-line px-3 py-2 text-sm">
             <p className="font-medium text-accent">v{row.version}</p>
             <p className="text-xs text-muted">{row.time}</p>
             <p className="mt-1">{row.text}</p>
@@ -170,40 +168,37 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu">("viec");
+  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu" | "giao-dien">("viec");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
+  const [booting, setBooting] = useState(true);
 
   async function refreshPlace() {
-    // Lời gọi đầu đánh thức máy chủ; bốn lời gọi đọc sau chạy song song trên máy đã nóng.
-    const next = await retryLoad(() => getMyPlace());
+    const next = await openAdminPlace(() => getMyPlace());
     setPlace(next);
-    savePlace(next);
+    setBooting(false);
     if (!next.role) return;
-    const [statsR, appealsR, auditR, badgeR] = await Promise.allSettled([
-      retryLoad(() => getDeskStats()),
-      retryLoad(() => listAppeals()),
-      retryLoad(() => listAudit()),
-      retryLoad(() => getBadgeStyle()),
+    const [statsNext, appealsNext, auditNext, badgeNext] = await Promise.all([
+      openAdminPlace(() => getDeskStats()).catch(() => null),
+      openAdminPlace(() => listAppeals()).catch(() => [] as AppealRow[]),
+      openAdminPlace(() => listAudit()).catch(() => [] as AuditRow[]),
+      openAdminPlace(() => getBadgeStyle()).then(badgeStyle).catch(() => null),
     ]);
-    if (statsR.status === "fulfilled") setStats(statsR.value);
-    if (appealsR.status === "fulfilled") setAppeals(appealsR.value);
-    if (auditR.status === "fulfilled") setAudit(auditR.value);
-    if (badgeR.status === "fulfilled") setBadge(badgeStyle(badgeR.value));
-    const failed = [statsR, appealsR, auditR, badgeR].find((item) => item.status === "rejected") as PromiseRejectedResult | undefined;
-    if (failed) throw failed.reason;
+    if (statsNext) setStats(statsNext);
+    setAppeals(appealsNext);
+    setAudit(auditNext);
+    if (badgeNext) setBadge(badgeNext);
   }
 
   useEffect(() => {
-    // Có quyền đã nhớ thì vẽ khung ngay, không đứng ở màn chờ.
-    const known = readPlace();
-    if (known) setPlace((current) => current ?? known);
+    setBooting(true);
     void refreshPlace().catch((error) => {
+      setBooting(false);
       const message = error instanceof Error ? error.message : "";
-      setNotice(message || "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này.");
+      setNotice(message === "Unauthorized" ? "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này." : message || "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này.");
     });
   }, []);
 
@@ -294,70 +289,10 @@ export function AdminDesk() {
     };
   }, []);
 
-  if (!place) {
-    return (
-      <AppShell>
-        <div className="app-main">
-          <div className="admin-boot">
-            <BrandMark small title="TyZo Sub" />
-            <p className="text-sm text-muted">{notice ? notice : "Đang mở trang quản lý"}</p>
-            {notice && (
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink"
-                  onClick={() => {
-                    setNotice(null);
-                    void refreshPlace().catch((error) => setNotice(error instanceof Error && error.message ? error.message : "Chưa mở được. Hãy thử lại."));
-                  }}
-                >
-                  Thử lại
-                </button>
-                <Link to="/login" className="min-tap w-fit rounded-full border border-line px-4 text-sm">
-                  Đăng nhập
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </AppShell>
-    );
-  }
-
-  const railItems: RailItem[] = [{ id: "room", label: "Về phòng", href: "/" }];
-  if (role) {
-    const tabs: RailItem[] = [
-      { id: "viec", label: "Việc", current: tab === "viec", onPick: () => setTab("viec") },
-      { id: "so-do", label: "Sơ đồ", current: tab === "so-do", onPick: () => setTab("so-do") },
-    ];
-    if (role === "chu") {
-      tabs.push(
-        { id: "tien", label: "Doanh thu", current: tab === "tien", onPick: () => setTab("tien") },
-        { id: "chat-luong", label: "Chất lượng", current: tab === "chat-luong", onPick: () => setTab("chat-luong") },
-        { id: "thuat-ngu", label: "Thuật ngữ", current: tab === "thuat-ngu", onPick: () => setTab("thuat-ngu") },
-        { id: "ctv", label: "Cộng tác", current: tab === "ctv", onPick: () => setTab("ctv") },
-        { id: "thu", label: "Thư", current: tab === "thu", onPick: () => setTab("thu") },
-      );
-    }
-    tabs.push({ id: "nhat-ky", label: "Nhật ký", current: tab === "nhat-ky", onPick: () => setTab("nhat-ky") });
-    railItems.unshift(...tabs);
-  }
+  if (!place) return <AdminBoot trying={booting} notice={notice} />;
 
   return (
-    <AppShell>
-      <SideRail label="Mục quản lý" items={railItems} />
-      <div className="app-main">
-      <header className="app-head">
-        <div className="flex min-w-0 items-center gap-1">
-          <RailToggle />
-          <div className="grid min-w-0 gap-1">
-            <h1 className="text-base leading-none font-semibold">Quản lý</h1>
-            <VersionMark align="start" />
-          </div>
-        </div>
-        <NoticeBell desk />
-      </header>
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
+    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
       {role ? (
         <div className="pb-2">
           <RoleChip role={role} />
@@ -365,15 +300,31 @@ export function AdminDesk() {
       ) : (
         <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
+      {role && (
+        <div className="flex gap-2 overflow-x-auto border-b border-line bg-bg py-2">
+          <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
+          <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
+          {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="chat-luong" onPick={setTab}>Chất lượng</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="thuat-ngu" onPick={setTab}>Thuật ngữ</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="ctv" onPick={setTab}>Cộng tác</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="thu" onPick={setTab}>Thư</TabButton>}
+          {role === "chu" && <TabButton current={tab} id="giao-dien" onPick={setTab}>Giao diện</TabButton>}
+          <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
+        </div>
+      )}
       <div className="admin-grid">
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
-      {role === "chu" && tab === "viec" && <ServicePackBoard />}
+      {role === "chu" && tab === "viec" && <AlibabaKeyBoard />}
+      {role === "chu" && tab === "viec" && <ServicePackBoard packsOnly />}
+      {role === "chu" && tab === "viec" && <RentShowBoard />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "nhat-ky" && <AdminNotes />}
       {role === "chu" && tab === "chat-luong" && <QualityBoard />}
       {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
       {role === "chu" && tab === "ctv" && <AffiliateBoard />}
+      {role === "chu" && tab === "giao-dien" && <ThemeBoard />}
       {role === "chu" && tab === "thu" && (
         <div className="admin-grid admin-wide">
           <MailDesk />
@@ -771,13 +722,29 @@ export function AdminDesk() {
         }}
       />
     </div>
-      </div>
-    </AppShell>
   );
 }
 
 function RoleChip({ role }: { role: "ho-tro" | "quan-ly" | "chu" }) {
   return <p className={"role-chip role-" + role}>{ROLE_LABEL[role]}</p>;
+}
+
+function TabButton({
+  current,
+  id,
+  onPick,
+  children,
+}: {
+  current: string;
+  id: "viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu" | "giao-dien";
+  onPick: (id: "viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu" | "giao-dien") => void;
+  children: string;
+}) {
+  return (
+    <button type="button" className={"inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap " + (current === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => onPick(id)}>
+      {children}
+    </button>
+  );
 }
 
 function logLine(item: AuditRow) {

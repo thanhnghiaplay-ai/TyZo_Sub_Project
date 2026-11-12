@@ -3,7 +3,6 @@ import { createAuthClient } from "better-auth/react";
 import { runPreSignInSignOut, runSignOut } from "../../../scripts/sign-out-plan.mjs";
 import { GROK_PROVIDERS } from "./providers";
 import { markSignedOut } from "./signed-out";
-import { forgetPlace } from "../place-cache";
 
 /**
  * Better Auth client for this React SPA (browser-side).
@@ -222,7 +221,6 @@ function waitForPopupToken(popup: Window): Promise<string | null> {
  */
 export async function signOut(redirectTo = "/login"): Promise<void> {
   markSignedOut();
-  forgetPlace();
   await runSignOut({
     livePreview: inLivePreview(),
     hasBearer: Boolean(getBearerToken()),

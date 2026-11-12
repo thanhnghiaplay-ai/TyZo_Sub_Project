@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 16:06 (UTC+7) — v3.17.2 sửa nút Quản lý đứng im, thêm `LUAT_CHUNG.md`. |
+| **Cập nhật lần cuối** | 2026-11-13 00:49 (UTC+7) — v3.24.1 trên nhánh work: sau bản mới trang quản lý không đứng im, không hiện sai quyền khi máy chủ đang khởi động. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.17.1** trên `main` và `work`. **v3.17.2** đã sửa trong code, chưa đẩy. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.24.1** trên nhánh `work`. Điều khoản `2026-11-13.3`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -68,13 +68,13 @@
 | 30 | Dò khoảng trống (Bước 5 Pha 2) | 🟡 Đã có test | Sau khi có phụ đề, nút «Dò khoảng trống» chỉ chạy trên máy. Khoảng ≥ 2 giây có tiếng mà không có câu được liệt kê kèm ước tính $. Ngân sách 120 giây cho cả lần chạy, không cắt khoảng. Nút «Nhận dạng các khoảng này» mới gửi, và còn hộp xác nhận. Không tự gửi khi nhận dạng xong. Test: `src/lib/sub/gap-scan.test.ts`. **Chưa chạy trên phim thật.** |
 | 31 | Đánh giá Silero (Bước 5 Pha 3) | 🟡 Bước 2 đã gắn, tắt mặc định | Model int8 nằm ở `public/models`, WASM 15 MB ở `public/vad`. Không nằm trong JS lúc mở app. Bật ô thì mới tải. Lỗi tải thì dùng RMS. Test: `vad.test.ts`. Chưa chạy trên phim thật. |
 | 32 | Xếp lại màn hình (Bước 6.1) | 🟡 Đã có test | Key, ngôn ngữ, thể loại, file và nút chạy đứng trước trong thẻ Phim. Trạng thái và Xuất file Vietsub nằm trên khung xem. «Tốc độ và chi phí» và «Thuật ngữ thể loại» đóng sẵn. Test: `src/components/studio-layout.test.ts`. |
-| 33 | Khung Phụ đề (Bước 6.2) | 🟡 Đã có test | v3.17.0: Phụ đề, Tài khoản và Quản lý nằm ở cột trái. Video và bảng câu vẫn trong `data-workspace`, một player. |
+| 33 | Khung Phụ đề (Bước 6.2) | 🟡 Đã có test | Thanh chức năng chỉ có Phụ đề. Video và bảng câu nằm trong `data-workspace`, một player, không nằm trong tab. |
 | 34 | Tab công cụ (Bước 6.3) | 🟡 Đã có test | Chỉ một tab hiện: Phim, Chất lượng, Nhân vật, Nghe, Kiểm tra. Đổi tab không gỡ form. Một nút Dịch tiếp trên khung xem. Dò khoảng trống và câu lỗi nằm ở Kiểm tra. |
 | 35 | Ba cỡ màn hình (Bước 6.4) | 🟡 Đã có test | Dưới 700px: video tối đa 33dvh, tab là tấm dưới không đè hình, có nút Đóng. 700–1023px: video ghim, tối đa 42dvh. Từ 1024px: video và bảng câu cạnh nhau. Chừa tai thỏ. Ô chữ 16px, nút 44px. |
 | 36 | Chuyển tab (Bước 6.5) | 🟡 Đã có test | Panel hiện ra trượt nhẹ 180ms. Nút tab đổi màu 160ms. `prefers-reduced-motion` thì tắt cả hai. Mũi tên trái/phải, Home và End chọn tab. Test: `src/components/studio-layout.test.ts`. |
 | 37 | Trình duyệt (Bước 6.6) | 🟡 Đã có test | `vh` đứng trước `dvh`, `env(safe-area-inset-*, 0px)`. `styles.css` không có tiền tố một hãng. Không còn câu bắt dùng Chrome. Âm thanh vẫn `AudioContext` hoặc `webkitAudioContext`. |
 | 38 | Hết chồng khung (Bước 7.1) | 🟡 Đã có test | Video không còn lớp nổi. Điện thoại: tab nằm dưới bảng câu, bảng câu co lại chứ không bị phủ. Màn thấp hơn 520px: không dùng lưới máy tính, video là dải nhỏ, tab chiếm phần còn lại và tự cuộn. |
-| 39 | Tab theo thứ tự dùng (Bước 7.2) | 🟡 Đã có test | v3.15.0: thẻ Bắt đầu gộp key, ngôn ngữ, thể loại, file. Model và luồng ở Nâng cao. Nhân vật, Nghe, Kiểm tra giữ nguyên. Có phụ đề thì giấu phần chuẩn bị. |
+| 39 | Tab theo thứ tự dùng (Bước 7.2) | 🟡 Đã có test | Key Sub (key, đồng bộ, model, Whisper, luồng), Phim (ngôn ngữ, thể loại, file, chạy), Nhân vật (ngữ cảnh đóng sẵn + phân tích), Nghe, Kiểm tra. Bỏ tab Chất lượng. Không xóa tên phim, tóm tắt, thuật ngữ tay. |
 | 40 | Không giật khung (Bước 7.3) | 🟡 Đã có test | Trang không cuộn cả khung. Chọn file xong thì bỏ focus. Nút đóng trên điện thoại là dấu X 44px, góc phải tab. Dòng trạng thái khóa 2 hàng; bấm để xem đủ, không đẩy video. |
 | 41 | Số nổi và nút X trong khung (Bước 7.4) | 🟡 Đã có test | Số thuật ngữ nằm trong viên vàng, chữ đen. Nút X nằm trong khung tab, chỉ hiện trên điện thoại và màn thấp. |
 | 42 | Giọng theo cao độ (Bước 7.5) | 🟡 Đã có test | Lúc nhận dạng, mỗi câu đo cao độ. Dưới 160 Hz là nam, trên 190 Hz là nữ, khoảng giữa hoặc ít tiếng thì giữ giọng dự phòng. Không hỏi model, không chọn tay. |
@@ -82,23 +82,52 @@
 | 44 | Thuê phòng | 🟡 Đã gắn, chưa thu tiền thật | Đăng ký email, không đăng nhập Google. Dùng thử: 1 tệp, 10 phút, không quá 100 MB, không xuất file. Gói còn hạn thì không giới hạn số tệp và được xuất file. Giá đã chốt: 9.000 / 39.000 / 99.000 đ. SePay và Casso có khung nhập API ở Admin. Chưa nhập API thì trang khách hiện bảo trì. Key Groq vẫn của khách. |
 | 45 | Cửa vào điều khoản | 🟡 Đã gắn | Màn chờ logo, rồi điều khoản. Phiên bản hiện tại `2026-11-08.3`. Chưa đồng ý thì không vào phòng. Đổi `TERMS_VERSION` thì phải đồng ý lại. Khi đã đăng nhập, máy chủ ghi `room_accounts.terms_version`. Từ 2026-11-06 13:09, việc nào đổi dịch vụ thì phải sửa bảng Tóm tắt, bảng giá hoặc mục liên quan trong cùng lần đó (`huongdan.txt` mục 12b). |
 | 46 | Giá model bằng đồng | 🟡 Đã gắn | Lúc mở app, máy chủ đọc trang model Groq và tỷ giá đô. Thẻ model hiện giá đồng, cửa sổ token, hạn mức tiếng Việt. Hạn mức là gói công khai, không phải số riêng của từng key. |
-| 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Cột trái giống phòng dịch. Điện thoại mở bằng ba gạch. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. |
+| 47 | Trang Admin | 🟡 Đã gắn | `/admin` tách khỏi phòng. Bốn cấp: Người dùng, Hỗ trợ, Quản lý, Chủ. Chủ xem được log cấp dưới. Cấp dưới không xem log cấp trên. Sơ đồ và doanh thu chỉ Chủ sửa. Lịch sử chỉ 6 dòng, có xem thêm. |
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
-| 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9. Câu hướng dẫn xuống dòng dưới khung. Nút tốc độ nằm trong khung. Cần user xem lại trên điện thoại. |
+| 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9 khi xoay ngang và khi bật chế độ máy tính. Câu hướng dẫn xuống dòng dưới khung. Cần user xem lại trên điện thoại. |
 | 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
-| 51 | Nút Quản lý | 🟡 Đã sửa trong code (v3.17.2) | Nằm trong cột trái, chỉ hiện khi có quyền. Quyền được nhớ trong tab nên quay về phòng vẫn hiện ngay. Trang Quản lý có hạn chờ 8 giây, tự thử lại và có nút Thử lại. Cần người dùng thử trên production. |
+| 51 | Nút Quản lý | 🟡 Đã gắn | Nằm trong danh sách của nút ba gạch, chỉ hiện khi có quyền. Tên mục đang mở hiện cạnh nút. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 57 | Số liệu chất lượng về Admin | 🟡 Đã có test và build, chưa thử đăng nhập thật | v3.13.0. Tab «Chất lượng» (Chủ): đèn, thanh ba màu, theo ngày, ngôn ngữ, model, phiên bản, riêng key riêng/key phòng và tổng. Điều khoản 2026-11-11.1. |
+| 58 | Giao diện mới, giai đoạn 1: nền móng | 🟡 Đã có test, chưa thử tab bằng Chủ thật | Token sáng/tối, phông trong danh sách, icon theo chỗ đặt (Phosphor, 6 độ đậm), nháp/công bố/lịch sử, chặn chữ khó đọc. Tab Admin «Giao diện» (chỉ Chủ). Mặc định tối nên khách chưa thấy đổi. Chưa dựng lại bố cục Studio và các trang (giai đoạn 2 trở đi). Màu cứng còn lại: `quality-view`, `top-up`, `admin-desk`, ô màu phụ đề trong `studio.tsx`, logo SVG. Test: `src/lib/theme/theme.test.ts`. |
+| 57 | Số liệu chất lượng về Admin | 🟡 Đã có test và build, chưa thử đăng nhập thật | v3.13.0. Tab «Chất lượng» (Chủ): đèn, thanh ba màu, theo ngày, ngôn ngữ, model, phiên bản, riêng key riêng/key phòng và tổng. Điều khoản 2026-11-12.3. |
 | 56 | Kiểm tra ngôn ngữ từng đoạn | 🟡 Đã có test, chưa chạy phim thật | v3.12.0. Ô tùy chọn, mặc định tắt. Đoạn nghi lệch ngôn ngữ hoặc độ tin thấp được nhận dạng lại một lần không ép ngôn ngữ, ngân sách 120 giây, chỉ đổi khi tốt hơn rõ. Test: `lang-check.test.ts`. Chưa đo trên phim lẫn tiếng. |
-| 55 | Trả theo lượt | 🟡 Đã trừ ví theo giá Groq cộng chênh | Từ v2.17.0 giữ tiền trước, trừ số thực, nhả phần thừa. v2.18.0: hoàn và nhả giữ không cộng hai lần. Key phòng không trả nguyên văn về trình duyệt. v3.16.1: phiếu dịch lại không nhận dạng. v3.16.2: mỗi đoạn giữ trần của chính nó trước khi gọi; hết phần giữ thì không gọi thêm. |
+| 55 | Trả theo lượt | 🟡 Đã trừ ví theo giá Groq cộng chênh | Từ v2.17.0 giữ tiền trước, trừ số thực, nhả phần thừa. v2.18.0: hoàn và nhả giữ không cộng hai lần. Key phòng không trả nguyên văn về trình duyệt. |
 
 ---
 
 ## 3. VẤN ĐỀ HIỆN TẠI (Ưu tiên cao – User báo cáo)
 
 Giữ nguyên mô tả gốc để đối chiếu. Phần **đã xử lý** ghi ở mục 4 và 6. Chưa xóa cho đến khi user xác nhận.
+
+### 3.10. Tách nhà phát hành (user chốt 2026-11-12, làm từng bước)
+
+Nguyên văn:
+
+«1. Các model AI của Groq, Alibaba hay sau này có thêm nhà phát hành nào khác, phải tách riêng ra, hoạt động độc lập tùy theo người dùng có chọn không.
+2. Ở trang Admin có quản lý key API của từng nhà phát hành ở đây là Groq và Alibaba và các nhà phát hành khác (nếu có hợp tác)
+3. Trang Admin có thể cho người dùng lựa chọn theo cách Admin muốn ( duy nhất 1 nhà phát hành, 1 model nhất định hoặc tùy chọn 1 model của nhà phát hành nào để làm chức năng riêng biệt để tạo thành 1 gói dịch vụ cho người dùng)
+4. Gói thuê phòng là dùng key api của người dùng và tất cả model admin cho phép hiển thị mới dùng được, người dùng có quyền dùng model nào, của AI nào để tùy chỉnh nhận diện, dịch,v.v... nếu họ có api key
+5. Gói trả theo lược là dùng key, API của admin và các gói tùy chỉnh do admin phát hành.
+6. Giá bán của model là lấy giá gốc của nhà phát hành + % chênh lệch admin tùy chỉnh, giống như của Groq.
+7. Người dùng chỉ thấy giá tổng sau khi đã cộng chênh lệch.
+Chấp nhận nâng cấp, làm từng bước»
+
+Bước 5 (v3.23.0): trả theo lượt chọn gói. Bước 6 và 7 (v3.24.0): giá = giá gốc cộng phần trăm, khách chỉ thấy số đã cộng. Gói Alibaba vẫn chưa gọi.
+
+### 3.11. Đơ và sai quyền sau mỗi lần cập nhật (user 2026-11-13)
+
+Nguyên văn:
+
+«Nó làm cho web bị đơ, hiển thị sai dữ liệu truy cập admin hay bị lỗi.
+Có phải do lỗi này không.
+Mỗi lần build, nâng cấp, cập nhật lên hay bị.
+Xác nhận lại giúp tôi»
+
+«Sửa triệt để, để những lần sau khi nâng cấp, fix lỗi và build lại không bị nữa»
+
+Đã xác nhận: 504 cắt hàm lúc máy chủ mới khởi động làm trang đứng và hiện sai quyền. Cảnh báo SSL không phải nguyên nhân. Thiếu thư không làm đơ.
 
 ### 3.1. Nhận diện giọng nói & ngữ cảnh (ASR)
 - Độ chính xác còn thấp, thiếu nhiều câu. **Chưa đụng thuật toán cắt đoạn / model** — chỉ lọc rác và prompt. Nếu vẫn thiếu câu, không được siết filter thêm (dễ nuốt lời ngắn như “Ừ”, “Em”).
@@ -142,16 +171,6 @@ Giữ nguyên mô tả gốc để đối chiếu. Phần **đã xử lý** ghi 
 - Đây là API không chính thức của Microsoft. Có thể bị chặn. Fallback giọng máy là bắt buộc và đã có.
 
 ---
-
-### 3.3. Nút Quản lý biến mất, trang Quản lý đứng im (người dùng báo 12/11/2026)
-Mô tả của người dùng, nguyên văn: «khi ấn vào trang quản lý, bị đơ ở lúc load trang, khi trở về phòng thì không còn hiện nút quản lý nữa phải tải lại web mới hiện lên lại, đôi khi cũng không hiện».
-- **Nguyên nhân (từ log Vercel production):** mỗi lần một instance khởi động nguội, lời gọi đầu tiên treo rất lâu mà không báo lỗi. Bước migration lấy `pg_advisory_lock` dù không còn migration nào, Pool `pg` không có hạn chờ kết nối, và `retryLoad` chỉ thử lại khi có lỗi. Ngoài ra `place` chỉ nằm trong `useState` nên mất khi đổi trang.
-- **Đã sửa trong code v3.17.2:** xem `ADMIN_LOG` v3.17.2. Có 2 test mới cho hạn chờ trong `retry-load.test.ts`; câu SQL gộp của `placeOf` đã thử trên PGlite với 3 trường hợp.
-- **Chưa thử:** production thật, điện thoại thật. **Chờ người dùng xác nhận** trước khi sang lỗi tiếp theo. Chưa chốt chuyện `DATABASE_URL` có `-pooler` hay không.
-- **Chưa làm:** test chạy cả luồng đăng nhập, vào Quản lý, về phòng (hiện chỉ có test từng phần).
-
-### 3.4. Lỗi ngoài phạm vi, chưa sửa
-- `scripts/grok-pwa-plugin.test.mjs`, test «strips install params from the app link» đang đỏ: `stripInstallParams("//evil.com")` trả `//evil.com`, test đòi `/`. `HANDOFF.md` ghi S6 đã chặn `//` ở link cài đặt, nên có thể đã hồi quy. Nằm trong file nền tảng `scripts/grok-pwa-*`, không tự sửa. Mức: trung bình, chưa rõ có khai thác được không.
 
 ## 4. Hướng xử lý đã chọn (khác đề xuất cũ ở chỗ ghi rõ)
 
@@ -232,16 +251,16 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
-- 2026-11-12 16:06 — v3.17.2 (Claude sửa, người dùng đã nói «Claude sửa»): nút Quản lý không còn biến mất, trang Quản lý không đứng im. `db.ts` bỏ khóa migration khi không cần và thêm hạn chờ kết nối; `retry-load.ts` thêm hạn chờ 8 giây; `place-cache.ts` mới nhớ quyền trong tab; `admin-desk.tsx` tải song song và có nút Thử lại; `placeOf` gộp 4 truy vấn thành 1. Thêm `LUAT_CHUNG.md`. `tsc` sạch; `npm test` 190 đạt, 1 hỏng ngoài phạm vi (xem 3.4); `app-version.test.ts` xanh. Chưa thử production, chưa thử điện thoại thật. Lỗi sót khi làm: lần đầu ghi giờ CHANGELOG không lấy từ `date`, đã sửa lại. Điều khoản không đổi.
-- 2026-11-12 13:32 — Đẩy chính thức: v3.17.1 từ work lên main. Điều khoản không đổi.
-- 2026-11-12 09:15 — v3.17.1 trên work: cột trái và các thẻ bớt cứng. Ba gạch cùng hàng với tên phòng. Mục đang chọn có vạch vàng. Thẻ cao theo nội dung của hàng, không nhốt một cỡ. Thanh tua một hàng, nút đủ chỗ bấm. Điều khoản không đổi. Chưa xem trên điện thoại thật.
-- 2026-11-12 08:41 — v3.17.0 trên work: cột trái cho phòng dịch và trang quản lý. Điện thoại mở bằng ba gạch. Đăng xuất cuối cột, chữ đỏ. Sửa mười chỗ hiển thị. Điều khoản không đổi. Chưa xem trên điện thoại thật.
-- 2026-11-12 05:06 — v3.16.2 trên work: mỗi đoạn nhận dạng hoặc dịch tự tính trần của chính nó và giữ trước khi gọi. Trần lớn hơn phần còn giữ thì không gọi. Gọi xong chỉ trừ số thật, không quá phần đã giữ. Lỗi thì không trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
-- 2026-11-12 04:25 — v3.16.1 trên work: phiếu dịch lại ghi loại và cổng từ chối nhận dạng trước khi gọi nhà cung cấp. Chat trên phiếu đó vẫn trừ. Điều khoản không đổi. Chưa xem trên điện thoại thật.
-- 2026-11-12 03:48 — v3.16.0 trên work: đang xem thì không còn nút xóa phụ đề cạnh phát. Đổi file hoặc ngôn ngữ nguồn phải hỏi. Dịch lại chỉ tính phần dịch, giữ câu đã sửa, câu cũ còn đến khi câu mới về. Đóng trang lưu phụ đề trên máy khách, chọn lại đúng file là xem tiếp. Điều khoản 2026-11-12.2. Chưa xem trên điện thoại thật.
-- 2026-11-12 02:44 — v3.15.0 trên work: xếp lại phòng dịch theo đường người dùng. Thẻ Bắt đầu gộp key và phim; Nâng cao đóng sẵn. Nút chạy và trạng thái dưới khung video. Có câu rồi thì ẩn chuẩn bị, xuất file cạnh danh sách. Player thêm tua ±10, công tắc đọc, nút Aa. Không đổi điều khoản. Chưa xem trên điện thoại thật.
-- 2026-11-11 18:18 — v3.12.1 và v3.13.0 trên work (lệnh «Claude sửa», Chủ duyệt: báo cả key riêng lẫn key phòng, hiện riêng từng loại và tổng, chỉ Chủ xem, không xem video và key). v3.12.1: `src/lib/sub/quality.ts` (độ tin từ `avg_logprob`: cao từ -0,5, thấp dưới -0,8 hoặc nén trên 2,4; đèn xanh/vàng/đỏ theo ngưỡng ước lượng đặt thành hằng số), khối «Chất lượng» và «Kiểm tra ngôn ngữ» trong tab Kiểm tra, thêm vào Xuất JSON, `components/quality-view.tsx`. v3.13.0: bảng `quality_runs` (migration 0019, chỉ số, không có mã tài khoản, tên tệp, chữ, key), `src/lib/quality-room.ts` (`reportQuality` kiểm tra và giới hạn 30 lần/giờ/tài khoản, `getQualityBoard` chỉ Chủ), `src/lib/quality-board.ts` (kiểm tra bản báo, gộp số, gợi ý chỉnh), tab Admin «Chất lượng» (`quality-board.tsx`), `use-pipeline.ts` gửi một bản sau khi nhận dạng xong mọi đoạn (một lần mỗi lần chạy, lỗi thì bỏ qua). Điều khoản nâng `2026-11-11.1`, thêm hai đoạn ở mục 4. Đã chạy: `tsc` sạch, `npm test` 191 + 310 đạt, `npm run build` được, truy vấn SQL thử trên PGLite, kết xuất thử HealthPill và BandBar. Chưa thử: đăng nhập thật, gửi từ trình duyệt thật, hiển thị tab Chất lượng, Postgres thật. Số do trình duyệt khách báo nên không kiểm chứng được; ngưỡng đèn chưa chỉnh theo số đo.
-- 2026-11-11 12:16 — v3.12.0 trên work (Claude sửa theo lệnh «Claude sửa», sau khi thẩm định đề xuất ChatGPT về backend Python/GPU và quyết định không làm đường đó): thêm ô «Kiểm tra ngôn ngữ từng đoạn», mặc định tắt, nhớ trên máy (`glang`). Mới: `src/lib/sub/lang-check.ts` (đếm chữ Hán/Kana/Hangul/Latin, `needsLangCheck`, `chooseBetter`, ngân sách 120 giây) và `lang-check.test.ts` (12 test, đã thêm vào `npm test`). `use-pipeline.ts`: sau lần nhận dạng đầu của một đoạn, nếu chữ lệch ngôn ngữ đã chọn hoặc trung bình `avg_logprob` dưới -0,8 thì gửi lại đúng đoạn đó một lần, không ép ngôn ngữ, không prompt; chỉ đổi khi ngôn ngữ đoán thuộc Trung/Hàn/Nhật/Anh, khác ngôn ngữ đã chọn, và chữ khớp lại hoặc độ tin cao hơn từ 0,2. Lỗi gửi lại thì giữ kết quả cũ. Không đổi Whisper Turbo, không đổi điều khoản (tính năng tùy chọn, mặc định tắt, không đổi lời hứa dịch vụ). Giới hạn đã biết: Whisper bị ép ngôn ngữ thường dịch/phiên âm sang đúng chữ viết đã ép nên dấu hiệu chữ viết không bắt được ca đó, chỉ độ tin thấp bắt được; câu đổi ngôn ngữ vẫn được dịch với `sourceLang` chung của phim. Đã chạy `npx tsc --noEmit` sạch và `npm test` (191 pass, 7 bỏ qua; 291 pass). Chưa gọi Groq thật, chưa thử trên điện thoại, chưa có số đo CER/WER trước và sau.
+- 2026-11-13 00:49 — v3.24.1 trên work. Sau bản mới: không giữ khóa migration khi không có file mới, bảng giá không chờ tải dài, trang quản lý tự thử lại và không hiện sai quyền khi đang khởi động.
+- 2026-11-13 00:25 — v3.24.0 trên work, bước 6 và 7. `quoteTurnPacks` trả ước tính và khoản giữ, không trả giá gốc. Chủ sửa phần trăm Alibaba trên khung gói. Phần trăm Groq vẫn ở bàn Việc. Điều khoản 2026-11-13.3.
+- 2026-11-13 00:20 — v3.23.0 trên work, bước 5. Cửa trả theo lượt hiện gói đã bật. Khách chọn gói thì model nhận dạng và dịch theo gói, chạy bằng key của phòng. Gói có việc Alibaba bị chặn, chưa gọi. Chưa có gói thì vẫn Whisper. Không hiện giá gốc. Điều khoản 2026-11-13.2.
+- 2026-11-13 00:10 — v3.22.0 trên work, bước 4. Chủ lưu `rent_show`. Khách thuê phòng chỉ chọn model trong danh sách, dùng key của mình. Whisper khóa theo Groq, Filetrans khóa theo Alibaba. Dịch Alibaba chưa nối. Điều khoản 2026-11-13.1. Cửa trả theo lượt không đổi.
+- 2026-11-13 00:01 — v3.21.0 trên work, bước 3. Tab Việc của Chủ hiện khung gói (`ServicePackBoard` chỉ phần gói). Mỗi việc chọn Groq hoặc Alibaba và một model. Lưu bằng `saveServicePacks`. Khách chưa chọn gói. Không đổi điều khoản.
+- 2026-11-12 23:55 — v3.20.0 trên work, bước 2. Tab Việc của Chủ có ô key Alibaba (`alibaba-key-board.tsx`), lưu `alibaba_key`, không đè key Groq. `listModelIds` gọi đúng máy Alibaba khi đồng bộ. Không đổi điều khoản. Cửa trả theo lượt chưa dùng key này.
+- 2026-11-12 23:44 — v3.19.0 trên work, bước 1 tách nhà nhận dạng. Danh sách model Groq không còn khóa Alibaba. Key của khách chọn Alibaba Filetrans được. Cửa trả theo lượt không nhận dạng Alibaba và báo rõ. Bàn giá Groq bỏ dòng Alibaba. Điều khoản 2026-11-12.4. Chưa làm quản lý key từng nhà, gói tùy chọn, giá chênh Alibaba cho cửa trả theo lượt.
+- 2026-11-12 17:21 — v3.18.0 trên work (lệnh «Claude sửa», giai đoạn 1 dựng lại giao diện). Nền móng, chưa đổi bố cục Studio: `src/lib/theme/theme.ts` (token sáng/tối, phông, icon theo chỗ đặt, làm sạch, chặn tương phản), `src/lib/theme-room.ts` (lưu ở `room_settings`, nháp/công bố/lịch sử 10 bản, chỉ Chủ), `src/components/ui/*` (Icon Phosphor, Button, Card, Badge, Field, Segmented), tab Admin «Giao diện» (`theme-board.tsx`), `__root.tsx` tiêm theme lúc tải. Mặc định tối nên khách không thấy đổi. Test mới `theme.test.ts` 11 ca. Kiểm tra: `tsc --noEmit` sạch; `npm test` 191 + 321 pass, 0 fail; mở `/` trên điện thoại và máy tính, ép chế độ sáng, dựng thử khung xem trước hai chế độ. Chưa thử tab Giao diện bằng tài khoản Chủ thật (đăng nhập đi qua dịch vụ ngoài), chưa thử trên Vercel, chưa chạy `npm run build`. Không đổi điều khoản. Sao lưu bản trước: thư mục v3.13.0 ngoài gói.
+- 2026-11-12.38:18 — v3.12.1 và v3.13.0 trên work (lệnh «Claude sửa», Chủ duyệt: báo cả key riêng lẫn key phòng, hiện riêng từng loại và tổng, chỉ Chủ xem, không xem video và key). v3.12.1: `src/lib/sub/quality.ts` (độ tin từ `avg_logprob`: cao từ -0,5, thấp dưới -0,8 hoặc nén trên 2,4; đèn xanh/vàng/đỏ theo ngưỡng ước lượng đặt thành hằng số), khối «Chất lượng» và «Kiểm tra ngôn ngữ» trong tab Kiểm tra, thêm vào Xuất JSON, `components/quality-view.tsx`. v3.13.0: bảng `quality_runs` (migration 0019, chỉ số, không có mã tài khoản, tên tệp, chữ, key), `src/lib/quality-room.ts` (`reportQuality` kiểm tra và giới hạn 30 lần/giờ/tài khoản, `getQualityBoard` chỉ Chủ), `src/lib/quality-board.ts` (kiểm tra bản báo, gộp số, gợi ý chỉnh), tab Admin «Chất lượng» (`quality-board.tsx`), `use-pipeline.ts` gửi một bản sau khi nhận dạng xong mọi đoạn (một lần mỗi lần chạy, lỗi thì bỏ qua). Điều khoản nâng `2026-11-12.3`, thêm hai đoạn ở mục 4. Đã chạy: `tsc` sạch, `npm test` 191 + 310 đạt, `npm run build` được, truy vấn SQL thử trên PGLite, kết xuất thử HealthPill và BandBar. Chưa thử: đăng nhập thật, gửi từ trình duyệt thật, hiển thị tab Chất lượng, Postgres thật. Số do trình duyệt khách báo nên không kiểm chứng được; ngưỡng đèn chưa chỉnh theo số đo.
+- 2026-11-12.32:16 — v3.12.0 trên work (Claude sửa theo lệnh «Claude sửa», sau khi thẩm định đề xuất ChatGPT về backend Python/GPU và quyết định không làm đường đó): thêm ô «Kiểm tra ngôn ngữ từng đoạn», mặc định tắt, nhớ trên máy (`glang`). Mới: `src/lib/sub/lang-check.ts` (đếm chữ Hán/Kana/Hangul/Latin, `needsLangCheck`, `chooseBetter`, ngân sách 120 giây) và `lang-check.test.ts` (12 test, đã thêm vào `npm test`). `use-pipeline.ts`: sau lần nhận dạng đầu của một đoạn, nếu chữ lệch ngôn ngữ đã chọn hoặc trung bình `avg_logprob` dưới -0,8 thì gửi lại đúng đoạn đó một lần, không ép ngôn ngữ, không prompt; chỉ đổi khi ngôn ngữ đoán thuộc Trung/Hàn/Nhật/Anh, khác ngôn ngữ đã chọn, và chữ khớp lại hoặc độ tin cao hơn từ 0,2. Lỗi gửi lại thì giữ kết quả cũ. Không đổi Whisper Turbo, không đổi điều khoản (tính năng tùy chọn, mặc định tắt, không đổi lời hứa dịch vụ). Giới hạn đã biết: Whisper bị ép ngôn ngữ thường dịch/phiên âm sang đúng chữ viết đã ép nên dấu hiệu chữ viết không bắt được ca đó, chỉ độ tin thấp bắt được; câu đổi ngôn ngữ vẫn được dịch với `sourceLang` chung của phim. Đã chạy `npx tsc --noEmit` sạch và `npm test` (191 pass, 7 bỏ qua; 291 pass). Chưa gọi Groq thật, chưa thử trên điện thoại, chưa có số đo CER/WER trước và sau.
 - 2026-11-11 05:20 — v3.10.10 trên work (Claude sửa theo ảnh chụp user): trang Tài khoản trên điện thoại mất đầu trang, trống giữa, cụt đáy. Nguyên nhân: `.account-grid` dùng `column-width` (cột kiểu báo) nhưng cùng phần tử bị ép `flex-1 overflow-y-auto`, nên trình duyệt xếp nội dung theo chiều cao khung rồi đẩy phần dư sang cột ẩn bên phải (lỗi có từ v3.10.6). Sửa `account-panel.tsx`: khung cuộn ở ngoài, `.account-grid` ở trong với chiều cao tự nhiên. Chưa thử trên điện thoại thật.
 - 2026-11-11 04:58 — v3.10.9 trên work (Claude sửa theo lệnh user, kiểm tra toàn bộ): (1) `studio.tsx`: danh sách bản dịch tách thành `CueRow` có memo và `content-visibility`, ô sửa nhớ câu theo nội dung chứ không theo số thứ tự. (2) `use-pipeline.ts`: bản dịch máy không ghi đè câu người dùng vừa sửa tay; đặt cờ `data-tyzo-busy` khi đang chạy. (3) `idle-sign-out.tsx`: không đăng xuất khi đang phát video hoặc đang chạy. (4) `pay-match.ts`, `pay-store.ts`: mã đơn nạp lấy trọn byte ngẫu nhiên (32^6 mã thay vì khoảng 16 triệu). Chưa chạy `tsc` đầy đủ và 9 file test cần pglite, jose, nodemailer, tanstack vì thiếu node_modules và không có mạng. Chi tiết: `BAO_CAO_KIEM_TRA.md`.
 - 2026-11-11 04:19 — v3.10.8 trên work (Claude sửa theo lệnh user): lỗi đứng máy. (1) `use-pipeline.ts`: nhận dạng và dịch dùng chung một tín hiệu hủy, một bên lỗi thì bên kia dừng; trước đó `inner` tạo ra mà không luồng nào dùng, nên dịch chờ nhận dạng mãi. (2) `groq.ts`, `mp4.ts`: fetch Groq chờ tối đa 120 giây, tải Range 60 giây, quá hạn thì thử lại hoặc báo. (3) `update-banner.tsx`: bỏ tự `reload` khi quay lại tab sau 5 phút. Chưa chạy `tsc` và `npm test` vì gói không có node_modules và không có mạng. Chưa làm: giải mã quá 25 giây vẫn tính đoạn lỗi; kết quả nhận dạng vẫn hiện theo thứ tự đoạn.

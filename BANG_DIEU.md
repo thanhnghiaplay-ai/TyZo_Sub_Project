@@ -15,16 +15,16 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | v3.17.1 trên nhánh `main` |
-| Bản đang làm | v3.17.2 (sửa nút Quản lý đứng im), chưa đẩy lên `work`, chờ người dùng thử trên production. Điều khoản `2026-11-12.2` |
-| Điều khoản | 2026-11-12.2 |
+| Bản khách đang dùng | v2.20.0 trên nhánh `main` |
+| Bản đang làm | v3.24.1 trên nhánh `work`: sau bản mới trang quản lý không đứng im. Điều khoản `2026-11-13.3`. Trước đó v3.24.0 giá gói đã cộng phần trăm |
+| Điều khoản | 2026-11-13.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
-| Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa. Hết khoản giữ thì không gọi đoạn đó |
+| Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa |
 | Kho | `thanhnghiaplay-ai/TyZo_Sub_Project`. Bản nén không làm gốc. Trước khi sửa, số phiên bản trong máy phải khớp `main` |
 | Nhánh | Sửa trên `work`. Nhánh `main` chỉ đổi khi người dùng nói đúng câu «đẩy chính thức» |
 
-Bản khách đang dùng vẫn là v3.17.1. v3.17.2 mới có trong gói nén, chưa lên `work` hay `main`.
+Bảng này đã ở trên `main` cùng v2.20.0.
 
 ## Ba vai
 
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-v3.17.1 đã lên `main` lúc 13:32 ngày 12/11/2026. v3.17.2 (lỗi nút Quản lý đứng im) đã sửa trong code, chờ người dùng xác nhận trên production rồi mới sang lỗi tiếp theo.
+Không có việc đã đẩy. v3.13.0 đang trên `work`, chưa lên `main`.
 
 ## Thư — còn lại
 
@@ -58,7 +58,6 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
-| 2026-11-12 16:06 | Người dùng chốt | Mỗi lỗi: mô tả của người dùng là chuẩn, sửa xong phải test kỹ và được xác nhận rồi mới sang lỗi sau. Nhiều AI làm như một. Tách file nhỏ. Cần một trang web hoàn chỉnh | Làm ngay | Đã vào `LUAT_CHUNG.md`. Tách các file lớn làm sau, từng file một |
 | 2026-11-11 03:28 | Người dùng chốt | Sửa layout lệch, hiển thị chưa chính xác ở Admin và phòng dịch. Câu «Claude sửa» | Làm ngay | Đã vào `work` trong v3.10.7 |
 | 2026-11-09 09:33 | Làm | Nhật ký khách 3 lớp. Thanh chỉ kéo núm. Đọc trước hoặc sau | Làm ngay | Đã vào `work` trong v2.21.0 |
 | 2026-11-09 12:19 | Làm | Thuật ngữ admin có tên Việt, phân trang, ẩn/mở tất cả, khôi phục từ thiếu | Làm ngay | Đã vào `work` trong v2.23.0 |

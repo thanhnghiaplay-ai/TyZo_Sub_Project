@@ -146,6 +146,23 @@ function authPopupPlugin(): Plugin {
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
 export default defineConfig(({ command, isPreview }) => ({
+  logLevel: command === "build" ? "error" : "info",
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress known harmless externalize + use client directive warnings
+        const msg = warning.message || "";
+        if (
+          msg.includes("has been externalized") ||
+          msg.includes("MODULE_LEVEL_DIRECTIVE") ||
+          msg.includes("module level directive")
+        ) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+  },
   server: {
     host: "0.0.0.0",
     port: 8080,

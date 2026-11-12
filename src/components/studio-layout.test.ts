@@ -18,17 +18,17 @@ function mediaBlock(css: string, query: string): string {
   const next = css.indexOf("\n@media", start + header.length);
   return css.slice(start, next < 0 ? css.length : next);
 }
-const hall = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-cast"'));
+const phim = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="tool-cast"'));
 
-describe("Bước 6.1 — thứ tự trong thẻ Bắt đầu", () => {
-  it("ngôn ngữ, thể loại và file đứng trước phần Nâng cao", () => {
-    const markers = ["Nhận diện ngôn ngữ", "Dịch sang tiếng", "Thể loại", "Thuật ngữ thể loại", 'title="Video"', "Nâng cao"];
-    const at = markers.map((marker) => hall.indexOf(marker));
+describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
+  it("ngôn ngữ, thể loại, file và nút chạy đứng trước phần thu gọn", () => {
+    const markers = ["Nhận diện ngôn ngữ", "Dịch sang tiếng", "Thể loại", "Thuật ngữ thể loại", 'title="Video"', "{app.buttonLabel}"];
+    const at = markers.map((marker) => phim.indexOf(marker));
     assert.ok(at.every((index) => index >= 0), at.join(","));
     assert.deepEqual(at, [...at].sort((a, b) => a - b));
-    assert.equal(hall.includes("Ngôn ngữ lời nói"), false);
-    assert.equal(hall.includes("Ngôn ngữ đích"), false);
-    assert.match(hall, /Dịch sang tiếng[\s\S]*value === "Vietnamese"/);
+    assert.equal(phim.includes("Ngôn ngữ lời nói"), false);
+    assert.equal(phim.includes("Ngôn ngữ đích"), false);
+    assert.match(phim, /Dịch sang tiếng[\s\S]*value === "Vietnamese"/);
     const lists = readFileSync(new URL("../lib/sub/text.ts", import.meta.url), "utf8");
     const src = lists.slice(lists.indexOf("export const SRC_LANGS"), lists.indexOf("export function speechLang"));
     assert.deepEqual(
@@ -36,28 +36,19 @@ describe("Bước 6.1 — thứ tự trong thẻ Bắt đầu", () => {
       ["zh", "ko", "ja", "en"],
     );
     assert.equal(src.includes("Tự nhận dạng"), false);
-    const advanced = hall.indexOf(">Nâng cao<");
-    const details = hall.lastIndexOf("<details", advanced);
-    assert.ok(advanced - details < 250);
-    assert.equal(/<details[^>]*\sopen/.test(hall.slice(details, advanced)), false);
-    assert.ok(hall.indexOf("Đồng bộ key") > advanced);
-    assert.ok(hall.indexOf("Nhận dạng giọng") > advanced);
-    const videoBar = source.slice(source.indexOf("studio-video"), source.indexOf('id="tool-key"'));
-    assert.match(videoBar, /\{app\.buttonLabel\}/);
-    assert.match(videoBar, /role="status"/);
   });
 
   it("thuật ngữ thể loại đóng mặc định", () => {
-    const gloss = hall.indexOf("Thuật ngữ thể loại");
-    const details = hall.lastIndexOf("<details", gloss);
+    const gloss = phim.indexOf("Thuật ngữ thể loại");
+    const details = phim.lastIndexOf("<details", gloss);
     assert.ok(gloss - details < 250);
-    assert.equal(/<details[^>]*\sopen/.test(hall.slice(details, gloss)), false);
+    assert.equal(/<details[^>]*\sopen/.test(phim.slice(details, gloss)), false);
   });
 });
 
 describe("Bước 6.2 — khung Phụ đề", () => {
   it("video và bảng câu đứng ngoài tab, chỉ có một player", () => {
-    const markers = ['data-product="sub"', 'role="tablist"', "data-workspace", "<Stage", "Bản dịch", 'id="tool-key"'];
+    const markers = ['data-product="sub"', 'role="tablist"', "data-workspace", "<Stage", "Bản dịch", 'id="tool-phim"'];
     const at = markers.map((marker) => source.indexOf(marker));
     assert.ok(at.every((index) => index >= 0));
     assert.deepEqual(at, [...at].sort((a, b) => a - b));
@@ -69,7 +60,7 @@ describe("Bước 6.2 — khung Phụ đề", () => {
   });
 
   it("mỗi tab trỏ tới một vùng, không dựng player theo tab", () => {
-    for (const id of ["tool-key", "tool-cast", "tool-voice", "tool-check"]) {
+    for (const id of ["tool-key", "tool-phim", "tool-cast", "tool-voice", "tool-check"]) {
       assert.match(source, new RegExp(`id="${id}"`));
     }
     assert.equal(/toolTab === [\s\S]{0,80}<Stage/.test(source), false);
@@ -77,11 +68,10 @@ describe("Bước 6.2 — khung Phụ đề", () => {
 });
 
 describe("Bước 6.3 — mỗi tab một phần", () => {
-  it("bốn tab ẩn lẫn nhau và vẫn gắn trong cây", () => {
-    for (const id of ["key", "cast", "voice", "check"]) {
+  it("năm tab ẩn lẫn nhau và vẫn gắn trong cây", () => {
+    for (const id of ["key", "phim", "cast", "voice", "check"]) {
       assert.match(source, new RegExp(`id="tool-${id}"[\\s\\S]{0,160}hidden=\\{toolTab !== "${id}"\\}`));
     }
-    assert.equal(source.includes('id="tool-phim"'), false);
     assert.equal(source.includes('{toolTab === "phim" &&'), false);
   });
 
@@ -89,7 +79,7 @@ describe("Bước 6.3 — mỗi tab một phần", () => {
     assert.equal(source.split("Dịch tiếp").length - 1, 1);
     const check = source.slice(source.indexOf('id="tool-check"'));
     assert.match(check, /Dò khoảng trống/);
-    const workspace = source.slice(source.indexOf("data-workspace"), source.indexOf('id="tool-key"'));
+    const workspace = source.slice(source.indexOf("data-workspace"), source.indexOf('id="tool-phim"'));
     assert.equal(workspace.includes("Dò khoảng trống"), false);
   });
 });
@@ -191,13 +181,13 @@ describe("Bước 7.1 — không chồng khung", () => {
 });
 
 describe("Bước 7.2 — tab theo thứ tự dùng", () => {
-  it("Bắt đầu, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
-    const labels = ["Bắt đầu", "Nhân vật", "Nghe", "Kiểm tra"];
+  it("Key Sub, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
+    const labels = ["Key Sub", "Phim", "Nhân vật", "Nghe", "Kiểm tra"];
     const at = labels.map((label) => source.indexOf(`"${label}"`));
     assert.ok(at.every((index) => index >= 0), at.join(","));
     assert.deepEqual(at, [...at].sort((a, b) => a - b));
     assert.equal(source.includes('id="tool-chat"'), false);
-    const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-cast"'));
+    const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
     assert.match(key, /Groq API key/);
     assert.match(key, /Đồng bộ key/);
     assert.match(key, /Nhận dạng giọng/);

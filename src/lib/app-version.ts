@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.17.2";
+export const APP_VERSION = "3.24.1";
 
 export type ReleaseNote = {
   version: string;
@@ -11,79 +11,92 @@ export type ReleaseNote = {
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
   {
-    version: "3.17.2",
-    time: "16:06 ngày 12/11/2026",
-    title: "Nút Quản lý và trang Quản lý không còn đứng im.",
+    version: "3.24.1",
+    time: "00:49 ngày 13/11/2026",
+    title: "Trang quản lý không còn đứng sau bản mới.",
     points: [
-      "Nút Quản lý hiện ngay khi quay về phòng, không phải tải lại trang.",
-      "Mạng chậm quá 8 giây thì tự thử lại. Trang Quản lý có nút Thử lại.",
-      "Trang Quản lý mở nhanh hơn.",
+      "Sau khi cập nhật, trang tự thử lại thay vì đứng im.",
+      "Quyền hiện đúng khi trang đã mở xong.",
+      "Số liệu phòng tải sau, không chặn cửa vào.",
     ],
   },
   {
-    version: "3.17.1",
-    time: "09:15 ngày 12/11/2026",
-    title: "Cột trái và các thẻ vừa nội dung hơn.",
+    version: "3.24.0",
+    time: "00:25 ngày 13/11/2026",
+    title: "Giá gói là số đã cộng phần vận hành.",
     points: [
-      "Ba gạch nằm cùng hàng với tên phòng, không đè logo.",
-      "Mục đang chọn có vạch vàng, không nằm trong ô.",
-      "Thẻ cao theo nội dung của hàng, không bị cắt một cỡ.",
-      "Thanh tua một hàng. Nút tốc độ nằm trong khung, đủ chỗ bấm.",
+      "Giá bán bằng giá nhà phát hành cộng phần trăm Chủ đặt.",
+      "Bạn chỉ thấy ước tính và khoản giữ ví.",
+      "Không hiện giá gốc và không hiện phần trăm.",
     ],
   },
   {
-    version: "3.17.0",
-    time: "08:41 ngày 12/11/2026",
-    title: "Phòng dịch có cột trái, điện thoại mở bằng ba gạch.",
+    version: "3.23.0",
+    time: "00:20 ngày 13/11/2026",
+    title: "Trả theo lượt chọn gói Chủ đã mở.",
     points: [
-      "Màn hình lớn hiện sẵn cột trái. Điện thoại bấm ba gạch.",
-      "Đăng xuất nằm cuối cột, chữ đỏ.",
-      "Các thẻ cùng hàng cao bằng nhau. Nội dung dài thì cuộn trong thẻ.",
-      "Nút tốc độ phát nằm gọn trong khung video.",
+      "Có gói thì nhận dạng và dịch theo gói đó.",
+      "Lần chạy dùng key của phòng. Bạn không nhập key.",
+      "Chưa có gói thì cửa vẫn nhận dạng bằng Whisper.",
     ],
   },
   {
-    version: "3.16.2",
-    time: "05:06 ngày 12/11/2026",
-    title: "Hết tiền giữ thì không gọi thêm.",
-    points: ["Mỗi đoạn chỉ chạy khi khoản giữ còn đủ cho đoạn đó.", "Hết khoản giữ thì phần đã dịch vẫn còn."],
-  },
-  {
-    version: "3.16.1",
-    time: "04:25 ngày 12/11/2026",
-    title: "Dịch lại không bị tính thêm lần nghe.",
-    points: ["Phiếu dành cho dịch lại chỉ trừ phần dịch.", "Cùng phiếu đó không nhận dạng thêm."],
-  },
-  {
-    version: "3.16.0",
-    time: "03:48 ngày 12/11/2026",
-    title: "Xem phim không sợ mất bản dịch vừa chạy.",
+    version: "3.22.0",
+    time: "00:10 ngày 13/11/2026",
+    title: "Thuê phòng chỉ hiện model Chủ đã mở.",
     points: [
-      "Đang xem không còn nút xóa phụ đề cạnh nút phát.",
-      "Đổi file hoặc ngôn ngữ nguồn phải hỏi. Chưa đồng ý thì phim giữ nguyên.",
-      "Dịch lại chỉ tính phần dịch, giữ câu đã sửa, không xóa chữ cũ trước.",
-      "Đóng trang vẫn còn phụ đề. Chọn lại đúng file là xem tiếp, không nghe lại.",
+      "Key của bạn chỉ chọn model Chủ đã mở cho thuê phòng.",
+      "Whisper cần key Groq. Filetrans cần key Alibaba.",
+      "Chủ chưa lưu danh sách thì cách chọn giữ như trước.",
     ],
   },
   {
-    version: "3.15.0",
-    time: "02:44 ngày 12/11/2026",
-    title: "Phòng dịch gọn hơn: chuẩn bị một chỗ, xem là chính.",
+    version: "3.21.0",
+    time: "00:01 ngày 13/11/2026",
+    title: "Chủ lập gói, mỗi việc một nhà và một model.",
     points: [
-      "Key, ngôn ngữ, thể loại và file nằm cùng thẻ Bắt đầu. Model và số luồng ở Nâng cao.",
-      "Nút chạy và dòng trạng thái nằm sát dưới khung video.",
-      "Có phụ đề rồi thì giấu phần chuẩn bị. Xuất file nằm cạnh danh sách câu.",
-      "Trên hình có nút tua 10 giây, bật tắt đọc và nút chữ Aa.",
+      "Mỗi gói gán nhận dạng, dịch và các việc phụ.",
+      "Mỗi việc chọn Groq hoặc Alibaba, rồi chọn một model.",
+      "Khách chưa thấy gói. Cửa trả theo lượt vẫn nhận dạng bằng Whisper.",
+    ],
+  },
+  {
+    version: "3.20.0",
+    time: "23:55 ngày 12/11/2026",
+    title: "Chủ lưu key Alibaba riêng, không đè key Groq.",
+    points: [
+      "Trang quản lý có ô key Alibaba, tách khỏi ô key Groq.",
+      "Chỉ thấy 4 ký tự cuối. Key đã lưu không hiện lại.",
+      "Cửa trả theo lượt vẫn chỉ nhận dạng bằng Whisper.",
+    ],
+  },
+  {
+    version: "3.19.0",
+    time: "23:44 ngày 12/11/2026",
+    title: "Nhận dạng Alibaba tách khỏi Whisper.",
+    points: [
+      "Chọn key của bạn thì Alibaba Filetrans không còn báo chưa cập nhật.",
+      "Cửa trả theo lượt chỉ nhận dạng bằng Whisper.",
+      "Alibaba cần key Alibaba của bạn và link file trực tiếp.",
+    ],
+  },
+  {
+    version: "3.18.0",
+    time: "22:50 ngày 12/11/2026",
+    title: "Chọn nhận dạng Alibaba Filetrans hoặc Whisper.",
+    points: [
+      "Có thể chọn Alibaba Filetrans cho nhận dạng cả file.",
+      "Cần key Alibaba và link file trực tiếp.",
+      "Điều khoản cập nhật để ghi nhà cung cấp Alibaba.",
     ],
   },
   {
     version: "3.14.0",
-    time: "01:40 ngày 12/11/2026",
-    title: "Chọn gói dịch thay vì chọn từng model.",
+    time: "17:21 ngày 12/11/2026",
+    title: "Chuẩn bị giao diện mới: có chế độ sáng, tối và đổi phông, màu, icon.",
     points: [
-      "Mỗi gói ghi rõ hợp việc gì, và ai nhận dạng, dịch, đối chiếu.",
-      "Có tệp rồi thì thấy giá gốc, giá phòng và khoản giữ trước khi chạy.",
-      "Cửa thuê phòng và cửa trả theo lượt cùng dùng các gói này.",
+      "Chủ phòng chỉnh được phông chữ, màu, icon và logo, xem trước rồi mới công bố.",
+      "Giao diện hiện tại giữ nguyên cho đến khi Chủ công bố bản mới.",
     ],
   },
   {

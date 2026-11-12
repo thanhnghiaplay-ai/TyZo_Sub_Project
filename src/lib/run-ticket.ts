@@ -36,10 +36,9 @@ export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {
  */
 export async function openTicketWith(
   sql: Sql,
-  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; cap: number; dayStartIso: string; scope?: "full" | "translate" },
+  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; cap: number; dayStartIso: string },
 ): Promise<OpenResult> {
   const { id, userId, fileName, seconds, rate, hold, cap, dayStartIso } = input;
-  const scope = input.scope === "translate" ? "translate" : "full";
   await sql`insert into room_accounts (user_id) values (${userId}) on conflict (user_id) do nothing`;
   await releaseStaleWith(sql, userId);
   const rows = await sql<{ id: string }>`
@@ -53,8 +52,8 @@ export async function openTicketWith(
       returning user_id
     ),
     ins as (
-      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status, scope)
-      select ${id}::text, user_id, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu', ${scope}::text from acc
+      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status)
+      select ${id}::text, user_id, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu' from acc
       returning id
     ),
     led as (
@@ -83,15 +82,6 @@ export async function ticketLive(sql: Sql, id: string, userId: string) {
   return rows.length > 0;
 }
 
-/** Loại phiếu còn sống. null khi phiếu không còn để trừ. Phiếu cũ không có loại thì là cả lần chạy. */
-export async function ticketKind(sql: Sql, id: string, userId: string): Promise<"full" | "translate" | null> {
-  const rows = await sql<{ scope: string | null }>`
-    select scope from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' and held > 0
-  `;
-  if (!rows.length) return null;
-  return rows[0].scope === "translate" ? "translate" : "full";
-}
-
 /**
  * Trừ một đoạn đã chạy xong vào phiếu, không bao giờ trừ quá số đang giữ.
  * Trả số thực trừ (có thể nhỏ hơn cost nếu phiếu hết tiền giữ).
@@ -111,21 +101,6 @@ export async function chargeTicketWith(sql: Sql, id: string, userId: string, cos
     returning least(${cost}::int, o.h) as taken, run_tickets.held as left_held
   `;
   return Number(rows[0]?.taken ?? 0);
-}
-
-/** Trả một khoản vừa trừ về phần đang giữ. Không đụng ví. Phiếu đã đóng thì bỏ qua. */
-export async function restoreTicketWith(sql: Sql, id: string, userId: string, amount: number, base = 0) {
-  const back = Math.max(0, Math.round(amount));
-  const bare = Math.max(0, Math.round(base));
-  if (!back && !bare) return;
-  await sql`
-    update run_tickets
-    set charged = greatest(0, charged - ${back}::int),
-        base_cost = greatest(0, base_cost - ${bare}::int),
-        held = held + ${back}::int,
-        status = case when status = 'dung-tien' then 'dang-giu' else status end
-    where id = ${id} and user_id = ${userId} and status in ('dang-giu', 'dung-tien')
-  `;
 }
 
 /** Kết thúc phiếu: nhả phần giữ thừa về ví. Chạy lại lần hai không làm gì. */
