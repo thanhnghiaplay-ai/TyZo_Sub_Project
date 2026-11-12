@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 13:32 (UTC+7) — đẩy chính thức v3.17.1 từ work lên main. |
+| **Cập nhật lần cuối** | 2026-11-12 16:06 (UTC+7) — v3.17.2 sửa nút Quản lý đứng im, thêm `LUAT_CHUNG.md`. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.17.1** trên `main` và `work`. Điều khoản `2026-11-12.2`. |
+| **Phiên bản code** | **v3.17.1** trên `main` và `work`. **v3.17.2** đã sửa trong code, chưa đẩy. Điều khoản `2026-11-12.2`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -86,7 +86,7 @@
 | 48 | Thẻ quyền | 🟡 Đã gắn | Mười kiểu. Chỉ Chủ chọn, có ô minh họa, thu gọn được. Màu theo cấp, cùng màu với sơ đồ. |
 | 49 | Khung video | 🟡 Đã sửa trong code | Giữ 16:9. Câu hướng dẫn xuống dòng dưới khung. Nút tốc độ nằm trong khung. Cần user xem lại trên điện thoại. |
 | 50 | Nghe / thuyết minh | 🟡 Đã gắn | Mặc định bật. Khách tắt thì lần sau giữ tắt. Chưa nghe trên phim thật. |
-| 51 | Nút Quản lý | 🟡 Đã gắn | Nằm trong cột trái, chỉ hiện khi có quyền. Điện thoại mở cột bằng ba gạch. Đăng xuất ở cuối cột, chữ đỏ. |
+| 51 | Nút Quản lý | 🟡 Đã sửa trong code (v3.17.2) | Nằm trong cột trái, chỉ hiện khi có quyền. Quyền được nhớ trong tab nên quay về phòng vẫn hiện ngay. Trang Quản lý có hạn chờ 8 giây, tự thử lại và có nút Thử lại. Cần người dùng thử trên production. |
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
@@ -142,6 +142,16 @@ Giữ nguyên mô tả gốc để đối chiếu. Phần **đã xử lý** ghi 
 - Đây là API không chính thức của Microsoft. Có thể bị chặn. Fallback giọng máy là bắt buộc và đã có.
 
 ---
+
+### 3.3. Nút Quản lý biến mất, trang Quản lý đứng im (người dùng báo 12/11/2026)
+Mô tả của người dùng, nguyên văn: «khi ấn vào trang quản lý, bị đơ ở lúc load trang, khi trở về phòng thì không còn hiện nút quản lý nữa phải tải lại web mới hiện lên lại, đôi khi cũng không hiện».
+- **Nguyên nhân (từ log Vercel production):** mỗi lần một instance khởi động nguội, lời gọi đầu tiên treo rất lâu mà không báo lỗi. Bước migration lấy `pg_advisory_lock` dù không còn migration nào, Pool `pg` không có hạn chờ kết nối, và `retryLoad` chỉ thử lại khi có lỗi. Ngoài ra `place` chỉ nằm trong `useState` nên mất khi đổi trang.
+- **Đã sửa trong code v3.17.2:** xem `ADMIN_LOG` v3.17.2. Có 2 test mới cho hạn chờ trong `retry-load.test.ts`; câu SQL gộp của `placeOf` đã thử trên PGlite với 3 trường hợp.
+- **Chưa thử:** production thật, điện thoại thật. **Chờ người dùng xác nhận** trước khi sang lỗi tiếp theo. Chưa chốt chuyện `DATABASE_URL` có `-pooler` hay không.
+- **Chưa làm:** test chạy cả luồng đăng nhập, vào Quản lý, về phòng (hiện chỉ có test từng phần).
+
+### 3.4. Lỗi ngoài phạm vi, chưa sửa
+- `scripts/grok-pwa-plugin.test.mjs`, test «strips install params from the app link» đang đỏ: `stripInstallParams("//evil.com")` trả `//evil.com`, test đòi `/`. `HANDOFF.md` ghi S6 đã chặn `//` ở link cài đặt, nên có thể đã hồi quy. Nằm trong file nền tảng `scripts/grok-pwa-*`, không tự sửa. Mức: trung bình, chưa rõ có khai thác được không.
 
 ## 4. Hướng xử lý đã chọn (khác đề xuất cũ ở chỗ ghi rõ)
 
@@ -222,6 +232,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-12 16:06 — v3.17.2 (Claude sửa, người dùng đã nói «Claude sửa»): nút Quản lý không còn biến mất, trang Quản lý không đứng im. `db.ts` bỏ khóa migration khi không cần và thêm hạn chờ kết nối; `retry-load.ts` thêm hạn chờ 8 giây; `place-cache.ts` mới nhớ quyền trong tab; `admin-desk.tsx` tải song song và có nút Thử lại; `placeOf` gộp 4 truy vấn thành 1. Thêm `LUAT_CHUNG.md`. `tsc` sạch; `npm test` 190 đạt, 1 hỏng ngoài phạm vi (xem 3.4); `app-version.test.ts` xanh. Chưa thử production, chưa thử điện thoại thật. Lỗi sót khi làm: lần đầu ghi giờ CHANGELOG không lấy từ `date`, đã sửa lại. Điều khoản không đổi.
 - 2026-11-12 13:32 — Đẩy chính thức: v3.17.1 từ work lên main. Điều khoản không đổi.
 - 2026-11-12 09:15 — v3.17.1 trên work: cột trái và các thẻ bớt cứng. Ba gạch cùng hàng với tên phòng. Mục đang chọn có vạch vàng. Thẻ cao theo nội dung của hàng, không nhốt một cỡ. Thanh tua một hàng, nút đủ chỗ bấm. Điều khoản không đổi. Chưa xem trên điện thoại thật.
 - 2026-11-12 08:41 — v3.17.0 trên work: cột trái cho phòng dịch và trang quản lý. Điện thoại mở bằng ba gạch. Đăng xuất cuối cột, chữ đỏ. Sửa mười chỗ hiển thị. Điều khoản không đổi. Chưa xem trên điện thoại thật.

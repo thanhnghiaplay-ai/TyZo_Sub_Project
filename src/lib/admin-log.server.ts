@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.17.2",
+    time: "16:06 ngày 12/11/2026",
+    area: "ha-tang",
+    text: "Sửa nút Quản lý biến mất và trang Quản lý đứng im trên production. Nguyên nhân từ log Vercel: mỗi instance khởi động nguội chạy bước migration có pg_advisory_lock dù không còn migration nào cần chạy, và Pool của pg không có hạn chờ kết nối, nên lời gọi đầu tiên treo không báo lỗi; retryLoad chỉ thử lại khi có lỗi nên không cứu được. Sửa: db.ts đọc _migrations trước, chỉ lấy khóa khi còn migration chưa chạy (bảng chưa có thì đi đường chậm như cũ); Pool có connectionTimeoutMillis 8 giây, statement_timeout 20 giây, max 5. retry-load.ts có hạn chờ 8 giây mỗi lần gọi (LoadTimeoutError) rồi thử lại. place-cache.ts nhớ quyền trong sessionStorage chỉ để vẽ giao diện, signOut xóa, luôn đọc lại từ máy chủ. studio.tsx và admin-desk.tsx hiện ngay theo quyền đã nhớ. admin-desk refreshPlace: getMyPlace trước, bốn lời gọi đọc sau chạy song song, có nút Thử lại. placeOf gộp bốn truy vấn thành một câu SQL, chỉ gọi ensureOwnerSeed khi người này chưa có quyền và có ADMIN_EMAIL. Không migration mới. Điều khoản không đổi, vẫn 2026-11-12.2. Chưa thử trên production và điện thoại thật.",
+  },
+  {
     version: "3.17.1",
     time: "09:15 ngày 12/11/2026",
     area: "khac",

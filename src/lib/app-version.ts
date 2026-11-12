@@ -12,7 +12,7 @@ export type ReleaseNote = {
 export const CHANGELOG: ReleaseNote[] = [
   {
     version: "3.17.2",
-    time: "16:30 ngày 12/11/2026",
+    time: "16:06 ngày 12/11/2026",
     title: "Nút Quản lý và trang Quản lý không còn đứng im.",
     points: [
       "Nút Quản lý hiện ngay khi quay về phòng, không phải tải lại trang.",
