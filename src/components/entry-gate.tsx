@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-12.2";
+export const TERMS_VERSION = "2026-11-12.3";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -124,6 +124,10 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
               <td>Bạn</td>
             </tr>
             <tr>
+              <td>Nhận dạng từ link file trực tiếp</td>
+              <td>Bạn đưa link và key Alibaba. Nhà cung cấp tải file. Cửa trả theo lượt không dùng đường này</td>
+            </tr>
+            <tr>
               <td>Dịch lại phim đã nhận dạng</td>
               <td>Chỉ tính phần dịch của câu chưa sửa tay</td>
             </tr>
@@ -158,7 +162,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 
         <h2>1. Phòng này làm gì</h2>
         <p>
-          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng. Bạn có thể dùng key của mình, hoặc chọn gói dịch của phòng. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất phụ đề phụ đề .srt.
+          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, hoặc dán link file trực tiếp. Bạn có thể dùng key của mình, hoặc chọn gói dịch của phòng. Phòng nhận dạng lời, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất phụ đề phụ đề .srt. Khi bạn chọn nhận dạng Alibaba cho một link file, phòng gửi link đó để nhà cung cấp tải file. Bạn phải có quyền dùng file tại link đó.
         </p>
         <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
         <p>Cửa trả theo lượt dùng key của phòng. Bạn chọn một gói dịch. Gói có thể là một model, hoặc nhiều model chia việc: nhận dạng, dịch, ngữ cảnh, đối chiếu, tóm tắt, thuyết minh. Tiền trừ trong ví theo giá gốc cộng phần chênh phòng niêm yết. Trước khi chạy, phòng hiện số cần trả và giữ tạm một khoản lớn hơn ước tính. Khi xong, phòng trừ số thực và trả phần giữ thừa. Đoạn lỗi không tính tiền. Thuyết minh trừ lúc đọc, không nằm trong khoản giữ. Dịch lại phim đã nhận dạng chỉ tính phần dịch của câu chưa sửa tay, không tính thêm lần nhận dạng. Câu đã sửa tay được giữ. Câu cũ chỉ được thay khi câu mới của dòng đó đã có. Cửa thuê phòng vẫn dùng key của bạn và không giữ ví; app chỉ hiện ước tính trên key đó.</p>
@@ -178,7 +182,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
         <p>
           Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy, và khi bạn đã đăng nhập thì máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
         </p>
-        <p>Lời thoại được gửi tới nhà cung cấp trong gói bạn chọn để nhận dạng và dịch. File video xử lý trên máy bạn.</p>
+        <p>Lời thoại được gửi tới nhà cung cấp trong gói bạn chọn để nhận dạng và dịch. File bạn chọn trên máy được xử lý trên máy bạn. Link file trực tiếp, khi bạn chọn nhận dạng Alibaba, được gửi cho nhà cung cấp để họ tải file. Phòng không lưu file đó.</p>
         <p>
           Mỗi lần nhận dạng xong, app gửi lên máy chủ của phòng một bản số liệu chất lượng để Chủ biết hệ thống chạy tốt hay kém. Bản này chỉ có số: phiên bản app, bạn dùng key riêng hay key của phòng, tên model, ngôn ngữ nguồn đã chọn, độ dài âm thanh, số đoạn và số câu, mức tin cậy Whisper tự báo, số đoạn lỗi, và kết quả kiểm tra ngôn ngữ nếu bạn bật. Việc này áp dụng cả khi bạn dùng key riêng và không có công tắc tắt riêng.
         </p>

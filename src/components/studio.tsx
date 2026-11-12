@@ -28,6 +28,7 @@ import { PackPicker } from "@/components/pack-picker";
 import { getServiceMenu, type ServiceMenu } from "@/lib/pack-room";
 import { providersIn, quotePack } from "@/lib/service-pack";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
+import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 import { estimateTranslateHold, HOLD_BUFFER } from "@/lib/run-bill";
 import { loadWatch, sameWatchFile, saveWatch, slimSeg, type WatchProject } from "@/lib/watch-save";
 import { readMediaSeconds } from "@/lib/trial-media";
@@ -1023,7 +1024,7 @@ export function Studio() {
           </span>
         </label>
         )}
-        {!(runDoor.open && payByRoom) && packOn && app.servicePack && providersIn(app.servicePack).includes("alibaba") && (
+        {!(runDoor.open && payByRoom) && packOn && app.servicePack && providersIn(app.servicePack).includes("alibaba") && app.asrModel !== ALI_FILETRANS_MODEL && (
           <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key">
             Key Alibaba
             <input
@@ -1139,6 +1140,34 @@ export function Studio() {
             />
           </span>
         </label>
+        <Select
+          label="Nhận dạng link"
+          value={app.asrModel === ALI_FILETRANS_MODEL ? ALI_FILETRANS_MODEL : "whisper"}
+          onChange={(value) => {
+            if (value === ALI_FILETRANS_MODEL) app.setAsrModel(ALI_FILETRANS_MODEL);
+            else if (app.asrModel === ALI_FILETRANS_MODEL) app.setAsrModel("whisper-large-v3-turbo");
+          }}
+        >
+          <option value="whisper">Whisper — tải về máy, cắt đoạn</option>
+          <option value={ALI_FILETRANS_MODEL}>Alibaba — gửi link, không tải về máy</option>
+        </Select>
+        {app.asrModel === ALI_FILETRANS_MODEL && !(runDoor.open && payByRoom) && (
+          <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key-link">
+            Key Alibaba
+            <input
+              id="ali-key-link"
+              className={FIELD}
+              type={showKey ? "text" : "password"}
+              placeholder="sk-… chỉ lưu trên máy này"
+              autoComplete="off"
+              value={app.alibabaKey}
+              onChange={(event) => app.setAlibabaKey(event.target.value)}
+            />
+          </label>
+        )}
+        {app.asrModel === ALI_FILETRANS_MODEL && (
+          <p className="text-sm text-muted">Chỉ link file trực tiếp, như mp4 hoặc mkv. Trang xem và link luồng không chạy. Phần dịch vẫn dùng key Groq hoặc gói đang chọn. Cửa trả theo lượt và bản dùng thử không đi đường này.</p>
+        )}
         <details className="text-sm text-muted">
           <summary className="min-tap cursor-pointer">File lớn hơn 1 GB, MKV, AC3/DTS?</summary>
           <p className="pb-2">
@@ -1199,6 +1228,7 @@ export function Studio() {
           <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
             Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
           </option>
+          <option value={ALI_FILETRANS_MODEL}>Alibaba — cả file từ link</option>
         </Select>
         {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
         </>
