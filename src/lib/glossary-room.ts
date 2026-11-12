@@ -102,9 +102,7 @@ export const listGlossary = createServerFn({ method: "GET" })
       order by id desc
       limit 20
     `;
-    const { fileTerms } = await import("@/lib/glossary-seed.server");
-    const fileCount = fileTerms(data.lang, data.genre).length;
-    return { hidden: Boolean(pack[0]?.hidden), total: counted[0]?.n ?? 0, terms, suggestions, fileCount };
+    return { hidden: Boolean(pack[0]?.hidden), total: counted[0]?.n ?? 0, terms, suggestions };
   });
 
 export const saveGlossaryTerm = createServerFn({ method: "POST" })

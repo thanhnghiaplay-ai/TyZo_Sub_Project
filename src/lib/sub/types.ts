@@ -17,8 +17,6 @@ export type Seg = {
   voiceLock?: "female" | "male";
   /** Người dùng đã sửa tay. Đổi model hoặc ngôn ngữ đích không xóa câu này. */
   edited?: boolean;
-  /** Cần dịch lại nhưng vẫn hiện câu cũ cho đến khi câu mới của đúng dòng này về. */
-  stale?: boolean;
 };
 
 export type ChatTier = "standard" | "preview" | "enterprise" | "safety" | "key";
@@ -37,12 +35,11 @@ export type ChatModel = {
 export type AutoProfile = "fast" | "balanced" | "accurate";
 export type ModelMode = "manual" | "auto";
 
-export type AsrModel = "whisper-large-v3-turbo" | "whisper-large-v3" | "qwen-audio-3.0-asr-flash-filetrans";
+export type AsrModel = "whisper-large-v3-turbo" | "whisper-large-v3";
 
 export const ASR_PRICE: Record<AsrModel, number> = {
   "whisper-large-v3-turbo": 0.04 / 3600,
   "whisper-large-v3": 0.111 / 3600,
-  "qwen-audio-3.0-asr-flash-filetrans": 0.000035,
 };
 
 export type NarrationSettings = {

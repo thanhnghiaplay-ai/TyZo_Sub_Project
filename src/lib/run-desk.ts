@@ -55,9 +55,8 @@ function overrideOf(value: unknown): PriceOverride {
 }
 
 export function quoteVnd(base: number | null, markup: number, custom: number) {
-  const floor = base != null && base > 0 ? Math.round(base) : 0;
-  if (custom > 0) return Math.max(Math.round(custom), floor);
-  if (!(floor > 0) || base == null) return 0;
+  if (custom > 0) return custom;
+  if (base == null || !(base > 0)) return 0;
   return Math.round(base * (1 + markup / 100));
 }
 

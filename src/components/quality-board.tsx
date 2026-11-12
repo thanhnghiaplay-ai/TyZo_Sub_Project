@@ -45,17 +45,15 @@ function SummaryCard({ title, data }: { title: string; data: Rollup }) {
 function DayChart({ rows }: { rows: BoardRow[] }) {
   const days = groupRollup(rows, (r) => r.day);
   if (!days.length) return null;
-  const maxKnown = Math.max(1, ...days.map(({ rollup: r }) => r.bands.high + r.bands.check + r.bands.low));
   return (
     <div className="grid gap-1">
       <div className="flex h-40 items-end gap-1 overflow-x-auto" role="img" aria-label="Phân bố độ tin theo ngày">
         {days.map(({ key, rollup: r }) => {
           const known = r.bands.high + r.bands.check + r.bands.low;
-          const scale = known ? Math.max(8, (known / maxKnown) * 100) : 0;
           const part = (n: number) => (known ? (n / known) * 100 : 0);
           return (
-            <div key={key} className="flex h-full min-w-6 flex-1 flex-col justify-end" title={`${key}: ${r.runs} lần chạy, ${known} câu, độ tin ${pct(r.meanConfidence)}`}>
-              <div className="flex w-full flex-col justify-end overflow-hidden rounded-md" style={{ height: `${scale}%`, background: "#2c4154" }}>
+            <div key={key} className="flex h-full min-w-6 flex-1 flex-col justify-end" title={`${key}: ${r.runs} lần chạy, độ tin ${pct(r.meanConfidence)}`}>
+              <div className="flex h-full flex-col justify-end overflow-hidden rounded-md" style={{ background: "#2c4154" }}>
                 <div style={{ height: `${part(r.bands.low)}%`, background: BAND_COLOR.low }} />
                 <div style={{ height: `${part(r.bands.check)}%`, background: BAND_COLOR.check }} />
                 <div style={{ height: `${part(r.bands.high)}%`, background: BAND_COLOR.high }} />
@@ -71,7 +69,7 @@ function DayChart({ rows }: { rows: BoardRow[] }) {
           </span>
         ))}
       </div>
-      <p className="text-sm text-muted">Chiều cao cột theo số câu đã chấm. Xanh là độ tin cao, vàng cần kiểm tra, đỏ thấp. Mảng đỏ dày hơn là chất lượng đang xấu đi.</p>
+      <p className="text-sm text-muted">Mỗi cột là một ngày: xanh là câu độ tin cao, vàng cần kiểm tra, đỏ thấp. Cột đỏ cao lên là chất lượng đang xấu đi.</p>
     </div>
   );
 }
@@ -167,7 +165,7 @@ export function QualityBoard() {
       )}
       {rows !== null && view.total.runs > 0 && (
         <>
-          <div className="tile-row">
+          <div className="grid gap-3 md:grid-cols-3">
             <SummaryCard title="Tổng cả hai" data={view.total} />
             <SummaryCard title="Key riêng của khách" data={view.own} />
             <SummaryCard title="Key của phòng" data={view.room} />
@@ -186,7 +184,7 @@ export function QualityBoard() {
             <h3 className="font-semibold">Theo ngày</h3>
             <DayChart rows={view.all} />
           </section>
-          <div className="tile-row">
+          <div className="grid gap-3 md:grid-cols-3">
             <GroupList title="Theo ngôn ngữ nguồn" items={view.byLang} />
             <GroupList title="Theo model Whisper" items={view.byModel} />
             <GroupList title="Theo phiên bản app" items={view.byVersion} />

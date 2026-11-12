@@ -28,7 +28,7 @@ export function TicketCard({ ticket, children }: { ticket: RunTicket; children?:
   return (
     <article className="rounded-xl border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium truncate" title={ticket.fileName || "Không tên tệp"}>{ticket.fileName || "Không tên tệp"}</p>
+        <p className="text-sm font-medium">{ticket.fileName || "Không tên tệp"}</p>
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
@@ -131,7 +131,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       </div>
       <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
       {owner && (
-      <div className="stat-grid">
+      <div className="grid grid-cols-3 gap-2">
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
@@ -149,13 +149,12 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           onChange={(event) => setForm((current) => (current ? { ...current, note: event.target.value } : current))}
           className="rounded-xl border border-line bg-raised px-3 py-2 outline-none disabled:opacity-60"
         />
-        <p className="text-xs text-muted">{form?.maintenance ? "Khách đang thấy câu này." : "Câu này chỉ hiện khi cửa đang bảo trì."}</p>
         {owner && form && (
           <div className="flex flex-wrap gap-2">
             <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={() => save({ ...form, maintenance: true }, "Đã bật bảo trì.")}>
               Lưu và báo bảo trì
             </button>
-            <button type="button" disabled={busy || !form.maintenance} className={"min-tap rounded-full px-4 text-sm font-semibold disabled:opacity-40 " + (form.maintenance ? "bg-accent text-ink" : "border border-line")} onClick={() => save({ ...form, maintenance: false }, "Đã mở lại cửa.")}>
+            <button type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => save({ ...form, maintenance: false }, "Đã mở lại cửa.")}>
               Mở lại cửa
             </button>
           </div>

@@ -15,16 +15,16 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | v3.18.0 trên nhánh `main` |
-| Bản đang làm | v3.18.0 trên nhánh `work`, cùng bản với `main`. Điều khoản `2026-11-12.3` |
-| Điều khoản | 2026-11-12.3 |
+| Bản khách đang dùng | v2.20.0 trên nhánh `main` |
+| Bản đang làm | v3.14.0 trên nhánh `work`: giai đoạn 1 giao diện mới (token sáng/tối, thành phần dùng chung, tab Admin «Giao diện»). Trước đó v3.13.0: ô Kiểm tra ngôn ngữ từng đoạn, mức tin cậy trong tab Kiểm tra, tab Admin «Chất lượng» (chỉ Chủ), điều khoản mới 2026-11-11.1 |
+| Điều khoản | 2026-11-11.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
-| Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa. Hết khoản giữ thì không gọi đoạn đó |
+| Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa |
 | Kho | `thanhnghiaplay-ai/TyZo_Sub_Project`. Bản nén không làm gốc. Trước khi sửa, số phiên bản trong máy phải khớp `main` |
 | Nhánh | Sửa trên `work`. Nhánh `main` chỉ đổi khi người dùng nói đúng câu «đẩy chính thức» |
 
-Bảng này đã ở trên `main` cùng v3.18.0.
+Bảng này đã ở trên `main` cùng v2.20.0.
 
 ## Ba vai
 
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-v3.18.0 đã lên `main` lúc 14:42 ngày 12/11/2026. `work` và `main` cùng bản này.
+Không có việc đã đẩy. v3.13.0 đang trên `work`, chưa lên `main`.
 
 ## Thư — còn lại
 

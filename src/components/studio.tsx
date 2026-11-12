@@ -1,7 +1,6 @@
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
-import { SideRail, RailToggle, AppShell, type RailItem } from "@/components/side-rail";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
@@ -14,24 +13,18 @@ import {
   FileAudio,
   Link2,
   Loader2,
+  Menu,
   Pause,
   Play,
   RefreshCw,
   RotateCw,
+  Settings,
   Square,
   Volume2,
   VolumeX,
   X,
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
-import { PackPicker } from "@/components/pack-picker";
-import { getServiceMenu, type ServiceMenu } from "@/lib/pack-room";
-import { providersIn, quotePack } from "@/lib/service-pack";
-import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
-import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
-import { estimateTranslateHold, HOLD_BUFFER } from "@/lib/run-bill";
-import { loadWatch, sameWatchFile, saveWatch, slimSeg, type WatchProject } from "@/lib/watch-save";
-import { readMediaSeconds } from "@/lib/trial-media";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
@@ -434,7 +427,8 @@ function loadNarration(): NarrationSettings {
 }
 
 const TOOLS = [
-  ["key", "Bắt đầu"],
+  ["key", "Key Sub"],
+  ["phim", "Phim"],
   ["cast", "Nhân vật"],
   ["voice", "Nghe"],
   ["check", "Kiểm tra"],
@@ -460,104 +454,25 @@ export function Studio() {
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [payByRoom, setPayByRoom] = useState(false);
-  const [menu, setMenu] = useState<ServiceMenu | null>(null);
-  const [mediaSeconds, setMediaSeconds] = useState(0);
+  const menuRef = useRef<HTMLDivElement>(null);
   const runDoor = useRunDoor();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(true);
   const statusRef = useRef<HTMLDialogElement>(null);
-  const [urlDraft, setUrlDraft] = useState("");
-  const [savedWatch, setSavedWatch] = useState<(WatchProject & { savedAt: number }) | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const narrator = useRef(createNarrator());
-  const door: "turn" | "rent" = payByRoom ? "turn" : "rent";
-  const doorPacks = (menu?.packs ?? []).filter((pack) => pack.enabled && pack.doors.includes(door));
-  const packOn = Boolean(app.servicePack && doorPacks.some((pack) => pack.id === app.servicePack?.id));
-  const narrationAssign = packOn ? app.servicePack?.roles.narration : undefined;
-  app.setBillNarration(Boolean(narration.enabled && narrationAssign));
-  app.setPackRequired(doorPacks.length > 0);
-  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible, ali: app.alibabaKey, cloud: narrationAssign ?? null });
-  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible, ali: app.alibabaKey, cloud: narrationAssign ?? null };
+  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible });
+  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible };
 
   useEffect(() => {
     setNarration(loadNarration());
     setSub(loadSub());
     setHydrated(true);
-    void loadWatch()
-      .then((row) => {
-        if (row) setSavedWatch(row);
-      })
-      .catch(() => {});
   }, []);
-
-  useEffect(() => {
-    setUrlDraft(app.url);
-  }, [app.url]);
-
-  useEffect(() => {
-    if (!app.segs.length || app.buttonLabel === "Nhận dạng lại") return;
-    const file = app.file;
-    const timer = window.setTimeout(() => {
-      const project: WatchProject = {
-        fileName: file?.name || "",
-        fileSize: file?.size || 0,
-        fileModified: file?.lastModified || 0,
-        url: app.url,
-        source: app.source,
-        position: app.videoRef.current?.currentTime || 0,
-        appliedSig: app.appliedSig,
-        segs: app.segs.map(slimSeg),
-      };
-      void saveWatch(project)
-        .then(() => setSavedWatch({ ...project, savedAt: Date.now() }))
-        .catch(() => {});
-    }, 800);
-    return () => window.clearTimeout(timer);
-  }, [app.segs, app.file, app.url, app.source, app.appliedSig, app.buttonLabel, app.videoRef]);
-  useEffect(() => {
-    void getServiceMenu()
-      .then(setMenu)
-      .catch(() => setMenu({ packs: [], alibaba: { markup: 0, custom: {}, models: null } }));
-  }, []);
-  useEffect(() => {
-    if (!menu || !app.servicePack) return;
-    const doorNow = payByRoom ? "turn" : "rent";
-    const ok = menu.packs.some((pack) => pack.enabled && pack.id === app.servicePack?.id && pack.doors.includes(doorNow));
-    if (!ok) app.setServicePack(null);
-  }, [app.servicePack, menu, payByRoom]);
-  useEffect(() => {
-    const file = app.audioFile || app.file;
-    if (!file) return;
-    let stop = false;
-    void readMediaSeconds(file)
-      .then((seconds) => {
-        if (!stop) setMediaSeconds(seconds);
-      })
-      .catch(() => {
-        if (!stop) setMediaSeconds(0);
-      });
-    return () => {
-      stop = true;
-    };
-  }, [app.audioFile, app.file]);
-  useEffect(() => {
-    const video = app.videoRef.current;
-    if (!video) return;
-    const read = () => {
-      if (app.file || app.audioFile) return;
-      if (Number.isFinite(video.duration) && video.duration > 0) setMediaSeconds(video.duration);
-    };
-    video.addEventListener("durationchange", read);
-    video.addEventListener("loadedmetadata", read);
-    read();
-    return () => {
-      video.removeEventListener("durationchange", read);
-      video.removeEventListener("loadedmetadata", read);
-    };
-  }, [app.audioFile, app.file, app.url, app.videoRef]);
   useEffect(() => {
     if (!hydrated) return;
     try {
@@ -597,69 +512,6 @@ export function Studio() {
     app.setRoomPay(false);
   }, [runDoor.ready, runDoor.open, app.setRoomPay]);
 
-  const askReplace = (what: string) => {
-    if (!app.segs.length) return true;
-    const edited = app.segs.filter((seg) => seg.edited).length;
-    const tail = edited ? `, kể cả ${edited} câu đã sửa` : "";
-    return confirm(`${what} sẽ tính là nhận dạng lại. Phụ đề hiện tại sẽ bị xóa khi bạn bấm Nhận dạng lại${tail}. Đổi chứ?`);
-  };
-  const pickVideo = (file: File | null) => {
-    if (!file) {
-      if (app.file && !askReplace("Bỏ file")) return;
-      app.setFile(null);
-      return;
-    }
-    if (!app.segs.length && savedWatch && sameWatchFile(savedWatch, file)) {
-      app.setFile(file);
-      app.restoreWatch(file, { source: savedWatch.source, position: savedWatch.position, segs: savedWatch.segs, appliedSig: savedWatch.appliedSig });
-      return;
-    }
-    if (!askReplace("Đổi file")) return;
-    app.setFile(file);
-  };
-  const pickAudio = (file: File | null) => {
-    if (!file) {
-      if (app.audioFile && !askReplace("Bỏ âm thanh")) return;
-      app.setAudioFile(null);
-      return;
-    }
-    if (!askReplace("Đổi âm thanh")) return;
-    app.setAudioFile(file);
-  };
-  const redoNote = () => {
-    if (app.buttonLabel !== "Dịch lại") return "";
-    const kept = app.segs.filter((seg) => seg.edited).length;
-    const lead = kept ? `Giữ ${kept} câu đã sửa tay. ` : "Giữ câu đã sửa tay. ";
-    const tail = "Chỉ gửi phần còn lại, không tính nhận dạng.";
-    const seconds = app.redoSeconds;
-    if (!(seconds > 0) || !app.board) return `${lead}${tail}`;
-    const money = (value: number) => `${new Intl.NumberFormat("vi-VN").format(value)} đ`;
-    if (app.servicePack) {
-      const quote = quotePack({
-        pack: app.servicePack,
-        seconds,
-        door,
-        narration: false,
-        scope: "translate",
-        books: {
-          groq: { rate: app.board.rate, rows: app.board.rows, desk: { markup: runDoor.markup, custom: runDoor.custom } },
-          alibaba: { rate: app.board.rate, rows: ALIBABA_ROWS, desk: { markup: menu?.alibaba.markup ?? 0, custom: menu?.alibaba.custom ?? {} } },
-        },
-      });
-      if (quote.ready && quote.marked != null) {
-        return door === "turn" ? `${lead}${tail} Giữ ${money(quote.hold)}.` : `${lead}${tail} Ước tính trên key của bạn ${money(quote.marked)}.`;
-      }
-    } else if (app.modelId) {
-      const hold = estimateTranslateHold(
-        { rate: app.board.rate, rows: app.board.rows, desk: { markup: door === "turn" ? runDoor.markup : 0, custom: door === "turn" ? runDoor.custom : {} } },
-        app.modelId,
-        seconds,
-      );
-      if (hold != null) return door === "turn" ? `${lead}${tail} Giữ ${money(hold)}.` : `${lead}${tail} Ước tính trên key của bạn ${money(Math.round(hold / HOLD_BUFFER))}.`;
-    }
-    return `${lead}${tail}`;
-  };
-
   const pasteKey = async () => {
     try {
       const text = (await navigator.clipboard.readText()).trim();
@@ -667,13 +519,6 @@ export function Studio() {
     } catch {
       document.getElementById("key")?.focus();
     }
-  };
-
-  const speakCloud = () => {
-    const assign = live.current.cloud;
-    if (!assign || !live.current.narration.enabled) return null;
-    const key = payByRoom ? "room" : assign.provider === "alibaba" ? live.current.ali.trim() : live.current.key.trim();
-    return key ? { key, model: assign.model, provider: assign.provider } : null;
   };
 
   const speakAt = (index: number) => {
@@ -699,7 +544,6 @@ export function Studio() {
       key: payByRoom ? "room" : key.trim(),
       video,
       playbackRate: video.playbackRate || 1,
-      cloud: speakCloud(),
     });
   };
 
@@ -711,7 +555,6 @@ export function Studio() {
       key: payByRoom ? "room" : app.key.trim(),
       video: app.videoRef.current,
       playbackRate: 1,
-      cloud: speakCloud(),
     });
   };
 
@@ -727,6 +570,22 @@ export function Studio() {
     setSheetOpen((open) => (sheet && id === toolTab ? !open : true));
     setToolTab(id);
   };
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   // Đọc quyền có thử lại. Lỗi tạm thời thì giữ quyền đã biết, không xóa nút Quản lý.
   const placeSeq = useRef(0);
@@ -768,30 +627,15 @@ export function Studio() {
     setSheetOpen(true);
   }, [app.reviewHold]);
 
-  const [setupOpen, setSetupOpen] = useState(true);
-  const showSetup = setupOpen || app.reviewHold || app.segs.length === 0;
-  useEffect(() => {
-    if (app.reviewHold || app.segs.length === 0) setSetupOpen(true);
-    else if (!app.running) setSetupOpen(false);
-  }, [app.reviewHold, app.segs.length, app.running]);
-
   const showRoomPrice = runDoor.open && payByRoom;
-  const railItems: RailItem[] = [
-    { id: "sub", label: "Phụ đề", current: product === "sub", onPick: () => setProduct("sub") },
-    { id: "account", label: "Tài khoản", current: product === "account", onPick: () => setProduct("account") },
-  ];
-  if (place?.role) railItems.push({ id: "admin", label: "Quản lý", href: "/admin" });
 
   return (
-    <AppShell data-product="sub">
-    <SideRail label="Chức năng phòng" items={railItems} />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex min-w-0 flex-1 items-center gap-1">
-            <RailToggle />
+          <div className="flex min-w-0 items-center gap-2">
             <BrandMark small title="TyZo Sub" />
-            <p className="min-w-0 truncate text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+            <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
           </div>
           <div className="flex items-center gap-2">
             <VersionMark />
@@ -801,6 +645,51 @@ export function Studio() {
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip payByRoom={payByRoom} />
       </header>
+
+      <nav aria-label="Chức năng" className="room-nav">
+        <div data-product="sub" ref={menuRef} className="room-menu">
+          <button
+            type="button"
+            className="room-menu-button"
+            aria-expanded={menuOpen}
+            aria-controls="room-menu-list"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <Menu className="size-4" aria-hidden="true" />
+            <span>{product === "account" ? "Tài khoản" : "Phụ đề"}</span>
+          </button>
+          {menuOpen && (
+            <div id="room-menu-list" role="tablist" className="room-menu-list">
+            <button
+              type="button"
+              aria-current={product === "sub" ? "page" : undefined}
+              onClick={() => {
+                setProduct("sub");
+                setMenuOpen(false);
+              }}
+            >
+              Phụ đề
+            </button>
+            <button
+              type="button"
+              data-product="account"
+              aria-current={product === "account" ? "page" : undefined}
+              onClick={() => {
+                setProduct("account");
+                setMenuOpen(false);
+              }}
+            >
+              Tài khoản
+            </button>
+            {place?.role && (
+              <Link to="/admin" onClick={() => setMenuOpen(false)}>
+                Quản lý
+              </Link>
+            )}
+          </div>
+          )}
+        </div>
+      </nav>
 
       {place?.status === "banned" ? (
         <div className="grid gap-3 p-4">
@@ -837,10 +726,42 @@ export function Studio() {
         </form>
       )}
 
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <button
+          type="button"
+          role="status"
+          className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
+          onClick={() => statusRef.current?.showModal()}
+        >
+          {app.status}
+        </button>
+        <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
+          Xuất file Vietsub
+        </button>
+        <button
+          type="button"
+          title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
+          className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
+          onClick={() => void app.exportRaw()}
+        >
+          Lưu bản Whisper
+        </button>
+        {app.reviewHold && (
+          <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
+            Dịch tiếp
+          </button>
+        )}
+      </div>
+      <dialog ref={statusRef} className="studio-note">
+        <p className="text-sm">{app.status}</p>
+        <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
+          Đóng
+        </button>
+      </dialog>
+
       <div
         role="tablist"
         aria-label="Công cụ phụ đề"
-        hidden={!showSetup}
         className="studio-tabs"
         onKeyDown={(event) => {
           if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") return;
@@ -873,7 +794,7 @@ export function Studio() {
         ))}
       </div>
 
-      <div className={"studio-stage" + (sheetOpen && showSetup ? " is-sheet" : "") + (showSetup ? "" : " is-watch")}>
+      <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>
       <section data-workspace className="studio-workspace">
         <div className="studio-video">
         <Stage
@@ -887,80 +808,11 @@ export function Studio() {
           onSpeak={speakAt}
           speechBusy={() => narrator.current.busy()}
           onPause={() => narrator.current.stop(app.videoRef.current)}
-          narrationEnabled={narration.enabled}
-          onNarration={() => patchNarration({ enabled: !narration.enabled })}
         />
-        <div className="flex w-full flex-wrap items-center gap-2 px-1 pt-2">
-          <button
-            type="button"
-            role="status"
-            className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
-            onClick={() => statusRef.current?.showModal()}
-          >
-            {app.status}
-          </button>
-          {app.buttonLabel ? (
-          <button
-            type="button"
-            className={"min-tap shrink-0 rounded-xl px-3 text-sm font-semibold " + (app.running || app.buttonLabel === "Nhận dạng lại" ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
-            onClick={() => (app.running ? app.cancel() : void app.start())}
-          >
-            {app.buttonLabel}
-          </button>
-          ) : null}
-          {app.reviewHold && (
-            <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
-              Dịch tiếp
-            </button>
-          )}
-          {!showSetup && (
-            <button
-              type="button"
-              className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
-              onClick={() => {
-                setSetupOpen(true);
-                setToolTab("key");
-                setSheetOpen(true);
-              }}
-            >
-              Sửa lần chạy
-            </button>
-          )}
-          {showSetup && app.segs.length > 0 && !app.running && !app.reviewHold && (
-            <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => setSetupOpen(false)}>
-              Xem video
-            </button>
-          )}
-          {redoNote() && <p className="w-full text-sm text-muted">{redoNote()}</p>}
-          {savedWatch && app.segs.length === 0 && (
-            <p className="w-full text-sm text-muted">Còn bản dịch của {savedWatch.fileName || "lần trước"}. Chọn lại đúng file để xem tiếp, không nhận dạng lại.</p>
-          )}
-        </div>
-        <dialog ref={statusRef} className="studio-note">
-          <p className="text-sm">{app.status}</p>
-          <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
-            Đóng
-          </button>
-        </dialog>
         </div>
         <section className="studio-cues grid gap-2 rounded-2xl border border-line bg-card p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Bản dịch</h2>
-            {app.segs.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
-                  Xuất file Vietsub
-                </button>
-                <button
-                  type="button"
-                  title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
-                  className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
-                  onClick={() => void app.exportRaw()}
-                >
-                  Lưu bản Whisper
-                </button>
-              </div>
-            )}
           </div>
           <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh và thêm thuật ngữ.</p>
           <div className="studio-cue-scroll">
@@ -972,7 +824,7 @@ export function Studio() {
         </section>
       </section>
 
-      <div className={"studio-tools" + (sheetOpen && showSetup ? " is-open" : "")}>
+      <div className={"studio-tools" + (sheetOpen ? " is-open" : "")}>
         <div className="studio-tool-card">
         <div className="studio-sheet-bar">
           <button type="button" className="studio-sheet-close" aria-label="Đóng tab" onClick={() => setSheetOpen(false)}>
@@ -984,7 +836,7 @@ export function Studio() {
           <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
         ) : runDoor.open ? (
           <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cửa dịch</h2>
+            <h2 className="text-sm font-semibold">Cách trả Groq</h2>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
@@ -1000,7 +852,7 @@ export function Studio() {
         ) : (
           <RunDoorClosed note={runDoor.note} />
         )}
-        {!(runDoor.open && payByRoom) && (!packOn || Boolean(app.servicePack && providersIn(app.servicePack).includes("groq"))) && (
+        {!(runDoor.open && payByRoom) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
           Groq API key
           <span className="flex gap-2">
@@ -1024,40 +876,84 @@ export function Studio() {
           </span>
         </label>
         )}
-        {!(runDoor.open && payByRoom) && packOn && app.servicePack && providersIn(app.servicePack).includes("alibaba") && app.asrModel !== ALI_FILETRANS_MODEL && (
-          <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key">
-            Key Alibaba
-            <input
-              id="ali-key"
-              className={FIELD}
-              type={showKey ? "text" : "password"}
-              placeholder="sk-… chỉ lưu trên máy này"
-              autoComplete="off"
-              value={app.alibabaKey}
-              onChange={(event) => app.setAlibabaKey(event.target.value)}
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-muted">Cách dịch</span>
+          {!showRoomPrice && (
+            <button
+              type="button"
+              className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
+              onClick={() => void app.refreshModels()}
+              disabled={app.modelBusy}
+            >
+              {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+              Đồng bộ key
+            </button>
+          )}
+        </div>
+        <VoiceLanes
+          modelId={app.modelId}
+          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
+          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
+          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
+          priceFor={(id) =>
+            showRoomPrice
+              ? modelFacts(app.board, runDoor, id, "").price
+              : ownModelPrice(app.board, id)
+          }
+          onPick={(id) => app.chooseVoice(id)}
+        />
+        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
+        <details className="text-sm text-muted">
+          <summary className="cursor-pointer">Nhập mã model khác</summary>
+          <div className="pt-2">
+            <ModelPicker
+              models={app.catalog}
+              value={app.modelId}
+              remote={showRoomPrice ? null : app.remoteIds}
+              board={showRoomPrice ? app.board : null}
+              door={showRoomPrice ? runDoor : null}
+              onChange={app.chooseVoice}
             />
-          </label>
+          </div>
+        </details>
+        <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
+          <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
+            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
+          </option>
+          <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
+            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
+          </option>
+        </Select>
+        {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
+          Chỉ gửi đoạn có tiếng người
+        </label>
+        <p className="text-sm text-muted">
+          Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
+        </p>
+        <label className="flex min-tap items-center gap-2 text-sm">
+          <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
+          Kiểm tra ngôn ngữ từng đoạn
+        </label>
+        <p className="text-sm text-muted">
+          Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.
+        </p>
+        <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
+          <option value="1">Ổn định · 1 luồng</option>
+          <option value="3">Cân bằng · 3 luồng</option>
+          <option value="4">Nhanh · 4 luồng</option>
+          <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
+          <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
+        </Select>
+        {app.threads >= 6 && (
+          <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
         )}
-        {menu && (
-          <PackPicker
-            door={door}
-            packs={menu.packs}
-            seconds={mediaSeconds}
-            narration={Boolean(narration.enabled && narrationAssign)}
-            board={app.board}
-            groqMarkup={runDoor.markup}
-            groqCustom={runDoor.custom}
-            aliMarkup={menu.alibaba.markup}
-            aliCustom={menu.alibaba.custom}
-            selectedId={packOn ? app.servicePack?.id ?? null : null}
-            onSelect={(pack) => app.setServicePack(pack)}
-          />
-        )}
+      </section>
+
+      <section id="tool-phim" role="tabpanel" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={(value) => {
-            if (value === app.source || !askReplace("Đổi ngôn ngữ nguồn")) return;
-            app.setSource(value);
-          }}>
+          <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
             {SRC_LANGS.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -1116,58 +1012,16 @@ export function Studio() {
         </details>
 
         <div className="grid gap-2 sm:grid-cols-2">
-          <FileTile icon={<Clapperboard className="size-5" />} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={pickVideo} />
-          <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={pickAudio} />
+          <FileTile icon={<Clapperboard className="size-5" />} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
+          <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
         </div>
         <label className="grid gap-1 text-sm text-muted">
           Hoặc link file trực tiếp
           <span className="relative">
             <Link2 className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
-            <input
-              className={FIELD + " pl-9"}
-              type="url"
-              placeholder="https://…/phim.mp4"
-              value={urlDraft}
-              onChange={(event) => setUrlDraft(event.target.value)}
-              onBlur={() => {
-                if (urlDraft.trim() === app.url.trim()) return;
-                if (!askReplace("Đổi link")) {
-                  setUrlDraft(app.url);
-                  return;
-                }
-                app.setUrl(urlDraft);
-              }}
-            />
+            <input className={FIELD + " pl-9"} type="url" placeholder="https://…/phim.mp4" value={app.url} onChange={(event) => app.setUrl(event.target.value)} />
           </span>
         </label>
-        <Select
-          label="Nhận dạng link"
-          value={app.asrModel === ALI_FILETRANS_MODEL ? ALI_FILETRANS_MODEL : "whisper"}
-          onChange={(value) => {
-            if (value === ALI_FILETRANS_MODEL) app.setAsrModel(ALI_FILETRANS_MODEL);
-            else if (app.asrModel === ALI_FILETRANS_MODEL) app.setAsrModel("whisper-large-v3-turbo");
-          }}
-        >
-          <option value="whisper">Whisper — tải về máy, cắt đoạn</option>
-          <option value={ALI_FILETRANS_MODEL}>Alibaba — gửi link, không tải về máy</option>
-        </Select>
-        {app.asrModel === ALI_FILETRANS_MODEL && !(runDoor.open && payByRoom) && (
-          <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key-link">
-            Key Alibaba
-            <input
-              id="ali-key-link"
-              className={FIELD}
-              type={showKey ? "text" : "password"}
-              placeholder="sk-… chỉ lưu trên máy này"
-              autoComplete="off"
-              value={app.alibabaKey}
-              onChange={(event) => app.setAlibabaKey(event.target.value)}
-            />
-          </label>
-        )}
-        {app.asrModel === ALI_FILETRANS_MODEL && (
-          <p className="text-sm text-muted">Chỉ link file trực tiếp, như mp4 hoặc mkv. Trang xem và link luồng không chạy. Phần dịch vẫn dùng key Groq hoặc gói đang chọn. Cửa trả theo lượt và bản dùng thử không đi đường này.</p>
-        )}
         <details className="text-sm text-muted">
           <summary className="min-tap cursor-pointer">File lớn hơn 1 GB, MKV, AC3/DTS?</summary>
           <p className="pb-2">
@@ -1175,94 +1029,19 @@ export function Studio() {
             <code className="text-fg">ffmpeg -i phim.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
           </p>
         </details>
-        <p className="text-sm text-muted">Nút Tải và dịch nằm dưới khung video.</p>
-        <details className="rounded-xl border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao</summary>
-          <div className="grid gap-3 pt-2">
-        {doorPacks.length === 0 && (
-        <>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-muted">Cách dịch</span>
-          {!showRoomPrice && (
-            <button
-              type="button"
-              className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
-              onClick={() => void app.refreshModels()}
-              disabled={app.modelBusy}
-            >
-              {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-              Đồng bộ key
-            </button>
-          )}
+
+        <div className="grid gap-2">
+          <button
+            type="button"
+            className={"min-tap rounded-xl font-semibold " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+            onClick={() => (app.running ? app.cancel() : void app.start())}
+          >
+            {app.buttonLabel}
+          </button>
+          <button type="button" className="min-tap rounded-xl border border-line" onClick={app.reset}>
+            Làm lại
+          </button>
         </div>
-        <VoiceLanes
-          modelId={app.modelId}
-          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : app.remoteIds ? new Set(app.remoteIds) : null}
-          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
-          known={showRoomPrice ? Boolean(runDoor.offered) : Boolean(app.remoteIds)}
-          priceFor={(id) =>
-            showRoomPrice
-              ? modelFacts(app.board, runDoor, id, "").price
-              : ownModelPrice(app.board, id)
-          }
-          onPick={(id) => app.chooseVoice(id)}
-        />
-        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
-        <details className="text-sm text-muted">
-          <summary className="cursor-pointer">Nhập mã model khác</summary>
-          <div className="pt-2">
-            <ModelPicker
-              models={app.catalog}
-              value={app.modelId}
-              remote={showRoomPrice ? null : app.remoteIds}
-              board={showRoomPrice ? app.board : null}
-              door={showRoomPrice ? runDoor : null}
-              onChange={app.chooseVoice}
-            />
-          </div>
-        </details>
-        <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          <option value="whisper-large-v3-turbo" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3-turbo")}>
-            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : ""}
-          </option>
-          <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
-            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
-          </option>
-          <option value={ALI_FILETRANS_MODEL}>Alibaba — cả file từ link</option>
-        </Select>
-        {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
-        </>
-        )}
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
-          Chỉ gửi đoạn có tiếng người
-        </label>
-        <p className="text-sm text-muted">
-          Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
-        </p>
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
-          Kiểm tra ngôn ngữ từng đoạn
-        </label>
-        <p className="text-sm text-muted">
-          Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.
-        </p>
-        <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
-          <option value="1">Ổn định · 1 luồng</option>
-          <option value="3">Cân bằng · 3 luồng</option>
-          <option value="4">Nhanh · 4 luồng</option>
-          <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
-          <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
-        </Select>
-        {app.threads >= 6 && (
-          <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
-        )}
-        <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={app.reset}>
-          Nhận dạng lại từ đầu
-        </button>
-        <p className="text-sm text-muted">Xóa phụ đề hiện tại, kể cả câu đã sửa, rồi nghe lại. Việc này tính phí thêm một lần.</p>
-          </div>
-        </details>
       </section>
 
       <section id="tool-cast" role="tabpanel" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
@@ -1583,7 +1362,6 @@ export function Studio() {
       </>
       )}
     </main>
-    </AppShell>
   );
 }
 
@@ -1691,15 +1469,15 @@ function VoiceLanes({
             type="button"
             disabled={closed}
             onClick={() => id && onPick(id)}
-            className={"min-tap h-auto min-w-0 whitespace-normal rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "choice-on" : "border-line bg-bg")}
+            className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
           >
-            <span className="block text-sm font-semibold leading-tight">{lane.title}</span>
-            <span className={"choice-sub mt-0.5 block text-xs leading-snug " + (on ? "" : "text-muted")}>{lane.fit}</span>
-            <span className={"choice-sub mt-0.5 block text-xs leading-snug " + (on ? "" : "text-muted")}>
+            <span className="block text-sm font-semibold">{lane.title}</span>
+            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
+            <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>
               {lane.pace}
-              {price ? <span className="font-medium"> · {price}</span> : null}
+              {price ? ` · ${price}` : ""}
             </span>
-            <span className={"choice-sub mt-1 block text-[0.7rem] leading-tight " + (on ? "" : "text-muted opacity-80")}>
+            <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>
               {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
             </span>
           </button>
@@ -1712,9 +1490,9 @@ function VoiceLanes({
 
 function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text: string }) {
   return (
-    <button type="button" onClick={onClick} className={"min-tap h-auto whitespace-normal rounded-xl border px-3 py-2 text-left " + (on ? "choice-on" : "border-line bg-bg")}>
+    <button type="button" onClick={onClick} className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
       <span className="block text-sm font-semibold">{title}</span>
-      <span className={"choice-sub block text-xs " + (on ? "" : "text-muted")}>{text}</span>
+      <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{text}</span>
     </button>
   );
 }
@@ -1751,7 +1529,6 @@ function FileTile({ icon, title, name, hint, accept, onFile }: { icon: ReactNode
         accept={accept}
         onChange={(event) => {
           onFile(event.target.files?.[0] || null);
-          event.currentTarget.value = "";
           event.currentTarget.blur();
           window.scrollTo(0, 0);
         }}
@@ -1853,8 +1630,6 @@ function Stage({
   onSpeak,
   speechBusy,
   onPause,
-  narrationEnabled,
-  onNarration,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>;
   segs: Seg[];
@@ -1866,8 +1641,6 @@ function Stage({
   onSpeak: (index: number) => void;
   speechBusy: () => boolean;
   onPause: () => void;
-  narrationEnabled: boolean;
-  onNarration: () => void;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const panelBoxRef = useRef<HTMLDivElement>(null);
@@ -1885,7 +1658,6 @@ function Stage({
   const [hasMedia, setHasMedia] = useState(false);
   const [fit, setFit] = useState<CSSProperties>({});
   const [bright, setBright] = useState(1);
-  const [hint, setHint] = useState(false);
   const segsRef = useRef(segs);
   const subRef = useRef(sub);
   const leadRef = useRef(lead);
@@ -1902,21 +1674,6 @@ function Stage({
   onSpeakRef.current = onSpeak;
   busyRef.current = speechBusy;
   onPauseRef.current = onPause;
-  useEffect(() => {
-    try {
-      setHint(localStorage.getItem("ggest_hint") !== "1");
-    } catch {
-      setHint(true);
-    }
-  }, []);
-  const dismissHint = () => {
-    setHint(false);
-    try {
-      localStorage.setItem("ggest_hint", "1");
-    } catch {
-      /* máy không cho lưu */
-    }
-  };
   const idxRef = useRef(-1);
   const speakRef = useRef("");
   const hideT = useRef(0);
@@ -2330,8 +2087,11 @@ function Stage({
         data-on="0"
         className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
       />
+      {!hasMedia && paused && (
+        <p className="pointer-events-none absolute inset-x-0 top-[calc(50%+2.75rem)] z-10 px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
+      )}
       <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
-        <div className="flex flex-wrap justify-end gap-1.5 p-2">
+        <div className="flex justify-end gap-2 p-2">
           <Tiny label="Tỷ lệ khung hình" onClick={() => setAr((n) => (n + 1) % ARS.length)}>
             {ARS[ar][0]}
           </Tiny>
@@ -2345,11 +2105,8 @@ function Stage({
           >
             <RotateCw className="size-4" />
           </Tiny>
-          <Tiny label={narrationEnabled ? "Tắt thuyết minh" : "Bật thuyết minh"} onClick={onNarration}>
-            {narrationEnabled ? "Đọc" : "Im"}
-          </Tiny>
           <Tiny label="Cài đặt phụ đề" onClick={() => setPanel((open) => !open)}>
-            Aa
+            <Settings className="size-4" />
           </Tiny>
           <Tiny label="Toàn màn hình" onClick={() => void toggleFull()}>
             <Square className="size-4" />
@@ -2367,94 +2124,59 @@ function Stage({
         >
           {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
         </button>
-        <div className="grid gap-0.5 px-2.5 pb-2">
-          <div className="flex items-center gap-2">
-            <span ref={tcRef} className="w-11 shrink-0 text-center text-xs text-white tabular-nums">
-              0:00
-            </span>
-            <input
-              ref={seekRef}
-              className="min-h-11 min-w-0 flex-1 accent-accent"
-              type="range"
-              min={0}
-              max={100000}
-              defaultValue={0}
-              aria-label="Tua video"
-              onInput={(event) => {
-                drag.current = true;
-                const video = videoRef.current;
-                const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
-                if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
-              }}
-              onChange={(event) => {
-                const video = videoRef.current;
-                const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
-                if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
-                drag.current = false;
-              }}
-            />
-            <span ref={tdRef} className="w-11 shrink-0 text-center text-xs text-white tabular-nums">
-              0:00
-            </span>
-          </div>
-          <div className="flex items-center justify-center gap-1.5">
-            <Tiny
-              label="Tua lui 10 giây"
-              onClick={() => {
-                const video = videoRef.current;
-                if (!video) return;
-                video.currentTime = Math.max(0, video.currentTime - 10);
-                showHud(`−10 giây · ${fmt(video.currentTime)}`);
-              }}
-            >
-              −10
-            </Tiny>
-            <Tiny
-              label="Tua tới 10 giây"
-              onClick={() => {
-                const video = videoRef.current;
-                if (!video) return;
-                const duration = Number.isFinite(video.duration) ? video.duration : video.currentTime + 10;
-                video.currentTime = Math.min(duration, video.currentTime + 10);
-                showHud(`+10 giây · ${fmt(video.currentTime)}`);
-              }}
-            >
-              +10
-            </Tiny>
-            <Tiny
-              label="Tắt hoặc bật tiếng"
-              onClick={() => {
-                const video = videoRef.current;
-                if (video) video.muted = !video.muted;
-              }}
-            >
-              {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-            </Tiny>
-            <Tiny
-              label="Tốc độ phát"
-              onClick={() => {
-                const video = videoRef.current;
-                if (!video) return;
-                video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
-              }}
-            >
-              {rate}×
-            </Tiny>
-          </div>
+        <div className="flex items-center gap-2 px-3 pb-3">
+          <span ref={tcRef} className="w-12 text-center text-xs text-white">
+            0:00
+          </span>
+          <input
+            ref={seekRef}
+            className="min-tap flex-1 accent-accent"
+            type="range"
+            min={0}
+            max={100000}
+            defaultValue={0}
+            aria-label="Tua video"
+            onInput={(event) => {
+              drag.current = true;
+              const video = videoRef.current;
+              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+              if (tcRef.current) tcRef.current.textContent = fmt((Number((event.target as HTMLInputElement).value) / 100000) * duration);
+            }}
+            onChange={(event) => {
+              const video = videoRef.current;
+              const duration = video && Number.isFinite(video.duration) ? video.duration : 0;
+              if (video) video.currentTime = (Number(event.target.value) / 100000) * duration;
+              drag.current = false;
+            }}
+          />
+          <span ref={tdRef} className="w-12 text-center text-xs text-white">
+            0:00
+          </span>
+          <Tiny
+            label="Tắt hoặc bật tiếng"
+            onClick={() => {
+              const video = videoRef.current;
+              if (video) video.muted = !video.muted;
+            }}
+          >
+            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+          </Tiny>
+          <Tiny
+            label="Tốc độ phát"
+            onClick={() => {
+              const video = videoRef.current;
+              if (!video) return;
+              video.playbackRate = SPEEDS[(SPEEDS.indexOf(video.playbackRate) + 1) % SPEEDS.length] ?? 1;
+            }}
+          >
+            {rate}×
+          </Tiny>
         </div>
       </div>
       {panel && full && panelNode}
     </div>
-    {!hasMedia && paused && !full && <p className="frame-hint">Chọn video để phát ở đây</p>}
     {panel && !full && panelNode}
-    {hint && (
-      <p className="gesture-hint">
-        Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy 10 giây.{" "}
-        <button type="button" className="underline" onClick={dismissHint}>
-          Đã hiểu
-        </button>
-      </p>
-    )}
+    <p className="gesture-hint">Kéo ngang để tua. Kéo dọc bên phải chỉnh tiếng, bên trái chỉnh sáng. Chạm đúp hai mé để nhảy 10 giây.</p>
     </div>
   );
 }
@@ -2483,7 +2205,7 @@ function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
 
 function Tiny({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" aria-label={label} className="inline-flex min-tap shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
+    <button type="button" aria-label={label} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
       {children}
     </button>
   );

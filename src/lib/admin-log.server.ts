@@ -8,46 +8,10 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
-    version: "3.18.0",
-    time: "14:36 ngày 12/11/2026",
+    version: "3.14.0",
+    time: "17:21 ngày 12/11/2026",
     area: "khac",
-    text: "Nhận dạng từ link file trực tiếp bằng qwen-audio-3.0-asr-flash-filetrans. Khách dán link, máy chủ nộp job bất đồng bộ rồi hỏi kết quả, không tải file về. Key Alibaba của khách, không dùng key phòng và không trừ ví. Trang xem, m3u8 và địa chỉ nội bộ bị từ chối. Kết quả JSON chỉ tải từ tên miền nhà cung cấp. Cửa trả theo lượt và bản dùng thử vẫn không nhận link. Điều khoản 2026-11-12.3 vì link được gửi cho nhà cung cấp tải file. Chưa gọi thử bằng key thật, chưa xem trên điện thoại thật.",
-  },
-  {
-    version: "3.17.1",
-    time: "09:15 ngày 12/11/2026",
-    area: "khac",
-    text: "Chỉnh lại v3.17.0 cho đỡ cứng. Ba gạch nằm trong hàng đầu, không nổi đè logo. Cột trượt ra, mục đang chọn chỉ có vạch vàng. Bỏ khuôn 11–22rem: thẻ cao theo nội dung cao nhất của hàng, một thẻ thì trải hết ngang. Chỉ nhật ký và danh sách thuật ngữ tự cuộn. Thanh tua tách một hàng, nút giữ đủ 44px. Khôi phục dòng nhật ký khách 3.16.2 bị sót. Điều khoản không đổi. Chưa xem trên điện thoại thật.",
-  },
-  {
-    version: "3.17.0",
-    time: "08:41 ngày 12/11/2026",
-    area: "khac",
-    text: "Làm trên nền v3.16.2. Cột trái dùng chung phòng dịch và trang quản lý: từ 1024px hiện sẵn, hẹp hơn thì ba gạch mở ngăn. Đăng xuất rời khỏi thẻ tài khoản, nằm cuối cột, chữ đỏ. Thẻ trong hàng cao bằng nhau, nội dung dài cuộn trong thẻ. Sửa 10 chỗ hiển thị: câu chọn video xuống dưới khung 16:9, nút tốc độ gọn trong khung, xem trước thư không tràn chữ, cột chất lượng theo ngày cao theo số câu, nhật ký nội bộ cuộn trong thẻ, nút mở cửa không còn vàng khi cửa đang mở, giá riêng không được thấp hơn giá gốc, thuật ngữ hiện số mục trong file gốc khi phòng đang 0, dòng thư đọc đúng công tắc xác minh và quên mật khẩu, dòng phụ của lựa chọn giọng là chữ đen trên nền vàng. Không đổi điều khoản, vẫn 2026-11-12.2. Chưa xem trên điện thoại thật.",
-  },
-  {
-    version: "3.16.2",
-    time: "05:06 ngày 12/11/2026",
-    area: "tien",
-    text: "Vá lỗ giây khai báo. Giây lúc mở phiếu chỉ là ước tính giữ, không phải trần chi. chargeWith tự tính trần xấu nhất của đúng request rồi chargeTicketWith trước khi gọi: dịch lấy cả body làm token vào và max_completion_tokens nếu từ 1 đến 8192, không thì 8192; nhận dạng WAV PCM lấy đúng giây trong header, file khác lấy byte×8/6000 (không tin Duration của WebM). Trần lớn hơn phần giữ còn lại thì restoreTicketWith và không gọi. Xong chỉ giữ số thật, không quá phần đã giữ. HTTP lỗi hoặc ném lỗi thì trả lại cả khoản vừa giữ. Hai request song song vẫn khóa FOR UPDATE. Multipart thì đo phần file khi có content-type. Opus 20 kbps × 60 giây trần khoảng 200 giây, vẫn nằm trong khoản giữ phim thường (1,5 lần nhận dạng cộng dịch). File bitrate cao có thể bị từ chối dù phim ngắn: chấp nhận, không ghi cho khách. Không migration mới. Điều khoản không đổi, vẫn 2026-11-12.2.",
-  },
-  {
-    version: "3.16.1",
-    time: "04:25 ngày 12/11/2026",
-    area: "tien",
-    text: "Vá lỗ phiếu v3.16.0. run_tickets.scope (migration 0020, mặc định full). openRunTicket ghi scope lúc giữ tiền. chargeWith đọc ticketKind và từ chối /audio/transcriptions trên phiếu translate trước khi gọi Groq, nên phòng không trả nhà cung cấp rồi chỉ thu được phần giữ. Chat trên phiếu đó vẫn trừ như cũ. Điều khoản không đổi vì lời hứa 2026-11-12.2 đã nói dịch lại không tính nhận dạng.",
-  },
-  {
-    version: "3.16.0",
-    time: "03:48 ngày 12/11/2026",
-    area: "tien",
-    text: "Làm trên nền v3.15.0. Gỡ nút Làm lại khỏi thanh xem; nhận dạng lại từ đầu nằm trong Nâng cao và vẫn hỏi. Đổi file, âm thanh, link hoặc ngôn ngữ nguồn khi đang có phụ đề phải xác nhận, chưa đồng ý thì không đổi ô. Nút chạy khi đã xong thì ẩn. Dịch lại giữ câu sửa tay, không xóa câu cũ trước khi câu mới về, phiếu cửa trả theo lượt dùng scope translate (không cộng nhận dạng, không giữ thuyết minh). Điều khoản 2026-11-12.2. Phụ đề, tên file, kích thước và chỗ phát lưu trên máy khách (IndexedDB), không lưu video.",
-  },
-  {
-    version: "3.15.0",
-    time: "02:44 ngày 12/11/2026",
-    area: "khac",
-    text: "Làm trên nền v3.14.0. Chỉ xếp lại phòng dịch, không đổi đường nhận dạng, dịch, hai cửa tiền hay điều khoản. Thẻ Bắt đầu gộp key và phim; model, luồng, lọc tiếng nằm trong Nâng cao đóng sẵn. Nút chạy và trạng thái xuống dưới khung video. Khi đã có câu và không đang chạy, ẩn tab chuẩn bị (is-watch), xuất file sang cạnh danh sách câu. Player thêm tua ±10 giây, công tắc thuyết minh và nút Aa. Gợi ý cử chỉ chỉ hiện đến khi bấm Đã hiểu.",
+    text: "Giai đoạn 1 dựng lại giao diện, theo yêu cầu người dùng (Claude sửa, nhánh work, nền v3.13.0). Chỉ nền móng, chưa đổi bố cục Studio. Thêm src/lib/theme/theme.ts (token sáng/tối, phông trong danh sách, icon theo chỗ đặt, parseTheme làm sạch, checkTheme chặn tương phản dưới 4.5/3.5, themeToCss, modeScript) và theme.test.ts (11 test). theme-room.ts: getLiveTheme công khai, getThemeAdmin/saveThemeDraft/publishTheme/loadThemeToDraft chỉ Chủ, lưu ở room_settings (theme_live, theme_draft, theme_history tối đa 10), không cần migration. __root.tsx đọc theme ở loader, tiêm CSS biến và chọn sáng/tối trước khi vẽ. styles.css thêm token error/success/warning/info/rank-* và thay màu cứng trùng token bằng biến; giá trị tối giữ nguyên. Thêm src/components/ui (Icon theo slot, Button, Card, Badge, Field, Segmented), icon dùng Phosphor (MIT, 6 độ đậm). Admin có tab «Giao diện» (theme-board.tsx). Mặc định mode=dark nên khách không thấy gì đổi. Còn màu cứng ở quality-view, top-up, admin-desk, studio (ô chọn màu phụ đề), logo SVG: làm ở giai đoạn 2 cùng các màn. Chưa thử tab Giao diện bằng tài khoản Chủ thật. Không đổi điều khoản.",
   },
   {
     version: "3.11.0",

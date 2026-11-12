@@ -16,8 +16,6 @@ import { Route as GoiRouteImport } from './routes/goi'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as YeuCauRouteImport } from './routes/yeu-cau'
-import { Route as ApiRelayAlibabaRouteImport } from './routes/api/relay-alibaba'
-import { Route as ApiRoomAlibabaRouteImport } from './routes/api/room-alibaba'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPayCassoRouteImport } from './routes/api/pay/casso'
@@ -58,16 +56,6 @@ const YeuCauRoute = YeuCauRouteImport.update({
   path: '/yeu-cau',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRelayAlibabaRoute = ApiRelayAlibabaRouteImport.update({
-  id: '/api/relay-alibaba',
-  path: '/api/relay-alibaba',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiRoomAlibabaRoute = ApiRoomAlibabaRouteImport.update({
-  id: '/api/room-alibaba',
-  path: '/api/room-alibaba',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiRoomGroqRoute = ApiRoomGroqRouteImport.update({
   id: '/api/room-groq',
   path: '/api/room-groq',
@@ -97,8 +85,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
-  '/api/relay-alibaba': typeof ApiRelayAlibabaRoute
-  '/api/room-alibaba': typeof ApiRoomAlibabaRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -112,8 +98,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
-  '/api/relay-alibaba': typeof ApiRelayAlibabaRoute
-  '/api/room-alibaba': typeof ApiRoomAlibabaRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -128,8 +112,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
-  '/api/relay-alibaba': typeof ApiRelayAlibabaRoute
-  '/api/room-alibaba': typeof ApiRoomAlibabaRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -145,8 +127,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
-    | '/api/relay-alibaba'
-    | '/api/room-alibaba'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -160,8 +140,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
-    | '/api/relay-alibaba'
-    | '/api/room-alibaba'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -175,8 +153,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
-    | '/api/relay-alibaba'
-    | '/api/room-alibaba'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -191,8 +167,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
   YeuCauRoute: typeof YeuCauRoute
-  ApiRelayAlibabaRoute: typeof ApiRelayAlibabaRoute
-  ApiRoomAlibabaRoute: typeof ApiRoomAlibabaRoute
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPayCassoRoute: typeof ApiPayCassoRoute
@@ -250,20 +224,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof YeuCauRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/relay-alibaba': {
-      id: '/api/relay-alibaba'
-      path: '/api/relay-alibaba'
-      fullPath: '/api/relay-alibaba'
-      preLoaderRoute: typeof ApiRelayAlibabaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/room-alibaba': {
-      id: '/api/room-alibaba'
-      path: '/api/room-alibaba'
-      fullPath: '/api/room-alibaba'
-      preLoaderRoute: typeof ApiRoomAlibabaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/room-groq': {
       id: '/api/room-groq'
       path: '/api/room-groq'
@@ -303,8 +263,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   TaiKhoanRoute: TaiKhoanRoute,
   YeuCauRoute: YeuCauRoute,
-  ApiRelayAlibabaRoute: ApiRelayAlibabaRoute,
-  ApiRoomAlibabaRoute: ApiRoomAlibabaRoute,
   ApiRoomGroqRoute: ApiRoomGroqRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPayCassoRoute: ApiPayCassoRoute,

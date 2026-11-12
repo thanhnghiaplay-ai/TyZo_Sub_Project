@@ -21,7 +21,6 @@ describe("bàn trả theo lượt", () => {
   it("giá riêng thắng phần trăm, không có giá riêng thì cộng phần trăm", () => {
     assert.equal(quoteVnd(1000, 25, 0), 1250);
     assert.equal(quoteVnd(1000, 25, 1800), 1800);
-    assert.equal(quoteVnd(1000, 25, 800), 1000);
   });
 
   it("mốc ngày theo giờ Việt Nam", () => {
