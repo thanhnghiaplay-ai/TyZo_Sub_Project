@@ -89,6 +89,8 @@ import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 import { alibabaAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";
+import { getServiceMenu } from "@/lib/pack-room";
+import { turnPackProblem } from "@/lib/turn-pack";
 
 type AsrResult = AsrPartResult;
 
@@ -735,6 +737,11 @@ export function usePipeline() {
     const token = activeKey();
     const link = url.trim();
     const chosen = modelId.trim();
+    if (roomPayRef.current) {
+      const menu = await getServiceMenu().catch(() => null);
+      const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });
+      if (packed) return say(packed, true);
+    }
     if (asrModel === ALI_FILETRANS_MODEL) {
       if (roomPayRef.current) return say(alibabaAsrOnRoomPayProblem(), true);
       const aliKey = alibabaKeyRef.current.trim();

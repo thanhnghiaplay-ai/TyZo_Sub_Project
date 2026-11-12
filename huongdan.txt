@@ -2,10 +2,10 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-13 00:10 UTC+7)
-- Số phiên bản người dùng thấy trên work: v3.22.0, trong src/lib/app-version.ts.
-- Điều khoản: TERMS_VERSION = 2026-11-13.1 trong src/components/entry-gate.tsx. Khách phải đồng ý lại.
-- Bước 4: Chủ đánh dấu model cho thuê phòng. Khách dùng key của mình chỉ chọn model đó. Whisper cần key Groq, Filetrans cần key Alibaba. Dịch vẫn là model Groq. Chủ chưa lưu thì cách chọn giữ như trước. Cửa trả theo lượt chưa đổi.
+ĐANG CHẠY (2026-11-13 00:20 UTC+7)
+- Số phiên bản người dùng thấy trên work: v3.23.0, trong src/lib/app-version.ts.
+- Điều khoản: TERMS_VERSION = 2026-11-13.2 trong src/components/entry-gate.tsx. Khách phải đồng ý lại.
+- Bước 5: cửa trả theo lượt, nếu Chủ đã mở gói, khách chọn một gói. Model nhận dạng và dịch theo gói. Lần chạy dùng key của phòng. Gói có việc Alibaba chưa chạy. Chưa có gói thì vẫn Whisper như trước. Giá từng gói chưa hiện.
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.

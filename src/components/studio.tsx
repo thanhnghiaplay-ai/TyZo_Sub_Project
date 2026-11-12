@@ -28,6 +28,8 @@ import { usePipeline } from "@/components/use-pipeline";
 import { groqListHolds } from "@/lib/sub/asr-house";
 import { ownKeyAvailable, rentOpen } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
+import { TurnPackList } from "@/components/turn-pack-list";
+import { turnPackModels } from "@/lib/turn-pack";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
@@ -459,6 +461,7 @@ export function Studio() {
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [menuOpen, setMenuOpen] = useState(false);
   const [payByRoom, setPayByRoom] = useState(false);
+  const [turnLocked, setTurnLocked] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const runDoor = useRunDoor();
   const rentShow = useRentShow();
@@ -635,6 +638,7 @@ export function Studio() {
   const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
+  const lockTurnModels = showRoomPrice && turnLocked;
 
   return (
     <main className="studio-shell">
@@ -843,7 +847,7 @@ export function Studio() {
           <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
         ) : runDoor.open ? (
           <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cách trả Groq</h2>
+            <h2 className="text-sm font-semibold">Cách trả</h2>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
@@ -853,7 +857,17 @@ export function Studio() {
               </button>
             </div>
             {payByRoom && (
-              <p className="text-sm text-muted">Lần chạy này dùng key đã lưu ở trang quản trị. Bạn không cần nhập key và không cần bấm đồng bộ.</p>
+              <p className="text-sm text-muted">Lần chạy này dùng key của phòng. Bạn không nhập key. Nếu có gói, hãy chọn một gói.</p>
+            )}
+            {payByRoom && (
+              <TurnPackList
+                onLocked={setTurnLocked}
+                onPick={(pack) => {
+                  const next = turnPackModels(pack);
+                  if (next.asr) app.setAsrModel(next.asr);
+                  if (next.chat) app.chooseVoice(next.chat);
+                }}
+              />
             )}
           </div>
         ) : (
@@ -897,6 +911,8 @@ export function Studio() {
             />
           </label>
         )}
+        {!lockTurnModels && (
+        <>
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted">Cách dịch</span>
           {!showRoomPrice && (
@@ -953,6 +969,8 @@ export function Studio() {
         )}
         {(groqAllow || aliAllow) && (
           <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Dịch vẫn dùng model Groq đã mở.</p>
+        )}
+        </>
         )}
         {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
         <label className="flex min-tap items-center gap-2 text-sm">
