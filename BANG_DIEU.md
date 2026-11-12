@@ -16,15 +16,15 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v3.17.1 trên nhánh `main` |
-| Bản đang làm | v3.17.1 trên nhánh `work`, cùng bản với `main`. Điều khoản `2026-11-12.2` |
-| Điều khoản | 2026-11-12.2 |
+| Bản đang làm | v3.18.0 trên nhánh `work`: nhận dạng cả file từ link. Điều khoản `2026-11-12.3` |
+| Điều khoản | 2026-11-12.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa. Hết khoản giữ thì không gọi đoạn đó |
 | Kho | `thanhnghiaplay-ai/TyZo_Sub_Project`. Bản nén không làm gốc. Trước khi sửa, số phiên bản trong máy phải khớp `main` |
 | Nhánh | Sửa trên `work`. Nhánh `main` chỉ đổi khi người dùng nói đúng câu «đẩy chính thức» |
 
-Bảng này đã ở trên `main` cùng v3.17.1.
+Bảng trên `main` vẫn là v3.17.1. Bản này trên `work` là v3.18.0.
 
 ## Ba vai
 
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-v3.17.1 đã lên `main` lúc 13:32 ngày 12/11/2026. `work` và `main` cùng bản này.
+v3.18.0 đang trên `work`, chưa lên `main`. Nhận dạng link file trực tiếp bằng model Alibaba của khách. Cửa trả theo lượt chưa đi đường này.
 
 ## Thư — còn lại
 

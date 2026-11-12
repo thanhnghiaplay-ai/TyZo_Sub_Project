@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.18.0",
+    time: "14:36 ngày 12/11/2026",
+    area: "khac",
+    text: "Nhận dạng từ link file trực tiếp bằng qwen-audio-3.0-asr-flash-filetrans. Khách dán link, máy chủ nộp job bất đồng bộ rồi hỏi kết quả, không tải file về. Key Alibaba của khách, không dùng key phòng và không trừ ví. Trang xem, m3u8 và địa chỉ nội bộ bị từ chối. Kết quả JSON chỉ tải từ tên miền nhà cung cấp. Cửa trả theo lượt và bản dùng thử vẫn không nhận link. Điều khoản 2026-11-12.3 vì link được gửi cho nhà cung cấp tải file. Chưa gọi thử bằng key thật, chưa xem trên điện thoại thật.",
+  },
+  {
     version: "3.17.1",
     time: "09:15 ngày 12/11/2026",
     area: "khac",

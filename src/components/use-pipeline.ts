@@ -31,6 +31,8 @@ import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
 import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
+import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
+import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
 import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
@@ -361,7 +363,7 @@ export function usePipeline() {
     if (savedModel) setModelId(savedModel);
     if (readStore("genter") === "0") setAllowEnterprise(false);
     const whisper = readStore("gasr");
-    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo") setAsrModel(whisper);
+    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo" || whisper === ALI_FILETRANS_MODEL) setAsrModel(whisper);
     if (readStore("gvad") === "1") setSpeechVadState(true);
     if (readStore("glang") === "1") setLangCheckState(true);
     setTitle(readStore("gtitle"));
@@ -825,6 +827,7 @@ export function usePipeline() {
     const redo = Math.ceil(resendSeconds(j0.segs, j0.appliedSig, sigNow));
     if (retranslate && redo < 1) return say("Không còn câu nào cần dịch lại.", true);
     if (roomPayRef.current) {
+      if (asrModel === ALI_FILETRANS_MODEL) return say("Cửa trả theo lượt chưa nhận dạng từ link. Tắt trả theo lượt và nhập key Alibaba.", true);
       const chosenFile = audioFile || file;
       if (!chosenFile) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
@@ -849,6 +852,13 @@ export function usePipeline() {
       }
     } else if (retranslate) {
       say("Đang dịch lại trên key của bạn. Câu đã sửa được giữ. Câu cũ còn đến khi câu mới về.");
+    }
+    if (!retranslate && asrModel === ALI_FILETRANS_MODEL) {
+      if (file || audioFile) return say("Model này chỉ dùng với link file trực tiếp, không dùng file trên máy.", true);
+      if (!link) return say("Hãy dán link file trực tiếp.", true);
+      const linkProblem = looksLikePageLink(link) ? "Đây là trang xem, không phải file trực tiếp." : /\.m3u8(\?|#|$)/i.test(link) ? "Link luồng chưa hỗ trợ. Hãy dùng link file trực tiếp." : "";
+      if (linkProblem) return say(linkProblem, true);
+      if (alibabaKeyRef.current.trim().length < 20) return say("Hãy nhập key Alibaba. Model này không dùng key Groq để nhận dạng.", true);
     }
 
     const j = job.current;
@@ -876,9 +886,10 @@ export function usePipeline() {
       /* resume có thể không có */
     }
 
-    const asrProvider = pack?.roles.asr?.provider ?? "groq";
-    const asrKey = pack ? keyOf(asrProvider) : token;
-    const asrId = pack?.roles.asr?.model ?? asrModel;
+    const linkAsr = asrModel === ALI_FILETRANS_MODEL;
+    const asrProvider = linkAsr ? "alibaba" : pack?.roles.asr?.provider ?? "groq";
+    const asrKey = linkAsr ? alibabaKeyRef.current.trim() : pack ? keyOf(asrProvider) : token;
+    const asrId = linkAsr ? ALI_FILETRANS_MODEL : pack?.roles.asr?.model ?? asrModel;
 
     const onWait = (message: string) => {
       if (my === j.runId) say(message);
@@ -1487,7 +1498,72 @@ export function usePipeline() {
       j.diagLang = source;
       const id = mediaId();
       const havePcm = Boolean((j.pcm || j.stream) && j.pcmId === id);
-      if (!retranslate && (j.pcmId !== id || j.doneSource !== source)) {
+      if (!retranslate && (j.pcmId !== id || j.doneSource !== source) && asrId === ALI_FILETRANS_MODEL) {
+        say("Đang gửi link để nhận dạng…");
+        const video = videoRef.current;
+        if (video) {
+          video.src = link;
+          video.load();
+        }
+        const heard = await recognizeFileUrl({
+          url: link,
+          language: source,
+          key: asrKey,
+          signal,
+          onWait,
+        });
+        if (my !== j.runId) return;
+        await ensureTrial();
+        const seconds = heard.seconds > 0 ? heard.seconds : heard.sentences.reduce((n, row) => Math.max(n, row.end), 0);
+        j.segs = heard.sentences.map((row) => ({ start: row.start, end: row.end, original: row.text, raw: row.text, translation: null }));
+        j.nextPart = 1;
+        j.skipped = 0;
+        j.asrCost = Math.max(1, seconds) * asrUsd(ALI_FILETRANS_MODEL);
+        j.asrBuf.clear();
+        j.heard.clear();
+        j.failedParts = [];
+        j.decodeRetried = new Set();
+        j.retryUsedSeconds = 0;
+        j.retryReport = null;
+        j.filterRetried = new Set();
+        j.filterRetryUsed = 0;
+        j.langRetryUsed = 0;
+        j.langSuspect = 0;
+        j.langEvents = [];
+        j.qualitySent = false;
+        j.filterRetryReport = null;
+        j.heardOffset.clear();
+        j.gapSpent = 0;
+        gapPlanRef.current = null;
+        setGapPlanState(null);
+        j.rawParts = [
+          {
+            partIndex: 0,
+            start: 0,
+            end: seconds,
+            requestedLanguage: source,
+            detectedLanguage: source,
+            language: source || "(tự nhận dạng)",
+            kind: j.segs.length ? "whisper" : "whisper_empty",
+            segments: j.segs.map((seg) => ({ text: seg.original, start: seg.start, end: seg.end })),
+          },
+        ];
+        j.rejects = [];
+        j.bible = null;
+        j.analysisP = null;
+        j.bibleGo = false;
+        j.holdPosted = false;
+        setBible(null);
+        setReviewHold(false);
+        j.uses = {};
+        j.parts = [[0, Math.max(1, Math.round(seconds * SR))]];
+        j.pcm = null;
+        j.stream = null;
+        j.pcmId = id;
+        j.doneSource = source;
+        j.appliedSig = "";
+        publish(true);
+      } else if (!retranslate && (j.pcmId !== id || j.doneSource !== source)) {
         if (!havePcm) {
           say("Đang đọc cấu trúc file…");
           const primary = audioFile || file;
