@@ -25,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
+import { groqListHolds } from "@/lib/sub/asr-house";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
@@ -937,8 +938,8 @@ export function Studio() {
           <option value="whisper-large-v3" disabled={showRoomPrice && roomHeld(runDoor, "whisper-large-v3")}>
             Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : ""}
           </option>
-          <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice && roomHeld(runDoor, "qwen-audio-3.0-asr-flash-filetrans")}>
-            Alibaba Filetrans{showRoomPrice ? ` · ${roomHeld(runDoor, "qwen-audio-3.0-asr-flash-filetrans") ? "Chủ chưa mở" : roomAsrPrice(app.board, runDoor, "qwen-audio-3.0-asr-flash-filetrans")}` : ""}
+          <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice}>
+            Alibaba Filetrans{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : ""}
           </option>
         </Select>
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
@@ -1628,7 +1629,7 @@ function modelFacts(
 }
 
 function roomHeld(door: { offered: string[] | null }, id: string) {
-  return Boolean(door.offered && !door.offered.includes(id));
+  return groqListHolds(door.offered, id);
 }
 
 function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }>; offered: string[] | null }, id: string): string {

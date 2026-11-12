@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-12.3";
+export const TERMS_VERSION = "2026-11-12.4";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -112,7 +112,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
               <td>Phòng cung cấp công cụ</td>
             </tr>
             <tr>
-              <td>Key Groq và cước Groq</td>
+              <td>Key Groq, key Alibaba và cước của nhà đó khi bạn tự chọn</td>
               <td>Bạn</td>
             </tr>
             <tr>
@@ -158,27 +158,27 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
 
         <h2>1. Phòng này làm gì</h2>
         <p>
-          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key Groq của chính bạn. Phòng nhận dạng lời (Whisper trên Groq hoặc Alibaba Filetrans), dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
+          Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key của chính bạn. Phòng nhận dạng lời bằng Whisper trên Groq hoặc bằng Alibaba Filetrans khi bạn chọn nhà đó, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
-        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key Groq của mình thì cước Groq vẫn là của bạn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
-        <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá Groq công bố cộng phần chênh phòng niêm yết: nhận dạng theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn Groq báo lỗi thì không tính tiền.</p>
+        <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key của mình thì cước Groq hoặc Alibaba vẫn là của bạn, tùy nhà bạn chọn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
+        <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá nhà phát hành công bố cộng phần chênh phòng niêm yết. Bước này cửa đó chỉ nhận dạng bằng Whisper trên Groq. Nhận dạng Alibaba chỉ khi bạn chọn key của mình. Nhận dạng tính theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn nhà phát hành báo lỗi thì không tính tiền.</p>
 
         <h2>2. Điều kiện để dùng</h2>
-        <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq là của bạn. Groq tính cước cho tài khoản của bạn, không phải phí của phòng.</p>
+        <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq và key Alibaba là của bạn. Nhà đó tính cước cho tài khoản của bạn, không phải phí thuê phòng.</p>
         <p>Bạn phải đọc và bấm đồng ý bản điều khoản đang hiện. Không đồng ý thì không mở được phòng dịch. Khi phòng bật, email dùng để xác minh tài khoản và lấy lại mật khẩu. Liên kết trong thư có thời hạn. Phòng không gửi mật khẩu.</p>
 
         <h2>3. Phòng không cam kết</h2>
         <p>
           Không cam kết nhận dạng hết câu, dịch đúng ý, giữ đúng tên hay giọng nam nữ, hoặc không mất câu. Kết quả là bản để bạn xem và sửa. Bạn tự kiểm tra trước khi đăng, phát hoặc giao cho người khác.
         </p>
-        <p>Key sai, hết hạn mức Groq, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị tính tiền và khoản giữ thừa được trả lại ví.</p>
-        <p>Phòng không phải Groq, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
+        <p>Key sai, hết hạn mức Groq hoặc Alibaba, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị tính tiền và khoản giữ thừa được trả lại ví.</p>
+        <p>Phòng không phải Groq, không phải Alibaba, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
 
         <h2>4. Dữ liệu đi những đâu</h2>
         <p>
-          Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy, và khi bạn đã đăng nhập thì máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
+          Key Groq, key Alibaba, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy, và khi bạn đã đăng nhập thì máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
         </p>
-        <p>Lời thoại được gửi tới Groq để nhận dạng và dịch, theo điều khoản của Groq. File video xử lý trên máy bạn.</p>
+        <p>Lời thoại được gửi tới Groq hoặc Alibaba tùy cách nhận dạng bạn chọn, theo điều khoản của nhà đó. Với Alibaba Filetrans, link file trực tiếp cũng được gửi tới Alibaba. File video xử lý trên máy bạn.</p>
         <p>
           Mỗi lần nhận dạng xong, app gửi lên máy chủ của phòng một bản số liệu chất lượng để Chủ biết hệ thống chạy tốt hay kém. Bản này chỉ có số: phiên bản app, bạn dùng key riêng hay key của phòng, tên model, ngôn ngữ nguồn đã chọn, độ dài âm thanh, số đoạn và số câu, mức tin cậy Whisper tự báo, số đoạn lỗi, và kết quả kiểm tra ngôn ngữ nếu bạn bật. Việc này áp dụng cả khi bạn dùng key riêng và không có công tắc tắt riêng.
         </p>

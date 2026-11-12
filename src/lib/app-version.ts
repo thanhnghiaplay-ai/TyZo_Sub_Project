@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.18.0";
+export const APP_VERSION = "3.19.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.19.0",
+    time: "23:44 ngày 12/11/2026",
+    title: "Nhận dạng Alibaba tách khỏi Whisper.",
+    points: [
+      "Chọn key của bạn thì Alibaba Filetrans không còn báo chưa cập nhật.",
+      "Cửa trả theo lượt chỉ nhận dạng bằng Whisper.",
+      "Alibaba cần key Alibaba của bạn và link file trực tiếp.",
+    ],
+  },
   {
     version: "3.18.0",
     time: "22:50 ngày 12/11/2026",

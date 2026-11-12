@@ -16,8 +16,8 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.20.0 trên nhánh `main` |
-| Bản đang làm | v3.18.0 trên nhánh `work`: giai đoạn 1 giao diện mới (token sáng/tối, thành phần dùng chung, tab Admin «Giao diện»). Trước đó v3.13.0: ô Kiểm tra ngôn ngữ từng đoạn, mức tin cậy trong tab Kiểm tra, tab Admin «Chất lượng» (chỉ Chủ), điều khoản mới 2026-11-12.3 |
-| Điều khoản | 2026-11-12.3 |
+| Bản đang làm | v3.19.0 trên nhánh `work`: bước 1 tách nhà nhận dạng. Alibaba Filetrans không còn bị danh sách model Groq khóa. Key của khách thì chọn được. Cửa trả theo lượt chỉ Whisper. Điều khoản `2026-11-12.4`. Trước đó v3.18.0 chọn nhận dạng Alibaba hoặc Whisper |
+| Điều khoản | 2026-11-12.4 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Cửa trả theo lượt dùng key Chủ đã lưu trên máy chủ, khách không thấy key. Cửa giữ khoản ước tính, trừ số thực khi xong, trả phần thừa |

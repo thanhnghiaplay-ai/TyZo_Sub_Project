@@ -87,6 +87,7 @@ import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelM
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
+import { alibabaAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
 
 type AsrResult = AsrPartResult;
 
@@ -734,6 +735,7 @@ export function usePipeline() {
     const link = url.trim();
     const chosen = modelId.trim();
     if (asrModel === ALI_FILETRANS_MODEL) {
+      if (roomPayRef.current) return say(alibabaAsrOnRoomPayProblem(), true);
       const aliKey = alibabaKeyRef.current.trim();
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
       if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);

@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 17:21 (UTC+7) — v3.18.0 trên nhánh work (giai đoạn 1 giao diện mới: token sáng/tối, thành phần dùng chung, tab Admin «Giao diện»). Trước đó v3.13.0 trên nhánh work (số liệu chất lượng gửi về Admin, thẻ Chất lượng chỉ Chủ xem, điều khoản 2026-11-12.3). Trước đó v3.12.1, v3.12.0 (ô Kiểm tra ngôn ngữ từng đoạn), v3.11.0 (nút Lưu bản Whisper), v3.10.11  (Claude sửa: nút Quản lý/Admin mất sau khi dịch, thử lại khi lỗi tạm; chưa tái hiện trên Vercel). Main vẫn v2.20.0. |
+| **Cập nhật lần cuối** | 2026-11-12 23:44 (UTC+7) — v3.19.0 trên nhánh work, bước 1 tách nhà nhận dạng. Alibaba không còn khóa theo danh sách model Groq. Điều khoản 2026-11-12.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.18.0** trên nhánh `work`. Bản khách trên `main` vẫn **v2.20.0**. Điều khoản `2026-11-12.3`. |
+| **Phiên bản code** | **v3.19.0** trên nhánh `work`. Điều khoản `2026-11-12.4`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -100,6 +100,21 @@
 ## 3. VẤN ĐỀ HIỆN TẠI (Ưu tiên cao – User báo cáo)
 
 Giữ nguyên mô tả gốc để đối chiếu. Phần **đã xử lý** ghi ở mục 4 và 6. Chưa xóa cho đến khi user xác nhận.
+
+### 3.10. Tách nhà phát hành (user chốt 2026-11-12, làm từng bước)
+
+Nguyên văn:
+
+«1. Các model AI của Groq, Alibaba hay sau này có thêm nhà phát hành nào khác, phải tách riêng ra, hoạt động độc lập tùy theo người dùng có chọn không.
+2. Ở trang Admin có quản lý key API của từng nhà phát hành ở đây là Groq và Alibaba và các nhà phát hành khác (nếu có hợp tác)
+3. Trang Admin có thể cho người dùng lựa chọn theo cách Admin muốn ( duy nhất 1 nhà phát hành, 1 model nhất định hoặc tùy chọn 1 model của nhà phát hành nào để làm chức năng riêng biệt để tạo thành 1 gói dịch vụ cho người dùng)
+4. Gói thuê phòng là dùng key api của người dùng và tất cả model admin cho phép hiển thị mới dùng được, người dùng có quyền dùng model nào, của AI nào để tùy chỉnh nhận diện, dịch,v.v... nếu họ có api key
+5. Gói trả theo lược là dùng key, API của admin và các gói tùy chỉnh do admin phát hành.
+6. Giá bán của model là lấy giá gốc của nhà phát hành + % chênh lệch admin tùy chỉnh, giống như của Groq.
+7. Người dùng chỉ thấy giá tổng sau khi đã cộng chênh lệch.
+Chấp nhận nâng cấp, làm từng bước»
+
+Bước 1 (v3.19.0): tách nhận dạng. Chưa làm bước 2 trở đi.
 
 ### 3.1. Nhận diện giọng nói & ngữ cảnh (ASR)
 - Độ chính xác còn thấp, thiếu nhiều câu. **Chưa đụng thuật toán cắt đoạn / model** — chỉ lọc rác và prompt. Nếu vẫn thiếu câu, không được siết filter thêm (dễ nuốt lời ngắn như “Ừ”, “Em”).
@@ -223,6 +238,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-12 23:44 — v3.19.0 trên work, bước 1 tách nhà nhận dạng. Danh sách model Groq không còn khóa Alibaba. Key của khách chọn Alibaba Filetrans được. Cửa trả theo lượt không nhận dạng Alibaba và báo rõ. Bàn giá Groq bỏ dòng Alibaba. Điều khoản 2026-11-12.4. Chưa làm quản lý key từng nhà, gói tùy chọn, giá chênh Alibaba cho cửa trả theo lượt.
 - 2026-11-12 17:21 — v3.18.0 trên work (lệnh «Claude sửa», giai đoạn 1 dựng lại giao diện). Nền móng, chưa đổi bố cục Studio: `src/lib/theme/theme.ts` (token sáng/tối, phông, icon theo chỗ đặt, làm sạch, chặn tương phản), `src/lib/theme-room.ts` (lưu ở `room_settings`, nháp/công bố/lịch sử 10 bản, chỉ Chủ), `src/components/ui/*` (Icon Phosphor, Button, Card, Badge, Field, Segmented), tab Admin «Giao diện» (`theme-board.tsx`), `__root.tsx` tiêm theme lúc tải. Mặc định tối nên khách không thấy đổi. Test mới `theme.test.ts` 11 ca. Kiểm tra: `tsc --noEmit` sạch; `npm test` 191 + 321 pass, 0 fail; mở `/` trên điện thoại và máy tính, ép chế độ sáng, dựng thử khung xem trước hai chế độ. Chưa thử tab Giao diện bằng tài khoản Chủ thật (đăng nhập đi qua dịch vụ ngoài), chưa thử trên Vercel, chưa chạy `npm run build`. Không đổi điều khoản. Sao lưu bản trước: thư mục v3.13.0 ngoài gói.
 - 2026-11-12.38:18 — v3.12.1 và v3.13.0 trên work (lệnh «Claude sửa», Chủ duyệt: báo cả key riêng lẫn key phòng, hiện riêng từng loại và tổng, chỉ Chủ xem, không xem video và key). v3.12.1: `src/lib/sub/quality.ts` (độ tin từ `avg_logprob`: cao từ -0,5, thấp dưới -0,8 hoặc nén trên 2,4; đèn xanh/vàng/đỏ theo ngưỡng ước lượng đặt thành hằng số), khối «Chất lượng» và «Kiểm tra ngôn ngữ» trong tab Kiểm tra, thêm vào Xuất JSON, `components/quality-view.tsx`. v3.13.0: bảng `quality_runs` (migration 0019, chỉ số, không có mã tài khoản, tên tệp, chữ, key), `src/lib/quality-room.ts` (`reportQuality` kiểm tra và giới hạn 30 lần/giờ/tài khoản, `getQualityBoard` chỉ Chủ), `src/lib/quality-board.ts` (kiểm tra bản báo, gộp số, gợi ý chỉnh), tab Admin «Chất lượng» (`quality-board.tsx`), `use-pipeline.ts` gửi một bản sau khi nhận dạng xong mọi đoạn (một lần mỗi lần chạy, lỗi thì bỏ qua). Điều khoản nâng `2026-11-12.3`, thêm hai đoạn ở mục 4. Đã chạy: `tsc` sạch, `npm test` 191 + 310 đạt, `npm run build` được, truy vấn SQL thử trên PGLite, kết xuất thử HealthPill và BandBar. Chưa thử: đăng nhập thật, gửi từ trình duyệt thật, hiển thị tab Chất lượng, Postgres thật. Số do trình duyệt khách báo nên không kiểm chứng được; ngưỡng đèn chưa chỉnh theo số đo.
 - 2026-11-12.32:16 — v3.12.0 trên work (Claude sửa theo lệnh «Claude sửa», sau khi thẩm định đề xuất ChatGPT về backend Python/GPU và quyết định không làm đường đó): thêm ô «Kiểm tra ngôn ngữ từng đoạn», mặc định tắt, nhớ trên máy (`glang`). Mới: `src/lib/sub/lang-check.ts` (đếm chữ Hán/Kana/Hangul/Latin, `needsLangCheck`, `chooseBetter`, ngân sách 120 giây) và `lang-check.test.ts` (12 test, đã thêm vào `npm test`). `use-pipeline.ts`: sau lần nhận dạng đầu của một đoạn, nếu chữ lệch ngôn ngữ đã chọn hoặc trung bình `avg_logprob` dưới -0,8 thì gửi lại đúng đoạn đó một lần, không ép ngôn ngữ, không prompt; chỉ đổi khi ngôn ngữ đoán thuộc Trung/Hàn/Nhật/Anh, khác ngôn ngữ đã chọn, và chữ khớp lại hoặc độ tin cao hơn từ 0,2. Lỗi gửi lại thì giữ kết quả cũ. Không đổi Whisper Turbo, không đổi điều khoản (tính năng tùy chọn, mặc định tắt, không đổi lời hứa dịch vụ). Giới hạn đã biết: Whisper bị ép ngôn ngữ thường dịch/phiên âm sang đúng chữ viết đã ép nên dấu hiệu chữ viết không bắt được ca đó, chỉ độ tin thấp bắt được; câu đổi ngôn ngữ vẫn được dịch với `sourceLang` chung của phim. Đã chạy `npx tsc --noEmit` sạch và `npm test` (191 pass, 7 bỏ qua; 291 pass). Chưa gọi Groq thật, chưa thử trên điện thoại, chưa có số đo CER/WER trước và sau.

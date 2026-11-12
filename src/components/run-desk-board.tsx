@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
+import { asrHouse } from "@/lib/sub/asr-house";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { emptyOverride, formatRoomPrice, RUN_STATUS_LABEL, type PriceOverride, type RunDesk, type RunStatus } from "@/lib/run-desk";
@@ -39,7 +40,7 @@ export function TicketCard({ ticket, children }: { ticket: RunTicket; children?:
 }
 
 const PRICE_ROWS = [
-  ...ASR_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "hour" as const })),
+  ...ASR_MODELS.filter((model) => asrHouse(model.id) === "groq").map((model) => ({ id: model.id, name: model.name, kind: "hour" as const })),
   ...CHAT_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "token" as const })),
 ];
 
@@ -236,6 +237,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           </button>
         )}
         <p className="text-xs text-muted">{keyTail ? `Đã lưu key, kết thúc bằng ${keyTail}. Key không hiện lại trên trang này.` : "Chưa lưu key."}</p>
+        <p className="text-xs text-muted">Bảng này chỉ model Groq. Nhận dạng Alibaba không dùng key Groq. Giá Alibaba đặt ở mục Gói dịch.</p>
         <div className="grid gap-2">
           {PRICE_ROWS.map((model) => {
             const row = board?.rows.find((item) => item.id === model.id);
