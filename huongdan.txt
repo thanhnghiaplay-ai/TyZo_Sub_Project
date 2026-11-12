@@ -2,10 +2,10 @@ Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo
 Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-13 00:25 UTC+7)
-- Số phiên bản người dùng thấy trên work: v3.24.0, trong src/lib/app-version.ts.
-- Điều khoản: TERMS_VERSION = 2026-11-13.3 trong src/components/entry-gate.tsx. Khách phải đồng ý lại.
-- Bước 6 và 7: giá trả theo lượt = giá nhà phát hành cộng phần trăm Chủ đặt (Groq ở bàn Việc, Alibaba ở khung gói). Khách chỉ thấy ước tính và khoản giữ. Không thấy giá gốc, không thấy phần trăm. Gói Alibaba vẫn chưa chạy.
+ĐANG CHẠY (2026-11-13 00:49 UTC+7)
+- Số phiên bản người dùng thấy trên work: v3.24.1, trong src/lib/app-version.ts.
+- Điều khoản: TERMS_VERSION = 2026-11-13.3 trong src/components/entry-gate.tsx.
+- Sau bản mới: trang quản lý tự thử lại, không đứng im, không hiện sai quyền khi máy chủ đang khởi động. Bảng giá không chờ tải dài. Không có migration mới thì không giữ khóa.
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
 - Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.

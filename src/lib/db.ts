@@ -101,32 +101,39 @@ function createNeonSql(): Promise<Sql> {
     }) as Record<string, string>;
     const client = await pool.connect();
     try {
-      await client.query("SELECT pg_advisory_lock($1)", [84201911]);
       await client.query(
         "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
       );
-      const applied = (await client.query<{ name: string }>("select name from _migrations")).rows.map((row) => row.name);
-      for (const { name, path } of pendingMigrations(Object.keys(migrations), applied)) {
+      const appliedNames = async () =>
+        (await client.query<{ name: string }>("select name from _migrations")).rows.map((row) => row.name);
+      const pending = async () => pendingMigrations(Object.keys(migrations), await appliedNames());
+      if ((await pending()).length > 0) {
+        await client.query("SELECT pg_advisory_lock($1)", [84201911]);
         try {
-          await client.query("BEGIN");
-          await client.query(migrations[path]);
-          await client.query("INSERT INTO _migrations (name) VALUES ($1)", [name]);
-          await client.query("COMMIT");
-        } catch (error) {
-          try {
-            await client.query("ROLLBACK");
-          } catch {
-            /* giữ lỗi gốc */
+          for (const { name, path } of await pending()) {
+            try {
+              await client.query("BEGIN");
+              await client.query(migrations[path]);
+              await client.query("INSERT INTO _migrations (name) VALUES ($1)", [name]);
+              await client.query("COMMIT");
+            } catch (error) {
+              try {
+                await client.query("ROLLBACK");
+              } catch {
+                /* giữ lỗi gốc */
+              }
+              throw error;
+            }
           }
-          throw error;
+        } finally {
+          try {
+            await client.query("SELECT pg_advisory_unlock($1)", [84201911]);
+          } catch {
+            /* kết nối có thể đã chết */
+          }
         }
       }
     } finally {
-      try {
-        await client.query("SELECT pg_advisory_unlock($1)", [84201911]);
-      } catch {
-        /* kết nối có thể đã chết */
-      }
       client.release();
     }
     const sql = toSql(async <T>(text: string, params: unknown[]) => {

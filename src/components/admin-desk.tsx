@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { retryLoad } from "@/lib/retry-load";
+import { openAdminPlace } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
 import {
@@ -37,7 +36,7 @@ import { ROOM_PLANS } from "@/lib/room-plans";
 import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
 import { BadgeBoard } from "@/components/badge-board";
 import { AccountCard } from "@/components/role-mark";
-import { BrandMark } from "@/components/brand-mark";
+import { AdminBoot } from "@/components/admin-boot";
 import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
@@ -175,22 +174,31 @@ export function AdminDesk() {
   const [resetCode, setResetCode] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
+  const [booting, setBooting] = useState(true);
 
   async function refreshPlace() {
-    const next = await retryLoad(() => getMyPlace());
+    const next = await openAdminPlace(() => getMyPlace());
     setPlace(next);
-    if (next.role) {
-      setStats(await getDeskStats());
-      setAppeals(await listAppeals());
-      setAudit(await listAudit());
-      setBadge(badgeStyle(await getBadgeStyle()));
-    }
+    setBooting(false);
+    if (!next.role) return;
+    const [statsNext, appealsNext, auditNext, badgeNext] = await Promise.all([
+      openAdminPlace(() => getDeskStats()).catch(() => null),
+      openAdminPlace(() => listAppeals()).catch(() => [] as AppealRow[]),
+      openAdminPlace(() => listAudit()).catch(() => [] as AuditRow[]),
+      openAdminPlace(() => getBadgeStyle()).then(badgeStyle).catch(() => null),
+    ]);
+    if (statsNext) setStats(statsNext);
+    setAppeals(appealsNext);
+    setAudit(auditNext);
+    if (badgeNext) setBadge(badgeNext);
   }
 
   useEffect(() => {
+    setBooting(true);
     void refreshPlace().catch((error) => {
+      setBooting(false);
       const message = error instanceof Error ? error.message : "";
-      setNotice(message || "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này.");
+      setNotice(message === "Unauthorized" ? "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này." : message || "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này.");
     });
   }, []);
 
@@ -281,19 +289,7 @@ export function AdminDesk() {
     };
   }, []);
 
-  if (!place) {
-    return (
-      <div className="admin-boot">
-        <BrandMark small title="TyZo Sub" />
-        <p className="text-sm text-muted">Đang mở trang Admin</p>
-        {notice && (
-          <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
-            Đăng nhập
-          </Link>
-        )}
-      </div>
-    );
-  }
+  if (!place) return <AdminBoot trying={booting} notice={notice} />;
 
   return (
     <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
