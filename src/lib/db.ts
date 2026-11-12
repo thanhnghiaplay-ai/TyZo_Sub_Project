@@ -93,39 +93,61 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
+    // Có hạn chờ rõ ràng: kết nối kẹt thì báo lỗi để máy khách thử lại, không treo vô hạn.
+    // Pool nhỏ vì mỗi instance serverless chỉ cần vài kết nối.
+    const pool = new Pool({
+      connectionString: databaseUrl,
+      max: 5,
+      connectionTimeoutMillis: 8_000,
+      idleTimeoutMillis: 10_000,
+      statement_timeout: 20_000,
+    });
     const migrations = import.meta.glob("/migrations/*.sql", {
       query: "?raw",
       import: "default",
       eager: true,
     }) as Record<string, string>;
     const client = await pool.connect();
+    let locked = false;
     try {
-      await client.query("SELECT pg_advisory_lock($1)", [84201911]);
-      await client.query(
-        "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
-      );
-      const applied = (await client.query<{ name: string }>("select name from _migrations")).rows.map((row) => row.name);
-      for (const { name, path } of pendingMigrations(Object.keys(migrations), applied)) {
-        try {
-          await client.query("BEGIN");
-          await client.query(migrations[path]);
-          await client.query("INSERT INTO _migrations (name) VALUES ($1)", [name]);
-          await client.query("COMMIT");
-        } catch (error) {
+      // Đường nhanh: migration đã chạy lúc build (npm run db:migrate). Không còn gì để chạy thì
+      // không lấy khóa, nên các instance khởi động nguội cùng lúc không phải chờ nhau.
+      let applied: string[] | null = null;
+      try {
+        applied = (await client.query<{ name: string }>("select name from _migrations")).rows.map((row) => row.name);
+      } catch (error) {
+        if ((error as { code?: string }).code !== "42P01") throw error; // chưa có bảng _migrations: đi đường chậm
+      }
+      if (!applied || pendingMigrations(Object.keys(migrations), applied).length > 0) {
+        await client.query("SELECT pg_advisory_lock($1)", [84201911]);
+        locked = true;
+        await client.query(
+          "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
+        );
+        const fresh = (await client.query<{ name: string }>("select name from _migrations")).rows.map((row) => row.name);
+        for (const { name, path } of pendingMigrations(Object.keys(migrations), fresh)) {
           try {
-            await client.query("ROLLBACK");
-          } catch {
-            /* giữ lỗi gốc */
+            await client.query("BEGIN");
+            await client.query(migrations[path]);
+            await client.query("INSERT INTO _migrations (name) VALUES ($1)", [name]);
+            await client.query("COMMIT");
+          } catch (error) {
+            try {
+              await client.query("ROLLBACK");
+            } catch {
+              /* giữ lỗi gốc */
+            }
+            throw error;
           }
-          throw error;
         }
       }
     } finally {
-      try {
-        await client.query("SELECT pg_advisory_unlock($1)", [84201911]);
-      } catch {
-        /* kết nối có thể đã chết */
+      if (locked) {
+        try {
+          await client.query("SELECT pg_advisory_unlock($1)", [84201911]);
+        } catch {
+          /* kết nối có thể đã chết */
+        }
       }
       client.release();
     }

@@ -23,7 +23,6 @@ export const ALIBABA_ROWS: GroqLiveRow[] = [
   blank({ id: "qwen-plus", usdIn: 0.4, usdOut: 1.2, contextTokens: 131_072 }),
   blank({ id: "qwen-max", usdIn: 1.6, usdOut: 6.4, contextTokens: 32_768 }),
   blank({ id: "qwen3-asr-flash", usdPerHour: null }),
-  blank({ id: "qwen-audio-3.0-asr-flash-filetrans", usdPerHour: 0.126 }),
   blank({ id: "qwen3-tts-flash", usdPerMillionChars: 10 }),
 ];
 

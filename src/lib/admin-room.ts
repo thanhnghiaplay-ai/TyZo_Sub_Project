@@ -77,24 +77,34 @@ function clip(value: string, max: number) {
   return text;
 }
 
+type PlaceRow = { role: string | null; status: string | null; status_reason: string | null; email: string | null; verified: boolean | null };
+
 async function placeOf(userId: string): Promise<MyPlace> {
   const { getSql } = await import("@/lib/db");
-  const { ensureOwnerSeed, ownerMustBeVerified } = await import("@/lib/admin-allow.server");
+  const { bootstrapEmail, ensureOwnerSeed, ownerMustBeVerified } = await import("@/lib/admin-allow.server");
   const sql = await getSql();
-  await ensureOwnerSeed(sql);
-  const staff = await sql<{ role: string }>`select role from room_staff where user_id = ${userId}`;
-  const account = await sql<{ status: string; status_reason: string }>`
-    select status, status_reason from room_accounts where user_id = ${userId}
+  // Một câu SQL thay cho bốn: quyền, tình trạng phòng và email. Điểm xuất phát là chính mã người dùng,
+  // nên tài khoản chưa có dòng nào ở các bảng kia vẫn trả đúng một dòng.
+  const read = () => sql<PlaceRow>`
+    select s.role as role, a.status as status, a.status_reason as status_reason, u.email as email, u."emailVerified" as verified
+    from (select ${userId}::text as id) x
+    left join "user" u on u.id = x.id
+    left join room_staff s on s.user_id = x.id
+    left join room_accounts a on a.user_id = x.id
   `;
-  const user = await sql<{ email: string; verified: boolean }>`select email, "emailVerified" as verified from "user" where id = ${userId}`;
-  const email = user[0]?.email ?? "";
-  const found = isStaffRole(staff[0]?.role) ? staff[0].role : null;
-  const staffRole = found === "chu" && ownerMustBeVerified() && !user[0]?.verified ? null : found;
+  let row = (await read())[0];
+  // Khởi tạo Chủ đầu tiên chỉ cần khi người này chưa có quyền. Người đã có quyền thì khỏi tốn thêm truy vấn.
+  if (!isStaffRole(row?.role) && bootstrapEmail()) {
+    await ensureOwnerSeed(sql);
+    row = (await read())[0];
+  }
+  const found = isStaffRole(row?.role) ? row.role : null;
+  const staffRole = found === "chu" && ownerMustBeVerified() && !row?.verified ? null : found;
   return {
     role: staffRole,
-    status: asStanding(account[0]?.status),
-    reason: account[0]?.status_reason ?? "",
-    email,
+    status: asStanding(row?.status),
+    reason: row?.status_reason ?? "",
+    email: row?.email ?? "",
   };
 }
 

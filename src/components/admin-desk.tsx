@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
+import { readPlace, savePlace } from "@/lib/place-cache";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
 import {
@@ -177,17 +178,29 @@ export function AdminDesk() {
   const [dropOpen, setDropOpen] = useState(false);
 
   async function refreshPlace() {
+    // Lời gọi đầu đánh thức máy chủ; bốn lời gọi đọc sau chạy song song trên máy đã nóng.
     const next = await retryLoad(() => getMyPlace());
     setPlace(next);
-    if (next.role) {
-      setStats(await getDeskStats());
-      setAppeals(await listAppeals());
-      setAudit(await listAudit());
-      setBadge(badgeStyle(await getBadgeStyle()));
-    }
+    savePlace(next);
+    if (!next.role) return;
+    const [statsR, appealsR, auditR, badgeR] = await Promise.allSettled([
+      retryLoad(() => getDeskStats()),
+      retryLoad(() => listAppeals()),
+      retryLoad(() => listAudit()),
+      retryLoad(() => getBadgeStyle()),
+    ]);
+    if (statsR.status === "fulfilled") setStats(statsR.value);
+    if (appealsR.status === "fulfilled") setAppeals(appealsR.value);
+    if (auditR.status === "fulfilled") setAudit(auditR.value);
+    if (badgeR.status === "fulfilled") setBadge(badgeStyle(badgeR.value));
+    const failed = [statsR, appealsR, auditR, badgeR].find((item) => item.status === "rejected") as PromiseRejectedResult | undefined;
+    if (failed) throw failed.reason;
   }
 
   useEffect(() => {
+    // Có quyền đã nhớ thì vẽ khung ngay, không đứng ở màn chờ.
+    const known = readPlace();
+    if (known) setPlace((current) => current ?? known);
     void refreshPlace().catch((error) => {
       const message = error instanceof Error ? error.message : "";
       setNotice(message || "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này.");
@@ -287,11 +300,23 @@ export function AdminDesk() {
         <div className="app-main">
           <div className="admin-boot">
             <BrandMark small title="TyZo Sub" />
-            <p className="text-sm text-muted">Đang mở trang quản lý</p>
+            <p className="text-sm text-muted">{notice ? notice : "Đang mở trang quản lý"}</p>
             {notice && (
-              <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
-                Đăng nhập
-              </Link>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink"
+                  onClick={() => {
+                    setNotice(null);
+                    void refreshPlace().catch((error) => setNotice(error instanceof Error && error.message ? error.message : "Chưa mở được. Hãy thử lại."));
+                  }}
+                >
+                  Thử lại
+                </button>
+                <Link to="/login" className="min-tap w-fit rounded-full border border-line px-4 text-sm">
+                  Đăng nhập
+                </Link>
+              </div>
             )}
           </div>
         </div>

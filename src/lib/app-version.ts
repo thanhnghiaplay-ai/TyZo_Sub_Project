@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.18.0";
+export const APP_VERSION = "3.17.2";
 
 export type ReleaseNote = {
   version: string;
@@ -11,14 +11,13 @@ export type ReleaseNote = {
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
   {
-    version: "3.18.0",
-    time: "14:36 ngày 12/11/2026",
-    title: "Nhận dạng cả file khi dán link trực tiếp.",
+    version: "3.17.2",
+    time: "16:30 ngày 12/11/2026",
+    title: "Nút Quản lý và trang Quản lý không còn đứng im.",
     points: [
-      "Có thể chọn Alibaba cho link file. Máy không tải phim về.",
-      "Câu có mốc thời gian, rồi được dịch như các lần chạy khác.",
-      "File chọn trên máy vẫn nhận dạng theo đoạn như cũ.",
-      "Trang xem và link luồng không dùng được. Cửa trả theo lượt chưa nhận link.",
+      "Nút Quản lý hiện ngay khi quay về phòng, không phải tải lại trang.",
+      "Mạng chậm quá 8 giây thì tự thử lại. Trang Quản lý có nút Thử lại.",
+      "Trang Quản lý mở nhanh hơn.",
     ],
   },
   {

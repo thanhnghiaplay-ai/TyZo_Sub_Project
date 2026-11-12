@@ -40,3 +40,26 @@ test("thành công ngay thì chỉ gọi một lần", async () => {
   await retryLoad(async () => ++calls, [1, 1], noWait);
   assert.equal(calls, 1);
 });
+
+test("lời gọi treo không trả lời thì hết hạn chờ rồi thử lại", async () => {
+  let calls = 0;
+  const value = await retryLoad(
+    () => {
+      calls++;
+      if (calls === 1) return new Promise<string>(() => {}); // treo vĩnh viễn
+      return Promise.resolve("ok");
+    },
+    [1],
+    noWait,
+    20,
+  );
+  assert.equal(value, "ok");
+  assert.equal(calls, 2);
+});
+
+test("treo ở mọi lần thì ném lỗi hết hạn chờ", async () => {
+  await assert.rejects(
+    retryLoad(() => new Promise<string>(() => {}), [1], noWait, 10),
+    /chưa trả lời/,
+  );
+});
