@@ -4,4 +4,4 @@ Trước khi sửa code, đọc **`BANG_DIEU.md`**, rồi **`huongdan.txt`**, r�
 
 App đang chạy là bản React. Số phiên bản người dùng thấy nằm ở `src/lib/app-version.ts`. Điều khoản nằm ở `src/components/entry-gate.tsx`. Không có file HTML standalone.
 
-Đang chạy trên main: bản đã đẩy chính thức. Bản đang làm trên work: **v3.20.0**, điều khoản `2026-11-12.4`, giá 9.000 / 39.000 / 99.000 đồng. Key của khách vẫn dùng được, Groq và Alibaba tách riêng. Chủ lưu key Alibaba của phòng ở tab Việc, không đè key Groq. Cửa trả theo lượt dùng key Chủ đã lưu, bước này chỉ nhận dạng Whisper. Mỗi lần nâng số phiên bản phải thêm một câu vào `CHANGELOG` trong `src/lib/app-version.ts`. Không code mục 14 trừ khi user yêu cầu đúng một việc. Không ghi token hay mật khẩu vào file.
+Đang chạy trên main: bản đã đẩy chính thức. Bản đang làm trên work: **v3.21.0**, điều khoản `2026-11-12.4`, giá 9.000 / 39.000 / 99.000 đồng. Chủ lập gói trên tab Việc: mỗi việc một nhà và một model. Khách chưa thấy gói. Cửa trả theo lượt vẫn chỉ nhận dạng Whisper. Không ghi token hay mật khẩu vào file.

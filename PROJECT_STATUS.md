@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-12 23:55 (UTC+7) — v3.20.0 trên nhánh work, bước 2: Chủ lưu key Alibaba riêng. Điều khoản vẫn 2026-11-12.4. |
+| **Cập nhật lần cuối** | 2026-11-13 00:01 (UTC+7) — v3.21.0 trên nhánh work, bước 3: Chủ lập gói. Điều khoản vẫn 2026-11-12.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.20.0** trên nhánh `work`. Điều khoản `2026-11-12.4`. |
+| **Phiên bản code** | **v3.21.0** trên nhánh `work`. Điều khoản `2026-11-12.4`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -114,7 +114,7 @@ Nguyên văn:
 7. Người dùng chỉ thấy giá tổng sau khi đã cộng chênh lệch.
 Chấp nhận nâng cấp, làm từng bước»
 
-Bước 1 (v3.19.0): tách nhận dạng. Bước 2 (v3.20.0): Chủ lưu key Alibaba riêng trên tab Việc. Chưa làm gói, giá chênh cho khách, và cửa trả theo lượt chưa gọi Alibaba.
+Bước 1 (v3.19.0): tách nhận dạng. Bước 2 (v3.20.0): Chủ lưu key Alibaba riêng. Bước 3 (v3.21.0): Chủ lập gói, mỗi việc một nhà và một model. Khách chưa thấy gói. Chưa làm giá khách thấy và chưa mở gói ở cửa trả theo lượt.
 
 ### 3.1. Nhận diện giọng nói & ngữ cảnh (ASR)
 - Độ chính xác còn thấp, thiếu nhiều câu. **Chưa đụng thuật toán cắt đoạn / model** — chỉ lọc rác và prompt. Nếu vẫn thiếu câu, không được siết filter thêm (dễ nuốt lời ngắn như “Ừ”, “Em”).
@@ -238,6 +238,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-13 00:01 — v3.21.0 trên work, bước 3. Tab Việc của Chủ hiện khung gói (`ServicePackBoard` chỉ phần gói). Mỗi việc chọn Groq hoặc Alibaba và một model. Lưu bằng `saveServicePacks`. Khách chưa chọn gói. Không đổi điều khoản.
 - 2026-11-12 23:55 — v3.20.0 trên work, bước 2. Tab Việc của Chủ có ô key Alibaba (`alibaba-key-board.tsx`), lưu `alibaba_key`, không đè key Groq. `listModelIds` gọi đúng máy Alibaba khi đồng bộ. Không đổi điều khoản. Cửa trả theo lượt chưa dùng key này.
 - 2026-11-12 23:44 — v3.19.0 trên work, bước 1 tách nhà nhận dạng. Danh sách model Groq không còn khóa Alibaba. Key của khách chọn Alibaba Filetrans được. Cửa trả theo lượt không nhận dạng Alibaba và báo rõ. Bàn giá Groq bỏ dòng Alibaba. Điều khoản 2026-11-12.4. Chưa làm quản lý key từng nhà, gói tùy chọn, giá chênh Alibaba cho cửa trả theo lượt.
 - 2026-11-12 17:21 — v3.18.0 trên work (lệnh «Claude sửa», giai đoạn 1 dựng lại giao diện). Nền móng, chưa đổi bố cục Studio: `src/lib/theme/theme.ts` (token sáng/tối, phông, icon theo chỗ đặt, làm sạch, chặn tương phản), `src/lib/theme-room.ts` (lưu ở `room_settings`, nháp/công bố/lịch sử 10 bản, chỉ Chủ), `src/components/ui/*` (Icon Phosphor, Button, Card, Badge, Field, Segmented), tab Admin «Giao diện» (`theme-board.tsx`), `__root.tsx` tiêm theme lúc tải. Mặc định tối nên khách không thấy đổi. Test mới `theme.test.ts` 11 ca. Kiểm tra: `tsc --noEmit` sạch; `npm test` 191 + 321 pass, 0 fail; mở `/` trên điện thoại và máy tính, ép chế độ sáng, dựng thử khung xem trước hai chế độ. Chưa thử tab Giao diện bằng tài khoản Chủ thật (đăng nhập đi qua dịch vụ ngoài), chưa thử trên Vercel, chưa chạy `npm run build`. Không đổi điều khoản. Sao lưu bản trước: thư mục v3.13.0 ngoài gói.

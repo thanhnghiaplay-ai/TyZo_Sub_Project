@@ -32,7 +32,7 @@ function freshPack(groqModels: string[] | null): ServicePack {
   };
 }
 
-export function ServicePackBoard() {
+export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean }) {
   const [desk, setDesk] = useState<RunDesk | null>(null);
   const [models, setModels] = useState<string[] | null>(null);
   const [groqModels, setGroqModels] = useState<string[] | null>(null);
@@ -124,10 +124,16 @@ export function ServicePackBoard() {
   return (
     <section className="admin-wide space-y-4 rounded-2xl border border-line bg-card p-4">
       <div>
-        <h3 className="text-sm font-semibold">Nhà cung cấp và gói dịch</h3>
-        <p className="text-sm text-muted">Groq giữ bàn giá phía trên. Alibaba có key, phần trăm chênh và giá riêng. Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói.</p>
+        <h3 className="text-sm font-semibold">{packsOnly ? "Gói dịch" : "Nhà cung cấp và gói dịch"}</h3>
+        <p className="text-sm text-muted">
+          {packsOnly
+            ? "Mỗi việc chọn một nhà và một model. Có thể dùng một nhà cho cả gói, hoặc tách từng việc. Khách chưa thấy gói. Bấm Lưu gói rồi mới giữ."
+            : "Groq giữ bàn giá phía trên. Alibaba có key, phần trăm chênh và giá riêng. Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
+        </p>
       </div>
 
+      {!packsOnly && (
+      <>
       <div className="grid gap-2">
         <p className="text-sm font-medium">Key Alibaba Model Studio {keyTail ? `· đuôi ${keyTail}` : "· chưa lưu"}</p>
         <div className="flex gap-2">
@@ -179,6 +185,8 @@ export function ServicePackBoard() {
             Lưu giá Alibaba
           </button>
         </div>
+      )}
+      </>
       )}
 
       <div className="grid gap-3">
