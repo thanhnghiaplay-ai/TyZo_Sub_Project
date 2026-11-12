@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-13 00:20 (UTC+7) — v3.23.0 trên nhánh work, bước 5: trả theo lượt theo gói. Điều khoản 2026-11-13.2. |
+| **Cập nhật lần cuối** | 2026-11-13 00:25 (UTC+7) — v3.24.0 trên nhánh work, bước 6 và 7: giá đã cộng phần trăm, khách không thấy giá gốc. Điều khoản 2026-11-13.3. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.23.0** trên nhánh `work`. Điều khoản `2026-11-13.2`. |
+| **Phiên bản code** | **v3.24.0** trên nhánh `work`. Điều khoản `2026-11-13.3`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -114,7 +114,7 @@ Nguyên văn:
 7. Người dùng chỉ thấy giá tổng sau khi đã cộng chênh lệch.
 Chấp nhận nâng cấp, làm từng bước»
 
-Bước 1 đến 3 đã xong (tách nhà, key riêng, Chủ lập gói). Bước 4 (v3.22.0): thuê phòng chỉ model Chủ đã mở. Bước 5 (v3.23.0): trả theo lượt chọn gói Chủ đã mở, dùng key của phòng. Gói Alibaba chưa gọi. Giá khách thấy chưa làm.
+Bước 5 (v3.23.0): trả theo lượt chọn gói. Bước 6 và 7 (v3.24.0): giá = giá gốc cộng phần trăm, khách chỉ thấy số đã cộng. Gói Alibaba vẫn chưa gọi.
 
 ### 3.1. Nhận diện giọng nói & ngữ cảnh (ASR)
 - Độ chính xác còn thấp, thiếu nhiều câu. **Chưa đụng thuật toán cắt đoạn / model** — chỉ lọc rác và prompt. Nếu vẫn thiếu câu, không được siết filter thêm (dễ nuốt lời ngắn như “Ừ”, “Em”).
@@ -238,6 +238,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-13 00:25 — v3.24.0 trên work, bước 6 và 7. `quoteTurnPacks` trả ước tính và khoản giữ, không trả giá gốc. Chủ sửa phần trăm Alibaba trên khung gói. Phần trăm Groq vẫn ở bàn Việc. Điều khoản 2026-11-13.3.
 - 2026-11-13 00:20 — v3.23.0 trên work, bước 5. Cửa trả theo lượt hiện gói đã bật. Khách chọn gói thì model nhận dạng và dịch theo gói, chạy bằng key của phòng. Gói có việc Alibaba bị chặn, chưa gọi. Chưa có gói thì vẫn Whisper. Không hiện giá gốc. Điều khoản 2026-11-13.2.
 - 2026-11-13 00:10 — v3.22.0 trên work, bước 4. Chủ lưu `rent_show`. Khách thuê phòng chỉ chọn model trong danh sách, dùng key của mình. Whisper khóa theo Groq, Filetrans khóa theo Alibaba. Dịch Alibaba chưa nối. Điều khoản 2026-11-13.1. Cửa trả theo lượt không đổi.
 - 2026-11-13 00:01 — v3.21.0 trên work, bước 3. Tab Việc của Chủ hiện khung gói (`ServicePackBoard` chỉ phần gói). Mỗi việc chọn Groq hoặc Alibaba và một model. Lưu bằng `saveServicePacks`. Khách chưa chọn gói. Không đổi điều khoản.

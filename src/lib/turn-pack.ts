@@ -16,7 +16,12 @@ export function turnPackModels(pack: ServicePack): { asr: AsrModel | null; chat:
   return { asr: known, chat: pack.roles.translate?.model || "" };
 }
 
-/** Không có gói thì cửa cũ vẫn chạy. Có gói thì model phải khớp một gói Groq. */
+/** Khách chỉ thấy số đã cộng phần chênh. Không ghi giá gốc, không ghi phần trăm. */
+export function customerVisiblePrice(total: number | null, hold: number): string {
+  if (total == null || !(total > 0)) return "Chưa có giá";
+  const dong = (n: number) => new Intl.NumberFormat("vi-VN").format(Math.round(n)) + " đ";
+  return `Ước tính ${dong(total)}. Giữ ví ${dong(hold)}.`;
+}
 export function turnPackProblem(packs: ServicePack[], pick: { asr: string; chat: string }): string {
   const open = turnPacks(packs);
   if (!open.length) return "";

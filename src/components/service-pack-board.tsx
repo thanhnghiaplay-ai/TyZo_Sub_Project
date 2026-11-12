@@ -127,13 +127,12 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         <h3 className="text-sm font-semibold">{packsOnly ? "Gói dịch" : "Nhà cung cấp và gói dịch"}</h3>
         <p className="text-sm text-muted">
           {packsOnly
-            ? "Mỗi việc chọn một nhà và một model. Có thể dùng một nhà cho cả gói, hoặc tách từng việc. Khách chưa thấy gói. Bấm Lưu gói rồi mới giữ."
+            ? "Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách chỉ thấy giá đã cộng phần trăm."
             : "Groq giữ bàn giá phía trên. Alibaba có key, phần trăm chênh và giá riêng. Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
         </p>
       </div>
 
       {!packsOnly && (
-      <>
       <div className="grid gap-2">
         <p className="text-sm font-medium">Key Alibaba Model Studio {keyTail ? `· đuôi ${keyTail}` : "· chưa lưu"}</p>
         <div className="flex gap-2">
@@ -154,6 +153,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         </div>
         <p className="text-xs text-muted">{models ? `${models.length} model trên key.` : "Chưa đồng bộ."} Giá gốc lấy từ bảng niêm yết trong app. Model nhận dạng Alibaba chưa có giờ công bố thì nhập giá riêng theo giờ.</p>
       </div>
+      )}
 
       {desk && (
         <label className="grid max-w-xs gap-1 text-sm">
@@ -181,12 +181,11 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
               </div>
             );
           })}
+          <p className="text-xs text-muted">Khách chỉ thấy giá đã cộng phần trăm. Phần trăm Groq ở bàn phía trên. Giá riêng để trống thì dùng phần trăm.</p>
           <button type="button" className="min-tap justify-self-start rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk(desk)}>
             Lưu giá Alibaba
           </button>
         </div>
-      )}
-      </>
       )}
 
       <div className="grid gap-3">

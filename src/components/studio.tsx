@@ -861,6 +861,8 @@ export function Studio() {
             )}
             {payByRoom && (
               <TurnPackList
+                videoRef={app.videoRef}
+                narration={narration.enabled}
                 onLocked={setTurnLocked}
                 onPick={(pack) => {
                   const next = turnPackModels(pack);
