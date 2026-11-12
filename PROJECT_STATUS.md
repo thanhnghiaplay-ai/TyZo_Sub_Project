@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-13 00:49 (UTC+7) — v3.24.1 trên nhánh work: sau bản mới trang quản lý không đứng im, không hiện sai quyền khi máy chủ đang khởi động. |
+| **Cập nhật lần cuối** | 2026-11-13 01:38 (UTC+7) — v3.25.0 trên nhánh work: trả theo lượt nhận dạng Alibaba bằng key phòng. Điều khoản 2026-11-13.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.24.1** trên nhánh `work`. Điều khoản `2026-11-13.3`. |
+| **Phiên bản code** | **v3.25.0** trên nhánh `work`. Điều khoản `2026-11-13.4`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -115,6 +115,14 @@ Nguyên văn:
 Chấp nhận nâng cấp, làm từng bước»
 
 Bước 5 (v3.23.0): trả theo lượt chọn gói. Bước 6 và 7 (v3.24.0): giá = giá gốc cộng phần trăm, khách chỉ thấy số đã cộng. Gói Alibaba vẫn chưa gọi.
+
+### 3.12. Gói Alibaba vẫn bị chặn khi trả theo lượt (user 2026-11-13)
+
+Nguyên văn:
+
+«Tôi đã thêm api alibaba, set gói, tải link phim. Nhưng vẫn báo như hình»
+
+Hình báo: «Gói này có việc Alibaba. Cửa trả theo lượt chưa gọi key Alibaba của phòng.»
 
 ### 3.11. Đơ và sai quyền sau mỗi lần cập nhật (user 2026-11-13)
 
@@ -251,6 +259,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-13 01:38 — v3.25.0 trên work. Trả theo lượt nhận dạng Alibaba bằng key phòng, cần link file trực tiếp. Việc Alibaba ngoài nhận dạng vẫn chặn. Điều khoản 2026-11-13.4.
 - 2026-11-13 00:49 — v3.24.1 trên work. Sau bản mới: không giữ khóa migration khi không có file mới, bảng giá không chờ tải dài, trang quản lý tự thử lại và không hiện sai quyền khi đang khởi động.
 - 2026-11-13 00:25 — v3.24.0 trên work, bước 6 và 7. `quoteTurnPacks` trả ước tính và khoản giữ, không trả giá gốc. Chủ sửa phần trăm Alibaba trên khung gói. Phần trăm Groq vẫn ở bàn Việc. Điều khoản 2026-11-13.3.
 - 2026-11-13 00:20 — v3.23.0 trên work, bước 5. Cửa trả theo lượt hiện gói đã bật. Khách chọn gói thì model nhận dạng và dịch theo gói, chạy bằng key của phòng. Gói có việc Alibaba bị chặn, chưa gọi. Chưa có gói thì vẫn Whisper. Không hiện giá gốc. Điều khoản 2026-11-13.2.

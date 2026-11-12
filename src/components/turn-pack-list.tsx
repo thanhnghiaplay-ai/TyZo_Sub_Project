@@ -71,7 +71,7 @@ export function TurnPackList({
       <h2 className="text-sm font-semibold">Gói trả theo lượt</h2>
       <p className="text-sm text-muted">
         {seconds > 0 ? "Giá đã gồm phần vận hành của phòng. Bạn không thấy giá gốc." : "Chọn tệp để thấy giá. Giá đã gồm phần vận hành của phòng."}
-        {" "}Gói có việc Alibaba chưa chạy.
+        {" "}Nhận dạng Alibaba cần link file trực tiếp. Việc Alibaba khác chưa chạy.
       </p>
       {packs.map((pack) => {
         const jobs = PACK_ROLES.filter((role) => pack.roles[role]).map((role) => {

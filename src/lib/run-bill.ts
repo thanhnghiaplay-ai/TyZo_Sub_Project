@@ -71,8 +71,13 @@ export function speechCost(book: PriceBook, model: string, chars: number): numbe
  * Số trừ cuối cùng là số thật, phần giữ thừa được nhả.
  */
 export function estimateHold(book: PriceBook, asrModel: string, chatModel: string, seconds: number): number | null {
-  const asr = asrCost(book, asrModel, seconds);
-  const chat = chatCost(book, chatModel, Math.ceil(seconds * 12) + 1500, Math.ceil(seconds * 8) + 500);
+  return estimateHoldSplit(book, book, asrModel, chatModel, seconds);
+}
+
+/** Giữ chỗ khi nhận dạng và dịch lấy từ hai bảng giá khác nhau. */
+export function estimateHoldSplit(asrBook: PriceBook, chatBook: PriceBook, asrModel: string, chatModel: string, seconds: number): number | null {
+  const asr = asrCost(asrBook, asrModel, seconds);
+  const chat = chatCost(chatBook, chatModel, Math.ceil(seconds * 12) + 1500, Math.ceil(seconds * 8) + 500);
   if (asr == null || chat == null) return null;
   return Math.ceil((asr + chat) * HOLD_BUFFER);
 }

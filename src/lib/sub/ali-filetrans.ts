@@ -49,6 +49,9 @@ export function directFileUrlProblem(url: string): string | null {
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return "Link phải bắt đầu bằng http:// hoặc https://.";
   if (parsed.username || parsed.password) return "Link không được kèm tài khoản.";
   if (pageLink(parsed.toString())) return "Đây là trang xem, không phải file trực tiếp.";
+  if (/\/(xem-phim|watch|phim|play)\b/i.test(parsed.pathname) && !/\.(mp4|mkv|mp3|wav|m4a|webm|aac|flac)(\?|#|$)/i.test(parsed.pathname)) {
+    return "Đây là trang xem, không phải file trực tiếp.";
+  }
   if (/\.m3u8(\?|#|$)/i.test(parsed.pathname + parsed.search)) return "Link luồng chưa hỗ trợ. Hãy dùng link file trực tiếp.";
   if (privateHost(parsed.hostname)) return "Link này không phải file công khai.";
   return null;

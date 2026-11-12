@@ -87,7 +87,6 @@ import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelM
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
-import { alibabaAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";
 import { getServiceMenu } from "@/lib/pack-room";
 import { turnPackProblem } from "@/lib/turn-pack";
@@ -743,8 +742,7 @@ export function usePipeline() {
       if (packed) return say(packed, true);
     }
     if (asrModel === ALI_FILETRANS_MODEL) {
-      if (roomPayRef.current) return say(alibabaAsrOnRoomPayProblem(), true);
-      const aliKey = alibabaKeyRef.current.trim();
+      const aliKey = roomPayRef.current ? "room" : alibabaKeyRef.current.trim();
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
       if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
     } else if (!token) return say("Vui lòng nhập Groq API key.", true);
@@ -804,11 +802,12 @@ export function usePipeline() {
     let releasePlayback = () => {};
     if (roomPayRef.current) {
       const chosenFile = audioFile || file;
-      if (!chosenFile) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
+      const linkRun = asrModel === ALI_FILETRANS_MODEL && !chosenFile;
+      if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile.name,
-          seconds: await readMediaSeconds(chosenFile),
+          fileName: chosenFile?.name || "Link Alibaba",
+          seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
         });
@@ -1539,12 +1538,12 @@ export function usePipeline() {
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
         };
         if (asrModel === ALI_FILETRANS_MODEL) {
-          const aliKey = alibabaKeyRef.current.trim();
           say("Đang gửi file tới Alibaba…");
           const result = await recognizeFileUrl({
             url: link,
             language: source,
-            key: aliKey,
+            key: roomPayRef.current ? "room" : alibabaKeyRef.current.trim(),
+            ticketId,
             signal,
             onWait: (m) => { if (my === j.runId) say(m); },
           });

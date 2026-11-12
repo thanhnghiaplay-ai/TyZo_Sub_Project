@@ -35,7 +35,15 @@ describe("cửa trả theo lượt theo gói", () => {
     });
     assert.match(turnPackProblem([groq], { asr: "whisper-large-v3", chat: "llama-3.3-70b-versatile" }), /chọn một gói/);
     assert.equal(turnPackProblem([groq], { asr: "whisper-large-v3-turbo", chat: "llama-3.3-70b-versatile" }), "");
-    assert.match(turnPackProblem([ali], { asr: "qwen-audio-3.0-asr-flash-filetrans", chat: "llama-3.3-70b-versatile" }), /Alibaba/);
+    assert.equal(turnPackProblem([ali], { asr: "qwen-audio-3.0-asr-flash-filetrans", chat: "llama-3.3-70b-versatile" }), "");
+    const aliChat = pack({
+      id: "pack_ali02",
+      roles: {
+        asr: { provider: "alibaba", model: "qwen-audio-3.0-asr-flash-filetrans" },
+        translate: { provider: "alibaba", model: "qwen-turbo" },
+      },
+    });
+    assert.match(turnPackProblem([aliChat], { asr: "qwen-audio-3.0-asr-flash-filetrans", chat: "qwen-turbo" }), /ngoài nhận dạng/);
     assert.equal(turnPackModels(groq).chat, "llama-3.3-70b-versatile");
   });
 
