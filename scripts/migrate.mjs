@@ -48,7 +48,12 @@ async function main() {
     return;
   }
 
-  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
+  // Suppress future SSL mode warning from pg-connection-string
+  let connStr = databaseUrl;
+  if (!connStr.includes("sslmode=") && !connStr.includes("uselibpqcompat=")) {
+    connStr += (connStr.includes("?") ? "&" : "?") + "uselibpqcompat=true&sslmode=require";
+  }
+  const pool = new pg.Pool({ connectionString: connStr, max: 1 });
   const client = await pool.connect();
   const lockKey = 84201911;
   try {
