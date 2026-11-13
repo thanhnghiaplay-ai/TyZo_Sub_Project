@@ -51,6 +51,9 @@ import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/as
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
+const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ ví cho lượt chạy.";
+const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ trước một khoản ước tính từ ví, trừ số thực khi xong và trả phần thừa. Không trừ ngày gói.";
+
 const FIELD =
   "min-tap w-full rounded-xl border border-line bg-bg px-3 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
@@ -849,16 +852,24 @@ export function Studio() {
           <div className="grid gap-2">
             <h2 className="text-sm font-semibold">Cách trả</h2>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
               </button>
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
                 Trả theo lượt
               </button>
             </div>
-            {payByRoom && (
-              <p className="text-sm text-muted">Lần chạy này dùng key của phòng. Bạn không nhập key. Nếu có gói, hãy chọn một gói.</p>
-            )}
+            <p id="pay-mode-note" className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
+              {payByRoom ? (
+                <>
+                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Giá từng gói bên dưới là ước tính; tiền trừ thật là số thực khi xong.
+                </>
+              ) : (
+                <>
+                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
+                </>
+              )}
+            </p>
             {payByRoom && (
               <TurnPackList
                 videoRef={app.videoRef}

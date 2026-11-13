@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-13 01:38 (UTC+7) — v3.25.0 trên nhánh work: trả theo lượt nhận dạng Alibaba bằng key phòng. Điều khoản 2026-11-13.4. |
+| **Cập nhật lần cuối** | 2026-11-14 04:25 (UTC+7) — v3.26.0 trên nhánh work: sửa 4 mục P0 (email đăng nhập, câu changelog, che tên tệp trong Admin, ghi chú hai cách trả). Điều khoản 2026-11-13.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.25.0** trên nhánh `work`. Điều khoản `2026-11-13.4`. |
+| **Phiên bản code** | **v3.26.0** trên nhánh `work`. Điều khoản `2026-11-13.4`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -259,6 +259,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-14 04:25 — v3.26.0 trên work (Claude sửa theo yêu cầu). P0: ô email đăng nhập type=email, dán nguyên địa chỉ; viết lại câu changelog 3.24.1; che tên tệp trong Admin → Việc và nút Hoàn phiếu (`mask-file-name.ts`); ghi chú và tooltip cho Key của tôi / Trả theo lượt. Chỉ đổi chữ, không đổi điều khoản. `tsc` còn 10 lỗi cũ ở watch-run, watch-save, relay-alibaba, room-alibaba, tai-video, tai-khoan (không thuộc các file đã sửa, chưa xử lý). Test liên quan 22/22 xanh. Chưa thử trên điện thoại thật.
 - 2026-11-13 01:38 — v3.25.0 trên work. Trả theo lượt nhận dạng Alibaba bằng key phòng, cần link file trực tiếp. Việc Alibaba ngoài nhận dạng vẫn chặn. Điều khoản 2026-11-13.4.
 - 2026-11-13 00:49 — v3.24.1 trên work. Sau bản mới: không giữ khóa migration khi không có file mới, bảng giá không chờ tải dài, trang quản lý tự thử lại và không hiện sai quyền khi đang khởi động.
 - 2026-11-13 00:25 — v3.24.0 trên work, bước 6 và 7. `quoteTurnPacks` trả ước tính và khoản giữ, không trả giá gốc. Chủ sửa phần trăm Alibaba trên khung gói. Phần trăm Groq vẫn ở bàn Việc. Điều khoản 2026-11-13.3.

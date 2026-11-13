@@ -45,6 +45,7 @@ import { ThemeBoard } from "@/components/theme-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
+import { maskFileName } from "@/lib/mask-file-name";
 import { AlibabaKeyBoard } from "@/components/alibaba-key-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
 import { RentShowBoard } from "@/components/rent-show-board";
@@ -476,7 +477,7 @@ export function AdminDesk() {
                             }, "Đã hoàn vào ví.")
                           }
                         >
-                          Hoàn phiếu {ticket.fileName || ticket.id}
+                          Hoàn phiếu {maskFileName(ticket.fileName) || ticket.id}
                         </button>
                       ))}
                   </div>

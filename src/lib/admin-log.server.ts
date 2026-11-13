@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.26.0",
+    time: "04:25 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.25.0, theo yêu cầu người dùng (Claude sửa, nhánh work). P0 bốn mục. (1) login.tsx: ô email type=email, dán nguyên địa chỉ; gợi ý đuôi chỉ còn là lối tắt, bỏ dòng «Đã chọn». mailProblem vẫn chặn email tạm khi gửi. (2) Câu changelog 3.24.1 viết lại cho rõ nghĩa; không tìm thấy câu «không còn dùng» nào trong app-version.ts. (3) Admin: thêm mask-file-name.ts (giữ 2 ký tự đầu và đuôi, che phần giữa), dùng ở TicketCard và nút Hoàn phiếu; không còn tên tệp nguyên văn trong Admin → Việc. Mã phiếu vẫn hiện khi tệp không tên. Quy tắc 23 giữ nguyên. (4) studio.tsx: ghi chú dưới hai nút Key của tôi / Trả theo lượt và tooltip title trên từng nút. Chỉ đổi chữ hiển thị, không đổi giá, không đổi điều khoản. Chưa thử trên điện thoại thật.",
+  },
+  {
     version: "3.14.0",
     time: "17:21 ngày 12/11/2026",
     area: "khac",
