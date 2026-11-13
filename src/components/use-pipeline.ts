@@ -25,6 +25,7 @@ import {
   translateWithRepair,
 } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
+import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
 import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
@@ -331,6 +332,8 @@ export function usePipeline() {
   const [status, setStatus] = useState("Sẵn sàng. Chọn video rồi bấm Tải và dịch.");
   const [isError, setIsError] = useState(false);
   const [running, setRunning] = useState(false);
+  const [stages, setStages] = useState<StageReport | null>(null);
+  const phaseRef = useRef<RunPhase>("idle");
   const [remoteIds, setRemoteIds] = useState<string[] | null>(null);
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [boardNote, setBoardNote] = useState("");
@@ -466,6 +469,26 @@ export function usePipeline() {
     setIsError(error);
   }, []);
 
+  const pushStages = useCallback(() => {
+    const j = job.current;
+    const phase = phaseRef.current;
+    if (phase === "idle" && !j.segs.length && !j.parts.length) {
+      setStages(null);
+      return;
+    }
+    setStages(
+      computeStages({
+        phase,
+        partsTotal: j.parts.length,
+        partsDone: Math.min(j.nextPart, j.parts.length),
+        segsTotal: j.segs.length,
+        segsDone: j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0),
+        repairs: j.decodeRetried.size + j.filterRetried.size + j.langEvents.length,
+        failed: j.segs.reduce((n, seg) => n + (seg.translationFailed ? 1 : 0), 0),
+      }),
+    );
+  }, []);
+
   const progress = useCallback(() => {
     const j = job.current;
     const done = j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0);
@@ -473,7 +496,8 @@ export function usePipeline() {
     say(
       `Nhận dạng ${Math.min(j.nextPart, j.parts.length)}/${j.parts.length} đoạn · dịch ${done}/${j.segs.length} câu${modelBit}${j.note ? " · " + j.note : ""}`,
     );
-  }, [mode, say]);
+    pushStages();
+  }, [mode, say, pushStages]);
 
   const mediaId = useCallback(() => {
     if (file || audioFile)
@@ -569,6 +593,8 @@ export function usePipeline() {
     j.uses = {};
     j.lastModel = "";
     j.note = "";
+    phaseRef.current = "idle";
+    setStages(null);
     publish(true);
   }, [publish]);
 
@@ -843,6 +869,8 @@ export function usePipeline() {
     const signal = inner.signal;
     const pauseForNewBible = { current: true };
     setRunning(true);
+    phaseRef.current = asrModel === ALI_FILETRANS_MODEL ? "ali" : "read";
+    pushStages();
     document.documentElement.dataset.tyzoBusy = "1";
     try {
       audioContext.resume?.();
@@ -1571,6 +1599,8 @@ export function usePipeline() {
         j.appliedSig = "";
         publish(true);
       }
+      phaseRef.current = "asr";
+      pushStages();
 
       pauseForNewBible.current = !(j.bible && !j.bible.failed);
       let asrFinished = j.nextPart >= j.parts.length;
@@ -1671,7 +1701,11 @@ export function usePipeline() {
       say(`Lỗi: ${err?.message || String(error)}${why}`, true);
     } finally {
       outerSignal.removeEventListener("abort", onAbort);
-      if (my === j.runId) delete document.documentElement.dataset.tyzoBusy;
+      if (my === j.runId) {
+        delete document.documentElement.dataset.tyzoBusy;
+        phaseRef.current = "idle";
+        pushStages();
+      }
       releasePlayback();
       await closeRoomTicket(ticketId, ticketFailed);
       try {
@@ -1707,6 +1741,7 @@ export function usePipeline() {
     profile,
     progress,
     publish,
+    pushStages,
     remoteIds,
     saveGloss,
     say,
@@ -2309,6 +2344,7 @@ export function usePipeline() {
     status,
     isError,
     running,
+    stages,
     buttonLabel,
     catalog,
     board,

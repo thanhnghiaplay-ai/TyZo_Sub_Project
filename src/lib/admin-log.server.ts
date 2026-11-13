@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.28.0",
+    time: "05:07 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.27.0, theo yêu cầu người dùng (nhánh work). P2 ba mục. (8) Player: khung chọn video lớn đặt trên player khi chưa có video (PlayerDrop): kéo thả, bấm để chọn, ảnh xem trước một khung hình + tên + dung lượng + thời lượng lấy ngay trên máy bằng thẻ video ẩn (file-thumb.ts, không tải lên đâu, trình duyệt không đọc được MKV/HEVC thì chỉ hiện tên). Tệp không phải video/âm thanh bị từ chối kèm câu báo. Thả tệp lên player đang có video thì đổi video. Ô link trực tiếp đã có từ trước nay có thêm ngay trong khung; không thêm đường tải link mới, không xem trước link (không tự gọi máy chủ lạ). Thẻ Video ở tab Phim hiện ảnh nhỏ. (9) Tiến trình theo bước: stage-progress.ts (hàm thuần, có test) tính Cắt / Nhận dạng / Dịch / Sửa lại từ số đếm của job; use-pipeline giữ phaseRef và state stages, cập nhật trong progress() và lúc đổi pha; bước Sửa lại đếm số đoạn gửi lại (giải mã lại, lọc lại, kiểm tra ngôn ngữ) cộng câu còn lỗi, không có thì ghi Không cần. Alibaba bỏ qua bước Cắt. Thanh chữ trạng thái cũ giữ nguyên. (10) Hướng dẫn lần đầu 4 bước (guided-tour.tsx), nhớ trong localStorage tyzo_tour_v1, không chặn thao tác, nút dấu hỏi mở lại. Không đổi điều khoản (chỉ giao diện). Lỗi tsc 10 cái có sẵn trước bản này (routeTree.gen.ts chưa sinh lại cho tai-video/relay-alibaba/room-alibaba, kiểu Seg thiếu stale, room-alibaba contentType), không sửa vì ngoài phạm vi. Chưa thử trên điện thoại thật, chưa chạy trình duyệt thật.",
+  },
+  {
     version: "3.27.0",
     time: "04:34 ngày 14/11/2026",
     area: "khac",
