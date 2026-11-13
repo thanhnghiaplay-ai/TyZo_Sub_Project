@@ -7,9 +7,13 @@ import {
   THEME_DEFAULT,
   checkTheme,
   contrast,
+  defaultUserDensity,
+  densityScript,
+  densityValue,
   fontHref,
   modeScript,
   parseTheme,
+  pickUserDensity,
   safeUrl,
   themeToCss,
 } from "./theme.ts";
@@ -86,4 +90,29 @@ test("modeScript: chế độ cố định thì không đọc localStorage", () 
 test("icons: chỉ giữ chỗ đặt hợp lệ, khóa đúng dạng, và khác mặc định", () => {
   const t = parseTheme({ icons: { "nav.home": "Cube", "nav.source": "FilmStrip", "khong.co": "Cube", "act.add": "x<y" } });
   assert.deepEqual(t.icons, { "nav.home": "Cube" });
+});
+
+test("mật độ khách chọn: gọn là 0.85, thoải mái không chật hơn mức vừa", () => {
+  assert.equal(densityValue("compact", "cozy"), 0.85);
+  assert.equal(densityValue("comfortable", "cozy"), 1);
+  assert.equal(densityValue("comfortable", "roomy"), 1.15);
+  assert.equal(densityValue("comfortable", "compact"), 1);
+});
+
+test("mật độ mặc định theo Admin, giá trị lạ thì lấy mặc định", () => {
+  assert.equal(defaultUserDensity("compact"), "compact");
+  assert.equal(defaultUserDensity("cozy"), "comfortable");
+  assert.equal(defaultUserDensity("roomy"), "comfortable");
+  assert.equal(pickUserDensity("compact", "roomy"), "compact");
+  assert.equal(pickUserDensity("x", "compact"), "compact");
+  assert.equal(pickUserDensity(null, "cozy"), "comfortable");
+});
+
+test("densityScript: đọc tyzo_density, đặt data-density và --density, có mặc định theo Admin", () => {
+  const script = densityScript("roomy");
+  assert.match(script, /tyzo_density/);
+  assert.match(script, /data-density/);
+  assert.match(script, /--density/);
+  assert.match(script, /1\.15/);
+  assert.match(densityScript("compact"), /"compact"/);
 });

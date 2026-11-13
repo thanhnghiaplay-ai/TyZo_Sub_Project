@@ -17,6 +17,7 @@ import {
   applyNameFixes,
   contextBlock,
   listModelIds,
+  probeKey,
   ROOM_KEY,
   sleep,
   throwIfAborted,
@@ -25,6 +26,7 @@ import {
   translateWithRepair,
 } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
+import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
 import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
 import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
@@ -534,6 +536,59 @@ export function usePipeline() {
     void pullBoard();
   }, [pullBoard]);
 
+  /** Kết quả hỏi Groq gần nhất cho đúng key đang nhập. Dùng để báo ngay dưới ô key và để chặn sớm trước khi chạy. */
+  const [probe, setProbe] = useState<{ key: string; value: KeyProbe; at: number } | null>(null);
+  const [probing, setProbing] = useState(false);
+  const probeSeq = useRef(0);
+  const probeRef = useRef<{ key: string; value: KeyProbe; at: number } | null>(null);
+  probeRef.current = probe;
+
+  const runProbe = useCallback(async (token: string): Promise<KeyProbe> => {
+    const seq = ++probeSeq.current;
+    setProbing(true);
+    try {
+      const value = await probeKey(token);
+      if (seq === probeSeq.current) {
+        const next = { key: token, value, at: Date.now() };
+        probeRef.current = next;
+        setProbe(next);
+        if (value.status >= 200 && value.status < 300 && value.ids.length) setRemoteIds(value.ids);
+      }
+      return value;
+    } finally {
+      if (seq === probeSeq.current) setProbing(false);
+    }
+  }, []);
+
+  // Dán hoặc gõ key xong chừng 0,8 giây thì tự kiểm tra, không cần bấm gì.
+  useEffect(() => {
+    const token = key.trim();
+    if (token.length < 20) {
+      probeSeq.current++;
+      setProbing(false);
+      setProbe(null);
+      return;
+    }
+    const timer = window.setTimeout(() => void runProbe(token), 800);
+    return () => window.clearTimeout(timer);
+  }, [key, runProbe]);
+
+  const keyNeed = useMemo<KeyNeed>(
+    () => ({
+      asr: asrModel === ALI_FILETRANS_MODEL ? null : asrModel,
+      chat: mode === "manual" ? modelId.trim() || null : null,
+    }),
+    [asrModel, mode, modelId],
+  );
+
+  const keyStatus = useMemo<{ phase: "idle" | "checking" | "ok" | "warn" | "bad"; text: string }>(() => {
+    const token = key.trim();
+    if (!token) return { phase: "idle", text: "" };
+    if (!probe || probe.key !== token) return probing ? { phase: "checking", text: "Đang kiểm tra key…" } : { phase: "idle", text: "" };
+    const verdict = judgeKey(probe.value, keyNeed);
+    return { phase: verdict.state, text: verdict.text };
+  }, [key, probe, probing, keyNeed]);
+
   const refreshModels = useCallback(async () => {
     const token = activeKey();
     void pullBoard();
@@ -784,6 +839,18 @@ export function usePipeline() {
     }
     if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
+    // Kiểm key và model trước mọi việc tốn tiền hay tốn lượt thử. Mất mạng hoặc Groq bận thì không chặn.
+    if (token && token !== ROOM_KEY && !roomPayRef.current) {
+      const known = probeRef.current;
+      let value: KeyProbe;
+      if (known && known.key === token && Date.now() - known.at < 60_000) value = known.value;
+      else {
+        say("Đang kiểm tra key Groq…");
+        value = await runProbe(token);
+      }
+      const verdict = judgeKey(value, { asr: asrModel === ALI_FILETRANS_MODEL ? null : asrModel, chat: mode === "manual" ? chosen : null });
+      if (verdict.state === "bad") return say(verdict.text, true);
+    }
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
     if (analyzing) return say("Đang phân tích phim, chờ một chút.", true);
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -1743,6 +1810,7 @@ export function usePipeline() {
     publish,
     pushStages,
     remoteIds,
+    runProbe,
     saveGloss,
     say,
     source,
@@ -2350,6 +2418,7 @@ export function usePipeline() {
     board,
     boardNote,
     remoteIds,
+    keyStatus,
     modelBusy,
     uses,
     videoRef,

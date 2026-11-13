@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-14 05:07 (UTC+7) — v3.28.0 trên nhánh work: P2 (kéo thả video + ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu). Trước đó v3.27.0 P1 (giá vốn phiếu cũ, ngưỡng chất lượng Chủ chỉnh, thuật ngữ nền tự bật). Điều khoản 2026-11-13.4. |
+| **Cập nhật lần cuối** | 2026-11-14 05:46 (UTC+7) — v3.29.0 trên nhánh work: P3 (sáng/tối + mật độ do khách chọn, kiểm tra key và model trước khi dịch). Trước đó v3.28.0 P2 (kéo thả video + ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu). Trước đó v3.27.0 P1 (giá vốn phiếu cũ, ngưỡng chất lượng Chủ chỉnh, thuật ngữ nền tự bật). Điều khoản 2026-11-13.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.28.0** trên nhánh `work`. Điều khoản `2026-11-13.4`. |
+| **Phiên bản code** | **v3.29.0** trên nhánh `work`. Điều khoản `2026-11-13.4`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -259,6 +259,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-14 05:46 — v3.29.0 trên work (theo yêu cầu). P3: (11) nút sáng/tối và nút Gọn/Thoải mái ở đầu trang (`display-toggle.tsx`), lưu `tyzo_mode` và `tyzo_density`; Admin đặt «Luôn sáng/tối» thì nút sáng/tối ẩn; `--density` giờ có tác dụng thật lên gap và padding (không đổi chiều cao nút, giữ vùng chạm 44px). (12) Dán key Groq thì 0,8 giây sau tự gọi danh sách model, báo dưới ô key: key sai, bị giới hạn 429, thiếu model nhận dạng hoặc dịch. `start` kiểm lại trước khi giữ tiền hay trừ lượt thử, mất mạng hoặc Groq 5xx thì không chặn. Groq không có lệnh hỏi số dư hạn mức nên chỉ hiện số còn lại khi Groq gửi kèm. Không đổi điều khoản. Chưa thử trên trình duyệt thật (không vào được phòng chiếu vì cần đăng nhập).
 - 2026-11-14 05:07 — v3.28.0 trên work (theo yêu cầu). P2: (8) khung chọn video lớn trên player, kéo thả, ảnh xem trước lấy trên máy; (9) thanh tiến trình Cắt / Nhận dạng / Dịch / Sửa lại; (10) hướng dẫn lần đầu 4 bước, nút dấu hỏi mở lại. Không đổi điều khoản. Chưa thử trình duyệt thật.
 - 2026-11-14 04:34 — v3.27.0 trên work (Claude sửa theo yêu cầu). P1: (5) migration 0021 `base_est`, nút Chủ «Ước tính giá vốn» cho phiếu cũ, Lời lỗ ghi rõ phần ước tính. (6) Chủ chỉnh 10 ngưỡng chất lượng trong Admin, chưa chỉnh theo số đo thật vì chưa có số. (7) Thể loại thường tự kèm bộ `auto` của ngôn ngữ nguồn, khách tắt được; adult, sex và auto đứng riêng. Chỉ đổi chữ và hành vi mặc định, không đổi điều khoản. Chưa thử trên điện thoại thật.
 - 2026-11-14 04:25 — v3.26.0 trên work (Claude sửa theo yêu cầu). P0: ô email đăng nhập type=email, dán nguyên địa chỉ; viết lại câu changelog 3.24.1; che tên tệp trong Admin → Việc và nút Hoàn phiếu (`mask-file-name.ts`); ghi chú và tooltip cho Key của tôi / Trả theo lượt. Chỉ đổi chữ, không đổi điều khoản. `tsc` còn 10 lỗi cũ ở watch-run, watch-save, relay-alibaba, room-alibaba, tai-video, tai-khoan (không thuộc các file đã sửa, chưa xử lý). Test liên quan 22/22 xanh. Chưa thử trên điện thoại thật.

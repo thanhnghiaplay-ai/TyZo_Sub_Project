@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.28.0";
+export const APP_VERSION = "3.29.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.29.0",
+    time: "05:46 ngày 14/11/2026",
+    title: "Chuyển sáng/tối, chọn giao diện gọn hoặc thoải mái, kiểm tra key trước khi dịch.",
+    points: [
+      "Hai nút nhỏ ở đầu trang: đổi sáng/tối và gọn/thoải mái. Máy nhớ lựa chọn của bạn.",
+      "Dán key Groq xong, app tự kiểm tra key, hạn mức và model đã chọn có dùng được không.",
+      "Key sai hoặc thiếu model thì báo ngay, không tốn lượt thử.",
+    ],
+  },
   {
     version: "3.28.0",
     time: "05:07 ngày 14/11/2026",

@@ -341,9 +341,49 @@ export function modeScript(mode: Mode): string {
     return `document.documentElement.setAttribute('data-theme',${JSON.stringify(mode)});`;
   }
   return (
-    "(function(){var m=null;try{m=localStorage.getItem('tyzo_mode')}catch(e){}" +
+    `(function(){var m=null;try{m=localStorage.getItem(${JSON.stringify(MODE_KEY)})}catch(e){}` +
     "if(m!=='dark'&&m!=='light'){try{m=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){m='dark'}}" +
     "document.documentElement.setAttribute('data-theme',m)})();"
+  );
+}
+
+/* ---------- Khách tự chọn: sáng/tối và mật độ ---------- */
+
+export const MODE_KEY = "tyzo_mode";
+export const DENSITY_KEY = "tyzo_density";
+
+export const USER_DENSITIES = [
+  ["compact", "Gọn"],
+  ["comfortable", "Thoải mái"],
+] as const;
+export type UserDensity = (typeof USER_DENSITIES)[number][0];
+
+export function adminDensityValue(density: Density): number {
+  return DENSITIES.find((d) => d[0] === density)?.[2] ?? 1;
+}
+
+/** Hệ số khoảng cách của lựa chọn khách. «Thoải mái» không bao giờ chật hơn mức vừa. */
+export function densityValue(choice: UserDensity, admin: Density): number {
+  return choice === "compact" ? 0.85 : Math.max(1, adminDensityValue(admin));
+}
+
+/** Chưa chọn thì theo Admin: Admin đặt «Gọn» thì gọn, còn lại là thoải mái. */
+export function defaultUserDensity(admin: Density): UserDensity {
+  return admin === "compact" ? "compact" : "comfortable";
+}
+
+export function pickUserDensity(raw: unknown, admin: Density): UserDensity {
+  return raw === "compact" || raw === "comfortable" ? raw : defaultUserDensity(admin);
+}
+
+/** Chạy trước khi vẽ, như modeScript. Đặt data-density và --density từ lựa chọn đã lưu của khách. */
+export function densityScript(admin: Density): string {
+  const roomy = Math.max(1, adminDensityValue(admin));
+  return (
+    `(function(){var d=null;try{d=localStorage.getItem(${JSON.stringify(DENSITY_KEY)})}catch(e){}` +
+    `if(d!=='compact'&&d!=='comfortable')d=${JSON.stringify(defaultUserDensity(admin))};` +
+    `var e=document.documentElement;e.setAttribute('data-density',d);` +
+    `e.style.setProperty('--density',String(d==='compact'?0.85:${roomy}))})();`
   );
 }
 

@@ -6,6 +6,8 @@ import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
 import {
+  AlertTriangle,
+  CheckCircle2,
   ClipboardPaste,
   Clapperboard,
   Eye,
@@ -24,6 +26,7 @@ import {
   Volume2,
   VolumeX,
   X,
+  XCircle,
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
 import { groqListHolds } from "@/lib/sub/asr-house";
@@ -34,6 +37,7 @@ import { turnPackModels } from "@/lib/turn-pack";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
+import { DisplayToggle } from "@/components/display-toggle";
 import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
 import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
@@ -678,6 +682,7 @@ export function Studio() {
           </div>
           <div className="flex items-center gap-2">
             <VersionMark />
+            <DisplayToggle />
             <NoticeBell />
           </div>
         </div>
@@ -943,6 +948,27 @@ export function Studio() {
               {showKey ? <EyeOff /> : <Eye />}
             </IconButton>
           </span>
+          {app.keyStatus.phase !== "idle" && (
+            <span
+              role="status"
+              className={
+                "flex items-start gap-1.5 text-xs " +
+                (app.keyStatus.phase === "ok"
+                  ? "text-success"
+                  : app.keyStatus.phase === "bad"
+                    ? "text-danger"
+                    : app.keyStatus.phase === "warn"
+                      ? "text-warning"
+                      : "text-muted")
+              }
+            >
+              {app.keyStatus.phase === "checking" && <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin" aria-hidden="true" />}
+              {app.keyStatus.phase === "ok" && <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              {app.keyStatus.phase === "warn" && <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              {app.keyStatus.phase === "bad" && <XCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              <span>{app.keyStatus.text}</span>
+            </span>
+          )}
         </label>
         )}
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && !(runDoor.open && payByRoom) && (

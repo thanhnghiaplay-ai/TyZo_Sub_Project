@@ -15,6 +15,7 @@ import {
 } from "@/lib/sub/text";
 import type { AsrModel } from "@/lib/sub/types";
 import { roomTicketId } from "@/lib/sub/room-ticket";
+import type { KeyProbe } from "@/lib/sub/key-check";
 
 export const API = "https://api.groq.com/openai/v1";
 export const ROOM_KEY = "room";
@@ -144,6 +145,42 @@ export async function listModelIds(key: string, signal?: AbortSignal, provider: 
   if (!response.ok) throw new Error(await readApiError(response, ""));
   const data = (await response.json()) as { data?: Array<{ id?: string }> };
   return (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
+}
+
+/** Hỏi Groq danh sách model bằng key này, giữ lại mã trạng thái để biết key sai, bị giới hạn hay chỉ là mất mạng. Không ném lỗi, trừ khi bị hủy. */
+export async function probeKey(key: string, signal?: AbortSignal): Promise<KeyProbe> {
+  const lost: KeyProbe = { status: 0, ids: [], retryAfter: 0, remainingRequests: null, remainingTokens: null };
+  const guard = new AbortController();
+  const relay = () => guard.abort();
+  signal?.addEventListener("abort", relay, { once: true });
+  const timer = setTimeout(() => guard.abort(), 15_000);
+  try {
+    const next = roomFetchTarget(modelListUrl("groq"), { headers: { Authorization: `Bearer ${key}` } }, null);
+    const response = await fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal: guard.signal });
+    const number = (name: string) => {
+      const raw = response.headers.get(name);
+      const value = raw === null ? NaN : Number(raw);
+      return Number.isFinite(value) ? value : null;
+    };
+    let ids: string[] = [];
+    if (response.ok) {
+      const data = (await response.json().catch(() => ({}))) as { data?: Array<{ id?: string }> };
+      ids = (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
+    }
+    return {
+      status: response.status,
+      ids,
+      retryAfter: Number(response.headers.get("retry-after")) || 0,
+      remainingRequests: number("x-ratelimit-remaining-requests"),
+      remainingTokens: number("x-ratelimit-remaining-tokens"),
+    };
+  } catch {
+    if (signal?.aborted) throw abortError();
+    return lost;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", relay);
+  }
 }
 
 export async function transcribe(
