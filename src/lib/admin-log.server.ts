@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.27.0",
+    time: "04:34 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.26.0, theo yêu cầu người dùng (Claude sửa, nhánh work). P1 ba mục. (5) Giá vốn: migration 0021 thêm run_tickets.base_est. Phiếu mới vẫn lưu base_cost thật như cũ (run-gate, ali-filetrans, đọc thuyết minh đều truyền base). Phiếu cũ base_cost = 0 nay Chủ bấm «Ước tính giá vốn» ở Admin → Doanh thu: cost-estimate.ts điền charged / (1 + chênh Groq hiện tại) rồi đánh dấu base_est. Không đụng phiếu có giá vốn thật, không đụng phiếu đang giữ, chạy lại không đổi gì. Đây chỉ là ước tính vì chênh giá và bảng giá của lúc đó không còn; tiền Alibaba cũ (nếu có phiếu 0) cũng dùng chênh Groq. Lời lỗ hiện dòng «Trong đó giá vốn ước tính». Không tự chạy migration dữ liệu, Chủ phải bấm. (6) Chất lượng: không tự chỉnh theo số đo vì chưa có số thật trong tay. Thay vào đó Chủ chỉnh được 10 ngưỡng trong Admin → Chất lượng (room_settings quality_thresholds, có kiểm tra khoảng, nút đặt lại mặc định). Khách đọc ngưỡng qua getQualityThresholds khi chạy, lỗi mạng thì dùng mặc định. Ngưỡng mới chỉ áp cho lần chạy sau; đèn tổng ở bảng Admin tính lại theo ngưỡng mới. (7) Thuật ngữ: chọn thể loại khác auto, adult, sex thì tự kèm bộ auto của ngôn ngữ nguồn, thể loại thắng khi trùng từ, khách tắt được bằng ô trong Studio (gbase). Bộ adult và sex vẫn đứng riêng. Không đổi điều khoản. Chưa thử trên điện thoại thật.",
+  },
+  {
     version: "3.26.0",
     time: "04:25 ngày 14/11/2026",
     area: "khac",

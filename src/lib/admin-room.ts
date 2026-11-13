@@ -1057,6 +1057,10 @@ export type MoneyBreakdown = {
   von: number;
   lai: number;
   hoa: number;
+  /** Phần giá vốn là ước tính cho phiếu cũ, nằm trong von. */
+  vonUoc: number;
+  /** Số phiếu cũ đã trừ tiền mà chưa có giá vốn, toàn thời gian. */
+  chuaVon: number;
 };
 
 export const getMoney = createServerFn({ method: "POST" })
@@ -1094,8 +1098,9 @@ export const getMoney = createServerFn({ method: "POST" })
         and kind in ('nap', 'goi', 'hoan', 'nha')
       group by kind
     `;
-    const runSum = await sql<{ charged: number; refunded: number; von: number }>`
-      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded, coalesce(sum(base_cost), 0)::int as von
+    const runSum = await sql<{ charged: number; refunded: number; von: number; uoc: number }>`
+      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded, coalesce(sum(base_cost), 0)::int as von,
+        coalesce(sum(base_cost) filter (where base_est), 0)::int as uoc
       from run_tickets
       where created_at > now() - ${window}::interval
     `;
@@ -1116,6 +1121,9 @@ export const getMoney = createServerFn({ method: "POST" })
     const charged = Number(runSum[0]?.charged ?? 0);
     const refundedRun = Number(runSum[0]?.refunded ?? 0);
     const von = Number(runSum[0]?.von ?? 0);
+    const vonUoc = Number(runSum[0]?.uoc ?? 0);
+    const { countUncosted } = await import("@/lib/cost-estimate");
+    const chuaVon = await countUncosted(sql);
     const hoa = Number(hoaRows[0]?.hoa ?? 0);
     const luot = Math.max(0, charged - refundedRun);
     const goi = Math.abs(Number(byKind.goi ?? 0));
@@ -1134,9 +1142,26 @@ export const getMoney = createServerFn({ method: "POST" })
         von,
         lai,
         hoa,
+        vonUoc,
+        chuaVon,
       },
       costs: savedCosts,
     };
+  });
+
+/** Chủ bấm: điền giá vốn ước tính cho phiếu cũ. Dùng phần chênh Groq hiện tại, nên chỉ là ước tính. */
+export const estimateOldCost = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<{ count: number; markup: number }> => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
+    const markup = parseRunDesk(saved[0]?.value).markup;
+    const { estimateOldCostWith } = await import("@/lib/cost-estimate");
+    const count = await estimateOldCostWith(sql, markup);
+    await writeAudit(context.userId, "uoc-gia-von", null, `${count} phiếu, chênh ${markup}%`);
+    return { count, markup };
   });
 
 export const addCost = createServerFn({ method: "POST" })

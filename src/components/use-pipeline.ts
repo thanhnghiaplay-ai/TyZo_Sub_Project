@@ -31,6 +31,7 @@ import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stre
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
 import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
+import { loadQualityThresholds } from "@/lib/quality-load";
 import { reportFromSummary } from "@/lib/quality-board";
 import { reportQuality } from "@/lib/quality-room";
 import { APP_VERSION } from "@/lib/app-version";
@@ -66,6 +67,7 @@ import {
 } from "@/lib/sub/text";
 import {
   loadGenreGlossary,
+  loadRunGlossary,
   protectTerms,
   restoreTerms,
   settleGlossaryLines,
@@ -275,6 +277,8 @@ export function usePipeline() {
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
   const [genre, setGenre] = useState("auto");
+  /** Kèm bộ thuật ngữ nền của ngôn ngữ nguồn. Mặc định bật. */
+  const [baseGloss, setBaseGloss] = useState(true);
   const [threads, setThreads] = useState(3);
   const [mode, setMode] = useState<ModelMode>("manual");
   const [profile, setProfile] = useState<AutoProfile>("balanced");
@@ -346,6 +350,7 @@ export function usePipeline() {
     setSource(src === "zh" || src === "ko" || src === "ja" || src === "en" ? src : "zh");
     const g = readStore("ggenre");
     if (g) setGenre(g);
+    setBaseGloss(readStore("gbase") !== "0");
     const par = Number(readStore("gpar"));
     if ([1, 3, 4, 6, 8].includes(par)) setThreads(par);
     const savedMode = readStore("gmode");
@@ -390,7 +395,7 @@ export function usePipeline() {
     });
     (async () => {
       try {
-        const pack = await loadGenreGlossary(source, genre, target);
+        const pack = await loadRunGlossary(source, genre, target, baseGloss);
         if (cancelled) return;
         const merged = overlayUserTerms(pack.terms, userTerms);
         const userKeys = new Set(userTerms.map((t) => t.source.toLowerCase()));
@@ -421,7 +426,7 @@ export function usePipeline() {
     return () => {
       cancelled = true;
     };
-  }, [source, genre, target, userTerms]);
+  }, [source, genre, target, userTerms, baseGloss]);
 
   useEffect(() => {
     lineLocksRef.current = readGenderMap(voiceStore("line", title));
@@ -477,7 +482,7 @@ export function usePipeline() {
     return "";
   }, [file, audioFile, url]);
 
-  const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}` : `${modelId}|${genre}`;
+  const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}${baseGloss ? "" : "|nb"}` : `${modelId}|${genre}${baseGloss ? "" : "|nb"}`;
 
   const buttonLabel = useMemo(() => {
     if (running) return "Hủy";
@@ -789,6 +794,7 @@ export function usePipeline() {
     writeStore("gsrc", source);
     writeStore("gmdl", chosen);
     writeStore("ggenre", genre);
+    writeStore("gbase", baseGloss ? "1" : "0");
     writeStore("gpar", String(threads));
     writeStore("gmode", mode);
     writeStore("gprofile", profile);
@@ -1277,7 +1283,7 @@ export function usePipeline() {
             // Structured glossary (genre × source language) — hard override via placeholder
             let packTerms: Awaited<ReturnType<typeof loadGenreGlossary>>["terms"] = [];
             try {
-              const pack = await loadGenreGlossary(source, genre, target);
+              const pack = await loadRunGlossary(source, genre, target, baseGloss);
               packTerms = overlayUserTerms(pack.terms, userTermsRef.current);
             } catch {
               packTerms = overlayUserTerms([], userTermsRef.current);
@@ -1595,6 +1601,7 @@ export function usePipeline() {
         // Chỉ gửi các con số, không gửi chữ, tên tệp, video hay khóa. Lỗi ở đây không được làm hỏng lần dịch.
         try {
           const summary = summarizeQuality({
+            thresholds: await loadQualityThresholds(),
             raw: j.rawParts,
             rejects: j.rejects,
             kept: j.segs.length,
@@ -1861,7 +1868,7 @@ export function usePipeline() {
       if (job.current.abort === controller) job.current.abort = null;
       setAnalyzing(false);
     }
-  }, [allowEnterprise, asrModel, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
+  }, [allowEnterprise, asrModel, baseGloss, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
 
   const retryFailed = useCallback(() => {
     void (async () => {
@@ -2192,6 +2199,8 @@ export function usePipeline() {
     setSource,
     genre,
     setGenre,
+    baseGloss,
+    setBaseGloss,
     threads,
     setThreads,
     mode,

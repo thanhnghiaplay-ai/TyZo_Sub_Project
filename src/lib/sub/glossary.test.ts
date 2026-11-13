@@ -5,9 +5,11 @@ import {
   findMatches,
   glossaryTarget,
   hasLeftoverPlaceholder,
+  mergeBaseGlossary,
   restoreTerms,
   settleGlossaryLines,
   stripLeftoverPlaceholders,
+  usesBaseGlossary,
 } from "./glossary.ts";
 import { translationMessages } from "./text.ts";
 
@@ -120,5 +122,47 @@ describe("prompt dịch", () => {
     assert.match(system, /\{\{G0\}\}/);
     assert.match(system, /\{\{G1\}\} is a different token from \{\{G10\}\}/);
     assert.match(system, /Do not translate, delete, reorder or change the digits/);
+  });
+});
+
+describe("bộ thuật ngữ nền theo ngôn ngữ nguồn", () => {
+  it("thể loại thường kèm bộ nền, bộ tự động và hai bộ 18+ thì không", () => {
+    assert.equal(usesBaseGlossary("action"), true);
+    assert.equal(usesBaseGlossary("Costume"), true);
+    assert.equal(usesBaseGlossary("auto"), false);
+    assert.equal(usesBaseGlossary(""), false);
+    assert.equal(usesBaseGlossary("adult"), false);
+    assert.equal(usesBaseGlossary("sex"), false);
+  });
+
+  it("gộp bộ nền với bộ thể loại, trùng từ thì thể loại thắng", () => {
+    const base = [
+      { source: "然后", target: "rồi sau đó" },
+      { source: "但是", target: "nhưng mà" },
+    ];
+    const main = [
+      { source: "然后", target: "sau đó thì" },
+      { source: "师父", target: "sư phụ" },
+    ];
+    const merged = mergeBaseGlossary(base, main);
+    assert.equal(merged.length, 3);
+    assert.equal(merged.find((t) => t.source === "然后")?.target, "sau đó thì");
+    assert.ok(merged.some((t) => t.source === "但是"));
+  });
+
+  it("chữ hoa chữ thường: không phân biệt thì trùng, có phân biệt thì giữ riêng", () => {
+    const merged = mergeBaseGlossary([{ source: "Then", target: "a" }], [{ source: "then", target: "b" }]);
+    assert.equal(merged.length, 1);
+    assert.equal(merged[0].target, "b");
+    const kept = mergeBaseGlossary([{ source: "AI", target: "a", case_sensitive: true }], [{ source: "ai", target: "b", case_sensitive: true }]);
+    assert.equal(kept.length, 2);
+  });
+
+  it("mỗi ngôn ngữ nguồn đều có sẵn bộ nền auto trong dữ liệu", () => {
+    for (const lang of ["zh", "ko", "ja", "en"]) {
+      const raw = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/auto.json`, import.meta.url), "utf8"));
+      const terms = Array.isArray(raw) ? raw : raw.terms;
+      assert.ok(terms.length > 0, lang);
+    }
   });
 });

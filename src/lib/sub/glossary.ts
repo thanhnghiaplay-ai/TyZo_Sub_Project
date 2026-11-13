@@ -1,7 +1,8 @@
 /**
  * Structured glossary by (source language × genre).
  * Each genre file stands alone. common.json and global.json are not merged,
- * so a term from one genre cannot leak into another.
+ * so a term from one genre cannot leak into another. The one exception is the language's `auto` pack,
+ * layered under a genre by loadRunGlossary (never under auto, adult or sex).
  * Matching: longest-match first. For space-less scripts (ja/zh/ko/th)
  * we do plain substring search; otherwise prefer word boundaries.
  */
@@ -98,6 +99,35 @@ export async function loadGenreGlossary(sourceLang: string, genre: string, targe
 
 export function clearGlossaryCache() {
   cache.clear();
+}
+
+/** Thể loại không bao giờ kèm bộ nền: bộ tự động và hai bộ 18+, mỗi bộ đứng riêng. */
+const NO_BASE_GENRES = new Set(["auto", "adult", "sex"]);
+
+/** Thể loại này có được kèm bộ nền (bộ `auto`) của ngôn ngữ nguồn hay không. */
+export function usesBaseGlossary(genre: string): boolean {
+  return !NO_BASE_GENRES.has((genre || "auto").trim().toLowerCase());
+}
+
+/** Gộp bộ nền với bộ thể loại. Trùng từ thì bản của thể loại thắng. Khóa trùng theo cùng cách với loadGenreGlossary. */
+export function mergeBaseGlossary(base: GlossaryTerm[], main: GlossaryTerm[]): GlossaryTerm[] {
+  const map = new Map<string, GlossaryTerm>();
+  for (const list of [base, main]) {
+    for (const term of list) map.set(term.case_sensitive ? term.source : term.source.toLowerCase(), term);
+  }
+  return [...map.values()];
+}
+
+/**
+ * Bộ thuật ngữ cho một lần chạy: bộ của thể loại đã chọn, kèm bộ nền `auto` của ngôn ngữ nguồn khi `withBase` bật.
+ * Bộ nền lỗi hoặc rỗng thì bỏ qua, không làm hỏng bộ thể loại. Bộ thể loại lỗi thì báo lỗi như cũ.
+ */
+export async function loadRunGlossary(sourceLang: string, genre: string, targetLang = "", withBase = true): Promise<GlossaryPack> {
+  const main = await loadGenreGlossary(sourceLang, genre, targetLang);
+  if (!withBase || main.error || !usesBaseGlossary(genre)) return main;
+  const base = await loadGenreGlossary(sourceLang, "auto", targetLang).catch(() => null);
+  if (!base || base.error || !base.terms.length) return main;
+  return { terms: mergeBaseGlossary(base.terms, main.terms), sources: [...base.sources, ...main.sources] };
 }
 
 const GODAN: Record<string, { i: string; a: string; past: string; te: string }> = {

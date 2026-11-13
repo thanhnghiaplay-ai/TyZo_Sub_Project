@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { parseQualityReport, type BoardRow, type QualityReport } from "@/lib/quality-board";
+import { checkQualityThresholds, parseQualityThresholds, type QualityThresholds } from "@/lib/sub/quality";
 
 /**
  * Trình duyệt báo số liệu chất lượng sau mỗi lần nhận dạng xong. Chỉ lưu số, không lưu mã tài khoản.
@@ -72,7 +73,7 @@ type DbRow = {
 export const getQualityBoard = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((days: number) => (days === 7 || days === 90 ? days : 30))
-  .handler(async ({ context, data }): Promise<{ rows: BoardRow[]; days: number }> => {
+  .handler(async ({ context, data }): Promise<{ rows: BoardRow[]; days: number; thresholds: QualityThresholds }> => {
     const { requireRole } = await import("@/lib/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
@@ -148,5 +149,34 @@ export const getQualityBoard = createServerFn({ method: "POST" })
       healthRed: r.h_red,
       healthUnknown: r.h_unknown,
     }));
-    return { rows, days: data };
+    const saved = await sql<{ value: string }>`select value from room_settings where key = 'quality_thresholds'`;
+    return { rows, days: data, thresholds: parseQualityThresholds(saved[0]?.value) };
+  });
+
+/** Ngưỡng đang dùng. Trình duyệt của khách đọc để tính đèn và mức tin cho lần chạy của mình. Chỉ là con số. */
+export const getQualityThresholds = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async (): Promise<QualityThresholds> => {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const saved = await sql<{ value: string }>`select value from room_settings where key = 'quality_thresholds'`;
+    return parseQualityThresholds(saved[0]?.value);
+  });
+
+/** Chỉ Chủ. Lưu bộ ngưỡng mới. Chỉ áp dụng cho lần chạy sau, số đã báo giữ theo ngưỡng lúc chạy. */
+export const saveQualityThresholds = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: unknown) => checkQualityThresholds(input))
+  .handler(async ({ context, data }): Promise<QualityThresholds> => {
+    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const value = JSON.stringify(data);
+    await sql`
+      insert into room_settings (key, value) values ('quality_thresholds', ${value})
+      on conflict (key) do update set value = ${value}
+    `;
+    await writeAudit(context.userId, "doi-nguong-chat-luong", null, value);
+    return data;
   });

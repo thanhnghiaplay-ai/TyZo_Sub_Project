@@ -43,9 +43,10 @@ import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sample
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
 import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
-import { termsToCsv } from "@/lib/sub/glossary";
+import { termsToCsv, usesBaseGlossary } from "@/lib/sub/glossary";
 import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
-import { summarizeQuality, type LangCheckReport } from "@/lib/sub/quality";
+import { DEFAULT_QUALITY_THRESHOLDS, summarizeQuality, type LangCheckReport, type QualityThresholds } from "@/lib/sub/quality";
+import { loadQualityThresholds } from "@/lib/quality-load";
 import { BandBar, HealthPill, pct } from "@/components/quality-view";
 import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/asr-retry";
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
@@ -94,9 +95,19 @@ function AsrDiag({
   onDrop: (index: number) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [thresholds, setThresholds] = useState<QualityThresholds>(DEFAULT_QUALITY_THRESHOLDS);
+  useEffect(() => {
+    let alive = true;
+    void loadQualityThresholds().then((next) => {
+      if (alive) setThresholds(next);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   if (!raw.length && !rejects.length && !retry?.missing.length && !(retry && retry.usedSeconds > 0) && !(filterRetry && (filterRetry.sent > 0 || filterRetry.deferred > 0))) return null;
   const summary = summarizeDiagnostics(rejects, raw);
-  const quality = summarizeQuality({ raw, rejects, kept, lang });
+  const quality = summarizeQuality({ raw, rejects, kept, lang, thresholds });
   const download = () => {
     const doc = { exportedAt: new Date().toISOString(), ...buildDiagnosticsExport({ rejects, raw, kept }), quality, langCheck: lang };
     const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json;charset=utf-8" });
@@ -1049,12 +1060,18 @@ export function Studio() {
           <option value="series">Phim bộ / phim mới chiếu</option>
           <option value="daily">Hằng ngày</option>
         </Select>
+        {usesBaseGlossary(app.genre) && (
+          <label className="flex min-h-11 items-center gap-2 text-sm">
+            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
+            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
+          </label>
+        )}
         <p className="text-sm text-muted">
           {app.glossaryInfo?.failed ? (
             "Không tải được thuật ngữ có sẵn. Hãy thử lại."
           ) : app.glossaryInfo?.count > 0 ? (
             <>
-              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ của thể loại này.
+              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
             </>
           ) : (
             "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."

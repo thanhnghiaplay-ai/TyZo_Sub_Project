@@ -1,4 +1,4 @@
-import { healthOf, type Bands, type Health, type QualitySummary } from "./sub/quality.ts";
+import { DEFAULT_QUALITY_THRESHOLDS, healthOf, type Bands, type Health, type QualitySummary, type QualityThresholds } from "./sub/quality.ts";
 
 /**
  * Bản báo chất lượng một lần chạy, gửi từ trình duyệt lên máy chủ. Chỉ có số.
@@ -185,7 +185,7 @@ export type Rollup = {
   lang: { runsOn: number; suspect: number; resent: number; swapped: number; meanBefore: number | null; meanAfter: number | null };
 };
 
-export function rollup(rows: BoardRow[]): Rollup {
+export function rollup(rows: BoardRow[], th: QualityThresholds = DEFAULT_QUALITY_THRESHOLDS): Rollup {
   const sum = (pick: (r: BoardRow) => number) => rows.reduce((n, r) => n + pick(r), 0);
   const bands: Bands = { high: sum((r) => r.high), check: sum((r) => r.check), low: sum((r) => r.low), unknown: sum((r) => r.unknown) };
   const parts = {
@@ -200,7 +200,7 @@ export function rollup(rows: BoardRow[]): Rollup {
   const confW = sum((r) => r.confWeight);
   const langW = sum((r) => r.langWeight);
   const verdict = rows.length
-    ? healthOf({ segments, bands, parts, appFiltered })
+    ? healthOf({ segments, bands, parts, appFiltered }, th)
     : { health: "unknown" as Health, reason: "Chưa có lần chạy nào." };
   return {
     runs: sum((r) => r.runs),
@@ -225,7 +225,7 @@ export function rollup(rows: BoardRow[]): Rollup {
   };
 }
 
-export function groupRollup(rows: BoardRow[], key: (r: BoardRow) => string, order: "key" | "key-desc" = "key"): Array<{ key: string; rollup: Rollup }> {
+export function groupRollup(rows: BoardRow[], key: (r: BoardRow) => string, order: "key" | "key-desc" = "key", th: QualityThresholds = DEFAULT_QUALITY_THRESHOLDS): Array<{ key: string; rollup: Rollup }> {
   const map = new Map<string, BoardRow[]>();
   for (const row of rows) {
     const k = key(row);
@@ -233,7 +233,7 @@ export function groupRollup(rows: BoardRow[], key: (r: BoardRow) => string, orde
     if (list) list.push(row);
     else map.set(k, [row]);
   }
-  const out = [...map.entries()].map(([k, list]) => ({ key: k, rollup: rollup(list) }));
+  const out = [...map.entries()].map(([k, list]) => ({ key: k, rollup: rollup(list, th) }));
   out.sort((a, b) => (order === "key" ? a.key.localeCompare(b.key) : b.key.localeCompare(a.key)));
   return out;
 }
@@ -250,13 +250,13 @@ export function compareVersionDesc(a: string, b: string): number {
 }
 
 /** Gợi ý chỗ nên xem khi chỉnh. Chỉ là gợi ý theo số liệu, chưa kiểm chứng. Không có số thì không gợi ý. */
-export function hintsFor(r: Rollup): string[] {
+export function hintsFor(r: Rollup, th: QualityThresholds = DEFAULT_QUALITY_THRESHOLDS): string[] {
   if (r.runs === 0 || r.segments === 0) return [];
   const out: string[] = [];
   const known = r.bands.high + r.bands.check + r.bands.low;
-  if (r.parts.total && r.parts.decodeFail / r.parts.total > 0.03) out.push("Nhiều đoạn không giải mã được. Xem lại codec và định dạng video của khách.");
-  if (known && r.bands.low / known > 0.12) out.push("Nhiều câu có độ tin thấp. Thử model chính xác hơn hoặc bật lọc đoạn có tiếng người.");
-  if (r.appFiltered / r.segments > 0.3) out.push("App lọc bỏ nhiều câu Whisper trả về. Xem lại ngưỡng lọc ảo giác.");
+  if (r.parts.total && r.parts.decodeFail / r.parts.total > th.yellowDecodeShare) out.push("Nhiều đoạn không giải mã được. Xem lại codec và định dạng video của khách.");
+  if (known && r.bands.low / known > th.yellowLowShare) out.push("Nhiều câu có độ tin thấp. Thử model chính xác hơn hoặc bật lọc đoạn có tiếng người.");
+  if (r.appFiltered / r.segments > th.yellowFilterRate) out.push("App lọc bỏ nhiều câu Whisper trả về. Xem lại ngưỡng lọc ảo giác.");
   if (r.parts.total && r.parts.empty / r.parts.total > 0.3) out.push("Nhiều đoạn Whisper không trả câu. Có thể phim ít thoại hoặc nhạc nền lấn tiếng.");
   return out;
 }
