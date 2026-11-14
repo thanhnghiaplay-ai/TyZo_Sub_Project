@@ -62,3 +62,20 @@ describe("nút quay lại có mặt ở các trang", () => {
     assert.match(read("../components/back-button.tsx"), /fallback = "\/"/);
   });
 });
+
+describe("trang tự cuộn được (html và body khóa cuộn)", () => {
+  const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
+  const css = read("../styles.css");
+  it("html và body đang khóa cuộn, nên mỗi trang phải tự có vùng cuộn", () => {
+    assert.match(css, /html,\s*body \{[^}]*overflow: hidden/);
+  });
+  const pages = ["../components/live-screen.tsx", "../components/guide-page.tsx", "../routes/ctv.tsx", "../routes/tai-video.tsx"];
+  for (const path of pages) {
+    it(`${path.split("/").pop()}: khung chính có h-dvh và overflow-y-auto`, () => {
+      const main = /<main className="([^"]+)"/.exec(read(path))?.[1] ?? "";
+      assert.match(main, /\bh-dvh\b/);
+      assert.match(main, /\boverflow-y-auto\b/);
+      assert.doesNotMatch(main, /min-h-dvh/);
+    });
+  }
+});

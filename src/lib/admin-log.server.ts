@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.43.1",
+    time: "04:15 ngày 15/11/2026",
+    area: "khac",
+    text: "Người dùng báo trang Dịch trực tiếp không cuộn được trên điện thoại. Nguyên nhân: html và body đặt overflow hidden (styles.css), mà live-screen, guide-page, ctv và tai-video chỉ dùng min-h-dvh nên không có vùng cuộn. Sửa: khung main của bốn trang đổi sang h-dvh overflow-y-auto. Thêm test chặn lỗi tái diễn trong back-nav.test.ts. Không đổi dịch vụ, giá, quyền hay điều khoản.",
+  },
+  {
     version: "3.43.0",
     time: "02:40 ngày 15/11/2026",
     area: "du-lieu",

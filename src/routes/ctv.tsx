@@ -24,7 +24,7 @@ function PartnerPage() {
 
   const [link, setLink] = useState("");
   return (
-    <main className="room-wide mx-auto flex min-h-dvh flex-col gap-4 bg-bg px-4 py-6 text-fg">
+    <main className="room-wide mx-auto flex h-dvh flex-col gap-4 overflow-y-auto bg-bg px-4 py-6 text-fg">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <BackButton />

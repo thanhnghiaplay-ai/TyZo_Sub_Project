@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.43.0";
+export const APP_VERSION = "3.43.1";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,14 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.43.1",
+    time: "04:15 ngày 15/11/2026",
+    title: "Sửa lỗi không cuộn được ở Dịch trực tiếp, Hướng dẫn, Cộng tác viên và Tải video.",
+    points: [
+      "Các trang này giờ cuộn xuống được hết, kể cả phần chữ chạy và nút tải phụ đề.",
+    ],
+  },
   {
     version: "3.43.0",
     time: "02:40 ngày 15/11/2026",

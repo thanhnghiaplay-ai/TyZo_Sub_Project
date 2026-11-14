@@ -129,7 +129,7 @@ export function LiveScreen() {
     <AppShell className="contents">
       <TourHost page="/dich-truc-tiep" />
       <SideRail label="Chức năng" items={railItems} who={{ name: user?.displayName, email: user?.primaryEmail }} />
-      <main className="room-wide mx-auto flex min-h-dvh flex-col gap-3 bg-bg px-4 py-4 text-fg">
+      <main className="room-wide mx-auto flex h-dvh flex-col gap-3 overflow-y-auto bg-bg px-4 py-4 text-fg">
         <header className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <BackButton />

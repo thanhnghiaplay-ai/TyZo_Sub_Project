@@ -76,7 +76,7 @@ function VideoLinkPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 pb-24">
+    <main className="mx-auto flex h-dvh w-full max-w-2xl flex-col gap-6 overflow-y-auto p-4 pb-24">
       <header className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <BackButton fallback="/tai-khoan" />
