@@ -1,5 +1,13 @@
 # HANDOFF — TyZo_Sub_Project
 
+## TRANG HƯỚNG DẪN — phần 1 trong 3 (15/11/2026, nhánh work, v3.39.0)
+ĐÃ LÀM: `/huong-dan` có mục lục, tìm không dấu, 9 mục và 6 câu hỏi thường gặp, «Chỉ tôi» ở mục Bắt đầu nhanh, menu trái và Ctrl+K. Nội dung ở `src/lib/guide-topics.ts`: giá gói, hạn dùng thử, thời gian giữ đơn nạp lấy từ hằng số; tên nút nhắc trong chữ nằm trong bảng `UI`, `guide-topics.test.ts` kiểm từng tên còn trong giao diện; mục mật khẩu đổi theo `getMailFace().resetOn`. Tuyến «Chỉ tôi» ở `lib/tour-steps.ts`, test kiểm nhãn `data-tour` còn tồn tại. Liên hệ hỗ trợ: Chủ nhập ở Admin, tab Cấu hình, ô «Liên hệ hỗ trợ» (email, Zalo, Facebook, ghi chú), lưu `room_settings.support_contact`, ai cũng đọc được, chỉ Chủ lưu, nhật ký thao tác `lien-he` chỉ ghi tên ô đã điền.
+ẢNH MINH HỌA: thả tệp vào `public/huong-dan/`. Tên đã giữ chỗ: `groq-tao-key.png` (mục Lấy key Groq, trang console.groq.com là của bên khác), `chia-se-tab.png` (hộp chia sẻ tab của trình duyệt, web không làm sáng lên được). Chưa có tệp thì khung ảnh tự ẩn, không cần sửa code. Muốn thêm ảnh ở bước khác thì điền `image` vào bước đó trong `guide-topics.ts`.
+CHƯA LÀM: phần 2 (làm mờ nền, chỉ sáng chỗ cần bấm, nhãn `data-tour` cho các mục còn lại, nút «Chỉ tôi» cho các mục khác ngoài Bắt đầu nhanh) và phần 3 (ô tích đồng ý điều khoản ở Đăng ký/Đăng nhập, trang `/dieu-khoan`, liên kết ở chân trang và trang Tài khoản, giữ `TERMS_VERSION`, không đổi nội dung điều khoản).
+CHƯA KIỂM: Safari, điện thoại thật, Vercel; tab Cấu hình bằng tài khoản Chủ thật (mới qua kiểu và test hàm). Trang /huong-dan hiện bọc `EntryGate` như các trang khác, nên người chưa đồng ý điều khoản chưa xem được; phần 3 sẽ xem lại.
+KHÔNG ĐỔI: giá, hạn mức, luật ví, quyền, điều khoản (`2026-11-13.4`).
+
+
 ## DỊCH TRỰC TIẾP — lớp tiền, vé, cầu nối (14/11/2026, nhánh work)
 ĐÃ LÀM: `live-billing.ts` nối cầu nối vào `openTicketWith`, `chargeTicketWith`, `closeTicketWith` (không viết lại luật tiền). `live-book.ts` đọc tỉ giá từ `run_board`, phần chênh từ `alibaba_desk`, giá live tự kéo và lưu ở `live_board`. `live-upstream.ts` ghép địa chỉ `wss://<WorkspaceId>.ap-southeast-1.maas.aliyuncs.com/...`. `live-open.ts` cấp vé (đăng nhập, tài khoản mở, 10 lần/phút, vé sống 60 giây). `scripts/live-bridge.ts` khởi chạy cầu nối riêng, `scripts/live-try.ts` thử bằng dòng lệnh. Sửa lỗi: một phiên lỗi (vd. DB đứt) không còn làm sập cả cầu nối.
 CẦN CHỦ ĐẶT: `LIVE_BRIDGE_SECRET` (giống nhau ở máy chủ chính và cầu nối), `LIVE_BRIDGE_URL` (địa chỉ wss công khai của cầu nối, ở máy chủ chính), `DATABASE_URL` (ở cầu nối), Workspace ID qua `ALIBABA_WORKSPACE_ID` hoặc cài đặt phòng `alibaba_workspace`.

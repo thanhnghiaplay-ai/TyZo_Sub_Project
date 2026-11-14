@@ -25,7 +25,7 @@ export type AdminTabInfo = {
 export const ADMIN_TABS: AdminTabInfo[] = [
   { id: "tong-quan", label: "Tổng quan", owner: false, words: "trang chu dashboard canh bao" },
   { id: "viec", label: "Việc", owner: false, words: "phieu luot don nap khach tai khoan tra theo luot" },
-  { id: "cau-hinh", label: "Cấu hình", owner: true, words: "key groq alibaba gia goi dich cong nap sepay casso thue phong model" },
+  { id: "cau-hinh", label: "Cấu hình", owner: true, words: "key groq alibaba gia goi dich cong nap sepay casso thue phong model lien he ho tro zalo facebook email" },
   { id: "so-do", label: "Sơ đồ", owner: false, words: "to chuc nhan vien quyen" },
   { id: "tien", label: "Doanh thu", owner: true, words: "tien chi phi loi lai arpu bieu do" },
   { id: "chat-luong", label: "Chất lượng", owner: true, words: "whisper model do tin" },

@@ -1,20 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { markSeen } from "@/components/tour-seen";
-
-type Step = { sel: string; title: string; text: string };
-
-const STEPS: Step[] = [
-  { sel: "[data-tour=drop]", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
-  { sel: "#tool-tab-key", title: "2. Chọn cách dùng", text: "Mở Key Sub: dùng key Groq của bạn, hoặc trả theo lượt bằng ví của phòng." },
-  { sel: "#tool-tab-phim", title: "3. Dịch", text: "Mở Phim, chọn ngôn ngữ và thể loại, rồi bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
-  { sel: "[data-tour=export]", title: "4. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
-];
+import { TOURS, type TourId } from "@/lib/tour-steps";
 
 type Box = { top: number; left: number; width: number; height: number };
 
-/** Hướng dẫn lần đầu 4 bước. Không chặn thao tác, không làm tối nền. */
-export function GuidedTour({ open, onClose }: { open: boolean; onClose: () => void }) {
+/** Hướng dẫn trên giao diện thật. Không chặn thao tác, không làm tối nền. Các bước nằm ở `lib/tour-steps.ts`. */
+export function GuidedTour({ open, onClose, tour = "quick-start" }: { open: boolean; onClose: () => void; tour?: TourId }) {
+  const STEPS = TOURS[tour];
   const [step, setStep] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
   const card = useRef<HTMLDivElement>(null);
@@ -31,7 +24,7 @@ export function GuidedTour({ open, onClose }: { open: boolean; onClose: () => vo
     const rect = el.getBoundingClientRect();
     if (!rect.width || !rect.height) return setBox(null);
     setBox({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
-  }, [step]);
+  }, [step, STEPS]);
 
   useLayoutEffect(() => {
     if (!open) return;

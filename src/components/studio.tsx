@@ -57,6 +57,9 @@ import type { PaletteCommand } from "@/lib/palette-match";
 import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
 import { tourSeen } from "@/components/tour-seen";
+import { guideTopics } from "@/lib/guide-topics";
+import { takeTourRequest } from "@/lib/tour-request";
+import type { TourId } from "@/lib/tour-steps";
 import { isMediaFile, useFileThumb, type FileThumb } from "@/components/file-thumb";
 import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
@@ -492,7 +495,16 @@ export function Studio() {
   const pickedFile = app.file || app.audioFile;
   const thumb = useFileThumb(pickedFile);
   const [tourOpen, setTourOpen] = useState(false);
+  const [tourId, setTourId] = useState<TourId>("quick-start");
+  // «Chỉ tôi» ở trang Hướng dẫn gửi yêu cầu qua sessionStorage. Đọc một lần, giữ trong ref để chạy lại hiệu ứng (StrictMode) không làm mất.
+  const askedTour = useRef<TourId | null | undefined>(undefined);
   useEffect(() => {
+    if (askedTour.current === undefined) askedTour.current = takeTourRequest();
+    if (askedTour.current) {
+      setTourId(askedTour.current);
+      const asked = window.setTimeout(() => setTourOpen(true), 500);
+      return () => window.clearTimeout(asked);
+    }
     if (tourSeen()) return;
     const timer = window.setTimeout(() => setTourOpen(true), 900);
     return () => window.clearTimeout(timer);
@@ -761,6 +773,7 @@ export function Studio() {
     },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep" },
     { id: "tai-video", label: "Tải video", href: "/tai-video" },
+    { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
     {
       id: "tai-khoan",
       label: "Tài khoản",
@@ -808,7 +821,9 @@ export function Studio() {
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
     { id: "ctv", label: "Cộng tác viên", hint: "Trang", run: () => void navigate({ to: "/ctv" }) },
     { id: "yeu-cau", label: "Yêu cầu xem lại", hint: "Trang", run: () => void navigate({ to: "/yeu-cau" }) },
-    { id: "tour", label: "Xem hướng dẫn nhanh", hint: "Trợ giúp", words: "huong dan help", run: () => setTourOpen(true) },
+    { id: "tour", label: "Xem hướng dẫn nhanh", hint: "Trợ giúp", words: "huong dan help chi toi", run: () => { setTourId("quick-start"); setTourOpen(true); } },
+    { id: "huong-dan", label: "Hướng dẫn sử dụng", hint: "Trợ giúp", words: "huong dan help tro giup cach dung tim kiem", run: () => void navigate({ to: "/huong-dan" }) },
+    ...guideTopics().map((topic) => ({ id: `huong-dan-${topic.id}`, label: `Hướng dẫn: ${topic.title}`, hint: "Trợ giúp", words: topic.words, run: () => void navigate({ to: "/huong-dan", hash: topic.id }) })),
     ...(place?.role ? [{ id: "admin", label: "Quản lý", hint: "Trang", run: () => void navigate({ to: "/admin" }) }] : []),
   ];
 
@@ -907,7 +922,7 @@ export function Studio() {
         </button>
       </div>
       <StepsBar report={app.stages} />
-      <GuidedTour open={tourOpen} onClose={() => setTourOpen(false)} />
+      <GuidedTour open={tourOpen} tour={tourId} onClose={() => setTourOpen(false)} />
       <dialog ref={statusRef} className="studio-note">
         <p className="text-sm">{app.status}</p>
         <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>

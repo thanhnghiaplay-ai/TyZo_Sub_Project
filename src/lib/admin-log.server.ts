@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.39.0",
+    time: "00:23 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng, phần 1 trong ba phần (trang Hướng dẫn; phần 2 guided tour làm mờ nền và phần 3 gom điều khoản làm ở các bản sau). Không đổi giá, quyền, luật ví hay điều khoản. Thêm trang /huong-dan (routes/huong-dan.tsx bọc EntryGate, components/guide-page.tsx): mục lục, ô tìm kiếm không dấu, 9 mục + câu hỏi thường gặp, nút «Chỉ tôi» ở mục Bắt đầu nhanh (lưu yêu cầu vào sessionStorage bằng lib/tour-request.ts rồi về trang chủ, studio.tsx đọc một lần bằng ref để StrictMode không làm mất). Nội dung ở lib/guide-topics.ts: giá gói, hạn dùng thử, thời gian giữ đơn nạp lấy từ hằng số (room-plans, pay-minutes); mọi tên nút nhắc trong chữ nằm trong bảng UI và guide-topics.test.ts kiểm từng tên còn xuất hiện trong mã giao diện; mục mật khẩu đổi theo getMailFace().resetOn. Các bước tuyến «Chỉ tôi» tách ra lib/tour-steps.ts (GuidedTour đọc từ đó); test kiểm mỗi nhãn data-tour còn tồn tại. Liên hệ hỗ trợ: Chủ nhập ở tab Cấu hình (components/support-board.tsx), lưu trong room_settings khóa support_contact (JSON), đọc công khai bằng getSupportContact (lib/support-room.ts), lưu chỉ Chủ và ghi nhật ký thao tác «lien-he» chỉ ghi tên các ô đã điền. Mọi ô đi qua lib/support-contact.ts: email, Zalo (số điện thoại hoặc zalo.me), Facebook (https của facebook.com, fb.com, m.me), ghi chú tối đa 200 ký tự; liên kết dựng ra chỉ là mailto: hoặc https:. Ảnh minh họa tùy chọn đặt ở public/huong-dan/ (groq-tao-key.png, chia-se-tab.png), thiếu thì khung ảnh tự ẩn. Menu trái (trang chủ, Dịch trực tiếp) và Ctrl+K có mục Hướng dẫn. Đã chạy tsc, test mới (support-contact, guide-topics), vite build, và mở thật bằng Chrome ở 390 và 1280 px: không tràn ngang, tìm kiếm và «Chỉ tôi» chạy. CHƯA kiểm: Safari, điện thoại thật, trang trên Vercel, trang Admin có tài khoản Chủ thật (ô liên hệ mới chỉ qua kiểu và test hàm).",
+  },
+  {
     version: "3.38.0",
     time: "23:55 ngày 14/11/2026",
     area: "khac",
