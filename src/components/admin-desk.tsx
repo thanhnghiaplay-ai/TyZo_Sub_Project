@@ -748,13 +748,25 @@ function TabButton({
   );
 }
 
+const AUDIT_ACTION_LABEL: Record<string, string> = {
+  "gia-luot": "Đổi giá trả theo lượt",
+  "dong-cua-luot": "Đóng cửa trả theo lượt",
+  "mo-cua-luot": "Mở cửa trả theo lượt",
+  "gia-alibaba": "Đổi giá Alibaba",
+  "mo-thue": "Đổi danh sách model cho thuê",
+  "goi-dich": "Sửa gói dịch",
+  "them-cong-tac": "Thêm cộng tác",
+  "go-cong-tac": "Gỡ cộng tác",
+  "doi-quyen": "Đổi quyền cộng tác",
+};
+
 function logLine(item: AuditRow) {
   const time = item.createdAt ? new Date(item.createdAt) : null;
   const clock = time && !Number.isNaN(time.getTime())
     ? time.toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit", day: "2-digit", month: "2-digit", year: "numeric" })
     : "";
   const rank = item.actorRole === "ho-tro" || item.actorRole === "quan-ly" || item.actorRole === "chu" ? ROLE_LABEL[item.actorRole] : "Người dùng";
-  return [clock, rank, item.actorEmail, item.action, item.targetEmail, item.note].filter(Boolean).join(" · ");
+  return [clock, rank, item.actorEmail, AUDIT_ACTION_LABEL[item.action] ?? item.action, item.targetEmail, item.note].filter(Boolean).join(" · ");
 }
 
 function Stat({ label, value, hint, tone }: { label: string; value: number; hint?: string; tone?: string }) {

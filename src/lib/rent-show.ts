@@ -28,10 +28,13 @@ export const saveRentShow = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const value = JSON.stringify(data);
+    const prev = await sql<{ value: string }>`select value from room_settings where key = 'rent_show'`;
+    const before = parseRentShow(prev[0]?.value);
     await sql`
       insert into room_settings (key, value) values ('rent_show', ${value})
       on conflict (key) do update set value = ${value}
     `;
-    await writeAudit(context.userId, "mo-thue", null, `groq ${data.groq.length}, alibaba ${data.alibaba.length}`);
+    const { describeRentShow } = await import("@/lib/audit-note");
+    await writeAudit(context.userId, "mo-thue", null, describeRentShow(before, data));
     return data;
   });

@@ -65,11 +65,14 @@ export const saveAlibabaDesk = createServerFn({ method: "POST" })
     await requireRole(context.userId, "chu");
     const { sql } = await readSettings();
     const value = JSON.stringify(data);
+    const prev = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
+    const before = parseRunDesk(prev[0]?.value);
     await sql`
       insert into room_settings (key, value) values ('alibaba_desk', ${value})
       on conflict (key) do update set value = ${value}
     `;
-    await writeAudit(context.userId, "gia-alibaba", null, value);
+    const { describeRunDesk } = await import("@/lib/audit-note");
+    await writeAudit(context.userId, "gia-alibaba", null, describeRunDesk(before, data));
     return data;
   });
 
@@ -105,10 +108,13 @@ export const saveServicePacks = createServerFn({ method: "POST" })
     await requireRole(context.userId, "chu");
     const { sql } = await readSettings();
     const value = JSON.stringify(data);
+    const prev = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
+    const before = parseServicePacks(prev[0]?.value);
     await sql`
       insert into room_settings (key, value) values ('service_packs', ${value})
       on conflict (key) do update set value = ${value}
     `;
-    await writeAudit(context.userId, "goi-dich", null, `${data.length} gói`);
+    const { describePacks } = await import("@/lib/audit-note");
+    await writeAudit(context.userId, "goi-dich", null, describePacks(before, data));
     return data;
   });

@@ -495,7 +495,9 @@ export const setStaffRole = createServerFn({ method: "POST" })
         on conflict (user_id) do update set role = ${data.role}
       `;
     }
-    await writeAudit(context.userId, "doi-quyen", data.userId, data.role);
+    const { describeStaffChange } = await import("@/lib/audit-note");
+    const change = describeStaffChange(person[0].email, target[0]?.role ?? null, data.role === "none" ? null : data.role);
+    await writeAudit(context.userId, change.action, data.userId, change.note);
     return { ok: true };
   });
 
@@ -1463,11 +1465,15 @@ export const saveRunDesk = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const value = JSON.stringify(data);
+    const prev = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
+    const before = parseRunDesk(prev[0]?.value);
     await sql`
       insert into room_settings (key, value) values ('run_desk', ${value})
       on conflict (key) do update set value = ${value}
     `;
-    await writeAudit(context.userId, "gia-luot", null, value);
+    const { describeRunDesk } = await import("@/lib/audit-note");
+    const action = before.maintenance !== data.maintenance ? (data.maintenance ? "dong-cua-luot" : "mo-cua-luot") : "gia-luot";
+    await writeAudit(context.userId, action, null, describeRunDesk(before, data));
     return data;
   });
 
