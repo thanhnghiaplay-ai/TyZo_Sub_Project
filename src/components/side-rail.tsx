@@ -2,17 +2,24 @@ import { Link } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactNode, type RefObject } from "react";
 import { signOut } from "@/lib/auth/client";
 
+export type RailLink = "/" | "/admin" | "/goi" | "/ctv" | "/yeu-cau" | "/tai-video";
+
+/** Một mục menu. Có `children` thì là nhóm lớn, bấm để xổ các mục nhỏ bên dưới. */
 export type RailItem = {
   id: string;
   label: string;
   current?: boolean;
   onPick?: () => void;
-  href?: "/" | "/admin";
+  href?: RailLink;
+  /** id gắn lên nút, để vùng nội dung trỏ aria-labelledby vào. */
+  domId?: string;
+  children?: RailItem[];
 };
 
 type RailCtx = {
   open: boolean;
   setOpen: (value: boolean) => void;
+  /** Đang ghim cố định bên trái (chỉ khi `pinned` và màn từ 1024 px). */
   wide: boolean;
   railId: string;
   toggleRef: RefObject<HTMLButtonElement | null>;
@@ -27,7 +34,7 @@ function useRail() {
   return ctx;
 }
 
-export function AppShell({ children, className, ...rest }: { children: ReactNode } & HTMLAttributes<HTMLDivElement>) {
+export function AppShell({ children, className, pinned = false, ...rest }: { children: ReactNode; pinned?: boolean } & HTMLAttributes<HTMLDivElement>) {
   const [open, setOpen] = useState(false);
   const [wide, setWide] = useState(false);
   const railId = useId();
@@ -39,13 +46,14 @@ export function AppShell({ children, className, ...rest }: { children: ReactNode
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const apply = () => {
-      setWide(mq.matches);
-      if (mq.matches) setOpen(false);
+      const on = pinned && mq.matches;
+      setWide(on);
+      if (on) setOpen(false);
     };
     apply();
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
-  }, []);
+  }, [pinned]);
   useEffect(() => {
     if (open || !returnFocus.current) return;
     returnFocus.current = false;
@@ -53,7 +61,7 @@ export function AppShell({ children, className, ...rest }: { children: ReactNode
   }, [open]);
   return (
     <Ctx.Provider value={{ open, setOpen, wide, railId, toggleRef, armFocus }}>
-      <div className={className ? `app-shell ${className}` : "app-shell"} {...rest}>
+      <div className={(className ? `app-shell ${className}` : "app-shell") + (pinned ? " is-pinned" : "")} {...rest}>
         {children}
       </div>
     </Ctx.Provider>
@@ -78,10 +86,16 @@ export function RailToggle() {
   );
 }
 
-export function SideRail({ items, label }: { items: RailItem[]; label: string }) {
+function hasCurrent(item: RailItem): boolean {
+  return Boolean(item.current) || Boolean(item.children?.some(hasCurrent));
+}
+
+export function SideRail({ items, label, top, who }: { items: RailItem[]; label: string; top?: (close: () => void) => ReactNode; who?: { name?: string | null; email?: string | null } }) {
   const { open, setOpen, wide, railId, armFocus } = useRail();
   const navRef = useRef<HTMLElement>(null);
   const [leaving, setLeaving] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [folded, setFolded] = useState<Record<string, boolean>>({});
   const shown = wide || open;
 
   useEffect(() => {
@@ -110,6 +124,23 @@ export function SideRail({ items, label }: { items: RailItem[]; label: string })
     setOpen(false);
   }
 
+  function leaf(item: RailItem, small: boolean) {
+    const cls = "rail-link" + (small ? " is-sub" : "");
+    const cur = item.current ? ("page" as const) : undefined;
+    if (item.href) {
+      return (
+        <Link key={item.id} id={item.domId} to={item.href} className={cls} aria-current={cur} onClick={() => shut(item)}>
+          {item.label}
+        </Link>
+      );
+    }
+    return (
+      <button key={item.id} id={item.domId} type="button" className={cls} aria-current={cur} onClick={() => shut(item)}>
+        {item.label}
+      </button>
+    );
+  }
+
   return (
     <>
       <button
@@ -124,35 +155,56 @@ export function SideRail({ items, label }: { items: RailItem[]; label: string })
         }}
       />
       <aside id={railId} className={"app-rail" + (shown ? " is-open" : "")} aria-label={label} aria-hidden={!shown}>
+        {top && <div className="rail-top">{top(() => setOpen(false))}</div>}
         <nav ref={navRef} className="rail-nav">
-          {items.map((item) =>
-            item.href === "/admin" ? (
-              <Link key={item.id} to="/admin" className="rail-link" aria-current={item.current ? "page" : undefined} onClick={() => shut(item)}>
-                {item.label}
-              </Link>
-            ) : item.href === "/" ? (
-              <Link key={item.id} to="/" className="rail-link" aria-current={item.current ? "page" : undefined} onClick={() => shut(item)}>
-                {item.label}
-              </Link>
-            ) : (
-              <button key={item.id} type="button" className="rail-link" aria-current={item.current ? "page" : undefined} onClick={() => shut(item)}>
-                {item.label}
-              </button>
-            ),
-          )}
+          {items.map((item) => {
+            if (!item.children) return leaf(item, false);
+            const isOpen = folded[item.id] ?? hasCurrent(item);
+            const groupId = `${railId}-${item.id}`;
+            return (
+              <div key={item.id} className="rail-group">
+                <button
+                  type="button"
+                  className="rail-link rail-parent"
+                  aria-expanded={isOpen}
+                  aria-controls={groupId}
+                  data-has-current={hasCurrent(item) ? "true" : undefined}
+                  onClick={() => setFolded((state) => ({ ...state, [item.id]: !isOpen }))}
+                >
+                  <span>{item.label}</span>
+                  <span className="rail-caret" aria-hidden="true" />
+                </button>
+                <div id={groupId} className="rail-sub" hidden={!isOpen}>
+                  {item.children.map((child) => leaf(child, true))}
+                </div>
+              </div>
+            );
+          })}
         </nav>
         <div className="rail-foot">
+          {who && (who.name || who.email) && (
+            <p className="rail-who">
+              {who.name && <b>{who.name}</b>}
+              {who.email && <span>{who.email}</span>}
+            </p>
+          )}
           <button
             type="button"
             className="rail-out"
             disabled={leaving}
             onClick={() => {
+              if (!window.confirm("Đăng xuất khỏi tài khoản này?")) return;
               setLeaving(true);
-              void signOut("/login").catch(() => setLeaving(false));
+              setFailed(false);
+              void signOut("/login").catch(() => {
+                setLeaving(false);
+                setFailed(true);
+              });
             }}
           >
             {leaving ? "Đang đăng xuất…" : "Đăng xuất"}
           </button>
+          {failed && <p className="rail-err">Chưa đăng xuất được. Thử lại.</p>}
         </div>
       </aside>
     </>

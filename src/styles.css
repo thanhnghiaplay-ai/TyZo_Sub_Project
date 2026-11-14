@@ -1780,3 +1780,231 @@ html[data-density] .studio-workspace {
     animation: none;
   }
 }
+
+/* ===== Menu trái dùng chung (Admin và trang khách) =====
+   Điện thoại và màn hẹp: ngăn trượt từ trái, mở bằng nút ba gạch.
+   Admin (pinned) từ 1024 px: ghim cố định bên trái, không cần nút. */
+.rail-toggle {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-card);
+}
+
+.rail-bars,
+.rail-bars::before,
+.rail-bars::after {
+  display: block;
+  width: 1.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  content: "";
+}
+
+.rail-bars {
+  position: relative;
+}
+
+.rail-bars::before {
+  position: absolute;
+  top: -0.36rem;
+}
+
+.rail-bars::after {
+  position: absolute;
+  top: 0.36rem;
+}
+
+.rail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.rail-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.app-rail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: flex;
+  width: min(19rem, 86vw);
+  flex-direction: column;
+  gap: 0.5rem;
+  border-right: 1px solid var(--color-line);
+  background: var(--color-bg);
+  padding: max(0.75rem, env(safe-area-inset-top, 0px)) 0.75rem max(0.75rem, env(safe-area-inset-bottom, 0px));
+  transform: translateX(-102%);
+  visibility: hidden;
+  transition: transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.app-rail.is-open {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-rail,
+  .rail-backdrop {
+    transition: none;
+  }
+}
+
+.rail-top {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rail-nav {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rail-link {
+  display: flex;
+  min-height: 2.75rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding-inline: 0.8rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.rail-link:hover {
+  background: var(--color-card);
+}
+
+.rail-link[aria-current="page"] {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+.rail-parent[data-has-current="true"] {
+  color: var(--color-accent);
+}
+
+.rail-sub {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0.15rem 0 0.3rem 0.9rem;
+  border-left: 1px solid var(--color-line);
+  padding-left: 0.4rem;
+}
+
+.rail-sub[hidden] {
+  display: none;
+}
+
+.rail-link.is-sub {
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.rail-caret {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.rail-parent[aria-expanded="true"] .rail-caret {
+  transform: rotate(-135deg);
+}
+
+.rail-foot {
+  display: grid;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.75rem;
+}
+
+.rail-who {
+  display: grid;
+  min-width: 0;
+  font-size: 0.8rem;
+}
+
+.rail-who span {
+  overflow: hidden;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+}
+
+.rail-out {
+  display: inline-flex;
+  min-height: 2.75rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, #ef6a6a 70%, var(--color-line));
+  border-radius: 999px;
+  color: color-mix(in srgb, #ef6a6a 80%, var(--color-fg));
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.rail-out:hover:not(:disabled) {
+  background: color-mix(in srgb, #ef6a6a 14%, transparent);
+}
+
+.rail-out:disabled {
+  opacity: 0.5;
+}
+
+.rail-err {
+  font-size: 0.75rem;
+  color: #ef6a6a;
+}
+
+@media (min-width: 1024px) {
+  .app-shell.is-pinned {
+    display: grid;
+    grid-template-columns: 14.5rem minmax(0, 1fr);
+    align-items: start;
+    column-gap: 1rem;
+  }
+
+  .app-shell.is-pinned .app-rail {
+    position: sticky;
+    top: 0;
+    z-index: auto;
+    width: auto;
+    height: calc(100 * var(--vh, 1vh));
+    transform: none;
+    visibility: visible;
+    border-right: 0;
+    padding-inline: 0;
+  }
+
+  .app-shell.is-pinned .rail-backdrop {
+    display: none;
+  }
+}

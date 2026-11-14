@@ -5,6 +5,8 @@ import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/adm
 import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -16,7 +18,6 @@ import {
   CircleHelp,
   Link2,
   Loader2,
-  Menu,
   Pause,
   Play,
   RefreshCw,
@@ -498,10 +499,9 @@ export function Studio() {
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [payByRoom, setPayByRoom] = useState(false);
   const [turnLocked, setTurnLocked] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const { user: me } = useCurrentUserState();
   const runDoor = useRunDoor();
   const rentShow = useRentShow();
   const [place, setPlace] = useState<MyPlace | null>(null);
@@ -617,21 +617,6 @@ export function Studio() {
     setToolTab(id);
   };
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
-    };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("pointerdown", close);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", close);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [menuOpen]);
 
   // Đọc quyền có thử lại. Lỗi tạm thời thì giữ quyền đã biết, không xóa nút Quản lý.
   const placeSeq = useRef(0);
@@ -679,13 +664,45 @@ export function Studio() {
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
   const lockTurnModels = showRoomPrice && turnLocked;
 
+  const railItems: RailItem[] = [
+    {
+      id: "sub",
+      label: "Phụ đề",
+      children: TOOLS.map(([id, label]) => ({
+        id: `tool-${id}`,
+        domId: `tool-tab-${id}`,
+        label,
+        current: product === "sub" && toolTab === id,
+        onPick: () => {
+          setProduct("sub");
+          pickTool(id);
+        },
+      })),
+    },
+    { id: "tai-video", label: "Tải video", href: "/tai-video" },
+    {
+      id: "tai-khoan",
+      label: "Tài khoản",
+      children: [
+        { id: "so-du", label: "Số dư và nạp tiền", current: product === "account", onPick: () => setProduct("account") },
+        { id: "goi", label: "Thuê phòng và gói", href: "/goi" },
+        { id: "ctv", label: "Cộng tác viên", href: "/ctv" },
+        { id: "yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
+      ],
+    },
+    ...(place?.role ? [{ id: "quan-ly", label: "Quản lý", href: "/admin" as const }] : []),
+  ];
+
   return (
+    <AppShell className="contents">
+    <SideRail label="Chức năng" items={railItems} who={{ name: me?.displayName, email: me?.primaryEmail }} />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
+            <RailToggle />
             <BrandMark small title="TyZo Sub" />
-            <p className="text-xs font-semibold text-accent">Phòng chiếu TyZo Sub</p>
+            <p className="hidden text-xs font-semibold text-accent min-[480px]:block">Phòng chiếu TyZo Sub</p>
           </div>
           <div className="flex items-center gap-2">
             <VersionMark />
@@ -696,51 +713,6 @@ export function Studio() {
         <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip payByRoom={payByRoom} />
       </header>
-
-      <nav aria-label="Chức năng" className="room-nav">
-        <div data-product="sub" ref={menuRef} className="room-menu">
-          <button
-            type="button"
-            className="room-menu-button"
-            aria-expanded={menuOpen}
-            aria-controls="room-menu-list"
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <Menu className="size-4" aria-hidden="true" />
-            <span>{product === "account" ? "Tài khoản" : "Phụ đề"}</span>
-          </button>
-          {menuOpen && (
-            <div id="room-menu-list" role="tablist" className="room-menu-list">
-            <button
-              type="button"
-              aria-current={product === "sub" ? "page" : undefined}
-              onClick={() => {
-                setProduct("sub");
-                setMenuOpen(false);
-              }}
-            >
-              Phụ đề
-            </button>
-            <button
-              type="button"
-              data-product="account"
-              aria-current={product === "account" ? "page" : undefined}
-              onClick={() => {
-                setProduct("account");
-                setMenuOpen(false);
-              }}
-            >
-              Tài khoản
-            </button>
-            {place?.role && (
-              <Link to="/admin" onClick={() => setMenuOpen(false)}>
-                Quản lý
-              </Link>
-            )}
-          </div>
-          )}
-        </div>
-      </nav>
 
       {place?.status === "banned" ? (
         <div className="grid gap-3 p-4">
@@ -754,7 +726,7 @@ export function Studio() {
         </div>
       ) : (
       <>
-      <div className={product === "account" ? "hidden" : "contents"}>
+      <div data-product="sub" className={product === "account" ? "hidden" : "contents"}>
       {place?.status === "locked" && (
         <form
           className="grid gap-2 rounded-xl border border-line bg-card p-3"
@@ -829,40 +801,6 @@ export function Studio() {
         </button>
       </dialog>
 
-      <div
-        role="tablist"
-        aria-label="Công cụ phụ đề"
-        className="studio-tabs"
-        onKeyDown={(event) => {
-          if (event.key !== "ArrowRight" && event.key !== "ArrowLeft" && event.key !== "Home" && event.key !== "End") return;
-          event.preventDefault();
-          const index = TOOLS.findIndex((tool) => tool[0] === toolTab);
-          const next =
-            event.key === "Home"
-              ? TOOLS[0][0]
-              : event.key === "End"
-                ? TOOLS[TOOLS.length - 1][0]
-                : TOOLS[(index + (event.key === "ArrowRight" ? 1 : TOOLS.length - 1)) % TOOLS.length][0];
-          if (next !== toolTab) pickTool(next);
-          (event.currentTarget.querySelector(`#tool-tab-${next}`) as HTMLButtonElement | null)?.focus();
-        }}
-      >
-        {TOOLS.map(([id, label]) => (
-          <button
-            key={id}
-            id={`tool-tab-${id}`}
-            type="button"
-            role="tab"
-            aria-selected={toolTab === id}
-            aria-controls={`tool-${id}`}
-            tabIndex={toolTab === id ? 0 : -1}
-            className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (toolTab === id ? "bg-accent text-ink" : "border border-line")}
-            onClick={() => pickTool(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
 
       <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>
       <section data-workspace className="studio-workspace">
@@ -906,7 +844,7 @@ export function Studio() {
             <X className="size-4" />
           </button>
         </div>
-      <section id="tool-key" role="tabpanel" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
+      <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
         {!runDoor.ready ? (
           <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
         ) : runDoor.open ? (
@@ -1094,7 +1032,7 @@ export function Studio() {
         )}
       </section>
 
-      <section id="tool-phim" role="tabpanel" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
+      <section id="tool-phim" role="region" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
             {SRC_LANGS.map(([value, label]) => (
@@ -1211,7 +1149,7 @@ export function Studio() {
         </div>
       </section>
 
-      <section id="tool-cast" role="tabpanel" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
+      <section id="tool-cast" role="region" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
           <details className="rounded-xl border border-line bg-raised px-3 py-2">
             <summary className="min-tap cursor-pointer text-sm font-medium">Ngữ cảnh phim</summary>
             <div className="grid gap-2 pb-2">
@@ -1324,7 +1262,7 @@ export function Studio() {
           )}
         </section>
 
-      <section id="tool-voice" role="tabpanel" aria-labelledby="tool-tab-voice" hidden={toolTab !== "voice"} className="grid gap-3 p-4">
+      <section id="tool-voice" role="region" aria-labelledby="tool-tab-voice" hidden={toolTab !== "voice"} className="grid gap-3 p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="font-semibold">Thuyết minh bản dịch</h2>
@@ -1445,7 +1383,7 @@ export function Studio() {
         </button>
       </section>
 
-      <section id="tool-check" role="tabpanel" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
+      <section id="tool-check" role="region" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
         <div className="flex flex-wrap gap-2">
           <button type="button" className="min-tap rounded-xl border border-line px-3 text-sm" disabled={app.running || app.segs.length === 0} onClick={() => void app.scanGaps()}>
             Dò khoảng trống
@@ -1529,6 +1467,7 @@ export function Studio() {
       </>
       )}
     </main>
+    </AppShell>
   );
 }
 

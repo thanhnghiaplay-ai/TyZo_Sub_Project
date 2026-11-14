@@ -48,7 +48,7 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
 
 describe("Bước 6.2 — khung Phụ đề", () => {
   it("video và bảng câu đứng ngoài tab, chỉ có một player", () => {
-    const markers = ['data-product="sub"', 'role="tablist"', "data-workspace", "<Stage", "Bản dịch", 'id="tool-phim"'];
+    const markers = ['<SideRail', 'data-product="sub"', "data-workspace", "<Stage", "Bản dịch", 'id="tool-phim"'];
     const at = markers.map((marker) => source.indexOf(marker));
     assert.ok(at.every((index) => index >= 0));
     assert.deepEqual(at, [...at].sort((a, b) => a - b));
@@ -102,17 +102,15 @@ describe("Bước 6.4 — ba cỡ màn hình", () => {
 });
 
 describe("Bước 6.5 — chuyển tab", () => {
-  it("animation ngắn, tắt khi giảm chuyển động, và chọn bằng bàn phím", () => {
+  it("animation ngắn, tắt khi giảm chuyển động, và chọn từ menu trái", () => {
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     assert.match(css, /@keyframes studio-tab-in/);
     assert.match(css, /prefers-reduced-motion:\s*reduce/);
     const reduced = css.slice(css.indexOf("prefers-reduced-motion"));
     assert.match(reduced, /animation:\s*none/);
     assert.match(reduced, /transition:\s*none/);
-    assert.match(source, /ArrowLeft/);
-    assert.match(source, /ArrowRight/);
-    assert.match(source, /"Home"/);
-    assert.match(source, /"End"/);
+    // Công cụ nay nằm trong menu trượt trái (nút bấm thường, Tab và Enter), không còn hàng tab dùng phím mũi tên.
+    assert.match(source, /<SideRail/);
   });
 });
 

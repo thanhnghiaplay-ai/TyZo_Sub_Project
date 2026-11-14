@@ -1,59 +1,75 @@
 import type { AdminTab, AdminTabInfo } from "@/lib/admin-tabs";
+import { RailToggle, SideRail, type RailItem } from "@/components/side-rail";
+
+/** Nhóm lớn của menu Admin. Mục nhỏ là các tab; tab không đủ quyền tự rơi khỏi nhóm. */
+export const ADMIN_GROUPS: { id: string; label: string; tabs: AdminTab[] }[] = [
+  { id: "van-hanh", label: "Vận hành", tabs: ["viec", "cau-hinh"] },
+  { id: "tien", label: "Tiền", tabs: ["tien", "chat-luong"] },
+  { id: "con-nguoi", label: "Con người", tabs: ["so-do", "ctv"] },
+  { id: "noi-dung", label: "Nội dung", tabs: ["thuat-ngu", "thu", "giao-dien"] },
+  { id: "nhat-ky", label: "Nhật ký", tabs: ["thao-tac", "nhat-ky"] },
+];
+
+/** Dựng cây menu từ danh sách tab được phép. Tổng quan đứng riêng, cuối là «Về phòng». */
+export function adminRailItems(tabs: AdminTabInfo[], current: AdminTab, onPick: (id: AdminTab) => void): RailItem[] {
+  const byId = new Map(tabs.map((tab) => [tab.id, tab]));
+  const leaf = (tab: AdminTabInfo): RailItem => ({ id: tab.id, label: tab.label, current: current === tab.id, onPick: () => onPick(tab.id) });
+  const items: RailItem[] = [];
+  const overview = byId.get("tong-quan");
+  if (overview) items.push(leaf(overview));
+  for (const group of ADMIN_GROUPS) {
+    const children = group.tabs.map((id) => byId.get(id)).filter((tab): tab is AdminTabInfo => Boolean(tab)).map(leaf);
+    if (children.length) items.push({ id: group.id, label: group.label, children });
+  }
+  items.push({ id: "ve-phong", label: "Về phòng", href: "/" });
+  return items;
+}
 
 /**
- * Điều hướng Admin. Màn rộng (từ 1024 px) có thanh bên trái đứng yên.
- * Điện thoại và máy tính bảng dùng hàng nút cuộn ngang như trước, mỗi nút cao tối thiểu 44 px.
+ * Điều hướng Admin. Từ 1024 px menu ghim bên trái; dưới đó là ngăn trượt mở bằng nút ba gạch.
+ * Phải nằm trong <AppShell pinned>.
  */
 export function AdminNav({
   tabs,
   current,
   onPick,
   onSearch,
+  who,
 }: {
   tabs: AdminTabInfo[];
   current: AdminTab;
   onPick: (id: AdminTab) => void;
   onSearch: () => void;
+  who?: { name?: string | null; email?: string | null };
 }) {
+  const label = tabs.find((tab) => tab.id === current)?.label ?? "Admin";
   return (
     <>
-      <nav aria-label="Các mục Admin" className="admin-pills sticky top-0 z-10 flex gap-2 overflow-x-auto border-b border-line bg-bg py-2 lg:hidden">
-        <button type="button" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-3 text-sm whitespace-nowrap" onClick={onSearch} aria-label="Tìm nhanh">
+      <div className="admin-bar sticky top-0 z-10 flex items-center gap-2 border-b border-line bg-bg py-2 lg:hidden">
+        <RailToggle />
+        <p className="min-w-0 flex-1 truncate text-sm font-semibold">{label}</p>
+        <button type="button" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-3 text-sm" onClick={onSearch} aria-label="Tìm nhanh">
           Tìm
         </button>
-        {tabs.map((tab) => (
+      </div>
+      <SideRail
+        label="Các mục Admin"
+        items={adminRailItems(tabs, current, onPick)}
+        who={who}
+        top={(close) => (
           <button
-            key={tab.id}
             type="button"
-            aria-current={current === tab.id ? "page" : undefined}
-            className={"inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap " + (current === tab.id ? "bg-accent font-semibold text-ink" : "border border-line")}
-            onClick={() => onPick(tab.id)}
+            className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-line px-3 text-sm text-muted"
+            onClick={() => {
+              close();
+              onSearch();
+            }}
           >
-            {tab.label}
+            <span>Tìm nhanh</span>
+            <kbd className="rounded border border-line px-1.5 text-xs">Ctrl K</kbd>
           </button>
-        ))}
-      </nav>
-      <nav aria-label="Các mục Admin" className="admin-side hidden w-52 shrink-0 flex-col gap-1 self-start lg:sticky lg:top-0 lg:flex">
-        <button
-          type="button"
-          className="mb-2 flex min-h-11 items-center justify-between gap-2 rounded-xl border border-line px-3 text-sm text-muted"
-          onClick={onSearch}
-        >
-          <span>Tìm nhanh</span>
-          <kbd className="rounded border border-line px-1.5 text-xs">Ctrl K</kbd>
-        </button>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            aria-current={current === tab.id ? "page" : undefined}
-            className={"flex min-h-11 items-center rounded-xl px-3 text-left text-sm " + (current === tab.id ? "bg-accent font-semibold text-ink" : "hover:bg-card")}
-            onClick={() => onPick(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
+        )}
+      />
     </>
   );
 }

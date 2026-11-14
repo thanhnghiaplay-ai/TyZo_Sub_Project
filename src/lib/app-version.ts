@@ -12,14 +12,16 @@ export type ReleaseNote = {
 export const CHANGELOG: ReleaseNote[] = [
   {
     version: "3.31.2",
-    time: "12:20 ngày 14/11/2026",
-    title: "Mọi tab quản lý có thẻ cùng khung, cao bằng nhau; phần key và giá gọn hơn.",
+    time: "19:30 ngày 14/11/2026",
+    title: "Menu ba gạch bên trái gom các chức năng; Đăng xuất nằm cuối menu.",
     points: [
-      "Các tab quản lý xếp thẻ có viền, cao bằng nhau, giống tab Tổng quan.",
-      "Key Groq và key Alibaba nằm cạnh nhau, giá và hạn mức chiếm một hàng riêng.",
-      "Phần soạn thư và danh sách icon dài được gập lại, bấm vào mới mở.",
+      "Bấm nút ba gạch để mở menu trái. Chức năng lớn gập các mục nhỏ bên trong.",
+      "Nút Đăng xuất nằm cuối menu, có hỏi lại một lần trước khi thoát.",
+      "Các tab quản lý xếp thẻ có viền, cao bằng nhau. Key và giá gọn hơn.",
+      "Phần soạn thư và danh sách icon dài được gập lại.",
     ],
   },
+
   {
     version: "3.31.1",
     time: "11:40 ngày 14/11/2026",

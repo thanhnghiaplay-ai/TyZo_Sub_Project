@@ -44,6 +44,8 @@ import { QualityBoard } from "@/components/quality-board";
 import { AdminOverview } from "@/components/admin-overview";
 import { tabsFor, type AdminTab } from "@/lib/admin-tabs";
 import { AdminNav } from "@/components/admin-nav";
+import { AppShell } from "@/components/side-rail";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AdminPalette } from "@/components/admin-palette";
 import { Fold } from "@/components/admin-fold";
 import { ThemeBoard } from "@/components/theme-board";
@@ -155,6 +157,7 @@ function AdminNotes() {
 }
 
 export function AdminDesk() {
+  const { user: me } = useCurrentUserState();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [stats, setStats] = useState<DeskStats | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -308,8 +311,8 @@ export function AdminDesk() {
         <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
       {role && <AdminPalette tabs={tabsFor(role)} open={paletteOpen} onOpenChange={setPaletteOpen} onPick={setTab} />}
-      <div className="lg:flex lg:items-start lg:gap-4">
-      {role && <AdminNav tabs={tabsFor(role)} current={tab} onPick={setTab} onSearch={() => setPaletteOpen(true)} />}
+      <AppShell pinned>
+      {role && <AdminNav tabs={tabsFor(role)} current={tab} onPick={setTab} onSearch={() => setPaletteOpen(true)} who={{ name: me?.displayName, email: me?.primaryEmail }} />}
       <div className="min-w-0 flex-1">
       <div className="admin-grid">
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
@@ -697,7 +700,7 @@ export function AdminDesk() {
       )}
       </div>
       </div>
-      </div>
+      </AppShell>
 
       <ConfirmCodeDialog
         open={resetOpen}
