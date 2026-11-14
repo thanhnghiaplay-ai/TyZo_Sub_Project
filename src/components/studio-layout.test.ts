@@ -22,7 +22,7 @@ const phim = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="
 
 describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
   it("ngôn ngữ, thể loại, file và nút chạy đứng trước phần thu gọn", () => {
-    const markers = ["Nhận diện ngôn ngữ", "Dịch sang tiếng", "Thể loại", "Thuật ngữ thể loại", 'title="Video"', "{app.buttonLabel}"];
+    const markers = ["Nhận diện ngôn ngữ", "Dịch sang tiếng", "Thể loại", 'title="Video"', "{app.buttonLabel}"];
     const at = markers.map((marker) => phim.indexOf(marker));
     assert.ok(at.every((index) => index >= 0), at.join(","));
     assert.deepEqual(at, [...at].sort((a, b) => a - b));
@@ -38,11 +38,18 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(src.includes("Tự nhận dạng"), false);
   });
 
-  it("thuật ngữ thể loại đóng mặc định", () => {
-    const gloss = phim.indexOf("Thuật ngữ thể loại");
-    const details = phim.lastIndexOf("<details", gloss);
-    assert.ok(gloss - details < 250);
-    assert.equal(/<details[^>]*\sopen/.test(phim.slice(details, gloss)), false);
+  it("thuật ngữ và gói dịch nằm ở mục Nâng cao của menu trái, không nằm trong tab Phim và Key", () => {
+    assert.equal(phim.includes("Thuật ngữ thể loại"), false);
+    assert.equal(phim.includes("<GlossaryEditor"), false);
+    const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
+    assert.equal(key.includes("<TurnPackList"), false);
+    const thuat = source.slice(source.indexOf('id="tool-thuatngu"'));
+    assert.match(thuat, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
+    const goi = source.slice(source.indexOf('id="tool-goi-dich"'), source.indexOf('id="tool-thuatngu"'));
+    assert.match(goi, /<TurnPackList/);
+    assert.match(source, /id: "nang-cao"[\s\S]{0,120}ADVANCED_TOOLS\.map/);
+    assert.match(source, /hidden=\{toolTab !== "goi-dich"\}/);
+    assert.match(source, /hidden=\{toolTab !== "thuatngu"\}/);
   });
 });
 
@@ -230,7 +237,7 @@ describe("Bước 7.4 — số thuật ngữ nổi, nút X nằm trong khung", (
     assert.match(count, /background:\s*var\(--color-accent\)/);
     assert.match(count, /color:\s*var\(--color-ink\)/);
     assert.equal(source.includes('className="text-ink">{app.glossaryInfo.count}'), false);
-    assert.equal(source.split("studio-count").length - 1, 2);
+    assert.equal(source.split("studio-count").length - 1, 3);
     const card = source.slice(source.indexOf('className="studio-tool-card"'), source.indexOf('id="tool-key"'));
     assert.match(card, /aria-label="Đóng tab"/);
     assert.ok(source.indexOf('className="studio-tool-card"') < source.indexOf('id="tool-check"'));

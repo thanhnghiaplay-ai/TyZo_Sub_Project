@@ -475,6 +475,13 @@ const TOOLS = [
   ["check", "Kiểm tra"],
 ] as const;
 
+/** Chức năng nâng cao: nằm trong nhóm «Nâng cao» của menu trái, không chen vào tab Key và Phim. */
+const ADVANCED_TOOLS = [
+  ["goi-dich", "Gói dịch"],
+  ["thuatngu", "Thuật ngữ"],
+] as const;
+type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
+
 export function Studio() {
   const app = usePipeline();
   const online = useOnline();
@@ -504,7 +511,7 @@ export function Studio() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [sub, setSub] = useState<SubStyle>(SUB_DEF);
   const [current, setCurrent] = useState(-1);
-  const [toolTab, setToolTab] = useState<(typeof TOOLS)[number][0]>("key");
+  const [toolTab, setToolTab] = useState<ToolId>("key");
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [payByRoom, setPayByRoom] = useState(false);
   const [turnLocked, setTurnLocked] = useState(false);
@@ -623,12 +630,12 @@ export function Studio() {
   const shownVoices = (langVoices.length ? langVoices : voices).filter(
     (voice) => narration.gender === "any" || guessGender(voice) === "any" || guessGender(voice) === narration.gender,
   );
-  const pickTool = (id: (typeof TOOLS)[number][0]) => {
+  const pickTool = (id: ToolId) => {
     const sheet = isStudioSheet();
     setSheetOpen((open) => (sheet && id === toolTab ? !open : true));
     setToolTab(id);
   };
-  const openTool = (id: (typeof TOOLS)[number][0]) => {
+  const openTool = (id: ToolId) => {
     setProduct("sub");
     if (forced) return pickTool(id);
     setForced(true);
@@ -739,6 +746,17 @@ export function Studio() {
         onPick: () => openTool(id),
       })),
     },
+    {
+      id: "nang-cao",
+      label: "Nâng cao",
+      children: ADVANCED_TOOLS.map(([id, label]) => ({
+        id: `tool-${id}`,
+        domId: `tool-tab-${id}`,
+        label,
+        current: product === "sub" && toolTab === id,
+        onPick: () => openTool(id),
+      })),
+    },
     { id: "tai-video", label: "Tải video", href: "/tai-video" },
     {
       id: "tai-khoan",
@@ -780,6 +798,7 @@ export function Studio() {
     { id: "export-txt", label: "Tải chữ thuần (.txt)", hint: "Tải", words: "txt text xuat van ban", disabled: noSubs || !online, run: () => void app.exportSub("txt") },
     { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
     ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "phu de cong cu", run: () => openTool(id) })),
+    ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: id === "goi-dich" ? "goi dich cach tra key theo luot" : "thuat ngu glossary the loai", run: () => openTool(id) })),
     { id: "wallet", label: "Số dư và nạp tiền", hint: "Tài khoản", words: "nap tien vi", run: () => setProduct("account") },
     { id: "tai-video", label: "Tải video", hint: "Trang", run: () => void navigate({ to: "/tai-video" }) },
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
@@ -982,45 +1001,14 @@ export function Studio() {
           </button>
         </div>
       <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
-        {!runDoor.ready ? (
-          <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
-        ) : runDoor.open ? (
-          <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cách trả</h2>
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
-                Key của tôi
-              </button>
-              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
-                Trả theo lượt
-              </button>
-            </div>
-            <p id="pay-mode-note" className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
-              {payByRoom ? (
-                <>
-                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Giá từng gói bên dưới là ước tính; tiền trừ thật là số thực khi xong.
-                </>
-              ) : (
-                <>
-                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
-                </>
-              )}
-            </p>
-            {payByRoom && (
-              <TurnPackList
-                videoRef={app.videoRef}
-                narration={narration.enabled}
-                onLocked={setTurnLocked}
-                onPick={(pack) => {
-                  const next = turnPackModels(pack);
-                  if (next.asr) app.setAsrModel(next.asr);
-                  if (next.chat) app.chooseVoice(next.chat);
-                }}
-              />
-            )}
-          </div>
-        ) : (
-          <RunDoorClosed note={runDoor.note} />
+        {runDoor.ready && runDoor.open && payByRoom && (
+          <p className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
+            <strong className="text-fg">Đang trả theo lượt, không cần key.</strong> Đổi cách trả và chọn gói ở mục{" "}
+            <button type="button" className="font-semibold text-accent underline" onClick={() => openTool("goi-dich")}>
+              Gói dịch
+            </button>
+            .
+          </p>
         )}
         {!(runDoor.open && payByRoom) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
@@ -1194,34 +1182,12 @@ export function Studio() {
             </option>
           ))}
         </Select>
-        {usesBaseGlossary(app.genre) && (
-          <label className="flex min-h-11 items-center gap-2 text-sm">
-            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
-            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
-          </label>
-        )}
         <p className="text-sm text-muted">
-          {app.glossaryInfo?.failed ? (
-            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
-          ) : app.glossaryInfo?.count > 0 ? (
-            <>
-              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
-            </>
-          ) : (
-            "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
-          )}
+          {app.glossaryInfo?.failed ? "Không tải được thuật ngữ có sẵn. Hãy thử lại." : <>Đã nạp <strong className="studio-count">{app.glossaryInfo?.count || 0}</strong> thuật ngữ. </>}
+          <button type="button" className="font-semibold text-accent underline" onClick={() => openTool("thuatngu")}>
+            Xem và sửa thuật ngữ
+          </button>
         </p>
-        <details className="rounded-xl border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">
-            Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
-          </summary>
-          <p className="pb-2 text-sm text-muted">
-            Mỗi thể loại một bộ riêng, không dùng chung. Thêm tay hoặc nhập CSV vẫn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại.
-            {app.glossaryInfo?.userCount ? ` Trong đó ${app.glossaryInfo.userCount} do bạn thêm.` : ""}
-            {app.glossaryInfo?.sources?.length ? ` ${app.glossaryInfo.sources.map((s: string) => s.replace(/^\/glossaries\//, "")).join(", ")}.` : ""}
-          </p>
-          <GlossaryEditor app={app} />
-        </details>
 
         <div className="grid gap-2 sm:grid-cols-2">
           <FileTile icon={<Clapperboard className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
@@ -1556,6 +1522,87 @@ export function Studio() {
           onDrop={app.dropReject}
         />
         {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một phim trước.</p>}
+      </section>
+
+      <section id="tool-goi-dich" role="region" aria-labelledby="tool-tab-goi-dich" hidden={toolTab !== "goi-dich"} className="grid gap-3 p-4">
+        {!runDoor.ready ? (
+          <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
+        ) : runDoor.open ? (
+          <div className="grid gap-2">
+            <h2 className="text-sm font-semibold">Cách trả</h2>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+                Key của tôi
+              </button>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+                Trả theo lượt
+              </button>
+            </div>
+            <p id="pay-mode-note" className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
+              {payByRoom ? (
+                <>
+                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Giá từng gói bên dưới là ước tính; tiền trừ thật là số thực khi xong.
+                </>
+              ) : (
+                <>
+                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
+                </>
+              )}
+            </p>
+            {payByRoom && (
+              <TurnPackList
+                videoRef={app.videoRef}
+                narration={narration.enabled}
+                onLocked={setTurnLocked}
+                onPick={(pack) => {
+                  const next = turnPackModels(pack);
+                  if (next.asr) app.setAsrModel(next.asr);
+                  if (next.chat) app.chooseVoice(next.chat);
+                }}
+              />
+            )}
+          </div>
+        ) : (
+          <RunDoorClosed note={runDoor.note} />
+        )}
+      </section>
+
+      <section id="tool-thuatngu" role="region" aria-labelledby="tool-tab-thuatngu" hidden={toolTab !== "thuatngu"} className="grid gap-3 p-4">
+        <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
+          {GENRES.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </Select>
+        {usesBaseGlossary(app.genre) && (
+          <label className="flex min-h-11 items-center gap-2 text-sm">
+            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
+            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
+          </label>
+        )}
+        <p className="text-sm text-muted">
+          {app.glossaryInfo?.failed ? (
+            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
+          ) : app.glossaryInfo?.count > 0 ? (
+            <>
+              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
+            </>
+          ) : (
+            "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
+          )}
+        </p>
+        <details className="rounded-xl border border-line bg-raised px-3 py-2">
+          <summary className="min-tap cursor-pointer text-sm font-medium">
+            Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
+          </summary>
+          <p className="pb-2 text-sm text-muted">
+            Mỗi thể loại một bộ riêng, không dùng chung. Thêm tay hoặc nhập CSV vẫn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại.
+            {app.glossaryInfo?.userCount ? ` Trong đó ${app.glossaryInfo.userCount} do bạn thêm.` : ""}
+            {app.glossaryInfo?.sources?.length ? ` ${app.glossaryInfo.sources.map((s: string) => s.replace(/^\/glossaries\//, "")).join(", ")}.` : ""}
+          </p>
+          <GlossaryEditor app={app} />
+        </details>
       </section>
         </div>
       </div>

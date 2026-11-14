@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.35.0",
+    time: "22:10 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.34.0, theo yêu cầu người dùng (mục 7, nhánh work). Chỉ dời giao diện, không đổi giá, hạn mức, ví, quyền hay điều khoản. Khối «Cách trả» và TurnPackList chuyển từ tab Key sang mục Gói dịch (tool-goi-dich); khối thuật ngữ (thêm thuật ngữ nền, đếm, GlossaryEditor) chuyển từ tab Phim sang mục Thuật ngữ (tool-thuatngu). Cả hai nằm trong nhóm Nâng cao của menu trái và trong Ctrl+K. Tab Key khi đang trả theo lượt hiện dòng chỉ sang Gói dịch; tab Phim giữ dòng đếm thuật ngữ kèm nút mở mục Thuật ngữ. studio-layout.test.ts sửa theo bố cục mới. CHƯA kiểm bằng trình duyệt thật hay điện thoại thật.",
+  },
+  {
     version: "3.34.0",
     time: "21:30 ngày 14/11/2026",
     area: "tien",
