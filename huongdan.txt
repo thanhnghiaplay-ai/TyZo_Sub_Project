@@ -39,7 +39,7 @@ SAU MỖI LẦN SỬA CODE
 12b. Từ 2026-11-06 13:09 trở đi, nếu một lần nâng cấp, cập nhật, bổ sung, chỉnh sửa hoặc chức năng hệ thống làm đổi dịch vụ, quyền lợi, giá, hạn mức dùng thử, dữ liệu, trách nhiệm, khóa hoặc cấm, thì cùng lần đó phải sửa trang điều khoản cho khớp. Sửa đúng chỗ liên quan: bảng Tóm tắt, bảng giá, và mục điều khoản đang nói việc đó. Không chờ user nhắc riêng. Câu thêm vào điều khoản viết chuyên môn, đủ ý, đúng việc vừa đổi. Rồi nâng TERMS_VERSION. Việc chỉ đổi giao diện, không đổi dịch vụ, thì không sửa điều khoản.
 13. Cập nhật PROJECT_STATUS.md: dòng «Cập nhật lần cuối», một dòng lịch sử mục 6, và hàng liên quan ở mục 2. Giờ lấy bằng lệnh TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M'. Không đoán giờ.
 14. Có sửa src/: chạy npx tsc --noEmit. Đụng logic đã có test thì chạy npm test. Dán kết quả thật. Không ghi pass khi chưa chạy.
-15. Đẩy nhánh `work` lên GitHub. Không đẩy `main` cho đến khi user nói đúng câu «đẩy chính thức». Không đóng zip mỗi lần, trừ khi user yêu cầu bàn giao zip. Tên zip nếu cần: TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip, không kèm node_modules. Bản nén không làm gốc nếu GitHub mới hơn.
+15. Đẩy nhánh `work` lên GitHub. Không đẩy `main` cho đến khi user nói đúng câu «đẩy chính thức». Không đóng zip mỗi lần, trừ khi user yêu cầu bàn giao zip. Tên zip nếu cần: TyZo_Sub_Project-YYYY-MM-DD-HHMM.zip, không kèm node_modules. Bản nén không làm gốc nếu GitHub mới hơn. Làm xong MỖI bước thì đẩy `work` ngay rồi mới sang bước kế; chỉ đẩy khi `npm test` và `npx tsc --noEmit` không có lỗi mới; mục đã đẩy từ trước thì kiểm lại đã đủ chưa rồi mới làm tiếp.
 16. Bản mới làm hỏng chức năng đã chạy thì quay lại commit ngay trước đó. Không vá tiếp trên bản hỏng. Nói rõ commit đã quay lại.
 
 CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
@@ -55,4 +55,4 @@ CÁC QUY TẮC ĐÃ CHỐT, ĐỪNG LÀM NGƯỢC
 
 BÁO CÁO
 26. Ngắn: đã làm gì, số phiên bản, kết quả kiểm tra, điều chưa thử trên điện thoại thật.
-27. Hỏi user trước khi làm việc tiếp theo.
+27. Trong danh sách việc user đã giao thì làm tiếp bước kế sau khi đã đẩy bước trước, không chờ hỏi. Việc mới ngoài danh sách thì hỏi user trước.

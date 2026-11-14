@@ -58,6 +58,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-14 | Người dùng chốt | Làm xong mỗi bước thì đẩy `work` rồi mới làm bước khác; mục đã đẩy thì kiểm lại trước khi làm tiếp | Làm ngay | Đã ghi vào «Khi một bản hoàn thành» ở đây và `huongdan.txt` mục 15, 27 |
 | 2026-11-14 20:10 | Người dùng chốt | Bảy mục «giao diện nhẹ kiểu tương lai» (một ô trung tâm, dòng thời gian tiến trình, xem trước là chính, tiền và hạn mức, giao diện nhẹ, phím tắt, chức năng nâng cao nằm sau một lớp). Làm theo ba bản nhỏ | Làm theo giai đoạn | Mục 1 và 6 vào `work` trong v3.32.0; mục 2 và 3 trong v3.33.0; mục 4 trong v3.34.0. Mục 7 (đưa Thuật ngữ, gói dịch vào menu trái) làm ở v3.35.0. Mục 5 (khoảng trống, chữ lớn, hiệu ứng kéo thả) làm ở v3.36.0 |
 | 2026-11-14 10:03 | Người dùng chốt | Gói cải tiến Admin A–F (Tổng quan, tab Việc, Doanh thu, Chất lượng, nhật ký thao tác, trải nghiệm Admin) | Làm theo giai đoạn | Giai đoạn 1 (A, B, tách nhật ký) đã vào `work` trong v3.30.0. Giai đoạn 2 (C phần mới, F giao diện) đã vào `work` trong v3.31.0. D (xem câu lỗi, gửi kiểm tra lại), «chặn toàn bộ phòng», chế độ Chỉ xem chờ người dùng chốt |
 | 2026-11-11 03:28 | Người dùng chốt | Sửa layout lệch, hiển thị chưa chính xác ở Admin và phòng dịch. Câu «Claude sửa» | Làm ngay | Đã vào `work` trong v3.10.7 |
@@ -103,4 +104,5 @@ Vai Làm tự làm các mục dưới đây trước khi báo xong. Không chờ
 - Sửa bảng này, dòng «Đang chạy» trong `huongdan.txt`, bảng đầu `PROJECT_STATUS.md`, và một dòng nhật ký. Phiếu bàn giao ghi đã làm, chưa làm, cố ý không làm.
 - Có sửa `src/` thì chạy `npx tsc --noEmit`. Đụng logic đã có test thì chạy test đó. Ghi kết quả thật. Không ghi pass khi chưa chạy.
 - Đẩy nhánh `work`. Không đẩy `main` cho đến câu «đẩy chính thức». Không đóng bản nén, trừ khi người dùng yêu cầu.
+- **Làm xong mỗi bước thì đẩy `work` ngay, rồi mới làm bước kế tiếp.** Một bước là một mục hoặc một bản nhỏ. Trước khi đẩy phải chạy `npm test` và `npx tsc --noEmit`; test còn lỗi thì không đẩy, sửa xong mới đẩy (lệnh đẩy phải đặt sau điều kiện test pass, không nối tiếp vô điều kiện). Mục đã đẩy từ trước thì kiểm lại đã đủ chưa; đủ thì làm tiếp mục còn lại, thiếu thì sửa và đẩy lại trước. Không gom nhiều bước vào một lần đẩy.
 - Không ghi token, mật khẩu, key vào file hoặc vào cuộc trò chuyện.
