@@ -317,15 +317,16 @@ export function AdminDesk() {
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
       {role === "chu" && tab === "cau-hinh" && (
         <>
-          <RunDeskBoard owner part="config" />
+          <RunDeskBoard owner part="key" />
           <AlibabaKeyBoard />
+          <RunDeskBoard owner part="price" />
           <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
             <ServicePackBoard packsOnly />
           </Fold>
           <Fold title="Model khách được chọn khi thuê phòng" hint="Khách dùng key của họ">
             <RentShowBoard />
           </Fold>
-          <Fold title="Cổng nạp" hint="Sepay, Casso và tài khoản nhận tiền">
+          <Fold title="Cổng nạp" hint="Sepay, Casso và tài khoản nhận tiền" wide>
             <PaySettings />
           </Fold>
         </>
@@ -345,7 +346,7 @@ export function AdminDesk() {
       )}
       {role && tab === "viec" && stats && (
         <section className="admin-wide admin-stats">
-          <div className="grid content-start gap-2">
+          <div className="admin-card grid content-start gap-2">
           <h2 className="text-sm font-semibold">Phòng</h2>
           <div className="stat-grid">
             <Stat label="Đang online" value={stats.online} hint="3 phút qua" tone="online" />
@@ -357,7 +358,7 @@ export function AdminDesk() {
             <Stat label="Cộng tác viên" value={stats.partners} tone="partner" />
           </div>
           </div>
-          <div className="grid content-start gap-2">
+          <div className="admin-card grid content-start gap-2">
           <h2 className="text-sm font-semibold">Gói và việc</h2>
           <div className="stat-grid">
             <Stat label="Còn lượt thử" value={stats.trial} tone="trial" />
@@ -371,7 +372,7 @@ export function AdminDesk() {
       )}
       {role && tab === "viec" && (
         <>
-          <div className="admin-wide admin-split">
+          <div className="admin-wide admin-card admin-split">
           <h2 className="admin-span font-semibold">Tài khoản</h2>
           <p className="admin-span text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Chủ được cấm.</p>
           <div className="admin-find">
@@ -636,7 +637,7 @@ export function AdminDesk() {
           }}
         />
       )}
-          <section className="space-y-2" data-appeals>
+          <section className="admin-card space-y-2" data-appeals>
             <h2 className="font-semibold">Yêu cầu</h2>
             {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}
             {appeals.map((item) => (
@@ -653,7 +654,7 @@ export function AdminDesk() {
               </article>
             ))}
           </section>
-          <section className="space-y-2">
+          <section className="admin-card space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h2 className="font-semibold">Lịch sử</h2>
               {audit.length > 6 && (
@@ -691,7 +692,7 @@ export function AdminDesk() {
               </button>
             </form>
           )}
-          {roleAtLeast(role, "quan-ly") && <div data-pay-queue><PayQueue owner={role === "chu"} /></div>}
+          {roleAtLeast(role, "quan-ly") && <div data-pay-queue className="admin-wide"><PayQueue owner={role === "chu"} /></div>}
         </>
       )}
       </div>

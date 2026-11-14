@@ -278,6 +278,8 @@
   min-width: 0;
   gap: 1rem;
   align-items: stretch;
+  /* Không để các hàng tự động giãn ra lấp chỗ trống: ô nhập, nút trong thẻ giữ đúng cỡ. */
+  align-content: start;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
 }
 
@@ -294,6 +296,19 @@
 
 .admin-grid > .admin-wide {
   grid-column: 1 / -1;
+}
+
+.admin-flow > .admin-wide {
+  grid-column: 1 / -1;
+}
+
+/* Khung thẻ chung của Admin. Mọi khối cấp một đều là thẻ cùng viền, cùng góc, cùng đệm như trang Tổng quan. */
+.admin-card {
+  min-width: 0;
+  padding: var(--pad-4, 1rem);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--color-card);
 }
 
 .account-grid > .account-wide {
@@ -400,13 +415,13 @@
 
 .admin-stats {
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
   grid-template-columns: minmax(0, 1fr);
 }
 
 @media (min-width: 48rem) {
   .admin-stats {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .admin-trio {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1419,6 +1434,10 @@
 .door-dot-closed {
   background: #ef5f5f;
   box-shadow: 0 0 8px rgb(239 95 95 / 45%);
+}
+
+.org-tree > div {
+  display: contents;
 }
 
 .org-card {

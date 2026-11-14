@@ -39,9 +39,9 @@ export function MailDesk() {
   const canTest = view.savedReady || Boolean(view.serverName);
 
   return (
-    <section className="grid gap-3">
+    <section className="grid content-start gap-3">
       <form
-        className="grid gap-2 rounded-2xl border border-line bg-card p-4"
+        className="grid content-start gap-2 rounded-2xl border border-line bg-card p-4"
         onSubmit={(event) => {
           event.preventDefault();
           if (busy) return;
@@ -129,7 +129,7 @@ export function MailDesk() {
           {busy ? "Đang lưu…" : "Lưu"}
         </button>
       </form>
-      <div className="grid gap-2 rounded-2xl border border-line p-4">
+      <div className="grid content-start gap-2 rounded-2xl border border-line p-4">
         <p className="text-sm text-muted">Thư thử gửi tới {view.email || "email của Chủ"}.</p>
         <button
           type="button"

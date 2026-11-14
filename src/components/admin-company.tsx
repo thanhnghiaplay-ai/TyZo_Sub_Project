@@ -134,7 +134,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
 
   return (
     <section className="admin-flow admin-wide">
-      <div className="space-y-3">
+      <div className="admin-card space-y-3">
       <div className="flex flex-wrap gap-2">
         {([["day", "Ngày"], ["week", "Tuần"], ["month", "Tháng"], ["year", "Năm"]] as const).map(([id, name]) => (
           <button key={id} type="button" className={"min-tap rounded-full px-3 text-sm " + (span === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setSpan(id)}>

@@ -183,7 +183,7 @@ const PRICE_ROWS = [
  * part "config" (tab Cấu hình, chỉ Chủ): key Groq, giá và hạn mức.
  * Mỗi lần lưu đọc lại cửa mới nhất rồi chỉ ghi phần của mình, nên hai nơi không đè nhau.
  */
-export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "ops" | "config" }) {
+export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "ops" | "config" | "key" | "price" }) {
   const [view, setView] = useState<RunDeskView | null>(null);
   const [form, setForm] = useState<RunDesk | null>(null);
   const [board, setBoard] = useState<GroqBoard | null>(null);
@@ -264,10 +264,13 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
 
   const sortedRows = [...PRICE_ROWS].sort((a, b) => Number(models?.includes(b.id) ?? false) - Number(models?.includes(a.id) ?? false));
 
-  if (part === "config") {
+  if (part === "config" || part === "key" || part === "price") {
     if (!owner) return null;
+    const showKeyCard = part !== "price";
+    const showPriceCard = part !== "key";
     return (
       <>
+        {showKeyCard && (
         <section className="grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-semibold">Key Groq của phòng</h2>
@@ -298,8 +301,10 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
           </button>
           <p className="text-xs text-muted">{models ? `Key gọi được ${models.length} model.` : "Chưa đồng bộ danh sách model."}</p>
         </section>
+        )}
 
-        <section className="grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
+        {showPriceCard && (
+        <section className="admin-wide grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
           <h2 className="font-semibold">Giá và hạn mức</h2>
           <div className="grid gap-2 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
@@ -381,6 +386,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
             </button>
           )}
         </section>
+        )}
       </>
     );
   }

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.31.1";
+export const APP_VERSION = "3.31.2";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.31.2",
+    time: "12:20 ngày 14/11/2026",
+    title: "Mọi tab quản lý có thẻ cùng khung, cao bằng nhau; phần key và giá gọn hơn.",
+    points: [
+      "Các tab quản lý xếp thẻ có viền, cao bằng nhau, giống tab Tổng quan.",
+      "Key Groq và key Alibaba nằm cạnh nhau, giá và hạn mức chiếm một hàng riêng.",
+      "Phần soạn thư và danh sách icon dài được gập lại, bấm vào mới mở.",
+    ],
+  },
   {
     version: "3.31.1",
     time: "11:40 ngày 14/11/2026",

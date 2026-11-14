@@ -66,6 +66,9 @@ export function MailPolicyBoard() {
           <input value={policy.resendHour} onChange={(event) => setPolicy({ ...policy, resendHour: Number(event.target.value) || 3 })} inputMode="numeric" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
         </label>
       </div>
+      <details className="grid gap-2 rounded-xl border border-line p-3">
+        <summary className="cursor-pointer text-sm font-semibold">Soạn thư (tiêu đề, nội dung, màu)</summary>
+        <div className="mt-2 grid gap-2">
       <div className="flex flex-wrap gap-2">
         {KINDS.map((item) => (
           <button key={item.id} type="button" className={"inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm " + (kind === item.id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setKind(item.id)}>{item.name}</button>
@@ -89,6 +92,8 @@ export function MailPolicyBoard() {
         <label className="flex items-center gap-2">Chữ <input type="color" value={policy.colorInk} onChange={(event) => setPolicy({ ...policy, colorInk: event.target.value })} /></label>
         <label className="flex items-center gap-2">Nút <input type="color" value={policy.colorButton} onChange={(event) => setPolicy({ ...policy, colorButton: event.target.value })} /></label>
       </div>
+        </div>
+      </details>
       <details className="grid gap-2 rounded-xl border border-line p-3">
         <summary className="cursor-pointer text-sm font-semibold">Chữ trên trang (5 câu)</summary>
         <div className="mt-2 grid gap-2">
