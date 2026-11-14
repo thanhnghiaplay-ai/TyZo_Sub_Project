@@ -15,9 +15,9 @@ export const CHANGELOG: ReleaseNote[] = [
     time: "22:40 ngày 14/11/2026",
     title: "Trang chủ thoáng hơn, chữ lớn hơn, kéo thả có hiệu ứng.",
     points: [
-      "Khoảng trống quanh ô thả và các lựa chọn rộng hơn; chữ tiêu đề, ô link và nút Tải và dịch lớn hơn.",
-      "Kéo tệp vào bất cứ đâu trên trang thì ô thả nhấp nháy nhắc; kéo vào ô thì ô phóng nhẹ, sáng viền và đổi chữ thành Thả để chọn video này.",
-      "Thả tệp ở ngoài ô cũng nhận được, trình duyệt không mở tệp thay app. Ai bật giảm chuyển động thì không có hiệu ứng phóng và nhấp nháy.",
+      "Ô thả và các lựa chọn thoáng hơn; tiêu đề, ô link và nút Tải và dịch chữ lớn hơn.",
+      "Kéo tệp vào trang thì ô thả nhấp nháy; kéo vào ô thì phóng nhẹ và sáng viền.",
+      "Thả tệp ngoài ô cũng nhận được. Bật giảm chuyển động thì không còn hiệu ứng.",
     ],
   },
   {
