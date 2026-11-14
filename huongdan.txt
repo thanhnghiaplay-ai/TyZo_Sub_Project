@@ -4,7 +4,7 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
 ĐANG CHẠY (2026-11-15 00:23 UTC+7)
-- Số phiên bản người dùng thấy trên work: v3.39.0, trong src/lib/app-version.ts.
+- Số phiên bản người dùng thấy trên work: v3.40.0, trong src/lib/app-version.ts.
 - Trang Hướng dẫn /huong-dan: nội dung ở src/lib/guide-topics.ts. Đổi tên nút ở app thì sửa bảng UI trong file đó (guide-topics.test.ts báo khi lệch). Giá, hạn dùng thử lấy từ hằng số, không chép số vào chữ. Liên hệ hỗ trợ do Chủ nhập ở tab Cấu hình, không nằm trong code.
 - Điều khoản: TERMS_VERSION = 2026-11-13.4 trong src/components/entry-gate.tsx. Khách phải đồng ý lại.
 - Trả theo lượt: gói nhận dạng Alibaba dùng key Alibaba của phòng. Cần link file trực tiếp, không phải trang xem. Dịch vẫn bằng Groq. Việc Alibaba ngoài nhận dạng chưa chạy.

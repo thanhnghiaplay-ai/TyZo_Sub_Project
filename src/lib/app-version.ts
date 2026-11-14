@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.39.0";
+export const APP_VERSION = "3.40.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.40.0",
+    time: "00:52 ngày 15/11/2026",
+    title: "Hướng dẫn «Chỉ tôi» làm tối nền, chỉ sáng đúng chỗ cần bấm.",
+    points: [
+      "Mọi mục trong trang Hướng dẫn đều có nút «Chỉ tôi» chạy ngay trên màn hình thật.",
+      "Nền tối mờ, chỗ cần bấm sáng lên kèm một câu ngắn, rồi sang bước kế.",
+      "Điện thoại tự mở menu trái khi cần chỉ vào mục trong menu.",
+    ],
+  },
   {
     version: "3.39.0",
     time: "00:23 ngày 15/11/2026",

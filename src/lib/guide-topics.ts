@@ -134,6 +134,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tinh-nang",
       intro: "Phụ đề hiện đồng bộ trên khung phát và sửa được ngay tại dòng.",
       words: "phu de sua cau font co chu mau nen vi tri hien thi",
+      tour: "phu-de",
       steps: [
         { text: "Bản dịch chạy cùng video. Bấm một câu trong danh sách để video nhảy tới đúng chỗ đó." },
         { text: "Thấy câu dịch chưa ổn thì sửa ngay tại dòng, không cần dịch lại cả phim." },
@@ -146,6 +147,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tinh-nang",
       intro: "Nghe bản dịch được đọc theo video.",
       words: "thuyet minh doc giong nghe tts neural orpheus am thanh",
+      tour: "thuyet-minh",
       steps: [
         { text: `Mở «${UI.voiceTab}» ở menu trái để bật hoặc tắt thuyết minh và chọn giọng. Bạn tắt thì lần sau app giữ tắt.` },
         { text: "Giọng neural cần mạng. Khi mạng lỗi, app đọc bằng giọng có sẵn trên máy." },
@@ -158,6 +160,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tinh-nang",
       intro: "Nghe tiếng nói và hiện chữ gốc cùng chữ dịch ngay khi đang nói.",
       words: "dich truc tiep live micro tab giong noi thoi gian thuc hop phat truc tiep",
+      tour: "dich-truc-tiep",
       page: { label: "Mở Dịch trực tiếp", to: "/dich-truc-tiep" },
       steps: [
         { text: `Mở «${UI.live}» ở menu trái. Chọn nguồn: «${UI.tabAudio}» (tiếng từ một tab trình duyệt) hoặc «${UI.mic}».` },
@@ -173,6 +176,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tinh-nang",
       intro: "Giúp dịch đúng từ chuyên dụng của từng thể loại.",
       words: "thuat ngu glossary the loai phim tu dien dich dung tu",
+      tour: "thuat-ngu",
       steps: [
         { text: `Mở nhóm «${UI.advanced}» ở menu trái, chọn «${UI.glossary}».` },
         { text: "Chọn thể loại của phim. Bộ thuật ngữ có cho tiếng Nhật, Hàn, Trung và Anh." },
@@ -185,6 +189,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tai-khoan",
       intro: "Có hai cách trả: thuê phòng theo gói, hoặc trả theo lượt bằng số dư trong ví.",
       words: "nap tien goi gia thue phong tra theo luot vi so du chuyen khoan dung thu 24 gio 7 ngay 30 ngay",
+      tour: "nap-tien",
       page: { label: "Xem bảng giá", to: "/goi" },
       steps: [
         { text: `Nạp tiền: mở «${UI.account}» ở menu trái, chọn «${UI.wallet}», chọn mức nạp hoặc nhập số tiền, rồi chuyển khoản đúng số tiền và nội dung chuyển khoản hiện ra. Đơn nạp còn hiệu lực ${PAY_MINUTES} phút kể từ lúc tạo.` },
@@ -200,6 +205,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tai-khoan",
       intro: "Key Groq là chìa khóa để dùng dịch vụ của Groq bằng tài khoản của bạn.",
       words: "key groq api gsk console tao key lay key dan key khoa",
+      tour: "key-groq",
       steps: [
         { text: "Mở trang quản lý key của Groq và đăng nhập (hoặc đăng ký) bằng tài khoản Groq.", link: { label: "console.groq.com/keys", href: "https://console.groq.com/keys" }, image: "groq-tao-key.png" },
         { text: "Chọn tạo key mới (Create API Key) và đặt tên tùy ý để bạn nhớ." },
@@ -214,6 +220,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tai-khoan",
       intro: "Đổi khi còn nhớ mật khẩu cũ. Quên thì đặt lại qua thư hoặc nhờ hỗ trợ.",
       words: "mat khau doi quen dat lai email dang nhap khong vao duoc",
+      tour: "mat-khau",
       steps: [
         { text: `Đổi mật khẩu: mở «${UI.account}» ở menu trái, chọn «${UI.wallet}», kéo tới «${UI.changePassword}». Nhập mật khẩu hiện tại và mật khẩu mới (ít nhất 8 ký tự).` },
         { text: "Đổi xong, các máy khác đang đăng nhập tài khoản này sẽ bị đăng xuất." },
@@ -226,6 +233,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       group: "tro-giup",
       intro: "Cần hỏi về gói, nạp tiền, khóa hoặc cấm tài khoản.",
       words: "ho tro lien he zalo facebook email hoi yeu cau xem lai khieu nai",
+      tour: "ho-tro",
       contact: true,
       page: { label: `Mở «${UI.appeal}»`, to: "/yeu-cau" },
       steps: [

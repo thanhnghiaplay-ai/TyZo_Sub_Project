@@ -11,6 +11,7 @@ import { getMailFace } from "@/lib/mail-runtime";
 import { contactLinks, EMPTY_CONTACT, type SupportContact } from "@/lib/support-contact";
 import { getSupportContact } from "@/lib/support-room";
 import { requestTour } from "@/lib/tour-request";
+import { TOUR_PAGE } from "@/lib/tour-steps";
 
 const RAIL: RailItem[] = [
   { id: "home", label: "Trang chủ", href: "/" },
@@ -144,7 +145,7 @@ export function GuidePage() {
   function startTour(topic: GuideTopic) {
     if (!topic.tour) return;
     requestTour(topic.tour);
-    void navigate({ to: "/" });
+    void navigate({ to: TOUR_PAGE[topic.tour] });
   }
 
   return (

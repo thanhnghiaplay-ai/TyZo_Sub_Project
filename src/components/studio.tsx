@@ -499,7 +499,7 @@ export function Studio() {
   // «Chỉ tôi» ở trang Hướng dẫn gửi yêu cầu qua sessionStorage. Đọc một lần, giữ trong ref để chạy lại hiệu ứng (StrictMode) không làm mất.
   const askedTour = useRef<TourId | null | undefined>(undefined);
   useEffect(() => {
-    if (askedTour.current === undefined) askedTour.current = takeTourRequest();
+    if (askedTour.current === undefined) askedTour.current = takeTourRequest("/");
     if (askedTour.current) {
       setTourId(askedTour.current);
       const asked = window.setTimeout(() => setTourOpen(true), 500);
@@ -778,10 +778,10 @@ export function Studio() {
       id: "tai-khoan",
       label: "Tài khoản",
       children: [
-        { id: "so-du", label: "Số dư và nạp tiền", current: product === "account", onPick: () => setProduct("account") },
-        { id: "goi", label: "Thuê phòng và gói", href: "/goi" },
+        { id: "so-du", domId: "tool-tab-so-du", label: "Số dư và nạp tiền", current: product === "account", onPick: () => setProduct("account") },
+        { id: "goi", domId: "tool-tab-goi", label: "Thuê phòng và gói", href: "/goi" },
         { id: "ctv", label: "Cộng tác viên", href: "/ctv" },
-        { id: "yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
+        { id: "yeu-cau", domId: "tool-tab-yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
       ],
     },
     ...(place?.role ? [{ id: "quan-ly", label: "Quản lý", href: "/admin" as const }] : []),
@@ -922,7 +922,6 @@ export function Studio() {
         </button>
       </div>
       <StepsBar report={app.stages} />
-      <GuidedTour open={tourOpen} tour={tourId} onClose={() => setTourOpen(false)} />
       <dialog ref={statusRef} className="studio-note">
         <p className="text-sm">{app.status}</p>
         <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
@@ -985,7 +984,7 @@ export function Studio() {
             <h2 className="font-semibold">Bản dịch</h2>
           </div>
           <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh ngay tại dòng và thêm thuật ngữ.</p>
-          <div className="studio-cue-scroll">
+          <div className="studio-cue-scroll" data-tour="cues">
             {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}
             {app.segs.map((seg, index) =>
               index === editing ? (
@@ -1032,7 +1031,7 @@ export function Studio() {
         {!(runDoor.open && payByRoom) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
           Groq API key
-          <span className="flex gap-2">
+          <span className="flex gap-2" data-tour="key-input">
             <input
               id="key"
               className={FIELD}
@@ -1247,6 +1246,7 @@ export function Studio() {
         <div className="grid gap-2">
           <button
             type="button"
+            data-tour="run"
             disabled={!app.running && !online}
             className={"min-tap rounded-xl font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
             onClick={() => (app.running ? app.cancel() : void app.start())}
@@ -1381,6 +1381,7 @@ export function Studio() {
           <button
             type="button"
             role="switch"
+            data-tour="voice-on"
             aria-checked={narration.enabled}
             className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (narration.enabled ? "bg-accent text-ink" : "border border-line")}
             onClick={() => patchNarration({ enabled: !narration.enabled })}
@@ -1388,7 +1389,7 @@ export function Studio() {
             {narration.enabled ? "Đang bật" : "Tắt"}
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-2" data-tour="voice-engine">
           <Choice on={narration.engine === "edge"} onClick={() => patchNarration({ engine: "edge", gender: narration.gender === "any" ? "female" : narration.gender })} title="Neural" text="Miễn phí, tự nhiên" />
           <Choice on={narration.engine === "browser"} onClick={() => patchNarration({ engine: "browser" })} title="Giọng máy" text="Có sẵn trên máy" />
           <Choice
@@ -1587,13 +1588,15 @@ export function Studio() {
       </section>
 
       <section id="tool-thuatngu" role="region" aria-labelledby="tool-tab-thuatngu" hidden={toolTab !== "thuatngu"} className="grid gap-3 p-4">
-        <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
-          {GENRES.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </Select>
+        <div data-tour="glossary-genre">
+          <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
+            {GENRES.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        </div>
         {usesBaseGlossary(app.genre) && (
           <label className="flex min-h-11 items-center gap-2 text-sm">
             <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
@@ -1633,6 +1636,7 @@ export function Studio() {
       </>
       )}
       <StudioPalette commands={commands} open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <GuidedTour open={tourOpen} tour={tourId} onClose={() => setTourOpen(false)} />
     </main>
     </AppShell>
   );
@@ -2450,7 +2454,7 @@ function Stage({
               <RotateCw className="size-4" />
             </Tiny>
           )}
-          <Tiny label="Cài đặt phụ đề" onClick={() => setPanel((open) => !open)}>
+          <Tiny label="Cài đặt phụ đề" tour="sub-style" onClick={() => setPanel((open) => !open)}>
             <Settings className="size-4" />
           </Tiny>
           <Tiny label="Toàn màn hình" onClick={() => void toggleFull()}>
@@ -2548,9 +2552,9 @@ function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
   };
 }
 
-function Tiny({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+function Tiny({ label, onClick, children, tour }: { label: string; onClick: () => void; children: ReactNode; tour?: string }) {
   return (
-    <button type="button" aria-label={label} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
+    <button type="button" aria-label={label} data-tour={tour} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
       {children}
     </button>
   );

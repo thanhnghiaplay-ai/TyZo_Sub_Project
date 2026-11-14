@@ -11,6 +11,7 @@ import { pushToast } from "@/components/toast";
 import { useCaps, useWakeLock } from "@/components/use-caps";
 import { useLive, type LiveInput } from "@/components/use-live";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { TourHost } from "@/components/tour-host";
 import { LIVE_LANGS, liveLang, targetHasVoice } from "@/lib/live/langs";
 import { downloadLiveFile, hasLiveCues, liveExportFile } from "@/lib/live/live-export";
 import { LIVE_MODELS } from "@/lib/live/live-open-rules";
@@ -125,6 +126,7 @@ export function LiveScreen() {
 
   return (
     <AppShell className="contents">
+      <TourHost page="/dich-truc-tiep" />
       <SideRail label="Chức năng" items={railItems} who={{ name: user?.displayName, email: user?.primaryEmail }} />
       <main className="room-wide mx-auto flex min-h-dvh flex-col gap-3 bg-bg px-4 py-4 text-fg">
         <header className="flex items-start justify-between gap-2">
@@ -145,7 +147,7 @@ export function LiveScreen() {
         </div>
 
         <section className="grid gap-3 rounded-2xl border border-line bg-card p-3" aria-label="Cài đặt dịch trực tiếp">
-          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Nguồn âm thanh">
+          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Nguồn âm thanh" data-tour="live-source">
             <button
               type="button"
               disabled={locked || !caps.tabAudio}
@@ -171,7 +173,7 @@ export function LiveScreen() {
           {input === "tab" && caps.tabAudio && <p className="text-xs text-muted">Khi bấm Bắt đầu, chọn tab trình duyệt và bật mục chia sẻ âm thanh của tab.</p>}
           {noInput && <p className="text-sm text-danger">Trình duyệt này không thu được âm thanh. Hãy mở trang bằng https trên Chrome, Edge hoặc Safari mới.</p>}
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2" data-tour="live-lang">
             <Field label="Ngôn ngữ đang nói">
               <select className={SELECT} disabled={locked} value={settings.source} onChange={(event) => setSettings((s) => ({ ...s, source: event.target.value }))}>
                 <option value="">Tự nhận biết</option>
@@ -223,7 +225,7 @@ export function LiveScreen() {
           {voice && settings.audio && input === "tab" && <p className="text-xs text-muted">Nên đeo tai nghe để tiếng dịch không lẫn vào âm thanh đang thu.</p>}
         </section>
 
-        <section className="grid gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Số dư">
+        <section className="grid gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Số dư" data-tour="live-balance">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="inline-flex items-center gap-2 text-sm">
               <Wallet className="size-4 text-muted" aria-hidden="true" />
@@ -247,6 +249,7 @@ export function LiveScreen() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
+              data-tour="live-start"
               disabled={button.disabled}
               onClick={() => (button.stops ? live.stop() : live.start({ ...settings, input, audio: voice && settings.audio }))}
               className={"min-tap inline-flex min-w-40 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold disabled:opacity-50 " + (button.stops ? "border border-error text-danger" : "bg-accent text-ink")}

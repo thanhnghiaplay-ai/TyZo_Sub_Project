@@ -143,6 +143,7 @@ export function AccountPanel() {
       {user && !user.isDevFallback && (
         <>
           <AccountCard rank={place?.role ?? null} extra={partner ? ["ctv"] : []} styleId={badge}>
+            <div data-tour="balance">
             <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>
@@ -153,7 +154,8 @@ export function AccountPanel() {
             <p className="mt-2 text-sm">
               {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2" data-tour="topup">
               <button type="button" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none" onClick={() => setPayOpen(true)}>
                 Nạp tiền
               </button>
@@ -236,7 +238,7 @@ export function AccountPanel() {
               Lưu tên
             </button>
           </form>
-          <form
+          <form data-tour="change-password"
             className="space-y-2 rounded-2xl border border-line bg-card p-4"
             onSubmit={(event) => {
               event.preventDefault();

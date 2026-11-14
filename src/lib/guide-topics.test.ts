@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
 import { GROUP_LABEL, GUIDE_FAQ, guideTopics, matchGuide, UI } from "./guide-topics.ts";
 import { ROOM_PLANS, TRIAL_MINUTES } from "./room-plans.ts";
-import { isTourId, TOURS } from "./tour-steps.ts";
+import { isTourId, TOUR_PAGE, TOURS } from "./tour-steps.ts";
 import { takeTourRequest, requestTour } from "./tour-request.ts";
 
 const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -132,21 +132,42 @@ describe("hướng dẫn không lệch giao diện", () => {
   });
 
   it("mỗi mục có «Chỉ tôi» trỏ tới một tuyến có thật", () => {
-    for (const topic of guideTopics()) if (topic.tour) assert.ok(isTourId(topic.tour), topic.id);
+    for (const topic of guideTopics()) {
+      assert.ok(topic.tour, `${topic.id}: thiếu «Chỉ tôi»`);
+      assert.ok(isTourId(topic.tour), topic.id);
+    }
+  });
+
+  it("mỗi tuyến có trang để chạy và mỗi tuyến có mục dùng nó", () => {
+    const used = new Set(guideTopics().map((topic) => topic.tour));
+    for (const id of Object.keys(TOURS)) {
+      assert.ok(["/", "/dich-truc-tiep"].includes(TOUR_PAGE[id as keyof typeof TOUR_PAGE]), `${id}: thiếu trang chạy`);
+      assert.ok(used.has(id as keyof typeof TOUR_PAGE), `${id}: không mục nào dùng tuyến này`);
+    }
   });
 
   it("mỗi bước của tuyến trỏ vào chỗ còn có nhãn trong mã giao diện", () => {
     for (const [id, steps] of Object.entries(TOURS)) {
       assert.ok(steps.length > 0, id);
       for (const step of steps) {
-        assert.ok(step.title && step.text, `${id}: ${step.sel}`);
+        assert.ok(step.title && step.text, `${id}: ${step.title}`);
+        if (!step.sel) {
+          assert.ok(!step.press && !step.rail, `${id}: bước không có chỗ chỉ thì không có «press» hay «rail»`);
+          continue;
+        }
         const byAttr = step.sel.match(/^\[data-tour=([\w-]+)\]$/);
         const byTab = step.sel.match(/^#tool-tab-([\w-]+)$/);
         if (byAttr) {
-          const marker = `data-tour="${byAttr[1]}"`;
-          assert.ok(UI_SOURCES.some((source) => source.includes(marker)), `${id}: không còn ${marker} trong giao diện`);
+          // Nhãn viết thẳng `data-tour="x"`, hoặc qua thuộc tính `tour="x"` của nút nhỏ trên khung phát.
+          const markers = [`data-tour="${byAttr[1]}"`, ` tour="${byAttr[1]}"`];
+          assert.ok(UI_SOURCES.some((source) => markers.some((marker) => source.includes(marker))), `${id}: không còn nhãn data-tour="${byAttr[1]}" trong giao diện`);
+          assert.ok(!step.rail && !step.press, `${id}: ${step.sel} không nằm trong menu nên không dùng «rail» hay «press»`);
         } else if (byTab) {
-          assert.ok(STUDIO.includes(`["${byTab[1]}",`), `${id}: không còn tab «${byTab[1]}» trong studio.tsx`);
+          const inTools = STUDIO.includes(`["${byTab[1]}",`);
+          const line = STUDIO.split("\n").find((text) => text.includes(`domId: "tool-tab-${byTab[1]}"`));
+          assert.ok(inTools || line, `${id}: không còn mục «${byTab[1]}» trong menu trái của studio.tsx`);
+          assert.ok(step.rail, `${id}: ${step.sel} nằm trong menu trái, bước phải có «rail»`);
+          if (step.press) assert.ok(inTools || (line && !line.includes("href:")), `${id}: ${step.sel} là liên kết sang trang khác, không dùng «press»`);
         } else {
           assert.fail(`${id}: bộ chọn «${step.sel}» phải dùng [data-tour=…] hoặc #tool-tab-…`);
         }
@@ -171,6 +192,15 @@ describe("yêu cầu chạy «Chỉ tôi» giữa các trang", () => {
     requestTour("quick-start");
     assert.equal(takeTourRequest(), "quick-start");
     assert.equal(takeTourRequest(), null);
+  });
+
+  it("tuyến của trang khác thì giữ lại cho đúng trang", () => {
+    const store = fakeSession();
+    requestTour("dich-truc-tiep");
+    assert.equal(takeTourRequest("/"), null);
+    assert.equal(store.get("tyzo_tour_ask"), "dich-truc-tiep");
+    assert.equal(takeTourRequest("/dich-truc-tiep"), "dich-truc-tiep");
+    assert.equal(store.has("tyzo_tour_ask"), false);
   });
 
   it("giá trị lạ thì bỏ qua", () => {
