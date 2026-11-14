@@ -54,6 +54,7 @@ import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { AlibabaKeyBoard } from "@/components/alibaba-key-board";
+import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
 import { RentShowBoard } from "@/components/rent-show-board";
 import { pushToast } from "@/components/toast";
@@ -322,6 +323,7 @@ export function AdminDesk() {
         <>
           <RunDeskBoard owner part="key" />
           <AlibabaKeyBoard />
+          <LiveWorkspaceBoard />
           <RunDeskBoard owner part="price" />
           <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
             <ServicePackBoard packsOnly />
@@ -761,6 +763,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "key-phong": "Đổi key Groq của phòng",
   "key-model": "Đồng bộ model của key",
   "key-alibaba": "Đổi key Alibaba",
+  "workspace-live": "Đổi Workspace ID Dịch trực tiếp",
   "giao-dien": "Công bố giao diện",
   "reset-so-du": "Reset số dư",
   "reset-tien-test": "Reset tiền thử",

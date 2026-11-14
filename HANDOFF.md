@@ -3,7 +3,8 @@
 ## DỊCH TRỰC TIẾP — lớp tiền, vé, cầu nối (14/11/2026, nhánh work)
 ĐÃ LÀM: `live-billing.ts` nối cầu nối vào `openTicketWith`, `chargeTicketWith`, `closeTicketWith` (không viết lại luật tiền). `live-book.ts` đọc tỉ giá từ `run_board`, phần chênh từ `alibaba_desk`, giá live tự kéo và lưu ở `live_board`. `live-upstream.ts` ghép địa chỉ `wss://<WorkspaceId>.ap-southeast-1.maas.aliyuncs.com/...`. `live-open.ts` cấp vé (đăng nhập, tài khoản mở, 10 lần/phút, vé sống 60 giây). `scripts/live-bridge.ts` khởi chạy cầu nối riêng, `scripts/live-try.ts` thử bằng dòng lệnh. Sửa lỗi: một phiên lỗi (vd. DB đứt) không còn làm sập cả cầu nối.
 CẦN CHỦ ĐẶT: `LIVE_BRIDGE_SECRET` (giống nhau ở máy chủ chính và cầu nối), `LIVE_BRIDGE_URL` (địa chỉ wss công khai của cầu nối, ở máy chủ chính), `DATABASE_URL` (ở cầu nối), Workspace ID qua `ALIBABA_WORKSPACE_ID` hoặc cài đặt phòng `alibaba_workspace`.
-CHƯA LÀM: màn hình Dịch trực tiếp và phần cho trình duyệt (micro, âm thanh tab, SRT); phần Admin (ô nhập Workspace ID, giá live).
+ĐÃ LÀM thêm: Admin, tab Cấu hình, có ô «Dịch trực tiếp: Workspace ID Alibaba» (chỉ Chủ, ghi nhật ký `workspace-live`, lưu ở `room_settings.alibaba_workspace`). Cầu nối đọc ID này nếu không có `ALIBABA_WORKSPACE_ID`.
+CHƯA LÀM: màn hình Dịch trực tiếp và phần cho trình duyệt (micro, âm thanh tab, SRT); phần Admin còn lại (giá live, bật/tắt).
 CHƯA KIỂM: chưa nối Alibaba thật (chưa có Workspace ID); chưa chạy trên máy chủ ngoài. Đã chạy thật với Postgres: giữ tiền, Alibaba không tới được thì phiếu `loi` và ví trả đủ.
 Kiểm tra: `tsc` sạch, test 191 + 494 pass, 0 fail.
 
