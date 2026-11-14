@@ -2,7 +2,7 @@ import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -47,6 +47,10 @@ import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
 import { PlayerDrop } from "@/components/player-drop";
 import { StepsBar } from "@/components/steps-bar";
+import { HomeHero } from "@/components/home-hero";
+import { StudioPalette } from "@/components/studio-palette";
+import type { PaletteCommand } from "@/lib/palette-match";
+import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
 import { tourSeen } from "@/components/tour-seen";
 import { isMediaFile, useFileThumb, type FileThumb } from "@/components/file-thumb";
@@ -508,6 +512,11 @@ export function Studio() {
   const [appeal, setAppeal] = useState("");
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(true);
+  // Khách bấm một mục trong menu trái thì hiện khung đầy đủ thay cho trang chủ một ô.
+  const [forced, setForced] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const autoStartLink = useRef<string | null>(null);
+  const navigate = useNavigate();
   const statusRef = useRef<HTMLDialogElement>(null);
   const [hydrated, setHydrated] = useState(false);
   const narrator = useRef(createNarrator());
@@ -616,6 +625,56 @@ export function Studio() {
     setSheetOpen((open) => (sheet && id === toolTab ? !open : true));
     setToolTab(id);
   };
+  const openTool = (id: (typeof TOOLS)[number][0]) => {
+    setProduct("sub");
+    if (forced) return pickTool(id);
+    setForced(true);
+    setToolTab(id);
+    setSheetOpen(true);
+  };
+  const hero = showHomeHero({ hasSegs: !noSubs, running: app.running, analyzing: app.analyzing, reviewHold: app.reviewHold, forced });
+  const togglePay = () => {
+    const next = !payByRoom;
+    if (next && !runDoor.open) return;
+    setPayByRoom(next);
+    app.setRoomPay(next);
+  };
+
+  // Dán link ở bất cứ đâu (ngoài ô gõ chữ) thì nhận link; ở trang chủ một ô thì tự bắt đầu.
+  const takeLink = useCallback(
+    (link: string, auto: boolean) => {
+      app.setFile(null);
+      app.setAudioFile(null);
+      app.setUrl(link);
+      linkCheck.check(link);
+      if (auto) autoStartLink.current = link;
+      else pushToast("Đã nhận link. Bấm Tải và dịch để chạy.", "ok");
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [app.setFile, app.setAudioFile, app.setUrl, linkCheck.check],
+  );
+  const heroRef = useRef(hero);
+  heroRef.current = hero;
+  const busyRef = useRef(false);
+  busyRef.current = app.running || app.analyzing || product === "account" || place?.status === "banned" || place?.status === "locked";
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      if (isTypingTarget(event.target) || busyRef.current) return;
+      const link = pastedLink(event.clipboardData?.getData("text") ?? "");
+      if (!link) return;
+      event.preventDefault();
+      takeLink(link, heroRef.current);
+    };
+    document.addEventListener("paste", onPaste);
+    return () => document.removeEventListener("paste", onPaste);
+  }, [takeLink]);
+  const { start: startRun } = app;
+  useEffect(() => {
+    const want = autoStartLink.current;
+    if (!want || app.url !== want) return;
+    autoStartLink.current = null;
+    void startRun();
+  }, [app.url, startRun]);
 
 
   // Đọc quyền có thử lại. Lỗi tạm thời thì giữ quyền đã biết, không xóa nút Quản lý.
@@ -665,6 +724,7 @@ export function Studio() {
   const lockTurnModels = showRoomPrice && turnLocked;
 
   const railItems: RailItem[] = [
+    { id: "home", label: "Trang chủ", current: product === "sub" && hero, onPick: () => { setProduct("sub"); setForced(false); } },
     {
       id: "sub",
       label: "Phụ đề",
@@ -673,10 +733,7 @@ export function Studio() {
         domId: `tool-tab-${id}`,
         label,
         current: product === "sub" && toolTab === id,
-        onPick: () => {
-          setProduct("sub");
-          pickTool(id);
-        },
+        onPick: () => openTool(id),
       })),
     },
     { id: "tai-video", label: "Tải video", href: "/tai-video" },
@@ -691,6 +748,40 @@ export function Studio() {
       ],
     },
     ...(place?.role ? [{ id: "quan-ly", label: "Quản lý", href: "/admin" as const }] : []),
+  ];
+
+  const clickPicker = () => (document.querySelector("[data-home-hero] input[type=file]") as HTMLInputElement | null)?.click();
+  const commands: PaletteCommand[] = [
+    { id: "pick", label: "Chọn video", hint: "Việc", words: "tep file mo tai len", disabled: !hero, run: clickPicker },
+    {
+      id: "paste",
+      label: "Dán link từ bộ nhớ tạm và bắt đầu",
+      hint: "Việc",
+      words: "link url dan paste",
+      disabled: app.running,
+      run: () => {
+        void navigator.clipboard
+          .readText()
+          .then((text) => {
+            const link = pastedLink(text);
+            if (!link) return pushToast("Bộ nhớ tạm không có link http/https.", "bad");
+            takeLink(link, hero);
+          })
+          .catch(() => pushToast("Trình duyệt chưa cho đọc bộ nhớ tạm. Hãy bấm Ctrl+V trên trang.", "bad"));
+      },
+    },
+    { id: "start", label: "Bắt đầu tải và dịch", hint: "Việc", words: "chay dich start", disabled: app.running || !(pickedFile || app.url.trim()), run: () => void app.start() },
+    { id: "stop", label: "Dừng đang chạy", hint: "Việc", words: "huy cancel", disabled: !app.running, run: () => app.cancel() },
+    { id: "export", label: "Xuất file Vietsub (.srt)", hint: "Tải", words: "srt tai xuat phu de", disabled: noSubs || !online, run: () => void app.exportSrt() },
+    { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
+    ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "phu de cong cu", run: () => openTool(id) })),
+    { id: "wallet", label: "Số dư và nạp tiền", hint: "Tài khoản", words: "nap tien vi", run: () => setProduct("account") },
+    { id: "tai-video", label: "Tải video", hint: "Trang", run: () => void navigate({ to: "/tai-video" }) },
+    { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
+    { id: "ctv", label: "Cộng tác viên", hint: "Trang", run: () => void navigate({ to: "/ctv" }) },
+    { id: "yeu-cau", label: "Yêu cầu xem lại", hint: "Trang", run: () => void navigate({ to: "/yeu-cau" }) },
+    { id: "tour", label: "Xem hướng dẫn nhanh", hint: "Trợ giúp", words: "huong dan help", run: () => setTourOpen(true) },
+    ...(place?.role ? [{ id: "admin", label: "Quản lý", hint: "Trang", run: () => void navigate({ to: "/admin" }) }] : []),
   ];
 
   return (
@@ -758,6 +849,8 @@ export function Studio() {
         >
           {app.status}
         </button>
+        {!hero && (
+        <>
         <span
           className="shrink-0"
           title={noSubs ? EXPORT_EMPTY : undefined}
@@ -783,6 +876,8 @@ export function Studio() {
         >
           Lưu bản Whisper
         </button>
+        </>
+        )}
         {app.reviewHold && (
           <button type="button" disabled={!online} className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40" onClick={app.approveBible}>
             Dịch tiếp
@@ -802,6 +897,30 @@ export function Studio() {
       </dialog>
 
 
+      {hero && (
+        <HomeHero
+          file={pickedFile}
+          thumb={thumb}
+          url={app.url}
+          onFile={(next) => {
+            app.setUrl("");
+            app.setFile(next);
+          }}
+          onUrl={app.setUrl}
+          source={app.source}
+          onSource={app.setSource}
+          genre={app.genre}
+          onGenre={app.setGenre}
+          payMode={runDoor.ready && runDoor.open ? (payByRoom ? "turn" : "key") : null}
+          onTogglePay={togglePay}
+          keyReady={app.key.trim().length > 0}
+          onOpenTool={openTool}
+          running={app.running}
+          online={online}
+          onStart={() => void app.start()}
+        />
+      )}
+      <div className={hero ? "hidden" : "contents"} aria-hidden={hero || undefined}>
       <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>
       <section data-workspace className="studio-workspace">
         <div className="studio-video">
@@ -1051,23 +1170,11 @@ export function Studio() {
         </div>
 
         <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
-          <option value="auto">Tự động</option>
-          <option value="action">Hành động</option>
-          <option value="adventure">Phiêu lưu</option>
-          <option value="crime">Hình sự / giang hồ</option>
-          <option value="scifi">Viễn tưởng / giả tưởng</option>
-          <option value="horror">Kinh dị</option>
-          <option value="romance">Tình cảm / lãng mạn</option>
-          <option value="psychological">Tâm lý</option>
-          <option value="comedy">Hài</option>
-          <option value="costume">Cổ trang / kiếm hiệp</option>
-          <option value="historical">Lịch sử / thời kỳ</option>
-          <option value="mystery">Trinh thám / bí ẩn</option>
-          <option value="sports">Thể thao</option>
-          <option value="adult">Phim gắn nhãn 18+</option>
-          <option value="sex">Phim thoại kín</option>
-          <option value="series">Phim bộ / phim mới chiếu</option>
-          <option value="daily">Hằng ngày</option>
+          {GENRES.map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </Select>
         {usesBaseGlossary(app.genre) && (
           <label className="flex min-h-11 items-center gap-2 text-sm">
@@ -1435,6 +1542,7 @@ export function Studio() {
         </div>
       </div>
       </div>
+      </div>
 
       {editing >= 0 && app.segs[editing] && (
         <div className="fixed inset-0 z-50 flex items-end bg-bg/80" onClick={() => setEditKey(null)}>
@@ -1466,6 +1574,7 @@ export function Studio() {
       {product === "account" && <AccountPanel />}
       </>
       )}
+      <StudioPalette commands={commands} open={paletteOpen} onOpenChange={setPaletteOpen} />
     </main>
     </AppShell>
   );

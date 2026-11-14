@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.32.0",
+    time: "20:20 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.31.2, theo yêu cầu người dùng (mục 1 và 6 trong danh sách 7 mục «giao diện nhẹ kiểu tương lai», nhánh work, mỗi mục một bản nhỏ). Không đổi dịch vụ, giá, quyền, dữ liệu khách hay điều khoản. (1) Trang chủ một ô: home-state.ts (showHomeHero, pastedLink, isTypingTarget, GENRES) và home-hero.tsx. Khi chưa có phụ đề, không chạy, không phân tích, không chờ duyệt bảng nhân vật và khách chưa bấm mục nào trong menu trái thì studio.tsx hiện HomeHero (ô thả lớn có ảnh xem trước, ô link, hàng chip Tiếng gốc, Thể loại, Cách trả khi cửa trả theo lượt mở, Key, Tùy chọn khác, nút Tải và dịch) và ẩn khung đầy đủ bằng class hidden (Stage vẫn mount nên videoRef giữ nguyên). Bấm mục công cụ trong menu hoặc chip Key, Tùy chọn khác thì hiện khung đầy đủ (state forced); mục Trang chủ mới ở đầu menu và lệnh Video mới trả về ô thả. Hàng nút xuất file ẩn ở trang chủ. Danh sách thể loại dùng chung một hằng. (6) Phím tắt cho trang khách: studio-palette.tsx và palette-match.ts (matchCommands, không dấu cũng khớp), mở bằng Ctrl+K hoặc Cmd+K, gồm chọn video, dán link và bắt đầu, bắt đầu, dừng, xuất .srt, video mới, mở từng mục công cụ, số dư và nạp tiền, các trang khác, hướng dẫn nhanh, Quản lý khi có quyền. Dán link: một listener paste trên document, bỏ qua khi đang gõ trong ô nhập, khi đang chạy, ở trang tài khoản và khi tài khoản bị khóa hoặc cấm; chỉ nhận khi cả đoạn dán là một link http/https. Ở trang chủ một ô thì tự gọi start() sau khi url đã vào state (nhờ vậy start() không đọc url cũ); ở khung đầy đủ chỉ nhận link và báo bằng toast, không tự chạy. Dán link thì bỏ tệp đang chọn để không chạy nhầm tệp cũ. start() vẫn chạy đủ kiểm key, hạn gói và ví như cũ nên dán link khi chưa có key hoặc hết hạn chỉ hiện câu lỗi, không tốn gì. Test mới: home-state.test.ts, palette-match.test.ts (đã vào npm test). CHƯA kiểm bằng trình duyệt thật hay điện thoại thật (cổng đăng nhập chặn khi chạy thử tự động); chưa thử dán link trên Safari iOS.",
+  },
+  {
     version: "3.31.2",
     time: "12:20 ngày 14/11/2026",
     area: "khac",

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.31.2";
+export const APP_VERSION = "3.32.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.32.0",
+    time: "20:20 ngày 14/11/2026",
+    title: "Trang chủ gọn lại thành một ô thả lớn, dán link là tự chạy, Ctrl+K mở lệnh nhanh.",
+    points: [
+      "Chưa có video thì trang chủ chỉ còn một ô thả lớn, một hàng chip và nút Tải và dịch.",
+      "Dán link video ở bất cứ đâu trên trang, app nhận link và tự bắt đầu dịch.",
+      "Bấm Ctrl+K (Cmd+K trên Mac) rồi gõ việc muốn làm: chọn video, tải file, nạp tiền.",
+      "Menu trái có mục Trang chủ để quay về ô thả bất cứ lúc nào.",
+    ],
+  },
   {
     version: "3.31.2",
     time: "19:30 ngày 14/11/2026",
