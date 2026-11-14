@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Clapperboard, FileAudio, Link2, Loader2, Upload } from "lucide-react";
 import { fmt } from "@/lib/sub/text";
 import { formatBytes, isMediaFile, type FileThumb } from "@/components/file-thumb";
+import { useLinkCheck } from "@/components/use-link-check";
 
 /** Khung chọn video lớn đặt trên player: kéo thả, bấm để chọn, ảnh xem trước, link trực tiếp. */
 export function PlayerDrop({
@@ -25,7 +26,7 @@ export function PlayerDrop({
     setNote("");
     onFile(next);
   };
-  const link = url.trim();
+  const linkCheck = useLinkCheck();
   return (
     <div data-tour="drop" className="absolute inset-0 z-[25] flex flex-col gap-2 p-2 sm:p-3">
       <label
@@ -87,9 +88,19 @@ export function PlayerDrop({
           placeholder="Hoặc dán link file trực tiếp https://…/phim.mp4"
           aria-label="Link file trực tiếp"
           className="h-9 w-full rounded-lg border border-line bg-bg pr-2 pl-8 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          onChange={(event) => onUrl(event.target.value)}
+          aria-invalid={Boolean(linkCheck.problem)}
+          onChange={(event) => {
+            if (linkCheck.problem) linkCheck.check(event.target.value);
+            onUrl(event.target.value);
+          }}
+          onBlur={(event) => linkCheck.check(event.target.value)}
+          onPaste={(event) => linkCheck.check(event.clipboardData.getData("text"))}
         />
-        {link && !/^https?:\/\//i.test(link) && <span className="sr-only">Link phải bắt đầu bằng http:// hoặc https://</span>}
+        {linkCheck.problem && (
+          <span role="alert" className="mt-1 block text-xs text-danger">
+            {linkCheck.problem}
+          </span>
+        )}
       </span>
     </div>
   );

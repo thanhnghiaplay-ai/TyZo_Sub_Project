@@ -92,6 +92,7 @@ import {
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
+import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";
 import { getServiceMenu } from "@/lib/pack-room";
@@ -840,6 +841,7 @@ export function usePipeline() {
     }
     if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
+    if (!file && !audioFile && videoLinkBroken(link)) return say(LINK_WARN, true);
     // Kiểm key và model trước mọi việc tốn tiền hay tốn lượt thử. Mất mạng hoặc Groq bận thì không chặn.
     if (token && token !== ROOM_KEY && !roomPayRef.current) {
       const known = probeRef.current;

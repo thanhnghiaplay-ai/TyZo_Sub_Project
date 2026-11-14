@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.29.4",
+    time: "09:15 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.29.3, theo yêu cầu người dùng (6 lỗi báo lỗi và trạng thái, nhánh work). Không đổi dịch vụ, giá, quyền hay điều khoản. (1) login.tsx: chế độ đăng nhập đổi câu «Email không đúng.» (mailProblem) và lỗi sai thông tin từ máy chủ (INVALID_EMAIL_OR_PASSWORD, INVALID_PASSWORD, INVALID_EMAIL, USER_NOT_FOUND hoặc câu tiếng Anh tương ứng) thành «Email hoặc mật khẩu chưa đúng. Kiểm tra lại hoặc bấm “Quên mật khẩu”.»; đăng ký giữ câu cũ. Lỗi chưa xác minh, giới hạn tốc độ vẫn hiện câu riêng. (2) Nút Đăng nhập: submit có chốt busy chống gửi đôi bằng phím Enter, nút disabled + spinner (.btn-spinner) + «Đang đăng nhập… Đừng tắt trang» (đăng ký: «Đang tạo tài khoản… Đừng tắt trang»), nút chuyển chế độ khóa theo. (3) studio.tsx: nút «Xuất file Vietsub» disabled khi app.segs rỗng, bọc span có title và toast «Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.» (nút pointer-events none để bấm rơi vào span, chạm điện thoại cũng ra toast). (4) Link: src/lib/link-check.ts (hàm thuần videoLinkProblem, videoLinkBroken) và use-link-check.ts; cảnh báo khi rời ô hoặc dán ở cả hai ô link (player-drop.tsx và tab công cụ). Cảnh báo chỉ nhắc, không chặn: link có đuôi lạ hoặc link ký tên không đuôi vẫn chạy được; start() chỉ chặn link hỏng hẳn (không đọc được hoặc không phải http/https). (5) Mất mạng: use-online.ts (useSyncExternalStore) và offline-banner.tsx đặt ở __root.tsx, banner đỏ cố định, đặt data-offline trên html. Khóa bằng disabled ở Đăng nhập, Quên mật khẩu, gửi lại thư xác minh, Tải và dịch (nút Hủy khi đang chạy vẫn mở), Dịch tiếp, Đồng bộ key, Xuất file Vietsub, Lưu bản Whisper. Chưa khóa các nút còn lại (tab, giao diện, thuyết minh…): không có nút nào ngoài danh sách này gọi mạng thì cần rà thêm. (6) VoiceLanes và ModelPicker: lối hoặc model key chưa mở nay mờ, thang xám, disabled, nhãn «Key chưa mở», bỏ dòng «Key này không dùng được». Test: link-check.test.ts (6 ca) đã thêm vào npm test. Chưa thử trên điện thoại thật và chưa thử bằng trình duyệt thật.",
+  },
+  {
     version: "3.29.3",
     time: "07:22 ngày 14/11/2026",
     area: "khac",

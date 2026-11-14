@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useOnline } from "@/lib/use-online";
+import { OFFLINE_TEXT } from "@/components/offline-banner";
 import { getMyPlace } from "@/lib/admin-room";
 import { authClient, authEnabled, signOut } from "@/lib/auth/client";
 import { TERMS_VERSION } from "@/components/entry-gate";
@@ -13,6 +15,18 @@ export const Route = createFileRoute("/login")({ component: LoginPage });
 
 const BEARER_KEY = "grok-auth.bearer-token";
 const REMEMBER_EMAIL = "tyzo-remember-email";
+const LOGIN_BAD = "Email hoặc mật khẩu chưa đúng. Kiểm tra lại hoặc bấm “Quên mật khẩu”.";
+
+function isBadLogin(error: { code?: string; message?: string; status?: number }) {
+  const code = error.code || "";
+  return (
+    code === "INVALID_EMAIL_OR_PASSWORD" ||
+    code === "INVALID_PASSWORD" ||
+    code === "INVALID_EMAIL" ||
+    code === "USER_NOT_FOUND" ||
+    /invalid (email|password)|incorrect|wrong password/i.test(error.message || "")
+  );
+}
 
 function LoginPage() {
   const router = useRouter();
@@ -46,6 +60,7 @@ function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const online = useOnline();
   useEffect(() => {
     try {
       const savedRef = localStorage.getItem("tyzo-ref") || "";
@@ -68,6 +83,11 @@ function LoginPage() {
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
+    if (busy) return;
+    if (!navigator.onLine) {
+      setNotice(OFFLINE_TEXT);
+      return;
+    }
     if (!authEnabled) {
       setNotice("Đăng nhập đang tắt.");
       return;
@@ -77,7 +97,7 @@ function LoginPage() {
     try {
     const rejected = mailProblem(email);
     if (rejected) {
-      setNotice(rejected);
+      setNotice(mode === "in" && rejected === "Email không đúng." ? LOGIN_BAD : rejected);
       return;
     }
     if (mode === "up" && password !== again) {
@@ -96,7 +116,8 @@ function LoginPage() {
         : await authClient.signIn.email({ email: email.trim(), password });
     if (result.error) {
       const unverified = result.error.code === "EMAIL_NOT_VERIFIED" || /not verified/i.test(result.error.message || "");
-      setNotice(unverified ? face.unverified : result.error.message || "Không vào được.");
+      const bad = mode === "in" && !unverified && isBadLogin(result.error);
+      setNotice(unverified ? face.unverified : bad ? LOGIN_BAD : result.error.message || "Không vào được.");
       return;
     }
     const token = result.data && "token" in result.data ? result.data.token : null;
@@ -265,12 +286,19 @@ function LoginPage() {
             </label>
           </>
         )}
-        <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">
-          {busy ? "Đang xử lý…" : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
+        <button
+          type="submit"
+          disabled={busy || !online}
+          aria-busy={busy}
+          className="min-tap flex w-full items-center justify-center gap-2 rounded-full bg-accent font-semibold text-ink disabled:pointer-events-none disabled:opacity-40"
+        >
+          {busy && <span className="btn-spinner" aria-hidden="true" />}
+          {busy ? (mode === "up" ? "Đang tạo tài khoản… Đừng tắt trang" : "Đang đăng nhập… Đừng tắt trang") : mode === "up" ? "Tạo tài khoản" : "Đăng nhập"}
         </button>
         <button
           type="button"
-          className="min-tap w-full rounded-full border border-line"
+          disabled={busy}
+          className="min-tap w-full rounded-full border border-line disabled:pointer-events-none disabled:opacity-40"
           onClick={() => {
             setMode(mode === "up" ? "in" : "up");
             setAgain("");
@@ -283,7 +311,8 @@ function LoginPage() {
         {face.verifyOn && notice === face.unverified && (
           <button
             type="button"
-            className="min-tap w-full rounded-full border border-line"
+            disabled={busy || !online}
+            className="min-tap w-full rounded-full border border-line disabled:pointer-events-none disabled:opacity-40"
             onClick={() => {
               void authClient.sendVerificationEmail({ email: email.trim(), callbackURL: "/" }).then((result) => {
                 setNotice(result.error ? result.error.message || "Chưa gửi lại được." : face.sent);
@@ -294,7 +323,7 @@ function LoginPage() {
           </button>
         )}
         {mode === "in" && face.resetOn && (
-          <button type="button" className="min-tap w-full rounded-full border border-line" onClick={() => { setMode("forgot"); setNotice(null); }}>
+          <button type="button" disabled={busy || !online} className="min-tap w-full rounded-full border border-line disabled:pointer-events-none disabled:opacity-40" onClick={() => { setMode("forgot"); setNotice(null); }}>
             Quên mật khẩu
           </button>
         )}
@@ -320,6 +349,7 @@ function ForgotBox({
   onBack: () => void;
 }) {
   const [asked, setAsked] = useState(false);
+  const online = useOnline();
   return (
     <form
       className="space-y-3"
@@ -334,7 +364,7 @@ function ForgotBox({
     >
       <p className="text-sm text-muted">Nhập email đã đăng ký. Phòng không cho biết email đó có tài khoản hay không.</p>
       <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang gửi…" : "Gửi thư đặt lại"}</button>
+      <button type="submit" disabled={busy || !online} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang gửi…" : "Gửi thư đặt lại"}</button>
       <button type="button" className="min-tap w-full rounded-full border border-line" onClick={onBack}>Về đăng nhập</button>
       {asked && <p className="text-sm text-muted">{sent}</p>}
     </form>
@@ -358,6 +388,7 @@ function ResetBox({
 }) {
   const [next, setNext] = useState("");
   const [again, setAgain] = useState("");
+  const online = useOnline();
   return (
     <form
       className="space-y-3"
@@ -380,7 +411,7 @@ function ResetBox({
       <input value={again} onChange={(event) => setAgain(event.target.value)} type="password" required minLength={8} placeholder="Nhập lại" className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       {next && again && next !== again && <p className="text-sm text-danger">Mật khẩu nhập lại chưa khớp.</p>}
       {!token && <p className="text-sm text-danger">{bad}</p>}
-      <button type="submit" disabled={busy || !token || next !== again} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang lưu…" : "Lưu mật khẩu mới"}</button>
+      <button type="submit" disabled={busy || !online || !token || next !== again} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang lưu…" : "Lưu mật khẩu mới"}</button>
     </form>
   );
 }

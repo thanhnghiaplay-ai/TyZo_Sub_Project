@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ToastHost } from "@/components/toast";
 import { UpdateBanner } from "@/components/update-banner";
+import { OfflineBanner } from "@/components/offline-banner";
 import { IdleSignOut } from "@/components/idle-sign-out";
 import { ThemeProvider } from "@/components/ui/theme-context";
 import { getLiveTheme } from "@/lib/theme-room";
@@ -61,6 +62,7 @@ function RootDocument() {
         <PreviewHostBridge />
         <ThemeProvider theme={theme}>
           <AuthProvider>
+            <OfflineBanner />
             <IdleSignOut />
             <Outlet />
             <UpdateBanner />

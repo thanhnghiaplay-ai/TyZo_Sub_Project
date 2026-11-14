@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.29.3";
+export const APP_VERSION = "3.29.4";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.29.4",
+    time: "09:15 ngày 14/11/2026",
+    title: "Báo lỗi rõ hơn khi đăng nhập, mất mạng, nhập link và chọn model.",
+    points: [
+      "Đăng nhập sai nói rõ email hoặc mật khẩu chưa đúng. Nút Đăng nhập khóa hẳn và quay khi đang xử lý.",
+      "Mất mạng thì hiện banner đỏ phía trên và các nút hành động tạm khóa.",
+      "Dán link không phải file video trực tiếp sẽ được nhắc ngay. Chưa có phụ đề thì nút xuất file khóa.",
+      "Model mà key chưa mở thì mờ đi, có nhãn Key chưa mở và không chọn được.",
+    ],
+  },
   {
     version: "3.29.3",
     time: "07:22 ngày 14/11/2026",
