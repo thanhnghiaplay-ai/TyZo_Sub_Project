@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
+import { parseCategory } from "@/lib/money-extra";
+import { parseSpan } from "@/lib/money-extra-data";
 import { isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
 import { checkRunDesk, dayStartIso, parseModelList, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
@@ -1048,7 +1050,7 @@ export const setNickname = createServerFn({ method: "POST" })
   });
 
 export type MoneyPoint = { bucket: string; revenue: number; cost: number };
-export type CostRow = { id: number; day: string; label: string; amount: number };
+export type CostRow = { id: number; day: string; label: string; amount: number; category: string };
 export type MoneyBreakdown = {
   nap: number;
   goi: number;
@@ -1081,7 +1083,7 @@ export const getMoney = createServerFn({ method: "POST" })
       group by 1 order by 1
     `;
     const savedCosts = await sql<CostRow>`
-      select id, to_char(spent_on, 'YYYY-MM-DD') as day, label, amount
+      select id, to_char(spent_on, 'YYYY-MM-DD') as day, label, amount, category
       from room_costs
       where spent_on::timestamp > now() - ${window}::interval
       order by spent_on desc, id desc
@@ -1151,6 +1153,19 @@ export const getMoney = createServerFn({ method: "POST" })
     };
   });
 
+export type { MoneyExtra } from "@/lib/money-extra-data";
+
+/** Số liệu mới cho trang Doanh thu. Chỉ Chủ. */
+export const getMoneyExtra = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((span: string) => parseSpan(span))
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const { moneyExtraWith } = await import("@/lib/money-extra-data");
+    return moneyExtraWith(await getSql(), data);
+  });
+
 /** Chủ bấm: điền giá vốn ước tính cho phiếu cũ. Dùng phần chênh Groq hiện tại, nên chỉ là ước tính. */
 export const estimateOldCost = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -1168,26 +1183,26 @@ export const estimateOldCost = createServerFn({ method: "POST" })
 
 export const addCost = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { day: string; label: string; amount: number }) => {
+  .validator((input: { day: string; label: string; amount: number; category?: string }) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(input.day || "")) throw new Error("Ngày không đúng.");
     const label = clip(input.label ?? "", 80);
     if (label.length < 2) throw new Error("Hãy ghi khoản chi.");
     const amount = Math.round(Number(input.amount));
     if (!Number.isFinite(amount) || amount < 1) throw new Error("Số tiền không đúng.");
-    return { day: input.day, label, amount };
+    return { day: input.day, label, amount, category: parseCategory(input.category) };
   })
   .handler(async ({ context, data }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
-    await sql`insert into room_costs (spent_on, label, amount) values (${data.day}, ${data.label}, ${data.amount})`;
-    await writeAudit(context.userId, "chi-phi", null, `${data.day} ${data.label} ${data.amount}`);
+    await sql`insert into room_costs (spent_on, label, amount, category) values (${data.day}, ${data.label}, ${data.amount}, ${data.category})`;
+    await writeAudit(context.userId, "chi-phi", null, `${data.day} ${data.label} ${data.amount} [${data.category}]`);
     return { ok: true };
   });
 
 export const updateCost = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id: number; day: string; label: string; amount: number }) => {
+  .validator((input: { id: number; day: string; label: string; amount: number; category?: string }) => {
     const id = Math.round(Number(input.id));
     if (!Number.isFinite(id) || id < 1) throw new Error("Thiếu khoản chi.");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(input.day || "")) throw new Error("Ngày không đúng.");
@@ -1195,19 +1210,19 @@ export const updateCost = createServerFn({ method: "POST" })
     if (label.length < 2) throw new Error("Hãy ghi khoản chi.");
     const amount = Math.round(Number(input.amount));
     if (!Number.isFinite(amount) || amount < 1) throw new Error("Số tiền không đúng.");
-    return { id, day: input.day, label, amount };
+    return { id, day: input.day, label, amount, category: parseCategory(input.category) };
   })
   .handler(async ({ context, data }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const updated = await sql<{ id: number }>`
-      update room_costs set spent_on = ${data.day}, label = ${data.label}, amount = ${data.amount}
+      update room_costs set spent_on = ${data.day}, label = ${data.label}, amount = ${data.amount}, category = ${data.category}
       where id = ${data.id}
       returning id
     `;
     if (!updated.length) throw new Error("Không thấy khoản chi.");
-    await writeAudit(context.userId, "sua-chi-phi", null, `${data.id} ${data.day} ${data.label} ${data.amount}`);
+    await writeAudit(context.userId, "sua-chi-phi", null, `${data.id} ${data.day} ${data.label} ${data.amount} [${data.category}]`);
     return { ok: true };
   });
 

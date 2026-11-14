@@ -4,6 +4,8 @@ import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
+import { COST_CATEGORIES, categoryLabel } from "@/lib/money-extra";
+import { RevenueExtra } from "@/components/revenue-extra";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -100,6 +102,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState<string>("khac");
   const [costs, setCosts] = useState<CostRow[]>([]);
   const [editing, setEditing] = useState<number | null>(null);
 
@@ -131,7 +134,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
 
   return (
     <section className="admin-flow admin-wide">
-      <div className="space-y-3">
+      <div className="admin-card space-y-3">
       <div className="flex flex-wrap gap-2">
         {([["day", "Ngày"], ["week", "Tuần"], ["month", "Tháng"], ["year", "Năm"]] as const).map(([id, name]) => (
           <button key={id} type="button" className={"min-tap rounded-full px-3 text-sm " + (span === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setSpan(id)}>
@@ -152,6 +155,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         {points.length === 0 && <li>{ready ? "Chưa có tiền nạp trong khoảng này." : "Đang tải…"}</li>}
       </ul>
       </div>
+      {owner && <RevenueExtra span={span} points={points} />}
       <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
         <ul className="space-y-1 text-muted">
@@ -201,13 +205,14 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
             if (saving) return;
             setSaving(true);
             const task = editing
-              ? updateCost({ data: { id: editing, day, label, amount: parseMoney(amount) } })
-              : addCost({ data: { day, label, amount: parseMoney(amount) } });
+              ? updateCost({ data: { id: editing, day, label, amount: parseMoney(amount), category } })
+              : addCost({ data: { day, label, amount: parseMoney(amount), category } });
             void task
               .then(() => {
                 setEditing(null);
                 setLabel("");
                 setAmount("");
+                setCategory("khac");
                 pushToast(editing ? "Đã sửa khoản chi." : "Đã ghi chi phí.");
                 load();
               })
@@ -219,6 +224,14 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Tên khoản chi" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
           <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+          <label className="grid gap-1 text-sm">
+            <span className="text-muted">Loại chi phí</span>
+            <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none">
+              {COST_CATEGORIES.map((item) => (
+                <option key={item.id} value={item.id}>{item.label}</option>
+              ))}
+            </select>
+          </label>
           <button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent font-semibold text-ink disabled:opacity-40" disabled={saving}>{saving ? "Đang lưu…" : editing ? "Lưu thay đổi" : "Lưu chi phí"}</button>
           {editing && (
             <button
@@ -228,6 +241,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
                 setEditing(null);
                 setLabel("");
                 setAmount("");
+                setCategory("khac");
               }}
             >
               Hủy sửa
@@ -237,7 +251,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
             {costs.map((row) => (
               <article key={row.id} className="grid gap-2 border-t border-line pt-2 text-sm">
                 <p className="font-medium">{row.label}</p>
-                <p className="text-muted">{row.day.split("-").reverse().join("/")} · {dong(row.amount)}</p>
+                <p className="text-muted">{row.day.split("-").reverse().join("/")} · {dong(row.amount)} · {categoryLabel(row.category)}</p>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
@@ -247,6 +261,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
                       setDay(row.day);
                       setLabel(row.label);
                       setAmount(formatMoney(row.amount));
+                      setCategory(row.category || "khac");
                     }}
                   >
                     Sửa
@@ -258,6 +273,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
                       setEditing(null);
                       setLabel(row.label);
                       setAmount(formatMoney(row.amount));
+                      setCategory(row.category || "khac");
                       setDay(vnDay());
                     }}
                   >

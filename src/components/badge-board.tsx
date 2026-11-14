@@ -14,7 +14,7 @@ export function BadgeBoard({
   const [open, setOpen] = useState(false);
   const currentName = BADGE_STYLES.find((item) => item.id === current)?.name ?? "Ruy băng";
   return (
-    <section className="space-y-2">
+    <section className="admin-card space-y-2">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Thẻ quyền</h2>
         <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => setOpen((value) => !value)}>

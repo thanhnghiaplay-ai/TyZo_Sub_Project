@@ -29,6 +29,9 @@ import {
   XCircle,
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
+import { useOnline } from "@/lib/use-online";
+import { useLinkCheck } from "@/components/use-link-check";
+import { pushToast } from "@/components/toast";
 import { groqListHolds } from "@/lib/sub/asr-house";
 import { ownKeyAvailable, rentOpen } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
@@ -65,6 +68,7 @@ import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } f
 const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ ví cho lượt chạy.";
 const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ trước một khoản ước tính từ ví, trừ số thực khi xong và trả phần thừa. Không trừ ngày gói.";
 
+const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
 const FIELD =
   "min-tap w-full rounded-xl border border-line bg-bg px-3 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
@@ -465,6 +469,9 @@ const TOOLS = [
 
 export function Studio() {
   const app = usePipeline();
+  const online = useOnline();
+  const linkCheck = useLinkCheck();
+  const noSubs = app.segs.length === 0;
   const pickedFile = app.file || app.audioFile;
   const thumb = useFileThumb(pickedFile);
   const [tourOpen, setTourOpen] = useState(false);
@@ -779,19 +786,33 @@ export function Studio() {
         >
           {app.status}
         </button>
-        <button type="button" data-tour="export" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
-          Xuất file Vietsub
-        </button>
+        <span
+          className="shrink-0"
+          title={noSubs ? EXPORT_EMPTY : undefined}
+          onClick={noSubs ? () => pushToast(EXPORT_EMPTY, "bad") : undefined}
+        >
+          <button
+            type="button"
+            data-tour="export"
+            disabled={noSubs || !online}
+            aria-disabled={noSubs || !online}
+            className="min-tap rounded-xl border border-line px-3 text-sm disabled:pointer-events-none disabled:opacity-40"
+            onClick={() => void app.exportSrt()}
+          >
+            Xuất file Vietsub
+          </button>
+        </span>
         <button
           type="button"
+          disabled={!online}
           title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
-          className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm"
+          className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm disabled:opacity-40"
           onClick={() => void app.exportRaw()}
         >
           Lưu bản Whisper
         </button>
         {app.reviewHold && (
-          <button type="button" className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={app.approveBible}>
+          <button type="button" disabled={!online} className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40" onClick={app.approveBible}>
             Dịch tiếp
           </button>
         )}
@@ -994,7 +1015,7 @@ export function Studio() {
               type="button"
               className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
               onClick={() => void app.refreshModels()}
-              disabled={app.modelBusy}
+              disabled={app.modelBusy || !online}
             >
               {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
               Đồng bộ key
@@ -1147,8 +1168,25 @@ export function Studio() {
           Hoặc link file trực tiếp
           <span className="relative">
             <Link2 className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
-            <input className={FIELD + " pl-9"} type="url" placeholder="https://…/phim.mp4" value={app.url} onChange={(event) => app.setUrl(event.target.value)} />
+            <input
+              className={FIELD + " pl-9"}
+              type="url"
+              placeholder="https://…/phim.mp4"
+              value={app.url}
+              aria-invalid={Boolean(linkCheck.problem)}
+              onChange={(event) => {
+                if (linkCheck.problem) linkCheck.check(event.target.value);
+                app.setUrl(event.target.value);
+              }}
+              onBlur={(event) => linkCheck.check(event.target.value)}
+              onPaste={(event) => linkCheck.check(event.clipboardData.getData("text"))}
+            />
           </span>
+          {linkCheck.problem && (
+            <span role="alert" className="text-xs text-danger">
+              {linkCheck.problem}
+            </span>
+          )}
         </label>
         <details className="text-sm text-muted">
           <summary className="min-tap cursor-pointer">File lớn hơn 1 GB, MKV, AC3/DTS?</summary>
@@ -1161,7 +1199,8 @@ export function Studio() {
         <div className="grid gap-2">
           <button
             type="button"
-            className={"min-tap rounded-xl font-semibold " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+            disabled={!app.running && !online}
+            className={"min-tap rounded-xl font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
             onClick={() => (app.running ? app.cancel() : void app.start())}
           >
             {app.buttonLabel}
@@ -1596,17 +1635,24 @@ function VoiceLanes({
             key={lane.id}
             type="button"
             disabled={closed}
+            aria-disabled={closed}
             onClick={() => id && onPick(id)}
-            className={"min-tap min-w-0 rounded-xl border px-3 py-2 text-left disabled:opacity-50 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}
+            className={
+              "min-tap min-w-0 rounded-xl border px-3 py-2 text-left " +
+              (closed ? "cursor-not-allowed border-line bg-raised text-muted opacity-50 grayscale" : on ? "border-accent bg-accent text-ink" : "border-line bg-bg")
+            }
           >
-            <span className="block text-sm font-semibold">{lane.title}</span>
+            <span className="flex items-center justify-between gap-2 text-sm font-semibold">
+              <span>{lane.title}</span>
+              {closed && <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs font-medium">Key chưa mở</span>}
+            </span>
             <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{lane.fit}</span>
             <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>
               {lane.pace}
               {price ? ` · ${price}` : ""}
             </span>
             <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>
-              {closed ? "Key này không dùng được" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
+              {closed ? "" : id ? modelLabel(id) : "Chưa đối chiếu được key"}
             </span>
           </button>
         );
@@ -1700,11 +1746,18 @@ function ModelPicker({
                   <button
                     key={model.id}
                     type="button"
-                    disabled={held}
+                    disabled={held || missing}
+                    aria-disabled={held || missing}
                     onClick={() => onChange(model.id)}
-                    className={"min-tap rounded-xl border px-3 py-2 text-left disabled:opacity-60 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg") + (missing ? " opacity-50" : "")}
+                    className={
+                      "min-tap rounded-xl border px-3 py-2 text-left " +
+                      (missing ? "cursor-not-allowed border-line bg-raised text-muted opacity-50 grayscale" : "disabled:opacity-60 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg"))
+                    }
                   >
-                    <span className="block text-sm font-semibold">{model.name}</span>
+                    <span className="flex items-center justify-between gap-2 text-sm font-semibold">
+                      <span>{model.name}</span>
+                      {missing && <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs font-medium">Key chưa mở</span>}
+                    </span>
                     {facts.price ? <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{facts.price}</span> : null}
                     {facts.detail ? <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>{facts.detail}</span> : null}
                   </button>

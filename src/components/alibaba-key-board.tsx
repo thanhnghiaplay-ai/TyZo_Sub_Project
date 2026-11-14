@@ -37,7 +37,7 @@ export function AlibabaKeyBoard() {
   }
 
   return (
-    <section className="admin-wide space-y-2 rounded-2xl border border-line bg-card p-4">
+    <section className="space-y-2 rounded-2xl border border-line bg-card p-4">
       <h3 className="text-sm font-semibold">Key Alibaba của phòng</h3>
       <p className="text-sm text-muted">Tách khỏi key Groq. Chỉ Chủ lưu. Khách không thấy key. Cửa trả theo lượt chưa dùng key này.</p>
       <div className="flex gap-2">

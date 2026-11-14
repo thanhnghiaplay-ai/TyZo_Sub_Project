@@ -66,6 +66,9 @@ export function MailPolicyBoard() {
           <input value={policy.resendHour} onChange={(event) => setPolicy({ ...policy, resendHour: Number(event.target.value) || 3 })} inputMode="numeric" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
         </label>
       </div>
+      <details className="grid gap-2 rounded-xl border border-line p-3">
+        <summary className="cursor-pointer text-sm font-semibold">Soạn thư (tiêu đề, nội dung, màu)</summary>
+        <div className="mt-2 grid gap-2">
       <div className="flex flex-wrap gap-2">
         {KINDS.map((item) => (
           <button key={item.id} type="button" className={"inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm " + (kind === item.id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setKind(item.id)}>{item.name}</button>
@@ -89,13 +92,19 @@ export function MailPolicyBoard() {
         <label className="flex items-center gap-2">Chữ <input type="color" value={policy.colorInk} onChange={(event) => setPolicy({ ...policy, colorInk: event.target.value })} /></label>
         <label className="flex items-center gap-2">Nút <input type="color" value={policy.colorButton} onChange={(event) => setPolicy({ ...policy, colorButton: event.target.value })} /></label>
       </div>
-      <p className="text-sm font-semibold">Chữ trên trang</p>
+        </div>
+      </details>
+      <details className="grid gap-2 rounded-xl border border-line p-3">
+        <summary className="cursor-pointer text-sm font-semibold">Chữ trên trang (5 câu)</summary>
+        <div className="mt-2 grid gap-2">
       <input value={policy.sent} onChange={(event) => setPolicy({ ...policy, sent: event.target.value })} placeholder="Sau khi gửi thư xác minh" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       <input value={policy.unverified} onChange={(event) => setPolicy({ ...policy, unverified: event.target.value })} placeholder="Khi chưa xác minh" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       <input value={policy.resetSent} onChange={(event) => setPolicy({ ...policy, resetSent: event.target.value })} placeholder="Sau khi xin đặt lại mật khẩu" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       <p className="text-xs text-muted">Câu đặt lại mật khẩu hiện cho mọi email, không nói email đó có tài khoản hay không.</p>
       <input value={policy.resetDone} onChange={(event) => setPolicy({ ...policy, resetDone: event.target.value })} placeholder="Khi đặt mật khẩu xong" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       <input value={policy.resetBad} onChange={(event) => setPolicy({ ...policy, resetBad: event.target.value })} placeholder="Khi liên kết hết hạn" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+        </div>
+      </details>
       <button type="submit" disabled={busy} className="inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">{busy ? "Đang lưu…" : "Lưu phần thư"}</button>
     </form>
     </div>

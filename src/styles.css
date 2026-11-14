@@ -258,21 +258,59 @@
   max-width: 120rem;
 }
 
-.admin-grid,
 .account-grid {
   min-width: 0;
   column-width: 22rem;
   column-gap: 1rem;
 }
 
-.admin-grid > *,
 .account-grid > * {
   min-width: 0;
   margin-bottom: 1rem;
   break-inside: avoid;
 }
 
-.admin-grid > .admin-wide,
+/* Admin: lưới đều như trang Tổng quan. Mỗi hàng các thẻ cao bằng nhau, thẻ rộng chiếm cả hàng,
+   một thẻ lẻ cũng giãn hết hàng nên không còn cột trống. */
+.admin-grid,
+.admin-flow {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  align-items: stretch;
+  /* Không để các hàng tự động giãn ra lấp chỗ trống: ô nhập, nút trong thẻ giữ đúng cỡ. */
+  align-content: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.admin-grid > *,
+.admin-flow > * {
+  min-width: 0;
+  margin: 0;
+}
+
+.admin-grid > details,
+.admin-flow > details {
+  align-self: start;
+}
+
+.admin-grid > .admin-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-flow > .admin-wide {
+  grid-column: 1 / -1;
+}
+
+/* Khung thẻ chung của Admin. Mọi khối cấp một đều là thẻ cùng viền, cùng góc, cùng đệm như trang Tổng quan. */
+.admin-card {
+  min-width: 0;
+  padding: var(--pad-4, 1rem);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--color-card);
+}
+
 .account-grid > .account-wide {
   column-span: all;
 }
@@ -306,19 +344,7 @@
   background: transparent;
 }
 
-/* Khối một thẻ của tab Admin: tự chia cột theo các khối con, không dồn hết vào cột trái. */
-.admin-flow {
-  min-width: 0;
-  column-width: 22rem;
-  column-gap: 1rem;
-}
-
-.admin-flow > * {
-  min-width: 0;
-  margin: 0 0 1rem;
-  break-inside: avoid;
-}
-
+/* Khối con của một thẻ Admin dùng cùng lưới đều ở trên (.admin-flow). */
 .admin-flow > :empty {
   display: none;
 }
@@ -389,13 +415,13 @@
 
 .admin-stats {
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
   grid-template-columns: minmax(0, 1fr);
 }
 
 @media (min-width: 48rem) {
   .admin-stats {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
   .admin-trio {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1410,6 +1436,10 @@
   box-shadow: 0 0 8px rgb(239 95 95 / 45%);
 }
 
+.org-tree > div {
+  display: contents;
+}
+
 .org-card {
   border: 1px solid var(--color-line);
   border-radius: 1rem;
@@ -1718,4 +1748,35 @@ html[data-density] {
 html[data-density] .studio-stage,
 html[data-density] .studio-workspace {
   gap: calc(0.5rem * var(--density));
+}
+
+.offline-banner {
+  position: fixed;
+  z-index: 95;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding: calc(0.55rem + env(safe-area-inset-top)) 1rem 0.55rem;
+  background: #c62f3a;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: pay-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-spinner {
+    animation: none;
+  }
 }

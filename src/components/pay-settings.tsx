@@ -190,12 +190,12 @@ export function PaySettings() {
   }
 
   return (
-    <form className="space-y-3 rounded-2xl border border-line bg-card p-4" onSubmit={save}>
-      <h2 className="font-semibold">Cổng nạp</h2>
+    <form className="space-y-3" onSubmit={save}>
       <p className="text-sm text-muted">
         Để trống ô khóa thì giữ khóa cũ. Tắt cổng thì khách không tạo được đơn của cổng đó. Webhook Sepay: {origin}/api/pay/sepay. Webhook Casso: {origin}/api/pay/casso.
       </p>
-      <fieldset className="grid gap-2">
+      <div className="grid gap-4 md:grid-cols-2">
+      <fieldset className="grid content-start gap-2">
         <legend className="flex items-center gap-2 font-medium">
           <DoorDot open={view.sepay} />
           Sepay {view.sepay ? "· đang mở" : view.sepayOn ? "· thiếu thông tin" : "· đang tắt"}
@@ -213,7 +213,7 @@ export function PaySettings() {
         <input value={view.sepayName} onChange={(event) => setView({ ...view, sepayName: event.target.value })} placeholder="Tên chủ tài khoản" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
         <input value={sepayKey} onChange={(event) => setSepayKey(event.target.value)} placeholder={view.sepayKeySet ? "API key webhook đã lưu, gõ để đổi" : "API key webhook Sepay"} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       </fieldset>
-      <fieldset className="grid gap-2">
+      <fieldset className="grid content-start gap-2">
         <legend className="flex items-center gap-2 font-medium">
           <DoorDot open={view.casso} />
           Casso {view.casso ? "· đang mở" : view.cassoOn ? "· thiếu thông tin" : "· đang tắt"}
@@ -232,6 +232,7 @@ export function PaySettings() {
         <input value={cassoToken} onChange={(event) => setCassoToken(event.target.value)} placeholder={view.cassoTokenSet ? "Secure token đã lưu, gõ để đổi" : "Secure token webhook Casso"} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
         <input value={cassoKey} onChange={(event) => setCassoKey(event.target.value)} placeholder={view.cassoKeySet ? "API key đã lưu, gõ để đổi" : "API key Casso, để kiểm tra giao dịch"} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
       </fieldset>
+      </div>
       <button type="submit" disabled={busy} className="min-tap rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">
         Lưu cổng nạp
       </button>

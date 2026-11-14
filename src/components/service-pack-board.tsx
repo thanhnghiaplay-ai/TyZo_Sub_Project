@@ -122,9 +122,9 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
   };
 
   return (
-    <section className="admin-wide space-y-4 rounded-2xl border border-line bg-card p-4">
+    <section className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold">{packsOnly ? "Gói dịch" : "Nhà cung cấp và gói dịch"}</h3>
+        {!packsOnly && <h3 className="text-sm font-semibold">Nhà cung cấp và gói dịch</h3>}
         <p className="text-sm text-muted">
           {packsOnly
             ? "Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách chỉ thấy giá đã cộng phần trăm."

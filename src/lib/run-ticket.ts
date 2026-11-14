@@ -11,7 +11,7 @@ export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {
       for update
     ),
     t as (
-      update run_tickets set released = released + o.h, held = 0,
+      update run_tickets set released = released + o.h, held = 0, closed_at = now(),
         status = case when charged > 0 then 'da-tru' else 'da-nha' end
       from o where run_tickets.id = o.id
       returning o.h as freed
@@ -36,9 +36,11 @@ export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {
  */
 export async function openTicketWith(
   sql: Sql,
-  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; cap: number; dayStartIso: string },
+  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; cap: number; dayStartIso: string; asrModel?: string; chatModel?: string },
 ): Promise<OpenResult> {
   const { id, userId, fileName, seconds, rate, hold, cap, dayStartIso } = input;
+  const asrModel = input.asrModel ?? "";
+  const chatModel = input.chatModel ?? "";
   await sql`insert into room_accounts (user_id) values (${userId}) on conflict (user_id) do nothing`;
   await releaseStaleWith(sql, userId);
   const rows = await sql<{ id: string }>`
@@ -52,8 +54,8 @@ export async function openTicketWith(
       returning user_id
     ),
     ins as (
-      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status)
-      select ${id}::text, user_id, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu' from acc
+      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status, asr_model, chat_model)
+      select ${id}::text, user_id, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu', ${asrModel}::text, ${chatModel}::text from acc
       returning id
     ),
     led as (
@@ -96,7 +98,8 @@ export async function chargeTicketWith(sql: Sql, id: string, userId: string, cos
     set charged = charged + least(${cost}::int, o.h),
         base_cost = base_cost + case when ${cost}::int > 0 then round(${safeBase}::numeric * least(${cost}::int, o.h) / ${cost}::int) else 0 end,
         held = held - least(${cost}::int, o.h),
-        status = case when held - least(${cost}::int, o.h) <= 0 then 'dung-tien' else status end
+        status = case when held - least(${cost}::int, o.h) <= 0 then 'dung-tien' else status end,
+        closed_at = case when held - least(${cost}::int, o.h) <= 0 then now() else closed_at end
     from o where run_tickets.id = o.id
     returning least(${cost}::int, o.h) as taken, run_tickets.held as left_held
   `;
@@ -110,7 +113,7 @@ export async function closeTicketWith(sql: Sql, id: string, userId: string, fail
       select id, held as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' for update
     ),
     t as (
-      update run_tickets set released = released + o.h, held = 0,
+      update run_tickets set released = released + o.h, held = 0, closed_at = now(),
         status = case when charged > 0 then 'da-tru' when ${failed}::boolean then 'loi' else 'da-nha' end
       from o where run_tickets.id = o.id
       returning o.h as freed, run_tickets.charged as charged, run_tickets.status as status

@@ -65,7 +65,7 @@ export function GlossaryBoard() {
 
   return (
     <section className="admin-flow admin-wide">
-      <div className="space-y-3">
+      <div className="admin-card space-y-3">
       <h2 className="font-semibold">Thuật ngữ</h2>
       {health ? <p className="text-sm text-muted">{health}</p> : null}
       <div className="grid gap-2 sm:grid-cols-2">
@@ -219,7 +219,7 @@ export function GlossaryBoard() {
       {note ? <p className="text-sm text-muted">{note}</p> : null}
       <p className="text-xs text-muted">Đang thấy {terms.length} / {total} mục. {hidden ? "Bộ này đang ẩn với khách." : "Bộ này đang mở cho khách."}</p>
       </div>
-      <div className="space-y-3">
+      <div className="admin-card space-y-3">
       <div className="space-y-2">
         {terms.map((term) => (
           <div key={term.id} className="flex flex-wrap items-center gap-2 text-sm">

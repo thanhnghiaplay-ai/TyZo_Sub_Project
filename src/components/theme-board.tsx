@@ -249,7 +249,7 @@ export function ThemeBoard() {
         </div>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="grid content-start gap-4">
           <Card>
             <CardHeader title="Chung" icon="ui.settings" />
@@ -321,7 +321,9 @@ export function ThemeBoard() {
               onChange={(iconWeight: IconWeight) => patch({ iconWeight })}
               options={ICON_WEIGHTS.map(([id, label]) => ({ id, label }))}
             />
-            <div className="grid gap-2">
+            <details className="rounded-xl border border-line p-3">
+            <summary className="cursor-pointer text-sm font-semibold">Đổi icon từng chức năng</summary>
+            <div className="mt-2 grid gap-2">
               {ICON_SLOTS.map(([slot, label, fallback]) => {
                 const current = draft.icons[slot] || fallback;
                 return (
@@ -339,6 +341,7 @@ export function ThemeBoard() {
                 );
               })}
             </div>
+            </details>
           </Card>
         </div>
 
