@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.38.0",
+    time: "23:55 ngày 14/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: làm nốt bước 5 đến 8 của màn hình Dịch trực tiếp (nhánh work). Không đổi giá, luật giữ và trừ ví, quyền hay điều khoản. Thêm trang /dich-truc-tiep (routes/dich-truc-tiep.tsx, bọc EntryGate như trang chủ), components/live-screen.tsx (chọn nguồn micro hoặc tab, ngôn ngữ nói, ngôn ngữ đích, model, bật tiếng dịch; nút Bắt đầu/Dừng; chữ gốc + chữ dịch từ LiveTranscript, phần stash mờ; số dư kèm còn khoảng N phút, cảnh báo sắp hết tiền, nạp nhanh bằng TopUp; menu Tải SRT/VTT/TXT dùng lại ExportMenu), components/use-live.ts (nối LiveSession với micEnv/tabEnv, trình phát và openLiveTicket). Loa và hộp chọn tab được mở ngay trong cú bấm, trước khi xin vé, vì Safari và Chrome chỉ cho trong lúc cú bấm còn hiệu lực; luồng âm thanh đã lấy được đưa vào startCapture khi cầu nối báo ready và được nhả ở mọi đường kết thúc. Số dư: ví đã trừ tiền giữ nên còn lại = số dư tự do (getRoomAccount, làm mới tối đa 15 giây một lần và khi đóng phiên) + heldLeft từ cầu nối. Mới: lib/live/live-view.ts (số phút, mức cảnh báo, nhãn trạng thái, đồng hồ) và live-export.ts (đổi dòng sang Seg rồi dùng toSrt/toVtt/toTxt có sẵn), cùng hai file test. Menu trái và Ctrl+K của trang chủ có mục Dịch trực tiếp. Đã chạy tsc, npm test và vite build. CHƯA kiểm bằng trình duyệt thật (loa, micro, chia sẻ tab, Safari) và CHƯA nối Alibaba thật (chưa có Workspace ID, chưa đặt LIVE_BRIDGE_URL/LIVE_BRIDGE_SECRET).",
+  },
+  {
     version: "3.37.0",
     time: "23:20 ngày 14/11/2026",
     area: "khac",

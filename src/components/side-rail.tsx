@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { createContext, useContext, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactNode, type RefObject } from "react";
 import { signOut } from "@/lib/auth/client";
 
-export type RailLink = "/" | "/admin" | "/goi" | "/ctv" | "/yeu-cau" | "/tai-video";
+export type RailLink = "/" | "/admin" | "/goi" | "/ctv" | "/yeu-cau" | "/tai-video" | "/dich-truc-tiep";
 
 /** Một mục menu. Có `children` thì là nhóm lớn, bấm để xổ các mục nhỏ bên dưới. */
 export type RailItem = {

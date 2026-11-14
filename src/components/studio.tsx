@@ -759,6 +759,7 @@ export function Studio() {
         onPick: () => openTool(id),
       })),
     },
+    { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep" },
     { id: "tai-video", label: "Tải video", href: "/tai-video" },
     {
       id: "tai-khoan",
@@ -802,6 +803,7 @@ export function Studio() {
     ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "phu de cong cu", run: () => openTool(id) })),
     ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: id === "goi-dich" ? "goi dich cach tra key theo luot" : "thuat ngu glossary the loai", run: () => openTool(id) })),
     { id: "wallet", label: "Số dư và nạp tiền", hint: "Tài khoản", words: "nap tien vi", run: () => setProduct("account") },
+    { id: "dich-truc-tiep", label: "Dịch trực tiếp", hint: "Trang", words: "live truc tiep micro tab giong noi", run: () => void navigate({ to: "/dich-truc-tiep" }) },
     { id: "tai-video", label: "Tải video", hint: "Trang", run: () => void navigate({ to: "/tai-video" }) },
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
     { id: "ctv", label: "Cộng tác viên", hint: "Trang", run: () => void navigate({ to: "/ctv" }) },
