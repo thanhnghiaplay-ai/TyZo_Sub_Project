@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.36.0",
+    time: "22:40 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.35.0, theo yêu cầu người dùng (mục 5, nhánh work). Chỉ đổi giao diện trang chủ (home-hero.tsx), không đổi dịch vụ, giá, ví, quyền hay điều khoản. Khoảng trống: ô thả cao hơn (15rem, 19rem từ màn sm), khoảng cách giữa các khối gap-5/gap-6, đệm trên dưới py-6/py-10. Chữ lớn: tiêu đề ô thả 2xl/3xl, tên tệp lg/xl, ô link và hàng phụ base, nút Tải và dịch cao tối thiểu 3,5rem chữ lg. Kéo thả: lắng nghe dragenter/dragleave/dragover/drop trên window chỉ khi dữ liệu kéo có Files; kéo vào trang thì ô thả nhấp nháy, kéo vào ô thì phóng 1,02 lần, viền sáng, nền nhấn nhạt, chữ đổi; thả ngoài ô vẫn nhận tệp (bỏ qua nếu ô đã xử lý, tránh nhận hai lần). Hiệu ứng tắt khi prefers-reduced-motion. Chế độ gọn/thoải mái không đổi (chỉ tác động gap-1..4, p-2..). Đã chạy tsc (5 lỗi cũ ở watch-run, watch-save, room-alibaba, có từ trước), npm test và vite build. CHƯA kiểm bằng trình duyệt thật hay điện thoại thật; chưa thử kéo thả trên Safari iOS (iOS không có kéo tệp từ ngoài).",
+  },
+  {
     version: "3.35.0",
     time: "22:10 ngày 14/11/2026",
     area: "khac",

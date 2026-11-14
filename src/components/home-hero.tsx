@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Clapperboard, FileAudio, KeyRound, Link2, Loader2, SlidersHorizontal, Upload, Wallet } from "lucide-react";
 import { fmt } from "@/lib/sub/text";
 import { SRC_LANGS } from "@/lib/sub/text";
@@ -69,6 +69,7 @@ export function HomeHero({
 }) {
   const [note, setNote] = useState("");
   const [over, setOver] = useState(false);
+  const [pageDrag, setPageDrag] = useState(false);
   const linkCheck = useLinkCheck();
   const isAudio = Boolean(file && (file.type.startsWith("audio/") || /\.(mp3|m4a|aac|ac3|dts|wav|flac|ogg|opus)$/i.test(file.name)));
   const hasInput = Boolean(file) || url.trim().length > 0;
@@ -78,12 +79,52 @@ export function HomeHero({
     setNote("");
     onFile(next);
   };
+  // Kéo tệp vào bất cứ đâu trên trang: ô thả sáng lên và nhận tệp, trình duyệt không mở tệp thay app.
+  useEffect(() => {
+    let depth = 0;
+    const hasFiles = (event: DragEvent) => Array.from(event.dataTransfer?.types ?? []).includes("Files");
+    const enter = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      depth += 1;
+      setPageDrag(true);
+    };
+    const leave = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      depth = Math.max(0, depth - 1);
+      if (depth === 0) setPageDrag(false);
+    };
+    const overPage = (event: DragEvent) => {
+      if (hasFiles(event)) event.preventDefault();
+    };
+    const drop = (event: DragEvent) => {
+      depth = 0;
+      setPageDrag(false);
+      if (!hasFiles(event) || event.defaultPrevented) return;
+      event.preventDefault();
+      pick(event.dataTransfer?.files?.[0] || null);
+    };
+    window.addEventListener("dragenter", enter);
+    window.addEventListener("dragleave", leave);
+    window.addEventListener("dragover", overPage);
+    window.addEventListener("drop", drop);
+    return () => {
+      window.removeEventListener("dragenter", enter);
+      window.removeEventListener("dragleave", leave);
+      window.removeEventListener("dragover", overPage);
+      window.removeEventListener("drop", drop);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onFile]);
   return (
-    <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-3 py-2">
+    <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-5 py-6 sm:gap-6 sm:py-10">
       <label
         className={
-          "relative grid min-h-[13rem] cursor-pointer place-items-center overflow-hidden rounded-3xl border-2 border-dashed bg-card px-4 py-8 text-center transition-colors focus-within:border-accent hover:border-accent sm:min-h-[16rem] " +
-          (over ? "border-accent" : "border-line")
+          "relative grid min-h-[15rem] cursor-pointer place-items-center overflow-hidden rounded-3xl border-2 border-dashed px-5 py-10 text-center transition-all duration-200 focus-within:border-accent hover:border-accent motion-reduce:transition-none sm:min-h-[19rem] " +
+          (over
+            ? "scale-[1.02] border-accent bg-accent/15 shadow-xl ring-4 ring-accent/30 motion-reduce:scale-100"
+            : pageDrag
+              ? "animate-pulse border-accent bg-accent/5 motion-reduce:animate-none"
+              : "border-line bg-card")
         }
         onDragOver={(event) => {
           event.preventDefault();
@@ -102,16 +143,16 @@ export function HomeHero({
             thumb.state === "loading" ? (
               <Loader2 className="size-9 animate-spin text-accent motion-reduce:animate-none" />
             ) : isAudio ? (
-              <FileAudio className="size-10 text-accent" />
+              <FileAudio className="size-12 text-accent" />
             ) : (
-              <Clapperboard className="size-10 text-accent" />
+              <Clapperboard className="size-12 text-accent" />
             )
           ) : (
-            <Upload className="size-10 text-accent" />
+            <Upload className="size-12 text-accent" />
           )}
           {file ? (
             <>
-              <span className="max-w-[18rem] truncate text-base font-semibold sm:max-w-md">{file.name}</span>
+              <span className="max-w-[18rem] truncate text-lg font-semibold sm:max-w-md sm:text-xl">{file.name}</span>
               <span className="text-xs text-muted">
                 {[formatBytes(file.size), thumb.seconds ? fmt(thumb.seconds) : ""].filter(Boolean).join(" · ")}
                 {thumb.state === "none" && !isAudio ? " · không xem trước được, vẫn dịch bình thường" : ""}
@@ -120,8 +161,8 @@ export function HomeHero({
             </>
           ) : (
             <>
-              <span className="text-lg font-semibold">Kéo video vào đây</span>
-              <span className="text-sm text-muted">hoặc bấm để chọn tệp · hoặc dán link ở dưới</span>
+              <span className="text-2xl font-semibold sm:text-3xl">{over ? "Thả để chọn video này" : "Kéo video vào đây"}</span>
+              <span className="text-base text-muted">hoặc bấm để chọn tệp · hoặc dán link ở dưới</span>
               <span className="text-xs text-muted">Dán link ở bất cứ đâu trên trang cũng được. Ctrl+K để mở lệnh nhanh.</span>
             </>
           )}
@@ -147,7 +188,7 @@ export function HomeHero({
           value={url}
           placeholder="Hoặc dán link file trực tiếp https://…/phim.mp4"
           aria-label="Link file trực tiếp"
-          className="min-tap w-full rounded-full border border-line bg-card pr-3 pl-9 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="min-tap w-full rounded-full border border-line bg-card pr-4 pl-10 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-invalid={Boolean(linkCheck.problem)}
           onChange={(event) => {
             if (linkCheck.problem) linkCheck.check(event.target.value);
@@ -163,7 +204,7 @@ export function HomeHero({
         )}
       </span>
 
-      <div className="flex flex-wrap items-center justify-center gap-2" role="group" aria-label="Lựa chọn nhanh">
+      <div className="flex flex-wrap items-center justify-center gap-2.5" role="group" aria-label="Lựa chọn nhanh">
         <ChipSelect label="Tiếng gốc" value={source} onChange={onSource}>
           {SRC_LANGS.map(([value, label]) => (
             <option key={value} value={value}>
@@ -202,7 +243,7 @@ export function HomeHero({
         type="button"
         data-home-start
         disabled={running || !hasInput || !online}
-        className="min-tap rounded-full bg-accent px-6 text-base font-semibold text-ink disabled:opacity-40"
+        className="min-h-14 rounded-full bg-accent px-8 text-lg font-semibold text-ink transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:hover:scale-100 motion-reduce:transition-none motion-reduce:hover:scale-100"
         onClick={onStart}
       >
         {running ? "Đang chạy…" : "Tải và dịch"}

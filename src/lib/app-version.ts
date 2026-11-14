@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.35.0";
+export const APP_VERSION = "3.36.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.36.0",
+    time: "22:40 ngày 14/11/2026",
+    title: "Trang chủ thoáng hơn, chữ lớn hơn, kéo thả có hiệu ứng.",
+    points: [
+      "Khoảng trống quanh ô thả và các lựa chọn rộng hơn; chữ tiêu đề, ô link và nút Tải và dịch lớn hơn.",
+      "Kéo tệp vào bất cứ đâu trên trang thì ô thả nhấp nháy nhắc; kéo vào ô thì ô phóng nhẹ, sáng viền và đổi chữ thành Thả để chọn video này.",
+      "Thả tệp ở ngoài ô cũng nhận được, trình duyệt không mở tệp thay app. Ai bật giảm chuyển động thì không có hiệu ứng phóng và nhấp nháy.",
+    ],
+  },
   {
     version: "3.35.0",
     time: "22:10 ngày 14/11/2026",
