@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.31.0",
+    time: "10:20 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.30.0, theo yêu cầu người dùng (gói cải tiến Admin A–F, GIAI ĐOẠN 2; nhánh work). Không đổi dịch vụ, giá, quyền, dữ liệu khách hay điều khoản. (F) Thanh bên trái ở /admin từ 1024 px (AdminNav, cố định khi cuộn); dưới 1024 px vẫn là hàng nút cuộn ngang, nay dính ở đầu khi cuộn, nút cao tối thiểu 44 px, thêm nút Tìm. Danh sách tab nằm một chỗ ở src/lib/admin-tabs.ts (ADMIN_TABS, tabsFor) dùng chung cho thanh bên, hàng nút và Ctrl+K; Quản lý và Hỗ trợ không thấy tab chỉ của Chủ. Ctrl+K (Cmd+K trên Mac) mở hộp tìm nhanh (admin-palette.tsx): gõ tên mục, không dấu cũng khớp, hoặc gõ email để mở khách bằng đường tìm khách có sẵn (sự kiện tyzo-open-user); phím mũi tên, Enter, Esc; trả lại tiêu điểm khi đóng. (C) Trang Doanh thu thêm, chỉ Chủ: biểu đồ đường thu và chi vẽ bằng SVG (không thêm thư viện); ARPU = tiền nạp chia số khách đã nạp trong kỳ; tỷ lệ dùng thử → mua = khách hết lượt thử (room_accounts.trial_left = 0) đã từng nạp hoặc mua gói, tính toàn thời gian vì phòng không ghi ngày dùng thử; giá vốn mỗi phút âm thanh = sum(base_cost) / phút của phiếu đã trừ tiền (da-tru, dung-tien, bỏ tts- và phiếu lỗi), kèm bản cộng chi phí ghi tay; chi phí ghi tay phân loại (hạ tầng, API và model, quảng cáo, nhân sự, khác) bằng cột room_costs.category (migration 0023, khoản cũ về 'khac'), có ô chọn loại khi ghi hoặc sửa. Phần truy vấn nằm ở money-extra-data.ts (moneyExtraWith), phần tính ở money-extra.ts. Chỉ có số tổng, không đọc tên tệp hay chữ phụ đề. KHÔNG làm (cần người dùng chốt, đụng điều khoản hoặc dữ liệu khách): D phần bấm vào lần chạy kém xem câu lỗi và gửi yêu cầu kiểm tra lại (quality_runs cố ý không lưu tài khoản, tên tệp, chữ phụ đề); «Chặn toàn bộ phòng» ở bảo trì; chế độ Chỉ xem cho Hỗ trợ (chưa biết chặn thao tác nào); cảnh báo key hết hạn và rate-limit (app không ghi dữ liệu đó). D thống kê theo model và cảnh báo chủ động đã có từ trước (Theo model Whisper, tab Tổng quan), không làm lại. Test: admin-tabs.test.ts (8 ca), money-extra.test.ts (11 ca), money-extra-data.test.ts (6 ca, PGLite) đã thêm vào npm test. Chưa thử bằng trình duyệt thật, chưa thử trên điện thoại thật và Neon thật; migration 0023 tự chạy khi build.",
+  },
+  {
     version: "3.30.0",
     time: "10:03 ngày 14/11/2026",
     area: "khac",

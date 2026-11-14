@@ -3,7 +3,7 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
 ĐANG CHẠY (2026-11-14 10:03 UTC+7)
-- Số phiên bản người dùng thấy trên work: v3.30.0, trong src/lib/app-version.ts.
+- Số phiên bản người dùng thấy trên work: v3.31.0, trong src/lib/app-version.ts.
 - Điều khoản: TERMS_VERSION = 2026-11-13.4 trong src/components/entry-gate.tsx. Khách phải đồng ý lại.
 - Trả theo lượt: gói nhận dạng Alibaba dùng key Alibaba của phòng. Cần link file trực tiếp, không phải trang xem. Dịch vẫn bằng Groq. Việc Alibaba ngoài nhận dạng chưa chạy.
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.

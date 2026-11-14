@@ -42,7 +42,9 @@ import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
 import { QualityBoard } from "@/components/quality-board";
 import { AdminOverview } from "@/components/admin-overview";
-import type { AdminTab } from "@/lib/admin-tabs";
+import { tabsFor, type AdminTab } from "@/lib/admin-tabs";
+import { AdminNav } from "@/components/admin-nav";
+import { AdminPalette } from "@/components/admin-palette";
 import { ThemeBoard } from "@/components/theme-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
@@ -172,6 +174,7 @@ export function AdminDesk() {
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [tab, setTab] = useState<AdminTab>("tong-quan");
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -303,21 +306,10 @@ export function AdminDesk() {
       ) : (
         <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
-      {role && (
-        <div className="flex gap-2 overflow-x-auto border-b border-line bg-bg py-2">
-          <TabButton current={tab} id="tong-quan" onPick={setTab}>Tổng quan</TabButton>
-          <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
-          <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
-          {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="chat-luong" onPick={setTab}>Chất lượng</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="thuat-ngu" onPick={setTab}>Thuật ngữ</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="ctv" onPick={setTab}>Cộng tác</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="thu" onPick={setTab}>Thư</TabButton>}
-          {role === "chu" && <TabButton current={tab} id="giao-dien" onPick={setTab}>Giao diện</TabButton>}
-          <TabButton current={tab} id="thao-tac" onPick={setTab}>Nhật ký thao tác</TabButton>
-          <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký hệ thống</TabButton>
-        </div>
-      )}
+      {role && <AdminPalette tabs={tabsFor(role)} open={paletteOpen} onOpenChange={setPaletteOpen} onPick={setTab} />}
+      <div className="lg:flex lg:items-start lg:gap-4">
+      {role && <AdminNav tabs={tabsFor(role)} current={tab} onPick={setTab} onSearch={() => setPaletteOpen(true)} />}
+      <div className="min-w-0 flex-1">
       <div className="admin-grid">
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
       {role && tab === "thao-tac" && <AuditTab rows={audit} />}
@@ -691,6 +683,8 @@ export function AdminDesk() {
         </>
       )}
       </div>
+      </div>
+      </div>
 
       <ConfirmCodeDialog
         open={resetOpen}
@@ -734,24 +728,6 @@ export function AdminDesk() {
 
 function RoleChip({ role }: { role: "ho-tro" | "quan-ly" | "chu" }) {
   return <p className={"role-chip role-" + role}>{ROLE_LABEL[role]}</p>;
-}
-
-function TabButton({
-  current,
-  id,
-  onPick,
-  children,
-}: {
-  current: string;
-  id: AdminTab;
-  onPick: (id: AdminTab) => void;
-  children: string;
-}) {
-  return (
-    <button type="button" className={"inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap " + (current === id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => onPick(id)}>
-      {children}
-    </button>
-  );
 }
 
 const AUDIT_ACTION_LABEL: Record<string, string> = {
