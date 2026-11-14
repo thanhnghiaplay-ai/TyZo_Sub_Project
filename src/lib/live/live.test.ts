@@ -8,6 +8,7 @@ import { LiveMeter } from "./live-meter.ts";
 import { LIVE_FALLBACK_ROWS, LIVE_MODEL_35, LIVE_MODEL_38, parseLivePrice, pullLiveBoard, saneLivePrice } from "./live-price.ts";
 import { attachLiveBridge, type LiveBilling } from "./live-bridge.ts";
 import { LiveTranscript } from "./live-transcript.ts";
+import { LiveSession } from "./live-session.ts";
 import { signLiveTicket, verifyLiveTicket } from "./live-ticket.ts";
 import { buildSessionUpdate, parseServerEvent } from "./qwen-protocol.ts";
 
@@ -264,5 +265,70 @@ describe("cầu nối (Alibaba giả)", () => {
     assert.equal(await t.closed, 4402);
     assert.deepEqual(t.bill.log.opened, []);
     await t.cleanup();
+  });
+});
+
+describe("phiên ở trình duyệt nối cầu nối thật (Alibaba giả)", () => {
+  it("bắt đầu, gửi tiếng, nhận chữ và tiếng dịch, dừng nhẹ, tiền được trừ và nhả đúng", async () => {
+    const ali = fakeAlibaba();
+    const bill = fakeBilling(1_000_000);
+    const server = createServer();
+    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url: ali.url, key: "SECRET-KEY" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500 });
+    await new Promise<void>((r) => server.listen(0, r));
+    const port = (server.address() as { port: number }).port;
+    const token = signLiveTicket("k", { uid: "u1", sid: "sess-e2e", model: LIVE_MODEL_38, target: "vi", source: "", audio: true, exp: Date.now() + 60_000 });
+
+    const states: string[] = [];
+    const events: Array<{ kind: string }> = [];
+    const played: number[] = [];
+    const balances: number[] = [];
+    const log: string[] = [];
+    let sent = 0;
+    const closed = new Promise<{ reason: string; code: number }>((resolve) => {
+      const session = new LiveSession(
+        {
+          createSocket: (url) => new WebSocket(url) as never,
+          startCapture: async (handlers) => {
+            log.push("thu");
+            setTimeout(() => {
+              handlers.onFrame(new Uint8Array(3200));
+              sent += 1;
+            }, 10);
+            return { stop: async () => void log.push("nhả") };
+          },
+          player: { play: (samples) => played.push(samples.length), stop: () => log.push("tắt loa") },
+        },
+        {
+          onState: (state) => {
+            states.push(state);
+            if (state === "live") {
+              const wait = setInterval(() => {
+                if (balances.length > 0) {
+                  clearInterval(wait);
+                  session.stop();
+                }
+              }, 20);
+            }
+          },
+          onEvent: (event) => events.push(event as { kind: string }),
+          onBalance: (info) => balances.push(info.heldLeft),
+          onClosed: resolve,
+        },
+      );
+      session.start(`ws://127.0.0.1:${port}/live?ticket=${encodeURIComponent(token)}`);
+    });
+    const done = await closed;
+    assert.equal(done.code, 1000);
+    assert.deepEqual(states, ["connecting", "live", "closing", "closed"]);
+    assert.equal(sent, 1);
+    assert.deepEqual(played, [2], "4 byte tiếng dịch = 2 mẫu");
+    assert.ok(events.some((event) => event.kind === "source"));
+    assert.ok(events.some((event) => event.kind === "pair"));
+    assert.ok(balances.length > 0);
+    assert.deepEqual(log, ["thu", "nhả", "tắt loa"]);
+    assert.ok(bill.log.charged > 0);
+    assert.deepEqual(bill.log.closed, bill.log.opened);
+    server.close();
+    ali.wss.close();
   });
 });
