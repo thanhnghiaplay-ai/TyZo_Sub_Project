@@ -249,7 +249,7 @@ export function ThemeBoard() {
         </div>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="grid content-start gap-4">
           <Card>
             <CardHeader title="Chung" icon="ui.settings" />

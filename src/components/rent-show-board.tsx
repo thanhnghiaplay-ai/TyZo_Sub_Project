@@ -58,16 +58,16 @@ export function RentShowBoard() {
   }
 
   return (
-    <section className="admin-wide space-y-3 rounded-2xl border border-line bg-card p-4">
+    <section className="space-y-3">
       <div>
-        <h3 className="text-sm font-semibold">Model khách được chọn khi thuê phòng</h3>
         <p className="text-sm text-muted">
           Khách dùng key của họ. Chỉ model được đánh dấu mới chọn được. Whisper cần key Groq. Filetrans cần key Alibaba.
           Dịch khi thuê phòng vẫn là model Groq. Dịch bằng Alibaba chưa chạy.
         </p>
         <p className="text-xs text-muted">{saved ? "Đã có danh sách. Bỏ hết dấu rồi lưu thì khách không chọn được model nào." : "Chưa lưu. Khách vẫn chọn như trước cho đến khi bạn bấm Lưu."}</p>
       </div>
-      <div className="grid gap-2">
+      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid content-start gap-2">
         <p className="text-sm font-medium">Groq</p>
         {GROQ_ROWS.map((row) => (
           <label key={row.id} className="flex items-center gap-2 text-sm">
@@ -76,7 +76,7 @@ export function RentShowBoard() {
           </label>
         ))}
       </div>
-      <div className="grid gap-2">
+      <div className="grid content-start gap-2">
         <p className="text-sm font-medium">Alibaba</p>
         {ALI_ROWS.map((row) => (
           <label key={row.id} className="flex items-center gap-2 text-sm">
@@ -84,6 +84,7 @@ export function RentShowBoard() {
             {row.name}
           </label>
         ))}
+      </div>
       </div>
       <button type="button" className="min-tap w-fit rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
         Lưu danh sách thuê phòng

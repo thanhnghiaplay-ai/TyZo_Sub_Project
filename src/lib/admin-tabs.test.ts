@@ -3,8 +3,8 @@ import { describe, it } from "node:test";
 import { foldText, looksLikeEmail, matchTabs, tabsFor } from "./admin-tabs.ts";
 
 describe("tab Admin theo quyền", () => {
-  it("Chủ thấy đủ 11 tab", () => {
-    assert.equal(tabsFor("chu").length, 11);
+  it("Chủ thấy đủ 12 tab", () => {
+    assert.equal(tabsFor("chu").length, 12);
   });
   it("Quản lý và Hỗ trợ không thấy tab chỉ của Chủ", () => {
     for (const role of ["quan-ly", "ho-tro"]) {
@@ -23,6 +23,11 @@ describe("tìm tab bằng Ctrl+K", () => {
     assert.deepEqual(matchTabs(tabsFor("chu"), "chat luong").map((tab) => tab.id), ["chat-luong"]);
     assert.deepEqual(matchTabs(tabsFor("chu"), "doanh thu").map((tab) => tab.id), ["tien"]);
   });
+  it("tìm key hay cổng nạp ra tab Cấu hình", () => {
+    assert.deepEqual(matchTabs(tabsFor("chu"), "alibaba").map((tab) => tab.id), ["cau-hinh"]);
+    assert.deepEqual(matchTabs(tabsFor("chu"), "cong nap").map((tab) => tab.id), ["cau-hinh"]);
+    assert.deepEqual(matchTabs(tabsFor("ho-tro"), "key groq"), []);
+  });
   it("tìm theo từ khóa phụ", () => {
     assert.ok(matchTabs(tabsFor("chu"), "arpu").some((tab) => tab.id === "tien"));
   });
@@ -30,7 +35,7 @@ describe("tìm tab bằng Ctrl+K", () => {
     assert.deepEqual(matchTabs(tabsFor("ho-tro"), "doanh thu"), []);
   });
   it("ô trống trả đủ danh sách", () => {
-    assert.equal(matchTabs(tabsFor("chu"), "  ").length, 11);
+    assert.equal(matchTabs(tabsFor("chu"), "  ").length, 12);
   });
 });
 

@@ -45,6 +45,7 @@ import { AdminOverview } from "@/components/admin-overview";
 import { tabsFor, type AdminTab } from "@/lib/admin-tabs";
 import { AdminNav } from "@/components/admin-nav";
 import { AdminPalette } from "@/components/admin-palette";
+import { Fold } from "@/components/admin-fold";
 import { ThemeBoard } from "@/components/theme-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
@@ -314,9 +315,21 @@ export function AdminDesk() {
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
       {role && tab === "thao-tac" && <AuditTab rows={audit} />}
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
-      {role === "chu" && tab === "viec" && <AlibabaKeyBoard />}
-      {role === "chu" && tab === "viec" && <ServicePackBoard packsOnly />}
-      {role === "chu" && tab === "viec" && <RentShowBoard />}
+      {role === "chu" && tab === "cau-hinh" && (
+        <>
+          <RunDeskBoard owner part="config" />
+          <AlibabaKeyBoard />
+          <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
+            <ServicePackBoard packsOnly />
+          </Fold>
+          <Fold title="Model khách được chọn khi thuê phòng" hint="Khách dùng key của họ">
+            <RentShowBoard />
+          </Fold>
+          <Fold title="Cổng nạp" hint="Sepay, Casso và tài khoản nhận tiền">
+            <PaySettings />
+          </Fold>
+        </>
+      )}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "nhat-ky" && <AdminNotes />}
@@ -679,7 +692,6 @@ export function AdminDesk() {
             </form>
           )}
           {roleAtLeast(role, "quan-ly") && <div data-pay-queue><PayQueue owner={role === "chu"} /></div>}
-          {roleAtLeast(role, "chu") && <PaySettings />}
         </>
       )}
       </div>

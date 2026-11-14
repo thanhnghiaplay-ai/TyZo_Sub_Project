@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.31.1",
+    time: "11:40 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.31.0, theo yêu cầu người dùng (ảnh chụp điện thoại: các tab dài ngắn không đều, muốn bố cục như tab Tổng quan; tab key Groq/Alibaba quá dài). Không đổi dịch vụ, giá, quyền, dữ liệu khách hay điều khoản. (1) CSS: .admin-grid và .admin-flow đổi từ cột kiểu gạch (column-width) sang lưới đều grid auto-fit minmax(min(100%, 22rem), 1fr), thẻ cùng hàng cao bằng nhau, .admin-wide chiếm cả hàng (grid-column 1 / -1), thẻ lẻ giãn hết hàng; thẻ <details> tự cao theo ruột. .account-grid (trang khách) giữ nguyên cột kiểu gạch. studio-layout.test.ts sửa theo luật mới. (2) Tab mới «Cấu hình» (cau-hinh, chỉ Chủ, ADMIN_TABS): Key Groq của phòng, Giá và hạn mức (giá riêng từng model gập trong <details>, model key dùng được xếp trước), Key Alibaba, Gói dịch, Model khách được chọn khi thuê phòng (hai cột Groq/Alibaba), Cổng nạp (Sepay và Casso cạnh nhau). Ba mục sau đặt trong thẻ gập Fold (admin-fold.tsx). Tab Việc chỉ còn bảo trì, phiếu, tài khoản, yêu cầu, đơn nạp. Cảnh báo «chưa lưu key Groq» và «chưa đồng bộ model» ở Tổng quan nhảy sang Cấu hình. (3) RunDeskBoard nhận part ops hoặc config. Mỗi lần lưu bảo trì hoặc giá nay đọc lại cửa mới nhất (getRunDesk) rồi chỉ ghi phần của mình, nên lưu giá ở tab Cấu hình không đè trạng thái bảo trì vừa đổi ở nơi khác và ngược lại. (4) Giao diện: khối màu và xem trước chia hai cột từ 768 px (trước đây từ 1024 px). Thư: nhóm «Chữ trên trang» (5 ô) gập trong <details>. Kiểm: tsc chỉ còn 5 lỗi có sẵn; npm test 191 và 442 pass, 0 fail; vite build qua. CHƯA kiểm bằng trình duyệt thật hay điện thoại thật; bố cục chỉ đối chiếu với ảnh chụp người dùng gửi. Nếu bố cục còn lệch, gửi ảnh mới.",
+  },
+  {
     version: "3.31.0",
     time: "10:20 ngày 14/11/2026",
     area: "khac",

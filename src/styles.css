@@ -258,21 +258,44 @@
   max-width: 120rem;
 }
 
-.admin-grid,
 .account-grid {
   min-width: 0;
   column-width: 22rem;
   column-gap: 1rem;
 }
 
-.admin-grid > *,
 .account-grid > * {
   min-width: 0;
   margin-bottom: 1rem;
   break-inside: avoid;
 }
 
-.admin-grid > .admin-wide,
+/* Admin: lưới đều như trang Tổng quan. Mỗi hàng các thẻ cao bằng nhau, thẻ rộng chiếm cả hàng,
+   một thẻ lẻ cũng giãn hết hàng nên không còn cột trống. */
+.admin-grid,
+.admin-flow {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  align-items: stretch;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.admin-grid > *,
+.admin-flow > * {
+  min-width: 0;
+  margin: 0;
+}
+
+.admin-grid > details,
+.admin-flow > details {
+  align-self: start;
+}
+
+.admin-grid > .admin-wide {
+  grid-column: 1 / -1;
+}
+
 .account-grid > .account-wide {
   column-span: all;
 }
@@ -306,19 +329,7 @@
   background: transparent;
 }
 
-/* Khối một thẻ của tab Admin: tự chia cột theo các khối con, không dồn hết vào cột trái. */
-.admin-flow {
-  min-width: 0;
-  column-width: 22rem;
-  column-gap: 1rem;
-}
-
-.admin-flow > * {
-  min-width: 0;
-  margin: 0 0 1rem;
-  break-inside: avoid;
-}
-
+/* Khối con của một thẻ Admin dùng cùng lưới đều ở trên (.admin-flow). */
 .admin-flow > :empty {
   display: none;
 }

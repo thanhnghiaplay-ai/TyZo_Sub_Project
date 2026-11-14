@@ -14,7 +14,7 @@ export type OverviewAlert = {
   level: "red" | "yellow";
   text: string;
   /** Tab Admin để nhảy tới. */
-  go: "viec" | "chat-luong" | "tien";
+  go: "viec" | "cau-hinh" | "chat-luong" | "tien";
 };
 
 export type Overview = {
@@ -105,8 +105,8 @@ export async function overviewWith(sql: Sql, range: OverviewRange, owner: boolea
 
   const alerts: OverviewAlert[] = [];
   if (desk.maintenance) alerts.push({ id: "bao-tri", level: "yellow", text: "Cửa trả theo lượt đang bảo trì. Khách không chạy được.", go: "viec" });
-  if (owner && !setting("run_key").trim()) alerts.push({ id: "chua-key", level: "yellow", text: "Phòng chưa lưu key Groq. Khách trả theo lượt chưa chạy được.", go: "viec" });
-  else if (owner && !parseModelList(setting("run_models"))) alerts.push({ id: "chua-dong-bo", level: "yellow", text: "Chưa đồng bộ danh sách model của key phòng.", go: "viec" });
+  if (owner && !setting("run_key").trim()) alerts.push({ id: "chua-key", level: "yellow", text: "Phòng chưa lưu key Groq. Khách trả theo lượt chưa chạy được.", go: "cau-hinh" });
+  else if (owner && !parseModelList(setting("run_models"))) alerts.push({ id: "chua-dong-bo", level: "yellow", text: "Chưa đồng bộ danh sách model của key phòng.", go: "cau-hinh" });
   if (total >= OVERVIEW_LIMITS.minRunsForRate && errors / total >= OVERVIEW_LIMITS.errorRate) {
     alerts.push({ id: "loi-cao", level: "red", text: `Tỷ lệ lỗi ${Math.round((errors / total) * 100)}% (${errors}/${total} lượt).`, go: "viec" });
   }

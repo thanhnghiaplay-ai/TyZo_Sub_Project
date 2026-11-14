@@ -178,7 +178,12 @@ const PRICE_ROWS = [
   ...CHAT_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "token" as const })),
 ];
 
-export function RunDeskBoard({ owner }: { owner: boolean }) {
+/**
+ * Bàn trả theo lượt. part "ops" (mặc định, tab Việc): bảo trì và phiếu.
+ * part "config" (tab Cấu hình, chỉ Chủ): key Groq, giá và hạn mức.
+ * Mỗi lần lưu đọc lại cửa mới nhất rồi chỉ ghi phần của mình, nên hai nơi không đè nhau.
+ */
+export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "ops" | "config" }) {
   const [view, setView] = useState<RunDeskView | null>(null);
   const [form, setForm] = useState<RunDesk | null>(null);
   const [board, setBoard] = useState<GroqBoard | null>(null);
@@ -187,7 +192,6 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   const [keyTail, setKeyTail] = useState("");
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [priceOpen, setPriceOpen] = useState(true);
   const [doorTick, setDoorTick] = useState(0);
 
   useEffect(() => {
@@ -204,9 +208,10 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       .catch(() => pushToast("Chưa lấy được giá gốc. Phần trăm và giá riêng vẫn lưu được.", "bad"));
   }, []);
 
-  function save(next: RunDesk, done: string) {
+  function save(patch: (latest: RunDesk) => RunDesk, done: string) {
     setBusy(true);
-    void saveRunDesk({ data: next })
+    void getRunDesk()
+      .then((latest) => saveRunDesk({ data: patch(latest.desk) }))
       .then((desk) => {
         setForm(desk);
         setView((current) => (current ? { ...current, desk } : current));
@@ -257,6 +262,129 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
     });
   }
 
+  const sortedRows = [...PRICE_ROWS].sort((a, b) => Number(models?.includes(b.id) ?? false) - Number(models?.includes(a.id) ?? false));
+
+  if (part === "config") {
+    if (!owner) return null;
+    return (
+      <>
+        <section className="grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="font-semibold">Key Groq của phòng</h2>
+            <p className="text-xs font-medium text-muted">{keyTail ? `Đã lưu · …${keyTail}` : "Chưa lưu"}</p>
+          </div>
+          <p className="text-sm text-muted">Khách trả theo lượt dùng đúng key này. Key chỉ nằm trên máy chủ và không hiện lại trên trang này. Nhận dạng Alibaba dùng key riêng.</p>
+          <span className="flex gap-2">
+            <input
+              type={showKey ? "text" : "password"}
+              value={adminKey}
+              autoComplete="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              placeholder={keyTail ? "Key đã lưu. Dán key mới nếu muốn đổi" : "Nhập hoặc dán key"}
+              aria-label="Key Groq của phòng"
+              onChange={(event) => setAdminKey(event.target.value)}
+              className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            />
+            <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => void pasteKey()}>
+              Dán
+            </button>
+            <button type="button" className="min-tap rounded-full border border-line px-3" aria-label={showKey ? "Ẩn key" : "Hiện key"} onClick={() => setShowKey((value) => !value)}>
+              {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+          </span>
+          <button type="button" disabled={busy} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={syncKey}>
+            Lưu key
+          </button>
+          <p className="text-xs text-muted">{models ? `Key gọi được ${models.length} model.` : "Chưa đồng bộ danh sách model."}</p>
+        </section>
+
+        <section className="grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
+          <h2 className="font-semibold">Giá và hạn mức</h2>
+          <div className="grid gap-2 sm:grid-cols-2">
+            <label className="grid gap-1 text-sm">
+              Tăng thêm trên giá gốc (%)
+              <input
+                inputMode="numeric"
+                value={form?.markup ?? 0}
+                onChange={(event) => setForm((current) => (current ? { ...current, markup: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
+                className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              />
+            </label>
+            <label className="grid gap-1 text-sm">
+              Hạn mức mỗi khách mỗi ngày (đ, 0 là chưa đặt)
+              <input
+                inputMode="numeric"
+                value={form?.cap ?? 0}
+                onChange={(event) => setForm((current) => (current ? { ...current, cap: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
+                className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              />
+            </label>
+          </div>
+          <details className="rounded-xl border border-line">
+            <summary className="min-tap flex cursor-pointer items-center px-3 text-sm font-semibold">Giá riêng từng model ({PRICE_ROWS.length})</summary>
+            <div className="grid gap-2 p-2">
+              {sortedRows.map((model) => {
+                const row = board?.rows.find((item) => item.id === model.id);
+                const custom = form?.custom[model.id] ?? emptyOverride();
+                const base = row && board ? formatLivePrice(row, board.rate) : "Chưa có giá gốc";
+                const shown = row && board && form ? formatRoomPrice(row, board.rate, form.markup, custom) : "Chưa có giá gốc";
+                const usable = models ? models.includes(model.id) : null;
+                return (
+                  <div key={model.id} className="grid gap-1 rounded-xl bg-raised px-3 py-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium">{model.name}</p>
+                      <p className={"shrink-0 text-xs " + (usable ? "text-ok" : "text-muted")}>{usable == null ? "Chưa đồng bộ" : usable ? "Key dùng được" : "Key không dùng được"}</p>
+                    </div>
+                    <p className="text-xs text-muted">Giá gốc: {base}</p>
+                    <p className="text-xs text-muted">Khách thấy: {shown}</p>
+                    {model.kind === "hour" ? (
+                      <input
+                        inputMode="numeric"
+                        value={custom.hour || ""}
+                        placeholder="Giá riêng, đồng mỗi giờ. Để trống thì dùng phần trăm"
+                        onChange={(event) => setCustom(model.id, { hour: Number(event.target.value.replace(/\D/g, "") || 0) })}
+                        className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none"
+                      />
+                    ) : (
+                      <div className="grid min-w-0 grid-cols-2 gap-2">
+                        <input
+                          inputMode="numeric"
+                          value={custom.inn || ""}
+                          placeholder="Vào, đồng / triệu token"
+                          onChange={(event) => setCustom(model.id, { inn: Number(event.target.value.replace(/\D/g, "") || 0) })}
+                          className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none"
+                        />
+                        <input
+                          inputMode="numeric"
+                          value={custom.out || ""}
+                          placeholder="Ra, đồng / triệu token"
+                          onChange={(event) => setCustom(model.id, { out: Number(event.target.value.replace(/\D/g, "") || 0) })}
+                          className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none"
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+          <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây, khách không thấy. Giá Alibaba đặt ở mục Gói dịch.</p>
+          {form && (
+            <button
+              type="button"
+              disabled={busy}
+              className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40"
+              onClick={() => save((latest) => ({ ...latest, markup: form.markup, cap: form.cap, custom: form.custom }), "Đã cập nhật giá.")}
+            >
+              Cập nhật giá
+            </button>
+          )}
+        </section>
+      </>
+    );
+  }
+
   return (
     <section className="admin-wide space-y-3 rounded-2xl border border-line bg-card p-4">
       <div className="flex items-center justify-between gap-2">
@@ -266,7 +394,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
           {form?.maintenance ? "Đang bảo trì" : "Đang mở"}
         </p>
       </div>
-      <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Giá gốc chỉ để tính ở trang này, không hiện khi khách dùng key của họ.</p>
+      <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Key, giá và hạn mức nằm ở tab Cấu hình.</p>
       {owner && (
       <div className="grid grid-cols-3 gap-2">
         <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
@@ -276,147 +404,30 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       )}
 
       <div className="admin-flow">
-      <div className="admin-pane rounded-xl border border-line p-3">
-        <h3 className="text-sm font-semibold">Bảo trì</h3>
-        <textarea
-          disabled={!owner}
-          rows={2}
-          value={form?.note ?? ""}
-          placeholder="Nội dung khách thấy khi tạm ngưng"
-          onChange={(event) => setForm((current) => (current ? { ...current, note: event.target.value } : current))}
-          className="rounded-xl border border-line bg-raised px-3 py-2 outline-none disabled:opacity-60"
-        />
-        {owner && form && (
-          <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={() => save({ ...form, maintenance: true }, "Đã bật bảo trì.")}>
-              Lưu và báo bảo trì
-            </button>
-            <button type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => save({ ...form, maintenance: false }, "Đã mở lại cửa.")}>
-              Mở lại cửa
-            </button>
-          </div>
-        )}
-        <DoorHistory refresh={doorTick} />
-      </div>
-
-      <TicketPane />
-
-      {owner && (
-      <div className="admin-pane rounded-xl border border-line p-3">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold">Giá biểu</h3>
-          <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => setPriceOpen((open) => !open)}>
-            {priceOpen ? "Ẩn giá biểu" : "Hiện giá biểu"}
-          </button>
-        </div>
-        {priceOpen && (
-          <>
-        <label className="grid gap-1 text-sm">
-          Tăng thêm trên giá gốc, phần trăm
-          <input
-            inputMode="numeric"
+        <div className="admin-pane rounded-xl border border-line p-3">
+          <h3 className="text-sm font-semibold">Bảo trì</h3>
+          <textarea
             disabled={!owner}
-            value={form?.markup ?? 0}
-            onChange={(event) => setForm((current) => (current ? { ...current, markup: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
-            className="rounded-xl border border-line bg-raised px-3 py-3 outline-none disabled:opacity-60"
+            rows={2}
+            value={form?.note ?? ""}
+            placeholder="Nội dung khách thấy khi tạm ngưng"
+            onChange={(event) => setForm((current) => (current ? { ...current, note: event.target.value } : current))}
+            className="rounded-xl border border-line bg-raised px-3 py-2 outline-none disabled:opacity-60"
           />
-        </label>
-        <label className="grid gap-1 text-sm">
-          Hạn mức một khách mỗi ngày, đồng. Để 0 nếu chưa đặt
-          <input
-            inputMode="numeric"
-            disabled={!owner}
-            value={form?.cap ?? 0}
-            onChange={(event) => setForm((current) => (current ? { ...current, cap: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
-            className="rounded-xl border border-line bg-raised px-3 py-3 outline-none disabled:opacity-60"
-          />
-        </label>
-        <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây. Khách không thấy.</p>
-        {owner && (
-          <label className="grid gap-1 text-sm">
-            Key Groq của phòng
-            <span className="flex gap-2">
-              <input
-                type={showKey ? "text" : "password"}
-                value={adminKey}
-                autoComplete="off"
-                autoCapitalize="off"
-                spellCheck={false}
-                placeholder={keyTail ? "Key đã lưu. Dán key mới nếu muốn đổi" : "Nhập hoặc dán key. Bấm lưu thì key được giữ trên máy chủ"}
-                onChange={(event) => setAdminKey(event.target.value)}
-                className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
-              />
-              <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => void pasteKey()}>
-                Dán
+          {owner && form && (
+            <div className="flex flex-wrap gap-2">
+              <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={() => save((latest) => ({ ...latest, maintenance: true, note: form.note }), "Đã bật bảo trì.")}>
+                Lưu và báo bảo trì
               </button>
-              <button type="button" className="min-tap rounded-full border border-line px-3" aria-label={showKey ? "Ẩn key" : "Hiện key"} onClick={() => setShowKey((value) => !value)}>
-                {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              <button type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => save((latest) => ({ ...latest, maintenance: false, note: form.note }), "Đã mở lại cửa.")}>
+                Mở lại cửa
               </button>
-            </span>
-          </label>
-        )}
-        {owner && (
-          <button type="button" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 text-sm disabled:opacity-40" onClick={syncKey}>
-            Lưu key
-          </button>
-        )}
-        <p className="text-xs text-muted">{keyTail ? `Đã lưu key, kết thúc bằng ${keyTail}. Key không hiện lại trên trang này.` : "Chưa lưu key."}</p>
-        <p className="text-xs text-muted">Bảng này chỉ model Groq. Nhận dạng Alibaba không dùng key Groq. Giá Alibaba đặt ở mục Gói dịch.</p>
-        <div className="grid gap-2">
-          {PRICE_ROWS.map((model) => {
-            const row = board?.rows.find((item) => item.id === model.id);
-            const custom = form?.custom[model.id] ?? emptyOverride();
-            const base = row && board ? formatLivePrice(row, board.rate) : "Chưa có giá gốc";
-            const shown = row && board && form ? formatRoomPrice(row, board.rate, form.markup, custom) : "Chưa có giá gốc";
-            const usable = models ? models.includes(model.id) : null;
-            return (
-              <div key={model.id} className="grid gap-1 rounded-xl bg-raised px-3 py-2">
-                <p className="text-sm font-medium">{model.name}</p>
-                <p className="text-xs text-muted">Giá gốc: {base}</p>
-                <p className="text-xs text-muted">Khách trả theo lượt sẽ thấy: {shown}</p>
-                <p className="text-xs text-muted">{usable == null ? "Key: chưa đồng bộ" : usable ? "Key dùng được" : "Key không dùng được"}</p>
-                {model.kind === "hour" ? (
-                  <input
-                    inputMode="numeric"
-                    disabled={!owner}
-                    value={custom.hour || ""}
-                    placeholder="Giá riêng, đồng mỗi giờ. Để trống thì dùng phần trăm"
-                    onChange={(event) => setCustom(model.id, { hour: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                    className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none disabled:opacity-60"
-                  />
-                ) : (
-                  <div className="grid min-w-0 grid-cols-2 gap-2">
-                    <input
-                      inputMode="numeric"
-                      disabled={!owner}
-                      value={custom.inn || ""}
-                      placeholder="Vào, đồng / triệu token"
-                      onChange={(event) => setCustom(model.id, { inn: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                      className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none disabled:opacity-60"
-                    />
-                    <input
-                      inputMode="numeric"
-                      disabled={!owner}
-                      value={custom.out || ""}
-                      placeholder="Ra, đồng / triệu token"
-                      onChange={(event) => setCustom(model.id, { out: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                      className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none disabled:opacity-60"
-                    />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+            </div>
+          )}
+          <DoorHistory refresh={doorTick} />
         </div>
-        {owner && form && (
-          <button type="button" disabled={busy} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => save(form, "Đã cập nhật giá.")}>
-            Cập nhật giá
-          </button>
-        )}
-          </>
-        )}
-      </div>
-      )}
+
+        <TicketPane />
       </div>
     </section>
   );

@@ -164,8 +164,10 @@ describe("Bước 7.1 — không chồng khung", () => {
     assert.match(css, /\.studio-stage\s*\{[^}]*min-height:\s*calc\(/);
     assert.match(css, /\.studio-shell\s*\{[^}]*overflow-y:\s*auto/);
     // Trang rộng: admin và tài khoản xếp thẻ theo cột tự tăng, thẻ rộng chiếm cả hàng.
-    assert.match(css, /\.admin-grid,\s*\.account-grid\s*\{[^}]*column-width:\s*22rem/);
-    assert.match(css, /\.admin-wide[^{]*\{[^}]*column-span:\s*all/);
+    assert.match(css, /\.account-grid\s*\{[^}]*column-width:\s*22rem/);
+    assert.match(css, /\.admin-grid,\s*\.admin-flow\s*\{[^}]*display:\s*grid[^}]*repeat\(auto-fit,\s*minmax\(min\(100%,\s*22rem\),\s*1fr\)\)/);
+    assert.match(css, /\.admin-grid > \.admin-wide\s*\{[^}]*grid-column:\s*1 \/ -1/);
+    assert.match(css, /\.account-grid > \.account-wide\s*\{[^}]*column-span:\s*all/);
     assert.match(css, /\.admin-split\s*\{[^}]*display:\s*grid/);
     const adminRoute = readFileSync(new URL("../routes/admin.tsx", import.meta.url), "utf8");
     const accountRoute = readFileSync(new URL("../routes/tai-khoan.tsx", import.meta.url), "utf8");
