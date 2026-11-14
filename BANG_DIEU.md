@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | v2.20.0 trên nhánh `main` |
-| Bản đang làm | v3.28.0 trên nhánh `work`: kéo thả video có ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu. Trước đó v3.27.0: giá vốn phiếu cũ ước tính, Chủ chỉnh ngưỡng chất lượng, thuật ngữ nền tự bật. Trước đó v3.26.0 email đăng nhập dán được, Admin che tên tệp, ghi chú hai cách trả. Điều khoản `2026-11-13.4`. Trước đó v3.25.0 trả theo lượt nhận dạng Alibaba bằng key phòng |
+| Bản đang làm | v3.29.1 trên nhánh `work`: nút sáng/tối luôn hiện, chế độ gọn không làm lệch bố cục. Trước đó v3.29.0: nút sáng/tối và gọn/thoải mái, kiểm tra key trước khi dịch. Trước đó v3.28.0: kéo thả video có ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu. Trước đó v3.27.0: giá vốn phiếu cũ ước tính, Chủ chỉnh ngưỡng chất lượng, thuật ngữ nền tự bật. Trước đó v3.26.0 email đăng nhập dán được, Admin che tên tệp, ghi chú hai cách trả. Điều khoản `2026-11-13.4`. Trước đó v3.25.0 trả theo lượt nhận dạng Alibaba bằng key phòng |
 | Điều khoản | 2026-11-13.4 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -75,6 +75,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 - Mục 13.2 không được code: chủ web giữ key để tính tiền theo phút, và dán link tải video.
 - Mục 14 không được code cho đến khi người dùng yêu cầu đúng một việc. Không đổi model nhận dạng khi chưa có số đo.
 - Không bán key Groq. Không nhận link video.
+- Ngoài phạm vi mục 11, chưa sửa: `npx tsc --noEmit` còn 5 lỗi có sẵn ở `watch-run.ts`, `watch-save.ts` (thiếu `stale` trong `Seg`) và `room-alibaba.ts` (`contentType`). `src/routeTree.gen.ts` đang commit đã cũ so với các route `tai-video`, `relay-alibaba`, `room-alibaba`.
 
 ## Không làm
 

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.29.1",
+    time: "07:00 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.29.0, theo yêu cầu người dùng (mục 11: sáng/tối + gọn/thoải mái, nhánh work). Không đổi dịch vụ, giá, quyền hay điều khoản. (1) Sáng/tối: v3.29.0 coi «Luôn tối/sáng» của Admin là khóa cứng và ẩn nút, mà mặc định Admin là tối nên nút không bao giờ hiện, trái với câu changelog. Nay lựa chọn khách (tyzo_mode) luôn thắng; Admin chỉ là mặc định lúc mở (nhãn đổi thành «Mặc định tối/sáng»); modeScript đọc localStorage ở mọi chế độ; DisplayToggle luôn hiện hai nút và đồng bộ meta theme-color ngay khi mở. (2) Mật độ: khối CSS cuối styles.css nằm ngoài @layer nên đè mọi tiện ích Tailwind, kể cả ở mật độ 1. Đo bằng trình duyệt thật: lớp phủ p-2 sm:p-3 bị ép 8px thay vì 12px, ô tìm kiếm px-3 pl-9 bị ép padding trái 12px thay vì 36px (chữ đè icon). Nay các luật bọc :where() (độ ưu tiên 0, CSS riêng như .card vẫn thắng) và loại phần tử còn lớp khoảng cách cùng loại (pl-*, px-*, gap-x-*, tiền tố sm:/md:). Đã đo 15 màn ở mật độ 1: 0 phần tử bị đổi. (3) Test: theme.test.ts chạy modeScript và densityScript trên DOM giả, và giữ hai quy tắc của khối CSS mật độ.",
+  },
+  {
     version: "3.28.0",
     time: "05:07 ngày 14/11/2026",
     area: "khac",

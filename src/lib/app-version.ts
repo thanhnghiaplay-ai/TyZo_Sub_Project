@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.29.0";
+export const APP_VERSION = "3.29.1";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.29.1",
+    time: "07:00 ngày 14/11/2026",
+    title: "Nút sáng/tối luôn hiện, chế độ gọn không còn làm lệch bố cục.",
+    points: [
+      "Nút sáng/tối ở đầu trang nay luôn hiện. Bạn chọn gì, máy nhớ cho lần mở sau.",
+      "Chế độ gọn không còn làm hẹp ô tìm kiếm hay lệch khung trên màn hình rộng.",
+      "Thanh trình duyệt đổi màu theo giao diện sáng hoặc tối ngay khi mở trang.",
+    ],
+  },
   {
     version: "3.29.0",
     time: "05:46 ngày 14/11/2026",

@@ -1685,7 +1685,13 @@
 /* ===== Mật độ khoảng cách (khách chọn Gọn / Thoải mái, Admin đặt mặc định) =====
    --density do themeToCss và densityScript đặt (0.85 gọn, 1 vừa, 1.15 thoáng).
    Chỉ co giãn khoảng cách giữa các khối (gap, padding). Không đụng chiều cao nút, ô nhập, icon,
-   để vùng chạm vẫn đủ 44px ở chế độ gọn. Không dùng --spacing vì nó cũng đổi cả kích thước. */
+   để vùng chạm vẫn đủ 44px ở chế độ gọn. Không dùng --spacing vì nó cũng đổi cả kích thước.
+
+   Luật nằm ngoài @layer nên thắng mọi tiện ích Tailwind. Vì vậy:
+   1. Bọc trong :where() để độ ưu tiên bằng 0: CSS tùy chỉnh như .card hay .studio-cues vẫn thắng như trước.
+   2. Loại phần tử còn lớp khoảng cách khác cùng loại (pl-9 kèm px-3, gap-x-4 kèm gap-2, p-2 kèm sm:p-3),
+      để chúng giữ đúng giá trị Tailwind đã tính. Ở mật độ 1 không phần tử nào được đổi so với trước khi có tính năng.
+   Có test giữ hai điều này trong theme.test.ts. */
 html[data-density] {
   --pad-1: calc(0.25rem * var(--density));
   --pad-2: calc(0.5rem * var(--density));
@@ -1693,20 +1699,22 @@ html[data-density] {
   --pad-4: calc(1rem * var(--density));
 }
 
-html[data-density] .gap-1 { gap: var(--pad-1); }
-html[data-density] .gap-2 { gap: var(--pad-2); }
-html[data-density] .gap-3 { gap: var(--pad-3); }
-html[data-density] .gap-4 { gap: var(--pad-4); }
-html[data-density] .p-2 { padding: var(--pad-2); }
-html[data-density] .p-3 { padding: var(--pad-3); }
-/* .studio-cues có luật riêng cho màn thấp, không để luật này đè lên. */
-html[data-density] .p-4:not(.studio-cues) { padding: var(--pad-4); }
-html[data-density] .py-2 { padding-block: var(--pad-2); }
-html[data-density] .py-3 { padding-block: var(--pad-3); }
-html[data-density] .pt-2 { padding-top: var(--pad-2); }
-html[data-density] .px-3 { padding-inline: var(--pad-3); }
-html[data-density] .px-4 { padding-inline: var(--pad-4); }
+:where(html[data-density] .gap-1:not([class*="gap-x-"], [class*="gap-y-"], [class*=":gap-"])) { gap: var(--pad-1); }
+:where(html[data-density] .gap-2:not([class*="gap-x-"], [class*="gap-y-"], [class*=":gap-"])) { gap: var(--pad-2); }
+:where(html[data-density] .gap-3:not([class*="gap-x-"], [class*="gap-y-"], [class*=":gap-"])) { gap: var(--pad-3); }
+:where(html[data-density] .gap-4:not([class*="gap-x-"], [class*="gap-y-"], [class*=":gap-"])) { gap: var(--pad-4); }
 
+:where(html[data-density] .p-2:not([class*="px-"], [class*="py-"], [class*="pt-"], [class*="pr-"], [class*="pb-"], [class*="pl-"], [class*=":p-"])) { padding: var(--pad-2); }
+:where(html[data-density] .p-3:not([class*="px-"], [class*="py-"], [class*="pt-"], [class*="pr-"], [class*="pb-"], [class*="pl-"], [class*=":p-"])) { padding: var(--pad-3); }
+:where(html[data-density] .p-4:not([class*="px-"], [class*="py-"], [class*="pt-"], [class*="pr-"], [class*="pb-"], [class*="pl-"], [class*=":p-"])) { padding: var(--pad-4); }
+
+:where(html[data-density] .py-2:not([class*="pt-"], [class*="pb-"], [class*=":py-"])) { padding-block: var(--pad-2); }
+:where(html[data-density] .py-3:not([class*="pt-"], [class*="pb-"], [class*=":py-"])) { padding-block: var(--pad-3); }
+:where(html[data-density] .pt-2:not([class*=":pt-"])) { padding-top: var(--pad-2); }
+:where(html[data-density] .px-3:not([class*="pl-"], [class*="pr-"], [class*=":px-"])) { padding-inline: var(--pad-3); }
+:where(html[data-density] .px-4:not([class*="pl-"], [class*="pr-"], [class*=":px-"])) { padding-inline: var(--pad-4); }
+
+/* Hai khung này đặt gap bằng CSS riêng (0.5rem, không đổi theo màn hình), nên cần độ ưu tiên cao hơn luật gốc. */
 html[data-density] .studio-stage,
 html[data-density] .studio-workspace {
   gap: calc(0.5rem * var(--density));

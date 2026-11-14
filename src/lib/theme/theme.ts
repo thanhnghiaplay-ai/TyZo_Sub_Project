@@ -62,10 +62,11 @@ export const DENSITIES = [
 ] as const;
 export type Density = (typeof DENSITIES)[number][0];
 
+/** Chế độ lúc khách mở trang lần đầu. Khách bấm nút sáng/tối thì lựa chọn của khách luôn thắng. */
 export const MODES = [
   ["auto", "Theo máy khách"],
-  ["dark", "Luôn tối"],
-  ["light", "Luôn sáng"],
+  ["dark", "Mặc định tối"],
+  ["light", "Mặc định sáng"],
 ] as const;
 export type Mode = (typeof MODES)[number][0];
 
@@ -334,15 +335,19 @@ export function themeToCss(theme: Theme): string {
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 
-/** Chọn chế độ sáng/tối ban đầu. Chạy trước khi vẽ để không nháy màu. Khách chọn tay thì lưu ở localStorage. */
+/**
+ * Chọn chế độ sáng/tối ban đầu. Chạy trước khi vẽ để không nháy màu.
+ * Thứ tự: lựa chọn khách đã lưu (localStorage) → mặc định Admin (tối/sáng) → màu hệ thống khi Admin để «auto».
+ * Khách luôn đổi được, nên nút sáng/tối ở đầu trang luôn hiện.
+ */
 export function modeScript(mode: Mode): string {
-  // Admin chọn "Luôn tối/sáng" thì khách không đổi được. Chỉ chế độ "auto" mới nhìn localStorage và màu hệ thống.
-  if (mode === "dark" || mode === "light") {
-    return `document.documentElement.setAttribute('data-theme',${JSON.stringify(mode)});`;
-  }
+  const fallback =
+    mode === "dark" || mode === "light"
+      ? `m=${JSON.stringify(mode)};`
+      : "try{m=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){m='dark'}";
   return (
     `(function(){var m=null;try{m=localStorage.getItem(${JSON.stringify(MODE_KEY)})}catch(e){}` +
-    "if(m!=='dark'&&m!=='light'){try{m=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){m='dark'}}" +
+    `if(m!=='dark'&&m!=='light'){${fallback}}` +
     "document.documentElement.setAttribute('data-theme',m)})();"
   );
 }
