@@ -23,8 +23,9 @@ export const openRunTicket = createServerFn({ method: "POST" })
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
     const { parseRunDesk, parseModelList, dayStartIso } = await import("@/lib/run-desk");
-    const { estimateHold } = await import("@/lib/run-bill");
+    const { estimateHold, estimateHoldSplit } = await import("@/lib/run-bill");
     const { loadPriceBook } = await import("@/lib/run-board.server");
+    const { ALIBABA_ROWS } = await import("@/lib/sub/alibaba-catalog");
     const { openTicketWith } = await import("@/lib/run-ticket");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
@@ -33,13 +34,26 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const offered = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
     const models = parseModelList(offered[0]?.value);
     if (!models) throw new Error("Phòng chưa đồng bộ danh sách model cho cửa trả theo lượt.");
+    const aliAsr = data.asrModel === "qwen-audio-3.0-asr-flash-filetrans";
     const auto = data.chatModel === "auto";
-    if (!models.includes(data.asrModel) || (!auto && !models.includes(data.chatModel))) throw new Error("Model này không có trong cửa trả theo lượt.");
+    if ((!aliAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
+      throw new Error("Model này không có trong cửa trả theo lượt.");
+    }
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
-    // Chế độ Auto chưa biết sẽ dùng model nào, nên giữ theo model dịch đắt nhất. Phần thừa được nhả khi xong.
-    const chatModel = auto ? dearestChatModel(book, models) : data.chatModel;
-    const hold = chatModel ? estimateHold(book, data.asrModel, chatModel, data.seconds) : null;
+    let hold: number | null = null;
+    if (aliAsr) {
+      const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
+      if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");
+      const aliDeskRaw = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
+      const aliDesk = parseRunDesk(aliDeskRaw[0]?.value);
+      const aliBook = { rate: book.rate, rows: ALIBABA_ROWS, desk: { markup: aliDesk.markup, custom: aliDesk.custom } };
+      const chatModel = auto ? dearestChatModel(book, models) : data.chatModel;
+      hold = chatModel ? estimateHoldSplit(aliBook, book, data.asrModel, chatModel, data.seconds) : null;
+    } else {
+      const chatModel = auto ? dearestChatModel(book, models) : data.chatModel;
+      hold = chatModel ? estimateHold(book, data.asrModel, chatModel, data.seconds) : null;
+    }
     if (hold == null) throw new Error("Model này chưa có giá niêm yết ở cửa trả theo lượt.");
     const id = randomBytes(12).toString("hex");
     const result = await openTicketWith(sql, {

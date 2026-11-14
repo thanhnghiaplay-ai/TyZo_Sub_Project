@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.24.1";
+export const APP_VERSION = "3.29.3";
 
 export type ReleaseNote = {
   version: string;
@@ -11,9 +11,89 @@ export type ReleaseNote = {
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
   {
+    version: "3.29.3",
+    time: "07:22 ngày 14/11/2026",
+    title: "Báo rõ khi file có loại âm thanh không đọc được, kèm cách đổi.",
+    points: [
+      "File MKV, AVI hay âm thanh AC3/DTS mà trình duyệt không đọc được nay được nhận ra và nói rõ.",
+      "Lỗi ghi sẵn lệnh đổi sang M4A với đúng tên file của bạn, chỉ cần chép và chạy.",
+      "File chỉ hỏng hoặc tải dở thì báo là hỏng, không đổ lỗi cho loại âm thanh.",
+    ],
+  },
+  {
+    version: "3.29.2",
+    time: "07:19 ngày 14/11/2026",
+    title: "Dịch không còn treo mãi khi Groq trả dữ liệu dở dang.",
+    points: [
+      "Nếu Groq gửi dữ liệu nửa chừng rồi đứng im, app tự dừng sau 2 phút và thử lại.",
+      "Lần thử lại không làm mất phần đã nhận dạng hay đã dịch.",
+      "Báo lỗi rõ ràng bằng tiếng Việt thay vì quay mãi không có kết quả.",
+    ],
+  },
+  {
+    version: "3.29.1",
+    time: "07:00 ngày 14/11/2026",
+    title: "Nút sáng/tối luôn hiện, chế độ gọn không còn làm lệch bố cục.",
+    points: [
+      "Nút sáng/tối ở đầu trang nay luôn hiện. Bạn chọn gì, máy nhớ cho lần mở sau.",
+      "Chế độ gọn không còn làm hẹp ô tìm kiếm hay lệch khung trên màn hình rộng.",
+      "Thanh trình duyệt đổi màu theo giao diện sáng hoặc tối ngay khi mở trang.",
+    ],
+  },
+  {
+    version: "3.29.0",
+    time: "05:46 ngày 14/11/2026",
+    title: "Chuyển sáng/tối, chọn giao diện gọn hoặc thoải mái, kiểm tra key trước khi dịch.",
+    points: [
+      "Hai nút nhỏ ở đầu trang: đổi sáng/tối và gọn/thoải mái. Máy nhớ lựa chọn của bạn.",
+      "Dán key Groq xong, app tự kiểm tra key, hạn mức và model đã chọn có dùng được không.",
+      "Key sai hoặc thiếu model thì báo ngay, không tốn lượt thử.",
+    ],
+  },
+  {
+    version: "3.28.0",
+    time: "05:07 ngày 14/11/2026",
+    title: "Kéo thả video, tiến trình theo từng bước, hướng dẫn lần đầu.",
+    points: [
+      "Kéo thả video vào khung phát, có ảnh xem trước, tên tệp và thời lượng.",
+      "Thanh tiến trình chia bước: cắt, nhận dạng, dịch, sửa lại.",
+      "Lần đầu vào có hướng dẫn 4 bước. Bấm nút dấu hỏi để xem lại.",
+    ],
+  },
+  {
+    version: "3.27.0",
+    time: "04:34 ngày 14/11/2026",
+    title: "Thuật ngữ nền tự bật theo ngôn ngữ nguồn.",
+    points: [
+      "Chọn một thể loại thì app tự thêm bộ thuật ngữ nền của ngôn ngữ nguồn.",
+      "Có ô để tắt nếu bạn chỉ muốn dùng bộ của thể loại đã chọn.",
+      "Thể loại 18+ vẫn dùng bộ riêng, không kèm bộ nền.",
+    ],
+  },
+  {
+    version: "3.26.0",
+    time: "04:25 ngày 14/11/2026",
+    title: "Đăng nhập dán được cả email, cách trả rõ hơn.",
+    points: [
+      "Ô email nhận địa chỉ dán nguyên, không bắt gõ tên rồi chọn gợi ý.",
+      "Hai cách trả Key của tôi và Trả theo lượt có ghi chú ngay bên dưới.",
+      "Rê chuột vào từng cách trả để xem tiền được tính thế nào.",
+    ],
+  },
+  {
+    version: "3.25.0",
+    time: "01:38 ngày 13/11/2026",
+    title: "Trả theo lượt nhận dạng bằng Alibaba.",
+    points: [
+      "Gói nhận dạng Alibaba dùng key của phòng.",
+      "Cần link file trực tiếp, không phải trang xem.",
+      "Dịch vẫn bằng Groq. Việc Alibaba khác chưa chạy.",
+    ],
+  },
+  {
     version: "3.24.1",
     time: "00:49 ngày 13/11/2026",
-    title: "Trang quản lý không còn đứng sau bản mới.",
+    title: "Trang quản lý tự mở lại sau mỗi bản cập nhật.",
     points: [
       "Sau khi cập nhật, trang tự thử lại thay vì đứng im.",
       "Quyền hiện đúng khi trang đã mở xong.",

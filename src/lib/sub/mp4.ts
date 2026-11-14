@@ -129,6 +129,7 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
   if (!moov) throw new Error("không tìm thấy dữ liệu moov");
   const root = boxes(moov, 0, moov.length)[0];
   let sawAudio = false;
+  const audioKinds: string[] = [];
   for (const trak of boxes(moov, root.s, root.e).filter((x) => x.type === "trak")) {
     const mdia = child(moov, trak, "mdia");
     const hdlr = child(moov, mdia, "hdlr");
@@ -139,6 +140,7 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
     const stsd = child(moov, stbl, "stsd");
     if (!mdhd || !stbl || !stsd) continue;
     const entry = boxes(moov, stsd.s + 8, stsd.e)[0];
+    if (entry && !audioKinds.includes(entry.type)) audioKinds.push(entry.type);
     if (!entry || entry.type !== "mp4a") continue;
     const ver = u16(moov, entry.s + 8);
     const esds = boxes(moov, entry.s + 28 + (ver === 1 ? 16 : ver === 2 ? 36 : 0), entry.e).find((x) => x.type === "esds");
@@ -218,7 +220,7 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
       },
     };
   }
-  throw new Error(sawAudio ? "âm thanh không phải AAC (có thể là AC3/DTS/Opus)" : "không có luồng âm thanh");
+  throw new Error(sawAudio ? `âm thanh không phải AAC-LC (${audioKinds.join(", ") || "không rõ loại"})` : "không có luồng âm thanh");
 }
 
 export function hostOf(url: string) {

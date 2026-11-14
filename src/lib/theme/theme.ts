@@ -62,10 +62,11 @@ export const DENSITIES = [
 ] as const;
 export type Density = (typeof DENSITIES)[number][0];
 
+/** Chế độ lúc khách mở trang lần đầu. Khách bấm nút sáng/tối thì lựa chọn của khách luôn thắng. */
 export const MODES = [
   ["auto", "Theo máy khách"],
-  ["dark", "Luôn tối"],
-  ["light", "Luôn sáng"],
+  ["dark", "Mặc định tối"],
+  ["light", "Mặc định sáng"],
 ] as const;
 export type Mode = (typeof MODES)[number][0];
 
@@ -334,16 +335,60 @@ export function themeToCss(theme: Theme): string {
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 
-/** Chọn chế độ sáng/tối ban đầu. Chạy trước khi vẽ để không nháy màu. Khách chọn tay thì lưu ở localStorage. */
+/**
+ * Chọn chế độ sáng/tối ban đầu. Chạy trước khi vẽ để không nháy màu.
+ * Thứ tự: lựa chọn khách đã lưu (localStorage) → mặc định Admin (tối/sáng) → màu hệ thống khi Admin để «auto».
+ * Khách luôn đổi được, nên nút sáng/tối ở đầu trang luôn hiện.
+ */
 export function modeScript(mode: Mode): string {
-  // Admin chọn "Luôn tối/sáng" thì khách không đổi được. Chỉ chế độ "auto" mới nhìn localStorage và màu hệ thống.
-  if (mode === "dark" || mode === "light") {
-    return `document.documentElement.setAttribute('data-theme',${JSON.stringify(mode)});`;
-  }
+  const fallback =
+    mode === "dark" || mode === "light"
+      ? `m=${JSON.stringify(mode)};`
+      : "try{m=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){m='dark'}";
   return (
-    "(function(){var m=null;try{m=localStorage.getItem('tyzo_mode')}catch(e){}" +
-    "if(m!=='dark'&&m!=='light'){try{m=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){m='dark'}}" +
+    `(function(){var m=null;try{m=localStorage.getItem(${JSON.stringify(MODE_KEY)})}catch(e){}` +
+    `if(m!=='dark'&&m!=='light'){${fallback}}` +
     "document.documentElement.setAttribute('data-theme',m)})();"
+  );
+}
+
+/* ---------- Khách tự chọn: sáng/tối và mật độ ---------- */
+
+export const MODE_KEY = "tyzo_mode";
+export const DENSITY_KEY = "tyzo_density";
+
+export const USER_DENSITIES = [
+  ["compact", "Gọn"],
+  ["comfortable", "Thoải mái"],
+] as const;
+export type UserDensity = (typeof USER_DENSITIES)[number][0];
+
+export function adminDensityValue(density: Density): number {
+  return DENSITIES.find((d) => d[0] === density)?.[2] ?? 1;
+}
+
+/** Hệ số khoảng cách của lựa chọn khách. «Thoải mái» không bao giờ chật hơn mức vừa. */
+export function densityValue(choice: UserDensity, admin: Density): number {
+  return choice === "compact" ? 0.85 : Math.max(1, adminDensityValue(admin));
+}
+
+/** Chưa chọn thì theo Admin: Admin đặt «Gọn» thì gọn, còn lại là thoải mái. */
+export function defaultUserDensity(admin: Density): UserDensity {
+  return admin === "compact" ? "compact" : "comfortable";
+}
+
+export function pickUserDensity(raw: unknown, admin: Density): UserDensity {
+  return raw === "compact" || raw === "comfortable" ? raw : defaultUserDensity(admin);
+}
+
+/** Chạy trước khi vẽ, như modeScript. Đặt data-density và --density từ lựa chọn đã lưu của khách. */
+export function densityScript(admin: Density): string {
+  const roomy = Math.max(1, adminDensityValue(admin));
+  return (
+    `(function(){var d=null;try{d=localStorage.getItem(${JSON.stringify(DENSITY_KEY)})}catch(e){}` +
+    `if(d!=='compact'&&d!=='comfortable')d=${JSON.stringify(defaultUserDensity(admin))};` +
+    `var e=document.documentElement;e.setAttribute('data-density',d);` +
+    `e.style.setProperty('--density',String(d==='compact'?0.85:${roomy}))})();`
   );
 }
 

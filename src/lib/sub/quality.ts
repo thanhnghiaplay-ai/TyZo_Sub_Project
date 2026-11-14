@@ -17,6 +17,66 @@ export const HEALTH_YELLOW_NOT_HIGH_SHARE = 0.4;
 export const HEALTH_YELLOW_DECODE_SHARE = 0.03;
 export const HEALTH_YELLOW_FILTER_RATE = 0.3;
 
+/** Bộ ngưỡng Chủ chỉnh được trong Admin. Mặc định là các hằng số ở trên. */
+export type QualityThresholds = {
+  highLogprob: number;
+  lowLogprob: number;
+  highCompression: number;
+  minSegments: number;
+  redLowShare: number;
+  redDecodeShare: number;
+  yellowLowShare: number;
+  yellowNotHighShare: number;
+  yellowDecodeShare: number;
+  yellowFilterRate: number;
+};
+
+export const DEFAULT_QUALITY_THRESHOLDS: QualityThresholds = {
+  highLogprob: QUALITY_HIGH_LOGPROB,
+  lowLogprob: QUALITY_LOW_LOGPROB,
+  highCompression: QUALITY_HIGH_COMPRESSION,
+  minSegments: QUALITY_MIN_SEGMENTS,
+  redLowShare: HEALTH_RED_LOW_SHARE,
+  redDecodeShare: HEALTH_RED_DECODE_SHARE,
+  yellowLowShare: HEALTH_YELLOW_LOW_SHARE,
+  yellowNotHighShare: HEALTH_YELLOW_NOT_HIGH_SHARE,
+  yellowDecodeShare: HEALTH_YELLOW_DECODE_SHARE,
+  yellowFilterRate: HEALTH_YELLOW_FILTER_RATE,
+};
+
+const THRESHOLD_KEYS = Object.keys(DEFAULT_QUALITY_THRESHOLDS) as Array<keyof QualityThresholds>;
+
+/** Kiểm tra bộ ngưỡng Chủ nhập. Sai thì báo lỗi tiếng Việt, không tự sửa im lặng. */
+export function checkQualityThresholds(input: unknown): QualityThresholds {
+  const raw = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
+  const out = { ...DEFAULT_QUALITY_THRESHOLDS };
+  for (const key of THRESHOLD_KEYS) {
+    const value = Number(raw[key]);
+    if (raw[key] === undefined || raw[key] === null || raw[key] === "" || !Number.isFinite(value)) throw new Error("Ngưỡng chất lượng thiếu hoặc không phải số.");
+    out[key] = value;
+  }
+  if (!(out.lowLogprob < out.highLogprob)) throw new Error("Mốc độ tin thấp phải nhỏ hơn mốc độ tin cao.");
+  if (out.highLogprob > 0 || out.lowLogprob < -3) throw new Error("Mốc độ tin nằm trong khoảng −3 đến 0.");
+  if (out.highCompression < 1 || out.highCompression > 10) throw new Error("Tỷ lệ nén phải từ 1 đến 10.");
+  if (!Number.isInteger(out.minSegments) || out.minSegments < 1 || out.minSegments > 200) throw new Error("Số câu tối thiểu phải là số nguyên từ 1 đến 200.");
+  for (const key of ["redLowShare", "redDecodeShare", "yellowLowShare", "yellowNotHighShare", "yellowDecodeShare", "yellowFilterRate"] as const) {
+    if (out[key] < 0 || out[key] > 1) throw new Error("Các tỷ lệ phải từ 0 đến 1.");
+  }
+  if (out.yellowLowShare >= out.redLowShare) throw new Error("Ngưỡng vàng về câu thấp phải nhỏ hơn ngưỡng đỏ.");
+  if (out.yellowDecodeShare >= out.redDecodeShare) throw new Error("Ngưỡng vàng về lỗi giải mã phải nhỏ hơn ngưỡng đỏ.");
+  return out;
+}
+
+/** Đọc bộ ngưỡng đã lưu. Hỏng hoặc chưa có thì dùng mặc định, không làm hỏng lần chạy. */
+export function parseQualityThresholds(raw: string | null | undefined): QualityThresholds {
+  if (!raw) return { ...DEFAULT_QUALITY_THRESHOLDS };
+  try {
+    return checkQualityThresholds(JSON.parse(raw));
+  } catch {
+    return { ...DEFAULT_QUALITY_THRESHOLDS };
+  }
+}
+
 export type Health = "green" | "yellow" | "red" | "unknown";
 export type Band = "high" | "check" | "low" | "unknown";
 
@@ -74,11 +134,11 @@ export function confidenceOf(logprob: number | undefined | null): number | null 
   return Math.min(1, Math.max(0, Math.exp(logprob)));
 }
 
-export function bandOf(seg: { avg_logprob?: number; compression_ratio?: number }): Band {
+export function bandOf(seg: { avg_logprob?: number; compression_ratio?: number }, th: QualityThresholds = DEFAULT_QUALITY_THRESHOLDS): Band {
   const lp = seg.avg_logprob;
   if (typeof lp !== "number" || !Number.isFinite(lp)) return "unknown";
-  if (lp < QUALITY_LOW_LOGPROB || (seg.compression_ratio ?? 0) > QUALITY_HIGH_COMPRESSION) return "low";
-  if (lp >= QUALITY_HIGH_LOGPROB) return "high";
+  if (lp < th.lowLogprob || (seg.compression_ratio ?? 0) > th.highCompression) return "low";
+  if (lp >= th.highLogprob) return "high";
   return "check";
 }
 
@@ -103,8 +163,8 @@ export function healthOf(input: {
   bands: Bands;
   parts: { total: number; decodeFail: number };
   appFiltered: number;
-}): { health: Health; reason: string } {
-  if (input.segments < QUALITY_MIN_SEGMENTS) return { health: "unknown", reason: "Chưa đủ câu để đánh giá." };
+}, th: QualityThresholds = DEFAULT_QUALITY_THRESHOLDS): { health: Health; reason: string } {
+  if (input.segments < th.minSegments) return { health: "unknown", reason: "Chưa đủ câu để đánh giá." };
   const known = input.bands.high + input.bands.check + input.bands.low;
   if (known === 0) return { health: "unknown", reason: "Whisper không trả độ tin." };
   const lowShare = input.bands.low / known;
@@ -112,12 +172,12 @@ export function healthOf(input: {
   const decode = input.parts.total ? input.parts.decodeFail / input.parts.total : 0;
   const filter = input.appFiltered / Math.max(1, input.segments);
   const pct = (n: number) => `${Math.round(n * 100)}%`;
-  if (lowShare > HEALTH_RED_LOW_SHARE) return { health: "red", reason: `${pct(lowShare)} câu có độ tin thấp.` };
-  if (decode > HEALTH_RED_DECODE_SHARE) return { health: "red", reason: `${pct(decode)} đoạn không giải mã được.` };
-  if (lowShare > HEALTH_YELLOW_LOW_SHARE) return { health: "yellow", reason: `${pct(lowShare)} câu có độ tin thấp.` };
-  if (notHigh > HEALTH_YELLOW_NOT_HIGH_SHARE) return { health: "yellow", reason: `${pct(notHigh)} câu chưa đạt độ tin cao.` };
-  if (decode > HEALTH_YELLOW_DECODE_SHARE) return { health: "yellow", reason: `${pct(decode)} đoạn không giải mã được.` };
-  if (filter > HEALTH_YELLOW_FILTER_RATE) return { health: "yellow", reason: `App lọc bỏ ${pct(filter)} câu Whisper trả về.` };
+  if (lowShare > th.redLowShare) return { health: "red", reason: `${pct(lowShare)} câu có độ tin thấp.` };
+  if (decode > th.redDecodeShare) return { health: "red", reason: `${pct(decode)} đoạn không giải mã được.` };
+  if (lowShare > th.yellowLowShare) return { health: "yellow", reason: `${pct(lowShare)} câu có độ tin thấp.` };
+  if (notHigh > th.yellowNotHighShare) return { health: "yellow", reason: `${pct(notHigh)} câu chưa đạt độ tin cao.` };
+  if (decode > th.yellowDecodeShare) return { health: "yellow", reason: `${pct(decode)} đoạn không giải mã được.` };
+  if (filter > th.yellowFilterRate) return { health: "yellow", reason: `App lọc bỏ ${pct(filter)} câu Whisper trả về.` };
   return { health: "green", reason: "Độ tin cao, ít đoạn lỗi." };
 }
 
@@ -126,7 +186,9 @@ export function summarizeQuality(input: {
   rejects: RejectEntry[];
   kept: number;
   lang?: LangCheckReport | null;
+  thresholds?: QualityThresholds;
 }): QualitySummary {
+  const th = input.thresholds ?? DEFAULT_QUALITY_THRESHOLDS;
   const bands: Bands = { high: 0, check: 0, low: 0, unknown: 0 };
   const conf: Array<{ value: number; weight: number }> = [];
   const parts = { total: 0, whisper: 0, empty: 0, silence: 0, decodeFail: 0 };
@@ -150,7 +212,7 @@ export function summarizeQuality(input: {
       if (!text) continue;
       segments++;
       row.segments++;
-      bands[bandOf(seg)]++;
+      bands[bandOf(seg, th)]++;
       const c = confidenceOf(seg.avg_logprob);
       if (c !== null) {
         const item = { value: c, weight: Math.max(1, text.length) };
@@ -159,7 +221,7 @@ export function summarizeQuality(input: {
       }
     }
   }
-  const { health, reason } = healthOf({ segments, bands, parts, appFiltered: input.rejects.length });
+  const { health, reason } = healthOf({ segments, bands, parts, appFiltered: input.rejects.length }, th);
   const lang = input.lang;
   return {
     version: 1,

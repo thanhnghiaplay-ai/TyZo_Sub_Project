@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-13 00:49 (UTC+7) — v3.24.1 trên nhánh work: sau bản mới trang quản lý không đứng im, không hiện sai quyền khi máy chủ đang khởi động. |
+| **Cập nhật lần cuối** | 2026-11-14 07:22 (UTC+7) — v3.29.3 trên nhánh work: P3-14, lỗi giải mã âm thanh nói rõ loại file và đưa lệnh ffmpeg. Trước đó v3.29.2 trên nhánh work: P3-13, hạn chót đọc hết phản hồi Groq (đầu 120 giây, thân 120 giây, phía máy chủ 100 giây). Trước đó v3.29.1 trên nhánh work: sửa mục 11 (nút sáng/tối luôn hiện, chế độ gọn không đè Tailwind). Trước đó v3.29.0 trên nhánh work: P3 (sáng/tối + mật độ do khách chọn, kiểm tra key và model trước khi dịch). Trước đó v3.28.0 P2 (kéo thả video + ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu). Trước đó v3.27.0 P1 (giá vốn phiếu cũ, ngưỡng chất lượng Chủ chỉnh, thuật ngữ nền tự bật). Điều khoản 2026-11-13.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v3.24.1** trên nhánh `work`. Điều khoản `2026-11-13.3`. |
+| **Phiên bản code** | **v3.29.3** trên nhánh `work`. Điều khoản `2026-11-13.4`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -90,7 +90,7 @@
 | 52 | Ghi nhớ email | 🟡 Đã gắn | Ô trên form đăng nhập. Chỉ lưu email trên máy, không lưu mật khẩu. |
 | 53 | Tóm tắt phiên bản | 🟡 Đã gắn | Bấm hoặc rê chuột vào Vx.x.x ở điều khoản, phòng dịch và Admin. Danh sách nằm ở `CHANGELOG` trong `src/lib/app-version.ts`. Từ v2.5.1, mỗi dòng viết đủ ý và có mốc thời gian. Bản chưa xem thì số sáng nhẹ. |
 | 54 | Nâng cấp nhận dạng và dịch | ⚪ Để sau | User chốt 2026-11-06: làm sau, chưa code. Thứ tự và việc cấm nằm ở mục 14. Không đổi Whisper Turbo trước khi có số đo. |
-| 58 | Giao diện mới, giai đoạn 1: nền móng | 🟡 Đã có test, chưa thử tab bằng Chủ thật | Token sáng/tối, phông trong danh sách, icon theo chỗ đặt (Phosphor, 6 độ đậm), nháp/công bố/lịch sử, chặn chữ khó đọc. Tab Admin «Giao diện» (chỉ Chủ). Mặc định tối nên khách chưa thấy đổi. Chưa dựng lại bố cục Studio và các trang (giai đoạn 2 trở đi). Màu cứng còn lại: `quality-view`, `top-up`, `admin-desk`, ô màu phụ đề trong `studio.tsx`, logo SVG. Test: `src/lib/theme/theme.test.ts`. |
+| 58 | Giao diện mới, giai đoạn 1: nền móng | 🟡 Đã có test, chưa thử tab bằng Chủ thật | Token sáng/tối, phông trong danh sách, icon theo chỗ đặt (Phosphor, 6 độ đậm), nháp/công bố/lịch sử, chặn chữ khó đọc. Tab Admin «Giao diện» (chỉ Chủ). Mặc định tối nên khách chưa thấy đổi. Từ v3.29.1 khách tự đổi sáng/tối và gọn/thoải mái được ở mọi cấu hình; Admin chỉ đặt mặc định lúc mở. Chưa dựng lại bố cục Studio và các trang (giai đoạn 2 trở đi). Màu cứng còn lại: `quality-view`, `top-up`, `admin-desk`, ô màu phụ đề trong `studio.tsx`, logo SVG. Test: `src/lib/theme/theme.test.ts`. |
 | 57 | Số liệu chất lượng về Admin | 🟡 Đã có test và build, chưa thử đăng nhập thật | v3.13.0. Tab «Chất lượng» (Chủ): đèn, thanh ba màu, theo ngày, ngôn ngữ, model, phiên bản, riêng key riêng/key phòng và tổng. Điều khoản 2026-11-12.3. |
 | 56 | Kiểm tra ngôn ngữ từng đoạn | 🟡 Đã có test, chưa chạy phim thật | v3.12.0. Ô tùy chọn, mặc định tắt. Đoạn nghi lệch ngôn ngữ hoặc độ tin thấp được nhận dạng lại một lần không ép ngôn ngữ, ngân sách 120 giây, chỉ đổi khi tốt hơn rõ. Test: `lang-check.test.ts`. Chưa đo trên phim lẫn tiếng. |
 | 55 | Trả theo lượt | 🟡 Đã trừ ví theo giá Groq cộng chênh | Từ v2.17.0 giữ tiền trước, trừ số thực, nhả phần thừa. v2.18.0: hoàn và nhả giữ không cộng hai lần. Key phòng không trả nguyên văn về trình duyệt. |
@@ -115,6 +115,14 @@ Nguyên văn:
 Chấp nhận nâng cấp, làm từng bước»
 
 Bước 5 (v3.23.0): trả theo lượt chọn gói. Bước 6 và 7 (v3.24.0): giá = giá gốc cộng phần trăm, khách chỉ thấy số đã cộng. Gói Alibaba vẫn chưa gọi.
+
+### 3.12. Gói Alibaba vẫn bị chặn khi trả theo lượt (user 2026-11-13)
+
+Nguyên văn:
+
+«Tôi đã thêm api alibaba, set gói, tải link phim. Nhưng vẫn báo như hình»
+
+Hình báo: «Gói này có việc Alibaba. Cửa trả theo lượt chưa gọi key Alibaba của phòng.»
 
 ### 3.11. Đơ và sai quyền sau mỗi lần cập nhật (user 2026-11-13)
 
@@ -251,6 +259,14 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-14 07:22 — v3.29.3 trên work (theo yêu cầu: P3 mục 14, thêm codec hoặc báo lỗi rõ kèm hướng dẫn convert). Chọn báo lỗi rõ, không thêm bộ giải mã (AC3/DTS/TrueHD/WMA trình duyệt không đọc; không mang ffmpeg.wasm, trái mục «Không làm» về bộ giải mã riêng). `src/lib/sub/media-sniff.ts`: nhận gói file và loại âm thanh từ 2 MB đầu (MP4 theo fourcc, MKV theo CodecID, AC3 thô theo bsid...), `describeDecodeFailure` ra câu tiếng Việt kèm lệnh `ffmpeg -i "tên file" ... am-thanh.m4a`. `decodeTo16k` dùng câu này thay câu chung chung; `mp4.ts` ghi loại mẫu âm thanh đã thấy. Test mới `media-sniff.test.ts` (15 ca), đã thêm vào `npm test`. Giới hạn: MKV có bảng track sau 2 MB thì chỉ báo tên gói. Không đổi điều khoản. Chưa chạy `npx tsc --noEmit` và `npm test` đầy đủ (không cài được node_modules); tsc riêng các file đụng tới không lỗi. Chưa thử với file MKV/AC3 thật.
+- 2026-11-14 07:19 — v3.29.2 trên work (theo yêu cầu: P3 mục 13, timeout đọc full response Groq). Lỗi: hạn 120 giây chỉ bao tới lúc có đầu phản hồi, `response.json()` / `blob()` không có hạn, nên Groq gửi đầu rồi đứng thân thì lần dịch treo mãi. Sửa: `src/lib/sub/http-deadline.ts` (hai hạn riêng, đầu và thân), `requestWithRetry` đọc thân trong vòng thử lại (quá hạn thì thử lại, hủy vẫn là AbortError), `listModelIds` 30 giây, `speakOrpheus` có hạn, `room-groq.ts` đặt 100 giây cho yêu cầu gửi Groq và trả 504 khi quá hạn. Test mới `http-deadline.test.ts` (7 ca, máy chủ HTTP cục bộ), đã thêm vào `npm test`. Không đổi điều khoản. Chưa chạy `npx tsc --noEmit` và `npm test` đầy đủ (không cài được node_modules); tsc riêng `groq.ts` và `http-deadline.ts` không lỗi. Chưa thử với Groq thật.
+- 2026-11-14 07:00 — v3.29.1 trên work (theo yêu cầu: sửa mục 11, sáng/tối + gọn/thoải mái). (a) `modeScript` đọc lựa chọn khách ở mọi chế độ Admin, `DisplayToggle` luôn hiện hai nút và đồng bộ `theme-color` lúc mở; nhãn Admin «Luôn tối/sáng» đổi thành «Mặc định tối/sáng». Trước đó nút sáng/tối ẩn khi Admin để tối, mà mặc định là tối. (b) Khối CSS mật độ ở cuối `styles.css` đè Tailwind vì nằm ngoài `@layer`: lớp phủ `p-2 sm:p-3` ép 8px thay 12px, ô tìm kiếm `px-3 pl-9` mất padding icon. Nay bọc `:where()` và loại phần tử có lớp cùng loại. Đo bằng Chrome thật: 15 màn ở mật độ 1, 0 phần tử bị đổi; chế độ Gọn co gap 8px còn 6,8px, không tràn ngang. Test `theme.test.ts` (18 ca). Ngoài phạm vi, chưa sửa: 5 lỗi `tsc` có sẵn (`watch-run.ts`, `watch-save.ts`, `room-alibaba.ts`) (`routeTree.gen.ts` đã sinh lại, commit kèm); ghi ở `BANG_DIEU.md` mục «Còn mở». Không đổi điều khoản.
+- 2026-11-14 05:46 — v3.29.0 trên work (theo yêu cầu). P3: (11) nút sáng/tối và nút Gọn/Thoải mái ở đầu trang (`display-toggle.tsx`), lưu `tyzo_mode` và `tyzo_density`; Admin đặt «Luôn sáng/tối» thì nút sáng/tối ẩn; `--density` giờ có tác dụng thật lên gap và padding (không đổi chiều cao nút, giữ vùng chạm 44px). (12) Dán key Groq thì 0,8 giây sau tự gọi danh sách model, báo dưới ô key: key sai, bị giới hạn 429, thiếu model nhận dạng hoặc dịch. `start` kiểm lại trước khi giữ tiền hay trừ lượt thử, mất mạng hoặc Groq 5xx thì không chặn. Groq không có lệnh hỏi số dư hạn mức nên chỉ hiện số còn lại khi Groq gửi kèm. Không đổi điều khoản. Chưa thử trên trình duyệt thật (không vào được phòng chiếu vì cần đăng nhập).
+- 2026-11-14 05:07 — v3.28.0 trên work (theo yêu cầu). P2: (8) khung chọn video lớn trên player, kéo thả, ảnh xem trước lấy trên máy; (9) thanh tiến trình Cắt / Nhận dạng / Dịch / Sửa lại; (10) hướng dẫn lần đầu 4 bước, nút dấu hỏi mở lại. Không đổi điều khoản. Chưa thử trình duyệt thật.
+- 2026-11-14 04:34 — v3.27.0 trên work (Claude sửa theo yêu cầu). P1: (5) migration 0021 `base_est`, nút Chủ «Ước tính giá vốn» cho phiếu cũ, Lời lỗ ghi rõ phần ước tính. (6) Chủ chỉnh 10 ngưỡng chất lượng trong Admin, chưa chỉnh theo số đo thật vì chưa có số. (7) Thể loại thường tự kèm bộ `auto` của ngôn ngữ nguồn, khách tắt được; adult, sex và auto đứng riêng. Chỉ đổi chữ và hành vi mặc định, không đổi điều khoản. Chưa thử trên điện thoại thật.
+- 2026-11-14 04:25 — v3.26.0 trên work (Claude sửa theo yêu cầu). P0: ô email đăng nhập type=email, dán nguyên địa chỉ; viết lại câu changelog 3.24.1; che tên tệp trong Admin → Việc và nút Hoàn phiếu (`mask-file-name.ts`); ghi chú và tooltip cho Key của tôi / Trả theo lượt. Chỉ đổi chữ, không đổi điều khoản. `tsc` còn 10 lỗi cũ ở watch-run, watch-save, relay-alibaba, room-alibaba, tai-video, tai-khoan (không thuộc các file đã sửa, chưa xử lý). Test liên quan 22/22 xanh. Chưa thử trên điện thoại thật.
+- 2026-11-13 01:38 — v3.25.0 trên work. Trả theo lượt nhận dạng Alibaba bằng key phòng, cần link file trực tiếp. Việc Alibaba ngoài nhận dạng vẫn chặn. Điều khoản 2026-11-13.4.
 - 2026-11-13 00:49 — v3.24.1 trên work. Sau bản mới: không giữ khóa migration khi không có file mới, bảng giá không chờ tải dài, trang quản lý tự thử lại và không hiện sai quyền khi đang khởi động.
 - 2026-11-13 00:25 — v3.24.0 trên work, bước 6 và 7. `quoteTurnPacks` trả ước tính và khoản giữ, không trả giá gốc. Chủ sửa phần trăm Alibaba trên khung gói. Phần trăm Groq vẫn ở bàn Việc. Điều khoản 2026-11-13.3.
 - 2026-11-13 00:20 — v3.23.0 trên work, bước 5. Cửa trả theo lượt hiện gói đã bật. Khách chọn gói thì model nhận dạng và dịch theo gói, chạy bằng key của phòng. Gói có việc Alibaba bị chặn, chưa gọi. Chưa có gói thì vẫn Whisper. Không hiện giá gốc. Điều khoản 2026-11-13.2.

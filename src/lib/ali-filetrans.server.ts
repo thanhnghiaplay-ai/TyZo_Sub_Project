@@ -11,8 +11,8 @@ import {
 const ORIGIN = "https://ws-u3mqeygepiyqd77d.ap-southeast-1.maas.aliyuncs.com";
 
 export type AliFiletransInput =
-  | { op: "submit"; url: string; language: string; key: string }
-  | { op: "status"; taskId: string; key: string };
+  | { op: "submit"; url: string; language: string; key: string; ticketId?: string }
+  | { op: "status"; taskId: string; key: string; ticketId?: string };
 
 export type AliFiletransResult =
   | { state: "queued"; taskId: string }
@@ -92,7 +92,9 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   if (input.op !== "submit" && input.op !== "status") throw new Error("Yêu cầu không được phép.");
   await requireOpenAccount(userId);
   await takeRate(`ali-asr:${userId}`, 30, 60);
-  const key = cleanKey(input.key);
+  const usingRoom = input.key === "room";
+  const key = usingRoom ? await roomAliKey() : cleanKey(input.key);
+  if (usingRoom) await assertRoomTicket(userId, input.ticketId);
   if (input.op === "submit") {
     const problem = directFileUrlProblem(input.url);
     if (problem) throw new Error(problem);
@@ -118,5 +120,43 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   const sub = typeof first?.subtask_status === "string" ? first.subtask_status : "SUCCEEDED";
   if (!first || sub !== "SUCCEEDED") throw new Error(messageOf(first, "Nhận dạng file thất bại."));
   const transcript = await readResult(String(first.transcription_url));
-  return { state: "done", ...sentencesFromTranscript(transcript) };
+  const done = { state: "done" as const, ...sentencesFromTranscript(transcript) };
+  if (usingRoom && input.ticketId) await chargeRoomAsr(userId, input.ticketId, done.seconds);
+  return done;
+}
+
+async function roomAliKey(): Promise<string> {
+  const { getSql } = await import("@/lib/db");
+  const sql = await getSql();
+  const rows = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
+  const key = rows[0]?.value?.trim() || "";
+  if (key.length < 20) throw new Error("Phòng chưa lưu key Alibaba.");
+  return key;
+}
+
+async function assertRoomTicket(userId: string, ticketId: string | undefined) {
+  if (!ticketId || !/^[a-f0-9]{24}$/.test(ticketId)) throw new Error("Thiếu phiếu giữ chỗ. Hãy bấm chạy lại.");
+  const { getSql } = await import("@/lib/db");
+  const { ticketLive } = await import("@/lib/run-ticket");
+  const sql = await getSql();
+  if (!(await ticketLive(sql, ticketId, userId))) throw new Error("Phiếu đã đóng hoặc không còn tiền giữ.");
+}
+
+async function chargeRoomAsr(userId: string, ticketId: string, seconds: number) {
+  const { getSql } = await import("@/lib/db");
+  const { loadPriceBook } = await import("@/lib/run-board.server");
+  const { parseRunDesk } = await import("@/lib/run-desk");
+  const { ALIBABA_ROWS } = await import("@/lib/sub/alibaba-catalog");
+  const { asrCost } = await import("@/lib/run-bill");
+  const { chargeTicketWith } = await import("@/lib/run-ticket");
+  const sql = await getSql();
+  const live = await loadPriceBook(sql);
+  if (!live) return;
+  const deskRaw = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
+  const desk = parseRunDesk(deskRaw[0]?.value);
+  const book = { rate: live.rate, rows: ALIBABA_ROWS, desk: { markup: desk.markup, custom: desk.custom } };
+  const bare = { ...book, desk: { markup: 0, custom: {} } };
+  const cost = asrCost(book, "qwen-audio-3.0-asr-flash-filetrans", seconds);
+  const base = asrCost(bare, "qwen-audio-3.0-asr-flash-filetrans", seconds) ?? 0;
+  if (cost && cost > 0) await chargeTicketWith(sql, ticketId, userId, cost, base);
 }

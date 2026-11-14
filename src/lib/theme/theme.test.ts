@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   DARK_DEFAULT,
   LIGHT_DEFAULT,
@@ -7,9 +8,13 @@ import {
   THEME_DEFAULT,
   checkTheme,
   contrast,
+  defaultUserDensity,
+  densityScript,
+  densityValue,
   fontHref,
   modeScript,
   parseTheme,
+  pickUserDensity,
   safeUrl,
   themeToCss,
 } from "./theme.ts";
@@ -77,13 +82,115 @@ test("fontHref: phông hệ thống không tải gì, phông khác có link Goog
   assert.match(fontHref("inter") || "", /^https:\/\/fonts\.googleapis\.com\/css2\?family=Inter/);
 });
 
-test("modeScript: chế độ cố định thì không đọc localStorage", () => {
-  assert.ok(!modeScript("dark").includes("localStorage"));
-  assert.ok(modeScript("auto").includes("localStorage"));
-  assert.ok(modeScript("light").includes('"light"'));
+/** Chạy script đầu trang trên DOM giả. Trả về data-theme, data-density và --density sau khi chạy. */
+function runHeadScript(script: string, opts: { saved?: Record<string, string>; osLight?: boolean; storageThrows?: boolean }) {
+  const attrs: Record<string, string> = {};
+  const vars: Record<string, string> = {};
+  const documentElement = {
+    setAttribute: (k: string, v: string) => {
+      attrs[k] = v;
+    },
+    style: {
+      setProperty: (k: string, v: string) => {
+        vars[k] = v;
+      },
+    },
+  };
+  const localStorage = {
+    getItem: (k: string) => {
+      if (opts.storageThrows) throw new Error("blocked");
+      return opts.saved?.[k] ?? null;
+    },
+  };
+  const window = { matchMedia: () => ({ matches: Boolean(opts.osLight) }) };
+  new Function("document", "localStorage", "window", script)({ documentElement }, localStorage, window);
+  return { theme: attrs["data-theme"], density: attrs["data-density"], densityVar: vars["--density"] };
+}
+
+test("modeScript: lựa chọn khách đã lưu luôn thắng mặc định Admin", () => {
+  for (const admin of ["dark", "light", "auto"] as const) {
+    assert.equal(runHeadScript(modeScript(admin), { saved: { tyzo_mode: "light" } }).theme, "light", admin);
+    assert.equal(runHeadScript(modeScript(admin), { saved: { tyzo_mode: "dark" }, osLight: true }).theme, "dark", admin);
+  }
+});
+
+test("modeScript: khách chưa chọn thì theo mặc định Admin, «auto» thì theo màu hệ thống", () => {
+  assert.equal(runHeadScript(modeScript("dark"), { osLight: true }).theme, "dark");
+  assert.equal(runHeadScript(modeScript("light"), { osLight: false }).theme, "light");
+  assert.equal(runHeadScript(modeScript("auto"), { osLight: true }).theme, "light");
+  assert.equal(runHeadScript(modeScript("auto"), { osLight: false }).theme, "dark");
+});
+
+test("modeScript: giá trị lưu lạ hoặc máy chặn localStorage thì lấy mặc định, không ném lỗi", () => {
+  assert.equal(runHeadScript(modeScript("light"), { saved: { tyzo_mode: "xanh" } }).theme, "light");
+  assert.equal(runHeadScript(modeScript("dark"), { storageThrows: true }).theme, "dark");
+  assert.equal(runHeadScript(modeScript("auto"), { storageThrows: true, osLight: true }).theme, "light");
+});
+
+test("densityScript: lựa chọn khách thắng Admin, chưa chọn thì theo Admin", () => {
+  assert.deepEqual(runHeadScript(densityScript("roomy"), { saved: { tyzo_density: "compact" } }), {
+    theme: undefined,
+    density: "compact",
+    densityVar: "0.85",
+  });
+  assert.deepEqual(runHeadScript(densityScript("roomy"), {}), { theme: undefined, density: "comfortable", densityVar: "1.15" });
+  assert.deepEqual(runHeadScript(densityScript("cozy"), {}), { theme: undefined, density: "comfortable", densityVar: "1" });
+  assert.deepEqual(runHeadScript(densityScript("compact"), { storageThrows: true }), {
+    theme: undefined,
+    density: "compact",
+    densityVar: "0.85",
+  });
+});
+
+test("CSS mật độ: luật nằm ngoài @layer phải độ ưu tiên 0 và loại phần tử có lớp khoảng cách khác", () => {
+  const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
+  const block = css.slice(css.indexOf("/* ===== Mật độ khoảng cách"));
+  assert.ok(block.length > 200, "không thấy khối mật độ trong styles.css");
+  // Mỗi lớp tiện ích bị co giãn cần loại những lớp cùng loại mà Tailwind đã tính (xem lỗi v3.29.0).
+  const need: Record<string, string[]> = {
+    gap: ["gap-x-", "gap-y-", ":gap-"],
+    p: ["px-", "py-", "pt-", "pr-", "pb-", "pl-", ":p-"],
+    py: ["pt-", "pb-", ":py-"],
+    pt: [":pt-"],
+    px: ["pl-", "pr-", ":px-"],
+  };
+  const lines = block.split("\n").filter((line) => /\.(gap|p|py|pt|px)-\d\b/.test(line) && line.includes("data-density"));
+  assert.ok(lines.length >= 12, `chỉ thấy ${lines.length} luật`);
+  for (const line of lines) {
+    const m = line.match(/^:where\(html\[data-density\] \.(gap|p|py|pt|px)-\d(.*)\) \{/);
+    assert.ok(m, `luật phải bọc trong :where() để độ ưu tiên bằng 0: ${line.slice(0, 70)}`);
+    for (const piece of need[m[1]]) {
+      assert.ok(m[2].includes(`[class*="${piece}"]`), `luật .${m[1]}-N thiếu loại trừ «${piece}»: ${line.slice(0, 70)}`);
+    }
+  }
 });
 
 test("icons: chỉ giữ chỗ đặt hợp lệ, khóa đúng dạng, và khác mặc định", () => {
   const t = parseTheme({ icons: { "nav.home": "Cube", "nav.source": "FilmStrip", "khong.co": "Cube", "act.add": "x<y" } });
   assert.deepEqual(t.icons, { "nav.home": "Cube" });
+});
+
+test("mật độ khách chọn: gọn là 0.85, thoải mái không chật hơn mức vừa", () => {
+  assert.equal(densityValue("compact", "cozy"), 0.85);
+  assert.equal(densityValue("comfortable", "cozy"), 1);
+  assert.equal(densityValue("comfortable", "roomy"), 1.15);
+  assert.equal(densityValue("comfortable", "compact"), 1);
+});
+
+test("mật độ mặc định theo Admin, giá trị lạ thì lấy mặc định", () => {
+  assert.equal(defaultUserDensity("compact"), "compact");
+  assert.equal(defaultUserDensity("cozy"), "comfortable");
+  assert.equal(defaultUserDensity("roomy"), "comfortable");
+  assert.equal(pickUserDensity("compact", "roomy"), "compact");
+  assert.equal(pickUserDensity("x", "compact"), "compact");
+  assert.equal(pickUserDensity(null, "cozy"), "comfortable");
+});
+
+test("densityScript: đọc tyzo_density, đặt data-density và --density, có mặc định theo Admin", () => {
+  const script = densityScript("roomy");
+  assert.match(script, /tyzo_density/);
+  assert.match(script, /data-density/);
+  assert.match(script, /--density/);
+  assert.match(script, /1\.15/);
+  assert.match(densityScript("compact"), /"compact"/);
 });

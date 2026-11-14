@@ -15,8 +15,10 @@ import { Route as CtvRouteImport } from './routes/ctv'
 import { Route as GoiRouteImport } from './routes/goi'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
+import { Route as TaiVideoRouteImport } from './routes/tai-video'
 import { Route as YeuCauRouteImport } from './routes/yeu-cau'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
+import { Route as ApiTaiVideoRouteImport } from './routes/api/tai-video'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPayCassoRouteImport } from './routes/api/pay/casso'
 import { Route as ApiPaySepayRouteImport } from './routes/api/pay/sepay'
@@ -51,6 +53,11 @@ const TaiKhoanRoute = TaiKhoanRouteImport.update({
   path: '/tai-khoan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TaiVideoRoute = TaiVideoRouteImport.update({
+  id: '/tai-video',
+  path: '/tai-video',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const YeuCauRoute = YeuCauRouteImport.update({
   id: '/yeu-cau',
   path: '/yeu-cau',
@@ -59,6 +66,11 @@ const YeuCauRoute = YeuCauRouteImport.update({
 const ApiRoomGroqRoute = ApiRoomGroqRouteImport.update({
   id: '/api/room-groq',
   path: '/api/room-groq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTaiVideoRoute = ApiTaiVideoRouteImport.update({
+  id: '/api/tai-video',
+  path: '/api/tai-video',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -84,8 +96,10 @@ export interface FileRoutesByFullPath {
   '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
+  '/tai-video': typeof TaiVideoRoute
   '/yeu-cau': typeof YeuCauRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
+  '/api/tai-video': typeof ApiTaiVideoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
   '/api/pay/sepay': typeof ApiPaySepayRoute
@@ -97,8 +111,10 @@ export interface FileRoutesByTo {
   '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
+  '/tai-video': typeof TaiVideoRoute
   '/yeu-cau': typeof YeuCauRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
+  '/api/tai-video': typeof ApiTaiVideoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
   '/api/pay/sepay': typeof ApiPaySepayRoute
@@ -111,8 +127,10 @@ export interface FileRoutesById {
   '/goi': typeof GoiRoute
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
+  '/tai-video': typeof TaiVideoRoute
   '/yeu-cau': typeof YeuCauRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
+  '/api/tai-video': typeof ApiTaiVideoRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
   '/api/pay/sepay': typeof ApiPaySepayRoute
@@ -126,8 +144,10 @@ export interface FileRouteTypes {
     | '/goi'
     | '/login'
     | '/tai-khoan'
+    | '/tai-video'
     | '/yeu-cau'
     | '/api/room-groq'
+    | '/api/tai-video'
     | '/api/auth/$'
     | '/api/pay/casso'
     | '/api/pay/sepay'
@@ -139,8 +159,10 @@ export interface FileRouteTypes {
     | '/goi'
     | '/login'
     | '/tai-khoan'
+    | '/tai-video'
     | '/yeu-cau'
     | '/api/room-groq'
+    | '/api/tai-video'
     | '/api/auth/$'
     | '/api/pay/casso'
     | '/api/pay/sepay'
@@ -152,8 +174,10 @@ export interface FileRouteTypes {
     | '/goi'
     | '/login'
     | '/tai-khoan'
+    | '/tai-video'
     | '/yeu-cau'
     | '/api/room-groq'
+    | '/api/tai-video'
     | '/api/auth/$'
     | '/api/pay/casso'
     | '/api/pay/sepay'
@@ -166,8 +190,10 @@ export interface RootRouteChildren {
   GoiRoute: typeof GoiRoute
   LoginRoute: typeof LoginRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
+  TaiVideoRoute: typeof TaiVideoRoute
   YeuCauRoute: typeof YeuCauRoute
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
+  ApiTaiVideoRoute: typeof ApiTaiVideoRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPayCassoRoute: typeof ApiPayCassoRoute
   ApiPaySepayRoute: typeof ApiPaySepayRoute
@@ -217,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TaiKhoanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tai-video': {
+      id: '/tai-video'
+      path: '/tai-video'
+      fullPath: '/tai-video'
+      preLoaderRoute: typeof TaiVideoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/yeu-cau': {
       id: '/yeu-cau'
       path: '/yeu-cau'
@@ -229,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/api/room-groq'
       fullPath: '/api/room-groq'
       preLoaderRoute: typeof ApiRoomGroqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/tai-video': {
+      id: '/api/tai-video'
+      path: '/api/tai-video'
+      fullPath: '/api/tai-video'
+      preLoaderRoute: typeof ApiTaiVideoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -262,8 +302,10 @@ const rootRouteChildren: RootRouteChildren = {
   GoiRoute: GoiRoute,
   LoginRoute: LoginRoute,
   TaiKhoanRoute: TaiKhoanRoute,
+  TaiVideoRoute: TaiVideoRoute,
   YeuCauRoute: YeuCauRoute,
   ApiRoomGroqRoute: ApiRoomGroqRoute,
+  ApiTaiVideoRoute: ApiTaiVideoRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPayCassoRoute: ApiPayCassoRoute,
   ApiPaySepayRoute: ApiPaySepayRoute,

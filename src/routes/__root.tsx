@@ -6,7 +6,7 @@ import { UpdateBanner } from "@/components/update-banner";
 import { IdleSignOut } from "@/components/idle-sign-out";
 import { ThemeProvider } from "@/components/ui/theme-context";
 import { getLiveTheme } from "@/lib/theme-room";
-import { THEME_DEFAULT, fontHref, modeScript, parseTheme, themeToCss } from "@/lib/theme/theme";
+import { THEME_DEFAULT, densityScript, fontHref, modeScript, parseTheme, themeToCss } from "@/lib/theme/theme";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Dịch phụ đề";
@@ -31,7 +31,7 @@ export const Route = createRootRoute({
       { title: theme.brandName || APP_NAME },
     ],
     styles: [{ children: themeToCss(theme) }],
-    scripts: [{ children: modeScript(theme.mode) }],
+    scripts: [{ children: modeScript(theme.mode) }, { children: densityScript(theme.density) }],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "stylesheet", href: appCss },

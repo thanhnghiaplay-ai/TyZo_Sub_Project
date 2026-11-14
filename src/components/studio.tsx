@@ -6,11 +6,14 @@ import { Link } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
 import {
+  AlertTriangle,
+  CheckCircle2,
   ClipboardPaste,
   Clapperboard,
   Eye,
   EyeOff,
   FileAudio,
+  CircleHelp,
   Link2,
   Loader2,
   Menu,
@@ -23,6 +26,7 @@ import {
   Volume2,
   VolumeX,
   X,
+  XCircle,
 } from "lucide-react";
 import { usePipeline } from "@/components/use-pipeline";
 import { groqListHolds } from "@/lib/sub/asr-house";
@@ -33,9 +37,15 @@ import { turnPackModels } from "@/lib/turn-pack";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
+import { DisplayToggle } from "@/components/display-toggle";
 import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
 import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
+import { PlayerDrop } from "@/components/player-drop";
+import { StepsBar } from "@/components/steps-bar";
+import { GuidedTour } from "@/components/guided-tour";
+import { tourSeen } from "@/components/tour-seen";
+import { isMediaFile, useFileThumb, type FileThumb } from "@/components/file-thumb";
 import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomPrice } from "@/lib/run-desk";
@@ -43,13 +53,17 @@ import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sample
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
 import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
-import { termsToCsv } from "@/lib/sub/glossary";
+import { termsToCsv, usesBaseGlossary } from "@/lib/sub/glossary";
 import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
-import { summarizeQuality, type LangCheckReport } from "@/lib/sub/quality";
+import { DEFAULT_QUALITY_THRESHOLDS, summarizeQuality, type LangCheckReport, type QualityThresholds } from "@/lib/sub/quality";
+import { loadQualityThresholds } from "@/lib/quality-load";
 import { BandBar, HealthPill, pct } from "@/components/quality-view";
 import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/asr-retry";
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
+
+const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ ví cho lượt chạy.";
+const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ trước một khoản ước tính từ ví, trừ số thực khi xong và trả phần thừa. Không trừ ngày gói.";
 
 const FIELD =
   "min-tap w-full rounded-xl border border-line bg-bg px-3 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
@@ -91,9 +105,19 @@ function AsrDiag({
   onDrop: (index: number) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [thresholds, setThresholds] = useState<QualityThresholds>(DEFAULT_QUALITY_THRESHOLDS);
+  useEffect(() => {
+    let alive = true;
+    void loadQualityThresholds().then((next) => {
+      if (alive) setThresholds(next);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   if (!raw.length && !rejects.length && !retry?.missing.length && !(retry && retry.usedSeconds > 0) && !(filterRetry && (filterRetry.sent > 0 || filterRetry.deferred > 0))) return null;
   const summary = summarizeDiagnostics(rejects, raw);
-  const quality = summarizeQuality({ raw, rejects, kept, lang });
+  const quality = summarizeQuality({ raw, rejects, kept, lang, thresholds });
   const download = () => {
     const doc = { exportedAt: new Date().toISOString(), ...buildDiagnosticsExport({ rejects, raw, kept }), quality, langCheck: lang };
     const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json;charset=utf-8" });
@@ -441,6 +465,14 @@ const TOOLS = [
 
 export function Studio() {
   const app = usePipeline();
+  const pickedFile = app.file || app.audioFile;
+  const thumb = useFileThumb(pickedFile);
+  const [tourOpen, setTourOpen] = useState(false);
+  useEffect(() => {
+    if (tourSeen()) return;
+    const timer = window.setTimeout(() => setTourOpen(true), 900);
+    return () => window.clearTimeout(timer);
+  }, []);
   const [showKey, setShowKey] = useState(false);
   // Câu đang sửa nhớ theo nội dung, không theo số thứ tự: câu mới chen vào danh sách thì ô sửa không nhảy sang câu khác.
   const [editKey, setEditKey] = useState<{ start: number; end: number; original: string } | null>(null);
@@ -650,6 +682,7 @@ export function Studio() {
           </div>
           <div className="flex items-center gap-2">
             <VersionMark />
+            <DisplayToggle />
             <NoticeBell />
           </div>
         </div>
@@ -746,7 +779,7 @@ export function Studio() {
         >
           {app.status}
         </button>
-        <button type="button" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
+        <button type="button" data-tour="export" className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm" onClick={() => void app.exportSrt()}>
           Xuất file Vietsub
         </button>
         <button
@@ -762,7 +795,12 @@ export function Studio() {
             Dịch tiếp
           </button>
         )}
+        <button type="button" aria-label="Xem hướng dẫn nhanh" title="Hướng dẫn nhanh" className="min-tap grid shrink-0 place-items-center rounded-xl border border-line px-3" onClick={() => setTourOpen(true)}>
+          <CircleHelp className="size-4" />
+        </button>
       </div>
+      <StepsBar report={app.stages} />
+      <GuidedTour open={tourOpen} onClose={() => setTourOpen(false)} />
       <dialog ref={statusRef} className="studio-note">
         <p className="text-sm">{app.status}</p>
         <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
@@ -819,6 +857,11 @@ export function Studio() {
           onSpeak={speakAt}
           speechBusy={() => narrator.current.busy()}
           onPause={() => narrator.current.stop(app.videoRef.current)}
+          file={pickedFile}
+          thumb={thumb}
+          url={app.url}
+          onFile={app.setFile}
+          onUrl={app.setUrl}
         />
         </div>
         <section className="studio-cues grid gap-2 rounded-2xl border border-line bg-card p-4">
@@ -849,16 +892,24 @@ export function Studio() {
           <div className="grid gap-2">
             <h2 className="text-sm font-semibold">Cách trả</h2>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
               </button>
-              <button type="button" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
                 Trả theo lượt
               </button>
             </div>
-            {payByRoom && (
-              <p className="text-sm text-muted">Lần chạy này dùng key của phòng. Bạn không nhập key. Nếu có gói, hãy chọn một gói.</p>
-            )}
+            <p id="pay-mode-note" className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
+              {payByRoom ? (
+                <>
+                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Giá từng gói bên dưới là ước tính; tiền trừ thật là số thực khi xong.
+                </>
+              ) : (
+                <>
+                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
+                </>
+              )}
+            </p>
             {payByRoom && (
               <TurnPackList
                 videoRef={app.videoRef}
@@ -897,6 +948,27 @@ export function Studio() {
               {showKey ? <EyeOff /> : <Eye />}
             </IconButton>
           </span>
+          {app.keyStatus.phase !== "idle" && (
+            <span
+              role="status"
+              className={
+                "flex items-start gap-1.5 text-xs " +
+                (app.keyStatus.phase === "ok"
+                  ? "text-success"
+                  : app.keyStatus.phase === "bad"
+                    ? "text-danger"
+                    : app.keyStatus.phase === "warn"
+                      ? "text-warning"
+                      : "text-muted")
+              }
+            >
+              {app.keyStatus.phase === "checking" && <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin" aria-hidden="true" />}
+              {app.keyStatus.phase === "ok" && <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              {app.keyStatus.phase === "warn" && <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              {app.keyStatus.phase === "bad" && <XCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              <span>{app.keyStatus.text}</span>
+            </span>
+          )}
         </label>
         )}
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && !(runDoor.open && payByRoom) && (
@@ -1038,12 +1110,18 @@ export function Studio() {
           <option value="series">Phim bộ / phim mới chiếu</option>
           <option value="daily">Hằng ngày</option>
         </Select>
+        {usesBaseGlossary(app.genre) && (
+          <label className="flex min-h-11 items-center gap-2 text-sm">
+            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
+            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
+          </label>
+        )}
         <p className="text-sm text-muted">
           {app.glossaryInfo?.failed ? (
             "Không tải được thuật ngữ có sẵn. Hãy thử lại."
           ) : app.glossaryInfo?.count > 0 ? (
             <>
-              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ của thể loại này.
+              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
             </>
           ) : (
             "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
@@ -1062,7 +1140,7 @@ export function Studio() {
         </details>
 
         <div className="grid gap-2 sm:grid-cols-2">
-          <FileTile icon={<Clapperboard className="size-5" />} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
+          <FileTile icon={<Clapperboard className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
           <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
         </div>
         <label className="grid gap-1 text-sm text-muted">
@@ -1558,7 +1636,7 @@ function Select({ label, value, onChange, children }: { label: string; value: st
   );
 }
 
-function FileTile({ icon, title, name, hint, accept, onFile }: { icon: ReactNode; title: string; name?: string; hint: string; accept: string; onFile: (file: File | null) => void }) {
+function FileTile({ icon, image, title, name, hint, accept, onFile }: { icon: ReactNode; image?: string | null; title: string; name?: string; hint: string; accept: string; onFile: (file: File | null) => void }) {
   return (
     <label
       className="relative grid min-tap cursor-pointer grid-cols-[auto_1fr] items-center gap-3 rounded-xl border border-dashed border-line bg-bg px-3 py-3"
@@ -1568,7 +1646,7 @@ function FileTile({ icon, title, name, hint, accept, onFile }: { icon: ReactNode
         onFile(event.dataTransfer.files?.[0] || null);
       }}
     >
-      <span className="text-accent">{icon}</span>
+      {image ? <img src={image} alt="" className="h-9 w-16 rounded-md object-cover" /> : <span className="text-accent">{icon}</span>}
       <span className="min-w-0">
         <span className="block text-sm font-semibold text-fg">{title}</span>
         <span className="block truncate text-xs text-muted">{name || hint}</span>
@@ -1680,7 +1758,17 @@ function Stage({
   onSpeak,
   speechBusy,
   onPause,
+  file,
+  thumb,
+  url,
+  onFile,
+  onUrl,
 }: {
+  file: File | null;
+  thumb: FileThumb;
+  url: string;
+  onFile: (file: File | null) => void;
+  onUrl: (value: string) => void;
   videoRef: RefObject<HTMLVideoElement | null>;
   segs: Seg[];
   sub: SubStyle;
@@ -1706,6 +1794,7 @@ function Stage({
   const [ar, setAr] = useState(0);
   const [full, setFull] = useState(false);
   const [hasMedia, setHasMedia] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [fit, setFit] = useState<CSSProperties>({});
   const [bright, setBright] = useState(1);
   const segsRef = useRef(segs);
@@ -2025,6 +2114,21 @@ function Stage({
     <div
       ref={stageRef}
       className={"relative touch-none overflow-hidden bg-black select-none " + (full ? "fixed inset-0 z-40 h-dvh rounded-none" : "aspect-video rounded-2xl")}
+      onDragOver={(event) => {
+        if (!event.dataTransfer.types.includes("Files")) return;
+        event.preventDefault();
+        setDragging(true);
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
+      }}
+      onDrop={(event) => {
+        setDragging(false);
+        const dropped = event.dataTransfer.files?.[0];
+        if (!dropped) return;
+        event.preventDefault();
+        if (isMediaFile(dropped)) onFile(dropped);
+      }}
       onPointerDown={(event) => {
         if ((event.target as HTMLElement).closest("button,input,select,textarea,label,a,[data-nogesture]")) return;
         const rect = stageRef.current?.getBoundingClientRect();
@@ -2137,8 +2241,11 @@ function Stage({
         data-on="0"
         className="pointer-events-none absolute top-[18%] left-1/2 z-30 max-w-[92%] -translate-x-1/2 truncate rounded-full bg-black/80 px-4 py-2 text-sm font-semibold text-white opacity-0 transition-opacity data-[on=1]:opacity-100"
       />
-      {!hasMedia && paused && (
-        <p className="pointer-events-none absolute inset-x-0 top-[calc(50%+2.75rem)] z-10 px-6 text-center text-sm text-muted">Chọn video để phát ở đây</p>
+      {!hasMedia && <PlayerDrop file={file} thumb={thumb} url={url} onFile={onFile} onUrl={onUrl} />}
+      {hasMedia && dragging && (
+        <div className="pointer-events-none absolute inset-2 z-[26] grid place-items-center rounded-xl border-2 border-dashed border-accent bg-black/70 text-sm font-semibold text-white">
+          Thả để đổi video
+        </div>
       )}
       <div className={"absolute inset-0 z-20 flex flex-col justify-between transition-opacity " + (ui || panel ? "opacity-100" : "pointer-events-none opacity-0")}>
         <div className="flex justify-end gap-2 p-2">

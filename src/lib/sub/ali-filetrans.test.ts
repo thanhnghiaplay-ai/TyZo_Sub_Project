@@ -6,6 +6,7 @@ describe("link file Alibaba", () => {
   it("nhận link file, từ chối trang xem, luồng và địa chỉ nội bộ", () => {
     assert.equal(directFileUrlProblem("https://cdn.example.com/phim.mp4"), null);
     assert.match(directFileUrlProblem("https://www.youtube.com/watch?v=abc") || "", /trang xem/);
+    assert.match(directFileUrlProblem("https://hoathinh3d.ee/xem-phim-tien-nghich") || "", /trang xem/);
     assert.match(directFileUrlProblem("https://cdn.example.com/live.m3u8") || "", /luồng/);
     assert.match(directFileUrlProblem("http://127.0.0.1/a.mp4") || "", /công khai/);
     assert.match(directFileUrlProblem("http://192.168.1.8/a.mp4") || "", /công khai/);

@@ -170,13 +170,15 @@ function LoginPage() {
         <label className="block text-sm">
           Email
           <input
-            type="text"
+            type="email"
             inputMode="email"
             autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            placeholder="Nhập tên trước @, rồi chọn gợi ý"
+            placeholder="ten@gmail.com (dán cả địa chỉ cũng được)"
             className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
           />
           {mailSuggestions(email).length > 0 && !email.includes("@") && (
@@ -192,9 +194,6 @@ function LoginPage() {
                 </button>
               ))}
             </span>
-          )}
-          {email.includes("@") && (
-            <span className="mt-1 block text-xs text-muted">Đã chọn: {email}</span>
           )}
         </label>
         {mode === "up" && (

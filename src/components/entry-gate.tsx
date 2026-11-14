@@ -7,7 +7,7 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /** Đổi chuỗi này khi sửa nội dung điều khoản. Người dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-13.3";
+export const TERMS_VERSION = "2026-11-13.4";
 const TERMS_KEY = "gterms";
 
 export function EntryGate({ children }: { children: ReactNode }) {
@@ -161,7 +161,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key của chính bạn. Phòng nhận dạng lời bằng Whisper trên Groq hoặc bằng Alibaba Filetrans khi bạn chọn nhà đó, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
         </p>
         <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key của mình thì cước Groq hoặc Alibaba vẫn là của bạn, tùy nhà bạn chọn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
-        <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá nhà phát hành công bố cộng phần chênh phòng niêm yết. Bạn chỉ thấy số tiền sau khi đã cộng phần chênh, gồm ước tính và khoản giữ ví. Bạn không thấy giá gốc và không thấy phần trăm. Khi Chủ đã mở gói trả theo lượt, bạn chọn một gói. Gói quyết định model nhận dạng và model dịch. Gói có việc Alibaba chưa chạy ở cửa này. Khi chưa có gói, cửa vẫn nhận dạng bằng Whisper trên Groq. Khi thuê phòng bằng key của bạn, bạn chỉ chọn model Chủ đã mở: Whisper cần key Groq, Filetrans cần key Alibaba. Dịch khi thuê phòng vẫn bằng model Groq đã mở. Nhận dạng tính theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn nhà phát hành báo lỗi thì không tính tiền.</p>
+        <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá nhà phát hành công bố cộng phần chênh phòng niêm yết. Bạn chỉ thấy số tiền sau khi đã cộng phần chênh, gồm ước tính và khoản giữ ví. Bạn không thấy giá gốc và không thấy phần trăm. Khi Chủ đã mở gói trả theo lượt, bạn chọn một gói. Gói quyết định model nhận dạng và model dịch. Nhận dạng Alibaba ở cửa này dùng key Alibaba của phòng và cần link file trực tiếp, không phải trang xem. Việc Alibaba ngoài nhận dạng chưa chạy ở cửa này. Khi chưa có gói, cửa vẫn nhận dạng bằng Whisper trên Groq. Khi thuê phòng bằng key của bạn, bạn chỉ chọn model Chủ đã mở: Whisper cần key Groq, Filetrans cần key Alibaba. Dịch khi thuê phòng vẫn bằng model Groq đã mở. Nhận dạng tính theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn nhà phát hành báo lỗi thì không tính tiền.</p>
 
         <h2>2. Điều kiện để dùng</h2>
         <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq và key Alibaba là của bạn. Nhà đó tính cước cho tài khoản của bạn, không phải phí thuê phòng.</p>

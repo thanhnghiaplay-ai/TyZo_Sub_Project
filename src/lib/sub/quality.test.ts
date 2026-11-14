@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { bandOf, confidenceOf, healthOf, summarizeQuality } from "./quality.ts";
+import { DEFAULT_QUALITY_THRESHOLDS, bandOf, checkQualityThresholds, confidenceOf, healthOf, parseQualityThresholds, summarizeQuality } from "./quality.ts";
 import type { RawAsrPart } from "./diagnostics.ts";
 
 const part = (partIndex: number, kind: RawAsrPart["kind"], segs: Array<[string, number?, number?]> = [], language = "zh"): RawAsrPart => ({
@@ -89,4 +89,35 @@ test("summarizeQuality: kiểm tra ngôn ngữ, trung bình trước và sau ch�
   assert.equal(s.langCheck.swapped, 1);
   assert.ok(Math.abs((s.langCheck.meanBefore as number) - Math.exp(-1.2)) < 1e-9);
   assert.ok(Math.abs((s.langCheck.meanAfter as number) - Math.exp(-0.2)) < 1e-9);
+});
+
+test("ngưỡng mặc định giữ đúng các hằng số cũ", () => {
+  assert.equal(DEFAULT_QUALITY_THRESHOLDS.highLogprob, -0.5);
+  assert.equal(DEFAULT_QUALITY_THRESHOLDS.lowLogprob, -0.8);
+  assert.equal(DEFAULT_QUALITY_THRESHOLDS.minSegments, 5);
+  assert.equal(parseQualityThresholds(null).redLowShare, 0.25);
+});
+
+test("ngưỡng Chủ chỉnh đổi cách xếp mức tin và đèn", () => {
+  const strict = { ...DEFAULT_QUALITY_THRESHOLDS, highLogprob: -0.3, lowLogprob: -0.5 };
+  assert.equal(bandOf({ avg_logprob: -0.4 }), "high");
+  assert.equal(bandOf({ avg_logprob: -0.4 }, strict), "check");
+  assert.equal(bandOf({ avg_logprob: -0.6 }, strict), "low");
+  assert.equal(bandOf({ avg_logprob: -0.6 }), "check");
+  const base = { segments: 100, parts: { total: 50, decodeFail: 0 }, appFiltered: 0 };
+  const bands = { high: 80, check: 6, low: 14, unknown: 0 };
+  assert.equal(healthOf({ ...base, bands }).health, "yellow");
+  assert.equal(healthOf({ ...base, bands }, { ...DEFAULT_QUALITY_THRESHOLDS, redLowShare: 0.1, yellowLowShare: 0.05 }).health, "red");
+});
+
+test("kiểm tra ngưỡng: chặn giá trị sai, đọc lại bản hỏng thì dùng mặc định", () => {
+  const ok = { ...DEFAULT_QUALITY_THRESHOLDS, highLogprob: -0.4 };
+  assert.equal(checkQualityThresholds(ok).highLogprob, -0.4);
+  assert.throws(() => checkQualityThresholds({ ...ok, lowLogprob: -0.2 }), /nhỏ hơn/);
+  assert.throws(() => checkQualityThresholds({ ...ok, redLowShare: 1.5 }), /0 đến 1/);
+  assert.throws(() => checkQualityThresholds({ ...ok, yellowLowShare: 0.3 }), /nhỏ hơn ngưỡng đỏ/);
+  assert.throws(() => checkQualityThresholds({ ...ok, minSegments: 2.5 }), /số nguyên/);
+  assert.throws(() => checkQualityThresholds({}), /thiếu/);
+  assert.deepEqual(parseQualityThresholds("{hỏng"), DEFAULT_QUALITY_THRESHOLDS);
+  assert.equal(parseQualityThresholds(JSON.stringify(ok)).highLogprob, -0.4);
 });

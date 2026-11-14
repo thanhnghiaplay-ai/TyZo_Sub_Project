@@ -17,6 +17,7 @@ import {
   applyNameFixes,
   contextBlock,
   listModelIds,
+  probeKey,
   ROOM_KEY,
   sleep,
   throwIfAborted,
@@ -25,12 +26,16 @@ import {
   translateWithRepair,
 } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
+import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
+import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
 import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
+import { describeDecodeFailure, SNIFF_BYTES } from "@/lib/sub/media-sniff";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
 import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
+import { loadQualityThresholds } from "@/lib/quality-load";
 import { reportFromSummary } from "@/lib/quality-board";
 import { reportQuality } from "@/lib/quality-room";
 import { APP_VERSION } from "@/lib/app-version";
@@ -66,6 +71,7 @@ import {
 } from "@/lib/sub/text";
 import {
   loadGenreGlossary,
+  loadRunGlossary,
   protectTerms,
   restoreTerms,
   settleGlossaryLines,
@@ -87,7 +93,6 @@ import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelM
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
-import { alibabaAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";
 import { getServiceMenu } from "@/lib/pack-room";
 import { turnPackProblem } from "@/lib/turn-pack";
@@ -276,6 +281,8 @@ export function usePipeline() {
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
   const [genre, setGenre] = useState("auto");
+  /** Kèm bộ thuật ngữ nền của ngôn ngữ nguồn. Mặc định bật. */
+  const [baseGloss, setBaseGloss] = useState(true);
   const [threads, setThreads] = useState(3);
   const [mode, setMode] = useState<ModelMode>("manual");
   const [profile, setProfile] = useState<AutoProfile>("balanced");
@@ -328,6 +335,8 @@ export function usePipeline() {
   const [status, setStatus] = useState("Sẵn sàng. Chọn video rồi bấm Tải và dịch.");
   const [isError, setIsError] = useState(false);
   const [running, setRunning] = useState(false);
+  const [stages, setStages] = useState<StageReport | null>(null);
+  const phaseRef = useRef<RunPhase>("idle");
   const [remoteIds, setRemoteIds] = useState<string[] | null>(null);
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [boardNote, setBoardNote] = useState("");
@@ -347,6 +356,7 @@ export function usePipeline() {
     setSource(src === "zh" || src === "ko" || src === "ja" || src === "en" ? src : "zh");
     const g = readStore("ggenre");
     if (g) setGenre(g);
+    setBaseGloss(readStore("gbase") !== "0");
     const par = Number(readStore("gpar"));
     if ([1, 3, 4, 6, 8].includes(par)) setThreads(par);
     const savedMode = readStore("gmode");
@@ -391,7 +401,7 @@ export function usePipeline() {
     });
     (async () => {
       try {
-        const pack = await loadGenreGlossary(source, genre, target);
+        const pack = await loadRunGlossary(source, genre, target, baseGloss);
         if (cancelled) return;
         const merged = overlayUserTerms(pack.terms, userTerms);
         const userKeys = new Set(userTerms.map((t) => t.source.toLowerCase()));
@@ -422,7 +432,7 @@ export function usePipeline() {
     return () => {
       cancelled = true;
     };
-  }, [source, genre, target, userTerms]);
+  }, [source, genre, target, userTerms, baseGloss]);
 
   useEffect(() => {
     lineLocksRef.current = readGenderMap(voiceStore("line", title));
@@ -462,6 +472,26 @@ export function usePipeline() {
     setIsError(error);
   }, []);
 
+  const pushStages = useCallback(() => {
+    const j = job.current;
+    const phase = phaseRef.current;
+    if (phase === "idle" && !j.segs.length && !j.parts.length) {
+      setStages(null);
+      return;
+    }
+    setStages(
+      computeStages({
+        phase,
+        partsTotal: j.parts.length,
+        partsDone: Math.min(j.nextPart, j.parts.length),
+        segsTotal: j.segs.length,
+        segsDone: j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0),
+        repairs: j.decodeRetried.size + j.filterRetried.size + j.langEvents.length,
+        failed: j.segs.reduce((n, seg) => n + (seg.translationFailed ? 1 : 0), 0),
+      }),
+    );
+  }, []);
+
   const progress = useCallback(() => {
     const j = job.current;
     const done = j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0);
@@ -469,7 +499,8 @@ export function usePipeline() {
     say(
       `Nhận dạng ${Math.min(j.nextPart, j.parts.length)}/${j.parts.length} đoạn · dịch ${done}/${j.segs.length} câu${modelBit}${j.note ? " · " + j.note : ""}`,
     );
-  }, [mode, say]);
+    pushStages();
+  }, [mode, say, pushStages]);
 
   const mediaId = useCallback(() => {
     if (file || audioFile)
@@ -478,7 +509,7 @@ export function usePipeline() {
     return "";
   }, [file, audioFile, url]);
 
-  const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}` : `${modelId}|${genre}`;
+  const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}${baseGloss ? "" : "|nb"}` : `${modelId}|${genre}${baseGloss ? "" : "|nb"}`;
 
   const buttonLabel = useMemo(() => {
     if (running) return "Hủy";
@@ -505,6 +536,59 @@ export function usePipeline() {
   useEffect(() => {
     void pullBoard();
   }, [pullBoard]);
+
+  /** Kết quả hỏi Groq gần nhất cho đúng key đang nhập. Dùng để báo ngay dưới ô key và để chặn sớm trước khi chạy. */
+  const [probe, setProbe] = useState<{ key: string; value: KeyProbe; at: number } | null>(null);
+  const [probing, setProbing] = useState(false);
+  const probeSeq = useRef(0);
+  const probeRef = useRef<{ key: string; value: KeyProbe; at: number } | null>(null);
+  probeRef.current = probe;
+
+  const runProbe = useCallback(async (token: string): Promise<KeyProbe> => {
+    const seq = ++probeSeq.current;
+    setProbing(true);
+    try {
+      const value = await probeKey(token);
+      if (seq === probeSeq.current) {
+        const next = { key: token, value, at: Date.now() };
+        probeRef.current = next;
+        setProbe(next);
+        if (value.status >= 200 && value.status < 300 && value.ids.length) setRemoteIds(value.ids);
+      }
+      return value;
+    } finally {
+      if (seq === probeSeq.current) setProbing(false);
+    }
+  }, []);
+
+  // Dán hoặc gõ key xong chừng 0,8 giây thì tự kiểm tra, không cần bấm gì.
+  useEffect(() => {
+    const token = key.trim();
+    if (token.length < 20) {
+      probeSeq.current++;
+      setProbing(false);
+      setProbe(null);
+      return;
+    }
+    const timer = window.setTimeout(() => void runProbe(token), 800);
+    return () => window.clearTimeout(timer);
+  }, [key, runProbe]);
+
+  const keyNeed = useMemo<KeyNeed>(
+    () => ({
+      asr: asrModel === ALI_FILETRANS_MODEL ? null : asrModel,
+      chat: mode === "manual" ? modelId.trim() || null : null,
+    }),
+    [asrModel, mode, modelId],
+  );
+
+  const keyStatus = useMemo<{ phase: "idle" | "checking" | "ok" | "warn" | "bad"; text: string }>(() => {
+    const token = key.trim();
+    if (!token) return { phase: "idle", text: "" };
+    if (!probe || probe.key !== token) return probing ? { phase: "checking", text: "Đang kiểm tra key…" } : { phase: "idle", text: "" };
+    const verdict = judgeKey(probe.value, keyNeed);
+    return { phase: verdict.state, text: verdict.text };
+  }, [key, probe, probing, keyNeed]);
 
   const refreshModels = useCallback(async () => {
     const token = activeKey();
@@ -565,6 +649,8 @@ export function usePipeline() {
     j.uses = {};
     j.lastModel = "";
     j.note = "";
+    phaseRef.current = "idle";
+    setStages(null);
     publish(true);
   }, [publish]);
 
@@ -743,8 +829,7 @@ export function usePipeline() {
       if (packed) return say(packed, true);
     }
     if (asrModel === ALI_FILETRANS_MODEL) {
-      if (roomPayRef.current) return say(alibabaAsrOnRoomPayProblem(), true);
-      const aliKey = alibabaKeyRef.current.trim();
+      const aliKey = roomPayRef.current ? "room" : alibabaKeyRef.current.trim();
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
       if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
     } else if (!token) return say("Vui lòng nhập Groq API key.", true);
@@ -755,6 +840,18 @@ export function usePipeline() {
     }
     if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
+    // Kiểm key và model trước mọi việc tốn tiền hay tốn lượt thử. Mất mạng hoặc Groq bận thì không chặn.
+    if (token && token !== ROOM_KEY && !roomPayRef.current) {
+      const known = probeRef.current;
+      let value: KeyProbe;
+      if (known && known.key === token && Date.now() - known.at < 60_000) value = known.value;
+      else {
+        say("Đang kiểm tra key Groq…");
+        value = await runProbe(token);
+      }
+      const verdict = judgeKey(value, { asr: asrModel === ALI_FILETRANS_MODEL ? null : asrModel, chat: mode === "manual" ? chosen : null });
+      if (verdict.state === "bad") return say(verdict.text, true);
+    }
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
     if (analyzing) return say("Đang phân tích phim, chờ một chút.", true);
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -791,6 +888,7 @@ export function usePipeline() {
     writeStore("gsrc", source);
     writeStore("gmdl", chosen);
     writeStore("ggenre", genre);
+    writeStore("gbase", baseGloss ? "1" : "0");
     writeStore("gpar", String(threads));
     writeStore("gmode", mode);
     writeStore("gprofile", profile);
@@ -804,11 +902,12 @@ export function usePipeline() {
     let releasePlayback = () => {};
     if (roomPayRef.current) {
       const chosenFile = audioFile || file;
-      if (!chosenFile) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
+      const linkRun = asrModel === ALI_FILETRANS_MODEL && !chosenFile;
+      if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile.name,
-          seconds: await readMediaSeconds(chosenFile),
+          fileName: chosenFile?.name || "Link Alibaba",
+          seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
         });
@@ -838,6 +937,8 @@ export function usePipeline() {
     const signal = inner.signal;
     const pauseForNewBible = { current: true };
     setRunning(true);
+    phaseRef.current = asrModel === ALI_FILETRANS_MODEL ? "ali" : "read";
+    pushStages();
     document.documentElement.dataset.tyzoBusy = "1";
     try {
       audioContext.resume?.();
@@ -1278,7 +1379,7 @@ export function usePipeline() {
             // Structured glossary (genre × source language) — hard override via placeholder
             let packTerms: Awaited<ReturnType<typeof loadGenreGlossary>>["terms"] = [];
             try {
-              const pack = await loadGenreGlossary(source, genre, target);
+              const pack = await loadRunGlossary(source, genre, target, baseGloss);
               packTerms = overlayUserTerms(pack.terms, userTermsRef.current);
             } catch {
               packTerms = overlayUserTerms([], userTermsRef.current);
@@ -1456,7 +1557,7 @@ export function usePipeline() {
             if (video && Number.isFinite(video.duration) && video.duration > MAX_MINUTES * 60)
               throw new Error(`File dài hơn ${MAX_MINUTES} phút sẽ làm đầy bộ nhớ máy. Hãy cắt thành đoạn ngắn hơn.`);
             say("Đang giải mã và đưa âm thanh về 16 kHz…");
-            j.pcm = await decodeTo16k(blob, audioContext);
+            j.pcm = await decodeTo16k(blob, audioContext, j.streamWhy);
             if (my !== j.runId) return;
             j.pcmId = id;
             j.stream = null;
@@ -1539,12 +1640,12 @@ export function usePipeline() {
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
         };
         if (asrModel === ALI_FILETRANS_MODEL) {
-          const aliKey = alibabaKeyRef.current.trim();
           say("Đang gửi file tới Alibaba…");
           const result = await recognizeFileUrl({
             url: link,
             language: source,
-            key: aliKey,
+            key: roomPayRef.current ? "room" : alibabaKeyRef.current.trim(),
+            ticketId,
             signal,
             onWait: (m) => { if (my === j.runId) say(m); },
           });
@@ -1566,6 +1667,8 @@ export function usePipeline() {
         j.appliedSig = "";
         publish(true);
       }
+      phaseRef.current = "asr";
+      pushStages();
 
       pauseForNewBible.current = !(j.bible && !j.bible.failed);
       let asrFinished = j.nextPart >= j.parts.length;
@@ -1596,6 +1699,7 @@ export function usePipeline() {
         // Chỉ gửi các con số, không gửi chữ, tên tệp, video hay khóa. Lỗi ở đây không được làm hỏng lần dịch.
         try {
           const summary = summarizeQuality({
+            thresholds: await loadQualityThresholds(),
             raw: j.rawParts,
             rejects: j.rejects,
             kept: j.segs.length,
@@ -1665,7 +1769,11 @@ export function usePipeline() {
       say(`Lỗi: ${err?.message || String(error)}${why}`, true);
     } finally {
       outerSignal.removeEventListener("abort", onAbort);
-      if (my === j.runId) delete document.documentElement.dataset.tyzoBusy;
+      if (my === j.runId) {
+        delete document.documentElement.dataset.tyzoBusy;
+        phaseRef.current = "idle";
+        pushStages();
+      }
       releasePlayback();
       await closeRoomTicket(ticketId, ticketFailed);
       try {
@@ -1701,7 +1809,9 @@ export function usePipeline() {
     profile,
     progress,
     publish,
+    pushStages,
     remoteIds,
+    runProbe,
     saveGloss,
     say,
     source,
@@ -1862,7 +1972,7 @@ export function usePipeline() {
       if (job.current.abort === controller) job.current.abort = null;
       setAnalyzing(false);
     }
-  }, [allowEnterprise, asrModel, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
+  }, [allowEnterprise, asrModel, baseGloss, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
 
   const retryFailed = useCallback(() => {
     void (async () => {
@@ -1928,7 +2038,7 @@ export function usePipeline() {
           return;
         }
         const blob = await loadBlob(primary, link, signal, () => {});
-        const pcm = await decodeTo16k(blob, audioContext);
+        const pcm = await decodeTo16k(blob, audioContext, j.streamWhy);
         await run(
           async (start, end) => pcm.subarray(Math.max(0, Math.floor(start * SR)), Math.min(pcm.length, Math.floor(end * SR))),
           pcm.length / SR,
@@ -2193,6 +2303,8 @@ export function usePipeline() {
     setSource,
     genre,
     setGenre,
+    baseGloss,
+    setBaseGloss,
     threads,
     setThreads,
     mode,
@@ -2301,11 +2413,13 @@ export function usePipeline() {
     status,
     isError,
     running,
+    stages,
     buttonLabel,
     catalog,
     board,
     boardNote,
     remoteIds,
+    keyStatus,
     modelBusy,
     uses,
     videoRef,
@@ -2389,7 +2503,7 @@ function waitForMetadata(video: HTMLVideoElement | null) {
   });
 }
 
-async function decodeTo16k(blob: Blob, audioContext: AudioContext) {
+async function decodeTo16k(blob: Blob, audioContext: AudioContext, streamWhy = "") {
   if (blob.size > MAX_BYTES)
     throw new Error("File lớn hơn 1 GB và không đọc theo đoạn được. Hãy chọn thêm Âm thanh riêng.");
   let encoded: ArrayBuffer;
@@ -2402,7 +2516,14 @@ async function decodeTo16k(blob: Blob, audioContext: AudioContext) {
   try {
     audioBuffer = await audioContext.decodeAudioData(encoded.slice(0));
   } catch {
-    throw new Error("Không giải mã được âm thanh. Hãy dùng mp4, webm, mp3, m4a hoặc wav.");
+    // Đọc vài MB đầu để nói rõ file là gì (MKV, AC3, DTS…) thay vì một câu chung chung.
+    let head = new Uint8Array(0);
+    try {
+      head = new Uint8Array(await blob.slice(0, SNIFF_BYTES).arrayBuffer());
+    } catch {
+      /* không đọc được thì báo theo nội dung đã có */
+    }
+    throw new Error(describeDecodeFailure({ fileName: blob instanceof File ? blob.name : "", head, hint: streamWhy }));
   }
   if (!audioBuffer.duration || !Number.isFinite(audioBuffer.duration)) throw new Error("Không đọc được thời lượng âm thanh.");
   if (audioBuffer.duration > MAX_MINUTES * 60)

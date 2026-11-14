@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, deleteCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
+import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
@@ -96,7 +96,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [points, setPoints] = useState<MoneyPoint[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
-  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0, hoa: 0 });
+  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0, hoa: 0, vonUoc: 0, chuaVon: 0 });
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -161,14 +161,37 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <li className="flex justify-between gap-2"><span>Hoàn vào ví</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
           <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
           <li className="flex justify-between gap-2"><span>Giá vốn lượt (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
+          {breakdown.vonUoc > 0 && (
+            <li className="flex justify-between gap-2"><span>Trong đó giá vốn ước tính (phiếu cũ)</span><span className="font-medium text-fg">{dong(breakdown.vonUoc)}</span></li>
+          )}
           <li className="flex justify-between gap-2"><span>Lãi gộp (gói + lượt − giá vốn)</span><span className="font-medium text-fg">{dong(breakdown.lai)}</span></li>
           <li className="flex justify-between gap-2"><span>Hoa hồng đã ghi</span><span className="font-medium text-fg">{dong(breakdown.hoa)}</span></li>
           <li className="flex justify-between gap-2"><span>Chi phí vận hành (ghi tay)</span><span className="font-medium text-fg">{dong(breakdown.chi)}</span></li>
         </ul>
         <p className="text-xs text-muted">
-          Lời lỗ = lãi gộp trừ hoa hồng và chi phí ghi tay. Lượt trước bản này chưa lưu giá vốn nên có thể làm lời lỗ cao hơn thực tế.
+          Lời lỗ = lãi gộp trừ hoa hồng và chi phí ghi tay. Phiếu từ bản này trở đi lưu giá vốn thật. Phiếu cũ chỉ có giá vốn ước tính (đánh dấu ở trên) và có thể lệch so với thực tế.
           Tiền thử và gói mở tay không tính. Key của khách không đi qua sổ này.
         </p>
+        {owner && breakdown.chuaVon > 0 && (
+          <button
+            type="button"
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm"
+            disabled={saving}
+            onClick={() => {
+              if (saving) return;
+              setSaving(true);
+              void estimateOldCost()
+                .then((result) => {
+                  pushToast(`Đã ước tính giá vốn cho ${result.count} phiếu cũ (chênh ${result.markup}%).`);
+                  load();
+                })
+                .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa ước tính được.", "bad"))
+                .finally(() => setSaving(false));
+            }}
+          >
+            Ước tính giá vốn cho {breakdown.chuaVon} phiếu cũ
+          </button>
+        )}
       </div>
       {owner && (
         <form

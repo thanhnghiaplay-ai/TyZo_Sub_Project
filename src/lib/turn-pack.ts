@@ -27,6 +27,7 @@ export function turnPackProblem(packs: ServicePack[], pick: { asr: string; chat:
   if (!open.length) return "";
   const hit = open.find((pack) => pack.roles.asr?.model === pick.asr && pack.roles.translate?.model === pick.chat);
   if (!hit) return "Hãy chọn một gói trả theo lượt. Cửa này không tự chọn model.";
-  if (packUsesAlibaba(hit)) return "Gói này có việc Alibaba. Cửa trả theo lượt chưa gọi key Alibaba của phòng.";
+  const other = Object.entries(hit.roles).find(([role, assign]) => role !== "asr" && assign?.provider === "alibaba");
+  if (other) return "Gói này có việc Alibaba ngoài nhận dạng. Cửa trả theo lượt chưa chạy việc đó.";
   return "";
 }
