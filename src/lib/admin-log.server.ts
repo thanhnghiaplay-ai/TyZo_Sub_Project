@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.43.0",
+    time: "02:40 ngày 15/11/2026",
+    area: "du-lieu",
+    text: "Theo yêu cầu người dùng (việc 3 của góp ý giao diện, «làm theo đề xuất»). Kiểm thấy run_tickets.file_name lưu tên đầy đủ và trước đây máy chủ gửi nguyên tên cho mọi nhân viên, che chỉ ở trình duyệt. Đổi: ticketOf (admin-room.ts) và searchTicketsWith (overview-data.ts) che tên ở máy chủ; tìm theo tên tệp chỉ Chủ (nhân viên khác không dò được tên bằng cách thử chữ); thêm revealTicketFileName (overview-room.ts, chỉ Chủ, writeAudit «xem-ten-tep» mỗi lần, dòng nhật ký không chứa tên tệp); nút «Hiện tên đầy đủ» ở Phiếu cho Chủ. Điều khoản mục 4 thêm đoạn nói rõ phiếu có tên tệp, nhân viên chỉ thấy bản che, Chủ xem có nhật ký, phòng không lưu video; TERMS_VERSION nâng 2026-11-13.4 sang 2026-11-15.1 nên mọi người đồng ý lại. Không đổi giá, hạn mức, luật ví hay quyền khác. Phiếu cũ vẫn hiện được vì tên đầy đủ đã lưu từ trước.",
+  },
+  {
     version: "3.42.0",
     time: "02:10 ngày 15/11/2026",
     area: "khac",

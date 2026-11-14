@@ -19,6 +19,7 @@ const css = read("../styles.css");
 /** Dấu vân tay chữ của điều khoản, bỏ khoảng trắng. Đổi chữ thì phải nâng TERMS_VERSION rồi thêm dòng mới ở đây. */
 const TERMS_TEXT_HASH: Record<string, string> = {
   "2026-11-13.4": "a31fe1df344c120bdc47be53a1d26b86be721250ae28d63609c6ff751bcb78d2",
+  "2026-11-15.1": "603f8b2428d5ffc05f338960cbea8d66ed755351d36067eb351115be17a51b79",
 };
 
 function termsText() {

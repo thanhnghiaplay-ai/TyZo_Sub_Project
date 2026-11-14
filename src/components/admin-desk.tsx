@@ -477,7 +477,7 @@ export function AdminDesk() {
                 <ul className="mt-1 space-y-2 text-sm">
                   {runs.map((ticket) => (
                     <li key={ticket.id}>
-                      <TicketCard ticket={ticket}>
+                      <TicketCard ticket={ticket} owner={role === "chu"}>
                       {roleAtLeast(role, "quan-ly") && ticket.status === "dang-giu" && ticket.held > 0 && (
                         <button
                           type="button"
@@ -783,6 +783,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "go-cong-tac": "Gỡ cộng tác",
   "doi-quyen": "Đổi quyền cộng tác",
   "nha-giu": "Nhả khoản giữ phiếu",
+  "xem-ten-tep": "Xem tên tệp đầy đủ của phiếu",
   "hoan-vi": "Hoàn tiền vào ví",
   "key-phong": "Đổi key Groq của phòng",
   "key-model": "Đồng bộ model của key",

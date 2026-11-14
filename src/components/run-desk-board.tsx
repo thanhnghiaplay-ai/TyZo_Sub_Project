@@ -3,7 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
-import { listDoorHistory, searchRunTickets, type DoorChange } from "@/lib/overview-room";
+import { listDoorHistory, revealTicketFileName, searchRunTickets, type DoorChange } from "@/lib/overview-room";
 import type { TicketFilter, TicketRow } from "@/lib/overview-data";
 import { asrHouse } from "@/lib/sub/asr-house";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
@@ -26,13 +26,48 @@ export function ticketLine(ticket: RunTicket) {
   return `${when} · ${minutes} · giữ ${dong(ticket.held)} · trừ ${dong(ticket.charged)} · ${label(ticket.status)}`;
 }
 
-export function TicketCard({ ticket, children }: { ticket: RunTicket; children?: ReactNode }) {
+/**
+ * Tên tệp đã che. Chủ có nút «Hiện tên đầy đủ»: mỗi lần bấm máy chủ ghi nhật ký thao tác.
+ * Nhân viên khác không có nút và máy chủ không gửi tên đầy đủ cho họ.
+ */
+function FileNameLine({ ticketId, masked, owner }: { ticketId: string; masked: string; owner: boolean }) {
+  const [full, setFull] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const shown = full ?? (maskFileName(masked) || "Không tên tệp");
+  return (
+    <p className="flex min-w-0 items-center gap-2 text-sm font-medium">
+      <span className="min-w-0 break-all">{shown}</span>
+      {owner && masked && (
+        <button
+          type="button"
+          disabled={busy}
+          className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs font-normal text-muted disabled:opacity-40"
+          onClick={() => {
+            if (full !== null) {
+              setFull(null);
+              return;
+            }
+            setBusy(true);
+            void revealTicketFileName({ data: ticketId })
+              .then((result) => setFull(result.fileName || "Không tên tệp"))
+              .catch((error: Error) => pushToast(error.message || "Chưa xem được tên tệp.", "bad"))
+              .finally(() => setBusy(false));
+          }}
+        >
+          {full !== null ? "Ẩn tên" : "Hiện tên đầy đủ"}
+        </button>
+      )}
+    </p>
+  );
+}
+
+export function TicketCard({ ticket, owner = false, children }: { ticket: RunTicket; owner?: boolean; children?: ReactNode }) {
   const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "Chưa có giờ";
   const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút tiếng` : "Chưa có thời lượng";
   return (
     <article className="rounded-xl border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium">{maskFileName(ticket.fileName) || "Không tên tệp"}</p>
+        <FileNameLine ticketId={ticket.id} masked={ticket.fileName} owner={owner} />
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
@@ -58,14 +93,14 @@ const TICKET_CHIPS: { id: TicketFilter; label: string }[] = [
   { id: "loi", label: "Lỗi" },
 ];
 
-function TicketRowCard({ ticket }: { ticket: TicketRow }) {
+function TicketRowCard({ ticket, owner }: { ticket: TicketRow; owner: boolean }) {
   const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "Chưa có giờ";
   const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút tiếng` : "Chưa có thời lượng";
   const models = [ticket.asrModel, ticket.chatModel].filter(Boolean).map(modelLabel).join(" + ");
   return (
     <article className="rounded-xl border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium">{maskFileName(ticket.fileName) || "Không tên tệp"}</p>
+        <FileNameLine ticketId={ticket.id} masked={ticket.fileName} owner={owner} />
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
@@ -76,7 +111,7 @@ function TicketRowCard({ ticket }: { ticket: TicketRow }) {
 }
 
 /** Danh sách phiếu: lọc theo trạng thái, tìm theo email hoặc tên tệp. */
-function TicketPane() {
+function TicketPane({ owner }: { owner: boolean }) {
   const [status, setStatus] = useState<TicketFilter>("all");
   const [text, setText] = useState("");
   const [query, setQuery] = useState("");
@@ -127,7 +162,7 @@ function TicketPane() {
         type="search"
         value={text}
         onChange={(event) => setText(event.target.value)}
-        placeholder="Tìm theo email hoặc tên tệp"
+        placeholder={owner ? "Tìm theo email hoặc tên tệp" : "Tìm theo email"}
         aria-label="Tìm phiếu theo email hoặc tên tệp"
         className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
       />
@@ -141,7 +176,7 @@ function TicketPane() {
       )}
       <div className="grid max-h-96 gap-2 overflow-y-auto" aria-busy={loading}>
         {rows?.map((ticket) => (
-          <TicketRowCard key={ticket.id} ticket={ticket} />
+          <TicketRowCard key={ticket.id} ticket={ticket} owner={owner} />
         ))}
       </div>
     </div>
@@ -433,7 +468,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
           <DoorHistory refresh={doorTick} />
         </div>
 
-        <TicketPane />
+        <TicketPane owner={owner} />
       </div>
     </section>
   );

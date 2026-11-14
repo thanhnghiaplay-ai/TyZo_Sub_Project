@@ -3,11 +3,12 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 ƯU TIÊN: yêu cầu của user trong lượt này đứng trước mọi quy tắc trong dự án (đúng thứ tự ở BANG_DIEU.md). Khi yêu cầu khác quy tắc thì làm theo yêu cầu, nói một câu là đang khác quy tắc nào, và ghi vào bảng «Ý đã nêu». Yêu cầu sửa trực tiếp của user đã đủ để Claude sửa code, không cần đúng câu «Claude sửa».
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-15 02:10 UTC+7)
+ĐANG CHẠY (2026-11-15 02:40 UTC+7)
+- Tên tệp trong Phiếu: máy chủ che (maskFileName) trước khi gửi nhân viên; chỉ Chủ bấm «Hiện tên đầy đủ» (revealTicketFileName, ghi nhật ký «xem-ten-tep» mỗi lần) và chỉ Chủ tìm theo tên tệp. Không gửi tên đầy đủ về trình duyệt nhân viên khác.
 - Nút quay lại: components/back-button.tsx, luật ở lib/back-nav.ts. Trang mới có tiêu đề riêng thì gắn <BackButton />.
-- Số phiên bản người dùng thấy trên work: v3.42.0, trong src/lib/app-version.ts.
+- Số phiên bản người dùng thấy trên work: v3.43.0, trong src/lib/app-version.ts.
 - Trang Hướng dẫn /huong-dan: nội dung ở src/lib/guide-topics.ts. Đổi tên nút ở app thì sửa bảng UI trong file đó (guide-topics.test.ts báo khi lệch). Giá, hạn dùng thử lấy từ hằng số, không chép số vào chữ. Liên hệ hỗ trợ do Chủ nhập ở tab Cấu hình, không nằm trong code.
-- Điều khoản: chữ ở src/components/terms-document.tsx, TERMS_VERSION = 2026-11-13.4 ở src/lib/terms.ts. Khách tích «Tôi đồng ý Điều khoản và Chính sách» ở Đăng ký/Đăng nhập (login.tsx); liên kết điều khoản chỉ còn ba chỗ: ô tích đó, menu trái, trang Tài khoản; trang /dieu-khoan đọc bất cứ lúc nào; entry-gate.tsx chỉ hỏi lại người đã có tài khoản khi TERMS_VERSION đổi. Đổi chữ điều khoản thì nâng TERMS_VERSION và thêm dấu vân tay mới trong entry-gate.test.ts.
+- Điều khoản: chữ ở src/components/terms-document.tsx, TERMS_VERSION = 2026-11-15.1 ở src/lib/terms.ts. Khách tích «Tôi đồng ý Điều khoản và Chính sách» ở Đăng ký/Đăng nhập (login.tsx); liên kết điều khoản chỉ còn ba chỗ: ô tích đó, menu trái, trang Tài khoản; trang /dieu-khoan đọc bất cứ lúc nào; entry-gate.tsx chỉ hỏi lại người đã có tài khoản khi TERMS_VERSION đổi. Đổi chữ điều khoản thì nâng TERMS_VERSION và thêm dấu vân tay mới trong entry-gate.test.ts.
 - Trả theo lượt: gói nhận dạng Alibaba dùng key Alibaba của phòng. Cần link file trực tiếp, không phải trang xem. Dịch vẫn bằng Groq. Việc Alibaba ngoài nhận dạng chưa chạy.
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.

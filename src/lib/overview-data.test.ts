@@ -109,7 +109,7 @@ describe("Tìm phiếu", () => {
   it("tìm theo email hoặc tên tệp, không phân biệt hoa thường, không hiểu % là ký tự đặc biệt", async () => {
     await ticket("a", "u1", "Phim_Hay.mp4", "da-tru", 500);
     await ticket("b", "u2", "100%.mp4", "da-tru", 500);
-    const find = async (q: string) => (await searchTicketsWith(sql, { status: "all", q })).map((row) => row.id);
+    const find = async (q: string) => (await searchTicketsWith(sql, { status: "all", q }, { owner: true })).map((row) => row.id);
     assert.deepEqual(await find("b@GMAIL"), ["b"]);
     assert.deepEqual(await find("phim_hay"), ["a"]);
     assert.deepEqual(await find("%"), ["b"]);
@@ -125,5 +125,15 @@ describe("Tìm phiếu", () => {
     assert.equal(byId.n.processSeconds, 95);
     assert.equal(byId.n.asrModel, "whisper-large-v3-turbo");
     assert.equal(byId.o.processSeconds, null);
+  });
+
+  it("tên tệp trả về luôn đã che; chỉ Chủ tìm được theo tên tệp, nhân viên khác vẫn tìm theo email", async () => {
+    await ticket("a", "u1", "Phim_Hay.mp4", "da-tru", 500);
+    const asOwner = await searchTicketsWith(sql, { status: "all", q: "" }, { owner: true });
+    assert.equal(asOwner[0].fileName, "Ph•••.mp4");
+    const staff = await searchTicketsWith(sql, { status: "all", q: "phim_hay" });
+    assert.deepEqual(staff, []);
+    const byMail = await searchTicketsWith(sql, { status: "all", q: "a@" });
+    assert.ok(byMail.every((row) => !row.fileName.includes("Phim_Hay")));
   });
 });

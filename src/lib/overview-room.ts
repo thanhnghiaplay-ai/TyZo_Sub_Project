@@ -23,10 +23,33 @@ export const searchRunTickets = createServerFn({ method: "POST" })
   }))
   .handler(async ({ context, data }): Promise<TicketRow[]> => {
     const { requireRole } = await import("@/lib/admin-room");
-    await requireRole(context.userId, "ho-tro");
+    const place = await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const { searchTicketsWith } = await import("@/lib/overview-data");
-    return searchTicketsWith(await getSql(), data);
+    return searchTicketsWith(await getSql(), data, { owner: place.role === "chu" });
+  });
+
+/**
+ * Xem tên tệp đầy đủ của một phiếu. Chỉ Chủ. Mỗi lần xem ghi một dòng nhật ký thao tác
+ * (ai, phiếu nào, lúc nào); dòng nhật ký không chứa tên tệp. Tên tệp không cho thấy video: phòng không lưu video.
+ */
+export const revealTicketFileName = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: unknown) => {
+    const ticket = typeof id === "string" ? id.trim().slice(0, 80) : "";
+    if (!ticket) throw new Error("Thiếu phiếu.");
+    return ticket;
+  })
+  .handler(async ({ context, data }): Promise<{ fileName: string }> => {
+    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ user_id: string; file_name: string }>`select user_id, file_name from run_tickets where id = ${data}`;
+    const row = rows[0];
+    if (!row) throw new Error("Không có phiếu này.");
+    await writeAudit(context.userId, "xem-ten-tep", row.user_id, `Phiếu ${data}`);
+    return { fileName: row.file_name };
   });
 
 export type DoorChange = { id: number; at: string; actorEmail: string; actorRole: string; action: string; note: string };

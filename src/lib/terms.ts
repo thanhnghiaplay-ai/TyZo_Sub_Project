@@ -1,5 +1,5 @@
 /** Đổi chuỗi này khi sửa nội dung điều khoản (components/terms-document.tsx). Người đã dùng phải đồng ý lại. */
-export const TERMS_VERSION = "2026-11-13.4";
+export const TERMS_VERSION = "2026-11-15.1";
 
 /** Khóa lưu trên máy. Giữ nguyên tên cũ để người đã đồng ý bản hiện tại không bị hỏi lại. */
 export const TERMS_KEY = "gterms";

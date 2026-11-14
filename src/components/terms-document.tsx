@@ -96,6 +96,9 @@ export function TermsDocument() {
         Không gửi phụ đề, lời thoại, tên file, tên phim, video, âm thanh hay key. Bản số liệu lưu trên máy chủ không có mã hay email tài khoản của bạn. Máy chủ chỉ dùng tài khoản để giới hạn số lần gửi. Chỉ Chủ xem được các số đã gộp, không xem được từng người.
       </p>
       <p>
+        Khi bạn dùng cửa trả theo lượt, máy chủ của phòng ghi một phiếu cho lần chạy đó, trong phiếu có tên tệp bạn đưa vào, thời lượng, số tiền giữ và trừ. Nhân viên của phòng chỉ thấy tên tệp đã che (hai ký tự đầu và đuôi tệp), phần còn lại là dấu chấm tròn. Chỉ Chủ xem được tên đầy đủ, để đối chiếu khi bạn hỏi về một lượt chạy, và mỗi lần xem được ghi vào nhật ký thao tác của phòng. Phòng không lưu video của bạn nên không ai trong phòng xem được video.
+      </p>
+      <p>
         Thuật ngữ bạn tự thêm chỉ nằm trên máy của bạn. Nếu bạn bật gửi thuật ngữ, phòng nhận một bản sao để xem. Phòng không áp bản đó cho người khác nếu Chủ chưa nhận vào bộ chính thức. Không gửi tên người thật, số điện thoại hay địa chỉ.
       </p>
       <p>

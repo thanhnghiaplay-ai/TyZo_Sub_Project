@@ -1,4 +1,5 @@
 import type { Sql } from "./db.ts";
+import { maskFileName } from "./mask-file-name.ts";
 import { parseModelList, parseRunDesk } from "./run-desk.ts";
 
 export type OverviewRange = 1 | 7 | 30;
@@ -186,7 +187,11 @@ function likeEscape(text: string) {
 }
 
 /** Tìm phiếu theo trạng thái, email hoặc tên tệp. Phiếu đọc thuyết minh (tts-) không tính là một lượt chạy. */
-export async function searchTicketsWith(sql: Sql, input: { status: TicketFilter; q: string; limit?: number }): Promise<TicketRow[]> {
+/**
+ * Tên tệp trả về luôn đã che. Chỉ Chủ (`owner`) tìm được theo tên tệp, để nhân viên khác không dò ra tên
+ * đầy đủ bằng cách thử từng chữ.
+ */
+export async function searchTicketsWith(sql: Sql, input: { status: TicketFilter; q: string; limit?: number }, opts: { owner?: boolean } = {}): Promise<TicketRow[]> {
   const q = input.q.trim().slice(0, 80);
   const statuses = input.status === "all" ? null : FILTER_STATUSES[input.status];
   const like = q ? `%${likeEscape(q.toLowerCase())}%` : null;
@@ -200,16 +205,16 @@ export async function searchTicketsWith(sql: Sql, input: { status: TicketFilter;
      from run_tickets t left join "user" u on u.id = t.user_id
      where t.id not like 'tts-%'
        and ($1::text[] is null or t.status = any($1::text[]))
-       and ($2::text is null or lower(coalesce(u.email, '')) like $2 escape '\\' or lower(t.file_name) like $2 escape '\\')
+       and ($2::text is null or lower(coalesce(u.email, '')) like $2 escape '\\' or ($4::boolean and lower(t.file_name) like $2 escape '\\'))
      order by t.created_at desc
      limit $3`,
-    [statuses, like, Math.min(Math.max(input.limit ?? 40, 1), 100)],
+    [statuses, like, Math.min(Math.max(input.limit ?? 40, 1), 100), opts.owner === true],
   );
   return rows.map((row) => ({
     id: row.id,
     userId: row.user_id,
     email: row.email ?? "",
-    fileName: row.file_name,
+    fileName: maskFileName(row.file_name),
     seconds: row.seconds,
     rate: row.rate,
     held: row.held,

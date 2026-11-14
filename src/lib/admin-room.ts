@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { maskFileName } from "@/lib/mask-file-name";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan } from "@/lib/room-plans";
 import { parseCategory } from "@/lib/money-extra";
@@ -1407,7 +1408,7 @@ function ticketOf(row: {
     id: row.id,
     userId: row.user_id,
     email: row.email ?? "",
-    fileName: row.file_name,
+    fileName: maskFileName(row.file_name),
     seconds: row.seconds,
     rate: row.rate,
     held: row.held,

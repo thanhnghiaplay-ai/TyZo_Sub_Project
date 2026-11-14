@@ -1,5 +1,11 @@
 # HANDOFF — TyZo_Sub_Project
 
+## TÊN TỆP TRONG PHIẾU (15/11/2026, nhánh work, v3.43.0)
+ĐÃ LÀM: máy chủ che tên tệp trước khi gửi (`ticketOf` trong `admin-room.ts`, `searchTicketsWith` trong `overview-data.ts`); tìm theo tên tệp chỉ Chủ; `revealTicketFileName` (`overview-room.ts`) chỉ Chủ, ghi nhật ký «xem-ten-tep» mỗi lần xem (dòng nhật ký không chứa tên tệp); nút «Hiện tên đầy đủ» / «Ẩn tên» ở Phiếu (`run-desk-board.tsx`), chỉ Chủ thấy. Điều khoản mục 4 thêm đoạn nói rõ; `TERMS_VERSION` 2026-11-15.1, mọi người bị hỏi lại (cố ý, vì đổi cách xử lý dữ liệu). Phiếu cũ vẫn xem được vì tên đầy đủ đã lưu từ trước.
+KIỂM TRA: `npx tsc --noEmit` sạch; `npm test` 621 pass, 0 fail (có test che tên và tìm theo tên chỉ Chủ).
+CHƯA KIỂM: mở bằng tài khoản Chủ thật (bấm hiện tên, xem dòng nhật ký trong tab Nhật ký thao tác), tài khoản Hỗ trợ/Quản lý (không có nút, tìm tên không ra). Ẩn/hiện chỉ để Chủ quản lý; phòng không lưu video nên vẫn không xem được video.
+KHÔNG ĐỔI: giá, hạn mức, luật ví, quyền khác.
+
 ## GÓP Ý GIAO DIỆN 15/11/2026 (nhánh work, v3.42.0)
 ĐÃ LÀM: (1) bỏ liên kết Điều khoản ở chân trang đăng nhập và cuối Hướng dẫn; còn ô tích, menu trái, Tài khoản. (2) `BackButton` (`components/back-button.tsx`, luật `lib/back-nav.ts`) ở Hướng dẫn, Dịch trực tiếp, Tài khoản, Thuê phòng, Cộng tác viên, Tải video, Điều khoản: có trang trước trong app thì quay lại, không có thì về `/`. Tab cùng trang: Admin nhớ tab vừa rời, mũi tên về đó, hết lịch sử về Tổng quan, đang ở Tổng quan thì rời trang; Số dư trong Studio về màn vừa xem. Người dùng chưa chốt «về tab vừa xem hay về màn chính» nên chọn «về tab vừa xem»; đổi sang «về màn chính» chỉ cần sửa `backFromTab` trong `admin-desk.tsx`.
 KIỂM TRA: `npx tsc --noEmit` sạch; `npm test` 617 pass, 0 fail.
