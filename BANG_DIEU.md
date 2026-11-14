@@ -4,7 +4,7 @@
 
 Thứ tự khi các câu khác nhau:
 
-1. Câu người dùng nói trong lượt này.
+1. Câu người dùng nói trong lượt này. Yêu cầu đứng trước quy tắc: khi khác quy tắc thì làm theo yêu cầu, nói rõ đang khác chỗ nào, và ghi vào «Ý đã nêu». Yêu cầu sửa trực tiếp cũng đủ để vai Thẩm định sửa code.
 2. File này, rồi `huongdan.txt`.
 3. Bảng trạng thái ở đầu `PROJECT_STATUS.md`.
 4. Phần còn lại của `PROJECT_STATUS.md` và `HANDOFF.md` chỉ để tra. Không được làm theo đoạn cũ.
@@ -33,7 +33,7 @@ Không ai vừa đề xuất vừa tự nhận là đã duyệt.
 | Vai | Model | Được làm | Không được làm |
 |---|---|---|---|
 | Làm | Grok | Sửa code, nâng phiên bản, điều khoản, văn phong, đẩy nhánh `work` | Tự thêm phạm vi, tự ghi đã duyệt, đẩy thẳng `main` |
-| Thẩm định | Claude | Đọc code và bản vừa làm. Ghi lỗi còn đó hoặc lỗi mới: mức nặng, chỗ nào, vì sao. Ghi vào mục «Còn mở» và «Ý đã nêu» | Sửa sản phẩm, trừ khi người dùng nói đúng câu «Claude sửa» |
+| Thẩm định | Claude | Đọc code và bản vừa làm. Ghi lỗi còn đó hoặc lỗi mới: mức nặng, chỗ nào, vì sao. Ghi vào mục «Còn mở» và «Ý đã nêu» | Sửa sản phẩm, trừ khi người dùng nói «Claude sửa» hoặc yêu cầu sửa trực tiếp |
 | Cố vấn | ChatGPT | Đề xuất hướng đi. Ghi khả thi: làm ngay, làm sau, hoặc không làm | Sửa code, đẩy kho, đổi giá, đổi điều khoản |
 
 Người dùng là người chốt. Câu khởi đầu cho model khác chỉ cần: «Đọc `BANG_DIEU.md` và làm đúng vai của mình.»
@@ -58,6 +58,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-14 | Người dùng chốt | Yêu cầu là ưu tiên, rồi mới đến quy tắc | Làm ngay | Đã có ở thứ tự ưu tiên số 1 của file này; thêm giải thích và dòng ƯU TIÊN đầu `huongdan.txt`. Yêu cầu sửa trực tiếp đủ để Claude sửa code |
 | 2026-11-14 | Người dùng chốt | Làm xong mỗi bước thì đẩy `work` rồi mới làm bước khác; mục đã đẩy thì kiểm lại trước khi làm tiếp | Làm ngay | Đã ghi vào «Khi một bản hoàn thành» ở đây và `huongdan.txt` mục 15, 27 |
 | 2026-11-14 20:10 | Người dùng chốt | Bảy mục «giao diện nhẹ kiểu tương lai» (một ô trung tâm, dòng thời gian tiến trình, xem trước là chính, tiền và hạn mức, giao diện nhẹ, phím tắt, chức năng nâng cao nằm sau một lớp). Làm theo ba bản nhỏ | Làm theo giai đoạn | Mục 1 và 6 vào `work` trong v3.32.0; mục 2 và 3 trong v3.33.0; mục 4 trong v3.34.0. Mục 7 (đưa Thuật ngữ, gói dịch vào menu trái) làm ở v3.35.0. Mục 5 (khoảng trống, chữ lớn, hiệu ứng kéo thả) làm ở v3.36.0 |
 | 2026-11-14 10:03 | Người dùng chốt | Gói cải tiến Admin A–F (Tổng quan, tab Việc, Doanh thu, Chất lượng, nhật ký thao tác, trải nghiệm Admin) | Làm theo giai đoạn | Giai đoạn 1 (A, B, tách nhật ký) đã vào `work` trong v3.30.0. Giai đoạn 2 (C phần mới, F giao diện) đã vào `work` trong v3.31.0. D (xem câu lỗi, gửi kiểm tra lại), «chặn toàn bộ phòng», chế độ Chỉ xem chờ người dùng chốt |

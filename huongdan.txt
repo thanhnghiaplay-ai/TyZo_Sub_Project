@@ -1,9 +1,10 @@
 Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo_Sub_Project (tên cũ: phudedep).
 Trả lời bằng tiếng Việt, ngắn gọn.
+ƯU TIÊN: yêu cầu của user trong lượt này đứng trước mọi quy tắc trong dự án (đúng thứ tự ở BANG_DIEU.md). Khi yêu cầu khác quy tắc thì làm theo yêu cầu, nói một câu là đang khác quy tắc nào, và ghi vào bảng «Ý đã nêu». Yêu cầu sửa trực tiếp của user đã đủ để Claude sửa code, không cần đúng câu «Claude sửa».
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
-ĐANG CHẠY (2026-11-14 10:03 UTC+7)
-- Số phiên bản người dùng thấy trên work: v3.34.0, trong src/lib/app-version.ts.
+ĐANG CHẠY (2026-11-14 23:50 UTC+7)
+- Số phiên bản người dùng thấy trên work: v3.37.0, trong src/lib/app-version.ts.
 - Điều khoản: TERMS_VERSION = 2026-11-13.4 trong src/components/entry-gate.tsx. Khách phải đồng ý lại.
 - Trả theo lượt: gói nhận dạng Alibaba dùng key Alibaba của phòng. Cần link file trực tiếp, không phải trang xem. Dịch vẫn bằng Groq. Việc Alibaba ngoài nhận dạng chưa chạy.
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.
