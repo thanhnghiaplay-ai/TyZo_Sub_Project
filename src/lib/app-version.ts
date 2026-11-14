@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.29.1";
+export const APP_VERSION = "3.29.2";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.29.2",
+    time: "07:19 ngày 14/11/2026",
+    title: "Dịch không còn treo mãi khi Groq trả dữ liệu dở dang.",
+    points: [
+      "Nếu Groq gửi dữ liệu nửa chừng rồi đứng im, app tự dừng sau 2 phút và thử lại.",
+      "Lần thử lại không làm mất phần đã nhận dạng hay đã dịch.",
+      "Báo lỗi rõ ràng bằng tiếng Việt thay vì quay mãi không có kết quả.",
+    ],
+  },
   {
     version: "3.29.1",
     time: "07:00 ngày 14/11/2026",

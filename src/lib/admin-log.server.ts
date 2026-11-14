@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.29.2",
+    time: "07:19 ngày 14/11/2026",
+    area: "ha-tang",
+    text: "Làm trên nền v3.29.1, theo yêu cầu người dùng (mục P3-13: timeout đọc full response Groq, nhánh work). Không đổi dịch vụ, giá, quyền hay điều khoản. Lỗi: hạn 120 giây trong requestWithRetry chỉ bao tới lúc Groq trả đầu phản hồi (clearTimeout trong finally ngay sau fetch), còn response.json() ở transcribeOnce, translateOnce, analyzeFilm, listModelIds và response.blob() ở speakOrpheus không có hạn nào. Groq gửi header rồi đứng thân thì lần dịch treo vô hạn. Sửa: hàm thuần mới src/lib/sub/http-deadline.ts (withDeadlines, DeadlineError) giữ hai hạn riêng, header 120 giây và body 120 giây, hạn body chỉ dừng khi bước đọc xong. requestWithRetry nhận thêm tham số read và đọc thân nằm trong vòng thử lại: quá hạn header hoặc body thì thử lại như lỗi mạng (tối đa 5 lần, giữ nguyên gate 429 và retry-after); người dùng hủy vẫn ném AbortError; JSON hỏng không thử lại. Danh sách model chờ tối đa 30 giây, Orpheus 120 giây + 120 giây. Phía máy chủ: src/routes/api/room-groq.ts đặt AbortSignal.timeout 100 giây cho yêu cầu gửi Groq (đầu + thân, gồm /models); quá hạn trả 504 và chargeWith chưa tính tiền vì text() ném trước khi trừ phiếu, riêng đọc thuyết minh đã trừ ví trước thì nhánh catch có sẵn hoàn lại. Test: src/lib/sub/http-deadline.test.ts dùng máy chủ HTTP cục bộ cho 7 ca (thân đứng giữa chừng, đầu không về, hủy giữa chừng, hủy từ trước, thân chậm vẫn trong hạn, JSON hỏng); đã thêm vào npm test. Chưa chạy: npx tsc --noEmit và npm test đầy đủ (máy này không cài được node_modules); đã tsc riêng groq.ts và http-deadline.ts, không lỗi; room-groq.ts chưa được tsc vì phụ thuộc TanStack. Chưa thử với Groq thật.",
+  },
+  {
     version: "3.29.1",
     time: "07:00 ngày 14/11/2026",
     area: "khac",

@@ -16,6 +16,7 @@ import {
 import type { AsrModel } from "@/lib/sub/types";
 import { roomTicketId } from "@/lib/sub/room-ticket";
 import type { KeyProbe } from "@/lib/sub/key-check";
+import { BODY_TIMEOUT_MS, DeadlineError, HEADER_TIMEOUT_MS, withDeadlines } from "@/lib/sub/http-deadline";
 
 export const API = "https://api.groq.com/openai/v1";
 export const ROOM_KEY = "room";
@@ -80,51 +81,62 @@ async function readApiError(response: Response, modelName: string) {
   return `API trả về lỗi ${response.status}: ${detail || response.statusText}`;
 }
 
-/** Chờ tối đa bấy nhiêu cho tới khi máy chủ trả đầu phản hồi. Quá hạn thì thử lại, không đứng mãi. */
-const REQUEST_TIMEOUT_MS = 120_000;
+/**
+ * Hai hạn chót cho mỗi lần gọi: chờ đầu phản hồi, rồi đọc hết phần thân (xem `http-deadline.ts`).
+ * Quá hạn ở bước nào thì thử lại, không đứng mãi. Việc đọc thân phải nằm trong `read`, vì hạn chót chỉ dừng khi `read` xong.
+ */
+type Outcome<T> = { done: true; value: T } | { done: false; status: number; retryAfter: number; error: Error };
 
-export async function requestWithRetry(
+export async function requestWithRetry<T>(
   url: string,
   makeInit: () => RequestInit,
   label: string,
   signal: AbortSignal | undefined,
   gate: { blockedUntil: number },
-  onWait?: (message: string) => void,
-  modelName = "",
-  ticket?: string | null,
-) {
+  onWait: ((message: string) => void) | undefined,
+  modelName: string,
+  ticket: string | null | undefined,
+  read: (response: Response) => Promise<T>,
+): Promise<T> {
   let lastError: Error | undefined;
   for (let attempt = 0; attempt < 5; attempt++) {
     let pause = 1500 * (attempt + 1);
     throwIfAborted(signal);
     if (gate.blockedUntil > Date.now()) await sleep(gate.blockedUntil - Date.now(), signal);
-    let response: Response | null = null;
-    const guard = new AbortController();
-    const relay = () => guard.abort();
-    signal?.addEventListener("abort", relay, { once: true });
-    const timer = setTimeout(() => guard.abort(), REQUEST_TIMEOUT_MS);
+    let outcome: Outcome<T> | null = null;
     try {
-      const next = roomFetchTarget(url, makeInit(), ticket);
-      response = await fetch(next.url, { ...next.init, signal: guard.signal });
-    } catch (error) {
-      if (signal?.aborted) throw abortError();
-      lastError = new Error(
-        guard.signal.aborted
-          ? `${label}: máy chủ không trả lời sau ${REQUEST_TIMEOUT_MS / 1000} giây.`
-          : `${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`,
+      outcome = await withDeadlines<Outcome<T>>(
+        (guard) => {
+          const next = roomFetchTarget(url, makeInit(), ticket);
+          return fetch(next.url, { ...next.init, signal: guard });
+        },
+        async (response) => {
+          if (response.ok) return { done: true, value: await read(response) };
+          const error = new Error(await readApiError(response, modelName));
+          return { done: false, status: response.status, retryAfter: Number(response.headers.get("retry-after")) || 0, error };
+        },
+        { signal, headerMs: HEADER_TIMEOUT_MS, bodyMs: BODY_TIMEOUT_MS },
       );
-    } finally {
-      clearTimeout(timer);
-      signal?.removeEventListener("abort", relay);
+    } catch (error) {
+      if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
+      if (error instanceof DeadlineError) {
+        lastError = new Error(
+          error.phase === "header"
+            ? `${label}: máy chủ không trả lời sau ${error.ms / 1000} giây.`
+            : `${label}: máy chủ gửi dữ liệu dở dang, quá ${error.ms / 1000} giây vẫn chưa nhận đủ.`,
+        );
+      } else if (error instanceof TypeError) {
+        lastError = new Error(`${label}: lỗi kết nối mạng. Kiểm tra Internet rồi thử lại.`);
+      } else {
+        throw error;
+      }
     }
-    if (response) {
-      if (response.ok) return response;
-      const message = await readApiError(response, modelName);
-      const err = new Error(message);
-      if (response.status !== 429 && response.status < 500) throw err;
-      lastError = err;
-      if (response.status === 429) {
-        const ra = Number(response.headers.get("retry-after")) || 0;
+    if (outcome?.done) return outcome.value;
+    if (outcome) {
+      if (outcome.status !== 429 && outcome.status < 500) throw outcome.error;
+      lastError = outcome.error;
+      if (outcome.status === 429) {
+        const ra = outcome.retryAfter;
         if (ra > 90)
           throw new Error(
             `Hết hạn mức Groq, cần chờ khoảng ${Math.ceil(ra / 60)} phút. Bấm Tiếp tục sau đó, phần đã nhận dạng không bị mất.`,
@@ -139,12 +151,25 @@ export async function requestWithRetry(
   throw lastError || new Error(`${label}: không thể kết nối máy chủ.`);
 }
 
+/** Danh sách model nhẹ, chờ ngắn hơn. */
+const LIST_TIMEOUT_MS = 30_000;
+
 export async function listModelIds(key: string, signal?: AbortSignal, provider: ProviderId = "groq"): Promise<string[]> {
   const next = roomFetchTarget(modelListUrl(provider), { headers: { Authorization: `Bearer ${key}` } }, null);
-  const response = await fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal });
-  if (!response.ok) throw new Error(await readApiError(response, ""));
-  const data = (await response.json()) as { data?: Array<{ id?: string }> };
-  return (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
+  try {
+    const data = await withDeadlines(
+      (guard) => fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal: guard }),
+      async (response) => {
+        if (!response.ok) throw new Error(await readApiError(response, ""));
+        return (await response.json()) as { data?: Array<{ id?: string }> };
+      },
+      { signal, headerMs: LIST_TIMEOUT_MS, bodyMs: LIST_TIMEOUT_MS },
+    );
+    return (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
+  } catch (error) {
+    if (error instanceof DeadlineError) throw new Error(`Đọc danh sách model: máy chủ không trả lời xong sau ${error.ms / 1000} giây.`);
+    throw error;
+  }
 }
 
 /** Hỏi Groq danh sách model bằng key này, giữ lại mã trạng thái để biết key sai, bị giới hạn hay chỉ là mất mạng. Không ném lỗi, trừ khi bị hủy. */
@@ -229,7 +254,7 @@ async function transcribeOnce(
   ticket?: string | null,
   withWords = true,
 ) {
-  const response = await requestWithRetry(
+  return requestWithRetry(
     `${API}/audio/transcriptions`,
     () => {
       const form = new FormData();
@@ -251,12 +276,13 @@ async function transcribeOnce(
     onWait,
     asrModel,
     ticket,
+    (response) =>
+      response.json() as Promise<{
+        language?: string;
+        segments?: Array<{ text?: string; start?: number; end?: number; no_speech_prob?: number; avg_logprob?: number; compression_ratio?: number }>;
+        words?: Array<{ word?: string; start?: number; end?: number }>;
+      }>,
   );
-  return response.json() as Promise<{
-    language?: string;
-    segments?: Array<{ text?: string; start?: number; end?: number; no_speech_prob?: number; avg_logprob?: number; compression_ratio?: number }>;
-    words?: Array<{ word?: string; start?: number; end?: number }>;
-  }>;
 }
 
 type Msg = { role: string; content: string };
@@ -289,7 +315,7 @@ async function translateOnce(
   let lastError: Error | undefined;
   for (let index = 0; index < payloads.length; index++) {
     try {
-      const response = await requestWithRetry(
+      const data = await requestWithRetry(
         `${API}/chat/completions`,
         () => ({
           method: "POST",
@@ -302,10 +328,11 @@ async function translateOnce(
         onWait,
         model,
         ticket,
+        (response) =>
+          response.json() as Promise<{
+            choices?: Array<{ finish_reason?: string; message?: { content?: string } }>;
+          }>,
       );
-      const data = (await response.json()) as {
-        choices?: Array<{ finish_reason?: string; message?: { content?: string } }>;
-      };
       const choice = data.choices?.[0];
       const content = choice?.message?.content;
       if (typeof content !== "string" || !content.trim()) {
@@ -469,7 +496,7 @@ export async function analyzeFilm(input: {
     { role: "system", content: sys },
     { role: "user", content: user },
   ];
-  const res = await requestWithRetry(
+  const data = await requestWithRetry(
     `${API}/chat/completions`,
     () => ({
       method: "POST",
@@ -489,8 +516,8 @@ export async function analyzeFilm(input: {
     input.onWait,
     input.model,
     input.ticket,
+    (response) => response.json() as Promise<{ choices?: Array<{ message?: { content?: string } }> }>,
   );
-  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   return JSON.parse(stripFence(data.choices?.[0]?.message?.content || "")) as Bible;
 }
 
@@ -528,7 +555,17 @@ export async function speakOrpheus(input: {
       response_format: "wav",
     }),
   });
-  const response = await fetch(next.url, { ...next.init, signal: input.signal });
-  if (!response.ok) throw new Error(await readApiError(response, "Orpheus"));
-  return response.blob();
+  try {
+    return await withDeadlines(
+      (guard) => fetch(next.url, { ...next.init, signal: guard }),
+      async (response) => {
+        if (!response.ok) throw new Error(await readApiError(response, "Orpheus"));
+        return response.blob();
+      },
+      { signal: input.signal, headerMs: HEADER_TIMEOUT_MS, bodyMs: BODY_TIMEOUT_MS },
+    );
+  } catch (error) {
+    if (error instanceof DeadlineError) throw new Error(`Giọng đọc Orpheus: máy chủ không gửi xong âm thanh sau ${error.ms / 1000} giây.`);
+    throw error;
+  }
 }

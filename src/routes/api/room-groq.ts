@@ -10,6 +10,17 @@ const BODY_LIMIT: Record<string, number> = {
 };
 /** Số yêu cầu tối đa mỗi phút cho một tài khoản. */
 const RATE_PER_MINUTE = 240;
+/**
+ * Tổng thời gian chờ Groq cho một yêu cầu, tính cả lúc đọc hết phần thân. Ngắn hơn hạn 120 giây của trình duyệt
+ * để khách nhận lỗi 504 rõ ràng và tự thử lại, thay vì treo tới khi máy chủ bị cắt. Phần thân đứng giữa chừng
+ * thì lần đọc trong `chargeWith` cũng bị cắt theo, nên chưa tính tiền.
+ */
+const UPSTREAM_TIMEOUT_MS = 100_000;
+const TIMEOUT_TEXT = "Groq không trả lời xong kịp. Phần này chưa tính tiền, hãy thử lại.";
+
+function isTimeout(error: unknown) {
+  return error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+}
 
 function fail(status: number, message: string, extra?: Record<string, string>) {
   return new Response(JSON.stringify({ error: { message } }), {
@@ -69,8 +80,17 @@ export const Route = createFileRoute("/api/room-groq")({
 
         // Danh sách model là việc của /models, không tính tiền, không cần phiếu.
         if (path === "/models") {
-          const upstream = await fetch("https://api.groq.com/openai/v1/models", { method: "GET", headers });
-          return relay(upstream);
+          try {
+            const upstream = await fetch("https://api.groq.com/openai/v1/models", {
+              method: "GET",
+              headers,
+              signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+            });
+            return relay(upstream);
+          } catch (error) {
+            if (isTimeout(error)) return fail(504, TIMEOUT_TEXT);
+            throw error;
+          }
         }
 
         const { readRequest, chargeWith } = await import("@/lib/run-gate");
@@ -85,18 +105,25 @@ export const Route = createFileRoute("/api/room-groq")({
         const book = await loadPriceBook(sql);
         if (!book) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
 
-        const outcome = await chargeWith({
-          sql,
-          book,
-          path,
-          model: parsed.model,
-          chars: parsed.chars,
-          userId: user.id,
-          ticketId: request.headers.get("x-run-ticket") || "",
-          body: body!,
-          cap: desk.cap,
-          send: () => fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: body! }),
-        });
+        let outcome: Awaited<ReturnType<typeof chargeWith>>;
+        try {
+          outcome = await chargeWith({
+            sql,
+            book,
+            path,
+            model: parsed.model,
+            chars: parsed.chars,
+            userId: user.id,
+            ticketId: request.headers.get("x-run-ticket") || "",
+            body: body!,
+            cap: desk.cap,
+            send: () =>
+              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: body!, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
+          });
+        } catch (error) {
+          if (isTimeout(error)) return fail(504, TIMEOUT_TEXT);
+          throw error;
+        }
         if (outcome.kind === "reject") return fail(outcome.status, outcome.message);
         return relay(outcome.response);
       },
