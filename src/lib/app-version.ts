@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.29.2";
+export const APP_VERSION = "3.29.3";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.29.3",
+    time: "07:22 ngày 14/11/2026",
+    title: "Báo rõ khi file có loại âm thanh không đọc được, kèm cách đổi.",
+    points: [
+      "File MKV, AVI hay âm thanh AC3/DTS mà trình duyệt không đọc được nay được nhận ra và nói rõ.",
+      "Lỗi ghi sẵn lệnh đổi sang M4A với đúng tên file của bạn, chỉ cần chép và chạy.",
+      "File chỉ hỏng hoặc tải dở thì báo là hỏng, không đổ lỗi cho loại âm thanh.",
+    ],
+  },
   {
     version: "3.29.2",
     time: "07:19 ngày 14/11/2026",

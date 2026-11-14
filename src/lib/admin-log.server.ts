@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.29.3",
+    time: "07:22 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.29.2, theo yêu cầu người dùng (mục P3-14: hỗ trợ thêm codec phổ biến, hoặc báo lỗi rõ kèm hướng dẫn convert; nhánh work). Không đổi dịch vụ, giá, quyền hay điều khoản. Chọn đường báo lỗi rõ, không thêm bộ giải mã: AC3, E-AC3, DTS, TrueHD, WMA không có trong decodeAudioData của trình duyệt phổ thông, mang ffmpeg.wasm hoặc bộ giải riêng cần gói ngoài (máy làm việc không cài được node_modules) và trái điều đã chốt «không viết bộ giải mã riêng» (HE-AAC). Làm: src/lib/sub/media-sniff.ts (hàm thuần): nhận gói file theo byte đầu (MP4/MOV, MKV, WebM, AVI, WAV, MP3, AAC thô, AC3 thô, OGG, FLAC, MPEG-TS, FLV, ASF) và loại âm thanh (fourcc trong stsd của MP4, CodecID A_AC3/A_EAC3/A_DTS/A_TRUEHD/A_AAC/A_OPUS/A_VORBIS/A_FLAC trong bảng track MKV, bsid của AC3 thô để tách E-AC3); đọc 2 MB đầu (SNIFF_BYTES). describeDecodeFailure ra câu tiếng Việt: file là gì, vì sao không đọc được (loại không hỗ trợ / gói hiếm / MKV / loại thường đọc được nên nghi file hỏng / không rõ) và lệnh ffmpeg -i \\\"tên file\\\" -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a, kèm chỗ chọn «Âm thanh riêng». Tên file bỏ dấu nháy và xuống dòng. Nối: decodeTo16k (use-pipeline.ts) gọi describeDecodeFailure thay câu «Hãy dùng mp4, webm, mp3, m4a hoặc wav»; truyền j.streamWhy làm gợi ý vì MP4 có moov ở cuối file thì fourcc không nằm trong 2 MB đầu. mp4.ts: openMp4 ghi danh sách loại mẫu âm thanh đã thấy vào câu lý do thay vì câu cố định «có thể là AC3/DTS/Opus». Test: src/lib/sub/media-sniff.test.ts, 15 ca, đã thêm vào npm test. Nhận diện MKV là tìm chuỗi CodecID trong 2 MB đầu, không phân tích EBML đầy đủ: MKV để bảng track sau 2 MB thì chỉ báo «file MKV» không kèm loại âm thanh, câu hướng dẫn vẫn đúng. Chưa chạy: npx tsc --noEmit toàn dự án và npm test đầy đủ (không cài được node_modules; 10 test lỗi sẵn do thiếu @electric-sql/pglite). Đã tsc riêng media-sniff.ts, mp4.ts, groq.ts: không lỗi. Chưa thử với file MKV/AC3 thật trên trình duyệt.",
+  },
+  {
     version: "3.29.2",
     time: "07:19 ngày 14/11/2026",
     area: "ha-tang",

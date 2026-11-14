@@ -30,6 +30,7 @@ import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
 import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
 import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
+import { describeDecodeFailure, SNIFF_BYTES } from "@/lib/sub/media-sniff";
 import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
@@ -1556,7 +1557,7 @@ export function usePipeline() {
             if (video && Number.isFinite(video.duration) && video.duration > MAX_MINUTES * 60)
               throw new Error(`File dài hơn ${MAX_MINUTES} phút sẽ làm đầy bộ nhớ máy. Hãy cắt thành đoạn ngắn hơn.`);
             say("Đang giải mã và đưa âm thanh về 16 kHz…");
-            j.pcm = await decodeTo16k(blob, audioContext);
+            j.pcm = await decodeTo16k(blob, audioContext, j.streamWhy);
             if (my !== j.runId) return;
             j.pcmId = id;
             j.stream = null;
@@ -2037,7 +2038,7 @@ export function usePipeline() {
           return;
         }
         const blob = await loadBlob(primary, link, signal, () => {});
-        const pcm = await decodeTo16k(blob, audioContext);
+        const pcm = await decodeTo16k(blob, audioContext, j.streamWhy);
         await run(
           async (start, end) => pcm.subarray(Math.max(0, Math.floor(start * SR)), Math.min(pcm.length, Math.floor(end * SR))),
           pcm.length / SR,
@@ -2502,7 +2503,7 @@ function waitForMetadata(video: HTMLVideoElement | null) {
   });
 }
 
-async function decodeTo16k(blob: Blob, audioContext: AudioContext) {
+async function decodeTo16k(blob: Blob, audioContext: AudioContext, streamWhy = "") {
   if (blob.size > MAX_BYTES)
     throw new Error("File lớn hơn 1 GB và không đọc theo đoạn được. Hãy chọn thêm Âm thanh riêng.");
   let encoded: ArrayBuffer;
@@ -2515,7 +2516,14 @@ async function decodeTo16k(blob: Blob, audioContext: AudioContext) {
   try {
     audioBuffer = await audioContext.decodeAudioData(encoded.slice(0));
   } catch {
-    throw new Error("Không giải mã được âm thanh. Hãy dùng mp4, webm, mp3, m4a hoặc wav.");
+    // Đọc vài MB đầu để nói rõ file là gì (MKV, AC3, DTS…) thay vì một câu chung chung.
+    let head = new Uint8Array(0);
+    try {
+      head = new Uint8Array(await blob.slice(0, SNIFF_BYTES).arrayBuffer());
+    } catch {
+      /* không đọc được thì báo theo nội dung đã có */
+    }
+    throw new Error(describeDecodeFailure({ fileName: blob instanceof File ? blob.name : "", head, hint: streamWhy }));
   }
   if (!audioBuffer.duration || !Number.isFinite(audioBuffer.duration)) throw new Error("Không đọc được thời lượng âm thanh.");
   if (audioBuffer.duration > MAX_MINUTES * 60)
