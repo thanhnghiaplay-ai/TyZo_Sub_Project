@@ -1958,6 +1958,19 @@ html[data-density] .studio-workspace {
   text-overflow: ellipsis;
 }
 
+.rail-terms {
+  display: block;
+  padding: 0.35rem 0;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.rail-terms:hover {
+  color: var(--color-fg);
+}
+
 .rail-out {
   display: inline-flex;
   min-height: 2.75rem;

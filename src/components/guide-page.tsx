@@ -5,6 +5,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { DisplayToggle } from "@/components/display-toggle";
 import { NoticeBell } from "@/components/notice-bell";
 import { VersionMark } from "@/components/version-mark";
+import { TermsLink } from "@/components/terms-link";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { GROUP_LABEL, GUIDE_FAQ, guideTopics, matchGuide, type GuideStep, type GuideTopic } from "@/lib/guide-topics";
 import { getMailFace } from "@/lib/mail-runtime";
@@ -227,6 +228,10 @@ export function GuidePage() {
             </div>
           </section>
         )}
+
+        <footer className="mt-2 border-t border-line pt-3 text-center">
+          <TermsLink />
+        </footer>
       </main>
     </AppShell>
   );

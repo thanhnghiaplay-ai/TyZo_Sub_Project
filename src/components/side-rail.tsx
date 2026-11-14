@@ -188,6 +188,9 @@ export function SideRail({ items, label, top, who }: { items: RailItem[]; label:
               {who.email && <span>{who.email}</span>}
             </p>
           )}
+          <Link to="/dieu-khoan" className="rail-terms" onClick={() => setOpen(false)}>
+            Điều khoản và Chính sách
+          </Link>
           <button
             type="button"
             className="rail-out"

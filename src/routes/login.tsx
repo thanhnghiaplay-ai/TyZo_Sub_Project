@@ -4,7 +4,8 @@ import { useOnline } from "@/lib/use-online";
 import { OFFLINE_TEXT } from "@/components/offline-banner";
 import { getMyPlace } from "@/lib/admin-room";
 import { authClient, authEnabled, signOut } from "@/lib/auth/client";
-import { TERMS_VERSION } from "@/components/entry-gate";
+import { TermsLink } from "@/components/terms-link";
+import { hasAcceptedTerms, rememberTermsAccepted } from "@/lib/terms";
 import { clearSignedOut } from "@/lib/auth/signed-out";
 import { attachReferral } from "@/lib/affiliate-room";
 import { mailProblem, mailSuggestions } from "@/lib/mail-domains";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/login")({ component: LoginPage });
 const BEARER_KEY = "grok-auth.bearer-token";
 const REMEMBER_EMAIL = "tyzo-remember-email";
 const LOGIN_BAD = "Email hoặc mật khẩu chưa đúng. Kiểm tra lại hoặc bấm “Quên mật khẩu”.";
+const TERMS_NEEDED = "Hãy tích ô đồng ý Điều khoản và Chính sách để tiếp tục.";
 
 function isBadLogin(error: { code?: string; message?: string; status?: number }) {
   const code = error.code || "";
@@ -31,13 +33,8 @@ function isBadLogin(error: { code?: string; message?: string; status?: number })
 function LoginPage() {
   const router = useRouter();
   useEffect(() => {
-    let saved = "";
-    try {
-      saved = localStorage.getItem("gterms") || "";
-    } catch {
-      saved = "";
-    }
-    if (saved !== TERMS_VERSION) void router.navigate({ to: "/" });
+    // Máy đã đồng ý đúng bản đang chạy thì ô tích hiện sẵn dấu. Chưa thì khách tự tích.
+    setAgreed(hasAcceptedTerms());
     try {
       const savedEmail = localStorage.getItem(REMEMBER_EMAIL) || "";
       if (savedEmail) {
@@ -58,6 +55,7 @@ function LoginPage() {
   const [refCode, setRefCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const online = useOnline();
@@ -88,6 +86,12 @@ function LoginPage() {
       setNotice(OFFLINE_TEXT);
       return;
     }
+    if (!agreed) {
+      setNotice(TERMS_NEEDED);
+      return;
+    }
+    // Tích rồi bấm gửi là đồng ý. Lưu ngay để vào phòng không bị hỏi lại.
+    rememberTermsAccepted();
     if (!authEnabled) {
       setNotice("Đăng nhập đang tắt.");
       return;
@@ -286,6 +290,20 @@ function LoginPage() {
             </label>
           </>
         )}
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            className="mt-1 size-4"
+            checked={agreed}
+            onChange={(event) => {
+              setAgreed(event.target.checked);
+              if (event.target.checked && notice === TERMS_NEEDED) setNotice(null);
+            }}
+          />
+          <span>
+            Tôi đồng ý <TermsLink newTab className="text-accent underline" />
+          </span>
+        </label>
         <button
           type="submit"
           disabled={busy || !online}
@@ -329,6 +347,9 @@ function LoginPage() {
         )}
       </form>
       )}
+      <footer className="border-t border-line px-4 py-2 text-center">
+        <TermsLink />
+      </footer>
     </main>
   );
 }

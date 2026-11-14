@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccountPanel } from "@/components/account-panel";
+import { TermsLink } from "@/components/terms-link";
 
 export const Route = createFileRoute("/tai-khoan")({ component: AccountPage });
 
@@ -19,6 +20,9 @@ function AccountPage() {
         <AccountPanel />
         <Link to="/ctv" className="mt-4 inline-block text-sm text-accent">Cộng tác viên</Link>
         <Link to="/tai-video" className="mt-4 ml-4 inline-block text-sm text-accent">Tải video</Link>{/* TAI-VIDEO: gỡ dòng này khi bỏ tab */}
+        <p className="mt-6 border-t border-line pt-3">
+          <TermsLink />
+        </p>
       </div>
     </main>
   );

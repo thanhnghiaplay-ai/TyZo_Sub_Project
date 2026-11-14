@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.41.0",
+    time: "01:35 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng, phần 3 trong ba phần (gom điều khoản về một chỗ). Chỉ đổi chỗ hiển thị: không đổi chữ điều khoản, giá, quyền hay luật ví; TERMS_VERSION giữ 2026-11-13.4 nên người đã đồng ý bản này không bị hỏi lại. Chữ điều khoản chuyển nguyên văn từ entry-gate.tsx sang components/terms-document.tsx (đã so dấu vân tay chữ trước và sau, giống hệt); entry-gate.test.ts giữ dấu vân tay đó, đổi chữ mà không nâng TERMS_VERSION thì test đỏ. TERMS_VERSION, TERMS_KEY (vẫn là gterms), hasAcceptedTerms, rememberTermsAccepted và termsGate (quyết vào thẳng, sang /login, hỏi lại hay đợi) nằm ở lib/terms.ts, có terms.test.ts. Cửa vào (entry-gate.tsx): đã đồng ý bản này thì vào thẳng; chưa đồng ý và chưa có tài khoản thì sang /login thay vì hiện màn điều khoản; đã có tài khoản mà TERMS_VERSION mới thì chỉ người đó thấy màn hỏi lại. Chế độ đăng nhập tắt (tài khoản dev) vẫn thấy màn hỏi lại rồi vào được như trước. login.tsx: ô tích «Tôi đồng ý Điều khoản và Chính sách» ở cả Đăng nhập và Đăng ký (máy đã đồng ý bản này thì hiện sẵn dấu), chưa tích thì không gọi đăng nhập, tích rồi bấm gửi thì lưu gterms ngay; bỏ đoạn đá về trang chủ khi chưa đồng ý (sẽ vòng lặp với cửa vào). Trang mới /dieu-khoan (routes/dieu-khoan.tsx) không bọc EntryGate nên đọc được bất cứ lúc nào, không cần đăng nhập. Liên kết components/terms-link.tsx ở chân trang đăng nhập, menu trái (rail-foot, dùng chung trang chủ, Dịch trực tiếp, Hướng dẫn), trang Tài khoản và cuối trang Hướng dẫn. routeTree.gen.ts sinh lại cho route mới. CHƯA đổi: /huong-dan vẫn bọc EntryGate (người chưa đồng ý sẽ sang /login trước). Câu §2, §6, §7 trong điều khoản vẫn nói «bấm đồng ý» và «màn mở phòng»; đúng ý nhưng có thể sửa chữ cho khớp ô tích, việc đó phải nâng TERMS_VERSION và hỏi lại mọi người nên chờ người dùng chốt. CHƯA kiểm bằng trình duyệt thật (Safari, điện thoại thật, Vercel).",
+  },
+  {
     version: "3.39.0",
     time: "00:23 ngày 15/11/2026",
     area: "khac",
