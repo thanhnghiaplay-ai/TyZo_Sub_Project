@@ -5,7 +5,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { DisplayToggle } from "@/components/display-toggle";
 import { NoticeBell } from "@/components/notice-bell";
 import { VersionMark } from "@/components/version-mark";
-import { TermsLink } from "@/components/terms-link";
+import { BackButton } from "@/components/back-button";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { GROUP_LABEL, GUIDE_FAQ, guideTopics, matchGuide, type GuideStep, type GuideTopic } from "@/lib/guide-topics";
 import { getMailFace } from "@/lib/mail-runtime";
@@ -155,6 +155,7 @@ export function GuidePage() {
       <main className="room-wide mx-auto flex min-h-dvh flex-col gap-3 bg-bg px-4 py-4 text-fg">
         <header className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
+            <BackButton />
             <RailToggle />
             <BrandMark small title="TyZo Sub" />
           </div>
@@ -228,10 +229,6 @@ export function GuidePage() {
             </div>
           </section>
         )}
-
-        <footer className="mt-2 border-t border-line pt-3 text-center">
-          <TermsLink />
-        </footer>
       </main>
     </AppShell>
   );

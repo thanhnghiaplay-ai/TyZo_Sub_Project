@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { BackButton } from "@/components/back-button";
 import { BrandMark } from "@/components/brand-mark";
 import { TermsDocument } from "@/components/terms-document";
 import { VersionMark } from "@/components/version-mark";
@@ -11,6 +12,7 @@ function TermsPage() {
   return (
     <main className="gate-screen gate-doc">
       <header className="gate-doc-head">
+        <BackButton />
         <BrandMark title="TyZo Sub" />
         <div>
           <p className="gate-kicker">Phòng chiếu TyZo Sub</p>

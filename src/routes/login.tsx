@@ -347,9 +347,6 @@ function LoginPage() {
         )}
       </form>
       )}
-      <footer className="border-t border-line px-4 py-2 text-center">
-        <TermsLink />
-      </footer>
     </main>
   );
 }

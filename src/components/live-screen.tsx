@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BackButton } from "@/components/back-button";
 import { AlertTriangle, Mic, MonitorSpeaker, Square, Play, Wallet } from "lucide-react";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import { BrandMark } from "@/components/brand-mark";
@@ -131,6 +132,7 @@ export function LiveScreen() {
       <main className="room-wide mx-auto flex min-h-dvh flex-col gap-3 bg-bg px-4 py-4 text-fg">
         <header className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
+            <BackButton />
             <RailToggle />
             <BrandMark small title="TyZo Sub" />
           </div>

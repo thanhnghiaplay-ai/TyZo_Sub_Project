@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { BackButton } from "@/components/back-button";
 import { useEffect, useState } from "react";
 import { applyAffiliate, myAffiliate, requestPayout } from "@/lib/affiliate-room";
 
@@ -25,7 +26,10 @@ function PartnerPage() {
   return (
     <main className="room-wide mx-auto flex min-h-dvh flex-col gap-4 bg-bg px-4 py-6 text-fg">
       <div className="flex items-center justify-between">
-        <h1 className="text-base font-semibold">Cộng tác viên</h1>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <h1 className="text-base font-semibold">Cộng tác viên</h1>
+        </div>
         <Link to="/" className="text-sm text-muted">Về phòng</Link>
       </div>
       {!desk?.joined ? (

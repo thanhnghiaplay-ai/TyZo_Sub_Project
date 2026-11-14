@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.42.0",
+    time: "02:10 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng (hai việc đầu trong ba việc góp ý giao diện). (1) Bỏ liên kết Điều khoản ở chân trang đăng nhập và cuối Hướng dẫn; còn ba chỗ: ô tích đăng ký/đăng nhập, menu trái, trang Tài khoản. (2) Thêm components/back-button.tsx (mũi tên quay lại: có trang trước trong app thì back, không có thì về trang chủ; luật ở lib/back-nav.ts, có test) cho Hướng dẫn, Dịch trực tiếp, Tài khoản, Thuê phòng, Cộng tác viên, Tải video, Điều khoản. Các tab cùng trang: Admin nhớ tab vừa rời, mũi tên về tab đó, hết lịch sử thì về Tổng quan, đang ở Tổng quan thì rời trang; mục Số dư trong Studio về màn vừa xem (người dùng chưa chốt tab nên chọn «về tab vừa xem»). Không đổi chữ điều khoản (TERMS_VERSION giữ 2026-11-13.4), giá, quyền hay luật ví. Việc 3 (hiện lại tên tệp đầy đủ trong Phiếu) chưa làm, chờ người dùng chốt.",
+  },
+  {
     version: "3.41.0",
     time: "01:35 ngày 15/11/2026",
     area: "khac",

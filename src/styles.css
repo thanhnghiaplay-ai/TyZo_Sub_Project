@@ -1003,6 +1003,23 @@
   white-space: nowrap;
 }
 
+.back-btn {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  color: var(--color-muted);
+}
+
+.back-btn:hover,
+.back-btn:focus-visible {
+  color: var(--color-fg);
+}
+
 .version-mark {
   display: inline-flex;
   align-items: center;

@@ -73,10 +73,13 @@ describe("Trang điều khoản và ô tích đồng ý", () => {
     assert.doesNotMatch(login, /getItem\("gterms"\)/);
   });
 
-  it("có liên kết ở menu trái, trang Tài khoản, trang Hướng dẫn và trang đăng nhập", () => {
+  it("liên kết điều khoản chỉ còn ba chỗ: ô tích đăng nhập/đăng ký, menu trái, trang Tài khoản", () => {
+    assert.match(login, /<TermsLink newTab/);
     assert.match(rail, /to="\/dieu-khoan"/);
     assert.match(account, /<TermsLink \/>/);
-    assert.match(guide, /<TermsLink \/>/);
-    assert.match(login, /<footer[^>]*>\s*<TermsLink \/>/);
+    // Bỏ chân trang đăng nhập và cuối Hướng dẫn.
+    assert.equal((login.match(/<TermsLink/g) ?? []).length, 1);
+    assert.doesNotMatch(login, /<footer/);
+    assert.doesNotMatch(guide, /TermsLink/);
   });
 });

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { BackButton } from "@/components/back-button";
 import { useState } from "react";
 
 /**
@@ -77,9 +78,12 @@ function VideoLinkPage() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 pb-24">
       <header className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Tải video</h1>
-          <p className="text-sm text-muted">Dán link trang, máy chủ quét link media công khai.</p>
+        <div className="flex items-center gap-3">
+          <BackButton fallback="/tai-khoan" />
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Tải video</h1>
+            <p className="text-sm text-muted">Dán link trang, máy chủ quét link media công khai.</p>
+          </div>
         </div>
         <Link to="/tai-khoan" className="min-tap rounded-full border border-line px-4 text-sm">
           Tài khoản

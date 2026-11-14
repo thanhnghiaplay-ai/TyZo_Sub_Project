@@ -1,6 +1,7 @@
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
+import { BackButton } from "@/components/back-button";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
@@ -1632,7 +1633,14 @@ export function Studio() {
       </div>
 
       </div>
-      {product === "account" && <AccountPanel />}
+      {product === "account" && (
+        <div className="grid gap-3">
+          <div>
+            <BackButton onBack={() => setProduct("sub")} label="Về màn vừa xem" />
+          </div>
+          <AccountPanel />
+        </div>
+      )}
       </>
       )}
       <StudioPalette commands={commands} open={paletteOpen} onOpenChange={setPaletteOpen} />

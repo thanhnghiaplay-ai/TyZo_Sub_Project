@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccountPanel } from "@/components/account-panel";
 import { TermsLink } from "@/components/terms-link";
+import { BackButton } from "@/components/back-button";
 
 export const Route = createFileRoute("/tai-khoan")({ component: AccountPage });
 
@@ -8,9 +9,12 @@ function AccountPage() {
   return (
     <main className="room-wide mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
-        <div>
-          <p className="text-xs font-medium tracking-wide text-accent">Quản lý</p>
-          <h1 className="text-base leading-none font-semibold">Tài khoản</h1>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <div>
+            <p className="text-xs font-medium tracking-wide text-accent">Quản lý</p>
+            <h1 className="text-base leading-none font-semibold">Tài khoản</h1>
+          </div>
         </div>
         <Link to="/" className="room-back">
           Về phòng dịch

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { BackButton } from "@/components/back-button";
 import { useState } from "react";
 
 export const Route = createFileRoute("/goi")({
@@ -80,9 +81,12 @@ function GoiDemo() {
   return (
     <main className="room-wide mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
-        <div>
-          <p className="text-xs font-medium tracking-wide text-accent">Bản xem thử giá</p>
-          <h1 className="text-base leading-none font-semibold">Thuê phòng TyZo Sub</h1>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <div>
+            <p className="text-xs font-medium tracking-wide text-accent">Bản xem thử giá</p>
+            <h1 className="text-base leading-none font-semibold">Thuê phòng TyZo Sub</h1>
+          </div>
         </div>
         <Link to="/" className="room-back">
           Về phòng dịch

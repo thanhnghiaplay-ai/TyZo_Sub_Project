@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { BackButton } from "@/components/back-button";
+import { backTab, pushTabHistory } from "@/lib/back-nav";
 import { openAdminPlace } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
@@ -179,7 +181,26 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<AdminTab>("tong-quan");
+  const [tab, setTabNow] = useState<AdminTab>("tong-quan");
+  const tabRef = useRef<AdminTab>("tong-quan");
+  const [tabStack, setTabStack] = useState<AdminTab[]>([]);
+  /** Đổi tab và nhớ tab vừa rời, để mũi tên quay về đúng tab vừa xem. */
+  function setTab(next: AdminTab) {
+    const from = tabRef.current;
+    if (from === next) return;
+    setTabStack((stack) => pushTabHistory(stack, from, next));
+    tabRef.current = next;
+    setTabNow(next);
+  }
+  /** Mũi tên: về tab vừa xem; hết lịch sử thì về Tổng quan; đang ở Tổng quan thì rời trang (BackButton lo). */
+  function backFromTab() {
+    const step = backTab(tabStack, tab, "tong-quan");
+    if (!step) return false;
+    setTabStack(step.stack);
+    tabRef.current = step.tab;
+    setTabNow(step.tab);
+    return true;
+  }
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
@@ -306,7 +327,8 @@ export function AdminDesk() {
   return (
     <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
       {role ? (
-        <div className="pb-2">
+        <div className="flex items-center gap-2 pb-2">
+          <BackButton fallback="/" onBack={tab === "tong-quan" && tabStack.length === 0 ? undefined : () => void backFromTab()} label={tab === "tong-quan" && tabStack.length === 0 ? "Quay lại" : tabStack.length > 0 ? "Về tab vừa xem" : "Về Tổng quan"} />
           <RoleChip role={role} />
         </div>
       ) : (
