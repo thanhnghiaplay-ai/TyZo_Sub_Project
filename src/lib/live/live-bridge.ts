@@ -58,7 +58,12 @@ export function attachLiveBridge(server: Server, deps: LiveBridgeDeps, path = "/
     const url = new URL(request.url ?? "/", "http://bridge");
     if (url.pathname !== path) return;
     wss.handleUpgrade(request, socket, head, (client) => {
-      void runSession(client, url.searchParams.get("ticket") ?? "", deps);
+      // Lỗi của một phiên (vd. cơ sở dữ liệu đứt) chỉ đóng phiên đó, không được làm sập cả cầu nối.
+      runSession(client, url.searchParams.get("ticket") ?? "", deps).catch((error) => {
+        deps.log?.(`phiên lỗi: ${String(error)}`);
+        send(client, { type: "error", message: "Cầu nối gặp sự cố, hãy thử lại sau ít phút." });
+        client.close(1011, "loi-cau-noi");
+      });
     });
   });
   return wss;
@@ -211,7 +216,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     const ws = deps.connect ? deps.connect(route.url, route.key) : new WebSocket(route.url, { headers: { Authorization: `Bearer ${route.key}` } });
     upstream = ws;
     ws.on("open", () => ws.send(sessionUpdate));
-    ws.on("message", (raw) => void handleUpstream(raw));
+    ws.on("message", (raw) => void handleUpstream(raw).catch((error) => log(`xử lý tin Alibaba lỗi: ${String(error)}`)));
     ws.on("error", (error) => log(`upstream: ${String(error)}`));
     ws.on("close", () => {
       if (closed || ws !== upstream) return;
