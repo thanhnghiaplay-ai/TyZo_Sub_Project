@@ -75,7 +75,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 - Mục 13.2 không được code: chủ web giữ key để tính tiền theo phút, và dán link tải video.
 - Mục 14 không được code cho đến khi người dùng yêu cầu đúng một việc. Không đổi model nhận dạng khi chưa có số đo.
 - Không bán key Groq. Không nhận link video.
-- Ngoài phạm vi mục 11, chưa sửa: `npx tsc --noEmit` còn 5 lỗi có sẵn ở `watch-run.ts`, `watch-save.ts` (thiếu `stale` trong `Seg`) và `room-alibaba.ts` (`contentType`). `src/routeTree.gen.ts` đang commit đã cũ so với các route `tai-video`, `relay-alibaba`, `room-alibaba`.
+- Ngoài phạm vi mục 11, chưa sửa: `npx tsc --noEmit` còn 5 lỗi có sẵn ở `watch-run.ts`, `watch-save.ts` (thiếu `stale` trong `Seg`) và `room-alibaba.ts` (`contentType`). `src/routeTree.gen.ts` đã được sinh lại để khớp các route `tai-video`, `relay-alibaba`, `room-alibaba`.
 
 ## Không làm
 
