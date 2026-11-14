@@ -7,7 +7,8 @@ CẦN CHỦ ĐẶT: `LIVE_BRIDGE_SECRET` (giống nhau ở máy chủ chính và
 MÀN HÌNH DỊCH TRỰC TIẾP, làm từng bước nhỏ, xong bước nào test bước đó:
   Bước 1 XONG: `live-audio.ts` (đổi tần số, PCM, mức âm), `live-inbox.ts` (đọc tin cầu nối), có test.
   Bước 2 XONG: `live-frames.ts` (gom khung 100 ms), `live-mic.ts` (thu, nhả micro khi lỗi), `live-mic-errors.ts` (câu lỗi tiếng Việt), `live-mic-browser.ts` (AudioWorklet, dự phòng ScriptProcessor; nhận mọi luồng nên bước 3 dùng lại). CHƯA KIỂM bằng trình duyệt thật (sandbox không tải được Chromium); đã test bằng đồ giả.
-  Bước 3: âm thanh tab. Bước 4: kết nối cầu nối và phát tiếng dịch. Bước 5: hiện chữ dịch (LiveTranscript). Bước 6: số dư, còn N phút. Bước 7: tải SRT/VTT/TXT. Bước 8: màn hình, menu, chọn ngôn ngữ.
+  Bước 3 XONG: `live-tab.ts` (nhận biết máy có thu được tab: iPhone, iPad, Android thì không; tắt hình giữ tiếng; báo lỗi khi quên bật chia sẻ âm thanh), có test bằng đồ giả; CHƯA kiểm bằng trình duyệt thật.
+  Bước 4: kết nối cầu nối và phát tiếng dịch. Bước 5: hiện chữ dịch (LiveTranscript). Bước 6: số dư, còn N phút. Bước 7: tải SRT/VTT/TXT. Bước 8: màn hình, menu, chọn ngôn ngữ.
 CHƯA LÀM: màn hình Dịch trực tiếp và phần cho trình duyệt (micro, âm thanh tab, SRT); phần Admin còn lại (giá live, bật/tắt).
 CHƯA KIỂM: chưa nối Alibaba thật (chưa có Workspace ID); chưa chạy trên máy chủ ngoài. Đã chạy thật với Postgres: giữ tiền, Alibaba không tới được thì phiếu `loi` và ví trả đủ.
 Kiểm tra: `tsc` sạch, test 191 + 494 pass, 0 fail.
