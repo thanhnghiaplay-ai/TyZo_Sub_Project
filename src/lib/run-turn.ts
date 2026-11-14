@@ -65,6 +65,8 @@ export const openRunTicket = createServerFn({ method: "POST" })
       hold,
       cap: desk.cap,
       dayStartIso: dayStartIso(),
+      asrModel: data.asrModel,
+      chatModel: data.chatModel,
     });
     if ("error" in result) {
       throw new Error(

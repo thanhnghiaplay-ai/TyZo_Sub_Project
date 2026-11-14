@@ -41,6 +41,8 @@ import { badgeStyle, type BadgeStyleId } from "@/lib/badge-styles";
 import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
 import { QualityBoard } from "@/components/quality-board";
+import { AdminOverview } from "@/components/admin-overview";
+import type { AdminTab } from "@/lib/admin-tabs";
 import { ThemeBoard } from "@/components/theme-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
@@ -169,7 +171,7 @@ export function AdminDesk() {
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
-  const [tab, setTab] = useState<"viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu" | "giao-dien">("viec");
+  const [tab, setTab] = useState<AdminTab>("tong-quan");
   const [auditOpen, setAuditOpen] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
   const [resetCode, setResetCode] = useState("");
@@ -303,6 +305,7 @@ export function AdminDesk() {
       )}
       {role && (
         <div className="flex gap-2 overflow-x-auto border-b border-line bg-bg py-2">
+          <TabButton current={tab} id="tong-quan" onPick={setTab}>Tổng quan</TabButton>
           <TabButton current={tab} id="viec" onPick={setTab}>Việc</TabButton>
           <TabButton current={tab} id="so-do" onPick={setTab}>Sơ đồ</TabButton>
           {role === "chu" && <TabButton current={tab} id="tien" onPick={setTab}>Doanh thu</TabButton>}
@@ -311,10 +314,13 @@ export function AdminDesk() {
           {role === "chu" && <TabButton current={tab} id="ctv" onPick={setTab}>Cộng tác</TabButton>}
           {role === "chu" && <TabButton current={tab} id="thu" onPick={setTab}>Thư</TabButton>}
           {role === "chu" && <TabButton current={tab} id="giao-dien" onPick={setTab}>Giao diện</TabButton>}
-          <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký</TabButton>
+          <TabButton current={tab} id="thao-tac" onPick={setTab}>Nhật ký thao tác</TabButton>
+          <TabButton current={tab} id="nhat-ky" onPick={setTab}>Nhật ký hệ thống</TabButton>
         </div>
       )}
       <div className="admin-grid">
+      {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
+      {role && tab === "thao-tac" && <AuditTab rows={audit} />}
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
       {role === "chu" && tab === "viec" && <AlibabaKeyBoard />}
       {role === "chu" && tab === "viec" && <ServicePackBoard packsOnly />}
@@ -737,8 +743,8 @@ function TabButton({
   children,
 }: {
   current: string;
-  id: "viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu" | "giao-dien";
-  onPick: (id: "viec" | "so-do" | "tien" | "chat-luong" | "nhat-ky" | "thuat-ngu" | "ctv" | "thu" | "giao-dien") => void;
+  id: AdminTab;
+  onPick: (id: AdminTab) => void;
   children: string;
 }) {
   return (
@@ -758,6 +764,28 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "them-cong-tac": "Thêm cộng tác",
   "go-cong-tac": "Gỡ cộng tác",
   "doi-quyen": "Đổi quyền cộng tác",
+  "nha-giu": "Nhả khoản giữ phiếu",
+  "hoan-vi": "Hoàn tiền vào ví",
+  "key-phong": "Đổi key Groq của phòng",
+  "key-model": "Đồng bộ model của key",
+  "key-alibaba": "Đổi key Alibaba",
+  "giao-dien": "Công bố giao diện",
+  "reset-so-du": "Reset số dư",
+  "reset-tien-test": "Reset tiền thử",
+  "dat-so-du": "Đặt số dư",
+  "mo-goi": "Cấp gói",
+  "chi-phi": "Thêm chi phí",
+  "sua-chi-phi": "Sửa chi phí",
+  "xoa-chi-phi": "Xóa chi phí",
+  "uoc-gia-von": "Ước giá vốn phiếu cũ",
+  "doi-nguong-chat-luong": "Đổi ngưỡng chất lượng",
+  "doi-email-chu": "Đổi email Chủ",
+  "doi-the-quyen": "Đổi thẻ quyền",
+  "mat-khau-tam": "Đặt mật khẩu tạm",
+  "xoa-tai-khoan": "Xóa tài khoản",
+  "tra-loi": "Trả lời yêu cầu",
+  "bao-cap": "Báo cấp trên",
+  "bao-chu": "Báo Chủ",
 };
 
 function logLine(item: AuditRow) {
@@ -767,6 +795,45 @@ function logLine(item: AuditRow) {
     : "";
   const rank = item.actorRole === "ho-tro" || item.actorRole === "quan-ly" || item.actorRole === "chu" ? ROLE_LABEL[item.actorRole] : "Người dùng";
   return [clock, rank, item.actorEmail, AUDIT_ACTION_LABEL[item.action] ?? item.action, item.targetEmail, item.note].filter(Boolean).join(" · ");
+}
+
+/** Nhật ký thao tác của nhân sự: ai, lúc nào, làm gì, giá trị cũ → mới (nằm trong phần ghi chú). Có lọc theo hành động và tìm chữ. */
+function AuditTab({ rows }: { rows: AuditRow[] }) {
+  const [action, setAction] = useState("");
+  const [text, setText] = useState("");
+  const kinds = [...new Set(rows.map((row) => row.action))].sort();
+  const needle = text.trim().toLowerCase();
+  const shown = rows.filter((row) => (!action || row.action === action) && (!needle || logLine(row).toLowerCase().includes(needle)));
+  return (
+    <section className="admin-wide space-y-3">
+      <h2 className="font-semibold">Nhật ký thao tác</h2>
+      <p className="text-sm text-muted">Ai làm, lúc nào, đổi gì. Giá trị cũ và mới nằm ở cuối mỗi dòng. Bạn chỉ thấy thao tác của cấp thấp hơn mình{rows.length ? `. Đang có ${rows.length} dòng gần nhất.` : "."}</p>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <input type="search" value={text} onChange={(event) => setText(event.target.value)} placeholder="Tìm theo email, hành động hoặc nội dung" aria-label="Tìm trong nhật ký thao tác" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+        <select value={action} onChange={(event) => setAction(event.target.value)} aria-label="Lọc theo hành động" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none">
+          <option value="">Mọi hành động</option>
+          {kinds.map((kind) => (
+            <option key={kind} value={kind}>
+              {AUDIT_ACTION_LABEL[kind] ?? kind}
+            </option>
+          ))}
+        </select>
+      </div>
+      {shown.length === 0 && <p className="text-sm text-muted">{rows.length ? "Không có dòng khớp." : "Chưa có thao tác ở cấp bạn được xem."}</p>}
+      <div className="grid gap-2">
+        {shown.map((item) => (
+          <article key={item.id} className="rounded-xl border border-line px-3 py-2 text-sm">
+            <p className="font-medium">{AUDIT_ACTION_LABEL[item.action] ?? item.action}</p>
+            <p className="text-xs text-muted">
+              {item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : ""} · {item.actorRole === "ho-tro" || item.actorRole === "quan-ly" || item.actorRole === "chu" ? ROLE_LABEL[item.actorRole] : "Người dùng"} · {item.actorEmail || "Không rõ"}
+              {item.targetEmail ? ` → ${item.targetEmail}` : ""}
+            </p>
+            {item.note && <p className="mt-1 break-words text-muted">{item.note}</p>}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function Stat({ label, value, hint, tone }: { label: string; value: number; hint?: string; tone?: string }) {

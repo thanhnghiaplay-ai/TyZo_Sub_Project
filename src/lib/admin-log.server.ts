@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.30.0",
+    time: "10:03 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.29.4, theo yêu cầu người dùng (gói cải tiến Admin A–F, GIAI ĐOẠN 1; nhánh work). Không đổi dịch vụ, giá, quyền hay điều khoản. Làm: (A) tab «Tổng quan» là tab mặc định của /admin: doanh thu (tiền nạp, room_ledger kind nap, cùng cách tính với tab Doanh thu) hôm nay/7 ngày/tháng này, lượt chạy và tỷ lệ lỗi theo bộ lọc Hôm nay/7 ngày/30 ngày (bỏ phiếu đọc thuyết minh tts-), số lần chạy chất lượng cần chú ý (health yellow/red trong quality_runs), đơn nạp chờ (pay_orders pending+claimed), cảnh báo, top 5 chi tiêu và top 5 lỗi; mỗi thẻ có nút Xem chi tiết nhảy sang tab. Quyền: Hỗ trợ trở lên xem được, nhưng tiền, top chi tiêu và chất lượng chỉ Chủ (server cắt, không chỉ ẩn ở giao diện). Cảnh báo có: bảo trì đang bật, chưa lưu key Groq phòng, chưa đồng bộ model, tỷ lệ lỗi ≥10% từ 5 lượt, chất lượng thấp tăng ≥10 điểm so với kỳ trước (cần ≥10 lần chạy mỗi kỳ), phiếu giữ quá 6 giờ, đơn nạp chờ ≥30 phút. KHÔNG làm được: cảnh báo key hết hạn và rate-limit, vì app không ghi hạn dùng key và rate_hits không lưu ngưỡng. (B) tab Việc: phiếu lọc theo Đang giữ/Đã trừ (gồm dừng vì hết tiền)/Đã nhả (gồm đã hoàn)/Lỗi, tìm theo email hoặc tên tệp (không phân biệt hoa thường, % và _ không phải ký tự đặc biệt), thêm dòng Model và Thời gian xử lý; migration 0022 thêm asr_model, chat_model, closed_at cho run_tickets, openTicketWith ghi model, closeTicketWith, chargeTicketWith (dừng vì hết tiền) và releaseStaleWith ghi closed_at. Phiếu cũ hiện «—». Lịch sử bật/tắt bảo trì và đổi giá lấy từ room_audit (ai, lúc nào, nội dung cũ → mới, ghi từ v3.29.x). (E) tách Nhật ký thành «Nhật ký thao tác» (audit, có lọc theo hành động và tìm chữ, thêm nhãn tiếng Việt cho 15 hành động còn hiện mã thô) và «Nhật ký hệ thống» (changelog nội bộ như cũ). Test: overview-data.test.ts (9 ca, chạy trên PGLite) thêm vào npm test. CHƯA làm: C (Doanh thu: biểu đồ, ARPU, chuyển đổi, chi phí theo phút, phân loại chi phí), D (Chất lượng), F (Ctrl+K, thanh bên, chế độ Chỉ xem, mobile), và «Chặn toàn bộ phòng» ở bảo trì. Xem PROJECT_STATUS mục «Vấn đề hiện tại / Còn mở» cho lý do. Chưa thử bằng trình duyệt thật và trên Neon thật (chỉ PGLite).",
+  },
+  {
     version: "3.29.4",
     time: "09:15 ngày 14/11/2026",
     area: "khac",

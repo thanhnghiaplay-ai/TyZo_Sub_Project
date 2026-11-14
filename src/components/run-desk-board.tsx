@@ -2,7 +2,9 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
-import { ASR_MODELS, CHAT_MODELS } from "@/lib/sub/models";
+import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
+import { listDoorHistory, searchRunTickets, type DoorChange } from "@/lib/overview-room";
+import type { TicketFilter, TicketRow } from "@/lib/overview-data";
 import { asrHouse } from "@/lib/sub/asr-house";
 import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
@@ -40,6 +42,137 @@ export function TicketCard({ ticket, children }: { ticket: RunTicket; children?:
   );
 }
 
+export function durationText(seconds: number | null) {
+  if (seconds == null) return "—";
+  if (seconds < 60) return `${Math.max(0, Math.round(seconds))} giây`;
+  const minutes = Math.floor(seconds / 60);
+  const rest = Math.round(seconds % 60);
+  return rest ? `${minutes} phút ${rest} giây` : `${minutes} phút`;
+}
+
+const TICKET_CHIPS: { id: TicketFilter; label: string }[] = [
+  { id: "all", label: "Tất cả" },
+  { id: "dang-giu", label: "Đang giữ" },
+  { id: "da-tru", label: "Đã trừ" },
+  { id: "da-nha", label: "Đã nhả" },
+  { id: "loi", label: "Lỗi" },
+];
+
+function TicketRowCard({ ticket }: { ticket: TicketRow }) {
+  const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "Chưa có giờ";
+  const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút tiếng` : "Chưa có thời lượng";
+  const models = [ticket.asrModel, ticket.chatModel].filter(Boolean).map(modelLabel).join(" + ");
+  return (
+    <article className="rounded-xl border border-line px-3 py-2">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium">{maskFileName(ticket.fileName) || "Không tên tệp"}</p>
+        <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
+      </div>
+      <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
+      <p className="text-sm text-muted">{minutes} · Giữ {dong(ticket.held)} · Trừ {dong(ticket.charged)}{ticket.refunded > 0 ? ` · Hoàn ${dong(ticket.refunded)}` : ""}</p>
+      <p className="text-xs text-muted">Model: {models || "—"} · Xử lý: {durationText(ticket.processSeconds)}</p>
+    </article>
+  );
+}
+
+/** Danh sách phiếu: lọc theo trạng thái, tìm theo email hoặc tên tệp. */
+function TicketPane() {
+  const [status, setStatus] = useState<TicketFilter>("all");
+  const [text, setText] = useState("");
+  const [query, setQuery] = useState("");
+  const [rows, setRows] = useState<TicketRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setQuery(text.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [text]);
+
+  useEffect(() => {
+    let gone = false;
+    setLoading(true);
+    void searchRunTickets({ data: { status, q: query } })
+      .then((next) => {
+        if (!gone) setRows(next);
+      })
+      .catch((error) => {
+        if (!gone) pushToast(error instanceof Error && error.message ? error.message : "Chưa đọc được phiếu.", "bad");
+      })
+      .finally(() => {
+        if (!gone) setLoading(false);
+      });
+    return () => {
+      gone = true;
+    };
+  }, [status, query]);
+
+  const filtered = status !== "all" || query !== "";
+  return (
+    <div className="admin-pane">
+      <h3 className="text-sm font-semibold">Phiếu</h3>
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Lọc theo trạng thái">
+        {TICKET_CHIPS.map((chip) => (
+          <button
+            key={chip.id}
+            type="button"
+            aria-pressed={status === chip.id}
+            className={"min-tap rounded-full px-3 text-sm " + (status === chip.id ? "bg-accent font-semibold text-ink" : "border border-line")}
+            onClick={() => setStatus(chip.id)}
+          >
+            {chip.label}
+          </button>
+        ))}
+      </div>
+      <input
+        type="search"
+        value={text}
+        onChange={(event) => setText(event.target.value)}
+        placeholder="Tìm theo email hoặc tên tệp"
+        aria-label="Tìm phiếu theo email hoặc tên tệp"
+        className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+      />
+      {rows && !rows.length && (
+        <div className="rounded-xl border border-dashed border-line px-3 py-3">
+          <p className="text-sm font-medium">{filtered ? "Không có phiếu khớp" : "Chưa có phiếu trả theo lượt"}</p>
+          <p className="mt-1 text-sm text-muted">
+            {filtered ? "Thử bỏ bộ lọc hoặc đổi từ tìm." : "Phiếu xuất hiện sau lần chạy đầu tiên. Mỗi phiếu ghi tên tệp, giờ, trạng thái, số phút, model, thời gian xử lý, số đang giữ và số đã trừ."}
+          </p>
+        </div>
+      )}
+      <div className="grid max-h-96 gap-2 overflow-y-auto" aria-busy={loading}>
+        {rows?.map((ticket) => (
+          <TicketRowCard key={ticket.id} ticket={ticket} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const DOOR_LABEL: Record<string, string> = { "dong-cua-luot": "Bật bảo trì", "mo-cua-luot": "Mở lại cửa", "gia-luot": "Đổi giá" };
+
+/** Ai bật hoặc tắt bảo trì, lúc nào, đổi gì. Lấy từ nhật ký thao tác. */
+function DoorHistory({ refresh }: { refresh: number }) {
+  const [rows, setRows] = useState<DoorChange[]>([]);
+  useEffect(() => {
+    void listDoorHistory()
+      .then(setRows)
+      .catch(() => setRows([]));
+  }, [refresh]);
+  return (
+    <div className="grid gap-1">
+      <h4 className="text-xs font-semibold text-muted">Lịch sử bảo trì và giá</h4>
+      {rows.length === 0 && <p className="text-xs text-muted">Chưa có thay đổi nào được ghi.</p>}
+      <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-muted">
+        {rows.map((row) => (
+          <li key={row.id}>
+            {[new Date(row.at).toLocaleString("vi-VN"), row.actorEmail || "Không rõ", DOOR_LABEL[row.action] ?? row.action, row.note].filter(Boolean).join(" · ")}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 const PRICE_ROWS = [
   ...ASR_MODELS.filter((model) => asrHouse(model.id) === "groq").map((model) => ({ id: model.id, name: model.name, kind: "hour" as const })),
   ...CHAT_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "token" as const })),
@@ -55,6 +188,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
   const [priceOpen, setPriceOpen] = useState(true);
+  const [doorTick, setDoorTick] = useState(0);
 
   useEffect(() => {
     void getRunDesk()
@@ -76,6 +210,7 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
       .then((desk) => {
         setForm(desk);
         setView((current) => (current ? { ...current, desk } : current));
+        setDoorTick((value) => value + 1);
         pushToast(done);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
@@ -161,22 +296,10 @@ export function RunDeskBoard({ owner }: { owner: boolean }) {
             </button>
           </div>
         )}
+        <DoorHistory refresh={doorTick} />
       </div>
 
-      <div className="admin-pane">
-        <h3 className="text-sm font-semibold">Phiếu gần đây</h3>
-        {!view?.recent.length && (
-          <div className="rounded-xl border border-dashed border-line px-3 py-3">
-            <p className="text-sm font-medium">Chưa có phiếu trả theo lượt</p>
-            <p className="mt-1 text-sm text-muted">Phiếu xuất hiện sau lần chạy đầu tiên. Mỗi phiếu ghi tên tệp, giờ, trạng thái, số phút, số đang giữ và số đã trừ.</p>
-          </div>
-        )}
-        <div className="grid max-h-80 gap-2 overflow-y-auto">
-          {view?.recent.map((ticket) => (
-            <TicketCard key={ticket.id} ticket={ticket} />
-          ))}
-        </div>
-      </div>
+      <TicketPane />
 
       {owner && (
       <div className="admin-pane rounded-xl border border-line p-3">
