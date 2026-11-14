@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.37.0",
+    time: "23:20 ngày 14/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: chức năng chạy tốt trên từng loại thiết bị nếu hỗ trợ. Không đổi dịch vụ, giá, ví, quyền hay điều khoản. Thêm src/lib/device-caps.ts (hàm thuần detectCaps: chuột/cảm ứng, micro, thu âm thanh tab, khóa hướng, khóa sáng màn hình, đọc bộ nhớ tạm) và use-caps.ts (useCaps, useWakeLock); sẽ dùng lại cho màn hình Dịch trực tiếp. Dùng ngay: trang chủ đổi chữ gợi ý theo máy cảm ứng; giữ màn hình sáng khi đang chạy hoặc phân tích (Wake Lock, xin lại khi quay về tab); toàn màn hình thử API chuẩn rồi tiền tố webkit rồi khung phủ kín (iPhone), có Esc và khóa cuộn nền; nút Xoay chỉ hiện trên Android. Test mới device-caps.test.ts (5 ca: Chrome máy tính, iPhone, Android, iPad giả Mac, trang không HTTPS). CHƯA thử trên thiết bị thật nào; kết quả dựa trên đặc tả và tài liệu, cần thử iPhone Safari, Android Chrome, iPad, Firefox.",
+  },
+  {
     version: "3.36.0",
     time: "22:40 ngày 14/11/2026",
     area: "khac",

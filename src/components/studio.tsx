@@ -49,6 +49,7 @@ import { PlayerDrop } from "@/components/player-drop";
 import { StepsBar } from "@/components/steps-bar";
 import { ExportMenu } from "@/components/export-menu";
 import { CueEditor } from "@/components/cue-editor";
+import { useCaps, useWakeLock } from "@/components/use-caps";
 import { MoneyCard } from "@/components/money-card";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
@@ -484,6 +485,7 @@ type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 
 export function Studio() {
   const app = usePipeline();
+  useWakeLock(app.running || app.analyzing);
   const online = useOnline();
   const linkCheck = useLinkCheck();
   const noSubs = app.segs.length === 0;
@@ -2062,13 +2064,17 @@ function Stage({
     }
   };
 
+  const caps = useCaps();
   useEffect(() => {
     applyAspect();
-    const onFs = () => setFull(document.fullscreenElement === stageRef.current);
+    const fsElement = () => document.fullscreenElement ?? (document as Document & { webkitFullscreenElement?: Element | null }).webkitFullscreenElement;
+    const onFs = () => setFull(fsElement() === stageRef.current);
     document.addEventListener("fullscreenchange", onFs);
+    document.addEventListener("webkitfullscreenchange", onFs);
     window.addEventListener("resize", applyAspect);
     return () => {
       document.removeEventListener("fullscreenchange", onFs);
+      document.removeEventListener("webkitfullscreenchange", onFs);
       window.removeEventListener("resize", applyAspect);
     };
   }, [ar]);
@@ -2077,16 +2083,39 @@ function Stage({
     if (panel && !full) panelBoxRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [panel, full]);
 
+  // Toàn màn hình thật khi trình duyệt cho (máy tính, Android, Safari có tiền tố webkit); iPhone không cho
+  // phần tử thường thì dùng khung phủ kín trang, thoát bằng nút hoặc phím Esc.
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !document.fullscreenElement) setFull(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [full]);
+
   const toggleFull = async () => {
-    const stage = stageRef.current;
+    const stage = stageRef.current as (HTMLDivElement & { webkitRequestFullscreen?: () => Promise<void> | void }) | null;
     if (!stage) return;
+    const doc = document as Document & { webkitExitFullscreen?: () => Promise<void> | void; webkitFullscreenElement?: Element | null };
     try {
-      if (document.fullscreenElement === stage || full) {
-        if (document.fullscreenElement) await document.exitFullscreen();
+      if (document.fullscreenElement || doc.webkitFullscreenElement) {
+        await (document.exitFullscreen?.() ?? doc.webkitExitFullscreen?.());
         setFull(false);
         return;
       }
-      await stage.requestFullscreen();
+      if (full) {
+        setFull(false);
+        return;
+      }
+      if (stage.requestFullscreen) await stage.requestFullscreen();
+      else if (stage.webkitRequestFullscreen) await stage.webkitRequestFullscreen();
+      else setFull(true);
     } catch {
       setFull((value) => !value);
     }
@@ -2392,16 +2421,18 @@ function Stage({
           <Tiny label="Tỷ lệ khung hình" onClick={() => setAr((n) => (n + 1) % ARS.length)}>
             {ARS[ar][0]}
           </Tiny>
-          <Tiny
-            label="Xoay"
-            onClick={() => {
-              const next = full && ar % 2 === 0 ? "portrait" : "landscape";
-              const orientation = typeof screen !== "undefined" ? (screen.orientation as (ScreenOrientation & { lock?: (type: string) => Promise<void> }) | undefined) : undefined;
-              void orientation?.lock?.(next).catch(() => {});
-            }}
-          >
-            <RotateCw className="size-4" />
-          </Tiny>
+          {caps.lockOrientation && (
+            <Tiny
+              label="Xoay"
+              onClick={() => {
+                const next = full && ar % 2 === 0 ? "portrait" : "landscape";
+                const orientation = typeof screen !== "undefined" ? (screen.orientation as (ScreenOrientation & { lock?: (type: string) => Promise<void> }) | undefined) : undefined;
+                void orientation?.lock?.(next).catch(() => {});
+              }}
+            >
+              <RotateCw className="size-4" />
+            </Tiny>
+          )}
           <Tiny label="Cài đặt phụ đề" onClick={() => setPanel((open) => !open)}>
             <Settings className="size-4" />
           </Tiny>

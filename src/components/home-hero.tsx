@@ -4,6 +4,7 @@ import { fmt } from "@/lib/sub/text";
 import { SRC_LANGS } from "@/lib/sub/text";
 import { formatBytes, isMediaFile, type FileThumb } from "@/components/file-thumb";
 import { useLinkCheck } from "@/components/use-link-check";
+import { useCaps } from "@/components/use-caps";
 import { GENRES } from "@/lib/home-state";
 
 const CHIP = "min-tap inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-3 text-sm text-fg hover:border-accent focus-visible:ring-2 focus-visible:ring-accent";
@@ -71,6 +72,7 @@ export function HomeHero({
   const [over, setOver] = useState(false);
   const [pageDrag, setPageDrag] = useState(false);
   const linkCheck = useLinkCheck();
+  const caps = useCaps();
   const isAudio = Boolean(file && (file.type.startsWith("audio/") || /\.(mp3|m4a|aac|ac3|dts|wav|flac|ogg|opus)$/i.test(file.name)));
   const hasInput = Boolean(file) || url.trim().length > 0;
   const pick = (next: File | null) => {
@@ -161,9 +163,9 @@ export function HomeHero({
             </>
           ) : (
             <>
-              <span className="text-2xl font-semibold sm:text-3xl">{over ? "Thả để chọn video này" : "Kéo video vào đây"}</span>
-              <span className="text-base text-muted">hoặc bấm để chọn tệp · hoặc dán link ở dưới</span>
-              <span className="text-xs text-muted">Dán link ở bất cứ đâu trên trang cũng được. Ctrl+K để mở lệnh nhanh.</span>
+              <span className="text-2xl font-semibold sm:text-3xl">{over ? "Thả để chọn video này" : caps.touchOnly ? "Chạm để chọn video" : "Kéo video vào đây"}</span>
+              <span className="text-base text-muted">{caps.touchOnly ? "từ máy hoặc thư viện · hoặc dán link ở dưới" : "hoặc bấm để chọn tệp · hoặc dán link ở dưới"}</span>
+              <span className="text-xs text-muted">{caps.touchOnly ? "Dán link vào ô bên dưới là bắt đầu được." : "Dán link ở bất cứ đâu trên trang cũng được. Ctrl+K để mở lệnh nhanh."}</span>
             </>
           )}
           {note && <span className="text-xs text-danger">{note}</span>}
