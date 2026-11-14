@@ -126,14 +126,14 @@ export function fmt(seconds: number): string {
   return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s % 60).padStart(2, "0");
 }
 
-function srtTimestamp(seconds: number): string {
+function srtTimestamp(seconds: number, dot = false): string {
   const ms = Math.max(0, Math.round(seconds * 1000));
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   const s = Math.floor((ms % 60000) / 1000);
   const milli = ms % 1000;
   const pad = (n: number, w = 2) => String(n).padStart(w, "0");
-  return `${pad(h)}:${pad(m)}:${pad(s)},${pad(milli, 3)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}${dot ? "." : ","}${pad(milli, 3)}`;
 }
 
 export function cueText(seg: Seg): string {
@@ -141,7 +141,7 @@ export function cueText(seg: Seg): string {
   return seg.translation.trim();
 }
 
-function srtBlocks(items: Seg[], textOf: (seg: Seg) => string): string {
+function srtBlocks(items: Seg[], textOf: (seg: Seg) => string, vtt = false): string {
   return items
     .map((seg, index) => {
       let end = seg.end > seg.start ? seg.end : seg.start + 0.4;
@@ -150,16 +150,33 @@ function srtBlocks(items: Seg[], textOf: (seg: Seg) => string): string {
       const text = textOf(seg)
         .replace(/\s*\n\s*/g, " ")
         .trim();
-      return `${index + 1}\n${srtTimestamp(seg.start)} --> ${srtTimestamp(end)}\n${text}\n`;
+      return `${index + 1}\n${srtTimestamp(seg.start, vtt)} --> ${srtTimestamp(end, vtt)}\n${text}\n`;
     })
     .join("\n");
 }
 
+/** Chữ hiện trong file xuất: câu dịch, hoặc nhãn kèm chữ gốc khi chưa dịch được. */
+function exportLine(seg: Seg): string {
+  const pending = seg.translation === null || !seg.translation.trim();
+  return seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg);
+}
+
 export function toSrt(items: Seg[]): string {
-  return srtBlocks(items, (seg) => {
-    const pending = seg.translation === null || !seg.translation.trim();
-    return seg.translationFailed ? `[không dịch được] ${seg.original}` : pending ? `[chưa dịch] ${seg.original}` : cueText(seg);
-  });
+  return srtBlocks(items, exportLine);
+}
+
+/** WebVTT: cùng nội dung với SRT, dấu chấm trước mili giây và dòng WEBVTT ở đầu. */
+export function toVtt(items: Seg[]): string {
+  return "WEBVTT\n\n" + srtBlocks(items, exportLine, true);
+}
+
+/** Chữ thuần, mỗi câu một dòng, không giờ. Dùng để đọc lại hoặc dán đi nơi khác. */
+export function toTxt(items: Seg[]): string {
+  return (
+    items
+      .map((seg) => exportLine(seg).replace(/\s*\n\s*/g, " ").trim())
+      .join("\n") + "\n"
+  );
 }
 
 /** Bản nhận dạng gốc của Whisper, từng câu theo giờ, trước khi qua bước phân tích phim và dịch. */

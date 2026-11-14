@@ -64,6 +64,8 @@ import {
   splitAudio,
   SR,
   toSrt,
+  toTxt,
+  toVtt,
   toRawSrt,
   untranslated,
   windowRms,
@@ -763,11 +765,16 @@ export function usePipeline() {
     [file, audioFile],
   );
 
-  const exportSrt = useCallback(async () => {
-    if (!(await exportAllowed("file Vietsub"))) return;
-    if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
-    saveText(toSrt(job.current.segs), ".srt");
-  }, [exportAllowed, saveText, say]);
+  const exportSub = useCallback(
+    async (format: "srt" | "vtt" | "txt") => {
+      if (!(await exportAllowed("file Vietsub"))) return;
+      if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
+      const segs = job.current.segs;
+      saveText(format === "vtt" ? toVtt(segs) : format === "txt" ? toTxt(segs) : toSrt(segs), "." + format);
+    },
+    [exportAllowed, saveText, say],
+  );
+  const exportSrt = useCallback(() => exportSub("srt"), [exportSub]);
 
   const exportRaw = useCallback(async () => {
     if (!(await exportAllowed("bản nhận dạng gốc"))) return;
@@ -2430,6 +2437,7 @@ export function usePipeline() {
     cancel,
     reset,
     exportSrt,
+    exportSub,
     exportRaw,
     editSeg,
     cycleVoiceLock,

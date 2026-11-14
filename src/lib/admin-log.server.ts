@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.33.0",
+    time: "20:50 ngày 14/11/2026",
+    area: "khac",
+    text: "Làm trên nền v3.32.0, theo yêu cầu người dùng (mục 2 và 3 trong danh sách 7 mục, nhánh work). Không đổi dịch vụ, giá, quyền, dữ liệu khách hay điều khoản. Đối chiếu code trước khi làm: bấm một dòng bản dịch để nhảy video đã có từ trước (CueRow gọi jump, đặt currentTime rồi phát), và phụ đề đã hiện dần khi nhận dạng xong từng đoạn (dòng chưa dịch hiện «Đang chờ dịch…»), nên hai việc này không đổi logic. (2) steps-bar.tsx: thanh liền cao 2,5 đơn vị, có vạch ngăn ở 10, 50, 90 phần trăm theo trọng số của computeStages (không đổi), phần trăm tổng bên phải, dòng «Đang: bước · số đếm»; bốn cột nhãn giữ nguyên. (3) Sửa tại chỗ: cue-editor.tsx thay hộp trượt từ đáy; Ctrl+Enter hoặc nút Lưu, Esc hoặc nút Hủy, vẫn có ô thuật ngữ áp cho cả phim và vẫn gọi editSeg như cũ. Menu tải: export-menu.tsx (Radix DropdownMenu, đã có trong gói) với SRT, WebVTT, chữ thuần; text.ts thêm toVtt (dòng WEBVTT, dấu chấm trước mili giây) và toTxt (mỗi câu một dòng), cùng bộ nhãn [chưa dịch] và [không dịch được] với SRT; use-pipeline.ts thêm exportSub(format), exportSrt giữ làm bí danh. Quyền xuất vẫn qua exportAllowed như cũ nên gói dùng thử và tài khoản khóa vẫn bị chặn ở cả ba định dạng. Ctrl+K thêm hai lệnh tải VTT và TXT. Test mới: export-format.test.ts (4 ca, đã vào npm test). CHƯA kiểm bằng trình duyệt thật hay điện thoại thật; chưa thử mở file .vtt trong trình phát thật.",
+  },
+  {
     version: "3.32.0",
     time: "20:20 ngày 14/11/2026",
     area: "khac",

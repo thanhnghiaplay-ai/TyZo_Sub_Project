@@ -8,7 +8,7 @@ const STEPS: Step[] = [
   { sel: "[data-tour=drop]", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
   { sel: "#tool-tab-key", title: "2. Chọn cách dùng", text: "Mở Key Sub: dùng key Groq của bạn, hoặc trả theo lượt bằng ví của phòng." },
   { sel: "#tool-tab-phim", title: "3. Dịch", text: "Mở Phim, chọn ngôn ngữ và thể loại, rồi bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
-  { sel: "[data-tour=export]", title: "4. Lấy phụ đề", text: "Dịch xong thì bấm Xuất file Vietsub (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
+  { sel: "[data-tour=export]", title: "4. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
 ];
 
 type Box = { top: number; left: number; width: number; height: number };

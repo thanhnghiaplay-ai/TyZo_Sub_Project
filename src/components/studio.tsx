@@ -47,6 +47,8 @@ import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
 import { PlayerDrop } from "@/components/player-drop";
 import { StepsBar } from "@/components/steps-bar";
+import { ExportMenu } from "@/components/export-menu";
+import { CueEditor } from "@/components/cue-editor";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
@@ -772,7 +774,9 @@ export function Studio() {
     },
     { id: "start", label: "Bắt đầu tải và dịch", hint: "Việc", words: "chay dich start", disabled: app.running || !(pickedFile || app.url.trim()), run: () => void app.start() },
     { id: "stop", label: "Dừng đang chạy", hint: "Việc", words: "huy cancel", disabled: !app.running, run: () => app.cancel() },
-    { id: "export", label: "Xuất file Vietsub (.srt)", hint: "Tải", words: "srt tai xuat phu de", disabled: noSubs || !online, run: () => void app.exportSrt() },
+    { id: "export-srt", label: "Tải phụ đề SRT (.srt)", hint: "Tải", words: "srt xuat file vietsub phu de", disabled: noSubs || !online, run: () => void app.exportSub("srt") },
+    { id: "export-vtt", label: "Tải phụ đề WebVTT (.vtt)", hint: "Tải", words: "vtt webvtt xuat phu de", disabled: noSubs || !online, run: () => void app.exportSub("vtt") },
+    { id: "export-txt", label: "Tải chữ thuần (.txt)", hint: "Tải", words: "txt text xuat van ban", disabled: noSubs || !online, run: () => void app.exportSub("txt") },
     { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
     ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "phu de cong cu", run: () => openTool(id) })),
     { id: "wallet", label: "Số dư và nạp tiền", hint: "Tài khoản", words: "nap tien vi", run: () => setProduct("account") },
@@ -856,16 +860,7 @@ export function Studio() {
           title={noSubs ? EXPORT_EMPTY : undefined}
           onClick={noSubs ? () => pushToast(EXPORT_EMPTY, "bad") : undefined}
         >
-          <button
-            type="button"
-            data-tour="export"
-            disabled={noSubs || !online}
-            aria-disabled={noSubs || !online}
-            className="min-tap rounded-xl border border-line px-3 text-sm disabled:pointer-events-none disabled:opacity-40"
-            onClick={() => void app.exportSrt()}
-          >
-            Xuất file Vietsub
-          </button>
+          <ExportMenu disabled={noSubs || !online} onPick={(format) => void app.exportSub(format)} />
         </span>
         <button
           type="button"
@@ -946,12 +941,30 @@ export function Studio() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Bản dịch</h2>
           </div>
-          <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh và thêm thuật ngữ.</p>
+          <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh ngay tại dòng và thêm thuật ngữ.</p>
           <div className="studio-cue-scroll">
             {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}
-            {app.segs.map((seg, index) => (
-              <CueRow key={`${seg.start}-${seg.end}-${index}`} seg={seg} index={index} active={index === current} onJump={jumpTo} onEdit={openEdit} onVoice={app.cycleVoiceLock} />
-            ))}
+            {app.segs.map((seg, index) =>
+              index === editing ? (
+                <div key={`edit-${seg.start}-${seg.end}`} className="border-b border-line py-3">
+                  <CueEditor
+                    start={seg.start}
+                    original={seg.original}
+                    draft={draft}
+                    rule={rule}
+                    onDraft={setDraft}
+                    onRule={setRule}
+                    onSave={() => {
+                      app.editSeg(editing, draft, rule);
+                      setEditKey(null);
+                    }}
+                    onCancel={() => setEditKey(null)}
+                  />
+                </div>
+              ) : (
+                <CueRow key={`${seg.start}-${seg.end}-${index}`} seg={seg} index={index} active={index === current} onJump={jumpTo} onEdit={openEdit} onVoice={app.cycleVoiceLock} />
+              ),
+            )}
           </div>
         </section>
       </section>
@@ -1544,32 +1557,6 @@ export function Studio() {
       </div>
       </div>
 
-      {editing >= 0 && app.segs[editing] && (
-        <div className="fixed inset-0 z-50 flex items-end bg-bg/80" onClick={() => setEditKey(null)}>
-          <form
-            className="mx-auto grid w-full max-w-3xl gap-3 rounded-t-2xl border border-line bg-card p-4"
-            onClick={(event) => event.stopPropagation()}
-            onSubmit={(event) => {
-              event.preventDefault();
-              app.editSeg(editing, draft, rule);
-              setEditKey(null);
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Sửa câu</h3>
-              <button type="button" aria-label="Đóng" className="min-tap rounded-full border border-line px-3" onClick={() => setEditKey(null)}>
-                <X className="size-4" />
-              </button>
-            </div>
-            <p className="text-sm text-muted">{app.segs[editing].original}</p>
-            <textarea className={FIELD} rows={3} value={draft} onChange={(event) => setDraft(event.target.value)} />
-            <input className={FIELD} placeholder="Áp cho cả phim: tên gốc = cách dịch" value={rule} onChange={(event) => setRule(event.target.value)} />
-            <button type="submit" className="min-tap rounded-xl bg-accent font-semibold text-ink">
-              Lưu
-            </button>
-          </form>
-        </div>
-      )}
       </div>
       {product === "account" && <AccountPanel />}
       </>
