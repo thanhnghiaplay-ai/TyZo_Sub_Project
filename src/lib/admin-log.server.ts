@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.34.0",
+    time: "21:30 ngày 14/11/2026",
+    area: "tien",
+    text: "Làm trên nền v3.33.0, theo yêu cầu người dùng (mục 4 trong danh sách 7 mục, nhánh work). Không đổi giá, hạn mức, cách giữ và trừ ví, quyền hay điều khoản; chỉ đọc và hiển thị. Thẻ tiền money-card.tsx chỉ hiện khi khách chọn Trả theo lượt, đăng nhập và không phải tài khoản dev. Số liệu: getRoomAccount (số dư, số đang giữ), getServiceMenu rồi quoteTurnPacks hai lần: một lần với 60 giây để ra giá một phút, một lần với thời lượng video đã chọn (từ ảnh xem trước của tệp, link thì chưa biết nên không ước tính). Gói được chọn khớp theo cặp model nhận dạng và dịch đang chọn (turnPackModels); không khớp thì lấy gói rẻ nhất có giá và ghi chú «theo gói rẻ nhất» để khách khỏi hiểu nhầm. «Còn khoảng N phút» = số dư chia giá một phút, làm tròn xuống (wallet-view.ts, minutesLeft); đây là ước tính, giá thật tính theo số thực khi xong. Ước tính trước khi chạy đặt cạnh nút Tải và dịch, so số phòng sẽ giữ với số dư; thiếu thì báo thiếu bao nhiêu, đổi nút Nạp nhanh sang màu nhấn. Không chặn nút bắt đầu: start() và cổng trả theo lượt vẫn là nơi quyết định giữ tiền. Thẻ nạp nhanh dùng lại TopUp chế độ gọn (cùng luồng đơn nạp, cùng giới hạn tối đa 3 đơn chờ); nạp xong phát sự kiện tyzo-room-refresh để số dư tự đọc lại. Khách thấy giá đã cộng phần chênh như cũ, không có giá gốc. Dùng key riêng thì không hiện thẻ (tiền là của Groq). Test mới: wallet-view.test.ts (4 ca, đã vào npm test). CHƯA thử với dữ liệu thật: chưa có gói trả theo lượt thật và ví thật để so ước tính với số trừ thật; chưa thử trên điện thoại thật.",
+  },
+  {
     version: "3.33.0",
     time: "20:50 ngày 14/11/2026",
     area: "khac",

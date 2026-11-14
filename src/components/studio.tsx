@@ -49,6 +49,7 @@ import { PlayerDrop } from "@/components/player-drop";
 import { StepsBar } from "@/components/steps-bar";
 import { ExportMenu } from "@/components/export-menu";
 import { CueEditor } from "@/components/cue-editor";
+import { MoneyCard } from "@/components/money-card";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
@@ -913,7 +914,11 @@ export function Studio() {
           running={app.running}
           online={online}
           onStart={() => void app.start()}
+          extra={<MoneyCard active={payByRoom} asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? 0} narration={narration.enabled} />}
         />
+      )}
+      {!hero && payByRoom && (
+        <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} />
       )}
       <div className={hero ? "hidden" : "contents"} aria-hidden={hero || undefined}>
       <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>

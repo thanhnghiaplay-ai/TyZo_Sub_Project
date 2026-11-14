@@ -1,5 +1,11 @@
 # HANDOFF — TyZo_Sub_Project, bản 2.19.1 (08/11/2026 19:13 giờ VN)
 
+## BẢN 3.32.0 → 3.34.0 (14/11/2026, nhánh work)
+ĐÃ LÀM: mục 1 (trang chủ một ô), 6 (Ctrl+K và dán link tự bắt đầu), 2 (tiến trình liền), 3 (sửa tại dòng, menu tải SRT/VTT/TXT; bấm dòng nhảy video đã có sẵn), 4 (số dư, còn khoảng N phút, ước tính trước khi chạy, nạp nhanh).
+CHƯA LÀM: mục 5 chỉnh khoảng trống, chữ lớn, hiệu ứng kéo thả (nền tối, nút sáng/tối, gọn/thoải mái đã có từ v3.29); mục 7 đưa Thuật ngữ và gói dịch vào menu trái.
+CHƯA KIỂM: chưa mở bằng trình duyệt thật hay điện thoại thật (cổng đăng nhập chặn chạy thử tự động); chưa thử dán link trên Safari iOS; chưa thử ước tính tiền với ví và gói trả theo lượt thật; chưa mở file .vtt trong trình phát thật.
+KHÔNG ĐỔI: giá, hạn mức, cách giữ và trừ ví, quyền, điều khoản (`2026-11-13.4`).
+
 Phiếu bàn giao một lần. Không phải bộ luật. Luật hiện tại nằm ở `BANG_DIEU.md`. Đoạn cũ phía dưới chỉ để tra.
 
 Gốc: v2.19.0. Bản này ghi các lỗi còn mở rồi sửa.
