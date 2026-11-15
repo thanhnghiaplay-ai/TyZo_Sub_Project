@@ -1,12 +1,31 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { APP_VERSION, CHANGELOG } from "@/lib/app-version";
+import { placeVersionLog } from "./version-mark-place";
 
 const SEEN_KEY = "tyzo-seen-version";
-
 export function VersionMark({ align = "end" }: { align?: "start" | "end" }) {
   const [open, setOpen] = useState(false);
   const [fresh, setFresh] = useState(false);
   const box = useRef<HTMLDivElement>(null);
+  const [spot, setSpot] = useState<CSSProperties | undefined>(undefined);
+
+  const measure = useCallback(() => {
+    const mark = box.current?.querySelector("button");
+    if (!mark) return;
+    const at = placeVersionLog(mark.getBoundingClientRect(), { width: window.innerWidth, height: window.innerHeight }, align);
+    setSpot({ position: "fixed", left: at.left, top: at.top, right: "auto", width: at.width, maxHeight: at.maxHeight });
+  }, [align]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    measure();
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure, true);
+    };
+  }, [open, measure]);
 
   useEffect(() => {
     try {
@@ -64,7 +83,7 @@ export function VersionMark({ align = "end" }: { align?: "start" | "end" }) {
         {fresh && <span className="version-dot" aria-hidden="true" />}
       </button>
       {open && (
-        <div className="version-log" role="dialog" aria-label="Các lần cập nhật">
+        <div className="version-log" role="dialog" aria-label="Các lần cập nhật" style={spot}>
           <p className="version-log-title">Cập nhật</p>
           <ol>
             {CHANGELOG.slice(0, 8).map((item) => (

@@ -1653,7 +1653,10 @@
 
 .version-log {
   position: absolute;
-  z-index: 40;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
+  z-index: 60;
   top: calc(100% + 0.45rem);
   right: 0;
   width: min(18.5rem, calc(100vw - 2rem));
@@ -1691,6 +1694,11 @@
 .version-log li {
   display: grid;
   gap: 0.12rem;
+}
+
+.version-log ol > li + li {
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.55rem;
 }
 
 .version-log strong {
