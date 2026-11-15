@@ -20,6 +20,9 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const { randomBytes } = await import("node:crypto");
     const { requireOpenAccount, takeRate } = await import("@/lib/guard.server");
     await requireOpenAccount(context.userId);
+    // Nhóm Dịch bình thường đang bảo trì thì không giữ tiền cho lượt mới. Phiếu đã mở vẫn chạy nốt.
+    const { requireServiceOpen } = await import("@/lib/service-status.server");
+    await requireServiceOpen("normal");
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
     const { parseRunDesk, parseModelList, dayStartIso } = await import("@/lib/run-desk");

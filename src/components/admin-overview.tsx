@@ -3,6 +3,8 @@ import { pushToast } from "@/components/toast";
 import { getOverview } from "@/lib/overview-room";
 import type { Overview, OverviewRange, TopUser } from "@/lib/overview-data";
 import type { AdminTab } from "@/lib/admin-tabs";
+import { useServiceStatus } from "@/components/use-service-status";
+import { SERVICE_GROUPS, SERVICE_LABEL, SERVICE_STATE_LABEL } from "@/lib/service-status";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -56,6 +58,32 @@ function TopList({ rows, money, empty }: { rows: TopUser[]; money: boolean; empt
   );
 }
 
+/** Dải trạng thái hai nhóm dịch. Ai cũng xem được; chỉ Chủ có nút sang nơi đổi. */
+function ServiceStrip({ owner, onGo }: { owner: boolean; onGo: (tab: AdminTab) => void }) {
+  const { status, ready } = useServiceStatus();
+  return (
+    <article className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Trạng thái các nhóm dịch">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+        {SERVICE_GROUPS.map((group) => {
+          const down = status[group].state === "maintenance";
+          return (
+            <p key={group} className="flex items-center gap-2">
+              <span className={"door-dot " + (down ? "door-dot-closed" : "door-dot-open")} aria-hidden="true" />
+              <span className="font-semibold">{SERVICE_LABEL[group]}</span>
+              <span className={down ? "text-warning" : "text-muted"}>{ready ? SERVICE_STATE_LABEL[status[group].state] : "…"}</span>
+            </p>
+          );
+        })}
+      </div>
+      {owner && (
+        <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => onGo("cau-hinh")}>
+          Đổi trạng thái
+        </button>
+      )}
+    </article>
+  );
+}
+
 /** Tổng quan: số chính, cảnh báo, top người dùng. Mỗi thẻ có nút nhảy vào tab chi tiết. */
 export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: AdminTab) => void }) {
   const [range, setRange] = useState<OverviewRange>(1);
@@ -104,6 +132,8 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
           </button>
         </div>
       </div>
+
+      <ServiceStrip owner={owner} onGo={onGo} />
 
       {!view && <p className="text-sm text-muted">{loading ? "Đang đọc số liệu…" : "Chưa có số liệu."}</p>}
 

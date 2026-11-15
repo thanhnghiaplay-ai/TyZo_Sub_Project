@@ -13,6 +13,8 @@ export type RailItem = {
   href?: RailLink;
   /** id gắn lên nút, để vùng nội dung trỏ aria-labelledby vào. */
   domId?: string;
+  /** Nhãn nhỏ bên phải tên mục, ví dụ «Bảo trì». Trống thì không hiện. */
+  badge?: string;
   children?: RailItem[];
 };
 
@@ -130,13 +132,15 @@ export function SideRail({ items, label, top, who }: { items: RailItem[]; label:
     if (item.href) {
       return (
         <Link key={item.id} id={item.domId} to={item.href} className={cls} aria-current={cur} onClick={() => shut(item)}>
-          {item.label}
+          <span>{item.label}</span>
+          {item.badge && <span className="rail-badge">{item.badge}</span>}
         </Link>
       );
     }
     return (
       <button key={item.id} id={item.domId} type="button" className={cls} aria-current={cur} onClick={() => shut(item)}>
-        {item.label}
+        <span>{item.label}</span>
+        {item.badge && <span className="rail-badge">{item.badge}</span>}
       </button>
     );
   }
@@ -172,7 +176,10 @@ export function SideRail({ items, label, top, who }: { items: RailItem[]; label:
                   onClick={() => setFolded((state) => ({ ...state, [item.id]: !isOpen }))}
                 >
                   <span>{item.label}</span>
-                  <span className="rail-caret" aria-hidden="true" />
+                  <span className="flex items-center gap-2">
+                    {item.badge && <span className="rail-badge">{item.badge}</span>}
+                    <span className="rail-caret" aria-hidden="true" />
+                  </span>
                 </button>
                 <div id={groupId} className="rail-sub" hidden={!isOpen}>
                   {item.children.map((child) => leaf(child, true))}

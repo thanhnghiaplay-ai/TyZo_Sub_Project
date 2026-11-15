@@ -1,4 +1,5 @@
 import { requireOpenAccount, takeRate } from "@/lib/guard.server";
+import { requireServiceOpen } from "@/lib/service-status.server";
 import {
   ALI_FILETRANS_MODEL,
   directFileUrlProblem,
@@ -91,6 +92,8 @@ function taskIdOf(payload: unknown): string {
 export async function runAliFiletrans(userId: string, input: AliFiletransInput): Promise<AliFiletransResult> {
   if (input.op !== "submit" && input.op !== "status") throw new Error("Yêu cầu không được phép.");
   await requireOpenAccount(userId);
+  // Chỉ chặn việc nhận dạng MỚI. Hỏi trạng thái việc đang chạy (op status) vẫn qua để lượt đã giữ tiền chạy nốt.
+  if (input.op === "submit") await requireServiceOpen("normal");
   await takeRate(`ali-asr:${userId}`, 30, 60);
   const usingRoom = input.key === "room";
   const key = usingRoom ? await roomAliKey() : cleanKey(input.key);

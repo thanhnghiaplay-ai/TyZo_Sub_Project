@@ -15,6 +15,9 @@ export const openLiveTicket = createServerFn({ method: "POST" })
     const { randomBytes } = await import("node:crypto");
     const { requireOpenAccount, takeRate } = await import("@/lib/guard.server");
     await requireOpenAccount(context.userId);
+    // Nhóm Dịch trực tiếp đang bảo trì thì không cấp vé mới. Phiên đang chạy vẫn chạy nốt.
+    const { requireServiceOpen } = await import("@/lib/service-status.server");
+    await requireServiceOpen("live");
     await takeRate(`live-open:${context.userId}`, 10, 60);
     const { env } = await import("@/lib/env.server");
     const secret = env("LIVE_BRIDGE_SECRET");

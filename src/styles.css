@@ -1945,6 +1945,22 @@ html[data-density] .studio-workspace {
   color: var(--color-accent);
 }
 
+.rail-badge {
+  flex-shrink: 0;
+  border: 1px solid var(--color-warning);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  color: var(--color-warning);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rail-link[aria-current="page"] .rail-badge {
+  border-color: currentColor;
+  color: inherit;
+}
+
 .rail-sub {
   display: grid;
   gap: 0.15rem;

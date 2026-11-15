@@ -1,5 +1,12 @@
 # HANDOFF — TyZo_Sub_Project
 
+## HAI NHÓM DỊCH CÓ TRẠNG THÁI (15/11/2026, nhánh work, v3.44.0)
+ĐÃ LÀM: Dịch trực tiếp và Dịch bình thường tách nhóm, mỗi nhóm Hoạt động/Bảo trì, Chủ đặt ở Admin → Cấu hình (lời nhắn tối đa 200 ký tự, giờ dự kiến mở lại chỉ để báo). Máy chủ chặn lượt MỚI ở `openLiveTicket`, `openRunTicket`, `spendTrial`, `runAliFiletrans` (submit); lượt đang chạy chạy nốt. Key riêng chỉ chặn ở giao diện (`use-pipeline.ts` start). Giao diện: `service-notice.tsx`, nhãn menu, bảng `service-status-board.tsx`, dải ở Tổng quan.
+KIỂM TRA: `tsc` sạch; `npm test` 656 pass (cộng test mới), `vite build` qua; lint chỉ còn 3 lỗi có sẵn ở studio.tsx.
+CHƯA KIỂM: mở bằng trình duyệt thật (có /usr/bin/google-chrome và playwright, chưa chạy): trang chủ, /dich-truc-tiep, tab Cấu hình bằng tài khoản Chủ, điện thoại 390 px, bật/tắt bảo trì rồi thử bắt đầu.
+CHƯA LÀM: bảo trì cả web có hẹn giờ (đụng điều khoản), tự mở lại theo giờ hẹn, cầu nối live tự cắt phiên khi bảo trì (hiện để phiên chạy nốt), chặn `/api/relay-alibaba` khi bảo trì.
+KHÔNG ĐỔI: giá, hạn mức, luật ví, quyền, điều khoản (`2026-11-15.1`).
+
 ## BƯỚC 1 TRONG DANH SÁCH 15/11/2026 (nhánh work, v3.43.2)
 ĐÃ LÀM: khung thông báo không tràn mép trên màn hẹp; cửa vào phòng bắt buộc có tài khoản (máy đã đồng ý điều khoản mà chưa đăng nhập thì sang /login), hết phiên giữa chừng thì về /login.
 KIỂM TRA: `npx tsc --noEmit` sạch; `npm test` 626 pass, 0 fail.

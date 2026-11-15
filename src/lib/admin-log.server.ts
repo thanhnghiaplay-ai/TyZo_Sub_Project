@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.44.0",
+    time: "10:15 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: chia Dịch trực tiếp và Dịch bình thường, mỗi nhóm Hoạt động hoặc Bảo trì, Chủ đặt ở Admin. Lưu ở room_settings khóa service_status (JSON, không cần migration). lib/service-status.ts (hàm thuần, có test), service-status-room.ts (getServiceStatus công khai, saveServiceStatus chỉ Chủ, nhật ký thao tác «bao-tri»), service-status.server.ts (requireServiceOpen). Máy chủ chặn lượt MỚI ở openLiveTicket (live), openRunTicket, spendTrial, runAliFiletrans op submit (normal); lượt đã mở chạy nốt. Khách dùng key riêng: máy chủ không nằm trong đường đi nên chặn ở use-pipeline start (client), chỉ là chặn ở giao diện. Giao diện: ServiceSwitch + MaintenanceNotice (service-notice.tsx), nhãn Bảo trì ở menu trái (RailItem.badge), nút bắt đầu bị khóa, bảng Admin ở tab Cấu hình (service-status-board.tsx), dải trạng thái ở tab Tổng quan. Chưa đổi điều khoản (chưa chặn cả phòng). CHƯA kiểm bằng trình duyệt thật.",
+  },
+  {
     version: "3.43.2",
     time: "09:10 ng\u00e0y 15/11/2026",
     area: "khac",

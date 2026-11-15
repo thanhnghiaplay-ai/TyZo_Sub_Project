@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { claimTrialDevice, spendTrial } from "@/lib/room-account";
+import { getServiceStatus } from "@/lib/service-status-room";
+import { defaultServiceStatus, serviceBlock } from "@/lib/service-status";
 import { getMyPlace } from "@/lib/admin-room";
 import { authClient } from "@/lib/auth/client";
 import { deviceId } from "@/lib/device-id";
@@ -831,6 +833,10 @@ export function usePipeline() {
     const token = activeKey();
     const link = url.trim();
     const chosen = modelId.trim();
+    // Nhóm Dịch bình thường đang bảo trì thì không bắt đầu lượt mới, kể cả khi dùng key riêng (khi đó máy chủ không nằm trong đường đi).
+    // Không đọc được trạng thái (mất mạng, máy chủ bận) thì không chặn: máy chủ vẫn chặn thật ở chỗ giữ tiền và trừ lượt thử.
+    const closed = serviceBlock((await getServiceStatus().catch(() => null)) ?? defaultServiceStatus(), "normal");
+    if (closed) return say(closed, true);
     if (roomPayRef.current) {
       const menu = await getServiceMenu().catch(() => null);
       const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });

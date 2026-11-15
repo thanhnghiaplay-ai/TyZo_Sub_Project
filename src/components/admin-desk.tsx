@@ -57,6 +57,7 @@ import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { AlibabaKeyBoard } from "@/components/alibaba-key-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
+import { ServiceStatusBoard } from "@/components/service-status-board";
 import { SupportBoard } from "@/components/support-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
 import { RentShowBoard } from "@/components/rent-show-board";
@@ -344,6 +345,7 @@ export function AdminDesk() {
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
       {role === "chu" && tab === "cau-hinh" && (
         <>
+          <ServiceStatusBoard />
           <RunDeskBoard owner part="key" />
           <AlibabaKeyBoard />
           <LiveWorkspaceBoard />
@@ -790,6 +792,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "key-alibaba": "Đổi key Alibaba",
   "workspace-live": "Đổi Workspace ID Dịch trực tiếp",
   "lien-he": "Đổi thông tin liên hệ hỗ trợ",
+  "bao-tri": "Đổi trạng thái Hoạt động/Bảo trì của nhóm dịch",
   "giao-dien": "Công bố giao diện",
   "reset-so-du": "Reset số dư",
   "reset-tien-test": "Reset tiền thử",

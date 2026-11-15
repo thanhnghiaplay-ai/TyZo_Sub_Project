@@ -77,6 +77,9 @@ export const spendTrial = createServerFn({ method: "POST" })
   .handler(async ({ context }): Promise<RoomState> => {
     const { requireOpenAccount } = await import("@/lib/guard.server");
     await requireOpenAccount(context.userId);
+    // Đang bảo trì thì không trừ lượt dùng thử của khách vào một lượt chạy sẽ bị chặn.
+    const { requireServiceOpen } = await import("@/lib/service-status.server");
+    await requireServiceOpen("normal");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`insert into room_accounts (user_id) values (${context.userId}) on conflict (user_id) do nothing`;

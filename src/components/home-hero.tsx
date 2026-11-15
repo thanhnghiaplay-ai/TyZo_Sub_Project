@@ -47,7 +47,10 @@ export function HomeHero({
   online,
   onStart,
   extra,
+  blocked = false,
 }: {
+  /** Nhóm Dịch bình thường đang bảo trì: khóa nút bắt đầu. Chọn tệp và đổi lựa chọn vẫn dùng được. */
+  blocked?: boolean;
   file: File | null;
   thumb: FileThumb;
   url: string;
@@ -244,11 +247,11 @@ export function HomeHero({
       <button
         type="button"
         data-home-start
-        disabled={running || !hasInput || !online}
+        disabled={running || !hasInput || !online || blocked}
         className="min-h-14 rounded-full bg-accent px-8 text-lg font-semibold text-ink transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:hover:scale-100 motion-reduce:transition-none motion-reduce:hover:scale-100"
         onClick={onStart}
       >
-        {running ? "Đang chạy…" : "Tải và dịch"}
+        {running ? "Đang chạy…" : blocked ? "Đang bảo trì" : "Tải và dịch"}
       </button>
     </section>
   );

@@ -11,6 +11,9 @@ import { VersionMark } from "@/components/version-mark";
 import { pushToast } from "@/components/toast";
 import { useCaps, useWakeLock } from "@/components/use-caps";
 import { useLive, type LiveInput } from "@/components/use-live";
+import { MaintenanceNotice, ServiceSwitch } from "@/components/service-notice";
+import { useServiceStatus } from "@/components/use-service-status";
+import { railBadge } from "@/lib/service-status";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { TourHost } from "@/components/tour-host";
 import { LIVE_LANGS, liveLang, targetHasVoice } from "@/lib/live/langs";
@@ -60,6 +63,7 @@ const SELECT = "min-tap w-full rounded-xl border border-line bg-raised px-3 text
 export function LiveScreen() {
   const live = useLive();
   const caps = useCaps();
+  const service = useServiceStatus();
   const { user } = useCurrentUserState();
   const [settings, setSettings] = useState<Saved>(DEFAULTS);
   const [loaded, setLoaded] = useState(false);
@@ -89,6 +93,9 @@ export function LiveScreen() {
 
   const voice = targetHasVoice(settings.target);
   const button = liveButton(live.state);
+  // Bảo trì chỉ chặn phiên MỚI. Đang chạy thì nút vẫn là Dừng và bấm được.
+  const down = service.status.live.state === "maintenance";
+  const startBlocked = down && !button.stops;
   const warnText = liveWarnText(live.warn, live.minutes);
   const hasText = hasLiveCues(live.cues);
 
@@ -107,7 +114,7 @@ export function LiveScreen() {
   const railItems: RailItem[] = useMemo(
     () => [
       { id: "home", label: "Trang chủ", href: "/" },
-      { id: "dich-truc-tiep", label: "Dịch trực tiếp", current: true },
+      { id: "dich-truc-tiep", label: "Dịch trực tiếp", current: true, badge: railBadge(service.status, "live") },
       { id: "tai-video", label: "Tải video", href: "/tai-video" },
       { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
       {
@@ -120,7 +127,7 @@ export function LiveScreen() {
         ],
       },
     ],
-    [],
+    [service.status],
   );
 
   const noInput = loaded && !caps.mic && !caps.tabAudio;
@@ -143,10 +150,14 @@ export function LiveScreen() {
           </div>
         </header>
 
+        <ServiceSwitch current="live" status={service.status} />
+
         <div>
           <h1 className="text-xl font-semibold">Dịch trực tiếp</h1>
           <p className="mt-1 text-sm text-muted">Nghe tiếng nói rồi hiện chữ gốc và chữ dịch ngay khi đang nói, kèm tiếng dịch nếu bạn bật.</p>
         </div>
+
+        <MaintenanceNotice group="live" entry={service.status.live} running={running} />
 
         <section className="grid gap-3 rounded-2xl border border-line bg-card p-3" aria-label="Cài đặt dịch trực tiếp">
           <div className="grid grid-cols-2 gap-2" role="group" aria-label="Nguồn âm thanh" data-tour="live-source">
@@ -252,7 +263,8 @@ export function LiveScreen() {
             <button
               type="button"
               data-tour="live-start"
-              disabled={button.disabled}
+              disabled={button.disabled || startBlocked}
+              title={startBlocked ? "Dịch trực tiếp đang bảo trì" : undefined}
               onClick={() => (button.stops ? live.stop() : live.start({ ...settings, input, audio: voice && settings.audio }))}
               className={"min-tap inline-flex min-w-40 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold disabled:opacity-50 " + (button.stops ? "border border-error text-danger" : "bg-accent text-ink")}
             >

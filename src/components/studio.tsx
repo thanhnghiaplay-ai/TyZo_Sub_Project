@@ -44,6 +44,9 @@ import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
 import { DisplayToggle } from "@/components/display-toggle";
 import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
+import { MaintenanceNotice, ServiceSwitch } from "@/components/service-notice";
+import { useServiceStatus } from "@/components/use-service-status";
+import { railBadge } from "@/lib/service-status";
 import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
 import { PlayerDrop } from "@/components/player-drop";
@@ -532,6 +535,9 @@ export function Studio() {
   const [turnLocked, setTurnLocked] = useState(false);
   const { user: me } = useCurrentUserState();
   const runDoor = useRunDoor();
+  const service = useServiceStatus();
+  // Nhóm Dịch bình thường đang bảo trì: chặn bấm bắt đầu. Lượt đang chạy vẫn chạy nốt (nút Dừng không bị khóa).
+  const normalDown = service.status.normal.state === "maintenance";
   const rentShow = useRentShow();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
@@ -752,7 +758,8 @@ export function Studio() {
     { id: "home", label: "Trang chủ", current: product === "sub" && hero, onPick: () => { setProduct("sub"); setForced(false); } },
     {
       id: "sub",
-      label: "Phụ đề",
+      label: "Dịch bình thường",
+      badge: railBadge(service.status, "normal"),
       children: TOOLS.map(([id, label]) => ({
         id: `tool-${id}`,
         domId: `tool-tab-${id}`,
@@ -772,7 +779,7 @@ export function Studio() {
         onPick: () => openTool(id),
       })),
     },
-    { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep" },
+    { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep", badge: railBadge(service.status, "live") },
     { id: "tai-video", label: "Tải video", href: "/tai-video" },
     { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
     {
@@ -808,7 +815,7 @@ export function Studio() {
           .catch(() => pushToast("Trình duyệt chưa cho đọc bộ nhớ tạm. Hãy bấm Ctrl+V trên trang.", "bad"));
       },
     },
-    { id: "start", label: "Bắt đầu tải và dịch", hint: "Việc", words: "chay dich start", disabled: app.running || !(pickedFile || app.url.trim()), run: () => void app.start() },
+    { id: "start", label: "Bắt đầu tải và dịch", hint: "Việc", words: "chay dich start", disabled: app.running || normalDown || !(pickedFile || app.url.trim()), run: () => void app.start() },
     { id: "stop", label: "Dừng đang chạy", hint: "Việc", words: "huy cancel", disabled: !app.running, run: () => app.cancel() },
     { id: "export-srt", label: "Tải phụ đề SRT (.srt)", hint: "Tải", words: "srt xuat file vietsub phu de", disabled: noSubs || !online, run: () => void app.exportSub("srt") },
     { id: "export-vtt", label: "Tải phụ đề WebVTT (.vtt)", hint: "Tải", words: "vtt webvtt xuat phu de", disabled: noSubs || !online, run: () => void app.exportSub("vtt") },
@@ -932,7 +939,19 @@ export function Studio() {
 
 
       {hero && (
+        <div className="mx-auto grid w-full max-w-2xl gap-3 pt-4" data-service-head>
+          <ServiceSwitch current="normal" status={service.status} />
+          <MaintenanceNotice group="normal" entry={service.status.normal} running={app.running} />
+        </div>
+      )}
+      {!hero && normalDown && (
+        <div className="shrink-0 px-1 pt-1">
+          <MaintenanceNotice group="normal" entry={service.status.normal} running={app.running} />
+        </div>
+      )}
+      {hero && (
         <HomeHero
+          blocked={normalDown}
           file={pickedFile}
           thumb={thumb}
           url={app.url}
@@ -1248,7 +1267,8 @@ export function Studio() {
           <button
             type="button"
             data-tour="run"
-            disabled={!app.running && !online}
+            disabled={!app.running && (!online || normalDown)}
+            title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
             className={"min-tap rounded-xl font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
             onClick={() => (app.running ? app.cancel() : void app.start())}
           >
