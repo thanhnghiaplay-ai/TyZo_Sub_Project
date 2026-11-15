@@ -10,6 +10,8 @@ import {
   railBadge,
   SERVICE_NOTE_MAX,
   serviceBlock,
+  siteBlock,
+  siteOpenPath,
   untilLabel,
   untilToInput,
   type ServiceStatus,
@@ -50,9 +52,10 @@ describe("parseServiceStatus", () => {
 });
 
 describe("cleanServiceStatus", () => {
-  const ok = { live: { state: "active", note: "", until: null }, normal: { state: "active", note: "", until: null } };
+  const idle = { state: "active", note: "", until: null };
+  const ok = { live: idle, normal: idle, site: idle };
 
-  it("nhận hai nhóm Hoạt động", () => {
+  it("nhận cả web và hai nhóm Hoạt động", () => {
     assert.deepEqual(cleanServiceStatus(ok, NOW), defaultServiceStatus());
   });
 
@@ -67,8 +70,10 @@ describe("cleanServiceStatus", () => {
   it("từ chối đầu vào không phải đối tượng hoặc thiếu một nhóm", () => {
     assert.throws(() => cleanServiceStatus(null, NOW), /không đúng/);
     assert.throws(() => cleanServiceStatus("x", NOW), /không đúng/);
-    assert.throws(() => cleanServiceStatus({ live: ok.live }, NOW), /Thiếu trạng thái của Dịch bình thường/);
-    assert.throws(() => cleanServiceStatus({ normal: ok.normal }, NOW), /Thiếu trạng thái của Dịch trực tiếp/);
+    assert.throws(() => cleanServiceStatus({ site: ok.site, live: ok.live }, NOW), /Thiếu trạng thái của Dịch bình thường/);
+    assert.throws(() => cleanServiceStatus({ site: ok.site, normal: ok.normal }, NOW), /Thiếu trạng thái của Dịch trực tiếp/);
+    // Màn hình cũ (chưa có mục Toàn web) lưu thì bị từ chối, không lỡ tay mở lại cả web.
+    assert.throws(() => cleanServiceStatus({ live: ok.live, normal: ok.normal }, NOW), /Thiếu trạng thái của Toàn web/);
   });
 
   it("từ chối trạng thái lạ", () => {
@@ -183,5 +188,67 @@ describe("describeServiceChange", () => {
     const note = describeServiceChange(defaultServiceStatus(), after);
     assert.match(note, /Dịch trực tiếp/);
     assert.match(note, /Dịch bình thường/);
+  });
+});
+
+describe("bảo trì Toàn web", () => {
+  const down = { state: "maintenance" as const, note: "Nâng cấp máy chủ", until: null };
+
+  it("bản lưu cũ chưa có site thì cả web vẫn Hoạt động", () => {
+    const out = parseServiceStatus(JSON.stringify({ live: { state: "maintenance", note: "x", until: null }, normal: { state: "active" } }));
+    assert.equal(out.site.state, "active");
+    assert.equal(siteBlock(out, NOW), "");
+    assert.equal(out.live.state, "maintenance");
+  });
+
+  it("đọc và kiểm site như hai nhóm kia", () => {
+    const raw = { site: { state: "maintenance", note: "  Nâng  cấp ", until: NOW + HOUR }, live: { state: "active" }, normal: { state: "active" } };
+    const clean = cleanServiceStatus(raw, NOW);
+    assert.equal(clean.site.note, "Nâng cấp");
+    assert.equal(clean.site.until, NOW + HOUR);
+    assert.deepEqual(parseServiceStatus(JSON.stringify(clean)), clean);
+    assert.throws(() => cleanServiceStatus({ ...raw, site: { state: "maintenance", until: NOW - HOUR } }, NOW), /Toàn web phải ở tương lai/);
+    assert.throws(() => cleanServiceStatus({ ...raw, site: { state: "nghi" } }, NOW), /Toàn web không đúng/);
+  });
+
+  it("siteBlock có lời nhắn, giờ dự kiến, hoặc câu mặc định", () => {
+    assert.equal(siteBlock(status({ site: down }), NOW), "Nâng cấp máy chủ");
+    assert.equal(siteBlock(status({ site: { state: "maintenance", note: "", until: null } }), NOW), "Toàn web đang bảo trì.");
+    const until = Date.UTC(2026, 10, 15, 13, 30, 0);
+    assert.equal(siteBlock(status({ site: { ...down, until } }), NOW), "Nâng cấp máy chủ Dự kiến mở lại lúc 20:30 15/11/2026.");
+  });
+
+  it("cả web bảo trì thì chặn luôn cả hai nhóm dịch", () => {
+    const s = status({ site: down });
+    assert.equal(serviceBlock(s, "live", NOW), "Nâng cấp máy chủ");
+    assert.equal(serviceBlock(s, "normal", NOW), "Nâng cấp máy chủ");
+  });
+
+  it("cả web bảo trì thì câu của web thắng câu của nhóm", () => {
+    const s = status({ site: down, live: { state: "maintenance", note: "Riêng live", until: null } });
+    assert.equal(serviceBlock(s, "live", NOW), "Nâng cấp máy chủ");
+  });
+
+  it("cả web Hoạt động thì nhóm nào bảo trì chỉ chặn nhóm đó", () => {
+    const s = status({ live: { state: "maintenance", note: "Riêng live", until: null } });
+    assert.equal(serviceBlock(s, "live", NOW), "Riêng live");
+    assert.equal(serviceBlock(s, "normal", NOW), "");
+  });
+
+  it("Admin và Đăng nhập luôn mở, kể cả đường con và tham số", () => {
+    for (const path of ["/admin", "/admin/", "/admin/anything", "/admin?tab=cau-hinh", "/admin#top", "/login", "/login/", "/login?token=abc"]) {
+      assert.equal(siteOpenPath(path), true, path);
+    }
+  });
+
+  it("mọi trang khác của khách bị che, không mở nhầm tên gần giống", () => {
+    for (const path of ["/", "/dich-truc-tiep", "/goi", "/tai-khoan", "/tai-video", "/ctv", "/yeu-cau", "/huong-dan", "/dieu-khoan", "/administrator", "/admin-x", "/loginx", "/x/admin", ""]) {
+      assert.equal(siteOpenPath(path), false, path);
+    }
+  });
+
+  it("nhật ký ghi rõ Toàn web vào bảo trì và mở lại", () => {
+    assert.equal(describeServiceChange(defaultServiceStatus(), status({ site: down })), "Toàn web: ĐƯA VÀO BẢO TRÌ (Nâng cấp máy chủ)");
+    assert.equal(describeServiceChange(status({ site: down }), defaultServiceStatus()), "Toàn web: MỞ LẠI, hoạt động");
   });
 });

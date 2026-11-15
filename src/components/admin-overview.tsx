@@ -4,7 +4,7 @@ import { getOverview } from "@/lib/overview-room";
 import type { Overview, OverviewRange, TopUser } from "@/lib/overview-data";
 import type { AdminTab } from "@/lib/admin-tabs";
 import { useServiceStatus } from "@/components/use-service-status";
-import { SERVICE_GROUPS, SERVICE_LABEL, SERVICE_STATE_LABEL } from "@/lib/service-status";
+import { SERVICE_SCOPES, SERVICE_STATE_LABEL, scopeLabel } from "@/lib/service-status";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -58,18 +58,18 @@ function TopList({ rows, money, empty }: { rows: TopUser[]; money: boolean; empt
   );
 }
 
-/** Dải trạng thái hai nhóm dịch. Ai cũng xem được; chỉ Chủ có nút sang nơi đổi. */
+/** Dải trạng thái cả web và hai nhóm dịch. Ai cũng xem được; chỉ Chủ có nút sang nơi đổi. */
 function ServiceStrip({ owner, onGo }: { owner: boolean; onGo: (tab: AdminTab) => void }) {
   const { status, ready } = useServiceStatus();
   return (
-    <article className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Trạng thái các nhóm dịch">
+    <article className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Trạng thái web và các nhóm dịch">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
-        {SERVICE_GROUPS.map((group) => {
+        {SERVICE_SCOPES.map((group) => {
           const down = status[group].state === "maintenance";
           return (
             <p key={group} className="flex items-center gap-2">
               <span className={"door-dot " + (down ? "door-dot-closed" : "door-dot-open")} aria-hidden="true" />
-              <span className="font-semibold">{SERVICE_LABEL[group]}</span>
+              <span className="font-semibold">{scopeLabel(group)}</span>
               <span className={down ? "text-warning" : "text-muted"}>{ready ? SERVICE_STATE_LABEL[status[group].state] : "…"}</span>
             </p>
           );

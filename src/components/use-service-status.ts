@@ -9,9 +9,10 @@ const REFRESH_MS = 60_000;
  * Đọc khi mở trang, mỗi phút khi tab đang hiện, và ngay khi quay lại tab. Lỗi mạng thì giữ trạng thái đang có:
  * máy chủ vẫn là nơi chặn thật ở lúc mở lượt chạy, màn hình chỉ báo trước cho khách đỡ bấm hụt.
  */
-export function useServiceStatus(): { status: ServiceStatus; ready: boolean } {
-  const [status, setStatus] = useState<ServiceStatus>(defaultServiceStatus);
-  const [ready, setReady] = useState(false);
+export function useServiceStatus(initial?: ServiceStatus): { status: ServiceStatus; ready: boolean } {
+  // `initial` là bản máy chủ đã đọc lúc dựng trang: có sẵn thì vẽ đúng ngay, không nháy trang thường rồi mới ra trang bảo trì.
+  const [status, setStatus] = useState<ServiceStatus>(() => initial ?? defaultServiceStatus());
+  const [ready, setReady] = useState(Boolean(initial));
 
   useEffect(() => {
     let alive = true;

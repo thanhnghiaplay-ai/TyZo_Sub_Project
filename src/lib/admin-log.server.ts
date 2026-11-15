@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.45.0",
+    time: "17:57 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: bảo trì cả web nhưng vẫn vào được trang Admin. Thêm mục site vào cùng bản ghi room_settings «service_status» (JSON, không migration; bản lưu cũ thiếu site thì Hoạt động). service-status.ts: ServiceScope, siteBlock, siteOpenPath (chỉ /admin và /login cùng đường con và tham số, không mở nhầm /administrator), serviceBlock cho site thắng nhóm nên openLiveTicket, openRunTicket, spendTrial, runAliFiletrans tự chặn cả hai nhóm khi cả web bảo trì. cleanServiceStatus đòi đủ ba mục: màn hình cũ lưu thiếu site bị từ chối, không lỡ mở lại cả web. Giao diện: root loader đọc trạng thái (SSR ra thẳng trang bảo trì, không nháy), SiteGate + SiteMaintenancePage (site-maintenance.tsx), thẻ «Toàn web» ở bảng Admin với hộp xác nhận riêng, dải Tổng quan có Toàn web. Lượt dịch chạy ở trình duyệt khách nên trang đã mở lúc web còn mở KHÔNG bị gỡ giữa chừng: chỉ hiện dải báo, trang bảo trì thay vào khi tải lại hoặc sang trang khác. Mở lại thì gỡ ngay (hỏi lại mỗi phút). Chạy thật bằng Chrome: Admin bật và lưu, khách ở 390 px thấy trang bảo trì ở mọi trang, /login và /admin mở, ba cổng máy chủ chặn, mở lại bình thường. Không đổi giá, quyền, luật ví, điều khoản (không có câu nào về bảo trì). Chưa có: tự mở lại theo giờ hẹn, Chủ chạy thử dịch khi cả web bảo trì (hiện cũng bị chặn), chặn /api/relay-alibaba (như v3.44).",
+  },
+  {
     version: "3.44.1",
     time: "10:54 ngày 15/11/2026",
     area: "khac",

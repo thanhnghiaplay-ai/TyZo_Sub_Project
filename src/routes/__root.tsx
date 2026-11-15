@@ -7,19 +7,22 @@ import { OfflineBanner } from "@/components/offline-banner";
 import { IdleSignOut } from "@/components/idle-sign-out";
 import { ThemeProvider } from "@/components/ui/theme-context";
 import { getLiveTheme } from "@/lib/theme-room";
+import { getServiceStatus } from "@/lib/service-status-room";
+import { defaultServiceStatus } from "@/lib/service-status";
+import { SiteGate } from "@/components/site-maintenance";
 import { THEME_DEFAULT, densityScript, fontHref, modeScript, parseTheme, themeToCss } from "@/lib/theme/theme";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Dịch phụ đề";
 
 export const Route = createRootRoute({
-  // Giao diện admin đã công bố. Lỗi thì dùng mặc định, trang vẫn mở được.
+  // Giao diện admin đã công bố và trạng thái bảo trì. Mỗi cái lỗi thì dùng mặc định (Hoạt động), trang vẫn mở được.
   loader: async () => {
-    try {
-      return { theme: parseTheme(await getLiveTheme()) };
-    } catch {
-      return { theme: THEME_DEFAULT };
-    }
+    const [theme, service] = await Promise.all([
+      getLiveTheme().then(parseTheme).catch(() => THEME_DEFAULT),
+      getServiceStatus().catch(() => defaultServiceStatus()),
+    ]);
+    return { theme, service };
   },
   head: ({ loaderData }) => {
     const theme = loaderData?.theme ?? THEME_DEFAULT;
@@ -52,7 +55,7 @@ export const Route = createRootRoute({
 });
 
 function RootDocument() {
-  const { theme } = Route.useLoaderData();
+  const { theme, service } = Route.useLoaderData();
   return (
     <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} suppressHydrationWarning>
       <head>
@@ -64,7 +67,9 @@ function RootDocument() {
           <AuthProvider>
             <OfflineBanner />
             <IdleSignOut />
-            <Outlet />
+            <SiteGate initial={service}>
+              <Outlet />
+            </SiteGate>
             <UpdateBanner />
             <ToastHost />
           </AuthProvider>

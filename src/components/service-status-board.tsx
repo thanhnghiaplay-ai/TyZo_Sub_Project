@@ -4,26 +4,27 @@ import { getServiceStatus, saveServiceStatus } from "@/lib/service-status-room";
 import {
   defaultServiceStatus,
   inputToUntil,
-  SERVICE_GROUPS,
-  SERVICE_LABEL,
   SERVICE_NOTE_MAX,
+  SERVICE_SCOPES,
   SERVICE_STATE_LABEL,
+  scopeLabel,
   untilToInput,
-  type ServiceGroup,
+  type ServiceScope,
   type ServiceState,
   type ServiceStatus,
 } from "@/lib/service-status";
 
-type Draft = Record<ServiceGroup, { state: ServiceState; note: string; until: string }>;
+type Draft = Record<ServiceScope, { state: ServiceState; note: string; until: string }>;
 
-const WHAT: Record<ServiceGroup, string> = {
+const WHAT: Record<ServiceScope, string> = {
+  site: "Che mọi trang của khách bằng một trang bảo trì và chặn lượt mới của cả hai nhóm dịch. Admin và Đăng nhập vẫn vào được.",
   live: "Nghe và dịch ngay khi đang nói (micro hoặc âm thanh tab).",
   normal: "Chọn tệp video hoặc âm thanh rồi dịch, gồm dùng thử, key riêng và trả theo lượt.",
 };
 
 function toDraft(status: ServiceStatus): Draft {
-  const one = (group: ServiceGroup) => ({ state: status[group].state, note: status[group].note, until: untilToInput(status[group].until) });
-  return { live: one("live"), normal: one("normal") };
+  const one = (scope: ServiceScope) => ({ state: status[scope].state, note: status[scope].note, until: untilToInput(status[scope].until) });
+  return { site: one("site"), live: one("live"), normal: one("normal") };
 }
 
 /** Chủ đặt Hoạt động hoặc Bảo trì cho từng nhóm dịch. Bảo trì chặn lượt chạy mới; lượt đang chạy vẫn chạy nốt. */
@@ -43,29 +44,34 @@ export function ServiceStatusBoard() {
       .finally(() => setLoaded(true));
   }, []);
 
-  function patch(group: ServiceGroup, change: Partial<Draft[ServiceGroup]>) {
+  function patch(group: ServiceScope, change: Partial<Draft[ServiceScope]>) {
     setDraft((current) => ({ ...current, [group]: { ...current[group], ...change } }));
   }
 
-  const dirty = SERVICE_GROUPS.some((group) => {
+  const dirty = SERVICE_SCOPES.some((group) => {
     const a = draft[group];
     const b = toDraft(saved)[group];
     return a.state !== b.state || (a.state === "maintenance" && (a.note.trim() !== b.note || a.until !== b.until));
   });
 
   function save() {
-    const opening = SERVICE_GROUPS.filter((group) => draft[group].state === "maintenance" && saved[group].state !== "maintenance");
+    const opening = SERVICE_SCOPES.filter((group) => draft[group].state === "maintenance" && saved[group].state !== "maintenance");
     if (opening.length) {
-      const names = opening.map((group) => SERVICE_LABEL[group]).join(" và ");
-      if (!window.confirm(`Đưa ${names} vào bảo trì? Khách sẽ không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt.`)) return;
+      const names = opening.map((group) => scopeLabel(group)).join(" và ");
+      const whole = opening.includes("site");
+      const ask = whole
+        ? `Đưa ${names} vào bảo trì? Khách sẽ không vào được trang nào ngoài Đăng nhập và Admin, cũng không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt. Bạn vẫn vào Admin để mở lại.`
+        : `Đưa ${names} vào bảo trì? Khách sẽ không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt.`;
+      if (!window.confirm(ask)) return;
     }
-    const payload: Record<ServiceGroup, { state: ServiceState; note: string; until: number | null }> = {
+    const payload: Record<ServiceScope, { state: ServiceState; note: string; until: number | null }> = {
+      site: { state: draft.site.state, note: draft.site.note, until: draft.site.state === "maintenance" ? inputToUntil(draft.site.until) : null },
       live: { state: draft.live.state, note: draft.live.note, until: draft.live.state === "maintenance" ? inputToUntil(draft.live.until) : null },
       normal: { state: draft.normal.state, note: draft.normal.note, until: draft.normal.state === "maintenance" ? inputToUntil(draft.normal.until) : null },
     };
-    for (const group of SERVICE_GROUPS) {
+    for (const group of SERVICE_SCOPES) {
       if (payload[group].state === "maintenance" && draft[group].until && payload[group].until == null) {
-        return pushToast(`Giờ dự kiến mở lại của ${SERVICE_LABEL[group]} chưa đúng.`, "bad");
+        return pushToast(`Giờ dự kiến mở lại của ${scopeLabel(group)} chưa đúng.`, "bad");
       }
     }
     setBusy(true);
@@ -73,7 +79,7 @@ export function ServiceStatusBoard() {
       .then((next) => {
         setSaved(next);
         setDraft(toDraft(next));
-        pushToast("Đã lưu trạng thái các nhóm dịch.");
+        pushToast("Đã lưu trạng thái web và các nhóm dịch.");
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được trạng thái.", "bad"))
       .finally(() => setBusy(false));
@@ -82,25 +88,25 @@ export function ServiceStatusBoard() {
   return (
     <section className="admin-card admin-wide grid gap-3" data-service-board>
       <div>
-        <h3 className="text-sm font-semibold">Trạng thái các nhóm dịch</h3>
+        <h3 className="text-sm font-semibold">Trạng thái web và các nhóm dịch</h3>
         <p className="text-sm text-muted">
-          Bảo trì chặn lượt chạy mới của nhóm đó, khách thấy lời nhắn bên dưới. Lượt đang chạy vẫn chạy nốt, không bị cắt. Chỉ Chủ đặt.
+          Bảo trì chặn lượt chạy mới, khách thấy lời nhắn bên dưới. «Toàn web» che cả trang khách nhưng Admin và Đăng nhập vẫn mở. Lượt đang chạy vẫn chạy nốt, không bị cắt. Chỉ Chủ đặt.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        {SERVICE_GROUPS.map((group) => {
+        {SERVICE_SCOPES.map((group) => {
           const row = draft[group];
           const down = row.state === "maintenance";
           const live = saved[group].state === "maintenance";
           return (
-            <div key={group} className="grid content-start gap-2 rounded-xl border border-line bg-bg p-3">
+            <div key={group} className={"grid content-start gap-2 rounded-xl border border-line bg-bg p-3" + (group === "site" ? " sm:col-span-2" : "")} data-scope={group}>
               <p className="flex items-center gap-2 text-sm font-semibold">
                 <span className={"door-dot " + (live ? "door-dot-closed" : "door-dot-open")} aria-hidden="true" />
-                {SERVICE_LABEL[group]}
+                {scopeLabel(group)}
                 <span className="text-xs font-normal text-muted">đang {SERVICE_STATE_LABEL[saved[group].state].toLowerCase()}</span>
               </p>
               <p className="text-xs text-muted">{WHAT[group]}</p>
-              <div className="grid grid-cols-2 gap-2" role="group" aria-label={`Trạng thái ${SERVICE_LABEL[group]}`}>
+              <div className="grid grid-cols-2 gap-2" role="group" aria-label={`Trạng thái ${scopeLabel(group)}`}>
                 {(["active", "maintenance"] as const).map((state) => (
                   <button
                     key={state}
@@ -126,7 +132,7 @@ export function ServiceStatusBoard() {
                       maxLength={SERVICE_NOTE_MAX}
                       value={row.note}
                       disabled={busy}
-                      placeholder={`${SERVICE_LABEL[group]} đang bảo trì.`}
+                      placeholder={`${scopeLabel(group)} đang bảo trì.`}
                       onChange={(event) => patch(group, { note: event.target.value })}
                     />
                     <span className="text-right text-xs text-muted">
