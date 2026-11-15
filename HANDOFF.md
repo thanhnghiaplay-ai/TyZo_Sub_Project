@@ -1,5 +1,11 @@
 # HANDOFF — TyZo_Sub_Project
 
+## QUÉT THEME BƯỚC 1 (16/11/2026, nhánh work, vẫn v3.46.1)
+ĐÃ LÀM: chỉ tài liệu. Quét `src/`: 160 mã hex ngoài `theme.ts`, 32 lớp màu Tailwind bảng, 483 dòng `rounded-*` (58 file), 64 icon Lucide ở 16 file. `ICON_SLOTS` mới chỉ có ở bảng theme và `primitives.tsx`. Chi tiết ở `PROJECT_STATUS.md` mục «Còn mở».
+KIỂM: `npx tsc --noEmit` thoát 0. `npm test` 672 pass, 0 fail.
+CHƯA LÀM: chuyển màu / icon / bo góc sang token. Không đụng `main`.
+KHÔNG ĐỔI: giá, quyền, điều khoản, số phiên bản.
+
 ## ĐỒNG BỘ Ô THÔNG BÁO MẶC ĐỊNH VỚI WEB (15/11/2026, nhánh work, v3.45.1)
 QUY ƯỚC CỐ ĐỊNH (người dùng đặt «từ đây về sau»): không dùng alert, confirm, prompt mặc định của trình duyệt. Hỏi lại thì `askConfirm({ title, text, confirmLabel, danger })` (lib/confirm.ts; `ConfirmHost` ở components/confirm-dialog.tsx, gắn ở __root.tsx); báo tin thì `pushToast`. `lib/no-native-dialog.test.ts` quét src và fail nếu còn vi phạm.
 ĐÃ LÀM: thay 7 chỗ `confirm` (bảng trạng thái dịch vụ, ẩn mọi thuật ngữ, xóa từ, xóa khoản chi phí, đăng xuất, xóa phụ đề làm lại, gửi khoảng trống). Hộp có Esc, bấm ra ngoài, Tab quay vòng, trả tiêu điểm, hàng đợi; việc nguy hiểm: nút đỏ, tiêu điểm ở Hủy. `Button` nhận prop `ref`.

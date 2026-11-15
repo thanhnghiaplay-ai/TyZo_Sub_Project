@@ -4,10 +4,44 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-15 09:17 (UTC+7) — v3.43.3 trên nhánh work: khung tóm tắt cập nhật tự căn trong màn hình, không còn lệch. Trước đó v3.43.2 trên nhánh work: khung thông báo không còn lệch, chưa đăng nhập thì không vào phòng dịch. Trước đó v3.43.0 trên nhánh work: tên tệp trong Phiếu che ở máy chủ, Chủ xem đầy đủ có nhật ký, điều khoản `2026-11-15.1`. Trước đó v3.42.0 trên nhánh work: mũi tên quay lại ở các trang, điều khoản còn ba chỗ liên kết; tên tệp trong Phiếu chưa đổi (xem BANG_DIEU «Còn mở»). Trước đó v3.41.0 trên nhánh work: điều khoản gom về một chỗ (ô tích «Tôi đồng ý Điều khoản và Chính sách» ở Đăng ký/Đăng nhập, trang `/dieu-khoan`, liên kết ở menu trái, Tài khoản, Hướng dẫn; chữ điều khoản giữ nguyên, `TERMS_VERSION` giữ `2026-11-13.4`). Phần 3 trong ba phần, xong cả ba. Trước đó v3.40.0 trên nhánh work: trang Hướng dẫn (/huong-dan: mục lục, tìm kiếm, nút «Chỉ tôi», câu hỏi thường gặp, liên hệ hỗ trợ do Chủ nhập ở tab Cấu hình). Phần 1 trong ba phần; phần 2 (guided tour làm mờ nền) và phần 3 (gom điều khoản) làm tiếp. Trước đó v3.38.0 trên nhánh work: màn hình Dịch trực tiếp (bước 5 đến 8: chữ chạy, số dư và còn N phút, tải SRT/VTT/TXT, chọn ngôn ngữ, menu). Trước đó v3.37.0 trên nhánh work: chạy tốt theo từng loại thiết bị (device-caps, khóa sáng màn hình, toàn màn hình iPhone). Trước đó v3.36.0 trên nhánh work: trang chủ thoáng hơn, chữ lớn hơn, kéo thả có hiệu ứng. Trước đó v3.35.0 trên nhánh work: Thuật ngữ và Gói dịch vào nhóm Nâng cao của menu trái. Trước đó v3.34.0 trên nhánh work: thẻ tiền (số dư, còn khoảng bao nhiêu phút, ước tính trước khi chạy, nạp nhanh). Trước đó v3.33.0: thanh tiến trình liền, sửa câu tại dòng, menu tải SRT/VTT/TXT. Trước đó v3.32.0: trang chủ một ô thả lớn, dán link tự bắt đầu, Ctrl+K cho trang khách. Trước đó v3.31.2 trên nhánh work: menu ba gạch trái cho Admin và trang khách, Đăng xuất ở cuối menu; mọi tab Admin thẻ cùng khung, key Groq/Alibaba xếp đôi. Trước đó v3.31.1 trên nhánh work: tab Admin xếp lưới đều, tab Cấu hình mới. Trước đó v3.31.0 trên nhánh work: Admin giai đoạn 2 (thanh bên trái, Ctrl+K, mobile, Doanh thu có biểu đồ, ARPU, chuyển đổi, giá vốn mỗi phút, chi phí theo loại). Trước đó v3.30.0 trên nhánh work: Admin giai đoạn 1 (tab Tổng quan, lọc và tìm phiếu, Nhật ký thao tác tách riêng). Trước đó v3.29.4 trên nhánh work: sửa 6 lỗi báo lỗi và trạng thái (đăng nhập, nút đăng nhập, xuất file rỗng, link, mất mạng, model key chưa mở). Trước đó v3.29.3 trên nhánh work: P3-14, lỗi giải mã âm thanh nói rõ loại file và đưa lệnh ffmpeg. Trước đó v3.29.2 trên nhánh work: P3-13, hạn chót đọc hết phản hồi Groq (đầu 120 giây, thân 120 giây, phía máy chủ 100 giây). Trước đó v3.29.1 trên nhánh work: sửa mục 11 (nút sáng/tối luôn hiện, chế độ gọn không đè Tailwind). Trước đó v3.29.0 trên nhánh work: P3 (sáng/tối + mật độ do khách chọn, kiểm tra key và model trước khi dịch). Trước đó v3.28.0 P2 (kéo thả video + ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu). Trước đó v3.27.0 P1 (giá vốn phiếu cũ, ngưỡng chất lượng Chủ chỉnh, thuật ngữ nền tự bật). Điều khoản 2026-11-13.4. |
+| **Cập nhật lần cuối** | 2026-11-16 06:49 (UTC+7) — bước 1 quét theme: liệt kê màu, icon, bo góc còn cứng; chưa sửa code. Trước đó 2026-11-15 09:17 (UTC+7) — v3.43.3 trên nhánh work: khung tóm tắt cập nhật tự căn trong màn hình, không còn lệch. Trước đó v3.43.2 trên nhánh work: khung thông báo không còn lệch, chưa đăng nhập thì không vào phòng dịch. Trước đó v3.43.0 trên nhánh work: tên tệp trong Phiếu che ở máy chủ, Chủ xem đầy đủ có nhật ký, điều khoản `2026-11-15.1`. Trước đó v3.42.0 trên nhánh work: mũi tên quay lại ở các trang, điều khoản còn ba chỗ liên kết; tên tệp trong Phiếu chưa đổi (xem BANG_DIEU «Còn mở»). Trước đó v3.41.0 trên nhánh work: điều khoản gom về một chỗ (ô tích «Tôi đồng ý Điều khoản và Chính sách» ở Đăng ký/Đăng nhập, trang `/dieu-khoan`, liên kết ở menu trái, Tài khoản, Hướng dẫn; chữ điều khoản giữ nguyên, `TERMS_VERSION` giữ `2026-11-13.4`). Phần 3 trong ba phần, xong cả ba. Trước đó v3.40.0 trên nhánh work: trang Hướng dẫn (/huong-dan: mục lục, tìm kiếm, nút «Chỉ tôi», câu hỏi thường gặp, liên hệ hỗ trợ do Chủ nhập ở tab Cấu hình). Phần 1 trong ba phần; phần 2 (guided tour làm mờ nền) và phần 3 (gom điều khoản) làm tiếp. Trước đó v3.38.0 trên nhánh work: màn hình Dịch trực tiếp (bước 5 đến 8: chữ chạy, số dư và còn N phút, tải SRT/VTT/TXT, chọn ngôn ngữ, menu). Trước đó v3.37.0 trên nhánh work: chạy tốt theo từng loại thiết bị (device-caps, khóa sáng màn hình, toàn màn hình iPhone). Trước đó v3.36.0 trên nhánh work: trang chủ thoáng hơn, chữ lớn hơn, kéo thả có hiệu ứng. Trước đó v3.35.0 trên nhánh work: Thuật ngữ và Gói dịch vào nhóm Nâng cao của menu trái. Trước đó v3.34.0 trên nhánh work: thẻ tiền (số dư, còn khoảng bao nhiêu phút, ước tính trước khi chạy, nạp nhanh). Trước đó v3.33.0: thanh tiến trình liền, sửa câu tại dòng, menu tải SRT/VTT/TXT. Trước đó v3.32.0: trang chủ một ô thả lớn, dán link tự bắt đầu, Ctrl+K cho trang khách. Trước đó v3.31.2 trên nhánh work: menu ba gạch trái cho Admin và trang khách, Đăng xuất ở cuối menu; mọi tab Admin thẻ cùng khung, key Groq/Alibaba xếp đôi. Trước đó v3.31.1 trên nhánh work: tab Admin xếp lưới đều, tab Cấu hình mới. Trước đó v3.31.0 trên nhánh work: Admin giai đoạn 2 (thanh bên trái, Ctrl+K, mobile, Doanh thu có biểu đồ, ARPU, chuyển đổi, giá vốn mỗi phút, chi phí theo loại). Trước đó v3.30.0 trên nhánh work: Admin giai đoạn 1 (tab Tổng quan, lọc và tìm phiếu, Nhật ký thao tác tách riêng). Trước đó v3.29.4 trên nhánh work: sửa 6 lỗi báo lỗi và trạng thái (đăng nhập, nút đăng nhập, xuất file rỗng, link, mất mạng, model key chưa mở). Trước đó v3.29.3 trên nhánh work: P3-14, lỗi giải mã âm thanh nói rõ loại file và đưa lệnh ffmpeg. Trước đó v3.29.2 trên nhánh work: P3-13, hạn chót đọc hết phản hồi Groq (đầu 120 giây, thân 120 giây, phía máy chủ 100 giây). Trước đó v3.29.1 trên nhánh work: sửa mục 11 (nút sáng/tối luôn hiện, chế độ gọn không đè Tailwind). Trước đó v3.29.0 trên nhánh work: P3 (sáng/tối + mật độ do khách chọn, kiểm tra key và model trước khi dịch). Trước đó v3.28.0 P2 (kéo thả video + ảnh xem trước, tiến trình theo bước, hướng dẫn lần đầu). Trước đó v3.27.0 P1 (giá vốn phiếu cũ, ngưỡng chất lượng Chủ chỉnh, thuật ngữ nền tự bật). Điều khoản 2026-11-13.4. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
 | **Phiên bản code** | **v3.46.1** trên nhánh `work`. Điều khoản `2026-11-15.1`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ. Cửa trả theo lượt đã giữ và trừ ví. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
+
+---
+
+## Còn mở
+
+### Quét theme 2026-11-16 (bước 1, chưa sửa code)
+
+Nguồn đúng: `PALETTE_KEYS` / `DARK_DEFAULT` / `LIGHT_DEFAULT` trong `src/lib/theme/theme.ts`, biến trong `@theme` của `src/styles.css`, và `ICON_SLOTS`. 36 mã hex trong `theme.ts` là mặc định của token, không tính là lệch.
+
+Màu hex còn cứng ngoài nguồn đó: **160** chỗ.
+
+| File | Số | Ghi chú |
+|---|---|---|
+| `src/styles.css` | 64 | Ngoài `@theme`: toast, mực huy hiệu cấp, chấm cửa, logo plate, thống kê thuê/khóa, banner mất mạng, nút rail, và gần hết khối `.mt-*` (trang bảo trì) |
+| `src/components/site-maintenance.tsx` | 49 | Tô robot SVG, không đọc theme |
+| `src/components/studio.tsx` | 15 | Bảng màu phụ đề khách chọn (`#ffe14d`…) cộng `#fff` / `#000`. Không gộp vào màu chrome |
+| `src/components/quality-view.tsx` | 9 | Xanh / vàng / đỏ / chữ phụ |
+| `src/components/revenue-extra.tsx` | 6 | Xanh / đỏ biểu đồ |
+| `src/lib/maintenance-scene.ts` | 6 | Cam biển và đèn (`#ffb020`, `#ff6a00`…) |
+| `src/components/admin-desk.tsx` | 3 | `#e15b64` `#e0a100` `#2f9e6b` |
+| `src/lib/mail-letter.ts` | 3 | Thư HTML, không dùng biến CSS của trang |
+| `src/components/admin-overview.tsx` | 2 | `#e15b64` `#e0a100` |
+| `src/lib/auth/popup.server.ts` | 2 | HTML popup OAuth |
+| `src/components/quality-board.tsx` | 1 | `#2c4154` |
+
+Màu Tailwind bảng (`red-500`…), không qua token: **32** — `top-up.tsx` 21, `lib/error-component.tsx` 7, `lib/auth/gates.tsx` 4.
+
+Bo góc `rounded-*` không dùng `--radius-card` / `--radius-ctl`: **483** dòng, **58** file. Nhiều nhất: `studio.tsx` 68, `admin-desk.tsx` 41, `run-desk-board.tsx` 28, `mail-policy.tsx` 23, `top-up.tsx` 21. Đổ bóng `shadow-*`: 38.
+
+Icon: `ICON_SLOTS` chỉ được gọi ở `theme-board.tsx` và `ui/primitives.tsx` (6 `slot`, 2 `name`). Còn **16** file import `lucide-react`, **64** icon JSX gắn tên cứng (studio, home-hero, live-screen, player-drop, display-toggle, site-maintenance, …).
+
+Kiểm tra gốc cùng lúc, chưa sửa `src/`: `npx tsc --noEmit` thoát 0. `npm test` 672 pass, 0 fail. Dòng «Còn mở» ở `BANG_DIEU.md` còn nói 5 lỗi `tsc` ở `watch-run.ts` / `watch-save.ts` / `room-alibaba.ts` — lần chạy này không còn. Git: `main` và `work` cùng `943c11c` (v3.46.1). Bảng «Đang chạy» vẫn ghi khách đang dùng v2.20.0 và v3.13.0 chưa lên `main` — không khớp git; chưa kiểm bản đang deploy.
+
+Chưa làm: chuyển các chỗ trên sang token / `ICON_SLOTS`. Không nâng phiên bản (chỉ tài liệu).
 
 ---
 
@@ -261,6 +295,7 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
 
+- 2026-11-16 06:49 — Bước 1 quét theme trên work (chỉ tài liệu, không nâng phiên bản). Liệt kê 160 mã hex cứng, 32 màu Tailwind bảng, 483 dòng `rounded-*`, 64 icon Lucide. `tsc` sạch, `npm test` 672 pass. Chưa sửa `src/`.
 - 2026-11-16 05:58 — v3.46.1 trên work (theo yêu cầu người dùng: nút xem trước trang bảo trì ở Admin; không đổi điều khoản).
 - 2026-11-15 19:56 — v3.46.0 trên work (theo yêu cầu người dùng: trang bảo trì toàn web có robot công nhân cắm biển dưới logo; tiêu đề và lời nhắn sửa được ở Admin → Cấu hình → Toàn web; không đổi điều khoản).
 - 2026-11-15 18:13 — v3.45.1 trên work (theo yêu cầu người dùng: đồng bộ ô thông báo mặc định của trình duyệt với web, áp dụng từ nay về sau). `askConfirm` + `ConfirmHost`, thay 7 chỗ `confirm`, test chặn `no-native-dialog.test.ts`.

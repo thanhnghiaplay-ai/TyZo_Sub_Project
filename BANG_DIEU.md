@@ -77,6 +77,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 ## Còn mở
 
+- 2026-11-16: bước 1 quét theme đã ghi ở `PROJECT_STATUS.md` mục «Còn mở» (160 hex cứng, 32 màu Tailwind bảng, 483 dòng bo góc, 64 icon Lucide). Chưa sửa code. `npx tsc --noEmit` lúc 06:49 sạch. Git `main` và `work` cùng `943c11c` (v3.46.1); dòng «bản khách v2.20.0» và «v3.13.0 chưa lên main» không khớp git, chưa kiểm deploy.
 - Ba phần Hướng dẫn (user chốt 2026-11-15): đã đẩy đủ trên `work` (v3.39.0, v3.40.0, v3.41.0). Còn chờ người dùng: (a) chữ §2, §6, §7 của điều khoản vẫn nói «bấm đồng ý» và «màn mở phòng»; sửa cho khớp ô tích thì phải nâng `TERMS_VERSION` và mọi người bị hỏi lại; (b) `/huong-dan` vẫn bọc `EntryGate`, muốn đọc không cần đồng ý thì bỏ lớp bọc; (c) mở thật bằng trình duyệt các tuyến nap-tien, mat-khau, dich-truc-tiep, trang đăng nhập có ô tích và trang /dieu-khoan, ở điện thoại lẫn máy tính, kể cả Safari.
 
 - Gói Admin A–F, phần chưa làm (chờ người dùng chốt): D (Chất lượng): bảng `quality_runs` cố ý không lưu tài khoản, tên tệp hay chữ phụ đề, nên «bấm vào lần chạy kém xem câu lỗi» và «gửi yêu cầu kiểm tra lại» cần đổi cách lưu và sửa điều khoản (khách đồng ý lại). Thống kê theo model và cảnh báo chủ động đã có. F: chế độ Chỉ xem cho Hỗ trợ (cần nói rõ chặn thao tác nào, vì Hỗ trợ hiện trả lời yêu cầu của khách). Bảo trì «chặn toàn bộ phòng» đụng điều khoản. Cảnh báo key hết hạn và rate-limit chưa làm được vì app không ghi dữ liệu đó. Đã xong ở v3.31.0: Ctrl+K, thanh bên, mobile, và phần mới của C.
@@ -84,7 +85,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 - Mục 13.2 không được code: chủ web giữ key để tính tiền theo phút, và dán link tải video.
 - Mục 14 không được code cho đến khi người dùng yêu cầu đúng một việc. Không đổi model nhận dạng khi chưa có số đo.
 - Không bán key Groq. Không nhận link video.
-- Ngoài phạm vi mục 11, chưa sửa: `npx tsc --noEmit` còn 5 lỗi có sẵn ở `watch-run.ts`, `watch-save.ts` (thiếu `stale` trong `Seg`) và `room-alibaba.ts` (`contentType`). `src/routeTree.gen.ts` đã được sinh lại để khớp các route `tai-video`, `relay-alibaba`, `room-alibaba`.
+- Đã kiểm lại 2026-11-16 06:49: `npx tsc --noEmit` sạch. Dòng cũ nói 5 lỗi ở `watch-run.ts`, `watch-save.ts`, `room-alibaba.ts` không còn.
 
 ## Không làm
 
