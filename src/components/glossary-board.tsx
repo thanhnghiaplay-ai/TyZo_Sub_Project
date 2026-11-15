@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { askConfirm } from "@/lib/confirm";
 import {
   deleteGlossaryTerm,
   glossaryHealth,
@@ -101,8 +102,8 @@ export function GlossaryBoard() {
           type="button"
           className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
           disabled={busy}
-          onClick={() => {
-            if (!window.confirm("Ẩn mọi bộ thuật ngữ? Khách sẽ không dùng được từ có sẵn.")) return;
+          onClick={async () => {
+            if (!(await askConfirm({ title: "Ẩn mọi bộ thuật ngữ?", text: "Khách sẽ không dùng được từ có sẵn.", confirmLabel: "Ẩn tất cả", danger: true }))) return;
             void run(async () => {
               const result = await setGlossaryPacks({ data: { hidden: true } });
               setNote(`Đã ẩn ${result.changed} bộ.`);
@@ -231,8 +232,8 @@ export function GlossaryBoard() {
               type="button"
               className="min-tap text-xs"
               disabled={busy}
-              onClick={() => {
-                if (!window.confirm(`Xóa «${term.source}»?`)) return;
+              onClick={async () => {
+                if (!(await askConfirm({ title: "Xóa từ này?", text: `Xóa «${term.source}»?`, confirmLabel: "Xóa", danger: true }))) return;
                 void run(async () => {
                   await deleteGlossaryTerm({ data: term.id });
                   await load(lang, genre, q, offset);

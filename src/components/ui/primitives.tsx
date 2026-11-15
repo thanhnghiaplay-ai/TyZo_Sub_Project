@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode, Ref } from "react";
 import { Icon } from "./icon";
 import type { IconSlot } from "@/lib/theme/theme";
 
@@ -13,6 +13,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   icon?: IconSlot;
   iconName?: string;
   busy?: boolean;
+  ref?: Ref<HTMLButtonElement>;
 };
 
 const BUTTON_TONE = {

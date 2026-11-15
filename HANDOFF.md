@@ -1,5 +1,11 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỒNG BỘ Ô THÔNG BÁO MẶC ĐỊNH VỚI WEB (15/11/2026, nhánh work, v3.45.1)
+QUY ƯỚC CỐ ĐỊNH (người dùng đặt «từ đây về sau»): không dùng alert, confirm, prompt mặc định của trình duyệt. Hỏi lại thì `askConfirm({ title, text, confirmLabel, danger })` (lib/confirm.ts; `ConfirmHost` ở components/confirm-dialog.tsx, gắn ở __root.tsx); báo tin thì `pushToast`. `lib/no-native-dialog.test.ts` quét src và fail nếu còn vi phạm.
+ĐÃ LÀM: thay 7 chỗ `confirm` (bảng trạng thái dịch vụ, ẩn mọi thuật ngữ, xóa từ, xóa khoản chi phí, đăng xuất, xóa phụ đề làm lại, gửi khoảng trống). Hộp có Esc, bấm ra ngoài, Tab quay vòng, trả tiêu điểm, hàng đợi; việc nguy hiểm: nút đỏ, tiêu điểm ở Hủy. `Button` nhận prop `ref`.
+KIỂM: Chrome thật cho hộp bảo trì (Esc, Hủy, ra ngoài, Tab, nút chính), đăng xuất, ẩn thuật ngữ: 0 hộp mặc định bật lên. CHƯA bấm tới được bằng dữ liệu thật: xóa từ, xóa khoản chi phí, xóa phụ đề làm lại, gửi khoảng trống (cùng cách gọi, tsc sạch).
+KHÔNG ĐỔI: giá, quyền, luật ví, điều khoản.
+
 ## BẢO TRÌ CẢ WEB, ADMIN VẪN VÀO ĐƯỢC (15/11/2026, nhánh work, v3.45.0)
 ĐÃ LÀM: mục thứ ba `site` («Toàn web») trong cùng dòng `room_settings.service_status`, đặt ở Admin → Cấu hình (thẻ trên cùng, có hộp xác nhận riêng) và hiện ở dải Tổng quan. Bật thì khách thấy trang bảo trì (lời nhắn, giờ dự kiến theo giờ Việt Nam) ở mọi trang trừ `/admin` và `/login` (luật ở `siteOpenPath`, có test). Máy chủ chặn lượt MỚI của cả hai nhóm (`serviceBlock` cho site thắng nhóm).
 CÁCH HOẠT ĐỘNG: root loader đọc trạng thái, nên HTML dựng sẵn đã là trang bảo trì (không nháy). `SiteGate` (site-maintenance.tsx) hỏi lại mỗi phút. Lượt dịch chạy ở trình duyệt khách, nên trang đã vào lúc web còn mở KHÔNG bị gỡ giữa chừng (sẽ cắt lượt đang chạy): chỉ hiện dải báo, trang bảo trì thay vào khi khách tải lại hoặc sang trang khác. Mở lại thì gỡ ngay.

@@ -2,6 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ToastHost } from "@/components/toast";
+import { ConfirmHost } from "@/components/confirm-dialog";
 import { UpdateBanner } from "@/components/update-banner";
 import { OfflineBanner } from "@/components/offline-banner";
 import { IdleSignOut } from "@/components/idle-sign-out";
@@ -72,6 +73,7 @@ function RootDocument() {
             </SiteGate>
             <UpdateBanner />
             <ToastHost />
+            <ConfirmHost />
           </AuthProvider>
         </ThemeProvider>
         <Scripts />

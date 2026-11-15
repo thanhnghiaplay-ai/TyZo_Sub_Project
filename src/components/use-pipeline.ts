@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { askConfirm } from "@/lib/confirm";
 import { claimTrialDevice, spendTrial } from "@/lib/room-account";
 import { getServiceStatus } from "@/lib/service-status-room";
 import { defaultServiceStatus, serviceBlock } from "@/lib/service-status";
@@ -668,13 +669,20 @@ export function usePipeline() {
       say("Chưa có gì để xóa.");
       return;
     }
-    if (!confirm("Xóa phụ đề hiện tại và nhận dạng lại từ đầu? Việc này sẽ tính phí Groq thêm một lần.")) return;
-    j.runId++;
-    j.abort?.abort();
-    j.abort = null;
-    setRunning(false);
-    clearJob();
-    say("Đã xóa. Bấm Tải và dịch để chạy lại.");
+    void askConfirm({
+      title: "Xóa phụ đề và làm lại?",
+      text: "Xóa phụ đề hiện tại và nhận dạng lại từ đầu? Việc này sẽ tính phí Groq thêm một lần.",
+      confirmLabel: "Xóa và làm lại",
+      danger: true,
+    }).then((ok) => {
+      if (!ok) return;
+      j.runId++;
+      j.abort?.abort();
+      j.abort = null;
+      setRunning(false);
+      clearJob();
+      say("Đã xóa. Bấm Tải và dịch để chạy lại.");
+    });
   }, [clearJob, say]);
 
   const guardRoom = useCallback(async (paidOnly: string | null, allowSpentTrial = false) => {
@@ -2125,7 +2133,7 @@ export function usePipeline() {
     if (!plan?.selected.length) return say("Chưa có khoảng trống để gửi. Hãy dò trước.", true);
     const token = activeKey();
     if (!token) return say("Nhập API key trước khi gửi.", true);
-    if (!confirm(formatGapConfirm(plan))) return;
+    if (!(await askConfirm({ title: "Gửi các khoảng trống?", text: formatGapConfirm(plan), confirmLabel: "Gửi" }))) return;
     let ticketId: string | null = null;
     let gapFailed = false;
     let releasePlayback = () => {};

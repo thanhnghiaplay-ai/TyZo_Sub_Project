@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-room";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
+import { askConfirm } from "@/lib/confirm";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
 import { COST_CATEGORIES, categoryLabel } from "@/lib/money-extra";
@@ -282,8 +283,8 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
                   <button
                     type="button"
                     className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-2"
-                    onClick={() => {
-                      if (!window.confirm(`Xóa khoản «${row.label}»?`)) return;
+                    onClick={async () => {
+                      if (!(await askConfirm({ title: "Xóa khoản này?", text: `Xóa khoản «${row.label}»?`, confirmLabel: "Xóa", danger: true }))) return;
                       void deleteCost({ data: row.id })
                         .then(() => {
                           if (editing === row.id) setEditing(null);

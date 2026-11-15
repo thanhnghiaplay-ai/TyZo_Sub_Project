@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { pushToast } from "@/components/toast";
+import { askConfirm } from "@/lib/confirm";
 import { getServiceStatus, saveServiceStatus } from "@/lib/service-status-room";
 import {
   defaultServiceStatus,
@@ -54,15 +55,15 @@ export function ServiceStatusBoard() {
     return a.state !== b.state || (a.state === "maintenance" && (a.note.trim() !== b.note || a.until !== b.until));
   });
 
-  function save() {
+  async function save() {
     const opening = SERVICE_SCOPES.filter((group) => draft[group].state === "maintenance" && saved[group].state !== "maintenance");
     if (opening.length) {
       const names = opening.map((group) => scopeLabel(group)).join(" và ");
       const whole = opening.includes("site");
       const ask = whole
-        ? `Đưa ${names} vào bảo trì? Khách sẽ không vào được trang nào ngoài Đăng nhập và Admin, cũng không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt. Bạn vẫn vào Admin để mở lại.`
-        : `Đưa ${names} vào bảo trì? Khách sẽ không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt.`;
-      if (!window.confirm(ask)) return;
+        ? "Khách sẽ không vào được trang nào ngoài Đăng nhập và Admin, cũng không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt. Bạn vẫn vào Admin để mở lại."
+        : "Khách sẽ không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt.";
+      if (!(await askConfirm({ title: `Đưa ${names} vào bảo trì?`, text: ask, confirmLabel: "Đưa vào bảo trì", danger: true }))) return;
     }
     const payload: Record<ServiceScope, { state: ServiceState; note: string; until: number | null }> = {
       site: { state: draft.site.state, note: draft.site.note, until: draft.site.state === "maintenance" ? inputToUntil(draft.site.until) : null },

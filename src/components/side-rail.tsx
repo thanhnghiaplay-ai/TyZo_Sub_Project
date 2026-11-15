@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { askConfirm } from "@/lib/confirm";
 import { createContext, useContext, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactNode, type RefObject } from "react";
 import { signOut } from "@/lib/auth/client";
 
@@ -202,8 +203,8 @@ export function SideRail({ items, label, top, who }: { items: RailItem[]; label:
             type="button"
             className="rail-out"
             disabled={leaving}
-            onClick={() => {
-              if (!window.confirm("Đăng xuất khỏi tài khoản này?")) return;
+            onClick={async () => {
+              if (!(await askConfirm({ title: "Đăng xuất?", text: "Đăng xuất khỏi tài khoản này? Bạn sẽ cần đăng nhập lại để dùng tiếp.", confirmLabel: "Đăng xuất" }))) return;
               setLeaving(true);
               setFailed(false);
               void signOut("/login").catch(() => {

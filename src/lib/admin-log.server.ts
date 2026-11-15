@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.45.1",
+    time: "18:13 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: đồng bộ các ô thông báo mặc định của trình duyệt với web, từ nay về sau. Thêm lib/confirm.ts: askConfirm({title,text,confirmLabel,cancelLabel,danger}) trả Promise<boolean>, và components/confirm-dialog.tsx: ConfirmHost gắn ở gốc (cạnh ToastHost); hỗ trợ Esc, bấm ra ngoài, Tab quay vòng, trả tiêu điểm, hàng đợi, việc nguy hiểm thì nút đỏ và tiêu điểm đặt ở Hủy; host chưa sẵn sàng thì trả false (chọn phía an toàn). Thay 7 chỗ window.confirm hoặc confirm: bảng trạng thái dịch vụ (Admin), ẩn mọi bộ thuật ngữ, xóa từ, xóa khoản chi phí, đăng xuất ở menu trái, xóa phụ đề làm lại, gửi khoảng trống (use-pipeline). Button nhận prop ref. Chốt chặn: lib/no-native-dialog.test.ts quét src và fail nếu còn alert, confirm, prompt mặc định (đã thử cố ý vi phạm, test bắt đúng). Thông báo thường dùng pushToast. Chạy thật bằng Chrome: hộp hiện đúng giao diện, Esc, Hủy, bấm ra ngoài đều không làm gì, nút chính mới chạy, 0 hộp mặc định bật lên. Chưa kiểm bằng trình duyệt: hộp xóa từ, xóa khoản chi phí, xóa phụ đề làm lại, gửi khoảng trống (cùng một cách gọi, tsc sạch, cần dữ liệu thật mới bấm tới). Không đổi giá, quyền, luật ví, điều khoản.",
+  },
+  {
     version: "3.45.0",
     time: "17:57 ngày 15/11/2026",
     area: "khac",
