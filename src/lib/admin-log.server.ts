@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.1",
+    time: "05:58 ngày 16/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: nút «Xem trước trang bảo trì» ở Admin → Cấu hình → Toàn web. SiteMaintenancePage nhận onClose (có thì phủ z-60, nút Đóng và Esc thay lối vào quản trị) và dùng đúng chữ đang nhập chưa lưu. Không đổi dữ liệu hay điều khoản."
+  },
+  {
     version: "3.46.0",
     time: "19:56 ngày 15/11/2026",
     area: "khac",

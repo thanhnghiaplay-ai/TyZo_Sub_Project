@@ -2569,6 +2569,10 @@ html[data-density] .studio-workspace {
   box-shadow: 0 0 22px #ff8a00, inset 0 0 22px #ff8a00;
 }
 
+.mt-root.mt-preview { z-index: 60; }
+
+.mt-admin { cursor: pointer; }
+
 /* cảnh hỏng giữa chừng: hiện nguyên trạng cuối */
 [data-phase="static"] .mt-logo,
 [data-phase="static"] .mt-eta,

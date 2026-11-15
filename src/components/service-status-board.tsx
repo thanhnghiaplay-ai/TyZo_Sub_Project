@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SiteMaintenancePage } from "@/components/site-maintenance";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
 import { getServiceStatus, saveServiceStatus } from "@/lib/service-status-room";
@@ -37,6 +38,7 @@ export function ServiceStatusBoard() {
   const [draft, setDraft] = useState<Draft>(() => toDraft(defaultServiceStatus()));
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     void getServiceStatus()
@@ -173,6 +175,15 @@ export function ServiceStatusBoard() {
                   </label>
                 </>
               )}
+              {group === "site" && (
+                <button
+                  type="button"
+                  className="min-tap w-fit rounded-xl border border-line bg-card px-4 text-sm font-semibold hover:border-accent"
+                  onClick={() => setPreview(true)}
+                >
+                  Xem trước trang bảo trì
+                </button>
+              )}
             </div>
           );
         })}
@@ -180,6 +191,12 @@ export function ServiceStatusBoard() {
       <button type="button" className="min-tap w-fit rounded-xl bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-50" disabled={!loaded || busy || !dirty} onClick={save}>
         {busy ? "Đang lưu…" : "Lưu trạng thái"}
       </button>
+      {preview && (
+        <SiteMaintenancePage
+          entry={{ state: "maintenance", title: draft.site.title.trim(), note: draft.site.note.trim(), until: inputToUntil(draft.site.until) }}
+          onClose={() => setPreview(false)}
+        />
+      )}
     </section>
   );
 }

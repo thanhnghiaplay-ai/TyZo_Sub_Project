@@ -146,9 +146,10 @@ function TitleLetters({ text }: { text: string }) {
 
 /**
  * Trang khách thấy khi Chủ đặt «Toàn web» vào bảo trì. Lối vào quản trị luôn có để Chủ và nhân viên không bị khóa ngoài.
+ * Có `onClose` thì là bản xem trước trong Admin: phủ lên trang, có nút Đóng và phím Esc thay cho lối vào quản trị.
  * Logo là `BrandMark` của web, tên cạnh logo lấy từ Admin → Giao diện. Tiêu đề và lời nhắn lấy từ Admin → Cấu hình → Toàn web.
  */
-export function SiteMaintenancePage({ entry }: { entry: ServiceEntry }) {
+export function SiteMaintenancePage({ entry, onClose }: { entry: ServiceEntry; onClose?: () => void }) {
   const theme = useTheme();
   const brand = theme.brandName || BRAND_DEFAULT;
   const { title, note } = siteMaintenanceText(entry);
@@ -176,8 +177,17 @@ export function SiteMaintenancePage({ entry }: { entry: ServiceEntry }) {
     sceneRef.current?.setMessage(note);
   }, [note]);
 
+  useEffect(() => {
+    if (!onClose) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    addEventListener("keydown", onKey);
+    return () => removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
-    <main ref={rootRef} className="mt-root" data-site-maintenance data-phase="init">
+    <main ref={rootRef} className={onClose ? "mt-root mt-preview" : "mt-root"} data-site-maintenance data-phase="init">
       <div className="mt-scene" data-mt="stage">
         <div className="mt-hz mt-hz-t" aria-hidden="true"><i /></div>
         <div className="mt-hz mt-hz-b" aria-hidden="true"><i /></div>
@@ -212,9 +222,15 @@ export function SiteMaintenancePage({ entry }: { entry: ServiceEntry }) {
           <p className="mt-keep" data-mt="keep">Số dư và lịch sử của bạn được giữ nguyên.</p>
         </section>
 
-        <Link to="/admin" className="mt-admin">
-          Dành cho quản trị viên
-        </Link>
+        {onClose ? (
+          <button type="button" className="mt-admin" onClick={onClose} autoFocus>
+            Đóng xem trước (Esc)
+          </button>
+        ) : (
+          <Link to="/admin" className="mt-admin">
+            Dành cho quản trị viên
+          </Link>
+        )}
         <canvas className="mt-fx" data-mt="fx" aria-hidden="true" />
         <div className="mt-flash" data-mt="flash" aria-hidden="true" />
       </div>
