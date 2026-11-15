@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.0",
+    time: "19:56 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng: trang bảo trì toàn web có robot vác biển. ServiceEntry thêm title (tối đa 60 ký tự, trống thì dùng SITE_TITLE_DEFAULT; bản lưu cũ thiếu title vẫn đọc được, không migration); siteMaintenanceText lấy chữ hiển thị. Admin → Cấu hình → Toàn web có thêm ô tiêu đề. Cảnh dựng ở lib/maintenance-scene.ts (Web Animations + canvas hạt, dispose được, tôn trọng giảm chuyển động), giao diện ở components/site-maintenance.tsx, CSS tiền tố mt- cuối styles.css. Logo dùng BrandMark và theme.brandName. Không đổi giá, quyền, dữ liệu nên không sửa điều khoản."
+  },
+  {
     version: "3.45.1",
     time: "18:13 ngày 15/11/2026",
     area: "khac",

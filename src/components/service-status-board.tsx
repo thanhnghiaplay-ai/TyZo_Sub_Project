@@ -8,6 +8,9 @@ import {
   SERVICE_NOTE_MAX,
   SERVICE_SCOPES,
   SERVICE_STATE_LABEL,
+  SERVICE_TITLE_MAX,
+  SITE_NOTE_DEFAULT,
+  SITE_TITLE_DEFAULT,
   scopeLabel,
   untilToInput,
   type ServiceScope,
@@ -15,7 +18,7 @@ import {
   type ServiceStatus,
 } from "@/lib/service-status";
 
-type Draft = Record<ServiceScope, { state: ServiceState; note: string; until: string }>;
+type Draft = Record<ServiceScope, { state: ServiceState; title: string; note: string; until: string }>;
 
 const WHAT: Record<ServiceScope, string> = {
   site: "Che mọi trang của khách bằng một trang bảo trì và chặn lượt mới của cả hai nhóm dịch. Admin và Đăng nhập vẫn vào được.",
@@ -24,7 +27,7 @@ const WHAT: Record<ServiceScope, string> = {
 };
 
 function toDraft(status: ServiceStatus): Draft {
-  const one = (scope: ServiceScope) => ({ state: status[scope].state, note: status[scope].note, until: untilToInput(status[scope].until) });
+  const one = (scope: ServiceScope) => ({ state: status[scope].state, title: status[scope].title, note: status[scope].note, until: untilToInput(status[scope].until) });
   return { site: one("site"), live: one("live"), normal: one("normal") };
 }
 
@@ -52,7 +55,7 @@ export function ServiceStatusBoard() {
   const dirty = SERVICE_SCOPES.some((group) => {
     const a = draft[group];
     const b = toDraft(saved)[group];
-    return a.state !== b.state || (a.state === "maintenance" && (a.note.trim() !== b.note || a.until !== b.until));
+    return a.state !== b.state || (a.state === "maintenance" && (a.title.trim() !== b.title || a.note.trim() !== b.note || a.until !== b.until));
   });
 
   async function save() {
@@ -65,10 +68,10 @@ export function ServiceStatusBoard() {
         : "Khách sẽ không bắt đầu được lượt mới. Lượt đang chạy vẫn chạy nốt.";
       if (!(await askConfirm({ title: `Đưa ${names} vào bảo trì?`, text: ask, confirmLabel: "Đưa vào bảo trì", danger: true }))) return;
     }
-    const payload: Record<ServiceScope, { state: ServiceState; note: string; until: number | null }> = {
-      site: { state: draft.site.state, note: draft.site.note, until: draft.site.state === "maintenance" ? inputToUntil(draft.site.until) : null },
-      live: { state: draft.live.state, note: draft.live.note, until: draft.live.state === "maintenance" ? inputToUntil(draft.live.until) : null },
-      normal: { state: draft.normal.state, note: draft.normal.note, until: draft.normal.state === "maintenance" ? inputToUntil(draft.normal.until) : null },
+    const payload: Record<ServiceScope, { state: ServiceState; title: string; note: string; until: number | null }> = {
+      site: { state: draft.site.state, title: draft.site.title, note: draft.site.note, until: draft.site.state === "maintenance" ? inputToUntil(draft.site.until) : null },
+      live: { state: draft.live.state, title: draft.live.title, note: draft.live.note, until: draft.live.state === "maintenance" ? inputToUntil(draft.live.until) : null },
+      normal: { state: draft.normal.state, title: draft.normal.title, note: draft.normal.note, until: draft.normal.state === "maintenance" ? inputToUntil(draft.normal.until) : null },
     };
     for (const group of SERVICE_SCOPES) {
       if (payload[group].state === "maintenance" && draft[group].until && payload[group].until == null) {
@@ -126,6 +129,23 @@ export function ServiceStatusBoard() {
               </div>
               {down && (
                 <>
+                  {group === "site" && (
+                    <label className="grid gap-1 text-sm">
+                      <span className="text-xs font-semibold text-muted">Tiêu đề lớn trên trang bảo trì (để trống dùng câu mặc định)</span>
+                      <input
+                        type="text"
+                        className="min-tap rounded-xl border border-line bg-card px-3 text-sm"
+                        maxLength={SERVICE_TITLE_MAX}
+                        value={row.title}
+                        disabled={busy}
+                        placeholder={SITE_TITLE_DEFAULT}
+                        onChange={(event) => patch(group, { title: event.target.value })}
+                      />
+                      <span className="text-right text-xs text-muted">
+                        {row.title.length}/{SERVICE_TITLE_MAX}
+                      </span>
+                    </label>
+                  )}
                   <label className="grid gap-1 text-sm">
                     <span className="text-xs font-semibold text-muted">Lời nhắn cho khách (để trống dùng câu mặc định)</span>
                     <textarea
@@ -133,7 +153,7 @@ export function ServiceStatusBoard() {
                       maxLength={SERVICE_NOTE_MAX}
                       value={row.note}
                       disabled={busy}
-                      placeholder={`${scopeLabel(group)} đang bảo trì.`}
+                      placeholder={group === "site" ? SITE_NOTE_DEFAULT : `${scopeLabel(group)} đang bảo trì.`}
                       onChange={(event) => patch(group, { note: event.target.value })}
                     />
                     <span className="text-right text-xs text-muted">

@@ -1,26 +1,223 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Wrench } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { BrandMark } from "@/components/brand-mark";
+import { useTheme } from "@/components/ui/theme-context";
 import { useServiceStatus } from "@/components/use-service-status";
-import { siteOpenPath, untilLabel, type ServiceEntry, type ServiceStatus } from "@/lib/service-status";
+import { startMaintenanceScene, type SceneHandle } from "@/lib/maintenance-scene";
+import { siteMaintenanceText, siteOpenPath, untilLabel, type ServiceEntry, type ServiceStatus } from "@/lib/service-status";
 
 const WARN_DEFAULT = "Web sắp bảo trì.";
+const BRAND_DEFAULT = "TyZo Sub";
 
-/** Trang khách thấy khi Chủ đặt «Toàn web» vào bảo trì. Lối vào quản trị luôn có để Chủ và nhân viên không bị khóa ngoài. */
-export function SiteMaintenancePage({ entry }: { entry: ServiceEntry }) {
-  const eta = entry.until && entry.until > Date.now() ? untilLabel(entry.until) : "";
+/** Robot công nhân vác biển «BẢO TRÌ». Toạ độ khớp với `maintenance-scene.ts` (khung 260 × 440, mặt đất y = 440). */
+function WorkerRobot() {
   return (
-    <main className="grid h-dvh place-items-center overflow-y-auto p-4" data-site-maintenance>
-      <section role="status" className="grid w-full max-w-md gap-3 rounded-2xl border border-warning bg-card p-5 text-center">
-        <Wrench className="mx-auto size-8 text-warning" aria-hidden="true" />
-        <h1 className="text-lg font-semibold">Web đang bảo trì</h1>
-        <p className="text-sm">{entry.note || "Tạm thời chưa dùng được. Bạn vui lòng quay lại sau."}</p>
-        {eta && <p className="text-xs text-muted">Dự kiến mở lại lúc {eta}.</p>}
-        <p className="text-xs text-muted">Số dư và lịch sử của bạn được giữ nguyên.</p>
-        <Link to="/admin" className="min-tap mx-auto inline-flex items-center rounded-full border border-line px-4 text-sm text-muted hover:border-accent">
+    <div className="mt-robot" data-mt="robot" aria-hidden="true">
+      <svg viewBox="0 0 260 440" focusable="false">
+        <defs>
+          <linearGradient id="mt-steel" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#b4bdc9" />
+            <stop offset=".55" stopColor="#7a8696" />
+            <stop offset="1" stopColor="#4e5766" />
+          </linearGradient>
+          <linearGradient id="mt-steel-v" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#c4ccd6" />
+            <stop offset="1" stopColor="#707c8c" />
+          </linearGradient>
+          <linearGradient id="mt-vest" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#ffa22b" />
+            <stop offset="1" stopColor="#f26a00" />
+          </linearGradient>
+          <linearGradient id="mt-hat" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#ffe873" />
+            <stop offset="1" stopColor="#f2b300" />
+          </linearGradient>
+          <linearGradient id="mt-red" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#ff4655" />
+            <stop offset="1" stopColor="#c5121f" />
+          </linearGradient>
+          <clipPath id="mt-clip">
+            <rect x="-200" y="-300" width="800" height="744" />
+          </clipPath>
+        </defs>
+
+        <ellipse cx="130" cy="441" rx="58" ry="7" fill="#000" opacity=".5" />
+
+        <g data-mt="bob" className="mt-bob">
+          {/* chân */}
+          <g data-mt="legL" className="mt-legL">
+            <rect x="102" y="392" width="20" height="36" rx="8" fill="url(#mt-steel-v)" />
+            <rect x="93" y="422" width="36" height="17" rx="7" fill="#1b2330" />
+            <rect x="93" y="428" width="36" height="3" fill="#ff8a00" />
+          </g>
+          <g data-mt="legR" className="mt-legR">
+            <rect x="138" y="392" width="20" height="36" rx="8" fill="url(#mt-steel-v)" />
+            <rect x="131" y="422" width="36" height="17" rx="7" fill="#1b2330" />
+            <rect x="131" y="428" width="36" height="3" fill="#ff8a00" />
+          </g>
+          {/* tay trái */}
+          <g data-mt="armL" className="mt-armL">
+            <line x1="90" y1="318" x2="70" y2="372" stroke="#6b7686" strokeWidth="16" strokeLinecap="round" />
+            <line x1="86" y1="320" x2="67" y2="370" stroke="#aab3c0" strokeWidth="4" strokeLinecap="round" opacity=".6" />
+            <circle cx="68" cy="378" r="11" fill="#1b2330" />
+            <rect x="60" y="371" width="16" height="3" rx="1.5" fill="#ff8a00" />
+          </g>
+          {/* thân */}
+          <rect x="120" y="294" width="20" height="14" fill="#4e5766" />
+          <rect x="88" y="304" width="84" height="96" rx="18" fill="url(#mt-steel)" />
+          <path d="M88 324H172V380Q172 400 152 400H108Q88 400 88 380Z" fill="url(#mt-vest)" />
+          <rect x="88" y="352" width="84" height="9" fill="#fff3b0" />
+          <rect x="88" y="368" width="84" height="7" fill="#fff3b0" opacity=".85" />
+          <circle cx="130" cy="337" r="11" fill="#22d3ee" opacity=".22" />
+          <circle cx="130" cy="337" r="6" fill="#22d3ee" />
+          <circle cx="88" cy="318" r="14" fill="#4e5766" />
+          <circle cx="172" cy="318" r="14" fill="#4e5766" />
+          <circle cx="88" cy="318" r="4" fill="#aab3c0" />
+          <circle cx="172" cy="318" r="4" fill="#aab3c0" />
+          {/* đầu */}
+          <rect x="98" y="240" width="64" height="58" rx="18" fill="url(#mt-steel-v)" />
+          <circle cx="96" cy="270" r="6" fill="#4e5766" />
+          <circle cx="164" cy="270" r="6" fill="#4e5766" />
+          <rect x="106" y="264" width="48" height="22" rx="11" fill="#0b1220" />
+          <ellipse className="mt-eye" cx="121" cy="275" rx="5" ry="5.5" fill="#22d3ee" />
+          <ellipse className="mt-eye" cx="139" cy="275" rx="5" ry="5.5" fill="#22d3ee" />
+          {/* mũ bảo hộ */}
+          <path d="M90 252Q130 196 170 252Z" fill="url(#mt-hat)" />
+          <rect x="84" y="248" width="92" height="9" rx="4.5" fill="#e0a400" />
+          <rect x="124" y="222" width="12" height="22" rx="4" fill="#e0a400" opacity=".75" />
+          <rect x="121" y="238" width="18" height="6" rx="3" fill="#fffbd0" />
+          <rect x="129" y="207" width="2.4" height="17" fill="#6b7686" />
+          <circle className="mt-beacon" cx="130" cy="205" r="4.5" fill="#ff3040" />
+        </g>
+
+        {/* tay phải + biển: đi cùng nhịp nhún với thân lúc bước, đứng yên sau khi cắm */}
+        <g data-mt="carry" className="mt-carry" clipPath="url(#mt-clip)">
+          <g data-mt="sign" transform="translate(50 0)">
+            <rect x="73" y="110" width="14" height="105" rx="3" fill="url(#mt-steel)" />
+            <rect x="77" y="110" width="4" height="105" fill="#e1e6ec" opacity=".6" />
+            <g transform="translate(80 128) scale(1.3) translate(-80 -128)">
+              <path d="M80 8 152 128H8Z" fill="url(#mt-red)" stroke="#ff8a00" strokeWidth="12" strokeLinejoin="round" />
+              <path d="M80 24 138 120H22Z" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="1.5" strokeLinejoin="round" />
+              <g transform="translate(80 64)" fill="none" stroke="#fff">
+                <g className="mt-gear">
+                  <circle r="12" strokeWidth="5.5" strokeDasharray="5.6 4.4" />
+                  <circle r="7.5" strokeWidth="3" />
+                </g>
+              </g>
+              <text x="80" y="108" textAnchor="middle" fontSize="17" fontWeight="900" fill="#fff" letterSpacing=".5" style={{ fontFamily: "var(--font-sans), 'Segoe UI', Arial, sans-serif" }}>
+                BẢO TRÌ
+              </text>
+            </g>
+          </g>
+          <path data-mt="armR" d="M170 318 192 262 130 195" fill="none" stroke="#6b7686" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+          <path data-mt="armRh" d="M170 318 192 262 130 195" fill="none" stroke="#aab3c0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".5" />
+          <circle data-mt="elbow" cx="192" cy="262" r="9" fill="#4e5766" />
+          <circle data-mt="handR" cx="130" cy="195" r="11" fill="#1b2330" />
+        </g>
+
+        <ellipse data-mt="mound" cx="240" cy="441" rx="0" ry="0" fill="#2a2018" />
+      </svg>
+    </div>
+  );
+}
+
+/** Tiêu đề tách chữ để từng chữ rơi xuống. Nguyên câu nằm ở `aria-label` cho trình đọc màn hình. */
+function TitleLetters({ text }: { text: string }) {
+  let index = 0;
+  const words = text.split(" ");
+  return (
+    <h1 className="mt-title" aria-label={text} data-mt="title">
+      {words.map((word, wi) => (
+        <Fragment key={`${wi}-${word}`}>
+          <span className="mt-w" aria-hidden="true">
+            {[...word].map((ch, ci) => (
+              <span key={ci} className="mt-c" style={{ "--i": index++ } as CSSProperties}>
+                {ch}
+              </span>
+            ))}
+          </span>
+          {wi < words.length - 1 ? " " : null}
+        </Fragment>
+      ))}
+    </h1>
+  );
+}
+
+/**
+ * Trang khách thấy khi Chủ đặt «Toàn web» vào bảo trì. Lối vào quản trị luôn có để Chủ và nhân viên không bị khóa ngoài.
+ * Logo là `BrandMark` của web, tên cạnh logo lấy từ Admin → Giao diện. Tiêu đề và lời nhắn lấy từ Admin → Cấu hình → Toàn web.
+ */
+export function SiteMaintenancePage({ entry }: { entry: ServiceEntry }) {
+  const theme = useTheme();
+  const brand = theme.brandName || BRAND_DEFAULT;
+  const { title, note } = siteMaintenanceText(entry);
+  const eta = entry.until && entry.until > Date.now() ? untilLabel(entry.until) : "";
+  const rootRef = useRef<HTMLElement>(null);
+  const sceneRef = useRef<SceneHandle | null>(null);
+  const noteRef = useRef(note);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    noteRef.current = note;
+    const scene = startMaintenanceScene(root, () => noteRef.current);
+    sceneRef.current = scene;
+    return () => {
+      scene.dispose();
+      sceneRef.current = null;
+    };
+    // Chỉ chạy một lần: đổi chữ giữa chừng đi qua `setMessage`, không dựng lại cảnh.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    noteRef.current = note;
+    sceneRef.current?.setMessage(note);
+  }, [note]);
+
+  return (
+    <main ref={rootRef} className="mt-root" data-site-maintenance data-phase="init">
+      <div className="mt-scene" data-mt="stage">
+        <div className="mt-hz mt-hz-t" aria-hidden="true"><i /></div>
+        <div className="mt-hz mt-hz-b" aria-hidden="true"><i /></div>
+        <div className="mt-bc mt-bc-l" aria-hidden="true" />
+        <div className="mt-bc mt-bc-r" aria-hidden="true" />
+        <div className="mt-floor" data-mt="floor" aria-hidden="true"><i /></div>
+        <div className="mt-glow" data-mt="glow" aria-hidden="true" />
+
+        <div className="mt-logo-wrap">
+          <div className="mt-logo" data-mt="logo">
+            <BrandMark title={brand} />
+            <span className="mt-brand">{brand}</span>
+          </div>
+        </div>
+
+        <div className="mt-ground" data-mt="ground" aria-hidden="true" />
+        <WorkerRobot />
+
+        <section role="status" className="mt-info">
+          <TitleLetters text={title} />
+          <p className="mt-msg">
+            <span className="mt-sr">{note}</span>
+            <span className="mt-typed" data-mt="typed" aria-hidden="true" />
+            <span className="mt-caret" data-mt="caret" aria-hidden="true" hidden />
+          </p>
+          {eta && (
+            <p className="mt-eta" data-mt="eta">
+              Dự kiến mở lại lúc <strong>{eta}</strong>
+            </p>
+          )}
+          <div className="mt-bar" data-mt="bar" aria-hidden="true"><i /></div>
+          <p className="mt-keep" data-mt="keep">Số dư và lịch sử của bạn được giữ nguyên.</p>
+        </section>
+
+        <Link to="/admin" className="mt-admin">
           Dành cho quản trị viên
         </Link>
-      </section>
+        <canvas className="mt-fx" data-mt="fx" aria-hidden="true" />
+        <div className="mt-flash" data-mt="flash" aria-hidden="true" />
+      </div>
     </main>
   );
 }

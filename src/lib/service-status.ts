@@ -27,12 +27,19 @@ export const SERVICE_STATE_LABEL: Record<ServiceState, string> = {
 export const SERVICE_KEY = "service_status";
 
 export const SERVICE_NOTE_MAX = 200;
+export const SERVICE_TITLE_MAX = 60;
+
+/** Chữ mặc định của trang bảo trì toàn web, dùng khi Chủ để trống tiêu đề hoặc lời nhắn. */
+export const SITE_TITLE_DEFAULT = "Hệ thống đang bảo trì";
+export const SITE_NOTE_DEFAULT = "Đang thực hiện nâng cấp hệ thống, vui lòng quay lại sau khi hết thời gian bảo trì.";
 
 /** Mốc dự kiến mở lại không được xa quá một năm, để gõ nhầm năm thì bị chặn. */
 const UNTIL_MAX_AHEAD_MS = 366 * 24 * 60 * 60 * 1000;
 
 export type ServiceEntry = {
   state: ServiceState;
+  /** Tiêu đề lớn trên trang bảo trì toàn web. Trống thì dùng `SITE_TITLE_DEFAULT`. Các nhóm dịch không dùng. */
+  title: string;
   /** Lời nhắn khách thấy khi bảo trì. Trống thì dùng câu mặc định. */
   note: string;
   /** Giờ dự kiến mở lại (mili giây). Chỉ để báo khách, không tự mở. null = chưa hẹn. */
@@ -48,14 +55,14 @@ export function scopeLabel(scope: ServiceScope): string {
   return scope === "site" ? SITE_LABEL : SERVICE_LABEL[scope];
 }
 
-export const SERVICE_ENTRY_DEFAULT: ServiceEntry = { state: "active", note: "", until: null };
+export const SERVICE_ENTRY_DEFAULT: ServiceEntry = { state: "active", title: "", note: "", until: null };
 
 export function defaultServiceStatus(): ServiceStatus {
   return { live: { ...SERVICE_ENTRY_DEFAULT }, normal: { ...SERVICE_ENTRY_DEFAULT }, site: { ...SERVICE_ENTRY_DEFAULT } };
 }
 
-function oneLine(value: unknown): string {
-  return typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, SERVICE_NOTE_MAX) : "";
+function oneLine(value: unknown, max: number = SERVICE_NOTE_MAX): string {
+  return typeof value === "string" ? value.replace(/\s+/g, " ").trim().slice(0, max) : "";
 }
 
 function untilOf(value: unknown): number | null {
@@ -66,7 +73,7 @@ function untilOf(value: unknown): number | null {
 function entryOf(value: unknown): ServiceEntry {
   const row = value && typeof value === "object" ? (value as Partial<ServiceEntry>) : {};
   const state: ServiceState = row.state === "maintenance" ? "maintenance" : "active";
-  return { state, note: oneLine(row.note), until: state === "maintenance" ? untilOf(row.until) : null };
+  return { state, title: oneLine(row.title, SERVICE_TITLE_MAX), note: oneLine(row.note), until: state === "maintenance" ? untilOf(row.until) : null };
 }
 
 /** Đọc từ DB. Không bao giờ ném lỗi: hỏng hay thiếu thì coi là Hoạt động, để một dòng cài đặt hỏng không khóa cả web. */
@@ -95,6 +102,9 @@ export function cleanServiceStatus(input: unknown, now: number = Date.now()): Se
     if (raw.state !== "active" && raw.state !== "maintenance") throw new Error(`Trạng thái của ${name} không đúng.`);
     if (typeof raw.note === "string" && raw.note.trim().length > SERVICE_NOTE_MAX) {
       throw new Error(`Lời nhắn của ${name} dài quá ${SERVICE_NOTE_MAX} ký tự.`);
+    }
+    if (typeof raw.title === "string" && raw.title.trim().length > SERVICE_TITLE_MAX) {
+      throw new Error(`Tiêu đề của ${name} dài quá ${SERVICE_TITLE_MAX} ký tự.`);
     }
     const entry = entryOf(raw);
     if (entry.state === "maintenance" && raw.until != null) {
@@ -163,6 +173,11 @@ function blockText(entry: ServiceEntry, name: string, now: number): string {
   return `${head}${tail}`;
 }
 
+/** Chữ trên trang bảo trì toàn web: tiêu đề lớn và lời nhắn. Chủ để trống thì dùng câu mặc định. */
+export function siteMaintenanceText(entry: ServiceEntry): { title: string; note: string } {
+  return { title: entry.title || SITE_TITLE_DEFAULT, note: entry.note || SITE_NOTE_DEFAULT };
+}
+
 /** Câu khách đọc khi cả web đang bảo trì. Trống = web đang hoạt động. */
 export function siteBlock(status: ServiceStatus, now: number = Date.now()): string {
   return blockText(status.site, SITE_LABEL, now);
@@ -191,8 +206,9 @@ export function describeServiceChange(before: ServiceStatus, after: ServiceStatu
     const name = scopeLabel(group);
     if (was.state !== now.state) {
       parts.push(now.state === "maintenance" ? `${name}: ĐƯA VÀO BẢO TRÌ${now.note ? ` (${now.note})` : ""}` : `${name}: MỞ LẠI, hoạt động`);
-    } else if (now.state === "maintenance" && (was.note !== now.note || was.until !== now.until)) {
-      parts.push(`${name}: sửa lời nhắn hoặc giờ dự kiến bảo trì${now.note ? ` (${now.note})` : ""}`);
+    } else if (now.state === "maintenance" && (was.title !== now.title || was.note !== now.note || was.until !== now.until)) {
+      const what = was.title !== now.title ? "tiêu đề, lời nhắn hoặc giờ dự kiến" : "lời nhắn hoặc giờ dự kiến";
+      parts.push(`${name}: sửa ${what} bảo trì${now.note ? ` (${now.note})` : ""}`);
     }
   }
   return parts.join("; ") || "Lưu lại, không có gì đổi";
