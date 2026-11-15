@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.43.2",
+    time: "09:10 ng\u00e0y 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng (hai lỗi đầu trong danh sách mới). (1) Khung thông báo bị lệch: .notice-panel neo right:0 vào chuông nên trên màn hẹp (chuông không sát mép phải, như Admin có thêm nút Về phòng) khung 18rem tràn ra mép trái; thêm @media (max-width: 640px) cho khung neo theo màn hình (position fixed, trái và phải 0.75rem, cách đỉnh theo safe-area). (2) Không có tài khoản vẫn vào được phòng: termsGate (lib/terms.ts) trả enter ngay khi máy đã tích đồng ý điều khoản, không xét đã đăng nhập chưa. Sửa: chờ biết đăng nhập chưa; chưa đăng nhập thì luôn sang /login; đã đăng nhập thì đồng ý rồi vào, chưa đồng ý bản này thì hỏi lại. entry-gate.tsx thêm: đang ở trong phòng mà phiên mất thì đưa về /login. Chữ điều khoản không đổi (đã nói không đồng ý thì không mở được phòng), TERMS_VERSION giữ 2026-11-15.1. Tài khoản dev (đăng nhập tắt) vẫn là user nên vẫn vào được. terms.test.ts viết lại cho luật mới. CHƯA kiểm bằng trình duyệt thật (điện thoại 360 px, hết phiên giữa chừng).",
+  },
+  {
     version: "3.43.1",
     time: "04:15 ngày 15/11/2026",
     area: "khac",

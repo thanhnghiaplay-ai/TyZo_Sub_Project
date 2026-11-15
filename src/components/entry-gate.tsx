@@ -8,10 +8,11 @@ import { VersionMark } from "@/components/version-mark";
 import { BrandMark } from "@/components/brand-mark";
 
 /**
- * Cửa mở phòng. Điều khoản không còn chen giữa lúc vào app:
- * - Đã đồng ý bản đang chạy: vào thẳng.
- * - Chưa đồng ý và chưa có tài khoản: sang /login, nơi có ô tích «Tôi đồng ý Điều khoản và Chính sách».
+ * Cửa mở phòng. Phải có tài khoản mới vào được; điều khoản không còn chen giữa lúc vào app:
+ * - Chưa đăng nhập (kể cả máy đã đồng ý điều khoản): sang /login, nơi có ô tích «Tôi đồng ý Điều khoản và Chính sách».
+ * - Đã đăng nhập và đã đồng ý bản đang chạy: vào thẳng.
  * - Đã có tài khoản mà điều khoản vừa đổi (TERMS_VERSION mới): chỉ người đó thấy màn hỏi lại.
+ * - Đang ở trong phòng mà phiên đăng nhập hết hạn hoặc đăng xuất ở tab khác: đưa về /login.
  */
 export function EntryGate({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<"splash" | "terms" | "declined" | "app">("splash");
@@ -41,6 +42,10 @@ export function EntryGate({ children }: { children: ReactNode }) {
     else if (next === "ask") setPhase("terms");
     else if (next === "login") void navigate({ to: "/login" });
   }, [shown, phase, isPending, user, navigate]);
+
+  useEffect(() => {
+    if (phase === "app" && !isPending && !user) void navigate({ to: "/login" });
+  }, [phase, isPending, user, navigate]);
 
   useEffect(() => {
     if (phase !== "app" || isPending || !user || user.isDevFallback) return;

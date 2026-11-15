@@ -24,14 +24,14 @@ export function rememberTermsAccepted(): boolean {
 }
 
 /**
- * Cửa vào phải làm gì khi mở phòng.
- * - "enter": đã đồng ý bản này, vào thẳng.
- * - "login": chưa đồng ý và chưa đăng nhập: sang trang đăng nhập, nơi có ô tích đồng ý.
- * - "ask": chưa đồng ý bản này nhưng đã có tài khoản (điều khoản vừa đổi): hiện lại điều khoản.
- * - "wait": chưa biết đã đăng nhập hay chưa.
+ * Cửa vào phải làm gì khi mở phòng. Phải có tài khoản mới vào được, đã đồng ý điều khoản trên máy cũng không đủ.
+ * - \"wait\": chưa biết đã đăng nhập hay chưa.
+ * - \"login\": chưa đăng nhập: sang trang đăng nhập, nơi có ô tích đồng ý điều khoản.
+ * - \"ask\": đã có tài khoản nhưng máy chưa đồng ý bản này (điều khoản vừa đổi): hiện lại điều khoản.
+ * - \"enter\": đã đăng nhập và đã đồng ý bản này, vào thẳng.
  */
 export function termsGate(input: { accepted: boolean; pending: boolean; signedIn: boolean }): "enter" | "login" | "ask" | "wait" {
-  if (input.accepted) return "enter";
   if (input.pending) return "wait";
-  return input.signedIn ? "ask" : "login";
+  if (!input.signedIn) return "login";
+  return input.accepted ? "enter" : "ask";
 }

@@ -1,5 +1,12 @@
 # HANDOFF — TyZo_Sub_Project
 
+## BƯỚC 1 TRONG DANH SÁCH 15/11/2026 (nhánh work, v3.43.2)
+ĐÃ LÀM: khung thông báo không tràn mép trên màn hẹp; cửa vào phòng bắt buộc có tài khoản (máy đã đồng ý điều khoản mà chưa đăng nhập thì sang /login), hết phiên giữa chừng thì về /login.
+KIỂM TRA: `npx tsc --noEmit` sạch; `npm test` 626 pass, 0 fail.
+CHƯA KIỂM: mở bằng trình duyệt thật (điện thoại 360 px, hết phiên giữa chừng).
+CHƯA LÀM (các bước sau của danh sách): chia Dịch trực tiếp / Dịch bình thường có trạng thái, bảo trì cả web có hẹn giờ, giao diện nhiều tùy chỉnh và icon, kho dự án dùng chung, admin quản lý dự án.
+KHÔNG ĐỔI: giá, hạn mức, luật ví, quyền, điều khoản (`2026-11-15.1`).
+
 ## TÊN TỆP TRONG PHIẾU (15/11/2026, nhánh work, v3.43.0)
 ĐÃ LÀM: máy chủ che tên tệp trước khi gửi (`ticketOf` trong `admin-room.ts`, `searchTicketsWith` trong `overview-data.ts`); tìm theo tên tệp chỉ Chủ; `revealTicketFileName` (`overview-room.ts`) chỉ Chủ, ghi nhật ký «xem-ten-tep» mỗi lần xem (dòng nhật ký không chứa tên tệp); nút «Hiện tên đầy đủ» / «Ẩn tên» ở Phiếu (`run-desk-board.tsx`), chỉ Chủ thấy. Điều khoản mục 4 thêm đoạn nói rõ; `TERMS_VERSION` 2026-11-15.1, mọi người bị hỏi lại (cố ý, vì đổi cách xử lý dữ liệu). Phiếu cũ vẫn xem được vì tên đầy đủ đã lưu từ trước.
 KIỂM TRA: `npx tsc --noEmit` sạch; `npm test` 621 pass, 0 fail (có test che tên và tìm theo tên chỉ Chủ).

@@ -25,17 +25,18 @@ afterEach(() => {
 });
 
 describe("termsGate", () => {
-  it("đã đồng ý bản này thì vào thẳng, kể cả khi chưa biết đã đăng nhập chưa", () => {
-    assert.equal(termsGate({ accepted: true, pending: true, signedIn: false }), "enter");
-    assert.equal(termsGate({ accepted: true, pending: false, signedIn: true }), "enter");
-  });
-
-  it("chưa đồng ý: đợi biết đăng nhập chưa rồi mới quyết", () => {
+  it("chưa biết đăng nhập chưa thì đợi, kể cả khi máy đã đồng ý", () => {
+    assert.equal(termsGate({ accepted: true, pending: true, signedIn: false }), "wait");
     assert.equal(termsGate({ accepted: false, pending: true, signedIn: false }), "wait");
   });
 
-  it("chưa có tài khoản thì sang trang đăng nhập, đã có tài khoản thì hỏi lại điều khoản", () => {
+  it("chưa có tài khoản thì luôn sang trang đăng nhập, dù máy đã đồng ý điều khoản", () => {
+    assert.equal(termsGate({ accepted: true, pending: false, signedIn: false }), "login");
     assert.equal(termsGate({ accepted: false, pending: false, signedIn: false }), "login");
+  });
+
+  it("đã có tài khoản: đồng ý rồi thì vào thẳng, chưa đồng ý bản này thì hỏi lại", () => {
+    assert.equal(termsGate({ accepted: true, pending: false, signedIn: true }), "enter");
     assert.equal(termsGate({ accepted: false, pending: false, signedIn: true }), "ask");
   });
 });
