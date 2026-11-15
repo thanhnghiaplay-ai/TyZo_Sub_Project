@@ -30,7 +30,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { usePipeline } from "@/components/use-pipeline";
+import { READY_STATUS, usePipeline } from "@/components/use-pipeline";
 import { useOnline } from "@/lib/use-online";
 import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
@@ -538,6 +538,11 @@ export function Studio() {
   const service = useServiceStatus();
   // Nhóm Dịch bình thường đang bảo trì: chặn bấm bắt đầu. Lượt đang chạy vẫn chạy nốt (nút Dừng không bị khóa).
   const normalDown = service.status.normal.state === "maintenance";
+  // Chưa có việc nào mà nhóm đang bảo trì thì không báo «Sẵn sàng» khi nút bắt đầu đã khóa. Lỗi và kết quả thật giữ nguyên.
+  const statusText =
+    normalDown && !app.running && app.status === READY_STATUS
+      ? "Dịch bình thường đang bảo trì. Bạn vẫn chọn được tệp, nhưng chưa bắt đầu dịch được."
+      : app.status;
   const rentShow = useRentShow();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [appeal, setAppeal] = useState("");
@@ -898,7 +903,7 @@ export function Studio() {
           className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
           onClick={() => statusRef.current?.showModal()}
         >
-          {app.status}
+          {statusText}
         </button>
         {!hero && (
         <>
@@ -931,7 +936,7 @@ export function Studio() {
       </div>
       <StepsBar report={app.stages} />
       <dialog ref={statusRef} className="studio-note">
-        <p className="text-sm">{app.status}</p>
+        <p className="text-sm">{statusText}</p>
         <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
           Đóng
         </button>

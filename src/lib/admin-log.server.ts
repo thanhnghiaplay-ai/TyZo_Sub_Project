@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.44.1",
+    time: "10:54 ngày 15/11/2026",
+    area: "khac",
+    text: "Theo yêu cầu người dùng (kiểm lại v3.44.0). Chạy thật bằng Chrome + Playwright (dev, đăng nhập tắt, seed quyền Chủ cho dev-user bằng route tạm đã xóa): bảng Admin → Cấu hình lưu được, hộp xác nhận hiện, khách thấy lời nhắn và giờ dự kiến, nút bắt đầu khóa; máy chủ chặn đúng nhóm ở openLiveTicket (live), openRunTicket và spendTrial (normal), nhóm kia vẫn qua cổng. Đường room-groq và room-alibaba đòi phiếu x-run-ticket nên đã kín nhờ openRunTicket. Lỗi tìm thấy: dòng trạng thái đầu trang vẫn ghi «Sẵn sàng. Chọn video rồi bấm Tải và dịch.» khi Dịch bình thường bảo trì. Sửa: use-pipeline.ts xuất READY_STATUS; studio.tsx đổi chữ hiển thị khi normalDown, chưa chạy và status còn là READY_STATUS (lỗi và kết quả thật giữ nguyên). Không đổi giá, quyền, luật ví, điều khoản. Vẫn chưa chặn /api/relay-alibaba (key riêng của khách): relay không có phiếu nên không phân biệt lượt mới với lượt đang chạy, chặn sẽ cắt lượt dở.",
+  },
+  {
     version: "3.44.0",
     time: "10:15 ngày 15/11/2026",
     area: "khac",

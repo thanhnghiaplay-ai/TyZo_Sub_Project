@@ -268,6 +268,9 @@ function readUserTerms(source: string, genre: string): GlossaryTerm[] {
   }
 }
 
+/** Dòng trạng thái lúc mới mở, chưa có việc nào. Studio đổi chữ này khi Dịch bình thường đang bảo trì. */
+export const READY_STATUS = "Sẵn sàng. Chọn video rồi bấm Tải và dịch.";
+
 export function usePipeline() {
   const job = useRef<Job>(emptyJob());
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
@@ -337,7 +340,7 @@ export function usePipeline() {
   const [langReport, setLangReport] = useState<LangCheckReport | null>(null);
   const [gapPlan, setGapPlanState] = useState<GapPlan | null>(null);
   const gapPlanRef = useRef<GapPlan | null>(null);
-  const [status, setStatus] = useState("Sẵn sàng. Chọn video rồi bấm Tải và dịch.");
+  const [status, setStatus] = useState(READY_STATUS);
   const [isError, setIsError] = useState(false);
   const [running, setRunning] = useState(false);
   const [stages, setStages] = useState<StageReport | null>(null);

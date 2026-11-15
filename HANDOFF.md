@@ -1,5 +1,12 @@
 # HANDOFF — TyZo_Sub_Project
 
+## KIỂM LẠI HAI NHÓM DỊCH (15/11/2026, nhánh work, v3.44.1)
+ĐÃ LÀM: chạy thật v3.44.0 bằng Chrome + Playwright (dev, đăng nhập tắt, quyền Chủ cấp cho `dev-user` bằng route tạm đã xóa, không vào kho). Admin → Cấu hình: bấm Bảo trì, hộp xác nhận hiện, lưu được. Khách (390 px): thanh chọn hai nhóm có chấm trạng thái, khung báo có lời nhắn và giờ dự kiến theo giờ Việt Nam, nút bắt đầu khóa («Đang bảo trì»), nhóm kia vẫn mở, mở lại thì khung biến mất. Máy chủ: `openLiveTicket` chặn khi live bảo trì; `openRunTicket` và `spendTrial` chặn khi normal bảo trì, trả đúng lời nhắn của Chủ; nhóm còn lại qua cổng. `room-groq` và `room-alibaba` đòi phiếu `x-run-ticket`, phiếu chỉ mở được qua `openRunTicket`, nên đường trả theo lượt đã kín.
+SỬA: dòng trạng thái đầu trang vẫn ghi «Sẵn sàng. Chọn video rồi bấm Tải và dịch.» khi Dịch bình thường bảo trì, mâu thuẫn với nút đã khóa. `use-pipeline.ts` xuất `READY_STATUS`; `studio.tsx` đổi chữ hiển thị khi đang bảo trì, chưa chạy và status còn là READY_STATUS (lỗi và kết quả thật giữ nguyên).
+CHƯA KIỂM: Safari, điện thoại thật, Vercel; bắt đầu một lượt thật bằng key riêng khi bảo trì (chỉ kiểm nút bị khóa và hàm máy chủ); đăng nhập OAuth thật.
+CHƯA LÀM (như bản 3.44.0): bảo trì cả web có hẹn giờ (đụng điều khoản), tự mở lại theo giờ hẹn, cầu nối live tự cắt phiên, chặn `/api/relay-alibaba`. Relay chỉ chuyển key của khách, không có phiếu nên không phân biệt lượt mới với lượt đang chạy; chặn sẽ cắt lượt dở, trái lời hứa «lượt đang chạy chạy nốt».
+KHÔNG ĐỔI: giá, hạn mức, luật ví, quyền, điều khoản (`2026-11-15.1`).
+
 ## HAI NHÓM DỊCH CÓ TRẠNG THÁI (15/11/2026, nhánh work, v3.44.0)
 ĐÃ LÀM: Dịch trực tiếp và Dịch bình thường tách nhóm, mỗi nhóm Hoạt động/Bảo trì, Chủ đặt ở Admin → Cấu hình (lời nhắn tối đa 200 ký tự, giờ dự kiến mở lại chỉ để báo). Máy chủ chặn lượt MỚI ở `openLiveTicket`, `openRunTicket`, `spendTrial`, `runAliFiletrans` (submit); lượt đang chạy chạy nốt. Key riêng chỉ chặn ở giao diện (`use-pipeline.ts` start). Giao diện: `service-notice.tsx`, nhãn menu, bảng `service-status-board.tsx`, dải ở Tổng quan.
 KIỂM TRA: `tsc` sạch; `npm test` 656 pass (cộng test mới), `vite build` qua; lint chỉ còn 3 lỗi có sẵn ở studio.tsx.
