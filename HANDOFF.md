@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỒNG BỘ MÀU 4/4 (16/11/2026, nhánh work, v3.46.10)
+ĐÃ LÀM: thư chưa lưu màu riêng lấy nền, mực và nút từ giao diện sáng. Cửa sổ đăng nhập chớp qua lấy nền và chữ phụ từ giao diện tối. Màu thư đã lưu giữ nguyên.
+PHẦN NÀY XONG. Còn màu phụ đề (khách chọn) và 5 màu dự phòng của tia lửa. Kế theo thứ tự ít bước: bo góc.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ĐỒNG BỘ MÀU 3/4 (16/11/2026, nhánh work, v3.46.9)
 ĐÃ LÀM: nền trang bảo trì, lời nhắn, nút cuối trang và bóng chữ nhấp theo màu nền, chữ, thông tin và lỗi. styles.css không còn mã hex ngoài mặc định.
 CÒN TRONG PHẦN NÀY: thư HTML và cửa sổ đăng nhập.

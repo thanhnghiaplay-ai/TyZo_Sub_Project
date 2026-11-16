@@ -17,6 +17,7 @@
  * `client.ts` (`signIn` → `openSignInPopup`).
  */
 import { auth, SESSION_TOKEN_COOKIE } from "./server";
+import { DARK_DEFAULT } from "../theme/theme.ts";
 
 /** Message shape the popup posts to the opener (must match `client.ts`). */
 type PopupMessage = {
@@ -134,7 +135,7 @@ function completionHtml(message: PopupMessage): string {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Signing in…</title>
 <style>
-  html,body{margin:0;min-height:100%;background:#0b0b0c;color:#a1a1aa;
+  html,body{margin:0;min-height:100%;background:${DARK_DEFAULT.bg};color:${DARK_DEFAULT.muted};
     font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   main{min-height:100vh;display:grid;place-items:center;padding:1.5rem;text-align:center}
 </style>

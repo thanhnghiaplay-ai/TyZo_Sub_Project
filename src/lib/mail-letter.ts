@@ -1,3 +1,5 @@
+import { LIGHT_DEFAULT } from "./theme/theme.ts";
+
 export type LetterKind = "verify" | "reset" | "changed";
 export type LetterLayout = "plain" | "frame" | "band";
 export type LetterFont = "sans" | "serif";
@@ -47,9 +49,9 @@ export const MAIL_POLICY: MailPolicy = {
   resendHour: 3,
   layout: "frame",
   font: "sans",
-  colorBg: "#f6f3ec",
-  colorInk: "#1c1608",
-  colorButton: "#e7b63a",
+  colorBg: LIGHT_DEFAULT.bg,
+  colorInk: LIGHT_DEFAULT.ink,
+  colorButton: LIGHT_DEFAULT.accent,
   sent: "Đã gửi thư xác minh. Hãy mở hộp thư, kể cả mục thư rác, rồi bấm liên kết.",
   unverified: "Email chưa được xác minh. Hãy mở thư xác minh rồi đăng nhập lại.",
   resetSent: "Nếu email này có tài khoản, thư đặt lại mật khẩu đã được gửi.",

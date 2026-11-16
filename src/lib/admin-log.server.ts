@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.10",
+    time: "08:11 ngày 16/11/2026",
+    area: "khac",
+    text: "Đồng bộ màu, bước 4/4. MAIL_POLICY lấy nền, mực và nút từ LIGHT_DEFAULT (thư là trang sáng; màu đã lưu của chủ vẫn giữ). popup.server.ts lấy nền và chữ phụ từ DARK_DEFAULT. Không dịch câu tiếng Anh của cửa sổ này. Không đụng màu phụ đề và màu dự phòng của tia lửa. Không đổi điều khoản."
+  },
+  {
     version: "3.46.9",
     time: "08:04 ngày 16/11/2026",
     area: "khac",
