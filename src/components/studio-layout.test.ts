@@ -38,17 +38,16 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(src.includes("Tự nhận dạng"), false);
   });
 
-  it("thuật ngữ và gói dịch nằm ở mục Nâng cao của menu trái, không nằm trong tab Phim và Key", () => {
+  it("cách trả và gói trả theo lượt nằm trong Key Sub, Nâng cao chỉ còn Thuật ngữ", () => {
     assert.equal(phim.includes("Thuật ngữ thể loại"), false);
     assert.equal(phim.includes("<GlossaryEditor"), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
-    assert.equal(key.includes("<TurnPackList"), false);
+    assert.match(key, /Cách trả/);
+    assert.match(key, /<TurnPackList/);
+    assert.equal(source.includes('id="tool-goi-dich"'), false);
     const thuat = source.slice(source.indexOf('id="tool-thuatngu"'));
     assert.match(thuat, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
-    const goi = source.slice(source.indexOf('id="tool-goi-dich"'), source.indexOf('id="tool-thuatngu"'));
-    assert.match(goi, /<TurnPackList/);
     assert.match(source, /id: "nang-cao"[\s\S]{0,120}ADVANCED_TOOLS\.map/);
-    assert.match(source, /hidden=\{toolTab !== "goi-dich"\}/);
     assert.match(source, /hidden=\{toolTab !== "thuatngu"\}/);
   });
 });

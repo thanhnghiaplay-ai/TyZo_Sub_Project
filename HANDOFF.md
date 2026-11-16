@@ -1,3 +1,13 @@
+## ĐẨY CHÍNH THỨC v5.0.6 (17/11/2026 02:43)
+ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.6. Cách trả nằm trong Key Sub.
+CHƯA LÀM: chưa bấm Key Sub trên điện thoại sau khi site lên. Bảng giá model chưa làm.
+CỐ Ý KHÔNG LÀM: không đổi giá bán, không đổi điều khoản.
+
+## CÁCH TRẢ TRONG KEY SUB (17/11/2026 02:45, nhánh work, v5.0.6)
+ĐÃ LÀM: Cách trả và danh sách gói nằm trong Key Sub. Bỏ mục Gói dịch ở Nâng cao. Gói dùng thời lượng tệp, cùng nguồn thẻ Token.
+CHƯA LÀM: bảng giá model ở trang quản lý (ô đô la tự lấy, sửa được, quy ra Token dịch). Chưa đẩy.
+CỐ Ý KHÔNG LÀM: không đổi giá bán, không đổi điều khoản.
+
 ## ĐẨY CHÍNH THỨC v5.0.5 (17/11/2026 02:17)
 ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.5. Mã QR nổi giữa màn hình.
 CHƯA LÀM: chưa bấm mã QR trên điện thoại sau khi site lên.

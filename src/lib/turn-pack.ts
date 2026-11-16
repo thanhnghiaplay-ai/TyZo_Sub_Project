@@ -20,7 +20,7 @@ export function turnPackModels(pack: ServicePack): { asr: AsrModel | null; chat:
 export function customerVisiblePrice(total: number | null, hold: number): string {
   if (total == null || !(total > 0)) return "Chưa có giá";
   const n = (value: number) => new Intl.NumberFormat("vi-VN").format(Math.round(value));
-  return `Ước tính ${n(total)} giây dịch. Giữ ${n(hold)} giây trước khi chạy.`;
+  return `Ước tính ${n(total)} Token dịch. Giữ ${n(hold)} trước khi chạy.`;
 }
 export function turnPackProblem(packs: ServicePack[], pick: { asr: string; chat: string }): string {
   const open = turnPacks(packs);

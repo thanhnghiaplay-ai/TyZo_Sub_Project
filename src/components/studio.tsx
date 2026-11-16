@@ -22,7 +22,7 @@ import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
 import { DisplayToggle } from "@/components/display-toggle";
-import { RunDoorClosed, useRunDoor } from "@/components/run-door";
+import { useRunDoor } from "@/components/run-door";
 import { MaintenanceNotice, ServiceSwitch } from "@/components/service-notice";
 import { useServiceStatus } from "@/components/use-service-status";
 import { railBadge } from "@/lib/service-status";
@@ -462,9 +462,8 @@ const TOOLS = [
   ["check", "Kiểm tra"],
 ] as const;
 
-/** Chức năng nâng cao: nằm trong nhóm «Nâng cao» của menu trái, không chen vào tab Key và Phim. */
+/** Chức năng nâng cao: chỉ Thuật ngữ. Cách trả nằm trong Key Sub. */
 const ADVANCED_TOOLS = [
-  ["goi-dich", "Gói dịch"],
   ["thuatngu", "Thuật ngữ"],
 ] as const;
 type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
@@ -805,8 +804,8 @@ export function Studio() {
     { id: "export-vtt", label: "Tải phụ đề WebVTT (.vtt)", hint: "Tải", words: "vtt webvtt xuat phu de", disabled: noSubs || !online, run: () => void app.exportSub("vtt") },
     { id: "export-txt", label: "Tải chữ thuần (.txt)", hint: "Tải", words: "txt text xuat van ban", disabled: noSubs || !online, run: () => void app.exportSub("txt") },
     { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
-    ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "phu de cong cu", run: () => openTool(id) })),
-    ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: id === "goi-dich" ? "goi dich cach tra key theo luot" : "thuat ngu glossary the loai", run: () => openTool(id) })),
+    ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: id === "key" ? "key groq cach tra theo luot goi" : "phu de cong cu", run: () => openTool(id) })),
+    ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: "thuat ngu glossary the loai", run: () => openTool(id) })),
     { id: "wallet", label: "Token dịch", hint: "Tài khoản", words: "token dich goi", run: () => setProduct("account") },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", hint: "Trang", words: "live truc tiep micro tab giong noi", run: () => void navigate({ to: "/dich-truc-tiep" }) },
     { id: "tai-video", label: "Tải video", hint: "Trang", run: () => void navigate({ to: "/tai-video" }) },
@@ -1023,14 +1022,42 @@ export function Studio() {
           </button>
         </div>
       <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
-        {runDoor.ready && runDoor.open && payByRoom && (
-          <p className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
-            <strong className="text-fg">Đang trả theo lượt, không cần key.</strong> Đổi cách trả và chọn gói ở mục{" "}
-            <button type="button" className="font-semibold text-accent underline" onClick={() => openTool("goi-dich")}>
-              Gói dịch
-            </button>
-            .
-          </p>
+        {runDoor.ready && runDoor.open && (
+          <div className="grid gap-2">
+            <h2 className="text-sm font-semibold">Cách trả</h2>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+                Key của tôi
+              </button>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+                Trả theo lượt
+              </button>
+            </div>
+            <p id="pay-mode-note" className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
+              {payByRoom ? (
+                <>
+                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.
+                </>
+              ) : (
+                <>
+                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
+                </>
+              )}
+            </p>
+            {payByRoom && (
+              <TurnPackList
+                videoRef={app.videoRef}
+                fileSeconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0}
+                narration={narration.enabled}
+                onLocked={setTurnLocked}
+                onPick={(pack) => {
+                  const next = turnPackModels(pack);
+                  if (next.asr) app.setAsrModel(next.asr);
+                  if (next.chat) app.chooseVoice(next.chat);
+                }}
+              />
+            )}
+          </div>
         )}
         {!(runDoor.open && payByRoom) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
@@ -1547,49 +1574,6 @@ export function Studio() {
           onDrop={app.dropReject}
         />
         {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một phim trước.</p>}
-      </section>
-
-      <section id="tool-goi-dich" role="region" aria-labelledby="tool-tab-goi-dich" hidden={toolTab !== "goi-dich"} className="grid gap-3 p-4">
-        {!runDoor.ready ? (
-          <p className="text-sm text-muted">Đang đọc cửa trả theo lượt…</p>
-        ) : runDoor.open ? (
-          <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cách trả</h2>
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
-                Key của tôi
-              </button>
-              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
-                Trả theo lượt
-              </button>
-            </div>
-            <p id="pay-mode-note" className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
-              {payByRoom ? (
-                <>
-                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.
-                </>
-              ) : (
-                <>
-                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
-                </>
-              )}
-            </p>
-            {payByRoom && (
-              <TurnPackList
-                videoRef={app.videoRef}
-                narration={narration.enabled}
-                onLocked={setTurnLocked}
-                onPick={(pack) => {
-                  const next = turnPackModels(pack);
-                  if (next.asr) app.setAsrModel(next.asr);
-                  if (next.chat) app.chooseVoice(next.chat);
-                }}
-              />
-            )}
-          </div>
-        ) : (
-          <RunDoorClosed note={runDoor.note} />
-        )}
       </section>
 
       <section id="tool-thuatngu" role="region" aria-labelledby="tool-tab-thuatngu" hidden={toolTab !== "thuatngu"} className="grid gap-3 p-4">

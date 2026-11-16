@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.0.6",
+    time: "02:45 ngày 17/11/2026",
+    area: "khac",
+    text: "Cách trả và TurnPackList chuyển từ mục Nâng cao về Key Sub. Bỏ mục Gói dịch trên menu khách. Gói lấy thời lượng từ tệp (cùng nguồn thẻ Token), không chỉ từ thẻ video nên không còn ghi Chưa có tệp khi tệp đã có thời lượng. Dòng giá gói ghi Token dịch.",
+  },
+  {
     version: "5.0.5",
     time: "02:20 ngày 17/11/2026",
     area: "khac",

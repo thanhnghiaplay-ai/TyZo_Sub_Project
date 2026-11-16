@@ -8,20 +8,25 @@ import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
 /** Gói Chủ đã mở cho cửa trả theo lượt. Chỉ hiện giá đã cộng phần chênh. */
 export function TurnPackList({
   videoRef,
+  fileSeconds = 0,
   narration,
   onLocked,
   onPick,
 }: {
   videoRef: RefObject<HTMLVideoElement | null>;
+  /** Thời lượng đọc từ tệp, cùng nguồn với thẻ Token phía trên. */
+  fileSeconds?: number;
   narration: boolean;
   onLocked: (locked: boolean) => void;
   onPick: (pack: ServicePack) => void;
 }) {
   const [packs, setPacks] = useState<ServicePack[]>([]);
   const [prices, setPrices] = useState<Record<string, TurnPrice>>({});
-  const [seconds, setSeconds] = useState(0);
+  const [liveSeconds, setLiveSeconds] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const fromFile = Number.isFinite(fileSeconds) && fileSeconds > 0 ? Math.round(fileSeconds) : 0;
+  const seconds = fromFile > 0 ? fromFile : liveSeconds;
 
   useEffect(() => {
     void getServiceMenu()
@@ -38,7 +43,7 @@ export function TurnPackList({
     const read = () => {
       const video = videoRef.current;
       const next = video && Number.isFinite(video.duration) ? Math.round(video.duration) : 0;
-      setSeconds((current) => (current === next ? current : next));
+      setLiveSeconds((current) => (current === next ? current : next));
     };
     read();
     const timer = window.setInterval(read, 1000);
