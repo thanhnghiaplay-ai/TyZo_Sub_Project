@@ -1,3 +1,13 @@
+## ĐẨY CHÍNH THỨC v5.0.2 (17/11/2026 01:18)
+ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.2. Mở Tài khoản một lần để đơn TZZEKV85 được bù 10.000 Token dịch.
+CHƯA LÀM: chưa bấm lại trên điện thoại sau khi site lên.
+CỐ Ý KHÔNG LÀM: không hoàn tiền.
+
+## BÙ TOKEN (17/11/2026 01:10, nhánh work, v5.0.2)
+ĐÃ LÀM: đơn mua Token dịch đã trả mà chưa có gói thì được bù khi mở Tài khoản, số dư nhầm bị gỡ. Webhook coi detail có tokens là đơn token. Xác nhận tay viết đúng câu.
+CHƯA LÀM: chưa bấm lại đơn TZZEKV85 trên điện thoại sau khi đẩy.
+CỐ Ý KHÔNG LÀM: không hoàn tiền. Không đổi giá gói.
+
 # HANDOFF — TyZo_Sub_Project
 
 ## ĐIỀU KHOẢN (17/11/2026 00:35, nhánh work, v5.0.1)

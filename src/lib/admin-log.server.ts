@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.0.2",
+    time: "01:10 ngày 17/11/2026",
+    area: "tien",
+    text: "Đơn TZZEKV85 tạo đúng purpose token (chuông «Mua 10.000 Token dịch») nhưng webhook ghi «Đã cộng tiền nạp» và không có token_grants. creditHitWith coi detail có tokens là đơn token kể cả purpose nap; settleDirect nhận cả purpose nap rồi ghi purpose token. repairMissedTokens bù gói cho đơn paid thiếu grant và gỡ số dư nhầm, gọi từ readState và getGiayShelf. Xác nhận tay viết đúng câu theo purpose. Mua Token phát tyzo-room-refresh.",
+  },
+  {
     version: "5.0.1",
     time: "00:35 ngày 17/11/2026",
     area: "quyen",

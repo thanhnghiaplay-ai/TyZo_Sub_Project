@@ -1,5 +1,5 @@
 import type { Sql } from "./db.ts";
-import { settleDirect } from "./pay-flow.ts";
+import { saleKind, settleDirect } from "./pay-flow.ts";
 
 /**
  * Xác nhận thủ công một đơn: đơn mua token hoặc thuê phòng thì giao đúng món.
@@ -10,21 +10,24 @@ export async function confirmOrderWith(sql: Sql, orderId: string, actorId: strin
     select id, user_id, amount, code, purpose, ref, detail, provider from pay_orders where id = ${orderId}
   `;
   const order = found[0];
-  if (order && (order.purpose === "token" || order.purpose === "plan")) {
-    const done = await settleDirect(sql, order, { provider: "tay", ref: `thu-${orderId}` });
-    if (!done) return null;
-    try {
-      await sql`
-        insert into room_audit (actor_id, action, target_id, note, actor_email, actor_role, target_email)
-        values (
-          ${actorId}, 'xac-nhan-nap', ${done.userId}, ${order.code + " " + order.amount + " đ"}, ${actorEmail}, 'chu',
-          coalesce((select email from "user" where id = ${done.userId}), '')
-        )
-      `;
-    } catch {
-      /* đơn đã giao, nhật ký không chặn */
+  if (order) {
+    const kind = saleKind(order);
+    if (kind === "token" || kind === "plan") {
+      const done = await settleDirect(sql, { ...order, purpose: kind }, { provider: "tay", ref: `thu-${orderId}` });
+      if (!done) return null;
+      try {
+        await sql`
+          insert into room_audit (actor_id, action, target_id, note, actor_email, actor_role, target_email)
+          values (
+            ${actorId}, 'xac-nhan-nap', ${done.userId}, ${order.code + " " + order.amount + " đ"}, ${actorEmail}, 'chu',
+            coalesce((select email from "user" where id = ${done.userId}), '')
+          )
+        `;
+      } catch {
+        /* đơn đã giao, nhật ký không chặn */
+      }
+      return { userId: done.userId, amount: done.amount, code: done.code };
     }
-    return { userId: done.userId, amount: done.amount, code: done.code };
   }
   const rows = await sql<{ user_id: string; amount: number; code: string }>`
     with paid as (

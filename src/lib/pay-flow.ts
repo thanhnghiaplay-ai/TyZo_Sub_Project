@@ -27,6 +27,13 @@ function tokenSpec(detail: string): { tokens: number; days: number } | null {
   }
 }
 
+/** Đơn token kể cả khi purpose lưu nhầm thành nap, miễn detail có tokens và days. */
+export function saleKind(order: { purpose: string; detail: string }): "token" | "plan" | "nap" {
+  if (order.purpose === "plan") return "plan";
+  if (order.purpose === "token" || tokenSpec(order.detail)) return "token";
+  return "nap";
+}
+
 /** Đơn mua thẳng: đánh dấu đã trả rồi cộng token hoặc mở hạn. Không cộng số dư. */
 export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider: string; ref: string }): Promise<CreditResult> {
   if (order.purpose === "token") {
@@ -41,8 +48,8 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
       ),
       paid as (
         update pay_orders
-        set status = 'paid', provider_ref = ${mark.ref}
-        where id = ${order.id} and status in ('pending', 'claimed') and purpose = 'token' and exists (select 1 from seen)
+        set status = 'paid', provider_ref = ${mark.ref}, purpose = 'token'
+        where id = ${order.id} and status in ('pending', 'claimed') and purpose in ('token', 'nap') and exists (select 1 from seen)
         returning user_id
       ),
       issued as (
@@ -121,7 +128,10 @@ export async function creditHitWith(sql: Sql, provider: "sepay" | "casso", hit: 
   `;
   const order = orders.find((item) => found.includes(item.code) && hit.amount >= item.amount);
   if (!order) return null;
-  if (order.purpose === "token" || order.purpose === "plan") return settleDirect(sql, order, { provider, ref: hit.ref });
+  if (order.purpose === "plan") return settleDirect(sql, order, { provider, ref: hit.ref });
+  if (order.purpose === "token" || tokenSpec(order.detail)) {
+    return settleDirect(sql, { ...order, purpose: "token" }, { provider, ref: hit.ref });
+  }
   const applied = await sql<{ user_id: string }>`
     with seen as (
       insert into pay_seen (provider, provider_ref) values (${provider}, ${hit.ref})
@@ -145,6 +155,44 @@ export async function creditHitWith(sql: Sql, provider: "sepay" | "casso", hit: 
     returning user_id
   `;
   return applied.length > 0 ? { userId: order.user_id, amount: hit.amount, code: order.code } : null;
+}
+
+/**
+ * Đơn Token đã trả nhưng chưa có gói (tiền về đi nhầm vào ví). Ghi gói, gỡ số dư nhầm.
+ * Chạy lại không cộng lần hai. Không đụng đơn không có detail token.
+ */
+export async function repairMissedTokens(sql: Sql, userId: string) {
+  const rows = await sql<{ id: string; amount: number; detail: string }>`
+    select id, amount, detail from pay_orders
+    where user_id = ${userId} and status = 'paid'
+      and (purpose = 'token' or detail like '%"tokens"%')
+      and not exists (select 1 from token_grants g where g.id = pay_orders.id)
+  `;
+  let fixed = 0;
+  for (const row of rows) {
+    const spec = tokenSpec(row.detail);
+    if (!spec) continue;
+    const note = `Bù ${spec.tokens} Token dịch từ đơn đã trả, gỡ số dư nhầm`;
+    const applied = await sql<{ id: string }>`
+      with issued as (
+        insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at)
+        values (${row.id}::text, ${userId}::text, ${spec.tokens}::int, ${spec.tokens}::int, ${row.amount}::int, now() + make_interval(days => ${spec.days}::int))
+        on conflict (id) do nothing
+        returning id
+      ),
+      claw as (
+        update room_accounts
+        set balance = greatest(0, balance - ${row.amount}::int)
+        where user_id = ${userId} and exists (select 1 from issued)
+        returning user_id
+      )
+      insert into room_ledger (user_id, kind, amount, note)
+      select ${userId}::text, 'goi-giay', ${-row.amount}::int, ${note}::text from issued
+      returning 1 as id
+    `;
+    if (applied.length) fixed += 1;
+  }
+  return fixed;
 }
 
 /** Mua gói từ số dư: trừ có điều kiện balance >= giá, cộng hạn, ghi sổ, trong một câu. */

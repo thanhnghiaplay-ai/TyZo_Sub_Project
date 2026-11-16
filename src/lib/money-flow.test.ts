@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
-import { buyPlanWith, creditHitWith, refundRunWith, releaseHoldWith } from "./pay-flow.ts";
+import { buyPlanWith, creditHitWith, refundRunWith, releaseHoldWith, repairMissedTokens } from "./pay-flow.ts";
 import { chargeTicketWith, closeTicketWith, openTicketWith } from "./run-ticket.ts";
 import { ROOM_PLANS } from "./room-plans.ts";
 
@@ -119,6 +119,25 @@ describe("mua thẳng không cộng số dư", () => {
     const row = (await sql<{ plan: string; ok: boolean }>`select plan, plan_until > now() as ok from room_accounts where user_id = 'k'`)[0];
     assert.equal(row.plan, PLAN.id);
     assert.equal(row.ok, true);
+  });
+
+  it("đơn lưu nhầm purpose nap nhưng detail là token thì cộng token, không cộng ví", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('om', 'k', 'sepay', 6407, 'TZZEKV85', 'pending', 'nap', 'nho', '{"tokens":10000,"days":30}')`;
+    const done = await creditHitWith(sql, "sepay", { ref: "M1", amount: 6407, text: "TZZEKV85" });
+    assert.equal(done?.purpose, "token");
+    assert.equal(await balanceOf("k"), 0);
+    const grant = (await sql<{ tokens: number }>`select tokens from token_grants where id = 'om'`)[0];
+    assert.equal(grant.tokens, 10000);
+  });
+
+  it("đơn token đã paid nhưng chưa có gói thì bù gói và gỡ số dư nhầm", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('of', 'k', 'sepay', 6407, 'TZFIX85', 'paid', 'token', 'nho', '{"tokens":10000,"days":30}')`;
+    await sql`insert into room_accounts (user_id, balance) values ('k', 6407)`;
+    assert.equal(await repairMissedTokens(sql, "k"), 1);
+    assert.equal(await balanceOf("k"), 0);
+    const grant = (await sql<{ left_tokens: number }>`select left_tokens from token_grants where id = 'of'`)[0];
+    assert.equal(grant.left_tokens, 10000);
+    assert.equal(await repairMissedTokens(sql, "k"), 0);
   });
 });
 

@@ -158,7 +158,7 @@ export function AccountPanel() {
           ) : (
             <RunDoorClosed note={runDoor.note} />
           )}
-          <GiayShelf reload={reload} onBought={(message) => { setNotice(message); setReload((value) => value + 1); }} />
+          <GiayShelf reload={reload} onBought={(message) => { setNotice(message); setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />
           <div className="grid gap-2" data-tour="plans">
           <p className="text-sm text-muted">
             Đăng ký mà chưa mua gói là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói thuê phòng đã trả thì trong hạn không giới hạn số tệp.

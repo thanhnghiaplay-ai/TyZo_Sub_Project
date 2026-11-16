@@ -28,6 +28,8 @@ export const getGiayShelf = createServerFn({ method: "GET" })
     const { getSql } = await import("@/lib/db");
     const { giayBalance } = await import("@/lib/token-flow");
     const sql = await getSql();
+    const { repairMissedTokens } = await import("@/lib/pay-flow");
+    await repairMissedTokens(sql, context.userId);
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'token_desk'`;
     const desk = parseGiayDesk(saved[0]?.value);
     const per = await turboPerSecond();

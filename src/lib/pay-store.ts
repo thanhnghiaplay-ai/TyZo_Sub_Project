@@ -488,7 +488,10 @@ export const confirmPayOrder = createServerFn({ method: "POST" })
     const actorEmail = who[0]?.email ?? "";
     const done = await confirmOrderWith(sql, data, context.userId, actorEmail);
     if (!done) throw new Error("Don nay da xu ly hoac khong con.");
-    await writePayNotice(done.userId, "user", "Đã cộng tiền nạp", `Đã cộng ${done.amount} đ vào số dư (mã ${done.code}).`);
+    const row = await sql<{ purpose: string }>`select purpose from pay_orders where id = ${data}`;
+    if (row[0]?.purpose === "token") await writePayNotice(done.userId, "user", "Đã cộng Token dịch", `Đơn ${done.code} đã cộng Token dịch.`);
+    else if (row[0]?.purpose === "plan") await writePayNotice(done.userId, "user", "Đã mở thuê phòng", `Đơn ${done.code} đã mở hạn thuê phòng.`);
+    else await writePayNotice(done.userId, "user", "Đã cộng tiền nạp", `Đã cộng ${done.amount} đ vào số dư (mã ${done.code}).`);
     return { ok: true };
   });
 
