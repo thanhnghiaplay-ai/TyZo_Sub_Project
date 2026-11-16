@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.0.5",
+    time: "02:20 ngày 17/11/2026",
+    area: "khac",
+    text: "PaySlip vẽ bằng cổng ra giữa màn hình, không còn nằm trong cột Tài khoản. Giữ màn cảm ơn hoặc xin lỗi (pay-thanks, pay-bye, pay-ring) cho đến khi bấm Xong hoặc Đóng, rồi mới gọi onDone. Trước đó onDone xóa phiếu ngay nên hiệu ứng không kịp hiện.",
+  },
+  {
     version: "5.0.4",
     time: "02:05 ngày 17/11/2026",
     area: "tien",

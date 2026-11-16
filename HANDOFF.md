@@ -1,3 +1,13 @@
+## ĐẨY CHÍNH THỨC v5.0.5 (17/11/2026 02:17)
+ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.5. Mã QR nổi giữa màn hình.
+CHƯA LÀM: chưa bấm mã QR trên điện thoại sau khi site lên.
+CỐ Ý KHÔNG LÀM: không đổi giá, không đổi điều khoản.
+
+## MÃ QR GIỮA MÀN (17/11/2026 02:20, nhánh work, v5.0.5)
+ĐÃ LÀM: PaySlip nổi giữa màn hình. Cảm ơn khi tiền về, xin lỗi khi đơn đóng. Giữ đến khi bấm Xong hoặc Đóng.
+CHƯA LÀM: chưa bấm trên điện thoại. Chưa đẩy.
+CỐ Ý KHÔNG LÀM: không đổi giá, không đổi điều khoản.
+
 ## ĐẨY CHÍNH THỨC v5.0.4 (17/11/2026 02:05)
 ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.4.
 CHƯA LÀM: chưa bấm chữ tiền trên điện thoại sau khi site lên.
