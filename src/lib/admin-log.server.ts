@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.10",
+    time: "11:59 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần tách tab 5/8. theme-board có sáu tab: Màu, Chữ, Hình khối, Biểu tượng, Chuyển động, Trang riêng. Xem trước và lịch sử vẫn hiện. Không thêm trường mới. Không đổi điều khoản."
+  },
+  {
     version: "3.47.9",
     time: "11:51 ngày 16/11/2026",
     area: "khac",

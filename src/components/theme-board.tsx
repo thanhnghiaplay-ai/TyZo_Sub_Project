@@ -169,6 +169,7 @@ export function ThemeBoard() {
   const [busy, setBusy] = useState(false);
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("dark");
   const [paletteMode, setPaletteMode] = useState<"light" | "dark">("dark");
+  const [tab, setTab] = useState<"mau" | "chu" | "khoi" | "icon" | "chuyen" | "trang">("mau");
   const [iconQuery, setIconQuery] = useState("");
   const [glyphQuery, setGlyphQuery] = useState("");
   const [iconPick, setIconPick] = useState("");
@@ -295,18 +296,34 @@ export function ThemeBoard() {
         </div>
       </Card>
 
+      <div role="tablist" aria-label="Phần giao diện" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {(
+          [
+            ["mau", "Màu"],
+            ["chu", "Chữ"],
+            ["khoi", "Hình khối"],
+            ["icon", "Biểu tượng"],
+            ["chuyen", "Chuyển động"],
+            ["trang", "Trang riêng"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            className={"min-tap rounded-[var(--radius-ctl)] border px-3 text-sm font-semibold " + (tab === id ? "border-transparent bg-accent text-ink" : "border-line")}
+            onClick={() => setTab(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div className="grid content-start gap-4">
-          <Card>
-            <CardHeader title="Chung" icon="ui.settings" />
-            <Field label="Chế độ khi khách mở trang">
-              <Segmented
-                label="Chế độ"
-                value={draft.mode}
-                onChange={(mode) => patch({ mode })}
-                options={MODES.map(([id, label]) => ({ id, label }))}
-              />
-            </Field>
+          <Card className={tab === "chu" ? undefined : "hidden"}>
+            <CardHeader title="Chữ" icon="ui.settings" />
             <Field label="Phông nội dung" hint="Chỉ gồm phông hỗ trợ tiếng Việt.">
               <select className={inputClass} value={draft.font} onChange={(event) => patch({ font: event.target.value as Theme["font"] })}>
                 {FONTS.map((font) => (
@@ -334,6 +351,10 @@ export function ThemeBoard() {
             <Field label={`Cỡ chữ: ${Math.round(draft.fontScale * 100)}%`}>
               <input type="range" min={0.85} max={1.25} step={0.05} value={draft.fontScale} aria-label="Cỡ chữ" onChange={(event) => patch({ fontScale: Number(event.target.value) })} />
             </Field>
+          </Card>
+
+          <Card className={tab === "khoi" ? undefined : "hidden"}>
+            <CardHeader title="Hình khối" icon="ui.settings" />
             <Field label={`Độ bo góc: ${draft.radius.toFixed(2)} rem`}>
               <input type="range" min={0} max={1.75} step={0.25} value={draft.radius} aria-label="Độ bo góc" onChange={(event) => patch({ radius: Number(event.target.value) })} />
             </Field>
@@ -355,6 +376,10 @@ export function ThemeBoard() {
             <Field label="Vị trí menu">
               <Segmented label="Vị trí menu" value={draft.menuSide} onChange={(menuSide: MenuSide) => patch({ menuSide })} options={MENU_SIDES.map(([id, label]) => ({ id, label }))} />
             </Field>
+          </Card>
+
+          <Card className={tab === "chuyen" ? undefined : "hidden"}>
+            <CardHeader title="Chuyển động" icon="ui.settings" />
             <Field label="Hiệu ứng" hint="Máy khách đang giảm chuyển động thì luôn tắt, dù chọn Bật.">
               <Segmented label="Hiệu ứng" value={draft.motion} onChange={(motion: Motion) => patch({ motion })} options={MOTION.map(([id, label]) => ({ id, label }))} />
             </Field>
@@ -363,7 +388,7 @@ export function ThemeBoard() {
             </Field>
           </Card>
 
-          <Card>
+          <Card className={tab === "trang" ? undefined : "hidden"}>
             <CardHeader title="Trang bảo trì" icon="ui.repair" hint="Chữ, màu biển, hiệu ứng mạnh, và robot hay chỉ biển. Mặc định giữ cảnh đang có." />
             <Field label="Chữ trên biển" hint="Tối đa 10 ký tự. Để trống thì lại «BẢO TRÌ».">
               <input
@@ -386,7 +411,7 @@ export function ThemeBoard() {
             </Field>
           </Card>
 
-          <Card>
+          <Card className={tab === "trang" ? undefined : "hidden"}>
             <CardHeader title="Thương hiệu" icon="nav.home" />
             <Field label="Tên hiển thị" hint="Để trống thì dùng “Dịch phụ đề”.">
               <input className={inputClass} maxLength={40} value={draft.brandName} onChange={(event) => patch({ brandName: event.target.value })} />
@@ -397,8 +422,16 @@ export function ThemeBoard() {
             {logo && <img src={logo} alt="Logo xem trước" className="h-12 w-auto max-w-full self-start rounded-[var(--radius-ctl)] border border-line bg-raised p-1" />}
           </Card>
 
-          <Card>
+          <Card className={tab === "mau" ? undefined : "hidden"}>
             <CardHeader title="Màu sắc" icon="ui.theme" />
+            <Field label="Chế độ khi khách mở trang">
+              <Segmented
+                label="Chế độ"
+                value={draft.mode}
+                onChange={(mode) => patch({ mode })}
+                options={MODES.map(([id, label]) => ({ id, label }))}
+              />
+            </Field>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {PALETTES.map((item) => (
                 <button
@@ -431,8 +464,8 @@ export function ThemeBoard() {
             </p>
           </Card>
 
-          <Card>
-            <CardHeader title="Icon" icon="ui.magic" hint="Chọn kiểu nét cho cả bộ, rồi đổi icon theo từng chức năng." />
+          <Card className={tab === "icon" ? undefined : "hidden"}>
+            <CardHeader title="Biểu tượng" icon="ui.magic" hint="Chọn kiểu nét cho cả bộ, rồi đổi icon theo từng chức năng." />
             <Segmented
               label="Kiểu nét icon"
               value={draft.iconWeight}

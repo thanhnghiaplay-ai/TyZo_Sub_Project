@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## TÁCH TAB 5/8 (16/11/2026, nhánh work, v3.47.10)
+ĐÃ LÀM: mục Giao diện chia sáu phần. Xem trước và nút lưu vẫn ở ngoài. Không thêm trường.
+CÒN 3 PHẦN: icon theo nhóm, xem trước cả web, chỗ cố ý để riêng. Favicon chưa làm.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## BẢO TRÌ 4/8 (16/11/2026, nhánh work, v3.47.9)
 ĐÃ LÀM: chữ biển, màu biển, hiệu ứng mạnh, robot hoặc chỉ biển. Mặc định giữ cảnh cũ.
 CÒN 4 PHẦN: tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng. Favicon chưa làm.
