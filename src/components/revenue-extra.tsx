@@ -118,7 +118,7 @@ export function RevenueExtra({ span, points }: { span: Span; points: MoneyPoint[
             </ul>
           </div>
           <p className="text-xs text-muted">
-            ARPU chỉ tính khách có nạp tiền trong kỳ. Tỷ lệ dùng thử → mua tính trên mọi khách đã dùng hết lượt thử, vì phòng không ghi ngày dùng thử. Giá vốn mỗi phút lấy từ các lượt đã trừ tiền; lượt cũ chưa có giá vốn thật thì tính theo số ước tính. Tất cả là số tổng, không có tên tệp hay chữ phụ đề.
+            ARPU chỉ tính khách có chuyển khoản trong kỳ. Tỷ lệ dùng thử → mua tính trên mọi khách đã dùng hết lượt thử, vì phòng không ghi ngày dùng thử. Giá vốn mỗi phút lấy từ các lượt đã trừ; lượt cũ chưa có giá vốn thật thì tính theo số ước tính. Tất cả là số tổng, không có tên tệp hay chữ phụ đề.
           </p>
         </>
       )}

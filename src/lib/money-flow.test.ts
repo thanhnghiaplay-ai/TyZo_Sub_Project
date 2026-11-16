@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
-import { buyPlanWith, creditHitWith, refundRunWith, releaseHoldWith, repairMissedTokens } from "./pay-flow.ts";
+import { buyPlanWith, creditHitWith, refundRunWith, releaseHoldWith, repairMissedTokens, wipeTestData } from "./pay-flow.ts";
 import { chargeTicketWith, closeTicketWith, openTicketWith } from "./run-ticket.ts";
 import { ROOM_PLANS } from "./room-plans.ts";
 
@@ -138,6 +138,35 @@ describe("mua thẳng không cộng số dư", () => {
     const grant = (await sql<{ left_tokens: number }>`select left_tokens from token_grants where id = 'of'`)[0];
     assert.equal(grant.left_tokens, 10000);
     assert.equal(await repairMissedTokens(sql, "k"), 0);
+  });
+});
+
+describe("xóa số liệu thử", () => {
+  beforeEach(reset);
+
+  it("xóa token, đơn, phiếu, chuông, nhật ký và gói, giữ tài khoản và cấu hình", async () => {
+    await sql`insert into room_accounts (user_id, balance, plan, plan_until, trial_left, status) values ('k', 6407, 'thang', now() + interval '1 day', 0, 'open')`;
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('g1', 'k', 10000, 10000, 6407, now() + interval '30 day')`;
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, detail) values ('o9', 'k', 'sepay', 6407, 'TZFIX99', 'paid', 'token', '{"tokens":10000,"days":30}')`;
+    await sql`insert into room_ledger (user_id, kind, amount, note) values ('k', 'nap', 6407, 'test')`;
+    await sql`insert into room_notices (user_id, kind, title, body) values ('k', 'user', 'Đã cộng tiền nạp', 'test')`;
+    await sql`insert into run_tickets (id, user_id, status) values ('t9', 'k', 'da-tru')`;
+    await sql`insert into room_audit (actor_id, action, note) values ('k', 'test', 'cu')`;
+    await sql`insert into room_settings (key, value) values ('giu', 'con')`;
+    await wipeTestData(sql);
+    const account = (await sql<{ balance: number; plan: string | null; trial_left: number; status: string }>`select balance, plan, trial_left, status from room_accounts where user_id = 'k'`)[0];
+    assert.equal(account.balance, 0);
+    assert.equal(account.plan, null);
+    assert.equal(account.trial_left, 1);
+    assert.equal(account.status, "open");
+    assert.equal((await sql`select 1 from token_grants`).length, 0);
+    assert.equal((await sql`select 1 from pay_orders`).length, 0);
+    assert.equal((await sql`select 1 from room_ledger`).length, 0);
+    assert.equal((await sql`select 1 from room_notices`).length, 0);
+    assert.equal((await sql`select 1 from run_tickets`).length, 0);
+    assert.equal((await sql`select 1 from room_audit`).length, 0);
+    assert.equal((await sql`select 1 from "user" where id = 'k'`).length, 1);
+    assert.equal((await sql<{ value: string }>`select value from room_settings where key = 'giu'`)[0].value, "con");
   });
 });
 

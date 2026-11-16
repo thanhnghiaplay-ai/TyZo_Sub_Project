@@ -33,8 +33,10 @@ function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
-function statusLabel(status: string) {
-  if (status === "paid") return "Đã cộng tiền";
+function statusLabel(status: string, purpose: string) {
+  if (status === "paid" && purpose === "token") return "Đã cộng Token dịch";
+  if (status === "paid" && purpose === "plan") return "Đã mở thuê phòng";
+  if (status === "paid") return "Đã ghi nhận (đơn cũ)";
   if (status === "claimed") return "Khách báo đã chuyển";
   if (status === "cancelled") return "Đã từ chối";
   if (status === "void") return "Khách hủy";
@@ -50,7 +52,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
   function load() {
     void listPayOrders()
       .then(setRows)
-      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được đơn nạp.", "bad"));
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được đơn.", "bad"));
   }
 
   useEffect(() => {
@@ -60,13 +62,13 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
   return (
     <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold">Đơn nạp</h2>
+        <h2 className="font-semibold">Đơn chuyển khoản</h2>
         <button type="button" className="text-sm text-muted underline" onClick={load}>
           Tải lại
         </button>
       </div>
-      <p className="text-sm text-muted">Khách bấm «Tôi đã chuyển khoản» thì đơn chuyển sang chờ kiểm tra. Webhook lỗi thì Chủ bấm xác nhận để cộng tiền tay. Quản lý chỉ xem và hủy.</p>
-      {rows.length === 0 && <p className="text-sm text-muted">Chưa có đơn nạp.</p>}
+      <p className="text-sm text-muted">Khách bấm «Tôi đã chuyển khoản» thì đơn chuyển sang chờ kiểm tra. Tiền khớp thì giao đúng gói, không cộng số dư. Cổng chưa tự cộng thì Chủ bấm xác nhận. Quản lý chỉ xem và từ chối.</p>
+      {rows.length === 0 && <p className="text-sm text-muted">Chưa có đơn.</p>}
       <ul className="grid max-h-80 gap-2 overflow-y-auto">
         {rows.map((row) => (
           <li key={row.id} data-pay-code={row.code} className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">
@@ -75,7 +77,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
               {row.provider} · {dong(row.amount)} · {row.code}
             </p>
             <p className="text-muted">
-              {statusLabel(row.status)} · {row.createdAt ? new Date(row.createdAt).toLocaleString("vi-VN") : ""}
+              {statusLabel(row.status, row.purpose)} · {row.createdAt ? new Date(row.createdAt).toLocaleString("vi-VN") : ""}
             </p>
             {(row.status === "pending" || row.status === "claimed") && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -104,7 +106,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
                   className="min-tap rounded-full border border-danger px-3 text-sm text-danger disabled:opacity-40"
                   onClick={() => setCancelId(row.id)}
                 >
-                  Hủy xác nhận
+                  Từ chối đơn
                 </button>
               </div>
             )}
@@ -113,9 +115,9 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
       </ul>
       <ConfirmDialog
         open={cancelId != null}
-        title="Hủy xác nhận"
-        message="Hủy xác nhận đơn này? Dùng khi khách báo giả hoặc lợi dụng, không cộng tiền."
-        confirmLabel="Hủy xác nhận"
+        title="Từ chối đơn"
+        message="Từ chối đơn này? Dùng khi khách báo chưa chuyển hoặc nội dung không khớp. Không giao gói."
+        confirmLabel="Từ chối đơn"
         danger
         onCancel={() => setCancelId(null)}
         onConfirm={() => {
@@ -125,7 +127,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
           setBusy(true);
           void cancelPayOrder({ data: id })
             .then(() => {
-              pushToast("Đã hủy xác nhận, không cộng tiền.");
+              pushToast("Đã từ chối đơn, không giao gói.");
               load();
             })
             .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa hủy được.", "bad"))

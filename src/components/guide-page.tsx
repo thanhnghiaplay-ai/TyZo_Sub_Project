@@ -168,14 +168,14 @@ export function GuidePage() {
 
         <div>
           <h1 className="text-xl font-semibold">Hướng dẫn</h1>
-          <p className="mt-1 text-sm text-muted">Cách dùng từng việc, nạp tiền, lấy key và liên hệ hỗ trợ. Gõ từ khóa để tìm nhanh.</p>
+          <p className="mt-1 text-sm text-muted">Cách dùng từng việc, mua gói, lấy key và liên hệ hỗ trợ. Gõ từ khóa để tìm nhanh.</p>
         </div>
 
         <input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Tìm: nạp tiền, key Groq, quên mật khẩu…"
+          placeholder="Tìm: Token dịch, key Groq, quên mật khẩu…"
           aria-label="Tìm trong hướng dẫn"
           autoComplete="off"
           className="min-h-12 w-full rounded-[var(--radius-card)] border border-line bg-raised px-4 text-base outline-none"

@@ -158,7 +158,7 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
               </Card>
             )}
             <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
-              <h3 className="text-sm font-semibold text-muted">Đơn nạp đang chờ xác nhận</h3>
+              <h3 className="text-sm font-semibold text-muted">Đơn chuyển khoản đang chờ</h3>
               <Big value={String(view.orders.waiting)} hint={view.orders.claimed ? `${view.orders.claimed} khách báo đã chuyển` : undefined} />
               <button type="button" className="min-tap w-fit rounded-full border border-line px-3 text-sm" onClick={goOrders}>
                 Xem chi tiết

@@ -150,7 +150,7 @@ export const ICON_SLOTS = [
   ["nav.voice", "Bước Thuyết minh & kiểu chữ", "SpeakerHigh"],
   ["nav.export", "Bước Xuất & kiểm tra", "DownloadSimple"],
   ["nav.account", "Tài khoản", "User"],
-  ["nav.wallet", "Ví / nạp tiền", "Wallet"],
+  ["nav.wallet", "Token dịch", "Wallet"],
   ["nav.plans", "Gói", "Crown"],
   ["nav.admin", "Quản lý / Admin", "ShieldCheck"],
   ["nav.home", "Trang chủ", "House"],

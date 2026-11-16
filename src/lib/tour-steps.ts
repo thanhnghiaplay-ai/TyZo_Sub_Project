@@ -77,7 +77,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "[data-tour=change-password]", title: "2. Đổi mật khẩu", text: "Nhập mật khẩu hiện tại và mật khẩu mới. Quên mật khẩu thì dùng nút Quên mật khẩu ở màn đăng nhập (nếu có) hoặc liên hệ hỗ trợ." },
   ],
   "ho-tro": [
-    { sel: "#tool-tab-yeu-cau", rail: true, title: "Yêu cầu xem lại", text: "Việc cần người xem lại (gói, nạp tiền, khóa, cấm): bấm mục này và mô tả rõ việc cùng thời điểm xảy ra. Thông tin liên hệ nằm ở mục Hỗ trợ và liên hệ của trang Hướng dẫn." },
+    { sel: "#tool-tab-yeu-cau", rail: true, title: "Yêu cầu xem lại", text: "Việc cần người xem lại (gói, Token dịch, khóa, cấm): bấm mục này và mô tả rõ việc cùng thời điểm xảy ra. Thông tin liên hệ nằm ở mục Hỗ trợ và liên hệ của trang Hướng dẫn." },
   ],
 };
 

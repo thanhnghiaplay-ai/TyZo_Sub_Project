@@ -72,7 +72,7 @@ export function StudioPalette({ commands, open, onOpenChange }: { commands: Pale
             setQuery(event.target.value);
             setIndex(0);
           }}
-          placeholder="Gõ việc muốn làm: chọn video, tải SRT, nạp tiền…"
+          placeholder="Gõ việc muốn làm: chọn video, tải SRT, Token dịch…"
           aria-label="Lệnh nhanh"
           role="combobox"
           aria-expanded="true"

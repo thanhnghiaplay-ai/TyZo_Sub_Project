@@ -30,7 +30,7 @@ export const RUN_STATUS_LABEL: Record<RunStatus, string> = {
   "da-nha": "Đã nhả",
   "dung-tien": "Dừng vì hết tiền",
   loi: "Lỗi nhận dạng",
-  "da-hoan": "Đã hoàn vào ví",
+  "da-hoan": "Đã hoàn",
 };
 
 function money(value: unknown) {

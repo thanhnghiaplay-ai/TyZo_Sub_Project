@@ -388,6 +388,7 @@ export type PayClaim = {
   amount: number;
   code: string;
   status: string;
+  purpose: string;
   createdAt: string;
 };
 
@@ -452,9 +453,10 @@ export const listPayOrders = createServerFn({ method: "GET" })
       amount: number;
       code: string;
       status: string;
+      purpose: string;
       created_at: Date | string;
     }>`
-      select o.id, u.email, u.name, o.provider, o.amount, o.code, o.status, o.created_at
+      select o.id, u.email, u.name, o.provider, o.amount, o.code, o.status, o.purpose, o.created_at
       from pay_orders o
       left join "user" u on u.id = o.user_id
       order by o.created_at desc
@@ -468,6 +470,7 @@ export const listPayOrders = createServerFn({ method: "GET" })
       amount: row.amount,
       code: row.code,
       status: row.status,
+      purpose: row.purpose ?? "nap",
       createdAt: new Date(row.created_at).toISOString(),
     }));
   });

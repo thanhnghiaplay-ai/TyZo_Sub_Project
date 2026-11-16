@@ -21,7 +21,6 @@ import {
   skipAppeal,
   listUserLedger,
   resetUserBalance,
-  setUserBalance,
   setBadgeStyle,
   setOwnerEmail,
   setStaffRole,
@@ -92,7 +91,7 @@ function AppealForm({
       </p>
       <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
       <div className="flex flex-wrap gap-2">
-        {["Lần này trừ đúng số phút đã chạy. Đơn giá là giá tại lúc bấm chạy.", "Phần giữ thừa đã trả vào số dư.", "Đoạn lỗi không tính tiền.", "Tệp không còn trên phòng. Hãy chọn lại tệp trên máy nếu muốn chạy tiếp.", "Cửa trả theo lượt đang đóng. Key của bạn vẫn dùng được."].map((line) => (
+        {["Lần này trừ đúng số phút đã chạy. Đơn giá là giá tại lúc bấm chạy.", "Phần giữ thừa đã trả về Token dịch.", "Đoạn lỗi không tính Token dịch.", "Tệp không còn trên phòng. Hãy chọn lại tệp trên máy nếu muốn chạy tiếp.", "Cửa trả theo lượt đang đóng. Key của bạn vẫn dùng được."].map((line) => (
           <button key={line} type="button" className="rounded-full border border-line px-3 py-1 text-left text-xs" onClick={() => setReplyText(line)}>
             {line}
           </button>
@@ -174,7 +173,6 @@ export function AdminDesk() {
   const [runs, setRuns] = useState<RunTicket[]>([]);
   const [refundAmount, setRefundAmount] = useState("");
   const [refundReason, setRefundReason] = useState("");
-  const [balanceEdit, setBalanceEdit] = useState("");
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
   const [password, setPassword] = useState("");
@@ -440,7 +438,6 @@ export function AdminDesk() {
                     setPicked(user);
                     setNote(user.note);
                     setReason(user.reason);
-                    setBalanceEdit(formatMoney(user.balance ?? 0));
                     setLedger([]);
                     setRuns([]);
                     void listUserLedger({ data: user.id }).then(setLedger).catch(() => setLedger([]));
@@ -462,7 +459,7 @@ export function AdminDesk() {
             <AccountCard rank={picked.role} extra={picked.partner ? ["ctv"] : []} styleId={badge} className="admin-detail">
               <h2 className="admin-span font-semibold">{picked.email}</h2>
               <p className="admin-span text-sm text-muted">
-                Số dư {dong(picked.balance)}. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
+                Số dư cũ {dong(picked.balance)} đ, không dùng để chi. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
               </p>
               <div>
                 <h3 className="text-sm font-semibold">Sổ tiền</h3>
@@ -491,7 +488,7 @@ export function AdminDesk() {
                             void run(async () => {
                               await releaseRunHold({ data: ticket.id });
                               setRuns(await listUserRuns({ data: picked.id }));
-                            }, "Đã nhả khoản đang giữ vào ví.")
+                            }, "Đã nhả khoản đang giữ.")
                           }
                         >
                           Nhả khoản giữ
@@ -519,7 +516,7 @@ export function AdminDesk() {
                               setRefundAmount("");
                               setRefundReason("");
                               setRuns(await listUserRuns({ data: picked.id }));
-                            }, "Đã hoàn vào ví.")
+                            }, "Đã hoàn.")
                           }
                         >
                           Hoàn phiếu {maskFileName(ticket.fileName) || ticket.id}
@@ -583,41 +580,9 @@ export function AdminDesk() {
                   </div>
                   )}
                   </div>
-                  {roleAtLeast(role, "chu") && (
+                  {roleAtLeast(role, "chu") && picked.balance > 0 && (
                     <div className="admin-pane">
-                      <label className="grid gap-1 text-sm">
-                        Số dư (đồng)
-                        <input
-                          value={balanceEdit}
-                          onChange={(event) => setBalanceEdit(formatMoney(parseMoney(event.target.value)))}
-                          inputMode="numeric"
-                          className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        disabled={busy}
-                        className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
-                        onClick={() => {
-                          const value = Math.round(parseMoney(balanceEdit || "0"));
-                          if (!Number.isFinite(value) || value < 0) {
-                            setNotice("Số dư phải từ 0 trở lên.");
-                            return;
-                          }
-                          void run(async () => {
-                            await setUserBalance({ data: { userId: picked.id, balance: value } });
-                            const found = await searchUsers({ data: picked.email });
-                            const next = found.find((item) => item.id === picked.id);
-                            if (next) {
-                              setPicked(next);
-                              setBalanceEdit(formatMoney(next.balance ?? 0));
-                            }
-                            setLedger(await listUserLedger({ data: picked.id }));
-                          }, "Đã cập nhật số dư.");
-                        }}
-                      >
-                        Lưu số dư
-                      </button>
+                      <p className="text-sm text-muted">Số dư cũ còn {dong(picked.balance)} đ. Số này không dùng để mua gói hay trừ lượt.</p>
                       <button
                         type="button"
                         disabled={busy}
@@ -628,7 +593,7 @@ export function AdminDesk() {
                           setResetOpen(true);
                         }}
                       >
-                        Reset số dư về 0
+                        Gỡ số dư cũ
                       </button>
                     </div>
                   )}
@@ -734,8 +699,8 @@ export function AdminDesk() {
 
       <ConfirmCodeDialog
         open={resetOpen}
-        title="Reset số dư về 0"
-        message={`Đưa số dư và sổ tiền của ${picked?.email ?? ""} về 0? Việc này không hoàn lại.`}
+        title="Gỡ số dư cũ"
+        message={`Đưa số dư cũ của ${picked?.email ?? ""} về 0? Không xóa đơn, Token dịch hay tài khoản. Số này không dùng để chi.`}
         code={resetCode}
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
@@ -743,12 +708,11 @@ export function AdminDesk() {
           if (!picked) return;
           void run(async () => {
             await resetUserBalance({ data: picked.id });
-            setLedger([]);
-            setBalanceEdit(formatMoney(0));
+            setLedger(await listUserLedger({ data: picked.id }));
             const found = await searchUsers({ data: picked.email });
             const next = found.find((item) => item.id === picked.id);
             if (next) setPicked(next);
-          }, "Đã đưa số dư về 0.");
+          }, "Đã gỡ số dư cũ.");
         }}
       />
       <ConfirmDialog
@@ -788,7 +752,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "doi-quyen": "Đổi quyền cộng tác",
   "nha-giu": "Nhả khoản giữ phiếu",
   "xem-ten-tep": "Xem tên tệp đầy đủ của phiếu",
-  "hoan-vi": "Hoàn tiền vào ví",
+  "hoan-vi": "Hoàn phiếu",
   "key-phong": "Đổi key Groq của phòng",
   "key-model": "Đồng bộ model của key",
   "key-alibaba": "Đổi key Alibaba",
@@ -796,8 +760,8 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "lien-he": "Đổi thông tin liên hệ hỗ trợ",
   "bao-tri": "Đổi trạng thái Hoạt động/Bảo trì của nhóm dịch",
   "giao-dien": "Công bố giao diện",
-  "reset-so-du": "Reset số dư",
-  "reset-tien-test": "Reset tiền thử",
+  "reset-so-du": "Gỡ số dư cũ",
+  "reset-tien-test": "Reset số liệu thử",
   "dat-so-du": "Đặt số dư",
   "mo-goi": "Cấp gói",
   "chi-phi": "Thêm chi phí",

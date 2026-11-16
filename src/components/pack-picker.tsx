@@ -46,8 +46,8 @@ export function PackPicker({
       <p className="text-sm text-muted">
         {seconds > 0
           ? door === "turn"
-            ? "Giá sau khi có tệp. Khoản giữ lớn hơn ước tính để phòng phát sinh. Thuyết minh, nếu bật, trừ ví lúc đọc và không nằm trong khoản giữ."
-            : "Ước tính tiền nhà cung cấp trên key của bạn. Phòng không giữ ví ở cửa này."
+            ? "Giá sau khi có tệp. Khoản giữ lớn hơn ước tính để phòng phát sinh. Thuyết minh, nếu bật, trừ Token dịch lúc đọc và không nằm trong khoản giữ."
+            : "Ước tính tiền nhà cung cấp trên key của bạn. Phòng không trừ Token dịch ở cửa này."
           : "Chọn tệp, âm thanh hoặc đợi link có thời lượng để thấy giá từng gói."}
       </p>
       {shown.map((pack) => {

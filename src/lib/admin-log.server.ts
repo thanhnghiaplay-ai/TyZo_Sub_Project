@@ -8,6 +8,18 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.0.4",
+    time: "02:05 ngày 17/11/2026",
+    area: "tien",
+    text: "Chữ tiền khớp cách trả. Đơn paid hiện theo purpose. Bỏ ô đặt số dư; setUserBalance từ chối. Gỡ số dư cũ chỉ đưa balance về 0, không xóa đơn hay Token dịch. Nút từ chối đơn khớp câu thông báo. Trả theo lượt, kệ gói, hướng dẫn và doanh thu không còn nói ví hay nạp tiền.",
+  },
+  {
+    version: "5.0.3",
+    time: "01:45 ngày 17/11/2026",
+    area: "du-lieu",
+    text: "Nút reset số liệu thử (wipeTestData) xóa token_grants, token_slices, đơn, phiếu, sổ, chi phí, chuông, hoa hồng, chất lượng, yêu cầu, nhật ký thao tác, rồi ghi một dòng nhật ký mới. Đưa balance về 0, gỡ plan và plan_until, trial_left về 1. Giữ tài khoản, vai trò, room_settings, key, điều khoản, affiliates và thuật ngữ.",
+  },
+  {
     version: "5.0.2",
     time: "01:10 ngày 17/11/2026",
     area: "tien",

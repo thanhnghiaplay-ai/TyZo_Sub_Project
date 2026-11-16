@@ -21,7 +21,7 @@ function clock(seconds: number) {
 }
 
 function chip(status: string) {
-  if (status === "paid") return { label: "Đã cộng", className: "border-success/40 bg-success/10 text-success" };
+  if (status === "paid") return { label: "Đã giao", className: "border-success/40 bg-success/10 text-success" };
   if (status === "expired") return { label: "Hết hạn", className: "border-error/40 bg-error/10 text-error" };
   if (status === "cancelled") return { label: "Đã từ chối", className: "border-error/40 bg-error/10 text-error" };
   if (status === "void") return { label: "Đã hủy", className: "border-error/40 bg-error/10 text-error" };
@@ -131,7 +131,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
         if (stop) return;
         if (next.status === "paid") {
           setEnding("thanks");
-          pushToast("Đã cộng tiền vào số dư.");
+          pushToast("Đã ghi nhận chuyển khoản.");
           return;
         }
         if (next.status === "expired" || next.status === "cancelled") setEnding("sorry");
@@ -316,7 +316,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
     <div className="pay-thanks absolute inset-0 grid place-items-center gap-3 px-4 text-center">
       <BrandMark title="TyZo Sub" />
       <p className="pay-end-title font-semibold text-fg">{ending === "thanks" ? "Xin cảm ơn" : "Xin lỗi vì sự bất tiện này"}</p>
-      {ending === "thanks" && <p className="text-sm text-muted">Đã cộng tiền vào số dư</p>}
+      {ending === "thanks" && <p className="text-sm text-muted">Đã ghi nhận chuyển khoản</p>}
     </div>
   );
 

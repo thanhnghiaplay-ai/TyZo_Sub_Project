@@ -233,13 +233,13 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       id: "ho-tro",
       title: "Hỗ trợ và liên hệ",
       group: "tro-giup",
-      intro: "Cần hỏi về gói, nạp tiền, khóa hoặc cấm tài khoản.",
+      intro: "Cần hỏi về gói, Token dịch, khóa hoặc cấm tài khoản.",
       words: "ho tro lien he zalo facebook email hoi yeu cau xem lai khieu nai",
       tour: "ho-tro",
       contact: true,
       page: { label: `Mở «${UI.appeal}»`, to: "/yeu-cau" },
       steps: [
-        { text: `Việc cần người xem lại (gói, nạp tiền, khóa, cấm): gửi ở «${UI.appeal}». Mô tả rõ việc và thời điểm xảy ra.` },
+        { text: `Việc cần người xem lại (gói, Token dịch, khóa, cấm): gửi ở «${UI.appeal}». Mô tả rõ việc và thời điểm xảy ra.` },
         { text: "Không gửi key Groq hay mật khẩu trong yêu cầu." },
       ],
     },
@@ -274,7 +274,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "xoa-du-lieu",
     q: "Xóa dữ liệu trình duyệt thì mất gì?",
-    a: "Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa lưu trên máy bạn nên sẽ mất. Tài khoản, số dư, gói thuê và gói giây nằm ở phòng nên không mất.",
+    a: "Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa lưu trên máy bạn nên sẽ mất. Tài khoản, Token dịch và gói thuê nằm ở phòng nên không mất.",
     words: "xoa du lieu trinh duyet cache mat key luu tren may",
   },
   {

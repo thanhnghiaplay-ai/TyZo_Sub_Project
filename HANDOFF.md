@@ -1,3 +1,18 @@
+## ĐẨY CHÍNH THỨC v5.0.4 (17/11/2026 02:05)
+ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.4.
+CHƯA LÀM: chưa bấm chữ tiền trên điện thoại sau khi site lên.
+CỐ Ý KHÔNG LÀM: không đổi giá, không đổi điều khoản.
+
+## CHỮ TIỀN (17/11/2026 02:05, nhánh work, v5.0.4)
+ĐÃ LÀM: đơn paid ghi đúng Token dịch hoặc thuê phòng. Bỏ ô đặt số dư. Gỡ số dư cũ chỉ đưa balance về 0. Nút từ chối đơn khớp câu báo. Chữ trả theo lượt, hướng dẫn và doanh thu không còn nói ví.
+CHƯA LÀM: chưa bấm trên điện thoại sau khi đẩy.
+CỐ Ý KHÔNG LÀM: không đổi giá, không đổi điều khoản.
+
+## RESET SẠCH (17/11/2026 01:45, nhánh work, v5.0.3)
+ĐÃ LÀM: nút reset xóa Token dịch, chuông, đơn, phiếu, sổ, chi phí, hoa hồng thử, chất lượng, yêu cầu, nhật ký thao tác. Gỡ gói thuê, lượt thử về 1. Giữ tài khoản, cấu hình, key.
+CHƯA LÀM: chưa bấm nút trên site thật. Chưa đẩy.
+CỐ Ý KHÔNG LÀM: không xóa tài khoản, vai trò, cộng tác viên, thuật ngữ, điều khoản.
+
 ## ĐẨY CHÍNH THỨC v5.0.2 (17/11/2026 01:18)
 ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.2. Mở Tài khoản một lần để đơn TZZEKV85 được bù 10.000 Token dịch.
 CHƯA LÀM: chưa bấm lại trên điện thoại sau khi site lên.

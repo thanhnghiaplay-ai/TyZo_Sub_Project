@@ -1254,26 +1254,10 @@ export const resetTestMoney = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
+    const { wipeTestData } = await import("@/lib/pay-flow");
     const sql = await getSql();
-    await sql`update room_accounts set balance = 0`;
-    await sql`delete from room_ledger`;
-    await sql`delete from room_costs`;
-    try {
-      await sql`delete from pay_orders`;
-    } catch {
-      /* bảng có thể chưa có trên bản cũ */
-    }
-    try {
-      await sql`delete from pay_seen`;
-    } catch {
-      /* bỏ qua nếu chưa có */
-    }
-    try {
-      await sql`update run_tickets set held = 0, charged = 0, refunded = 0, status = 'da-huy' where held > 0 or charged > 0 or refunded > 0`;
-    } catch {
-      /* bỏ qua nếu chưa có phiếu */
-    }
-    await writeAudit(context.userId, "reset-tien-test", null, "Xóa số dư, sổ, đơn nạp, chi phí và phiếu tiền test");
+    await wipeTestData(sql);
+    await writeAudit(context.userId, "reset-tien-test", null, "Xóa số liệu thử: Token dịch, đơn, phiếu, chuông, nhật ký, gói thuê. Giữ tài khoản.");
     return { ok: true as const };
   });
 
@@ -1290,18 +1274,7 @@ export const resetUserBalance = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     await sql`insert into room_accounts (user_id, balance) values (${data}, 0) on conflict (user_id) do update set balance = 0`;
-    await sql`delete from room_ledger where user_id = ${data}`;
-    try {
-      await sql`delete from pay_orders where user_id = ${data}`;
-    } catch {
-      /* bỏ qua */
-    }
-    try {
-      await sql`update run_tickets set held = 0, charged = 0, refunded = 0, status = 'da-huy' where user_id = ${data}`;
-    } catch {
-      /* bỏ qua */
-    }
-    await writeAudit(context.userId, "reset-so-du", data, "Đưa số dư và sổ về 0 (test)");
+    await writeAudit(context.userId, "reset-so-du", data, "Gỡ số dư cũ. Không xóa đơn, Token dịch hay tài khoản.");
     return { ok: true as const };
   });
 
@@ -1316,21 +1289,8 @@ export const setUserBalance = createServerFn({ method: "POST" })
     }
     return { userId, balance };
   })
-  .handler(async ({ context, data }) => {
-    const place = await requireRole(context.userId, "chu");
-    await assertLower(context.userId, data.userId);
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    const before = await sql<{ balance: number | null }>`select balance from room_accounts where user_id = ${data.userId}`;
-    const prev = before[0]?.balance ?? 0;
-    const delta = data.balance - prev;
-    await sql`insert into room_accounts (user_id, balance) values (${data.userId}, ${data.balance}) on conflict (user_id) do update set balance = ${data.balance}`;
-    await sql`
-      insert into room_ledger (user_id, kind, amount, note)
-      values (${data.userId}, 'dieu-chinh', ${delta}, ${"Admin " + place.email + " đặt số dư " + data.balance + " đ"})
-    `;
-    await writeAudit(context.userId, "dat-so-du", data.userId, `Đặt số dư ${data.balance} (trước ${prev})`);
-    return { ok: true as const };
+  .handler(async () => {
+    throw new Error("Không đặt số dư. Số dư không dùng để chi.");
   });
 
 export const getBadgeStyle = createServerFn({ method: "GET" })

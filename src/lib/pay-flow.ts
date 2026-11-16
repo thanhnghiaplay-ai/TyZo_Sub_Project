@@ -298,3 +298,30 @@ export async function releaseHoldWith(sql: Sql, id: string, note = "") {
   if (!rows.length) throw new Error("Không có phiếu này.");
   throw new Error("Phiếu này không còn khoản đang giữ.");
 }
+
+/**
+ * Xóa số liệu thử để còn bản như lúc mới cài.
+ * Giữ tài khoản, vai trò, cấu hình, key, điều khoản, cộng tác viên và thuật ngữ.
+ */
+export async function wipeTestData(sql: Sql) {
+  await sql`delete from token_slices`;
+  await sql`delete from token_grants`;
+  await sql`delete from run_tickets`;
+  await sql`delete from pay_orders`;
+  await sql`delete from pay_seen`;
+  await sql`delete from room_ledger`;
+  await sql`delete from room_costs`;
+  await sql`delete from room_notices`;
+  await sql`delete from commission_events`;
+  await sql`delete from affiliate_payouts`;
+  await sql`delete from quality_runs`;
+  await sql`delete from room_appeals`;
+  await sql`delete from trial_devices`;
+  await sql`delete from room_presence`;
+  await sql`delete from rate_hits`;
+  await sql`delete from room_audit`;
+  await sql`
+    update room_accounts
+    set balance = 0, plan = null, plan_until = null, trial_left = 1
+  `;
+}

@@ -63,7 +63,7 @@ export function AccountPanel() {
         if (!gone) setState(next);
       })
       .catch(() => {
-        if (!gone) setNotice("Chưa đọc được ví. Hãy đăng nhập lại.");
+        if (!gone) setNotice("Chưa đọc được tài khoản. Hãy đăng nhập lại.");
       });
     return () => {
       gone = true;
@@ -103,7 +103,7 @@ export function AccountPanel() {
           </h2>
           <p className="text-sm text-muted">
             {place?.status === "open" || !place
-              ? "Dùng khi cần hỏi về gói, nạp tiền, khóa hoặc cấm. Không gửi key Groq."
+              ? "Dùng khi cần hỏi về gói, Token dịch, khóa hoặc cấm. Không gửi key Groq."
               : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}
           </p>
           <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
@@ -153,7 +153,7 @@ export function AccountPanel() {
                 <DoorDot open />
                 Trả theo lượt
               </h2>
-              <p className="text-sm text-muted">Cửa này trừ Token dịch, không giữ ví. Mua gói ở dưới. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
+              <p className="text-sm text-muted">Cửa này trừ Token dịch, không giữ số dư. Mua gói ở dưới. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
             </section>
           ) : (
             <RunDoorClosed note={runDoor.note} />

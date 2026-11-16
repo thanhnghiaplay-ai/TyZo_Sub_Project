@@ -153,17 +153,17 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         {points.map((point) => (
           <li key={point.bucket}>{point.bucket} · thu {dong(point.revenue)} · chi {dong(point.cost)}</li>
         ))}
-        {points.length === 0 && <li>{ready ? "Chưa có tiền nạp trong khoảng này." : "Đang tải…"}</li>}
+        {points.length === 0 && <li>{ready ? "Chưa có chuyển khoản trong khoảng này." : "Đang tải…"}</li>}
       </ul>
       </div>
       {owner && <RevenueExtra span={span} points={points} />}
       <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
         <ul className="space-y-1 text-muted">
-          <li className="flex justify-between gap-2"><span>Tiền nạp đã xác nhận</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
-          <li className="flex justify-between gap-2"><span>Khách mua gói từ số dư</span><span className="font-medium text-fg">{dong(breakdown.goi)}</span></li>
+          <li className="flex justify-between gap-2"><span>Tiền chuyển khoản đã xác nhận</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
+          <li className="flex justify-between gap-2"><span>Mua gói từ số dư cũ</span><span className="font-medium text-fg">{dong(breakdown.goi)}</span></li>
           <li className="flex justify-between gap-2"><span>Đã trừ trả theo lượt (sau hoàn)</span><span className="font-medium text-fg">{dong(breakdown.luot)}</span></li>
-          <li className="flex justify-between gap-2"><span>Hoàn vào ví</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
+          <li className="flex justify-between gap-2"><span>Hoàn vào số dư cũ</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
           <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
           <li className="flex justify-between gap-2"><span>Giá vốn lượt (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
           {breakdown.vonUoc > 0 && (
@@ -305,9 +305,9 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       )}
       {owner && (
         <div className="grid gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/5 p-3">
-          <h2 className="font-semibold text-danger">Reset tiền (chỉ khi test)</h2>
+          <h2 className="font-semibold text-danger">Reset số liệu thử</h2>
           <p className="text-sm text-muted">
-            Đưa toàn bộ số dư về 0, xóa sổ cái, đơn nạp, chi phí ghi tay và phiếu tiền test. Không xóa tài khoản hay gói. Dùng trước khi chạy thật để tránh lẫn số liệu thử.
+            Xóa Token dịch, chuông, đơn, phiếu, nhật ký thao tác, hoa hồng thử và gói thuê đang mở. Lượt thử về 1. Giữ tài khoản, cấu hình và key. Không hoàn tiền.
           </p>
           <button
             type="button"
@@ -318,22 +318,22 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
               setResetOpen(true);
             }}
           >
-            Reset về 0
+            Reset về sạch
           </button>
         </div>
       )}
 
       <ConfirmCodeDialog
         open={resetOpen}
-        title="Reset tiền test"
-        message="Xóa hết số liệu tiền test? Không hoàn lại. Đưa toàn bộ số dư về 0, xóa sổ cái, đơn nạp, chi phí ghi tay và phiếu tiền test."
+        title="Reset số liệu thử"
+        message="Xóa hết số liệu thử? Không hoàn tiền. Xóa Token dịch, chuông, đơn, phiếu, nhật ký, hoa hồng thử và gói thuê. Lượt thử về 1. Giữ tài khoản, cấu hình và key."
         code={resetCode}
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
           setResetOpen(false);
           void resetTestMoney({ data: resetCode })
             .then(() => {
-              pushToast("Đã reset tiền test về 0.");
+              pushToast("Đã xóa số liệu thử.");
               load();
             })
             .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa reset được.", "bad"));

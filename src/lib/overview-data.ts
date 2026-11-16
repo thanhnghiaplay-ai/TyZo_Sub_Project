@@ -114,7 +114,7 @@ export async function overviewWith(sql: Sql, range: OverviewRange, owner: boolea
   if (qualityDrop) alerts.push({ id: "chat-luong-giam", level: "red", text: "Tỷ lệ lần chạy chất lượng thấp đang tăng so với kỳ trước.", go: "chat-luong" });
   if (Number(stuck[0]?.n ?? 0) > 0) alerts.push({ id: "giu-lau", level: "yellow", text: `${stuck[0].n} phiếu giữ tiền quá ${OVERVIEW_LIMITS.holdHours} giờ chưa nhả.`, go: "viec" });
   if (orders.waiting > 0 && orders.oldestMinutes >= OVERVIEW_LIMITS.orderMinutes) {
-    alerts.push({ id: "don-cho-lau", level: "yellow", text: `Đơn nạp chờ lâu nhất đã ${orders.oldestMinutes} phút.`, go: "viec" });
+    alerts.push({ id: "don-cho-lau", level: "yellow", text: `Đơn chuyển khoản chờ lâu nhất đã ${orders.oldestMinutes} phút.`, go: "viec" });
   }
 
   let topSpend: TopUser[] | null = null;
