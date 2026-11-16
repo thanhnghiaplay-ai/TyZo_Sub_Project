@@ -32,10 +32,10 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
   }, [reload]);
 
   return (
-    <section className="grid gap-2" aria-label="Gói giây">
-      <h2 className="text-sm font-semibold">Gói giây cho trả theo lượt</h2>
+    <section className="grid gap-2" aria-label="Gói giây" data-tour="giay">
+      <h2 className="text-sm font-semibold">Gói giây</h2>
       <p className="text-sm text-muted">
-        Còn {units == null ? "…" : formatGiay(units)}. Giá gói mới có thể đổi. Gói đã mua giữ nguyên số giây đến hết hạn. Hết hạn thì phần còn lại mất, không hoàn tiền.
+        Dùng cho trả theo lượt và dịch trực tiếp. Còn {units == null ? "…" : formatGiay(units)}. Giá gói mới có thể đổi. Gói đã mua giữ nguyên số giây đến hết hạn. Hết hạn thì phần còn lại mất, không hoàn tiền.
       </p>
       {!priced && <p className="text-sm text-danger">Chưa có giá bản Turbo hoặc tỷ giá nên chưa bán gói.</p>}
       {packs.length === 0 && <p className="text-sm text-muted">Chủ chưa mở gói giây.</p>}

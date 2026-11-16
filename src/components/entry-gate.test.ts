@@ -22,6 +22,7 @@ const TERMS_TEXT_HASH: Record<string, string> = {
   "2026-11-15.1": "603f8b2428d5ffc05f338960cbea8d66ed755351d36067eb351115be17a51b79",
   "2026-11-16.1": "91f1a92ce2709e78af47072c9ecf13135cdbbaeae89a501d838ec6bb7ee96016",
   "2026-11-16.2": "f78f05bc80a9227a1cdb849b0e0c0676aa364bd4c9cc4f11d376a8ab8c9f852a",
+  "2026-11-16.3": "bda4fbae11af81413357a9bca25413853b9ed500bef459958c9eebd24bd5d61b",
 };
 
 function termsText() {

@@ -145,13 +145,13 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       id: "thuyet-minh",
       title: "Thuyết minh (đọc bản dịch thành tiếng)",
       group: "tinh-nang",
-      intro: "Nghe bản dịch được đọc theo video.",
+      intro: "Nghe bản dịch được đọc theo video. Khi dùng key của phòng thì trừ số dư đồng.",
       words: "thuyet minh doc giong nghe tts neural orpheus am thanh",
       tour: "thuyet-minh",
       steps: [
         { text: `Mở «${UI.voiceTab}» ở menu trái để bật hoặc tắt thuyết minh và chọn giọng. Bạn tắt thì lần sau app giữ tắt.` },
         { text: "Giọng neural cần mạng. Khi mạng lỗi, app đọc bằng giọng có sẵn trên máy." },
-        { text: "Giọng Orpheus dùng key Groq của bạn." },
+        { text: "Khi dùng key của phòng, đọc thuyết minh trừ số dư đồng, không trừ gói giây. Giọng Orpheus khi bạn dùng key của mình thì tính vào key đó." },
       ],
     },
     {
@@ -167,7 +167,8 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: `Chọn ngôn ngữ nói (để «${UI.autoLang}» nếu chưa rõ) và ngôn ngữ dịch. Bật tiếng dịch nếu muốn nghe.` },
         { text: `Bấm «${UI.begin}». Với «${UI.tabAudio}», trình duyệt hiện hộp chọn: hãy chọn đúng tab đang phát và bật mục chia sẻ âm thanh của tab.`, image: "chia-se-tab.png" },
         { text: "Điện thoại và máy tính bảng thường không thu được tiếng của tab. Máy đó app tự chuyển sang micro." },
-        { text: "Số giây còn lại và số phút hiện ngay trên màn hình, kèm cảnh báo khi sắp hết. Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
+        { text: "Số giây còn lại và số phút hiện ngay trên màn hình, kèm cảnh báo khi sắp hết. Hết giây thì phiên dừng. Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
+        { text: "Dịch trực tiếp trừ cùng gói giây đã mua ở Số dư. Phiên không giữ số dư đồng." },
       ],
     },
     {
@@ -187,8 +188,8 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       id: "nap-tien-goi",
       title: "Nạp tiền và gói",
       group: "tai-khoan",
-      intro: "Có hai cách trả: thuê phòng theo gói, hoặc trả theo lượt bằng gói giây.",
-      words: "nap tien goi gia thue phong tra theo luot vi so du chuyen khoan dung thu 24 gio 7 ngay 30 ngay",
+      intro: "Ba cách: thuê phòng theo gói, trả theo lượt và dịch trực tiếp bằng gói giây, thuyết minh trừ số dư đồng.",
+      words: "nap tien goi gia thue phong tra theo luot giay dich truc tiep thuyet minh vi so du chuyen khoan dung thu 24 gio 7 ngay 30 ngay",
       tour: "nap-tien",
       page: { label: "Xem bảng giá", to: "/goi" },
       steps: [
@@ -196,6 +197,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: `Gói thuê phòng: ${planLines()}. Trong hạn không giới hạn số tệp và được xuất file Vietsub; ${planSaving()}.` },
         { text: `Dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB, không xuất file Vietsub.` },
         { text: "Trả theo lượt: mua gói giây ở Số dư. Phòng giữ số giây ước tính, khi xong trừ số giây thực và trả phần thừa nếu gói còn hạn. Hết hạn thì phần còn lại mất, không hoàn tiền. Giá gói mới có thể đổi. Nếu nhà cung cấp báo lỗi thì không bị trừ. Tài khoản dùng thử chưa dùng được cách này." },
+        { text: "Dịch trực tiếp dùng cùng gói giây. Phiên không giữ số dư đồng. Hết giây thì phiên dừng." },
         { text: "Nếu bạn dùng key Groq của mình thì Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ ví cho lượt chạy đó." },
       ],
     },
@@ -272,7 +274,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "xoa-du-lieu",
     q: "Xóa dữ liệu trình duyệt thì mất gì?",
-    a: "Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa lưu trên máy bạn nên sẽ mất. Tài khoản, số dư và gói của bạn nằm ở phòng nên không mất.",
+    a: "Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa lưu trên máy bạn nên sẽ mất. Tài khoản, số dư, gói thuê và gói giây nằm ở phòng nên không mất.",
     words: "xoa du lieu trinh duyet cache mat key luu tren may",
   },
   {

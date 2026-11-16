@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## GÓI GIÂY 9 (16/11/2026 22:55, nhánh work, v4.1.1)
+ĐÃ LÀM: hướng dẫn, tuyến Chỉ tôi và câu chọn Trả theo lượt khớp gói giây. Kệ gói ghi cả dịch trực tiếp. Điều khoản `2026-11-16.3` (tóm tắt và bảng giá). Không đổi cách tính.
+CHƯA LÀM: chưa bấm trên điện thoại thật.
+CỐ Ý KHÔNG LÀM: không sửa `pack-picker.tsx` vì không chỗ nào gọi. Không đổi giá thuê phòng.
+
 ## GÓI GIÂY 5–8 (16/11/2026 22:12, nhánh work, v4.1.0)
 ĐÃ LÀM: dịch trực tiếp tự tính và trừ gói giây, không giữ ví. Thuê phòng giữ 9.000 / 39.000 / 99.000. Bỏ ô giá riêng từng model. Alibaba kéo giá Singapore, chưa kéo được thì dùng giá dự phòng. Điều khoản `2026-11-16.2`.
 CHƯA LÀM: chưa bấm dịch trực tiếp trên điện thoại thật.

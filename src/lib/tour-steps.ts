@@ -53,7 +53,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   "dich-truc-tiep": [
     { sel: "[data-tour=live-source]", title: "1. Chọn nguồn", text: "Âm thanh tab (tiếng từ một tab trình duyệt) hoặc Micro. Điện thoại thường chỉ dùng được Micro." },
     { sel: "[data-tour=live-lang]", title: "2. Chọn ngôn ngữ", text: "Ngôn ngữ nói (để Tự nhận biết nếu chưa rõ) và ngôn ngữ dịch. Có thể bật tiếng dịch qua loa." },
-    { sel: "[data-tour=live-balance]", title: "3. Số giây", text: "Số giây còn lại và số phút hiện ở đây. Sắp hết thì có cảnh báo. Bấm Mua gói giây để mua thêm." },
+    { sel: "[data-tour=live-balance]", title: "3. Số giây", text: "Số giây còn lại và số phút hiện ở đây. Sắp hết thì có cảnh báo. Hết giây thì phiên dừng. Bấm Mua gói giây để mua thêm." },
     { sel: "[data-tour=live-start]", title: "4. Bắt đầu", text: "Bấm Bắt đầu. Với Âm thanh tab, hộp chọn của trình duyệt hiện ra: chọn đúng tab và bật mục chia sẻ âm thanh của tab." },
     { sel: "[data-tour=export]", title: "5. Tải bản ghi", text: "Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
   ],
@@ -65,7 +65,8 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Số dư và nạp tiền", text: "Nằm trong nhóm Tài khoản của menu trái." },
     { sel: "[data-tour=balance]", title: "2. Số dư và hạn gói", text: "Số dư, giây dịch còn lại và hạn gói của bạn." },
     { sel: "[data-tour=topup]", title: "3. Nạp tiền", text: "Bấm Nạp tiền, chọn mức hoặc nhập số tiền rồi chuyển khoản đúng số tiền và nội dung hiện ra. Đơn nạp có thời hạn." },
-    { sel: "#tool-tab-goi", rail: true, title: "4. Gói thuê phòng", text: "Muốn thuê theo gói thì mở Thuê phòng và gói để xem bảng giá." },
+    { sel: "[data-tour=giay]", title: "4. Mua gói giây", text: "Gói này dùng cho trả theo lượt và dịch trực tiếp. Hết hạn thì phần còn mất, không hoàn tiền." },
+    { sel: "#tool-tab-goi", rail: true, title: "5. Gói thuê phòng", text: "Muốn thuê theo gói thì mở Thuê phòng và gói để xem bảng giá." },
   ],
   "key-groq": [
     { title: "1. Lấy key ở Groq", text: "Mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },

@@ -34,8 +34,12 @@ export function TermsDocument() {
             <td>Bạn</td>
           </tr>
           <tr>
-            <td>Gói giây cho cửa trả theo lượt</td>
+            <td>Gói giây cho trả theo lượt và dịch trực tiếp</td>
             <td>Bạn mua. Hết hạn thì phần còn lại mất, không hoàn tiền</td>
+          </tr>
+          <tr>
+            <td>Đọc thuyết minh khi dùng key của phòng</td>
+            <td>Trừ số dư đồng, không trừ gói giây</td>
           </tr>
           <tr>
             <td>Đúng hết câu, đúng ý, đúng giọng</td>
@@ -45,7 +49,7 @@ export function TermsDocument() {
       </table>
 
       <h2>Bảng giá</h2>
-      <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp. Cửa trả theo lượt dùng gói giây, không dùng bảng giá thuê phòng. Giá từng gói giây tính lúc mua và có thể đổi ở lần mua sau.</p>
+      <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp. Cửa trả theo lượt và dịch trực tiếp dùng cùng gói giây, không dùng bảng giá thuê phòng. Giá từng gói giây tính lúc mua và có thể đổi ở lần mua sau. Đọc thuyết minh khi dùng key của phòng trừ số dư đồng, không trừ gói giây.</p>
       <table className="gate-table">
         <thead>
           <tr>

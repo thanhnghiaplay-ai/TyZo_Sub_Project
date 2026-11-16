@@ -61,7 +61,7 @@ import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
 const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ ví cho lượt chạy.";
-const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ trước một khoản ước tính từ ví, trừ số thực khi xong và trả phần thừa. Không trừ ngày gói.";
+const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số giây ước tính từ gói giây đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn. Không trừ ngày gói.";
 
 const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
 const FIELD =
@@ -1566,7 +1566,7 @@ export function Studio() {
             <p id="pay-mode-note" className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
               {payByRoom ? (
                 <>
-                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Giá từng gói bên dưới là ước tính; tiền trừ thật là số thực khi xong.
+                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.
                 </>
               ) : (
                 <>
