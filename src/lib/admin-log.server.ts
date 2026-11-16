@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.13",
+    time: "08:33 ngày 16/11/2026",
+    area: "khac",
+    text: "Bo góc bước 3. 4 rounded-lg và 5 rounded-md thành --radius-ctl (ô nhập gói, ô link, ảnh tệp, câu phụ đề, cột biểu đồ, nút cổng). 1 rounded-3xl của ô thả video thành --radius-card. Mặc định các chỗ này tròn hơn một chút (0.375rem hoặc 0.5rem lên 0.75rem; ô thả từ 1.5rem về 1rem). rounded-none và nút tròn không đụng. Không đổi điều khoản."
+  },
+  {
     version: "3.46.12",
     time: "08:26 ngày 16/11/2026",
     area: "khac",

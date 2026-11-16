@@ -175,9 +175,9 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
             return (
               <div key={id} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line px-3 py-2 sm:grid-cols-[1fr_repeat(3,7rem)] sm:items-center">
                 <p className="text-sm">{id}</p>
-                <input className="min-tap rounded-lg border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá giờ`} placeholder="đ/giờ" value={custom.hour || ""} onChange={(event) => setCustom({ hour: Number(event.target.value.replace(/\D/g, "") || 0) })} />
-                <input className="min-tap rounded-lg border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá vào`} placeholder="đ vào" value={custom.inn || ""} onChange={(event) => setCustom({ inn: Number(event.target.value.replace(/\D/g, "") || 0) })} />
-                <input className="min-tap rounded-lg border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá ra`} placeholder="đ ra" value={custom.out || ""} onChange={(event) => setCustom({ out: Number(event.target.value.replace(/\D/g, "") || 0) })} />
+                <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá giờ`} placeholder="đ/giờ" value={custom.hour || ""} onChange={(event) => setCustom({ hour: Number(event.target.value.replace(/\D/g, "") || 0) })} />
+                <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá vào`} placeholder="đ vào" value={custom.inn || ""} onChange={(event) => setCustom({ inn: Number(event.target.value.replace(/\D/g, "") || 0) })} />
+                <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá ra`} placeholder="đ ra" value={custom.out || ""} onChange={(event) => setCustom({ out: Number(event.target.value.replace(/\D/g, "") || 0) })} />
               </div>
             );
           })}

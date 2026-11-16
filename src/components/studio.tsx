@@ -1835,7 +1835,7 @@ function FileTile({ icon, image, title, name, hint, accept, onFile }: { icon: Re
         onFile(event.dataTransfer.files?.[0] || null);
       }}
     >
-      {image ? <img src={image} alt="" className="h-9 w-16 rounded-md object-cover" /> : <span className="text-accent">{icon}</span>}
+      {image ? <img src={image} alt="" className="h-9 w-16 rounded-[var(--radius-ctl)] object-cover" /> : <span className="text-accent">{icon}</span>}
       <span className="min-w-0">
         <span className="block text-sm font-semibold text-fg">{title}</span>
         <span className="block truncate text-xs text-muted">{name || hint}</span>
@@ -2284,7 +2284,7 @@ function Stage({
             <p className="px-3 pt-2 text-xs text-muted">Mẫu nổi — nằm yên khi kéo các thanh bên dưới</p>
             <div className="relative h-28">
               <div className="absolute inset-x-[6%] text-center" style={{ bottom: sampleBottom(sub.pos) }}>
-                <span className="rounded-md px-2" style={{ ...cueStyle(sub, false), opacity: sub.on ? 1 : 0.4 }}>
+                <span className="rounded-[var(--radius-ctl)] px-2" style={{ ...cueStyle(sub, false), opacity: sub.on ? 1 : 0.4 }}>
                   Đây là phụ đề xem thử
                 </span>
               </div>
@@ -2454,7 +2454,7 @@ function Stage({
       />
       {sub.on && line && (
         <div className="pointer-events-none absolute inset-x-[4%] z-10 text-center" style={{ bottom: `${sub.pos}%` }}>
-          <span className="rounded-md px-2" style={renderedCue}>
+          <span className="rounded-[var(--radius-ctl)] px-2" style={renderedCue}>
             {line}
           </span>
         </div>

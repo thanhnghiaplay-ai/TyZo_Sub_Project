@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## BO GÓC 3 (16/11/2026, nhánh work, v3.46.13)
+ĐÃ LÀM: ô nhập, ảnh nhỏ, cột biểu đồ theo mức ô nhập. Ô thả video theo mức thẻ. Các chỗ này tròn hơn một chút so với trước.
+CỐ Ý GIỮ: nút tròn, chấm, video toàn màn vuông, góc viên thuốc. Đổ bóng chưa đụng. Kế: icon.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## BO GÓC 2 (16/11/2026, nhánh work, v3.46.12)
 ĐÃ LÀM: khung thẻ 1rem và mục menu 0.75rem trong styles.css theo thanh bo góc. Nhìn mặc định không đổi.
 CÒN: nút tròn, rounded-md/lg/3xl, góc 999px và 50%, đổ bóng 38. Rồi icon.

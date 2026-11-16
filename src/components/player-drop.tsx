@@ -87,7 +87,7 @@ export function PlayerDrop({
           value={url}
           placeholder="Hoặc dán link file trực tiếp https://…/phim.mp4"
           aria-label="Link file trực tiếp"
-          className="h-9 w-full rounded-lg border border-line bg-bg pr-2 pl-8 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="h-9 w-full rounded-[var(--radius-ctl)] border border-line bg-bg pr-2 pl-8 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-invalid={Boolean(linkCheck.problem)}
           onChange={(event) => {
             if (linkCheck.problem) linkCheck.check(event.target.value);

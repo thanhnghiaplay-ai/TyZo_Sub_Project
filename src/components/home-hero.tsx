@@ -124,7 +124,7 @@ export function HomeHero({
     <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-5 py-6 sm:gap-6 sm:py-10">
       <label
         className={
-          "relative grid min-h-[15rem] cursor-pointer place-items-center overflow-hidden rounded-3xl border-2 border-dashed px-5 py-10 text-center transition-all duration-200 focus-within:border-accent hover:border-accent motion-reduce:transition-none sm:min-h-[19rem] " +
+          "relative grid min-h-[15rem] cursor-pointer place-items-center overflow-hidden rounded-[var(--radius-card)] border-2 border-dashed px-5 py-10 text-center transition-all duration-200 focus-within:border-accent hover:border-accent motion-reduce:transition-none sm:min-h-[19rem] " +
           (over
             ? "scale-[1.02] border-accent bg-accent/15 shadow-xl ring-4 ring-accent/30 motion-reduce:scale-100"
             : pageDrag
