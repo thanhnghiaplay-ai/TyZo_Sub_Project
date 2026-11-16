@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.7",
+    time: "07:47 ngày 16/11/2026",
+    area: "khac",
+    text: "Đồng bộ màu, bước 1/4. styles.css: nền logo (.brand-plate) dùng --color-card; vạch mật khẩu tắt dùng --color-line; dải huy hiệu hỗ trợ dùng --color-info, quản lý dùng --color-accent, chủ dùng --color-accent và --rank-owner. Không đụng nền đêm, robot, thư. Không đổi điều khoản."
+  },
+  {
     version: "3.46.6",
     time: "07:41 ngày 16/11/2026",
     area: "khac",

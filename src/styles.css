@@ -819,7 +819,7 @@
 
 .brand-plate,
 .gate-plate {
-  fill: #121a22;
+  fill: var(--color-card);
 }
 
 .brand-frame,
@@ -1550,7 +1550,7 @@
   display: block;
   height: 0.35rem;
   border-radius: 999px;
-  background: #2a3542;
+  background: var(--color-line);
   transform: scaleX(0.3);
   transform-origin: left center;
   transition: transform 0.28s ease, background 0.28s ease;
@@ -1598,21 +1598,21 @@
 .role-mark[data-rank="ho-tro"].role-mark-pill,
 .role-mark[data-rank="ho-tro"].role-mark-banner,
 .role-mark[data-rank="ho-tro"].role-mark-ticket {
-  background-image: linear-gradient(110deg, #6ea2e4, #d7e8ff 45%, var(--color-info));
+  background-image: linear-gradient(110deg, color-mix(in srgb, var(--color-info) 72%, black), color-mix(in srgb, var(--color-info) 28%, white) 45%, var(--color-info));
 }
 
 .role-mark[data-rank="quan-ly"].role-mark-ribbon,
 .role-mark[data-rank="quan-ly"].role-mark-pill,
 .role-mark[data-rank="quan-ly"].role-mark-banner,
 .role-mark[data-rank="quan-ly"].role-mark-ticket {
-  background-image: linear-gradient(110deg, #b88922, #f0d78c 42%, var(--color-accent));
+  background-image: linear-gradient(110deg, color-mix(in srgb, var(--color-accent) 72%, black), color-mix(in srgb, var(--color-accent) 32%, white) 42%, var(--color-accent));
 }
 
 .role-mark[data-rank="chu"].role-mark-ribbon,
 .role-mark[data-rank="chu"].role-mark-pill,
 .role-mark[data-rank="chu"].role-mark-banner,
 .role-mark[data-rank="chu"].role-mark-ticket {
-  background-image: linear-gradient(110deg, #c9962e, #fff4cc 40%, var(--color-accent) 70%, var(--rank-owner));
+  background-image: linear-gradient(110deg, color-mix(in srgb, var(--color-accent) 68%, black), color-mix(in srgb, var(--rank-owner) 40%, white) 40%, var(--color-accent) 70%, var(--rank-owner));
 }
 
 @keyframes rank-sheen {

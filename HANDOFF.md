@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỒNG BỘ MÀU 1/4 (16/11/2026, nhánh work, v3.46.7)
+ĐÃ LÀM: nền logo theo màu thẻ, vạch mật khẩu chưa bật theo màu viền, huy hiệu hỗ trợ / quản lý / chủ theo màu cấp.
+CÒN TRONG PHẦN NÀY: robot (kim loại, mắt, biển đỏ), nền đêm và nhấp nháy, thư HTML và cửa sổ đăng nhập.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## PHẦN CHỮ (16/11/2026, nhánh work, v3.46.6)
 ĐÃ LÀM: trang lỗi hiện «Đã xảy ra lỗi» và «Không rõ lỗi gì. Hãy tải lại trang.»
 CHƯA LÀM: câu tiếng Anh trong lib/app-data/errors.ts và nút Continue with ở gates.tsx (không gắn trang đang chạy). Rồi tới phần đồng bộ màu (4 bước).
