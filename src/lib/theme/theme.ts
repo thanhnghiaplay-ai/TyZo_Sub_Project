@@ -94,6 +94,26 @@ export const MOTION_SPEEDS = [
 ] as const;
 export type MotionSpeed = (typeof MOTION_SPEEDS)[number][0];
 
+export const MT_BOARDS = [
+  ["error", "Lỗi"],
+  ["warning", "Chờ"],
+  ["accent", "Nhấn"],
+  ["info", "Thông tin"],
+] as const;
+export type MtBoard = (typeof MT_BOARDS)[number][0];
+
+export const MT_FX = [
+  ["on", "Bật"],
+  ["off", "Tắt"],
+] as const;
+export type MtFx = (typeof MT_FX)[number][0];
+
+export const MT_SHOWS = [
+  ["robot", "Robot"],
+  ["sign", "Chỉ biển"],
+] as const;
+export type MtShow = (typeof MT_SHOWS)[number][0];
+
 export const TITLE_WEIGHTS = [
   ["keep", "Như hiện tại"],
   ["500", "Vừa"],
@@ -206,6 +226,11 @@ export type Theme = {
   menuSide: MenuSide;
   motion: Motion;
   motionSpeed: MotionSpeed;
+  /** Chữ trên biển bảo trì. Rỗng thì «BẢO TRÌ». */
+  mtText: string;
+  mtBoard: MtBoard;
+  mtFx: MtFx;
+  mtShow: MtShow;
   /** Đặc giữ nút đặc. Viền và mờ chỉ đổi nút đang tô màu nhấn. */
   button: ButtonStyle;
   density: Density;
@@ -278,6 +303,10 @@ export const THEME_DEFAULT: Theme = {
   menuSide: "left",
   motion: "on",
   motionSpeed: "mid",
+  mtText: "BẢO TRÌ",
+  mtBoard: "error",
+  mtFx: "on",
+  mtShow: "robot",
   button: "solid",
   density: "cozy",
   iconWeight: "duotone",
@@ -398,6 +427,11 @@ export function parseTheme(input: unknown): Theme {
   const menuSide = MENU_SIDES.some((s) => s[0] === src.menuSide) ? (src.menuSide as MenuSide) : THEME_DEFAULT.menuSide;
   const motion = MOTION.some((m) => m[0] === src.motion) ? (src.motion as Motion) : THEME_DEFAULT.motion;
   const motionSpeed = MOTION_SPEEDS.some((s) => s[0] === src.motionSpeed) ? (src.motionSpeed as MotionSpeed) : THEME_DEFAULT.motionSpeed;
+  const mtTextRaw = typeof src.mtText === "string" ? src.mtText.replace(/\s+/g, " ").trim().slice(0, 10) : "";
+  const mtText = mtTextRaw || THEME_DEFAULT.mtText;
+  const mtBoard = MT_BOARDS.some((b) => b[0] === src.mtBoard) ? (src.mtBoard as MtBoard) : THEME_DEFAULT.mtBoard;
+  const mtFx = MT_FX.some((f) => f[0] === src.mtFx) ? (src.mtFx as MtFx) : THEME_DEFAULT.mtFx;
+  const mtShow = MT_SHOWS.some((s) => s[0] === src.mtShow) ? (src.mtShow as MtShow) : THEME_DEFAULT.mtShow;
   const density = DENSITIES.some((d) => d[0] === src.density) ? (src.density as Density) : THEME_DEFAULT.density;
   const mode = MODES.some((m) => m[0] === src.mode) ? (src.mode as Mode) : THEME_DEFAULT.mode;
   return {
@@ -415,6 +449,10 @@ export function parseTheme(input: unknown): Theme {
     menuSide,
     motion,
     motionSpeed,
+    mtText,
+    mtBoard,
+    mtFx,
+    mtShow,
     button,
     density,
     iconWeight: weight,

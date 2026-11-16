@@ -2649,6 +2649,24 @@ html[data-menu="right"] .app-rail.is-open {
 [data-phase="static"] .mt-bar { opacity: 1; }
 [data-phase="static"] .mt-floor { opacity: 1; }
 [data-phase="static"] .mt-ground { transform: none; }
+.mt-root[data-mt-fx="off"] .mt-title,
+.mt-root[data-mt-fx="off"] .mt-gear,
+.mt-root[data-mt-fx="off"] .mt-beacon {
+  animation: none;
+}
+
+.mt-root[data-mt-show="sign"] .mt-robot {
+  visibility: visible;
+}
+
+.mt-root[data-mt-show="sign"] .mt-bob,
+.mt-root[data-mt-show="sign"] [data-mt="armR"],
+.mt-root[data-mt-show="sign"] [data-mt="armRh"],
+.mt-root[data-mt-show="sign"] [data-mt="elbow"],
+.mt-root[data-mt-show="sign"] [data-mt="handR"],
+.mt-root[data-mt-show="sign"] [data-mt="mound"] {
+  display: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .mt-root *,

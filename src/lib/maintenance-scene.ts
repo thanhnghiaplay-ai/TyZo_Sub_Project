@@ -91,7 +91,9 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
     paint("color-mix(in srgb, var(--color-warning) 55%, var(--color-error))", "#ff3d00"),
   ];
   const emberColor = sparkColors[1] ?? "#ffb020";
-  const K = reduce ? 0 : 1;
+  const calm = reduce || root.dataset.mtFx === "off";
+  const signOnly = root.dataset.mtShow === "sign";
+  const K = reduce || signOnly ? 0 : 1;
 
   let dead = false;
   let message = getMessage();
@@ -150,7 +152,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
   const P: Particle[] = [];
   const MAX_P = 800;
   function spark(x: number, y: number, n: number, power = 1) {
-    if (reduce) return;
+    if (calm) return;
     for (let i = 0; i < n && P.length < MAX_P; i++) {
       const a = rnd(-Math.PI * 0.95, -Math.PI * 0.05);
       const v = rnd(140, 700) * power;
@@ -158,7 +160,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
     }
   }
   function dust(x: number, y: number, n: number) {
-    if (reduce) return;
+    if (calm) return;
     for (let i = 0; i < n && P.length < MAX_P; i++) {
       P.push({ k: 1, x: x + rnd(-30, 30), y: y - rnd(0, 6), vx: rnd(-130, 130), vy: rnd(-80, -10), l: 0, m: rnd(0.7, 1.4), r: rnd(8, 22) });
     }
@@ -291,7 +293,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
 
   /* ---------- va chạm ---------- */
   function shake(amp = 12, dur = 560) {
-    if (reduce) return;
+    if (calm) return;
     const frames: Keyframe[] = [];
     const n = 14;
     for (let i = 0; i <= n; i++) {
@@ -301,7 +303,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
     play(stage, frames, { duration: dur });
   }
   function rings() {
-    if (reduce) return;
+    if (calm) return;
     [0, 120].forEach((delay) => {
       const r = document.createElement("div");
       r.className = "mt-ring";
@@ -504,7 +506,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
   };
   addEventListener("resize", onResize);
 
-  if (ctx && !reduce) raf = requestAnimationFrame(loop);
+  if (ctx && !calm) raf = requestAnimationFrame(loop);
   main().catch((error) => {
     if (error instanceof Stop) return;
     console.error(error);

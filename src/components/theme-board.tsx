@@ -11,6 +11,9 @@ import {
   MENU_SIDES,
   MOTION,
   MOTION_SPEEDS,
+  MT_BOARDS,
+  MT_FX,
+  MT_SHOWS,
   MODES,
   PALETTE_KEYS,
   PALETTES,
@@ -26,6 +29,9 @@ import {
   type MenuSide,
   type Motion,
   type MotionSpeed,
+  type MtBoard,
+  type MtFx,
+  type MtShow,
   type ButtonStyle,
   type TitleWeight,
   type IconWeight,
@@ -354,6 +360,29 @@ export function ThemeBoard() {
             </Field>
             <Field label="Tốc độ hiệu ứng">
               <Segmented label="Tốc độ hiệu ứng" value={draft.motionSpeed} onChange={(motionSpeed: MotionSpeed) => patch({ motionSpeed })} options={MOTION_SPEEDS.map(([id, label]) => ({ id, label }))} />
+            </Field>
+          </Card>
+
+          <Card>
+            <CardHeader title="Trang bảo trì" icon="ui.repair" hint="Chữ, màu biển, hiệu ứng mạnh, và robot hay chỉ biển. Mặc định giữ cảnh đang có." />
+            <Field label="Chữ trên biển" hint="Tối đa 10 ký tự. Để trống thì lại «BẢO TRÌ».">
+              <input
+                className={inputClass}
+                maxLength={10}
+                value={draft.mtText}
+                aria-label="Chữ trên biển"
+                onChange={(event) => setDraft((current) => ({ ...current, mtText: event.target.value.slice(0, 10) }))}
+                onBlur={(event) => patch({ mtText: event.target.value })}
+              />
+            </Field>
+            <Field label="Màu biển">
+              <Segmented label="Màu biển" value={draft.mtBoard} onChange={(mtBoard: MtBoard) => patch({ mtBoard })} options={MT_BOARDS.map(([id, label]) => ({ id, label }))} />
+            </Field>
+            <Field label="Hiệu ứng mạnh">
+              <Segmented label="Hiệu ứng mạnh" value={draft.mtFx} onChange={(mtFx: MtFx) => patch({ mtFx })} options={MT_FX.map(([id, label]) => ({ id, label }))} />
+            </Field>
+            <Field label="Hình trang bảo trì">
+              <Segmented label="Hình trang bảo trì" value={draft.mtShow} onChange={(mtShow: MtShow) => patch({ mtShow })} options={MT_SHOWS.map(([id, label]) => ({ id, label }))} />
             </Field>
           </Card>
 

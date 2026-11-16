@@ -11,7 +11,7 @@ const WARN_DEFAULT = "Web sắp bảo trì.";
 const BRAND_DEFAULT = "TyZo Sub";
 
 /** Robot công nhân vác biển «BẢO TRÌ». Toạ độ khớp với `maintenance-scene.ts` (khung 260 × 440, mặt đất y = 440). */
-function WorkerRobot() {
+function WorkerRobot({ text }: { text: string }) {
   return (
     <div className="mt-robot" data-mt="robot" aria-hidden="true">
       <svg viewBox="0 0 260 440" focusable="false">
@@ -34,8 +34,8 @@ function WorkerRobot() {
             <stop offset="1" stopColor="var(--color-accent)" />
           </linearGradient>
           <linearGradient id="mt-red" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="color-mix(in srgb, var(--color-error) 65%, white)" />
-            <stop offset="1" stopColor="var(--color-error)" />
+            <stop offset="0" stopColor="color-mix(in srgb, var(--mt-board, var(--color-error)) 65%, white)" />
+            <stop offset="1" stopColor="var(--mt-board, var(--color-error))" />
           </linearGradient>
           <clipPath id="mt-clip">
             <rect x="-200" y="-300" width="800" height="744" />
@@ -105,8 +105,8 @@ function WorkerRobot() {
                   <circle r="7.5" strokeWidth="3" />
                 </g>
               </g>
-              <text x="80" y="108" textAnchor="middle" fontSize="17" fontWeight="900" fill="white" letterSpacing=".5" style={{ fontFamily: "var(--font-sans), 'Segoe UI', Arial, sans-serif" }}>
-                BẢO TRÌ
+              <text x="80" y="108" textAnchor="middle" fontSize={text.length > 7 ? 13 : 17} fontWeight="900" fill="white" letterSpacing=".5" style={{ fontFamily: "var(--font-sans), 'Segoe UI', Arial, sans-serif" }}>
+                {text}
               </text>
             </g>
           </g>
@@ -187,7 +187,15 @@ export function SiteMaintenancePage({ entry, onClose }: { entry: ServiceEntry; o
   }, [onClose]);
 
   return (
-    <main ref={rootRef} className={onClose ? "mt-root mt-preview" : "mt-root"} data-site-maintenance data-phase="init">
+    <main
+      ref={rootRef}
+      className={onClose ? "mt-root mt-preview" : "mt-root"}
+      data-site-maintenance
+      data-phase="init"
+      data-mt-fx={theme.mtFx}
+      data-mt-show={theme.mtShow}
+      style={{ "--mt-board": `var(--color-${theme.mtBoard})` } as CSSProperties}
+    >
       <div className="mt-scene" data-mt="stage">
         <div className="mt-hz mt-hz-t" aria-hidden="true"><i /></div>
         <div className="mt-hz mt-hz-b" aria-hidden="true"><i /></div>
@@ -204,7 +212,7 @@ export function SiteMaintenancePage({ entry, onClose }: { entry: ServiceEntry; o
         </div>
 
         <div className="mt-ground" data-mt="ground" aria-hidden="true" />
-        <WorkerRobot />
+        <WorkerRobot text={theme.mtText} />
 
         <section role="status" className="mt-info">
           <TitleLetters text={title} />

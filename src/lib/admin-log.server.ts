@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.9",
+    time: "11:51 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần bảo trì 4/8. mtText tối đa 10 ký tự, rỗng về BẢO TRÌ. mtBoard error/warning/accent/info, mặc định error. mtFx on/off tắt tia lửa, rung và nhấp nháy khi off, robot vẫn đi. mtShow sign ẩn thân robot và bỏ cảnh đi. Không đổi điều khoản."
+  },
+  {
     version: "3.47.8",
     time: "11:41 ngày 16/11/2026",
     area: "khac",

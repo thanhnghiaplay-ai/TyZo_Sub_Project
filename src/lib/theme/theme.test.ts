@@ -46,6 +46,10 @@ test("parseTheme: kẹp số về khoảng cho phép", () => {
   assert.equal(t.menuSide, "left");
   assert.equal(t.motion, "on");
   assert.equal(t.motionSpeed, "mid");
+  assert.equal(t.mtText, "BẢO TRÌ");
+  assert.equal(t.mtBoard, "error");
+  assert.equal(t.mtFx, "on");
+  assert.equal(t.mtShow, "robot");
   assert.equal(t.button, "solid");
   assert.equal(t.density, "cozy");
   assert.equal(t.iconWeight, "duotone");
@@ -78,6 +82,13 @@ test("themeToCss: có cả hai chế độ, đủ mọi biến, không lọt chu
   assert.match(css, /--shadow-amt:1;/);
   assert.match(css, /--shadow-lg:0 10px 15px -3px rgb\(0 0 0 \/ 0\.1\), 0 4px 6px -4px rgb\(0 0 0 \/ 0\.1\)/);
   assert.ok(!css.includes("<"));
+});
+
+test("trang bảo trì: chữ biển cắt 10 ký tự, rỗng thì về BẢO TRÌ", () => {
+  assert.equal(parseTheme({ mtText: "  TẠM   DỪNG  " }).mtText, "TẠM DỪNG");
+  assert.equal(parseTheme({ mtText: "BẢO TRÌ HÔM NAY" }).mtText, "BẢO TRÌ HÔ");
+  assert.equal(parseTheme({ mtText: "   " }).mtText, "BẢO TRÌ");
+  assert.equal(parseTheme({ mtBoard: "nope", mtFx: "nope", mtShow: "nope" }).mtShow, "robot");
 });
 
 test("bộ màu: đủ 8 bộ và mỗi bộ sáng tối đều đọc được", () => {

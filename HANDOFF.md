@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## BẢO TRÌ 4/8 (16/11/2026, nhánh work, v3.47.9)
+ĐÃ LÀM: chữ biển, màu biển, hiệu ứng mạnh, robot hoặc chỉ biển. Mặc định giữ cảnh cũ.
+CÒN 4 PHẦN: tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng. Favicon chưa làm.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## CHUYỂN ĐỘNG 3/8 (16/11/2026, nhánh work, v3.47.8)
 ĐÃ LÀM: bật hoặc tắt hiệu ứng, tốc độ chậm/vừa/nhanh. Mặc định bật và vừa. Máy giảm chuyển động thì luôn tắt.
 CÒN 5 PHẦN: trang bảo trì, tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng.
