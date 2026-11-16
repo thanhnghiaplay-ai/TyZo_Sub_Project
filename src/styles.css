@@ -2080,7 +2080,7 @@ html[data-density] .studio-workspace {
   --mt-gy: 58vh;
   --mt-rh: clamp(120px, min(38vh, 70vw), 440px);
   --mt-mark: clamp(64px, min(15vh, 30vw), 150px);
-  --mt-or: #ff8a00;
+  --mt-or: var(--color-warning);
   position: fixed;
   inset: 0;
   z-index: 30;
@@ -2135,7 +2135,7 @@ html[data-density] .studio-workspace {
   left: 0;
   width: calc(100% + 80px);
   height: 100%;
-  background: repeating-linear-gradient(-45deg, #facc15 0 14px, #0b0b0b 14px 28px);
+  background: repeating-linear-gradient(-45deg, var(--color-warning) 0 14px, var(--color-ink) 14px 28px);
   animation: mt-hz 1s linear infinite;
   will-change: transform;
 }
@@ -2154,7 +2154,7 @@ html[data-density] .studio-workspace {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, rgb(255 80 0 / 0.6), rgb(255 80 0 / 0) 24%, rgb(255 80 0 / 0) 100%);
+  background: conic-gradient(from 0deg, color-mix(in srgb, var(--color-warning) 60%, transparent), transparent 24%, transparent 100%);
   mask-image: radial-gradient(closest-side, #000 30%, transparent);
   animation: mt-spin 2.2s linear infinite;
   will-change: transform;
@@ -2190,8 +2190,8 @@ html[data-density] .studio-workspace {
   transform: rotateX(62deg);
   transform-origin: 50% 0;
   background-image:
-    linear-gradient(rgb(255 138 0 / 0.32) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 138 0 / 0.32) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-warning) 32%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-warning) 32%, transparent) 1px, transparent 1px);
   background-size: 56px 56px;
   animation: mt-grid 1.6s linear infinite;
 }
@@ -2208,8 +2208,8 @@ html[data-density] .studio-workspace {
   z-index: 3;
   height: 3px;
   transform: scaleX(0);
-  background: linear-gradient(90deg, transparent, var(--mt-or) 18%, #ffd27a 50%, var(--mt-or) 82%, transparent);
-  box-shadow: 0 0 18px 2px rgb(255 138 0 / 0.7);
+  background: linear-gradient(90deg, transparent, var(--mt-or) 18%, color-mix(in srgb, var(--color-warning) 55%, white) 50%, var(--mt-or) 82%, transparent);
+  box-shadow: 0 0 18px 2px color-mix(in srgb, var(--color-warning) 70%, transparent);
 }
 
 /* quầng sáng quanh biển sau khi cắm */
@@ -2224,7 +2224,7 @@ html[data-density] .studio-workspace {
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, rgb(255 90 20 / 0.45), rgb(255 90 20 / 0.12) 55%, transparent 75%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--color-warning) 45%, transparent), color-mix(in srgb, var(--color-warning) 12%, transparent) 55%, transparent 75%);
 }
 
 [data-phase="planted"] .mt-glow,
@@ -2396,7 +2396,7 @@ html[data-density] .studio-workspace {
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--mt-or);
-  text-shadow: 0 0 26px rgb(255 138 0 / 0.65), 0 4px 0 #8a2d00;
+  text-shadow: 0 0 26px color-mix(in srgb, var(--color-warning) 65%, transparent), 0 4px 0 color-mix(in srgb, var(--color-warning) 45%, black);
 }
 
 [data-phase="done"] .mt-title { animation: mt-glitch 6s infinite; }
@@ -2470,12 +2470,12 @@ html[data-density] .studio-workspace {
 
 .mt-eta {
   margin-top: 1.2vh;
-  border: 1px solid rgb(255 138 0 / 0.5);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 50%, transparent);
   border-radius: 999px;
   padding: 0.35rem 0.95rem;
   font-size: 0.9rem;
-  color: #ffd9a3;
-  background: rgb(255 138 0 / 0.1);
+  color: color-mix(in srgb, var(--color-warning) 30%, white);
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
   opacity: 0;
 }
 
@@ -2496,7 +2496,7 @@ html[data-density] .studio-workspace {
   width: 38%;
   height: 100%;
   border-radius: 6px;
-  background: repeating-linear-gradient(-45deg, #ff8a00 0 8px, #ffc266 8px 16px);
+  background: repeating-linear-gradient(-45deg, var(--color-warning) 0 8px, color-mix(in srgb, var(--color-warning) 55%, white) 8px 16px);
   animation: mt-slide 1.5s ease-in-out infinite alternate;
 }
 
@@ -2552,7 +2552,7 @@ html[data-density] .studio-workspace {
   z-index: 11;
   pointer-events: none;
   opacity: 0;
-  background: radial-gradient(circle at 50% var(--mt-gy), #fff 0%, rgb(255 170 60 / 0.7) 30%, transparent 70%);
+  background: radial-gradient(circle at 50% var(--mt-gy), white 0%, color-mix(in srgb, var(--color-warning) 70%, transparent) 30%, transparent 70%);
 }
 
 .mt-ring {
@@ -2564,9 +2564,9 @@ html[data-density] .studio-workspace {
   height: 100px;
   margin: -50px 0 0 -50px;
   pointer-events: none;
-  border: 3px solid #ffb347;
+  border: 3px solid color-mix(in srgb, var(--color-warning) 75%, white);
   border-radius: 50%;
-  box-shadow: 0 0 22px #ff8a00, inset 0 0 22px #ff8a00;
+  box-shadow: 0 0 22px var(--color-warning), inset 0 0 22px var(--color-warning);
 }
 
 .mt-root.mt-preview { z-index: 60; }

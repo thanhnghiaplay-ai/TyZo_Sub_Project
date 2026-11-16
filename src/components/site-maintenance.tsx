@@ -26,12 +26,12 @@ function WorkerRobot() {
             <stop offset="1" stopColor="#707c8c" />
           </linearGradient>
           <linearGradient id="mt-vest" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ffa22b" />
-            <stop offset="1" stopColor="#f26a00" />
+            <stop offset="0" stopColor="color-mix(in srgb, var(--color-warning) 70%, white)" />
+            <stop offset="1" stopColor="var(--color-warning)" />
           </linearGradient>
           <linearGradient id="mt-hat" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ffe873" />
-            <stop offset="1" stopColor="#f2b300" />
+            <stop offset="0" stopColor="color-mix(in srgb, var(--color-accent) 55%, white)" />
+            <stop offset="1" stopColor="var(--color-accent)" />
           </linearGradient>
           <linearGradient id="mt-red" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#ff4655" />
@@ -49,26 +49,26 @@ function WorkerRobot() {
           <g data-mt="legL" className="mt-legL">
             <rect x="102" y="392" width="20" height="36" rx="8" fill="url(#mt-steel-v)" />
             <rect x="93" y="422" width="36" height="17" rx="7" fill="#1b2330" />
-            <rect x="93" y="428" width="36" height="3" fill="#ff8a00" />
+            <rect x="93" y="428" width="36" height="3" fill="var(--color-warning)" />
           </g>
           <g data-mt="legR" className="mt-legR">
             <rect x="138" y="392" width="20" height="36" rx="8" fill="url(#mt-steel-v)" />
             <rect x="131" y="422" width="36" height="17" rx="7" fill="#1b2330" />
-            <rect x="131" y="428" width="36" height="3" fill="#ff8a00" />
+            <rect x="131" y="428" width="36" height="3" fill="var(--color-warning)" />
           </g>
           {/* tay trái */}
           <g data-mt="armL" className="mt-armL">
             <line x1="90" y1="318" x2="70" y2="372" stroke="#6b7686" strokeWidth="16" strokeLinecap="round" />
             <line x1="86" y1="320" x2="67" y2="370" stroke="#aab3c0" strokeWidth="4" strokeLinecap="round" opacity=".6" />
             <circle cx="68" cy="378" r="11" fill="#1b2330" />
-            <rect x="60" y="371" width="16" height="3" rx="1.5" fill="#ff8a00" />
+            <rect x="60" y="371" width="16" height="3" rx="1.5" fill="var(--color-warning)" />
           </g>
           {/* thân */}
           <rect x="120" y="294" width="20" height="14" fill="#4e5766" />
           <rect x="88" y="304" width="84" height="96" rx="18" fill="url(#mt-steel)" />
           <path d="M88 324H172V380Q172 400 152 400H108Q88 400 88 380Z" fill="url(#mt-vest)" />
-          <rect x="88" y="352" width="84" height="9" fill="#fff3b0" />
-          <rect x="88" y="368" width="84" height="7" fill="#fff3b0" opacity=".85" />
+          <rect x="88" y="352" width="84" height="9" fill="color-mix(in srgb, var(--color-warning) 25%, white)" />
+          <rect x="88" y="368" width="84" height="7" fill="color-mix(in srgb, var(--color-warning) 25%, white)" opacity=".85" />
           <circle cx="130" cy="337" r="11" fill="#22d3ee" opacity=".22" />
           <circle cx="130" cy="337" r="6" fill="#22d3ee" />
           <circle cx="88" cy="318" r="14" fill="#4e5766" />
@@ -84,9 +84,9 @@ function WorkerRobot() {
           <ellipse className="mt-eye" cx="139" cy="275" rx="5" ry="5.5" fill="#22d3ee" />
           {/* mũ bảo hộ */}
           <path d="M90 252Q130 196 170 252Z" fill="url(#mt-hat)" />
-          <rect x="84" y="248" width="92" height="9" rx="4.5" fill="#e0a400" />
-          <rect x="124" y="222" width="12" height="22" rx="4" fill="#e0a400" opacity=".75" />
-          <rect x="121" y="238" width="18" height="6" rx="3" fill="#fffbd0" />
+          <rect x="84" y="248" width="92" height="9" rx="4.5" fill="var(--color-accent)" />
+          <rect x="124" y="222" width="12" height="22" rx="4" fill="var(--color-accent)" opacity=".75" />
+          <rect x="121" y="238" width="18" height="6" rx="3" fill="color-mix(in srgb, var(--color-accent) 40%, white)" />
           <rect x="129" y="207" width="2.4" height="17" fill="#6b7686" />
           <circle className="mt-beacon" cx="130" cy="205" r="4.5" fill="#ff3040" />
         </g>
@@ -97,7 +97,7 @@ function WorkerRobot() {
             <rect x="73" y="110" width="14" height="105" rx="3" fill="url(#mt-steel)" />
             <rect x="77" y="110" width="4" height="105" fill="#e1e6ec" opacity=".6" />
             <g transform="translate(80 128) scale(1.3) translate(-80 -128)">
-              <path d="M80 8 152 128H8Z" fill="url(#mt-red)" stroke="#ff8a00" strokeWidth="12" strokeLinejoin="round" />
+              <path d="M80 8 152 128H8Z" fill="url(#mt-red)" stroke="var(--color-warning)" strokeWidth="12" strokeLinejoin="round" />
               <path d="M80 24 138 120H22Z" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="1.5" strokeLinejoin="round" />
               <g transform="translate(80 64)" fill="none" stroke="#fff">
                 <g className="mt-gear">

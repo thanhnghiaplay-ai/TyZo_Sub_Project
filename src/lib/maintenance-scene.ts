@@ -44,7 +44,6 @@ const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
 const easeIn = (p: number) => p * p * p;
 const linear = (p: number) => p;
-const SPARK_COLORS = ["#fff2b0", "#ffb020", "#ff6a00", "#ff3d00"];
 
 export function startMaintenanceScene(root: HTMLElement, getMessage: () => string): SceneHandle {
   const q = <T extends Element>(name: string): T => {
@@ -77,6 +76,21 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
 
   const ctx = cv.getContext("2d");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const paint = (expr: string, fallback: string) => {
+    const probe = document.createElement("span");
+    probe.style.color = expr;
+    root.appendChild(probe);
+    const color = getComputedStyle(probe).color || fallback;
+    probe.remove();
+    return color;
+  };
+  const sparkColors = [
+    paint("color-mix(in srgb, var(--color-warning) 45%, white)", "#fff2b0"),
+    paint("var(--color-warning)", "#ffb020"),
+    paint("color-mix(in srgb, var(--color-warning) 70%, black)", "#ff6a00"),
+    paint("color-mix(in srgb, var(--color-warning) 55%, var(--color-error))", "#ff3d00"),
+  ];
+  const emberColor = sparkColors[1] ?? "#ffb020";
   const K = reduce ? 0 : 1;
 
   let dead = false;
@@ -140,7 +154,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
     for (let i = 0; i < n && P.length < MAX_P; i++) {
       const a = rnd(-Math.PI * 0.95, -Math.PI * 0.05);
       const v = rnd(140, 700) * power;
-      P.push({ k: 0, x, y, px: x, py: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 0, m: rnd(0.5, 1.2), c: SPARK_COLORS[(Math.random() * 4) | 0] ?? "#ffb020" });
+      P.push({ k: 0, x, y, px: x, py: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 0, m: rnd(0.5, 1.2), c: sparkColors[(Math.random() * 4) | 0] ?? emberColor });
     }
   }
   function dust(x: number, y: number, n: number) {
@@ -234,7 +248,7 @@ export function startMaintenanceScene(root: HTMLElement, getMessage: () => strin
         p.y += p.vy * dt;
         ctx.globalCompositeOperation = "lighter";
         ctx.globalAlpha = Math.sin(Math.PI * t) * 0.85;
-        ctx.fillStyle = "#ffa733";
+        ctx.fillStyle = emberColor;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 6.283);
         ctx.fill();

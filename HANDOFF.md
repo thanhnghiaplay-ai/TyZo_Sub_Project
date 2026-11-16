@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## MÀU BẢO TRÌ THEO GIAO DIỆN (16/11/2026, nhánh work, v3.46.3)
+ĐÃ LÀM: dải, lưới, đèn, tiêu đề, vòng sáng, thanh chạy và tia lửa dùng màu chờ. Áo, sọc, viền biển dùng màu chờ. Mũ dùng màu nhấn. Tên thương hiệu vốn đã đọc từ giao diện.
+CHƯA LÀM: nền đêm cố định, kim loại và mắt robot, biển đỏ, hiệu ứng nhấp nháy chữ, màu phụ đề, icon Lucide, bo góc.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## MÀU CHROME THEO TOKEN (16/11/2026, nhánh work, v3.46.2)
 ĐÃ LÀM: chỉ `styles.css`. Toast nền thẻ / chữ chính; thông báo lỗi trộn màu lỗi. Dải mất mạng nền lỗi, chữ màu nền trang. Chấm cửa màu thành công / lỗi. Ô thuê dùng màu cộng tác viên. Ô khóa dùng màu chờ. Chữ trên nhãn cấp dùng màu mực. Nút đăng xuất dùng màu lỗi.
 CHƯA LÀM: robot và khối `.mt-*`, màu phụ đề, icon Lucide, bo góc, vé cấp, logo plate.
