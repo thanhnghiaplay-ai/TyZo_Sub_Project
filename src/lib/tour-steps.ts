@@ -35,7 +35,7 @@ export const TOUR_PAGE: Record<TourId, TourPage> = {
 export const TOURS: Record<TourId, TourStep[]> = {
   "quick-start": [
     { sel: "[data-tour=drop]", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
-    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở Key Sub: dùng key Groq của bạn, hoặc trả theo lượt bằng ví của phòng." },
+    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở Key Sub: dùng key Groq của bạn, hoặc trả theo lượt bằng gói giây đã mua." },
     { sel: "#tool-tab-phim", rail: true, press: true, title: "3. Chọn phim", text: "Mở Phim để chọn ngôn ngữ và thể loại." },
     { sel: "[data-tour=run]", title: "4. Dịch", text: "Bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
     { sel: "[data-tour=export]", title: "5. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
@@ -63,7 +63,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   ],
   "nap-tien": [
     { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Số dư và nạp tiền", text: "Nằm trong nhóm Tài khoản của menu trái." },
-    { sel: "[data-tour=balance]", title: "2. Số dư và hạn gói", text: "Số dư, khoản đang giữ và hạn gói của bạn." },
+    { sel: "[data-tour=balance]", title: "2. Số dư và hạn gói", text: "Số dư, giây dịch còn lại và hạn gói của bạn." },
     { sel: "[data-tour=topup]", title: "3. Nạp tiền", text: "Bấm Nạp tiền, chọn mức hoặc nhập số tiền rồi chuyển khoản đúng số tiền và nội dung hiện ra. Đơn nạp có thời hạn." },
     { sel: "#tool-tab-goi", rail: true, title: "4. Gói thuê phòng", text: "Muốn thuê theo gói thì mở Thuê phòng và gói để xem bảng giá." },
   ],

@@ -122,7 +122,7 @@ export async function overviewWith(sql: Sql, range: OverviewRange, owner: boolea
     topSpend = await sql.query<TopUser>(`
       select t.user_id as "userId", coalesce(u.email, '') as email, sum(t.charged - t.refunded)::int as amount, count(*)::int as runs
       from run_tickets t left join "user" u on u.id = t.user_id
-      where t.created_at >= ${since}
+      where t.created_at >= ${since} and t.unit = 'vnd'
       group by t.user_id, u.email
       having sum(t.charged - t.refunded) > 0
       order by amount desc limit 5
@@ -167,6 +167,7 @@ export type TicketRow = {
   released: number;
   refunded: number;
   status: string;
+  unit: string;
   createdAt: string;
   asrModel: string;
   chatModel: string;
@@ -197,9 +198,9 @@ export async function searchTicketsWith(sql: Sql, input: { status: TicketFilter;
   const like = q ? `%${likeEscape(q.toLowerCase())}%` : null;
   const rows = await sql.query<{
     id: string; user_id: string; email: string | null; file_name: string; seconds: number; rate: number; held: number;
-    charged: number; released: number; refunded: number; status: string; created_at: unknown; asr_model: string; chat_model: string; process_seconds: number | null;
+    charged: number; released: number; refunded: number; status: string; unit: string; created_at: unknown; asr_model: string; chat_model: string; process_seconds: number | null;
   }>(
-    `select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.created_at,
+    `select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.unit, t.created_at,
        t.asr_model, t.chat_model,
        case when t.closed_at is null then null else extract(epoch from (t.closed_at - t.created_at))::int end as process_seconds
      from run_tickets t left join "user" u on u.id = t.user_id
@@ -222,6 +223,7 @@ export async function searchTicketsWith(sql: Sql, input: { status: TicketFilter;
     released: row.released,
     refunded: row.refunded,
     status: row.status,
+    unit: row.unit || "vnd",
     createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at ?? ""),
     asrModel: row.asr_model || "",
     chatModel: row.chat_model || "",

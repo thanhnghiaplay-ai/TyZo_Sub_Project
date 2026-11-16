@@ -142,7 +142,7 @@ async function assertRoomTicket(userId: string, ticketId: string | undefined) {
   const { getSql } = await import("@/lib/db");
   const { ticketLive } = await import("@/lib/run-ticket");
   const sql = await getSql();
-  if (!(await ticketLive(sql, ticketId, userId))) throw new Error("Phiếu đã đóng hoặc không còn tiền giữ.");
+  if (!(await ticketLive(sql, ticketId, userId))) throw new Error("Phiếu đã đóng hoặc không còn phần giữ.");
 }
 
 async function chargeRoomAsr(userId: string, ticketId: string, seconds: number) {
@@ -161,5 +161,15 @@ async function chargeRoomAsr(userId: string, ticketId: string, seconds: number) 
   const bare = { ...book, desk: { markup: 0, custom: {} } };
   const cost = asrCost(book, "qwen-audio-3.0-asr-flash-filetrans", seconds);
   const base = asrCost(bare, "qwen-audio-3.0-asr-flash-filetrans", seconds) ?? 0;
+  const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${ticketId} and user_id = ${userId}`;
+  if (unit[0]?.unit === "token") {
+    const { giayForBaseCost } = await import("@/lib/token-math");
+    const giay = giayForBaseCost(live, base);
+    if (giay && giay > 0) {
+      const { chargeTokenWith } = await import("@/lib/token-flow");
+      await chargeTokenWith(sql, ticketId, userId, giay);
+    }
+    return;
+  }
   if (cost && cost > 0) await chargeTicketWith(sql, ticketId, userId, cost, base);
 }

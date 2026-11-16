@@ -79,7 +79,7 @@ export async function chargeWith(input: {
   if (!priced) return { kind: "reject", status: 422, message: "Model này chưa có giá niêm yết." };
   if (!/^[a-f0-9]{24}$/.test(input.ticketId)) return { kind: "reject", status: 402, message: "Thiếu phiếu giữ chỗ. Hãy bấm chạy lại để giữ chỗ." };
   if (!(await ticketLive(sql, input.ticketId, userId))) {
-    return { kind: "reject", status: 402, message: "Số tiền đã giữ cho lần chạy này đã hết hoặc phiếu đã đóng. Phần đã dịch vẫn còn. Hãy nạp thêm và chạy tiếp." };
+    return { kind: "reject", status: 402, message: "Phần đã giữ cho lần chạy này đã hết hoặc phiếu đã đóng. Phần đã dịch vẫn còn." };
   }
   const response = await input.send();
   if (!response.ok) return { kind: "pass", response };
@@ -110,7 +110,17 @@ export async function chargeWith(input: {
     cost = path === "/audio/transcriptions" ? asrCost(book, model, 0) : chatCost(book, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS);
     base = path === "/audio/transcriptions" ? asrCost(bare, model, 0) ?? 0 : chatCost(bare, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS) ?? 0;
   }
-  if (cost && cost > 0) await chargeTicketWith(sql, input.ticketId, userId, cost, base);
+  if (cost && cost > 0) {
+    const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${userId}`;
+    if (unit[0]?.unit === "token") {
+      const { giayForBaseCost } = await import("./token-math.ts");
+      const giay = giayForBaseCost(book, base);
+      if (giay && giay > 0) {
+        const { chargeTokenWith } = await import("./token-flow.ts");
+        await chargeTokenWith(sql, input.ticketId, userId, giay);
+      }
+    } else await chargeTicketWith(sql, input.ticketId, userId, cost, base);
+  }
   const out = new Headers();
   const type = response.headers.get("content-type");
   if (type) out.set("content-type", type);

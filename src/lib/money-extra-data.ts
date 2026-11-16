@@ -45,7 +45,7 @@ export async function moneyExtraWith(sql: Sql, span: MoneySpan): Promise<MoneyEx
   const runRows = await sql.query<{ seconds: number; von: number }>(
     `select coalesce(sum(seconds), 0)::int as seconds, coalesce(sum(base_cost), 0)::int as von
      from run_tickets
-     where created_at > now() - $1::interval and id not like 'tts-%' and status in ('da-tru', 'dung-tien')`,
+     where created_at > now() - $1::interval and id not like 'tts-%' and status in ('da-tru', 'dung-tien') and unit = 'vnd'`,
     [window],
   );
   const catRows = await sql.query<{ category: string; amount: number }>(

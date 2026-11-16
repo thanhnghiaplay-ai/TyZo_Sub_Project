@@ -5,6 +5,7 @@ import { roomPlan, type RoomPlanId } from "@/lib/room-plans";
 export type RoomState = {
   balance: number;
   holding: number;
+  units: number;
   plan: string | null;
   planUntil: string | null;
   trialLeft: number;
@@ -27,7 +28,11 @@ async function readState(userId: string): Promise<RoomState> {
     select balance, plan, plan_until, trial_left from room_accounts where user_id = ${userId}
   `;
   const held = await sql<{ n: number }>`
-    select coalesce(sum(held), 0)::int as n from run_tickets where user_id = ${userId} and status = 'dang-giu'
+    select coalesce(sum(held), 0)::int as n from run_tickets where user_id = ${userId} and status = 'dang-giu' and unit = 'vnd'
+  `;
+  const units = await sql<{ n: number }>`
+    select coalesce(sum(left_tokens), 0)::int as n from token_grants
+    where user_id = ${userId} and expires_at > now() and left_tokens > 0
   `;
   const ledger = await sql<{ id: number; kind: string; amount: number; note: string; created_at: unknown }>`
     select id, kind, amount, note, created_at from room_ledger
@@ -37,6 +42,7 @@ async function readState(userId: string): Promise<RoomState> {
   return {
     balance: row?.balance ?? 0,
     holding: Number(held[0]?.n ?? 0),
+    units: Number(units[0]?.n ?? 0),
     plan: row?.plan ?? null,
     planUntil: stamp(row?.plan_until),
     trialLeft: row?.trial_left ?? 1,

@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## GÓI GIÂY 1–4 (16/11/2026 21:50, nhánh work, v4.0.0)
+ĐÃ LÀM: công thức giây theo Turbo giá gốc; gói có hạn, giá tự tính (chênh × đệm); mua bằng số dư đồng; lần chạy trừ giây. Ví đồng không quy đổi. Điều khoản `2026-11-16.1`.
+CHƯA LÀM: bước 5 cửa trực tiếp tự tính không lưu số dư; bước 6 thuê phòng giữ giá tay; bước 7 bỏ ô giá riêng từng model; bước 8 Alibaba Singapore tự lấy giá.
+CỐ Ý KHÔNG LÀM: không hoàn tiền khi gói hết hạn; không cộng hoa hồng lúc mua gói; hạn mức đồng trong ngày không áp vào phiếu giây.
+
 ## CHỖ ĐỂ RIÊNG 8/8 (16/11/2026, nhánh work, v3.47.13)
 ĐÃ LÀM: viền huy hiệu vai trò, bóng chữ bảo trì, bóng huy hiệu và màn hướng dẫn theo token. Mức 1 không đổi hình.
 TÁM PHẦN YÊU CẦU ĐÃ XONG.

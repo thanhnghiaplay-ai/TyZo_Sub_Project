@@ -79,7 +79,7 @@ export async function refundRunWith(sql: Sql, id: string, amount: number, reason
       update run_tickets
       set refunded = refunded + ${amount},
           status = case when refunded + ${amount} >= charged then 'da-hoan' else status end
-      where id = ${id} and charged - refunded >= ${amount}
+      where id = ${id} and charged - refunded >= ${amount} and unit = 'vnd'
       returning user_id
     ),
     acct as (
@@ -103,18 +103,26 @@ export async function refundRunWith(sql: Sql, id: string, amount: number, reason
     }
     return applied[0].user_id;
   }
-  const rows = await sql<{ id: string }>`select id from run_tickets where id = ${id}`;
+  const rows = await sql<{ id: string; unit: string }>`select id, unit from run_tickets where id = ${id}`;
   if (!rows.length) throw new Error("Không có phiếu này.");
+  if (rows[0].unit === "token") throw new Error("Phiếu giây dịch không hoàn vào số dư.");
   throw new Error("Không hoàn quá số đã trừ.");
 }
 
 /** Nhả khoản đang giữ. Khóa dòng phiếu rồi cộng đúng số vừa nhả, không cộng hai lần. */
 export async function releaseHoldWith(sql: Sql, id: string, note = "") {
+  const kind = await sql<{ unit: string; user_id: string }>`select unit, user_id from run_tickets where id = ${id} and status = 'dang-giu'`;
+  if (kind[0]?.unit === "token") {
+    const { closeTokenWith } = await import("./token-flow.ts");
+    const closed = await closeTokenWith(sql, id, kind[0].user_id, false);
+    if (!closed) throw new Error("Không nhả được phiếu này.");
+    return kind[0].user_id;
+  }
   const line = note.trim() || "Nhả khoản giữ phiếu " + id;
   const applied = await sql<{ user_id: string }>`
     with src as (
       select id, user_id, held from run_tickets
-      where id = ${id} and status = 'dang-giu' and held > 0
+      where id = ${id} and status = 'dang-giu' and held > 0 and unit = 'vnd'
       for update
     ),
     upd as (

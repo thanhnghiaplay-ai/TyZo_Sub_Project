@@ -1107,7 +1107,7 @@ export const getMoney = createServerFn({ method: "POST" })
       select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded, coalesce(sum(base_cost), 0)::int as von,
         coalesce(sum(base_cost) filter (where base_est), 0)::int as uoc
       from run_tickets
-      where created_at > now() - ${window}::interval
+      where created_at > now() - ${window}::interval and unit = 'vnd'
     `;
     const hoaRows = await sql<{ hoa: number }>`
       select coalesce(sum(amount), 0)::int as hoa from commission_events
@@ -1377,6 +1377,7 @@ export type RunTicket = {
   released: number;
   refunded: number;
   status: string;
+  unit: string;
   createdAt: string;
 };
 
@@ -1402,6 +1403,7 @@ function ticketOf(row: {
   released: number;
   refunded: number;
   status: string;
+  unit: string;
   created_at: unknown;
 }): RunTicket {
   return {
@@ -1416,6 +1418,7 @@ function ticketOf(row: {
     released: row.released,
     refunded: row.refunded,
     status: row.status,
+    unit: row.unit || "vnd",
     createdAt: stamp(row.created_at),
   };
 }
@@ -1433,8 +1436,8 @@ export const getRunDesk = createServerFn({ method: "GET" })
     const start = dayStartIso();
     const totals = await sql<{ holding: number; charged: number; errors: number }>`
       select
-        coalesce(sum(case when status = 'dang-giu' then held else 0 end), 0)::int as holding,
-        coalesce(sum(charged), 0)::int as charged,
+        coalesce(sum(case when status = 'dang-giu' and unit = 'vnd' then held else 0 end), 0)::int as holding,
+        coalesce(sum(case when unit = 'vnd' then charged else 0 end), 0)::int as charged,
         coalesce(sum(case when status = 'loi' then 1 else 0 end), 0)::int as errors
       from run_tickets
       where created_at >= ${start}
@@ -1451,9 +1454,10 @@ export const getRunDesk = createServerFn({ method: "GET" })
       released: number;
       refunded: number;
       status: string;
+      unit: string;
       created_at: unknown;
     }>`
-      select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.created_at
+      select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.unit, t.created_at
       from run_tickets t
       left join "user" u on u.id = t.user_id
       order by t.created_at desc
@@ -1516,9 +1520,10 @@ export const listUserRuns = createServerFn({ method: "POST" })
       released: number;
       refunded: number;
       status: string;
+      unit: string;
       created_at: unknown;
     }>`
-      select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.created_at
+      select t.id, t.user_id, u.email, t.file_name, t.seconds, t.rate, t.held, t.charged, t.released, t.refunded, t.status, t.unit, t.created_at
       from run_tickets t
       left join "user" u on u.id = t.user_id
       where t.user_id = ${data}

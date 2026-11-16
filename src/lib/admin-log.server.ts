@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "4.0.0",
+    time: "21:50 ngày 16/11/2026",
+    area: "tien",
+    text: "Bước 1–4 gói giây (nội bộ gọi token). 1 giây dịch = 1 giây Turbo giá gốc. Gói bán = giây × giá Turbo × (1+chênh) × đệm, mặc định chênh 50 và đệm 1.2, lưu room_settings token_desk. Ví đồng không quy đổi. Mua gói trừ ví, kind goi-giay, không hoa hồng. Cửa trả theo lượt giữ và trừ giây (run_tickets.unit token), hết hạn không trả. Phiếu đồng, dịch trực tiếp và thuyết minh vẫn trừ ví. Không làm bước 5–8.",
+  },
+  {
     version: "3.47.13",
     time: "12:20 ngày 16/11/2026",
     area: "khac",

@@ -7,7 +7,7 @@ export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {
   const rows = await sql<{ freed: number }>`
     with o as (
       select id, held as h from run_tickets
-      where user_id = ${userId} and status = 'dang-giu' and created_at < now() - make_interval(hours => ${hours}::int)
+      where user_id = ${userId} and status = 'dang-giu' and unit = 'vnd' and created_at < now() - make_interval(hours => ${hours}::int)
       for update
     ),
     t as (
@@ -27,6 +27,8 @@ export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {
     )
     select coalesce(sum(freed), 0)::int as freed from t
   `;
+  const { releaseStaleTokensWith } = await import("./token-flow.ts");
+  await releaseStaleTokensWith(sql, userId, hours);
   return Number(rows[0]?.freed ?? 0);
 }
 
@@ -49,7 +51,7 @@ export async function openTicketWith(
       where user_id = ${userId} and balance >= ${hold}::int
         and (${cap}::int = 0 or (
           select coalesce(sum(held + charged), 0) from run_tickets
-          where user_id = ${userId} and created_at >= ${dayStartIso}::timestamptz and status <> 'da-huy'
+          where user_id = ${userId} and created_at >= ${dayStartIso}::timestamptz and status <> 'da-huy' and unit = 'vnd'
         ) + ${hold}::int <= ${cap}::int)
       returning user_id
     ),
@@ -68,7 +70,7 @@ export async function openTicketWith(
   if (cap > 0) {
     const today = await sql<{ used: number }>`
       select coalesce(sum(held + charged), 0)::int as used from run_tickets
-      where user_id = ${userId} and created_at >= ${dayStartIso}::timestamptz and status <> 'da-huy'
+      where user_id = ${userId} and created_at >= ${dayStartIso}::timestamptz and status <> 'da-huy' and unit = 'vnd'
     `;
     const bal = await sql<{ balance: number }>`select balance from room_accounts where user_id = ${userId}`;
     if (Number(bal[0]?.balance ?? 0) >= hold && Number(today[0]?.used ?? 0) + hold > cap) return { error: "qua-han-muc" };
@@ -89,6 +91,8 @@ export async function ticketLive(sql: Sql, id: string, userId: string) {
  * Trả số thực trừ (có thể nhỏ hơn cost nếu phiếu hết tiền giữ).
  */
 export async function chargeTicketWith(sql: Sql, id: string, userId: string, cost: number, base = 0) {
+  const peek = await sql<{ unit: string }>`select unit from run_tickets where id = ${id} and user_id = ${userId}`;
+  if (peek[0]?.unit === "token") throw new Error("Phiếu giây dịch không trừ bằng đồng.");
   const safeBase = Math.max(0, Math.round(base));
   const rows = await sql<{ taken: number; left_held: number }>`
     with o as (
@@ -108,9 +112,14 @@ export async function chargeTicketWith(sql: Sql, id: string, userId: string, cos
 
 /** Kết thúc phiếu: nhả phần giữ thừa về ví. Chạy lại lần hai không làm gì. */
 export async function closeTicketWith(sql: Sql, id: string, userId: string, failed: boolean) {
+  const peek = await sql<{ unit: string }>`select unit from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu'`;
+  if (peek[0]?.unit === "token") {
+    const { closeTokenWith } = await import("./token-flow.ts");
+    return closeTokenWith(sql, id, userId, failed);
+  }
   const rows = await sql<{ freed: number; charged: number; status: string }>`
     with o as (
-      select id, held as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' for update
+      select id, held as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'vnd' for update
     ),
     t as (
       update run_tickets set released = released + o.h, held = 0, closed_at = now(),
@@ -150,7 +159,7 @@ export async function chargeSpeechWith(sql: Sql, userId: string, cost: number, d
       where user_id = ${userId} and balance >= ${cost}::int
         and (${cap}::int = 0 or (
           select coalesce(sum(held + charged), 0) from run_tickets
-          where user_id = ${userId} and created_at >= ${dayStartIso}::timestamptz and status <> 'da-huy'
+          where user_id = ${userId} and created_at >= ${dayStartIso}::timestamptz and status <> 'da-huy' and unit = 'vnd'
         ) + ${cost}::int <= ${cap}::int)
       returning user_id
     ),

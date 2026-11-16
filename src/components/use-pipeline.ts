@@ -10,9 +10,6 @@ import { exportNotice, roomAccess, trialFileProblem } from "@/lib/room-plans";
 import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
-import { formatMoney } from "@/lib/money-format";
-
-const moneyText = (n: number) => `${formatMoney(n) || "0"} đ`;
 import { audioBufferTo16k, packAudio, type PackedAudio } from "@/lib/sub/codec";
 import {
   abortError,
@@ -939,7 +936,7 @@ export function usePipeline() {
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
-        say(`Đã giữ ${moneyText(opened.held)} (ước tính, số trừ là số thực, phần thừa trả lại). Số dư còn ${moneyText(opened.balance)}.`);
+        say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} giây dịch (ước tính, số trừ là số thực, phần thừa trả lại nếu gói còn hạn). Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} giây dịch.`);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
       }

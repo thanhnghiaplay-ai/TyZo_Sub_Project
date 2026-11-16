@@ -19,8 +19,8 @@ export function turnPackModels(pack: ServicePack): { asr: AsrModel | null; chat:
 /** Khách chỉ thấy số đã cộng phần chênh. Không ghi giá gốc, không ghi phần trăm. */
 export function customerVisiblePrice(total: number | null, hold: number): string {
   if (total == null || !(total > 0)) return "Chưa có giá";
-  const dong = (n: number) => new Intl.NumberFormat("vi-VN").format(Math.round(n)) + " đ";
-  return `Ước tính ${dong(total)}. Giữ ví ${dong(hold)}.`;
+  const n = (value: number) => new Intl.NumberFormat("vi-VN").format(Math.round(value));
+  return `Ước tính ${n(total)} giây dịch. Giữ ${n(hold)} giây trước khi chạy.`;
 }
 export function turnPackProblem(packs: ServicePack[], pick: { asr: string; chat: string }): string {
   const open = turnPacks(packs);

@@ -10,6 +10,8 @@ import { deviceId } from "@/lib/device-id";
 import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
 import { TopUp } from "@/components/top-up";
+import { GiayShelf } from "@/components/giay-shelf";
+import { formatGiay } from "@/lib/token-math";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
@@ -148,6 +150,8 @@ export function AccountPanel() {
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             <p className="mt-2 text-sm text-muted">Số dư</p>
             <p className="text-2xl font-semibold text-accent">{dong(state?.balance ?? 0)}</p>
+            <p className="mt-2 text-sm text-muted">Giây dịch còn</p>
+            <p className="text-xl font-semibold">{formatGiay(state?.units ?? 0)}</p>
             {(state?.holding ?? 0) > 0 && (
               <p className="text-sm text-muted">Đang giữ {dong(state?.holding ?? 0)} cho lần chạy chưa xong. Quá 6 giờ không chạy tiếp thì số này trả về số dư.</p>
             )}
@@ -176,11 +180,12 @@ export function AccountPanel() {
                 <DoorDot open />
                 Trả theo lượt
               </h2>
-              <p className="text-sm text-muted">Đơn giá nằm ở tab Key khi chọn Trả theo lượt. Đó là giá dịch vụ của phòng, không phải bảng giá để so với key riêng.</p>
+              <p className="text-sm text-muted">Cửa này trừ gói giây, không giữ ví. Mua gói ở dưới. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
             </section>
           ) : (
             <RunDoorClosed note={runDoor.note} />
           )}
+          <GiayShelf reload={reload} onBought={(message) => { setNotice(message); setReload((value) => value + 1); }} />
           <div className="grid gap-2">
           <p className="text-sm text-muted">
             Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.

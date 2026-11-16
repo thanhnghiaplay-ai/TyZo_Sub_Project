@@ -61,6 +61,7 @@ import { ServiceStatusBoard } from "@/components/service-status-board";
 import { SupportBoard } from "@/components/support-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
 import { RentShowBoard } from "@/components/rent-show-board";
+import { GiayPackBoard } from "@/components/giay-pack-board";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
@@ -351,6 +352,7 @@ export function AdminDesk() {
           <LiveWorkspaceBoard />
           <SupportBoard />
           <RunDeskBoard owner part="price" />
+          <GiayPackBoard />
           <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
             <ServicePackBoard packsOnly />
           </Fold>

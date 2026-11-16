@@ -16,6 +16,11 @@ function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
+function amount(n: number, unit?: string) {
+  if (unit === "token") return new Intl.NumberFormat("vi-VN").format(n) + " giây";
+  return dong(n);
+}
+
 function label(status: string) {
   return status in RUN_STATUS_LABEL ? RUN_STATUS_LABEL[status as RunStatus] : status;
 }
@@ -23,7 +28,7 @@ function label(status: string) {
 export function ticketLine(ticket: RunTicket) {
   const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút` : "Chưa có thời lượng";
   const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "";
-  return `${when} · ${minutes} · giữ ${dong(ticket.held)} · trừ ${dong(ticket.charged)} · ${label(ticket.status)}`;
+  return `${when} · ${minutes} · giữ ${amount(ticket.held, ticket.unit)} · trừ ${amount(ticket.charged, ticket.unit)} · ${label(ticket.status)}`;
 }
 
 /**
@@ -71,7 +76,7 @@ export function TicketCard({ ticket, owner = false, children }: { ticket: RunTic
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
-      <p className="text-sm text-muted">{minutes} · Giữ {dong(ticket.held)} · Trừ {dong(ticket.charged)}{ticket.refunded > 0 ? ` · Hoàn ${dong(ticket.refunded)}` : ""}</p>
+      <p className="text-sm text-muted">{minutes} · Giữ {amount(ticket.held, ticket.unit)} · Trừ {amount(ticket.charged, ticket.unit)}{ticket.refunded > 0 ? ` · Hoàn ${amount(ticket.refunded, ticket.unit)}` : ""}</p>
       {children}
     </article>
   );
@@ -104,7 +109,7 @@ function TicketRowCard({ ticket, owner }: { ticket: TicketRow; owner: boolean })
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
-      <p className="text-sm text-muted">{minutes} · Giữ {dong(ticket.held)} · Trừ {dong(ticket.charged)}{ticket.refunded > 0 ? ` · Hoàn ${dong(ticket.refunded)}` : ""}</p>
+      <p className="text-sm text-muted">{minutes} · Giữ {amount(ticket.held, ticket.unit)} · Trừ {amount(ticket.charged, ticket.unit)}{ticket.refunded > 0 ? ` · Hoàn ${amount(ticket.refunded, ticket.unit)}` : ""}</p>
       <p className="text-xs text-muted">Model: {models || "—"} · Xử lý: {durationText(ticket.processSeconds)}</p>
     </article>
   );

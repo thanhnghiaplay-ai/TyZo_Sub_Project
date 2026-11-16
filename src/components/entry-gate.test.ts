@@ -20,6 +20,7 @@ const css = read("../styles.css");
 const TERMS_TEXT_HASH: Record<string, string> = {
   "2026-11-13.4": "a31fe1df344c120bdc47be53a1d26b86be721250ae28d63609c6ff751bcb78d2",
   "2026-11-15.1": "603f8b2428d5ffc05f338960cbea8d66ed755351d36067eb351115be17a51b79",
+  "2026-11-16.1": "91f1a92ce2709e78af47072c9ecf13135cdbbaeae89a501d838ec6bb7ee96016",
 };
 
 function termsText() {

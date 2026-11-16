@@ -1,12 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { MAX_RUN_SECONDS, dearestChatModel } from "@/lib/run-bill";
+import { MAX_RUN_SECONDS } from "@/lib/run-bill";
 
 export type RunTicketOpen = { id: string; held: number; perMinute: number; balance: number };
 
 const MODEL_RE = /^[a-z0-9./_-]{2,80}$|^auto$/i;
 
-/** Mở phiếu cho một lần chạy: giữ tiền trước, trả mã phiếu. Mọi yêu cầu sau gắn mã này. */
+/** Mở phiếu cho một lần chạy: giữ giây dịch trước, trả mã phiếu. Mọi yêu cầu sau gắn mã này. */
 export const openRunTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { fileName: string; seconds: number; asrModel: string; chatModel: string }) => {
@@ -25,11 +25,13 @@ export const openRunTicket = createServerFn({ method: "POST" })
     await requireServiceOpen("normal");
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
-    const { parseRunDesk, parseModelList, dayStartIso } = await import("@/lib/run-desk");
-    const { estimateHold, estimateHoldSplit } = await import("@/lib/run-bill");
+    const { parseRunDesk, parseModelList } = await import("@/lib/run-desk");
+    const { dearestChatModel: pickChat } = await import("@/lib/run-bill");
+    const { holdGiay, formatGiay } = await import("@/lib/token-math");
     const { loadPriceBook } = await import("@/lib/run-board.server");
     const { ALIBABA_ROWS } = await import("@/lib/sub/alibaba-catalog");
-    const { openTicketWith } = await import("@/lib/run-ticket");
+    const { openGiayWith, giayBalance } = await import("@/lib/token-flow");
+    const { releaseStaleWith } = await import("@/lib/run-ticket");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
     const desk = parseRunDesk(saved[0]?.value);
@@ -44,45 +46,36 @@ export const openRunTicket = createServerFn({ method: "POST" })
     }
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
+    const bare = { rate: book.rate, rows: book.rows, desk: { markup: 0 as const, custom: {} } };
     let hold: number | null = null;
     if (aliAsr) {
       const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
       if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");
-      const aliDeskRaw = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
-      const aliDesk = parseRunDesk(aliDeskRaw[0]?.value);
-      const aliBook = { rate: book.rate, rows: ALIBABA_ROWS, desk: { markup: aliDesk.markup, custom: aliDesk.custom } };
-      const chatModel = auto ? dearestChatModel(book, models) : data.chatModel;
-      hold = chatModel ? estimateHoldSplit(aliBook, book, data.asrModel, chatModel, data.seconds) : null;
+      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
+      hold = chatModel ? holdGiay({ groq: book, aliRows: ALIBABA_ROWS, asrProvider: "alibaba", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
     } else {
-      const chatModel = auto ? dearestChatModel(book, models) : data.chatModel;
-      hold = chatModel ? estimateHold(book, data.asrModel, chatModel, data.seconds) : null;
+      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
+      hold = chatModel ? holdGiay({ groq: book, aliRows: ALIBABA_ROWS, asrProvider: "groq", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
     }
-    if (hold == null) throw new Error("Model này chưa có giá niêm yết ở cửa trả theo lượt.");
+    if (hold == null || hold < 1) throw new Error("Chưa có giá bản Turbo hoặc model này chưa có giá gốc.");
     const id = randomBytes(12).toString("hex");
-    const result = await openTicketWith(sql, {
+    await releaseStaleWith(sql, context.userId);
+    const result = await openGiayWith(sql, {
       id,
       userId: context.userId,
       fileName: data.fileName,
       seconds: data.seconds,
       rate: Math.round((hold * 60) / data.seconds),
       hold,
-      cap: desk.cap,
-      dayStartIso: dayStartIso(),
       asrModel: data.asrModel,
       chatModel: data.chatModel,
     });
-    if ("error" in result) {
-      throw new Error(
-        result.error === "qua-han-muc"
-          ? "Đã quá hạn mức trả theo lượt của hôm nay."
-          : `Số dư chưa đủ. Lần này cần giữ ${new Intl.NumberFormat("vi-VN").format(hold)} đ. Hãy nạp thêm.`,
-      );
-    }
-    const bal = await sql<{ balance: number }>`select balance from room_accounts where user_id = ${context.userId}`;
-    return { id, held: hold, perMinute: Math.round((hold * 60) / data.seconds), balance: Number(bal[0]?.balance ?? 0) };
+    if ("error" in result) throw new Error(`Chưa đủ giây dịch. Lần này cần giữ ${formatGiay(hold)}. Hãy mua gói giây.`);
+    const left = await giayBalance(sql, context.userId);
+    return { id, held: hold, perMinute: Math.round((hold * 60) / data.seconds), balance: left };
   });
 
-/** Kết thúc phiếu: trừ số thật, nhả phần giữ thừa về ví. Gọi nhiều lần cũng an toàn. */
+/** Kết thúc phiếu: trừ số giây thực, nhả phần giữ thừa về gói còn hạn. Gọi nhiều lần cũng an toàn. */
 export const closeRunTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { id: string; failed?: boolean }) => {

@@ -6,6 +6,7 @@ import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
 import { turnPackModels, turnPacks } from "@/lib/turn-pack";
 import type { ServicePack } from "@/lib/service-pack";
 import { formatDong, formatMinutes, minutesLeft, pickPrice, runEstimate } from "@/lib/wallet-view";
+import { formatGiay } from "@/lib/token-math";
 import { fmt } from "@/lib/sub/text";
 import { TopUp } from "@/components/top-up";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -110,18 +111,18 @@ export function MoneyCard({
     return models.asr === asr && models.chat === chat;
   });
   const rate = pickPrice(perMinute, chosen?.id ?? null);
-  const left = account && rate ? minutesLeft(account.balance, rate.row.total) : null;
+  const left = account && rate ? minutesLeft(account.units, rate.row.total) : null;
   const run = pickPrice(forRun, chosen?.id ?? null);
-  const estimate = account ? runEstimate(run?.row ?? null, account.balance) : null;
+  const estimate = account ? runEstimate(run?.row ?? null, account.units) : null;
 
   return (
-    <section aria-label="Ví và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
+    <section aria-label="Gói giây và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex min-w-0 items-center gap-2">
           <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
           {account ? (
             <span>
-              <strong>{formatDong(account.balance)}</strong>
+              <strong>{formatGiay(account.units)}</strong>
               {left != null && (
                 <>
                   {" "}
@@ -129,7 +130,7 @@ export function MoneyCard({
                   {!rate?.exact ? " (theo gói rẻ nhất)" : ""}
                 </>
               )}
-              {account.holding > 0 ? ` · đang giữ ${formatDong(account.holding)}` : ""}
+              {account.holding > 0 ? ` · ví đang giữ ${formatDong(account.holding)}` : ""}
             </span>
           ) : (
             <span className="text-muted">Đang đọc số dư…</span>
@@ -146,9 +147,9 @@ export function MoneyCard({
       </div>
       {estimate && (
         <p className={estimate.enough ? "text-muted" : "text-danger"} role="status">
-          Video {fmt(secs)}: ước tính khoảng <strong className="text-fg">{formatDong(estimate.total)}</strong>, phòng giữ {formatDong(estimate.hold)} trong ví trước khi chạy
+          Video {fmt(secs)}: giữ khoảng <strong className="text-fg">{formatGiay(estimate.hold)}</strong> trước khi chạy
           {run && !run.exact ? " (theo gói rẻ nhất)" : ""}.
-          {!estimate.enough ? ` Ví thiếu ${formatDong(estimate.short)}, hãy nạp thêm.` : ""}
+          {!estimate.enough ? ` Thiếu ${formatGiay(estimate.short)}. Hãy mua gói giây ở Số dư.` : ""}
         </p>
       )}
       {!estimate && secs < 1 && account && <p className="text-xs text-muted">Chọn một tệp để thấy ước tính cho video đó. Dán link thì chưa biết thời lượng.</p>}

@@ -11,7 +11,7 @@ export function estimateBase(charged: number, markup: number): number {
 export async function countUncosted(sql: Sql): Promise<number> {
   const rows = await sql<{ n: number }>`
     select count(*)::int as n from run_tickets
-    where charged > 0 and base_cost = 0 and base_est = false and status <> 'dang-giu'
+    where charged > 0 and base_cost = 0 and base_est = false and status <> 'dang-giu' and unit = 'vnd'
   `;
   return Number(rows[0]?.n ?? 0);
 }
@@ -25,7 +25,7 @@ export async function estimateOldCostWith(sql: Sql, markup: number): Promise<num
   const rows = await sql<{ id: string }>`
     update run_tickets
     set base_cost = round(charged::numeric / (1 + ${m}::numeric / 100))::int, base_est = true
-    where charged > 0 and base_cost = 0 and base_est = false and status <> 'dang-giu'
+    where charged > 0 and base_cost = 0 and base_est = false and status <> 'dang-giu' and unit = 'vnd'
     returning id
   `;
   return rows.length;

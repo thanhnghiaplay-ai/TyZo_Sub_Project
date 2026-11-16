@@ -1,12 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
-import { parseRunDesk } from "@/lib/run-desk";
-import { parseServicePacks, quotePack } from "@/lib/service-pack";
+import { parseServicePacks } from "@/lib/service-pack";
+import { holdGiay } from "@/lib/token-math";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { turnPacks } from "@/lib/turn-pack";
 
 export type TurnPrice = { id: string; total: number | null; hold: number };
 
-/** Giá khách thấy: giá gốc cộng phần trăm Chủ đặt. Không trả giá gốc. */
+/** Số giây dịch sẽ giữ cho cửa trả theo lượt. Không trả giá gốc. */
 export const quoteTurnPacks = createServerFn({ method: "POST" })
   .validator((input: { seconds: number; narration: boolean }) => {
     const seconds = Math.round(Number(input?.seconds));
@@ -19,25 +19,21 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
       const { loadPriceBook } = await import("@/lib/run-board.server");
       const sql = await getSql();
       const book = await loadPriceBook(sql);
-      const rows = await sql<{ key: string; value: string }>`
-        select key, value from room_settings where key in ('service_packs', 'alibaba_desk')
-      `;
-      const map = new Map(rows.map((row) => [row.key, row.value]));
-      const aliDesk = parseRunDesk(map.get("alibaba_desk"));
-      const packs = turnPacks(parseServicePacks(map.get("service_packs")));
-      const aliBook = book
-        ? { rate: book.rate, rows: ALIBABA_ROWS, desk: { markup: aliDesk.markup, custom: aliDesk.custom } }
-        : null;
+      const rows = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
+      const packs = turnPacks(parseServicePacks(rows[0]?.value));
       return packs.map((pack) => {
-        if (!book) return { id: pack.id, total: null, hold: 0 };
-        const quote = quotePack({
-          pack,
+        const asr = pack.roles.asr;
+        const chat = pack.roles.translate;
+        if (!book || !asr || !chat) return { id: pack.id, total: null, hold: 0 };
+        const giay = holdGiay({
+          groq: book,
+          aliRows: ALIBABA_ROWS,
+          asrProvider: asr.provider,
+          asrModel: asr.model,
+          chatModel: chat.model,
           seconds: data.seconds,
-          door: "turn",
-          narration: data.narration,
-          books: { groq: book, ...(aliBook ? { alibaba: aliBook } : {}) },
         });
-        return { id: pack.id, total: quote.ready ? quote.marked : null, hold: quote.ready ? quote.hold : 0 };
+        return { id: pack.id, total: giay, hold: giay ?? 0 };
       });
     } catch {
       return [];

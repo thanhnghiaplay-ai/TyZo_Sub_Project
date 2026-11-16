@@ -34,6 +34,10 @@ export function TermsDocument() {
             <td>Bạn</td>
           </tr>
           <tr>
+            <td>Gói giây cho cửa trả theo lượt</td>
+            <td>Bạn mua. Hết hạn thì phần còn lại mất, không hoàn tiền</td>
+          </tr>
+          <tr>
             <td>Đúng hết câu, đúng ý, đúng giọng</td>
             <td>Không cam kết</td>
           </tr>
@@ -41,7 +45,7 @@ export function TermsDocument() {
       </table>
 
       <h2>Bảng giá</h2>
-      <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp.</p>
+      <p>Đăng ký chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, xem đủ chức năng, không xuất file Vietsub. Lượt thử chỉ bị trừ khi nhận dạng đã gọi được máy dịch. Lỗi trước bước đó không mất lượt. Gói đã mua thì trong hạn không giới hạn số tệp. Cửa trả theo lượt dùng gói giây, không dùng bảng giá thuê phòng. Giá từng gói giây tính lúc mua và có thể đổi ở lần mua sau.</p>
       <table className="gate-table">
         <thead>
           <tr>
@@ -71,7 +75,7 @@ export function TermsDocument() {
         Phòng chiếu TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng, dán key của chính bạn. Phòng nhận dạng lời bằng Whisper trên Groq hoặc bằng Alibaba Filetrans khi bạn chọn nhà đó, dịch sang tiếng Việt, chiếu phụ đề trên video, có thể đọc thuyết minh, và xuất file phụ đề .srt.
       </p>
       <p>Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key của mình thì cước Groq hoặc Alibaba vẫn là của bạn, tùy nhà bạn chọn. Nạp ví bằng chuyển khoản qua Sepay hoặc Casso khi Chủ đã bật cổng. Chỉ cộng khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.</p>
-      <p>Cửa trả theo lượt dùng key của phòng và tính tiền trong ví theo giá nhà phát hành công bố cộng phần chênh phòng niêm yết. Bạn chỉ thấy số tiền sau khi đã cộng phần chênh, gồm ước tính và khoản giữ ví. Bạn không thấy giá gốc và không thấy phần trăm. Khi Chủ đã mở gói trả theo lượt, bạn chọn một gói. Gói quyết định model nhận dạng và model dịch. Nhận dạng Alibaba ở cửa này dùng key Alibaba của phòng và cần link file trực tiếp, không phải trang xem. Việc Alibaba ngoài nhận dạng chưa chạy ở cửa này. Khi chưa có gói, cửa vẫn nhận dạng bằng Whisper trên Groq. Khi thuê phòng bằng key của bạn, bạn chỉ chọn model Chủ đã mở: Whisper cần key Groq, Filetrans cần key Alibaba. Dịch khi thuê phòng vẫn bằng model Groq đã mở. Nhận dạng tính theo giây âm thanh (tối thiểu 10 giây mỗi lần), dịch theo token, đọc thuyết minh theo ký tự. Trước khi chạy, phòng giữ tạm một khoản ước tính trong ví. Khi xong, phòng trừ số thực và trả lại phần giữ thừa. Đoạn nhà phát hành báo lỗi thì không tính tiền.</p>
+      <p>Cửa trả theo lượt dùng key của phòng và trừ gói giây bạn đã mua, không giữ tiền ví cho lần chạy. Bạn thấy số giây, hạn dùng và giá gói. Bạn không thấy giá gốc, phần trăm chênh hay hệ số đệm. Khi Chủ đã mở gói trả theo lượt, bạn chọn một gói việc. Gói việc quyết định model nhận dạng và model dịch. Nhận dạng Alibaba ở cửa này dùng key Alibaba của phòng và cần link file trực tiếp, không phải trang xem. Việc Alibaba ngoài nhận dạng chưa chạy ở cửa này. Khi chưa có gói việc, cửa vẫn nhận dạng bằng Whisper trên Groq. Khi thuê phòng bằng key của bạn, bạn chỉ chọn model Chủ đã mở: Whisper cần key Groq, Filetrans cần key Alibaba. Dịch khi thuê phòng vẫn bằng model Groq đã mở. Nhận dạng tính theo giây âm thanh (tối thiểu 10 giây mỗi lần). Dịch tính theo lượng chữ gửi đi. Một model đắt hơn thì lần chạy trừ nhiều giây hơn. Đọc thuyết minh tính theo ký tự và trừ vào số dư đồng, không trừ gói giây. Dịch trực tiếp cũng trừ số dư đồng. Trước khi chạy cửa trả theo lượt, phòng giữ số giây ước tính. Khi xong, phòng trừ số giây thực và trả phần giữ thừa vào gói còn hạn. Gói hết hạn thì phần còn lại mất, không đổi lại thành tiền. Giá gói mới có thể đổi khi giá nhà phát hành hoặc tỷ giá đổi. Gói đã mua giữ nguyên số giây đến hết hạn. Đoạn nhà phát hành báo lỗi thì không trừ giây.</p>
 
       <h2>2. Điều kiện để dùng</h2>
       <p>Bạn tự chịu trách nhiệm khi đưa nội dung vào. Bạn phải có quyền dùng video và tiếng đó. Key Groq và key Alibaba là của bạn. Nhà đó tính cước cho tài khoản của bạn, không phải phí thuê phòng.</p>
@@ -81,7 +85,7 @@ export function TermsDocument() {
       <p>
         Không cam kết nhận dạng hết câu, dịch đúng ý, giữ đúng tên hay giọng nam nữ, hoặc không mất câu. Kết quả là bản để bạn xem và sửa. Bạn tự kiểm tra trước khi đăng, phát hoặc giao cho người khác.
       </p>
-      <p>Key sai, hết hạn mức Groq hoặc Alibaba, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị tính tiền và khoản giữ thừa được trả lại ví.</p>
+      <p>Key sai, hết hạn mức Groq hoặc Alibaba, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị trừ giây và phần giữ thừa được trả lại nếu gói còn hạn. Hết hạn thì không trả lại và không hoàn tiền.</p>
       <p>Phòng không phải Groq, không phải Alibaba, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
 
       <h2>4. Dữ liệu đi những đâu</h2>
@@ -96,7 +100,7 @@ export function TermsDocument() {
         Không gửi phụ đề, lời thoại, tên file, tên phim, video, âm thanh hay key. Bản số liệu lưu trên máy chủ không có mã hay email tài khoản của bạn. Máy chủ chỉ dùng tài khoản để giới hạn số lần gửi. Chỉ Chủ xem được các số đã gộp, không xem được từng người.
       </p>
       <p>
-        Khi bạn dùng cửa trả theo lượt, máy chủ của phòng ghi một phiếu cho lần chạy đó, trong phiếu có tên tệp bạn đưa vào, thời lượng, số tiền giữ và trừ. Nhân viên của phòng chỉ thấy tên tệp đã che (hai ký tự đầu và đuôi tệp), phần còn lại là dấu chấm tròn. Chỉ Chủ xem được tên đầy đủ, để đối chiếu khi bạn hỏi về một lượt chạy, và mỗi lần xem được ghi vào nhật ký thao tác của phòng. Phòng không lưu video của bạn nên không ai trong phòng xem được video.
+        Khi bạn dùng cửa trả theo lượt, máy chủ của phòng ghi một phiếu cho lần chạy đó, trong phiếu có tên tệp bạn đưa vào, thời lượng, số giây dịch đã giữ và đã trừ. Nhân viên của phòng chỉ thấy tên tệp đã che (hai ký tự đầu và đuôi tệp), phần còn lại là dấu chấm tròn. Chỉ Chủ xem được tên đầy đủ, để đối chiếu khi bạn hỏi về một lượt chạy, và mỗi lần xem được ghi vào nhật ký thao tác của phòng. Phòng không lưu video của bạn nên không ai trong phòng xem được video.
       </p>
       <p>
         Thuật ngữ bạn tự thêm chỉ nằm trên máy của bạn. Nếu bạn bật gửi thuật ngữ, phòng nhận một bản sao để xem. Phòng không áp bản đó cho người khác nếu Chủ chưa nhận vào bộ chính thức. Không gửi tên người thật, số điện thoại hay địa chỉ.
