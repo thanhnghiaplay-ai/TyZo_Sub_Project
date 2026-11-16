@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỒNG BỘ MÀU 3/4 (16/11/2026, nhánh work, v3.46.9)
+ĐÃ LÀM: nền trang bảo trì, lời nhắn, nút cuối trang và bóng chữ nhấp theo màu nền, chữ, thông tin và lỗi. styles.css không còn mã hex ngoài mặc định.
+CÒN TRONG PHẦN NÀY: thư HTML và cửa sổ đăng nhập.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ĐỒNG BỘ MÀU 2/4 (16/11/2026, nhánh work, v3.46.8)
 ĐÃ LÀM: robot hết mã màu cứng. Thân theo chữ và viền, mắt theo màu thông tin, biển và đèn mũ theo màu lỗi.
 CÒN TRONG PHẦN NÀY: nền đêm và nhấp nháy chữ, thư HTML và cửa sổ đăng nhập.

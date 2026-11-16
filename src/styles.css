@@ -2085,8 +2085,8 @@ html[data-density] .studio-workspace {
   inset: 0;
   z-index: 30;
   overflow: hidden;
-  background: #04050a;
-  color: #fff;
+  background: var(--color-bg);
+  color: var(--color-fg);
   font-family: var(--font-sans);
 }
 
@@ -2102,7 +2102,7 @@ html[data-density] .studio-workspace {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 26%, #1b1022 0%, #0a0c16 55%, #04050a 100%);
+  background: radial-gradient(ellipse at 50% 26%, color-mix(in srgb, var(--color-ink) 42%, var(--color-bg)) 0%, color-mix(in srgb, var(--color-bg) 78%, black) 55%, var(--color-bg) 100%);
 }
 
 .mt-scene::after {
@@ -2155,7 +2155,7 @@ html[data-density] .studio-workspace {
   height: 240px;
   border-radius: 50%;
   background: conic-gradient(from 0deg, color-mix(in srgb, var(--color-warning) 60%, transparent), transparent 24%, transparent 100%);
-  mask-image: radial-gradient(closest-side, #000 30%, transparent);
+  mask-image: radial-gradient(closest-side, black 30%, transparent);
   animation: mt-spin 2.2s linear infinite;
   will-change: transform;
 }
@@ -2178,7 +2178,7 @@ html[data-density] .studio-workspace {
   overflow: hidden;
   opacity: 0;
   perspective: 420px;
-  mask-image: linear-gradient(to bottom, #000, transparent 85%);
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
 }
 
 .mt-floor i {
@@ -2425,9 +2425,9 @@ html[data-density] .studio-workspace {
 
 @keyframes mt-glitch {
   0%, 89%, 100% { transform: none; }
-  90% { transform: translateX(-4px) skewX(-6deg); text-shadow: -5px 0 #22d3ee, 5px 0 #ff2d55; }
-  92% { transform: translateX(5px) skewX(5deg); text-shadow: 5px 0 #22d3ee, -5px 0 #ff2d55; }
-  94% { transform: translateX(-2px); text-shadow: -3px 0 #22d3ee, 3px 0 #ff2d55; }
+  90% { transform: translateX(-4px) skewX(-6deg); text-shadow: -5px 0 var(--color-info), 5px 0 var(--color-error); }
+  92% { transform: translateX(5px) skewX(5deg); text-shadow: 5px 0 var(--color-info), -5px 0 var(--color-error); }
+  94% { transform: translateX(-2px); text-shadow: -3px 0 var(--color-info), 3px 0 var(--color-error); }
   96% { transform: none; }
 }
 
@@ -2437,7 +2437,7 @@ html[data-density] .studio-workspace {
   padding: 0 2vw;
   font-size: clamp(14px, min(2.3vw, 2.7vh), 21px);
   line-height: 1.55;
-  color: #d5dde8;
+  color: var(--color-fg);
 }
 
 .mt-sr {
@@ -2479,7 +2479,7 @@ html[data-density] .studio-workspace {
   opacity: 0;
 }
 
-.mt-eta strong { color: #fff; }
+.mt-eta strong { color: var(--color-fg); }
 
 .mt-bar {
   width: min(360px, 70vw);
@@ -2520,12 +2520,12 @@ html[data-density] .studio-workspace {
   min-height: 2.5rem;
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgb(255 255 255 / 0.18);
+  border: 1px solid color-mix(in srgb, var(--color-fg) 18%, transparent);
   border-radius: 999px;
   padding: 0 1rem;
   font-size: 0.8rem;
-  color: #9fb0c0;
-  background: rgb(4 5 10 / 0.6);
+  color: var(--color-muted);
+  background: color-mix(in srgb, var(--color-bg) 72%, transparent);
   transform: translateX(-50%);
   transition: border-color 0.15s, color 0.15s;
 }
@@ -2533,7 +2533,7 @@ html[data-density] .studio-workspace {
 .mt-admin:hover,
 .mt-admin:focus-visible {
   border-color: var(--mt-or);
-  color: #fff;
+  color: var(--color-fg);
 }
 
 /* hiệu ứng toàn cảnh */
