@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
 import { getAlibabaDesk, saveAlibabaKey } from "@/lib/pack-room";
 
@@ -52,7 +52,7 @@ export function AlibabaKeyBoard() {
           onChange={(event) => setDraft(event.target.value)}
         />
         <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3" aria-label={show ? "Ẩn key" : "Hiện key"} onClick={() => setShow((value) => !value)}>
-          {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          {show ? <Icon slot="ui.hide" className="size-4" /> : <Icon slot="ui.eye" className="size-4" />}
         </button>
         <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
           Lưu key

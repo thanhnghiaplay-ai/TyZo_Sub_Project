@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.14",
+    time: "08:40 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 1. Thêm slot ui.hide (EyeSlash) và icon EyeSlash vào registry. Nút xem/ẩn key ở studio, service-pack-board, alibaba-key-board, run-desk-board dùng Icon slot ui.eye / ui.hide thay lucide Eye/EyeOff. Ba file kia hết import lucide. studio vẫn còn icon lucide khác. Không đổi điều khoản."
+  },
+  {
     version: "3.46.13",
     time: "08:33 ngày 16/11/2026",
     area: "khac",

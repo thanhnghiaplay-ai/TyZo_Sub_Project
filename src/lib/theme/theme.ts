@@ -118,6 +118,7 @@ export const ICON_SLOTS = [
   ["ui.key", "Khóa API", "Key"],
   ["ui.chart", "Thống kê", "ChartBar"],
   ["ui.eye", "Xem", "Eye"],
+  ["ui.hide", "Ẩn", "EyeSlash"],
   ["ui.clock", "Thời gian", "Clock"],
   ["ui.magic", "Tự động / AI", "Sparkle"],
 ] as const;

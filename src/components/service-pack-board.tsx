@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
 import { getAlibabaDesk, saveAlibabaDesk, saveAlibabaKey, saveServicePacks } from "@/lib/pack-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
@@ -145,7 +145,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
             onChange={(event) => setAdminKey(event.target.value)}
           />
           <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3" onClick={() => setShowKey((value) => !value)} aria-label={showKey ? "Ẩn key" : "Hiện key"}>
-            {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {showKey ? <Icon slot="ui.hide" className="size-4" /> : <Icon slot="ui.eye" className="size-4" />}
           </button>
           <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={syncKey}>
             Đồng bộ

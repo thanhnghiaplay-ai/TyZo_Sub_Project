@@ -1,6 +1,6 @@
 import {
   ArrowsClockwise, Bell, BookOpen, Camera, CaretDown, CaretRight, ChartBar, CheckCircle, Clock, Coins, Copy, CornersOut, Crown,
-  Cube, DownloadSimple, Envelope, Eye, FilmStrip, Funnel, GearSix, Globe, Headphones, Heart, House, Image, Info, Key, Lightning,
+  Cube, DownloadSimple, Envelope, Eye, EyeSlash, FilmStrip, Funnel, GearSix, Globe, Headphones, Heart, House, Image, Info, Key, Lightning,
   Link, List, Lock, MagnifyingGlass, Microphone, Minus, Moon, Palette, Pause, PencilSimple, Play, Plus, QrCode, Question,
   ShieldCheck, SignIn, SignOut, Sparkle, SpeakerHigh, Star, Stop, Subtitles, Sun, TextAa, Translate, Trash, UploadSimple, User,
   UsersThree, Wallet, Warning, Waveform, X, XCircle,
@@ -13,7 +13,7 @@ import {
  */
 export const ICONS: Record<string, PhosphorIcon> = {
   ArrowsClockwise, Bell, BookOpen, Camera, CaretDown, CaretRight, ChartBar, CheckCircle, Clock, Coins, Copy, CornersOut, Crown,
-  Cube, DownloadSimple, Envelope, Eye, FilmStrip, Funnel, GearSix, Globe, Headphones, Heart, House, Image, Info, Key, Lightning,
+  Cube, DownloadSimple, Envelope, Eye, EyeSlash, FilmStrip, Funnel, GearSix, Globe, Headphones, Heart, House, Image, Info, Key, Lightning,
   Link, List, Lock, MagnifyingGlass, Microphone, Minus, Moon, Palette, Pause, PencilSimple, Play, Plus, QrCode, Question,
   ShieldCheck, SignIn, SignOut, Sparkle, SpeakerHigh, Star, Stop, Subtitles, Sun, TextAa, Translate, Trash, UploadSimple, User,
   UsersThree, Wallet, Warning, Waveform, X, XCircle,

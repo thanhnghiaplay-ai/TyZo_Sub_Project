@@ -8,13 +8,12 @@ import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
+import { Icon } from "@/components/ui/icon";
 import {
   AlertTriangle,
   CheckCircle2,
   ClipboardPaste,
   Clapperboard,
-  Eye,
-  EyeOff,
   FileAudio,
   CircleHelp,
   Link2,
@@ -1072,7 +1071,7 @@ export function Studio() {
               <ClipboardPaste />
             </IconButton>
             <IconButton label={showKey ? "Ẩn API key" : "Hiện API key"} onClick={() => setShowKey((value) => !value)}>
-              {showKey ? <EyeOff /> : <Eye />}
+              {showKey ? <Icon slot="ui.hide" /> : <Icon slot="ui.eye" />}
             </IconButton>
           </span>
           {app.keyStatus.phase !== "idle" && (

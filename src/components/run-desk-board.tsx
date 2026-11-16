@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
@@ -328,7 +328,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
               Dán
             </button>
             <button type="button" className="min-tap rounded-full border border-line px-3" aria-label={showKey ? "Ẩn key" : "Hiện key"} onClick={() => setShowKey((value) => !value)}>
-              {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showKey ? <Icon slot="ui.hide" className="size-4" /> : <Icon slot="ui.eye" className="size-4" />}
             </button>
           </span>
           <button type="button" disabled={busy} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={syncKey}>
