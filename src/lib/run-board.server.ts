@@ -26,9 +26,13 @@ export async function loadPriceBook(sql: Sql): Promise<PriceBook | null> {
   const board = stored?.board ?? null;
   const stale = !stored || Date.now() - stored.at > FRESH_MS;
   if (board && stale) void refreshBoard(sql);
-  if (board) return { rate: board.rate, rows: board.rows, desk: { markup: desk.markup, custom: desk.custom } };
+  const fixRaw = await sql<{ value: string }>`select value from room_settings where key = 'usd_fix'`;
+  const { applyUsdFix, parseUsdFix } = await import("./usd-fix");
+  const rows = board ? applyUsdFix(board.rows, parseUsdFix(fixRaw[0]?.value)) : null;
+  if (board && rows) return { rate: board.rate, rows, desk: { markup: desk.markup, custom: desk.custom } };
   const fresh = await pullBoard(sql);
-  return fresh ? { rate: fresh.rate, rows: fresh.rows, desk: { markup: desk.markup, custom: desk.custom } } : null;
+  if (!fresh) return null;
+  return { rate: fresh.rate, rows: applyUsdFix(fresh.rows, parseUsdFix(fixRaw[0]?.value)), desk: { markup: desk.markup, custom: desk.custom } };
 }
 
 async function refreshBoard(sql: Sql) {

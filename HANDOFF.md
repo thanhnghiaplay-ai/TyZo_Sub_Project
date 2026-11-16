@@ -1,3 +1,13 @@
+## ĐẨY CHÍNH THỨC (17/11/2026 02:51)
+ĐÃ LÀM: đẩy work rồi main. Bản khách vẫn v5.0.6. Chủ có bảng giá model.
+CHƯA LÀM: chưa mở Giá và hạn mức trên điện thoại sau khi site lên.
+CỐ Ý KHÔNG LÀM: không nâng số phiên bản khách, không đổi điều khoản.
+
+## GIÁ MODEL (17/11/2026 02:50, nhánh work, vẫn v5.0.6)
+ĐÃ LÀM: Mục Giá và hạn mức liệt kê model Groq và Alibaba. Hiện Token dịch. Ô đô la tự lấy, sửa khi bảng sai, để trống thì dùng số tự lấy. Số sửa được dùng khi tính Token dịch.
+CHƯA LÀM: chưa mở trên điện thoại sau khi site lên.
+CỐ Ý KHÔNG LÀM: không đặt giá bán riêng, không đổi điều khoản, không nâng số phiên bản khách.
+
 ## ĐẨY CHÍNH THỨC v5.0.6 (17/11/2026 02:43)
 ĐÃ LÀM: đẩy work rồi main. Bản khách là v5.0.6. Cách trả nằm trong Key Sub.
 CHƯA LÀM: chưa bấm Key Sub trên điện thoại sau khi site lên. Bảng giá model chưa làm.

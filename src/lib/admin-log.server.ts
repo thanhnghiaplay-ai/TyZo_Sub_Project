@@ -9,6 +9,12 @@ export type AdminNote = {
 export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.0.6",
+    time: "02:50 ngày 17/11/2026",
+    area: "tien",
+    text: "Chủ ở Giá và hạn mức thấy từng model Groq và Alibaba bằng Token dịch. Ô đô la tự lấy từ bảng niêm yết, để trống thì dùng số đó, gõ số chỉ khi bảng sai. Số sửa lưu room_settings usd_fix và được phủ lên bảng trước khi tính Token dịch. Không đặt giá bán riêng. Không nâng số phiên bản khách.",
+  },
+  {
+    version: "5.0.6",
     time: "02:45 ngày 17/11/2026",
     area: "khac",
     text: "Cách trả và TurnPackList chuyển từ mục Nâng cao về Key Sub. Bỏ mục Gói dịch trên menu khách. Gói lấy thời lượng từ tệp (cùng nguồn thẻ Token), không chỉ từ thẻ video nên không còn ghi Chưa có tệp khi tệp đã có thời lượng. Dòng giá gói ghi Token dịch.",

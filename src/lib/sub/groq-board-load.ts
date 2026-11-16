@@ -20,4 +20,15 @@ export async function fetchGroqBoard(): Promise<GroqBoard> {
   return { rate, rateDate: fx.date || "", rows };
 }
 
-export const loadGroqBoard = createServerFn({ method: "POST" }).handler(async (): Promise<GroqBoard> => fetchGroqBoard());
+export const loadGroqBoard = createServerFn({ method: "POST" }).handler(async (): Promise<GroqBoard> => {
+  const board = await fetchGroqBoard();
+  try {
+    const { getSql } = await import("@/lib/db");
+    const { applyUsdFix, parseUsdFix } = await import("@/lib/usd-fix");
+    const sql = await getSql();
+    const raw = await sql<{ value: string }>`select value from room_settings where key = 'usd_fix'`;
+    return { ...board, rows: applyUsdFix(board.rows, parseUsdFix(raw[0]?.value)) };
+  } catch {
+    return board;
+  }
+});

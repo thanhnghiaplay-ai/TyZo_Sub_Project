@@ -7,6 +7,7 @@ import { listDoorHistory, revealTicketFileName, searchRunTickets, type DoorChang
 import type { TicketFilter, TicketRow } from "@/lib/overview-data";
 import { RUN_STATUS_LABEL, type RunDesk, type RunStatus } from "@/lib/run-desk";
 import { DoorDot } from "@/components/run-door";
+import { ModelUsdBoard } from "@/components/model-usd-board";
 import { maskFileName } from "@/lib/mask-file-name";
 
 function dong(n: number) {
@@ -344,7 +345,8 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
               />
             </label>
           </div>
-          <p className="text-xs text-muted">Giá là giá niêm yết cộng phần trăm. Không đặt giá riêng từng model. Giá Alibaba lấy ở mục Gói dịch.</p>
+          <p className="text-xs text-muted">Giá bán là giá niêm yết cộng phần trăm. Không đặt giá bán riêng từng model. Số đô la bên dưới chỉ sửa khi bảng tự lấy sai.</p>
+          <ModelUsdBoard />
           {form && (
             <button
               type="button"

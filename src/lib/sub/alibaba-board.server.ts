@@ -46,5 +46,8 @@ export async function loadAlibabaRows(sql: Sql, fetchPage: (url: string) => Prom
     stored = null;
   }
   if (!stored || Date.now() - stored.at > FRESH_MS) void refreshAlibabaBoard(sql, fetchPage);
-  return mergeAlibaba(Array.isArray(stored?.quotes) ? stored.quotes : []);
+  const merged = mergeAlibaba(Array.isArray(stored?.quotes) ? stored.quotes : []);
+  const fixRaw = await sql<{ value: string }>`select value from room_settings where key = 'usd_fix'`;
+  const { applyUsdFix, parseUsdFix } = await import("../usd-fix.ts");
+  return applyUsdFix(merged, parseUsdFix(fixRaw[0]?.value));
 }

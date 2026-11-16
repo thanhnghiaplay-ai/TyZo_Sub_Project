@@ -762,7 +762,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "giao-dien": "Công bố giao diện",
   "reset-so-du": "Gỡ số dư cũ",
   "reset-tien-test": "Reset số liệu thử",
-  "dat-so-du": "Đặt số dư",
+  "sua-usd": "Sửa số đô la tham chiếu",
   "mo-goi": "Cấp gói",
   "chi-phi": "Thêm chi phí",
   "sua-chi-phi": "Sửa chi phí",
