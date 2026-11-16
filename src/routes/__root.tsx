@@ -58,7 +58,7 @@ export const Route = createRootRoute({
 function RootDocument() {
   const { theme, service } = Route.useLoaderData();
   return (
-    <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} suppressHydrationWarning>
+    <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} data-button={theme.button} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

@@ -68,6 +68,13 @@ export const ICON_TONES = [
 ] as const;
 export type IconTone = (typeof ICON_TONES)[number][0];
 
+export const BUTTON_STYLES = [
+  ["solid", "Đặc"],
+  ["line", "Viền"],
+  ["soft", "Mờ"],
+] as const;
+export type ButtonStyle = (typeof BUTTON_STYLES)[number][0];
+
 export const DENSITIES = [
   ["compact", "Gọn", 0.85],
   ["cozy", "Vừa", 1],
@@ -163,6 +170,8 @@ export type Theme = {
   shadow: number;
   /** Độ dày viền khung, tính bằng px. 1 là mức đang có. */
   line: number;
+  /** Đặc giữ nút đặc. Viền và mờ chỉ đổi nút đang tô màu nhấn. */
+  button: ButtonStyle;
   density: Density;
   iconWeight: IconWeight;
   iconSize: IconSize;
@@ -226,6 +235,7 @@ export const THEME_DEFAULT: Theme = {
   radius: 1,
   shadow: 1,
   line: 1,
+  button: "solid",
   density: "cozy",
   iconWeight: "duotone",
   iconSize: "md",
@@ -236,6 +246,57 @@ export const THEME_DEFAULT: Theme = {
   light: LIGHT_DEFAULT,
   dark: DARK_DEFAULT,
 };
+
+function paint(base: Palette, over: Partial<Palette>): Palette {
+  return { ...base, ...over };
+}
+
+/** Tám bộ màu. Bộ Vàng là màu đang dùng. Bấm bộ là chép cả sáng và tối vào bản nháp. */
+export const PALETTES: Array<{ id: string; name: string; light: Palette; dark: Palette }> = [
+  { id: "vang", name: "Vàng", light: LIGHT_DEFAULT, dark: DARK_DEFAULT },
+  {
+    id: "bien",
+    name: "Biển",
+    dark: paint(DARK_DEFAULT, { bg: "#0b1522", card: "#122033", raised: "#1a2c44", fg: "#e8f1f8", muted: "#9bb3c9", line: "#34536e", accent: "#8ec5ff", ink: "#071422", info: "#8ec5ff", rankSupport: "#8ec5ff", rankManager: "#8ec5ff", rankOwner: "#d7ebff" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#f5f8fc", card: "#ffffff", raised: "#e8f0f8", fg: "#102033", muted: "#3d5570", line: "#c3d3e4", accent: "#0f4f9e", ink: "#f5f9ff", info: "#0f4f9e", rankSupport: "#0f4f9e", rankManager: "#0f4f9e", rankOwner: "#0a3468" }),
+  },
+  {
+    id: "rung",
+    name: "Rừng",
+    dark: paint(DARK_DEFAULT, { bg: "#0d1612", card: "#14211b", raised: "#1c2e24", fg: "#e7f3ec", muted: "#9bb5a6", line: "#345445", accent: "#8ed4a8", ink: "#06210f", info: "#8ed4a8", rankSupport: "#8ed4a8", rankManager: "#8ed4a8", rankOwner: "#d7f5e4" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#f4f8f5", card: "#ffffff", raised: "#e7f1eb", fg: "#102218", muted: "#3c5a48", line: "#c5ddd0", accent: "#0e6b3c", ink: "#f3fff7", info: "#0e6b3c", rankSupport: "#0e6b3c", rankManager: "#0e6b3c", rankOwner: "#084828" }),
+  },
+  {
+    id: "dat",
+    name: "Đất",
+    dark: paint(DARK_DEFAULT, { bg: "#16110e", card: "#241911", raised: "#322216", fg: "#f6eee8", muted: "#c2a898", line: "#5c4030", accent: "#f0b48a", ink: "#2a1208", info: "#f0b48a", rankSupport: "#f0b48a", rankManager: "#f0b48a", rankOwner: "#f8ddc8" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#fbf6f2", card: "#ffffff", raised: "#f3e7de", fg: "#2a160f", muted: "#6b4636", line: "#e2cbbd", accent: "#9a3d16", ink: "#fff6f1", info: "#9a3d16", rankSupport: "#9a3d16", rankManager: "#9a3d16", rankOwner: "#6a240c" }),
+  },
+  {
+    id: "tim",
+    name: "Tím",
+    dark: paint(DARK_DEFAULT, { bg: "#120f1a", card: "#1c1730", raised: "#271f42", fg: "#f1ecf8", muted: "#b5a8cc", line: "#463a66", accent: "#c4b5fd", ink: "#1a1033", info: "#c4b5fd", rankSupport: "#c4b5fd", rankManager: "#c4b5fd", rankOwner: "#e6defd" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#f7f5fb", card: "#ffffff", raised: "#ece7f6", fg: "#1c1430", muted: "#53446e", line: "#d4cbe6", accent: "#5b3cc4", ink: "#f7f4ff", info: "#5b3cc4", rankSupport: "#5b3cc4", rankManager: "#5b3cc4", rankOwner: "#3a2288" }),
+  },
+  {
+    id: "hong",
+    name: "Hồng",
+    dark: paint(DARK_DEFAULT, { bg: "#160f13", card: "#26161d", raised: "#351e28", fg: "#f8eef2", muted: "#c9a8b6", line: "#5e3848", accent: "#f5a3c7", ink: "#2a0e1c", info: "#f5a3c7", rankSupport: "#f5a3c7", rankManager: "#f5a3c7", rankOwner: "#fad4e4" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#fdf6f8", card: "#ffffff", raised: "#f8e8ee", fg: "#2a121c", muted: "#6e4454", line: "#e7cdd6", accent: "#a12662", ink: "#fff5f8", info: "#a12662", rankSupport: "#a12662", rankManager: "#a12662", rankOwner: "#6e143f" }),
+  },
+  {
+    id: "xam",
+    name: "Xám",
+    dark: paint(DARK_DEFAULT, { bg: "#121416", card: "#1c2024", raised: "#262c32", fg: "#eef1f4", muted: "#a7b0b8", line: "#3c4650", accent: "#d5dde6", ink: "#12171c", info: "#d5dde6", rankSupport: "#d5dde6", rankManager: "#d5dde6", rankOwner: "#f2f5f8" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#f4f6f8", card: "#ffffff", raised: "#e7ebef", fg: "#161b20", muted: "#4a5560", line: "#d0d6dc", accent: "#3d4a57", ink: "#f4f6f8", info: "#3d4a57", rankSupport: "#3d4a57", rankManager: "#3d4a57", rankOwner: "#1e272f" }),
+  },
+  {
+    id: "tuong-phan",
+    name: "Tương phản",
+    dark: paint(DARK_DEFAULT, { bg: "#000000", card: "#111111", raised: "#1c1c1c", fg: "#ffffff", muted: "#c8c8c8", line: "#444444", accent: "#ffe14d", ink: "#1a1400", info: "#ffe14d", rankSupport: "#ffe14d", rankManager: "#ffe14d", rankOwner: "#fff3b0" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#ffffff", card: "#f7f7f7", raised: "#eeeeee", fg: "#000000", muted: "#444444", line: "#cccccc", accent: "#111111", ink: "#ffffff", info: "#111111", rankSupport: "#111111", rankManager: "#111111", rankOwner: "#000000" }),
+  },
+];
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
@@ -288,6 +349,7 @@ export function parseTheme(input: unknown): Theme {
   const weight = ICON_WEIGHTS.some((w) => w[0] === src.iconWeight) ? (src.iconWeight as IconWeight) : THEME_DEFAULT.iconWeight;
   const iconSize = ICON_SIZES.some((s) => s[0] === src.iconSize) ? (src.iconSize as IconSize) : THEME_DEFAULT.iconSize;
   const iconTone = ICON_TONES.some((t) => t[0] === src.iconTone) ? (src.iconTone as IconTone) : THEME_DEFAULT.iconTone;
+  const button = BUTTON_STYLES.some((b) => b[0] === src.button) ? (src.button as ButtonStyle) : THEME_DEFAULT.button;
   const density = DENSITIES.some((d) => d[0] === src.density) ? (src.density as Density) : THEME_DEFAULT.density;
   const mode = MODES.some((m) => m[0] === src.mode) ? (src.mode as Mode) : THEME_DEFAULT.mode;
   return {
@@ -298,6 +360,7 @@ export function parseTheme(input: unknown): Theme {
     radius: pickNumber(src.radius, 1, 0, 1.75),
     shadow: pickNumber(src.shadow, 1, 0, 1.5),
     line: pickNumber(src.line, 1, 1, 3),
+    button,
     density,
     iconWeight: weight,
     iconSize,

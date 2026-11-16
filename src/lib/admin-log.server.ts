@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.5",
+    time: "10:50 ngày 16/11/2026",
+    area: "khac",
+    text: "Kiểu nút và bộ màu. Theme.button solid/line/soft, mặc định solid. CSS data-button chỉ đổi nút và liên kết đang có lớp bg-accent. Tám PALETTES, mỗi bộ qua checkTheme. Bấm bộ chép sáng và tối vào nháp. Không đổi điều khoản."
+  },
+  {
     version: "3.47.4",
     time: "10:41 ngày 16/11/2026",
     area: "khac",

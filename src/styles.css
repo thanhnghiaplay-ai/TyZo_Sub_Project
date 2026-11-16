@@ -31,6 +31,19 @@
   border-width: var(--line-w, 1px);
 }
 
+/* Kiểu nút. Đặc không có luật riêng nên giữ nguyên nút tô màu nhấn. */
+[data-button="line"] :is(button, a, [role="button"]).bg-accent {
+  background-color: transparent;
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+[data-button="soft"] :is(button, a, [role="button"]).bg-accent {
+  background-color: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+  border-color: transparent;
+}
+
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {

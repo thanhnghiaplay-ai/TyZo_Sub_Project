@@ -5,6 +5,7 @@ import {
   DARK_DEFAULT,
   LIGHT_DEFAULT,
   PALETTE_KEYS,
+  PALETTES,
   THEME_DEFAULT,
   checkTheme,
   contrast,
@@ -33,11 +34,12 @@ test("parseTheme: nhận màu 3 và 6 ký tự, ép về chữ thường", () =>
 });
 
 test("parseTheme: kẹp số về khoảng cho phép", () => {
-  const t = parseTheme({ fontScale: 9, radius: -4, shadow: 9, line: 9, density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
+  const t = parseTheme({ fontScale: 9, radius: -4, shadow: 9, line: 9, button: "nope", density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
   assert.equal(t.fontScale, 1.25);
   assert.equal(t.radius, 0);
   assert.equal(t.shadow, 1.5);
   assert.equal(t.line, 3);
+  assert.equal(t.button, "solid");
   assert.equal(t.density, "cozy");
   assert.equal(t.iconWeight, "duotone");
   assert.equal(t.iconSize, "md");
@@ -65,6 +67,15 @@ test("themeToCss: có cả hai chế độ, đủ mọi biến, không lọt chu
   assert.match(css, /--shadow-amt:1;/);
   assert.match(css, /--shadow-lg:0 10px 15px -3px rgb\(0 0 0 \/ 0\.1\), 0 4px 6px -4px rgb\(0 0 0 \/ 0\.1\)/);
   assert.ok(!css.includes("<"));
+});
+
+test("bộ màu: đủ 8 bộ và mỗi bộ sáng tối đều đọc được", () => {
+  assert.equal(PALETTES.length, 8);
+  assert.equal(PALETTES[0].name, "Vàng");
+  for (const item of PALETTES) {
+    const theme = parseTheme({ light: item.light, dark: item.dark });
+    assert.deepEqual(checkTheme(theme), [], item.name);
+  }
 });
 
 test("contrast: đen/trắng là 21, cùng màu là 1", () => {

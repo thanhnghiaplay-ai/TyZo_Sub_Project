@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { getThemeAdmin, loadThemeToDraft, publishTheme, saveThemeDraft, type ThemeAdminView } from "@/lib/theme-room";
 import {
+  BUTTON_STYLES,
   DENSITIES,
   FONTS,
   ICON_SLOTS,
@@ -9,6 +10,7 @@ import {
   ICON_WEIGHTS,
   MODES,
   PALETTE_KEYS,
+  PALETTES,
   THEME_DEFAULT,
   checkTheme,
   contrast,
@@ -17,6 +19,7 @@ import {
   parseTheme,
   safeUrl,
   shadowStyle,
+  type ButtonStyle,
   type IconWeight,
   type IconSize,
   type IconTone,
@@ -92,7 +95,7 @@ function Preview({ theme, mode }: { theme: Theme; mode: "light" | "dark" }) {
   return (
     <ThemeProvider theme={theme}>
       {href && <link rel="stylesheet" href={href} />}
-      <div style={paletteStyle(palette, theme)} className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4 shadow-lg">
+      <div data-button={theme.button} style={paletteStyle(palette, theme)} className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4 shadow-lg">
         <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: palette.muted }}>
           Xem trước · {mode === "light" ? "Sáng" : "Tối"}
         </p>
@@ -301,6 +304,9 @@ export function ThemeBoard() {
             <Field label={`Độ dày viền: ${draft.line} px`}>
               <input type="range" min={1} max={3} step={1} value={draft.line} aria-label="Độ dày viền" onChange={(event) => patch({ line: Number(event.target.value) })} />
             </Field>
+            <Field label="Kiểu nút">
+              <Segmented label="Kiểu nút" value={draft.button} onChange={(button: ButtonStyle) => patch({ button })} options={BUTTON_STYLES.map(([id, label]) => ({ id, label }))} />
+            </Field>
             <Field label="Mật độ khoảng cách">
               <Segmented label="Mật độ" value={draft.density} onChange={(density) => patch({ density })} options={DENSITIES.map(([id, label]) => ({ id, label }))} />
             </Field>
@@ -319,6 +325,19 @@ export function ThemeBoard() {
 
           <Card>
             <CardHeader title="Màu sắc" icon="ui.theme" />
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {PALETTES.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border border-line px-2 text-sm"
+                  onClick={() => patch({ light: item.light, dark: item.dark })}
+                >
+                  <span className="size-3 shrink-0 rounded-full border border-line" style={{ background: item.dark.accent }} aria-hidden="true" />
+                  {item.name}
+                </button>
+              ))}
+            </div>
             <Segmented
               label="Bảng màu đang sửa"
               value={paletteMode}
