@@ -14,6 +14,7 @@ import {
   fontOf,
   parseTheme,
   safeUrl,
+  shadowStyle,
   type IconWeight,
   type Palette,
   type PaletteKey,
@@ -30,6 +31,7 @@ function paletteStyle(palette: Palette, theme: Theme): CSSProperties {
   for (const [key, variable] of PALETTE_KEYS) style[variable] = palette[key];
   style["--radius-card"] = `${theme.radius}rem`;
   style["--radius-ctl"] = `${Math.round(theme.radius * 0.75 * 100) / 100}rem`;
+  Object.assign(style, shadowStyle(theme.shadow));
   const family = fontOf(theme.font).css;
   style.fontFamily = family ? `${family}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
   style.background = palette.bg;
@@ -84,7 +86,7 @@ function Preview({ theme, mode }: { theme: Theme; mode: "light" | "dark" }) {
   return (
     <ThemeProvider theme={theme}>
       {href && <link rel="stylesheet" href={href} />}
-      <div style={paletteStyle(palette, theme)} className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4">
+      <div style={paletteStyle(palette, theme)} className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4 shadow-lg">
         <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: palette.muted }}>
           Xem trước · {mode === "light" ? "Sáng" : "Tối"}
         </p>
@@ -275,6 +277,9 @@ export function ThemeBoard() {
             </Field>
             <Field label={`Độ bo góc: ${draft.radius.toFixed(2)} rem`}>
               <input type="range" min={0} max={1.75} step={0.25} value={draft.radius} aria-label="Độ bo góc" onChange={(event) => patch({ radius: Number(event.target.value) })} />
+            </Field>
+            <Field label={`Độ đậm bóng: ${draft.shadow.toFixed(2)}`}>
+              <input type="range" min={0} max={1.5} step={0.25} value={draft.shadow} aria-label="Độ đậm bóng" onChange={(event) => patch({ shadow: Number(event.target.value) })} />
             </Field>
             <Field label="Mật độ khoảng cách">
               <Segmented label="Mật độ" value={draft.density} onChange={(density) => patch({ density })} options={DENSITIES.map(([id, label]) => ({ id, label }))} />

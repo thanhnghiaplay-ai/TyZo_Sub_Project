@@ -146,6 +146,8 @@ export type Theme = {
   font: FontId;
   fontScale: number;
   radius: number;
+  /** 0 là tắt bóng nổi, 1 là mức đang có, tối đa 1.5. */
+  shadow: number;
   density: Density;
   iconWeight: IconWeight;
   /** Tên hiển thị và logo (https:// hoặc đường dẫn bắt đầu bằng /). Rỗng là dùng mặc định. */
@@ -205,6 +207,7 @@ export const THEME_DEFAULT: Theme = {
   font: "be-vietnam-pro",
   fontScale: 1,
   radius: 1,
+  shadow: 1,
   density: "cozy",
   iconWeight: "duotone",
   brandName: "",
@@ -271,6 +274,7 @@ export function parseTheme(input: unknown): Theme {
     font,
     fontScale: pickNumber(src.fontScale, 1, 0.85, 1.25),
     radius: pickNumber(src.radius, 1, 0, 1.75),
+    shadow: pickNumber(src.shadow, 1, 0, 1.5),
     density,
     iconWeight: weight,
     brandName: typeof src.brandName === "string" ? src.brandName.trim().slice(0, 40) : "",
@@ -341,14 +345,29 @@ function block(selector: string, palette: Palette): string {
   return `${selector}{${lines.join("")}color-scheme:${selector.includes("light") ? "light" : "dark"};}`;
 }
 
+function shade(y: string, blur: string, spread: string, alpha: number, amount: number): string {
+  const a = Math.round(alpha * amount * 1000) / 1000;
+  return `0 ${y} ${blur} ${spread} rgb(0 0 0 / ${a})`;
+}
+
+/** Ba mức bóng nổi. Mức 1 trùng bóng sẵn của trang. */
+export function shadowStyle(amount: number): Record<"--shadow" | "--shadow-lg" | "--shadow-xl", string> {
+  return {
+    "--shadow": `${shade("1px", "3px", "0", 0.1, amount)}, ${shade("1px", "2px", "-1px", 0.1, amount)}`,
+    "--shadow-lg": `${shade("10px", "15px", "-3px", 0.1, amount)}, ${shade("4px", "6px", "-4px", 0.1, amount)}`,
+    "--shadow-xl": `${shade("20px", "25px", "-5px", 0.1, amount)}, ${shade("8px", "10px", "-6px", 0.1, amount)}`,
+  };
+}
+
 /** CSS đã làm sạch. Mọi giá trị đi qua parseTheme nên không chèn được mã lạ. */
 export function themeToCss(theme: Theme): string {
   const font = fontOf(theme.font);
   const density = DENSITIES.find((d) => d[0] === theme.density)?.[2] ?? 1;
   const family = font.css ? `${font.css}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
+  const shadows = Object.entries(shadowStyle(theme.shadow)).map(([key, value]) => `${key}:${value};`).join("");
   const root =
     `:root{--font-sans:${family};--radius-card:${theme.radius}rem;--radius-ctl:${Math.round(theme.radius * 0.75 * 100) / 100}rem;` +
-    `--font-scale:${theme.fontScale};--density:${density};}`;
+    `--font-scale:${theme.fontScale};--density:${density};${shadows}}`;
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 

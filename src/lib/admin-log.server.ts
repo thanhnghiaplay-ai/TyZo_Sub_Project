@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.0",
+    time: "10:08 ngày 16/11/2026",
+    area: "khac",
+    text: "Đổ bóng bước 1. Theme.shadow 0–1.5, mặc định 1. themeToCss ghi --shadow, --shadow-lg, --shadow-xl nên lớp shadow, shadow-lg, shadow-xl đổi theo. Thanh trong theme-board, ô xem trước có shadow-lg. Không đụng bóng phát sáng, viền huy hiệu, bóng chữ, màn tối của hướng dẫn. Không đổi điều khoản."
+  },
+  {
     version: "3.46.18",
     time: "09:50 ngày 16/11/2026",
     area: "khac",

@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỔ BÓNG 1 (16/11/2026, nhánh work, v3.47.0)
+ĐÃ LÀM: thanh «Độ đậm bóng» trong giao diện. Hộp thoại, menu và banner nổi theo mức đó. Mức 1 giống trước.
+CHƯA LÀM: bóng phát sáng, viền huy hiệu, bóng chữ, màn tối của hướng dẫn.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 5 (16/11/2026, nhánh work, v3.46.18)
 ĐÃ LÀM: hết icon cứng ở 9 file còn lại. Thêm chỗ video, âm thanh, đang chạy, bảo trì, micro, tab, loa, tắt tiếng, dán, tùy chọn, mở thêm, bỏ qua, trợ giúp, xoay, gọn, thoải mái.
 CÒN: đổ bóng 38. Màu phụ đề khách chọn và 5 màu dự phòng tia lửa.

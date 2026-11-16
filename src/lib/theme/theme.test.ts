@@ -33,9 +33,10 @@ test("parseTheme: nhận màu 3 và 6 ký tự, ép về chữ thường", () =>
 });
 
 test("parseTheme: kẹp số về khoảng cho phép", () => {
-  const t = parseTheme({ fontScale: 9, radius: -4, density: "x", iconWeight: "nope", mode: "x" });
+  const t = parseTheme({ fontScale: 9, radius: -4, shadow: 9, density: "x", iconWeight: "nope", mode: "x" });
   assert.equal(t.fontScale, 1.25);
   assert.equal(t.radius, 0);
+  assert.equal(t.shadow, 1.5);
   assert.equal(t.density, "cozy");
   assert.equal(t.iconWeight, "duotone");
   assert.equal(t.mode, "dark");
@@ -57,6 +58,7 @@ test("themeToCss: có cả hai chế độ, đủ mọi biến, không lọt chu
   assert.match(css, /html\[data-theme="light"\]\{/);
   assert.match(css, /--font-sans:"Inter"/);
   for (const [, variable] of PALETTE_KEYS) assert.ok(css.includes(variable + ":"), variable);
+  assert.match(css, /--shadow-lg:0 10px 15px -3px rgb\(0 0 0 \/ 0\.1\), 0 4px 6px -4px rgb\(0 0 0 \/ 0\.1\)/);
   assert.ok(!css.includes("<"));
 });
 
