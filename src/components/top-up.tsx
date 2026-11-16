@@ -21,11 +21,11 @@ function clock(seconds: number) {
 }
 
 function chip(status: string) {
-  if (status === "paid") return { label: "Đã cộng", className: "border-emerald-400/40 bg-emerald-400/10 text-emerald-200" };
-  if (status === "expired") return { label: "Hết hạn", className: "border-red-400/40 bg-red-400/10 text-red-200" };
-  if (status === "cancelled") return { label: "Đã từ chối", className: "border-red-400/40 bg-red-400/10 text-red-200" };
-  if (status === "void") return { label: "Đã hủy", className: "border-red-400/40 bg-red-400/10 text-red-200" };
-  return { label: "Đang chờ", className: "border-amber-300/40 bg-amber-300/10 text-amber-100" };
+  if (status === "paid") return { label: "Đã cộng", className: "border-success/40 bg-success/10 text-success" };
+  if (status === "expired") return { label: "Hết hạn", className: "border-error/40 bg-error/10 text-error" };
+  if (status === "cancelled") return { label: "Đã từ chối", className: "border-error/40 bg-error/10 text-error" };
+  if (status === "void") return { label: "Đã hủy", className: "border-error/40 bg-error/10 text-error" };
+  return { label: "Đang chờ", className: "border-warning/40 bg-warning/10 text-warning" };
 }
 
 function CopyLine({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
@@ -284,7 +284,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
             <button type="button" disabled={busy} className="inline-flex h-full min-h-11 items-center justify-center rounded-full border border-line px-3 text-center text-sm leading-snug disabled:opacity-40" onClick={() => void refresh()}>
               {told ? "Đang chờ ngân hàng" : "Tôi đã chuyển khoản"}
             </button>
-            <button type="button" disabled={busy} className="inline-flex h-full min-h-11 items-center justify-center rounded-full border border-red-400/40 px-3 text-center text-sm leading-snug text-red-200 disabled:opacity-40" onClick={() => setAskCancel(true)}>
+            <button type="button" disabled={busy} className="inline-flex h-full min-h-11 items-center justify-center rounded-full border border-error/40 px-3 text-center text-sm leading-snug text-error disabled:opacity-40" onClick={() => setAskCancel(true)}>
               Hủy đơn
             </button>
           </div>
@@ -293,13 +293,13 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
             Vui lòng không rời đi hoặc tải lại trang
           </p>
           {askCancel && (
-            <div className="grid gap-2 rounded-xl border border-red-400/30 bg-red-400/10 p-3 text-sm">
+            <div className="grid gap-2 rounded-xl border border-error/30 bg-error/10 p-3 text-sm">
               <p>Hủy đơn này? Nếu đã chuyển khoản, tiền sẽ không tự cộng.</p>
               <div className="grid grid-cols-2 gap-2">
                 <button type="button" className="min-tap rounded-full border border-line" onClick={() => setAskCancel(false)}>
                   Giữ đơn
                 </button>
-                <button type="button" disabled={busy} className="min-tap rounded-full bg-red-400/80 font-semibold text-ink disabled:opacity-40" onClick={() => void cancelOrder()}>
+                <button type="button" disabled={busy} className="min-tap rounded-full bg-error/80 font-semibold text-ink disabled:opacity-40" onClick={() => void cancelOrder()}>
                   Hủy đơn
                 </button>
               </div>
@@ -307,7 +307,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
           )}
         </>
       ) : (
-        <p className="text-sm text-red-200">{order.status === "cancelled" ? "Đơn đã bị từ chối. Không cộng tiền." : "Hết 15 phút. Đơn đã đóng. Hãy tạo mã mới nếu vẫn muốn nạp."}</p>
+        <p className="text-sm text-error">{order.status === "cancelled" ? "Đơn đã bị từ chối. Không cộng tiền." : "Hết 15 phút. Đơn đã đóng. Hãy tạo mã mới nếu vẫn muốn nạp."}</p>
       )}
     </div>
   );

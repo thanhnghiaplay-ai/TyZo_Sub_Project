@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## HẾT MÀU TAILWIND BẢNG (16/11/2026, nhánh work, v3.46.5)
+ĐÃ LÀM: nhãn đơn nạp, nút hủy đơn, trang lỗi và nút đăng nhập ngoài dùng màu thành công, chờ, lỗi, nền, chữ, viền. Không còn lớp red/emerald/amber/zinc/neutral.
+CHƯA LÀM: dịch câu tiếng Anh trên trang lỗi. Robot, nền đêm, màu phụ đề, thư HTML, icon Lucide, bo góc.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## MÀU TRẠNG THÁI (16/11/2026, nhánh work, v3.46.4)
 ĐÃ LÀM: đèn tốt / cần chú ý / kém, thanh độ tin, đường thu và chi, chấm phiếu và chấm cảnh báo lấy màu thành công, chờ, lỗi, chữ phụ, đường viền. Chữ trên đèn dùng màu nền trang để đọc được cả sáng lẫn tối.
 CHƯA LÀM: robot (kim loại, mắt, biển đỏ), nền đêm, màu phụ đề, thư HTML, icon Lucide, bo góc.

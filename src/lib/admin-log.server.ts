@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.5",
+    time: "07:28 ngày 16/11/2026",
+    area: "khac",
+    text: "Bước 5 theme. Bỏ hết lớp màu Tailwind bảng (red, emerald, amber, zinc, neutral). top-up.tsx: nhãn đơn và nút hủy dùng success/warning/error. error-component.tsx: nền và chữ theo bg/fg/muted/error, bỏ lớp dark:. gates.tsx: nút đăng nhập ngoài dùng line và raised. Không dịch câu tiếng Anh có sẵn trên trang lỗi. Không đụng robot, phụ đề, icon, bo góc. Không đổi điều khoản."
+  },
+  {
     version: "3.46.4",
     time: "07:21 ngày 16/11/2026",
     area: "khac",
