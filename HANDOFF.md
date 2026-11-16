@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON 3 (16/11/2026, nhánh work, v3.46.16)
+ĐÃ LÀM: nút sao chép và đã chép, nút lưu câu, nút hủy, icon trang lỗi theo chỗ Sao chép, Thành công, Đóng và Lỗi.
+CÒN: 9 file vẫn gắn icon cứng. Đổ bóng chưa đụng.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 2 (16/11/2026, nhánh work, v3.46.15)
 ĐÃ LÀM: icon ví ở trang chủ, thẻ tiền và dịch trực tiếp theo chỗ Ví.
 CÒN: 12 file vẫn gắn icon cứng. Đổ bóng chưa đụng.

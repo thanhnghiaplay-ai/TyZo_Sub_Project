@@ -1,5 +1,5 @@
 import type { ErrorComponentProps } from "@tanstack/react-router";
-import { TriangleAlert } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 
 const FALLBACK_MESSAGE = "Không rõ lỗi gì. Hãy tải lại trang.";
 
@@ -18,7 +18,7 @@ export function AppErrorComponent({ error }: ErrorComponentProps) {
       }
     >
       <span className="text-error" aria-hidden="true">
-        <TriangleAlert className="size-10" strokeWidth={2} />
+        <Icon slot="st.error" className="size-10" />
       </span>
       <h1 className="text-lg font-semibold">Đã xảy ra lỗi</h1>
       <p className="max-w-md text-sm break-words text-muted">

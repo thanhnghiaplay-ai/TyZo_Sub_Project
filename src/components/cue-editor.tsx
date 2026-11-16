@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { fmt } from "@/lib/sub/text";
 
 const FIELD =
@@ -61,11 +61,11 @@ export function CueEditor({
       <input className={FIELD} placeholder="Áp cho cả phim: tên gốc = cách dịch" aria-label="Thuật ngữ áp cho cả phim" value={rule} onChange={(event) => onRule(event.target.value)} />
       <div className="flex flex-wrap items-center gap-2">
         <button type="submit" className="min-tap inline-flex items-center gap-1.5 rounded-full bg-accent px-4 text-sm font-semibold text-ink">
-          <Check className="size-4" aria-hidden="true" />
+          <Icon slot="st.ok" className="size-4" />
           Lưu
         </button>
         <button type="button" className="min-tap inline-flex items-center gap-1.5 rounded-full border border-line px-4 text-sm" onClick={onCancel}>
-          <X className="size-4" aria-hidden="true" />
+          <Icon slot="act.close" className="size-4" />
           Hủy
         </button>
         <span className="text-xs text-muted">Ctrl+Enter để lưu · Esc để hủy</span>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { claimPayOrder, cancelMyPayOrder, createPayOrder, getPayDesk, getPayPublic, readPayOrder, syncCasso, type PayHistoryItem, type PayOrderView, type PayPublic } from "@/lib/pay-store";
 import { PAY_MINUTES } from "@/lib/pay-minutes";
 import { pushToast } from "@/components/toast";
@@ -46,7 +46,7 @@ function CopyLine({ label, value, strong = false }: { label: string; value: stri
           }).catch(() => setDone(false));
         }}
       >
-        {done ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        {done ? <Icon slot="st.ok" className="size-3.5" /> : <Icon slot="act.copy" className="size-3.5" />}
         {done ? "Đã chép" : "Sao chép"}
       </button>
     </div>

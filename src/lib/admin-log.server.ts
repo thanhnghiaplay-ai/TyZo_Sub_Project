@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.16",
+    time: "09:29 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 3. top-up: Check/Copy thành st.ok và act.copy. cue-editor: Check thành st.ok, X thành act.close. error-component: TriangleAlert thành st.error. Ba file hết lucide. Còn 9 file. Không thêm slot. Không đổi điều khoản."
+  },
+  {
     version: "3.46.15",
     time: "09:21 ngày 16/11/2026",
     area: "khac",
