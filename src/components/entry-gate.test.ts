@@ -24,6 +24,7 @@ const TERMS_TEXT_HASH: Record<string, string> = {
   "2026-11-16.2": "f78f05bc80a9227a1cdb849b0e0c0676aa364bd4c9cc4f11d376a8ab8c9f852a",
   "2026-11-16.3": "bda4fbae11af81413357a9bca25413853b9ed500bef459958c9eebd24bd5d61b",
   "2026-11-16.4": "4d989f204611bd3608a74c948ad2ad2322d4776a0d8b908929f6f8a9b161070b",
+  "2026-11-17.1": "6e5989c2f08034ac3e5389228a41904af63e29eece50158e34ea526ee3cfe002",
 };
 
 function termsText() {
@@ -49,7 +50,7 @@ describe("Cửa vào điều khoản", () => {
 
   it("nội dung điều khoản ở một chỗ, chữ đổi thì phải nâng TERMS_VERSION", () => {
     assert.match(doc, /Bảng giá/);
-    assert.match(doc, /9\. Giới thiệu/);
+    assert.match(doc, /11\. Giới thiệu/);
     assert.doesNotMatch(gate, /Bảng giá/);
     const version = /TERMS_VERSION = "([^"]+)"/.exec(terms)?.[1] ?? "";
     assert.equal(

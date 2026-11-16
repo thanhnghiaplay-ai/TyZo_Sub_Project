@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐIỀU KHOẢN (17/11/2026 00:35, nhánh work, v5.0.1)
+ĐÃ LÀM: một trang điều khoản và chính sách khớp web. Thêm bản quyền và khiếu nại qua hỗ trợ, Token dịch là đơn vị dùng dịch vụ không phải tiền, dữ liệu gửi Groq (Hoa Kỳ) và Alibaba (Singapore), video xử lý trên máy khách. Điều khoản `2026-11-17.1`.
+CHƯA LÀM: chưa bấm cửa đồng ý trên điện thoại. Chưa có tên doanh nghiệp để ghi.
+CỐ Ý KHÔNG LÀM: không tách trang chính sách riêng. Không bịa tên công ty, địa chỉ, mã số thuế. Không thêm giao diện khiếu nại mới.
+
 ## MUA THẲNG BẰNG QR (16/11/2026 23:55, nhánh work, v5.0.0)
 ĐÃ LÀM: bỏ nạp số dư. Mua Token dịch và thuê phòng tạo mã QR đúng giá. Tiền về thì giao gói hoặc mở hạn, không cộng số dư. Số dư test và đơn nạp đang chờ được đưa về 0 / hủy, không hoàn. Orpheus khi dùng key phòng trừ Token dịch theo giá gốc. Neural không trừ. Điều khoản `2026-11-16.4`. Trang giá chỉ xem giá.
 CHƯA LÀM: chưa bấm QR, thuê phòng và Orpheus trên điện thoại hay trình duyệt thật.

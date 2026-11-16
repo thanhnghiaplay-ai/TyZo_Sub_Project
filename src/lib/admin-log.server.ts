@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.0.1",
+    time: "00:35 ngày 17/11/2026",
+    area: "quyen",
+    text: "Làm lại điều khoản cho khớp web và luật, vẫn một trang. Thêm mục bản quyền và khiếu nại qua hỗ trợ hoặc yêu cầu xem lại, tạm dừng nội dung bị báo, không kết luận thay cơ quan. Token dịch ghi là đơn vị dùng dịch vụ, không phải tiền, không chuyển, QR đúng giá, không giữ số dư. Dữ liệu: video xử lý trên máy khách; tiếng gửi Groq (Hoa Kỳ) hoặc Alibaba (Singapore); Neural gửi chữ qua phòng; Orpheus key phòng trừ Token dịch. Không bịa tên doanh nghiệp. Không thêm trang chính sách riêng. TERMS_VERSION 2026-11-17.1.",
+  },
+  {
     version: "5.0.0",
     time: "23:55 ngày 16/11/2026",
     area: "tien",
