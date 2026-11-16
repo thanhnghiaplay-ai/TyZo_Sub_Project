@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Clapperboard, FileAudio, KeyRound, Link2, Loader2, SlidersHorizontal, Upload } from "lucide-react";
+import { Clapperboard, FileAudio, Loader2, SlidersHorizontal } from "lucide-react";
 import { Icon } from "@/components/ui/icon";
 import { fmt } from "@/lib/sub/text";
 import { SRC_LANGS } from "@/lib/sub/text";
@@ -154,7 +154,7 @@ export function HomeHero({
               <Clapperboard className="size-12 text-accent" />
             )
           ) : (
-            <Upload className="size-12 text-accent" />
+            <Icon slot="act.upload" className="size-12 text-accent" />
           )}
           {file ? (
             <>
@@ -188,7 +188,7 @@ export function HomeHero({
       </label>
 
       <span className="relative block">
-        <Link2 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" />
+        <Icon slot="act.link" className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted" />
         <input
           type="url"
           value={url}
@@ -233,7 +233,7 @@ export function HomeHero({
         )}
         {payMode !== "turn" && (
           <button type="button" className={CHIP} onClick={() => onOpenTool("key")}>
-            <KeyRound className="size-4" aria-hidden="true" />
+            <Icon slot="ui.key" className="size-4" />
             <span className={keyReady ? "font-medium" : "font-medium text-warning"}>{keyReady ? "Đã có key" : "Nhập key"}</span>
           </button>
         )}

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Clapperboard, FileAudio, Link2, Loader2, Upload } from "lucide-react";
+import { Clapperboard, FileAudio, Loader2 } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { fmt } from "@/lib/sub/text";
 import { formatBytes, isMediaFile, type FileThumb } from "@/components/file-thumb";
 import { useLinkCheck } from "@/components/use-link-check";
@@ -49,7 +50,7 @@ export function PlayerDrop({
               <Clapperboard className="size-8 text-accent" />
             )
           ) : (
-            <Upload className="size-8 text-accent" />
+            <Icon slot="act.upload" className="size-8 text-accent" />
           )}
           {file ? (
             <>
@@ -81,7 +82,7 @@ export function PlayerDrop({
         />
       </label>
       <span className="relative block shrink-0">
-        <Link2 className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted" />
+        <Icon slot="act.link" className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted" />
         <input
           type="url"
           value={url}

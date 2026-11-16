@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.17",
+    time: "09:37 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 4. home-hero và player-drop: Upload thành act.upload, Link2 thành act.link. home-hero KeyRound thành ui.key. Hai file vẫn còn lucide (video, âm thanh, vòng xoay, thanh trượt). Không thêm slot. Không đụng studio. Không đổi điều khoản."
+  },
+  {
     version: "3.46.16",
     time: "09:29 ngày 16/11/2026",
     area: "khac",

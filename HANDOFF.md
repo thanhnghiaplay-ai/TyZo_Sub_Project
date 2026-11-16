@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON 4 (16/11/2026, nhánh work, v3.46.17)
+ĐÃ LÀM: ô chọn tệp và ô dán link ở trang chủ và ô thả dùng chỗ Tải lên và Dán link. Nút khóa của tôi dùng chỗ Khóa API.
+CÒN: 9 file lucide (video, âm thanh, vòng xoay, phòng chiếu, bảo trì, sáng/tối). Đổ bóng chưa đụng.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 3 (16/11/2026, nhánh work, v3.46.16)
 ĐÃ LÀM: nút sao chép và đã chép, nút lưu câu, nút hủy, icon trang lỗi theo chỗ Sao chép, Thành công, Đóng và Lỗi.
 CÒN: 9 file vẫn gắn icon cứng. Đổ bóng chưa đụng.
