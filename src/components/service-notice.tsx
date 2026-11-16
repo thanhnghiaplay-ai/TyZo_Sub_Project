@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Wrench } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { SERVICE_LABEL, SERVICE_STATE_LABEL, untilLabel, type ServiceEntry, type ServiceGroup, type ServiceStatus } from "@/lib/service-status";
 
 
@@ -45,7 +45,7 @@ export function MaintenanceNotice({ group, entry, running = false }: { group: Se
   return (
     <section role="status" className="grid gap-1 rounded-[var(--radius-card)] border border-warning bg-card p-3 text-sm" data-maintenance={group}>
       <p className="flex items-center gap-2 font-semibold text-warning">
-        <Wrench className="size-4 shrink-0" aria-hidden="true" />
+        <Icon slot="ui.repair" className="size-4 shrink-0" />
         {SERVICE_LABEL[group]} đang bảo trì
       </p>
       <p>{entry.note || "Tạm thời chưa nhận lượt mới. Bạn vui lòng quay lại sau."}</p>

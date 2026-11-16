@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Clapperboard, FileAudio, Loader2, SlidersHorizontal } from "lucide-react";
 import { Icon } from "@/components/ui/icon";
 import { fmt } from "@/lib/sub/text";
 import { SRC_LANGS } from "@/lib/sub/text";
@@ -147,11 +146,11 @@ export function HomeHero({
         <span className="relative grid justify-items-center gap-1.5">
           {file ? (
             thumb.state === "loading" ? (
-              <Loader2 className="size-9 animate-spin text-accent motion-reduce:animate-none" />
+              <Icon slot="ui.busy" className="size-9 animate-spin text-accent motion-reduce:animate-none" />
             ) : isAudio ? (
-              <FileAudio className="size-12 text-accent" />
+              <Icon slot="ui.audio" className="size-12 text-accent" />
             ) : (
-              <Clapperboard className="size-12 text-accent" />
+              <Icon slot="ui.video" className="size-12 text-accent" />
             )
           ) : (
             <Icon slot="act.upload" className="size-12 text-accent" />
@@ -238,7 +237,7 @@ export function HomeHero({
           </button>
         )}
         <button type="button" className={CHIP} onClick={() => onOpenTool("phim")}>
-          <SlidersHorizontal className="size-4" aria-hidden="true" />
+          <Icon slot="ui.options" className="size-4" />
           <span className="font-medium">Tùy chọn khác</span>
         </button>
       </div>

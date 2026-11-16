@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/back-button";
-import { AlertTriangle, Mic, MonitorSpeaker, Square, Play } from "lucide-react";
 import { Icon } from "@/components/ui/icon";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import { BrandMark } from "@/components/brand-mark";
@@ -169,7 +168,7 @@ export function LiveScreen() {
               onClick={() => setSettings((s) => ({ ...s, input: "tab" }))}
               className={"min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border px-3 text-sm font-semibold disabled:opacity-40 " + (input === "tab" ? "border-accent bg-accent text-ink" : "border-line")}
             >
-              <MonitorSpeaker className="size-4" aria-hidden="true" />
+              <Icon slot="ui.tab" className="size-4" />
               Âm thanh tab
             </button>
             <button
@@ -179,7 +178,7 @@ export function LiveScreen() {
               onClick={() => setSettings((s) => ({ ...s, input: "mic" }))}
               className={"min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border px-3 text-sm font-semibold disabled:opacity-40 " + (input === "mic" ? "border-accent bg-accent text-ink" : "border-line")}
             >
-              <Mic className="size-4" aria-hidden="true" />
+              <Icon slot="ui.mic" className="size-4" />
               Micro
             </button>
           </div>
@@ -252,7 +251,7 @@ export function LiveScreen() {
           {live.perMinute != null && <p className="text-xs text-muted">Giá khoảng {new Intl.NumberFormat("vi-VN").format(live.perMinute)} đ mỗi phút. Tiền chỉ bị trừ theo phần đã dịch.</p>}
           {warnText && (
             <p role="alert" className={"flex items-start gap-2 rounded-[var(--radius-ctl)] border px-3 py-2 text-sm " + (live.warn === "out" ? "border-error text-danger" : "border-warning text-warning")}>
-              <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <Icon slot="st.warn" className="mt-0.5 size-4 shrink-0" />
               <span>{warnText}</span>
             </p>
           )}
@@ -269,7 +268,7 @@ export function LiveScreen() {
               onClick={() => (button.stops ? live.stop() : live.start({ ...settings, input, audio: voice && settings.audio }))}
               className={"min-tap inline-flex min-w-40 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold disabled:opacity-50 " + (button.stops ? "border border-error text-danger" : "bg-accent text-ink")}
             >
-              {button.stops ? <Square className="size-4" aria-hidden="true" /> : <Play className="size-4" aria-hidden="true" />}
+              {button.stops ? <Icon slot="act.stop" className="size-4" /> : <Icon slot="act.start" className="size-4" />}
               {button.label}
             </button>
             <ExportMenu disabled={!hasText} onPick={pick} />

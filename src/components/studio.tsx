@@ -9,26 +9,6 @@ import { signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import { Icon } from "@/components/ui/icon";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  ClipboardPaste,
-  Clapperboard,
-  FileAudio,
-  CircleHelp,
-  Link2,
-  Loader2,
-  Pause,
-  Play,
-  RefreshCw,
-  RotateCw,
-  Settings,
-  Square,
-  Volume2,
-  VolumeX,
-  X,
-  XCircle,
-} from "lucide-react";
 import { READY_STATUS, usePipeline } from "@/components/use-pipeline";
 import { useOnline } from "@/lib/use-online";
 import { useLinkCheck } from "@/components/use-link-check";
@@ -930,7 +910,7 @@ export function Studio() {
           </button>
         )}
         <button type="button" aria-label="Xem hướng dẫn nhanh" title="Hướng dẫn nhanh" className="min-tap grid shrink-0 place-items-center rounded-[var(--radius-ctl)] border border-line px-3" onClick={() => setTourOpen(true)}>
-          <CircleHelp className="size-4" />
+          <Icon slot="ui.help" className="size-4" />
         </button>
       </div>
       <StepsBar report={app.stages} />
@@ -1039,7 +1019,7 @@ export function Studio() {
         <div className="studio-tool-card">
         <div className="studio-sheet-bar">
           <button type="button" className="studio-sheet-close" aria-label="Đóng tab" onClick={() => setSheetOpen(false)}>
-            <X className="size-4" />
+            <Icon slot="act.close" className="size-4" />
           </button>
         </div>
       <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
@@ -1068,7 +1048,7 @@ export function Studio() {
               onChange={(event) => app.setKey(event.target.value)}
             />
             <IconButton label="Dán API key" onClick={() => void pasteKey()}>
-              <ClipboardPaste />
+              <Icon slot="ui.paste" />
             </IconButton>
             <IconButton label={showKey ? "Ẩn API key" : "Hiện API key"} onClick={() => setShowKey((value) => !value)}>
               {showKey ? <Icon slot="ui.hide" /> : <Icon slot="ui.eye" />}
@@ -1088,10 +1068,10 @@ export function Studio() {
                       : "text-muted")
               }
             >
-              {app.keyStatus.phase === "checking" && <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin" aria-hidden="true" />}
-              {app.keyStatus.phase === "ok" && <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
-              {app.keyStatus.phase === "warn" && <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
-              {app.keyStatus.phase === "bad" && <XCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />}
+              {app.keyStatus.phase === "checking" && <Icon slot="ui.busy" className="mt-0.5 size-3.5 shrink-0 animate-spin" />}
+              {app.keyStatus.phase === "ok" && <Icon slot="st.ok" className="mt-0.5 size-3.5 shrink-0" />}
+              {app.keyStatus.phase === "warn" && <Icon slot="st.warn" className="mt-0.5 size-3.5 shrink-0" />}
+              {app.keyStatus.phase === "bad" && <Icon slot="st.error" className="mt-0.5 size-3.5 shrink-0" />}
               <span>{app.keyStatus.text}</span>
             </span>
           )}
@@ -1122,7 +1102,7 @@ export function Studio() {
               onClick={() => void app.refreshModels()}
               disabled={app.modelBusy || !online}
             >
-              {app.modelBusy ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+              {app.modelBusy ? <Icon slot="ui.busy" className="size-4 animate-spin" /> : <Icon slot="act.retry" className="size-4" />}
               Đồng bộ key
             </button>
           )}
@@ -1232,13 +1212,13 @@ export function Studio() {
         </p>
 
         <div className="grid gap-2 sm:grid-cols-2">
-          <FileTile icon={<Clapperboard className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
-          <FileTile icon={<FileAudio className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
+          <FileTile icon={<Icon slot="ui.video" className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
+          <FileTile icon={<Icon slot="ui.audio" className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
         </div>
         <label className="grid gap-1 text-sm text-muted">
           Hoặc link file trực tiếp
           <span className="relative">
-            <Link2 className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
+            <Icon slot="act.link" className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
             <input
               className={FIELD + " pl-9"}
               type="url"
@@ -2276,7 +2256,7 @@ function Stage({
           <div className="flex items-center justify-between px-4 pt-3">
             <h3 className="font-semibold">Phụ đề</h3>
             <button type="button" aria-label="Đóng" className="min-tap rounded-full border border-line px-3" onClick={() => setPanel(false)}>
-              <X className="size-4" />
+              <Icon slot="act.close" className="size-4" />
             </button>
           </div>
           <div className="mx-4 mt-2 shrink-0 overflow-hidden rounded-[var(--radius-ctl)] border border-accent/50 bg-black shadow-lg">
@@ -2483,14 +2463,14 @@ function Stage({
                 void orientation?.lock?.(next).catch(() => {});
               }}
             >
-              <RotateCw className="size-4" />
+              <Icon slot="ui.rotate" className="size-4" />
             </Tiny>
           )}
           <Tiny label="Cài đặt phụ đề" tour="sub-style" onClick={() => setPanel((open) => !open)}>
-            <Settings className="size-4" />
+            <Icon slot="ui.settings" className="size-4" />
           </Tiny>
           <Tiny label="Toàn màn hình" onClick={() => void toggleFull()}>
-            <Square className="size-4" />
+            <Icon slot="act.fullscreen" className="size-4" />
           </Tiny>
         </div>
         <button
@@ -2503,7 +2483,7 @@ function Stage({
             video.paused ? void video.play().catch(() => {}) : video.pause();
           }}
         >
-          {paused ? <Play className="size-7" /> : <Pause className="size-7" />}
+          {paused ? <Icon slot="act.start" className="size-7" /> : <Icon slot="act.pause" className="size-7" />}
         </button>
         <div className="flex items-center gap-2 px-3 pb-3">
           <span ref={tcRef} className="w-12 text-center text-xs text-white">
@@ -2540,7 +2520,7 @@ function Stage({
               if (video) video.muted = !video.muted;
             }}
           >
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+            {muted ? <Icon slot="ui.mute" className="size-4" /> : <Icon slot="ui.speaker" className="size-4" />}
           </Tiny>
           <Tiny
             label="Tốc độ phát"

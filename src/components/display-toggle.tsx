@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Moon, Rows2, Rows3, Sun } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { useTheme } from "@/components/ui/theme-context";
 import { DENSITY_KEY, MODE_KEY, defaultUserDensity, densityValue, pickUserDensity, type UserDensity } from "@/lib/theme/theme";
 
@@ -52,11 +52,11 @@ export function DisplayToggle() {
 
   return (
     <div className="flex items-center gap-1.5">
-      <button type="button" className="notice-bell-btn" aria-label={modeLabel} title={modeLabel} onClick={flipMode}>
-        {mode === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+      <button type="button" className="notice-bell-btn is-glyph" aria-label={modeLabel} title={modeLabel} onClick={flipMode}>
+        {mode === "dark" ? <Icon slot="ui.sun" /> : <Icon slot="ui.moon" />}
       </button>
-      <button type="button" className="notice-bell-btn" aria-label={densityLabel} title={densityLabel} onClick={flipDensity}>
-        {density === "compact" ? <Rows2 aria-hidden="true" /> : <Rows3 aria-hidden="true" />}
+      <button type="button" className="notice-bell-btn is-glyph" aria-label={densityLabel} title={densityLabel} onClick={flipDensity}>
+        {density === "compact" ? <Icon slot="ui.compact" /> : <Icon slot="ui.roomy" />}
       </button>
     </div>
   );

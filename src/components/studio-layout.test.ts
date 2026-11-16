@@ -216,7 +216,7 @@ describe("Bước 7.3 — không giật khi chọn file và khi báo trạng th�
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     assert.match(css, /html,\s*body\s*\{[^}]*overflow:\s*hidden/);
     assert.match(source, /aria-label="Đóng tab"/);
-    assert.match(source, /<X /);
+    assert.match(source, /aria-label="Đóng tab"[\s\S]{0,200}slot="act.close"/);
     assert.equal(source.includes(">Đóng</button>\n        <section id=\"tool-key\""), false);
     assert.match(mediaBlock(css, SHEET_PORTRAIT), /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
     assert.match(mediaBlock(css, SHEET_LANDSCAPE), /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);

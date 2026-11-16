@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.18",
+    time: "09:50 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 5, hết 9 file lucide. Thêm 16 chỗ: video, audio, busy, repair, mic, tab, speaker, mute, paste, options, more, skip, help, rotate, compact, roomy. studio, live-screen, home-hero, player-drop, steps-bar, export-menu, display-toggle, site-maintenance, service-notice không còn lucide-react. Nút chuông giữ nét vẽ cũ; nút sáng/tối thêm lớp is-glyph để icon tô đặc. Không đổi điều khoản."
+  },
+  {
     version: "3.46.17",
     time: "09:37 ngày 16/11/2026",
     area: "khac",

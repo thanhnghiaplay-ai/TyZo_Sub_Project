@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Clapperboard, FileAudio, Loader2 } from "lucide-react";
 import { Icon } from "@/components/ui/icon";
 import { fmt } from "@/lib/sub/text";
 import { formatBytes, isMediaFile, type FileThumb } from "@/components/file-thumb";
@@ -43,11 +42,11 @@ export function PlayerDrop({
         <span className="relative flex flex-col items-center gap-1">
           {file ? (
             thumb.state === "loading" ? (
-              <Loader2 className="size-7 animate-spin text-accent motion-reduce:animate-none" />
+              <Icon slot="ui.busy" className="size-7 animate-spin text-accent motion-reduce:animate-none" />
             ) : isAudio ? (
-              <FileAudio className="size-8 text-accent" />
+              <Icon slot="ui.audio" className="size-8 text-accent" />
             ) : (
-              <Clapperboard className="size-8 text-accent" />
+              <Icon slot="ui.video" className="size-8 text-accent" />
             )
           ) : (
             <Icon slot="act.upload" className="size-8 text-accent" />

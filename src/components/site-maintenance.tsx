@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Wrench } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { BrandMark } from "@/components/brand-mark";
 import { useTheme } from "@/components/ui/theme-context";
@@ -263,7 +263,7 @@ export function SiteGate({ initial, children }: { initial: ServiceStatus; childr
       {children}
       <aside role="status" className="fixed inset-x-3 top-3 z-50 mx-auto grid max-w-md gap-0.5 rounded-[var(--radius-ctl)] border border-warning bg-card p-3 text-sm shadow-lg" data-site-warning>
         <p className="flex items-center gap-2 font-semibold text-warning">
-          <Wrench className="size-4 shrink-0" aria-hidden="true" />
+          <Icon slot="ui.repair" className="size-4 shrink-0" />
           {status.site.note || WARN_DEFAULT}
         </p>
         <p className="text-xs text-muted">Lượt đang chạy vẫn chạy nốt. Đừng tải lại hay rời trang này khi chưa xong, vì các trang khác đã đóng đến khi mở lại.</p>

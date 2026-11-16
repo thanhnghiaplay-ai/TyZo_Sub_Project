@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON 5 (16/11/2026, nhánh work, v3.46.18)
+ĐÃ LÀM: hết icon cứng ở 9 file còn lại. Thêm chỗ video, âm thanh, đang chạy, bảo trì, micro, tab, loa, tắt tiếng, dán, tùy chọn, mở thêm, bỏ qua, trợ giúp, xoay, gọn, thoải mái.
+CÒN: đổ bóng 38. Màu phụ đề khách chọn và 5 màu dự phòng tia lửa.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 4 (16/11/2026, nhánh work, v3.46.17)
 ĐÃ LÀM: ô chọn tệp và ô dán link ở trang chủ và ô thả dùng chỗ Tải lên và Dán link. Nút khóa của tôi dùng chỗ Khóa API.
 CÒN: 9 file lucide (video, âm thanh, vòng xoay, phòng chiếu, bảo trì, sáng/tối). Đổ bóng chưa đụng.

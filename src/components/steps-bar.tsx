@@ -1,10 +1,10 @@
-import { Check, Loader2, Minus } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import type { Stage, StageReport } from "@/lib/sub/stage-progress";
 
 function Dot({ stage }: { stage: Stage }) {
-  if (stage.state === "done") return <Check className="size-3.5 shrink-0 text-accent" aria-hidden />;
-  if (stage.state === "active") return <Loader2 className="size-3.5 shrink-0 animate-spin text-accent motion-reduce:animate-none" aria-hidden />;
-  if (stage.state === "skip") return <Minus className="size-3.5 shrink-0 text-muted" aria-hidden />;
+  if (stage.state === "done") return <Icon slot="st.ok" className="size-3.5 shrink-0 text-accent" />;
+  if (stage.state === "active") return <Icon slot="ui.busy" className="size-3.5 shrink-0 animate-spin text-accent motion-reduce:animate-none" />;
+  if (stage.state === "skip") return <Icon slot="ui.skip" className="size-3.5 shrink-0 text-muted" />;
   return <span className="size-3 shrink-0 rounded-full border border-line" aria-hidden />;
 }
 

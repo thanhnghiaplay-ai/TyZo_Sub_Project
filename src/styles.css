@@ -891,6 +891,11 @@
   stroke-linejoin: round;
 }
 
+.notice-bell-btn.is-glyph svg {
+  fill: currentColor;
+  stroke: none;
+}
+
 .notice-badge {
   position: absolute;
   z-index: 6;

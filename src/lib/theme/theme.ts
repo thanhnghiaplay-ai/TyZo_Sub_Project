@@ -121,6 +121,22 @@ export const ICON_SLOTS = [
   ["ui.hide", "Ẩn", "EyeSlash"],
   ["ui.clock", "Thời gian", "Clock"],
   ["ui.magic", "Tự động / AI", "Sparkle"],
+  ["ui.video", "Video", "FilmSlate"],
+  ["ui.audio", "Âm thanh", "Headphones"],
+  ["ui.busy", "Đang chạy", "CircleNotch"],
+  ["ui.repair", "Bảo trì", "Wrench"],
+  ["ui.mic", "Micro", "Microphone"],
+  ["ui.tab", "Âm thanh tab", "MonitorPlay"],
+  ["ui.speaker", "Loa", "SpeakerHigh"],
+  ["ui.mute", "Tắt tiếng", "SpeakerSlash"],
+  ["ui.paste", "Dán", "Clipboard"],
+  ["ui.options", "Tùy chọn", "SlidersHorizontal"],
+  ["ui.more", "Mở thêm", "CaretDown"],
+  ["ui.skip", "Bỏ qua", "Minus"],
+  ["ui.help", "Trợ giúp", "Question"],
+  ["ui.rotate", "Xoay", "ArrowsClockwise"],
+  ["ui.compact", "Gọn", "ListDashes"],
+  ["ui.roomy", "Thoải mái", "Rows"],
 ] as const;
 export type IconSlot = (typeof ICON_SLOTS)[number][0];
 

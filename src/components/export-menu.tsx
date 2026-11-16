@@ -1,5 +1,5 @@
 import * as Menu from "@radix-ui/react-dropdown-menu";
-import { ChevronDown, Download } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 
 export type ExportFormat = "srt" | "vtt" | "txt";
 
@@ -19,9 +19,9 @@ export function ExportMenu({ disabled, onPick }: { disabled: boolean; onPick: (f
         aria-disabled={disabled}
         className="min-tap inline-flex items-center gap-1.5 rounded-[var(--radius-ctl)] border border-line px-3 text-sm disabled:pointer-events-none disabled:opacity-40"
       >
-        <Download className="size-4" aria-hidden="true" />
+        <Icon slot="nav.export" className="size-4" />
         Tải phụ đề
-        <ChevronDown className="size-3.5" aria-hidden="true" />
+        <Icon slot="ui.more" className="size-3.5" />
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Content align="end" sideOffset={6} className="z-50 w-64 overflow-hidden rounded-[var(--radius-card)] border border-line bg-card p-1 shadow-xl">
