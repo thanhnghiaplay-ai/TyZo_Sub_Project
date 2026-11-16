@@ -2331,7 +2331,7 @@ html[data-density] .studio-workspace {
 }
 
 @keyframes mt-beacon {
-  50% { fill: #5a0a12; }
+  50% { fill: color-mix(in srgb, var(--color-error) 40%, black); }
 }
 
 @keyframes mt-gear {

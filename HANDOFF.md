@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỒNG BỘ MÀU 2/4 (16/11/2026, nhánh work, v3.46.8)
+ĐÃ LÀM: robot hết mã màu cứng. Thân theo chữ và viền, mắt theo màu thông tin, biển và đèn mũ theo màu lỗi.
+CÒN TRONG PHẦN NÀY: nền đêm và nhấp nháy chữ, thư HTML và cửa sổ đăng nhập.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ĐỒNG BỘ MÀU 1/4 (16/11/2026, nhánh work, v3.46.7)
 ĐÃ LÀM: nền logo theo màu thẻ, vạch mật khẩu chưa bật theo màu viền, huy hiệu hỗ trợ / quản lý / chủ theo màu cấp.
 CÒN TRONG PHẦN NÀY: robot (kim loại, mắt, biển đỏ), nền đêm và nhấp nháy, thư HTML và cửa sổ đăng nhập.

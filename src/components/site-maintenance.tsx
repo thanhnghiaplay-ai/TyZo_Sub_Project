@@ -17,13 +17,13 @@ function WorkerRobot() {
       <svg viewBox="0 0 260 440" focusable="false">
         <defs>
           <linearGradient id="mt-steel" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="#b4bdc9" />
-            <stop offset=".55" stopColor="#7a8696" />
-            <stop offset="1" stopColor="#4e5766" />
+            <stop offset="0" stopColor="color-mix(in srgb, var(--color-fg) 78%, white)" />
+            <stop offset=".55" stopColor="var(--color-muted)" />
+            <stop offset="1" stopColor="var(--color-line)" />
           </linearGradient>
           <linearGradient id="mt-steel-v" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#c4ccd6" />
-            <stop offset="1" stopColor="#707c8c" />
+            <stop offset="0" stopColor="color-mix(in srgb, var(--color-fg) 85%, white)" />
+            <stop offset="1" stopColor="var(--color-muted)" />
           </linearGradient>
           <linearGradient id="mt-vest" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="color-mix(in srgb, var(--color-warning) 70%, white)" />
@@ -34,89 +34,89 @@ function WorkerRobot() {
             <stop offset="1" stopColor="var(--color-accent)" />
           </linearGradient>
           <linearGradient id="mt-red" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ff4655" />
-            <stop offset="1" stopColor="#c5121f" />
+            <stop offset="0" stopColor="color-mix(in srgb, var(--color-error) 65%, white)" />
+            <stop offset="1" stopColor="var(--color-error)" />
           </linearGradient>
           <clipPath id="mt-clip">
             <rect x="-200" y="-300" width="800" height="744" />
           </clipPath>
         </defs>
 
-        <ellipse cx="130" cy="441" rx="58" ry="7" fill="#000" opacity=".5" />
+        <ellipse cx="130" cy="441" rx="58" ry="7" fill="black" opacity=".5" />
 
         <g data-mt="bob" className="mt-bob">
           {/* chân */}
           <g data-mt="legL" className="mt-legL">
             <rect x="102" y="392" width="20" height="36" rx="8" fill="url(#mt-steel-v)" />
-            <rect x="93" y="422" width="36" height="17" rx="7" fill="#1b2330" />
+            <rect x="93" y="422" width="36" height="17" rx="7" fill="var(--color-ink)" />
             <rect x="93" y="428" width="36" height="3" fill="var(--color-warning)" />
           </g>
           <g data-mt="legR" className="mt-legR">
             <rect x="138" y="392" width="20" height="36" rx="8" fill="url(#mt-steel-v)" />
-            <rect x="131" y="422" width="36" height="17" rx="7" fill="#1b2330" />
+            <rect x="131" y="422" width="36" height="17" rx="7" fill="var(--color-ink)" />
             <rect x="131" y="428" width="36" height="3" fill="var(--color-warning)" />
           </g>
           {/* tay trái */}
           <g data-mt="armL" className="mt-armL">
-            <line x1="90" y1="318" x2="70" y2="372" stroke="#6b7686" strokeWidth="16" strokeLinecap="round" />
-            <line x1="86" y1="320" x2="67" y2="370" stroke="#aab3c0" strokeWidth="4" strokeLinecap="round" opacity=".6" />
-            <circle cx="68" cy="378" r="11" fill="#1b2330" />
+            <line x1="90" y1="318" x2="70" y2="372" stroke="var(--color-muted)" strokeWidth="16" strokeLinecap="round" />
+            <line x1="86" y1="320" x2="67" y2="370" stroke="color-mix(in srgb, var(--color-fg) 70%, var(--color-muted))" strokeWidth="4" strokeLinecap="round" opacity=".6" />
+            <circle cx="68" cy="378" r="11" fill="var(--color-ink)" />
             <rect x="60" y="371" width="16" height="3" rx="1.5" fill="var(--color-warning)" />
           </g>
           {/* thân */}
-          <rect x="120" y="294" width="20" height="14" fill="#4e5766" />
+          <rect x="120" y="294" width="20" height="14" fill="var(--color-line)" />
           <rect x="88" y="304" width="84" height="96" rx="18" fill="url(#mt-steel)" />
           <path d="M88 324H172V380Q172 400 152 400H108Q88 400 88 380Z" fill="url(#mt-vest)" />
           <rect x="88" y="352" width="84" height="9" fill="color-mix(in srgb, var(--color-warning) 25%, white)" />
           <rect x="88" y="368" width="84" height="7" fill="color-mix(in srgb, var(--color-warning) 25%, white)" opacity=".85" />
-          <circle cx="130" cy="337" r="11" fill="#22d3ee" opacity=".22" />
-          <circle cx="130" cy="337" r="6" fill="#22d3ee" />
-          <circle cx="88" cy="318" r="14" fill="#4e5766" />
-          <circle cx="172" cy="318" r="14" fill="#4e5766" />
-          <circle cx="88" cy="318" r="4" fill="#aab3c0" />
-          <circle cx="172" cy="318" r="4" fill="#aab3c0" />
+          <circle cx="130" cy="337" r="11" fill="var(--color-info)" opacity=".22" />
+          <circle cx="130" cy="337" r="6" fill="var(--color-info)" />
+          <circle cx="88" cy="318" r="14" fill="var(--color-line)" />
+          <circle cx="172" cy="318" r="14" fill="var(--color-line)" />
+          <circle cx="88" cy="318" r="4" fill="color-mix(in srgb, var(--color-fg) 72%, white)" />
+          <circle cx="172" cy="318" r="4" fill="color-mix(in srgb, var(--color-fg) 72%, white)" />
           {/* đầu */}
           <rect x="98" y="240" width="64" height="58" rx="18" fill="url(#mt-steel-v)" />
-          <circle cx="96" cy="270" r="6" fill="#4e5766" />
-          <circle cx="164" cy="270" r="6" fill="#4e5766" />
-          <rect x="106" y="264" width="48" height="22" rx="11" fill="#0b1220" />
-          <ellipse className="mt-eye" cx="121" cy="275" rx="5" ry="5.5" fill="#22d3ee" />
-          <ellipse className="mt-eye" cx="139" cy="275" rx="5" ry="5.5" fill="#22d3ee" />
+          <circle cx="96" cy="270" r="6" fill="var(--color-line)" />
+          <circle cx="164" cy="270" r="6" fill="var(--color-line)" />
+          <rect x="106" y="264" width="48" height="22" rx="11" fill="var(--color-bg)" />
+          <ellipse className="mt-eye" cx="121" cy="275" rx="5" ry="5.5" fill="var(--color-info)" />
+          <ellipse className="mt-eye" cx="139" cy="275" rx="5" ry="5.5" fill="var(--color-info)" />
           {/* mũ bảo hộ */}
           <path d="M90 252Q130 196 170 252Z" fill="url(#mt-hat)" />
           <rect x="84" y="248" width="92" height="9" rx="4.5" fill="var(--color-accent)" />
           <rect x="124" y="222" width="12" height="22" rx="4" fill="var(--color-accent)" opacity=".75" />
           <rect x="121" y="238" width="18" height="6" rx="3" fill="color-mix(in srgb, var(--color-accent) 40%, white)" />
-          <rect x="129" y="207" width="2.4" height="17" fill="#6b7686" />
-          <circle className="mt-beacon" cx="130" cy="205" r="4.5" fill="#ff3040" />
+          <rect x="129" y="207" width="2.4" height="17" fill="var(--color-muted)" />
+          <circle className="mt-beacon" cx="130" cy="205" r="4.5" fill="var(--color-error)" />
         </g>
 
         {/* tay phải + biển: đi cùng nhịp nhún với thân lúc bước, đứng yên sau khi cắm */}
         <g data-mt="carry" className="mt-carry" clipPath="url(#mt-clip)">
           <g data-mt="sign" transform="translate(50 0)">
             <rect x="73" y="110" width="14" height="105" rx="3" fill="url(#mt-steel)" />
-            <rect x="77" y="110" width="4" height="105" fill="#e1e6ec" opacity=".6" />
+            <rect x="77" y="110" width="4" height="105" fill="color-mix(in srgb, var(--color-fg) 80%, white)" opacity=".6" />
             <g transform="translate(80 128) scale(1.3) translate(-80 -128)">
               <path d="M80 8 152 128H8Z" fill="url(#mt-red)" stroke="var(--color-warning)" strokeWidth="12" strokeLinejoin="round" />
-              <path d="M80 24 138 120H22Z" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="1.5" strokeLinejoin="round" />
-              <g transform="translate(80 64)" fill="none" stroke="#fff">
+              <path d="M80 24 138 120H22Z" fill="none" stroke="white" strokeOpacity=".35" strokeWidth="1.5" strokeLinejoin="round" />
+              <g transform="translate(80 64)" fill="none" stroke="white">
                 <g className="mt-gear">
                   <circle r="12" strokeWidth="5.5" strokeDasharray="5.6 4.4" />
                   <circle r="7.5" strokeWidth="3" />
                 </g>
               </g>
-              <text x="80" y="108" textAnchor="middle" fontSize="17" fontWeight="900" fill="#fff" letterSpacing=".5" style={{ fontFamily: "var(--font-sans), 'Segoe UI', Arial, sans-serif" }}>
+              <text x="80" y="108" textAnchor="middle" fontSize="17" fontWeight="900" fill="white" letterSpacing=".5" style={{ fontFamily: "var(--font-sans), 'Segoe UI', Arial, sans-serif" }}>
                 BẢO TRÌ
               </text>
             </g>
           </g>
-          <path data-mt="armR" d="M170 318 192 262 130 195" fill="none" stroke="#6b7686" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-          <path data-mt="armRh" d="M170 318 192 262 130 195" fill="none" stroke="#aab3c0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".5" />
-          <circle data-mt="elbow" cx="192" cy="262" r="9" fill="#4e5766" />
-          <circle data-mt="handR" cx="130" cy="195" r="11" fill="#1b2330" />
+          <path data-mt="armR" d="M170 318 192 262 130 195" fill="none" stroke="var(--color-muted)" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+          <path data-mt="armRh" d="M170 318 192 262 130 195" fill="none" stroke="color-mix(in srgb, var(--color-fg) 70%, var(--color-muted))" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".5" />
+          <circle data-mt="elbow" cx="192" cy="262" r="9" fill="var(--color-line)" />
+          <circle data-mt="handR" cx="130" cy="195" r="11" fill="var(--color-ink)" />
         </g>
 
-        <ellipse data-mt="mound" cx="240" cy="441" rx="0" ry="0" fill="#2a2018" />
+        <ellipse data-mt="mound" cx="240" cy="441" rx="0" ry="0" fill="color-mix(in srgb, var(--color-warning) 30%, var(--color-ink))" />
       </svg>
     </div>
   );
