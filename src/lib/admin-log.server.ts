@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.7",
+    time: "11:29 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần bố cục 2/8. pageWidth 40–120 rem, mặc định 120, gắn .room-wide. menuSide left/right, mặc định left. CSS data-menu=right đưa rail sang phải, kể cả lưới ghim. Phòng dịch không bị thu. Không đổi điều khoản."
+  },
+  {
     version: "3.47.6",
     time: "11:02 ngày 16/11/2026",
     area: "khac",

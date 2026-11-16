@@ -292,7 +292,7 @@ h4 {
    số cột tự tăng theo bề rộng: 1 cột trên điện thoại, 2 trên máy tính bảng, 3 đến 5 trên màn rộng. */
 .room-wide {
   width: 100%;
-  max-width: 120rem;
+  max-width: var(--page-w, 120rem);
 }
 
 .account-grid {
@@ -2114,6 +2114,33 @@ html[data-density] .studio-workspace {
 
   .app-shell.is-pinned .rail-backdrop {
     display: none;
+  }
+}
+
+/* Menu bên phải. Mặc định trái không có luật này. */
+html[data-menu="right"] .app-rail {
+  left: auto;
+  right: 0;
+  border-right: 0;
+  border-left: var(--line-w, 1px) solid var(--color-line);
+  transform: translateX(102%);
+}
+
+html[data-menu="right"] .app-rail.is-open {
+  transform: none;
+}
+
+@media (min-width: 1024px) {
+  html[data-menu="right"] .app-shell.is-pinned {
+    grid-template-columns: minmax(0, 1fr) 14.5rem;
+  }
+
+  html[data-menu="right"] .app-shell.is-pinned .app-rail {
+    left: auto;
+    right: auto;
+    order: 2;
+    border-left: 0;
+    transform: none;
   }
 }
 

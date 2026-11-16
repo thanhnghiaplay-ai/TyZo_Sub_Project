@@ -75,6 +75,12 @@ export const BUTTON_STYLES = [
 ] as const;
 export type ButtonStyle = (typeof BUTTON_STYLES)[number][0];
 
+export const MENU_SIDES = [
+  ["left", "Trái"],
+  ["right", "Phải"],
+] as const;
+export type MenuSide = (typeof MENU_SIDES)[number][0];
+
 export const TITLE_WEIGHTS = [
   ["keep", "Như hiện tại"],
   ["500", "Vừa"],
@@ -182,6 +188,9 @@ export type Theme = {
   shadow: number;
   /** Độ dày viền khung, tính bằng px. 1 là mức đang có. */
   line: number;
+  /** Độ rộng tối đa các trang rộng, rem. 120 là mức đang có. */
+  pageWidth: number;
+  menuSide: MenuSide;
   /** Đặc giữ nút đặc. Viền và mờ chỉ đổi nút đang tô màu nhấn. */
   button: ButtonStyle;
   density: Density;
@@ -250,6 +259,8 @@ export const THEME_DEFAULT: Theme = {
   radius: 1,
   shadow: 1,
   line: 1,
+  pageWidth: 120,
+  menuSide: "left",
   button: "solid",
   density: "cozy",
   iconWeight: "duotone",
@@ -367,6 +378,7 @@ export function parseTheme(input: unknown): Theme {
   const iconSize = ICON_SIZES.some((s) => s[0] === src.iconSize) ? (src.iconSize as IconSize) : THEME_DEFAULT.iconSize;
   const iconTone = ICON_TONES.some((t) => t[0] === src.iconTone) ? (src.iconTone as IconTone) : THEME_DEFAULT.iconTone;
   const button = BUTTON_STYLES.some((b) => b[0] === src.button) ? (src.button as ButtonStyle) : THEME_DEFAULT.button;
+  const menuSide = MENU_SIDES.some((s) => s[0] === src.menuSide) ? (src.menuSide as MenuSide) : THEME_DEFAULT.menuSide;
   const density = DENSITIES.some((d) => d[0] === src.density) ? (src.density as Density) : THEME_DEFAULT.density;
   const mode = MODES.some((m) => m[0] === src.mode) ? (src.mode as Mode) : THEME_DEFAULT.mode;
   return {
@@ -380,6 +392,8 @@ export function parseTheme(input: unknown): Theme {
     radius: pickNumber(src.radius, 1, 0, 1.75),
     shadow: pickNumber(src.shadow, 1, 0, 1.5),
     line: pickNumber(src.line, 1, 1, 3),
+    pageWidth: pickNumber(src.pageWidth, 120, 40, 120),
+    menuSide,
     button,
     density,
     iconWeight: weight,
@@ -481,7 +495,7 @@ export function themeToCss(theme: Theme): string {
   const shadows = Object.entries(shadowStyle(theme.shadow)).map(([key, value]) => `${key}:${value};`).join("");
   const root =
     `:root{--font-sans:${family};--font-title:${title};--radius-card:${theme.radius}rem;--radius-ctl:${Math.round(theme.radius * 0.75 * 100) / 100}rem;` +
-    `--font-scale:${theme.fontScale};--leading:${theme.leading};${weight}--density:${density};--shadow-amt:${theme.shadow};--line-w:${theme.line}px;${shadows}}`;
+    `--font-scale:${theme.fontScale};--leading:${theme.leading};${weight}--density:${density};--page-w:${theme.pageWidth}rem;--shadow-amt:${theme.shadow};--line-w:${theme.line}px;${shadows}}`;
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 

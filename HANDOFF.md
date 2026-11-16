@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## BỐ CỤC 2/8 (16/11/2026, nhánh work, v3.47.7)
+ĐÃ LÀM: độ rộng các trang rộng và menu trái hoặc phải. Mặc định 120 rem, menu trái.
+CÒN 6 PHẦN: chuyển động, trang bảo trì, tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## CHỮ 1/8 (16/11/2026, nhánh work, v3.47.6)
 ĐÃ LÀM: phông tiêu đề, độ đậm tiêu đề, giãn dòng. Mặc định trùng hình cũ. Cỡ chữ chung nay có tác dụng.
 CÒN 7 PHẦN: bố cục, chuyển động, trang bảo trì, tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng.

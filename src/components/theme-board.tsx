@@ -8,6 +8,7 @@ import {
   ICON_TONES,
   ICON_SIZES,
   ICON_WEIGHTS,
+  MENU_SIDES,
   MODES,
   PALETTE_KEYS,
   PALETTES,
@@ -20,6 +21,7 @@ import {
   safeUrl,
   shadowStyle,
   TITLE_WEIGHTS,
+  type MenuSide,
   type ButtonStyle,
   type TitleWeight,
   type IconWeight,
@@ -336,6 +338,12 @@ export function ThemeBoard() {
             </Field>
             <Field label="Mật độ khoảng cách">
               <Segmented label="Mật độ" value={draft.density} onChange={(density) => patch({ density })} options={DENSITIES.map(([id, label]) => ({ id, label }))} />
+            </Field>
+            <Field label={`Độ rộng trang: ${draft.pageWidth} rem`} hint="Các trang rộng. Phòng dịch vẫn đầy màn hình.">
+              <input type="range" min={40} max={120} step={10} value={draft.pageWidth} aria-label="Độ rộng trang" onChange={(event) => patch({ pageWidth: Number(event.target.value) })} />
+            </Field>
+            <Field label="Vị trí menu">
+              <Segmented label="Vị trí menu" value={draft.menuSide} onChange={(menuSide: MenuSide) => patch({ menuSide })} options={MENU_SIDES.map(([id, label]) => ({ id, label }))} />
             </Field>
           </Card>
 
