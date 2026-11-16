@@ -59,7 +59,7 @@ export function AdminNav({
         top={(close) => (
           <button
             type="button"
-            className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-line px-3 text-sm text-muted"
+            className="flex min-h-11 items-center justify-between gap-2 rounded-[var(--radius-ctl)] border border-line px-3 text-sm text-muted"
             onClick={() => {
               close();
               onSearch();

@@ -65,7 +65,7 @@ export function TicketCard({ ticket, owner = false, children }: { ticket: RunTic
   const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "Chưa có giờ";
   const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút tiếng` : "Chưa có thời lượng";
   return (
-    <article className="rounded-xl border border-line px-3 py-2">
+    <article className="rounded-[var(--radius-ctl)] border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
         <FileNameLine ticketId={ticket.id} masked={ticket.fileName} owner={owner} />
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
@@ -98,7 +98,7 @@ function TicketRowCard({ ticket, owner }: { ticket: TicketRow; owner: boolean })
   const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút tiếng` : "Chưa có thời lượng";
   const models = [ticket.asrModel, ticket.chatModel].filter(Boolean).map(modelLabel).join(" + ");
   return (
-    <article className="rounded-xl border border-line px-3 py-2">
+    <article className="rounded-[var(--radius-ctl)] border border-line px-3 py-2">
       <div className="flex items-start justify-between gap-2">
         <FileNameLine ticketId={ticket.id} masked={ticket.fileName} owner={owner} />
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
@@ -164,10 +164,10 @@ function TicketPane({ owner }: { owner: boolean }) {
         onChange={(event) => setText(event.target.value)}
         placeholder={owner ? "Tìm theo email hoặc tên tệp" : "Tìm theo email"}
         aria-label="Tìm phiếu theo email hoặc tên tệp"
-        className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+        className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
       />
       {rows && !rows.length && (
-        <div className="rounded-xl border border-dashed border-line px-3 py-3">
+        <div className="rounded-[var(--radius-ctl)] border border-dashed border-line px-3 py-3">
           <p className="text-sm font-medium">{filtered ? "Không có phiếu khớp" : "Chưa có phiếu trả theo lượt"}</p>
           <p className="mt-1 text-sm text-muted">
             {filtered ? "Thử bỏ bộ lọc hoặc đổi từ tìm." : "Phiếu xuất hiện sau lần chạy đầu tiên. Mỗi phiếu ghi tên tệp, giờ, trạng thái, số phút, model, thời gian xử lý, số đang giữ và số đã trừ."}
@@ -306,7 +306,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
     return (
       <>
         {showKeyCard && (
-        <section className="grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
+        <section className="grid content-start gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-semibold">Key Groq của phòng</h2>
             <p className="text-xs font-medium text-muted">{keyTail ? `Đã lưu · …${keyTail}` : "Chưa lưu"}</p>
@@ -322,7 +322,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
               placeholder={keyTail ? "Key đã lưu. Dán key mới nếu muốn đổi" : "Nhập hoặc dán key"}
               aria-label="Key Groq của phòng"
               onChange={(event) => setAdminKey(event.target.value)}
-              className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
             <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => void pasteKey()}>
               Dán
@@ -339,7 +339,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
         )}
 
         {showPriceCard && (
-        <section className="admin-wide grid content-start gap-3 rounded-2xl border border-line bg-card p-4">
+        <section className="admin-wide grid content-start gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <h2 className="font-semibold">Giá và hạn mức</h2>
           <div className="grid gap-2 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
@@ -348,7 +348,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
                 inputMode="numeric"
                 value={form?.markup ?? 0}
                 onChange={(event) => setForm((current) => (current ? { ...current, markup: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
-                className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
               />
             </label>
             <label className="grid gap-1 text-sm">
@@ -357,11 +357,11 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
                 inputMode="numeric"
                 value={form?.cap ?? 0}
                 onChange={(event) => setForm((current) => (current ? { ...current, cap: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
-                className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
               />
             </label>
           </div>
-          <details className="rounded-xl border border-line">
+          <details className="rounded-[var(--radius-ctl)] border border-line">
             <summary className="min-tap flex cursor-pointer items-center px-3 text-sm font-semibold">Giá riêng từng model ({PRICE_ROWS.length})</summary>
             <div className="grid gap-2 p-2">
               {sortedRows.map((model) => {
@@ -371,7 +371,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
                 const shown = row && board && form ? formatRoomPrice(row, board.rate, form.markup, custom) : "Chưa có giá gốc";
                 const usable = models ? models.includes(model.id) : null;
                 return (
-                  <div key={model.id} className="grid gap-1 rounded-xl bg-raised px-3 py-2">
+                  <div key={model.id} className="grid gap-1 rounded-[var(--radius-ctl)] bg-raised px-3 py-2">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-medium">{model.name}</p>
                       <p className={"shrink-0 text-xs " + (usable ? "text-ok" : "text-muted")}>{usable == null ? "Chưa đồng bộ" : usable ? "Key dùng được" : "Key không dùng được"}</p>
@@ -384,7 +384,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
                         value={custom.hour || ""}
                         placeholder="Giá riêng, đồng mỗi giờ. Để trống thì dùng phần trăm"
                         onChange={(event) => setCustom(model.id, { hour: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                        className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none"
+                        className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm outline-none"
                       />
                     ) : (
                       <div className="grid min-w-0 grid-cols-2 gap-2">
@@ -393,14 +393,14 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
                           value={custom.inn || ""}
                           placeholder="Vào, đồng / triệu token"
                           onChange={(event) => setCustom(model.id, { inn: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                          className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none"
+                          className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm outline-none"
                         />
                         <input
                           inputMode="numeric"
                           value={custom.out || ""}
                           placeholder="Ra, đồng / triệu token"
                           onChange={(event) => setCustom(model.id, { out: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                          className="rounded-xl border border-line bg-card px-3 py-2 text-sm outline-none"
+                          className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm outline-none"
                         />
                       </div>
                     )}
@@ -427,7 +427,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
   }
 
   return (
-    <section className="admin-wide space-y-3 rounded-2xl border border-line bg-card p-4">
+    <section className="admin-wide space-y-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Trả theo lượt</h2>
         <p className="flex items-center gap-2 text-xs font-medium text-muted">
@@ -438,14 +438,14 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
       <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Key, giá và hạn mức nằm ở tab Cấu hình.</p>
       {owner && (
       <div className="grid grid-cols-3 gap-2">
-        <p className="rounded-xl border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
-        <p className="rounded-xl border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
-        <p className="rounded-xl border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
       </div>
       )}
 
       <div className="admin-flow">
-        <div className="admin-pane rounded-xl border border-line p-3">
+        <div className="admin-pane rounded-[var(--radius-ctl)] border border-line p-3">
           <h3 className="text-sm font-semibold">Bảo trì</h3>
           <textarea
             disabled={!owner}
@@ -453,7 +453,7 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
             value={form?.note ?? ""}
             placeholder="Nội dung khách thấy khi tạm ngưng"
             onChange={(event) => setForm((current) => (current ? { ...current, note: event.target.value } : current))}
-            className="rounded-xl border border-line bg-raised px-3 py-2 outline-none disabled:opacity-60"
+            className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none disabled:opacity-60"
           />
           {owner && form && (
             <div className="flex flex-wrap gap-2">

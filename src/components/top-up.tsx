@@ -31,7 +31,7 @@ function chip(status: string) {
 function CopyLine({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
   const [done, setDone] = useState(false);
   return (
-    <div className="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-line bg-bg/40 px-3 py-2">
+    <div className="flex min-w-0 items-center justify-between gap-2 rounded-[var(--radius-ctl)] border border-line bg-bg/40 px-3 py-2">
       <span className="min-w-0 flex-1">
         <span className="block text-xs text-muted">{label}</span>
         <span className={"block break-words " + (strong ? "text-base font-semibold tracking-wide text-accent" : "text-sm font-medium")}>{value}</span>
@@ -62,7 +62,7 @@ function History({ rows }: { rows: PayHistoryItem[] }) {
         {rows.map((row) => {
           const tone = chip(row.status);
           return (
-            <li key={row.id} className="flex items-center justify-between gap-2 rounded-xl border border-line bg-raised/60 px-3 py-2">
+            <li key={row.id} className="flex items-center justify-between gap-2 rounded-[var(--radius-ctl)] border border-line bg-raised/60 px-3 py-2">
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium">{dong(row.amount)} · {row.code}</span>
                 <span className="block text-xs text-muted">{new Date(row.createdAt).toLocaleString("vi-VN")}</span>
@@ -246,7 +246,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
   if (!gates) return <p className="text-sm text-muted">Đang xem cổng nạp…</p>;
   if (!gates.sepay && !gates.casso) {
     return (
-      <p className="rounded-2xl border border-line bg-card p-4 text-sm text-muted">
+      <p className="rounded-[var(--radius-card)] border border-line bg-card p-4 text-sm text-muted">
         Nạp tiền đang bảo trì. Sẽ cập nhật sớm.
       </p>
     );
@@ -254,7 +254,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
 
   const alive = Boolean(order && (ending || (left > 0 && order.status !== "expired" && order.status !== "cancelled")));
   const sheet = order && (
-    <div className="pay-sheet pay-rise grid gap-3 rounded-2xl border border-accent/30 bg-gradient-to-b from-accent/10 to-transparent p-3">
+    <div className="pay-sheet pay-rise grid gap-3 rounded-[var(--radius-card)] border border-accent/30 bg-gradient-to-b from-accent/10 to-transparent p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold">Chuyển khoản</p>
         <p className={"rounded-full border px-2.5 py-1 text-xs font-semibold tabular-nums " + (left > 0 && order.status !== "expired" && order.status !== "cancelled" ? chip("pending").className : chip(order.status === "cancelled" ? "cancelled" : "expired").className)}>
@@ -266,7 +266,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
           <div className="h-1 overflow-hidden rounded-full bg-line">
             <div className="h-full rounded-full bg-accent transition-[width] duration-1000" style={{ width: `${Math.min(100, (left / (PAY_MINUTES * 60)) * 100)}%` }} />
           </div>
-          <img src={order.qr} alt="Mã QR chuyển khoản" className="pay-ring mx-auto h-auto w-52 max-w-full rounded-2xl bg-white p-2" />
+          <img src={order.qr} alt="Mã QR chuyển khoản" className="pay-ring mx-auto h-auto w-52 max-w-full rounded-[var(--radius-card)] bg-white p-2" />
           <p className="text-center text-xs text-muted">
             {order.qrLive ? "Mở ứng dụng ngân hàng và quét mã." : "Ngân hàng này chưa lập được mã quét. Chuyển theo số bên dưới."}
           </p>
@@ -293,7 +293,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
             Vui lòng không rời đi hoặc tải lại trang
           </p>
           {askCancel && (
-            <div className="grid gap-2 rounded-xl border border-error/30 bg-error/10 p-3 text-sm">
+            <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-error/30 bg-error/10 p-3 text-sm">
               <p>Hủy đơn này? Nếu đã chuyển khoản, tiền sẽ không tự cộng.</p>
               <div className="grid grid-cols-2 gap-2">
                 <button type="button" className="min-tap rounded-full border border-line" onClick={() => setAskCancel(false)}>
@@ -329,7 +329,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
   }
 
   return (
-    <section className={"pay-sheet relative mt-3 min-w-0 max-w-full overflow-hidden rounded-2xl border border-line bg-card p-4 " + (ending ? "min-h-72" : "")}>
+    <section className={"pay-sheet relative mt-3 min-w-0 max-w-full overflow-hidden rounded-[var(--radius-card)] border border-line bg-card p-4 " + (ending ? "min-h-72" : "")}>
       <div className={"space-y-3 " + (ending ? "pay-bye pointer-events-none" : "")}>
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-semibold">Nạp tiền</h2>
@@ -383,7 +383,7 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
               setDraft(formatMoney(num) || "");
               setAmount(num);
             }}
-            className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             placeholder={`${MIN} – ${MAX}`}
           />
         </label>

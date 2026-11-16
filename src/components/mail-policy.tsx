@@ -23,12 +23,12 @@ export function MailPolicyBoard() {
   }
   return (
     <div className="grid min-w-0 gap-2">
-      <div className="sticky top-0 z-10 rounded-2xl border border-line bg-card p-2">
+      <div className="sticky top-0 z-10 rounded-[var(--radius-card)] border border-line bg-card p-2">
         <p className="mb-1 text-xs text-muted">Xem trước. Sửa chữ hoặc màu thì thấy ngay, không cần kéo xuống.</p>
-        <iframe title="Xem trước thư" sandbox="" className="h-44 w-full rounded-xl border border-line bg-white" srcDoc={preview.html} />
+        <iframe title="Xem trước thư" sandbox="" className="h-44 w-full rounded-[var(--radius-ctl)] border border-line bg-white" srcDoc={preview.html} />
       </div>
     <form
-      className="grid min-w-0 gap-2 rounded-2xl border border-line bg-card p-4"
+      className="grid min-w-0 gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
       onSubmit={(event) => {
         event.preventDefault();
         if (busy) return;
@@ -50,7 +50,7 @@ export function MailPolicyBoard() {
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={policy.changedOn} onChange={(event) => setPolicy({ ...policy, changedOn: event.target.checked })} /> Báo khi mật khẩu vừa đổi</label>
       <label className="grid gap-1 text-sm">
         Thời hạn liên kết
-        <select value={policy.ttlMin} onChange={(event) => setPolicy({ ...policy, ttlMin: Number(event.target.value) as MailPolicy["ttlMin"] })} className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none">
+        <select value={policy.ttlMin} onChange={(event) => setPolicy({ ...policy, ttlMin: Number(event.target.value) as MailPolicy["ttlMin"] })} className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none">
           <option value={15}>15 phút</option>
           <option value={60}>1 giờ</option>
           <option value={1440}>24 giờ</option>
@@ -59,14 +59,14 @@ export function MailPolicyBoard() {
       <div className="grid min-w-0 gap-2">
         <label className="grid min-w-0 gap-1 text-sm">
           <span className="leading-snug">Chờ giữa hai lần gửi (giây)</span>
-          <input value={policy.resendWait} onChange={(event) => setPolicy({ ...policy, resendWait: Number(event.target.value) || 60 })} inputMode="numeric" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+          <input value={policy.resendWait} onChange={(event) => setPolicy({ ...policy, resendWait: Number(event.target.value) || 60 })} inputMode="numeric" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
         </label>
         <label className="grid min-w-0 gap-1 text-sm">
           <span className="leading-snug">Tối đa mỗi giờ</span>
-          <input value={policy.resendHour} onChange={(event) => setPolicy({ ...policy, resendHour: Number(event.target.value) || 3 })} inputMode="numeric" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+          <input value={policy.resendHour} onChange={(event) => setPolicy({ ...policy, resendHour: Number(event.target.value) || 3 })} inputMode="numeric" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
         </label>
       </div>
-      <details className="grid gap-2 rounded-xl border border-line p-3">
+      <details className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3">
         <summary className="cursor-pointer text-sm font-semibold">Soạn thư (tiêu đề, nội dung, màu)</summary>
         <div className="mt-2 grid gap-2">
       <div className="flex flex-wrap gap-2">
@@ -74,11 +74,11 @@ export function MailPolicyBoard() {
           <button key={item.id} type="button" className={"inline-flex min-h-11 items-center justify-center rounded-full px-3 text-sm " + (kind === item.id ? "bg-accent font-semibold text-ink" : "border border-line")} onClick={() => setKind(item.id)}>{item.name}</button>
         ))}
       </div>
-      <input value={letter.subject} onChange={(event) => setLetter({ subject: event.target.value })} placeholder="Tiêu đề thư" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <input value={letter.greeting} onChange={(event) => setLetter({ greeting: event.target.value })} placeholder="Lời chào" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <textarea value={letter.body} onChange={(event) => setLetter({ body: event.target.value })} rows={3} placeholder="Nội dung" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      {kind !== "changed" && <input value={letter.button} onChange={(event) => setLetter({ button: event.target.value })} placeholder="Chữ trên nút" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />}
-      <input value={letter.footer} onChange={(event) => setLetter({ footer: event.target.value })} placeholder="Chân thư" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={letter.subject} onChange={(event) => setLetter({ subject: event.target.value })} placeholder="Tiêu đề thư" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={letter.greeting} onChange={(event) => setLetter({ greeting: event.target.value })} placeholder="Lời chào" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      <textarea value={letter.body} onChange={(event) => setLetter({ body: event.target.value })} rows={3} placeholder="Nội dung" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      {kind !== "changed" && <input value={letter.button} onChange={(event) => setLetter({ button: event.target.value })} placeholder="Chữ trên nút" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />}
+      <input value={letter.footer} onChange={(event) => setLetter({ footer: event.target.value })} placeholder="Chân thư" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={letter.showName} onChange={(event) => setLetter({ showName: event.target.checked })} /> Hiện tên phòng</label>
       <div className="flex flex-wrap gap-2">
         {(["plain", "frame", "band"] as const).map((id) => (
@@ -94,15 +94,15 @@ export function MailPolicyBoard() {
       </div>
         </div>
       </details>
-      <details className="grid gap-2 rounded-xl border border-line p-3">
+      <details className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3">
         <summary className="cursor-pointer text-sm font-semibold">Chữ trên trang (5 câu)</summary>
         <div className="mt-2 grid gap-2">
-      <input value={policy.sent} onChange={(event) => setPolicy({ ...policy, sent: event.target.value })} placeholder="Sau khi gửi thư xác minh" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <input value={policy.unverified} onChange={(event) => setPolicy({ ...policy, unverified: event.target.value })} placeholder="Khi chưa xác minh" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <input value={policy.resetSent} onChange={(event) => setPolicy({ ...policy, resetSent: event.target.value })} placeholder="Sau khi xin đặt lại mật khẩu" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={policy.sent} onChange={(event) => setPolicy({ ...policy, sent: event.target.value })} placeholder="Sau khi gửi thư xác minh" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={policy.unverified} onChange={(event) => setPolicy({ ...policy, unverified: event.target.value })} placeholder="Khi chưa xác minh" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={policy.resetSent} onChange={(event) => setPolicy({ ...policy, resetSent: event.target.value })} placeholder="Sau khi xin đặt lại mật khẩu" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
       <p className="text-xs text-muted">Câu đặt lại mật khẩu hiện cho mọi email, không nói email đó có tài khoản hay không.</p>
-      <input value={policy.resetDone} onChange={(event) => setPolicy({ ...policy, resetDone: event.target.value })} placeholder="Khi đặt mật khẩu xong" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <input value={policy.resetBad} onChange={(event) => setPolicy({ ...policy, resetBad: event.target.value })} placeholder="Khi liên kết hết hạn" className="w-full min-w-0 rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={policy.resetDone} onChange={(event) => setPolicy({ ...policy, resetDone: event.target.value })} placeholder="Khi đặt mật khẩu xong" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={policy.resetBad} onChange={(event) => setPolicy({ ...policy, resetBad: event.target.value })} placeholder="Khi liên kết hết hạn" className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
         </div>
       </details>
       <button type="submit" disabled={busy} className="inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">{busy ? "Đang lưu…" : "Lưu phần thư"}</button>

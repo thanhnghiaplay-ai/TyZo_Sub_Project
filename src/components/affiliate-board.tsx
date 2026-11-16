@@ -38,11 +38,11 @@ export function AffiliateBoard() {
       <h2 className="font-semibold">Cộng tác viên</h2>
       <p className="text-sm text-muted">0 ngày là hưởng cả đời. Đổi số ngày chỉ chặn hoa hồng mới. Tỷ lệ 0 ở từng người là dùng tỷ lệ chung.</p>
       <div className="grid gap-2 sm:grid-cols-2">
-        <label className="grid gap-1 text-sm"><span>Tỷ lệ gói (%)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={plan} onChange={(event) => setPlan(event.target.value)} /></label>
-        <label className="grid gap-1 text-sm"><span>Tỷ lệ lượt (%)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={run} onChange={(event) => setRun(event.target.value)} /></label>
-        <label className="grid gap-1 text-sm"><span>Ngày chờ</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={hold} onChange={(event) => setHold(event.target.value)} /></label>
-        <label className="grid gap-1 text-sm"><span>Số ngày được hưởng (0 = cả đời)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={windowDays} onChange={(event) => setWindowDays(event.target.value)} /></label>
-        <label className="grid gap-1 text-sm sm:col-span-2"><span>Rút tối thiểu (đồng)</span><input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={minPay} onChange={(event) => setMinPay(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Tỷ lệ gói (%)</span><input className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={plan} onChange={(event) => setPlan(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Tỷ lệ lượt (%)</span><input className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={run} onChange={(event) => setRun(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Ngày chờ</span><input className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={hold} onChange={(event) => setHold(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm"><span>Số ngày được hưởng (0 = cả đời)</span><input className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={windowDays} onChange={(event) => setWindowDays(event.target.value)} /></label>
+        <label className="grid gap-1 text-sm sm:col-span-2"><span>Rút tối thiểu (đồng)</span><input className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={minPay} onChange={(event) => setMinPay(event.target.value)} /></label>
       </div>
       <button
         type="button"
@@ -74,7 +74,7 @@ export function AffiliateBoard() {
       <div className="admin-card space-y-3">
       <label className="grid gap-1 text-sm">
         <span>Tìm theo tên, email hoặc mã</span>
-        <input className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" value={q} onChange={(event) => setQ(event.target.value)} />
+        <input className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={q} onChange={(event) => setQ(event.target.value)} />
       </label>
       <div className="affiliate-list">
         {people.filter((person) => {
@@ -83,7 +83,7 @@ export function AffiliateBoard() {
           const status = person.status === "hoat-dong" ? "đang mở" : person.status === "tam-khoa" ? "tạm khóa" : "chờ duyệt";
           return [person.name, person.email, person.code, status].join(" ").toLowerCase().includes(needle);
         }).map((person) => (
-          <article key={person.user_id} className="rounded-xl border border-line p-3 text-sm">
+          <article key={person.user_id} className="rounded-[var(--radius-ctl)] border border-line p-3 text-sm">
             <p className="break-all font-medium">{person.name || person.email}</p>
             <p className="break-all text-muted">{person.email}</p>
             <p className="text-muted">Mã {person.code} · {person.status === "hoat-dong" ? "Đang mở" : person.status === "tam-khoa" ? "Tạm khóa" : "Chờ duyệt"}</p>
@@ -123,11 +123,11 @@ export function AffiliateBoard() {
             >
               <label className="grid gap-1 text-sm">
                 <span>Gói riêng (%). Điền 0 để dùng tỷ lệ chung</span>
-                <input name="plan" defaultValue={String(person.rate_plan_bp / 100)} className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" />
+                <input name="plan" defaultValue={String(person.rate_plan_bp / 100)} className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" />
               </label>
               <label className="grid gap-1 text-sm">
                 <span>Lượt riêng (%). Điền 0 để dùng tỷ lệ chung</span>
-                <input name="run" defaultValue={String(person.rate_run_bp / 100)} className="min-h-11 w-full rounded-xl border border-line bg-bg px-3" />
+                <input name="run" defaultValue={String(person.rate_run_bp / 100)} className="min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" />
               </label>
               <button type="submit" className="inline-flex min-h-11 w-fit items-center justify-center rounded-full border border-line px-3">Lưu tỷ lệ riêng</button>
             </form>
@@ -137,7 +137,7 @@ export function AffiliateBoard() {
       {payouts.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-sm font-semibold">Lệnh rút</h3>
-          <input className="min-tap w-full rounded-xl border border-line bg-bg px-3" placeholder="Mã chuyển khoản" value={paid} onChange={(event) => setPaid(event.target.value)} />
+          <input className="min-tap w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3" placeholder="Mã chuyển khoản" value={paid} onChange={(event) => setPaid(event.target.value)} />
           {payouts.map((row) => (
             <div key={row.id} className="flex flex-wrap items-center gap-2 text-sm">
               <span className="min-w-0 flex-1">{row.email} · {row.amount.toLocaleString("vi-VN")} đ</span>

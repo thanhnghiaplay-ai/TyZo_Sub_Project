@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.11",
+    time: "08:18 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần bo góc, bước 1. 224 lớp rounded-xl thành rounded-[var(--radius-ctl)], 66 lớp rounded-2xl (kể cả rounded-t-2xl) thành radius-card. Mặc định vẫn 0.75rem và 1rem nên nhìn không đổi cho đến khi kéo thanh bo góc. Còn 187 dòng: 176 rounded-full, 5 md, 4 lg, 1 3xl, 1 none. Không đổi điều khoản."
+  },
+  {
     version: "3.46.10",
     time: "08:11 ngày 16/11/2026",
     area: "khac",

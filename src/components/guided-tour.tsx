@@ -127,7 +127,7 @@ export function GuidedTour({ open, onClose, tour = "quick-start" }: { open: bool
           <div aria-hidden className="fixed z-[60]" style={{ top: hole.top, left: hole.left + hole.width, right: 0, height: hole.height }} />
           <div
             aria-hidden
-            className="pointer-events-none fixed z-[60] rounded-xl border-2 border-accent shadow-[0_0_0_9999px_rgba(0,0,0,0.62)] transition-all duration-200 motion-reduce:transition-none"
+            className="pointer-events-none fixed z-[60] rounded-[var(--radius-ctl)] border-2 border-accent shadow-[0_0_0_9999px_rgba(0,0,0,0.62)] transition-all duration-200 motion-reduce:transition-none"
             style={{ top: hole.top, left: hole.left, width: hole.width, height: hole.height }}
           />
         </>
@@ -138,7 +138,7 @@ export function GuidedTour({ open, onClose, tour = "quick-start" }: { open: bool
         tabIndex={-1}
         role="dialog"
         aria-label={now.title}
-        className={"fixed inset-x-3 z-[61] mx-auto grid max-w-md gap-2 rounded-2xl border border-line bg-card p-4 shadow-xl outline-none " + (upper ? "top-3" : "bottom-3")}
+        className={"fixed inset-x-3 z-[61] mx-auto grid max-w-md gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4 shadow-xl outline-none " + (upper ? "top-3" : "bottom-3")}
       >
         <p className="text-xs text-muted">
           Bước {step + 1} / {STEPS.length}

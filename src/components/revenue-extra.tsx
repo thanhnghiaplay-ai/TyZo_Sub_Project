@@ -47,7 +47,7 @@ function LineChart({ points }: { points: MoneyPoint[] }) {
 
 function Stat({ title, value, hint }: { title: string; value: string; hint?: string }) {
   return (
-    <article className="rounded-xl border border-line px-2 py-2">
+    <article className="rounded-[var(--radius-ctl)] border border-line px-2 py-2">
       <p className="text-xs text-muted">{title}</p>
       <p className="text-sm font-semibold">{value}</p>
       {hint && <p className="text-xs text-muted">{hint}</p>}
@@ -81,7 +81,7 @@ export function RevenueExtra({ span, points }: { span: Span; points: MoneyPoint[
   const minutes = extra ? Math.round(extra.audioSeconds / 60) : 0;
 
   return (
-    <div className="grid gap-3 rounded-xl border border-line p-3 text-sm">
+    <div className="grid gap-3 rounded-[var(--radius-ctl)] border border-line p-3 text-sm">
       <p className="font-semibold">Biểu đồ thu và chi</p>
       <LineChart points={points} />
       {fault && <p className="text-danger">{fault}</p>}

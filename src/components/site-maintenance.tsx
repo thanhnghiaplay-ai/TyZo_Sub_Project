@@ -261,7 +261,7 @@ export function SiteGate({ initial, children }: { initial: ServiceStatus; childr
   return (
     <>
       {children}
-      <aside role="status" className="fixed inset-x-3 top-3 z-50 mx-auto grid max-w-md gap-0.5 rounded-xl border border-warning bg-card p-3 text-sm shadow-lg" data-site-warning>
+      <aside role="status" className="fixed inset-x-3 top-3 z-50 mx-auto grid max-w-md gap-0.5 rounded-[var(--radius-ctl)] border border-warning bg-card p-3 text-sm shadow-lg" data-site-warning>
         <p className="flex items-center gap-2 font-semibold text-warning">
           <Wrench className="size-4 shrink-0" aria-hidden="true" />
           {status.site.note || WARN_DEFAULT}

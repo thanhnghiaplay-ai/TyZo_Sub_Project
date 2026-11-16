@@ -105,7 +105,7 @@ export function ServiceStatusBoard() {
           const down = row.state === "maintenance";
           const live = saved[group].state === "maintenance";
           return (
-            <div key={group} className={"grid content-start gap-2 rounded-xl border border-line bg-bg p-3" + (group === "site" ? " sm:col-span-2" : "")} data-scope={group}>
+            <div key={group} className={"grid content-start gap-2 rounded-[var(--radius-ctl)] border border-line bg-bg p-3" + (group === "site" ? " sm:col-span-2" : "")} data-scope={group}>
               <p className="flex items-center gap-2 text-sm font-semibold">
                 <span className={"door-dot " + (live ? "door-dot-closed" : "door-dot-open")} aria-hidden="true" />
                 {scopeLabel(group)}
@@ -121,7 +121,7 @@ export function ServiceStatusBoard() {
                     aria-pressed={row.state === state}
                     onClick={() => patch(group, { state })}
                     className={
-                      "min-tap rounded-xl border px-3 text-sm font-semibold disabled:opacity-50 " +
+                      "min-tap rounded-[var(--radius-ctl)] border px-3 text-sm font-semibold disabled:opacity-50 " +
                       (row.state === state ? (state === "active" ? "border-accent bg-accent text-ink" : "border-warning bg-warning/20 text-warning") : "border-line")
                     }
                   >
@@ -136,7 +136,7 @@ export function ServiceStatusBoard() {
                       <span className="text-xs font-semibold text-muted">Tiêu đề lớn trên trang bảo trì (để trống dùng câu mặc định)</span>
                       <input
                         type="text"
-                        className="min-tap rounded-xl border border-line bg-card px-3 text-sm"
+                        className="min-tap rounded-[var(--radius-ctl)] border border-line bg-card px-3 text-sm"
                         maxLength={SERVICE_TITLE_MAX}
                         value={row.title}
                         disabled={busy}
@@ -151,7 +151,7 @@ export function ServiceStatusBoard() {
                   <label className="grid gap-1 text-sm">
                     <span className="text-xs font-semibold text-muted">Lời nhắn cho khách (để trống dùng câu mặc định)</span>
                     <textarea
-                      className="min-h-20 rounded-xl border border-line bg-card px-3 py-2 text-sm"
+                      className="min-h-20 rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm"
                       maxLength={SERVICE_NOTE_MAX}
                       value={row.note}
                       disabled={busy}
@@ -166,7 +166,7 @@ export function ServiceStatusBoard() {
                     <span className="text-xs font-semibold text-muted">Dự kiến mở lại (giờ Việt Nam, có thể để trống)</span>
                     <input
                       type="datetime-local"
-                      className="min-tap rounded-xl border border-line bg-card px-3 text-sm"
+                      className="min-tap rounded-[var(--radius-ctl)] border border-line bg-card px-3 text-sm"
                       value={row.until}
                       disabled={busy}
                       onChange={(event) => patch(group, { until: event.target.value })}
@@ -178,7 +178,7 @@ export function ServiceStatusBoard() {
               {group === "site" && (
                 <button
                   type="button"
-                  className="min-tap w-fit rounded-xl border border-line bg-card px-4 text-sm font-semibold hover:border-accent"
+                  className="min-tap w-fit rounded-[var(--radius-ctl)] border border-line bg-card px-4 text-sm font-semibold hover:border-accent"
                   onClick={() => setPreview(true)}
                 >
                   Xem trước trang bảo trì
@@ -188,7 +188,7 @@ export function ServiceStatusBoard() {
           );
         })}
       </div>
-      <button type="button" className="min-tap w-fit rounded-xl bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-50" disabled={!loaded || busy || !dirty} onClick={save}>
+      <button type="button" className="min-tap w-fit rounded-[var(--radius-ctl)] bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-50" disabled={!loaded || busy || !dirty} onClick={save}>
         {busy ? "Đang lưu…" : "Lưu trạng thái"}
       </button>
       {preview && (

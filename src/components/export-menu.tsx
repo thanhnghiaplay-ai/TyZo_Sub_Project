@@ -17,18 +17,18 @@ export function ExportMenu({ disabled, onPick }: { disabled: boolean; onPick: (f
         data-tour="export"
         disabled={disabled}
         aria-disabled={disabled}
-        className="min-tap inline-flex items-center gap-1.5 rounded-xl border border-line px-3 text-sm disabled:pointer-events-none disabled:opacity-40"
+        className="min-tap inline-flex items-center gap-1.5 rounded-[var(--radius-ctl)] border border-line px-3 text-sm disabled:pointer-events-none disabled:opacity-40"
       >
         <Download className="size-4" aria-hidden="true" />
         Tải phụ đề
         <ChevronDown className="size-3.5" aria-hidden="true" />
       </Menu.Trigger>
       <Menu.Portal>
-        <Menu.Content align="end" sideOffset={6} className="z-50 w-64 overflow-hidden rounded-2xl border border-line bg-card p-1 shadow-xl">
+        <Menu.Content align="end" sideOffset={6} className="z-50 w-64 overflow-hidden rounded-[var(--radius-card)] border border-line bg-card p-1 shadow-xl">
           {FORMATS.map((item) => (
             <Menu.Item
               key={item.id}
-              className="grid min-h-11 cursor-pointer gap-0.5 rounded-xl px-3 py-2 text-left text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-ink"
+              className="grid min-h-11 cursor-pointer gap-0.5 rounded-[var(--radius-ctl)] px-3 py-2 text-left text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-ink"
               onSelect={() => onPick(item.id)}
             >
               <span className="font-semibold">{item.label}</span>

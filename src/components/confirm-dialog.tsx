@@ -80,7 +80,7 @@ export function ConfirmHost() {
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={textId}
-        className="grid w-full max-w-sm gap-3 rounded-2xl border border-line bg-card p-4 shadow-xl"
+        className="grid w-full max-w-sm gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4 shadow-xl"
         onKeyDown={onKeyDown}
       >
         <h2 id={titleId} className="text-base font-semibold">

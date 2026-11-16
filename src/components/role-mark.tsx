@@ -45,7 +45,7 @@ export function AccountCard({
     </div>
   );
   return (
-    <article data-badge={style} data-rank={top} data-marks={shown.length} className={"account-card rounded-2xl border border-line bg-card p-4 " + className}>
+    <article data-badge={style} data-rank={top} data-marks={shown.length} className={"account-card rounded-[var(--radius-card)] border border-line bg-card p-4 " + className}>
       {style === "ticket" ? children : row}
       {style === "ticket" ? row : children}
     </article>

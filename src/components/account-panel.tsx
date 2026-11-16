@@ -96,7 +96,7 @@ export function AccountPanel() {
       )}
       {user && !user.isDevFallback && (
         <form
-          className="space-y-2 rounded-2xl border border-line bg-card p-4"
+          className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
           onSubmit={(event) => {
             event.preventDefault();
             setBusy(true);
@@ -117,7 +117,7 @@ export function AccountPanel() {
               ? "Dùng khi cần hỏi về gói, nạp tiền, khóa hoặc cấm. Không gửi key Groq."
               : place.reason || "Bạn vẫn gửi được yêu cầu. Không dịch và không xuất file."}
           </p>
-          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
+          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" placeholder="Viết rõ việc cần xem, ít nhất 10 ký tự" />
           <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
             Gửi yêu cầu
           </button>
@@ -171,7 +171,7 @@ export function AccountPanel() {
             />
           </AccountCard>
           {runDoor.open ? (
-            <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
+            <section className="grid gap-1 rounded-[var(--radius-ctl)] border border-line bg-card p-3">
               <h2 className="flex items-center gap-2 text-sm font-semibold">
                 <DoorDot open />
                 Trả theo lượt
@@ -190,7 +190,7 @@ export function AccountPanel() {
               key={plan.id}
               type="button"
               disabled={busy}
-              className="flex min-tap w-full items-center justify-between gap-3 rounded-2xl border border-line bg-card px-4 py-3 text-left disabled:opacity-40"
+              className="flex min-tap w-full items-center justify-between gap-3 rounded-[var(--radius-card)] border border-line bg-card px-4 py-3 text-left disabled:opacity-40"
               onClick={() => void run(() => buyRoomPlan({ data: plan.id }), "Đã mở gói.")}
             >
               <span className="min-w-0">
@@ -211,7 +211,7 @@ export function AccountPanel() {
           ))}
           </div>
           <form
-            className="space-y-2 rounded-2xl border border-line bg-card p-4"
+            className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
             onSubmit={(event) => {
               event.preventDefault();
               const next = name.trim();
@@ -232,14 +232,14 @@ export function AccountPanel() {
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
-              className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
             <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
               Lưu tên
             </button>
           </form>
           <form data-tour="change-password"
-            className="space-y-2 rounded-2xl border border-line bg-card p-4"
+            className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
             onSubmit={(event) => {
               event.preventDefault();
               setBusy(true);
@@ -264,7 +264,7 @@ export function AccountPanel() {
               onChange={(event) => setCurrentPassword(event.target.value)}
               placeholder="Mật khẩu hiện tại"
               required
-              className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
             <input
               type="password"
@@ -273,7 +273,7 @@ export function AccountPanel() {
               placeholder="Mật khẩu mới, ít nhất 8 ký tự"
               required
               minLength={8}
-              className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
             <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
               Đổi mật khẩu
@@ -281,7 +281,7 @@ export function AccountPanel() {
             <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
           </form>
           {state && state.ledger.length > 0 && (
-            <section className="account-wide rounded-2xl border border-line bg-card p-3">
+            <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3">
               <h2 className="text-sm font-semibold">Lịch sử Nạp/Mua gói</h2>
               <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
                 {(ledgerOpen ? state.ledger.slice(0, 9) : state.ledger.slice(0, 3)).map((item) => {

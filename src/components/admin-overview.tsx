@@ -18,7 +18,7 @@ const RANGES: { id: OverviewRange; label: string }[] = [
 
 function Card({ title, go, onGo, children }: { title: string; go: AdminTab; onGo: (tab: AdminTab) => void; children: ReactNode }) {
   return (
-    <article className="grid content-start gap-2 rounded-2xl border border-line bg-card p-4">
+    <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <h3 className="text-sm font-semibold text-muted">{title}</h3>
       {children}
       <button type="button" className="min-tap w-fit rounded-full border border-line px-3 text-sm" onClick={() => onGo(go)}>
@@ -62,7 +62,7 @@ function TopList({ rows, money, empty }: { rows: TopUser[]; money: boolean; empt
 function ServiceStrip({ owner, onGo }: { owner: boolean; onGo: (tab: AdminTab) => void }) {
   const { status, ready } = useServiceStatus();
   return (
-    <article className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Trạng thái web và các nhóm dịch">
+    <article className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3" aria-label="Trạng thái web và các nhóm dịch">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
         {SERVICE_SCOPES.map((group) => {
           const down = status[group].state === "maintenance";
@@ -157,7 +157,7 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
                 <Big value={String(view.quality.attention)} hint={`${view.quality.red} lần thấp · trên ${view.quality.total} lần chạy`} />
               </Card>
             )}
-            <article className="grid content-start gap-2 rounded-2xl border border-line bg-card p-4">
+            <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
               <h3 className="text-sm font-semibold text-muted">Đơn nạp đang chờ xác nhận</h3>
               <Big value={String(view.orders.waiting)} hint={view.orders.claimed ? `${view.orders.claimed} khách báo đã chuyển` : undefined} />
               <button type="button" className="min-tap w-fit rounded-full border border-line px-3 text-sm" onClick={goOrders}>
@@ -166,7 +166,7 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
             </article>
           </div>
 
-          <article className="grid gap-2 rounded-2xl border border-line bg-card p-4">
+          <article className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
             <h3 className="text-sm font-semibold text-muted">Cảnh báo</h3>
             {view.alerts.length === 0 && <p className="text-sm text-muted">Chưa có cảnh báo.</p>}
             {view.alerts.map((alert) => (
@@ -185,12 +185,12 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
 
           <div className="grid gap-3 sm:grid-cols-2">
             {owner && view.topSpend && (
-              <article className="grid content-start gap-2 rounded-2xl border border-line bg-card p-4">
+              <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
                 <h3 className="text-sm font-semibold text-muted">Top 5 tiêu nhiều nhất ({rangeText})</h3>
                 <TopList rows={view.topSpend} money empty="Chưa có lượt trừ tiền." />
               </article>
             )}
-            <article className="grid content-start gap-2 rounded-2xl border border-line bg-card p-4">
+            <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
               <h3 className="text-sm font-semibold text-muted">Top 5 lỗi nhiều nhất ({rangeText})</h3>
               <TopList rows={view.topErrors} money={false} empty="Chưa có phiếu lỗi." />
             </article>

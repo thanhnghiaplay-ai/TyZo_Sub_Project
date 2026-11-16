@@ -109,7 +109,7 @@ function VideoLinkPage() {
           placeholder="https://..."
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="min-tap w-full rounded-xl border border-line bg-raised px-4 py-3 text-sm outline-none focus:border-accent"
+          className="min-tap w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-4 py-3 text-sm outline-none focus:border-accent"
         />
         <button
           type="submit"
@@ -120,14 +120,14 @@ function VideoLinkPage() {
         </button>
       </form>
 
-      {note && <p className="rounded-xl border border-line bg-raised p-3 text-sm text-muted">{note}</p>}
+      {note && <p className="rounded-[var(--radius-ctl)] border border-line bg-raised p-3 text-sm text-muted">{note}</p>}
 
       {scan && scan.media.length > 0 && (
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">Tìm thấy ({scan.media.length})</h2>
           <ul className="space-y-2">
             {scan.media.map((item) => (
-              <li key={item.url} className="space-y-2 rounded-xl border border-line bg-raised p-3">
+              <li key={item.url} className="space-y-2 rounded-[var(--radius-ctl)] border border-line bg-raised p-3">
                 <span className="text-xs font-medium text-accent">{KIND_LABEL[item.kind]}</span>
                 <p className="text-xs break-all text-muted">{item.url}</p>
                 <div className="flex flex-wrap gap-2">
@@ -159,7 +159,7 @@ function VideoLinkPage() {
           <h2 className="text-sm font-semibold">Khung nhúng ({scan.frames.length})</h2>
           <ul className="space-y-2">
             {scan.frames.map((frame) => (
-              <li key={frame} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-raised p-3">
+              <li key={frame} className="flex items-center justify-between gap-3 rounded-[var(--radius-ctl)] border border-line bg-raised p-3">
                 <p className="min-w-0 text-xs break-all text-muted">{frame}</p>
                 <button
                   type="button"

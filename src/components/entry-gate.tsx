@@ -101,10 +101,10 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
           Tôi đã đọc điều khoản phiên bản {TERMS_VERSION} và muốn dùng phòng dịch.
         </label>
         <div className="flex flex-wrap gap-2">
-          <button type="button" className="min-tap rounded-xl bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" disabled={!read} onClick={onAccept}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" disabled={!read} onClick={onAccept}>
             Đồng ý và tiếp tục
           </button>
-          <button type="button" className="min-tap rounded-xl border border-line px-4 text-sm" onClick={onDecline}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-4 text-sm" onClick={onDecline}>
             Không đồng ý
           </button>
         </div>
@@ -119,7 +119,7 @@ function Declined({ onReview }: { onReview: () => void }) {
       <BrandMark title="TyZo Sub" />
       <h1 className="gate-title">Chưa vào phòng</h1>
       <p className="gate-wait">Bạn chưa đồng ý điều khoản nên không dùng được phòng dịch.</p>
-      <button type="button" className="min-tap rounded-xl bg-accent px-4 text-sm font-semibold text-ink" onClick={onReview}>
+      <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-4 text-sm font-semibold text-ink" onClick={onReview}>
         Xem lại điều khoản
       </button>
     </main>

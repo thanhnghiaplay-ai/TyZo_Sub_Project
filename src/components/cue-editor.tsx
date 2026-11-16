@@ -2,7 +2,7 @@ import { Check, X } from "lucide-react";
 import { fmt } from "@/lib/sub/text";
 
 const FIELD =
-  "min-h-11 w-full rounded-xl border border-line bg-raised px-3 py-2 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
+  "min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 /**
  * Sửa câu ngay tại dòng đang xem. Ctrl+Enter hoặc nút Lưu để lưu, Esc hoặc nút Hủy để bỏ.
@@ -29,7 +29,7 @@ export function CueEditor({
 }) {
   return (
     <form
-      className="grid gap-2 rounded-xl border border-accent bg-raised p-3"
+      className="grid gap-2 rounded-[var(--radius-ctl)] border border-accent bg-raised p-3"
       aria-label={`Sửa câu lúc ${fmt(start)}`}
       onSubmit={(event) => {
         event.preventDefault();

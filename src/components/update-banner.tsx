@@ -32,7 +32,7 @@ export function UpdateBanner() {
   if (live === APP_VERSION || later) return null;
 
   return (
-    <div className="fixed inset-x-3 bottom-3 z-40 grid gap-2 rounded-2xl border border-line bg-card p-3 shadow-lg">
+    <div className="fixed inset-x-3 bottom-3 z-40 grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 shadow-lg">
       <p className="text-sm">Đã có bản v{live}. Hãy tải lại trang để dùng bản vừa cập nhật. Việc đang làm vẫn giữ nếu bạn chọn để sau.</p>
       <div className="flex gap-2">
         <button type="button" className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink" onClick={() => window.location.reload()}>

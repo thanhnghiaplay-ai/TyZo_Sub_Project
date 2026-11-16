@@ -30,7 +30,7 @@ export function PlayerDrop({
   return (
     <div data-tour="drop" className="absolute inset-0 z-[25] flex flex-col gap-2 p-2 sm:p-3">
       <label
-        className="relative flex min-h-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border-2 border-dashed border-line bg-card/90 px-3 text-center transition-colors hover:border-accent focus-within:border-accent"
+        className="relative flex min-h-0 flex-1 cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-[var(--radius-ctl)] border-2 border-dashed border-line bg-card/90 px-3 text-center transition-colors hover:border-accent focus-within:border-accent"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();

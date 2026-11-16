@@ -58,7 +58,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
   }, []);
 
   return (
-    <section className="grid gap-2 rounded-2xl border border-line bg-card p-4">
+    <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold">Đơn nạp</h2>
         <button type="button" className="text-sm text-muted underline" onClick={load}>
@@ -69,7 +69,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có đơn nạp.</p>}
       <ul className="grid max-h-80 gap-2 overflow-y-auto">
         {rows.map((row) => (
-          <li key={row.id} data-pay-code={row.code} className="rounded-xl border border-line px-3 py-2 text-sm">
+          <li key={row.id} data-pay-code={row.code} className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">
             <p className="font-medium">{row.email || "Không rõ email"}</p>
             <p className="text-muted">
               {row.provider} · {dong(row.amount)} · {row.code}
@@ -208,10 +208,10 @@ export function PaySettings() {
             Xóa Sepay
           </button>
         </div>
-        <input value={view.sepayBank} onChange={(event) => setView({ ...view, sepayBank: event.target.value })} placeholder="Ngân hàng, ví dụ MBBank" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={view.sepayAccount} onChange={(event) => setView({ ...view, sepayAccount: event.target.value })} placeholder="Số tài khoản" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={view.sepayName} onChange={(event) => setView({ ...view, sepayName: event.target.value })} placeholder="Tên chủ tài khoản" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={sepayKey} onChange={(event) => setSepayKey(event.target.value)} placeholder={view.sepayKeySet ? "API key webhook đã lưu, gõ để đổi" : "API key webhook Sepay"} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={view.sepayBank} onChange={(event) => setView({ ...view, sepayBank: event.target.value })} placeholder="Ngân hàng, ví dụ MBBank" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={view.sepayAccount} onChange={(event) => setView({ ...view, sepayAccount: event.target.value })} placeholder="Số tài khoản" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={view.sepayName} onChange={(event) => setView({ ...view, sepayName: event.target.value })} placeholder="Tên chủ tài khoản" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={sepayKey} onChange={(event) => setSepayKey(event.target.value)} placeholder={view.sepayKeySet ? "API key webhook đã lưu, gõ để đổi" : "API key webhook Sepay"} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
       </fieldset>
       <fieldset className="grid content-start gap-2">
         <legend className="flex items-center gap-2 font-medium">
@@ -226,11 +226,11 @@ export function PaySettings() {
             Xóa Casso
           </button>
         </div>
-        <input value={view.cassoBank} onChange={(event) => setView({ ...view, cassoBank: event.target.value })} placeholder="Ngân hàng, ví dụ MBBank" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={view.cassoAccount} onChange={(event) => setView({ ...view, cassoAccount: event.target.value })} placeholder="Số tài khoản" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={view.cassoName} onChange={(event) => setView({ ...view, cassoName: event.target.value })} placeholder="Tên chủ tài khoản" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={cassoToken} onChange={(event) => setCassoToken(event.target.value)} placeholder={view.cassoTokenSet ? "Secure token đã lưu, gõ để đổi" : "Secure token webhook Casso"} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <input value={cassoKey} onChange={(event) => setCassoKey(event.target.value)} placeholder={view.cassoKeySet ? "API key đã lưu, gõ để đổi" : "API key Casso, để kiểm tra giao dịch"} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={view.cassoBank} onChange={(event) => setView({ ...view, cassoBank: event.target.value })} placeholder="Ngân hàng, ví dụ MBBank" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={view.cassoAccount} onChange={(event) => setView({ ...view, cassoAccount: event.target.value })} placeholder="Số tài khoản" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={view.cassoName} onChange={(event) => setView({ ...view, cassoName: event.target.value })} placeholder="Tên chủ tài khoản" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={cassoToken} onChange={(event) => setCassoToken(event.target.value)} placeholder={view.cassoTokenSet ? "Secure token đã lưu, gõ để đổi" : "Secure token webhook Casso"} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <input value={cassoKey} onChange={(event) => setCassoKey(event.target.value)} placeholder={view.cassoKeySet ? "API key đã lưu, gõ để đổi" : "API key Casso, để kiểm tra giao dịch"} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
       </fieldset>
       </div>
       <button type="submit" disabled={busy} className="min-tap rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">

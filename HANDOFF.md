@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## BO GÓC 1 (16/11/2026, nhánh work, v3.46.11)
+ĐÃ LÀM: góc cỡ thẻ (1rem) và cỡ ô nhập (0.75rem) theo thanh bo góc. Nhìn mặc định không đổi.
+CÒN: nút tròn (176), góc md/lg/3xl (10), đổ bóng 38. Rồi icon.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ĐỒNG BỘ MÀU 4/4 (16/11/2026, nhánh work, v3.46.10)
 ĐÃ LÀM: thư chưa lưu màu riêng lấy nền, mực và nút từ giao diện sáng. Cửa sổ đăng nhập chớp qua lấy nền và chữ phụ từ giao diện tối. Màu thư đã lưu giữ nguyên.
 PHẦN NÀY XONG. Còn màu phụ đề (khách chọn) và 5 màu dự phòng của tia lửa. Kế theo thứ tự ít bước: bo góc.

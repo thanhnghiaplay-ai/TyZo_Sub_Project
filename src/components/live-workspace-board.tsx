@@ -33,12 +33,12 @@ export function LiveWorkspaceBoard() {
   }
 
   return (
-    <section className="space-y-2 rounded-2xl border border-line bg-card p-4">
+    <section className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <h3 className="text-sm font-semibold">Dịch trực tiếp: Workspace ID Alibaba</h3>
       <p className="text-sm text-muted">Vùng Singapore. Dùng chung key Alibaba ở trên. Chỉ Chủ lưu.</p>
       <div className="flex gap-2">
         <input
-          className="min-tap min-w-0 flex-1 rounded-xl border border-line bg-bg px-3 text-sm"
+          className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"
           value={draft}
           autoComplete="off"
           autoCapitalize="off"
@@ -46,7 +46,7 @@ export function LiveWorkspaceBoard() {
           placeholder={saved ? "Đã lưu. Dán ID mới nếu muốn đổi" : "ws-…"}
           onChange={(event) => setDraft(event.target.value)}
         />
-        <button type="button" className="min-tap rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
           Lưu ID
         </button>
       </div>

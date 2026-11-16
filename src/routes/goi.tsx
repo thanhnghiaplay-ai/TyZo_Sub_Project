@@ -93,19 +93,19 @@ function GoiDemo() {
         </Link>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-        <p className="rounded-2xl border border-line bg-card px-3 py-2 text-sm text-muted">
+        <p className="rounded-[var(--radius-card)] border border-line bg-card px-3 py-2 text-sm text-muted">
           Không thu tiền, không tạo tài khoản, không ghi vào cơ sở dữ liệu. Phòng dịch ở trang chủ không đổi.
         </p>
 
         {phase === "gia" && (
           <section className="plan-grid mt-4">
-            <article className="rounded-2xl border border-line bg-raised p-4">
+            <article className="rounded-[var(--radius-card)] border border-line bg-raised p-4">
               <p className="text-sm text-muted">Xem thử</p>
               <p className="mt-1 text-2xl font-semibold">0 đ</p>
               <p className="mt-2 text-sm text-muted">Đăng ký, chưa nạp: 1 tệp, tối đa 10 phút, đủ chức năng trên màn hình. Không xuất file Vietsub. Cùng máy tạo thêm tài khoản không được thêm lượt.</p>
             </article>
             {PLANS.map((plan) => (
-              <article key={plan.id} className="rounded-2xl border border-line bg-card p-4">
+              <article key={plan.id} className="rounded-[var(--radius-card)] border border-line bg-card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h2 className="font-semibold">{plan.name}</h2>
@@ -156,7 +156,7 @@ function GoiDemo() {
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                className="mt-1 w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
               />
             </label>
             <label className="block text-sm">
@@ -165,7 +165,7 @@ function GoiDemo() {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                className="mt-1 w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
               />
             </label>
             <button type="submit" className="min-tap w-full rounded-full bg-accent font-semibold text-ink">
@@ -179,7 +179,7 @@ function GoiDemo() {
 
         {phase === "vi" && account && (
           <section className="mt-4 space-y-3">
-            <article className="rounded-2xl border border-line bg-card p-4">
+            <article className="rounded-[var(--radius-card)] border border-line bg-card p-4">
               <p className="text-sm text-muted">{account}</p>
               <p className="mt-1 text-sm text-muted">Số dư</p>
               <p className="text-2xl font-semibold text-accent">{dong(balance)}</p>
@@ -194,7 +194,7 @@ function GoiDemo() {
                 <button
                   key={amount}
                   type="button"
-                  className="min-tap rounded-2xl border border-line bg-raised text-sm"
+                  className="min-tap rounded-[var(--radius-card)] border border-line bg-raised text-sm"
                   onClick={() => {
                     setBalance((value) => value + amount);
                     setNotice("Đã cộng tiền giả. Không có giao dịch ngân hàng.");
@@ -208,7 +208,7 @@ function GoiDemo() {
               <button
                 key={plan.id}
                 type="button"
-                className="flex min-tap w-full items-center justify-between rounded-2xl border border-line bg-card px-4 text-left"
+                className="flex min-tap w-full items-center justify-between rounded-[var(--radius-card)] border border-line bg-card px-4 text-left"
                 onClick={() => buy(plan.id)}
               >
                 <span>

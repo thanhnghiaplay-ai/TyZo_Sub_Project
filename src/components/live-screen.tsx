@@ -57,7 +57,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const SELECT = "min-tap w-full rounded-xl border border-line bg-raised px-3 text-sm outline-none disabled:opacity-50";
+const SELECT = "min-tap w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 text-sm outline-none disabled:opacity-50";
 
 /** Màn hình Dịch trực tiếp: chọn ngôn ngữ, bắt đầu/dừng, chữ gốc và chữ dịch chạy theo thời gian thực, số dư, tải SRT/VTT/TXT. */
 export function LiveScreen() {
@@ -159,14 +159,14 @@ export function LiveScreen() {
 
         <MaintenanceNotice group="live" entry={service.status.live} running={running} />
 
-        <section className="grid gap-3 rounded-2xl border border-line bg-card p-3" aria-label="Cài đặt dịch trực tiếp">
+        <section className="grid gap-3 rounded-[var(--radius-card)] border border-line bg-card p-3" aria-label="Cài đặt dịch trực tiếp">
           <div className="grid grid-cols-2 gap-2" role="group" aria-label="Nguồn âm thanh" data-tour="live-source">
             <button
               type="button"
               disabled={locked || !caps.tabAudio}
               aria-pressed={input === "tab"}
               onClick={() => setSettings((s) => ({ ...s, input: "tab" }))}
-              className={"min-tap inline-flex items-center justify-center gap-2 rounded-xl border px-3 text-sm font-semibold disabled:opacity-40 " + (input === "tab" ? "border-accent bg-accent text-ink" : "border-line")}
+              className={"min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border px-3 text-sm font-semibold disabled:opacity-40 " + (input === "tab" ? "border-accent bg-accent text-ink" : "border-line")}
             >
               <MonitorSpeaker className="size-4" aria-hidden="true" />
               Âm thanh tab
@@ -176,7 +176,7 @@ export function LiveScreen() {
               disabled={locked || !caps.mic}
               aria-pressed={input === "mic"}
               onClick={() => setSettings((s) => ({ ...s, input: "mic" }))}
-              className={"min-tap inline-flex items-center justify-center gap-2 rounded-xl border px-3 text-sm font-semibold disabled:opacity-40 " + (input === "mic" ? "border-accent bg-accent text-ink" : "border-line")}
+              className={"min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border px-3 text-sm font-semibold disabled:opacity-40 " + (input === "mic" ? "border-accent bg-accent text-ink" : "border-line")}
             >
               <Mic className="size-4" aria-hidden="true" />
               Micro
@@ -238,7 +238,7 @@ export function LiveScreen() {
           {voice && settings.audio && input === "tab" && <p className="text-xs text-muted">Nên đeo tai nghe để tiếng dịch không lẫn vào âm thanh đang thu.</p>}
         </section>
 
-        <section className="grid gap-2 rounded-2xl border border-line bg-card p-3" aria-label="Số dư" data-tour="live-balance">
+        <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3" aria-label="Số dư" data-tour="live-balance">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="inline-flex items-center gap-2 text-sm">
               <Wallet className="size-4 text-muted" aria-hidden="true" />
@@ -250,7 +250,7 @@ export function LiveScreen() {
           </div>
           {live.perMinute != null && <p className="text-xs text-muted">Giá khoảng {new Intl.NumberFormat("vi-VN").format(live.perMinute)} đ mỗi phút. Tiền chỉ bị trừ theo phần đã dịch.</p>}
           {warnText && (
-            <p role="alert" className={"flex items-start gap-2 rounded-xl border px-3 py-2 text-sm " + (live.warn === "out" ? "border-error text-danger" : "border-warning text-warning")}>
+            <p role="alert" className={"flex items-start gap-2 rounded-[var(--radius-ctl)] border px-3 py-2 text-sm " + (live.warn === "out" ? "border-error text-danger" : "border-warning text-warning")}>
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
               <span>{warnText}</span>
             </p>
@@ -283,13 +283,13 @@ export function LiveScreen() {
             </div>
           )}
           {live.error && (
-            <p role="alert" className="rounded-xl border border-error px-3 py-2 text-sm text-danger">
+            <p role="alert" className="rounded-[var(--radius-ctl)] border border-error px-3 py-2 text-sm text-danger">
               {live.error}
             </p>
           )}
         </section>
 
-        <section className="flex min-h-48 flex-1 flex-col rounded-2xl border border-line bg-card" aria-label="Chữ dịch">
+        <section className="flex min-h-48 flex-1 flex-col rounded-[var(--radius-card)] border border-line bg-card" aria-label="Chữ dịch">
           <div
             ref={logRef}
             role="log"

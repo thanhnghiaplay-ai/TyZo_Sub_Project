@@ -41,7 +41,7 @@ export function MailDesk() {
   return (
     <section className="grid content-start gap-3">
       <form
-        className="grid content-start gap-2 rounded-2xl border border-line bg-card p-4"
+        className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
         onSubmit={(event) => {
           event.preventDefault();
           if (busy) return;
@@ -68,7 +68,7 @@ export function MailDesk() {
           <select
             value={view.provider}
             onChange={(event) => setView({ ...view, provider: event.target.value as MailProvider })}
-            className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
           >
             {MAIL_PROVIDERS.map((id) => (
               <option key={id} value={id}>
@@ -78,7 +78,7 @@ export function MailDesk() {
           </select>
         </label>
         {view.provider === "smtp" && (
-          <div className="grid gap-1 rounded-xl border border-line p-3 text-sm text-muted">
+          <div className="grid gap-1 rounded-[var(--radius-ctl)] border border-line p-3 text-sm text-muted">
             <p className="font-semibold text-fg">Dùng Gmail của bạn để gửi thư xác minh</p>
             <p>1. Bật xác minh 2 bước cho Gmail.</p>
             <p>2. Vào myaccount.google.com/apppasswords, tạo mật khẩu ứng dụng, chép 16 ký tự.</p>
@@ -98,14 +98,14 @@ export function MailDesk() {
           value={view.from}
           onChange={(event) => setView({ ...view, from: event.target.value })}
           placeholder={view.provider === "smtp" ? "TyZo Sub <ban@gmail.com>" : "TyZo Sub <thu@ten-mien-cua-ban.vn>"}
-          className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+          className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
         />
         {view.provider === "mailgun" && (
           <input
             value={view.domain}
             onChange={(event) => setView({ ...view, domain: event.target.value })}
             placeholder="Tên miền gửi, ví dụ mg.ten-mien.vn"
-            className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
           />
         )}
         {view.provider === "smtp" && (
@@ -114,7 +114,7 @@ export function MailDesk() {
             onChange={(event) => setView({ ...view, domain: event.target.value })}
             placeholder="SMTP riêng, ví dụ smtp.ten-mien.vn:465"
             title="Chỉ cần khi không dùng Gmail hoặc Yahoo"
-            className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
           />
         )}
         <input
@@ -123,13 +123,13 @@ export function MailDesk() {
           type="password"
           autoComplete="off"
           placeholder={view.keySet ? "Khóa đã lưu, gõ để đổi" : view.provider === "smtp" ? "Mật khẩu ứng dụng (16 ký tự)" : "Khóa API"}
-          className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+          className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
         />
         <button type="submit" disabled={busy} className="inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-accent px-4 font-semibold text-ink disabled:opacity-40">
           {busy ? "Đang lưu…" : "Lưu"}
         </button>
       </form>
-      <div className="grid content-start gap-2 rounded-2xl border border-line p-4">
+      <div className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line p-4">
         <p className="text-sm text-muted">Thư thử gửi tới {view.email || "email của Chủ"}.</p>
         <button
           type="button"

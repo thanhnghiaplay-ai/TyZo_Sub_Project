@@ -115,7 +115,7 @@ export function MoneyCard({
   const estimate = account ? runEstimate(run?.row ?? null, account.balance) : null;
 
   return (
-    <section aria-label="Ví và ước tính" className="grid gap-2 rounded-2xl border border-line bg-card p-3 text-sm">
+    <section aria-label="Ví và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex min-w-0 items-center gap-2">
           <Wallet className="size-4 shrink-0 text-accent" aria-hidden="true" />

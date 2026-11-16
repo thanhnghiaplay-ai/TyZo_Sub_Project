@@ -321,7 +321,7 @@ export function ThemeBoard() {
               onChange={(iconWeight: IconWeight) => patch({ iconWeight })}
               options={ICON_WEIGHTS.map(([id, label]) => ({ id, label }))}
             />
-            <details className="rounded-xl border border-line p-3">
+            <details className="rounded-[var(--radius-ctl)] border border-line p-3">
             <summary className="cursor-pointer text-sm font-semibold">Đổi icon từng chức năng</summary>
             <div className="mt-2 grid gap-2">
               {ICON_SLOTS.map(([slot, label, fallback]) => {

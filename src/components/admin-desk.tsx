@@ -89,7 +89,7 @@ function AppealForm({
       <p className="text-xs" style={{ color: dot }}>
         {item.waitLabel}
       </p>
-      <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
+      <textarea value={replyText} onChange={(event) => setReplyText(event.target.value)} rows={2} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" placeholder="Câu trả lời gửi cho khách" />
       <div className="flex flex-wrap gap-2">
         {["Lần này trừ đúng số phút đã chạy. Đơn giá là giá tại lúc bấm chạy.", "Phần giữ thừa đã trả vào số dư.", "Đoạn lỗi không tính tiền.", "Tệp không còn trên phòng. Hãy chọn lại tệp trên máy nếu muốn chạy tiếp.", "Cửa trả theo lượt đang đóng. Key của bạn vẫn dùng được."].map((line) => (
           <button key={line} type="button" className="rounded-full border border-line px-3 py-1 text-left text-xs" onClick={() => setReplyText(line)}>
@@ -121,7 +121,7 @@ function AppealForm({
       </div>
       {roleAtLeast(role, "quan-ly") && mayReply(role, item.holdRole) && (
         <div className="grid gap-2">
-          <textarea value={rejectReason} onChange={(event) => setRejectReason(event.target.value)} rows={2} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do từ chối, bắt buộc" />
+          <textarea value={rejectReason} onChange={(event) => setRejectReason(event.target.value)} rows={2} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do từ chối, bắt buộc" />
           <button type="button" disabled={rejectReason.trim().length < 8} className="min-tap w-fit rounded-full border border-line px-3 disabled:opacity-40" onClick={() => void run(async () => { await replyAppeal({ data: { id: item.id, status: "tu-choi", reply: rejectReason.trim() } }); setRejectReason(""); }, "Đã từ chối và gửi lý do cho khách.")}>
             Từ chối
           </button>
@@ -150,7 +150,7 @@ function AdminNotes() {
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có dòng nội bộ.</p>}
       <div className="plan-grid">
         {rows.map((row) => (
-          <article key={`${row.version}-${row.area}`} className="rounded-xl border border-line px-3 py-2 text-sm">
+          <article key={`${row.version}-${row.area}`} className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">
             <p className="font-medium text-accent">v{row.version}</p>
             <p className="text-xs text-muted">{row.time}</p>
             <p className="mt-1">{row.text}</p>
@@ -422,7 +422,7 @@ export function AdminDesk() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Email hoặc tên"
-              className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
             <button type="submit" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40">
               Tìm
@@ -433,7 +433,7 @@ export function AdminDesk() {
               <li key={user.id}>
                 <button
                   type="button"
-                  className="w-full rounded-xl border border-line px-3 py-2 text-left"
+                  className="w-full rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-left"
                   onClick={() => {
                     setPicked(user);
                     setNote(user.note);
@@ -501,8 +501,8 @@ export function AdminDesk() {
                 </ul>
                 {roleAtLeast(role, "quan-ly") && runs.some((ticket) => ticket.charged > ticket.refunded) && (
                   <div className="mt-2 grid gap-2">
-                    <input value={refundAmount} onChange={(event) => setRefundAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số hoàn, đồng" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-                    <input value={refundReason} onChange={(event) => setRefundReason(event.target.value)} placeholder="Lý do hoàn, ít nhất 8 ký tự" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                    <input value={refundAmount} onChange={(event) => setRefundAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số hoàn, đồng" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+                    <input value={refundReason} onChange={(event) => setRefundReason(event.target.value)} placeholder="Lý do hoàn, ít nhất 8 ký tự" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
                     {runs
                       .filter((ticket) => ticket.charged > ticket.refunded)
                       .map((ticket) => (
@@ -529,7 +529,7 @@ export function AdminDesk() {
               <div className="admin-pane">
               <label className="grid gap-1 text-sm">
                 Ghi chú nội bộ
-                <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+                <textarea value={note} onChange={(event) => setNote(event.target.value)} rows={3} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" />
               </label>
               <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => saveStaffNote({ data: { userId: picked.id, note } }), "Đã lưu ghi chú.")}>
                 Lưu ghi chú
@@ -540,7 +540,7 @@ export function AdminDesk() {
                   <div className="admin-pane">
                   <label className="grid gap-1 text-sm">
                     Mật khẩu tạm
-                    <input value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                    <input value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
                   </label>
                   <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setTempPassword({ data: { userId: picked.id, password } }), "Đã đặt mật khẩu tạm. Hãy gửi cho họ.")}>
                     Đặt mật khẩu tạm
@@ -549,7 +549,7 @@ export function AdminDesk() {
                   <div className="admin-pane">
                   <label className="grid gap-1 text-sm">
                     Lý do khóa hoặc cấm
-                    <input value={reason} onChange={(event) => setReason(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+                    <input value={reason} onChange={(event) => setReason(event.target.value)} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
                   </label>
                   <div className="flex flex-wrap gap-2">
                     <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setUserStatus({ data: { userId: picked.id, status: "locked", reason } }), "Đã khóa.")}>
@@ -589,7 +589,7 @@ export function AdminDesk() {
                           value={balanceEdit}
                           onChange={(event) => setBalanceEdit(formatMoney(parseMoney(event.target.value)))}
                           inputMode="numeric"
-                          className="rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                          className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
                         />
                       </label>
                       <button
@@ -672,7 +672,7 @@ export function AdminDesk() {
             <h2 className="font-semibold">Yêu cầu</h2>
             {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}
             {appeals.map((item) => (
-              <article key={item.id} data-appeal-id={item.id} className={"rounded-xl border border-line px-3 py-2 text-sm" + (role === "chu" && item.holdRole !== "chu" ? " opacity-70" : "")}>
+              <article key={item.id} data-appeal-id={item.id} className={"rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm" + (role === "chu" && item.holdRole !== "chu" ? " opacity-70" : "")}>
                 <button type="button" className="w-full text-left" onClick={() => void openByEmail(item.email)}>
                   <span className="block font-medium">{item.email}</span>
                   <span className="mt-1 block">{item.body}</span>
@@ -703,7 +703,7 @@ export function AdminDesk() {
           </section>
           {roleAtLeast(role, "chu") && (
             <form
-              className="grid gap-2 rounded-2xl border border-line bg-card p-4"
+              className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
               onSubmit={(event) => {
                 event.preventDefault();
                 void run(() => setOwnerEmail({ data: ownerEmail }), "Đã đổi email Chủ. Email cũ không còn vào trang này.");
@@ -716,7 +716,7 @@ export function AdminDesk() {
                 required
                 value={ownerEmail}
                 onChange={(event) => setOwnerEmailInput(event.target.value)}
-                className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
               />
               <button type="submit" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 disabled:opacity-40">
                 Lưu email Chủ
@@ -833,8 +833,8 @@ function AuditTab({ rows }: { rows: AuditRow[] }) {
       <h2 className="font-semibold">Nhật ký thao tác</h2>
       <p className="text-sm text-muted">Ai làm, lúc nào, đổi gì. Giá trị cũ và mới nằm ở cuối mỗi dòng. Bạn chỉ thấy thao tác của cấp thấp hơn mình{rows.length ? `. Đang có ${rows.length} dòng gần nhất.` : "."}</p>
       <div className="grid gap-2 sm:grid-cols-2">
-        <input type="search" value={text} onChange={(event) => setText(event.target.value)} placeholder="Tìm theo email, hành động hoặc nội dung" aria-label="Tìm trong nhật ký thao tác" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-        <select value={action} onChange={(event) => setAction(event.target.value)} aria-label="Lọc theo hành động" className="rounded-xl border border-line bg-raised px-3 py-3 outline-none">
+        <input type="search" value={text} onChange={(event) => setText(event.target.value)} placeholder="Tìm theo email, hành động hoặc nội dung" aria-label="Tìm trong nhật ký thao tác" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+        <select value={action} onChange={(event) => setAction(event.target.value)} aria-label="Lọc theo hành động" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none">
           <option value="">Mọi hành động</option>
           {kinds.map((kind) => (
             <option key={kind} value={kind}>
@@ -846,7 +846,7 @@ function AuditTab({ rows }: { rows: AuditRow[] }) {
       {shown.length === 0 && <p className="text-sm text-muted">{rows.length ? "Không có dòng khớp." : "Chưa có thao tác ở cấp bạn được xem."}</p>}
       <div className="grid gap-2">
         {shown.map((item) => (
-          <article key={item.id} className="rounded-xl border border-line px-3 py-2 text-sm">
+          <article key={item.id} className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">
             <p className="font-medium">{AUDIT_ACTION_LABEL[item.action] ?? item.action}</p>
             <p className="text-xs text-muted">
               {item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : ""} · {item.actorRole === "ho-tro" || item.actorRole === "quan-ly" || item.actorRole === "chu" ? ROLE_LABEL[item.actorRole] : "Người dùng"} · {item.actorEmail || "Không rõ"}
@@ -862,7 +862,7 @@ function AuditTab({ rows }: { rows: AuditRow[] }) {
 
 function Stat({ label, value, hint, tone }: { label: string; value: number; hint?: string; tone?: string }) {
   return (
-    <article className={"rounded-xl border border-line bg-card px-3 py-2" + (tone ? " stat-" + tone : "")}>
+    <article className={"rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2" + (tone ? " stat-" + tone : "")}>
       <p className="text-xs text-muted">{label}</p>
       <p key={value} className="stat-num text-xl font-semibold">{value}</p>
       {hint && <p className="text-xs text-muted">{hint}</p>}

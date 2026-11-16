@@ -64,7 +64,7 @@ export function StudioPalette({ commands, open, onOpenChange }: { commands: Pale
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-3 pt-[10vh]" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onOpenChange(false)}>
-      <div role="dialog" aria-modal="true" aria-label="Lệnh nhanh" className="w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-card shadow-xl" onKeyDown={onKeyDown}>
+      <div role="dialog" aria-modal="true" aria-label="Lệnh nhanh" className="w-full max-w-lg overflow-hidden rounded-[var(--radius-card)] border border-line bg-card shadow-xl" onKeyDown={onKeyDown}>
         <input
           ref={inputRef}
           value={query}
@@ -85,7 +85,7 @@ export function StudioPalette({ commands, open, onOpenChange }: { commands: Pale
             <li key={item.id} id={"studio-palette-" + item.id} role="option" aria-selected={position === index}>
               <button
                 type="button"
-                className={"flex min-h-11 w-full items-center justify-between gap-2 rounded-xl px-3 text-left text-sm " + (position === index ? "bg-accent font-semibold text-ink" : "")}
+                className={"flex min-h-11 w-full items-center justify-between gap-2 rounded-[var(--radius-ctl)] px-3 text-left text-sm " + (position === index ? "bg-accent font-semibold text-ink" : "")}
                 onMouseEnter={() => setIndex(position)}
                 onClick={() => runItem(item)}
               >

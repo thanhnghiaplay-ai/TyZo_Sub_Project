@@ -3,7 +3,7 @@ import { pushToast } from "@/components/toast";
 import { EMPTY_CONTACT, NOTE_MAX, type SupportContact } from "@/lib/support-contact";
 import { getSupportContact, saveSupportContact } from "@/lib/support-room";
 
-const INPUT = "min-tap w-full min-w-0 rounded-xl border border-line bg-bg px-3 text-sm";
+const INPUT = "min-tap w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm";
 
 /** Thông tin liên hệ hỗ trợ hiện ở trang Hướng dẫn. Chủ đổi ở đây, không phải sửa code. */
 export function SupportBoard() {
@@ -57,7 +57,7 @@ export function SupportBoard() {
       </label>
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs text-muted">{saved === null ? "Đang đọc…" : dirty ? "Có thay đổi chưa lưu." : "Đã lưu."}</p>
-        <button type="button" className="min-tap rounded-xl bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy || saved === null || !dirty} onClick={save}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy || saved === null || !dirty} onClick={save}>
           Lưu liên hệ
         </button>
       </div>

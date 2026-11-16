@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
  */
 export function Fold({ title, hint, children, defaultOpen = false, wide = false }: { title: string; hint?: string; children: ReactNode; defaultOpen?: boolean; wide?: boolean }) {
   return (
-    <details className={"group rounded-2xl border border-line bg-card" + (wide ? " admin-wide" : "")} open={defaultOpen}>
+    <details className={"group rounded-[var(--radius-card)] border border-line bg-card" + (wide ? " admin-wide" : "")} open={defaultOpen}>
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 [&::-webkit-details-marker]:hidden">
         <span className="grid min-w-0">
           <span className="font-semibold">{title}</span>

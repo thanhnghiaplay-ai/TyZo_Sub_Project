@@ -34,7 +34,7 @@ const RAIL: RailItem[] = [
 function StepImage({ name }: { name: string }) {
   const [ok, setOk] = useState(true);
   if (!ok) return null;
-  return <img src={`/huong-dan/${name}`} alt="" loading="lazy" onError={() => setOk(false)} className="mt-2 max-h-72 max-w-full rounded-xl border border-line" />;
+  return <img src={`/huong-dan/${name}`} alt="" loading="lazy" onError={() => setOk(false)} className="mt-2 max-h-72 max-w-full rounded-[var(--radius-ctl)] border border-line" />;
 }
 
 function Step({ step }: { step: GuideStep }) {
@@ -58,10 +58,10 @@ function ContactCard({ contact }: { contact: SupportContact | null }) {
   if (contact === null) return <p className="text-sm text-muted">Đang đọc thông tin liên hệ…</p>;
   const links = contactLinks(contact);
   if (!links.length) {
-    return <p className="rounded-xl border border-line bg-raised px-3 py-2 text-sm text-muted">Phòng chưa đăng cách liên hệ riêng. Hãy gửi yêu cầu ở «Yêu cầu xem lại», phòng sẽ trả lời ở đó.</p>;
+    return <p className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 text-sm text-muted">Phòng chưa đăng cách liên hệ riêng. Hãy gửi yêu cầu ở «Yêu cầu xem lại», phòng sẽ trả lời ở đó.</p>;
   }
   return (
-    <div className="grid gap-2 rounded-xl border border-line bg-raised p-3">
+    <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-raised p-3">
       <ul className="flex flex-wrap gap-2">
         {links.map((link) => (
           <li key={link.kind}>
@@ -79,7 +79,7 @@ function ContactCard({ contact }: { contact: SupportContact | null }) {
 
 function Topic({ topic, contact, onTour }: { topic: GuideTopic; contact: SupportContact | null; onTour: (topic: GuideTopic) => void }) {
   return (
-    <section id={topic.id} aria-labelledby={`${topic.id}-title`} className="scroll-mt-4 rounded-2xl border border-line bg-card p-4">
+    <section id={topic.id} aria-labelledby={`${topic.id}-title`} className="scroll-mt-4 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-accent">{GROUP_LABEL[topic.group]}</p>
@@ -178,7 +178,7 @@ export function GuidePage() {
           placeholder="Tìm: nạp tiền, key Groq, quên mật khẩu…"
           aria-label="Tìm trong hướng dẫn"
           autoComplete="off"
-          className="min-h-12 w-full rounded-2xl border border-line bg-raised px-4 text-base outline-none"
+          className="min-h-12 w-full rounded-[var(--radius-card)] border border-line bg-raised px-4 text-base outline-none"
         />
 
         {!searching && (
@@ -201,7 +201,7 @@ export function GuidePage() {
         )}
 
         {nothing && searching && (
-          <p className="rounded-2xl border border-line bg-card p-4 text-sm">
+          <p className="rounded-[var(--radius-card)] border border-line bg-card p-4 text-sm">
             Thử từ khóa khác, hoặc{" "}
             <button type="button" className="font-semibold text-accent underline" onClick={() => setQuery("liên hệ")}>
               xem cách liên hệ hỗ trợ
@@ -215,13 +215,13 @@ export function GuidePage() {
         ))}
 
         {found.faqs.length > 0 && (
-          <section id="cau-hoi" aria-labelledby="cau-hoi-title" className="scroll-mt-4 rounded-2xl border border-line bg-card p-4">
+          <section id="cau-hoi" aria-labelledby="cau-hoi-title" className="scroll-mt-4 rounded-[var(--radius-card)] border border-line bg-card p-4">
             <h2 id="cau-hoi-title" className="text-base font-semibold">
               Câu hỏi thường gặp
             </h2>
             <div className="mt-2 grid gap-2">
               {found.faqs.map((faq) => (
-                <details key={`${faq.id}-${searching}`} open={searching} className="rounded-xl border border-line bg-raised px-3 py-2">
+                <details key={`${faq.id}-${searching}`} open={searching} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
                   <summary className="min-tap flex cursor-pointer items-center text-sm font-semibold">{faq.q}</summary>
                   <p className="pb-1 text-sm text-muted">{faq.a}</p>
                 </details>

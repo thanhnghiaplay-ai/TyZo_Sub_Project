@@ -86,7 +86,7 @@ export function RentShowBoard() {
         ))}
       </div>
       </div>
-      <button type="button" className="min-tap w-fit rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
+      <button type="button" className="min-tap w-fit rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
         Lưu danh sách thuê phòng
       </button>
     </section>

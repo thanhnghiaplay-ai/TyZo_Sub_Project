@@ -37,12 +37,12 @@ export function AlibabaKeyBoard() {
   }
 
   return (
-    <section className="space-y-2 rounded-2xl border border-line bg-card p-4">
+    <section className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <h3 className="text-sm font-semibold">Key Alibaba của phòng</h3>
       <p className="text-sm text-muted">Tách khỏi key Groq. Chỉ Chủ lưu. Khách không thấy key. Cửa trả theo lượt chưa dùng key này.</p>
       <div className="flex gap-2">
         <input
-          className="min-tap min-w-0 flex-1 rounded-xl border border-line bg-bg px-3 text-sm"
+          className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"
           type={show ? "text" : "password"}
           value={draft}
           autoComplete="off"
@@ -51,10 +51,10 @@ export function AlibabaKeyBoard() {
           placeholder={tail ? "Key đã lưu. Dán key mới nếu muốn đổi" : "sk-… key Alibaba"}
           onChange={(event) => setDraft(event.target.value)}
         />
-        <button type="button" className="min-tap rounded-xl border border-line px-3" aria-label={show ? "Ẩn key" : "Hiện key"} onClick={() => setShow((value) => !value)}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3" aria-label={show ? "Ẩn key" : "Hiện key"} onClick={() => setShow((value) => !value)}>
           {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
         </button>
-        <button type="button" className="min-tap rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={save}>
           Lưu key
         </button>
       </div>

@@ -70,12 +70,12 @@ export function GlossaryBoard() {
       <h2 className="font-semibold">Thuật ngữ</h2>
       {health ? <p className="text-sm text-muted">{health}</p> : null}
       <div className="grid gap-2 sm:grid-cols-2">
-        <select className="min-tap rounded-xl border border-line bg-bg px-3" value={lang} onChange={(event) => pick(event.target.value, genre)}>
+        <select className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={lang} onChange={(event) => pick(event.target.value, genre)}>
           {LANGS.map(([id, label]) => (
             <option key={id} value={id}>{label}</option>
           ))}
         </select>
-        <select className="min-tap rounded-xl border border-line bg-bg px-3" value={genre} onChange={(event) => pick(lang, event.target.value)}>
+        <select className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3" value={genre} onChange={(event) => pick(lang, event.target.value)}>
           {Object.entries(GENRE_LABELS).map(([id, label]) => (
             <option key={id} value={id}>{label}</option>
           ))}
@@ -184,11 +184,11 @@ export function GlossaryBoard() {
         </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-        <input className="min-tap rounded-xl border border-line bg-bg px-3" placeholder="Từ gốc" value={source} onChange={(event) => setSource(event.target.value)} />
-        <input className="min-tap rounded-xl border border-line bg-bg px-3" placeholder="Cách dịch" value={target} onChange={(event) => setTarget(event.target.value)} />
+        <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3" placeholder="Từ gốc" value={source} onChange={(event) => setSource(event.target.value)} />
+        <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3" placeholder="Cách dịch" value={target} onChange={(event) => setTarget(event.target.value)} />
         <button
           type="button"
-          className="min-tap rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40"
+          className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40"
           disabled={busy}
           onClick={() =>
             void run(async () => {
@@ -205,7 +205,7 @@ export function GlossaryBoard() {
       </div>
       <div className="flex gap-2">
         <input
-          className="min-tap min-w-0 flex-1 rounded-xl border border-line bg-bg px-3"
+          className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3"
           placeholder="Lọc trong bộ đang mở"
           value={q}
           onChange={(event) => {

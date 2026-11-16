@@ -21,7 +21,7 @@ export function ServiceSwitch({ current, status }: { current: ServiceGroup; stat
             to={to}
             aria-current={here ? "page" : undefined}
             className={
-              "grid min-h-16 content-center gap-0.5 rounded-2xl border p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent " +
+              "grid min-h-16 content-center gap-0.5 rounded-[var(--radius-card)] border p-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-accent " +
               (here ? "border-accent bg-accent/10" : "border-line bg-card hover:border-accent")
             }
           >
@@ -43,7 +43,7 @@ export function MaintenanceNotice({ group, entry, running = false }: { group: Se
   if (entry.state !== "maintenance") return null;
   const eta = entry.until && entry.until > Date.now() ? untilLabel(entry.until) : "";
   return (
-    <section role="status" className="grid gap-1 rounded-2xl border border-warning bg-card p-3 text-sm" data-maintenance={group}>
+    <section role="status" className="grid gap-1 rounded-[var(--radius-card)] border border-warning bg-card p-3 text-sm" data-maintenance={group}>
       <p className="flex items-center gap-2 font-semibold text-warning">
         <Wrench className="size-4 shrink-0" aria-hidden="true" />
         {SERVICE_LABEL[group]} đang bảo trì

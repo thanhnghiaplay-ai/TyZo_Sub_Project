@@ -27,7 +27,7 @@ export function DoorDot({ open, className = "" }: { open: boolean; className?: s
 
 export function RunDoorClosed({ note }: { note: string }) {
   return (
-    <section className="grid gap-1 rounded-xl border border-line bg-card p-3">
+    <section className="grid gap-1 rounded-[var(--radius-ctl)] border border-line bg-card p-3">
       <h2 className="flex items-center gap-2 text-sm font-semibold">
         <DoorDot open={false} />
         Trả theo lượt

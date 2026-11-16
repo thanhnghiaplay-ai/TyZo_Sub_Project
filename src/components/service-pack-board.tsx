@@ -137,17 +137,17 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         <p className="text-sm font-medium">Key Alibaba Model Studio {keyTail ? `· đuôi ${keyTail}` : "· chưa lưu"}</p>
         <div className="flex gap-2">
           <input
-            className="min-tap min-w-0 flex-1 rounded-xl border border-line bg-bg px-3 text-sm"
+            className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"
             type={showKey ? "text" : "password"}
             value={adminKey}
             autoComplete="off"
             placeholder="sk-… key quốc tế"
             onChange={(event) => setAdminKey(event.target.value)}
           />
-          <button type="button" className="min-tap rounded-xl border border-line px-3" onClick={() => setShowKey((value) => !value)} aria-label={showKey ? "Ẩn key" : "Hiện key"}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3" onClick={() => setShowKey((value) => !value)} aria-label={showKey ? "Ẩn key" : "Hiện key"}>
             {showKey ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
-          <button type="button" className="min-tap rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={syncKey}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={syncKey}>
             Đồng bộ
           </button>
         </div>
@@ -159,7 +159,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         <label className="grid max-w-xs gap-1 text-sm">
           Phần trăm chênh Alibaba
           <input
-            className="min-tap rounded-xl border border-line bg-bg px-3"
+            className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3"
             inputMode="numeric"
             value={desk.markup}
             onChange={(event) => setDesk({ ...desk, markup: Number(event.target.value.replace(/\D/g, "") || 0) })}
@@ -173,7 +173,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
             const custom = desk.custom[id] ?? emptyOverride();
             const setCustom = (patch: Partial<PriceOverride>) => setDesk({ ...desk, custom: { ...desk.custom, [id]: { ...custom, ...patch } } });
             return (
-              <div key={id} className="grid gap-2 rounded-xl border border-line px-3 py-2 sm:grid-cols-[1fr_repeat(3,7rem)] sm:items-center">
+              <div key={id} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line px-3 py-2 sm:grid-cols-[1fr_repeat(3,7rem)] sm:items-center">
                 <p className="text-sm">{id}</p>
                 <input className="min-tap rounded-lg border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá giờ`} placeholder="đ/giờ" value={custom.hour || ""} onChange={(event) => setCustom({ hour: Number(event.target.value.replace(/\D/g, "") || 0) })} />
                 <input className="min-tap rounded-lg border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá vào`} placeholder="đ vào" value={custom.inn || ""} onChange={(event) => setCustom({ inn: Number(event.target.value.replace(/\D/g, "") || 0) })} />
@@ -182,7 +182,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
             );
           })}
           <p className="text-xs text-muted">Khách chỉ thấy giá đã cộng phần trăm. Phần trăm Groq ở bàn phía trên. Giá riêng để trống thì dùng phần trăm.</p>
-          <button type="button" className="min-tap justify-self-start rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk(desk)}>
+          <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk(desk)}>
             Lưu giá Alibaba
           </button>
         </div>
@@ -191,7 +191,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-semibold">Gói dịch</h4>
-          <button type="button" className="min-tap rounded-xl border border-line px-3 text-sm" onClick={() => setPacks((current) => [...current, freshPack(groqModels)])}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => setPacks((current) => [...current, freshPack(groqModels)])}>
             Thêm gói
           </button>
         </div>
@@ -208,9 +208,9 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
               })
             : null;
           return (
-            <article key={pack.id} className="grid gap-2 rounded-xl border border-line p-3">
+            <article key={pack.id} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3">
               <div className="flex flex-wrap items-center gap-2">
-                <input className="min-tap min-w-40 flex-1 rounded-xl border border-line bg-bg px-3 text-sm" value={pack.name} onChange={(event) => patchPack(pack.id, { name: event.target.value })} />
+                <input className="min-tap min-w-40 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm" value={pack.name} onChange={(event) => patchPack(pack.id, { name: event.target.value })} />
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={pack.enabled} onChange={(event) => patchPack(pack.id, { enabled: event.target.checked })} />
                   Mở
@@ -219,7 +219,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
                   Xóa
                 </button>
               </div>
-              <input className="min-tap rounded-xl border border-line bg-bg px-3 text-sm" placeholder="Gói này hợp việc gì" value={pack.note} onChange={(event) => patchPack(pack.id, { note: event.target.value })} />
+              <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm" placeholder="Gói này hợp việc gì" value={pack.note} onChange={(event) => patchPack(pack.id, { note: event.target.value })} />
               <div className="flex gap-3 text-sm">
                 {(["turn", "rent"] as const).map((door) => (
                   <label key={door} className="flex items-center gap-2">
@@ -243,7 +243,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
                   <div key={role} className="grid gap-2 sm:grid-cols-[7rem_8rem_1fr] sm:items-center">
                     <span className="text-sm">{PACK_ROLE_LABEL[role]}</span>
                     <select
-                      className="min-tap rounded-xl border border-line bg-bg px-2 text-sm"
+                      className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm"
                       value={provider}
                       onChange={(event) => {
                         const next = event.target.value as ProviderId | "";
@@ -256,7 +256,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
                       <option value="alibaba">{PROVIDER_LABEL.alibaba}</option>
                     </select>
                     <select
-                      className="min-tap rounded-xl border border-line bg-bg px-2 text-sm"
+                      className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm"
                       value={assign?.model ?? ""}
                       disabled={!provider}
                       onChange={(event) => setRole(pack.id, role, provider as ProviderId, event.target.value)}
@@ -277,7 +277,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
             </article>
           );
         })}
-        <button type="button" className="min-tap justify-self-start rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => savePacks(packs)}>
+        <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => savePacks(packs)}>
           Lưu gói
         </button>
       </div>

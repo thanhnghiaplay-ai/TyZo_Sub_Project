@@ -19,7 +19,7 @@ function share(n: number, total: number) {
 
 function SummaryCard({ title, data }: { title: string; data: Rollup }) {
   return (
-    <article className="grid content-start gap-2 rounded-2xl border border-line bg-bg p-3">
+    <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-bg p-3">
       <h3 className="font-semibold">{title}</h3>
       {data.runs === 0 ? (
         <p className="text-sm text-muted">Chưa có lần chạy nào.</p>
@@ -80,7 +80,7 @@ function DayChart({ rows }: { rows: BoardRow[] }) {
 function GroupList({ title, items }: { title: string; items: Array<{ key: string; label: string; rollup: Rollup }> }) {
   if (!items.length) return null;
   return (
-    <section className="grid content-start gap-2 rounded-2xl border border-line bg-bg p-3">
+    <section className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-bg p-3">
       <h3 className="font-semibold">{title}</h3>
       <ul className="grid gap-3">
         {items.map((item) => (
@@ -142,7 +142,7 @@ function ThresholdForm({ value, onSaved }: { value: QualityThresholds; onSaved: 
   }
 
   return (
-    <details className="rounded-2xl border border-line bg-bg p-3 text-sm">
+    <details className="rounded-[var(--radius-card)] border border-line bg-bg p-3 text-sm">
       <summary className="cursor-pointer font-semibold">Ngưỡng chất lượng (Chủ chỉnh)</summary>
       <p className="mt-2 text-muted">
         Các ngưỡng mặc định là ước lượng ban đầu, chưa chỉnh theo số đo thật. Xem phân bố ở trên rồi chỉnh. Ngưỡng mới chỉ áp dụng cho lần chạy sau;
@@ -156,7 +156,7 @@ function ThresholdForm({ value, onSaved }: { value: QualityThresholds; onSaved: 
               inputMode="decimal"
               value={draft[field.key] ?? ""}
               onChange={(event) => setDraft((prev) => ({ ...prev, [field.key]: event.target.value }))}
-              className="rounded-xl border border-line bg-raised px-3 py-2 outline-none"
+              className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none"
             />
             <span className="text-xs text-muted">{field.hint}</span>
           </label>
@@ -251,7 +251,7 @@ export function QualityBoard() {
             <SummaryCard title="Key của phòng" data={view.room} />
           </div>
           {view.hints.length > 0 && (
-            <div className="grid gap-1 rounded-2xl border border-line bg-bg p-3 text-sm">
+            <div className="grid gap-1 rounded-[var(--radius-card)] border border-line bg-bg p-3 text-sm">
               <h3 className="font-semibold">Nên xem</h3>
               <ul className="grid gap-1">
                 {view.hints.map((hint) => (
@@ -260,7 +260,7 @@ export function QualityBoard() {
               </ul>
             </div>
           )}
-          <section className="grid gap-2 rounded-2xl border border-line bg-bg p-3">
+          <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-bg p-3">
             <h3 className="font-semibold">Theo ngày</h3>
             <DayChart rows={view.all} />
           </section>
@@ -269,7 +269,7 @@ export function QualityBoard() {
             <GroupList title="Theo model Whisper" items={view.byModel} />
             <GroupList title="Theo phiên bản app" items={view.byVersion} />
           </div>
-          <section className="grid gap-1 rounded-2xl border border-line bg-bg p-3 text-sm">
+          <section className="grid gap-1 rounded-[var(--radius-card)] border border-line bg-bg p-3 text-sm">
             <h3 className="font-semibold">Kiểm tra ngôn ngữ từng đoạn</h3>
             <p>
               {view.total.lang.runsOn} lần chạy bật · nghi lệch {view.total.lang.suspect} đoạn · gửi lại {view.total.lang.resent} · đổi sang bản mới {view.total.lang.swapped}

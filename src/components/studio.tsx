@@ -86,7 +86,7 @@ const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng g
 
 const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
 const FIELD =
-  "min-tap w-full rounded-xl border border-line bg-bg px-3 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
+  "min-tap w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 function stamp(seconds: number | null): string {
   if (seconds == null || !Number.isFinite(seconds)) return "—";
@@ -149,12 +149,12 @@ function AsrDiag({
     setTimeout(() => URL.revokeObjectURL(href), 1000);
   };
   return (
-    <div className="grid gap-3 rounded-2xl border border-line bg-bg p-3">
+    <div className="grid gap-3 rounded-[var(--radius-card)] border border-line bg-bg p-3">
       <div>
         <h3 className="font-semibold">Chẩn đoán câu bị loại</h3>
         <p className="text-sm text-muted">Không đổi phụ đề. Phân biệt đoạn Whisper không trả câu với câu app tự lọc.</p>
       </div>
-      <div className="grid gap-2 rounded-xl border border-line p-3">
+      <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3">
         <HealthPill health={quality.health} reason={quality.healthReason} />
         <p className="text-sm">
           Độ tin trung bình: <span className="font-semibold">{pct(quality.meanConfidence)}</span>
@@ -173,7 +173,7 @@ function AsrDiag({
         <p className="text-sm text-muted">Độ tin là mức Whisper tự tin vào chữ nó viết. Không phải tỷ lệ đúng.</p>
       </div>
       {lang && (lang.suspect > 0 || lang.resent > 0) && (
-        <div className="grid gap-1 rounded-xl border border-line p-3 text-sm">
+        <div className="grid gap-1 rounded-[var(--radius-ctl)] border border-line p-3 text-sm">
           <p className="font-semibold">Kiểm tra ngôn ngữ từng đoạn</p>
           <p>
             Nghi lệch {lang.suspect} đoạn · gửi lại {lang.resent} · đổi sang bản mới {lang.swapped} · dùng {Math.round(lang.usedSeconds)} / {lang.budgetSeconds} giây
@@ -196,19 +196,19 @@ function AsrDiag({
         </div>
       )}
       <div className="grid grid-cols-2 gap-2 text-sm">
-        <p className="rounded-xl border border-line px-3 py-2">
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2">
           <span className="block text-muted">Whisper không trả câu</span>
           <span className="font-semibold">{summary.whisperEmptyParts} đoạn</span>
         </p>
-        <p className="rounded-xl border border-line px-3 py-2">
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2">
           <span className="block text-muted">App lọc bỏ</span>
           <span className="font-semibold">{summary.appFiltered} câu</span>
         </p>
-        <p className="rounded-xl border border-line px-3 py-2">
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2">
           <span className="block text-muted">Im lặng, không gửi</span>
           <span className="font-semibold">{summary.silenceParts} đoạn</span>
         </p>
-        <p className="rounded-xl border border-line px-3 py-2">
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2">
           <span className="block text-muted">Không giải mã được</span>
           <span className="font-semibold">{summary.decodeFailParts} đoạn</span>
         </p>
@@ -262,10 +262,10 @@ function AsrDiag({
         </ul>
       )}
       <div className="grid grid-cols-2 gap-2">
-        <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => setOpen((value) => !value)}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm" onClick={() => setOpen((value) => !value)}>
           {open ? "Thu gọn" : "Xem danh sách"}
         </button>
-        <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={download}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm" onClick={download}>
           Xuất JSON
         </button>
       </div>
@@ -287,13 +287,13 @@ function AsrDiag({
                 <p className="text-muted">Đã bỏ. Không đưa vào phụ đề.</p>
               ) : (
                 <div className="grid grid-cols-3 gap-2">
-                  <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => onPlay(row)} disabled={row.start == null || row.end == null}>
+                  <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm" onClick={() => onPlay(row)} disabled={row.start == null || row.end == null}>
                     Nghe
                   </button>
-                  <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => onKeep(index)} disabled={row.start == null || row.end == null}>
+                  <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm" onClick={() => onKeep(index)} disabled={row.start == null || row.end == null}>
                     Giữ
                   </button>
-                  <button type="button" className="min-tap rounded-xl border border-line text-sm" onClick={() => onDrop(index)}>
+                  <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm" onClick={() => onDrop(index)}>
                     Bỏ
                   </button>
                 </div>
@@ -333,12 +333,12 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
       <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
         <input className={FIELD} placeholder="Từ gốc" value={src} onChange={(e) => setSrc(e.target.value)} />
         <input className={FIELD} placeholder="Cách dịch" value={tgt} onChange={(e) => setTgt(e.target.value)} />
-        <button type="button" className="min-tap rounded-xl bg-accent px-3 text-sm font-semibold text-ink" onClick={add} disabled={!src.trim()}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink" onClick={add} disabled={!src.trim()}>
           Thêm
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="min-tap rounded-xl border border-line px-3 text-sm" onClick={() => fileRef.current?.click()}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => fileRef.current?.click()}>
           Nhập CSV
         </button>
         <input
@@ -357,7 +357,7 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
         />
         <button
           type="button"
-          className="min-tap rounded-xl border border-line px-3 text-sm"
+          className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm"
           disabled={!app.userTerms.length}
           onClick={() => {
             const blob = new Blob([termsToCsv(app.userTerms)], { type: "text/csv;charset=utf-8" });
@@ -373,7 +373,7 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
         </button>
         <button
           type="button"
-          className="min-tap rounded-xl border border-line px-3 text-sm"
+          className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm"
           disabled={!app.userTerms.length}
           onClick={() => {
             app.clearUserTerms();
@@ -876,7 +876,7 @@ export function Studio() {
       <div data-product="sub" className={product === "account" ? "hidden" : "contents"}>
       {place?.status === "locked" && (
         <form
-          className="grid gap-2 rounded-xl border border-line bg-card p-3"
+          className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-card p-3"
           onSubmit={(event) => {
             event.preventDefault();
             void submitAppeal({ data: appeal })
@@ -888,7 +888,7 @@ export function Studio() {
           }}
         >
           <p className="text-sm">Tài khoản đang bị khóa{place.reason ? `: ${place.reason}` : ""}. Bạn vẫn gửi được yêu cầu, nhưng không dịch và không xuất file.</p>
-          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do cần mở lại" />
+          <textarea value={appeal} onChange={(event) => setAppeal(event.target.value)} rows={3} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" placeholder="Lý do cần mở lại" />
           <button type="submit" className="min-tap w-fit rounded-full border border-line px-4 text-sm">
             Gửi yêu cầu
           </button>
@@ -918,7 +918,7 @@ export function Studio() {
           type="button"
           disabled={!online}
           title="Lưu chữ gốc Whisper nhận ra, từng câu theo giờ, trước khi dịch"
-          className="min-tap shrink-0 rounded-xl border border-line px-3 text-sm disabled:opacity-40"
+          className="min-tap shrink-0 rounded-[var(--radius-ctl)] border border-line px-3 text-sm disabled:opacity-40"
           onClick={() => void app.exportRaw()}
         >
           Lưu bản Whisper
@@ -926,11 +926,11 @@ export function Studio() {
         </>
         )}
         {app.reviewHold && (
-          <button type="button" disabled={!online} className="min-tap shrink-0 rounded-xl bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40" onClick={app.approveBible}>
+          <button type="button" disabled={!online} className="min-tap shrink-0 rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40" onClick={app.approveBible}>
             Dịch tiếp
           </button>
         )}
-        <button type="button" aria-label="Xem hướng dẫn nhanh" title="Hướng dẫn nhanh" className="min-tap grid shrink-0 place-items-center rounded-xl border border-line px-3" onClick={() => setTourOpen(true)}>
+        <button type="button" aria-label="Xem hướng dẫn nhanh" title="Hướng dẫn nhanh" className="min-tap grid shrink-0 place-items-center rounded-[var(--radius-ctl)] border border-line px-3" onClick={() => setTourOpen(true)}>
           <CircleHelp className="size-4" />
         </button>
       </div>
@@ -1004,7 +1004,7 @@ export function Studio() {
           onUrl={app.setUrl}
         />
         </div>
-        <section className="studio-cues grid gap-2 rounded-2xl border border-line bg-card p-4">
+        <section className="studio-cues grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Bản dịch</h2>
           </div>
@@ -1045,7 +1045,7 @@ export function Studio() {
         </div>
       <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
         {runDoor.ready && runDoor.open && payByRoom && (
-          <p className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
+          <p className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
             <strong className="text-fg">Đang trả theo lượt, không cần key.</strong> Đổi cách trả và chọn gói ở mục{" "}
             <button type="button" className="font-semibold text-accent underline" onClick={() => openTool("goi-dich")}>
               Gói dịch
@@ -1274,19 +1274,19 @@ export function Studio() {
             data-tour="run"
             disabled={!app.running && (!online || normalDown)}
             title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
-            className={"min-tap rounded-xl font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+            className={"min-tap rounded-[var(--radius-ctl)] font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
             onClick={() => (app.running ? app.cancel() : void app.start())}
           >
             {app.buttonLabel}
           </button>
-          <button type="button" className="min-tap rounded-xl border border-line" onClick={app.reset}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line" onClick={app.reset}>
             Làm lại
           </button>
         </div>
       </section>
 
       <section id="tool-cast" role="region" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
-          <details className="rounded-xl border border-line bg-raised px-3 py-2">
+          <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
             <summary className="min-tap cursor-pointer text-sm font-medium">Ngữ cảnh phim</summary>
             <div className="grid gap-2 pb-2">
               <input className={FIELD} placeholder="Tên phim + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
@@ -1316,7 +1316,7 @@ export function Studio() {
           <div className="grid gap-2">
             <button
               type="button"
-              className="min-tap rounded-xl border border-line text-sm disabled:opacity-50"
+              className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm disabled:opacity-50"
               disabled={app.running || app.segs.length === 0}
               onClick={() => (app.analyzing ? app.cancel() : void app.analyzeNow())}
             >
@@ -1334,7 +1334,7 @@ export function Studio() {
               <div className="grid max-h-80 gap-2 overflow-auto">
                 {(app.bible.characters || []).map((character, index) => (
                   // key chỉ theo vị trí: key có tên thì gõ một chữ là hàng bị dựng lại, mất focus, bàn phím ảo tắt
-                  <div key={`character-${index}`} className="grid gap-2 rounded-xl border border-line bg-card p-3">
+                  <div key={`character-${index}`} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-card p-3">
                     <p className="text-xs font-semibold text-muted">Nhân vật {index + 1}</p>
                     <label className="grid gap-1 text-xs text-muted">
                       Tên nhân vật
@@ -1448,7 +1448,7 @@ export function Studio() {
             <button
               key={id}
               type="button"
-              className={"min-tap rounded-xl border text-sm " + (narration.gender === id ? "border-accent bg-accent text-ink" : "border-line")}
+              className={"min-tap rounded-[var(--radius-ctl)] border text-sm " + (narration.gender === id ? "border-accent bg-accent text-ink" : "border-line")}
               onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id) })}
             >
               {label}
@@ -1515,24 +1515,24 @@ export function Studio() {
           <input type="checkbox" checked={narration.skipCues} onChange={(event) => patchNarration({ skipCues: event.target.checked })} />
           Bỏ qua chú thích trong ngoặc, ví dụ [nhạc]
         </label>
-        <button type="button" className="min-tap rounded-xl border border-line" onClick={previewVoice}>
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line" onClick={previewVoice}>
           Nghe thử một câu
         </button>
       </section>
 
       <section id="tool-check" role="region" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
         <div className="flex flex-wrap gap-2">
-          <button type="button" className="min-tap rounded-xl border border-line px-3 text-sm" disabled={app.running || app.segs.length === 0} onClick={() => void app.scanGaps()}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" disabled={app.running || app.segs.length === 0} onClick={() => void app.scanGaps()}>
             Dò khoảng trống
           </button>
           {app.segs.some((seg) => seg.translationFailed) && (
-            <button type="button" className="min-tap rounded-xl border border-danger px-3 text-sm font-semibold text-danger" onClick={app.retryFailed}>
+            <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-danger px-3 text-sm font-semibold text-danger" onClick={app.retryFailed}>
               Dịch lại các câu lỗi
             </button>
           )}
         </div>
         {app.gapPlan && (app.gapPlan.selected.length > 0 || app.gapPlan.deferred.length > 0) && (
-          <div className="grid gap-2 rounded-xl border border-line bg-bg p-3 text-sm">
+          <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-bg p-3 text-sm">
             <p>
               {app.gapPlan.selected.length
                 ? `${app.gapPlan.selected.length} khoảng có tiếng nhưng chưa có câu, ${app.gapPlan.audioSeconds.toFixed(1)} giây. Chưa gửi.`
@@ -1549,7 +1549,7 @@ export function Studio() {
               </ul>
             )}
             {app.gapPlan.selected.length > 0 && (
-              <button type="button" className="min-tap rounded-xl bg-accent font-semibold text-ink" disabled={app.running} onClick={() => void app.fillGaps()}>
+              <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent font-semibold text-ink" disabled={app.running} onClick={() => void app.fillGaps()}>
                 Nhận dạng các khoảng này
               </button>
             )}
@@ -1577,14 +1577,14 @@ export function Studio() {
           <div className="grid gap-2">
             <h2 className="text-sm font-semibold">Cách trả</h2>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
                 Key của tôi
               </button>
-              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-xl text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
                 Trả theo lượt
               </button>
             </div>
-            <p id="pay-mode-note" className="rounded-xl border border-line bg-card p-3 text-sm text-muted">
+            <p id="pay-mode-note" className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
               {payByRoom ? (
                 <>
                   <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Giá từng gói bên dưới là ước tính; tiền trừ thật là số thực khi xong.
@@ -1640,7 +1640,7 @@ export function Studio() {
             "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
           )}
         </p>
-        <details className="rounded-xl border border-line bg-raised px-3 py-2">
+        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
           <summary className="min-tap cursor-pointer text-sm font-medium">
             Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
           </summary>
@@ -1689,7 +1689,7 @@ const CueRow = memo(
   function CueRow({ seg, index, active, onJump, onEdit, onVoice }: CueRowProps) {
     return (
       <div
-        className={"grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3 " + (active ? "rounded-xl bg-raised px-2" : "")}
+        className={"grid grid-cols-[1fr_auto] gap-2 border-b border-line py-3 " + (active ? "rounded-[var(--radius-ctl)] bg-raised px-2" : "")}
         style={{ contentVisibility: "auto", containIntrinsicSize: "auto 96px" }}
       >
         <button type="button" className="grid gap-1 text-left" onClick={() => onJump(seg.start)}>
@@ -1738,7 +1738,7 @@ function jump(video: HTMLVideoElement | null, start: number) {
 
 function IconButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" aria-label={label} className="inline-flex min-tap w-11 shrink-0 items-center justify-center rounded-xl border border-line [&_svg]:size-5" onClick={onClick}>
+    <button type="button" aria-label={label} className="inline-flex min-tap w-11 shrink-0 items-center justify-center rounded-[var(--radius-ctl)] border border-line [&_svg]:size-5" onClick={onClick}>
       {children}
     </button>
   );
@@ -1781,7 +1781,7 @@ function VoiceLanes({
             aria-disabled={closed}
             onClick={() => id && onPick(id)}
             className={
-              "min-tap min-w-0 rounded-xl border px-3 py-2 text-left " +
+              "min-tap min-w-0 rounded-[var(--radius-ctl)] border px-3 py-2 text-left " +
               (closed ? "cursor-not-allowed border-line bg-raised text-muted opacity-50 grayscale" : on ? "border-accent bg-accent text-ink" : "border-line bg-bg")
             }
           >
@@ -1807,7 +1807,7 @@ function VoiceLanes({
 
 function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void; title: string; text: string }) {
   return (
-    <button type="button" onClick={onClick} className={"min-tap rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
+    <button type="button" onClick={onClick} className={"min-tap rounded-[var(--radius-ctl)] border px-3 py-2 text-left " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg")}>
       <span className="block text-sm font-semibold">{title}</span>
       <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{text}</span>
     </button>
@@ -1828,7 +1828,7 @@ function Select({ label, value, onChange, children }: { label: string; value: st
 function FileTile({ icon, image, title, name, hint, accept, onFile }: { icon: ReactNode; image?: string | null; title: string; name?: string; hint: string; accept: string; onFile: (file: File | null) => void }) {
   return (
     <label
-      className="relative grid min-tap cursor-pointer grid-cols-[auto_1fr] items-center gap-3 rounded-xl border border-dashed border-line bg-bg px-3 py-3"
+      className="relative grid min-tap cursor-pointer grid-cols-[auto_1fr] items-center gap-3 rounded-[var(--radius-ctl)] border border-dashed border-line bg-bg px-3 py-3"
       onDragOver={(event) => event.preventDefault()}
       onDrop={(event) => {
         event.preventDefault();
@@ -1893,7 +1893,7 @@ function ModelPicker({
                     aria-disabled={held || missing}
                     onClick={() => onChange(model.id)}
                     className={
-                      "min-tap rounded-xl border px-3 py-2 text-left " +
+                      "min-tap rounded-[var(--radius-ctl)] border px-3 py-2 text-left " +
                       (missing ? "cursor-not-allowed border-line bg-raised text-muted opacity-50 grayscale" : "disabled:opacity-60 " + (on ? "border-accent bg-accent text-ink" : "border-line bg-bg"))
                     }
                   >
@@ -2270,8 +2270,8 @@ function Stage({
         data-nogesture
         className={
           full
-            ? "absolute inset-x-0 bottom-0 z-30 flex max-h-[75%] touch-auto flex-col overflow-hidden rounded-t-2xl border-t border-line bg-card"
-            : "flex max-h-[80dvh] touch-auto flex-col overflow-hidden rounded-2xl border border-line bg-card"
+            ? "absolute inset-x-0 bottom-0 z-30 flex max-h-[75%] touch-auto flex-col overflow-hidden rounded-t-[var(--radius-card)] border-t border-line bg-card"
+            : "flex max-h-[80dvh] touch-auto flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-card"
         }
       >
           <div className="flex items-center justify-between px-4 pt-3">
@@ -2280,7 +2280,7 @@ function Stage({
               <X className="size-4" />
             </button>
           </div>
-          <div className="mx-4 mt-2 shrink-0 overflow-hidden rounded-xl border border-accent/50 bg-black shadow-lg">
+          <div className="mx-4 mt-2 shrink-0 overflow-hidden rounded-[var(--radius-ctl)] border border-accent/50 bg-black shadow-lg">
             <p className="px-3 pt-2 text-xs text-muted">Mẫu nổi — nằm yên khi kéo các thanh bên dưới</p>
             <div className="relative h-28">
               <div className="absolute inset-x-[6%] text-center" style={{ bottom: sampleBottom(sub.pos) }}>
@@ -2325,7 +2325,7 @@ function Stage({
               <DragSlider label="Vị trí từ đáy" value={sub.pos} min={2} max={85} step={1} defaultValue={3} format={(value) => `${value}%`} onCommit={(pos) => setSub({ ...sub, pos })} />
               <DragSlider label="Lệch thời gian" value={sub.off} min={-10} max={10} step={0.1} defaultValue={0} marks={[0]} format={(value) => `${value > 0 ? "+" : ""}${value.toFixed(1)} giây`} onCommit={(off) => setSub({ ...sub, off })} />
             </div>
-            <button type="button" className="col-span-2 min-tap rounded-xl border border-line" onClick={() => setSub(SUB_DEF)}>
+            <button type="button" className="col-span-2 min-tap rounded-[var(--radius-ctl)] border border-line" onClick={() => setSub(SUB_DEF)}>
               Đặt lại mặc định
             </button>
           </div>
@@ -2336,7 +2336,7 @@ function Stage({
     <div className="player-stack">
     <div
       ref={stageRef}
-      className={"relative touch-none overflow-hidden bg-black select-none " + (full ? "fixed inset-0 z-40 h-dvh rounded-none" : "aspect-video rounded-2xl")}
+      className={"relative touch-none overflow-hidden bg-black select-none " + (full ? "fixed inset-0 z-40 h-dvh rounded-none" : "aspect-video rounded-[var(--radius-card)]")}
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes("Files")) return;
         event.preventDefault();
@@ -2466,7 +2466,7 @@ function Stage({
       />
       {!hasMedia && <PlayerDrop file={file} thumb={thumb} url={url} onFile={onFile} onUrl={onUrl} />}
       {hasMedia && dragging && (
-        <div className="pointer-events-none absolute inset-2 z-[26] grid place-items-center rounded-xl border-2 border-dashed border-accent bg-black/70 text-sm font-semibold text-white">
+        <div className="pointer-events-none absolute inset-2 z-[26] grid place-items-center rounded-[var(--radius-ctl)] border-2 border-dashed border-accent bg-black/70 text-sm font-semibold text-white">
           Thả để đổi video
         </div>
       )}

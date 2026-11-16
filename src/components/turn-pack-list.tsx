@@ -84,7 +84,7 @@ export function TurnPackList({
           <button
             key={pack.id}
             type="button"
-            className={"grid gap-1 rounded-xl border px-3 py-2 text-left " + (on ? "border-accent bg-accent/10" : "border-line")}
+            className={"grid gap-1 rounded-[var(--radius-ctl)] border px-3 py-2 text-left " + (on ? "border-accent bg-accent/10" : "border-line")}
             onClick={() => {
               setPicked(pack.id);
               onPick(pack);

@@ -30,7 +30,7 @@ export function BadgeBoard({
               type="button"
               disabled={busy}
               onClick={() => onPick(item.id)}
-              className={"rounded-2xl border p-2 text-left disabled:opacity-40 " + (current === item.id ? "border-accent" : "border-line")}
+              className={"rounded-[var(--radius-card)] border p-2 text-left disabled:opacity-40 " + (current === item.id ? "border-accent" : "border-line")}
             >
               <AccountCard rank="chu" extra={["ctv"]} styleId={item.id} className="pointer-events-none">
                 <p className="font-semibold">Nghĩa</p>

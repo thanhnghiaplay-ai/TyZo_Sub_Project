@@ -188,7 +188,7 @@ function LoginPage() {
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
-              className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="mt-1 w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
           </label>
         )}
@@ -204,7 +204,7 @@ function LoginPage() {
             onChange={(event) => setEmail(event.target.value)}
             required
             placeholder="ten@gmail.com (dán cả địa chỉ cũng được)"
-            className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+            className="mt-1 w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
           />
           {mailSuggestions(email).length > 0 && !email.includes("@") && (
             <span className="mt-2 grid gap-1">
@@ -212,7 +212,7 @@ function LoginPage() {
                 <button
                   key={item}
                   type="button"
-                  className="rounded-xl border border-line px-3 py-2 text-left text-sm"
+                  className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-left text-sm"
                   onClick={() => setEmail(item)}
                 >
                   {item}
@@ -230,7 +230,7 @@ function LoginPage() {
               maxLength={8}
               autoCapitalize="characters"
               placeholder="Bỏ trống nếu không có"
-              className="mt-1 w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+              className="mt-1 w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
             />
           </label>
         )}
@@ -243,7 +243,7 @@ function LoginPage() {
               onChange={(event) => setPassword(event.target.value)}
               required
               minLength={8}
-              className="w-full rounded-xl border border-line bg-raised px-3 py-3 pr-16 outline-none"
+              className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 pr-16 outline-none"
             />
             <button
               type="button"
@@ -284,7 +284,7 @@ function LoginPage() {
                   onChange={(event) => setAgain(event.target.value)}
                   required
                   minLength={8}
-                  className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+                  className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
                 />
               </span>
             </label>
@@ -381,7 +381,7 @@ function ForgotBox({
       }}
     >
       <p className="text-sm text-muted">Nhập email đã đăng ký. Phòng không cho biết email đó có tài khoản hay không.</p>
-      <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
       <button type="submit" disabled={busy || !online} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang gửi…" : "Gửi thư đặt lại"}</button>
       <button type="button" className="min-tap w-full rounded-full border border-line" onClick={onBack}>Về đăng nhập</button>
       {asked && <p className="text-sm text-muted">{sent}</p>}
@@ -425,8 +425,8 @@ function ResetBox({
     >
       <p className="text-sm text-muted">Chọn mật khẩu mới, ít nhất 8 ký tự.</p>
       <PasswordMeter password={next} />
-      <input value={next} onChange={(event) => setNext(event.target.value)} type="password" required minLength={8} className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
-      <input value={again} onChange={(event) => setAgain(event.target.value)} type="password" required minLength={8} placeholder="Nhập lại" className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={next} onChange={(event) => setNext(event.target.value)} type="password" required minLength={8} className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
+      <input value={again} onChange={(event) => setAgain(event.target.value)} type="password" required minLength={8} placeholder="Nhập lại" className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none" />
       {next && again && next !== again && <p className="text-sm text-danger">Mật khẩu nhập lại chưa khớp.</p>}
       {!token && <p className="text-sm text-danger">{bad}</p>}
       <button type="submit" disabled={busy || !online || !token || next !== again} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">{busy ? "Đang lưu…" : "Lưu mật khẩu mới"}</button>

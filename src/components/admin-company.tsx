@@ -66,7 +66,7 @@ export function OrgBoard({ owner }: { owner: boolean }) {
                       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"));
                   }}
                 >
-                  <input value={nick[card.id] || ""} onChange={(event) => setNick((prev) => ({ ...prev, [card.id]: event.target.value }))} placeholder="Tên gợi nhớ" className="min-w-0 flex-1 rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+                  <input value={nick[card.id] || ""} onChange={(event) => setNick((prev) => ({ ...prev, [card.id]: event.target.value }))} placeholder="Tên gợi nhớ" className="min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" />
                   <button type="submit" className="min-tap rounded-full border border-line px-3">Lưu</button>
                 </form>
               )}
@@ -145,9 +145,9 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       </div>
       {fault && <p className="text-sm text-danger">{fault}</p>}
       <div className="grid grid-cols-3 gap-2">
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>
-        <article className="rounded-xl border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((breakdown.lai - cost - breakdown.hoa) > 0 ? "text-accent" : (breakdown.lai - cost - breakdown.hoa) < 0 ? "text-danger" : "")}>{(breakdown.lai - cost - breakdown.hoa) > 0 ? "+" : ""}{dong(breakdown.lai - cost - breakdown.hoa)}</p></article>
+        <article className="rounded-[var(--radius-ctl)] border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>
+        <article className="rounded-[var(--radius-ctl)] border border-line px-2 py-2"><p className="text-xs text-muted">Chi phí</p><p className="text-sm font-semibold">{dong(cost)}</p></article>
+        <article className="rounded-[var(--radius-ctl)] border border-line px-2 py-2"><p className="text-xs text-muted">Lời lỗ</p><p className={"text-sm font-semibold " + ((breakdown.lai - cost - breakdown.hoa) > 0 ? "text-accent" : (breakdown.lai - cost - breakdown.hoa) < 0 ? "text-danger" : "")}>{(breakdown.lai - cost - breakdown.hoa) > 0 ? "+" : ""}{dong(breakdown.lai - cost - breakdown.hoa)}</p></article>
       </div>
       <ul className="space-y-1 text-sm text-muted">
         {points.map((point) => (
@@ -157,7 +157,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       </ul>
       </div>
       {owner && <RevenueExtra span={span} points={points} />}
-      <div className="grid gap-2 rounded-xl border border-line p-3 text-sm">
+      <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3 text-sm">
         <p className="font-semibold">Chi tiết khoản (khoảng đang chọn)</p>
         <ul className="space-y-1 text-muted">
           <li className="flex justify-between gap-2"><span>Tiền nạp đã xác nhận</span><span className="font-medium text-fg">{dong(breakdown.nap)}</span></li>
@@ -200,7 +200,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       </div>
       {owner && (
         <form
-          className="grid gap-2 rounded-2xl border border-line p-3"
+          className="grid gap-2 rounded-[var(--radius-card)] border border-line p-3"
           onSubmit={(event) => {
             event.preventDefault();
             if (saving) return;
@@ -222,12 +222,12 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           }}
         >
           <h2 className="font-semibold">{editing ? "Sửa khoản chi" : "Ghi chi phí"}</h2>
-          <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Tên khoản chi" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
-          <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-xl border border-line bg-raised px-3 py-2 outline-none" />
+          <input type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" />
+          <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Tên khoản chi" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" />
+          <input value={amount} onChange={(event) => setAmount(formatMoney(parseMoney(event.target.value)))} inputMode="numeric" placeholder="Số tiền" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" />
           <label className="grid gap-1 text-sm">
             <span className="text-muted">Loại chi phí</span>
-            <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-xl border border-line bg-raised px-3 py-2 outline-none">
+            <select value={category} onChange={(event) => setCategory(event.target.value)} className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none">
               {COST_CATEGORIES.map((item) => (
                 <option key={item.id} value={item.id}>{item.label}</option>
               ))}
@@ -304,7 +304,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         </form>
       )}
       {owner && (
-        <div className="grid gap-2 rounded-2xl border border-danger/40 bg-danger/5 p-3">
+        <div className="grid gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/5 p-3">
           <h2 className="font-semibold text-danger">Reset tiền (chỉ khi test)</h2>
           <p className="text-sm text-muted">
             Đưa toàn bộ số dư về 0, xóa sổ cái, đơn nạp, chi phí ghi tay và phiếu tiền test. Không xóa tài khoản hay gói. Dùng trước khi chạy thật để tránh lẫn số liệu thử.

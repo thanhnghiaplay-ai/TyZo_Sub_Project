@@ -23,7 +23,7 @@ function TermsPage() {
       </header>
       <TermsDocument />
       <footer className="gate-actions">
-        <Link to="/" className="min-tap inline-flex items-center justify-center rounded-xl border border-line px-4 text-sm">
+        <Link to="/" className="min-tap inline-flex items-center justify-center rounded-[var(--radius-ctl)] border border-line px-4 text-sm">
           Về phòng dịch
         </Link>
       </footer>

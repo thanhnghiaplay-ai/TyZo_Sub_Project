@@ -37,7 +37,7 @@ function AppealPage() {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="Email tài khoản"
-          className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+          className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
         />
         <textarea
           required
@@ -45,7 +45,7 @@ function AppealPage() {
           onChange={(event) => setBody(event.target.value)}
           placeholder="Việc đã xảy ra và vì sao cần mở lại"
           rows={5}
-          className="w-full rounded-xl border border-line bg-raised px-3 py-3 outline-none"
+          className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
         />
         <button type="submit" disabled={busy} className="min-tap w-full rounded-full bg-accent font-semibold text-ink disabled:opacity-40">
           Gửi yêu cầu
