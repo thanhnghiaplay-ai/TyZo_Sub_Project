@@ -137,6 +137,9 @@ export function ThemeBoard() {
   const [busy, setBusy] = useState(false);
   const [previewMode, setPreviewMode] = useState<"light" | "dark">("dark");
   const [paletteMode, setPaletteMode] = useState<"light" | "dark">("dark");
+  const [iconQuery, setIconQuery] = useState("");
+  const [glyphQuery, setGlyphQuery] = useState("");
+  const [iconPick, setIconPick] = useState("");
 
   const load = async () => {
     try {
@@ -219,6 +222,14 @@ export function ThemeBoard() {
   if (!view) return <p className="p-4 text-sm text-muted">Đang tải giao diện…</p>;
 
   const logo = safeUrl(draft.logoUrl);
+  const iconNeedle = iconQuery.trim().toLowerCase();
+  const shownSlots = ICON_SLOTS.filter(([slot, label, fallback]) => {
+    if (!iconNeedle) return true;
+    const current = (draft.icons[slot] || fallback).toLowerCase();
+    return label.toLowerCase().includes(iconNeedle) || current.includes(iconNeedle);
+  });
+  const glyphNeedle = glyphQuery.trim().toLowerCase();
+  const glyphs = ICON_KEYS.filter((key) => !glyphNeedle || key.toLowerCase().includes(glyphNeedle));
 
   return (
     <div className="grid gap-4">
@@ -328,25 +339,68 @@ export function ThemeBoard() {
               options={ICON_WEIGHTS.map(([id, label]) => ({ id, label }))}
             />
             <details className="rounded-[var(--radius-ctl)] border border-line p-3">
-            <summary className="cursor-pointer text-sm font-semibold">Đổi icon từng chức năng</summary>
-            <div className="mt-2 grid gap-2">
-              {ICON_SLOTS.map(([slot, label, fallback]) => {
-                const current = draft.icons[slot] || fallback;
-                return (
-                  <div key={slot} className="grid grid-cols-[2rem_minmax(0,1fr)_minmax(0,9rem)] items-center gap-2 text-sm">
-                    <Icon slot={slot} size="1.4rem" />
-                    <span className="truncate text-muted">{label}</span>
-                    <select className={inputClass + " text-xs"} aria-label={`Icon cho ${label}`} value={current} onChange={(event) => patchIcon(slot, event.target.value)}>
-                      {ICON_KEYS.map((key) => (
-                        <option key={key} value={key}>
-                          {key}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                );
-              })}
-            </div>
+              <summary className="cursor-pointer text-sm font-semibold">Đổi icon từng chức năng</summary>
+              <ThemeProvider theme={draft}>
+                <div className="mt-2 grid gap-2">
+                  <input className={inputClass} value={iconQuery} aria-label="Tìm chức năng" placeholder="Tìm chức năng" onChange={(event) => setIconQuery(event.target.value)} />
+                  {shownSlots.length === 0 && <p className="text-sm text-muted">Không thấy chức năng này.</p>}
+                  {shownSlots.map(([slot, label, fallback]) => {
+                    const current = draft.icons[slot] || fallback;
+                    const open = iconPick === slot;
+                    return (
+                      <div key={slot} className="grid gap-2">
+                        <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 text-sm sm:grid-cols-[2rem_minmax(0,1fr)_auto]">
+                          <Icon name={current} size="1.4rem" />
+                          <button type="button" className="min-tap truncate text-left" aria-expanded={open} onClick={() => setIconPick(open ? "" : slot)}>
+                            {label}
+                          </button>
+                          <button
+                            type="button"
+                            className="col-span-2 min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-xs disabled:opacity-40 sm:col-span-1"
+                            disabled={current === fallback}
+                            onClick={() => patchIcon(slot, fallback)}
+                          >
+                            Đặt lại icon này
+                          </button>
+                        </div>
+                        {open && (
+                          <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-2">
+                            <input
+                              className={inputClass}
+                              value={glyphQuery}
+                              aria-label={`Tìm hình cho ${label}`}
+                              placeholder="Tìm hình"
+                              onChange={(event) => setGlyphQuery(event.target.value)}
+                            />
+                            {glyphs.length === 0 ? (
+                              <p className="text-sm text-muted">Không thấy hình này.</p>
+                            ) : (
+                              <div className="grid max-h-48 grid-cols-6 gap-1 overflow-auto">
+                                {glyphs.map((key) => (
+                                  <button
+                                    key={key}
+                                    type="button"
+                                    aria-label={key}
+                                    aria-pressed={key === current}
+                                    title={key}
+                                    className={
+                                      "inline-flex size-11 items-center justify-center rounded-[var(--radius-ctl)] border " +
+                                      (key === current ? "border-accent bg-raised" : "border-transparent")
+                                    }
+                                    onClick={() => patchIcon(slot, key)}
+                                  >
+                                    <Icon name={key} size="1.25rem" />
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ThemeProvider>
             </details>
           </Card>
         </div>

@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON 6 (16/11/2026, nhánh work, v3.47.2)
+ĐÃ LÀM: trong mục Icon có ô tìm chức năng, bấm tên để xem lưới hình, nút «Đặt lại icon này».
+CHƯA LÀM: cỡ icon, màu icon. Viền huy hiệu, bóng chữ, màn tối hướng dẫn.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ĐỔ BÓNG 2 (16/11/2026, nhánh work, v3.47.1)
 ĐÃ LÀM: quầng sáng màu và khung tóm tắt phiên bản theo thanh «Độ đậm bóng». Mức 1 giống trước.
 CHƯA LÀM: viền huy hiệu, vòng focus, bóng chữ, màn tối của hướng dẫn.

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.2",
+    time: "10:23 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 6. theme-board: ô tìm chức năng, bấm tên để mở lưới hình có ô tìm, nút Đặt lại icon này ghi lại icon mặc định qua parseTheme. Xem trước dùng bản nháp, kể cả kiểu nét. Không thêm chỗ mới. Không đổi điều khoản."
+  },
+  {
     version: "3.47.1",
     time: "10:15 ngày 16/11/2026",
     area: "khac",
