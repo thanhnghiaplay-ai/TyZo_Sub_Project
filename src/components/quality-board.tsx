@@ -56,7 +56,7 @@ function DayChart({ rows }: { rows: BoardRow[] }) {
           const part = (n: number) => (known ? (n / known) * 100 : 0);
           return (
             <div key={key} className="flex h-full min-w-6 flex-1 flex-col justify-end" title={`${key}: ${r.runs} lần chạy, độ tin ${pct(r.meanConfidence)}`}>
-              <div className="flex h-full flex-col justify-end overflow-hidden rounded-md" style={{ background: "#2c4154" }}>
+              <div className="flex h-full flex-col justify-end overflow-hidden rounded-md" style={{ background: "var(--color-line)" }}>
                 <div style={{ height: `${part(r.bands.low)}%`, background: BAND_COLOR.low }} />
                 <div style={{ height: `${part(r.bands.check)}%`, background: BAND_COLOR.check }} />
                 <div style={{ height: `${part(r.bands.high)}%`, background: BAND_COLOR.high }} />

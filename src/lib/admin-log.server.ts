@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.4",
+    time: "07:21 ngày 16/11/2026",
+    area: "khac",
+    text: "Bước 4 theme. HEALTH_COLOR và BAND_COLOR trong quality-view.tsx, nền thanh ở quality-board.tsx, đường thu/chi trong revenue-extra.tsx, chấm phiếu trong admin-desk.tsx và chấm cảnh báo trong admin-overview.tsx dùng --color-success, --color-warning, --color-error, --color-muted, --color-line. Chữ trên đèn chất lượng dùng --color-bg để đọc được cả hai chế độ. Không đụng robot, phụ đề, icon, bo góc, thư HTML. Không đổi điều khoản."
+  },
+  {
     version: "3.46.3",
     time: "07:12 ngày 16/11/2026",
     area: "khac",

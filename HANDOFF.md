@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## MÀU TRẠNG THÁI (16/11/2026, nhánh work, v3.46.4)
+ĐÃ LÀM: đèn tốt / cần chú ý / kém, thanh độ tin, đường thu và chi, chấm phiếu và chấm cảnh báo lấy màu thành công, chờ, lỗi, chữ phụ, đường viền. Chữ trên đèn dùng màu nền trang để đọc được cả sáng lẫn tối.
+CHƯA LÀM: robot (kim loại, mắt, biển đỏ), nền đêm, màu phụ đề, thư HTML, icon Lucide, bo góc.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## MÀU BẢO TRÌ THEO GIAO DIỆN (16/11/2026, nhánh work, v3.46.3)
 ĐÃ LÀM: dải, lưới, đèn, tiêu đề, vòng sáng, thanh chạy và tia lửa dùng màu chờ. Áo, sọc, viền biển dùng màu chờ. Mũ dùng màu nhấn. Tên thương hiệu vốn đã đọc từ giao diện.
 CHƯA LÀM: nền đêm cố định, kim loại và mắt robot, biển đỏ, hiệu ứng nhấp nháy chữ, màu phụ đề, icon Lucide, bo góc.

@@ -20,22 +20,22 @@ function LineChart({ points }: { points: MoneyPoint[] }) {
     <figure className="grid gap-1">
       <svg viewBox={`0 0 ${BOX.width} ${BOX.height}`} className="w-full" role="img" aria-label="Đường thu và chi theo kỳ">
         <line x1={BOX.pad} x2={BOX.width - BOX.pad} y1={BOX.height - BOX.pad} y2={BOX.height - BOX.pad} stroke="currentColor" strokeOpacity="0.25" />
-        <path d={pathOf(revenueLine)} fill="none" stroke="#3fb67a" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d={pathOf(costLine)} fill="none" stroke="#e15b64" strokeWidth="2.5" strokeLinejoin="round" />
+        <path d={pathOf(revenueLine)} fill="none" stroke="var(--color-success)" strokeWidth="2.5" strokeLinejoin="round" />
+        <path d={pathOf(costLine)} fill="none" stroke="var(--color-error)" strokeWidth="2.5" strokeLinejoin="round" />
         {revenueLine.map((point, index) => (
-          <circle key={"r" + sorted[index].bucket} cx={point.x} cy={point.y} r="3.5" fill="#3fb67a">
+          <circle key={"r" + sorted[index].bucket} cx={point.x} cy={point.y} r="3.5" fill="var(--color-success)">
             <title>{`${sorted[index].bucket}: thu ${dong(sorted[index].revenue)}`}</title>
           </circle>
         ))}
         {costLine.map((point, index) => (
-          <circle key={"c" + sorted[index].bucket} cx={point.x} cy={point.y} r="3.5" fill="#e15b64">
+          <circle key={"c" + sorted[index].bucket} cx={point.x} cy={point.y} r="3.5" fill="var(--color-error)">
             <title>{`${sorted[index].bucket}: chi ${dong(sorted[index].cost)}`}</title>
           </circle>
         ))}
       </svg>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
         <span>
-          <span style={{ color: "#3fb67a" }}>●</span> Thu (tiền nạp) · <span style={{ color: "#e15b64" }}>●</span> Chi (ghi tay)
+          <span style={{ color: "var(--color-success)" }}>●</span> Thu (tiền nạp) · <span style={{ color: "var(--color-error)" }}>●</span> Chi (ghi tay)
         </span>
         <span>
           {sorted[0].bucket} → {sorted[sorted.length - 1].bucket} · mức cao nhất {dong(geo.max)}

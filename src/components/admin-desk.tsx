@@ -83,7 +83,7 @@ function AppealForm({
 }) {
   const [replyText, setReplyText] = useState("");
   const [rejectReason, setRejectReason] = useState("");
-  const dot = item.tone === "red" ? "#e15b64" : item.tone === "yellow" ? "#e0a100" : "#2f9e6b";
+  const dot = item.tone === "red" ? "var(--color-error)" : item.tone === "yellow" ? "var(--color-warning)" : "var(--color-success)";
   return (
     <div className="mt-2 grid gap-2">
       <p className="text-xs" style={{ color: dot }}>

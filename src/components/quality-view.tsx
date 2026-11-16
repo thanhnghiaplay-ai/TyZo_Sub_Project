@@ -1,10 +1,10 @@
 import type { Bands, Health } from "@/lib/sub/quality";
 
 export const HEALTH_COLOR: Record<Health, string> = {
-  green: "#4ade80",
-  yellow: "#e7b63a",
-  red: "#f87171",
-  unknown: "#93a6b6",
+  green: "var(--color-success)",
+  yellow: "var(--color-warning)",
+  red: "var(--color-error)",
+  unknown: "var(--color-muted)",
 };
 
 export const HEALTH_LABEL: Record<Health, string> = {
@@ -14,7 +14,7 @@ export const HEALTH_LABEL: Record<Health, string> = {
   unknown: "Chưa đủ số liệu",
 };
 
-export const BAND_COLOR = { high: "#4ade80", check: "#e7b63a", low: "#f87171" } as const;
+export const BAND_COLOR = { high: "var(--color-success)", check: "var(--color-warning)", low: "var(--color-error)" } as const;
 
 export function pct(value: number | null | undefined, digits = 0): string {
   return typeof value === "number" && Number.isFinite(value) ? `${(value * 100).toFixed(digits)}%` : "—";
@@ -25,7 +25,7 @@ export function HealthPill({ health, reason }: { health: Health; reason?: string
     <div className="flex items-center gap-3">
       <span
         className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full px-4 text-sm font-semibold"
-        style={{ background: HEALTH_COLOR[health], color: "#1a1400" }}
+        style={{ background: HEALTH_COLOR[health], color: "var(--color-bg)" }}
       >
         {HEALTH_LABEL[health]}
       </span>
@@ -40,7 +40,7 @@ export function BandBar({ bands }: { bands: Bands }) {
   const share = (n: number) => (known ? (n / known) * 100 : 0);
   return (
     <div className="grid gap-1">
-      <div className="flex h-4 w-full overflow-hidden rounded-full" style={{ background: "#2c4154" }} role="img" aria-label="Phân bố độ tin cậy">
+      <div className="flex h-4 w-full overflow-hidden rounded-full" style={{ background: "var(--color-line)" }} role="img" aria-label="Phân bố độ tin cậy">
         <div style={{ width: `${share(bands.high)}%`, background: BAND_COLOR.high }} />
         <div style={{ width: `${share(bands.check)}%`, background: BAND_COLOR.check }} />
         <div style={{ width: `${share(bands.low)}%`, background: BAND_COLOR.low }} />

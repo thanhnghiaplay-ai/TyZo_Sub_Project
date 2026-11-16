@@ -172,7 +172,7 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
             {view.alerts.map((alert) => (
               <div key={alert.id} className="flex items-center justify-between gap-2 text-sm">
                 <p className="flex min-w-0 items-start gap-2">
-                  <span aria-hidden="true" className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: alert.level === "red" ? "#e15b64" : "#e0a100" }} />
+                  <span aria-hidden="true" className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: alert.level === "red" ? "var(--color-error)" : "var(--color-warning)" }} />
                   <span>{alert.text}</span>
                 </p>
                 <button type="button" className="min-tap shrink-0 rounded-full border border-line px-3 text-sm" onClick={() => onGo(alert.go)}>
