@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.3",
+    time: "10:32 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 7. Theme.iconSize sm/md/lg (0.85/1/1.15) và iconTone text/accent. Icon áp zoom khi khác 1, tô màu nhấn khi accent. Mặc định md + text nên không đổi hình. Giá trị lạ về mặc định. Không đổi điều khoản."
+  },
+  {
     version: "3.47.2",
     time: "10:23 ngày 16/11/2026",
     area: "khac",

@@ -55,6 +55,19 @@ export const ICON_WEIGHTS = [
 ] as const;
 export type IconWeight = (typeof ICON_WEIGHTS)[number][0];
 
+export const ICON_SIZES = [
+  ["sm", "Nhỏ", 0.85],
+  ["md", "Vừa", 1],
+  ["lg", "Lớn", 1.15],
+] as const;
+export type IconSize = (typeof ICON_SIZES)[number][0];
+
+export const ICON_TONES = [
+  ["text", "Theo chữ"],
+  ["accent", "Theo màu nhấn"],
+] as const;
+export type IconTone = (typeof ICON_TONES)[number][0];
+
 export const DENSITIES = [
   ["compact", "Gọn", 0.85],
   ["cozy", "Vừa", 1],
@@ -150,6 +163,8 @@ export type Theme = {
   shadow: number;
   density: Density;
   iconWeight: IconWeight;
+  iconSize: IconSize;
+  iconTone: IconTone;
   /** Tên hiển thị và logo (https:// hoặc đường dẫn bắt đầu bằng /). Rỗng là dùng mặc định. */
   brandName: string;
   logoUrl: string;
@@ -210,6 +225,8 @@ export const THEME_DEFAULT: Theme = {
   shadow: 1,
   density: "cozy",
   iconWeight: "duotone",
+  iconSize: "md",
+  iconTone: "text",
   brandName: "",
   logoUrl: "",
   icons: {},
@@ -266,6 +283,8 @@ export function parseTheme(input: unknown): Theme {
   const src = input && typeof input === "object" ? (input as Record<string, unknown>) : {};
   const font = FONTS.some((f) => f.id === src.font) ? (src.font as FontId) : THEME_DEFAULT.font;
   const weight = ICON_WEIGHTS.some((w) => w[0] === src.iconWeight) ? (src.iconWeight as IconWeight) : THEME_DEFAULT.iconWeight;
+  const iconSize = ICON_SIZES.some((s) => s[0] === src.iconSize) ? (src.iconSize as IconSize) : THEME_DEFAULT.iconSize;
+  const iconTone = ICON_TONES.some((t) => t[0] === src.iconTone) ? (src.iconTone as IconTone) : THEME_DEFAULT.iconTone;
   const density = DENSITIES.some((d) => d[0] === src.density) ? (src.density as Density) : THEME_DEFAULT.density;
   const mode = MODES.some((m) => m[0] === src.mode) ? (src.mode as Mode) : THEME_DEFAULT.mode;
   return {
@@ -277,6 +296,8 @@ export function parseTheme(input: unknown): Theme {
     shadow: pickNumber(src.shadow, 1, 0, 1.5),
     density,
     iconWeight: weight,
+    iconSize,
+    iconTone,
     brandName: typeof src.brandName === "string" ? src.brandName.trim().slice(0, 40) : "",
     logoUrl: safeUrl(src.logoUrl),
     icons: pickIcons(src.icons),

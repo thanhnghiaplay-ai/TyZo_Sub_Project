@@ -33,12 +33,14 @@ test("parseTheme: nhận màu 3 và 6 ký tự, ép về chữ thường", () =>
 });
 
 test("parseTheme: kẹp số về khoảng cho phép", () => {
-  const t = parseTheme({ fontScale: 9, radius: -4, shadow: 9, density: "x", iconWeight: "nope", mode: "x" });
+  const t = parseTheme({ fontScale: 9, radius: -4, shadow: 9, density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
   assert.equal(t.fontScale, 1.25);
   assert.equal(t.radius, 0);
   assert.equal(t.shadow, 1.5);
   assert.equal(t.density, "cozy");
   assert.equal(t.iconWeight, "duotone");
+  assert.equal(t.iconSize, "md");
+  assert.equal(t.iconTone, "text");
   assert.equal(t.mode, "dark");
 });
 

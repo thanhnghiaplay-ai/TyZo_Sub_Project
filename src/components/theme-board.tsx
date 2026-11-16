@@ -4,6 +4,8 @@ import {
   DENSITIES,
   FONTS,
   ICON_SLOTS,
+  ICON_TONES,
+  ICON_SIZES,
   ICON_WEIGHTS,
   MODES,
   PALETTE_KEYS,
@@ -16,6 +18,8 @@ import {
   safeUrl,
   shadowStyle,
   type IconWeight,
+  type IconSize,
+  type IconTone,
   type Palette,
   type PaletteKey,
   type Theme,
@@ -337,6 +341,18 @@ export function ThemeBoard() {
               value={draft.iconWeight}
               onChange={(iconWeight: IconWeight) => patch({ iconWeight })}
               options={ICON_WEIGHTS.map(([id, label]) => ({ id, label }))}
+            />
+            <Segmented
+              label="Cỡ icon"
+              value={draft.iconSize}
+              onChange={(iconSize: IconSize) => patch({ iconSize })}
+              options={ICON_SIZES.map(([id, label]) => ({ id, label }))}
+            />
+            <Segmented
+              label="Màu icon"
+              value={draft.iconTone}
+              onChange={(iconTone: IconTone) => patch({ iconTone })}
+              options={ICON_TONES.map(([id, label]) => ({ id, label }))}
             />
             <details className="rounded-[var(--radius-ctl)] border border-line p-3">
               <summary className="cursor-pointer text-sm font-semibold">Đổi icon từng chức năng</summary>

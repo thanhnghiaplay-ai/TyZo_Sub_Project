@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON 7 (16/11/2026, nhánh work, v3.47.3)
+ĐÃ LÀM: cỡ icon nhỏ/vừa/lớn và màu theo chữ hoặc màu nhấn. Mức vừa và theo chữ giữ hình cũ.
+CHƯA LÀM: viền huy hiệu, bóng chữ, màn tối hướng dẫn, độ dày viền, kiểu nút, bộ màu có sẵn.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 6 (16/11/2026, nhánh work, v3.47.2)
 ĐÃ LÀM: trong mục Icon có ô tìm chức năng, bấm tên để xem lưới hình, nút «Đặt lại icon này».
 CHƯA LÀM: cỡ icon, màu icon. Viền huy hiệu, bóng chữ, màn tối hướng dẫn.

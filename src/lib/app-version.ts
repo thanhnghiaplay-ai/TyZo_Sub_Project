@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.47.2";
+export const APP_VERSION = "3.47.3";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.47.3",
+    time: "10:32 ngày 16/11/2026",
+    title: "Chọn cỡ icon và màu icon.",
+    points: [
+      "Icon có ba cỡ: nhỏ, vừa, lớn. Mức vừa giữ nguyên như trước.",
+      "Màu icon theo chữ, hoặc theo màu nhấn.",
+    ],
+  },
   {
     version: "3.47.2",
     time: "10:23 ngày 16/11/2026",
