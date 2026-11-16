@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## MÀU CHROME THEO TOKEN (16/11/2026, nhánh work, v3.46.2)
+ĐÃ LÀM: chỉ `styles.css`. Toast nền thẻ / chữ chính; thông báo lỗi trộn màu lỗi. Dải mất mạng nền lỗi, chữ màu nền trang. Chấm cửa màu thành công / lỗi. Ô thuê dùng màu cộng tác viên. Ô khóa dùng màu chờ. Chữ trên nhãn cấp dùng màu mực. Nút đăng xuất dùng màu lỗi.
+CHƯA LÀM: robot và khối `.mt-*`, màu phụ đề, icon Lucide, bo góc, vé cấp, logo plate.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## QUÉT THEME BƯỚC 1 (16/11/2026, nhánh work, vẫn v3.46.1)
 ĐÃ LÀM: chỉ tài liệu. Quét `src/`: 160 mã hex ngoài `theme.ts`, 32 lớp màu Tailwind bảng, 483 dòng `rounded-*` (58 file), 64 icon Lucide ở 16 file. `ICON_SLOTS` mới chỉ có ở bảng theme và `primitives.tsx`. Chi tiết ở `PROJECT_STATUS.md` mục «Còn mở».
 KIỂM: `npx tsc --noEmit` thoát 0. `npm test` 672 pass, 0 fail.

@@ -851,9 +851,9 @@
   margin: 0;
   border: 1px solid var(--color-accent);
   border-radius: 999px;
-  background: #1a1408;
+  background: var(--color-card);
   padding: 0.55rem 0.9rem;
-  color: #f7f4ea;
+  color: var(--color-fg);
   font-size: 0.85rem;
   text-align: center;
   animation: toast-in 0.28s ease;
@@ -861,7 +861,7 @@
 
 .toast-bad {
   border-color: var(--color-error);
-  background: #2a1216;
+  background: color-mix(in srgb, var(--color-error) 22%, var(--color-card));
 }
 
 .notice-bell {
@@ -1274,8 +1274,8 @@
 
 .stat-online { border-color: var(--color-success); }
 .stat-online .stat-num { color: var(--color-success); }
-.stat-rent { border-color: #6fbf9a; }
-.stat-rent .stat-num { color: #6fbf9a; }
+.stat-rent { border-color: var(--rank-partner); }
+.stat-rent .stat-num { color: var(--rank-partner); }
 .stat-lead { border-color: var(--color-accent); }
 .stat-lead .stat-num { color: var(--color-accent); }
 .stat-staff { border-color: var(--color-info); }
@@ -1283,8 +1283,8 @@
 .stat-partner { border-color: var(--rank-partner); }
 .stat-partner .stat-num { color: var(--rank-partner); }
 .stat-trial { border-color: var(--color-info); }
-.stat-lock { border-color: #d98a3a; }
-.stat-lock .stat-num { color: #d98a3a; }
+.stat-lock { border-color: var(--color-warning); }
+.stat-lock .stat-num { color: var(--color-warning); }
 .stat-ban { border-color: var(--color-error); }
 .stat-ban .stat-num { color: var(--color-error); }
 .stat-wait { border-color: var(--color-warning); }
@@ -1295,17 +1295,17 @@
   overflow: hidden;
 }
 
-.account-card[data-rank="user"] { --badge: var(--rank-user); --badge-ink: #10161c; }
-.account-card[data-rank="ho-tro"] { --badge: var(--rank-support); --badge-ink: #10161c; }
-.account-card[data-rank="quan-ly"] { --badge: var(--rank-manager); --badge-ink: #1c1608; }
-.account-card[data-rank="chu"] { --badge: var(--rank-owner); --badge-ink: #1c1608; }
-.account-card[data-rank="ctv"] { --badge: var(--rank-partner); --badge-ink: #10211c; }
+.account-card[data-rank="user"] { --badge: var(--rank-user); --badge-ink: var(--color-ink); }
+.account-card[data-rank="ho-tro"] { --badge: var(--rank-support); --badge-ink: var(--color-ink); }
+.account-card[data-rank="quan-ly"] { --badge: var(--rank-manager); --badge-ink: var(--color-ink); }
+.account-card[data-rank="chu"] { --badge: var(--rank-owner); --badge-ink: var(--color-ink); }
+.account-card[data-rank="ctv"] { --badge: var(--rank-partner); --badge-ink: var(--color-ink); }
 
-.role-mark[data-rank="user"] { --badge: var(--rank-user); --badge-ink: #10161c; }
-.role-mark[data-rank="ho-tro"] { --badge: var(--rank-support); --badge-ink: #10161c; }
-.role-mark[data-rank="quan-ly"] { --badge: var(--rank-manager); --badge-ink: #1c1608; }
-.role-mark[data-rank="chu"] { --badge: var(--rank-owner); --badge-ink: #1c1608; }
-.role-mark[data-rank="ctv"] { --badge: var(--rank-partner); --badge-ink: #10211c; }
+.role-mark[data-rank="user"] { --badge: var(--rank-user); --badge-ink: var(--color-ink); }
+.role-mark[data-rank="ho-tro"] { --badge: var(--rank-support); --badge-ink: var(--color-ink); }
+.role-mark[data-rank="quan-ly"] { --badge: var(--rank-manager); --badge-ink: var(--color-ink); }
+.role-mark[data-rank="chu"] { --badge: var(--rank-owner); --badge-ink: var(--color-ink); }
+.role-mark[data-rank="ctv"] { --badge: var(--rank-partner); --badge-ink: var(--color-ink); }
 
 .role-row {
   position: relative;
@@ -1405,7 +1405,7 @@
   border-radius: 0.15rem 0.7rem 0.15rem 0.7rem;
   background: var(--badge);
   color: var(--badge-ink);
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--badge) 45%, #000);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--badge) 45%, var(--color-ink));
 }
 
 .role-mark-fold b {
@@ -1457,12 +1457,12 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 12%, transparent);
 }
 .door-dot-open {
-  background: #3ecf8e;
-  box-shadow: 0 0 8px rgb(62 207 142 / 55%);
+  background: var(--color-success);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-success) 55%, transparent);
 }
 .door-dot-closed {
-  background: #ef5f5f;
-  box-shadow: 0 0 8px rgb(239 95 95 / 45%);
+  background: var(--color-error);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-error) 45%, transparent);
 }
 
 .org-tree > div {
@@ -1794,8 +1794,8 @@ html[data-density] .studio-workspace {
   right: 0;
   left: 0;
   padding: calc(0.55rem + env(safe-area-inset-top)) 1rem 0.55rem;
-  background: #c62f3a;
-  color: #fff;
+  background: var(--color-error);
+  color: var(--color-bg);
   font-size: 0.875rem;
   font-weight: 600;
   text-align: center;
@@ -2030,15 +2030,15 @@ html[data-density] .studio-workspace {
   width: 100%;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in srgb, #ef6a6a 70%, var(--color-line));
+  border: 1px solid color-mix(in srgb, var(--color-error) 70%, var(--color-line));
   border-radius: 999px;
-  color: color-mix(in srgb, #ef6a6a 80%, var(--color-fg));
+  color: color-mix(in srgb, var(--color-error) 80%, var(--color-fg));
   font-size: 0.9rem;
   font-weight: 700;
 }
 
 .rail-out:hover:not(:disabled) {
-  background: color-mix(in srgb, #ef6a6a 14%, transparent);
+  background: color-mix(in srgb, var(--color-error) 14%, transparent);
 }
 
 .rail-out:disabled {
@@ -2047,7 +2047,7 @@ html[data-density] .studio-workspace {
 
 .rail-err {
   font-size: 0.75rem;
-  color: #ef6a6a;
+  color: var(--color-error);
 }
 
 @media (min-width: 1024px) {

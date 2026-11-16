@@ -8,10 +8,10 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
-    version: "3.46.1",
-    time: "05:58 ngày 16/11/2026",
+    version: "3.46.2",
+    time: "06:58 ngày 16/11/2026",
     area: "khac",
-    text: "Theo yêu cầu người dùng: nút «Xem trước trang bảo trì» ở Admin → Cấu hình → Toàn web. SiteMaintenancePage nhận onClose (có thì phủ z-60, nút Đóng và Esc thay lối vào quản trị) và dùng đúng chữ đang nhập chưa lưu. Không đổi dữ liệu hay điều khoản."
+    text: "Bước 2 theme, chỉ styles.css. Toast dùng --color-card/--color-fg, toast lỗi trộn --color-error. Dải mất mạng: nền --color-error, chữ --color-bg (đủ tương phản cả hai chế độ). Chấm cửa: --color-success/--color-error. Ô thuê dùng --rank-partner (trùng màu ô cộng tác viên). Ô khóa dùng --color-warning (trùng ô chờ). Mực huy hiệu cấp dùng --color-ink. Nút đăng xuất menu dùng --color-error. Không đụng robot, khối .mt-*, màu phụ đề, icon Lucide, bo góc. Không đổi điều khoản."
   },
   {
     version: "3.46.0",
