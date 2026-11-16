@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## CHUYỂN ĐỘNG 3/8 (16/11/2026, nhánh work, v3.47.8)
+ĐÃ LÀM: bật hoặc tắt hiệu ứng, tốc độ chậm/vừa/nhanh. Mặc định bật và vừa. Máy giảm chuyển động thì luôn tắt.
+CÒN 5 PHẦN: trang bảo trì, tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## BỐ CỤC 2/8 (16/11/2026, nhánh work, v3.47.7)
 ĐÃ LÀM: độ rộng các trang rộng và menu trái hoặc phải. Mặc định 120 rem, menu trái.
 CÒN 6 PHẦN: chuyển động, trang bảo trì, tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng.

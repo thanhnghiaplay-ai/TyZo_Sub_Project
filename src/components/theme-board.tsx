@@ -9,6 +9,8 @@ import {
   ICON_SIZES,
   ICON_WEIGHTS,
   MENU_SIDES,
+  MOTION,
+  MOTION_SPEEDS,
   MODES,
   PALETTE_KEYS,
   PALETTES,
@@ -22,6 +24,8 @@ import {
   shadowStyle,
   TITLE_WEIGHTS,
   type MenuSide,
+  type Motion,
+  type MotionSpeed,
   type ButtonStyle,
   type TitleWeight,
   type IconWeight,
@@ -344,6 +348,12 @@ export function ThemeBoard() {
             </Field>
             <Field label="Vị trí menu">
               <Segmented label="Vị trí menu" value={draft.menuSide} onChange={(menuSide: MenuSide) => patch({ menuSide })} options={MENU_SIDES.map(([id, label]) => ({ id, label }))} />
+            </Field>
+            <Field label="Hiệu ứng" hint="Máy khách đang giảm chuyển động thì luôn tắt, dù chọn Bật.">
+              <Segmented label="Hiệu ứng" value={draft.motion} onChange={(motion: Motion) => patch({ motion })} options={MOTION.map(([id, label]) => ({ id, label }))} />
+            </Field>
+            <Field label="Tốc độ hiệu ứng">
+              <Segmented label="Tốc độ hiệu ứng" value={draft.motionSpeed} onChange={(motionSpeed: MotionSpeed) => patch({ motionSpeed })} options={MOTION_SPEEDS.map(([id, label]) => ({ id, label }))} />
             </Field>
           </Card>
 

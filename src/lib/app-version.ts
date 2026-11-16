@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.47.7";
+export const APP_VERSION = "3.47.8";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.47.8",
+    time: "11:41 ngày 16/11/2026",
+    title: "Bật tắt hiệu ứng và chọn tốc độ.",
+    points: [
+      "Hiệu ứng có thể tắt hoặc để chậm, vừa, nhanh. Mặc định vẫn bật và vừa.",
+      "Máy đang giảm chuyển động thì hiệu ứng luôn tắt.",
+    ],
+  },
   {
     version: "3.47.7",
     time: "11:29 ngày 16/11/2026",

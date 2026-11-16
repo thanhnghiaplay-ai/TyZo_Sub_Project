@@ -2656,3 +2656,39 @@ html[data-menu="right"] .app-rail.is-open {
   .mt-root *::after { animation: none !important; }
   .mt-root .mt-c { opacity: 1; }
 }
+
+/* Hiệu ứng. Bật và tốc độ vừa không có luật riêng, nên hình mặc định không đổi.
+   Máy khách đang giảm chuyển động thì tắt hiệu ứng dù admin để bật. */
+html[data-motion-speed="slow"] :where(*),
+html[data-motion-speed="slow"] :where(*)::before,
+html[data-motion-speed="slow"] :where(*)::after {
+  animation-duration: 0.7s;
+  transition-duration: 0.45s;
+}
+
+html[data-motion-speed="fast"] :where(*),
+html[data-motion-speed="fast"] :where(*)::before,
+html[data-motion-speed="fast"] :where(*)::after {
+  animation-duration: 0.12s;
+  transition-duration: 0.08s;
+}
+
+html[data-motion="off"] :where(*),
+html[data-motion="off"] :where(*)::before,
+html[data-motion="off"] :where(*)::after {
+  animation-duration: 0.01ms;
+  animation-iteration-count: 1;
+  transition-duration: 0.01ms;
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html :where(*),
+  html :where(*)::before,
+  html :where(*)::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}

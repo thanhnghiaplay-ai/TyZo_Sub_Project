@@ -31,7 +31,8 @@ export function EntryGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const timer = window.setTimeout(() => setShown(true), reduce ? 400 : 1700);
+    const off = document.documentElement.getAttribute("data-motion") === "off";
+    const timer = window.setTimeout(() => setShown(true), reduce || off ? 400 : 1700);
     return () => window.clearTimeout(timer);
   }, []);
 

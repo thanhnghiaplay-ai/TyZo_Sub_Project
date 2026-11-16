@@ -81,6 +81,19 @@ export const MENU_SIDES = [
 ] as const;
 export type MenuSide = (typeof MENU_SIDES)[number][0];
 
+export const MOTION = [
+  ["on", "Bật"],
+  ["off", "Tắt"],
+] as const;
+export type Motion = (typeof MOTION)[number][0];
+
+export const MOTION_SPEEDS = [
+  ["slow", "Chậm"],
+  ["mid", "Vừa"],
+  ["fast", "Nhanh"],
+] as const;
+export type MotionSpeed = (typeof MOTION_SPEEDS)[number][0];
+
 export const TITLE_WEIGHTS = [
   ["keep", "Như hiện tại"],
   ["500", "Vừa"],
@@ -191,6 +204,8 @@ export type Theme = {
   /** Độ rộng tối đa các trang rộng, rem. 120 là mức đang có. */
   pageWidth: number;
   menuSide: MenuSide;
+  motion: Motion;
+  motionSpeed: MotionSpeed;
   /** Đặc giữ nút đặc. Viền và mờ chỉ đổi nút đang tô màu nhấn. */
   button: ButtonStyle;
   density: Density;
@@ -261,6 +276,8 @@ export const THEME_DEFAULT: Theme = {
   line: 1,
   pageWidth: 120,
   menuSide: "left",
+  motion: "on",
+  motionSpeed: "mid",
   button: "solid",
   density: "cozy",
   iconWeight: "duotone",
@@ -379,6 +396,8 @@ export function parseTheme(input: unknown): Theme {
   const iconTone = ICON_TONES.some((t) => t[0] === src.iconTone) ? (src.iconTone as IconTone) : THEME_DEFAULT.iconTone;
   const button = BUTTON_STYLES.some((b) => b[0] === src.button) ? (src.button as ButtonStyle) : THEME_DEFAULT.button;
   const menuSide = MENU_SIDES.some((s) => s[0] === src.menuSide) ? (src.menuSide as MenuSide) : THEME_DEFAULT.menuSide;
+  const motion = MOTION.some((m) => m[0] === src.motion) ? (src.motion as Motion) : THEME_DEFAULT.motion;
+  const motionSpeed = MOTION_SPEEDS.some((s) => s[0] === src.motionSpeed) ? (src.motionSpeed as MotionSpeed) : THEME_DEFAULT.motionSpeed;
   const density = DENSITIES.some((d) => d[0] === src.density) ? (src.density as Density) : THEME_DEFAULT.density;
   const mode = MODES.some((m) => m[0] === src.mode) ? (src.mode as Mode) : THEME_DEFAULT.mode;
   return {
@@ -394,6 +413,8 @@ export function parseTheme(input: unknown): Theme {
     line: pickNumber(src.line, 1, 1, 3),
     pageWidth: pickNumber(src.pageWidth, 120, 40, 120),
     menuSide,
+    motion,
+    motionSpeed,
     button,
     density,
     iconWeight: weight,

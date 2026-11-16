@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.8",
+    time: "11:41 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần chuyển động 3/8. motion on/off mặc định on. motionSpeed slow/mid/fast mặc định mid, không ghi thuộc tính khi mid. CSS data-motion=off cắt thời lượng. prefers-reduced-motion luôn tắt. Cửa vào chờ 400ms khi tắt hoặc máy giảm chuyển động. Không đổi điều khoản."
+  },
+  {
     version: "3.47.7",
     time: "11:29 ngày 16/11/2026",
     area: "khac",

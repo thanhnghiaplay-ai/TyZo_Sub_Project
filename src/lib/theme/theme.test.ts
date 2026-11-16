@@ -34,7 +34,7 @@ test("parseTheme: nhận màu 3 và 6 ký tự, ép về chữ thường", () =>
 });
 
 test("parseTheme: kẹp số về khoảng cho phép", () => {
-  const t = parseTheme({ fontScale: 9, leading: 9, radius: -4, shadow: 9, line: 9, pageWidth: 9, button: "nope", menuSide: "nope", titleFont: "nope", titleWeight: "nope", density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
+  const t = parseTheme({ fontScale: 9, leading: 9, radius: -4, shadow: 9, line: 9, pageWidth: 9, button: "nope", menuSide: "nope", motion: "nope", motionSpeed: "nope", titleFont: "nope", titleWeight: "nope", density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
   assert.equal(t.fontScale, 1.25);
   assert.equal(t.leading, 1.8);
   assert.equal(t.titleFont, "be-vietnam-pro");
@@ -44,6 +44,8 @@ test("parseTheme: kẹp số về khoảng cho phép", () => {
   assert.equal(t.line, 3);
   assert.equal(t.pageWidth, 40);
   assert.equal(t.menuSide, "left");
+  assert.equal(t.motion, "on");
+  assert.equal(t.motionSpeed, "mid");
   assert.equal(t.button, "solid");
   assert.equal(t.density, "cozy");
   assert.equal(t.iconWeight, "duotone");
