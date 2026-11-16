@@ -32,6 +32,7 @@ function paletteStyle(palette: Palette, theme: Theme): CSSProperties {
   style["--radius-card"] = `${theme.radius}rem`;
   style["--radius-ctl"] = `${Math.round(theme.radius * 0.75 * 100) / 100}rem`;
   Object.assign(style, shadowStyle(theme.shadow));
+  style["--shadow-amt"] = String(theme.shadow);
   const family = fontOf(theme.font).css;
   style.fontFamily = family ? `${family}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
   style.background = palette.bg;

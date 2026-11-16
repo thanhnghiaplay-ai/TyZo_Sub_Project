@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ĐỔ BÓNG 2 (16/11/2026, nhánh work, v3.47.1)
+ĐÃ LÀM: quầng sáng màu và khung tóm tắt phiên bản theo thanh «Độ đậm bóng». Mức 1 giống trước.
+CHƯA LÀM: viền huy hiệu, vòng focus, bóng chữ, màn tối của hướng dẫn.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ĐỔ BÓNG 1 (16/11/2026, nhánh work, v3.47.0)
 ĐÃ LÀM: thanh «Độ đậm bóng» trong giao diện. Hộp thoại, menu và banner nổi theo mức đó. Mức 1 giống trước.
 CHƯA LÀM: bóng phát sáng, viền huy hiệu, bóng chữ, màn tối của hướng dẫn.

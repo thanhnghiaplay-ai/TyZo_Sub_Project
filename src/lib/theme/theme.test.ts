@@ -58,6 +58,7 @@ test("themeToCss: có cả hai chế độ, đủ mọi biến, không lọt chu
   assert.match(css, /html\[data-theme="light"\]\{/);
   assert.match(css, /--font-sans:"Inter"/);
   for (const [, variable] of PALETTE_KEYS) assert.ok(css.includes(variable + ":"), variable);
+  assert.match(css, /--shadow-amt:1;/);
   assert.match(css, /--shadow-lg:0 10px 15px -3px rgb\(0 0 0 \/ 0\.1\), 0 4px 6px -4px rgb\(0 0 0 \/ 0\.1\)/);
   assert.ok(!css.includes("<"));
 });

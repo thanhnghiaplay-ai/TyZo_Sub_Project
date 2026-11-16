@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.1",
+    time: "10:15 ngày 16/11/2026",
+    area: "khac",
+    text: "Đổ bóng bước 2. Quầng sáng trong styles.css nhân độ đậm với --shadow-amt. Gồm vòng nhấn, chấm thành công/lỗi, thẻ tổ chức, đèn cảnh báo, khung phiên bản. Không đụng viền huy hiệu (rail, sash, offset), vòng focus, bóng chữ và màn tối hướng dẫn. Mức 1 giữ số cũ. Không đổi điều khoản."
+  },
+  {
     version: "3.47.0",
     time: "10:08 ngày 16/11/2026",
     area: "khac",

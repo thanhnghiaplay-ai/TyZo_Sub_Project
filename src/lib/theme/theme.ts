@@ -367,7 +367,7 @@ export function themeToCss(theme: Theme): string {
   const shadows = Object.entries(shadowStyle(theme.shadow)).map(([key, value]) => `${key}:${value};`).join("");
   const root =
     `:root{--font-sans:${family};--radius-card:${theme.radius}rem;--radius-ctl:${Math.round(theme.radius * 0.75 * 100) / 100}rem;` +
-    `--font-scale:${theme.fontScale};--density:${density};${shadows}}`;
+    `--font-scale:${theme.fontScale};--density:${density};--shadow-amt:${theme.shadow};${shadows}}`;
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 

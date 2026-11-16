@@ -64,7 +64,7 @@
 @keyframes pay-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) calc(55% * var(--shadow-amt, 1)), transparent);
   }
   70% {
     box-shadow: 0 0 0 10px transparent;
@@ -1274,7 +1274,7 @@
 .org-owner {
   border-color: var(--color-accent);
   background: color-mix(in srgb, var(--color-accent) 18%, var(--color-card));
-  box-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 28%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) calc(28% * var(--shadow-amt, 1)), transparent);
 }
 
 .stat-online { border-color: var(--color-success); }
@@ -1442,7 +1442,7 @@
   padding: 0.28rem 0.55rem;
   background: color-mix(in srgb, var(--badge) 10%, transparent);
   color: var(--badge);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--badge) 35%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--badge) calc(35% * var(--shadow-amt, 1)), transparent);
 }
 
 .role-mark-ticket {
@@ -1463,11 +1463,11 @@
 }
 .door-dot-open {
   background: var(--color-success);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--color-success) 55%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-success) calc(55% * var(--shadow-amt, 1)), transparent);
 }
 .door-dot-closed {
   background: var(--color-error);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--color-error) 45%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-error) calc(45% * var(--shadow-amt, 1)), transparent);
 }
 
 .org-tree > div {
@@ -1502,7 +1502,7 @@
 .role-mark[data-rank="ho-tro"].role-mark-chip,
 .role-mark[data-rank="ctv"].role-mark-chip {
   animation: role-glow 2.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--badge) 70%, transparent));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--badge) calc(70% * var(--shadow-amt, 1)), transparent));
 }
 
 @keyframes stat-in {
@@ -1576,8 +1576,8 @@
 }
 
 .org-card.role-user { border-color: var(--rank-user); }
-.org-card.role-ho-tro { border-color: var(--color-info); box-shadow: 0 0 12px color-mix(in srgb, var(--color-info) 18%, transparent); }
-.org-card.role-quan-ly { border-color: var(--color-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 20%, transparent); }
+.org-card.role-ho-tro { border-color: var(--color-info); box-shadow: 0 0 12px color-mix(in srgb, var(--color-info) calc(18% * var(--shadow-amt, 1)), transparent); }
+.org-card.role-quan-ly { border-color: var(--color-accent); box-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) calc(20% * var(--shadow-amt, 1)), transparent); }
 
 .role-mark[data-rank="user"] {
   animation: none;
@@ -1673,7 +1673,7 @@
   padding: 0.75rem 0.8rem;
   color: var(--color-fg);
   text-align: left;
-  box-shadow: 0 12px 32px rgb(0 0 0 / 35%);
+  box-shadow: 0 12px 32px rgb(0 0 0 / calc(0.35 * var(--shadow-amt, 1)));
   animation: version-in 180ms ease-out;
 }
 
@@ -1739,7 +1739,7 @@
 }
 
 @keyframes version-ping {
-  50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 38%, transparent); }
+  50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) calc(38% * var(--shadow-amt, 1)), transparent); }
 }
 
 @keyframes version-in {
@@ -2214,7 +2214,7 @@ html[data-density] .studio-workspace {
   height: 3px;
   transform: scaleX(0);
   background: linear-gradient(90deg, transparent, var(--mt-or) 18%, color-mix(in srgb, var(--color-warning) 55%, white) 50%, var(--mt-or) 82%, transparent);
-  box-shadow: 0 0 18px 2px color-mix(in srgb, var(--color-warning) 70%, transparent);
+  box-shadow: 0 0 18px 2px color-mix(in srgb, var(--color-warning) calc(70% * var(--shadow-amt, 1)), transparent);
 }
 
 /* quầng sáng quanh biển sau khi cắm */
@@ -2276,7 +2276,7 @@ html[data-density] .studio-workspace {
 .mt-logo .brand-mark {
   width: var(--mt-mark);
   height: var(--mt-mark);
-  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-accent) 45%, transparent));
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-accent) calc(45% * var(--shadow-amt, 1)), transparent));
 }
 
 .mt-brand {
@@ -2571,7 +2571,7 @@ html[data-density] .studio-workspace {
   pointer-events: none;
   border: 3px solid color-mix(in srgb, var(--color-warning) 75%, white);
   border-radius: 50%;
-  box-shadow: 0 0 22px var(--color-warning), inset 0 0 22px var(--color-warning);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--color-warning) calc(100% * var(--shadow-amt, 1)), transparent), inset 0 0 22px color-mix(in srgb, var(--color-warning) calc(100% * var(--shadow-amt, 1)), transparent);
 }
 
 .mt-root.mt-preview { z-index: 60; }
