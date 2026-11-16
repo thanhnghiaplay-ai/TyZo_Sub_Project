@@ -36,8 +36,8 @@ export function GiayPackBoard() {
 
   return (
     <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3">
-      <h2 className="font-semibold">Gói giây</h2>
-      <p className="text-sm text-muted">Giá bán = số giây × giá gốc Turbo × (1 + phần trăm) × hệ số đệm. Thiếu giá Turbo hoặc tỷ giá thì không bán. Gói đã bán không đổi số giây.</p>
+      <h2 className="font-semibold">Token dịch</h2>
+      <p className="text-sm text-muted">Giá bán = số Token dịch × giá gốc Turbo × (1 + phần trăm) × hệ số đệm. Thiếu giá Turbo hoặc tỷ giá thì không bán. Gói đã bán không đổi số Token dịch.</p>
       {!ready ? (
         <p className="text-sm text-muted">Đang đọc…</p>
       ) : (
@@ -55,7 +55,7 @@ export function GiayPackBoard() {
           {packs.map((pack, index) => (
             <div key={pack.id} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-2 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end">
               <label className="grid gap-1 text-sm">
-                Số giây
+                Số Token dịch
                 <input value={pack.tokens} onChange={(event) => setPack(index, { tokens: Number(event.target.value) })} inputMode="numeric" className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2 outline-none" />
               </label>
               <label className="grid gap-1 text-sm">
@@ -84,14 +84,14 @@ export function GiayPackBoard() {
                 setBusy(true);
                 void saveGiayDesk({ data: { markup: Number(markup), buffer: Number(buffer), packs } })
                   .then(() => {
-                    pushToast("Đã lưu gói giây.");
+                    pushToast("Đã lưu gói Token dịch.");
                     load();
                   })
                   .catch((error: Error) => pushToast(error.message || "Chưa lưu được.", "bad"))
                   .finally(() => setBusy(false));
               }}
             >
-              Lưu gói giây
+              Lưu gói
             </button>
           </div>
         </>

@@ -34,7 +34,7 @@ export const getGiayShelf = createServerFn({ method: "GET" })
     return { units: await giayBalance(sql, context.userId), packs: priced(desk, per), priced: per != null };
   });
 
-export const buyGiayPack = createServerFn({ method: "POST" })
+export const orderGiayPack = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
     const packId = String(id || "").trim().toLowerCase();
@@ -45,8 +45,6 @@ export const buyGiayPack = createServerFn({ method: "POST" })
     const { requireOpenAccount } = await import("@/lib/guard.server");
     await requireOpenAccount(context.userId);
     const { getSql } = await import("@/lib/db");
-    const { buyGiayWith } = await import("@/lib/token-flow");
-    const { randomBytes } = await import("node:crypto");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'token_desk'`;
     const desk = parseGiayDesk(saved[0]?.value);
@@ -55,15 +53,25 @@ export const buyGiayPack = createServerFn({ method: "POST" })
     const per = await turboPerSecond();
     const price = per ? packPriceVnd(pack.tokens, per, desk.markup, desk.buffer) : null;
     if (price == null) throw new Error("Chưa có giá bản Turbo hoặc tỷ giá. Chưa bán được gói này.");
-    const bought = await buyGiayWith(sql, context.userId, {
-      grantId: randomBytes(12).toString("hex"),
-      tokens: pack.tokens,
-      days: pack.days,
-      price,
-      note: `Mua gói ${pack.tokens} giây, hạn ${pack.days} ngày`,
+    const { placeSale } = await import("@/lib/pay-store");
+    return placeSale(context.userId, {
+      amount: price,
+      purpose: "token",
+      ref: pack.id,
+      detail: JSON.stringify({ tokens: pack.tokens, days: pack.days }),
+      title: `Mua ${pack.tokens} Token dịch`,
     });
-    if ("error" in bought) throw new Error("Số dư chưa đủ để mua gói này.");
-    return { balance: bought.balance, units: pack.tokens };
+  });
+
+export const buyGiayPack = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    const packId = String(id || "").trim().toLowerCase();
+    if (!/^[a-z0-9-]{1,40}$/.test(packId)) throw new Error("Gói không có.");
+    return packId;
+  })
+  .handler(async () => {
+    throw new Error("Không trừ số dư. Hãy chuyển khoản theo mã QR.");
   });
 
 export const getGiayDesk = createServerFn({ method: "GET" })

@@ -936,7 +936,7 @@ export function usePipeline() {
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
-        say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} giây dịch (ước tính, số trừ là số thực, phần thừa trả lại nếu gói còn hạn). Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} giây dịch.`);
+        say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} Token dịch (ước tính, số trừ là số thực, phần thừa trả lại nếu gói còn hạn). Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} Token dịch.`);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
       }

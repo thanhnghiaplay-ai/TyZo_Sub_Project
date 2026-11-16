@@ -14,8 +14,8 @@ describe("số giây và số phút", () => {
     assert.equal(liveMinutes(5000, null), null);
   });
   it("dòng giây còn có số giây và số phút", () => {
-    assert.equal(liveBalanceLine(5000, 5), "5.000 giây dịch · còn khoảng 5 phút");
-    assert.equal(liveBalanceLine(5000, null), "5.000 giây dịch");
+    assert.equal(liveBalanceLine(5000, 5), "5.000 Token dịch · còn khoảng 5 phút");
+    assert.equal(liveBalanceLine(5000, null), "5.000 Token dịch");
   });
 });
 
@@ -27,7 +27,7 @@ describe("cảnh báo sắp hết giây", () => {
   });
   it("dưới 3 phút báo sắp hết", () => {
     assert.equal(liveWarn({ ...base, minutes: 2 }), "low");
-    assert.match(liveWarnText("low", 2), /Sắp hết giây: còn khoảng 2 phút/);
+    assert.match(liveWarnText("low", 2), /Sắp hết Token dịch: còn khoảng 2 phút/);
   });
   it("cầu nối báo low thì báo dù còn nhiều phút theo ước tính", () => {
     assert.equal(liveWarn({ ...base, bridgeLow: true }), "low");
@@ -41,7 +41,7 @@ describe("cảnh báo sắp hết giây", () => {
   });
   it("chưa biết giá thì không bịa số phút", () => {
     assert.equal(liveWarn({ ...base, minutes: null }), "ok");
-    assert.match(liveWarnText("low", null), /Sắp hết giây\./);
+    assert.match(liveWarnText("low", null), /Sắp hết Token dịch\./);
   });
 });
 

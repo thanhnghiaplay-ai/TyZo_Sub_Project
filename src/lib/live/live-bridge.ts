@@ -131,7 +131,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   };
 
   if (!(await openBlock())) {
-    return fail(4402, deps.toGiay ? "Gói giây chưa đủ. Hãy mua thêm gói." : "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm.");
+    return fail(4402, deps.toGiay ? "Token dịch chưa đủ. Hãy mua thêm gói." : "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm.");
   }
 
   let upstream: WebSocket | null = null;

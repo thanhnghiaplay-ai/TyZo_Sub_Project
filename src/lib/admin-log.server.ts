@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.0.0",
+    time: "23:55 ngày 16/11/2026",
+    area: "tien",
+    text: "Bỏ nạp số dư. Mua Token dịch và thuê phòng tạo đơn QR (purpose token hoặc plan). Webhook và xác nhận tay giao đúng món, không cộng balance. Đơn nạp cũ vẫn cộng ví nếu còn. Migration 0025 đưa số dư về 0, hủy đơn nạp đang chờ, nhả phiếu đồng đang giữ mà không hoàn. Orpheus trừ token theo giá gốc. Neural không trừ. Trang /goi chỉ còn bảng giá, không còn ví giả. Điều khoản 2026-11-16.4.",
+  },
+  {
     version: "4.1.1",
     time: "22:55 ngày 16/11/2026",
     area: "tien",

@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## MUA THẲNG BẰNG QR (16/11/2026 23:55, nhánh work, v5.0.0)
+ĐÃ LÀM: bỏ nạp số dư. Mua Token dịch và thuê phòng tạo mã QR đúng giá. Tiền về thì giao gói hoặc mở hạn, không cộng số dư. Số dư test và đơn nạp đang chờ được đưa về 0 / hủy, không hoàn. Orpheus khi dùng key phòng trừ Token dịch theo giá gốc. Neural không trừ. Điều khoản `2026-11-16.4`. Trang giá chỉ xem giá.
+CHƯA LÀM: chưa bấm QR, thuê phòng và Orpheus trên điện thoại hay trình duyệt thật.
+CỐ Ý KHÔNG LÀM: không đổi giá thuê phòng tay. Không xóa file màn nạp cũ (không còn gắn vào trang). Không đổi tên biến nội bộ `giay`. Không cộng hoa hồng khi mua Token dịch.
+
 ## GÓI GIÂY 9 (16/11/2026 22:55, nhánh work, v4.1.1)
 ĐÃ LÀM: hướng dẫn, tuyến Chỉ tôi và câu chọn Trả theo lượt khớp gói giây. Kệ gói ghi cả dịch trực tiếp. Điều khoản `2026-11-16.3` (tóm tắt và bảng giá). Không đổi cách tính.
 CHƯA LÀM: chưa bấm trên điện thoại thật.

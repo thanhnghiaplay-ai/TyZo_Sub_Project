@@ -60,6 +60,27 @@ export const getRoomAccount = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<RoomState> => readState(context.userId));
 
+export const orderRoomPlan = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((id: string) => {
+    const plan = roomPlan(id);
+    if (!plan) throw new Error("Gói không có.");
+    return plan.id;
+  })
+  .handler(async ({ context, data }) => {
+    const plan = roomPlan(data)!;
+    const { requireOpenAccount } = await import("@/lib/guard.server");
+    await requireOpenAccount(context.userId);
+    const { placeSale } = await import("@/lib/pay-store");
+    return placeSale(context.userId, {
+      amount: plan.price,
+      purpose: "plan",
+      ref: plan.id,
+      detail: JSON.stringify({ hours: plan.hours, name: plan.name }),
+      title: `Thuê phòng ${plan.name}`,
+    });
+  });
+
 export const buyRoomPlan = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
@@ -67,15 +88,8 @@ export const buyRoomPlan = createServerFn({ method: "POST" })
     if (!plan) throw new Error("Gói không có.");
     return plan.id;
   })
-  .handler(async ({ context, data }): Promise<RoomState> => {
-    const plan = roomPlan(data)!;
-    const { requireOpenAccount } = await import("@/lib/guard.server");
-    await requireOpenAccount(context.userId);
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    const { buyPlanWith } = await import("@/lib/pay-flow");
-    await buyPlanWith(sql, context.userId, plan);
-    return readState(context.userId);
+  .handler(async () => {
+    throw new Error("Không trừ số dư. Hãy chuyển khoản theo mã QR.");
   });
 
 export const spendTrial = createServerFn({ method: "POST" })

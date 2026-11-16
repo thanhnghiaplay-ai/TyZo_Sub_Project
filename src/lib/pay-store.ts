@@ -128,7 +128,9 @@ async function writePayNotice(userId: string | null, kind: string, title: string
 async function creditHit(provider: "sepay" | "casso", hit: PayHit) {
   const { getSql } = await import("@/lib/db");
   const done = await creditHitWith(await getSql(), provider, hit);
-  if (done) await writePayNotice(done.userId, "user", "Đã cộng tiền nạp", `Đã cộng ${done.amount} đ vào số dư (mã ${done.code}).`);
+  if (done?.purpose === "token") await writePayNotice(done.userId, "user", "Đã cộng Token dịch", `Đơn ${done.code} đã cộng Token dịch.`);
+  else if (done?.purpose === "plan") await writePayNotice(done.userId, "user", "Đã mở thuê phòng", `Đơn ${done.code} đã mở hạn thuê phòng.`);
+  else if (done) await writePayNotice(done.userId, "user", "Đã cộng tiền nạp", `Đã cộng ${done.amount} đ vào số dư (mã ${done.code}).`);
   return Boolean(done);
 }
 
@@ -197,8 +199,53 @@ export const savePaySettings = createServerFn({ method: "POST" })
     return viewOf(next);
   });
 
-/** Số đơn nạp chưa xong tối đa của một tài khoản. */
+/** Số đơn chưa xong tối đa của một tài khoản. */
 const MAX_PENDING_ORDERS = 3;
+
+/** Tạo đơn chuyển khoản đúng giá một món. Không cộng số dư khi tiền về. */
+export async function placeSale(
+  userId: string,
+  input: { amount: number; purpose: "token" | "plan"; ref: string; detail: string; title: string },
+): Promise<PayOrderView> {
+  const settings = await readSettings();
+  const gates = viewOf(settings);
+  const provider = gates.sepay ? "sepay" : gates.casso ? "casso" : null;
+  if (!provider) throw new Error("Cổng chuyển khoản đang bảo trì.");
+  const amount = Math.round(input.amount);
+  if (!Number.isFinite(amount) || amount < 1 || amount > 5_000_000) throw new Error("Giá gói không bán được.");
+  const bank = provider === "sepay" ? settings.sepay_bank : settings.casso_bank;
+  const account = provider === "sepay" ? settings.sepay_account : settings.casso_account;
+  const name = provider === "sepay" ? settings.sepay_name : settings.casso_name;
+  const id = randomBytes(12).toString("hex");
+  const code = randomPayCode(randomBytes(6));
+  const { getSql } = await import("@/lib/db");
+  const sql = await getSql();
+  await expireMine(sql, userId);
+  const { takeRate } = await import("@/lib/guard.server");
+  await takeRate(`pay-create:${userId}`, 10, 3600);
+  const made = await sql<{ id: string; created_at: Date | string }>`
+    insert into pay_orders (id, user_id, provider, amount, code, purpose, ref, detail)
+    select ${id}::text, ${userId}::text, ${provider}::text, ${amount}::int, ${code}::text, ${input.purpose}::text, ${input.ref}::text, ${input.detail}::text
+    where (select count(*) from pay_orders where user_id = ${userId} and status in ('pending', 'claimed')) < ${MAX_PENDING_ORDERS}
+    returning id, created_at
+  `;
+  if (!made.length) throw new Error(`Bạn đang có ${MAX_PENDING_ORDERS} đơn chưa xong. Hãy chuyển khoản hoặc hủy bớt rồi tạo đơn mới.`);
+  await writePayNotice(userId, "user", "Đã tạo đơn chuyển khoản", `${input.title}. Mã ${code}: ${amount} đ.`);
+  const picture = await qrUrl(bank, account, amount, code);
+  return {
+    id,
+    provider,
+    amount,
+    code,
+    status: "pending",
+    bank,
+    account,
+    name,
+    qr: picture.qr,
+    qrLive: picture.qrLive,
+    createdAt: new Date(made[0].created_at).toISOString(),
+  };
+}
 
 export const createPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -209,45 +256,8 @@ export const createPayOrder = createServerFn({ method: "POST" })
     if (!Number.isFinite(amount) || amount < 10_000 || amount > 1_000_000) throw new Error("So tien tu 10.000 den 1.000.000 dong.");
     return { provider, amount };
   })
-  .handler(async ({ context, data }): Promise<PayOrderView> => {
-    const { requireOpenAccount } = await import("@/lib/guard.server");
-    await requireOpenAccount(context.userId);
-    const settings = await readSettings();
-    const view = viewOf(settings);
-    if (data.provider === "sepay" && !view.sepay) throw new Error("Sepay dang bao tri.");
-    if (data.provider === "casso" && !view.casso) throw new Error("Casso dang bao tri.");
-    const bank = data.provider === "sepay" ? settings.sepay_bank : settings.casso_bank;
-    const account = data.provider === "sepay" ? settings.sepay_account : settings.casso_account;
-    const name = data.provider === "sepay" ? settings.sepay_name : settings.casso_name;
-    const id = randomBytes(12).toString("hex");
-    const code = randomPayCode(randomBytes(6));
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    await expireMine(sql, context.userId);
-    const { takeRate } = await import("@/lib/guard.server");
-    await takeRate(`pay-create:${context.userId}`, 10, 3600);
-    const made = await sql<{ id: string; created_at: Date | string }>`
-      insert into pay_orders (id, user_id, provider, amount, code)
-      select ${id}::text, ${context.userId}::text, ${data.provider}::text, ${data.amount}::int, ${code}::text
-      where (select count(*) from pay_orders where user_id = ${context.userId} and status in ('pending', 'claimed')) < ${MAX_PENDING_ORDERS}
-      returning id, created_at
-    `;
-    if (!made.length) throw new Error(`Bạn đang có ${MAX_PENDING_ORDERS} đơn nạp chưa xong. Hãy chuyển khoản hoặc hủy bớt rồi tạo đơn mới.`);
-    await writePayNotice(context.userId, "user", "Đã tạo đơn nạp", `Đơn ${code}: ${data.amount} đ qua ${data.provider}. Chờ xác nhận hoặc chuyển khoản.`);
-    const picture = await qrUrl(bank, account, data.amount, code);
-    return {
-      id,
-      provider: data.provider as "sepay" | "casso",
-      amount: data.amount,
-      code,
-      status: "pending",
-      bank,
-      account,
-      name,
-      qr: picture.qr,
-      qrLive: picture.qrLive,
-      createdAt: new Date(made[0].created_at).toISOString(),
-    };
+  .handler(async (): Promise<PayOrderView> => {
+    throw new Error("Không còn nạp số dư. Hãy mua Token dịch hoặc thuê phòng.");
   });
 
 export const readPayOrder = createServerFn({ method: "POST" })

@@ -71,7 +71,7 @@ export function TurnPackList({
       <h2 className="text-sm font-semibold">Gói trả theo lượt</h2>
       <p className="text-sm text-muted">
         {seconds > 0 ? "Số giây đã gồm phần vận hành của phòng. Bạn không thấy giá gốc." : "Chọn tệp để thấy số giây sẽ giữ. Bạn không thấy giá gốc."}
-        {" "}Đọc thuyết minh, nếu bật, vẫn trừ số dư đồng. Nhận dạng Alibaba cần link file trực tiếp. Việc Alibaba khác chưa chạy.
+        {" "}Orpheus, nếu bật, trừ Token dịch. Neural không trừ. Nhận dạng Alibaba cần link file trực tiếp. Việc Alibaba khác chưa chạy.
       </p>
       {packs.map((pack) => {
         const jobs = PACK_ROLES.filter((role) => pack.roles[role]).map((role) => {

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "4.1.1";
+export const APP_VERSION = "5.0.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.0.0",
+    time: "23:55 ngày 16/11/2026",
+    title: "Mua gói bằng mã QR, không giữ số dư.",
+    points: [
+      "Bấm mua Token dịch thì hiện mã QR. Chuyển khoản đúng số thì được gói.",
+      "Thuê phòng cũng chuyển khoản theo mã, không giữ số dư.",
+      "Orpheus khi dùng key của phòng trừ Token dịch. Giọng Neural vẫn miễn phí.",
+      "Không còn chỗ nạp số dư.",
+    ],
+  },
   {
     version: "4.1.1",
     time: "22:55 ngày 16/11/2026",

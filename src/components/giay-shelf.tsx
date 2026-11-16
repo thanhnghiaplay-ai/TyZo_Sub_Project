@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { askConfirm } from "@/lib/confirm";
-import { buyGiayPack, getGiayShelf, type GiayPackView } from "@/lib/giay-room";
+import { getGiayShelf, orderGiayPack, type GiayPackView } from "@/lib/giay-room";
 import { formatGiay } from "@/lib/token-math";
+import { PaySlip } from "@/components/pay-slip";
+import type { PayOrderView } from "@/lib/pay-store";
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -13,6 +15,7 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
   const [packs, setPacks] = useState<GiayPackView[]>([]);
   const [priced, setPriced] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [slip, setSlip] = useState<PayOrderView | null>(null);
 
   useEffect(() => {
     let gone = false;
@@ -32,13 +35,24 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
   }, [reload]);
 
   return (
-    <section className="grid gap-2" aria-label="Gói giây" data-tour="giay">
-      <h2 className="text-sm font-semibold">Gói giây</h2>
+    <section className="grid gap-2" aria-label="Token dịch" data-tour="giay">
+      <h2 className="text-sm font-semibold">Token dịch</h2>
       <p className="text-sm text-muted">
-        Dùng cho trả theo lượt và dịch trực tiếp. Còn {units == null ? "…" : formatGiay(units)}. Giá gói mới có thể đổi. Gói đã mua giữ nguyên số giây đến hết hạn. Hết hạn thì phần còn lại mất, không hoàn tiền.
+        Dùng cho trả theo lượt, dịch trực tiếp và Orpheus. Còn {units == null ? "…" : formatGiay(units)}. Bấm mua thì hiện mã QR, chuyển khoản đúng số thì được Token dịch. Hết hạn thì phần còn lại mất, không hoàn tiền.
       </p>
+      {slip && (
+        <PaySlip
+          order={slip}
+          doneText="Đã cộng Token dịch."
+          onDone={() => {
+            setSlip(null);
+            onBought("Đã cộng Token dịch.");
+          }}
+          onClose={() => setSlip(null)}
+        />
+      )}
       {!priced && <p className="text-sm text-danger">Chưa có giá bản Turbo hoặc tỷ giá nên chưa bán gói.</p>}
-      {packs.length === 0 && <p className="text-sm text-muted">Chủ chưa mở gói giây.</p>}
+      {packs.length === 0 && <p className="text-sm text-muted">Chủ chưa mở gói Token dịch.</p>}
       {packs.map((pack) => (
         <button
           key={pack.id}
@@ -50,15 +64,15 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
             const price = pack.price;
             void (async () => {
               const ok = await askConfirm({
-                title: "Mua gói giây?",
-                text: `${formatGiay(pack.tokens)}, hạn ${pack.days} ngày, giá ${dong(price)}.\nGiá gói mới có thể đổi. Gói này giữ nguyên đến hết hạn. Hết hạn thì phần còn lại mất, không hoàn tiền.`,
-                confirmLabel: "Mua gói",
+                title: "Mua Token dịch?",
+                text: `${formatGiay(pack.tokens)}, hạn ${pack.days} ngày, giá ${dong(price)}.\nSẽ hiện mã QR. Chuyển khoản đúng số thì được Token dịch. Hết hạn thì phần còn lại mất, không hoàn tiền.`,
+                confirmLabel: "Tạo mã QR",
               });
               if (!ok) return;
               setBusy(true);
               try {
-                await buyGiayPack({ data: pack.id });
-                onBought("Đã mua gói giây.");
+                const made = await orderGiayPack({ data: pack.id });
+                setSlip(made);
               } catch (error) {
                 onBought(error instanceof Error ? error.message : "Chưa mua được.");
               } finally {

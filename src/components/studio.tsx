@@ -61,7 +61,7 @@ import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
 const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ ví cho lượt chạy.";
-const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số giây ước tính từ gói giây đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn. Không trừ ngày gói.";
+const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số Token dịch ước tính từ gói đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn.";
 
 const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
 const FIELD =
@@ -770,7 +770,7 @@ export function Studio() {
       id: "tai-khoan",
       label: "Tài khoản",
       children: [
-        { id: "so-du", domId: "tool-tab-so-du", label: "Số dư và nạp tiền", current: product === "account", onPick: () => setProduct("account") },
+        { id: "so-du", domId: "tool-tab-so-du", label: "Token dịch", current: product === "account", onPick: () => setProduct("account") },
         { id: "goi", domId: "tool-tab-goi", label: "Thuê phòng và gói", href: "/goi" },
         { id: "ctv", label: "Cộng tác viên", href: "/ctv" },
         { id: "yeu-cau", domId: "tool-tab-yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
@@ -807,7 +807,7 @@ export function Studio() {
     { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
     ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "phu de cong cu", run: () => openTool(id) })),
     ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: id === "goi-dich" ? "goi dich cach tra key theo luot" : "thuat ngu glossary the loai", run: () => openTool(id) })),
-    { id: "wallet", label: "Số dư và nạp tiền", hint: "Tài khoản", words: "nap tien vi", run: () => setProduct("account") },
+    { id: "wallet", label: "Token dịch", hint: "Tài khoản", words: "token dich goi", run: () => setProduct("account") },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", hint: "Trang", words: "live truc tiep micro tab giong noi", run: () => void navigate({ to: "/dich-truc-tiep" }) },
     { id: "tai-video", label: "Tải video", hint: "Trang", run: () => void navigate({ to: "/tai-video" }) },
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },

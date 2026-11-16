@@ -1,7 +1,9 @@
 import type { Sql } from "./db.ts";
 import { asrPerSecond, billedSecondsOf, asrCost, chatCost, chatPerMillion, speechCost, speechPerMillionChars, type PriceBook } from "./run-bill.ts";
-import { dayStartIso } from "./run-desk.ts";
-import { chargeSpeechWith, chargeTicketWith, refundSpeechWith, ticketLive } from "./run-ticket.ts";
+import { chargeTicketWith, ticketLive } from "./run-ticket.ts";
+import { tokensForBase, TURBO_ASR } from "./token-math.ts";
+import { chargeTokenWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
+import { randomBytes } from "node:crypto";
 
 export const MAX_COMPLETION_TOKENS = 8192;
 
@@ -35,13 +37,9 @@ export async function readRequest(
   }
 }
 
-function dayKey(now = Date.now()) {
-  return new Date(now + 7 * 3600 * 1000).toISOString().slice(0, 10);
-}
-
 /**
  * Tính tiền một yêu cầu gửi Groq. Chỉ tính khi Groq trả thành công; đoạn lỗi không mất tiền.
- * Nhận dạng và dịch trừ vào phiếu đã giữ chỗ, đọc thuyết minh trừ thẳng ví.
+ * Nhận dạng và dịch trừ vào phiếu đã giữ chỗ. Orpheus trừ Token dịch theo giá gốc.
  */
 export async function chargeWith(input: {
   sql: Sql;
@@ -58,20 +56,37 @@ export async function chargeWith(input: {
   const { sql, book, path, model, userId } = input;
 
   if (path === "/audio/speech") {
-    const cost = speechCost(book, model, input.chars);
-    const base = speechCost({ ...book, desk: { markup: 0, custom: {} } }, model, input.chars) ?? 0;
-    if (cost == null || speechPerMillionChars(book, model) == null) return { kind: "reject", status: 422, message: "Model này chưa có giá niêm yết." };
-    const key = dayKey();
-    const ok = await chargeSpeechWith(sql, userId, cost, key, input.cap, dayStartIso(), base);
-    if (!ok) return { kind: "reject", status: 402, message: "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm." };
+    const bare = { ...book, desk: { markup: 0, custom: {} } };
+    const base = speechCost(bare, model, input.chars) ?? 0;
+    const turbo = asrPerSecond(bare, TURBO_ASR);
+    if (!(base > 0) || turbo == null || speechPerMillionChars(bare, model) == null) {
+      return { kind: "reject", status: 422, message: "Model này chưa có giá niêm yết." };
+    }
+    const tokens = tokensForBase(base, turbo);
+    if (tokens == null || tokens < 1) return { kind: "reject", status: 422, message: "Chưa tính được số Token dịch." };
+    const id = randomBytes(12).toString("hex");
+    const opened = await openGiayWith(sql, {
+      id,
+      userId,
+      fileName: "Đọc thuyết minh",
+      seconds: 0,
+      rate: Math.max(1, Math.round(turbo)),
+      hold: tokens,
+    });
+    if ("error" in opened) return { kind: "reject", status: 402, message: "Chưa đủ Token dịch. Hãy mua gói." };
     let response: Response;
     try {
       response = await input.send();
     } catch (error) {
-      await refundSpeechWith(sql, userId, cost, key, base);
+      await closeTokenWith(sql, id, userId, true);
       throw error;
     }
-    if (!response.ok) await refundSpeechWith(sql, userId, cost, key, base);
+    if (!response.ok) {
+      await closeTokenWith(sql, id, userId, true);
+      return { kind: "pass", response };
+    }
+    await chargeTokenWith(sql, id, userId, tokens);
+    await closeTokenWith(sql, id, userId, false);
     return { kind: "pass", response };
   }
 

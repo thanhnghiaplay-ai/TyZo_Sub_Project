@@ -36,8 +36,8 @@ export function liveWarn(input: { minutes: number | null; bridgeLow: boolean; de
 
 /** Câu cảnh báo cho khách. Rỗng khi tiền còn thoải mái. */
 export function liveWarnText(warn: LiveWarn, minutes: number | null): string {
-  if (warn === "out") return "Sắp hết giây, phiên sẽ tự dừng. Hãy mua thêm gói rồi bấm Bắt đầu lại.";
-  if (warn === "low") return minutes != null ? `Sắp hết giây: còn khoảng ${formatMinutes(minutes)}. Mua thêm gói để không bị ngắt.` : "Sắp hết giây. Mua thêm gói để không bị ngắt.";
+  if (warn === "out") return "Sắp hết Token dịch, phiên sẽ tự dừng. Hãy mua thêm gói rồi bấm Bắt đầu lại.";
+  if (warn === "low") return minutes != null ? `Sắp hết Token dịch: còn khoảng ${formatMinutes(minutes)}. Mua thêm gói để không bị ngắt.` : "Sắp hết Token dịch. Mua thêm gói để không bị ngắt.";
   return "";
 }
 

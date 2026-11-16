@@ -19,6 +19,7 @@ const book: PriceBook = {
   rows: [
     row({ id: "asr", usdPerHour: 0.04 }),
     row({ id: "chat", usdIn: 0.075, usdOut: 0.3 }),
+    row({ id: "whisper-large-v3-turbo", usdPerHour: 79.2 }),
     row({ id: "tts", usdPerMillionChars: 22 }),
   ],
 };
@@ -90,14 +91,19 @@ describe("cổng tính tiền", () => {
     assert.equal(called, false);
   });
 
-  it("đọc thuyết minh: trừ trước, hoàn khi Groq lỗi", async () => {
+  it("đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi", async () => {
+    await sql`delete from token_slices where grant_id = 'gtts'`;
+    await sql`delete from token_grants where id = 'gtts'`;
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('gtts', 'g', 5, 5, 1, now() + interval '1 day')`;
+    const left = async () => Number((await sql<{ n: number }>`select left_tokens as n from token_grants where id = 'gtts'`)[0].n);
     const before = await bal();
     const ok = await call({ path: "/audio/speech", model: "tts", chars: 1000, send: async () => new Response("wav") });
     assert.equal(ok.kind, "pass");
-    assert.equal(before - (await bal()), 1100); // 22×25.000×2 = 1.100.000 đ/triệu ký tự × 1.000
-    const mid = await bal();
+    assert.equal(await bal(), before);
+    assert.equal(await left(), 4);
     await call({ path: "/audio/speech", model: "tts", chars: 1000, send: json({}, 500) });
-    assert.equal(await bal(), mid);
+    assert.equal(await left(), 4);
+    assert.equal(await bal(), before);
   });
 });
 

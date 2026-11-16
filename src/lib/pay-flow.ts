@@ -1,24 +1,127 @@
 import type { Sql } from "./db.ts";
 import { codesIn, PAY_MINUTES, type PayHit } from "./pay-match.ts";
+import { roomPlan } from "./room-plans.ts";
 
-export type CreditResult = { userId: string; amount: number; code: string } | null;
+export type CreditResult = { userId: string; amount: number; code: string; purpose?: string } | null;
+
+type SaleOrder = {
+  id: string;
+  user_id: string;
+  amount: number;
+  code: string;
+  purpose: string;
+  ref: string;
+  detail: string;
+};
+
+function tokenSpec(detail: string): { tokens: number; days: number } | null {
+  try {
+    const data = JSON.parse(detail) as { tokens?: unknown; days?: unknown };
+    const tokens = Math.round(Number(data.tokens));
+    const days = Math.round(Number(data.days));
+    if (!Number.isFinite(tokens) || tokens < 1 || tokens > 10_000_000) return null;
+    if (!Number.isFinite(days) || days < 1 || days > 365) return null;
+    return { tokens, days };
+  } catch {
+    return null;
+  }
+}
+
+/** Đơn mua thẳng: đánh dấu đã trả rồi cộng token hoặc mở hạn. Không cộng số dư. */
+export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider: string; ref: string }): Promise<CreditResult> {
+  if (order.purpose === "token") {
+    const spec = tokenSpec(order.detail);
+    if (!spec) return null;
+    const note = `Mua ${spec.tokens} Token dịch, hạn ${spec.days} ngày`;
+    const applied = await sql<{ user_id: string }>`
+      with seen as (
+        insert into pay_seen (provider, provider_ref) values (${mark.provider}, ${mark.ref})
+        on conflict do nothing
+        returning provider_ref
+      ),
+      paid as (
+        update pay_orders
+        set status = 'paid', provider_ref = ${mark.ref}
+        where id = ${order.id} and status in ('pending', 'claimed') and purpose = 'token' and exists (select 1 from seen)
+        returning user_id
+      ),
+      issued as (
+        insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at)
+        select ${order.id}::text, user_id, ${spec.tokens}::int, ${spec.tokens}::int, ${order.amount}::int, now() + make_interval(days => ${spec.days}::int)
+        from paid
+        returning id
+      ),
+      led as (
+        insert into room_ledger (user_id, kind, amount, note)
+        select user_id, 'nap', ${order.amount}::int, ${note}::text from paid
+        returning 1
+      )
+      select user_id from paid
+    `;
+    return applied.length ? { userId: order.user_id, amount: order.amount, code: order.code, purpose: "token" } : null;
+  }
+  if (order.purpose === "plan") {
+    const plan = roomPlan(order.ref);
+    if (!plan || plan.price !== order.amount) return null;
+    const note = `Thuê phòng ${plan.name}`;
+    const applied = await sql<{ user_id: string }>`
+      with seen as (
+        insert into pay_seen (provider, provider_ref) values (${mark.provider}, ${mark.ref})
+        on conflict do nothing
+        returning provider_ref
+      ),
+      paid as (
+        update pay_orders
+        set status = 'paid', provider_ref = ${mark.ref}
+        where id = ${order.id} and status in ('pending', 'claimed') and purpose = 'plan' and exists (select 1 from seen)
+        returning user_id
+      ),
+      acct as (
+        insert into room_accounts (user_id, plan, plan_until)
+        select user_id, ${plan.id}::text, now() + make_interval(hours => ${plan.hours}::int) from paid
+        on conflict (user_id) do update set
+          plan = ${plan.id}::text,
+          plan_until = (case when room_accounts.plan_until > now() then room_accounts.plan_until else now() end)
+            + make_interval(hours => ${plan.hours}::int)
+        returning user_id
+      ),
+      led as (
+        insert into room_ledger (user_id, kind, amount, note)
+        select user_id, 'nap', ${order.amount}::int, ${note}::text from acct
+        returning 1
+      )
+      select user_id from paid
+    `;
+    if (!applied.length) return null;
+    try {
+      const { accruePlan } = await import("@/lib/affiliate-flow");
+      await accruePlan(sql, order.user_id, `goi:${order.id}`, plan.price);
+    } catch {
+      /* mở hạn vẫn xong nếu hoa hồng lỗi */
+    }
+    return { userId: order.user_id, amount: order.amount, code: order.code, purpose: "plan" };
+  }
+  return null;
+}
 
 /**
- * Webhook nạp tiền: khớp mã TZxxxxxx trong nội dung chuyển khoản với đơn đang chờ, rồi cộng ví.
- * Một câu SQL duy nhất: pay_seen chặn webhook gửi lặp, đơn chỉ chuyển 'paid' một lần.
+ * Webhook nạp tiền: khớp mã TZxxxxxx trong nội dung chuyển khoản với đơn đang chờ.
+ * Đơn mua token hoặc thuê phòng thì giao đúng món, không cộng số dư.
+ * Đơn nạp cũ vẫn cộng ví (chỉ còn đơn đã tạo trước khi bỏ nạp).
  */
 export async function creditHitWith(sql: Sql, provider: "sepay" | "casso", hit: PayHit): Promise<CreditResult> {
   const found = codesIn(hit.text).slice(0, 8);
   if (!found.length) return null;
   const slot = (index: number) => found[index] ?? found[0];
-  const orders = await sql<{ id: string; user_id: string; amount: number; code: string }>`
-    select id, user_id, amount, code from pay_orders
+  const orders = await sql<SaleOrder & { provider: string }>`
+    select id, user_id, amount, code, purpose, ref, detail, provider from pay_orders
     where status in ('pending', 'claimed') and provider = ${provider}
       and created_at > now() - (${PAY_MINUTES} * interval '1 minute')
       and code in (${slot(0)}, ${slot(1)}, ${slot(2)}, ${slot(3)}, ${slot(4)}, ${slot(5)}, ${slot(6)}, ${slot(7)})
   `;
   const order = orders.find((item) => found.includes(item.code) && hit.amount >= item.amount);
   if (!order) return null;
+  if (order.purpose === "token" || order.purpose === "plan") return settleDirect(sql, order, { provider, ref: hit.ref });
   const applied = await sql<{ user_id: string }>`
     with seen as (
       insert into pay_seen (provider, provider_ref) values (${provider}, ${hit.ref})

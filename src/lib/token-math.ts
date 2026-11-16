@@ -23,7 +23,7 @@ export function packPriceVnd(tokens: number, turboVndPerSecond: number, markupPc
 }
 
 export function formatGiay(n: number): string {
-  return new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(n))) + " giây dịch";
+  return new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(n))) + " Token dịch";
 }
 
 /** Số giây sẽ giữ cho một lần chạy. Tính trên giá gốc, đã gồm đệm giữ chỗ. null khi thiếu giá. */

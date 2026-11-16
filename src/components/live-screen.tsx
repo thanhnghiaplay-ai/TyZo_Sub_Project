@@ -244,7 +244,7 @@ export function LiveScreen() {
               <span data-testid="live-balance">{live.money == null ? "Đang xem số giây…" : liveBalanceLine(live.money, live.minutes)}</span>
             </p>
             <Link to="/tai-khoan" className="min-tap rounded-full border border-line px-4 text-sm font-semibold">
-              Mua gói giây
+              Mua Token dịch
             </Link>
           </div>
           {live.perMinute != null && <p className="text-xs text-muted">Khoảng {new Intl.NumberFormat("vi-VN").format(live.perMinute)} giây mỗi phút. Chỉ trừ phần đã dịch.</p>}

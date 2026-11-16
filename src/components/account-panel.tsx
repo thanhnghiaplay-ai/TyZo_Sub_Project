@@ -7,10 +7,11 @@ import { AccountCard } from "@/components/role-mark";
 import type { BadgeStyleId } from "@/lib/badge-styles";
 import { canSkipToOwner } from "@/lib/staff-role";
 import { deviceId } from "@/lib/device-id";
-import { buyRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
+import { orderRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
 import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
-import { TopUp } from "@/components/top-up";
 import { GiayShelf } from "@/components/giay-shelf";
+import { PaySlip } from "@/components/pay-slip";
+import type { PayOrderView } from "@/lib/pay-store";
 import { formatGiay } from "@/lib/token-math";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
@@ -35,7 +36,7 @@ export function AccountPanel() {
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [reload, setReload] = useState(0);
-  const [payOpen, setPayOpen] = useState(false);
+  const [payOpen, setPayOpen] = useState<PayOrderView | null>(null);
   const runDoor = useRunDoor();
 
   useEffect(() => {
@@ -68,20 +69,6 @@ export function AccountPanel() {
       gone = true;
     };
   }, [user, reload]);
-
-  async function run(task: () => Promise<RoomState>, done: string) {
-    setBusy(true);
-    setNotice(null);
-    try {
-      setState(await task());
-      setNotice(done);
-      window.dispatchEvent(new Event("tyzo-room-refresh"));
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Không thực hiện được.");
-    } finally {
-      setBusy(false);
-    }
-  }
 
   return (
     <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
@@ -148,31 +135,17 @@ export function AccountPanel() {
             <div data-tour="balance">
             <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
-            <p className="mt-2 text-sm text-muted">Số dư</p>
-            <p className="text-2xl font-semibold text-accent">{dong(state?.balance ?? 0)}</p>
-            <p className="mt-2 text-sm text-muted">Giây dịch còn</p>
+            <p className="mt-2 text-sm text-muted">Token dịch còn</p>
             <p className="text-xl font-semibold">{formatGiay(state?.units ?? 0)}</p>
-            {(state?.holding ?? 0) > 0 && (
-              <p className="text-sm text-muted">Đang giữ {dong(state?.holding ?? 0)} cho lần chạy chưa xong. Quá 6 giờ không chạy tiếp thì số này trả về số dư.</p>
-            )}
             <p className="mt-2 text-sm">
               {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
             </p>
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2" data-tour="topup">
-              <button type="button" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none" onClick={() => setPayOpen(true)}>
-                Nạp tiền
-              </button>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
                 Cộng tác viên
               </Link>
             </div>
-            <TopUp
-              compact
-              opened={payOpen}
-              onOpened={setPayOpen}
-              onPaid={() => { setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }}
-            />
           </AccountCard>
           {runDoor.open ? (
             <section className="grid gap-1 rounded-[var(--radius-ctl)] border border-line bg-card p-3">
@@ -180,23 +153,45 @@ export function AccountPanel() {
                 <DoorDot open />
                 Trả theo lượt
               </h2>
-              <p className="text-sm text-muted">Cửa này trừ gói giây, không giữ ví. Mua gói ở dưới. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
+              <p className="text-sm text-muted">Cửa này trừ Token dịch, không giữ ví. Mua gói ở dưới. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
             </section>
           ) : (
             <RunDoorClosed note={runDoor.note} />
           )}
           <GiayShelf reload={reload} onBought={(message) => { setNotice(message); setReload((value) => value + 1); }} />
-          <div className="grid gap-2">
+          <div className="grid gap-2" data-tour="plans">
           <p className="text-sm text-muted">
-            Đăng ký mà chưa nạp là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói đã mua thì trong hạn không giới hạn số tệp.
+            Đăng ký mà chưa mua gói là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói thuê phòng đã trả thì trong hạn không giới hạn số tệp.
           </p>
+          {payOpen && (
+            <PaySlip
+              order={payOpen}
+              doneText="Đã mở hạn thuê phòng."
+              onDone={() => {
+                setPayOpen(null);
+                setReload((value) => value + 1);
+                window.dispatchEvent(new Event("tyzo-room-refresh"));
+              }}
+              onClose={() => setPayOpen(null)}
+            />
+          )}
           {ROOM_PLANS.map((plan) => (
             <button
               key={plan.id}
               type="button"
               disabled={busy}
               className="flex min-tap w-full items-center justify-between gap-3 rounded-[var(--radius-card)] border border-line bg-card px-4 py-3 text-left disabled:opacity-40"
-              onClick={() => void run(() => buyRoomPlan({ data: plan.id }), "Đã mở gói.")}
+              onClick={() => {
+                setBusy(true);
+                setNotice(null);
+                void orderRoomPlan({ data: plan.id })
+                  .then((order) => {
+                    setPayOpen(order);
+                    setNotice("Đã tạo mã chuyển khoản.");
+                  })
+                  .catch((error: Error) => setNotice(error.message || "Chưa tạo được mã."))
+                  .finally(() => setBusy(false));
+              }}
             >
               <span className="min-w-0">
                 <span className="block font-medium">{plan.name}</span>

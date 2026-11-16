@@ -35,7 +35,7 @@ export const TOUR_PAGE: Record<TourId, TourPage> = {
 export const TOURS: Record<TourId, TourStep[]> = {
   "quick-start": [
     { sel: "[data-tour=drop]", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
-    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở Key Sub: dùng key Groq của bạn, hoặc trả theo lượt bằng gói giây đã mua." },
+    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở Key Sub: dùng key Groq của bạn, hoặc trả theo lượt bằng Token dịch đã mua." },
     { sel: "#tool-tab-phim", rail: true, press: true, title: "3. Chọn phim", text: "Mở Phim để chọn ngôn ngữ và thể loại." },
     { sel: "[data-tour=run]", title: "4. Dịch", text: "Bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
     { sel: "[data-tour=export]", title: "5. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
@@ -53,7 +53,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   "dich-truc-tiep": [
     { sel: "[data-tour=live-source]", title: "1. Chọn nguồn", text: "Âm thanh tab (tiếng từ một tab trình duyệt) hoặc Micro. Điện thoại thường chỉ dùng được Micro." },
     { sel: "[data-tour=live-lang]", title: "2. Chọn ngôn ngữ", text: "Ngôn ngữ nói (để Tự nhận biết nếu chưa rõ) và ngôn ngữ dịch. Có thể bật tiếng dịch qua loa." },
-    { sel: "[data-tour=live-balance]", title: "3. Số giây", text: "Số giây còn lại và số phút hiện ở đây. Sắp hết thì có cảnh báo. Hết giây thì phiên dừng. Bấm Mua gói giây để mua thêm." },
+    { sel: "[data-tour=live-balance]", title: "3. Token dịch", text: "Số Token dịch còn lại và số phút hiện ở đây. Sắp hết thì có cảnh báo. Hết Token dịch thì phiên dừng. Bấm Mua Token dịch để mua thêm." },
     { sel: "[data-tour=live-start]", title: "4. Bắt đầu", text: "Bấm Bắt đầu. Với Âm thanh tab, hộp chọn của trình duyệt hiện ra: chọn đúng tab và bật mục chia sẻ âm thanh của tab." },
     { sel: "[data-tour=export]", title: "5. Tải bản ghi", text: "Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
   ],
@@ -62,11 +62,10 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "[data-tour=glossary-genre]", title: "2. Chọn thể loại", text: "Chọn thể loại của phim để nạp đúng bộ thuật ngữ. Chọn Tự động thì app không nạp bộ có sẵn." },
   ],
   "nap-tien": [
-    { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Số dư và nạp tiền", text: "Nằm trong nhóm Tài khoản của menu trái." },
-    { sel: "[data-tour=balance]", title: "2. Số dư và hạn gói", text: "Số dư, giây dịch còn lại và hạn gói của bạn." },
-    { sel: "[data-tour=topup]", title: "3. Nạp tiền", text: "Bấm Nạp tiền, chọn mức hoặc nhập số tiền rồi chuyển khoản đúng số tiền và nội dung hiện ra. Đơn nạp có thời hạn." },
-    { sel: "[data-tour=giay]", title: "4. Mua gói giây", text: "Gói này dùng cho trả theo lượt và dịch trực tiếp. Hết hạn thì phần còn mất, không hoàn tiền." },
-    { sel: "#tool-tab-goi", rail: true, title: "5. Gói thuê phòng", text: "Muốn thuê theo gói thì mở Thuê phòng và gói để xem bảng giá." },
+    { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },
+    { sel: "[data-tour=balance]", title: "2. Token dịch và hạn gói", text: "Token dịch còn lại và hạn thuê phòng của bạn." },
+    { sel: "[data-tour=giay]", title: "3. Mua Token dịch", text: "Gói này dùng cho trả theo lượt, dịch trực tiếp và Orpheus. Bấm mua thì hiện mã QR. Hết hạn thì phần còn mất, không hoàn tiền." },
+    { sel: "[data-tour=plans]", title: "4. Thuê phòng", text: "Bấm gói thì hiện mã QR. Chuyển khoản đúng số thì mở hạn, không giữ số dư." },
   ],
   "key-groq": [
     { title: "1. Lấy key ở Groq", text: "Mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
@@ -74,7 +73,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "[data-tour=key-input]", title: "3. Dán key", text: "Dán key vào ô này hoặc bấm nút dán. Key chỉ lưu trên máy này. Dán xong app tự kiểm tra key và model." },
   ],
   "mat-khau": [
-    { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Số dư và nạp tiền", text: "Nằm trong nhóm Tài khoản của menu trái." },
+    { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },
     { sel: "[data-tour=change-password]", title: "2. Đổi mật khẩu", text: "Nhập mật khẩu hiện tại và mật khẩu mới. Quên mật khẩu thì dùng nút Quên mật khẩu ở màn đăng nhập (nếu có) hoặc liên hệ hỗ trợ." },
   ],
   "ho-tro": [

@@ -5,15 +5,13 @@ import { getServiceMenu } from "@/lib/pack-room";
 import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
 import { turnPackModels, turnPacks } from "@/lib/turn-pack";
 import type { ServicePack } from "@/lib/service-pack";
-import { formatDong, formatMinutes, minutesLeft, pickPrice, runEstimate } from "@/lib/wallet-view";
+import { formatMinutes, minutesLeft, pickPrice, runEstimate } from "@/lib/wallet-view";
 import { formatGiay } from "@/lib/token-math";
 import { fmt } from "@/lib/sub/text";
-import { TopUp } from "@/components/top-up";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 /**
- * Thẻ tiền cho cửa trả theo lượt: số dư và còn bao nhiêu phút, ước tính cho video đang chọn,
- * và thẻ nạp nhanh ngay tại chỗ. Chỉ hiện khi đang chọn Trả theo lượt; dùng key riêng thì tiền là của Groq.
+ * Thẻ Token dịch cho cửa trả theo lượt: số còn và ước tính cho video đang chọn.
  */
 export function MoneyCard({
   active,
@@ -36,7 +34,6 @@ export function MoneyCard({
   const [perMinute, setPerMinute] = useState<TurnPrice[]>([]);
   const [forRun, setForRun] = useState<TurnPrice[]>([]);
   const [tick, setTick] = useState(0);
-  const [topOpen, setTopOpen] = useState(false);
 
   useEffect(() => {
     const refresh = () => setTick((value) => value + 1);
@@ -116,7 +113,7 @@ export function MoneyCard({
   const estimate = account ? runEstimate(run?.row ?? null, account.units) : null;
 
   return (
-    <section aria-label="Gói giây và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
+    <section aria-label="Token dịch và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex min-w-0 items-center gap-2">
           <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
@@ -130,38 +127,20 @@ export function MoneyCard({
                   {!rate?.exact ? " (theo gói rẻ nhất)" : ""}
                 </>
               )}
-              {account.holding > 0 ? ` · ví đang giữ ${formatDong(account.holding)}` : ""}
             </span>
           ) : (
-            <span className="text-muted">Đang đọc số dư…</span>
+            <span className="text-muted">Đang đọc Token dịch…</span>
           )}
         </p>
-        <button
-          type="button"
-          className={"min-tap rounded-full border px-4 text-sm font-semibold " + (estimate && !estimate.enough ? "border-accent bg-accent text-ink" : "border-line")}
-          aria-expanded={topOpen}
-          onClick={() => setTopOpen((value) => !value)}
-        >
-          {topOpen ? "Đóng nạp nhanh" : "Nạp nhanh"}
-        </button>
       </div>
       {estimate && (
         <p className={estimate.enough ? "text-muted" : "text-danger"} role="status">
           Video {fmt(secs)}: giữ khoảng <strong className="text-fg">{formatGiay(estimate.hold)}</strong> trước khi chạy
           {run && !run.exact ? " (theo gói rẻ nhất)" : ""}.
-          {!estimate.enough ? ` Thiếu ${formatGiay(estimate.short)}. Hãy mua gói giây ở Số dư.` : ""}
+          {!estimate.enough ? ` Thiếu ${formatGiay(estimate.short)}. Hãy mua Token dịch ở Tài khoản.` : ""}
         </p>
       )}
       {!estimate && secs < 1 && account && <p className="text-xs text-muted">Chọn một tệp để thấy ước tính cho video đó. Dán link thì chưa biết thời lượng.</p>}
-      <TopUp
-        compact
-        opened={topOpen}
-        onOpened={setTopOpen}
-        onPaid={() => {
-          setTick((value) => value + 1);
-          window.dispatchEvent(new Event("tyzo-room-refresh"));
-        }}
-      />
     </section>
   );
 }

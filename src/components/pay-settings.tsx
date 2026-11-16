@@ -88,7 +88,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
                     setBusy(true);
                     void confirmPayOrder({ data: row.id })
                       .then(() => {
-                        pushToast("Đã cộng tiền vào số dư.");
+                        pushToast("Đã xác nhận đơn.");
                         load();
                       })
                       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa xác nhận được.", "bad"))

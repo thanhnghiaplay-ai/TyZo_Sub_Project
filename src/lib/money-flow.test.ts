@@ -28,6 +28,7 @@ const orderStatus = async (id: string) => (await sql<{ status: string }>`select 
 
 async function reset() {
   await sql`delete from run_tickets`;
+  await sql`delete from token_grants`;
   await sql`delete from room_ledger`;
   await sql`delete from pay_seen`;
   await sql`delete from pay_orders`;
@@ -94,6 +95,30 @@ describe("webhook nạp tiền", () => {
     ]);
     assert.equal(results.filter(Boolean).length, 1);
     assert.equal(await balanceOf("k"), 100000);
+  });
+});
+
+describe("mua thẳng không cộng số dư", () => {
+  beforeEach(reset);
+
+  it("đơn token: tiền về thì cộng token, số dư vẫn 0", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('ot', 'k', 'sepay', 1845, 'TZTOK234', 'pending', 'token', 'nho', '{"tokens":3600,"days":30}')`;
+    const done = await creditHitWith(sql, "sepay", { ref: "T1", amount: 1845, text: "TZTOK234" });
+    assert.equal(done?.purpose, "token");
+    assert.equal(await balanceOf("k"), 0);
+    const grant = (await sql<{ tokens: number; left_tokens: number }>`select tokens, left_tokens from token_grants where id = 'ot'`)[0];
+    assert.equal(grant.tokens, 3600);
+    assert.equal(grant.left_tokens, 3600);
+  });
+
+  it("đơn thuê phòng: tiền về thì mở hạn, số dư vẫn 0", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('op', 'k', 'sepay', ${PLAN.price}, 'TZPLN234', 'pending', 'plan', ${PLAN.id}, '{}')`;
+    const done = await creditHitWith(sql, "sepay", { ref: "P1", amount: PLAN.price, text: "TZPLN234" });
+    assert.equal(done?.purpose, "plan");
+    assert.equal(await balanceOf("k"), 0);
+    const row = (await sql<{ plan: string; ok: boolean }>`select plan, plan_until > now() as ok from room_accounts where user_id = 'k'`)[0];
+    assert.equal(row.plan, PLAN.id);
+    assert.equal(row.ok, true);
   });
 });
 
