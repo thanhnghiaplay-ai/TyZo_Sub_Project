@@ -91,6 +91,13 @@ test("trang bảo trì: chữ biển cắt 10 ký tự, rỗng thì về BẢO T
   assert.equal(parseTheme({ mtBoard: "nope", mtFx: "nope", mtShow: "nope" }).mtShow, "robot");
 });
 
+test("bảng giao diện xem trước cả trang và có nút hoàn tác", () => {
+  const src = readFileSync(new URL("../../components/theme-board.tsx", import.meta.url), "utf8");
+  assert.match(src, /Hoàn tác/);
+  assert.match(src, /data-theme-live/);
+  assert.match(src, /Khách chỉ thấy khi bạn bấm Công bố/);
+});
+
 test("nhóm icon: mặc định theo cả bộ, giá trị lạ bị bỏ", () => {
   assert.deepEqual(parseTheme({}).iconGroups, { nav: "same", act: "same", st: "same", ui: "same" });
   const grouped = parseTheme({ iconGroups: { nav: "bold", act: "nope", ui: "thin" } });

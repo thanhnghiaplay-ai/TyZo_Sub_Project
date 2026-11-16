@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## XEM TRƯỚC CẢ TRANG 7/8 (16/11/2026, nhánh work, v3.47.12)
+ĐÃ LÀM: tab Giao diện phủ bản nháp lên trang ngay. Nút Hoàn tác tối đa 30 bước. Khách vẫn cần Công bố.
+CÒN 1 PHẦN: chỗ cố ý để riêng. Favicon chưa làm.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON NHÓM 6/8 (16/11/2026, nhánh work, v3.47.11)
 ĐÃ LÀM: bốn nhóm biểu tượng và nét riêng từng nhóm. Mặc định theo nét chung.
 CÒN 2 PHẦN: xem trước cả web, chỗ cố ý để riêng. Favicon chưa làm.

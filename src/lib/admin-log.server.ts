@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.12",
+    time: "12:13 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần xem trước cả trang 7/8. ThemeBoard gắn themeToCss của bản nháp lên style data-theme-live khi đang mở tab Giao diện, gỡ khi rời. Nút Hoàn tác tối đa 30 bước, chỉ trong phiên. Khách vẫn cần Công bố. Không đổi điều khoản."
+  },
+  {
     version: "3.47.11",
     time: "12:06 ngày 16/11/2026",
     area: "khac",

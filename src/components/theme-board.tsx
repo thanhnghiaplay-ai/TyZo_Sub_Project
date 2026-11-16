@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { getThemeAdmin, loadThemeToDraft, publishTheme, saveThemeDraft, type ThemeAdminView } from "@/lib/theme-room";
 import {
   BUTTON_STYLES,
@@ -26,6 +26,7 @@ import {
   parseTheme,
   safeUrl,
   shadowStyle,
+  themeToCss,
   TITLE_WEIGHTS,
   type MenuSide,
   type Motion,
@@ -175,6 +176,26 @@ export function ThemeBoard() {
   const [iconQuery, setIconQuery] = useState("");
   const [glyphQuery, setGlyphQuery] = useState("");
   const [iconPick, setIconPick] = useState("");
+  const draftRef = useRef(draft);
+  const undoRef = useRef<Theme[]>([]);
+  const [undoCount, setUndoCount] = useState(0);
+  const liveOrigin = useRef<Record<string, string | null> | null>(null);
+  draftRef.current = draft;
+
+  const commit = (next: Theme) => {
+    if (JSON.stringify(next) === JSON.stringify(draftRef.current)) return;
+    undoRef.current = [...undoRef.current, draftRef.current].slice(-30);
+    draftRef.current = next;
+    setUndoCount(undoRef.current.length);
+    setDraft(next);
+  };
+  const undo = () => {
+    const prev = undoRef.current.pop();
+    setUndoCount(undoRef.current.length);
+    if (!prev) return;
+    draftRef.current = prev;
+    setDraft(prev);
+  };
 
   const load = async () => {
     try {
@@ -195,10 +216,53 @@ export function ThemeBoard() {
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const liveDiffers = view ? JSON.stringify(saved) !== JSON.stringify(view.live) : false;
 
-  const patch = (next: Partial<Theme>) => setDraft((current) => parseTheme({ ...current, ...next }));
+  const patch = (next: Partial<Theme>) => commit(parseTheme({ ...draftRef.current, ...next }));
   const patchPalette = (mode: "light" | "dark", key: PaletteKey, hex: string) =>
-    setDraft((current) => parseTheme({ ...current, [mode]: { ...current[mode], [key]: hex } }));
-  const patchIcon = (slot: string, key: string) => setDraft((current) => parseTheme({ ...current, icons: { ...current.icons, [slot]: key } }));
+    commit(parseTheme({ ...draftRef.current, [mode]: { ...draftRef.current[mode], [key]: hex } }));
+  const patchIcon = (slot: string, key: string) => commit(parseTheme({ ...draftRef.current, icons: { ...draftRef.current.icons, [slot]: key } }));
+
+  useEffect(() => {
+    if (!view) return;
+    const html = document.documentElement;
+    if (!liveOrigin.current) {
+      liveOrigin.current = {
+        button: html.getAttribute("data-button"),
+        menu: html.getAttribute("data-menu"),
+        motion: html.getAttribute("data-motion"),
+        speed: html.getAttribute("data-motion-speed"),
+        title: html.getAttribute("data-title-weight"),
+      };
+    }
+    let node = document.head.querySelector<HTMLStyleElement>("style[data-theme-live]");
+    if (!node) {
+      node = document.createElement("style");
+      node.setAttribute("data-theme-live", "1");
+      document.head.appendChild(node);
+    }
+    node.textContent = themeToCss(draft);
+    html.setAttribute("data-button", draft.button);
+    html.setAttribute("data-menu", draft.menuSide);
+    html.setAttribute("data-motion", draft.motion);
+    if (draft.motionSpeed === "mid") html.removeAttribute("data-motion-speed");
+    else html.setAttribute("data-motion-speed", draft.motionSpeed);
+    if (draft.titleWeight === "keep") html.removeAttribute("data-title-weight");
+    else html.setAttribute("data-title-weight", draft.titleWeight);
+  }, [view, draft]);
+
+  useEffect(() => {
+    return () => {
+      document.querySelector("style[data-theme-live]")?.remove();
+      const html = document.documentElement;
+      const origin = liveOrigin.current;
+      if (!origin) return;
+      const put = (name: string, value: string | null) => (value === null ? html.removeAttribute(name) : html.setAttribute(name, value));
+      put("data-button", origin.button);
+      put("data-menu", origin.menu);
+      put("data-motion", origin.motion);
+      put("data-motion-speed", origin.speed);
+      put("data-title-weight", origin.title);
+    };
+  }, []);
 
   const run = async (job: () => Promise<void>, done: string) => {
     setBusy(true);
@@ -272,7 +336,7 @@ export function ThemeBoard() {
         <CardHeader
           title="Giao diện"
           icon="ui.theme"
-          hint="Chỉnh bản nháp, xem trước, rồi Công bố. Khách chỉ thấy khi bạn bấm Công bố."
+          hint="Chỉnh là trang này đổi ngay. Khách chỉ thấy khi bạn bấm Công bố."
           action={dirty ? <Badge tone="warn">Chưa lưu</Badge> : liveDiffers ? <Badge tone="info">Nháp chưa công bố</Badge> : <Badge tone="ok">Đang dùng</Badge>}
         />
         {issues.length > 0 && (
@@ -291,6 +355,9 @@ export function ThemeBoard() {
           </Button>
           <Button variant="primary" onClick={publish} busy={busy} disabled={issues.length > 0 || (!dirty && !liveDiffers)}>
             Công bố cho khách
+          </Button>
+          <Button variant="ghost" onClick={undo} disabled={undoCount === 0 || busy}>
+            Hoàn tác
           </Button>
           <Button variant="ghost" onClick={reset} busy={busy}>
             Về mặc định
@@ -398,7 +465,7 @@ export function ThemeBoard() {
                 maxLength={10}
                 value={draft.mtText}
                 aria-label="Chữ trên biển"
-                onChange={(event) => setDraft((current) => ({ ...current, mtText: event.target.value.slice(0, 10) }))}
+                onChange={(event) => commit({ ...draftRef.current, mtText: event.target.value.slice(0, 10) })}
                 onBlur={(event) => patch({ mtText: event.target.value })}
               />
             </Field>
@@ -419,7 +486,7 @@ export function ThemeBoard() {
               <input className={inputClass} maxLength={40} value={draft.brandName} onChange={(event) => patch({ brandName: event.target.value })} />
             </Field>
             <Field label="Logo (đường dẫn https:// hoặc bắt đầu bằng /)" error={draft.logoUrl && !logo ? "Đường dẫn không hợp lệ, sẽ bị bỏ qua." : undefined}>
-              <input className={inputClass} value={draft.logoUrl} onChange={(event) => setDraft((current) => ({ ...current, logoUrl: event.target.value }))} onBlur={() => patch({ logoUrl: draft.logoUrl })} />
+              <input className={inputClass} value={draft.logoUrl} onChange={(event) => commit({ ...draftRef.current, logoUrl: event.target.value })} onBlur={() => patch({ logoUrl: draft.logoUrl })} />
             </Field>
             {logo && <img src={logo} alt="Logo xem trước" className="h-12 w-auto max-w-full self-start rounded-[var(--radius-ctl)] border border-line bg-raised p-1" />}
           </Card>
