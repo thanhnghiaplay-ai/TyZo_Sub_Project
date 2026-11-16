@@ -24,56 +24,62 @@ before(async () => {
   }) as unknown as Sql;
 });
 
-const balanceOf = async (user: string) => Number((await sql<{ balance: number }>`select balance from room_accounts where user_id = ${user}`)[0]?.balance ?? 0);
-const ticketOf = async (id: string) => (await sql<{ held: number; charged: number; status: string }>`select held, charged, status from run_tickets where id = ${id}`)[0];
+const leftOf = async (user: string) =>
+  Number((await sql<{ n: number }>`select coalesce(sum(left_tokens), 0)::int as n from token_grants where user_id = ${user} and expires_at > now()`)[0]?.n ?? 0);
+const ticketOf = async (id: string) => (await sql<{ held: number; charged: number; status: string; unit: string }>`select held, charged, status, unit from run_tickets where id = ${id}`)[0];
 
-async function reset(balance: number) {
+async function reset(left: number) {
+  await sql`delete from token_slices`;
   await sql`delete from run_tickets`;
+  await sql`delete from token_grants`;
   await sql`delete from room_ledger`;
   await sql`delete from room_settings`;
   await sql`delete from room_accounts`;
-  await sql`insert into room_accounts (user_id, balance) values ('k', ${balance})`;
+  if (left > 0) {
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('g', 'k', ${left}, ${left}, 1, now() + interval '30 days')`;
+  }
 }
 
 describe("LiveBilling nối vào DB", () => {
   beforeEach(() => reset(10_000));
-  const billing = () => createLiveBilling(sql, { book: async () => book, cap: async () => 0, now: () => new Date("2026-11-14T03:00:00Z") });
+  const billing = () => createLiveBilling(sql, { book: async () => book, now: () => new Date("2026-11-14T03:00:00Z") });
 
-  it("giữ tiền, trừ theo token, nhả phần thừa", async () => {
+  it("giữ giây, trừ theo phần đã dịch, nhả phần thừa về gói", async () => {
     const live = billing();
     assert.deepEqual(await live.open({ userId: "k", ticketId: "s1-1", hold: 3000, seconds: 120, model: LIVE_MODEL_38 }), { ok: true });
-    assert.equal(await balanceOf("k"), 7000);
+    assert.equal(await leftOf("k"), 7000);
     assert.equal(await live.charge({ userId: "k", ticketId: "s1-1", cost: 800, base: 700 }), 800);
     await live.close({ userId: "k", ticketId: "s1-1", failed: false });
-    assert.equal(await balanceOf("k"), 9200);
-    assert.deepEqual(await ticketOf("s1-1"), { held: 0, charged: 800, status: "da-tru" });
+    assert.equal(await leftOf("k"), 9200);
+    assert.deepEqual(await ticketOf("s1-1"), { held: 0, charged: 800, status: "da-tru", unit: "token" });
   });
 
-  it("không trừ quá số đang giữ", async () => {
+  it("không trừ quá số giây đang giữ", async () => {
     const live = billing();
     await live.open({ userId: "k", ticketId: "s2-1", hold: 500, seconds: 120, model: LIVE_MODEL_38 });
     assert.equal(await live.charge({ userId: "k", ticketId: "s2-1", cost: 900, base: 800 }), 500);
-    assert.equal(await balanceOf("k"), 9500);
+    assert.equal(await leftOf("k"), 9500);
   });
 
-  it("hết tiền thì báo het-tien, không tạo phiếu", async () => {
+  it("hết giây thì báo het-tien, không tạo phiếu", async () => {
     const live = billing();
     assert.deepEqual(await live.open({ userId: "k", ticketId: "s3-1", hold: 20_000, seconds: 120, model: LIVE_MODEL_38 }), { ok: false, reason: "het-tien" });
     assert.equal(await ticketOf("s3-1"), undefined);
-    assert.equal(await balanceOf("k"), 10_000);
+    assert.equal(await leftOf("k"), 10_000);
   });
 
-  it("quá hạn mức ngày thì báo qua-han-muc", async () => {
-    const live = createLiveBilling(sql, { book: async () => book, cap: async () => 1000, now: () => new Date("2026-11-14T03:00:00Z") });
-    assert.deepEqual(await live.open({ userId: "k", ticketId: "s4-1", hold: 1500, seconds: 120, model: LIVE_MODEL_38 }), { ok: false, reason: "qua-han-muc" });
+  it("hạn mức đồng không chặn gói giây", async () => {
+    const live = billing();
+    assert.deepEqual(await live.open({ userId: "k", ticketId: "s4-1", hold: 1500, seconds: 120, model: LIVE_MODEL_38 }), { ok: true });
+    assert.equal((await ticketOf("s4-1")).unit, "token");
   });
 
-  it("phiên lỗi không tính tiền, đóng hai lần không nhả hai lần", async () => {
+  it("phiên lỗi trả giây về gói, đóng hai lần không trả hai lần", async () => {
     const live = billing();
     await live.open({ userId: "k", ticketId: "s5-1", hold: 2000, seconds: 120, model: LIVE_MODEL_38 });
     await live.close({ userId: "k", ticketId: "s5-1", failed: true });
     await live.close({ userId: "k", ticketId: "s5-1", failed: true });
-    assert.equal(await balanceOf("k"), 10_000);
+    assert.equal(await leftOf("k"), 10_000);
     assert.equal((await ticketOf("s5-1")).status, "loi");
   });
 });

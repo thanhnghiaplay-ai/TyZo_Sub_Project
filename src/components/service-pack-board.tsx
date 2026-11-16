@@ -5,7 +5,7 @@ import { getAlibabaDesk, saveAlibabaDesk, saveAlibabaKey, saveServicePacks } fro
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import type { GroqBoard } from "@/lib/sub/groq-board";
-import { emptyOverride, type PriceOverride, type RunDesk } from "@/lib/run-desk";
+import type { RunDesk } from "@/lib/run-desk";
 import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
@@ -128,7 +128,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         <p className="text-sm text-muted">
           {packsOnly
             ? "Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách chỉ thấy giá đã cộng phần trăm."
-            : "Groq giữ bàn giá phía trên. Alibaba có key, phần trăm chênh và giá riêng. Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
+            : "Groq giữ bàn giá phía trên. Alibaba có key và phần trăm chênh. Giá lấy từ bảng niêm yết. Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
         </p>
       </div>
 
@@ -151,7 +151,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
             Đồng bộ
           </button>
         </div>
-        <p className="text-xs text-muted">{models ? `${models.length} model trên key.` : "Chưa đồng bộ."} Giá gốc lấy từ bảng niêm yết trong app. Model nhận dạng Alibaba chưa có giờ công bố thì nhập giá riêng theo giờ.</p>
+        <p className="text-xs text-muted">{models ? `${models.length} model trên key.` : "Chưa đồng bộ."} Giá lấy từ bảng niêm yết vùng Singapore khi phòng đọc được. Chưa đọc được thì dùng giá dự phòng.</p>
       </div>
       )}
 
@@ -169,20 +169,8 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
 
       {desk && (
         <div className="grid gap-2">
-          {[...new Set([...ALIBABA_ROWS.map((row) => row.id), ...(models ?? [])])].map((id) => {
-            const custom = desk.custom[id] ?? emptyOverride();
-            const setCustom = (patch: Partial<PriceOverride>) => setDesk({ ...desk, custom: { ...desk.custom, [id]: { ...custom, ...patch } } });
-            return (
-              <div key={id} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line px-3 py-2 sm:grid-cols-[1fr_repeat(3,7rem)] sm:items-center">
-                <p className="text-sm">{id}</p>
-                <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá giờ`} placeholder="đ/giờ" value={custom.hour || ""} onChange={(event) => setCustom({ hour: Number(event.target.value.replace(/\D/g, "") || 0) })} />
-                <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá vào`} placeholder="đ vào" value={custom.inn || ""} onChange={(event) => setCustom({ inn: Number(event.target.value.replace(/\D/g, "") || 0) })} />
-                <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm" inputMode="numeric" aria-label={`${id} giá ra`} placeholder="đ ra" value={custom.out || ""} onChange={(event) => setCustom({ out: Number(event.target.value.replace(/\D/g, "") || 0) })} />
-              </div>
-            );
-          })}
-          <p className="text-xs text-muted">Khách chỉ thấy giá đã cộng phần trăm. Phần trăm Groq ở bàn phía trên. Giá riêng để trống thì dùng phần trăm.</p>
-          <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk(desk)}>
+          <p className="text-xs text-muted">Khách chỉ thấy giá đã cộng phần trăm. Không đặt giá riêng từng model.</p>
+          <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk({ ...desk, custom: {} })}>
             Lưu giá Alibaba
           </button>
         </div>
@@ -197,7 +185,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         </div>
         {packs.map((pack) => {
           const groqBook = sampleBook(board?.rows ?? [], board ? 0 : 0, {});
-          const aliBook = desk && board ? sampleBook(ALIBABA_ROWS, desk.markup, desk.custom) : null;
+          const aliBook = desk && board ? sampleBook(ALIBABA_ROWS, desk.markup, {}) : null;
           const quote = board && groqBook
             ? quotePack({
                 pack,

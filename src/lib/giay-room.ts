@@ -6,7 +6,7 @@ import { packPriceVnd, TURBO_ASR } from "@/lib/token-math";
 
 export type GiayPackView = GiayPack & { price: number | null };
 
-async function turboPerSecond() {
+export async function turboPerSecond() {
   const { getSql } = await import("@/lib/db");
   const { loadPriceBook } = await import("@/lib/run-board.server");
   const sql = await getSql();

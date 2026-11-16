@@ -29,7 +29,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const { dearestChatModel: pickChat } = await import("@/lib/run-bill");
     const { holdGiay, formatGiay } = await import("@/lib/token-math");
     const { loadPriceBook } = await import("@/lib/run-board.server");
-    const { ALIBABA_ROWS } = await import("@/lib/sub/alibaba-catalog");
+    const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
     const { openGiayWith, giayBalance } = await import("@/lib/token-flow");
     const { releaseStaleWith } = await import("@/lib/run-ticket");
     const sql = await getSql();
@@ -47,15 +47,16 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
     const bare = { rate: book.rate, rows: book.rows, desk: { markup: 0 as const, custom: {} } };
+    const aliRows = await loadAlibabaRows(sql);
     let hold: number | null = null;
     if (aliAsr) {
       const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
       if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows: ALIBABA_ROWS, asrProvider: "alibaba", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
+      hold = chatModel ? holdGiay({ groq: book, aliRows, asrProvider: "alibaba", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
     } else {
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows: ALIBABA_ROWS, asrProvider: "groq", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
+      hold = chatModel ? holdGiay({ groq: book, aliRows, asrProvider: "groq", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
     }
     if (hold == null || hold < 1) throw new Error("Chưa có giá bản Turbo hoặc model này chưa có giá gốc.");
     const id = randomBytes(12).toString("hex");

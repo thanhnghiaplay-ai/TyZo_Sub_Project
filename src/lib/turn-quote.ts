@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { parseServicePacks } from "@/lib/service-pack";
 import { holdGiay } from "@/lib/token-math";
-import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { turnPacks } from "@/lib/turn-pack";
 
 export type TurnPrice = { id: string; total: number | null; hold: number };
@@ -18,6 +17,8 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
       const { getSql } = await import("@/lib/db");
       const { loadPriceBook } = await import("@/lib/run-board.server");
       const sql = await getSql();
+      const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
+      const aliRows = await loadAlibabaRows(sql);
       const book = await loadPriceBook(sql);
       const rows = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
       const packs = turnPacks(parseServicePacks(rows[0]?.value));
@@ -27,7 +28,7 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
         if (!book || !asr || !chat) return { id: pack.id, total: null, hold: 0 };
         const giay = holdGiay({
           groq: book,
-          aliRows: ALIBABA_ROWS,
+          aliRows,
           asrProvider: asr.provider,
           asrModel: asr.model,
           chatModel: chat.model,

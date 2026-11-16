@@ -37,8 +37,8 @@ export function PackPicker({
 }) {
   const shown = packs.filter((pack) => pack.enabled && pack.doors.includes(door));
   if (!shown.length) return null;
-  const groqBook: PriceBook | null = board ? { rate: board.rate, rows: board.rows, desk: { markup: groqMarkup, custom: groqCustom } } : null;
-  const aliBook: PriceBook | null = board ? { rate: board.rate, rows: ALIBABA_ROWS, desk: { markup: aliMarkup, custom: aliCustom } } : null;
+  const groqBook: PriceBook | null = board ? { rate: board.rate, rows: board.rows, desk: { markup: groqMarkup, custom: {} } } : null;
+  const aliBook: PriceBook | null = board ? { rate: board.rate, rows: ALIBABA_ROWS, desk: { markup: aliMarkup, custom: {} } } : null;
 
   return (
     <div className="grid gap-2">

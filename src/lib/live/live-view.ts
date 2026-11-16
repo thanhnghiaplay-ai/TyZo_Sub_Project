@@ -1,8 +1,10 @@
-import { formatDong, formatMinutes, minutesLeft } from "../wallet-view.ts";
+import { formatMinutes, minutesLeft } from "../wallet-view.ts";
+import { formatGiay } from "../token-math.ts";
 
 /**
  * Số liệu hiện ở màn hình Dịch trực tiếp. Hàm thuần, không gọi mạng, test được bằng Node.
- * Tiền giữ cho phiên đã bị trừ khỏi số dư tự do của ví, nên tổng còn dùng được = số dư tự do + tiền đang giữ.
+ * Giây đang giữ cho phiên đã trừ khỏi gói, nên tổng còn dùng được = giây còn hạn + giây đang giữ.
+ * Không lưu số dư đồng cho phiên này.
  */
 export type LiveMoney = { free: number; heldLeft: number };
 
@@ -34,14 +36,14 @@ export function liveWarn(input: { minutes: number | null; bridgeLow: boolean; de
 
 /** Câu cảnh báo cho khách. Rỗng khi tiền còn thoải mái. */
 export function liveWarnText(warn: LiveWarn, minutes: number | null): string {
-  if (warn === "out") return "Sắp hết tiền, phiên sẽ tự dừng. Hãy nạp thêm rồi bấm Bắt đầu lại.";
-  if (warn === "low") return minutes != null ? `Sắp hết tiền: còn khoảng ${formatMinutes(minutes)}. Nạp thêm để không bị ngắt.` : "Sắp hết tiền. Nạp thêm để không bị ngắt.";
+  if (warn === "out") return "Sắp hết giây, phiên sẽ tự dừng. Hãy mua thêm gói rồi bấm Bắt đầu lại.";
+  if (warn === "low") return minutes != null ? `Sắp hết giây: còn khoảng ${formatMinutes(minutes)}. Mua thêm gói để không bị ngắt.` : "Sắp hết giây. Mua thêm gói để không bị ngắt.";
   return "";
 }
 
-/** Dòng số dư: "12.000 đ · còn khoảng 5 phút". */
+/** Dòng giây còn: "5.000 giây dịch · còn khoảng 5 phút". */
 export function liveBalanceLine(money: number, minutes: number | null): string {
-  const base = formatDong(money);
+  const base = formatGiay(money);
   return minutes == null ? base : `${base} · còn khoảng ${formatMinutes(minutes)}`;
 }
 

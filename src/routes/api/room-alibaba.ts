@@ -52,7 +52,7 @@ export const Route = createFileRoute("/api/room-alibaba")({
 
         const { getSql } = await import("@/lib/db");
         const { parseRunDesk, parseModelList } = await import("@/lib/run-desk");
-        const { ALIBABA_ROWS } = await import("@/lib/sub/alibaba-catalog");
+        const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
         const { loadPriceBook } = await import("@/lib/run-board.server");
         const sql = await getSql();
         const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
@@ -84,7 +84,8 @@ export const Route = createFileRoute("/api/room-alibaba")({
         if (!live) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
         const ali = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
         const aliDesk = parseRunDesk(ali[0]?.value);
-        const book = { rate: live.rate, rows: ALIBABA_ROWS, desk: { markup: aliDesk.markup, custom: aliDesk.custom } };
+        const aliRows = await loadAlibabaRows(sql);
+        const book = { rate: live.rate, rows: aliRows, desk: { markup: aliDesk.markup, custom: {} } };
 
         const outcome = await chargeWith({
           sql,

@@ -30,9 +30,9 @@ describe("tính tiền theo giá Groq", () => {
     assert.equal(asrCost(book(100), "whisper-large-v3-turbo", 3600), 2000);
   });
 
-  it("giá Chủ đặt tay thay cho giá Groq cộng chênh", () => {
+  it("giá tay không còn thắng phần trăm", () => {
     const custom = { "whisper-large-v3-turbo": { hour: 7200, inn: 0, out: 0 } };
-    assert.equal(asrCost(book(50, custom), "whisper-large-v3-turbo", 3600), 7200);
+    assert.equal(asrCost(book(50, custom), "whisper-large-v3-turbo", 3600), 1500);
   });
 
   it("dịch: token vào và ra tính riêng", () => {

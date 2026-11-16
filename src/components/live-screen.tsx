@@ -6,7 +6,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { DisplayToggle } from "@/components/display-toggle";
 import { ExportMenu, type ExportFormat } from "@/components/export-menu";
 import { NoticeBell } from "@/components/notice-bell";
-import { TopUp } from "@/components/top-up";
+import { Link } from "@tanstack/react-router";
 import { VersionMark } from "@/components/version-mark";
 import { pushToast } from "@/components/toast";
 import { useCaps, useWakeLock } from "@/components/use-caps";
@@ -59,7 +59,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const SELECT = "min-tap w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 text-sm outline-none disabled:opacity-50";
 
-/** Màn hình Dịch trực tiếp: chọn ngôn ngữ, bắt đầu/dừng, chữ gốc và chữ dịch chạy theo thời gian thực, số dư, tải SRT/VTT/TXT. */
+/** Màn hình Dịch trực tiếp: chọn ngôn ngữ, bắt đầu/dừng, chữ gốc và chữ dịch chạy theo thời gian thực, số giây, tải SRT/VTT/TXT. */
 export function LiveScreen() {
   const live = useLive();
   const caps = useCaps();
@@ -67,7 +67,6 @@ export function LiveScreen() {
   const { user } = useCurrentUserState();
   const [settings, setSettings] = useState<Saved>(DEFAULTS);
   const [loaded, setLoaded] = useState(false);
-  const [topOpen, setTopOpen] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
   const stuck = useRef(true);
 
@@ -238,24 +237,23 @@ export function LiveScreen() {
           {voice && settings.audio && input === "tab" && <p className="text-xs text-muted">Nên đeo tai nghe để tiếng dịch không lẫn vào âm thanh đang thu.</p>}
         </section>
 
-        <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3" aria-label="Số dư" data-tour="live-balance">
+        <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3" aria-label="Số giây" data-tour="live-balance">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="inline-flex items-center gap-2 text-sm">
               <Icon slot="nav.wallet" className="size-4 text-muted" />
-              <span data-testid="live-balance">{live.money == null ? "Đang xem số dư…" : liveBalanceLine(live.money, live.minutes)}</span>
+              <span data-testid="live-balance">{live.money == null ? "Đang xem số giây…" : liveBalanceLine(live.money, live.minutes)}</span>
             </p>
-            <button type="button" className="min-tap rounded-full border border-line px-4 text-sm font-semibold" onClick={() => setTopOpen((value) => !value)} aria-expanded={topOpen}>
-              {topOpen ? "Đóng nạp tiền" : "Nạp thêm"}
-            </button>
+            <Link to="/tai-khoan" className="min-tap rounded-full border border-line px-4 text-sm font-semibold">
+              Mua gói giây
+            </Link>
           </div>
-          {live.perMinute != null && <p className="text-xs text-muted">Giá khoảng {new Intl.NumberFormat("vi-VN").format(live.perMinute)} đ mỗi phút. Tiền chỉ bị trừ theo phần đã dịch.</p>}
+          {live.perMinute != null && <p className="text-xs text-muted">Khoảng {new Intl.NumberFormat("vi-VN").format(live.perMinute)} giây mỗi phút. Chỉ trừ phần đã dịch.</p>}
           {warnText && (
             <p role="alert" className={"flex items-start gap-2 rounded-[var(--radius-ctl)] border px-3 py-2 text-sm " + (live.warn === "out" ? "border-error text-danger" : "border-warning text-warning")}>
               <Icon slot="st.warn" className="mt-0.5 size-4 shrink-0" />
               <span>{warnText}</span>
             </p>
           )}
-          {topOpen && <TopUp compact opened onPaid={() => { live.refreshBalance(); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />}
         </section>
 
         <section className="grid gap-2" aria-label="Điều khiển">

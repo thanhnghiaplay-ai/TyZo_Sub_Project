@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openLiveTicket } from "@/lib/live/live-open";
-import { getRoomAccount } from "@/lib/room-account";
+import { getGiayShelf } from "@/lib/giay-room";
 import { LiveSession, type SocketLike } from "@/lib/live/live-session";
 import { LiveTranscript, type LiveLine } from "@/lib/live/live-transcript";
 import { createBrowserPlayer } from "@/lib/live/live-player-browser";
@@ -19,10 +19,10 @@ export type LiveApi = {
   cues: ReturnType<LiveTranscript["cues"]>;
   level: number;
   error: string | null;
-  /** Số dư tự do trong ví (đã trừ tiền đang giữ), null khi chưa biết. */
+  /** Số giây còn hạn, null khi chưa biết. */
   free: number | null;
   perMinute: number | null;
-  /** Tổng còn dùng được: số dư tự do + tiền đang giữ cho phiên. */
+  /** Tổng giây còn dùng được: giây còn hạn + giây đang giữ cho phiên. */
   money: number | null;
   minutes: number | null;
   warn: LiveWarn;
@@ -67,9 +67,9 @@ export function useLive(): LiveApi {
 
   const refreshBalance = useCallback(() => {
     lastBalanceRef.current = Date.now();
-    void getRoomAccount()
-      .then((account) => {
-        if (aliveRef.current) setFree(account.balance);
+    void getGiayShelf()
+      .then((shelf) => {
+        if (aliveRef.current) setFree(shelf.units);
       })
       .catch(() => undefined);
   }, []);
@@ -193,7 +193,7 @@ export function useLive(): LiveApi {
                 setReconnecting(0);
                 setElapsedMs(Date.now() - startedAtRef.current);
                 bump();
-                // Phiếu đã đóng, tiền thừa đã nhả: lấy số dư thật rồi báo các khung khác trên trang.
+                // Phiếu đã đóng, giây thừa đã trả về gói còn hạn.
                 refreshBalance();
                 window.dispatchEvent(new Event("tyzo-room-refresh"));
               },

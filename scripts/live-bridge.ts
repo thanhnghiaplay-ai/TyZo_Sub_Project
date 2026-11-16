@@ -5,7 +5,10 @@ import pg from "pg";
 import type { Sql } from "../src/lib/db.ts";
 import { attachLiveBridge } from "../src/lib/live/live-bridge.ts";
 import { createLiveBilling } from "../src/lib/live/live-billing.ts";
-import { loadLiveBook, loadLiveCap } from "../src/lib/live/live-book.ts";
+import { loadLiveBook } from "../src/lib/live/live-book.ts";
+import { asrPerSecond } from "../src/lib/run-bill.ts";
+import { loadPriceBook } from "../src/lib/run-board.server.ts";
+import { tokensForBase, TURBO_ASR } from "../src/lib/token-math.ts";
 import { loadLiveUpstream } from "../src/lib/live/live-upstream.ts";
 
 const secret = (process.env.LIVE_BRIDGE_SECRET ?? "").trim();
@@ -14,7 +17,7 @@ if (secret.length < 24) {
   process.exit(1);
 }
 if (!process.env.DATABASE_URL?.trim()) {
-  console.error("Thiếu DATABASE_URL. Cầu nối phải dùng cùng cơ sở dữ liệu với máy chủ chính để giữ và trừ ví thật.");
+  console.error("Thiếu DATABASE_URL. Cầu nối phải dùng cùng cơ sở dữ liệu với máy chủ chính để giữ và trừ gói giây.");
   process.exit(1);
 }
 const port = Number(process.env.PORT ?? process.env.LIVE_BRIDGE_PORT ?? 8787);
@@ -40,11 +43,22 @@ const server = createServer((request, response) => {
   response.end();
 });
 
+let turboPerSecond = 0;
+async function refreshTurbo() {
+  const book = await loadPriceBook(sql);
+  const per = book ? asrPerSecond({ rate: book.rate, rows: book.rows, desk: { markup: 0, custom: {} } }, TURBO_ASR) : null;
+  turboPerSecond = per && per > 0 ? per : 0;
+}
+
 attachLiveBridge(server, {
   secret,
   upstream: (model) => loadLiveUpstream(sql, model, process.env.ALIBABA_WORKSPACE_ID),
-  billing: createLiveBilling(sql, { book: () => loadLiveBook(sql), cap: () => loadLiveCap(sql) }),
+  billing: createLiveBilling(sql, { book: () => loadLiveBook(sql) }),
+  toGiay: (base) => (turboPerSecond > 0 ? tokensForBase(base, turboPerSecond) : null),
   log: (message) => console.log(new Date().toISOString(), message),
 });
 
-server.listen(port, () => console.log(`Cầu nối Dịch trực tiếp đang nghe cổng ${port}, đường /live`));
+void refreshTurbo().then(() => {
+  setInterval(() => void refreshTurbo(), 60_000);
+  server.listen(port, () => console.log(`Cầu nối Dịch trực tiếp đang nghe cổng ${port}, đường /live`));
+});

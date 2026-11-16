@@ -1,8 +1,13 @@
 # HANDOFF — TyZo_Sub_Project
 
+## GÓI GIÂY 5–8 (16/11/2026 22:12, nhánh work, v4.1.0)
+ĐÃ LÀM: dịch trực tiếp tự tính và trừ gói giây, không giữ ví. Thuê phòng giữ 9.000 / 39.000 / 99.000. Bỏ ô giá riêng từng model. Alibaba kéo giá Singapore, chưa kéo được thì dùng giá dự phòng. Điều khoản `2026-11-16.2`.
+CHƯA LÀM: chưa bấm dịch trực tiếp trên điện thoại thật.
+CỐ Ý KHÔNG LÀM: không đổi giá thuê phòng; thuyết minh vẫn trừ ví đồng.
+
 ## GÓI GIÂY 1–4 (16/11/2026 21:50, nhánh work, v4.0.0)
 ĐÃ LÀM: công thức giây theo Turbo giá gốc; gói có hạn, giá tự tính (chênh × đệm); mua bằng số dư đồng; lần chạy trừ giây. Ví đồng không quy đổi. Điều khoản `2026-11-16.1`.
-CHƯA LÀM: bước 5 cửa trực tiếp tự tính không lưu số dư; bước 6 thuê phòng giữ giá tay; bước 7 bỏ ô giá riêng từng model; bước 8 Alibaba Singapore tự lấy giá.
+CHƯA LÀM lúc 21:50: bước 5 đến 8. Đã làm ở v4.1.0.
 CỐ Ý KHÔNG LÀM: không hoàn tiền khi gói hết hạn; không cộng hoa hồng lúc mua gói; hạn mức đồng trong ngày không áp vào phiếu giây.
 
 ## CHỖ ĐỂ RIÊNG 8/8 (16/11/2026, nhánh work, v3.47.13)

@@ -2,13 +2,10 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
-import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
+import { modelLabel } from "@/lib/sub/models";
 import { listDoorHistory, revealTicketFileName, searchRunTickets, type DoorChange } from "@/lib/overview-room";
 import type { TicketFilter, TicketRow } from "@/lib/overview-data";
-import { asrHouse } from "@/lib/sub/asr-house";
-import { formatLivePrice, type GroqBoard } from "@/lib/sub/groq-board";
-import { loadGroqBoard } from "@/lib/sub/groq-board-load";
-import { emptyOverride, formatRoomPrice, RUN_STATUS_LABEL, type PriceOverride, type RunDesk, type RunStatus } from "@/lib/run-desk";
+import { RUN_STATUS_LABEL, type RunDesk, type RunStatus } from "@/lib/run-desk";
 import { DoorDot } from "@/components/run-door";
 import { maskFileName } from "@/lib/mask-file-name";
 
@@ -213,11 +210,6 @@ function DoorHistory({ refresh }: { refresh: number }) {
   );
 }
 
-const PRICE_ROWS = [
-  ...ASR_MODELS.filter((model) => asrHouse(model.id) === "groq").map((model) => ({ id: model.id, name: model.name, kind: "hour" as const })),
-  ...CHAT_MODELS.map((model) => ({ id: model.id, name: model.name, kind: "token" as const })),
-];
-
 /**
  * Bàn trả theo lượt. part "ops" (mặc định, tab Việc): bảo trì và phiếu.
  * part "config" (tab Cấu hình, chỉ Chủ): key Groq, giá và hạn mức.
@@ -226,7 +218,6 @@ const PRICE_ROWS = [
 export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "ops" | "config" | "key" | "price" }) {
   const [view, setView] = useState<RunDeskView | null>(null);
   const [form, setForm] = useState<RunDesk | null>(null);
-  const [board, setBoard] = useState<GroqBoard | null>(null);
   const [models, setModels] = useState<string[] | null>(null);
   const [adminKey, setAdminKey] = useState("");
   const [keyTail, setKeyTail] = useState("");
@@ -243,9 +234,6 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
         setKeyTail(next.keyTail || "");
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt.", "bad"));
-    void loadGroqBoard()
-      .then(setBoard)
-      .catch(() => pushToast("Chưa lấy được giá gốc. Phần trăm và giá riêng vẫn lưu được.", "bad"));
   }, []);
 
   function save(patch: (latest: RunDesk) => RunDesk, done: string) {
@@ -293,16 +281,6 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
       pushToast("Chưa dán được. Hãy cho phép dán, hoặc nhập tay.", "bad");
     }
   }
-
-  function setCustom(id: string, patch: Partial<PriceOverride>) {
-    setForm((current) => {
-      if (!current) return current;
-      const prev = current.custom[id] ?? emptyOverride();
-      return { ...current, custom: { ...current.custom, [id]: { ...prev, ...patch } } };
-    });
-  }
-
-  const sortedRows = [...PRICE_ROWS].sort((a, b) => Number(models?.includes(b.id) ?? false) - Number(models?.includes(a.id) ?? false));
 
   if (part === "config" || part === "key" || part === "price") {
     if (!owner) return null;
@@ -366,61 +344,13 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
               />
             </label>
           </div>
-          <details className="rounded-[var(--radius-ctl)] border border-line">
-            <summary className="min-tap flex cursor-pointer items-center px-3 text-sm font-semibold">Giá riêng từng model ({PRICE_ROWS.length})</summary>
-            <div className="grid gap-2 p-2">
-              {sortedRows.map((model) => {
-                const row = board?.rows.find((item) => item.id === model.id);
-                const custom = form?.custom[model.id] ?? emptyOverride();
-                const base = row && board ? formatLivePrice(row, board.rate) : "Chưa có giá gốc";
-                const shown = row && board && form ? formatRoomPrice(row, board.rate, form.markup, custom) : "Chưa có giá gốc";
-                const usable = models ? models.includes(model.id) : null;
-                return (
-                  <div key={model.id} className="grid gap-1 rounded-[var(--radius-ctl)] bg-raised px-3 py-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium">{model.name}</p>
-                      <p className={"shrink-0 text-xs " + (usable ? "text-ok" : "text-muted")}>{usable == null ? "Chưa đồng bộ" : usable ? "Key dùng được" : "Key không dùng được"}</p>
-                    </div>
-                    <p className="text-xs text-muted">Giá gốc: {base}</p>
-                    <p className="text-xs text-muted">Khách thấy: {shown}</p>
-                    {model.kind === "hour" ? (
-                      <input
-                        inputMode="numeric"
-                        value={custom.hour || ""}
-                        placeholder="Giá riêng, đồng mỗi giờ. Để trống thì dùng phần trăm"
-                        onChange={(event) => setCustom(model.id, { hour: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                        className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm outline-none"
-                      />
-                    ) : (
-                      <div className="grid min-w-0 grid-cols-2 gap-2">
-                        <input
-                          inputMode="numeric"
-                          value={custom.inn || ""}
-                          placeholder="Vào, đồng / triệu token"
-                          onChange={(event) => setCustom(model.id, { inn: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                          className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm outline-none"
-                        />
-                        <input
-                          inputMode="numeric"
-                          value={custom.out || ""}
-                          placeholder="Ra, đồng / triệu token"
-                          onChange={(event) => setCustom(model.id, { out: Number(event.target.value.replace(/\D/g, "") || 0) })}
-                          className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm outline-none"
-                        />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </details>
-          <p className="text-xs text-muted">Giá gốc chỉ hiện ở đây, khách không thấy. Giá Alibaba đặt ở mục Gói dịch.</p>
+          <p className="text-xs text-muted">Giá là giá niêm yết cộng phần trăm. Không đặt giá riêng từng model. Giá Alibaba lấy ở mục Gói dịch.</p>
           {form && (
             <button
               type="button"
               disabled={busy}
               className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40"
-              onClick={() => save((latest) => ({ ...latest, markup: form.markup, cap: form.cap, custom: form.custom }), "Đã cập nhật giá.")}
+              onClick={() => save((latest) => ({ ...latest, markup: form.markup, cap: form.cap, custom: {} }), "Đã cập nhật giá.")}
             >
               Cập nhật giá
             </button>

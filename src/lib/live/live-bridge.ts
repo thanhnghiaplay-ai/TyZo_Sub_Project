@@ -35,9 +35,10 @@ export type LiveBridgeDeps = {
   upstream(model: string): Promise<{ url: string; key: string } | null>;
   billing: LiveBilling;
   now?: () => number;
-  /** Độ dài mỗi khoảng giữ tiền, giây. Mặc định 120. */
+  /** Đổi giá gốc (đồng) ra giây dịch. Có hàm này thì cầu nối không giữ ví đồng. */
+  toGiay?: (baseVnd: number) => number | null;
+  /** Độ dài mỗi khoảng giữ chỗ, giây. Mặc định 120. */
   blockSeconds?: number;
-  /** Thay cách mở kết nối tới nhà cung cấp, dùng cho test. */
   connect?: (url: string, key: string) => WebSocket;
   /** Số lần tự nối lại khi nhà cung cấp cắt (vd. quá 60 giây không có kết quả). Mặc định 3. */
   maxReconnects?: number;
@@ -88,10 +89,12 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   const blockSeconds = deps.blockSeconds ?? 120;
   const quote = liveHold(book, ticket.model, audio, blockSeconds);
   if (!quote) return fail(4402, "Model này chưa có giá niêm yết.");
+  const holdUnits = deps.toGiay ? deps.toGiay(quote.base) : quote.cost;
+  if (holdUnits == null || !(holdUnits > 0)) return fail(4402, "Model này chưa có giá niêm yết.");
   const route = await deps.upstream(ticket.model);
   if (!route) return fail(4503, "Phòng chưa cấu hình Alibaba cho dịch trực tiếp.");
 
-  const meter = new LiveMeter(quote.cost, blockSeconds);
+  const meter = new LiveMeter(holdUnits, blockSeconds);
   const tickets: string[] = [];
   let seq = 0;
   let opening: Promise<void> | null = null;
@@ -99,13 +102,13 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   const openBlock = async (): Promise<boolean> => {
     seq += 1;
     const ticketId = `${ticket.sid}-${seq}`;
-    const result = await deps.billing.open({ userId: ticket.uid, ticketId, hold: quote.cost, seconds: blockSeconds, model: ticket.model });
+    const result = await deps.billing.open({ userId: ticket.uid, ticketId, hold: holdUnits, seconds: blockSeconds, model: ticket.model });
     if (!result.ok) {
       meter.denied = true;
       return false;
     }
     tickets.push(ticketId);
-    meter.grant(quote.cost);
+    meter.grant(holdUnits);
     return true;
   };
   const topUp = () => {
@@ -128,7 +131,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   };
 
   if (!(await openBlock())) {
-    return fail(4402, "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm.");
+    return fail(4402, deps.toGiay ? "Gói giây chưa đủ. Hãy mua thêm gói." : "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm.");
   }
 
   let upstream: WebSocket | null = null;
@@ -190,13 +193,16 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
       if (event.kind === "usage") {
         const priced = liveCost(book, ticket.model, event.usage);
         let taken = 0;
-        if (priced && priced.cost > 0) {
+        if (priced && priced.base > 0) {
+          const amount = deps.toGiay ? deps.toGiay(priced.base) : priced.cost;
+          if (amount != null && amount > 0) {
           // Trừ vào phiếu mới nhất trước; phần tràn sang phiếu cũ hơn nếu phiếu mới đã cạn.
-          let left = priced.cost;
+          let left = amount;
           for (let i = tickets.length - 1; i >= 0 && left > 0; i -= 1) {
             const part = await deps.billing.charge({ userId: ticket.uid, ticketId: tickets[i], cost: left, base: i === tickets.length - 1 ? priced.base : 0 });
             taken += part;
             left -= part;
+          }
           }
         }
         meter.settle(taken, event.usage.audioIn);

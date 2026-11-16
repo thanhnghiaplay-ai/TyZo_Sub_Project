@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "4.1.0",
+    time: "22:12 ngày 16/11/2026",
+    area: "tien",
+    text: "Bước 5–8 gói giây. Dịch trực tiếp giữ và trừ giây (unit token), không trừ ví, không áp hạn mức đồng. Cầu nối đổi giá gốc ra giây theo Turbo. Thuê phòng giữ 9000/39000/99000. asrPerSecond và chatPerMillion bỏ giá tay. Ô giá riêng Groq và Alibaba đã gỡ, lần lưu xóa custom. Alibaba kéo bảng Singapore vào room_settings ali_board, chưa kéo được thì giữ ALIBABA_ROWS. Điều khoản 2026-11-16.2.",
+  },
+  {
     version: "4.0.0",
     time: "21:50 ngày 16/11/2026",
     area: "tien",

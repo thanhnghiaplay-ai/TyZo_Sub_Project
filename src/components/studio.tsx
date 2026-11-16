@@ -22,7 +22,7 @@ import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
 import { DisplayToggle } from "@/components/display-toggle";
-import { RunDoorClosed, roomCustom, useRunDoor } from "@/components/run-door";
+import { RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { MaintenanceNotice, ServiceSwitch } from "@/components/service-notice";
 import { useServiceStatus } from "@/components/use-service-status";
 import { railBadge } from "@/lib/service-status";
@@ -1907,7 +1907,7 @@ function modelFacts(
   const row = board?.rows.find((item) => item.id === id);
   if (!board) return { price: "Đang lấy đơn giá phòng…", detail: "" };
   if (!row) return { price: "Chưa niêm yết", detail: note };
-  return { price: formatRoomPrice(row, board.rate, door.markup, roomCustom(door.custom, id)), detail: "" };
+  return { price: formatRoomPrice(row, board.rate, door.markup), detail: "" };
 }
 
 function roomHeld(door: { offered: string[] | null }, id: string) {
@@ -1919,7 +1919,7 @@ function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: R
   const row = board?.rows.find((item) => item.id === id);
   if (!board) return "đang lấy đơn giá";
   if (!row) return "chưa niêm yết";
-  return formatRoomPrice(row, board.rate, door.markup, roomCustom(door.custom, id));
+  return formatRoomPrice(row, board.rate, door.markup);
 }
 
 function Stage({

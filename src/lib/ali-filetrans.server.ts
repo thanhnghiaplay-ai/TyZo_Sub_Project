@@ -149,7 +149,7 @@ async function chargeRoomAsr(userId: string, ticketId: string, seconds: number) 
   const { getSql } = await import("@/lib/db");
   const { loadPriceBook } = await import("@/lib/run-board.server");
   const { parseRunDesk } = await import("@/lib/run-desk");
-  const { ALIBABA_ROWS } = await import("@/lib/sub/alibaba-catalog");
+  const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
   const { asrCost } = await import("@/lib/run-bill");
   const { chargeTicketWith } = await import("@/lib/run-ticket");
   const sql = await getSql();
@@ -157,7 +157,8 @@ async function chargeRoomAsr(userId: string, ticketId: string, seconds: number) 
   if (!live) return;
   const deskRaw = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
   const desk = parseRunDesk(deskRaw[0]?.value);
-  const book = { rate: live.rate, rows: ALIBABA_ROWS, desk: { markup: desk.markup, custom: desk.custom } };
+  const rows = await loadAlibabaRows(sql);
+  const book = { rate: live.rate, rows, desk: { markup: desk.markup, custom: {} } };
   const bare = { ...book, desk: { markup: 0, custom: {} } };
   const cost = asrCost(book, "qwen-audio-3.0-asr-flash-filetrans", seconds);
   const base = asrCost(bare, "qwen-audio-3.0-asr-flash-filetrans", seconds) ?? 0;

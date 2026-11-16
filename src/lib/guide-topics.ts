@@ -167,7 +167,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: `Chọn ngôn ngữ nói (để «${UI.autoLang}» nếu chưa rõ) và ngôn ngữ dịch. Bật tiếng dịch nếu muốn nghe.` },
         { text: `Bấm «${UI.begin}». Với «${UI.tabAudio}», trình duyệt hiện hộp chọn: hãy chọn đúng tab đang phát và bật mục chia sẻ âm thanh của tab.`, image: "chia-se-tab.png" },
         { text: "Điện thoại và máy tính bảng thường không thu được tiếng của tab. Máy đó app tự chuyển sang micro." },
-        { text: "Số dư và số phút còn lại hiện ngay trên màn hình, kèm cảnh báo khi sắp hết tiền. Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
+        { text: "Số giây còn lại và số phút hiện ngay trên màn hình, kèm cảnh báo khi sắp hết. Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
       ],
     },
     {

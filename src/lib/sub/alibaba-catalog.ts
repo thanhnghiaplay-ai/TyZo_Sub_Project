@@ -1,8 +1,8 @@
 import type { GroqLiveRow } from "./groq-board.ts";
 
 /**
- * Giá niêm yết quốc tế của Model Studio, dùng làm giá gốc.
- * Chủ nhập giá riêng thì giá riêng thắng. Model không có trong bảng vẫn gán được, nhưng chưa tính được cho đến khi có giá riêng.
+ * Giá niêm yết quốc tế, dùng khi chưa kéo được bảng Singapore.
+ * Giá tay từng model không còn được tính.
  */
 const blank = (over: Partial<GroqLiveRow> & { id: string }): GroqLiveRow => ({
   id: over.id,

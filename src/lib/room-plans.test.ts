@@ -1,10 +1,17 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { exportNotice, payTurnNotice, roomAccess, trialFileProblem } from "./room-plans.ts";
+import { ROOM_PLANS, exportNotice, payTurnNotice, roomAccess, trialFileProblem } from "./room-plans.ts";
 
 const now = Date.parse("2026-11-05T10:00:00.000Z");
 
 describe("hạn gói", () => {
+  it("giá thuê phòng là giá tay", () => {
+    assert.deepEqual(
+      ROOM_PLANS.map((plan) => plan.price),
+      [9_000, 39_000, 99_000],
+    );
+  });
+
   it("đăng ký chưa nạp là dùng thử", () => {
     assert.equal(
       roomAccess({ plan: null, planUntil: null, trialLeft: 1 }, now).text,

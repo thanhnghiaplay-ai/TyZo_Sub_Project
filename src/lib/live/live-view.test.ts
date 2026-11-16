@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { elapsedLabel, liveBalanceLine, liveButton, liveMinutes, liveMoneyLeft, liveStateText, liveWarn, liveWarnText } from "./live-view.ts";
 
-describe("số dư và số phút", () => {
-  it("tổng còn dùng được = số dư tự do + tiền đang giữ", () => {
+describe("số giây và số phút", () => {
+  it("tổng còn dùng được = giây còn hạn + giây đang giữ", () => {
     assert.equal(liveMoneyLeft({ free: 1000, heldLeft: 500 }), 1500);
     assert.equal(liveMoneyLeft({ free: -5, heldLeft: Number.NaN }), 0);
   });
@@ -13,13 +13,13 @@ describe("số dư và số phút", () => {
     assert.equal(liveMinutes(0, 1000), 0);
     assert.equal(liveMinutes(5000, null), null);
   });
-  it("dòng số dư có số tiền và số phút", () => {
-    assert.equal(liveBalanceLine(5000, 5), "5.000 đ · còn khoảng 5 phút");
-    assert.equal(liveBalanceLine(5000, null), "5.000 đ");
+  it("dòng giây còn có số giây và số phút", () => {
+    assert.equal(liveBalanceLine(5000, 5), "5.000 giây dịch · còn khoảng 5 phút");
+    assert.equal(liveBalanceLine(5000, null), "5.000 giây dịch");
   });
 });
 
-describe("cảnh báo sắp hết tiền", () => {
+describe("cảnh báo sắp hết giây", () => {
   const base = { minutes: 10, bridgeLow: false, denied: false, running: true };
   it("còn nhiều thì không báo", () => {
     assert.equal(liveWarn(base), "ok");
@@ -27,7 +27,7 @@ describe("cảnh báo sắp hết tiền", () => {
   });
   it("dưới 3 phút báo sắp hết", () => {
     assert.equal(liveWarn({ ...base, minutes: 2 }), "low");
-    assert.match(liveWarnText("low", 2), /Sắp hết tiền: còn khoảng 2 phút/);
+    assert.match(liveWarnText("low", 2), /Sắp hết giây: còn khoảng 2 phút/);
   });
   it("cầu nối báo low thì báo dù còn nhiều phút theo ước tính", () => {
     assert.equal(liveWarn({ ...base, bridgeLow: true }), "low");
@@ -36,12 +36,12 @@ describe("cảnh báo sắp hết tiền", () => {
     assert.equal(liveWarn({ ...base, minutes: 0 }), "out");
     assert.match(liveWarnText("out", 0), /tự dừng/);
   });
-  it("chưa chạy mà ví trống thì chưa tính là hết phiên, chỉ báo thấp", () => {
+  it("chưa chạy mà gói trống thì chưa tính là hết phiên, chỉ báo thấp", () => {
     assert.equal(liveWarn({ minutes: 0, bridgeLow: false, denied: false, running: false }), "low");
   });
   it("chưa biết giá thì không bịa số phút", () => {
     assert.equal(liveWarn({ ...base, minutes: null }), "ok");
-    assert.match(liveWarnText("low", null), /Sắp hết tiền\./);
+    assert.match(liveWarnText("low", null), /Sắp hết giây\./);
   });
 });
 

@@ -53,7 +53,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   "dich-truc-tiep": [
     { sel: "[data-tour=live-source]", title: "1. Chọn nguồn", text: "Âm thanh tab (tiếng từ một tab trình duyệt) hoặc Micro. Điện thoại thường chỉ dùng được Micro." },
     { sel: "[data-tour=live-lang]", title: "2. Chọn ngôn ngữ", text: "Ngôn ngữ nói (để Tự nhận biết nếu chưa rõ) và ngôn ngữ dịch. Có thể bật tiếng dịch qua loa." },
-    { sel: "[data-tour=live-balance]", title: "3. Số dư", text: "Số dư và số phút còn lại hiện ở đây. Sắp hết tiền thì có cảnh báo, bấm Nạp thêm để nạp ngay." },
+    { sel: "[data-tour=live-balance]", title: "3. Số giây", text: "Số giây còn lại và số phút hiện ở đây. Sắp hết thì có cảnh báo. Bấm Mua gói giây để mua thêm." },
     { sel: "[data-tour=live-start]", title: "4. Bắt đầu", text: "Bấm Bắt đầu. Với Âm thanh tab, hộp chọn của trình duyệt hiện ra: chọn đúng tab và bật mục chia sẻ âm thanh của tab." },
     { sel: "[data-tour=export]", title: "5. Tải bản ghi", text: "Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
   ],

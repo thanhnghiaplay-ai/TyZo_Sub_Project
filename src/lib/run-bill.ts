@@ -1,5 +1,5 @@
 import type { GroqLiveRow } from "./sub/groq-board.ts";
-import { emptyOverride, quoteVnd, type PriceOverride, type RunDesk } from "./run-desk.ts";
+import { quoteVnd, type RunDesk } from "./run-desk.ts";
 
 /** Groq tính tối thiểu 10 giây cho mỗi lần nhận dạng. */
 export const MIN_BILLED_SECONDS = 10;
@@ -13,24 +13,18 @@ function rowOf(book: PriceBook, model: string) {
   return book.rows.find((row) => row.id === model) ?? null;
 }
 
-function overrideOf(book: PriceBook, model: string): PriceOverride {
-  return book.desk.custom[model] ?? emptyOverride();
-}
-
 /** Đơn giá nhận dạng, đồng mỗi giây âm thanh, đã gồm phần chênh. null khi model chưa có giá. */
 export function asrPerSecond(book: PriceBook, model: string): number | null {
   const row = rowOf(book, model);
-  const over = overrideOf(book, model);
-  const perHour = quoteVnd(row?.usdPerHour == null ? null : row.usdPerHour * book.rate, book.desk.markup, over.hour);
+  const perHour = quoteVnd(row?.usdPerHour == null ? null : row.usdPerHour * book.rate, book.desk.markup, 0);
   return perHour > 0 ? perHour / 3600 : null;
 }
 
 /** Đơn giá dịch: đồng mỗi triệu token vào và ra, đã gồm phần chênh. null khi thiếu giá. */
 export function chatPerMillion(book: PriceBook, model: string): { inn: number; out: number } | null {
   const row = rowOf(book, model);
-  const over = overrideOf(book, model);
-  const inn = quoteVnd(row?.usdIn == null ? null : row.usdIn * book.rate, book.desk.markup, over.inn);
-  const out = quoteVnd(row?.usdOut == null ? null : row.usdOut * book.rate, book.desk.markup, over.out);
+  const inn = quoteVnd(row?.usdIn == null ? null : row.usdIn * book.rate, book.desk.markup, 0);
+  const out = quoteVnd(row?.usdOut == null ? null : row.usdOut * book.rate, book.desk.markup, 0);
   return inn > 0 || out > 0 ? { inn, out } : null;
 }
 

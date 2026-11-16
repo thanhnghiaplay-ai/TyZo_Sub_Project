@@ -1,46 +1,43 @@
 import type { Sql } from "../db.ts";
 import type { LiveBilling } from "./live-bridge.ts";
 import type { LiveBook } from "./live-cost.ts";
-import { chargeTicketWith, closeTicketWith, openTicketWith } from "../run-ticket.ts";
-import { dayStartIso } from "../run-desk.ts";
+import { releaseStaleWith } from "../run-ticket.ts";
+import { chargeTokenWith, closeTokenWith, openGiayWith } from "../token-flow.ts";
 
 export type LiveBillingEnv = {
   /** Bảng giá hiện hành (đã cộng chênh). null khi chưa có giá. */
   book(): Promise<LiveBook | null>;
-  /** Hạn mức trả theo lượt mỗi ngày, 0 là không giới hạn. */
-  cap(): Promise<number>;
   now?: () => Date;
 };
 
 /**
- * Nối cầu nối vào các hàm giữ, trừ, nhả tiền của cửa trả theo lượt. Không viết lại luật tiền:
- * giữ nguyên tử bằng UPDATE có điều kiện, trừ không vượt số đang giữ, nhả chạy lại không làm gì.
+ * Giữ và trừ gói giây, không đụng ví đồng và không lưu số dư cho phiên.
+ * Hạn mức đồng trong ngày không áp vào cửa này.
  */
 export function createLiveBilling(sql: Sql, env: LiveBillingEnv): LiveBilling {
   return {
     book: () => env.book(),
     async open({ userId, ticketId, hold, seconds, model }) {
       try {
-        const result = await openTicketWith(sql, {
+        await releaseStaleWith(sql, userId);
+        const result = await openGiayWith(sql, {
           id: ticketId,
           userId,
           fileName: "Dịch trực tiếp",
           seconds,
           rate: Math.round((hold * 60) / Math.max(1, seconds)),
           hold,
-          cap: await env.cap(),
-          dayStartIso: dayStartIso((env.now ?? (() => new Date()))()),
           asrModel: model,
           chatModel: "",
         });
-        return "error" in result ? { ok: false, reason: result.error } : { ok: true };
+        return "error" in result ? { ok: false, reason: "het-tien" } : { ok: true };
       } catch {
         return { ok: false, reason: "loi" };
       }
     },
-    charge: ({ userId, ticketId, cost, base }) => chargeTicketWith(sql, ticketId, userId, cost, base),
+    charge: ({ userId, ticketId, cost }) => chargeTokenWith(sql, ticketId, userId, cost),
     async close({ userId, ticketId, failed }) {
-      await closeTicketWith(sql, ticketId, userId, failed);
+      await closeTokenWith(sql, ticketId, userId, failed);
     },
   };
 }
