@@ -34,8 +34,11 @@ test("parseTheme: nhận màu 3 và 6 ký tự, ép về chữ thường", () =>
 });
 
 test("parseTheme: kẹp số về khoảng cho phép", () => {
-  const t = parseTheme({ fontScale: 9, radius: -4, shadow: 9, line: 9, button: "nope", density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
+  const t = parseTheme({ fontScale: 9, leading: 9, radius: -4, shadow: 9, line: 9, button: "nope", titleFont: "nope", titleWeight: "nope", density: "x", iconWeight: "nope", iconSize: "nope", iconTone: "nope", mode: "x" });
   assert.equal(t.fontScale, 1.25);
+  assert.equal(t.leading, 1.8);
+  assert.equal(t.titleFont, "be-vietnam-pro");
+  assert.equal(t.titleWeight, "keep");
   assert.equal(t.radius, 0);
   assert.equal(t.shadow, 1.5);
   assert.equal(t.line, 3);
@@ -62,6 +65,9 @@ test("themeToCss: có cả hai chế độ, đủ mọi biến, không lọt chu
   assert.match(css, /html\[data-theme="dark"\]\{/);
   assert.match(css, /html\[data-theme="light"\]\{/);
   assert.match(css, /--font-sans:"Inter"/);
+  assert.match(css, /--font-title:"Be Vietnam Pro"/);
+  assert.match(css, /--leading:1\.5;/);
+  assert.ok(!css.includes("--title-weight"));
   for (const [, variable] of PALETTE_KEYS) assert.ok(css.includes(variable + ":"), variable);
   assert.match(css, /--line-w:1px;/);
   assert.match(css, /--shadow-amt:1;/);

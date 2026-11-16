@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.6",
+    time: "11:02 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần chữ 1/8. titleFont, titleWeight keep/500/600/700, leading 1.3–1.8 mặc định 1.5. Cỡ chữ --font-scale nay áp vào html. Tiêu đề h1–h4 lấy --font-title. Độ đậm chỉ khi khác «như hiện tại». Không đổi điều khoản."
+  },
+  {
     version: "3.47.5",
     time: "10:50 ngày 16/11/2026",
     area: "khac",

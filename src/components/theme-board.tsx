@@ -14,12 +14,14 @@ import {
   THEME_DEFAULT,
   checkTheme,
   contrast,
+  fontFamily,
   fontHref,
-  fontOf,
   parseTheme,
   safeUrl,
   shadowStyle,
+  TITLE_WEIGHTS,
   type ButtonStyle,
+  type TitleWeight,
   type IconWeight,
   type IconSize,
   type IconTone,
@@ -41,8 +43,10 @@ function paletteStyle(palette: Palette, theme: Theme): CSSProperties {
   Object.assign(style, shadowStyle(theme.shadow));
   style["--shadow-amt"] = String(theme.shadow);
   style["--line-w"] = `${theme.line}px`;
-  const family = fontOf(theme.font).css;
-  style.fontFamily = family ? `${family}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
+  style["--font-title"] = fontFamily(theme.titleFont);
+  style["--leading"] = String(theme.leading);
+  style.lineHeight = String(theme.leading);
+  style.fontFamily = fontFamily(theme.font);
   style.background = palette.bg;
   style.color = palette.fg;
   style.colorScheme = palette === theme.light ? "light" : "dark";
@@ -92,10 +96,17 @@ function PaletteEditor({ mode, theme, onChange }: { mode: "light" | "dark"; them
 function Preview({ theme, mode }: { theme: Theme; mode: "light" | "dark" }) {
   const palette = theme[mode];
   const href = fontHref(theme.font);
+  const titleHref = theme.titleFont === theme.font ? null : fontHref(theme.titleFont);
   return (
     <ThemeProvider theme={theme}>
       {href && <link rel="stylesheet" href={href} />}
-      <div data-button={theme.button} style={paletteStyle(palette, theme)} className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4 shadow-lg">
+      {titleHref && <link rel="stylesheet" href={titleHref} />}
+      <div
+        data-button={theme.button}
+        data-title-weight={theme.titleWeight === "keep" ? undefined : theme.titleWeight}
+        style={paletteStyle(palette, theme)}
+        className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4 shadow-lg"
+      >
         <p className="text-xs font-semibold tracking-wide uppercase" style={{ color: palette.muted }}>
           Xem trước · {mode === "light" ? "Sáng" : "Tối"}
         </p>
@@ -123,6 +134,7 @@ function Preview({ theme, mode }: { theme: Theme; mode: "light" | "dark" }) {
           <Field label="Ô nhập mẫu" hint="Gợi ý nhỏ dưới ô nhập">
             <input className={inputClass} defaultValue="Nội dung mẫu" aria-label="Ô nhập mẫu" />
           </Field>
+          <p className="text-sm">Câu nội dung mẫu để xem giãn dòng.</p>
           <p className="text-sm" style={{ color: palette.danger }}>
             Câu cảnh báo mẫu
           </p>
@@ -283,7 +295,7 @@ export function ThemeBoard() {
                 options={MODES.map(([id, label]) => ({ id, label }))}
               />
             </Field>
-            <Field label="Phông chữ" hint="Chỉ gồm phông hỗ trợ tiếng Việt.">
+            <Field label="Phông nội dung" hint="Chỉ gồm phông hỗ trợ tiếng Việt.">
               <select className={inputClass} value={draft.font} onChange={(event) => patch({ font: event.target.value as Theme["font"] })}>
                 {FONTS.map((font) => (
                   <option key={font.id} value={font.id}>
@@ -291,6 +303,21 @@ export function ThemeBoard() {
                   </option>
                 ))}
               </select>
+            </Field>
+            <Field label="Phông tiêu đề" hint="Áp cho tiêu đề. Mặc định trùng phông nội dung.">
+              <select className={inputClass} value={draft.titleFont} onChange={(event) => patch({ titleFont: event.target.value as Theme["titleFont"] })}>
+                {FONTS.map((font) => (
+                  <option key={font.id} value={font.id}>
+                    {font.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Độ đậm tiêu đề">
+              <Segmented label="Độ đậm tiêu đề" value={draft.titleWeight} onChange={(titleWeight: TitleWeight) => patch({ titleWeight })} options={TITLE_WEIGHTS.map(([id, label]) => ({ id, label }))} />
+            </Field>
+            <Field label={`Giãn dòng: ${draft.leading.toFixed(1)}`}>
+              <input type="range" min={1.3} max={1.8} step={0.1} value={draft.leading} aria-label="Giãn dòng" onChange={(event) => patch({ leading: Number(event.target.value) })} />
             </Field>
             <Field label={`Cỡ chữ: ${Math.round(draft.fontScale * 100)}%`}>
               <input type="range" min={0.85} max={1.25} step={0.05} value={draft.fontScale} aria-label="Cỡ chữ" onChange={(event) => patch({ fontScale: Number(event.target.value) })} />

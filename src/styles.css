@@ -44,6 +44,25 @@
   border-color: transparent;
 }
 
+html {
+  font-size: calc(100% * var(--font-scale, 1));
+}
+
+body {
+  line-height: var(--leading, 1.5);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-title, var(--font-sans));
+}
+
+[data-title-weight] :is(h1, h2, h3, h4) {
+  font-weight: var(--title-weight);
+}
+
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {

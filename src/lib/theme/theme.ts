@@ -75,6 +75,14 @@ export const BUTTON_STYLES = [
 ] as const;
 export type ButtonStyle = (typeof BUTTON_STYLES)[number][0];
 
+export const TITLE_WEIGHTS = [
+  ["keep", "Như hiện tại"],
+  ["500", "Vừa"],
+  ["600", "Đậm vừa"],
+  ["700", "Đậm"],
+] as const;
+export type TitleWeight = (typeof TITLE_WEIGHTS)[number][0];
+
 export const DENSITIES = [
   ["compact", "Gọn", 0.85],
   ["cozy", "Vừa", 1],
@@ -165,6 +173,10 @@ export type Theme = {
   mode: Mode;
   font: FontId;
   fontScale: number;
+  titleFont: FontId;
+  titleWeight: TitleWeight;
+  /** Giãn dòng nội dung. 1.5 là mức đang có. */
+  leading: number;
   radius: number;
   /** 0 là tắt bóng nổi, 1 là mức đang có, tối đa 1.5. */
   shadow: number;
@@ -232,6 +244,9 @@ export const THEME_DEFAULT: Theme = {
   mode: "dark",
   font: "be-vietnam-pro",
   fontScale: 1,
+  titleFont: "be-vietnam-pro",
+  titleWeight: "keep",
+  leading: 1.5,
   radius: 1,
   shadow: 1,
   line: 1,
@@ -346,6 +361,8 @@ function pickIcons(value: unknown): Record<string, string> {
 export function parseTheme(input: unknown): Theme {
   const src = input && typeof input === "object" ? (input as Record<string, unknown>) : {};
   const font = FONTS.some((f) => f.id === src.font) ? (src.font as FontId) : THEME_DEFAULT.font;
+  const titleFont = FONTS.some((f) => f.id === src.titleFont) ? (src.titleFont as FontId) : THEME_DEFAULT.titleFont;
+  const titleWeight = TITLE_WEIGHTS.some((w) => w[0] === src.titleWeight) ? (src.titleWeight as TitleWeight) : THEME_DEFAULT.titleWeight;
   const weight = ICON_WEIGHTS.some((w) => w[0] === src.iconWeight) ? (src.iconWeight as IconWeight) : THEME_DEFAULT.iconWeight;
   const iconSize = ICON_SIZES.some((s) => s[0] === src.iconSize) ? (src.iconSize as IconSize) : THEME_DEFAULT.iconSize;
   const iconTone = ICON_TONES.some((t) => t[0] === src.iconTone) ? (src.iconTone as IconTone) : THEME_DEFAULT.iconTone;
@@ -357,6 +374,9 @@ export function parseTheme(input: unknown): Theme {
     mode,
     font,
     fontScale: pickNumber(src.fontScale, 1, 0.85, 1.25),
+    titleFont,
+    titleWeight,
+    leading: pickNumber(src.leading, 1.5, 1.3, 1.8),
     radius: pickNumber(src.radius, 1, 0, 1.75),
     shadow: pickNumber(src.shadow, 1, 0, 1.5),
     line: pickNumber(src.line, 1, 1, 3),
@@ -428,6 +448,11 @@ export function fontHref(id: FontId): string | null {
   return font.gf ? `https://fonts.googleapis.com/css2?family=${font.gf}&display=swap` : null;
 }
 
+export function fontFamily(id: FontId): string {
+  const font = fontOf(id);
+  return font.css ? `${font.css}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
+}
+
 function block(selector: string, palette: Palette): string {
   const lines = PALETTE_KEYS.map(([key, variable]) => `${variable}:${palette[key]};`);
   return `${selector}{${lines.join("")}color-scheme:${selector.includes("light") ? "light" : "dark"};}`;
@@ -449,13 +474,14 @@ export function shadowStyle(amount: number): Record<"--shadow" | "--shadow-lg" |
 
 /** CSS đã làm sạch. Mọi giá trị đi qua parseTheme nên không chèn được mã lạ. */
 export function themeToCss(theme: Theme): string {
-  const font = fontOf(theme.font);
   const density = DENSITIES.find((d) => d[0] === theme.density)?.[2] ?? 1;
-  const family = font.css ? `${font.css}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
+  const family = fontFamily(theme.font);
+  const title = fontFamily(theme.titleFont);
+  const weight = theme.titleWeight === "keep" ? "" : `--title-weight:${theme.titleWeight};`;
   const shadows = Object.entries(shadowStyle(theme.shadow)).map(([key, value]) => `${key}:${value};`).join("");
   const root =
-    `:root{--font-sans:${family};--radius-card:${theme.radius}rem;--radius-ctl:${Math.round(theme.radius * 0.75 * 100) / 100}rem;` +
-    `--font-scale:${theme.fontScale};--density:${density};--shadow-amt:${theme.shadow};--line-w:${theme.line}px;${shadows}}`;
+    `:root{--font-sans:${family};--font-title:${title};--radius-card:${theme.radius}rem;--radius-ctl:${Math.round(theme.radius * 0.75 * 100) / 100}rem;` +
+    `--font-scale:${theme.fontScale};--leading:${theme.leading};${weight}--density:${density};--shadow-amt:${theme.shadow};--line-w:${theme.line}px;${shadows}}`;
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 

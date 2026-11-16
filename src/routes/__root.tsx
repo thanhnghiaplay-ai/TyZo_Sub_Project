@@ -28,6 +28,8 @@ export const Route = createRootRoute({
   head: ({ loaderData }) => {
     const theme = loaderData?.theme ?? THEME_DEFAULT;
     const font = fontHref(theme.font);
+    const titleFont = fontHref(theme.titleFont);
+    const fontLinks = [...new Set([font, titleFont].filter((href): href is string => !!href))];
     return {
     meta: [
       { charSet: "utf-8" },
@@ -42,11 +44,11 @@ export const Route = createRootRoute({
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
-      ...(font
+      ...(fontLinks.length
         ? [
             { rel: "preconnect", href: "https://fonts.googleapis.com" },
             { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const },
-            { rel: "stylesheet", href: font },
+            ...fontLinks.map((href) => ({ rel: "stylesheet", href })),
           ]
         : []),
     ],
@@ -58,7 +60,7 @@ export const Route = createRootRoute({
 function RootDocument() {
   const { theme, service } = Route.useLoaderData();
   return (
-    <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} data-button={theme.button} suppressHydrationWarning>
+    <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} data-button={theme.button} data-title-weight={theme.titleWeight === "keep" ? undefined : theme.titleWeight} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

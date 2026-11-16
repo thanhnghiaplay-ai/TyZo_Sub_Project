@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## CHỮ 1/8 (16/11/2026, nhánh work, v3.47.6)
+ĐÃ LÀM: phông tiêu đề, độ đậm tiêu đề, giãn dòng. Mặc định trùng hình cũ. Cỡ chữ chung nay có tác dụng.
+CÒN 7 PHẦN: bố cục, chuyển động, trang bảo trì, tách tab, icon theo nhóm, xem trước cả web, chỗ cố ý để riêng.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## NÚT VÀ BỘ MÀU (16/11/2026, nhánh work, v3.47.5)
 ĐÃ LÀM: kiểu nút Đặc / Viền / Mờ cho nút đang tô màu nhấn. Tám bộ màu, bộ Vàng là màu cũ.
 CHƯA LÀM: viền huy hiệu, bóng chữ, màn tối hướng dẫn, phông tiêu đề riêng, chuyển động.

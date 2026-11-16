@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.47.5";
+export const APP_VERSION = "3.47.6";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.47.6",
+    time: "11:02 ngày 16/11/2026",
+    title: "Phông tiêu đề, độ đậm và giãn dòng.",
+    points: [
+      "Tiêu đề có phông riêng và độ đậm riêng. Mặc định trùng như trước.",
+      "Giãn dòng nội dung chỉnh được. Mức 1.5 giữ nguyên.",
+    ],
+  },
   {
     version: "3.47.5",
     time: "10:50 ngày 16/11/2026",
