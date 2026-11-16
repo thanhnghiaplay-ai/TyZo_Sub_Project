@@ -5,6 +5,7 @@ import {
   DENSITIES,
   FONTS,
   ICON_SLOTS,
+  ICON_GROUPS,
   ICON_TONES,
   ICON_SIZES,
   ICON_WEIGHTS,
@@ -35,6 +36,7 @@ import {
   type ButtonStyle,
   type TitleWeight,
   type IconWeight,
+  type IconGroupWeight,
   type IconSize,
   type IconTone,
   type Palette,
@@ -472,6 +474,25 @@ export function ThemeBoard() {
               onChange={(iconWeight: IconWeight) => patch({ iconWeight })}
               options={ICON_WEIGHTS.map(([id, label]) => ({ id, label }))}
             />
+            <div className="grid gap-2 sm:grid-cols-2">
+              {ICON_GROUPS.map(([id, label]) => (
+                <Field key={id} label={`Nét ${label}`} hint="«Theo cả bộ» thì không đổi riêng.">
+                  <select
+                    className={inputClass}
+                    aria-label={`Nét ${label}`}
+                    value={draft.iconGroups[id]}
+                    onChange={(event) => patch({ iconGroups: { ...draft.iconGroups, [id]: event.target.value as IconGroupWeight } })}
+                  >
+                    <option value="same">Theo cả bộ</option>
+                    {ICON_WEIGHTS.map(([weight, name]) => (
+                      <option key={weight} value={weight}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              ))}
+            </div>
             <Segmented
               label="Cỡ icon"
               value={draft.iconSize}
@@ -490,58 +511,67 @@ export function ThemeBoard() {
                 <div className="mt-2 grid gap-2">
                   <input className={inputClass} value={iconQuery} aria-label="Tìm chức năng" placeholder="Tìm chức năng" onChange={(event) => setIconQuery(event.target.value)} />
                   {shownSlots.length === 0 && <p className="text-sm text-muted">Không thấy chức năng này.</p>}
-                  {shownSlots.map(([slot, label, fallback]) => {
-                    const current = draft.icons[slot] || fallback;
-                    const open = iconPick === slot;
+                  {ICON_GROUPS.map(([id, label]) => {
+                    const rows = shownSlots.filter(([slot]) => slot.startsWith(`${id}.`));
+                    if (rows.length === 0) return null;
                     return (
-                      <div key={slot} className="grid gap-2">
-                        <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 text-sm sm:grid-cols-[2rem_minmax(0,1fr)_auto]">
-                          <Icon name={current} size="1.4rem" />
-                          <button type="button" className="min-tap truncate text-left" aria-expanded={open} onClick={() => setIconPick(open ? "" : slot)}>
-                            {label}
-                          </button>
-                          <button
-                            type="button"
-                            className="col-span-2 min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-xs disabled:opacity-40 sm:col-span-1"
-                            disabled={current === fallback}
-                            onClick={() => patchIcon(slot, fallback)}
-                          >
-                            Đặt lại icon này
-                          </button>
-                        </div>
-                        {open && (
-                          <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-2">
-                            <input
-                              className={inputClass}
-                              value={glyphQuery}
-                              aria-label={`Tìm hình cho ${label}`}
-                              placeholder="Tìm hình"
-                              onChange={(event) => setGlyphQuery(event.target.value)}
-                            />
-                            {glyphs.length === 0 ? (
-                              <p className="text-sm text-muted">Không thấy hình này.</p>
-                            ) : (
-                              <div className="grid max-h-48 grid-cols-6 gap-1 overflow-auto">
-                                {glyphs.map((key) => (
-                                  <button
-                                    key={key}
-                                    type="button"
-                                    aria-label={key}
-                                    aria-pressed={key === current}
-                                    title={key}
-                                    className={
-                                      "inline-flex size-11 items-center justify-center rounded-[var(--radius-ctl)] border " +
-                                      (key === current ? "border-accent bg-raised" : "border-transparent")
-                                    }
-                                    onClick={() => patchIcon(slot, key)}
-                                  >
-                                    <Icon name={key} size="1.25rem" />
-                                  </button>
-                                ))}
+                      <div key={id} className="grid gap-2">
+                        <p className="text-sm font-semibold">{label}</p>
+                        {rows.map(([slot, slotLabel, fallback]) => {
+                          const current = draft.icons[slot] || fallback;
+                          const open = iconPick === slot;
+                          return (
+                            <div key={slot} className="grid gap-2">
+                              <div className="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-2 text-sm sm:grid-cols-[2rem_minmax(0,1fr)_auto]">
+                                <Icon slot={slot} size="1.4rem" />
+                                <button type="button" className="min-tap truncate text-left" aria-expanded={open} onClick={() => setIconPick(open ? "" : slot)}>
+                                  {slotLabel}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="col-span-2 min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-xs disabled:opacity-40 sm:col-span-1"
+                                  disabled={current === fallback}
+                                  onClick={() => patchIcon(slot, fallback)}
+                                >
+                                  Đặt lại icon này
+                                </button>
                               </div>
-                            )}
-                          </div>
-                        )}
+                              {open && (
+                                <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-2">
+                                  <input
+                                    className={inputClass}
+                                    value={glyphQuery}
+                                    aria-label={`Tìm hình cho ${slotLabel}`}
+                                    placeholder="Tìm hình"
+                                    onChange={(event) => setGlyphQuery(event.target.value)}
+                                  />
+                                  {glyphs.length === 0 ? (
+                                    <p className="text-sm text-muted">Không thấy hình này.</p>
+                                  ) : (
+                                    <div className="grid max-h-48 grid-cols-6 gap-1 overflow-auto">
+                                      {glyphs.map((key) => (
+                                        <button
+                                          key={key}
+                                          type="button"
+                                          aria-label={key}
+                                          aria-pressed={key === current}
+                                          title={key}
+                                          className={
+                                            "inline-flex size-11 items-center justify-center rounded-[var(--radius-ctl)] border " +
+                                            (key === current ? "border-accent bg-raised" : "border-transparent")
+                                          }
+                                          onClick={() => patchIcon(slot, key)}
+                                        >
+                                          <Icon name={key} size="1.25rem" />
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })}

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.11",
+    time: "12:06 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần icon nhóm 6/8. iconGroups nav/act/st/ui, mặc định same nên vẫn theo iconWeight. Danh sách icon trong tab Biểu tượng chia bốn nhóm. Không đổi điều khoản."
+  },
+  {
     version: "3.47.10",
     time: "11:59 ngày 16/11/2026",
     area: "khac",

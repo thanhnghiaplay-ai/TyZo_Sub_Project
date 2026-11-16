@@ -1,4 +1,4 @@
-import { ICON_SIZES, ICON_SLOTS, type IconSlot, type IconWeight } from "@/lib/theme/theme";
+import { ICON_SIZES, ICON_SLOTS, type IconGroup, type IconSlot, type IconWeight } from "@/lib/theme/theme";
 import { ICONS } from "./icon-registry";
 import { useTheme } from "./theme-context";
 
@@ -20,6 +20,9 @@ export function Icon({ slot, name, size = "1.25em", weight, className, label }: 
   const theme = useTheme();
   const key = name ?? (slot ? theme.icons[slot] || DEFAULTS.get(slot) : undefined) ?? "Question";
   const Glyph = ICONS[key] ?? ICONS[(slot && DEFAULTS.get(slot)) || ""] ?? ICONS.Question;
+  const group = slot?.split(".")[0] as IconGroup | undefined;
+  const groupWeight = group ? theme.iconGroups?.[group] : undefined;
+  const chosen = weight ?? (groupWeight && groupWeight !== "same" ? groupWeight : theme.iconWeight);
   const scale = ICON_SIZES.find((item) => item[0] === theme.iconSize)?.[2] ?? 1;
   const style = {
     zoom: scale === 1 ? undefined : scale,
@@ -28,7 +31,7 @@ export function Icon({ slot, name, size = "1.25em", weight, className, label }: 
   return (
     <Glyph
       size={size}
-      weight={weight ?? theme.iconWeight}
+      weight={chosen}
       className={className}
       style={style.zoom || style.color ? style : undefined}
       aria-hidden={label ? undefined : true}

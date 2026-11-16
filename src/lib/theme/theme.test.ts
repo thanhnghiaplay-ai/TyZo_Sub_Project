@@ -91,6 +91,15 @@ test("trang bảo trì: chữ biển cắt 10 ký tự, rỗng thì về BẢO T
   assert.equal(parseTheme({ mtBoard: "nope", mtFx: "nope", mtShow: "nope" }).mtShow, "robot");
 });
 
+test("nhóm icon: mặc định theo cả bộ, giá trị lạ bị bỏ", () => {
+  assert.deepEqual(parseTheme({}).iconGroups, { nav: "same", act: "same", st: "same", ui: "same" });
+  const grouped = parseTheme({ iconGroups: { nav: "bold", act: "nope", ui: "thin" } });
+  assert.equal(grouped.iconGroups.nav, "bold");
+  assert.equal(grouped.iconGroups.act, "same");
+  assert.equal(grouped.iconGroups.ui, "thin");
+  assert.equal(grouped.iconGroups.st, "same");
+});
+
 test("bộ màu: đủ 8 bộ và mỗi bộ sáng tối đều đọc được", () => {
   assert.equal(PALETTES.length, 8);
   assert.equal(PALETTES[0].name, "Vàng");

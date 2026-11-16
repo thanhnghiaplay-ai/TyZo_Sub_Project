@@ -207,6 +207,15 @@ export const ICON_SLOTS = [
 ] as const;
 export type IconSlot = (typeof ICON_SLOTS)[number][0];
 
+export const ICON_GROUPS = [
+  ["nav", "Điều hướng"],
+  ["act", "Hành động"],
+  ["st", "Trạng thái"],
+  ["ui", "Giao diện"],
+] as const;
+export type IconGroup = (typeof ICON_GROUPS)[number][0];
+export type IconGroupWeight = IconWeight | "same";
+
 export type Theme = {
   v: number;
   mode: Mode;
@@ -235,6 +244,8 @@ export type Theme = {
   button: ButtonStyle;
   density: Density;
   iconWeight: IconWeight;
+  /** «same» nghĩa là nhóm này theo kiểu nét chung. */
+  iconGroups: Record<IconGroup, IconGroupWeight>;
   iconSize: IconSize;
   iconTone: IconTone;
   /** Tên hiển thị và logo (https:// hoặc đường dẫn bắt đầu bằng /). Rỗng là dùng mặc định. */
@@ -310,6 +321,7 @@ export const THEME_DEFAULT: Theme = {
   button: "solid",
   density: "cozy",
   iconWeight: "duotone",
+  iconGroups: { nav: "same", act: "same", st: "same", ui: "same" },
   iconSize: "md",
   iconTone: "text",
   brandName: "",
@@ -414,6 +426,16 @@ function pickIcons(value: unknown): Record<string, string> {
   return out;
 }
 
+function pickIconGroups(value: unknown): Theme["iconGroups"] {
+  const src = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+  const out = { ...THEME_DEFAULT.iconGroups };
+  for (const [id] of ICON_GROUPS) {
+    const raw = src[id];
+    if (raw === "same" || ICON_WEIGHTS.some((w) => w[0] === raw)) out[id] = raw as IconGroupWeight;
+  }
+  return out;
+}
+
 /** Làm sạch mọi đầu vào. Giá trị lạ thì lấy mặc định. Không bao giờ ném lỗi. */
 export function parseTheme(input: unknown): Theme {
   const src = input && typeof input === "object" ? (input as Record<string, unknown>) : {};
@@ -456,6 +478,7 @@ export function parseTheme(input: unknown): Theme {
     button,
     density,
     iconWeight: weight,
+    iconGroups: pickIconGroups(src.iconGroups),
     iconSize,
     iconTone,
     brandName: typeof src.brandName === "string" ? src.brandName.trim().slice(0, 40) : "",

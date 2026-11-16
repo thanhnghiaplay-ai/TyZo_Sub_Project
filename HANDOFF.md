@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON NHÓM 6/8 (16/11/2026, nhánh work, v3.47.11)
+ĐÃ LÀM: bốn nhóm biểu tượng và nét riêng từng nhóm. Mặc định theo nét chung.
+CÒN 2 PHẦN: xem trước cả web, chỗ cố ý để riêng. Favicon chưa làm.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## TÁCH TAB 5/8 (16/11/2026, nhánh work, v3.47.10)
 ĐÃ LÀM: mục Giao diện chia sáu phần. Xem trước và nút lưu vẫn ở ngoài. Không thêm trường.
 CÒN 3 PHẦN: icon theo nhóm, xem trước cả web, chỗ cố ý để riêng. Favicon chưa làm.
