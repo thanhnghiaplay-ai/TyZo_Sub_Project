@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## VIỀN 1 (16/11/2026, nhánh work, v3.47.4)
+ĐÃ LÀM: thanh «Độ dày viền» 1, 2 hoặc 3 px cho thẻ, nút và ô nhập. Mức 1 giống trước.
+CHƯA LÀM: kiểu nút (đặc/viền/mờ), bộ màu có sẵn. Viền huy hiệu và viền 2 px giữ nguyên.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 7 (16/11/2026, nhánh work, v3.47.3)
 ĐÃ LÀM: cỡ icon nhỏ/vừa/lớn và màu theo chữ hoặc màu nhấn. Mức vừa và theo chữ giữ hình cũ.
 CHƯA LÀM: viền huy hiệu, bóng chữ, màn tối hướng dẫn, độ dày viền, kiểu nút, bộ màu có sẵn.

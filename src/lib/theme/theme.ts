@@ -161,6 +161,8 @@ export type Theme = {
   radius: number;
   /** 0 là tắt bóng nổi, 1 là mức đang có, tối đa 1.5. */
   shadow: number;
+  /** Độ dày viền khung, tính bằng px. 1 là mức đang có. */
+  line: number;
   density: Density;
   iconWeight: IconWeight;
   iconSize: IconSize;
@@ -223,6 +225,7 @@ export const THEME_DEFAULT: Theme = {
   fontScale: 1,
   radius: 1,
   shadow: 1,
+  line: 1,
   density: "cozy",
   iconWeight: "duotone",
   iconSize: "md",
@@ -294,6 +297,7 @@ export function parseTheme(input: unknown): Theme {
     fontScale: pickNumber(src.fontScale, 1, 0.85, 1.25),
     radius: pickNumber(src.radius, 1, 0, 1.75),
     shadow: pickNumber(src.shadow, 1, 0, 1.5),
+    line: pickNumber(src.line, 1, 1, 3),
     density,
     iconWeight: weight,
     iconSize,
@@ -388,7 +392,7 @@ export function themeToCss(theme: Theme): string {
   const shadows = Object.entries(shadowStyle(theme.shadow)).map(([key, value]) => `${key}:${value};`).join("");
   const root =
     `:root{--font-sans:${family};--radius-card:${theme.radius}rem;--radius-ctl:${Math.round(theme.radius * 0.75 * 100) / 100}rem;` +
-    `--font-scale:${theme.fontScale};--density:${density};--shadow-amt:${theme.shadow};${shadows}}`;
+    `--font-scale:${theme.fontScale};--density:${density};--shadow-amt:${theme.shadow};--line-w:${theme.line}px;${shadows}}`;
   return [root, block('html[data-theme="dark"]', theme.dark), block('html[data-theme="light"]', theme.light)].join("\n");
 }
 

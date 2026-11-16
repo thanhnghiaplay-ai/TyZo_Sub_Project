@@ -37,6 +37,7 @@ function paletteStyle(palette: Palette, theme: Theme): CSSProperties {
   style["--radius-ctl"] = `${Math.round(theme.radius * 0.75 * 100) / 100}rem`;
   Object.assign(style, shadowStyle(theme.shadow));
   style["--shadow-amt"] = String(theme.shadow);
+  style["--line-w"] = `${theme.line}px`;
   const family = fontOf(theme.font).css;
   style.fontFamily = family ? `${family}, ui-sans-serif, system-ui, sans-serif` : "ui-sans-serif, system-ui, sans-serif";
   style.background = palette.bg;
@@ -296,6 +297,9 @@ export function ThemeBoard() {
             </Field>
             <Field label={`Độ đậm bóng: ${draft.shadow.toFixed(2)}`}>
               <input type="range" min={0} max={1.5} step={0.25} value={draft.shadow} aria-label="Độ đậm bóng" onChange={(event) => patch({ shadow: Number(event.target.value) })} />
+            </Field>
+            <Field label={`Độ dày viền: ${draft.line} px`}>
+              <input type="range" min={1} max={3} step={1} value={draft.line} aria-label="Độ dày viền" onChange={(event) => patch({ line: Number(event.target.value) })} />
             </Field>
             <Field label="Mật độ khoảng cách">
               <Segmented label="Mật độ" value={draft.density} onChange={(density) => patch({ density })} options={DENSITIES.map(([id, label]) => ({ id, label }))} />

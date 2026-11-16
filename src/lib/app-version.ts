@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "3.47.3";
+export const APP_VERSION = "3.47.4";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "3.47.4",
+    time: "10:41 ngày 16/11/2026",
+    title: "Chọn độ dày viền khung.",
+    points: [
+      "Viền thẻ, nút và ô nhập có thể dày 1, 2 hoặc 3 px.",
+      "Mức 1 giữ nguyên như trước. Viền huy hiệu không đổi.",
+    ],
+  },
   {
     version: "3.47.3",
     time: "10:32 ngày 16/11/2026",

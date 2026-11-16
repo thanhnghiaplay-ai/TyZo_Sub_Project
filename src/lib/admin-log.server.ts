@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.4",
+    time: "10:41 ngày 16/11/2026",
+    area: "khac",
+    text: "Hình khối: Theme.line 1–3, mặc định 1. themeToCss ghi --line-w. Lớp .border và 22 khung 1px trong styles.css theo biến. Hai viền huy hiệu giữ 1px. Viền 2px (nét đứt, vòng tour, núm kéo) không đụng. Không đổi điều khoản."
+  },
+  {
     version: "3.47.3",
     time: "10:32 ngày 16/11/2026",
     area: "khac",
