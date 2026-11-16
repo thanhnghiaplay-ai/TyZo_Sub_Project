@@ -91,6 +91,13 @@ test("trang bảo trì: chữ biển cắt 10 ký tự, rỗng thì về BẢO T
   assert.equal(parseTheme({ mtBoard: "nope", mtFx: "nope", mtShow: "nope" }).mtShow, "robot");
 });
 
+test("huy hiệu, bóng chữ và màn hướng dẫn theo token", () => {
+  const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
+  assert.match(css, /border: var\(--line-w, 1px\) solid var\(--badge\)/);
+  assert.match(css, /\.tour-scrim \{[\s\S]{0,80}var\(--shadow-amt, 1\)/);
+  assert.match(css, /text-shadow: 0 0 calc\(26px \* var\(--shadow-amt, 1\)\)/);
+});
+
 test("bảng giao diện xem trước cả trang và có nút hoàn tác", () => {
   const src = readFileSync(new URL("../../components/theme-board.tsx", import.meta.url), "utf8");
   assert.match(src, /Hoàn tác/);

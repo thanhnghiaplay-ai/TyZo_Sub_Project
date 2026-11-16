@@ -1,5 +1,11 @@
 # HANDOFF — TyZo_Sub_Project
 
+## CHỖ ĐỂ RIÊNG 8/8 (16/11/2026, nhánh work, v3.47.13)
+ĐÃ LÀM: viền huy hiệu vai trò, bóng chữ bảo trì, bóng huy hiệu và màn hướng dẫn theo token. Mức 1 không đổi hình.
+TÁM PHẦN YÊU CẦU ĐÃ XONG.
+CÒN CỐ Ý: màu phụ đề khách chọn, nút tròn, favicon, 5 màu dự phòng tia lửa.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## XEM TRƯỚC CẢ TRANG 7/8 (16/11/2026, nhánh work, v3.47.12)
 ĐÃ LÀM: tab Giao diện phủ bản nháp lên trang ngay. Nút Hoàn tác tối đa 30 bước. Khách vẫn cần Công bố.
 CÒN 1 PHẦN: chỗ cố ý để riêng. Favicon chưa làm.

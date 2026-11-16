@@ -132,7 +132,7 @@ export function GuidedTour({ open, onClose, tour = "quick-start" }: { open: bool
           />
         </>
       )}
-      {lonely && <div aria-hidden className="fixed inset-0 z-[60] bg-black/60" />}
+      {lonely && <div aria-hidden className="tour-scrim fixed inset-0 z-[60]" />}
       <div
         ref={card}
         tabIndex={-1}

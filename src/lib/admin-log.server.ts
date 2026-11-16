@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.47.13",
+    time: "12:20 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần chỗ để riêng 8/8. Viền role-mark theo --line-w. Bóng ruy-băng, viên thuốc, bóng chữ bảo trì và .tour-scrim theo --shadow-amt. Mức 1 không đổi hình. Không đụng màu phụ đề, nút tròn, favicon, 5 màu dự phòng tia lửa. Không đổi điều khoản."
+  },
+  {
     version: "3.47.12",
     time: "12:13 ngày 16/11/2026",
     area: "khac",
