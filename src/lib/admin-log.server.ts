@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.15",
+    time: "09:21 ngày 16/11/2026",
+    area: "khac",
+    text: "Icon bước 2. Wallet lucide ở home-hero, money-card, live-screen đổi thành Icon slot nav.wallet. money-card hết import lucide. Còn 12 file lucide. Không thêm slot mới. Không đổi điều khoản."
+  },
+  {
     version: "3.46.14",
     time: "08:40 ngày 16/11/2026",
     area: "khac",

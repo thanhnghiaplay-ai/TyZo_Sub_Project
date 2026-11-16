@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Wallet } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { getRoomAccount, type RoomState } from "@/lib/room-account";
 import { getServiceMenu } from "@/lib/pack-room";
 import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
@@ -118,7 +118,7 @@ export function MoneyCard({
     <section aria-label="Ví và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex min-w-0 items-center gap-2">
-          <Wallet className="size-4 shrink-0 text-accent" aria-hidden="true" />
+          <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
           {account ? (
             <span>
               <strong>{formatDong(account.balance)}</strong>

@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## ICON 2 (16/11/2026, nhánh work, v3.46.15)
+ĐÃ LÀM: icon ví ở trang chủ, thẻ tiền và dịch trực tiếp theo chỗ Ví.
+CÒN: 12 file vẫn gắn icon cứng. Đổ bóng chưa đụng.
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## ICON 1 (16/11/2026, nhánh work, v3.46.14)
 ĐÃ LÀM: nút xem/ẩn khóa (phòng chiếu, gói, key Alibaba, bàn chạy) theo chỗ Xem và Ẩn trong giao diện.
 CÒN: 13 file vẫn gắn icon cứng. Đổ bóng chưa đụng.

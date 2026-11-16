@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/back-button";
-import { AlertTriangle, Mic, MonitorSpeaker, Square, Play, Wallet } from "lucide-react";
+import { AlertTriangle, Mic, MonitorSpeaker, Square, Play } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import { BrandMark } from "@/components/brand-mark";
 import { DisplayToggle } from "@/components/display-toggle";
@@ -241,7 +242,7 @@ export function LiveScreen() {
         <section className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3" aria-label="Số dư" data-tour="live-balance">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="inline-flex items-center gap-2 text-sm">
-              <Wallet className="size-4 text-muted" aria-hidden="true" />
+              <Icon slot="nav.wallet" className="size-4 text-muted" />
               <span data-testid="live-balance">{live.money == null ? "Đang xem số dư…" : liveBalanceLine(live.money, live.minutes)}</span>
             </p>
             <button type="button" className="min-tap rounded-full border border-line px-4 text-sm font-semibold" onClick={() => setTopOpen((value) => !value)} aria-expanded={topOpen}>

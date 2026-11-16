@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Clapperboard, FileAudio, KeyRound, Link2, Loader2, SlidersHorizontal, Upload, Wallet } from "lucide-react";
+import { Clapperboard, FileAudio, KeyRound, Link2, Loader2, SlidersHorizontal, Upload } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 import { fmt } from "@/lib/sub/text";
 import { SRC_LANGS } from "@/lib/sub/text";
 import { formatBytes, isMediaFile, type FileThumb } from "@/components/file-thumb";
@@ -226,7 +227,7 @@ export function HomeHero({
         </ChipSelect>
         {payMode && (
           <button type="button" className={CHIP} aria-pressed={payMode === "turn"} onClick={onTogglePay} title="Đổi giữa key của bạn và trả theo lượt">
-            <Wallet className="size-4" aria-hidden="true" />
+            <Icon slot="nav.wallet" className="size-4" />
             <span className="font-medium">{payMode === "turn" ? "Trả theo lượt" : "Key của tôi"}</span>
           </button>
         )}
