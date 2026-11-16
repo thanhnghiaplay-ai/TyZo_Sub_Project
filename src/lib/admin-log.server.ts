@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.12",
+    time: "08:26 ngày 16/11/2026",
+    area: "khac",
+    text: "Bo góc bước 2. styles.css: 8 chỗ border-radius 1rem thành --radius-card (thẻ studio, admin, menu, cổng, tổ chức), 2 chỗ 0.75rem thành --radius-ctl (mục menu và mục rail). Mặc định không đổi hình. Không đụng 999px, 50%, góc md/lg/3xl, đổ bóng. Không đổi điều khoản."
+  },
+  {
     version: "3.46.11",
     time: "08:18 ngày 16/11/2026",
     area: "khac",
