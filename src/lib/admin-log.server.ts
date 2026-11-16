@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "3.46.6",
+    time: "07:41 ngày 16/11/2026",
+    area: "khac",
+    text: "Phần chữ, một bước. error-component.tsx: tiêu đề «Đã xảy ra lỗi», lời dự phòng «Không rõ lỗi gì. Hãy tải lại trang.». Không dịch errors.ts và nút Continue with trong gates.tsx vì không gắn vào trang đang chạy. Không đổi điều khoản."
+  },
+  {
     version: "3.46.5",
     time: "07:28 ngày 16/11/2026",
     area: "khac",

@@ -1,5 +1,10 @@
 # HANDOFF — TyZo_Sub_Project
 
+## PHẦN CHỮ (16/11/2026, nhánh work, v3.46.6)
+ĐÃ LÀM: trang lỗi hiện «Đã xảy ra lỗi» và «Không rõ lỗi gì. Hãy tải lại trang.»
+CHƯA LÀM: câu tiếng Anh trong lib/app-data/errors.ts và nút Continue with ở gates.tsx (không gắn trang đang chạy). Rồi tới phần đồng bộ màu (4 bước).
+KHÔNG ĐỔI: giá, quyền, điều khoản (`2026-11-15.1`).
+
 ## HẾT MÀU TAILWIND BẢNG (16/11/2026, nhánh work, v3.46.5)
 ĐÃ LÀM: nhãn đơn nạp, nút hủy đơn, trang lỗi và nút đăng nhập ngoài dùng màu thành công, chờ, lỗi, nền, chữ, viền. Không còn lớp red/emerald/amber/zinc/neutral.
 CHƯA LÀM: dịch câu tiếng Anh trên trang lỗi. Robot, nền đêm, màu phụ đề, thư HTML, icon Lucide, bo góc.
