@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.1.0";
+export const APP_VERSION = "5.1.1";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,12 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.1.1",
+    time: "17/11/2026",
+    title: "Giá Deepgram tự cập nhật theo trang chính thức.",
+    points: ["Giá nhận dạng và giọng đọc Deepgram tự lấy từ trang giá của Deepgram, bỏ giá khuyến mãi cũ.", "Nova-3 tính theo 0,0048 đô mỗi phút."],
+  },
   {
     version: "5.1.0",
     time: "10:50 ngày 17/11/2026",

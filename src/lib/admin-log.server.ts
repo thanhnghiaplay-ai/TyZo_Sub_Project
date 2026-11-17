@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.1.1",
+    time: "17/11/2026",
+    area: "tien",
+    text: "Giá Deepgram tự cập nhật từ deepgram.com/pricing (sub/deepgram-price.ts, deepgram-board.server.ts, khóa dg_board): đọc cột trả theo dùng, bỏ giá gạch, chặn giá lệch quá 5 lần dự phòng. Chủ chỉnh trong Giá và hạn mức: bật/tắt tự cập nhật, chu kỳ 1 đến 168 giờ (khóa dg_price_cfg), nút Lấy lại bảng kéo ngay; số sửa tay usd_fix vẫn thắng. Dự phòng Nova-3 đổi 0,0043 thành 0,0048 đô/phút (0,288 đô/giờ) theo trang chính thức 17/11/2026; thêm dòng Nova-3 đa ngữ 0,0058 (deepgram-nova-3-multi, mới có giá, chưa nối vào tính tiền nhận dạng). Giọng Aura-2 tính tiền theo giá tự cập nhật.",
+  },
+  {
     version: "5.1.0",
     time: "10:50 ngày 17/11/2026",
     area: "ha-tang",

@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { DEEPGRAM_ROWS, deepgramRow, deepgramRowFor } from "./deepgram-catalog.ts";
 
-test("Nova-3 có giá giờ 0,258 đô", () => {
-  assert.equal(deepgramRow("deepgram-nova-3")?.usdPerHour, 0.258);
+test("Nova-3 có giá giờ 0,288 đô", () => {
+  assert.equal(deepgramRow("deepgram-nova-3")?.usdPerHour, 0.288);
   assert.equal(deepgramRow("khong-co"), null);
 });
 
@@ -21,5 +21,5 @@ test("mọi giọng Aura-2 dùng chung giá 30 đô mỗi triệu ký tự", () 
   assert.equal(row?.usdPerMillionChars, 30);
   assert.equal(deepgramRowFor("aura-2-sirio-es")?.usdPerMillionChars, 30);
   assert.equal(deepgramRowFor("aura-2-thalia-vi"), null);
-  assert.equal(deepgramRowFor("deepgram-nova-3")?.usdPerHour, 0.258);
+  assert.equal(deepgramRowFor("deepgram-nova-3")?.usdPerHour, 0.288);
 });

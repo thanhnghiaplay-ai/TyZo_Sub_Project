@@ -498,3 +498,8 @@ Chưa làm: chưa xem trang admin có dữ liệu thật (chưa đăng nhập đ
 Đã làm: ô tick và ô chọn màu không còn bị `width:100%` (tab Thư); `.admin-flow` chia cột cho Sơ đồ, Doanh thu, Thuật ngữ, Cộng tác; Nhật ký xếp lưới; thẻ Trả theo lượt xếp lại hết khoảng trống; `.stat-grid` hàng cuối giãn đầy; nút Lọc cạnh ô lọc; tiêu đề Gmail đúng màu; placeholder SMTP gọn; chữ hướng dẫn dưới nút phát.
 Chưa làm: chưa xem trên Vercel thật hay điện thoại thật, mới dựng thử CSS trong Chromium. `tsc --noEmit` và 9 test cần gói cài đặt chưa chạy được ở bản này. Trang Tài khoản còn chia hai cột, cuối cột có thể lệch chiều cao. Nút Lưu trên thẻ Chủ ở Sơ đồ viền nhạt, chưa tìm ra nguyên nhân.
 Cố ý không làm: không đổi logic, không đổi điều khoản (chỉ giao diện).
+
+
+## v5.1.1: giá Deepgram tự cập nhật (việc 1 trong 4 của "tùy biến cao nhất")
+XONG: `sub/deepgram-price.ts` (đọc trang giá, bỏ giá gạch, chặn lệch >5 lần, cấu hình auto + chu kỳ giờ), `sub/deepgram-base.ts` (giá dự phòng 0,0048/0,0058/30), `sub/deepgram-board.server.ts` (khóa `dg_board`, `loadDeepgramRows`), nút Lấy lại bảng kéo cả Deepgram, ô cấu hình trong `model-usd-board.tsx`, route Aura dùng `loadDeepgramRows`.
+CHƯA: (2) gửi file từ máy lên Deepgram, thử CORS trước; (3) dịch trực tiếp qua Deepgram; (4) bảng ngôn ngữ Nova-3 sửa được (thêm vi) + cổng bảo trì cho /api/room-deepgram; nối dòng `deepgram-nova-3-multi` vào tính tiền khi ngôn ngữ là `multi`. Phía khách (`pack-picker`, `service-pack-board`) còn dùng bảng dự phòng, chưa dùng giá tự lấy. Trang giá có thể đổi dạng: khi đó parser trả rỗng và giữ giá cũ. Chưa thử kéo thật từ máy chủ Vercel.

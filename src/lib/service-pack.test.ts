@@ -241,6 +241,6 @@ describe("Deepgram trong gói dịch", () => {
     const dgBook: PriceBook = { rate: 25000, rows: DEEPGRAM_ROWS, desk: { markup: 0, custom: {} } };
     const quote = quotePack({ pack: mk({}), seconds: 3600, door: "rent", narration: false, books: { groq: book(0), deepgram: dgBook } });
     const line = quote.lines.find((item) => item.role === "asr");
-    assert.equal(Math.round(line?.base ?? 0), Math.round(0.258 * 25000));
+    assert.equal(Math.round(line?.base ?? 0), Math.round(0.288 * 25000));
   });
 });

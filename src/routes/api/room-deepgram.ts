@@ -54,8 +54,7 @@ export const Route = createFileRoute("/api/room-deepgram")({
         const { parseRunDesk, parseModelList } = await import("@/lib/run-desk");
         const { loadPriceBook } = await import("@/lib/run-board.server");
         const { readRequest, chargeWith } = await import("@/lib/run-gate");
-        const { deepgramRowFor } = await import("@/lib/sub/deepgram-catalog");
-        const { applyUsdFix, parseUsdFix } = await import("@/lib/usd-fix");
+        const { loadDeepgramRows } = await import("@/lib/sub/deepgram-board.server");
         const { AURA_PRICE_ID } = await import("@/lib/sub/aura");
         const sql = await getSql();
 
@@ -78,12 +77,10 @@ export const Route = createFileRoute("/api/room-deepgram")({
 
         const live = await loadPriceBook(sql);
         if (!live) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
-        const fixRaw = await sql<{ value: string }>`select value from room_settings where key = 'usd_fix'`;
-        const fix = parseUsdFix(fixRaw[0]?.value);
-        const own = deepgramRowFor(parsed.model);
-        if (!own) return fail(422, "Model này chưa có giá niêm yết.");
-        // Số Chủ sửa ở dòng chung `aura-2` áp cho mọi giọng. Bảng Groq giữ nguyên để có giá Turbo quy ra Token dịch.
-        const [priced] = applyUsdFix([own], { [own.id]: fix[AURA_PRICE_ID] ?? { hour: null, inn: null, out: null, chars: null } });
+        // Giá Aura-2 tự cập nhật từ trang Deepgram, đã phủ số Chủ sửa tay ở dòng chung `aura-2` (áp cho mọi giọng).
+        const shared = (await loadDeepgramRows(sql)).find((row) => row.id === AURA_PRICE_ID);
+        if (!shared) return fail(422, "Model này chưa có giá niêm yết.");
+        const priced = { ...shared, id: parsed.model };
         const book = { rate: live.rate, rows: [...live.rows, priced], desk: { markup: 0, custom: {} } };
 
         const text = (() => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { pushToast } from "@/components/toast";
-import { getModelPrices, reloadModelPrices, saveUsdFix, type ModelPriceRow } from "@/lib/usd-fix-room";
+import { getModelPrices, reloadModelPrices, saveDeepgramPriceConfig, saveUsdFix, type ModelPriceRow } from "@/lib/usd-fix-room";
 import { type UsdFix, type UsdSlot } from "@/lib/usd-fix";
 
 function show(n: number | null) {
@@ -20,8 +20,10 @@ export function ModelUsdBoard() {
   const [rate, setRate] = useState<number | null>(null);
   const [text, setText] = useState<Record<string, { hour: string; inn: string; out: string; chars: string }>>({});
   const [busy, setBusy] = useState(false);
+  const [dg, setDg] = useState<{ auto: boolean; everyHours: string; at: number | null }>({ auto: true, everyHours: "6", at: null });
 
-  function take(next: { rate: number | null; rows: ModelPriceRow[] }) {
+  function take(next: { rate: number | null; rows: ModelPriceRow[]; deepgram?: { auto: boolean; everyHours: number; at: number | null } }) {
+    if (next.deepgram) setDg({ auto: next.deepgram.auto, everyHours: String(next.deepgram.everyHours), at: next.deepgram.at });
     setRate(next.rate);
     setRows(next.rows);
     const slots: Record<string, { hour: string; inn: string; out: string; chars: string }> = {};
@@ -64,6 +66,14 @@ export function ModelUsdBoard() {
       .finally(() => setBusy(false));
   }
 
+  function saveDg() {
+    setBusy(true);
+    void saveDeepgramPriceConfig({ data: { auto: dg.auto, everyHours: Number(dg.everyHours) } })
+      .then(() => pushToast("Đã lưu cách cập nhật giá Deepgram."))
+      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được.", "bad"))
+      .finally(() => setBusy(false));
+  }
+
   function reload() {
     setBusy(true);
     void reloadModelPrices()
@@ -86,6 +96,21 @@ export function ModelUsdBoard() {
       <p className="text-xs text-muted">
         Số đô la tự lấy từ bảng niêm yết{rate ? ` · tỷ giá ${new Intl.NumberFormat("vi-VN").format(Math.round(rate))} đ` : ""}. Ô trống thì dùng số tự lấy. Gõ số chỉ khi bảng sai. Đây không phải giá bán riêng. Cột Token dịch tính từ số đang dùng, so với một giờ Turbo.
       </p>
+      <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line px-3 py-2">
+        <p className="text-sm font-medium">Giá Deepgram tự cập nhật</p>
+        <p className="text-xs text-muted">
+          Lấy từ deepgram.com/pricing (cột trả theo dùng, bỏ giá cũ bị gạch). Giá lệch quá 5 lần so với dự phòng thì bỏ. Số bạn gõ ở từng model bên dưới luôn thắng số tự lấy.
+          {dg.at ? ` Lần lấy gần nhất: ${new Date(dg.at).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}.` : " Chưa lấy lần nào, đang dùng giá dự phòng."}
+        </p>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={dg.auto} onChange={(event) => setDg((cur) => ({ ...cur, auto: event.target.checked }))} />
+          Tự cập nhật theo trang giá
+        </label>
+        <UsdField label="Chu kỳ lấy lại (giờ, 1 đến 168)" placeholder="6" value={dg.everyHours} onChange={(value) => setDg((cur) => ({ ...cur, everyHours: value.replace(/\D/g, "") }))} />
+        <button type="button" disabled={busy} className="min-tap w-fit rounded-full border border-line px-3 text-sm disabled:opacity-40" onClick={saveDg}>
+          Lưu cách cập nhật Deepgram
+        </button>
+      </div>
       <ul className="grid gap-2">
         {rows.map((row) => {
           const slot = text[row.id] ?? { hour: "", inn: "", out: "", chars: "" };
