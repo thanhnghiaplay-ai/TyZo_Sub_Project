@@ -745,6 +745,7 @@ export function Studio() {
     showRoomPrice,
     allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow },
     roomHeld: (id) => roomHeld(runDoor, id),
+    keyModels: { groq: app.remoteIds, ...app.keyModels },
   });
   const lockTurnModels = showRoomPrice && turnLocked;
 
@@ -1181,7 +1182,9 @@ export function Studio() {
                   ? " · chưa có ở cửa trả theo lượt"
                   : row.state === "closed"
                     ? " · Chủ chưa mở"
-                    : ""}
+                    : row.state === "noKey"
+                      ? " · key của bạn không có model này"
+                      : ""}
             </option>
           ))}
         </Select>

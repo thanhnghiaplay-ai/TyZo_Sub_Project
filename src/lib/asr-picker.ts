@@ -4,12 +4,14 @@
  *  - room: đang ở cửa Trả theo lượt (hiện giá phòng, Groq có thể bị giữ)
  *  - noRoom: nhà này chưa chạy cửa Trả theo lượt trên giao diện
  *  - closed: Thuê phòng, Chủ chưa mở model này
+ *  - noKey: Chủ đã mở nhưng key của khách không có model này (chỉ khi danh sách key của nhà đáng tin, xem key-list.ts)
  *  - open: dùng được
  */
+import { keyListHas } from "./sub/key-list.ts";
 import { catalogFor } from "./sub/model-catalog.ts";
 import { PROVIDER_IDS, type ProviderId } from "./sub/provider.ts";
 
-export type AsrPickState = "room" | "noRoom" | "closed" | "open";
+export type AsrPickState = "room" | "noRoom" | "closed" | "noKey" | "open";
 export type AsrPickRow = { id: string; name: string; house: ProviderId; state: AsrPickState; disabled: boolean };
 
 export function asrPickerRows(input: {
@@ -18,6 +20,8 @@ export function asrPickerRows(input: {
   allow: Partial<Record<ProviderId, string[] | null>>;
   /** Cửa Trả theo lượt: model Groq nào đang bị giữ (chưa có giá). */
   roomHeld: (id: string) => boolean;
+  /** Danh sách model trên key của khách, theo nhà (null/thiếu = chưa biết). */
+  keyModels?: Partial<Record<ProviderId, string[] | null>>;
 }): AsrPickRow[] {
   const rows: AsrPickRow[] = [];
   for (const house of PROVIDER_IDS) {
@@ -31,8 +35,9 @@ export function asrPickerRows(input: {
         state = house === "groq" ? "room" : "noRoom";
         disabled = house === "groq" ? input.roomHeld(model.id) : true;
       } else {
-        state = open ? "open" : "closed";
-        disabled = !open;
+        const onKey = open ? keyListHas(house, model.id, input.keyModels?.[house]) : null;
+        state = !open ? "closed" : onKey === false ? "noKey" : "open";
+        disabled = state !== "open";
       }
       rows.push({ id: model.id, name: model.label, house, state, disabled });
     }

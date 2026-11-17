@@ -34,3 +34,18 @@ test("trả theo lượt: Groq theo roomHeld, nhà khác khóa 'noRoom'", () => 
   assert.equal(by["deepgram-nova-3"].state, "noRoom");
   assert.equal(by["deepgram-nova-3"].disabled, true);
 });
+
+test("key khách không có model Groq thì khóa 'noKey'; Chủ chưa mở vẫn 'closed'; nhà chưa đáng tin không khóa", () => {
+  const rows = asrPickerRows({
+    showRoomPrice: false,
+    allow: { groq: ["whisper-large-v3-turbo", "whisper-large-v3"], alibaba: null, deepgram: null },
+    roomHeld: none,
+    keyModels: { groq: ["whisper-large-v3-turbo"], alibaba: ["qwen-plus"], deepgram: ["x"] },
+  });
+  const by = Object.fromEntries(rows.map((row) => [row.id, row]));
+  assert.equal(by["whisper-large-v3-turbo"].state, "open");
+  assert.equal(by["whisper-large-v3"].state, "noKey");
+  assert.equal(by["whisper-large-v3"].disabled, true);
+  assert.equal(by["deepgram-nova-3"].state, "open");
+  assert.equal(by["qwen-audio-3.0-asr-flash-filetrans"].state, "open");
+});

@@ -96,6 +96,8 @@ import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
 import { DEEPGRAM_ASR, segsFromDeepgram } from "@/lib/sub/deepgram";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
+import { listKeyModels } from "@/lib/key-models";
+import { KEY_LIST_TRUSTED } from "@/lib/sub/key-list";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
@@ -286,6 +288,32 @@ export function usePipeline() {
     if (value) writeStore(PROVIDERS[id].clientStore, value);
   }, []);
   const houseKeyOf = (id: ProviderId) => (houseKeysRef.current[id] ?? "").trim();
+  // Model có trên key khách của các nhà ngoài Groq (Groq đã có remoteIds). Key chỉ đi qua máy chủ, không lưu.
+  // Chỉ hỏi nhà có danh sách đáng tin (KEY_LIST_TRUSTED); nhà chưa đáng tin thì không gửi key đi vô ích.
+  const [keyModels, setKeyModels] = useState<Partial<Record<ProviderId, string[] | null>>>({});
+  useEffect(() => {
+    const timers: number[] = [];
+    let live = true;
+    for (const id of PROVIDER_IDS) {
+      if (id === "groq" || !KEY_LIST_TRUSTED[id]) continue;
+      const token = (houseKeys[id] ?? "").trim();
+      if (token.length < 20) {
+        setKeyModels((current) => (current[id] ? { ...current, [id]: null } : current));
+        continue;
+      }
+      timers.push(
+        window.setTimeout(() => {
+          listKeyModels({ data: { provider: id, key: token } })
+            .then((ids) => live && setKeyModels((current) => ({ ...current, [id]: ids })))
+            .catch(() => live && setKeyModels((current) => ({ ...current, [id]: null })));
+        }, 800),
+      );
+    }
+    return () => {
+      live = false;
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [houseKeys]);
   const roomPayRef = useRef(false);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
@@ -2371,6 +2399,7 @@ export function usePipeline() {
     key,
     setKey,
     houseKeys,
+    keyModels,
     setHouseKey,
     setRoomPay,
     target,
