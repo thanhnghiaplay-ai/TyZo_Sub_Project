@@ -39,6 +39,8 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const offered = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
     const models = parseModelList(offered[0]?.value);
     if (!models) throw new Error("Phòng chưa đồng bộ danh sách model cho cửa trả theo lượt.");
+    const { asrHouse, deepgramAsrOnRoomPayProblem } = await import("@/lib/sub/asr-house");
+    if (asrHouse(data.asrModel) === "deepgram") throw new Error(deepgramAsrOnRoomPayProblem());
     const aliAsr = data.asrModel === "qwen-audio-3.0-asr-flash-filetrans";
     const auto = data.chatModel === "auto";
     if ((!aliAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {

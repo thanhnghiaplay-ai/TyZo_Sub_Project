@@ -63,12 +63,13 @@ BƯỚC:
 2. [XONG] Lõi nhận dạng Deepgram (`src/lib/sub/deepgram.ts`) (dựng yêu cầu, đọc `utterances` ra Seg, bảng ngôn ngữ) + test.
 3. [XONG] Máy chủ nhận dạng Deepgram bằng link (`deepgram-asr.server.ts`, `deepgram-asr.ts`, `sub/deepgram-run.ts`), key khách. Gửi file từ máy chưa làm (xem GHI CHÚ).
 4. [XONG] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse` (bảng HOUSES, thêm `asrTakesLink`), kiểu `AsrModel`, giá dự phòng, gói trả theo lượt báo chưa chạy Deepgram. Chưa hiện ở ô chọn trên giao diện (bước 5).
-5. [CHƯA] Giao diện khách: ô key Deepgram, chọn model, nhánh `start()` và nhánh chạy trong `use-pipeline.ts`.
+5. [XONG] Giao diện khách: ô key Deepgram (lưu trên máy, khóa kho `gdg`), chọn "Deepgram Nova-3", nhánh `start()` và nhánh chạy trong `use-pipeline.ts`. Danh sách thuê phòng (`RentShow`) nay theo `PROVIDER_IDS` nên có cột Deepgram ở Admin. Máy chủ chặn trả theo lượt Deepgram (`run-turn.ts`). Deepgram cần CẢ key Deepgram và key Groq (dịch vẫn Groq). CHƯA bấm thử trên trình duyệt thật.
 6. [CHƯA] Admin: ô key phòng Deepgram, bảng giá, gói dịch chọn được Deepgram.
 7. [CHƯA] Đọc thành tiếng Aura (TTS), nếu chủ muốn.
 8. [CHƯA] Điều khoản (dữ liệu gửi Deepgram), Hướng dẫn, CHANGELOG, nâng phiên bản.
 CỐ Ý KHÔNG LÀM: trả theo lượt bằng key phòng cho Deepgram (chưa được yêu cầu); không đổi giá bán; chưa đổi điều khoản ở bước 1.
 GHI CHÚ BƯỚC 3: Deepgram trả kết quả ngay trong một yêu cầu (chờ tối đa 110 giây). Chưa kiểm hạn chạy hàm trên Vercel với phim dài, cần thử thật. Chỉ nhận link công khai, giống Alibaba. Gửi file từ máy lên Deepgram chưa làm.
+GHI CHÚ BƯỚC 5: đường Alibaba có sẵn không đòi key Groq trước khi chạy (chỉ nhắc khi dịch). Chưa sửa vì ngoài yêu cầu, cần kiểm. `npx eslint` báo 2 lỗi cũ ở `cast-voice.ts`, `mp4.ts` và 1 cảnh báo ở `gap-scan.test.ts`, không phải do Deepgram.
 KHÔNG GHI KEY/TOKEN GITHUB VÀO FILE NÀO.
 
 

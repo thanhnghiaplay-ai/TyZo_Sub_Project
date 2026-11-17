@@ -1,5 +1,6 @@
 import type { RunDesk } from "./run-desk.ts";
 import type { RentShow } from "./rent-show-rule.ts";
+import { PROVIDER_IDS } from "./sub/provider.ts";
 
 /** Ghi chú audit dễ đọc: nói rõ cái gì đổi, từ gì sang gì. Không chứa key hay mật khẩu. */
 
@@ -59,7 +60,7 @@ export function describeRunDesk(before: RunDesk, after: RunDesk): string {
 
 export function describeRentShow(before: RentShow | null, after: RentShow): string {
   const parts: string[] = [];
-  for (const house of ["groq", "alibaba"] as const) {
+  for (const house of PROVIDER_IDS) {
     const was = new Set(before?.[house] ?? []);
     const now = new Set(after[house]);
     const opened = [...now].filter((id) => !was.has(id));
@@ -67,7 +68,7 @@ export function describeRentShow(before: RentShow | null, after: RentShow): stri
     if (opened.length) parts.push(`mở ${house}: ${opened.join(", ")}`);
     if (closed.length) parts.push(`đóng ${house}: ${closed.join(", ")}`);
   }
-  if (!before && !parts.length) parts.push(`lưu danh sách lần đầu (groq ${after.groq.length}, alibaba ${after.alibaba.length})`);
+  if (!before && !parts.length) parts.push(`lưu danh sách lần đầu (${PROVIDER_IDS.map((id) => `${id} ${after[id].length}`).join(", ")})`);
   return joinNote(parts);
 }
 

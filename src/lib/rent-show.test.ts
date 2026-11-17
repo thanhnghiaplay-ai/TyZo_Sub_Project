@@ -13,12 +13,21 @@ describe("thuê phòng chỉ model Chủ mở", () => {
     const show = parseRentShow(JSON.stringify({
       groq: ["whisper-large-v3-turbo", "llama-3.3-70b-versatile"],
       alibaba: ["qwen-audio-3.0-asr-flash-filetrans"],
+      deepgram: ["deepgram-nova-3"],
     }));
     assert.equal(rentOpen(show!.groq, "whisper-large-v3"), false);
     assert.equal(rentOpen(show!.alibaba, "qwen-audio-3.0-asr-flash-filetrans"), true);
     assert.match(rentUseProblem(show, { asr: "whisper-large-v3", chat: "llama-3.3-70b-versatile" }), /nhận dạng/);
     assert.match(rentUseProblem(show, { asr: "qwen-audio-3.0-asr-flash-filetrans", chat: "qwen-plus" }), /dịch/);
     assert.equal(rentUseProblem(show, { asr: "whisper-large-v3-turbo", chat: "llama-3.3-70b-versatile" }), "");
+  });
+
+  it("Deepgram: model phải nằm trong danh sách Deepgram, nhà thiếu trong dữ liệu cũ thì rỗng", () => {
+    const old = parseRentShow(JSON.stringify({ groq: ["whisper-large-v3-turbo"], alibaba: [] }));
+    assert.deepEqual(old!.deepgram, []);
+    assert.match(rentUseProblem(old, { asr: "deepgram-nova-3", chat: "" }), /nhận dạng/);
+    const show = parseRentShow(JSON.stringify({ groq: ["openai/gpt-oss-120b"], alibaba: [], deepgram: ["deepgram-nova-3"] }));
+    assert.equal(rentUseProblem(show, { asr: "deepgram-nova-3", chat: "openai/gpt-oss-120b" }), "");
   });
 
   it("key của khách chỉ còn model vừa có trên key vừa được mở", () => {

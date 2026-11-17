@@ -735,6 +735,7 @@ export function Studio() {
   const showRoomPrice = runDoor.open && payByRoom;
   const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
+  const dgAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.deepgram ?? null) : null;
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
   const lockTurnModels = showRoomPrice && turnLocked;
 
@@ -1117,6 +1118,20 @@ export function Studio() {
             />
           </label>
         )}
+        {app.asrModel === "deepgram-nova-3" && !(runDoor.open && payByRoom) && (
+          <label className="grid gap-1 text-sm text-muted" htmlFor="dg-key">
+            Key Deepgram
+            <input
+              id="dg-key"
+              className={FIELD}
+              type={showKey ? "text" : "password"}
+              placeholder="Key Deepgram, chỉ lưu trên máy này"
+              autoComplete="off"
+              value={app.deepgramKey}
+              onChange={(event) => app.setDeepgramKey(event.target.value)}
+            />
+          </label>
+        )}
         {!lockTurnModels && (
         <>
         <div className="flex items-center justify-between gap-2">
@@ -1169,12 +1184,18 @@ export function Studio() {
           <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice || !rentOpen(aliAllow, "qwen-audio-3.0-asr-flash-filetrans")}>
             Alibaba Filetrans{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : aliAllow && !aliAllow.includes("qwen-audio-3.0-asr-flash-filetrans") ? " · Chủ chưa mở" : ""}
           </option>
+          <option value="deepgram-nova-3" disabled={showRoomPrice || !rentOpen(dgAllow, "deepgram-nova-3")}>
+            Deepgram Nova-3{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : dgAllow && !dgAllow.includes("deepgram-nova-3") ? " · Chủ chưa mở" : ""}
+          </option>
         </Select>
+        {app.asrModel === "deepgram-nova-3" && (
+          <p className="text-sm text-muted">Deepgram nhận cả file từ link trực tiếp. Cần key Deepgram và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
+        )}
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
           <p className="text-sm text-muted">Alibaba nhận cả file từ link trực tiếp. Cần key Alibaba và link file công khai (không phải trang xem). Không cắt đoạn trên máy.</p>
         )}
-        {(groqAllow || aliAllow) && (
-          <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Dịch vẫn dùng model Groq đã mở.</p>
+        {(groqAllow || aliAllow || dgAllow) && (
+          <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Dịch vẫn dùng model Groq đã mở.</p>
         )}
         </>
         )}

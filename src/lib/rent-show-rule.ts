@@ -1,6 +1,8 @@
 import { asrHouse } from "./sub/asr-house.ts";
+import { PROVIDER_IDS, type ProviderId } from "./sub/provider.ts";
 
-export type RentShow = { groq: string[]; alibaba: string[] };
+/** Model Chủ mở cho thuê phòng, theo từng nhà cung cấp. Nhà mới trong PROVIDERS tự có một danh sách. */
+export type RentShow = Record<ProviderId, string[]>;
 
 const ID_RE = /^[a-z0-9./_-]{2,80}$/i;
 
@@ -12,9 +14,9 @@ function idList(value: unknown): string[] {
 export function parseRentShow(raw: string | null | undefined): RentShow | null {
   if (!raw) return null;
   try {
-    const data = JSON.parse(raw) as { groq?: unknown; alibaba?: unknown };
+    const data = JSON.parse(raw) as Record<string, unknown>;
     if (!data || typeof data !== "object") return null;
-    return { groq: idList(data.groq), alibaba: idList(data.alibaba) };
+    return Object.fromEntries(PROVIDER_IDS.map((id) => [id, idList(data[id])])) as RentShow;
   } catch {
     return null;
   }
@@ -35,10 +37,9 @@ export function ownKeyAvailable(userIds: string[] | null, allow: string[] | null
 export function rentUseProblem(show: RentShow | null, pick: { asr: string; chat: string }): string {
   if (!show) return "";
   const house = asrHouse(pick.asr);
-  if (house === "groq" && !show.groq.includes(pick.asr)) return "Chủ chưa mở model nhận dạng này cho thuê phòng.";
-  if (house === "alibaba" && !show.alibaba.includes(pick.asr)) return "Chủ chưa mở model nhận dạng này cho thuê phòng.";
+  if (house && !show[house].includes(pick.asr)) return "Chủ chưa mở model nhận dạng này cho thuê phòng.";
   if (!house) return "Model nhận dạng này chưa được mở cho thuê phòng.";
   const chat = pick.chat.trim();
-  if (chat && !show.groq.includes(chat) && !show.alibaba.includes(chat)) return "Chủ chưa mở model dịch này cho thuê phòng.";
+  if (chat && !PROVIDER_IDS.some((id) => show[id].includes(chat))) return "Chủ chưa mở model dịch này cho thuê phòng.";
   return "";
 }

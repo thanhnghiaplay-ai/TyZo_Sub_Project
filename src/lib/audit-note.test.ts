@@ -31,9 +31,10 @@ describe("ghi chú audit", () => {
   });
 
   it("danh sách thuê phòng ghi model mở và đóng", () => {
-    const note = describeRentShow({ groq: ["a", "b"], alibaba: [] }, { groq: ["b", "c"], alibaba: [] });
+    const note = describeRentShow({ groq: ["a", "b"], alibaba: [], deepgram: [] }, { groq: ["b", "c"], alibaba: [], deepgram: ["deepgram-nova-3"] });
     assert.match(note, /mở groq: c/);
     assert.match(note, /đóng groq: a/);
+    assert.match(note, /mở deepgram: deepgram-nova-3/);
   });
 
   it("gói dịch ghi bật tắt", () => {

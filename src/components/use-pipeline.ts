@@ -93,6 +93,9 @@ import {
 } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
+import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
+import { DEEPGRAM_ASR, segsFromDeepgram } from "@/lib/sub/deepgram";
+import { asrHouse, asrTakesLink, deepgramAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
@@ -279,6 +282,12 @@ export function usePipeline() {
   useEffect(() => {
     if (alibabaKey) writeStore("gali", alibabaKey);
   }, [alibabaKey]);
+  const [deepgramKey, setDeepgramKey] = useState("");
+  const deepgramKeyRef = useRef("");
+  deepgramKeyRef.current = deepgramKey;
+  useEffect(() => {
+    if (deepgramKey) writeStore("gdg", deepgramKey);
+  }, [deepgramKey]);
   const roomPayRef = useRef(false);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
@@ -372,6 +381,7 @@ export function usePipeline() {
   useEffect(() => {
     setKey(readStore("gk"));
     setAlibabaKey(readStore("gali"));
+    setDeepgramKey(readStore("gdg"));
     const lang = readStore("glang");
     setTarget(lang === "Vietnamese" ? lang : "Vietnamese");
     const src = readStore("gsrc");
@@ -392,7 +402,7 @@ export function usePipeline() {
     if (savedModel) setModelId(savedModel);
     if (readStore("genter") === "0") setAllowEnterprise(false);
     const whisper = readStore("gasr");
-    if (whisper === "whisper-large-v3" || whisper === "whisper-large-v3-turbo" || whisper === "qwen-audio-3.0-asr-flash-filetrans") setAsrModel(whisper);
+    if (asrHouse(whisper)) setAsrModel(whisper as AsrModel);
     if (readStore("gvad") === "1") setSpeechVadState(true);
     if (readStore("glang") === "1") setLangCheckState(true);
     setTitle(readStore("gtitle"));
@@ -598,7 +608,7 @@ export function usePipeline() {
 
   const keyNeed = useMemo<KeyNeed>(
     () => ({
-      asr: asrModel === ALI_FILETRANS_MODEL ? null : asrModel,
+      asr: asrTakesLink(asrModel) ? null : asrModel,
       chat: mode === "manual" ? modelId.trim() || null : null,
     }),
     [asrModel, mode, modelId],
@@ -866,7 +876,12 @@ export function usePipeline() {
       const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });
       if (packed) return say(packed, true);
     }
-    if (asrModel === ALI_FILETRANS_MODEL) {
+    if (asrModel === DEEPGRAM_ASR) {
+      if (roomPayRef.current) return say(deepgramAsrOnRoomPayProblem(), true);
+      if (!deepgramKeyRef.current.trim()) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
+      if (!link) return say("Deepgram cần link file trực tiếp (http/https).", true);
+      if (!token) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+    } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : alibabaKeyRef.current.trim();
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
       if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
@@ -888,7 +903,7 @@ export function usePipeline() {
         say("Đang kiểm tra key Groq…");
         value = await runProbe(token);
       }
-      const verdict = judgeKey(value, { asr: asrModel === ALI_FILETRANS_MODEL ? null : asrModel, chat: mode === "manual" ? chosen : null });
+      const verdict = judgeKey(value, { asr: asrTakesLink(asrModel) ? null : asrModel, chat: mode === "manual" ? chosen : null });
       if (verdict.state === "bad") return say(verdict.text, true);
     }
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
@@ -978,7 +993,7 @@ export function usePipeline() {
     const signal = inner.signal;
     const pauseForNewBible = { current: true };
     setRunning(true);
-    phaseRef.current = asrModel === ALI_FILETRANS_MODEL ? "ali" : "read";
+    phaseRef.current = asrTakesLink(asrModel) ? "ali" : "read";
     pushStages();
     document.documentElement.dataset.tyzoBusy = "1";
     try {
@@ -1680,6 +1695,27 @@ export function usePipeline() {
           const planned = chunksToSamples(chunksFromSpans(spans, duration), totalSamples);
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
         };
+        if (asrModel === DEEPGRAM_ASR) {
+          say("Đang gửi link tới Deepgram…");
+          const result = await recognizeDeepgramUrl({
+            url: link,
+            language: source,
+            key: deepgramKeyRef.current.trim(),
+            signal,
+          });
+          if (my !== j.runId) return;
+          j.segs = segsFromDeepgram(result.sentences);
+          j.parts = [];
+          j.nextPart = 0;
+          j.doneSource = source;
+          publish(true);
+          await translateRemaining(() => true);
+          publish(true);
+          say(j.segs.length ? `Nhận dạng Deepgram xong: ${j.segs.length} câu.` : "Deepgram không trả câu nào.", !j.segs.length);
+          setRunning(false);
+          delete document.documentElement.dataset.tyzoBusy;
+          return;
+        }
         if (asrModel === ALI_FILETRANS_MODEL) {
           say("Đang gửi file tới Alibaba…");
           const result = await recognizeFileUrl({
@@ -2339,6 +2375,8 @@ export function usePipeline() {
     setKey,
     alibabaKey,
     setAlibabaKey,
+    deepgramKey,
+    setDeepgramKey,
     setRoomPay,
     target,
     setTarget,
