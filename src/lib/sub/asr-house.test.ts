@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { alibabaAsrOnRoomPayProblem, asrHouse, asrTakesLink, deepgramAsrOnRoomPayProblem, groqListHolds } from "./asr-house.ts";
+import { alibabaAsrOnRoomPayProblem, asrHouse, asrTakesLink, groqListHolds } from "./asr-house.ts";
 import { ASR_MODELS } from "./models.ts";
 import { ASR_PRICE } from "./types.ts";
 
@@ -38,9 +38,6 @@ describe("Deepgram trong bảng nhà nhận dạng", () => {
   });
   it("danh sách Groq không khóa Deepgram", () => {
     assert.equal(groqListHolds(["whisper-large-v3-turbo"], "deepgram-nova-3"), false);
-  });
-  it("cửa trả theo lượt nói rõ chưa nhận dạng Deepgram", () => {
-    assert.match(deepgramAsrOnRoomPayProblem(), /Deepgram.*Key của tôi/);
   });
   it("mọi model nhận dạng trong danh sách đều có nhà và có giá dự phòng", () => {
     for (const row of ASR_MODELS) {

@@ -503,3 +503,6 @@ Cố ý không làm: không đổi logic, không đổi điều khoản (chỉ g
 ## v5.1.1: giá Deepgram tự cập nhật (việc 1 trong 4 của "tùy biến cao nhất")
 XONG: `sub/deepgram-price.ts` (đọc trang giá, bỏ giá gạch, chặn lệch >5 lần, cấu hình auto + chu kỳ giờ), `sub/deepgram-base.ts` (giá dự phòng 0,0048/0,0058/30), `sub/deepgram-board.server.ts` (khóa `dg_board`, `loadDeepgramRows`), nút Lấy lại bảng kéo cả Deepgram, ô cấu hình trong `model-usd-board.tsx`, route Aura dùng `loadDeepgramRows`.
 CHƯA: (2) gửi file từ máy lên Deepgram, thử CORS trước; (3) dịch trực tiếp qua Deepgram; (4) bảng ngôn ngữ Nova-3 sửa được (thêm vi) + cổng bảo trì cho /api/room-deepgram; nối dòng `deepgram-nova-3-multi` vào tính tiền khi ngôn ngữ là `multi`. Phía khách (`pack-picker`, `service-pack-board`) còn dùng bảng dự phòng, chưa dùng giá tự lấy. Trang giá có thể đổi dạng: khi đó parser trả rỗng và giữ giá cũ. Chưa thử kéo thật từ máy chủ Vercel.
+
+## v5.1.2: Deepgram mở cả hai cửa
+XONG: cửa Trả theo lượt chạy Deepgram bằng key phòng (xem admin-log 5.1.2). Quy tắc từ nay: nhà mới phải đủ cả hai cửa (PROVIDERS.md bước 7, `provider-doors.test.ts`). CHƯA thử chạy thật với key Deepgram. Giá khách ở cửa Trả theo lượt hiện chưa cộng phần trăm chênh Deepgram trong ước tính (giữ tiền tính trên giá gốc như Groq; số trừ thật có cộng). `pack-picker.tsx` đang không được dùng ở đâu.

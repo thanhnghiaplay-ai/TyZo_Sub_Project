@@ -1,5 +1,4 @@
 import { asrCost, chatCost, speechCost, HOLD_BUFFER, type PriceBook } from "./run-bill.ts";
-import { deepgramAsrOnRoomPayProblem } from "./sub/asr-house.ts";
 import { isProviderId, PROVIDER_IDS, providerHas, type ProviderId } from "./sub/provider.ts";
 
 export const PACK_ROLES = ["asr", "translate", "context", "review", "summary", "narration"] as const;
@@ -207,7 +206,6 @@ export function checkServicePack(input: ServicePack): ServicePack {
     const assign = roles[role];
     if (assign && !providersForRole(role).includes(assign.provider)) throw new Error(`Việc ${PACK_ROLE_LABEL[role]} chưa chạy bằng ${assign.provider}.`);
   }
-  if (roles.asr.provider === "deepgram" && doors.includes("turn")) throw new Error(`${deepgramAsrOnRoomPayProblem()} Gói Deepgram chỉ mở cửa Thuê phòng.`);
   return { id, name, note, enabled: Boolean(input.enabled), doors: [...new Set(doors)], roles };
 }
 

@@ -19,6 +19,8 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
       const sql = await getSql();
       const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
       const aliRows = await loadAlibabaRows(sql);
+      const { loadDeepgramRows } = await import("@/lib/sub/deepgram-board.server");
+      const dgRows = await loadDeepgramRows(sql);
       const book = await loadPriceBook(sql);
       const rows = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
       const packs = turnPacks(parseServicePacks(rows[0]?.value));
@@ -29,6 +31,7 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
         const giay = holdGiay({
           groq: book,
           aliRows,
+          dgRows,
           asrProvider: asr.provider,
           asrModel: asr.model,
           chatModel: chat.model,

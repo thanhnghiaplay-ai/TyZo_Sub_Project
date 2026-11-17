@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.1.2",
+    time: "17/11/2026",
+    area: "tien",
+    text: "Deepgram mở cả cửa Trả theo lượt (key phòng deepgram_key): run-turn.ts giữ Token dịch, deepgram-asr.server.ts nhận key room + phiếu và trừ theo số giây thật bằng room-asr.server.ts (dùng chung với Alibaba, đã refactor), holdGiay/turn-quote dùng bảng giá Deepgram tự cập nhật. Gói Deepgram lưu được cho cả hai cửa. Phần trăm chênh Deepgram nhập ở ô key Deepgram (khóa deepgram_desk, nhật ký gia-deepgram). Thêm provider-doors.test.ts: nhà mới có asr phải đủ hai cửa, quên khai bảng giá thì tsc lỗi. Cửa Trả theo lượt nhận link Deepgram giữ tạm 1800 giây khi chưa biết thời lượng, trừ theo số giây thực.",
+  },
+  {
     version: "5.1.1",
     time: "17/11/2026",
     area: "tien",

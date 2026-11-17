@@ -39,11 +39,11 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const offered = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
     const models = parseModelList(offered[0]?.value);
     if (!models) throw new Error("Phòng chưa đồng bộ danh sách model cho cửa trả theo lượt.");
-    const { asrHouse, deepgramAsrOnRoomPayProblem } = await import("@/lib/sub/asr-house");
-    if (asrHouse(data.asrModel) === "deepgram") throw new Error(deepgramAsrOnRoomPayProblem());
+    const { asrHouse } = await import("@/lib/sub/asr-house");
     const aliAsr = data.asrModel === "qwen-audio-3.0-asr-flash-filetrans";
+    const dgAsr = asrHouse(data.asrModel) === "deepgram";
     const auto = data.chatModel === "auto";
-    if ((!aliAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
+    if ((!aliAsr && !dgAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
       throw new Error("Model này không có trong cửa trả theo lượt.");
     }
     const book = await loadPriceBook(sql);
@@ -51,7 +51,16 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const bare = { rate: book.rate, rows: book.rows, desk: { markup: 0 as const, custom: {} } };
     const aliRows = await loadAlibabaRows(sql);
     let hold: number | null = null;
-    if (aliAsr) {
+    if (dgAsr) {
+      const dgKey = await sql<{ value: string }>`select value from room_settings where key = 'deepgram_key'`;
+      if (!dgKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Deepgram.");
+      const offeredDg = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'deepgram_models'`)[0]?.value);
+      if (offeredDg && !offeredDg.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      const { loadDeepgramRows } = await import("@/lib/sub/deepgram-board.server");
+      const dgRows = await loadDeepgramRows(sql);
+      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
+      hold = chatModel ? holdGiay({ groq: book, aliRows, dgRows, asrProvider: "deepgram", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
+    } else if (aliAsr) {
       const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
       if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;

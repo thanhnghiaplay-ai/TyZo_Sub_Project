@@ -96,7 +96,8 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   if (input.op === "submit") await requireServiceOpen("normal");
   await takeRate(`ali-asr:${userId}`, 30, 60);
   const usingRoom = input.key === "room";
-  const key = usingRoom ? await roomAliKey() : cleanKey(input.key);
+  const { assertRoomTicket, roomKeyOf } = await import("@/lib/room-asr.server");
+  const key = usingRoom ? await roomKeyOf("alibaba_key", "Alibaba", 20) : cleanKey(input.key);
   if (usingRoom) await assertRoomTicket(userId, input.ticketId);
   if (input.op === "submit") {
     const problem = directFileUrlProblem(input.url);
@@ -124,53 +125,12 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   if (!first || sub !== "SUCCEEDED") throw new Error(messageOf(first, "Nhận dạng file thất bại."));
   const transcript = await readResult(String(first.transcription_url));
   const done = { state: "done" as const, ...sentencesFromTranscript(transcript) };
-  if (usingRoom && input.ticketId) await chargeRoomAsr(userId, input.ticketId, done.seconds);
-  return done;
-}
-
-async function roomAliKey(): Promise<string> {
-  const { getSql } = await import("@/lib/db");
-  const sql = await getSql();
-  const rows = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
-  const key = rows[0]?.value?.trim() || "";
-  if (key.length < 20) throw new Error("Phòng chưa lưu key Alibaba.");
-  return key;
-}
-
-async function assertRoomTicket(userId: string, ticketId: string | undefined) {
-  if (!ticketId || !/^[a-f0-9]{24}$/.test(ticketId)) throw new Error("Thiếu phiếu giữ chỗ. Hãy bấm chạy lại.");
-  const { getSql } = await import("@/lib/db");
-  const { ticketLive } = await import("@/lib/run-ticket");
-  const sql = await getSql();
-  if (!(await ticketLive(sql, ticketId, userId))) throw new Error("Phiếu đã đóng hoặc không còn phần giữ.");
-}
-
-async function chargeRoomAsr(userId: string, ticketId: string, seconds: number) {
-  const { getSql } = await import("@/lib/db");
-  const { loadPriceBook } = await import("@/lib/run-board.server");
-  const { parseRunDesk } = await import("@/lib/run-desk");
-  const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
-  const { asrCost } = await import("@/lib/run-bill");
-  const { chargeTicketWith } = await import("@/lib/run-ticket");
-  const sql = await getSql();
-  const live = await loadPriceBook(sql);
-  if (!live) return;
-  const deskRaw = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
-  const desk = parseRunDesk(deskRaw[0]?.value);
-  const rows = await loadAlibabaRows(sql);
-  const book = { rate: live.rate, rows, desk: { markup: desk.markup, custom: {} } };
-  const bare = { ...book, desk: { markup: 0, custom: {} } };
-  const cost = asrCost(book, "qwen-audio-3.0-asr-flash-filetrans", seconds);
-  const base = asrCost(bare, "qwen-audio-3.0-asr-flash-filetrans", seconds) ?? 0;
-  const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${ticketId} and user_id = ${userId}`;
-  if (unit[0]?.unit === "token") {
-    const { giayForBaseCost } = await import("@/lib/token-math");
-    const giay = giayForBaseCost(live, base);
-    if (giay && giay > 0) {
-      const { chargeTokenWith } = await import("@/lib/token-flow");
-      await chargeTokenWith(sql, ticketId, userId, giay);
-    }
-    return;
+  if (usingRoom && input.ticketId) {
+    const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
+    const { getSql } = await import("@/lib/db");
+    const { chargeRoomAsr } = await import("@/lib/room-asr.server");
+    const rows = await loadAlibabaRows(await getSql());
+    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: "qwen-audio-3.0-asr-flash-filetrans", rows, deskKey: "alibaba_desk" });
   }
-  if (cost && cost > 0) await chargeTicketWith(sql, ticketId, userId, cost, base);
+  return done;
 }

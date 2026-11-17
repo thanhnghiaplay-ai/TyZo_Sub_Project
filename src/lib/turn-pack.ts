@@ -1,5 +1,5 @@
 import { packsForDoor, type ServicePack } from "./service-pack.ts";
-import { asrHouse, deepgramAsrOnRoomPayProblem } from "./sub/asr-house.ts";
+import { asrHouse } from "./sub/asr-house.ts";
 import type { AsrModel } from "./sub/types.ts";
 
 export function turnPacks(packs: ServicePack[]) {
@@ -27,7 +27,6 @@ export function turnPackProblem(packs: ServicePack[], pick: { asr: string; chat:
   if (!open.length) return "";
   const hit = open.find((pack) => pack.roles.asr?.model === pick.asr && pack.roles.translate?.model === pick.chat);
   if (!hit) return "Hãy chọn một gói trả theo lượt. Cửa này không tự chọn model.";
-  if (asrHouse(hit.roles.asr?.model || "") === "deepgram") return deepgramAsrOnRoomPayProblem();
   const other = Object.entries(hit.roles).find(([role, assign]) => role !== "asr" && assign?.provider === "alibaba");
   if (other) return "Gói này có việc Alibaba ngoài nhận dạng. Cửa trả theo lượt chưa chạy việc đó.";
   return "";

@@ -33,7 +33,3 @@ export function groqListHolds(offered: string[] | null, id: string): boolean {
 export function alibabaAsrOnRoomPayProblem(): string {
   return "Cửa trả theo lượt chưa nhận dạng bằng Alibaba. Hãy chọn Key của tôi.";
 }
-
-export function deepgramAsrOnRoomPayProblem(): string {
-  return "Cửa trả theo lượt chưa nhận dạng bằng Deepgram. Hãy chọn Key của tôi.";
-}

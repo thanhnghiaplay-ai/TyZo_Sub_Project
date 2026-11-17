@@ -95,7 +95,7 @@ import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelM
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
 import { DEEPGRAM_ASR, segsFromDeepgram } from "@/lib/sub/deepgram";
-import { asrHouse, asrTakesLink, deepgramAsrOnRoomPayProblem } from "@/lib/sub/asr-house";
+import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
@@ -877,10 +877,9 @@ export function usePipeline() {
       if (packed) return say(packed, true);
     }
     if (asrModel === DEEPGRAM_ASR) {
-      if (roomPayRef.current) return say(deepgramAsrOnRoomPayProblem(), true);
-      if (!deepgramKeyRef.current.trim()) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
+      if (!roomPayRef.current && !deepgramKeyRef.current.trim()) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
       if (!link) return say("Deepgram cần link file trực tiếp (http/https).", true);
-      if (!token) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+      if (!token && !roomPayRef.current) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : alibabaKeyRef.current.trim();
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
@@ -956,11 +955,11 @@ export function usePipeline() {
     let releasePlayback = () => {};
     if (roomPayRef.current) {
       const chosenFile = audioFile || file;
-      const linkRun = asrModel === ALI_FILETRANS_MODEL && !chosenFile;
+      const linkRun = asrTakesLink(asrModel) && !chosenFile;
       if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile?.name || "Link Alibaba",
+          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : "Link Alibaba"),
           seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
@@ -1700,7 +1699,8 @@ export function usePipeline() {
           const result = await recognizeDeepgramUrl({
             url: link,
             language: source,
-            key: deepgramKeyRef.current.trim(),
+            key: roomPayRef.current ? "room" : deepgramKeyRef.current.trim(),
+            ticketId,
             signal,
           });
           if (my !== j.runId) return;

@@ -7,10 +7,11 @@ export async function recognizeDeepgramUrl(input: {
   url: string;
   language: string;
   key: string;
+  ticketId?: string | null;
   signal: AbortSignal;
 }): Promise<{ sentences: DgSentence[]; seconds: number }> {
   if (input.signal.aborted) throw abortError();
-  const result = await deepgramAsr({ data: { url: input.url, language: input.language, key: input.key } });
+  const result = await deepgramAsr({ data: { url: input.url, language: input.language, key: input.key, ...(input.ticketId ? { ticketId: input.ticketId } : {}) } });
   if (input.signal.aborted) throw abortError();
   return result;
 }

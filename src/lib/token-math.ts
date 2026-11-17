@@ -1,3 +1,4 @@
+import { DEEPGRAM_BASE_ROWS as DEEPGRAM_ROWS } from "./sub/deepgram-base.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 import { asrCost, asrPerSecond, chatCost, estimateHold, estimateHoldSplit, type PriceBook } from "./run-bill.ts";
 
@@ -30,6 +31,8 @@ export function formatGiay(n: number): string {
 export function holdGiay(input: {
   groq: PriceBook;
   aliRows: GroqLiveRow[];
+  /** Bảng giá Deepgram (loadDeepgramRows). Thiếu thì dùng bảng dự phòng. */
+  dgRows?: GroqLiveRow[];
   asrProvider: string;
   asrModel: string;
   chatModel: string;
@@ -38,9 +41,10 @@ export function holdGiay(input: {
   const bare: PriceBook = { rate: input.groq.rate, rows: input.groq.rows, desk: { markup: 0, custom: {} } };
   const turbo = asrPerSecond(bare, TURBO_ASR);
   if (!(turbo && turbo > 0)) return null;
+  const asrRows = input.asrProvider === "alibaba" ? input.aliRows : input.asrProvider === "deepgram" ? (input.dgRows ?? DEEPGRAM_ROWS) : null;
   const vnd =
-    input.asrProvider === "alibaba"
-      ? estimateHoldSplit({ rate: input.groq.rate, rows: input.aliRows, desk: { markup: 0, custom: {} } }, bare, input.asrModel, input.chatModel, input.seconds)
+    asrRows
+      ? estimateHoldSplit({ rate: input.groq.rate, rows: asrRows, desk: { markup: 0, custom: {} } }, bare, input.asrModel, input.chatModel, input.seconds)
       : estimateHold(bare, input.asrModel, input.chatModel, input.seconds);
   if (vnd == null) return null;
   return tokensForBase(vnd, turbo);

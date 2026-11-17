@@ -228,8 +228,8 @@ describe("Deepgram trong gói dịch", () => {
     assert.equal(checkServicePacks([mk({})])[0].roles.asr?.provider, "deepgram");
   });
 
-  it("chặn gói Deepgram mở cửa trả theo lượt", () => {
-    assert.throws(() => checkServicePacks([mk({ doors: ["turn", "rent"] })]), /Thuê phòng/);
+  it("gói Deepgram mở được cả hai cửa", () => {
+    assert.deepEqual(checkServicePacks([mk({ doors: ["turn", "rent"] })])[0].doors, ["turn", "rent"]);
   });
 
   it("chặn Deepgram ở việc dịch", () => {

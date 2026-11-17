@@ -348,7 +348,7 @@ export function AdminDesk() {
           <ServiceStatusBoard />
           <RunDeskBoard owner part="key" />
           <AlibabaKeyBoard />
-          <ProviderKeyBoard provider="deepgram" note="Chỉ Chủ lưu. Khách không thấy key. Deepgram chỉ nhận dạng giọng, dịch vẫn bằng Groq. Cửa trả theo lượt chưa dùng key này." />
+          <ProviderKeyBoard provider="deepgram" withMarkup note="Chỉ Chủ lưu. Khách không thấy key. Deepgram chỉ nhận dạng giọng, dịch vẫn bằng Groq. Key này chạy cả cửa Trả theo lượt (trừ Token dịch, cộng phần trăm chênh) và cửa Thuê phòng (key của khách)." />
           <LiveWorkspaceBoard />
           <SupportBoard />
           <RunDeskBoard owner part="price" />
@@ -747,6 +747,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "dong-cua-luot": "Đóng cửa trả theo lượt",
   "mo-cua-luot": "Mở cửa trả theo lượt",
   "gia-alibaba": "Đổi giá Alibaba",
+  "gia-deepgram": "Đổi giá Deepgram",
   "mo-thue": "Đổi danh sách model cho thuê",
   "goi-dich": "Sửa gói dịch",
   "them-cong-tac": "Thêm cộng tác",
