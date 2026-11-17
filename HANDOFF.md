@@ -64,7 +64,10 @@ BƯỚC:
 3. [XONG] Máy chủ nhận dạng Deepgram bằng link (`deepgram-asr.server.ts`, `deepgram-asr.ts`, `sub/deepgram-run.ts`), key khách. Gửi file từ máy chưa làm (xem GHI CHÚ).
 4. [XONG] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse` (bảng HOUSES, thêm `asrTakesLink`), kiểu `AsrModel`, giá dự phòng, gói trả theo lượt báo chưa chạy Deepgram. Chưa hiện ở ô chọn trên giao diện (bước 5).
 5. [XONG] Giao diện khách: ô key Deepgram (lưu trên máy, khóa kho `gdg`), chọn "Deepgram Nova-3", nhánh `start()` và nhánh chạy trong `use-pipeline.ts`. Danh sách thuê phòng (`RentShow`) nay theo `PROVIDER_IDS` nên có cột Deepgram ở Admin. Máy chủ chặn trả theo lượt Deepgram (`run-turn.ts`). Deepgram cần CẢ key Deepgram và key Groq (dịch vẫn Groq). CHƯA bấm thử trên trình duyệt thật.
-6. [CHƯA] Admin: ô key phòng Deepgram, bảng giá, gói dịch chọn được Deepgram.
+6. [ĐANG LÀM] Admin: 
+   6a. [XONG 17/11/2026] Ô key phòng Deepgram: `src/lib/provider-room.ts` (server fn chung `getProviderKey`/`saveProviderKey`, theo `PROVIDERS[id].settings`), `src/components/provider-key-board.tsx` (`<ProviderKeyBoard provider="deepgram" />`, đặt trong tab Cấu hình ở `admin-desk.tsx`), nhãn nhật ký `key-deepgram`. Nhà mới chỉ thêm một dòng `<ProviderKeyBoard provider="..." />`. CHƯA thử lưu key thật.
+   6b. [CHƯA] Bảng giá Deepgram cho Chủ (mẫu `alibaba-catalog.ts`, `alibaba-price.ts`, mục Giá và hạn mức). Giá Nova-3 phải kiểm ở trang giá chính thức Deepgram trước khi dùng tính tiền.
+   6c. [CHƯA] Gói dịch (`service-pack-board.tsx`, `pack-picker.tsx`, `service-pack.ts`) chọn được Deepgram làm nhà nhận dạng.
 7. [CHƯA] Đọc thành tiếng Aura (TTS), nếu chủ muốn.
 8. [CHƯA] Điều khoản (dữ liệu gửi Deepgram), Hướng dẫn, CHANGELOG, nâng phiên bản.
 CỐ Ý KHÔNG LÀM: trả theo lượt bằng key phòng cho Deepgram (chưa được yêu cầu); không đổi giá bán; chưa đổi điều khoản ở bước 1.

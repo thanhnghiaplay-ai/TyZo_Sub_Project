@@ -9,7 +9,7 @@ Bảng chung nằm ở `src/lib/sub/provider.ts` (`PROVIDERS`). Mỗi nhà là m
 3. **Máy chủ**: file `*.server.ts` + server fn mỏng (mẫu: `ali-filetrans.server.ts`, `ali-filetrans.ts`). Key khách đi qua máy chủ, không lưu. Key phòng lấy từ `room_settings`.
 4. **Model + nhà nhận dạng**: thêm vào `ASR_MODELS` (`models.ts`), `asrHouse` (`asr-house.ts`), kiểu `AsrModel` (`types.ts`).
 5. **Giao diện khách**: ô key (`use-pipeline.ts`, kho trình duyệt), chọn model (`studio.tsx`), nhánh trong `start()` và nhánh chạy.
-6. **Admin**: ô key phòng + danh sách model (mẫu `alibaba-key-board.tsx`, `pack-room.ts`), bảng giá (mẫu `alibaba-catalog.ts`), gói dịch (`service-pack-board.tsx`).
+6. **Admin**: ô key phòng + danh sách model: thêm `<ProviderKeyBoard provider="id" />` ở `admin-desk.tsx` (dùng chung `provider-room.ts`, không viết lại), bảng giá (mẫu `alibaba-catalog.ts`), gói dịch (`service-pack-board.tsx`).
 7. **Trả theo lượt (key phòng)**: chỉ làm khi được yêu cầu. Cần giữ và trừ Token dịch (mẫu `chargeRoomAsr`).
 8. **Chữ**: điều khoản (nhà nhận dữ liệu, nước đặt máy chủ), Hướng dẫn, CHANGELOG, `HANDOFF.md`, `PROJECT_STATUS.md`.
 

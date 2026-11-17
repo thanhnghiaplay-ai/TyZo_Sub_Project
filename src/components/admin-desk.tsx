@@ -55,6 +55,7 @@ import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { AlibabaKeyBoard } from "@/components/alibaba-key-board";
+import { ProviderKeyBoard } from "@/components/provider-key-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { ServiceStatusBoard } from "@/components/service-status-board";
 import { SupportBoard } from "@/components/support-board";
@@ -347,6 +348,7 @@ export function AdminDesk() {
           <ServiceStatusBoard />
           <RunDeskBoard owner part="key" />
           <AlibabaKeyBoard />
+          <ProviderKeyBoard provider="deepgram" note="Chỉ Chủ lưu. Khách không thấy key. Deepgram chỉ nhận dạng giọng, dịch vẫn bằng Groq. Cửa trả theo lượt chưa dùng key này." />
           <LiveWorkspaceBoard />
           <SupportBoard />
           <RunDeskBoard owner part="price" />
@@ -756,6 +758,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "key-phong": "Đổi key Groq của phòng",
   "key-model": "Đồng bộ model của key",
   "key-alibaba": "Đổi key Alibaba",
+  "key-deepgram": "Đổi key Deepgram",
   "workspace-live": "Đổi Workspace ID Dịch trực tiếp",
   "lien-he": "Đổi thông tin liên hệ hỗ trợ",
   "bao-tri": "Đổi trạng thái Hoạt động/Bảo trì của nhóm dịch",
