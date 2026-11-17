@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.2.0",
+    time: "17/11/2026",
+    area: "ha-tang",
+    text: "Chủ chốt: khách chọn Thuê phòng thì dùng key của khách và thấy ô key của TẤT CẢ nhà. studio.tsx: ô key các nhà ngoài Groq không còn chỉ hiện cho nhà đang chọn nhận dạng, hiện đủ vòng lặp PROVIDER_IDS khi không ở cửa Trả theo lượt, kèm dòng «Lấy key ở <keyPage>». Hướng dẫn: mục key-groq (giữ mã để Chỉ tôi và test không đổi) thành «Lấy key (Groq, Alibaba, Deepgram)», bước theo nhà sinh từ PROVIDERS (keyPage), Groq giữ ảnh và các bước cũ; FAQ key-groq-loi nói chung các nhà; tour key-groq nói ba nhà; bước 3 của Bắt đầu nhắc Alibaba/Deepgram. Nâng 5.2.0, CHANGELOG khách. CHƯA bấm thử trên điện thoại.",
+  },
+  {
     version: "5.1.3",
     time: "17/11/2026",
     area: "ha-tang",

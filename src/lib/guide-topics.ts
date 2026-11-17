@@ -9,6 +9,7 @@
  *  - Ảnh minh họa (nếu có) đặt ở `public/huong-dan/<tên>.png` rồi điền tên vào `image`. Thiếu ảnh thì trang tự bỏ khung ảnh.
  */
 import { foldText } from "./admin-tabs.ts";
+import { PROVIDER_IDS, PROVIDERS } from "./sub/provider.ts";
 import { PAY_MINUTES } from "./pay-minutes.ts";
 import { ROOM_PLANS, TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
 import type { TourId } from "./tour-steps.ts";
@@ -122,7 +123,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       steps: [
         { text: `Đăng ký hoặc đăng nhập. Tài khoản mới được dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB.` },
         { text: "Ở trang chủ, kéo thả video vào ô lớn hoặc bấm để chọn tệp. Cũng dán được link tải thẳng về tệp, không phải link trang xem phim." },
-        { text: `Mở «${UI.keyTab}» ở menu trái và chọn cách dùng: dán key Groq của bạn, hoặc trả theo lượt bằng gói giây đã mua.` },
+        { text: `Mở «${UI.keyTab}» ở menu trái và chọn cách dùng: dán key của bạn (Groq, và Alibaba hay Deepgram nếu dùng), hoặc trả theo lượt bằng gói giây đã mua.` },
         { text: `Mở «${UI.filmTab}», chọn ngôn ngữ và thể loại, rồi bấm «${UI.startRun}». Thanh tiến trình cho biết đang ở bước nào.` },
         { text: `Dịch xong, bấm «${UI.download}» và chọn SRT, VTT hoặc TXT. Bấm một câu trong bản dịch để nhảy tới đúng chỗ trong video. Tài khoản dùng thử chưa xuất được file.` },
       ],
@@ -202,16 +203,20 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
     },
     {
       id: "key-groq",
-      title: "Lấy key Groq",
+      title: "Lấy key (Groq, Alibaba, Deepgram)",
       group: "tai-khoan",
-      intro: "Key Groq là chìa khóa để dùng dịch vụ của Groq bằng tài khoản của bạn.",
-      words: "key groq api gsk console tao key lay key dan key khoa",
+      intro: "Chọn Thuê phòng thì bạn dùng key của chính bạn. Mỗi nhà có một key riêng, nhà nào bạn dùng thì lấy key nhà đó. Groq cần cho dịch, nên gần như ai cũng cần key Groq.",
+      words: "key groq alibaba deepgram api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper",
       tour: "key-groq",
       steps: [
         { text: "Mở trang quản lý key của Groq và đăng nhập (hoặc đăng ký) bằng tài khoản Groq.", link: { label: "console.groq.com/keys", href: "https://console.groq.com/keys" }, image: "groq-tao-key.png" },
-        { text: "Chọn tạo key mới (Create API Key) và đặt tên tùy ý để bạn nhớ." },
-        { text: "Sao chép key ngay khi tạo xong, vì thường không xem lại được sau đó. Key bắt đầu bằng gsk_." },
-        { text: `Quay lại app, mở «${UI.keyTab}» và dán key vào ô key. Key chỉ lưu trên máy này. Dán xong app tự kiểm tra key và model.` },
+        { text: "Chọn tạo key mới (Create API Key) và đặt tên tùy ý để bạn nhớ.", },
+        { text: "Sao chép key ngay khi tạo xong, vì thường không xem lại được sau đó. Key Groq bắt đầu bằng gsk_." },
+        ...PROVIDER_IDS.filter((id) => id !== "groq").map((id) => ({
+          text: `${PROVIDERS[id].label}: mở trang key của ${PROVIDERS[id].label}, đăng nhập, tạo key mới và sao chép ngay. Chỉ cần khi bạn chọn model nhận dạng của ${PROVIDERS[id].label}. Cách tạo y như Groq.`,
+          link: { label: PROVIDERS[id].keyPage, href: `https://${PROVIDERS[id].keyPage}` },
+        })),
+        { text: `Quay lại app, mở «${UI.keyTab}» và dán từng key vào đúng ô của nhà đó. Mọi ô đều hiện khi bạn chọn Thuê phòng. Key chỉ lưu trên máy này. Dán key Groq xong app tự kiểm tra key và model.` },
         { text: "Không gửi key cho ai, kể cả khi hỏi hỗ trợ." },
       ],
     },
@@ -266,9 +271,9 @@ export const GUIDE_FAQ: GuideFaq[] = [
   },
   {
     id: "key-groq-loi",
-    q: "App báo key Groq không hợp lệ?",
-    a: "Key không hợp lệ hoặc chưa được cấp quyền. Kiểm tra lại key ở console.groq.com/keys. Không được thì tạo key mới rồi dán lại.",
-    words: "key groq khong hop le sai loi bao loi het han",
+    q: "App báo key không hợp lệ?",
+    a: `Key không hợp lệ hoặc chưa được cấp quyền. Kiểm tra lại key ở trang của nhà đó (${PROVIDER_IDS.map((id) => `${PROVIDERS[id].label}: ${PROVIDERS[id].keyPage}`).join("; ")}). Không được thì tạo key mới rồi dán lại.`,
+    words: "key groq alibaba deepgram khong hop le sai loi bao loi het han",
   },
   {
     id: "xoa-du-lieu",

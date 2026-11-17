@@ -1114,8 +1114,8 @@ export function Studio() {
           )}
         </label>
         )}
-        {PROVIDER_IDS.filter((id) => id !== "groq").map((id) =>
-          asrHouse(app.asrModel) === id && !(runDoor.open && payByRoom) ? (
+        {!(runDoor.open && payByRoom) &&
+          PROVIDER_IDS.filter((id) => id !== "groq").map((id) => (
             <label key={id} className="grid gap-1 text-sm text-muted" htmlFor={`key-${id}`}>
               Key {PROVIDERS[id].label}
               <input
@@ -1127,9 +1127,11 @@ export function Studio() {
                 value={app.houseKeys[id] ?? ""}
                 onChange={(event) => app.setHouseKey(id, event.target.value)}
               />
+              <span className="text-xs">
+                Lấy key ở {PROVIDERS[id].keyPage}. Chỉ lưu trên máy này. Cách lấy: mục Hướng dẫn, «Lấy key».
+              </span>
             </label>
-          ) : null,
-        )}
+          ))}
         {!lockTurnModels && (
         <>
         <div className="flex items-center justify-between gap-2">

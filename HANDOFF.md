@@ -1,3 +1,9 @@
+## v5.2.0: KEY KHÁCH HIỆN ĐỦ MỌI NHÀ (17/11/2026, nhánh work)
+CHỦ ĐÃ CHỐT 17/11/2026: (1) a3-2 GỠ phần trăm chênh Groq/Alibaba, giá theo Token dịch. (2) d: dịch trực tiếp THEO KHẢ NĂNG từng model. (3) Thuê phòng dùng key khách, hiện TẤT CẢ nhà để nhập. (4) Chủ tự thử trên điện thoại. (5) Sửa luôn hướng dẫn/Chỉ tôi, cách lấy key các nhà để chung mục Groq.
+THỨ TỰ LÀM: [XONG] bước 1 key mọi nhà + hướng dẫn (mục này) → [CHƯA] bước 2 a3-2 gỡ chênh → [CHƯA] bước 3 d dịch trực tiếp theo khả năng → [CHƯA] c3.
+ĐÃ LÀM bước 1: `studio.tsx` hiện ô key Alibaba/Deepgram mọi lúc ở cửa Thuê phòng; hướng dẫn `key-groq` thành «Lấy key (Groq, Alibaba, Deepgram)» sinh từ PROVIDERS; FAQ, tour, bước Bắt đầu sửa. Nâng 5.2.0, CHANGELOG, admin-log. 799 test pass.
+CHƯA LÀM: chưa bấm thử điện thoại. `KEY_LIST_TRUSTED` Alibaba/Deepgram vẫn false (chờ key thật).
+
 ## c2b: KHUNG KEY KHÁCH GIAO DANH SÁCH MỞ (17/11/2026, nhánh work, v5.1.3)
 ĐÃ LÀM: `key-list.ts`, `key-models.ts` (server fn), `keyModels` ở use-pipeline, trạng thái `noKey` ở ô nhận dạng. tsc sạch, test pass.
 CHƯA LÀM: bật khóa cho Alibaba/Deepgram (cần thử key thật, xem mục c2b trong kế hoạch), c3, d, a3-2.
