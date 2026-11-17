@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote } from "./provider.ts";
+import { PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote, clientKeyPlaceholder } from "./provider.ts";
 
 describe("địa chỉ danh sách model", () => {
   it("Groq và Alibaba không dùng chung máy", () => {
@@ -94,5 +94,27 @@ describe("ghi chú key phòng sinh từ khả năng của nhà", () => {
       assert.match(note, /Trả theo lượt/);
       assert.match(note, /Thuê phòng/);
     }
+  });
+});
+
+describe("khóa kho và chữ mẫu ô key của khách", () => {
+  it("mỗi nhà có khóa kho riêng, không trùng nhau (key khách chỉ lưu trên máy khách)", () => {
+    const seen = new Set<string>();
+    for (const id of PROVIDER_IDS) {
+      const name = PROVIDERS[id].clientStore;
+      assert.ok(name.length > 0, `${id} thiếu clientStore`);
+      assert.ok(!seen.has(name), `trùng khóa kho ${name}`);
+      seen.add(name);
+    }
+  });
+  it("giữ đúng khóa kho cũ để khách đã lưu key không mất key", () => {
+    assert.equal(PROVIDERS.groq.clientStore, "gk");
+    assert.equal(PROVIDERS.alibaba.clientStore, "gali");
+    assert.equal(PROVIDERS.deepgram.clientStore, "gdg");
+  });
+  it("chữ mẫu giữ đúng như các ô viết tay trước đây", () => {
+    assert.equal(clientKeyPlaceholder("groq"), "gsk_… chỉ lưu trên máy này");
+    assert.equal(clientKeyPlaceholder("alibaba"), "sk-… chỉ lưu trên máy này");
+    assert.equal(clientKeyPlaceholder("deepgram"), "Key Deepgram, chỉ lưu trên máy này");
   });
 });

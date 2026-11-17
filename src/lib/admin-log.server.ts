@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.1.3",
     time: "17/11/2026",
     area: "ha-tang",
+    text: "Bước (b3) phía khách: ô nhập key các nhà ngoài Groq sinh từ PROVIDERS. PROVIDERS thêm clientStore (khóa kho trình duyệt: groq gk, alibaba gali, deepgram gdg, GIỮ đúng tên cũ để khách đã lưu key không mất) và keyHint (đầu key mẫu), kèm hàm clientKeyPlaceholder (chữ mẫu trùng từng chữ với ba ô viết tay cũ). use-pipeline.ts thay hai state alibabaKey/deepgramKey bằng một bảng houseKeys + setHouseKey(id, value) + houseKeyOf(id); khóa kho đọc từ PROVIDERS[id].clientStore. Giữ nguyên quirk cũ: chỉ ghi kho khi ô không rỗng. studio.tsx vẽ ô key bằng vòng lặp PROVIDER_IDS (bỏ groq) và chỉ hiện ô của nhà đang chọn nhận dạng (asrHouse), thay hai ô viết tay ali-key/dg-key. Ô Groq vẫn riêng vì còn kiểm key, đồng bộ model, nút Dán và dòng trạng thái. Khách không thấy khác gì (nhãn, chữ mẫu, khóa kho đều giữ), không nâng số bản. Test: provider.test.ts (khóa kho không trùng, giữ tên cũ, chữ mẫu), provider-admin-board.test.ts (studio dùng vòng lặp, use-pipeline không còn chép tên khóa). CHƯA bấm thử trên trình duyệt: chọn Alibaba/Deepgram, nhập key, tải lại trang xem key còn không.",
+  },
+  {
+    version: "5.1.3",
+    time: "17/11/2026",
+    area: "ha-tang",
     text: "Bước (b2) Admin gom ô key phòng. Tab Cấu hình vẽ ô key bằng một thành phần ProviderKeyBoards lặp theo PROVIDER_IDS (provider-key-board.tsx), thay thẻ Key Groq nằm trong RunDeskBoard, AlibabaKeyBoard (xóa file) và dòng Deepgram viết tay. Nhà mới thêm vào PROVIDERS thì ô key tự hiện. Ô key chung có thêm nút Dán (lấy từ ô Groq cũ) và ghi chú sinh từ khả năng của nhà (providerKeyNote trong provider.ts; sửa ghi chú sai ở ô Alibaba cũ: «cửa trả theo lượt chưa dùng key này», nay Alibaba đã chạy cửa đó bằng key phòng). Lưu key Groq nay đi saveProviderKey: cùng dòng run_key và run_models như saveRunKey cũ, chỉ khác nhãn nhật ký key-groq thay key-phong (nhật ký cũ vẫn giữ nhãn cũ). RunDeskBoard chỉ còn part ops và price (bỏ config và key); gỡ saveRunKey khỏi admin-room.ts vì hết nơi gọi. service-pack-board.tsx vẫn giữ ô key Alibaba riêng và saveAlibabaKey, chưa gỡ. Không đổi dữ liệu, giá, điều khoản hay giao diện khách; không nâng số bản. Test: provider.test.ts (providerKeyNote), provider-admin-board.test.ts (mới, đã thêm vào npm test). CHƯA bấm thử trên trình duyệt thật: lưu key Groq/Alibaba/Deepgram và nút Dán ở tab Cấu hình.",
   },
   {

@@ -96,6 +96,7 @@ import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
 import { DEEPGRAM_ASR, segsFromDeepgram } from "@/lib/sub/deepgram";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
+import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
@@ -276,18 +277,15 @@ export function usePipeline() {
   const job = useRef<Job>(emptyJob());
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
   const [key, setKey] = useState("");
-  const [alibabaKey, setAlibabaKey] = useState("");
-  const alibabaKeyRef = useRef("");
-  alibabaKeyRef.current = alibabaKey;
-  useEffect(() => {
-    if (alibabaKey) writeStore("gali", alibabaKey);
-  }, [alibabaKey]);
-  const [deepgramKey, setDeepgramKey] = useState("");
-  const deepgramKeyRef = useRef("");
-  deepgramKeyRef.current = deepgramKey;
-  useEffect(() => {
-    if (deepgramKey) writeStore("gdg", deepgramKey);
-  }, [deepgramKey]);
+  // Key khách nhập cho các nhà ngoài Groq (Groq có `key` riêng vì còn kiểm key và đồng bộ model). Khóa kho lấy từ PROVIDERS[id].clientStore.
+  const [houseKeys, setHouseKeys] = useState<Partial<Record<ProviderId, string>>>({});
+  const houseKeysRef = useRef(houseKeys);
+  houseKeysRef.current = houseKeys;
+  const setHouseKey = useCallback((id: ProviderId, value: string) => {
+    setHouseKeys((current) => ({ ...current, [id]: value }));
+    if (value) writeStore(PROVIDERS[id].clientStore, value);
+  }, []);
+  const houseKeyOf = (id: ProviderId) => (houseKeysRef.current[id] ?? "").trim();
   const roomPayRef = useRef(false);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
@@ -379,9 +377,8 @@ export function usePipeline() {
   const publishTimer = useRef(0);
 
   useEffect(() => {
-    setKey(readStore("gk"));
-    setAlibabaKey(readStore("gali"));
-    setDeepgramKey(readStore("gdg"));
+    setKey(readStore(PROVIDERS.groq.clientStore));
+    setHouseKeys(Object.fromEntries(PROVIDER_IDS.filter((id) => id !== "groq").map((id) => [id, readStore(PROVIDERS[id].clientStore)])));
     const lang = readStore("glang");
     setTarget(lang === "Vietnamese" ? lang : "Vietnamese");
     const src = readStore("gsrc");
@@ -877,11 +874,11 @@ export function usePipeline() {
       if (packed) return say(packed, true);
     }
     if (asrModel === DEEPGRAM_ASR) {
-      if (!roomPayRef.current && !deepgramKeyRef.current.trim()) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
+      if (!roomPayRef.current && !houseKeyOf("deepgram")) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
       if (!link) return say("Deepgram cần link file trực tiếp (http/https).", true);
       if (!token && !roomPayRef.current) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
-      const aliKey = roomPayRef.current ? "room" : alibabaKeyRef.current.trim();
+      const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
       if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
     } else if (!token) return say("Vui lòng nhập Groq API key.", true);
@@ -936,7 +933,7 @@ export function usePipeline() {
       trialLease.current = { media: idNow, spent: true };
     };
 
-    if (token !== ROOM_KEY) writeStore("gk", token);
+    if (token !== ROOM_KEY) writeStore(PROVIDERS.groq.clientStore, token);
     writeStore("glang", target);
     writeStore("gsrc", source);
     writeStore("gmdl", chosen);
@@ -1699,7 +1696,7 @@ export function usePipeline() {
           const result = await recognizeDeepgramUrl({
             url: link,
             language: source,
-            key: roomPayRef.current ? "room" : deepgramKeyRef.current.trim(),
+            key: roomPayRef.current ? "room" : houseKeyOf("deepgram"),
             ticketId,
             signal,
           });
@@ -1721,7 +1718,7 @@ export function usePipeline() {
           const result = await recognizeFileUrl({
             url: link,
             language: source,
-            key: roomPayRef.current ? "room" : alibabaKeyRef.current.trim(),
+            key: roomPayRef.current ? "room" : houseKeyOf("alibaba"),
             ticketId,
             signal,
             onWait: (m) => { if (my === j.runId) say(m); },
@@ -2373,10 +2370,8 @@ export function usePipeline() {
   return {
     key,
     setKey,
-    alibabaKey,
-    setAlibabaKey,
-    deepgramKey,
-    setDeepgramKey,
+    houseKeys,
+    setHouseKey,
     setRoomPay,
     target,
     setTarget,

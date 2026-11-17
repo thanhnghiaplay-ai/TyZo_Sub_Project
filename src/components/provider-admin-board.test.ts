@@ -25,3 +25,19 @@ describe("Admin: ô key các nhà sinh từ bảng PROVIDERS", () => {
     assert.doesNotMatch(run, /Key Groq của phòng/);
   });
 });
+
+describe("Khách: ô key các nhà ngoài Groq sinh từ bảng PROVIDERS", () => {
+  const studio = read("./studio.tsx");
+  const pipe = read("./use-pipeline.ts");
+
+  it("studio vẽ ô key bằng vòng lặp PROVIDER_IDS, không còn ô viết tay Alibaba/Deepgram", () => {
+    assert.match(studio, /PROVIDER_IDS\.filter\(\(id\) => id !== "groq"\)\.map/);
+    assert.doesNotMatch(studio, /id="ali-key"/);
+    assert.doesNotMatch(studio, /id="dg-key"/);
+    assert.doesNotMatch(studio, /app\.alibabaKey|app\.deepgramKey/);
+  });
+  it("use-pipeline đọc khóa kho từ PROVIDERS, không chép tên khóa tay", () => {
+    assert.doesNotMatch(pipe, /"gali"|"gdg"|"gk"/);
+    assert.match(pipe, /PROVIDERS\[id\]\.clientStore/);
+  });
+});

@@ -27,6 +27,10 @@ export type ProviderInfo = {
   intake: ProviderIntake;
   /** Trang khách lấy key. */
   keyPage: string;
+  /** Tên khóa trong kho trình duyệt của khách, nơi key khách nhập được lưu (chỉ trên máy khách, không lên máy chủ). */
+  clientStore: string;
+  /** Đầu key mẫu hiện trong ô nhập của khách (không bắt buộc). */
+  keyHint?: string;
   /** Tên dòng trong room_settings. */
   settings: { key: string; models: string; desk: string };
 };
@@ -44,6 +48,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     caps: ["asr", "chat", "tts"],
     intake: "chunks",
     keyPage: "console.groq.com/keys",
+    clientStore: "gk",
+    keyHint: "gsk_…",
     // Groq giữ tên dòng cũ: key lưu ở run_key (admin-room.ts, room-groq.ts, overview-data.ts đều đọc dòng này).
     settings: { key: "run_key", models: "run_models", desk: "run_desk" },
   },
@@ -55,6 +61,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     caps: ["asr", "live"],
     intake: "link",
     keyPage: "bailian.console.alibabacloud.com",
+    clientStore: "gali",
+    keyHint: "sk-…",
     settings: { key: "alibaba_key", models: "alibaba_models", desk: "alibaba_desk" },
   },
   deepgram: {
@@ -66,6 +74,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     // Deepgram nhận được cả link, file và luồng; app hiện chỉ dùng link công khai (gửi file từ máy chưa làm).
     intake: "link",
     keyPage: "console.deepgram.com",
+    clientStore: "gdg",
     settings: { key: "deepgram_key", models: "deepgram_models", desk: "deepgram_desk" },
   },
 };
@@ -135,4 +144,10 @@ export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
   return rows
     .map((row) => (row && typeof row === "object" ? (row as Record<string, unknown>).id : undefined))
     .filter((value): value is string => typeof value === "string" && value.length > 0);
+}
+
+/** Chữ mẫu trong ô nhập key của khách, đọc từ khai của nhà (không viết tay từng nhà). */
+export function clientKeyPlaceholder(id: ProviderId): string {
+  const info = PROVIDERS[id];
+  return `${info.keyHint ?? `Key ${info.label},`} chỉ lưu trên máy này`;
 }

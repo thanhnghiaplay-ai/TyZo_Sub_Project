@@ -13,7 +13,8 @@ import { READY_STATUS, usePipeline } from "@/components/use-pipeline";
 import { useOnline } from "@/lib/use-online";
 import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
-import { groqListHolds } from "@/lib/sub/asr-house";
+import { asrHouse, groqListHolds } from "@/lib/sub/asr-house";
+import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDERS } from "@/lib/sub/provider";
 import { ownKeyAvailable, rentOpen } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
 import { TurnPackList } from "@/components/turn-pack-list";
@@ -1106,33 +1107,21 @@ export function Studio() {
           )}
         </label>
         )}
-        {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && !(runDoor.open && payByRoom) && (
-          <label className="grid gap-1 text-sm text-muted" htmlFor="ali-key">
-            Key Alibaba
-            <input
-              id="ali-key"
-              className={FIELD}
-              type={showKey ? "text" : "password"}
-              placeholder="sk-… chỉ lưu trên máy này"
-              autoComplete="off"
-              value={app.alibabaKey}
-              onChange={(event) => app.setAlibabaKey(event.target.value)}
-            />
-          </label>
-        )}
-        {app.asrModel === "deepgram-nova-3" && !(runDoor.open && payByRoom) && (
-          <label className="grid gap-1 text-sm text-muted" htmlFor="dg-key">
-            Key Deepgram
-            <input
-              id="dg-key"
-              className={FIELD}
-              type={showKey ? "text" : "password"}
-              placeholder="Key Deepgram, chỉ lưu trên máy này"
-              autoComplete="off"
-              value={app.deepgramKey}
-              onChange={(event) => app.setDeepgramKey(event.target.value)}
-            />
-          </label>
+        {PROVIDER_IDS.filter((id) => id !== "groq").map((id) =>
+          asrHouse(app.asrModel) === id && !(runDoor.open && payByRoom) ? (
+            <label key={id} className="grid gap-1 text-sm text-muted" htmlFor={`key-${id}`}>
+              Key {PROVIDERS[id].label}
+              <input
+                id={`key-${id}`}
+                className={FIELD}
+                type={showKey ? "text" : "password"}
+                placeholder={clientKeyPlaceholder(id)}
+                autoComplete="off"
+                value={app.houseKeys[id] ?? ""}
+                onChange={(event) => app.setHouseKey(id, event.target.value)}
+              />
+            </label>
+          ) : null,
         )}
         {!lockTurnModels && (
         <>
