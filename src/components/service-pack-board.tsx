@@ -15,6 +15,7 @@ import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
 import { PackAutoBoard } from "@/components/pack-auto-board";
 import { buildAutoPack, type AutoCandidate } from "@/lib/pack-auto";
+import { getRentShow, type RentShow } from "@/lib/rent-show";
 
 function dong(n: number | null) {
   if (n == null) return "Chưa có giá gốc";
@@ -48,6 +49,11 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
   const [board, setBoard] = useState<GroqBoard | null>(null);
+
+  const [rentShow, setRentShow] = useState<RentShow | null>(null);
+  useEffect(() => {
+    void getRentShow().then(setRentShow).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     void getAlibabaDesk()
@@ -194,7 +200,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         </div>
       )}
 
-      <PackAutoBoard candidates={autoCandidates} books={autoBooks} onCreate={createAutoPack} />
+      <PackAutoBoard candidates={autoCandidates} books={autoBooks} rentShow={rentShow} onCreate={createAutoPack} />
 
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">

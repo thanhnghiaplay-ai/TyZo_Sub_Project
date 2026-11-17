@@ -9,6 +9,7 @@ import { PACK_ROLES, PACK_ROLE_LABEL, providersForRole, translateTokens, type Pa
 import { gradeOf } from "./sub/model-grade.ts";
 import { modelRoleOf } from "./sub/model-role.ts";
 import { chatModel } from "./sub/models.ts";
+import type { RentShow } from "./rent-show-rule.ts";
 import type { ProviderId } from "./sub/provider.ts";
 
 export const AUTO_LEVELS = ["save", "balanced", "best"] as const;
@@ -135,4 +136,10 @@ export function buildAutoPack(input: { id: string; levels: AutoInput["levels"]; 
   const head = AUTO_LEVEL_LABEL[input.levels.translate && input.levels.translate !== "off" ? input.levels.translate : "balanced"];
   const note = `Tự động${input.lang === "cjk" ? " (Trung, Nhật, Hàn)" : ""}. ${parts.join(" · ")}`.slice(0, 180);
   return { id: input.id, name: `Gói tự động · ${head}`, note, enabled: false, doors: ["turn", "rent"], roles: { ...input.roles } };
+}
+
+/** Chỉ giữ model Chủ đã mở cho thuê phòng. show = null (Chủ chưa lưu danh sách) thì không lọc. */
+export function onlyRentOpen(candidates: AutoCandidate[], show: RentShow | null): AutoCandidate[] {
+  if (!show) return candidates;
+  return candidates.filter((c) => show[c.provider].includes(c.model));
 }

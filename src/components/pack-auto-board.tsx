@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, type AutoCandidate, type AutoChoice, type AutoLang, type AutoResult } from "@/lib/pack-auto";
+import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, onlyRentOpen, type AutoCandidate, type AutoChoice, type AutoLang, type AutoResult } from "@/lib/pack-auto";
 import type { PriceBook } from "@/lib/run-bill";
+import type { RentShow } from "@/lib/rent-show-rule";
 import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 
@@ -15,11 +16,14 @@ export type AutoDraft = { levels: Partial<Record<PackRole, AutoChoice>>; lang: A
 export function PackAutoBoard({
   candidates,
   books,
+  rentShow = null,
   onDraft,
   onCreate,
 }: {
   candidates: AutoCandidate[];
   books: Partial<Record<ProviderId, PriceBook>> | null;
+  /** Danh sách model Chủ đã mở cho thuê phòng. null = chưa lưu, ẩn ô lọc. */
+  rentShow?: RentShow | null;
   /** Báo bản nháp hiện tại cho bên ngoài (để nút Tạo gói dùng ở bước sau). */
   onDraft?: (draft: AutoDraft) => void;
   /** Bấm «Tạo gói»: trả model đã chọn và mức đã dùng. Bên ngoài tự thêm gói nháp, chưa lưu. */
@@ -27,8 +31,10 @@ export function PackAutoBoard({
 }) {
   const [levels, setLevels] = useState<AutoDraft["levels"]>({ asr: "balanced", translate: "balanced" });
   const [lang, setLang] = useState<AutoLang>("other");
+  const [rentOnly, setRentOnly] = useState(false);
 
-  const result = useMemo(() => (books ? autoRoles({ levels, candidates, books, lang }) : null), [levels, candidates, books, lang]);
+  const pool = useMemo(() => (rentOnly ? onlyRentOpen(candidates, rentShow) : candidates), [rentOnly, candidates, rentShow]);
+  const result = useMemo(() => (books ? autoRoles({ levels, candidates: pool, books, lang }) : null), [levels, pool, books, lang]);
   const quote = useMemo(() => {
     if (!books || !result) return null;
     const pack: ServicePack = { id: "pack_preview0", name: "Xem trước", note: "", enabled: false, doors: ["turn", "rent"], roles: result.roles };
@@ -61,6 +67,13 @@ export function PackAutoBoard({
         <button type="button" className={btn(lang === "other")} onClick={() => pickLang("other")}>Lời gốc thường</button>
         <button type="button" className={btn(lang === "cjk")} onClick={() => pickLang("cjk")}>Trung, Nhật, Hàn</button>
       </div>
+
+      {rentShow && (
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={rentOnly} onChange={(event) => setRentOnly(event.target.checked)} />
+          Chỉ dùng model đã mở cho thuê phòng
+        </label>
+      )}
 
       {PACK_ROLES.map((role) => {
         const required = REQUIRED_ROLES.includes(role);

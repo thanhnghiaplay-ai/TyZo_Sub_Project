@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AUTO_LEVELS, autoRoles, buildAutoPack, pickForRole, type AutoCandidate } from "./pack-auto.ts";
+import { AUTO_LEVELS, autoRoles, buildAutoPack, onlyRentOpen, pickForRole, type AutoCandidate } from "./pack-auto.ts";
 import type { PriceBook } from "./run-bill.ts";
 import { checkServicePack } from "./service-pack.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
@@ -108,4 +108,14 @@ test("buildAutoPack: gói nháp (tắt), hợp lệ với checkServicePack, ghi 
 
 test("buildAutoPack: thiếu nhận dạng hoặc dịch thì không dựng gói", () => {
   assert.equal(buildAutoPack({ id: "pack_abc123def456", levels: {}, roles: { translate: { provider: "groq", model: "openai/gpt-oss-120b" } } }), null);
+});
+
+test("onlyRentOpen: chỉ giữ model đã mở cho thuê phòng, chưa lưu danh sách thì không lọc", () => {
+  const show = { groq: ["openai/gpt-oss-120b", "whisper-large-v3-turbo"], alibaba: [], deepgram: ["deepgram-nova-3"] };
+  const kept = onlyRentOpen(all, show);
+  assert.deepEqual(kept.map((c) => c.model).sort(), ["deepgram-nova-3", "openai/gpt-oss-120b", "whisper-large-v3-turbo"]);
+  assert.equal(onlyRentOpen(all, null), all);
+  const out = autoRoles({ levels: {}, candidates: kept, books });
+  assert.equal(out.roles.translate?.model, "openai/gpt-oss-120b");
+  assert.ok(out.roles.asr);
 });
