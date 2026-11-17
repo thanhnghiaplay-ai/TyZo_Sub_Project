@@ -13,7 +13,7 @@ function norm(value: string) {
 
 /** Tự xưng đứng đầu câu. Chỉ dùng khi token đó không phải cách gọi người khác. */
 function leadingToken(text: string, token: string) {
-  const body = text.trim().replace(/^[\s"'“”«»（(【\[]+/, "");
+  const body = text.trim().replace(/^[\s"'“”«»（(【[]+/, "");
   if (!body || token.length < 2) return false;
   return new RegExp(`^${escapeReg(token)}(?=$|[^\\p{L}\\p{N}])`, "iu").test(body);
 }

@@ -278,7 +278,9 @@ function tokenIdentityKey(token: string): string {
             .digest("base64url");
         }
       }
-    } catch {}
+    } catch {
+      /* không đọc được thì dùng băm mặc định bên dưới */
+    }
   }
   return createHash("sha256").update(token).digest("base64url");
 }

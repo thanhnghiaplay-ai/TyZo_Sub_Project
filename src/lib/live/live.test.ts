@@ -12,7 +12,7 @@ import { LiveSession } from "./live-session.ts";
 import { signLiveTicket, verifyLiveTicket } from "./live-ticket.ts";
 import { buildSessionUpdate, parseServerEvent } from "./qwen-protocol.ts";
 
-const book: LiveBook = { rate: 26000, markup: 0, rows: LIVE_FALLBACK_ROWS };
+const book: LiveBook = { rate: 26000, rows: LIVE_FALLBACK_ROWS };
 
 describe("ngôn ngữ", () => {
   it("đủ 60, trong đó 29 có tiếng", () => {
@@ -63,11 +63,11 @@ describe("tiền", () => {
   it("chỉ chữ rẻ hơn có tiếng", () => {
     assert.ok(livePerMinute(book, LIVE_MODEL_38, false)! < livePerMinute(book, LIVE_MODEL_38, true)!);
   });
-  it("cộng chênh và tách giá gốc", () => {
+  it("không cộng chênh: giá khách trả bằng giá gốc", () => {
     const usage = { audioIn: 1_000_000, textIn: 0, imageIn: 0, textOut: 0, audioOut: 0 };
-    const q = liveCost({ ...book, markup: 50 }, LIVE_MODEL_38, usage)!;
+    const q = liveCost(book, LIVE_MODEL_38, usage)!;
     assert.equal(q.base, 7.5 * 26000);
-    assert.equal(q.cost, 7.5 * 26000 * 1.5);
+    assert.equal(q.cost, q.base);
   });
   it("đọc usage của response.done, thiếu thì 0", () => {
     assert.deepEqual(readUsage({ input_tokens_details: { audio_tokens: 27, text_tokens: 20 }, output_tokens_details: { text_tokens: 2, audio_tokens: 7 } }), { audioIn: 27, textIn: 20, imageIn: 0, textOut: 2, audioOut: 7 });

@@ -44,8 +44,6 @@ export async function loadLiveBook(sql: Sql, fetchPage: (url: string) => Promise
     rate = 0;
   }
   if (!(rate > 0)) return null;
-  const deskRaw = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
-  const markup = parseRunDesk(deskRaw[0]?.value).markup;
   const liveRaw = await sql<{ value: string }>`select value from room_settings where key = 'live_board'`;
   let stored: LiveBoard | null = null;
   try {
@@ -54,7 +52,7 @@ export async function loadLiveBook(sql: Sql, fetchPage: (url: string) => Promise
     stored = null;
   }
   if (!stored || Date.now() - stored.at > FRESH_MS) void refreshLiveBoard(sql, stored, fetchPage);
-  return { rate, markup, rows: stored?.rows?.length ? stored.rows : LIVE_FALLBACK_ROWS };
+  return { rate, rows: stored?.rows?.length ? stored.rows : LIVE_FALLBACK_ROWS };
 }
 
 export async function loadLiveCap(sql: Sql): Promise<number> {

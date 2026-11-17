@@ -47,6 +47,7 @@ export function glossaryPair(lang: string, genre: string) {
 }
 
 function scrub(value: string) {
+  // eslint-disable-next-line no-control-regex -- cố ý xóa ký tự điều khiển
   const text = value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 80);
   if (!text || /https?:|www\.|@/i.test(text) || /\d{8,}/.test(text)) return "";
   return text;

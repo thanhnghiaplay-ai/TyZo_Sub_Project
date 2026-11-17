@@ -11,7 +11,7 @@ import { LIVE_FALLBACK_ROWS, LIVE_MODEL_38 } from "./live-price.ts";
 import { loadLiveUpstream, liveUpstreamUrl, validWorkspaceId } from "./live-upstream.ts";
 
 let sql: Sql;
-const book: LiveBook = { rate: 26000, markup: 0, rows: LIVE_FALLBACK_ROWS };
+const book: LiveBook = { rate: 26000, rows: LIVE_FALLBACK_ROWS };
 
 before(async () => {
   const db = new PGlite();
@@ -98,7 +98,7 @@ describe("bảng giá live từ cài đặt phòng", () => {
       throw new Error("không có mạng");
     });
     assert.equal(loaded?.rate, 25500);
-    assert.equal(loaded?.markup, 0);
+    assert.ok(loaded && !("markup" in loaded), "LiveBook không còn trường markup");
     assert.deepEqual(loaded?.rows, LIVE_FALLBACK_ROWS);
   });
 });

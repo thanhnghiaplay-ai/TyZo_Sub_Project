@@ -2231,7 +2231,8 @@ function Stage({
       if (key === " " || key === "k") {
         if (el?.closest("button,a")) return;
         event.preventDefault();
-        video.paused ? void video.play().catch(() => {}) : video.pause();
+        if (video.paused) void video.play().catch(() => {});
+        else video.pause();
       } else if (key === "ArrowLeft") {
         event.preventDefault();
         video.currentTime = Math.max(0, video.currentTime - 5);
@@ -2441,7 +2442,8 @@ function Stage({
           } else if (g.rx > 0.67) {
             video.currentTime = video.currentTime + 10;
             showHud(`+10 giây · ${fmt(video.currentTime)}`);
-          } else video.paused ? void video.play().catch(() => {}) : video.pause();
+          } else if (video.paused) void video.play().catch(() => {});
+          else video.pause();
           if (stageRef.current) stageRef.current.dataset.tap = "0";
           return;
         }
@@ -2511,7 +2513,8 @@ function Stage({
           onClick={() => {
             const video = videoRef.current;
             if (!video) return;
-            video.paused ? void video.play().catch(() => {}) : video.pause();
+            if (video.paused) void video.play().catch(() => {});
+            else video.pause();
           }}
         >
           {paused ? <Icon slot="act.start" className="size-7" /> : <Icon slot="act.pause" className="size-7" />}

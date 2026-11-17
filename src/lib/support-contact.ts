@@ -14,6 +14,7 @@ const EMAIL = /^[^\s@<>"'`]+@[^\s@<>"'`]+\.[^\s@<>"'`]+$/;
 const FACEBOOK_HOSTS = ["facebook.com", "www.facebook.com", "m.facebook.com", "fb.com", "www.fb.com", "fb.me", "m.me", "messenger.com", "www.messenger.com"];
 
 function text(value: unknown): string {
+  // eslint-disable-next-line no-control-regex -- cố ý đổi ký tự điều khiển thành dấu cách
   return typeof value === "string" ? value.replace(/[\u0000-\u001f\u007f]/g, " ").trim() : "";
 }
 

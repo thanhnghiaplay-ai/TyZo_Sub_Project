@@ -1257,7 +1257,7 @@ export function usePipeline() {
           const seconds = partSeconds({ index: part.index, start: startAt / SR, end: endAt / SR });
           j.note = `thử lại đoạn ${part.index + 1}`;
           progress();
-          let samples = j.pcm ? j.pcm.subarray(startAt, endAt) : await streamSamples(j.stream!, audioContext, startAt / SR, endAt / SR, signal);
+          const samples = j.pcm ? j.pcm.subarray(startAt, endAt) : await streamSamples(j.stream!, audioContext, startAt / SR, endAt / SR, signal);
           throwIfAborted(signal);
           let res: AsrResult;
           let heard: Float32Array | null = null;
@@ -1329,7 +1329,7 @@ export function usePipeline() {
           progress();
           const from = Math.max(0, Math.floor(clip.start * SR));
           const to = Math.max(from + 1, Math.ceil(clip.end * SR));
-          let samples = j.pcm ? j.pcm.subarray(from, Math.min(j.pcm.length, to)) : await streamSamples(j.stream!, audioContext, clip.start, clip.end, signal);
+          const samples = j.pcm ? j.pcm.subarray(from, Math.min(j.pcm.length, to)) : await streamSamples(j.stream!, audioContext, clip.start, clip.end, signal);
           throwIfAborted(signal);
           if (!samples?.length) continue;
           const gated = await gateChunk(samples, vadRef.current);

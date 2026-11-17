@@ -97,7 +97,7 @@ function parseAsc(a: Uint8Array) {
     }
     return v;
   };
-  let type = rd(5);
+  const type = rd(5);
   const fi = rd(4);
   if (fi === 15 || fi > 12) return null;
   const ch = rd(4);

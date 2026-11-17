@@ -15,6 +15,7 @@ export default tseslint.config(
       ".nitro/**",
       "node_modules/**",
       "src/routeTree.gen.ts",
+      "public/vad/**", // thư viện onnxruntime-web đóng gói sẵn, không phải code của dự án
     ],
   },
   js.configs.recommended,

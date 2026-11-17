@@ -1,6 +1,6 @@
 import { AUDIO_IN_TOKENS_PER_SEC, AUDIO_OUT_TOKENS_PER_SEC, type LivePriceRow } from "./live-price.ts";
 
-export type LiveBook = { rate: number; markup: number; rows: LivePriceRow[] };
+export type LiveBook = { rate: number; rows: LivePriceRow[] };
 
 /** Token thật Alibaba trả trong response.done. */
 export type LiveUsage = { audioIn: number; textIn: number; imageIn: number; textOut: number; audioOut: number };
@@ -53,12 +53,12 @@ function ceilVnd(amount: number) {
   return Math.max(1, Math.ceil(amount - 1e-9));
 }
 
-/** Tiền một lần dùng: `cost` là giá khách trả (đã cộng chênh), `base` là giá gốc không chênh. null khi chưa có giá. */
+/** Tiền một lần dùng. Từ v5.2.1 không còn cộng chênh nên `cost` bằng `base` (giữ cả hai để chỗ gọi cũ không đổi). null khi chưa có giá. */
 export function liveCost(book: LiveBook, model: string, usage: LiveUsage): { cost: number; base: number } | null {
   const row = book.rows.find((item) => item.id === model);
   if (!row || !(book.rate > 0)) return null;
   const base = usdOf(row, usage) * book.rate;
-  return { cost: ceilVnd(base * (1 + book.markup / 100)), base: ceilVnd(base) };
+  return { cost: ceilVnd(base), base: ceilVnd(base) };
 }
 
 /**

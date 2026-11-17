@@ -43,7 +43,7 @@ export const openLiveTicket = createServerFn({ method: "POST" })
     const turbo = await turboPerSecond();
     if (!(turbo && turbo > 0)) throw new Error("Chưa có giá bản Turbo. Chưa tính được giây.");
     const audio = data.audio && targetHasVoice(data.target);
-    const minute = liveCost({ ...book, markup: 0 }, data.model, usageForSeconds(60, audio));
+    const minute = liveCost(book, data.model, usageForSeconds(60, audio));
     const perMinute = minute ? tokensForBase(minute.base, turbo) : null;
     if (perMinute == null || !(perMinute > 0)) throw new Error("Model này chưa có giá niêm yết.");
     const balance = await giayBalance(sql, context.userId);
