@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { packPriceVnd, tokensForBase } from "./token-math.ts";
+import { legacyMarkupOf, parseRunDesk } from "./run-desk.ts";
+import { formatRoomTokens, packPriceVnd, tokensForBase } from "./token-math.ts";
 
 describe("quy giây dịch", () => {
   it("1 giây Turbo là 1 đơn vị, model đắt hơn thì nhiều hơn", () => {
@@ -16,4 +17,31 @@ describe("quy giây dịch", () => {
     assert.equal(packPriceVnd(10, 0, 50, 1.2), null);
     assert.equal(packPriceVnd(10, 0.3, 50, 0), null);
   });
+});
+
+
+describe("bỏ phần trăm chênh theo nhà", () => {
+it("giá model ở trả theo lượt nói bằng Token dịch, không còn đồng", () => {
+  const groq = {
+    rate: 25000,
+    rows: [
+      { id: "whisper-large-v3-turbo", usdPerHour: 0.04, usdPerMillionChars: null, usdIn: null, usdOut: null },
+    ],
+  } as never;
+  const text = formatRoomTokens({ usdPerHour: 0.08, usdPerMillionChars: null, usdIn: null, usdOut: null }, groq);
+  assert.match(text ?? "", /Token dịch\/giờ$/);
+  assert.doesNotMatch(text ?? "", /đ\b/);
+  // model đắt gấp đôi Turbo thì đúng gấp đôi Token dịch mỗi giờ
+  const turbo = formatRoomTokens({ usdPerHour: 0.04, usdPerMillionChars: null, usdIn: null, usdOut: null }, groq);
+  const num = (t: string | null) => Number((t ?? "").replace(/\./g, "").match(/^\d+/)?.[0] ?? 0);
+  assert.ok(num(text) > num(turbo));
+  assert.equal(formatRoomTokens({ usdPerHour: 0.04, usdPerMillionChars: null, usdIn: null, usdOut: null }, { rate: 25000, rows: [] } as never), null);
+});
+
+it("phần trăm chênh Groq/Alibaba không còn được cộng, số cũ chỉ để ước phiếu cũ", () => {
+  const raw = JSON.stringify({ markup: 30, cap: 0 });
+  assert.equal(parseRunDesk(raw).markup, 0);
+  assert.equal(legacyMarkupOf(raw), 30);
+  assert.equal(legacyMarkupOf(null), 0);
+});
 });

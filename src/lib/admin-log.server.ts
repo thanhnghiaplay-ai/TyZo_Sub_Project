@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.2.1",
+    time: "17/11/2026",
+    area: "tien",
+    text: "Bước (a3-2), Chủ chốt GỠ phần trăm chênh Groq và Alibaba, giá theo Token dịch. run-desk.ts: parseRunDesk luôn trả markup 0 nên mọi nơi đọc (run-board.server, live-book, pack-room, room-alibaba, hiển thị) thôi cộng chênh; số cũ đã lưu giữ nguyên trong dữ liệu và chỉ đọc qua legacyMarkupOf cho nút «ước giá vốn phiếu cũ» (admin-room.ts). Lưu cấu hình giá từ nay ghi markup 0 (số cũ mất sau lần lưu đầu, chỉ ảnh hưởng ước phiếu đồng cũ). Admin: bỏ ô «Tăng thêm trên giá gốc» (run-desk-board) và «Phần trăm chênh Alibaba» (service-pack-board), sửa chữ ghi chú. Khách: studio.tsx hiện giá model bằng formatRoomTokens (token-math.ts): 1 Token dịch = giá gốc 1 giây Turbo, nói Token dịch mỗi giờ / mỗi triệu ký tự / vào-ra mỗi triệu token, thay formatRoomPrice (đồng). KHÔNG đổi số Token dịch trừ thật (vốn đã tính từ giá gốc). GÓI Token dịch giữ chênh 50 (token-desk.ts, giay-pack-board). CHƯA SỬA ĐIỀU KHOẢN: terms-document.tsx dòng ~206 nói hoa hồng tính trên «phần chênh của lượt dùng key phòng», nay không còn chênh ở lượt này (chỉ còn chênh ở gói Token dịch); dòng ~122 vẫn đúng. Cần Chủ quyết có sửa chữ và nâng TERMS_VERSION không. Test: token-math.test.ts, live-wire.test.ts sửa theo.",
+  },
+  {
     version: "5.2.0",
     time: "17/11/2026",
     area: "ha-tang",

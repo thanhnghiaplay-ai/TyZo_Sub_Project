@@ -1,3 +1,9 @@
+## v5.2.1: GỠ CHÊNH GROQ/ALIBABA (17/11/2026, nhánh work)
+THỨ TỰ: [XONG] bước 1 key mọi nhà (v5.2.0) → [XONG] bước 2 a3-2 (mục này) → [CHƯA] bước 3 d dịch trực tiếp theo khả năng → [CHƯA] c3.
+ĐÃ LÀM: markup luôn 0 (parseRunDesk), `legacyMarkupOf` cho ước phiếu cũ, bỏ 2 ô chênh ở Admin, giá model khách theo Token dịch (`formatRoomTokens`). Chi tiết ở admin-log 5.2.1.
+CẦN CHỦ QUYẾT: điều khoản `terms-document.tsx` ~dòng 206 (hoa hồng tính trên «phần chênh» lượt key phòng) nay không còn chênh; sửa chữ + nâng TERMS_VERSION? Chưa đụng.
+CÒN GHI: `live-cost.ts` vẫn có trường markup (nay 0). `pack-picker.tsx` không dùng ở đâu. Chưa bấm thử điện thoại.
+
 ## v5.2.0: KEY KHÁCH HIỆN ĐỦ MỌI NHÀ (17/11/2026, nhánh work)
 CHỦ ĐÃ CHỐT 17/11/2026: (1) a3-2 GỠ phần trăm chênh Groq/Alibaba, giá theo Token dịch. (2) d: dịch trực tiếp THEO KHẢ NĂNG từng model. (3) Thuê phòng dùng key khách, hiện TẤT CẢ nhà để nhập. (4) Chủ tự thử trên điện thoại. (5) Sửa luôn hướng dẫn/Chỉ tôi, cách lấy key các nhà để chung mục Groq.
 THỨ TỰ LÀM: [XONG] bước 1 key mọi nhà + hướng dẫn (mục này) → [CHƯA] bước 2 a3-2 gỡ chênh → [CHƯA] bước 3 d dịch trực tiếp theo khả năng → [CHƯA] c3.

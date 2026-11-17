@@ -91,14 +91,14 @@ describe("bảng giá live từ cài đặt phòng", () => {
     assert.equal(await loadLiveBook(sql, async () => ""), null);
   });
 
-  it("có tỉ giá và phần chênh Alibaba thì dùng giá dự phòng khi chưa kéo được giá", async () => {
+  it("có tỉ giá thì dùng giá dự phòng khi chưa kéo được giá, phần chênh cũ đã lưu không còn được cộng", async () => {
     await sql`insert into room_settings (key, value) values ('run_board', ${JSON.stringify({ at: Date.now(), board: { rate: 25500, rows: [] } })})`;
     await sql`insert into room_settings (key, value) values ('alibaba_desk', ${JSON.stringify({ markup: 30 })})`;
     const loaded = await loadLiveBook(sql, async () => {
       throw new Error("không có mạng");
     });
     assert.equal(loaded?.rate, 25500);
-    assert.equal(loaded?.markup, 30);
+    assert.equal(loaded?.markup, 0);
     assert.deepEqual(loaded?.rows, LIVE_FALLBACK_ROWS);
   });
 });

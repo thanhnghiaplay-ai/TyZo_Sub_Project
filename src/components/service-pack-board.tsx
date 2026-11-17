@@ -133,8 +133,8 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         {!packsOnly && <h3 className="text-sm font-semibold">Nhà cung cấp và gói dịch</h3>}
         <p className="text-sm text-muted">
           {packsOnly
-            ? "Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách chỉ thấy giá đã cộng phần trăm."
-            : "Groq giữ bàn giá phía trên. Alibaba có key và phần trăm chênh. Giá lấy từ bảng niêm yết. Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
+            ? "Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách thấy giá theo Token dịch, tính từ giá gốc."
+            : "Groq giữ bàn giá phía trên. Alibaba có key riêng. Giá lấy từ bảng niêm yết, tính từ giá gốc (không cộng phần trăm). Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
         </p>
       </div>
 
@@ -162,20 +162,8 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
       )}
 
       {desk && (
-        <label className="grid max-w-xs gap-1 text-sm">
-          Phần trăm chênh Alibaba
-          <input
-            className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3"
-            inputMode="numeric"
-            value={desk.markup}
-            onChange={(event) => setDesk({ ...desk, markup: Number(event.target.value.replace(/\D/g, "") || 0) })}
-          />
-        </label>
-      )}
-
-      {desk && (
         <div className="grid gap-2">
-          <p className="text-xs text-muted">Khách chỉ thấy giá đã cộng phần trăm. Không đặt giá riêng từng model.</p>
+          <p className="text-xs text-muted">Giá theo Token dịch, tính từ giá gốc. Không đặt giá riêng từng model.</p>
           <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk({ ...desk, custom: {} })}>
             Lưu giá Alibaba
           </button>
@@ -266,7 +254,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
               })}
               {quote && (
                 <p className="text-xs text-muted">
-                  Ước tính 10 phút. Phần chênh Alibaba đã tính. Phần chênh Groq nằm ở bàn phía trên, mẫu này chưa cộng: gốc {dong(quote.base)} · giữ {dong(quote.hold)}
+                  Ước tính 10 phút, theo giá gốc: gốc {dong(quote.base)} · giữ {dong(quote.hold)}
                   {quote.ready ? "" : " · chưa đủ giá"}
                 </p>
               )}

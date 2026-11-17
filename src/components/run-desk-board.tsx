@@ -252,15 +252,6 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
           <h2 className="font-semibold">Giá và hạn mức</h2>
           <div className="grid gap-2 sm:grid-cols-2">
             <label className="grid gap-1 text-sm">
-              Tăng thêm trên giá gốc (%)
-              <input
-                inputMode="numeric"
-                value={form?.markup ?? 0}
-                onChange={(event) => setForm((current) => (current ? { ...current, markup: Number(event.target.value.replace(/\D/g, "") || 0) } : current))}
-                className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
-              />
-            </label>
-            <label className="grid gap-1 text-sm">
               Hạn mức mỗi khách mỗi ngày (đ, 0 là chưa đặt)
               <input
                 inputMode="numeric"
@@ -270,14 +261,14 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
               />
             </label>
           </div>
-          <p className="text-xs text-muted">Giá bán là giá niêm yết cộng phần trăm. Không đặt giá bán riêng từng model. Số đô la bên dưới chỉ sửa khi bảng tự lấy sai.</p>
+          <p className="text-xs text-muted">Khách thấy giá model theo Token dịch, tính từ giá gốc (không cộng phần trăm). Số đô la bên dưới chỉ sửa khi bảng tự lấy sai.</p>
           <ModelUsdBoard />
           {form && (
             <button
               type="button"
               disabled={busy}
               className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40"
-              onClick={() => save((latest) => ({ ...latest, markup: form.markup, cap: form.cap, custom: {} }), "Đã cập nhật giá.")}
+              onClick={() => save((latest) => ({ ...latest, markup: 0, cap: form.cap, custom: {} }), "Đã cập nhật giá.")}
             >
               Cập nhật giá
             </button>

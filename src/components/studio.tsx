@@ -48,7 +48,7 @@ import type { TourId } from "@/lib/tour-steps";
 import { isMediaFile, useFileThumb, type FileThumb } from "@/components/file-thumb";
 import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
-import { formatRoomPrice } from "@/lib/run-desk";
+import { formatRoomTokens } from "@/lib/token-math";
 import { modelRoleNote } from "@/lib/sub/model-role";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { auraReady, auraVoices, defaultAuraVoice } from "@/lib/sub/aura";
@@ -1930,7 +1930,7 @@ function modelFacts(
   const row = board?.rows.find((item) => item.id === id);
   if (!board) return { price: "Đang lấy đơn giá phòng…", detail: "" };
   if (!row) return { price: "Chưa niêm yết", detail: note };
-  return { price: formatRoomPrice(row, board.rate, door.markup), detail: "" };
+  return { price: formatRoomTokens(row, board) ?? "Chưa niêm yết", detail: "" };
 }
 
 function roomHeld(door: { offered: string[] | null }, id: string) {
@@ -1942,7 +1942,7 @@ function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: R
   const row = board?.rows.find((item) => item.id === id);
   if (!board) return "đang lấy đơn giá";
   if (!row) return "chưa niêm yết";
-  return formatRoomPrice(row, board.rate, door.markup);
+  return formatRoomTokens(row, board) ?? "chưa niêm yết";
 }
 
 function Stage({

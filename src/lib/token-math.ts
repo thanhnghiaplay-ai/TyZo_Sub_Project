@@ -67,3 +67,30 @@ export function bareChatVnd(book: PriceBook, model: string, inn: number, out: nu
   const bare: PriceBook = { rate: book.rate, rows: book.rows, desk: { markup: 0, custom: {} } };
   return chatCost(bare, model, inn, out) ?? 0;
 }
+
+/**
+ * Giá một model ở cửa Trả theo lượt, nói bằng Token dịch (từ giá gốc, không cộng chênh).
+ * 1 Token dịch = giá gốc 1 giây nhận dạng Turbo. null khi chưa có giá Turbo.
+ */
+export function formatRoomTokens(
+  row: { usdPerHour: number | null; usdPerMillionChars: number | null; usdIn: number | null; usdOut: number | null },
+  groq: { rate: number; rows: GroqLiveRow[] },
+): string | null {
+  const bare: PriceBook = { rate: groq.rate, rows: groq.rows, desk: { markup: 0, custom: {} } };
+  const turbo = asrPerSecond(bare, TURBO_ASR);
+  if (!(turbo && turbo > 0)) return null;
+  const tokens = (usd: number | null) => (usd == null || !(usd > 0) ? null : tokensForBase(usd * groq.rate, turbo));
+  const num = (n: number) => new Intl.NumberFormat("vi-VN").format(n);
+  if (row.usdPerHour != null) {
+    const n = tokens(row.usdPerHour);
+    return n ? `${num(n)} Token dịch/giờ` : "Chưa niêm yết";
+  }
+  if (row.usdPerMillionChars != null) {
+    const n = tokens(row.usdPerMillionChars);
+    return n ? `${num(n)} Token dịch mỗi triệu ký tự` : "Chưa niêm yết";
+  }
+  const inn = tokens(row.usdIn);
+  const out = tokens(row.usdOut);
+  if (!inn && !out) return "Chưa niêm yết";
+  return `${inn ? num(inn) : "—"} vào / ${out ? num(out) : "—"} ra Token dịch mỗi triệu token`;
+}

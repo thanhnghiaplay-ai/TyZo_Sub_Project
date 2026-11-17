@@ -6,7 +6,7 @@ import { parseCategory } from "@/lib/money-extra";
 import { parseSpan } from "@/lib/money-extra-data";
 import { isStaffRole, nextHold, outranks, roleAtLeast, type RoomStanding, type StaffRole } from "@/lib/staff-role";
 import { BADGE_STYLES, badgeStyle } from "@/lib/badge-styles";
-import { checkRunDesk, dayStartIso, parseModelList, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
+import { checkRunDesk, dayStartIso, legacyMarkupOf, parseModelList, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
 
 export type MyPlace = {
   role: StaffRole | null;
@@ -1175,7 +1175,7 @@ export const estimateOldCost = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
-    const markup = parseRunDesk(saved[0]?.value).markup;
+    const markup = legacyMarkupOf(saved[0]?.value);
     const { estimateOldCostWith } = await import("@/lib/cost-estimate");
     const count = await estimateOldCostWith(sql, markup);
     await writeAudit(context.userId, "uoc-gia-von", null, `${count} phiếu, chênh ${markup}%`);

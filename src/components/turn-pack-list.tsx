@@ -5,7 +5,7 @@ import { PROVIDER_LABEL } from "@/lib/sub/provider";
 import { customerVisiblePrice, turnPacks } from "@/lib/turn-pack";
 import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
 
-/** Gói Chủ đã mở cho cửa trả theo lượt. Chỉ hiện giá đã cộng phần chênh. */
+/** Gói Chủ đã mở cho cửa trả theo lượt. Giá theo Token dịch, từ giá gốc. */
 export function TurnPackList({
   videoRef,
   fileSeconds = 0,

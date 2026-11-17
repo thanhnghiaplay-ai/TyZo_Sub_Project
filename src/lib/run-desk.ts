@@ -106,11 +106,23 @@ export function parseRunDesk(raw: string | null | undefined): RunDesk {
       maintenance,
       note: canned ? "" : note,
       cap: data.cap ?? 0,
-      markup: data.markup ?? 0,
+      // Chủ chốt 17/11/2026: không còn phần trăm chênh theo nhà. Giá model là giá gốc, quy ra Token dịch. Số cũ chỉ còn trong legacyMarkupOf.
+      markup: 0,
       custom,
     });
   } catch {
     return { ...RUN_DESK_DEFAULT, custom: {} };
+  }
+}
+
+/** Phần trăm chênh cũ đã lưu (chỉ để ước giá vốn phiếu đồng cũ). Không dùng để tính giá mới. */
+export function legacyMarkupOf(raw: string | null | undefined): number {
+  if (!raw) return 0;
+  try {
+    const data = JSON.parse(raw) as { markup?: unknown };
+    return percent(Number(data.markup ?? 0));
+  } catch {
+    return 0;
   }
 }
 
