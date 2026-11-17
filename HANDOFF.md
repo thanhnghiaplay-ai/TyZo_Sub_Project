@@ -61,13 +61,14 @@ GHI CHÚ API (đã tra tài liệu Deepgram): `POST https://api.deepgram.com/v1/
 BƯỚC:
 1. [XONG] Bảng chung nhà cung cấp (`provider.ts`), `listModelIds` đọc đúng dạng Deepgram.
 2. [XONG] Lõi nhận dạng Deepgram (`src/lib/sub/deepgram.ts`) (dựng yêu cầu, đọc `utterances` ra Seg, bảng ngôn ngữ) + test.
-3. [CHƯA] Máy chủ nhận dạng Deepgram (link và file), key khách.
+3. [XONG] Máy chủ nhận dạng Deepgram bằng link (`deepgram-asr.server.ts`, `deepgram-asr.ts`, `sub/deepgram-run.ts`), key khách. Gửi file từ máy chưa làm (xem GHI CHÚ).
 4. [CHƯA] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse`, kiểu `AsrModel`.
 5. [CHƯA] Giao diện khách: ô key Deepgram, chọn model, nhánh `start()` và nhánh chạy trong `use-pipeline.ts`.
 6. [CHƯA] Admin: ô key phòng Deepgram, bảng giá, gói dịch chọn được Deepgram.
 7. [CHƯA] Đọc thành tiếng Aura (TTS), nếu chủ muốn.
 8. [CHƯA] Điều khoản (dữ liệu gửi Deepgram), Hướng dẫn, CHANGELOG, nâng phiên bản.
 CỐ Ý KHÔNG LÀM: trả theo lượt bằng key phòng cho Deepgram (chưa được yêu cầu); không đổi giá bán; chưa đổi điều khoản ở bước 1.
+GHI CHÚ BƯỚC 3: Deepgram trả kết quả ngay trong một yêu cầu (chờ tối đa 110 giây). Chưa kiểm hạn chạy hàm trên Vercel với phim dài, cần thử thật. Chỉ nhận link công khai, giống Alibaba. Gửi file từ máy lên Deepgram chưa làm.
 KHÔNG GHI KEY/TOKEN GITHUB VÀO FILE NÀO.
 
 

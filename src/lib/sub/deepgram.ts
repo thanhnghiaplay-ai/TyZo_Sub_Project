@@ -111,3 +111,10 @@ export function deepgramErrorText(status: number, payload: unknown): string {
   if (status >= 500) return "Deepgram đang bận. Hãy thử lại sau.";
   return message ? `Deepgram báo lỗi: ${message}` : `Deepgram từ chối yêu cầu (mã ${status}).`;
 }
+
+/** Key khách dán. Không nhận "room" (cửa trả theo lượt chưa chạy Deepgram), khoảng trắng hay độ dài lạ. */
+export function cleanDeepgramKey(key: string): string {
+  const value = (key || "").trim();
+  if (value.length < 20 || value.length > 200 || /\s/.test(value) || value === "room") throw new Error("Key Deepgram không đúng.");
+  return value;
+}

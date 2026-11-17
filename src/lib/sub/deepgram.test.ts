@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { deepgramErrorText, deepgramLanguage, deepgramListenUrl, segsFromDeepgram, sentencesFromDeepgram } from "./deepgram.ts";
+import { cleanDeepgramKey, deepgramErrorText, deepgramLanguage, deepgramListenUrl, segsFromDeepgram, sentencesFromDeepgram } from "./deepgram.ts";
 
 describe("ngôn ngữ Deepgram", () => {
   it("bốn ngôn ngữ nguồn của app", () => {
@@ -69,5 +69,17 @@ describe("câu báo lỗi", () => {
   it("mã khác thì kèm câu của Deepgram", () => {
     assert.match(deepgramErrorText(400, { err_msg: "bad param" }), /bad param/);
     assert.match(deepgramErrorText(418, null), /418/);
+  });
+});
+
+describe("key Deepgram", () => {
+  it("nhận key hợp lệ, cắt khoảng trắng hai đầu", () => {
+    assert.equal(cleanDeepgramKey("  " + "a".repeat(40) + " "), "a".repeat(40));
+  });
+  it("từ chối key ngắn, có khoảng trắng giữa, hoặc chữ room", () => {
+    assert.throws(() => cleanDeepgramKey("abc"));
+    assert.throws(() => cleanDeepgramKey("a".repeat(20) + " " + "b".repeat(20)));
+    assert.throws(() => cleanDeepgramKey("room"));
+    assert.throws(() => cleanDeepgramKey(""));
   });
 });
