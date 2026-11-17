@@ -15,6 +15,8 @@ import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
 import { asrHouse, groqListHolds } from "@/lib/sub/asr-house";
 import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDERS } from "@/lib/sub/provider";
+import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
+import { DEEPGRAM_BASE_ROWS } from "@/lib/sub/deepgram-base";
 import { asrPickerRows } from "@/lib/asr-picker";
 import { ownKeyAvailable } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
@@ -744,7 +746,8 @@ export function Studio() {
   const asrPick = asrPickerRows({
     showRoomPrice,
     allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow },
-    roomHeld: (id) => roomHeld(runDoor, id),
+    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba và Deepgram do máy chủ kiểm khi chạy.
+    roomHeld: (id) => asrHouse(id) === "groq" && roomHeld(runDoor, id),
     keyModels: { groq: app.remoteIds, ...app.keyModels },
   });
   const lockTurnModels = showRoomPrice && turnLocked;
@@ -1180,9 +1183,7 @@ export function Studio() {
               {row.name}
               {row.state === "room"
                 ? ` · ${roomAsrPrice(app.board, runDoor, row.id)}`
-                : row.state === "noRoom"
-                  ? " · chưa có ở cửa trả theo lượt"
-                  : row.state === "closed"
+                : row.state === "closed"
                     ? " · Chủ chưa mở"
                     : row.state === "noKey"
                       ? " · key của bạn không có model này"
@@ -1933,13 +1934,18 @@ function modelFacts(
   return { price: formatRoomTokens(row, board) ?? "Chưa niêm yết", detail: "" };
 }
 
+/** Dòng giá của model ở cửa Trả theo lượt: bảng Groq, hoặc bảng dự phòng của Alibaba và Deepgram (tỉ giá lấy từ bảng Groq). */
+function roomPriceRow(board: GroqBoard, id: string) {
+  return board.rows.find((item) => item.id === id) ?? ALIBABA_ROWS.find((item) => item.id === id) ?? DEEPGRAM_BASE_ROWS.find((item) => item.id === id);
+}
+
 function roomHeld(door: { offered: string[] | null }, id: string) {
   return groqListHolds(door.offered, id);
 }
 
 function roomAsrPrice(board: GroqBoard | null, door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }>; offered: string[] | null }, id: string): string {
   if (roomHeld(door, id)) return "Chưa cập nhật";
-  const row = board?.rows.find((item) => item.id === id);
+  const row = board ? roomPriceRow(board, id) : undefined;
   if (!board) return "đang lấy đơn giá";
   if (!row) return "chưa niêm yết";
   return formatRoomTokens(row, board) ?? "chưa niêm yết";

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.2.2",
+    time: "17/11/2026",
+    area: "ha-tang",
+    text: "Sửa chữ giao diện khách: ô Nhận dạng giọng ở cửa Trả theo lượt không còn khóa và ghi «chưa có ở cửa trả theo lượt» cho Alibaba và Deepgram (máy chủ chạy hai nhà này bằng key phòng từ trước: ali-filetrans.server.ts, deepgram-asr.server.ts, use-pipeline.ts đã truyền key \"room\"). asr-picker.ts bỏ trạng thái noRoom; studio.tsx: roomHeld chỉ áp cho model Groq (danh sách «phòng mở» offered chỉ nói về Groq, máy chủ tự kiểm Alibaba/Deepgram khi chạy); giá hiện Token dịch lấy từ bảng Groq hoặc bảng dự phòng ALIBABA_ROWS, DEEPGRAM_BASE_ROWS (roomPriceRow). live-screen.tsx: Chủ lưu danh sách mà không mở model nào thì báo «Hiện chưa mở model nào…» và khoá nút Bắt đầu. CHƯA thử chạy thật Alibaba/Deepgram ở cửa Trả theo lượt từ giao diện (cần key phòng).",
+  },
+  {
     version: "5.2.1",
     time: "17/11/2026",
     area: "ha-tang",

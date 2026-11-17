@@ -76,6 +76,8 @@ export function LiveScreen() {
       .catch(() => setLiveShow(null));
   }, []);
   const openModels = useMemo(() => liveOpenModels(liveShow, LIVE_MODELS), [liveShow]);
+  // Chủ đã lưu danh sách mà không mở model nào: báo rõ và không cho bắt đầu.
+  const noModel = liveShow !== null && openModels.length === 0;
   useEffect(() => {
     if (openModels.length && !openModels.includes(settings.model)) setSettings((s) => ({ ...s, model: openModels[0] }));
   }, [openModels, settings.model]);
@@ -273,7 +275,7 @@ export function LiveScreen() {
             <button
               type="button"
               data-tour="live-start"
-              disabled={button.disabled || startBlocked}
+              disabled={button.disabled || startBlocked || (noModel && !button.stops)}
               title={startBlocked ? "Dịch trực tiếp đang bảo trì" : undefined}
               onClick={() => (button.stops ? live.stop() : live.start({ ...settings, input, audio: voice && settings.audio }))}
               className={"min-tap inline-flex min-w-40 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold disabled:opacity-50 " + (button.stops ? "border border-error text-danger" : "bg-accent text-ink")}
@@ -283,6 +285,7 @@ export function LiveScreen() {
             </button>
             <ExportMenu disabled={!hasText} onPick={pick} />
           </div>
+          {noModel && <p className="text-sm text-warning" role="status">Hiện chưa mở model nào cho Dịch trực tiếp. Bạn tạm dùng Dịch bình thường, hoặc liên hệ hỗ trợ.</p>}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted" aria-live="polite">
             <span>{liveStateText(live.state, live.reconnecting)}</span>
             {(running || live.elapsedMs > 0) && <span>{elapsedLabel(live.elapsedMs)}</span>}

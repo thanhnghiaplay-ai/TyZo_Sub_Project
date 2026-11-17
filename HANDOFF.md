@@ -1,3 +1,5 @@
+## v5.2.2 (17/11/2026, work): chữ Deepgram/Alibaba ở trả theo lượt + thông báo live rỗng — XONG. Đang làm tiếp: c3, rồi dọn code (eslint cũ, pack-picker.tsx, markup ở live-cost.ts, PROJECT_STATUS.md, AGENTS.project.md). Xem các mục mới hơn ở trên nếu có.
+
 ## BƯỚC (d) XONG: DỊCH TRỰC TIẾP THEO KHẢ NĂNG (17/11/2026, nhánh work, v5.2.1)
 THỨ TỰ: [XONG] 1 key mọi nhà (5.2.0) → [XONG] 2 gỡ chênh (5.2.1) → [XONG] 3 d (mục này) → [CHƯA] c3 (giọng đọc Orpheus/Aura bật tắt thuê phòng, cần chặn thật ở narration.ts) → [CHƯA] đường chạy `chunked` thật cho dịch trực tiếp bằng Whisper.
 ĐÃ LÀM: `live-show.ts`, `live-show-room.ts`, `live-show-board.tsx`, chặn ở `live-open.ts`, lọc ở `live-screen.tsx`, test. Chi tiết admin-log 5.2.1.
