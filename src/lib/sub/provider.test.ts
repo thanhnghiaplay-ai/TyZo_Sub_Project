@@ -31,6 +31,13 @@ describe("bảng nhà cung cấp", () => {
     assert.equal(authHeader("alibaba", "abc"), "Bearer abc");
     assert.equal(authHeader("deepgram", "abc"), "Token abc");
   });
+  it("mỗi nhà khai cách nhận âm thanh (intake) hợp lệ", () => {
+    const allowed = ["chunks", "link", "upload", "stream"];
+    for (const id of PROVIDER_IDS) assert.ok(allowed.includes(PROVIDERS[id].intake), `${id} thiếu intake`);
+    assert.equal(PROVIDERS.groq.intake, "chunks");
+    assert.equal(PROVIDERS.alibaba.intake, "link");
+    assert.equal(PROVIDERS.deepgram.intake, "link");
+  });
   it("isProviderId chỉ nhận nhà có trong bảng", () => {
     assert.ok(isProviderId("deepgram"));
     assert.ok(!isProviderId("toString"));

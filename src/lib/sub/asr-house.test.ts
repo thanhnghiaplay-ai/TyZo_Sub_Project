@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { alibabaAsrOnRoomPayProblem, asrHouse, asrTakesLink, groqListHolds } from "./asr-house.ts";
+import { alibabaAsrOnRoomPayProblem, asrHouse, asrIntake, asrTakesLink, groqListHolds } from "./asr-house.ts";
 import { ASR_MODELS } from "./models.ts";
 import { ASR_PRICE } from "./types.ts";
 
@@ -31,6 +31,13 @@ describe("Deepgram trong bảng nhà nhận dạng", () => {
     assert.equal(asrTakesLink("deepgram-nova-3"), true);
     assert.equal(asrTakesLink("qwen-audio-3.0-asr-flash-filetrans"), true);
     assert.equal(asrTakesLink("whisper-large-v3"), false);
+  });
+  it("cách nhận âm thanh đọc từ khai của nhà, model lạ thì null", () => {
+    assert.equal(asrIntake("whisper-large-v3-turbo"), "chunks");
+    assert.equal(asrIntake("qwen-audio-3.0-asr-flash-filetrans"), "link");
+    assert.equal(asrIntake("deepgram-nova-3"), "link");
+    assert.equal(asrIntake("openai/gpt-oss-120b"), null);
+    assert.equal(asrIntake("toString"), null);
   });
   it("id lạ hoặc tên thuộc tính của Object không bị nhận nhầm", () => {
     assert.equal(asrHouse("toString"), null);

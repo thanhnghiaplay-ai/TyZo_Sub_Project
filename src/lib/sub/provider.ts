@@ -10,12 +10,21 @@ export type ProviderCap = "asr" | "chat" | "tts" | "live";
 /** bearer: `Authorization: Bearer KEY` (kiểu OpenAI). token: `Authorization: Token KEY` (Deepgram). */
 export type ProviderAuth = "bearer" | "token";
 
+/**
+ * Cách app đưa âm thanh cho nhà nhận dạng (chỉ nói về cách app đang dùng, không phải mọi khả năng của nhà):
+ * chunks: cắt đoạn ở trình duyệt rồi gửi từng đoạn · link: gửi link công khai tới file ·
+ * upload: tải cả file lên · stream: gửi luồng liên tục.
+ */
+export type ProviderIntake = "chunks" | "link" | "upload" | "stream";
+
 export type ProviderInfo = {
   id: ProviderId;
   label: string;
   api: string;
   auth: ProviderAuth;
   caps: ProviderCap[];
+  /** Cách nhận âm thanh khi nhận dạng. Nhà không có khả năng asr vẫn phải khai (dùng "chunks"). */
+  intake: ProviderIntake;
   /** Trang khách lấy key. */
   keyPage: string;
   /** Tên dòng trong room_settings. */
@@ -33,6 +42,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     api: GROQ_API,
     auth: "bearer",
     caps: ["asr", "chat", "tts"],
+    intake: "chunks",
     keyPage: "console.groq.com/keys",
     settings: { key: "groq_key", models: "run_models", desk: "run_desk" },
   },
@@ -42,6 +52,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     api: ALIBABA_API,
     auth: "bearer",
     caps: ["asr", "live"],
+    intake: "link",
     keyPage: "bailian.console.alibabacloud.com",
     settings: { key: "alibaba_key", models: "alibaba_models", desk: "alibaba_desk" },
   },
@@ -51,6 +62,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     api: DEEPGRAM_API,
     auth: "token",
     caps: ["asr", "tts"],
+    // Deepgram nhận được cả link, file và luồng; app hiện chỉ dùng link công khai (gửi file từ máy chưa làm).
+    intake: "link",
     keyPage: "console.deepgram.com",
     settings: { key: "deepgram_key", models: "deepgram_models", desk: "deepgram_desk" },
   },
