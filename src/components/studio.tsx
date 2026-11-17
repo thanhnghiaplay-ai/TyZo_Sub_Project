@@ -15,7 +15,8 @@ import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
 import { asrHouse, groqListHolds } from "@/lib/sub/asr-house";
 import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDERS } from "@/lib/sub/provider";
-import { ownKeyAvailable, rentOpen } from "@/lib/rent-show";
+import { asrPickerRows } from "@/lib/asr-picker";
+import { ownKeyAvailable } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
 import { TurnPackList } from "@/components/turn-pack-list";
 import { turnPackModels } from "@/lib/turn-pack";
@@ -740,6 +741,11 @@ export function Studio() {
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
   const dgAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.deepgram ?? null) : null;
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
+  const asrPick = asrPickerRows({
+    showRoomPrice,
+    allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow },
+    roomHeld: (id) => roomHeld(runDoor, id),
+  });
   const lockTurnModels = showRoomPrice && turnLocked;
 
   const railItems: RailItem[] = [
@@ -1166,18 +1172,18 @@ export function Studio() {
           </div>
         </details>
         <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          <option value="whisper-large-v3-turbo" disabled={showRoomPrice ? roomHeld(runDoor, "whisper-large-v3-turbo") : !rentOpen(groqAllow, "whisper-large-v3-turbo")}>
-            Whisper Turbo{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3-turbo")}` : groqAllow && !groqAllow.includes("whisper-large-v3-turbo") ? " · Chủ chưa mở" : ""}
-          </option>
-          <option value="whisper-large-v3" disabled={showRoomPrice ? roomHeld(runDoor, "whisper-large-v3") : !rentOpen(groqAllow, "whisper-large-v3")}>
-            Whisper Large{showRoomPrice ? ` · ${roomAsrPrice(app.board, runDoor, "whisper-large-v3")}` : groqAllow && !groqAllow.includes("whisper-large-v3") ? " · Chủ chưa mở" : ""}
-          </option>
-          <option value="qwen-audio-3.0-asr-flash-filetrans" disabled={showRoomPrice || !rentOpen(aliAllow, "qwen-audio-3.0-asr-flash-filetrans")}>
-            Alibaba Filetrans{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : aliAllow && !aliAllow.includes("qwen-audio-3.0-asr-flash-filetrans") ? " · Chủ chưa mở" : ""}
-          </option>
-          <option value="deepgram-nova-3" disabled={showRoomPrice || !rentOpen(dgAllow, "deepgram-nova-3")}>
-            Deepgram Nova-3{showRoomPrice ? " · chưa có ở cửa trả theo lượt" : dgAllow && !dgAllow.includes("deepgram-nova-3") ? " · Chủ chưa mở" : ""}
-          </option>
+          {asrPick.map((row) => (
+            <option key={row.id} value={row.id} disabled={row.disabled}>
+              {row.name}
+              {row.state === "room"
+                ? ` · ${roomAsrPrice(app.board, runDoor, row.id)}`
+                : row.state === "noRoom"
+                  ? " · chưa có ở cửa trả theo lượt"
+                  : row.state === "closed"
+                    ? " · Chủ chưa mở"
+                    : ""}
+            </option>
+          ))}
         </Select>
         {app.asrModel === "deepgram-nova-3" && (
           <p className="text-sm text-muted">Deepgram nhận cả file từ link trực tiếp. Cần key Deepgram và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
