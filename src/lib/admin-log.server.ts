@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.1.3",
     time: "17/11/2026",
     area: "ha-tang",
+    text: "Bước (c1) Admin: bảng «Model khách được chọn khi thuê phòng» dựng từ danh mục chung + model key phòng thay bảng viết tay HOUSES. File mới rent-rows.ts (thuần): rentKindsOf(nhà) cho biết loại model cửa Thuê phòng chặn được hôm nay (nhận dạng nếu nhà có asr; dịch và kiểm duyệt nếu nhà có chat, giống bảng cũ), rentRowsFor(nhà, model key phòng) trả model đã biết rồi model lạ trên key phòng (xếp theo tên; Deepgram không đoán bừa thành model dịch), kèm cờ onKey. rent-show-board.tsx đọc model từng nhà bằng getProviderKey (chỉ Chủ), hàng nào key phòng không thấy thì ghi «(key phòng không thấy)». Nhờ vậy Chủ mở được model mới có trên key phòng (trước đây model lạ không có ô để tick nên khách không dùng được dù key của họ gọi được, vì ownKeyAvailable lấy giao của key khách và danh sách Chủ mở). KHÔNG đổi luật chặn (rentUseProblem, rentOpen, ownKeyAvailable giữ nguyên), không đổi dữ liệu rent_show, không đổi giá, điều khoản hay giao diện khách; không nâng số bản. Giọng đọc (Orpheus, Aura) và dịch trực tiếp CHƯA liệt kê vì cửa Thuê phòng chưa chặn chúng (xem HANDOFF c2, c3). Test mới rent-rows.test.ts (đã thêm vào npm test). CHƯA bấm thử bảng trên trình duyệt thật với key phòng thật.",
+  },
+  {
+    version: "5.1.3",
+    time: "17/11/2026",
+    area: "ha-tang",
     text: "Bước (b3) phía khách: ô nhập key các nhà ngoài Groq sinh từ PROVIDERS. PROVIDERS thêm clientStore (khóa kho trình duyệt: groq gk, alibaba gali, deepgram gdg, GIỮ đúng tên cũ để khách đã lưu key không mất) và keyHint (đầu key mẫu), kèm hàm clientKeyPlaceholder (chữ mẫu trùng từng chữ với ba ô viết tay cũ). use-pipeline.ts thay hai state alibabaKey/deepgramKey bằng một bảng houseKeys + setHouseKey(id, value) + houseKeyOf(id); khóa kho đọc từ PROVIDERS[id].clientStore. Giữ nguyên quirk cũ: chỉ ghi kho khi ô không rỗng. studio.tsx vẽ ô key bằng vòng lặp PROVIDER_IDS (bỏ groq) và chỉ hiện ô của nhà đang chọn nhận dạng (asrHouse), thay hai ô viết tay ali-key/dg-key. Ô Groq vẫn riêng vì còn kiểm key, đồng bộ model, nút Dán và dòng trạng thái. Khách không thấy khác gì (nhãn, chữ mẫu, khóa kho đều giữ), không nâng số bản. Test: provider.test.ts (khóa kho không trùng, giữ tên cũ, chữ mẫu), provider-admin-board.test.ts (studio dùng vòng lặp, use-pipeline không còn chép tên khóa). CHƯA bấm thử trên trình duyệt: chọn Alibaba/Deepgram, nhập key, tải lại trang xem key còn không.",
   },
   {
