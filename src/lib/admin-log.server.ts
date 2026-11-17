@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.2.3",
+    time: "17/11/2026",
+    area: "ha-tang",
+    text: "Bước c3: ô tick giọng đọc Orpheus (Groq) ở bảng «Model khách được chọn khi thuê phòng» nay chặn thật. rent-rows.ts thêm loại tts cho Groq (Aura/Deepgram không có ô vì chỉ trả bằng Token dịch); rent-show-rule.ts thêm rentVoiceProblem + orpheusModelId; narration.ts kiểm danh sách (getRentShow, nhớ 60 giây) trước khi gọi Orpheus khi khách dùng key riêng (key khác \"room\"), bị khóa thì rơi sang giọng Edge/trình duyệt và studio.tsx báo toast một lần. Trả theo lượt (key \"room\") không bị chặn. LƯU Ý: danh sách Chủ đã lưu từ trước chưa có Orpheus nên khách key riêng sẽ bị khóa giọng Orpheus cho tới khi Chủ tick lại và lưu. Chưa lưu danh sách (null) thì không khóa.",
+  },
+  {
     version: "5.2.2",
     time: "17/11/2026",
     area: "ha-tang",

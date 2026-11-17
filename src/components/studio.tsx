@@ -619,6 +619,7 @@ export function Studio() {
       key: payByRoom ? "room" : key.trim(),
       video,
       playbackRate: video.playbackRate || 1,
+      onBlocked: (message) => pushToast(message, "bad"),
     });
   };
 
@@ -630,6 +631,7 @@ export function Studio() {
       key: payByRoom ? "room" : app.key.trim(),
       video: app.videoRef.current,
       playbackRate: 1,
+      onBlocked: (message) => pushToast(message, "bad"),
     });
   };
 

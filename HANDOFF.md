@@ -1,3 +1,9 @@
+## v5.2.3 (17/11/2026, work): c3 XONG — chặn thật giọng đọc Orpheus theo ô tick thuê phòng
+THỨ TỰ CÒN LẠI: [XONG] c3 (mục này) → [CHƯA] dọn code: (1) lỗi eslint cũ, (2) xóa pack-picker.tsx, (3) bỏ trường markup ở live-cost.ts, (4) làm mới PROJECT_STATUS.md và AGENTS.project.md. Hai mục «chữ Deepgram» và «thông báo live khi bỏ tick hết model» đã XONG ở v5.2.2 (commit 05382a2), không làm lại.
+ĐÃ LÀM c3: `rent-rows.ts` thêm loại tts cho Groq (Orpheus en/ar có ô tick; Aura không có vì chỉ trả bằng Token dịch); `rent-show-rule.ts` thêm `orpheusModelId` + `rentVoiceProblem`; `narration.ts` kiểm danh sách (getRentShow, nhớ 60 giây) trước khi gọi Orpheus khi key khác "room", bị khóa thì rơi sang Edge/trình duyệt và gọi `onBlocked` (studio.tsx hiện toast một lần); chữ ở `rent-show-board.tsx`; test ở rent-show.test.ts, rent-rows.test.ts.
+CHƯA LÀM / LƯU Ý: danh sách Chủ lưu từ trước chưa có Orpheus nên khách key riêng bị khóa giọng Orpheus tới khi Chủ tick lại và lưu. Chưa thử trên trình duyệt thật.
+CỐ Ý KHÔNG LÀM: không đổi luật chặn nhận dạng/dịch, không đụng Aura, không đổi điều khoản.
+
 ## v5.2.2 (17/11/2026, work): chữ Deepgram/Alibaba ở trả theo lượt + thông báo live rỗng — XONG. Đang làm tiếp: c3, rồi dọn code (eslint cũ, pack-picker.tsx, markup ở live-cost.ts, PROJECT_STATUS.md, AGENTS.project.md). Xem các mục mới hơn ở trên nếu có.
 
 ## BƯỚC (d) XONG: DỊCH TRỰC TIẾP THEO KHẢ NĂNG (17/11/2026, nhánh work, v5.2.1)

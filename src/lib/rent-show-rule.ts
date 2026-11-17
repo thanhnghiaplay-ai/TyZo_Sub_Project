@@ -43,3 +43,19 @@ export function rentUseProblem(show: RentShow | null, pick: { asr: string; chat:
   if (chat && !PROVIDER_IDS.some((id) => show[id].includes(chat))) return "Chủ chưa mở model dịch này cho thuê phòng.";
   return "";
 }
+
+/** Model Orpheus (Groq) cho từng ngôn ngữ giọng đọc. Cùng mã với danh mục model-catalog. */
+export function orpheusModelId(lang: "en" | "ar") {
+  return lang === "ar" ? "canopylabs/orpheus-arabic-saudi" : "canopylabs/orpheus-v1-english";
+}
+
+/**
+ * Giọng đọc Orpheus bằng key riêng của khách có được mở không. Chỉ Groq có giọng thuê phòng được;
+ * Aura (Deepgram) chỉ trả bằng Token dịch nên không qua cửa này.
+ * show = null: Chủ chưa lưu danh sách, không khóa thêm.
+ */
+export function rentVoiceProblem(show: RentShow | null, voiceModel: string): string {
+  if (!show) return "";
+  if (show.groq.includes(voiceModel)) return "";
+  return "Chủ chưa mở giọng đọc này cho thuê phòng. Đang dùng giọng khác.";
+}

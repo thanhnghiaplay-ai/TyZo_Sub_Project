@@ -4,8 +4,8 @@ import { rentKindsOf, rentRowsFor } from "./rent-rows.ts";
 import { PROVIDER_IDS } from "./sub/provider.ts";
 
 describe("hàng model thuê phòng ở Admin", () => {
-  it("loại chặn được theo khả năng nhà: Groq nhận dạng và dịch, Alibaba và Deepgram chỉ nhận dạng", () => {
-    assert.deepEqual([...rentKindsOf("groq")].sort(), ["asr", "chat", "guard"]);
+  it("loại chặn được theo khả năng nhà: Groq nhận dạng, dịch và giọng đọc, Alibaba và Deepgram chỉ nhận dạng", () => {
+    assert.deepEqual([...rentKindsOf("groq")].sort(), ["asr", "chat", "guard", "tts"]);
     assert.deepEqual([...rentKindsOf("alibaba")], ["asr"]);
     assert.deepEqual([...rentKindsOf("deepgram")], ["asr"]);
   });
@@ -19,9 +19,12 @@ describe("hàng model thuê phòng ở Admin", () => {
     assert.deepEqual(rentRowsFor("deepgram", null).map((row) => row.id), ["deepgram-nova-3"]);
   });
 
-  it("không đưa giọng đọc hay dịch trực tiếp vào bảng (cửa Thuê phòng chưa chặn được)", () => {
+  it("giọng Orpheus có ô tick; giọng Aura và dịch trực tiếp thì không", () => {
+    const groq = rentRowsFor("groq", null).map((row) => row.id);
+    assert.ok(groq.includes("canopylabs/orpheus-v1-english"));
+    assert.ok(groq.includes("canopylabs/orpheus-arabic-saudi"));
     const ids = PROVIDER_IDS.flatMap((id) => rentRowsFor(id, null).map((row) => row.id));
-    assert.ok(!ids.some((id) => /orpheus|aura-2|livetranslate/i.test(id)));
+    assert.ok(!ids.some((id) => /aura-2|livetranslate/i.test(id)));
   });
 
   it("model lạ trên key phòng được thêm để Chủ mở, nhưng chỉ loại chặn được", () => {
@@ -29,7 +32,7 @@ describe("hàng model thuê phòng ở Admin", () => {
     const ids = rows.map((row) => row.id);
     assert.ok(ids.includes("meta-llama/new-model-9b"), "model dịch lạ phải hiện");
     assert.ok(ids.includes("whisper-next"), "model nhận dạng lạ phải hiện");
-    assert.ok(!ids.includes("canopylabs/orpheus-v1-english"), "giọng đọc không hiện");
+    assert.ok(ids.includes("canopylabs/orpheus-v1-english"), "giọng Orpheus trên key phòng hiện");
     assert.equal(rows.find((row) => row.id === "whisper-large-v3")?.onKey, true);
     assert.equal(rows.find((row) => row.id === "whisper-large-v3-turbo")?.onKey, false, "có trong danh mục nhưng key phòng không thấy");
   });

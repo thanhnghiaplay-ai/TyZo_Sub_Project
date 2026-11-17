@@ -3,7 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { parseRentShow, type RentShow } from "@/lib/rent-show-rule";
 
-export { ownKeyAvailable, parseRentShow, rentOpen, rentUseProblem, type RentShow } from "@/lib/rent-show-rule";
+export { orpheusModelId, ownKeyAvailable, parseRentShow, rentOpen, rentUseProblem, rentVoiceProblem, type RentShow } from "@/lib/rent-show-rule";
 
 export const getRentShow = createServerFn({ method: "GET" }).handler(async (): Promise<RentShow | null> => {
   try {

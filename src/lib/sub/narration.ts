@@ -1,4 +1,5 @@
-import { speakOrpheus } from "@/lib/sub/groq";
+import { speakOrpheus, ROOM_KEY } from "@/lib/sub/groq";
+import { getRentShow, orpheusModelId, rentVoiceProblem, type RentShow } from "@/lib/rent-show";
 import { speakAura } from "@/lib/sub/aura-speak";
 import { auraPieces, auraReady, auraVoiceOk, defaultAuraVoice } from "@/lib/sub/aura";
 import { synthesizeEdge } from "@/lib/sub/edge-speech";
@@ -78,6 +79,16 @@ export function createNarrator() {
   let savedMuted = false;
   const cache = new Map<string, string>();
   let edgeCoolUntil = 0;
+  let rentCache: { at: number; value: RentShow | null } | null = null;
+  let rentWarned = false;
+
+  /** Danh sách Chủ mở cho thuê phòng, nhớ 60 giây. Không đọc được thì coi như chưa khóa (máy chủ không có đường chặn giọng đọc). */
+  const rentShow = async () => {
+    if (rentCache && Date.now() - rentCache.at < 60_000) return rentCache.value;
+    const value = await getRentShow().catch(() => null);
+    rentCache = { at: Date.now(), value };
+    return value;
+  };
 
   const restore = (video: HTMLVideoElement | null) => {
     if (!video) return;
@@ -137,6 +148,8 @@ export function createNarrator() {
       key: string;
       video: HTMLVideoElement | null;
       playbackRate: number;
+      /** Báo khách khi giọng bị Chủ khóa (mỗi lần mở trang một lần). */
+      onBlocked?: (message: string) => void;
     }) {
       const line = speakable(opts.text, opts.settings.skipCues);
       if (!line) return;
@@ -182,7 +195,19 @@ export function createNarrator() {
             if (mine !== token) return;
           }
         }
-        const cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
+        let cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
+        // Thuê phòng bằng key riêng: giọng Orpheus phải nằm trong danh sách Chủ mở. Trả theo lượt (key "room") đã tính bằng Token dịch nên không qua đây.
+        if (cloud && opts.key && opts.key !== ROOM_KEY) {
+          const blocked = rentVoiceProblem(await rentShow(), orpheusModelId(cloud));
+          if (mine !== token) return;
+          if (blocked) {
+            cloud = null;
+            if (!rentWarned) {
+              rentWarned = true;
+              opts.onBlocked?.(blocked);
+            }
+          }
+        }
         if (settings.engine === "orpheus" && cloud && opts.key) {
           try {
             const voice = settings.matchCast
