@@ -47,6 +47,7 @@ import { isMediaFile, useFileThumb, type FileThumb } from "@/components/file-thu
 import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomPrice } from "@/lib/run-desk";
+import { modelRoleNote } from "@/lib/sub/model-role";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
@@ -763,7 +764,6 @@ export function Studio() {
       })),
     },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep", badge: railBadge(service.status, "live") },
-    { id: "tai-video", label: "Tải video", href: "/tai-video" },
     { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
     {
       id: "tai-khoan",
@@ -808,7 +808,6 @@ export function Studio() {
     ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: "thuat ngu glossary the loai", run: () => openTool(id) })),
     { id: "wallet", label: "Token dịch", hint: "Tài khoản", words: "token dich goi", run: () => setProduct("account") },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", hint: "Trang", words: "live truc tiep micro tab giong noi", run: () => void navigate({ to: "/dich-truc-tiep" }) },
-    { id: "tai-video", label: "Tải video", hint: "Trang", run: () => void navigate({ to: "/tai-video" }) },
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
     { id: "ctv", label: "Cộng tác viên", hint: "Trang", run: () => void navigate({ to: "/ctv" }) },
     { id: "yeu-cau", label: "Yêu cầu xem lại", hint: "Trang", run: () => void navigate({ to: "/yeu-cau" }) },
@@ -1707,10 +1706,9 @@ function IconButton({ label, onClick, children }: { label: string; onClick: () =
   );
 }
 
-function ownModelPrice(board: GroqBoard | null, id: string) {
-  const row = board?.rows.find((item) => item.id === id);
-  if (!board || !row) return board ? "Chưa niêm yết" : "";
-  return formatRoomPrice(row, board.rate, 0);
+/** Key riêng của khách: không cần giá vào/ra, chỉ ghi model làm được việc gì. */
+function ownModelPrice(_board: GroqBoard | null, id: string) {
+  return modelRoleNote(id);
 }
 
 function VoiceLanes({
@@ -1887,7 +1885,7 @@ function modelFacts(
   id: string,
   note: string,
 ): { price: string; detail: string } {
-  if (!door) return { price: "", detail: "" };
+  if (!door) return { price: modelRoleNote(id), detail: note };
   const row = board?.rows.find((item) => item.id === id);
   if (!board) return { price: "Đang lấy đơn giá phòng…", detail: "" };
   if (!row) return { price: "Chưa niêm yết", detail: note };

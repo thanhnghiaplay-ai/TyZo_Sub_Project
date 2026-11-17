@@ -18,7 +18,6 @@ const RAIL: RailItem[] = [
   { id: "home", label: "Trang chủ", href: "/" },
   { id: "huong-dan", label: "Hướng dẫn", current: true },
   { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep" },
-  { id: "tai-video", label: "Tải video", href: "/tai-video" },
   {
     id: "tai-khoan",
     label: "Tài khoản",

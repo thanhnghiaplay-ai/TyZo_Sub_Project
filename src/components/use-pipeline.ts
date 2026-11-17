@@ -9,7 +9,7 @@ import { deviceId } from "@/lib/device-id";
 import { exportNotice, roomAccess, trialFileProblem } from "@/lib/room-plans";
 import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
-import { claimPlayback, closeRoomTicket, openRoomTicket } from "@/lib/sub/room-ticket";
+import { claimPlayback, closeRoomTicket, forgetTicket, openRoomTicket, recoverOrphanTicket, rememberTicket } from "@/lib/sub/room-ticket";
 import { audioBufferTo16k, packAudio, type PackedAudio } from "@/lib/sub/codec";
 import {
   abortError,
@@ -341,6 +341,22 @@ export function usePipeline() {
   const [status, setStatus] = useState(READY_STATUS);
   const [isError, setIsError] = useState(false);
   const [running, setRunning] = useState(false);
+  // Tab bị trình duyệt dọn hoặc tải lại giữa lúc dịch: nhả Token còn giữ ngay lúc mở lại, không đợi 6 giờ.
+  useEffect(() => {
+    void recoverOrphanTicket().then((freed) => {
+      if (freed) window.dispatchEvent(new Event("tyzo-room-refresh"));
+    });
+  }, []);
+  // Đang dịch mà rời trang thì video và tiến độ trong bộ nhớ mất: báo trước để người dùng chọn ở lại.
+  useEffect(() => {
+    if (!running) return;
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [running]);
   const [stages, setStages] = useState<StageReport | null>(null);
   const phaseRef = useRef<RunPhase>("idle");
   const [remoteIds, setRemoteIds] = useState<string[] | null>(null);
@@ -936,6 +952,8 @@ export function usePipeline() {
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
+        rememberTicket(ticketId);
+        window.dispatchEvent(new Event("tyzo-room-refresh"));
         say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} Token dịch (ước tính, số trừ là số thực, phần thừa trả lại nếu gói còn hạn). Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} Token dịch.`);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
@@ -1799,6 +1817,8 @@ export function usePipeline() {
       }
       releasePlayback();
       await closeRoomTicket(ticketId, ticketFailed);
+      forgetTicket(ticketId);
+      if (ticketId) window.dispatchEvent(new Event("tyzo-room-refresh"));
       try {
         await audioContext.close();
       } catch {

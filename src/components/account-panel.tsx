@@ -13,6 +13,7 @@ import { GiayShelf } from "@/components/giay-shelf";
 import { PaySlip } from "@/components/pay-slip";
 import type { PayOrderView } from "@/lib/pay-store";
 import { formatGiay } from "@/lib/token-math";
+import { ledgerRows } from "@/lib/ledger-view";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
@@ -37,6 +38,7 @@ export function AccountPanel() {
   const [ledgerOpen, setLedgerOpen] = useState(false);
   const [reload, setReload] = useState(0);
   const [payOpen, setPayOpen] = useState<PayOrderView | null>(null);
+  const rows = ledgerRows(state?.ledger ?? []);
   const runDoor = useRunDoor();
 
   useEffect(() => {
@@ -280,26 +282,23 @@ export function AccountPanel() {
             </button>
             <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
           </form>
-          {state && state.ledger.length > 0 && (
+          {rows.length > 0 && (
             <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3">
-              <h2 className="text-sm font-semibold">Lịch sử Nạp/Mua gói</h2>
+              <h2 className="text-sm font-semibold">Lịch sử Token/Gói</h2>
               <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
-                {(ledgerOpen ? state.ledger.slice(0, 9) : state.ledger.slice(0, 3)).map((item) => {
-                  const reject = item.kind === "huy-nap" || /từ chối/i.test(item.note);
-                  const negative = item.amount < 0 || reject;
-                  return (
-                    <li key={item.id} className="flex justify-between gap-3">
-                      <span className={"min-w-0 truncate " + (reject ? "text-danger" : "")}>{item.note}</span>
-                      <span className={"shrink-0 " + (negative ? "text-danger" : "text-accent")}>
-                        {reject && item.amount === 0 ? "Từ chối" : item.amount > 0 ? "+" + dong(item.amount) : dong(item.amount)}
-                      </span>
-                    </li>
-                  );
-                })}
+                {(ledgerOpen ? rows.slice(0, 9) : rows.slice(0, 3)).map((row) => (
+                  <li key={row.id} className="flex justify-between gap-3">
+                    <span className={"min-w-0 truncate " + (row.tone === "reject" ? "text-danger" : "")}>{row.label}</span>
+                    <span className={"shrink-0 text-right " + (row.tone === "down" || row.tone === "reject" ? "text-danger" : "text-accent")}>
+                      {row.main}
+                      {row.money && <span className="block text-xs text-muted">{row.money}</span>}
+                    </span>
+                  </li>
+                ))}
               </ul>
-              {state.ledger.length > 3 && (
+              {rows.length > 3 && (
                 <button type="button" className="mt-2 text-sm text-muted underline" onClick={() => setLedgerOpen((open) => !open)}>
-                  {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(state.ledger.length, 9) - 3} dòng`}
+                  {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(rows.length, 9) - 3} dòng`}
                 </button>
               )}
             </section>

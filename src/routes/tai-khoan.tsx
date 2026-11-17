@@ -23,7 +23,6 @@ function AccountPage() {
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
         <AccountPanel />
         <Link to="/ctv" className="mt-4 inline-block text-sm text-accent">Cộng tác viên</Link>
-        <Link to="/tai-video" className="mt-4 ml-4 inline-block text-sm text-accent">Tải video</Link>{/* TAI-VIDEO: gỡ dòng này khi bỏ tab */}
         <p className="mt-6 border-t border-line pt-3">
           <TermsLink />
         </p>

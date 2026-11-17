@@ -246,7 +246,7 @@ describe("bảo trì Toàn web", () => {
   });
 
   it("mọi trang khác của khách bị che, không mở nhầm tên gần giống", () => {
-    for (const path of ["/", "/dich-truc-tiep", "/goi", "/tai-khoan", "/tai-video", "/ctv", "/yeu-cau", "/huong-dan", "/dieu-khoan", "/administrator", "/admin-x", "/loginx", "/x/admin", ""]) {
+    for (const path of ["/", "/dich-truc-tiep", "/goi", "/tai-khoan", "/ctv", "/yeu-cau", "/huong-dan", "/dieu-khoan", "/administrator", "/admin-x", "/loginx", "/x/admin", ""]) {
       assert.equal(siteOpenPath(path), false, path);
     }
   });

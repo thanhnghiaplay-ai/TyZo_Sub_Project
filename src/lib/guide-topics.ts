@@ -25,7 +25,6 @@ export const UI = {
   account: "Tài khoản",
   wallet: "Token dịch",
   live: "Dịch trực tiếp",
-  getVideo: "Tải video",
   tabAudio: "Âm thanh tab",
   mic: "Micro",
   begin: "Bắt đầu",
@@ -262,7 +261,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "dan-link-khong-chay",
     q: "Tôi dán link mà app không chạy?",
-    a: `App cần link tải thẳng về tệp video hoặc âm thanh (đuôi như .mp4, .mkv) và link phải công khai. Link trang xem phim thì không dùng được: hãy chọn tệp từ máy, hoặc thử «${UI.getVideo}» ở menu trái để tìm link tệp trên một trang web.`,
+    a: `App cần link tải thẳng về tệp video hoặc âm thanh (đuôi như .mp4, .mkv) và link phải công khai. Link trang xem phim thì không dùng được: hãy chọn tệp từ máy.`,
     words: "dan link khong chay url youtube trang xem tai tep",
   },
   {

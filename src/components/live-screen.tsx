@@ -114,7 +114,6 @@ export function LiveScreen() {
     () => [
       { id: "home", label: "Trang chủ", href: "/" },
       { id: "dich-truc-tiep", label: "Dịch trực tiếp", current: true, badge: railBadge(service.status, "live") },
-      { id: "tai-video", label: "Tải video", href: "/tai-video" },
       { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
       {
         id: "tai-khoan",

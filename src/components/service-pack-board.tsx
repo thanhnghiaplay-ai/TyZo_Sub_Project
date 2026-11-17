@@ -1,3 +1,4 @@
+import { modelRoleNote } from "@/lib/sub/model-role";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
@@ -250,9 +251,10 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
                       onChange={(event) => setRole(pack.id, role, provider as ProviderId, event.target.value)}
                     >
                       {list.map((id) => (
-                        <option key={id} value={id}>{id}</option>
+                        <option key={id} value={id}>{id} · {modelRoleNote(id)}</option>
                       ))}
                     </select>
+                    {assign?.model && <p className="text-xs text-muted sm:col-span-3">{assign.model}: {modelRoleNote(assign.model)}</p>}
                   </div>
                 );
               })}

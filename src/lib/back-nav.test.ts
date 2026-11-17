@@ -48,7 +48,6 @@ describe("nút quay lại có mặt ở các trang", () => {
     "Tài khoản": "../routes/tai-khoan.tsx",
     "Gói": "../routes/goi.tsx",
     "Cộng tác viên": "../routes/ctv.tsx",
-    "Tải video": "../routes/tai-video.tsx",
     "Điều khoản": "../routes/dieu-khoan.tsx",
     "Admin": "../components/admin-desk.tsx",
     "Số dư (trong Studio)": "../components/studio.tsx",
@@ -69,7 +68,7 @@ describe("trang tự cuộn được (html và body khóa cuộn)", () => {
   it("html và body đang khóa cuộn, nên mỗi trang phải tự có vùng cuộn", () => {
     assert.match(css, /html,\s*body \{[^}]*overflow: hidden/);
   });
-  const pages = ["../components/live-screen.tsx", "../components/guide-page.tsx", "../routes/ctv.tsx", "../routes/tai-video.tsx"];
+  const pages = ["../components/live-screen.tsx", "../components/guide-page.tsx", "../routes/ctv.tsx"];
   for (const path of pages) {
     it(`${path.split("/").pop()}: khung chính có h-dvh và overflow-y-auto`, () => {
       const main = /<main className="([^"]+)"/.exec(read(path))?.[1] ?? "";
