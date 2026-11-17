@@ -49,6 +49,7 @@ import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomPrice } from "@/lib/run-desk";
 import { modelRoleNote } from "@/lib/sub/model-role";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
+import { auraReady, auraVoices, defaultAuraVoice } from "@/lib/sub/aura";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
 import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
@@ -630,6 +631,7 @@ export function Studio() {
 
   const patchNarration = (patch: Partial<NarrationSettings>) => setNarration((prev) => ({ ...prev, ...patch }));
   const cloud = orpheusReady(app.target);
+  const auraLang = auraReady(app.target);
   const prefix = speechLang(app.target).slice(0, 2).toLowerCase();
   const langVoices = voices.filter((voice) => voice.lang.replace("_", "-").toLowerCase().startsWith(prefix));
   const shownVoices = (langVoices.length ? langVoices : voices).filter(
@@ -1441,7 +1443,7 @@ export function Studio() {
             {narration.enabled ? "Đang bật" : "Tắt"}
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-2" data-tour="voice-engine">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" data-tour="voice-engine">
           <Choice on={narration.engine === "edge"} onClick={() => patchNarration({ engine: "edge", gender: narration.gender === "any" ? "female" : narration.gender })} title="Neural" text="Miễn phí, tự nhiên" />
           <Choice on={narration.engine === "browser"} onClick={() => patchNarration({ engine: "browser" })} title="Giọng máy" text="Có sẵn trên máy" />
           <Choice
@@ -1449,6 +1451,12 @@ export function Studio() {
             onClick={() => patchNarration({ engine: "orpheus", orpheusVoice: defaultOrpheusVoice(app.target, narration.gender) })}
             title="Orpheus"
             text={cloud ? "Có phí" : "Anh, Ả Rập"}
+          />
+          <Choice
+            on={narration.engine === "aura"}
+            onClick={() => patchNarration({ engine: "aura", auraVoice: auraLang ? defaultAuraVoice(auraLang, narration.gender) : narration.auraVoice })}
+            title="Aura"
+            text={auraLang ? "Có phí" : "Anh, Tây Ban Nha"}
           />
         </div>
         {narration.engine === "edge" && (
@@ -1460,6 +1468,8 @@ export function Studio() {
           </p>
         )}
         {narration.engine === "orpheus" && !cloud && <p className="text-sm text-danger">Orpheus chưa đọc tiếng này. Máy sẽ dùng giọng có sẵn.</p>}
+        {narration.engine === "aura" && !auraLang && <p className="text-sm text-danger">Aura chưa đọc tiếng này. Máy sẽ dùng giọng có sẵn.</p>}
+        {narration.engine === "aura" && auraLang && <p className="text-sm text-muted">Aura trừ Token dịch theo số chữ đọc. Hết Token dịch thì máy dùng giọng có sẵn.</p>}
         <p className="text-sm text-muted">Giọng dự phòng khi không đo được cao độ, hoặc khi tắt đọc theo video.</p>
         <div className={"grid gap-2 " + (narration.engine === "edge" ? "grid-cols-2" : "grid-cols-3")}>
           {(
@@ -1469,13 +1479,13 @@ export function Studio() {
               ["any", "Bất kỳ"],
             ] as const
           )
-            .filter(([id]) => narration.engine === "browser" || narration.engine === "orpheus" || id !== "any")
+            .filter(([id]) => narration.engine === "browser" || narration.engine === "orpheus" || narration.engine === "aura" || id !== "any")
             .map(([id, label]) => (
             <button
               key={id}
               type="button"
               className={"min-tap rounded-[var(--radius-ctl)] border text-sm " + (narration.gender === id ? "border-accent bg-accent text-ink" : "border-line")}
-              onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id) })}
+              onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id), ...(auraLang ? { auraVoice: defaultAuraVoice(auraLang, id) } : {}) })}
             >
               {label}
             </button>
@@ -1500,9 +1510,19 @@ export function Studio() {
                 </option>
               ))}
           </Select>
+        ) : narration.engine === "aura" && auraLang ? (
+          <Select label="Giọng Aura" value={narration.auraVoice} onChange={(auraVoice) => patchNarration({ auraVoice })}>
+            {auraVoices(auraLang)
+              .filter((voice) => narration.gender === "any" || voice.gender === narration.gender)
+              .map((voice) => (
+                <option key={voice.id} value={voice.id}>
+                  {voice.name} · {voice.gender === "female" ? "nữ" : "nam"}
+                </option>
+              ))}
+          </Select>
         ) : null}
         <DragSlider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} defaultValue={1} marks={[1]} format={(value) => `${value.toFixed(1)}×`} onCommit={(rate) => patchNarration({ rate })} />
-        {narration.engine !== "orpheus" && (
+        {narration.engine !== "orpheus" && narration.engine !== "aura" && (
           <DragSlider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} defaultValue={1} marks={[1]} format={(value) => value.toFixed(1)} onCommit={(pitch) => patchNarration({ pitch })} />
         )}
         <DragSlider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} defaultValue={1} format={(value) => `${Math.round(value * 100)}%`} onCommit={(volume) => patchNarration({ volume })} />
