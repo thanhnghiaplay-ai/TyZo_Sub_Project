@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.1.0",
+    time: "10:50 ngày 17/11/2026",
+    area: "ha-tang",
+    text: "Thêm nhà cung cấp Deepgram (PROVIDERS.md, bước 1 đến 8). Nhận dạng Nova-3 bằng link file trực tiếp với key Deepgram của khách (sub/deepgram.ts, deepgram-asr.server.ts); cửa trả theo lượt CHƯA nhận dạng Deepgram, gói Deepgram chỉ mở cửa Thuê phòng. Admin: ô key phòng Deepgram (provider-room.ts, provider-key-board.tsx, khóa deepgram_key/deepgram_models), bảng giá trong Giá và hạn mức (deepgram-catalog.ts: Nova-3 0,258 đô/giờ, aura-2 30 đô/triệu ký tự, sửa tay qua usd_fix), gói dịch chọn Deepgram làm nhận dạng. Giọng đọc Aura-2 (en, es) qua /api/room-deepgram, trừ Token dịch theo ký tự bằng chargeWith như Orpheus. Điều khoản 2026-11-17.2 thêm Deepgram (nhà nhận dữ liệu, link file, chữ đọc). Giá Deepgram chưa đối chiếu trang chính thức; vùng xử lý của Deepgram ghi là công ty Hoa Kỳ, chưa kiểm vùng máy chủ."
+  },
+  {
     version: "5.0.6",
     time: "02:50 ngày 17/11/2026",
     area: "tien",
