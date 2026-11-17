@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas } from "./provider.ts";
+import { PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote } from "./provider.ts";
 
 describe("địa chỉ danh sách model", () => {
   it("Groq và Alibaba không dùng chung máy", () => {
@@ -70,5 +70,29 @@ describe("đọc danh sách model", () => {
   it("phản hồi lạ thì ra danh sách rỗng", () => {
     assert.deepEqual(modelIdsFrom("deepgram", null), []);
     assert.deepEqual(modelIdsFrom("groq", "x"), []);
+  });
+});
+
+describe("ghi chú key phòng sinh từ khả năng của nhà", () => {
+  it("nhà không dịch bằng mô hình thì nhắc dịch vẫn bằng nhà có khả năng dịch", () => {
+    const note = providerKeyNote("deepgram");
+    assert.match(note, /Deepgram làm: nhận dạng giọng, đọc thành tiếng/);
+    assert.match(note, /Dịch vẫn bằng Groq/);
+  });
+  it("nhà có khả năng dịch bằng mô hình thì không nhắc nhà khác dịch thay", () => {
+    assert.doesNotMatch(providerKeyNote("groq"), /Dịch vẫn bằng/);
+  });
+  it("nhà dịch trực tiếp (Alibaba) nêu đúng khả năng và dịch vẫn bằng Groq", () => {
+    const note = providerKeyNote("alibaba");
+    assert.match(note, /Alibaba làm: nhận dạng giọng, dịch trực tiếp/);
+    assert.match(note, /Dịch vẫn bằng Groq/);
+  });
+  it("mọi nhà đều có ghi chú, và ghi chú nhắc cửa Trả theo lượt lẫn Thuê phòng", () => {
+    for (const id of PROVIDER_IDS) {
+      const note = providerKeyNote(id);
+      assert.ok(note.includes(PROVIDERS[id].label), `${id} thiếu nhãn`);
+      assert.match(note, /Trả theo lượt/);
+      assert.match(note, /Thuê phòng/);
+    }
   });
 });

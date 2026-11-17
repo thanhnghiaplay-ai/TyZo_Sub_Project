@@ -54,8 +54,7 @@ import { MailPolicyBoard } from "@/components/mail-policy";
 import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
-import { AlibabaKeyBoard } from "@/components/alibaba-key-board";
-import { ProviderKeyBoard } from "@/components/provider-key-board";
+import { ProviderKeyBoards } from "@/components/provider-key-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { ServiceStatusBoard } from "@/components/service-status-board";
 import { SupportBoard } from "@/components/support-board";
@@ -346,9 +345,7 @@ export function AdminDesk() {
       {role === "chu" && tab === "cau-hinh" && (
         <>
           <ServiceStatusBoard />
-          <RunDeskBoard owner part="key" />
-          <AlibabaKeyBoard />
-          <ProviderKeyBoard provider="deepgram" note="Chỉ Chủ lưu. Khách không thấy key. Deepgram chỉ nhận dạng giọng, dịch vẫn bằng Groq. Key này chạy cả cửa Trả theo lượt (trừ Token dịch theo giá gốc) và cửa Thuê phòng (key của khách)." />
+          <ProviderKeyBoards />
           <LiveWorkspaceBoard />
           <SupportBoard />
           <RunDeskBoard owner part="price" />

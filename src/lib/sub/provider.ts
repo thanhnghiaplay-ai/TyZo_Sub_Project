@@ -97,6 +97,25 @@ export function providerHas(id: ProviderId, cap: ProviderCap): boolean {
   return PROVIDERS[id].caps.includes(cap);
 }
 
+const CAP_LABEL: Record<ProviderCap, string> = {
+  asr: "nhận dạng giọng",
+  chat: "dịch bằng mô hình",
+  tts: "đọc thành tiếng",
+  live: "dịch trực tiếp",
+};
+
+/**
+ * Ghi chú dưới ô key phòng ở Admin, sinh từ khả năng của nhà (không viết tay từng nhà).
+ * Nhà không có khả năng dịch bằng mô hình thì nhắc dịch vẫn do nhà nào làm.
+ */
+export function providerKeyNote(id: ProviderId): string {
+  const info = PROVIDERS[id];
+  const does = info.caps.map((cap) => CAP_LABEL[cap]).join(", ");
+  const chatHouse = PROVIDER_IDS.find((other) => other !== id && PROVIDERS[other].caps.includes("chat"));
+  const translate = !info.caps.includes("chat") && chatHouse ? ` Dịch vẫn bằng ${PROVIDERS[chatHouse].label}.` : "";
+  return `Chỉ Chủ lưu. Khách không thấy key. ${info.label} làm: ${does}.${translate} Key này chạy cửa Trả theo lượt (phòng trả tiền, trừ Token dịch theo giá gốc). Cửa Thuê phòng dùng key của khách.`;
+}
+
 /** Đọc danh sách mã model từ phản hồi `/models` của từng nhà (mỗi nhà một dạng). */
 export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
   const root = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
