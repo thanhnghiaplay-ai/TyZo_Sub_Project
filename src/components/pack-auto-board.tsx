@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, type AutoCandidate, type AutoChoice, type AutoLang } from "@/lib/pack-auto";
+import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, type AutoCandidate, type AutoChoice, type AutoLang, type AutoResult } from "@/lib/pack-auto";
 import type { PriceBook } from "@/lib/run-bill";
 import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
@@ -16,11 +16,14 @@ export function PackAutoBoard({
   candidates,
   books,
   onDraft,
+  onCreate,
 }: {
   candidates: AutoCandidate[];
   books: Partial<Record<ProviderId, PriceBook>> | null;
   /** Báo bản nháp hiện tại cho bên ngoài (để nút Tạo gói dùng ở bước sau). */
   onDraft?: (draft: AutoDraft) => void;
+  /** Bấm «Tạo gói»: trả model đã chọn và mức đã dùng. Bên ngoài tự thêm gói nháp, chưa lưu. */
+  onCreate?: (roles: AutoResult["roles"], draft: AutoDraft) => void;
 }) {
   const [levels, setLevels] = useState<AutoDraft["levels"]>({ asr: "balanced", translate: "balanced" });
   const [lang, setLang] = useState<AutoLang>("other");
@@ -82,6 +85,14 @@ export function PackAutoBoard({
       })}
 
       {!books && <p className="text-xs text-muted">Đang đọc bảng giá…</p>}
+      <button
+        type="button"
+        className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50"
+        disabled={!result?.roles.asr || !result?.roles.translate}
+        onClick={() => result && onCreate?.(result.roles, { levels, lang })}
+      >
+        Tạo gói từ bảng này
+      </button>
       {quote && (
         <p className="text-xs text-muted">
           Ước tính 10 phút, theo giá gốc: {dong(quote.turn.base)} · giữ ví (trả theo lượt) {dong(quote.turn.hold)}

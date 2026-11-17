@@ -5,7 +5,7 @@
  * Ba mức lồng nhau nên giá không bao giờ đảo: Tiết kiệm ≤ Cân bằng ≤ Chất lượng (cùng một danh sách model).
  */
 import { asrCost, chatCost, speechCost, type PriceBook } from "./run-bill.ts";
-import { PACK_ROLES, providersForRole, translateTokens, type PackRole, type RoleAssign } from "./service-pack.ts";
+import { PACK_ROLES, PACK_ROLE_LABEL, providersForRole, translateTokens, type PackRole, type RoleAssign, type ServicePack } from "./service-pack.ts";
 import { gradeOf } from "./sub/model-grade.ts";
 import { modelRoleOf } from "./sub/model-role.ts";
 import { chatModel } from "./sub/models.ts";
@@ -117,4 +117,22 @@ export function autoRoles(input: AutoInput): AutoResult {
     else missing.push(role);
   }
   return { roles, missing };
+}
+
+/**
+ * Dựng gói nháp từ kết quả tự chọn. Gói LƯU CỐ ĐỊNH model đã chọn (giá model đổi thì gói không tự đổi).
+ * enabled luôn false: Chủ xem lại rồi mới mở. Ghi chú liệt kê mức đã dùng. Trả null khi thiếu nhận dạng hoặc dịch.
+ */
+export function buildAutoPack(input: { id: string; levels: AutoInput["levels"]; lang?: AutoLang; roles: AutoResult["roles"] }): ServicePack | null {
+  if (!input.roles.asr || !input.roles.translate) return null;
+  const parts: string[] = [];
+  for (const role of PACK_ROLES) {
+    if (!input.roles[role]) continue;
+    const raw = input.levels[role];
+    const level: AutoChoice = raw && raw !== "off" ? raw : REQUIRED_ROLES.includes(role) ? "balanced" : "save";
+    parts.push(`${PACK_ROLE_LABEL[role]}: ${AUTO_LEVEL_LABEL[level]}`);
+  }
+  const head = AUTO_LEVEL_LABEL[input.levels.translate && input.levels.translate !== "off" ? input.levels.translate : "balanced"];
+  const note = `Tự động${input.lang === "cjk" ? " (Trung, Nhật, Hàn)" : ""}. ${parts.join(" · ")}`.slice(0, 180);
+  return { id: input.id, name: `Gói tự động · ${head}`, note, enabled: false, doors: ["turn", "rent"], roles: { ...input.roles } };
 }

@@ -14,7 +14,7 @@ import { asrHouse } from "@/lib/sub/asr-house";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
 import { PackAutoBoard } from "@/components/pack-auto-board";
-import type { AutoCandidate } from "@/lib/pack-auto";
+import { buildAutoPack, type AutoCandidate } from "@/lib/pack-auto";
 
 function dong(n: number | null) {
   if (n == null) return "Chưa có giá gốc";
@@ -83,6 +83,14 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
       deepgram: { rate: board.rate, rows: DEEPGRAM_ROWS, desk: desk0 },
     };
   }, [board]);
+
+  function createAutoPack(roles: ServicePack["roles"], draft: { levels: Parameters<typeof buildAutoPack>[0]["levels"]; lang: "cjk" | "other" }) {
+    const id = `pack_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
+    const pack = buildAutoPack({ id, levels: draft.levels, lang: draft.lang, roles });
+    if (!pack) return pushToast("Gói cần model nhận dạng và model dịch.", "bad");
+    setPacks((current) => [...current, pack]);
+    pushToast("Đã thêm gói nháp (đang tắt). Xem lại rồi bấm Lưu gói.");
+  }
 
   function saveDesk(next: RunDesk) {
     setBusy(true);
@@ -186,7 +194,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         </div>
       )}
 
-      <PackAutoBoard candidates={autoCandidates} books={autoBooks} />
+      <PackAutoBoard candidates={autoCandidates} books={autoBooks} onCreate={createAutoPack} />
 
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">

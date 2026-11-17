@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AUTO_LEVELS, autoRoles, pickForRole, type AutoCandidate } from "./pack-auto.ts";
+import { AUTO_LEVELS, autoRoles, buildAutoPack, pickForRole, type AutoCandidate } from "./pack-auto.ts";
 import type { PriceBook } from "./run-bill.ts";
+import { checkServicePack } from "./service-pack.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
 import { DEEPGRAM_ROWS } from "./sub/deepgram-catalog.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
@@ -90,4 +91,21 @@ test("thiếu giá hoặc thiếu điểm thì bỏ qua và báo missing, không
   assert.ok(noPrice.missing.includes("translate"));
   const unknown = autoRoles({ levels: {}, candidates: [C("groq", "mo-hinh-la")], books });
   assert.deepEqual(unknown.missing.sort(), ["asr", "translate"]);
+});
+
+test("buildAutoPack: gói nháp (tắt), hợp lệ với checkServicePack, ghi chú nêu mức đã dùng", () => {
+  const levels = { translate: "best", review: "save" } as const;
+  const { roles } = autoRoles({ levels, candidates: all, books });
+  const pack = buildAutoPack({ id: "pack_abc123def456", levels, roles })!;
+  assert.equal(pack.enabled, false);
+  assert.deepEqual(pack.doors, ["turn", "rent"]);
+  assert.equal(pack.name, "Gói tự động · Chất lượng");
+  assert.match(pack.note, /Dịch: Chất lượng/);
+  assert.match(pack.note, /Đối chiếu: Tiết kiệm/);
+  assert.deepEqual(pack.roles, roles);
+  assert.deepEqual(checkServicePack(pack).roles, roles);
+});
+
+test("buildAutoPack: thiếu nhận dạng hoặc dịch thì không dựng gói", () => {
+  assert.equal(buildAutoPack({ id: "pack_abc123def456", levels: {}, roles: { translate: { provider: "groq", model: "openai/gpt-oss-120b" } } }), null);
 });
