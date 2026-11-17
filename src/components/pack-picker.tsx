@@ -1,5 +1,6 @@
 import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type ServiceDoor, type ServicePack } from "@/lib/service-pack";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
+import { DEEPGRAM_ROWS } from "@/lib/sub/deepgram-catalog";
 import { PROVIDER_LABEL } from "@/lib/sub/provider";
 import type { GroqBoard } from "@/lib/sub/groq-board";
 import type { PriceOverride } from "@/lib/run-desk";
@@ -39,6 +40,7 @@ export function PackPicker({
   if (!shown.length) return null;
   const groqBook: PriceBook | null = board ? { rate: board.rate, rows: board.rows, desk: { markup: groqMarkup, custom: {} } } : null;
   const aliBook: PriceBook | null = board ? { rate: board.rate, rows: ALIBABA_ROWS, desk: { markup: aliMarkup, custom: {} } } : null;
+  const dgBook: PriceBook | null = board ? { rate: board.rate, rows: DEEPGRAM_ROWS, desk: { markup: 0, custom: {} } } : null;
 
   return (
     <div className="grid gap-2">
@@ -53,7 +55,7 @@ export function PackPicker({
       {shown.map((pack) => {
         const quote =
           seconds > 0 && groqBook && aliBook
-            ? quotePack({ pack, seconds, door, narration, books: { groq: groqBook, alibaba: aliBook } })
+            ? quotePack({ pack, seconds, door, narration, books: { groq: groqBook, alibaba: aliBook, ...(dgBook ? { deepgram: dgBook } : {}) } })
             : null;
         const jobs = PACK_ROLES.filter((role) => pack.roles[role]).map((role) => {
           const assign = pack.roles[role]!;

@@ -7,7 +7,10 @@ import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import type { GroqBoard } from "@/lib/sub/groq-board";
 import type { RunDesk } from "@/lib/run-desk";
-import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
+import { PACK_ROLE_LABEL, PACK_ROLES, providersForRole, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
+import { DEEPGRAM_ROWS } from "@/lib/sub/deepgram-catalog";
+import { ASR_MODELS } from "@/lib/sub/models";
+import { asrHouse } from "@/lib/sub/asr-house";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
 
@@ -60,7 +63,9 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
   const choices = useMemo(() => {
     const groq = [...new Set([...(groqModels ?? []), "whisper-large-v3-turbo", "whisper-large-v3"])];
     const alibaba = [...new Set([...(models ?? []), ...ALIBABA_ROWS.map((row) => row.id)])];
-    return { groq, alibaba };
+    const deepgram = ASR_MODELS.filter((row) => asrHouse(row.id) === "deepgram").map((row) => row.id);
+    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram };
+    return byProvider;
   }, [groqModels, models]);
 
   function saveDesk(next: RunDesk) {
@@ -193,7 +198,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
                 seconds: 600,
                 door: "turn",
                 narration: Boolean(pack.roles.narration),
-                books: { groq: { ...groqBook, desk: { markup: 0, custom: {} } }, ...(aliBook ? { alibaba: aliBook } : {}) },
+                books: { groq: { ...groqBook, desk: { markup: 0, custom: {} } }, ...(aliBook ? { alibaba: aliBook } : {}), deepgram: { rate: groqBook.rate, rows: DEEPGRAM_ROWS, desk: { markup: 0, custom: {} } } },
               })
             : null;
           return (
@@ -227,7 +232,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
               {PACK_ROLES.map((role) => {
                 const assign = pack.roles[role];
                 const provider = assign?.provider ?? "";
-                const list = provider === "alibaba" ? choices.alibaba : provider === "groq" ? choices.groq : [];
+                const list = provider ? choices[provider] : [];
                 return (
                   <div key={role} className="grid gap-2 sm:grid-cols-[7rem_8rem_1fr] sm:items-center">
                     <span className="text-sm">{PACK_ROLE_LABEL[role]}</span>
@@ -236,13 +241,14 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
                       value={provider}
                       onChange={(event) => {
                         const next = event.target.value as ProviderId | "";
-                        const model = next === "alibaba" ? choices.alibaba[0] || "" : next === "groq" ? choices.groq[0] || "" : "";
+                        const model = next ? choices[next][0] || "" : "";
                         setRole(pack.id, role, next, model);
                       }}
                     >
                       {role !== "asr" && role !== "translate" && <option value="">Không tách</option>}
-                      <option value="groq">{PROVIDER_LABEL.groq}</option>
-                      <option value="alibaba">{PROVIDER_LABEL.alibaba}</option>
+                      {providersForRole(role).map((id) => (
+                        <option key={id} value={id}>{PROVIDER_LABEL[id]}</option>
+                      ))}
                     </select>
                     <select
                       className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm"

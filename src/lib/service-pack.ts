@@ -1,5 +1,6 @@
 import { asrCost, chatCost, speechCost, HOLD_BUFFER, type PriceBook } from "./run-bill.ts";
-import { isProviderId, type ProviderId } from "./sub/provider.ts";
+import { deepgramAsrOnRoomPayProblem } from "./sub/asr-house.ts";
+import { isProviderId, PROVIDER_IDS, providerHas, type ProviderId } from "./sub/provider.ts";
 
 export const PACK_ROLES = ["asr", "translate", "context", "review", "summary", "narration"] as const;
 export type PackRole = (typeof PACK_ROLES)[number];
@@ -20,6 +21,15 @@ export const DOOR_LABEL: Record<ServiceDoor, string> = {
   turn: "Trả theo lượt",
   rent: "Thuê phòng",
 };
+
+/**
+ * Nhà được chọn cho từng việc trong gói. Nhận dạng: mọi nhà có khả năng asr trong bảng PROVIDERS.
+ * Các việc khác: Groq và Alibaba. Deepgram chỉ nhận dạng (dịch và đọc chưa làm). Nhà mới có asr tự hiện ở đây.
+ */
+export function providersForRole(role: PackRole): ProviderId[] {
+  if (role === "asr") return PROVIDER_IDS.filter((id) => providerHas(id, "asr"));
+  return ["groq", "alibaba"];
+}
 
 export type RoleAssign = { provider: ProviderId; model: string };
 
@@ -193,6 +203,11 @@ export function checkServicePack(input: ServicePack): ServicePack {
     if (assign) roles[role] = assign;
   }
   if (!roles.asr || !roles.translate) throw new Error("Gói cần model nhận dạng và model dịch.");
+  for (const role of PACK_ROLES) {
+    const assign = roles[role];
+    if (assign && !providersForRole(role).includes(assign.provider)) throw new Error(`Việc ${PACK_ROLE_LABEL[role]} chưa chạy bằng ${assign.provider}.`);
+  }
+  if (roles.asr.provider === "deepgram" && doors.includes("turn")) throw new Error(`${deepgramAsrOnRoomPayProblem()} Gói Deepgram chỉ mở cửa Thuê phòng.`);
   return { id, name, note, enabled: Boolean(input.enabled), doors: [...new Set(doors)], roles };
 }
 

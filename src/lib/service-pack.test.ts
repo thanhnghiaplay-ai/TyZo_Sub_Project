@@ -6,11 +6,13 @@ import {
   checkServicePacks,
   CONTEXT_TOKENS,
   parseServicePacks,
+  providersForRole,
   quotePack,
   reviewTokens,
   translateTokens,
   type ServicePack,
 } from "./service-pack.ts";
+import { DEEPGRAM_ROWS } from "./sub/deepgram-catalog.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 
 const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
@@ -199,5 +201,46 @@ describe("báo giá gói dịch", () => {
     assert.equal(again.narration, 0);
     assert.ok((again.hold ?? 0) > 0);
     assert.ok((again.hold ?? 0) < (full.hold ?? 0));
+  });
+});
+
+describe("Deepgram trong gói dịch", () => {
+  const mk = (over: Partial<ServicePack>): ServicePack => ({
+    id: "pack_dg0001",
+    name: "Gói Deepgram",
+    note: "",
+    enabled: true,
+    doors: ["rent"],
+    roles: {
+      asr: { provider: "deepgram", model: "deepgram-nova-3" },
+      translate: { provider: "groq", model: "chat-model" },
+    },
+    ...over,
+  });
+
+  it("nhận dạng chọn được Deepgram, các việc khác thì không", () => {
+    assert.deepEqual(providersForRole("asr"), ["groq", "alibaba", "deepgram"]);
+    assert.deepEqual(providersForRole("translate"), ["groq", "alibaba"]);
+    assert.deepEqual(providersForRole("narration"), ["groq", "alibaba"]);
+  });
+
+  it("lưu được gói Deepgram nhận dạng ở cửa thuê phòng", () => {
+    assert.equal(checkServicePacks([mk({})])[0].roles.asr?.provider, "deepgram");
+  });
+
+  it("chặn gói Deepgram mở cửa trả theo lượt", () => {
+    assert.throws(() => checkServicePacks([mk({ doors: ["turn", "rent"] })]), /Thuê phòng/);
+  });
+
+  it("chặn Deepgram ở việc dịch", () => {
+    const bad = mk({ roles: { asr: { provider: "groq", model: "whisper-large-v3-turbo" }, translate: { provider: "deepgram", model: "deepgram-nova-3" } } });
+    assert.throws(() => checkServicePacks([bad]), /chưa chạy/);
+  });
+
+  it("báo giá nhận dạng Deepgram theo giá giờ trong bảng", () => {
+    const dgBook: PriceBook = { rate: 25000, rows: DEEPGRAM_ROWS, desk: { markup: 0, custom: {} } };
+    const quote = quotePack({ pack: mk({}), seconds: 3600, door: "rent", narration: false, books: { groq: book(0), deepgram: dgBook } });
+    const line = quote.lines.find((item) => item.role === "asr");
+    assert.equal(Math.round(line?.base ?? 0), Math.round(0.258 * 25000));
   });
 });
