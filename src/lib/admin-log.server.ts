@@ -8,10 +8,10 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
-    version: "5.1.2",
+    version: "5.1.3",
     time: "17/11/2026",
     area: "ha-tang",
-    text: "Bước (a1) danh mục nhà chung: PROVIDERS khai thêm intake (chunks, link, upload, stream) cho từng nhà; asrIntake() đọc từ đó, asrTakesLink() chỉ còn là intake === link. Không đổi hành vi, không đổi giao diện khách, không nâng số phiên bản.",
+    text: "Bước (a1) và (a2) danh mục nhà + model chung. (a1) PROVIDERS khai intake (chunks, link, upload, stream) cho từng nhà; asrIntake() đọc từ đó, asrTakesLink() chỉ còn là intake === link. (a2) sub/model-catalog.ts dựng MODEL_CATALOG từ ASR_MODELS, CHAT_MODELS, giọng Orpheus, giọng Aura, model dịch trực tiếp Alibaba (không chép dữ liệu lần hai); catalogFor, catalogModel, modelKindOf (đoán theo nhà và tên cho model lạ). Test model-catalog.test.ts: nhà khai khả năng nào thì phải có model loại đó. Sửa lỗi: model-role.ts trước đây gán deepgram-nova-3, aura-2-* và livetranslate là «dịch», nay đúng asr, tts, live (Admin chọn gói và mục key riêng của khách hiện ghi chú đúng). Chưa gỡ phần trăm chênh theo nhà (a3).",
   },
   {
     version: "5.1.2",
