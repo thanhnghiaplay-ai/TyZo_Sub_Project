@@ -14,7 +14,7 @@ export const CHANGELOG: ReleaseNote[] = [
     version: "5.2.2",
     time: "17/11/2026",
     title: "Chọn được Alibaba và Deepgram ở cửa Trả theo lượt.",
-    points: ["Ô Nhận dạng giọng không còn ghi nhầm là chưa có ở cửa Trả theo lượt, và hiện số Token dịch của từng model.", "Dịch trực tiếp báo rõ khi Chủ chưa mở model nào."],
+    points: ["Ô Nhận dạng giọng hiện số Token dịch của từng model, không còn ghi nhầm là chưa có.", "Dịch trực tiếp báo rõ khi Chủ chưa mở model nào."],
   },
   {
     version: "5.2.1",
