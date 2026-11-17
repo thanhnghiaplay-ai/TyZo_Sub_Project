@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
+import { DEEPGRAM_ROWS } from "@/lib/sub/deepgram-catalog";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
 import type { AliQuote } from "@/lib/sub/alibaba-price";
@@ -84,6 +85,12 @@ function listed(groq: GroqLiveRow[], ali: GroqLiveRow[], fix: UsdFix): ModelPric
     const slot = fix[id] ?? emptySlot();
     const effective = applyUsdFix([{ ...blank(id), usdPerHour: auto.hour, usdIn: auto.inn, usdOut: auto.out, usdPerMillionChars: auto.chars }], { [id]: slot })[0];
     rows.push({ id, name: modelLabel(id), house: "Alibaba", kind: kindOf(id, auto), auto, fix: slot, tokens: tokenPriceLine(effective, turbo) });
+  }
+  for (const row of DEEPGRAM_ROWS) {
+    const auto = slotOf(row);
+    const slot = fix[row.id] ?? emptySlot();
+    const effective = applyUsdFix([{ ...blank(row.id), usdPerHour: auto.hour, usdIn: auto.inn, usdOut: auto.out, usdPerMillionChars: auto.chars }], { [row.id]: slot })[0];
+    rows.push({ id: row.id, name: ASR_MODELS.find((item) => item.id === row.id)?.name ?? modelLabel(row.id), house: "Deepgram", kind: kindOf(row.id, auto), auto, fix: slot, tokens: tokenPriceLine(effective, turbo) });
   }
   return rows;
 }
