@@ -60,7 +60,7 @@ YÊU CẦU: thêm nhà cung cấp Deepgram, chức năng giống Groq và Alibab
 GHI CHÚ API (đã tra tài liệu Deepgram): `POST https://api.deepgram.com/v1/listen?model=nova-3&language=..`, header `Authorization: Token KEY`, thân JSON `{"url":..}` hoặc byte âm thanh. Nova-3 có en, ja, ko, zh. Mặc định `language=en` nên luôn phải gửi language. Deepgram KHÔNG có model dịch, dịch vẫn bằng Groq. Giá Nova-3 trả sau, một nguồn ghi 0,0043 đô/phút, cần kiểm lại ở trang giá chính thức trước khi dùng tính tiền.
 BƯỚC:
 1. [XONG] Bảng chung nhà cung cấp (`provider.ts`), `listModelIds` đọc đúng dạng Deepgram.
-2. [CHƯA] Lõi nhận dạng Deepgram (dựng yêu cầu, đọc `utterances` ra Seg, bảng ngôn ngữ) + test.
+2. [XONG] Lõi nhận dạng Deepgram (`src/lib/sub/deepgram.ts`) (dựng yêu cầu, đọc `utterances` ra Seg, bảng ngôn ngữ) + test.
 3. [CHƯA] Máy chủ nhận dạng Deepgram (link và file), key khách.
 4. [CHƯA] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse`, kiểu `AsrModel`.
 5. [CHƯA] Giao diện khách: ô key Deepgram, chọn model, nhánh `start()` và nhánh chạy trong `use-pipeline.ts`.
