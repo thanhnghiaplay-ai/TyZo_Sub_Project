@@ -1,3 +1,4 @@
+import { AURA_PRICE_ID, AURA_USD_PER_MILLION_CHARS, isAuraModel } from "./aura.ts";
 import type { GroqLiveRow } from "./groq-board.ts";
 
 /**
@@ -21,8 +22,30 @@ export const DEEPGRAM_ROWS: GroqLiveRow[] = [
     maxCompletionTokens: null,
     maxFile: null,
   },
+  {
+    id: AURA_PRICE_ID,
+    speed: null,
+    usdIn: null,
+    usdOut: null,
+    usdPerHour: null,
+    usdPerMillionChars: AURA_USD_PER_MILLION_CHARS,
+    unlisted: false,
+    limits: [],
+    contextTokens: null,
+    maxCompletionTokens: null,
+    maxFile: null,
+  },
 ];
 
 export function deepgramRow(id: string) {
   return DEEPGRAM_ROWS.find((row) => row.id === id) ?? null;
+}
+
+/** Dòng giá cho một model Deepgram cụ thể. Mọi giọng Aura-2 dùng chung giá của dòng `aura-2`. */
+export function deepgramRowFor(model: string): GroqLiveRow | null {
+  if (isAuraModel(model)) {
+    const shared = deepgramRow(AURA_PRICE_ID);
+    return shared ? { ...shared, id: model } : null;
+  }
+  return deepgramRow(model);
 }

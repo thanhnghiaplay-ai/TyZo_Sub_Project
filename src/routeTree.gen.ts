@@ -21,6 +21,7 @@ import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as YeuCauRouteImport } from './routes/yeu-cau'
 import { Route as ApiRelayAlibabaRouteImport } from './routes/api/relay-alibaba'
 import { Route as ApiRoomAlibabaRouteImport } from './routes/api/room-alibaba'
+import { Route as ApiRoomDeepgramRouteImport } from './routes/api/room-deepgram'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPayCassoRouteImport } from './routes/api/pay/casso'
@@ -86,6 +87,11 @@ const ApiRoomAlibabaRoute = ApiRoomAlibabaRouteImport.update({
   path: '/api/room-alibaba',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRoomDeepgramRoute = ApiRoomDeepgramRouteImport.update({
+  id: '/api/room-deepgram',
+  path: '/api/room-deepgram',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRoomGroqRoute = ApiRoomGroqRouteImport.update({
   id: '/api/room-groq',
   path: '/api/room-groq',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/yeu-cau': typeof YeuCauRoute
   '/api/relay-alibaba': typeof ApiRelayAlibabaRoute
   '/api/room-alibaba': typeof ApiRoomAlibabaRoute
+  '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/yeu-cau': typeof YeuCauRoute
   '/api/relay-alibaba': typeof ApiRelayAlibabaRoute
   '/api/room-alibaba': typeof ApiRoomAlibabaRoute
+  '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/yeu-cau': typeof YeuCauRoute
   '/api/relay-alibaba': typeof ApiRelayAlibabaRoute
   '/api/room-alibaba': typeof ApiRoomAlibabaRoute
+  '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/yeu-cau'
     | '/api/relay-alibaba'
     | '/api/room-alibaba'
+    | '/api/room-deepgram'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/yeu-cau'
     | '/api/relay-alibaba'
     | '/api/room-alibaba'
+    | '/api/room-deepgram'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/yeu-cau'
     | '/api/relay-alibaba'
     | '/api/room-alibaba'
+    | '/api/room-deepgram'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   YeuCauRoute: typeof YeuCauRoute
   ApiRelayAlibabaRoute: typeof ApiRelayAlibabaRoute
   ApiRoomAlibabaRoute: typeof ApiRoomAlibabaRoute
+  ApiRoomDeepgramRoute: typeof ApiRoomDeepgramRoute
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPayCassoRoute: typeof ApiPayCassoRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRoomAlibabaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/room-deepgram': {
+      id: '/api/room-deepgram'
+      path: '/api/room-deepgram'
+      fullPath: '/api/room-deepgram'
+      preLoaderRoute: typeof ApiRoomDeepgramRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/room-groq': {
       id: '/api/room-groq'
       path: '/api/room-groq'
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   YeuCauRoute: YeuCauRoute,
   ApiRelayAlibabaRoute: ApiRelayAlibabaRoute,
   ApiRoomAlibabaRoute: ApiRoomAlibabaRoute,
+  ApiRoomDeepgramRoute: ApiRoomDeepgramRoute,
   ApiRoomGroqRoute: ApiRoomGroqRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPayCassoRoute: ApiPayCassoRoute,
