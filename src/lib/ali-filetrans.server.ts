@@ -130,7 +130,7 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
     const { getSql } = await import("@/lib/db");
     const { chargeRoomAsr } = await import("@/lib/room-asr.server");
     const rows = await loadAlibabaRows(await getSql());
-    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: "qwen-audio-3.0-asr-flash-filetrans", rows, deskKey: "alibaba_desk" });
+    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: "qwen-audio-3.0-asr-flash-filetrans", rows });
   }
   return done;
 }

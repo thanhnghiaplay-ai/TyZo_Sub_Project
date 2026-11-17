@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
-import { checkRunDesk, parseModelList, parseRunDesk } from "@/lib/run-desk";
+import { parseModelList } from "@/lib/run-desk";
 import { isProviderId, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 
 /**
@@ -61,35 +61,4 @@ export const saveProviderKey = createServerFn({ method: "POST" })
     `;
     await writeAudit(context.userId, `key-${data.provider}`, null, `${ids.length} model`);
     return ids;
-  });
-
-/** Phần trăm chênh của một nhà (khóa `settings.desk`). Chỉ nhà ngoài Groq và Alibaba, vì hai nhà đó đã có bàn giá riêng. */
-export const getProviderMarkup = createServerFn({ method: "GET" })
-  .middleware([authMiddleware])
-  .validator((input: ProviderId) => checkProviderId(input))
-  .handler(async ({ context, data }): Promise<number> => {
-    await requireRole(context.userId, "chu");
-    const sql = await openSql();
-    const rows = await sql<{ value: string }>`select value from room_settings where key = ${PROVIDERS[data].settings.desk}`;
-    return parseRunDesk(rows[0]?.value).markup;
-  });
-
-export const saveProviderMarkup = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((input: { provider: ProviderId; markup: number }) => {
-    const provider = checkProviderId(input?.provider);
-    const markup = Math.round(Number(input?.markup));
-    if (!Number.isFinite(markup) || markup < 0 || markup > 1000) throw new Error("Phần trăm chênh từ 0 đến 1000.");
-    if (provider === "groq" || provider === "alibaba") throw new Error("Nhà này có bàn giá riêng.");
-    return { provider, markup };
-  })
-  .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "chu");
-    const name = PROVIDERS[data.provider].settings.desk;
-    const sql = await openSql();
-    const prev = await sql<{ value: string }>`select value from room_settings where key = ${name}`;
-    const next = JSON.stringify(checkRunDesk({ ...parseRunDesk(prev[0]?.value), maintenance: false, markup: data.markup }));
-    await sql`insert into room_settings (key, value) values (${name}, ${next}) on conflict (key) do update set value = ${next}`;
-    await writeAudit(context.userId, `gia-${data.provider}`, null, `Phần trăm chênh ${PROVIDERS[data.provider].label}: ${data.markup}%`);
-    return data.markup;
   });

@@ -52,7 +52,7 @@ export async function runDeepgramAsr(userId: string, input: DeepgramAsrInput): P
     const { chargeRoomAsr } = await import("@/lib/room-asr.server");
     const { DEEPGRAM_ASR } = await import("@/lib/sub/deepgram");
     const rows = await loadDeepgramRows(await getSql());
-    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: DEEPGRAM_ASR, rows, deskKey: "deepgram_desk" });
+    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: DEEPGRAM_ASR, rows });
   }
   return done;
 }

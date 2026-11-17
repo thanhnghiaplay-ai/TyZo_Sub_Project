@@ -348,7 +348,7 @@ export function AdminDesk() {
           <ServiceStatusBoard />
           <RunDeskBoard owner part="key" />
           <AlibabaKeyBoard />
-          <ProviderKeyBoard provider="deepgram" withMarkup note="Chỉ Chủ lưu. Khách không thấy key. Deepgram chỉ nhận dạng giọng, dịch vẫn bằng Groq. Key này chạy cả cửa Trả theo lượt (trừ Token dịch, cộng phần trăm chênh) và cửa Thuê phòng (key của khách)." />
+          <ProviderKeyBoard provider="deepgram" note="Chỉ Chủ lưu. Khách không thấy key. Deepgram chỉ nhận dạng giọng, dịch vẫn bằng Groq. Key này chạy cả cửa Trả theo lượt (trừ Token dịch theo giá gốc) và cửa Thuê phòng (key của khách)." />
           <LiveWorkspaceBoard />
           <SupportBoard />
           <RunDeskBoard owner part="price" />
