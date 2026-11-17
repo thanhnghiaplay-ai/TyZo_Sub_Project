@@ -13,6 +13,8 @@ import { ASR_MODELS } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
+import { PackAutoBoard } from "@/components/pack-auto-board";
+import type { AutoCandidate } from "@/lib/pack-auto";
 
 function dong(n: number | null) {
   if (n == null) return "Chưa có giá gốc";
@@ -67,6 +69,20 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
     const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram };
     return byProvider;
   }, [groqModels, models]);
+
+  const autoCandidates = useMemo<AutoCandidate[]>(
+    () => (Object.entries(choices) as Array<[ProviderId, string[]]>).flatMap(([provider, ids]) => ids.map((model) => ({ provider, model }))),
+    [choices],
+  );
+  const autoBooks = useMemo<Partial<Record<ProviderId, PriceBook>> | null>(() => {
+    if (!board) return null;
+    const desk0 = { markup: 0, custom: {} };
+    return {
+      groq: { rate: board.rate, rows: board.rows, desk: desk0 },
+      alibaba: { rate: board.rate, rows: ALIBABA_ROWS, desk: desk0 },
+      deepgram: { rate: board.rate, rows: DEEPGRAM_ROWS, desk: desk0 },
+    };
+  }, [board]);
 
   function saveDesk(next: RunDesk) {
     setBusy(true);
@@ -169,6 +185,8 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
           </button>
         </div>
       )}
+
+      <PackAutoBoard candidates={autoCandidates} books={autoBooks} />
 
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">
