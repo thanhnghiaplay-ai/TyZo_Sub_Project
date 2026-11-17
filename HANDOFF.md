@@ -55,6 +55,22 @@ CỐ Ý KHÔNG LÀM: không hoàn tiền. Không đổi giá gói.
 
 # HANDOFF — TyZo_Sub_Project
 
+## THÊM DEEPGRAM (kế hoạch, bắt đầu 17/11/2026 09:44, nhánh work)
+YÊU CẦU: thêm nhà cung cấp Deepgram, chức năng giống Groq và Alibaba; nhà mới sau này làm cùng cách (xem `PROVIDERS.md`). Làm từng bước, đẩy `work` sau mỗi bước.
+GHI CHÚ API (đã tra tài liệu Deepgram): `POST https://api.deepgram.com/v1/listen?model=nova-3&language=..`, header `Authorization: Token KEY`, thân JSON `{"url":..}` hoặc byte âm thanh. Nova-3 có en, ja, ko, zh. Mặc định `language=en` nên luôn phải gửi language. Deepgram KHÔNG có model dịch, dịch vẫn bằng Groq. Giá Nova-3 trả sau, một nguồn ghi 0,0043 đô/phút, cần kiểm lại ở trang giá chính thức trước khi dùng tính tiền.
+BƯỚC:
+1. [XONG] Bảng chung nhà cung cấp (`provider.ts`), `listModelIds` đọc đúng dạng Deepgram.
+2. [CHƯA] Lõi nhận dạng Deepgram (dựng yêu cầu, đọc `utterances` ra Seg, bảng ngôn ngữ) + test.
+3. [CHƯA] Máy chủ nhận dạng Deepgram (link và file), key khách.
+4. [CHƯA] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse`, kiểu `AsrModel`.
+5. [CHƯA] Giao diện khách: ô key Deepgram, chọn model, nhánh `start()` và nhánh chạy trong `use-pipeline.ts`.
+6. [CHƯA] Admin: ô key phòng Deepgram, bảng giá, gói dịch chọn được Deepgram.
+7. [CHƯA] Đọc thành tiếng Aura (TTS), nếu chủ muốn.
+8. [CHƯA] Điều khoản (dữ liệu gửi Deepgram), Hướng dẫn, CHANGELOG, nâng phiên bản.
+CỐ Ý KHÔNG LÀM: trả theo lượt bằng key phòng cho Deepgram (chưa được yêu cầu); không đổi giá bán; chưa đổi điều khoản ở bước 1.
+KHÔNG GHI KEY/TOKEN GITHUB VÀO FILE NÀO.
+
+
 ## ĐIỀU KHOẢN (17/11/2026 00:35, nhánh work, v5.0.1)
 ĐÃ LÀM: một trang điều khoản và chính sách khớp web. Thêm bản quyền và khiếu nại qua hỗ trợ, Token dịch là đơn vị dùng dịch vụ không phải tiền, dữ liệu gửi Groq (Hoa Kỳ) và Alibaba (Singapore), video xử lý trên máy khách. Điều khoản `2026-11-17.1`.
 CHƯA LÀM: chưa bấm cửa đồng ý trên điện thoại. Chưa có tên doanh nghiệp để ghi.

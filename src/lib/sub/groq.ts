@@ -1,5 +1,5 @@
 import { reasoningOpts } from "@/lib/sub/models";
-import { modelListUrl, type ProviderId } from "@/lib/sub/provider";
+import { authHeader, modelIdsFrom, modelListUrl, type ProviderId } from "@/lib/sub/provider";
 import type { PackedAudio } from "@/lib/sub/codec";
 import {
   contiguousRuns,
@@ -155,17 +155,17 @@ export async function requestWithRetry<T>(
 const LIST_TIMEOUT_MS = 30_000;
 
 export async function listModelIds(key: string, signal?: AbortSignal, provider: ProviderId = "groq"): Promise<string[]> {
-  const next = roomFetchTarget(modelListUrl(provider), { headers: { Authorization: `Bearer ${key}` } }, null);
+  const next = roomFetchTarget(modelListUrl(provider), { headers: { Authorization: authHeader(provider, key) } }, null);
   try {
     const data = await withDeadlines(
       (guard) => fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal: guard }),
       async (response) => {
         if (!response.ok) throw new Error(await readApiError(response, ""));
-        return (await response.json()) as { data?: Array<{ id?: string }> };
+        return (await response.json()) as unknown;
       },
       { signal, headerMs: LIST_TIMEOUT_MS, bodyMs: LIST_TIMEOUT_MS },
     );
-    return (data.data || []).map((item) => item.id).filter((id): id is string => Boolean(id));
+    return modelIdsFrom(provider, data);
   } catch (error) {
     if (error instanceof DeadlineError) throw new Error(`Đọc danh sách model: máy chủ không trả lời xong sau ${error.ms / 1000} giây.`);
     throw error;
