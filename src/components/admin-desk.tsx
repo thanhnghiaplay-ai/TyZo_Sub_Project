@@ -55,6 +55,7 @@ import { PayQueue, PaySettings } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { ProviderKeyBoards } from "@/components/provider-key-board";
+import { LiveShowBoard } from "@/components/live-show-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { ServiceStatusBoard } from "@/components/service-status-board";
 import { SupportBoard } from "@/components/support-board";
@@ -347,6 +348,7 @@ export function AdminDesk() {
           <ServiceStatusBoard />
           <ProviderKeyBoards />
           <LiveWorkspaceBoard />
+          <LiveShowBoard />
           <SupportBoard />
           <RunDeskBoard owner part="price" />
           <GiayPackBoard />
@@ -746,6 +748,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "gia-alibaba": "Đổi giá Alibaba",
   "gia-deepgram": "Đổi giá Deepgram",
   "mo-thue": "Đổi danh sách model cho thuê",
+  "mo-live": "Đổi danh sách model dịch trực tiếp",
   "goi-dich": "Sửa gói dịch",
   "them-cong-tac": "Thêm cộng tác",
   "go-cong-tac": "Gỡ cộng tác",

@@ -15,3 +15,6 @@ Bảng chung nằm ở `src/lib/sub/provider.ts` (`PROVIDERS`). Mỗi nhà là m
 
 Mỗi bước xong phải: `npx tsc --noEmit` và `npm test` sạch rồi mới đẩy.
 Không ghi key hay token vào code, tài liệu hay lịch sử git.
+
+## Dịch trực tiếp theo khả năng (v5.2.1)
+Không cần khai riêng: `liveModeOf` (`src/lib/live/live-show.ts`) suy từ danh mục model. Model loại `live` là `real` (Admin bật được); nhận dạng có `intake: "chunks"` là `chunked` (hiện nhưng chưa bật được, app chưa có đường chạy); còn lại không có dịch trực tiếp. Model live thật mới: thêm vào danh mục (`model-catalog.ts`) với kind `live` và vào `LIVE_MODELS`.

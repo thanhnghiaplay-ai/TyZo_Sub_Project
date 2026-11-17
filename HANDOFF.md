@@ -1,3 +1,9 @@
+## BƯỚC (d) XONG: DỊCH TRỰC TIẾP THEO KHẢ NĂNG (17/11/2026, nhánh work, v5.2.1)
+THỨ TỰ: [XONG] 1 key mọi nhà (5.2.0) → [XONG] 2 gỡ chênh (5.2.1) → [XONG] 3 d (mục này) → [CHƯA] c3 (giọng đọc Orpheus/Aura bật tắt thuê phòng, cần chặn thật ở narration.ts) → [CHƯA] đường chạy `chunked` thật cho dịch trực tiếp bằng Whisper.
+ĐÃ LÀM: `live-show.ts`, `live-show-room.ts`, `live-show-board.tsx`, chặn ở `live-open.ts`, lọc ở `live-screen.tsx`, test. Chi tiết admin-log 5.2.1.
+LƯU Ý: nếu Chủ bỏ tick hết model thì ô Model ở màn live rỗng và bấm bắt đầu báo «Chủ chưa mở model này cho dịch trực tiếp». Chưa có câu thông báo riêng ở màn live.
+VIỆC CHỦ: tự thử điện thoại (key mọi nhà, giá Token dịch ở trả theo lượt, bảng model live ở Admin). Điều khoản ~dòng 206 (hoa hồng «phần chênh») cần quyết. Bật khóa key Alibaba/Deepgram (`KEY_LIST_TRUSTED`) sau khi thử key thật.
+
 ## v5.2.1: GỠ CHÊNH GROQ/ALIBABA (17/11/2026, nhánh work)
 THỨ TỰ: [XONG] bước 1 key mọi nhà (v5.2.0) → [XONG] bước 2 a3-2 (mục này) → [CHƯA] bước 3 d dịch trực tiếp theo khả năng → [CHƯA] c3.
 ĐÃ LÀM: markup luôn 0 (parseRunDesk), `legacyMarkupOf` cho ước phiếu cũ, bỏ 2 ô chênh ở Admin, giá model khách theo Token dịch (`formatRoomTokens`). Chi tiết ở admin-log 5.2.1.

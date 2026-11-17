@@ -18,6 +18,8 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { TourHost } from "@/components/tour-host";
 import { LIVE_LANGS, liveLang, targetHasVoice } from "@/lib/live/langs";
 import { downloadLiveFile, hasLiveCues, liveExportFile } from "@/lib/live/live-export";
+import { getLiveShow } from "@/lib/live/live-show-room";
+import { liveOpenModels } from "@/lib/live/live-show";
 import { LIVE_MODELS } from "@/lib/live/live-open-rules";
 import { LIVE_MODEL_35, LIVE_MODEL_38 } from "@/lib/live/live-price";
 import { elapsedLabel, liveBalanceLine, liveButton, liveStateText, liveWarnText } from "@/lib/live/live-view";
@@ -66,6 +68,17 @@ export function LiveScreen() {
   const service = useServiceStatus();
   const { user } = useCurrentUserState();
   const [settings, setSettings] = useState<Saved>(DEFAULTS);
+  // Model Chủ đã mở cho dịch trực tiếp (null = chưa lưu, mở hết model làm được).
+  const [liveShow, setLiveShow] = useState<string[] | null>(null);
+  useEffect(() => {
+    void getLiveShow()
+      .then(setLiveShow)
+      .catch(() => setLiveShow(null));
+  }, []);
+  const openModels = useMemo(() => liveOpenModels(liveShow, LIVE_MODELS), [liveShow]);
+  useEffect(() => {
+    if (openModels.length && !openModels.includes(settings.model)) setSettings((s) => ({ ...s, model: openModels[0] }));
+  }, [openModels, settings.model]);
   const [loaded, setLoaded] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
   const stuck = useRef(true);
@@ -215,7 +228,7 @@ export function LiveScreen() {
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Model">
               <select className={SELECT} disabled={locked} value={settings.model} onChange={(event) => setSettings((s) => ({ ...s, model: event.target.value }))}>
-                {LIVE_MODELS.map((id) => (
+                {openModels.map((id) => (
                   <option key={id} value={id}>
                     {MODEL_NAME[id] ?? id}
                   </option>

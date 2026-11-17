@@ -33,6 +33,11 @@ export const openLiveTicket = createServerFn({ method: "POST" })
     const { giayBalance } = await import("@/lib/token-flow");
     const { tokensForBase, formatGiay } = await import("@/lib/token-math");
     const sql = await getSql();
+    // Chủ chỉ mở model làm được; chặn thật ở đây, không chỉ ẩn ở ô chọn.
+    const { liveOpenProblem, parseLiveShow } = await import("@/lib/live/live-show");
+    const shown = await sql<{ value: string }>`select value from room_settings where key = 'live_show'`;
+    const problem = liveOpenProblem(parseLiveShow(shown[0]?.value), data.model);
+    if (problem) throw new Error(problem);
     const book = await loadLiveBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính giây. Hãy thử lại sau.");
     const turbo = await turboPerSecond();
