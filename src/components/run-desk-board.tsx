@@ -1,7 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
-import { getRunDesk, saveRunDesk, saveRunKey, type RunDeskView, type RunTicket } from "@/lib/admin-room";
+import { getRunDesk, saveRunDesk, type RunDeskView, type RunTicket } from "@/lib/admin-room";
 import { modelLabel } from "@/lib/sub/models";
 import { listDoorHistory, revealTicketFileName, searchRunTickets, type DoorChange } from "@/lib/overview-room";
 import type { TicketFilter, TicketRow } from "@/lib/overview-data";
@@ -213,16 +212,12 @@ function DoorHistory({ refresh }: { refresh: number }) {
 
 /**
  * Bàn trả theo lượt. part "ops" (mặc định, tab Việc): bảo trì và phiếu.
- * part "config" (tab Cấu hình, chỉ Chủ): key Groq, giá và hạn mức.
+ * part "price" hoặc "config" (tab Cấu hình, chỉ Chủ): giá và hạn mức. Key các nhà nằm ở mục Nhà cung cấp (provider-desk.tsx).
  * Mỗi lần lưu đọc lại cửa mới nhất rồi chỉ ghi phần của mình, nên hai nơi không đè nhau.
  */
-export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "ops" | "config" | "key" | "price" }) {
+export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "ops" | "config" | "price" }) {
   const [view, setView] = useState<RunDeskView | null>(null);
   const [form, setForm] = useState<RunDesk | null>(null);
-  const [models, setModels] = useState<string[] | null>(null);
-  const [adminKey, setAdminKey] = useState("");
-  const [keyTail, setKeyTail] = useState("");
-  const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
   const [doorTick, setDoorTick] = useState(0);
 
@@ -231,8 +226,6 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
       .then((next) => {
         setView(next);
         setForm(next.desk);
-        setModels(next.models);
-        setKeyTail(next.keyTail || "");
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn trả theo lượt.", "bad"));
   }, []);
@@ -251,78 +244,10 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
       .finally(() => setBusy(false));
   }
 
-  function syncKey() {
-    const token = adminKey.trim();
-    if (!token) {
-      pushToast("Hãy nhập hoặc dán key, rồi đồng bộ.", "bad");
-      return;
-    }
-    setBusy(true);
-    void saveRunKey({ data: token })
-      .then((ids) => {
-        setModels(ids);
-        setKeyTail(token.slice(-4));
-        setAdminKey("");
-        setShowKey(false);
-        pushToast(`Đã lưu key. Key này gọi được ${ids.length} model. Khách chọn trả theo lượt sẽ dùng đúng key này.`);
-      })
-      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đồng bộ được key.", "bad"))
-      .finally(() => setBusy(false));
-  }
-
-  async function pasteKey() {
-    try {
-      const text = (await navigator.clipboard.readText()).trim();
-      if (!text) {
-        pushToast("Bộ nhớ tạm không có nội dung để dán.", "bad");
-        return;
-      }
-      setAdminKey(text);
-    } catch {
-      pushToast("Chưa dán được. Hãy cho phép dán, hoặc nhập tay.", "bad");
-    }
-  }
-
-  if (part === "config" || part === "key" || part === "price") {
+  if (part === "config" || part === "price") {
     if (!owner) return null;
-    const showKeyCard = part !== "price";
-    const showPriceCard = part !== "key";
     return (
       <>
-        {showKeyCard && (
-        <section className="grid content-start gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="font-semibold">Key Groq của phòng</h2>
-            <p className="text-xs font-medium text-muted">{keyTail ? `Đã lưu · …${keyTail}` : "Chưa lưu"}</p>
-          </div>
-          <p className="text-sm text-muted">Khách trả theo lượt dùng đúng key này. Key chỉ nằm trên máy chủ và không hiện lại trên trang này. Nhận dạng Alibaba dùng key riêng.</p>
-          <span className="flex gap-2">
-            <input
-              type={showKey ? "text" : "password"}
-              value={adminKey}
-              autoComplete="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              placeholder={keyTail ? "Key đã lưu. Dán key mới nếu muốn đổi" : "Nhập hoặc dán key"}
-              aria-label="Key Groq của phòng"
-              onChange={(event) => setAdminKey(event.target.value)}
-              className="min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
-            />
-            <button type="button" className="min-tap rounded-full border border-line px-3 text-sm" onClick={() => void pasteKey()}>
-              Dán
-            </button>
-            <button type="button" className="min-tap rounded-full border border-line px-3" aria-label={showKey ? "Ẩn key" : "Hiện key"} onClick={() => setShowKey((value) => !value)}>
-              {showKey ? <Icon slot="ui.hide" className="size-4" /> : <Icon slot="ui.eye" className="size-4" />}
-            </button>
-          </span>
-          <button type="button" disabled={busy} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={syncKey}>
-            Lưu key
-          </button>
-          <p className="text-xs text-muted">{models ? `Key gọi được ${models.length} model.` : "Chưa đồng bộ danh sách model."}</p>
-        </section>
-        )}
-
-        {showPriceCard && (
         <section className="admin-wide grid content-start gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <h2 className="font-semibold">Giá và hạn mức</h2>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -358,7 +283,6 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
             </button>
           )}
         </section>
-        )}
       </>
     );
   }

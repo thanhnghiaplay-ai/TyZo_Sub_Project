@@ -1583,32 +1583,6 @@ export const saveRunModels = createServerFn({ method: "POST" })
     return data;
   });
 
-export const saveRunKey = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((input: string) => {
-    const key = input?.trim() ?? "";
-    if (key.length < 20 || key.length > 200 || /\s/.test(key)) throw new Error("Key không đúng.");
-    return key;
-  })
-  .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "chu");
-    const { listModelIds } = await import("@/lib/sub/groq");
-    const ids = await listModelIds(data);
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    const models = JSON.stringify(ids);
-    await sql`
-      insert into room_settings (key, value) values ('run_key', ${data})
-      on conflict (key) do update set value = ${data}
-    `;
-    await sql`
-      insert into room_settings (key, value) values ('run_models', ${models})
-      on conflict (key) do update set value = ${models}
-    `;
-    await writeAudit(context.userId, "key-phong", null, `${ids.length} model`);
-    return ids;
-  });
-
 export const getAdminLog = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {

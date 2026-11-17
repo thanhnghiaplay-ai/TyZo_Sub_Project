@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
 import { getProviderKey, saveProviderKey } from "@/lib/provider-room";
-import { PROVIDERS, type ProviderId } from "@/lib/sub/provider";
+import { PROVIDERS, providerHas, type ProviderId } from "@/lib/sub/provider";
 
 /**
  * Ô key phòng cho một nhà cung cấp bất kỳ trong bảng PROVIDERS. Không dùng chung ô key nhà khác.
@@ -25,6 +25,16 @@ export function ProviderKeyBoard({ provider, note }: { provider: ProviderId; not
       .catch((error) => pushToast(error instanceof Error ? error.message : `Chưa đọc được key ${info.label}.`, "bad"));
   }, [provider, info.label]);
 
+  async function paste() {
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      if (!text) return pushToast("Bộ nhớ tạm không có nội dung để dán.", "bad");
+      setDraft(text);
+    } catch {
+      pushToast("Chưa dán được. Hãy cho phép dán, hoặc nhập tay.", "bad");
+    }
+  }
+
   function save() {
     const token = draft.trim();
     if (!token) return pushToast(`Hãy nhập key ${info.label}.`, "bad");
@@ -44,7 +54,11 @@ export function ProviderKeyBoard({ provider, note }: { provider: ProviderId; not
   return (
     <section className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <h3 className="text-sm font-semibold">Key {info.label} của phòng</h3>
-      <p className="text-sm text-muted">{note ?? `Tách khỏi key nhà khác. Chỉ Chủ lưu. Khách không thấy key. Key này dùng cho cửa Trả theo lượt (phòng trả tiền, trừ Token dịch).`}</p>
+      <p className="text-sm text-muted">
+        {note ??
+          `Tách khỏi key nhà khác. Chỉ Chủ lưu. Khách không thấy key, key không hiện lại. Key này chạy cửa Trả theo lượt (phòng trả tiền, trừ Token dịch theo giá gốc).` +
+            (providerHas(provider, "chat") ? "" : ` ${info.label} không dịch, phần dịch vẫn dùng Groq.`)}
+      </p>
       <div className="flex gap-2">
         <input
           className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"
@@ -56,6 +70,9 @@ export function ProviderKeyBoard({ provider, note }: { provider: ProviderId; not
           placeholder={tail ? "Key đã lưu. Dán key mới nếu muốn đổi" : `Key ${info.label} (${info.keyPage})`}
           onChange={(event) => setDraft(event.target.value)}
         />
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => void paste()}>
+          Dán
+        </button>
         <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3" aria-label={show ? "Ẩn key" : "Hiện key"} onClick={() => setShow((value) => !value)}>
           {show ? <Icon slot="ui.hide" className="size-4" /> : <Icon slot="ui.eye" className="size-4" />}
         </button>
