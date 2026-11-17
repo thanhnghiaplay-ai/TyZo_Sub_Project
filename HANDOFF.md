@@ -62,7 +62,7 @@ BƯỚC:
 1. [XONG] Bảng chung nhà cung cấp (`provider.ts`), `listModelIds` đọc đúng dạng Deepgram.
 2. [XONG] Lõi nhận dạng Deepgram (`src/lib/sub/deepgram.ts`) (dựng yêu cầu, đọc `utterances` ra Seg, bảng ngôn ngữ) + test.
 3. [XONG] Máy chủ nhận dạng Deepgram bằng link (`deepgram-asr.server.ts`, `deepgram-asr.ts`, `sub/deepgram-run.ts`), key khách. Gửi file từ máy chưa làm (xem GHI CHÚ).
-4. [CHƯA] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse`, kiểu `AsrModel`.
+4. [XONG] Model `deepgram-nova-3` vào `ASR_MODELS`, `asrHouse` (bảng HOUSES, thêm `asrTakesLink`), kiểu `AsrModel`, giá dự phòng, gói trả theo lượt báo chưa chạy Deepgram. Chưa hiện ở ô chọn trên giao diện (bước 5).
 5. [CHƯA] Giao diện khách: ô key Deepgram, chọn model, nhánh `start()` và nhánh chạy trong `use-pipeline.ts`.
 6. [CHƯA] Admin: ô key phòng Deepgram, bảng giá, gói dịch chọn được Deepgram.
 7. [CHƯA] Đọc thành tiếng Aura (TTS), nếu chủ muốn.
