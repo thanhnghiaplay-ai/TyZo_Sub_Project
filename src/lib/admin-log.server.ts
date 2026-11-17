@@ -10,6 +10,12 @@ export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.1.3",
     time: "17/11/2026",
+    area: "ha-tang",
+    text: "Bước (b1): sửa bảng PROVIDERS: Groq khai key ở dòng groq_key nhưng cả app (admin-room.ts, room-groq.ts, overview-data.ts) đọc và ghi run_key; đã đổi thành run_key để ô key chung theo PROVIDERS không lưu nhầm chỗ (chưa có chỗ nào dùng groq_key nên không mất dữ liệu). Test provider.test.ts giữ tên này. Thêm nhãn nhật ký key-groq. Bỏ alibabaAsrOnRoomPayProblem (báo «cửa trả theo lượt chưa nhận dạng Alibaba», đã sai từ khi Alibaba chạy key phòng, không còn nơi nào gọi).",
+  },
+  {
+    version: "5.1.3",
+    time: "17/11/2026",
     area: "tien",
     text: "Bước (a3-1) gỡ phần trăm chênh riêng của Deepgram (thêm ở v5.1.2): bỏ getProviderMarkup/saveProviderMarkup (provider-room.ts), ô nhập và prop withMarkup (provider-key-board.tsx, admin-desk.tsx), tham số deskKey của chargeRoomAsr (room-asr.server.ts; ali-filetrans.server.ts và deepgram-asr.server.ts gọi không còn deskKey). Không đổi số Token dịch bị trừ: với phiếu token, số trừ vốn đã tính từ giá gốc (markup 0) qua giayForBaseCost; số có chênh trước đây chỉ dùng kiểm lớn hơn 0 và cho phiếu vnd cũ (không còn được tạo từ v5.0.0). Ghi chú ở Admin từng nói «cộng phần trăm chênh» là sai, đã sửa thành «theo giá gốc». Khóa deepgram_desk trong room_settings không còn ai đọc (để nguyên, không xóa dữ liệu).",
   },

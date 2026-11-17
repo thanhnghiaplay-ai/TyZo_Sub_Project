@@ -757,6 +757,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "xem-ten-tep": "Xem tên tệp đầy đủ của phiếu",
   "hoan-vi": "Hoàn phiếu",
   "key-phong": "Đổi key Groq của phòng",
+  "key-groq": "Đổi key Groq của phòng",
   "key-model": "Đồng bộ model của key",
   "key-alibaba": "Đổi key Alibaba",
   "key-deepgram": "Đổi key Deepgram",

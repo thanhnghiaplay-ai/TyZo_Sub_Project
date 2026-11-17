@@ -20,11 +20,16 @@ describe("bảng nhà cung cấp", () => {
       assert.equal(PROVIDERS[id].id, id);
       assert.ok(PROVIDER_LABEL[id].length > 0);
       for (const name of Object.values(PROVIDERS[id].settings)) {
-        if (name === "run_desk" || name === "run_models") continue; // Groq giữ tên cũ
+        if (name === "run_key" || name === "run_desk" || name === "run_models") continue; // Groq giữ tên cũ
         assert.ok(!seen.has(name), `trùng ${name}`);
         seen.add(name);
       }
     }
+  });
+  it("Groq lưu key ở dòng run_key mà cả app đang đọc, không phải một tên mới", () => {
+    assert.equal(PROVIDERS.groq.settings.key, "run_key");
+    assert.equal(PROVIDERS.groq.settings.models, "run_models");
+    assert.equal(PROVIDERS.groq.settings.desk, "run_desk");
   });
   it("kiểu gửi key đúng từng nhà", () => {
     assert.equal(authHeader("groq", "abc"), "Bearer abc");

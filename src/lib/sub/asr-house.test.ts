@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { alibabaAsrOnRoomPayProblem, asrHouse, asrIntake, asrTakesLink, groqListHolds } from "./asr-house.ts";
+import { asrHouse, asrIntake, asrTakesLink, groqListHolds } from "./asr-house.ts";
 import { ASR_MODELS } from "./models.ts";
 import { ASR_PRICE } from "./types.ts";
 
@@ -18,10 +18,6 @@ describe("nhà nhận dạng", () => {
     assert.equal(groqListHolds(offered, "whisper-large-v3-turbo"), false);
     assert.equal(groqListHolds(offered, "qwen-audio-3.0-asr-flash-filetrans"), false);
     assert.equal(groqListHolds(null, "whisper-large-v3"), false);
-  });
-
-  it("cửa trả theo lượt chưa nhận dạng Alibaba", () => {
-    assert.match(alibabaAsrOnRoomPayProblem(), /Key của tôi/);
   });
 });
 

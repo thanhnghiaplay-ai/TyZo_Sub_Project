@@ -44,7 +44,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     caps: ["asr", "chat", "tts"],
     intake: "chunks",
     keyPage: "console.groq.com/keys",
-    settings: { key: "groq_key", models: "run_models", desk: "run_desk" },
+    // Groq giữ tên dòng cũ: key lưu ở run_key (admin-room.ts, room-groq.ts, overview-data.ts đều đọc dòng này).
+    settings: { key: "run_key", models: "run_models", desk: "run_desk" },
   },
   alibaba: {
     id: "alibaba",

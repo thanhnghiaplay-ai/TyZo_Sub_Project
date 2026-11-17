@@ -34,7 +34,3 @@ export function groqListHolds(offered: string[] | null, id: string): boolean {
   if (asrHouse(id) !== "groq") return false;
   return Boolean(offered && !offered.includes(id));
 }
-
-export function alibabaAsrOnRoomPayProblem(): string {
-  return "Cửa trả theo lượt chưa nhận dạng bằng Alibaba. Hãy chọn Key của tôi.";
-}
