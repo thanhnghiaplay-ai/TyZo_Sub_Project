@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { confirmOrderWith } from "@/lib/pay-confirm";
 import { creditHitWith } from "@/lib/pay-flow";
-import { randomBytes } from "node:crypto";
 import { toDataURL } from "qrcode";
 import type { Sql } from "@/lib/db";
 import { authMiddleware } from "@/lib/auth/middleware";
@@ -216,6 +215,8 @@ export async function placeSale(
   const bank = provider === "sepay" ? settings.sepay_bank : settings.casso_bank;
   const account = provider === "sepay" ? settings.sepay_account : settings.casso_account;
   const name = provider === "sepay" ? settings.sepay_name : settings.casso_name;
+  // Nạp trong hàm: import ở đầu file làm bản dev báo «node:crypto externalized» ở trang khách (xem ADMIN_LOG 5.5.0).
+  const { randomBytes } = await import("node:crypto");
   const id = randomBytes(12).toString("hex");
   const code = randomPayCode(randomBytes(6));
   const { getSql } = await import("@/lib/db");
