@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.5.0";
+export const APP_VERSION = "5.6.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.6.0",
+    time: "18/11/2026",
+    title: "Tự chọn màu, số dư ở đầu trang và giao diện Tương lai.",
+    points: [
+      "Nút Màu ở đầu trang cho bạn tự chọn màu nhấn bằng thanh kéo hoặc mã màu, được nhớ trên máy.",
+      "Số dư Token dịch nằm ngay đầu trang chủ; trên máy tính, ô thả video cạnh bảng Bản dịch.",
+      "Giao diện Tương lai (nếu được bật): nền lưới mờ, thẻ kính mờ. Có nút tắt hiệu ứng ở đầu trang.",
+    ],
+  },
   {
     version: "5.5.0",
     time: "18/11/2026",

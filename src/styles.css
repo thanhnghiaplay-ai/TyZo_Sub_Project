@@ -2745,11 +2745,11 @@ html[data-accent="user"][data-theme="light"] {
 }
 
 /*
- * Giao diện «Tương lai» (B3). Chỉ bật khi <html data-look="future">. Không đổi màu, chữ, bố cục:
+ * Giao diện «Tương lai» (B3). Chỉ bật khi <html data-look="future"> và khách chưa tắt (data-fx="off", B4). Không đổi màu, chữ, bố cục:
  * thêm lưới mờ ở nền, kính mờ ở thẻ, viền và hào quang theo màu nhấn. Màu nền thẻ vẫn lấy từ bảng màu
  * (trộn trong suốt tối đa 18%) nên chữ trên thẻ giữ độ tương phản đã kiểm ở checkTheme.
  */
-html[data-look="future"] body {
+html[data-look="future"]:not([data-fx="off"]) body {
   background-image:
     linear-gradient(color-mix(in srgb, var(--color-accent) 7%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 7%, transparent) 1px, transparent 1px),
@@ -2758,19 +2758,26 @@ html[data-look="future"] body {
   background-attachment: fixed;
 }
 
-html[data-look="future"] .bg-card,
-html[data-look="future"] .bg-raised {
+html[data-look="future"]:not([data-fx="off"]) .bg-raised {
+  background-color: color-mix(in srgb, var(--color-raised) 82%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) .bg-card {
   background-color: color-mix(in srgb, var(--color-card) 82%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) .bg-card,
+html[data-look="future"]:not([data-fx="off"]) .bg-raised {
   backdrop-filter: blur(14px) saturate(1.2);
   border-color: color-mix(in srgb, var(--color-accent) 28%, var(--color-line));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 10%, transparent), 0 8px 28px -12px color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
-html[data-look="future"] :is(button, a, [role="button"]).bg-accent {
+html[data-look="future"]:not([data-fx="off"]) :is(button, a, [role="button"]).bg-accent {
   box-shadow: 0 0 18px -4px color-mix(in srgb, var(--color-accent) 70%, transparent);
 }
 
-html[data-look="future"] .floating-dock {
+html[data-look="future"]:not([data-fx="off"]) .floating-dock {
   background-color: color-mix(in srgb, var(--color-raised) 78%, transparent);
   backdrop-filter: blur(16px) saturate(1.25);
   border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-line));
@@ -2779,9 +2786,9 @@ html[data-look="future"] .floating-dock {
 
 /* Người dùng tắt trong suốt: thẻ đặc, không mờ kính, giữ lưới và viền. */
 @media (prefers-reduced-transparency: reduce) {
-  html[data-look="future"] .bg-card,
-  html[data-look="future"] .bg-raised,
-  html[data-look="future"] .floating-dock {
+  html[data-look="future"]:not([data-fx="off"]) .bg-card,
+  html[data-look="future"]:not([data-fx="off"]) .bg-raised,
+  html[data-look="future"]:not([data-fx="off"]) .floating-dock {
     background-color: var(--color-card);
     backdrop-filter: none;
   }

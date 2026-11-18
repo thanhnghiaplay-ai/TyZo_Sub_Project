@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.6.0",
+    time: "18/11/2026",
+    area: "khac",
+    text: "Phần B giao diện trang khách xong. B1: khách tự chọn màu nhấn (khóa tyzo_accent trong máy, thắng màu Admin). B2: bộ màu thứ chín «Tương lai» ở Admin → Giao diện → Màu sắc. B3: trường Theme.look (Cổ điển hoặc Tương lai, data-look trên html): nền lưới mờ, thẻ kính mờ, hào quang theo màu nhấn, thanh dưới nổi kính mờ; bấm bộ Tương lai tự đặt look, có hàng «Hiệu ứng toàn trang» để đặt riêng. B4: khách tắt được hiệu ứng bằng nút ở đầu trang (khóa tyzo_fx = off, script đầu trang đặt data-fx=off trước khi vẽ), và hệ điều hành bật giảm trong suốt thì thẻ về nền đặc. Không đổi chức năng, giá, quyền, điều khoản. Đã chụp bằng Chromium ở 393, 720, 1280 px: không tràn ngang; chưa xem trang thật có đăng nhập.",
+  },
+  {
     version: "5.5.0",
     time: "18/11/2026",
     area: "khac",

@@ -657,6 +657,14 @@ export function densityScript(admin: Density): string {
   );
 }
 
+/** Khóa lưu trong máy khách: «off» là khách tắt hiệu ứng Tương lai (lưới, kính mờ, hào quang). */
+export const FX_KEY = "tyzo_fx";
+
+/** Script đầu trang: đặt data-fx="off" trước khi vẽ nên không nháy. Không có khóa hoặc kho bị chặn thì giữ hiệu ứng. */
+export function fxScript(): string {
+  return `(function(){try{if(localStorage.getItem(${JSON.stringify(FX_KEY)})==='off')document.documentElement.setAttribute('data-fx','off')}catch(e){}})();`;
+}
+
 export function paletteDiff(a: Theme, b: Theme): boolean {
   return JSON.stringify(a) !== JSON.stringify(b);
 }

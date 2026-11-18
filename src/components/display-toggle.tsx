@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AccentPicker } from "@/components/accent-picker";
 import { Icon } from "@/components/ui/icon";
 import { useTheme } from "@/components/ui/theme-context";
-import { DENSITY_KEY, MODE_KEY, defaultUserDensity, densityValue, pickUserDensity, type UserDensity } from "@/lib/theme/theme";
+import { DENSITY_KEY, FX_KEY, MODE_KEY, defaultUserDensity, densityValue, pickUserDensity, type UserDensity } from "@/lib/theme/theme";
 
 function remember(key: string, value: string) {
   try {
@@ -21,6 +21,7 @@ export function DisplayToggle() {
   const theme = useTheme();
   const [mode, setMode] = useState<"dark" | "light">("dark");
   const [density, setDensity] = useState<UserDensity>(defaultUserDensity(theme.density));
+  const [fxOff, setFxOff] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -29,7 +30,24 @@ export function DisplayToggle() {
     // Script đầu trang đã chọn sáng/tối nhưng không biết màu nền: đồng bộ thanh trình duyệt ngay từ lúc mở.
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme[current].bg);
     setDensity(pickUserDensity(root.getAttribute("data-density"), theme.density));
+    setFxOff(root.getAttribute("data-fx") === "off");
   }, [theme]);
+
+  const flipFx = () => {
+    const root = document.documentElement;
+    if (fxOff) {
+      root.removeAttribute("data-fx");
+      try {
+        localStorage.removeItem(FX_KEY);
+      } catch {
+        /* kho bị chặn: chỉ giữ đến khi tải lại trang */
+      }
+    } else {
+      root.setAttribute("data-fx", "off");
+      remember(FX_KEY, "off");
+    }
+    setFxOff(!fxOff);
+  };
 
   const flipMode = () => {
     const next = mode === "dark" ? "light" : "dark";
@@ -51,6 +69,8 @@ export function DisplayToggle() {
   const modeLabel = mode === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối";
   const densityLabel = density === "compact" ? "Đang gọn. Chuyển sang thoải mái" : "Đang thoải mái. Chuyển sang gọn";
 
+  const fxLabel = fxOff ? "Bật lại hiệu ứng Tương lai" : "Tắt hiệu ứng Tương lai (lưới, kính mờ, hào quang)";
+
   return (
     <div className="flex items-center gap-1.5">
       <button type="button" className="notice-bell-btn is-glyph" aria-label={modeLabel} title={modeLabel} onClick={flipMode}>
@@ -59,6 +79,11 @@ export function DisplayToggle() {
       <button type="button" className="notice-bell-btn is-glyph" aria-label={densityLabel} title={densityLabel} onClick={flipDensity}>
         {density === "compact" ? <Icon slot="ui.compact" /> : <Icon slot="ui.roomy" />}
       </button>
+      {theme.look === "future" && (
+        <button type="button" className="notice-bell-btn is-glyph" aria-label={fxLabel} aria-pressed={!fxOff} title={fxLabel} onClick={flipFx}>
+          <Icon slot="ui.magic" />
+        </button>
+      )}
       <AccentPicker />
     </div>
   );

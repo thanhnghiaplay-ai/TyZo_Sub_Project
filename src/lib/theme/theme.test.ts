@@ -270,9 +270,27 @@ test("look: mặc định Cổ điển, nhận Tương lai, giá trị lạ về
 
 test("look: styles.css có lớp Tương lai, nhánh giảm trong suốt, bộ màu Tương lai vẫn đọc được", () => {
   const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
-  assert.ok(css.includes('html[data-look="future"] body'));
-  assert.ok(css.includes('html[data-look="future"] .floating-dock'));
+  assert.ok(css.includes('html[data-look="future"]:not([data-fx="off"]) body'));
+  assert.ok(css.includes('html[data-look="future"]:not([data-fx="off"]) .floating-dock'));
+  assert.equal(/html\[data-look="future"\](?!:not)/.test(css), false, "mọi luật Tương lai phải tôn trọng nút tắt");
   assert.ok(/@media \(prefers-reduced-transparency: reduce\)[\s\S]*data-look="future"/.test(css));
   const item = PALETTES.find((p) => p.id === "tuong-lai")!;
   assert.deepEqual(checkTheme(parseTheme({ look: "future", light: item.light, dark: item.dark })), []);
+});
+
+test("fxScript: chỉ đặt data-fx khi khóa là off, không ném lỗi khi kho bị chặn", async () => {
+  const { runInNewContext } = await import("node:vm");
+  const { fxScript, FX_KEY } = await import("./theme.ts");
+  const run = (store: Record<string, string> | "blocked") => {
+    const attrs: Record<string, string> = {};
+    runInNewContext(fxScript(), {
+      document: { documentElement: { setAttribute: (k: string, v: string) => void (attrs[k] = v) } },
+      localStorage: store === "blocked" ? { getItem: () => { throw new Error("blocked"); } } : { getItem: (k: string) => store[k] ?? null },
+    });
+    return attrs;
+  };
+  assert.deepEqual(run({ [FX_KEY]: "off" }), { "data-fx": "off" });
+  assert.deepEqual(run({ [FX_KEY]: "on" }), {});
+  assert.deepEqual(run({}), {});
+  assert.deepEqual(run("blocked"), {});
 });
