@@ -9,6 +9,12 @@ export type AdminNote = {
 export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.6.1",
+    time: "23:40 ngày 18/11/2026",
+    area: "khac",
+    text: "Dọn giao diện Cấu hình của Chủ, 5 bước. 1) Ô model của gói chỉ hiện model hợp việc theo luật pack-fit (cùng luật Dựng gói tự động); model đã lưu mà không hợp thì giữ, ghi «không hợp việc này»; Alibaba ở Thuyết minh chưa có giọng thì để trống. 2) Danh sách model chỉ tên ngắn, mã dài một dòng nhỏ dưới ô. 3) Danh sách gói thu gọn, bấm mới sửa, xóa hỏi lại. 4) Giá mỗi nhà một khối cùng kiểu, Lấy lại theo nhà (Groq, Alibaba, Deepgram), Deepgram tự cập nhật nằm trong khối, một nút lưu số đô la. 5) Trang con «Gói và giá» tách thành «Giá» (hạn mức, giá từng nhà, giá thuê phòng chỉ xem) và «Gói» (Token dịch, gói dịch). Không đổi dữ liệu lưu, quyền hay giá bán; khách không thấy khác; không nâng số phiên bản khách.",
+  },
+  {
+    version: "5.6.1",
     time: "22:23 ngày 18/11/2026",
     area: "khac",
     text: "Rút gọn chữ trong phòng dịch, tab Cách trả, dưới ô Nhận dạng giọng. Năm đoạn gần giống nhau (Deepgram, AssemblyAI, Soniox, Speechmatics, Alibaba) gom thành một hàm linkAsrNote. Giữ lời riêng: Speechmatics nhắc key đúng vùng, Soniox nhắc tài khoản đã nạp tiền, Alibaba không nhắc key Groq như câu cũ. Không đổi cách chạy, giá, quyền hay điều khoản.",

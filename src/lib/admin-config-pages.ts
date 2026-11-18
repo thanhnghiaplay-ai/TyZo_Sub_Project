@@ -1,10 +1,11 @@
 /** Các trang con của tab Cấu hình (Admin, Chủ). Chỉ là danh sách để dựng thanh chọn ngang. */
-export type ConfigPageId = "trang-thai" | "nha-cung-cap" | "goi-gia" | "thue-phong" | "truc-tiep" | "cong-nap";
+export type ConfigPageId = "trang-thai" | "nha-cung-cap" | "gia" | "goi" | "thue-phong" | "truc-tiep" | "cong-nap";
 
 export const CONFIG_PAGES: { id: ConfigPageId; label: string }[] = [
   { id: "trang-thai", label: "Trạng thái" },
   { id: "nha-cung-cap", label: "Nhà cung cấp" },
-  { id: "goi-gia", label: "Gói và giá" },
+  { id: "gia", label: "Giá" },
+  { id: "goi", label: "Gói" },
   { id: "thue-phong", label: "Thuê phòng" },
   { id: "truc-tiep", label: "Dịch trực tiếp" },
   { id: "cong-nap", label: "Cổng nạp" },

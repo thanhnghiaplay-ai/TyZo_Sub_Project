@@ -49,11 +49,13 @@ export function ConfigTab() {
         <ProviderKeyBoards />
         <R2Board />
       </Page>
-      <Page id="goi-gia" current={page}>
+      <Page id="gia" current={page}>
         <RunDeskBoard owner part="price" />
         <Fold title="Giá thuê phòng" hint="Chỉ xem">
           <RoomPlansView />
         </Fold>
+      </Page>
+      <Page id="goi" current={page}>
         <GiayPackBoard />
         <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
           <ServicePackBoard />
