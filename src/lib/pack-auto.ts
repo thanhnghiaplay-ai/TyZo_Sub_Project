@@ -5,10 +5,9 @@
  * Ba mức lồng nhau nên giá không bao giờ đảo: Tiết kiệm ≤ Cân bằng ≤ Chất lượng (cùng một danh sách model).
  */
 import { asrCost, chatCost, speechCost, type PriceBook } from "./run-bill.ts";
-import { PACK_ROLES, PACK_ROLE_LABEL, providersForRole, translateTokens, type PackRole, type RoleAssign, type ServicePack } from "./service-pack.ts";
+import { PACK_ROLES, PACK_ROLE_LABEL, translateTokens, type PackRole, type RoleAssign, type ServicePack } from "./service-pack.ts";
 import { gradeOf } from "./sub/model-grade.ts";
-import { modelRoleOf } from "./sub/model-role.ts";
-import { chatModel } from "./sub/models.ts";
+import { fitsRole } from "./pack-fit.ts";
 import type { RentShow } from "./rent-show-rule.ts";
 import type { ProviderId } from "./sub/provider.ts";
 
@@ -48,16 +47,6 @@ export type AutoResult = {
   /** Việc được yêu cầu (không tắt) nhưng không có model hợp lệ có điểm và giá. */
   missing: PackRole[];
 };
-
-function fitsRole(role: PackRole, c: AutoCandidate): boolean {
-  const kind = modelRoleOf(c.model);
-  if (role === "asr") return kind === "asr" && providersForRole("asr").includes(c.provider);
-  if (!providersForRole(role).includes(c.provider)) return false;
-  if (role === "narration") return kind === "tts" && c.provider === "groq";
-  if (kind !== "translate") return false;
-  const tier = chatModel(c.model)?.tier;
-  return tier !== "safety";
-}
 
 /** Giá một phút để so sánh giữa các model cùng việc. Đồng. null khi thiếu giá. */
 function unitCost(role: PackRole, c: AutoCandidate, books: AutoInput["books"]): number | null {

@@ -16,6 +16,7 @@ import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
 import { PackAutoBoard } from "@/components/pack-auto-board";
 import { buildAutoPack, type AutoCandidate } from "@/lib/pack-auto";
+import { modelsForRole } from "@/lib/pack-fit";
 import { getRentShow, type RentShow } from "@/lib/rent-show";
 
 const dong = (n: number | null) => dongOrNull(n, "Chưa có giá gốc");
@@ -48,6 +49,8 @@ export function ServicePackBoard() {
   const [alibabaRows, setAlibabaRows] = useState<GroqLiveRow[] | undefined>(undefined);
   const [deepgramRows, setDeepgramRows] = useState<GroqLiveRow[] | undefined>(undefined);
 
+  // Nhà đã chọn nhưng chưa có model hợp việc (vd. Alibaba ở Thuyết minh). Chỉ để hiển thị, không lưu.
+  const [emptyPick, setEmptyPick] = useState<Record<string, ProviderId>>({});
   const [rentShow, setRentShow] = useState<RentShow | null>(null);
   useEffect(() => {
     void getRentShow().then(setRentShow).catch(() => undefined);
@@ -178,8 +181,11 @@ export function ServicePackBoard() {
               </div>
               {PACK_ROLES.map((role) => {
                 const assign = pack.roles[role];
-                const provider = assign?.provider ?? "";
-                const list = provider ? choices[provider] : [];
+                const key = `${pack.id}:${role}`;
+                const provider = assign?.provider ?? emptyPick[key] ?? "";
+                const fit = provider ? modelsForRole(role, provider, choices[provider]) : [];
+                const misfit = Boolean(assign?.model && !fit.includes(assign.model));
+                const list = misfit && assign ? [assign.model, ...fit] : fit;
                 return (
                   <div key={role} className="grid gap-2 sm:grid-cols-[7rem_8rem_1fr] sm:items-center">
                     <span className="text-sm">{PACK_ROLE_LABEL[role]}</span>
@@ -188,7 +194,13 @@ export function ServicePackBoard() {
                       value={provider}
                       onChange={(event) => {
                         const next = event.target.value as ProviderId | "";
-                        const model = next ? choices[next][0] || "" : "";
+                        const model = next ? modelsForRole(role, next, choices[next])[0] || "" : "";
+                        setEmptyPick((current) => {
+                          const rest = { ...current };
+                          if (next && !model) rest[key] = next;
+                          else delete rest[key];
+                          return rest;
+                        });
                         setRole(pack.id, role, next, model);
                       }}
                     >
@@ -197,17 +209,21 @@ export function ServicePackBoard() {
                         <option key={id} value={id}>{PROVIDER_LABEL[id]}</option>
                       ))}
                     </select>
-                    <select
-                      className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm"
-                      value={assign?.model ?? ""}
-                      disabled={!provider}
-                      onChange={(event) => setRole(pack.id, role, provider as ProviderId, event.target.value)}
-                    >
-                      {list.map((id) => (
-                        <option key={id} value={id}>{id} · {modelRoleNote(id)}</option>
-                      ))}
-                    </select>
-                    {assign?.model && <p className="text-xs text-muted sm:col-span-3">{assign.model}: {modelRoleNote(assign.model)}</p>}
+                    {provider && list.length === 0 ? (
+                      <p className="text-sm text-muted">Nhà này chưa có model cho việc này</p>
+                    ) : (
+                      <select
+                        className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-2 text-sm"
+                        value={assign?.model ?? ""}
+                        disabled={!provider}
+                        onChange={(event) => setRole(pack.id, role, provider as ProviderId, event.target.value)}
+                      >
+                        {list.map((id) => (
+                          <option key={id} value={id}>{id}{misfit && id === assign?.model ? " · không hợp việc này" : ` · ${modelRoleNote(id)}`}</option>
+                        ))}
+                      </select>
+                    )}
+                    {assign?.model && <p className="text-xs text-muted sm:col-span-3">{assign.model}: {misfit ? "không hợp việc này" : modelRoleNote(assign.model)}</p>}
                   </div>
                 );
               })}
