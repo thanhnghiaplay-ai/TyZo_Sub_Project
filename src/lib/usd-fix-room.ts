@@ -7,6 +7,7 @@ import { SPEECHMATICS_BASE_ROWS } from "@/lib/sub/speechmatics-base";
 import { SONIOX_BASE_ROWS } from "@/lib/sub/soniox-base";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
+import { isPulledHouse } from "@/lib/price-house";
 import type { AliQuote } from "@/lib/sub/alibaba-price";
 import type { DgPriceConfig, DgQuote } from "@/lib/sub/deepgram-price";
 import type { GroqLiveRow } from "@/lib/sub/groq-board";
@@ -166,23 +167,37 @@ export const saveUsdFix = createServerFn({ method: "POST" })
 
 export const reloadModelPrices = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => {
+  .validator((input: { house?: string } | undefined) => {
+    const house = input?.house;
+    if (house === undefined) return { house: undefined };
+    if (!isPulledHouse(house)) throw new Error("Nhà này không lấy giá từ trang giá.");
+    return { house };
+  })
+  .handler(async ({ context, data }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
-    const { fetchGroqBoard } = await import("@/lib/sub/groq-board-load");
-    const { refreshAlibabaBoard } = await import("@/lib/sub/alibaba-board.server");
     const sql = await getSql();
-    try {
-      const board = await fetchGroqBoard();
-      const value = JSON.stringify({ at: Date.now(), board });
-      await sql`insert into room_settings (key, value) values ('run_board', ${value}) on conflict (key) do update set value = ${value}`;
-    } catch {
-      /* giữ bảng Groq cũ */
+    const only = data.house;
+    if (!only || only === "Groq") {
+      const { fetchGroqBoard } = await import("@/lib/sub/groq-board-load");
+      try {
+        const board = await fetchGroqBoard();
+        const value = JSON.stringify({ at: Date.now(), board });
+        await sql`insert into room_settings (key, value) values ('run_board', ${value}) on conflict (key) do update set value = ${value}`;
+      } catch {
+        /* giữ bảng Groq cũ */
+      }
     }
-    await refreshAlibabaBoard(sql);
+    if (!only || only === "Alibaba") {
+      const { refreshAlibabaBoard } = await import("@/lib/sub/alibaba-board.server");
+      await refreshAlibabaBoard(sql);
+    }
     // Chủ bấm tay thì kéo Deepgram ngay, kể cả khi đang tắt tự động.
-    const { refreshDeepgramBoard } = await import("@/lib/sub/deepgram-board.server");
-    const dgOk = await refreshDeepgramBoard(sql);
+    let dgOk: boolean | undefined;
+    if (!only || only === "Deepgram") {
+      const { refreshDeepgramBoard } = await import("@/lib/sub/deepgram-board.server");
+      dgOk = await refreshDeepgramBoard(sql);
+    }
     const { groq, ali, dg, dgAt, dgConfig, rate, fix } = await readBoards();
     return { rate, rows: listed(groq, ali, dg, fix), deepgram: { ...dgConfig, at: dgAt }, deepgramPulled: dgOk };
   });
