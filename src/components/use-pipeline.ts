@@ -100,6 +100,9 @@ import { segsFromAssemblyai } from "@/lib/sub/assemblyai";
 import { recognizeSpeechmaticsUrl } from "@/lib/sub/speechmatics-run";
 import { segsFromSpeechmatics } from "@/lib/sub/speechmatics";
 import { recognizeSonioxUrl } from "@/lib/sub/soniox-run";
+import { r2Status } from "@/lib/r2-upload";
+import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
+import { packWavFromReader } from "@/lib/sub/wav-stream";
 import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { listKeyModels } from "@/lib/key-models";
@@ -909,25 +912,30 @@ export function usePipeline() {
     }
     if (asrModel === DEEPGRAM_ASR) {
       if (!roomPayRef.current && !houseKeyOf("deepgram")) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
-      if (!link) return say("Deepgram cần link file trực tiếp (http/https).", true);
+      if (!link && !(file || audioFile)) return say("Deepgram cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
       if (!token && !roomPayRef.current) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrHouse(asrModel) === "assemblyai") {
       if (!roomPayRef.current && !houseKeyOf("assemblyai")) return say("Nhận dạng AssemblyAI cần key AssemblyAI của bạn.", true);
-      if (!link) return say("AssemblyAI cần link file trực tiếp (http/https).", true);
+      if (!link && !(file || audioFile)) return say("AssemblyAI cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
       if (!token && !roomPayRef.current) return say("AssemblyAI chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrHouse(asrModel) === "speechmatics") {
       if (!roomPayRef.current && !houseKeyOf("speechmatics")) return say("Nhận dạng Speechmatics cần key Speechmatics của bạn.", true);
-      if (!link) return say("Speechmatics cần link file trực tiếp (http/https).", true);
+      if (!link && !(file || audioFile)) return say("Speechmatics cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
       if (!token && !roomPayRef.current) return say("Speechmatics chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrHouse(asrModel) === "soniox") {
       if (!roomPayRef.current && !houseKeyOf("soniox")) return say("Nhận dạng Soniox cần key Soniox của bạn.", true);
-      if (!link) return say("Soniox cần link file trực tiếp (http/https).", true);
+      if (!link && !(file || audioFile)) return say("Soniox cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
       if (!token && !roomPayRef.current) return say("Soniox chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
-      if (!link) return say("Alibaba Filetrans cần link file trực tiếp (http/https).", true);
+      if (!link && !(file || audioFile)) return say("Alibaba Filetrans cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
     } else if (!token) return say("Vui lòng nhập Groq API key.", true);
+    if (asrTakesLink(asrModel) && !link && (file || audioFile)) {
+      // Tệp trên máy đi qua kho tạm R2 (âm thanh tách ở máy khách). Chủ chưa cấu hình thì không nhận, báo trước khi giữ tiền.
+      const ready = await r2Status().catch(() => null);
+      if (!ready?.ready) return say("Kho tạm để gửi tệp trên máy tới nhà nhận dạng chưa được bật. Hãy dán link file trực tiếp hoặc chọn nhận dạng Whisper.", true);
+    }
     if (!roomPayRef.current) {
       const opened = await getRentShow().catch(() => null);
       const blocked = rentUseProblem(opened, { asr: asrModel, chat: chosen });
@@ -1610,6 +1618,7 @@ export function usePipeline() {
       await Promise.all(Array.from({ length: translators }, worker));
     };
 
+    let r2Key: string | null = null;
     try {
       j.diagLang = source;
       const id = mediaId();
@@ -1737,10 +1746,37 @@ export function usePipeline() {
           const planned = chunksToSamples(chunksFromSpans(spans, duration), totalSamples);
           return planned.length ? planned : j.pcm ? splitAudio(j.pcm) : streamParts(duration);
         };
+        let runUrl = link;
+        if (asrTakesLink(asrModel) && !link && (file || audioFile)) {
+          const pcm = j.pcm;
+          const stream = j.stream;
+          const seconds = pcm ? pcm.length / SR : stream?.dur || 0;
+          if (!(seconds > 0)) throw new Error("Không đọc được âm thanh của tệp này.");
+          let shown = -1;
+          const tell = (label: string, done: number, total: number) => {
+            const pct = Math.floor((done / Math.max(1, total)) * 100 / 5) * 5;
+            if (pct === shown) return;
+            shown = pct;
+            if (my === j.runId) say(`${label} ${pct}%`);
+          };
+          say("Đang tách âm thanh trên máy…");
+          const wav = await packWavFromReader(
+            async (from, to) => (pcm ? pcm.subarray(Math.max(0, Math.floor(from * SR)), Math.min(pcm.length, Math.floor(to * SR))) : streamSamples(stream!, audioContext, from, to, signal)),
+            seconds,
+            { signal, onProgress: (done, total) => tell("Đang tách âm thanh trên máy…", done, total) },
+          );
+          if (my !== j.runId) return;
+          shown = -1;
+          say("Đang tải âm thanh lên kho tạm…");
+          const uploaded = await uploadAudioToR2(wav, { signal, onProgress: (sent, total) => tell("Đang tải âm thanh lên kho tạm…", sent, total) });
+          r2Key = uploaded.key;
+          runUrl = uploaded.url;
+          if (my !== j.runId) return;
+        }
         if (asrModel === DEEPGRAM_ASR) {
           say("Đang gửi link tới Deepgram…");
           const result = await recognizeDeepgramUrl({
-            url: link,
+            url: runUrl,
             language: source,
             key: roomPayRef.current ? "room" : houseKeyOf("deepgram"),
             ticketId,
@@ -1762,7 +1798,7 @@ export function usePipeline() {
         if (asrHouse(asrModel) === "assemblyai") {
           say("Đang gửi link tới AssemblyAI…");
           const result = await recognizeAssemblyaiUrl({
-            url: link,
+            url: runUrl,
             language: source,
             model: asrModel,
             key: roomPayRef.current ? "room" : houseKeyOf("assemblyai"),
@@ -1785,7 +1821,7 @@ export function usePipeline() {
         if (asrHouse(asrModel) === "speechmatics") {
           say("Đang gửi link tới Speechmatics…");
           const result = await recognizeSpeechmaticsUrl({
-            url: link,
+            url: runUrl,
             language: source,
             model: asrModel,
             key: roomPayRef.current ? "room" : houseKeyOf("speechmatics"),
@@ -1808,7 +1844,7 @@ export function usePipeline() {
         if (asrHouse(asrModel) === "soniox") {
           say("Đang gửi link tới Soniox…");
           const result = await recognizeSonioxUrl({
-            url: link,
+            url: runUrl,
             language: source,
             model: asrModel,
             key: roomPayRef.current ? "room" : houseKeyOf("soniox"),
@@ -1831,7 +1867,7 @@ export function usePipeline() {
         if (asrModel === ALI_FILETRANS_MODEL) {
           say("Đang gửi file tới Alibaba…");
           const result = await recognizeFileUrl({
-            url: link,
+            url: runUrl,
             language: source,
             key: roomPayRef.current ? "room" : houseKeyOf("alibaba"),
             ticketId,
@@ -1964,6 +2000,7 @@ export function usePipeline() {
         pushStages();
       }
       releasePlayback();
+      await removeAudioFromR2(r2Key);
       await closeRoomTicket(ticketId, ticketFailed);
       forgetTicket(ticketId);
       if (ticketId) window.dispatchEvent(new Event("tyzo-room-refresh"));
