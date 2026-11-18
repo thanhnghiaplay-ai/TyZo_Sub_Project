@@ -1,3 +1,4 @@
+import { MENU_GROUP, MENU_ITEM } from "@/lib/customer-menu";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
@@ -15,16 +16,22 @@ import { requestTour } from "@/lib/tour-request";
 import { TOUR_PAGE } from "@/lib/tour-steps";
 
 const RAIL: RailItem[] = [
-  { id: "home", label: "Trang chủ", href: "/" },
-  { id: "huong-dan", label: "Hướng dẫn", current: true },
-  { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep" },
+  { id: "home", label: MENU_ITEM.home, href: "/" },
+  { id: "dich-truc-tiep", label: MENU_GROUP.live, href: "/dich-truc-tiep" },
   {
-    id: "tai-khoan",
-    label: "Tài khoản",
+    id: "vi-goi",
+    label: MENU_GROUP.wallet,
     children: [
-      { id: "goi", label: "Thuê phòng và gói", href: "/goi" },
-      { id: "ctv", label: "Cộng tác viên", href: "/ctv" },
-      { id: "yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
+      { id: "goi", label: MENU_ITEM.plans, href: "/goi" },
+      { id: "ctv", label: MENU_ITEM.partner, href: "/ctv" },
+    ],
+  },
+  {
+    id: "tro-giup",
+    label: MENU_GROUP.help,
+    children: [
+      { id: "huong-dan", label: MENU_ITEM.guide, current: true },
+      { id: "yeu-cau", label: MENU_ITEM.appeal, href: "/yeu-cau" },
     ],
   },
 ];

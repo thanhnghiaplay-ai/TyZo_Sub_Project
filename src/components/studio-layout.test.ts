@@ -1,3 +1,4 @@
+import { TOOL_NAME } from "../lib/customer-menu.ts";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
@@ -38,7 +39,7 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(src.includes("Tự nhận dạng"), false);
   });
 
-  it("cách trả và gói trả theo lượt nằm trong Key Sub, Nâng cao chỉ còn Thuật ngữ", () => {
+  it("cách trả và gói trả theo lượt nằm trong mục Cách trả, Thuật ngữ cùng nhóm Dịch bình thường", () => {
     assert.equal(phim.includes("Thuật ngữ thể loại"), false);
     assert.equal(phim.includes("<GlossaryEditor"), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
@@ -47,7 +48,8 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(source.includes('id="tool-goi-dich"'), false);
     const thuat = source.slice(source.indexOf('id="tool-thuatngu"'));
     assert.match(thuat, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
-    assert.match(source, /id: "nang-cao"[\s\S]{0,120}ADVANCED_TOOLS\.map/);
+    assert.match(source, /label: MENU_GROUP\.normal[\s\S]{0,400}\[\.\.\.TOOLS, \.\.\.ADVANCED_TOOLS\]/);
+    assert.equal(source.includes('id: "nang-cao"'), false);
     assert.match(source, /hidden=\{toolTab !== "thuatngu"\}/);
   });
 });
@@ -187,9 +189,10 @@ describe("Bước 7.1 — không chồng khung", () => {
 });
 
 describe("Bước 7.2 — tab theo thứ tự dùng", () => {
-  it("Key Sub, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
-    const labels = ["Key Sub", "Phim", "Nhân vật", "Nghe", "Kiểm tra"];
-    const at = labels.map((label) => source.indexOf(`"${label}"`));
+  it("Cách trả, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
+    assert.deepEqual([TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check], ["Cách trả", "Phim", "Nhân vật", "Thuyết minh", "Kiểm tra"]);
+    const keys = ["key", "phim", "cast", "voice", "check"];
+    const at = keys.map((key) => source.indexOf(`["${key}", TOOL_NAME.`));
     assert.ok(at.every((index) => index >= 0), at.join(","));
     assert.deepEqual(at, [...at].sort((a, b) => a - b));
     assert.equal(source.includes('id="tool-chat"'), false);

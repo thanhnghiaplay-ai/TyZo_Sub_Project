@@ -1,3 +1,4 @@
+import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "@/lib/customer-menu";
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
@@ -461,16 +462,16 @@ function loadNarration(): NarrationSettings {
 }
 
 const TOOLS = [
-  ["key", "Key Sub"],
-  ["phim", "Phim"],
-  ["cast", "Nhân vật"],
-  ["voice", "Nghe"],
-  ["check", "Kiểm tra"],
+  ["key", TOOL_NAME.key],
+  ["phim", TOOL_NAME.phim],
+  ["cast", TOOL_NAME.cast],
+  ["voice", TOOL_NAME.voice],
+  ["check", TOOL_NAME.check],
 ] as const;
 
-/** Chức năng nâng cao: chỉ Thuật ngữ. Cách trả nằm trong Key Sub. */
+/** Chức năng thêm: chỉ Thuật ngữ (cùng nhóm «Dịch bình thường» trên menu). Cách trả nằm trong mục «Cách trả». */
 const ADVANCED_TOOLS = [
-  ["thuatngu", "Thuật ngữ"],
+  ["thuatngu", TOOL_NAME.thuatngu],
 ] as const;
 type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 
@@ -758,12 +759,12 @@ export function Studio() {
   const lockTurnModels = showRoomPrice && turnLocked;
 
   const railItems: RailItem[] = [
-    { id: "home", label: "Trang chủ", current: product === "sub" && hero, onPick: () => { setProduct("sub"); setForced(false); } },
+    { id: "home", label: MENU_ITEM.home, current: product === "sub" && hero, onPick: () => { setProduct("sub"); setForced(false); } },
     {
       id: "sub",
-      label: "Dịch bình thường",
+      label: MENU_GROUP.normal,
       badge: railBadge(service.status, "normal"),
-      children: TOOLS.map(([id, label]) => ({
+      children: [...TOOLS, ...ADVANCED_TOOLS].map(([id, label]) => ({
         id: `tool-${id}`,
         domId: `tool-tab-${id}`,
         label,
@@ -771,30 +772,25 @@ export function Studio() {
         onPick: () => openTool(id),
       })),
     },
+    { id: "dich-truc-tiep", label: MENU_GROUP.live, href: "/dich-truc-tiep", badge: railBadge(service.status, "live") },
     {
-      id: "nang-cao",
-      label: "Nâng cao",
-      children: ADVANCED_TOOLS.map(([id, label]) => ({
-        id: `tool-${id}`,
-        domId: `tool-tab-${id}`,
-        label,
-        current: product === "sub" && toolTab === id,
-        onPick: () => openTool(id),
-      })),
-    },
-    { id: "dich-truc-tiep", label: "Dịch trực tiếp", href: "/dich-truc-tiep", badge: railBadge(service.status, "live") },
-    { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
-    {
-      id: "tai-khoan",
-      label: "Tài khoản",
+      id: "vi-goi",
+      label: MENU_GROUP.wallet,
       children: [
-        { id: "so-du", domId: "tool-tab-so-du", label: "Token dịch", current: product === "account", onPick: () => setProduct("account") },
-        { id: "goi", domId: "tool-tab-goi", label: "Thuê phòng và gói", href: "/goi" },
-        { id: "ctv", label: "Cộng tác viên", href: "/ctv" },
-        { id: "yeu-cau", domId: "tool-tab-yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
+        { id: "so-du", domId: "tool-tab-so-du", label: MENU_ITEM.tokens, current: product === "account", onPick: () => setProduct("account") },
+        { id: "goi", domId: "tool-tab-goi", label: MENU_ITEM.plans, href: "/goi" },
+        { id: "ctv", label: MENU_ITEM.partner, href: "/ctv" },
       ],
     },
-    ...(place?.role ? [{ id: "quan-ly", label: "Quản lý", href: "/admin" as const }] : []),
+    {
+      id: "tro-giup",
+      label: MENU_GROUP.help,
+      children: [
+        { id: "huong-dan", label: MENU_ITEM.guide, href: "/huong-dan" },
+        { id: "yeu-cau", domId: "tool-tab-yeu-cau", label: MENU_ITEM.appeal, href: "/yeu-cau" },
+      ],
+    },
+    ...(place?.role ? [{ id: "quan-ly", label: MENU_ITEM.manage, href: "/admin" as const }] : []),
   ];
 
   const clickPicker = () => (document.querySelector("[data-home-hero] input[type=file]") as HTMLInputElement | null)?.click();
@@ -823,9 +819,9 @@ export function Studio() {
     { id: "export-vtt", label: "Tải phụ đề WebVTT (.vtt)", hint: "Tải", words: "vtt webvtt xuat phu de", disabled: noSubs || !online, run: () => void app.exportSub("vtt") },
     { id: "export-txt", label: "Tải chữ thuần (.txt)", hint: "Tải", words: "txt text xuat van ban", disabled: noSubs || !online, run: () => void app.exportSub("txt") },
     { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
-    ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: id === "key" ? "key groq cach tra theo luot goi" : "phu de cong cu", run: () => openTool(id) })),
-    ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Nâng cao", words: "thuat ngu glossary the loai", run: () => openTool(id) })),
-    { id: "wallet", label: "Token dịch", hint: "Tài khoản", words: "token dich goi", run: () => setProduct("account") },
+    ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: id === "key" ? "key sub groq cach tra theo luot goi" : id === "voice" ? "nghe thuyet minh giong doc" : "phu de cong cu", run: () => openTool(id) })),
+    ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "thuat ngu glossary the loai", run: () => openTool(id) })),
+    { id: "wallet", label: MENU_ITEM.tokens, hint: MENU_GROUP.wallet, words: "token dich goi", run: () => setProduct("account") },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", hint: "Trang", words: "live truc tiep micro tab giong noi", run: () => void navigate({ to: "/dich-truc-tiep" }) },
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
     { id: "ctv", label: "Cộng tác viên", hint: "Trang", run: () => void navigate({ to: "/ctv" }) },

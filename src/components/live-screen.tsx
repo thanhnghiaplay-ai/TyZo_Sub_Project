@@ -1,3 +1,4 @@
+import { MENU_GROUP, MENU_ITEM } from "@/lib/customer-menu";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/back-button";
 import { Icon } from "@/components/ui/icon";
@@ -127,16 +128,22 @@ export function LiveScreen() {
 
   const railItems: RailItem[] = useMemo(
     () => [
-      { id: "home", label: "Trang chủ", href: "/" },
-      { id: "dich-truc-tiep", label: "Dịch trực tiếp", current: true, badge: railBadge(service.status, "live") },
-      { id: "huong-dan", label: "Hướng dẫn", href: "/huong-dan" },
+      { id: "home", label: MENU_ITEM.home, href: "/" },
+      { id: "dich-truc-tiep", label: MENU_GROUP.live, current: true, badge: railBadge(service.status, "live") },
       {
-        id: "tai-khoan",
-        label: "Tài khoản",
+        id: "vi-goi",
+        label: MENU_GROUP.wallet,
         children: [
-          { id: "goi", label: "Thuê phòng và gói", href: "/goi" },
-          { id: "ctv", label: "Cộng tác viên", href: "/ctv" },
-          { id: "yeu-cau", label: "Yêu cầu xem lại", href: "/yeu-cau" },
+          { id: "goi", label: MENU_ITEM.plans, href: "/goi" },
+          { id: "ctv", label: MENU_ITEM.partner, href: "/ctv" },
+        ],
+      },
+      {
+        id: "tro-giup",
+        label: MENU_GROUP.help,
+        children: [
+          { id: "huong-dan", label: MENU_ITEM.guide, href: "/huong-dan" },
+          { id: "yeu-cau", label: MENU_ITEM.appeal, href: "/yeu-cau" },
         ],
       },
     ],

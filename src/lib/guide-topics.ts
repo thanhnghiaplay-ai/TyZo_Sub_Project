@@ -9,6 +9,7 @@
  *  - Ảnh minh họa (nếu có) đặt ở `public/huong-dan/<tên>.png` rồi điền tên vào `image`. Thiếu ảnh thì trang tự bỏ khung ảnh.
  */
 import { foldText } from "./admin-tabs.ts";
+import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "./customer-menu.ts";
 import { PROVIDER_IDS, PROVIDERS } from "./sub/provider.ts";
 import { PAY_MINUTES } from "./pay-minutes.ts";
 import { ROOM_PLANS, TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
@@ -16,22 +17,22 @@ import type { TourId } from "./tour-steps.ts";
 
 /** Tên hiện trên giao diện mà hướng dẫn nhắc tới. Đổi tên nút ở app thì đổi ở đây. */
 export const UI = {
-  keyTab: "Key Sub",
-  filmTab: "Phim",
-  voiceTab: "Nghe",
-  advanced: "Nâng cao",
-  glossary: "Thuật ngữ",
+  keyTab: TOOL_NAME.key,
+  filmTab: TOOL_NAME.phim,
+  voiceTab: TOOL_NAME.voice,
+  advanced: MENU_GROUP.normal,
+  glossary: TOOL_NAME.thuatngu,
   startRun: "Tải và dịch",
   download: "Tải phụ đề",
   account: "Tài khoản",
-  wallet: "Token dịch",
+  wallet: MENU_ITEM.tokens,
   live: "Dịch trực tiếp",
   tabAudio: "Âm thanh tab",
   mic: "Micro",
   begin: "Bắt đầu",
   changePassword: "Đổi mật khẩu",
   forgot: "Quên mật khẩu",
-  appeal: "Yêu cầu xem lại",
+  appeal: MENU_ITEM.appeal,
   autoLang: "Tự nhận biết",
 } as const;
 
