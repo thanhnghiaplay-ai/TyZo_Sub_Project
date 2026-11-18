@@ -61,7 +61,7 @@ export const Route = createRootRoute({
 function RootDocument() {
   const { theme, service } = Route.useLoaderData();
   return (
-    <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} data-button={theme.button} data-menu={theme.menuSide} data-motion={theme.motion} data-motion-speed={theme.motionSpeed === "mid" ? undefined : theme.motionSpeed} data-title-weight={theme.titleWeight === "keep" ? undefined : theme.titleWeight} suppressHydrationWarning>
+    <html lang="vi" data-theme={theme.mode === "light" ? "light" : "dark"} data-button={theme.button} data-look={theme.look === "future" ? "future" : undefined} data-menu={theme.menuSide} data-motion={theme.motion} data-motion-speed={theme.motionSpeed === "mid" ? undefined : theme.motionSpeed} data-title-weight={theme.titleWeight === "keep" ? undefined : theme.titleWeight} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

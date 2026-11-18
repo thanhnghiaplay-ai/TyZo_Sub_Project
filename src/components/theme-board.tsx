@@ -35,6 +35,8 @@ import {
   type MtFx,
   type MtShow,
   type ButtonStyle,
+  type Look,
+  LOOKS,
   type TitleWeight,
   type IconWeight,
   type IconGroupWeight,
@@ -118,6 +120,7 @@ function Preview({ theme, mode }: { theme: Theme; mode: "light" | "dark" }) {
       {titleHref && <link rel="stylesheet" href={titleHref} />}
       <div
         data-button={theme.button}
+        data-look={theme.look === "future" ? "future" : undefined}
         data-title-weight={theme.titleWeight === "keep" ? undefined : theme.titleWeight}
         style={paletteStyle(palette, theme)}
         className="grid gap-3 rounded-[var(--radius-card)] border border-line p-4 shadow-lg"
@@ -227,6 +230,7 @@ export function ThemeBoard() {
     if (!liveOrigin.current) {
       liveOrigin.current = {
         button: html.getAttribute("data-button"),
+        look: html.getAttribute("data-look"),
         menu: html.getAttribute("data-menu"),
         motion: html.getAttribute("data-motion"),
         speed: html.getAttribute("data-motion-speed"),
@@ -241,6 +245,8 @@ export function ThemeBoard() {
     }
     node.textContent = themeToCss(draft);
     html.setAttribute("data-button", draft.button);
+    if (draft.look === "future") html.setAttribute("data-look", "future");
+    else html.removeAttribute("data-look");
     html.setAttribute("data-menu", draft.menuSide);
     html.setAttribute("data-motion", draft.motion);
     if (draft.motionSpeed === "mid") html.removeAttribute("data-motion-speed");
@@ -257,6 +263,7 @@ export function ThemeBoard() {
       if (!origin) return;
       const put = (name: string, value: string | null) => (value === null ? html.removeAttribute(name) : html.setAttribute(name, value));
       put("data-button", origin.button);
+      put("data-look", origin.look);
       put("data-menu", origin.menu);
       put("data-motion", origin.motion);
       put("data-motion-speed", origin.speed);
@@ -433,6 +440,9 @@ export function ThemeBoard() {
             <Field label={`Độ dày viền: ${draft.line} px`}>
               <input type="range" min={1} max={3} step={1} value={draft.line} aria-label="Độ dày viền" onChange={(event) => patch({ line: Number(event.target.value) })} />
             </Field>
+            <Field label="Hiệu ứng toàn trang (Tương lai: lưới mờ, kính mờ, hào quang)">
+              <Segmented label="Hiệu ứng" value={draft.look} onChange={(look: Look) => patch({ look })} options={LOOKS.map(([id, label]) => ({ id, label }))} />
+            </Field>
             <Field label="Kiểu nút">
               <Segmented label="Kiểu nút" value={draft.button} onChange={(button: ButtonStyle) => patch({ button })} options={BUTTON_STYLES.map(([id, label]) => ({ id, label }))} />
             </Field>
@@ -507,7 +517,7 @@ export function ThemeBoard() {
                   key={item.id}
                   type="button"
                   className="min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border border-line px-2 text-sm"
-                  onClick={() => patch({ light: item.light, dark: item.dark })}
+                  onClick={() => patch({ light: item.light, dark: item.dark, look: item.id === "tuong-lai" ? "future" : "classic" })}
                 >
                   <span className="size-3 shrink-0 rounded-full border border-line" style={{ background: item.dark.accent }} aria-hidden="true" />
                   {item.name}

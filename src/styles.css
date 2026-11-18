@@ -2743,3 +2743,46 @@ html[data-accent="user"][data-theme="light"] {
   --color-accent: var(--accent-light);
   --color-ink: var(--ink-light);
 }
+
+/*
+ * Giao diện «Tương lai» (B3). Chỉ bật khi <html data-look="future">. Không đổi màu, chữ, bố cục:
+ * thêm lưới mờ ở nền, kính mờ ở thẻ, viền và hào quang theo màu nhấn. Màu nền thẻ vẫn lấy từ bảng màu
+ * (trộn trong suốt tối đa 18%) nên chữ trên thẻ giữ độ tương phản đã kiểm ở checkTheme.
+ */
+html[data-look="future"] body {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-accent) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-accent) 7%, transparent) 1px, transparent 1px),
+    radial-gradient(60rem 30rem at 50% -10%, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 70%);
+  background-size: 32px 32px, 32px 32px, auto;
+  background-attachment: fixed;
+}
+
+html[data-look="future"] .bg-card,
+html[data-look="future"] .bg-raised {
+  background-color: color-mix(in srgb, var(--color-card) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-color: color-mix(in srgb, var(--color-accent) 28%, var(--color-line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 10%, transparent), 0 8px 28px -12px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+html[data-look="future"] :is(button, a, [role="button"]).bg-accent {
+  box-shadow: 0 0 18px -4px color-mix(in srgb, var(--color-accent) 70%, transparent);
+}
+
+html[data-look="future"] .floating-dock {
+  background-color: color-mix(in srgb, var(--color-raised) 78%, transparent);
+  backdrop-filter: blur(16px) saturate(1.25);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-line));
+  box-shadow: 0 10px 34px -10px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+
+/* Người dùng tắt trong suốt: thẻ đặc, không mờ kính, giữ lưới và viền. */
+@media (prefers-reduced-transparency: reduce) {
+  html[data-look="future"] .bg-card,
+  html[data-look="future"] .bg-raised,
+  html[data-look="future"] .floating-dock {
+    background-color: var(--color-card);
+    backdrop-filter: none;
+  }
+}

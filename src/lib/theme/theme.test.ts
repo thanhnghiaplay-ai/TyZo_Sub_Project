@@ -258,3 +258,21 @@ test("densityScript: đọc tyzo_density, đặt data-density và --density, có
   assert.match(script, /1\.15/);
   assert.match(densityScript("compact"), /"compact"/);
 });
+
+test("look: mặc định Cổ điển, nhận Tương lai, giá trị lạ về Cổ điển, qua parseTheme hai lần vẫn giữ", () => {
+  assert.equal(THEME_DEFAULT.look, "classic");
+  assert.equal(parseTheme({}).look, "classic");
+  assert.equal(parseTheme({ look: "future" }).look, "future");
+  assert.equal(parseTheme({ look: "neon" }).look, "classic");
+  assert.equal(parseTheme({ look: 3 }).look, "classic");
+  assert.equal(parseTheme(parseTheme({ look: "future" })).look, "future");
+});
+
+test("look: styles.css có lớp Tương lai, nhánh giảm trong suốt, bộ màu Tương lai vẫn đọc được", () => {
+  const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
+  assert.ok(css.includes('html[data-look="future"] body'));
+  assert.ok(css.includes('html[data-look="future"] .floating-dock'));
+  assert.ok(/@media \(prefers-reduced-transparency: reduce\)[\s\S]*data-look="future"/.test(css));
+  const item = PALETTES.find((p) => p.id === "tuong-lai")!;
+  assert.deepEqual(checkTheme(parseTheme({ look: "future", light: item.light, dark: item.dark })), []);
+});

@@ -75,6 +75,13 @@ export const BUTTON_STYLES = [
 ] as const;
 export type ButtonStyle = (typeof BUTTON_STYLES)[number][0];
 
+/** Kiểu hiệu ứng toàn trang. Cổ điển giữ nguyên; Tương lai thêm lưới mờ, kính mờ, hào quang theo màu nhấn (CSS ở styles.css). */
+export const LOOKS = [
+  ["classic", "Cổ điển"],
+  ["future", "Tương lai"],
+] as const;
+export type Look = (typeof LOOKS)[number][0];
+
 export const MENU_SIDES = [
   ["left", "Trái"],
   ["right", "Phải"],
@@ -242,6 +249,8 @@ export type Theme = {
   mtShow: MtShow;
   /** Đặc giữ nút đặc. Viền và mờ chỉ đổi nút đang tô màu nhấn. */
   button: ButtonStyle;
+  /** Cổ điển (mặc định) hoặc Tương lai. Chỉ thêm lớp hiệu ứng, không đổi màu hay chữ. */
+  look: Look;
   density: Density;
   iconWeight: IconWeight;
   /** «same» nghĩa là nhóm này theo kiểu nét chung. */
@@ -319,6 +328,7 @@ export const THEME_DEFAULT: Theme = {
   mtFx: "on",
   mtShow: "robot",
   button: "solid",
+  look: "classic",
   density: "cozy",
   iconWeight: "duotone",
   iconGroups: { nav: "same", act: "same", st: "same", ui: "same" },
@@ -453,6 +463,7 @@ export function parseTheme(input: unknown): Theme {
   const iconSize = ICON_SIZES.some((s) => s[0] === src.iconSize) ? (src.iconSize as IconSize) : THEME_DEFAULT.iconSize;
   const iconTone = ICON_TONES.some((t) => t[0] === src.iconTone) ? (src.iconTone as IconTone) : THEME_DEFAULT.iconTone;
   const button = BUTTON_STYLES.some((b) => b[0] === src.button) ? (src.button as ButtonStyle) : THEME_DEFAULT.button;
+  const look = LOOKS.some((l) => l[0] === src.look) ? (src.look as Look) : THEME_DEFAULT.look;
   const menuSide = MENU_SIDES.some((s) => s[0] === src.menuSide) ? (src.menuSide as MenuSide) : THEME_DEFAULT.menuSide;
   const motion = MOTION.some((m) => m[0] === src.motion) ? (src.motion as Motion) : THEME_DEFAULT.motion;
   const motionSpeed = MOTION_SPEEDS.some((s) => s[0] === src.motionSpeed) ? (src.motionSpeed as MotionSpeed) : THEME_DEFAULT.motionSpeed;
@@ -483,6 +494,7 @@ export function parseTheme(input: unknown): Theme {
     mtFx,
     mtShow,
     button,
+    look,
     density,
     iconWeight: weight,
     iconGroups: pickIconGroups(src.iconGroups),
