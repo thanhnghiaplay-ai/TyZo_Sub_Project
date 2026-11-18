@@ -1,13 +1,10 @@
+import { dong } from "@/lib/money-format";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { BrandMark } from "@/components/brand-mark";
 import { Icon } from "@/components/ui/icon";
 import { cancelMyPayOrder, claimPayOrder, readPayOrder, syncCasso, type PayOrderView } from "@/lib/pay-store";
 import { PAY_MINUTES } from "@/lib/pay-minutes";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function clock(seconds: number) {
   const safe = Math.max(0, seconds);

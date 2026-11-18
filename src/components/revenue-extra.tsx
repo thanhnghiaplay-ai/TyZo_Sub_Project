@@ -1,12 +1,9 @@
+import { dong } from "@/lib/money-format";
 import { useEffect, useMemo, useState } from "react";
 import { getMoneyExtra, type MoneyExtra, type MoneyPoint } from "@/lib/admin-room";
 import { categoryLabel, lineGeometry, pathOf } from "@/lib/money-extra";
 
 type Span = "day" | "week" | "month" | "year";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 const BOX = { width: 640, height: 200, pad: 14 };
 

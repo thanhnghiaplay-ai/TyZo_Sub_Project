@@ -1,3 +1,4 @@
+import { dong } from "@/lib/money-format";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "@/components/back-button";
 import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
@@ -12,10 +13,6 @@ const PLAN_NOTES: Record<RoomPlanId, string> = {
   tuan: "Trong 7 ngày không giới hạn số tệp. Rẻ hơn mua bảy ngày lẻ.",
   thang: "Trong 30 ngày không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
 };
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function GoiPage() {
   return (

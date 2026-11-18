@@ -57,12 +57,8 @@ import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
-import { formatMoney, parseMoney } from "@/lib/money-format";
+import { formatMoney, parseMoney, dong } from "@/lib/money-format";
 import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function AppealForm({
   item,

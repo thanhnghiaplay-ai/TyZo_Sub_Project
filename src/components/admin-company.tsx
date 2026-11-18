@@ -4,13 +4,9 @@ import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
-import { formatMoney, parseMoney } from "@/lib/money-format";
+import { formatMoney, parseMoney, dong } from "@/lib/money-format";
 import { COST_CATEGORIES, categoryLabel } from "@/lib/money-extra";
 import { RevenueExtra } from "@/components/revenue-extra";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function vnDay(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh", year: "numeric", month: "2-digit", day: "2-digit" }).format(now);

@@ -1,3 +1,4 @@
+import { dongOrNull } from "@/lib/money-format";
 import { modelRoleNote } from "@/lib/sub/model-role";
 import { useEffect, useMemo, useState } from "react";
 import { pushToast } from "@/components/toast";
@@ -16,10 +17,7 @@ import { PackAutoBoard } from "@/components/pack-auto-board";
 import { buildAutoPack, type AutoCandidate } from "@/lib/pack-auto";
 import { getRentShow, type RentShow } from "@/lib/rent-show";
 
-function dong(n: number | null) {
-  if (n == null) return "Chưa có giá gốc";
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
+const dong = (n: number | null) => dongOrNull(n, "Chưa có giá gốc");
 
 function freshPack(groqModels: string[] | null): ServicePack {
   const chat = groqModels?.find((id) => !/whisper|orpheus/i.test(id)) || "qwen-plus";

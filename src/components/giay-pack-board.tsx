@@ -1,11 +1,8 @@
+import { dong } from "@/lib/money-format";
 import { useEffect, useState } from "react";
 import { getGiayDesk, saveGiayDesk } from "@/lib/giay-room";
 import { pushToast } from "@/components/toast";
 import type { GiayPack } from "@/lib/token-desk";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 /** Chủ đặt số Token dịch, số ngày, phần trăm chênh và hệ số đệm. Giá bán tính từ giá Turbo. */
 export function GiayPackBoard() {

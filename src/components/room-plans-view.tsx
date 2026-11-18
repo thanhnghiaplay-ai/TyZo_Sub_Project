@@ -1,8 +1,5 @@
+import { dong } from "@/lib/money-format";
 import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES } from "@/lib/room-plans";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 /** Chỉ XEM giá thuê phòng. Số nằm ở `src/lib/room-plans.ts` (cũng nằm trong chữ điều khoản và hướng dẫn); sửa phải sửa code, chưa sửa được ở Admin. */
 export function RoomPlansView() {

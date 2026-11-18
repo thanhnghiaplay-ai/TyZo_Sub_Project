@@ -10,3 +10,13 @@ export function parseMoney(s: string): number {
   const digits = s.replace(/\D/g, "");
   return digits ? Number(digits) : 0;
 }
+
+/** Tiền đồng kiểu Việt kèm đơn vị: 100.000 đ. Không làm tròn (người gọi đưa số nguyên). */
+export function dong(n: number): string {
+  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
+}
+
+/** Như `dong` nhưng số thiếu (null) thì trả chữ `missing` thay vì số. Làm tròn về đồng nguyên. */
+export function dongOrNull(n: number | null, missing: string): string {
+  return n == null ? missing : dong(Math.round(n));
+}

@@ -1,3 +1,4 @@
+import { dongOrNull } from "@/lib/money-format";
 import { useMemo, useState } from "react";
 import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, onlyRentOpen, type AutoCandidate, type AutoChoice, type AutoLang, type AutoResult } from "@/lib/pack-auto";
 import type { PriceBook } from "@/lib/run-bill";
@@ -5,7 +6,7 @@ import type { RentShow } from "@/lib/rent-show-rule";
 import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 
-const dong = (n: number | null) => (n == null ? "chưa đủ giá" : new Intl.NumberFormat("vi-VN").format(Math.round(n)) + " đ");
+const dong = (n: number | null) => dongOrNull(n, "chưa đủ giá");
 
 export type AutoDraft = { levels: Partial<Record<PackRole, AutoChoice>>; lang: AutoLang };
 

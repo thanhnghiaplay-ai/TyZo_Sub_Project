@@ -10,6 +10,7 @@
  */
 import { foldText } from "./admin-tabs.ts";
 import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "./customer-menu.ts";
+import { dong } from "./money-format.ts";
 import { PROVIDER_IDS, PROVIDERS } from "./sub/provider.ts";
 import { PAY_MINUTES } from "./pay-minutes.ts";
 import { ROOM_PLANS, TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
@@ -73,10 +74,6 @@ export type GuideContext = {
   /** Phòng có bật thư đặt lại mật khẩu. `null` khi chưa biết. */
   resetOn?: boolean | null;
 };
-
-function dong(amount: number): string {
-  return new Intl.NumberFormat("vi-VN").format(amount) + " đ";
-}
 
 function megabytes(bytes: number): number {
   return Math.round(bytes / (1024 * 1024));

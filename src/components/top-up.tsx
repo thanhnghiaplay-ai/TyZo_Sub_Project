@@ -4,16 +4,12 @@ import { claimPayOrder, cancelMyPayOrder, createPayOrder, getPayDesk, getPayPubl
 import { PAY_MINUTES } from "@/lib/pay-minutes";
 import { pushToast } from "@/components/toast";
 import { BrandMark } from "@/components/brand-mark";
-import { formatMoney, parseMoney } from "@/lib/money-format";
+import { formatMoney, parseMoney, dong } from "@/lib/money-format";
 
 const QUICK = [10_000, 50_000, 100_000, 200_000, 500_000];
 const MIN = 10_000;
 const MAX = 1_000_000;
 const WINDOW = PAY_MINUTES * 60 * 1000;
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function clock(seconds: number) {
   const safe = Math.max(0, seconds);

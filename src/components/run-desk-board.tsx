@@ -1,3 +1,4 @@
+import { dong } from "@/lib/money-format";
 import { useEffect, useState, type ReactNode } from "react";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, type RunDeskView, type RunTicket } from "@/lib/admin-room";
@@ -8,10 +9,6 @@ import { RUN_STATUS_LABEL, type RunDesk, type RunStatus } from "@/lib/run-desk";
 import { DoorDot } from "@/components/run-door";
 import { ModelUsdBoard } from "@/components/model-usd-board";
 import { maskFileName } from "@/lib/mask-file-name";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function amount(n: number, unit?: string) {
   if (unit === "token") return new Intl.NumberFormat("vi-VN").format(n) + " giây";

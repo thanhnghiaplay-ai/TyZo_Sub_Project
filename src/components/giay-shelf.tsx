@@ -1,13 +1,10 @@
+import { dong } from "@/lib/money-format";
 import { useEffect, useState } from "react";
 import { askConfirm } from "@/lib/confirm";
 import { getGiayShelf, orderGiayPack, type GiayPackView } from "@/lib/giay-room";
 import { formatGiay } from "@/lib/token-math";
 import { PaySlip } from "@/components/pay-slip";
 import type { PayOrderView } from "@/lib/pay-store";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 /** Kệ mua gói Token dịch. Giá tính lúc mở kệ. Gói đã mua không đổi số Token dịch. */
 export function GiayShelf({ reload, onBought }: { reload: number; onBought: (message: string) => void }) {

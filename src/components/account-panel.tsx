@@ -1,3 +1,4 @@
+import { dong } from "@/lib/money-format";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth/client";
@@ -17,10 +18,6 @@ import { ledgerRows } from "@/lib/ledger-view";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 export function AccountPanel() {
   const { user, isPending } = useCurrentUserState();

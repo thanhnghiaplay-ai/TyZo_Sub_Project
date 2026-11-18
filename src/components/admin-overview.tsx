@@ -1,3 +1,4 @@
+import { dong } from "@/lib/money-format";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { pushToast } from "@/components/toast";
 import { getOverview } from "@/lib/overview-room";
@@ -5,10 +6,6 @@ import type { Overview, OverviewRange, TopUser } from "@/lib/overview-data";
 import type { AdminTab } from "@/lib/admin-tabs";
 import { useServiceStatus } from "@/components/use-service-status";
 import { SERVICE_SCOPES, SERVICE_STATE_LABEL, scopeLabel } from "@/lib/service-status";
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 const RANGES: { id: OverviewRange; label: string }[] = [
   { id: 1, label: "Hôm nay" },

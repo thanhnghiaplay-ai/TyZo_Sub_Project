@@ -1,3 +1,4 @@
+import { dong } from "@/lib/money-format";
 import { useEffect, useState } from "react";
 import { DoorDot } from "@/components/run-door";
 import { ConfirmDialog } from "@/components/confirm-code";
@@ -28,10 +29,6 @@ const BLANK: PaySettingsView = {
   cassoTokenSet: false,
   cassoKeySet: false,
 };
-
-function dong(n: number) {
-  return new Intl.NumberFormat("vi-VN").format(n) + " đ";
-}
 
 function statusLabel(status: string, purpose: string) {
   if (status === "paid" && purpose === "token") return "Đã cộng Token dịch";
