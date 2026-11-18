@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.4.0",
+    time: "ngày 18/11/2026",
+    area: "ha-tang",
+    text: "Thêm nhà nhận dạng Speechmatics (PROVIDERS.md, bước 1 đến 7; bước 8 chưa gồm điều khoản). Lõi sub/speechmatics.ts (dựng config job, đọc json-v2 ra câu, lỗi tiếng Việt), vòng gửi-hỏi-lấy-xóa sub/speechmatics-poll.ts (luôn DELETE job khi xong để không giữ dữ liệu khách), speechmatics-asr.server.ts (key khách hoặc key phòng speechmatics_key), hai model speechmatics-standard và speechmatics-enhanced (ASR_MODELS, asrHouse). Giá cố định trong sub/speechmatics-base.ts (0,45 và 0,75 đô/giờ, theo trang giá 18/11/2026), Chủ sửa tay ở bảng giá qua usd_fix. Cửa Trả theo lượt: run-turn.ts giữ Token dịch, trừ theo số giây thực bằng chargeRoomAsr. Ô key phòng hiện ở Admin (ready: true). CHƯA đối chiếu với key Speechmatics thật: vùng máy chủ (đang khai US1, hằng SPEECHMATICS_API ở provider.ts), tên trường chọn model (SPEECHMATICS_MODEL_FIELD, đang operating_point), mã tiếng Trung cmn, cấu trúc json-v2. Điều khoản chưa nhắc Speechmatics: chờ Chủ chốt chữ rồi nâng TERMS_VERSION một lần cho cả ba nhà mới."
+  },
+  {
     version: "5.3.0",
     time: "ngày 18/11/2026",
     area: "ha-tang",
