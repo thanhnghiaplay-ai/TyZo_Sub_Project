@@ -15,16 +15,17 @@ const INTERVAL_MS = 3_000;
 const REQUEST_MS = 20_000;
 
 /**
- * Nhận dạng cả file từ link công khai bằng key của khách (không lưu, không tính tiền phòng).
- * Key "room" (cửa Trả theo lượt) CHƯA mở: chưa có bảng giá Soniox để trừ Token dịch (PROVIDERS.md bước 6 và 7),
- * nên chặn thẳng ở đây để không có lượt chạy miễn phí bằng key phòng.
+ * Nhận dạng cả file từ link công khai. Key "room" = key phòng ở cửa Trả theo lượt (cần phiếu giữ chỗ, trừ Token dịch
+ * theo số giây thực, giá gốc của nhà). Key khách: không lưu, không tính tiền phòng.
  */
 export async function runSonioxAsr(userId: string, input: SonioxAsrInput): Promise<SonioxAsrResult> {
   await requireOpenAccount(userId);
   await requireServiceOpen("normal");
   await takeRate(`sx-asr:${userId}`, 30, 60);
-  if (input.key === "room") throw new Error("Soniox chưa mở cho cửa Trả theo lượt. Hãy dùng key của bạn.");
-  const key = cleanSonioxKey(input.key);
+  const usingRoom = input.key === "room";
+  const { assertRoomTicket, roomKeyOf } = await import("@/lib/room-asr.server");
+  const key = usingRoom ? cleanSonioxKey(await roomKeyOf("soniox_key", "Soniox", 20)) : cleanSonioxKey(input.key);
+  if (usingRoom) await assertRoomTicket(userId, input.ticketId);
   const problem = directFileUrlProblem(input.url);
   if (problem) throw new Error(problem);
   const body = sonioxSubmitBody({ audioUrl: input.url, appModel: input.model, language: input.language });
@@ -53,5 +54,13 @@ export async function runSonioxAsr(userId: string, input: SonioxAsrInput): Promi
   };
 
   const transcript = await runSonioxJob({ request, body, deadlineMs: DEADLINE_MS, intervalMs: INTERVAL_MS });
-  return sentencesFromSoniox(transcript, input.language);
+  const done = sentencesFromSoniox(transcript, input.language);
+  if (usingRoom && input.ticketId) {
+    const { loadSonioxRows } = await import("@/lib/sub/soniox-board.server");
+    const { getSql } = await import("@/lib/db");
+    const { chargeRoomAsr } = await import("@/lib/room-asr.server");
+    const rows = await loadSonioxRows(await getSql());
+    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: input.model, rows });
+  }
+  return done;
 }

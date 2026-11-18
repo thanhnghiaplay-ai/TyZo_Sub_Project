@@ -219,7 +219,7 @@ describe("Deepgram trong gói dịch", () => {
   });
 
   it("nhận dạng chọn được Deepgram, các việc khác thì không", () => {
-    assert.deepEqual(providersForRole("asr"), ["groq", "alibaba", "deepgram", "assemblyai", "speechmatics"]);
+    assert.deepEqual(providersForRole("asr"), ["groq", "alibaba", "deepgram", "assemblyai", "speechmatics", "soniox"]);
     assert.deepEqual(providersForRole("translate"), ["groq", "alibaba"]);
     assert.deepEqual(providersForRole("narration"), ["groq", "alibaba"]);
   });

@@ -44,8 +44,9 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const dgAsr = asrHouse(data.asrModel) === "deepgram";
     const aaiAsr = asrHouse(data.asrModel) === "assemblyai";
     const smAsr = asrHouse(data.asrModel) === "speechmatics";
+    const sxAsr = asrHouse(data.asrModel) === "soniox";
     const auto = data.chatModel === "auto";
-    if ((!aliAsr && !dgAsr && !aaiAsr && !smAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
+    if ((!aliAsr && !dgAsr && !aaiAsr && !smAsr && !sxAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
       throw new Error("Model này không có trong cửa trả theo lượt.");
     }
     const book = await loadPriceBook(sql);
@@ -80,6 +81,15 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const smRows = await loadSpeechmaticsRows(sql);
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
       hold = chatModel ? holdGiay({ groq: book, aliRows, smRows, asrProvider: "speechmatics", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
+    } else if (sxAsr) {
+      const sxKey = await sql<{ value: string }>`select value from room_settings where key = 'soniox_key'`;
+      if (!sxKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Soniox.");
+      const offeredSx = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'soniox_models'`)[0]?.value);
+      if (offeredSx && !offeredSx.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      const { loadSonioxRows } = await import("@/lib/sub/soniox-board.server");
+      const sxRows = await loadSonioxRows(sql);
+      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
+      hold = chatModel ? holdGiay({ groq: book, aliRows, sxRows, asrProvider: "soniox", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
     } else if (aliAsr) {
       const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
       if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");

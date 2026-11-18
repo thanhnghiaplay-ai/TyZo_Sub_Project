@@ -142,7 +142,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     keyPage: "console.soniox.com",
     clientStore: "gsx",
     listPath: "/models",
-    ready: false,
+    ready: true,
     settings: { key: "soniox_key", models: "soniox_models", desk: "soniox_desk" },
   },
 };

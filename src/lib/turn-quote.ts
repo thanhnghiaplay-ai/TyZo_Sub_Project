@@ -25,6 +25,8 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
       const aaiRows = await loadAssemblyaiRows(sql);
       const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
       const smRows = await loadSpeechmaticsRows(sql);
+      const { loadSonioxRows } = await import("@/lib/sub/soniox-board.server");
+      const sxRows = await loadSonioxRows(sql);
       const book = await loadPriceBook(sql);
       const rows = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
       const packs = turnPacks(parseServicePacks(rows[0]?.value));
@@ -38,6 +40,7 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
           dgRows,
           aaiRows,
           smRows,
+          sxRows,
           asrProvider: asr.provider,
           asrModel: asr.model,
           chatModel: chat.model,

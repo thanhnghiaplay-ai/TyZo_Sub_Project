@@ -920,11 +920,9 @@ export function usePipeline() {
       if (!link) return say("Speechmatics cần link file trực tiếp (http/https).", true);
       if (!token && !roomPayRef.current) return say("Speechmatics chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrHouse(asrModel) === "soniox") {
-      // Cửa Trả theo lượt của Soniox mở ở bước 7 (cần bảng giá để trừ Token dịch). Tới lúc đó chỉ chạy bằng key của khách.
-      if (roomPayRef.current) return say("Soniox chưa mở cho cửa Trả theo lượt. Hãy dùng Thuê phòng với key Soniox của bạn.", true);
-      if (!houseKeyOf("soniox")) return say("Nhận dạng Soniox cần key Soniox của bạn.", true);
+      if (!roomPayRef.current && !houseKeyOf("soniox")) return say("Nhận dạng Soniox cần key Soniox của bạn.", true);
       if (!link) return say("Soniox cần link file trực tiếp (http/https).", true);
-      if (!token) return say("Soniox chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+      if (!token && !roomPayRef.current) return say("Soniox chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
