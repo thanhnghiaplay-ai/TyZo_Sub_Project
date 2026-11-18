@@ -1,4 +1,5 @@
 import { prependPack } from "@/lib/pack-order";
+import { packStatusView } from "@/lib/pack-status";
 import { dongOrNull } from "@/lib/money-format";
 import { askConfirm } from "@/lib/confirm";
 import { packDoorsText, packSummary } from "@/lib/pack-summary";
@@ -167,6 +168,7 @@ export function ServicePackBoard() {
               })
             : null;
           const open = openId === pack.id;
+          const status = packStatusView(pack.enabled);
           return (
             <article key={pack.id} id={`pack-${pack.id}`} className="rounded-[var(--radius-ctl)] border border-line">
               <div className="flex items-center gap-2 p-3">
@@ -178,7 +180,7 @@ export function ServicePackBoard() {
                 >
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-sm font-semibold">{pack.name.trim() || "Gói chưa đặt tên"}</span>
-                    <span className={`rounded-full border px-2 text-xs ${pack.enabled ? "border-accent text-ink" : "border-line text-muted"}`}>{pack.enabled ? "Đang mở" : "Đang tắt"}</span>
+                    <span className={`rounded-full border px-2 text-xs ${status.className}`}>{status.mark} {status.text}</span>
                     <span className="text-xs text-muted">{packDoorsText(pack)}</span>
                   </span>
                   <span className="text-xs text-muted">{packSummary(pack)}</span>
@@ -200,8 +202,8 @@ export function ServicePackBoard() {
               <div className="flex flex-wrap items-center gap-2">
                 <input className="min-tap min-w-40 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm" value={pack.name} onChange={(event) => patchPack(pack.id, { name: event.target.value })} />
                 <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={pack.enabled} onChange={(event) => patchPack(pack.id, { enabled: event.target.checked })} />
-                  Mở
+                  <input type="checkbox" className="size-5" style={{ accentColor: "var(--color-accent)" }} checked={pack.enabled} onChange={(event) => patchPack(pack.id, { enabled: event.target.checked })} />
+                  <span className={`rounded-full border px-2 text-xs ${status.className}`}>{status.mark} {status.text}</span>
                 </label>
               </div>
               <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm" placeholder="Gói này hợp việc gì" value={pack.note} onChange={(event) => patchPack(pack.id, { note: event.target.value })} />

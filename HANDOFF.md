@@ -6,7 +6,7 @@ YÊU CẦU CỦA CHỦ (làm từng bước, mỗi bước: sửa → `npx tsc -
 NGUYÊN NHÂN BƯỚC 2 (đã tìm): `service-pack-board.tsx` nhãn «Đang mở» dùng `text-ink` (#1a1400, gần đen) trên nền tối #0e141b nên chữ chìm. `text-ink` chỉ đúng khi nằm trên nền `bg-accent`.
 TIẾN ĐỘ:
 - Bước 1 [XONG]: `src/lib/pack-order.ts` (`prependPack`) + `pack-order.test.ts` (3 ca, đã vào `npm test`, có ca đọc mã chặn chèn cuối và chặn nút Lưu quay lại cuối danh sách). `service-pack-board.tsx`: «Thêm gói dịch» và «Dựng gói tự động» (`createAutoPack`) đều chèn đầu; nút «Lưu các gói dịch» nay cùng hàng với «Thêm gói dịch» ở đầu khối, bỏ nút Lưu cuối danh sách. `tsc` sạch, `npm test` 198 (191 pass, 7 bỏ qua) + 1040 pass. Chưa bấm thử trình duyệt. Admin-only, không đổi APP_VERSION.
-- Bước 2 [CHƯA]
+- Bước 2 [XONG, chờ kiểm bằng mắt trên trình duyệt]: `src/lib/pack-status.ts` (`packStatusView`) + `pack-status.test.ts` (3 ca, đã vào `npm test`). Bật = nền vàng `bg-accent` + chữ `text-ink` + dấu ●; tắt = viền/chữ xám + dấu ○ (phân biệt cả bằng dấu, không chỉ màu). Dùng ở dòng thu gọn VÀ cạnh ô «Mở» trong phần sửa gói (ô tick to hơn, `accentColor` vàng). CHƯA có ảnh 1 và 2 của Chủ trong repo nên suy đoán lỗi = chữ chìm màu; nếu Chủ nói lỗi khác thì hỏi lại. `tsc` sạch, `npm test` 198 (191 pass, 7 bỏ qua) + 1043 pass. Admin-only, không đổi APP_VERSION.
 - Bước 3 [CHƯA]
 CÁCH LÀM TIẾP (tài khoản khác): clone nhánh `work`, `npm ci`, đọc `BANG_DIEU.md` rồi mục này; làm bước đầu tiên còn [CHƯA]. Test phải thêm vào script `test` ở `package.json` (liệt kê từng file). `service-pack-board.tsx` không theo Prettier từ trước, đừng `prettier --write` cả file. KHÔNG đẩy `main` trừ khi Chủ nói đúng câu «đẩy chính thức».
 KHÔNG ghi token GitHub vào file. Token đã dán trong chat: Chủ cần THU HỒI sau khi xong.
