@@ -6,13 +6,17 @@ const read = (file: string) => readFileSync(new URL(file, import.meta.url), "utf
 
 describe("Admin: ô key các nhà sinh từ bảng PROVIDERS", () => {
   const desk = read("./admin-desk.tsx");
+  const config = read("./admin-config.tsx");
   const board = read("./provider-key-board.tsx");
   const run = read("./run-desk-board.tsx");
 
   it("tab Cấu hình vẽ ô key bằng ProviderKeyBoards, không viết tay từng nhà", () => {
-    assert.match(desk, /<ProviderKeyBoards \/>/);
-    assert.doesNotMatch(desk, /<ProviderKeyBoard provider=/);
-    assert.doesNotMatch(desk, /AlibabaKeyBoard/);
+    assert.match(desk, /<ConfigTab \/>/);
+    assert.match(config, /<ProviderKeyBoards \/>/);
+    for (const source of [desk, config]) {
+      assert.doesNotMatch(source, /<ProviderKeyBoard provider=/);
+      assert.doesNotMatch(source, /AlibabaKeyBoard/);
+    }
   });
   it("ProviderKeyBoards lặp theo PROVIDER_IDS", () => {
     assert.match(board, /PROVIDER_IDS\.map/);
