@@ -1201,6 +1201,9 @@ export function Studio() {
         {asrHouse(app.asrModel) === "assemblyai" && (
           <p className="text-sm text-muted">AssemblyAI nhận cả file từ link trực tiếp. Cần key AssemblyAI và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
         )}
+        {asrHouse(app.asrModel) === "soniox" && (
+          <p className="text-sm text-muted">Soniox nhận cả file từ link trực tiếp. Cần key Soniox (tài khoản đã nạp tiền) và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
+        )}
         {asrHouse(app.asrModel) === "speechmatics" && (
           <p className="text-sm text-muted">Speechmatics nhận cả file từ link trực tiếp. Cần key Speechmatics (đúng vùng tài khoản) và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
         )}

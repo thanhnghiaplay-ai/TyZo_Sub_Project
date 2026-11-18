@@ -99,6 +99,8 @@ import { recognizeAssemblyaiUrl } from "@/lib/sub/assemblyai-run";
 import { segsFromAssemblyai } from "@/lib/sub/assemblyai";
 import { recognizeSpeechmaticsUrl } from "@/lib/sub/speechmatics-run";
 import { segsFromSpeechmatics } from "@/lib/sub/speechmatics";
+import { recognizeSonioxUrl } from "@/lib/sub/soniox-run";
+import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { listKeyModels } from "@/lib/key-models";
 import { KEY_LIST_TRUSTED } from "@/lib/sub/key-list";
@@ -917,6 +919,12 @@ export function usePipeline() {
       if (!roomPayRef.current && !houseKeyOf("speechmatics")) return say("Nhận dạng Speechmatics cần key Speechmatics của bạn.", true);
       if (!link) return say("Speechmatics cần link file trực tiếp (http/https).", true);
       if (!token && !roomPayRef.current) return say("Speechmatics chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+    } else if (asrHouse(asrModel) === "soniox") {
+      // Cửa Trả theo lượt của Soniox mở ở bước 7 (cần bảng giá để trừ Token dịch). Tới lúc đó chỉ chạy bằng key của khách.
+      if (roomPayRef.current) return say("Soniox chưa mở cho cửa Trả theo lượt. Hãy dùng Thuê phòng với key Soniox của bạn.", true);
+      if (!houseKeyOf("soniox")) return say("Nhận dạng Soniox cần key Soniox của bạn.", true);
+      if (!link) return say("Soniox cần link file trực tiếp (http/https).", true);
+      if (!token) return say("Soniox chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
@@ -996,7 +1004,7 @@ export function usePipeline() {
       if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : asrHouse(asrModel) === "assemblyai" ? "Link AssemblyAI" : asrHouse(asrModel) === "speechmatics" ? "Link Speechmatics" : "Link Alibaba"),
+          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : asrHouse(asrModel) === "assemblyai" ? "Link AssemblyAI" : asrHouse(asrModel) === "speechmatics" ? "Link Speechmatics" : asrHouse(asrModel) === "soniox" ? "Link Soniox" : "Link Alibaba"),
           seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
@@ -1795,6 +1803,29 @@ export function usePipeline() {
           await translateRemaining(() => true);
           publish(true);
           say(j.segs.length ? `Nhận dạng Speechmatics xong: ${j.segs.length} câu.` : "Speechmatics không trả câu nào.", !j.segs.length);
+          setRunning(false);
+          delete document.documentElement.dataset.tyzoBusy;
+          return;
+        }
+        if (asrHouse(asrModel) === "soniox") {
+          say("Đang gửi link tới Soniox…");
+          const result = await recognizeSonioxUrl({
+            url: link,
+            language: source,
+            model: asrModel,
+            key: roomPayRef.current ? "room" : houseKeyOf("soniox"),
+            ticketId,
+            signal,
+          });
+          if (my !== j.runId) return;
+          j.segs = segsFromSoniox(result.sentences);
+          j.parts = [];
+          j.nextPart = 0;
+          j.doneSource = source;
+          publish(true);
+          await translateRemaining(() => true);
+          publish(true);
+          say(j.segs.length ? `Nhận dạng Soniox xong: ${j.segs.length} câu.` : "Soniox không trả câu nào.", !j.segs.length);
           setRunning(false);
           delete document.documentElement.dataset.tyzoBusy;
           return;
