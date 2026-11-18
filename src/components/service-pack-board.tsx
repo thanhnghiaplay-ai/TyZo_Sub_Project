@@ -1,3 +1,4 @@
+import { prependPack } from "@/lib/pack-order";
 import { dongOrNull } from "@/lib/money-format";
 import { askConfirm } from "@/lib/confirm";
 import { packDoorsText, packSummary } from "@/lib/pack-summary";
@@ -99,7 +100,7 @@ export function ServicePackBoard() {
     const id = `pack_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
     const pack = buildAutoPack({ id, levels: draft.levels, lang: draft.lang, roles });
     if (!pack) return pushToast("Gói cần model nhận dạng và model dịch.", "bad");
-    setPacks((current) => [...current, pack]);
+    setPacks((current) => prependPack(current, pack));
     setOpenId(pack.id);
     pushToast("Đã thêm gói nháp (đang tắt). Xem lại rồi bấm «Lưu các gói dịch».");
   }
@@ -142,13 +143,18 @@ export function ServicePackBoard() {
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-semibold">Gói dịch</h4>
-          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => {
-            const pack = freshPack(groqModels);
-            setPacks((current) => [...current, pack]);
-            setOpenId(pack.id);
-          }}>
-            Thêm gói dịch
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => {
+              const pack = freshPack(groqModels);
+              setPacks((current) => prependPack(current, pack));
+              setOpenId(pack.id);
+            }}>
+              Thêm gói dịch
+            </button>
+            <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => savePacks(packs)}>
+              Lưu các gói dịch
+            </button>
+          </div>
         </div>
         {packs.map((pack) => {
           const quote = board
@@ -274,9 +280,6 @@ export function ServicePackBoard() {
             </article>
           );
         })}
-        <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => savePacks(packs)}>
-          Lưu các gói dịch
-        </button>
       </div>
     </section>
   );

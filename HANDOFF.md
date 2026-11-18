@@ -1,3 +1,16 @@
+## BÀN GIAO (19/11/2026, nhánh work) — SỬA 3 LỖI GIAO DIỆN CẤU HÌNH, 3 BƯỚC THEO THỨ TỰ 1→2→3 — đọc mục này đầu tiên
+YÊU CẦU CỦA CHỦ (làm từng bước, mỗi bước: sửa → `npx tsc --noEmit` → `npm test` → commit → đẩy `work` → ghi vào đây → bước sau):
+1. «Thêm gói dịch»: gói mới nằm TRÊN đầu, đẩy gói cũ xuống (nút Thêm ở trên). Nút «Lưu các gói dịch» nằm phía trên, kế nút Thêm.
+2. Khi mở gói, nhãn trạng thái Mở/Tắt bị chìm màu, không nhìn thấy rõ trạng thái bật/tắt (Chủ gửi ảnh 1 và 2 trong chat; ảnh KHÔNG có trong repo).
+3. Trang Giá: mỗi nhà cung cấp mặc định ẨN, có nút ẩn/hiện, gồm cả các model của nhà đó.
+NGUYÊN NHÂN BƯỚC 2 (đã tìm): `service-pack-board.tsx` nhãn «Đang mở» dùng `text-ink` (#1a1400, gần đen) trên nền tối #0e141b nên chữ chìm. `text-ink` chỉ đúng khi nằm trên nền `bg-accent`.
+TIẾN ĐỘ:
+- Bước 1 [XONG]: `src/lib/pack-order.ts` (`prependPack`) + `pack-order.test.ts` (3 ca, đã vào `npm test`, có ca đọc mã chặn chèn cuối và chặn nút Lưu quay lại cuối danh sách). `service-pack-board.tsx`: «Thêm gói dịch» và «Dựng gói tự động» (`createAutoPack`) đều chèn đầu; nút «Lưu các gói dịch» nay cùng hàng với «Thêm gói dịch» ở đầu khối, bỏ nút Lưu cuối danh sách. `tsc` sạch, `npm test` 198 (191 pass, 7 bỏ qua) + 1040 pass. Chưa bấm thử trình duyệt. Admin-only, không đổi APP_VERSION.
+- Bước 2 [CHƯA]
+- Bước 3 [CHƯA]
+CÁCH LÀM TIẾP (tài khoản khác): clone nhánh `work`, `npm ci`, đọc `BANG_DIEU.md` rồi mục này; làm bước đầu tiên còn [CHƯA]. Test phải thêm vào script `test` ở `package.json` (liệt kê từng file). `service-pack-board.tsx` không theo Prettier từ trước, đừng `prettier --write` cả file. KHÔNG đẩy `main` trừ khi Chủ nói đúng câu «đẩy chính thức».
+KHÔNG ghi token GitHub vào file. Token đã dán trong chat: Chủ cần THU HỒI sau khi xong.
+
 ## BÀN GIAO (18/11/2026, nhánh work) — DỌN GIAO DIỆN CẤU HÌNH, 5 BƯỚC THEO THỨ TỰ 1→2→3→4→5 — đọc mục này đầu tiên
 YÊU CẦU CỦA CHỦ (làm từng bước, mỗi bước: sửa → `npx tsc --noEmit` → `npm test` → commit → đẩy `work` → ghi vào đây → bước sau):
 1. Ô model chỉ hiện model hợp việc (dùng luật máy đã có). Nhận dạng chỉ model nhận dạng; Dịch, Ngữ cảnh, Đối chiếu, Tóm tắt chỉ model dịch; Thuyết minh chỉ giọng đọc. Model đã lưu mà không hợp việc thì GIỮ, ghi «không hợp việc này», không tự xóa. Alibaba ở Thuyết minh chưa có giọng thì để trống, nói «Nhà này chưa có model cho việc này», không đổ model chat vào.
