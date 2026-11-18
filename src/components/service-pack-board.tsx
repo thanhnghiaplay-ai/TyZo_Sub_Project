@@ -74,7 +74,8 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
     const deepgram = ASR_MODELS.filter((row) => asrHouse(row.id) === "deepgram").map((row) => row.id);
     const assemblyai = ASR_MODELS.filter((row) => asrHouse(row.id) === "assemblyai").map((row) => row.id);
     const speechmatics = ASR_MODELS.filter((row) => asrHouse(row.id) === "speechmatics").map((row) => row.id);
-    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai, speechmatics, soniox: [] };
+    const soniox = ASR_MODELS.filter((row) => asrHouse(row.id) === "soniox").map((row) => row.id);
+    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai, speechmatics, soniox };
     return byProvider;
   }, [groqModels, models]);
 

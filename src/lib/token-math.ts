@@ -1,6 +1,7 @@
 import { ASSEMBLYAI_BASE_ROWS as ASSEMBLYAI_ROWS } from "./sub/assemblyai-base.ts";
 import { DEEPGRAM_BASE_ROWS as DEEPGRAM_ROWS } from "./sub/deepgram-base.ts";
 import { SPEECHMATICS_BASE_ROWS as SPEECHMATICS_ROWS } from "./sub/speechmatics-base.ts";
+import { SONIOX_BASE_ROWS as SONIOX_ROWS } from "./sub/soniox-base.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 import { asrCost, asrPerSecond, chatCost, estimateHold, estimateHoldSplit, type PriceBook } from "./run-bill.ts";
 
@@ -39,6 +40,8 @@ export function holdGiay(input: {
   aaiRows?: GroqLiveRow[];
   /** Bảng giá Speechmatics (loadSpeechmaticsRows). Thiếu thì dùng bảng cố định trong code. */
   smRows?: GroqLiveRow[];
+  /** Bảng giá Soniox (loadSonioxRows). Thiếu thì dùng bảng cố định trong code. */
+  sxRows?: GroqLiveRow[];
   asrProvider: string;
   asrModel: string;
   chatModel: string;
@@ -56,7 +59,9 @@ export function holdGiay(input: {
           ? (input.aaiRows ?? ASSEMBLYAI_ROWS)
           : input.asrProvider === "speechmatics"
             ? (input.smRows ?? SPEECHMATICS_ROWS)
-            : null;
+            : input.asrProvider === "soniox"
+              ? (input.sxRows ?? SONIOX_ROWS)
+              : null;
   const vnd =
     asrRows
       ? estimateHoldSplit({ rate: input.groq.rate, rows: asrRows, desk: { markup: 0, custom: {} } }, bare, input.asrModel, input.chatModel, input.seconds)
