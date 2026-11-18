@@ -1196,6 +1196,9 @@ export function Studio() {
         {app.asrModel === "deepgram-nova-3" && (
           <p className="text-sm text-muted">Deepgram nhận cả file từ link trực tiếp. Cần key Deepgram và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
         )}
+        {asrHouse(app.asrModel) === "assemblyai" && (
+          <p className="text-sm text-muted">AssemblyAI nhận cả file từ link trực tiếp. Cần key AssemblyAI và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
+        )}
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
           <p className="text-sm text-muted">Alibaba nhận cả file từ link trực tiếp. Cần key Alibaba và link file công khai (không phải trang xem). Không cắt đoạn trên máy.</p>
         )}

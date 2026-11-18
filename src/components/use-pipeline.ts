@@ -95,6 +95,8 @@ import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelM
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
 import { DEEPGRAM_ASR, segsFromDeepgram } from "@/lib/sub/deepgram";
+import { recognizeAssemblyaiUrl } from "@/lib/sub/assemblyai-run";
+import { segsFromAssemblyai } from "@/lib/sub/assemblyai";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { listKeyModels } from "@/lib/key-models";
 import { KEY_LIST_TRUSTED } from "@/lib/sub/key-list";
@@ -905,6 +907,12 @@ export function usePipeline() {
       if (!roomPayRef.current && !houseKeyOf("deepgram")) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
       if (!link) return say("Deepgram cần link file trực tiếp (http/https).", true);
       if (!token && !roomPayRef.current) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+    } else if (asrHouse(asrModel) === "assemblyai") {
+      // Cửa Trả theo lượt của AssemblyAI mở ở bước 7 (cần bảng giá để trừ Token dịch). Tới lúc đó chỉ chạy bằng key của khách.
+      if (roomPayRef.current) return say("AssemblyAI chưa mở cho cửa Trả theo lượt. Hãy dùng Thuê phòng với key AssemblyAI của bạn.", true);
+      if (!houseKeyOf("assemblyai")) return say("Nhận dạng AssemblyAI cần key AssemblyAI của bạn.", true);
+      if (!link) return say("AssemblyAI cần link file trực tiếp (http/https).", true);
+      if (!token) return say("AssemblyAI chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
@@ -1737,6 +1745,29 @@ export function usePipeline() {
           await translateRemaining(() => true);
           publish(true);
           say(j.segs.length ? `Nhận dạng Deepgram xong: ${j.segs.length} câu.` : "Deepgram không trả câu nào.", !j.segs.length);
+          setRunning(false);
+          delete document.documentElement.dataset.tyzoBusy;
+          return;
+        }
+        if (asrHouse(asrModel) === "assemblyai") {
+          say("Đang gửi link tới AssemblyAI…");
+          const result = await recognizeAssemblyaiUrl({
+            url: link,
+            language: source,
+            model: asrModel,
+            key: houseKeyOf("assemblyai"),
+            ticketId,
+            signal,
+          });
+          if (my !== j.runId) return;
+          j.segs = segsFromAssemblyai(result.sentences);
+          j.parts = [];
+          j.nextPart = 0;
+          j.doneSource = source;
+          publish(true);
+          await translateRemaining(() => true);
+          publish(true);
+          say(j.segs.length ? `Nhận dạng AssemblyAI xong: ${j.segs.length} câu.` : "AssemblyAI không trả câu nào.", !j.segs.length);
           setRunning(false);
           delete document.documentElement.dataset.tyzoBusy;
           return;
