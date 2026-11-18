@@ -7,8 +7,11 @@ import { authHeader } from "@/lib/sub/provider";
 export type DeepgramAsrInput = { url: string; language: string; key: string; ticketId?: string };
 export type DeepgramAsrResult = { sentences: DgSentence[]; seconds: number };
 
-/** Deepgram trả kết quả ngay trong một yêu cầu. Quá hạn này thì báo lỗi rõ, không treo. */
-const WAIT_MS = 110_000;
+/**
+ * Deepgram trả kết quả ngay trong một yêu cầu (không có API hỏi lại). Quá hạn này thì báo lỗi rõ, không treo.
+ * Hàm Vercel Hobby chạy tối đa 300 giây, chừa 30 giây cho kiểm tài khoản và trừ Token dịch. Chờ I/O không tính cước CPU.
+ */
+const WAIT_MS = 270_000;
 
 /**
  * Nhận dạng cả file từ link công khai. Key "room" = key phòng ở cửa Trả theo lượt (cần phiếu giữ chỗ, trừ Token dịch theo số giây thực).
