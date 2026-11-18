@@ -1,14 +1,6 @@
 import type { AdminTab, AdminTabInfo } from "@/lib/admin-tabs";
+import { ADMIN_GROUPS } from "@/lib/admin-groups";
 import { RailToggle, SideRail, type RailItem } from "@/components/side-rail";
-
-/** Nhóm lớn của menu Admin. Mục nhỏ là các tab; tab không đủ quyền tự rơi khỏi nhóm. */
-export const ADMIN_GROUPS: { id: string; label: string; tabs: AdminTab[] }[] = [
-  { id: "van-hanh", label: "Vận hành", tabs: ["viec", "cau-hinh"] },
-  { id: "tien", label: "Tiền", tabs: ["tien", "chat-luong"] },
-  { id: "con-nguoi", label: "Con người", tabs: ["so-do", "ctv"] },
-  { id: "noi-dung", label: "Nội dung", tabs: ["thuat-ngu", "thu", "giao-dien"] },
-  { id: "nhat-ky", label: "Nhật ký", tabs: ["thao-tac", "nhat-ky"] },
-];
 
 /** Dựng cây menu từ danh sách tab được phép. Tổng quan đứng riêng, cuối là «Về phòng». */
 export function adminRailItems(tabs: AdminTabInfo[], current: AdminTab, onPick: (id: AdminTab) => void): RailItem[] {

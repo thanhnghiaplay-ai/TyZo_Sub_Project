@@ -9,6 +9,12 @@ export type AdminNote = {
 export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.2.3",
+    time: "18/11/2026",
+    area: "khac",
+    text: "Sắp xếp lại giao diện Admin, bước 1 (Chủ chốt bản mô phỏng 18/11/2026): menu trái đổi từ 5 nhóm cũ (Vận hành, Tiền, Con người, Nội dung, Nhật ký) sang 5 nhóm theo việc đang làm: Khách và việc, Dịch vụ, Tiền (thêm Cộng tác), Nội dung, Hệ thống (Sơ đồ, Chất lượng, hai Nhật ký). Tab «Việc» đổi nhãn thành «Phiếu và việc». Không đổi id tab, quyền, dữ liệu hay chức năng. Ghi chú: Chất lượng chuyển từ nhóm Tiền sang Hệ thống. Không nâng số phiên bản khách vì khách không thấy khác.",
+  },
+  {
+    version: "5.2.3",
     time: "17/11/2026",
     area: "ha-tang",
     text: "Bước c3: ô tick giọng đọc Orpheus (Groq) ở bảng «Model khách được chọn khi thuê phòng» nay chặn thật. rent-rows.ts thêm loại tts cho Groq (Aura/Deepgram không có ô vì chỉ trả bằng Token dịch); rent-show-rule.ts thêm rentVoiceProblem + orpheusModelId; narration.ts kiểm danh sách (getRentShow, nhớ 60 giây) trước khi gọi Orpheus khi khách dùng key riêng (key khác \"room\"), bị khóa thì rơi sang giọng Edge/trình duyệt và studio.tsx báo toast một lần. Trả theo lượt (key \"room\") không bị chặn. LƯU Ý: danh sách Chủ đã lưu từ trước chưa có Orpheus nên khách key riêng sẽ bị khóa giọng Orpheus cho tới khi Chủ tick lại và lưu. Chưa lưu danh sách (null) thì không khóa.",

@@ -24,7 +24,7 @@ export type AdminTabInfo = {
 /** Một danh sách duy nhất cho thanh bên trái, hàng nút trên điện thoại và Ctrl+K. */
 export const ADMIN_TABS: AdminTabInfo[] = [
   { id: "tong-quan", label: "Tổng quan", owner: false, words: "trang chu dashboard canh bao" },
-  { id: "viec", label: "Việc", owner: false, words: "phieu luot don nap khach tai khoan tra theo luot" },
+  { id: "viec", label: "Phiếu và việc", owner: false, words: "phieu luot don nap khach tai khoan tra theo luot" },
   { id: "cau-hinh", label: "Cấu hình", owner: true, words: "key groq alibaba gia goi dich cong nap sepay casso thue phong model lien he ho tro zalo facebook email bao tri hoat dong dich truc tiep dich binh thuong" },
   { id: "so-do", label: "Sơ đồ", owner: false, words: "to chuc nhan vien quyen" },
   { id: "tien", label: "Doanh thu", owner: true, words: "tien chi phi loi lai arpu bieu do" },
