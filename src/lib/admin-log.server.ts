@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.2.3",
     time: "18/11/2026",
     area: "khac",
+    text: "Sắp xếp lại giao diện Admin, bước 2: tab Cấu hình của Chủ tách thành 6 trang con bấm ngang (Trạng thái, Nhà cung cấp, Gói và giá, Thuê phòng, Dịch trực tiếp, Cổng nạp). Code mới: components/admin-config.tsx (ConfigTab), lib/admin-config-pages.ts (+ test). Cùng các khối như trước, trang không chọn chỉ bị ẩn nên không mất dữ liệu đang nhập. Không đổi quyền, dữ liệu, giá hay chức năng; không nâng số phiên bản khách.",
+  },
+  {
+    version: "5.2.3",
+    time: "18/11/2026",
+    area: "khac",
     text: "Sắp xếp lại giao diện Admin, bước 1 (Chủ chốt bản mô phỏng 18/11/2026): menu trái đổi từ 5 nhóm cũ (Vận hành, Tiền, Con người, Nội dung, Nhật ký) sang 5 nhóm theo việc đang làm: Khách và việc, Dịch vụ, Tiền (thêm Cộng tác), Nội dung, Hệ thống (Sơ đồ, Chất lượng, hai Nhật ký). Tab «Việc» đổi nhãn thành «Phiếu và việc». Không đổi id tab, quyền, dữ liệu hay chức năng. Ghi chú: Chất lượng chuyển từ nhóm Tiền sang Hệ thống. Không nâng số phiên bản khách vì khách không thấy khác.",
   },
   {

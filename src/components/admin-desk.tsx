@@ -45,23 +45,15 @@ import { QualityBoard } from "@/components/quality-board";
 import { AdminOverview } from "@/components/admin-overview";
 import { tabsFor, type AdminTab } from "@/lib/admin-tabs";
 import { AdminNav } from "@/components/admin-nav";
+import { ConfigTab } from "@/components/admin-config";
 import { AppShell } from "@/components/side-rail";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AdminPalette } from "@/components/admin-palette";
-import { Fold } from "@/components/admin-fold";
 import { ThemeBoard } from "@/components/theme-board";
 import { MailPolicyBoard } from "@/components/mail-policy";
-import { PayQueue, PaySettings } from "@/components/pay-settings";
+import { PayQueue } from "@/components/pay-settings";
 import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
-import { ProviderKeyBoards } from "@/components/provider-key-board";
-import { LiveShowBoard } from "@/components/live-show-board";
-import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
-import { ServiceStatusBoard } from "@/components/service-status-board";
-import { SupportBoard } from "@/components/support-board";
-import { ServicePackBoard } from "@/components/service-pack-board";
-import { RentShowBoard } from "@/components/rent-show-board";
-import { GiayPackBoard } from "@/components/giay-pack-board";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney } from "@/lib/money-format";
@@ -343,26 +335,7 @@ export function AdminDesk() {
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
       {role && tab === "thao-tac" && <AuditTab rows={audit} />}
       {role && tab === "viec" && <RunDeskBoard owner={role === "chu"} />}
-      {role === "chu" && tab === "cau-hinh" && (
-        <>
-          <ServiceStatusBoard />
-          <ProviderKeyBoards />
-          <LiveWorkspaceBoard />
-          <LiveShowBoard />
-          <SupportBoard />
-          <RunDeskBoard owner part="price" />
-          <GiayPackBoard />
-          <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
-            <ServicePackBoard packsOnly />
-          </Fold>
-          <Fold title="Model khách được chọn khi thuê phòng" hint="Khách dùng key của họ">
-            <RentShowBoard />
-          </Fold>
-          <Fold title="Cổng nạp" hint="Sepay, Casso và tài khoản nhận tiền" wide>
-            <PaySettings />
-          </Fold>
-        </>
-      )}
+      {role === "chu" && tab === "cau-hinh" && <ConfigTab />}
       {role && tab === "so-do" && <OrgBoard owner={role === "chu"} />}
       {role && tab === "tien" && <MoneyBoard owner={role === "chu"} />}
       {role && tab === "nhat-ky" && <AdminNotes />}
