@@ -123,7 +123,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       steps: [
         { text: `Đăng ký hoặc đăng nhập. Tài khoản mới được dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB.` },
         { text: "Ở trang chủ, kéo thả video vào ô lớn hoặc bấm để chọn tệp. Cũng dán được link tải thẳng về tệp, không phải link trang xem phim." },
-        { text: `Mở «${UI.keyTab}» ở menu trái và chọn cách dùng: dán key của bạn (Groq, và Alibaba, Deepgram, AssemblyAI hay Speechmatics nếu dùng), hoặc trả theo lượt bằng gói giây đã mua.` },
+        { text: `Mở «${UI.keyTab}» ở menu trái và chọn cách dùng: dán key của bạn (Groq, và Alibaba, Deepgram, AssemblyAI, Speechmatics hay Soniox nếu dùng), hoặc trả theo lượt bằng gói giây đã mua.` },
         { text: `Mở «${UI.filmTab}», chọn ngôn ngữ và thể loại, rồi bấm «${UI.startRun}». Thanh tiến trình cho biết đang ở bước nào.` },
         { text: `Dịch xong, bấm «${UI.download}» và chọn SRT, VTT hoặc TXT. Bấm một câu trong bản dịch để nhảy tới đúng chỗ trong video. Tài khoản dùng thử chưa xuất được file.` },
       ],
@@ -203,10 +203,10 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
     },
     {
       id: "key-groq",
-      title: "Lấy key (Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics)",
+      title: "Lấy key (Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox)",
       group: "tai-khoan",
       intro: "Chọn Thuê phòng thì bạn dùng key của chính bạn. Mỗi nhà có một key riêng, nhà nào bạn dùng thì lấy key nhà đó. Groq cần cho dịch, nên gần như ai cũng cần key Groq.",
-      words: "key groq alibaba deepgram assemblyai speechmatics api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper universal",
+      words: "key groq alibaba deepgram assemblyai speechmatics soniox api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper universal",
       tour: "key-groq",
       steps: [
         { text: "Mở trang quản lý key của Groq và đăng nhập (hoặc đăng ký) bằng tài khoản Groq.", link: { label: "console.groq.com/keys", href: "https://console.groq.com/keys" }, image: "groq-tao-key.png" },
@@ -273,7 +273,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
     id: "key-groq-loi",
     q: "App báo key không hợp lệ?",
     a: `Key không hợp lệ hoặc chưa được cấp quyền. Kiểm tra lại key ở trang của nhà đó (${PROVIDER_IDS.map((id) => `${PROVIDERS[id].label}: ${PROVIDERS[id].keyPage}`).join("; ")}). Không được thì tạo key mới rồi dán lại.`,
-    words: "key groq alibaba deepgram assemblyai speechmatics khong hop le sai loi bao loi het han",
+    words: "key groq alibaba deepgram assemblyai speechmatics soniox khong hop le sai loi bao loi het han",
   },
   {
     id: "xoa-du-lieu",

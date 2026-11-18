@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.5.0",
+    time: "ngày 18/11/2026",
+    area: "ha-tang",
+    text: "Thêm nhà nhận dạng Soniox (PROVIDERS.md, bước 1 đến 7; bước 8 chưa gồm điều khoản). Lõi sub/soniox.ts (dựng body, đọc token mili giây ra câu, lỗi tiếng Việt), vòng gửi-hỏi-lấy-xóa sub/soniox-poll.ts (luôn DELETE bản phiên âm khi xong để không giữ dữ liệu khách), soniox-asr.server.ts (key khách hoặc key phòng soniox_key), model soniox-stt-async (ASR_MODELS, asrHouse). Giá cố định trong sub/soniox-base.ts (0,10 đô/giờ, lấy từ ghi chú, chưa tra lại trang giá), Chủ sửa tay ở bảng giá qua usd_fix. Cửa Trả theo lượt: run-turn.ts giữ Token dịch, trừ theo số giây thực bằng chargeRoomAsr. Ô key phòng hiện ở Admin (ready: true). CHƯA đối chiếu với key Soniox thật (tài khoản chưa nạp tiền): tên model gửi API (SONIOX_API_MODEL, đang stt-async-v5, Chủ thấy STT v6), hình dạng phản hồi trạng thái và transcript, giá. Điều khoản chưa nhắc ba nhà mới (AssemblyAI, Speechmatics, Soniox): chờ Chủ chốt chữ rồi nâng TERMS_VERSION một lần."
+  },
+  {
     version: "5.4.0",
     time: "ngày 18/11/2026",
     area: "ha-tang",

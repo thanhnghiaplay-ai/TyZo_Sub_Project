@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.4.0";
+export const APP_VERSION = "5.5.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,12 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.5.0",
+    time: "18/11/2026",
+    title: "Thêm nhà nhận dạng giọng Soniox.",
+    points: ["Chọn Soniox Async ở ô Nhận dạng giọng, dán link file trực tiếp.", "Dùng được ở cả Thuê phòng (key của bạn) và Trả theo lượt."],
+  },
   {
     version: "5.4.0",
     time: "18/11/2026",
