@@ -6,6 +6,7 @@ import { rentUseProblem, type RentShow } from "./rent-show-rule.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
 import { ASSEMBLYAI_BASE_ROWS } from "./sub/assemblyai-base.ts";
 import { DEEPGRAM_BASE_ROWS } from "./sub/deepgram-base.ts";
+import { SPEECHMATICS_BASE_ROWS } from "./sub/speechmatics-base.ts";
 import { asrHouse, asrTakesLink } from "./sub/asr-house.ts";
 import { ASR_MODELS } from "./sub/models.ts";
 import { PROVIDER_IDS, providerHas, type ProviderId } from "./sub/provider.ts";
@@ -22,8 +23,8 @@ const PRICE_ROWS: Record<ProviderId, string[] | "bang-gia-groq"> = {
   alibaba: ALIBABA_ROWS.map((row) => row.id),
   deepgram: DEEPGRAM_BASE_ROWS.map((row) => row.id),
   assemblyai: ASSEMBLYAI_BASE_ROWS.map((row) => row.id),
+  speechmatics: SPEECHMATICS_BASE_ROWS.map((row) => row.id),
   // Nhà đang làm dở (ready: false): điền dòng giá thật ở bước 6, rồi bài kiểm này mới đếm tới khi ready thành true.
-  speechmatics: [],
   soniox: [],
 };
 
