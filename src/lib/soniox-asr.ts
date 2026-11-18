@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import type { SonioxAsrInput, SonioxAsrResult } from "@/lib/soniox-asr.server";
+import type { SonioxAsrInput, SonioxAsrResult, SonioxStartResult, SonioxStepInput, SonioxStepResult } from "@/lib/soniox-asr.server";
 
 export const sonioxAsr = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -8,4 +8,20 @@ export const sonioxAsr = createServerFn({ method: "POST" })
   .handler(async ({ context, data }): Promise<SonioxAsrResult> => {
     const { runSonioxAsr } = await import("@/lib/soniox-asr.server");
     return runSonioxAsr(context.userId, data);
+  });
+
+export const sonioxStart = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: SonioxAsrInput) => input)
+  .handler(async ({ context, data }): Promise<SonioxStartResult> => {
+    const { startSonioxAsr } = await import("@/lib/soniox-asr.server");
+    return startSonioxAsr(context.userId, data);
+  });
+
+export const sonioxStep = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: SonioxStepInput) => input)
+  .handler(async ({ context, data }): Promise<SonioxStepResult> => {
+    const { stepSonioxAsr } = await import("@/lib/soniox-asr.server");
+    return stepSonioxAsr(context.userId, data);
   });

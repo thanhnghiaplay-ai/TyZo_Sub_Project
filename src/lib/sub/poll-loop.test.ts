@@ -82,6 +82,7 @@ describe("vòng hỏi lặp phía khách", () => {
     assert.equal(isTransientNetworkError(new Error("Failed to fetch")), true);
     assert.equal(isTransientNetworkError(new Error("Request timed out")), true);
     assert.equal(isTransientNetworkError(new Error("HTTP 503")), true);
+    assert.equal(isTransientNetworkError(new Error("Không kết nối được Soniox.")), true);
     assert.equal(isTransientNetworkError(new Error("AssemblyAI: key không đúng.")), false);
     assert.equal(isTransientNetworkError("x"), false);
     const abort = new Error("Đã hủy.");

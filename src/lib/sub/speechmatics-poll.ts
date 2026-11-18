@@ -69,3 +69,38 @@ export async function runSpeechmaticsJob(options: SmJobOptions): Promise<unknown
   if (failure) throw failure;
   return result;
 }
+
+/** Tách vòng thành hai lệnh ngắn để mỗi lần gọi máy chủ chỉ chạy vài giây (không chạm hạn chạy của hàm). */
+export async function startSpeechmaticsJob(request: SmRequest, config: SpeechmaticsConfig): Promise<string> {
+  const first = await request("/jobs", { method: "POST", config });
+  if (first.status < 200 || first.status >= 300) throw new Error(speechmaticsErrorText(first.status, first.payload));
+  const id = speechmaticsId(first.payload);
+  if (!id || !/^[A-Za-z0-9_-]{6,80}$/.test(id)) throw new Error("Speechmatics không trả mã job. Hãy chạy lại.");
+  return id;
+}
+
+export type SmStep = { state: "running" } | { state: "done"; payload: unknown };
+
+/** Hỏi một lần. Done thì lấy transcript rồi xóa job; bị từ chối hoặc lỗi thì xóa job rồi ném lỗi tiếng Việt. */
+export async function stepSpeechmaticsJob(request: SmRequest, id: string): Promise<SmStep> {
+  if (!/^[A-Za-z0-9_-]{6,80}$/.test(id)) throw new Error("Mã job không hợp lệ.");
+  const drop = () => request(`/jobs/${id}?force=true`, { method: "DELETE" }).catch(() => null);
+  const next = await request(`/jobs/${id}`, { method: "GET" });
+  if (next.status < 200 || next.status >= 300) {
+    await drop();
+    throw new Error(speechmaticsErrorText(next.status, next.payload));
+  }
+  const status = speechmaticsStatus(next.payload);
+  if (status === "running" || status === "unknown") return { state: "running" };
+  if (status === "done") {
+    const transcript = await request(`/jobs/${id}/transcript?format=json-v2`, { method: "GET" });
+    if (transcript.status < 200 || transcript.status >= 300) {
+      await drop();
+      throw new Error(speechmaticsErrorText(transcript.status, transcript.payload));
+    }
+    await drop();
+    return { state: "done", payload: transcript.payload };
+  }
+  await drop();
+  throw new Error(speechmaticsErrorText(400, next.payload));
+}

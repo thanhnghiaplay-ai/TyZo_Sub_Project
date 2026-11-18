@@ -45,7 +45,7 @@ export function isTransientNetworkError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   if (error.name === "AbortError") return false;
   const text = `${error.name} ${error.message}`.toLowerCase();
-  return /failed to fetch|networkerror|network request failed|load failed|timeout|timed out|\b50[234]\b|fetch failed|econnreset/.test(text);
+  return /failed to fetch|networkerror|network request failed|load failed|timeout|timed out|\b50[234]\b|fetch failed|econnreset|không kết nối được/.test(text);
 }
 
 export async function pollUntilDone<T>(options: PollLoopOptions<T>): Promise<{ state: "done" } & T> {
