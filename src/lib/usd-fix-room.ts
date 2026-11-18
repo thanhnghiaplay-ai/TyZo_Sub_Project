@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
+import { ASSEMBLYAI_BASE_ROWS } from "@/lib/sub/assemblyai-base";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
 import type { AliQuote } from "@/lib/sub/alibaba-price";
@@ -100,6 +101,13 @@ function listed(groq: GroqLiveRow[], ali: GroqLiveRow[], dg: GroqLiveRow[], fix:
     const slot = fix[row.id] ?? emptySlot();
     const effective = applyUsdFix([{ ...blank(row.id), usdPerHour: auto.hour, usdIn: auto.inn, usdOut: auto.out, usdPerMillionChars: auto.chars }], { [row.id]: slot })[0];
     rows.push({ id: row.id, name: ASR_MODELS.find((item) => item.id === row.id)?.name ?? modelLabel(row.id), house: "Deepgram", kind: kindOf(row.id, auto), auto, fix: slot, tokens: tokenPriceLine(effective, turbo) });
+  }
+  // AssemblyAI chưa có trang giá để tự kéo: số "tự động" là giá cố định trong code, Chủ sửa tay ở ô bên cạnh.
+  for (const row of ASSEMBLYAI_BASE_ROWS) {
+    const auto = slotOf(row);
+    const slot = fix[row.id] ?? emptySlot();
+    const effective = applyUsdFix([{ ...blank(row.id), usdPerHour: auto.hour, usdIn: auto.inn, usdOut: auto.out, usdPerMillionChars: auto.chars }], { [row.id]: slot })[0];
+    rows.push({ id: row.id, name: ASR_MODELS.find((item) => item.id === row.id)?.name ?? modelLabel(row.id), house: "AssemblyAI", kind: kindOf(row.id, auto), auto, fix: slot, tokens: tokenPriceLine(effective, turbo) });
   }
   return rows;
 }

@@ -4,6 +4,7 @@ import { checkServicePacks } from "./service-pack.ts";
 import { turnPackProblem } from "./turn-pack.ts";
 import { rentUseProblem, type RentShow } from "./rent-show-rule.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
+import { ASSEMBLYAI_BASE_ROWS } from "./sub/assemblyai-base.ts";
 import { DEEPGRAM_BASE_ROWS } from "./sub/deepgram-base.ts";
 import { asrHouse, asrTakesLink } from "./sub/asr-house.ts";
 import { ASR_MODELS } from "./sub/models.ts";
@@ -20,8 +21,8 @@ const PRICE_ROWS: Record<ProviderId, string[] | "bang-gia-groq"> = {
   groq: "bang-gia-groq",
   alibaba: ALIBABA_ROWS.map((row) => row.id),
   deepgram: DEEPGRAM_BASE_ROWS.map((row) => row.id),
+  assemblyai: ASSEMBLYAI_BASE_ROWS.map((row) => row.id),
   // Nhà đang làm dở (ready: false): điền dòng giá thật ở bước 6, rồi bài kiểm này mới đếm tới khi ready thành true.
-  assemblyai: [],
   speechmatics: [],
   soniox: [],
 };
