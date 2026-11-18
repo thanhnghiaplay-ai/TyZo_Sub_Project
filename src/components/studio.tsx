@@ -16,6 +16,7 @@ import { useOnline } from "@/lib/use-online";
 import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
 import { asrHouse, groqListHolds } from "@/lib/sub/asr-house";
+import { linkAsrNote } from "@/lib/sub/link-asr-note";
 import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDERS } from "@/lib/sub/provider";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { DEEPGRAM_BASE_ROWS } from "@/lib/sub/deepgram-base";
@@ -1218,21 +1219,7 @@ export function Studio() {
             </option>
           ))}
         </Select>
-        {app.asrModel === "deepgram-nova-3" && (
-          <p className="text-sm text-muted">Deepgram nhận cả file từ link trực tiếp. Cần key Deepgram và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Chọn tệp trên máy cũng được khi kho tạm đã bật: âm thanh được tách ngay trên máy, gửi lên kho tạm rồi xóa khi nhận dạng xong. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
-        )}
-        {asrHouse(app.asrModel) === "assemblyai" && (
-          <p className="text-sm text-muted">AssemblyAI nhận cả file từ link trực tiếp. Cần key AssemblyAI và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Chọn tệp trên máy cũng được khi kho tạm đã bật: âm thanh được tách ngay trên máy, gửi lên kho tạm rồi xóa khi nhận dạng xong. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
-        )}
-        {asrHouse(app.asrModel) === "soniox" && (
-          <p className="text-sm text-muted">Soniox nhận cả file từ link trực tiếp. Cần key Soniox (tài khoản đã nạp tiền) và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Chọn tệp trên máy cũng được khi kho tạm đã bật: âm thanh được tách ngay trên máy, gửi lên kho tạm rồi xóa khi nhận dạng xong. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
-        )}
-        {asrHouse(app.asrModel) === "speechmatics" && (
-          <p className="text-sm text-muted">Speechmatics nhận cả file từ link trực tiếp. Cần key Speechmatics (đúng vùng tài khoản) và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Chọn tệp trên máy cũng được khi kho tạm đã bật: âm thanh được tách ngay trên máy, gửi lên kho tạm rồi xóa khi nhận dạng xong. Dịch vẫn dùng Groq nên cần cả key Groq.</p>
-        )}
-        {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
-          <p className="text-sm text-muted">Alibaba nhận cả file từ link trực tiếp. Cần key Alibaba và link file công khai (không phải trang xem). Không cắt đoạn trên máy. Chọn tệp trên máy cũng được khi kho tạm đã bật: âm thanh được tách ngay trên máy, gửi lên kho tạm rồi xóa khi nhận dạng xong.</p>
-        )}
+        {linkAsrNote(app.asrModel) && <p className="text-sm text-muted">{linkAsrNote(app.asrModel)}</p>}
         {(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow) && (
           <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.</p>
         )}

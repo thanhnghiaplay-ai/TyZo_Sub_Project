@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.6.1",
+    time: "22:23 ngày 18/11/2026",
+    area: "khac",
+    text: "Rút gọn chữ trong phòng dịch, tab Cách trả, dưới ô Nhận dạng giọng. Năm đoạn gần giống nhau (Deepgram, AssemblyAI, Soniox, Speechmatics, Alibaba) gom thành một hàm linkAsrNote. Giữ lời riêng: Speechmatics nhắc key đúng vùng, Soniox nhắc tài khoản đã nạp tiền, Alibaba không nhắc key Groq như câu cũ. Không đổi cách chạy, giá, quyền hay điều khoản.",
+  },
+  {
     version: "5.6.0",
     time: "18/11/2026",
     area: "khac",

@@ -1,3 +1,15 @@
+## BÀN GIAO (18/11/2026 22:23, nhánh work, sau rút gọn chữ phòng dịch) — đọc mục này trước
+ĐANG Ở: nhánh `work`. `APP_VERSION` 5.6.1. `TERMS_VERSION` 2026-11-18.1 (không đổi ở bước này). `main` cũ hơn. KHÔNG đẩy `main` trừ khi Chủ nói đúng câu «đẩy chính thức».
+VỪA XONG: rút gọn chữ trong phòng dịch. Năm đoạn dưới ô «Nhận dạng giọng» (Deepgram, AssemblyAI, Soniox, Speechmatics, Alibaba) gom thành `linkAsrNote` (`src/lib/sub/link-asr-note.ts`). Một khuôn: link tải thẳng, không phải trang xem, không cắt đoạn trên máy; kho tạm bật thì chọn tệp trên máy. Lời riêng giữ lại: Speechmatics «Key phải đúng vùng tài khoản», Soniox «Tài khoản cần đã nạp tiền», Alibaba không nhắc key Groq. Whisper không hiện đoạn này. Test `link-asr-note.test.ts`. Không đổi cách chạy, giá, quyền, điều khoản. tsc sạch, eslint 0 lỗi (31 cảnh báo cũ), npm test 198 (191 pass, 7 bỏ qua) + 1018 pass.
+CÁCH LÀM TIẾP: clone nhánh `work`, `npm ci` (nếu báo lock lệch ajv thì `npm install --ignore-scripts`; đừng commit `package-lock.json` nếu nó chỉ đổi vì máy npm). Đọc `BANG_DIEU.md` rồi mục này. Mỗi bước: sửa → `npx tsc --noEmit` → `npx eslint .` → `npm test` → commit → đẩy `work` → ghi vào đây → bước sau. Token GitHub đã dán trong chat: THU HỒI sau khi xong, không ghi token vào file.
+VIỆC CÒN, CHƯA LÀM (chờ Chủ chọn, đừng tự làm):
+1. Đồng bộ nốt sổ cũ nếu còn lệch (bảng «Đang chạy» đã chỉnh dòng đầu cho 5.6.1; thân lịch sử dài phía sau vẫn là nhật ký).
+2. Đoạn thuê phòng ngay dưới ô nhận dạng vẫn dài («Thuê phòng chỉ chọn model Chủ đã mở…»). Có thể rút tiếp nếu Chủ muốn.
+3. Điều khoản kho tạm R2 và chữ «cần link» trong điều khoản / ghi chú model. ĐỪNG đặt biến `R2_*` trên bản chạy thật trước khi Chủ chốt chữ.
+4. Rủi ro: lần hỏi cuối trừ Token dịch rồi mất phản hồi thì khách mất phụ đề. Cần Chủ chọn giữ kết quả hay hoàn Token.
+5. Chủ nhập key thật, thử file ngắn, xem `GRADE_FIX`. Không tự cho sửa giá thuê phòng trên Admin. Không đẩy `main`.
+Mục «sau bước 8 dọn gói/giá» ngay dưới là bàn giao cũ. Phần dọn gói/giá đã xong, đừng làm lại.
+
 ## BÀN GIAO (18/11/2026, nhánh work, sau bước 8 dọn gói/giá) — đọc mục này trước
 ĐANG Ở: nhánh `work`. `APP_VERSION` 5.6.0. `TERMS_VERSION` 2026-11-18.1. `main` cũ hơn. KHÔNG đẩy `main` trừ khi Chủ nói đúng câu «đẩy chính thức».
 `BANG_DIEU.md` mục «Đang chạy» đang cũ (còn ghi v5.0.6). Đừng làm theo dòng đó. Nguồn đúng là code (`src/lib/app-version.ts`) và mục này.

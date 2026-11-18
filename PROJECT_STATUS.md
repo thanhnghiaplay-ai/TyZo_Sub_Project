@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-18 (UTC+7) — v5.5.0 trên work: thêm ba nhà nhận dạng AssemblyAI (v5.3.0), Speechmatics (v5.4.0) và Soniox (v5.5.0), mỗi nhà đủ hai cửa (Thuê phòng và Trả theo lượt), chưa đối chiếu key thật, điều khoản chưa nhắc ba nhà này (chờ Chủ chốt chữ, làm một lần, nâng TERMS_VERSION). Trước đó v5.2.3 trên work: c3 chặn thật giọng đọc Orpheus theo ô tick thuê phòng (narration.ts); dọn code (eslint 0 lỗi, xóa pack-picker.tsx, bỏ markup khỏi LiveBook). Trước đó v5.2.2: chữ Deepgram/Alibaba ở cửa Trả theo lượt và thông báo live khi Chủ không mở model nào. v5.2.1: gỡ phần chênh Groq/Alibaba, giá model theo Token dịch. v5.2.0: Thuê phòng hiện ô key mọi nhà. v5.1.x: Deepgram, khung key khách, ô nhận dạng sinh từ danh mục. Nhánh `main` chưa có từ v5.2.0 trở lên (đang v5.1.0). Lịch sử cũ hơn xem mục 6 và `git log`; từng bước gần nhất ghi ở đầu `HANDOFF.md` và `ADMIN_LOG` trong `src/lib/admin-log.server.ts`. Điều khoản `2026-11-17.2`. |
+| **Cập nhật lần cuối** | 2026-11-18 22:23 (UTC+7) — v5.6.1 trên work: rút gọn chữ dưới ô Nhận dạng giọng. Trước đó v5.6.0: màu nhấn tự chọn và giao diện Tương lai. |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v5.5.0** trên nhánh `work`. `main` đang v5.1.0 (chưa đẩy chính thức các bước từ v5.2.0). Điều khoản `2026-11-17.2`. |
+| **Phiên bản code** | **v5.6.1** trên nhánh `work`. `main` cũ hơn, chưa đẩy chính thức. Điều khoản `2026-11-18.1`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ, giá tay. Mua Token dịch và thuê phòng bằng mã QR đúng giá, không giữ số dư để chi. Trả theo lượt, dịch trực tiếp và Orpheus (key phòng) trừ Token dịch. Thuê phòng bằng key riêng: Chủ tick model nhận dạng, dịch và giọng Orpheus ở Admin, app chặn thật (rent-show-rule.ts, narration.ts); Aura chỉ trả bằng Token dịch. Neural không trừ. Không còn giá riêng từng model và không còn phần chênh Groq/Alibaba (markup luôn 0). Alibaba lấy giá Singapore khi đọc được. Số dư test đã về 0, không hoàn. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---
@@ -305,6 +305,8 @@ Không có trong gói giao: file HTML standalone (`attachments/` để rỗng).
 ## 6. Lịch sử thay đổi / Tiến độ
 
 > Từ 2026-11-08 20:03, mục này là nhật ký. Không làm theo các dòng cũ. Lệnh hiện tại nằm ở `BANG_DIEU.md`.
+
+- 2026-11-18 22:23 — v5.6.1 trên work. Rút gọn năm đoạn dưới ô Nhận dạng giọng thành một đoạn (`linkAsrNote`). Không đổi cách chạy, giá, quyền, điều khoản. `tsc` sạch, eslint 0 lỗi (31 cảnh báo cũ), `npm test` 198 (191 pass, 7 bỏ qua) + 1018 pass.
 
 - 2026-11-17 00:35 — v5.0.1 trên work. Làm lại điều khoản cho khớp web và luật, vẫn một trang. Thêm bản quyền và khiếu nại, Token dịch không phải tiền, dữ liệu gửi Groq và Alibaba. Điều khoản 2026-11-17.1. Không bịa tên doanh nghiệp. Không thêm trang riêng.
 - 2026-11-16 23:55 — v5.0.0 trên work. Mua Token dịch và thuê phòng bằng mã QR, không giữ số dư. Orpheus trừ Token dịch. Số dư test về 0, không hoàn. Điều khoản 2026-11-16.4. Trước: `tsc` sạch, `npm test` 692 pass (2 fail vì SQL `grant` và hướng dẫn còn chỉ chỗ nạp). Sau: `tsc` sạch, `npm test` scripts 191 pass (7 skip) và src 692 pass, 0 fail.
