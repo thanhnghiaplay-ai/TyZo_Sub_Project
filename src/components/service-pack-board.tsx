@@ -8,7 +8,7 @@ import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import type { GroqBoard } from "@/lib/sub/groq-board";
 import type { RunDesk } from "@/lib/run-desk";
 import { PACK_ROLE_LABEL, PACK_ROLES, providersForRole, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
-import { DEEPGRAM_ROWS } from "@/lib/sub/deepgram-catalog";
+import { buildPackBooks } from "@/lib/pack-books";
 import { ASR_MODELS } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
@@ -85,12 +85,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
   );
   const autoBooks = useMemo<Partial<Record<ProviderId, PriceBook>> | null>(() => {
     if (!board) return null;
-    const desk0 = { markup: 0, custom: {} };
-    return {
-      groq: { rate: board.rate, rows: board.rows, desk: desk0 },
-      alibaba: { rate: board.rate, rows: ALIBABA_ROWS, desk: desk0 },
-      deepgram: { rate: board.rate, rows: DEEPGRAM_ROWS, desk: desk0 },
-    };
+    return buildPackBooks({ rate: board.rate, groqRows: board.rows });
   }, [board]);
 
   function createAutoPack(roles: ServicePack["roles"], draft: { levels: Parameters<typeof buildAutoPack>[0]["levels"]; lang: "cjk" | "other" }) {
@@ -155,11 +150,6 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
     );
   }
 
-  const sampleBook = (rows: PriceBook["rows"], markup: number, custom: RunDesk["custom"]): PriceBook | null => {
-    if (!board) return null;
-    return { rate: board.rate, rows, desk: { markup, custom } };
-  };
-
   return (
     <section className="space-y-4">
       <div>
@@ -213,15 +203,13 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
           </button>
         </div>
         {packs.map((pack) => {
-          const groqBook = sampleBook(board?.rows ?? [], board ? 0 : 0, {});
-          const aliBook = desk && board ? sampleBook(ALIBABA_ROWS, desk.markup, {}) : null;
-          const quote = board && groqBook
+          const quote = board
             ? quotePack({
                 pack,
                 seconds: 600,
                 door: "turn",
                 narration: Boolean(pack.roles.narration),
-                books: { groq: { ...groqBook, desk: { markup: 0, custom: {} } }, ...(aliBook ? { alibaba: aliBook } : {}), deepgram: { rate: groqBook.rate, rows: DEEPGRAM_ROWS, desk: { markup: 0, custom: {} } } },
+                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup }),
               })
             : null;
           return (

@@ -9,3 +9,9 @@ test("đoán việc của model theo tên", () => {
   assert.equal(modelRoleOf("openai/gpt-oss-safeguard-20b"), "guard");
   assert.equal(modelRoleOf("qwen-plus"), "translate");
 });
+
+test("model nhận dạng của AssemblyAI, Speechmatics, Soniox là asr", () => {
+  for (const id of ["assemblyai-universal-3-5-pro", "assemblyai-universal-2", "speechmatics-enhanced", "speechmatics-standard", "soniox-stt-async"]) {
+    assert.equal(modelRoleOf(id), "asr", id);
+  }
+});

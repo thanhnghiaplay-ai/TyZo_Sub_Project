@@ -6,6 +6,8 @@ export type ModelRole = "asr" | "tts" | "guard" | "translate" | "live";
 export function modelRoleOf(id: string): ModelRole {
   const name = id.toLowerCase();
   if (/livetranslate/.test(name)) return "live";
+  // Ba nhà chỉ làm nhận dạng; id có chữ «speech» (speechmatics-*) không được rơi vào đọc thuyết minh.
+  if (/^(assemblyai|speechmatics|soniox)-/.test(name)) return "asr";
   if (/whisper|asr|filetrans|transcri|(^|[-/])nova-\d/.test(name)) return "asr";
   if (/tts|orpheus|speech|voice|(^|[-/])aura-/.test(name)) return "tts";
   if (/guard|safeguard|moderat/.test(name)) return "guard";
