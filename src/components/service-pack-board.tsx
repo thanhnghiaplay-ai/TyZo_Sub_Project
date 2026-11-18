@@ -1,8 +1,7 @@
 import { modelRoleNote } from "@/lib/sub/model-role";
 import { useEffect, useMemo, useState } from "react";
-import { Icon } from "@/components/ui/icon";
 import { pushToast } from "@/components/toast";
-import { getAlibabaDesk, saveAlibabaDesk, saveAlibabaKey, saveServicePacks } from "@/lib/pack-room";
+import { getAlibabaDesk, saveServicePacks } from "@/lib/pack-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import type { GroqBoard } from "@/lib/sub/groq-board";
@@ -39,14 +38,11 @@ function freshPack(groqModels: string[] | null): ServicePack {
   };
 }
 
-export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean }) {
+export function ServicePackBoard() {
   const [desk, setDesk] = useState<RunDesk | null>(null);
   const [models, setModels] = useState<string[] | null>(null);
   const [groqModels, setGroqModels] = useState<string[] | null>(null);
   const [packs, setPacks] = useState<ServicePack[]>([]);
-  const [keyTail, setKeyTail] = useState("");
-  const [adminKey, setAdminKey] = useState("");
-  const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState(false);
   const [board, setBoard] = useState<GroqBoard | null>(null);
 
@@ -62,7 +58,6 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         setModels(next.models);
         setGroqModels(next.groqModels);
         setPacks(next.packs);
-        setKeyTail(next.keyTail);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn Alibaba.", "bad"));
     void loadGroqBoard().then(setBoard).catch(() => undefined);
@@ -93,34 +88,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
     const pack = buildAutoPack({ id, levels: draft.levels, lang: draft.lang, roles });
     if (!pack) return pushToast("Gói cần model nhận dạng và model dịch.", "bad");
     setPacks((current) => [...current, pack]);
-    pushToast("Đã thêm gói nháp (đang tắt). Xem lại rồi bấm Lưu gói.");
-  }
-
-  function saveDesk(next: RunDesk) {
-    setBusy(true);
-    void saveAlibabaDesk({ data: { ...next, maintenance: false } })
-      .then((saved) => {
-        setDesk(saved);
-        pushToast("Đã lưu giá Alibaba.");
-      })
-      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lưu được giá Alibaba.", "bad"))
-      .finally(() => setBusy(false));
-  }
-
-  function syncKey() {
-    const token = adminKey.trim();
-    if (!token) return pushToast("Hãy nhập key Alibaba.", "bad");
-    setBusy(true);
-    void saveAlibabaKey({ data: token })
-      .then((ids) => {
-        setModels(ids);
-        setKeyTail(token.slice(-4));
-        setAdminKey("");
-        setShowKey(false);
-        pushToast(`Đã lưu key Alibaba. Key gọi được ${ids.length} model.`);
-      })
-      .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đồng bộ được key Alibaba.", "bad"))
-      .finally(() => setBusy(false));
+    pushToast("Đã thêm gói nháp (đang tắt). Xem lại rồi bấm «Lưu các gói dịch».");
   }
 
   function savePacks(next: ServicePack[]) {
@@ -152,46 +120,9 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
 
   return (
     <section className="space-y-4">
-      <div>
-        {!packsOnly && <h3 className="text-sm font-semibold">Nhà cung cấp và gói dịch</h3>}
-        <p className="text-sm text-muted">
-          {packsOnly
-            ? "Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách thấy giá theo Token dịch, tính từ giá gốc."
-            : "Groq giữ bàn giá phía trên. Alibaba có key riêng. Giá lấy từ bảng niêm yết, tính từ giá gốc (không cộng phần trăm). Mỗi gói giao việc cho một hoặc nhiều model. Khách chỉ chọn gói."}
-        </p>
-      </div>
-
-      {!packsOnly && (
-      <div className="grid gap-2">
-        <p className="text-sm font-medium">Key Alibaba Model Studio {keyTail ? `· đuôi ${keyTail}` : "· chưa lưu"}</p>
-        <div className="flex gap-2">
-          <input
-            className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"
-            type={showKey ? "text" : "password"}
-            value={adminKey}
-            autoComplete="off"
-            placeholder="sk-… key quốc tế"
-            onChange={(event) => setAdminKey(event.target.value)}
-          />
-          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3" onClick={() => setShowKey((value) => !value)} aria-label={showKey ? "Ẩn key" : "Hiện key"}>
-            {showKey ? <Icon slot="ui.hide" className="size-4" /> : <Icon slot="ui.eye" className="size-4" />}
-          </button>
-          <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={syncKey}>
-            Đồng bộ
-          </button>
-        </div>
-        <p className="text-xs text-muted">{models ? `${models.length} model trên key.` : "Chưa đồng bộ."} Giá lấy từ bảng niêm yết vùng Singapore khi phòng đọc được. Chưa đọc được thì dùng giá dự phòng.</p>
-      </div>
-      )}
-
-      {desk && (
-        <div className="grid gap-2">
-          <p className="text-xs text-muted">Giá theo Token dịch, tính từ giá gốc. Không đặt giá riêng từng model.</p>
-          <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => saveDesk({ ...desk, custom: {} })}>
-            Lưu giá Alibaba
-          </button>
-        </div>
-      )}
+      <p className="text-sm text-muted">
+        Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách thấy giá theo Token dịch, tính từ giá gốc.
+      </p>
 
       <PackAutoBoard candidates={autoCandidates} books={autoBooks} rentShow={rentShow} onCreate={createAutoPack} />
 
@@ -199,7 +130,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-semibold">Gói dịch</h4>
           <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => setPacks((current) => [...current, freshPack(groqModels)])}>
-            Thêm gói
+            Thêm gói dịch
           </button>
         </div>
         {packs.map((pack) => {
@@ -285,7 +216,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
           );
         })}
         <button type="button" className="min-tap justify-self-start rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-50" disabled={busy} onClick={() => savePacks(packs)}>
-          Lưu gói
+          Lưu các gói dịch
         </button>
       </div>
     </section>

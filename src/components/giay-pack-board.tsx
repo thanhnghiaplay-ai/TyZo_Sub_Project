@@ -74,7 +74,7 @@ export function GiayPackBoard() {
               className="min-tap rounded-full border border-line px-4 text-sm"
               onClick={() => setPacks((rows) => [...rows, { id: "g" + Math.random().toString(36).slice(2, 8), tokens: 3600, days: 30 }])}
             >
-              Thêm gói
+              Thêm gói Token
             </button>
             <button
               type="button"
@@ -91,7 +91,7 @@ export function GiayPackBoard() {
                   .finally(() => setBusy(false));
               }}
             >
-              Lưu gói
+              Lưu các gói Token
             </button>
           </div>
         </>

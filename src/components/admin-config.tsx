@@ -7,6 +7,7 @@ import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { PaySettings } from "@/components/pay-settings";
 import { R2Board } from "@/components/r2-board";
 import { ProviderKeyBoards } from "@/components/provider-key-board";
+import { RoomPlansView } from "@/components/room-plans-view";
 import { RentShowBoard } from "@/components/rent-show-board";
 import { RunDeskBoard } from "@/components/run-desk-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
@@ -50,9 +51,12 @@ export function ConfigTab() {
       </Page>
       <Page id="goi-gia" current={page}>
         <RunDeskBoard owner part="price" />
+        <Fold title="Giá thuê phòng" hint="Chỉ xem">
+          <RoomPlansView />
+        </Fold>
         <GiayPackBoard />
         <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
-          <ServicePackBoard packsOnly />
+          <ServicePackBoard />
         </Fold>
       </Page>
       <Page id="thue-phong" current={page}>
