@@ -1,3 +1,9 @@
+## ĐIỀU KHOẢN CHO BA NHÀ MỚI — BẢN NHÁP XONG (18/11/2026, nhánh work)
+ĐÃ LÀM: `terms-document.tsx` nhắc AssemblyAI, Speechmatics, Soniox ở các mục: bảng ai chịu cước key, thuê phòng, trả theo lượt (key phòng, link trực tiếp, trừ Token dịch), giá niêm yết gắn sẵn không tự cập nhật, dữ liệu lưu trên máy, nhà nhận dữ liệu và nước đặt máy chủ, lỗi/hạn mức, «Phòng không phải …». `TERMS_VERSION` 2026-11-17.2 → 2026-11-18.1 (khách đã đồng ý bản cũ sẽ bị hỏi lại); dấu vân tay thêm ở entry-gate.test.ts. Kiểm: tsc sạch, eslint 0 lỗi (30 cảnh báo cũ), npm test 932/932.
+CHỦ CẦN DUYỆT CHỮ TRƯỚC KHI ĐẨY main (ý Chủ trước đó: không đẩy chính thức khi chưa chốt chữ): (1) nước đặt máy chủ: AssemblyAI ghi «công ty Hoa Kỳ» (endpoint mặc định), Speechmatics ghi «công ty Anh, phòng dùng vùng US1», Soniox CHƯA kiểm được nơi đặt máy chủ nên ghi «do Soniox công bố»; Chủ tra rồi sửa cho đúng; (2) câu «gửi lệnh xóa bản nhận dạng sau mỗi lần chạy» đúng theo code (finally DELETE) nhưng chưa thử bằng key thật.
+VIỆC CHỦ CÒN LẠI: nhập key thật từng nhà ở Admin, thử file ngắn ở cả hai cửa, đối chiếu phản hồi/giá/`SONIOX_API_MODEL`/`SPEECHMATICS_API`/`SPEECHMATICS_MODEL_FIELD`; xem điểm `GRADE_FIX`; bật `KEY_LIST_TRUSTED` khi chắc; rồi mới đẩy main.
+NHẮC AN TOÀN: token GitHub đã dán vào chat, nên thu hồi và tạo token mới sau khi xong.
+
 ## THÊM 3 NHÀ NHẬN DẠNG: AssemblyAI, Speechmatics, Soniox (bắt đầu 18/11/2026, nhánh work)
 Ý CHỦ (18/11/2026): thêm 3 nhà này như Deepgram, làm theo PROVIDERS.md (8 bước, đủ HAI cửa Thuê phòng và Trả theo lượt), từng bước một, mỗi bước xong tsc + eslint + npm test rồi đẩy work. Chủ đã tạo tài khoản cả ba (Speechmatics đang chọn vùng US1; Soniox org «Tyzo», chưa nạp tiền). Key thật Chủ tự nhập ở Admin sau, KHÔNG ghi key vào code hay tài liệu.
 THỨ TỰ: AssemblyAI → Speechmatics → Soniox, mỗi nhà đủ bước 2 đến 8 rồi mới sang nhà sau. Bước 1 (bảng chung) làm một lượt cho cả ba.

@@ -23,7 +23,7 @@ export function TermsDocument() {
             <td>Phòng cung cấp công cụ. Không phát hành phim</td>
           </tr>
           <tr>
-            <td>Key Groq, key Alibaba, key Deepgram và cước của nhà đó khi bạn tự chọn</td>
+            <td>Key Groq, key Alibaba, key Deepgram, key AssemblyAI, key Speechmatics, key Soniox và cước của nhà đó khi bạn tự chọn</td>
             <td>Bạn</td>
           </tr>
           <tr>
@@ -89,7 +89,7 @@ export function TermsDocument() {
         Link phải là file trực tiếp. Phòng không nhận trang xem, không vượt khóa trả phí, và không tải video hộ bạn. Video được xử lý trên máy bạn. Phòng chỉ gửi phần tiếng hoặc chữ cần thiết tới nhà nhận dạng và dịch mà bạn đang dùng.
       </p>
       <p>
-        Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key của mình thì cước Groq, Alibaba hoặc Deepgram vẫn là của bạn. Mua Token dịch và thuê phòng bằng chuyển khoản đúng số tiền của đơn, qua Sepay hoặc Casso khi Chủ đã bật cổng. Phòng không giữ số dư để chi tiêu. Chỉ giao gói khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.
+        Phòng cho thuê theo gói ngày, tuần hoặc tháng. Khi bạn dùng key của mình thì cước Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics hoặc Soniox vẫn là của bạn. Mua Token dịch và thuê phòng bằng chuyển khoản đúng số tiền của đơn, qua Sepay hoặc Casso khi Chủ đã bật cổng. Phòng không giữ số dư để chi tiêu. Chỉ giao gói khi nội dung và số tiền khớp đơn đang chờ. Mã QR là VietQR nếu phòng nhận ra ngân hàng; không nhận ra thì chuyển theo số tài khoản và nội dung.
       </p>
 
       <h2>2. Điều kiện để dùng</h2>
@@ -119,10 +119,10 @@ export function TermsDocument() {
         Bấm mua Token dịch hoặc thuê phòng thì phòng tạo một đơn đúng giá gói đó. Bạn chuyển khoản đúng số tiền và đúng nội dung. Tiền khớp đơn thì được gói hoặc được mở hạn. Chuyển thiếu thì đơn không xong. Chuyển dư thì phần dư không được lưu thành số dư.
       </p>
       <p>
-        Cửa trả theo lượt dùng key của phòng và trừ Token dịch, không giữ tiền cho lần chạy. Bạn thấy số Token dịch, hạn dùng và giá gói. Bạn không thấy giá gốc, phần trăm chênh hay hệ số đệm. Khi Chủ đã mở gói việc, bạn chọn một gói. Gói việc quyết định model nhận dạng và model dịch. Nhận dạng Alibaba ở cửa này dùng key Alibaba của phòng và cần link file trực tiếp. Việc Alibaba ngoài nhận dạng chưa chạy ở cửa này. Giọng đọc Aura của Deepgram ở cửa này dùng key Deepgram của phòng và trừ Token dịch theo số chữ đọc. Nhận dạng Deepgram chưa chạy ở cửa này. Khi chưa có gói việc, cửa vẫn nhận dạng bằng Whisper trên Groq. Khi thuê phòng bằng key của bạn, bạn chỉ chọn model Chủ đã mở. Dịch khi thuê phòng vẫn bằng model Groq đã mở. Nhận dạng Deepgram dùng key Deepgram của bạn và cần link file trực tiếp.
+        Cửa trả theo lượt dùng key của phòng và trừ Token dịch, không giữ tiền cho lần chạy. Bạn thấy số Token dịch, hạn dùng và giá gói. Bạn không thấy giá gốc, phần trăm chênh hay hệ số đệm. Khi Chủ đã mở gói việc, bạn chọn một gói. Gói việc quyết định model nhận dạng và model dịch. Nhận dạng Alibaba ở cửa này dùng key Alibaba của phòng và cần link file trực tiếp. Việc Alibaba ngoài nhận dạng chưa chạy ở cửa này. Giọng đọc Aura của Deepgram ở cửa này dùng key Deepgram của phòng và trừ Token dịch theo số chữ đọc. Nhận dạng Deepgram chưa chạy ở cửa này. Nhận dạng AssemblyAI, Speechmatics và Soniox ở cửa này dùng key của phòng từng nhà, cần link file trực tiếp và trừ Token dịch theo giây âm thanh. Khi chưa có gói việc, cửa vẫn nhận dạng bằng Whisper trên Groq. Khi thuê phòng bằng key của bạn, bạn chỉ chọn model Chủ đã mở. Dịch khi thuê phòng vẫn bằng model Groq đã mở. Nhận dạng Deepgram, AssemblyAI, Speechmatics và Soniox dùng key của chính nhà đó do bạn nhập và cần link file trực tiếp.
       </p>
       <p>
-        Nhận dạng tính theo giây âm thanh, tối thiểu 10 giây mỗi lần. Dịch tính theo lượng chữ gửi đi. Một model đắt hơn thì lần chạy trừ nhiều Token dịch hơn. Giá lấy từ giá niêm yết, không đặt giá riêng từng model. Giá Alibaba lấy theo bảng niêm yết vùng Singapore khi phòng đọc được; chưa đọc được thì dùng giá dự phòng đã gắn sẵn. Giọng đọc Aura tính theo số chữ đọc, giá lấy từ giá niêm yết Deepgram đã gắn sẵn. Dịch trực tiếp trừ cùng Token dịch theo phần đã dịch, không giữ số dư. Hết Token dịch thì phiên dừng.
+        Nhận dạng tính theo giây âm thanh, tối thiểu 10 giây mỗi lần. Dịch tính theo lượng chữ gửi đi. Một model đắt hơn thì lần chạy trừ nhiều Token dịch hơn. Giá lấy từ giá niêm yết, không đặt giá riêng từng model. Giá Alibaba lấy theo bảng niêm yết vùng Singapore khi phòng đọc được; chưa đọc được thì dùng giá dự phòng đã gắn sẵn. Giọng đọc Aura tính theo số chữ đọc, giá lấy từ giá niêm yết Deepgram đã gắn sẵn. Giá AssemblyAI, Speechmatics và Soniox là bảng giá niêm yết đã gắn sẵn trong phòng, không tự cập nhật; Chủ có thể sửa tay khi nhà đổi giá. Dịch trực tiếp trừ cùng Token dịch theo phần đã dịch, không giữ số dư. Hết Token dịch thì phiên dừng.
       </p>
       <p>
         Orpheus khi dùng key của phòng tính theo giá gốc rồi trừ Token dịch. Neural và giọng máy không trừ. Thuê phòng giữ giá tay, trả bằng chuyển khoản đúng giá, không tính theo Token dịch.
@@ -133,10 +133,10 @@ export function TermsDocument() {
 
       <h2>5. Dữ liệu đi những đâu</h2>
       <p>
-        Key Groq, key Alibaba, key Deepgram, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy. Khi bạn đã đăng nhập, máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
+        Key Groq, key Alibaba, key Deepgram, key AssemblyAI, key Speechmatics, key Soniox, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy. Khi bạn đã đăng nhập, máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
       </p>
       <p>
-        Lời thoại được gửi tới nhà nhận dạng bạn chọn, theo điều khoản của nhà đó. Groq xử lý ở Hoa Kỳ. Alibaba Filetrans xử lý theo vùng Singapore, và link file trực tiếp cũng được gửi tới Alibaba. Deepgram nhận dạng theo điều khoản của Deepgram, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới Deepgram. Chữ cần đọc bằng giọng Aura cũng được gửi tới Deepgram. Đây là chuyển dữ liệu ra ngoài Việt Nam để làm đúng việc bạn yêu cầu. File video xử lý trên máy bạn. Phòng không lưu video.
+        Lời thoại được gửi tới nhà nhận dạng bạn chọn, theo điều khoản của nhà đó. Groq xử lý ở Hoa Kỳ. Alibaba Filetrans xử lý theo vùng Singapore, và link file trực tiếp cũng được gửi tới Alibaba. Deepgram nhận dạng theo điều khoản của Deepgram, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới Deepgram. Chữ cần đọc bằng giọng Aura cũng được gửi tới Deepgram. AssemblyAI nhận dạng theo điều khoản của AssemblyAI, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới AssemblyAI. Speechmatics nhận dạng theo điều khoản của Speechmatics, một công ty Anh, phòng đang dùng máy chủ vùng Hoa Kỳ (US1), và link file trực tiếp cũng được gửi tới Speechmatics. Soniox nhận dạng theo điều khoản của Soniox; nơi đặt máy chủ do Soniox công bố, và link file trực tiếp cũng được gửi tới Soniox. Phòng gửi lệnh xóa bản nhận dạng ngay sau mỗi lần chạy, nhưng việc nhà đó có xóa thật hay không là theo điều khoản của nhà đó. Đây là chuyển dữ liệu ra ngoài Việt Nam để làm đúng việc bạn yêu cầu. File video xử lý trên máy bạn. Phòng không lưu video.
       </p>
       <p>
         Khi bật thuyết minh Neural, câu chữ được gửi qua phòng tới dịch vụ đọc giọng. Giọng máy của trình duyệt đọc trên thiết bị của bạn. Orpheus khi bạn dùng key của mình thì gửi chữ tới Groq bằng key đó. Orpheus khi dùng key của phòng thì gửi chữ tới Groq bằng key của phòng và trừ Token dịch.
@@ -159,9 +159,9 @@ export function TermsDocument() {
         Không cam kết nhận dạng hết câu, dịch đúng ý, giữ đúng tên hay giọng nam nữ, hoặc không mất câu. Kết quả là bản để bạn xem và sửa. Bạn tự kiểm tra trước khi đăng, phát hoặc giao cho người khác.
       </p>
       <p>
-        Key sai, hết hạn mức Groq, Alibaba hoặc Deepgram, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị trừ và phần giữ thừa được trả lại nếu gói còn hạn. Hết hạn thì không trả lại và không hoàn tiền.
+        Key sai, hết hạn mức Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics hoặc Soniox, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị trừ và phần giữ thừa được trả lại nếu gói còn hạn. Hết hạn thì không trả lại và không hoàn tiền.
       </p>
-      <p>Phòng không phải Groq, không phải Alibaba, không phải Deepgram, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
+      <p>Phòng không phải Groq, không phải Alibaba, không phải Deepgram, không phải AssemblyAI, không phải Speechmatics, không phải Soniox, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
 
       <h2>7. Phần mỗi bên chịu</h2>
       <p>Bạn chịu nội dung đưa vào và cách bạn dùng bản dịch, file phụ đề, hoặc tiếng đọc.</p>
