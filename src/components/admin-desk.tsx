@@ -267,7 +267,7 @@ export function AdminDesk() {
     setNote(user.note);
     setReason(user.reason);
     setLedger(await listUserLedger({ data: user.id }));
-    setTab("viec");
+    setTab("tai-khoan");
   }
 
   useEffect(() => {
@@ -375,7 +375,7 @@ export function AdminDesk() {
           </div>
         </section>
       )}
-      {role && tab === "viec" && (
+      {role && tab === "tai-khoan" && (
         <>
           <div className="admin-wide admin-card admin-split">
           <h2 className="admin-span font-semibold">Tài khoản</h2>
@@ -609,6 +609,10 @@ export function AdminDesk() {
           }}
         />
       )}
+        </>
+      )}
+      {role && tab === "viec" && (
+        <>
           <section className="admin-card space-y-2" data-appeals>
             <h2 className="font-semibold">Yêu cầu</h2>
             {appeals.length === 0 && <p className="text-sm text-muted">Chưa có yêu cầu ở cấp của bạn.</p>}

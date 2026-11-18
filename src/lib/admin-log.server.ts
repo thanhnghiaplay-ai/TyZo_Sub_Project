@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.2.3",
     time: "18/11/2026",
     area: "khac",
+    text: "Sắp xếp lại giao diện Admin, bước 3: tách «Tài khoản khách» ra tab riêng (id mới tai-khoan, mọi vai trò đều thấy như khối cũ), gồm thẻ tìm tài khoản và bảng kiểu thẻ quyền của Chủ. Tab «Phiếu và việc» còn thống kê, phiếu, yêu cầu, lịch sử, Email Chủ và hàng chờ nạp. Mở tài khoản từ nơi khác (bấm email) nay đưa sang tab Tài khoản khách; mở đơn nạp và yêu cầu vẫn về Phiếu và việc. Không đổi quyền, dữ liệu hay chức năng; không nâng số phiên bản khách.",
+  },
+  {
+    version: "5.2.3",
+    time: "18/11/2026",
+    area: "khac",
     text: "Sắp xếp lại giao diện Admin, bước 2: tab Cấu hình của Chủ tách thành 6 trang con bấm ngang (Trạng thái, Nhà cung cấp, Gói và giá, Thuê phòng, Dịch trực tiếp, Cổng nạp). Code mới: components/admin-config.tsx (ConfigTab), lib/admin-config-pages.ts (+ test). Cùng các khối như trước, trang không chọn chỉ bị ẩn nên không mất dữ liệu đang nhập. Không đổi quyền, dữ liệu, giá hay chức năng; không nâng số phiên bản khách.",
   },
   {
