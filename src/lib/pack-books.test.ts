@@ -3,6 +3,8 @@ import test from "node:test";
 import { pickForRole, type AutoCandidate } from "./pack-auto.ts";
 import { buildPackBooks } from "./pack-books.ts";
 import { asrPerSecond } from "./run-bill.ts";
+import { ASSEMBLYAI_BASE_ROWS } from "./sub/assemblyai-base.ts";
+import { SPEECHMATICS_BASE_ROWS } from "./sub/speechmatics-base.ts";
 import { ALL_PROVIDER_IDS } from "./sub/provider.ts";
 import { ASR_MODELS } from "./sub/models.ts";
 import { asrHouse } from "./sub/asr-house.ts";
@@ -22,6 +24,20 @@ test("markup Alibaba chỉ áp cho Alibaba", () => {
   const b = buildPackBooks({ rate: 25000, groqRows: [], alibabaMarkup: 10 });
   assert.equal(b.alibaba.desk.markup, 10);
   assert.equal(b.assemblyai.desk.markup, 0);
+});
+
+test("số Chủ sửa tay phủ giá gốc, ô trống giữ nguyên", () => {
+  const id = ASSEMBLYAI_BASE_ROWS[0].id;
+  const before = asrPerSecond(books.assemblyai, id);
+  const fixed = buildPackBooks({
+    rate: 25000,
+    groqRows: [],
+    usdFix: { [id]: { hour: 9, inn: null, out: null, chars: null } },
+  });
+  const after = asrPerSecond(fixed.assemblyai, id);
+  assert.notEqual(before, after);
+  assert.equal(after, Math.round(9 * 25000) / 3600);
+  assert.equal(asrPerSecond(fixed.speechmatics, SPEECHMATICS_BASE_ROWS[0].id), asrPerSecond(books.speechmatics, SPEECHMATICS_BASE_ROWS[0].id));
 });
 
 test("Dựng gói tự động chọn được model nhận dạng của 3 nhà mới khi chỉ có nhà đó", () => {

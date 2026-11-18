@@ -3,6 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { checkRunDesk, parseModelList, parseRunDesk, type RunDesk } from "@/lib/run-desk";
 import { checkServicePacks, parseServicePacks, type ServicePack } from "@/lib/service-pack";
+import { parseUsdFix, type UsdFix } from "@/lib/usd-fix";
 import type { PriceOverride } from "@/lib/run-desk";
 
 export type AlibabaDeskView = {
@@ -11,6 +12,8 @@ export type AlibabaDeskView = {
   keyTail: string;
   packs: ServicePack[];
   groqModels: string[] | null;
+  /** Số đô la Chủ sửa tay. Xem trước gói phủ lên giá gốc. */
+  usdFix: UsdFix;
 };
 
 export type ServiceMenu = {
@@ -22,7 +25,7 @@ async function readSettings() {
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();
   const rows = await sql<{ key: string; value: string }>`
-    select key, value from room_settings where key in ('service_packs', 'alibaba_desk', 'alibaba_models', 'alibaba_key')
+    select key, value from room_settings where key in ('service_packs', 'alibaba_desk', 'alibaba_models', 'alibaba_key', 'usd_fix')
   `;
   const map = new Map(rows.map((row) => [row.key, row.value]));
   return { sql, map };
@@ -55,6 +58,7 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
       keyTail: key ? key.slice(-4) : "",
       packs: parseServicePacks(map.get("service_packs")),
       groqModels: parseModelList(groqRows[0]?.value),
+      usdFix: parseUsdFix(map.get("usd_fix")),
     };
   });
 

@@ -9,6 +9,7 @@ import type { GroqBoard } from "@/lib/sub/groq-board";
 import type { RunDesk } from "@/lib/run-desk";
 import { PACK_ROLE_LABEL, PACK_ROLES, providersForRole, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { buildPackBooks } from "@/lib/pack-books";
+import type { UsdFix } from "@/lib/usd-fix";
 import { ASR_MODELS } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
@@ -43,6 +44,7 @@ export function ServicePackBoard() {
   const [packs, setPacks] = useState<ServicePack[]>([]);
   const [busy, setBusy] = useState(false);
   const [board, setBoard] = useState<GroqBoard | null>(null);
+  const [usdFix, setUsdFix] = useState<UsdFix>({});
 
   const [rentShow, setRentShow] = useState<RentShow | null>(null);
   useEffect(() => {
@@ -56,6 +58,7 @@ export function ServicePackBoard() {
         setModels(next.models);
         setGroqModels(next.groqModels);
         setPacks(next.packs);
+        setUsdFix(next.usdFix);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn Alibaba.", "bad"));
     void loadGroqBoard().then(setBoard).catch(() => undefined);
@@ -78,8 +81,8 @@ export function ServicePackBoard() {
   );
   const autoBooks = useMemo<Partial<Record<ProviderId, PriceBook>> | null>(() => {
     if (!board) return null;
-    return buildPackBooks({ rate: board.rate, groqRows: board.rows });
-  }, [board]);
+    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix });
+  }, [board, usdFix]);
 
   function createAutoPack(roles: ServicePack["roles"], draft: { levels: Parameters<typeof buildAutoPack>[0]["levels"]; lang: "cjk" | "other" }) {
     const id = `pack_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
@@ -138,7 +141,7 @@ export function ServicePackBoard() {
                 seconds: 600,
                 door: "turn",
                 narration: Boolean(pack.roles.narration),
-                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup }),
+                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix }),
               })
             : null;
           return (
