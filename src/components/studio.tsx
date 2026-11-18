@@ -39,7 +39,7 @@ import { StepsBar } from "@/components/steps-bar";
 import { ExportMenu } from "@/components/export-menu";
 import { CueEditor } from "@/components/cue-editor";
 import { useCaps, useWakeLock } from "@/components/use-caps";
-import { MoneyCard } from "@/components/money-card";
+import { MoneyBalance, MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
@@ -743,6 +743,8 @@ export function Studio() {
   }, [app.reviewHold]);
 
   const showRoomPrice = runDoor.open && payByRoom;
+  // Số dư Token dịch đọc một lần: thanh số dư ở đầu màn hình đầu và ô ước tính trên nút bắt đầu dùng chung.
+  const money = useMoney({ active: runDoor.ready && runDoor.open, asr: app.asrModel, chat: app.modelId, seconds: thumb.seconds ?? 0, narration: narration.enabled });
   const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
   const dgAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.deepgram ?? null) : null;
@@ -980,7 +982,8 @@ export function Studio() {
           running={app.running}
           online={online}
           onStart={() => void app.start()}
-          extra={<MoneyCard active={payByRoom} asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? 0} narration={narration.enabled} />}
+          top={<MoneyBalance money={money} turn={payByRoom} />}
+          extra={payByRoom ? <MoneyEstimate money={money} /> : null}
         />
       )}
       {!hero && payByRoom && (

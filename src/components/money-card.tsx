@@ -10,23 +10,30 @@ import { formatGiay } from "@/lib/token-math";
 import { fmt } from "@/lib/sub/text";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
-/**
- * Thẻ Token dịch cho cửa trả theo lượt: số còn và ước tính cho video đang chọn.
- */
-export function MoneyCard({
-  active,
-  asr,
-  chat,
-  seconds,
-  narration,
-}: {
+type MoneyInput = {
   active: boolean;
   asr: string;
   chat: string;
   /** Thời lượng video đang chọn, 0 nếu chưa biết (ví dụ dán link). */
   seconds: number;
   narration: boolean;
-}) {
+};
+
+export type MoneyView = {
+  on: boolean;
+  account: RoomState | null;
+  left: number | null;
+  exactRate: boolean;
+  secs: number;
+  run: ReturnType<typeof pickPrice>;
+  estimate: ReturnType<typeof runEstimate> | null;
+};
+
+/**
+ * Đọc số Token dịch, giá mỗi phút và ước tính một lần, để thanh số dư ở đầu trang và ô ước tính
+ * ở cuối dùng chung, không gọi máy chủ hai lần.
+ */
+export function useMoney({ active, asr, chat, seconds, narration }: MoneyInput): MoneyView {
   const { user, isPending } = useCurrentUserState();
   const on = active && !isPending && Boolean(user) && !user?.isDevFallback;
   const [account, setAccount] = useState<RoomState | null>(null);
@@ -101,8 +108,6 @@ export function MoneyCard({
     };
   }, [on, packs.length, secs, narration]);
 
-  if (!on) return null;
-
   const chosen = packs.find((pack) => {
     const models = turnPackModels(pack);
     return models.asr === asr && models.chat === chat;
@@ -111,28 +116,41 @@ export function MoneyCard({
   const left = account && rate ? minutesLeft(account.units, rate.row.total) : null;
   const run = pickPrice(forRun, chosen?.id ?? null);
   const estimate = account ? runEstimate(run?.row ?? null, account.units) : null;
+  return { on, account, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
+}
 
+/** Thanh số dư gọn, đặt ngay đầu màn hình đầu: Token dịch còn và còn khoảng bao nhiêu phút. */
+export function MoneyBalance({ money, turn }: { money: MoneyView; turn: boolean }) {
+  if (!money.on) return null;
+  const { account, left, exactRate } = money;
   return (
-    <section aria-label="Token dịch và ước tính" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="flex min-w-0 items-center gap-2">
-          <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
-          {account ? (
-            <span>
-              <strong>{formatGiay(account.units)}</strong>
-              {left != null && (
-                <>
-                  {" "}
-                  · <strong className="text-accent">Còn khoảng {formatMinutes(left)}</strong>
-                  {!rate?.exact ? " (theo gói rẻ nhất)" : ""}
-                </>
-              )}
-            </span>
-          ) : (
-            <span className="text-muted">Đang đọc Token dịch…</span>
+    <section aria-label="Số dư Token dịch" data-balance className="flex min-w-0 items-center justify-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-sm">
+      <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
+      {account ? (
+        <span className="min-w-0 truncate">
+          <strong>{formatGiay(account.units)}</strong>
+          {left != null && turn && (
+            <>
+              {" "}
+              · <strong className="text-accent">Còn khoảng {formatMinutes(left)}</strong>
+              {!exactRate ? " (theo gói rẻ nhất)" : ""}
+            </>
           )}
-        </p>
-      </div>
+          {!turn && <span className="text-muted"> · đang dùng key của bạn</span>}
+        </span>
+      ) : (
+        <span className="text-muted">Đang đọc Token dịch…</span>
+      )}
+    </section>
+  );
+}
+
+/** Ô ước tính cho video đang chọn, đặt trên nút bắt đầu. Chỉ có ý nghĩa khi trả theo lượt. */
+export function MoneyEstimate({ money }: { money: MoneyView }) {
+  const { on, account, secs, run, estimate } = money;
+  if (!on || !account) return null;
+  return (
+    <section aria-label="Ước tính Token dịch" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
       {estimate && (
         <p className={estimate.enough ? "text-muted" : "text-danger"} role="status">
           Video {fmt(secs)}: giữ khoảng <strong className="text-fg">{formatGiay(estimate.hold)}</strong> trước khi chạy
@@ -140,7 +158,22 @@ export function MoneyCard({
           {!estimate.enough ? ` Thiếu ${formatGiay(estimate.short)}. Hãy mua Token dịch ở Tài khoản.` : ""}
         </p>
       )}
-      {!estimate && secs < 1 && account && <p className="text-xs text-muted">Chọn một tệp để thấy ước tính cho video đó. Dán link thì chưa biết thời lượng.</p>}
+      {!estimate && secs < 1 && <p className="text-xs text-muted">Chọn một tệp để thấy ước tính cho video đó. Dán link thì chưa biết thời lượng.</p>}
     </section>
+  );
+}
+
+/**
+ * Thẻ Token dịch cho cửa trả theo lượt: số còn và ước tính cho video đang chọn.
+ * Dùng khi đã có bản dịch (không còn màn hình đầu). Màn hình đầu dùng useMoney riêng.
+ */
+export function MoneyCard(props: MoneyInput) {
+  const money = useMoney(props);
+  if (!money.on) return null;
+  return (
+    <div className="grid gap-2">
+      <MoneyBalance money={money} turn />
+      <MoneyEstimate money={money} />
+    </div>
   );
 }

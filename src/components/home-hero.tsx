@@ -11,11 +11,11 @@ const CHIP = "min-tap inline-flex items-center gap-1.5 rounded-full border borde
 
 function ChipSelect({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
   return (
-    <label className={CHIP + " relative"}>
-      <span className="text-muted">{label}</span>
+    <label className={CHIP + " relative min-w-0"}>
+      <span className="shrink-0 text-muted">{label}</span>
       <select
         aria-label={label}
-        className="max-w-[10.5rem] cursor-pointer truncate bg-transparent py-2 pr-1 font-medium outline-none"
+        className="min-w-0 flex-1 cursor-pointer truncate bg-transparent py-2 pr-1 font-medium outline-none"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
@@ -47,6 +47,7 @@ export function HomeHero({
   online,
   onStart,
   extra,
+  top,
   blocked = false,
 }: {
   /** Nhóm Dịch bình thường đang bảo trì: khóa nút bắt đầu. Chọn tệp và đổi lựa chọn vẫn dùng được. */
@@ -68,8 +69,10 @@ export function HomeHero({
   running: boolean;
   online: boolean;
   onStart: () => void;
-  /** Chỗ cho ước tính và số dư, đặt ngay trên nút bắt đầu. */
+  /** Chỗ cho ước tính, đặt ngay trên nút bắt đầu. */
   extra?: ReactNode;
+  /** Chỗ cho số dư Token dịch, đặt ngay đầu trang, trên ô thả. */
+  top?: ReactNode;
 }) {
   const [note, setNote] = useState("");
   const [over, setOver] = useState(false);
@@ -121,7 +124,8 @@ export function HomeHero({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onFile]);
   return (
-    <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-5 py-6 sm:gap-6 sm:py-10">
+    <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-4 py-4 sm:gap-5 sm:py-8">
+      {top}
       <label
         className={
           "relative grid min-h-[15rem] cursor-pointer place-items-center overflow-hidden rounded-[var(--radius-card)] border-2 border-dashed px-5 py-10 text-center transition-all duration-200 focus-within:border-accent hover:border-accent motion-reduce:transition-none sm:min-h-[19rem] " +
@@ -209,37 +213,41 @@ export function HomeHero({
         )}
       </span>
 
-      <div className="flex flex-wrap items-center justify-center gap-2.5" role="group" aria-label="Lựa chọn nhanh">
-        <ChipSelect label="Tiếng gốc" value={source} onChange={onSource}>
-          {SRC_LANGS.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </ChipSelect>
-        <ChipSelect label="Thể loại" value={genre} onChange={onGenre}>
-          {GENRES.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </ChipSelect>
-        {payMode && (
-          <button type="button" className={CHIP} aria-pressed={payMode === "turn"} onClick={onTogglePay} title="Đổi giữa key của bạn và trả theo lượt">
-            <Icon slot="nav.wallet" className="size-4" />
-            <span className="font-medium">{payMode === "turn" ? "Trả theo lượt" : "Key của tôi"}</span>
+      <div className="grid gap-2" role="group" aria-label="Lựa chọn nhanh">
+        <div className="grid grid-cols-2 gap-2">
+          <ChipSelect label="Tiếng gốc" value={source} onChange={onSource}>
+            {SRC_LANGS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </ChipSelect>
+          <ChipSelect label="Thể loại" value={genre} onChange={onGenre}>
+            {GENRES.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </ChipSelect>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {payMode && (
+            <button type="button" className={CHIP} aria-pressed={payMode === "turn"} onClick={onTogglePay} title="Đổi giữa key của bạn và trả theo lượt">
+              <Icon slot="nav.wallet" className="size-4" />
+              <span className="font-medium">{payMode === "turn" ? "Trả theo lượt" : "Key của tôi"}</span>
+            </button>
+          )}
+          {payMode !== "turn" && (
+            <button type="button" className={CHIP} onClick={() => onOpenTool("key")}>
+              <Icon slot="ui.key" className="size-4" />
+              <span className={keyReady ? "font-medium" : "font-medium text-warning"}>{keyReady ? "Đã có key" : "Nhập key"}</span>
+            </button>
+          )}
+          <button type="button" className={CHIP} onClick={() => onOpenTool("phim")}>
+            <Icon slot="ui.options" className="size-4" />
+            <span className="font-medium">Tùy chọn khác</span>
           </button>
-        )}
-        {payMode !== "turn" && (
-          <button type="button" className={CHIP} onClick={() => onOpenTool("key")}>
-            <Icon slot="ui.key" className="size-4" />
-            <span className={keyReady ? "font-medium" : "font-medium text-warning"}>{keyReady ? "Đã có key" : "Nhập key"}</span>
-          </button>
-        )}
-        <button type="button" className={CHIP} onClick={() => onOpenTool("phim")}>
-          <Icon slot="ui.options" className="size-4" />
-          <span className="font-medium">Tùy chọn khác</span>
-        </button>
+        </div>
       </div>
 
       {extra}
