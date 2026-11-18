@@ -50,3 +50,15 @@ describe("hạn gói", () => {
     assert.match(payTurnNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), /Bản dùng thử/);
   });
 });
+describe("một nguồn giá thuê phòng", () => {
+  it("trang /goi không chép tay giá hay số dùng thử", async () => {
+    const { readFileSync } = await import("node:fs");
+    const page = readFileSync(new URL("../routes/goi.tsx", import.meta.url), "utf8");
+    for (const plan of ROOM_PLANS) {
+      assert.ok(!page.includes(String(plan.price).replace(/(\d)(?=(\d{3})+$)/g, "$1_")), `goi.tsx chép giá ${plan.price}`);
+    }
+    assert.ok(page.includes("ROOM_PLANS"), "goi.tsx phải đọc ROOM_PLANS");
+    assert.ok(page.includes("TRIAL_MINUTES"), "goi.tsx phải đọc TRIAL_MINUTES");
+    assert.ok(!/tối đa 10 phút/.test(page), "goi.tsx chép tay chữ dùng thử");
+  });
+});

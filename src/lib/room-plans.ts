@@ -1,5 +1,3 @@
-export const TRIAL_AMOUNTS = [9_000, 39_000, 99_000] as const;
-
 /** Giá thuê phòng đặt tay. Không tính từ gói giây và không tự đổi theo giá model. */
 export const ROOM_PLANS = [
   { id: "ngay", name: "24 giờ", price: 9_000, hours: 24, strike: null as number | null, save: null as number | null },
@@ -11,10 +9,6 @@ export type RoomPlanId = (typeof ROOM_PLANS)[number]["id"];
 
 export function roomPlan(id: string) {
   return ROOM_PLANS.find((plan) => plan.id === id) ?? null;
-}
-
-export function isTrialAmount(amount: number) {
-  return (TRIAL_AMOUNTS as readonly number[]).includes(amount);
 }
 
 export const TRIAL_FILES = 1;

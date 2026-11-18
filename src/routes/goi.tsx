@@ -1,36 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "@/components/back-button";
+import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
 
 export const Route = createFileRoute("/goi")({
   component: GoiPage,
 });
 
-const PLANS = [
-  {
-    id: "ngay",
-    name: "24 giờ",
-    price: 9_000,
-    strike: null as number | null,
-    save: null as number | null,
-    note: "Một buổi. Trong 24 giờ không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
-  },
-  {
-    id: "tuan",
-    name: "7 ngày",
-    price: 39_000,
-    strike: 63_000,
-    save: 24_000,
-    note: "Trong 7 ngày không giới hạn số tệp. Rẻ hơn mua bảy ngày lẻ.",
-  },
-  {
-    id: "thang",
-    name: "30 ngày",
-    price: 99_000,
-    strike: 270_000,
-    save: 171_000,
-    note: "Trong 30 ngày không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
-  },
-] as const;
+/** Giá, số ngày, giá gạch và số tiết kiệm lấy hết từ ROOM_PLANS. Ở đây chỉ giữ lời ghi chú. */
+const PLAN_NOTES: Record<RoomPlanId, string> = {
+  ngay: "Một buổi. Trong 24 giờ không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
+  tuan: "Trong 7 ngày không giới hạn số tệp. Rẻ hơn mua bảy ngày lẻ.",
+  thang: "Trong 30 ngày không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
+};
 
 function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
@@ -59,9 +40,9 @@ function GoiPage() {
           <article className="rounded-[var(--radius-card)] border border-line bg-raised p-4">
             <p className="text-sm text-muted">Dùng thử</p>
             <p className="mt-1 text-2xl font-semibold">0 đ</p>
-            <p className="mt-2 text-sm text-muted">Đăng ký, chưa mua gói: 1 tệp, tối đa 10 phút, đủ chức năng trên màn hình. Không xuất file Vietsub.</p>
+            <p className="mt-2 text-sm text-muted">Đăng ký, chưa mua gói: {TRIAL_FILES} tệp, tối đa {TRIAL_MINUTES} phút, đủ chức năng trên màn hình. Không xuất file Vietsub.</p>
           </article>
-          {PLANS.map((plan) => (
+          {ROOM_PLANS.map((plan) => (
             <article key={plan.id} className="rounded-[var(--radius-card)] border border-line bg-card p-4">
               <h2 className="font-semibold">{plan.name}</h2>
               <p className="mt-1 text-2xl font-semibold text-accent">{dong(plan.price)}</p>
@@ -74,7 +55,7 @@ function GoiPage() {
               ) : (
                 <p className="text-sm text-muted">Giá một ngày. Gói 7 ngày và 30 ngày tiết kiệm hơn.</p>
               )}
-              <p className="mt-2 text-sm text-muted">{plan.note}</p>
+              <p className="mt-2 text-sm text-muted">{PLAN_NOTES[plan.id]}</p>
             </article>
           ))}
         </section>
