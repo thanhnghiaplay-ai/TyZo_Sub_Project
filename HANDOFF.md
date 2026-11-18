@@ -7,7 +7,7 @@ C. Tab «Ngày» thực ra cộng cả 14 ngày (cửa sổ `14 days`; Tuần = 
 D. `money-extra-data.ts`: «giá vốn mỗi phút» chỉ lấy phiếu `unit = 'vnd'` nên cũng bỏ Token dịch (phải sửa cùng bước 2).
 E. Cần xét: giá vốn phiếu đã hoàn tiền vẫn tính (đúng: tiền API đã tiêu thật) nhưng nhãn chưa nói rõ.
 KẾ HOẠCH:
-[CHƯA] 1 Lời lỗ tính theo tiền thật: Lời lỗ = Doanh thu (tiền vào) − giá vốn − hoa hồng − chi phí ghi tay. Bỏ `goi`+`luot` ra khỏi công thức (chỉ hiện làm thông tin số dư cũ). Hàm thuần + test.
+[XONG] 1 Lời lỗ tính theo tiền thật: `src/lib/money-profit.ts` (`profitOf`) + `money-profit.test.ts` (4 ca, đã vào `npm test`, có ca chặn công thức cũ `goi + luot − von` quay lại). `getMoney` trả thêm `breakdown.loi`; `lai` = tiền vào − giá vốn. Màn hình chỉ hiện `breakdown.loi`; hai dòng «từ số dư cũ» đổi nhãn thành tham khảo. Ca của Chủ nay: thu 12.832 − giá vốn 18.843 = −6.011 (trước đó −18.843). CHƯA gồm giá vốn Token dịch nên số lời vẫn có thể cao hơn thật cho tới bước 2. `tsc` sạch, `npm test` 198 (191 pass, 7 bỏ qua) + 1050 pass. Admin-only, không đổi APP_VERSION.
 [CHƯA] 2 Giá vốn Token dịch bằng đồng đưa vào giá vốn và giá vốn mỗi phút (sửa cả `money-extra-data.ts`). Hàm thuần + test.
 [CHƯA] 3 Nhãn khoảng thời gian rõ (14 ngày/8 tuần/12 tháng/5 năm) + số «hôm nay». Sửa chữ dòng giải thích.
 [CHƯA] 4 Rà ARPU, Dùng thử→mua, biểu đồ, `overview-data.ts` (cũng đọc `nap`); ADMIN_LOG; cập nhật mục này.

@@ -1050,6 +1050,8 @@ export const setNickname = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+import { profitOf } from "@/lib/money-profit";
+
 export type MoneyPoint = { bucket: string; revenue: number; cost: number };
 export type CostRow = { id: number; day: string; label: string; amount: number; category: string };
 export type MoneyBreakdown = {
@@ -1060,7 +1062,10 @@ export type MoneyBreakdown = {
   nha: number;
   chi: number;
   von: number;
+  /** Lãi gộp = tiền vào − giá vốn. */
   lai: number;
+  /** Lời lỗ = lãi gộp − hoa hồng − chi phí ghi tay. Tính ở máy chủ, màn hình chỉ hiện. */
+  loi: number;
   hoa: number;
   /** Phần giá vốn là ước tính cho phiếu cũ, nằm trong von. */
   vonUoc: number;
@@ -1132,13 +1137,14 @@ export const getMoney = createServerFn({ method: "POST" })
     const hoa = Number(hoaRows[0]?.hoa ?? 0);
     const luot = Math.max(0, charged - refundedRun);
     const goi = Math.abs(Number(byKind.goi ?? 0));
-    const lai = goi + luot - von;
+    const nap = Number(byKind.nap ?? 0);
+    const { lai, loi } = profitOf({ revenue: nap, von, hoa, chi: costTotal });
     return {
       points,
       revenue: points.reduce((sum, point) => sum + point.revenue, 0),
       cost: costTotal,
       breakdown: {
-        nap: Number(byKind.nap ?? 0),
+        nap,
         goi,
         luot,
         hoan: Number(byKind.hoan ?? 0),
@@ -1146,6 +1152,7 @@ export const getMoney = createServerFn({ method: "POST" })
         chi: costTotal,
         von,
         lai,
+        loi,
         hoa,
         vonUoc,
         chuaVon,
