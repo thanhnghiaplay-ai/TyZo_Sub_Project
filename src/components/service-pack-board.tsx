@@ -1,4 +1,6 @@
 import { dongOrNull } from "@/lib/money-format";
+import { askConfirm } from "@/lib/confirm";
+import { packDoorsText, packSummary } from "@/lib/pack-summary";
 import { shortModelNames } from "@/lib/sub/model-short";
 import { useEffect, useMemo, useState } from "react";
 import { pushToast } from "@/components/toast";
@@ -51,6 +53,8 @@ export function ServicePackBoard() {
 
   // Nhà đã chọn nhưng chưa có model hợp việc (vd. Alibaba ở Thuyết minh). Chỉ để hiển thị, không lưu.
   const [emptyPick, setEmptyPick] = useState<Record<string, ProviderId>>({});
+  // Danh sách gói thu gọn: chỉ gói được bấm mới mở phần sửa. Gói vừa thêm tự mở.
+  const [openId, setOpenId] = useState<string | null>(null);
   const [rentShow, setRentShow] = useState<RentShow | null>(null);
   useEffect(() => {
     void getRentShow().then(setRentShow).catch(() => undefined);
@@ -96,6 +100,7 @@ export function ServicePackBoard() {
     const pack = buildAutoPack({ id, levels: draft.levels, lang: draft.lang, roles });
     if (!pack) return pushToast("Gói cần model nhận dạng và model dịch.", "bad");
     setPacks((current) => [...current, pack]);
+    setOpenId(pack.id);
     pushToast("Đã thêm gói nháp (đang tắt). Xem lại rồi bấm «Lưu các gói dịch».");
   }
 
@@ -137,7 +142,11 @@ export function ServicePackBoard() {
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-semibold">Gói dịch</h4>
-          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => setPacks((current) => [...current, freshPack(groqModels)])}>
+          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" onClick={() => {
+            const pack = freshPack(groqModels);
+            setPacks((current) => [...current, pack]);
+            setOpenId(pack.id);
+          }}>
             Thêm gói dịch
           </button>
         </div>
@@ -151,17 +160,43 @@ export function ServicePackBoard() {
                 books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix, alibabaRows, deepgramRows }),
               })
             : null;
+          const open = openId === pack.id;
           return (
-            <article key={pack.id} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line p-3">
+            <article key={pack.id} id={`pack-${pack.id}`} className="rounded-[var(--radius-ctl)] border border-line">
+              <div className="flex items-center gap-2 p-3">
+                <button
+                  type="button"
+                  className="min-tap grid min-w-0 flex-1 gap-1 text-left"
+                  aria-expanded={open}
+                  onClick={() => setOpenId(open ? null : pack.id)}
+                >
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-semibold">{pack.name.trim() || "Gói chưa đặt tên"}</span>
+                    <span className={`rounded-full border px-2 text-xs ${pack.enabled ? "border-accent text-ink" : "border-line text-muted"}`}>{pack.enabled ? "Đang mở" : "Đang tắt"}</span>
+                    <span className="text-xs text-muted">{packDoorsText(pack)}</span>
+                  </span>
+                  <span className="text-xs text-muted">{packSummary(pack)}</span>
+                </button>
+                <button
+                  type="button"
+                  className="min-tap px-2 text-sm text-muted"
+                  onClick={async () => {
+                    if (!(await askConfirm({ title: "Xóa gói này?", text: `Xóa «${pack.name.trim() || "Gói chưa đặt tên"}»? Gói chỉ mất hẳn sau khi bấm «Lưu các gói dịch».`, confirmLabel: "Xóa", danger: true }))) return;
+                    setPacks((current) => current.filter((item) => item.id !== pack.id));
+                    setOpenId((current) => (current === pack.id ? null : current));
+                  }}
+                >
+                  Xóa
+                </button>
+              </div>
+              {open && (
+              <div className="grid gap-2 border-t border-line p-3">
               <div className="flex flex-wrap items-center gap-2">
                 <input className="min-tap min-w-40 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm" value={pack.name} onChange={(event) => patchPack(pack.id, { name: event.target.value })} />
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={pack.enabled} onChange={(event) => patchPack(pack.id, { enabled: event.target.checked })} />
                   Mở
                 </label>
-                <button type="button" className="text-sm text-muted" onClick={() => setPacks((current) => current.filter((item) => item.id !== pack.id))}>
-                  Xóa
-                </button>
               </div>
               <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm" placeholder="Gói này hợp việc gì" value={pack.note} onChange={(event) => patchPack(pack.id, { note: event.target.value })} />
               <div className="flex gap-3 text-sm">
@@ -233,6 +268,8 @@ export function ServicePackBoard() {
                   Ước tính 10 phút, theo giá gốc: gốc {dong(quote.base)} · giữ {dong(quote.hold)}
                   {quote.ready ? "" : " · chưa đủ giá"}
                 </p>
+              )}
+              </div>
               )}
             </article>
           );
