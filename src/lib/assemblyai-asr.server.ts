@@ -15,16 +15,17 @@ const INTERVAL_MS = 3_000;
 const REQUEST_MS = 20_000;
 
 /**
- * Nhận dạng cả file từ link công khai bằng key của khách (không lưu, không tính tiền phòng).
- * Key "room" (cửa Trả theo lượt) CHƯA mở: chưa có bảng giá AssemblyAI để trừ Token dịch (PROVIDERS.md bước 6 và 7),
- * nên chặn thẳng ở đây để không có lượt chạy miễn phí bằng key phòng.
+ * Nhận dạng cả file từ link công khai. Key "room" = key phòng ở cửa Trả theo lượt (cần phiếu giữ chỗ, trừ Token dịch
+ * theo số giây thực, giá gốc của nhà). Key khách: không lưu, không tính tiền phòng.
  */
 export async function runAssemblyaiAsr(userId: string, input: AssemblyaiAsrInput): Promise<AssemblyaiAsrResult> {
   await requireOpenAccount(userId);
   await requireServiceOpen("normal");
   await takeRate(`aai-asr:${userId}`, 30, 60);
-  if (input.key === "room") throw new Error("AssemblyAI chưa mở cho cửa Trả theo lượt. Hãy dùng key của bạn.");
-  const key = cleanAssemblyaiKey(input.key);
+  const usingRoom = input.key === "room";
+  const { assertRoomTicket, roomKeyOf } = await import("@/lib/room-asr.server");
+  const key = usingRoom ? cleanAssemblyaiKey(await roomKeyOf("assemblyai_key", "AssemblyAI", 20)) : cleanAssemblyaiKey(input.key);
+  if (usingRoom) await assertRoomTicket(userId, input.ticketId);
   const problem = directFileUrlProblem(input.url);
   if (problem) throw new Error(problem);
   const body = assemblyaiSubmitBody({ audioUrl: input.url, appModel: input.model, language: input.language });
@@ -52,5 +53,13 @@ export async function runAssemblyaiAsr(userId: string, input: AssemblyaiAsrInput
   };
 
   const finished = await runAssemblyaiJob({ request, body, deadlineMs: DEADLINE_MS, intervalMs: INTERVAL_MS });
-  return sentencesFromAssemblyai(finished, input.language);
+  const done = sentencesFromAssemblyai(finished, input.language);
+  if (usingRoom && input.ticketId) {
+    const { loadAssemblyaiRows } = await import("@/lib/sub/assemblyai-board.server");
+    const { getSql } = await import("@/lib/db");
+    const { chargeRoomAsr } = await import("@/lib/room-asr.server");
+    const rows = await loadAssemblyaiRows(await getSql());
+    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: input.model, rows });
+  }
+  return done;
 }

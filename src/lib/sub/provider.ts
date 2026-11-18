@@ -112,7 +112,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     // Không có lệnh liệt kê model: hỏi một lượt phiên âm gần nhất để kiểm key.
     listPath: "/transcript?limit=1",
     fixedModels: ["universal-3-5-pro", "universal-2"],
-    ready: false,
+    ready: true,
     settings: { key: "assemblyai_key", models: "assemblyai_models", desk: "assemblyai_desk" },
   },
   speechmatics: {

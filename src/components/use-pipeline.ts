@@ -908,11 +908,9 @@ export function usePipeline() {
       if (!link) return say("Deepgram cần link file trực tiếp (http/https).", true);
       if (!token && !roomPayRef.current) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrHouse(asrModel) === "assemblyai") {
-      // Cửa Trả theo lượt của AssemblyAI mở ở bước 7 (cần bảng giá để trừ Token dịch). Tới lúc đó chỉ chạy bằng key của khách.
-      if (roomPayRef.current) return say("AssemblyAI chưa mở cho cửa Trả theo lượt. Hãy dùng Thuê phòng với key AssemblyAI của bạn.", true);
-      if (!houseKeyOf("assemblyai")) return say("Nhận dạng AssemblyAI cần key AssemblyAI của bạn.", true);
+      if (!roomPayRef.current && !houseKeyOf("assemblyai")) return say("Nhận dạng AssemblyAI cần key AssemblyAI của bạn.", true);
       if (!link) return say("AssemblyAI cần link file trực tiếp (http/https).", true);
-      if (!token) return say("AssemblyAI chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+      if (!token && !roomPayRef.current) return say("AssemblyAI chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
@@ -992,7 +990,7 @@ export function usePipeline() {
       if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : "Link Alibaba"),
+          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : asrHouse(asrModel) === "assemblyai" ? "Link AssemblyAI" : "Link Alibaba"),
           seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
@@ -1755,7 +1753,7 @@ export function usePipeline() {
             url: link,
             language: source,
             model: asrModel,
-            key: houseKeyOf("assemblyai"),
+            key: roomPayRef.current ? "room" : houseKeyOf("assemblyai"),
             ticketId,
             signal,
           });

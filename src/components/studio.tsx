@@ -744,11 +744,12 @@ export function Studio() {
   const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
   const dgAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.deepgram ?? null) : null;
+  const aaiAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.assemblyai ?? null) : null;
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
   const asrPick = asrPickerRows({
     showRoomPrice,
-    allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow },
-    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba và Deepgram do máy chủ kiểm khi chạy.
+    allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow, assemblyai: aaiAllow },
+    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba, Deepgram và AssemblyAI do máy chủ kiểm khi chạy.
     roomHeld: (id) => asrHouse(id) === "groq" && roomHeld(runDoor, id),
     keyModels: { groq: app.remoteIds, ...app.keyModels },
   });
@@ -1202,8 +1203,8 @@ export function Studio() {
         {app.asrModel === "qwen-audio-3.0-asr-flash-filetrans" && (
           <p className="text-sm text-muted">Alibaba nhận cả file từ link trực tiếp. Cần key Alibaba và link file công khai (không phải trang xem). Không cắt đoạn trên máy.</p>
         )}
-        {(groqAllow || aliAllow || dgAllow) && (
-          <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Dịch vẫn dùng model Groq đã mở.</p>
+        {(groqAllow || aliAllow || dgAllow || aaiAllow) && (
+          <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Dịch vẫn dùng model Groq đã mở.</p>
         )}
         </>
         )}

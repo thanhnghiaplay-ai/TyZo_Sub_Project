@@ -119,14 +119,18 @@ describe("khóa kho và chữ mẫu ô key của khách", () => {
   });
 });
 
-describe("AssemblyAI, Speechmatics, Soniox (đang làm dở, ready: false)", () => {
+describe("AssemblyAI (đã ready), Speechmatics, Soniox (đang làm dở, ready: false)", () => {
   const NEW = ["assemblyai", "speechmatics", "soniox"] as const;
-  it("có trong bảng đầy đủ nhưng chưa hiện ra Admin, khách (PROVIDER_IDS)", () => {
+  it("AssemblyAI đã hiện ra Admin, khách; hai nhà còn lại chỉ có trong bảng đầy đủ (ALL_PROVIDER_IDS)", () => {
     for (const id of NEW) {
       assert.ok(ALL_PROVIDER_IDS.includes(id));
+      assert.equal(isProviderId(id), true);
+    }
+    assert.equal(PROVIDERS.assemblyai.ready, true);
+    assert.ok(PROVIDER_IDS.includes("assemblyai"));
+    for (const id of ["speechmatics", "soniox"] as const) {
       assert.equal(PROVIDERS[id].ready, false);
       assert.equal(PROVIDER_IDS.includes(id), false);
-      assert.equal(isProviderId(id), true);
     }
     for (const id of ["groq", "alibaba", "deepgram"] as const) assert.ok(PROVIDER_IDS.includes(id));
   });
