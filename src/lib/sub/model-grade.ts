@@ -28,6 +28,8 @@ const GRADE_FIX: Record<string, ModelGrade> = {
   // Speechmatics: ĐIỂM ƯỚC LƯỢNG của người làm (18/11/2026), CHƯA đo bằng phim thật; Chủ xem lại ở đây.
   "speechmatics-enhanced": { quality: 8.5, speed: 6, asian: 7.5 },
   "speechmatics-standard": { quality: 7, speed: 7, asian: 6.5 },
+  // Soniox: ĐIỂM ƯỚC LƯỢNG của người làm (18/11/2026), CHƯA đo bằng phim thật; Chủ xem lại ở đây.
+  "soniox-stt-async": { quality: 8, speed: 7, asian: 7.5 },
   // Đọc thuyết minh
   "canopylabs/orpheus-v1-english": { quality: 7.5, speed: 7, asian: 0 },
   "canopylabs/orpheus-arabic-saudi": { quality: 7.5, speed: 7, asian: 0 },
