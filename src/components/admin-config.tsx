@@ -5,6 +5,7 @@ import { GiayPackBoard } from "@/components/giay-pack-board";
 import { LiveShowBoard } from "@/components/live-show-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { PaySettings } from "@/components/pay-settings";
+import { R2Board } from "@/components/r2-board";
 import { ProviderKeyBoards } from "@/components/provider-key-board";
 import { RentShowBoard } from "@/components/rent-show-board";
 import { RunDeskBoard } from "@/components/run-desk-board";
@@ -45,6 +46,7 @@ export function ConfigTab() {
       </Page>
       <Page id="nha-cung-cap" current={page}>
         <ProviderKeyBoards />
+        <R2Board />
       </Page>
       <Page id="goi-gia" current={page}>
         <RunDeskBoard owner part="price" />

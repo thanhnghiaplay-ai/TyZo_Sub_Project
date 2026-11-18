@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import type { R2UploadInput, R2UploadResult } from "@/lib/r2-upload.server";
+import type { R2AdminStatus, R2CheckResult, R2UploadInput, R2UploadResult } from "@/lib/r2-upload.server";
 
 export const r2Upload = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
@@ -23,4 +23,18 @@ export const r2Status = createServerFn({ method: "GET" })
   .handler(async (): Promise<{ ready: boolean }> => {
     const { r2Ready } = await import("@/lib/r2-upload.server");
     return { ready: r2Ready() };
+  });
+
+export const r2AdminInfo = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<R2AdminStatus> => {
+    const { r2AdminStatus } = await import("@/lib/r2-upload.server");
+    return r2AdminStatus(context.userId);
+  });
+
+export const r2AdminCheck = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<R2CheckResult> => {
+    const { checkR2Connection } = await import("@/lib/r2-upload.server");
+    return checkR2Connection(context.userId);
   });

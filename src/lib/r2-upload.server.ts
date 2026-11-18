@@ -70,3 +70,47 @@ export async function removeR2Object(userId: string, key: string): Promise<{ rem
 export function r2Ready(): boolean {
   return r2Config().ok;
 }
+
+async function requireOwnerUser(userId: string): Promise<void> {
+  const { isOwnerId } = await import("@/lib/admin-allow.server");
+  const { getSql } = await import("@/lib/db");
+  if (!(await isOwnerId(await getSql(), userId))) throw new Error("Chỉ Chủ xem được cấu hình kho tạm.");
+}
+
+export type R2AdminStatus = { ready: boolean; missing: string[] };
+
+/** Chỉ Chủ: cấu hình đã đủ chưa và còn thiếu biến nào (chỉ tên biến, không bao giờ trả giá trị). */
+export async function r2AdminStatus(userId: string): Promise<R2AdminStatus> {
+  await requireOwnerUser(userId);
+  const loaded = r2Config();
+  return loaded.ok ? { ready: true, missing: [] } : { ready: false, missing: loaded.missing };
+}
+
+export type R2CheckResult = { ok: boolean; message: string };
+
+/** Chỉ Chủ: thử ghi, đọc, xóa một tệp nhỏ bằng chính link ký. Không kiểm được CORS (đó là việc của trình duyệt khách). */
+export async function checkR2Connection(userId: string): Promise<R2CheckResult> {
+  await requireOwnerUser(userId);
+  await takeRate(`r2-check:${userId}`, 6, 60);
+  const loaded = r2Config();
+  if (!loaded.ok) return { ok: false, message: `Còn thiếu biến môi trường: ${loaded.missing.join(", ")}.` };
+  const random = Array.from(globalThis.crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+  const key = `_check/${random}.txt`;
+  const target = targetFor(loaded.config, key);
+  const creds = loaded.config.creds;
+  const call = async (method: "PUT" | "GET" | "DELETE", body?: string) => {
+    const url = await presignUrl({ method, target, creds, expiresSeconds: 120 });
+    return fetch(url, { method, ...(body ? { body } : {}), signal: AbortSignal.timeout(15_000) });
+  };
+  try {
+    const put = await call("PUT", "tyzo-r2-check");
+    if (!put.ok) return { ok: false, message: put.status === 403 ? "R2 từ chối ghi (403): kiểm Access Key, Secret, tên bucket và quyền Object Read & Write." : `Ghi thử lỗi ${put.status}.` };
+    const get = await call("GET");
+    const text = get.ok ? await get.text() : "";
+    await call("DELETE").catch(() => null);
+    if (!get.ok || text !== "tyzo-r2-check") return { ok: false, message: `Đọc lại thử lỗi ${get.status}.` };
+    return { ok: true, message: "Ghi, đọc và xóa thử đều thành công. CORS chưa kiểm được từ đây: thử tải một tệp thật ở trang khách." };
+  } catch {
+    return { ok: false, message: "Không kết nối được R2 (kiểm R2_ACCOUNT_ID)." };
+  }
+}
