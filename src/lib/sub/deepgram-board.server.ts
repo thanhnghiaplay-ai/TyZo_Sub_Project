@@ -1,6 +1,6 @@
 import type { Sql } from "../db.ts";
 import { DEEPGRAM_BASE_ROWS } from "./deepgram-base.ts";
-import { DEEPGRAM_PRICE_PAGE, DG_CONFIG_KEY, acceptDgQuote, mergeDeepgram, parseDeepgramPrices, parseDgConfig, type DgQuote } from "./deepgram-price.ts";
+import { DEEPGRAM_PRICE_PAGE, DG_CONFIG_KEY, acceptDgQuote, parseDeepgramPrices, parseDgBoard, parseDgConfig, rowsFromDgStored, type DgQuote } from "./deepgram-price.ts";
 import type { GroqLiveRow } from "./groq-board.ts";
 
 const KEY = "dg_board";
@@ -16,11 +16,7 @@ const fetchText = async (url: string) => {
 
 export async function readDgStored(sql: Sql): Promise<DgStored | null> {
   const raw = await sql<{ value: string }>`select value from room_settings where key = ${KEY}`;
-  try {
-    return raw[0]?.value ? (JSON.parse(raw[0].value) as DgStored) : null;
-  } catch {
-    return null;
-  }
+  return parseDgBoard(raw[0]?.value);
 }
 
 /** Kéo giá từ trang Deepgram và lưu. Lỗi thì giữ bảng cũ. Trả true nếu lưu được ít nhất một giá. */
@@ -47,7 +43,7 @@ export async function loadDeepgramRows(sql: Sql, fetchPage: (url: string) => Pro
   const cfgRaw = await sql<{ value: string }>`select value from room_settings where key = ${DG_CONFIG_KEY}`;
   const cfg = parseDgConfig(cfgRaw[0]?.value);
   if (cfg.auto && (!stored || Date.now() - stored.at > cfg.everyHours * 3600 * 1000)) void refreshDeepgramBoard(sql, fetchPage);
-  const merged = mergeDeepgram(Array.isArray(stored?.quotes) ? stored.quotes : []);
+  const merged = rowsFromDgStored(stored);
   const fixRaw = await sql<{ value: string }>`select value from room_settings where key = 'usd_fix'`;
   const { applyUsdFix, parseUsdFix } = await import("../usd-fix.ts");
   return applyUsdFix(merged, parseUsdFix(fixRaw[0]?.value));

@@ -1,6 +1,6 @@
 import type { Sql } from "../db.ts";
 import { ALIBABA_ROWS } from "./alibaba-catalog.ts";
-import { ALIBABA_PRICE_PAGE, acceptQuote, mergeAlibaba, parseSingaporePrices, type AliQuote } from "./alibaba-price.ts";
+import { ALIBABA_PRICE_PAGE, acceptQuote, parseAliBoard, parseSingaporePrices, rowsFromStoredAlibaba, type AliQuote } from "./alibaba-price.ts";
 import type { GroqLiveRow } from "./groq-board.ts";
 
 const FRESH_MS = 6 * 3600 * 1000;
@@ -39,14 +39,9 @@ export async function refreshAlibabaBoard(sql: Sql, fetchPage: (url: string) => 
 /** Bảng giá Alibaba để tính giây. Chưa kéo được thì dùng giá dự phòng trong app. */
 export async function loadAlibabaRows(sql: Sql, fetchPage: (url: string) => Promise<string> = fetchText): Promise<GroqLiveRow[]> {
   const raw = await sql<{ value: string }>`select value from room_settings where key = 'ali_board'`;
-  let stored: Stored | null = null;
-  try {
-    stored = raw[0]?.value ? (JSON.parse(raw[0].value) as Stored) : null;
-  } catch {
-    stored = null;
-  }
+  const stored = parseAliBoard(raw[0]?.value);
   if (!stored || Date.now() - stored.at > FRESH_MS) void refreshAlibabaBoard(sql, fetchPage);
-  const merged = mergeAlibaba(Array.isArray(stored?.quotes) ? stored.quotes : []);
+  const merged = rowsFromStoredAlibaba(raw[0]?.value);
   const fixRaw = await sql<{ value: string }>`select value from room_settings where key = 'usd_fix'`;
   const { applyUsdFix, parseUsdFix } = await import("../usd-fix.ts");
   return applyUsdFix(merged, parseUsdFix(fixRaw[0]?.value));

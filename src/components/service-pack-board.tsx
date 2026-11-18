@@ -5,7 +5,7 @@ import { pushToast } from "@/components/toast";
 import { getAlibabaDesk, saveServicePacks } from "@/lib/pack-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
-import type { GroqBoard } from "@/lib/sub/groq-board";
+import type { GroqBoard, GroqLiveRow } from "@/lib/sub/groq-board";
 import type { RunDesk } from "@/lib/run-desk";
 import { PACK_ROLE_LABEL, PACK_ROLES, providersForRole, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { buildPackBooks } from "@/lib/pack-books";
@@ -45,6 +45,8 @@ export function ServicePackBoard() {
   const [busy, setBusy] = useState(false);
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [usdFix, setUsdFix] = useState<UsdFix>({});
+  const [alibabaRows, setAlibabaRows] = useState<GroqLiveRow[] | undefined>(undefined);
+  const [deepgramRows, setDeepgramRows] = useState<GroqLiveRow[] | undefined>(undefined);
 
   const [rentShow, setRentShow] = useState<RentShow | null>(null);
   useEffect(() => {
@@ -59,6 +61,8 @@ export function ServicePackBoard() {
         setGroqModels(next.groqModels);
         setPacks(next.packs);
         setUsdFix(next.usdFix);
+        setAlibabaRows(next.alibabaRows);
+        setDeepgramRows(next.deepgramRows);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn Alibaba.", "bad"));
     void loadGroqBoard().then(setBoard).catch(() => undefined);
@@ -81,8 +85,8 @@ export function ServicePackBoard() {
   );
   const autoBooks = useMemo<Partial<Record<ProviderId, PriceBook>> | null>(() => {
     if (!board) return null;
-    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix });
-  }, [board, usdFix]);
+    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix, alibabaRows, deepgramRows });
+  }, [board, usdFix, alibabaRows, deepgramRows]);
 
   function createAutoPack(roles: ServicePack["roles"], draft: { levels: Parameters<typeof buildAutoPack>[0]["levels"]; lang: "cjk" | "other" }) {
     const id = `pack_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
@@ -141,7 +145,7 @@ export function ServicePackBoard() {
                 seconds: 600,
                 door: "turn",
                 narration: Boolean(pack.roles.narration),
-                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix }),
+                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix, alibabaRows, deepgramRows }),
               })
             : null;
           return (

@@ -96,3 +96,23 @@ export function mergeDeepgram(quotes: DgQuote[]): GroqLiveRow[] {
     return { ...row, usdPerHour: ok.usdPerHour ?? row.usdPerHour, usdPerMillionChars: ok.usdPerMillionChars ?? row.usdPerMillionChars };
   });
 }
+
+/** Đọc JSON khóa `dg_board`. Hỏng hoặc trống thì null. */
+export function parseDgBoard(raw: string | null | undefined): { at: number; quotes: DgQuote[] } | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as { at: number; quotes: DgQuote[] };
+  } catch {
+    return null;
+  }
+}
+
+/** Bảng Deepgram đã gộp giá tự kéo. Chưa phủ số Chủ sửa tay (`usd_fix`). */
+export function rowsFromDgStored(stored: { quotes?: DgQuote[] } | null | undefined): GroqLiveRow[] {
+  const quotes = stored && typeof stored === "object" && Array.isArray(stored.quotes) ? stored.quotes : [];
+  return mergeDeepgram(quotes);
+}
+
+export function rowsFromStoredDeepgram(raw: string | null | undefined): GroqLiveRow[] {
+  return rowsFromDgStored(parseDgBoard(raw));
+}

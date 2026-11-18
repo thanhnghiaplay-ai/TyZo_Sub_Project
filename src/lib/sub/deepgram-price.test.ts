@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { DEEPGRAM_BASE_ROWS, DEEPGRAM_MULTI_ID, DEEPGRAM_NOVA_ID } from "./deepgram-base.ts";
-import { acceptDgQuote, mergeDeepgram, parseDeepgramPrices, parseDgConfig, withoutStruck } from "./deepgram-price.ts";
+import { acceptDgQuote, mergeDeepgram, parseDeepgramPrices, parseDgConfig, rowsFromStoredDeepgram, withoutStruck } from "./deepgram-price.ts";
 
 const MD = `
 | Nova-3 Monolingual | $0.0048 ~~was $0.0077~~ / min | $0.0042 ~~was $0.0065~~ / min | - |
@@ -40,6 +40,15 @@ test("giá lệch quá xa bị bỏ, giữ dự phòng", () => {
   assert.equal(merged[0].usdPerHour, base.usdPerHour);
   const ok = mergeDeepgram([{ id: base.id, usdPerHour: 0.3, usdPerMillionChars: null }]);
   assert.equal(ok[0].usdPerHour, 0.3);
+});
+
+test("đọc bảng đã lưu: giá hợp lệ phủ dự phòng, hỏng thì giữ", () => {
+  const raw = JSON.stringify({ at: 1, quotes: [{ id: DEEPGRAM_NOVA_ID, usdPerHour: 0.3, usdPerMillionChars: null }] });
+  assert.equal(rowsFromStoredDeepgram(raw).find((row) => row.id === DEEPGRAM_NOVA_ID)?.usdPerHour, 0.3);
+  assert.equal(rowsFromStoredDeepgram("{")[0].usdPerHour, DEEPGRAM_BASE_ROWS[0].usdPerHour);
+  assert.equal(rowsFromStoredDeepgram(null)[0].usdPerHour, DEEPGRAM_BASE_ROWS[0].usdPerHour);
+  const far = JSON.stringify({ at: 1, quotes: [{ id: DEEPGRAM_NOVA_ID, usdPerHour: 99, usdPerMillionChars: null }] });
+  assert.equal(rowsFromStoredDeepgram(far)[0].usdPerHour, DEEPGRAM_BASE_ROWS[0].usdPerHour);
 });
 
 test("cấu hình: mặc định, kẹp chu kỳ, hỏng thì mặc định", () => {

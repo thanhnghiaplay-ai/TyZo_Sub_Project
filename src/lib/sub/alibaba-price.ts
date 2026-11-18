@@ -106,3 +106,20 @@ export function mergeAlibaba(quotes: AliQuote[]): GroqLiveRow[] {
     };
   });
 }
+
+/** Đọc JSON khóa `ali_board`. Hỏng hoặc trống thì null (người gọi giữ bảng dự phòng). */
+export function parseAliBoard(raw: string | null | undefined): { at: number; quotes: AliQuote[] } | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as { at: number; quotes: AliQuote[] };
+  } catch {
+    return null;
+  }
+}
+
+/** Bảng Alibaba đã gộp giá tự kéo. Chưa phủ số Chủ sửa tay (`usd_fix`). */
+export function rowsFromStoredAlibaba(raw: string | null | undefined): GroqLiveRow[] {
+  const stored = parseAliBoard(raw);
+  const quotes = stored && typeof stored === "object" && Array.isArray(stored.quotes) ? stored.quotes : [];
+  return mergeAlibaba(quotes);
+}

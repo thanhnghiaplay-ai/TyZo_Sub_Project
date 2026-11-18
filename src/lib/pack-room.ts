@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
-import { parseModelList, parseRunDesk, type RunDesk } from "@/lib/run-desk";
+import { parseModelList, parseRunDesk, type PriceOverride, type RunDesk } from "@/lib/run-desk";
 import { checkServicePacks, parseServicePacks, type ServicePack } from "@/lib/service-pack";
+import type { GroqLiveRow } from "@/lib/sub/groq-board";
 import { parseUsdFix, type UsdFix } from "@/lib/usd-fix";
-import type { PriceOverride } from "@/lib/run-desk";
 
 export type AlibabaDeskView = {
   desk: RunDesk;
@@ -14,6 +14,10 @@ export type AlibabaDeskView = {
   groqModels: string[] | null;
   /** Số đô la Chủ sửa tay. Xem trước gói phủ lên giá gốc. */
   usdFix: UsdFix;
+  /** Bảng Alibaba đã gộp giá tự kéo (`ali_board`). Chưa phủ `usdFix`. */
+  alibabaRows: GroqLiveRow[];
+  /** Bảng Deepgram đã gộp giá tự kéo (`dg_board`). Chưa phủ `usdFix`. */
+  deepgramRows: GroqLiveRow[];
 };
 
 export type ServiceMenu = {
@@ -51,6 +55,10 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
     await requireRole(context.userId, "chu");
     const { sql, map } = await readSettings();
     const groqRows = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
+    const boards = await sql<{ key: string; value: string }>`select key, value from room_settings where key in ('ali_board', 'dg_board')`;
+    const boardMap = new Map(boards.map((row) => [row.key, row.value]));
+    const { rowsFromStoredAlibaba } = await import("@/lib/sub/alibaba-price");
+    const { rowsFromStoredDeepgram } = await import("@/lib/sub/deepgram-price");
     const key = map.get("alibaba_key") || "";
     return {
       desk: parseRunDesk(map.get("alibaba_desk")),
@@ -59,6 +67,8 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
       packs: parseServicePacks(map.get("service_packs")),
       groqModels: parseModelList(groqRows[0]?.value),
       usdFix: parseUsdFix(map.get("usd_fix")),
+      alibabaRows: rowsFromStoredAlibaba(boardMap.get("ali_board")),
+      deepgramRows: rowsFromStoredDeepgram(boardMap.get("dg_board")),
     };
   });
 

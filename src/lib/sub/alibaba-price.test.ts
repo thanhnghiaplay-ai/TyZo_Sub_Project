@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { ALIBABA_ROWS } from "./alibaba-catalog.ts";
-import { acceptQuote, mergeAlibaba, parseSingaporePrices } from "./alibaba-price.ts";
+import { acceptQuote, mergeAlibaba, parseSingaporePrices, rowsFromStoredAlibaba } from "./alibaba-price.ts";
 
 const PAGE = `
 <h2>Singapore</h2>
@@ -39,5 +39,16 @@ describe("giá Alibaba vùng Singapore", () => {
     assert.equal(acceptQuote({ id: "qwen3-asr-flash", usdIn: null, usdOut: null, usdPerHour: 0.000035, usdPerMillionChars: null }, flash), null);
     const rows = mergeAlibaba([{ id: "qwen-turbo", usdIn: 99, usdOut: 99, usdPerHour: null, usdPerMillionChars: null }]);
     assert.equal(rows.find((row) => row.id === "qwen-turbo")?.usdIn, 0.05);
+  });
+
+  it("đọc bảng đã lưu: giá hợp lệ phủ dự phòng, hỏng hoặc lệch thì giữ", () => {
+    const raw = JSON.stringify({ at: 1, quotes: [{ id: "qwen-turbo", usdIn: 0.08, usdOut: 0.3, usdPerHour: null, usdPerMillionChars: null }] });
+    const rows = rowsFromStoredAlibaba(raw);
+    assert.equal(rows.find((row) => row.id === "qwen-turbo")?.usdIn, 0.08);
+    assert.equal(rows.find((row) => row.id === "qwen-turbo")?.usdOut, 0.3);
+    assert.equal(rowsFromStoredAlibaba("không phải json").find((row) => row.id === "qwen-turbo")?.usdIn, 0.05);
+    assert.equal(rowsFromStoredAlibaba(null).find((row) => row.id === "qwen-turbo")?.usdIn, 0.05);
+    const far = JSON.stringify({ at: 1, quotes: [{ id: "qwen-turbo", usdIn: 99, usdOut: 99, usdPerHour: null, usdPerMillionChars: null }] });
+    assert.equal(rowsFromStoredAlibaba(far).find((row) => row.id === "qwen-turbo")?.usdIn, 0.05);
   });
 });
