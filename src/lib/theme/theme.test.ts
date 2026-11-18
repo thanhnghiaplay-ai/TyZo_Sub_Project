@@ -114,8 +114,9 @@ test("nhóm icon: mặc định theo cả bộ, giá trị lạ bị bỏ", () =
   assert.equal(grouped.iconGroups.st, "same");
 });
 
-test("bộ màu: đủ 8 bộ và mỗi bộ sáng tối đều đọc được", () => {
-  assert.equal(PALETTES.length, 8);
+test("bộ màu: đủ 9 bộ (có «Tương lai») và mỗi bộ sáng tối đều đọc được", () => {
+  assert.equal(PALETTES.length, 9);
+  assert.equal(PALETTES[8].id, "tuong-lai");
   assert.equal(PALETTES[0].name, "Vàng");
   for (const item of PALETTES) {
     const theme = parseTheme({ light: item.light, dark: item.dark });

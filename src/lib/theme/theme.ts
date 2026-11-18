@@ -335,7 +335,7 @@ function paint(base: Palette, over: Partial<Palette>): Palette {
   return { ...base, ...over };
 }
 
-/** Tám bộ màu. Bộ Vàng là màu đang dùng. Bấm bộ là chép cả sáng và tối vào bản nháp. */
+/** Chín bộ màu. Bộ Vàng là màu đang dùng. Bấm bộ là chép cả sáng và tối vào bản nháp. */
 export const PALETTES: Array<{ id: string; name: string; light: Palette; dark: Palette }> = [
   { id: "vang", name: "Vàng", light: LIGHT_DEFAULT, dark: DARK_DEFAULT },
   {
@@ -379,6 +379,13 @@ export const PALETTES: Array<{ id: string; name: string; light: Palette; dark: P
     name: "Tương phản",
     dark: paint(DARK_DEFAULT, { bg: "#000000", card: "#111111", raised: "#1c1c1c", fg: "#ffffff", muted: "#c8c8c8", line: "#444444", accent: "#ffe14d", ink: "#1a1400", info: "#ffe14d", rankSupport: "#ffe14d", rankManager: "#ffe14d", rankOwner: "#fff3b0" }),
     light: paint(LIGHT_DEFAULT, { bg: "#ffffff", card: "#f7f7f7", raised: "#eeeeee", fg: "#000000", muted: "#444444", line: "#cccccc", accent: "#111111", ink: "#ffffff", info: "#111111", rankSupport: "#111111", rankManager: "#111111", rankOwner: "#000000" }),
+  },
+  // Bộ thứ chín «Tương lai» (B2): nền gần đen ngả xanh, nhấn cyan. Phần lưới mờ, kính mờ, hào quang là lớp CSS riêng ở B3.
+  {
+    id: "tuong-lai",
+    name: "Tương lai",
+    dark: paint(DARK_DEFAULT, { bg: "#070b14", card: "#0e1626", raised: "#16213a", fg: "#e9f1ff", muted: "#9fb0cc", line: "#2a3a5c", accent: "#5de4ff", ink: "#04121a", info: "#5de4ff", rankSupport: "#5de4ff", rankManager: "#7aa8ff", rankOwner: "#c8f4ff" }),
+    light: paint(LIGHT_DEFAULT, { bg: "#f3f7fd", card: "#ffffff", raised: "#e4ecf8", fg: "#0c1a2e", muted: "#3b4f6b", line: "#c4d2e6", accent: "#0b6a8f", ink: "#f2fbff", info: "#0b6a8f", rankSupport: "#0b6a8f", rankManager: "#1d4fb0", rankOwner: "#073a52" }),
   },
 ];
 
