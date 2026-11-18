@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { assemblyaiSubmitBody } from "./assemblyai.ts";
-import { runAssemblyaiJob, type AaiRequest } from "./assemblyai-poll.ts";
+import { runAssemblyaiJob, startAssemblyaiJob, stepAssemblyaiJob, type AaiRequest } from "./assemblyai-poll.ts";
 
 const body = assemblyaiSubmitBody({ audioUrl: "https://example.com/a.mp3", appModel: "assemblyai-universal-2", language: "en" });
 
@@ -102,5 +102,46 @@ describe("vòng gửi rồi hỏi AssemblyAI", () => {
       },
     });
     assert.deepEqual(waits, [1000]);
+  });
+});
+
+describe("tách gửi và hỏi AssemblyAI", () => {
+  it("startAssemblyaiJob chỉ gửi POST một lần rồi trả mã, không hỏi", async () => {
+    const { request, calls } = fake([{ status: 200, payload: { id: "abc123def", status: "queued" } }]);
+    assert.equal(await startAssemblyaiJob(request, body), "abc123def");
+    assert.deepEqual(calls, [{ path: "/transcript", method: "POST" }]);
+  });
+
+  it("startAssemblyaiJob báo lỗi khi nhà từ chối hoặc mã lạ", async () => {
+    await assert.rejects(startAssemblyaiJob(fake([{ status: 401, payload: { error: "bad" } }]).request, body));
+    await assert.rejects(startAssemblyaiJob(fake([{ status: 200, payload: { id: "../x" } }]).request, body), /mã bản phiên âm/);
+  });
+
+  it("stepAssemblyaiJob đang xử lý thì chỉ hỏi một lần và KHÔNG xóa", async () => {
+    const { request, calls } = fake([{ status: 200, payload: { id: "abc123def", status: "processing" } }]);
+    assert.deepEqual(await stepAssemblyaiJob(request, "abc123def"), { state: "running" });
+    assert.deepEqual(calls, [{ path: "/transcript/abc123def", method: "GET" }]);
+  });
+
+  it("stepAssemblyaiJob xong thì xóa và trả bản phiên âm", async () => {
+    const { request, calls } = fake([{ status: 200, payload: { id: "abc123def", status: "completed", audio_duration: 12 } }]);
+    const step = await stepAssemblyaiJob(request, "abc123def");
+    assert.equal(step.state, "done");
+    assert.deepEqual(calls.map((c) => c.method), ["GET", "DELETE"]);
+  });
+
+  it("stepAssemblyaiJob gặp error hoặc HTTP lỗi thì xóa rồi ném lỗi", async () => {
+    const a = fake([{ status: 200, payload: { id: "abc123def", status: "error", error: "x" } }]);
+    await assert.rejects(stepAssemblyaiJob(a.request, "abc123def"));
+    assert.deepEqual(a.calls.map((c) => c.method), ["GET", "DELETE"]);
+    const b = fake([{ status: 500, payload: null }]);
+    await assert.rejects(stepAssemblyaiJob(b.request, "abc123def"));
+    assert.deepEqual(b.calls.map((c) => c.method), ["GET", "DELETE"]);
+  });
+
+  it("stepAssemblyaiJob từ chối mã không hợp lệ, không gọi mạng", async () => {
+    const { request, calls } = fake([{ status: 200, payload: {} }]);
+    await assert.rejects(stepAssemblyaiJob(request, "../etc"), /không hợp lệ/);
+    assert.equal(calls.length, 0);
   });
 });
