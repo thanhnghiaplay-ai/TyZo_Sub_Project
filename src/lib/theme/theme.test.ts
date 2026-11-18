@@ -272,6 +272,8 @@ test("look: styles.css có lớp Tương lai, nhánh giảm trong suốt, bộ m
   const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
   assert.ok(css.includes('html[data-look="future"]:not([data-fx="off"]) body'));
   assert.ok(css.includes('html[data-look="future"]:not([data-fx="off"]) .floating-dock'));
+  assert.ok(css.includes('html[data-look="future"]:not([data-fx="off"]) [data-home-hero] > label'));
+  assert.ok(css.includes('html[data-look="future"]:not([data-fx="off"]) .app-rail'));
   assert.equal(/html\[data-look="future"\](?!:not)/.test(css), false, "mọi luật Tương lai phải tôn trọng nút tắt");
   assert.ok(/@media \(prefers-reduced-transparency: reduce\)[\s\S]*data-look="future"/.test(css));
   const item = PALETTES.find((p) => p.id === "tuong-lai")!;

@@ -2784,12 +2784,46 @@ html[data-look="future"]:not([data-fx="off"]) .floating-dock {
   box-shadow: 0 10px 34px -10px color-mix(in srgb, var(--color-accent) 55%, transparent);
 }
 
+/* B5: ô thả video phát sáng viền nét đứt, menu trái kính mờ, mục đang chọn có hào quang. */
+html[data-look="future"]:not([data-fx="off"]) [data-home-hero] > label {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-line));
+  box-shadow: inset 0 0 44px -16px color-mix(in srgb, var(--color-accent) 40%, transparent), 0 0 30px -10px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) .app-rail {
+  background: color-mix(in srgb, var(--color-bg) 84%, transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-right-color: color-mix(in srgb, var(--color-accent) 30%, var(--color-line));
+  box-shadow: 12px 0 40px -18px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) .rail-link[aria-current="page"] {
+  box-shadow: 0 0 18px -4px color-mix(in srgb, var(--color-accent) 65%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) .rail-link:hover {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
 /* Người dùng tắt trong suốt: thẻ đặc, không mờ kính, giữ lưới và viền. */
 @media (prefers-reduced-transparency: reduce) {
+  html[data-look="future"]:not([data-fx="off"]) .bg-card {
+    background-color: var(--color-card);
+  }
+
+  html[data-look="future"]:not([data-fx="off"]) .bg-raised,
+  html[data-look="future"]:not([data-fx="off"]) .floating-dock {
+    background-color: var(--color-raised);
+  }
+
   html[data-look="future"]:not([data-fx="off"]) .bg-card,
   html[data-look="future"]:not([data-fx="off"]) .bg-raised,
   html[data-look="future"]:not([data-fx="off"]) .floating-dock {
-    background-color: var(--color-card);
+    backdrop-filter: none;
+  }
+
+  html[data-look="future"]:not([data-fx="off"]) .app-rail {
+    background: var(--color-bg);
     backdrop-filter: none;
   }
 }
