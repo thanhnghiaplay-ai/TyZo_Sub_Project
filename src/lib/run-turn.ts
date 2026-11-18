@@ -6,7 +6,7 @@ export type RunTicketOpen = { id: string; held: number; perMinute: number; balan
 
 const MODEL_RE = /^[a-z0-9./_-]{2,80}$|^auto$/i;
 
-/** Mở phiếu cho một lần chạy: giữ giây dịch trước, trả mã phiếu. Mọi yêu cầu sau gắn mã này. */
+/** Mở phiếu cho một lần chạy: giữ Token dịch trước, trả mã phiếu. Mọi yêu cầu sau gắn mã này. */
 export const openRunTicket = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { fileName: string; seconds: number; asrModel: string; chatModel: string }) => {
@@ -112,7 +112,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       asrModel: data.asrModel,
       chatModel: data.chatModel,
     });
-    if ("error" in result) throw new Error(`Chưa đủ giây dịch. Lần này cần giữ ${formatGiay(hold)}. Hãy mua gói giây.`);
+    if ("error" in result) throw new Error(`Chưa đủ Token dịch. Lần này cần giữ ${formatGiay(hold)}. Hãy mua Token dịch ở Tài khoản.`);
     const left = await giayBalance(sql, context.userId);
     return { id, held: hold, perMinute: Math.round((hold * 60) / data.seconds), balance: left };
   });

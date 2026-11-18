@@ -7,7 +7,7 @@ function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
-/** Chủ đặt số giây, số ngày, phần trăm chênh và hệ số đệm. Giá bán tính từ giá Turbo. */
+/** Chủ đặt số Token dịch, số ngày, phần trăm chênh và hệ số đệm. Giá bán tính từ giá Turbo. */
 export function GiayPackBoard() {
   const [markup, setMarkup] = useState("50");
   const [buffer, setBuffer] = useState("1.2");
@@ -25,7 +25,7 @@ export function GiayPackBoard() {
         setPrices(view.packs.map((pack) => pack.price));
         setReady(true);
       })
-      .catch((error: Error) => pushToast(error.message || "Chưa đọc được gói giây.", "bad"));
+      .catch((error: Error) => pushToast(error.message || "Chưa đọc được gói Token dịch.", "bad"));
   }
 
   useEffect(load, []);

@@ -1,4 +1,4 @@
-/** Giá thuê phòng đặt tay. Không tính từ gói giây và không tự đổi theo giá model. */
+/** Giá thuê phòng đặt tay. Không tính từ Token dịch và không tự đổi theo giá model. */
 export const ROOM_PLANS = [
   { id: "ngay", name: "24 giờ", price: 9_000, hours: 24, strike: null as number | null, save: null as number | null },
   { id: "tuan", name: "7 ngày", price: 39_000, hours: 24 * 7, strike: 63_000, save: 24_000 },

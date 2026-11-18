@@ -92,7 +92,7 @@ export async function ticketLive(sql: Sql, id: string, userId: string) {
  */
 export async function chargeTicketWith(sql: Sql, id: string, userId: string, cost: number, base = 0) {
   const peek = await sql<{ unit: string }>`select unit from run_tickets where id = ${id} and user_id = ${userId}`;
-  if (peek[0]?.unit === "token") throw new Error("Phiếu giây dịch không trừ bằng đồng.");
+  if (peek[0]?.unit === "token") throw new Error("Phiếu Token dịch không trừ bằng đồng.");
   const safeBase = Math.max(0, Math.round(base));
   const rows = await sql<{ taken: number; left_held: number }>`
     with o as (

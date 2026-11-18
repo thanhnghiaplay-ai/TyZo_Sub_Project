@@ -5,10 +5,10 @@ import { SONIOX_BASE_ROWS as SONIOX_ROWS } from "./sub/soniox-base.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 import { asrCost, asrPerSecond, chatCost, estimateHold, estimateHoldSplit, type PriceBook } from "./run-bill.ts";
 
-/** 1 giây dịch = 1 giây nhận dạng Turbo theo giá gốc, chưa cộng chênh. */
+/** 1 Token dịch = 1 giây nhận dạng Turbo theo giá gốc, chưa cộng chênh. */
 export const TURBO_ASR = "whisper-large-v3-turbo";
 
-/** Số giây dịch cho một khoản giá gốc. null khi chưa có giá Turbo. 0 khi khoản bằng 0. */
+/** Số Token dịch cho một khoản giá gốc. null khi chưa có giá Turbo. 0 khi khoản bằng 0. */
 export function tokensForBase(baseVnd: number, turboVndPerSecond: number): number | null {
   if (!(baseVnd > 0)) return 0;
   if (!(turboVndPerSecond > 0)) return null;
@@ -30,7 +30,7 @@ export function formatGiay(n: number): string {
   return new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(n))) + " Token dịch";
 }
 
-/** Số giây sẽ giữ cho một lần chạy. Tính trên giá gốc, đã gồm đệm giữ chỗ. null khi thiếu giá. */
+/** Số Token dịch sẽ giữ cho một lần chạy. Tính trên giá gốc, đã gồm đệm giữ chỗ. null khi thiếu giá. */
 export function holdGiay(input: {
   groq: PriceBook;
   aliRows: GroqLiveRow[];
@@ -70,7 +70,7 @@ export function holdGiay(input: {
   return tokensForBase(vnd, turbo);
 }
 
-/** Giá gốc của một đoạn đã chạy, quy ra giây dịch. null khi thiếu giá Turbo. */
+/** Giá gốc của một đoạn đã chạy, quy ra Token dịch. null khi thiếu giá Turbo. */
 export function giayForBaseCost(groq: PriceBook, baseVnd: number): number | null {
   const bare: PriceBook = { rate: groq.rate, rows: groq.rows, desk: { markup: 0, custom: {} } };
   const turbo = asrPerSecond(bare, TURBO_ASR);

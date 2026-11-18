@@ -9,7 +9,7 @@ function dong(n: number) {
   return new Intl.NumberFormat("vi-VN").format(n) + " đ";
 }
 
-/** Kệ mua gói giây. Giá tính lúc mở kệ. Gói đã mua không đổi số giây. */
+/** Kệ mua gói Token dịch. Giá tính lúc mở kệ. Gói đã mua không đổi số Token dịch. */
 export function GiayShelf({ reload, onBought }: { reload: number; onBought: (message: string) => void }) {
   const [units, setUnits] = useState<number | null>(null);
   const [packs, setPacks] = useState<GiayPackView[]>([]);

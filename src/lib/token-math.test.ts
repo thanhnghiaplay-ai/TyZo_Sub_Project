@@ -45,3 +45,26 @@ it("phần trăm chênh Groq/Alibaba không còn được cộng, số cũ chỉ
   assert.equal(legacyMarkupOf(null), 0);
 });
 });
+
+describe("một tên gọi: Token dịch", () => {
+  it("chữ khách thấy không còn «gói giây» hay «giây dịch»", async () => {
+    const { readFileSync, readdirSync, statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const root = new URL("..", import.meta.url).pathname;
+    // Lịch sử (CHANGELOG khách, nhật ký Admin) giữ nguyên chữ cũ; test không đọc chính nó.
+    const skip = new Set(["app-version.ts", "admin-log.server.ts", "token-math.test.ts"]);
+    const bad: string[] = [];
+    const walk = (dir: string) => {
+      for (const name of readdirSync(dir)) {
+        const full = join(dir, name);
+        if (statSync(full).isDirectory()) walk(full);
+        else if (/\.(ts|tsx)$/.test(name) && !skip.has(name) && !/\.test\.ts$/.test(name)) {
+          const text = readFileSync(full, "utf8");
+          if (/gói giây|giây dịch|Gói giây/.test(text)) bad.push(full.replace(root, ""));
+        }
+      }
+    };
+    walk(root);
+    assert.deepEqual(bad, []);
+  });
+});

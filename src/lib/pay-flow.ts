@@ -256,7 +256,7 @@ export async function refundRunWith(sql: Sql, id: string, amount: number, reason
   }
   const rows = await sql<{ id: string; unit: string }>`select id, unit from run_tickets where id = ${id}`;
   if (!rows.length) throw new Error("Không có phiếu này.");
-  if (rows[0].unit === "token") throw new Error("Phiếu giây dịch không hoàn vào số dư.");
+  if (rows[0].unit === "token") throw new Error("Phiếu Token dịch không hoàn vào số dư.");
   throw new Error("Không hoàn quá số đã trừ.");
 }
 

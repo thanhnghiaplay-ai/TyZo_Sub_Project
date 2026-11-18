@@ -5,7 +5,7 @@ import { turnPacks } from "@/lib/turn-pack";
 
 export type TurnPrice = { id: string; total: number | null; hold: number };
 
-/** Số giây dịch sẽ giữ cho cửa trả theo lượt. Không trả giá gốc. */
+/** Số Token dịch sẽ giữ cho cửa trả theo lượt. Không trả giá gốc. */
 export const quoteTurnPacks = createServerFn({ method: "POST" })
   .validator((input: { seconds: number; narration: boolean }) => {
     const seconds = Math.round(Number(input?.seconds));

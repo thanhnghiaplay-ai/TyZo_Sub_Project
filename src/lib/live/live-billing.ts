@@ -11,7 +11,7 @@ export type LiveBillingEnv = {
 };
 
 /**
- * Giữ và trừ gói giây, không đụng ví đồng và không lưu số dư cho phiên.
+ * Giữ và trừ Token dịch, không đụng ví đồng và không lưu số dư cho phiên.
  * Hạn mức đồng trong ngày không áp vào cửa này.
  */
 export function createLiveBilling(sql: Sql, env: LiveBillingEnv): LiveBilling {

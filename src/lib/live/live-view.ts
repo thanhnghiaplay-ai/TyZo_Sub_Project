@@ -41,7 +41,7 @@ export function liveWarnText(warn: LiveWarn, minutes: number | null): string {
   return "";
 }
 
-/** Dòng giây còn: "5.000 giây dịch · còn khoảng 5 phút". */
+/** Dòng giây còn: "5.000 Token dịch · còn khoảng 5 phút". */
 export function liveBalanceLine(money: number, minutes: number | null): string {
   const base = formatGiay(money);
   return minutes == null ? base : `${base} · còn khoảng ${formatMinutes(minutes)}`;

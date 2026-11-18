@@ -35,7 +35,7 @@ export type LiveBridgeDeps = {
   upstream(model: string): Promise<{ url: string; key: string } | null>;
   billing: LiveBilling;
   now?: () => number;
-  /** Đổi giá gốc (đồng) ra giây dịch. Có hàm này thì cầu nối không giữ ví đồng. */
+  /** Đổi giá gốc (đồng) ra Token dịch. Có hàm này thì cầu nối không giữ ví đồng. */
   toGiay?: (baseVnd: number) => number | null;
   /** Độ dài mỗi khoảng giữ chỗ, giây. Mặc định 120. */
   blockSeconds?: number;

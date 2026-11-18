@@ -48,7 +48,7 @@ export const openLiveTicket = createServerFn({ method: "POST" })
     if (perMinute == null || !(perMinute > 0)) throw new Error("Model này chưa có giá niêm yết.");
     const balance = await giayBalance(sql, context.userId);
     if (balance < perMinute) {
-      throw new Error(`Token dịch chưa đủ. Mỗi phút khoảng ${formatGiay(perMinute)}. Hãy mua thêm gói.`);
+      throw new Error(`Token dịch chưa đủ. Mỗi phút khoảng ${formatGiay(perMinute)}. Hãy mua thêm Token dịch ở Tài khoản.`);
     }
     const exp = Date.now() + LIVE_TICKET_TTL_MS;
     const ticket = signLiveTicket(secret, {

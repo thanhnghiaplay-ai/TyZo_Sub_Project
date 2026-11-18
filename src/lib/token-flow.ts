@@ -12,7 +12,7 @@ export async function giayBalance(sql: Sql, userId: string) {
 }
 
 /**
- * Mua gói: trừ ví đồng, ghi gói giây, ghi sổ. Không cộng hoa hồng.
+ * Mua gói: trừ ví đồng, ghi Token dịch, ghi sổ. Không cộng hoa hồng.
  * Một câu lệnh, số dư không đủ thì không tạo gói.
  */
 export async function buyGiayWith(
