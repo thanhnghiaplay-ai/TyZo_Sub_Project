@@ -1,6 +1,7 @@
 /** Nhà nhận dạng. Danh sách model Groq không quyết định nhà khác. */
 import { ASSEMBLYAI_PRO_ASR, ASSEMBLYAI_V2_ASR } from "./assemblyai.ts";
 import { DEEPGRAM_ASR } from "./deepgram.ts";
+import { SPEECHMATICS_ENHANCED_ASR, SPEECHMATICS_STANDARD_ASR } from "./speechmatics.ts";
 import { PROVIDERS, type ProviderId, type ProviderIntake } from "./provider.ts";
 
 export const ALI_FILETRANS_ASR = "qwen-audio-3.0-asr-flash-filetrans";
@@ -15,6 +16,8 @@ const HOUSES: Record<string, AsrHouse> = {
   [DEEPGRAM_ASR]: "deepgram",
   [ASSEMBLYAI_PRO_ASR]: "assemblyai",
   [ASSEMBLYAI_V2_ASR]: "assemblyai",
+  [SPEECHMATICS_STANDARD_ASR]: "speechmatics",
+  [SPEECHMATICS_ENHANCED_ASR]: "speechmatics",
 };
 
 export function asrHouse(id: string): AsrHouse | null {

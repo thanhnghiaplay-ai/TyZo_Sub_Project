@@ -35,6 +35,22 @@ describe("AssemblyAI trong bảng nhà nhận dạng", () => {
   });
 });
 
+describe("Speechmatics trong bảng nhà nhận dạng", () => {
+  it("nhận ra hai model Speechmatics, nhận link, có giá dự phòng", () => {
+    for (const id of ["speechmatics-standard", "speechmatics-enhanced"]) {
+      assert.equal(asrHouse(id), "speechmatics");
+      assert.equal(asrIntake(id), "link");
+      assert.equal(asrTakesLink(id), true);
+      assert.equal(catalogModel("speechmatics", id)?.kind, "asr");
+      assert.equal(groqListHolds(["whisper-large-v3-turbo"], id), false);
+      assert.ok(ASR_MODELS.some((row) => row.id === id));
+      assert.ok((ASR_PRICE as Record<string, number>)[id] > 0);
+    }
+    assert.ok(ASR_PRICE["speechmatics-enhanced"] > ASR_PRICE["speechmatics-standard"]);
+    assert.equal(catalogModel("groq", "speechmatics-standard"), null);
+  });
+});
+
 describe("Deepgram trong bảng nhà nhận dạng", () => {
   it("nhận ra Nova-3 là của Deepgram, nhận link", () => {
     assert.equal(asrHouse("deepgram-nova-3"), "deepgram");

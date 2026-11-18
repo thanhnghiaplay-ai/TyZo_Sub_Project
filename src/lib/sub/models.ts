@@ -91,6 +91,8 @@ export const ASR_MODELS = [
   { id: "deepgram-nova-3", name: "Deepgram Nova-3", price: "~$0.288/giờ", note: "Cả file, hợp Trung, Nhật, Hàn, Anh, cần link trực tiếp" },
   { id: "assemblyai-universal-3-5-pro", name: "AssemblyAI Universal-3.5 Pro", price: "~$0.21/giờ", note: "Cả file, chính xác cao, tự lùi về Universal-2, cần link trực tiếp" },
   { id: "assemblyai-universal-2", name: "AssemblyAI Universal-2", price: "~$0.15/giờ", note: "Cả file, 99 ngôn ngữ, rẻ hơn, cần link trực tiếp" },
+  { id: "speechmatics-enhanced", name: "Speechmatics Enhanced", price: "$0.75/giờ", note: "Cả file, chính xác cao, cần link trực tiếp" },
+  { id: "speechmatics-standard", name: "Speechmatics Standard", price: "$0.45/giờ", note: "Cả file, rẻ hơn Enhanced, cần link trực tiếp" },
 ] as const;
 
 const BY_ID = new Map(CHAT_MODELS.map((model) => [model.id, model]));
