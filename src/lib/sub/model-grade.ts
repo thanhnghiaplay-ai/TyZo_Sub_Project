@@ -22,6 +22,9 @@ const GRADE_FIX: Record<string, ModelGrade> = {
   "qwen3-asr-flash": { quality: 7.5, speed: 8, asian: 9 },
   "deepgram-nova-3": { quality: 8.5, speed: 7, asian: 8 },
   "deepgram-nova-3-multi": { quality: 8, speed: 7, asian: 8 },
+  // AssemblyAI: ĐIỂM ƯỚC LƯỢNG của người làm (18/11/2026), CHƯA đo bằng phim thật; Chủ xem lại ở đây.
+  "assemblyai-universal-3-5-pro": { quality: 9, speed: 6, asian: 8 },
+  "assemblyai-universal-2": { quality: 7.5, speed: 7, asian: 7 },
   // Đọc thuyết minh
   "canopylabs/orpheus-v1-english": { quality: 7.5, speed: 7, asian: 0 },
   "canopylabs/orpheus-arabic-saudi": { quality: 7.5, speed: 7, asian: 0 },

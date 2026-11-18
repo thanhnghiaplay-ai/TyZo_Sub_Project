@@ -1,14 +1,24 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { asrPickerRows } from "./asr-picker.ts";
+import { asrHouse } from "./sub/asr-house.ts";
 import { ASR_MODELS } from "./sub/models.ts";
+import { PROVIDER_IDS } from "./sub/provider.ts";
 
 const none = () => false;
 
-test("mọi model nhận dạng trong ASR_MODELS đều có hàng, giữ thứ tự nhà", () => {
+test("mọi model nhận dạng của nhà đã ready đều có hàng; nhà chưa ready (ready: false) bị ẩn", () => {
   const rows = asrPickerRows({ showRoomPrice: false, allow: {}, roomHeld: none });
-  for (const model of ASR_MODELS) assert.ok(rows.some((row) => row.id === model.id), model.id);
-  assert.equal(rows.length, ASR_MODELS.length);
+  const shown = ASR_MODELS.filter((model) => {
+    const house = asrHouse(model.id);
+    return house !== null && PROVIDER_IDS.includes(house);
+  });
+  for (const model of shown) assert.ok(rows.some((row) => row.id === model.id), model.id);
+  assert.equal(rows.length, shown.length);
+  for (const model of ASR_MODELS) {
+    const house = asrHouse(model.id);
+    if (house && !PROVIDER_IDS.includes(house)) assert.ok(!rows.some((row) => row.id === model.id), `${model.id} chưa ready mà đã hiện`);
+  }
 });
 
 test("thuê phòng: chưa lưu danh sách thì mở hết", () => {

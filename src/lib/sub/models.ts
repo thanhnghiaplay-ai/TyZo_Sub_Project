@@ -89,6 +89,8 @@ export const ASR_MODELS = [
   { id: "whisper-large-v3", name: "Whisper Large v3", price: "$0.111/giờ", note: "Chính xác hơn, chậm và đắt hơn" },
   { id: "qwen-audio-3.0-asr-flash-filetrans", name: "Alibaba Filetrans", price: "~$0.126/giờ", note: "Cả file, mạnh tiếng Á, cần link trực tiếp" },
   { id: "deepgram-nova-3", name: "Deepgram Nova-3", price: "~$0.288/giờ", note: "Cả file, hợp Trung, Nhật, Hàn, Anh, cần link trực tiếp" },
+  { id: "assemblyai-universal-3-5-pro", name: "AssemblyAI Universal-3.5 Pro", price: "~$0.21/giờ", note: "Cả file, chính xác cao, tự lùi về Universal-2, cần link trực tiếp" },
+  { id: "assemblyai-universal-2", name: "AssemblyAI Universal-2", price: "~$0.15/giờ", note: "Cả file, 99 ngôn ngữ, rẻ hơn, cần link trực tiếp" },
 ] as const;
 
 const BY_ID = new Map(CHAT_MODELS.map((model) => [model.id, model]));

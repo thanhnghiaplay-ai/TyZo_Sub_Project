@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { asrHouse, asrIntake, asrTakesLink, groqListHolds } from "./asr-house.ts";
+import { catalogModel } from "./model-catalog.ts";
 import { ASR_MODELS } from "./models.ts";
 import { ASR_PRICE } from "./types.ts";
 
@@ -18,6 +19,19 @@ describe("nhà nhận dạng", () => {
     assert.equal(groqListHolds(offered, "whisper-large-v3-turbo"), false);
     assert.equal(groqListHolds(offered, "qwen-audio-3.0-asr-flash-filetrans"), false);
     assert.equal(groqListHolds(null, "whisper-large-v3"), false);
+  });
+});
+
+describe("AssemblyAI trong bảng nhà nhận dạng", () => {
+  it("nhận ra hai model AssemblyAI, nhận link, có trong danh mục model", () => {
+    for (const id of ["assemblyai-universal-3-5-pro", "assemblyai-universal-2"]) {
+      assert.equal(asrHouse(id), "assemblyai");
+      assert.equal(asrIntake(id), "link");
+      assert.equal(asrTakesLink(id), true);
+      assert.equal(catalogModel("assemblyai", id)?.kind, "asr");
+      assert.equal(groqListHolds(["whisper-large-v3-turbo"], id), false);
+    }
+    assert.equal(catalogModel("groq", "assemblyai-universal-2"), null);
   });
 });
 

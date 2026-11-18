@@ -37,7 +37,13 @@ export type ChatModel = {
 export type AutoProfile = "fast" | "balanced" | "accurate";
 export type ModelMode = "manual" | "auto";
 
-export type AsrModel = "whisper-large-v3-turbo" | "whisper-large-v3" | "qwen-audio-3.0-asr-flash-filetrans" | "deepgram-nova-3";
+export type AsrModel =
+  | "whisper-large-v3-turbo"
+  | "whisper-large-v3"
+  | "qwen-audio-3.0-asr-flash-filetrans"
+  | "deepgram-nova-3"
+  | "assemblyai-universal-3-5-pro"
+  | "assemblyai-universal-2";
 
 export const ASR_PRICE: Record<AsrModel, number> = {
   "whisper-large-v3-turbo": 0.04 / 3600,
@@ -45,6 +51,9 @@ export const ASR_PRICE: Record<AsrModel, number> = {
   "qwen-audio-3.0-asr-flash-filetrans": 0.000035,
   /** 0,0043 đô/phút (Nova-3, trả theo lượt, nói một ngôn ngữ). Giá dự phòng, cần đối chiếu trang giá Deepgram. */
   "deepgram-nova-3": 0.0043 / 60,
+  /** Khoảng 0,21 đô/giờ (Universal-3.5 Pro) và 0,15 đô/giờ (Universal-2), theo tài liệu AssemblyAI tra 18/11/2026. Giá dự phòng, cần đối chiếu trang giá chính thức ở bước 6. */
+  "assemblyai-universal-3-5-pro": 0.21 / 3600,
+  "assemblyai-universal-2": 0.15 / 3600,
 };
 
 export type NarrationSettings = {

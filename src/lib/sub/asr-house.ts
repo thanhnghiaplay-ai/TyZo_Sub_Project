@@ -1,4 +1,5 @@
 /** Nhà nhận dạng. Danh sách model Groq không quyết định nhà khác. */
+import { ASSEMBLYAI_PRO_ASR, ASSEMBLYAI_V2_ASR } from "./assemblyai.ts";
 import { DEEPGRAM_ASR } from "./deepgram.ts";
 import { PROVIDERS, type ProviderId, type ProviderIntake } from "./provider.ts";
 
@@ -12,6 +13,8 @@ const HOUSES: Record<string, AsrHouse> = {
   "whisper-large-v3-turbo": "groq",
   [ALI_FILETRANS_ASR]: "alibaba",
   [DEEPGRAM_ASR]: "deepgram",
+  [ASSEMBLYAI_PRO_ASR]: "assemblyai",
+  [ASSEMBLYAI_V2_ASR]: "assemblyai",
 };
 
 export function asrHouse(id: string): AsrHouse | null {
