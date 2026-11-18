@@ -1,5 +1,5 @@
 import { dongOrNull } from "@/lib/money-format";
-import { modelRoleNote } from "@/lib/sub/model-role";
+import { shortModelNames } from "@/lib/sub/model-short";
 import { useEffect, useMemo, useState } from "react";
 import { pushToast } from "@/components/toast";
 import { getAlibabaDesk, saveServicePacks } from "@/lib/pack-room";
@@ -186,6 +186,7 @@ export function ServicePackBoard() {
                 const fit = provider ? modelsForRole(role, provider, choices[provider]) : [];
                 const misfit = Boolean(assign?.model && !fit.includes(assign.model));
                 const list = misfit && assign ? [assign.model, ...fit] : fit;
+                const names = shortModelNames(list);
                 return (
                   <div key={role} className="grid gap-2 sm:grid-cols-[7rem_8rem_1fr] sm:items-center">
                     <span className="text-sm">{PACK_ROLE_LABEL[role]}</span>
@@ -219,11 +220,11 @@ export function ServicePackBoard() {
                         onChange={(event) => setRole(pack.id, role, provider as ProviderId, event.target.value)}
                       >
                         {list.map((id) => (
-                          <option key={id} value={id}>{id}{misfit && id === assign?.model ? " · không hợp việc này" : ` · ${modelRoleNote(id)}`}</option>
+                          <option key={id} value={id}>{names[id]}{misfit && id === assign?.model ? " · không hợp việc này" : ""}</option>
                         ))}
                       </select>
                     )}
-                    {assign?.model && <p className="text-xs text-muted sm:col-span-3">{assign.model}: {misfit ? "không hợp việc này" : modelRoleNote(assign.model)}</p>}
+                    {assign?.model && <p className="break-all text-xs text-muted sm:col-span-3">{assign.model}{misfit ? " · không hợp việc này" : ""}</p>}
                   </div>
                 );
               })}
