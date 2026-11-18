@@ -20,6 +20,10 @@ const PRICE_ROWS: Record<ProviderId, string[] | "bang-gia-groq"> = {
   groq: "bang-gia-groq",
   alibaba: ALIBABA_ROWS.map((row) => row.id),
   deepgram: DEEPGRAM_BASE_ROWS.map((row) => row.id),
+  // Nhà đang làm dở (ready: false): điền dòng giá thật ở bước 6, rồi bài kiểm này mới đếm tới khi ready thành true.
+  assemblyai: [],
+  speechmatics: [],
+  soniox: [],
 };
 
 const asrProviders = PROVIDER_IDS.filter((id) => providerHas(id, "asr"));

@@ -2,13 +2,13 @@
  * BẢNG NHÀ CUNG CẤP. Thêm nhà mới = thêm một dòng vào PROVIDERS và làm theo PROVIDERS.md.
  * Mọi chỗ cần nhãn, địa chỉ, kiểu gửi key, khả năng đều đọc từ đây, không chép tay.
  */
-export type ProviderId = "groq" | "alibaba" | "deepgram";
+export type ProviderId = "groq" | "alibaba" | "deepgram" | "assemblyai" | "speechmatics" | "soniox";
 
 /** asr: nhận dạng giọng · chat: dịch bằng mô hình ngôn ngữ · tts: đọc thành tiếng · live: dịch trực tiếp */
 export type ProviderCap = "asr" | "chat" | "tts" | "live";
 
-/** bearer: `Authorization: Bearer KEY` (kiểu OpenAI). token: `Authorization: Token KEY` (Deepgram). */
-export type ProviderAuth = "bearer" | "token";
+/** bearer: `Authorization: Bearer KEY` (kiểu OpenAI). token: `Authorization: Token KEY` (Deepgram). raw: `Authorization: KEY`, không tiền tố (AssemblyAI). */
+export type ProviderAuth = "bearer" | "token" | "raw";
 
 /**
  * Cách app đưa âm thanh cho nhà nhận dạng (chỉ nói về cách app đang dùng, không phải mọi khả năng của nhà):
@@ -31,6 +31,18 @@ export type ProviderInfo = {
   clientStore: string;
   /** Đầu key mẫu hiện trong ô nhập của khách (không bắt buộc). */
   keyHint?: string;
+  /**
+   * Đường (nối sau `api`) app gọi để kiểm key và đọc danh sách model. Nhà có lệnh liệt kê model thì trỏ vào đó (`/models`);
+   * nhà không có thì trỏ vào một lệnh nhẹ chỉ để biết key đúng hay sai (đi cùng `fixedModels`).
+   */
+  listPath: string;
+  /** Danh sách model khai cố định cho nhà không có lệnh liệt kê model. Có trường này thì phản hồi của `listPath` không được đọc. */
+  fixedModels?: string[];
+  /**
+   * false = nhà đang làm dở (PROVIDERS.md bước 2 đến 7): có trong bảng và trong kiểu `ProviderId` để code dựng dần,
+   * nhưng chưa hiện ra Admin, khách, Hướng dẫn và chưa bị bài kiểm «đủ hai cửa» đếm tới. Đổi thành true khi làm xong bước 7.
+   */
+  ready: boolean;
   /** Tên dòng trong room_settings. */
   settings: { key: string; models: string; desk: string };
 };
@@ -38,6 +50,10 @@ export type ProviderInfo = {
 export const GROQ_API = "https://api.groq.com/openai/v1";
 export const ALIBABA_API = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
 export const DEEPGRAM_API = "https://api.deepgram.com/v1";
+export const ASSEMBLYAI_API = "https://api.assemblyai.com/v2";
+/** Speechmatics chia máy chủ theo vùng; key của vùng nào chỉ chạy ở vùng đó. Đang khai vùng US1, cần kiểm bằng key thật ở bước máy chủ. */
+export const SPEECHMATICS_API = "https://us1.asr.api.speechmatics.com/v2";
+export const SONIOX_API = "https://api.soniox.com/v1";
 
 export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
   groq: {
@@ -50,6 +66,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     keyPage: "console.groq.com/keys",
     clientStore: "gk",
     keyHint: "gsk_…",
+    listPath: "/models",
+    ready: true,
     // Groq giữ tên dòng cũ: key lưu ở run_key (admin-room.ts, room-groq.ts, overview-data.ts đều đọc dòng này).
     settings: { key: "run_key", models: "run_models", desk: "run_desk" },
   },
@@ -63,6 +81,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     keyPage: "bailian.console.alibabacloud.com",
     clientStore: "gali",
     keyHint: "sk-…",
+    listPath: "/models",
+    ready: true,
     settings: { key: "alibaba_key", models: "alibaba_models", desk: "alibaba_desk" },
   },
   deepgram: {
@@ -75,14 +95,66 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     intake: "link",
     keyPage: "console.deepgram.com",
     clientStore: "gdg",
+    listPath: "/models",
+    ready: true,
     settings: { key: "deepgram_key", models: "deepgram_models", desk: "deepgram_desk" },
+  },
+  assemblyai: {
+    id: "assemblyai",
+    label: "AssemblyAI",
+    api: ASSEMBLYAI_API,
+    auth: "raw",
+    caps: ["asr"],
+    // AssemblyAI nhận link công khai (audio_url) hoặc file tải lên; app dùng link trước.
+    intake: "link",
+    keyPage: "www.assemblyai.com/dashboard",
+    clientStore: "gaai",
+    // Không có lệnh liệt kê model: hỏi một lượt phiên âm gần nhất để kiểm key.
+    listPath: "/transcript?limit=1",
+    fixedModels: ["universal-3-5-pro", "universal-2"],
+    ready: false,
+    settings: { key: "assemblyai_key", models: "assemblyai_models", desk: "assemblyai_desk" },
+  },
+  speechmatics: {
+    id: "speechmatics",
+    label: "Speechmatics",
+    api: SPEECHMATICS_API,
+    auth: "bearer",
+    caps: ["asr"],
+    // Speechmatics nhận link (fetch_data) hoặc file tải lên; app dùng link trước.
+    intake: "link",
+    keyPage: "portal.speechmatics.com",
+    clientStore: "gsm",
+    // Không có lệnh liệt kê model: hỏi danh sách việc gần nhất để kiểm key.
+    listPath: "/jobs/?limit=1",
+    fixedModels: ["standard", "enhanced"],
+    ready: false,
+    settings: { key: "speechmatics_key", models: "speechmatics_models", desk: "speechmatics_desk" },
+  },
+  soniox: {
+    id: "soniox",
+    label: "Soniox",
+    api: SONIOX_API,
+    auth: "bearer",
+    caps: ["asr"],
+    // Soniox nhận link (audio_url) hoặc file tải lên; app dùng link trước.
+    intake: "link",
+    keyPage: "console.soniox.com",
+    clientStore: "gsx",
+    listPath: "/models",
+    ready: false,
+    settings: { key: "soniox_key", models: "soniox_models", desk: "soniox_desk" },
   },
 };
 
-export const PROVIDER_IDS = Object.keys(PROVIDERS) as ProviderId[];
+/** Mọi nhà trong bảng, kể cả nhà đang làm dở. Chỉ dùng khi cần cả bảng (kiểu, bài kiểm bảng). */
+export const ALL_PROVIDER_IDS = Object.keys(PROVIDERS) as ProviderId[];
+
+/** Các nhà đã làm xong (`ready`): đây là danh sách Admin, khách và bài kiểm dùng. */
+export const PROVIDER_IDS = ALL_PROVIDER_IDS.filter((id) => PROVIDERS[id].ready);
 
 export const PROVIDER_LABEL: Record<ProviderId, string> = Object.fromEntries(
-  PROVIDER_IDS.map((id) => [id, PROVIDERS[id].label]),
+  ALL_PROVIDER_IDS.map((id) => [id, PROVIDERS[id].label]),
 ) as Record<ProviderId, string>;
 
 export function providerApi(id: ProviderId) {
@@ -90,7 +162,7 @@ export function providerApi(id: ProviderId) {
 }
 
 export function modelListUrl(id: ProviderId) {
-  return `${providerApi(id)}/models`;
+  return `${providerApi(id)}${PROVIDERS[id].listPath}`;
 }
 
 export function isProviderId(value: string): value is ProviderId {
@@ -99,7 +171,8 @@ export function isProviderId(value: string): value is ProviderId {
 
 /** Giá trị cho phần đầu Authorization theo kiểu của từng nhà. */
 export function authHeader(id: ProviderId, key: string): string {
-  return PROVIDERS[id].auth === "token" ? `Token ${key}` : `Bearer ${key}`;
+  const auth = PROVIDERS[id].auth;
+  return auth === "token" ? `Token ${key}` : auth === "raw" ? key : `Bearer ${key}`;
 }
 
 export function providerHas(id: ProviderId, cap: ProviderCap): boolean {
@@ -127,6 +200,8 @@ export function providerKeyNote(id: ProviderId): string {
 
 /** Đọc danh sách mã model từ phản hồi `/models` của từng nhà (mỗi nhà một dạng). */
 export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
+  const fixed = PROVIDERS[id].fixedModels;
+  if (fixed) return [...fixed];
   const root = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
   if (id === "deepgram") {
     const out: string[] = [];
@@ -140,7 +215,8 @@ export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
     }
     return out;
   }
-  const rows = Array.isArray(root.data) ? (root.data as unknown[]) : [];
+  // Dạng OpenAI trả `data`; Soniox trả `models`.
+  const rows = Array.isArray(root.data) ? (root.data as unknown[]) : Array.isArray(root.models) ? (root.models as unknown[]) : [];
   return rows
     .map((row) => (row && typeof row === "object" ? (row as Record<string, unknown>).id : undefined))
     .filter((value): value is string => typeof value === "string" && value.length > 0);

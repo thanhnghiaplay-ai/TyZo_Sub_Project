@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote, clientKeyPlaceholder } from "./provider.ts";
+import { ALL_PROVIDER_IDS, PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote, clientKeyPlaceholder } from "./provider.ts";
 
 describe("địa chỉ danh sách model", () => {
   it("Groq và Alibaba không dùng chung máy", () => {
@@ -116,5 +116,53 @@ describe("khóa kho và chữ mẫu ô key của khách", () => {
     assert.equal(clientKeyPlaceholder("groq"), "gsk_… chỉ lưu trên máy này");
     assert.equal(clientKeyPlaceholder("alibaba"), "sk-… chỉ lưu trên máy này");
     assert.equal(clientKeyPlaceholder("deepgram"), "Key Deepgram, chỉ lưu trên máy này");
+  });
+});
+
+describe("AssemblyAI, Speechmatics, Soniox (đang làm dở, ready: false)", () => {
+  const NEW = ["assemblyai", "speechmatics", "soniox"] as const;
+  it("có trong bảng đầy đủ nhưng chưa hiện ra Admin, khách (PROVIDER_IDS)", () => {
+    for (const id of NEW) {
+      assert.ok(ALL_PROVIDER_IDS.includes(id));
+      assert.equal(PROVIDERS[id].ready, false);
+      assert.equal(PROVIDER_IDS.includes(id), false);
+      assert.equal(isProviderId(id), true);
+    }
+    for (const id of ["groq", "alibaba", "deepgram"] as const) assert.ok(PROVIDER_IDS.includes(id));
+  });
+  it("địa chỉ API mỗi nhà một máy riêng", () => {
+    assert.equal(PROVIDERS.assemblyai.api, "https://api.assemblyai.com/v2");
+    assert.match(PROVIDERS.speechmatics.api, /^https:\/\/[a-z0-9]+\.asr\.api\.speechmatics\.com\/v2$/);
+    assert.equal(PROVIDERS.soniox.api, "https://api.soniox.com/v1");
+  });
+  it("AssemblyAI gửi key không tiền tố, hai nhà kia dùng Bearer", () => {
+    assert.equal(authHeader("assemblyai", "abc"), "abc");
+    assert.equal(authHeader("speechmatics", "abc"), "Bearer abc");
+    assert.equal(authHeader("soniox", "abc"), "Bearer abc");
+  });
+  it("nhà không có lệnh liệt kê model dùng danh sách khai cố định, bất kể phản hồi", () => {
+    assert.deepEqual(modelIdsFrom("assemblyai", {}), ["universal-3-5-pro", "universal-2"]);
+    assert.deepEqual(modelIdsFrom("assemblyai", { data: [{ id: "x" }] }), ["universal-3-5-pro", "universal-2"]);
+    assert.deepEqual(modelIdsFrom("speechmatics", null), ["standard", "enhanced"]);
+    assert.match(modelListUrl("assemblyai"), /\/v2\/transcript\?limit=1$/);
+    assert.match(modelListUrl("speechmatics"), /\/v2\/jobs\/\?limit=1$/);
+  });
+  it("Soniox đọc danh sách model từ khóa models (và vẫn đọc data)", () => {
+    assert.equal(modelListUrl("soniox"), "https://api.soniox.com/v1/models");
+    assert.deepEqual(modelIdsFrom("soniox", { models: [{ id: "stt-async-v5" }, { id: "" }, {}] }), ["stt-async-v5"]);
+    assert.deepEqual(modelIdsFrom("soniox", { data: [{ id: "a" }] }), ["a"]);
+  });
+  it("tên dòng lưu và kho trình duyệt không trùng nhà nào trong bảng đầy đủ", () => {
+    const names = new Set<string>();
+    const stores = new Set<string>();
+    for (const id of ALL_PROVIDER_IDS) {
+      for (const name of Object.values(PROVIDERS[id].settings)) {
+        if (id === "groq") continue;
+        assert.ok(!names.has(name), `trùng ${name}`);
+        names.add(name);
+      }
+      assert.ok(!stores.has(PROVIDERS[id].clientStore), `trùng kho ${PROVIDERS[id].clientStore}`);
+      stores.add(PROVIDERS[id].clientStore);
+    }
   });
 });

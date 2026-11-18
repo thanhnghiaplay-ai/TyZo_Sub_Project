@@ -72,7 +72,7 @@ export function ServicePackBoard({ packsOnly = false }: { packsOnly?: boolean })
     const groq = [...new Set([...(groqModels ?? []), "whisper-large-v3-turbo", "whisper-large-v3"])];
     const alibaba = [...new Set([...(models ?? []), ...ALIBABA_ROWS.map((row) => row.id)])];
     const deepgram = ASR_MODELS.filter((row) => asrHouse(row.id) === "deepgram").map((row) => row.id);
-    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram };
+    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai: [], speechmatics: [], soniox: [] };
     return byProvider;
   }, [groqModels, models]);
 
