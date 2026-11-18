@@ -71,6 +71,13 @@ export function AppShell({ children, className, pinned = false, ...rest }: { chi
   );
 }
 
+/** Cho nút ngoài (thanh dưới điện thoại) mở/đóng ngăn trượt. Không vẽ gì khi menu đã ghim bên trái. */
+export function RailControl({ children }: { children: (control: { open: boolean; setOpen: (value: boolean) => void; railId: string }) => ReactNode }) {
+  const { open, setOpen, wide, railId } = useRail();
+  if (wide) return null;
+  return <>{children({ open, setOpen, railId })}</>;
+}
+
 export function RailToggle() {
   const { open, setOpen, wide, railId, toggleRef } = useRail();
   if (wide) return null;

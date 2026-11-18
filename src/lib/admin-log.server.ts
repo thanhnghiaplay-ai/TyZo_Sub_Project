@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.2.3",
     time: "18/11/2026",
     area: "khac",
+    text: "Sắp xếp lại giao diện Admin, bước 4 (điện thoại): thêm thanh nút dưới cùng dưới 1024 px gồm Tổng quan, Việc, Dịch vụ (Quản lý/Hỗ trợ thay bằng Khách vì không có Dịch vụ) và nút Menu mở ngăn trượt đầy đủ. Code: lib/admin-bottom-tabs.ts (+ test), components/admin-bottom-bar.tsx, RailControl trong side-rail.tsx; vùng nội dung chừa chỗ dưới cùng. Thanh trên (ba gạch, tên mục, Tìm) giữ nguyên. Không đổi quyền, dữ liệu hay chức năng; không nâng số phiên bản khách.",
+  },
+  {
+    version: "5.2.3",
+    time: "18/11/2026",
+    area: "khac",
     text: "Sắp xếp lại giao diện Admin, bước 3: tách «Tài khoản khách» ra tab riêng (id mới tai-khoan, mọi vai trò đều thấy như khối cũ), gồm thẻ tìm tài khoản và bảng kiểu thẻ quyền của Chủ. Tab «Phiếu và việc» còn thống kê, phiếu, yêu cầu, lịch sử, Email Chủ và hàng chờ nạp. Mở tài khoản từ nơi khác (bấm email) nay đưa sang tab Tài khoản khách; mở đơn nạp và yêu cầu vẫn về Phiếu và việc. Không đổi quyền, dữ liệu hay chức năng; không nâng số phiên bản khách.",
   },
   {

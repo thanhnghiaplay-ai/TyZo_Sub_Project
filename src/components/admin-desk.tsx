@@ -46,6 +46,7 @@ import { AdminOverview } from "@/components/admin-overview";
 import { tabsFor, type AdminTab } from "@/lib/admin-tabs";
 import { AdminNav } from "@/components/admin-nav";
 import { ConfigTab } from "@/components/admin-config";
+import { AdminBottomBar } from "@/components/admin-bottom-bar";
 import { AppShell } from "@/components/side-rail";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AdminPalette } from "@/components/admin-palette";
@@ -330,7 +331,8 @@ export function AdminDesk() {
       {role && <AdminPalette tabs={tabsFor(role)} open={paletteOpen} onOpenChange={setPaletteOpen} onPick={setTab} />}
       <AppShell pinned>
       {role && <AdminNav tabs={tabsFor(role)} current={tab} onPick={setTab} onSearch={() => setPaletteOpen(true)} who={{ name: me?.displayName, email: me?.primaryEmail }} />}
-      <div className="min-w-0 flex-1">
+      {role && <AdminBottomBar tabs={tabsFor(role)} current={tab} onPick={setTab} />}
+      <div className="min-w-0 flex-1 pb-20 lg:pb-0">
       <div className="admin-grid">
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
       {role && tab === "thao-tac" && <AuditTab rows={audit} />}
