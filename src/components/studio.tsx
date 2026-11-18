@@ -858,6 +858,17 @@ export function Studio() {
             <p className="hidden text-xs font-semibold text-accent min-[480px]:block">Phòng chiếu TyZo Sub</p>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              data-palette-open
+              aria-label="Tìm nhanh, phím tắt Ctrl K"
+              className="min-tap hidden items-center gap-2 rounded-full border border-line bg-card px-3 text-sm text-muted hover:border-accent focus-visible:ring-2 focus-visible:ring-accent lg:inline-flex"
+              onClick={() => setPaletteOpen(true)}
+            >
+              <Icon slot="act.search" className="size-4" />
+              <span>Tìm nhanh</span>
+              <kbd className="rounded border border-line px-1.5 text-xs">Ctrl K</kbd>
+            </button>
             <VersionMark />
             <DisplayToggle />
             <NoticeBell />
@@ -950,7 +961,7 @@ export function Studio() {
 
 
       {hero && (
-        <div className="mx-auto grid w-full max-w-2xl gap-3 pt-4" data-service-head>
+        <div className="mx-auto grid w-full max-w-2xl gap-3 pt-4 lg:max-w-5xl" data-service-head>
           <ServiceSwitch current="normal" status={service.status} />
           <MaintenanceNotice group="normal" entry={service.status.normal} running={app.running} />
         </div>
