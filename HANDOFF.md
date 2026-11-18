@@ -1,3 +1,19 @@
+## BÀN GIAO (19/11/2026, nhánh work) — KIỂM TRA LOGIC TRANG DOANH THU, 4 BƯỚC THEO THỨ TỰ 1→2→3→4 — đọc mục này đầu tiên
+YÊU CẦU CỦA CHỦ: «Kiểm tra phần doanh thu, tất cả chỉ số đã đúng, chuẩn logic chưa, sao tôi thấy cứ sai sai». Làm từng bước: sửa → `npx tsc --noEmit` → `npm test` → commit → đẩy `work` → ghi vào đây → bước sau. Ảnh của Chủ (Admin → Doanh thu, tab Ngày): Doanh thu 12.832 đ, Chi phí 0, Lời lỗ −18.843 đ; Giá vốn lượt 18.843 (1.320 ước tính), Lãi gộp −18.843; ARPU 12.832; Dùng thử→mua 12,5% (1/8).
+CÁC LỖI ĐÃ TÌM THẤY (đọc code `getMoney` ở `src/lib/admin-room.ts` ~dòng 1071, `src/lib/money-extra-data.ts`, `src/components/admin-company.tsx` MoneyBoard):
+A. Lời lỗ = `lai − chi − hoa` với `lai = goi + luot − von`. `goi`/`luot` chỉ là phần tiêu số dư ví CŨ. Từ v5.0.0 không còn số dư, khách trả thẳng bằng QR (ghi `room_ledger.kind = 'nap'`, `settleDirect` ở `pay-flow.ts`) nên tiền thật vào không nằm trong Lời lỗ: Doanh thu 12.832 mà Lời lỗ −18.843. Ghi chú cũ ở ADMIN_LOG «Lời lỗ vẫn không cộng tiền nạp» đúng thời có ví, nay sai.
+B. Giá vốn của phiếu Token dịch KHÔNG BAO GIỜ vào sổ: `token-flow.ts` `chargeTokenWith` cộng `base_cost` bằng SỐ GIÂY (Token), còn mọi truy vấn doanh thu lọc `unit = 'vnd'` nên bỏ phiếu `unit = 'token'`. Cột `rate` của phiếu token là Token/phút (không phải đồng). 1 Token dịch = 1 giây Turbo theo giá gốc (`TURBO_ASR`, `tokensForBase`), nên giá vốn đồng = Token đã trừ × giá gốc Turbo đồng/giây hiện hành (`asrPerSecond` với bảng giá `desk.markup = 0`).
+C. Tab «Ngày» thực ra cộng cả 14 ngày (cửa sổ `14 days`; Tuần = 8 tuần, Tháng = 12 tháng, Năm = 5 năm) nhưng chữ ghi như một ngày; Chủ thấy 12.832 của 17/11 ở màn ngày 19/11. Cần ghi rõ «14 ngày gần nhất» và nên cho số hôm nay riêng.
+D. `money-extra-data.ts`: «giá vốn mỗi phút» chỉ lấy phiếu `unit = 'vnd'` nên cũng bỏ Token dịch (phải sửa cùng bước 2).
+E. Cần xét: giá vốn phiếu đã hoàn tiền vẫn tính (đúng: tiền API đã tiêu thật) nhưng nhãn chưa nói rõ.
+KẾ HOẠCH:
+[CHƯA] 1 Lời lỗ tính theo tiền thật: Lời lỗ = Doanh thu (tiền vào) − giá vốn − hoa hồng − chi phí ghi tay. Bỏ `goi`+`luot` ra khỏi công thức (chỉ hiện làm thông tin số dư cũ). Hàm thuần + test.
+[CHƯA] 2 Giá vốn Token dịch bằng đồng đưa vào giá vốn và giá vốn mỗi phút (sửa cả `money-extra-data.ts`). Hàm thuần + test.
+[CHƯA] 3 Nhãn khoảng thời gian rõ (14 ngày/8 tuần/12 tháng/5 năm) + số «hôm nay». Sửa chữ dòng giải thích.
+[CHƯA] 4 Rà ARPU, Dùng thử→mua, biểu đồ, `overview-data.ts` (cũng đọc `nap`); ADMIN_LOG; cập nhật mục này.
+KHÔNG đẩy `main` trừ khi Chủ nói đúng câu «đẩy chính thức». KHÔNG ghi token GitHub vào file; token đã dán trong chat, Chủ cần THU HỒI sau khi xong. Chưa truy cập được cơ sở dữ liệu thật nên số 18.843 chưa đối chiếu được với phiếu thật.
+CÁCH LÀM TIẾP (tài khoản khác): clone nhánh `work`, `npm ci --ignore-scripts`, đọc `BANG_DIEU.md` rồi mục này, làm bước đầu còn [CHƯA].
+
 ## BÀN GIAO (19/11/2026, nhánh work) — SỬA 3 LỖI GIAO DIỆN CẤU HÌNH, 3 BƯỚC THEO THỨ TỰ 1→2→3 — đọc mục này đầu tiên
 YÊU CẦU CỦA CHỦ (làm từng bước, mỗi bước: sửa → `npx tsc --noEmit` → `npm test` → commit → đẩy `work` → ghi vào đây → bước sau):
 1. «Thêm gói dịch»: gói mới nằm TRÊN đầu, đẩy gói cũ xuống (nút Thêm ở trên). Nút «Lưu các gói dịch» nằm phía trên, kế nút Thêm.
