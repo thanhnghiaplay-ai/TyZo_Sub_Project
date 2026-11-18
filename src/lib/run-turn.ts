@@ -43,8 +43,9 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const aliAsr = data.asrModel === "qwen-audio-3.0-asr-flash-filetrans";
     const dgAsr = asrHouse(data.asrModel) === "deepgram";
     const aaiAsr = asrHouse(data.asrModel) === "assemblyai";
+    const smAsr = asrHouse(data.asrModel) === "speechmatics";
     const auto = data.chatModel === "auto";
-    if ((!aliAsr && !dgAsr && !aaiAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
+    if ((!aliAsr && !dgAsr && !aaiAsr && !smAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
       throw new Error("Model này không có trong cửa trả theo lượt.");
     }
     const book = await loadPriceBook(sql);
@@ -70,6 +71,15 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const aaiRows = await loadAssemblyaiRows(sql);
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
       hold = chatModel ? holdGiay({ groq: book, aliRows, aaiRows, asrProvider: "assemblyai", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
+    } else if (smAsr) {
+      const smKey = await sql<{ value: string }>`select value from room_settings where key = 'speechmatics_key'`;
+      if (!smKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Speechmatics.");
+      const offeredSm = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'speechmatics_models'`)[0]?.value);
+      if (offeredSm && !offeredSm.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
+      const smRows = await loadSpeechmaticsRows(sql);
+      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
+      hold = chatModel ? holdGiay({ groq: book, aliRows, smRows, asrProvider: "speechmatics", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
     } else if (aliAsr) {
       const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
       if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");

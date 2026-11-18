@@ -914,11 +914,9 @@ export function usePipeline() {
       if (!link) return say("AssemblyAI cần link file trực tiếp (http/https).", true);
       if (!token && !roomPayRef.current) return say("AssemblyAI chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrHouse(asrModel) === "speechmatics") {
-      // Cửa Trả theo lượt của Speechmatics mở ở bước 7 (cần bảng giá để trừ Token dịch). Tới lúc đó chỉ chạy bằng key của khách.
-      if (roomPayRef.current) return say("Speechmatics chưa mở cho cửa Trả theo lượt. Hãy dùng Thuê phòng với key Speechmatics của bạn.", true);
-      if (!houseKeyOf("speechmatics")) return say("Nhận dạng Speechmatics cần key Speechmatics của bạn.", true);
+      if (!roomPayRef.current && !houseKeyOf("speechmatics")) return say("Nhận dạng Speechmatics cần key Speechmatics của bạn.", true);
       if (!link) return say("Speechmatics cần link file trực tiếp (http/https).", true);
-      if (!token) return say("Speechmatics chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
+      if (!token && !roomPayRef.current) return say("Speechmatics chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
     } else if (asrModel === ALI_FILETRANS_MODEL) {
       const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
       if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
@@ -1784,7 +1782,7 @@ export function usePipeline() {
             url: link,
             language: source,
             model: asrModel,
-            key: houseKeyOf("speechmatics"),
+            key: roomPayRef.current ? "room" : houseKeyOf("speechmatics"),
             ticketId,
             signal,
           });

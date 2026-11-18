@@ -15,16 +15,17 @@ const INTERVAL_MS = 3_000;
 const REQUEST_MS = 20_000;
 
 /**
- * Nhận dạng cả file từ link công khai bằng key của khách (không lưu, không tính tiền phòng).
- * Key "room" (cửa Trả theo lượt) CHƯA mở: chưa có bảng giá Speechmatics để trừ Token dịch (PROVIDERS.md bước 6 và 7),
- * nên chặn thẳng ở đây để không có lượt chạy miễn phí bằng key phòng.
+ * Nhận dạng cả file từ link công khai. Key "room" = key phòng ở cửa Trả theo lượt (cần phiếu giữ chỗ, trừ Token dịch
+ * theo số giây thực, giá gốc của nhà). Key khách: không lưu, không tính tiền phòng.
  */
 export async function runSpeechmaticsAsr(userId: string, input: SpeechmaticsAsrInput): Promise<SpeechmaticsAsrResult> {
   await requireOpenAccount(userId);
   await requireServiceOpen("normal");
   await takeRate(`sm-asr:${userId}`, 30, 60);
-  if (input.key === "room") throw new Error("Speechmatics chưa mở cho cửa Trả theo lượt. Hãy dùng key của bạn.");
-  const key = cleanSpeechmaticsKey(input.key);
+  const usingRoom = input.key === "room";
+  const { assertRoomTicket, roomKeyOf } = await import("@/lib/room-asr.server");
+  const key = usingRoom ? cleanSpeechmaticsKey(await roomKeyOf("speechmatics_key", "Speechmatics", 20)) : cleanSpeechmaticsKey(input.key);
+  if (usingRoom) await assertRoomTicket(userId, input.ticketId);
   const problem = directFileUrlProblem(input.url);
   if (problem) throw new Error(problem);
   const config = speechmaticsJobConfig({ audioUrl: input.url, appModel: input.model, language: input.language });
@@ -59,5 +60,13 @@ export async function runSpeechmaticsAsr(userId: string, input: SpeechmaticsAsrI
   };
 
   const transcript = await runSpeechmaticsJob({ request, config, deadlineMs: DEADLINE_MS, intervalMs: INTERVAL_MS });
-  return sentencesFromSpeechmatics(transcript, input.language);
+  const done = sentencesFromSpeechmatics(transcript, input.language);
+  if (usingRoom && input.ticketId) {
+    const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
+    const { getSql } = await import("@/lib/db");
+    const { chargeRoomAsr } = await import("@/lib/room-asr.server");
+    const rows = await loadSpeechmaticsRows(await getSql());
+    await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: input.model, rows });
+  }
+  return done;
 }

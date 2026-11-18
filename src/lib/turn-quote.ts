@@ -23,6 +23,8 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
       const dgRows = await loadDeepgramRows(sql);
       const { loadAssemblyaiRows } = await import("@/lib/sub/assemblyai-board.server");
       const aaiRows = await loadAssemblyaiRows(sql);
+      const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
+      const smRows = await loadSpeechmaticsRows(sql);
       const book = await loadPriceBook(sql);
       const rows = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
       const packs = turnPacks(parseServicePacks(rows[0]?.value));
@@ -35,6 +37,7 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
           aliRows,
           dgRows,
           aaiRows,
+          smRows,
           asrProvider: asr.provider,
           asrModel: asr.model,
           chatModel: chat.model,

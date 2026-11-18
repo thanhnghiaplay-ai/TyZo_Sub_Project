@@ -128,7 +128,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     // Không có lệnh liệt kê model: hỏi danh sách việc gần nhất để kiểm key.
     listPath: "/jobs/?limit=1",
     fixedModels: ["standard", "enhanced"],
-    ready: false,
+    ready: true,
     settings: { key: "speechmatics_key", models: "speechmatics_models", desk: "speechmatics_desk" },
   },
   soniox: {
