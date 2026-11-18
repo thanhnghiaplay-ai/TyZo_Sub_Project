@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
-import { checkRunDesk, parseModelList, parseRunDesk, type RunDesk } from "@/lib/run-desk";
+import { parseModelList, parseRunDesk, type RunDesk } from "@/lib/run-desk";
 import { checkServicePacks, parseServicePacks, type ServicePack } from "@/lib/service-pack";
 import { parseUsdFix, type UsdFix } from "@/lib/usd-fix";
 import type { PriceOverride } from "@/lib/run-desk";
@@ -60,49 +60,6 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
       groqModels: parseModelList(groqRows[0]?.value),
       usdFix: parseUsdFix(map.get("usd_fix")),
     };
-  });
-
-export const saveAlibabaDesk = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((input: RunDesk) => checkRunDesk({ ...input, maintenance: false, note: input.note || "" }))
-  .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "chu");
-    const { sql } = await readSettings();
-    const value = JSON.stringify(data);
-    const prev = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;
-    const before = parseRunDesk(prev[0]?.value);
-    await sql`
-      insert into room_settings (key, value) values ('alibaba_desk', ${value})
-      on conflict (key) do update set value = ${value}
-    `;
-    const { describeRunDesk } = await import("@/lib/audit-note");
-    await writeAudit(context.userId, "gia-alibaba", null, describeRunDesk(before, data));
-    return data;
-  });
-
-export const saveAlibabaKey = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((input: string) => {
-    const key = input?.trim() ?? "";
-    if (key.length < 20 || key.length > 200 || /\s/.test(key)) throw new Error("Key không đúng.");
-    return key;
-  })
-  .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "chu");
-    const { listModelIds } = await import("@/lib/sub/groq");
-    const ids = await listModelIds(data, undefined, "alibaba");
-    const { sql } = await readSettings();
-    const models = JSON.stringify(ids);
-    await sql`
-      insert into room_settings (key, value) values ('alibaba_key', ${data})
-      on conflict (key) do update set value = ${data}
-    `;
-    await sql`
-      insert into room_settings (key, value) values ('alibaba_models', ${models})
-      on conflict (key) do update set value = ${models}
-    `;
-    await writeAudit(context.userId, "key-alibaba", null, `${ids.length} model`);
-    return ids;
   });
 
 export const saveServicePacks = createServerFn({ method: "POST" })
