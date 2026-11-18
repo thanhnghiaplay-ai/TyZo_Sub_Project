@@ -319,14 +319,14 @@ export function AdminDesk() {
   if (!place) return <AdminBoot trying={booting} notice={notice} />;
 
   return (
-    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-2">
+    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 pb-2">
       {role ? (
-        <div className="flex items-center gap-2 pb-2">
+        <div className="flex items-center gap-2 py-2">
           <BackButton fallback="/" onBack={tab === "tong-quan" && tabStack.length === 0 ? undefined : () => void backFromTab()} label={tab === "tong-quan" && tabStack.length === 0 ? "Quay lại" : tabStack.length > 0 ? "Về tab vừa xem" : "Về Tổng quan"} />
           <RoleChip role={role} />
         </div>
       ) : (
-        <p className="text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
+        <p className="pt-2 text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
       {role && <AdminPalette tabs={tabsFor(role)} open={paletteOpen} onOpenChange={setPaletteOpen} onPick={setTab} />}
       <AppShell pinned>
