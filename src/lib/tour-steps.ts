@@ -68,9 +68,9 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "[data-tour=plans]", title: "4. Thuê phòng", text: "Bấm gói thì hiện mã QR. Chuyển khoản đúng số thì mở hạn, không giữ số dư." },
   ],
   "key-groq": [
-    { title: "1. Lấy key ở nhà cung cấp", text: "Groq: mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Alibaba và Deepgram cũng tạo key theo cách tương tự ở trang của họ, chỉ cần khi bạn dùng nhà đó. Các trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
+    { title: "1. Lấy key ở nhà cung cấp", text: "Groq: mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Alibaba, Deepgram và AssemblyAI cũng tạo key theo cách tương tự ở trang của họ, chỉ cần khi bạn dùng nhà đó. Các trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
     { sel: "#tool-tab-key", rail: true, press: true, title: "2. Mở Key Sub", text: "Mục này có ô dán key." },
-    { sel: "[data-tour=key-input]", title: "3. Dán key", text: "Dán key Groq vào ô này hoặc bấm nút dán. Dưới đó là ô key của Alibaba và Deepgram. Key chỉ lưu trên máy này. Dán key Groq xong app tự kiểm tra key và model." },
+    { sel: "[data-tour=key-input]", title: "3. Dán key", text: "Dán key Groq vào ô này hoặc bấm nút dán. Dưới đó là ô key của Alibaba, Deepgram và AssemblyAI. Key chỉ lưu trên máy này. Dán key Groq xong app tự kiểm tra key và model." },
   ],
   "mat-khau": [
     { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },

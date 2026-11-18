@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.3.0",
+    time: "ngày 18/11/2026",
+    area: "ha-tang",
+    text: "Thêm nhà nhận dạng AssemblyAI (PROVIDERS.md, bước 1 đến 7; bước 8 chưa gồm điều khoản). Lõi sub/assemblyai.ts (dựng yêu cầu, đọc từ ra câu, lỗi tiếng Việt), vòng gửi-hỏi-xóa sub/assemblyai-poll.ts (luôn DELETE bản phiên âm khi xong để không giữ dữ liệu khách), assemblyai-asr.server.ts (key khách hoặc key phòng assemblyai_key), hai model assemblyai-universal-3-5-pro và assemblyai-universal-2 (ASR_MODELS, asrHouse). Giá cố định trong sub/assemblyai-base.ts (0,21 và 0,15 đô/giờ), Chủ sửa tay ở bảng giá qua usd_fix; AssemblyAI chưa có trang giá để tự kéo. Cửa Trả theo lượt: run-turn.ts giữ Token dịch, trừ theo số giây thực bằng chargeRoomAsr. Ô key phòng hiện ở Admin (ready: true). CHƯA đối chiếu với key AssemblyAI thật. Điều khoản chưa nhắc AssemblyAI: chờ Chủ chốt chữ rồi nâng TERMS_VERSION một lần cho cả ba nhà mới."
+  },
+  {
     version: "5.2.3",
     time: "18/11/2026",
     area: "khac",
