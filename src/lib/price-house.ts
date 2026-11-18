@@ -36,3 +36,14 @@ export function houseSourceLine(group: Pick<HouseGroup<PriceHouseRow>, "pulled" 
   const base = group.pulled ? "Nguồn giá: tự lấy từ trang giá của nhà." : "Nguồn giá: giá gắn sẵn, sửa tay khi nhà đổi giá.";
   return group.fixedCount > 0 ? `${base} ${group.fixedCount} model đang dùng số bạn sửa.` : base;
 }
+
+/** Bật/tắt một nhà trong danh sách nhà đang mở. Mặc định danh sách rỗng = mọi nhà ẩn. */
+export function toggleHouse(open: readonly string[], house: string): string[] {
+  return open.includes(house) ? open.filter((item) => item !== house) : [...open, house];
+}
+
+/** Dòng ngắn hiện ở tiêu đề khi nhà đang thu lại: số model, và số model đang dùng số sửa tay. */
+export function houseHeadline(group: Pick<HouseGroup<PriceHouseRow>, "rows" | "fixedCount">): string {
+  const base = `${group.rows.length} model`;
+  return group.fixedCount > 0 ? `${base} · ${group.fixedCount} đang dùng số bạn sửa` : base;
+}

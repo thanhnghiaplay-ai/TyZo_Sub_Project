@@ -37,3 +37,24 @@ test("bảng giá: nút Lấy lại chỉ ở nhà tự lấy, một nút lưu, 
   assert.equal((src.match(/Lưu số đô la/g) ?? []).length, 1);
   assert.doesNotMatch(src, /Giá Deepgram tự cập nhật/);
 });
+
+test("toggleHouse: mặc định ẩn hết, bấm một lần mở, bấm lại ẩn", async () => {
+  const { toggleHouse } = await import("./price-house.ts");
+  assert.deepEqual(toggleHouse([], "Groq"), ["Groq"]);
+  assert.deepEqual(toggleHouse(["Groq", "Alibaba"], "Groq"), ["Alibaba"]);
+});
+
+test("houseHeadline: số model và số model sửa tay", async () => {
+  const { houseHeadline } = await import("./price-house.ts");
+  const row = { id: "a", house: "Groq", fix: { hour: null, inn: null, out: null, chars: null } };
+  assert.equal(houseHeadline({ rows: [row, row], fixedCount: 0 }), "2 model");
+  assert.equal(houseHeadline({ rows: [row], fixedCount: 1 }), "1 model · 1 đang dùng số bạn sửa");
+});
+
+test("bảng giá: nhà mặc định thu gọn, có nút ẩn/hiện, model chỉ vẽ khi nhà đang mở", async () => {
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync(new URL("../components/model-usd-board.tsx", import.meta.url), "utf8");
+  assert.ok(src.includes("useState<string[]>([])"), "danh sách nhà mở bắt đầu rỗng");
+  assert.ok(src.includes("aria-expanded={open}"));
+  assert.ok(/\{open && \(/.test(src), "khối model chỉ vẽ khi mở");
+});

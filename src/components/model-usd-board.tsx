@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { pushToast } from "@/components/toast";
 import { getModelPrices, reloadModelPrices, saveDeepgramPriceConfig, saveUsdFix, type ModelPriceRow } from "@/lib/usd-fix-room";
 import { type UsdFix, type UsdSlot } from "@/lib/usd-fix";
-import { groupByHouse, houseSourceLine, isPulledHouse, type PulledHouse } from "@/lib/price-house";
+import { groupByHouse, houseHeadline, houseSourceLine, isPulledHouse, toggleHouse, type PulledHouse } from "@/lib/price-house";
 
 function show(n: number | null) {
   return n == null ? "" : String(n);
@@ -25,6 +25,8 @@ export function ModelUsdBoard() {
   const [text, setText] = useState<Record<string, Draft>>({});
   const [busy, setBusy] = useState(false);
   const [dg, setDg] = useState<DgState>({ auto: true, everyHours: "6", at: null });
+  // Nhà đang mở. Mặc định rỗng: mọi nhà thu gọn. Ô đang sửa vẫn giữ trong `text` khi thu lại.
+  const [openHouses, setOpenHouses] = useState<string[]>([]);
   const [dgSaved, setDgSaved] = useState<{ auto: boolean; everyHours: string }>({ auto: true, everyHours: "6" });
 
   function take(next: { rate: number | null; rows: ModelPriceRow[]; deepgram?: { auto: boolean; everyHours: number; at: number | null } }) {
@@ -101,16 +103,38 @@ export function ModelUsdBoard() {
           Ô trống thì dùng số của nhà{rate ? ` (tỷ giá ${new Intl.NumberFormat("vi-VN").format(Math.round(rate))} đ)` : ""}. Gõ số chỉ khi bảng sai. Không phải giá bán riêng. Token dịch tính so với một giờ Turbo.
         </p>
       </div>
-      {groups.map((group) => (
+      {groups.length > 1 && (
+        <button
+          type="button"
+          className="min-tap w-fit rounded-full border border-line px-3 text-sm"
+          onClick={() => setOpenHouses(openHouses.length >= groups.length ? [] : groups.map((group) => group.house))}
+        >
+          {openHouses.length >= groups.length ? "Thu hết" : "Mở hết"}
+        </button>
+      )}
+      {groups.map((group) => {
+        const open = openHouses.includes(group.house);
+        return (
         <section key={group.house} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line px-3 py-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-semibold">{group.house}</p>
-            {group.pulled && isPulledHouse(group.house) && (
+            <button
+              type="button"
+              className="min-tap flex min-w-0 flex-1 items-center gap-2 text-left"
+              aria-expanded={open}
+              onClick={() => setOpenHouses((current) => toggleHouse(current, group.house))}
+            >
+              <span aria-hidden className="text-xs text-muted">{open ? "▾" : "▸"}</span>
+              <span className="text-sm font-semibold">{group.house}</span>
+              <span className="text-xs text-muted">{houseHeadline(group)}</span>
+            </button>
+            {open && group.pulled && isPulledHouse(group.house) && (
               <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-3 text-sm disabled:opacity-40" onClick={() => reload(group.house as PulledHouse)}>
                 Lấy lại
               </button>
             )}
           </div>
+          {open && (
+            <>
           <p className="text-xs text-muted">
             {houseSourceLine(group)}
             {group.house === "Deepgram" && (dg.at ? ` Lần lấy gần nhất: ${new Date(dg.at).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}.` : " Chưa lấy lần nào, đang dùng giá dự phòng.")}
@@ -143,8 +167,11 @@ export function ModelUsdBoard() {
               );
             })}
           </ul>
+            </>
+          )}
         </section>
-      ))}
+        );
+      })}
       <button type="button" disabled={busy || rows.length === 0} className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => void saveAll()}>
         Lưu số đô la
       </button>
