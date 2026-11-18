@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AccentPicker } from "@/components/accent-picker";
 import { Icon } from "@/components/ui/icon";
 import { useTheme } from "@/components/ui/theme-context";
 import { DENSITY_KEY, MODE_KEY, defaultUserDensity, densityValue, pickUserDensity, type UserDensity } from "@/lib/theme/theme";
@@ -12,7 +13,7 @@ function remember(key: string, value: string) {
 }
 
 /**
- * Hai nút nhỏ ở đầu trang: sáng/tối và gọn/thoải mái.
+ * Ba nút nhỏ ở đầu trang: sáng/tối, gọn/thoải mái và màu nhấn tự chọn.
  * Trạng thái nằm ở <html> (data-theme, data-density) do script đầu trang đặt, nên không nháy màu.
  * Lựa chọn của khách luôn thắng mặc định của Admin, nên cả hai nút luôn hiện.
  */
@@ -58,6 +59,7 @@ export function DisplayToggle() {
       <button type="button" className="notice-bell-btn is-glyph" aria-label={densityLabel} title={densityLabel} onClick={flipDensity}>
         {density === "compact" ? <Icon slot="ui.compact" /> : <Icon slot="ui.roomy" />}
       </button>
+      <AccentPicker />
     </div>
   );
 }

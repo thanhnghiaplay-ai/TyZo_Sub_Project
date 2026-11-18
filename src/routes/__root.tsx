@@ -11,6 +11,7 @@ import { getLiveTheme } from "@/lib/theme-room";
 import { getServiceStatus } from "@/lib/service-status-room";
 import { defaultServiceStatus } from "@/lib/service-status";
 import { SiteGate } from "@/components/site-maintenance";
+import { accentScript } from "@/lib/theme/accent";
 import { THEME_DEFAULT, densityScript, fontHref, modeScript, parseTheme, themeToCss } from "@/lib/theme/theme";
 import appCss from "../styles.css?url";
 
@@ -38,7 +39,7 @@ export const Route = createRootRoute({
       { title: theme.brandName || APP_NAME },
     ],
     styles: [{ children: themeToCss(theme) }],
-    scripts: [{ children: modeScript(theme.mode) }, { children: densityScript(theme.density) }],
+    scripts: [{ children: modeScript(theme.mode) }, { children: densityScript(theme.density) }, { children: accentScript(theme.dark.bg, theme.light.bg) }],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "stylesheet", href: appCss },

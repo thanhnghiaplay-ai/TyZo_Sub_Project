@@ -2732,3 +2732,14 @@ html[data-motion="off"] :where(*)::after {
     padding-bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Màu nhấn khách tự chọn (accent.ts): thắng màu Admin đặt chung, theo từng chế độ sáng/tối. */
+html[data-accent="user"][data-theme="dark"] {
+  --color-accent: var(--accent-dark);
+  --color-ink: var(--ink-dark);
+}
+
+html[data-accent="user"][data-theme="light"] {
+  --color-accent: var(--accent-light);
+  --color-ink: var(--ink-light);
+}
