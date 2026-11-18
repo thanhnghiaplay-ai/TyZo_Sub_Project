@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.5.0",
     time: "18/11/2026",
     area: "khac",
+    text: "Sắp xếp lại giao diện, bước A2: thanh nút dưới nổi bo tròn kiểu có nút giữa nhô lên (Chủ gửi ảnh mẫu, chọn nút giữa trang khách là Tải và dịch, làm luôn cho Admin). Dùng chung một thành phần (components/floating-dock.tsx), chỉ hiện dưới 1024 px. Trang khách: Trang chủ, Trực tiếp, [Tải và dịch], Ví, Menu; nút giữa chưa chọn video thì mở hộp chọn tệp, có video thì bắt đầu dịch, đang chạy/mất mạng/bảo trì hoặc đã có bản dịch thì mờ. Admin: Tổng quan, Việc (chấm đỏ số yêu cầu chờ), [Tìm nhanh], Dịch vụ hoặc Khách, Menu. Mục đang chọn hiện chữ nhỏ; thanh tự ẩn khi đang gõ chữ. Biểu tượng theo chỗ đặt nên Admin đổi được ở mục Giao diện. Thay thanh dưới chữ của bước 4. Không đổi chức năng, giá hay điều khoản.",
+  },
+  {
+    version: "5.5.0",
+    time: "18/11/2026",
+    area: "khac",
     text: "Sắp xếp lại giao diện trang khách, bước A1 (Chủ duyệt bản mô phỏng 18/11/2026): menu trái đổi tên và nhóm. «Key Sub» thành «Cách trả», «Nghe» thành «Thuyết minh»; bỏ nhóm «Nâng cao» một mục, «Thuật ngữ» chuyển vào nhóm «Dịch bình thường»; nhóm «Tài khoản» tách thành «Ví và gói» (Token dịch, Thuê phòng và gói, Cộng tác viên) và «Trợ giúp» (Hướng dẫn, Yêu cầu xem lại). Áp cho ba trang có menu: trang chủ, Dịch trực tiếp, Hướng dẫn. Tên gom ở lib/customer-menu.ts; hướng dẫn và tour đọc cùng tên. Không đổi id mục, chức năng, giá hay điều khoản; tìm nhanh Ctrl K vẫn gõ được tên cũ. Khách chỉ thấy khi có bản chính thức: cần ghi CHANGELOG khách khi nâng số phiên bản.",
   },
   {

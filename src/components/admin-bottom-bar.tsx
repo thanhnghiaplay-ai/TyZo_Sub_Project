@@ -1,28 +1,14 @@
 import type { AdminTab, AdminTabInfo } from "@/lib/admin-tabs";
-import { BOTTOM_LABEL, bottomTabIds } from "@/lib/admin-bottom-tabs";
-import { RailControl } from "@/components/side-rail";
+import { BOTTOM_LABEL, BOTTOM_SLOT, bottomTabIds } from "@/lib/admin-bottom-tabs";
+import { FloatingDock, type DockItem } from "@/components/floating-dock";
 
 /**
- * Thanh nút dưới cùng cho điện thoại (ẩn từ 1024 px, khi đó đã có menu ghim bên trái).
- * Ba tab hay dùng + nút «Menu» mở ngăn trượt đầy đủ. Phải nằm trong <AppShell>.
+ * Thanh dưới Admin trên điện thoại: hai tab đầu, nút giữa «Tìm» (mở tìm nhanh), tab thứ ba, Menu.
+ * Chủ: Tổng quan, Việc, [Tìm], Dịch vụ. Quản lý và Hỗ trợ: Tổng quan, Việc, [Tìm], Khách.
+ * Chấm đỏ trên «Việc» là số yêu cầu đang chờ. Phải nằm trong <AppShell>.
  */
-export function AdminBottomBar({ tabs, current, onPick }: { tabs: AdminTabInfo[]; current: AdminTab; onPick: (id: AdminTab) => void }) {
+export function AdminBottomBar({ tabs, current, waiting, onPick, onSearch }: { tabs: AdminTabInfo[]; current: AdminTab; waiting?: number; onPick: (id: AdminTab) => void; onSearch: () => void }) {
   const ids = bottomTabIds(tabs.map((tab) => tab.id));
-  const base = "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs ";
-  return (
-    <RailControl>
-      {({ open, setOpen, railId }) => (
-        <nav className="admin-bottom-bar fixed inset-x-0 bottom-0 z-30 grid border-t border-line bg-bg pb-[env(safe-area-inset-bottom)] lg:hidden" style={{ gridTemplateColumns: `repeat(${ids.length + 1}, minmax(0, 1fr))` }} aria-label="Mục chính">
-          {ids.map((id) => (
-            <button key={id} type="button" className={base + (current === id ? "font-semibold text-accent" : "text-muted")} aria-current={current === id ? "page" : undefined} onClick={() => onPick(id)}>
-              {BOTTOM_LABEL[id]}
-            </button>
-          ))}
-          <button type="button" className={base + (!ids.includes(current) || open ? "font-semibold text-accent" : "text-muted")} aria-expanded={open} aria-controls={railId} onClick={() => setOpen(!open)}>
-            Menu
-          </button>
-        </nav>
-      )}
-    </RailControl>
-  );
+  const item = (id: AdminTab): DockItem => ({ id, label: BOTTOM_LABEL[id] ?? id, slot: BOTTOM_SLOT[id] ?? "ui.options", current: current === id, badge: id === "viec" ? waiting : undefined, onPick: () => onPick(id) });
+  return <FloatingDock left={ids.slice(0, 2).map(item)} right={ids.slice(2).map(item)} center={{ label: "Tìm nhanh", slot: "act.search", onPress: onSearch }} />;
 }

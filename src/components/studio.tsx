@@ -1,4 +1,5 @@
 import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "@/lib/customer-menu";
+import { StudioDock } from "@/components/studio-dock";
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
@@ -835,6 +836,17 @@ export function Studio() {
   return (
     <AppShell className="contents">
     <SideRail label="Chức năng" items={railItems} who={{ name: me?.displayName, email: me?.primaryEmail }} />
+    <StudioDock
+      atHome={product === "sub" && hero}
+      accountOpen={product === "account"}
+      hasInput={Boolean(pickedFile) || app.url.trim().length > 0}
+      canStart={online && !normalDown && !app.running}
+      onHome={() => { setProduct("sub"); setForced(false); }}
+      onLive={() => void navigate({ to: "/dich-truc-tiep" })}
+      onWallet={() => setProduct("account")}
+      onStart={() => void app.start()}
+      onPickFile={clickPicker}
+    />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
         <div className="flex items-start justify-between gap-2">

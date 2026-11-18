@@ -2725,3 +2725,10 @@ html[data-motion="off"] :where(*)::after {
     scroll-behavior: auto;
   }
 }
+
+/* Thanh nút dưới nổi (điện thoại, máy tính bảng đứng): chừa chỗ để không che nội dung cuối trang khách. */
+@media (max-width: 1023px) {
+  .studio-shell {
+    padding-bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}

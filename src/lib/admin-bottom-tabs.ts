@@ -1,4 +1,5 @@
 import type { AdminTab } from "./admin-tabs.ts";
+import type { IconSlot } from "./theme/theme.ts";
 
 /** Nhãn ngắn cho thanh dưới trên điện thoại. */
 export const BOTTOM_LABEL: Partial<Record<AdminTab, string>> = {
@@ -6,6 +7,14 @@ export const BOTTOM_LABEL: Partial<Record<AdminTab, string>> = {
   viec: "Việc",
   "cau-hinh": "Dịch vụ",
   "tai-khoan": "Khách",
+};
+
+/** Biểu tượng (theo chỗ đặt, Admin đổi được ở mục Giao diện) cho từng tab trên thanh dưới. */
+export const BOTTOM_SLOT: Partial<Record<AdminTab, IconSlot>> = {
+  "tong-quan": "ui.chart",
+  viec: "ui.paste",
+  "cau-hinh": "ui.settings",
+  "tai-khoan": "nav.account",
 };
 
 const FIRST: AdminTab[] = ["tong-quan", "viec", "cau-hinh"];

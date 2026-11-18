@@ -19,3 +19,10 @@ test("thanh dưới: mọi tab hiện đều có nhãn ngắn, không có quyề
   }
   assert.deepEqual(bottomTabIds([]), []);
 });
+
+test("thanh dưới: mọi tab hiện đều có biểu tượng", async () => {
+  const { BOTTOM_SLOT } = await import("./admin-bottom-tabs.ts");
+  for (const role of ["chu", "quan-ly", "ho-tro"]) {
+    for (const id of bottomTabIds(tabsFor(role).map((tab) => tab.id))) assert.ok(BOTTOM_SLOT[id], id);
+  }
+});
