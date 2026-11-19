@@ -440,9 +440,6 @@ export function ThemeBoard() {
             <Field label={`Độ dày viền: ${draft.line} px`}>
               <input type="range" min={1} max={3} step={1} value={draft.line} aria-label="Độ dày viền" onChange={(event) => patch({ line: Number(event.target.value) })} />
             </Field>
-            <Field label="Hiệu ứng toàn trang (Tương lai: lưới mờ, kính mờ, hào quang)">
-              <Segmented label="Hiệu ứng" value={draft.look} onChange={(look: Look) => patch({ look })} options={LOOKS.map(([id, label]) => ({ id, label }))} />
-            </Field>
             <Field label="Kiểu nút">
               <Segmented label="Kiểu nút" value={draft.button} onChange={(button: ButtonStyle) => patch({ button })} options={BUTTON_STYLES.map(([id, label]) => ({ id, label }))} />
             </Field>
@@ -459,11 +456,11 @@ export function ThemeBoard() {
 
           <Card className={tab === "chuyen" ? undefined : "hidden"}>
             <CardHeader title="Chuyển động" icon="ui.settings" />
-            <Field label="Hiệu ứng" hint="Máy khách đang giảm chuyển động thì luôn tắt, dù chọn Bật.">
-              <Segmented label="Hiệu ứng" value={draft.motion} onChange={(motion: Motion) => patch({ motion })} options={MOTION.map(([id, label]) => ({ id, label }))} />
+            <Field label="Chuyển động" hint="Máy khách đang giảm chuyển động thì luôn tắt, dù chọn Bật.">
+              <Segmented label="Chuyển động" value={draft.motion} onChange={(motion: Motion) => patch({ motion })} options={MOTION.map(([id, label]) => ({ id, label }))} />
             </Field>
-            <Field label="Tốc độ hiệu ứng">
-              <Segmented label="Tốc độ hiệu ứng" value={draft.motionSpeed} onChange={(motionSpeed: MotionSpeed) => patch({ motionSpeed })} options={MOTION_SPEEDS.map(([id, label]) => ({ id, label }))} />
+            <Field label="Tốc độ chuyển động">
+              <Segmented label="Tốc độ chuyển động" value={draft.motionSpeed} onChange={(motionSpeed: MotionSpeed) => patch({ motionSpeed })} options={MOTION_SPEEDS.map(([id, label]) => ({ id, label }))} />
             </Field>
           </Card>
 
@@ -503,6 +500,9 @@ export function ThemeBoard() {
 
           <Card className={tab === "mau" ? undefined : "hidden"}>
             <CardHeader title="Màu sắc" icon="ui.theme" />
+            <Field label="Phong cách giao diện" hint="Tương lai: nền lưới mờ, thẻ kính mờ, vòng thả video sáng. Cổ điển: như trước đây. Khách vẫn có nút tắt hiệu ứng riêng ở đầu trang.">
+              <Segmented label="Phong cách giao diện" value={draft.look} onChange={(look: Look) => patch({ look })} options={LOOKS.map(([id, label]) => ({ id, label }))} />
+            </Field>
             <Field label="Chế độ khi khách mở trang">
               <Segmented
                 label="Chế độ"

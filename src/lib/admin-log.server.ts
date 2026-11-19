@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.6.0",
     time: "18/11/2026",
     area: "khac",
+    text: "Admin → Giao diện: Chủ không tìm thấy mục «Hiệu ứng». Nguyên nhân: mục nằm trong thẻ «Hình khối» với tên dài, và thẻ «Chuyển động» có mục khác cũng tên «Hiệu ứng». Đã chuyển lên ĐẦU thẻ «Màu sắc» (cạnh các bộ màu) với tên «Phong cách giao diện» (Tương lai hoặc Cổ điển, kèm chú thích); mục Bật/Tắt trong thẻ «Chuyển động» đổi tên thành «Chuyển động» và «Tốc độ chuyển động» để không trùng. Không đổi chức năng.",
+  },
+  {
+    version: "5.6.0",
+    time: "18/11/2026",
+    area: "khac",
     text: "Giao diện Tương lai B7 (Chủ chốt: để mặc định màu vàng, làm chip tô màu): (1) giao diện Tương lai nay là MẶC ĐỊNH (THEME_DEFAULT.look = future), bảng màu mặc định vẫn là Vàng; theme đã lưu mà chưa có trường look cũng nhận Tương lai; Admin vẫn đổi lại Cổ điển ở Admin → Giao diện → Hiệu ứng, khách vẫn có nút tắt hiệu ứng. (2) Bấm bộ màu ở Admin → Giao diện nay chỉ đổi màu, không đổi hiệu ứng (trước đây bộ Tương lai bật Tương lai và bộ khác bật Cổ điển). (3) Giá trị trên chip chọn nhanh (Tiếng gốc, Thể loại, Trả theo lượt, Đã có key) tô màu nhấn trộn 70% với màu chữ để đọc rõ cả khi khách chọn màu nhấn tối (đo: vàng 10,5:1, xanh tối 4,9:1). Không đổi chức năng, giá hay điều khoản.",
   },
   {
