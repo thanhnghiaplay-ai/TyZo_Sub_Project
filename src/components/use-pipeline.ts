@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
 import { claimTrialDevice, spendTrial } from "@/lib/room-account";
 import { getServiceStatus } from "@/lib/service-status-room";
@@ -331,6 +332,7 @@ export function usePipeline() {
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
   const [genre, setGenre] = useState("auto");
+  const [pendingGenre, setPendingGenre] = useState<string | null>(null);
   /** Kèm bộ thuật ngữ nền của ngôn ngữ nguồn. Mặc định bật. */
   const [baseGloss, setBaseGloss] = useState(true);
   const [threads, setThreads] = useState(3);
@@ -413,6 +415,19 @@ export function usePipeline() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const publishTimer = useRef(0);
 
+  /** Chọn thể loại. Thể loại 18+ chỉ áp dụng sau khi khách xác nhận trên 18 tuổi trong hộp thoại của app. */
+  const pickGenre = useCallback((value: string) => {
+    if (needsAgeConfirm(value)) setPendingGenre(value);
+    else setGenre(value);
+  }, []);
+  const confirmGenre = useCallback(() => {
+    setPendingGenre((value) => {
+      if (value) setGenre(value);
+      return null;
+    });
+  }, []);
+  const cancelGenre = useCallback(() => setPendingGenre(null), []);
+
   useEffect(() => {
     setKey(readStore(PROVIDERS.groq.clientStore));
     setHouseKeys(Object.fromEntries(PROVIDER_IDS.filter((id) => id !== "groq").map((id) => [id, readStore(PROVIDERS[id].clientStore)])));
@@ -421,7 +436,8 @@ export function usePipeline() {
     const src = readStore("gsrc");
     setSource(src === "zh" || src === "ko" || src === "ja" || src === "en" ? src : "zh");
     const g = readStore("ggenre");
-    if (g) setGenre(g);
+    // Thể loại 18+ không tự khôi phục: khách phải xác nhận lại trên 18 tuổi mỗi lần chọn.
+    if (g) setGenre(needsAgeConfirm(g) ? "auto" : g);
     setBaseGloss(readStore("gbase") !== "0");
     const par = Number(readStore("gpar"));
     if ([1, 3, 4, 6, 8].includes(par)) setThreads(par);
@@ -2532,6 +2548,10 @@ export function usePipeline() {
     setSource,
     genre,
     setGenre,
+    pendingGenre,
+    pickGenre,
+    confirmGenre,
+    cancelGenre,
     baseGloss,
     setBaseGloss,
     threads,

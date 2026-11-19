@@ -130,6 +130,7 @@ describe("bộ thuật ngữ nền theo ngôn ngữ nguồn", () => {
     assert.equal(usesBaseGlossary("action"), true);
     assert.equal(usesBaseGlossary("Costume"), true);
     assert.equal(usesBaseGlossary("auto"), false);
+    for (const id of ["adult", "softcore", "sex"]) assert.equal(usesBaseGlossary(id), false, id);
     assert.equal(usesBaseGlossary(""), false);
     assert.equal(usesBaseGlossary("adult"), false);
     assert.equal(usesBaseGlossary("sex"), false);

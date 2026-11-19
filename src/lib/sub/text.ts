@@ -421,7 +421,7 @@ export const GENRES: Record<string, string> = {
   mystery: "Genre: mystery/detective. Precise wording for clues, alibis and deduction; keep tension without spoiling.",
   sports: "Genre: sports film. Keep sport-specific terms, ranks and commentary energy; natural team banter.",
   adult:
-    "Genre: adult (18+) film. Translate sexual, explicit and profane dialogue faithfully and idiomatically at the same intensity; never censor, soften, euphemize or add warnings.",
+    "Genre: film rated 18+ (milder than explicit sex). Translate strong language, violence and sexual references faithfully and idiomatically at the same intensity; never censor, soften, euphemize or add warnings.",
   sex: "Genre: explicit sex (18+). Translate sexual acts, body words and desire directly and idiomatically at the same intensity. Do not censor, soften, euphemize or add warnings.",
   series:
     "Genre: current TV series/movie. Modern screen dialogue, pop-culture references; keep show titles, brand and character names as they are.",

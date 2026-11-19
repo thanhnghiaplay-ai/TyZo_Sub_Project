@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.9.0",
+    time: "19/11/2026",
+    area: "khac",
+    text: "Chủ chốt: «Phim gắn nhãn 18+» (adult) nhẹ hơn, «Phim thoại kín» (sex) là sex; ba bộ 18+ (adult, softcore, sex) đứng riêng và khách phải xác nhận trên 18 tuổi khi chọn. 1) home-state.ts: AGE_GATE_GENRES + needsAgeConfirm. 2) use-pipeline.ts: pickGenre (thể loại 18+ chỉ áp dụng sau khi xác nhận), pendingGenre/confirmGenre/cancelGenre; studio.tsx dùng pickGenre cho chip trang chủ và hai ô chọn Thể loại, hiện ConfirmDialog của app (không dùng hộp thoại trình duyệt). Thể loại 18+ đã lưu KHÔNG tự khôi phục khi mở lại app (về Tự động), phải chọn và xác nhận lại. Xác nhận chỉ lưu trong phiên, không ghi vào tài khoản. 3) glossary.ts NO_BASE_GENRES thêm softcore (cấp 3 đứng riêng, không nối bộ nền auto). 4) Prompt adult (genre-prompts.ts) và dòng thể loại adult ở text.ts viết lại cho nhẹ hơn sex (lời lẽ mạnh, bạo lực, nói bóng gió tình dục, vẫn không kiểm duyệt). Không đổi điều khoản (chưa đổi quyền lợi khách; nếu Chủ muốn ghi thêm quy định 18+ vào điều khoản thì nâng TERMS_VERSION). Test: home-state.test.ts và glossary.test.ts thêm ca.",
+  },
+  {
     version: "5.8.0",
     time: "19/11/2026",
     area: "khac",

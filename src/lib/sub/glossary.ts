@@ -101,8 +101,8 @@ export function clearGlossaryCache() {
   cache.clear();
 }
 
-/** Thể loại không bao giờ kèm bộ nền: bộ tự động và hai bộ 18+, mỗi bộ đứng riêng. */
-const NO_BASE_GENRES = new Set(["auto", "adult", "sex"]);
+/** Thể loại không bao giờ kèm bộ nền: bộ tự động và ba bộ 18+ (18+, cấp 3, thoại kín), mỗi bộ đứng riêng. */
+const NO_BASE_GENRES = new Set(["auto", "adult", "softcore", "sex"]);
 
 /** Thể loại này có được kèm bộ nền (bộ `auto`) của ngôn ngữ nguồn hay không. */
 export function usesBaseGlossary(genre: string): boolean {

@@ -4,7 +4,7 @@ Lập ngày 19/11/2026, nhánh `work`. File này là kế hoạch làm từng b�
 
 ## Quy tắc bắt buộc (từ Chủ và từ dự án)
 - Làm trên nhánh `work`, từng bước một, đẩy lên `work` sau mỗi bước.
-- Mỗi bước: sửa code, `npm run typecheck`, `npx eslint <file đã sửa>` (hoặc `npm run lint`, 0 lỗi), `npm test` (pass hết; hiện 198 + 1089). Test mới phải thêm vào danh sách trong script `test` ở `package.json` nếu là file `src/**/*.test.ts` (script liệt kê từng file).
+- Mỗi bước: sửa code, `npm run typecheck`, `npx eslint <file đã sửa>` (hoặc `npm run lint`, 0 lỗi), `npm test` (pass hết; hiện 198 + 1090). Test mới phải thêm vào danh sách trong script `test` ở `package.json` nếu là file `src/**/*.test.ts` (script liệt kê từng file).
 - Khi đổi hành vi khách thấy: nâng `APP_VERSION` (`src/lib/app-version.ts`) + `CHANGELOG` (chữ cho khách, không từ nội bộ) + `ADMIN_LOG`.
 - KHÔNG dùng hộp thoại mặc định của trình duyệt (`alert`, `confirm`, `prompt`). Mọi thông báo và xác nhận dùng hộp thoại của app (`ConfirmDialog`, `pushToast`). Có test chặn: `src/lib/no-native-dialog.test.ts`.
 - Màu chỉ dùng biến theme (`--color-accent`, ...), không mã màu cứng.
@@ -32,7 +32,7 @@ Lập ngày 19/11/2026, nhánh `work`. File này là kế hoạch làm từng b�
 - Test `src/lib/sub/genre-prompts.test.ts` (9 ca, đã thêm vào script `test`): mọi thể loại trong ô chọn có prompt riêng (không rơi dự phòng), độ dài ≤ 1200, nhãn khớp ô chọn, thể loại lạ rơi dự phòng, thể loại 18+ có dặn không kiểm duyệt/làm nhẹ, cổ trang dặn `ta/ngươi`, `glossaryPair` nhận mọi khóa.
 - Nâng `APP_VERSION` 5.8.0, `CHANGELOG` (mỗi dòng ≤ 100 ký tự, có test), `ADMIN_LOG`. Kết quả: typecheck sạch, eslint 0 lỗi, `npm test` 198 + 1089 pass.
 CHƯA CÓ (đúng phạm vi A1): chưa có chỗ nào GỌI `genrePrompt(...).polish`; đó là việc của A2 (`polishBatch`). Thể loại mới CHƯA có file thuật ngữ trong `data/glossaries` nên bộ thuật ngữ của chúng rỗng (việc B1).
-CHỜ CHỦ CHỐT: `softcore` (Phim cấp 3) hiện CÓ nối bộ nền `auto` như thể loại thường, vì `NO_BASE_GENRES` (`src/lib/sub/glossary.ts`) chỉ gồm `auto`, `adult`, `sex`. Nếu Chủ muốn cấp 3 đứng riêng như hai bộ 18+, thêm `softcore` vào `NO_BASE_GENRES`. Chưa đổi vì chưa hỏi.
+CẬP NHẬT v5.9.0 (Chủ chốt sau A1): «Phim gắn nhãn 18+» (`adult`) NHẸ hơn, «Phim thoại kín» (`sex`) là sex; cả ba bộ 18+ (`adult`, `softcore`, `sex`) ĐỨNG RIÊNG (đã thêm `softcore` vào `NO_BASE_GENRES`) và khách phải XÁC NHẬN TRÊN 18 TUỔI khi chọn (`needsAgeConfirm` ở `home-state.ts`, `pickGenre` ở `use-pipeline.ts`, `ConfirmDialog` ở `studio.tsx`). Thể loại 18+ đã lưu không tự khôi phục. Khi làm A2/A3 mà thấy cần kiểm tuổi lần nữa trước khi trau chuốt bản 18+: hỏi Chủ, đừng tự thêm. Điều khoản chưa đổi.
 VIỆC TIẾP THEO: A2 (`polishBatch`). Dùng `genrePrompt(genre).polish` nối thêm vào lệnh trau chuốt, KHÔNG thay lệnh JSON gốc.
 
 ## Hiện trạng đã khảo sát (để khỏi đọc lại)

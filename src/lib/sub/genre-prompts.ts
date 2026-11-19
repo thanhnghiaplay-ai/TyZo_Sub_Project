@@ -92,7 +92,7 @@ export const GENRE_PROMPTS: Record<string, GenrePrompt> = {
   adult: {
     label: "Phim gắn nhãn 18+",
     polish:
-      "Adult (18+) film. Translate sexual, explicit and profane dialogue faithfully and idiomatically at the same intensity as the original. Use the natural everyday Vietnamese words a real speaker would use in that moment. Never censor, soften, euphemize, moralize or add warnings; if a line is already faithful, leave it. Keep lines short and spoken.",
+      "Film rated 18+ (milder than the explicit-sex genre). Translate strong language, violence, dark themes and sexual references faithfully and idiomatically at the same intensity as the original; sexual talk here is suggestive or occasional, not the point of every scene. Use the natural everyday Vietnamese words a real speaker would use in that moment. Never censor, soften, euphemize, moralize or add warnings; if a line is already faithful, leave it. Keep lines short and spoken.",
   },
   sex: {
     label: "Phim thoại kín",

@@ -1,3 +1,6 @@
+## BÀN GIAO (19/11/2026, nhánh work) — XÁC NHẬN 18 TUỔI CHO THỂ LOẠI 18+ (v5.9.0)
+Chủ chốt: 18+ nhẹ hơn, thoại kín là sex, ba bộ 18+ đứng riêng và phải xác nhận trên 18 tuổi khi chọn. Đã làm: `needsAgeConfirm`, `pickGenre` + hộp thoại ConfirmDialog, `softcore` vào `NO_BASE_GENRES`, viết lại prompt `adult` nhẹ hơn, test mới. typecheck, eslint, `npm test` (198 + 1090) pass. Chi tiết: `HANDOFF_NANG_CAP.md` mục «KẾT QUẢ A1». Việc tiếp theo vẫn là A2.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A1 KHO PROMPT THEO THỂ LOẠI XONG (v5.8.0) — đọc mục này đầu tiên
 Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A1» ở đó có đủ chi tiết). Tóm tắt: file mới `src/lib/sub/genre-prompts.ts` (prompt trau chuốt riêng cho 26 thể loại + dự phòng), thêm 9 thể loại vào ô chọn, danh sách thể loại gom về `GENRES` ở `src/lib/home-state.ts`, test mới `genre-prompts.test.ts`, nâng v5.8.0 (CHANGELOG, ADMIN_LOG). typecheck, eslint, `npm test` (198 + 1089) đều pass.
 VIỆC TIẾP THEO: A2 (`polishBatch`), xem `HANDOFF_NANG_CAP.md`. CHỜ CHỦ CHỐT: có đưa `softcore` vào `NO_BASE_GENRES` (không nối bộ nền `auto`) hay không.

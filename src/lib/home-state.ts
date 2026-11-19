@@ -30,6 +30,13 @@ export const GENRES: [string, string][] = [
   ["documentary", "Tài liệu / phóng sự"],
 ];
 
+/** Thể loại 18+: mỗi bộ đứng riêng, và khách phải xác nhận trên 18 tuổi mới được chọn. */
+export const AGE_GATE_GENRES: ReadonlySet<string> = new Set(["adult", "softcore", "sex"]);
+
+export function needsAgeConfirm(genre: string): boolean {
+  return AGE_GATE_GENRES.has((genre || "").trim().toLowerCase());
+}
+
 export type HomeInput = {
   hasSegs: boolean;
   running: boolean;

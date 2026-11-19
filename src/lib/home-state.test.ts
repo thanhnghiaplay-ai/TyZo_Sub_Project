@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isTypingTarget, pastedLink, showHomeHero } from "./home-state.ts";
+import { isTypingTarget, needsAgeConfirm, pastedLink, showHomeHero } from "./home-state.ts";
 
 const idle = { hasSegs: false, running: false, analyzing: false, reviewHold: false, forced: false };
 
@@ -34,4 +34,9 @@ test("isTypingTarget nhận ô gõ chữ", () => {
   assert.equal(isTypingTarget({ tagName: "DIV", isContentEditable: true } as unknown as EventTarget), true);
   assert.equal(isTypingTarget({ tagName: "BUTTON" } as unknown as EventTarget), false);
   assert.equal(isTypingTarget(null), false);
+});
+
+test("chỉ ba thể loại 18+ phải xác nhận trên 18 tuổi", () => {
+  for (const id of ["adult", "softcore", "sex", " SEX "]) assert.equal(needsAgeConfirm(id), true, id);
+  for (const id of ["auto", "action", "romance", "wuxia", "", "khong-co"]) assert.equal(needsAgeConfirm(id), false, id);
 });

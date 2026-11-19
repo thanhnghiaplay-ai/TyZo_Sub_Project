@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.8.0";
+export const APP_VERSION = "5.9.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.9.0",
+    time: "19/11/2026",
+    title: "Thể loại 18+ phải xác nhận đủ 18 tuổi mới chọn được.",
+    points: [
+      "Phim gắn nhãn 18+, Phim cấp 3 và Phim thoại kín hiện hộp xác nhận trên 18 tuổi khi chọn.",
+      "Phim 18+ dịch nhẹ hơn Phim thoại kín; mỗi loại có bộ thuật ngữ riêng, không lẫn.",
+    ],
+  },
   {
     version: "5.8.0",
     time: "19/11/2026",

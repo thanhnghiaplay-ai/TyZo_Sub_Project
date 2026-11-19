@@ -47,6 +47,7 @@ import { MoneyBalance, MoneyCard, MoneyEstimate, useMoney } from "@/components/m
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
+import { ConfirmDialog } from "@/components/confirm-code";
 import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
 import { tourSeen } from "@/components/tour-seen";
@@ -841,6 +842,14 @@ export function Studio() {
 
   return (
     <AppShell className="contents">
+    <ConfirmDialog
+      open={app.pendingGenre !== null}
+      title="Xác nhận trên 18 tuổi"
+      message={"Thể loại này có thoại người lớn. Bạn xác nhận mình đủ 18 tuổi trở lên và muốn dùng thể loại này?"}
+      confirmLabel="Tôi trên 18 tuổi"
+      onConfirm={app.confirmGenre}
+      onCancel={app.cancelGenre}
+    />
     <SideRail label="Chức năng" items={railItems} who={{ name: me?.displayName, email: me?.primaryEmail }} />
     <StudioDock
       atHome={product === "sub" && hero}
@@ -986,7 +995,7 @@ export function Studio() {
           source={app.source}
           onSource={app.setSource}
           genre={app.genre}
-          onGenre={app.setGenre}
+          onGenre={app.pickGenre}
           payMode={runDoor.ready && runDoor.open ? (payByRoom ? "turn" : "key") : null}
           onTogglePay={togglePay}
           keyReady={app.key.trim().length > 0}
@@ -1280,7 +1289,7 @@ export function Studio() {
           </Select>
         </div>
 
-        <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
+        <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
           {GENRES.map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -1652,7 +1661,7 @@ export function Studio() {
 
       <section id="tool-thuatngu" role="region" aria-labelledby="tool-tab-thuatngu" hidden={toolTab !== "thuatngu"} className="grid gap-3 p-4">
         <div data-tour="glossary-genre">
-          <Select label="Thể loại" value={app.genre} onChange={app.setGenre}>
+          <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
             {GENRES.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
