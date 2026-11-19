@@ -193,5 +193,180 @@
     "source": "slightly",
     "target": "hơi, một chút",
     "note": "Hán Việt: sảo vi"
+  },
+  {
+    "source": "by the way",
+    "target": "nhân tiện",
+    "reviewed": false
+  },
+  {
+    "source": "in fact",
+    "target": "thực ra",
+    "reviewed": false
+  },
+  {
+    "source": "you know",
+    "target": "bạn biết đấy",
+    "reviewed": false
+  },
+  {
+    "source": "I mean",
+    "target": "ý tôi là",
+    "reviewed": false
+  },
+  {
+    "source": "hold on",
+    "target": "khoan đã",
+    "reviewed": false
+  },
+  {
+    "source": "wait a second",
+    "target": "đợi một chút",
+    "reviewed": false
+  },
+  {
+    "source": "come on",
+    "target": "thôi nào",
+    "reviewed": false
+  },
+  {
+    "source": "no way",
+    "target": "không đời nào",
+    "reviewed": false
+  },
+  {
+    "source": "for real",
+    "target": "thật à",
+    "reviewed": false
+  },
+  {
+    "source": "seriously",
+    "target": "nghiêm túc đấy",
+    "reviewed": false
+  },
+  {
+    "source": "whatever",
+    "target": "sao cũng được",
+    "reviewed": false
+  },
+  {
+    "source": "never mind",
+    "target": "không sao",
+    "reviewed": false
+  },
+  {
+    "source": "as I said",
+    "target": "như tôi đã nói",
+    "reviewed": false
+  },
+  {
+    "source": "to be honest",
+    "target": "thành thật mà nói",
+    "reviewed": false
+  },
+  {
+    "source": "in other words",
+    "target": "nói cách khác",
+    "reviewed": false
+  },
+  {
+    "source": "for example",
+    "target": "ví dụ",
+    "reviewed": false
+  },
+  {
+    "source": "that is to say",
+    "target": "nghĩa là",
+    "reviewed": false
+  },
+  {
+    "source": "on the other hand",
+    "target": "mặt khác",
+    "reviewed": false
+  },
+  {
+    "source": "at the same time",
+    "target": "đồng thời",
+    "reviewed": false
+  },
+  {
+    "source": "all of a sudden",
+    "target": "bất thình lình",
+    "reviewed": false
+  },
+  {
+    "source": "as a result",
+    "target": "kết quả là",
+    "reviewed": false
+  },
+  {
+    "source": "because of that",
+    "target": "vì vậy",
+    "reviewed": false
+  },
+  {
+    "source": "even though",
+    "target": "dù cho",
+    "reviewed": false
+  },
+  {
+    "source": "as long as",
+    "target": "miễn là",
+    "reviewed": false
+  },
+  {
+    "source": "in case",
+    "target": "phòng khi",
+    "reviewed": false
+  },
+  {
+    "source": "just in case",
+    "target": "đề phòng",
+    "reviewed": false
+  },
+  {
+    "source": "by the time",
+    "target": "đến lúc",
+    "reviewed": false
+  },
+  {
+    "source": "no matter what",
+    "target": "dù thế nào",
+    "reviewed": false
+  },
+  {
+    "source": "so far",
+    "target": "đến giờ",
+    "reviewed": false
+  },
+  {
+    "source": "from now on",
+    "target": "từ giờ trở đi",
+    "reviewed": false
+  },
+  {
+    "source": "once in a while",
+    "target": "thỉnh thoảng",
+    "reviewed": false
+  },
+  {
+    "source": "every now and then",
+    "target": "thỉnh thoảng",
+    "reviewed": false
+  },
+  {
+    "source": "pretty much",
+    "target": "gần như",
+    "reviewed": false
+  },
+  {
+    "source": "kind of",
+    "target": "kiểu như",
+    "reviewed": false
+  },
+  {
+    "source": "sort of",
+    "target": "kiểu như",
+    "reviewed": false
   }
 ]

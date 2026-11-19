@@ -211,5 +211,180 @@
     "source": "divorce",
     "target": "ly hôn",
     "reviewed": false
+  },
+  {
+    "source": "stepbrother",
+    "target": "anh trai kế",
+    "reviewed": false
+  },
+  {
+    "source": "stepsister",
+    "target": "chị gái kế",
+    "reviewed": false
+  },
+  {
+    "source": "half-brother",
+    "target": "anh em cùng cha khác mẹ",
+    "reviewed": false
+  },
+  {
+    "source": "half-sister",
+    "target": "chị em cùng cha khác mẹ",
+    "reviewed": false
+  },
+  {
+    "source": "godparent",
+    "target": "cha mẹ đỡ đầu",
+    "reviewed": false
+  },
+  {
+    "source": "godchild",
+    "target": "con đỡ đầu",
+    "reviewed": false
+  },
+  {
+    "source": "godson",
+    "target": "con trai đỡ đầu",
+    "reviewed": false
+  },
+  {
+    "source": "goddaughter",
+    "target": "con gái đỡ đầu",
+    "reviewed": false
+  },
+  {
+    "source": "stepson",
+    "target": "con trai kế",
+    "reviewed": false
+  },
+  {
+    "source": "stepdaughter",
+    "target": "con gái kế",
+    "reviewed": false
+  },
+  {
+    "source": "family business",
+    "target": "doanh nghiệp gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "sibling rivalry",
+    "target": "tranh chấp giữa anh chị em",
+    "reviewed": false
+  },
+  {
+    "source": "empty nest",
+    "target": "tổ ấm trống",
+    "reviewed": false
+  },
+  {
+    "source": "family gathering",
+    "target": "họp mặt gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "last will",
+    "target": "di chúc",
+    "reviewed": false
+  },
+  {
+    "source": "estate",
+    "target": "di sản",
+    "reviewed": false
+  },
+  {
+    "source": "trust fund",
+    "target": "quỹ ủy thác",
+    "reviewed": false
+  },
+  {
+    "source": "family feud",
+    "target": "mâu thuẫn gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "blood relative",
+    "target": "người thân ruột thịt",
+    "reviewed": false
+  },
+  {
+    "source": "extended family",
+    "target": "đại gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "nuclear family",
+    "target": "gia đình hạt nhân",
+    "reviewed": false
+  },
+  {
+    "source": "single mom",
+    "target": "mẹ đơn thân",
+    "reviewed": false
+  },
+  {
+    "source": "single dad",
+    "target": "bố đơn thân",
+    "reviewed": false
+  },
+  {
+    "source": "blended family",
+    "target": "gia đình hỗn hợp",
+    "reviewed": false
+  },
+  {
+    "source": "family portrait",
+    "target": "ảnh gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family tradition",
+    "target": "truyền thống gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family heirloom",
+    "target": "gia bảo",
+    "reviewed": false
+  },
+  {
+    "source": "family curse",
+    "target": "lời nguyền gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family doctor",
+    "target": "bác sĩ gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family friend",
+    "target": "bạn của gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family vacation",
+    "target": "kỳ nghỉ gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family meeting",
+    "target": "họp gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family bond",
+    "target": "sợi dây gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "parental leave",
+    "target": "nghỉ chăm con",
+    "reviewed": false
+  },
+  {
+    "source": "child care",
+    "target": "chăm sóc trẻ",
+    "reviewed": false
   }
 ]

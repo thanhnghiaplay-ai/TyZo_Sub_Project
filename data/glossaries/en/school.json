@@ -215,5 +215,180 @@
     "source": "student council",
     "target": "hội học sinh",
     "reviewed": false
+  },
+  {
+    "source": "essay",
+    "target": "bài luận",
+    "reviewed": false
+  },
+  {
+    "source": "thesis",
+    "target": "luận văn",
+    "reviewed": false
+  },
+  {
+    "source": "dissertation",
+    "target": "luận án",
+    "reviewed": false
+  },
+  {
+    "source": "quiz",
+    "target": "bài kiểm tra ngắn",
+    "reviewed": false
+  },
+  {
+    "source": "dean",
+    "target": "trưởng khoa",
+    "reviewed": false
+  },
+  {
+    "source": "tenure",
+    "target": "biên chế",
+    "reviewed": false
+  },
+  {
+    "source": "extracurricular",
+    "target": "hoạt động ngoại khóa",
+    "reviewed": false
+  },
+  {
+    "source": "club activity",
+    "target": "hoạt động câu lạc bộ",
+    "reviewed": false
+  },
+  {
+    "source": "student ID",
+    "target": "thẻ sinh viên",
+    "reviewed": false
+  },
+  {
+    "source": "library card",
+    "target": "thẻ thư viện",
+    "reviewed": false
+  },
+  {
+    "source": "school bus",
+    "target": "xe buýt trường",
+    "reviewed": false
+  },
+  {
+    "source": "school nurse",
+    "target": "y tá trường",
+    "reviewed": false
+  },
+  {
+    "source": "guidance counselor",
+    "target": "cố vấn học đường",
+    "reviewed": false
+  },
+  {
+    "source": "honor roll",
+    "target": "danh sách học sinh giỏi",
+    "reviewed": false
+  },
+  {
+    "source": "failing grade",
+    "target": "điểm trượt",
+    "reviewed": false
+  },
+  {
+    "source": "makeup exam",
+    "target": "thi lại",
+    "reviewed": false
+  },
+  {
+    "source": "study hall",
+    "target": "giờ tự học",
+    "reviewed": false
+  },
+  {
+    "source": "field trip",
+    "target": "chuyến đi thực tế",
+    "reviewed": false
+  },
+  {
+    "source": "parent-teacher conference",
+    "target": "họp phụ huynh",
+    "reviewed": false
+  },
+  {
+    "source": "school spirit",
+    "target": "tinh thần trường",
+    "reviewed": false
+  },
+  {
+    "source": "mascot",
+    "target": "linh vật trường",
+    "reviewed": false
+  },
+  {
+    "source": "pep rally",
+    "target": "cuộc hội cổ vũ",
+    "reviewed": false
+  },
+  {
+    "source": "detention hall",
+    "target": "phòng phạt",
+    "reviewed": false
+  },
+  {
+    "source": "school board",
+    "target": "ban giám hiệu",
+    "reviewed": false
+  },
+  {
+    "source": "alumni",
+    "target": "cựu học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "reunion",
+    "target": "họp lớp",
+    "reviewed": false
+  },
+  {
+    "source": "letter of recommendation",
+    "target": "thư giới thiệu",
+    "reviewed": false
+  },
+  {
+    "source": "college prep",
+    "target": "luyện thi đại học",
+    "reviewed": false
+  },
+  {
+    "source": "SAT",
+    "target": "bài thi SAT",
+    "reviewed": false
+  },
+  {
+    "source": "ACT",
+    "target": "bài thi ACT",
+    "reviewed": false
+  },
+  {
+    "source": "late assignment",
+    "target": "bài nộp muộn",
+    "reviewed": false
+  },
+  {
+    "source": "plagiarism",
+    "target": "đạo văn",
+    "reviewed": false
+  },
+  {
+    "source": "textbook",
+    "target": "sách giáo khoa",
+    "reviewed": false
+  },
+  {
+    "source": "notebook",
+    "target": "vở ghi",
+    "reviewed": false
+  },
+  {
+    "source": "backpack",
+    "target": "ba lô",
+    "reviewed": false
   }
 ]
