@@ -438,5 +438,230 @@
       "en": "Olympics"
     },
     "note": "Hán Việt: Áo vận hội"
+  },
+  {
+    "source": "体育",
+    "target": "thể thao",
+    "reviewed": false
+  },
+  {
+    "source": "运动员",
+    "target": "vận động viên",
+    "reviewed": false
+  },
+  {
+    "source": "选手",
+    "target": "tuyển thủ",
+    "reviewed": false
+  },
+  {
+    "source": "对手",
+    "target": "đối thủ",
+    "reviewed": false
+  },
+  {
+    "source": "队友",
+    "target": "đồng đội",
+    "reviewed": false
+  },
+  {
+    "source": "主场",
+    "target": "sân nhà",
+    "reviewed": false
+  },
+  {
+    "source": "客场",
+    "target": "sân khách",
+    "reviewed": false
+  },
+  {
+    "source": "开场",
+    "target": "bắt đầu trận",
+    "reviewed": false
+  },
+  {
+    "source": "中场",
+    "target": "giữa sân, nghỉ giữa trận",
+    "reviewed": false
+  },
+  {
+    "source": "终场",
+    "target": "hết trận",
+    "reviewed": false
+  },
+  {
+    "source": "上半场",
+    "target": "hiệp một",
+    "reviewed": false
+  },
+  {
+    "source": "下半场",
+    "target": "hiệp hai",
+    "reviewed": false
+  },
+  {
+    "source": "平局",
+    "target": "hòa",
+    "reviewed": false
+  },
+  {
+    "source": "加时赛",
+    "target": "hiệp phụ",
+    "reviewed": false
+  },
+  {
+    "source": "点球大战",
+    "target": "đá luân lưu",
+    "reviewed": false
+  },
+  {
+    "source": "射门",
+    "target": "sút bóng",
+    "reviewed": false
+  },
+  {
+    "source": "传球",
+    "target": "chuyền bóng",
+    "reviewed": false
+  },
+  {
+    "source": "盘带",
+    "target": "rê bóng",
+    "reviewed": false
+  },
+  {
+    "source": "抢断",
+    "target": "cướp bóng",
+    "reviewed": false
+  },
+  {
+    "source": "扑救",
+    "target": "cứu thua",
+    "reviewed": false
+  },
+  {
+    "source": "守门员",
+    "target": "thủ môn",
+    "reviewed": false
+  },
+  {
+    "source": "前锋",
+    "target": "tiền đạo",
+    "reviewed": false
+  },
+  {
+    "source": "后卫",
+    "target": "hậu vệ",
+    "reviewed": false
+  },
+  {
+    "source": "任意球",
+    "target": "đá phạt",
+    "reviewed": false
+  },
+  {
+    "source": "角球",
+    "target": "phạt góc",
+    "reviewed": false
+  },
+  {
+    "source": "投篮",
+    "target": "ném rổ",
+    "reviewed": false
+  },
+  {
+    "source": "上篮",
+    "target": "lên rổ",
+    "reviewed": false
+  },
+  {
+    "source": "盖帽",
+    "target": "chặn bóng",
+    "reviewed": false
+  },
+  {
+    "source": "抢断球",
+    "target": "cướp bóng",
+    "reviewed": false
+  },
+  {
+    "source": "暂停",
+    "target": "tạm dừng",
+    "reviewed": false
+  },
+  {
+    "source": "得分",
+    "target": "ghi điểm",
+    "reviewed": false
+  },
+  {
+    "source": "比分",
+    "target": "tỷ số",
+    "reviewed": false
+  },
+  {
+    "source": "领先",
+    "target": "dẫn trước",
+    "reviewed": false
+  },
+  {
+    "source": "反超",
+    "target": "vượt lên dẫn",
+    "reviewed": false
+  },
+  {
+    "source": "逆转",
+    "target": "lật ngược thế cờ",
+    "reviewed": false
+  },
+  {
+    "source": "发力",
+    "target": "dồn sức",
+    "reviewed": false
+  },
+  {
+    "source": "冲刺",
+    "target": "chạy nước rút",
+    "reviewed": false
+  },
+  {
+    "source": "跑步",
+    "target": "chạy bộ",
+    "reviewed": false
+  },
+  {
+    "source": "马拉松",
+    "target": "marathon",
+    "reviewed": false
+  },
+  {
+    "source": "游泳",
+    "target": "bơi lội",
+    "reviewed": false
+  },
+  {
+    "source": "金牌",
+    "target": "huy chương vàng",
+    "reviewed": false
+  },
+  {
+    "source": "银牌",
+    "target": "huy chương bạc",
+    "reviewed": false
+  },
+  {
+    "source": "铜牌",
+    "target": "huy chương đồng",
+    "reviewed": false
+  },
+  {
+    "source": "纪录",
+    "target": "kỷ lục",
+    "reviewed": false
+  },
+  {
+    "source": "退役",
+    "target": "giải nghệ",
+    "reviewed": false
   }
 ]

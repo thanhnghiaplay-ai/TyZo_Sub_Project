@@ -427,5 +427,230 @@
       "en": "legendary show"
     },
     "note": "Hán Việt: thần kịch"
+  },
+  {
+    "source": "本集",
+    "target": "tập này",
+    "reviewed": false
+  },
+  {
+    "source": "上集",
+    "target": "tập trước",
+    "reviewed": false
+  },
+  {
+    "source": "下集",
+    "target": "tập sau",
+    "reviewed": false
+  },
+  {
+    "source": "上一集",
+    "target": "tập trước",
+    "reviewed": false
+  },
+  {
+    "source": "下一集",
+    "target": "tập tiếp theo",
+    "reviewed": false
+  },
+  {
+    "source": "全剧",
+    "target": "toàn bộ bộ phim",
+    "reviewed": false
+  },
+  {
+    "source": "连续剧",
+    "target": "phim truyền hình nhiều tập",
+    "reviewed": false
+  },
+  {
+    "source": "电视剧",
+    "target": "phim truyền hình",
+    "reviewed": false
+  },
+  {
+    "source": "网剧",
+    "target": "phim mạng",
+    "reviewed": false
+  },
+  {
+    "source": "综艺",
+    "target": "chương trình giải trí",
+    "reviewed": false
+  },
+  {
+    "source": "剧集",
+    "target": "các tập phim",
+    "reviewed": false
+  },
+  {
+    "source": "集数",
+    "target": "số tập",
+    "reviewed": false
+  },
+  {
+    "source": "开播",
+    "target": "lên sóng",
+    "reviewed": false
+  },
+  {
+    "source": "收官",
+    "target": "khép lại, kết thúc",
+    "reviewed": false
+  },
+  {
+    "source": "完结",
+    "target": "hoàn kết",
+    "reviewed": false
+  },
+  {
+    "source": "剧透",
+    "target": "tiết lộ nội dung",
+    "reviewed": false
+  },
+  {
+    "source": "高能",
+    "target": "cảnh cao trào",
+    "reviewed": false
+  },
+  {
+    "source": "名场面",
+    "target": "cảnh kinh điển",
+    "reviewed": false
+  },
+  {
+    "source": "泪点",
+    "target": "điểm gây xúc động",
+    "reviewed": false
+  },
+  {
+    "source": "爽点",
+    "target": "điểm gây hưng phấn",
+    "reviewed": false
+  },
+  {
+    "source": "男一号",
+    "target": "nam chính",
+    "reviewed": false
+  },
+  {
+    "source": "女一号",
+    "target": "nữ chính",
+    "reviewed": false
+  },
+  {
+    "source": "男主角",
+    "target": "nam chính",
+    "reviewed": false
+  },
+  {
+    "source": "女主角",
+    "target": "nữ chính",
+    "reviewed": false
+  },
+  {
+    "source": "大反派",
+    "target": "phản diện chính",
+    "reviewed": false
+  },
+  {
+    "source": "演员",
+    "target": "diễn viên",
+    "reviewed": false
+  },
+  {
+    "source": "新人",
+    "target": "diễn viên mới",
+    "reviewed": false
+  },
+  {
+    "source": "老戏骨",
+    "target": "diễn viên gạo cội",
+    "reviewed": false
+  },
+  {
+    "source": "流量",
+    "target": "ngôi sao đắt khách",
+    "reviewed": false
+  },
+  {
+    "source": "选角",
+    "target": "chọn diễn viên",
+    "reviewed": false
+  },
+  {
+    "source": "制作人",
+    "target": "nhà sản xuất",
+    "reviewed": false
+  },
+  {
+    "source": "监制",
+    "target": "giám chế",
+    "reviewed": false
+  },
+  {
+    "source": "摄影",
+    "target": "quay phim",
+    "reviewed": false
+  },
+  {
+    "source": "剪辑",
+    "target": "dựng phim",
+    "reviewed": false
+  },
+  {
+    "source": "配乐",
+    "target": "nhạc nền",
+    "reviewed": false
+  },
+  {
+    "source": "插曲",
+    "target": "nhạc chèn",
+    "reviewed": false
+  },
+  {
+    "source": "主题曲",
+    "target": "nhạc chủ đề",
+    "reviewed": false
+  },
+  {
+    "source": "独家",
+    "target": "độc quyền",
+    "reviewed": false
+  },
+  {
+    "source": "会员",
+    "target": "hội viên",
+    "reviewed": false
+  },
+  {
+    "source": "弹幕",
+    "target": "bình luận bay",
+    "reviewed": false
+  },
+  {
+    "source": "二刷",
+    "target": "xem lần hai",
+    "reviewed": false
+  },
+  {
+    "source": "安利",
+    "target": "giới thiệu, quảng bá",
+    "reviewed": false
+  },
+  {
+    "source": "入坑",
+    "target": "sa hố, bắt đầu mê",
+    "reviewed": false
+  },
+  {
+    "source": "嗑CP",
+    "target": "ship cặp đôi",
+    "reviewed": false
+  },
+  {
+    "source": "爆款",
+    "target": "tác phẩm bùng nổ",
+    "reviewed": false
   }
 ]

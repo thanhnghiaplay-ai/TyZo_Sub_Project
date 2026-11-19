@@ -190,5 +190,230 @@
     "target": "tìm kiếm nổi bật",
     "note": "Cách khác: hot search, xu hướng",
     "reviewed": false
+  },
+  {
+    "source": "社会",
+    "target": "xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "民生",
+    "target": "dân sinh",
+    "reviewed": false
+  },
+  {
+    "source": "底层人民",
+    "target": "người dân tầng lớp dưới",
+    "reviewed": false
+  },
+  {
+    "source": "中产",
+    "target": "tầng lớp trung lưu",
+    "reviewed": false
+  },
+  {
+    "source": "富人",
+    "target": "người giàu",
+    "reviewed": false
+  },
+  {
+    "source": "穷人",
+    "target": "người nghèo",
+    "reviewed": false
+  },
+  {
+    "source": "打工",
+    "target": "làm thuê",
+    "reviewed": false
+  },
+  {
+    "source": "外卖员",
+    "target": "nhân viên giao đồ ăn",
+    "reviewed": false
+  },
+  {
+    "source": "快递员",
+    "target": "nhân viên giao hàng",
+    "reviewed": false
+  },
+  {
+    "source": "996",
+    "target": "làm việc 996 (9h sáng đến 9h tối, 6 ngày/tuần)",
+    "reviewed": false
+  },
+  {
+    "source": "过劳",
+    "target": "làm việc quá sức",
+    "reviewed": false
+  },
+  {
+    "source": "降薪",
+    "target": "giảm lương",
+    "reviewed": false
+  },
+  {
+    "source": "拖欠工资",
+    "target": "nợ lương",
+    "reviewed": false
+  },
+  {
+    "source": "劳动合同",
+    "target": "hợp đồng lao động",
+    "reviewed": false
+  },
+  {
+    "source": "社保",
+    "target": "bảo hiểm xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "就业",
+    "target": "việc làm",
+    "reviewed": false
+  },
+  {
+    "source": "考公",
+    "target": "thi công chức",
+    "reviewed": false
+  },
+  {
+    "source": "学区房",
+    "target": "nhà khu trường học",
+    "reviewed": false
+  },
+  {
+    "source": "买房",
+    "target": "mua nhà",
+    "reviewed": false
+  },
+  {
+    "source": "房价",
+    "target": "giá nhà",
+    "reviewed": false
+  },
+  {
+    "source": "养老",
+    "target": "dưỡng già",
+    "reviewed": false
+  },
+  {
+    "source": "空巢老人",
+    "target": "người già neo đơn",
+    "reviewed": false
+  },
+  {
+    "source": "独居",
+    "target": "sống một mình",
+    "reviewed": false
+  },
+  {
+    "source": "生育",
+    "target": "sinh đẻ",
+    "reviewed": false
+  },
+  {
+    "source": "催生",
+    "target": "giục sinh con",
+    "reviewed": false
+  },
+  {
+    "source": "育儿",
+    "target": "nuôi dạy con",
+    "reviewed": false
+  },
+  {
+    "source": "教育",
+    "target": "giáo dục",
+    "reviewed": false
+  },
+  {
+    "source": "补课",
+    "target": "học thêm",
+    "reviewed": false
+  },
+  {
+    "source": "鸡娃",
+    "target": "ép con học",
+    "reviewed": false
+  },
+  {
+    "source": "应试教育",
+    "target": "giáo dục thi cử",
+    "reviewed": false
+  },
+  {
+    "source": "网暴",
+    "target": "bạo lực mạng",
+    "reviewed": false
+  },
+  {
+    "source": "人肉搜索",
+    "target": "truy tìm thông tin cá nhân",
+    "reviewed": false
+  },
+  {
+    "source": "造谣",
+    "target": "tung tin đồn",
+    "reviewed": false
+  },
+  {
+    "source": "辟谣",
+    "target": "bác bỏ tin đồn",
+    "reviewed": false
+  },
+  {
+    "source": "炒作",
+    "target": "thổi phồng, đánh bóng",
+    "reviewed": false
+  },
+  {
+    "source": "诈骗",
+    "target": "lừa đảo",
+    "reviewed": false
+  },
+  {
+    "source": "电信诈骗",
+    "target": "lừa đảo qua điện thoại, mạng",
+    "reviewed": false
+  },
+  {
+    "source": "传销",
+    "target": "đa cấp",
+    "reviewed": false
+  },
+  {
+    "source": "腐败",
+    "target": "tham nhũng",
+    "reviewed": false
+  },
+  {
+    "source": "公平",
+    "target": "công bằng",
+    "reviewed": false
+  },
+  {
+    "source": "正义",
+    "target": "chính nghĩa",
+    "reviewed": false
+  },
+  {
+    "source": "法律",
+    "target": "pháp luật",
+    "reviewed": false
+  },
+  {
+    "source": "维护权益",
+    "target": "bảo vệ quyền lợi",
+    "reviewed": false
+  },
+  {
+    "source": "弱势群体",
+    "target": "nhóm yếu thế",
+    "reviewed": false
+  },
+  {
+    "source": "性别平等",
+    "target": "bình đẳng giới",
+    "reviewed": false
   }
 ]

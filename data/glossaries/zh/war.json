@@ -266,5 +266,230 @@
     "source": "停战",
     "target": "ngừng bắn",
     "reviewed": false
+  },
+  {
+    "source": "战争",
+    "target": "chiến tranh",
+    "reviewed": false
+  },
+  {
+    "source": "战役",
+    "target": "chiến dịch",
+    "reviewed": false
+  },
+  {
+    "source": "战斗",
+    "target": "chiến đấu",
+    "reviewed": false
+  },
+  {
+    "source": "战友",
+    "target": "đồng đội, chiến hữu",
+    "reviewed": false
+  },
+  {
+    "source": "战术",
+    "target": "chiến thuật",
+    "reviewed": false
+  },
+  {
+    "source": "战略",
+    "target": "chiến lược",
+    "reviewed": false
+  },
+  {
+    "source": "指挥部",
+    "target": "sở chỉ huy",
+    "reviewed": false
+  },
+  {
+    "source": "总攻",
+    "target": "tổng tấn công",
+    "reviewed": false
+  },
+  {
+    "source": "进攻",
+    "target": "tấn công",
+    "reviewed": false
+  },
+  {
+    "source": "突围",
+    "target": "phá vòng vây",
+    "reviewed": false
+  },
+  {
+    "source": "包围",
+    "target": "bao vây",
+    "reviewed": false
+  },
+  {
+    "source": "围剿",
+    "target": "vây quét",
+    "reviewed": false
+  },
+  {
+    "source": "增援",
+    "target": "tiếp viện",
+    "reviewed": false
+  },
+  {
+    "source": "掩护",
+    "target": "yểm trợ",
+    "reviewed": false
+  },
+  {
+    "source": "集合",
+    "target": "tập hợp",
+    "reviewed": false
+  },
+  {
+    "source": "开火",
+    "target": "nổ súng",
+    "reviewed": false
+  },
+  {
+    "source": "射击",
+    "target": "bắn",
+    "reviewed": false
+  },
+  {
+    "source": "瞄准",
+    "target": "nhắm bắn",
+    "reviewed": false
+  },
+  {
+    "source": "卧倒",
+    "target": "nằm xuống",
+    "reviewed": false
+  },
+  {
+    "source": "隐蔽",
+    "target": "ẩn nấp",
+    "reviewed": false
+  },
+  {
+    "source": "装甲车",
+    "target": "xe bọc thép",
+    "reviewed": false
+  },
+  {
+    "source": "战斗机",
+    "target": "máy bay chiến đấu",
+    "reviewed": false
+  },
+  {
+    "source": "轰炸机",
+    "target": "máy bay ném bom",
+    "reviewed": false
+  },
+  {
+    "source": "航母",
+    "target": "tàu sân bay",
+    "reviewed": false
+  },
+  {
+    "source": "潜艇",
+    "target": "tàu ngầm",
+    "reviewed": false
+  },
+  {
+    "source": "大炮",
+    "target": "đại bác",
+    "reviewed": false
+  },
+  {
+    "source": "迫击炮",
+    "target": "súng cối",
+    "reviewed": false
+  },
+  {
+    "source": "步枪",
+    "target": "súng trường",
+    "reviewed": false
+  },
+  {
+    "source": "刺刀",
+    "target": "lưỡi lê",
+    "reviewed": false
+  },
+  {
+    "source": "子弹",
+    "target": "đạn",
+    "reviewed": false
+  },
+  {
+    "source": "军营",
+    "target": "doanh trại",
+    "reviewed": false
+  },
+  {
+    "source": "军旗",
+    "target": "quân kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "军装",
+    "target": "quân phục",
+    "reviewed": false
+  },
+  {
+    "source": "勋章",
+    "target": "huân chương",
+    "reviewed": false
+  },
+  {
+    "source": "军衔",
+    "target": "quân hàm",
+    "reviewed": false
+  },
+  {
+    "source": "将军",
+    "target": "tướng quân",
+    "reviewed": false
+  },
+  {
+    "source": "参谋",
+    "target": "tham mưu",
+    "reviewed": false
+  },
+  {
+    "source": "通讯兵",
+    "target": "lính thông tin",
+    "reviewed": false
+  },
+  {
+    "source": "侦察兵",
+    "target": "lính trinh sát",
+    "reviewed": false
+  },
+  {
+    "source": "工兵",
+    "target": "công binh",
+    "reviewed": false
+  },
+  {
+    "source": "难民",
+    "target": "người tị nạn",
+    "reviewed": false
+  },
+  {
+    "source": "平民",
+    "target": "thường dân",
+    "reviewed": false
+  },
+  {
+    "source": "沦陷",
+    "target": "thất thủ",
+    "reviewed": false
+  },
+  {
+    "source": "光复",
+    "target": "giải phóng, khôi phục",
+    "reviewed": false
+  },
+  {
+    "source": "胜利",
+    "target": "chiến thắng",
+    "reviewed": false
   }
 ]
