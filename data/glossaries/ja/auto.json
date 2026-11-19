@@ -188,5 +188,165 @@
     "source": "少し",
     "target": "hơi, một chút",
     "note": "Hán Việt: sảo vi"
+  },
+  {
+    "source": "ところで",
+    "target": "nhân tiện",
+    "reviewed": false
+  },
+  {
+    "source": "つまり",
+    "target": "nghĩa là",
+    "reviewed": false
+  },
+  {
+    "source": "例えば",
+    "target": "ví dụ",
+    "reviewed": false
+  },
+  {
+    "source": "一方で",
+    "target": "mặt khác",
+    "reviewed": false
+  },
+  {
+    "source": "同時に",
+    "target": "đồng thời",
+    "reviewed": false
+  },
+  {
+    "source": "突然",
+    "target": "bất ngờ",
+    "reviewed": false
+  },
+  {
+    "source": "その結果",
+    "target": "kết quả là",
+    "reviewed": false
+  },
+  {
+    "source": "だから",
+    "target": "vì vậy",
+    "reviewed": false
+  },
+  {
+    "source": "にもかかわらず",
+    "target": "dù vậy",
+    "reviewed": false
+  },
+  {
+    "source": "念のため",
+    "target": "cho chắc",
+    "reviewed": false
+  },
+  {
+    "source": "今のところ",
+    "target": "đến giờ",
+    "reviewed": false
+  },
+  {
+    "source": "これから",
+    "target": "từ giờ trở đi",
+    "reviewed": false
+  },
+  {
+    "source": "たまに",
+    "target": "thỉnh thoảng",
+    "reviewed": false
+  },
+  {
+    "source": "ほとんど",
+    "target": "gần như",
+    "reviewed": false
+  },
+  {
+    "source": "なんか",
+    "target": "kiểu như",
+    "reviewed": false
+  },
+  {
+    "source": "正直に言うと",
+    "target": "nói thật",
+    "reviewed": false
+  },
+  {
+    "source": "言い換えれば",
+    "target": "nói cách khác",
+    "reviewed": false
+  },
+  {
+    "source": "とにかく",
+    "target": "dù sao thì",
+    "reviewed": false
+  },
+  {
+    "source": "それに",
+    "target": "hơn nữa",
+    "reviewed": false
+  },
+  {
+    "source": "むしろ",
+    "target": "ngược lại",
+    "reviewed": false
+  },
+  {
+    "source": "幸い",
+    "target": "may mà",
+    "reviewed": false
+  },
+  {
+    "source": "残念ながら",
+    "target": "tiếc là",
+    "reviewed": false
+  },
+  {
+    "source": "やっと",
+    "target": "cuối cùng cũng",
+    "reviewed": false
+  },
+  {
+    "source": "もはや",
+    "target": "giờ thì không còn",
+    "reviewed": false
+  },
+  {
+    "source": "やがて",
+    "target": "rồi sẽ",
+    "reviewed": false
+  },
+  {
+    "source": "とりあえず",
+    "target": "tạm thời",
+    "reviewed": false
+  },
+  {
+    "source": "なにしろ",
+    "target": "dù sao",
+    "reviewed": false
+  },
+  {
+    "source": "そういえば",
+    "target": "nhắc mới nhớ",
+    "reviewed": false
+  },
+  {
+    "source": "もしかして",
+    "target": "hay là",
+    "reviewed": false
+  },
+  {
+    "source": "おそらく",
+    "target": "chắc là",
+    "reviewed": false
+  },
+  {
+    "source": "絶対に",
+    "target": "tuyệt đối",
+    "reviewed": false
+  },
+  {
+    "source": "全然",
+    "target": "hoàn toàn không",
+    "reviewed": false
   }
 ]

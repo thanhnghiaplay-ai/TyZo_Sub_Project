@@ -416,5 +416,165 @@
       "en": "slightly"
     },
     "note": "Hán Việt: sảo vi"
+  },
+  {
+    "source": "不过",
+    "target": "nhưng mà",
+    "reviewed": false
+  },
+  {
+    "source": "可是",
+    "target": "nhưng",
+    "reviewed": false
+  },
+  {
+    "source": "然而",
+    "target": "tuy nhiên",
+    "reviewed": false
+  },
+  {
+    "source": "于是",
+    "target": "thế là",
+    "reviewed": false
+  },
+  {
+    "source": "因此",
+    "target": "do đó",
+    "reviewed": false
+  },
+  {
+    "source": "所以",
+    "target": "nên",
+    "reviewed": false
+  },
+  {
+    "source": "因为",
+    "target": "vì",
+    "reviewed": false
+  },
+  {
+    "source": "虽然",
+    "target": "mặc dù",
+    "reviewed": false
+  },
+  {
+    "source": "尽管",
+    "target": "dù cho",
+    "reviewed": false
+  },
+  {
+    "source": "即使",
+    "target": "ngay cả khi",
+    "reviewed": false
+  },
+  {
+    "source": "只要",
+    "target": "miễn là",
+    "reviewed": false
+  },
+  {
+    "source": "除非",
+    "target": "trừ khi",
+    "reviewed": false
+  },
+  {
+    "source": "万一",
+    "target": "lỡ như",
+    "reviewed": false
+  },
+  {
+    "source": "一旦",
+    "target": "một khi",
+    "reviewed": false
+  },
+  {
+    "source": "忽然",
+    "target": "đột nhiên",
+    "reviewed": false
+  },
+  {
+    "source": "突然",
+    "target": "bất ngờ",
+    "reviewed": false
+  },
+  {
+    "source": "幸好",
+    "target": "may mà",
+    "reviewed": false
+  },
+  {
+    "source": "可惜",
+    "target": "tiếc là",
+    "reviewed": false
+  },
+  {
+    "source": "顺便",
+    "target": "nhân tiện",
+    "reviewed": false
+  },
+  {
+    "source": "说实话",
+    "target": "nói thật",
+    "reviewed": false
+  },
+  {
+    "source": "换句话说",
+    "target": "nói cách khác",
+    "reviewed": false
+  },
+  {
+    "source": "也就是说",
+    "target": "nghĩa là",
+    "reviewed": false
+  },
+  {
+    "source": "例如",
+    "target": "ví dụ",
+    "reviewed": false
+  },
+  {
+    "source": "与此同时",
+    "target": "đồng thời",
+    "reviewed": false
+  },
+  {
+    "source": "相反",
+    "target": "ngược lại",
+    "reviewed": false
+  },
+  {
+    "source": "总而言之",
+    "target": "tóm lại",
+    "reviewed": false
+  },
+  {
+    "source": "话说回来",
+    "target": "nói lại thì",
+    "reviewed": false
+  },
+  {
+    "source": "对了",
+    "target": "à mà",
+    "reviewed": false
+  },
+  {
+    "source": "慢着",
+    "target": "khoan đã",
+    "reviewed": false
+  },
+  {
+    "source": "算了",
+    "target": "thôi vậy",
+    "reviewed": false
+  },
+  {
+    "source": "何况",
+    "target": "huống hồ",
+    "reviewed": false
+  },
+  {
+    "source": "说不定",
+    "target": "không chừng",
+    "reviewed": false
   }
 ]

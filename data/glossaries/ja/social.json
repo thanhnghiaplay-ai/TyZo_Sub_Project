@@ -198,5 +198,165 @@
     "source": "生活困窮者",
     "target": "người sống trong cảnh túng thiếu",
     "reviewed": false
+  },
+  {
+    "source": "残業",
+    "target": "làm thêm giờ",
+    "reviewed": false
+  },
+  {
+    "source": "有給",
+    "target": "nghỉ phép có lương",
+    "reviewed": false
+  },
+  {
+    "source": "最低賃金",
+    "target": "lương tối thiểu",
+    "reviewed": false
+  },
+  {
+    "source": "失業",
+    "target": "thất nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "求人",
+    "target": "tin tuyển dụng",
+    "reviewed": false
+  },
+  {
+    "source": "面接",
+    "target": "phỏng vấn",
+    "reviewed": false
+  },
+  {
+    "source": "内定",
+    "target": "nhận việc",
+    "reviewed": false
+  },
+  {
+    "source": "退職",
+    "target": "nghỉ việc",
+    "reviewed": false
+  },
+  {
+    "source": "退職金",
+    "target": "trợ cấp thôi việc",
+    "reviewed": false
+  },
+  {
+    "source": "仕送り",
+    "target": "tiền gửi về nhà",
+    "reviewed": false
+  },
+  {
+    "source": "奨学金",
+    "target": "học bổng",
+    "reviewed": false
+  },
+  {
+    "source": "借金",
+    "target": "nợ",
+    "reviewed": false
+  },
+  {
+    "source": "自己破産",
+    "target": "phá sản cá nhân",
+    "reviewed": false
+  },
+  {
+    "source": "家賃",
+    "target": "tiền thuê nhà",
+    "reviewed": false
+  },
+  {
+    "source": "敷金",
+    "target": "tiền đặt cọc",
+    "reviewed": false
+  },
+  {
+    "source": "礼金",
+    "target": "tiền lễ",
+    "reviewed": false
+  },
+  {
+    "source": "待機児童",
+    "target": "trẻ chờ chỗ nhà trẻ",
+    "reviewed": false
+  },
+  {
+    "source": "ひとり親",
+    "target": "cha mẹ đơn thân",
+    "reviewed": false
+  },
+  {
+    "source": "児童虐待",
+    "target": "ngược đãi trẻ em",
+    "reviewed": false
+  },
+  {
+    "source": "ストーカー",
+    "target": "kẻ theo dõi",
+    "reviewed": false
+  },
+  {
+    "source": "特殊詐欺",
+    "target": "lừa đảo đặc biệt",
+    "reviewed": false
+  },
+  {
+    "source": "オレオレ詐欺",
+    "target": "lừa kiểu gọi người thân",
+    "reviewed": false
+  },
+  {
+    "source": "ネットいじめ",
+    "target": "bắt nạt trên mạng",
+    "reviewed": false
+  },
+  {
+    "source": "労働組合",
+    "target": "công đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "ストライキ",
+    "target": "đình công",
+    "reviewed": false
+  },
+  {
+    "source": "寄付",
+    "target": "quyên góp",
+    "reviewed": false
+  },
+  {
+    "source": "ボランティア",
+    "target": "tình nguyện",
+    "reviewed": false
+  },
+  {
+    "source": "町内会",
+    "target": "hội khu phố",
+    "reviewed": false
+  },
+  {
+    "source": "生活費",
+    "target": "chi phí sinh hoạt",
+    "reviewed": false
+  },
+  {
+    "source": "差別",
+    "target": "phân biệt đối xử",
+    "reviewed": false
+  },
+  {
+    "source": "近所付き合い",
+    "target": "quan hệ lối xóm",
+    "reviewed": false
+  },
+  {
+    "source": "デマ",
+    "target": "tin đồn thất thiệt",
+    "reviewed": false
   }
 ]

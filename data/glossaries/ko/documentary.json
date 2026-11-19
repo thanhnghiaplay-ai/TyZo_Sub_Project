@@ -198,5 +198,165 @@
     "source": "휴먼 다큐",
     "target": "phim tài liệu nhân văn",
     "reviewed": false
+  },
+  {
+    "source": "촬영",
+    "target": "quay phim",
+    "reviewed": false
+  },
+  {
+    "source": "인터뷰",
+    "target": "phỏng vấn",
+    "reviewed": false
+  },
+  {
+    "source": "자막",
+    "target": "phụ đề",
+    "reviewed": false
+  },
+  {
+    "source": "사료",
+    "target": "sử liệu",
+    "reviewed": false
+  },
+  {
+    "source": "고문서",
+    "target": "cổ thư",
+    "reviewed": false
+  },
+  {
+    "source": "유적",
+    "target": "di tích",
+    "reviewed": false
+  },
+  {
+    "source": "발굴",
+    "target": "khai quật",
+    "reviewed": false
+  },
+  {
+    "source": "화석",
+    "target": "hóa thạch",
+    "reviewed": false
+  },
+  {
+    "source": "기후변화",
+    "target": "biến đổi khí hậu",
+    "reviewed": false
+  },
+  {
+    "source": "온난화",
+    "target": "nóng lên",
+    "reviewed": false
+  },
+  {
+    "source": "삼림 벌채",
+    "target": "chặt rừng",
+    "reviewed": false
+  },
+  {
+    "source": "해양 오염",
+    "target": "ô nhiễm biển",
+    "reviewed": false
+  },
+  {
+    "source": "철새",
+    "target": "chim di cư",
+    "reviewed": false
+  },
+  {
+    "source": "멸종",
+    "target": "tuyệt chủng",
+    "reviewed": false
+  },
+  {
+    "source": "보호구역",
+    "target": "khu bảo tồn",
+    "reviewed": false
+  },
+  {
+    "source": "국립공원",
+    "target": "vườn quốc gia",
+    "reviewed": false
+  },
+  {
+    "source": "화산",
+    "target": "núi lửa",
+    "reviewed": false
+  },
+  {
+    "source": "지진",
+    "target": "động đất",
+    "reviewed": false
+  },
+  {
+    "source": "태풍",
+    "target": "bão",
+    "reviewed": false
+  },
+  {
+    "source": "홍수",
+    "target": "lũ",
+    "reviewed": false
+  },
+  {
+    "source": "가뭄",
+    "target": "hạn",
+    "reviewed": false
+  },
+  {
+    "source": "난민",
+    "target": "người tị nạn",
+    "reviewed": false
+  },
+  {
+    "source": "원주민",
+    "target": "người bản địa",
+    "reviewed": false
+  },
+  {
+    "source": "독립",
+    "target": "độc lập",
+    "reviewed": false
+  },
+  {
+    "source": "혁명",
+    "target": "cách mạng",
+    "reviewed": false
+  },
+  {
+    "source": "왕실",
+    "target": "vương thất",
+    "reviewed": false
+  },
+  {
+    "source": "연표",
+    "target": "niên biểu",
+    "reviewed": false
+  },
+  {
+    "source": "드론 촬영",
+    "target": "quay bằng drone",
+    "reviewed": false
+  },
+  {
+    "source": "음성 해설",
+    "target": "thuyết minh",
+    "reviewed": false
+  },
+  {
+    "source": "현장 취재",
+    "target": "tác nghiệp hiện trường",
+    "reviewed": false
+  },
+  {
+    "source": "재연 드라마",
+    "target": "dựng lại thành phim",
+    "reviewed": false
+  },
+  {
+    "source": "고증",
+    "target": "khảo chứng",
+    "reviewed": false
   }
 ]

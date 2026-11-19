@@ -218,5 +218,165 @@
     "source": "勘当",
     "target": "từ mặt, đoạn tuyệt cha con",
     "reviewed": false
+  },
+  {
+    "source": "義兄",
+    "target": "anh của vợ hoặc chồng",
+    "reviewed": false
+  },
+  {
+    "source": "義姉",
+    "target": "chị của vợ hoặc chồng",
+    "reviewed": false
+  },
+  {
+    "source": "義弟",
+    "target": "em trai của vợ hoặc chồng",
+    "reviewed": false
+  },
+  {
+    "source": "義妹",
+    "target": "em gái của vợ hoặc chồng",
+    "reviewed": false
+  },
+  {
+    "source": "いとこ",
+    "target": "anh chị em họ",
+    "reviewed": false
+  },
+  {
+    "source": "ひ孫",
+    "target": "chắt",
+    "reviewed": false
+  },
+  {
+    "source": "伯父",
+    "target": "bác trai",
+    "reviewed": false
+  },
+  {
+    "source": "叔父",
+    "target": "chú",
+    "reviewed": false
+  },
+  {
+    "source": "伯母",
+    "target": "bác gái",
+    "reviewed": false
+  },
+  {
+    "source": "叔母",
+    "target": "cô hoặc thím",
+    "reviewed": false
+  },
+  {
+    "source": "継母",
+    "target": "mẹ kế",
+    "reviewed": false
+  },
+  {
+    "source": "継父",
+    "target": "bố kế",
+    "reviewed": false
+  },
+  {
+    "source": "連れ子",
+    "target": "con riêng",
+    "reviewed": false
+  },
+  {
+    "source": "再婚",
+    "target": "tái hôn",
+    "reviewed": false
+  },
+  {
+    "source": "再婚相手",
+    "target": "người tái hôn",
+    "reviewed": false
+  },
+  {
+    "source": "内縁",
+    "target": "sống chung không đăng ký",
+    "reviewed": false
+  },
+  {
+    "source": "籍を入れる",
+    "target": "nhập hộ khẩu kết hôn",
+    "reviewed": false
+  },
+  {
+    "source": "結婚届",
+    "target": "giấy đăng ký kết hôn",
+    "reviewed": false
+  },
+  {
+    "source": "離婚届",
+    "target": "đơn ly hôn",
+    "reviewed": false
+  },
+  {
+    "source": "婚約",
+    "target": "đính hôn",
+    "reviewed": false
+  },
+  {
+    "source": "結納",
+    "target": "lễ hỏi",
+    "reviewed": false
+  },
+  {
+    "source": "仲人",
+    "target": "người mai mối",
+    "reviewed": false
+  },
+  {
+    "source": "花嫁",
+    "target": "cô dâu",
+    "reviewed": false
+  },
+  {
+    "source": "花婿",
+    "target": "chú rể",
+    "reviewed": false
+  },
+  {
+    "source": "新婚旅行",
+    "target": "tuần trăng mật",
+    "reviewed": false
+  },
+  {
+    "source": "七五三",
+    "target": "lễ thất ngũ tam",
+    "reviewed": false
+  },
+  {
+    "source": "お宮参り",
+    "target": "lễ bế con ra đền",
+    "reviewed": false
+  },
+  {
+    "source": "家族会議",
+    "target": "họp gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "核家族",
+    "target": "gia đình hạt nhân",
+    "reviewed": false
+  },
+  {
+    "source": "大家族",
+    "target": "đại gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "一人暮らし",
+    "target": "sống một mình",
+    "reviewed": false
+  },
+  {
+    "source": "初孫",
+    "target": "cháu đầu",
+    "reviewed": false
   }
 ]

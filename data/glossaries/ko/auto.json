@@ -178,5 +178,165 @@
     "source": "약간",
     "target": "hơi, một chút",
     "note": "Hán Việt: sảo vi"
+  },
+  {
+    "source": "그런데",
+    "target": "nhưng mà",
+    "reviewed": false
+  },
+  {
+    "source": "그래서",
+    "target": "nên là",
+    "reviewed": false
+  },
+  {
+    "source": "그러니까",
+    "target": "nghĩa là",
+    "reviewed": false
+  },
+  {
+    "source": "말하자면",
+    "target": "nói cách khác",
+    "reviewed": false
+  },
+  {
+    "source": "예를 들어",
+    "target": "ví dụ",
+    "reviewed": false
+  },
+  {
+    "source": "한편",
+    "target": "mặt khác",
+    "reviewed": false
+  },
+  {
+    "source": "동시에",
+    "target": "đồng thời",
+    "reviewed": false
+  },
+  {
+    "source": "갑자기",
+    "target": "đột ngột",
+    "reviewed": false
+  },
+  {
+    "source": "그 결과",
+    "target": "kết quả là",
+    "reviewed": false
+  },
+  {
+    "source": "왜냐하면",
+    "target": "bởi vì",
+    "reviewed": false
+  },
+  {
+    "source": "그럼에도",
+    "target": "dù vậy",
+    "reviewed": false
+  },
+  {
+    "source": "만약을 대비해",
+    "target": "phòng khi",
+    "reviewed": false
+  },
+  {
+    "source": "지금까지",
+    "target": "đến giờ",
+    "reviewed": false
+  },
+  {
+    "source": "이제부터",
+    "target": "từ giờ",
+    "reviewed": false
+  },
+  {
+    "source": "가끔",
+    "target": "thỉnh thoảng",
+    "reviewed": false
+  },
+  {
+    "source": "거의",
+    "target": "gần như",
+    "reviewed": false
+  },
+  {
+    "source": "솔직히",
+    "target": "nói thật",
+    "reviewed": false
+  },
+  {
+    "source": "다시 말해",
+    "target": "nói lại cho rõ",
+    "reviewed": false
+  },
+  {
+    "source": "게다가",
+    "target": "hơn nữa",
+    "reviewed": false
+  },
+  {
+    "source": "오히려",
+    "target": "ngược lại",
+    "reviewed": false
+  },
+  {
+    "source": "다행히",
+    "target": "may mà",
+    "reviewed": false
+  },
+  {
+    "source": "아쉽게도",
+    "target": "tiếc là",
+    "reviewed": false
+  },
+  {
+    "source": "일단",
+    "target": "tạm thời",
+    "reviewed": false
+  },
+  {
+    "source": "그나저나",
+    "target": "nhân tiện",
+    "reviewed": false
+  },
+  {
+    "source": "혹시",
+    "target": "hay là",
+    "reviewed": false
+  },
+  {
+    "source": "아마도",
+    "target": "chắc là",
+    "reviewed": false
+  },
+  {
+    "source": "절대",
+    "target": "tuyệt đối",
+    "reviewed": false
+  },
+  {
+    "source": "전혀",
+    "target": "hoàn toàn không",
+    "reviewed": false
+  },
+  {
+    "source": "정말",
+    "target": "thật sự",
+    "reviewed": false
+  },
+  {
+    "source": "잠깐",
+    "target": "khoan",
+    "reviewed": false
+  },
+  {
+    "source": "알겠어",
+    "target": "hiểu rồi",
+    "reviewed": false
+  },
+  {
+    "source": "어쨌든간에",
+    "target": "dù thế nào đi nữa",
+    "reviewed": false
   }
 ]

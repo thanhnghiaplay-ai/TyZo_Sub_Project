@@ -1,3 +1,15 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B4.4 + B4.5 + B4.6 XONG — B4 HẾT BỘ MỎNG — đọc mục này đầu tiên
+Chủ bảo làm hết và cho soạn (duyệt nội dung) luôn. Cờ trong file vẫn `reviewed:false`: bài kiểm tra bắt mọi mục trong các bộ nháp phải để «chưa duyệt», và bộ bổ sung phải còn ít nhất 20 mục chưa duyệt. Bật thành đã duyệt thì bài kiểm tra hỏng. Chủ muốn chốt từng mục thì bấm duyệt ở Admin sau khi «Khôi phục».
+B4.4 tiếng Nhật, thêm vào file có sẵn: `ja/auto` +32 (38→70), `ja/documentary` +32 (38→70), `ja/social` +32 (40→72), `ja/family` +32 (44→76), `ja/school` +32 (44→76), `ja/war` +32 (45→77), `ja/ngontinh` +32 (49→81).
+B4.5 tiếng Hàn: `ko/auto` +32 (36→68), `ko/documentary` +32 (40→72), `ko/social` +32 (46→78).
+B4.6 tiếng Trung: `zh/adult` +32 (30→62), `zh/auto` +32 (38→70).
+Đã thêm các cặp này vào `expanded` ở test. `auto` là từ nối/cụm nói chung, không phải thể loại phim. Không nâng `APP_VERSION`.
+Chú ý khi Chủ xem lại: tiếng Nhật gia đình 義兄/義姉 là anh chị của vợ hoặc chồng (không phải anh rể theo nghĩa chồng của chị); 礼金 là tiền lễ khi thuê nhà ở Nhật; 浪人 là học lại chờ thi; chiến tranh 未亡人 là vợ góa, 植民地 dịch trung tính «thuộc địa». Tiếng Hàn 보이스피싱, 전세사기, 스토킹. Tiếng Trung phim người lớn giữ mức như bộ cũ (không thêm từ trần trụi): 炮友, 开房, 捉奸, 正宫 là cách nói suồng sã. Từ nối: 说不定 là «không chừng», 算了 là «thôi vậy».
+Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` pass (phần script và 1197 ca).
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp mục mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B4 (mở rộng bộ mỏng) đã xong. Trong `HANDOFF_NANG_CAP.md`, việc còn mở là C4: Chủ tự chạy một video tiếng Trung ngắn 3 lần để so (tắt phân tích phim / bật phân tích / bật phân tích kèm giữ chỗ thuật ngữ) rồi gửi số câu lỗi và Token. Không tự chạy C4 khi chưa có video và key. Không soạn thêm thuật ngữ nếu Chủ không chỉ định bộ mới.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B4.3c XONG: BỔ SUNG THUẬT NGỮ TIẾNG ANH (en) CHO family/school/auto — đọc mục này đầu tiên
 Thêm vào file có sẵn (giữ nguyên mục cũ): `en/family.json` +35 (41→76), `en/school.json` +35 (43→78), `en/auto.json` +35 (39→74). Mục mới `reviewed:false`; đã thêm 3 thể loại vào `expanded` (en) ở test. Thể loại `auto` là bộ từ nối/cụm phổ biến dùng chung (không phải thể loại phim). Chú ý khi duyệt: stepbrother→anh trai kế, half-brother→anh em cùng cha khác mẹ, blended family→gia đình hỗn hợp, family heirloom→gia bảo; essay→bài luận, thesis→luận văn, dean→trưởng khoa, guidance counselor→cố vấn học đường, plagiarism→đạo văn; by the way→nhân tiện, hold on→khoan đã, no way→không đời nào, to be honest→thành thật mà nói. Không nâng `APP_VERSION`.
 Kiểm: typecheck sạch, eslint 0 lỗi, `npm test` pass.

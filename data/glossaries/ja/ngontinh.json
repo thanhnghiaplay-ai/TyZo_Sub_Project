@@ -246,5 +246,165 @@
     "source": "略奪愛",
     "target": "cướp người yêu",
     "reviewed": false
+  },
+  {
+    "source": "契約恋人",
+    "target": "người yêu hợp đồng",
+    "reviewed": false
+  },
+  {
+    "source": "復縁",
+    "target": "quay lại với nhau",
+    "reviewed": false
+  },
+  {
+    "source": "社内恋愛",
+    "target": "yêu trong công ty",
+    "reviewed": false
+  },
+  {
+    "source": "年の差",
+    "target": "chênh lệch tuổi",
+    "reviewed": false
+  },
+  {
+    "source": "身分違い",
+    "target": "khác biệt thân phận",
+    "reviewed": false
+  },
+  {
+    "source": "親の反対",
+    "target": "cha mẹ phản đối",
+    "reviewed": false
+  },
+  {
+    "source": "駆け落ち",
+    "target": "bỏ trốn để yêu",
+    "reviewed": false
+  },
+  {
+    "source": "プロポーズ",
+    "target": "cầu hôn",
+    "reviewed": false
+  },
+  {
+    "source": "サプライズ",
+    "target": "bất ngờ",
+    "reviewed": false
+  },
+  {
+    "source": "デート",
+    "target": "hẹn hò",
+    "reviewed": false
+  },
+  {
+    "source": "キス",
+    "target": "hôn",
+    "reviewed": false
+  },
+  {
+    "source": "抱擁",
+    "target": "ôm",
+    "reviewed": false
+  },
+  {
+    "source": "甘える",
+    "target": "nũng nịu",
+    "reviewed": false
+  },
+  {
+    "source": "独占欲",
+    "target": "muốn chiếm hữu",
+    "reviewed": false
+  },
+  {
+    "source": "束縛",
+    "target": "kiểm soát",
+    "reviewed": false
+  },
+  {
+    "source": "照れる",
+    "target": "ngượng",
+    "reviewed": false
+  },
+  {
+    "source": "赤面",
+    "target": "đỏ mặt",
+    "reviewed": false
+  },
+  {
+    "source": "両想い",
+    "target": "yêu nhau",
+    "reviewed": false
+  },
+  {
+    "source": "再会",
+    "target": "gặp lại",
+    "reviewed": false
+  },
+  {
+    "source": "すれ違い",
+    "target": "lệch nhịp",
+    "reviewed": false
+  },
+  {
+    "source": "誤解",
+    "target": "hiểu lầm",
+    "reviewed": false
+  },
+  {
+    "source": "仲直り",
+    "target": "làm lành",
+    "reviewed": false
+  },
+  {
+    "source": "誓い",
+    "target": "lời thề",
+    "reviewed": false
+  },
+  {
+    "source": "秘密の関係",
+    "target": "quan hệ bí mật",
+    "reviewed": false
+  },
+  {
+    "source": "別居",
+    "target": "sống ly thân",
+    "reviewed": false
+  },
+  {
+    "source": "新婚生活",
+    "target": "đời sống vợ chồng mới cưới",
+    "reviewed": false
+  },
+  {
+    "source": "本命",
+    "target": "người để bụng",
+    "reviewed": false
+  },
+  {
+    "source": "お泊まり",
+    "target": "ngủ lại nhà nhau",
+    "reviewed": false
+  },
+  {
+    "source": "愛の告白",
+    "target": "tỏ tình",
+    "reviewed": false
+  },
+  {
+    "source": "指輪",
+    "target": "nhẫn",
+    "reviewed": false
+  },
+  {
+    "source": "花嫁衣装",
+    "target": "áo cưới",
+    "reviewed": false
+  },
+  {
+    "source": "家庭内別居",
+    "target": "sống chung nhà nhưng ly thân",
+    "reviewed": false
   }
 ]

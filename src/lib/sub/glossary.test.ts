@@ -201,6 +201,9 @@ describe("mục bổ sung chưa duyệt vào bộ có sẵn (B4)", () => {
   const expanded: [string, string][] = [];
   for (const genre of ["action", "crime", "mystery", "horror", "adventure", "comedy", "costume", "daily", "documentary", "family", "historical", "ngontinh", "psychological", "romance", "school", "scifi", "series", "social", "sports", "war", "wuxia", "xianxia"]) expanded.push(["zh", genre]);
   for (const genre of ["ngontinh", "wuxia", "xianxia", "war", "documentary", "social", "family", "school", "auto"]) expanded.push(["en", genre]);
+  for (const genre of ["auto", "documentary", "social", "family", "school", "war", "ngontinh"]) expanded.push(["ja", genre]);
+  for (const genre of ["auto", "documentary", "social"]) expanded.push(["ko", genre]);
+  for (const genre of ["adult", "auto"]) expanded.push(["zh", genre]);
 
   it("không trùng nguồn, mục mới đều chưa duyệt, đủ ≥ 20 mục bổ sung mỗi bộ", () => {
     for (const [lang, genre] of expanded) {

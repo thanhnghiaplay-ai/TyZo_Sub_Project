@@ -223,5 +223,165 @@
     "source": "自衛隊",
     "target": "Lực lượng Phòng vệ",
     "reviewed": false
+  },
+  {
+    "source": "弾薬",
+    "target": "đạn dược",
+    "reviewed": false
+  },
+  {
+    "source": "手榴弾",
+    "target": "lựu đạn",
+    "reviewed": false
+  },
+  {
+    "source": "戦車",
+    "target": "xe tăng",
+    "reviewed": false
+  },
+  {
+    "source": "潜水艦",
+    "target": "tàu ngầm",
+    "reviewed": false
+  },
+  {
+    "source": "空母",
+    "target": "tàu sân bay",
+    "reviewed": false
+  },
+  {
+    "source": "戦艦",
+    "target": "thiết giáp hạm",
+    "reviewed": false
+  },
+  {
+    "source": "駆逐艦",
+    "target": "khu trục hạm",
+    "reviewed": false
+  },
+  {
+    "source": "戦闘機",
+    "target": "máy bay tiêm kích",
+    "reviewed": false
+  },
+  {
+    "source": "爆撃機",
+    "target": "máy bay ném bom",
+    "reviewed": false
+  },
+  {
+    "source": "偵察",
+    "target": "trinh sát",
+    "reviewed": false
+  },
+  {
+    "source": "塹壕",
+    "target": "chiến hào",
+    "reviewed": false
+  },
+  {
+    "source": "作戦",
+    "target": "chiến dịch",
+    "reviewed": false
+  },
+  {
+    "source": "戦略",
+    "target": "chiến lược",
+    "reviewed": false
+  },
+  {
+    "source": "戦術",
+    "target": "chiến thuật",
+    "reviewed": false
+  },
+  {
+    "source": "補給",
+    "target": "tiếp tế",
+    "reviewed": false
+  },
+  {
+    "source": "兵站",
+    "target": "hậu cần",
+    "reviewed": false
+  },
+  {
+    "source": "援軍",
+    "target": "viện binh",
+    "reviewed": false
+  },
+  {
+    "source": "降伏",
+    "target": "đầu hàng",
+    "reviewed": false
+  },
+  {
+    "source": "休戦",
+    "target": "đình chiến",
+    "reviewed": false
+  },
+  {
+    "source": "講和",
+    "target": "giảng hòa",
+    "reviewed": false
+  },
+  {
+    "source": "占領",
+    "target": "chiếm đóng",
+    "reviewed": false
+  },
+  {
+    "source": "解放",
+    "target": "giải phóng",
+    "reviewed": false
+  },
+  {
+    "source": "徴兵",
+    "target": "cưỡng bách tòng quân",
+    "reviewed": false
+  },
+  {
+    "source": "志願兵",
+    "target": "lính tình nguyện",
+    "reviewed": false
+  },
+  {
+    "source": "退役",
+    "target": "giải ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "復員",
+    "target": "xuất ngũ về",
+    "reviewed": false
+  },
+  {
+    "source": "戦災",
+    "target": "nạn chiến tranh",
+    "reviewed": false
+  },
+  {
+    "source": "未亡人",
+    "target": "vợ góa",
+    "reviewed": false
+  },
+  {
+    "source": "慰霊",
+    "target": "tưởng niệm",
+    "reviewed": false
+  },
+  {
+    "source": "防空壕",
+    "target": "hầm tránh bom",
+    "reviewed": false
+  },
+  {
+    "source": "配給",
+    "target": "tem phiếu",
+    "reviewed": false
+  },
+  {
+    "source": "野戦病院",
+    "target": "bệnh viện dã chiến",
+    "reviewed": false
   }
 ]

@@ -228,5 +228,165 @@
     "source": "지연",
     "target": "quan hệ đồng hương",
     "reviewed": false
+  },
+  {
+    "source": "성과급",
+    "target": "thưởng hiệu suất",
+    "reviewed": false
+  },
+  {
+    "source": "상여금",
+    "target": "tiền thưởng",
+    "reviewed": false
+  },
+  {
+    "source": "퇴직금",
+    "target": "trợ cấp thôi việc",
+    "reviewed": false
+  },
+  {
+    "source": "실업",
+    "target": "thất nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "구직",
+    "target": "tìm việc",
+    "reviewed": false
+  },
+  {
+    "source": "면접",
+    "target": "phỏng vấn",
+    "reviewed": false
+  },
+  {
+    "source": "합격",
+    "target": "trúng tuyển",
+    "reviewed": false
+  },
+  {
+    "source": "불합격",
+    "target": "trượt",
+    "reviewed": false
+  },
+  {
+    "source": "사직서",
+    "target": "đơn xin nghỉ",
+    "reviewed": false
+  },
+  {
+    "source": "연차",
+    "target": "phép năm",
+    "reviewed": false
+  },
+  {
+    "source": "육아휴직",
+    "target": "nghỉ chăm con",
+    "reviewed": false
+  },
+  {
+    "source": "출산휴가",
+    "target": "nghỉ sinh",
+    "reviewed": false
+  },
+  {
+    "source": "어린이집",
+    "target": "nhà trẻ",
+    "reviewed": false
+  },
+  {
+    "source": "한부모",
+    "target": "cha mẹ đơn thân",
+    "reviewed": false
+  },
+  {
+    "source": "가정폭력",
+    "target": "bạo lực gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "스토킹",
+    "target": "theo dõi quấy rối",
+    "reviewed": false
+  },
+  {
+    "source": "보이스피싱",
+    "target": "lừa đảo qua điện thoại",
+    "reviewed": false
+  },
+  {
+    "source": "전세사기",
+    "target": "lừa tiền thuê nhà",
+    "reviewed": false
+  },
+  {
+    "source": "파산",
+    "target": "phá sản",
+    "reviewed": false
+  },
+  {
+    "source": "보증금",
+    "target": "tiền đặt cọc",
+    "reviewed": false
+  },
+  {
+    "source": "관리비",
+    "target": "phí quản lý",
+    "reviewed": false
+  },
+  {
+    "source": "차별",
+    "target": "phân biệt đối xử",
+    "reviewed": false
+  },
+  {
+    "source": "성차별",
+    "target": "phân biệt giới",
+    "reviewed": false
+  },
+  {
+    "source": "가짜뉴스",
+    "target": "tin giả",
+    "reviewed": false
+  },
+  {
+    "source": "여론",
+    "target": "dư luận",
+    "reviewed": false
+  },
+  {
+    "source": "기부",
+    "target": "quyên góp",
+    "reviewed": false
+  },
+  {
+    "source": "자원봉사",
+    "target": "tình nguyện",
+    "reviewed": false
+  },
+  {
+    "source": "반상회",
+    "target": "họp tổ dân phố",
+    "reviewed": false
+  },
+  {
+    "source": "생활비",
+    "target": "chi phí sinh hoạt",
+    "reviewed": false
+  },
+  {
+    "source": "학자금",
+    "target": "tiền học",
+    "reviewed": false
+  },
+  {
+    "source": "주거",
+    "target": "chỗ ở",
+    "reviewed": false
+  },
+  {
+    "source": "대출",
+    "target": "vay nợ",
+    "reviewed": false
   }
 ]

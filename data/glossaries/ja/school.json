@@ -218,5 +218,165 @@
     "source": "学習塾",
     "target": "lớp học thêm",
     "reviewed": false
+  },
+  {
+    "source": "宿題",
+    "target": "bài tập về nhà",
+    "reviewed": false
+  },
+  {
+    "source": "通知表",
+    "target": "học bạ",
+    "reviewed": false
+  },
+  {
+    "source": "内申点",
+    "target": "điểm học bạ nội bộ",
+    "reviewed": false
+  },
+  {
+    "source": "推薦",
+    "target": "tuyển thẳng",
+    "reviewed": false
+  },
+  {
+    "source": "浪人",
+    "target": "học lại chờ thi",
+    "reviewed": false
+  },
+  {
+    "source": "予備校",
+    "target": "trường luyện thi",
+    "reviewed": false
+  },
+  {
+    "source": "模試",
+    "target": "thi thử",
+    "reviewed": false
+  },
+  {
+    "source": "合格",
+    "target": "đỗ",
+    "reviewed": false
+  },
+  {
+    "source": "不合格",
+    "target": "trượt",
+    "reviewed": false
+  },
+  {
+    "source": "留年",
+    "target": "lưu ban",
+    "reviewed": false
+  },
+  {
+    "source": "退学",
+    "target": "thôi học",
+    "reviewed": false
+  },
+  {
+    "source": "停学",
+    "target": "đình chỉ học",
+    "reviewed": false
+  },
+  {
+    "source": "出席",
+    "target": "có mặt",
+    "reviewed": false
+  },
+  {
+    "source": "欠席",
+    "target": "vắng mặt",
+    "reviewed": false
+  },
+  {
+    "source": "早退",
+    "target": "về sớm",
+    "reviewed": false
+  },
+  {
+    "source": "授業",
+    "target": "tiết học",
+    "reviewed": false
+  },
+  {
+    "source": "講義",
+    "target": "bài giảng",
+    "reviewed": false
+  },
+  {
+    "source": "ゼミ",
+    "target": "lớp chuyên đề",
+    "reviewed": false
+  },
+  {
+    "source": "教授",
+    "target": "giáo sư",
+    "reviewed": false
+  },
+  {
+    "source": "講師",
+    "target": "giảng viên",
+    "reviewed": false
+  },
+  {
+    "source": "サークル",
+    "target": "câu lạc bộ",
+    "reviewed": false
+  },
+  {
+    "source": "学園祭",
+    "target": "lễ hội trường",
+    "reviewed": false
+  },
+  {
+    "source": "吹奏楽",
+    "target": "đội kèn hơi",
+    "reviewed": false
+  },
+  {
+    "source": "マネージャー",
+    "target": "quản lý đội",
+    "reviewed": false
+  },
+  {
+    "source": "顧問",
+    "target": "giáo viên phụ trách",
+    "reviewed": false
+  },
+  {
+    "source": "参考書",
+    "target": "sách tham khảo",
+    "reviewed": false
+  },
+  {
+    "source": "問題集",
+    "target": "sách bài tập",
+    "reviewed": false
+  },
+  {
+    "source": "時間割",
+    "target": "thời khóa biểu",
+    "reviewed": false
+  },
+  {
+    "source": "休み時間",
+    "target": "giờ ra chơi",
+    "reviewed": false
+  },
+  {
+    "source": "昼休み",
+    "target": "giờ nghỉ trưa",
+    "reviewed": false
+  },
+  {
+    "source": "家庭教師",
+    "target": "gia sư",
+    "reviewed": false
+  },
+  {
+    "source": "自転車通学",
+    "target": "đi học bằng xe đạp",
+    "reviewed": false
   }
 ]

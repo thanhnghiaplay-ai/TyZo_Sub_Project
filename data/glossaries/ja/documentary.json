@@ -188,5 +188,165 @@
     "source": "人間ドキュメント",
     "target": "phim tài liệu nhân văn",
     "reviewed": false
+  },
+  {
+    "source": "撮影",
+    "target": "quay phim",
+    "reviewed": false
+  },
+  {
+    "source": "インタビュー",
+    "target": "phỏng vấn",
+    "reviewed": false
+  },
+  {
+    "source": "字幕",
+    "target": "phụ đề",
+    "reviewed": false
+  },
+  {
+    "source": "史料",
+    "target": "sử liệu",
+    "reviewed": false
+  },
+  {
+    "source": "古文書",
+    "target": "cổ thư",
+    "reviewed": false
+  },
+  {
+    "source": "遺跡",
+    "target": "di tích",
+    "reviewed": false
+  },
+  {
+    "source": "発掘",
+    "target": "khai quật",
+    "reviewed": false
+  },
+  {
+    "source": "化石",
+    "target": "hóa thạch",
+    "reviewed": false
+  },
+  {
+    "source": "気候変動",
+    "target": "biến đổi khí hậu",
+    "reviewed": false
+  },
+  {
+    "source": "温暖化",
+    "target": "nóng lên toàn cầu",
+    "reviewed": false
+  },
+  {
+    "source": "森林伐採",
+    "target": "chặt phá rừng",
+    "reviewed": false
+  },
+  {
+    "source": "海洋汚染",
+    "target": "ô nhiễm biển",
+    "reviewed": false
+  },
+  {
+    "source": "渡り鳥",
+    "target": "chim di cư",
+    "reviewed": false
+  },
+  {
+    "source": "絶滅",
+    "target": "tuyệt chủng",
+    "reviewed": false
+  },
+  {
+    "source": "保護区",
+    "target": "khu bảo tồn",
+    "reviewed": false
+  },
+  {
+    "source": "国立公園",
+    "target": "vườn quốc gia",
+    "reviewed": false
+  },
+  {
+    "source": "火山",
+    "target": "núi lửa",
+    "reviewed": false
+  },
+  {
+    "source": "地震",
+    "target": "động đất",
+    "reviewed": false
+  },
+  {
+    "source": "台風",
+    "target": "bão",
+    "reviewed": false
+  },
+  {
+    "source": "洪水",
+    "target": "lũ lụt",
+    "reviewed": false
+  },
+  {
+    "source": "干ばつ",
+    "target": "hạn hán",
+    "reviewed": false
+  },
+  {
+    "source": "難民",
+    "target": "người tị nạn",
+    "reviewed": false
+  },
+  {
+    "source": "先住民",
+    "target": "người bản địa",
+    "reviewed": false
+  },
+  {
+    "source": "植民地",
+    "target": "thuộc địa",
+    "reviewed": false
+  },
+  {
+    "source": "独立",
+    "target": "độc lập",
+    "reviewed": false
+  },
+  {
+    "source": "革命",
+    "target": "cách mạng",
+    "reviewed": false
+  },
+  {
+    "source": "王室",
+    "target": "vương thất",
+    "reviewed": false
+  },
+  {
+    "source": "年表",
+    "target": "niên biểu",
+    "reviewed": false
+  },
+  {
+    "source": "航空撮影",
+    "target": "quay trên không",
+    "reviewed": false
+  },
+  {
+    "source": "再現ドラマ",
+    "target": "phim dựng lại",
+    "reviewed": false
+  },
+  {
+    "source": "音声解説",
+    "target": "thuyết minh",
+    "reviewed": false
+  },
+  {
+    "source": "現地取材",
+    "target": "tác nghiệp tại chỗ",
+    "reviewed": false
   }
 ]
