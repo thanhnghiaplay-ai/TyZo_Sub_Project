@@ -1,3 +1,10 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B4.2c XONG: BỔ SUNG THUẬT NGỮ TIẾNG TRUNG (zh) CHO psychological/romance/school/scifi — đọc mục này đầu tiên
+Thêm vào file có sẵn (giữ nguyên mục cũ): `zh/psychological.json` +40 (40→80), `zh/romance.json` +39 (39→78), `zh/school.json` +44 (44→88), `zh/scifi.json` +45 (38→83). Mục mới `reviewed:false`; đã thêm 4 thể loại vào `expanded` ở test. Chú ý khi duyệt: 洗脑/操控/精神控制 (trung tính), 自闭 (tự kỷ hay «khép kín»), 双重人格/多重人格 (thuật ngữ y khoa), 喜欢你/爱你/我爱你/想你 (xưng hô anh/em theo vai), 在一起 (yêu nhau hay chỉ «ở bên nhau»), 出轨/劈腿, 老师 (thầy/cô), 考研 (thi cao học), 高二/初二 (lớp 11/lớp 8 theo hệ Việt), 校霸/欺负 (bắt nạt), 星舰/跃迁/曲速 (từ khoa học viễn tưởng), 程序/代码 (nghĩa đen hay tin học). Không nâng `APP_VERSION`.
+Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1197 pass.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp mục mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B4.2d = bổ sung `zh` cho series, social, sports, war (mỗi bộ ≥ 30 mục mới; nguồn ≥ 2 ký tự, không trùng, `reviewed:false`; thêm vào `expanded` ở test). Sau đó B4.2e (wuxia, xianxia). Mỗi bước: `npm ci` (nếu chưa có node_modules), `npm run typecheck`, `npm run lint`, `npm test`, commit, `git push origin work`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B4.2b XONG: BỔ SUNG THUẬT NGỮ TIẾNG TRUNG (zh) CHO documentary/family/historical/ngontinh — đọc mục này đầu tiên
 Thêm vào file có sẵn (giữ nguyên mục cũ): `zh/documentary.json` +40 (40→80), `zh/family.json` +40 (47→87), `zh/historical.json` +44 (41→85), `zh/ngontinh.json` +43 (36→79). Mục mới `reviewed:false`; đã thêm 4 thể loại vào `expanded` ở `src/lib/sub/glossary.test.ts`. Chú ý khi duyệt: 寡人/本王/微臣/爱卿 (xưng hô theo vai), 伯父/婶婶/姑父/姨夫 (cách gọi họ hàng Việt), 老伴, 彩礼 (sính lễ), 绿茶/白莲花 (miệt thị), 狗血, 撩 (đã có sẵn ở bộ khác nên bỏ), 殖民 (nhạy cảm chính trị, dịch trung tính). Không nâng `APP_VERSION`.
 Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1197 pass.

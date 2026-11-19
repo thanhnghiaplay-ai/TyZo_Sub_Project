@@ -220,5 +220,225 @@
     "source": "高一",
     "target": "lớp 10",
     "reviewed": false
+  },
+  {
+    "source": "老师",
+    "target": "thầy cô, giáo viên",
+    "reviewed": false
+  },
+  {
+    "source": "班级",
+    "target": "lớp",
+    "reviewed": false
+  },
+  {
+    "source": "教室",
+    "target": "phòng học",
+    "reviewed": false
+  },
+  {
+    "source": "黑板",
+    "target": "bảng đen",
+    "reviewed": false
+  },
+  {
+    "source": "课本",
+    "target": "sách giáo khoa",
+    "reviewed": false
+  },
+  {
+    "source": "上课",
+    "target": "vào học",
+    "reviewed": false
+  },
+  {
+    "source": "下课",
+    "target": "tan giờ học",
+    "reviewed": false
+  },
+  {
+    "source": "放学",
+    "target": "tan học",
+    "reviewed": false
+  },
+  {
+    "source": "迟到",
+    "target": "đến muộn",
+    "reviewed": false
+  },
+  {
+    "source": "早读",
+    "target": "giờ đọc sáng",
+    "reviewed": false
+  },
+  {
+    "source": "课代表",
+    "target": "đại diện môn học",
+    "reviewed": false
+  },
+  {
+    "source": "值日",
+    "target": "trực nhật",
+    "reviewed": false
+  },
+  {
+    "source": "点名",
+    "target": "điểm danh",
+    "reviewed": false
+  },
+  {
+    "source": "罚站",
+    "target": "phạt đứng",
+    "reviewed": false
+  },
+  {
+    "source": "检讨",
+    "target": "viết bản kiểm điểm",
+    "reviewed": false
+  },
+  {
+    "source": "考试",
+    "target": "thi cử",
+    "reviewed": false
+  },
+  {
+    "source": "考砸",
+    "target": "thi hỏng",
+    "reviewed": false
+  },
+  {
+    "source": "满分",
+    "target": "điểm tuyệt đối",
+    "reviewed": false
+  },
+  {
+    "source": "不及格",
+    "target": "không đạt",
+    "reviewed": false
+  },
+  {
+    "source": "年级第一",
+    "target": "đứng đầu khối",
+    "reviewed": false
+  },
+  {
+    "source": "模拟考",
+    "target": "thi thử",
+    "reviewed": false
+  },
+  {
+    "source": "复习",
+    "target": "ôn tập",
+    "reviewed": false
+  },
+  {
+    "source": "刷题",
+    "target": "làm bài tập nhiều",
+    "reviewed": false
+  },
+  {
+    "source": "抄作业",
+    "target": "chép bài tập",
+    "reviewed": false
+  },
+  {
+    "source": "作弊",
+    "target": "gian lận thi cử",
+    "reviewed": false
+  },
+  {
+    "source": "抄袭",
+    "target": "đạo văn, chép bài",
+    "reviewed": false
+  },
+  {
+    "source": "家长会",
+    "target": "họp phụ huynh",
+    "reviewed": false
+  },
+  {
+    "source": "家访",
+    "target": "thăm nhà học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "体育课",
+    "target": "giờ thể dục",
+    "reviewed": false
+  },
+  {
+    "source": "运动会",
+    "target": "hội thao",
+    "reviewed": false
+  },
+  {
+    "source": "艺术节",
+    "target": "lễ hội nghệ thuật",
+    "reviewed": false
+  },
+  {
+    "source": "春游",
+    "target": "đi dã ngoại mùa xuân",
+    "reviewed": false
+  },
+  {
+    "source": "军训",
+    "target": "huấn luyện quân sự",
+    "reviewed": false
+  },
+  {
+    "source": "开学",
+    "target": "khai giảng",
+    "reviewed": false
+  },
+  {
+    "source": "毕业",
+    "target": "tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "同桌",
+    "target": "bạn cùng bàn",
+    "reviewed": false
+  },
+  {
+    "source": "校霸",
+    "target": "đầu gấu trường",
+    "reviewed": false
+  },
+  {
+    "source": "欺负",
+    "target": "bắt nạt",
+    "reviewed": false
+  },
+  {
+    "source": "校园",
+    "target": "khuôn viên trường",
+    "reviewed": false
+  },
+  {
+    "source": "高二",
+    "target": "lớp 11",
+    "reviewed": false
+  },
+  {
+    "source": "初二",
+    "target": "lớp 8",
+    "reviewed": false
+  },
+  {
+    "source": "大学",
+    "target": "đại học",
+    "reviewed": false
+  },
+  {
+    "source": "考研",
+    "target": "thi cao học",
+    "reviewed": false
+  },
+  {
+    "source": "奖学金",
+    "target": "học bổng",
+    "reviewed": false
   }
 ]

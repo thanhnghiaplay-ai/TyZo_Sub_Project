@@ -416,5 +416,230 @@
       "en": "quest"
     },
     "note": "Hán Việt: nhiệm vụ"
+  },
+  {
+    "source": "科幻",
+    "target": "khoa học viễn tưởng",
+    "reviewed": false
+  },
+  {
+    "source": "未来",
+    "target": "tương lai",
+    "reviewed": false
+  },
+  {
+    "source": "宇宙",
+    "target": "vũ trụ",
+    "reviewed": false
+  },
+  {
+    "source": "宇航员",
+    "target": "phi hành gia",
+    "reviewed": false
+  },
+  {
+    "source": "太空",
+    "target": "không gian vũ trụ",
+    "reviewed": false
+  },
+  {
+    "source": "空间站",
+    "target": "trạm vũ trụ",
+    "reviewed": false
+  },
+  {
+    "source": "星球",
+    "target": "hành tinh",
+    "reviewed": false
+  },
+  {
+    "source": "母星",
+    "target": "hành tinh mẹ",
+    "reviewed": false
+  },
+  {
+    "source": "星舰",
+    "target": "phi thuyền vũ trụ",
+    "reviewed": false
+  },
+  {
+    "source": "跃迁",
+    "target": "nhảy không gian",
+    "reviewed": false
+  },
+  {
+    "source": "曲速",
+    "target": "tốc độ ánh sáng, warp",
+    "reviewed": false
+  },
+  {
+    "source": "虫洞",
+    "target": "hố giun",
+    "reviewed": false
+  },
+  {
+    "source": "黑洞",
+    "target": "hố đen",
+    "reviewed": false
+  },
+  {
+    "source": "引力",
+    "target": "lực hấp dẫn",
+    "reviewed": false
+  },
+  {
+    "source": "反重力",
+    "target": "phản trọng lực",
+    "reviewed": false
+  },
+  {
+    "source": "量子",
+    "target": "lượng tử",
+    "reviewed": false
+  },
+  {
+    "source": "纳米",
+    "target": "nano",
+    "reviewed": false
+  },
+  {
+    "source": "克隆",
+    "target": "nhân bản",
+    "reviewed": false
+  },
+  {
+    "source": "改造人",
+    "target": "người cải tạo",
+    "reviewed": false
+  },
+  {
+    "source": "仿生人",
+    "target": "người máy mô phỏng",
+    "reviewed": false
+  },
+  {
+    "source": "机甲",
+    "target": "cơ giáp",
+    "reviewed": false
+  },
+  {
+    "source": "无人机",
+    "target": "máy bay không người lái",
+    "reviewed": false
+  },
+  {
+    "source": "激光",
+    "target": "tia laser",
+    "reviewed": false
+  },
+  {
+    "source": "能量",
+    "target": "năng lượng",
+    "reviewed": false
+  },
+  {
+    "source": "核心",
+    "target": "lõi",
+    "reviewed": false
+  },
+  {
+    "source": "程序",
+    "target": "chương trình",
+    "reviewed": false
+  },
+  {
+    "source": "代码",
+    "target": "mã code",
+    "reviewed": false
+  },
+  {
+    "source": "黑客",
+    "target": "hacker",
+    "reviewed": false
+  },
+  {
+    "source": "虚拟现实",
+    "target": "thực tế ảo",
+    "reviewed": false
+  },
+  {
+    "source": "数据库",
+    "target": "cơ sở dữ liệu",
+    "reviewed": false
+  },
+  {
+    "source": "文明",
+    "target": "nền văn minh",
+    "reviewed": false
+  },
+  {
+    "source": "入侵",
+    "target": "xâm lược",
+    "reviewed": false
+  },
+  {
+    "source": "地球",
+    "target": "Trái Đất",
+    "reviewed": false
+  },
+  {
+    "source": "人类",
+    "target": "loài người",
+    "reviewed": false
+  },
+  {
+    "source": "灭绝",
+    "target": "tuyệt chủng",
+    "reviewed": false
+  },
+  {
+    "source": "冷冻",
+    "target": "đông lạnh",
+    "reviewed": false
+  },
+  {
+    "source": "休眠",
+    "target": "ngủ đông",
+    "reviewed": false
+  },
+  {
+    "source": "时间线",
+    "target": "dòng thời gian",
+    "reviewed": false
+  },
+  {
+    "source": "悖论",
+    "target": "nghịch lý",
+    "reviewed": false
+  },
+  {
+    "source": "实验室",
+    "target": "phòng thí nghiệm",
+    "reviewed": false
+  },
+  {
+    "source": "觉醒",
+    "target": "thức tỉnh",
+    "reviewed": false
+  },
+  {
+    "source": "进化者",
+    "target": "người tiến hóa",
+    "reviewed": false
+  },
+  {
+    "source": "能量护盾",
+    "target": "khiên năng lượng",
+    "reviewed": false
+  },
+  {
+    "source": "警报",
+    "target": "báo động",
+    "reviewed": false
+  },
+  {
+    "source": "启动",
+    "target": "khởi động",
+    "reviewed": false
   }
 ]

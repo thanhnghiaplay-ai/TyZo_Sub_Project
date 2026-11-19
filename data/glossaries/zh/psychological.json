@@ -438,5 +438,205 @@
       "en": "family of origin"
     },
     "note": "Hán Việt: nguyên sinh gia đình"
+  },
+  {
+    "source": "抑郁症",
+    "target": "trầm cảm",
+    "reviewed": false
+  },
+  {
+    "source": "焦虑症",
+    "target": "rối loạn lo âu",
+    "reviewed": false
+  },
+  {
+    "source": "惊恐发作",
+    "target": "cơn hoảng loạn",
+    "reviewed": false
+  },
+  {
+    "source": "精神病",
+    "target": "bệnh tâm thần",
+    "reviewed": false
+  },
+  {
+    "source": "精神科",
+    "target": "khoa tâm thần",
+    "reviewed": false
+  },
+  {
+    "source": "心理咨询",
+    "target": "tư vấn tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "心理治疗",
+    "target": "trị liệu tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "心理阴影",
+    "target": "bóng ma tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "童年阴影",
+    "target": "bóng ma tuổi thơ",
+    "reviewed": false
+  },
+  {
+    "source": "噩梦",
+    "target": "ác mộng",
+    "reviewed": false
+  },
+  {
+    "source": "梦魇",
+    "target": "cơn ác mộng",
+    "reviewed": false
+  },
+  {
+    "source": "幻觉",
+    "target": "ảo giác",
+    "reviewed": false
+  },
+  {
+    "source": "幻想",
+    "target": "tưởng tượng, ảo tưởng",
+    "reviewed": false
+  },
+  {
+    "source": "错觉",
+    "target": "cảm giác sai lệch",
+    "reviewed": false
+  },
+  {
+    "source": "记忆",
+    "target": "ký ức",
+    "reviewed": false
+  },
+  {
+    "source": "失忆症",
+    "target": "chứng mất trí nhớ",
+    "reviewed": false
+  },
+  {
+    "source": "回忆",
+    "target": "hồi tưởng",
+    "reviewed": false
+  },
+  {
+    "source": "闪回",
+    "target": "hồi tưởng chớp nhoáng",
+    "reviewed": false
+  },
+  {
+    "source": "双重人格",
+    "target": "nhân cách kép",
+    "reviewed": false
+  },
+  {
+    "source": "多重人格",
+    "target": "đa nhân cách",
+    "reviewed": false
+  },
+  {
+    "source": "自我怀疑",
+    "target": "tự nghi ngờ bản thân",
+    "reviewed": false
+  },
+  {
+    "source": "自我否定",
+    "target": "tự phủ nhận bản thân",
+    "reviewed": false
+  },
+  {
+    "source": "自欺欺人",
+    "target": "tự lừa dối mình",
+    "reviewed": false
+  },
+  {
+    "source": "逃避",
+    "target": "trốn tránh",
+    "reviewed": false
+  },
+  {
+    "source": "压力",
+    "target": "áp lực",
+    "reviewed": false
+  },
+  {
+    "source": "情绪失控",
+    "target": "mất kiểm soát cảm xúc",
+    "reviewed": false
+  },
+  {
+    "source": "愤怒",
+    "target": "phẫn nộ",
+    "reviewed": false
+  },
+  {
+    "source": "恐惧",
+    "target": "sợ hãi",
+    "reviewed": false
+  },
+  {
+    "source": "绝望",
+    "target": "tuyệt vọng",
+    "reviewed": false
+  },
+  {
+    "source": "无助",
+    "target": "bất lực",
+    "reviewed": false
+  },
+  {
+    "source": "心魔",
+    "target": "tâm ma, nỗi ám ảnh",
+    "reviewed": false
+  },
+  {
+    "source": "阴影",
+    "target": "bóng tối trong lòng",
+    "reviewed": false
+  },
+  {
+    "source": "洗脑",
+    "target": "tẩy não",
+    "reviewed": false
+  },
+  {
+    "source": "操控",
+    "target": "thao túng",
+    "reviewed": false
+  },
+  {
+    "source": "精神控制",
+    "target": "kiểm soát tinh thần",
+    "reviewed": false
+  },
+  {
+    "source": "心理暗示",
+    "target": "ám thị tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "共情",
+    "target": "đồng cảm",
+    "reviewed": false
+  },
+  {
+    "source": "自闭",
+    "target": "tự kỷ, khép kín",
+    "reviewed": false
+  },
+  {
+    "source": "社交恐惧",
+    "target": "sợ giao tiếp xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "疗愈",
+    "target": "chữa lành",
+    "reviewed": false
   }
 ]
