@@ -515,5 +515,230 @@
       "en": "seek advice"
     },
     "note": "Hán Việt: thỉnh giáo"
+  },
+  {
+    "source": "本宫",
+    "target": "bổn cung",
+    "reviewed": false
+  },
+  {
+    "source": "哀家",
+    "target": "ai gia",
+    "reviewed": false
+  },
+  {
+    "source": "臣妾",
+    "target": "thần thiếp",
+    "reviewed": false
+  },
+  {
+    "source": "奴婢",
+    "target": "nô tì",
+    "reviewed": false
+  },
+  {
+    "source": "奴才",
+    "target": "nô tài",
+    "reviewed": false
+  },
+  {
+    "source": "陛下",
+    "target": "bệ hạ",
+    "reviewed": false
+  },
+  {
+    "source": "皇上",
+    "target": "hoàng thượng",
+    "reviewed": false
+  },
+  {
+    "source": "皇后",
+    "target": "hoàng hậu",
+    "reviewed": false
+  },
+  {
+    "source": "太后",
+    "target": "thái hậu",
+    "reviewed": false
+  },
+  {
+    "source": "娘娘",
+    "target": "nương nương",
+    "reviewed": false
+  },
+  {
+    "source": "太子",
+    "target": "thái tử",
+    "reviewed": false
+  },
+  {
+    "source": "王爷",
+    "target": "vương gia",
+    "reviewed": false
+  },
+  {
+    "source": "公主",
+    "target": "công chúa",
+    "reviewed": false
+  },
+  {
+    "source": "格格",
+    "target": "cách cách",
+    "reviewed": false
+  },
+  {
+    "source": "贝勒",
+    "target": "bối lặc",
+    "reviewed": false
+  },
+  {
+    "source": "大人",
+    "target": "đại nhân",
+    "reviewed": false
+  },
+  {
+    "source": "下官",
+    "target": "hạ quan",
+    "reviewed": false
+  },
+  {
+    "source": "草民",
+    "target": "thảo dân",
+    "reviewed": false
+  },
+  {
+    "source": "小的",
+    "target": "tiểu nhân (tự xưng)",
+    "reviewed": false
+  },
+  {
+    "source": "老爷",
+    "target": "lão gia",
+    "reviewed": false
+  },
+  {
+    "source": "丫鬟",
+    "target": "nha hoàn",
+    "reviewed": false
+  },
+  {
+    "source": "管家",
+    "target": "quản gia",
+    "reviewed": false
+  },
+  {
+    "source": "太监",
+    "target": "thái giám",
+    "reviewed": false
+  },
+  {
+    "source": "侍卫",
+    "target": "thị vệ",
+    "reviewed": false
+  },
+  {
+    "source": "宫女",
+    "target": "cung nữ",
+    "reviewed": false
+  },
+  {
+    "source": "圣旨",
+    "target": "thánh chỉ",
+    "reviewed": false
+  },
+  {
+    "source": "接旨",
+    "target": "tiếp chỉ",
+    "reviewed": false
+  },
+  {
+    "source": "谢恩",
+    "target": "tạ ơn",
+    "reviewed": false
+  },
+  {
+    "source": "遵命",
+    "target": "tuân lệnh",
+    "reviewed": false
+  },
+  {
+    "source": "起驾",
+    "target": "khởi giá",
+    "reviewed": false
+  },
+  {
+    "source": "恕罪",
+    "target": "xin tha tội",
+    "reviewed": false
+  },
+  {
+    "source": "该当何罪",
+    "target": "có tội gì",
+    "reviewed": false
+  },
+  {
+    "source": "万岁",
+    "target": "vạn tuế",
+    "reviewed": false
+  },
+  {
+    "source": "参见",
+    "target": "bái kiến",
+    "reviewed": false
+  },
+  {
+    "source": "退下",
+    "target": "lui xuống",
+    "reviewed": false
+  },
+  {
+    "source": "上朝",
+    "target": "thượng triều",
+    "reviewed": false
+  },
+  {
+    "source": "科举",
+    "target": "khoa cử",
+    "reviewed": false
+  },
+  {
+    "source": "状元",
+    "target": "trạng nguyên",
+    "reviewed": false
+  },
+  {
+    "source": "衙门",
+    "target": "nha môn",
+    "reviewed": false
+  },
+  {
+    "source": "县令",
+    "target": "huyện lệnh",
+    "reviewed": false
+  },
+  {
+    "source": "府邸",
+    "target": "phủ đệ",
+    "reviewed": false
+  },
+  {
+    "source": "后宫",
+    "target": "hậu cung",
+    "reviewed": false
+  },
+  {
+    "source": "选秀",
+    "target": "tuyển tú",
+    "reviewed": false
+  },
+  {
+    "source": "和亲",
+    "target": "hòa thân",
+    "reviewed": false
+  },
+  {
+    "source": "赐婚",
+    "target": "ban hôn",
+    "reviewed": false
   }
 ]

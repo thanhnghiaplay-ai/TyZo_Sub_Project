@@ -416,5 +416,205 @@
       "en": "set out"
     },
     "note": "Hán Việt: khải trình"
+  },
+  {
+    "source": "寻宝图",
+    "target": "bản đồ kho báu",
+    "reviewed": false
+  },
+  {
+    "source": "藏宝图",
+    "target": "bản đồ kho báu",
+    "reviewed": false
+  },
+  {
+    "source": "宝箱",
+    "target": "rương báu",
+    "reviewed": false
+  },
+  {
+    "source": "黄金",
+    "target": "vàng",
+    "reviewed": false
+  },
+  {
+    "source": "财宝",
+    "target": "của cải, châu báu",
+    "reviewed": false
+  },
+  {
+    "source": "探索",
+    "target": "khám phá",
+    "reviewed": false
+  },
+  {
+    "source": "发现",
+    "target": "phát hiện",
+    "reviewed": false
+  },
+  {
+    "source": "出发",
+    "target": "xuất phát",
+    "reviewed": false
+  },
+  {
+    "source": "远征",
+    "target": "viễn chinh, chuyến đi xa",
+    "reviewed": false
+  },
+  {
+    "source": "徒步",
+    "target": "đi bộ đường dài",
+    "reviewed": false
+  },
+  {
+    "source": "攀登",
+    "target": "leo núi",
+    "reviewed": false
+  },
+  {
+    "source": "悬崖",
+    "target": "vách đá",
+    "reviewed": false
+  },
+  {
+    "source": "瀑布",
+    "target": "thác nước",
+    "reviewed": false
+  },
+  {
+    "source": "热带雨林",
+    "target": "rừng mưa nhiệt đới",
+    "reviewed": false
+  },
+  {
+    "source": "火山",
+    "target": "núi lửa",
+    "reviewed": false
+  },
+  {
+    "source": "沼泽",
+    "target": "đầm lầy",
+    "reviewed": false
+  },
+  {
+    "source": "暗河",
+    "target": "sông ngầm",
+    "reviewed": false
+  },
+  {
+    "source": "山洞",
+    "target": "hang động",
+    "reviewed": false
+  },
+  {
+    "source": "密道",
+    "target": "lối đi bí mật",
+    "reviewed": false
+  },
+  {
+    "source": "暗门",
+    "target": "cửa bí mật",
+    "reviewed": false
+  },
+  {
+    "source": "石碑",
+    "target": "bia đá",
+    "reviewed": false
+  },
+  {
+    "source": "壁画",
+    "target": "bích họa",
+    "reviewed": false
+  },
+  {
+    "source": "古城",
+    "target": "thành cổ",
+    "reviewed": false
+  },
+  {
+    "source": "失落的文明",
+    "target": "nền văn minh thất lạc",
+    "reviewed": false
+  },
+  {
+    "source": "诅咒",
+    "target": "lời nguyền",
+    "reviewed": false
+  },
+  {
+    "source": "机关术",
+    "target": "thuật cơ quan",
+    "reviewed": false
+  },
+  {
+    "source": "陷阱门",
+    "target": "cửa bẫy",
+    "reviewed": false
+  },
+  {
+    "source": "绳索",
+    "target": "dây thừng",
+    "reviewed": false
+  },
+  {
+    "source": "火把",
+    "target": "đuốc",
+    "reviewed": false
+  },
+  {
+    "source": "帐篷",
+    "target": "lều",
+    "reviewed": false
+  },
+  {
+    "source": "船长",
+    "target": "thuyền trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "船员",
+    "target": "thủy thủ đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "登陆",
+    "target": "đổ bộ, cập bờ",
+    "reviewed": false
+  },
+  {
+    "source": "风暴",
+    "target": "bão tố",
+    "reviewed": false
+  },
+  {
+    "source": "漂流",
+    "target": "trôi dạt, đi bè",
+    "reviewed": false
+  },
+  {
+    "source": "幸存者",
+    "target": "người sống sót",
+    "reviewed": false
+  },
+  {
+    "source": "求生",
+    "target": "cầu sinh, sinh tồn",
+    "reviewed": false
+  },
+  {
+    "source": "猛兽",
+    "target": "mãnh thú",
+    "reviewed": false
+  },
+  {
+    "source": "毒蛇",
+    "target": "rắn độc",
+    "reviewed": false
+  },
+  {
+    "source": "迷路",
+    "target": "lạc đường",
+    "reviewed": false
   }
 ]

@@ -199,7 +199,7 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
 
 describe("mục bổ sung chưa duyệt vào bộ có sẵn (B4)", () => {
   const expanded: [string, string][] = [];
-  for (const genre of ["action", "crime", "mystery", "horror"]) expanded.push(["zh", genre]);
+  for (const genre of ["action", "crime", "mystery", "horror", "adventure", "comedy", "costume", "daily"]) expanded.push(["zh", genre]);
 
   it("không trùng nguồn, mục mới đều chưa duyệt, đủ ≥ 20 mục bổ sung mỗi bộ", () => {
     for (const [lang, genre] of expanded) {

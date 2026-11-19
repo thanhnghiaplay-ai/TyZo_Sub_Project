@@ -416,5 +416,205 @@
       "en": "troublesome"
     },
     "note": "Hán Việt: ma phiền"
+  },
+  {
+    "source": "谢谢",
+    "target": "cảm ơn",
+    "reviewed": false
+  },
+  {
+    "source": "不客气",
+    "target": "không có gì",
+    "reviewed": false
+  },
+  {
+    "source": "对不起",
+    "target": "xin lỗi",
+    "reviewed": false
+  },
+  {
+    "source": "没关系",
+    "target": "không sao",
+    "reviewed": false
+  },
+  {
+    "source": "不好意思",
+    "target": "ngại quá, xin lỗi",
+    "reviewed": false
+  },
+  {
+    "source": "打扰了",
+    "target": "làm phiền rồi",
+    "reviewed": false
+  },
+  {
+    "source": "请进",
+    "target": "mời vào",
+    "reviewed": false
+  },
+  {
+    "source": "慢点",
+    "target": "chậm thôi",
+    "reviewed": false
+  },
+  {
+    "source": "等一下",
+    "target": "đợi một chút",
+    "reviewed": false
+  },
+  {
+    "source": "马上",
+    "target": "ngay lập tức",
+    "reviewed": false
+  },
+  {
+    "source": "吃饱了",
+    "target": "ăn no rồi",
+    "reviewed": false
+  },
+  {
+    "source": "好吃",
+    "target": "ngon",
+    "reviewed": false
+  },
+  {
+    "source": "干杯",
+    "target": "cạn ly",
+    "reviewed": false
+  },
+  {
+    "source": "我请客",
+    "target": "tôi mời",
+    "reviewed": false
+  },
+  {
+    "source": "AA制",
+    "target": "chia đều",
+    "reviewed": false
+  },
+  {
+    "source": "起床",
+    "target": "thức dậy",
+    "reviewed": false
+  },
+  {
+    "source": "睡觉",
+    "target": "đi ngủ",
+    "reviewed": false
+  },
+  {
+    "source": "洗澡",
+    "target": "tắm",
+    "reviewed": false
+  },
+  {
+    "source": "刷牙",
+    "target": "đánh răng",
+    "reviewed": false
+  },
+  {
+    "source": "做饭",
+    "target": "nấu cơm",
+    "reviewed": false
+  },
+  {
+    "source": "出门",
+    "target": "ra ngoài",
+    "reviewed": false
+  },
+  {
+    "source": "到家",
+    "target": "về đến nhà",
+    "reviewed": false
+  },
+  {
+    "source": "路上小心",
+    "target": "đi đường cẩn thận",
+    "reviewed": false
+  },
+  {
+    "source": "回头见",
+    "target": "hẹn gặp lại",
+    "reviewed": false
+  },
+  {
+    "source": "改天",
+    "target": "hôm khác",
+    "reviewed": false
+  },
+  {
+    "source": "周末",
+    "target": "cuối tuần",
+    "reviewed": false
+  },
+  {
+    "source": "放假",
+    "target": "nghỉ lễ, nghỉ phép",
+    "reviewed": false
+  },
+  {
+    "source": "开会",
+    "target": "họp",
+    "reviewed": false
+  },
+  {
+    "source": "同事",
+    "target": "đồng nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "老板",
+    "target": "sếp, ông chủ",
+    "reviewed": false
+  },
+  {
+    "source": "邻居",
+    "target": "hàng xóm",
+    "reviewed": false
+  },
+  {
+    "source": "朋友圈",
+    "target": "vòng bạn bè (WeChat)",
+    "reviewed": false
+  },
+  {
+    "source": "发消息",
+    "target": "nhắn tin",
+    "reviewed": false
+  },
+  {
+    "source": "打电话",
+    "target": "gọi điện",
+    "reviewed": false
+  },
+  {
+    "source": "充电",
+    "target": "sạc pin",
+    "reviewed": false
+  },
+  {
+    "source": "地铁",
+    "target": "tàu điện ngầm",
+    "reviewed": false
+  },
+  {
+    "source": "公交",
+    "target": "xe buýt",
+    "reviewed": false
+  },
+  {
+    "source": "红绿灯",
+    "target": "đèn giao thông",
+    "reviewed": false
+  },
+  {
+    "source": "超市",
+    "target": "siêu thị",
+    "reviewed": false
+  },
+  {
+    "source": "菜市场",
+    "target": "chợ",
+    "reviewed": false
   }
 ]

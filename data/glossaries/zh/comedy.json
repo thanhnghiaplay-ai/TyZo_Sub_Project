@@ -383,5 +383,175 @@
       "en": "goof around"
     },
     "note": "Hán Việt: bì nhất hạ"
+  },
+  {
+    "source": "笑话",
+    "target": "chuyện cười",
+    "reviewed": false
+  },
+  {
+    "source": "搞怪",
+    "target": "làm trò, bày trò",
+    "reviewed": false
+  },
+  {
+    "source": "滑稽",
+    "target": "hài hước, buồn cười",
+    "reviewed": false
+  },
+  {
+    "source": "好笑",
+    "target": "buồn cười",
+    "reviewed": false
+  },
+  {
+    "source": "幽默",
+    "target": "hài hước",
+    "reviewed": false
+  },
+  {
+    "source": "逗比",
+    "target": "người hài hước, hơi ngố",
+    "reviewed": false
+  },
+  {
+    "source": "损友",
+    "target": "bạn chơi khăm",
+    "reviewed": false
+  },
+  {
+    "source": "损人",
+    "target": "đá xoáy, châm chọc",
+    "reviewed": false
+  },
+  {
+    "source": "忽悠",
+    "target": "lừa phỉnh, chém gió",
+    "reviewed": false
+  },
+  {
+    "source": "吹牛",
+    "target": "khoác lác",
+    "reviewed": false
+  },
+  {
+    "source": "穿帮",
+    "target": "bị lộ tẩy",
+    "reviewed": false
+  },
+  {
+    "source": "露馅",
+    "target": "lộ tẩy",
+    "reviewed": false
+  },
+  {
+    "source": "糗事",
+    "target": "chuyện xấu hổ",
+    "reviewed": false
+  },
+  {
+    "source": "丢脸",
+    "target": "mất mặt",
+    "reviewed": false
+  },
+  {
+    "source": "出丑",
+    "target": "bẽ mặt, làm trò cười",
+    "reviewed": false
+  },
+  {
+    "source": "崩溃",
+    "target": "sụp đổ, hết nói nổi",
+    "reviewed": false
+  },
+  {
+    "source": "心累",
+    "target": "mệt mỏi trong lòng",
+    "reviewed": false
+  },
+  {
+    "source": "扎心",
+    "target": "đau lòng, chạm vào nỗi đau",
+    "reviewed": false
+  },
+  {
+    "source": "套路",
+    "target": "chiêu trò",
+    "reviewed": false
+  },
+  {
+    "source": "坑爹",
+    "target": "hố cha, quá đáng",
+    "reviewed": false
+  },
+  {
+    "source": "神转折",
+    "target": "cú ngoặt bất ngờ",
+    "reviewed": false
+  },
+  {
+    "source": "反转",
+    "target": "đảo ngược tình thế",
+    "reviewed": false
+  },
+  {
+    "source": "接地气",
+    "target": "gần gũi đời thường",
+    "reviewed": false
+  },
+  {
+    "source": "跑偏",
+    "target": "lạc đề",
+    "reviewed": false
+  },
+  {
+    "source": "抖机灵",
+    "target": "khoe mẽo, làm khôn",
+    "reviewed": false
+  },
+  {
+    "source": "耍宝",
+    "target": "làm trò cho vui",
+    "reviewed": false
+  },
+  {
+    "source": "憋笑",
+    "target": "nín cười",
+    "reviewed": false
+  },
+  {
+    "source": "爆笑",
+    "target": "cười phá lên",
+    "reviewed": false
+  },
+  {
+    "source": "笑场",
+    "target": "bật cười giữa chừng",
+    "reviewed": false
+  },
+  {
+    "source": "单身狗",
+    "target": "FA, người độc thân",
+    "reviewed": false
+  },
+  {
+    "source": "柠檬精",
+    "target": "người hay ghen tị",
+    "reviewed": false
+  },
+  {
+    "source": "土味",
+    "target": "quê mùa, sến",
+    "reviewed": false
+  },
+  {
+    "source": "尬聊",
+    "target": "trò chuyện gượng gạo",
+    "reviewed": false
+  },
+  {
+    "source": "白眼",
+    "target": "liếc xéo, lườm",
+    "reviewed": false
   }
 ]
