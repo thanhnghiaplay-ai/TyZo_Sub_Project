@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.7.0",
+    time: "19/11/2026",
+    area: "khac",
+    text: "Bố cục mới trang khách trên điện thoại đứng (6 bước, Chủ chốt demo). 1) tool-wheel.ts: toán thuần cho nút vàng giữa thanh dưới (kéo ngang lướt qua 6 công cụ theo thứ tự Phim, Nhân vật, Thuật ngữ, Thuyết minh, Kiểm tra, Cách trả, xoay vòng, thả đâu chọn đó, có quán tính). 2) tool-wheel.tsx + FloatingDock/StudioDock nhận nút giữa mới; bấm (không kéo) thì mở tab. 3) Tab công cụ là thẻ kính nổi cao ~80% màn hình, đầu tab có icon + tên + nút đóng (studio.tsx, styles.css khối SHEET_PORTRAIT; ngang thấp giữ như cũ). 4) Mặc định tab Phim; Tải và dịch dính đáy tab Phim; chip «Trả bằng: …» ở đầu tab Phim mở tab Cách trả. 5) Ví mở cùng kiểu tab 80% (lớp product-covered thay hidden); dòng «Tiếp theo: …» cuối mỗi công cụ (nextTool); vòng tiến độ quanh nút vàng khi đang dịch (ringDash, lấy % từ stage-progress). Màn từ 1024 px và ngang thấp KHÔNG đổi. Không đổi giá, quyền, điều khoản, dữ liệu. TERMS_VERSION giữ nguyên. Chưa bấm thử trên điện thoại thật (độ nhạy kéo WHEEL_DRAG_PX, quán tính settleTarget).",
+  },
+  {
     version: "5.6.0",
     time: "18/11/2026",
     area: "khac",

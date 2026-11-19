@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.6.1";
+export const APP_VERSION = "5.7.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.7.0",
+    time: "19/11/2026",
+    title: "Bố cục mới trên điện thoại: nút vàng lướt chọn công cụ.",
+    points: [
+      "Kéo nút vàng giữa thanh dưới để lướt qua Phim, Nhân vật, Thuật ngữ, Thuyết minh, Kiểm tra, Cách trả.",
+      "Bấm nút vàng mở tab công cụ cao khoảng 80% màn hình; Ví mở cùng kiểu.",
+      "Tải và dịch nằm sát đáy tab Phim; vòng quanh nút vàng chạy theo tiến độ dịch.",
+    ],
+  },
   {
     version: "5.6.1",
     time: "22:23 ngày 18/11/2026",
