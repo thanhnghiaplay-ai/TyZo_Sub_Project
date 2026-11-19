@@ -1,0 +1,202 @@
+[
+  {
+    "source": "다큐멘터리",
+    "target": "phim tài liệu",
+    "reviewed": false
+  },
+  {
+    "source": "내레이션",
+    "target": "lời dẫn",
+    "reviewed": false
+  },
+  {
+    "source": "취재",
+    "target": "phỏng vấn, thu thập tư liệu thực địa",
+    "reviewed": false
+  },
+  {
+    "source": "밀착 취재",
+    "target": "bám sát ghi hình",
+    "reviewed": false
+  },
+  {
+    "source": "증언",
+    "target": "lời chứng",
+    "reviewed": false
+  },
+  {
+    "source": "유가족",
+    "target": "thân nhân người đã khuất",
+    "reviewed": false
+  },
+  {
+    "source": "피해자",
+    "target": "nạn nhân",
+    "reviewed": false
+  },
+  {
+    "source": "가해자",
+    "target": "thủ phạm, bên gây hại",
+    "reviewed": false
+  },
+  {
+    "source": "생존자",
+    "target": "người sống sót",
+    "reviewed": false
+  },
+  {
+    "source": "목격자",
+    "target": "nhân chứng",
+    "reviewed": false
+  },
+  {
+    "source": "참사",
+    "target": "thảm họa",
+    "reviewed": false
+  },
+  {
+    "source": "세월호",
+    "target": "phà Sewol",
+    "reviewed": false
+  },
+  {
+    "source": "이태원 참사",
+    "target": "thảm họa Itaewon",
+    "reviewed": false
+  },
+  {
+    "source": "재난",
+    "target": "thiên tai, tai họa",
+    "reviewed": false
+  },
+  {
+    "source": "복구",
+    "target": "khôi phục",
+    "reviewed": false
+  },
+  {
+    "source": "이재민",
+    "target": "người bị nạn",
+    "reviewed": false
+  },
+  {
+    "source": "멸종위기종",
+    "target": "loài nguy cấp",
+    "reviewed": false
+  },
+  {
+    "source": "생태계",
+    "target": "hệ sinh thái",
+    "reviewed": false
+  },
+  {
+    "source": "세계유산",
+    "target": "di sản thế giới",
+    "reviewed": false
+  },
+  {
+    "source": "무형문화재",
+    "target": "di sản văn hóa phi vật thể",
+    "reviewed": false
+  },
+  {
+    "source": "인간문화재",
+    "target": "nghệ nhân quốc gia (Nhân gian văn hóa tài)",
+    "reviewed": false
+  },
+  {
+    "source": "장인",
+    "target": "nghệ nhân",
+    "reviewed": false
+  },
+  {
+    "source": "전통시장",
+    "target": "chợ truyền thống",
+    "reviewed": false
+  },
+  {
+    "source": "노포",
+    "target": "quán lâu đời",
+    "reviewed": false
+  },
+  {
+    "source": "후계자",
+    "target": "người kế nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "귀농",
+    "target": "về quê làm nông",
+    "reviewed": false
+  },
+  {
+    "source": "귀촌",
+    "target": "về quê sinh sống",
+    "reviewed": false
+  },
+  {
+    "source": "해녀",
+    "target": "hải nữ (nữ thợ lặn Jeju)",
+    "reviewed": false
+  },
+  {
+    "source": "재연 영상",
+    "target": "cảnh dựng lại",
+    "reviewed": false
+  },
+  {
+    "source": "자료 화면",
+    "target": "hình ảnh tư liệu",
+    "reviewed": false
+  },
+  {
+    "source": "전문가",
+    "target": "chuyên gia",
+    "reviewed": false
+  },
+  {
+    "source": "연구자",
+    "target": "nhà nghiên cứu",
+    "reviewed": false
+  },
+  {
+    "source": "진상",
+    "target": "sự thật đằng sau",
+    "reviewed": false
+  },
+  {
+    "source": "이면",
+    "target": "mặt khuất",
+    "reviewed": false
+  },
+  {
+    "source": "추적",
+    "target": "truy tìm theo dõi",
+    "reviewed": false
+  },
+  {
+    "source": "검증",
+    "target": "kiểm chứng",
+    "reviewed": false
+  },
+  {
+    "source": "탐사보도",
+    "target": "phóng sự điều tra",
+    "reviewed": false
+  },
+  {
+    "source": "고발",
+    "target": "tố cáo",
+    "reviewed": false
+  },
+  {
+    "source": "심층 취재",
+    "target": "điều tra chuyên sâu",
+    "reviewed": false
+  },
+  {
+    "source": "휴먼 다큐",
+    "target": "phim tài liệu nhân văn",
+    "reviewed": false
+  }
+]

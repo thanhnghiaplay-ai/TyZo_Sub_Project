@@ -1,0 +1,232 @@
+[
+  {
+    "source": "갑질",
+    "target": "lạm quyền hách dịch (gapjil)",
+    "reviewed": false
+  },
+  {
+    "source": "재벌",
+    "target": "tài phiệt (chaebol)",
+    "reviewed": false
+  },
+  {
+    "source": "금수저",
+    "target": "con nhà giàu (\"thìa vàng\")",
+    "reviewed": false
+  },
+  {
+    "source": "흙수저",
+    "target": "con nhà nghèo (\"thìa đất\")",
+    "reviewed": false
+  },
+  {
+    "source": "헬조선",
+    "target": "Hell Joseon (Joseon địa ngục)",
+    "reviewed": false
+  },
+  {
+    "source": "취준생",
+    "target": "người đang tìm việc",
+    "reviewed": false
+  },
+  {
+    "source": "취업",
+    "target": "xin việc",
+    "reviewed": false
+  },
+  {
+    "source": "공무원",
+    "target": "công chức",
+    "reviewed": false
+  },
+  {
+    "source": "공시생",
+    "target": "người luyện thi công chức",
+    "reviewed": false
+  },
+  {
+    "source": "정규직",
+    "target": "nhân viên chính thức",
+    "reviewed": false
+  },
+  {
+    "source": "비정규직",
+    "target": "nhân viên không chính thức",
+    "reviewed": false
+  },
+  {
+    "source": "계약직",
+    "target": "nhân viên hợp đồng",
+    "reviewed": false
+  },
+  {
+    "source": "야근",
+    "target": "làm thêm ban đêm",
+    "reviewed": false
+  },
+  {
+    "source": "회식",
+    "target": "tiệc công ty",
+    "reviewed": false
+  },
+  {
+    "source": "워라밸",
+    "target": "cân bằng công việc và cuộc sống",
+    "reviewed": false
+  },
+  {
+    "source": "퇴사",
+    "target": "nghỉ việc",
+    "reviewed": false
+  },
+  {
+    "source": "권고사직",
+    "target": "bị ép nghỉ việc",
+    "reviewed": false
+  },
+  {
+    "source": "부당해고",
+    "target": "sa thải trái luật",
+    "reviewed": false
+  },
+  {
+    "source": "월세",
+    "target": "tiền thuê nhà hàng tháng",
+    "reviewed": false
+  },
+  {
+    "source": "전세",
+    "target": "thuê nhà đặt cọc lớn (jeonse)",
+    "reviewed": false
+  },
+  {
+    "source": "반지하",
+    "target": "nhà bán hầm",
+    "reviewed": false
+  },
+  {
+    "source": "고시원",
+    "target": "nhà trọ siêu nhỏ (goshiwon)",
+    "reviewed": false
+  },
+  {
+    "source": "독거노인",
+    "target": "người già sống một mình",
+    "reviewed": false
+  },
+  {
+    "source": "고독사",
+    "target": "chết cô độc",
+    "reviewed": false
+  },
+  {
+    "source": "저출산",
+    "target": "tỷ lệ sinh thấp",
+    "reviewed": false
+  },
+  {
+    "source": "고령화",
+    "target": "già hóa dân số",
+    "reviewed": false
+  },
+  {
+    "source": "학교폭력",
+    "target": "bạo lực học đường",
+    "reviewed": false
+  },
+  {
+    "source": "학폭",
+    "target": "bạo lực học đường",
+    "reviewed": false
+  },
+  {
+    "source": "왕따",
+    "target": "bị cô lập, bắt nạt",
+    "reviewed": false
+  },
+  {
+    "source": "악플",
+    "target": "bình luận ác ý",
+    "reviewed": false
+  },
+  {
+    "source": "악플러",
+    "target": "kẻ bình luận ác ý",
+    "reviewed": false
+  },
+  {
+    "source": "신상털기",
+    "target": "bới móc thông tin cá nhân",
+    "reviewed": false
+  },
+  {
+    "source": "내부고발",
+    "target": "tố giác nội bộ",
+    "reviewed": false
+  },
+  {
+    "source": "기자회견",
+    "target": "họp báo",
+    "reviewed": false
+  },
+  {
+    "source": "국민청원",
+    "target": "kiến nghị công dân",
+    "reviewed": false
+  },
+  {
+    "source": "파업",
+    "target": "đình công",
+    "reviewed": false
+  },
+  {
+    "source": "노조",
+    "target": "công đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "최저임금",
+    "target": "lương tối thiểu",
+    "reviewed": false
+  },
+  {
+    "source": "병역",
+    "target": "nghĩa vụ quân sự",
+    "reviewed": false
+  },
+  {
+    "source": "민원",
+    "target": "khiếu nại, kiến nghị hành chính",
+    "reviewed": false
+  },
+  {
+    "source": "주민센터",
+    "target": "trung tâm hành chính phường",
+    "reviewed": false
+  },
+  {
+    "source": "기초수급자",
+    "target": "người nhận trợ cấp cơ bản",
+    "reviewed": false
+  },
+  {
+    "source": "체면",
+    "target": "thể diện",
+    "reviewed": false
+  },
+  {
+    "source": "눈치",
+    "target": "sự tinh ý nhìn sắc mặt (nunchi)",
+    "reviewed": false
+  },
+  {
+    "source": "학연",
+    "target": "quan hệ đồng môn",
+    "reviewed": false
+  },
+  {
+    "source": "지연",
+    "target": "quan hệ đồng hương",
+    "reviewed": false
+  }
+]

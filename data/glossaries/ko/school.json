@@ -1,0 +1,257 @@
+[
+  {
+    "source": "담임",
+    "target": "giáo viên chủ nhiệm",
+    "reviewed": false
+  },
+  {
+    "source": "교장",
+    "target": "hiệu trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "교감",
+    "target": "hiệu phó",
+    "reviewed": false
+  },
+  {
+    "source": "전학생",
+    "target": "học sinh chuyển trường",
+    "reviewed": false
+  },
+  {
+    "source": "선배",
+    "target": "tiền bối (đàn anh, đàn chị)",
+    "reviewed": false
+  },
+  {
+    "source": "후배",
+    "target": "hậu bối (đàn em)",
+    "reviewed": false
+  },
+  {
+    "source": "동기",
+    "target": "bạn đồng khóa",
+    "reviewed": false
+  },
+  {
+    "source": "반장",
+    "target": "lớp trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "부반장",
+    "target": "lớp phó",
+    "reviewed": false
+  },
+  {
+    "source": "학생회",
+    "target": "hội học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "학생회장",
+    "target": "chủ tịch hội học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "동아리",
+    "target": "câu lạc bộ",
+    "reviewed": false
+  },
+  {
+    "source": "체육대회",
+    "target": "hội thao",
+    "reviewed": false
+  },
+  {
+    "source": "학교 축제",
+    "target": "lễ hội trường",
+    "reviewed": false
+  },
+  {
+    "source": "소풍",
+    "target": "dã ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "수학여행",
+    "target": "chuyến tham quan học tập",
+    "reviewed": false
+  },
+  {
+    "source": "중간고사",
+    "target": "thi giữa kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "기말고사",
+    "target": "thi cuối kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "모의고사",
+    "target": "thi thử",
+    "reviewed": false
+  },
+  {
+    "source": "수능",
+    "target": "kỳ thi đại học Suneung",
+    "reviewed": false
+  },
+  {
+    "source": "수시",
+    "target": "tuyển sinh sớm",
+    "reviewed": false
+  },
+  {
+    "source": "정시",
+    "target": "tuyển sinh chính quy",
+    "reviewed": false
+  },
+  {
+    "source": "재수",
+    "target": "học lại một năm để thi lại (jaesu)",
+    "reviewed": false
+  },
+  {
+    "source": "재수생",
+    "target": "thí sinh thi lại",
+    "reviewed": false
+  },
+  {
+    "source": "입시",
+    "target": "thi tuyển sinh",
+    "reviewed": false
+  },
+  {
+    "source": "내신",
+    "target": "điểm học bạ",
+    "reviewed": false
+  },
+  {
+    "source": "학원",
+    "target": "trung tâm học thêm (hagwon)",
+    "reviewed": false
+  },
+  {
+    "source": "과외",
+    "target": "dạy kèm",
+    "reviewed": false
+  },
+  {
+    "source": "야자",
+    "target": "tự học buổi tối",
+    "reviewed": false
+  },
+  {
+    "source": "야간 자율학습",
+    "target": "tự học buổi tối",
+    "reviewed": false
+  },
+  {
+    "source": "보충수업",
+    "target": "học bổ trợ",
+    "reviewed": false
+  },
+  {
+    "source": "입학식",
+    "target": "lễ nhập học",
+    "reviewed": false
+  },
+  {
+    "source": "졸업식",
+    "target": "lễ tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "개학",
+    "target": "khai giảng đầu kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "방학",
+    "target": "kỳ nghỉ",
+    "reviewed": false
+  },
+  {
+    "source": "교복",
+    "target": "đồng phục",
+    "reviewed": false
+  },
+  {
+    "source": "교무실",
+    "target": "phòng giáo viên",
+    "reviewed": false
+  },
+  {
+    "source": "보건실",
+    "target": "phòng y tế",
+    "reviewed": false
+  },
+  {
+    "source": "급식",
+    "target": "bữa ăn bán trú",
+    "reviewed": false
+  },
+  {
+    "source": "매점",
+    "target": "căn tin",
+    "reviewed": false
+  },
+  {
+    "source": "청소 당번",
+    "target": "phiên trực nhật",
+    "reviewed": false
+  },
+  {
+    "source": "지각",
+    "target": "đi muộn",
+    "reviewed": false
+  },
+  {
+    "source": "조퇴",
+    "target": "xin về sớm",
+    "reviewed": false
+  },
+  {
+    "source": "벌점",
+    "target": "điểm phạt",
+    "reviewed": false
+  },
+  {
+    "source": "생활기록부",
+    "target": "học bạ",
+    "reviewed": false
+  },
+  {
+    "source": "학폭위",
+    "target": "hội đồng bạo lực học đường",
+    "reviewed": false
+  },
+  {
+    "source": "학부모",
+    "target": "phụ huynh",
+    "reviewed": false
+  },
+  {
+    "source": "짝꿍",
+    "target": "bạn cùng bàn",
+    "reviewed": false
+  },
+  {
+    "source": "고등학교",
+    "target": "trường cấp ba",
+    "reviewed": false
+  },
+  {
+    "source": "중학교",
+    "target": "trường cấp hai",
+    "reviewed": false
+  },
+  {
+    "source": "초등학교",
+    "target": "trường tiểu học",
+    "reviewed": false
+  }
+]

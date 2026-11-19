@@ -1,0 +1,287 @@
+[
+  {
+    "source": "전쟁",
+    "target": "chiến tranh",
+    "reviewed": false
+  },
+  {
+    "source": "전장",
+    "target": "chiến trường",
+    "reviewed": false
+  },
+  {
+    "source": "전선",
+    "target": "tiền tuyến",
+    "reviewed": false
+  },
+  {
+    "source": "후방",
+    "target": "hậu phương",
+    "reviewed": false
+  },
+  {
+    "source": "한국전쟁",
+    "target": "Chiến tranh Triều Tiên",
+    "reviewed": false
+  },
+  {
+    "source": "육이오",
+    "target": "Chiến tranh Triều Tiên (6.25)",
+    "reviewed": false
+  },
+  {
+    "source": "휴전",
+    "target": "đình chiến",
+    "reviewed": false
+  },
+  {
+    "source": "휴전선",
+    "target": "tuyến đình chiến",
+    "reviewed": false
+  },
+  {
+    "source": "삼팔선",
+    "target": "vĩ tuyến 38",
+    "reviewed": false
+  },
+  {
+    "source": "인민군",
+    "target": "Quân đội Nhân dân (Bắc Triều Tiên)",
+    "reviewed": false
+  },
+  {
+    "source": "국군",
+    "target": "quân đội Hàn Quốc",
+    "reviewed": false
+  },
+  {
+    "source": "유엔군",
+    "target": "quân Liên Hợp Quốc",
+    "reviewed": false
+  },
+  {
+    "source": "중공군",
+    "target": "quân Trung Quốc (Chí nguyện quân)",
+    "reviewed": false
+  },
+  {
+    "source": "빨갱이",
+    "target": "\"đồ đỏ\" (cách gọi miệt thị người cộng sản)",
+    "reviewed": false
+  },
+  {
+    "source": "월북",
+    "target": "vượt sang miền Bắc",
+    "reviewed": false
+  },
+  {
+    "source": "피란",
+    "target": "di tản tránh chiến tranh",
+    "reviewed": false
+  },
+  {
+    "source": "피란민",
+    "target": "người tị nạn chiến tranh",
+    "reviewed": false
+  },
+  {
+    "source": "이산가족",
+    "target": "gia đình ly tán",
+    "reviewed": false
+  },
+  {
+    "source": "징집",
+    "target": "bắt nhập ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "입대",
+    "target": "nhập ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "제대",
+    "target": "xuất ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "전역",
+    "target": "xuất ngũ (chuyển ngũ)",
+    "reviewed": false
+  },
+  {
+    "source": "탈영",
+    "target": "đào ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "탈영병",
+    "target": "lính đào ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "포로",
+    "target": "tù binh",
+    "reviewed": false
+  },
+  {
+    "source": "사령관",
+    "target": "tư lệnh",
+    "reviewed": false
+  },
+  {
+    "source": "대장",
+    "target": "đại tướng",
+    "reviewed": false
+  },
+  {
+    "source": "중장",
+    "target": "trung tướng",
+    "reviewed": false
+  },
+  {
+    "source": "소장",
+    "target": "thiếu tướng",
+    "reviewed": false
+  },
+  {
+    "source": "준장",
+    "target": "chuẩn tướng",
+    "reviewed": false
+  },
+  {
+    "source": "대령",
+    "target": "đại tá",
+    "reviewed": false
+  },
+  {
+    "source": "중령",
+    "target": "trung tá",
+    "reviewed": false
+  },
+  {
+    "source": "소령",
+    "target": "thiếu tá",
+    "reviewed": false
+  },
+  {
+    "source": "대위",
+    "target": "đại úy",
+    "reviewed": false
+  },
+  {
+    "source": "중위",
+    "target": "trung úy",
+    "reviewed": false
+  },
+  {
+    "source": "소위",
+    "target": "thiếu úy",
+    "reviewed": false
+  },
+  {
+    "source": "상사",
+    "target": "thượng sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "중사",
+    "target": "trung sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "하사",
+    "target": "hạ sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "소대장",
+    "target": "trung đội trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "중대장",
+    "target": "đại đội trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "대대장",
+    "target": "tiểu đoàn trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "연대장",
+    "target": "trung đoàn trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "사단장",
+    "target": "sư đoàn trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "공습",
+    "target": "không kích",
+    "reviewed": false
+  },
+  {
+    "source": "폭격",
+    "target": "ném bom",
+    "reviewed": false
+  },
+  {
+    "source": "참호",
+    "target": "chiến hào",
+    "reviewed": false
+  },
+  {
+    "source": "돌격",
+    "target": "xung phong",
+    "reviewed": false
+  },
+  {
+    "source": "후퇴",
+    "target": "rút lui",
+    "reviewed": false
+  },
+  {
+    "source": "전멸",
+    "target": "bị tiêu diệt toàn bộ",
+    "reviewed": false
+  },
+  {
+    "source": "인민재판",
+    "target": "tòa án nhân dân",
+    "reviewed": false
+  },
+  {
+    "source": "비무장지대",
+    "target": "khu phi quân sự (DMZ)",
+    "reviewed": false
+  },
+  {
+    "source": "국방부",
+    "target": "Bộ Quốc phòng",
+    "reviewed": false
+  },
+  {
+    "source": "전사",
+    "target": "tử trận",
+    "reviewed": false
+  },
+  {
+    "source": "참전용사",
+    "target": "cựu chiến binh tham chiến",
+    "reviewed": false
+  },
+  {
+    "source": "전우",
+    "target": "đồng đội",
+    "reviewed": false
+  },
+  {
+    "source": "무공훈장",
+    "target": "huân chương quân công",
+    "reviewed": false
+  }
+]

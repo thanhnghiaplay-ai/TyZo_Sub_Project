@@ -106,7 +106,7 @@ CHƯA LÀM: chụp thử bằng trình duyệt (điện thoại + máy tính); c
   - [x] A5.5 (xong 19/11/2026: PROJECT_STATUS.md bảng đầu đã ghi v5.10.0; BANG_DIEU.md không có mục nào cần đổi) Ghi `PROJECT_STATUS.md`, `BANG_DIEU.md` nếu quy trình yêu cầu.
 
 ### Giai đoạn B — Thư viện thuật ngữ (làm sau A nếu Chủ không đổi thứ tự)
-- [ ] B1 (đang làm: B1.1 xong = seed hiểu `reviewed:false`; B1.2 xong 19/11/2026 = zh+en cho wuxia/xianxia/ngontinh; còn B1.3 và B1.4, xem đầu `HANDOFF.md`). Rà thể loại thiếu (kiếm hiệp, tiên hiệp, ngôn tình, trinh thám…): thêm file dữ liệu theo từng ngôn ngữ nguồn, đánh dấu «chưa duyệt» để Chủ xem lại. Bản nháp do Claude soạn KHÔNG coi là đã đúng; cách dịch thuật ngữ cộng đồng có nhiều biến thể.
+- [ ] B1 (đang làm: B1.1 xong = seed hiểu `reviewed:false`; B1.2 xong 19/11/2026 = zh+en cho wuxia/xianxia/ngontinh; B1.3a xong = zh+en cho 5 thể loại; B1.3b xong = ja+ko cho 5 thể loại; còn B1.3c và B1.4, xem đầu `HANDOFF.md`). Rà thể loại thiếu (kiếm hiệp, tiên hiệp, ngôn tình, trinh thám…): thêm file dữ liệu theo từng ngôn ngữ nguồn, đánh dấu «chưa duyệt» để Chủ xem lại. Bản nháp do Claude soạn KHÔNG coi là đã đúng; cách dịch thuật ngữ cộng đồng có nhiều biến thể.
 - [x] B2 (xong 19/11/2026; không nâng APP_VERSION vì chỉ Chủ thấy; chưa chạy với CSDL thật, chưa chụp thử giao diện). Công cụ nhập hàng loạt cho Chủ (CSV/JSON) vào `glossary_terms`, có xem trước và hộp thoại xác nhận của app.
 - [x] B3 (xong 19/11/2026; không nâng APP_VERSION vì chỉ Chủ thấy; chưa chạy với CSDL thật, chưa chụp thử giao diện; chi tiết ở đầu `HANDOFF.md`). Nhãn «đã duyệt / chưa duyệt», lọc theo nhãn, thống kê số mục mỗi thể loại ở trang Admin.
 - [ ] B4. Mở rộng các bộ mỏng (tiếng Trung ~40 mục mỗi thể loại) theo đợt, có người rành tiếng Việt duyệt.

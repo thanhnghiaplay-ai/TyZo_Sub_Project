@@ -1,3 +1,9 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3b XONG: BẢN NHÁP 5 THỂ LOẠI TIẾNG NHẬT + TIẾNG HÀN (ja, ko) — đọc mục này đầu tiên
+B1.3b-1 (ja) xem mục ngay bên dưới. B1.3b-2: thêm 5 file `data/glossaries/ko/{social,war,family,school,documentary}.json` (40 đến 57 mục mỗi file), MỌI mục `"reviewed": false`. Test `glossary.test.ts` nay quét 8 thể loại × zh/en và 5 thể loại × ja/ko (15 ca pass), typecheck sạch. Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Chú ý khi duyệt: các từ họ hàng (이모, 고모, 삼촌...), 빨갱이 (miệt thị, chỉ dùng khi phim dùng đúng nghĩa đó), 육이오/한국전쟁 và cấp bậc quân đội. Không nâng `APP_VERSION`.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B1.3c = `ko` cho wuxia (무협) và ja/ko cho ngontinh/xianxia — HỎI CHỦ trước (phim Nhật/Hàn ít dùng); B1.4 = `softcore` (18+, hỏi Chủ về mức nội dung trước khi soạn). Cách làm mỗi bước: file nháp `reviewed:false` (nguồn ≥ 2 ký tự, không trùng, ≥ 25 mục) + thêm cặp vào mảng `drafts` ở test + ghi đầu HANDOFF.md + đẩy `work`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B1.3b-1 XONG: BẢN NHÁP 5 THỂ LOẠI TIẾNG NHẬT (ja) — đọc mục này đầu tiên
 Thêm 5 file `data/glossaries/ja/{social,war,family,school,documentary}.json` (38 đến 45 mục mỗi file), MỌI mục `"reviewed": false`. Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Test `glossary.test.ts` (nhóm «bản nháp thuật ngữ thể loại mới (B1)») nay quét thêm 5 cặp `ja`. Nguồn phải từ 2 ký tự trở lên (test chặn), nên các từ một chữ Hán (嫁, 姑, 婿, 塾) viết dạng お嫁さん, お姑さん, お婿さん, 学習塾; bỏ 舅. typecheck sạch, test glossary 15 pass. Không nâng `APP_VERSION`.
 LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin.

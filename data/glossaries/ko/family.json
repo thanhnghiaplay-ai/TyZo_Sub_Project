@@ -1,0 +1,272 @@
+[
+  {
+    "source": "장남",
+    "target": "trưởng nam",
+    "reviewed": false
+  },
+  {
+    "source": "차남",
+    "target": "con trai thứ",
+    "reviewed": false
+  },
+  {
+    "source": "장녀",
+    "target": "trưởng nữ",
+    "reviewed": false
+  },
+  {
+    "source": "막내",
+    "target": "con út",
+    "reviewed": false
+  },
+  {
+    "source": "외동",
+    "target": "con một",
+    "reviewed": false
+  },
+  {
+    "source": "시어머니",
+    "target": "mẹ chồng",
+    "reviewed": false
+  },
+  {
+    "source": "시아버지",
+    "target": "bố chồng",
+    "reviewed": false
+  },
+  {
+    "source": "시누이",
+    "target": "chị/em gái chồng",
+    "reviewed": false
+  },
+  {
+    "source": "시댁",
+    "target": "nhà chồng",
+    "reviewed": false
+  },
+  {
+    "source": "처가",
+    "target": "nhà vợ",
+    "reviewed": false
+  },
+  {
+    "source": "친정",
+    "target": "nhà mẹ đẻ",
+    "reviewed": false
+  },
+  {
+    "source": "며느리",
+    "target": "con dâu",
+    "reviewed": false
+  },
+  {
+    "source": "사위",
+    "target": "con rể",
+    "reviewed": false
+  },
+  {
+    "source": "장인",
+    "target": "bố vợ",
+    "reviewed": false
+  },
+  {
+    "source": "장모",
+    "target": "mẹ vợ",
+    "reviewed": false
+  },
+  {
+    "source": "할아버지",
+    "target": "ông",
+    "reviewed": false
+  },
+  {
+    "source": "할머니",
+    "target": "bà",
+    "reviewed": false
+  },
+  {
+    "source": "외할머니",
+    "target": "bà ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "외할아버지",
+    "target": "ông ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "친할머니",
+    "target": "bà nội",
+    "reviewed": false
+  },
+  {
+    "source": "친할아버지",
+    "target": "ông nội",
+    "reviewed": false
+  },
+  {
+    "source": "이모",
+    "target": "dì (chị/em gái của mẹ)",
+    "reviewed": false
+  },
+  {
+    "source": "고모",
+    "target": "cô (chị/em gái của bố)",
+    "reviewed": false
+  },
+  {
+    "source": "큰아버지",
+    "target": "bác (anh của bố)",
+    "reviewed": false
+  },
+  {
+    "source": "작은아버지",
+    "target": "chú (em của bố)",
+    "reviewed": false
+  },
+  {
+    "source": "외삼촌",
+    "target": "cậu (anh/em trai của mẹ)",
+    "reviewed": false
+  },
+  {
+    "source": "사촌",
+    "target": "anh chị em họ",
+    "reviewed": false
+  },
+  {
+    "source": "친척",
+    "target": "họ hàng",
+    "reviewed": false
+  },
+  {
+    "source": "명절",
+    "target": "dịp lễ Tết lớn",
+    "reviewed": false
+  },
+  {
+    "source": "설날",
+    "target": "Tết Seollal",
+    "reviewed": false
+  },
+  {
+    "source": "추석",
+    "target": "Tết Trung Thu Chuseok",
+    "reviewed": false
+  },
+  {
+    "source": "차례",
+    "target": "lễ cúng tổ tiên ngày Tết",
+    "reviewed": false
+  },
+  {
+    "source": "제사",
+    "target": "lễ giỗ",
+    "reviewed": false
+  },
+  {
+    "source": "세배",
+    "target": "lạy chào năm mới",
+    "reviewed": false
+  },
+  {
+    "source": "세뱃돈",
+    "target": "tiền mừng tuổi",
+    "reviewed": false
+  },
+  {
+    "source": "족보",
+    "target": "gia phả",
+    "reviewed": false
+  },
+  {
+    "source": "가문",
+    "target": "dòng họ",
+    "reviewed": false
+  },
+  {
+    "source": "호적",
+    "target": "hộ tịch",
+    "reviewed": false
+  },
+  {
+    "source": "상속",
+    "target": "thừa kế",
+    "reviewed": false
+  },
+  {
+    "source": "재산 분할",
+    "target": "chia tài sản",
+    "reviewed": false
+  },
+  {
+    "source": "이혼",
+    "target": "ly hôn",
+    "reviewed": false
+  },
+  {
+    "source": "양육권",
+    "target": "quyền nuôi con",
+    "reviewed": false
+  },
+  {
+    "source": "입양",
+    "target": "nhận con nuôi",
+    "reviewed": false
+  },
+  {
+    "source": "고부갈등",
+    "target": "mâu thuẫn mẹ chồng nàng dâu",
+    "reviewed": false
+  },
+  {
+    "source": "맞벌이",
+    "target": "vợ chồng cùng đi làm",
+    "reviewed": false
+  },
+  {
+    "source": "전업주부",
+    "target": "nội trợ toàn thời gian",
+    "reviewed": false
+  },
+  {
+    "source": "기러기 아빠",
+    "target": "bố \"ngỗng\" (ở lại kiếm tiền, vợ con ra nước ngoài học)",
+    "reviewed": false
+  },
+  {
+    "source": "효도",
+    "target": "hiếu thảo",
+    "reviewed": false
+  },
+  {
+    "source": "불효자",
+    "target": "đứa con bất hiếu",
+    "reviewed": false
+  },
+  {
+    "source": "사돈",
+    "target": "thông gia",
+    "reviewed": false
+  },
+  {
+    "source": "상견례",
+    "target": "buổi gặp mặt hai gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "혼수",
+    "target": "đồ hồi môn, sính lễ",
+    "reviewed": false
+  },
+  {
+    "source": "돌잔치",
+    "target": "tiệc thôi nôi",
+    "reviewed": false
+  },
+  {
+    "source": "환갑",
+    "target": "mừng thọ sáu mươi",
+    "reviewed": false
+  }
+]
