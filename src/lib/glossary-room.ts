@@ -262,17 +262,19 @@ export const restoreGlossary = createServerFn({ method: "POST" })
     const sql = await sqlOf();
     const { fileTerms } = await import("@/lib/glossary-seed.server");
     const rows = fileTerms(data.lang, data.genre);
+    // Bộ mới thêm vào file sau lần nạp đầu chưa có dòng trong glossary_packs (khóa ngoại), nên tạo trước.
+    if (rows.length) await sql`insert into glossary_packs (lang, genre) values (${data.lang}, ${data.genre}) on conflict do nothing`;
     let added = 0;
     for (let i = 0; i < rows.length; i += 80) {
       const chunk = rows.slice(i, i + 80);
       const values: unknown[] = [];
       const parts = chunk.map((row, index) => {
-        const base = index * 4;
-        values.push(row.lang, row.genre, row.source, row.target);
-        return `($${base + 1},$${base + 2},$${base + 3},$${base + 4})`;
+        const base = index * 5;
+        values.push(row.lang, row.genre, row.source, row.target, row.reviewed);
+        return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5})`;
       });
       const inserted = await sql.query<{ id: number }>(
-        `insert into glossary_terms (lang, genre, source, target) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing returning id`,
+        `insert into glossary_terms (lang, genre, source, target, reviewed) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing returning id`,
         values,
       );
       added += inserted.length;

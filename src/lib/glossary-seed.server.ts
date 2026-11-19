@@ -7,6 +7,8 @@ type RawTerm = {
   note?: string;
   whole_word?: boolean;
   case_sensitive?: boolean;
+  /** false = bản nháp chưa duyệt (B1). Không ghi = đã duyệt. */
+  reviewed?: boolean;
 };
 
 const files = import.meta.glob("/data/glossaries/*/*.json", {
@@ -16,7 +18,7 @@ const files = import.meta.glob("/data/glossaries/*/*.json", {
 }) as Record<string, string>;
 
 export function fileTerms(lang?: string, genre?: string) {
-  const rows: { lang: string; genre: string; source: string; target: string }[] = [];
+  const rows: { lang: string; genre: string; source: string; target: string; reviewed: boolean }[] = [];
   for (const [path, raw] of Object.entries(files)) {
     const match = path.match(/glossaries\/([^/]+)\/([^/]+)\.json$/i);
     if (!match) continue;
@@ -29,7 +31,7 @@ export function fileTerms(lang?: string, genre?: string) {
     for (const term of terms) {
       const source = term.source?.trim();
       if (!source) continue;
-      rows.push({ lang: fileLang, genre: fileGenre, source, target: (term.target ?? source).trim() });
+      rows.push({ lang: fileLang, genre: fileGenre, source, target: (term.target ?? source).trim(), reviewed: term.reviewed !== false });
     }
   }
   return rows;
@@ -77,6 +79,7 @@ async function seed(sql: Sql) {
         (term.note ?? "").slice(0, 500),
         term.whole_word ?? null,
         term.case_sensitive ?? null,
+        term.reviewed !== false,
       ]);
     }
   }
@@ -84,12 +87,12 @@ async function seed(sql: Sql) {
     const chunk = rows.slice(i, i + 80);
     const values: unknown[] = [];
     const parts = chunk.map((row, index) => {
-      const base = index * 8;
+      const base = index * 9;
       values.push(...row);
-      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5}::jsonb,$${base + 6},$${base + 7},$${base + 8})`;
+      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5}::jsonb,$${base + 6},$${base + 7},$${base + 8},$${base + 9})`;
     });
     await sql.query(
-      `insert into glossary_terms (lang, genre, source, target, renders, note, whole_word, case_sensitive) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing`,
+      `insert into glossary_terms (lang, genre, source, target, renders, note, whole_word, case_sensitive, reviewed) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing`,
       values,
     );
   }
