@@ -112,7 +112,7 @@ CHƯA LÀM: chụp thử bằng trình duyệt (điện thoại + máy tính); c
 - [ ] B4. Mở rộng các bộ mỏng (tiếng Trung ~40 mục mỗi thể loại) theo đợt, có người rành tiếng Việt duyệt.
 
 ### Giai đoạn C — Nâng cấp nhỏ khác (tùy chọn)
-- [ ] C1. Test cho `analyzeFilm` bằng phản hồi giả (hiện chưa có test).
+- [x] C1 (xong 19/11/2026: phần thuần tách ra `src/lib/sub/analyze.ts` (`analyzeMessages`, `parseBible`), test `analyze.test.ts` 6 ca; `analyzeFilm` ở groq.ts chỉ còn gọi mạng, chưa có test gọi mạng vì `groq.ts` dùng alias `@/`). Test cho `analyzeFilm` bằng phản hồi giả (hiện chưa có test).
 - [x] C2 (xong 19/11/2026, v5.10.1). Nới `untranslated` (`src/lib/sub/text.ts`) để câu lặp như «okay okay» không bị đánh dấu chưa dịch oan; thêm test.
 - [ ] C3. Ô «Yêu cầu thêm cho bản dịch» nối vào cuối prompt dịch (giọng văn, mức trang trọng), giới hạn độ dài.
 - [ ] C4. Thử so sánh có đo lường trên phim mẫu: có/không bước phân tích phim, có/không bước thay thuật ngữ bằng ký hiệu giữ chỗ (`protectTerms`); so lỗi và chi phí. Cần phim mẫu và key của Chủ.

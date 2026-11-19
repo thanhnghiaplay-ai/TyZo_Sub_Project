@@ -4,10 +4,8 @@ import type { PackedAudio } from "@/lib/sub/codec";
 import {
   contiguousRuns,
   filmContext,
-  glossaryList,
   optsForRange,
   parseTranslations,
-  stripFence,
   translationMessages,
   translationSchema,
   untranslated,
@@ -18,6 +16,7 @@ import { roomTicketId } from "@/lib/sub/room-ticket";
 import type { KeyProbe } from "@/lib/sub/key-check";
 import { BODY_TIMEOUT_MS, DeadlineError, HEADER_TIMEOUT_MS, withDeadlines } from "@/lib/sub/http-deadline";
 import { PolishRefusal, type PolishCall } from "@/lib/sub/polish";
+import { analyzeMessages, parseBible } from "@/lib/sub/analyze";
 
 export const API = "https://api.groq.com/openai/v1";
 export const ROOM_KEY = "room";
@@ -545,21 +544,7 @@ export async function analyzeFilm(input: {
   onWait?: (message: string) => void;
   ticket?: string | null;
 }): Promise<Bible> {
-  let text = input.lines.join("\n");
-  if (text.length > 40000) {
-    const h = Math.floor(text.length / 2);
-    text = text.slice(0, 12000) + "\n[...]\n" + text.slice(h - 6000, h + 6000) + "\n[...]\n" + text.slice(-12000);
-  }
-  const sys = `You are a film analyst preparing a subtitle translation into ${input.language}. The input is a raw speech-recognition transcript; names are often misspelled. Return only JSON: {"summary":"3-5 sentences in ${input.language}","characters":[{"name":"canonical spelling","variants":["misspellings of this name that appear in the transcript"],"gender":"male|female|unknown","self":"pronoun this person uses for themselves in ${input.language}","addressed":"how others address this person in ${input.language}","note":"role and relationships"}],"terms":[{"src":"place/organization/item/term as in transcript","tgt":"best rendering in ${input.language}, or the same if it should stay"}]}. Include only names and terms actually present, at most 30 characters and 40 terms, and unify spelling variants of the same name. Infer gender from names, grammar and how people speak; do not leave gender unknown when the transcript makes it clear. self and addressed must be concrete address forms in ${input.language} (Vietnamese examples: "tự xưng tôi, được gọi là anh"), or empty strings if truly unknown.`;
-  const glossPairs = glossaryList(input.gloss)
-    .slice(0, 80)
-    .map(([src, tgt]) => (src === tgt ? src : `${src} => ${tgt}`))
-    .join("; ");
-  const user = `Known info: ${[input.title.trim(), input.notes.trim().slice(0, 1500), glossPairs].filter(Boolean).join(" | ") || "(none)"}\n\nTRANSCRIPT:\n${text}`;
-  const messages: Msg[] = [
-    { role: "system", content: sys },
-    { role: "user", content: user },
-  ];
+  const messages: Msg[] = analyzeMessages(input);
   const data = await requestWithRetry(
     `${API}/chat/completions`,
     () => ({
@@ -582,7 +567,7 @@ export async function analyzeFilm(input: {
     input.ticket,
     (response) => response.json() as Promise<{ choices?: Array<{ message?: { content?: string } }> }>,
   );
-  return JSON.parse(stripFence(data.choices?.[0]?.message?.content || "")) as Bible;
+  return parseBible(data.choices?.[0]?.message?.content || "");
 }
 
 export function applyNameFixes(lines: Array<{ original: string; translation: string | null }>, bible: Bible) {

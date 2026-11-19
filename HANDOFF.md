@@ -1,3 +1,7 @@
+## BÀN GIAO (19/11/2026, nhánh work) — C1 XONG (không nâng phiên bản, chỉ tách code + test)
+Tách phần thuần của `analyzeFilm` ra `src/lib/sub/analyze.ts` (`analyzeMessages`, `parseBible`; `parseBible` nay ném lỗi nếu kết quả không phải đối tượng JSON). Test mới `analyze.test.ts` (6 ca, đã thêm vào script `test`). typecheck sạch, eslint 0 lỗi, `npm test` 198 + 1177 pass. Gọi mạng của `analyzeFilm` vẫn chưa có test (groq.ts dùng alias `@/`, Node thuần không nạp được).
+VIỆC TIẾP THEO: C3 (ô «Yêu cầu thêm cho bản dịch»); giai đoạn B cần Chủ duyệt dữ liệu; còn kiểm tay A5 (trình duyệt, model thật).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — C2 XONG (v5.10.1) — đọc mục này đầu tiên
 `untranslated()` (`src/lib/sub/text.ts`) không coi câu chỉ gồm tiếng đệm (okay, haha, wow...) là chưa dịch; test thêm ở `translate-batch.test.ts`. Nâng 5.10.1, CHANGELOG, ADMIN_LOG. Phần A5 (v5.10.0) xem mục bên dưới.
 VIỆC TIẾP THEO: C1 (test `analyzeFilm`), rồi C3; giai đoạn B cần Chủ duyệt dữ liệu. Vẫn còn kiểm tay A5 (trình duyệt, model thật).
