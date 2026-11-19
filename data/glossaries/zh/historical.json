@@ -449,5 +449,225 @@
       "en": "military tally"
     },
     "note": "Hán Việt: binh phù"
+  },
+  {
+    "source": "寡人",
+    "target": "quả nhân",
+    "reviewed": false
+  },
+  {
+    "source": "本王",
+    "target": "bổn vương",
+    "reviewed": false
+  },
+  {
+    "source": "微臣",
+    "target": "vi thần",
+    "reviewed": false
+  },
+  {
+    "source": "爱卿",
+    "target": "ái khanh",
+    "reviewed": false
+  },
+  {
+    "source": "众卿",
+    "target": "chư khanh",
+    "reviewed": false
+  },
+  {
+    "source": "万岁",
+    "target": "vạn tuế",
+    "reviewed": false
+  },
+  {
+    "source": "传位",
+    "target": "truyền ngôi",
+    "reviewed": false
+  },
+  {
+    "source": "继位",
+    "target": "kế vị",
+    "reviewed": false
+  },
+  {
+    "source": "称帝",
+    "target": "xưng đế",
+    "reviewed": false
+  },
+  {
+    "source": "皇帝",
+    "target": "hoàng đế",
+    "reviewed": false
+  },
+  {
+    "source": "皇宫",
+    "target": "hoàng cung",
+    "reviewed": false
+  },
+  {
+    "source": "朝堂",
+    "target": "triều đình",
+    "reviewed": false
+  },
+  {
+    "source": "上朝",
+    "target": "thượng triều",
+    "reviewed": false
+  },
+  {
+    "source": "退朝",
+    "target": "bãi triều",
+    "reviewed": false
+  },
+  {
+    "source": "奏请",
+    "target": "tấu xin",
+    "reviewed": false
+  },
+  {
+    "source": "上奏",
+    "target": "dâng tấu",
+    "reviewed": false
+  },
+  {
+    "source": "谏言",
+    "target": "can gián",
+    "reviewed": false
+  },
+  {
+    "source": "弹劾",
+    "target": "luận tội, hặc tấu",
+    "reviewed": false
+  },
+  {
+    "source": "罢官",
+    "target": "cách chức",
+    "reviewed": false
+  },
+  {
+    "source": "宰相",
+    "target": "tể tướng",
+    "reviewed": false
+  },
+  {
+    "source": "尚书",
+    "target": "thượng thư",
+    "reviewed": false
+  },
+  {
+    "source": "御史",
+    "target": "ngự sử",
+    "reviewed": false
+  },
+  {
+    "source": "太傅",
+    "target": "thái phó",
+    "reviewed": false
+  },
+  {
+    "source": "总督",
+    "target": "tổng đốc",
+    "reviewed": false
+  },
+  {
+    "source": "巡抚",
+    "target": "tuần phủ",
+    "reviewed": false
+  },
+  {
+    "source": "刺史",
+    "target": "thứ sử",
+    "reviewed": false
+  },
+  {
+    "source": "太守",
+    "target": "thái thú",
+    "reviewed": false
+  },
+  {
+    "source": "诸侯",
+    "target": "chư hầu",
+    "reviewed": false
+  },
+  {
+    "source": "藩王",
+    "target": "phiên vương",
+    "reviewed": false
+  },
+  {
+    "source": "联盟",
+    "target": "liên minh",
+    "reviewed": false
+  },
+  {
+    "source": "起义",
+    "target": "khởi nghĩa",
+    "reviewed": false
+  },
+  {
+    "source": "叛军",
+    "target": "quân phản loạn",
+    "reviewed": false
+  },
+  {
+    "source": "攻城",
+    "target": "đánh thành",
+    "reviewed": false
+  },
+  {
+    "source": "守城",
+    "target": "giữ thành",
+    "reviewed": false
+  },
+  {
+    "source": "粮草",
+    "target": "lương thảo",
+    "reviewed": false
+  },
+  {
+    "source": "军令",
+    "target": "quân lệnh",
+    "reviewed": false
+  },
+  {
+    "source": "虎符",
+    "target": "hổ phù",
+    "reviewed": false
+  },
+  {
+    "source": "凯旋",
+    "target": "khải hoàn",
+    "reviewed": false
+  },
+  {
+    "source": "议和",
+    "target": "nghị hòa",
+    "reviewed": false
+  },
+  {
+    "source": "灭国",
+    "target": "diệt quốc",
+    "reviewed": false
+  },
+  {
+    "source": "亡国",
+    "target": "mất nước",
+    "reviewed": false
+  },
+  {
+    "source": "三公九卿",
+    "target": "tam công cửu khanh",
+    "reviewed": false
+  },
+  {
+    "source": "太庙",
+    "target": "thái miếu",
+    "reviewed": false
+  },
+  {
+    "source": "玉玺",
+    "target": "ngọc tỷ",
+    "reviewed": false
   }
 ]

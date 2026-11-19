@@ -1,3 +1,10 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B4.2b XONG: BỔ SUNG THUẬT NGỮ TIẾNG TRUNG (zh) CHO documentary/family/historical/ngontinh — đọc mục này đầu tiên
+Thêm vào file có sẵn (giữ nguyên mục cũ): `zh/documentary.json` +40 (40→80), `zh/family.json` +40 (47→87), `zh/historical.json` +44 (41→85), `zh/ngontinh.json` +43 (36→79). Mục mới `reviewed:false`; đã thêm 4 thể loại vào `expanded` ở `src/lib/sub/glossary.test.ts`. Chú ý khi duyệt: 寡人/本王/微臣/爱卿 (xưng hô theo vai), 伯父/婶婶/姑父/姨夫 (cách gọi họ hàng Việt), 老伴, 彩礼 (sính lễ), 绿茶/白莲花 (miệt thị), 狗血, 撩 (đã có sẵn ở bộ khác nên bỏ), 殖民 (nhạy cảm chính trị, dịch trung tính). Không nâng `APP_VERSION`.
+Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1197 pass.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp mục mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B4.2c = bổ sung `zh` cho psychological, romance, school, scifi (mỗi bộ ≥ 30 mục mới; nguồn ≥ 2 ký tự, không trùng, `reviewed:false`; thêm vào `expanded` ở test). Sau đó B4.2d (series, social, sports, war), B4.2e (wuxia, xianxia). Mỗi bước: `npm ci` (nếu chưa có node_modules), `npm run typecheck`, `npm run lint`, `npm test`, commit, `git push origin work`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B4.2a XONG: BỔ SUNG THUẬT NGỮ TIẾNG TRUNG (zh) CHO adventure/comedy/costume/daily — đọc mục này đầu tiên
 Thêm vào file có sẵn (giữ nguyên mục cũ, JSON indent 2): `zh/adventure.json` +40 (38→78), `zh/comedy.json` +34 (35→69), `zh/costume.json` +45 (47→92), `zh/daily.json` +40 (38→78). Mục mới dạng `{source, target, "reviewed": false}`. Đã thêm 4 thể loại vào `expanded` ở test «mục bổ sung chưa duyệt» (`src/lib/sub/glossary.test.ts`). Chú ý khi duyệt: 本宫/哀家/臣妾 (xưng hô theo vai), 奴才 (nô tài hay «nô tì»), 小的, 大人 (đại nhân hay «người lớn»), 囧 (bỏ vì 1 ký tự), 老板 (sếp hay ông chủ), 崩溃 (sụp đổ hay «hết nói nổi»), 套路 (chiêu trò). Không nâng `APP_VERSION`.
 Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1197 pass.

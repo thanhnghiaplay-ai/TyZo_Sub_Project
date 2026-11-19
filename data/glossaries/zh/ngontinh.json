@@ -180,5 +180,220 @@
     "source": "小三",
     "target": "kẻ thứ ba",
     "reviewed": false
+  },
+  {
+    "source": "霸总",
+    "target": "tổng tài bá đạo",
+    "reviewed": false
+  },
+  {
+    "source": "商业联姻",
+    "target": "hôn nhân thương mại",
+    "reviewed": false
+  },
+  {
+    "source": "闪婚",
+    "target": "cưới chớp nhoáng",
+    "reviewed": false
+  },
+  {
+    "source": "婚礼",
+    "target": "lễ cưới",
+    "reviewed": false
+  },
+  {
+    "source": "订婚宴",
+    "target": "tiệc đính hôn",
+    "reviewed": false
+  },
+  {
+    "source": "求婚",
+    "target": "cầu hôn",
+    "reviewed": false
+  },
+  {
+    "source": "戒指",
+    "target": "nhẫn",
+    "reviewed": false
+  },
+  {
+    "source": "领证",
+    "target": "đăng ký kết hôn",
+    "reviewed": false
+  },
+  {
+    "source": "蜜月",
+    "target": "tuần trăng mật",
+    "reviewed": false
+  },
+  {
+    "source": "老公大人",
+    "target": "ông xã",
+    "reviewed": false
+  },
+  {
+    "source": "老婆大人",
+    "target": "bà xã",
+    "reviewed": false
+  },
+  {
+    "source": "心上人",
+    "target": "người trong lòng",
+    "reviewed": false
+  },
+  {
+    "source": "意中人",
+    "target": "người trong mộng",
+    "reviewed": false
+  },
+  {
+    "source": "男神",
+    "target": "nam thần",
+    "reviewed": false
+  },
+  {
+    "source": "女神",
+    "target": "nữ thần",
+    "reviewed": false
+  },
+  {
+    "source": "撒娇",
+    "target": "làm nũng",
+    "reviewed": false
+  },
+  {
+    "source": "宠你",
+    "target": "cưng chiều em",
+    "reviewed": false
+  },
+  {
+    "source": "宠溺",
+    "target": "cưng chiều hết mực",
+    "reviewed": false
+  },
+  {
+    "source": "占有欲",
+    "target": "dục vọng chiếm hữu",
+    "reviewed": false
+  },
+  {
+    "source": "护短",
+    "target": "bênh người nhà",
+    "reviewed": false
+  },
+  {
+    "source": "英雄救美",
+    "target": "anh hùng cứu mỹ nhân",
+    "reviewed": false
+  },
+  {
+    "source": "拥抱",
+    "target": "ôm",
+    "reviewed": false
+  },
+  {
+    "source": "牵手",
+    "target": "nắm tay",
+    "reviewed": false
+  },
+  {
+    "source": "心跳加速",
+    "target": "tim đập nhanh",
+    "reviewed": false
+  },
+  {
+    "source": "脸红",
+    "target": "đỏ mặt",
+    "reviewed": false
+  },
+  {
+    "source": "害羞",
+    "target": "ngại ngùng",
+    "reviewed": false
+  },
+  {
+    "source": "暧昧",
+    "target": "mập mờ",
+    "reviewed": false
+  },
+  {
+    "source": "追求",
+    "target": "theo đuổi",
+    "reviewed": false
+  },
+  {
+    "source": "情敌",
+    "target": "tình địch",
+    "reviewed": false
+  },
+  {
+    "source": "绿茶",
+    "target": "kẻ giả vờ ngây thơ (trà xanh)",
+    "reviewed": false
+  },
+  {
+    "source": "白莲花",
+    "target": "bạch liên hoa",
+    "reviewed": false
+  },
+  {
+    "source": "误会",
+    "target": "hiểu lầm",
+    "reviewed": false
+  },
+  {
+    "source": "复合",
+    "target": "quay lại",
+    "reviewed": false
+  },
+  {
+    "source": "挽回",
+    "target": "cứu vãn",
+    "reviewed": false
+  },
+  {
+    "source": "狗血",
+    "target": "sến súa, kịch tính quá đà",
+    "reviewed": false
+  },
+  {
+    "source": "虐心",
+    "target": "đau lòng",
+    "reviewed": false
+  },
+  {
+    "source": "甜宠",
+    "target": "ngọt ngào cưng chiều",
+    "reviewed": false
+  },
+  {
+    "source": "重逢",
+    "target": "tái ngộ",
+    "reviewed": false
+  },
+  {
+    "source": "失忆",
+    "target": "mất trí nhớ",
+    "reviewed": false
+  },
+  {
+    "source": "怀孕",
+    "target": "mang thai",
+    "reviewed": false
+  },
+  {
+    "source": "孩子",
+    "target": "đứa bé, con",
+    "reviewed": false
+  },
+  {
+    "source": "日久生情",
+    "target": "ở lâu sinh tình",
+    "reviewed": false
+  },
+  {
+    "source": "相爱相杀",
+    "target": "yêu nhau lẫn hại nhau",
+    "reviewed": false
   }
 ]

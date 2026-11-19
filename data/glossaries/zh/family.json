@@ -234,5 +234,205 @@
     "source": "传宗接代",
     "target": "nối dõi tông đường",
     "reviewed": false
+  },
+  {
+    "source": "爸爸",
+    "target": "bố, ba",
+    "reviewed": false
+  },
+  {
+    "source": "妈妈",
+    "target": "mẹ, má",
+    "reviewed": false
+  },
+  {
+    "source": "父母",
+    "target": "cha mẹ",
+    "reviewed": false
+  },
+  {
+    "source": "爸妈",
+    "target": "bố mẹ",
+    "reviewed": false
+  },
+  {
+    "source": "儿子",
+    "target": "con trai",
+    "reviewed": false
+  },
+  {
+    "source": "女儿",
+    "target": "con gái",
+    "reviewed": false
+  },
+  {
+    "source": "兄弟",
+    "target": "anh em",
+    "reviewed": false
+  },
+  {
+    "source": "姐妹",
+    "target": "chị em",
+    "reviewed": false
+  },
+  {
+    "source": "堂哥",
+    "target": "anh họ (bên nội)",
+    "reviewed": false
+  },
+  {
+    "source": "表姐",
+    "target": "chị họ (bên ngoại)",
+    "reviewed": false
+  },
+  {
+    "source": "伯父",
+    "target": "bác (anh của bố)",
+    "reviewed": false
+  },
+  {
+    "source": "伯母",
+    "target": "bác gái",
+    "reviewed": false
+  },
+  {
+    "source": "婶婶",
+    "target": "thím",
+    "reviewed": false
+  },
+  {
+    "source": "姑父",
+    "target": "dượng (chồng cô)",
+    "reviewed": false
+  },
+  {
+    "source": "姨夫",
+    "target": "dượng (chồng dì)",
+    "reviewed": false
+  },
+  {
+    "source": "亲家",
+    "target": "thông gia",
+    "reviewed": false
+  },
+  {
+    "source": "老伴",
+    "target": "vợ/chồng già, bạn đời",
+    "reviewed": false
+  },
+  {
+    "source": "独生子",
+    "target": "con một",
+    "reviewed": false
+  },
+  {
+    "source": "长子",
+    "target": "con trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "小儿子",
+    "target": "con trai út",
+    "reviewed": false
+  },
+  {
+    "source": "唠叨",
+    "target": "cằn nhằn",
+    "reviewed": false
+  },
+  {
+    "source": "管教",
+    "target": "dạy dỗ, kèm cặp",
+    "reviewed": false
+  },
+  {
+    "source": "溺爱",
+    "target": "nuông chiều",
+    "reviewed": false
+  },
+  {
+    "source": "偏心",
+    "target": "thiên vị",
+    "reviewed": false
+  },
+  {
+    "source": "争吵",
+    "target": "cãi vã",
+    "reviewed": false
+  },
+  {
+    "source": "赡养",
+    "target": "phụng dưỡng",
+    "reviewed": false
+  },
+  {
+    "source": "反哺",
+    "target": "đền đáp công ơn cha mẹ",
+    "reviewed": false
+  },
+  {
+    "source": "探亲",
+    "target": "thăm người thân",
+    "reviewed": false
+  },
+  {
+    "source": "回老家",
+    "target": "về quê",
+    "reviewed": false
+  },
+  {
+    "source": "年夜饭",
+    "target": "bữa cơm tất niên",
+    "reviewed": false
+  },
+  {
+    "source": "全家福",
+    "target": "ảnh gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "家庭聚会",
+    "target": "buổi họp mặt gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "相亲",
+    "target": "xem mắt",
+    "reviewed": false
+  },
+  {
+    "source": "催婚",
+    "target": "giục cưới",
+    "reviewed": false
+  },
+  {
+    "source": "彩礼",
+    "target": "sính lễ",
+    "reviewed": false
+  },
+  {
+    "source": "嫁妆",
+    "target": "của hồi môn",
+    "reviewed": false
+  },
+  {
+    "source": "婆媳",
+    "target": "mẹ chồng nàng dâu",
+    "reviewed": false
+  },
+  {
+    "source": "代沟",
+    "target": "khoảng cách thế hệ",
+    "reviewed": false
+  },
+  {
+    "source": "家丑",
+    "target": "chuyện xấu trong nhà",
+    "reviewed": false
+  },
+  {
+    "source": "养育",
+    "target": "nuôi dưỡng",
+    "reviewed": false
   }
 ]

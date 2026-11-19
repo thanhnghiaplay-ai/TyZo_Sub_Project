@@ -198,5 +198,205 @@
     "source": "黑洞",
     "target": "hố đen",
     "reviewed": false
+  },
+  {
+    "source": "影片",
+    "target": "bộ phim, phim tài liệu",
+    "reviewed": false
+  },
+  {
+    "source": "镜头",
+    "target": "ống kính, cảnh quay",
+    "reviewed": false
+  },
+  {
+    "source": "解说",
+    "target": "thuyết minh",
+    "reviewed": false
+  },
+  {
+    "source": "画外音",
+    "target": "giọng đọc ngoài hình",
+    "reviewed": false
+  },
+  {
+    "source": "口述",
+    "target": "kể lại bằng lời",
+    "reviewed": false
+  },
+  {
+    "source": "历史学家",
+    "target": "nhà sử học",
+    "reviewed": false
+  },
+  {
+    "source": "研究人员",
+    "target": "nhà nghiên cứu",
+    "reviewed": false
+  },
+  {
+    "source": "研究表明",
+    "target": "nghiên cứu cho thấy",
+    "reviewed": false
+  },
+  {
+    "source": "调查显示",
+    "target": "khảo sát cho thấy",
+    "reviewed": false
+  },
+  {
+    "source": "数据显示",
+    "target": "số liệu cho thấy",
+    "reviewed": false
+  },
+  {
+    "source": "野生动物",
+    "target": "động vật hoang dã",
+    "reviewed": false
+  },
+  {
+    "source": "食物链",
+    "target": "chuỗi thức ăn",
+    "reviewed": false
+  },
+  {
+    "source": "捕食者",
+    "target": "kẻ săn mồi",
+    "reviewed": false
+  },
+  {
+    "source": "猎物",
+    "target": "con mồi",
+    "reviewed": false
+  },
+  {
+    "source": "灭绝",
+    "target": "tuyệt chủng",
+    "reviewed": false
+  },
+  {
+    "source": "生物多样性",
+    "target": "đa dạng sinh học",
+    "reviewed": false
+  },
+  {
+    "source": "自然保护",
+    "target": "bảo tồn thiên nhiên",
+    "reviewed": false
+  },
+  {
+    "source": "国家公园",
+    "target": "vườn quốc gia",
+    "reviewed": false
+  },
+  {
+    "source": "热带雨林",
+    "target": "rừng mưa nhiệt đới",
+    "reviewed": false
+  },
+  {
+    "source": "冰川",
+    "target": "sông băng",
+    "reviewed": false
+  },
+  {
+    "source": "海平面",
+    "target": "mực nước biển",
+    "reviewed": false
+  },
+  {
+    "source": "极端天气",
+    "target": "thời tiết cực đoan",
+    "reviewed": false
+  },
+  {
+    "source": "碳排放",
+    "target": "phát thải carbon",
+    "reviewed": false
+  },
+  {
+    "source": "可再生能源",
+    "target": "năng lượng tái tạo",
+    "reviewed": false
+  },
+  {
+    "source": "环境保护",
+    "target": "bảo vệ môi trường",
+    "reviewed": false
+  },
+  {
+    "source": "考古学家",
+    "target": "nhà khảo cổ",
+    "reviewed": false
+  },
+  {
+    "source": "出土",
+    "target": "khai quật được",
+    "reviewed": false
+  },
+  {
+    "source": "墓葬",
+    "target": "mộ táng",
+    "reviewed": false
+  },
+  {
+    "source": "手稿",
+    "target": "bản thảo viết tay",
+    "reviewed": false
+  },
+  {
+    "source": "战争年代",
+    "target": "thời chiến",
+    "reviewed": false
+  },
+  {
+    "source": "工业革命",
+    "target": "cách mạng công nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "殖民",
+    "target": "thực dân",
+    "reviewed": false
+  },
+  {
+    "source": "古代文明",
+    "target": "văn minh cổ đại",
+    "reviewed": false
+  },
+  {
+    "source": "人类学",
+    "target": "nhân loại học",
+    "reviewed": false
+  },
+  {
+    "source": "天文学家",
+    "target": "nhà thiên văn",
+    "reviewed": false
+  },
+  {
+    "source": "太阳系",
+    "target": "hệ Mặt Trời",
+    "reviewed": false
+  },
+  {
+    "source": "行星",
+    "target": "hành tinh",
+    "reviewed": false
+  },
+  {
+    "source": "基因",
+    "target": "gen",
+    "reviewed": false
+  },
+  {
+    "source": "进化",
+    "target": "tiến hóa",
+    "reviewed": false
+  },
+  {
+    "source": "显微镜",
+    "target": "kính hiển vi",
+    "reviewed": false
   }
 ]
