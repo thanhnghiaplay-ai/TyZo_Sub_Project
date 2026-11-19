@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.11.0",
     time: "19/11/2026",
     area: "du-lieu",
+    text: "B3 (HANDOFF_NANG_CAP.md): nhãn «đã duyệt / chưa duyệt» cho thuật ngữ. 1) Migration 0026_glossary_review.sql thêm cột glossary_terms.reviewed (mặc định true: mục đang có coi là đã duyệt). 2) src/lib/glossary-review.ts (thuần) + glossary-review.test.ts (6 ca): lọc, thống kê theo ngôn ngữ/thể loại, thể loại còn trống. 3) glossary-room.ts: listGlossary nhận review (all/reviewed/draft) và trả packTotal/packReviewed; setGlossaryReviewed (một mục hoặc cả bộ); glossaryStats; importGlossary nhận draft (nhập làm bản nháp = chưa duyệt); Chủ tự thêm tay hoặc nhận gợi ý của khách thì tự coi đã duyệt. 4) glossary-board.tsx: ô lọc, nhãn từng mục, nút Duyệt/Bỏ duyệt, «Duyệt cả bộ» có hộp xác nhận, ô «đánh dấu chưa duyệt» khi nhập file, mục «Thống kê số mục». Khách không thấy gì mới (không nâng APP_VERSION). Chưa chạy với CSDL thật.",
+  },
+  {
+    version: "5.11.0",
+    time: "19/11/2026",
+    area: "du-lieu",
     text: "B2 (HANDOFF_NANG_CAP.md): nhập thuật ngữ hàng loạt có xem trước. 1) File mới src/lib/glossary-import.ts (thuần): parseImportText đọc JSON hoặc CSV/TSV/«gốc = dịch» (tối đa 5000 dòng), planImport phân loại từng dòng (mới, đổi cách dịch, hiện lại từ đang ẩn, giống hệt, lặp trong file, bị từ chối kèm số dòng và lý do), importBatches cắt lượt 400 dòng, importSummary cho hộp xác nhận. 2) glossary-room.ts: previewGlossaryImport (chỉ đọc, không ghi). 3) Bảng Admin Thuật ngữ, nút «Nhập file»: đọc, xem trước, hộp xác nhận của app, rồi ghi từng lượt; trước đây ghi thẳng và cắt âm thầm ở 400 dòng. Test glossary-import.test.ts (8 ca). Chưa chạy với CSDL thật. Không hiện cho khách nên không nâng APP_VERSION.",
   },
   {

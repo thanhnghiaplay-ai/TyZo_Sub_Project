@@ -7,14 +7,17 @@ import {
   restoreGlossary,
   saveGlossaryTerm,
   exportGlossary,
+  glossaryStats,
   importGlossary,
   previewGlossaryImport,
   setGlossaryHidden,
   setGlossaryPacks,
+  setGlossaryReviewed,
   setSuggestionStatus,
 } from "@/lib/glossary-room";
 import { GENRE_LABELS } from "@/lib/glossary-share";
 import { importBatches, importSummary, parseImportText } from "@/lib/glossary-import";
+import { REVIEW_FILTERS, cleanReviewFilter, emptyGenres, statLine, type LangStat, type ReviewFilter, type StatRow } from "@/lib/glossary-review";
 
 const LANGS = [
   ["zh", "Trung"],
@@ -35,7 +38,11 @@ export function GlossaryBoard() {
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [health, setHealth] = useState("");
-  const [terms, setTerms] = useState<{ id: number; source: string; target: string; hidden: boolean }[]>([]);
+  const [review, setReview] = useState<ReviewFilter>("all");
+  const [asDraft, setAsDraft] = useState(false);
+  const [packStat, setPackStat] = useState({ total: 0, reviewed: 0 });
+  const [stats, setStats] = useState<{ langs: LangStat[]; rows: StatRow[] } | null>(null);
+  const [terms, setTerms] = useState<{ id: number; source: string; target: string; hidden: boolean; reviewed: boolean }[]>([]);
   const [ideas, setIdeas] = useState<{ id: number; source: string; target: string }[]>([]);
 
   async function run(job: () => Promise<void>) {
@@ -49,9 +56,11 @@ export function GlossaryBoard() {
     }
   }
 
-  async function load(nextLang = lang, nextGenre = genre, nextQ = q, nextOffset = 0) {
-    const pack = await listGlossary({ data: { lang: nextLang, genre: nextGenre, q: nextQ, offset: nextOffset } });
+  async function load(nextLang = lang, nextGenre = genre, nextQ = q, nextOffset = 0, nextReview = review) {
+    const pack = await listGlossary({ data: { lang: nextLang, genre: nextGenre, q: nextQ, offset: nextOffset, review: nextReview } });
     setHidden(pack.hidden);
+    setPackStat({ total: pack.packTotal, reviewed: pack.packReviewed });
+    setStats(await glossaryStats());
     setTotal(pack.total);
     setOffset(nextOffset);
     setTerms(pack.terms);
@@ -185,7 +194,7 @@ export function GlossaryBoard() {
                 }
                 const ok = await askConfirm({
                   title: "Nhập thuật ngữ?",
-                  text: `${note} Ghi vào bộ ${lang} / ${GENRE_LABELS[genre] || genre}.`,
+                  text: `${note} Ghi vào bộ ${lang} / ${GENRE_LABELS[genre] || genre}${asDraft ? ", đánh dấu CHƯA DUYỆT" : ""}.`,
                   confirmLabel: "Nhập",
                 });
                 if (!ok) {
@@ -194,7 +203,7 @@ export function GlossaryBoard() {
                 }
                 let written = 0;
                 for (const batch of batches) {
-                  const result = await importGlossary({ data: { lang, genre, rows: batch } });
+                  const result = await importGlossary({ data: { lang, genre, rows: batch, draft: asDraft } });
                   written += result.added;
                   setNote(`Đang nhập… ${written} từ.`);
                 }
@@ -205,6 +214,10 @@ export function GlossaryBoard() {
           />
         </label>
       </div>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={asDraft} onChange={(event) => setAsDraft(event.target.checked)} />
+        Lần nhập file này đánh dấu «chưa duyệt» (bản nháp)
+      </label>
       <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
         <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3" placeholder="Từ gốc" value={source} onChange={(event) => setSource(event.target.value)} />
         <input className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3" placeholder="Cách dịch" value={target} onChange={(event) => setTarget(event.target.value)} />
@@ -235,8 +248,39 @@ export function GlossaryBoard() {
             setQ(next);
           }}
         />
+        <select
+          className="min-tap rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"
+          value={review}
+          onChange={(event) => {
+            const next = cleanReviewFilter(event.target.value);
+            setReview(next);
+            void run(() => load(lang, genre, q, 0, next));
+          }}
+        >
+          {REVIEW_FILTERS.map(([id, label]) => (
+            <option key={id} value={id}>{label}</option>
+          ))}
+        </select>
         <button type="button" className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" disabled={busy} onClick={() => void run(() => load(lang, genre, q, 0))}>
           Lọc
+        </button>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+        <span>Bộ này: {statLine(packStat.total, packStat.reviewed)}</span>
+        <button
+          type="button"
+          className="min-tap rounded-full border border-line px-3 text-xs disabled:opacity-40"
+          disabled={busy || packStat.total === packStat.reviewed}
+          onClick={async () => {
+            if (!(await askConfirm({ title: "Duyệt cả bộ?", text: `Đánh dấu «đã duyệt» mọi mục của bộ ${lang} / ${GENRE_LABELS[genre] || genre}. Chỉ làm khi bạn đã xem hết.`, confirmLabel: "Duyệt cả bộ" }))) return;
+            void run(async () => {
+              const result = await setGlossaryReviewed({ data: { pack: true, lang, genre, reviewed: true } });
+              setNote(`Đã duyệt ${result.changed} mục.`);
+              await load();
+            });
+          }}
+        >
+          Duyệt cả bộ
         </button>
       </div>
       {note ? <p className="text-sm text-muted">{note}</p> : null}
@@ -247,6 +291,10 @@ export function GlossaryBoard() {
         {terms.map((term) => (
           <div key={term.id} className="flex flex-wrap items-center gap-2 text-sm">
             <span className={"min-w-0 flex-1 break-words " + (term.hidden ? "text-muted line-through" : "")}>{term.source} → {term.target}</span>
+            <span className={"rounded-full border px-2 text-xs " + (term.reviewed ? "border-line text-muted" : "border-accent text-accent")}>{term.reviewed ? "Đã duyệt" : "Chưa duyệt"}</span>
+            <button type="button" className="min-tap text-xs" disabled={busy} onClick={() => void run(async () => { await setGlossaryReviewed({ data: { id: term.id, reviewed: !term.reviewed } }); await load(lang, genre, q, offset); })}>
+              {term.reviewed ? "Bỏ duyệt" : "Duyệt"}
+            </button>
             <button type="button" className="min-tap text-xs" disabled={busy} onClick={() => void run(async () => { await setGlossaryHidden({ data: { id: term.id, hidden: !term.hidden } }); await load(lang, genre, q, offset); })}>
               {term.hidden ? "Hiện" : "Ẩn"}
             </button>
@@ -271,6 +319,24 @@ export function GlossaryBoard() {
         <button type="button" className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40" disabled={busy} onClick={() => void run(() => load(lang, genre, q, offset + 50))}>
           Xem tiếp
         </button>
+      )}
+      {stats && stats.langs.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">Thống kê số mục</h3>
+          {stats.langs.map((item) => (
+            <details key={item.lang} className="text-sm" open={item.lang === lang}>
+              <summary className="cursor-pointer">{LANGS.find(([id]) => id === item.lang)?.[1] ?? item.lang}: {statLine(item.total, item.reviewed)}</summary>
+              <ul className="mt-1 space-y-1 text-xs text-muted">
+                {item.genres.map((g) => (
+                  <li key={g.genre}>{g.label}: {g.total} mục, {g.draft} chưa duyệt{g.hidden ? `, ${g.hidden} ẩn` : ""}</li>
+                ))}
+              </ul>
+              {emptyGenres(stats.rows, item.lang, GENRE_LABELS).length > 0 && (
+                <p className="mt-1 text-xs text-muted">Chưa có mục: {emptyGenres(stats.rows, item.lang, GENRE_LABELS).map((id) => GENRE_LABELS[id]).join(", ")}.</p>
+              )}
+            </details>
+          ))}
+        </div>
       )}
       {ideas.length > 0 && (
         <div className="space-y-2">

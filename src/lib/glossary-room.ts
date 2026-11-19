@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { cleanSuggestions, glossaryPair } from "@/lib/glossary-share";
 import { IMPORT_MAX_ROWS, planImport, type ExistingTerm, type ImportRow } from "@/lib/glossary-import";
+import { cleanReviewFilter, reviewFilterValue, summarizeStats, type StatRow } from "@/lib/glossary-review";
+import { GENRE_LABELS } from "@/lib/glossary-share";
 
 type TermRow = {
   id: number;
@@ -9,6 +11,7 @@ type TermRow = {
   target: string;
   hidden: boolean;
   note: string;
+  reviewed: boolean;
 };
 
 async function sqlOf() {
@@ -71,9 +74,10 @@ export const suggestTerms = createServerFn({ method: "POST" })
 
 export const listGlossary = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .validator((input: { lang: string; genre: string; q?: string; offset?: number }) => ({
+  .validator((input: { lang: string; genre: string; q?: string; offset?: number; review?: string }) => ({
     ...glossaryPair(input?.lang ?? "", input?.genre ?? ""),
     q: (input?.q ?? "").trim().slice(0, 40),
+    review: reviewFilterValue(cleanReviewFilter(input?.review)),
     offset: Math.max(0, Math.min(5000, Math.floor(Number(input?.offset) || 0))),
   }))
   .handler(async ({ context, data }) => {
@@ -87,13 +91,23 @@ export const listGlossary = createServerFn({ method: "GET" })
       select count(*)::int as n from glossary_terms
       where lang = ${data.lang} and genre = ${data.genre}
         and (${data.q} = '' or source ilike ${like} or target ilike ${like})
+        and (${data.review}::boolean is null or reviewed = ${data.review}::boolean)
+    `;
+    const reviewedCount = await sql<{ n: number }>`
+      select count(*)::int as n from glossary_terms
+      where lang = ${data.lang} and genre = ${data.genre} and reviewed
+    `;
+    const allCount = await sql<{ n: number }>`
+      select count(*)::int as n from glossary_terms
+      where lang = ${data.lang} and genre = ${data.genre}
     `;
     const terms = await sql<TermRow>`
-      select id, source, target, hidden, note
+      select id, source, target, hidden, note, reviewed
       from glossary_terms
       where lang = ${data.lang} and genre = ${data.genre}
         and (${data.q} = '' or source ilike ${like} or target ilike ${like})
-      order by hidden, length(source) desc
+        and (${data.review}::boolean is null or reviewed = ${data.review}::boolean)
+      order by reviewed, hidden, length(source) desc
       limit 50 offset ${data.offset}
     `;
     const suggestions = await sql<{ id: number; source: string; target: string; status: string }>`
@@ -103,7 +117,14 @@ export const listGlossary = createServerFn({ method: "GET" })
       order by id desc
       limit 20
     `;
-    return { hidden: Boolean(pack[0]?.hidden), total: counted[0]?.n ?? 0, terms, suggestions };
+    return {
+      hidden: Boolean(pack[0]?.hidden),
+      total: counted[0]?.n ?? 0,
+      packTotal: allCount[0]?.n ?? 0,
+      packReviewed: reviewedCount[0]?.n ?? 0,
+      terms,
+      suggestions,
+    };
   });
 
 export const saveGlossaryTerm = createServerFn({ method: "POST" })
@@ -125,7 +146,7 @@ export const saveGlossaryTerm = createServerFn({ method: "POST" })
     await sql`
       insert into glossary_terms (lang, genre, source, target)
       values (${data.lang}, ${data.genre}, ${data.source}, ${data.target})
-      on conflict (lang, genre, lower(source)) do update set target = ${data.target}, hidden = false, updated_at = now()
+      on conflict (lang, genre, lower(source)) do update set target = ${data.target}, hidden = false, reviewed = true, updated_at = now()
     `;
     await audit(context.userId, "them-thuat-ngu", `${data.lang}/${data.genre}: ${data.source}`);
     return { ok: true as const };
@@ -194,7 +215,7 @@ export const setSuggestionStatus = createServerFn({ method: "POST" })
       await sql`
         insert into glossary_terms (lang, genre, source, target)
         values (${row.lang}, ${row.genre}, ${row.source}, ${row.target})
-        on conflict (lang, genre, lower(source)) do update set target = ${row.target}, hidden = false, updated_at = now()
+        on conflict (lang, genre, lower(source)) do update set target = ${row.target}, hidden = false, reviewed = true, updated_at = now()
       `;
     }
     await sql`update glossary_suggestions set status = ${data.status} where id = ${data.id}`;
@@ -313,14 +334,14 @@ export const previewGlossaryImport = createServerFn({ method: "POST" })
 
 export const importGlossary = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { lang: string; genre: string; rows: { source: string; target: string }[] }) => {
+  .validator((input: { lang: string; genre: string; rows: { source: string; target: string }[]; draft?: boolean }) => {
     const pair = glossaryPair(input?.lang ?? "", input?.genre ?? "");
     const rows = (input?.rows ?? [])
       .slice(0, 400)
       .map((row) => ({ source: String(row?.source ?? "").trim().slice(0, 80), target: String(row?.target ?? "").trim().slice(0, 80) }))
       .filter((row) => row.source && row.target);
     if (!rows.length) throw new Error("Không có dòng nào dùng được.");
-    return { ...pair, rows };
+    return { ...pair, rows, reviewed: !input?.draft };
   })
   .handler(async ({ context, data }) => {
     await ownerOnly(context.userId);
@@ -331,11 +352,63 @@ export const importGlossary = createServerFn({ method: "POST" })
       const inserted = await sql<{ id: number }>`
         insert into glossary_terms (lang, genre, source, target)
         values (${data.lang}, ${data.genre}, ${row.source}, ${row.target})
-        on conflict (lang, genre, lower(source)) do update set target = ${row.target}, hidden = false, updated_at = now()
+        on conflict (lang, genre, lower(source)) do update set target = ${row.target}, hidden = false, reviewed = true, updated_at = now()
         returning id
       `;
       if (inserted.length) added += 1;
     }
-    await audit(context.userId, "nhap-thuat-ngu", `${data.lang}/${data.genre}: ${added}`);
+    await audit(context.userId, "nhap-thuat-ngu", `${data.lang}/${data.genre}: ${added}${data.reviewed ? "" : " (chưa duyệt)"}`);
     return { added };
+  });
+
+/** Đánh dấu «đã duyệt» / «chưa duyệt»: một mục, hoặc cả bộ (ngôn ngữ + thể loại). */
+export const setGlossaryReviewed = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { id?: number; lang?: string; genre?: string; reviewed: boolean; pack?: boolean }) => {
+    const reviewed = Boolean(input?.reviewed);
+    if (input?.pack) return { pack: true as const, ...glossaryPair(input.lang ?? "", input.genre ?? ""), reviewed };
+    const id = Number(input?.id);
+    if (!Number.isInteger(id) || id < 1) throw new Error("Không đúng mục.");
+    return { pack: false as const, id, reviewed };
+  })
+  .handler(async ({ context, data }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    let changed = 1;
+    if (data.pack) {
+      const rows = await sql<{ n: number }>`
+        with u as (
+          update glossary_terms set reviewed = ${data.reviewed}, updated_at = now()
+          where lang = ${data.lang} and genre = ${data.genre} and reviewed <> ${data.reviewed}
+          returning 1
+        )
+        select count(*)::int as n from u
+      `;
+      changed = rows[0]?.n ?? 0;
+    } else {
+      await sql`update glossary_terms set reviewed = ${data.reviewed}, updated_at = now() where id = ${data.id}`;
+    }
+    await audit(
+      context.userId,
+      data.reviewed ? "duyet-thuat-ngu" : "bo-duyet-thuat-ngu",
+      data.pack ? `${data.lang}/${data.genre}: ${changed}` : String(data.id),
+    );
+    return { changed };
+  });
+
+/** Thống kê số mục mỗi ngôn ngữ / thể loại, tách đã duyệt và chưa duyệt, cho trang Admin. */
+export const glossaryStats = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const rows = await sql<StatRow>`
+      select lang, genre,
+        count(*)::int as total,
+        count(*) filter (where reviewed)::int as reviewed,
+        count(*) filter (where hidden)::int as hidden
+      from glossary_terms
+      group by lang, genre
+    `;
+    return { langs: summarizeStats(rows, GENRE_LABELS), rows };
   });
