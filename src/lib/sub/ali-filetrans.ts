@@ -14,6 +14,30 @@ function pageLink(url: string): boolean {
 /** Nhận dạng cả file từ một link. Không nhận file cắt trên máy. */
 export const ALI_FILETRANS_MODEL = "qwen-audio-3.0-asr-flash-filetrans";
 
+/** Workspace mặc định (vùng Singapore) khi Chủ chưa đặt Workspace ID. */
+export const ALI_FILETRANS_DEFAULT_WORKSPACE = "ws-u3mqeygepiyqd77d";
+
+function okWorkspaceId(value: string | undefined | null): value is string {
+  return typeof value === "string" && /^[a-z0-9][a-z0-9-]{2,62}$/i.test(value.trim());
+}
+
+/** Địa chỉ nhận dạng file theo Workspace. ID sai dạng hoặc trống thì dùng Workspace mặc định. */
+export function filetransWorkspace(workspaceId?: string | null): string {
+  return okWorkspaceId(workspaceId) ? workspaceId.trim().toLowerCase() : ALI_FILETRANS_DEFAULT_WORKSPACE;
+}
+
+export function filetransOrigin(workspaceId?: string | null): string {
+  return `https://${filetransWorkspace(workspaceId)}.ap-southeast-1.maas.aliyuncs.com`;
+}
+
+/** Đổi lỗi tiếng Anh của Alibaba thành lời chỉ đúng chỗ cần sửa. Lỗi khác giữ nguyên. */
+export function aliErrorText(message: string, workspaceId?: string | null): string {
+  if (/workspace endpoint access denied/i.test(message)) {
+    return `Alibaba từ chối: key Alibaba không thuộc Workspace ${filetransWorkspace(workspaceId)}. Chủ cần lưu key tạo trong đúng Workspace này, hoặc đổi Workspace ID ở Admin, Cấu hình cho khớp key.`;
+  }
+  return message;
+}
+
 /** $0.000035 mỗi giây, niêm yết Singapore trên trang model. */
 export const ALI_FILETRANS_USD_PER_SECOND = 0.000035;
 

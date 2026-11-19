@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { directFileUrlProblem, languageHint, resultUrlProblem, sentencesFromTranscript } from "./ali-filetrans.ts";
+import {
+  aliErrorText,
+  directFileUrlProblem,
+  filetransOrigin,
+  languageHint,
+  resultUrlProblem,
+  sentencesFromTranscript,
+} from "./ali-filetrans.ts";
 
 describe("link file Alibaba", () => {
   it("nhận link file, từ chối trang xem, luồng và địa chỉ nội bộ", () => {
@@ -34,5 +41,20 @@ describe("link file Alibaba", () => {
     assert.equal(resultUrlProblem("https://dashscope-result.oss-ap-southeast-1.aliyuncs.com/a.json"), null);
     assert.match(resultUrlProblem("https://evil.example/a.json") || "", /ngoài/);
     assert.match(resultUrlProblem("http://bucket.aliyuncs.com/a.json") || "", /không mở/);
+  });
+});
+
+describe("Workspace Alibaba cho nhận dạng file", () => {
+  it("dùng Workspace đã đặt, sai dạng hoặc trống thì về Workspace mặc định", () => {
+    assert.equal(filetransOrigin("WS-Abc123"), "https://ws-abc123.ap-southeast-1.maas.aliyuncs.com");
+    for (const bad of ["", "a", "ws.evil.com/x", undefined, null]) {
+      assert.equal(filetransOrigin(bad), "https://ws-u3mqeygepiyqd77d.ap-southeast-1.maas.aliyuncs.com");
+    }
+  });
+  it("đổi lỗi Workspace endpoint access denied thành lời chỉ cách sửa, lỗi khác giữ nguyên", () => {
+    const text = aliErrorText("Workspace endpoint access denied", "ws-abc123");
+    assert.match(text, /ws-abc123/);
+    assert.match(text, /Admin/);
+    assert.equal(aliErrorText("InvalidParameter", "ws-abc123"), "InvalidParameter");
   });
 });

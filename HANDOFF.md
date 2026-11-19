@@ -1,3 +1,9 @@
+## BÀN GIAO (20/11/2026, nhánh work) — LỖI «Workspace endpoint access denied» Ở DỊCH PHỤ ĐỀ VIDEO (Alibaba) — đọc mục này đầu tiên
+NGUYÊN NHÂN: `src/lib/ali-filetrans.server.ts` ghim cứng địa chỉ `https://ws-u3mqeygepiyqd77d.ap-southeast-1.maas.aliyuncs.com`. Alibaba trả «Workspace endpoint access denied» khi key gọi vào địa chỉ của một Workspace mà key đó không thuộc về. Ảnh chụp dùng «Trả theo lượt» tức key Alibaba Chủ đã lưu (`room_settings.alibaba_key`), nhiều khả năng được tạo ở Workspace khác ws-u3mq... Dịch trực tiếp thì đã đọc Workspace ID Chủ đặt ở Admin, Cấu hình, nên hai nơi lệch nhau.
+ĐÃ SỬA: nhận dạng file với key Chủ nay dùng `ALIBABA_WORKSPACE_ID` hoặc ô «Workspace ID Alibaba» ở Admin (cùng ô với Dịch trực tiếp), trống thì về ws-u3mq... như cũ; thông báo lỗi nói rõ phải sửa gì (`aliErrorText`, `filetransOrigin` ở `src/lib/sub/ali-filetrans.ts`, test thêm 2 ca). typecheck sạch, `npm test` pass.
+CHỦ CẦN LÀM: vào Admin, Cấu hình, nhập Workspace ID đúng của key Alibaba đang lưu (xem ở bảng điều khiển Model Studio, vùng Singapore), hoặc lưu lại key tạo trong Workspace ws-u3mqeygepiyqd77d. Rồi thử lại Tải và dịch.
+CHƯA KIỂM: không gọi được Alibaba thật từ đây. Key khách tự dán (không phải «Trả theo lượt») vẫn đi vào Workspace mặc định của Chủ nên sẽ bị từ chối cùng lỗi này; cần thử xem Alibaba có cho key khách dùng địa chỉ chung `dashscope-intl.aliyuncs.com` cho model này không rồi mới đổi.
+
 ## BÀN GIAO (20/11/2026, nhánh work) — NÚT NẠP HẾT BỘ CÒN THIẾU — đọc mục này đầu tiên
 Phòng báo «Chưa có mục» vì file thuật ngữ thêm sau lần nạp đầu không tự vào cơ sở dữ liệu. «Duyệt hết» chỉ đánh dấu mục đã có. «Khôi phục từ gốc» chỉ nạp đúng một bộ đang chọn.
 Đã thêm nút «Nạp hết bộ còn thiếu» cạnh nút khôi phục một bộ. Có hỏi lại. Nạp mọi ngôn ngữ, mọi thể loại có trong file gốc; từ đã có (kể cả đã sửa) không bị ghi đè. Không nâng `APP_VERSION`.

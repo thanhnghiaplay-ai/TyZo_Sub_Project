@@ -2,14 +2,15 @@ import { requireOpenAccount, takeRate } from "@/lib/guard.server";
 import { requireServiceOpen } from "@/lib/service-status.server";
 import {
   ALI_FILETRANS_MODEL,
+  aliErrorText,
   directFileUrlProblem,
+  filetransOrigin,
+  filetransWorkspace,
   languageHint,
   resultUrlProblem,
   sentencesFromTranscript,
   type AliSentence,
 } from "@/lib/sub/ali-filetrans";
-
-const ORIGIN = "https://ws-u3mqeygepiyqd77d.ap-southeast-1.maas.aliyuncs.com";
 
 export type AliFiletransInput =
   | { op: "submit"; url: string; language: string; key: string; ticketId?: string }
@@ -34,7 +35,20 @@ function messageOf(payload: unknown, fallback: string): string {
   return typeof text === "string" && text.trim() ? text.trim().slice(0, 180) : fallback;
 }
 
-async function aliJson(path: string, key: string, body?: unknown): Promise<unknown> {
+/**
+ * Workspace của key Chủ: ALIBABA_WORKSPACE_ID hoặc cài đặt phòng (cùng ô với Dịch trực tiếp, vì cùng một key).
+ * Key khách tự dán không biết Workspace của khách nên dùng Workspace mặc định.
+ */
+async function roomWorkspace(): Promise<string> {
+  const fromEnv = process.env.ALIBABA_WORKSPACE_ID?.trim();
+  if (fromEnv) return filetransWorkspace(fromEnv);
+  const { getSql } = await import("@/lib/db");
+  const sql = await getSql();
+  const rows = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_workspace'`;
+  return filetransWorkspace(rows[0]?.value);
+}
+
+async function aliJson(workspace: string, path: string, key: string, body?: unknown): Promise<unknown> {
   const headers = new Headers();
   headers.set("Authorization", `Bearer ${key}`);
   if (body !== undefined) {
@@ -43,7 +57,7 @@ async function aliJson(path: string, key: string, body?: unknown): Promise<unkno
   }
   let response: Response;
   try {
-    response = await fetch(`${ORIGIN}${path}`, {
+    response = await fetch(`${filetransOrigin(workspace)}${path}`, {
       method: body === undefined ? "GET" : "POST",
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -59,7 +73,7 @@ async function aliJson(path: string, key: string, body?: unknown): Promise<unkno
   } catch {
     payload = null;
   }
-  if (!response.ok) throw new Error(messageOf(payload, `Nhận dạng lỗi ${response.status}.`));
+  if (!response.ok) throw new Error(aliErrorText(messageOf(payload, `Nhận dạng lỗi ${response.status}.`), workspace));
   return payload;
 }
 
@@ -99,11 +113,12 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   const { assertRoomTicket, roomKeyOf } = await import("@/lib/room-asr.server");
   const key = usingRoom ? await roomKeyOf("alibaba_key", "Alibaba", 20) : cleanKey(input.key);
   if (usingRoom) await assertRoomTicket(userId, input.ticketId);
+  const workspace = usingRoom ? await roomWorkspace() : filetransWorkspace(null);
   if (input.op === "submit") {
     const problem = directFileUrlProblem(input.url);
     if (problem) throw new Error(problem);
     const hints = languageHint(input.language);
-    const payload = await aliJson("/api/v1/services/audio/asr/transcription", key, {
+    const payload = await aliJson(workspace, "/api/v1/services/audio/asr/transcription", key, {
       model: ALI_FILETRANS_MODEL,
       input: { file_urls: [input.url.trim()] },
       parameters: { channel_id: [0], ...(hints ? { language_hints: hints } : {}) },
@@ -111,18 +126,18 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
     return { state: "queued", taskId: taskIdOf(payload) };
   }
   if (!/^[\w-]{8,128}$/.test(input.taskId)) throw new Error("Mã việc nhận dạng không đúng.");
-  const payload = await aliJson(`/api/v1/tasks/${input.taskId}`, key);
+  const payload = await aliJson(workspace, `/api/v1/tasks/${input.taskId}`, key);
   const row = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
   const output = row.output && typeof row.output === "object" ? (row.output as Record<string, unknown>) : {};
   const status = typeof output.task_status === "string" ? output.task_status : "";
   if (status === "PENDING" || status === "RUNNING") return { state: "run" };
-  if (status !== "SUCCEEDED") throw new Error(messageOf(payload, "Nhận dạng file thất bại."));
+  if (status !== "SUCCEEDED") throw new Error(aliErrorText(messageOf(payload, "Nhận dạng file thất bại."), workspace));
   const results = Array.isArray(output.results) ? output.results : [];
   const first = results.find((item) => item && typeof item === "object" && typeof (item as Record<string, unknown>).transcription_url === "string") as
     | Record<string, unknown>
     | undefined;
   const sub = typeof first?.subtask_status === "string" ? first.subtask_status : "SUCCEEDED";
-  if (!first || sub !== "SUCCEEDED") throw new Error(messageOf(first, "Nhận dạng file thất bại."));
+  if (!first || sub !== "SUCCEEDED") throw new Error(aliErrorText(messageOf(first, "Nhận dạng file thất bại."), workspace));
   const transcript = await readResult(String(first.transcription_url));
   const done = { state: "done" as const, ...sentencesFromTranscript(transcript) };
   if (usingRoom && input.ticketId) {
