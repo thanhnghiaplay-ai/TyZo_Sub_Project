@@ -1,0 +1,202 @@
+[
+  {
+    "source": "纪录片",
+    "target": "phim tài liệu",
+    "reviewed": false
+  },
+  {
+    "source": "旁白",
+    "target": "lời dẫn",
+    "reviewed": false
+  },
+  {
+    "source": "采访",
+    "target": "phỏng vấn",
+    "reviewed": false
+  },
+  {
+    "source": "受访者",
+    "target": "người được phỏng vấn",
+    "reviewed": false
+  },
+  {
+    "source": "专家",
+    "target": "chuyên gia",
+    "reviewed": false
+  },
+  {
+    "source": "学者",
+    "target": "học giả",
+    "reviewed": false
+  },
+  {
+    "source": "考古",
+    "target": "khảo cổ",
+    "reviewed": false
+  },
+  {
+    "source": "遗址",
+    "target": "di chỉ",
+    "reviewed": false
+  },
+  {
+    "source": "文物",
+    "target": "cổ vật",
+    "reviewed": false
+  },
+  {
+    "source": "古迹",
+    "target": "di tích",
+    "reviewed": false
+  },
+  {
+    "source": "世界遗产",
+    "target": "di sản thế giới",
+    "reviewed": false
+  },
+  {
+    "source": "保护区",
+    "target": "khu bảo tồn",
+    "reviewed": false
+  },
+  {
+    "source": "濒危物种",
+    "target": "loài nguy cấp",
+    "reviewed": false
+  },
+  {
+    "source": "生态系统",
+    "target": "hệ sinh thái",
+    "reviewed": false
+  },
+  {
+    "source": "栖息地",
+    "target": "môi trường sống",
+    "reviewed": false
+  },
+  {
+    "source": "迁徙",
+    "target": "di cư",
+    "reviewed": false
+  },
+  {
+    "source": "物种",
+    "target": "loài",
+    "reviewed": false
+  },
+  {
+    "source": "气候变化",
+    "target": "biến đổi khí hậu",
+    "reviewed": false
+  },
+  {
+    "source": "全球变暖",
+    "target": "nóng lên toàn cầu",
+    "reviewed": false
+  },
+  {
+    "source": "温室气体",
+    "target": "khí nhà kính",
+    "reviewed": false
+  },
+  {
+    "source": "污染",
+    "target": "ô nhiễm",
+    "reviewed": false
+  },
+  {
+    "source": "可持续发展",
+    "target": "phát triển bền vững",
+    "reviewed": false
+  },
+  {
+    "source": "记者",
+    "target": "phóng viên",
+    "reviewed": false
+  },
+  {
+    "source": "真相",
+    "target": "sự thật",
+    "reviewed": false
+  },
+  {
+    "source": "证据",
+    "target": "bằng chứng",
+    "reviewed": false
+  },
+  {
+    "source": "档案",
+    "target": "hồ sơ lưu trữ",
+    "reviewed": false
+  },
+  {
+    "source": "史料",
+    "target": "sử liệu",
+    "reviewed": false
+  },
+  {
+    "source": "公元前",
+    "target": "trước Công nguyên",
+    "reviewed": false
+  },
+  {
+    "source": "世纪",
+    "target": "thế kỷ",
+    "reviewed": false
+  },
+  {
+    "source": "朝代",
+    "target": "triều đại",
+    "reviewed": false
+  },
+  {
+    "source": "文明",
+    "target": "nền văn minh",
+    "reviewed": false
+  },
+  {
+    "source": "非物质文化遗产",
+    "target": "di sản văn hóa phi vật thể",
+    "reviewed": false
+  },
+  {
+    "source": "传统工艺",
+    "target": "nghề thủ công truyền thống",
+    "reviewed": false
+  },
+  {
+    "source": "人口",
+    "target": "dân số",
+    "reviewed": false
+  },
+  {
+    "source": "据统计",
+    "target": "theo thống kê",
+    "reviewed": false
+  },
+  {
+    "source": "科学家",
+    "target": "nhà khoa học",
+    "reviewed": false
+  },
+  {
+    "source": "实验",
+    "target": "thí nghiệm",
+    "reviewed": false
+  },
+  {
+    "source": "宇宙",
+    "target": "vũ trụ",
+    "reviewed": false
+  },
+  {
+    "source": "星系",
+    "target": "thiên hà",
+    "reviewed": false
+  },
+  {
+    "source": "黑洞",
+    "target": "hố đen",
+    "reviewed": false
+  }
+]

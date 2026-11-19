@@ -1,0 +1,194 @@
+[
+  {
+    "source": "阶层",
+    "target": "tầng lớp",
+    "reviewed": false
+  },
+  {
+    "source": "贫富差距",
+    "target": "chênh lệch giàu nghèo",
+    "reviewed": false
+  },
+  {
+    "source": "底层",
+    "target": "tầng lớp dưới đáy",
+    "reviewed": false
+  },
+  {
+    "source": "内卷",
+    "target": "nội quyển",
+    "note": "Cách khác: cuộc đua kiệt sức, cạnh tranh vô nghĩa",
+    "reviewed": false
+  },
+  {
+    "source": "躺平",
+    "target": "nằm yên",
+    "note": "Cách khác: nằm phẳng",
+    "reviewed": false
+  },
+  {
+    "source": "加班",
+    "target": "tăng ca",
+    "reviewed": false
+  },
+  {
+    "source": "裁员",
+    "target": "sa thải hàng loạt",
+    "reviewed": false
+  },
+  {
+    "source": "失业",
+    "target": "thất nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "房贷",
+    "target": "khoản vay mua nhà",
+    "reviewed": false
+  },
+  {
+    "source": "彩礼",
+    "target": "sính lễ",
+    "reviewed": false
+  },
+  {
+    "source": "相亲",
+    "target": "xem mắt",
+    "reviewed": false
+  },
+  {
+    "source": "剩女",
+    "target": "gái ế",
+    "reviewed": false
+  },
+  {
+    "source": "单亲",
+    "target": "đơn thân",
+    "reviewed": false
+  },
+  {
+    "source": "校园霸凌",
+    "target": "bạo lực học đường",
+    "reviewed": false
+  },
+  {
+    "source": "网络暴力",
+    "target": "bạo lực mạng",
+    "reviewed": false
+  },
+  {
+    "source": "抑郁症",
+    "target": "bệnh trầm cảm",
+    "reviewed": false
+  },
+  {
+    "source": "焦虑",
+    "target": "lo âu",
+    "reviewed": false
+  },
+  {
+    "source": "心理咨询",
+    "target": "tư vấn tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "心理医生",
+    "target": "bác sĩ tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "创伤",
+    "target": "chấn thương tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "原生家庭",
+    "target": "gia đình gốc",
+    "note": "Cách khác: gia đình nơi mình lớn lên",
+    "reviewed": false
+  },
+  {
+    "source": "重男轻女",
+    "target": "trọng nam khinh nữ",
+    "reviewed": false
+  },
+  {
+    "source": "留守儿童",
+    "target": "trẻ em bị bỏ lại ở quê",
+    "reviewed": false
+  },
+  {
+    "source": "农民工",
+    "target": "lao động nhập cư",
+    "note": "Cách khác: nông dân công",
+    "reviewed": false
+  },
+  {
+    "source": "户口",
+    "target": "hộ khẩu",
+    "reviewed": false
+  },
+  {
+    "source": "舆论",
+    "target": "dư luận",
+    "reviewed": false
+  },
+  {
+    "source": "人设",
+    "target": "hình tượng",
+    "note": "Cách khác: nhân thiết, hình tượng được dựng lên",
+    "reviewed": false
+  },
+  {
+    "source": "面子",
+    "target": "thể diện",
+    "reviewed": false
+  },
+  {
+    "source": "人情",
+    "target": "nhân tình",
+    "note": "Cách khác: ơn nghĩa, tình nghĩa qua lại",
+    "reviewed": false
+  },
+  {
+    "source": "潜规则",
+    "target": "luật ngầm",
+    "reviewed": false
+  },
+  {
+    "source": "走后门",
+    "target": "chạy cửa sau",
+    "reviewed": false
+  },
+  {
+    "source": "维权",
+    "target": "đòi quyền lợi",
+    "reviewed": false
+  },
+  {
+    "source": "举报",
+    "target": "tố cáo",
+    "reviewed": false
+  },
+  {
+    "source": "家暴",
+    "target": "bạo lực gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "歧视",
+    "target": "phân biệt đối xử",
+    "reviewed": false
+  },
+  {
+    "source": "偏见",
+    "target": "thành kiến",
+    "reviewed": false
+  },
+  {
+    "source": "热搜",
+    "target": "tìm kiếm nổi bật",
+    "note": "Cách khác: hot search, xu hướng",
+    "reviewed": false
+  }
+]

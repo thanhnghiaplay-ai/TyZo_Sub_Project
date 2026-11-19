@@ -1,0 +1,219 @@
+[
+  {
+    "source": "homeroom teacher",
+    "target": "giáo viên chủ nhiệm",
+    "reviewed": false
+  },
+  {
+    "source": "principal",
+    "target": "hiệu trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "vice principal",
+    "target": "hiệu phó",
+    "reviewed": false
+  },
+  {
+    "source": "classmate",
+    "target": "bạn cùng lớp",
+    "reviewed": false
+  },
+  {
+    "source": "freshman",
+    "target": "học sinh năm nhất",
+    "note": "Bậc đại học: sinh viên năm nhất",
+    "reviewed": false
+  },
+  {
+    "source": "sophomore",
+    "target": "học sinh năm hai",
+    "note": "Bậc đại học: sinh viên năm hai",
+    "reviewed": false
+  },
+  {
+    "source": "valedictorian",
+    "target": "thủ khoa tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "prom",
+    "target": "dạ hội tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "prom queen",
+    "target": "nữ hoàng dạ hội",
+    "reviewed": false
+  },
+  {
+    "source": "homecoming",
+    "target": "lễ hội homecoming",
+    "reviewed": false
+  },
+  {
+    "source": "detention",
+    "target": "bị phạt ở lại trường",
+    "reviewed": false
+  },
+  {
+    "source": "suspension",
+    "target": "bị đình chỉ học",
+    "reviewed": false
+  },
+  {
+    "source": "expelled",
+    "target": "bị đuổi học",
+    "reviewed": false
+  },
+  {
+    "source": "report card",
+    "target": "phiếu điểm",
+    "reviewed": false
+  },
+  {
+    "source": "gpa",
+    "target": "điểm trung bình GPA",
+    "reviewed": false
+  },
+  {
+    "source": "midterm",
+    "target": "thi giữa kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "final exam",
+    "target": "thi cuối kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "pop quiz",
+    "target": "bài kiểm tra bất ngờ",
+    "reviewed": false
+  },
+  {
+    "source": "homework",
+    "target": "bài tập về nhà",
+    "reviewed": false
+  },
+  {
+    "source": "study group",
+    "target": "nhóm học tập",
+    "reviewed": false
+  },
+  {
+    "source": "tutor",
+    "target": "gia sư",
+    "reviewed": false
+  },
+  {
+    "source": "cram school",
+    "target": "lớp học thêm",
+    "reviewed": false
+  },
+  {
+    "source": "cafeteria",
+    "target": "căng tin",
+    "reviewed": false
+  },
+  {
+    "source": "locker",
+    "target": "tủ đồ cá nhân",
+    "reviewed": false
+  },
+  {
+    "source": "yearbook",
+    "target": "kỷ yếu",
+    "reviewed": false
+  },
+  {
+    "source": "school uniform",
+    "target": "đồng phục",
+    "reviewed": false
+  },
+  {
+    "source": "cheerleader",
+    "target": "đội cổ vũ",
+    "reviewed": false
+  },
+  {
+    "source": "varsity",
+    "target": "đội tuyển trường",
+    "reviewed": false
+  },
+  {
+    "source": "bully",
+    "target": "kẻ bắt nạt",
+    "reviewed": false
+  },
+  {
+    "source": "love letter",
+    "target": "thư tình",
+    "reviewed": false
+  },
+  {
+    "source": "graduation",
+    "target": "lễ tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "college application",
+    "target": "hồ sơ xin vào đại học",
+    "reviewed": false
+  },
+  {
+    "source": "scholarship",
+    "target": "học bổng",
+    "reviewed": false
+  },
+  {
+    "source": "dorm",
+    "target": "ký túc xá",
+    "reviewed": false
+  },
+  {
+    "source": "roommate",
+    "target": "bạn cùng phòng",
+    "reviewed": false
+  },
+  {
+    "source": "campus",
+    "target": "khuôn viên trường",
+    "reviewed": false
+  },
+  {
+    "source": "professor",
+    "target": "giáo sư",
+    "reviewed": false
+  },
+  {
+    "source": "teaching assistant",
+    "target": "trợ giảng",
+    "reviewed": false
+  },
+  {
+    "source": "skip class",
+    "target": "trốn học",
+    "reviewed": false
+  },
+  {
+    "source": "cut class",
+    "target": "trốn học",
+    "reviewed": false
+  },
+  {
+    "source": "hall pass",
+    "target": "giấy phép ra khỏi lớp",
+    "reviewed": false
+  },
+  {
+    "source": "recess",
+    "target": "giờ ra chơi",
+    "reviewed": false
+  },
+  {
+    "source": "student council",
+    "target": "hội học sinh",
+    "reviewed": false
+  }
+]

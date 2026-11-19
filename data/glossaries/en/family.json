@@ -1,0 +1,215 @@
+[
+  {
+    "source": "grandfather",
+    "target": "ông",
+    "note": "Tiếng Việt phân biệt ông nội/ông ngoại; dịch theo ngữ cảnh",
+    "reviewed": false
+  },
+  {
+    "source": "grandmother",
+    "target": "bà",
+    "note": "Tiếng Việt phân biệt bà nội/bà ngoại; dịch theo ngữ cảnh",
+    "reviewed": false
+  },
+  {
+    "source": "grandpa",
+    "target": "ông",
+    "reviewed": false
+  },
+  {
+    "source": "grandma",
+    "target": "bà",
+    "reviewed": false
+  },
+  {
+    "source": "stepmother",
+    "target": "mẹ kế",
+    "reviewed": false
+  },
+  {
+    "source": "stepfather",
+    "target": "bố dượng",
+    "reviewed": false
+  },
+  {
+    "source": "adoptive parents",
+    "target": "bố mẹ nuôi",
+    "reviewed": false
+  },
+  {
+    "source": "adopted",
+    "target": "được nhận nuôi",
+    "reviewed": false
+  },
+  {
+    "source": "foster parents",
+    "target": "bố mẹ nuôi tạm thời",
+    "reviewed": false
+  },
+  {
+    "source": "in-laws",
+    "target": "nhà thông gia",
+    "reviewed": false
+  },
+  {
+    "source": "mother-in-law",
+    "target": "mẹ chồng",
+    "note": "Nếu người nói là chồng thì dịch: mẹ vợ",
+    "reviewed": false
+  },
+  {
+    "source": "father-in-law",
+    "target": "bố chồng",
+    "note": "Nếu người nói là chồng thì dịch: bố vợ",
+    "reviewed": false
+  },
+  {
+    "source": "son-in-law",
+    "target": "con rể",
+    "reviewed": false
+  },
+  {
+    "source": "daughter-in-law",
+    "target": "con dâu",
+    "reviewed": false
+  },
+  {
+    "source": "sister-in-law",
+    "target": "chị dâu",
+    "note": "Tùy ngữ cảnh: chị/em dâu, chị/em chồng, chị/em vợ",
+    "reviewed": false
+  },
+  {
+    "source": "brother-in-law",
+    "target": "anh rể",
+    "note": "Tùy ngữ cảnh: anh/em rể, anh/em vợ, anh/em chồng",
+    "reviewed": false
+  },
+  {
+    "source": "uncle",
+    "target": "chú",
+    "note": "Tùy ngữ cảnh: chú, bác, cậu, dượng",
+    "reviewed": false
+  },
+  {
+    "source": "aunt",
+    "target": "dì",
+    "note": "Tùy ngữ cảnh: dì, cô, thím, mợ, bác",
+    "reviewed": false
+  },
+  {
+    "source": "cousin",
+    "target": "anh chị em họ",
+    "reviewed": false
+  },
+  {
+    "source": "nephew",
+    "target": "cháu trai",
+    "reviewed": false
+  },
+  {
+    "source": "niece",
+    "target": "cháu gái",
+    "reviewed": false
+  },
+  {
+    "source": "relatives",
+    "target": "họ hàng",
+    "reviewed": false
+  },
+  {
+    "source": "family reunion",
+    "target": "buổi họp mặt gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "family dinner",
+    "target": "bữa cơm gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "inheritance",
+    "target": "tài sản thừa kế",
+    "reviewed": false
+  },
+  {
+    "source": "heir",
+    "target": "người thừa kế",
+    "reviewed": false
+  },
+  {
+    "source": "family secret",
+    "target": "bí mật gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "alimony",
+    "target": "tiền cấp dưỡng",
+    "reviewed": false
+  },
+  {
+    "source": "child support",
+    "target": "tiền nuôi con",
+    "reviewed": false
+  },
+  {
+    "source": "single parent",
+    "target": "cha mẹ đơn thân",
+    "reviewed": false
+  },
+  {
+    "source": "newborn",
+    "target": "trẻ sơ sinh",
+    "reviewed": false
+  },
+  {
+    "source": "toddler",
+    "target": "trẻ mới biết đi",
+    "reviewed": false
+  },
+  {
+    "source": "siblings",
+    "target": "anh chị em ruột",
+    "reviewed": false
+  },
+  {
+    "source": "twins",
+    "target": "cặp song sinh",
+    "reviewed": false
+  },
+  {
+    "source": "elderly parents",
+    "target": "cha mẹ già",
+    "reviewed": false
+  },
+  {
+    "source": "nursing home",
+    "target": "viện dưỡng lão",
+    "reviewed": false
+  },
+  {
+    "source": "funeral",
+    "target": "đám tang",
+    "reviewed": false
+  },
+  {
+    "source": "wedding anniversary",
+    "target": "kỷ niệm ngày cưới",
+    "reviewed": false
+  },
+  {
+    "source": "family tree",
+    "target": "gia phả",
+    "reviewed": false
+  },
+  {
+    "source": "custody",
+    "target": "quyền nuôi con",
+    "reviewed": false
+  },
+  {
+    "source": "divorce",
+    "target": "ly hôn",
+    "reviewed": false
+  }
+]

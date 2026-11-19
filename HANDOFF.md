@@ -1,3 +1,10 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3a XONG: BẢN NHÁP 5 THỂ LOẠI (zh + en) — đọc mục này đầu tiên
+Thêm 10 file `data/glossaries/{zh,en}/{social,war,family,school,documentary}.json` (37 đến 53 mục mỗi file), MỌI mục `"reviewed": false`. Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem lại ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Test `glossary.test.ts` (nhóm «bản nháp thuật ngữ thể loại mới (B1)») nay quét 8 thể loại × zh/en. Ghi `ADMIN_LOG`. Không nâng `APP_VERSION` (chỉ Chủ thấy).
+LƯU Ý: nơi đã seed lần đầu sẽ KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+CÁCH LÀM CÁC BƯỚC KẾ (để tài khoản khác tiếp tục): mỗi file là mảng JSON `{source, target, note?, reviewed:false}`; nguồn không trùng (không phân biệt hoa thường), ít nhất 25 mục; viết nguồn tiếng Anh bằng chữ thường; tránh từ quá chung dễ dịch nhầm (major, private, tank...). Thêm cặp (ngôn ngữ, thể loại) mới vào mảng `drafts` ở test.
+VIỆC TIẾP THEO: B1.3b = bản nháp `ja` + `ko` cho 5 thể loại (social, war, family, school, documentary) = 10 file; B1.3c = `ko` cho wuxia (무협) và ja/ko cho ngontinh/xianxia nếu Chủ cần (hỏi Chủ, vì phim Nhật/Hàn ít dùng); B1.4 = `softcore` (18+, hỏi Chủ về mức nội dung trước khi soạn). Mỗi bước: file nháp `reviewed:false` + test + ghi đầu HANDOFF.md + đẩy `work`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B1.2 XONG: BẢN NHÁP KIẾM HIỆP / TIÊN HIỆP / NGÔN TÌNH (zh + en) — đọc mục này đầu tiên
 Thêm 6 file `data/glossaries/{zh,en}/{wuxia,xianxia,ngontinh}.json` (28 đến 49 mục mỗi file), MỌI mục có `"reviewed": false` (B1.1 đã làm seed/khôi phục hiểu cờ này). Bản nháp do Claude soạn, chưa ai duyệt: cách dịch cộng đồng có nhiều biến thể, Chủ phải xem lại ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Test mới ở `src/lib/sub/glossary.test.ts` (đủ mục, không trùng nguồn, đều chưa duyệt). typecheck sạch, eslint 0 lỗi, `npm test` 1196 pass. Ghi `ADMIN_LOG`. Không nâng `APP_VERSION` (chỉ Chủ thấy).
 LƯU Ý: nơi đã chạy seed lần đầu (`glossary_meta.seeded = true`) sẽ KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin (`restoreGlossary` tự tạo bộ còn thiếu).

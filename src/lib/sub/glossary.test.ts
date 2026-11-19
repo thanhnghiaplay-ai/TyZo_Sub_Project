@@ -170,7 +170,7 @@ describe("bộ thuật ngữ nền theo ngôn ngữ nguồn", () => {
 
 describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
   const drafts: [string, string][] = [];
-  for (const genre of ["wuxia", "xianxia", "ngontinh"]) for (const lang of ["zh", "en"]) drafts.push([lang, genre]);
+  for (const genre of ["wuxia", "xianxia", "ngontinh", "social", "war", "family", "school", "documentary"]) for (const lang of ["zh", "en"]) drafts.push([lang, genre]);
 
   it("có file, mỗi mục đủ nguồn/đích, không trùng nguồn, đều đánh dấu chưa duyệt", () => {
     for (const [lang, genre] of drafts) {

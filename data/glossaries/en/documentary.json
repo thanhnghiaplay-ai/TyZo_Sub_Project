@@ -1,0 +1,223 @@
+[
+  {
+    "source": "narrator",
+    "target": "người dẫn chuyện",
+    "reviewed": false
+  },
+  {
+    "source": "footage",
+    "target": "thước phim",
+    "reviewed": false
+  },
+  {
+    "source": "archive footage",
+    "target": "tư liệu phim lưu trữ",
+    "reviewed": false
+  },
+  {
+    "source": "expert",
+    "target": "chuyên gia",
+    "reviewed": false
+  },
+  {
+    "source": "researcher",
+    "target": "nhà nghiên cứu",
+    "reviewed": false
+  },
+  {
+    "source": "archaeologist",
+    "target": "nhà khảo cổ",
+    "reviewed": false
+  },
+  {
+    "source": "excavation",
+    "target": "cuộc khai quật",
+    "reviewed": false
+  },
+  {
+    "source": "artifact",
+    "target": "cổ vật",
+    "note": "Cách khác: hiện vật",
+    "reviewed": false
+  },
+  {
+    "source": "ancient civilization",
+    "target": "nền văn minh cổ đại",
+    "reviewed": false
+  },
+  {
+    "source": "dynasty",
+    "target": "triều đại",
+    "reviewed": false
+  },
+  {
+    "source": "century",
+    "target": "thế kỷ",
+    "reviewed": false
+  },
+  {
+    "source": "bce",
+    "target": "trước Công nguyên",
+    "reviewed": false
+  },
+  {
+    "source": "ecosystem",
+    "target": "hệ sinh thái",
+    "reviewed": false
+  },
+  {
+    "source": "habitat",
+    "target": "môi trường sống",
+    "reviewed": false
+  },
+  {
+    "source": "endangered species",
+    "target": "loài nguy cấp",
+    "reviewed": false
+  },
+  {
+    "source": "extinction",
+    "target": "sự tuyệt chủng",
+    "reviewed": false
+  },
+  {
+    "source": "migration",
+    "target": "cuộc di cư",
+    "reviewed": false
+  },
+  {
+    "source": "predator",
+    "target": "động vật săn mồi",
+    "reviewed": false
+  },
+  {
+    "source": "prey",
+    "target": "con mồi",
+    "reviewed": false
+  },
+  {
+    "source": "wildlife",
+    "target": "động vật hoang dã",
+    "reviewed": false
+  },
+  {
+    "source": "rainforest",
+    "target": "rừng mưa nhiệt đới",
+    "reviewed": false
+  },
+  {
+    "source": "climate change",
+    "target": "biến đổi khí hậu",
+    "reviewed": false
+  },
+  {
+    "source": "global warming",
+    "target": "nóng lên toàn cầu",
+    "reviewed": false
+  },
+  {
+    "source": "greenhouse gas",
+    "target": "khí nhà kính",
+    "reviewed": false
+  },
+  {
+    "source": "carbon emissions",
+    "target": "khí thải carbon",
+    "reviewed": false
+  },
+  {
+    "source": "fossil fuels",
+    "target": "nhiên liệu hóa thạch",
+    "reviewed": false
+  },
+  {
+    "source": "renewable energy",
+    "target": "năng lượng tái tạo",
+    "reviewed": false
+  },
+  {
+    "source": "sustainability",
+    "target": "tính bền vững",
+    "reviewed": false
+  },
+  {
+    "source": "biodiversity",
+    "target": "đa dạng sinh học",
+    "reviewed": false
+  },
+  {
+    "source": "conservation",
+    "target": "công tác bảo tồn",
+    "reviewed": false
+  },
+  {
+    "source": "pollution",
+    "target": "ô nhiễm",
+    "reviewed": false
+  },
+  {
+    "source": "deforestation",
+    "target": "nạn phá rừng",
+    "reviewed": false
+  },
+  {
+    "source": "evidence",
+    "target": "bằng chứng",
+    "reviewed": false
+  },
+  {
+    "source": "according to",
+    "target": "theo",
+    "reviewed": false
+  },
+  {
+    "source": "statistics show",
+    "target": "số liệu thống kê cho thấy",
+    "reviewed": false
+  },
+  {
+    "source": "universe",
+    "target": "vũ trụ",
+    "reviewed": false
+  },
+  {
+    "source": "galaxy",
+    "target": "thiên hà",
+    "reviewed": false
+  },
+  {
+    "source": "black hole",
+    "target": "hố đen",
+    "reviewed": false
+  },
+  {
+    "source": "solar system",
+    "target": "hệ Mặt Trời",
+    "reviewed": false
+  },
+  {
+    "source": "evolution",
+    "target": "sự tiến hóa",
+    "reviewed": false
+  },
+  {
+    "source": "world heritage site",
+    "target": "di sản thế giới",
+    "reviewed": false
+  },
+  {
+    "source": "cultural heritage",
+    "target": "di sản văn hóa",
+    "reviewed": false
+  },
+  {
+    "source": "traditional craft",
+    "target": "nghề thủ công truyền thống",
+    "reviewed": false
+  },
+  {
+    "source": "population",
+    "target": "dân số",
+    "reviewed": false
+  }
+]

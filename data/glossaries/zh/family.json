@@ -1,0 +1,238 @@
+[
+  {
+    "source": "外公",
+    "target": "ông ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "外婆",
+    "target": "bà ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "爷爷",
+    "target": "ông nội",
+    "reviewed": false
+  },
+  {
+    "source": "奶奶",
+    "target": "bà nội",
+    "reviewed": false
+  },
+  {
+    "source": "哥哥",
+    "target": "anh trai",
+    "reviewed": false
+  },
+  {
+    "source": "姐姐",
+    "target": "chị gái",
+    "reviewed": false
+  },
+  {
+    "source": "弟弟",
+    "target": "em trai",
+    "reviewed": false
+  },
+  {
+    "source": "妹妹",
+    "target": "em gái",
+    "reviewed": false
+  },
+  {
+    "source": "孙子",
+    "target": "cháu nội",
+    "reviewed": false
+  },
+  {
+    "source": "孙女",
+    "target": "cháu gái nội",
+    "reviewed": false
+  },
+  {
+    "source": "外孙",
+    "target": "cháu ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "亲戚",
+    "target": "họ hàng",
+    "reviewed": false
+  },
+  {
+    "source": "叔叔",
+    "target": "chú",
+    "note": "Tùy bối cảnh: chú, bác, cậu, dượng",
+    "reviewed": false
+  },
+  {
+    "source": "舅舅",
+    "target": "cậu",
+    "reviewed": false
+  },
+  {
+    "source": "姑姑",
+    "target": "cô",
+    "reviewed": false
+  },
+  {
+    "source": "姨妈",
+    "target": "dì",
+    "reviewed": false
+  },
+  {
+    "source": "婆婆",
+    "target": "mẹ chồng",
+    "reviewed": false
+  },
+  {
+    "source": "公公",
+    "target": "bố chồng",
+    "reviewed": false
+  },
+  {
+    "source": "岳母",
+    "target": "mẹ vợ",
+    "reviewed": false
+  },
+  {
+    "source": "岳父",
+    "target": "bố vợ",
+    "reviewed": false
+  },
+  {
+    "source": "儿媳",
+    "target": "con dâu",
+    "reviewed": false
+  },
+  {
+    "source": "女婿",
+    "target": "con rể",
+    "reviewed": false
+  },
+  {
+    "source": "嫂子",
+    "target": "chị dâu",
+    "reviewed": false
+  },
+  {
+    "source": "妯娌",
+    "target": "chị em dâu",
+    "reviewed": false
+  },
+  {
+    "source": "继母",
+    "target": "mẹ kế",
+    "reviewed": false
+  },
+  {
+    "source": "继父",
+    "target": "bố dượng",
+    "reviewed": false
+  },
+  {
+    "source": "养父母",
+    "target": "bố mẹ nuôi",
+    "reviewed": false
+  },
+  {
+    "source": "领养",
+    "target": "nhận nuôi",
+    "reviewed": false
+  },
+  {
+    "source": "亲生",
+    "target": "ruột thịt",
+    "reviewed": false
+  },
+  {
+    "source": "家人",
+    "target": "người nhà",
+    "reviewed": false
+  },
+  {
+    "source": "团圆",
+    "target": "đoàn viên",
+    "reviewed": false
+  },
+  {
+    "source": "过年",
+    "target": "đón Tết",
+    "reviewed": false
+  },
+  {
+    "source": "压岁钱",
+    "target": "tiền mừng tuổi",
+    "reviewed": false
+  },
+  {
+    "source": "红包",
+    "target": "bao lì xì",
+    "reviewed": false
+  },
+  {
+    "source": "孝顺",
+    "target": "hiếu thảo",
+    "reviewed": false
+  },
+  {
+    "source": "不孝",
+    "target": "bất hiếu",
+    "reviewed": false
+  },
+  {
+    "source": "养老",
+    "target": "phụng dưỡng tuổi già",
+    "reviewed": false
+  },
+  {
+    "source": "家务",
+    "target": "việc nhà",
+    "reviewed": false
+  },
+  {
+    "source": "离婚",
+    "target": "ly hôn",
+    "reviewed": false
+  },
+  {
+    "source": "抚养权",
+    "target": "quyền nuôi con",
+    "reviewed": false
+  },
+  {
+    "source": "遗产",
+    "target": "di sản thừa kế",
+    "reviewed": false
+  },
+  {
+    "source": "分家",
+    "target": "chia nhà",
+    "reviewed": false
+  },
+  {
+    "source": "家规",
+    "target": "gia quy",
+    "reviewed": false
+  },
+  {
+    "source": "祖宗",
+    "target": "tổ tông",
+    "reviewed": false
+  },
+  {
+    "source": "祠堂",
+    "target": "từ đường",
+    "reviewed": false
+  },
+  {
+    "source": "香火",
+    "target": "hương hỏa",
+    "reviewed": false
+  },
+  {
+    "source": "传宗接代",
+    "target": "nối dõi tông đường",
+    "reviewed": false
+  }
+]

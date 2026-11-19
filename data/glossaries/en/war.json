@@ -1,0 +1,248 @@
+[
+  {
+    "source": "battlefield",
+    "target": "chiến trường",
+    "reviewed": false
+  },
+  {
+    "source": "front line",
+    "target": "tiền tuyến",
+    "reviewed": false
+  },
+  {
+    "source": "frontline",
+    "target": "tiền tuyến",
+    "reviewed": false
+  },
+  {
+    "source": "home front",
+    "target": "hậu phương",
+    "reviewed": false
+  },
+  {
+    "source": "general",
+    "target": "tướng quân",
+    "note": "Cách khác: thưa tướng quân; đại tướng, thượng tướng tùy cấp bậc trong phim",
+    "reviewed": false
+  },
+  {
+    "source": "colonel",
+    "target": "đại tá",
+    "reviewed": false
+  },
+  {
+    "source": "lieutenant",
+    "target": "trung úy",
+    "reviewed": false
+  },
+  {
+    "source": "sergeant",
+    "target": "trung sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "commander",
+    "target": "chỉ huy",
+    "reviewed": false
+  },
+  {
+    "source": "soldier",
+    "target": "người lính",
+    "reviewed": false
+  },
+  {
+    "source": "platoon",
+    "target": "trung đội",
+    "reviewed": false
+  },
+  {
+    "source": "squad",
+    "target": "tiểu đội",
+    "reviewed": false
+  },
+  {
+    "source": "battalion",
+    "target": "tiểu đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "regiment",
+    "target": "trung đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "division",
+    "target": "sư đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "troops",
+    "target": "quân lính",
+    "reviewed": false
+  },
+  {
+    "source": "reinforcements",
+    "target": "quân tiếp viện",
+    "reviewed": false
+  },
+  {
+    "source": "ambush",
+    "target": "phục kích",
+    "reviewed": false
+  },
+  {
+    "source": "retreat",
+    "target": "rút lui",
+    "reviewed": false
+  },
+  {
+    "source": "surrender",
+    "target": "đầu hàng",
+    "reviewed": false
+  },
+  {
+    "source": "prisoner of war",
+    "target": "tù binh",
+    "reviewed": false
+  },
+  {
+    "source": "casualties",
+    "target": "thương vong",
+    "reviewed": false
+  },
+  {
+    "source": "medic",
+    "target": "quân y",
+    "reviewed": false
+  },
+  {
+    "source": "enemy",
+    "target": "kẻ địch",
+    "reviewed": false
+  },
+  {
+    "source": "allies",
+    "target": "đồng minh",
+    "reviewed": false
+  },
+  {
+    "source": "trench",
+    "target": "chiến hào",
+    "reviewed": false
+  },
+  {
+    "source": "bunker",
+    "target": "hầm trú ẩn",
+    "reviewed": false
+  },
+  {
+    "source": "airstrike",
+    "target": "không kích",
+    "reviewed": false
+  },
+  {
+    "source": "air raid",
+    "target": "cuộc không kích",
+    "reviewed": false
+  },
+  {
+    "source": "bombing",
+    "target": "cuộc ném bom",
+    "reviewed": false
+  },
+  {
+    "source": "artillery",
+    "target": "pháo binh",
+    "reviewed": false
+  },
+  {
+    "source": "sniper",
+    "target": "xạ thủ bắn tỉa",
+    "reviewed": false
+  },
+  {
+    "source": "machine gun",
+    "target": "súng máy",
+    "reviewed": false
+  },
+  {
+    "source": "grenade",
+    "target": "lựu đạn",
+    "reviewed": false
+  },
+  {
+    "source": "landmine",
+    "target": "mìn",
+    "reviewed": false
+  },
+  {
+    "source": "ceasefire",
+    "target": "ngừng bắn",
+    "reviewed": false
+  },
+  {
+    "source": "armistice",
+    "target": "hiệp định đình chiến",
+    "reviewed": false
+  },
+  {
+    "source": "invasion",
+    "target": "cuộc xâm lược",
+    "reviewed": false
+  },
+  {
+    "source": "occupation",
+    "target": "sự chiếm đóng",
+    "reviewed": false
+  },
+  {
+    "source": "resistance",
+    "target": "kháng chiến",
+    "reviewed": false
+  },
+  {
+    "source": "guerrilla",
+    "target": "du kích",
+    "reviewed": false
+  },
+  {
+    "source": "deserter",
+    "target": "kẻ đào ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "court-martial",
+    "target": "tòa án quân sự",
+    "reviewed": false
+  },
+  {
+    "source": "copy that",
+    "target": "đã rõ",
+    "reviewed": false
+  },
+  {
+    "source": "fall back",
+    "target": "lui lại",
+    "reviewed": false
+  },
+  {
+    "source": "hold the line",
+    "target": "giữ vững phòng tuyến",
+    "reviewed": false
+  },
+  {
+    "source": "take cover",
+    "target": "tìm chỗ nấp",
+    "reviewed": false
+  },
+  {
+    "source": "man down",
+    "target": "có người ngã xuống",
+    "reviewed": false
+  },
+  {
+    "source": "hold your fire",
+    "target": "khoan bắn",
+    "reviewed": false
+  }
+]

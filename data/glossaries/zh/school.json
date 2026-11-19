@@ -1,0 +1,224 @@
+[
+  {
+    "source": "班主任",
+    "target": "giáo viên chủ nhiệm",
+    "reviewed": false
+  },
+  {
+    "source": "校长",
+    "target": "hiệu trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "教导主任",
+    "target": "chủ nhiệm giáo vụ",
+    "note": "Cách khác: giám thị",
+    "reviewed": false
+  },
+  {
+    "source": "同学",
+    "target": "bạn học",
+    "reviewed": false
+  },
+  {
+    "source": "班长",
+    "target": "lớp trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "学霸",
+    "target": "học bá",
+    "reviewed": false
+  },
+  {
+    "source": "学渣",
+    "target": "học dốt",
+    "reviewed": false
+  },
+  {
+    "source": "学长",
+    "target": "anh khóa trên",
+    "reviewed": false
+  },
+  {
+    "source": "学姐",
+    "target": "chị khóa trên",
+    "reviewed": false
+  },
+  {
+    "source": "学弟",
+    "target": "đàn em khóa dưới",
+    "reviewed": false
+  },
+  {
+    "source": "学妹",
+    "target": "đàn em khóa dưới (nữ)",
+    "reviewed": false
+  },
+  {
+    "source": "校花",
+    "target": "hoa khôi của trường",
+    "reviewed": false
+  },
+  {
+    "source": "校草",
+    "target": "hotboy của trường",
+    "reviewed": false
+  },
+  {
+    "source": "转学生",
+    "target": "học sinh chuyển trường",
+    "reviewed": false
+  },
+  {
+    "source": "高考",
+    "target": "kỳ thi đại học",
+    "note": "Cách khác: cao khảo",
+    "reviewed": false
+  },
+  {
+    "source": "中考",
+    "target": "kỳ thi vào lớp 10",
+    "reviewed": false
+  },
+  {
+    "source": "期末考试",
+    "target": "thi cuối kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "月考",
+    "target": "thi tháng",
+    "reviewed": false
+  },
+  {
+    "source": "成绩",
+    "target": "điểm số",
+    "reviewed": false
+  },
+  {
+    "source": "排名",
+    "target": "xếp hạng",
+    "reviewed": false
+  },
+  {
+    "source": "作业",
+    "target": "bài tập về nhà",
+    "reviewed": false
+  },
+  {
+    "source": "补习",
+    "target": "học thêm",
+    "reviewed": false
+  },
+  {
+    "source": "晚自习",
+    "target": "tự học buổi tối",
+    "reviewed": false
+  },
+  {
+    "source": "早恋",
+    "target": "yêu sớm",
+    "reviewed": false
+  },
+  {
+    "source": "情书",
+    "target": "thư tình",
+    "reviewed": false
+  },
+  {
+    "source": "暗恋",
+    "target": "thầm thương",
+    "reviewed": false
+  },
+  {
+    "source": "校服",
+    "target": "đồng phục",
+    "reviewed": false
+  },
+  {
+    "source": "操场",
+    "target": "sân trường",
+    "reviewed": false
+  },
+  {
+    "source": "食堂",
+    "target": "căng tin",
+    "reviewed": false
+  },
+  {
+    "source": "宿舍",
+    "target": "ký túc xá",
+    "reviewed": false
+  },
+  {
+    "source": "社团",
+    "target": "câu lạc bộ",
+    "reviewed": false
+  },
+  {
+    "source": "毕业典礼",
+    "target": "lễ tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "初恋",
+    "target": "mối tình đầu",
+    "reviewed": false
+  },
+  {
+    "source": "青春",
+    "target": "thanh xuân",
+    "reviewed": false
+  },
+  {
+    "source": "请家长",
+    "target": "mời phụ huynh",
+    "reviewed": false
+  },
+  {
+    "source": "记过",
+    "target": "ghi lỗi kỷ luật",
+    "reviewed": false
+  },
+  {
+    "source": "留级",
+    "target": "lưu ban",
+    "reviewed": false
+  },
+  {
+    "source": "逃课",
+    "target": "trốn học",
+    "reviewed": false
+  },
+  {
+    "source": "补考",
+    "target": "thi lại",
+    "reviewed": false
+  },
+  {
+    "source": "保送",
+    "target": "tuyển thẳng",
+    "reviewed": false
+  },
+  {
+    "source": "志愿",
+    "target": "nguyện vọng",
+    "reviewed": false
+  },
+  {
+    "source": "高三",
+    "target": "lớp 12",
+    "reviewed": false
+  },
+  {
+    "source": "初三",
+    "target": "lớp 9",
+    "reviewed": false
+  },
+  {
+    "source": "高一",
+    "target": "lớp 10",
+    "reviewed": false
+  }
+]

@@ -1,0 +1,217 @@
+[
+  {
+    "source": "social class",
+    "target": "tầng lớp xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "wealth gap",
+    "target": "chênh lệch giàu nghèo",
+    "reviewed": false
+  },
+  {
+    "source": "working class",
+    "target": "tầng lớp lao động",
+    "reviewed": false
+  },
+  {
+    "source": "middle class",
+    "target": "tầng lớp trung lưu",
+    "reviewed": false
+  },
+  {
+    "source": "layoffs",
+    "target": "sa thải hàng loạt",
+    "reviewed": false
+  },
+  {
+    "source": "unemployment",
+    "target": "thất nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "overtime",
+    "target": "tăng ca",
+    "reviewed": false
+  },
+  {
+    "source": "burnout",
+    "target": "kiệt sức",
+    "reviewed": false
+  },
+  {
+    "source": "mortgage",
+    "target": "khoản vay mua nhà",
+    "reviewed": false
+  },
+  {
+    "source": "bullying",
+    "target": "bắt nạt",
+    "reviewed": false
+  },
+  {
+    "source": "cyberbullying",
+    "target": "bắt nạt trên mạng",
+    "reviewed": false
+  },
+  {
+    "source": "domestic violence",
+    "target": "bạo lực gia đình",
+    "reviewed": false
+  },
+  {
+    "source": "depression",
+    "target": "trầm cảm",
+    "reviewed": false
+  },
+  {
+    "source": "anxiety",
+    "target": "lo âu",
+    "reviewed": false
+  },
+  {
+    "source": "therapy",
+    "target": "trị liệu tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "therapist",
+    "target": "nhà trị liệu tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "counselor",
+    "target": "chuyên viên tư vấn",
+    "reviewed": false
+  },
+  {
+    "source": "trauma",
+    "target": "chấn thương tâm lý",
+    "reviewed": false
+  },
+  {
+    "source": "panic attack",
+    "target": "cơn hoảng loạn",
+    "reviewed": false
+  },
+  {
+    "source": "dysfunctional family",
+    "target": "gia đình rạn nứt",
+    "reviewed": false
+  },
+  {
+    "source": "peer pressure",
+    "target": "áp lực từ bạn bè đồng trang lứa",
+    "reviewed": false
+  },
+  {
+    "source": "stereotype",
+    "target": "định kiến",
+    "reviewed": false
+  },
+  {
+    "source": "discrimination",
+    "target": "phân biệt đối xử",
+    "reviewed": false
+  },
+  {
+    "source": "prejudice",
+    "target": "thành kiến",
+    "reviewed": false
+  },
+  {
+    "source": "public opinion",
+    "target": "dư luận",
+    "reviewed": false
+  },
+  {
+    "source": "social media",
+    "target": "mạng xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "going viral",
+    "target": "lan truyền chóng mặt",
+    "reviewed": false
+  },
+  {
+    "source": "scandal",
+    "target": "bê bối",
+    "reviewed": false
+  },
+  {
+    "source": "whistleblower",
+    "target": "người tố giác",
+    "reviewed": false
+  },
+  {
+    "source": "corruption",
+    "target": "tham nhũng",
+    "reviewed": false
+  },
+  {
+    "source": "bribe",
+    "target": "hối lộ",
+    "reviewed": false
+  },
+  {
+    "source": "protest",
+    "target": "cuộc biểu tình",
+    "reviewed": false
+  },
+  {
+    "source": "labor union",
+    "target": "công đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "immigrant",
+    "target": "người nhập cư",
+    "reviewed": false
+  },
+  {
+    "source": "refugee",
+    "target": "người tị nạn",
+    "reviewed": false
+  },
+  {
+    "source": "homeless",
+    "target": "vô gia cư",
+    "reviewed": false
+  },
+  {
+    "source": "addiction",
+    "target": "chứng nghiện",
+    "reviewed": false
+  },
+  {
+    "source": "rehab",
+    "target": "trại cai nghiện",
+    "reviewed": false
+  },
+  {
+    "source": "support group",
+    "target": "nhóm hỗ trợ",
+    "reviewed": false
+  },
+  {
+    "source": "social worker",
+    "target": "nhân viên công tác xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "welfare",
+    "target": "phúc lợi xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "foster care",
+    "target": "chăm sóc nuôi dưỡng tạm thời",
+    "reviewed": false
+  },
+  {
+    "source": "single mother",
+    "target": "mẹ đơn thân",
+    "reviewed": false
+  }
+]
