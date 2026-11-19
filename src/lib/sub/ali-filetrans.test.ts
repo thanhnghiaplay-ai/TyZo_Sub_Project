@@ -65,3 +65,41 @@ describe("Workspace Alibaba cho nhận dạng file", () => {
     assert.doesNotMatch(text, /Model access denied/);
   });
 });
+
+describe("tách câu Alibaba gộp quá dài", () => {
+  it("tách theo dấu câu và mốc từng từ khi có words", () => {
+    const w = (text: string, b: number, e: number, punctuation = "") => ({ text, begin_time: b, end_time: e, punctuation });
+    const parsed = sentencesFromTranscript({
+      transcripts: [{ sentences: [{ begin_time: 0, end_time: 6000, text: "如果一件事说了很多遍，对方还是没有做到。怎么办？", words: [
+        w("如果一件事说了很多遍", 0, 2000, "，"), w("对方还是没有做到", 2200, 4000, "。"), w("怎么办", 4500, 5800, "？"),
+      ] }] }],
+    });
+    assert.deepEqual(parsed.sentences.map((x) => x.text), ["如果一件事说了很多遍", "对方还是没有做到。", "怎么办？"]);
+    assert.equal(parsed.sentences[1].start, 2.2);
+    assert.equal(parsed.sentences[2].end, 5.8);
+  });
+
+  it("không có words thì tách theo dấu câu và chia thời gian theo độ dài chữ", () => {
+    const parsed = sentencesFromTranscript({
+      transcripts: [{ sentences: [{ begin_time: 0, end_time: 8000, text: "你会不开心，他还忍心看你伤心难过？" }] }],
+    });
+    assert.equal(parsed.sentences.length, 2);
+    assert.equal(parsed.sentences[0].text, "你会不开心");
+    assert.ok(parsed.sentences[0].end <= parsed.sentences[1].start + 1e-9);
+    assert.ok(Math.abs(parsed.sentences[1].end - 8) < 1e-6);
+  });
+
+  it("ngắt khi hai từ cách nhau từ nửa giây dù không có dấu câu", () => {
+    const w = (text: string, b: number, e: number) => ({ text, begin_time: b, end_time: e, punctuation: "" });
+    const parsed = sentencesFromTranscript({
+      transcripts: [{ sentences: [{ begin_time: 0, end_time: 5000, text: "谁让你有了失望谁就也会让你", words: [w("谁让你有了失望", 0, 1800), w("谁就也会让你", 2600, 4000)] }] }],
+    });
+    assert.equal(parsed.sentences.length, 2);
+  });
+
+  it("câu ngắn hoặc không có chỗ ngắt giữ nguyên, mảnh chỉ 1 chữ gộp vào mảnh kề", () => {
+    assert.equal(sentencesFromTranscript({ transcripts: [{ sentences: [{ begin_time: 0, end_time: 1000, text: "怎么办" }] }] }).sentences.length, 1);
+    const merged = sentencesFromTranscript({ transcripts: [{ sentences: [{ begin_time: 0, end_time: 3000, text: "好，我们走吧。" }] }] });
+    assert.equal(merged.sentences.length, 1);
+  });
+});

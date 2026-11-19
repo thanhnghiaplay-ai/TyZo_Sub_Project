@@ -103,6 +103,82 @@ function num(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
+const BREAK_MARKS = /[，,。.！!？?；;…、]/;
+const WORD_GAP_MS = 500;
+const MIN_VISIBLE_CHARS = 2;
+
+function visibleLength(text: string): number {
+  return text.replace(/[\s，,。.！!？?；;…、:："“”"'‘’()（）\-—]/g, "").length;
+}
+
+function tidyPiece(text: string): string {
+  return text.trim().replace(/[，,、；;\s]+$/g, "").trim();
+}
+
+/** Gộp mảnh quá ngắn (dưới 2 ký tự nhìn thấy) vào mảnh liền trước, hoặc mảnh liền sau nếu là mảnh đầu. */
+function mergeTiny(pieces: AliSentence[]): AliSentence[] {
+  const out: AliSentence[] = [];
+  for (const piece of pieces) {
+    if (visibleLength(piece.text) < MIN_VISIBLE_CHARS && out.length) {
+      const prev = out[out.length - 1];
+      out[out.length - 1] = { start: prev.start, end: Math.max(prev.end, piece.end), text: `${prev.text} ${piece.text}`.trim() };
+    } else {
+      out.push(piece);
+    }
+  }
+  if (out.length > 1 && visibleLength(out[0].text) < MIN_VISIBLE_CHARS) {
+    const [first, second, ...rest] = out;
+    return [{ start: first.start, end: Math.max(first.end, second.end), text: `${first.text} ${second.text}`.trim() }, ...rest];
+  }
+  return out;
+}
+
+/**
+ * Alibaba hay gộp nhiều câu liền nhau (lời thoại không có quãng lặng) thành một «câu» dài.
+ * Tách lại theo dấu câu, ưu tiên mốc từng từ (words) nếu có, ngắt thêm khi hai từ cách nhau từ 0,5 giây.
+ * Câu không có chỗ ngắt thì giữ nguyên.
+ */
+export function splitLongSentence(item: Record<string, unknown>, text: string, begin: number, end: number): AliSentence[] {
+  const whole: AliSentence = { start: Math.max(0, begin / 1000), end: Math.max(begin / 1000 + 0.2, end / 1000), text };
+  const words = Array.isArray(item.words) ? item.words : [];
+  const usable = words
+    .map((w) => (w && typeof w === "object" ? (w as Record<string, unknown>) : null))
+    .filter((w): w is Record<string, unknown> => !!w && typeof w.text === "string" && num(w.begin_time) !== null && num(w.end_time) !== null);
+  let pieces: AliSentence[] = [];
+  if (usable.length > 1) {
+    let buf = "";
+    let from = 0;
+    let to = 0;
+    const flush = () => {
+      const cleaned = tidyPiece(buf);
+      if (cleaned) pieces.push({ start: Math.max(0, from / 1000), end: Math.max(from / 1000 + 0.2, to / 1000), text: cleaned });
+      buf = "";
+    };
+    usable.forEach((w, index) => {
+      const wBegin = num(w.begin_time) as number;
+      const wEnd = num(w.end_time) as number;
+      if (buf && wBegin - to >= WORD_GAP_MS) flush();
+      if (!buf) from = wBegin;
+      const mark = typeof w.punctuation === "string" ? w.punctuation : "";
+      buf += `${w.text as string}${mark}`;
+      to = wEnd;
+      if (BREAK_MARKS.test(mark) || index === usable.length - 1) flush();
+    });
+  } else {
+    const parts = text.match(/[^，,。.！!？?；;…]+[，,。.！!？?；;…]*/g) ?? [];
+    const total = parts.reduce((sum, part) => sum + Math.max(1, visibleLength(part)), 0);
+    let cursor = begin;
+    for (const part of parts) {
+      const cleaned = tidyPiece(part);
+      const share = (Math.max(1, visibleLength(part)) / Math.max(1, total)) * (end - begin);
+      if (cleaned) pieces.push({ start: Math.max(0, cursor / 1000), end: Math.max(cursor / 1000 + 0.2, (cursor + share) / 1000), text: cleaned });
+      cursor += share;
+    }
+  }
+  pieces = mergeTiny(pieces);
+  return pieces.length > 1 ? pieces : [whole];
+}
+
 /** Mốc trong JSON là mili-giây. */
 export function sentencesFromTranscript(payload: unknown): { sentences: AliSentence[]; seconds: number } {
   const root = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
@@ -118,9 +194,7 @@ export function sentencesFromTranscript(payload: unknown): { sentences: AliSente
       const begin = num(item.begin_time);
       const end = num(item.end_time);
       if (!text || begin === null || end === null) continue;
-      const start = Math.max(0, begin / 1000);
-      const stop = Math.max(start + 0.2, end / 1000);
-      sentences.push({ start, end: stop, text });
+      sentences.push(...splitLongSentence(item, text, begin, end));
     }
   }
   sentences.sort((a, b) => a.start - b.start || a.end - b.end);
