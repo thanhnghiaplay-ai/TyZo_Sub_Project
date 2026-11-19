@@ -1,4 +1,5 @@
 import type { Seg } from "@/lib/sub/types";
+import { genreHint } from "./genre-prompts.ts";
 import { measurePitch } from "./pitch-voice.ts";
 
 export const SR = 16000;
@@ -552,7 +553,7 @@ export function translationMessages(texts: string[], language: string, opts: Tra
     vi
       ? "Vietnamese rules: choose pronouns from the gender lock (tôi/mình, anh/em, cậu/tớ, tao/mày, ông/bà, ngài, huynh/đệ...). A male speaker never refers to himself as chị/cô/bà, and a female speaker never refers to herself as anh/ông/chú. Keep the same pair for the same two people. Prefer natural movie-subtitle Vietnamese over a stiff word-for-word line."
       : "Keep grammatical gender (he/she and the target language's equivalents) aligned with the gender lock for the whole batch.",
-    GENRES[opts.genre] || "",
+    GENRES[opts.genre] || genreHint(opts.genre),
     opts.context,
     'Use "context_after" (upcoming original lines) only to resolve who is speaking or answering and unfinished sentences; never translate it.',
     opts.fix

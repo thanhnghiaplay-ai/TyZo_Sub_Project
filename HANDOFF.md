@@ -1,3 +1,7 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A1 KHO PROMPT THEO THỂ LOẠI XONG (v5.8.0) — đọc mục này đầu tiên
+Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A1» ở đó có đủ chi tiết). Tóm tắt: file mới `src/lib/sub/genre-prompts.ts` (prompt trau chuốt riêng cho 26 thể loại + dự phòng), thêm 9 thể loại vào ô chọn, danh sách thể loại gom về `GENRES` ở `src/lib/home-state.ts`, test mới `genre-prompts.test.ts`, nâng v5.8.0 (CHANGELOG, ADMIN_LOG). typecheck, eslint, `npm test` (198 + 1089) đều pass.
+VIỆC TIẾP THEO: A2 (`polishBatch`), xem `HANDOFF_NANG_CAP.md`. CHỜ CHỦ CHỐT: có đưa `softcore` vào `NO_BASE_GENRES` (không nối bộ nền `auto`) hay không.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — KẾ HOẠCH NÂNG CẤP: xem `HANDOFF_NANG_CAP.md` — đọc mục này đầu tiên
 Chủ muốn thêm «Trau chuốt bản dịch» (gửi bản dịch tiếng Việt cho model chat chỉnh theo thể loại, hiện cạnh bản cũ, ước giá trước khi gửi), prompt riêng theo thể loại, và mở rộng thư viện thuật ngữ. Chưa viết code. Toàn bộ quyết định, hiện trạng đã khảo sát và các bước A1 đến C4 nằm trong `HANDOFF_NANG_CAP.md`; làm từng bước, đánh dấu ở đó, đẩy lên `work` sau mỗi bước.
 

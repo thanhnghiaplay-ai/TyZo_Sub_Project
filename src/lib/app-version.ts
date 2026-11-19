@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.7.0";
+export const APP_VERSION = "5.8.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.8.0",
+    time: "19/11/2026",
+    title: "Thêm 9 thể loại phim mới để dịch sát giọng phim hơn.",
+    points: [
+      "Thêm Kiếm hiệp, Tiên hiệp, Ngôn tình, Phim cấp 3, Tâm lý xã hội.",
+      "Thêm Chiến tranh, Gia đình, Học đường / thanh xuân, Tài liệu / phóng sự.",
+      "Mỗi thể loại dặn cách xưng hô và giọng văn riêng khi dịch.",
+    ],
+  },
   {
     version: "5.7.0",
     time: "19/11/2026",

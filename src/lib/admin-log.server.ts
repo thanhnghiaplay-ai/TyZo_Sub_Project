@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.8.0",
+    time: "19/11/2026",
+    area: "khac",
+    text: "A1 kho prompt theo thể loại (HANDOFF_NANG_CAP.md). 1) File mới src/lib/sub/genre-prompts.ts: prompt trau chuốt RIÊNG cho 26 thể loại (17 cũ + 9 mới) gồm tên, prompt giọng văn/xưng hô/mức thô tục/độ dài câu, gợi ý ngắn cho bước dịch của thể loại mới, prompt dự phòng cho thể loại lạ, giới hạn 1200 ký tự. CHƯA có chỗ nào gọi prompt trau chuốt (làm ở A2). 2) 9 thể loại mới trong ô chọn (home-state.ts GENRES): wuxia, xianxia, ngontinh, softcore, social, war, family, school, documentary. Trinh thám đã có sẵn dưới khóa mystery nên không thêm. 3) glossary-share.ts nay LẤY danh sách và nhãn thể loại từ home-state.ts (trước đây chép tay ba nơi, dễ lệch); glossaryPair nhận khóa mới. Thể loại mới CHƯA có file thuật ngữ trong data/glossaries nên bộ thuật ngữ rỗng (việc B1). Lưu ý: thể loại mới được nối bộ nền auto như thể loại thường (NO_BASE_GENRES chỉ gồm auto, adult, sex): phim cấp 3 (softcore) CÓ nối bộ nền auto, Chủ xem có muốn thêm softcore vào NO_BASE_GENRES không. 4) text.ts translationMessages: thể loại mới dùng genreHint khi GENRES cũ chưa có (thể loại cũ giữ nguyên chữ). Test mới genre-prompts.test.ts (9 ca) đã thêm vào script test.",
+  },
+  {
     version: "5.7.0",
     time: "19/11/2026",
     area: "khac",

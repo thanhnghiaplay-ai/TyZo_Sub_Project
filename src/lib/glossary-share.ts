@@ -1,43 +1,10 @@
-const LANGS = new Set(["ja", "ko", "zh", "en"]);
-const GENRES = new Set([
-  "action",
-  "adventure",
-  "crime",
-  "scifi",
-  "horror",
-  "romance",
-  "psychological",
-  "comedy",
-  "costume",
-  "historical",
-  "mystery",
-  "sports",
-  "adult",
-  "sex",
-  "series",
-  "daily",
-  "auto",
-]);
+import { GENRES as GENRE_LIST } from "./home-state.ts";
 
-export const GENRE_LABELS: Record<string, string> = {
-  auto: "Tự động",
-  action: "Hành động",
-  adventure: "Phiêu lưu",
-  crime: "Hình sự / giang hồ",
-  scifi: "Viễn tưởng / giả tưởng",
-  horror: "Kinh dị",
-  romance: "Tình cảm / lãng mạn",
-  psychological: "Tâm lý",
-  comedy: "Hài",
-  costume: "Cổ trang / kiếm hiệp",
-  historical: "Lịch sử / thời kỳ",
-  mystery: "Trinh thám / bí ẩn",
-  sports: "Thể thao",
-  adult: "Phim gắn nhãn 18+",
-  sex: "Phim thoại kín",
-  series: "Phim bộ / phim mới chiếu",
-  daily: "Hằng ngày",
-};
+const LANGS = new Set(["ja", "ko", "zh", "en"]);
+// Danh sách thể loại lấy từ một nơi duy nhất (home-state.ts) để ô chọn, bộ thuật ngữ và kho prompt không lệch nhau.
+const GENRES = new Set(GENRE_LIST.map(([id]) => id));
+
+export const GENRE_LABELS: Record<string, string> = Object.fromEntries(GENRE_LIST);
 
 export function glossaryPair(lang: string, genre: string) {
   const nextLang = lang.trim().toLowerCase();

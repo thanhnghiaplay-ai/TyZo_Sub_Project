@@ -19,6 +19,15 @@ export const GENRES: [string, string][] = [
   ["sex", "Phim thoại kín"],
   ["series", "Phim bộ / phim mới chiếu"],
   ["daily", "Hằng ngày"],
+  ["wuxia", "Kiếm hiệp"],
+  ["xianxia", "Tiên hiệp"],
+  ["ngontinh", "Ngôn tình"],
+  ["softcore", "Phim cấp 3"],
+  ["social", "Tâm lý xã hội"],
+  ["war", "Chiến tranh"],
+  ["family", "Gia đình"],
+  ["school", "Học đường / thanh xuân"],
+  ["documentary", "Tài liệu / phóng sự"],
 ];
 
 export type HomeInput = {
