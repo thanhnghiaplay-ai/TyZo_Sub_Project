@@ -252,7 +252,7 @@ export const createPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { provider: string; amount: number }) => {
     const provider = input.provider;
-    if (provider !== "sepay" && provider !== "casso") throw new Error("Cong khong dung.");
+    if (provider !== "sepay" && provider !== "casso") throw new Error("Cổng không đúng.");
     const amount = Math.round(Number(input.amount));
     if (!Number.isFinite(amount) || amount < 10_000 || amount > 1_000_000) throw new Error("So tien tu 10.000 den 1.000.000 dong.");
     return { provider, amount };
@@ -271,7 +271,7 @@ export const readPayOrder = createServerFn({ method: "POST" })
     const rows = await sql<{ status: string; amount: number; created_at: Date | string }>`
       select status, amount, created_at from pay_orders where id = ${data} and user_id = ${context.userId}
     `;
-    if (!rows.length) throw new Error("Khong thay don nap.");
+    if (!rows.length) throw new Error("Không thấy đơn nạp.");
     const row = rows[0];
     return { status: row.status, amount: row.amount, createdAt: new Date(row.created_at).toISOString() };
   });
@@ -280,7 +280,7 @@ export const cancelMyPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
     const value = id?.trim();
-    if (!value) throw new Error("Thieu don nap.");
+    if (!value) throw new Error("Thiếu đơn nạp.");
     return value;
   })
   .handler(async ({ context, data }) => {
@@ -407,7 +407,7 @@ export const claimPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
     const value = id?.trim();
-    if (!value) throw new Error("Thieu don nap.");
+    if (!value) throw new Error("Thiếu đơn nạp.");
     return value;
   })
   .handler(async ({ context, data }) => {
@@ -480,7 +480,7 @@ export const confirmPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
     const value = id?.trim();
-    if (!value) throw new Error("Thieu don nap.");
+    if (!value) throw new Error("Thiếu đơn nạp.");
     return value;
   })
   .handler(async ({ context, data }) => {
@@ -491,7 +491,7 @@ export const confirmPayOrder = createServerFn({ method: "POST" })
     const who = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
     const actorEmail = who[0]?.email ?? "";
     const done = await confirmOrderWith(sql, data, context.userId, actorEmail);
-    if (!done) throw new Error("Don nay da xu ly hoac khong con.");
+    if (!done) throw new Error("Đơn này đã xử lý hoặc không còn.");
     const row = await sql<{ purpose: string }>`select purpose from pay_orders where id = ${data}`;
     if (row[0]?.purpose === "token") await writePayNotice(done.userId, "user", "Đã cộng Token dịch", `Đơn ${done.code} đã cộng Token dịch.`);
     else if (row[0]?.purpose === "plan") await writePayNotice(done.userId, "user", "Đã mở thuê phòng", `Đơn ${done.code} đã mở hạn thuê phòng.`);
@@ -503,7 +503,7 @@ export const cancelPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
     const value = id?.trim();
-    if (!value) throw new Error("Thieu don nap.");
+    if (!value) throw new Error("Thiếu đơn nạp.");
     return value;
   })
   .handler(async ({ context, data }) => {
@@ -516,7 +516,7 @@ export const cancelPayOrder = createServerFn({ method: "POST" })
       where id = ${data} and status in ('pending', 'claimed')
       returning id, status, code, user_id, amount
     `;
-    if (!rows.length) throw new Error("Don nay da xu ly hoac khong con de huy.");
+    if (!rows.length) throw new Error("Đơn này đã xử lý hoặc không còn để hủy.");
     const order = rows[0];
     const who = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
     const actor = who[0]?.email ?? "";
@@ -536,7 +536,7 @@ export const setPayGate = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { provider: string; on?: boolean; clear?: boolean }) => {
     const provider = input.provider === "casso" ? "casso" : input.provider === "sepay" ? "sepay" : "";
-    if (!provider) throw new Error("Cong khong dung.");
+    if (!provider) throw new Error("Cổng không đúng.");
     return { provider, on: Boolean(input.on), clear: Boolean(input.clear) };
   })
   .handler(async ({ context, data }) => {
