@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
-import { moneyExtraWith, parseSpan } from "./money-extra-data.ts";
+import { moneyExtraWith, parseSpan, tokenUsageWith, WINDOW } from "./money-extra-data.ts";
 
 let sql: Sql;
 before(async () => {
@@ -84,5 +84,33 @@ describe("số liệu mới trang Doanh thu", () => {
     ]);
     assert.equal(view.costPerMinute, 60);
     assert.equal(view.allInPerMinute, 150);
+  });
+
+  it("Token dịch: phiếu unit token vào giá vốn đồng và giá vốn mỗi phút (trước đây bị bỏ)", async () => {
+    await sql`insert into run_tickets (id, user_id, file_name, status, seconds, charged, base_cost, unit) values ('k1', 'u', 'f', 'dung-tien', 600, 600, 600, 'token')`;
+    await sql`insert into run_tickets (id, user_id, file_name, status, seconds, charged, base_cost, unit) values ('k2', 'u', 'f', 'dang-giu', 600, 0, 0, 'token')`;
+    const used = await tokenUsageWith(sql, WINDOW.month);
+    assert.deepEqual(used, { tokens: 600, seconds: 600 });
+    const view = await moneyExtraWith(sql, "month", 0.5);
+    assert.equal(view.audioSeconds, 600);
+    assert.equal(view.costPerMinute, 30);
+    const noPrice = await moneyExtraWith(sql, "month", null);
+    assert.equal(noPrice.costPerMinute, null);
+  });
+
+  it("Token dịch: giá vốn đồng = Token đã trừ × giá gốc Turbo, vào giá vốn mỗi phút", async () => {
+    await sql`insert into run_tickets (id, user_id, file_name, status, seconds, charged, unit) values ('k1', 'u', 'f', 'dung-tien', 600, 300, 'token')`;
+    const used = await tokenUsageWith(sql, WINDOW.month);
+    assert.deepEqual(used, { tokens: 300, seconds: 600 });
+    const view = await moneyExtraWith(sql, "month", 0.5);
+    assert.equal(view.audioSeconds, 600);
+    assert.equal(view.costPerMinute, 15);
+  });
+
+  it("Token dịch chưa có giá Turbo thì giá vốn mỗi phút là null (hiện —), không báo số thiếu", async () => {
+    await sql`insert into run_tickets (id, user_id, file_name, status, seconds, charged, unit) values ('k2', 'u', 'f', 'dung-tien', 600, 300, 'token')`;
+    const view = await moneyExtraWith(sql, "month", null);
+    assert.equal(view.costPerMinute, null);
+    assert.equal(view.allInPerMinute, null);
   });
 });

@@ -28,3 +28,14 @@ export function profitOf(input: ProfitInput): Profit {
   const loi = lai - Math.max(0, money(input.hoa)) - Math.max(0, money(input.chi));
   return { lai, loi };
 }
+
+/**
+ * Giá vốn bằng đồng của các lượt trừ Token dịch. 1 Token dịch = 1 giây nhận dạng Turbo
+ * theo giá gốc (chưa cộng chênh), nên đồng = số Token đã trừ × giá gốc Turbo đồng mỗi giây.
+ * Phiếu Token chỉ lưu số Token (cột base_cost của phiếu này là Token, không phải đồng),
+ * nên đây là số quy theo bảng giá hiện hành. Thiếu giá Turbo thì trả 0 và màn hình nói rõ.
+ */
+export function tokenCostVnd(tokens: number, turboPerSecond: number | null): number {
+  if (!(tokens > 0) || turboPerSecond == null || !(turboPerSecond > 0)) return 0;
+  return Math.round(tokens * turboPerSecond);
+}

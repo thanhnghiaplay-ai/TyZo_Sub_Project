@@ -95,7 +95,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [points, setPoints] = useState<MoneyPoint[]>([]);
   const [revenue, setRevenue] = useState(0);
   const [cost, setCost] = useState(0);
-  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0, hoa: 0, loi: 0, vonUoc: 0, chuaVon: 0 });
+  const [breakdown, setBreakdown] = useState<MoneyBreakdown>({ nap: 0, goi: 0, luot: 0, hoan: 0, nha: 0, chi: 0, von: 0, lai: 0, hoa: 0, loi: 0, vonUoc: 0, vonToken: 0, tokenChuaGia: false, chuaVon: 0 });
   const [day, setDay] = useState(vnDay);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -161,7 +161,10 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           <li className="flex justify-between gap-2"><span>Đã dùng từ số dư cũ: trả theo lượt (sau hoàn)</span><span className="font-medium text-fg">{dong(breakdown.luot)}</span></li>
           <li className="flex justify-between gap-2"><span>Hoàn vào số dư cũ</span><span className="font-medium text-fg">{dong(breakdown.hoan)}</span></li>
           <li className="flex justify-between gap-2"><span>Nhả khoản đang giữ</span><span className="font-medium text-fg">{dong(breakdown.nha)}</span></li>
-          <li className="flex justify-between gap-2"><span>Giá vốn lượt (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
+          <li className="flex justify-between gap-2"><span>Giá vốn (chưa gồm chênh)</span><span className="font-medium text-fg">{dong(breakdown.von)}</span></li>
+          {breakdown.vonToken > 0 && (
+            <li className="flex justify-between gap-2"><span>Trong đó Token dịch (quy theo giá gốc Turbo hiện hành)</span><span className="font-medium text-fg">{dong(breakdown.vonToken)}</span></li>
+          )}
           {breakdown.vonUoc > 0 && (
             <li className="flex justify-between gap-2"><span>Trong đó giá vốn ước tính (phiếu cũ)</span><span className="font-medium text-fg">{dong(breakdown.vonUoc)}</span></li>
           )}
@@ -173,6 +176,9 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           Lời lỗ = tiền chuyển khoản vào − giá vốn − hoa hồng − chi phí ghi tay. Các dòng «từ số dư cũ» chỉ để tham khảo, không cộng vào lời lỗ vì tiền đó đã tính lúc khách nạp. Phiếu từ bản này trở đi lưu giá vốn thật. Phiếu cũ chỉ có giá vốn ước tính (đánh dấu ở trên) và có thể lệch so với thực tế.
           Tiền thử và gói mở tay không tính. Key của khách không đi qua sổ này.
         </p>
+        {breakdown.tokenChuaGia && (
+          <p className="text-xs text-danger">Có lượt trừ Token dịch nhưng chưa có giá Turbo để quy ra đồng, nên giá vốn đang thiếu và lời lỗ có thể cao hơn thật. Vào Cấu hình → Giá để tải bảng giá.</p>
+        )}
         {owner && breakdown.chuaVon > 0 && (
           <button
             type="button"

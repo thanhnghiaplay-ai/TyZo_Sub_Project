@@ -1050,7 +1050,7 @@ export const setNickname = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-import { profitOf } from "@/lib/money-profit";
+import { profitOf, tokenCostVnd } from "@/lib/money-profit";
 
 export type MoneyPoint = { bucket: string; revenue: number; cost: number };
 export type CostRow = { id: number; day: string; label: string; amount: number; category: string };
@@ -1069,6 +1069,10 @@ export type MoneyBreakdown = {
   hoa: number;
   /** Phần giá vốn là ước tính cho phiếu cũ, nằm trong von. */
   vonUoc: number;
+  /** Phần giá vốn của lượt trừ Token dịch, quy ra đồng theo giá gốc Turbo hiện hành, nằm trong von. */
+  vonToken: number;
+  /** Có lượt Token dịch nhưng chưa có giá Turbo để quy ra đồng: giá vốn đang thiếu. */
+  tokenChuaGia: boolean;
   /** Số phiếu cũ đã trừ tiền mà chưa có giá vốn, toàn thời gian. */
   chuaVon: number;
 };
@@ -1130,7 +1134,12 @@ export const getMoney = createServerFn({ method: "POST" })
     const costTotal = points.reduce((sum, point) => sum + point.cost, 0);
     const charged = Number(runSum[0]?.charged ?? 0);
     const refundedRun = Number(runSum[0]?.refunded ?? 0);
-    const von = Number(runSum[0]?.von ?? 0);
+    const { tokenUsageWith, WINDOW } = await import("@/lib/money-extra-data");
+    const { turboBasePerSecond } = await import("@/lib/token-cost.server");
+    const turbo = await turboBasePerSecond(sql);
+    const used = await tokenUsageWith(sql, WINDOW[data]);
+    const vonToken = tokenCostVnd(used.tokens, turbo);
+    const von = Number(runSum[0]?.von ?? 0) + vonToken;
     const vonUoc = Number(runSum[0]?.uoc ?? 0);
     const { countUncosted } = await import("@/lib/cost-estimate");
     const chuaVon = await countUncosted(sql);
@@ -1155,6 +1164,8 @@ export const getMoney = createServerFn({ method: "POST" })
         loi,
         hoa,
         vonUoc,
+        vonToken,
+        tokenChuaGia: used.tokens > 0 && turbo === null,
         chuaVon,
       },
       costs: savedCosts,
@@ -1171,7 +1182,9 @@ export const getMoneyExtra = createServerFn({ method: "POST" })
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const { moneyExtraWith } = await import("@/lib/money-extra-data");
-    return moneyExtraWith(await getSql(), data);
+    const sql = await getSql();
+    const { turboBasePerSecond } = await import("@/lib/token-cost.server");
+    return moneyExtraWith(sql, data, await turboBasePerSecond(sql));
   });
 
 /** Chủ bấm: điền giá vốn ước tính cho phiếu cũ. Dùng phần chênh Groq hiện tại, nên chỉ là ước tính. */

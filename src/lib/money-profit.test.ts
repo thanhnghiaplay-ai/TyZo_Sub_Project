@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { profitOf } from "./money-profit.ts";
+import { profitOf, tokenCostVnd } from "./money-profit.ts";
+
+describe("giá vốn Token dịch", () => {
+  it("Token × giá Turbo, làm tròn; thiếu giá thì 0", () => {
+    assert.equal(tokenCostVnd(1000, 0.35), 350);
+    assert.equal(tokenCostVnd(0, 0.35), 0);
+    assert.equal(tokenCostVnd(1000, null), 0);
+  });
+});
 
 describe("lời lỗ theo tiền thật", () => {
   it("ca của Chủ: thu 12.832, giá vốn 18.843 thì lỗ 6.011, không phải −18.843", () => {
@@ -24,5 +32,14 @@ describe("lời lỗ theo tiền thật", () => {
     assert.ok(server.includes("profitOf("));
     assert.ok(!/const lai = goi \+ luot - von/.test(server));
     assert.ok(!screen.includes("breakdown.lai - cost - breakdown.hoa"));
+  });
+  it("giá vốn Token dịch = Token × giá gốc Turbo; thiếu giá thì 0", () => {
+    assert.equal(tokenCostVnd(600, 0.5), 300);
+    assert.equal(tokenCostVnd(0, 0.5), 0);
+    assert.equal(tokenCostVnd(600, null), 0);
+  });
+  it("getMoney cộng giá vốn Token dịch vào von", () => {
+    const server = readFileSync(new URL("./admin-room.ts", import.meta.url), "utf8");
+    assert.ok(server.includes("tokenCostVnd(used.tokens, turbo)"));
   });
 });

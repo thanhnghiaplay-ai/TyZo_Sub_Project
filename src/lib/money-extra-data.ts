@@ -1,5 +1,6 @@
 import type { Sql } from "./db.ts";
 import { arpu, conversionRate, costPerMinute, sortCategories } from "./money-extra.ts";
+import { tokenCostVnd } from "./money-profit.ts";
 
 export type MoneySpan = "day" | "week" | "month" | "year";
 
@@ -27,10 +28,22 @@ export function parseSpan(value: unknown): MoneySpan {
 }
 
 /** Cùng khoảng với getMoney: 14 ngày, 8 tuần, 12 tháng, 5 năm. */
-const WINDOW: Record<MoneySpan, string> = { day: "14 days", week: "8 weeks", month: "12 months", year: "5 years" };
+export const WINDOW: Record<MoneySpan, string> = { day: "14 days", week: "8 weeks", month: "12 months", year: "5 years" };
+
+/** Token dịch đã trừ trong khoảng, và số giây âm thanh của các lượt đã xong. Phiếu Token không nằm trong unit = 'vnd'. */
+export async function tokenUsageWith(sql: Sql, window: string): Promise<{ tokens: number; seconds: number }> {
+  const rows = await sql.query<{ tokens: number; seconds: number }>(
+    `select coalesce(sum(charged), 0)::int as tokens,
+       coalesce(sum(seconds) filter (where charged > 0 and status in ('da-tru', 'dung-tien')), 0)::int as seconds
+     from run_tickets
+     where created_at > now() - $1::interval and unit = 'token'`,
+    [window],
+  );
+  return { tokens: Number(rows[0]?.tokens ?? 0), seconds: Number(rows[0]?.seconds ?? 0) };
+}
 
 /** Số liệu mới của trang Doanh thu. Chỉ có số tổng, không đọc tên tệp hay chữ phụ đề. */
-export async function moneyExtraWith(sql: Sql, span: MoneySpan): Promise<MoneyExtra> {
+export async function moneyExtraWith(sql: Sql, span: MoneySpan, turbo: number | null = null): Promise<MoneyExtra> {
   const window = WINDOW[span];
   const payerRows = await sql.query<{ payers: number; amount: number }>(
     `select count(distinct user_id)::int as payers, coalesce(sum(amount), 0)::int as amount
@@ -58,8 +71,10 @@ export async function moneyExtraWith(sql: Sql, span: MoneySpan): Promise<MoneyEx
   const topUp = Number(payerRows[0]?.amount ?? 0);
   const trialUsers = Number(trialRows[0]?.trial ?? 0);
   const converted = Number(trialRows[0]?.converted ?? 0);
-  const seconds = Number(runRows[0]?.seconds ?? 0);
-  const von = Number(runRows[0]?.von ?? 0);
+  const used = await tokenUsageWith(sql, window);
+  const seconds = Number(runRows[0]?.seconds ?? 0) + used.seconds;
+  const von = Number(runRows[0]?.von ?? 0) + tokenCostVnd(used.tokens, turbo);
+  const unpriced = used.tokens > 0 && !(turbo != null && turbo > 0);
   const categories = sortCategories(catRows);
   const manual = categories.reduce((sum, row) => sum + row.amount, 0);
   return {
@@ -69,8 +84,9 @@ export async function moneyExtraWith(sql: Sql, span: MoneySpan): Promise<MoneyEx
     converted: Math.min(converted, trialUsers),
     conversion: conversionRate(trialUsers, converted),
     audioSeconds: seconds,
-    costPerMinute: costPerMinute(von, seconds),
-    allInPerMinute: costPerMinute(von + manual, seconds),
+    // Có lượt Token dịch mà chưa có giá Turbo thì chưa biết giá vốn: hiện «—», không hiện số thiếu.
+    costPerMinute: unpriced ? null : costPerMinute(von, seconds),
+    allInPerMinute: unpriced ? null : costPerMinute(von + manual, seconds),
     categories,
   };
 }
