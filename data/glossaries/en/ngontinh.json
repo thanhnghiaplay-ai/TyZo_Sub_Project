@@ -139,5 +139,215 @@
     "source": "the other woman",
     "target": "kẻ thứ ba",
     "reviewed": false
+  },
+  {
+    "source": "general manager",
+    "target": "tổng giám đốc",
+    "reviewed": false
+  },
+  {
+    "source": "board of directors",
+    "target": "hội đồng quản trị",
+    "reviewed": false
+  },
+  {
+    "source": "shareholder",
+    "target": "cổ đông",
+    "reviewed": false
+  },
+  {
+    "source": "subsidiary",
+    "target": "công ty con",
+    "reviewed": false
+  },
+  {
+    "source": "inheritance",
+    "target": "thừa kế",
+    "reviewed": false
+  },
+  {
+    "source": "prenup",
+    "target": "thỏa thuận tiền hôn nhân",
+    "reviewed": false
+  },
+  {
+    "source": "marriage certificate",
+    "target": "giấy đăng ký kết hôn",
+    "reviewed": false
+  },
+  {
+    "source": "divorce papers",
+    "target": "đơn ly hôn",
+    "reviewed": false
+  },
+  {
+    "source": "divorce agreement",
+    "target": "thỏa thuận ly hôn",
+    "reviewed": false
+  },
+  {
+    "source": "wedding banquet",
+    "target": "tiệc cưới",
+    "reviewed": false
+  },
+  {
+    "source": "bride price",
+    "target": "sính lễ",
+    "reviewed": false
+  },
+  {
+    "source": "dowry",
+    "target": "của hồi môn",
+    "reviewed": false
+  },
+  {
+    "source": "pregnant",
+    "target": "mang thai",
+    "reviewed": false
+  },
+  {
+    "source": "secret baby",
+    "target": "đứa con bí mật",
+    "reviewed": false
+  },
+  {
+    "source": "paternity test",
+    "target": "xét nghiệm huyết thống",
+    "reviewed": false
+  },
+  {
+    "source": "amnesia",
+    "target": "mất trí nhớ",
+    "reviewed": false
+  },
+  {
+    "source": "car accident",
+    "target": "tai nạn xe",
+    "reviewed": false
+  },
+  {
+    "source": "bodyguard",
+    "target": "vệ sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "secretary",
+    "target": "thư ký",
+    "reviewed": false
+  },
+  {
+    "source": "butler",
+    "target": "quản gia",
+    "reviewed": false
+  },
+  {
+    "source": "love rival",
+    "target": "tình địch",
+    "reviewed": false
+  },
+  {
+    "source": "female lead",
+    "target": "nữ chính",
+    "reviewed": false
+  },
+  {
+    "source": "male lead",
+    "target": "nam chính",
+    "reviewed": false
+  },
+  {
+    "source": "second male lead",
+    "target": "nam phụ",
+    "reviewed": false
+  },
+  {
+    "source": "villainess",
+    "target": "nữ phụ độc ác",
+    "reviewed": false
+  },
+  {
+    "source": "gold digger",
+    "target": "kẻ đào mỏ",
+    "reviewed": false
+  },
+  {
+    "source": "playboy",
+    "target": "công tử đào hoa",
+    "reviewed": false
+  },
+  {
+    "source": "spoil you",
+    "target": "nuông chiều em",
+    "reviewed": false
+  },
+  {
+    "source": "chase after",
+    "target": "theo đuổi",
+    "reviewed": false
+  },
+  {
+    "source": "make up",
+    "target": "làm lành",
+    "reviewed": false
+  },
+  {
+    "source": "remarry",
+    "target": "tái hôn",
+    "reviewed": false
+  },
+  {
+    "source": "elope",
+    "target": "bỏ trốn để kết hôn",
+    "reviewed": false
+  },
+  {
+    "source": "heartbroken",
+    "target": "đau lòng",
+    "reviewed": false
+  },
+  {
+    "source": "unrequited love",
+    "target": "tình đơn phương",
+    "reviewed": false
+  },
+  {
+    "source": "mistress",
+    "target": "tình nhân",
+    "reviewed": false
+  },
+  {
+    "source": "affair",
+    "target": "ngoại tình",
+    "reviewed": false
+  },
+  {
+    "source": "fake girlfriend",
+    "target": "bạn gái giả",
+    "reviewed": false
+  },
+  {
+    "source": "fake boyfriend",
+    "target": "bạn trai giả",
+    "reviewed": false
+  },
+  {
+    "source": "fake couple",
+    "target": "cặp đôi giả",
+    "reviewed": false
+  },
+  {
+    "source": "marry into a wealthy family",
+    "target": "gả vào hào môn",
+    "reviewed": false
+  },
+  {
+    "source": "possessive",
+    "target": "chiếm hữu",
+    "reviewed": false
+  },
+  {
+    "source": "cold and aloof",
+    "target": "lạnh lùng xa cách",
+    "reviewed": false
   }
 ]

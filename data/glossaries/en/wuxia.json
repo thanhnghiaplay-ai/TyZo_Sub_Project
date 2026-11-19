@@ -168,5 +168,235 @@
     "source": "we shall meet again",
     "target": "hẹn ngày gặp lại",
     "reviewed": false
+  },
+  {
+    "source": "jianghu",
+    "target": "giang hồ",
+    "reviewed": false
+  },
+  {
+    "source": "wulin",
+    "target": "võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "expert",
+    "target": "cao thủ",
+    "reviewed": false
+  },
+  {
+    "source": "grandmaster",
+    "target": "tông sư",
+    "reviewed": false
+  },
+  {
+    "source": "sect leader",
+    "target": "chưởng môn",
+    "reviewed": false
+  },
+  {
+    "source": "clan head",
+    "target": "tộc trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "disciple",
+    "target": "đệ tử",
+    "reviewed": false
+  },
+  {
+    "source": "inner disciple",
+    "target": "nội môn đệ tử",
+    "reviewed": false
+  },
+  {
+    "source": "outer disciple",
+    "target": "ngoại môn đệ tử",
+    "reviewed": false
+  },
+  {
+    "source": "apprentice",
+    "target": "đồ đệ",
+    "reviewed": false
+  },
+  {
+    "source": "saber",
+    "target": "đao",
+    "reviewed": false
+  },
+  {
+    "source": "inner strength",
+    "target": "nội lực",
+    "reviewed": false
+  },
+  {
+    "source": "martial arts",
+    "target": "võ công",
+    "reviewed": false
+  },
+  {
+    "source": "kung fu",
+    "target": "công phu",
+    "reviewed": false
+  },
+  {
+    "source": "swordsmanship",
+    "target": "kiếm pháp",
+    "reviewed": false
+  },
+  {
+    "source": "fist technique",
+    "target": "quyền pháp",
+    "reviewed": false
+  },
+  {
+    "source": "leg technique",
+    "target": "cước pháp",
+    "reviewed": false
+  },
+  {
+    "source": "body technique",
+    "target": "thân pháp",
+    "reviewed": false
+  },
+  {
+    "source": "lightness skill",
+    "target": "khinh công",
+    "reviewed": false
+  },
+  {
+    "source": "meridians",
+    "target": "kinh mạch",
+    "reviewed": false
+  },
+  {
+    "source": "poisoned",
+    "target": "trúng độc",
+    "reviewed": false
+  },
+  {
+    "source": "duel",
+    "target": "tỷ võ",
+    "reviewed": false
+  },
+  {
+    "source": "martial arts tournament",
+    "target": "đại hội tỷ võ",
+    "reviewed": false
+  },
+  {
+    "source": "bandit",
+    "target": "thổ phỉ",
+    "reviewed": false
+  },
+  {
+    "source": "mountain stronghold",
+    "target": "sơn trại",
+    "reviewed": false
+  },
+  {
+    "source": "chivalry",
+    "target": "hiệp nghĩa",
+    "reviewed": false
+  },
+  {
+    "source": "knight-errant",
+    "target": "hiệp khách",
+    "reviewed": false
+  },
+  {
+    "source": "heroine",
+    "target": "nữ hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "evil sect",
+    "target": "tà phái",
+    "reviewed": false
+  },
+  {
+    "source": "orthodox sect",
+    "target": "chính phái",
+    "reviewed": false
+  },
+  {
+    "source": "revenge",
+    "target": "báo thù",
+    "reviewed": false
+  },
+  {
+    "source": "repay a debt of gratitude",
+    "target": "báo ân",
+    "reviewed": false
+  },
+  {
+    "source": "life-saving grace",
+    "target": "ơn cứu mạng",
+    "reviewed": false
+  },
+  {
+    "source": "benefactor",
+    "target": "ân công",
+    "reviewed": false
+  },
+  {
+    "source": "sworn brother",
+    "target": "huynh đệ kết nghĩa",
+    "reviewed": false
+  },
+  {
+    "source": "this old man",
+    "target": "lão phu",
+    "reviewed": false
+  },
+  {
+    "source": "innkeeper",
+    "target": "chủ quán",
+    "reviewed": false
+  },
+  {
+    "source": "waiter",
+    "target": "tiểu nhị",
+    "reviewed": false
+  },
+  {
+    "source": "escort",
+    "target": "tiêu sư",
+    "reviewed": false
+  },
+  {
+    "source": "imperial court",
+    "target": "triều đình",
+    "reviewed": false
+  },
+  {
+    "source": "imperial guard",
+    "target": "cấm vệ quân",
+    "reviewed": false
+  },
+  {
+    "source": "treasure map",
+    "target": "bản đồ kho báu",
+    "reviewed": false
+  },
+  {
+    "source": "legendary sword",
+    "target": "thần kiếm",
+    "reviewed": false
+  },
+  {
+    "source": "divine weapon",
+    "target": "thần binh",
+    "reviewed": false
+  },
+  {
+    "source": "hermit",
+    "target": "ẩn sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "hidden master",
+    "target": "cao nhân ẩn thế",
+    "reviewed": false
   }
 ]
