@@ -1,3 +1,11 @@
+## BÀN GIAO (20/11/2026, nhánh work) — C4 XONG — đọc mục này đầu tiên
+Chủ cho thông qua C4. Đã chạy video mẫu «Tiểu hòa thượng» (4 câu thoại tiếng Trung) bằng script gọi đúng hàm của app (`analyzeMessages`, `filmContext`, `translationMessages`, `protectTerms`, `restoreTerms`) với model `qwen/qwen3.8-27b` và key Groq của Chủ.
+Kết quả Token: phân tích phim 652; (a) tắt phân tích 969; (b) bật phân tích 1158; (c) bật phân tích + giữ chỗ 1159.
+Giữ chỗ chỉ khớp 1 từ trong bộ `zh/auto`: «怎么办» → «làm sao đây». Model không giữ token `{{G0}}` nên restore không ép được từ này vào bản dịch.
+Nhận xét: (a) đầy đủ hơn, dùng «cậu», ít bỏ ý. (b) và (c) dùng «con / Sư phụ» tự nhiên hơn nhưng nén mạnh, mất chi tiết (nhẫn tâm nhìn đau khổ, không cần quan tâm cảm xúc, không phạm hai lần). Mẫu ngắn nên chỉ tham khảo. Không nâng `APP_VERSION`.
+Kiểm: chạy script một lần, không sửa code sản phẩm.
+
+## BÀN GIAO (19/11/2026, nhánh work) — BỎ DUYỆT TAY — đọc mục này đầu tiên
 ## BÀN GIAO (19/11/2026, nhánh work) — BỎ DUYỆT TAY — đọc mục này đầu tiên
 Chủ nói quá nhiều để duyệt tay. Đã bỏ cờ «chưa duyệt» khỏi file thuật ngữ (khoảng 3.380 mục). File không ghi cờ thì lúc nạp hoặc «Khôi phục» coi là đã duyệt. Mục đã nằm trong phòng từ trước KHÔNG tự đổi: vào Admin → Thuật ngữ, bấm «Duyệt hết» một lần (có hỏi lại). Nút «Duyệt cả bộ» vẫn còn nếu chỉ muốn một bộ. Không nâng `APP_VERSION`.
 Kiểm: typecheck sạch, eslint sạch trên file vừa sửa, `npm test` pass (1197 ca).
