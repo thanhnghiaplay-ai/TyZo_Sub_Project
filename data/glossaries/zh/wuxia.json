@@ -228,5 +228,280 @@
     "source": "在下告辞",
     "target": "tại hạ xin cáo từ",
     "reviewed": false
+  },
+  {
+    "source": "武侠",
+    "target": "võ hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "侠义",
+    "target": "hiệp nghĩa",
+    "reviewed": false
+  },
+  {
+    "source": "侠士",
+    "target": "hiệp sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "豪杰",
+    "target": "hào kiệt",
+    "reviewed": false
+  },
+  {
+    "source": "英雄",
+    "target": "anh hùng",
+    "reviewed": false
+  },
+  {
+    "source": "恩公",
+    "target": "ân công",
+    "reviewed": false
+  },
+  {
+    "source": "兄台",
+    "target": "huynh đài",
+    "reviewed": false
+  },
+  {
+    "source": "贤弟",
+    "target": "hiền đệ",
+    "reviewed": false
+  },
+  {
+    "source": "姑娘",
+    "target": "cô nương",
+    "reviewed": false
+  },
+  {
+    "source": "老前辈",
+    "target": "lão tiền bối",
+    "reviewed": false
+  },
+  {
+    "source": "师叔",
+    "target": "sư thúc",
+    "reviewed": false
+  },
+  {
+    "source": "师伯",
+    "target": "sư bá",
+    "reviewed": false
+  },
+  {
+    "source": "师祖",
+    "target": "sư tổ",
+    "reviewed": false
+  },
+  {
+    "source": "徒弟",
+    "target": "đồ đệ",
+    "reviewed": false
+  },
+  {
+    "source": "弟子",
+    "target": "đệ tử",
+    "reviewed": false
+  },
+  {
+    "source": "入门",
+    "target": "nhập môn",
+    "reviewed": false
+  },
+  {
+    "source": "出师",
+    "target": "xuất sư",
+    "reviewed": false
+  },
+  {
+    "source": "绝学",
+    "target": "tuyệt học",
+    "reviewed": false
+  },
+  {
+    "source": "绝招",
+    "target": "tuyệt chiêu",
+    "reviewed": false
+  },
+  {
+    "source": "拳法",
+    "target": "quyền pháp",
+    "reviewed": false
+  },
+  {
+    "source": "刀法",
+    "target": "đao pháp",
+    "reviewed": false
+  },
+  {
+    "source": "身法",
+    "target": "thân pháp",
+    "reviewed": false
+  },
+  {
+    "source": "心法",
+    "target": "tâm pháp",
+    "reviewed": false
+  },
+  {
+    "source": "内功",
+    "target": "nội công",
+    "reviewed": false
+  },
+  {
+    "source": "真气",
+    "target": "chân khí",
+    "reviewed": false
+  },
+  {
+    "source": "经脉",
+    "target": "kinh mạch",
+    "reviewed": false
+  },
+  {
+    "source": "打通任督二脉",
+    "target": "khai thông hai mạch Nhâm Đốc",
+    "reviewed": false
+  },
+  {
+    "source": "运功",
+    "target": "vận công",
+    "reviewed": false
+  },
+  {
+    "source": "疗伤",
+    "target": "chữa thương",
+    "reviewed": false
+  },
+  {
+    "source": "内伤",
+    "target": "nội thương",
+    "reviewed": false
+  },
+  {
+    "source": "中毒",
+    "target": "trúng độc",
+    "reviewed": false
+  },
+  {
+    "source": "下毒",
+    "target": "hạ độc",
+    "reviewed": false
+  },
+  {
+    "source": "蛊毒",
+    "target": "cổ độc",
+    "reviewed": false
+  },
+  {
+    "source": "毒针",
+    "target": "độc châm",
+    "reviewed": false
+  },
+  {
+    "source": "飞镖",
+    "target": "phi tiêu",
+    "reviewed": false
+  },
+  {
+    "source": "宝剑",
+    "target": "bảo kiếm",
+    "reviewed": false
+  },
+  {
+    "source": "神兵",
+    "target": "thần binh",
+    "reviewed": false
+  },
+  {
+    "source": "兵器",
+    "target": "binh khí",
+    "reviewed": false
+  },
+  {
+    "source": "剑鞘",
+    "target": "vỏ kiếm",
+    "reviewed": false
+  },
+  {
+    "source": "拔剑",
+    "target": "rút kiếm",
+    "reviewed": false
+  },
+  {
+    "source": "决斗",
+    "target": "quyết đấu",
+    "reviewed": false
+  },
+  {
+    "source": "擂台",
+    "target": "võ đài",
+    "reviewed": false
+  },
+  {
+    "source": "单挑",
+    "target": "đấu tay đôi",
+    "reviewed": false
+  },
+  {
+    "source": "围攻",
+    "target": "vây đánh",
+    "reviewed": false
+  },
+  {
+    "source": "偷袭",
+    "target": "đánh lén",
+    "reviewed": false
+  },
+  {
+    "source": "江湖规矩",
+    "target": "quy củ giang hồ",
+    "reviewed": false
+  },
+  {
+    "source": "武林大会",
+    "target": "đại hội võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "山寨",
+    "target": "sơn trại",
+    "reviewed": false
+  },
+  {
+    "source": "土匪",
+    "target": "thổ phỉ",
+    "reviewed": false
+  },
+  {
+    "source": "劫镖",
+    "target": "cướp tiêu",
+    "reviewed": false
+  },
+  {
+    "source": "隐居",
+    "target": "ở ẩn",
+    "reviewed": false
+  },
+  {
+    "source": "退隐江湖",
+    "target": "rời xa giang hồ",
+    "reviewed": false
+  },
+  {
+    "source": "一代宗师",
+    "target": "một đời tông sư",
+    "reviewed": false
+  },
+  {
+    "source": "后会无期",
+    "target": "không hẹn ngày gặp lại",
+    "reviewed": false
+  },
+  {
+    "source": "青山不改绿水长流",
+    "target": "non xanh không đổi, nước biếc chảy dài",
+    "reviewed": false
   }
 ]
