@@ -8,11 +8,13 @@ import {
   saveGlossaryTerm,
   exportGlossary,
   importGlossary,
+  previewGlossaryImport,
   setGlossaryHidden,
   setGlossaryPacks,
   setSuggestionStatus,
 } from "@/lib/glossary-room";
 import { GENRE_LABELS } from "@/lib/glossary-share";
+import { importBatches, importSummary, parseImportText } from "@/lib/glossary-import";
 
 const LANGS = [
   ["zh", "Trung"],
@@ -164,7 +166,7 @@ export function GlossaryBoard() {
           Nhập file
           <input
             type="file"
-            accept="application/json,.json"
+            accept="application/json,.json,.csv,.tsv,.txt,text/csv,text/plain"
             className="sr-only"
             disabled={busy}
             onChange={(event) => {
@@ -172,11 +174,31 @@ export function GlossaryBoard() {
               event.target.value = "";
               if (!file) return;
               void run(async () => {
-                const text = await file.text();
-                const parsed = JSON.parse(text) as { source?: string; target?: string }[];
-                if (!Array.isArray(parsed)) throw new Error("File phải là danh sách từ.");
-                const result = await importGlossary({ data: { lang, genre, rows: parsed.map((row) => ({ source: row.source ?? "", target: row.target ?? "" })) } });
-                setNote(`Đã ghi ${result.added} từ.`);
+                const rows = parseImportText(await file.text());
+                const plan = await previewGlossaryImport({ data: { lang, genre, rows } });
+                const problems = plan.rejected.slice(0, 3).map((item) => `dòng ${item.line}: ${item.reason}`);
+                const note = importSummary(plan) + (problems.length ? ` Dòng lỗi đầu tiên: ${problems.join("; ")}` : "");
+                const batches = importBatches(plan);
+                if (!batches.length) {
+                  setNote(note + " Không có gì để ghi.");
+                  return;
+                }
+                const ok = await askConfirm({
+                  title: "Nhập thuật ngữ?",
+                  text: `${note} Ghi vào bộ ${lang} / ${GENRE_LABELS[genre] || genre}.`,
+                  confirmLabel: "Nhập",
+                });
+                if (!ok) {
+                  setNote("Đã hủy, chưa ghi gì.");
+                  return;
+                }
+                let written = 0;
+                for (const batch of batches) {
+                  const result = await importGlossary({ data: { lang, genre, rows: batch } });
+                  written += result.added;
+                  setNote(`Đang nhập… ${written} từ.`);
+                }
+                setNote(`Đã ghi ${written} từ. ${plan.same} từ giống hệt đã bỏ qua${plan.rejected.length ? `, ${plan.rejected.length} dòng không dùng được` : ""}.`);
                 await load();
               });
             }}

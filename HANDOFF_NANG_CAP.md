@@ -107,7 +107,7 @@ CHƯA LÀM: chụp thử bằng trình duyệt (điện thoại + máy tính); c
 
 ### Giai đoạn B — Thư viện thuật ngữ (làm sau A nếu Chủ không đổi thứ tự)
 - [ ] B1. Rà thể loại thiếu (kiếm hiệp, tiên hiệp, ngôn tình, trinh thám…): thêm file dữ liệu theo từng ngôn ngữ nguồn, đánh dấu «chưa duyệt» để Chủ xem lại. Bản nháp do Claude soạn KHÔNG coi là đã đúng; cách dịch thuật ngữ cộng đồng có nhiều biến thể.
-- [ ] B2. Công cụ nhập hàng loạt cho Chủ (CSV/JSON) vào `glossary_terms`, có xem trước và hộp thoại xác nhận của app.
+- [x] B2 (xong 19/11/2026; không nâng APP_VERSION vì chỉ Chủ thấy; chưa chạy với CSDL thật, chưa chụp thử giao diện). Công cụ nhập hàng loạt cho Chủ (CSV/JSON) vào `glossary_terms`, có xem trước và hộp thoại xác nhận của app.
 - [ ] B3. Nhãn «đã duyệt / chưa duyệt», lọc theo nhãn, thống kê số mục mỗi thể loại ở trang Admin.
 - [ ] B4. Mở rộng các bộ mỏng (tiếng Trung ~40 mục mỗi thể loại) theo đợt, có người rành tiếng Việt duyệt.
 

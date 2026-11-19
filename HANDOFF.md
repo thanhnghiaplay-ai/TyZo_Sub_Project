@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B2 XONG: NHẬP THUẬT NGỮ CÓ XEM TRƯỚC (không nâng phiên bản, chỉ Chủ thấy)
+`src/lib/glossary-import.ts` (thuần) + `previewGlossaryImport` (`glossary-room.ts`, chỉ đọc) + nút «Nhập file» ở `glossary-board.tsx`: đọc JSON/CSV/TSV, xem trước số từ mới/đổi/giống/lặp/lỗi, hộp xác nhận của app, ghi từng lượt 400 dòng. Test `glossary-import.test.ts` (8 ca, đã thêm vào script `test`). Ghi `ADMIN_LOG` (5.11.0).
+CHƯA KIỂM: chưa chạy với CSDL thật (không có Postgres ở đây), chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B3 (nhãn «đã duyệt / chưa duyệt» + lọc + thống kê mỗi thể loại; cần migration `0026_*.sql` thêm cột vào `glossary_terms`), rồi B1 (bản nháp thuật ngữ, đánh dấu «chưa duyệt»).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — C3 XONG (v5.11.0) — đọc mục này đầu tiên
 Ô «Yêu cầu thêm cho bản dịch» (≤300 ký tự, lưu `gextra`) ở Ngữ cảnh phim (`studio.tsx`, `use-pipeline.ts` có `extra`/`setExtra`). `text.ts`: `STYLE_EXTRA_MAX`, `styleExtraBlock`, `filmContext` nhận `extra` và nối khối «USER STYLE REQUEST» cuối ngữ cảnh; dùng chung cho dịch và trau chuốt (`use-polish.ts`). Lệnh JSON gốc không đổi. Test thêm ở `translate-batch.test.ts`. Nâng 5.11.0, CHANGELOG, ADMIN_LOG.
 CHƯA KIỂM: chưa đo tác dụng thật trên phim mẫu (cần Chủ chạy); chưa chụp thử giao diện ô mới.

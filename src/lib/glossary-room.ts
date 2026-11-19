@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { cleanSuggestions, glossaryPair } from "@/lib/glossary-share";
+import { IMPORT_MAX_ROWS, planImport, type ExistingTerm, type ImportRow } from "@/lib/glossary-import";
 
 type TermRow = {
   id: number;
@@ -284,6 +285,30 @@ export const exportGlossary = createServerFn({ method: "POST" })
       limit 5000
     `;
     return { rows };
+  });
+
+/** Xem trước file nhập: phân loại từng dòng so với bộ từ đang có, KHÔNG ghi gì. */
+export const previewGlossaryImport = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { lang: string; genre: string; rows: ImportRow[] }) => {
+    const pair = glossaryPair(input?.lang ?? "", input?.genre ?? "");
+    const rows = (Array.isArray(input?.rows) ? input.rows : [])
+      .slice(0, IMPORT_MAX_ROWS)
+      .map((row) => ({ source: String(row?.source ?? ""), target: String(row?.target ?? "") }));
+    if (!rows.length) throw new Error("Không có dòng nào để xem trước.");
+    return { ...pair, rows };
+  })
+  .handler(async ({ context, data }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const have = await sql<{ source: string; target: string; hidden: boolean }>`
+      select source, target, hidden from glossary_terms
+      where lang = ${data.lang} and genre = ${data.genre}
+      limit 20000
+    `;
+    const existing = new Map<string, ExistingTerm>();
+    for (const row of have) existing.set(row.source.toLowerCase(), { target: row.target, hidden: row.hidden });
+    return planImport(data.rows, existing);
   });
 
 export const importGlossary = createServerFn({ method: "POST" })

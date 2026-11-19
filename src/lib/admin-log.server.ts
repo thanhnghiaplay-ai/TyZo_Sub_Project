@@ -10,6 +10,12 @@ export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.11.0",
     time: "19/11/2026",
+    area: "du-lieu",
+    text: "B2 (HANDOFF_NANG_CAP.md): nhập thuật ngữ hàng loạt có xem trước. 1) File mới src/lib/glossary-import.ts (thuần): parseImportText đọc JSON hoặc CSV/TSV/«gốc = dịch» (tối đa 5000 dòng), planImport phân loại từng dòng (mới, đổi cách dịch, hiện lại từ đang ẩn, giống hệt, lặp trong file, bị từ chối kèm số dòng và lý do), importBatches cắt lượt 400 dòng, importSummary cho hộp xác nhận. 2) glossary-room.ts: previewGlossaryImport (chỉ đọc, không ghi). 3) Bảng Admin Thuật ngữ, nút «Nhập file»: đọc, xem trước, hộp xác nhận của app, rồi ghi từng lượt; trước đây ghi thẳng và cắt âm thầm ở 400 dòng. Test glossary-import.test.ts (8 ca). Chưa chạy với CSDL thật. Không hiện cho khách nên không nâng APP_VERSION.",
+  },
+  {
+    version: "5.11.0",
+    time: "19/11/2026",
     area: "khac",
     text: "C3 (HANDOFF_NANG_CAP.md): ô «Yêu cầu thêm cho bản dịch» (tối đa 300 ký tự, lưu ở khóa gextra) trong Ngữ cảnh phim. src/lib/sub/text.ts: STYLE_EXTRA_MAX, styleExtraBlock(), filmContext nhận extra và nối khối «USER STYLE REQUEST» ở cuối ngữ cảnh (dùng chung cho dịch ở use-pipeline và trau chuốt ở use-polish). Câu lệnh gốc đòi JSON giữ cố định; khối chỉ nối thêm, bỏ ký tự điều khiển và xuống dòng. Test thêm ở translate-batch.test.ts. Chưa đo tác dụng trên phim thật.",
   },
