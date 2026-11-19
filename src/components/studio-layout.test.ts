@@ -148,10 +148,16 @@ describe("Bước 7.1 — không chồng khung", () => {
     // Chuông, thông báo, huy hiệu vai trò và nhật ký phiên bản là lớp nổi riêng, không thuộc khung video.
     const stageRules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).filter((rule) => /studio|stage|player|video|sheet/.test(rule.split("{")[0]));
     assert.ok(stageRules.length > 0);
+    // Ngoại lệ duy nhất: tab công cụ 80% (`.studio-tools.is-open`) và thanh đầu của nó nổi lên phía trên thanh dưới.
+    const floatingTab = (rule: string) => /\.studio-tools\.is-open(\s+\.studio-sheet-bar)?\s*$/.test(rule.split("{")[0]);
     for (const rule of stageRules) {
+      if (floatingTab(rule)) continue;
       assert.equal(rule.includes("z-index:"), false, rule);
       assert.equal(rule.includes("position: absolute"), false, rule);
     }
+    const tab = mediaBlock(css, SHEET_PORTRAIT);
+    assert.match(tab, /\.studio-tools\.is-open\s*\{[^}]*position:\s*fixed/);
+    assert.match(tab, /\.studio-tools\.is-open\s*\{[^}]*calc\(80 \* var\(--vh\)\)/);
     assert.match(css, /max-height:\s*520px/);
     assert.match(source, /studio-stage/);
     assert.match(source, /is-sheet/);

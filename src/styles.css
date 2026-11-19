@@ -216,8 +216,20 @@ h4 {
 .studio-sheet-bar {
   display: none;
   flex: none;
-  justify-content: flex-end;
-  padding: 0.5rem 0.5rem 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem 0.25rem 0.9rem;
+}
+
+.studio-sheet-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-fg);
 }
 
 .studio-sheet-close {
@@ -722,10 +734,10 @@ h4 {
     display: flex;
   }
 
-  /* Tấm đang mở: video nhỏ lại, bản dịch nhường chỗ cho công cụ. */
+  /* Tab đang mở: video nhỏ lại, bản dịch nhường chỗ (tab nổi 80% phủ lên phía dưới, xem khối kế). */
   .studio-stage.is-sheet {
     --video-h: calc(24 * var(--vh));
-    min-height: calc(var(--video-box) + var(--tools-min) + 0.5rem);
+    min-height: calc(var(--video-box) + 0.5rem);
   }
 
   .studio-stage.is-sheet .studio-workspace {
@@ -737,9 +749,39 @@ h4 {
     display: none;
   }
 
-  .studio-stage.is-sheet .studio-tools {
-    min-height: var(--tools-min);
-    flex: 1 1 0;
+  /* Tab công cụ đang mở: thẻ kính cao ~80% màn hình nổi phía trên thanh dưới, video và bản dịch đứng yên phía sau. */
+  .studio-tools.is-open {
+    --dock-room: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+    position: fixed;
+    inset-inline: 0.5rem;
+    bottom: var(--dock-room);
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    height: min(calc(80 * var(--vh)), calc(100 * var(--vh) - var(--dock-room) - 0.75rem));
+    max-height: none;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 0.35);
+  }
+
+  .studio-tools.is-open .studio-tool-card {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: color-mix(in srgb, var(--color-card) 88%, transparent);
+    backdrop-filter: blur(18px);
+  }
+
+  .studio-tools.is-open .studio-sheet-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: inherit;
   }
 }
 

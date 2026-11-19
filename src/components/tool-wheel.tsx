@@ -1,17 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
-import type { IconSlot } from "@/lib/theme/theme";
+import { TOOL_ICON } from "@/lib/tool-icon";
 import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, type WheelId } from "@/lib/tool-wheel";
-
-/** Icon từng công cụ: có chỗ đặt (admin đổi được) thì dùng slot, chưa có thì dùng icon cố định. */
-const ICON: Record<WheelId, { slot?: IconSlot; name?: string }> = {
-  phim: { slot: "nav.source" },
-  cast: { slot: "nav.cast" },
-  thuatngu: { name: "BookOpen" },
-  voice: { slot: "nav.voice" },
-  check: { name: "CheckCircle" },
-  key: { name: "Coins" },
-};
 
 export type WheelLabels = Record<WheelId, string>;
 
@@ -142,7 +132,7 @@ export function ToolWheel({ labels, currentId, onChange, onPress }: { labels: Wh
       >
         {WHEEL_ORDER.map((tool, i) => (
           <span key={tool} ref={(el) => { slots.current[i] = el; }} className="absolute inset-0 grid place-items-center will-change-transform">
-            <Icon slot={ICON[tool].slot} name={ICON[tool].name} size="1.9rem" />
+            <Icon slot={TOOL_ICON[tool].slot} name={TOOL_ICON[tool].name} size="1.9rem" />
           </span>
         ))}
       </button>

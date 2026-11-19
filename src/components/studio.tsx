@@ -2,6 +2,7 @@ import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "@/lib/customer-menu";
 import { StudioDock } from "@/components/studio-dock";
 import { ToolWheel } from "@/components/tool-wheel";
 import { isStudioSheet } from "@/lib/studio-layout";
+import { TOOL_ICON } from "@/lib/tool-icon";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { BackButton } from "@/components/back-button";
@@ -1056,6 +1057,10 @@ export function Studio() {
       <div className={"studio-tools" + (sheetOpen ? " is-open" : "")}>
         <div className="studio-tool-card">
         <div className="studio-sheet-bar">
+          <span className="studio-sheet-title">
+            <Icon slot={TOOL_ICON[toolTab].slot} name={TOOL_ICON[toolTab].name} className="size-5" />
+            {TOOL_NAME[toolTab]}
+          </span>
           <button type="button" className="studio-sheet-close" aria-label="Đóng tab" onClick={() => setSheetOpen(false)}>
             <Icon slot="act.close" className="size-4" />
           </button>
