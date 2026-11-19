@@ -3,6 +3,7 @@ import { StudioDock } from "@/components/studio-dock";
 import { ToolWheel } from "@/components/tool-wheel";
 import { isStudioSheet } from "@/lib/studio-layout";
 import { TOOL_ICON } from "@/lib/tool-icon";
+import { nextTool } from "@/lib/tool-wheel";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { BackButton } from "@/components/back-button";
@@ -890,7 +891,7 @@ export function Studio() {
         </div>
       ) : (
       <>
-      <div data-product="sub" className={product === "account" ? "hidden" : "contents"}>
+      <div data-product="sub" className={product === "account" ? "product-covered" : "contents"}>
       {place?.status === "locked" && (
         <form
           className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-card p-3"
@@ -1688,6 +1689,12 @@ export function Studio() {
           <GlossaryEditor app={app} />
         </details>
       </section>
+        {nextTool(toolTab) && (
+          <button type="button" className="studio-next-tool" onClick={() => setToolTab(nextTool(toolTab)!)}>
+            <span className="text-muted">Tiếp theo:</span> <strong>{TOOL_NAME[nextTool(toolTab)!]}</strong>
+            <span aria-hidden="true">›</span>
+          </button>
+        )}
         </div>
       </div>
       </div>
@@ -1695,11 +1702,13 @@ export function Studio() {
 
       </div>
       {product === "account" && (
-        <div className="grid gap-3">
-          <div>
+        <div className="studio-wallet-tab grid gap-3">
+          <div className="studio-wallet-head">
             <BackButton onBack={() => setProduct("sub")} label="Về màn vừa xem" />
           </div>
-          <AccountPanel />
+          <div className="studio-wallet-body grid gap-3">
+            <AccountPanel />
+          </div>
         </div>
       )}
       </>

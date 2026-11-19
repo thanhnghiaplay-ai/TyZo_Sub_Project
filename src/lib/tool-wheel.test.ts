@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { TOOL_NAME } from "./customer-menu.ts";
-import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, wrapIndex } from "./tool-wheel.ts";
+import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, wrapIndex, nextTool } from "./tool-wheel.ts";
 
 test("thứ tự lướt theo luồng làm việc, đủ 6 công cụ không trùng", () => {
   assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "thuatngu", "voice", "check", "key"]);
@@ -65,4 +65,13 @@ test("mọi công cụ lướt đều có tên trong TOOL_NAME, và Studio gắn
   assert.match(studio, /<StudioDock[\s\S]*wheel=\{<ToolWheel /);
   const dock = readFileSync(new URL("../components/studio-dock.tsx", import.meta.url), "utf8");
   assert.equal(dock.includes("onPickFile"), false);
+});
+
+test("nextTool đi theo luồng Phim → … → Cách trả, công cụ cuối không có tiếp theo", () => {
+  assert.equal(nextTool("phim"), "cast");
+  assert.equal(nextTool("check"), "key");
+  assert.equal(nextTool("key"), null);
+  for (let i = 0; i < WHEEL_ORDER.length - 1; i++) assert.equal(nextTool(WHEEL_ORDER[i]), WHEEL_ORDER[i + 1]);
+  const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+  assert.match(studio, /Tiếp theo:[\s\S]{0,120}TOOL_NAME\[nextTool\(toolTab\)!\]/);
 });

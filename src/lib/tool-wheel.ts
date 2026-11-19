@@ -8,6 +8,12 @@
 export const WHEEL_ORDER = ["phim", "cast", "thuatngu", "voice", "check", "key"] as const;
 export type WheelId = (typeof WHEEL_ORDER)[number];
 
+/** Công cụ kế tiếp theo luồng làm việc (cho dòng «Tiếp theo: …»); công cụ cuối (Cách trả) thì không có. */
+export function nextTool(id: WheelId): WheelId | null {
+  const i = WHEEL_ORDER.indexOf(id);
+  return i >= 0 && i < WHEEL_ORDER.length - 1 ? WHEEL_ORDER[i + 1] : null;
+}
+
 /** Khoảng cách giữa hai icon (px) và số px kéo cho một công cụ. */
 export const WHEEL_SPACING = 46;
 export const WHEEL_DRAG_PX = 48;

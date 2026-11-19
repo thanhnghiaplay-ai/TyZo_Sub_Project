@@ -149,7 +149,7 @@ describe("Bước 7.1 — không chồng khung", () => {
     const stageRules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).filter((rule) => /studio|stage|player|video|sheet/.test(rule.split("{")[0]));
     assert.ok(stageRules.length > 0);
     // Ngoại lệ duy nhất: tab công cụ 80% (`.studio-tools.is-open`) và thanh đầu của nó nổi lên phía trên thanh dưới.
-    const floatingTab = (rule: string) => /\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?\s*$/.test(rule.split("{")[0]);
+    const floatingTab = (rule: string) => /(\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?|\.studio-wallet-tab)\s*$/.test(rule.split("{")[0]);
     for (const rule of stageRules) {
       if (floatingTab(rule)) continue;
       assert.equal(rule.includes("z-index:"), false, rule);
@@ -266,5 +266,17 @@ describe("Bố cục mới B4 — Tải và dịch trong tab Phim, chip Trả b�
     assert.ok(phimTab.indexOf("studio-pay-chip") < phimTab.indexOf("Nhận diện ngôn ngữ"));
     assert.match(phimTab, /studio-run-bar[\s\S]{0,200}data-tour="run"/);
     assert.match(mediaBlock(css, SHEET_PORTRAIT), /\.studio-run-bar\s*\{[^}]*position:\s*sticky[^}]*bottom:\s*0/);
+  });
+});
+
+describe("Bố cục mới B5a — Ví mở cùng kiểu tab 80%", () => {
+  it("trang khách đứng: Ví là tab nổi, màn công cụ vẫn ở phía sau; chỗ khác Ví thay cả trang", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(source, /product === "account" \? "product-covered" : "contents"/);
+    assert.match(source, /studio-wallet-tab[\s\S]{0,400}<AccountPanel \/>/);
+    assert.match(css, /\n\.product-covered\s*\{[^}]*display:\s*none/);
+    const portrait = mediaBlock(css, SHEET_PORTRAIT);
+    assert.match(portrait, /\.product-covered\s*\{[^}]*display:\s*contents/);
+    assert.match(portrait, /\.studio-wallet-tab\s*\{[^}]*position:\s*fixed[^}]*calc\(80 \* var\(--vh\)\)/);
   });
 });
