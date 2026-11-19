@@ -200,7 +200,7 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
 describe("mục bổ sung chưa duyệt vào bộ có sẵn (B4)", () => {
   const expanded: [string, string][] = [];
   for (const genre of ["action", "crime", "mystery", "horror", "adventure", "comedy", "costume", "daily", "documentary", "family", "historical", "ngontinh", "psychological", "romance", "school", "scifi", "series", "social", "sports", "war", "wuxia", "xianxia"]) expanded.push(["zh", genre]);
-  for (const genre of ["ngontinh", "wuxia"]) expanded.push(["en", genre]);
+  for (const genre of ["ngontinh", "wuxia", "xianxia", "war", "documentary", "social"]) expanded.push(["en", genre]);
 
   it("không trùng nguồn, mục mới đều chưa duyệt, đủ ≥ 20 mục bổ sung mỗi bộ", () => {
     for (const [lang, genre] of expanded) {

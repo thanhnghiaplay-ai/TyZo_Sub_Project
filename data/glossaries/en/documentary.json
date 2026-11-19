@@ -219,5 +219,220 @@
     "source": "population",
     "target": "dân số",
     "reviewed": false
+  },
+  {
+    "source": "according to scientists",
+    "target": "theo các nhà khoa học",
+    "reviewed": false
+  },
+  {
+    "source": "researchers",
+    "target": "các nhà nghiên cứu",
+    "reviewed": false
+  },
+  {
+    "source": "species",
+    "target": "loài",
+    "reviewed": false
+  },
+  {
+    "source": "endangered",
+    "target": "có nguy cơ tuyệt chủng",
+    "reviewed": false
+  },
+  {
+    "source": "fossil",
+    "target": "hóa thạch",
+    "reviewed": false
+  },
+  {
+    "source": "empire",
+    "target": "đế quốc",
+    "reviewed": false
+  },
+  {
+    "source": "eyewitness",
+    "target": "nhân chứng",
+    "reviewed": false
+  },
+  {
+    "source": "survivor",
+    "target": "người sống sót",
+    "reviewed": false
+  },
+  {
+    "source": "investigation",
+    "target": "cuộc điều tra",
+    "reviewed": false
+  },
+  {
+    "source": "whistleblower",
+    "target": "người tố giác",
+    "reviewed": false
+  },
+  {
+    "source": "corruption",
+    "target": "tham nhũng",
+    "reviewed": false
+  },
+  {
+    "source": "unemployment",
+    "target": "thất nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "inflation",
+    "target": "lạm phát",
+    "reviewed": false
+  },
+  {
+    "source": "expedition",
+    "target": "cuộc thám hiểm",
+    "reviewed": false
+  },
+  {
+    "source": "glacier",
+    "target": "sông băng",
+    "reviewed": false
+  },
+  {
+    "source": "coral reef",
+    "target": "rạn san hô",
+    "reviewed": false
+  },
+  {
+    "source": "deep sea",
+    "target": "biển sâu",
+    "reviewed": false
+  },
+  {
+    "source": "poaching",
+    "target": "săn trộm",
+    "reviewed": false
+  },
+  {
+    "source": "pandemic",
+    "target": "đại dịch",
+    "reviewed": false
+  },
+  {
+    "source": "vaccine",
+    "target": "vắc-xin",
+    "reviewed": false
+  },
+  {
+    "source": "scientist",
+    "target": "nhà khoa học",
+    "reviewed": false
+  },
+  {
+    "source": "historian",
+    "target": "nhà sử học",
+    "reviewed": false
+  },
+  {
+    "source": "biologist",
+    "target": "nhà sinh vật học",
+    "reviewed": false
+  },
+  {
+    "source": "geologist",
+    "target": "nhà địa chất",
+    "reviewed": false
+  },
+  {
+    "source": "astronomer",
+    "target": "nhà thiên văn",
+    "reviewed": false
+  },
+  {
+    "source": "volcano",
+    "target": "núi lửa",
+    "reviewed": false
+  },
+  {
+    "source": "earthquake",
+    "target": "động đất",
+    "reviewed": false
+  },
+  {
+    "source": "tsunami",
+    "target": "sóng thần",
+    "reviewed": false
+  },
+  {
+    "source": "drought",
+    "target": "hạn hán",
+    "reviewed": false
+  },
+  {
+    "source": "famine",
+    "target": "nạn đói",
+    "reviewed": false
+  },
+  {
+    "source": "world war",
+    "target": "chiến tranh thế giới",
+    "reviewed": false
+  },
+  {
+    "source": "cold war",
+    "target": "chiến tranh lạnh",
+    "reviewed": false
+  },
+  {
+    "source": "industrial revolution",
+    "target": "cách mạng công nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "ancient tomb",
+    "target": "lăng mộ cổ",
+    "reviewed": false
+  },
+  {
+    "source": "mummy",
+    "target": "xác ướp",
+    "reviewed": false
+  },
+  {
+    "source": "pyramid",
+    "target": "kim tự tháp",
+    "reviewed": false
+  },
+  {
+    "source": "ice age",
+    "target": "kỷ băng hà",
+    "reviewed": false
+  },
+  {
+    "source": "dinosaur",
+    "target": "khủng long",
+    "reviewed": false
+  },
+  {
+    "source": "food chain",
+    "target": "chuỗi thức ăn",
+    "reviewed": false
+  },
+  {
+    "source": "mating season",
+    "target": "mùa sinh sản",
+    "reviewed": false
+  },
+  {
+    "source": "nocturnal",
+    "target": "hoạt động về đêm",
+    "reviewed": false
+  },
+  {
+    "source": "tribe",
+    "target": "bộ lạc",
+    "reviewed": false
+  },
+  {
+    "source": "indigenous people",
+    "target": "người bản địa",
+    "reviewed": false
   }
 ]

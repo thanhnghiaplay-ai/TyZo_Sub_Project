@@ -213,5 +213,245 @@
     "source": "single mother",
     "target": "mẹ đơn thân",
     "reviewed": false
+  },
+  {
+    "source": "inequality",
+    "target": "bất bình đẳng",
+    "reviewed": false
+  },
+  {
+    "source": "minority",
+    "target": "nhóm thiểu số",
+    "reviewed": false
+  },
+  {
+    "source": "go viral",
+    "target": "lan truyền chóng mặt",
+    "reviewed": false
+  },
+  {
+    "source": "cancel culture",
+    "target": "văn hóa tẩy chay",
+    "reviewed": false
+  },
+  {
+    "source": "stigma",
+    "target": "sự kỳ thị",
+    "reviewed": false
+  },
+  {
+    "source": "gambling",
+    "target": "cờ bạc",
+    "reviewed": false
+  },
+  {
+    "source": "debt",
+    "target": "nợ nần",
+    "reviewed": false
+  },
+  {
+    "source": "eviction",
+    "target": "bị đuổi khỏi nhà",
+    "reviewed": false
+  },
+  {
+    "source": "layoff",
+    "target": "sa thải hàng loạt",
+    "reviewed": false
+  },
+  {
+    "source": "fired",
+    "target": "bị sa thải",
+    "reviewed": false
+  },
+  {
+    "source": "promotion",
+    "target": "thăng chức",
+    "reviewed": false
+  },
+  {
+    "source": "workplace harassment",
+    "target": "quấy rối nơi làm việc",
+    "reviewed": false
+  },
+  {
+    "source": "orphan",
+    "target": "trẻ mồ côi",
+    "reviewed": false
+  },
+  {
+    "source": "adoption",
+    "target": "nhận con nuôi",
+    "reviewed": false
+  },
+  {
+    "source": "volunteer",
+    "target": "tình nguyện viên",
+    "reviewed": false
+  },
+  {
+    "source": "charity",
+    "target": "từ thiện",
+    "reviewed": false
+  },
+  {
+    "source": "strike",
+    "target": "đình công",
+    "reviewed": false
+  },
+  {
+    "source": "union",
+    "target": "công đoàn",
+    "reviewed": false
+  },
+  {
+    "source": "lawsuit",
+    "target": "vụ kiện",
+    "reviewed": false
+  },
+  {
+    "source": "verdict",
+    "target": "phán quyết",
+    "reviewed": false
+  },
+  {
+    "source": "bail",
+    "target": "tiền bảo lãnh",
+    "reviewed": false
+  },
+  {
+    "source": "prison",
+    "target": "nhà tù",
+    "reviewed": false
+  },
+  {
+    "source": "parole",
+    "target": "tạm tha",
+    "reviewed": false
+  },
+  {
+    "source": "corrupt official",
+    "target": "quan chức tham nhũng",
+    "reviewed": false
+  },
+  {
+    "source": "petition",
+    "target": "kiến nghị",
+    "reviewed": false
+  },
+  {
+    "source": "reputation",
+    "target": "danh tiếng",
+    "reviewed": false
+  },
+  {
+    "source": "gossip",
+    "target": "đàm tiếu",
+    "reviewed": false
+  },
+  {
+    "source": "poverty",
+    "target": "nghèo đói",
+    "reviewed": false
+  },
+  {
+    "source": "income gap",
+    "target": "chênh lệch thu nhập",
+    "reviewed": false
+  },
+  {
+    "source": "gender equality",
+    "target": "bình đẳng giới",
+    "reviewed": false
+  },
+  {
+    "source": "sexual harassment",
+    "target": "quấy rối tình dục",
+    "reviewed": false
+  },
+  {
+    "source": "mental health",
+    "target": "sức khỏe tâm thần",
+    "reviewed": false
+  },
+  {
+    "source": "loneliness",
+    "target": "cô đơn",
+    "reviewed": false
+  },
+  {
+    "source": "elderly care",
+    "target": "chăm sóc người cao tuổi",
+    "reviewed": false
+  },
+  {
+    "source": "nursing home",
+    "target": "viện dưỡng lão",
+    "reviewed": false
+  },
+  {
+    "source": "migrant worker",
+    "target": "lao động nhập cư",
+    "reviewed": false
+  },
+  {
+    "source": "tenant",
+    "target": "người thuê nhà",
+    "reviewed": false
+  },
+  {
+    "source": "landlord",
+    "target": "chủ nhà",
+    "reviewed": false
+  },
+  {
+    "source": "tax evasion",
+    "target": "trốn thuế",
+    "reviewed": false
+  },
+  {
+    "source": "bribery",
+    "target": "hối lộ",
+    "reviewed": false
+  },
+  {
+    "source": "embezzlement",
+    "target": "tham ô",
+    "reviewed": false
+  },
+  {
+    "source": "fake news",
+    "target": "tin giả",
+    "reviewed": false
+  },
+  {
+    "source": "paparazzi",
+    "target": "giới săn ảnh",
+    "reviewed": false
+  },
+  {
+    "source": "influencer",
+    "target": "người có sức ảnh hưởng",
+    "reviewed": false
+  },
+  {
+    "source": "livestream",
+    "target": "phát trực tiếp",
+    "reviewed": false
+  },
+  {
+    "source": "privacy",
+    "target": "quyền riêng tư",
+    "reviewed": false
+  },
+  {
+    "source": "generation gap",
+    "target": "khoảng cách thế hệ",
+    "reviewed": false
+  },
+  {
+    "source": "rat race",
+    "target": "cuộc chạy đua mưu sinh",
+    "reviewed": false
   }
 ]
