@@ -57,4 +57,11 @@ describe("Workspace Alibaba cho nhận dạng file", () => {
     assert.match(text, /Admin/);
     assert.equal(aliErrorText("InvalidParameter", "ws-abc123"), "InvalidParameter");
   });
+
+  it("đổi lỗi Model access denied thành lời chỉ cách bật quyền model, nêu tên model và Workspace", () => {
+    const text = aliErrorText("Model access denied", "ws-abc123");
+    assert.match(text, /qwen-audio-3\.0-asr-flash-filetrans/);
+    assert.match(text, /ws-abc123/);
+    assert.doesNotMatch(text, /Model access denied/);
+  });
 });

@@ -35,6 +35,9 @@ export function aliErrorText(message: string, workspaceId?: string | null): stri
   if (/workspace endpoint access denied/i.test(message)) {
     return `Alibaba từ chối: key Alibaba không thuộc Workspace ${filetransWorkspace(workspaceId)}. Chủ cần lưu key tạo trong đúng Workspace này, hoặc đổi Workspace ID ở Admin, Cấu hình cho khớp key.`;
   }
+  if (/model access denied/i.test(message)) {
+    return `Alibaba từ chối: key chưa được quyền dùng model ${ALI_FILETRANS_MODEL}. Key và Workspace đã khớp. Chủ cần vào Model Studio (vùng Singapore), Workspace ${filetransWorkspace(workspaceId)}, bật quyền cho model này (hoặc chọn quyền toàn bộ model khi tạo key) và kiểm tra dịch vụ đã kích hoạt, còn hạn mức.`;
+  }
   return message;
 }
 
