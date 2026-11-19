@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — C3 XONG (v5.11.0) — đọc mục này đầu tiên
+Ô «Yêu cầu thêm cho bản dịch» (≤300 ký tự, lưu `gextra`) ở Ngữ cảnh phim (`studio.tsx`, `use-pipeline.ts` có `extra`/`setExtra`). `text.ts`: `STYLE_EXTRA_MAX`, `styleExtraBlock`, `filmContext` nhận `extra` và nối khối «USER STYLE REQUEST» cuối ngữ cảnh; dùng chung cho dịch và trau chuốt (`use-polish.ts`). Lệnh JSON gốc không đổi. Test thêm ở `translate-batch.test.ts`. Nâng 5.11.0, CHANGELOG, ADMIN_LOG.
+CHƯA KIỂM: chưa đo tác dụng thật trên phim mẫu (cần Chủ chạy); chưa chụp thử giao diện ô mới.
+VIỆC TIẾP THEO: C4 (đo so sánh trên phim mẫu, cần phim và key của Chủ) và giai đoạn B (cần Chủ duyệt dữ liệu); còn kiểm tay A5.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — C1 XONG (không nâng phiên bản, chỉ tách code + test)
 Tách phần thuần của `analyzeFilm` ra `src/lib/sub/analyze.ts` (`analyzeMessages`, `parseBible`; `parseBible` nay ném lỗi nếu kết quả không phải đối tượng JSON). Test mới `analyze.test.ts` (6 ca, đã thêm vào script `test`). typecheck sạch, eslint 0 lỗi, `npm test` 198 + 1177 pass. Gọi mạng của `analyzeFilm` vẫn chưa có test (groq.ts dùng alias `@/`, Node thuần không nạp được).
 VIỆC TIẾP THEO: C3 (ô «Yêu cầu thêm cho bản dịch»); giai đoạn B cần Chủ duyệt dữ liệu; còn kiểm tay A5 (trình duyệt, model thật).

@@ -25,6 +25,7 @@ type Host = {
   title: string;
   notes: string;
   gloss: string;
+  extra: string;
   target: string;
   activeKey: () => string;
   roomPay: () => boolean;
@@ -58,7 +59,7 @@ export function usePolish(host: Host) {
       failed: seg.translationFailed,
     }));
     const context = [
-      contextBlock({ title: h.title, notes: h.notes, gloss: h.gloss, bible: h.getBible() }),
+      contextBlock({ title: h.title, notes: h.notes, gloss: h.gloss, bible: h.getBible(), extra: h.extra }),
       addressLock(
         segs.map((seg) => seg.original),
         h.getBible(),

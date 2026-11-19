@@ -583,7 +583,7 @@ export function applyNameFixes(lines: Array<{ original: string; translation: str
   }
 }
 
-export function contextBlock(input: { title: string; notes: string; gloss: string; bible: Bible | null }) {
+export function contextBlock(input: { title: string; notes: string; gloss: string; bible: Bible | null; extra?: string }) {
   return filmContext(input);
 }
 

@@ -65,7 +65,7 @@ import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sample
 import { auraReady, auraVoices, defaultAuraVoice } from "@/lib/sub/aura";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
-import { LANGS, SRC_LANGS, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
+import { LANGS, SRC_LANGS, STYLE_EXTRA_MAX, cueText, findCueIndex, fmt, orpheusReady, speechIndex, speechLang } from "@/lib/sub/text";
 import { termsToCsv, usesBaseGlossary } from "@/lib/sub/glossary";
 import { buildDiagnosticsExport, REJECT_LABEL, summarizeDiagnostics, type RejectEntry, type RawAsrPart } from "@/lib/sub/diagnostics";
 import { DEFAULT_QUALITY_THRESHOLDS, summarizeQuality, type LangCheckReport, type QualityThresholds } from "@/lib/sub/quality";
@@ -1366,6 +1366,15 @@ export function Studio() {
               <input className={FIELD} placeholder="Tên phim + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
               <textarea className={FIELD} rows={3} placeholder="Dàn diễn viên hoặc tóm tắt cốt truyện" value={app.notes} onChange={(event) => app.setNotes(event.target.value)} />
               <textarea className={FIELD} rows={4} placeholder="Bảng thuật ngữ, mỗi dòng: tên gốc = cách dịch" value={app.gloss} onChange={(event) => app.setGloss(event.target.value)} />
+              <textarea
+                className={FIELD}
+                rows={2}
+                maxLength={STYLE_EXTRA_MAX}
+                placeholder="Yêu cầu thêm cho bản dịch (giọng văn, mức trang trọng)"
+                value={app.extra}
+                onChange={(event) => app.setExtra(event.target.value)}
+              />
+              <p className="text-xs text-muted">{app.extra.length}/{STYLE_EXTRA_MAX} ký tự. Chỉ chỉnh giọng văn; không đổi định dạng kết quả.</p>
             </div>
           </details>
           <div className="flex items-start justify-between gap-3">

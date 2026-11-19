@@ -64,6 +64,7 @@ import {
   MAX_MINUTES,
   MAX_STREAM_HOURS,
   splitAudio,
+  STYLE_EXTRA_MAX,
   SR,
   toSrt,
   toTxt,
@@ -350,6 +351,7 @@ export function usePipeline() {
   langRef.current = langCheck;
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
+  const [extra, setExtra] = useState("");
   const [gloss, setGloss] = useState("");
   const [glossaryInfo, setGlossaryInfo] = useState<{
     count: number;
@@ -458,6 +460,7 @@ export function usePipeline() {
     if (readStore("glang") === "1") setLangCheckState(true);
     setTitle(readStore("gtitle"));
     setNotes(readStore("gnotes"));
+    setExtra(readStore("gextra").slice(0, STYLE_EXTRA_MAX));
     const glossKey = "gl_" + (readStore("gtitle").trim().toLowerCase() || "_");
     setGloss(readStore(glossKey));
     if (readStore("gpre") === "0") setPre(false);
@@ -1515,7 +1518,7 @@ export function usePipeline() {
               nxt,
               genre,
               context: [
-                contextBlock({ title, notes, gloss: effectiveGloss, bible: j.bible }),
+                contextBlock({ title, notes, gloss: effectiveGloss, bible: j.bible, extra }),
                 addressLock([...prior, ...origs, ...nxt], j.bible),
               ]
                 .filter(Boolean)
@@ -2050,6 +2053,7 @@ export function usePipeline() {
     modelId,
     modelSig,
     notes,
+    extra,
     pre,
     profile,
     progress,
@@ -2550,6 +2554,7 @@ export function usePipeline() {
     title,
     notes,
     gloss,
+    extra,
     target,
     activeKey,
     roomPay: () => roomPayRef.current,
@@ -2613,6 +2618,12 @@ export function usePipeline() {
     setNotes: (value: string) => {
       setNotes(value);
       saveGloss(title, value, gloss);
+    },
+    extra,
+    setExtra: (value: string) => {
+      const next = value.slice(0, STYLE_EXTRA_MAX);
+      setExtra(next);
+      writeStore("gextra", next);
     },
     gloss,
     setGloss: (value: string) => {

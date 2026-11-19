@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.11.0",
+    time: "19/11/2026",
+    area: "khac",
+    text: "C3 (HANDOFF_NANG_CAP.md): ô «Yêu cầu thêm cho bản dịch» (tối đa 300 ký tự, lưu ở khóa gextra) trong Ngữ cảnh phim. src/lib/sub/text.ts: STYLE_EXTRA_MAX, styleExtraBlock(), filmContext nhận extra và nối khối «USER STYLE REQUEST» ở cuối ngữ cảnh (dùng chung cho dịch ở use-pipeline và trau chuốt ở use-polish). Câu lệnh gốc đòi JSON giữ cố định; khối chỉ nối thêm, bỏ ký tự điều khiển và xuống dòng. Test thêm ở translate-batch.test.ts. Chưa đo tác dụng trên phim thật.",
+  },
+  {
     version: "5.10.1",
     time: "19/11/2026",
     area: "khac",

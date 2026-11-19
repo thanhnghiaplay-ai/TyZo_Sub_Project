@@ -10,6 +10,10 @@ import {
   parseTranslations,
   toSrt,
   untranslated,
+  filmContext,
+  styleExtraBlock,
+  STYLE_EXTRA_MAX,
+  translationMessages,
 } from "./text.ts";
 import type { Seg } from "./types.ts";
 
@@ -106,5 +110,36 @@ describe("câu lỗi không hiện như bản dịch", () => {
       { start: 5, end: 5.4, original: "e", translation: "e" },
     ];
     assert.equal(findCueIndex(items, 6), 0);
+  });
+});
+
+describe("Yêu cầu thêm cho bản dịch (C3)", () => {
+  const film = { title: "", notes: "", gloss: "", bible: null };
+
+  it("trống thì không thêm gì vào ngữ cảnh", () => {
+    assert.equal(styleExtraBlock(""), "");
+    assert.equal(styleExtraBlock("   \n\t "), "");
+    assert.equal(filmContext({ ...film, extra: "  " }), "");
+  });
+
+  it("nối cuối ngữ cảnh, gọn khoảng trắng, nói rõ chỉ chỉnh giọng văn", () => {
+    const block = filmContext({ ...film, title: "Phim A", extra: "Dịch\n\ntrang   trọng hơn" });
+    assert.match(block, /Film\/series: Phim A/);
+    assert.match(block, /USER STYLE REQUEST[^\n]*never change the JSON output format[^\n]*: Dịch trang trọng hơn$/);
+    assert.ok(block.indexOf("Film/series") < block.indexOf("USER STYLE REQUEST"));
+  });
+
+  it("chỉ có yêu cầu thêm vẫn ra khối riêng; cắt ở giới hạn độ dài", () => {
+    assert.match(filmContext({ ...film, extra: "xưng hô thân mật" }), /^USER STYLE REQUEST/);
+    const long = styleExtraBlock("a".repeat(STYLE_EXTRA_MAX + 200));
+    assert.ok(long.endsWith("a".repeat(STYLE_EXTRA_MAX)));
+    assert.ok(!long.endsWith("a".repeat(STYLE_EXTRA_MAX + 1)));
+  });
+
+  it("có trong câu lệnh dịch mà JSON gốc và số dòng không đổi", () => {
+    const context = filmContext({ ...film, extra: "giọng trẻ trung" });
+    const [sys] = translationMessages(["a", "b"], "Vietnamese", { genre: "auto", context });
+    assert.match(sys?.content || "", /USER STYLE REQUEST[^\n]*giọng trẻ trung/);
+    assert.match(sys?.content || "", /Return only JSON \{"t":\["\.\.\."\]\} with exactly 2 strings/);
   });
 });
