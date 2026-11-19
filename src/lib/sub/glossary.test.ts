@@ -174,6 +174,7 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
   for (const genre of ["social", "war", "family", "school", "documentary"]) for (const lang of ["ja", "ko"]) drafts.push([lang, genre]);
   drafts.push(["ko", "wuxia"]);
   for (const lang of ["ja", "ko"]) drafts.push([lang, "ngontinh"]);
+  for (const lang of ["ja", "ko"]) drafts.push([lang, "xianxia"]);
 
   it("có file, mỗi mục đủ nguồn/đích, không trùng nguồn, đều đánh dấu chưa duyệt", () => {
     for (const [lang, genre] of drafts) {

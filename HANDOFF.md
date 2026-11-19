@@ -1,4 +1,11 @@
-## BÀN GIAO (19/11/2026, nhánh work) — B1.3c-2 XONG: BẢN NHÁP NGÔN TÌNH TIẾNG NHẬT + TIẾNG HÀN (ja, ko) — đọc mục này đầu tiên
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3c XONG: BẢN NHÁP TIÊN HIỆP TIẾNG NHẬT + TIẾNG HÀN (ja, ko) — đọc mục này đầu tiên
+Thêm `data/glossaries/ja/xianxia.json` (60 mục: 修仙, 仙人, 霊気, 霊根, 丹田, 金丹, 元嬰, 築基, 渡劫, 雷劫, 飛昇, 宗門, 道侶, 御剣飛行, 心魔, 洞府...) và `data/glossaries/ko/xianxia.json` (60 mục: 선협, 수선, 영기, 단전, 금단, 원영, 도겁, 비승, 종문, 도려, 어검비행, 심마, 기연, 천재지보...), MỌI mục `"reviewed": false`. Cặp `ja`/`ko` xianxia đã thêm vào mảng `drafts` ở `src/lib/sub/glossary.test.ts`. Chú ý khi duyệt: `동부` (động phủ, cũng là «phía đông»), 사부 / 師匠 (sư phụ hay «thầy»), 환생 / 転生 (tái sinh hay «trọng sinh» tùy truyện), 부적 / 護符 (bùa hay «phù lục»). Cố ý BỎ các từ dễ dịch nhầm: 연기 (luyện khí, trùng «diễn xuất/khói»), 화신 (hóa thần, trùng «hóa thân»), 도우 (đạo hữu, trùng «bột bánh pizza»), 범인 (phàm nhân, trùng «tội phạm»), 오성. B1.3 (mọi thể loại × ngôn ngữ) coi như xong. Không nâng `APP_VERSION`.
+Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1196 pass (198 test lõi, 7 skipped có sẵn).
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B1.4 = `softcore` (18+). DỪNG ĐỂ HỎI CHỦ về mức nội dung (chỉ từ lóng/tình cảm nhẹ hay cả từ nhạy cảm) và ngôn ngữ nào trước khi soạn; chưa có câu trả lời thì KHÔNG tự soạn. Sau đó B4 (mở rộng bộ mỏng, cần người rành tiếng Việt duyệt) — xem `HANDOFF_NANG_CAP.md`.
+
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3c-2 XONG: BẢN NHÁP NGÔN TÌNH TIẾNG NHẬT + TIẾNG HÀN (ja, ko)
 Thêm `data/glossaries/ja/ngontinh.json` (49 mục: 御曹司, 令嬢, 政略結婚, 契約結婚, 幼なじみ, 溺愛, 俺様, 修羅場...) và `data/glossaries/ko/ngontinh.json` (54 mục: 재벌, 정략결혼, 계약결혼, 첫사랑, 츤데레, 시월드, 출생의 비밀...), MỌI mục `"reviewed": false`. Hai cặp `ja`/`ko` ngontinh đã thêm vào mảng `drafts` ở `src/lib/sub/glossary.test.ts`. Chú ý khi duyệt: 社長/사장님 (giám đốc hay «tổng tài» tùy nhân vật, có ghi chú), 婚約者/약혼자 (vị hôn phu hay vị hôn thê tùy giới), 아가씨 (tiểu thư hay «cô ơi»), 여보/자기야 (cách gọi vợ chồng), 浮気 (ngoại tình hay «cắm sừng»). Không nâng `APP_VERSION`.
 LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» ở Admin.
 CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
