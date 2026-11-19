@@ -1,3 +1,10 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B1.4d XONG: BẢN NHÁP PHIM CẤP 3 (softcore) TIẾNG HÀN (ko) — B1.4 XONG — đọc mục này đầu tiên
+Thêm `data/glossaries/ko/softcore.json` (72 mục: 조건만남, 슈거대디, 스폰서, 내연녀, 상간녀, 외도, 밀회, 섹파, 하룻밤, 잠자리, 러브호텔, 미인계, 꽃뱀, 베드신, 최음제, 유흥업소, 룸살롱, 호스트바, 안마시술소, 첫날밤...), MỌI mục `"reviewed": false`. Cặp `["ko","softcore"]` đã thêm vào `drafts` ở `src/lib/sub/glossary.test.ts` (nay `for lang of [zh, en, ja, ko]`). Không lặp nguồn đã có ở `ko/adult` và `ko/sex` (bỏ 첩 vì trùng/1 ký tự). Chú ý khi duyệt: 조건만남 (từ nhạy cảm), 스폰 / 스폰서 (nhà tài trợ hay bao nuôi), 같이 자다 (chỉ ngủ chung hay quan hệ), 덮치다 (có thể là cưỡng bức), 안마시술소 (có thể ngầm chỉ dịch vụ khác), 상간녀 / 상간남 (miệt thị, trong kiện tụng), 꽃뱀. Không nâng `APP_VERSION`.
+Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1196 pass.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B4 = mở rộng bộ thuật ngữ còn mỏng (cần người rành tiếng Việt duyệt) — đọc `HANDOFF_NANG_CAP.md` mục B4 trước; nếu chưa rõ phạm vi thì HỎI CHỦ trước khi soạn. Cách làm mỗi bước: `npm ci` (nếu chưa có node_modules), `npm run typecheck`, `npm run lint`, `npm test`, commit, `git push origin work`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B1.4c XONG: BẢN NHÁP PHIM CẤP 3 (softcore) TIẾNG NHẬT (ja) — đọc mục này đầu tiên
 Thêm `data/glossaries/ja/softcore.json` (73 mục: パパ活, 愛人契約, 寝取られ, 間男, 不貞, 密会, セフレ, ワンナイト, お持ち帰り, ラブホ, 体の関係, 色仕掛け, ハニートラップ, 濡れ場, 情事, 媚薬, 風俗, キャバクラ, ホスト, ストリップ, 新婚初夜...), MỌI mục `"reviewed": false`. Cặp `["ja","softcore"]` đã thêm vào `drafts` ở `src/lib/sub/glossary.test.ts` (nay `for lang of [zh, en, ja]`). Không lặp nguồn đã có ở `ja/adult` và `ja/sex`. Cố ý BỎ 援助交際 (dễ liên quan người chưa thành niên). Chú ý khi duyệt: 寝る / 抱く (quan hệ hay chỉ ngủ/ôm), 襲う (có thể là cưỡng bức, cân nhắc ngữ cảnh), パトロン (bảo trợ hay bao nuôi), マッサージ (có thể ngầm chỉ dịch vụ khác), お妾さん. Nguồn 1 ký tự bị test từ chối (phải ≥ 2 ký tự): đã đổi 妾 → お妾さん, 裸 → 裸体. Không nâng `APP_VERSION`.
 Kiểm: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), `npm test` 1196 pass.
