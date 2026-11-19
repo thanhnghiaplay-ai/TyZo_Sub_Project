@@ -1,432 +1,346 @@
 [
   {
     "source": "cultivation",
-    "target": "tu luyện",
-    "reviewed": false
+    "target": "tu luyện"
   },
   {
     "source": "cultivator",
-    "target": "tu sĩ",
-    "reviewed": false
+    "target": "tu sĩ"
   },
   {
     "source": "cultivation base",
-    "target": "tu vi",
-    "reviewed": false
+    "target": "tu vi"
   },
   {
     "source": "spiritual energy",
-    "target": "linh khí",
-    "reviewed": false
+    "target": "linh khí"
   },
   {
     "source": "spiritual root",
-    "target": "linh căn",
-    "reviewed": false
+    "target": "linh căn"
   },
   {
     "source": "dantian",
-    "target": "đan điền",
-    "reviewed": false
+    "target": "đan điền"
   },
   {
     "source": "qi condensation",
-    "target": "luyện khí",
-    "reviewed": false
+    "target": "luyện khí"
   },
   {
     "source": "foundation establishment",
-    "target": "trúc cơ",
-    "reviewed": false
+    "target": "trúc cơ"
   },
   {
     "source": "golden core",
-    "target": "kim đan",
-    "reviewed": false
+    "target": "kim đan"
   },
   {
     "source": "nascent soul",
-    "target": "nguyên anh",
-    "reviewed": false
+    "target": "nguyên anh"
   },
   {
     "source": "deity transformation",
-    "target": "hóa thần",
-    "reviewed": false
+    "target": "hóa thần"
   },
   {
     "source": "heavenly tribulation",
-    "target": "thiên kiếp",
-    "reviewed": false
+    "target": "thiên kiếp"
   },
   {
     "source": "tribulation",
-    "target": "kiếp nạn",
-    "reviewed": false
+    "target": "kiếp nạn"
   },
   {
     "source": "ascend",
-    "target": "phi thăng",
-    "reviewed": false
+    "target": "phi thăng"
   },
   {
     "source": "sect",
-    "target": "tông môn",
-    "reviewed": false
+    "target": "tông môn"
   },
   {
     "source": "sect master",
-    "target": "tông chủ",
-    "reviewed": false
+    "target": "tông chủ"
   },
   {
     "source": "elder",
-    "target": "trưởng lão",
-    "reviewed": false
+    "target": "trưởng lão"
   },
   {
     "source": "fellow daoist",
-    "target": "đạo hữu",
-    "reviewed": false
+    "target": "đạo hữu"
   },
   {
     "source": "senior",
-    "target": "tiền bối",
-    "reviewed": false
+    "target": "tiền bối"
   },
   {
     "source": "immortal lord",
-    "target": "tiên quân",
-    "reviewed": false
+    "target": "tiên quân"
   },
   {
     "source": "immortal",
-    "target": "tiên nhân",
-    "reviewed": false
+    "target": "tiên nhân"
   },
   {
     "source": "demon lord",
-    "target": "ma tôn",
-    "reviewed": false
+    "target": "ma tôn"
   },
   {
     "source": "demonic cultivator",
-    "target": "ma tu",
-    "reviewed": false
+    "target": "ma tu"
   },
   {
     "source": "demon beast",
-    "target": "yêu thú",
-    "reviewed": false
+    "target": "yêu thú"
   },
   {
     "source": "spirit beast",
-    "target": "linh thú",
-    "reviewed": false
+    "target": "linh thú"
   },
   {
     "source": "spirit stone",
-    "target": "linh thạch",
-    "reviewed": false
+    "target": "linh thạch"
   },
   {
     "source": "magic treasure",
-    "target": "pháp bảo",
-    "reviewed": false
+    "target": "pháp bảo"
   },
   {
     "source": "flying sword",
-    "target": "phi kiếm",
-    "reviewed": false
+    "target": "phi kiếm"
   },
   {
     "source": "formation",
-    "target": "trận pháp",
-    "reviewed": false
+    "target": "trận pháp"
   },
   {
     "source": "talisman",
-    "target": "phù lục",
-    "reviewed": false
+    "target": "phù lục"
   },
   {
     "source": "elixir",
-    "target": "đan dược",
-    "reviewed": false
+    "target": "đan dược"
   },
   {
     "source": "alchemy",
-    "target": "luyện đan",
-    "reviewed": false
+    "target": "luyện đan"
   },
   {
     "source": "inner demon",
-    "target": "tâm ma",
-    "reviewed": false
+    "target": "tâm ma"
   },
   {
     "source": "divine sense",
-    "target": "thần thức",
-    "reviewed": false
+    "target": "thần thức"
   },
   {
     "source": "primordial spirit",
-    "target": "nguyên thần",
-    "reviewed": false
+    "target": "nguyên thần"
   },
   {
     "source": "cave abode",
-    "target": "động phủ",
-    "reviewed": false
+    "target": "động phủ"
   },
   {
     "source": "secret realm",
-    "target": "bí cảnh",
-    "reviewed": false
+    "target": "bí cảnh"
   },
   {
     "source": "immortal realm",
-    "target": "tiên giới",
-    "reviewed": false
+    "target": "tiên giới"
   },
   {
     "source": "mortal",
-    "target": "phàm nhân",
-    "reviewed": false
+    "target": "phàm nhân"
   },
   {
     "source": "this seat",
-    "target": "bổn tọa",
-    "reviewed": false
+    "target": "bổn tọa"
   },
   {
     "source": "soul seizure",
-    "target": "đoạt xá",
-    "reviewed": false
+    "target": "đoạt xá"
   },
   {
     "source": "heavenly dao",
-    "target": "thiên đạo",
-    "reviewed": false
+    "target": "thiên đạo"
   },
   {
     "source": "karma",
-    "target": "nhân quả",
-    "reviewed": false
+    "target": "nhân quả"
   },
   {
     "source": "dao heart",
-    "target": "đạo tâm",
-    "reviewed": false
+    "target": "đạo tâm"
   },
   {
     "source": "closed-door cultivation",
-    "target": "bế quan",
-    "reviewed": false
+    "target": "bế quan"
   },
   {
     "source": "shizun",
-    "target": "sư tôn",
-    "reviewed": false
+    "target": "sư tôn"
   },
   {
     "source": "realm",
-    "target": "cảnh giới",
-    "reviewed": false
+    "target": "cảnh giới"
   },
   {
     "source": "breakthrough",
-    "target": "đột phá",
-    "reviewed": false
+    "target": "đột phá"
   },
   {
     "source": "bottleneck",
-    "target": "bình cảnh",
-    "reviewed": false
+    "target": "bình cảnh"
   },
   {
     "source": "pill furnace",
-    "target": "đan lô",
-    "reviewed": false
+    "target": "đan lô"
   },
   {
     "source": "mortal realm",
-    "target": "phàm giới",
-    "reviewed": false
+    "target": "phàm giới"
   },
   {
     "source": "demon realm",
-    "target": "ma giới",
-    "reviewed": false
+    "target": "ma giới"
   },
   {
     "source": "sword cultivator",
-    "target": "kiếm tu",
-    "reviewed": false
+    "target": "kiếm tu"
   },
   {
     "source": "dao companion",
-    "target": "đạo lữ",
-    "reviewed": false
+    "target": "đạo lữ"
   },
   {
     "source": "heart demon",
-    "target": "tâm ma",
-    "reviewed": false
+    "target": "tâm ma"
   },
   {
     "source": "peak master",
-    "target": "phong chủ",
-    "reviewed": false
+    "target": "phong chủ"
   },
   {
     "source": "ancestor",
-    "target": "lão tổ",
-    "reviewed": false
+    "target": "lão tổ"
   },
   {
     "source": "reincarnation",
-    "target": "luân hồi",
-    "reviewed": false
+    "target": "luân hồi"
   },
   {
     "source": "rebirth",
-    "target": "trùng sinh",
-    "reviewed": false
+    "target": "trùng sinh"
   },
   {
     "source": "ancient ruins",
-    "target": "di tích cổ",
-    "reviewed": false
+    "target": "di tích cổ"
   },
   {
     "source": "genius",
-    "target": "thiên tài",
-    "reviewed": false
+    "target": "thiên tài"
   },
   {
     "source": "trash",
-    "target": "phế vật",
-    "reviewed": false
+    "target": "phế vật"
   },
   {
     "source": "lifespan",
-    "target": "thọ nguyên",
-    "reviewed": false
+    "target": "thọ nguyên"
   },
   {
     "source": "sea of consciousness",
-    "target": "thức hải",
-    "reviewed": false
+    "target": "thức hải"
   },
   {
     "source": "true essence",
-    "target": "chân nguyên",
-    "reviewed": false
+    "target": "chân nguyên"
   },
   {
     "source": "true qi",
-    "target": "chân khí",
-    "reviewed": false
+    "target": "chân khí"
   },
   {
     "source": "inheritance",
-    "target": "truyền thừa",
-    "reviewed": false
+    "target": "truyền thừa"
   },
   {
     "source": "ancient sect",
-    "target": "cổ tông",
-    "reviewed": false
+    "target": "cổ tông"
   },
   {
     "source": "spirit vein",
-    "target": "linh mạch",
-    "reviewed": false
+    "target": "linh mạch"
   },
   {
     "source": "spirit herb",
-    "target": "linh thảo",
-    "reviewed": false
+    "target": "linh thảo"
   },
   {
     "source": "spirit pill",
-    "target": "linh đan",
-    "reviewed": false
+    "target": "linh đan"
   },
   {
     "source": "natal sword",
-    "target": "bản mệnh kiếm",
-    "reviewed": false
+    "target": "bản mệnh kiếm"
   },
   {
     "source": "spirit pet",
-    "target": "linh sủng",
-    "reviewed": false
+    "target": "linh sủng"
   },
   {
     "source": "blood sacrifice",
-    "target": "huyết tế",
-    "reviewed": false
+    "target": "huyết tế"
   },
   {
     "source": "ancient beast",
-    "target": "thượng cổ hung thú",
-    "reviewed": false
+    "target": "thượng cổ hung thú"
   },
   {
     "source": "primordial chaos",
-    "target": "hỗn độn",
-    "reviewed": false
+    "target": "hỗn độn"
   },
   {
     "source": "heavenly court",
-    "target": "thiên đình",
-    "reviewed": false
+    "target": "thiên đình"
   },
   {
     "source": "netherworld",
-    "target": "u minh",
-    "reviewed": false
+    "target": "u minh"
   },
   {
     "source": "ghost cultivator",
-    "target": "quỷ tu",
-    "reviewed": false
+    "target": "quỷ tu"
   },
   {
     "source": "body cultivator",
-    "target": "thể tu",
-    "reviewed": false
+    "target": "thể tu"
   },
   {
     "source": "soul search",
-    "target": "sưu hồn",
-    "reviewed": false
+    "target": "sưu hồn"
   },
   {
     "source": "sword intent",
-    "target": "kiếm ý",
-    "reviewed": false
+    "target": "kiếm ý"
   },
   {
     "source": "cultivation method",
-    "target": "công pháp",
-    "reviewed": false
+    "target": "công pháp"
   },
   {
     "source": "supreme being",
-    "target": "chí tôn",
-    "reviewed": false
+    "target": "chí tôn"
   },
   {
     "source": "overlord",
-    "target": "bá chủ",
-    "reviewed": false
+    "target": "bá chủ"
   },
   {
     "source": "ascension",
-    "target": "phi thăng",
-    "reviewed": false
+    "target": "phi thăng"
   }
 ]

@@ -181,162 +181,130 @@
   },
   {
     "source": "그런데",
-    "target": "nhưng mà",
-    "reviewed": false
+    "target": "nhưng mà"
   },
   {
     "source": "그래서",
-    "target": "nên là",
-    "reviewed": false
+    "target": "nên là"
   },
   {
     "source": "그러니까",
-    "target": "nghĩa là",
-    "reviewed": false
+    "target": "nghĩa là"
   },
   {
     "source": "말하자면",
-    "target": "nói cách khác",
-    "reviewed": false
+    "target": "nói cách khác"
   },
   {
     "source": "예를 들어",
-    "target": "ví dụ",
-    "reviewed": false
+    "target": "ví dụ"
   },
   {
     "source": "한편",
-    "target": "mặt khác",
-    "reviewed": false
+    "target": "mặt khác"
   },
   {
     "source": "동시에",
-    "target": "đồng thời",
-    "reviewed": false
+    "target": "đồng thời"
   },
   {
     "source": "갑자기",
-    "target": "đột ngột",
-    "reviewed": false
+    "target": "đột ngột"
   },
   {
     "source": "그 결과",
-    "target": "kết quả là",
-    "reviewed": false
+    "target": "kết quả là"
   },
   {
     "source": "왜냐하면",
-    "target": "bởi vì",
-    "reviewed": false
+    "target": "bởi vì"
   },
   {
     "source": "그럼에도",
-    "target": "dù vậy",
-    "reviewed": false
+    "target": "dù vậy"
   },
   {
     "source": "만약을 대비해",
-    "target": "phòng khi",
-    "reviewed": false
+    "target": "phòng khi"
   },
   {
     "source": "지금까지",
-    "target": "đến giờ",
-    "reviewed": false
+    "target": "đến giờ"
   },
   {
     "source": "이제부터",
-    "target": "từ giờ",
-    "reviewed": false
+    "target": "từ giờ"
   },
   {
     "source": "가끔",
-    "target": "thỉnh thoảng",
-    "reviewed": false
+    "target": "thỉnh thoảng"
   },
   {
     "source": "거의",
-    "target": "gần như",
-    "reviewed": false
+    "target": "gần như"
   },
   {
     "source": "솔직히",
-    "target": "nói thật",
-    "reviewed": false
+    "target": "nói thật"
   },
   {
     "source": "다시 말해",
-    "target": "nói lại cho rõ",
-    "reviewed": false
+    "target": "nói lại cho rõ"
   },
   {
     "source": "게다가",
-    "target": "hơn nữa",
-    "reviewed": false
+    "target": "hơn nữa"
   },
   {
     "source": "오히려",
-    "target": "ngược lại",
-    "reviewed": false
+    "target": "ngược lại"
   },
   {
     "source": "다행히",
-    "target": "may mà",
-    "reviewed": false
+    "target": "may mà"
   },
   {
     "source": "아쉽게도",
-    "target": "tiếc là",
-    "reviewed": false
+    "target": "tiếc là"
   },
   {
     "source": "일단",
-    "target": "tạm thời",
-    "reviewed": false
+    "target": "tạm thời"
   },
   {
     "source": "그나저나",
-    "target": "nhân tiện",
-    "reviewed": false
+    "target": "nhân tiện"
   },
   {
     "source": "혹시",
-    "target": "hay là",
-    "reviewed": false
+    "target": "hay là"
   },
   {
     "source": "아마도",
-    "target": "chắc là",
-    "reviewed": false
+    "target": "chắc là"
   },
   {
     "source": "절대",
-    "target": "tuyệt đối",
-    "reviewed": false
+    "target": "tuyệt đối"
   },
   {
     "source": "전혀",
-    "target": "hoàn toàn không",
-    "reviewed": false
+    "target": "hoàn toàn không"
   },
   {
     "source": "정말",
-    "target": "thật sự",
-    "reviewed": false
+    "target": "thật sự"
   },
   {
     "source": "잠깐",
-    "target": "khoan",
-    "reviewed": false
+    "target": "khoan"
   },
   {
     "source": "알겠어",
-    "target": "hiểu rồi",
-    "reviewed": false
+    "target": "hiểu rồi"
   },
   {
     "source": "어쨌든간에",
-    "target": "dù thế nào đi nữa",
-    "reviewed": false
+    "target": "dù thế nào đi nữa"
   }
 ]

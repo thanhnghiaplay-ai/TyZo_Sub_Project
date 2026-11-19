@@ -419,202 +419,162 @@
   },
   {
     "source": "寻宝图",
-    "target": "bản đồ kho báu",
-    "reviewed": false
+    "target": "bản đồ kho báu"
   },
   {
     "source": "藏宝图",
-    "target": "bản đồ kho báu",
-    "reviewed": false
+    "target": "bản đồ kho báu"
   },
   {
     "source": "宝箱",
-    "target": "rương báu",
-    "reviewed": false
+    "target": "rương báu"
   },
   {
     "source": "黄金",
-    "target": "vàng",
-    "reviewed": false
+    "target": "vàng"
   },
   {
     "source": "财宝",
-    "target": "của cải, châu báu",
-    "reviewed": false
+    "target": "của cải, châu báu"
   },
   {
     "source": "探索",
-    "target": "khám phá",
-    "reviewed": false
+    "target": "khám phá"
   },
   {
     "source": "发现",
-    "target": "phát hiện",
-    "reviewed": false
+    "target": "phát hiện"
   },
   {
     "source": "出发",
-    "target": "xuất phát",
-    "reviewed": false
+    "target": "xuất phát"
   },
   {
     "source": "远征",
-    "target": "viễn chinh, chuyến đi xa",
-    "reviewed": false
+    "target": "viễn chinh, chuyến đi xa"
   },
   {
     "source": "徒步",
-    "target": "đi bộ đường dài",
-    "reviewed": false
+    "target": "đi bộ đường dài"
   },
   {
     "source": "攀登",
-    "target": "leo núi",
-    "reviewed": false
+    "target": "leo núi"
   },
   {
     "source": "悬崖",
-    "target": "vách đá",
-    "reviewed": false
+    "target": "vách đá"
   },
   {
     "source": "瀑布",
-    "target": "thác nước",
-    "reviewed": false
+    "target": "thác nước"
   },
   {
     "source": "热带雨林",
-    "target": "rừng mưa nhiệt đới",
-    "reviewed": false
+    "target": "rừng mưa nhiệt đới"
   },
   {
     "source": "火山",
-    "target": "núi lửa",
-    "reviewed": false
+    "target": "núi lửa"
   },
   {
     "source": "沼泽",
-    "target": "đầm lầy",
-    "reviewed": false
+    "target": "đầm lầy"
   },
   {
     "source": "暗河",
-    "target": "sông ngầm",
-    "reviewed": false
+    "target": "sông ngầm"
   },
   {
     "source": "山洞",
-    "target": "hang động",
-    "reviewed": false
+    "target": "hang động"
   },
   {
     "source": "密道",
-    "target": "lối đi bí mật",
-    "reviewed": false
+    "target": "lối đi bí mật"
   },
   {
     "source": "暗门",
-    "target": "cửa bí mật",
-    "reviewed": false
+    "target": "cửa bí mật"
   },
   {
     "source": "石碑",
-    "target": "bia đá",
-    "reviewed": false
+    "target": "bia đá"
   },
   {
     "source": "壁画",
-    "target": "bích họa",
-    "reviewed": false
+    "target": "bích họa"
   },
   {
     "source": "古城",
-    "target": "thành cổ",
-    "reviewed": false
+    "target": "thành cổ"
   },
   {
     "source": "失落的文明",
-    "target": "nền văn minh thất lạc",
-    "reviewed": false
+    "target": "nền văn minh thất lạc"
   },
   {
     "source": "诅咒",
-    "target": "lời nguyền",
-    "reviewed": false
+    "target": "lời nguyền"
   },
   {
     "source": "机关术",
-    "target": "thuật cơ quan",
-    "reviewed": false
+    "target": "thuật cơ quan"
   },
   {
     "source": "陷阱门",
-    "target": "cửa bẫy",
-    "reviewed": false
+    "target": "cửa bẫy"
   },
   {
     "source": "绳索",
-    "target": "dây thừng",
-    "reviewed": false
+    "target": "dây thừng"
   },
   {
     "source": "火把",
-    "target": "đuốc",
-    "reviewed": false
+    "target": "đuốc"
   },
   {
     "source": "帐篷",
-    "target": "lều",
-    "reviewed": false
+    "target": "lều"
   },
   {
     "source": "船长",
-    "target": "thuyền trưởng",
-    "reviewed": false
+    "target": "thuyền trưởng"
   },
   {
     "source": "船员",
-    "target": "thủy thủ đoàn",
-    "reviewed": false
+    "target": "thủy thủ đoàn"
   },
   {
     "source": "登陆",
-    "target": "đổ bộ, cập bờ",
-    "reviewed": false
+    "target": "đổ bộ, cập bờ"
   },
   {
     "source": "风暴",
-    "target": "bão tố",
-    "reviewed": false
+    "target": "bão tố"
   },
   {
     "source": "漂流",
-    "target": "trôi dạt, đi bè",
-    "reviewed": false
+    "target": "trôi dạt, đi bè"
   },
   {
     "source": "幸存者",
-    "target": "người sống sót",
-    "reviewed": false
+    "target": "người sống sót"
   },
   {
     "source": "求生",
-    "target": "cầu sinh, sinh tồn",
-    "reviewed": false
+    "target": "cầu sinh, sinh tồn"
   },
   {
     "source": "猛兽",
-    "target": "mãnh thú",
-    "reviewed": false
+    "target": "mãnh thú"
   },
   {
     "source": "毒蛇",
-    "target": "rắn độc",
-    "reviewed": false
+    "target": "rắn độc"
   },
   {
     "source": "迷路",
-    "target": "lạc đường",
-    "reviewed": false
+    "target": "lạc đường"
   }
 ]

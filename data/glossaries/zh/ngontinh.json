@@ -1,399 +1,320 @@
 [
   {
     "source": "总裁",
-    "target": "tổng tài",
-    "reviewed": false
+    "target": "tổng tài"
   },
   {
     "source": "霸道总裁",
-    "target": "tổng tài bá đạo",
-    "reviewed": false
+    "target": "tổng tài bá đạo"
   },
   {
     "source": "董事长",
-    "target": "chủ tịch",
-    "reviewed": false
+    "target": "chủ tịch"
   },
   {
     "source": "助理",
-    "target": "trợ lý",
-    "reviewed": false
+    "target": "trợ lý"
   },
   {
     "source": "少爷",
-    "target": "thiếu gia",
-    "reviewed": false
+    "target": "thiếu gia"
   },
   {
     "source": "千金",
-    "target": "thiên kim",
-    "reviewed": false
+    "target": "thiên kim"
   },
   {
     "source": "豪门",
-    "target": "hào môn",
-    "reviewed": false
+    "target": "hào môn"
   },
   {
     "source": "联姻",
-    "target": "liên hôn",
-    "reviewed": false
+    "target": "liên hôn"
   },
   {
     "source": "契约婚姻",
-    "target": "hôn nhân hợp đồng",
-    "reviewed": false
+    "target": "hôn nhân hợp đồng"
   },
   {
     "source": "未婚夫",
-    "target": "vị hôn phu",
-    "reviewed": false
+    "target": "vị hôn phu"
   },
   {
     "source": "未婚妻",
-    "target": "vị hôn thê",
-    "reviewed": false
+    "target": "vị hôn thê"
   },
   {
     "source": "订婚",
-    "target": "đính hôn",
-    "reviewed": false
+    "target": "đính hôn"
   },
   {
     "source": "结婚",
-    "target": "kết hôn",
-    "reviewed": false
+    "target": "kết hôn"
   },
   {
     "source": "离婚",
-    "target": "ly hôn",
-    "reviewed": false
+    "target": "ly hôn"
   },
   {
     "source": "前夫",
-    "target": "chồng cũ",
-    "reviewed": false
+    "target": "chồng cũ"
   },
   {
     "source": "前妻",
-    "target": "vợ cũ",
-    "reviewed": false
+    "target": "vợ cũ"
   },
   {
     "source": "前任",
-    "target": "người yêu cũ",
-    "reviewed": false
+    "target": "người yêu cũ"
   },
   {
     "source": "男朋友",
-    "target": "bạn trai",
-    "reviewed": false
+    "target": "bạn trai"
   },
   {
     "source": "女朋友",
-    "target": "bạn gái",
-    "reviewed": false
+    "target": "bạn gái"
   },
   {
     "source": "老公",
-    "target": "chồng, ông xã",
-    "reviewed": false
+    "target": "chồng, ông xã"
   },
   {
     "source": "老婆",
-    "target": "vợ, bà xã",
-    "reviewed": false
+    "target": "vợ, bà xã"
   },
   {
     "source": "宝贝",
-    "target": "bảo bối",
-    "reviewed": false
+    "target": "bảo bối"
   },
   {
     "source": "亲爱的",
     "target": "em yêu, anh yêu",
-    "note": "Chọn theo giới tính người nói",
-    "reviewed": false
+    "note": "Chọn theo giới tính người nói"
   },
   {
     "source": "白月光",
     "target": "bạch nguyệt quang",
-    "note": "Người trong lòng không thể có được",
-    "reviewed": false
+    "note": "Người trong lòng không thể có được"
   },
   {
     "source": "替身",
-    "target": "thế thân",
-    "reviewed": false
+    "target": "thế thân"
   },
   {
     "source": "初恋",
-    "target": "mối tình đầu",
-    "reviewed": false
+    "target": "mối tình đầu"
   },
   {
     "source": "青梅竹马",
-    "target": "thanh mai trúc mã",
-    "reviewed": false
+    "target": "thanh mai trúc mã"
   },
   {
     "source": "一见钟情",
-    "target": "yêu từ cái nhìn đầu tiên",
-    "reviewed": false
+    "target": "yêu từ cái nhìn đầu tiên"
   },
   {
     "source": "暗恋",
-    "target": "thầm thương, thích mà không dám nói ra",
-    "reviewed": false
+    "target": "thầm thương, thích mà không dám nói ra"
   },
   {
     "source": "表白",
-    "target": "tỏ tình",
-    "reviewed": false
+    "target": "tỏ tình"
   },
   {
     "source": "分手",
-    "target": "chia tay",
-    "reviewed": false
+    "target": "chia tay"
   },
   {
     "source": "吃醋",
-    "target": "ghen",
-    "reviewed": false
+    "target": "ghen"
   },
   {
     "source": "心动",
-    "target": "rung động",
-    "reviewed": false
+    "target": "rung động"
   },
   {
     "source": "缘分",
-    "target": "duyên phận",
-    "reviewed": false
+    "target": "duyên phận"
   },
   {
     "source": "渣男",
-    "target": "đồ tồi",
-    "reviewed": false
+    "target": "đồ tồi"
   },
   {
     "source": "小三",
-    "target": "kẻ thứ ba",
-    "reviewed": false
+    "target": "kẻ thứ ba"
   },
   {
     "source": "霸总",
-    "target": "tổng tài bá đạo",
-    "reviewed": false
+    "target": "tổng tài bá đạo"
   },
   {
     "source": "商业联姻",
-    "target": "hôn nhân thương mại",
-    "reviewed": false
+    "target": "hôn nhân thương mại"
   },
   {
     "source": "闪婚",
-    "target": "cưới chớp nhoáng",
-    "reviewed": false
+    "target": "cưới chớp nhoáng"
   },
   {
     "source": "婚礼",
-    "target": "lễ cưới",
-    "reviewed": false
+    "target": "lễ cưới"
   },
   {
     "source": "订婚宴",
-    "target": "tiệc đính hôn",
-    "reviewed": false
+    "target": "tiệc đính hôn"
   },
   {
     "source": "求婚",
-    "target": "cầu hôn",
-    "reviewed": false
+    "target": "cầu hôn"
   },
   {
     "source": "戒指",
-    "target": "nhẫn",
-    "reviewed": false
+    "target": "nhẫn"
   },
   {
     "source": "领证",
-    "target": "đăng ký kết hôn",
-    "reviewed": false
+    "target": "đăng ký kết hôn"
   },
   {
     "source": "蜜月",
-    "target": "tuần trăng mật",
-    "reviewed": false
+    "target": "tuần trăng mật"
   },
   {
     "source": "老公大人",
-    "target": "ông xã",
-    "reviewed": false
+    "target": "ông xã"
   },
   {
     "source": "老婆大人",
-    "target": "bà xã",
-    "reviewed": false
+    "target": "bà xã"
   },
   {
     "source": "心上人",
-    "target": "người trong lòng",
-    "reviewed": false
+    "target": "người trong lòng"
   },
   {
     "source": "意中人",
-    "target": "người trong mộng",
-    "reviewed": false
+    "target": "người trong mộng"
   },
   {
     "source": "男神",
-    "target": "nam thần",
-    "reviewed": false
+    "target": "nam thần"
   },
   {
     "source": "女神",
-    "target": "nữ thần",
-    "reviewed": false
+    "target": "nữ thần"
   },
   {
     "source": "撒娇",
-    "target": "làm nũng",
-    "reviewed": false
+    "target": "làm nũng"
   },
   {
     "source": "宠你",
-    "target": "cưng chiều em",
-    "reviewed": false
+    "target": "cưng chiều em"
   },
   {
     "source": "宠溺",
-    "target": "cưng chiều hết mực",
-    "reviewed": false
+    "target": "cưng chiều hết mực"
   },
   {
     "source": "占有欲",
-    "target": "dục vọng chiếm hữu",
-    "reviewed": false
+    "target": "dục vọng chiếm hữu"
   },
   {
     "source": "护短",
-    "target": "bênh người nhà",
-    "reviewed": false
+    "target": "bênh người nhà"
   },
   {
     "source": "英雄救美",
-    "target": "anh hùng cứu mỹ nhân",
-    "reviewed": false
+    "target": "anh hùng cứu mỹ nhân"
   },
   {
     "source": "拥抱",
-    "target": "ôm",
-    "reviewed": false
+    "target": "ôm"
   },
   {
     "source": "牵手",
-    "target": "nắm tay",
-    "reviewed": false
+    "target": "nắm tay"
   },
   {
     "source": "心跳加速",
-    "target": "tim đập nhanh",
-    "reviewed": false
+    "target": "tim đập nhanh"
   },
   {
     "source": "脸红",
-    "target": "đỏ mặt",
-    "reviewed": false
+    "target": "đỏ mặt"
   },
   {
     "source": "害羞",
-    "target": "ngại ngùng",
-    "reviewed": false
+    "target": "ngại ngùng"
   },
   {
     "source": "暧昧",
-    "target": "mập mờ",
-    "reviewed": false
+    "target": "mập mờ"
   },
   {
     "source": "追求",
-    "target": "theo đuổi",
-    "reviewed": false
+    "target": "theo đuổi"
   },
   {
     "source": "情敌",
-    "target": "tình địch",
-    "reviewed": false
+    "target": "tình địch"
   },
   {
     "source": "绿茶",
-    "target": "kẻ giả vờ ngây thơ (trà xanh)",
-    "reviewed": false
+    "target": "kẻ giả vờ ngây thơ (trà xanh)"
   },
   {
     "source": "白莲花",
-    "target": "bạch liên hoa",
-    "reviewed": false
+    "target": "bạch liên hoa"
   },
   {
     "source": "误会",
-    "target": "hiểu lầm",
-    "reviewed": false
+    "target": "hiểu lầm"
   },
   {
     "source": "复合",
-    "target": "quay lại",
-    "reviewed": false
+    "target": "quay lại"
   },
   {
     "source": "挽回",
-    "target": "cứu vãn",
-    "reviewed": false
+    "target": "cứu vãn"
   },
   {
     "source": "狗血",
-    "target": "sến súa, kịch tính quá đà",
-    "reviewed": false
+    "target": "sến súa, kịch tính quá đà"
   },
   {
     "source": "虐心",
-    "target": "đau lòng",
-    "reviewed": false
+    "target": "đau lòng"
   },
   {
     "source": "甜宠",
-    "target": "ngọt ngào cưng chiều",
-    "reviewed": false
+    "target": "ngọt ngào cưng chiều"
   },
   {
     "source": "重逢",
-    "target": "tái ngộ",
-    "reviewed": false
+    "target": "tái ngộ"
   },
   {
     "source": "失忆",
-    "target": "mất trí nhớ",
-    "reviewed": false
+    "target": "mất trí nhớ"
   },
   {
     "source": "怀孕",
-    "target": "mang thai",
-    "reviewed": false
+    "target": "mang thai"
   },
   {
     "source": "孩子",
-    "target": "đứa bé, con",
-    "reviewed": false
+    "target": "đứa bé, con"
   },
   {
     "source": "日久生情",
-    "target": "ở lâu sinh tình",
-    "reviewed": false
+    "target": "ở lâu sinh tình"
   },
   {
     "source": "相爱相杀",
-    "target": "yêu nhau lẫn hại nhau",
-    "reviewed": false
+    "target": "yêu nhau lẫn hại nhau"
   }
 ]

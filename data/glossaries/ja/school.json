@@ -1,382 +1,306 @@
 [
   {
     "source": "担任",
-    "target": "giáo viên chủ nhiệm",
-    "reviewed": false
+    "target": "giáo viên chủ nhiệm"
   },
   {
     "source": "校長",
-    "target": "hiệu trưởng",
-    "reviewed": false
+    "target": "hiệu trưởng"
   },
   {
     "source": "教頭",
-    "target": "hiệu phó",
-    "reviewed": false
+    "target": "hiệu phó"
   },
   {
     "source": "生徒",
-    "target": "học sinh",
-    "reviewed": false
+    "target": "học sinh"
   },
   {
     "source": "転校生",
-    "target": "học sinh chuyển trường",
-    "reviewed": false
+    "target": "học sinh chuyển trường"
   },
   {
     "source": "先輩",
-    "target": "tiền bối (đàn anh, đàn chị)",
-    "reviewed": false
+    "target": "tiền bối (đàn anh, đàn chị)"
   },
   {
     "source": "後輩",
-    "target": "hậu bối (đàn em)",
-    "reviewed": false
+    "target": "hậu bối (đàn em)"
   },
   {
     "source": "同級生",
-    "target": "bạn cùng khóa",
-    "reviewed": false
+    "target": "bạn cùng khóa"
   },
   {
     "source": "部活",
-    "target": "hoạt động câu lạc bộ",
-    "reviewed": false
+    "target": "hoạt động câu lạc bộ"
   },
   {
     "source": "部長",
-    "target": "trưởng câu lạc bộ",
-    "reviewed": false
+    "target": "trưởng câu lạc bộ"
   },
   {
     "source": "生徒会",
-    "target": "hội học sinh",
-    "reviewed": false
+    "target": "hội học sinh"
   },
   {
     "source": "生徒会長",
-    "target": "chủ tịch hội học sinh",
-    "reviewed": false
+    "target": "chủ tịch hội học sinh"
   },
   {
     "source": "文化祭",
-    "target": "lễ hội văn hóa trường",
-    "reviewed": false
+    "target": "lễ hội văn hóa trường"
   },
   {
     "source": "体育祭",
-    "target": "hội thao",
-    "reviewed": false
+    "target": "hội thao"
   },
   {
     "source": "修学旅行",
-    "target": "chuyến tham quan học tập",
-    "reviewed": false
+    "target": "chuyến tham quan học tập"
   },
   {
     "source": "期末試験",
-    "target": "thi cuối kỳ",
-    "reviewed": false
+    "target": "thi cuối kỳ"
   },
   {
     "source": "中間テスト",
-    "target": "thi giữa kỳ",
-    "reviewed": false
+    "target": "thi giữa kỳ"
   },
   {
     "source": "追試",
-    "target": "thi bổ sung",
-    "reviewed": false
+    "target": "thi bổ sung"
   },
   {
     "source": "補習",
-    "target": "học bù",
-    "reviewed": false
+    "target": "học bù"
   },
   {
     "source": "赤点",
-    "target": "điểm liệt",
-    "reviewed": false
+    "target": "điểm liệt"
   },
   {
     "source": "偏差値",
-    "target": "điểm chuẩn hóa (hensachi)",
-    "reviewed": false
+    "target": "điểm chuẩn hóa (hensachi)"
   },
   {
     "source": "受験",
-    "target": "thi tuyển sinh",
-    "reviewed": false
+    "target": "thi tuyển sinh"
   },
   {
     "source": "志望校",
-    "target": "trường nguyện vọng",
-    "reviewed": false
+    "target": "trường nguyện vọng"
   },
   {
     "source": "進路相談",
-    "target": "tư vấn hướng nghiệp",
-    "reviewed": false
+    "target": "tư vấn hướng nghiệp"
   },
   {
     "source": "卒業式",
-    "target": "lễ tốt nghiệp",
-    "reviewed": false
+    "target": "lễ tốt nghiệp"
   },
   {
     "source": "入学式",
-    "target": "lễ nhập học",
-    "reviewed": false
+    "target": "lễ nhập học"
   },
   {
     "source": "始業式",
-    "target": "lễ khai giảng đầu kỳ",
-    "reviewed": false
+    "target": "lễ khai giảng đầu kỳ"
   },
   {
     "source": "終業式",
-    "target": "lễ bế giảng cuối kỳ",
-    "reviewed": false
+    "target": "lễ bế giảng cuối kỳ"
   },
   {
     "source": "放課後",
-    "target": "sau giờ học",
-    "reviewed": false
+    "target": "sau giờ học"
   },
   {
     "source": "屋上",
-    "target": "sân thượng trường",
-    "reviewed": false
+    "target": "sân thượng trường"
   },
   {
     "source": "保健室",
-    "target": "phòng y tế",
-    "reviewed": false
+    "target": "phòng y tế"
   },
   {
     "source": "職員室",
-    "target": "phòng giáo viên",
-    "reviewed": false
+    "target": "phòng giáo viên"
   },
   {
     "source": "制服",
-    "target": "đồng phục",
-    "reviewed": false
+    "target": "đồng phục"
   },
   {
     "source": "上履き",
-    "target": "giày đi trong trường",
-    "reviewed": false
+    "target": "giày đi trong trường"
   },
   {
     "source": "給食",
-    "target": "bữa ăn bán trú",
-    "reviewed": false
+    "target": "bữa ăn bán trú"
   },
   {
     "source": "掃除当番",
-    "target": "phiên trực nhật dọn vệ sinh",
-    "reviewed": false
+    "target": "phiên trực nhật dọn vệ sinh"
   },
   {
     "source": "日直",
-    "target": "học sinh trực nhật",
-    "reviewed": false
+    "target": "học sinh trực nhật"
   },
   {
     "source": "遅刻",
-    "target": "đi muộn",
-    "reviewed": false
+    "target": "đi muộn"
   },
   {
     "source": "不登校",
-    "target": "không đến trường",
-    "reviewed": false
+    "target": "không đến trường"
   },
   {
     "source": "学級委員",
-    "target": "cán bộ lớp",
-    "reviewed": false
+    "target": "cán bộ lớp"
   },
   {
     "source": "小学校",
-    "target": "trường tiểu học",
-    "reviewed": false
+    "target": "trường tiểu học"
   },
   {
     "source": "中学校",
-    "target": "trường cấp hai",
-    "reviewed": false
+    "target": "trường cấp hai"
   },
   {
     "source": "高校",
-    "target": "trường cấp ba",
-    "reviewed": false
+    "target": "trường cấp ba"
   },
   {
     "source": "学習塾",
-    "target": "lớp học thêm",
-    "reviewed": false
+    "target": "lớp học thêm"
   },
   {
     "source": "宿題",
-    "target": "bài tập về nhà",
-    "reviewed": false
+    "target": "bài tập về nhà"
   },
   {
     "source": "通知表",
-    "target": "học bạ",
-    "reviewed": false
+    "target": "học bạ"
   },
   {
     "source": "内申点",
-    "target": "điểm học bạ nội bộ",
-    "reviewed": false
+    "target": "điểm học bạ nội bộ"
   },
   {
     "source": "推薦",
-    "target": "tuyển thẳng",
-    "reviewed": false
+    "target": "tuyển thẳng"
   },
   {
     "source": "浪人",
-    "target": "học lại chờ thi",
-    "reviewed": false
+    "target": "học lại chờ thi"
   },
   {
     "source": "予備校",
-    "target": "trường luyện thi",
-    "reviewed": false
+    "target": "trường luyện thi"
   },
   {
     "source": "模試",
-    "target": "thi thử",
-    "reviewed": false
+    "target": "thi thử"
   },
   {
     "source": "合格",
-    "target": "đỗ",
-    "reviewed": false
+    "target": "đỗ"
   },
   {
     "source": "不合格",
-    "target": "trượt",
-    "reviewed": false
+    "target": "trượt"
   },
   {
     "source": "留年",
-    "target": "lưu ban",
-    "reviewed": false
+    "target": "lưu ban"
   },
   {
     "source": "退学",
-    "target": "thôi học",
-    "reviewed": false
+    "target": "thôi học"
   },
   {
     "source": "停学",
-    "target": "đình chỉ học",
-    "reviewed": false
+    "target": "đình chỉ học"
   },
   {
     "source": "出席",
-    "target": "có mặt",
-    "reviewed": false
+    "target": "có mặt"
   },
   {
     "source": "欠席",
-    "target": "vắng mặt",
-    "reviewed": false
+    "target": "vắng mặt"
   },
   {
     "source": "早退",
-    "target": "về sớm",
-    "reviewed": false
+    "target": "về sớm"
   },
   {
     "source": "授業",
-    "target": "tiết học",
-    "reviewed": false
+    "target": "tiết học"
   },
   {
     "source": "講義",
-    "target": "bài giảng",
-    "reviewed": false
+    "target": "bài giảng"
   },
   {
     "source": "ゼミ",
-    "target": "lớp chuyên đề",
-    "reviewed": false
+    "target": "lớp chuyên đề"
   },
   {
     "source": "教授",
-    "target": "giáo sư",
-    "reviewed": false
+    "target": "giáo sư"
   },
   {
     "source": "講師",
-    "target": "giảng viên",
-    "reviewed": false
+    "target": "giảng viên"
   },
   {
     "source": "サークル",
-    "target": "câu lạc bộ",
-    "reviewed": false
+    "target": "câu lạc bộ"
   },
   {
     "source": "学園祭",
-    "target": "lễ hội trường",
-    "reviewed": false
+    "target": "lễ hội trường"
   },
   {
     "source": "吹奏楽",
-    "target": "đội kèn hơi",
-    "reviewed": false
+    "target": "đội kèn hơi"
   },
   {
     "source": "マネージャー",
-    "target": "quản lý đội",
-    "reviewed": false
+    "target": "quản lý đội"
   },
   {
     "source": "顧問",
-    "target": "giáo viên phụ trách",
-    "reviewed": false
+    "target": "giáo viên phụ trách"
   },
   {
     "source": "参考書",
-    "target": "sách tham khảo",
-    "reviewed": false
+    "target": "sách tham khảo"
   },
   {
     "source": "問題集",
-    "target": "sách bài tập",
-    "reviewed": false
+    "target": "sách bài tập"
   },
   {
     "source": "時間割",
-    "target": "thời khóa biểu",
-    "reviewed": false
+    "target": "thời khóa biểu"
   },
   {
     "source": "休み時間",
-    "target": "giờ ra chơi",
-    "reviewed": false
+    "target": "giờ ra chơi"
   },
   {
     "source": "昼休み",
-    "target": "giờ nghỉ trưa",
-    "reviewed": false
+    "target": "giờ nghỉ trưa"
   },
   {
     "source": "家庭教師",
-    "target": "gia sư",
-    "reviewed": false
+    "target": "gia sư"
   },
   {
     "source": "自転車通学",
-    "target": "đi học bằng xe đạp",
-    "reviewed": false
+    "target": "đi học bằng xe đạp"
   }
 ]

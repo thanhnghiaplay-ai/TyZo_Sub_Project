@@ -1,257 +1,206 @@
 [
   {
     "source": "담임",
-    "target": "giáo viên chủ nhiệm",
-    "reviewed": false
+    "target": "giáo viên chủ nhiệm"
   },
   {
     "source": "교장",
-    "target": "hiệu trưởng",
-    "reviewed": false
+    "target": "hiệu trưởng"
   },
   {
     "source": "교감",
-    "target": "hiệu phó",
-    "reviewed": false
+    "target": "hiệu phó"
   },
   {
     "source": "전학생",
-    "target": "học sinh chuyển trường",
-    "reviewed": false
+    "target": "học sinh chuyển trường"
   },
   {
     "source": "선배",
-    "target": "tiền bối (đàn anh, đàn chị)",
-    "reviewed": false
+    "target": "tiền bối (đàn anh, đàn chị)"
   },
   {
     "source": "후배",
-    "target": "hậu bối (đàn em)",
-    "reviewed": false
+    "target": "hậu bối (đàn em)"
   },
   {
     "source": "동기",
-    "target": "bạn đồng khóa",
-    "reviewed": false
+    "target": "bạn đồng khóa"
   },
   {
     "source": "반장",
-    "target": "lớp trưởng",
-    "reviewed": false
+    "target": "lớp trưởng"
   },
   {
     "source": "부반장",
-    "target": "lớp phó",
-    "reviewed": false
+    "target": "lớp phó"
   },
   {
     "source": "학생회",
-    "target": "hội học sinh",
-    "reviewed": false
+    "target": "hội học sinh"
   },
   {
     "source": "학생회장",
-    "target": "chủ tịch hội học sinh",
-    "reviewed": false
+    "target": "chủ tịch hội học sinh"
   },
   {
     "source": "동아리",
-    "target": "câu lạc bộ",
-    "reviewed": false
+    "target": "câu lạc bộ"
   },
   {
     "source": "체육대회",
-    "target": "hội thao",
-    "reviewed": false
+    "target": "hội thao"
   },
   {
     "source": "학교 축제",
-    "target": "lễ hội trường",
-    "reviewed": false
+    "target": "lễ hội trường"
   },
   {
     "source": "소풍",
-    "target": "dã ngoại",
-    "reviewed": false
+    "target": "dã ngoại"
   },
   {
     "source": "수학여행",
-    "target": "chuyến tham quan học tập",
-    "reviewed": false
+    "target": "chuyến tham quan học tập"
   },
   {
     "source": "중간고사",
-    "target": "thi giữa kỳ",
-    "reviewed": false
+    "target": "thi giữa kỳ"
   },
   {
     "source": "기말고사",
-    "target": "thi cuối kỳ",
-    "reviewed": false
+    "target": "thi cuối kỳ"
   },
   {
     "source": "모의고사",
-    "target": "thi thử",
-    "reviewed": false
+    "target": "thi thử"
   },
   {
     "source": "수능",
-    "target": "kỳ thi đại học Suneung",
-    "reviewed": false
+    "target": "kỳ thi đại học Suneung"
   },
   {
     "source": "수시",
-    "target": "tuyển sinh sớm",
-    "reviewed": false
+    "target": "tuyển sinh sớm"
   },
   {
     "source": "정시",
-    "target": "tuyển sinh chính quy",
-    "reviewed": false
+    "target": "tuyển sinh chính quy"
   },
   {
     "source": "재수",
-    "target": "học lại một năm để thi lại (jaesu)",
-    "reviewed": false
+    "target": "học lại một năm để thi lại (jaesu)"
   },
   {
     "source": "재수생",
-    "target": "thí sinh thi lại",
-    "reviewed": false
+    "target": "thí sinh thi lại"
   },
   {
     "source": "입시",
-    "target": "thi tuyển sinh",
-    "reviewed": false
+    "target": "thi tuyển sinh"
   },
   {
     "source": "내신",
-    "target": "điểm học bạ",
-    "reviewed": false
+    "target": "điểm học bạ"
   },
   {
     "source": "학원",
-    "target": "trung tâm học thêm (hagwon)",
-    "reviewed": false
+    "target": "trung tâm học thêm (hagwon)"
   },
   {
     "source": "과외",
-    "target": "dạy kèm",
-    "reviewed": false
+    "target": "dạy kèm"
   },
   {
     "source": "야자",
-    "target": "tự học buổi tối",
-    "reviewed": false
+    "target": "tự học buổi tối"
   },
   {
     "source": "야간 자율학습",
-    "target": "tự học buổi tối",
-    "reviewed": false
+    "target": "tự học buổi tối"
   },
   {
     "source": "보충수업",
-    "target": "học bổ trợ",
-    "reviewed": false
+    "target": "học bổ trợ"
   },
   {
     "source": "입학식",
-    "target": "lễ nhập học",
-    "reviewed": false
+    "target": "lễ nhập học"
   },
   {
     "source": "졸업식",
-    "target": "lễ tốt nghiệp",
-    "reviewed": false
+    "target": "lễ tốt nghiệp"
   },
   {
     "source": "개학",
-    "target": "khai giảng đầu kỳ",
-    "reviewed": false
+    "target": "khai giảng đầu kỳ"
   },
   {
     "source": "방학",
-    "target": "kỳ nghỉ",
-    "reviewed": false
+    "target": "kỳ nghỉ"
   },
   {
     "source": "교복",
-    "target": "đồng phục",
-    "reviewed": false
+    "target": "đồng phục"
   },
   {
     "source": "교무실",
-    "target": "phòng giáo viên",
-    "reviewed": false
+    "target": "phòng giáo viên"
   },
   {
     "source": "보건실",
-    "target": "phòng y tế",
-    "reviewed": false
+    "target": "phòng y tế"
   },
   {
     "source": "급식",
-    "target": "bữa ăn bán trú",
-    "reviewed": false
+    "target": "bữa ăn bán trú"
   },
   {
     "source": "매점",
-    "target": "căn tin",
-    "reviewed": false
+    "target": "căn tin"
   },
   {
     "source": "청소 당번",
-    "target": "phiên trực nhật",
-    "reviewed": false
+    "target": "phiên trực nhật"
   },
   {
     "source": "지각",
-    "target": "đi muộn",
-    "reviewed": false
+    "target": "đi muộn"
   },
   {
     "source": "조퇴",
-    "target": "xin về sớm",
-    "reviewed": false
+    "target": "xin về sớm"
   },
   {
     "source": "벌점",
-    "target": "điểm phạt",
-    "reviewed": false
+    "target": "điểm phạt"
   },
   {
     "source": "생활기록부",
-    "target": "học bạ",
-    "reviewed": false
+    "target": "học bạ"
   },
   {
     "source": "학폭위",
-    "target": "hội đồng bạo lực học đường",
-    "reviewed": false
+    "target": "hội đồng bạo lực học đường"
   },
   {
     "source": "학부모",
-    "target": "phụ huynh",
-    "reviewed": false
+    "target": "phụ huynh"
   },
   {
     "source": "짝꿍",
-    "target": "bạn cùng bàn",
-    "reviewed": false
+    "target": "bạn cùng bàn"
   },
   {
     "source": "고등학교",
-    "target": "trường cấp ba",
-    "reviewed": false
+    "target": "trường cấp ba"
   },
   {
     "source": "중학교",
-    "target": "trường cấp hai",
-    "reviewed": false
+    "target": "trường cấp hai"
   },
   {
     "source": "초등학교",
-    "target": "trường tiểu học",
-    "reviewed": false
+    "target": "trường tiểu học"
   }
 ]

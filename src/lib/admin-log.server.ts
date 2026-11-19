@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.11.0",
     time: "19/11/2026",
     area: "du-lieu",
+    text: "Chủ không duyệt tay hàng nghìn mục thuật ngữ. Bỏ cờ «chưa duyệt» trong file gốc (mục không ghi cờ thì lúc nạp/khôi phục coi là đã duyệt). Thêm nút «Duyệt hết» ở Admin → Thuật ngữ: một lần đánh dấu đã duyệt mọi mục đang chưa duyệt trong phòng. Không nâng APP_VERSION.",
+  },
+  {
+    version: "5.11.0",
+    time: "19/11/2026",
+    area: "du-lieu",
     text: "B1.3a bản nháp thuật ngữ 5 thể loại còn thiếu (zh, en): thêm data/glossaries/{zh,en}/{social,war,family,school,documentary}.json (tâm lý xã hội, chiến tranh, gia đình, học đường, tài liệu; 37 đến 53 mục mỗi file), mọi mục có reviewed:false nên khi nạp/khôi phục đều là «chưa duyệt». Bản nháp do Claude soạn, KHÔNG coi là đã đúng: Chủ vào Admin → Thuật ngữ, lọc «chưa duyệt», sửa rồi Duyệt từng mục hoặc cả bộ. Nơi đã chạy seed trước đó thì bấm «Khôi phục» cho từng bộ mới. Test ở glossary.test.ts.",
   },
   {

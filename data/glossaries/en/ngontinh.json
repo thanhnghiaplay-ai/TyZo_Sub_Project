@@ -1,353 +1,283 @@
 [
   {
     "source": "domineering ceo",
-    "target": "tổng tài bá đạo",
-    "reviewed": false
+    "target": "tổng tài bá đạo"
   },
   {
     "source": "ceo",
-    "target": "tổng tài",
-    "reviewed": false
+    "target": "tổng tài"
   },
   {
     "source": "chairman",
-    "target": "chủ tịch",
-    "reviewed": false
+    "target": "chủ tịch"
   },
   {
     "source": "assistant",
-    "target": "trợ lý",
-    "reviewed": false
+    "target": "trợ lý"
   },
   {
     "source": "young master",
-    "target": "thiếu gia",
-    "reviewed": false
+    "target": "thiếu gia"
   },
   {
     "source": "young lady",
-    "target": "tiểu thư",
-    "reviewed": false
+    "target": "tiểu thư"
   },
   {
     "source": "heiress",
-    "target": "thiên kim",
-    "reviewed": false
+    "target": "thiên kim"
   },
   {
     "source": "wealthy family",
-    "target": "hào môn",
-    "reviewed": false
+    "target": "hào môn"
   },
   {
     "source": "arranged marriage",
-    "target": "hôn nhân sắp đặt",
-    "reviewed": false
+    "target": "hôn nhân sắp đặt"
   },
   {
     "source": "contract marriage",
-    "target": "hôn nhân hợp đồng",
-    "reviewed": false
+    "target": "hôn nhân hợp đồng"
   },
   {
     "source": "fiancé",
-    "target": "vị hôn phu",
-    "reviewed": false
+    "target": "vị hôn phu"
   },
   {
     "source": "fiancée",
-    "target": "vị hôn thê",
-    "reviewed": false
+    "target": "vị hôn thê"
   },
   {
     "source": "engagement party",
-    "target": "tiệc đính hôn",
-    "reviewed": false
+    "target": "tiệc đính hôn"
   },
   {
     "source": "ex-husband",
-    "target": "chồng cũ",
-    "reviewed": false
+    "target": "chồng cũ"
   },
   {
     "source": "ex-wife",
-    "target": "vợ cũ",
-    "reviewed": false
+    "target": "vợ cũ"
   },
   {
     "source": "ex-boyfriend",
-    "target": "bạn trai cũ",
-    "reviewed": false
+    "target": "bạn trai cũ"
   },
   {
     "source": "ex-girlfriend",
-    "target": "bạn gái cũ",
-    "reviewed": false
+    "target": "bạn gái cũ"
   },
   {
     "source": "white moonlight",
     "target": "bạch nguyệt quang",
-    "note": "Người trong lòng không thể có được",
-    "reviewed": false
+    "note": "Người trong lòng không thể có được"
   },
   {
     "source": "stand-in",
-    "target": "thế thân",
-    "reviewed": false
+    "target": "thế thân"
   },
   {
     "source": "first love",
-    "target": "mối tình đầu",
-    "reviewed": false
+    "target": "mối tình đầu"
   },
   {
     "source": "childhood sweetheart",
-    "target": "thanh mai trúc mã",
-    "reviewed": false
+    "target": "thanh mai trúc mã"
   },
   {
     "source": "love at first sight",
-    "target": "yêu từ cái nhìn đầu tiên",
-    "reviewed": false
+    "target": "yêu từ cái nhìn đầu tiên"
   },
   {
     "source": "confess my feelings",
-    "target": "tỏ tình",
-    "reviewed": false
+    "target": "tỏ tình"
   },
   {
     "source": "break up",
-    "target": "chia tay",
-    "reviewed": false
+    "target": "chia tay"
   },
   {
     "source": "jealous",
-    "target": "ghen",
-    "reviewed": false
+    "target": "ghen"
   },
   {
     "source": "fate",
-    "target": "duyên phận",
-    "reviewed": false
+    "target": "duyên phận"
   },
   {
     "source": "scumbag",
-    "target": "đồ tồi",
-    "reviewed": false
+    "target": "đồ tồi"
   },
   {
     "source": "the other woman",
-    "target": "kẻ thứ ba",
-    "reviewed": false
+    "target": "kẻ thứ ba"
   },
   {
     "source": "general manager",
-    "target": "tổng giám đốc",
-    "reviewed": false
+    "target": "tổng giám đốc"
   },
   {
     "source": "board of directors",
-    "target": "hội đồng quản trị",
-    "reviewed": false
+    "target": "hội đồng quản trị"
   },
   {
     "source": "shareholder",
-    "target": "cổ đông",
-    "reviewed": false
+    "target": "cổ đông"
   },
   {
     "source": "subsidiary",
-    "target": "công ty con",
-    "reviewed": false
+    "target": "công ty con"
   },
   {
     "source": "inheritance",
-    "target": "thừa kế",
-    "reviewed": false
+    "target": "thừa kế"
   },
   {
     "source": "prenup",
-    "target": "thỏa thuận tiền hôn nhân",
-    "reviewed": false
+    "target": "thỏa thuận tiền hôn nhân"
   },
   {
     "source": "marriage certificate",
-    "target": "giấy đăng ký kết hôn",
-    "reviewed": false
+    "target": "giấy đăng ký kết hôn"
   },
   {
     "source": "divorce papers",
-    "target": "đơn ly hôn",
-    "reviewed": false
+    "target": "đơn ly hôn"
   },
   {
     "source": "divorce agreement",
-    "target": "thỏa thuận ly hôn",
-    "reviewed": false
+    "target": "thỏa thuận ly hôn"
   },
   {
     "source": "wedding banquet",
-    "target": "tiệc cưới",
-    "reviewed": false
+    "target": "tiệc cưới"
   },
   {
     "source": "bride price",
-    "target": "sính lễ",
-    "reviewed": false
+    "target": "sính lễ"
   },
   {
     "source": "dowry",
-    "target": "của hồi môn",
-    "reviewed": false
+    "target": "của hồi môn"
   },
   {
     "source": "pregnant",
-    "target": "mang thai",
-    "reviewed": false
+    "target": "mang thai"
   },
   {
     "source": "secret baby",
-    "target": "đứa con bí mật",
-    "reviewed": false
+    "target": "đứa con bí mật"
   },
   {
     "source": "paternity test",
-    "target": "xét nghiệm huyết thống",
-    "reviewed": false
+    "target": "xét nghiệm huyết thống"
   },
   {
     "source": "amnesia",
-    "target": "mất trí nhớ",
-    "reviewed": false
+    "target": "mất trí nhớ"
   },
   {
     "source": "car accident",
-    "target": "tai nạn xe",
-    "reviewed": false
+    "target": "tai nạn xe"
   },
   {
     "source": "bodyguard",
-    "target": "vệ sĩ",
-    "reviewed": false
+    "target": "vệ sĩ"
   },
   {
     "source": "secretary",
-    "target": "thư ký",
-    "reviewed": false
+    "target": "thư ký"
   },
   {
     "source": "butler",
-    "target": "quản gia",
-    "reviewed": false
+    "target": "quản gia"
   },
   {
     "source": "love rival",
-    "target": "tình địch",
-    "reviewed": false
+    "target": "tình địch"
   },
   {
     "source": "female lead",
-    "target": "nữ chính",
-    "reviewed": false
+    "target": "nữ chính"
   },
   {
     "source": "male lead",
-    "target": "nam chính",
-    "reviewed": false
+    "target": "nam chính"
   },
   {
     "source": "second male lead",
-    "target": "nam phụ",
-    "reviewed": false
+    "target": "nam phụ"
   },
   {
     "source": "villainess",
-    "target": "nữ phụ độc ác",
-    "reviewed": false
+    "target": "nữ phụ độc ác"
   },
   {
     "source": "gold digger",
-    "target": "kẻ đào mỏ",
-    "reviewed": false
+    "target": "kẻ đào mỏ"
   },
   {
     "source": "playboy",
-    "target": "công tử đào hoa",
-    "reviewed": false
+    "target": "công tử đào hoa"
   },
   {
     "source": "spoil you",
-    "target": "nuông chiều em",
-    "reviewed": false
+    "target": "nuông chiều em"
   },
   {
     "source": "chase after",
-    "target": "theo đuổi",
-    "reviewed": false
+    "target": "theo đuổi"
   },
   {
     "source": "make up",
-    "target": "làm lành",
-    "reviewed": false
+    "target": "làm lành"
   },
   {
     "source": "remarry",
-    "target": "tái hôn",
-    "reviewed": false
+    "target": "tái hôn"
   },
   {
     "source": "elope",
-    "target": "bỏ trốn để kết hôn",
-    "reviewed": false
+    "target": "bỏ trốn để kết hôn"
   },
   {
     "source": "heartbroken",
-    "target": "đau lòng",
-    "reviewed": false
+    "target": "đau lòng"
   },
   {
     "source": "unrequited love",
-    "target": "tình đơn phương",
-    "reviewed": false
+    "target": "tình đơn phương"
   },
   {
     "source": "mistress",
-    "target": "tình nhân",
-    "reviewed": false
+    "target": "tình nhân"
   },
   {
     "source": "affair",
-    "target": "ngoại tình",
-    "reviewed": false
+    "target": "ngoại tình"
   },
   {
     "source": "fake girlfriend",
-    "target": "bạn gái giả",
-    "reviewed": false
+    "target": "bạn gái giả"
   },
   {
     "source": "fake boyfriend",
-    "target": "bạn trai giả",
-    "reviewed": false
+    "target": "bạn trai giả"
   },
   {
     "source": "fake couple",
-    "target": "cặp đôi giả",
-    "reviewed": false
+    "target": "cặp đôi giả"
   },
   {
     "source": "marry into a wealthy family",
-    "target": "gả vào hào môn",
-    "reviewed": false
+    "target": "gả vào hào môn"
   },
   {
     "source": "possessive",
-    "target": "chiếm hữu",
-    "reviewed": false
+    "target": "chiếm hữu"
   },
   {
     "source": "cold and aloof",
-    "target": "lạnh lùng xa cách",
-    "reviewed": false
+    "target": "lạnh lùng xa cách"
   }
 ]

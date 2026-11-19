@@ -441,167 +441,134 @@
   },
   {
     "source": "毒枭",
-    "target": "trùm ma túy",
-    "reviewed": false
+    "target": "trùm ma túy"
   },
   {
     "source": "毒品",
-    "target": "ma túy",
-    "reviewed": false
+    "target": "ma túy"
   },
   {
     "source": "缉毒",
-    "target": "truy quét ma túy",
-    "reviewed": false
+    "target": "truy quét ma túy"
   },
   {
     "source": "线报",
-    "target": "tin báo",
-    "reviewed": false
+    "target": "tin báo"
   },
   {
     "source": "黑社会",
-    "target": "xã hội đen",
-    "reviewed": false
+    "target": "xã hội đen"
   },
   {
     "source": "堂口",
-    "target": "đường khẩu, chi nhánh băng đảng",
-    "reviewed": false
+    "target": "đường khẩu, chi nhánh băng đảng"
   },
   {
     "source": "社团",
-    "target": "hội đoàn, băng nhóm",
-    "reviewed": false
+    "target": "hội đoàn, băng nhóm"
   },
   {
     "source": "龙头",
-    "target": "đại ca đứng đầu băng nhóm",
-    "reviewed": false
+    "target": "đại ca đứng đầu băng nhóm"
   },
   {
     "source": "话事人",
-    "target": "người nắm quyền quyết định",
-    "reviewed": false
+    "target": "người nắm quyền quyết định"
   },
   {
     "source": "马仔",
-    "target": "đàn em, tay sai",
-    "reviewed": false
+    "target": "đàn em, tay sai"
   },
   {
     "source": "杀手",
-    "target": "sát thủ",
-    "reviewed": false
+    "target": "sát thủ"
   },
   {
     "source": "买凶",
-    "target": "thuê người giết",
-    "reviewed": false
+    "target": "thuê người giết"
   },
   {
     "source": "雇凶",
-    "target": "thuê sát thủ",
-    "reviewed": false
+    "target": "thuê sát thủ"
   },
   {
     "source": "赎金",
-    "target": "tiền chuộc",
-    "reviewed": false
+    "target": "tiền chuộc"
   },
   {
     "source": "劫匪",
-    "target": "kẻ cướp",
-    "reviewed": false
+    "target": "kẻ cướp"
   },
   {
     "source": "窃贼",
-    "target": "kẻ trộm",
-    "reviewed": false
+    "target": "kẻ trộm"
   },
   {
     "source": "扒手",
-    "target": "kẻ móc túi",
-    "reviewed": false
+    "target": "kẻ móc túi"
   },
   {
     "source": "赌场",
-    "target": "sòng bạc",
-    "reviewed": false
+    "target": "sòng bạc"
   },
   {
     "source": "高利贷",
-    "target": "cho vay nặng lãi",
-    "reviewed": false
+    "target": "cho vay nặng lãi"
   },
   {
     "source": "追债",
-    "target": "đòi nợ",
-    "reviewed": false
+    "target": "đòi nợ"
   },
   {
     "source": "欠债",
-    "target": "nợ nần",
-    "reviewed": false
+    "target": "nợ nần"
   },
   {
     "source": "保释",
-    "target": "tại ngoại",
-    "reviewed": false
+    "target": "tại ngoại"
   },
   {
     "source": "缓刑",
-    "target": "án treo",
-    "reviewed": false
+    "target": "án treo"
   },
   {
     "source": "越狱",
-    "target": "vượt ngục",
-    "reviewed": false
+    "target": "vượt ngục"
   },
   {
     "source": "狱警",
-    "target": "cai ngục",
-    "reviewed": false
+    "target": "cai ngục"
   },
   {
     "source": "案底",
-    "target": "tiền án",
-    "reviewed": false
+    "target": "tiền án"
   },
   {
     "source": "前科",
-    "target": "tiền sự",
-    "reviewed": false
+    "target": "tiền sự"
   },
   {
     "source": "黑市",
-    "target": "chợ đen",
-    "reviewed": false
+    "target": "chợ đen"
   },
   {
     "source": "假钞",
-    "target": "tiền giả",
-    "reviewed": false
+    "target": "tiền giả"
   },
   {
     "source": "行贿",
-    "target": "đưa hối lộ",
-    "reviewed": false
+    "target": "đưa hối lộ"
   },
   {
     "source": "受贿",
-    "target": "nhận hối lộ",
-    "reviewed": false
+    "target": "nhận hối lộ"
   },
   {
     "source": "保护伞",
-    "target": "kẻ chống lưng",
-    "reviewed": false
+    "target": "kẻ chống lưng"
   },
   {
     "source": "洗白",
-    "target": "rửa sạch",
-    "reviewed": false
+    "target": "rửa sạch"
   }
 ]

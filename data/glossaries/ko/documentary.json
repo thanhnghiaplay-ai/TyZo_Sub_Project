@@ -1,362 +1,290 @@
 [
   {
     "source": "다큐멘터리",
-    "target": "phim tài liệu",
-    "reviewed": false
+    "target": "phim tài liệu"
   },
   {
     "source": "내레이션",
-    "target": "lời dẫn",
-    "reviewed": false
+    "target": "lời dẫn"
   },
   {
     "source": "취재",
-    "target": "phỏng vấn, thu thập tư liệu thực địa",
-    "reviewed": false
+    "target": "phỏng vấn, thu thập tư liệu thực địa"
   },
   {
     "source": "밀착 취재",
-    "target": "bám sát ghi hình",
-    "reviewed": false
+    "target": "bám sát ghi hình"
   },
   {
     "source": "증언",
-    "target": "lời chứng",
-    "reviewed": false
+    "target": "lời chứng"
   },
   {
     "source": "유가족",
-    "target": "thân nhân người đã khuất",
-    "reviewed": false
+    "target": "thân nhân người đã khuất"
   },
   {
     "source": "피해자",
-    "target": "nạn nhân",
-    "reviewed": false
+    "target": "nạn nhân"
   },
   {
     "source": "가해자",
-    "target": "thủ phạm, bên gây hại",
-    "reviewed": false
+    "target": "thủ phạm, bên gây hại"
   },
   {
     "source": "생존자",
-    "target": "người sống sót",
-    "reviewed": false
+    "target": "người sống sót"
   },
   {
     "source": "목격자",
-    "target": "nhân chứng",
-    "reviewed": false
+    "target": "nhân chứng"
   },
   {
     "source": "참사",
-    "target": "thảm họa",
-    "reviewed": false
+    "target": "thảm họa"
   },
   {
     "source": "세월호",
-    "target": "phà Sewol",
-    "reviewed": false
+    "target": "phà Sewol"
   },
   {
     "source": "이태원 참사",
-    "target": "thảm họa Itaewon",
-    "reviewed": false
+    "target": "thảm họa Itaewon"
   },
   {
     "source": "재난",
-    "target": "thiên tai, tai họa",
-    "reviewed": false
+    "target": "thiên tai, tai họa"
   },
   {
     "source": "복구",
-    "target": "khôi phục",
-    "reviewed": false
+    "target": "khôi phục"
   },
   {
     "source": "이재민",
-    "target": "người bị nạn",
-    "reviewed": false
+    "target": "người bị nạn"
   },
   {
     "source": "멸종위기종",
-    "target": "loài nguy cấp",
-    "reviewed": false
+    "target": "loài nguy cấp"
   },
   {
     "source": "생태계",
-    "target": "hệ sinh thái",
-    "reviewed": false
+    "target": "hệ sinh thái"
   },
   {
     "source": "세계유산",
-    "target": "di sản thế giới",
-    "reviewed": false
+    "target": "di sản thế giới"
   },
   {
     "source": "무형문화재",
-    "target": "di sản văn hóa phi vật thể",
-    "reviewed": false
+    "target": "di sản văn hóa phi vật thể"
   },
   {
     "source": "인간문화재",
-    "target": "nghệ nhân quốc gia (Nhân gian văn hóa tài)",
-    "reviewed": false
+    "target": "nghệ nhân quốc gia (Nhân gian văn hóa tài)"
   },
   {
     "source": "장인",
-    "target": "nghệ nhân",
-    "reviewed": false
+    "target": "nghệ nhân"
   },
   {
     "source": "전통시장",
-    "target": "chợ truyền thống",
-    "reviewed": false
+    "target": "chợ truyền thống"
   },
   {
     "source": "노포",
-    "target": "quán lâu đời",
-    "reviewed": false
+    "target": "quán lâu đời"
   },
   {
     "source": "후계자",
-    "target": "người kế nghiệp",
-    "reviewed": false
+    "target": "người kế nghiệp"
   },
   {
     "source": "귀농",
-    "target": "về quê làm nông",
-    "reviewed": false
+    "target": "về quê làm nông"
   },
   {
     "source": "귀촌",
-    "target": "về quê sinh sống",
-    "reviewed": false
+    "target": "về quê sinh sống"
   },
   {
     "source": "해녀",
-    "target": "hải nữ (nữ thợ lặn Jeju)",
-    "reviewed": false
+    "target": "hải nữ (nữ thợ lặn Jeju)"
   },
   {
     "source": "재연 영상",
-    "target": "cảnh dựng lại",
-    "reviewed": false
+    "target": "cảnh dựng lại"
   },
   {
     "source": "자료 화면",
-    "target": "hình ảnh tư liệu",
-    "reviewed": false
+    "target": "hình ảnh tư liệu"
   },
   {
     "source": "전문가",
-    "target": "chuyên gia",
-    "reviewed": false
+    "target": "chuyên gia"
   },
   {
     "source": "연구자",
-    "target": "nhà nghiên cứu",
-    "reviewed": false
+    "target": "nhà nghiên cứu"
   },
   {
     "source": "진상",
-    "target": "sự thật đằng sau",
-    "reviewed": false
+    "target": "sự thật đằng sau"
   },
   {
     "source": "이면",
-    "target": "mặt khuất",
-    "reviewed": false
+    "target": "mặt khuất"
   },
   {
     "source": "추적",
-    "target": "truy tìm theo dõi",
-    "reviewed": false
+    "target": "truy tìm theo dõi"
   },
   {
     "source": "검증",
-    "target": "kiểm chứng",
-    "reviewed": false
+    "target": "kiểm chứng"
   },
   {
     "source": "탐사보도",
-    "target": "phóng sự điều tra",
-    "reviewed": false
+    "target": "phóng sự điều tra"
   },
   {
     "source": "고발",
-    "target": "tố cáo",
-    "reviewed": false
+    "target": "tố cáo"
   },
   {
     "source": "심층 취재",
-    "target": "điều tra chuyên sâu",
-    "reviewed": false
+    "target": "điều tra chuyên sâu"
   },
   {
     "source": "휴먼 다큐",
-    "target": "phim tài liệu nhân văn",
-    "reviewed": false
+    "target": "phim tài liệu nhân văn"
   },
   {
     "source": "촬영",
-    "target": "quay phim",
-    "reviewed": false
+    "target": "quay phim"
   },
   {
     "source": "인터뷰",
-    "target": "phỏng vấn",
-    "reviewed": false
+    "target": "phỏng vấn"
   },
   {
     "source": "자막",
-    "target": "phụ đề",
-    "reviewed": false
+    "target": "phụ đề"
   },
   {
     "source": "사료",
-    "target": "sử liệu",
-    "reviewed": false
+    "target": "sử liệu"
   },
   {
     "source": "고문서",
-    "target": "cổ thư",
-    "reviewed": false
+    "target": "cổ thư"
   },
   {
     "source": "유적",
-    "target": "di tích",
-    "reviewed": false
+    "target": "di tích"
   },
   {
     "source": "발굴",
-    "target": "khai quật",
-    "reviewed": false
+    "target": "khai quật"
   },
   {
     "source": "화석",
-    "target": "hóa thạch",
-    "reviewed": false
+    "target": "hóa thạch"
   },
   {
     "source": "기후변화",
-    "target": "biến đổi khí hậu",
-    "reviewed": false
+    "target": "biến đổi khí hậu"
   },
   {
     "source": "온난화",
-    "target": "nóng lên",
-    "reviewed": false
+    "target": "nóng lên"
   },
   {
     "source": "삼림 벌채",
-    "target": "chặt rừng",
-    "reviewed": false
+    "target": "chặt rừng"
   },
   {
     "source": "해양 오염",
-    "target": "ô nhiễm biển",
-    "reviewed": false
+    "target": "ô nhiễm biển"
   },
   {
     "source": "철새",
-    "target": "chim di cư",
-    "reviewed": false
+    "target": "chim di cư"
   },
   {
     "source": "멸종",
-    "target": "tuyệt chủng",
-    "reviewed": false
+    "target": "tuyệt chủng"
   },
   {
     "source": "보호구역",
-    "target": "khu bảo tồn",
-    "reviewed": false
+    "target": "khu bảo tồn"
   },
   {
     "source": "국립공원",
-    "target": "vườn quốc gia",
-    "reviewed": false
+    "target": "vườn quốc gia"
   },
   {
     "source": "화산",
-    "target": "núi lửa",
-    "reviewed": false
+    "target": "núi lửa"
   },
   {
     "source": "지진",
-    "target": "động đất",
-    "reviewed": false
+    "target": "động đất"
   },
   {
     "source": "태풍",
-    "target": "bão",
-    "reviewed": false
+    "target": "bão"
   },
   {
     "source": "홍수",
-    "target": "lũ",
-    "reviewed": false
+    "target": "lũ"
   },
   {
     "source": "가뭄",
-    "target": "hạn",
-    "reviewed": false
+    "target": "hạn"
   },
   {
     "source": "난민",
-    "target": "người tị nạn",
-    "reviewed": false
+    "target": "người tị nạn"
   },
   {
     "source": "원주민",
-    "target": "người bản địa",
-    "reviewed": false
+    "target": "người bản địa"
   },
   {
     "source": "독립",
-    "target": "độc lập",
-    "reviewed": false
+    "target": "độc lập"
   },
   {
     "source": "혁명",
-    "target": "cách mạng",
-    "reviewed": false
+    "target": "cách mạng"
   },
   {
     "source": "왕실",
-    "target": "vương thất",
-    "reviewed": false
+    "target": "vương thất"
   },
   {
     "source": "연표",
-    "target": "niên biểu",
-    "reviewed": false
+    "target": "niên biểu"
   },
   {
     "source": "드론 촬영",
-    "target": "quay bằng drone",
-    "reviewed": false
+    "target": "quay bằng drone"
   },
   {
     "source": "음성 해설",
-    "target": "thuyết minh",
-    "reviewed": false
+    "target": "thuyết minh"
   },
   {
     "source": "현장 취재",
-    "target": "tác nghiệp hiện trường",
-    "reviewed": false
+    "target": "tác nghiệp hiện trường"
   },
   {
     "source": "재연 드라마",
-    "target": "dựng lại thành phim",
-    "reviewed": false
+    "target": "dựng lại thành phim"
   },
   {
     "source": "고증",
-    "target": "khảo chứng",
-    "reviewed": false
+    "target": "khảo chứng"
   }
 ]

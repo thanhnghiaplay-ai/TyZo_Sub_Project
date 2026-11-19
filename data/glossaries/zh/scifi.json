@@ -419,227 +419,182 @@
   },
   {
     "source": "科幻",
-    "target": "khoa học viễn tưởng",
-    "reviewed": false
+    "target": "khoa học viễn tưởng"
   },
   {
     "source": "未来",
-    "target": "tương lai",
-    "reviewed": false
+    "target": "tương lai"
   },
   {
     "source": "宇宙",
-    "target": "vũ trụ",
-    "reviewed": false
+    "target": "vũ trụ"
   },
   {
     "source": "宇航员",
-    "target": "phi hành gia",
-    "reviewed": false
+    "target": "phi hành gia"
   },
   {
     "source": "太空",
-    "target": "không gian vũ trụ",
-    "reviewed": false
+    "target": "không gian vũ trụ"
   },
   {
     "source": "空间站",
-    "target": "trạm vũ trụ",
-    "reviewed": false
+    "target": "trạm vũ trụ"
   },
   {
     "source": "星球",
-    "target": "hành tinh",
-    "reviewed": false
+    "target": "hành tinh"
   },
   {
     "source": "母星",
-    "target": "hành tinh mẹ",
-    "reviewed": false
+    "target": "hành tinh mẹ"
   },
   {
     "source": "星舰",
-    "target": "phi thuyền vũ trụ",
-    "reviewed": false
+    "target": "phi thuyền vũ trụ"
   },
   {
     "source": "跃迁",
-    "target": "nhảy không gian",
-    "reviewed": false
+    "target": "nhảy không gian"
   },
   {
     "source": "曲速",
-    "target": "tốc độ ánh sáng, warp",
-    "reviewed": false
+    "target": "tốc độ ánh sáng, warp"
   },
   {
     "source": "虫洞",
-    "target": "hố giun",
-    "reviewed": false
+    "target": "hố giun"
   },
   {
     "source": "黑洞",
-    "target": "hố đen",
-    "reviewed": false
+    "target": "hố đen"
   },
   {
     "source": "引力",
-    "target": "lực hấp dẫn",
-    "reviewed": false
+    "target": "lực hấp dẫn"
   },
   {
     "source": "反重力",
-    "target": "phản trọng lực",
-    "reviewed": false
+    "target": "phản trọng lực"
   },
   {
     "source": "量子",
-    "target": "lượng tử",
-    "reviewed": false
+    "target": "lượng tử"
   },
   {
     "source": "纳米",
-    "target": "nano",
-    "reviewed": false
+    "target": "nano"
   },
   {
     "source": "克隆",
-    "target": "nhân bản",
-    "reviewed": false
+    "target": "nhân bản"
   },
   {
     "source": "改造人",
-    "target": "người cải tạo",
-    "reviewed": false
+    "target": "người cải tạo"
   },
   {
     "source": "仿生人",
-    "target": "người máy mô phỏng",
-    "reviewed": false
+    "target": "người máy mô phỏng"
   },
   {
     "source": "机甲",
-    "target": "cơ giáp",
-    "reviewed": false
+    "target": "cơ giáp"
   },
   {
     "source": "无人机",
-    "target": "máy bay không người lái",
-    "reviewed": false
+    "target": "máy bay không người lái"
   },
   {
     "source": "激光",
-    "target": "tia laser",
-    "reviewed": false
+    "target": "tia laser"
   },
   {
     "source": "能量",
-    "target": "năng lượng",
-    "reviewed": false
+    "target": "năng lượng"
   },
   {
     "source": "核心",
-    "target": "lõi",
-    "reviewed": false
+    "target": "lõi"
   },
   {
     "source": "程序",
-    "target": "chương trình",
-    "reviewed": false
+    "target": "chương trình"
   },
   {
     "source": "代码",
-    "target": "mã code",
-    "reviewed": false
+    "target": "mã code"
   },
   {
     "source": "黑客",
-    "target": "hacker",
-    "reviewed": false
+    "target": "hacker"
   },
   {
     "source": "虚拟现实",
-    "target": "thực tế ảo",
-    "reviewed": false
+    "target": "thực tế ảo"
   },
   {
     "source": "数据库",
-    "target": "cơ sở dữ liệu",
-    "reviewed": false
+    "target": "cơ sở dữ liệu"
   },
   {
     "source": "文明",
-    "target": "nền văn minh",
-    "reviewed": false
+    "target": "nền văn minh"
   },
   {
     "source": "入侵",
-    "target": "xâm lược",
-    "reviewed": false
+    "target": "xâm lược"
   },
   {
     "source": "地球",
-    "target": "Trái Đất",
-    "reviewed": false
+    "target": "Trái Đất"
   },
   {
     "source": "人类",
-    "target": "loài người",
-    "reviewed": false
+    "target": "loài người"
   },
   {
     "source": "灭绝",
-    "target": "tuyệt chủng",
-    "reviewed": false
+    "target": "tuyệt chủng"
   },
   {
     "source": "冷冻",
-    "target": "đông lạnh",
-    "reviewed": false
+    "target": "đông lạnh"
   },
   {
     "source": "休眠",
-    "target": "ngủ đông",
-    "reviewed": false
+    "target": "ngủ đông"
   },
   {
     "source": "时间线",
-    "target": "dòng thời gian",
-    "reviewed": false
+    "target": "dòng thời gian"
   },
   {
     "source": "悖论",
-    "target": "nghịch lý",
-    "reviewed": false
+    "target": "nghịch lý"
   },
   {
     "source": "实验室",
-    "target": "phòng thí nghiệm",
-    "reviewed": false
+    "target": "phòng thí nghiệm"
   },
   {
     "source": "觉醒",
-    "target": "thức tỉnh",
-    "reviewed": false
+    "target": "thức tỉnh"
   },
   {
     "source": "进化者",
-    "target": "người tiến hóa",
-    "reviewed": false
+    "target": "người tiến hóa"
   },
   {
     "source": "能量护盾",
-    "target": "khiên năng lượng",
-    "reviewed": false
+    "target": "khiên năng lượng"
   },
   {
     "source": "警报",
-    "target": "báo động",
-    "reviewed": false
+    "target": "báo động"
   },
   {
     "source": "启动",
-    "target": "khởi động",
-    "reviewed": false
+    "target": "khởi động"
   }
 ]

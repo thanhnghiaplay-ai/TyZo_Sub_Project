@@ -322,7 +322,25 @@ export function GlossaryBoard() {
       )}
       {stats && stats.langs.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Thống kê số mục</h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-sm font-semibold">Thống kê số mục</h3>
+            <button
+              type="button"
+              className="min-tap rounded-full border border-line px-3 text-xs disabled:opacity-40"
+              disabled={busy || stats.langs.every((item) => item.draft === 0)}
+              onClick={async () => {
+                const draft = stats.langs.reduce((sum, item) => sum + item.draft, 0);
+                if (!(await askConfirm({ title: "Duyệt hết?", text: `Đánh dấu đã duyệt ${draft} mục chưa duyệt, mọi ngôn ngữ. Không cần xem từng câu.`, confirmLabel: "Duyệt hết" }))) return;
+                void run(async () => {
+                  const result = await setGlossaryReviewed({ data: { all: true, reviewed: true } });
+                  setNote(`Đã duyệt ${result.changed} mục.`);
+                  await load();
+                });
+              }}
+            >
+              Duyệt hết
+            </button>
+          </div>
           {stats.langs.map((item) => (
             <details key={item.lang} className="text-sm" open={item.lang === lang}>
               <summary className="cursor-pointer">{LANGS.find(([id]) => id === item.lang)?.[1] ?? item.lang}: {statLine(item.total, item.reviewed)}</summary>

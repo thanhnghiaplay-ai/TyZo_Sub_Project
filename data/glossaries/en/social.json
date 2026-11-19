@@ -1,457 +1,366 @@
 [
   {
     "source": "social class",
-    "target": "tầng lớp xã hội",
-    "reviewed": false
+    "target": "tầng lớp xã hội"
   },
   {
     "source": "wealth gap",
-    "target": "chênh lệch giàu nghèo",
-    "reviewed": false
+    "target": "chênh lệch giàu nghèo"
   },
   {
     "source": "working class",
-    "target": "tầng lớp lao động",
-    "reviewed": false
+    "target": "tầng lớp lao động"
   },
   {
     "source": "middle class",
-    "target": "tầng lớp trung lưu",
-    "reviewed": false
+    "target": "tầng lớp trung lưu"
   },
   {
     "source": "layoffs",
-    "target": "sa thải hàng loạt",
-    "reviewed": false
+    "target": "sa thải hàng loạt"
   },
   {
     "source": "unemployment",
-    "target": "thất nghiệp",
-    "reviewed": false
+    "target": "thất nghiệp"
   },
   {
     "source": "overtime",
-    "target": "tăng ca",
-    "reviewed": false
+    "target": "tăng ca"
   },
   {
     "source": "burnout",
-    "target": "kiệt sức",
-    "reviewed": false
+    "target": "kiệt sức"
   },
   {
     "source": "mortgage",
-    "target": "khoản vay mua nhà",
-    "reviewed": false
+    "target": "khoản vay mua nhà"
   },
   {
     "source": "bullying",
-    "target": "bắt nạt",
-    "reviewed": false
+    "target": "bắt nạt"
   },
   {
     "source": "cyberbullying",
-    "target": "bắt nạt trên mạng",
-    "reviewed": false
+    "target": "bắt nạt trên mạng"
   },
   {
     "source": "domestic violence",
-    "target": "bạo lực gia đình",
-    "reviewed": false
+    "target": "bạo lực gia đình"
   },
   {
     "source": "depression",
-    "target": "trầm cảm",
-    "reviewed": false
+    "target": "trầm cảm"
   },
   {
     "source": "anxiety",
-    "target": "lo âu",
-    "reviewed": false
+    "target": "lo âu"
   },
   {
     "source": "therapy",
-    "target": "trị liệu tâm lý",
-    "reviewed": false
+    "target": "trị liệu tâm lý"
   },
   {
     "source": "therapist",
-    "target": "nhà trị liệu tâm lý",
-    "reviewed": false
+    "target": "nhà trị liệu tâm lý"
   },
   {
     "source": "counselor",
-    "target": "chuyên viên tư vấn",
-    "reviewed": false
+    "target": "chuyên viên tư vấn"
   },
   {
     "source": "trauma",
-    "target": "chấn thương tâm lý",
-    "reviewed": false
+    "target": "chấn thương tâm lý"
   },
   {
     "source": "panic attack",
-    "target": "cơn hoảng loạn",
-    "reviewed": false
+    "target": "cơn hoảng loạn"
   },
   {
     "source": "dysfunctional family",
-    "target": "gia đình rạn nứt",
-    "reviewed": false
+    "target": "gia đình rạn nứt"
   },
   {
     "source": "peer pressure",
-    "target": "áp lực từ bạn bè đồng trang lứa",
-    "reviewed": false
+    "target": "áp lực từ bạn bè đồng trang lứa"
   },
   {
     "source": "stereotype",
-    "target": "định kiến",
-    "reviewed": false
+    "target": "định kiến"
   },
   {
     "source": "discrimination",
-    "target": "phân biệt đối xử",
-    "reviewed": false
+    "target": "phân biệt đối xử"
   },
   {
     "source": "prejudice",
-    "target": "thành kiến",
-    "reviewed": false
+    "target": "thành kiến"
   },
   {
     "source": "public opinion",
-    "target": "dư luận",
-    "reviewed": false
+    "target": "dư luận"
   },
   {
     "source": "social media",
-    "target": "mạng xã hội",
-    "reviewed": false
+    "target": "mạng xã hội"
   },
   {
     "source": "going viral",
-    "target": "lan truyền chóng mặt",
-    "reviewed": false
+    "target": "lan truyền chóng mặt"
   },
   {
     "source": "scandal",
-    "target": "bê bối",
-    "reviewed": false
+    "target": "bê bối"
   },
   {
     "source": "whistleblower",
-    "target": "người tố giác",
-    "reviewed": false
+    "target": "người tố giác"
   },
   {
     "source": "corruption",
-    "target": "tham nhũng",
-    "reviewed": false
+    "target": "tham nhũng"
   },
   {
     "source": "bribe",
-    "target": "hối lộ",
-    "reviewed": false
+    "target": "hối lộ"
   },
   {
     "source": "protest",
-    "target": "cuộc biểu tình",
-    "reviewed": false
+    "target": "cuộc biểu tình"
   },
   {
     "source": "labor union",
-    "target": "công đoàn",
-    "reviewed": false
+    "target": "công đoàn"
   },
   {
     "source": "immigrant",
-    "target": "người nhập cư",
-    "reviewed": false
+    "target": "người nhập cư"
   },
   {
     "source": "refugee",
-    "target": "người tị nạn",
-    "reviewed": false
+    "target": "người tị nạn"
   },
   {
     "source": "homeless",
-    "target": "vô gia cư",
-    "reviewed": false
+    "target": "vô gia cư"
   },
   {
     "source": "addiction",
-    "target": "chứng nghiện",
-    "reviewed": false
+    "target": "chứng nghiện"
   },
   {
     "source": "rehab",
-    "target": "trại cai nghiện",
-    "reviewed": false
+    "target": "trại cai nghiện"
   },
   {
     "source": "support group",
-    "target": "nhóm hỗ trợ",
-    "reviewed": false
+    "target": "nhóm hỗ trợ"
   },
   {
     "source": "social worker",
-    "target": "nhân viên công tác xã hội",
-    "reviewed": false
+    "target": "nhân viên công tác xã hội"
   },
   {
     "source": "welfare",
-    "target": "phúc lợi xã hội",
-    "reviewed": false
+    "target": "phúc lợi xã hội"
   },
   {
     "source": "foster care",
-    "target": "chăm sóc nuôi dưỡng tạm thời",
-    "reviewed": false
+    "target": "chăm sóc nuôi dưỡng tạm thời"
   },
   {
     "source": "single mother",
-    "target": "mẹ đơn thân",
-    "reviewed": false
+    "target": "mẹ đơn thân"
   },
   {
     "source": "inequality",
-    "target": "bất bình đẳng",
-    "reviewed": false
+    "target": "bất bình đẳng"
   },
   {
     "source": "minority",
-    "target": "nhóm thiểu số",
-    "reviewed": false
+    "target": "nhóm thiểu số"
   },
   {
     "source": "go viral",
-    "target": "lan truyền chóng mặt",
-    "reviewed": false
+    "target": "lan truyền chóng mặt"
   },
   {
     "source": "cancel culture",
-    "target": "văn hóa tẩy chay",
-    "reviewed": false
+    "target": "văn hóa tẩy chay"
   },
   {
     "source": "stigma",
-    "target": "sự kỳ thị",
-    "reviewed": false
+    "target": "sự kỳ thị"
   },
   {
     "source": "gambling",
-    "target": "cờ bạc",
-    "reviewed": false
+    "target": "cờ bạc"
   },
   {
     "source": "debt",
-    "target": "nợ nần",
-    "reviewed": false
+    "target": "nợ nần"
   },
   {
     "source": "eviction",
-    "target": "bị đuổi khỏi nhà",
-    "reviewed": false
+    "target": "bị đuổi khỏi nhà"
   },
   {
     "source": "layoff",
-    "target": "sa thải hàng loạt",
-    "reviewed": false
+    "target": "sa thải hàng loạt"
   },
   {
     "source": "fired",
-    "target": "bị sa thải",
-    "reviewed": false
+    "target": "bị sa thải"
   },
   {
     "source": "promotion",
-    "target": "thăng chức",
-    "reviewed": false
+    "target": "thăng chức"
   },
   {
     "source": "workplace harassment",
-    "target": "quấy rối nơi làm việc",
-    "reviewed": false
+    "target": "quấy rối nơi làm việc"
   },
   {
     "source": "orphan",
-    "target": "trẻ mồ côi",
-    "reviewed": false
+    "target": "trẻ mồ côi"
   },
   {
     "source": "adoption",
-    "target": "nhận con nuôi",
-    "reviewed": false
+    "target": "nhận con nuôi"
   },
   {
     "source": "volunteer",
-    "target": "tình nguyện viên",
-    "reviewed": false
+    "target": "tình nguyện viên"
   },
   {
     "source": "charity",
-    "target": "từ thiện",
-    "reviewed": false
+    "target": "từ thiện"
   },
   {
     "source": "strike",
-    "target": "đình công",
-    "reviewed": false
+    "target": "đình công"
   },
   {
     "source": "union",
-    "target": "công đoàn",
-    "reviewed": false
+    "target": "công đoàn"
   },
   {
     "source": "lawsuit",
-    "target": "vụ kiện",
-    "reviewed": false
+    "target": "vụ kiện"
   },
   {
     "source": "verdict",
-    "target": "phán quyết",
-    "reviewed": false
+    "target": "phán quyết"
   },
   {
     "source": "bail",
-    "target": "tiền bảo lãnh",
-    "reviewed": false
+    "target": "tiền bảo lãnh"
   },
   {
     "source": "prison",
-    "target": "nhà tù",
-    "reviewed": false
+    "target": "nhà tù"
   },
   {
     "source": "parole",
-    "target": "tạm tha",
-    "reviewed": false
+    "target": "tạm tha"
   },
   {
     "source": "corrupt official",
-    "target": "quan chức tham nhũng",
-    "reviewed": false
+    "target": "quan chức tham nhũng"
   },
   {
     "source": "petition",
-    "target": "kiến nghị",
-    "reviewed": false
+    "target": "kiến nghị"
   },
   {
     "source": "reputation",
-    "target": "danh tiếng",
-    "reviewed": false
+    "target": "danh tiếng"
   },
   {
     "source": "gossip",
-    "target": "đàm tiếu",
-    "reviewed": false
+    "target": "đàm tiếu"
   },
   {
     "source": "poverty",
-    "target": "nghèo đói",
-    "reviewed": false
+    "target": "nghèo đói"
   },
   {
     "source": "income gap",
-    "target": "chênh lệch thu nhập",
-    "reviewed": false
+    "target": "chênh lệch thu nhập"
   },
   {
     "source": "gender equality",
-    "target": "bình đẳng giới",
-    "reviewed": false
+    "target": "bình đẳng giới"
   },
   {
     "source": "sexual harassment",
-    "target": "quấy rối tình dục",
-    "reviewed": false
+    "target": "quấy rối tình dục"
   },
   {
     "source": "mental health",
-    "target": "sức khỏe tâm thần",
-    "reviewed": false
+    "target": "sức khỏe tâm thần"
   },
   {
     "source": "loneliness",
-    "target": "cô đơn",
-    "reviewed": false
+    "target": "cô đơn"
   },
   {
     "source": "elderly care",
-    "target": "chăm sóc người cao tuổi",
-    "reviewed": false
+    "target": "chăm sóc người cao tuổi"
   },
   {
     "source": "nursing home",
-    "target": "viện dưỡng lão",
-    "reviewed": false
+    "target": "viện dưỡng lão"
   },
   {
     "source": "migrant worker",
-    "target": "lao động nhập cư",
-    "reviewed": false
+    "target": "lao động nhập cư"
   },
   {
     "source": "tenant",
-    "target": "người thuê nhà",
-    "reviewed": false
+    "target": "người thuê nhà"
   },
   {
     "source": "landlord",
-    "target": "chủ nhà",
-    "reviewed": false
+    "target": "chủ nhà"
   },
   {
     "source": "tax evasion",
-    "target": "trốn thuế",
-    "reviewed": false
+    "target": "trốn thuế"
   },
   {
     "source": "bribery",
-    "target": "hối lộ",
-    "reviewed": false
+    "target": "hối lộ"
   },
   {
     "source": "embezzlement",
-    "target": "tham ô",
-    "reviewed": false
+    "target": "tham ô"
   },
   {
     "source": "fake news",
-    "target": "tin giả",
-    "reviewed": false
+    "target": "tin giả"
   },
   {
     "source": "paparazzi",
-    "target": "giới săn ảnh",
-    "reviewed": false
+    "target": "giới săn ảnh"
   },
   {
     "source": "influencer",
-    "target": "người có sức ảnh hưởng",
-    "reviewed": false
+    "target": "người có sức ảnh hưởng"
   },
   {
     "source": "livestream",
-    "target": "phát trực tiếp",
-    "reviewed": false
+    "target": "phát trực tiếp"
   },
   {
     "source": "privacy",
-    "target": "quyền riêng tư",
-    "reviewed": false
+    "target": "quyền riêng tư"
   },
   {
     "source": "generation gap",
-    "target": "khoảng cách thế hệ",
-    "reviewed": false
+    "target": "khoảng cách thế hệ"
   },
   {
     "source": "rat race",
-    "target": "cuộc chạy đua mưu sinh",
-    "reviewed": false
+    "target": "cuộc chạy đua mưu sinh"
   }
 ]

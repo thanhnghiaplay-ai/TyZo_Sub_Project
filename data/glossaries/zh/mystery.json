@@ -441,167 +441,134 @@
   },
   {
     "source": "疑犯",
-    "target": "nghi phạm",
-    "reviewed": false
+    "target": "nghi phạm"
   },
   {
     "source": "犯人",
-    "target": "phạm nhân, thủ phạm",
-    "reviewed": false
+    "target": "phạm nhân, thủ phạm"
   },
   {
     "source": "凶案",
-    "target": "vụ án giết người",
-    "reviewed": false
+    "target": "vụ án giết người"
   },
   {
     "source": "命案",
-    "target": "án mạng",
-    "reviewed": false
+    "target": "án mạng"
   },
   {
     "source": "谋杀",
-    "target": "mưu sát",
-    "reviewed": false
+    "target": "mưu sát"
   },
   {
     "source": "他杀",
-    "target": "bị giết",
-    "reviewed": false
+    "target": "bị giết"
   },
   {
     "source": "自杀",
-    "target": "tự sát",
-    "reviewed": false
+    "target": "tự sát"
   },
   {
     "source": "意外死亡",
-    "target": "chết do tai nạn",
-    "reviewed": false
+    "target": "chết do tai nạn"
   },
   {
     "source": "毒杀",
-    "target": "đầu độc",
-    "reviewed": false
+    "target": "đầu độc"
   },
   {
     "source": "中毒",
-    "target": "trúng độc",
-    "reviewed": false
+    "target": "trúng độc"
   },
   {
     "source": "毒药",
-    "target": "thuốc độc",
-    "reviewed": false
+    "target": "thuốc độc"
   },
   {
     "source": "验尸",
-    "target": "khám nghiệm tử thi",
-    "reviewed": false
+    "target": "khám nghiệm tử thi"
   },
   {
     "source": "痕迹",
-    "target": "dấu vết",
-    "reviewed": false
+    "target": "dấu vết"
   },
   {
     "source": "血迹",
-    "target": "vết máu",
-    "reviewed": false
+    "target": "vết máu"
   },
   {
     "source": "搜查",
-    "target": "khám xét",
-    "reviewed": false
+    "target": "khám xét"
   },
   {
     "source": "取证",
-    "target": "thu thập chứng cứ",
-    "reviewed": false
+    "target": "thu thập chứng cứ"
   },
   {
     "source": "笔录",
-    "target": "biên bản lấy lời khai",
-    "reviewed": false
+    "target": "biên bản lấy lời khai"
   },
   {
     "source": "盘问",
-    "target": "tra hỏi",
-    "reviewed": false
+    "target": "tra hỏi"
   },
   {
     "source": "排查",
-    "target": "rà soát",
-    "reviewed": false
+    "target": "rà soát"
   },
   {
     "source": "嫌疑最大",
-    "target": "đáng nghi nhất",
-    "reviewed": false
+    "target": "đáng nghi nhất"
   },
   {
     "source": "作案手法",
-    "target": "thủ đoạn gây án",
-    "reviewed": false
+    "target": "thủ đoạn gây án"
   },
   {
     "source": "作案时间",
-    "target": "thời gian gây án",
-    "reviewed": false
+    "target": "thời gian gây án"
   },
   {
     "source": "案发现场",
-    "target": "hiện trường vụ án",
-    "reviewed": false
+    "target": "hiện trường vụ án"
   },
   {
     "source": "报案",
-    "target": "trình báo",
-    "reviewed": false
+    "target": "trình báo"
   },
   {
     "source": "立案",
-    "target": "lập án",
-    "reviewed": false
+    "target": "lập án"
   },
   {
     "source": "结案",
-    "target": "kết án",
-    "reviewed": false
+    "target": "kết án"
   },
   {
     "source": "重案组",
-    "target": "tổ trọng án",
-    "reviewed": false
+    "target": "tổ trọng án"
   },
   {
     "source": "刑侦",
-    "target": "hình sự trinh sát",
-    "reviewed": false
+    "target": "hình sự trinh sát"
   },
   {
     "source": "拘留",
-    "target": "tạm giữ",
-    "reviewed": false
+    "target": "tạm giữ"
   },
   {
     "source": "逮捕",
-    "target": "bắt giữ",
-    "reviewed": false
+    "target": "bắt giữ"
   },
   {
     "source": "蛛丝马迹",
-    "target": "dấu vết nhỏ",
-    "reviewed": false
+    "target": "dấu vết nhỏ"
   },
   {
     "source": "破绽",
-    "target": "sơ hở",
-    "reviewed": false
+    "target": "sơ hở"
   },
   {
     "source": "疑点",
-    "target": "điểm đáng ngờ",
-    "reviewed": false
+    "target": "điểm đáng ngờ"
   }
 ]

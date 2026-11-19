@@ -1,438 +1,351 @@
 [
   {
     "source": "narrator",
-    "target": "người dẫn chuyện",
-    "reviewed": false
+    "target": "người dẫn chuyện"
   },
   {
     "source": "footage",
-    "target": "thước phim",
-    "reviewed": false
+    "target": "thước phim"
   },
   {
     "source": "archive footage",
-    "target": "tư liệu phim lưu trữ",
-    "reviewed": false
+    "target": "tư liệu phim lưu trữ"
   },
   {
     "source": "expert",
-    "target": "chuyên gia",
-    "reviewed": false
+    "target": "chuyên gia"
   },
   {
     "source": "researcher",
-    "target": "nhà nghiên cứu",
-    "reviewed": false
+    "target": "nhà nghiên cứu"
   },
   {
     "source": "archaeologist",
-    "target": "nhà khảo cổ",
-    "reviewed": false
+    "target": "nhà khảo cổ"
   },
   {
     "source": "excavation",
-    "target": "cuộc khai quật",
-    "reviewed": false
+    "target": "cuộc khai quật"
   },
   {
     "source": "artifact",
     "target": "cổ vật",
-    "note": "Cách khác: hiện vật",
-    "reviewed": false
+    "note": "Cách khác: hiện vật"
   },
   {
     "source": "ancient civilization",
-    "target": "nền văn minh cổ đại",
-    "reviewed": false
+    "target": "nền văn minh cổ đại"
   },
   {
     "source": "dynasty",
-    "target": "triều đại",
-    "reviewed": false
+    "target": "triều đại"
   },
   {
     "source": "century",
-    "target": "thế kỷ",
-    "reviewed": false
+    "target": "thế kỷ"
   },
   {
     "source": "bce",
-    "target": "trước Công nguyên",
-    "reviewed": false
+    "target": "trước Công nguyên"
   },
   {
     "source": "ecosystem",
-    "target": "hệ sinh thái",
-    "reviewed": false
+    "target": "hệ sinh thái"
   },
   {
     "source": "habitat",
-    "target": "môi trường sống",
-    "reviewed": false
+    "target": "môi trường sống"
   },
   {
     "source": "endangered species",
-    "target": "loài nguy cấp",
-    "reviewed": false
+    "target": "loài nguy cấp"
   },
   {
     "source": "extinction",
-    "target": "sự tuyệt chủng",
-    "reviewed": false
+    "target": "sự tuyệt chủng"
   },
   {
     "source": "migration",
-    "target": "cuộc di cư",
-    "reviewed": false
+    "target": "cuộc di cư"
   },
   {
     "source": "predator",
-    "target": "động vật săn mồi",
-    "reviewed": false
+    "target": "động vật săn mồi"
   },
   {
     "source": "prey",
-    "target": "con mồi",
-    "reviewed": false
+    "target": "con mồi"
   },
   {
     "source": "wildlife",
-    "target": "động vật hoang dã",
-    "reviewed": false
+    "target": "động vật hoang dã"
   },
   {
     "source": "rainforest",
-    "target": "rừng mưa nhiệt đới",
-    "reviewed": false
+    "target": "rừng mưa nhiệt đới"
   },
   {
     "source": "climate change",
-    "target": "biến đổi khí hậu",
-    "reviewed": false
+    "target": "biến đổi khí hậu"
   },
   {
     "source": "global warming",
-    "target": "nóng lên toàn cầu",
-    "reviewed": false
+    "target": "nóng lên toàn cầu"
   },
   {
     "source": "greenhouse gas",
-    "target": "khí nhà kính",
-    "reviewed": false
+    "target": "khí nhà kính"
   },
   {
     "source": "carbon emissions",
-    "target": "khí thải carbon",
-    "reviewed": false
+    "target": "khí thải carbon"
   },
   {
     "source": "fossil fuels",
-    "target": "nhiên liệu hóa thạch",
-    "reviewed": false
+    "target": "nhiên liệu hóa thạch"
   },
   {
     "source": "renewable energy",
-    "target": "năng lượng tái tạo",
-    "reviewed": false
+    "target": "năng lượng tái tạo"
   },
   {
     "source": "sustainability",
-    "target": "tính bền vững",
-    "reviewed": false
+    "target": "tính bền vững"
   },
   {
     "source": "biodiversity",
-    "target": "đa dạng sinh học",
-    "reviewed": false
+    "target": "đa dạng sinh học"
   },
   {
     "source": "conservation",
-    "target": "công tác bảo tồn",
-    "reviewed": false
+    "target": "công tác bảo tồn"
   },
   {
     "source": "pollution",
-    "target": "ô nhiễm",
-    "reviewed": false
+    "target": "ô nhiễm"
   },
   {
     "source": "deforestation",
-    "target": "nạn phá rừng",
-    "reviewed": false
+    "target": "nạn phá rừng"
   },
   {
     "source": "evidence",
-    "target": "bằng chứng",
-    "reviewed": false
+    "target": "bằng chứng"
   },
   {
     "source": "according to",
-    "target": "theo",
-    "reviewed": false
+    "target": "theo"
   },
   {
     "source": "statistics show",
-    "target": "số liệu thống kê cho thấy",
-    "reviewed": false
+    "target": "số liệu thống kê cho thấy"
   },
   {
     "source": "universe",
-    "target": "vũ trụ",
-    "reviewed": false
+    "target": "vũ trụ"
   },
   {
     "source": "galaxy",
-    "target": "thiên hà",
-    "reviewed": false
+    "target": "thiên hà"
   },
   {
     "source": "black hole",
-    "target": "hố đen",
-    "reviewed": false
+    "target": "hố đen"
   },
   {
     "source": "solar system",
-    "target": "hệ Mặt Trời",
-    "reviewed": false
+    "target": "hệ Mặt Trời"
   },
   {
     "source": "evolution",
-    "target": "sự tiến hóa",
-    "reviewed": false
+    "target": "sự tiến hóa"
   },
   {
     "source": "world heritage site",
-    "target": "di sản thế giới",
-    "reviewed": false
+    "target": "di sản thế giới"
   },
   {
     "source": "cultural heritage",
-    "target": "di sản văn hóa",
-    "reviewed": false
+    "target": "di sản văn hóa"
   },
   {
     "source": "traditional craft",
-    "target": "nghề thủ công truyền thống",
-    "reviewed": false
+    "target": "nghề thủ công truyền thống"
   },
   {
     "source": "population",
-    "target": "dân số",
-    "reviewed": false
+    "target": "dân số"
   },
   {
     "source": "according to scientists",
-    "target": "theo các nhà khoa học",
-    "reviewed": false
+    "target": "theo các nhà khoa học"
   },
   {
     "source": "researchers",
-    "target": "các nhà nghiên cứu",
-    "reviewed": false
+    "target": "các nhà nghiên cứu"
   },
   {
     "source": "species",
-    "target": "loài",
-    "reviewed": false
+    "target": "loài"
   },
   {
     "source": "endangered",
-    "target": "có nguy cơ tuyệt chủng",
-    "reviewed": false
+    "target": "có nguy cơ tuyệt chủng"
   },
   {
     "source": "fossil",
-    "target": "hóa thạch",
-    "reviewed": false
+    "target": "hóa thạch"
   },
   {
     "source": "empire",
-    "target": "đế quốc",
-    "reviewed": false
+    "target": "đế quốc"
   },
   {
     "source": "eyewitness",
-    "target": "nhân chứng",
-    "reviewed": false
+    "target": "nhân chứng"
   },
   {
     "source": "survivor",
-    "target": "người sống sót",
-    "reviewed": false
+    "target": "người sống sót"
   },
   {
     "source": "investigation",
-    "target": "cuộc điều tra",
-    "reviewed": false
+    "target": "cuộc điều tra"
   },
   {
     "source": "whistleblower",
-    "target": "người tố giác",
-    "reviewed": false
+    "target": "người tố giác"
   },
   {
     "source": "corruption",
-    "target": "tham nhũng",
-    "reviewed": false
+    "target": "tham nhũng"
   },
   {
     "source": "unemployment",
-    "target": "thất nghiệp",
-    "reviewed": false
+    "target": "thất nghiệp"
   },
   {
     "source": "inflation",
-    "target": "lạm phát",
-    "reviewed": false
+    "target": "lạm phát"
   },
   {
     "source": "expedition",
-    "target": "cuộc thám hiểm",
-    "reviewed": false
+    "target": "cuộc thám hiểm"
   },
   {
     "source": "glacier",
-    "target": "sông băng",
-    "reviewed": false
+    "target": "sông băng"
   },
   {
     "source": "coral reef",
-    "target": "rạn san hô",
-    "reviewed": false
+    "target": "rạn san hô"
   },
   {
     "source": "deep sea",
-    "target": "biển sâu",
-    "reviewed": false
+    "target": "biển sâu"
   },
   {
     "source": "poaching",
-    "target": "săn trộm",
-    "reviewed": false
+    "target": "săn trộm"
   },
   {
     "source": "pandemic",
-    "target": "đại dịch",
-    "reviewed": false
+    "target": "đại dịch"
   },
   {
     "source": "vaccine",
-    "target": "vắc-xin",
-    "reviewed": false
+    "target": "vắc-xin"
   },
   {
     "source": "scientist",
-    "target": "nhà khoa học",
-    "reviewed": false
+    "target": "nhà khoa học"
   },
   {
     "source": "historian",
-    "target": "nhà sử học",
-    "reviewed": false
+    "target": "nhà sử học"
   },
   {
     "source": "biologist",
-    "target": "nhà sinh vật học",
-    "reviewed": false
+    "target": "nhà sinh vật học"
   },
   {
     "source": "geologist",
-    "target": "nhà địa chất",
-    "reviewed": false
+    "target": "nhà địa chất"
   },
   {
     "source": "astronomer",
-    "target": "nhà thiên văn",
-    "reviewed": false
+    "target": "nhà thiên văn"
   },
   {
     "source": "volcano",
-    "target": "núi lửa",
-    "reviewed": false
+    "target": "núi lửa"
   },
   {
     "source": "earthquake",
-    "target": "động đất",
-    "reviewed": false
+    "target": "động đất"
   },
   {
     "source": "tsunami",
-    "target": "sóng thần",
-    "reviewed": false
+    "target": "sóng thần"
   },
   {
     "source": "drought",
-    "target": "hạn hán",
-    "reviewed": false
+    "target": "hạn hán"
   },
   {
     "source": "famine",
-    "target": "nạn đói",
-    "reviewed": false
+    "target": "nạn đói"
   },
   {
     "source": "world war",
-    "target": "chiến tranh thế giới",
-    "reviewed": false
+    "target": "chiến tranh thế giới"
   },
   {
     "source": "cold war",
-    "target": "chiến tranh lạnh",
-    "reviewed": false
+    "target": "chiến tranh lạnh"
   },
   {
     "source": "industrial revolution",
-    "target": "cách mạng công nghiệp",
-    "reviewed": false
+    "target": "cách mạng công nghiệp"
   },
   {
     "source": "ancient tomb",
-    "target": "lăng mộ cổ",
-    "reviewed": false
+    "target": "lăng mộ cổ"
   },
   {
     "source": "mummy",
-    "target": "xác ướp",
-    "reviewed": false
+    "target": "xác ướp"
   },
   {
     "source": "pyramid",
-    "target": "kim tự tháp",
-    "reviewed": false
+    "target": "kim tự tháp"
   },
   {
     "source": "ice age",
-    "target": "kỷ băng hà",
-    "reviewed": false
+    "target": "kỷ băng hà"
   },
   {
     "source": "dinosaur",
-    "target": "khủng long",
-    "reviewed": false
+    "target": "khủng long"
   },
   {
     "source": "food chain",
-    "target": "chuỗi thức ăn",
-    "reviewed": false
+    "target": "chuỗi thức ăn"
   },
   {
     "source": "mating season",
-    "target": "mùa sinh sản",
-    "reviewed": false
+    "target": "mùa sinh sản"
   },
   {
     "source": "nocturnal",
-    "target": "hoạt động về đêm",
-    "reviewed": false
+    "target": "hoạt động về đêm"
   },
   {
     "source": "tribe",
-    "target": "bộ lạc",
-    "reviewed": false
+    "target": "bộ lạc"
   },
   {
     "source": "indigenous people",
-    "target": "người bản địa",
-    "reviewed": false
+    "target": "người bản địa"
   }
 ]

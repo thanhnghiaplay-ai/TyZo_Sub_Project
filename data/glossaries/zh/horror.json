@@ -419,187 +419,150 @@
   },
   {
     "source": "鬼屋",
-    "target": "nhà ma",
-    "reviewed": false
+    "target": "nhà ma"
   },
   {
     "source": "鬼影",
-    "target": "bóng ma",
-    "reviewed": false
+    "target": "bóng ma"
   },
   {
     "source": "鬼火",
-    "target": "ma trơi",
-    "reviewed": false
+    "target": "ma trơi"
   },
   {
     "source": "幽灵",
-    "target": "u linh, bóng ma",
-    "reviewed": false
+    "target": "u linh, bóng ma"
   },
   {
     "source": "亡魂",
-    "target": "vong hồn",
-    "reviewed": false
+    "target": "vong hồn"
   },
   {
     "source": "孤魂野鬼",
-    "target": "cô hồn dã quỷ",
-    "reviewed": false
+    "target": "cô hồn dã quỷ"
   },
   {
     "source": "索命",
-    "target": "đòi mạng",
-    "reviewed": false
+    "target": "đòi mạng"
   },
   {
     "source": "怨念",
-    "target": "oán niệm",
-    "reviewed": false
+    "target": "oán niệm"
   },
   {
     "source": "阴魂不散",
-    "target": "oan hồn không tan",
-    "reviewed": false
+    "target": "oan hồn không tan"
   },
   {
     "source": "作祟",
-    "target": "quấy phá",
-    "reviewed": false
+    "target": "quấy phá"
   },
   {
     "source": "邪灵",
-    "target": "tà linh",
-    "reviewed": false
+    "target": "tà linh"
   },
   {
     "source": "恶魔",
-    "target": "ác quỷ",
-    "reviewed": false
+    "target": "ác quỷ"
   },
   {
     "source": "驱魔",
-    "target": "trừ tà, trừ quỷ",
-    "reviewed": false
+    "target": "trừ tà, trừ quỷ"
   },
   {
     "source": "法师",
-    "target": "pháp sư",
-    "reviewed": false
+    "target": "pháp sư"
   },
   {
     "source": "符纸",
-    "target": "giấy bùa",
-    "reviewed": false
+    "target": "giấy bùa"
   },
   {
     "source": "桃木剑",
-    "target": "kiếm gỗ đào",
-    "reviewed": false
+    "target": "kiếm gỗ đào"
   },
   {
     "source": "黑狗血",
-    "target": "máu chó đen",
-    "reviewed": false
+    "target": "máu chó đen"
   },
   {
     "source": "糯米",
-    "target": "gạo nếp",
-    "reviewed": false
+    "target": "gạo nếp"
   },
   {
     "source": "阴阳眼",
-    "target": "âm dương nhãn",
-    "reviewed": false
+    "target": "âm dương nhãn"
   },
   {
     "source": "通灵",
-    "target": "thông linh",
-    "reviewed": false
+    "target": "thông linh"
   },
   {
     "source": "灵异",
-    "target": "linh dị",
-    "reviewed": false
+    "target": "linh dị"
   },
   {
     "source": "灵媒",
-    "target": "đồng cốt, người thông linh",
-    "reviewed": false
+    "target": "đồng cốt, người thông linh"
   },
   {
     "source": "降头",
-    "target": "bùa ngải, hàng đầu",
-    "reviewed": false
+    "target": "bùa ngải, hàng đầu"
   },
   {
     "source": "巫术",
-    "target": "vu thuật",
-    "reviewed": false
+    "target": "vu thuật"
   },
   {
     "source": "邪术",
-    "target": "tà thuật",
-    "reviewed": false
+    "target": "tà thuật"
   },
   {
     "source": "献祭",
-    "target": "hiến tế",
-    "reviewed": false
+    "target": "hiến tế"
   },
   {
     "source": "祭坛",
-    "target": "bàn tế",
-    "reviewed": false
+    "target": "bàn tế"
   },
   {
     "source": "午夜",
-    "target": "nửa đêm",
-    "reviewed": false
+    "target": "nửa đêm"
   },
   {
     "source": "半夜",
-    "target": "giữa đêm",
-    "reviewed": false
+    "target": "giữa đêm"
   },
   {
     "source": "脚步声",
-    "target": "tiếng bước chân",
-    "reviewed": false
+    "target": "tiếng bước chân"
   },
   {
     "source": "敲门声",
-    "target": "tiếng gõ cửa",
-    "reviewed": false
+    "target": "tiếng gõ cửa"
   },
   {
     "source": "哭声",
-    "target": "tiếng khóc",
-    "reviewed": false
+    "target": "tiếng khóc"
   },
   {
     "source": "低语",
-    "target": "tiếng thì thầm",
-    "reviewed": false
+    "target": "tiếng thì thầm"
   },
   {
     "source": "古宅",
-    "target": "nhà cổ",
-    "reviewed": false
+    "target": "nhà cổ"
   },
   {
     "source": "荒村",
-    "target": "làng hoang",
-    "reviewed": false
+    "target": "làng hoang"
   },
   {
     "source": "废墟",
-    "target": "phế tích",
-    "reviewed": false
+    "target": "phế tích"
   },
   {
     "source": "阴冷",
-    "target": "lạnh lẽo âm u",
-    "reviewed": false
+    "target": "lạnh lẽo âm u"
   }
 ]

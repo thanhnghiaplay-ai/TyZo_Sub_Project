@@ -1,444 +1,356 @@
 [
   {
     "source": "班主任",
-    "target": "giáo viên chủ nhiệm",
-    "reviewed": false
+    "target": "giáo viên chủ nhiệm"
   },
   {
     "source": "校长",
-    "target": "hiệu trưởng",
-    "reviewed": false
+    "target": "hiệu trưởng"
   },
   {
     "source": "教导主任",
     "target": "chủ nhiệm giáo vụ",
-    "note": "Cách khác: giám thị",
-    "reviewed": false
+    "note": "Cách khác: giám thị"
   },
   {
     "source": "同学",
-    "target": "bạn học",
-    "reviewed": false
+    "target": "bạn học"
   },
   {
     "source": "班长",
-    "target": "lớp trưởng",
-    "reviewed": false
+    "target": "lớp trưởng"
   },
   {
     "source": "学霸",
-    "target": "học bá",
-    "reviewed": false
+    "target": "học bá"
   },
   {
     "source": "学渣",
-    "target": "học dốt",
-    "reviewed": false
+    "target": "học dốt"
   },
   {
     "source": "学长",
-    "target": "anh khóa trên",
-    "reviewed": false
+    "target": "anh khóa trên"
   },
   {
     "source": "学姐",
-    "target": "chị khóa trên",
-    "reviewed": false
+    "target": "chị khóa trên"
   },
   {
     "source": "学弟",
-    "target": "đàn em khóa dưới",
-    "reviewed": false
+    "target": "đàn em khóa dưới"
   },
   {
     "source": "学妹",
-    "target": "đàn em khóa dưới (nữ)",
-    "reviewed": false
+    "target": "đàn em khóa dưới (nữ)"
   },
   {
     "source": "校花",
-    "target": "hoa khôi của trường",
-    "reviewed": false
+    "target": "hoa khôi của trường"
   },
   {
     "source": "校草",
-    "target": "hotboy của trường",
-    "reviewed": false
+    "target": "hotboy của trường"
   },
   {
     "source": "转学生",
-    "target": "học sinh chuyển trường",
-    "reviewed": false
+    "target": "học sinh chuyển trường"
   },
   {
     "source": "高考",
     "target": "kỳ thi đại học",
-    "note": "Cách khác: cao khảo",
-    "reviewed": false
+    "note": "Cách khác: cao khảo"
   },
   {
     "source": "中考",
-    "target": "kỳ thi vào lớp 10",
-    "reviewed": false
+    "target": "kỳ thi vào lớp 10"
   },
   {
     "source": "期末考试",
-    "target": "thi cuối kỳ",
-    "reviewed": false
+    "target": "thi cuối kỳ"
   },
   {
     "source": "月考",
-    "target": "thi tháng",
-    "reviewed": false
+    "target": "thi tháng"
   },
   {
     "source": "成绩",
-    "target": "điểm số",
-    "reviewed": false
+    "target": "điểm số"
   },
   {
     "source": "排名",
-    "target": "xếp hạng",
-    "reviewed": false
+    "target": "xếp hạng"
   },
   {
     "source": "作业",
-    "target": "bài tập về nhà",
-    "reviewed": false
+    "target": "bài tập về nhà"
   },
   {
     "source": "补习",
-    "target": "học thêm",
-    "reviewed": false
+    "target": "học thêm"
   },
   {
     "source": "晚自习",
-    "target": "tự học buổi tối",
-    "reviewed": false
+    "target": "tự học buổi tối"
   },
   {
     "source": "早恋",
-    "target": "yêu sớm",
-    "reviewed": false
+    "target": "yêu sớm"
   },
   {
     "source": "情书",
-    "target": "thư tình",
-    "reviewed": false
+    "target": "thư tình"
   },
   {
     "source": "暗恋",
-    "target": "thầm thương",
-    "reviewed": false
+    "target": "thầm thương"
   },
   {
     "source": "校服",
-    "target": "đồng phục",
-    "reviewed": false
+    "target": "đồng phục"
   },
   {
     "source": "操场",
-    "target": "sân trường",
-    "reviewed": false
+    "target": "sân trường"
   },
   {
     "source": "食堂",
-    "target": "căng tin",
-    "reviewed": false
+    "target": "căng tin"
   },
   {
     "source": "宿舍",
-    "target": "ký túc xá",
-    "reviewed": false
+    "target": "ký túc xá"
   },
   {
     "source": "社团",
-    "target": "câu lạc bộ",
-    "reviewed": false
+    "target": "câu lạc bộ"
   },
   {
     "source": "毕业典礼",
-    "target": "lễ tốt nghiệp",
-    "reviewed": false
+    "target": "lễ tốt nghiệp"
   },
   {
     "source": "初恋",
-    "target": "mối tình đầu",
-    "reviewed": false
+    "target": "mối tình đầu"
   },
   {
     "source": "青春",
-    "target": "thanh xuân",
-    "reviewed": false
+    "target": "thanh xuân"
   },
   {
     "source": "请家长",
-    "target": "mời phụ huynh",
-    "reviewed": false
+    "target": "mời phụ huynh"
   },
   {
     "source": "记过",
-    "target": "ghi lỗi kỷ luật",
-    "reviewed": false
+    "target": "ghi lỗi kỷ luật"
   },
   {
     "source": "留级",
-    "target": "lưu ban",
-    "reviewed": false
+    "target": "lưu ban"
   },
   {
     "source": "逃课",
-    "target": "trốn học",
-    "reviewed": false
+    "target": "trốn học"
   },
   {
     "source": "补考",
-    "target": "thi lại",
-    "reviewed": false
+    "target": "thi lại"
   },
   {
     "source": "保送",
-    "target": "tuyển thẳng",
-    "reviewed": false
+    "target": "tuyển thẳng"
   },
   {
     "source": "志愿",
-    "target": "nguyện vọng",
-    "reviewed": false
+    "target": "nguyện vọng"
   },
   {
     "source": "高三",
-    "target": "lớp 12",
-    "reviewed": false
+    "target": "lớp 12"
   },
   {
     "source": "初三",
-    "target": "lớp 9",
-    "reviewed": false
+    "target": "lớp 9"
   },
   {
     "source": "高一",
-    "target": "lớp 10",
-    "reviewed": false
+    "target": "lớp 10"
   },
   {
     "source": "老师",
-    "target": "thầy cô, giáo viên",
-    "reviewed": false
+    "target": "thầy cô, giáo viên"
   },
   {
     "source": "班级",
-    "target": "lớp",
-    "reviewed": false
+    "target": "lớp"
   },
   {
     "source": "教室",
-    "target": "phòng học",
-    "reviewed": false
+    "target": "phòng học"
   },
   {
     "source": "黑板",
-    "target": "bảng đen",
-    "reviewed": false
+    "target": "bảng đen"
   },
   {
     "source": "课本",
-    "target": "sách giáo khoa",
-    "reviewed": false
+    "target": "sách giáo khoa"
   },
   {
     "source": "上课",
-    "target": "vào học",
-    "reviewed": false
+    "target": "vào học"
   },
   {
     "source": "下课",
-    "target": "tan giờ học",
-    "reviewed": false
+    "target": "tan giờ học"
   },
   {
     "source": "放学",
-    "target": "tan học",
-    "reviewed": false
+    "target": "tan học"
   },
   {
     "source": "迟到",
-    "target": "đến muộn",
-    "reviewed": false
+    "target": "đến muộn"
   },
   {
     "source": "早读",
-    "target": "giờ đọc sáng",
-    "reviewed": false
+    "target": "giờ đọc sáng"
   },
   {
     "source": "课代表",
-    "target": "đại diện môn học",
-    "reviewed": false
+    "target": "đại diện môn học"
   },
   {
     "source": "值日",
-    "target": "trực nhật",
-    "reviewed": false
+    "target": "trực nhật"
   },
   {
     "source": "点名",
-    "target": "điểm danh",
-    "reviewed": false
+    "target": "điểm danh"
   },
   {
     "source": "罚站",
-    "target": "phạt đứng",
-    "reviewed": false
+    "target": "phạt đứng"
   },
   {
     "source": "检讨",
-    "target": "viết bản kiểm điểm",
-    "reviewed": false
+    "target": "viết bản kiểm điểm"
   },
   {
     "source": "考试",
-    "target": "thi cử",
-    "reviewed": false
+    "target": "thi cử"
   },
   {
     "source": "考砸",
-    "target": "thi hỏng",
-    "reviewed": false
+    "target": "thi hỏng"
   },
   {
     "source": "满分",
-    "target": "điểm tuyệt đối",
-    "reviewed": false
+    "target": "điểm tuyệt đối"
   },
   {
     "source": "不及格",
-    "target": "không đạt",
-    "reviewed": false
+    "target": "không đạt"
   },
   {
     "source": "年级第一",
-    "target": "đứng đầu khối",
-    "reviewed": false
+    "target": "đứng đầu khối"
   },
   {
     "source": "模拟考",
-    "target": "thi thử",
-    "reviewed": false
+    "target": "thi thử"
   },
   {
     "source": "复习",
-    "target": "ôn tập",
-    "reviewed": false
+    "target": "ôn tập"
   },
   {
     "source": "刷题",
-    "target": "làm bài tập nhiều",
-    "reviewed": false
+    "target": "làm bài tập nhiều"
   },
   {
     "source": "抄作业",
-    "target": "chép bài tập",
-    "reviewed": false
+    "target": "chép bài tập"
   },
   {
     "source": "作弊",
-    "target": "gian lận thi cử",
-    "reviewed": false
+    "target": "gian lận thi cử"
   },
   {
     "source": "抄袭",
-    "target": "đạo văn, chép bài",
-    "reviewed": false
+    "target": "đạo văn, chép bài"
   },
   {
     "source": "家长会",
-    "target": "họp phụ huynh",
-    "reviewed": false
+    "target": "họp phụ huynh"
   },
   {
     "source": "家访",
-    "target": "thăm nhà học sinh",
-    "reviewed": false
+    "target": "thăm nhà học sinh"
   },
   {
     "source": "体育课",
-    "target": "giờ thể dục",
-    "reviewed": false
+    "target": "giờ thể dục"
   },
   {
     "source": "运动会",
-    "target": "hội thao",
-    "reviewed": false
+    "target": "hội thao"
   },
   {
     "source": "艺术节",
-    "target": "lễ hội nghệ thuật",
-    "reviewed": false
+    "target": "lễ hội nghệ thuật"
   },
   {
     "source": "春游",
-    "target": "đi dã ngoại mùa xuân",
-    "reviewed": false
+    "target": "đi dã ngoại mùa xuân"
   },
   {
     "source": "军训",
-    "target": "huấn luyện quân sự",
-    "reviewed": false
+    "target": "huấn luyện quân sự"
   },
   {
     "source": "开学",
-    "target": "khai giảng",
-    "reviewed": false
+    "target": "khai giảng"
   },
   {
     "source": "毕业",
-    "target": "tốt nghiệp",
-    "reviewed": false
+    "target": "tốt nghiệp"
   },
   {
     "source": "同桌",
-    "target": "bạn cùng bàn",
-    "reviewed": false
+    "target": "bạn cùng bàn"
   },
   {
     "source": "校霸",
-    "target": "đầu gấu trường",
-    "reviewed": false
+    "target": "đầu gấu trường"
   },
   {
     "source": "欺负",
-    "target": "bắt nạt",
-    "reviewed": false
+    "target": "bắt nạt"
   },
   {
     "source": "校园",
-    "target": "khuôn viên trường",
-    "reviewed": false
+    "target": "khuôn viên trường"
   },
   {
     "source": "高二",
-    "target": "lớp 11",
-    "reviewed": false
+    "target": "lớp 11"
   },
   {
     "source": "初二",
-    "target": "lớp 8",
-    "reviewed": false
+    "target": "lớp 8"
   },
   {
     "source": "大学",
-    "target": "đại học",
-    "reviewed": false
+    "target": "đại học"
   },
   {
     "source": "考研",
-    "target": "thi cao học",
-    "reviewed": false
+    "target": "thi cao học"
   },
   {
     "source": "奖学金",
-    "target": "học bổng",
-    "reviewed": false
+    "target": "học bổng"
   }
 ]

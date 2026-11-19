@@ -430,197 +430,158 @@
   },
   {
     "source": "喜欢你",
-    "target": "thích em/anh",
-    "reviewed": false
+    "target": "thích em/anh"
   },
   {
     "source": "爱你",
-    "target": "yêu em/anh",
-    "reviewed": false
+    "target": "yêu em/anh"
   },
   {
     "source": "我爱你",
-    "target": "anh yêu em / em yêu anh",
-    "reviewed": false
+    "target": "anh yêu em / em yêu anh"
   },
   {
     "source": "想你",
-    "target": "nhớ em/anh",
-    "reviewed": false
+    "target": "nhớ em/anh"
   },
   {
     "source": "在一起",
-    "target": "ở bên nhau, yêu nhau",
-    "reviewed": false
+    "target": "ở bên nhau, yêu nhau"
   },
   {
     "source": "交往",
-    "target": "hẹn hò",
-    "reviewed": false
+    "target": "hẹn hò"
   },
   {
     "source": "热恋",
-    "target": "yêu đương nồng nhiệt",
-    "reviewed": false
+    "target": "yêu đương nồng nhiệt"
   },
   {
     "source": "恋人",
-    "target": "người yêu",
-    "reviewed": false
+    "target": "người yêu"
   },
   {
     "source": "情侣",
-    "target": "cặp đôi",
-    "reviewed": false
+    "target": "cặp đôi"
   },
   {
     "source": "情话",
-    "target": "lời tình tứ",
-    "reviewed": false
+    "target": "lời tình tứ"
   },
   {
     "source": "告白信",
-    "target": "thư tỏ tình",
-    "reviewed": false
+    "target": "thư tỏ tình"
   },
   {
     "source": "示爱",
-    "target": "bày tỏ tình yêu",
-    "reviewed": false
+    "target": "bày tỏ tình yêu"
   },
   {
     "source": "求婚",
-    "target": "cầu hôn",
-    "reviewed": false
+    "target": "cầu hôn"
   },
   {
     "source": "订情",
-    "target": "trao tín vật",
-    "reviewed": false
+    "target": "trao tín vật"
   },
   {
     "source": "定情信物",
-    "target": "tín vật đính ước",
-    "reviewed": false
+    "target": "tín vật đính ước"
   },
   {
     "source": "浪漫",
-    "target": "lãng mạn",
-    "reviewed": false
+    "target": "lãng mạn"
   },
   {
     "source": "惊喜",
-    "target": "bất ngờ",
-    "reviewed": false
+    "target": "bất ngờ"
   },
   {
     "source": "接吻",
-    "target": "hôn",
-    "reviewed": false
+    "target": "hôn"
   },
   {
     "source": "拥吻",
-    "target": "ôm hôn",
-    "reviewed": false
+    "target": "ôm hôn"
   },
   {
     "source": "脸红心跳",
-    "target": "đỏ mặt tim đập",
-    "reviewed": false
+    "target": "đỏ mặt tim đập"
   },
   {
     "source": "小鹿乱撞",
-    "target": "tim đập thình thịch",
-    "reviewed": false
+    "target": "tim đập thình thịch"
   },
   {
     "source": "一见钟情",
-    "target": "yêu từ cái nhìn đầu tiên",
-    "reviewed": false
+    "target": "yêu từ cái nhìn đầu tiên"
   },
   {
     "source": "青梅竹马",
-    "target": "thanh mai trúc mã",
-    "reviewed": false
+    "target": "thanh mai trúc mã"
   },
   {
     "source": "异地恋",
-    "target": "yêu xa",
-    "reviewed": false
+    "target": "yêu xa"
   },
   {
     "source": "异地",
-    "target": "ở xa nhau",
-    "reviewed": false
+    "target": "ở xa nhau"
   },
   {
     "source": "修成正果",
-    "target": "nên duyên, thành đôi",
-    "reviewed": false
+    "target": "nên duyên, thành đôi"
   },
   {
     "source": "白头偕老",
-    "target": "bạch đầu giai lão",
-    "reviewed": false
+    "target": "bạch đầu giai lão"
   },
   {
     "source": "海誓山盟",
-    "target": "thề non hẹn biển",
-    "reviewed": false
+    "target": "thề non hẹn biển"
   },
   {
     "source": "山盟海誓",
-    "target": "thề non hẹn biển",
-    "reviewed": false
+    "target": "thề non hẹn biển"
   },
   {
     "source": "三角恋",
-    "target": "tình tay ba",
-    "reviewed": false
+    "target": "tình tay ba"
   },
   {
     "source": "情敌",
-    "target": "tình địch",
-    "reviewed": false
+    "target": "tình địch"
   },
   {
     "source": "劈腿",
-    "target": "bắt cá hai tay",
-    "reviewed": false
+    "target": "bắt cá hai tay"
   },
   {
     "source": "出轨",
-    "target": "ngoại tình",
-    "reviewed": false
+    "target": "ngoại tình"
   },
   {
     "source": "背叛",
-    "target": "phản bội",
-    "reviewed": false
+    "target": "phản bội"
   },
   {
     "source": "心碎",
-    "target": "tan nát cõi lòng",
-    "reviewed": false
+    "target": "tan nát cõi lòng"
   },
   {
     "source": "失恋",
-    "target": "thất tình",
-    "reviewed": false
+    "target": "thất tình"
   },
   {
     "source": "放不下",
-    "target": "không buông bỏ được",
-    "reviewed": false
+    "target": "không buông bỏ được"
   },
   {
     "source": "忘不了",
-    "target": "không quên được",
-    "reviewed": false
+    "target": "không quên được"
   },
   {
     "source": "旧情复燃",
-    "target": "tình cũ lại bùng cháy",
-    "reviewed": false
+    "target": "tình cũ lại bùng cháy"
   }
 ]

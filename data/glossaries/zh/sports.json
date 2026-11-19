@@ -441,227 +441,182 @@
   },
   {
     "source": "体育",
-    "target": "thể thao",
-    "reviewed": false
+    "target": "thể thao"
   },
   {
     "source": "运动员",
-    "target": "vận động viên",
-    "reviewed": false
+    "target": "vận động viên"
   },
   {
     "source": "选手",
-    "target": "tuyển thủ",
-    "reviewed": false
+    "target": "tuyển thủ"
   },
   {
     "source": "对手",
-    "target": "đối thủ",
-    "reviewed": false
+    "target": "đối thủ"
   },
   {
     "source": "队友",
-    "target": "đồng đội",
-    "reviewed": false
+    "target": "đồng đội"
   },
   {
     "source": "主场",
-    "target": "sân nhà",
-    "reviewed": false
+    "target": "sân nhà"
   },
   {
     "source": "客场",
-    "target": "sân khách",
-    "reviewed": false
+    "target": "sân khách"
   },
   {
     "source": "开场",
-    "target": "bắt đầu trận",
-    "reviewed": false
+    "target": "bắt đầu trận"
   },
   {
     "source": "中场",
-    "target": "giữa sân, nghỉ giữa trận",
-    "reviewed": false
+    "target": "giữa sân, nghỉ giữa trận"
   },
   {
     "source": "终场",
-    "target": "hết trận",
-    "reviewed": false
+    "target": "hết trận"
   },
   {
     "source": "上半场",
-    "target": "hiệp một",
-    "reviewed": false
+    "target": "hiệp một"
   },
   {
     "source": "下半场",
-    "target": "hiệp hai",
-    "reviewed": false
+    "target": "hiệp hai"
   },
   {
     "source": "平局",
-    "target": "hòa",
-    "reviewed": false
+    "target": "hòa"
   },
   {
     "source": "加时赛",
-    "target": "hiệp phụ",
-    "reviewed": false
+    "target": "hiệp phụ"
   },
   {
     "source": "点球大战",
-    "target": "đá luân lưu",
-    "reviewed": false
+    "target": "đá luân lưu"
   },
   {
     "source": "射门",
-    "target": "sút bóng",
-    "reviewed": false
+    "target": "sút bóng"
   },
   {
     "source": "传球",
-    "target": "chuyền bóng",
-    "reviewed": false
+    "target": "chuyền bóng"
   },
   {
     "source": "盘带",
-    "target": "rê bóng",
-    "reviewed": false
+    "target": "rê bóng"
   },
   {
     "source": "抢断",
-    "target": "cướp bóng",
-    "reviewed": false
+    "target": "cướp bóng"
   },
   {
     "source": "扑救",
-    "target": "cứu thua",
-    "reviewed": false
+    "target": "cứu thua"
   },
   {
     "source": "守门员",
-    "target": "thủ môn",
-    "reviewed": false
+    "target": "thủ môn"
   },
   {
     "source": "前锋",
-    "target": "tiền đạo",
-    "reviewed": false
+    "target": "tiền đạo"
   },
   {
     "source": "后卫",
-    "target": "hậu vệ",
-    "reviewed": false
+    "target": "hậu vệ"
   },
   {
     "source": "任意球",
-    "target": "đá phạt",
-    "reviewed": false
+    "target": "đá phạt"
   },
   {
     "source": "角球",
-    "target": "phạt góc",
-    "reviewed": false
+    "target": "phạt góc"
   },
   {
     "source": "投篮",
-    "target": "ném rổ",
-    "reviewed": false
+    "target": "ném rổ"
   },
   {
     "source": "上篮",
-    "target": "lên rổ",
-    "reviewed": false
+    "target": "lên rổ"
   },
   {
     "source": "盖帽",
-    "target": "chặn bóng",
-    "reviewed": false
+    "target": "chặn bóng"
   },
   {
     "source": "抢断球",
-    "target": "cướp bóng",
-    "reviewed": false
+    "target": "cướp bóng"
   },
   {
     "source": "暂停",
-    "target": "tạm dừng",
-    "reviewed": false
+    "target": "tạm dừng"
   },
   {
     "source": "得分",
-    "target": "ghi điểm",
-    "reviewed": false
+    "target": "ghi điểm"
   },
   {
     "source": "比分",
-    "target": "tỷ số",
-    "reviewed": false
+    "target": "tỷ số"
   },
   {
     "source": "领先",
-    "target": "dẫn trước",
-    "reviewed": false
+    "target": "dẫn trước"
   },
   {
     "source": "反超",
-    "target": "vượt lên dẫn",
-    "reviewed": false
+    "target": "vượt lên dẫn"
   },
   {
     "source": "逆转",
-    "target": "lật ngược thế cờ",
-    "reviewed": false
+    "target": "lật ngược thế cờ"
   },
   {
     "source": "发力",
-    "target": "dồn sức",
-    "reviewed": false
+    "target": "dồn sức"
   },
   {
     "source": "冲刺",
-    "target": "chạy nước rút",
-    "reviewed": false
+    "target": "chạy nước rút"
   },
   {
     "source": "跑步",
-    "target": "chạy bộ",
-    "reviewed": false
+    "target": "chạy bộ"
   },
   {
     "source": "马拉松",
-    "target": "marathon",
-    "reviewed": false
+    "target": "marathon"
   },
   {
     "source": "游泳",
-    "target": "bơi lội",
-    "reviewed": false
+    "target": "bơi lội"
   },
   {
     "source": "金牌",
-    "target": "huy chương vàng",
-    "reviewed": false
+    "target": "huy chương vàng"
   },
   {
     "source": "银牌",
-    "target": "huy chương bạc",
-    "reviewed": false
+    "target": "huy chương bạc"
   },
   {
     "source": "铜牌",
-    "target": "huy chương đồng",
-    "reviewed": false
+    "target": "huy chương đồng"
   },
   {
     "source": "纪录",
-    "target": "kỷ lục",
-    "reviewed": false
+    "target": "kỷ lục"
   },
   {
     "source": "退役",
-    "target": "giải nghệ",
-    "reviewed": false
+    "target": "giải nghệ"
   }
 ]

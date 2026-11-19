@@ -2,389 +2,313 @@
   {
     "source": "grandfather",
     "target": "ông",
-    "note": "Tiếng Việt phân biệt ông nội/ông ngoại; dịch theo ngữ cảnh",
-    "reviewed": false
+    "note": "Tiếng Việt phân biệt ông nội/ông ngoại; dịch theo ngữ cảnh"
   },
   {
     "source": "grandmother",
     "target": "bà",
-    "note": "Tiếng Việt phân biệt bà nội/bà ngoại; dịch theo ngữ cảnh",
-    "reviewed": false
+    "note": "Tiếng Việt phân biệt bà nội/bà ngoại; dịch theo ngữ cảnh"
   },
   {
     "source": "grandpa",
-    "target": "ông",
-    "reviewed": false
+    "target": "ông"
   },
   {
     "source": "grandma",
-    "target": "bà",
-    "reviewed": false
+    "target": "bà"
   },
   {
     "source": "stepmother",
-    "target": "mẹ kế",
-    "reviewed": false
+    "target": "mẹ kế"
   },
   {
     "source": "stepfather",
-    "target": "bố dượng",
-    "reviewed": false
+    "target": "bố dượng"
   },
   {
     "source": "adoptive parents",
-    "target": "bố mẹ nuôi",
-    "reviewed": false
+    "target": "bố mẹ nuôi"
   },
   {
     "source": "adopted",
-    "target": "được nhận nuôi",
-    "reviewed": false
+    "target": "được nhận nuôi"
   },
   {
     "source": "foster parents",
-    "target": "bố mẹ nuôi tạm thời",
-    "reviewed": false
+    "target": "bố mẹ nuôi tạm thời"
   },
   {
     "source": "in-laws",
-    "target": "nhà thông gia",
-    "reviewed": false
+    "target": "nhà thông gia"
   },
   {
     "source": "mother-in-law",
     "target": "mẹ chồng",
-    "note": "Nếu người nói là chồng thì dịch: mẹ vợ",
-    "reviewed": false
+    "note": "Nếu người nói là chồng thì dịch: mẹ vợ"
   },
   {
     "source": "father-in-law",
     "target": "bố chồng",
-    "note": "Nếu người nói là chồng thì dịch: bố vợ",
-    "reviewed": false
+    "note": "Nếu người nói là chồng thì dịch: bố vợ"
   },
   {
     "source": "son-in-law",
-    "target": "con rể",
-    "reviewed": false
+    "target": "con rể"
   },
   {
     "source": "daughter-in-law",
-    "target": "con dâu",
-    "reviewed": false
+    "target": "con dâu"
   },
   {
     "source": "sister-in-law",
     "target": "chị dâu",
-    "note": "Tùy ngữ cảnh: chị/em dâu, chị/em chồng, chị/em vợ",
-    "reviewed": false
+    "note": "Tùy ngữ cảnh: chị/em dâu, chị/em chồng, chị/em vợ"
   },
   {
     "source": "brother-in-law",
     "target": "anh rể",
-    "note": "Tùy ngữ cảnh: anh/em rể, anh/em vợ, anh/em chồng",
-    "reviewed": false
+    "note": "Tùy ngữ cảnh: anh/em rể, anh/em vợ, anh/em chồng"
   },
   {
     "source": "uncle",
     "target": "chú",
-    "note": "Tùy ngữ cảnh: chú, bác, cậu, dượng",
-    "reviewed": false
+    "note": "Tùy ngữ cảnh: chú, bác, cậu, dượng"
   },
   {
     "source": "aunt",
     "target": "dì",
-    "note": "Tùy ngữ cảnh: dì, cô, thím, mợ, bác",
-    "reviewed": false
+    "note": "Tùy ngữ cảnh: dì, cô, thím, mợ, bác"
   },
   {
     "source": "cousin",
-    "target": "anh chị em họ",
-    "reviewed": false
+    "target": "anh chị em họ"
   },
   {
     "source": "nephew",
-    "target": "cháu trai",
-    "reviewed": false
+    "target": "cháu trai"
   },
   {
     "source": "niece",
-    "target": "cháu gái",
-    "reviewed": false
+    "target": "cháu gái"
   },
   {
     "source": "relatives",
-    "target": "họ hàng",
-    "reviewed": false
+    "target": "họ hàng"
   },
   {
     "source": "family reunion",
-    "target": "buổi họp mặt gia đình",
-    "reviewed": false
+    "target": "buổi họp mặt gia đình"
   },
   {
     "source": "family dinner",
-    "target": "bữa cơm gia đình",
-    "reviewed": false
+    "target": "bữa cơm gia đình"
   },
   {
     "source": "inheritance",
-    "target": "tài sản thừa kế",
-    "reviewed": false
+    "target": "tài sản thừa kế"
   },
   {
     "source": "heir",
-    "target": "người thừa kế",
-    "reviewed": false
+    "target": "người thừa kế"
   },
   {
     "source": "family secret",
-    "target": "bí mật gia đình",
-    "reviewed": false
+    "target": "bí mật gia đình"
   },
   {
     "source": "alimony",
-    "target": "tiền cấp dưỡng",
-    "reviewed": false
+    "target": "tiền cấp dưỡng"
   },
   {
     "source": "child support",
-    "target": "tiền nuôi con",
-    "reviewed": false
+    "target": "tiền nuôi con"
   },
   {
     "source": "single parent",
-    "target": "cha mẹ đơn thân",
-    "reviewed": false
+    "target": "cha mẹ đơn thân"
   },
   {
     "source": "newborn",
-    "target": "trẻ sơ sinh",
-    "reviewed": false
+    "target": "trẻ sơ sinh"
   },
   {
     "source": "toddler",
-    "target": "trẻ mới biết đi",
-    "reviewed": false
+    "target": "trẻ mới biết đi"
   },
   {
     "source": "siblings",
-    "target": "anh chị em ruột",
-    "reviewed": false
+    "target": "anh chị em ruột"
   },
   {
     "source": "twins",
-    "target": "cặp song sinh",
-    "reviewed": false
+    "target": "cặp song sinh"
   },
   {
     "source": "elderly parents",
-    "target": "cha mẹ già",
-    "reviewed": false
+    "target": "cha mẹ già"
   },
   {
     "source": "nursing home",
-    "target": "viện dưỡng lão",
-    "reviewed": false
+    "target": "viện dưỡng lão"
   },
   {
     "source": "funeral",
-    "target": "đám tang",
-    "reviewed": false
+    "target": "đám tang"
   },
   {
     "source": "wedding anniversary",
-    "target": "kỷ niệm ngày cưới",
-    "reviewed": false
+    "target": "kỷ niệm ngày cưới"
   },
   {
     "source": "family tree",
-    "target": "gia phả",
-    "reviewed": false
+    "target": "gia phả"
   },
   {
     "source": "custody",
-    "target": "quyền nuôi con",
-    "reviewed": false
+    "target": "quyền nuôi con"
   },
   {
     "source": "divorce",
-    "target": "ly hôn",
-    "reviewed": false
+    "target": "ly hôn"
   },
   {
     "source": "stepbrother",
-    "target": "anh trai kế",
-    "reviewed": false
+    "target": "anh trai kế"
   },
   {
     "source": "stepsister",
-    "target": "chị gái kế",
-    "reviewed": false
+    "target": "chị gái kế"
   },
   {
     "source": "half-brother",
-    "target": "anh em cùng cha khác mẹ",
-    "reviewed": false
+    "target": "anh em cùng cha khác mẹ"
   },
   {
     "source": "half-sister",
-    "target": "chị em cùng cha khác mẹ",
-    "reviewed": false
+    "target": "chị em cùng cha khác mẹ"
   },
   {
     "source": "godparent",
-    "target": "cha mẹ đỡ đầu",
-    "reviewed": false
+    "target": "cha mẹ đỡ đầu"
   },
   {
     "source": "godchild",
-    "target": "con đỡ đầu",
-    "reviewed": false
+    "target": "con đỡ đầu"
   },
   {
     "source": "godson",
-    "target": "con trai đỡ đầu",
-    "reviewed": false
+    "target": "con trai đỡ đầu"
   },
   {
     "source": "goddaughter",
-    "target": "con gái đỡ đầu",
-    "reviewed": false
+    "target": "con gái đỡ đầu"
   },
   {
     "source": "stepson",
-    "target": "con trai kế",
-    "reviewed": false
+    "target": "con trai kế"
   },
   {
     "source": "stepdaughter",
-    "target": "con gái kế",
-    "reviewed": false
+    "target": "con gái kế"
   },
   {
     "source": "family business",
-    "target": "doanh nghiệp gia đình",
-    "reviewed": false
+    "target": "doanh nghiệp gia đình"
   },
   {
     "source": "sibling rivalry",
-    "target": "tranh chấp giữa anh chị em",
-    "reviewed": false
+    "target": "tranh chấp giữa anh chị em"
   },
   {
     "source": "empty nest",
-    "target": "tổ ấm trống",
-    "reviewed": false
+    "target": "tổ ấm trống"
   },
   {
     "source": "family gathering",
-    "target": "họp mặt gia đình",
-    "reviewed": false
+    "target": "họp mặt gia đình"
   },
   {
     "source": "last will",
-    "target": "di chúc",
-    "reviewed": false
+    "target": "di chúc"
   },
   {
     "source": "estate",
-    "target": "di sản",
-    "reviewed": false
+    "target": "di sản"
   },
   {
     "source": "trust fund",
-    "target": "quỹ ủy thác",
-    "reviewed": false
+    "target": "quỹ ủy thác"
   },
   {
     "source": "family feud",
-    "target": "mâu thuẫn gia đình",
-    "reviewed": false
+    "target": "mâu thuẫn gia đình"
   },
   {
     "source": "blood relative",
-    "target": "người thân ruột thịt",
-    "reviewed": false
+    "target": "người thân ruột thịt"
   },
   {
     "source": "extended family",
-    "target": "đại gia đình",
-    "reviewed": false
+    "target": "đại gia đình"
   },
   {
     "source": "nuclear family",
-    "target": "gia đình hạt nhân",
-    "reviewed": false
+    "target": "gia đình hạt nhân"
   },
   {
     "source": "single mom",
-    "target": "mẹ đơn thân",
-    "reviewed": false
+    "target": "mẹ đơn thân"
   },
   {
     "source": "single dad",
-    "target": "bố đơn thân",
-    "reviewed": false
+    "target": "bố đơn thân"
   },
   {
     "source": "blended family",
-    "target": "gia đình hỗn hợp",
-    "reviewed": false
+    "target": "gia đình hỗn hợp"
   },
   {
     "source": "family portrait",
-    "target": "ảnh gia đình",
-    "reviewed": false
+    "target": "ảnh gia đình"
   },
   {
     "source": "family tradition",
-    "target": "truyền thống gia đình",
-    "reviewed": false
+    "target": "truyền thống gia đình"
   },
   {
     "source": "family heirloom",
-    "target": "gia bảo",
-    "reviewed": false
+    "target": "gia bảo"
   },
   {
     "source": "family curse",
-    "target": "lời nguyền gia đình",
-    "reviewed": false
+    "target": "lời nguyền gia đình"
   },
   {
     "source": "family doctor",
-    "target": "bác sĩ gia đình",
-    "reviewed": false
+    "target": "bác sĩ gia đình"
   },
   {
     "source": "family friend",
-    "target": "bạn của gia đình",
-    "reviewed": false
+    "target": "bạn của gia đình"
   },
   {
     "source": "family vacation",
-    "target": "kỳ nghỉ gia đình",
-    "reviewed": false
+    "target": "kỳ nghỉ gia đình"
   },
   {
     "source": "family meeting",
-    "target": "họp gia đình",
-    "reviewed": false
+    "target": "họp gia đình"
   },
   {
     "source": "family bond",
-    "target": "sợi dây gia đình",
-    "reviewed": false
+    "target": "sợi dây gia đình"
   },
   {
     "source": "parental leave",
-    "target": "nghỉ chăm con",
-    "reviewed": false
+    "target": "nghỉ chăm con"
   },
   {
     "source": "child care",
-    "target": "chăm sóc trẻ",
-    "reviewed": false
+    "target": "chăm sóc trẻ"
   }
 ]

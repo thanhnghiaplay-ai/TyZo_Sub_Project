@@ -441,202 +441,162 @@
   },
   {
     "source": "抑郁症",
-    "target": "trầm cảm",
-    "reviewed": false
+    "target": "trầm cảm"
   },
   {
     "source": "焦虑症",
-    "target": "rối loạn lo âu",
-    "reviewed": false
+    "target": "rối loạn lo âu"
   },
   {
     "source": "惊恐发作",
-    "target": "cơn hoảng loạn",
-    "reviewed": false
+    "target": "cơn hoảng loạn"
   },
   {
     "source": "精神病",
-    "target": "bệnh tâm thần",
-    "reviewed": false
+    "target": "bệnh tâm thần"
   },
   {
     "source": "精神科",
-    "target": "khoa tâm thần",
-    "reviewed": false
+    "target": "khoa tâm thần"
   },
   {
     "source": "心理咨询",
-    "target": "tư vấn tâm lý",
-    "reviewed": false
+    "target": "tư vấn tâm lý"
   },
   {
     "source": "心理治疗",
-    "target": "trị liệu tâm lý",
-    "reviewed": false
+    "target": "trị liệu tâm lý"
   },
   {
     "source": "心理阴影",
-    "target": "bóng ma tâm lý",
-    "reviewed": false
+    "target": "bóng ma tâm lý"
   },
   {
     "source": "童年阴影",
-    "target": "bóng ma tuổi thơ",
-    "reviewed": false
+    "target": "bóng ma tuổi thơ"
   },
   {
     "source": "噩梦",
-    "target": "ác mộng",
-    "reviewed": false
+    "target": "ác mộng"
   },
   {
     "source": "梦魇",
-    "target": "cơn ác mộng",
-    "reviewed": false
+    "target": "cơn ác mộng"
   },
   {
     "source": "幻觉",
-    "target": "ảo giác",
-    "reviewed": false
+    "target": "ảo giác"
   },
   {
     "source": "幻想",
-    "target": "tưởng tượng, ảo tưởng",
-    "reviewed": false
+    "target": "tưởng tượng, ảo tưởng"
   },
   {
     "source": "错觉",
-    "target": "cảm giác sai lệch",
-    "reviewed": false
+    "target": "cảm giác sai lệch"
   },
   {
     "source": "记忆",
-    "target": "ký ức",
-    "reviewed": false
+    "target": "ký ức"
   },
   {
     "source": "失忆症",
-    "target": "chứng mất trí nhớ",
-    "reviewed": false
+    "target": "chứng mất trí nhớ"
   },
   {
     "source": "回忆",
-    "target": "hồi tưởng",
-    "reviewed": false
+    "target": "hồi tưởng"
   },
   {
     "source": "闪回",
-    "target": "hồi tưởng chớp nhoáng",
-    "reviewed": false
+    "target": "hồi tưởng chớp nhoáng"
   },
   {
     "source": "双重人格",
-    "target": "nhân cách kép",
-    "reviewed": false
+    "target": "nhân cách kép"
   },
   {
     "source": "多重人格",
-    "target": "đa nhân cách",
-    "reviewed": false
+    "target": "đa nhân cách"
   },
   {
     "source": "自我怀疑",
-    "target": "tự nghi ngờ bản thân",
-    "reviewed": false
+    "target": "tự nghi ngờ bản thân"
   },
   {
     "source": "自我否定",
-    "target": "tự phủ nhận bản thân",
-    "reviewed": false
+    "target": "tự phủ nhận bản thân"
   },
   {
     "source": "自欺欺人",
-    "target": "tự lừa dối mình",
-    "reviewed": false
+    "target": "tự lừa dối mình"
   },
   {
     "source": "逃避",
-    "target": "trốn tránh",
-    "reviewed": false
+    "target": "trốn tránh"
   },
   {
     "source": "压力",
-    "target": "áp lực",
-    "reviewed": false
+    "target": "áp lực"
   },
   {
     "source": "情绪失控",
-    "target": "mất kiểm soát cảm xúc",
-    "reviewed": false
+    "target": "mất kiểm soát cảm xúc"
   },
   {
     "source": "愤怒",
-    "target": "phẫn nộ",
-    "reviewed": false
+    "target": "phẫn nộ"
   },
   {
     "source": "恐惧",
-    "target": "sợ hãi",
-    "reviewed": false
+    "target": "sợ hãi"
   },
   {
     "source": "绝望",
-    "target": "tuyệt vọng",
-    "reviewed": false
+    "target": "tuyệt vọng"
   },
   {
     "source": "无助",
-    "target": "bất lực",
-    "reviewed": false
+    "target": "bất lực"
   },
   {
     "source": "心魔",
-    "target": "tâm ma, nỗi ám ảnh",
-    "reviewed": false
+    "target": "tâm ma, nỗi ám ảnh"
   },
   {
     "source": "阴影",
-    "target": "bóng tối trong lòng",
-    "reviewed": false
+    "target": "bóng tối trong lòng"
   },
   {
     "source": "洗脑",
-    "target": "tẩy não",
-    "reviewed": false
+    "target": "tẩy não"
   },
   {
     "source": "操控",
-    "target": "thao túng",
-    "reviewed": false
+    "target": "thao túng"
   },
   {
     "source": "精神控制",
-    "target": "kiểm soát tinh thần",
-    "reviewed": false
+    "target": "kiểm soát tinh thần"
   },
   {
     "source": "心理暗示",
-    "target": "ám thị tâm lý",
-    "reviewed": false
+    "target": "ám thị tâm lý"
   },
   {
     "source": "共情",
-    "target": "đồng cảm",
-    "reviewed": false
+    "target": "đồng cảm"
   },
   {
     "source": "自闭",
-    "target": "tự kỷ, khép kín",
-    "reviewed": false
+    "target": "tự kỷ, khép kín"
   },
   {
     "source": "社交恐惧",
-    "target": "sợ giao tiếp xã hội",
-    "reviewed": false
+    "target": "sợ giao tiếp xã hội"
   },
   {
     "source": "疗愈",
-    "target": "chữa lành",
-    "reviewed": false
+    "target": "chữa lành"
   }
 ]

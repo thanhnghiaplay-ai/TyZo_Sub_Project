@@ -386,172 +386,138 @@
   },
   {
     "source": "笑话",
-    "target": "chuyện cười",
-    "reviewed": false
+    "target": "chuyện cười"
   },
   {
     "source": "搞怪",
-    "target": "làm trò, bày trò",
-    "reviewed": false
+    "target": "làm trò, bày trò"
   },
   {
     "source": "滑稽",
-    "target": "hài hước, buồn cười",
-    "reviewed": false
+    "target": "hài hước, buồn cười"
   },
   {
     "source": "好笑",
-    "target": "buồn cười",
-    "reviewed": false
+    "target": "buồn cười"
   },
   {
     "source": "幽默",
-    "target": "hài hước",
-    "reviewed": false
+    "target": "hài hước"
   },
   {
     "source": "逗比",
-    "target": "người hài hước, hơi ngố",
-    "reviewed": false
+    "target": "người hài hước, hơi ngố"
   },
   {
     "source": "损友",
-    "target": "bạn chơi khăm",
-    "reviewed": false
+    "target": "bạn chơi khăm"
   },
   {
     "source": "损人",
-    "target": "đá xoáy, châm chọc",
-    "reviewed": false
+    "target": "đá xoáy, châm chọc"
   },
   {
     "source": "忽悠",
-    "target": "lừa phỉnh, chém gió",
-    "reviewed": false
+    "target": "lừa phỉnh, chém gió"
   },
   {
     "source": "吹牛",
-    "target": "khoác lác",
-    "reviewed": false
+    "target": "khoác lác"
   },
   {
     "source": "穿帮",
-    "target": "bị lộ tẩy",
-    "reviewed": false
+    "target": "bị lộ tẩy"
   },
   {
     "source": "露馅",
-    "target": "lộ tẩy",
-    "reviewed": false
+    "target": "lộ tẩy"
   },
   {
     "source": "糗事",
-    "target": "chuyện xấu hổ",
-    "reviewed": false
+    "target": "chuyện xấu hổ"
   },
   {
     "source": "丢脸",
-    "target": "mất mặt",
-    "reviewed": false
+    "target": "mất mặt"
   },
   {
     "source": "出丑",
-    "target": "bẽ mặt, làm trò cười",
-    "reviewed": false
+    "target": "bẽ mặt, làm trò cười"
   },
   {
     "source": "崩溃",
-    "target": "sụp đổ, hết nói nổi",
-    "reviewed": false
+    "target": "sụp đổ, hết nói nổi"
   },
   {
     "source": "心累",
-    "target": "mệt mỏi trong lòng",
-    "reviewed": false
+    "target": "mệt mỏi trong lòng"
   },
   {
     "source": "扎心",
-    "target": "đau lòng, chạm vào nỗi đau",
-    "reviewed": false
+    "target": "đau lòng, chạm vào nỗi đau"
   },
   {
     "source": "套路",
-    "target": "chiêu trò",
-    "reviewed": false
+    "target": "chiêu trò"
   },
   {
     "source": "坑爹",
-    "target": "hố cha, quá đáng",
-    "reviewed": false
+    "target": "hố cha, quá đáng"
   },
   {
     "source": "神转折",
-    "target": "cú ngoặt bất ngờ",
-    "reviewed": false
+    "target": "cú ngoặt bất ngờ"
   },
   {
     "source": "反转",
-    "target": "đảo ngược tình thế",
-    "reviewed": false
+    "target": "đảo ngược tình thế"
   },
   {
     "source": "接地气",
-    "target": "gần gũi đời thường",
-    "reviewed": false
+    "target": "gần gũi đời thường"
   },
   {
     "source": "跑偏",
-    "target": "lạc đề",
-    "reviewed": false
+    "target": "lạc đề"
   },
   {
     "source": "抖机灵",
-    "target": "khoe mẽo, làm khôn",
-    "reviewed": false
+    "target": "khoe mẽo, làm khôn"
   },
   {
     "source": "耍宝",
-    "target": "làm trò cho vui",
-    "reviewed": false
+    "target": "làm trò cho vui"
   },
   {
     "source": "憋笑",
-    "target": "nín cười",
-    "reviewed": false
+    "target": "nín cười"
   },
   {
     "source": "爆笑",
-    "target": "cười phá lên",
-    "reviewed": false
+    "target": "cười phá lên"
   },
   {
     "source": "笑场",
-    "target": "bật cười giữa chừng",
-    "reviewed": false
+    "target": "bật cười giữa chừng"
   },
   {
     "source": "单身狗",
-    "target": "FA, người độc thân",
-    "reviewed": false
+    "target": "FA, người độc thân"
   },
   {
     "source": "柠檬精",
-    "target": "người hay ghen tị",
-    "reviewed": false
+    "target": "người hay ghen tị"
   },
   {
     "source": "土味",
-    "target": "quê mùa, sến",
-    "reviewed": false
+    "target": "quê mùa, sến"
   },
   {
     "source": "尬聊",
-    "target": "trò chuyện gượng gạo",
-    "reviewed": false
+    "target": "trò chuyện gượng gạo"
   },
   {
     "source": "白眼",
-    "target": "liếc xéo, lườm",
-    "reviewed": false
+    "target": "liếc xéo, lườm"
   }
 ]

@@ -1,362 +1,290 @@
 [
   {
     "source": "貧困",
-    "target": "nghèo đói",
-    "reviewed": false
+    "target": "nghèo đói"
   },
   {
     "source": "格差社会",
-    "target": "xã hội phân hóa giàu nghèo",
-    "reviewed": false
+    "target": "xã hội phân hóa giàu nghèo"
   },
   {
     "source": "生活保護",
-    "target": "trợ cấp sinh hoạt (phúc lợi xã hội)",
-    "reviewed": false
+    "target": "trợ cấp sinh hoạt (phúc lợi xã hội)"
   },
   {
     "source": "ブラック企業",
-    "target": "công ty bóc lột nhân viên",
-    "reviewed": false
+    "target": "công ty bóc lột nhân viên"
   },
   {
     "source": "過労死",
-    "target": "chết vì làm việc quá sức",
-    "reviewed": false
+    "target": "chết vì làm việc quá sức"
   },
   {
     "source": "サービス残業",
-    "target": "làm thêm giờ không lương",
-    "reviewed": false
+    "target": "làm thêm giờ không lương"
   },
   {
     "source": "派遣社員",
-    "target": "nhân viên phái cử",
-    "reviewed": false
+    "target": "nhân viên phái cử"
   },
   {
     "source": "正社員",
-    "target": "nhân viên chính thức",
-    "reviewed": false
+    "target": "nhân viên chính thức"
   },
   {
     "source": "非正規",
-    "target": "lao động không chính thức",
-    "reviewed": false
+    "target": "lao động không chính thức"
   },
   {
     "source": "リストラ",
-    "target": "cắt giảm nhân sự",
-    "reviewed": false
+    "target": "cắt giảm nhân sự"
   },
   {
     "source": "就職活動",
-    "target": "đi xin việc",
-    "reviewed": false
+    "target": "đi xin việc"
   },
   {
     "source": "就活",
-    "target": "đi xin việc",
-    "reviewed": false
+    "target": "đi xin việc"
   },
   {
     "source": "ひきこもり",
-    "target": "hikikomori (người thu mình trong nhà)",
-    "reviewed": false
+    "target": "hikikomori (người thu mình trong nhà)"
   },
   {
     "source": "ニート",
-    "target": "NEET (không học, không làm, không đào tạo)",
-    "reviewed": false
+    "target": "NEET (không học, không làm, không đào tạo)"
   },
   {
     "source": "いじめ",
-    "target": "bắt nạt",
-    "reviewed": false
+    "target": "bắt nạt"
   },
   {
     "source": "パワハラ",
-    "target": "quấy rối quyền lực nơi làm việc",
-    "reviewed": false
+    "target": "quấy rối quyền lực nơi làm việc"
   },
   {
     "source": "セクハラ",
-    "target": "quấy rối tình dục",
-    "reviewed": false
+    "target": "quấy rối tình dục"
   },
   {
     "source": "虐待",
-    "target": "ngược đãi",
-    "reviewed": false
+    "target": "ngược đãi"
   },
   {
     "source": "児童相談所",
-    "target": "trung tâm tư vấn nhi đồng",
-    "reviewed": false
+    "target": "trung tâm tư vấn nhi đồng"
   },
   {
     "source": "少子化",
-    "target": "tỷ lệ sinh thấp",
-    "reviewed": false
+    "target": "tỷ lệ sinh thấp"
   },
   {
     "source": "高齢化",
-    "target": "già hóa dân số",
-    "reviewed": false
+    "target": "già hóa dân số"
   },
   {
     "source": "介護",
-    "target": "chăm sóc người già",
-    "reviewed": false
+    "target": "chăm sóc người già"
   },
   {
     "source": "孤独死",
-    "target": "chết cô độc",
-    "reviewed": false
+    "target": "chết cô độc"
   },
   {
     "source": "ホームレス",
-    "target": "người vô gia cư",
-    "reviewed": false
+    "target": "người vô gia cư"
   },
   {
     "source": "市役所",
-    "target": "tòa thị chính",
-    "reviewed": false
+    "target": "tòa thị chính"
   },
   {
     "source": "区役所",
-    "target": "ủy ban quận",
-    "reviewed": false
+    "target": "ủy ban quận"
   },
   {
     "source": "示談",
-    "target": "hòa giải ngoài tòa",
-    "reviewed": false
+    "target": "hòa giải ngoài tòa"
   },
   {
     "source": "内部告発",
-    "target": "tố giác nội bộ",
-    "reviewed": false
+    "target": "tố giác nội bộ"
   },
   {
     "source": "記者会見",
-    "target": "họp báo",
-    "reviewed": false
+    "target": "họp báo"
   },
   {
     "source": "週刊誌",
-    "target": "tạp chí lá cải tuần san",
-    "reviewed": false
+    "target": "tạp chí lá cải tuần san"
   },
   {
     "source": "炎上",
-    "target": "bị ném đá trên mạng",
-    "reviewed": false
+    "target": "bị ném đá trên mạng"
   },
   {
     "source": "誹謗中傷",
-    "target": "phỉ báng, công kích",
-    "reviewed": false
+    "target": "phỉ báng, công kích"
   },
   {
     "source": "保険証",
-    "target": "thẻ bảo hiểm y tế",
-    "reviewed": false
+    "target": "thẻ bảo hiểm y tế"
   },
   {
     "source": "住民票",
-    "target": "giấy đăng ký cư trú",
-    "reviewed": false
+    "target": "giấy đăng ký cư trú"
   },
   {
     "source": "年金",
-    "target": "lương hưu",
-    "reviewed": false
+    "target": "lương hưu"
   },
   {
     "source": "社会保険",
-    "target": "bảo hiểm xã hội",
-    "reviewed": false
+    "target": "bảo hiểm xã hội"
   },
   {
     "source": "世間体",
-    "target": "thể diện trước thiên hạ",
-    "reviewed": false
+    "target": "thể diện trước thiên hạ"
   },
   {
     "source": "空気を読む",
-    "target": "biết nhìn sắc mặt, đọc bầu không khí",
-    "reviewed": false
+    "target": "biết nhìn sắc mặt, đọc bầu không khí"
   },
   {
     "source": "自己責任",
-    "target": "tự chịu trách nhiệm",
-    "reviewed": false
+    "target": "tự chịu trách nhiệm"
   },
   {
     "source": "生活困窮者",
-    "target": "người sống trong cảnh túng thiếu",
-    "reviewed": false
+    "target": "người sống trong cảnh túng thiếu"
   },
   {
     "source": "残業",
-    "target": "làm thêm giờ",
-    "reviewed": false
+    "target": "làm thêm giờ"
   },
   {
     "source": "有給",
-    "target": "nghỉ phép có lương",
-    "reviewed": false
+    "target": "nghỉ phép có lương"
   },
   {
     "source": "最低賃金",
-    "target": "lương tối thiểu",
-    "reviewed": false
+    "target": "lương tối thiểu"
   },
   {
     "source": "失業",
-    "target": "thất nghiệp",
-    "reviewed": false
+    "target": "thất nghiệp"
   },
   {
     "source": "求人",
-    "target": "tin tuyển dụng",
-    "reviewed": false
+    "target": "tin tuyển dụng"
   },
   {
     "source": "面接",
-    "target": "phỏng vấn",
-    "reviewed": false
+    "target": "phỏng vấn"
   },
   {
     "source": "内定",
-    "target": "nhận việc",
-    "reviewed": false
+    "target": "nhận việc"
   },
   {
     "source": "退職",
-    "target": "nghỉ việc",
-    "reviewed": false
+    "target": "nghỉ việc"
   },
   {
     "source": "退職金",
-    "target": "trợ cấp thôi việc",
-    "reviewed": false
+    "target": "trợ cấp thôi việc"
   },
   {
     "source": "仕送り",
-    "target": "tiền gửi về nhà",
-    "reviewed": false
+    "target": "tiền gửi về nhà"
   },
   {
     "source": "奨学金",
-    "target": "học bổng",
-    "reviewed": false
+    "target": "học bổng"
   },
   {
     "source": "借金",
-    "target": "nợ",
-    "reviewed": false
+    "target": "nợ"
   },
   {
     "source": "自己破産",
-    "target": "phá sản cá nhân",
-    "reviewed": false
+    "target": "phá sản cá nhân"
   },
   {
     "source": "家賃",
-    "target": "tiền thuê nhà",
-    "reviewed": false
+    "target": "tiền thuê nhà"
   },
   {
     "source": "敷金",
-    "target": "tiền đặt cọc",
-    "reviewed": false
+    "target": "tiền đặt cọc"
   },
   {
     "source": "礼金",
-    "target": "tiền lễ",
-    "reviewed": false
+    "target": "tiền lễ"
   },
   {
     "source": "待機児童",
-    "target": "trẻ chờ chỗ nhà trẻ",
-    "reviewed": false
+    "target": "trẻ chờ chỗ nhà trẻ"
   },
   {
     "source": "ひとり親",
-    "target": "cha mẹ đơn thân",
-    "reviewed": false
+    "target": "cha mẹ đơn thân"
   },
   {
     "source": "児童虐待",
-    "target": "ngược đãi trẻ em",
-    "reviewed": false
+    "target": "ngược đãi trẻ em"
   },
   {
     "source": "ストーカー",
-    "target": "kẻ theo dõi",
-    "reviewed": false
+    "target": "kẻ theo dõi"
   },
   {
     "source": "特殊詐欺",
-    "target": "lừa đảo đặc biệt",
-    "reviewed": false
+    "target": "lừa đảo đặc biệt"
   },
   {
     "source": "オレオレ詐欺",
-    "target": "lừa kiểu gọi người thân",
-    "reviewed": false
+    "target": "lừa kiểu gọi người thân"
   },
   {
     "source": "ネットいじめ",
-    "target": "bắt nạt trên mạng",
-    "reviewed": false
+    "target": "bắt nạt trên mạng"
   },
   {
     "source": "労働組合",
-    "target": "công đoàn",
-    "reviewed": false
+    "target": "công đoàn"
   },
   {
     "source": "ストライキ",
-    "target": "đình công",
-    "reviewed": false
+    "target": "đình công"
   },
   {
     "source": "寄付",
-    "target": "quyên góp",
-    "reviewed": false
+    "target": "quyên góp"
   },
   {
     "source": "ボランティア",
-    "target": "tình nguyện",
-    "reviewed": false
+    "target": "tình nguyện"
   },
   {
     "source": "町内会",
-    "target": "hội khu phố",
-    "reviewed": false
+    "target": "hội khu phố"
   },
   {
     "source": "生活費",
-    "target": "chi phí sinh hoạt",
-    "reviewed": false
+    "target": "chi phí sinh hoạt"
   },
   {
     "source": "差別",
-    "target": "phân biệt đối xử",
-    "reviewed": false
+    "target": "phân biệt đối xử"
   },
   {
     "source": "近所付き合い",
-    "target": "quan hệ lối xóm",
-    "reviewed": false
+    "target": "quan hệ lối xóm"
   },
   {
     "source": "デマ",
-    "target": "tin đồn thất thiệt",
-    "reviewed": false
+    "target": "tin đồn thất thiệt"
   }
 ]

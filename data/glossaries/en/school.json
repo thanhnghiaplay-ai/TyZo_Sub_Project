@@ -1,394 +1,316 @@
 [
   {
     "source": "homeroom teacher",
-    "target": "giáo viên chủ nhiệm",
-    "reviewed": false
+    "target": "giáo viên chủ nhiệm"
   },
   {
     "source": "principal",
-    "target": "hiệu trưởng",
-    "reviewed": false
+    "target": "hiệu trưởng"
   },
   {
     "source": "vice principal",
-    "target": "hiệu phó",
-    "reviewed": false
+    "target": "hiệu phó"
   },
   {
     "source": "classmate",
-    "target": "bạn cùng lớp",
-    "reviewed": false
+    "target": "bạn cùng lớp"
   },
   {
     "source": "freshman",
     "target": "học sinh năm nhất",
-    "note": "Bậc đại học: sinh viên năm nhất",
-    "reviewed": false
+    "note": "Bậc đại học: sinh viên năm nhất"
   },
   {
     "source": "sophomore",
     "target": "học sinh năm hai",
-    "note": "Bậc đại học: sinh viên năm hai",
-    "reviewed": false
+    "note": "Bậc đại học: sinh viên năm hai"
   },
   {
     "source": "valedictorian",
-    "target": "thủ khoa tốt nghiệp",
-    "reviewed": false
+    "target": "thủ khoa tốt nghiệp"
   },
   {
     "source": "prom",
-    "target": "dạ hội tốt nghiệp",
-    "reviewed": false
+    "target": "dạ hội tốt nghiệp"
   },
   {
     "source": "prom queen",
-    "target": "nữ hoàng dạ hội",
-    "reviewed": false
+    "target": "nữ hoàng dạ hội"
   },
   {
     "source": "homecoming",
-    "target": "lễ hội homecoming",
-    "reviewed": false
+    "target": "lễ hội homecoming"
   },
   {
     "source": "detention",
-    "target": "bị phạt ở lại trường",
-    "reviewed": false
+    "target": "bị phạt ở lại trường"
   },
   {
     "source": "suspension",
-    "target": "bị đình chỉ học",
-    "reviewed": false
+    "target": "bị đình chỉ học"
   },
   {
     "source": "expelled",
-    "target": "bị đuổi học",
-    "reviewed": false
+    "target": "bị đuổi học"
   },
   {
     "source": "report card",
-    "target": "phiếu điểm",
-    "reviewed": false
+    "target": "phiếu điểm"
   },
   {
     "source": "gpa",
-    "target": "điểm trung bình GPA",
-    "reviewed": false
+    "target": "điểm trung bình GPA"
   },
   {
     "source": "midterm",
-    "target": "thi giữa kỳ",
-    "reviewed": false
+    "target": "thi giữa kỳ"
   },
   {
     "source": "final exam",
-    "target": "thi cuối kỳ",
-    "reviewed": false
+    "target": "thi cuối kỳ"
   },
   {
     "source": "pop quiz",
-    "target": "bài kiểm tra bất ngờ",
-    "reviewed": false
+    "target": "bài kiểm tra bất ngờ"
   },
   {
     "source": "homework",
-    "target": "bài tập về nhà",
-    "reviewed": false
+    "target": "bài tập về nhà"
   },
   {
     "source": "study group",
-    "target": "nhóm học tập",
-    "reviewed": false
+    "target": "nhóm học tập"
   },
   {
     "source": "tutor",
-    "target": "gia sư",
-    "reviewed": false
+    "target": "gia sư"
   },
   {
     "source": "cram school",
-    "target": "lớp học thêm",
-    "reviewed": false
+    "target": "lớp học thêm"
   },
   {
     "source": "cafeteria",
-    "target": "căng tin",
-    "reviewed": false
+    "target": "căng tin"
   },
   {
     "source": "locker",
-    "target": "tủ đồ cá nhân",
-    "reviewed": false
+    "target": "tủ đồ cá nhân"
   },
   {
     "source": "yearbook",
-    "target": "kỷ yếu",
-    "reviewed": false
+    "target": "kỷ yếu"
   },
   {
     "source": "school uniform",
-    "target": "đồng phục",
-    "reviewed": false
+    "target": "đồng phục"
   },
   {
     "source": "cheerleader",
-    "target": "đội cổ vũ",
-    "reviewed": false
+    "target": "đội cổ vũ"
   },
   {
     "source": "varsity",
-    "target": "đội tuyển trường",
-    "reviewed": false
+    "target": "đội tuyển trường"
   },
   {
     "source": "bully",
-    "target": "kẻ bắt nạt",
-    "reviewed": false
+    "target": "kẻ bắt nạt"
   },
   {
     "source": "love letter",
-    "target": "thư tình",
-    "reviewed": false
+    "target": "thư tình"
   },
   {
     "source": "graduation",
-    "target": "lễ tốt nghiệp",
-    "reviewed": false
+    "target": "lễ tốt nghiệp"
   },
   {
     "source": "college application",
-    "target": "hồ sơ xin vào đại học",
-    "reviewed": false
+    "target": "hồ sơ xin vào đại học"
   },
   {
     "source": "scholarship",
-    "target": "học bổng",
-    "reviewed": false
+    "target": "học bổng"
   },
   {
     "source": "dorm",
-    "target": "ký túc xá",
-    "reviewed": false
+    "target": "ký túc xá"
   },
   {
     "source": "roommate",
-    "target": "bạn cùng phòng",
-    "reviewed": false
+    "target": "bạn cùng phòng"
   },
   {
     "source": "campus",
-    "target": "khuôn viên trường",
-    "reviewed": false
+    "target": "khuôn viên trường"
   },
   {
     "source": "professor",
-    "target": "giáo sư",
-    "reviewed": false
+    "target": "giáo sư"
   },
   {
     "source": "teaching assistant",
-    "target": "trợ giảng",
-    "reviewed": false
+    "target": "trợ giảng"
   },
   {
     "source": "skip class",
-    "target": "trốn học",
-    "reviewed": false
+    "target": "trốn học"
   },
   {
     "source": "cut class",
-    "target": "trốn học",
-    "reviewed": false
+    "target": "trốn học"
   },
   {
     "source": "hall pass",
-    "target": "giấy phép ra khỏi lớp",
-    "reviewed": false
+    "target": "giấy phép ra khỏi lớp"
   },
   {
     "source": "recess",
-    "target": "giờ ra chơi",
-    "reviewed": false
+    "target": "giờ ra chơi"
   },
   {
     "source": "student council",
-    "target": "hội học sinh",
-    "reviewed": false
+    "target": "hội học sinh"
   },
   {
     "source": "essay",
-    "target": "bài luận",
-    "reviewed": false
+    "target": "bài luận"
   },
   {
     "source": "thesis",
-    "target": "luận văn",
-    "reviewed": false
+    "target": "luận văn"
   },
   {
     "source": "dissertation",
-    "target": "luận án",
-    "reviewed": false
+    "target": "luận án"
   },
   {
     "source": "quiz",
-    "target": "bài kiểm tra ngắn",
-    "reviewed": false
+    "target": "bài kiểm tra ngắn"
   },
   {
     "source": "dean",
-    "target": "trưởng khoa",
-    "reviewed": false
+    "target": "trưởng khoa"
   },
   {
     "source": "tenure",
-    "target": "biên chế",
-    "reviewed": false
+    "target": "biên chế"
   },
   {
     "source": "extracurricular",
-    "target": "hoạt động ngoại khóa",
-    "reviewed": false
+    "target": "hoạt động ngoại khóa"
   },
   {
     "source": "club activity",
-    "target": "hoạt động câu lạc bộ",
-    "reviewed": false
+    "target": "hoạt động câu lạc bộ"
   },
   {
     "source": "student ID",
-    "target": "thẻ sinh viên",
-    "reviewed": false
+    "target": "thẻ sinh viên"
   },
   {
     "source": "library card",
-    "target": "thẻ thư viện",
-    "reviewed": false
+    "target": "thẻ thư viện"
   },
   {
     "source": "school bus",
-    "target": "xe buýt trường",
-    "reviewed": false
+    "target": "xe buýt trường"
   },
   {
     "source": "school nurse",
-    "target": "y tá trường",
-    "reviewed": false
+    "target": "y tá trường"
   },
   {
     "source": "guidance counselor",
-    "target": "cố vấn học đường",
-    "reviewed": false
+    "target": "cố vấn học đường"
   },
   {
     "source": "honor roll",
-    "target": "danh sách học sinh giỏi",
-    "reviewed": false
+    "target": "danh sách học sinh giỏi"
   },
   {
     "source": "failing grade",
-    "target": "điểm trượt",
-    "reviewed": false
+    "target": "điểm trượt"
   },
   {
     "source": "makeup exam",
-    "target": "thi lại",
-    "reviewed": false
+    "target": "thi lại"
   },
   {
     "source": "study hall",
-    "target": "giờ tự học",
-    "reviewed": false
+    "target": "giờ tự học"
   },
   {
     "source": "field trip",
-    "target": "chuyến đi thực tế",
-    "reviewed": false
+    "target": "chuyến đi thực tế"
   },
   {
     "source": "parent-teacher conference",
-    "target": "họp phụ huynh",
-    "reviewed": false
+    "target": "họp phụ huynh"
   },
   {
     "source": "school spirit",
-    "target": "tinh thần trường",
-    "reviewed": false
+    "target": "tinh thần trường"
   },
   {
     "source": "mascot",
-    "target": "linh vật trường",
-    "reviewed": false
+    "target": "linh vật trường"
   },
   {
     "source": "pep rally",
-    "target": "cuộc hội cổ vũ",
-    "reviewed": false
+    "target": "cuộc hội cổ vũ"
   },
   {
     "source": "detention hall",
-    "target": "phòng phạt",
-    "reviewed": false
+    "target": "phòng phạt"
   },
   {
     "source": "school board",
-    "target": "ban giám hiệu",
-    "reviewed": false
+    "target": "ban giám hiệu"
   },
   {
     "source": "alumni",
-    "target": "cựu học sinh",
-    "reviewed": false
+    "target": "cựu học sinh"
   },
   {
     "source": "reunion",
-    "target": "họp lớp",
-    "reviewed": false
+    "target": "họp lớp"
   },
   {
     "source": "letter of recommendation",
-    "target": "thư giới thiệu",
-    "reviewed": false
+    "target": "thư giới thiệu"
   },
   {
     "source": "college prep",
-    "target": "luyện thi đại học",
-    "reviewed": false
+    "target": "luyện thi đại học"
   },
   {
     "source": "SAT",
-    "target": "bài thi SAT",
-    "reviewed": false
+    "target": "bài thi SAT"
   },
   {
     "source": "ACT",
-    "target": "bài thi ACT",
-    "reviewed": false
+    "target": "bài thi ACT"
   },
   {
     "source": "late assignment",
-    "target": "bài nộp muộn",
-    "reviewed": false
+    "target": "bài nộp muộn"
   },
   {
     "source": "plagiarism",
-    "target": "đạo văn",
-    "reviewed": false
+    "target": "đạo văn"
   },
   {
     "source": "textbook",
-    "target": "sách giáo khoa",
-    "reviewed": false
+    "target": "sách giáo khoa"
   },
   {
     "source": "notebook",
-    "target": "vở ghi",
-    "reviewed": false
+    "target": "vở ghi"
   },
   {
     "source": "backpack",
-    "target": "ba lô",
-    "reviewed": false
+    "target": "ba lô"
   }
 ]

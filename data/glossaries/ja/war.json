@@ -1,387 +1,310 @@
 [
   {
     "source": "戦場",
-    "target": "chiến trường",
-    "reviewed": false
+    "target": "chiến trường"
   },
   {
     "source": "前線",
-    "target": "tiền tuyến",
-    "reviewed": false
+    "target": "tiền tuyến"
   },
   {
     "source": "銃後",
-    "target": "hậu phương",
-    "reviewed": false
+    "target": "hậu phương"
   },
   {
     "source": "司令官",
-    "target": "tư lệnh",
-    "reviewed": false
+    "target": "tư lệnh"
   },
   {
     "source": "大将",
-    "target": "đại tướng",
-    "reviewed": false
+    "target": "đại tướng"
   },
   {
     "source": "中将",
-    "target": "trung tướng",
-    "reviewed": false
+    "target": "trung tướng"
   },
   {
     "source": "少将",
-    "target": "thiếu tướng",
-    "reviewed": false
+    "target": "thiếu tướng"
   },
   {
     "source": "大佐",
-    "target": "đại tá",
-    "reviewed": false
+    "target": "đại tá"
   },
   {
     "source": "中佐",
-    "target": "trung tá",
-    "reviewed": false
+    "target": "trung tá"
   },
   {
     "source": "少佐",
-    "target": "thiếu tá",
-    "reviewed": false
+    "target": "thiếu tá"
   },
   {
     "source": "大尉",
-    "target": "đại úy",
-    "reviewed": false
+    "target": "đại úy"
   },
   {
     "source": "中尉",
-    "target": "trung úy",
-    "reviewed": false
+    "target": "trung úy"
   },
   {
     "source": "少尉",
-    "target": "thiếu úy",
-    "reviewed": false
+    "target": "thiếu úy"
   },
   {
     "source": "軍曹",
-    "target": "trung sĩ",
-    "reviewed": false
+    "target": "trung sĩ"
   },
   {
     "source": "伍長",
-    "target": "hạ sĩ",
-    "reviewed": false
+    "target": "hạ sĩ"
   },
   {
     "source": "上等兵",
-    "target": "binh nhất",
-    "reviewed": false
+    "target": "binh nhất"
   },
   {
     "source": "二等兵",
-    "target": "binh nhì",
-    "reviewed": false
+    "target": "binh nhì"
   },
   {
     "source": "大本営",
-    "target": "đại bản doanh",
-    "reviewed": false
+    "target": "đại bản doanh"
   },
   {
     "source": "陸軍",
-    "target": "lục quân",
-    "reviewed": false
+    "target": "lục quân"
   },
   {
     "source": "海軍",
-    "target": "hải quân",
-    "reviewed": false
+    "target": "hải quân"
   },
   {
     "source": "空軍",
-    "target": "không quân",
-    "reviewed": false
+    "target": "không quân"
   },
   {
     "source": "特攻",
-    "target": "đột kích cảm tử (tokkō)",
-    "reviewed": false
+    "target": "đột kích cảm tử (tokkō)"
   },
   {
     "source": "特攻隊",
-    "target": "đội cảm tử",
-    "reviewed": false
+    "target": "đội cảm tử"
   },
   {
     "source": "零戦",
-    "target": "chiến đấu cơ Zero",
-    "reviewed": false
+    "target": "chiến đấu cơ Zero"
   },
   {
     "source": "空襲",
-    "target": "không kích",
-    "reviewed": false
+    "target": "không kích"
   },
   {
     "source": "疎開",
-    "target": "sơ tán",
-    "reviewed": false
+    "target": "sơ tán"
   },
   {
     "source": "玉音放送",
-    "target": "bản tuyên bố đầu hàng của Thiên hoàng",
-    "reviewed": false
+    "target": "bản tuyên bố đầu hàng của Thiên hoàng"
   },
   {
     "source": "終戦",
-    "target": "chiến tranh kết thúc",
-    "reviewed": false
+    "target": "chiến tranh kết thúc"
   },
   {
     "source": "敗戦",
-    "target": "thất trận",
-    "reviewed": false
+    "target": "thất trận"
   },
   {
     "source": "出征",
-    "target": "xuất chinh",
-    "reviewed": false
+    "target": "xuất chinh"
   },
   {
     "source": "召集令状",
-    "target": "giấy gọi nhập ngũ",
-    "reviewed": false
+    "target": "giấy gọi nhập ngũ"
   },
   {
     "source": "赤紙",
-    "target": "giấy gọi nhập ngũ (akagami)",
-    "reviewed": false
+    "target": "giấy gọi nhập ngũ (akagami)"
   },
   {
     "source": "捕虜",
-    "target": "tù binh",
-    "reviewed": false
+    "target": "tù binh"
   },
   {
     "source": "軍法会議",
-    "target": "tòa án quân sự",
-    "reviewed": false
+    "target": "tòa án quân sự"
   },
   {
     "source": "脱走兵",
-    "target": "lính đào ngũ",
-    "reviewed": false
+    "target": "lính đào ngũ"
   },
   {
     "source": "突撃",
-    "target": "xung phong",
-    "reviewed": false
+    "target": "xung phong"
   },
   {
     "source": "撤退",
-    "target": "rút lui",
-    "reviewed": false
+    "target": "rút lui"
   },
   {
     "source": "全滅",
-    "target": "bị tiêu diệt toàn bộ",
-    "reviewed": false
+    "target": "bị tiêu diệt toàn bộ"
   },
   {
     "source": "玉砕",
-    "target": "chiến đấu đến người cuối cùng (gyokusai)",
-    "reviewed": false
+    "target": "chiến đấu đến người cuối cùng (gyokusai)"
   },
   {
     "source": "戦友",
-    "target": "đồng đội chiến trường",
-    "reviewed": false
+    "target": "đồng đội chiến trường"
   },
   {
     "source": "戦犯",
-    "target": "tội phạm chiến tranh",
-    "reviewed": false
+    "target": "tội phạm chiến tranh"
   },
   {
     "source": "原爆",
-    "target": "bom nguyên tử",
-    "reviewed": false
+    "target": "bom nguyên tử"
   },
   {
     "source": "焼け野原",
-    "target": "cánh đồng đổ nát cháy rụi",
-    "reviewed": false
+    "target": "cánh đồng đổ nát cháy rụi"
   },
   {
     "source": "憲兵",
-    "target": "hiến binh",
-    "reviewed": false
+    "target": "hiến binh"
   },
   {
     "source": "自衛隊",
-    "target": "Lực lượng Phòng vệ",
-    "reviewed": false
+    "target": "Lực lượng Phòng vệ"
   },
   {
     "source": "弾薬",
-    "target": "đạn dược",
-    "reviewed": false
+    "target": "đạn dược"
   },
   {
     "source": "手榴弾",
-    "target": "lựu đạn",
-    "reviewed": false
+    "target": "lựu đạn"
   },
   {
     "source": "戦車",
-    "target": "xe tăng",
-    "reviewed": false
+    "target": "xe tăng"
   },
   {
     "source": "潜水艦",
-    "target": "tàu ngầm",
-    "reviewed": false
+    "target": "tàu ngầm"
   },
   {
     "source": "空母",
-    "target": "tàu sân bay",
-    "reviewed": false
+    "target": "tàu sân bay"
   },
   {
     "source": "戦艦",
-    "target": "thiết giáp hạm",
-    "reviewed": false
+    "target": "thiết giáp hạm"
   },
   {
     "source": "駆逐艦",
-    "target": "khu trục hạm",
-    "reviewed": false
+    "target": "khu trục hạm"
   },
   {
     "source": "戦闘機",
-    "target": "máy bay tiêm kích",
-    "reviewed": false
+    "target": "máy bay tiêm kích"
   },
   {
     "source": "爆撃機",
-    "target": "máy bay ném bom",
-    "reviewed": false
+    "target": "máy bay ném bom"
   },
   {
     "source": "偵察",
-    "target": "trinh sát",
-    "reviewed": false
+    "target": "trinh sát"
   },
   {
     "source": "塹壕",
-    "target": "chiến hào",
-    "reviewed": false
+    "target": "chiến hào"
   },
   {
     "source": "作戦",
-    "target": "chiến dịch",
-    "reviewed": false
+    "target": "chiến dịch"
   },
   {
     "source": "戦略",
-    "target": "chiến lược",
-    "reviewed": false
+    "target": "chiến lược"
   },
   {
     "source": "戦術",
-    "target": "chiến thuật",
-    "reviewed": false
+    "target": "chiến thuật"
   },
   {
     "source": "補給",
-    "target": "tiếp tế",
-    "reviewed": false
+    "target": "tiếp tế"
   },
   {
     "source": "兵站",
-    "target": "hậu cần",
-    "reviewed": false
+    "target": "hậu cần"
   },
   {
     "source": "援軍",
-    "target": "viện binh",
-    "reviewed": false
+    "target": "viện binh"
   },
   {
     "source": "降伏",
-    "target": "đầu hàng",
-    "reviewed": false
+    "target": "đầu hàng"
   },
   {
     "source": "休戦",
-    "target": "đình chiến",
-    "reviewed": false
+    "target": "đình chiến"
   },
   {
     "source": "講和",
-    "target": "giảng hòa",
-    "reviewed": false
+    "target": "giảng hòa"
   },
   {
     "source": "占領",
-    "target": "chiếm đóng",
-    "reviewed": false
+    "target": "chiếm đóng"
   },
   {
     "source": "解放",
-    "target": "giải phóng",
-    "reviewed": false
+    "target": "giải phóng"
   },
   {
     "source": "徴兵",
-    "target": "cưỡng bách tòng quân",
-    "reviewed": false
+    "target": "cưỡng bách tòng quân"
   },
   {
     "source": "志願兵",
-    "target": "lính tình nguyện",
-    "reviewed": false
+    "target": "lính tình nguyện"
   },
   {
     "source": "退役",
-    "target": "giải ngũ",
-    "reviewed": false
+    "target": "giải ngũ"
   },
   {
     "source": "復員",
-    "target": "xuất ngũ về",
-    "reviewed": false
+    "target": "xuất ngũ về"
   },
   {
     "source": "戦災",
-    "target": "nạn chiến tranh",
-    "reviewed": false
+    "target": "nạn chiến tranh"
   },
   {
     "source": "未亡人",
-    "target": "vợ góa",
-    "reviewed": false
+    "target": "vợ góa"
   },
   {
     "source": "慰霊",
-    "target": "tưởng niệm",
-    "reviewed": false
+    "target": "tưởng niệm"
   },
   {
     "source": "防空壕",
-    "target": "hầm tránh bom",
-    "reviewed": false
+    "target": "hầm tránh bom"
   },
   {
     "source": "配給",
-    "target": "tem phiếu",
-    "reviewed": false
+    "target": "tem phiếu"
   },
   {
     "source": "野戦病院",
-    "target": "bệnh viện dã chiến",
-    "reviewed": false
+    "target": "bệnh viện dã chiến"
   }
 ]

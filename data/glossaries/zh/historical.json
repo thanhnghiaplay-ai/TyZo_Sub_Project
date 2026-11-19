@@ -452,222 +452,178 @@
   },
   {
     "source": "寡人",
-    "target": "quả nhân",
-    "reviewed": false
+    "target": "quả nhân"
   },
   {
     "source": "本王",
-    "target": "bổn vương",
-    "reviewed": false
+    "target": "bổn vương"
   },
   {
     "source": "微臣",
-    "target": "vi thần",
-    "reviewed": false
+    "target": "vi thần"
   },
   {
     "source": "爱卿",
-    "target": "ái khanh",
-    "reviewed": false
+    "target": "ái khanh"
   },
   {
     "source": "众卿",
-    "target": "chư khanh",
-    "reviewed": false
+    "target": "chư khanh"
   },
   {
     "source": "万岁",
-    "target": "vạn tuế",
-    "reviewed": false
+    "target": "vạn tuế"
   },
   {
     "source": "传位",
-    "target": "truyền ngôi",
-    "reviewed": false
+    "target": "truyền ngôi"
   },
   {
     "source": "继位",
-    "target": "kế vị",
-    "reviewed": false
+    "target": "kế vị"
   },
   {
     "source": "称帝",
-    "target": "xưng đế",
-    "reviewed": false
+    "target": "xưng đế"
   },
   {
     "source": "皇帝",
-    "target": "hoàng đế",
-    "reviewed": false
+    "target": "hoàng đế"
   },
   {
     "source": "皇宫",
-    "target": "hoàng cung",
-    "reviewed": false
+    "target": "hoàng cung"
   },
   {
     "source": "朝堂",
-    "target": "triều đình",
-    "reviewed": false
+    "target": "triều đình"
   },
   {
     "source": "上朝",
-    "target": "thượng triều",
-    "reviewed": false
+    "target": "thượng triều"
   },
   {
     "source": "退朝",
-    "target": "bãi triều",
-    "reviewed": false
+    "target": "bãi triều"
   },
   {
     "source": "奏请",
-    "target": "tấu xin",
-    "reviewed": false
+    "target": "tấu xin"
   },
   {
     "source": "上奏",
-    "target": "dâng tấu",
-    "reviewed": false
+    "target": "dâng tấu"
   },
   {
     "source": "谏言",
-    "target": "can gián",
-    "reviewed": false
+    "target": "can gián"
   },
   {
     "source": "弹劾",
-    "target": "luận tội, hặc tấu",
-    "reviewed": false
+    "target": "luận tội, hặc tấu"
   },
   {
     "source": "罢官",
-    "target": "cách chức",
-    "reviewed": false
+    "target": "cách chức"
   },
   {
     "source": "宰相",
-    "target": "tể tướng",
-    "reviewed": false
+    "target": "tể tướng"
   },
   {
     "source": "尚书",
-    "target": "thượng thư",
-    "reviewed": false
+    "target": "thượng thư"
   },
   {
     "source": "御史",
-    "target": "ngự sử",
-    "reviewed": false
+    "target": "ngự sử"
   },
   {
     "source": "太傅",
-    "target": "thái phó",
-    "reviewed": false
+    "target": "thái phó"
   },
   {
     "source": "总督",
-    "target": "tổng đốc",
-    "reviewed": false
+    "target": "tổng đốc"
   },
   {
     "source": "巡抚",
-    "target": "tuần phủ",
-    "reviewed": false
+    "target": "tuần phủ"
   },
   {
     "source": "刺史",
-    "target": "thứ sử",
-    "reviewed": false
+    "target": "thứ sử"
   },
   {
     "source": "太守",
-    "target": "thái thú",
-    "reviewed": false
+    "target": "thái thú"
   },
   {
     "source": "诸侯",
-    "target": "chư hầu",
-    "reviewed": false
+    "target": "chư hầu"
   },
   {
     "source": "藩王",
-    "target": "phiên vương",
-    "reviewed": false
+    "target": "phiên vương"
   },
   {
     "source": "联盟",
-    "target": "liên minh",
-    "reviewed": false
+    "target": "liên minh"
   },
   {
     "source": "起义",
-    "target": "khởi nghĩa",
-    "reviewed": false
+    "target": "khởi nghĩa"
   },
   {
     "source": "叛军",
-    "target": "quân phản loạn",
-    "reviewed": false
+    "target": "quân phản loạn"
   },
   {
     "source": "攻城",
-    "target": "đánh thành",
-    "reviewed": false
+    "target": "đánh thành"
   },
   {
     "source": "守城",
-    "target": "giữ thành",
-    "reviewed": false
+    "target": "giữ thành"
   },
   {
     "source": "粮草",
-    "target": "lương thảo",
-    "reviewed": false
+    "target": "lương thảo"
   },
   {
     "source": "军令",
-    "target": "quân lệnh",
-    "reviewed": false
+    "target": "quân lệnh"
   },
   {
     "source": "虎符",
-    "target": "hổ phù",
-    "reviewed": false
+    "target": "hổ phù"
   },
   {
     "source": "凯旋",
-    "target": "khải hoàn",
-    "reviewed": false
+    "target": "khải hoàn"
   },
   {
     "source": "议和",
-    "target": "nghị hòa",
-    "reviewed": false
+    "target": "nghị hòa"
   },
   {
     "source": "灭国",
-    "target": "diệt quốc",
-    "reviewed": false
+    "target": "diệt quốc"
   },
   {
     "source": "亡国",
-    "target": "mất nước",
-    "reviewed": false
+    "target": "mất nước"
   },
   {
     "source": "三公九卿",
-    "target": "tam công cửu khanh",
-    "reviewed": false
+    "target": "tam công cửu khanh"
   },
   {
     "source": "太庙",
-    "target": "thái miếu",
-    "reviewed": false
+    "target": "thái miếu"
   },
   {
     "source": "玉玺",
-    "target": "ngọc tỷ",
-    "reviewed": false
+    "target": "ngọc tỷ"
   }
 ]

@@ -518,227 +518,182 @@
   },
   {
     "source": "本宫",
-    "target": "bổn cung",
-    "reviewed": false
+    "target": "bổn cung"
   },
   {
     "source": "哀家",
-    "target": "ai gia",
-    "reviewed": false
+    "target": "ai gia"
   },
   {
     "source": "臣妾",
-    "target": "thần thiếp",
-    "reviewed": false
+    "target": "thần thiếp"
   },
   {
     "source": "奴婢",
-    "target": "nô tì",
-    "reviewed": false
+    "target": "nô tì"
   },
   {
     "source": "奴才",
-    "target": "nô tài",
-    "reviewed": false
+    "target": "nô tài"
   },
   {
     "source": "陛下",
-    "target": "bệ hạ",
-    "reviewed": false
+    "target": "bệ hạ"
   },
   {
     "source": "皇上",
-    "target": "hoàng thượng",
-    "reviewed": false
+    "target": "hoàng thượng"
   },
   {
     "source": "皇后",
-    "target": "hoàng hậu",
-    "reviewed": false
+    "target": "hoàng hậu"
   },
   {
     "source": "太后",
-    "target": "thái hậu",
-    "reviewed": false
+    "target": "thái hậu"
   },
   {
     "source": "娘娘",
-    "target": "nương nương",
-    "reviewed": false
+    "target": "nương nương"
   },
   {
     "source": "太子",
-    "target": "thái tử",
-    "reviewed": false
+    "target": "thái tử"
   },
   {
     "source": "王爷",
-    "target": "vương gia",
-    "reviewed": false
+    "target": "vương gia"
   },
   {
     "source": "公主",
-    "target": "công chúa",
-    "reviewed": false
+    "target": "công chúa"
   },
   {
     "source": "格格",
-    "target": "cách cách",
-    "reviewed": false
+    "target": "cách cách"
   },
   {
     "source": "贝勒",
-    "target": "bối lặc",
-    "reviewed": false
+    "target": "bối lặc"
   },
   {
     "source": "大人",
-    "target": "đại nhân",
-    "reviewed": false
+    "target": "đại nhân"
   },
   {
     "source": "下官",
-    "target": "hạ quan",
-    "reviewed": false
+    "target": "hạ quan"
   },
   {
     "source": "草民",
-    "target": "thảo dân",
-    "reviewed": false
+    "target": "thảo dân"
   },
   {
     "source": "小的",
-    "target": "tiểu nhân (tự xưng)",
-    "reviewed": false
+    "target": "tiểu nhân (tự xưng)"
   },
   {
     "source": "老爷",
-    "target": "lão gia",
-    "reviewed": false
+    "target": "lão gia"
   },
   {
     "source": "丫鬟",
-    "target": "nha hoàn",
-    "reviewed": false
+    "target": "nha hoàn"
   },
   {
     "source": "管家",
-    "target": "quản gia",
-    "reviewed": false
+    "target": "quản gia"
   },
   {
     "source": "太监",
-    "target": "thái giám",
-    "reviewed": false
+    "target": "thái giám"
   },
   {
     "source": "侍卫",
-    "target": "thị vệ",
-    "reviewed": false
+    "target": "thị vệ"
   },
   {
     "source": "宫女",
-    "target": "cung nữ",
-    "reviewed": false
+    "target": "cung nữ"
   },
   {
     "source": "圣旨",
-    "target": "thánh chỉ",
-    "reviewed": false
+    "target": "thánh chỉ"
   },
   {
     "source": "接旨",
-    "target": "tiếp chỉ",
-    "reviewed": false
+    "target": "tiếp chỉ"
   },
   {
     "source": "谢恩",
-    "target": "tạ ơn",
-    "reviewed": false
+    "target": "tạ ơn"
   },
   {
     "source": "遵命",
-    "target": "tuân lệnh",
-    "reviewed": false
+    "target": "tuân lệnh"
   },
   {
     "source": "起驾",
-    "target": "khởi giá",
-    "reviewed": false
+    "target": "khởi giá"
   },
   {
     "source": "恕罪",
-    "target": "xin tha tội",
-    "reviewed": false
+    "target": "xin tha tội"
   },
   {
     "source": "该当何罪",
-    "target": "có tội gì",
-    "reviewed": false
+    "target": "có tội gì"
   },
   {
     "source": "万岁",
-    "target": "vạn tuế",
-    "reviewed": false
+    "target": "vạn tuế"
   },
   {
     "source": "参见",
-    "target": "bái kiến",
-    "reviewed": false
+    "target": "bái kiến"
   },
   {
     "source": "退下",
-    "target": "lui xuống",
-    "reviewed": false
+    "target": "lui xuống"
   },
   {
     "source": "上朝",
-    "target": "thượng triều",
-    "reviewed": false
+    "target": "thượng triều"
   },
   {
     "source": "科举",
-    "target": "khoa cử",
-    "reviewed": false
+    "target": "khoa cử"
   },
   {
     "source": "状元",
-    "target": "trạng nguyên",
-    "reviewed": false
+    "target": "trạng nguyên"
   },
   {
     "source": "衙门",
-    "target": "nha môn",
-    "reviewed": false
+    "target": "nha môn"
   },
   {
     "source": "县令",
-    "target": "huyện lệnh",
-    "reviewed": false
+    "target": "huyện lệnh"
   },
   {
     "source": "府邸",
-    "target": "phủ đệ",
-    "reviewed": false
+    "target": "phủ đệ"
   },
   {
     "source": "后宫",
-    "target": "hậu cung",
-    "reviewed": false
+    "target": "hậu cung"
   },
   {
     "source": "选秀",
-    "target": "tuyển tú",
-    "reviewed": false
+    "target": "tuyển tú"
   },
   {
     "source": "和亲",
-    "target": "hòa thân",
-    "reviewed": false
+    "target": "hòa thân"
   },
   {
     "source": "赐婚",
-    "target": "ban hôn",
-    "reviewed": false
+    "target": "ban hôn"
   }
 ]

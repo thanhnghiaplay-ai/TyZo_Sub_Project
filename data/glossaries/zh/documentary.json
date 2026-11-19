@@ -1,402 +1,322 @@
 [
   {
     "source": "纪录片",
-    "target": "phim tài liệu",
-    "reviewed": false
+    "target": "phim tài liệu"
   },
   {
     "source": "旁白",
-    "target": "lời dẫn",
-    "reviewed": false
+    "target": "lời dẫn"
   },
   {
     "source": "采访",
-    "target": "phỏng vấn",
-    "reviewed": false
+    "target": "phỏng vấn"
   },
   {
     "source": "受访者",
-    "target": "người được phỏng vấn",
-    "reviewed": false
+    "target": "người được phỏng vấn"
   },
   {
     "source": "专家",
-    "target": "chuyên gia",
-    "reviewed": false
+    "target": "chuyên gia"
   },
   {
     "source": "学者",
-    "target": "học giả",
-    "reviewed": false
+    "target": "học giả"
   },
   {
     "source": "考古",
-    "target": "khảo cổ",
-    "reviewed": false
+    "target": "khảo cổ"
   },
   {
     "source": "遗址",
-    "target": "di chỉ",
-    "reviewed": false
+    "target": "di chỉ"
   },
   {
     "source": "文物",
-    "target": "cổ vật",
-    "reviewed": false
+    "target": "cổ vật"
   },
   {
     "source": "古迹",
-    "target": "di tích",
-    "reviewed": false
+    "target": "di tích"
   },
   {
     "source": "世界遗产",
-    "target": "di sản thế giới",
-    "reviewed": false
+    "target": "di sản thế giới"
   },
   {
     "source": "保护区",
-    "target": "khu bảo tồn",
-    "reviewed": false
+    "target": "khu bảo tồn"
   },
   {
     "source": "濒危物种",
-    "target": "loài nguy cấp",
-    "reviewed": false
+    "target": "loài nguy cấp"
   },
   {
     "source": "生态系统",
-    "target": "hệ sinh thái",
-    "reviewed": false
+    "target": "hệ sinh thái"
   },
   {
     "source": "栖息地",
-    "target": "môi trường sống",
-    "reviewed": false
+    "target": "môi trường sống"
   },
   {
     "source": "迁徙",
-    "target": "di cư",
-    "reviewed": false
+    "target": "di cư"
   },
   {
     "source": "物种",
-    "target": "loài",
-    "reviewed": false
+    "target": "loài"
   },
   {
     "source": "气候变化",
-    "target": "biến đổi khí hậu",
-    "reviewed": false
+    "target": "biến đổi khí hậu"
   },
   {
     "source": "全球变暖",
-    "target": "nóng lên toàn cầu",
-    "reviewed": false
+    "target": "nóng lên toàn cầu"
   },
   {
     "source": "温室气体",
-    "target": "khí nhà kính",
-    "reviewed": false
+    "target": "khí nhà kính"
   },
   {
     "source": "污染",
-    "target": "ô nhiễm",
-    "reviewed": false
+    "target": "ô nhiễm"
   },
   {
     "source": "可持续发展",
-    "target": "phát triển bền vững",
-    "reviewed": false
+    "target": "phát triển bền vững"
   },
   {
     "source": "记者",
-    "target": "phóng viên",
-    "reviewed": false
+    "target": "phóng viên"
   },
   {
     "source": "真相",
-    "target": "sự thật",
-    "reviewed": false
+    "target": "sự thật"
   },
   {
     "source": "证据",
-    "target": "bằng chứng",
-    "reviewed": false
+    "target": "bằng chứng"
   },
   {
     "source": "档案",
-    "target": "hồ sơ lưu trữ",
-    "reviewed": false
+    "target": "hồ sơ lưu trữ"
   },
   {
     "source": "史料",
-    "target": "sử liệu",
-    "reviewed": false
+    "target": "sử liệu"
   },
   {
     "source": "公元前",
-    "target": "trước Công nguyên",
-    "reviewed": false
+    "target": "trước Công nguyên"
   },
   {
     "source": "世纪",
-    "target": "thế kỷ",
-    "reviewed": false
+    "target": "thế kỷ"
   },
   {
     "source": "朝代",
-    "target": "triều đại",
-    "reviewed": false
+    "target": "triều đại"
   },
   {
     "source": "文明",
-    "target": "nền văn minh",
-    "reviewed": false
+    "target": "nền văn minh"
   },
   {
     "source": "非物质文化遗产",
-    "target": "di sản văn hóa phi vật thể",
-    "reviewed": false
+    "target": "di sản văn hóa phi vật thể"
   },
   {
     "source": "传统工艺",
-    "target": "nghề thủ công truyền thống",
-    "reviewed": false
+    "target": "nghề thủ công truyền thống"
   },
   {
     "source": "人口",
-    "target": "dân số",
-    "reviewed": false
+    "target": "dân số"
   },
   {
     "source": "据统计",
-    "target": "theo thống kê",
-    "reviewed": false
+    "target": "theo thống kê"
   },
   {
     "source": "科学家",
-    "target": "nhà khoa học",
-    "reviewed": false
+    "target": "nhà khoa học"
   },
   {
     "source": "实验",
-    "target": "thí nghiệm",
-    "reviewed": false
+    "target": "thí nghiệm"
   },
   {
     "source": "宇宙",
-    "target": "vũ trụ",
-    "reviewed": false
+    "target": "vũ trụ"
   },
   {
     "source": "星系",
-    "target": "thiên hà",
-    "reviewed": false
+    "target": "thiên hà"
   },
   {
     "source": "黑洞",
-    "target": "hố đen",
-    "reviewed": false
+    "target": "hố đen"
   },
   {
     "source": "影片",
-    "target": "bộ phim, phim tài liệu",
-    "reviewed": false
+    "target": "bộ phim, phim tài liệu"
   },
   {
     "source": "镜头",
-    "target": "ống kính, cảnh quay",
-    "reviewed": false
+    "target": "ống kính, cảnh quay"
   },
   {
     "source": "解说",
-    "target": "thuyết minh",
-    "reviewed": false
+    "target": "thuyết minh"
   },
   {
     "source": "画外音",
-    "target": "giọng đọc ngoài hình",
-    "reviewed": false
+    "target": "giọng đọc ngoài hình"
   },
   {
     "source": "口述",
-    "target": "kể lại bằng lời",
-    "reviewed": false
+    "target": "kể lại bằng lời"
   },
   {
     "source": "历史学家",
-    "target": "nhà sử học",
-    "reviewed": false
+    "target": "nhà sử học"
   },
   {
     "source": "研究人员",
-    "target": "nhà nghiên cứu",
-    "reviewed": false
+    "target": "nhà nghiên cứu"
   },
   {
     "source": "研究表明",
-    "target": "nghiên cứu cho thấy",
-    "reviewed": false
+    "target": "nghiên cứu cho thấy"
   },
   {
     "source": "调查显示",
-    "target": "khảo sát cho thấy",
-    "reviewed": false
+    "target": "khảo sát cho thấy"
   },
   {
     "source": "数据显示",
-    "target": "số liệu cho thấy",
-    "reviewed": false
+    "target": "số liệu cho thấy"
   },
   {
     "source": "野生动物",
-    "target": "động vật hoang dã",
-    "reviewed": false
+    "target": "động vật hoang dã"
   },
   {
     "source": "食物链",
-    "target": "chuỗi thức ăn",
-    "reviewed": false
+    "target": "chuỗi thức ăn"
   },
   {
     "source": "捕食者",
-    "target": "kẻ săn mồi",
-    "reviewed": false
+    "target": "kẻ săn mồi"
   },
   {
     "source": "猎物",
-    "target": "con mồi",
-    "reviewed": false
+    "target": "con mồi"
   },
   {
     "source": "灭绝",
-    "target": "tuyệt chủng",
-    "reviewed": false
+    "target": "tuyệt chủng"
   },
   {
     "source": "生物多样性",
-    "target": "đa dạng sinh học",
-    "reviewed": false
+    "target": "đa dạng sinh học"
   },
   {
     "source": "自然保护",
-    "target": "bảo tồn thiên nhiên",
-    "reviewed": false
+    "target": "bảo tồn thiên nhiên"
   },
   {
     "source": "国家公园",
-    "target": "vườn quốc gia",
-    "reviewed": false
+    "target": "vườn quốc gia"
   },
   {
     "source": "热带雨林",
-    "target": "rừng mưa nhiệt đới",
-    "reviewed": false
+    "target": "rừng mưa nhiệt đới"
   },
   {
     "source": "冰川",
-    "target": "sông băng",
-    "reviewed": false
+    "target": "sông băng"
   },
   {
     "source": "海平面",
-    "target": "mực nước biển",
-    "reviewed": false
+    "target": "mực nước biển"
   },
   {
     "source": "极端天气",
-    "target": "thời tiết cực đoan",
-    "reviewed": false
+    "target": "thời tiết cực đoan"
   },
   {
     "source": "碳排放",
-    "target": "phát thải carbon",
-    "reviewed": false
+    "target": "phát thải carbon"
   },
   {
     "source": "可再生能源",
-    "target": "năng lượng tái tạo",
-    "reviewed": false
+    "target": "năng lượng tái tạo"
   },
   {
     "source": "环境保护",
-    "target": "bảo vệ môi trường",
-    "reviewed": false
+    "target": "bảo vệ môi trường"
   },
   {
     "source": "考古学家",
-    "target": "nhà khảo cổ",
-    "reviewed": false
+    "target": "nhà khảo cổ"
   },
   {
     "source": "出土",
-    "target": "khai quật được",
-    "reviewed": false
+    "target": "khai quật được"
   },
   {
     "source": "墓葬",
-    "target": "mộ táng",
-    "reviewed": false
+    "target": "mộ táng"
   },
   {
     "source": "手稿",
-    "target": "bản thảo viết tay",
-    "reviewed": false
+    "target": "bản thảo viết tay"
   },
   {
     "source": "战争年代",
-    "target": "thời chiến",
-    "reviewed": false
+    "target": "thời chiến"
   },
   {
     "source": "工业革命",
-    "target": "cách mạng công nghiệp",
-    "reviewed": false
+    "target": "cách mạng công nghiệp"
   },
   {
     "source": "殖民",
-    "target": "thực dân",
-    "reviewed": false
+    "target": "thực dân"
   },
   {
     "source": "古代文明",
-    "target": "văn minh cổ đại",
-    "reviewed": false
+    "target": "văn minh cổ đại"
   },
   {
     "source": "人类学",
-    "target": "nhân loại học",
-    "reviewed": false
+    "target": "nhân loại học"
   },
   {
     "source": "天文学家",
-    "target": "nhà thiên văn",
-    "reviewed": false
+    "target": "nhà thiên văn"
   },
   {
     "source": "太阳系",
-    "target": "hệ Mặt Trời",
-    "reviewed": false
+    "target": "hệ Mặt Trời"
   },
   {
     "source": "行星",
-    "target": "hành tinh",
-    "reviewed": false
+    "target": "hành tinh"
   },
   {
     "source": "基因",
-    "target": "gen",
-    "reviewed": false
+    "target": "gen"
   },
   {
     "source": "进化",
-    "target": "tiến hóa",
-    "reviewed": false
+    "target": "tiến hóa"
   },
   {
     "source": "显微镜",
-    "target": "kính hiển vi",
-    "reviewed": false
+    "target": "kính hiển vi"
   }
 ]

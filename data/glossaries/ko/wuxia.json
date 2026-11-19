@@ -1,423 +1,339 @@
 [
   {
     "source": "강호",
-    "target": "giang hồ",
-    "reviewed": false
+    "target": "giang hồ"
   },
   {
     "source": "무림",
-    "target": "võ lâm",
-    "reviewed": false
+    "target": "võ lâm"
   },
   {
     "source": "무림맹주",
-    "target": "minh chủ võ lâm",
-    "reviewed": false
+    "target": "minh chủ võ lâm"
   },
   {
     "source": "맹주",
-    "target": "minh chủ",
-    "reviewed": false
+    "target": "minh chủ"
   },
   {
     "source": "장문인",
-    "target": "chưởng môn",
-    "reviewed": false
+    "target": "chưởng môn"
   },
   {
     "source": "문파",
-    "target": "môn phái",
-    "reviewed": false
+    "target": "môn phái"
   },
   {
     "source": "방주",
-    "target": "bang chủ",
-    "reviewed": false
+    "target": "bang chủ"
   },
   {
     "source": "장로",
-    "target": "trưởng lão",
-    "reviewed": false
+    "target": "trưởng lão"
   },
   {
     "source": "호법",
-    "target": "hộ pháp",
-    "reviewed": false
+    "target": "hộ pháp"
   },
   {
     "source": "영패",
-    "target": "lệnh bài",
-    "reviewed": false
+    "target": "lệnh bài"
   },
   {
     "source": "소협",
-    "target": "thiếu hiệp",
-    "reviewed": false
+    "target": "thiếu hiệp"
   },
   {
     "source": "대협",
-    "target": "đại hiệp",
-    "reviewed": false
+    "target": "đại hiệp"
   },
   {
     "source": "여협",
-    "target": "nữ hiệp",
-    "reviewed": false
+    "target": "nữ hiệp"
   },
   {
     "source": "협객",
-    "target": "hiệp khách",
-    "reviewed": false
+    "target": "hiệp khách"
   },
   {
     "source": "검객",
-    "target": "kiếm khách",
-    "reviewed": false
+    "target": "kiếm khách"
   },
   {
     "source": "선배님",
     "target": "tiền bối",
-    "note": "dùng khi người nói xưng thấp hơn",
-    "reviewed": false
+    "note": "dùng khi người nói xưng thấp hơn"
   },
   {
     "source": "후배",
-    "target": "vãn bối",
-    "reviewed": false
+    "target": "vãn bối"
   },
   {
     "source": "재하",
-    "target": "tại hạ",
-    "reviewed": false
+    "target": "tại hạ"
   },
   {
     "source": "소생",
-    "target": "tiểu sinh",
-    "reviewed": false
+    "target": "tiểu sinh"
   },
   {
     "source": "귀하",
-    "target": "các hạ",
-    "reviewed": false
+    "target": "các hạ"
   },
   {
     "source": "노부",
-    "target": "lão phu",
-    "reviewed": false
+    "target": "lão phu"
   },
   {
     "source": "본좌",
-    "target": "bổn tọa",
-    "reviewed": false
+    "target": "bổn tọa"
   },
   {
     "source": "공자",
-    "target": "công tử",
-    "reviewed": false
+    "target": "công tử"
   },
   {
     "source": "소저",
-    "target": "tiểu thư",
-    "reviewed": false
+    "target": "tiểu thư"
   },
   {
     "source": "낭자",
-    "target": "cô nương",
-    "reviewed": false
+    "target": "cô nương"
   },
   {
     "source": "사부",
-    "target": "sư phụ",
-    "reviewed": false
+    "target": "sư phụ"
   },
   {
     "source": "사형",
-    "target": "sư huynh",
-    "reviewed": false
+    "target": "sư huynh"
   },
   {
     "source": "사제",
-    "target": "sư đệ",
-    "reviewed": false
+    "target": "sư đệ"
   },
   {
     "source": "사저",
-    "target": "sư tỷ",
-    "reviewed": false
+    "target": "sư tỷ"
   },
   {
     "source": "사매",
-    "target": "sư muội",
-    "reviewed": false
+    "target": "sư muội"
   },
   {
     "source": "제자",
-    "target": "đệ tử",
-    "reviewed": false
+    "target": "đệ tử"
   },
   {
     "source": "내공",
-    "target": "nội công",
-    "reviewed": false
+    "target": "nội công"
   },
   {
     "source": "외공",
-    "target": "ngoại công",
-    "reviewed": false
+    "target": "ngoại công"
   },
   {
     "source": "경공",
-    "target": "khinh công",
-    "reviewed": false
+    "target": "khinh công"
   },
   {
     "source": "무공",
-    "target": "võ công",
-    "reviewed": false
+    "target": "võ công"
   },
   {
     "source": "검법",
-    "target": "kiếm pháp",
-    "reviewed": false
+    "target": "kiếm pháp"
   },
   {
     "source": "장법",
-    "target": "chưởng pháp",
-    "reviewed": false
+    "target": "chưởng pháp"
   },
   {
     "source": "권법",
-    "target": "quyền pháp",
-    "reviewed": false
+    "target": "quyền pháp"
   },
   {
     "source": "비급",
-    "target": "bí kíp",
-    "reviewed": false
+    "target": "bí kíp"
   },
   {
     "source": "검기",
-    "target": "kiếm khí",
-    "reviewed": false
+    "target": "kiếm khí"
   },
   {
     "source": "검강",
-    "target": "kiếm cương",
-    "reviewed": false
+    "target": "kiếm cương"
   },
   {
     "source": "진기",
-    "target": "chân khí",
-    "reviewed": false
+    "target": "chân khí"
   },
   {
     "source": "단전",
-    "target": "đan điền",
-    "reviewed": false
+    "target": "đan điền"
   },
   {
     "source": "혈도",
-    "target": "huyệt đạo",
-    "reviewed": false
+    "target": "huyệt đạo"
   },
   {
     "source": "점혈",
-    "target": "điểm huyệt",
-    "reviewed": false
+    "target": "điểm huyệt"
   },
   {
     "source": "내상",
-    "target": "nội thương",
-    "reviewed": false
+    "target": "nội thương"
   },
   {
     "source": "주화입마",
-    "target": "tẩu hỏa nhập ma",
-    "reviewed": false
+    "target": "tẩu hỏa nhập ma"
   },
   {
     "source": "환골탈태",
-    "target": "hoán cốt đoạt thai",
-    "reviewed": false
+    "target": "hoán cốt đoạt thai"
   },
   {
     "source": "폐관수련",
-    "target": "bế quan tu luyện",
-    "reviewed": false
+    "target": "bế quan tu luyện"
   },
   {
     "source": "영약",
-    "target": "linh dược",
-    "reviewed": false
+    "target": "linh dược"
   },
   {
     "source": "암기",
-    "target": "ám khí",
-    "reviewed": false
+    "target": "ám khí"
   },
   {
     "source": "독공",
-    "target": "độc công",
-    "reviewed": false
+    "target": "độc công"
   },
   {
     "source": "만독불침",
-    "target": "vạn độc bất xâm",
-    "reviewed": false
+    "target": "vạn độc bất xâm"
   },
   {
     "source": "고수",
-    "target": "cao thủ",
-    "reviewed": false
+    "target": "cao thủ"
   },
   {
     "source": "절정고수",
-    "target": "tuyệt đỉnh cao thủ",
-    "reviewed": false
+    "target": "tuyệt đỉnh cao thủ"
   },
   {
     "source": "천하제일",
-    "target": "thiên hạ đệ nhất",
-    "reviewed": false
+    "target": "thiên hạ đệ nhất"
   },
   {
     "source": "비무",
-    "target": "tỷ võ",
-    "reviewed": false
+    "target": "tỷ võ"
   },
   {
     "source": "낭인",
-    "target": "lãng nhân",
-    "reviewed": false
+    "target": "lãng nhân"
   },
   {
     "source": "은거",
-    "target": "ẩn cư",
-    "reviewed": false
+    "target": "ẩn cư"
   },
   {
     "source": "보검",
-    "target": "bảo kiếm",
-    "reviewed": false
+    "target": "bảo kiếm"
   },
   {
     "source": "신검",
-    "target": "thần kiếm",
-    "reviewed": false
+    "target": "thần kiếm"
   },
   {
     "source": "표국",
-    "target": "tiêu cục",
-    "reviewed": false
+    "target": "tiêu cục"
   },
   {
     "source": "표사",
-    "target": "tiêu sư",
-    "reviewed": false
+    "target": "tiêu sư"
   },
   {
     "source": "녹림",
-    "target": "lục lâm",
-    "reviewed": false
+    "target": "lục lâm"
   },
   {
     "source": "산적",
-    "target": "sơn tặc",
-    "reviewed": false
+    "target": "sơn tặc"
   },
   {
     "source": "마교",
-    "target": "ma giáo",
-    "reviewed": false
+    "target": "ma giáo"
   },
   {
     "source": "천마",
-    "target": "thiên ma",
-    "reviewed": false
+    "target": "thiên ma"
   },
   {
     "source": "혈교",
-    "target": "huyết giáo",
-    "reviewed": false
+    "target": "huyết giáo"
   },
   {
     "source": "사파",
-    "target": "tà phái",
-    "reviewed": false
+    "target": "tà phái"
   },
   {
     "source": "정파",
-    "target": "chính phái",
-    "reviewed": false
+    "target": "chính phái"
   },
   {
     "source": "흑도",
-    "target": "hắc đạo",
-    "reviewed": false
+    "target": "hắc đạo"
   },
   {
     "source": "백도",
-    "target": "bạch đạo",
-    "reviewed": false
+    "target": "bạch đạo"
   },
   {
     "source": "세가",
-    "target": "thế gia",
-    "reviewed": false
+    "target": "thế gia"
   },
   {
     "source": "남궁세가",
-    "target": "Nam Cung thế gia",
-    "reviewed": false
+    "target": "Nam Cung thế gia"
   },
   {
     "source": "소림사",
-    "target": "Thiếu Lâm tự",
-    "reviewed": false
+    "target": "Thiếu Lâm tự"
   },
   {
     "source": "무당파",
-    "target": "Võ Đang phái",
-    "reviewed": false
+    "target": "Võ Đang phái"
   },
   {
     "source": "화산파",
-    "target": "Hoa Sơn phái",
-    "reviewed": false
+    "target": "Hoa Sơn phái"
   },
   {
     "source": "개방",
-    "target": "Cái Bang",
-    "reviewed": false
+    "target": "Cái Bang"
   },
   {
     "source": "아미파",
-    "target": "Nga Mi phái",
-    "reviewed": false
+    "target": "Nga Mi phái"
   },
   {
     "source": "곤륜파",
-    "target": "Côn Lôn phái",
-    "reviewed": false
+    "target": "Côn Lôn phái"
   },
   {
     "source": "당문",
-    "target": "Đường Môn",
-    "reviewed": false
+    "target": "Đường Môn"
   },
   {
     "source": "객잔",
-    "target": "khách điếm",
-    "reviewed": false
+    "target": "khách điếm"
   },
   {
     "source": "점소이",
-    "target": "tiểu nhị",
-    "reviewed": false
+    "target": "tiểu nhị"
   },
   {
     "source": "은자",
-    "target": "lượng bạc",
-    "reviewed": false
+    "target": "lượng bạc"
   }
 ]

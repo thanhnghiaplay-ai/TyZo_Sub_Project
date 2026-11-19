@@ -1,495 +1,397 @@
 [
   {
     "source": "战场",
-    "target": "chiến trường",
-    "reviewed": false
+    "target": "chiến trường"
   },
   {
     "source": "前线",
-    "target": "tiền tuyến",
-    "reviewed": false
+    "target": "tiền tuyến"
   },
   {
     "source": "后方",
-    "target": "hậu phương",
-    "reviewed": false
+    "target": "hậu phương"
   },
   {
     "source": "司令",
-    "target": "tư lệnh",
-    "reviewed": false
+    "target": "tư lệnh"
   },
   {
     "source": "师长",
-    "target": "sư trưởng",
-    "reviewed": false
+    "target": "sư trưởng"
   },
   {
     "source": "团长",
-    "target": "trung đoàn trưởng",
-    "reviewed": false
+    "target": "trung đoàn trưởng"
   },
   {
     "source": "营长",
-    "target": "tiểu đoàn trưởng",
-    "reviewed": false
+    "target": "tiểu đoàn trưởng"
   },
   {
     "source": "连长",
-    "target": "đại đội trưởng",
-    "reviewed": false
+    "target": "đại đội trưởng"
   },
   {
     "source": "排长",
-    "target": "trung đội trưởng",
-    "reviewed": false
+    "target": "trung đội trưởng"
   },
   {
     "source": "班长",
-    "target": "tiểu đội trưởng",
-    "reviewed": false
+    "target": "tiểu đội trưởng"
   },
   {
     "source": "士兵",
-    "target": "binh sĩ",
-    "reviewed": false
+    "target": "binh sĩ"
   },
   {
     "source": "战士",
-    "target": "chiến sĩ",
-    "reviewed": false
+    "target": "chiến sĩ"
   },
   {
     "source": "指挥官",
-    "target": "chỉ huy",
-    "reviewed": false
+    "target": "chỉ huy"
   },
   {
     "source": "长官",
     "target": "thủ trưởng",
-    "note": "Cách khác: thưa chỉ huy, thưa sếp (tùy bối cảnh)",
-    "reviewed": false
+    "note": "Cách khác: thưa chỉ huy, thưa sếp (tùy bối cảnh)"
   },
   {
     "source": "上级",
-    "target": "cấp trên",
-    "reviewed": false
+    "target": "cấp trên"
   },
   {
     "source": "敌军",
-    "target": "quân địch",
-    "reviewed": false
+    "target": "quân địch"
   },
   {
     "source": "友军",
-    "target": "quân bạn",
-    "reviewed": false
+    "target": "quân bạn"
   },
   {
     "source": "部队",
     "target": "đơn vị",
-    "note": "Cách khác: bộ đội, quân đội",
-    "reviewed": false
+    "note": "Cách khác: bộ đội, quân đội"
   },
   {
     "source": "阵地",
-    "target": "trận địa",
-    "reviewed": false
+    "target": "trận địa"
   },
   {
     "source": "防线",
-    "target": "phòng tuyến",
-    "reviewed": false
+    "target": "phòng tuyến"
   },
   {
     "source": "冲锋",
-    "target": "xung phong",
-    "reviewed": false
+    "target": "xung phong"
   },
   {
     "source": "撤退",
-    "target": "rút lui",
-    "reviewed": false
+    "target": "rút lui"
   },
   {
     "source": "投降",
-    "target": "đầu hàng",
-    "reviewed": false
+    "target": "đầu hàng"
   },
   {
     "source": "俘虏",
-    "target": "tù binh",
-    "reviewed": false
+    "target": "tù binh"
   },
   {
     "source": "伤员",
-    "target": "thương binh",
-    "reviewed": false
+    "target": "thương binh"
   },
   {
     "source": "军医",
-    "target": "quân y",
-    "reviewed": false
+    "target": "quân y"
   },
   {
     "source": "炮兵",
-    "target": "pháo binh",
-    "reviewed": false
+    "target": "pháo binh"
   },
   {
     "source": "步兵",
-    "target": "bộ binh",
-    "reviewed": false
+    "target": "bộ binh"
   },
   {
     "source": "骑兵",
-    "target": "kỵ binh",
-    "reviewed": false
+    "target": "kỵ binh"
   },
   {
     "source": "空袭",
-    "target": "không kích",
-    "reviewed": false
+    "target": "không kích"
   },
   {
     "source": "轰炸",
-    "target": "ném bom",
-    "reviewed": false
+    "target": "ném bom"
   },
   {
     "source": "埋伏",
-    "target": "phục kích",
-    "reviewed": false
+    "target": "phục kích"
   },
   {
     "source": "侦察",
-    "target": "trinh sát",
-    "reviewed": false
+    "target": "trinh sát"
   },
   {
     "source": "情报",
-    "target": "tình báo",
-    "reviewed": false
+    "target": "tình báo"
   },
   {
     "source": "间谍",
-    "target": "gián điệp",
-    "reviewed": false
+    "target": "gián điệp"
   },
   {
     "source": "暗号",
-    "target": "mật hiệu",
-    "reviewed": false
+    "target": "mật hiệu"
   },
   {
     "source": "弹药",
-    "target": "đạn dược",
-    "reviewed": false
+    "target": "đạn dược"
   },
   {
     "source": "手榴弹",
-    "target": "lựu đạn",
-    "reviewed": false
+    "target": "lựu đạn"
   },
   {
     "source": "地雷",
-    "target": "mìn",
-    "reviewed": false
+    "target": "mìn"
   },
   {
     "source": "机枪",
-    "target": "súng máy",
-    "reviewed": false
+    "target": "súng máy"
   },
   {
     "source": "狙击手",
-    "target": "xạ thủ bắn tỉa",
-    "reviewed": false
+    "target": "xạ thủ bắn tỉa"
   },
   {
     "source": "坦克",
-    "target": "xe tăng",
-    "reviewed": false
+    "target": "xe tăng"
   },
   {
     "source": "军令状",
-    "target": "quân lệnh trạng",
-    "reviewed": false
+    "target": "quân lệnh trạng"
   },
   {
     "source": "阵亡",
-    "target": "tử trận",
-    "reviewed": false
+    "target": "tử trận"
   },
   {
     "source": "牺牲",
-    "target": "hy sinh",
-    "reviewed": false
+    "target": "hy sinh"
   },
   {
     "source": "烈士",
-    "target": "liệt sĩ",
-    "reviewed": false
+    "target": "liệt sĩ"
   },
   {
     "source": "抗战",
-    "target": "kháng chiến",
-    "reviewed": false
+    "target": "kháng chiến"
   },
   {
     "source": "八路军",
-    "target": "Bát Lộ Quân",
-    "reviewed": false
+    "target": "Bát Lộ Quân"
   },
   {
     "source": "国军",
-    "target": "quân Quốc dân",
-    "reviewed": false
+    "target": "quân Quốc dân"
   },
   {
     "source": "日军",
-    "target": "quân Nhật",
-    "reviewed": false
+    "target": "quân Nhật"
   },
   {
     "source": "鬼子",
     "target": "giặc Nhật",
-    "note": "Lời gọi miệt thị của người Trung Quốc thời kháng Nhật",
-    "reviewed": false
+    "note": "Lời gọi miệt thị của người Trung Quốc thời kháng Nhật"
   },
   {
     "source": "战俘营",
-    "target": "trại tù binh",
-    "reviewed": false
+    "target": "trại tù binh"
   },
   {
     "source": "停战",
-    "target": "ngừng bắn",
-    "reviewed": false
+    "target": "ngừng bắn"
   },
   {
     "source": "战争",
-    "target": "chiến tranh",
-    "reviewed": false
+    "target": "chiến tranh"
   },
   {
     "source": "战役",
-    "target": "chiến dịch",
-    "reviewed": false
+    "target": "chiến dịch"
   },
   {
     "source": "战斗",
-    "target": "chiến đấu",
-    "reviewed": false
+    "target": "chiến đấu"
   },
   {
     "source": "战友",
-    "target": "đồng đội, chiến hữu",
-    "reviewed": false
+    "target": "đồng đội, chiến hữu"
   },
   {
     "source": "战术",
-    "target": "chiến thuật",
-    "reviewed": false
+    "target": "chiến thuật"
   },
   {
     "source": "战略",
-    "target": "chiến lược",
-    "reviewed": false
+    "target": "chiến lược"
   },
   {
     "source": "指挥部",
-    "target": "sở chỉ huy",
-    "reviewed": false
+    "target": "sở chỉ huy"
   },
   {
     "source": "总攻",
-    "target": "tổng tấn công",
-    "reviewed": false
+    "target": "tổng tấn công"
   },
   {
     "source": "进攻",
-    "target": "tấn công",
-    "reviewed": false
+    "target": "tấn công"
   },
   {
     "source": "突围",
-    "target": "phá vòng vây",
-    "reviewed": false
+    "target": "phá vòng vây"
   },
   {
     "source": "包围",
-    "target": "bao vây",
-    "reviewed": false
+    "target": "bao vây"
   },
   {
     "source": "围剿",
-    "target": "vây quét",
-    "reviewed": false
+    "target": "vây quét"
   },
   {
     "source": "增援",
-    "target": "tiếp viện",
-    "reviewed": false
+    "target": "tiếp viện"
   },
   {
     "source": "掩护",
-    "target": "yểm trợ",
-    "reviewed": false
+    "target": "yểm trợ"
   },
   {
     "source": "集合",
-    "target": "tập hợp",
-    "reviewed": false
+    "target": "tập hợp"
   },
   {
     "source": "开火",
-    "target": "nổ súng",
-    "reviewed": false
+    "target": "nổ súng"
   },
   {
     "source": "射击",
-    "target": "bắn",
-    "reviewed": false
+    "target": "bắn"
   },
   {
     "source": "瞄准",
-    "target": "nhắm bắn",
-    "reviewed": false
+    "target": "nhắm bắn"
   },
   {
     "source": "卧倒",
-    "target": "nằm xuống",
-    "reviewed": false
+    "target": "nằm xuống"
   },
   {
     "source": "隐蔽",
-    "target": "ẩn nấp",
-    "reviewed": false
+    "target": "ẩn nấp"
   },
   {
     "source": "装甲车",
-    "target": "xe bọc thép",
-    "reviewed": false
+    "target": "xe bọc thép"
   },
   {
     "source": "战斗机",
-    "target": "máy bay chiến đấu",
-    "reviewed": false
+    "target": "máy bay chiến đấu"
   },
   {
     "source": "轰炸机",
-    "target": "máy bay ném bom",
-    "reviewed": false
+    "target": "máy bay ném bom"
   },
   {
     "source": "航母",
-    "target": "tàu sân bay",
-    "reviewed": false
+    "target": "tàu sân bay"
   },
   {
     "source": "潜艇",
-    "target": "tàu ngầm",
-    "reviewed": false
+    "target": "tàu ngầm"
   },
   {
     "source": "大炮",
-    "target": "đại bác",
-    "reviewed": false
+    "target": "đại bác"
   },
   {
     "source": "迫击炮",
-    "target": "súng cối",
-    "reviewed": false
+    "target": "súng cối"
   },
   {
     "source": "步枪",
-    "target": "súng trường",
-    "reviewed": false
+    "target": "súng trường"
   },
   {
     "source": "刺刀",
-    "target": "lưỡi lê",
-    "reviewed": false
+    "target": "lưỡi lê"
   },
   {
     "source": "子弹",
-    "target": "đạn",
-    "reviewed": false
+    "target": "đạn"
   },
   {
     "source": "军营",
-    "target": "doanh trại",
-    "reviewed": false
+    "target": "doanh trại"
   },
   {
     "source": "军旗",
-    "target": "quân kỳ",
-    "reviewed": false
+    "target": "quân kỳ"
   },
   {
     "source": "军装",
-    "target": "quân phục",
-    "reviewed": false
+    "target": "quân phục"
   },
   {
     "source": "勋章",
-    "target": "huân chương",
-    "reviewed": false
+    "target": "huân chương"
   },
   {
     "source": "军衔",
-    "target": "quân hàm",
-    "reviewed": false
+    "target": "quân hàm"
   },
   {
     "source": "将军",
-    "target": "tướng quân",
-    "reviewed": false
+    "target": "tướng quân"
   },
   {
     "source": "参谋",
-    "target": "tham mưu",
-    "reviewed": false
+    "target": "tham mưu"
   },
   {
     "source": "通讯兵",
-    "target": "lính thông tin",
-    "reviewed": false
+    "target": "lính thông tin"
   },
   {
     "source": "侦察兵",
-    "target": "lính trinh sát",
-    "reviewed": false
+    "target": "lính trinh sát"
   },
   {
     "source": "工兵",
-    "target": "công binh",
-    "reviewed": false
+    "target": "công binh"
   },
   {
     "source": "难民",
-    "target": "người tị nạn",
-    "reviewed": false
+    "target": "người tị nạn"
   },
   {
     "source": "平民",
-    "target": "thường dân",
-    "reviewed": false
+    "target": "thường dân"
   },
   {
     "source": "沦陷",
-    "target": "thất thủ",
-    "reviewed": false
+    "target": "thất thủ"
   },
   {
     "source": "光复",
-    "target": "giải phóng, khôi phục",
-    "reviewed": false
+    "target": "giải phóng, khôi phục"
   },
   {
     "source": "胜利",
-    "target": "chiến thắng",
-    "reviewed": false
+    "target": "chiến thắng"
   }
 ]

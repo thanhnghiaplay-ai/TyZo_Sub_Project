@@ -196,177 +196,142 @@
   },
   {
     "source": "by the way",
-    "target": "nhân tiện",
-    "reviewed": false
+    "target": "nhân tiện"
   },
   {
     "source": "in fact",
-    "target": "thực ra",
-    "reviewed": false
+    "target": "thực ra"
   },
   {
     "source": "you know",
-    "target": "bạn biết đấy",
-    "reviewed": false
+    "target": "bạn biết đấy"
   },
   {
     "source": "I mean",
-    "target": "ý tôi là",
-    "reviewed": false
+    "target": "ý tôi là"
   },
   {
     "source": "hold on",
-    "target": "khoan đã",
-    "reviewed": false
+    "target": "khoan đã"
   },
   {
     "source": "wait a second",
-    "target": "đợi một chút",
-    "reviewed": false
+    "target": "đợi một chút"
   },
   {
     "source": "come on",
-    "target": "thôi nào",
-    "reviewed": false
+    "target": "thôi nào"
   },
   {
     "source": "no way",
-    "target": "không đời nào",
-    "reviewed": false
+    "target": "không đời nào"
   },
   {
     "source": "for real",
-    "target": "thật à",
-    "reviewed": false
+    "target": "thật à"
   },
   {
     "source": "seriously",
-    "target": "nghiêm túc đấy",
-    "reviewed": false
+    "target": "nghiêm túc đấy"
   },
   {
     "source": "whatever",
-    "target": "sao cũng được",
-    "reviewed": false
+    "target": "sao cũng được"
   },
   {
     "source": "never mind",
-    "target": "không sao",
-    "reviewed": false
+    "target": "không sao"
   },
   {
     "source": "as I said",
-    "target": "như tôi đã nói",
-    "reviewed": false
+    "target": "như tôi đã nói"
   },
   {
     "source": "to be honest",
-    "target": "thành thật mà nói",
-    "reviewed": false
+    "target": "thành thật mà nói"
   },
   {
     "source": "in other words",
-    "target": "nói cách khác",
-    "reviewed": false
+    "target": "nói cách khác"
   },
   {
     "source": "for example",
-    "target": "ví dụ",
-    "reviewed": false
+    "target": "ví dụ"
   },
   {
     "source": "that is to say",
-    "target": "nghĩa là",
-    "reviewed": false
+    "target": "nghĩa là"
   },
   {
     "source": "on the other hand",
-    "target": "mặt khác",
-    "reviewed": false
+    "target": "mặt khác"
   },
   {
     "source": "at the same time",
-    "target": "đồng thời",
-    "reviewed": false
+    "target": "đồng thời"
   },
   {
     "source": "all of a sudden",
-    "target": "bất thình lình",
-    "reviewed": false
+    "target": "bất thình lình"
   },
   {
     "source": "as a result",
-    "target": "kết quả là",
-    "reviewed": false
+    "target": "kết quả là"
   },
   {
     "source": "because of that",
-    "target": "vì vậy",
-    "reviewed": false
+    "target": "vì vậy"
   },
   {
     "source": "even though",
-    "target": "dù cho",
-    "reviewed": false
+    "target": "dù cho"
   },
   {
     "source": "as long as",
-    "target": "miễn là",
-    "reviewed": false
+    "target": "miễn là"
   },
   {
     "source": "in case",
-    "target": "phòng khi",
-    "reviewed": false
+    "target": "phòng khi"
   },
   {
     "source": "just in case",
-    "target": "đề phòng",
-    "reviewed": false
+    "target": "đề phòng"
   },
   {
     "source": "by the time",
-    "target": "đến lúc",
-    "reviewed": false
+    "target": "đến lúc"
   },
   {
     "source": "no matter what",
-    "target": "dù thế nào",
-    "reviewed": false
+    "target": "dù thế nào"
   },
   {
     "source": "so far",
-    "target": "đến giờ",
-    "reviewed": false
+    "target": "đến giờ"
   },
   {
     "source": "from now on",
-    "target": "từ giờ trở đi",
-    "reviewed": false
+    "target": "từ giờ trở đi"
   },
   {
     "source": "once in a while",
-    "target": "thỉnh thoảng",
-    "reviewed": false
+    "target": "thỉnh thoảng"
   },
   {
     "source": "every now and then",
-    "target": "thỉnh thoảng",
-    "reviewed": false
+    "target": "thỉnh thoảng"
   },
   {
     "source": "pretty much",
-    "target": "gần như",
-    "reviewed": false
+    "target": "gần như"
   },
   {
     "source": "kind of",
-    "target": "kiểu như",
-    "reviewed": false
+    "target": "kiểu như"
   },
   {
     "source": "sort of",
-    "target": "kiểu như",
-    "reviewed": false
+    "target": "kiểu như"
   }
 ]

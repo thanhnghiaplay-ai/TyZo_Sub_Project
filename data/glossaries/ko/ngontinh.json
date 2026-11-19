@@ -1,277 +1,223 @@
 [
   {
     "source": "재벌",
-    "target": "tài phiệt",
-    "reviewed": false
+    "target": "tài phiệt"
   },
   {
     "source": "재벌 2세",
-    "target": "thiếu gia tài phiệt",
-    "reviewed": false
+    "target": "thiếu gia tài phiệt"
   },
   {
     "source": "회장님",
-    "target": "chủ tịch",
-    "reviewed": false
+    "target": "chủ tịch"
   },
   {
     "source": "사장님",
     "target": "tổng giám đốc",
-    "note": "trong phim tình cảm hào môn có thể dịch «tổng tài»",
-    "reviewed": false
+    "note": "trong phim tình cảm hào môn có thể dịch «tổng tài»"
   },
   {
     "source": "비서",
-    "target": "thư ký",
-    "reviewed": false
+    "target": "thư ký"
   },
   {
     "source": "도련님",
-    "target": "cậu chủ",
-    "reviewed": false
+    "target": "cậu chủ"
   },
   {
     "source": "아가씨",
     "target": "tiểu thư",
-    "note": "còn có nghĩa «cô ơi/cô gái» tùy ngữ cảnh",
-    "reviewed": false
+    "note": "còn có nghĩa «cô ơi/cô gái» tùy ngữ cảnh"
   },
   {
     "source": "약혼자",
     "target": "vị hôn phu/vị hôn thê",
-    "note": "chọn theo giới tính người được nhắc",
-    "reviewed": false
+    "note": "chọn theo giới tính người được nhắc"
   },
   {
     "source": "약혼식",
-    "target": "lễ đính hôn",
-    "reviewed": false
+    "target": "lễ đính hôn"
   },
   {
     "source": "약혼",
-    "target": "đính hôn",
-    "reviewed": false
+    "target": "đính hôn"
   },
   {
     "source": "파혼",
-    "target": "hủy hôn",
-    "reviewed": false
+    "target": "hủy hôn"
   },
   {
     "source": "정략결혼",
-    "target": "hôn nhân sắp đặt vì lợi ích",
-    "reviewed": false
+    "target": "hôn nhân sắp đặt vì lợi ích"
   },
   {
     "source": "계약결혼",
-    "target": "hôn nhân hợp đồng",
-    "reviewed": false
+    "target": "hôn nhân hợp đồng"
   },
   {
     "source": "위장결혼",
-    "target": "hôn nhân giả",
-    "reviewed": false
+    "target": "hôn nhân giả"
   },
   {
     "source": "청혼",
-    "target": "cầu hôn",
-    "reviewed": false
+    "target": "cầu hôn"
   },
   {
     "source": "프러포즈",
-    "target": "cầu hôn",
-    "reviewed": false
+    "target": "cầu hôn"
   },
   {
     "source": "결혼반지",
-    "target": "nhẫn cưới",
-    "reviewed": false
+    "target": "nhẫn cưới"
   },
   {
     "source": "신혼여행",
-    "target": "tuần trăng mật",
-    "reviewed": false
+    "target": "tuần trăng mật"
   },
   {
     "source": "신혼",
-    "target": "tân hôn",
-    "reviewed": false
+    "target": "tân hôn"
   },
   {
     "source": "전남편",
-    "target": "chồng cũ",
-    "reviewed": false
+    "target": "chồng cũ"
   },
   {
     "source": "전처",
-    "target": "vợ cũ",
-    "reviewed": false
+    "target": "vợ cũ"
   },
   {
     "source": "전남친",
-    "target": "bạn trai cũ",
-    "reviewed": false
+    "target": "bạn trai cũ"
   },
   {
     "source": "전여친",
-    "target": "bạn gái cũ",
-    "reviewed": false
+    "target": "bạn gái cũ"
   },
   {
     "source": "첫사랑",
-    "target": "mối tình đầu",
-    "reviewed": false
+    "target": "mối tình đầu"
   },
   {
     "source": "소꿉친구",
-    "target": "thanh mai trúc mã",
-    "reviewed": false
+    "target": "thanh mai trúc mã"
   },
   {
     "source": "짝사랑",
-    "target": "yêu đơn phương",
-    "reviewed": false
+    "target": "yêu đơn phương"
   },
   {
     "source": "고백",
-    "target": "tỏ tình",
-    "reviewed": false
+    "target": "tỏ tình"
   },
   {
     "source": "이별",
-    "target": "chia tay",
-    "reviewed": false
+    "target": "chia tay"
   },
   {
     "source": "불륜",
-    "target": "ngoại tình",
-    "reviewed": false
+    "target": "ngoại tình"
   },
   {
     "source": "질투",
-    "target": "ghen tuông",
-    "reviewed": false
+    "target": "ghen tuông"
   },
   {
     "source": "설렘",
-    "target": "rung động",
-    "reviewed": false
+    "target": "rung động"
   },
   {
     "source": "운명",
-    "target": "định mệnh",
-    "reviewed": false
+    "target": "định mệnh"
   },
   {
     "source": "츤데레",
-    "target": "tsundere (ngoài lạnh trong nóng)",
-    "reviewed": false
+    "target": "tsundere (ngoài lạnh trong nóng)"
   },
   {
     "source": "벽쿵",
-    "target": "ép sát vào tường",
-    "reviewed": false
+    "target": "ép sát vào tường"
   },
   {
     "source": "동거",
-    "target": "sống chung",
-    "reviewed": false
+    "target": "sống chung"
   },
   {
     "source": "남친",
-    "target": "bạn trai",
-    "reviewed": false
+    "target": "bạn trai"
   },
   {
     "source": "여친",
-    "target": "bạn gái",
-    "reviewed": false
+    "target": "bạn gái"
   },
   {
     "source": "애인",
-    "target": "người yêu",
-    "reviewed": false
+    "target": "người yêu"
   },
   {
     "source": "남편",
-    "target": "chồng",
-    "reviewed": false
+    "target": "chồng"
   },
   {
     "source": "아내",
-    "target": "vợ",
-    "reviewed": false
+    "target": "vợ"
   },
   {
     "source": "여보",
     "target": "mình ơi",
-    "note": "vợ chồng gọi nhau",
-    "reviewed": false
+    "note": "vợ chồng gọi nhau"
   },
   {
     "source": "자기야",
-    "target": "cưng ơi",
-    "reviewed": false
+    "target": "cưng ơi"
   },
   {
     "source": "삼각관계",
-    "target": "tình tay ba",
-    "reviewed": false
+    "target": "tình tay ba"
   },
   {
     "source": "맞선",
-    "target": "buổi xem mắt",
-    "reviewed": false
+    "target": "buổi xem mắt"
   },
   {
     "source": "소개팅",
-    "target": "buổi hẹn hò do người quen mai mối",
-    "reviewed": false
+    "target": "buổi hẹn hò do người quen mai mối"
   },
   {
     "source": "막장 드라마",
-    "target": "phim cẩu huyết",
-    "reviewed": false
+    "target": "phim cẩu huyết"
   },
   {
     "source": "출생의 비밀",
-    "target": "bí mật thân thế",
-    "reviewed": false
+    "target": "bí mật thân thế"
   },
   {
     "source": "기억상실",
-    "target": "mất trí nhớ",
-    "reviewed": false
+    "target": "mất trí nhớ"
   },
   {
     "source": "신데렐라",
-    "target": "Lọ Lem",
-    "reviewed": false
+    "target": "Lọ Lem"
   },
   {
     "source": "시월드",
     "target": "nhà chồng",
-    "note": "tiếng lóng",
-    "reviewed": false
+    "note": "tiếng lóng"
   },
   {
     "source": "시댁",
-    "target": "nhà chồng",
-    "reviewed": false
+    "target": "nhà chồng"
   },
   {
     "source": "시어머니",
-    "target": "mẹ chồng",
-    "reviewed": false
+    "target": "mẹ chồng"
   },
   {
     "source": "장모님",
-    "target": "mẹ vợ",
-    "reviewed": false
+    "target": "mẹ vợ"
   },
   {
     "source": "처가",
-    "target": "nhà vợ",
-    "reviewed": false
+    "target": "nhà vợ"
   }
 ]

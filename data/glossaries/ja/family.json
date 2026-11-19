@@ -1,382 +1,306 @@
 [
   {
     "source": "長男",
-    "target": "con trai trưởng",
-    "reviewed": false
+    "target": "con trai trưởng"
   },
   {
     "source": "次男",
-    "target": "con trai thứ",
-    "reviewed": false
+    "target": "con trai thứ"
   },
   {
     "source": "三男",
-    "target": "con trai thứ ba",
-    "reviewed": false
+    "target": "con trai thứ ba"
   },
   {
     "source": "長女",
-    "target": "con gái đầu",
-    "reviewed": false
+    "target": "con gái đầu"
   },
   {
     "source": "次女",
-    "target": "con gái thứ",
-    "reviewed": false
+    "target": "con gái thứ"
   },
   {
     "source": "末っ子",
-    "target": "con út",
-    "reviewed": false
+    "target": "con út"
   },
   {
     "source": "一人っ子",
-    "target": "con một",
-    "reviewed": false
+    "target": "con một"
   },
   {
     "source": "お嫁さん",
-    "target": "con dâu (hoặc cô dâu, tùy ngữ cảnh)",
-    "reviewed": false
+    "target": "con dâu (hoặc cô dâu, tùy ngữ cảnh)"
   },
   {
     "source": "お姑さん",
-    "target": "mẹ chồng",
-    "reviewed": false
+    "target": "mẹ chồng"
   },
   {
     "source": "小姑",
-    "target": "chị/em gái chồng",
-    "reviewed": false
+    "target": "chị/em gái chồng"
   },
   {
     "source": "お婿さん",
-    "target": "con rể (hoặc chàng rể)",
-    "reviewed": false
+    "target": "con rể (hoặc chàng rể)"
   },
   {
     "source": "義父",
-    "target": "bố vợ / bố chồng / bố dượng (tùy ngữ cảnh)",
-    "reviewed": false
+    "target": "bố vợ / bố chồng / bố dượng (tùy ngữ cảnh)"
   },
   {
     "source": "義母",
-    "target": "mẹ vợ / mẹ chồng / mẹ kế (tùy ngữ cảnh)",
-    "reviewed": false
+    "target": "mẹ vợ / mẹ chồng / mẹ kế (tùy ngữ cảnh)"
   },
   {
     "source": "祖父",
-    "target": "ông",
-    "reviewed": false
+    "target": "ông"
   },
   {
     "source": "祖母",
-    "target": "bà",
-    "reviewed": false
+    "target": "bà"
   },
   {
     "source": "おじいちゃん",
-    "target": "ông",
-    "reviewed": false
+    "target": "ông"
   },
   {
     "source": "おばあちゃん",
-    "target": "bà",
-    "reviewed": false
+    "target": "bà"
   },
   {
     "source": "親戚",
-    "target": "họ hàng",
-    "reviewed": false
+    "target": "họ hàng"
   },
   {
     "source": "実家",
-    "target": "nhà bố mẹ đẻ",
-    "reviewed": false
+    "target": "nhà bố mẹ đẻ"
   },
   {
     "source": "里帰り",
-    "target": "về nhà mẹ đẻ",
-    "reviewed": false
+    "target": "về nhà mẹ đẻ"
   },
   {
     "source": "帰省",
-    "target": "về quê",
-    "reviewed": false
+    "target": "về quê"
   },
   {
     "source": "同居",
-    "target": "sống chung với gia đình",
-    "reviewed": false
+    "target": "sống chung với gia đình"
   },
   {
     "source": "二世帯住宅",
-    "target": "nhà hai thế hệ cùng sống",
-    "reviewed": false
+    "target": "nhà hai thế hệ cùng sống"
   },
   {
     "source": "単身赴任",
-    "target": "đi làm xa nhà một mình",
-    "reviewed": false
+    "target": "đi làm xa nhà một mình"
   },
   {
     "source": "専業主婦",
-    "target": "nội trợ toàn thời gian",
-    "reviewed": false
+    "target": "nội trợ toàn thời gian"
   },
   {
     "source": "共働き",
-    "target": "vợ chồng cùng đi làm",
-    "reviewed": false
+    "target": "vợ chồng cùng đi làm"
   },
   {
     "source": "家督",
-    "target": "quyền thừa kế gia chủ",
-    "reviewed": false
+    "target": "quyền thừa kế gia chủ"
   },
   {
     "source": "跡取り",
-    "target": "người nối dõi",
-    "reviewed": false
+    "target": "người nối dõi"
   },
   {
     "source": "家業",
-    "target": "nghề gia truyền",
-    "reviewed": false
+    "target": "nghề gia truyền"
   },
   {
     "source": "本家",
-    "target": "dòng chính",
-    "reviewed": false
+    "target": "dòng chính"
   },
   {
     "source": "分家",
-    "target": "nhánh phụ của dòng họ",
-    "reviewed": false
+    "target": "nhánh phụ của dòng họ"
   },
   {
     "source": "お盆",
-    "target": "lễ Obon",
-    "reviewed": false
+    "target": "lễ Obon"
   },
   {
     "source": "法事",
-    "target": "lễ cúng giỗ theo Phật giáo",
-    "reviewed": false
+    "target": "lễ cúng giỗ theo Phật giáo"
   },
   {
     "source": "仏壇",
-    "target": "bàn thờ Phật trong nhà",
-    "reviewed": false
+    "target": "bàn thờ Phật trong nhà"
   },
   {
     "source": "遺産相続",
-    "target": "thừa kế di sản",
-    "reviewed": false
+    "target": "thừa kế di sản"
   },
   {
     "source": "離婚",
-    "target": "ly hôn",
-    "reviewed": false
+    "target": "ly hôn"
   },
   {
     "source": "親権",
-    "target": "quyền nuôi con",
-    "reviewed": false
+    "target": "quyền nuôi con"
   },
   {
     "source": "養子",
-    "target": "con nuôi",
-    "reviewed": false
+    "target": "con nuôi"
   },
   {
     "source": "里親",
-    "target": "cha mẹ nuôi tạm thời",
-    "reviewed": false
+    "target": "cha mẹ nuôi tạm thời"
   },
   {
     "source": "反抗期",
-    "target": "tuổi nổi loạn",
-    "reviewed": false
+    "target": "tuổi nổi loạn"
   },
   {
     "source": "門限",
-    "target": "giờ giới nghiêm của gia đình",
-    "reviewed": false
+    "target": "giờ giới nghiêm của gia đình"
   },
   {
     "source": "お年玉",
-    "target": "tiền mừng tuổi năm mới",
-    "reviewed": false
+    "target": "tiền mừng tuổi năm mới"
   },
   {
     "source": "親孝行",
-    "target": "hiếu thảo với cha mẹ",
-    "reviewed": false
+    "target": "hiếu thảo với cha mẹ"
   },
   {
     "source": "勘当",
-    "target": "từ mặt, đoạn tuyệt cha con",
-    "reviewed": false
+    "target": "từ mặt, đoạn tuyệt cha con"
   },
   {
     "source": "義兄",
-    "target": "anh của vợ hoặc chồng",
-    "reviewed": false
+    "target": "anh của vợ hoặc chồng"
   },
   {
     "source": "義姉",
-    "target": "chị của vợ hoặc chồng",
-    "reviewed": false
+    "target": "chị của vợ hoặc chồng"
   },
   {
     "source": "義弟",
-    "target": "em trai của vợ hoặc chồng",
-    "reviewed": false
+    "target": "em trai của vợ hoặc chồng"
   },
   {
     "source": "義妹",
-    "target": "em gái của vợ hoặc chồng",
-    "reviewed": false
+    "target": "em gái của vợ hoặc chồng"
   },
   {
     "source": "いとこ",
-    "target": "anh chị em họ",
-    "reviewed": false
+    "target": "anh chị em họ"
   },
   {
     "source": "ひ孫",
-    "target": "chắt",
-    "reviewed": false
+    "target": "chắt"
   },
   {
     "source": "伯父",
-    "target": "bác trai",
-    "reviewed": false
+    "target": "bác trai"
   },
   {
     "source": "叔父",
-    "target": "chú",
-    "reviewed": false
+    "target": "chú"
   },
   {
     "source": "伯母",
-    "target": "bác gái",
-    "reviewed": false
+    "target": "bác gái"
   },
   {
     "source": "叔母",
-    "target": "cô hoặc thím",
-    "reviewed": false
+    "target": "cô hoặc thím"
   },
   {
     "source": "継母",
-    "target": "mẹ kế",
-    "reviewed": false
+    "target": "mẹ kế"
   },
   {
     "source": "継父",
-    "target": "bố kế",
-    "reviewed": false
+    "target": "bố kế"
   },
   {
     "source": "連れ子",
-    "target": "con riêng",
-    "reviewed": false
+    "target": "con riêng"
   },
   {
     "source": "再婚",
-    "target": "tái hôn",
-    "reviewed": false
+    "target": "tái hôn"
   },
   {
     "source": "再婚相手",
-    "target": "người tái hôn",
-    "reviewed": false
+    "target": "người tái hôn"
   },
   {
     "source": "内縁",
-    "target": "sống chung không đăng ký",
-    "reviewed": false
+    "target": "sống chung không đăng ký"
   },
   {
     "source": "籍を入れる",
-    "target": "nhập hộ khẩu kết hôn",
-    "reviewed": false
+    "target": "nhập hộ khẩu kết hôn"
   },
   {
     "source": "結婚届",
-    "target": "giấy đăng ký kết hôn",
-    "reviewed": false
+    "target": "giấy đăng ký kết hôn"
   },
   {
     "source": "離婚届",
-    "target": "đơn ly hôn",
-    "reviewed": false
+    "target": "đơn ly hôn"
   },
   {
     "source": "婚約",
-    "target": "đính hôn",
-    "reviewed": false
+    "target": "đính hôn"
   },
   {
     "source": "結納",
-    "target": "lễ hỏi",
-    "reviewed": false
+    "target": "lễ hỏi"
   },
   {
     "source": "仲人",
-    "target": "người mai mối",
-    "reviewed": false
+    "target": "người mai mối"
   },
   {
     "source": "花嫁",
-    "target": "cô dâu",
-    "reviewed": false
+    "target": "cô dâu"
   },
   {
     "source": "花婿",
-    "target": "chú rể",
-    "reviewed": false
+    "target": "chú rể"
   },
   {
     "source": "新婚旅行",
-    "target": "tuần trăng mật",
-    "reviewed": false
+    "target": "tuần trăng mật"
   },
   {
     "source": "七五三",
-    "target": "lễ thất ngũ tam",
-    "reviewed": false
+    "target": "lễ thất ngũ tam"
   },
   {
     "source": "お宮参り",
-    "target": "lễ bế con ra đền",
-    "reviewed": false
+    "target": "lễ bế con ra đền"
   },
   {
     "source": "家族会議",
-    "target": "họp gia đình",
-    "reviewed": false
+    "target": "họp gia đình"
   },
   {
     "source": "核家族",
-    "target": "gia đình hạt nhân",
-    "reviewed": false
+    "target": "gia đình hạt nhân"
   },
   {
     "source": "大家族",
-    "target": "đại gia đình",
-    "reviewed": false
+    "target": "đại gia đình"
   },
   {
     "source": "一人暮らし",
-    "target": "sống một mình",
-    "reviewed": false
+    "target": "sống một mình"
   },
   {
     "source": "初孫",
-    "target": "cháu đầu",
-    "reviewed": false
+    "target": "cháu đầu"
   }
 ]

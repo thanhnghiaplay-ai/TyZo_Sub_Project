@@ -1,524 +1,420 @@
 [
   {
     "source": "修仙",
-    "target": "tu tiên",
-    "reviewed": false
+    "target": "tu tiên"
   },
   {
     "source": "修炼",
-    "target": "tu luyện",
-    "reviewed": false
+    "target": "tu luyện"
   },
   {
     "source": "修为",
-    "target": "tu vi",
-    "reviewed": false
+    "target": "tu vi"
   },
   {
     "source": "灵气",
-    "target": "linh khí",
-    "reviewed": false
+    "target": "linh khí"
   },
   {
     "source": "灵根",
-    "target": "linh căn",
-    "reviewed": false
+    "target": "linh căn"
   },
   {
     "source": "丹田",
-    "target": "đan điền",
-    "reviewed": false
+    "target": "đan điền"
   },
   {
     "source": "练气",
     "target": "luyện khí",
-    "note": "Cảnh giới đầu tiên",
-    "reviewed": false
+    "note": "Cảnh giới đầu tiên"
   },
   {
     "source": "筑基",
-    "target": "trúc cơ",
-    "reviewed": false
+    "target": "trúc cơ"
   },
   {
     "source": "金丹",
-    "target": "kim đan",
-    "reviewed": false
+    "target": "kim đan"
   },
   {
     "source": "元婴",
-    "target": "nguyên anh",
-    "reviewed": false
+    "target": "nguyên anh"
   },
   {
     "source": "化神",
-    "target": "hóa thần",
-    "reviewed": false
+    "target": "hóa thần"
   },
   {
     "source": "渡劫",
-    "target": "độ kiếp",
-    "reviewed": false
+    "target": "độ kiếp"
   },
   {
     "source": "天劫",
-    "target": "thiên kiếp",
-    "reviewed": false
+    "target": "thiên kiếp"
   },
   {
     "source": "飞升",
-    "target": "phi thăng",
-    "reviewed": false
+    "target": "phi thăng"
   },
   {
     "source": "宗门",
-    "target": "tông môn",
-    "reviewed": false
+    "target": "tông môn"
   },
   {
     "source": "掌门",
-    "target": "chưởng môn",
-    "reviewed": false
+    "target": "chưởng môn"
   },
   {
     "source": "长老",
-    "target": "trưởng lão",
-    "reviewed": false
+    "target": "trưởng lão"
   },
   {
     "source": "师尊",
-    "target": "sư tôn",
-    "reviewed": false
+    "target": "sư tôn"
   },
   {
     "source": "道友",
-    "target": "đạo hữu",
-    "reviewed": false
+    "target": "đạo hữu"
   },
   {
     "source": "前辈",
-    "target": "tiền bối",
-    "reviewed": false
+    "target": "tiền bối"
   },
   {
     "source": "仙君",
-    "target": "tiên quân",
-    "reviewed": false
+    "target": "tiên quân"
   },
   {
     "source": "仙尊",
-    "target": "tiên tôn",
-    "reviewed": false
+    "target": "tiên tôn"
   },
   {
     "source": "魔尊",
-    "target": "ma tôn",
-    "reviewed": false
+    "target": "ma tôn"
   },
   {
     "source": "魔修",
-    "target": "ma tu",
-    "reviewed": false
+    "target": "ma tu"
   },
   {
     "source": "妖兽",
-    "target": "yêu thú",
-    "reviewed": false
+    "target": "yêu thú"
   },
   {
     "source": "灵石",
-    "target": "linh thạch",
-    "reviewed": false
+    "target": "linh thạch"
   },
   {
     "source": "法宝",
-    "target": "pháp bảo",
-    "reviewed": false
+    "target": "pháp bảo"
   },
   {
     "source": "飞剑",
-    "target": "phi kiếm",
-    "reviewed": false
+    "target": "phi kiếm"
   },
   {
     "source": "御剑飞行",
-    "target": "ngự kiếm phi hành",
-    "reviewed": false
+    "target": "ngự kiếm phi hành"
   },
   {
     "source": "结界",
-    "target": "kết giới",
-    "reviewed": false
+    "target": "kết giới"
   },
   {
     "source": "阵法",
-    "target": "trận pháp",
-    "reviewed": false
+    "target": "trận pháp"
   },
   {
     "source": "符箓",
-    "target": "phù lục",
-    "reviewed": false
+    "target": "phù lục"
   },
   {
     "source": "丹药",
-    "target": "đan dược",
-    "reviewed": false
+    "target": "đan dược"
   },
   {
     "source": "炼丹",
-    "target": "luyện đan",
-    "reviewed": false
+    "target": "luyện đan"
   },
   {
     "source": "炼器",
     "target": "luyện khí",
-    "note": "Luyện pháp khí, khác với cảnh giới 练气",
-    "reviewed": false
+    "note": "Luyện pháp khí, khác với cảnh giới 练气"
   },
   {
     "source": "心魔",
-    "target": "tâm ma",
-    "reviewed": false
+    "target": "tâm ma"
   },
   {
     "source": "神识",
-    "target": "thần thức",
-    "reviewed": false
+    "target": "thần thức"
   },
   {
     "source": "元神",
-    "target": "nguyên thần",
-    "reviewed": false
+    "target": "nguyên thần"
   },
   {
     "source": "洞府",
-    "target": "động phủ",
-    "reviewed": false
+    "target": "động phủ"
   },
   {
     "source": "秘境",
-    "target": "bí cảnh",
-    "reviewed": false
+    "target": "bí cảnh"
   },
   {
     "source": "仙界",
-    "target": "tiên giới",
-    "reviewed": false
+    "target": "tiên giới"
   },
   {
     "source": "凡人",
-    "target": "phàm nhân",
-    "reviewed": false
+    "target": "phàm nhân"
   },
   {
     "source": "本座",
-    "target": "bổn tọa",
-    "reviewed": false
+    "target": "bổn tọa"
   },
   {
     "source": "夺舍",
-    "target": "đoạt xá",
-    "reviewed": false
+    "target": "đoạt xá"
   },
   {
     "source": "天道",
-    "target": "thiên đạo",
-    "reviewed": false
+    "target": "thiên đạo"
   },
   {
     "source": "因果",
-    "target": "nhân quả",
-    "reviewed": false
+    "target": "nhân quả"
   },
   {
     "source": "道心",
-    "target": "đạo tâm",
-    "reviewed": false
+    "target": "đạo tâm"
   },
   {
     "source": "闭关",
-    "target": "bế quan",
-    "reviewed": false
+    "target": "bế quan"
   },
   {
     "source": "出关",
-    "target": "xuất quan",
-    "reviewed": false
+    "target": "xuất quan"
   },
   {
     "source": "仙侠",
-    "target": "tiên hiệp",
-    "reviewed": false
+    "target": "tiên hiệp"
   },
   {
     "source": "修真",
-    "target": "tu chân",
-    "reviewed": false
+    "target": "tu chân"
   },
   {
     "source": "修士",
-    "target": "tu sĩ",
-    "reviewed": false
+    "target": "tu sĩ"
   },
   {
     "source": "仙人",
-    "target": "tiên nhân",
-    "reviewed": false
+    "target": "tiên nhân"
   },
   {
     "source": "神仙",
-    "target": "thần tiên",
-    "reviewed": false
+    "target": "thần tiên"
   },
   {
     "source": "天地灵气",
-    "target": "linh khí trời đất",
-    "reviewed": false
+    "target": "linh khí trời đất"
   },
   {
     "source": "灵力",
-    "target": "linh lực",
-    "reviewed": false
+    "target": "linh lực"
   },
   {
     "source": "灵魂",
-    "target": "linh hồn",
-    "reviewed": false
+    "target": "linh hồn"
   },
   {
     "source": "魂魄",
-    "target": "hồn phách",
-    "reviewed": false
+    "target": "hồn phách"
   },
   {
     "source": "元气",
-    "target": "nguyên khí",
-    "reviewed": false
+    "target": "nguyên khí"
   },
   {
     "source": "真元",
-    "target": "chân nguyên",
-    "reviewed": false
+    "target": "chân nguyên"
   },
   {
     "source": "功法",
-    "target": "công pháp",
-    "reviewed": false
+    "target": "công pháp"
   },
   {
     "source": "心法",
-    "target": "tâm pháp",
-    "reviewed": false
+    "target": "tâm pháp"
   },
   {
     "source": "道法",
-    "target": "đạo pháp",
-    "reviewed": false
+    "target": "đạo pháp"
   },
   {
     "source": "法术",
-    "target": "pháp thuật",
-    "reviewed": false
+    "target": "pháp thuật"
   },
   {
     "source": "法诀",
-    "target": "pháp quyết",
-    "reviewed": false
+    "target": "pháp quyết"
   },
   {
     "source": "法器",
-    "target": "pháp khí",
-    "reviewed": false
+    "target": "pháp khí"
   },
   {
     "source": "灵器",
-    "target": "linh khí (pháp bảo)",
-    "reviewed": false
+    "target": "linh khí (pháp bảo)"
   },
   {
     "source": "仙器",
-    "target": "tiên khí",
-    "reviewed": false
+    "target": "tiên khí"
   },
   {
     "source": "神器",
-    "target": "thần khí",
-    "reviewed": false
+    "target": "thần khí"
   },
   {
     "source": "储物袋",
-    "target": "túi trữ vật",
-    "reviewed": false
+    "target": "túi trữ vật"
   },
   {
     "source": "乾坤袋",
-    "target": "túi càn khôn",
-    "reviewed": false
+    "target": "túi càn khôn"
   },
   {
     "source": "灵草",
-    "target": "linh thảo",
-    "reviewed": false
+    "target": "linh thảo"
   },
   {
     "source": "灵药",
-    "target": "linh dược",
-    "reviewed": false
+    "target": "linh dược"
   },
   {
     "source": "仙丹",
-    "target": "tiên đan",
-    "reviewed": false
+    "target": "tiên đan"
   },
   {
     "source": "灵兽",
-    "target": "linh thú",
-    "reviewed": false
+    "target": "linh thú"
   },
   {
     "source": "妖族",
-    "target": "yêu tộc",
-    "reviewed": false
+    "target": "yêu tộc"
   },
   {
     "source": "魔族",
-    "target": "ma tộc",
-    "reviewed": false
+    "target": "ma tộc"
   },
   {
     "source": "魔道",
-    "target": "ma đạo",
-    "reviewed": false
+    "target": "ma đạo"
   },
   {
     "source": "正道",
-    "target": "chính đạo",
-    "reviewed": false
+    "target": "chính đạo"
   },
   {
     "source": "炼气期",
-    "target": "kỳ luyện khí",
-    "reviewed": false
+    "target": "kỳ luyện khí"
   },
   {
     "source": "筑基期",
-    "target": "kỳ trúc cơ",
-    "reviewed": false
+    "target": "kỳ trúc cơ"
   },
   {
     "source": "金丹期",
-    "target": "kỳ kim đan",
-    "reviewed": false
+    "target": "kỳ kim đan"
   },
   {
     "source": "元婴期",
-    "target": "kỳ nguyên anh",
-    "reviewed": false
+    "target": "kỳ nguyên anh"
   },
   {
     "source": "化神期",
-    "target": "kỳ hóa thần",
-    "reviewed": false
+    "target": "kỳ hóa thần"
   },
   {
     "source": "大乘",
-    "target": "đại thừa",
-    "reviewed": false
+    "target": "đại thừa"
   },
   {
     "source": "突破",
-    "target": "đột phá",
-    "reviewed": false
+    "target": "đột phá"
   },
   {
     "source": "瓶颈",
-    "target": "bình cảnh",
-    "reviewed": false
+    "target": "bình cảnh"
   },
   {
     "source": "顿悟",
-    "target": "đốn ngộ",
-    "reviewed": false
+    "target": "đốn ngộ"
   },
   {
     "source": "机缘",
-    "target": "cơ duyên",
-    "reviewed": false
+    "target": "cơ duyên"
   },
   {
     "source": "天材地宝",
-    "target": "thiên tài địa bảo",
-    "reviewed": false
+    "target": "thiên tài địa bảo"
   },
   {
     "source": "传承",
-    "target": "truyền thừa",
-    "reviewed": false
+    "target": "truyền thừa"
   },
   {
     "source": "道侣",
-    "target": "đạo lữ",
-    "reviewed": false
+    "target": "đạo lữ"
   },
   {
     "source": "师门",
-    "target": "sư môn",
-    "reviewed": false
+    "target": "sư môn"
   },
   {
     "source": "入魔",
-    "target": "nhập ma",
-    "reviewed": false
+    "target": "nhập ma"
   },
   {
     "source": "魂飞魄散",
-    "target": "hồn phi phách tán",
-    "reviewed": false
+    "target": "hồn phi phách tán"
   },
   {
     "source": "轮回",
-    "target": "luân hồi",
-    "reviewed": false
+    "target": "luân hồi"
   },
   {
     "source": "转世",
-    "target": "chuyển thế",
-    "reviewed": false
+    "target": "chuyển thế"
   },
   {
     "source": "仙门",
-    "target": "tiên môn",
-    "reviewed": false
+    "target": "tiên môn"
   },
   {
     "source": "天宫",
-    "target": "thiên cung",
-    "reviewed": false
+    "target": "thiên cung"
   },
   {
     "source": "九天",
-    "target": "cửu thiên",
-    "reviewed": false
+    "target": "cửu thiên"
   },
   {
     "source": "上界",
-    "target": "thượng giới",
-    "reviewed": false
+    "target": "thượng giới"
   },
   {
     "source": "下界",
-    "target": "hạ giới",
-    "reviewed": false
+    "target": "hạ giới"
   },
   {
     "source": "护山大阵",
-    "target": "hộ sơn đại trận",
-    "reviewed": false
+    "target": "hộ sơn đại trận"
   },
   {
     "source": "传送阵",
-    "target": "truyền tống trận",
-    "reviewed": false
+    "target": "truyền tống trận"
   }
 ]

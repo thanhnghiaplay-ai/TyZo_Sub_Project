@@ -1,410 +1,329 @@
 [
   {
     "source": "御曹司",
-    "target": "thiếu gia",
-    "reviewed": false
+    "target": "thiếu gia"
   },
   {
     "source": "令嬢",
-    "target": "thiên kim tiểu thư",
-    "reviewed": false
+    "target": "thiên kim tiểu thư"
   },
   {
     "source": "お嬢様",
-    "target": "tiểu thư",
-    "reviewed": false
+    "target": "tiểu thư"
   },
   {
     "source": "財閥",
-    "target": "tài phiệt",
-    "reviewed": false
+    "target": "tài phiệt"
   },
   {
     "source": "社長",
     "target": "tổng giám đốc",
-    "note": "trong phim tình cảm hào môn thường dịch là «tổng tài» nếu nhân vật bá đạo",
-    "reviewed": false
+    "note": "trong phim tình cảm hào môn thường dịch là «tổng tài» nếu nhân vật bá đạo"
   },
   {
     "source": "副社長",
-    "target": "phó tổng giám đốc",
-    "reviewed": false
+    "target": "phó tổng giám đốc"
   },
   {
     "source": "会長",
-    "target": "chủ tịch",
-    "reviewed": false
+    "target": "chủ tịch"
   },
   {
     "source": "専務",
-    "target": "phó tổng",
-    "reviewed": false
+    "target": "phó tổng"
   },
   {
     "source": "秘書",
-    "target": "thư ký",
-    "reviewed": false
+    "target": "thư ký"
   },
   {
     "source": "政略結婚",
-    "target": "hôn nhân sắp đặt vì lợi ích",
-    "reviewed": false
+    "target": "hôn nhân sắp đặt vì lợi ích"
   },
   {
     "source": "契約結婚",
-    "target": "hôn nhân hợp đồng",
-    "reviewed": false
+    "target": "hôn nhân hợp đồng"
   },
   {
     "source": "偽装結婚",
-    "target": "hôn nhân giả",
-    "reviewed": false
+    "target": "hôn nhân giả"
   },
   {
     "source": "婚約者",
     "target": "vị hôn phu/vị hôn thê",
-    "note": "chọn theo giới tính người được nhắc",
-    "reviewed": false
+    "note": "chọn theo giới tính người được nhắc"
   },
   {
     "source": "許嫁",
-    "target": "người đã được hứa hôn",
-    "reviewed": false
+    "target": "người đã được hứa hôn"
   },
   {
     "source": "婚約破棄",
-    "target": "hủy hôn",
-    "reviewed": false
+    "target": "hủy hôn"
   },
   {
     "source": "婚約指輪",
-    "target": "nhẫn đính hôn",
-    "reviewed": false
+    "target": "nhẫn đính hôn"
   },
   {
     "source": "結婚指輪",
-    "target": "nhẫn cưới",
-    "reviewed": false
+    "target": "nhẫn cưới"
   },
   {
     "source": "結婚式",
-    "target": "lễ cưới",
-    "reviewed": false
+    "target": "lễ cưới"
   },
   {
     "source": "新婚",
-    "target": "tân hôn",
-    "reviewed": false
+    "target": "tân hôn"
   },
   {
     "source": "元カノ",
-    "target": "bạn gái cũ",
-    "reviewed": false
+    "target": "bạn gái cũ"
   },
   {
     "source": "元カレ",
-    "target": "bạn trai cũ",
-    "reviewed": false
+    "target": "bạn trai cũ"
   },
   {
     "source": "元夫",
-    "target": "chồng cũ",
-    "reviewed": false
+    "target": "chồng cũ"
   },
   {
     "source": "元妻",
-    "target": "vợ cũ",
-    "reviewed": false
+    "target": "vợ cũ"
   },
   {
     "source": "初恋",
-    "target": "mối tình đầu",
-    "reviewed": false
+    "target": "mối tình đầu"
   },
   {
     "source": "幼なじみ",
-    "target": "thanh mai trúc mã",
-    "reviewed": false
+    "target": "thanh mai trúc mã"
   },
   {
     "source": "一目惚れ",
-    "target": "yêu từ cái nhìn đầu tiên",
-    "reviewed": false
+    "target": "yêu từ cái nhìn đầu tiên"
   },
   {
     "source": "片思い",
-    "target": "yêu đơn phương",
-    "reviewed": false
+    "target": "yêu đơn phương"
   },
   {
     "source": "告白",
-    "target": "tỏ tình",
-    "reviewed": false
+    "target": "tỏ tình"
   },
   {
     "source": "失恋",
-    "target": "thất tình",
-    "reviewed": false
+    "target": "thất tình"
   },
   {
     "source": "浮気",
     "target": "ngoại tình",
-    "note": "có thể là «cắm sừng» tùy ngữ cảnh",
-    "reviewed": false
+    "note": "có thể là «cắm sừng» tùy ngữ cảnh"
   },
   {
     "source": "不倫",
-    "target": "ngoại tình",
-    "reviewed": false
+    "target": "ngoại tình"
   },
   {
     "source": "嫉妬",
-    "target": "ghen tuông",
-    "reviewed": false
+    "target": "ghen tuông"
   },
   {
     "source": "運命の人",
-    "target": "người định mệnh",
-    "reviewed": false
+    "target": "người định mệnh"
   },
   {
     "source": "身代わり",
-    "target": "thế thân",
-    "reviewed": false
+    "target": "thế thân"
   },
   {
     "source": "溺愛",
-    "target": "cưng chiều hết mực",
-    "reviewed": false
+    "target": "cưng chiều hết mực"
   },
   {
     "source": "俺様",
-    "target": "bá đạo ngạo mạn",
-    "reviewed": false
+    "target": "bá đạo ngạo mạn"
   },
   {
     "source": "ツンデレ",
-    "target": "tsundere (ngoài lạnh trong nóng)",
-    "reviewed": false
+    "target": "tsundere (ngoài lạnh trong nóng)"
   },
   {
     "source": "壁ドン",
-    "target": "ép sát vào tường",
-    "reviewed": false
+    "target": "ép sát vào tường"
   },
   {
     "source": "同棲",
-    "target": "sống chung",
-    "reviewed": false
+    "target": "sống chung"
   },
   {
     "source": "彼氏",
-    "target": "bạn trai",
-    "reviewed": false
+    "target": "bạn trai"
   },
   {
     "source": "彼女",
-    "target": "bạn gái",
-    "reviewed": false
+    "target": "bạn gái"
   },
   {
     "source": "恋人",
-    "target": "người yêu",
-    "reviewed": false
+    "target": "người yêu"
   },
   {
     "source": "旦那",
-    "target": "chồng",
-    "reviewed": false
+    "target": "chồng"
   },
   {
     "source": "奥さん",
-    "target": "vợ",
-    "reviewed": false
+    "target": "vợ"
   },
   {
     "source": "三角関係",
-    "target": "tình tay ba",
-    "reviewed": false
+    "target": "tình tay ba"
   },
   {
     "source": "修羅場",
-    "target": "cảnh ghen tuông tranh giành",
-    "reviewed": false
+    "target": "cảnh ghen tuông tranh giành"
   },
   {
     "source": "玉の輿",
-    "target": "lấy chồng giàu",
-    "reviewed": false
+    "target": "lấy chồng giàu"
   },
   {
     "source": "お見合い",
-    "target": "buổi xem mắt",
-    "reviewed": false
+    "target": "buổi xem mắt"
   },
   {
     "source": "略奪愛",
-    "target": "cướp người yêu",
-    "reviewed": false
+    "target": "cướp người yêu"
   },
   {
     "source": "契約恋人",
-    "target": "người yêu hợp đồng",
-    "reviewed": false
+    "target": "người yêu hợp đồng"
   },
   {
     "source": "復縁",
-    "target": "quay lại với nhau",
-    "reviewed": false
+    "target": "quay lại với nhau"
   },
   {
     "source": "社内恋愛",
-    "target": "yêu trong công ty",
-    "reviewed": false
+    "target": "yêu trong công ty"
   },
   {
     "source": "年の差",
-    "target": "chênh lệch tuổi",
-    "reviewed": false
+    "target": "chênh lệch tuổi"
   },
   {
     "source": "身分違い",
-    "target": "khác biệt thân phận",
-    "reviewed": false
+    "target": "khác biệt thân phận"
   },
   {
     "source": "親の反対",
-    "target": "cha mẹ phản đối",
-    "reviewed": false
+    "target": "cha mẹ phản đối"
   },
   {
     "source": "駆け落ち",
-    "target": "bỏ trốn để yêu",
-    "reviewed": false
+    "target": "bỏ trốn để yêu"
   },
   {
     "source": "プロポーズ",
-    "target": "cầu hôn",
-    "reviewed": false
+    "target": "cầu hôn"
   },
   {
     "source": "サプライズ",
-    "target": "bất ngờ",
-    "reviewed": false
+    "target": "bất ngờ"
   },
   {
     "source": "デート",
-    "target": "hẹn hò",
-    "reviewed": false
+    "target": "hẹn hò"
   },
   {
     "source": "キス",
-    "target": "hôn",
-    "reviewed": false
+    "target": "hôn"
   },
   {
     "source": "抱擁",
-    "target": "ôm",
-    "reviewed": false
+    "target": "ôm"
   },
   {
     "source": "甘える",
-    "target": "nũng nịu",
-    "reviewed": false
+    "target": "nũng nịu"
   },
   {
     "source": "独占欲",
-    "target": "muốn chiếm hữu",
-    "reviewed": false
+    "target": "muốn chiếm hữu"
   },
   {
     "source": "束縛",
-    "target": "kiểm soát",
-    "reviewed": false
+    "target": "kiểm soát"
   },
   {
     "source": "照れる",
-    "target": "ngượng",
-    "reviewed": false
+    "target": "ngượng"
   },
   {
     "source": "赤面",
-    "target": "đỏ mặt",
-    "reviewed": false
+    "target": "đỏ mặt"
   },
   {
     "source": "両想い",
-    "target": "yêu nhau",
-    "reviewed": false
+    "target": "yêu nhau"
   },
   {
     "source": "再会",
-    "target": "gặp lại",
-    "reviewed": false
+    "target": "gặp lại"
   },
   {
     "source": "すれ違い",
-    "target": "lệch nhịp",
-    "reviewed": false
+    "target": "lệch nhịp"
   },
   {
     "source": "誤解",
-    "target": "hiểu lầm",
-    "reviewed": false
+    "target": "hiểu lầm"
   },
   {
     "source": "仲直り",
-    "target": "làm lành",
-    "reviewed": false
+    "target": "làm lành"
   },
   {
     "source": "誓い",
-    "target": "lời thề",
-    "reviewed": false
+    "target": "lời thề"
   },
   {
     "source": "秘密の関係",
-    "target": "quan hệ bí mật",
-    "reviewed": false
+    "target": "quan hệ bí mật"
   },
   {
     "source": "別居",
-    "target": "sống ly thân",
-    "reviewed": false
+    "target": "sống ly thân"
   },
   {
     "source": "新婚生活",
-    "target": "đời sống vợ chồng mới cưới",
-    "reviewed": false
+    "target": "đời sống vợ chồng mới cưới"
   },
   {
     "source": "本命",
-    "target": "người để bụng",
-    "reviewed": false
+    "target": "người để bụng"
   },
   {
     "source": "お泊まり",
-    "target": "ngủ lại nhà nhau",
-    "reviewed": false
+    "target": "ngủ lại nhà nhau"
   },
   {
     "source": "愛の告白",
-    "target": "tỏ tình",
-    "reviewed": false
+    "target": "tỏ tình"
   },
   {
     "source": "指輪",
-    "target": "nhẫn",
-    "reviewed": false
+    "target": "nhẫn"
   },
   {
     "source": "花嫁衣装",
-    "target": "áo cưới",
-    "reviewed": false
+    "target": "áo cưới"
   },
   {
     "source": "家庭内別居",
-    "target": "sống chung nhà nhưng ly thân",
-    "reviewed": false
+    "target": "sống chung nhà nhưng ly thân"
   }
 ]

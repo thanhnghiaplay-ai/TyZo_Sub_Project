@@ -1,402 +1,322 @@
 [
   {
     "source": "martial world",
-    "target": "võ lâm",
-    "reviewed": false
+    "target": "võ lâm"
   },
   {
     "source": "alliance leader",
-    "target": "minh chủ",
-    "reviewed": false
+    "target": "minh chủ"
   },
   {
     "source": "young hero",
-    "target": "thiếu hiệp",
-    "reviewed": false
+    "target": "thiếu hiệp"
   },
   {
     "source": "great hero",
-    "target": "đại hiệp",
-    "reviewed": false
+    "target": "đại hiệp"
   },
   {
     "source": "swordsman",
-    "target": "kiếm khách",
-    "reviewed": false
+    "target": "kiếm khách"
   },
   {
     "source": "senior",
-    "target": "tiền bối",
-    "reviewed": false
+    "target": "tiền bối"
   },
   {
     "source": "junior",
-    "target": "vãn bối",
-    "reviewed": false
+    "target": "vãn bối"
   },
   {
     "source": "this humble one",
-    "target": "tại hạ",
-    "reviewed": false
+    "target": "tại hạ"
   },
   {
     "source": "this one",
-    "target": "tại hạ",
-    "reviewed": false
+    "target": "tại hạ"
   },
   {
     "source": "master",
-    "target": "sư phụ",
-    "reviewed": false
+    "target": "sư phụ"
   },
   {
     "source": "senior brother",
-    "target": "sư huynh",
-    "reviewed": false
+    "target": "sư huynh"
   },
   {
     "source": "senior sister",
-    "target": "sư tỷ",
-    "reviewed": false
+    "target": "sư tỷ"
   },
   {
     "source": "junior brother",
-    "target": "sư đệ",
-    "reviewed": false
+    "target": "sư đệ"
   },
   {
     "source": "junior sister",
-    "target": "sư muội",
-    "reviewed": false
+    "target": "sư muội"
   },
   {
     "source": "internal energy",
-    "target": "nội lực",
-    "reviewed": false
+    "target": "nội lực"
   },
   {
     "source": "qinggong",
-    "target": "khinh công",
-    "reviewed": false
+    "target": "khinh công"
   },
   {
     "source": "pressure point",
-    "target": "huyệt đạo",
-    "reviewed": false
+    "target": "huyệt đạo"
   },
   {
     "source": "acupoint",
-    "target": "huyệt đạo",
-    "reviewed": false
+    "target": "huyệt đạo"
   },
   {
     "source": "secret manual",
-    "target": "bí kíp",
-    "reviewed": false
+    "target": "bí kíp"
   },
   {
     "source": "martial arts manual",
-    "target": "bí kíp",
-    "reviewed": false
+    "target": "bí kíp"
   },
   {
     "source": "sword technique",
-    "target": "kiếm pháp",
-    "reviewed": false
+    "target": "kiếm pháp"
   },
   {
     "source": "palm technique",
-    "target": "chưởng pháp",
-    "reviewed": false
+    "target": "chưởng pháp"
   },
   {
     "source": "hidden weapon",
-    "target": "ám khí",
-    "reviewed": false
+    "target": "ám khí"
   },
   {
     "source": "qi deviation",
-    "target": "tẩu hỏa nhập ma",
-    "reviewed": false
+    "target": "tẩu hỏa nhập ma"
   },
   {
     "source": "demonic sect",
-    "target": "ma giáo",
-    "reviewed": false
+    "target": "ma giáo"
   },
   {
     "source": "righteous sect",
-    "target": "chính phái",
-    "reviewed": false
+    "target": "chính phái"
   },
   {
     "source": "escort agency",
-    "target": "tiêu cục",
-    "reviewed": false
+    "target": "tiêu cục"
   },
   {
     "source": "elder",
-    "target": "trưởng lão",
-    "reviewed": false
+    "target": "trưởng lão"
   },
   {
     "source": "guardian",
-    "target": "hộ pháp",
-    "reviewed": false
+    "target": "hộ pháp"
   },
   {
     "source": "token",
-    "target": "lệnh bài",
-    "reviewed": false
+    "target": "lệnh bài"
   },
   {
     "source": "inn",
-    "target": "khách điếm",
-    "reviewed": false
+    "target": "khách điếm"
   },
   {
     "source": "antidote",
-    "target": "thuốc giải",
-    "reviewed": false
+    "target": "thuốc giải"
   },
   {
     "source": "expel from the sect",
-    "target": "trục xuất khỏi môn phái",
-    "reviewed": false
+    "target": "trục xuất khỏi môn phái"
   },
   {
     "source": "we shall meet again",
-    "target": "hẹn ngày gặp lại",
-    "reviewed": false
+    "target": "hẹn ngày gặp lại"
   },
   {
     "source": "jianghu",
-    "target": "giang hồ",
-    "reviewed": false
+    "target": "giang hồ"
   },
   {
     "source": "wulin",
-    "target": "võ lâm",
-    "reviewed": false
+    "target": "võ lâm"
   },
   {
     "source": "expert",
-    "target": "cao thủ",
-    "reviewed": false
+    "target": "cao thủ"
   },
   {
     "source": "grandmaster",
-    "target": "tông sư",
-    "reviewed": false
+    "target": "tông sư"
   },
   {
     "source": "sect leader",
-    "target": "chưởng môn",
-    "reviewed": false
+    "target": "chưởng môn"
   },
   {
     "source": "clan head",
-    "target": "tộc trưởng",
-    "reviewed": false
+    "target": "tộc trưởng"
   },
   {
     "source": "disciple",
-    "target": "đệ tử",
-    "reviewed": false
+    "target": "đệ tử"
   },
   {
     "source": "inner disciple",
-    "target": "nội môn đệ tử",
-    "reviewed": false
+    "target": "nội môn đệ tử"
   },
   {
     "source": "outer disciple",
-    "target": "ngoại môn đệ tử",
-    "reviewed": false
+    "target": "ngoại môn đệ tử"
   },
   {
     "source": "apprentice",
-    "target": "đồ đệ",
-    "reviewed": false
+    "target": "đồ đệ"
   },
   {
     "source": "saber",
-    "target": "đao",
-    "reviewed": false
+    "target": "đao"
   },
   {
     "source": "inner strength",
-    "target": "nội lực",
-    "reviewed": false
+    "target": "nội lực"
   },
   {
     "source": "martial arts",
-    "target": "võ công",
-    "reviewed": false
+    "target": "võ công"
   },
   {
     "source": "kung fu",
-    "target": "công phu",
-    "reviewed": false
+    "target": "công phu"
   },
   {
     "source": "swordsmanship",
-    "target": "kiếm pháp",
-    "reviewed": false
+    "target": "kiếm pháp"
   },
   {
     "source": "fist technique",
-    "target": "quyền pháp",
-    "reviewed": false
+    "target": "quyền pháp"
   },
   {
     "source": "leg technique",
-    "target": "cước pháp",
-    "reviewed": false
+    "target": "cước pháp"
   },
   {
     "source": "body technique",
-    "target": "thân pháp",
-    "reviewed": false
+    "target": "thân pháp"
   },
   {
     "source": "lightness skill",
-    "target": "khinh công",
-    "reviewed": false
+    "target": "khinh công"
   },
   {
     "source": "meridians",
-    "target": "kinh mạch",
-    "reviewed": false
+    "target": "kinh mạch"
   },
   {
     "source": "poisoned",
-    "target": "trúng độc",
-    "reviewed": false
+    "target": "trúng độc"
   },
   {
     "source": "duel",
-    "target": "tỷ võ",
-    "reviewed": false
+    "target": "tỷ võ"
   },
   {
     "source": "martial arts tournament",
-    "target": "đại hội tỷ võ",
-    "reviewed": false
+    "target": "đại hội tỷ võ"
   },
   {
     "source": "bandit",
-    "target": "thổ phỉ",
-    "reviewed": false
+    "target": "thổ phỉ"
   },
   {
     "source": "mountain stronghold",
-    "target": "sơn trại",
-    "reviewed": false
+    "target": "sơn trại"
   },
   {
     "source": "chivalry",
-    "target": "hiệp nghĩa",
-    "reviewed": false
+    "target": "hiệp nghĩa"
   },
   {
     "source": "knight-errant",
-    "target": "hiệp khách",
-    "reviewed": false
+    "target": "hiệp khách"
   },
   {
     "source": "heroine",
-    "target": "nữ hiệp",
-    "reviewed": false
+    "target": "nữ hiệp"
   },
   {
     "source": "evil sect",
-    "target": "tà phái",
-    "reviewed": false
+    "target": "tà phái"
   },
   {
     "source": "orthodox sect",
-    "target": "chính phái",
-    "reviewed": false
+    "target": "chính phái"
   },
   {
     "source": "revenge",
-    "target": "báo thù",
-    "reviewed": false
+    "target": "báo thù"
   },
   {
     "source": "repay a debt of gratitude",
-    "target": "báo ân",
-    "reviewed": false
+    "target": "báo ân"
   },
   {
     "source": "life-saving grace",
-    "target": "ơn cứu mạng",
-    "reviewed": false
+    "target": "ơn cứu mạng"
   },
   {
     "source": "benefactor",
-    "target": "ân công",
-    "reviewed": false
+    "target": "ân công"
   },
   {
     "source": "sworn brother",
-    "target": "huynh đệ kết nghĩa",
-    "reviewed": false
+    "target": "huynh đệ kết nghĩa"
   },
   {
     "source": "this old man",
-    "target": "lão phu",
-    "reviewed": false
+    "target": "lão phu"
   },
   {
     "source": "innkeeper",
-    "target": "chủ quán",
-    "reviewed": false
+    "target": "chủ quán"
   },
   {
     "source": "waiter",
-    "target": "tiểu nhị",
-    "reviewed": false
+    "target": "tiểu nhị"
   },
   {
     "source": "escort",
-    "target": "tiêu sư",
-    "reviewed": false
+    "target": "tiêu sư"
   },
   {
     "source": "imperial court",
-    "target": "triều đình",
-    "reviewed": false
+    "target": "triều đình"
   },
   {
     "source": "imperial guard",
-    "target": "cấm vệ quân",
-    "reviewed": false
+    "target": "cấm vệ quân"
   },
   {
     "source": "treasure map",
-    "target": "bản đồ kho báu",
-    "reviewed": false
+    "target": "bản đồ kho báu"
   },
   {
     "source": "legendary sword",
-    "target": "thần kiếm",
-    "reviewed": false
+    "target": "thần kiếm"
   },
   {
     "source": "divine weapon",
-    "target": "thần binh",
-    "reviewed": false
+    "target": "thần binh"
   },
   {
     "source": "hermit",
-    "target": "ẩn sĩ",
-    "reviewed": false
+    "target": "ẩn sĩ"
   },
   {
     "source": "hidden master",
-    "target": "cao nhân ẩn thế",
-    "reviewed": false
+    "target": "cao nhân ẩn thế"
   }
 ]

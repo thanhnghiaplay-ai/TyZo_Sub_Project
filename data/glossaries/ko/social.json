@@ -1,392 +1,314 @@
 [
   {
     "source": "갑질",
-    "target": "lạm quyền hách dịch (gapjil)",
-    "reviewed": false
+    "target": "lạm quyền hách dịch (gapjil)"
   },
   {
     "source": "재벌",
-    "target": "tài phiệt (chaebol)",
-    "reviewed": false
+    "target": "tài phiệt (chaebol)"
   },
   {
     "source": "금수저",
-    "target": "con nhà giàu (\"thìa vàng\")",
-    "reviewed": false
+    "target": "con nhà giàu (\"thìa vàng\")"
   },
   {
     "source": "흙수저",
-    "target": "con nhà nghèo (\"thìa đất\")",
-    "reviewed": false
+    "target": "con nhà nghèo (\"thìa đất\")"
   },
   {
     "source": "헬조선",
-    "target": "Hell Joseon (Joseon địa ngục)",
-    "reviewed": false
+    "target": "Hell Joseon (Joseon địa ngục)"
   },
   {
     "source": "취준생",
-    "target": "người đang tìm việc",
-    "reviewed": false
+    "target": "người đang tìm việc"
   },
   {
     "source": "취업",
-    "target": "xin việc",
-    "reviewed": false
+    "target": "xin việc"
   },
   {
     "source": "공무원",
-    "target": "công chức",
-    "reviewed": false
+    "target": "công chức"
   },
   {
     "source": "공시생",
-    "target": "người luyện thi công chức",
-    "reviewed": false
+    "target": "người luyện thi công chức"
   },
   {
     "source": "정규직",
-    "target": "nhân viên chính thức",
-    "reviewed": false
+    "target": "nhân viên chính thức"
   },
   {
     "source": "비정규직",
-    "target": "nhân viên không chính thức",
-    "reviewed": false
+    "target": "nhân viên không chính thức"
   },
   {
     "source": "계약직",
-    "target": "nhân viên hợp đồng",
-    "reviewed": false
+    "target": "nhân viên hợp đồng"
   },
   {
     "source": "야근",
-    "target": "làm thêm ban đêm",
-    "reviewed": false
+    "target": "làm thêm ban đêm"
   },
   {
     "source": "회식",
-    "target": "tiệc công ty",
-    "reviewed": false
+    "target": "tiệc công ty"
   },
   {
     "source": "워라밸",
-    "target": "cân bằng công việc và cuộc sống",
-    "reviewed": false
+    "target": "cân bằng công việc và cuộc sống"
   },
   {
     "source": "퇴사",
-    "target": "nghỉ việc",
-    "reviewed": false
+    "target": "nghỉ việc"
   },
   {
     "source": "권고사직",
-    "target": "bị ép nghỉ việc",
-    "reviewed": false
+    "target": "bị ép nghỉ việc"
   },
   {
     "source": "부당해고",
-    "target": "sa thải trái luật",
-    "reviewed": false
+    "target": "sa thải trái luật"
   },
   {
     "source": "월세",
-    "target": "tiền thuê nhà hàng tháng",
-    "reviewed": false
+    "target": "tiền thuê nhà hàng tháng"
   },
   {
     "source": "전세",
-    "target": "thuê nhà đặt cọc lớn (jeonse)",
-    "reviewed": false
+    "target": "thuê nhà đặt cọc lớn (jeonse)"
   },
   {
     "source": "반지하",
-    "target": "nhà bán hầm",
-    "reviewed": false
+    "target": "nhà bán hầm"
   },
   {
     "source": "고시원",
-    "target": "nhà trọ siêu nhỏ (goshiwon)",
-    "reviewed": false
+    "target": "nhà trọ siêu nhỏ (goshiwon)"
   },
   {
     "source": "독거노인",
-    "target": "người già sống một mình",
-    "reviewed": false
+    "target": "người già sống một mình"
   },
   {
     "source": "고독사",
-    "target": "chết cô độc",
-    "reviewed": false
+    "target": "chết cô độc"
   },
   {
     "source": "저출산",
-    "target": "tỷ lệ sinh thấp",
-    "reviewed": false
+    "target": "tỷ lệ sinh thấp"
   },
   {
     "source": "고령화",
-    "target": "già hóa dân số",
-    "reviewed": false
+    "target": "già hóa dân số"
   },
   {
     "source": "학교폭력",
-    "target": "bạo lực học đường",
-    "reviewed": false
+    "target": "bạo lực học đường"
   },
   {
     "source": "학폭",
-    "target": "bạo lực học đường",
-    "reviewed": false
+    "target": "bạo lực học đường"
   },
   {
     "source": "왕따",
-    "target": "bị cô lập, bắt nạt",
-    "reviewed": false
+    "target": "bị cô lập, bắt nạt"
   },
   {
     "source": "악플",
-    "target": "bình luận ác ý",
-    "reviewed": false
+    "target": "bình luận ác ý"
   },
   {
     "source": "악플러",
-    "target": "kẻ bình luận ác ý",
-    "reviewed": false
+    "target": "kẻ bình luận ác ý"
   },
   {
     "source": "신상털기",
-    "target": "bới móc thông tin cá nhân",
-    "reviewed": false
+    "target": "bới móc thông tin cá nhân"
   },
   {
     "source": "내부고발",
-    "target": "tố giác nội bộ",
-    "reviewed": false
+    "target": "tố giác nội bộ"
   },
   {
     "source": "기자회견",
-    "target": "họp báo",
-    "reviewed": false
+    "target": "họp báo"
   },
   {
     "source": "국민청원",
-    "target": "kiến nghị công dân",
-    "reviewed": false
+    "target": "kiến nghị công dân"
   },
   {
     "source": "파업",
-    "target": "đình công",
-    "reviewed": false
+    "target": "đình công"
   },
   {
     "source": "노조",
-    "target": "công đoàn",
-    "reviewed": false
+    "target": "công đoàn"
   },
   {
     "source": "최저임금",
-    "target": "lương tối thiểu",
-    "reviewed": false
+    "target": "lương tối thiểu"
   },
   {
     "source": "병역",
-    "target": "nghĩa vụ quân sự",
-    "reviewed": false
+    "target": "nghĩa vụ quân sự"
   },
   {
     "source": "민원",
-    "target": "khiếu nại, kiến nghị hành chính",
-    "reviewed": false
+    "target": "khiếu nại, kiến nghị hành chính"
   },
   {
     "source": "주민센터",
-    "target": "trung tâm hành chính phường",
-    "reviewed": false
+    "target": "trung tâm hành chính phường"
   },
   {
     "source": "기초수급자",
-    "target": "người nhận trợ cấp cơ bản",
-    "reviewed": false
+    "target": "người nhận trợ cấp cơ bản"
   },
   {
     "source": "체면",
-    "target": "thể diện",
-    "reviewed": false
+    "target": "thể diện"
   },
   {
     "source": "눈치",
-    "target": "sự tinh ý nhìn sắc mặt (nunchi)",
-    "reviewed": false
+    "target": "sự tinh ý nhìn sắc mặt (nunchi)"
   },
   {
     "source": "학연",
-    "target": "quan hệ đồng môn",
-    "reviewed": false
+    "target": "quan hệ đồng môn"
   },
   {
     "source": "지연",
-    "target": "quan hệ đồng hương",
-    "reviewed": false
+    "target": "quan hệ đồng hương"
   },
   {
     "source": "성과급",
-    "target": "thưởng hiệu suất",
-    "reviewed": false
+    "target": "thưởng hiệu suất"
   },
   {
     "source": "상여금",
-    "target": "tiền thưởng",
-    "reviewed": false
+    "target": "tiền thưởng"
   },
   {
     "source": "퇴직금",
-    "target": "trợ cấp thôi việc",
-    "reviewed": false
+    "target": "trợ cấp thôi việc"
   },
   {
     "source": "실업",
-    "target": "thất nghiệp",
-    "reviewed": false
+    "target": "thất nghiệp"
   },
   {
     "source": "구직",
-    "target": "tìm việc",
-    "reviewed": false
+    "target": "tìm việc"
   },
   {
     "source": "면접",
-    "target": "phỏng vấn",
-    "reviewed": false
+    "target": "phỏng vấn"
   },
   {
     "source": "합격",
-    "target": "trúng tuyển",
-    "reviewed": false
+    "target": "trúng tuyển"
   },
   {
     "source": "불합격",
-    "target": "trượt",
-    "reviewed": false
+    "target": "trượt"
   },
   {
     "source": "사직서",
-    "target": "đơn xin nghỉ",
-    "reviewed": false
+    "target": "đơn xin nghỉ"
   },
   {
     "source": "연차",
-    "target": "phép năm",
-    "reviewed": false
+    "target": "phép năm"
   },
   {
     "source": "육아휴직",
-    "target": "nghỉ chăm con",
-    "reviewed": false
+    "target": "nghỉ chăm con"
   },
   {
     "source": "출산휴가",
-    "target": "nghỉ sinh",
-    "reviewed": false
+    "target": "nghỉ sinh"
   },
   {
     "source": "어린이집",
-    "target": "nhà trẻ",
-    "reviewed": false
+    "target": "nhà trẻ"
   },
   {
     "source": "한부모",
-    "target": "cha mẹ đơn thân",
-    "reviewed": false
+    "target": "cha mẹ đơn thân"
   },
   {
     "source": "가정폭력",
-    "target": "bạo lực gia đình",
-    "reviewed": false
+    "target": "bạo lực gia đình"
   },
   {
     "source": "스토킹",
-    "target": "theo dõi quấy rối",
-    "reviewed": false
+    "target": "theo dõi quấy rối"
   },
   {
     "source": "보이스피싱",
-    "target": "lừa đảo qua điện thoại",
-    "reviewed": false
+    "target": "lừa đảo qua điện thoại"
   },
   {
     "source": "전세사기",
-    "target": "lừa tiền thuê nhà",
-    "reviewed": false
+    "target": "lừa tiền thuê nhà"
   },
   {
     "source": "파산",
-    "target": "phá sản",
-    "reviewed": false
+    "target": "phá sản"
   },
   {
     "source": "보증금",
-    "target": "tiền đặt cọc",
-    "reviewed": false
+    "target": "tiền đặt cọc"
   },
   {
     "source": "관리비",
-    "target": "phí quản lý",
-    "reviewed": false
+    "target": "phí quản lý"
   },
   {
     "source": "차별",
-    "target": "phân biệt đối xử",
-    "reviewed": false
+    "target": "phân biệt đối xử"
   },
   {
     "source": "성차별",
-    "target": "phân biệt giới",
-    "reviewed": false
+    "target": "phân biệt giới"
   },
   {
     "source": "가짜뉴스",
-    "target": "tin giả",
-    "reviewed": false
+    "target": "tin giả"
   },
   {
     "source": "여론",
-    "target": "dư luận",
-    "reviewed": false
+    "target": "dư luận"
   },
   {
     "source": "기부",
-    "target": "quyên góp",
-    "reviewed": false
+    "target": "quyên góp"
   },
   {
     "source": "자원봉사",
-    "target": "tình nguyện",
-    "reviewed": false
+    "target": "tình nguyện"
   },
   {
     "source": "반상회",
-    "target": "họp tổ dân phố",
-    "reviewed": false
+    "target": "họp tổ dân phố"
   },
   {
     "source": "생활비",
-    "target": "chi phí sinh hoạt",
-    "reviewed": false
+    "target": "chi phí sinh hoạt"
   },
   {
     "source": "학자금",
-    "target": "tiền học",
-    "reviewed": false
+    "target": "tiền học"
   },
   {
     "source": "주거",
-    "target": "chỗ ở",
-    "reviewed": false
+    "target": "chỗ ở"
   },
   {
     "source": "대출",
-    "target": "vay nợ",
-    "reviewed": false
+    "target": "vay nợ"
   }
 ]

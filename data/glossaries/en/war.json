@@ -1,483 +1,387 @@
 [
   {
     "source": "battlefield",
-    "target": "chiến trường",
-    "reviewed": false
+    "target": "chiến trường"
   },
   {
     "source": "front line",
-    "target": "tiền tuyến",
-    "reviewed": false
+    "target": "tiền tuyến"
   },
   {
     "source": "frontline",
-    "target": "tiền tuyến",
-    "reviewed": false
+    "target": "tiền tuyến"
   },
   {
     "source": "home front",
-    "target": "hậu phương",
-    "reviewed": false
+    "target": "hậu phương"
   },
   {
     "source": "general",
     "target": "tướng quân",
-    "note": "Cách khác: thưa tướng quân; đại tướng, thượng tướng tùy cấp bậc trong phim",
-    "reviewed": false
+    "note": "Cách khác: thưa tướng quân; đại tướng, thượng tướng tùy cấp bậc trong phim"
   },
   {
     "source": "colonel",
-    "target": "đại tá",
-    "reviewed": false
+    "target": "đại tá"
   },
   {
     "source": "lieutenant",
-    "target": "trung úy",
-    "reviewed": false
+    "target": "trung úy"
   },
   {
     "source": "sergeant",
-    "target": "trung sĩ",
-    "reviewed": false
+    "target": "trung sĩ"
   },
   {
     "source": "commander",
-    "target": "chỉ huy",
-    "reviewed": false
+    "target": "chỉ huy"
   },
   {
     "source": "soldier",
-    "target": "người lính",
-    "reviewed": false
+    "target": "người lính"
   },
   {
     "source": "platoon",
-    "target": "trung đội",
-    "reviewed": false
+    "target": "trung đội"
   },
   {
     "source": "squad",
-    "target": "tiểu đội",
-    "reviewed": false
+    "target": "tiểu đội"
   },
   {
     "source": "battalion",
-    "target": "tiểu đoàn",
-    "reviewed": false
+    "target": "tiểu đoàn"
   },
   {
     "source": "regiment",
-    "target": "trung đoàn",
-    "reviewed": false
+    "target": "trung đoàn"
   },
   {
     "source": "division",
-    "target": "sư đoàn",
-    "reviewed": false
+    "target": "sư đoàn"
   },
   {
     "source": "troops",
-    "target": "quân lính",
-    "reviewed": false
+    "target": "quân lính"
   },
   {
     "source": "reinforcements",
-    "target": "quân tiếp viện",
-    "reviewed": false
+    "target": "quân tiếp viện"
   },
   {
     "source": "ambush",
-    "target": "phục kích",
-    "reviewed": false
+    "target": "phục kích"
   },
   {
     "source": "retreat",
-    "target": "rút lui",
-    "reviewed": false
+    "target": "rút lui"
   },
   {
     "source": "surrender",
-    "target": "đầu hàng",
-    "reviewed": false
+    "target": "đầu hàng"
   },
   {
     "source": "prisoner of war",
-    "target": "tù binh",
-    "reviewed": false
+    "target": "tù binh"
   },
   {
     "source": "casualties",
-    "target": "thương vong",
-    "reviewed": false
+    "target": "thương vong"
   },
   {
     "source": "medic",
-    "target": "quân y",
-    "reviewed": false
+    "target": "quân y"
   },
   {
     "source": "enemy",
-    "target": "kẻ địch",
-    "reviewed": false
+    "target": "kẻ địch"
   },
   {
     "source": "allies",
-    "target": "đồng minh",
-    "reviewed": false
+    "target": "đồng minh"
   },
   {
     "source": "trench",
-    "target": "chiến hào",
-    "reviewed": false
+    "target": "chiến hào"
   },
   {
     "source": "bunker",
-    "target": "hầm trú ẩn",
-    "reviewed": false
+    "target": "hầm trú ẩn"
   },
   {
     "source": "airstrike",
-    "target": "không kích",
-    "reviewed": false
+    "target": "không kích"
   },
   {
     "source": "air raid",
-    "target": "cuộc không kích",
-    "reviewed": false
+    "target": "cuộc không kích"
   },
   {
     "source": "bombing",
-    "target": "cuộc ném bom",
-    "reviewed": false
+    "target": "cuộc ném bom"
   },
   {
     "source": "artillery",
-    "target": "pháo binh",
-    "reviewed": false
+    "target": "pháo binh"
   },
   {
     "source": "sniper",
-    "target": "xạ thủ bắn tỉa",
-    "reviewed": false
+    "target": "xạ thủ bắn tỉa"
   },
   {
     "source": "machine gun",
-    "target": "súng máy",
-    "reviewed": false
+    "target": "súng máy"
   },
   {
     "source": "grenade",
-    "target": "lựu đạn",
-    "reviewed": false
+    "target": "lựu đạn"
   },
   {
     "source": "landmine",
-    "target": "mìn",
-    "reviewed": false
+    "target": "mìn"
   },
   {
     "source": "ceasefire",
-    "target": "ngừng bắn",
-    "reviewed": false
+    "target": "ngừng bắn"
   },
   {
     "source": "armistice",
-    "target": "hiệp định đình chiến",
-    "reviewed": false
+    "target": "hiệp định đình chiến"
   },
   {
     "source": "invasion",
-    "target": "cuộc xâm lược",
-    "reviewed": false
+    "target": "cuộc xâm lược"
   },
   {
     "source": "occupation",
-    "target": "sự chiếm đóng",
-    "reviewed": false
+    "target": "sự chiếm đóng"
   },
   {
     "source": "resistance",
-    "target": "kháng chiến",
-    "reviewed": false
+    "target": "kháng chiến"
   },
   {
     "source": "guerrilla",
-    "target": "du kích",
-    "reviewed": false
+    "target": "du kích"
   },
   {
     "source": "deserter",
-    "target": "kẻ đào ngũ",
-    "reviewed": false
+    "target": "kẻ đào ngũ"
   },
   {
     "source": "court-martial",
-    "target": "tòa án quân sự",
-    "reviewed": false
+    "target": "tòa án quân sự"
   },
   {
     "source": "copy that",
-    "target": "đã rõ",
-    "reviewed": false
+    "target": "đã rõ"
   },
   {
     "source": "fall back",
-    "target": "lui lại",
-    "reviewed": false
+    "target": "lui lại"
   },
   {
     "source": "hold the line",
-    "target": "giữ vững phòng tuyến",
-    "reviewed": false
+    "target": "giữ vững phòng tuyến"
   },
   {
     "source": "take cover",
-    "target": "tìm chỗ nấp",
-    "reviewed": false
+    "target": "tìm chỗ nấp"
   },
   {
     "source": "man down",
-    "target": "có người ngã xuống",
-    "reviewed": false
+    "target": "có người ngã xuống"
   },
   {
     "source": "hold your fire",
-    "target": "khoan bắn",
-    "reviewed": false
+    "target": "khoan bắn"
   },
   {
     "source": "wounded soldier",
-    "target": "thương binh",
-    "reviewed": false
+    "target": "thương binh"
   },
   {
     "source": "tank",
-    "target": "xe tăng",
-    "reviewed": false
+    "target": "xe tăng"
   },
   {
     "source": "bomber",
-    "target": "máy bay ném bom",
-    "reviewed": false
+    "target": "máy bay ném bom"
   },
   {
     "source": "barracks",
-    "target": "doanh trại",
-    "reviewed": false
+    "target": "doanh trại"
   },
   {
     "source": "company commander",
-    "target": "đại đội trưởng",
-    "reviewed": false
+    "target": "đại đội trưởng"
   },
   {
     "source": "brigade",
-    "target": "lữ đoàn",
-    "reviewed": false
+    "target": "lữ đoàn"
   },
   {
     "source": "recruit",
-    "target": "tân binh",
-    "reviewed": false
+    "target": "tân binh"
   },
   {
     "source": "martial law",
-    "target": "thiết quân luật",
-    "reviewed": false
+    "target": "thiết quân luật"
   },
   {
     "source": "truce",
-    "target": "đình chiến",
-    "reviewed": false
+    "target": "đình chiến"
   },
   {
     "source": "resistance fighter",
-    "target": "chiến sĩ kháng chiến",
-    "reviewed": false
+    "target": "chiến sĩ kháng chiến"
   },
   {
     "source": "liberation",
-    "target": "giải phóng",
-    "reviewed": false
+    "target": "giải phóng"
   },
   {
     "source": "supply line",
-    "target": "đường tiếp tế",
-    "reviewed": false
+    "target": "đường tiếp tế"
   },
   {
     "source": "military order",
-    "target": "quân lệnh",
-    "reviewed": false
+    "target": "quân lệnh"
   },
   {
     "source": "charge",
-    "target": "xung phong",
-    "reviewed": false
+    "target": "xung phong"
   },
   {
     "source": "comrade",
-    "target": "đồng đội",
-    "reviewed": false
+    "target": "đồng đội"
   },
   {
     "source": "ally",
-    "target": "đồng minh",
-    "reviewed": false
+    "target": "đồng minh"
   },
   {
     "source": "allied forces",
-    "target": "quân đồng minh",
-    "reviewed": false
+    "target": "quân đồng minh"
   },
   {
     "source": "invader",
-    "target": "quân xâm lược",
-    "reviewed": false
+    "target": "quân xâm lược"
   },
   {
     "source": "siege",
-    "target": "vây hãm",
-    "reviewed": false
+    "target": "vây hãm"
   },
   {
     "source": "fortress",
-    "target": "pháo đài",
-    "reviewed": false
+    "target": "pháo đài"
   },
   {
     "source": "headquarters",
-    "target": "sở chỉ huy",
-    "reviewed": false
+    "target": "sở chỉ huy"
   },
   {
     "source": "radio operator",
-    "target": "báo vụ viên",
-    "reviewed": false
+    "target": "báo vụ viên"
   },
   {
     "source": "telegram",
-    "target": "điện báo",
-    "reviewed": false
+    "target": "điện báo"
   },
   {
     "source": "air raid siren",
-    "target": "còi báo động không kích",
-    "reviewed": false
+    "target": "còi báo động không kích"
   },
   {
     "source": "minefield",
-    "target": "bãi mìn",
-    "reviewed": false
+    "target": "bãi mìn"
   },
   {
     "source": "rifle",
-    "target": "súng trường",
-    "reviewed": false
+    "target": "súng trường"
   },
   {
     "source": "bayonet",
-    "target": "lưỡi lê",
-    "reviewed": false
+    "target": "lưỡi lê"
   },
   {
     "source": "pistol",
-    "target": "súng ngắn",
-    "reviewed": false
+    "target": "súng ngắn"
   },
   {
     "source": "ammunition",
-    "target": "đạn dược",
-    "reviewed": false
+    "target": "đạn dược"
   },
   {
     "source": "out of ammo",
-    "target": "hết đạn",
-    "reviewed": false
+    "target": "hết đạn"
   },
   {
     "source": "fighter plane",
-    "target": "máy bay chiến đấu",
-    "reviewed": false
+    "target": "máy bay chiến đấu"
   },
   {
     "source": "warship",
-    "target": "tàu chiến",
-    "reviewed": false
+    "target": "tàu chiến"
   },
   {
     "source": "submarine",
-    "target": "tàu ngầm",
-    "reviewed": false
+    "target": "tàu ngầm"
   },
   {
     "source": "torpedo",
-    "target": "ngư lôi",
-    "reviewed": false
+    "target": "ngư lôi"
   },
   {
     "source": "navy",
-    "target": "hải quân",
-    "reviewed": false
+    "target": "hải quân"
   },
   {
     "source": "air force",
-    "target": "không quân",
-    "reviewed": false
+    "target": "không quân"
   },
   {
     "source": "infantry",
-    "target": "bộ binh",
-    "reviewed": false
+    "target": "bộ binh"
   },
   {
     "source": "cavalry",
-    "target": "kỵ binh",
-    "reviewed": false
+    "target": "kỵ binh"
   },
   {
     "source": "vanguard",
-    "target": "tiên phong",
-    "reviewed": false
+    "target": "tiên phong"
   },
   {
     "source": "rear guard",
-    "target": "hậu quân",
-    "reviewed": false
+    "target": "hậu quân"
   },
   {
     "source": "military camp",
-    "target": "quân doanh",
-    "reviewed": false
+    "target": "quân doanh"
   },
   {
     "source": "war zone",
-    "target": "vùng chiến sự",
-    "reviewed": false
+    "target": "vùng chiến sự"
   },
   {
     "source": "war criminal",
-    "target": "tội phạm chiến tranh",
-    "reviewed": false
+    "target": "tội phạm chiến tranh"
   },
   {
     "source": "refugee camp",
-    "target": "trại tị nạn",
-    "reviewed": false
+    "target": "trại tị nạn"
   },
   {
     "source": "evacuate",
-    "target": "sơ tán",
-    "reviewed": false
+    "target": "sơ tán"
   },
   {
     "source": "conscript",
-    "target": "lính nghĩa vụ",
-    "reviewed": false
+    "target": "lính nghĩa vụ"
   },
   {
     "source": "veteran",
-    "target": "cựu chiến binh",
-    "reviewed": false
+    "target": "cựu chiến binh"
   }
 ]

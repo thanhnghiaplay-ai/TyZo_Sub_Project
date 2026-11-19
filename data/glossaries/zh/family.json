@@ -1,438 +1,351 @@
 [
   {
     "source": "外公",
-    "target": "ông ngoại",
-    "reviewed": false
+    "target": "ông ngoại"
   },
   {
     "source": "外婆",
-    "target": "bà ngoại",
-    "reviewed": false
+    "target": "bà ngoại"
   },
   {
     "source": "爷爷",
-    "target": "ông nội",
-    "reviewed": false
+    "target": "ông nội"
   },
   {
     "source": "奶奶",
-    "target": "bà nội",
-    "reviewed": false
+    "target": "bà nội"
   },
   {
     "source": "哥哥",
-    "target": "anh trai",
-    "reviewed": false
+    "target": "anh trai"
   },
   {
     "source": "姐姐",
-    "target": "chị gái",
-    "reviewed": false
+    "target": "chị gái"
   },
   {
     "source": "弟弟",
-    "target": "em trai",
-    "reviewed": false
+    "target": "em trai"
   },
   {
     "source": "妹妹",
-    "target": "em gái",
-    "reviewed": false
+    "target": "em gái"
   },
   {
     "source": "孙子",
-    "target": "cháu nội",
-    "reviewed": false
+    "target": "cháu nội"
   },
   {
     "source": "孙女",
-    "target": "cháu gái nội",
-    "reviewed": false
+    "target": "cháu gái nội"
   },
   {
     "source": "外孙",
-    "target": "cháu ngoại",
-    "reviewed": false
+    "target": "cháu ngoại"
   },
   {
     "source": "亲戚",
-    "target": "họ hàng",
-    "reviewed": false
+    "target": "họ hàng"
   },
   {
     "source": "叔叔",
     "target": "chú",
-    "note": "Tùy bối cảnh: chú, bác, cậu, dượng",
-    "reviewed": false
+    "note": "Tùy bối cảnh: chú, bác, cậu, dượng"
   },
   {
     "source": "舅舅",
-    "target": "cậu",
-    "reviewed": false
+    "target": "cậu"
   },
   {
     "source": "姑姑",
-    "target": "cô",
-    "reviewed": false
+    "target": "cô"
   },
   {
     "source": "姨妈",
-    "target": "dì",
-    "reviewed": false
+    "target": "dì"
   },
   {
     "source": "婆婆",
-    "target": "mẹ chồng",
-    "reviewed": false
+    "target": "mẹ chồng"
   },
   {
     "source": "公公",
-    "target": "bố chồng",
-    "reviewed": false
+    "target": "bố chồng"
   },
   {
     "source": "岳母",
-    "target": "mẹ vợ",
-    "reviewed": false
+    "target": "mẹ vợ"
   },
   {
     "source": "岳父",
-    "target": "bố vợ",
-    "reviewed": false
+    "target": "bố vợ"
   },
   {
     "source": "儿媳",
-    "target": "con dâu",
-    "reviewed": false
+    "target": "con dâu"
   },
   {
     "source": "女婿",
-    "target": "con rể",
-    "reviewed": false
+    "target": "con rể"
   },
   {
     "source": "嫂子",
-    "target": "chị dâu",
-    "reviewed": false
+    "target": "chị dâu"
   },
   {
     "source": "妯娌",
-    "target": "chị em dâu",
-    "reviewed": false
+    "target": "chị em dâu"
   },
   {
     "source": "继母",
-    "target": "mẹ kế",
-    "reviewed": false
+    "target": "mẹ kế"
   },
   {
     "source": "继父",
-    "target": "bố dượng",
-    "reviewed": false
+    "target": "bố dượng"
   },
   {
     "source": "养父母",
-    "target": "bố mẹ nuôi",
-    "reviewed": false
+    "target": "bố mẹ nuôi"
   },
   {
     "source": "领养",
-    "target": "nhận nuôi",
-    "reviewed": false
+    "target": "nhận nuôi"
   },
   {
     "source": "亲生",
-    "target": "ruột thịt",
-    "reviewed": false
+    "target": "ruột thịt"
   },
   {
     "source": "家人",
-    "target": "người nhà",
-    "reviewed": false
+    "target": "người nhà"
   },
   {
     "source": "团圆",
-    "target": "đoàn viên",
-    "reviewed": false
+    "target": "đoàn viên"
   },
   {
     "source": "过年",
-    "target": "đón Tết",
-    "reviewed": false
+    "target": "đón Tết"
   },
   {
     "source": "压岁钱",
-    "target": "tiền mừng tuổi",
-    "reviewed": false
+    "target": "tiền mừng tuổi"
   },
   {
     "source": "红包",
-    "target": "bao lì xì",
-    "reviewed": false
+    "target": "bao lì xì"
   },
   {
     "source": "孝顺",
-    "target": "hiếu thảo",
-    "reviewed": false
+    "target": "hiếu thảo"
   },
   {
     "source": "不孝",
-    "target": "bất hiếu",
-    "reviewed": false
+    "target": "bất hiếu"
   },
   {
     "source": "养老",
-    "target": "phụng dưỡng tuổi già",
-    "reviewed": false
+    "target": "phụng dưỡng tuổi già"
   },
   {
     "source": "家务",
-    "target": "việc nhà",
-    "reviewed": false
+    "target": "việc nhà"
   },
   {
     "source": "离婚",
-    "target": "ly hôn",
-    "reviewed": false
+    "target": "ly hôn"
   },
   {
     "source": "抚养权",
-    "target": "quyền nuôi con",
-    "reviewed": false
+    "target": "quyền nuôi con"
   },
   {
     "source": "遗产",
-    "target": "di sản thừa kế",
-    "reviewed": false
+    "target": "di sản thừa kế"
   },
   {
     "source": "分家",
-    "target": "chia nhà",
-    "reviewed": false
+    "target": "chia nhà"
   },
   {
     "source": "家规",
-    "target": "gia quy",
-    "reviewed": false
+    "target": "gia quy"
   },
   {
     "source": "祖宗",
-    "target": "tổ tông",
-    "reviewed": false
+    "target": "tổ tông"
   },
   {
     "source": "祠堂",
-    "target": "từ đường",
-    "reviewed": false
+    "target": "từ đường"
   },
   {
     "source": "香火",
-    "target": "hương hỏa",
-    "reviewed": false
+    "target": "hương hỏa"
   },
   {
     "source": "传宗接代",
-    "target": "nối dõi tông đường",
-    "reviewed": false
+    "target": "nối dõi tông đường"
   },
   {
     "source": "爸爸",
-    "target": "bố, ba",
-    "reviewed": false
+    "target": "bố, ba"
   },
   {
     "source": "妈妈",
-    "target": "mẹ, má",
-    "reviewed": false
+    "target": "mẹ, má"
   },
   {
     "source": "父母",
-    "target": "cha mẹ",
-    "reviewed": false
+    "target": "cha mẹ"
   },
   {
     "source": "爸妈",
-    "target": "bố mẹ",
-    "reviewed": false
+    "target": "bố mẹ"
   },
   {
     "source": "儿子",
-    "target": "con trai",
-    "reviewed": false
+    "target": "con trai"
   },
   {
     "source": "女儿",
-    "target": "con gái",
-    "reviewed": false
+    "target": "con gái"
   },
   {
     "source": "兄弟",
-    "target": "anh em",
-    "reviewed": false
+    "target": "anh em"
   },
   {
     "source": "姐妹",
-    "target": "chị em",
-    "reviewed": false
+    "target": "chị em"
   },
   {
     "source": "堂哥",
-    "target": "anh họ (bên nội)",
-    "reviewed": false
+    "target": "anh họ (bên nội)"
   },
   {
     "source": "表姐",
-    "target": "chị họ (bên ngoại)",
-    "reviewed": false
+    "target": "chị họ (bên ngoại)"
   },
   {
     "source": "伯父",
-    "target": "bác (anh của bố)",
-    "reviewed": false
+    "target": "bác (anh của bố)"
   },
   {
     "source": "伯母",
-    "target": "bác gái",
-    "reviewed": false
+    "target": "bác gái"
   },
   {
     "source": "婶婶",
-    "target": "thím",
-    "reviewed": false
+    "target": "thím"
   },
   {
     "source": "姑父",
-    "target": "dượng (chồng cô)",
-    "reviewed": false
+    "target": "dượng (chồng cô)"
   },
   {
     "source": "姨夫",
-    "target": "dượng (chồng dì)",
-    "reviewed": false
+    "target": "dượng (chồng dì)"
   },
   {
     "source": "亲家",
-    "target": "thông gia",
-    "reviewed": false
+    "target": "thông gia"
   },
   {
     "source": "老伴",
-    "target": "vợ/chồng già, bạn đời",
-    "reviewed": false
+    "target": "vợ/chồng già, bạn đời"
   },
   {
     "source": "独生子",
-    "target": "con một",
-    "reviewed": false
+    "target": "con một"
   },
   {
     "source": "长子",
-    "target": "con trưởng",
-    "reviewed": false
+    "target": "con trưởng"
   },
   {
     "source": "小儿子",
-    "target": "con trai út",
-    "reviewed": false
+    "target": "con trai út"
   },
   {
     "source": "唠叨",
-    "target": "cằn nhằn",
-    "reviewed": false
+    "target": "cằn nhằn"
   },
   {
     "source": "管教",
-    "target": "dạy dỗ, kèm cặp",
-    "reviewed": false
+    "target": "dạy dỗ, kèm cặp"
   },
   {
     "source": "溺爱",
-    "target": "nuông chiều",
-    "reviewed": false
+    "target": "nuông chiều"
   },
   {
     "source": "偏心",
-    "target": "thiên vị",
-    "reviewed": false
+    "target": "thiên vị"
   },
   {
     "source": "争吵",
-    "target": "cãi vã",
-    "reviewed": false
+    "target": "cãi vã"
   },
   {
     "source": "赡养",
-    "target": "phụng dưỡng",
-    "reviewed": false
+    "target": "phụng dưỡng"
   },
   {
     "source": "反哺",
-    "target": "đền đáp công ơn cha mẹ",
-    "reviewed": false
+    "target": "đền đáp công ơn cha mẹ"
   },
   {
     "source": "探亲",
-    "target": "thăm người thân",
-    "reviewed": false
+    "target": "thăm người thân"
   },
   {
     "source": "回老家",
-    "target": "về quê",
-    "reviewed": false
+    "target": "về quê"
   },
   {
     "source": "年夜饭",
-    "target": "bữa cơm tất niên",
-    "reviewed": false
+    "target": "bữa cơm tất niên"
   },
   {
     "source": "全家福",
-    "target": "ảnh gia đình",
-    "reviewed": false
+    "target": "ảnh gia đình"
   },
   {
     "source": "家庭聚会",
-    "target": "buổi họp mặt gia đình",
-    "reviewed": false
+    "target": "buổi họp mặt gia đình"
   },
   {
     "source": "相亲",
-    "target": "xem mắt",
-    "reviewed": false
+    "target": "xem mắt"
   },
   {
     "source": "催婚",
-    "target": "giục cưới",
-    "reviewed": false
+    "target": "giục cưới"
   },
   {
     "source": "彩礼",
-    "target": "sính lễ",
-    "reviewed": false
+    "target": "sính lễ"
   },
   {
     "source": "嫁妆",
-    "target": "của hồi môn",
-    "reviewed": false
+    "target": "của hồi môn"
   },
   {
     "source": "婆媳",
-    "target": "mẹ chồng nàng dâu",
-    "reviewed": false
+    "target": "mẹ chồng nàng dâu"
   },
   {
     "source": "代沟",
-    "target": "khoảng cách thế hệ",
-    "reviewed": false
+    "target": "khoảng cách thế hệ"
   },
   {
     "source": "家丑",
-    "target": "chuyện xấu trong nhà",
-    "reviewed": false
+    "target": "chuyện xấu trong nhà"
   },
   {
     "source": "养育",
-    "target": "nuôi dưỡng",
-    "reviewed": false
+    "target": "nuôi dưỡng"
   }
 ]

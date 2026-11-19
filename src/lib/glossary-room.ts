@@ -363,21 +363,34 @@ export const importGlossary = createServerFn({ method: "POST" })
     return { added };
   });
 
-/** Đánh dấu «đã duyệt» / «chưa duyệt»: một mục, hoặc cả bộ (ngôn ngữ + thể loại). */
+/** Đánh dấu «đã duyệt» / «chưa duyệt»: một mục, cả bộ, hoặc mọi bộ. */
 export const setGlossaryReviewed = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { id?: number; lang?: string; genre?: string; reviewed: boolean; pack?: boolean }) => {
+  .validator((input: { id?: number; lang?: string; genre?: string; reviewed: boolean; pack?: boolean; all?: boolean }) => {
     const reviewed = Boolean(input?.reviewed);
-    if (input?.pack) return { pack: true as const, ...glossaryPair(input.lang ?? "", input.genre ?? ""), reviewed };
+    if (input?.all) return { all: true as const, reviewed };
+    if (input?.pack) return { all: false as const, pack: true as const, ...glossaryPair(input.lang ?? "", input.genre ?? ""), reviewed };
     const id = Number(input?.id);
     if (!Number.isInteger(id) || id < 1) throw new Error("Không đúng mục.");
-    return { pack: false as const, id, reviewed };
+    return { all: false as const, pack: false as const, id, reviewed };
   })
   .handler(async ({ context, data }) => {
     await ownerOnly(context.userId);
     const sql = await sqlOf();
     let changed = 1;
-    if (data.pack) {
+    let detail = "";
+    if (data.all) {
+      const rows = await sql<{ n: number }>`
+        with u as (
+          update glossary_terms set reviewed = ${data.reviewed}, updated_at = now()
+          where reviewed <> ${data.reviewed}
+          returning 1
+        )
+        select count(*)::int as n from u
+      `;
+      changed = rows[0]?.n ?? 0;
+      detail = `tat-ca: ${changed}`;
+    } else if (data.pack) {
       const rows = await sql<{ n: number }>`
         with u as (
           update glossary_terms set reviewed = ${data.reviewed}, updated_at = now()
@@ -387,14 +400,12 @@ export const setGlossaryReviewed = createServerFn({ method: "POST" })
         select count(*)::int as n from u
       `;
       changed = rows[0]?.n ?? 0;
+      detail = `${data.lang}/${data.genre}: ${changed}`;
     } else {
       await sql`update glossary_terms set reviewed = ${data.reviewed}, updated_at = now() where id = ${data.id}`;
+      detail = String(data.id);
     }
-    await audit(
-      context.userId,
-      data.reviewed ? "duyet-thuat-ngu" : "bo-duyet-thuat-ngu",
-      data.pack ? `${data.lang}/${data.genre}: ${changed}` : String(data.id),
-    );
+    await audit(context.userId, data.reviewed ? "duyet-thuat-ngu" : "bo-duyet-thuat-ngu", detail);
     return { changed };
   });
 

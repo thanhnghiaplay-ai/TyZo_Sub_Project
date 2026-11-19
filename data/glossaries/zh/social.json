@@ -1,419 +1,337 @@
 [
   {
     "source": "阶层",
-    "target": "tầng lớp",
-    "reviewed": false
+    "target": "tầng lớp"
   },
   {
     "source": "贫富差距",
-    "target": "chênh lệch giàu nghèo",
-    "reviewed": false
+    "target": "chênh lệch giàu nghèo"
   },
   {
     "source": "底层",
-    "target": "tầng lớp dưới đáy",
-    "reviewed": false
+    "target": "tầng lớp dưới đáy"
   },
   {
     "source": "内卷",
     "target": "nội quyển",
-    "note": "Cách khác: cuộc đua kiệt sức, cạnh tranh vô nghĩa",
-    "reviewed": false
+    "note": "Cách khác: cuộc đua kiệt sức, cạnh tranh vô nghĩa"
   },
   {
     "source": "躺平",
     "target": "nằm yên",
-    "note": "Cách khác: nằm phẳng",
-    "reviewed": false
+    "note": "Cách khác: nằm phẳng"
   },
   {
     "source": "加班",
-    "target": "tăng ca",
-    "reviewed": false
+    "target": "tăng ca"
   },
   {
     "source": "裁员",
-    "target": "sa thải hàng loạt",
-    "reviewed": false
+    "target": "sa thải hàng loạt"
   },
   {
     "source": "失业",
-    "target": "thất nghiệp",
-    "reviewed": false
+    "target": "thất nghiệp"
   },
   {
     "source": "房贷",
-    "target": "khoản vay mua nhà",
-    "reviewed": false
+    "target": "khoản vay mua nhà"
   },
   {
     "source": "彩礼",
-    "target": "sính lễ",
-    "reviewed": false
+    "target": "sính lễ"
   },
   {
     "source": "相亲",
-    "target": "xem mắt",
-    "reviewed": false
+    "target": "xem mắt"
   },
   {
     "source": "剩女",
-    "target": "gái ế",
-    "reviewed": false
+    "target": "gái ế"
   },
   {
     "source": "单亲",
-    "target": "đơn thân",
-    "reviewed": false
+    "target": "đơn thân"
   },
   {
     "source": "校园霸凌",
-    "target": "bạo lực học đường",
-    "reviewed": false
+    "target": "bạo lực học đường"
   },
   {
     "source": "网络暴力",
-    "target": "bạo lực mạng",
-    "reviewed": false
+    "target": "bạo lực mạng"
   },
   {
     "source": "抑郁症",
-    "target": "bệnh trầm cảm",
-    "reviewed": false
+    "target": "bệnh trầm cảm"
   },
   {
     "source": "焦虑",
-    "target": "lo âu",
-    "reviewed": false
+    "target": "lo âu"
   },
   {
     "source": "心理咨询",
-    "target": "tư vấn tâm lý",
-    "reviewed": false
+    "target": "tư vấn tâm lý"
   },
   {
     "source": "心理医生",
-    "target": "bác sĩ tâm lý",
-    "reviewed": false
+    "target": "bác sĩ tâm lý"
   },
   {
     "source": "创伤",
-    "target": "chấn thương tâm lý",
-    "reviewed": false
+    "target": "chấn thương tâm lý"
   },
   {
     "source": "原生家庭",
     "target": "gia đình gốc",
-    "note": "Cách khác: gia đình nơi mình lớn lên",
-    "reviewed": false
+    "note": "Cách khác: gia đình nơi mình lớn lên"
   },
   {
     "source": "重男轻女",
-    "target": "trọng nam khinh nữ",
-    "reviewed": false
+    "target": "trọng nam khinh nữ"
   },
   {
     "source": "留守儿童",
-    "target": "trẻ em bị bỏ lại ở quê",
-    "reviewed": false
+    "target": "trẻ em bị bỏ lại ở quê"
   },
   {
     "source": "农民工",
     "target": "lao động nhập cư",
-    "note": "Cách khác: nông dân công",
-    "reviewed": false
+    "note": "Cách khác: nông dân công"
   },
   {
     "source": "户口",
-    "target": "hộ khẩu",
-    "reviewed": false
+    "target": "hộ khẩu"
   },
   {
     "source": "舆论",
-    "target": "dư luận",
-    "reviewed": false
+    "target": "dư luận"
   },
   {
     "source": "人设",
     "target": "hình tượng",
-    "note": "Cách khác: nhân thiết, hình tượng được dựng lên",
-    "reviewed": false
+    "note": "Cách khác: nhân thiết, hình tượng được dựng lên"
   },
   {
     "source": "面子",
-    "target": "thể diện",
-    "reviewed": false
+    "target": "thể diện"
   },
   {
     "source": "人情",
     "target": "nhân tình",
-    "note": "Cách khác: ơn nghĩa, tình nghĩa qua lại",
-    "reviewed": false
+    "note": "Cách khác: ơn nghĩa, tình nghĩa qua lại"
   },
   {
     "source": "潜规则",
-    "target": "luật ngầm",
-    "reviewed": false
+    "target": "luật ngầm"
   },
   {
     "source": "走后门",
-    "target": "chạy cửa sau",
-    "reviewed": false
+    "target": "chạy cửa sau"
   },
   {
     "source": "维权",
-    "target": "đòi quyền lợi",
-    "reviewed": false
+    "target": "đòi quyền lợi"
   },
   {
     "source": "举报",
-    "target": "tố cáo",
-    "reviewed": false
+    "target": "tố cáo"
   },
   {
     "source": "家暴",
-    "target": "bạo lực gia đình",
-    "reviewed": false
+    "target": "bạo lực gia đình"
   },
   {
     "source": "歧视",
-    "target": "phân biệt đối xử",
-    "reviewed": false
+    "target": "phân biệt đối xử"
   },
   {
     "source": "偏见",
-    "target": "thành kiến",
-    "reviewed": false
+    "target": "thành kiến"
   },
   {
     "source": "热搜",
     "target": "tìm kiếm nổi bật",
-    "note": "Cách khác: hot search, xu hướng",
-    "reviewed": false
+    "note": "Cách khác: hot search, xu hướng"
   },
   {
     "source": "社会",
-    "target": "xã hội",
-    "reviewed": false
+    "target": "xã hội"
   },
   {
     "source": "民生",
-    "target": "dân sinh",
-    "reviewed": false
+    "target": "dân sinh"
   },
   {
     "source": "底层人民",
-    "target": "người dân tầng lớp dưới",
-    "reviewed": false
+    "target": "người dân tầng lớp dưới"
   },
   {
     "source": "中产",
-    "target": "tầng lớp trung lưu",
-    "reviewed": false
+    "target": "tầng lớp trung lưu"
   },
   {
     "source": "富人",
-    "target": "người giàu",
-    "reviewed": false
+    "target": "người giàu"
   },
   {
     "source": "穷人",
-    "target": "người nghèo",
-    "reviewed": false
+    "target": "người nghèo"
   },
   {
     "source": "打工",
-    "target": "làm thuê",
-    "reviewed": false
+    "target": "làm thuê"
   },
   {
     "source": "外卖员",
-    "target": "nhân viên giao đồ ăn",
-    "reviewed": false
+    "target": "nhân viên giao đồ ăn"
   },
   {
     "source": "快递员",
-    "target": "nhân viên giao hàng",
-    "reviewed": false
+    "target": "nhân viên giao hàng"
   },
   {
     "source": "996",
-    "target": "làm việc 996 (9h sáng đến 9h tối, 6 ngày/tuần)",
-    "reviewed": false
+    "target": "làm việc 996 (9h sáng đến 9h tối, 6 ngày/tuần)"
   },
   {
     "source": "过劳",
-    "target": "làm việc quá sức",
-    "reviewed": false
+    "target": "làm việc quá sức"
   },
   {
     "source": "降薪",
-    "target": "giảm lương",
-    "reviewed": false
+    "target": "giảm lương"
   },
   {
     "source": "拖欠工资",
-    "target": "nợ lương",
-    "reviewed": false
+    "target": "nợ lương"
   },
   {
     "source": "劳动合同",
-    "target": "hợp đồng lao động",
-    "reviewed": false
+    "target": "hợp đồng lao động"
   },
   {
     "source": "社保",
-    "target": "bảo hiểm xã hội",
-    "reviewed": false
+    "target": "bảo hiểm xã hội"
   },
   {
     "source": "就业",
-    "target": "việc làm",
-    "reviewed": false
+    "target": "việc làm"
   },
   {
     "source": "考公",
-    "target": "thi công chức",
-    "reviewed": false
+    "target": "thi công chức"
   },
   {
     "source": "学区房",
-    "target": "nhà khu trường học",
-    "reviewed": false
+    "target": "nhà khu trường học"
   },
   {
     "source": "买房",
-    "target": "mua nhà",
-    "reviewed": false
+    "target": "mua nhà"
   },
   {
     "source": "房价",
-    "target": "giá nhà",
-    "reviewed": false
+    "target": "giá nhà"
   },
   {
     "source": "养老",
-    "target": "dưỡng già",
-    "reviewed": false
+    "target": "dưỡng già"
   },
   {
     "source": "空巢老人",
-    "target": "người già neo đơn",
-    "reviewed": false
+    "target": "người già neo đơn"
   },
   {
     "source": "独居",
-    "target": "sống một mình",
-    "reviewed": false
+    "target": "sống một mình"
   },
   {
     "source": "生育",
-    "target": "sinh đẻ",
-    "reviewed": false
+    "target": "sinh đẻ"
   },
   {
     "source": "催生",
-    "target": "giục sinh con",
-    "reviewed": false
+    "target": "giục sinh con"
   },
   {
     "source": "育儿",
-    "target": "nuôi dạy con",
-    "reviewed": false
+    "target": "nuôi dạy con"
   },
   {
     "source": "教育",
-    "target": "giáo dục",
-    "reviewed": false
+    "target": "giáo dục"
   },
   {
     "source": "补课",
-    "target": "học thêm",
-    "reviewed": false
+    "target": "học thêm"
   },
   {
     "source": "鸡娃",
-    "target": "ép con học",
-    "reviewed": false
+    "target": "ép con học"
   },
   {
     "source": "应试教育",
-    "target": "giáo dục thi cử",
-    "reviewed": false
+    "target": "giáo dục thi cử"
   },
   {
     "source": "网暴",
-    "target": "bạo lực mạng",
-    "reviewed": false
+    "target": "bạo lực mạng"
   },
   {
     "source": "人肉搜索",
-    "target": "truy tìm thông tin cá nhân",
-    "reviewed": false
+    "target": "truy tìm thông tin cá nhân"
   },
   {
     "source": "造谣",
-    "target": "tung tin đồn",
-    "reviewed": false
+    "target": "tung tin đồn"
   },
   {
     "source": "辟谣",
-    "target": "bác bỏ tin đồn",
-    "reviewed": false
+    "target": "bác bỏ tin đồn"
   },
   {
     "source": "炒作",
-    "target": "thổi phồng, đánh bóng",
-    "reviewed": false
+    "target": "thổi phồng, đánh bóng"
   },
   {
     "source": "诈骗",
-    "target": "lừa đảo",
-    "reviewed": false
+    "target": "lừa đảo"
   },
   {
     "source": "电信诈骗",
-    "target": "lừa đảo qua điện thoại, mạng",
-    "reviewed": false
+    "target": "lừa đảo qua điện thoại, mạng"
   },
   {
     "source": "传销",
-    "target": "đa cấp",
-    "reviewed": false
+    "target": "đa cấp"
   },
   {
     "source": "腐败",
-    "target": "tham nhũng",
-    "reviewed": false
+    "target": "tham nhũng"
   },
   {
     "source": "公平",
-    "target": "công bằng",
-    "reviewed": false
+    "target": "công bằng"
   },
   {
     "source": "正义",
-    "target": "chính nghĩa",
-    "reviewed": false
+    "target": "chính nghĩa"
   },
   {
     "source": "法律",
-    "target": "pháp luật",
-    "reviewed": false
+    "target": "pháp luật"
   },
   {
     "source": "维护权益",
-    "target": "bảo vệ quyền lợi",
-    "reviewed": false
+    "target": "bảo vệ quyền lợi"
   },
   {
     "source": "弱势群体",
-    "target": "nhóm yếu thế",
-    "reviewed": false
+    "target": "nhóm yếu thế"
   },
   {
     "source": "性别平等",
-    "target": "bình đẳng giới",
-    "reviewed": false
+    "target": "bình đẳng giới"
   }
 ]

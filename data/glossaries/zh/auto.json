@@ -419,162 +419,130 @@
   },
   {
     "source": "不过",
-    "target": "nhưng mà",
-    "reviewed": false
+    "target": "nhưng mà"
   },
   {
     "source": "可是",
-    "target": "nhưng",
-    "reviewed": false
+    "target": "nhưng"
   },
   {
     "source": "然而",
-    "target": "tuy nhiên",
-    "reviewed": false
+    "target": "tuy nhiên"
   },
   {
     "source": "于是",
-    "target": "thế là",
-    "reviewed": false
+    "target": "thế là"
   },
   {
     "source": "因此",
-    "target": "do đó",
-    "reviewed": false
+    "target": "do đó"
   },
   {
     "source": "所以",
-    "target": "nên",
-    "reviewed": false
+    "target": "nên"
   },
   {
     "source": "因为",
-    "target": "vì",
-    "reviewed": false
+    "target": "vì"
   },
   {
     "source": "虽然",
-    "target": "mặc dù",
-    "reviewed": false
+    "target": "mặc dù"
   },
   {
     "source": "尽管",
-    "target": "dù cho",
-    "reviewed": false
+    "target": "dù cho"
   },
   {
     "source": "即使",
-    "target": "ngay cả khi",
-    "reviewed": false
+    "target": "ngay cả khi"
   },
   {
     "source": "只要",
-    "target": "miễn là",
-    "reviewed": false
+    "target": "miễn là"
   },
   {
     "source": "除非",
-    "target": "trừ khi",
-    "reviewed": false
+    "target": "trừ khi"
   },
   {
     "source": "万一",
-    "target": "lỡ như",
-    "reviewed": false
+    "target": "lỡ như"
   },
   {
     "source": "一旦",
-    "target": "một khi",
-    "reviewed": false
+    "target": "một khi"
   },
   {
     "source": "忽然",
-    "target": "đột nhiên",
-    "reviewed": false
+    "target": "đột nhiên"
   },
   {
     "source": "突然",
-    "target": "bất ngờ",
-    "reviewed": false
+    "target": "bất ngờ"
   },
   {
     "source": "幸好",
-    "target": "may mà",
-    "reviewed": false
+    "target": "may mà"
   },
   {
     "source": "可惜",
-    "target": "tiếc là",
-    "reviewed": false
+    "target": "tiếc là"
   },
   {
     "source": "顺便",
-    "target": "nhân tiện",
-    "reviewed": false
+    "target": "nhân tiện"
   },
   {
     "source": "说实话",
-    "target": "nói thật",
-    "reviewed": false
+    "target": "nói thật"
   },
   {
     "source": "换句话说",
-    "target": "nói cách khác",
-    "reviewed": false
+    "target": "nói cách khác"
   },
   {
     "source": "也就是说",
-    "target": "nghĩa là",
-    "reviewed": false
+    "target": "nghĩa là"
   },
   {
     "source": "例如",
-    "target": "ví dụ",
-    "reviewed": false
+    "target": "ví dụ"
   },
   {
     "source": "与此同时",
-    "target": "đồng thời",
-    "reviewed": false
+    "target": "đồng thời"
   },
   {
     "source": "相反",
-    "target": "ngược lại",
-    "reviewed": false
+    "target": "ngược lại"
   },
   {
     "source": "总而言之",
-    "target": "tóm lại",
-    "reviewed": false
+    "target": "tóm lại"
   },
   {
     "source": "话说回来",
-    "target": "nói lại thì",
-    "reviewed": false
+    "target": "nói lại thì"
   },
   {
     "source": "对了",
-    "target": "à mà",
-    "reviewed": false
+    "target": "à mà"
   },
   {
     "source": "慢着",
-    "target": "khoan đã",
-    "reviewed": false
+    "target": "khoan đã"
   },
   {
     "source": "算了",
-    "target": "thôi vậy",
-    "reviewed": false
+    "target": "thôi vậy"
   },
   {
     "source": "何况",
-    "target": "huống hồ",
-    "reviewed": false
+    "target": "huống hồ"
   },
   {
     "source": "说不定",
-    "target": "không chừng",
-    "reviewed": false
+    "target": "không chừng"
   }
 ]

@@ -430,152 +430,122 @@
   },
   {
     "source": "火力",
-    "target": "hỏa lực",
-    "reviewed": false
+    "target": "hỏa lực"
   },
   {
     "source": "弹药",
-    "target": "đạn dược",
-    "reviewed": false
+    "target": "đạn dược"
   },
   {
     "source": "子弹",
-    "target": "viên đạn",
-    "reviewed": false
+    "target": "viên đạn"
   },
   {
     "source": "手雷",
-    "target": "lựu đạn",
-    "reviewed": false
+    "target": "lựu đạn"
   },
   {
     "source": "炸弹",
-    "target": "bom",
-    "reviewed": false
+    "target": "bom"
   },
   {
     "source": "引爆",
-    "target": "kích nổ",
-    "reviewed": false
+    "target": "kích nổ"
   },
   {
     "source": "拆弹",
-    "target": "gỡ bom",
-    "reviewed": false
+    "target": "gỡ bom"
   },
   {
     "source": "人质",
-    "target": "con tin",
-    "reviewed": false
+    "target": "con tin"
   },
   {
     "source": "劫持",
-    "target": "bắt giữ, khống chế làm con tin",
-    "reviewed": false
+    "target": "bắt giữ, khống chế làm con tin"
   },
   {
     "source": "营救",
-    "target": "giải cứu",
-    "reviewed": false
+    "target": "giải cứu"
   },
   {
     "source": "救援",
-    "target": "cứu viện",
-    "reviewed": false
+    "target": "cứu viện"
   },
   {
     "source": "据点",
-    "target": "cứ điểm",
-    "reviewed": false
+    "target": "cứ điểm"
   },
   {
     "source": "总攻",
-    "target": "tổng tấn công",
-    "reviewed": false
+    "target": "tổng tấn công"
   },
   {
     "source": "冲锋",
-    "target": "xung phong",
-    "reviewed": false
+    "target": "xung phong"
   },
   {
     "source": "掩体",
-    "target": "chỗ nấp",
-    "reviewed": false
+    "target": "chỗ nấp"
   },
   {
     "source": "弹匣",
-    "target": "băng đạn",
-    "reviewed": false
+    "target": "băng đạn"
   },
   {
     "source": "换弹",
-    "target": "thay băng đạn",
-    "reviewed": false
+    "target": "thay băng đạn"
   },
   {
     "source": "开枪",
-    "target": "nổ súng",
-    "reviewed": false
+    "target": "nổ súng"
   },
   {
     "source": "扣扳机",
-    "target": "bóp cò",
-    "reviewed": false
+    "target": "bóp cò"
   },
   {
     "source": "保险栓",
-    "target": "chốt an toàn",
-    "reviewed": false
+    "target": "chốt an toàn"
   },
   {
     "source": "手枪",
-    "target": "súng lục",
-    "reviewed": false
+    "target": "súng lục"
   },
   {
     "source": "步枪",
-    "target": "súng trường",
-    "reviewed": false
+    "target": "súng trường"
   },
   {
     "source": "匕首",
-    "target": "dao găm",
-    "reviewed": false
+    "target": "dao găm"
   },
   {
     "source": "追车",
-    "target": "rượt xe",
-    "reviewed": false
+    "target": "rượt xe"
   },
   {
     "source": "飞车",
-    "target": "lao xe tốc độ cao",
-    "reviewed": false
+    "target": "lao xe tốc độ cao"
   },
   {
     "source": "坠落",
-    "target": "rơi xuống",
-    "reviewed": false
+    "target": "rơi xuống"
   },
   {
     "source": "跳车",
-    "target": "nhảy khỏi xe",
-    "reviewed": false
+    "target": "nhảy khỏi xe"
   },
   {
     "source": "对峙",
-    "target": "đối đầu giằng co",
-    "reviewed": false
+    "target": "đối đầu giằng co"
   },
   {
     "source": "缴械",
-    "target": "tước vũ khí",
-    "reviewed": false
+    "target": "tước vũ khí"
   },
   {
     "source": "制服",
-    "target": "khống chế",
-    "reviewed": false
+    "target": "khống chế"
   }
 ]

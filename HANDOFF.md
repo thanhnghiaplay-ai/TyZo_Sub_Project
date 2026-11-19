@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — BỎ DUYỆT TAY — đọc mục này đầu tiên
+Chủ nói quá nhiều để duyệt tay. Đã bỏ cờ «chưa duyệt» khỏi file thuật ngữ (khoảng 3.380 mục). File không ghi cờ thì lúc nạp hoặc «Khôi phục» coi là đã duyệt. Mục đã nằm trong phòng từ trước KHÔNG tự đổi: vào Admin → Thuật ngữ, bấm «Duyệt hết» một lần (có hỏi lại). Nút «Duyệt cả bộ» vẫn còn nếu chỉ muốn một bộ. Không nâng `APP_VERSION`.
+Kiểm: typecheck sạch, eslint sạch trên file vừa sửa, `npm test` pass (1197 ca).
+CHƯA KIỂM: chưa bấm thử nút trên phòng thật.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B4.4 + B4.5 + B4.6 XONG — B4 HẾT BỘ MỎNG — đọc mục này đầu tiên
 Chủ bảo làm hết và cho soạn (duyệt nội dung) luôn. Cờ trong file vẫn `reviewed:false`: bài kiểm tra bắt mọi mục trong các bộ nháp phải để «chưa duyệt», và bộ bổ sung phải còn ít nhất 20 mục chưa duyệt. Bật thành đã duyệt thì bài kiểm tra hỏng. Chủ muốn chốt từng mục thì bấm duyệt ở Admin sau khi «Khôi phục».
 B4.4 tiếng Nhật, thêm vào file có sẵn: `ja/auto` +32 (38→70), `ja/documentary` +32 (38→70), `ja/social` +32 (40→72), `ja/family` +32 (44→76), `ja/school` +32 (44→76), `ja/war` +32 (45→77), `ja/ngontinh` +32 (49→81).

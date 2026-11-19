@@ -430,227 +430,182 @@
   },
   {
     "source": "本集",
-    "target": "tập này",
-    "reviewed": false
+    "target": "tập này"
   },
   {
     "source": "上集",
-    "target": "tập trước",
-    "reviewed": false
+    "target": "tập trước"
   },
   {
     "source": "下集",
-    "target": "tập sau",
-    "reviewed": false
+    "target": "tập sau"
   },
   {
     "source": "上一集",
-    "target": "tập trước",
-    "reviewed": false
+    "target": "tập trước"
   },
   {
     "source": "下一集",
-    "target": "tập tiếp theo",
-    "reviewed": false
+    "target": "tập tiếp theo"
   },
   {
     "source": "全剧",
-    "target": "toàn bộ bộ phim",
-    "reviewed": false
+    "target": "toàn bộ bộ phim"
   },
   {
     "source": "连续剧",
-    "target": "phim truyền hình nhiều tập",
-    "reviewed": false
+    "target": "phim truyền hình nhiều tập"
   },
   {
     "source": "电视剧",
-    "target": "phim truyền hình",
-    "reviewed": false
+    "target": "phim truyền hình"
   },
   {
     "source": "网剧",
-    "target": "phim mạng",
-    "reviewed": false
+    "target": "phim mạng"
   },
   {
     "source": "综艺",
-    "target": "chương trình giải trí",
-    "reviewed": false
+    "target": "chương trình giải trí"
   },
   {
     "source": "剧集",
-    "target": "các tập phim",
-    "reviewed": false
+    "target": "các tập phim"
   },
   {
     "source": "集数",
-    "target": "số tập",
-    "reviewed": false
+    "target": "số tập"
   },
   {
     "source": "开播",
-    "target": "lên sóng",
-    "reviewed": false
+    "target": "lên sóng"
   },
   {
     "source": "收官",
-    "target": "khép lại, kết thúc",
-    "reviewed": false
+    "target": "khép lại, kết thúc"
   },
   {
     "source": "完结",
-    "target": "hoàn kết",
-    "reviewed": false
+    "target": "hoàn kết"
   },
   {
     "source": "剧透",
-    "target": "tiết lộ nội dung",
-    "reviewed": false
+    "target": "tiết lộ nội dung"
   },
   {
     "source": "高能",
-    "target": "cảnh cao trào",
-    "reviewed": false
+    "target": "cảnh cao trào"
   },
   {
     "source": "名场面",
-    "target": "cảnh kinh điển",
-    "reviewed": false
+    "target": "cảnh kinh điển"
   },
   {
     "source": "泪点",
-    "target": "điểm gây xúc động",
-    "reviewed": false
+    "target": "điểm gây xúc động"
   },
   {
     "source": "爽点",
-    "target": "điểm gây hưng phấn",
-    "reviewed": false
+    "target": "điểm gây hưng phấn"
   },
   {
     "source": "男一号",
-    "target": "nam chính",
-    "reviewed": false
+    "target": "nam chính"
   },
   {
     "source": "女一号",
-    "target": "nữ chính",
-    "reviewed": false
+    "target": "nữ chính"
   },
   {
     "source": "男主角",
-    "target": "nam chính",
-    "reviewed": false
+    "target": "nam chính"
   },
   {
     "source": "女主角",
-    "target": "nữ chính",
-    "reviewed": false
+    "target": "nữ chính"
   },
   {
     "source": "大反派",
-    "target": "phản diện chính",
-    "reviewed": false
+    "target": "phản diện chính"
   },
   {
     "source": "演员",
-    "target": "diễn viên",
-    "reviewed": false
+    "target": "diễn viên"
   },
   {
     "source": "新人",
-    "target": "diễn viên mới",
-    "reviewed": false
+    "target": "diễn viên mới"
   },
   {
     "source": "老戏骨",
-    "target": "diễn viên gạo cội",
-    "reviewed": false
+    "target": "diễn viên gạo cội"
   },
   {
     "source": "流量",
-    "target": "ngôi sao đắt khách",
-    "reviewed": false
+    "target": "ngôi sao đắt khách"
   },
   {
     "source": "选角",
-    "target": "chọn diễn viên",
-    "reviewed": false
+    "target": "chọn diễn viên"
   },
   {
     "source": "制作人",
-    "target": "nhà sản xuất",
-    "reviewed": false
+    "target": "nhà sản xuất"
   },
   {
     "source": "监制",
-    "target": "giám chế",
-    "reviewed": false
+    "target": "giám chế"
   },
   {
     "source": "摄影",
-    "target": "quay phim",
-    "reviewed": false
+    "target": "quay phim"
   },
   {
     "source": "剪辑",
-    "target": "dựng phim",
-    "reviewed": false
+    "target": "dựng phim"
   },
   {
     "source": "配乐",
-    "target": "nhạc nền",
-    "reviewed": false
+    "target": "nhạc nền"
   },
   {
     "source": "插曲",
-    "target": "nhạc chèn",
-    "reviewed": false
+    "target": "nhạc chèn"
   },
   {
     "source": "主题曲",
-    "target": "nhạc chủ đề",
-    "reviewed": false
+    "target": "nhạc chủ đề"
   },
   {
     "source": "独家",
-    "target": "độc quyền",
-    "reviewed": false
+    "target": "độc quyền"
   },
   {
     "source": "会员",
-    "target": "hội viên",
-    "reviewed": false
+    "target": "hội viên"
   },
   {
     "source": "弹幕",
-    "target": "bình luận bay",
-    "reviewed": false
+    "target": "bình luận bay"
   },
   {
     "source": "二刷",
-    "target": "xem lần hai",
-    "reviewed": false
+    "target": "xem lần hai"
   },
   {
     "source": "安利",
-    "target": "giới thiệu, quảng bá",
-    "reviewed": false
+    "target": "giới thiệu, quảng bá"
   },
   {
     "source": "入坑",
-    "target": "sa hố, bắt đầu mê",
-    "reviewed": false
+    "target": "sa hố, bắt đầu mê"
   },
   {
     "source": "嗑CP",
-    "target": "ship cặp đôi",
-    "reviewed": false
+    "target": "ship cặp đôi"
   },
   {
     "source": "爆款",
-    "target": "tác phẩm bùng nổ",
-    "reviewed": false
+    "target": "tác phẩm bùng nổ"
   }
 ]

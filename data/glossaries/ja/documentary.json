@@ -1,352 +1,282 @@
 [
   {
     "source": "ドキュメンタリー",
-    "target": "phim tài liệu",
-    "reviewed": false
+    "target": "phim tài liệu"
   },
   {
     "source": "ナレーション",
-    "target": "lời dẫn",
-    "reviewed": false
+    "target": "lời dẫn"
   },
   {
     "source": "取材",
-    "target": "phỏng vấn, thu thập tư liệu thực địa",
-    "reviewed": false
+    "target": "phỏng vấn, thu thập tư liệu thực địa"
   },
   {
     "source": "密着取材",
-    "target": "bám sát ghi hình",
-    "reviewed": false
+    "target": "bám sát ghi hình"
   },
   {
     "source": "証言",
-    "target": "lời chứng",
-    "reviewed": false
+    "target": "lời chứng"
   },
   {
     "source": "関係者",
-    "target": "người liên quan",
-    "reviewed": false
+    "target": "người liên quan"
   },
   {
     "source": "遺族",
-    "target": "thân nhân người đã mất",
-    "reviewed": false
+    "target": "thân nhân người đã mất"
   },
   {
     "source": "被害者",
-    "target": "nạn nhân",
-    "reviewed": false
+    "target": "nạn nhân"
   },
   {
     "source": "加害者",
-    "target": "thủ phạm, bên gây hại",
-    "reviewed": false
+    "target": "thủ phạm, bên gây hại"
   },
   {
     "source": "生存者",
-    "target": "người sống sót",
-    "reviewed": false
+    "target": "người sống sót"
   },
   {
     "source": "被災地",
-    "target": "vùng bị thiên tai",
-    "reviewed": false
+    "target": "vùng bị thiên tai"
   },
   {
     "source": "震災",
-    "target": "thảm họa động đất",
-    "reviewed": false
+    "target": "thảm họa động đất"
   },
   {
     "source": "東日本大震災",
-    "target": "Đại thảm họa động đất Đông Nhật Bản",
-    "reviewed": false
+    "target": "Đại thảm họa động đất Đông Nhật Bản"
   },
   {
     "source": "津波",
-    "target": "sóng thần",
-    "reviewed": false
+    "target": "sóng thần"
   },
   {
     "source": "原発事故",
-    "target": "sự cố nhà máy điện hạt nhân",
-    "reviewed": false
+    "target": "sự cố nhà máy điện hạt nhân"
   },
   {
     "source": "復興",
-    "target": "phục hồi, tái thiết",
-    "reviewed": false
+    "target": "phục hồi, tái thiết"
   },
   {
     "source": "避難所",
-    "target": "nơi sơ tán",
-    "reviewed": false
+    "target": "nơi sơ tán"
   },
   {
     "source": "仮設住宅",
-    "target": "nhà ở tạm",
-    "reviewed": false
+    "target": "nhà ở tạm"
   },
   {
     "source": "絶滅危惧種",
-    "target": "loài nguy cấp",
-    "reviewed": false
+    "target": "loài nguy cấp"
   },
   {
     "source": "生態系",
-    "target": "hệ sinh thái",
-    "reviewed": false
+    "target": "hệ sinh thái"
   },
   {
     "source": "世界遺産",
-    "target": "di sản thế giới",
-    "reviewed": false
+    "target": "di sản thế giới"
   },
   {
     "source": "伝統工芸",
-    "target": "nghề thủ công truyền thống",
-    "reviewed": false
+    "target": "nghề thủ công truyền thống"
   },
   {
     "source": "職人",
-    "target": "nghệ nhân, thợ thủ công bậc thầy",
-    "reviewed": false
+    "target": "nghệ nhân, thợ thủ công bậc thầy"
   },
   {
     "source": "人間国宝",
-    "target": "Quốc bảo sống (nghệ nhân cấp quốc gia)",
-    "reviewed": false
+    "target": "Quốc bảo sống (nghệ nhân cấp quốc gia)"
   },
   {
     "source": "老舗",
-    "target": "cửa hiệu lâu đời",
-    "reviewed": false
+    "target": "cửa hiệu lâu đời"
   },
   {
     "source": "後継者",
-    "target": "người kế nghiệp",
-    "reviewed": false
+    "target": "người kế nghiệp"
   },
   {
     "source": "過疎",
-    "target": "dân cư thưa thớt",
-    "reviewed": false
+    "target": "dân cư thưa thớt"
   },
   {
     "source": "限界集落",
-    "target": "làng có nguy cơ biến mất",
-    "reviewed": false
+    "target": "làng có nguy cơ biến mất"
   },
   {
     "source": "検証",
-    "target": "kiểm chứng",
-    "reviewed": false
+    "target": "kiểm chứng"
   },
   {
     "source": "再現映像",
-    "target": "cảnh dựng lại",
-    "reviewed": false
+    "target": "cảnh dựng lại"
   },
   {
     "source": "記録映像",
-    "target": "phim tư liệu",
-    "reviewed": false
+    "target": "phim tư liệu"
   },
   {
     "source": "専門家",
-    "target": "chuyên gia",
-    "reviewed": false
+    "target": "chuyên gia"
   },
   {
     "source": "研究者",
-    "target": "nhà nghiên cứu",
-    "reviewed": false
+    "target": "nhà nghiên cứu"
   },
   {
     "source": "真相",
-    "target": "sự thật đằng sau",
-    "reviewed": false
+    "target": "sự thật đằng sau"
   },
   {
     "source": "内幕",
-    "target": "chuyện bên trong, nội tình",
-    "reviewed": false
+    "target": "chuyện bên trong, nội tình"
   },
   {
     "source": "追跡",
-    "target": "truy tìm theo dõi",
-    "reviewed": false
+    "target": "truy tìm theo dõi"
   },
   {
     "source": "告発",
-    "target": "tố cáo",
-    "reviewed": false
+    "target": "tố cáo"
   },
   {
     "source": "人間ドキュメント",
-    "target": "phim tài liệu nhân văn",
-    "reviewed": false
+    "target": "phim tài liệu nhân văn"
   },
   {
     "source": "撮影",
-    "target": "quay phim",
-    "reviewed": false
+    "target": "quay phim"
   },
   {
     "source": "インタビュー",
-    "target": "phỏng vấn",
-    "reviewed": false
+    "target": "phỏng vấn"
   },
   {
     "source": "字幕",
-    "target": "phụ đề",
-    "reviewed": false
+    "target": "phụ đề"
   },
   {
     "source": "史料",
-    "target": "sử liệu",
-    "reviewed": false
+    "target": "sử liệu"
   },
   {
     "source": "古文書",
-    "target": "cổ thư",
-    "reviewed": false
+    "target": "cổ thư"
   },
   {
     "source": "遺跡",
-    "target": "di tích",
-    "reviewed": false
+    "target": "di tích"
   },
   {
     "source": "発掘",
-    "target": "khai quật",
-    "reviewed": false
+    "target": "khai quật"
   },
   {
     "source": "化石",
-    "target": "hóa thạch",
-    "reviewed": false
+    "target": "hóa thạch"
   },
   {
     "source": "気候変動",
-    "target": "biến đổi khí hậu",
-    "reviewed": false
+    "target": "biến đổi khí hậu"
   },
   {
     "source": "温暖化",
-    "target": "nóng lên toàn cầu",
-    "reviewed": false
+    "target": "nóng lên toàn cầu"
   },
   {
     "source": "森林伐採",
-    "target": "chặt phá rừng",
-    "reviewed": false
+    "target": "chặt phá rừng"
   },
   {
     "source": "海洋汚染",
-    "target": "ô nhiễm biển",
-    "reviewed": false
+    "target": "ô nhiễm biển"
   },
   {
     "source": "渡り鳥",
-    "target": "chim di cư",
-    "reviewed": false
+    "target": "chim di cư"
   },
   {
     "source": "絶滅",
-    "target": "tuyệt chủng",
-    "reviewed": false
+    "target": "tuyệt chủng"
   },
   {
     "source": "保護区",
-    "target": "khu bảo tồn",
-    "reviewed": false
+    "target": "khu bảo tồn"
   },
   {
     "source": "国立公園",
-    "target": "vườn quốc gia",
-    "reviewed": false
+    "target": "vườn quốc gia"
   },
   {
     "source": "火山",
-    "target": "núi lửa",
-    "reviewed": false
+    "target": "núi lửa"
   },
   {
     "source": "地震",
-    "target": "động đất",
-    "reviewed": false
+    "target": "động đất"
   },
   {
     "source": "台風",
-    "target": "bão",
-    "reviewed": false
+    "target": "bão"
   },
   {
     "source": "洪水",
-    "target": "lũ lụt",
-    "reviewed": false
+    "target": "lũ lụt"
   },
   {
     "source": "干ばつ",
-    "target": "hạn hán",
-    "reviewed": false
+    "target": "hạn hán"
   },
   {
     "source": "難民",
-    "target": "người tị nạn",
-    "reviewed": false
+    "target": "người tị nạn"
   },
   {
     "source": "先住民",
-    "target": "người bản địa",
-    "reviewed": false
+    "target": "người bản địa"
   },
   {
     "source": "植民地",
-    "target": "thuộc địa",
-    "reviewed": false
+    "target": "thuộc địa"
   },
   {
     "source": "独立",
-    "target": "độc lập",
-    "reviewed": false
+    "target": "độc lập"
   },
   {
     "source": "革命",
-    "target": "cách mạng",
-    "reviewed": false
+    "target": "cách mạng"
   },
   {
     "source": "王室",
-    "target": "vương thất",
-    "reviewed": false
+    "target": "vương thất"
   },
   {
     "source": "年表",
-    "target": "niên biểu",
-    "reviewed": false
+    "target": "niên biểu"
   },
   {
     "source": "航空撮影",
-    "target": "quay trên không",
-    "reviewed": false
+    "target": "quay trên không"
   },
   {
     "source": "再現ドラマ",
-    "target": "phim dựng lại",
-    "reviewed": false
+    "target": "phim dựng lại"
   },
   {
     "source": "音声解説",
-    "target": "thuyết minh",
-    "reviewed": false
+    "target": "thuyết minh"
   },
   {
     "source": "現地取材",
-    "target": "tác nghiệp tại chỗ",
-    "reviewed": false
+    "target": "tác nghiệp tại chỗ"
   }
 ]

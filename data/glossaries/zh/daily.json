@@ -419,202 +419,162 @@
   },
   {
     "source": "谢谢",
-    "target": "cảm ơn",
-    "reviewed": false
+    "target": "cảm ơn"
   },
   {
     "source": "不客气",
-    "target": "không có gì",
-    "reviewed": false
+    "target": "không có gì"
   },
   {
     "source": "对不起",
-    "target": "xin lỗi",
-    "reviewed": false
+    "target": "xin lỗi"
   },
   {
     "source": "没关系",
-    "target": "không sao",
-    "reviewed": false
+    "target": "không sao"
   },
   {
     "source": "不好意思",
-    "target": "ngại quá, xin lỗi",
-    "reviewed": false
+    "target": "ngại quá, xin lỗi"
   },
   {
     "source": "打扰了",
-    "target": "làm phiền rồi",
-    "reviewed": false
+    "target": "làm phiền rồi"
   },
   {
     "source": "请进",
-    "target": "mời vào",
-    "reviewed": false
+    "target": "mời vào"
   },
   {
     "source": "慢点",
-    "target": "chậm thôi",
-    "reviewed": false
+    "target": "chậm thôi"
   },
   {
     "source": "等一下",
-    "target": "đợi một chút",
-    "reviewed": false
+    "target": "đợi một chút"
   },
   {
     "source": "马上",
-    "target": "ngay lập tức",
-    "reviewed": false
+    "target": "ngay lập tức"
   },
   {
     "source": "吃饱了",
-    "target": "ăn no rồi",
-    "reviewed": false
+    "target": "ăn no rồi"
   },
   {
     "source": "好吃",
-    "target": "ngon",
-    "reviewed": false
+    "target": "ngon"
   },
   {
     "source": "干杯",
-    "target": "cạn ly",
-    "reviewed": false
+    "target": "cạn ly"
   },
   {
     "source": "我请客",
-    "target": "tôi mời",
-    "reviewed": false
+    "target": "tôi mời"
   },
   {
     "source": "AA制",
-    "target": "chia đều",
-    "reviewed": false
+    "target": "chia đều"
   },
   {
     "source": "起床",
-    "target": "thức dậy",
-    "reviewed": false
+    "target": "thức dậy"
   },
   {
     "source": "睡觉",
-    "target": "đi ngủ",
-    "reviewed": false
+    "target": "đi ngủ"
   },
   {
     "source": "洗澡",
-    "target": "tắm",
-    "reviewed": false
+    "target": "tắm"
   },
   {
     "source": "刷牙",
-    "target": "đánh răng",
-    "reviewed": false
+    "target": "đánh răng"
   },
   {
     "source": "做饭",
-    "target": "nấu cơm",
-    "reviewed": false
+    "target": "nấu cơm"
   },
   {
     "source": "出门",
-    "target": "ra ngoài",
-    "reviewed": false
+    "target": "ra ngoài"
   },
   {
     "source": "到家",
-    "target": "về đến nhà",
-    "reviewed": false
+    "target": "về đến nhà"
   },
   {
     "source": "路上小心",
-    "target": "đi đường cẩn thận",
-    "reviewed": false
+    "target": "đi đường cẩn thận"
   },
   {
     "source": "回头见",
-    "target": "hẹn gặp lại",
-    "reviewed": false
+    "target": "hẹn gặp lại"
   },
   {
     "source": "改天",
-    "target": "hôm khác",
-    "reviewed": false
+    "target": "hôm khác"
   },
   {
     "source": "周末",
-    "target": "cuối tuần",
-    "reviewed": false
+    "target": "cuối tuần"
   },
   {
     "source": "放假",
-    "target": "nghỉ lễ, nghỉ phép",
-    "reviewed": false
+    "target": "nghỉ lễ, nghỉ phép"
   },
   {
     "source": "开会",
-    "target": "họp",
-    "reviewed": false
+    "target": "họp"
   },
   {
     "source": "同事",
-    "target": "đồng nghiệp",
-    "reviewed": false
+    "target": "đồng nghiệp"
   },
   {
     "source": "老板",
-    "target": "sếp, ông chủ",
-    "reviewed": false
+    "target": "sếp, ông chủ"
   },
   {
     "source": "邻居",
-    "target": "hàng xóm",
-    "reviewed": false
+    "target": "hàng xóm"
   },
   {
     "source": "朋友圈",
-    "target": "vòng bạn bè (WeChat)",
-    "reviewed": false
+    "target": "vòng bạn bè (WeChat)"
   },
   {
     "source": "发消息",
-    "target": "nhắn tin",
-    "reviewed": false
+    "target": "nhắn tin"
   },
   {
     "source": "打电话",
-    "target": "gọi điện",
-    "reviewed": false
+    "target": "gọi điện"
   },
   {
     "source": "充电",
-    "target": "sạc pin",
-    "reviewed": false
+    "target": "sạc pin"
   },
   {
     "source": "地铁",
-    "target": "tàu điện ngầm",
-    "reviewed": false
+    "target": "tàu điện ngầm"
   },
   {
     "source": "公交",
-    "target": "xe buýt",
-    "reviewed": false
+    "target": "xe buýt"
   },
   {
     "source": "红绿灯",
-    "target": "đèn giao thông",
-    "reviewed": false
+    "target": "đèn giao thông"
   },
   {
     "source": "超市",
-    "target": "siêu thị",
-    "reviewed": false
+    "target": "siêu thị"
   },
   {
     "source": "菜市场",
-    "target": "chợ",
-    "reviewed": false
+    "target": "chợ"
   }
 ]
