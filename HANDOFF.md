@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A2 HÀM TRAU CHUỐT XONG (`polishAll`) — đọc mục này đầu tiên
+Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A2» có đủ chi tiết). Tóm tắt: file mới `src/lib/sub/polish.ts` (trau chuốt theo lô, giữ câu `edited`, từ chối/lỗi thì giữ bản cũ và đánh dấu đúng câu, lô lỗi không mất cả phim, lỗi nặng dừng có báo), `makePolishCall` ở `groq.ts` (gọi mạng, dùng lại `requestWithRetry`), test mới `polish.test.ts` (26 ca). Chưa nối vào giao diện nên KHÔNG nâng `APP_VERSION`, không đổi điều khoản. typecheck, eslint 0 lỗi, `npm test` 198 + 1117 pass.
+CHƯA LÀM/CÒN MỞ: chưa gọi model thật; chưa bắt được kiểu model «làm nhẹ» câu mà không từ chối (cần Chủ chạy phim mẫu 18+).
+VIỆC TIẾP THEO: A3 (ước giá + hộp xác nhận + chọn model trau chuốt), xem `HANDOFF_NANG_CAP.md`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — HỘP CHỌN CỦA WEB + KHU 18+ (v5.9.1)
 Chủ yêu cầu ô chọn (ngôn ngữ, thể loại, ...) dùng hộp web thay danh sách gốc của điện thoại, và hộp Thể loại có khu «18+» nổi bật trên cùng với thanh Thấp/Vừa/Cao = adult/softcore/sex. Đã làm: `src/components/picker-select.tsx` (`PickerSelect`), `Select` ở `studio.tsx` và `ChipSelect` ở `home-hero.tsx` dùng nó; `AGE_LEVELS` ở `home-state.ts`. typecheck, eslint 0 lỗi, `npm test` (198 + 1091) pass. CHƯA thử trên điện thoại thật (cuộn, chạm, chế độ tối, giao diện Tương lai: CSS `[data-chip-select] select` cũ không còn tác dụng vì chip nay là nút). Việc tiếp theo vẫn là A2.
 

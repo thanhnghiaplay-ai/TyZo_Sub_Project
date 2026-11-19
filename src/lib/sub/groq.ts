@@ -17,6 +17,7 @@ import type { AsrModel } from "@/lib/sub/types";
 import { roomTicketId } from "@/lib/sub/room-ticket";
 import type { KeyProbe } from "@/lib/sub/key-check";
 import { BODY_TIMEOUT_MS, DeadlineError, HEADER_TIMEOUT_MS, withDeadlines } from "@/lib/sub/http-deadline";
+import { PolishRefusal, type PolishCall } from "@/lib/sub/polish";
 
 export const API = "https://api.groq.com/openai/v1";
 export const ROOM_KEY = "room";
@@ -466,6 +467,69 @@ export async function translateWithRepair(
     }
   }
   return out;
+}
+
+/**
+ * Lớp gọi mạng cho `polishAll` (polish.ts). Cùng đường gọi, hạn chót, thử lại và xử lý 429 như bước dịch.
+ * Nhà cung cấp báo từ chối (`content_filter` hoặc trường `refusal`) thì ném `PolishRefusal` để polishAll
+ * chia lô và đánh dấu đúng câu bị từ chối.
+ */
+export function makePolishCall(
+  key: string,
+  model: string,
+  signal: AbortSignal,
+  gate: { blockedUntil: number },
+  onWait?: (message: string) => void,
+  ticket?: string | null,
+): PolishCall {
+  return async (messages, count) => {
+    if (!model) throw new Error("Bạn chưa chọn model trau chuốt.");
+    const budget = Math.min(8192, 512 + count * 220);
+    const payloads = [
+      { model, temperature: 0, ...reasoningOpts(model), max_completion_tokens: budget, response_format: translationSchema(), messages },
+      { model, temperature: 0, max_completion_tokens: budget, response_format: { type: "json_object" }, messages },
+    ];
+    let lastError: Error | undefined;
+    for (let index = 0; index < payloads.length; index++) {
+      try {
+        const data = await requestWithRetry(
+          `${API}/chat/completions`,
+          () => ({
+            method: "POST",
+            headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+            body: JSON.stringify(payloads[index]),
+          }),
+          "Trau chuốt bản dịch",
+          signal,
+          gate,
+          onWait,
+          model,
+          ticket,
+          (response) =>
+            response.json() as Promise<{
+              choices?: Array<{ finish_reason?: string; message?: { content?: string; refusal?: string | null } }>;
+            }>,
+        );
+        const choice = data.choices?.[0];
+        if (choice?.finish_reason === "content_filter" || (typeof choice?.message?.refusal === "string" && choice.message.refusal.trim())) {
+          throw new PolishRefusal();
+        }
+        const content = choice?.message?.content;
+        if (typeof content !== "string" || !content.trim()) {
+          if (choice?.finish_reason === "length") throw new Error("Model trau chuốt dùng hết token trước khi trả câu.");
+          throw new Error("Model trau chuốt trả về nội dung trống.");
+        }
+        return content;
+      } catch (error) {
+        if ((error as { name?: string })?.name === "AbortError" || error instanceof PolishRefusal) throw error;
+        lastError = error as Error;
+        const canFallback =
+          index === 0 && /400|reasoning|response_format|json_schema|not supported|unsupported|unknown parameter/i.test(lastError.message || "");
+        if (!canFallback) throw error;
+      }
+    }
+    throw lastError || new Error("Trau chuốt thất bại.");
+  };
 }
 
 export async function analyzeFilm(input: {
