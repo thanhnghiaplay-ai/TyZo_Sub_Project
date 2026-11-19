@@ -1,0 +1,222 @@
+[
+  {
+    "source": "担任",
+    "target": "giáo viên chủ nhiệm",
+    "reviewed": false
+  },
+  {
+    "source": "校長",
+    "target": "hiệu trưởng",
+    "reviewed": false
+  },
+  {
+    "source": "教頭",
+    "target": "hiệu phó",
+    "reviewed": false
+  },
+  {
+    "source": "生徒",
+    "target": "học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "転校生",
+    "target": "học sinh chuyển trường",
+    "reviewed": false
+  },
+  {
+    "source": "先輩",
+    "target": "tiền bối (đàn anh, đàn chị)",
+    "reviewed": false
+  },
+  {
+    "source": "後輩",
+    "target": "hậu bối (đàn em)",
+    "reviewed": false
+  },
+  {
+    "source": "同級生",
+    "target": "bạn cùng khóa",
+    "reviewed": false
+  },
+  {
+    "source": "部活",
+    "target": "hoạt động câu lạc bộ",
+    "reviewed": false
+  },
+  {
+    "source": "部長",
+    "target": "trưởng câu lạc bộ",
+    "reviewed": false
+  },
+  {
+    "source": "生徒会",
+    "target": "hội học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "生徒会長",
+    "target": "chủ tịch hội học sinh",
+    "reviewed": false
+  },
+  {
+    "source": "文化祭",
+    "target": "lễ hội văn hóa trường",
+    "reviewed": false
+  },
+  {
+    "source": "体育祭",
+    "target": "hội thao",
+    "reviewed": false
+  },
+  {
+    "source": "修学旅行",
+    "target": "chuyến tham quan học tập",
+    "reviewed": false
+  },
+  {
+    "source": "期末試験",
+    "target": "thi cuối kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "中間テスト",
+    "target": "thi giữa kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "追試",
+    "target": "thi bổ sung",
+    "reviewed": false
+  },
+  {
+    "source": "補習",
+    "target": "học bù",
+    "reviewed": false
+  },
+  {
+    "source": "赤点",
+    "target": "điểm liệt",
+    "reviewed": false
+  },
+  {
+    "source": "偏差値",
+    "target": "điểm chuẩn hóa (hensachi)",
+    "reviewed": false
+  },
+  {
+    "source": "受験",
+    "target": "thi tuyển sinh",
+    "reviewed": false
+  },
+  {
+    "source": "志望校",
+    "target": "trường nguyện vọng",
+    "reviewed": false
+  },
+  {
+    "source": "進路相談",
+    "target": "tư vấn hướng nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "卒業式",
+    "target": "lễ tốt nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "入学式",
+    "target": "lễ nhập học",
+    "reviewed": false
+  },
+  {
+    "source": "始業式",
+    "target": "lễ khai giảng đầu kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "終業式",
+    "target": "lễ bế giảng cuối kỳ",
+    "reviewed": false
+  },
+  {
+    "source": "放課後",
+    "target": "sau giờ học",
+    "reviewed": false
+  },
+  {
+    "source": "屋上",
+    "target": "sân thượng trường",
+    "reviewed": false
+  },
+  {
+    "source": "保健室",
+    "target": "phòng y tế",
+    "reviewed": false
+  },
+  {
+    "source": "職員室",
+    "target": "phòng giáo viên",
+    "reviewed": false
+  },
+  {
+    "source": "制服",
+    "target": "đồng phục",
+    "reviewed": false
+  },
+  {
+    "source": "上履き",
+    "target": "giày đi trong trường",
+    "reviewed": false
+  },
+  {
+    "source": "給食",
+    "target": "bữa ăn bán trú",
+    "reviewed": false
+  },
+  {
+    "source": "掃除当番",
+    "target": "phiên trực nhật dọn vệ sinh",
+    "reviewed": false
+  },
+  {
+    "source": "日直",
+    "target": "học sinh trực nhật",
+    "reviewed": false
+  },
+  {
+    "source": "遅刻",
+    "target": "đi muộn",
+    "reviewed": false
+  },
+  {
+    "source": "不登校",
+    "target": "không đến trường",
+    "reviewed": false
+  },
+  {
+    "source": "学級委員",
+    "target": "cán bộ lớp",
+    "reviewed": false
+  },
+  {
+    "source": "小学校",
+    "target": "trường tiểu học",
+    "reviewed": false
+  },
+  {
+    "source": "中学校",
+    "target": "trường cấp hai",
+    "reviewed": false
+  },
+  {
+    "source": "高校",
+    "target": "trường cấp ba",
+    "reviewed": false
+  },
+  {
+    "source": "学習塾",
+    "target": "lớp học thêm",
+    "reviewed": false
+  }
+]

@@ -1,0 +1,192 @@
+[
+  {
+    "source": "ドキュメンタリー",
+    "target": "phim tài liệu",
+    "reviewed": false
+  },
+  {
+    "source": "ナレーション",
+    "target": "lời dẫn",
+    "reviewed": false
+  },
+  {
+    "source": "取材",
+    "target": "phỏng vấn, thu thập tư liệu thực địa",
+    "reviewed": false
+  },
+  {
+    "source": "密着取材",
+    "target": "bám sát ghi hình",
+    "reviewed": false
+  },
+  {
+    "source": "証言",
+    "target": "lời chứng",
+    "reviewed": false
+  },
+  {
+    "source": "関係者",
+    "target": "người liên quan",
+    "reviewed": false
+  },
+  {
+    "source": "遺族",
+    "target": "thân nhân người đã mất",
+    "reviewed": false
+  },
+  {
+    "source": "被害者",
+    "target": "nạn nhân",
+    "reviewed": false
+  },
+  {
+    "source": "加害者",
+    "target": "thủ phạm, bên gây hại",
+    "reviewed": false
+  },
+  {
+    "source": "生存者",
+    "target": "người sống sót",
+    "reviewed": false
+  },
+  {
+    "source": "被災地",
+    "target": "vùng bị thiên tai",
+    "reviewed": false
+  },
+  {
+    "source": "震災",
+    "target": "thảm họa động đất",
+    "reviewed": false
+  },
+  {
+    "source": "東日本大震災",
+    "target": "Đại thảm họa động đất Đông Nhật Bản",
+    "reviewed": false
+  },
+  {
+    "source": "津波",
+    "target": "sóng thần",
+    "reviewed": false
+  },
+  {
+    "source": "原発事故",
+    "target": "sự cố nhà máy điện hạt nhân",
+    "reviewed": false
+  },
+  {
+    "source": "復興",
+    "target": "phục hồi, tái thiết",
+    "reviewed": false
+  },
+  {
+    "source": "避難所",
+    "target": "nơi sơ tán",
+    "reviewed": false
+  },
+  {
+    "source": "仮設住宅",
+    "target": "nhà ở tạm",
+    "reviewed": false
+  },
+  {
+    "source": "絶滅危惧種",
+    "target": "loài nguy cấp",
+    "reviewed": false
+  },
+  {
+    "source": "生態系",
+    "target": "hệ sinh thái",
+    "reviewed": false
+  },
+  {
+    "source": "世界遺産",
+    "target": "di sản thế giới",
+    "reviewed": false
+  },
+  {
+    "source": "伝統工芸",
+    "target": "nghề thủ công truyền thống",
+    "reviewed": false
+  },
+  {
+    "source": "職人",
+    "target": "nghệ nhân, thợ thủ công bậc thầy",
+    "reviewed": false
+  },
+  {
+    "source": "人間国宝",
+    "target": "Quốc bảo sống (nghệ nhân cấp quốc gia)",
+    "reviewed": false
+  },
+  {
+    "source": "老舗",
+    "target": "cửa hiệu lâu đời",
+    "reviewed": false
+  },
+  {
+    "source": "後継者",
+    "target": "người kế nghiệp",
+    "reviewed": false
+  },
+  {
+    "source": "過疎",
+    "target": "dân cư thưa thớt",
+    "reviewed": false
+  },
+  {
+    "source": "限界集落",
+    "target": "làng có nguy cơ biến mất",
+    "reviewed": false
+  },
+  {
+    "source": "検証",
+    "target": "kiểm chứng",
+    "reviewed": false
+  },
+  {
+    "source": "再現映像",
+    "target": "cảnh dựng lại",
+    "reviewed": false
+  },
+  {
+    "source": "記録映像",
+    "target": "phim tư liệu",
+    "reviewed": false
+  },
+  {
+    "source": "専門家",
+    "target": "chuyên gia",
+    "reviewed": false
+  },
+  {
+    "source": "研究者",
+    "target": "nhà nghiên cứu",
+    "reviewed": false
+  },
+  {
+    "source": "真相",
+    "target": "sự thật đằng sau",
+    "reviewed": false
+  },
+  {
+    "source": "内幕",
+    "target": "chuyện bên trong, nội tình",
+    "reviewed": false
+  },
+  {
+    "source": "追跡",
+    "target": "truy tìm theo dõi",
+    "reviewed": false
+  },
+  {
+    "source": "告発",
+    "target": "tố cáo",
+    "reviewed": false
+  },
+  {
+    "source": "人間ドキュメント",
+    "target": "phim tài liệu nhân văn",
+    "reviewed": false
+  }
+]

@@ -1,0 +1,202 @@
+[
+  {
+    "source": "貧困",
+    "target": "nghèo đói",
+    "reviewed": false
+  },
+  {
+    "source": "格差社会",
+    "target": "xã hội phân hóa giàu nghèo",
+    "reviewed": false
+  },
+  {
+    "source": "生活保護",
+    "target": "trợ cấp sinh hoạt (phúc lợi xã hội)",
+    "reviewed": false
+  },
+  {
+    "source": "ブラック企業",
+    "target": "công ty bóc lột nhân viên",
+    "reviewed": false
+  },
+  {
+    "source": "過労死",
+    "target": "chết vì làm việc quá sức",
+    "reviewed": false
+  },
+  {
+    "source": "サービス残業",
+    "target": "làm thêm giờ không lương",
+    "reviewed": false
+  },
+  {
+    "source": "派遣社員",
+    "target": "nhân viên phái cử",
+    "reviewed": false
+  },
+  {
+    "source": "正社員",
+    "target": "nhân viên chính thức",
+    "reviewed": false
+  },
+  {
+    "source": "非正規",
+    "target": "lao động không chính thức",
+    "reviewed": false
+  },
+  {
+    "source": "リストラ",
+    "target": "cắt giảm nhân sự",
+    "reviewed": false
+  },
+  {
+    "source": "就職活動",
+    "target": "đi xin việc",
+    "reviewed": false
+  },
+  {
+    "source": "就活",
+    "target": "đi xin việc",
+    "reviewed": false
+  },
+  {
+    "source": "ひきこもり",
+    "target": "hikikomori (người thu mình trong nhà)",
+    "reviewed": false
+  },
+  {
+    "source": "ニート",
+    "target": "NEET (không học, không làm, không đào tạo)",
+    "reviewed": false
+  },
+  {
+    "source": "いじめ",
+    "target": "bắt nạt",
+    "reviewed": false
+  },
+  {
+    "source": "パワハラ",
+    "target": "quấy rối quyền lực nơi làm việc",
+    "reviewed": false
+  },
+  {
+    "source": "セクハラ",
+    "target": "quấy rối tình dục",
+    "reviewed": false
+  },
+  {
+    "source": "虐待",
+    "target": "ngược đãi",
+    "reviewed": false
+  },
+  {
+    "source": "児童相談所",
+    "target": "trung tâm tư vấn nhi đồng",
+    "reviewed": false
+  },
+  {
+    "source": "少子化",
+    "target": "tỷ lệ sinh thấp",
+    "reviewed": false
+  },
+  {
+    "source": "高齢化",
+    "target": "già hóa dân số",
+    "reviewed": false
+  },
+  {
+    "source": "介護",
+    "target": "chăm sóc người già",
+    "reviewed": false
+  },
+  {
+    "source": "孤独死",
+    "target": "chết cô độc",
+    "reviewed": false
+  },
+  {
+    "source": "ホームレス",
+    "target": "người vô gia cư",
+    "reviewed": false
+  },
+  {
+    "source": "市役所",
+    "target": "tòa thị chính",
+    "reviewed": false
+  },
+  {
+    "source": "区役所",
+    "target": "ủy ban quận",
+    "reviewed": false
+  },
+  {
+    "source": "示談",
+    "target": "hòa giải ngoài tòa",
+    "reviewed": false
+  },
+  {
+    "source": "内部告発",
+    "target": "tố giác nội bộ",
+    "reviewed": false
+  },
+  {
+    "source": "記者会見",
+    "target": "họp báo",
+    "reviewed": false
+  },
+  {
+    "source": "週刊誌",
+    "target": "tạp chí lá cải tuần san",
+    "reviewed": false
+  },
+  {
+    "source": "炎上",
+    "target": "bị ném đá trên mạng",
+    "reviewed": false
+  },
+  {
+    "source": "誹謗中傷",
+    "target": "phỉ báng, công kích",
+    "reviewed": false
+  },
+  {
+    "source": "保険証",
+    "target": "thẻ bảo hiểm y tế",
+    "reviewed": false
+  },
+  {
+    "source": "住民票",
+    "target": "giấy đăng ký cư trú",
+    "reviewed": false
+  },
+  {
+    "source": "年金",
+    "target": "lương hưu",
+    "reviewed": false
+  },
+  {
+    "source": "社会保険",
+    "target": "bảo hiểm xã hội",
+    "reviewed": false
+  },
+  {
+    "source": "世間体",
+    "target": "thể diện trước thiên hạ",
+    "reviewed": false
+  },
+  {
+    "source": "空気を読む",
+    "target": "biết nhìn sắc mặt, đọc bầu không khí",
+    "reviewed": false
+  },
+  {
+    "source": "自己責任",
+    "target": "tự chịu trách nhiệm",
+    "reviewed": false
+  },
+  {
+    "source": "生活困窮者",
+    "target": "người sống trong cảnh túng thiếu",
+    "reviewed": false
+  }
+]

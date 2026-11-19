@@ -1,0 +1,227 @@
+[
+  {
+    "source": "戦場",
+    "target": "chiến trường",
+    "reviewed": false
+  },
+  {
+    "source": "前線",
+    "target": "tiền tuyến",
+    "reviewed": false
+  },
+  {
+    "source": "銃後",
+    "target": "hậu phương",
+    "reviewed": false
+  },
+  {
+    "source": "司令官",
+    "target": "tư lệnh",
+    "reviewed": false
+  },
+  {
+    "source": "大将",
+    "target": "đại tướng",
+    "reviewed": false
+  },
+  {
+    "source": "中将",
+    "target": "trung tướng",
+    "reviewed": false
+  },
+  {
+    "source": "少将",
+    "target": "thiếu tướng",
+    "reviewed": false
+  },
+  {
+    "source": "大佐",
+    "target": "đại tá",
+    "reviewed": false
+  },
+  {
+    "source": "中佐",
+    "target": "trung tá",
+    "reviewed": false
+  },
+  {
+    "source": "少佐",
+    "target": "thiếu tá",
+    "reviewed": false
+  },
+  {
+    "source": "大尉",
+    "target": "đại úy",
+    "reviewed": false
+  },
+  {
+    "source": "中尉",
+    "target": "trung úy",
+    "reviewed": false
+  },
+  {
+    "source": "少尉",
+    "target": "thiếu úy",
+    "reviewed": false
+  },
+  {
+    "source": "軍曹",
+    "target": "trung sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "伍長",
+    "target": "hạ sĩ",
+    "reviewed": false
+  },
+  {
+    "source": "上等兵",
+    "target": "binh nhất",
+    "reviewed": false
+  },
+  {
+    "source": "二等兵",
+    "target": "binh nhì",
+    "reviewed": false
+  },
+  {
+    "source": "大本営",
+    "target": "đại bản doanh",
+    "reviewed": false
+  },
+  {
+    "source": "陸軍",
+    "target": "lục quân",
+    "reviewed": false
+  },
+  {
+    "source": "海軍",
+    "target": "hải quân",
+    "reviewed": false
+  },
+  {
+    "source": "空軍",
+    "target": "không quân",
+    "reviewed": false
+  },
+  {
+    "source": "特攻",
+    "target": "đột kích cảm tử (tokkō)",
+    "reviewed": false
+  },
+  {
+    "source": "特攻隊",
+    "target": "đội cảm tử",
+    "reviewed": false
+  },
+  {
+    "source": "零戦",
+    "target": "chiến đấu cơ Zero",
+    "reviewed": false
+  },
+  {
+    "source": "空襲",
+    "target": "không kích",
+    "reviewed": false
+  },
+  {
+    "source": "疎開",
+    "target": "sơ tán",
+    "reviewed": false
+  },
+  {
+    "source": "玉音放送",
+    "target": "bản tuyên bố đầu hàng của Thiên hoàng",
+    "reviewed": false
+  },
+  {
+    "source": "終戦",
+    "target": "chiến tranh kết thúc",
+    "reviewed": false
+  },
+  {
+    "source": "敗戦",
+    "target": "thất trận",
+    "reviewed": false
+  },
+  {
+    "source": "出征",
+    "target": "xuất chinh",
+    "reviewed": false
+  },
+  {
+    "source": "召集令状",
+    "target": "giấy gọi nhập ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "赤紙",
+    "target": "giấy gọi nhập ngũ (akagami)",
+    "reviewed": false
+  },
+  {
+    "source": "捕虜",
+    "target": "tù binh",
+    "reviewed": false
+  },
+  {
+    "source": "軍法会議",
+    "target": "tòa án quân sự",
+    "reviewed": false
+  },
+  {
+    "source": "脱走兵",
+    "target": "lính đào ngũ",
+    "reviewed": false
+  },
+  {
+    "source": "突撃",
+    "target": "xung phong",
+    "reviewed": false
+  },
+  {
+    "source": "撤退",
+    "target": "rút lui",
+    "reviewed": false
+  },
+  {
+    "source": "全滅",
+    "target": "bị tiêu diệt toàn bộ",
+    "reviewed": false
+  },
+  {
+    "source": "玉砕",
+    "target": "chiến đấu đến người cuối cùng (gyokusai)",
+    "reviewed": false
+  },
+  {
+    "source": "戦友",
+    "target": "đồng đội chiến trường",
+    "reviewed": false
+  },
+  {
+    "source": "戦犯",
+    "target": "tội phạm chiến tranh",
+    "reviewed": false
+  },
+  {
+    "source": "原爆",
+    "target": "bom nguyên tử",
+    "reviewed": false
+  },
+  {
+    "source": "焼け野原",
+    "target": "cánh đồng đổ nát cháy rụi",
+    "reviewed": false
+  },
+  {
+    "source": "憲兵",
+    "target": "hiến binh",
+    "reviewed": false
+  },
+  {
+    "source": "自衛隊",
+    "target": "Lực lượng Phòng vệ",
+    "reviewed": false
+  }
+]

@@ -1,3 +1,9 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3b-1 XONG: BẢN NHÁP 5 THỂ LOẠI TIẾNG NHẬT (ja) — đọc mục này đầu tiên
+Thêm 5 file `data/glossaries/ja/{social,war,family,school,documentary}.json` (38 đến 45 mục mỗi file), MỌI mục `"reviewed": false`. Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Test `glossary.test.ts` (nhóm «bản nháp thuật ngữ thể loại mới (B1)») nay quét thêm 5 cặp `ja`. Nguồn phải từ 2 ký tự trở lên (test chặn), nên các từ một chữ Hán (嫁, 姑, 婿, 塾) viết dạng お嫁さん, お姑さん, お婿さん, 学習塾; bỏ 舅. typecheck sạch, test glossary 15 pass. Không nâng `APP_VERSION`.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B1.3b-2 = 5 file `ko` cùng 5 thể loại (thêm cặp `ko` vào mảng `drafts` ở test); rồi B1.3c, B1.4 như mục bên dưới.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B1.3a XONG: BẢN NHÁP 5 THỂ LOẠI (zh + en) — đọc mục này đầu tiên
 Thêm 10 file `data/glossaries/{zh,en}/{social,war,family,school,documentary}.json` (37 đến 53 mục mỗi file), MỌI mục `"reviewed": false`. Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem lại ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Test `glossary.test.ts` (nhóm «bản nháp thuật ngữ thể loại mới (B1)») nay quét 8 thể loại × zh/en. Ghi `ADMIN_LOG`. Không nâng `APP_VERSION` (chỉ Chủ thấy).
 LƯU Ý: nơi đã seed lần đầu sẽ KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin.
