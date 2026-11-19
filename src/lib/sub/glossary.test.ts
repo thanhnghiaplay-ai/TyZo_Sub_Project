@@ -196,3 +196,26 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
     }
   });
 });
+
+describe("mục bổ sung chưa duyệt vào bộ có sẵn (B4)", () => {
+  const expanded: [string, string][] = [];
+  for (const genre of ["action", "crime", "mystery", "horror"]) expanded.push(["zh", genre]);
+
+  it("không trùng nguồn, mục mới đều chưa duyệt, đủ ≥ 20 mục bổ sung mỗi bộ", () => {
+    for (const [lang, genre] of expanded) {
+      const terms = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/${genre}.json`, import.meta.url), "utf8")) as {
+        source: string;
+        target: string;
+        reviewed?: boolean;
+      }[];
+      const seen = new Set<string>();
+      for (const term of terms) {
+        assert.ok(term.source.trim() && term.target.trim(), `${lang}/${genre}`);
+        assert.ok(!seen.has(term.source.toLowerCase()), `${lang}/${genre}: trùng ${term.source}`);
+        seen.add(term.source.toLowerCase());
+        if (term.reviewed === false) assert.ok(term.source.trim().length >= 2, `${lang}/${genre}: ${term.source}`);
+      }
+      assert.ok(terms.filter((t) => t.reviewed === false).length >= 20, `${lang}/${genre}`);
+    }
+  });
+});

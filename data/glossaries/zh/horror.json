@@ -416,5 +416,190 @@
       "en": "shriek"
     },
     "note": "Hán Việt: tiêm khiếu"
+  },
+  {
+    "source": "鬼屋",
+    "target": "nhà ma",
+    "reviewed": false
+  },
+  {
+    "source": "鬼影",
+    "target": "bóng ma",
+    "reviewed": false
+  },
+  {
+    "source": "鬼火",
+    "target": "ma trơi",
+    "reviewed": false
+  },
+  {
+    "source": "幽灵",
+    "target": "u linh, bóng ma",
+    "reviewed": false
+  },
+  {
+    "source": "亡魂",
+    "target": "vong hồn",
+    "reviewed": false
+  },
+  {
+    "source": "孤魂野鬼",
+    "target": "cô hồn dã quỷ",
+    "reviewed": false
+  },
+  {
+    "source": "索命",
+    "target": "đòi mạng",
+    "reviewed": false
+  },
+  {
+    "source": "怨念",
+    "target": "oán niệm",
+    "reviewed": false
+  },
+  {
+    "source": "阴魂不散",
+    "target": "oan hồn không tan",
+    "reviewed": false
+  },
+  {
+    "source": "作祟",
+    "target": "quấy phá",
+    "reviewed": false
+  },
+  {
+    "source": "邪灵",
+    "target": "tà linh",
+    "reviewed": false
+  },
+  {
+    "source": "恶魔",
+    "target": "ác quỷ",
+    "reviewed": false
+  },
+  {
+    "source": "驱魔",
+    "target": "trừ tà, trừ quỷ",
+    "reviewed": false
+  },
+  {
+    "source": "法师",
+    "target": "pháp sư",
+    "reviewed": false
+  },
+  {
+    "source": "符纸",
+    "target": "giấy bùa",
+    "reviewed": false
+  },
+  {
+    "source": "桃木剑",
+    "target": "kiếm gỗ đào",
+    "reviewed": false
+  },
+  {
+    "source": "黑狗血",
+    "target": "máu chó đen",
+    "reviewed": false
+  },
+  {
+    "source": "糯米",
+    "target": "gạo nếp",
+    "reviewed": false
+  },
+  {
+    "source": "阴阳眼",
+    "target": "âm dương nhãn",
+    "reviewed": false
+  },
+  {
+    "source": "通灵",
+    "target": "thông linh",
+    "reviewed": false
+  },
+  {
+    "source": "灵异",
+    "target": "linh dị",
+    "reviewed": false
+  },
+  {
+    "source": "灵媒",
+    "target": "đồng cốt, người thông linh",
+    "reviewed": false
+  },
+  {
+    "source": "降头",
+    "target": "bùa ngải, hàng đầu",
+    "reviewed": false
+  },
+  {
+    "source": "巫术",
+    "target": "vu thuật",
+    "reviewed": false
+  },
+  {
+    "source": "邪术",
+    "target": "tà thuật",
+    "reviewed": false
+  },
+  {
+    "source": "献祭",
+    "target": "hiến tế",
+    "reviewed": false
+  },
+  {
+    "source": "祭坛",
+    "target": "bàn tế",
+    "reviewed": false
+  },
+  {
+    "source": "午夜",
+    "target": "nửa đêm",
+    "reviewed": false
+  },
+  {
+    "source": "半夜",
+    "target": "giữa đêm",
+    "reviewed": false
+  },
+  {
+    "source": "脚步声",
+    "target": "tiếng bước chân",
+    "reviewed": false
+  },
+  {
+    "source": "敲门声",
+    "target": "tiếng gõ cửa",
+    "reviewed": false
+  },
+  {
+    "source": "哭声",
+    "target": "tiếng khóc",
+    "reviewed": false
+  },
+  {
+    "source": "低语",
+    "target": "tiếng thì thầm",
+    "reviewed": false
+  },
+  {
+    "source": "古宅",
+    "target": "nhà cổ",
+    "reviewed": false
+  },
+  {
+    "source": "荒村",
+    "target": "làng hoang",
+    "reviewed": false
+  },
+  {
+    "source": "废墟",
+    "target": "phế tích",
+    "reviewed": false
+  },
+  {
+    "source": "阴冷",
+    "target": "lạnh lẽo âm u",
+    "reviewed": false
   }
 ]

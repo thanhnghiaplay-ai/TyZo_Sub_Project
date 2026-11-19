@@ -438,5 +438,170 @@
       "en": "murder weapon"
     },
     "note": "Hán Việt: hung khí"
+  },
+  {
+    "source": "疑犯",
+    "target": "nghi phạm",
+    "reviewed": false
+  },
+  {
+    "source": "犯人",
+    "target": "phạm nhân, thủ phạm",
+    "reviewed": false
+  },
+  {
+    "source": "凶案",
+    "target": "vụ án giết người",
+    "reviewed": false
+  },
+  {
+    "source": "命案",
+    "target": "án mạng",
+    "reviewed": false
+  },
+  {
+    "source": "谋杀",
+    "target": "mưu sát",
+    "reviewed": false
+  },
+  {
+    "source": "他杀",
+    "target": "bị giết",
+    "reviewed": false
+  },
+  {
+    "source": "自杀",
+    "target": "tự sát",
+    "reviewed": false
+  },
+  {
+    "source": "意外死亡",
+    "target": "chết do tai nạn",
+    "reviewed": false
+  },
+  {
+    "source": "毒杀",
+    "target": "đầu độc",
+    "reviewed": false
+  },
+  {
+    "source": "中毒",
+    "target": "trúng độc",
+    "reviewed": false
+  },
+  {
+    "source": "毒药",
+    "target": "thuốc độc",
+    "reviewed": false
+  },
+  {
+    "source": "验尸",
+    "target": "khám nghiệm tử thi",
+    "reviewed": false
+  },
+  {
+    "source": "痕迹",
+    "target": "dấu vết",
+    "reviewed": false
+  },
+  {
+    "source": "血迹",
+    "target": "vết máu",
+    "reviewed": false
+  },
+  {
+    "source": "搜查",
+    "target": "khám xét",
+    "reviewed": false
+  },
+  {
+    "source": "取证",
+    "target": "thu thập chứng cứ",
+    "reviewed": false
+  },
+  {
+    "source": "笔录",
+    "target": "biên bản lấy lời khai",
+    "reviewed": false
+  },
+  {
+    "source": "盘问",
+    "target": "tra hỏi",
+    "reviewed": false
+  },
+  {
+    "source": "排查",
+    "target": "rà soát",
+    "reviewed": false
+  },
+  {
+    "source": "嫌疑最大",
+    "target": "đáng nghi nhất",
+    "reviewed": false
+  },
+  {
+    "source": "作案手法",
+    "target": "thủ đoạn gây án",
+    "reviewed": false
+  },
+  {
+    "source": "作案时间",
+    "target": "thời gian gây án",
+    "reviewed": false
+  },
+  {
+    "source": "案发现场",
+    "target": "hiện trường vụ án",
+    "reviewed": false
+  },
+  {
+    "source": "报案",
+    "target": "trình báo",
+    "reviewed": false
+  },
+  {
+    "source": "立案",
+    "target": "lập án",
+    "reviewed": false
+  },
+  {
+    "source": "结案",
+    "target": "kết án",
+    "reviewed": false
+  },
+  {
+    "source": "重案组",
+    "target": "tổ trọng án",
+    "reviewed": false
+  },
+  {
+    "source": "刑侦",
+    "target": "hình sự trinh sát",
+    "reviewed": false
+  },
+  {
+    "source": "拘留",
+    "target": "tạm giữ",
+    "reviewed": false
+  },
+  {
+    "source": "逮捕",
+    "target": "bắt giữ",
+    "reviewed": false
+  },
+  {
+    "source": "蛛丝马迹",
+    "target": "dấu vết nhỏ",
+    "reviewed": false
+  },
+  {
+    "source": "破绽",
+    "target": "sơ hở",
+    "reviewed": false
+  },
+  {
+    "source": "疑点",
+    "target": "điểm đáng ngờ",
+    "reviewed": false
   }
 ]

@@ -109,7 +109,7 @@ CHƯA LÀM: chụp thử bằng trình duyệt (điện thoại + máy tính); c
 - [ ] B1 (đang làm: B1.1 xong = seed hiểu `reviewed:false`; B1.2 xong 19/11/2026 = zh+en cho wuxia/xianxia/ngontinh; B1.3a xong = zh+en cho 5 thể loại; B1.3b xong = ja+ko cho 5 thể loại; B1.3c xong = ko/wuxia + ja,ko ngontinh + ja,ko xianxia; B1.4 softcore xong cả zh, en, ja, ko, xem đầu `HANDOFF.md`). Rà thể loại thiếu (kiếm hiệp, tiên hiệp, ngôn tình, trinh thám…): thêm file dữ liệu theo từng ngôn ngữ nguồn, đánh dấu «chưa duyệt» để Chủ xem lại. Bản nháp do Claude soạn KHÔNG coi là đã đúng; cách dịch thuật ngữ cộng đồng có nhiều biến thể.
 - [x] B2 (xong 19/11/2026; không nâng APP_VERSION vì chỉ Chủ thấy; chưa chạy với CSDL thật, chưa chụp thử giao diện). Công cụ nhập hàng loạt cho Chủ (CSV/JSON) vào `glossary_terms`, có xem trước và hộp thoại xác nhận của app.
 - [x] B3 (xong 19/11/2026; không nâng APP_VERSION vì chỉ Chủ thấy; chưa chạy với CSDL thật, chưa chụp thử giao diện; chi tiết ở đầu `HANDOFF.md`). Nhãn «đã duyệt / chưa duyệt», lọc theo nhãn, thống kê số mục mỗi thể loại ở trang Admin.
-- [ ] B4. Mở rộng các bộ mỏng (tiếng Trung ~40 mục mỗi thể loại) theo đợt, có người rành tiếng Việt duyệt.
+- [ ] B4 (đang làm: B4.1 xong 19/11/2026 = zh action/crime/mystery/horror; xem đầu `HANDOFF.md`). Mở rộng các bộ mỏng (tiếng Trung ~40 mục mỗi thể loại) theo đợt, có người rành tiếng Việt duyệt.
 
 ### Giai đoạn C — Nâng cấp nhỏ khác (tùy chọn)
 - [x] C1 (xong 19/11/2026: phần thuần tách ra `src/lib/sub/analyze.ts` (`analyzeMessages`, `parseBible`), test `analyze.test.ts` 6 ca; `analyzeFilm` ở groq.ts chỉ còn gọi mạng, chưa có test gọi mạng vì `groq.ts` dùng alias `@/`). Test cho `analyzeFilm` bằng phản hồi giả (hiện chưa có test).

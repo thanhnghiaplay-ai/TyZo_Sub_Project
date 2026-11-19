@@ -438,5 +438,170 @@
       "en": "quit the underworld"
     },
     "note": "Hán Việt: kim bồn tẩy thủ"
+  },
+  {
+    "source": "毒枭",
+    "target": "trùm ma túy",
+    "reviewed": false
+  },
+  {
+    "source": "毒品",
+    "target": "ma túy",
+    "reviewed": false
+  },
+  {
+    "source": "缉毒",
+    "target": "truy quét ma túy",
+    "reviewed": false
+  },
+  {
+    "source": "线报",
+    "target": "tin báo",
+    "reviewed": false
+  },
+  {
+    "source": "黑社会",
+    "target": "xã hội đen",
+    "reviewed": false
+  },
+  {
+    "source": "堂口",
+    "target": "đường khẩu, chi nhánh băng đảng",
+    "reviewed": false
+  },
+  {
+    "source": "社团",
+    "target": "hội đoàn, băng nhóm",
+    "reviewed": false
+  },
+  {
+    "source": "龙头",
+    "target": "đại ca đứng đầu băng nhóm",
+    "reviewed": false
+  },
+  {
+    "source": "话事人",
+    "target": "người nắm quyền quyết định",
+    "reviewed": false
+  },
+  {
+    "source": "马仔",
+    "target": "đàn em, tay sai",
+    "reviewed": false
+  },
+  {
+    "source": "杀手",
+    "target": "sát thủ",
+    "reviewed": false
+  },
+  {
+    "source": "买凶",
+    "target": "thuê người giết",
+    "reviewed": false
+  },
+  {
+    "source": "雇凶",
+    "target": "thuê sát thủ",
+    "reviewed": false
+  },
+  {
+    "source": "赎金",
+    "target": "tiền chuộc",
+    "reviewed": false
+  },
+  {
+    "source": "劫匪",
+    "target": "kẻ cướp",
+    "reviewed": false
+  },
+  {
+    "source": "窃贼",
+    "target": "kẻ trộm",
+    "reviewed": false
+  },
+  {
+    "source": "扒手",
+    "target": "kẻ móc túi",
+    "reviewed": false
+  },
+  {
+    "source": "赌场",
+    "target": "sòng bạc",
+    "reviewed": false
+  },
+  {
+    "source": "高利贷",
+    "target": "cho vay nặng lãi",
+    "reviewed": false
+  },
+  {
+    "source": "追债",
+    "target": "đòi nợ",
+    "reviewed": false
+  },
+  {
+    "source": "欠债",
+    "target": "nợ nần",
+    "reviewed": false
+  },
+  {
+    "source": "保释",
+    "target": "tại ngoại",
+    "reviewed": false
+  },
+  {
+    "source": "缓刑",
+    "target": "án treo",
+    "reviewed": false
+  },
+  {
+    "source": "越狱",
+    "target": "vượt ngục",
+    "reviewed": false
+  },
+  {
+    "source": "狱警",
+    "target": "cai ngục",
+    "reviewed": false
+  },
+  {
+    "source": "案底",
+    "target": "tiền án",
+    "reviewed": false
+  },
+  {
+    "source": "前科",
+    "target": "tiền sự",
+    "reviewed": false
+  },
+  {
+    "source": "黑市",
+    "target": "chợ đen",
+    "reviewed": false
+  },
+  {
+    "source": "假钞",
+    "target": "tiền giả",
+    "reviewed": false
+  },
+  {
+    "source": "行贿",
+    "target": "đưa hối lộ",
+    "reviewed": false
+  },
+  {
+    "source": "受贿",
+    "target": "nhận hối lộ",
+    "reviewed": false
+  },
+  {
+    "source": "保护伞",
+    "target": "kẻ chống lưng",
+    "reviewed": false
+  },
+  {
+    "source": "洗白",
+    "target": "rửa sạch",
+    "reviewed": false
   }
 ]

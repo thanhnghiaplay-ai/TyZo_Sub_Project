@@ -427,5 +427,155 @@
       "en": "suppress"
     },
     "note": "Hán Việt: áp chế"
+  },
+  {
+    "source": "火力",
+    "target": "hỏa lực",
+    "reviewed": false
+  },
+  {
+    "source": "弹药",
+    "target": "đạn dược",
+    "reviewed": false
+  },
+  {
+    "source": "子弹",
+    "target": "viên đạn",
+    "reviewed": false
+  },
+  {
+    "source": "手雷",
+    "target": "lựu đạn",
+    "reviewed": false
+  },
+  {
+    "source": "炸弹",
+    "target": "bom",
+    "reviewed": false
+  },
+  {
+    "source": "引爆",
+    "target": "kích nổ",
+    "reviewed": false
+  },
+  {
+    "source": "拆弹",
+    "target": "gỡ bom",
+    "reviewed": false
+  },
+  {
+    "source": "人质",
+    "target": "con tin",
+    "reviewed": false
+  },
+  {
+    "source": "劫持",
+    "target": "bắt giữ, khống chế làm con tin",
+    "reviewed": false
+  },
+  {
+    "source": "营救",
+    "target": "giải cứu",
+    "reviewed": false
+  },
+  {
+    "source": "救援",
+    "target": "cứu viện",
+    "reviewed": false
+  },
+  {
+    "source": "据点",
+    "target": "cứ điểm",
+    "reviewed": false
+  },
+  {
+    "source": "总攻",
+    "target": "tổng tấn công",
+    "reviewed": false
+  },
+  {
+    "source": "冲锋",
+    "target": "xung phong",
+    "reviewed": false
+  },
+  {
+    "source": "掩体",
+    "target": "chỗ nấp",
+    "reviewed": false
+  },
+  {
+    "source": "弹匣",
+    "target": "băng đạn",
+    "reviewed": false
+  },
+  {
+    "source": "换弹",
+    "target": "thay băng đạn",
+    "reviewed": false
+  },
+  {
+    "source": "开枪",
+    "target": "nổ súng",
+    "reviewed": false
+  },
+  {
+    "source": "扣扳机",
+    "target": "bóp cò",
+    "reviewed": false
+  },
+  {
+    "source": "保险栓",
+    "target": "chốt an toàn",
+    "reviewed": false
+  },
+  {
+    "source": "手枪",
+    "target": "súng lục",
+    "reviewed": false
+  },
+  {
+    "source": "步枪",
+    "target": "súng trường",
+    "reviewed": false
+  },
+  {
+    "source": "匕首",
+    "target": "dao găm",
+    "reviewed": false
+  },
+  {
+    "source": "追车",
+    "target": "rượt xe",
+    "reviewed": false
+  },
+  {
+    "source": "飞车",
+    "target": "lao xe tốc độ cao",
+    "reviewed": false
+  },
+  {
+    "source": "坠落",
+    "target": "rơi xuống",
+    "reviewed": false
+  },
+  {
+    "source": "跳车",
+    "target": "nhảy khỏi xe",
+    "reviewed": false
+  },
+  {
+    "source": "对峙",
+    "target": "đối đầu giằng co",
+    "reviewed": false
+  },
+  {
+    "source": "缴械",
+    "target": "tước vũ khí",
+    "reviewed": false
+  },
+  {
+    "source": "制服",
+    "target": "khống chế",
+    "reviewed": false
   }
 ]
