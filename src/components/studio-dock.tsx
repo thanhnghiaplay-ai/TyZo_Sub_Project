@@ -1,33 +1,27 @@
+import type { ReactNode } from "react";
 import { FloatingDock } from "@/components/floating-dock";
 import { MENU_GROUP, MENU_ITEM } from "@/lib/customer-menu";
 
 /**
- * Thanh dưới trang khách trên điện thoại: Trang chủ, Trực tiếp, [Tải và dịch], Ví, Menu.
- * Nút giữa làm đúng việc của nút «Tải và dịch» ở màn hình đầu: chưa chọn video thì mở hộp chọn tệp,
- * đã có video thì bắt đầu dịch; đang chạy, mất mạng hoặc đang bảo trì thì mờ; khi đã có bản dịch (không ở màn hình đầu) cũng mờ.
+ * Thanh dưới trang khách trên điện thoại: Trang chủ, Trực tiếp, [nút vàng lướt chọn công cụ], Ví, Menu.
+ * Nút giữa (`wheel`, xem tool-wheel.tsx): kéo ngang để lướt qua Phim, Nhân vật, Thuật ngữ, Thuyết minh, Kiểm tra, Cách trả;
+ * bấm thì mở tab công cụ đang chọn. «Tải và dịch» nằm ở màn hình đầu và trong tab Phim.
  */
 export function StudioDock({
   atHome,
   accountOpen,
-  hasInput,
-  canStart,
   onHome,
   onLive,
   onWallet,
-  onStart,
-  onPickFile,
+  wheel,
 }: {
   atHome: boolean;
   accountOpen: boolean;
-  hasInput: boolean;
-  canStart: boolean;
   onHome: () => void;
   onLive: () => void;
   onWallet: () => void;
-  onStart: () => void;
-  onPickFile: () => void;
+  wheel: ReactNode;
 }) {
-  const disabled = !atHome || (hasInput && !canStart);
   return (
     <FloatingDock
       left={[
@@ -35,7 +29,8 @@ export function StudioDock({
         { id: "live", label: MENU_GROUP.live.replace("Dịch ", ""), slot: "ui.mic", onPick: onLive },
       ]}
       right={[{ id: "wallet", label: "Ví", slot: "nav.wallet", current: accountOpen, onPick: onWallet }]}
-      center={{ label: "Tải và dịch", slot: "act.start", disabled, onPress: hasInput ? onStart : onPickFile }}
+      center={{ label: "Công cụ", slot: "ui.options", onPress: () => {} }}
+      centerNode={wheel}
     />
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icon";
 import { RailControl } from "@/components/side-rail";
 import { dockBadgeText, isTypingTarget } from "@/lib/dock";
@@ -43,7 +43,7 @@ function DockButton({ item }: { item: DockItem }) {
  * Hai nút trái, nút giữa tròn lớn nhô lên (việc chính), nút phải, rồi «Menu» mở ngăn trượt.
  * Phải nằm trong <AppShell>. Màu nút giữa và mục đang chọn theo màu nhấn của giao diện.
  */
-export function FloatingDock({ left, right, center, label = "Mục chính" }: { left: DockItem[]; right: DockItem[]; center: DockCenter; label?: string }) {
+export function FloatingDock({ left, right, center, centerNode, label = "Mục chính" }: { left: DockItem[]; right: DockItem[]; center: DockCenter; /** Có thì thay cả nút giữa mặc định (ví dụ nút lướt chọn công cụ). */ centerNode?: ReactNode; label?: string }) {
   const typing = useTyping();
   if (typing) return null;
   return (
@@ -51,6 +51,7 @@ export function FloatingDock({ left, right, center, label = "Mục chính" }: { 
       {({ open, setOpen, railId }) => (
         <nav aria-label={label} className="floating-dock fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 flex items-center justify-around rounded-full border border-line bg-raised/90 px-1.5 py-1.5 shadow-lg backdrop-blur lg:hidden">
           {left.map((item) => <DockButton key={item.id} item={item} />)}
+          {centerNode ?? (
           <button
             type="button"
             aria-label={center.label}
@@ -60,6 +61,7 @@ export function FloatingDock({ left, right, center, label = "Mục chính" }: { 
           >
             <Icon slot={center.slot} size="1.9rem" />
           </button>
+          )}
           {right.map((item) => <DockButton key={item.id} item={item} />)}
           <button type="button" aria-label="Menu" aria-expanded={open} aria-controls={railId} className={BASE + (open ? ACTIVE : "text-muted")} onClick={() => setOpen(!open)}>
             <Icon slot="nav.menu" size="1.4rem" />

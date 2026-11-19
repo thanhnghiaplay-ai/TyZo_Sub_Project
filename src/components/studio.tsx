@@ -1,5 +1,6 @@
 import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "@/lib/customer-menu";
 import { StudioDock } from "@/components/studio-dock";
+import { ToolWheel } from "@/components/tool-wheel";
 import { isStudioSheet } from "@/lib/studio-layout";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
@@ -842,13 +843,10 @@ export function Studio() {
     <StudioDock
       atHome={product === "sub" && hero}
       accountOpen={product === "account"}
-      hasInput={Boolean(pickedFile) || app.url.trim().length > 0}
-      canStart={online && !normalDown && !app.running}
       onHome={() => { setProduct("sub"); setForced(false); }}
       onLive={() => void navigate({ to: "/dich-truc-tiep" })}
       onWallet={() => setProduct("account")}
-      onStart={() => void app.start()}
-      onPickFile={clickPicker}
+      wheel={<ToolWheel labels={TOOL_NAME} currentId={toolTab} onChange={setToolTab} onPress={openTool} />}
     />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
