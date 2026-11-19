@@ -9,6 +9,12 @@ export type AdminNote = {
 export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.11.0",
+    time: "20/11/2026",
+    area: "du-lieu",
+    text: "Thêm nút «Nạp hết bộ còn thiếu» ở Admin → Thuật ngữ. Một lần nạp mọi từ trong file gốc mà phòng chưa có (bộ mới như Kiếm hiệp, Tiên hiệp không còn phải khôi phục từng bộ). Từ đã có không bị ghi đè. Không nâng APP_VERSION.",
+  },
+  {
+    version: "5.11.0",
     time: "19/11/2026",
     area: "du-lieu",
     text: "Chủ không duyệt tay hàng nghìn mục thuật ngữ. Bỏ cờ «chưa duyệt» trong file gốc (mục không ghi cờ thì lúc nạp/khôi phục coi là đã duyệt). Thêm nút «Duyệt hết» ở Admin → Thuật ngữ: một lần đánh dấu đã duyệt mọi mục đang chưa duyệt trong phòng. Không nâng APP_VERSION.",

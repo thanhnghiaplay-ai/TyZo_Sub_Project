@@ -254,6 +254,33 @@ export const setGlossaryPacks = createServerFn({ method: "POST" })
     return { changed: rows[0]?.n ?? 0 };
   });
 
+type SeedRow = { lang: string; genre: string; source: string; target: string; reviewed: boolean };
+
+/** Thêm từ gốc còn thiếu. Từ đã có (kể cả đã sửa) không bị ghi đè. */
+async function insertMissingTerms(sql: Awaited<ReturnType<typeof sqlOf>>, rows: SeedRow[]) {
+  const packs = new Set(rows.map((row) => `${row.lang}|${row.genre}`));
+  for (const key of packs) {
+    const [lang, genre] = key.split("|");
+    await sql`insert into glossary_packs (lang, genre) values (${lang}, ${genre}) on conflict do nothing`;
+  }
+  let added = 0;
+  for (let i = 0; i < rows.length; i += 80) {
+    const chunk = rows.slice(i, i + 80);
+    const values: unknown[] = [];
+    const parts = chunk.map((row, index) => {
+      const base = index * 5;
+      values.push(row.lang, row.genre, row.source, row.target, row.reviewed);
+      return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5})`;
+    });
+    const inserted = await sql.query<{ id: number }>(
+      `insert into glossary_terms (lang, genre, source, target, reviewed) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing returning id`,
+      values,
+    );
+    added += inserted.length;
+  }
+  return added;
+}
+
 export const restoreGlossary = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { lang: string; genre: string }) => glossaryPair(input?.lang ?? "", input?.genre ?? ""))
@@ -261,26 +288,22 @@ export const restoreGlossary = createServerFn({ method: "POST" })
     await ownerOnly(context.userId);
     const sql = await sqlOf();
     const { fileTerms } = await import("@/lib/glossary-seed.server");
-    const rows = fileTerms(data.lang, data.genre);
-    // Bộ mới thêm vào file sau lần nạp đầu chưa có dòng trong glossary_packs (khóa ngoại), nên tạo trước.
-    if (rows.length) await sql`insert into glossary_packs (lang, genre) values (${data.lang}, ${data.genre}) on conflict do nothing`;
-    let added = 0;
-    for (let i = 0; i < rows.length; i += 80) {
-      const chunk = rows.slice(i, i + 80);
-      const values: unknown[] = [];
-      const parts = chunk.map((row, index) => {
-        const base = index * 5;
-        values.push(row.lang, row.genre, row.source, row.target, row.reviewed);
-        return `($${base + 1},$${base + 2},$${base + 3},$${base + 4},$${base + 5})`;
-      });
-      const inserted = await sql.query<{ id: number }>(
-        `insert into glossary_terms (lang, genre, source, target, reviewed) values ${parts.join(",")} on conflict (lang, genre, lower(source)) do nothing returning id`,
-        values,
-      );
-      added += inserted.length;
-    }
+    const added = await insertMissingTerms(sql, fileTerms(data.lang, data.genre));
     await audit(context.userId, "khoi-phuc-thuat-ngu", `${data.lang}/${data.genre}: ${added}`);
     return { added };
+  });
+
+export const restoreAllGlossary = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await ownerOnly(context.userId);
+    const sql = await sqlOf();
+    const { fileTerms } = await import("@/lib/glossary-seed.server");
+    const rows = fileTerms();
+    const added = await insertMissingTerms(sql, rows);
+    const packs = new Set(rows.map((row) => `${row.lang}/${row.genre}`)).size;
+    await audit(context.userId, "khoi-phuc-het-thuat-ngu", `${packs} bộ, thêm ${added}`);
+    return { added, packs };
   });
 
 export const glossaryHealth = createServerFn({ method: "GET" })

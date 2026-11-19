@@ -5,6 +5,7 @@ import {
   glossaryHealth,
   listGlossary,
   restoreGlossary,
+  restoreAllGlossary,
   saveGlossaryTerm,
   exportGlossary,
   glossaryStats,
@@ -151,6 +152,21 @@ export function GlossaryBoard() {
           }
         >
           Khôi phục từ gốc
+        </button>
+        <button
+          type="button"
+          className="min-tap rounded-full border border-line px-4 text-sm disabled:opacity-40"
+          disabled={busy}
+          onClick={async () => {
+            if (!(await askConfirm({ title: "Nạp hết bộ còn thiếu?", text: "Nạp mọi từ trong file gốc mà phòng chưa có, mọi ngôn ngữ. Từ đã có không bị ghi đè.", confirmLabel: "Nạp hết" }))) return;
+            void run(async () => {
+              const result = await restoreAllGlossary();
+              setNote(result.added ? `Đã nạp ${result.added} từ còn thiếu (${result.packs} bộ).` : "Phòng đã đủ từ gốc.");
+              await load();
+            });
+          }}
+        >
+          Nạp hết bộ còn thiếu
         </button>
         <button
           type="button"
