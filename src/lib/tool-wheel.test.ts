@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { TOOL_NAME } from "./customer-menu.ts";
-import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, wrapIndex, nextTool } from "./tool-wheel.ts";
+import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, wrapIndex, nextTool, ringDash } from "./tool-wheel.ts";
 
 test("thứ tự lướt theo luồng làm việc, đủ 6 công cụ không trùng", () => {
   assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "thuatngu", "voice", "check", "key"]);
@@ -74,4 +74,16 @@ test("nextTool đi theo luồng Phim → … → Cách trả, công cụ cuối 
   for (let i = 0; i < WHEEL_ORDER.length - 1; i++) assert.equal(nextTool(WHEEL_ORDER[i]), WHEEL_ORDER[i + 1]);
   const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
   assert.match(studio, /Tiếp theo:[\s\S]{0,120}TOOL_NAME\[nextTool\(toolTab\)!\]/);
+});
+
+test("ringDash: 0% là vòng trống, 100% là vòng đầy, ngoài khoảng thì cắt", () => {
+  const { circumference } = ringDash(0);
+  assert.equal(ringDash(0).offset, circumference);
+  assert.equal(ringDash(100).offset, 0);
+  assert.ok(Math.abs(ringDash(50).offset - circumference / 2) < 1e-9);
+  assert.equal(ringDash(-5).offset, circumference);
+  assert.equal(ringDash(250).offset, 0);
+  assert.equal(ringDash(Number.NaN).offset, circumference);
+  const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+  assert.match(studio, /progress=\{app\.running && app\.stages \? app\.stages\.percent : null\}/);
 });

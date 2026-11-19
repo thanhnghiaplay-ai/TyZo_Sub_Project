@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { TOOL_ICON } from "@/lib/tool-icon";
-import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, type WheelId } from "@/lib/tool-wheel";
+import { RING_RADIUS, WHEEL_ORDER, dragToPos, ringDash, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, type WheelId } from "@/lib/tool-wheel";
 
 export type WheelLabels = Record<WheelId, string>;
 
@@ -10,7 +10,20 @@ export type WheelLabels = Record<WheelId, string>;
  * (có quán tính, khớp vào công cụ gần nhất, xoay vòng). Bấm (không kéo) thì mở tab công cụ đang chọn.
  * Vị trí đổi trực tiếp trên DOM theo từng khung hình để không làm cả trang vẽ lại; chỉ báo đổi công cụ khi đã dừng.
  */
-export function ToolWheel({ labels, currentId, onChange, onPress }: { labels: WheelLabels; currentId: WheelId; onChange: (id: WheelId) => void; onPress: (id: WheelId) => void }) {
+export function ToolWheel({
+  labels,
+  currentId,
+  onChange,
+  onPress,
+  progress = null,
+}: {
+  labels: WheelLabels;
+  currentId: WheelId;
+  onChange: (id: WheelId) => void;
+  onPress: (id: WheelId) => void;
+  /** Phần trăm tiến độ lần dịch đang chạy (0..100); null thì không vẽ vòng. */
+  progress?: number | null;
+}) {
   const n = WHEEL_ORDER.length;
   const startIndex = Math.max(0, WHEEL_ORDER.indexOf(currentId));
   const pos = useRef(startIndex);
@@ -136,6 +149,23 @@ export function ToolWheel({ labels, currentId, onChange, onPress }: { labels: Wh
           </span>
         ))}
       </button>
+      {progress !== null && (
+        <svg className="studio-wheel-ring pointer-events-none absolute -inset-1.5 size-[calc(100%+0.75rem)] -rotate-90" viewBox="0 0 100 100" role="progressbar" aria-label="Tiến độ dịch" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
+          <circle cx="50" cy="50" r={RING_RADIUS} fill="none" stroke="var(--color-line)" strokeWidth="5" />
+          <circle
+            cx="50"
+            cy="50"
+            r={RING_RADIUS}
+            fill="none"
+            stroke="var(--color-accent)"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray={ringDash(progress).circumference}
+            strokeDashoffset={ringDash(progress).offset}
+            className="transition-[stroke-dashoffset] duration-300 motion-reduce:transition-none"
+          />
+        </svg>
+      )}
     </div>
   );
 

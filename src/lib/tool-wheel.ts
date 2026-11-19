@@ -14,6 +14,14 @@ export function nextTool(id: WheelId): WheelId | null {
   return i >= 0 && i < WHEEL_ORDER.length - 1 ? WHEEL_ORDER[i + 1] : null;
 }
 
+/** Vòng tiến độ quanh nút vàng: bán kính 46 trong khung 100×100; `percent` 0..100, ngoài khoảng thì cắt về khoảng. */
+export const RING_RADIUS = 46;
+export function ringDash(percent: number): { circumference: number; offset: number } {
+  const circumference = 2 * Math.PI * RING_RADIUS;
+  const p = Number.isFinite(percent) ? Math.min(100, Math.max(0, percent)) : 0;
+  return { circumference, offset: circumference * (1 - p / 100) };
+}
+
 /** Khoảng cách giữa hai icon (px) và số px kéo cho một công cụ. */
 export const WHEEL_SPACING = 46;
 export const WHEEL_DRAG_PX = 48;

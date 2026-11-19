@@ -848,7 +848,7 @@ export function Studio() {
       onHome={() => { setProduct("sub"); setForced(false); }}
       onLive={() => void navigate({ to: "/dich-truc-tiep" })}
       onWallet={() => setProduct("account")}
-      wheel={<ToolWheel labels={TOOL_NAME} currentId={toolTab} onChange={setToolTab} onPress={openTool} />}
+      wheel={<ToolWheel labels={TOOL_NAME} currentId={toolTab} onChange={setToolTab} onPress={openTool} progress={app.running && app.stages ? app.stages.percent : null} />}
     />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
