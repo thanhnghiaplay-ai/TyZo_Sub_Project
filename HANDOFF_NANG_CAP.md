@@ -113,7 +113,7 @@ CHƯA LÀM: chụp thử bằng trình duyệt (điện thoại + máy tính); c
 
 ### Giai đoạn C — Nâng cấp nhỏ khác (tùy chọn)
 - [ ] C1. Test cho `analyzeFilm` bằng phản hồi giả (hiện chưa có test).
-- [ ] C2. Nới `untranslated` (`src/lib/sub/text.ts`) để câu lặp như «okay okay» không bị đánh dấu chưa dịch oan; thêm test.
+- [x] C2 (xong 19/11/2026, v5.10.1). Nới `untranslated` (`src/lib/sub/text.ts`) để câu lặp như «okay okay» không bị đánh dấu chưa dịch oan; thêm test.
 - [ ] C3. Ô «Yêu cầu thêm cho bản dịch» nối vào cuối prompt dịch (giọng văn, mức trang trọng), giới hạn độ dài.
 - [ ] C4. Thử so sánh có đo lường trên phim mẫu: có/không bước phân tích phim, có/không bước thay thuật ngữ bằng ký hiệu giữ chỗ (`protectTerms`); so lỗi và chi phí. Cần phim mẫu và key của Chủ.
 

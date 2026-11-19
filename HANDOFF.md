@@ -1,3 +1,7 @@
+## BÀN GIAO (19/11/2026, nhánh work) — C2 XONG (v5.10.1) — đọc mục này đầu tiên
+`untranslated()` (`src/lib/sub/text.ts`) không coi câu chỉ gồm tiếng đệm (okay, haha, wow...) là chưa dịch; test thêm ở `translate-batch.test.ts`. Nâng 5.10.1, CHANGELOG, ADMIN_LOG. Phần A5 (v5.10.0) xem mục bên dưới.
+VIỆC TIẾP THEO: C1 (test `analyzeFilm`), rồi C3; giai đoạn B cần Chủ duyệt dữ liệu. Vẫn còn kiểm tay A5 (trình duyệt, model thật).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A5.4: GIAO DIỆN TRAU CHUỐT ĐÃ GẮN VÀO TRANG (v5.10.0) — đọc mục này đầu tiên
 Chi tiết ở `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A5.4»). Tóm tắt: `src/components/polish-panel.tsx` (nút «Trau chuốt bản dịch» ở khung «Bản dịch», hộp chọn model kèm giá Token dịch, tiến độ, hủy, màn so sánh), `usePolish` gắn vào `usePipeline` (`app.polish`), nâng `APP_VERSION` 5.10.0 + `CHANGELOG` + `ADMIN_LOG`. typecheck sạch, eslint 0 lỗi (7 cảnh báo có sẵn), `npm test` 198 + 1170 pass (ca CHANGELOG đã sửa chữ «Token» thành «Token dịch»).
 CHƯA KIỂM: chưa chụp thử bằng trình duyệt, chưa chạy với model thật và CSDL thật. Admin phải đặt model trau chuốt (Cấu hình → Gói) và thêm vào «cửa trả theo lượt» thì khách key phòng mới có model để chọn.

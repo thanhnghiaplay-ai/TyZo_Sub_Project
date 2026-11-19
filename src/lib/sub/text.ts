@@ -432,11 +432,20 @@ export const GENRES: Record<string, string> = {
 const norm = (t: string) => t.toLowerCase().replace(/[\p{P}\s]+/gu, "");
 const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 
+// Tiếng đệm mượn nguyên văn vào lời Việt (okay, haha, wow...). Câu chỉ gồm các từ này, lặp bao nhiêu lần cũng được, không phải câu chưa dịch.
+const KEPT_INTERJECTION = /^(?:o+k+(?:a+y+|e+y+)?|(?:h+a+){2,}h*|(?:h+e+){2,}h*|(?:h+i+){2,}h*|h+m+|w+o+w+|w+o+a+h+|w+h+o+a+|o+h+|a+h+|u+h+|u+m+)$/i;
+
+function onlyKeptInterjections(text: string): boolean {
+  const words = text.split(/[^\p{L}]+/u).filter(Boolean);
+  return words.length > 0 && words.every((word) => KEPT_INTERJECTION.test(word));
+}
+
 export function untranslated(original: string, translated: string): boolean {
   const n = norm(translated);
   if (!n) return true;
   if (n !== norm(original)) return false;
   if (CJK.test(original)) return true;
+  if (onlyKeptInterjections(original)) return false;
   const proper = /^(?:[A-Z][\p{L}'’.-]*)(?:\s+[A-Z][\p{L}'’.-]*){0,3}[!?.]*$/u.test(original.trim());
   return /\p{L}{4,}/u.test(original) && !proper;
 }

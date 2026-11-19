@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.10.1",
+    time: "19/11/2026",
+    area: "khac",
+    text: "C2 (HANDOFF_NANG_CAP.md): src/lib/sub/text.ts untranslated() không coi câu chỉ gồm tiếng đệm mượn nguyên văn (okay, haha, hehe, hihi, hmm, wow, ooh, aah...) là chưa dịch; câu có thêm chữ khác vẫn bị kiểm như cũ. Test thêm ở translate-batch.test.ts.",
+  },
+  {
     version: "5.10.0",
     time: "19/11/2026",
     area: "khac",

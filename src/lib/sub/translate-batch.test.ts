@@ -87,6 +87,15 @@ describe("câu lỗi không hiện như bản dịch", () => {
     assert.equal(untranslated("你好", "xin chào"), false);
   });
 
+  it("tiếng đệm lặp như «okay okay», «haha» giữ nguyên không bị đánh dấu chưa dịch oan", () => {
+    assert.equal(untranslated("Okay, okay.", "Okay, okay."), false);
+    assert.equal(untranslated("Haha!", "Haha!"), false);
+    assert.equal(untranslated("Wow... wow.", "Wow... wow."), false);
+    assert.equal(untranslated("Hmmm.", "Hmmm."), false);
+    assert.equal(untranslated("Okay, I will go home.", "Okay, I will go home."), true);
+    assert.equal(untranslated("Okay okay", ""), true);
+  });
+
   it("câu dài vẫn hiện khi có nhiều câu ngắn đã kết thúc", () => {
     const items: Seg[] = [
       { start: 0, end: 12, original: "dài", translation: "dài" },
