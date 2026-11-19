@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
+import { usePolish } from "@/components/use-polish";
 import { claimTrialDevice, spendTrial } from "@/lib/room-account";
 import { getServiceStatus } from "@/lib/service-status-room";
 import { defaultServiceStatus, serviceBlock } from "@/lib/service-status";
@@ -2535,6 +2536,28 @@ export function usePipeline() {
     writeStore("gmdl", id);
   }, []);
 
+  const polish = usePolish({
+    getSegs: () => job.current.segs,
+    getBible: () => bible,
+    writeTranslations: (next) => {
+      next.forEach((text, index) => {
+        const seg = job.current.segs[index];
+        if (seg && seg.translation !== text) seg.translation = text;
+      });
+      publish(true);
+    },
+    genre,
+    title,
+    notes,
+    gloss,
+    target,
+    activeKey,
+    roomPay: () => roomPayRef.current,
+    remoteIds,
+    busy: running || analyzing,
+    say,
+  });
+
   return {
     key,
     setKey,
@@ -2687,6 +2710,7 @@ export function usePipeline() {
     playReject,
     keepReject,
     dropReject,
+    polish,
   };
 }
 

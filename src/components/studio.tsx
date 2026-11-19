@@ -15,6 +15,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import { Icon } from "@/components/ui/icon";
 import { READY_STATUS, usePipeline } from "@/components/use-pipeline";
+import { PolishPanel } from "@/components/polish-panel";
 import { useOnline } from "@/lib/use-online";
 import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
@@ -1037,6 +1038,7 @@ export function Studio() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Bản dịch</h2>
           </div>
+          <PolishPanel ui={app.polish} segs={app.segs} disabled={app.running} />
           <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh ngay tại dòng và thêm thuật ngữ.</p>
           <div className="studio-cue-scroll" data-tour="cues">
             {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}

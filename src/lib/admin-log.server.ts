@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.10.0",
+    time: "19/11/2026",
+    area: "khac",
+    text: "A5.4 giao diện trau chuốt bản dịch (HANDOFF_NANG_CAP.md). 1) src/components/polish-panel.tsx: nút «Trau chuốt bản dịch» ở khung «Bản dịch», hộp chọn model kèm giá Token, tiến độ, hủy, màn so sánh. 2) use-polish.ts gắn vào usePipeline (app.polish): giữ Token qua openPolishTicket khi dùng key phòng, đóng phiếu bằng closeRoomTicket ở finally, key riêng của khách thì không trừ Token. 3) Admin phải đặt model trau chuốt (Cấu hình, Gói) và thêm model vào «cửa trả theo lượt» thì khách mới thấy model để chọn. Chưa chạy với model thật và CSDL thật.",
+  },
+  {
     version: "5.9.1",
     time: "19/11/2026",
     area: "khac",

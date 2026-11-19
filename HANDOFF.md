@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A5.4: GIAO DIỆN TRAU CHUỐT ĐÃ GẮN VÀO TRANG (v5.10.0) — đọc mục này đầu tiên
+Chi tiết ở `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A5.4»). Tóm tắt: `src/components/polish-panel.tsx` (nút «Trau chuốt bản dịch» ở khung «Bản dịch», hộp chọn model kèm giá Token dịch, tiến độ, hủy, màn so sánh), `usePolish` gắn vào `usePipeline` (`app.polish`), nâng `APP_VERSION` 5.10.0 + `CHANGELOG` + `ADMIN_LOG`. typecheck sạch, eslint 0 lỗi (7 cảnh báo có sẵn), `npm test` 198 + 1170 pass (ca CHANGELOG đã sửa chữ «Token» thành «Token dịch»).
+CHƯA KIỂM: chưa chụp thử bằng trình duyệt, chưa chạy với model thật và CSDL thật. Admin phải đặt model trau chuốt (Cấu hình → Gói) và thêm vào «cửa trả theo lượt» thì khách key phòng mới có model để chọn.
+VIỆC TIẾP THEO: A5.5 (ghi `PROJECT_STATUS.md`, `BANG_DIEU.md` nếu quy trình yêu cầu), rồi giai đoạn B (thư viện thuật ngữ) hoặc C theo `HANDOFF_NANG_CAP.md`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A5.3: GIỮ TOKEN CHO TRAU CHUỐT (MÁY CHỦ) XONG — đọc mục này đầu tiên
 Chi tiết ở `HANDOFF_NANG_CAP.md` (danh sách bước A5.x). Tóm tắt: `src/lib/polish-hold.ts` + `openPolishTicket` (`polish-room.ts`) giữ Token dịch trước; trừ thật theo usage đã có sẵn ở `/api/room-groq`; đóng phiếu bằng `closeRoomTicket`. Test mới `polish-hold.test.ts` (5 ca). Chưa hiện cho khách, không nâng `APP_VERSION`. typecheck, eslint, `npm test` 198 + 1169 pass.
 CHƯA KIỂM: chưa chạy `openPolishTicket` với CSDL thật (không có Postgres ở đây). Admin phải thêm model trau chuốt vào danh sách «cửa trả theo lượt» (`run_models`) thì khách key phòng mới dùng được.
