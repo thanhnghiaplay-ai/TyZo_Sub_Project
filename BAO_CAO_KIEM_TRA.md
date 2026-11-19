@@ -20,10 +20,10 @@ Ngày 11/11/2026 04:58 (giờ VN). Người sửa: Claude, theo lệnh «Claude 
 | 7 | Hệ thống | Trung bình | `idle-sign-out.tsx` | 30 phút không chạm màn hình là đăng xuất, kể cả đang xem phim hoặc đang dịch | Đã sửa v3.10.9 |
 | 8 | Hệ thống | Thấp | `pay-match.ts`, `pay-store.ts` | Mã đơn nạp chỉ lấy 6 ký tự hex đầu (khoảng 16 triệu mã), trùng thì tạo đơn lỗi | Đã sửa v3.10.9, có test |
 | 9 | Tiền | Trung bình | `pay-flow.ts`, `pay-confirm.ts` | Đơn hết hạn sau 15 phút. Khách chuyển khoản trễ thì không được cộng, Chủ xác nhận tay cũng không được vì chỉ nhận đơn đang chờ | Cần Chủ quyết |
-| 10 | Logic | Thấp | `mp4.ts` | Giải mã âm thanh quá 25 giây thì coi đoạn là lỗi, có thể thiếu câu | Chưa sửa |
-| 11 | Tốc độ | Thấp | `use-pipeline.ts` | Kết quả nhận dạng chỉ hiện theo thứ tự đoạn, một đoạn chậm thì cả danh sách đứng rồi nhảy | Chưa sửa |
-| 12 | Hệ thống | Thấp | `groq.ts` | Giới hạn 120 giây chỉ tính tới khi có đầu phản hồi, đọc nội dung trả về chưa có giới hạn | Chưa sửa |
-| 13 | Giao diện | Thấp | `pay-store.ts` | Một số câu lỗi nạp tiền thiếu dấu tiếng Việt («Cong khong dung», «Khong thay don nap») | Chưa sửa |
+| 10 | Logic | Thấp | `mp4.ts` | Giải mã âm thanh quá 25 giây thì coi đoạn là lỗi, có thể thiếu câu | Đã xử lý trong code (rà 19/11/2026): giải mã lỗi thì thử lại 1 lần, vẫn lỗi thì đánh dấu đoạn «fail» và vòng `retryDecodeFails` thử lại có ngân sách |
+| 11 | Tốc độ | Thấp | `use-pipeline.ts` | Kết quả nhận dạng chỉ hiện theo thứ tự đoạn, một đoạn chậm thì cả danh sách đứng rồi nhảy | Giữ nguyên có chủ ý (rà 19/11/2026): `ingestAsrPart` cần xử lý đúng thứ tự để lọc câu trùng ở vùng chồng giữa hai đoạn; chậm tối đa bằng số luồng song song |
+| 12 | Hệ thống | Thấp | `groq.ts` | Giới hạn 120 giây chỉ tính tới khi có đầu phản hồi, đọc nội dung trả về chưa có giới hạn | Đã sửa (`http-deadline.ts`, hạn body 120 giây, có test) |
+| 13 | Giao diện | Thấp | `pay-store.ts` | Một số câu lỗi nạp tiền thiếu dấu tiếng Việt («Cong khong dung», «Khong thay don nap») | Đã sửa 19/11/2026 (9 chỗ) |
 | 14 | Hệ thống | Thấp | `migrations/` | `0001_auth.sql` có hai bản giống hệt. Vô hại vì máy chạy không đọc thư mục con | Chưa sửa, ghi nhận |
 | 15 | Giao diện | Nặng | `account-panel.tsx` | Trang Tài khoản trên điện thoại mất đầu trang, trống giữa, cụt đáy (cột kiểu báo bị ép chiều cao, từ v3.10.6) | Đã sửa v3.10.10 theo ảnh chụp |
 

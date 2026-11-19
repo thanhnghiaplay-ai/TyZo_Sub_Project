@@ -2,9 +2,10 @@
 NGUỒN VIỆC: Chủ yêu cầu «tra cứu, kiểm tra, rà soát quy trình nhận diện và dịch», sửa lỗi hoặc làm theo đề xuất. Danh sách gốc là bảng lỗi trong `BAO_CAO_KIEM_TRA.md` (mục 10, 11, 12, 13 còn «chưa sửa» trên giấy). Kiểm lại code hiện tại: mục 12 ĐÃ sửa từ trước (`src/lib/sub/http-deadline.ts`, hạn body 120 giây, có test).
 CÁC BƯỚC (đánh dấu khi xong):
 - [x] B1 mục 13: câu lỗi nạp tiền thiếu dấu ở `src/lib/pay-store.ts` (9 chỗ) đã thêm dấu. Không đổi hành vi. typecheck, eslint, npm test pass hết.
-- [ ] B2 mục 10: `streamSamples` (`src/lib/sub/mp4.ts`) quá 25 giây giải mã thì trả null, nơi gọi trong `src/components/use-pipeline.ts` (dòng ~1210, 1286, 1358, 1712) xem có bỏ sót đoạn không.
-- [ ] B3 mục 11: kết quả nhận dạng chỉ hiện theo thứ tự đoạn (`use-pipeline.ts`), một đoạn chậm thì danh sách đứng rồi nhảy.
-- [ ] B4 rà thêm luồng dịch (`src/lib/sub/groq.ts`, `translate-batch`, `lang-check`) tìm lỗi mới, ghi vào đây.
+- [x] B2 (rà, không cần sửa) mục 10: `streamSamples` (`src/lib/sub/mp4.ts`) quá 25 giây giải mã thì trả null, nơi gọi trong `src/components/use-pipeline.ts` (dòng ~1210, 1286, 1358, 1712) xem có bỏ sót đoạn không.
+- [x] B3 (rà, giữ nguyên có chủ ý, lý do trong BAO_CAO_KIEM_TRA.md) mục 11: kết quả nhận dạng chỉ hiện theo thứ tự đoạn (`use-pipeline.ts`), một đoạn chậm thì danh sách đứng rồi nhảy.
+- [x] B4 (rà, chưa thấy lỗi mới: thử lại tối đa 5 lần, 429 chờ theo retry-after, hạn header/body 120 giây, hết hạn mức >90 giây thì dừng báo rõ) rà thêm luồng dịch (`src/lib/sub/groq.ts`, `translate-batch`, `lang-check`) tìm lỗi mới, ghi vào đây.
+CÒN MỞ (không thuộc việc này): mục 9 (cộng tiền khi chuyển khoản trễ) cần Chủ quyết; mục 14 ghi nhận. Chưa thử với dịch thật bằng key thật, chỉ rà code và chạy test.
 CÁCH CHẠY: `npm run typecheck`, `npx eslint <file>`, `npm test` (hiện 198 + 1077, 0 lỗi). Token GitHub do Chủ đưa trong chat, KHÔNG ghi vào file; khi cần đẩy thì dùng `git -c http.extraHeader=...` hoặc xin Chủ token mới.
 
 ## BÀN GIAO (19/11/2026, nhánh work) — MÀN CẢM ƠN / XIN LỖI SAU THANH TOÁN ĐẸP HƠN + GHI CHÚ SEPAY VA — đọc mục này đầu tiên
