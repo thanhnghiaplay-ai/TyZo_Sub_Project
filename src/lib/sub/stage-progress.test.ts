@@ -54,3 +54,15 @@ test("tổng không vượt 0..100 khi số đếm lệch", () => {
   const r = computeStages({ ...base, phase: "asr", partsTotal: 4, partsDone: 9, segsTotal: 2, segsDone: 9 });
   assert.ok(r.percent >= 0 && r.percent <= 100);
 });
+
+test("chạy qua link xong (pha idle, không có đoạn cắt): đủ 100%, không tụt về 40%", () => {
+  const r = computeStages({ ...base, phase: "idle", segsTotal: 15, segsDone: 15 });
+  assert.deepEqual(r.stages.map((s) => s.state), ["skip", "done", "done", "skip"]);
+  assert.equal(r.percent, 100);
+  assert.equal(r.active, null);
+});
+
+test("chạy qua link xong nhưng còn câu dịch lỗi: chưa 100%", () => {
+  const r = computeStages({ ...base, phase: "idle", segsTotal: 15, segsDone: 14, failed: 1 });
+  assert.ok(r.percent < 100);
+});

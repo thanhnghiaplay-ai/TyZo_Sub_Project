@@ -44,8 +44,10 @@ function ratio(done: number, total: number) {
 
 export function computeStages(input: StageInput): StageReport {
   const running = input.phase !== "idle";
-  const ali = input.phase === "ali";
   const planned = input.partsTotal > 0;
+  // Chạy qua link (Alibaba...) không có đoạn cắt. Khi xong, pha về "idle" nhưng câu vẫn còn: vẫn coi là chạy qua link,
+  // nếu không thanh tụt về 40% vì giai đoạn cắt và nhận dạng bị tính là chưa làm.
+  const ali = input.phase === "ali" || (!running && !planned && input.segsTotal > 0);
   const asrDone = planned && input.partsDone >= input.partsTotal;
   const transDone = input.segsTotal > 0 && input.segsDone >= input.segsTotal && (asrDone || ali || (!running && planned));
 

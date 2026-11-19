@@ -1,3 +1,9 @@
+## BÀN GIAO (20/11/2026, nhánh work) — 3 lỗi Chủ báo từ ảnh: mốc 0:00, thanh tiến trình 40%, trau chuốt dính trong Bản dịch
+1) **Mốc thời gian**: `segsFromAli` (ali-asr-to-segs.ts) chia mili-giây cho 1000 lần nữa dù `AliSentence` đã là GIÂY (sentencesFromTranscript đã đổi) nên mọi câu về ~0:00, SRT xếp chồng và Thuyết minh chỉ đọc được 1 câu. Đã bỏ phép chia; test mới `ali-asr-to-segs.test.ts` (3 ca, đã vào script `test`).
+2) **Thanh tiến trình**: chạy qua link (Alibaba) xong thì pha về `idle`, `computeStages` tính cắt/nhận dạng là chưa làm nên thanh tụt về 40%. Nay `idle` + không có đoạn cắt + còn câu = coi là chạy qua link, đủ 100% khi dịch xong và không còn câu lỗi. Test thêm 2 ca ở stage-progress.test.ts.
+3) **Trau chuốt**: `PolishPanel` chuyển từ khung «Bản dịch» (studio.tsx) sang đầu tab «Kiểm tra» (`tool-check`), để màn so sánh không đè danh sách câu. Chủ có thể muốn tab riêng thứ 7 thay vì để ở Kiểm tra: chưa làm (đổi vòng 6 công cụ, tool-wheel.ts và test).
+CHƯA KIỂM: chưa chạy lại video thật sau sửa, chưa chụp thử giao diện điện thoại. Không nâng APP_VERSION.
+
 ## BÀN GIAO (20/11/2026, nhánh work) — Alibaba gộp nhiều câu thành 3 câu dài (video Tiểu hòa thượng)
 Video mẫu 34 giây có khoảng 17 câu thoại (đã đếm từ phụ đề cứng trên hình), nhưng Alibaba chỉ trả 3 «câu» vì lời thoại liền nhau không có quãng lặng. App không bỏ câu (`segsFromAli` không lọc). Sửa: `splitLongSentence` trong `src/lib/sub/ali-filetrans.ts` tách lại theo dấu câu, ưu tiên mốc từng từ (`words`) nếu Alibaba trả, ngắt thêm khi hai từ cách ≥ 0,5 giây, không có `words` thì chia thời gian theo độ dài chữ; mảnh dưới 2 chữ gộp vào mảnh kề; câu không có chỗ ngắt giữ nguyên. Test thêm 4 ca. CHƯA kiểm với kết quả Alibaba thật (không gọi được từ đây): nếu Alibaba trả câu không có dấu câu và không có `words` thì vẫn chưa tách được; khi đó cần xem JSON thật (transcription_url) để chỉnh.
 

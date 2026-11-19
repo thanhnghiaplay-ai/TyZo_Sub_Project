@@ -1038,7 +1038,6 @@ export function Studio() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-semibold">Bản dịch</h2>
           </div>
-          <PolishPanel ui={app.polish} segs={app.segs} disabled={app.running} />
           <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh ngay tại dòng và thêm thuật ngữ.</p>
           <div className="studio-cue-scroll" data-tour="cues">
             {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}
@@ -1622,6 +1621,7 @@ export function Studio() {
       </section>
 
       <section id="tool-check" role="region" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
+        <PolishPanel ui={app.polish} segs={app.segs} disabled={app.running} />
         <div className="flex flex-wrap gap-2">
           <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" disabled={app.running || app.segs.length === 0} onClick={() => void app.scanGaps()}>
             Dò khoảng trống
