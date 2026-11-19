@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A4 MÀN SO SÁNH BẢN DỊCH / BẢN TRAU CHUỐT XONG (chưa gắn vào trang) — đọc mục này đầu tiên
+Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A4» có đủ chi tiết). Tóm tắt: `src/lib/polish-review.ts` (chấp nhận từng câu / tất cả / quay lại bản cũ / hoàn tác, câu sửa tay và câu xung đột không bị đè), `src/components/polish-review-panel.tsx` (màn so sánh, theme), test mới `polish-review.test.ts` (15 ca). Chưa gắn vào trang, KHÔNG nâng `APP_VERSION`. typecheck, eslint 0 lỗi, `npm test` 198 + 1148 pass.
+CÒN MỞ: chưa chụp thử giao diện trên trình duyệt.
+VIỆC TIẾP THEO: A5 (nối nút + trừ Token đúng số thực). Phần trừ Token cần Chủ chốt vai «trau chuốt» trong gói dịch trước (xem `HANDOFF_NANG_CAP.md`).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A3 ƯỚC GIÁ: PHẦN LÕI XONG — đọc mục này đầu tiên
 Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A3» có đủ chi tiết). Tóm tắt: file mới `src/lib/polish-estimate.ts` (`planPolish`, `quotePolish` ra Token dịch/đồng, `defaultPolishModel`, `polishConfirmText`), test mới `polish-estimate.test.ts` (16 ca). Thiếu giá thì `ready: false`, không cho chạy. Chưa có giao diện, chưa trừ gì, KHÔNG nâng `APP_VERSION`. typecheck, eslint 0 lỗi, `npm test` 198 + 1133 pass.
 CÒN MỞ (chuyển sang A5): khung chọn model trau chuốt trong giao diện; chưa có vai «trau chuốt» trong gói dịch (cần hỏi Chủ: dùng vai `review`/`translate` hay thêm vai `polish`); `makePolishCall` chưa trả `usage` để trừ Token đúng số thực.
