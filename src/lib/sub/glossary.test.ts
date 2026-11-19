@@ -167,3 +167,27 @@ describe("bộ thuật ngữ nền theo ngôn ngữ nguồn", () => {
     }
   });
 });
+
+describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
+  const drafts: [string, string][] = [];
+  for (const genre of ["wuxia", "xianxia", "ngontinh"]) for (const lang of ["zh", "en"]) drafts.push([lang, genre]);
+
+  it("có file, mỗi mục đủ nguồn/đích, không trùng nguồn, đều đánh dấu chưa duyệt", () => {
+    for (const [lang, genre] of drafts) {
+      const terms = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/${genre}.json`, import.meta.url), "utf8")) as {
+        source: string;
+        target: string;
+        reviewed?: boolean;
+      }[];
+      assert.ok(terms.length >= 25, `${lang}/${genre}`);
+      const seen = new Set<string>();
+      for (const term of terms) {
+        assert.ok(term.source.trim().length >= 2 && term.target.trim(), `${lang}/${genre}`);
+        assert.equal(term.reviewed, false, `${lang}/${genre}: ${term.source}`);
+        const key = term.source.toLowerCase();
+        assert.ok(!seen.has(key), `${lang}/${genre}: trùng ${term.source}`);
+        seen.add(key);
+      }
+    }
+  });
+});

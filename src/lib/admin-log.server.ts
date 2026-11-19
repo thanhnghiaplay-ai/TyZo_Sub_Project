@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.11.0",
     time: "19/11/2026",
     area: "du-lieu",
+    text: "B1.2 bản nháp thuật ngữ thể loại mới: thêm data/glossaries/{zh,en}/{wuxia,xianxia,ngontinh}.json (kiếm hiệp, tiên hiệp, ngôn tình; 28 đến 49 mục mỗi file), mọi mục có reviewed:false nên khi nạp/khôi phục vào CSDL đều là «chưa duyệt». Bản nháp do Claude soạn, KHÔNG coi là đã đúng: Chủ vào Admin → Thuật ngữ, lọc «chưa duyệt», sửa rồi Duyệt từng mục hoặc Duyệt cả bộ. Nơi đã chạy seed trước đó thì bấm «Khôi phục» cho từng bộ (restoreGlossary tạo bộ còn thiếu). Test mới ở glossary.test.ts.",
+  },
+  {
+    version: "5.11.0",
+    time: "19/11/2026",
+    area: "du-lieu",
     text: "B3 (HANDOFF_NANG_CAP.md): nhãn «đã duyệt / chưa duyệt» cho thuật ngữ. 1) Migration 0026_glossary_review.sql thêm cột glossary_terms.reviewed (mặc định true: mục đang có coi là đã duyệt). 2) src/lib/glossary-review.ts (thuần) + glossary-review.test.ts (6 ca): lọc, thống kê theo ngôn ngữ/thể loại, thể loại còn trống. 3) glossary-room.ts: listGlossary nhận review (all/reviewed/draft) và trả packTotal/packReviewed; setGlossaryReviewed (một mục hoặc cả bộ); glossaryStats; importGlossary nhận draft (nhập làm bản nháp = chưa duyệt); Chủ tự thêm tay hoặc nhận gợi ý của khách thì tự coi đã duyệt. 4) glossary-board.tsx: ô lọc, nhãn từng mục, nút Duyệt/Bỏ duyệt, «Duyệt cả bộ» có hộp xác nhận, ô «đánh dấu chưa duyệt» khi nhập file, mục «Thống kê số mục». Khách không thấy gì mới (không nâng APP_VERSION). Chưa chạy với CSDL thật.",
   },
   {

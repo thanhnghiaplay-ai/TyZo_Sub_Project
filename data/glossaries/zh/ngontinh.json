@@ -1,0 +1,184 @@
+[
+  {
+    "source": "总裁",
+    "target": "tổng tài",
+    "reviewed": false
+  },
+  {
+    "source": "霸道总裁",
+    "target": "tổng tài bá đạo",
+    "reviewed": false
+  },
+  {
+    "source": "董事长",
+    "target": "chủ tịch",
+    "reviewed": false
+  },
+  {
+    "source": "助理",
+    "target": "trợ lý",
+    "reviewed": false
+  },
+  {
+    "source": "少爷",
+    "target": "thiếu gia",
+    "reviewed": false
+  },
+  {
+    "source": "千金",
+    "target": "thiên kim",
+    "reviewed": false
+  },
+  {
+    "source": "豪门",
+    "target": "hào môn",
+    "reviewed": false
+  },
+  {
+    "source": "联姻",
+    "target": "liên hôn",
+    "reviewed": false
+  },
+  {
+    "source": "契约婚姻",
+    "target": "hôn nhân hợp đồng",
+    "reviewed": false
+  },
+  {
+    "source": "未婚夫",
+    "target": "vị hôn phu",
+    "reviewed": false
+  },
+  {
+    "source": "未婚妻",
+    "target": "vị hôn thê",
+    "reviewed": false
+  },
+  {
+    "source": "订婚",
+    "target": "đính hôn",
+    "reviewed": false
+  },
+  {
+    "source": "结婚",
+    "target": "kết hôn",
+    "reviewed": false
+  },
+  {
+    "source": "离婚",
+    "target": "ly hôn",
+    "reviewed": false
+  },
+  {
+    "source": "前夫",
+    "target": "chồng cũ",
+    "reviewed": false
+  },
+  {
+    "source": "前妻",
+    "target": "vợ cũ",
+    "reviewed": false
+  },
+  {
+    "source": "前任",
+    "target": "người yêu cũ",
+    "reviewed": false
+  },
+  {
+    "source": "男朋友",
+    "target": "bạn trai",
+    "reviewed": false
+  },
+  {
+    "source": "女朋友",
+    "target": "bạn gái",
+    "reviewed": false
+  },
+  {
+    "source": "老公",
+    "target": "chồng, ông xã",
+    "reviewed": false
+  },
+  {
+    "source": "老婆",
+    "target": "vợ, bà xã",
+    "reviewed": false
+  },
+  {
+    "source": "宝贝",
+    "target": "bảo bối",
+    "reviewed": false
+  },
+  {
+    "source": "亲爱的",
+    "target": "em yêu, anh yêu",
+    "note": "Chọn theo giới tính người nói",
+    "reviewed": false
+  },
+  {
+    "source": "白月光",
+    "target": "bạch nguyệt quang",
+    "note": "Người trong lòng không thể có được",
+    "reviewed": false
+  },
+  {
+    "source": "替身",
+    "target": "thế thân",
+    "reviewed": false
+  },
+  {
+    "source": "初恋",
+    "target": "mối tình đầu",
+    "reviewed": false
+  },
+  {
+    "source": "青梅竹马",
+    "target": "thanh mai trúc mã",
+    "reviewed": false
+  },
+  {
+    "source": "一见钟情",
+    "target": "yêu từ cái nhìn đầu tiên",
+    "reviewed": false
+  },
+  {
+    "source": "暗恋",
+    "target": "thầm thương, thích mà không dám nói ra",
+    "reviewed": false
+  },
+  {
+    "source": "表白",
+    "target": "tỏ tình",
+    "reviewed": false
+  },
+  {
+    "source": "分手",
+    "target": "chia tay",
+    "reviewed": false
+  },
+  {
+    "source": "吃醋",
+    "target": "ghen",
+    "reviewed": false
+  },
+  {
+    "source": "心动",
+    "target": "rung động",
+    "reviewed": false
+  },
+  {
+    "source": "缘分",
+    "target": "duyên phận",
+    "reviewed": false
+  },
+  {
+    "source": "渣男",
+    "target": "đồ tồi",
+    "reviewed": false
+  },
+  {
+    "source": "小三",
+    "target": "kẻ thứ ba",
+    "reviewed": false
+  }
+]

@@ -1,0 +1,172 @@
+[
+  {
+    "source": "martial world",
+    "target": "võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "alliance leader",
+    "target": "minh chủ",
+    "reviewed": false
+  },
+  {
+    "source": "young hero",
+    "target": "thiếu hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "great hero",
+    "target": "đại hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "swordsman",
+    "target": "kiếm khách",
+    "reviewed": false
+  },
+  {
+    "source": "senior",
+    "target": "tiền bối",
+    "reviewed": false
+  },
+  {
+    "source": "junior",
+    "target": "vãn bối",
+    "reviewed": false
+  },
+  {
+    "source": "this humble one",
+    "target": "tại hạ",
+    "reviewed": false
+  },
+  {
+    "source": "this one",
+    "target": "tại hạ",
+    "reviewed": false
+  },
+  {
+    "source": "master",
+    "target": "sư phụ",
+    "reviewed": false
+  },
+  {
+    "source": "senior brother",
+    "target": "sư huynh",
+    "reviewed": false
+  },
+  {
+    "source": "senior sister",
+    "target": "sư tỷ",
+    "reviewed": false
+  },
+  {
+    "source": "junior brother",
+    "target": "sư đệ",
+    "reviewed": false
+  },
+  {
+    "source": "junior sister",
+    "target": "sư muội",
+    "reviewed": false
+  },
+  {
+    "source": "internal energy",
+    "target": "nội lực",
+    "reviewed": false
+  },
+  {
+    "source": "qinggong",
+    "target": "khinh công",
+    "reviewed": false
+  },
+  {
+    "source": "pressure point",
+    "target": "huyệt đạo",
+    "reviewed": false
+  },
+  {
+    "source": "acupoint",
+    "target": "huyệt đạo",
+    "reviewed": false
+  },
+  {
+    "source": "secret manual",
+    "target": "bí kíp",
+    "reviewed": false
+  },
+  {
+    "source": "martial arts manual",
+    "target": "bí kíp",
+    "reviewed": false
+  },
+  {
+    "source": "sword technique",
+    "target": "kiếm pháp",
+    "reviewed": false
+  },
+  {
+    "source": "palm technique",
+    "target": "chưởng pháp",
+    "reviewed": false
+  },
+  {
+    "source": "hidden weapon",
+    "target": "ám khí",
+    "reviewed": false
+  },
+  {
+    "source": "qi deviation",
+    "target": "tẩu hỏa nhập ma",
+    "reviewed": false
+  },
+  {
+    "source": "demonic sect",
+    "target": "ma giáo",
+    "reviewed": false
+  },
+  {
+    "source": "righteous sect",
+    "target": "chính phái",
+    "reviewed": false
+  },
+  {
+    "source": "escort agency",
+    "target": "tiêu cục",
+    "reviewed": false
+  },
+  {
+    "source": "elder",
+    "target": "trưởng lão",
+    "reviewed": false
+  },
+  {
+    "source": "guardian",
+    "target": "hộ pháp",
+    "reviewed": false
+  },
+  {
+    "source": "token",
+    "target": "lệnh bài",
+    "reviewed": false
+  },
+  {
+    "source": "inn",
+    "target": "khách điếm",
+    "reviewed": false
+  },
+  {
+    "source": "antidote",
+    "target": "thuốc giải",
+    "reviewed": false
+  },
+  {
+    "source": "expel from the sect",
+    "target": "trục xuất khỏi môn phái",
+    "reviewed": false
+  },
+  {
+    "source": "we shall meet again",
+    "target": "hẹn ngày gặp lại",
+    "reviewed": false
+  }
+]

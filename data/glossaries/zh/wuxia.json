@@ -1,0 +1,232 @@
+[
+  {
+    "source": "江湖",
+    "target": "giang hồ",
+    "reviewed": false
+  },
+  {
+    "source": "武林",
+    "target": "võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "武林盟主",
+    "target": "minh chủ võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "盟主",
+    "target": "minh chủ",
+    "reviewed": false
+  },
+  {
+    "source": "掌门",
+    "target": "chưởng môn",
+    "reviewed": false
+  },
+  {
+    "source": "门派",
+    "target": "môn phái",
+    "reviewed": false
+  },
+  {
+    "source": "帮主",
+    "target": "bang chủ",
+    "reviewed": false
+  },
+  {
+    "source": "长老",
+    "target": "trưởng lão",
+    "reviewed": false
+  },
+  {
+    "source": "护法",
+    "target": "hộ pháp",
+    "reviewed": false
+  },
+  {
+    "source": "令牌",
+    "target": "lệnh bài",
+    "reviewed": false
+  },
+  {
+    "source": "少侠",
+    "target": "thiếu hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "大侠",
+    "target": "đại hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "女侠",
+    "target": "nữ hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "剑客",
+    "target": "kiếm khách",
+    "reviewed": false
+  },
+  {
+    "source": "前辈",
+    "target": "tiền bối",
+    "reviewed": false
+  },
+  {
+    "source": "晚辈",
+    "target": "vãn bối",
+    "reviewed": false
+  },
+  {
+    "source": "在下",
+    "target": "tại hạ",
+    "reviewed": false
+  },
+  {
+    "source": "阁下",
+    "target": "các hạ",
+    "reviewed": false
+  },
+  {
+    "source": "师父",
+    "target": "sư phụ",
+    "reviewed": false
+  },
+  {
+    "source": "师兄",
+    "target": "sư huynh",
+    "reviewed": false
+  },
+  {
+    "source": "师姐",
+    "target": "sư tỷ",
+    "reviewed": false
+  },
+  {
+    "source": "师弟",
+    "target": "sư đệ",
+    "reviewed": false
+  },
+  {
+    "source": "师妹",
+    "target": "sư muội",
+    "reviewed": false
+  },
+  {
+    "source": "拜师",
+    "target": "bái sư",
+    "reviewed": false
+  },
+  {
+    "source": "逐出师门",
+    "target": "trục xuất khỏi sư môn",
+    "reviewed": false
+  },
+  {
+    "source": "武功",
+    "target": "võ công",
+    "reviewed": false
+  },
+  {
+    "source": "内力",
+    "target": "nội lực",
+    "reviewed": false
+  },
+  {
+    "source": "轻功",
+    "target": "khinh công",
+    "reviewed": false
+  },
+  {
+    "source": "点穴",
+    "target": "điểm huyệt",
+    "reviewed": false
+  },
+  {
+    "source": "秘籍",
+    "target": "bí kíp",
+    "reviewed": false
+  },
+  {
+    "source": "剑法",
+    "target": "kiếm pháp",
+    "reviewed": false
+  },
+  {
+    "source": "掌法",
+    "target": "chưởng pháp",
+    "reviewed": false
+  },
+  {
+    "source": "暗器",
+    "target": "ám khí",
+    "reviewed": false
+  },
+  {
+    "source": "走火入魔",
+    "target": "tẩu hỏa nhập ma",
+    "reviewed": false
+  },
+  {
+    "source": "比武",
+    "target": "tỷ võ",
+    "reviewed": false
+  },
+  {
+    "source": "切磋",
+    "target": "luận bàn, so tài",
+    "reviewed": false
+  },
+  {
+    "source": "魔教",
+    "target": "ma giáo",
+    "reviewed": false
+  },
+  {
+    "source": "正派",
+    "target": "chính phái",
+    "reviewed": false
+  },
+  {
+    "source": "邪派",
+    "target": "tà phái",
+    "reviewed": false
+  },
+  {
+    "source": "镖局",
+    "target": "tiêu cục",
+    "reviewed": false
+  },
+  {
+    "source": "镖师",
+    "target": "tiêu sư",
+    "reviewed": false
+  },
+  {
+    "source": "客栈",
+    "target": "khách điếm",
+    "reviewed": false
+  },
+  {
+    "source": "解药",
+    "target": "thuốc giải",
+    "reviewed": false
+  },
+  {
+    "source": "恩怨",
+    "target": "ân oán",
+    "reviewed": false
+  },
+  {
+    "source": "后会有期",
+    "target": "hẹn ngày gặp lại",
+    "reviewed": false
+  },
+  {
+    "source": "在下告辞",
+    "target": "tại hạ xin cáo từ",
+    "reviewed": false
+  }
+]
