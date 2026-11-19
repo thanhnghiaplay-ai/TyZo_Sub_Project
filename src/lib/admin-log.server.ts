@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.9.1",
+    time: "19/11/2026",
+    area: "khac",
+    text: "Chủ yêu cầu (ảnh chụp điện thoại): ô chọn dùng danh sách gốc của máy, đổi sang hộp web; khu 18+ nổi bật trong hộp Thể loại với thanh Thấp/Vừa/Cao. 1) File mới src/components/picker-select.tsx: PickerSelect (hộp chọn dạng thẻ nổi, portal ra body, Escape/bấm nền để đóng, hàng có vòng tròn chọn). Lấy lựa chọn từ các thẻ <option> con nên Select (studio.tsx, 13 chỗ) và ChipSelect (home-hero.tsx) giữ nguyên cách gọi. 2) Khi danh sách có đủ adult, softcore, sex thì hộp hiện khối «18+» viền màu nhấn ở đầu hộp: Thấp = Phim gắn nhãn 18+, Vừa = Phim cấp 3, Cao = Phim thoại kín; ba thể loại này không lặp trong danh sách thường. Chọn mức vẫn qua pickGenre nên vẫn hỏi xác nhận trên 18 tuổi (ConfirmDialog z-50 nằm trên hộp chọn z-40; hộp chọn đóng trước khi hỏi). 3) home-state.ts: AGE_LEVELS (thứ tự nhẹ đến nặng), AGE_GATE_GENRES lấy từ đó; test mới. CHƯA thử trên điện thoại thật: cần Chủ xem lại hộp trên máy (cuộn, chạm, chế độ tối).",
+  },
+  {
     version: "5.9.0",
     time: "19/11/2026",
     area: "khac",

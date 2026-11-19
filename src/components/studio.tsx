@@ -48,6 +48,7 @@ import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
 import { ConfirmDialog } from "@/components/confirm-code";
+import { PickerSelect } from "@/components/picker-select";
 import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
 import { tourSeen } from "@/components/tour-seen";
@@ -1869,12 +1870,22 @@ function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void
 
 function Select({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
   return (
-    <label className="grid gap-1 text-sm text-muted">
-      {label}
-      <select className={FIELD} value={value} onChange={(event) => onChange(event.target.value)}>
-        {children}
-      </select>
-    </label>
+    <PickerSelect
+      label={label}
+      value={value}
+      onChange={onChange}
+      trigger={(open, current) => (
+        <div className="grid gap-1 text-sm text-muted">
+          {label}
+          <button type="button" aria-haspopup="dialog" className={FIELD + " flex items-center justify-between gap-2 text-left"} onClick={open}>
+            <span className="min-w-0 truncate">{current}</span>
+            <span aria-hidden="true" className="text-muted">▾</span>
+          </button>
+        </div>
+      )}
+    >
+      {children}
+    </PickerSelect>
   );
 }
 

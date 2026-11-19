@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isTypingTarget, needsAgeConfirm, pastedLink, showHomeHero } from "./home-state.ts";
+import { AGE_GATE_GENRES, AGE_LEVELS, GENRES, isTypingTarget, needsAgeConfirm, pastedLink, showHomeHero } from "./home-state.ts";
 
 const idle = { hasSegs: false, running: false, analyzing: false, reviewHold: false, forced: false };
 
@@ -39,4 +39,11 @@ test("isTypingTarget nhận ô gõ chữ", () => {
 test("chỉ ba thể loại 18+ phải xác nhận trên 18 tuổi", () => {
   for (const id of ["adult", "softcore", "sex", " SEX "]) assert.equal(needsAgeConfirm(id), true, id);
   for (const id of ["auto", "action", "romance", "wuxia", "", "khong-co"]) assert.equal(needsAgeConfirm(id), false, id);
+});
+
+test("ba mức 18+ Thấp, Vừa, Cao khớp ba thể loại và thứ tự nhẹ đến nặng", () => {
+  assert.deepEqual(AGE_LEVELS, [["adult", "Thấp"], ["softcore", "Vừa"], ["sex", "Cao"]]);
+  const ids = new Set(GENRES.map(([id]) => id));
+  for (const [id] of AGE_LEVELS) assert.ok(ids.has(id), id);
+  assert.deepEqual([...AGE_GATE_GENRES].sort(), AGE_LEVELS.map(([id]) => id).sort());
 });

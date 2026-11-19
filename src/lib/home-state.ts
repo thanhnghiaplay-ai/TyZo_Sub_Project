@@ -30,8 +30,15 @@ export const GENRES: [string, string][] = [
   ["documentary", "Tài liệu / phóng sự"],
 ];
 
+/** Ba mức 18+ từ nhẹ đến nặng: Thấp = Phim gắn nhãn 18+, Vừa = Phim cấp 3, Cao = Phim thoại kín. */
+export const AGE_LEVELS: readonly (readonly [string, string])[] = [
+  ["adult", "Thấp"],
+  ["softcore", "Vừa"],
+  ["sex", "Cao"],
+];
+
 /** Thể loại 18+: mỗi bộ đứng riêng, và khách phải xác nhận trên 18 tuổi mới được chọn. */
-export const AGE_GATE_GENRES: ReadonlySet<string> = new Set(["adult", "softcore", "sex"]);
+export const AGE_GATE_GENRES: ReadonlySet<string> = new Set(AGE_LEVELS.map(([id]) => id));
 
 export function needsAgeConfirm(genre: string): boolean {
   return AGE_GATE_GENRES.has((genre || "").trim().toLowerCase());

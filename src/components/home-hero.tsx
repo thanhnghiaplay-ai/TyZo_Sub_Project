@@ -6,22 +6,26 @@ import { formatBytes, isMediaFile, type FileThumb } from "@/components/file-thum
 import { useLinkCheck } from "@/components/use-link-check";
 import { useCaps } from "@/components/use-caps";
 import { GENRES } from "@/lib/home-state";
+import { PickerSelect } from "@/components/picker-select";
 
 const CHIP = "min-tap inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-3 text-sm text-fg hover:border-accent focus-visible:ring-2 focus-visible:ring-accent";
 
 function ChipSelect({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
   return (
-    <label data-chip-select className={CHIP + " relative min-w-0"}>
-      <span className="shrink-0 text-muted">{label}</span>
-      <select
-        aria-label={label}
-        className="min-w-0 flex-1 cursor-pointer truncate bg-transparent py-2 pr-1 font-medium outline-none"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {children}
-      </select>
-    </label>
+    <PickerSelect
+      label={label}
+      value={value}
+      onChange={onChange}
+      trigger={(open, current) => (
+        <button type="button" data-chip-select aria-haspopup="dialog" aria-label={label} className={CHIP + " relative min-w-0 text-left"} onClick={open}>
+          <span className="shrink-0 text-muted">{label}</span>
+          <span data-chip-value className="min-w-0 flex-1 truncate py-2 pr-1 font-medium">{current}</span>
+          <span aria-hidden="true" className="shrink-0 text-muted">▾</span>
+        </button>
+      )}
+    >
+      {children}
+    </PickerSelect>
   );
 }
 

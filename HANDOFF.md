@@ -1,3 +1,6 @@
+## BÀN GIAO (19/11/2026, nhánh work) — HỘP CHỌN CỦA WEB + KHU 18+ (v5.9.1)
+Chủ yêu cầu ô chọn (ngôn ngữ, thể loại, ...) dùng hộp web thay danh sách gốc của điện thoại, và hộp Thể loại có khu «18+» nổi bật trên cùng với thanh Thấp/Vừa/Cao = adult/softcore/sex. Đã làm: `src/components/picker-select.tsx` (`PickerSelect`), `Select` ở `studio.tsx` và `ChipSelect` ở `home-hero.tsx` dùng nó; `AGE_LEVELS` ở `home-state.ts`. typecheck, eslint 0 lỗi, `npm test` (198 + 1091) pass. CHƯA thử trên điện thoại thật (cuộn, chạm, chế độ tối, giao diện Tương lai: CSS `[data-chip-select] select` cũ không còn tác dụng vì chip nay là nút). Việc tiếp theo vẫn là A2.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — XÁC NHẬN 18 TUỔI CHO THỂ LOẠI 18+ (v5.9.0)
 Chủ chốt: 18+ nhẹ hơn, thoại kín là sex, ba bộ 18+ đứng riêng và phải xác nhận trên 18 tuổi khi chọn. Đã làm: `needsAgeConfirm`, `pickGenre` + hộp thoại ConfirmDialog, `softcore` vào `NO_BASE_GENRES`, viết lại prompt `adult` nhẹ hơn, test mới. typecheck, eslint, `npm test` (198 + 1090) pass. Chi tiết: `HANDOFF_NANG_CAP.md` mục «KẾT QUẢ A1». Việc tiếp theo vẫn là A2.
 
