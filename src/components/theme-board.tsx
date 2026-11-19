@@ -517,7 +517,7 @@ export function ThemeBoard() {
                   key={item.id}
                   type="button"
                   className="min-tap inline-flex items-center justify-center gap-2 rounded-[var(--radius-ctl)] border border-line px-2 text-sm"
-                  onClick={() => patch({ light: item.light, dark: item.dark, look: item.id === "tuong-lai" ? "future" : "classic" })}
+                  onClick={() => patch({ light: item.light, dark: item.dark })}
                 >
                   <span className="size-3 shrink-0 rounded-full border border-line" style={{ background: item.dark.accent }} aria-hidden="true" />
                   {item.name}

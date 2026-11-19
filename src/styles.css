@@ -2881,3 +2881,14 @@ html[data-look="future"]:not([data-fx="off"]) .rail-parent {
   text-transform: uppercase;
   color: var(--color-muted);
 }
+
+/* B7: giá trị trên các chip chọn nhanh tô màu nhấn (trộn 70% với màu chữ để đọc rõ cả khi khách chọn màu nhấn tối). */
+html[data-look="future"]:not([data-fx="off"]) [data-chip-select] select,
+html[data-look="future"]:not([data-fx="off"]) [data-chip-value] {
+  color: color-mix(in srgb, var(--color-accent) 70%, var(--color-fg));
+}
+
+html[data-look="future"]:not([data-fx="off"]) [data-chip-select] option {
+  color: var(--color-fg);
+  background-color: var(--color-card);
+}

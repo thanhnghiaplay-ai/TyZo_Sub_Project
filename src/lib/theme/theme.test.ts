@@ -259,13 +259,14 @@ test("densityScript: đọc tyzo_density, đặt data-density và --density, có
   assert.match(densityScript("compact"), /"compact"/);
 });
 
-test("look: mặc định Cổ điển, nhận Tương lai, giá trị lạ về Cổ điển, qua parseTheme hai lần vẫn giữ", () => {
-  assert.equal(THEME_DEFAULT.look, "classic");
-  assert.equal(parseTheme({}).look, "classic");
-  assert.equal(parseTheme({ look: "future" }).look, "future");
-  assert.equal(parseTheme({ look: "neon" }).look, "classic");
-  assert.equal(parseTheme({ look: 3 }).look, "classic");
-  assert.equal(parseTheme(parseTheme({ look: "future" })).look, "future");
+test("look: mặc định Tương lai (màu vẫn là Vàng), nhận Cổ điển, giá trị lạ về mặc định, qua parseTheme hai lần vẫn giữ", () => {
+  assert.equal(THEME_DEFAULT.look, "future");
+  assert.deepEqual(THEME_DEFAULT.dark, PALETTES.find((p) => p.id === "vang")!.dark);
+  assert.equal(parseTheme({}).look, "future");
+  assert.equal(parseTheme({ look: "classic" }).look, "classic");
+  assert.equal(parseTheme({ look: "neon" }).look, "future");
+  assert.equal(parseTheme({ look: 3 }).look, "future");
+  assert.equal(parseTheme(parseTheme({ look: "classic" })).look, "classic");
 });
 
 test("look: styles.css có lớp Tương lai, nhánh giảm trong suốt, bộ màu Tương lai vẫn đọc được", () => {

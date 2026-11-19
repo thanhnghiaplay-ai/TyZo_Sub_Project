@@ -26,7 +26,7 @@ export const CHANGELOG: ReleaseNote[] = [
     points: [
       "Nút Màu ở đầu trang cho bạn tự chọn màu nhấn bằng thanh kéo hoặc mã màu, được nhớ trên máy.",
       "Số dư Token dịch nằm ngay đầu trang chủ; trên máy tính, ô thả video cạnh bảng Bản dịch.",
-      "Giao diện Tương lai (nếu được bật): nền lưới mờ, thẻ kính mờ. Có nút tắt hiệu ứng ở đầu trang.",
+      "Giao diện Tương lai (lưới mờ, kính mờ, vòng thả video sáng) là mặc định; có nút tắt hiệu ứng.",
     ],
   },
   {

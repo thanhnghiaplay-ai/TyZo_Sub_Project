@@ -11,7 +11,7 @@ const CHIP = "min-tap inline-flex items-center gap-1.5 rounded-full border borde
 
 function ChipSelect({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
   return (
-    <label className={CHIP + " relative min-w-0"}>
+    <label data-chip-select className={CHIP + " relative min-w-0"}>
       <span className="shrink-0 text-muted">{label}</span>
       <select
         aria-label={label}
@@ -246,13 +246,13 @@ export function HomeHero({
           {payMode && (
             <button type="button" className={CHIP} aria-pressed={payMode === "turn"} onClick={onTogglePay} title="Đổi giữa key của bạn và trả theo lượt">
               <Icon slot="nav.wallet" className="size-4" />
-              <span className="font-medium">{payMode === "turn" ? "Trả theo lượt" : "Key của tôi"}</span>
+              <span data-chip-value className="font-medium">{payMode === "turn" ? "Trả theo lượt" : "Key của tôi"}</span>
             </button>
           )}
           {payMode !== "turn" && (
             <button type="button" className={CHIP} onClick={() => onOpenTool("key")}>
               <Icon slot="ui.key" className="size-4" />
-              <span className={keyReady ? "font-medium" : "font-medium text-warning"}>{keyReady ? "Đã có key" : "Nhập key"}</span>
+              <span {...(keyReady ? { "data-chip-value": "" } : {})} className={keyReady ? "font-medium" : "font-medium text-warning"}>{keyReady ? "Đã có key" : "Nhập key"}</span>
             </button>
           )}
           <button type="button" className={CHIP} onClick={() => onOpenTool("phim")}>

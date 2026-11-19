@@ -249,7 +249,7 @@ export type Theme = {
   mtShow: MtShow;
   /** Đặc giữ nút đặc. Viền và mờ chỉ đổi nút đang tô màu nhấn. */
   button: ButtonStyle;
-  /** Cổ điển (mặc định) hoặc Tương lai. Chỉ thêm lớp hiệu ứng, không đổi màu hay chữ. */
+  /** Tương lai (mặc định) hoặc Cổ điển. Chỉ thêm lớp hiệu ứng, không đổi màu hay chữ. */
   look: Look;
   density: Density;
   iconWeight: IconWeight;
@@ -328,7 +328,7 @@ export const THEME_DEFAULT: Theme = {
   mtFx: "on",
   mtShow: "robot",
   button: "solid",
-  look: "classic",
+  look: "future",
   density: "cozy",
   iconWeight: "duotone",
   iconGroups: { nav: "same", act: "same", st: "same", ui: "same" },

@@ -20,3 +20,12 @@ test("Tương lai B6: mọi luật mới tôn trọng nút tắt, chữ chuyển
   assert.match(block, /@supports \(background-clip: text\)/);
   assert.match(block, /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,160}animation: none/);
 });
+
+test("Tương lai B7: chip có dấu giá trị, CSS tô màu nhưng không đổi màu chữ trong danh sách chọn", () => {
+  assert.match(hero, /data-chip-select/);
+  assert.match(hero, /data-chip-value/);
+  const block = css.slice(css.indexOf("B7:"));
+  assert.ok(block.includes('html[data-look="future"]:not([data-fx="off"]) [data-chip-select] select'));
+  assert.ok(block.includes('html[data-look="future"]:not([data-fx="off"]) [data-chip-value]'));
+  assert.match(block, /\[data-chip-select\] option \{[\s\S]{0,120}color: var\(--color-fg\)/);
+});
