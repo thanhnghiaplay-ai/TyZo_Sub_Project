@@ -52,4 +52,26 @@ describe("xác nhận thủ công đơn nạp", () => {
     assert.equal(await confirmOrderWith(sql, "khong-co", "a", "a@x"), null);
     assert.equal((await sql`select 1 from room_accounts`).length, 0);
   });
+  it("đơn đã hết hạn vẫn xác nhận tay được (khách chuyển trễ)", async () => {
+    await sql`update pay_orders set status = 'expired' where id = 'o1'`;
+    const done = await confirmOrderWith(sql, "o1", "chu1", "chu@tyzo.test");
+    assert.deepEqual(done, { userId: "k", amount: 50000, code: "TZ123" });
+    assert.equal((await sql<{ status: string }>`select status from pay_orders where id = 'o1'`)[0].status, "paid");
+    assert.equal(await confirmOrderWith(sql, "o1", "chu1", "chu@tyzo.test"), null);
+  });
+
+  it("đơn Token đã hết hạn xác nhận tay thì ghi gói Token, chỉ một lần", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, detail) values ('o2', 'k', 'sepay', 30000, 'TZ456', 'expired', 'token', '{"tokens":1000,"days":30}')`;
+    const done = await confirmOrderWith(sql, "o2", "chu1", "chu@tyzo.test");
+    assert.equal(done?.code, "TZ456");
+    assert.equal((await sql`select 1 from token_grants where id = 'o2'`).length, 1);
+    assert.equal(await confirmOrderWith(sql, "o2", "chu1", "chu@tyzo.test"), null);
+    assert.equal((await sql`select 1 from token_grants where id = 'o2'`).length, 1);
+  });
+
+  it("đơn đã hủy dù hết hạn hay không đều không xác nhận được", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, detail) values ('o3', 'k', 'sepay', 30000, 'TZ789', 'cancelled', 'token', '{"tokens":1000,"days":30}')`;
+    assert.equal(await confirmOrderWith(sql, "o3", "a", "a@x"), null);
+    assert.equal((await sql`select 1 from token_grants where id = 'o3'`).length, 0);
+  });
 });

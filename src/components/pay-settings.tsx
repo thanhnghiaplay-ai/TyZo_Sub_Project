@@ -76,7 +76,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
             <p className="text-muted">
               {statusLabel(row.status, row.purpose)} · {row.createdAt ? new Date(row.createdAt).toLocaleString("vi-VN") : ""}
             </p>
-            {(row.status === "pending" || row.status === "claimed") && (
+            {(row.status === "pending" || row.status === "claimed" || (row.status === "expired" && owner)) && (
               <div className="mt-2 flex flex-wrap gap-2">
                 {owner && (
                 <button
@@ -97,6 +97,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
                   Xác nhận đã nhận tiền
                 </button>
                 )}
+                {row.status !== "expired" && (
                 <button
                   type="button"
                   disabled={busy}
@@ -105,6 +106,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
                 >
                   Từ chối đơn
                 </button>
+                )}
               </div>
             )}
           </li>

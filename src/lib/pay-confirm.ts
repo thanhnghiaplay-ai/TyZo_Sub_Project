@@ -3,7 +3,7 @@ import { saleKind, settleDirect } from "./pay-flow.ts";
 
 /**
  * Xác nhận thủ công một đơn: đơn mua token hoặc thuê phòng thì giao đúng món.
- * Đơn nạp cũ vẫn cộng ví. Một câu lệnh, hai người bấm cùng lúc chỉ một lần.
+ * Đơn nạp cũ vẫn cộng ví. Đơn đã hết hạn vẫn xác nhận được (khách chuyển trễ, Chủ đã tự kiểm tiền về); đơn đã hủy thì không. Một câu lệnh, hai người bấm cùng lúc chỉ một lần.
  */
 export async function confirmOrderWith(sql: Sql, orderId: string, actorId: string, actorEmail: string) {
   const found = await sql<{ id: string; user_id: string; amount: number; code: string; purpose: string; ref: string; detail: string; provider: string }>`
@@ -13,7 +13,7 @@ export async function confirmOrderWith(sql: Sql, orderId: string, actorId: strin
   if (order) {
     const kind = saleKind(order);
     if (kind === "token" || kind === "plan") {
-      const done = await settleDirect(sql, { ...order, purpose: kind }, { provider: "tay", ref: `thu-${orderId}` });
+      const done = await settleDirect(sql, { ...order, purpose: kind }, { provider: "tay", ref: `thu-${orderId}` }, true);
       if (!done) return null;
       try {
         await sql`
@@ -32,7 +32,7 @@ export async function confirmOrderWith(sql: Sql, orderId: string, actorId: strin
   const rows = await sql<{ user_id: string; amount: number; code: string }>`
     with paid as (
       update pay_orders set status = 'paid', provider_ref = 'thu-cong'
-      where id = ${orderId} and status in ('pending', 'claimed')
+      where id = ${orderId} and status in ('pending', 'claimed', 'expired')
       returning user_id, amount, code
     ),
     acc as (

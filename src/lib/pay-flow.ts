@@ -35,7 +35,7 @@ export function saleKind(order: { purpose: string; detail: string }): "token" | 
 }
 
 /** Đơn mua thẳng: đánh dấu đã trả rồi cộng token hoặc mở hạn. Không cộng số dư. */
-export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider: string; ref: string }): Promise<CreditResult> {
+export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider: string; ref: string }, late = false): Promise<CreditResult> {
   if (order.purpose === "token") {
     const spec = tokenSpec(order.detail);
     if (!spec) return null;
@@ -49,7 +49,7 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
       paid as (
         update pay_orders
         set status = 'paid', provider_ref = ${mark.ref}, purpose = 'token'
-        where id = ${order.id} and status in ('pending', 'claimed') and purpose in ('token', 'nap') and exists (select 1 from seen)
+        where id = ${order.id} and (status in ('pending', 'claimed') or (${late}::boolean and status = 'expired')) and purpose in ('token', 'nap') and exists (select 1 from seen)
         returning user_id
       ),
       issued as (
@@ -80,7 +80,7 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
       paid as (
         update pay_orders
         set status = 'paid', provider_ref = ${mark.ref}
-        where id = ${order.id} and status in ('pending', 'claimed') and purpose = 'plan' and exists (select 1 from seen)
+        where id = ${order.id} and (status in ('pending', 'claimed') or (${late}::boolean and status = 'expired')) and purpose = 'plan' and exists (select 1 from seen)
         returning user_id
       ),
       acct as (

@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — MỤC 9: CHỦ XÁC NHẬN TAY ĐƠN ĐÃ HẾT HẠN — đọc mục này đầu tiên
+Chủ chốt: khách chuyển khoản trễ (đơn quá 15 phút, trạng thái `expired`) thì Chủ vẫn xác nhận tay được sau khi tự kiểm tiền đã về. Tự động (webhook, `pay-match`) KHÔNG đổi, vẫn chỉ nhận đơn chờ. Đơn `cancelled` (từ chối) và `void` không xác nhận được. Quản lý (không phải Chủ) vẫn không thấy nút.
+ĐÃ SỬA: `settleDirect` (`src/lib/pay-flow.ts`) thêm tham số `late` (mặc định false), chỉ `confirmOrderWith` (`src/lib/pay-confirm.ts`) truyền true; nhánh đơn nạp cũ trong `pay-confirm.ts` nhận thêm `expired`. `src/components/pay-settings.tsx`: đơn «Hết hạn» hiện nút «Xác nhận đã nhận tiền» cho Chủ, không hiện «Từ chối đơn». Test mới 3 ca ở `src/lib/pay-confirm.test.ts` (nạp hết hạn, Token hết hạn chỉ giao một lần, đơn đã hủy không giao). Không đổi điều khoản (điều khoản không nói hạn đơn; đây là quyền của Chủ, không hứa với khách), không nâng APP_VERSION.
+CHƯA LÀM/CÒN MỞ: chưa thử trên máy chủ thật với tiền thật. Việc rà nhận diện và dịch xem mục ngay bên dưới (đã xong).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — RÀ SOÁT NHẬN DIỆN VÀ DỊCH, làm từng bước — đọc mục này đầu tiên
 NGUỒN VIỆC: Chủ yêu cầu «tra cứu, kiểm tra, rà soát quy trình nhận diện và dịch», sửa lỗi hoặc làm theo đề xuất. Danh sách gốc là bảng lỗi trong `BAO_CAO_KIEM_TRA.md` (mục 10, 11, 12, 13 còn «chưa sửa» trên giấy). Kiểm lại code hiện tại: mục 12 ĐÃ sửa từ trước (`src/lib/sub/http-deadline.ts`, hạn body 120 giây, có test).
 CÁC BƯỚC (đánh dấu khi xong):

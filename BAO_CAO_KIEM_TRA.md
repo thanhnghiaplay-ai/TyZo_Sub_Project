@@ -19,7 +19,7 @@ Ngày 11/11/2026 04:58 (giờ VN). Người sửa: Claude, theo lệnh «Claude 
 | 6 | Logic | Trung bình | `use-pipeline.ts` | Máy đang dịch câu thì người dùng sửa tay, bản dịch máy ghi đè câu đã sửa | Đã sửa v3.10.9 |
 | 7 | Hệ thống | Trung bình | `idle-sign-out.tsx` | 30 phút không chạm màn hình là đăng xuất, kể cả đang xem phim hoặc đang dịch | Đã sửa v3.10.9 |
 | 8 | Hệ thống | Thấp | `pay-match.ts`, `pay-store.ts` | Mã đơn nạp chỉ lấy 6 ký tự hex đầu (khoảng 16 triệu mã), trùng thì tạo đơn lỗi | Đã sửa v3.10.9, có test |
-| 9 | Tiền | Trung bình | `pay-flow.ts`, `pay-confirm.ts` | Đơn hết hạn sau 15 phút. Khách chuyển khoản trễ thì không được cộng, Chủ xác nhận tay cũng không được vì chỉ nhận đơn đang chờ | Cần Chủ quyết |
+| 9 | Tiền | Trung bình | `pay-flow.ts`, `pay-confirm.ts` | Đơn hết hạn sau 15 phút. Khách chuyển khoản trễ thì không được cộng, Chủ xác nhận tay cũng không được vì chỉ nhận đơn đang chờ | Đã xử lý 19/11/2026: Chủ xác nhận tay được đơn hết hạn (tự động giữ nguyên) |
 | 10 | Logic | Thấp | `mp4.ts` | Giải mã âm thanh quá 25 giây thì coi đoạn là lỗi, có thể thiếu câu | Đã xử lý trong code (rà 19/11/2026): giải mã lỗi thì thử lại 1 lần, vẫn lỗi thì đánh dấu đoạn «fail» và vòng `retryDecodeFails` thử lại có ngân sách |
 | 11 | Tốc độ | Thấp | `use-pipeline.ts` | Kết quả nhận dạng chỉ hiện theo thứ tự đoạn, một đoạn chậm thì cả danh sách đứng rồi nhảy | Giữ nguyên có chủ ý (rà 19/11/2026): `ingestAsrPart` cần xử lý đúng thứ tự để lọc câu trùng ở vùng chồng giữa hai đoạn; chậm tối đa bằng số luồng song song |
 | 12 | Hệ thống | Thấp | `groq.ts` | Giới hạn 120 giây chỉ tính tới khi có đầu phản hồi, đọc nội dung trả về chưa có giới hạn | Đã sửa (`http-deadline.ts`, hạn body 120 giây, có test) |
