@@ -1,0 +1,423 @@
+[
+  {
+    "source": "강호",
+    "target": "giang hồ",
+    "reviewed": false
+  },
+  {
+    "source": "무림",
+    "target": "võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "무림맹주",
+    "target": "minh chủ võ lâm",
+    "reviewed": false
+  },
+  {
+    "source": "맹주",
+    "target": "minh chủ",
+    "reviewed": false
+  },
+  {
+    "source": "장문인",
+    "target": "chưởng môn",
+    "reviewed": false
+  },
+  {
+    "source": "문파",
+    "target": "môn phái",
+    "reviewed": false
+  },
+  {
+    "source": "방주",
+    "target": "bang chủ",
+    "reviewed": false
+  },
+  {
+    "source": "장로",
+    "target": "trưởng lão",
+    "reviewed": false
+  },
+  {
+    "source": "호법",
+    "target": "hộ pháp",
+    "reviewed": false
+  },
+  {
+    "source": "영패",
+    "target": "lệnh bài",
+    "reviewed": false
+  },
+  {
+    "source": "소협",
+    "target": "thiếu hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "대협",
+    "target": "đại hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "여협",
+    "target": "nữ hiệp",
+    "reviewed": false
+  },
+  {
+    "source": "협객",
+    "target": "hiệp khách",
+    "reviewed": false
+  },
+  {
+    "source": "검객",
+    "target": "kiếm khách",
+    "reviewed": false
+  },
+  {
+    "source": "선배님",
+    "target": "tiền bối",
+    "note": "dùng khi người nói xưng thấp hơn",
+    "reviewed": false
+  },
+  {
+    "source": "후배",
+    "target": "vãn bối",
+    "reviewed": false
+  },
+  {
+    "source": "재하",
+    "target": "tại hạ",
+    "reviewed": false
+  },
+  {
+    "source": "소생",
+    "target": "tiểu sinh",
+    "reviewed": false
+  },
+  {
+    "source": "귀하",
+    "target": "các hạ",
+    "reviewed": false
+  },
+  {
+    "source": "노부",
+    "target": "lão phu",
+    "reviewed": false
+  },
+  {
+    "source": "본좌",
+    "target": "bổn tọa",
+    "reviewed": false
+  },
+  {
+    "source": "공자",
+    "target": "công tử",
+    "reviewed": false
+  },
+  {
+    "source": "소저",
+    "target": "tiểu thư",
+    "reviewed": false
+  },
+  {
+    "source": "낭자",
+    "target": "cô nương",
+    "reviewed": false
+  },
+  {
+    "source": "사부",
+    "target": "sư phụ",
+    "reviewed": false
+  },
+  {
+    "source": "사형",
+    "target": "sư huynh",
+    "reviewed": false
+  },
+  {
+    "source": "사제",
+    "target": "sư đệ",
+    "reviewed": false
+  },
+  {
+    "source": "사저",
+    "target": "sư tỷ",
+    "reviewed": false
+  },
+  {
+    "source": "사매",
+    "target": "sư muội",
+    "reviewed": false
+  },
+  {
+    "source": "제자",
+    "target": "đệ tử",
+    "reviewed": false
+  },
+  {
+    "source": "내공",
+    "target": "nội công",
+    "reviewed": false
+  },
+  {
+    "source": "외공",
+    "target": "ngoại công",
+    "reviewed": false
+  },
+  {
+    "source": "경공",
+    "target": "khinh công",
+    "reviewed": false
+  },
+  {
+    "source": "무공",
+    "target": "võ công",
+    "reviewed": false
+  },
+  {
+    "source": "검법",
+    "target": "kiếm pháp",
+    "reviewed": false
+  },
+  {
+    "source": "장법",
+    "target": "chưởng pháp",
+    "reviewed": false
+  },
+  {
+    "source": "권법",
+    "target": "quyền pháp",
+    "reviewed": false
+  },
+  {
+    "source": "비급",
+    "target": "bí kíp",
+    "reviewed": false
+  },
+  {
+    "source": "검기",
+    "target": "kiếm khí",
+    "reviewed": false
+  },
+  {
+    "source": "검강",
+    "target": "kiếm cương",
+    "reviewed": false
+  },
+  {
+    "source": "진기",
+    "target": "chân khí",
+    "reviewed": false
+  },
+  {
+    "source": "단전",
+    "target": "đan điền",
+    "reviewed": false
+  },
+  {
+    "source": "혈도",
+    "target": "huyệt đạo",
+    "reviewed": false
+  },
+  {
+    "source": "점혈",
+    "target": "điểm huyệt",
+    "reviewed": false
+  },
+  {
+    "source": "내상",
+    "target": "nội thương",
+    "reviewed": false
+  },
+  {
+    "source": "주화입마",
+    "target": "tẩu hỏa nhập ma",
+    "reviewed": false
+  },
+  {
+    "source": "환골탈태",
+    "target": "hoán cốt đoạt thai",
+    "reviewed": false
+  },
+  {
+    "source": "폐관수련",
+    "target": "bế quan tu luyện",
+    "reviewed": false
+  },
+  {
+    "source": "영약",
+    "target": "linh dược",
+    "reviewed": false
+  },
+  {
+    "source": "암기",
+    "target": "ám khí",
+    "reviewed": false
+  },
+  {
+    "source": "독공",
+    "target": "độc công",
+    "reviewed": false
+  },
+  {
+    "source": "만독불침",
+    "target": "vạn độc bất xâm",
+    "reviewed": false
+  },
+  {
+    "source": "고수",
+    "target": "cao thủ",
+    "reviewed": false
+  },
+  {
+    "source": "절정고수",
+    "target": "tuyệt đỉnh cao thủ",
+    "reviewed": false
+  },
+  {
+    "source": "천하제일",
+    "target": "thiên hạ đệ nhất",
+    "reviewed": false
+  },
+  {
+    "source": "비무",
+    "target": "tỷ võ",
+    "reviewed": false
+  },
+  {
+    "source": "낭인",
+    "target": "lãng nhân",
+    "reviewed": false
+  },
+  {
+    "source": "은거",
+    "target": "ẩn cư",
+    "reviewed": false
+  },
+  {
+    "source": "보검",
+    "target": "bảo kiếm",
+    "reviewed": false
+  },
+  {
+    "source": "신검",
+    "target": "thần kiếm",
+    "reviewed": false
+  },
+  {
+    "source": "표국",
+    "target": "tiêu cục",
+    "reviewed": false
+  },
+  {
+    "source": "표사",
+    "target": "tiêu sư",
+    "reviewed": false
+  },
+  {
+    "source": "녹림",
+    "target": "lục lâm",
+    "reviewed": false
+  },
+  {
+    "source": "산적",
+    "target": "sơn tặc",
+    "reviewed": false
+  },
+  {
+    "source": "마교",
+    "target": "ma giáo",
+    "reviewed": false
+  },
+  {
+    "source": "천마",
+    "target": "thiên ma",
+    "reviewed": false
+  },
+  {
+    "source": "혈교",
+    "target": "huyết giáo",
+    "reviewed": false
+  },
+  {
+    "source": "사파",
+    "target": "tà phái",
+    "reviewed": false
+  },
+  {
+    "source": "정파",
+    "target": "chính phái",
+    "reviewed": false
+  },
+  {
+    "source": "흑도",
+    "target": "hắc đạo",
+    "reviewed": false
+  },
+  {
+    "source": "백도",
+    "target": "bạch đạo",
+    "reviewed": false
+  },
+  {
+    "source": "세가",
+    "target": "thế gia",
+    "reviewed": false
+  },
+  {
+    "source": "남궁세가",
+    "target": "Nam Cung thế gia",
+    "reviewed": false
+  },
+  {
+    "source": "소림사",
+    "target": "Thiếu Lâm tự",
+    "reviewed": false
+  },
+  {
+    "source": "무당파",
+    "target": "Võ Đang phái",
+    "reviewed": false
+  },
+  {
+    "source": "화산파",
+    "target": "Hoa Sơn phái",
+    "reviewed": false
+  },
+  {
+    "source": "개방",
+    "target": "Cái Bang",
+    "reviewed": false
+  },
+  {
+    "source": "아미파",
+    "target": "Nga Mi phái",
+    "reviewed": false
+  },
+  {
+    "source": "곤륜파",
+    "target": "Côn Lôn phái",
+    "reviewed": false
+  },
+  {
+    "source": "당문",
+    "target": "Đường Môn",
+    "reviewed": false
+  },
+  {
+    "source": "객잔",
+    "target": "khách điếm",
+    "reviewed": false
+  },
+  {
+    "source": "점소이",
+    "target": "tiểu nhị",
+    "reviewed": false
+  },
+  {
+    "source": "은자",
+    "target": "lượng bạc",
+    "reviewed": false
+  }
+]

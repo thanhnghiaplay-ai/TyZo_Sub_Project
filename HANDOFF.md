@@ -1,3 +1,9 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3c-1 XONG: BẢN NHÁP KIẾM HIỆP TIẾNG HÀN (ko/wuxia) — đọc mục này đầu tiên
+Chủ ra lệnh «Tiếp tục với B1.3c» (coi như đã trả lời câu hỏi «hỏi Chủ trước»). Thêm `data/glossaries/ko/wuxia.json` (84 mục: 강호, 무림, 맹주, 장문인, 사부/사형/사제, 내공/경공, 주화입마, 표국, 마교/사파/정파, các môn phái 소림/무당/화산/개방...), MỌI mục `"reviewed": false`. Cặp `["ko", "wuxia"]` đã thêm vào mảng `drafts` ở `src/lib/sub/glossary.test.ts` (15 ca pass chạy trực tiếp bằng `node --experimental-strip-types --test`). Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem ở Admin (lọc «chưa duyệt»). Chú ý khi duyệt: 선배님 (tiền bối, có ghi chú), 소생 (tiểu sinh) và 재하 (tại hạ), 은자 (lượng bạc), cách phiên âm tên môn phái. Không nâng `APP_VERSION`.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B1.3c-2 = `ja/ngontinh` + `ko/ngontinh`; B1.3c-3 = `ja/xianxia` + `ko/xianxia`; rồi B1.4 = `softcore` (18+, HỎI CHỦ về mức nội dung trước khi soạn). Cách làm: file nháp `reviewed:false` (nguồn ≥ 2 ký tự, không trùng, ≥ 25 mục) + thêm cặp vào `drafts` ở test + ghi đầu HANDOFF.md + đẩy `work`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B1.3b XONG: BẢN NHÁP 5 THỂ LOẠI TIẾNG NHẬT + TIẾNG HÀN (ja, ko) — đọc mục này đầu tiên
 B1.3b-1 (ja) xem mục ngay bên dưới. B1.3b-2: thêm 5 file `data/glossaries/ko/{social,war,family,school,documentary}.json` (40 đến 57 mục mỗi file), MỌI mục `"reviewed": false`. Test `glossary.test.ts` nay quét 8 thể loại × zh/en và 5 thể loại × ja/ko (15 ca pass), typecheck sạch. Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem ở Admin (lọc «chưa duyệt» → Duyệt từng mục / cả bộ). Chú ý khi duyệt: các từ họ hàng (이모, 고모, 삼촌...), 빨갱이 (miệt thị, chỉ dùng khi phim dùng đúng nghĩa đó), 육이오/한국전쟁 và cấp bậc quân đội. Không nâng `APP_VERSION`.
 LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» từng bộ mới ở Admin.
