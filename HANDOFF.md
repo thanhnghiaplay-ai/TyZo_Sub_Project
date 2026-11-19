@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A3 ƯỚC GIÁ: PHẦN LÕI XONG — đọc mục này đầu tiên
+Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A3» có đủ chi tiết). Tóm tắt: file mới `src/lib/polish-estimate.ts` (`planPolish`, `quotePolish` ra Token dịch/đồng, `defaultPolishModel`, `polishConfirmText`), test mới `polish-estimate.test.ts` (16 ca). Thiếu giá thì `ready: false`, không cho chạy. Chưa có giao diện, chưa trừ gì, KHÔNG nâng `APP_VERSION`. typecheck, eslint 0 lỗi, `npm test` 198 + 1133 pass.
+CÒN MỞ (chuyển sang A5): khung chọn model trau chuốt trong giao diện; chưa có vai «trau chuốt» trong gói dịch (cần hỏi Chủ: dùng vai `review`/`translate` hay thêm vai `polish`); `makePolishCall` chưa trả `usage` để trừ Token đúng số thực.
+VIỆC TIẾP THEO: A4 (màn so sánh bản dịch / bản trau chuốt), xem `HANDOFF_NANG_CAP.md`.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A2 HÀM TRAU CHUỐT XONG (`polishAll`) — đọc mục này đầu tiên
 Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A2» có đủ chi tiết). Tóm tắt: file mới `src/lib/sub/polish.ts` (trau chuốt theo lô, giữ câu `edited`, từ chối/lỗi thì giữ bản cũ và đánh dấu đúng câu, lô lỗi không mất cả phim, lỗi nặng dừng có báo), `makePolishCall` ở `groq.ts` (gọi mạng, dùng lại `requestWithRetry`), test mới `polish.test.ts` (26 ca). Chưa nối vào giao diện nên KHÔNG nâng `APP_VERSION`, không đổi điều khoản. typecheck, eslint 0 lỗi, `npm test` 198 + 1117 pass.
 CHƯA LÀM/CÒN MỞ: chưa gọi model thật; chưa bắt được kiểu model «làm nhẹ» câu mà không từ chối (cần Chủ chạy phim mẫu 18+).

@@ -179,6 +179,27 @@ async function polishChunk(
   }
 }
 
+/** Chỉ số các câu sẽ được gửi: không `edited`, không dịch lỗi, có bản dịch. Dùng chung cho polishAll và ước giá. */
+export function sendableIndexes(items: PolishItem[]): number[] {
+  const out: number[] = [];
+  items.forEach((item, i) => {
+    if (item.edited || item.failed || !String(item.translation ?? "").trim()) return;
+    out.push(i);
+  });
+  return out;
+}
+
+/** Ngữ cảnh trước (tối đa 8 câu) và sau (tối đa 4 câu) cho một lô, lấy bản dịch hiện tại trong `current`. */
+export function batchContext(items: PolishItem[], current: string[], idx: number[]): { before: CtxLine[]; after: CtxLine[] } {
+  const first = idx[0];
+  const last = idx[idx.length - 1];
+  const before: CtxLine[] = [];
+  for (let i = Math.max(0, first - CTX_BEFORE); i < first; i++) before.push({ o: items[i].original, t: current[i] });
+  const after: CtxLine[] = [];
+  for (let i = last + 1; i < Math.min(items.length, last + 1 + CTX_AFTER); i++) after.push({ o: items[i].original, t: current[i] });
+  return { before, after };
+}
+
 export type PolishRun = {
   /** Cùng độ dài và thứ tự với `items`. Luôn có `text`: bản mới nếu `changed`, còn lại là bản cũ. */
   results: PolishResult[];
@@ -199,12 +220,10 @@ export async function polishAll(
   const size = Math.max(1, Math.floor(extra.batchSize ?? POLISH_BATCH));
   const out: Array<PolishResult | undefined> = new Array(items.length).fill(undefined);
   const current = items.map((item) => (item.translation ?? "") as string);
-  const sendable: number[] = [];
+  const sendable = sendableIndexes(items);
   items.forEach((item, i) => {
-    const text = current[i];
-    if (item.edited) out[i] = { text, status: "locked" };
-    else if (item.failed || !text.trim()) out[i] = { text, status: "skipped" };
-    else sendable.push(i);
+    if (item.edited) out[i] = { text: current[i], status: "locked" };
+    else if (item.failed || !current[i].trim()) out[i] = { text: current[i], status: "skipped" };
   });
   const total = sendable.length;
   let done = 0;
@@ -220,12 +239,7 @@ export async function polishAll(
     }
     const idx = sendable.slice(from, from + size);
     const chunk: Line[] = idx.map((i) => ({ i, o: items[i].original, t: current[i] }));
-    const first = idx[0];
-    const last = idx[idx.length - 1];
-    const before: CtxLine[] = [];
-    for (let i = Math.max(0, first - CTX_BEFORE); i < first; i++) before.push({ o: items[i].original, t: current[i] });
-    const after: CtxLine[] = [];
-    for (let i = last + 1; i < Math.min(items.length, last + 1 + CTX_AFTER); i++) after.push({ o: items[i].original, t: current[i] });
+    const { before, after } = batchContext(items, current, idx);
     try {
       await polishChunk(call, chunk, before, after, opts, out);
       strikes = 0;
