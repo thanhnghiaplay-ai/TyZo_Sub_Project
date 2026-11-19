@@ -50,6 +50,7 @@ import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
 import { ConfirmDialog } from "@/components/confirm-code";
 import { PickerSelect } from "@/components/picker-select";
+import { InfoTip } from "@/components/info-tip";
 import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
 import { tourSeen } from "@/components/tour-seen";
@@ -75,6 +76,8 @@ import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/as
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
+const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.";
+const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
 const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ Token dịch cho lượt chạy.";
 const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số Token dịch ước tính từ gói đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn.";
 
@@ -1036,9 +1039,11 @@ export function Studio() {
         </div>
         <section className="studio-cues grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-semibold">Bản dịch</h2>
+            <h2 className="flex items-center gap-2 font-semibold">
+              Bản dịch
+              <InfoTip label="Cách dùng bản dịch">Chạm một câu để tua. Nút Sửa để chỉnh ngay tại dòng và thêm thuật ngữ.</InfoTip>
+            </h2>
           </div>
-          <p className="text-sm text-muted">Chạm một câu để tua. Nút Sửa để chỉnh ngay tại dòng và thêm thuật ngữ.</p>
           <div className="studio-cue-scroll" data-tour="cues">
             {app.segs.length === 0 && <p className="py-6 text-sm text-muted">Chưa có phụ đề. Hãy chọn video và bấm Tải và dịch.</p>}
             {app.segs.map((seg, index) =>
@@ -1089,16 +1094,11 @@ export function Studio() {
                 Trả theo lượt
               </button>
             </div>
-            <p id="pay-mode-note" className="rounded-[var(--radius-ctl)] border border-line bg-card p-3 text-sm text-muted">
-              {payByRoom ? (
-                <>
-                  <strong className="text-fg">Đang chọn: Trả theo lượt.</strong> {TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.
-                </>
-              ) : (
-                <>
-                  <strong className="text-fg">Đang chọn: Key của tôi.</strong> {KEY_MODE_TIP}
-                </>
-              )}
+            <p id="pay-mode-note" className="flex items-center gap-2 rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
+              <strong className="text-fg">{payByRoom ? "Đang chọn: Trả theo lượt." : "Đang chọn: Key của tôi."}</strong>
+              <InfoTip label="Giải thích cách trả">
+                {payByRoom ? <>{TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.</> : KEY_MODE_TIP}
+              </InfoTip>
             </p>
             {payByRoom && (
               <TurnPackList
@@ -1206,8 +1206,9 @@ export function Studio() {
           }
           onPick={(id) => app.chooseVoice(id)}
         />
-        <p className="text-sm text-muted">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</p>
-        <details className="text-sm text-muted">
+        
+        <div className="flex items-start gap-2">
+          <details className="min-w-0 flex-1 text-sm text-muted">
           <summary className="cursor-pointer">Nhập mã model khác</summary>
           <div className="pt-2">
             <ModelPicker
@@ -1220,7 +1221,9 @@ export function Studio() {
             />
           </div>
         </details>
-        <Select label="Nhận dạng giọng" value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
+          <InfoTip label="Về chọn model">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</InfoTip>
+        </div>
+        <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || showRoomPrice) ? <>{(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
           {asrPick.map((row) => (
             <option key={row.id} value={row.id} disabled={row.disabled}>
               {row.name}
@@ -1235,36 +1238,29 @@ export function Studio() {
           ))}
         </Select>
         {linkAsrNote(app.asrModel) && <p className="text-sm text-muted">{linkAsrNote(app.asrModel)}</p>}
-        {(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow) && (
-          <p className="text-sm text-muted">Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.</p>
+                </>
         )}
-        </>
-        )}
-        {showRoomPrice && <p className="text-sm text-muted">Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.</p>}
-        <label className="flex min-tap items-center gap-2 text-sm">
+        <div className="flex items-center gap-2">
+          <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
           Chỉ gửi đoạn có tiếng người
         </label>
-        <p className="text-sm text-muted">
-          Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.
-        </p>
-        <label className="flex min-tap items-center gap-2 text-sm">
+          <InfoTip label="Giải thích: Chỉ gửi đoạn có tiếng người">Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.</InfoTip>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
           Kiểm tra ngôn ngữ từng đoạn
         </label>
-        <p className="text-sm text-muted">
-          Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.
-        </p>
-        <Select label="Số luồng nhận dạng" value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
+          <InfoTip label="Giải thích: Kiểm tra ngôn ngữ từng đoạn">Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.</InfoTip>
+        </div>
+        <Select label="Số luồng nhận dạng" tip="Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng." value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
           <option value="1">Ổn định · 1 luồng</option>
           <option value="3">Cân bằng · 3 luồng</option>
           <option value="4">Nhanh · 4 luồng</option>
           <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
           <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
         </Select>
-        {app.threads >= 6 && (
-          <p className="text-sm text-muted">6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.</p>
-        )}
       </section>
 
       <section id="tool-phim" role="region" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
@@ -1378,8 +1374,10 @@ export function Studio() {
           </details>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="font-semibold">Phân tích phim</h2>
-              <p className="text-sm text-muted">Bước riêng, trước khi dịch. Bảng nhân vật khóa tên, giới và cách xưng hô.</p>
+              <h2 className="flex items-center gap-2 font-semibold">
+                Phân tích phim
+                <InfoTip label="Giải thích phân tích phim">Bước riêng, trước khi dịch. Bảng nhân vật khóa tên, giới và cách xưng hô.</InfoTip>
+              </h2>
             </div>
             <button
               type="button"
@@ -1483,8 +1481,10 @@ export function Studio() {
       <section id="tool-voice" role="region" aria-labelledby="tool-tab-voice" hidden={toolTab !== "voice"} className="grid gap-3 p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="font-semibold">Thuyết minh bản dịch</h2>
-            <p className="text-sm text-muted">Giọng neural miễn phí đọc tự nhiên hơn. Lỗi mạng thì máy đọc bằng giọng có sẵn.</p>
+            <h2 className="flex items-center gap-2 font-semibold">
+              Thuyết minh bản dịch
+              <InfoTip label="Giải thích thuyết minh">Giọng neural miễn phí đọc tự nhiên hơn. Lỗi mạng thì máy đọc bằng giọng có sẵn.</InfoTip>
+            </h2>
           </div>
           <button
             type="button"
@@ -1592,13 +1592,13 @@ export function Studio() {
           onCommit={(lead) => patchNarration({ lead })}
         />
         <p className="text-sm text-muted">Kéo núm để chỉnh. Đúng lúc là đọc khi câu hiện. Trước là đọc sớm, sau là đọc muộn.</p>
-        <label className="flex min-tap items-center gap-2 text-sm">
+        <div className="flex items-center gap-2">
+          <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={narration.matchCast} onChange={(event) => patchNarration({ matchCast: event.target.checked })} />
           Đọc theo nhân vật, rồi theo cao độ
         </label>
-        <p className="text-sm text-muted">
-          Câu có tên hoặc tự xưng rõ trong bảng nhân vật thì dùng giới đó. Không chắc thì so cao độ trong video: nhóm thấp là nam, nhóm cao là nữ. Bấm Đổi giọng trên một câu để khóa nam hoặc nữ. Không đoán anh/em.
-        </p>
+          <InfoTip label="Giải thích: Đọc theo nhân vật">Câu có tên hoặc tự xưng rõ trong bảng nhân vật thì dùng giới đó. Không chắc thì so cao độ trong video: nhóm thấp là nam, nhóm cao là nữ. Bấm Đổi giọng trên một câu để khóa nam hoặc nữ. Không đoán anh/em.</InfoTip>
+        </div>
         <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={narration.duck} onChange={(event) => patchNarration({ duck: event.target.checked })} />
           Hạ tiếng phim khi đang đọc
@@ -1879,7 +1879,7 @@ function Choice({ on, onClick, title, text }: { on: boolean; onClick: () => void
   );
 }
 
-function Select({ label, value, onChange, children }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode }) {
+function Select({ label, value, onChange, children, tip }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode; tip?: ReactNode }) {
   return (
     <PickerSelect
       label={label}
@@ -1887,7 +1887,10 @@ function Select({ label, value, onChange, children }: { label: string; value: st
       onChange={onChange}
       trigger={(open, current) => (
         <div className="grid gap-1 text-sm text-muted">
-          {label}
+          <span className="flex items-center gap-2">
+            {label}
+            {tip ? <InfoTip label={"Giải thích: " + label}>{tip}</InfoTip> : null}
+          </span>
           <button type="button" aria-haspopup="dialog" className={FIELD + " flex items-center justify-between gap-2 text-left"} onClick={open}>
             <span className="min-w-0 truncate">{current}</span>
             <span aria-hidden="true" className="text-muted">▾</span>

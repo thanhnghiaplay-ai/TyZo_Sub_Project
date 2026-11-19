@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.12.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Bước 1 sắp xếp lại trang khách: thành phần dùng chung src/components/info-tip.tsx (nút (i), Popover Radix, chuột rê mở, điện thoại bấm mở). studio.tsx: Select có tham số tip; ghi chú giải thích của Bản dịch, Cách trả, Nhận dạng giọng, hai ô tick nhận dạng, Số luồng, Phân tích phim, Thuyết minh, Đọc theo nhân vật chuyển vào (i). Lỗi và cảnh báo vẫn hiện sẵn. Test info-tip.test.ts.",
+  },
+  {
     version: "5.11.0",
     time: "20/11/2026",
     area: "du-lieu",

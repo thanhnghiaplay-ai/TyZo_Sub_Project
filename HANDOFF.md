@@ -1,3 +1,13 @@
+## BÀN GIAO (20/11/2026, nhánh work) — SẮP XẾP LẠI TRANG KHÁCH, BƯỚC 1/5 XONG: NÚT (i) (v5.12.0) — đọc mục này đầu tiên
+KẾ HOẠCH 5 BƯỚC (Chủ đã duyệt, làm lần lượt, test + đẩy `work` sau mỗi bước, không hỏi lại): mục tiêu trang khách đơn giản nhưng đủ tính năng; ghi chú gom vào (i); gom nhóm hợp lý. Bản đồ chức năng đã chốt:
+- Phim (màn chính): chọn video/link, Nhận diện ngôn ngữ, Dịch sang, Thể loại, nút Tải và dịch dính đáy, chip «Trả bằng». Gập «Tùy chọn thêm»: Âm thanh riêng, file lớn/MKV/AC3, Phân tích phim, Yêu cầu thêm.
+- Ngữ cảnh (gộp Nhân vật + Thuật ngữ + Ghi chú phim). Kiểm tra (Sửa, Trau chuốt, Chẩn đoán, Xuất). Thuyết minh.
+- Cài đặt dịch (Menu, ngoài nút vàng): Cách trả + key; gập «Nâng cao»: model dịch, model nhận dạng, số luồng, mã model khác, ô tick.
+- (i) CHỈ cho chữ giải thích; lỗi, cảnh báo, giá sắp trừ, trạng thái vẫn hiện sẵn.
+BƯỚC 1 (xong): `src/components/info-tip.tsx` (Popover Radix; chuột rê mở, bấm trên điện thoại; bấm ra ngoài/Esc đóng; vùng chạm 44px). `studio.tsx`: `Select` nhận `tip`; ghi chú của Bản dịch, Cách trả, Nhận dạng giọng (+giá phòng), hai ô tick nhận dạng, Số luồng, Phân tích phim, Thuyết minh, Đọc theo nhân vật chuyển vào (i). Chưa chuyển (còn hiện sẵn, có chủ ý hoặc để bước sau): `linkAsrNote`, ghi chú trạng thái Aura/Orpheus, «Chưa có lời thoại…», ghi chú nhỏ ở Nhân vật/Thuyết minh/Thuật ngữ. Nâng 5.12.0, CHANGELOG, ADMIN_LOG; test mới `info-tip.test.ts` (3 ca, vào script `test`). typecheck sạch, eslint 0 lỗi, `npm test` 198 + 1216 pass.
+CHƯA KIỂM: chưa chụp thử giao diện (điện thoại, tối, giao diện Tương lai); popover trên màn cảm ứng thật.
+VIỆC TIẾP THEO: bước 2 = tách Cách trả và «Nâng cao» sang «Cài đặt dịch» (Menu), bỏ Cách trả khỏi nút vàng (`WHEEL_ORDER` ở `tool-wheel.ts`, `tool-wheel.test.ts`, `customer-menu.ts`); bước 3 = rút gọn tab Phim + dính nút Tải và dịch; bước 4 = gộp Nhân vật + Thuật ngữ thành Ngữ cảnh; bước 5 = bố cục máy tính bảng/máy tính + 3 mức cỡ chữ. Còn tồn: Trau chuốt đang ở đầu tab Kiểm tra.
+
 ## BÀN GIAO (20/11/2026, nhánh work) — 3 lỗi Chủ báo từ ảnh: mốc 0:00, thanh tiến trình 40%, trau chuốt dính trong Bản dịch
 1) **Mốc thời gian**: `segsFromAli` (ali-asr-to-segs.ts) chia mili-giây cho 1000 lần nữa dù `AliSentence` đã là GIÂY (sentencesFromTranscript đã đổi) nên mọi câu về ~0:00, SRT xếp chồng và Thuyết minh chỉ đọc được 1 câu. Đã bỏ phép chia; test mới `ali-asr-to-segs.test.ts` (3 ca, đã vào script `test`).
 2) **Thanh tiến trình**: chạy qua link (Alibaba) xong thì pha về `idle`, `computeStages` tính cắt/nhận dạng là chưa làm nên thanh tụt về 40%. Nay `idle` + không có đoạn cắt + còn câu = coi là chạy qua link, đủ 100% khi dịch xong và không còn câu lỗi. Test thêm 2 ca ở stage-progress.test.ts.
