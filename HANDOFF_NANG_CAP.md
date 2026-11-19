@@ -115,7 +115,7 @@ CHƯA LÀM: chụp thử bằng trình duyệt (điện thoại + máy tính); c
 - [x] C1 (xong 19/11/2026: phần thuần tách ra `src/lib/sub/analyze.ts` (`analyzeMessages`, `parseBible`), test `analyze.test.ts` 6 ca; `analyzeFilm` ở groq.ts chỉ còn gọi mạng, chưa có test gọi mạng vì `groq.ts` dùng alias `@/`). Test cho `analyzeFilm` bằng phản hồi giả (hiện chưa có test).
 - [x] C2 (xong 19/11/2026, v5.10.1). Nới `untranslated` (`src/lib/sub/text.ts`) để câu lặp như «okay okay» không bị đánh dấu chưa dịch oan; thêm test.
 - [x] C3 (xong 19/11/2026, v5.11.0). Ô «Yêu cầu thêm cho bản dịch» nối vào cuối prompt dịch (giọng văn, mức trang trọng), giới hạn độ dài.
-- [ ] C4. Thử so sánh có đo lường trên phim mẫu: có/không bước phân tích phim, có/không bước thay thuật ngữ bằng ký hiệu giữ chỗ (`protectTerms`); so lỗi và chi phí. Cần phim mẫu và key của Chủ.
+- [ ] C4 (Chủ hẹn test sau). Cách làm khi Chủ sẵn sàng: Chủ chạy một video tiếng Trung ngắn (video luyện nghe «Tiểu hòa thượng») trong app 3 lần: (a) tắt phân tích phim, (b) bật phân tích phim, (c) bật phân tích phim cộng thay thuật ngữ bằng ký hiệu giữ chỗ; xuất SRT và ghi số Token dịch mỗi lần, gửi lại để so số câu lỗi, xưng hô, chi phí. Hoặc mở `api.groq.com` trong cài đặt mạng của phiên Claude rồi đưa key tạm để chạy bằng script. Mẫu nhỏ nên chỉ tham khảo. Mô tả gốc: Thử so sánh có đo lường trên phim mẫu: có/không bước phân tích phim, có/không bước thay thuật ngữ bằng ký hiệu giữ chỗ (`protectTerms`); so lỗi và chi phí. Cần phim mẫu và key của Chủ.
 
 ## Việc đã xong trước file này (nhánh work)
 - Rà nhận diện và dịch: sửa chữ thiếu dấu câu lỗi nạp tiền (`pay-store.ts`); các mục 10, 11, 12 trong `BAO_CAO_KIEM_TRA.md` đã rà (10 và 12 đã xử lý, 11 giữ có chủ ý).
