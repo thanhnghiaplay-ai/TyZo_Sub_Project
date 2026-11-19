@@ -1,3 +1,8 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A5.3: GIỮ TOKEN CHO TRAU CHUỐT (MÁY CHỦ) XONG — đọc mục này đầu tiên
+Chi tiết ở `HANDOFF_NANG_CAP.md` (danh sách bước A5.x). Tóm tắt: `src/lib/polish-hold.ts` + `openPolishTicket` (`polish-room.ts`) giữ Token dịch trước; trừ thật theo usage đã có sẵn ở `/api/room-groq`; đóng phiếu bằng `closeRoomTicket`. Test mới `polish-hold.test.ts` (5 ca). Chưa hiện cho khách, không nâng `APP_VERSION`. typecheck, eslint, `npm test` 198 + 1169 pass.
+CHƯA KIỂM: chưa chạy `openPolishTicket` với CSDL thật (không có Postgres ở đây). Admin phải thêm model trau chuốt vào danh sách «cửa trả theo lượt» (`run_models`) thì khách key phòng mới dùng được.
+VIỆC TIẾP THEO: A5.4 (nút + hộp chọn model kèm giá + xác nhận + chạy + màn so sánh trong `studio.tsx`/`use-pipeline.ts`), rồi A5.5.
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A5.1-A5.2: ADMIN ĐẶT MODEL TRAU CHUỐT (CÓ / KHÔNG KIỂM DUYỆT) XONG — đọc mục này đầu tiên
 Chi tiết ở `HANDOFF_NANG_CAP.md` mục «KẾT QUẢ A5.1-A5.2». Tóm tắt: Admin (Cấu hình → Gói → «Model trau chuốt bản dịch») chọn model dịch Groq cho 2 danh sách: có kiểm duyệt (thể loại thường) và không kiểm duyệt (18+). Logic thuần `polish-models.ts` + test, máy chủ `polish-room.ts`. Chưa hiện cho khách, chưa trừ Token, không nâng `APP_VERSION`. typecheck, eslint, `npm test` 198 + 1164 pass.
 VIỆC TIẾP THEO: A5.3 (nút, hộp chọn model kèm giá Token, xác nhận, chạy, màn so sánh), rồi A5.4 (trừ Token thực), A5.5 (ghi trạng thái).
