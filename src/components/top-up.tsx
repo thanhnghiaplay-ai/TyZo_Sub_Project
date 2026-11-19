@@ -3,7 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { claimPayOrder, cancelMyPayOrder, createPayOrder, getPayDesk, getPayPublic, readPayOrder, syncCasso, type PayHistoryItem, type PayOrderView, type PayPublic } from "@/lib/pay-store";
 import { PAY_MINUTES } from "@/lib/pay-minutes";
 import { pushToast } from "@/components/toast";
-import { BrandMark } from "@/components/brand-mark";
+import { PayEnding } from "@/components/pay-ending";
 import { formatMoney, parseMoney, dong } from "@/lib/money-format";
 
 const QUICK = [10_000, 50_000, 100_000, 200_000, 500_000];
@@ -309,10 +309,11 @@ export function TopUp({ onPaid, compact = false, opened = false, onOpened }: { o
   );
 
   const success = ending && (
-    <div className="pay-thanks absolute inset-0 grid place-items-center gap-3 px-4 text-center">
-      <BrandMark title="TyZo Sub" />
-      <p className="pay-end-title font-semibold text-fg">{ending === "thanks" ? "Xin cảm ơn" : "Xin lỗi vì sự bất tiện này"}</p>
-      {ending === "thanks" && <p className="text-sm text-muted">Đã ghi nhận chuyển khoản</p>}
+    <div className="pay-thanks absolute inset-0 grid place-items-center px-4 text-center">
+      <PayEnding
+        kind={ending}
+        text={ending === "thanks" ? "Đã ghi nhận chuyển khoản" : "Đơn đã đóng. Hãy tạo mã mới nếu vẫn muốn nạp."}
+      />
     </div>
   );
 

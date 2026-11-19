@@ -1,7 +1,7 @@
 import { dong } from "@/lib/money-format";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { BrandMark } from "@/components/brand-mark";
+import { PayEnding } from "@/components/pay-ending";
 import { Icon } from "@/components/ui/icon";
 import { cancelMyPayOrder, claimPayOrder, readPayOrder, syncCasso, type PayOrderView } from "@/lib/pay-store";
 import { PAY_MINUTES } from "@/lib/pay-minutes";
@@ -156,17 +156,13 @@ export function PaySlip({ order, doneText, onDone, onClose }: { order: PayOrderV
           </p>
         </div>
         {ending && (
-          <div className="pay-thanks absolute inset-0 grid place-items-center gap-3 bg-card px-6 text-center">
-            <BrandMark title="TyZo Sub" />
-            <p className="pay-end-title pay-pop font-semibold text-fg">{ending === "thanks" ? "Xin cảm ơn" : "Xin lỗi vì sự bất tiện này"}</p>
-            <p className="text-sm text-muted">{ending === "thanks" ? doneText : "Đơn đã đóng. Hãy tạo mã mới nếu vẫn muốn mua."}</p>
-            <button
-              type="button"
-              className="min-tap rounded-full bg-accent px-5 text-sm font-semibold text-ink"
-              onClick={ending === "thanks" ? onDone : onClose}
-            >
-              {ending === "thanks" ? "Xong" : "Đóng"}
-            </button>
+          <div className="pay-thanks absolute inset-0 grid place-items-center bg-card px-6 text-center">
+            <PayEnding
+              kind={ending}
+              text={ending === "thanks" ? doneText : "Đơn đã đóng. Hãy tạo mã mới nếu vẫn muốn mua."}
+              actionLabel={ending === "thanks" ? "Xong" : "Đóng"}
+              onAction={ending === "thanks" ? onDone : onClose}
+            />
           </div>
         )}
       </div>

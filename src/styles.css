@@ -206,6 +206,199 @@ h4 {
   }
 }
 
+/* PAY-END: màn cảm ơn / xin lỗi sau khi thanh toán. Màu theo bộ màu của web; tắt khi data-fx="off" hoặc giảm chuyển động. */
+.pay-end {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  text-align: center;
+  --pay-end-tint: var(--color-accent);
+}
+
+.pay-end-sorry {
+  --pay-end-tint: var(--color-muted);
+}
+
+.pay-end-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 6.5rem;
+  height: 6.5rem;
+}
+
+.pay-end-glow {
+  position: absolute;
+  inset: -1.25rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pay-end-tint) 30%, transparent), transparent 68%);
+  animation: pay-end-glow 2.8s ease-in-out infinite;
+}
+
+.pay-end-badge {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  overflow: visible;
+  animation: pay-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.pay-end-disc {
+  fill: color-mix(in srgb, var(--pay-end-tint) 14%, var(--color-card));
+  stroke: color-mix(in srgb, var(--pay-end-tint) 45%, transparent);
+  stroke-width: 1.5;
+}
+
+.pay-end-orbit {
+  fill: none;
+  stroke: var(--pay-end-tint);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  animation: pay-end-draw 0.9s ease-out 0.15s both;
+}
+
+.pay-end-check,
+.pay-end-hourglass {
+  fill: none;
+  stroke: var(--pay-end-tint);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pay-end-check {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: pay-end-draw 0.5s ease-out 0.7s both;
+}
+
+.pay-end-hourglass {
+  stroke-width: 3;
+  animation: pay-thanks 0.6s ease 0.4s both;
+}
+
+.pay-end-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.38rem;
+  height: 0.38rem;
+  margin: -0.19rem;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  --a: calc(var(--i) * 25.7deg);
+  --d: calc(3.3rem + (var(--i) % 3) * 0.5rem);
+  opacity: 0;
+  animation: pay-end-spark 1.4s ease-out calc(0.65s + (var(--i) % 4) * 0.05s) both;
+}
+
+.pay-end-spark:nth-child(3n + 2) {
+  background: var(--color-success);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-success) 70%, transparent);
+}
+
+.pay-end-brand {
+  opacity: 0.85;
+}
+
+.pay-end-head {
+  max-width: 100%;
+  font-size: clamp(1.05rem, 5.4cqi, 1.4rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-fg);
+  animation: pay-rise 0.5s ease 0.55s both;
+}
+
+@supports (background-clip: text) {
+  .pay-end-thanks .pay-end-head {
+    background-image: linear-gradient(90deg, var(--color-fg) 20%, var(--color-accent));
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.pay-end-text {
+  max-width: 24rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  animation: pay-rise 0.5s ease 0.7s both;
+}
+
+.pay-end-action {
+  margin-top: 0.25rem;
+  background-image: linear-gradient(135deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 78%, var(--color-ink)));
+  box-shadow: 0 8px 26px -8px color-mix(in srgb, var(--color-accent) 60%, transparent);
+  animation: pay-rise 0.5s ease 0.85s both;
+}
+
+.pay-end-sorry .pay-end-action {
+  background-image: none;
+  box-shadow: none;
+}
+
+@keyframes pay-end-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pay-end-glow {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes pay-end-spark {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(0) scale(0.3);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scale(1);
+  }
+}
+
+html[data-fx="off"] .pay-end-glow,
+html[data-fx="off"] .pay-end-spark {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pay-end-glow,
+  .pay-end-badge,
+  .pay-end-orbit,
+  .pay-end-check,
+  .pay-end-hourglass,
+  .pay-end-head,
+  .pay-end-text,
+  .pay-end-action {
+    animation: none;
+  }
+  .pay-end-spark {
+    display: none;
+  }
+}
+
 /* Bước 6.4 — một màn hình, video không bị cuộn mất */
 .studio-tool-card {
   border: var(--line-w, 1px) solid var(--color-line);
