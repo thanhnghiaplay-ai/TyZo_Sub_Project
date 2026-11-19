@@ -149,7 +149,7 @@ describe("Bước 7.1 — không chồng khung", () => {
     const stageRules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).filter((rule) => /studio|stage|player|video|sheet/.test(rule.split("{")[0]));
     assert.ok(stageRules.length > 0);
     // Ngoại lệ duy nhất: tab công cụ 80% (`.studio-tools.is-open`) và thanh đầu của nó nổi lên phía trên thanh dưới.
-    const floatingTab = (rule: string) => /\.studio-tools\.is-open(\s+\.studio-sheet-bar)?\s*$/.test(rule.split("{")[0]);
+    const floatingTab = (rule: string) => /\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?\s*$/.test(rule.split("{")[0]);
     for (const rule of stageRules) {
       if (floatingTab(rule)) continue;
       assert.equal(rule.includes("z-index:"), false, rule);
@@ -255,3 +255,16 @@ describe("Bước 7.4 — số thuật ngữ nổi, nút X nằm trong khung", (
 
 
 
+
+describe("Bố cục mới B4 — Tải và dịch trong tab Phim, chip Trả bằng", () => {
+  it("mở lên tab Phim, nút chạy dính đáy tab, chip Cách trả ở đầu tab Phim", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(source, /useState<ToolId>\("phim"\)/);
+    const phimTab = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="tool-cast"'));
+    assert.match(phimTab, /studio-pay-chip/);
+    assert.match(phimTab, /Trả bằng:/);
+    assert.ok(phimTab.indexOf("studio-pay-chip") < phimTab.indexOf("Nhận diện ngôn ngữ"));
+    assert.match(phimTab, /studio-run-bar[\s\S]{0,200}data-tour="run"/);
+    assert.match(mediaBlock(css, SHEET_PORTRAIT), /\.studio-run-bar\s*\{[^}]*position:\s*sticky[^}]*bottom:\s*0/);
+  });
+});

@@ -518,7 +518,7 @@ export function Studio() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [sub, setSub] = useState<SubStyle>(SUB_DEF);
   const [current, setCurrent] = useState(-1);
-  const [toolTab, setToolTab] = useState<ToolId>("key");
+  const [toolTab, setToolTab] = useState<ToolId>("phim");
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [payByRoom, setPayByRoom] = useState(false);
   const [turnLocked, setTurnLocked] = useState(false);
@@ -1256,6 +1256,12 @@ export function Studio() {
       </section>
 
       <section id="tool-phim" role="region" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
+        {runDoor.ready && runDoor.open && (
+          <button type="button" className="studio-pay-chip" onClick={() => openTool("key")} aria-label={"Cách trả đang chọn: " + (payByRoom ? "Trả theo lượt" : "Key của tôi") + ". Bấm để đổi."}>
+            <span className="text-muted">Trả bằng:</span> <strong>{payByRoom ? "Trả theo lượt" : "Key của tôi"}</strong>
+            <span aria-hidden="true">›</span>
+          </button>
+        )}
         <div className="grid gap-3 sm:grid-cols-2">
           <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
             {SRC_LANGS.map(([value, label]) => (
@@ -1323,7 +1329,7 @@ export function Studio() {
           </p>
         </details>
 
-        <div className="grid gap-2">
+        <div className="studio-run-bar grid gap-2">
           <button
             type="button"
             data-tour="run"
