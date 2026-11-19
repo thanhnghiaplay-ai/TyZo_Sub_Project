@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { arpu, conversionRate, costPerMinute, lineGeometry, parseCategory, pathOf, safeDiv, sortCategories } from "./money-extra.ts";
+import { arpu, conversionRate, costPerMinute, lineGeometry, bucketTotals, spanLabel, parseCategory, pathOf, safeDiv, sortCategories } from "./money-extra.ts";
 
 describe("phân loại chi phí", () => {
   it("loại lạ hay thiếu về khac", () => {
@@ -70,5 +70,19 @@ describe("đường biểu đồ", () => {
   });
   it("đường vẽ bắt đầu bằng M", () => {
     assert.equal(pathOf([{ x: 1, y: 2 }, { x: 3, y: 4 }]), "M1.0 2.0 L3.0 4.0");
+  });
+});
+
+describe("nhãn khoảng thời gian và số hôm nay", () => {
+  it("mỗi tab nói đúng cửa sổ máy chủ cộng", () => {
+    assert.match(spanLabel("day"), /14 ngày/);
+    assert.match(spanLabel("week"), /8 tuần/);
+    assert.match(spanLabel("month"), /12 tháng/);
+    assert.match(spanLabel("year"), /5 năm/);
+  });
+  it("số của một mốc; mốc không có thì 0 (hôm nay chưa có tiền không bị lẫn số hôm qua)", () => {
+    const points = [{ bucket: "2026-11-17", revenue: 12832, cost: 0 }];
+    assert.deepEqual(bucketTotals(points, "2026-11-17"), { revenue: 12832, cost: 0 });
+    assert.deepEqual(bucketTotals(points, "2026-11-19"), { revenue: 0, cost: 0 });
   });
 });

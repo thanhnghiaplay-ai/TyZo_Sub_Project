@@ -87,3 +87,16 @@ export function lineGeometry(
 export function pathOf(points: ChartSeries): string {
   return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
 }
+
+export type SpanId = "day" | "week" | "month" | "year";
+
+/** Cửa sổ thật mà máy chủ cộng cho mỗi tab (khớp WINDOW trong money-extra-data.ts và getMoney). */
+export function spanLabel(span: SpanId): string {
+  return span === "year" ? "5 năm gần nhất, chia theo năm" : span === "month" ? "12 tháng gần nhất, chia theo tháng" : span === "week" ? "8 tuần gần nhất, chia theo tuần" : "14 ngày gần nhất, chia theo ngày";
+}
+
+/** Số thu và chi của đúng một mốc (ví dụ hôm nay). Không có mốc đó thì 0. */
+export function bucketTotals(points: Array<{ bucket: string; revenue: number; cost: number }>, bucket: string): { revenue: number; cost: number } {
+  const hit = points.find((point) => point.bucket === bucket);
+  return { revenue: hit?.revenue ?? 0, cost: hit?.cost ?? 0 };
+}

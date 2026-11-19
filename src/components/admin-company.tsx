@@ -5,7 +5,7 @@ import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney, dong } from "@/lib/money-format";
-import { COST_CATEGORIES, categoryLabel } from "@/lib/money-extra";
+import { COST_CATEGORIES, bucketTotals, categoryLabel, spanLabel } from "@/lib/money-extra";
 import { RevenueExtra } from "@/components/revenue-extra";
 
 function vnDay(now = new Date()) {
@@ -139,6 +139,10 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
           </button>
         ))}
       </div>
+      <p className="text-xs text-muted">Các số bên dưới cộng {spanLabel(span)}.</p>
+      {span === "day" && ready && (
+        <p className="text-xs text-muted">Hôm nay ({vnDay()}): thu {dong(bucketTotals(points, vnDay()).revenue)} · chi {dong(bucketTotals(points, vnDay()).cost)}</p>
+      )}
       {fault && <p className="text-sm text-danger">{fault}</p>}
       <div className="grid grid-cols-3 gap-2">
         <article className="rounded-[var(--radius-ctl)] border border-line px-2 py-2"><p className="text-xs text-muted">Doanh thu</p><p className="text-sm font-semibold">{dong(revenue)}</p></article>

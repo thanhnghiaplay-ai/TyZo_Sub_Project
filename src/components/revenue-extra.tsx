@@ -32,7 +32,7 @@ function LineChart({ points }: { points: MoneyPoint[] }) {
       </svg>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
         <span>
-          <span style={{ color: "var(--color-success)" }}>●</span> Thu (tiền nạp) · <span style={{ color: "var(--color-error)" }}>●</span> Chi (ghi tay)
+          <span style={{ color: "var(--color-success)" }}>●</span> Thu (tiền chuyển khoản) · <span style={{ color: "var(--color-error)" }}>●</span> Chi (ghi tay)
         </span>
         <span>
           {sorted[0].bucket} → {sorted[sorted.length - 1].bucket} · mức cao nhất {dong(geo.max)}
