@@ -29,6 +29,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.6.0",
     time: "18/11/2026",
     area: "khac",
+    text: "Giao diện Tương lai, bước B6 (Chủ hỏi vì sao bản thật chưa giống bản mô phỏng): thêm các nét còn thiếu, chỉ khi bật «Tương lai» ở Admin → Giao diện và chưa bấm tắt hiệu ứng: tiêu đề «Dịch phụ đề video» chữ chuyển màu theo màu nhấn, vòng tròn phát sáng có vòng nét đứt quay chậm quanh biểu tượng tải lên ở ô thả video, nút «Tải và dịch» chuyển màu có hào quang, nhãn nhóm menu chữ nhỏ viết hoa cách chữ. Màu đều suy từ màu nhấn nên khách tự chọn RGB vẫn đẹp. Vòng dừng quay khi máy đặt giảm chuyển động. Giao diện Cổ điển và bản đã tắt hiệu ứng không đổi. Không đổi chức năng, giá hay điều khoản.",
+  },
+  {
+    version: "5.6.0",
+    time: "18/11/2026",
+    area: "khac",
     text: "Phần B giao diện trang khách xong. B1: khách tự chọn màu nhấn (khóa tyzo_accent trong máy, thắng màu Admin). B2: bộ màu thứ chín «Tương lai» ở Admin → Giao diện → Màu sắc. B3: trường Theme.look (Cổ điển hoặc Tương lai, data-look trên html): nền lưới mờ, thẻ kính mờ, hào quang theo màu nhấn, thanh dưới nổi kính mờ; bấm bộ Tương lai tự đặt look, có hàng «Hiệu ứng toàn trang» để đặt riêng. B4: khách tắt được hiệu ứng bằng nút ở đầu trang (khóa tyzo_fx = off, script đầu trang đặt data-fx=off trước khi vẽ), và hệ điều hành bật giảm trong suốt thì thẻ về nền đặc. Không đổi chức năng, giá, quyền, điều khoản. Đã chụp bằng Chromium ở 393, 720, 1280 px: không tràn ngang; chưa xem trang thật có đăng nhập.",
   },
   {

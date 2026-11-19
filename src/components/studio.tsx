@@ -875,7 +875,7 @@ export function Studio() {
             <NoticeBell />
           </div>
         </div>
-        <h1 className="text-xl font-semibold">Dịch phụ đề video</h1>
+        <h1 data-hero-title className="text-xl font-semibold">Dịch phụ đề video</h1>
         <AccountStrip payByRoom={payByRoom} />
       </header>
 

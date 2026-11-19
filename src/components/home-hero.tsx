@@ -157,7 +157,9 @@ export function HomeHero({
               <Icon slot="ui.video" className="size-12 text-accent" />
             )
           ) : (
-            <Icon slot="act.upload" className="size-12 text-accent" />
+            <span data-drop-ring className="grid place-items-center">
+              <Icon slot="act.upload" className="size-12 text-accent" />
+            </span>
           )}
           {file ? (
             <>

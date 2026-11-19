@@ -2827,3 +2827,57 @@ html[data-look="future"]:not([data-fx="off"]) .rail-link:hover {
     backdrop-filter: none;
   }
 }
+
+/* B6: nét đặc trưng của bản mô phỏng Chủ đã duyệt: tiêu đề chữ chuyển màu, vòng phát sáng ở ô thả video,
+ * nút Tải và dịch chuyển màu có hào quang, nhãn nhóm menu chữ nhỏ viết hoa. Màu đều suy từ --color-accent
+ * (khách tự chọn RGB cũng đẹp) và --color-ink (chữ trên nút luôn đủ tương phản). */
+@supports (background-clip: text) {
+  html[data-look="future"]:not([data-fx="off"]) [data-hero-title] {
+    background-image: linear-gradient(90deg, var(--color-fg) 15%, var(--color-accent));
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+html[data-look="future"]:not([data-fx="off"]) [data-drop-ring] {
+  position: relative;
+  width: 5.75rem;
+  height: 5.75rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 70%);
+  box-shadow: 0 0 30px -4px color-mix(in srgb, var(--color-accent) 40%, transparent), inset 0 0 22px -4px color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) [data-drop-ring]::after {
+  content: "";
+  position: absolute;
+  inset: -0.55rem;
+  border-radius: 9999px;
+  border: 1px dashed color-mix(in srgb, var(--color-accent) 45%, transparent);
+  animation: tyzo-ring-spin 18s linear infinite;
+}
+
+@keyframes tyzo-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-look="future"]:not([data-fx="off"]) [data-drop-ring]::after {
+    animation: none;
+  }
+}
+
+html[data-look="future"]:not([data-fx="off"]) [data-home-start]:not(:disabled) {
+  background-image: linear-gradient(135deg, var(--color-accent), color-mix(in srgb, var(--color-accent) 78%, var(--color-ink)));
+  box-shadow: 0 8px 30px -6px color-mix(in srgb, var(--color-accent) 55%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent);
+}
+
+html[data-look="future"]:not([data-fx="off"]) .rail-parent {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
