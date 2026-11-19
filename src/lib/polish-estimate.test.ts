@@ -136,4 +136,10 @@ describe("polishConfirmText", () => {
     assert.match(t.text, /chưa có giá/);
     assert.ok(!/Token dịch\. Số trừ/.test(t.text));
   });
+
+  it("key riêng của khách: không hứa trừ Token dịch", () => {
+    const t = polishConfirmText({ plan, quote, modelName: "GPT-OSS 120B", skippedEdited: 0, ownKey: true });
+    assert.match(t.text, /key Groq của bạn/);
+    assert.ok(!/Ước tính khoảng/.test(t.text));
+  });
 });

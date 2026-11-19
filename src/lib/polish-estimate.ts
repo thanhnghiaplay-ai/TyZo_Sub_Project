@@ -130,15 +130,17 @@ export function defaultPolishModel(input: {
 }
 
 /** Chữ cho hộp xác nhận (dùng `askConfirm`, KHÔNG dùng `confirm()` của trình duyệt). */
-export function polishConfirmText(input: { plan: PolishPlan; quote: PolishQuote; modelName: string; skippedEdited: number }): {
+export function polishConfirmText(input: { plan: PolishPlan; quote: PolishQuote; modelName: string; skippedEdited: number; ownKey?: boolean }): {
   title: string;
   text: string;
   confirmLabel: string;
 } {
-  const { plan, quote, modelName, skippedEdited } = input;
+  const { plan, quote, modelName, skippedEdited, ownKey } = input;
   const lines = [
     `Gửi ${plan.sendable.toLocaleString("vi-VN")} câu cho ${modelName} để trau chuốt.`,
-    quote.ready && quote.tokens != null
+    ownKey
+      ? "Dùng key Groq của bạn: Groq tính tiền cho bạn, phòng không trừ Token dịch."
+      : quote.ready && quote.tokens != null
       ? `Ước tính khoảng ${formatGiay(quote.tokens)}. Số trừ thật tính theo lượng dùng thật, có thể thấp hơn.`
       : (quote.reason ?? "Chưa ước được chi phí."),
     "Kết quả hiện cạnh bản cũ, bạn chọn câu nào dùng. Bản cũ không bị ghi đè.",

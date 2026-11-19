@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { checkPolishModels, parsePolishModels, type PolishModels } from "@/lib/polish-models";
+import { validPolishTokens } from "@/lib/polish-hold";
 
 /**
  * Danh sách model trau chuốt Chủ đã đặt. Ai đăng nhập cũng đọc được (khách cần để chọn), chỉ Chủ lưu được.
@@ -53,7 +54,7 @@ export const openPolishTicket = createServerFn({ method: "POST" })
     return { model, genre: String(input.genre || "").trim().slice(0, 40), inn: input.inn, out: input.out };
   })
   .handler(async ({ context, data }): Promise<PolishTicketOpen> => {
-    const { validPolishTokens, polishHold } = await import("@/lib/polish-hold");
+    const { polishHold } = await import("@/lib/polish-hold");
     const tokens = validPolishTokens(data.inn, data.out);
     if (!tokens) throw new Error("Số lượng cần trau chuốt không đúng.");
     const { randomBytes } = await import("node:crypto");
@@ -95,4 +96,51 @@ export const openPolishTicket = createServerFn({ method: "POST" })
     });
     if ("error" in opened) throw new Error(`Chưa đủ Token dịch. Lần này cần giữ ${formatGiay(hold)}. Hãy mua Token dịch ở Tài khoản.`);
     return { id, held: hold, balance: await giayBalance(sql, context.userId) };
+  });
+
+export type PolishChoiceView = {
+  id: string;
+  name: string;
+  ready: boolean;
+  reason: string | null;
+  /** Token dịch ước cho cả lần trau chuốt này. null khi chưa ước được. */
+  tokens: number | null;
+  /** Model này có trong cửa trả theo lượt (key phòng) không. */
+  inRoom: boolean;
+};
+export type PolishQuoteView = { rows: PolishChoiceView[]; note: string };
+
+/** Giá ước từng model Chủ đã mở cho thể loại này, bằng Token dịch, theo số token ước của lần trau chuốt hiện tại. */
+export const quotePolishChoices = createServerFn({ method: "POST" })
+  .validator((input: { genre: string; sendable: number; batches: number; inn: number; out: number }) => {
+    const tokens = validPolishTokens(input?.inn, input?.out);
+    if (!tokens) throw new Error("Số lượng cần trau chuốt không đúng.");
+    const sendable = Math.max(0, Math.min(100000, Math.floor(Number(input.sendable) || 0)));
+    const batches = Math.max(0, Math.min(100000, Math.floor(Number(input.batches) || 0)));
+    return { genre: String(input.genre || "").trim().slice(0, 40), sendable, batches, inn: tokens.inn, out: tokens.out };
+  })
+  .handler(async ({ data }): Promise<PolishQuoteView> => {
+    const { polishChoices, polishIdsFor, polishNoModelText } = await import("@/lib/polish-models");
+    const { getSql } = await import("@/lib/db");
+    const { parseModelList } = await import("@/lib/run-desk");
+    const { loadPriceBook } = await import("@/lib/run-board.server");
+    const sql = await getSql();
+    const models = parsePolishModels((await sql<{ value: string }>`select value from room_settings where key = 'polish_models'`)[0]?.value);
+    const ids = polishIdsFor(models, data.genre) ?? [];
+    if (!ids.length) return { rows: [], note: polishNoModelText(models, data.genre) };
+    const book = (await loadPriceBook(sql)) ?? undefined;
+    const offered = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'run_models'`)[0]?.value);
+    const plan = { sendable: data.sendable, batches: data.batches, inn: data.inn, out: data.out };
+    const choices = polishChoices({ ids, plan, chatBook: book, groqBook: book });
+    return {
+      rows: choices.map((choice) => ({
+        id: choice.id,
+        name: choice.name,
+        ready: choice.quote.ready,
+        reason: choice.quote.reason,
+        tokens: choice.quote.tokens,
+        inRoom: Boolean(offered?.includes(choice.id)),
+      })),
+      note: "",
+    };
   });
