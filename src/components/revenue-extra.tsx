@@ -86,7 +86,7 @@ export function RevenueExtra({ span, points }: { span: Span; points: MoneyPoint[
       {extra && (
         <>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Stat title="ARPU (tiền nạp mỗi khách nạp)" value={extra.arpu === null ? "—" : dong(extra.arpu)} hint={`${extra.payers} khách đã nạp trong kỳ`} />
+            <Stat title="ARPU (tiền thu mỗi khách trả tiền)" value={extra.arpu === null ? "—" : dong(extra.arpu)} hint={`${extra.payers} khách đã trả tiền trong kỳ`} />
             <Stat
               title="Dùng thử → mua"
               value={extra.conversion === null ? "—" : `${Math.round(extra.conversion * 1000) / 10}%`}
@@ -115,7 +115,7 @@ export function RevenueExtra({ span, points }: { span: Span; points: MoneyPoint[
             </ul>
           </div>
           <p className="text-xs text-muted">
-            ARPU chỉ tính khách có chuyển khoản trong kỳ. Tỷ lệ dùng thử → mua tính trên mọi khách đã dùng hết lượt thử, vì phòng không ghi ngày dùng thử. Giá vốn mỗi phút lấy từ các lượt đã trừ; lượt cũ chưa có giá vốn thật thì tính theo số ước tính. Tất cả là số tổng, không có tên tệp hay chữ phụ đề.
+            ARPU chỉ tính khách có chuyển khoản trong kỳ (mua Token dịch hoặc thuê phòng). Tỷ lệ dùng thử → mua tính trên mọi khách đã dùng hết lượt thử, vì phòng không ghi ngày dùng thử. Giá vốn mỗi phút lấy từ các lượt đã trừ, gồm cả lượt trừ Token dịch (quy theo giá gốc Turbo hiện hành); lượt cũ chưa có giá vốn thật thì tính theo số ước tính. Tất cả là số tổng, không có tên tệp hay chữ phụ đề.
           </p>
         </>
       )}

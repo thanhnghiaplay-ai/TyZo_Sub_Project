@@ -9,6 +9,12 @@ export type AdminNote = {
 export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.6.1",
+    time: "ngày 19/11/2026",
+    area: "khac",
+    text: "Sửa logic trang Doanh thu (Admin), 4 bước, theo yêu cầu Chủ. 1) Lời lỗ tính theo tiền thật: tiền chuyển khoản vào − giá vốn − hoa hồng − chi phí ghi tay (money-profit.ts). Trước đây lời lỗ chỉ cộng phần tiêu số dư ví cũ nên bỏ sót tiền khách trả thẳng bằng QR từ v5.0.0 (thu 12.832 mà lỗ −18.843); ghi chú cũ «Lời lỗ vẫn không cộng tiền nạp» hết đúng. 2) Giá vốn của lượt trừ Token dịch trước đây không vào sổ (phiếu Token lưu số Token, mọi truy vấn lọc unit vnd); nay quy ra đồng bằng Token × giá gốc Turbo hiện hành, vào giá vốn, lời lỗ và giá vốn mỗi phút; thiếu giá Turbo thì báo đỏ và hiện «—». 3) Mỗi tab ghi rõ cộng 14 ngày, 8 tuần, 12 tháng hay 5 năm; tab Ngày có dòng số hôm nay. 4) Rà ARPU, dùng thử → mua, Tổng quan: nhất quán, chỉ đổi chữ. Giá vốn Token là số quy theo giá hiện hành, không phải giá lúc chạy. Chưa đối chiếu với cơ sở dữ liệu thật.",
+  },
+  {
+    version: "5.6.1",
     time: "23:40 ngày 18/11/2026",
     area: "khac",
     text: "Dọn giao diện Cấu hình của Chủ, 5 bước. 1) Ô model của gói chỉ hiện model hợp việc theo luật pack-fit (cùng luật Dựng gói tự động); model đã lưu mà không hợp thì giữ, ghi «không hợp việc này»; Alibaba ở Thuyết minh chưa có giọng thì để trống. 2) Danh sách model chỉ tên ngắn, mã dài một dòng nhỏ dưới ô. 3) Danh sách gói thu gọn, bấm mới sửa, xóa hỏi lại. 4) Giá mỗi nhà một khối cùng kiểu, Lấy lại theo nhà (Groq, Alibaba, Deepgram), Deepgram tự cập nhật nằm trong khối, một nút lưu số đô la. 5) Trang con «Gói và giá» tách thành «Giá» (hạn mức, giá từng nhà, giá thuê phòng chỉ xem) và «Gói» (Token dịch, gói dịch). Không đổi dữ liệu lưu, quyền hay giá bán; khách không thấy khác; không nâng số phiên bản khách.",
