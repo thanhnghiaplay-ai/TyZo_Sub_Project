@@ -714,13 +714,13 @@ h4 {
   }
 }
 
-/* A. TALL, từ 1024px: lưới hai cột trên, công cụ ở dưới. */
+/* A. TALL, từ 1024px: video và bản dịch xếp dọc bên trái, cột công cụ bên phải. */
 @media (min-width: 1024px) and (min-height: 721px) {
   .studio-stage {
     --stage-h: calc(100 * var(--vh) - var(--chrome));
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    grid-template-rows: minmax(0, 1fr) clamp(8rem, 32%, 18rem);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    grid-template-rows: minmax(0, 1.4fr) minmax(8rem, 1fr);
     min-height: 24rem;
   }
 
@@ -736,18 +736,18 @@ h4 {
   }
 
   .studio-video .aspect-video {
-    width: min(100%, calc((var(--stage-h) * 0.68 - 4.5rem) * 16 / 9));
+    width: min(100%, calc((var(--stage-h) * 0.5 - 2rem) * 16 / 9));
   }
 
   .studio-cues {
-    grid-column: 2;
-    grid-row: 1;
+    grid-column: 1;
+    grid-row: 2;
     min-height: 0;
   }
 
   .studio-tools {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    grid-column: 2;
+    grid-row: 1 / -1;
     flex: none;
     min-height: 0;
     max-height: none;

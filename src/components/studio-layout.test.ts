@@ -280,3 +280,12 @@ describe("Bố cục mới B5a — Ví mở cùng kiểu tab 80%", () => {
     assert.match(portrait, /\.studio-wallet-tab\s*\{[^}]*position:\s*fixed[^}]*calc\(80 \* var\(--vh\)\)/);
   });
 });
+
+describe("Bố cục mới B5c — màn lớn có cột công cụ bên phải", () => {
+  it("từ 1024px: video và bản dịch bên trái, công cụ chiếm cột phải", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    const block = mediaBlock(css, "(min-width: 1024px) and (min-height: 721px)");
+    assert.match(block, /\.studio-cues\s*\{[^}]*grid-column:\s*1[^}]*grid-row:\s*2/);
+    assert.match(block, /\.studio-tools\s*\{[^}]*grid-column:\s*2[^}]*grid-row:\s*1 \/ -1/);
+  });
+});
