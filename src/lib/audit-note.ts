@@ -1,6 +1,7 @@
 import type { RunDesk } from "./run-desk.ts";
 import type { RentShow } from "./rent-show-rule.ts";
 import { PROVIDER_IDS } from "./sub/provider.ts";
+import { POLISH_POOLS, POLISH_POOL_LABEL, type PolishModels } from "./polish-models.ts";
 
 /** Ghi chú audit dễ đọc: nói rõ cái gì đổi, từ gì sang gì. Không chứa key hay mật khẩu. */
 
@@ -69,6 +70,21 @@ export function describeRentShow(before: RentShow | null, after: RentShow): stri
     if (closed.length) parts.push(`đóng ${house}: ${closed.join(", ")}`);
   }
   if (!before && !parts.length) parts.push(`lưu danh sách lần đầu (${PROVIDER_IDS.map((id) => `${id} ${after[id].length}`).join(", ")})`);
+  return joinNote(parts);
+}
+
+/** Đổi danh sách model trau chuốt (có kiểm duyệt / không kiểm duyệt). */
+export function describePolishModels(before: PolishModels | null, after: PolishModels): string {
+  const parts: string[] = [];
+  for (const pool of POLISH_POOLS) {
+    const was = new Set(before?.[pool] ?? []);
+    const now = new Set(after[pool]);
+    const added = [...now].filter((id) => !was.has(id));
+    const removed = [...was].filter((id) => !now.has(id));
+    if (added.length) parts.push(`${POLISH_POOL_LABEL[pool]}: thêm ${added.join(", ")}`);
+    if (removed.length) parts.push(`${POLISH_POOL_LABEL[pool]}: bỏ ${removed.join(", ")}`);
+  }
+  if (!before && !parts.length) parts.push("lưu danh sách lần đầu (trống)");
   return joinNote(parts);
 }
 

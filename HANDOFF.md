@@ -1,3 +1,7 @@
+## BÀN GIAO (19/11/2026, nhánh work) — A5.1-A5.2: ADMIN ĐẶT MODEL TRAU CHUỐT (CÓ / KHÔNG KIỂM DUYỆT) XONG — đọc mục này đầu tiên
+Chi tiết ở `HANDOFF_NANG_CAP.md` mục «KẾT QUẢ A5.1-A5.2». Tóm tắt: Admin (Cấu hình → Gói → «Model trau chuốt bản dịch») chọn model dịch Groq cho 2 danh sách: có kiểm duyệt (thể loại thường) và không kiểm duyệt (18+). Logic thuần `polish-models.ts` + test, máy chủ `polish-room.ts`. Chưa hiện cho khách, chưa trừ Token, không nâng `APP_VERSION`. typecheck, eslint, `npm test` 198 + 1164 pass.
+VIỆC TIẾP THEO: A5.3 (nút, hộp chọn model kèm giá Token, xác nhận, chạy, màn so sánh), rồi A5.4 (trừ Token thực), A5.5 (ghi trạng thái).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — A4 MÀN SO SÁNH BẢN DỊCH / BẢN TRAU CHUỐT XONG (chưa gắn vào trang) — đọc mục này đầu tiên
 Làm theo `HANDOFF_NANG_CAP.md` (mục «KẾT QUẢ A4» có đủ chi tiết). Tóm tắt: `src/lib/polish-review.ts` (chấp nhận từng câu / tất cả / quay lại bản cũ / hoàn tác, câu sửa tay và câu xung đột không bị đè), `src/components/polish-review-panel.tsx` (màn so sánh, theme), test mới `polish-review.test.ts` (15 ca). Chưa gắn vào trang, KHÔNG nâng `APP_VERSION`. typecheck, eslint 0 lỗi, `npm test` 198 + 1148 pass.
 CÒN MỞ: chưa chụp thử giao diện trên trình duyệt.

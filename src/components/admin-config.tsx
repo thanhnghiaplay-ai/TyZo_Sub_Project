@@ -5,6 +5,7 @@ import { GiayPackBoard } from "@/components/giay-pack-board";
 import { LiveShowBoard } from "@/components/live-show-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { PaySettings } from "@/components/pay-settings";
+import { PolishModelBoard } from "@/components/polish-model-board";
 import { R2Board } from "@/components/r2-board";
 import { ProviderKeyBoards } from "@/components/provider-key-board";
 import { RoomPlansView } from "@/components/room-plans-view";
@@ -59,6 +60,9 @@ export function ConfigTab() {
         <GiayPackBoard />
         <Fold title="Gói dịch" hint="Mỗi việc chọn một nhà và một model">
           <ServicePackBoard />
+        </Fold>
+        <Fold title="Model trau chuốt bản dịch" hint="Có kiểm duyệt cho thể loại thường, không kiểm duyệt cho 18+">
+          <PolishModelBoard />
         </Fold>
       </Page>
       <Page id="thue-phong" current={page}>

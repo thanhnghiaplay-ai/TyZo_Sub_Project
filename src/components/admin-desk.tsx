@@ -724,6 +724,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "gia-deepgram": "Đổi giá Deepgram",
   "mo-thue": "Đổi danh sách model cho thuê",
   "mo-live": "Đổi danh sách model dịch trực tiếp",
+  "mo-trau-chuot": "Đổi danh sách model trau chuốt",
   "goi-dich": "Sửa gói dịch",
   "them-cong-tac": "Thêm cộng tác",
   "go-cong-tac": "Gỡ cộng tác",
