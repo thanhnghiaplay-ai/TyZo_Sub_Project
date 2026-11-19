@@ -1,0 +1,277 @@
+[
+  {
+    "source": "재벌",
+    "target": "tài phiệt",
+    "reviewed": false
+  },
+  {
+    "source": "재벌 2세",
+    "target": "thiếu gia tài phiệt",
+    "reviewed": false
+  },
+  {
+    "source": "회장님",
+    "target": "chủ tịch",
+    "reviewed": false
+  },
+  {
+    "source": "사장님",
+    "target": "tổng giám đốc",
+    "note": "trong phim tình cảm hào môn có thể dịch «tổng tài»",
+    "reviewed": false
+  },
+  {
+    "source": "비서",
+    "target": "thư ký",
+    "reviewed": false
+  },
+  {
+    "source": "도련님",
+    "target": "cậu chủ",
+    "reviewed": false
+  },
+  {
+    "source": "아가씨",
+    "target": "tiểu thư",
+    "note": "còn có nghĩa «cô ơi/cô gái» tùy ngữ cảnh",
+    "reviewed": false
+  },
+  {
+    "source": "약혼자",
+    "target": "vị hôn phu/vị hôn thê",
+    "note": "chọn theo giới tính người được nhắc",
+    "reviewed": false
+  },
+  {
+    "source": "약혼식",
+    "target": "lễ đính hôn",
+    "reviewed": false
+  },
+  {
+    "source": "약혼",
+    "target": "đính hôn",
+    "reviewed": false
+  },
+  {
+    "source": "파혼",
+    "target": "hủy hôn",
+    "reviewed": false
+  },
+  {
+    "source": "정략결혼",
+    "target": "hôn nhân sắp đặt vì lợi ích",
+    "reviewed": false
+  },
+  {
+    "source": "계약결혼",
+    "target": "hôn nhân hợp đồng",
+    "reviewed": false
+  },
+  {
+    "source": "위장결혼",
+    "target": "hôn nhân giả",
+    "reviewed": false
+  },
+  {
+    "source": "청혼",
+    "target": "cầu hôn",
+    "reviewed": false
+  },
+  {
+    "source": "프러포즈",
+    "target": "cầu hôn",
+    "reviewed": false
+  },
+  {
+    "source": "결혼반지",
+    "target": "nhẫn cưới",
+    "reviewed": false
+  },
+  {
+    "source": "신혼여행",
+    "target": "tuần trăng mật",
+    "reviewed": false
+  },
+  {
+    "source": "신혼",
+    "target": "tân hôn",
+    "reviewed": false
+  },
+  {
+    "source": "전남편",
+    "target": "chồng cũ",
+    "reviewed": false
+  },
+  {
+    "source": "전처",
+    "target": "vợ cũ",
+    "reviewed": false
+  },
+  {
+    "source": "전남친",
+    "target": "bạn trai cũ",
+    "reviewed": false
+  },
+  {
+    "source": "전여친",
+    "target": "bạn gái cũ",
+    "reviewed": false
+  },
+  {
+    "source": "첫사랑",
+    "target": "mối tình đầu",
+    "reviewed": false
+  },
+  {
+    "source": "소꿉친구",
+    "target": "thanh mai trúc mã",
+    "reviewed": false
+  },
+  {
+    "source": "짝사랑",
+    "target": "yêu đơn phương",
+    "reviewed": false
+  },
+  {
+    "source": "고백",
+    "target": "tỏ tình",
+    "reviewed": false
+  },
+  {
+    "source": "이별",
+    "target": "chia tay",
+    "reviewed": false
+  },
+  {
+    "source": "불륜",
+    "target": "ngoại tình",
+    "reviewed": false
+  },
+  {
+    "source": "질투",
+    "target": "ghen tuông",
+    "reviewed": false
+  },
+  {
+    "source": "설렘",
+    "target": "rung động",
+    "reviewed": false
+  },
+  {
+    "source": "운명",
+    "target": "định mệnh",
+    "reviewed": false
+  },
+  {
+    "source": "츤데레",
+    "target": "tsundere (ngoài lạnh trong nóng)",
+    "reviewed": false
+  },
+  {
+    "source": "벽쿵",
+    "target": "ép sát vào tường",
+    "reviewed": false
+  },
+  {
+    "source": "동거",
+    "target": "sống chung",
+    "reviewed": false
+  },
+  {
+    "source": "남친",
+    "target": "bạn trai",
+    "reviewed": false
+  },
+  {
+    "source": "여친",
+    "target": "bạn gái",
+    "reviewed": false
+  },
+  {
+    "source": "애인",
+    "target": "người yêu",
+    "reviewed": false
+  },
+  {
+    "source": "남편",
+    "target": "chồng",
+    "reviewed": false
+  },
+  {
+    "source": "아내",
+    "target": "vợ",
+    "reviewed": false
+  },
+  {
+    "source": "여보",
+    "target": "mình ơi",
+    "note": "vợ chồng gọi nhau",
+    "reviewed": false
+  },
+  {
+    "source": "자기야",
+    "target": "cưng ơi",
+    "reviewed": false
+  },
+  {
+    "source": "삼각관계",
+    "target": "tình tay ba",
+    "reviewed": false
+  },
+  {
+    "source": "맞선",
+    "target": "buổi xem mắt",
+    "reviewed": false
+  },
+  {
+    "source": "소개팅",
+    "target": "buổi hẹn hò do người quen mai mối",
+    "reviewed": false
+  },
+  {
+    "source": "막장 드라마",
+    "target": "phim cẩu huyết",
+    "reviewed": false
+  },
+  {
+    "source": "출생의 비밀",
+    "target": "bí mật thân thế",
+    "reviewed": false
+  },
+  {
+    "source": "기억상실",
+    "target": "mất trí nhớ",
+    "reviewed": false
+  },
+  {
+    "source": "신데렐라",
+    "target": "Lọ Lem",
+    "reviewed": false
+  },
+  {
+    "source": "시월드",
+    "target": "nhà chồng",
+    "note": "tiếng lóng",
+    "reviewed": false
+  },
+  {
+    "source": "시댁",
+    "target": "nhà chồng",
+    "reviewed": false
+  },
+  {
+    "source": "시어머니",
+    "target": "mẹ chồng",
+    "reviewed": false
+  },
+  {
+    "source": "장모님",
+    "target": "mẹ vợ",
+    "reviewed": false
+  },
+  {
+    "source": "처가",
+    "target": "nhà vợ",
+    "reviewed": false
+  }
+]

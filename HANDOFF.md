@@ -1,3 +1,9 @@
+## BÀN GIAO (19/11/2026, nhánh work) — B1.3c-2 XONG: BẢN NHÁP NGÔN TÌNH TIẾNG NHẬT + TIẾNG HÀN (ja, ko) — đọc mục này đầu tiên
+Thêm `data/glossaries/ja/ngontinh.json` (49 mục: 御曹司, 令嬢, 政略結婚, 契約結婚, 幼なじみ, 溺愛, 俺様, 修羅場...) và `data/glossaries/ko/ngontinh.json` (54 mục: 재벌, 정략결혼, 계약결혼, 첫사랑, 츤데레, 시월드, 출생의 비밀...), MỌI mục `"reviewed": false`. Hai cặp `ja`/`ko` ngontinh đã thêm vào mảng `drafts` ở `src/lib/sub/glossary.test.ts`. Chú ý khi duyệt: 社長/사장님 (giám đốc hay «tổng tài» tùy nhân vật, có ghi chú), 婚約者/약혼자 (vị hôn phu hay vị hôn thê tùy giới), 아가씨 (tiểu thư hay «cô ơi»), 여보/자기야 (cách gọi vợ chồng), 浮気 (ngoại tình hay «cắm sừng»). Không nâng `APP_VERSION`.
+LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» ở Admin.
+CHƯA KIỂM: chưa chạy với CSDL thật, chưa chụp thử giao diện.
+VIỆC TIẾP THEO: B1.3c-3 = `ja/xianxia` + `ko/xianxia`; rồi B1.4 = `softcore` (18+, HỎI CHỦ về mức nội dung trước khi soạn).
+
 ## BÀN GIAO (19/11/2026, nhánh work) — B1.3c-1 XONG: BẢN NHÁP KIẾM HIỆP TIẾNG HÀN (ko/wuxia) — đọc mục này đầu tiên
 Chủ ra lệnh «Tiếp tục với B1.3c» (coi như đã trả lời câu hỏi «hỏi Chủ trước»). Thêm `data/glossaries/ko/wuxia.json` (84 mục: 강호, 무림, 맹주, 장문인, 사부/사형/사제, 내공/경공, 주화입마, 표국, 마교/사파/정파, các môn phái 소림/무당/화산/개방...), MỌI mục `"reviewed": false`. Cặp `["ko", "wuxia"]` đã thêm vào mảng `drafts` ở `src/lib/sub/glossary.test.ts` (15 ca pass chạy trực tiếp bằng `node --experimental-strip-types --test`). Bản nháp do Claude soạn, chưa ai duyệt: Chủ xem ở Admin (lọc «chưa duyệt»). Chú ý khi duyệt: 선배님 (tiền bối, có ghi chú), 소생 (tiểu sinh) và 재하 (tại hạ), 은자 (lượng bạc), cách phiên âm tên môn phái. Không nâng `APP_VERSION`.
 LƯU Ý: nơi đã seed lần đầu KHÔNG tự nạp file mới; Chủ bấm «Khôi phục» ở Admin.

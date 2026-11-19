@@ -1,0 +1,250 @@
+[
+  {
+    "source": "御曹司",
+    "target": "thiếu gia",
+    "reviewed": false
+  },
+  {
+    "source": "令嬢",
+    "target": "thiên kim tiểu thư",
+    "reviewed": false
+  },
+  {
+    "source": "お嬢様",
+    "target": "tiểu thư",
+    "reviewed": false
+  },
+  {
+    "source": "財閥",
+    "target": "tài phiệt",
+    "reviewed": false
+  },
+  {
+    "source": "社長",
+    "target": "tổng giám đốc",
+    "note": "trong phim tình cảm hào môn thường dịch là «tổng tài» nếu nhân vật bá đạo",
+    "reviewed": false
+  },
+  {
+    "source": "副社長",
+    "target": "phó tổng giám đốc",
+    "reviewed": false
+  },
+  {
+    "source": "会長",
+    "target": "chủ tịch",
+    "reviewed": false
+  },
+  {
+    "source": "専務",
+    "target": "phó tổng",
+    "reviewed": false
+  },
+  {
+    "source": "秘書",
+    "target": "thư ký",
+    "reviewed": false
+  },
+  {
+    "source": "政略結婚",
+    "target": "hôn nhân sắp đặt vì lợi ích",
+    "reviewed": false
+  },
+  {
+    "source": "契約結婚",
+    "target": "hôn nhân hợp đồng",
+    "reviewed": false
+  },
+  {
+    "source": "偽装結婚",
+    "target": "hôn nhân giả",
+    "reviewed": false
+  },
+  {
+    "source": "婚約者",
+    "target": "vị hôn phu/vị hôn thê",
+    "note": "chọn theo giới tính người được nhắc",
+    "reviewed": false
+  },
+  {
+    "source": "許嫁",
+    "target": "người đã được hứa hôn",
+    "reviewed": false
+  },
+  {
+    "source": "婚約破棄",
+    "target": "hủy hôn",
+    "reviewed": false
+  },
+  {
+    "source": "婚約指輪",
+    "target": "nhẫn đính hôn",
+    "reviewed": false
+  },
+  {
+    "source": "結婚指輪",
+    "target": "nhẫn cưới",
+    "reviewed": false
+  },
+  {
+    "source": "結婚式",
+    "target": "lễ cưới",
+    "reviewed": false
+  },
+  {
+    "source": "新婚",
+    "target": "tân hôn",
+    "reviewed": false
+  },
+  {
+    "source": "元カノ",
+    "target": "bạn gái cũ",
+    "reviewed": false
+  },
+  {
+    "source": "元カレ",
+    "target": "bạn trai cũ",
+    "reviewed": false
+  },
+  {
+    "source": "元夫",
+    "target": "chồng cũ",
+    "reviewed": false
+  },
+  {
+    "source": "元妻",
+    "target": "vợ cũ",
+    "reviewed": false
+  },
+  {
+    "source": "初恋",
+    "target": "mối tình đầu",
+    "reviewed": false
+  },
+  {
+    "source": "幼なじみ",
+    "target": "thanh mai trúc mã",
+    "reviewed": false
+  },
+  {
+    "source": "一目惚れ",
+    "target": "yêu từ cái nhìn đầu tiên",
+    "reviewed": false
+  },
+  {
+    "source": "片思い",
+    "target": "yêu đơn phương",
+    "reviewed": false
+  },
+  {
+    "source": "告白",
+    "target": "tỏ tình",
+    "reviewed": false
+  },
+  {
+    "source": "失恋",
+    "target": "thất tình",
+    "reviewed": false
+  },
+  {
+    "source": "浮気",
+    "target": "ngoại tình",
+    "note": "có thể là «cắm sừng» tùy ngữ cảnh",
+    "reviewed": false
+  },
+  {
+    "source": "不倫",
+    "target": "ngoại tình",
+    "reviewed": false
+  },
+  {
+    "source": "嫉妬",
+    "target": "ghen tuông",
+    "reviewed": false
+  },
+  {
+    "source": "運命の人",
+    "target": "người định mệnh",
+    "reviewed": false
+  },
+  {
+    "source": "身代わり",
+    "target": "thế thân",
+    "reviewed": false
+  },
+  {
+    "source": "溺愛",
+    "target": "cưng chiều hết mực",
+    "reviewed": false
+  },
+  {
+    "source": "俺様",
+    "target": "bá đạo ngạo mạn",
+    "reviewed": false
+  },
+  {
+    "source": "ツンデレ",
+    "target": "tsundere (ngoài lạnh trong nóng)",
+    "reviewed": false
+  },
+  {
+    "source": "壁ドン",
+    "target": "ép sát vào tường",
+    "reviewed": false
+  },
+  {
+    "source": "同棲",
+    "target": "sống chung",
+    "reviewed": false
+  },
+  {
+    "source": "彼氏",
+    "target": "bạn trai",
+    "reviewed": false
+  },
+  {
+    "source": "彼女",
+    "target": "bạn gái",
+    "reviewed": false
+  },
+  {
+    "source": "恋人",
+    "target": "người yêu",
+    "reviewed": false
+  },
+  {
+    "source": "旦那",
+    "target": "chồng",
+    "reviewed": false
+  },
+  {
+    "source": "奥さん",
+    "target": "vợ",
+    "reviewed": false
+  },
+  {
+    "source": "三角関係",
+    "target": "tình tay ba",
+    "reviewed": false
+  },
+  {
+    "source": "修羅場",
+    "target": "cảnh ghen tuông tranh giành",
+    "reviewed": false
+  },
+  {
+    "source": "玉の輿",
+    "target": "lấy chồng giàu",
+    "reviewed": false
+  },
+  {
+    "source": "お見合い",
+    "target": "buổi xem mắt",
+    "reviewed": false
+  },
+  {
+    "source": "略奪愛",
+    "target": "cướp người yêu",
+    "reviewed": false
+  }
+]
