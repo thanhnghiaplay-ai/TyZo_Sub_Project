@@ -40,13 +40,30 @@ export function roomPool(offer: RoomOffer, kind: ModelKind): Set<string> | null 
   return seen ? pool : null;
 }
 
-/** Tập model mà chế độ Tự động được chọn cho một việc. Trả theo lượt và đã biết danh sách phòng thì dùng danh sách phòng. */
-export function pickPool(roomPay: boolean, offer: RoomOffer | null, ownIds: string[] | null, kind: ModelKind = "chat"): Set<string> | null {
-  if (roomPay && offer) {
-    const pool = roomPool(offer, kind);
-    if (pool) return pool;
+/**
+ * Model dịch dùng được bằng KEY CỦA KHÁCH: mọi nhà khách đã nhập key. Nhà có danh sách model thì lọc theo danh sách
+ * (như cửa phòng); chưa đọc được danh sách thì lấy model đã biết của nhà đó. Không nhà nào có key: null (không lọc).
+ */
+export function ownPool(keys: Partial<Record<ProviderId, string>>, lists: RoomOffer, kind: ModelKind = "chat"): Set<string> | null {
+  const offer: RoomOffer = {};
+  let any = false;
+  for (const provider of PROVIDER_IDS) {
+    if (!keys[provider]?.trim()) continue;
+    any = true;
+    offer[provider] = lists[provider] ?? catalogFor(provider, kind).map((model) => model.id);
   }
-  return ownIds ? new Set(ownIds) : null;
+  return any ? roomPool(offer, kind) : null;
+}
+
+/** Tập model mà chế độ Tự động được chọn cho một việc: trả theo lượt dùng danh sách phòng, key riêng dùng các nhà khách có key. */
+export function pickPool(
+  roomPay: boolean,
+  offer: RoomOffer | null,
+  own: { keys: Partial<Record<ProviderId, string>>; lists: RoomOffer } | null,
+  kind: ModelKind = "chat",
+): Set<string> | null {
+  if (roomPay) return offer ? roomPool(offer, kind) : null;
+  return own ? ownPool(own.keys, own.lists, kind) : null;
 }
 
 /** Model đang chọn mà nhà của nó có danh sách phòng nhưng danh sách không có model đó. */

@@ -18,12 +18,13 @@ export function validPolishTokens(inn: unknown, out: unknown): { inn: number; ou
 }
 
 /** Token dịch cần giữ. null khi model chưa có giá hoặc chưa có giá Turbo: khi đó KHÔNG mở phiếu. */
-export function polishHold(book: PriceBook, model: string, inn: number, out: number): number | null {
+export function polishHold(book: PriceBook, model: string, inn: number, out: number, unitBook: PriceBook = book): number | null {
+  // `book`: giá của nhà chạy model (mọi nhà). `unitBook`: bảng Groq có Whisper Turbo để quy ra Token dịch.
   const bare: PriceBook = { rate: book.rate, rows: book.rows, desk: { markup: 0, custom: {} } };
   if (!chatPerMillion(bare, model)) return null;
   const base = bareChatVnd(book, model, inn, out);
   if (!(base > 0)) return null;
-  const tokens = giayForBaseCost(book, base);
+  const tokens = giayForBaseCost(unitBook, base);
   if (tokens == null || tokens < 1) return null;
   return Math.max(1, Math.ceil(tokens * HOLD_BUFFER));
 }

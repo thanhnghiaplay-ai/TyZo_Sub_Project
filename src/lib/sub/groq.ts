@@ -1,5 +1,6 @@
 import { reasoningOpts } from "@/lib/sub/models";
-import { authHeader, modelIdsFrom, modelListUrl, type ProviderId } from "@/lib/sub/provider";
+import { authHeader, modelIdsFrom, modelListUrl, PROVIDERS, providerApi, providerChat, type ProviderChat, type ProviderId } from "@/lib/sub/provider";
+import { providerOfModel, type RoomOffer } from "@/lib/sub/room-models";
 import type { PackedAudio } from "@/lib/sub/codec";
 import {
   contiguousRuns,
@@ -30,6 +31,41 @@ export function roomFetchTarget(url: string, init: RequestInit, ticketId?: strin
   const ticket = ticketId === undefined ? roomTicketId() : ticketId;
   if (ticket) headers.set("x-run-ticket", ticket);
   return { url: "/api/room-groq", init: { ...init, headers } };
+}
+
+/**
+ * Key cho mọi việc chữ (dịch, phân tích phim, trau chuốt): ROOM_KEY (trả theo lượt), một chuỗi (key Groq, cách cũ),
+ * hoặc vòng key theo nhà `{ keys, lists }` (key khách của từng nhà + danh sách model key đó có, để biết model lạ thuộc nhà nào).
+ */
+export type ChatKey = string | { keys: Partial<Record<ProviderId, string>>; lists?: RoomOffer };
+
+export type ChatCall = { provider: ProviderId; url: string; headers: Record<string, string>; tokenField: ProviderChat["tokenField"] };
+
+/**
+ * Đường gọi cho một model dịch, theo NHÀ của model (danh mục chung + danh sách key), không gắn cứng Groq.
+ * Trả theo lượt: cửa chung /api/model-call của phòng. Key khách: gọi thẳng nhà nếu nhà cho trình duyệt gọi,
+ * không thì đi qua cửa chung (key không lưu). Thiếu key của đúng nhà thì báo rõ nhà nào.
+ */
+export function chatCall(model: string, key: ChatKey, ticket?: string | null): ChatCall {
+  const lists = typeof key === "string" ? undefined : key.lists;
+  const provider = providerOfModel(model, lists ?? {}) ?? "groq";
+  const chat = providerChat(provider);
+  const label = PROVIDERS[provider].label;
+  if (!chat) throw new Error(`${label} không có model dịch, hãy chọn model khác.`);
+  const json = { "Content-Type": "application/json" };
+  if (key === ROOM_KEY) {
+    const room = ticket === undefined ? roomTicketId() : ticket;
+    return { provider, tokenField: chat.tokenField, url: "/api/model-call", headers: { ...json, "x-provider": provider, "x-path": chat.path, ...(room ? { "x-run-ticket": room } : {}) } };
+  }
+  const own = (typeof key === "string" ? (provider === "groq" ? key : "") : (key.keys[provider] ?? "")).trim();
+  if (!own) throw new Error(`Model ${model} chạy trên ${label}. Hãy nhập key ${label}, hoặc chọn model của nhà bạn đã có key.`);
+  if (chat.browserDirect) return { provider, tokenField: chat.tokenField, url: `${providerApi(provider)}${chat.path}`, headers: { ...json, Authorization: authHeader(provider, own) } };
+  return { provider, tokenField: chat.tokenField, url: "/api/model-call", headers: { ...json, "x-provider": provider, "x-path": chat.path, "x-user-key": own } };
+}
+
+/** Tên nhà của model, cho câu báo chờ/giới hạn (không ghi cứng «Groq»). */
+function houseLabel(model: string): string {
+  return PROVIDERS[providerOfModel(model) ?? "groq"].label;
 }
 
 export function abortError() {
@@ -139,11 +175,11 @@ export async function requestWithRetry<T>(
         const ra = outcome.retryAfter;
         if (ra > 90)
           throw new Error(
-            `Hết hạn mức Groq, cần chờ khoảng ${Math.ceil(ra / 60)} phút. Bấm Tiếp tục sau đó, phần đã nhận dạng không bị mất.`,
+            `Hết hạn mức ${houseLabel(modelName)}, cần chờ khoảng ${Math.ceil(ra / 60)} phút. Bấm Tiếp tục sau đó, phần đã nhận dạng không bị mất.`,
           );
         pause = Math.max(pause, (ra || 10 * (attempt + 1)) * 1000);
         gate.blockedUntil = Date.now() + pause;
-        if (attempt < 4) onWait?.(`Groq đang giới hạn tốc độ, chờ ${Math.round(pause / 1000)} giây rồi thử lại…`);
+        if (attempt < 4) onWait?.(`${houseLabel(modelName)} đang giới hạn tốc độ, chờ ${Math.round(pause / 1000)} giây rồi thử lại…`);
       }
     }
     if (attempt < 4) await sleep(pause, signal);
@@ -290,7 +326,7 @@ type Msg = { role: string; content: string };
 async function translateOnce(
   texts: string[],
   language: string,
-  key: string,
+  key: ChatKey,
   model: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
@@ -299,6 +335,7 @@ async function translateOnce(
   ticket?: string | null,
 ) {
   if (!model) throw new Error("Bạn chưa nhập model dịch.");
+  const call = chatCall(model, key, ticket);
   const messages = translationMessages(texts, language, opts);
   const budget = Math.min(4096, 512 + texts.length * 160);
   const payloads = [
@@ -306,20 +343,20 @@ async function translateOnce(
       model,
       temperature: 0,
       ...reasoningOpts(model),
-      max_completion_tokens: budget,
+      [call.tokenField]: budget,
       response_format: translationSchema(),
       messages,
     },
-    { model, temperature: 0, max_completion_tokens: budget, response_format: { type: "json_object" }, messages },
+    { model, temperature: 0, [call.tokenField]: budget, response_format: { type: "json_object" }, messages },
   ];
   let lastError: Error | undefined;
   for (let index = 0; index < payloads.length; index++) {
     try {
       const data = await requestWithRetry(
-        `${API}/chat/completions`,
+        call.url,
         () => ({
           method: "POST",
-          headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+          headers: call.headers,
           body: JSON.stringify(payloads[index]),
         }),
         "Dịch văn bản",
@@ -354,7 +391,7 @@ async function translateOnce(
 export async function translateBatch(
   texts: string[],
   language: string,
-  key: string,
+  key: ChatKey,
   model: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
@@ -410,7 +447,7 @@ export async function translateIndexes(
   texts: string[],
   indexes: number[],
   language: string,
-  key: string,
+  key: ChatKey,
   model: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
@@ -445,7 +482,7 @@ export async function translateIndexes(
 export async function translateWithRepair(
   texts: string[],
   language: string,
-  key: string,
+  key: ChatKey,
   model: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
@@ -474,7 +511,7 @@ export async function translateWithRepair(
  * chia lô và đánh dấu đúng câu bị từ chối.
  */
 export function makePolishCall(
-  key: string,
+  key: ChatKey,
   model: string,
   signal: AbortSignal,
   gate: { blockedUntil: number },
@@ -483,19 +520,20 @@ export function makePolishCall(
 ): PolishCall {
   return async (messages, count) => {
     if (!model) throw new Error("Bạn chưa chọn model trau chuốt.");
+    const call = chatCall(model, key, ticket);
     const budget = Math.min(8192, 512 + count * 220);
     const payloads = [
-      { model, temperature: 0, ...reasoningOpts(model), max_completion_tokens: budget, response_format: translationSchema(), messages },
-      { model, temperature: 0, max_completion_tokens: budget, response_format: { type: "json_object" }, messages },
+      { model, temperature: 0, ...reasoningOpts(model), [call.tokenField]: budget, response_format: translationSchema(), messages },
+      { model, temperature: 0, [call.tokenField]: budget, response_format: { type: "json_object" }, messages },
     ];
     let lastError: Error | undefined;
     for (let index = 0; index < payloads.length; index++) {
       try {
         const data = await requestWithRetry(
-          `${API}/chat/completions`,
+          call.url,
           () => ({
             method: "POST",
-            headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+            headers: call.headers,
             body: JSON.stringify(payloads[index]),
           }),
           "Trau chuốt bản dịch",
@@ -532,7 +570,7 @@ export function makePolishCall(
 }
 
 export async function analyzeFilm(input: {
-  key: string;
+  key: ChatKey;
   model: string;
   language: string;
   title: string;
@@ -545,16 +583,17 @@ export async function analyzeFilm(input: {
   ticket?: string | null;
 }): Promise<Bible> {
   const messages: Msg[] = analyzeMessages(input);
+  const call = chatCall(input.model, input.key, input.ticket);
   const data = await requestWithRetry(
-    `${API}/chat/completions`,
+    call.url,
     () => ({
       method: "POST",
-      headers: { Authorization: `Bearer ${input.key}`, "Content-Type": "application/json" },
+      headers: call.headers,
       body: JSON.stringify({
         model: input.model,
         temperature: 0,
         ...reasoningOpts(input.model),
-        max_completion_tokens: 4096,
+        [call.tokenField]: 4096,
         response_format: { type: "json_object" },
         messages,
       }),

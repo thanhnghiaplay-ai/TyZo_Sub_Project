@@ -28,6 +28,8 @@ type Host = {
   extra: string;
   target: string;
   activeKey: () => string;
+  /** Key theo nhà của model (dịch bằng mọi nhà). */
+  chatKey: () => import("@/lib/sub/groq").ChatKey;
   roomPay: () => boolean;
   /** Model khách gọi được bằng key riêng. null = chưa biết, không lọc. */
   remoteIds: string[] | null;
@@ -153,7 +155,7 @@ export function usePolish(host: Host) {
     const snapshot = h.getSegs().map((seg) => ({ translation: seg.translation, edited: seg.edited }));
     let failed = false;
     try {
-      const call = makePolishCall(token === ROOM_KEY ? ROOM_KEY : token, row.id, controller.signal, { blockedUntil: 0 }, (message) => h.say(message), ticket);
+      const call = makePolishCall(token === ROOM_KEY ? ROOM_KEY : h.chatKey(), row.id, controller.signal, { blockedUntil: 0 }, (message) => h.say(message), ticket);
       const run = await polishAll(call, built.items, built.opts, {
         signal: controller.signal,
         onProgress: (done, total) => setProgress({ done, total }),

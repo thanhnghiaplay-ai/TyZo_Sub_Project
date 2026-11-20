@@ -18,9 +18,11 @@ import {
   analyzeFilm,
   applyNameFixes,
   contextBlock,
+  chatCall,
   listModelIds,
   probeKey,
   ROOM_KEY,
+  type ChatKey,
   sleep,
   throwIfAborted,
   transcribe,
@@ -110,11 +112,11 @@ import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
 import { packWavFromReader } from "@/lib/sub/wav-stream";
 import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
-import { pickPool, roomMissing, roomMissingText, type RoomOffer } from "@/lib/sub/room-models";
+import { pickPool, providerOfModel, roomMissing, roomMissingText, type RoomOffer } from "@/lib/sub/room-models";
 import { listKeyModels } from "@/lib/key-models";
 import { getRoomModelCounts, getRoomOffer } from "@/lib/provider-room";
 import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
-import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
+import { PROVIDER_IDS, PROVIDERS, providersWith, type ProviderId } from "@/lib/sub/provider";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
 import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
@@ -346,6 +348,8 @@ export function usePipeline() {
   const roomPayRef = useRef(false);
   /** Model key phòng theo từng nhà. Trả theo lượt thì chỉ chọn trong danh sách này, vì máy chủ chặn model ngoài danh sách. */
   const roomOfferedRef = useRef<RoomOffer | null>(null);
+  /** Bản cho giao diện (ô chọn model) của danh sách phòng theo nhà. */
+  const [roomOffer, setRoomOffer] = useState<RoomOffer | null>(null);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
   keyRef.current = key;
@@ -429,6 +433,27 @@ export function usePipeline() {
   const [stages, setStages] = useState<StageReport | null>(null);
   const phaseRef = useRef<RunPhase>("idle");
   const [remoteIds, setRemoteIds] = useState<string[] | null>(null);
+  const remoteIdsRef = useRef(remoteIds);
+  remoteIdsRef.current = remoteIds;
+  /**
+   * Key cho mọi việc chữ (dịch, phân tích, trau chuốt) theo NHÀ của model: trả theo lượt dùng cửa phòng;
+   * key riêng thì đưa đủ key của từng nhà khách đã nhập, kèm danh sách model mỗi key có để biết model lạ thuộc nhà nào.
+   */
+  const chatKeyOf = useCallback(
+    (): ChatKey =>
+      roomPayRef.current
+        ? ROOM_KEY
+        : {
+            keys: { ...houseKeysRef.current, groq: keyRef.current.trim() },
+            lists: { ...keyModelsRef.current, groq: remoteIdsRef.current },
+          },
+    [],
+  );
+  /** Model dịch chế độ Tự động được chọn: theo phòng (trả theo lượt) hoặc theo các nhà khách có key. */
+  const autoPool = useCallback(() => {
+    const ring = chatKeyOf();
+    return pickPool(roomPayRef.current, roomOfferedRef.current, typeof ring === "string" ? null : { keys: ring.keys, lists: ring.lists ?? {} });
+  }, [chatKeyOf]);
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [boardNote, setBoardNote] = useState("");
   const boardRef = useRef<GroqBoard | null>(null);
@@ -732,6 +757,7 @@ export function usePipeline() {
       void getRoomOffer()
         .then((offer) => {
           roomOfferedRef.current = offer;
+          setRoomOffer(offer);
         })
         .catch(() => {
           /* chưa đọc được: để máy chủ tự kiểm khi chạy */
@@ -969,27 +995,28 @@ export function usePipeline() {
       const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });
       if (packed) return say(packed, true);
     }
-    if (asrModel === DEEPGRAM_ASR) {
-      if (!roomPayRef.current && !houseKeyOf("deepgram")) return say("Nhận dạng Deepgram cần key Deepgram của bạn.", true);
-      if (!link && !(file || audioFile)) return say("Deepgram cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
-      if (!token && !roomPayRef.current) return say("Deepgram chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
-    } else if (asrHouse(asrModel) === "assemblyai") {
-      if (!roomPayRef.current && !houseKeyOf("assemblyai")) return say("Nhận dạng AssemblyAI cần key AssemblyAI của bạn.", true);
-      if (!link && !(file || audioFile)) return say("AssemblyAI cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
-      if (!token && !roomPayRef.current) return say("AssemblyAI chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
-    } else if (asrHouse(asrModel) === "speechmatics") {
-      if (!roomPayRef.current && !houseKeyOf("speechmatics")) return say("Nhận dạng Speechmatics cần key Speechmatics của bạn.", true);
-      if (!link && !(file || audioFile)) return say("Speechmatics cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
-      if (!token && !roomPayRef.current) return say("Speechmatics chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
-    } else if (asrHouse(asrModel) === "soniox") {
-      if (!roomPayRef.current && !houseKeyOf("soniox")) return say("Nhận dạng Soniox cần key Soniox của bạn.", true);
-      if (!link && !(file || audioFile)) return say("Soniox cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
-      if (!token && !roomPayRef.current) return say("Soniox chỉ nhận dạng. Dịch vẫn dùng Groq, vui lòng nhập Groq API key.", true);
-    } else if (asrModel === ALI_FILETRANS_MODEL) {
-      const aliKey = roomPayRef.current ? "room" : houseKeyOf("alibaba");
-      if (!aliKey) return say("Nhận dạng Alibaba cần key Alibaba của bạn.", true);
-      if (!link && !(file || audioFile)) return say("Alibaba Filetrans cần link file trực tiếp (http/https) hoặc một tệp trên máy.", true);
-    } else if (!token) return say("Vui lòng nhập Groq API key.", true);
+    // Kiểm chung cho MỌI nhà (không nhánh riêng từng nhà): key của nhà nhận dạng, link khi nhà đó nhận link,
+    // và key của nhà chạy model dịch (dịch có thể bằng bất kỳ nhà nào có model dịch).
+    const asrOwner = asrHouse(asrModel) ?? "groq";
+    const asrLabel = PROVIDERS[asrOwner].label;
+    if (!roomPayRef.current) {
+      const asrKey = asrOwner === "groq" ? token : houseKeyOf(asrOwner);
+      if (!asrKey) return say(asrOwner === "groq" ? "Vui lòng nhập Groq API key." : `Nhận dạng ${asrLabel} cần key ${asrLabel} của bạn.`, true);
+    }
+    if (asrTakesLink(asrModel) && !link && !(file || audioFile)) return say(`${asrLabel} cần link file trực tiếp (http/https) hoặc một tệp trên máy.`, true);
+    if (!roomPayRef.current) {
+      const ring = chatKeyOf();
+      if (mode === "manual" && chosen) {
+        try {
+          chatCall(chosen, ring);
+        } catch (error) {
+          return say((error as Error).message, true);
+        }
+      } else if (mode !== "manual") {
+        const pool = autoPool();
+        if (pool && pool.size === 0) return say(`Chưa có key của nhà nào có model dịch. Hãy nhập key ${providersWith("chat").map((id) => PROVIDERS[id].label).join(" hoặc ")}.`, true);
+      }
+    }
     if (asrTakesLink(asrModel) && !link && (file || audioFile)) {
       // Tệp trên máy đi qua kho tạm R2 (âm thanh tách ở máy khách). Chủ chưa cấu hình thì không nhận, báo trước khi giữ tiền.
       const ready = await r2Status().catch(() => null);
@@ -1012,7 +1039,9 @@ export function usePipeline() {
         say("Đang kiểm tra key Groq…");
         value = await runProbe(token);
       }
-      const verdict = judgeKey(value, { asr: asrTakesLink(asrModel) ? null : asrModel, chat: mode === "manual" ? chosen : null });
+      // Key Groq chỉ cần có model dịch khi model dịch chạy trên Groq; model nhà khác đã kiểm ở trên.
+      const groqChat = mode === "manual" && (providerOfModel(chosen, { groq: remoteIdsRef.current }) ?? "groq") === "groq" ? chosen : null;
+      const verdict = judgeKey(value, { asr: asrOwner === "groq" && !asrTakesLink(asrModel) ? asrModel : null, chat: groqChat });
       if (verdict.state === "bad") return say(verdict.text, true);
     }
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
@@ -1151,13 +1180,13 @@ export function usePipeline() {
                 genre,
                 glossaryHit: true,
                 allowEnterprise,
-                available: pickPool(roomPayRef.current, roomOfferedRef.current, remoteIds),
+                available: autoPool(),
                 cooling: j.cooling,
                 blocked: j.blocked,
                 escalate: true,
               }).id;
         j.analysisP = analyzeFilm({
-          key: token,
+          key: chatKeyOf(),
           model: analysisModel,
           language: target,
           title,
@@ -1608,7 +1637,7 @@ export function usePipeline() {
                       genre,
                       glossaryHit: glossaryHit(origs, effectiveGloss) || hits > 0,
                       allowEnterprise,
-                      available: pickPool(roomPayRef.current, roomOfferedRef.current, remoteIds),
+                      available: autoPool(),
                       cooling: j.cooling,
                       blocked: j.blocked,
                       escalate: attempt > 0,
@@ -1622,7 +1651,7 @@ export function usePipeline() {
                 translated = await translateWithRepair(
                   protectedOrigs,
                   target,
-                  token,
+                  chatKeyOf(),
                   used,
                   signal,
                   j.gate,
@@ -1650,7 +1679,7 @@ export function usePipeline() {
                   again.protected,
                   settled.retryIndexes,
                   target,
-                  token,
+                  chatKeyOf(),
                   used,
                   signal,
                   j.gate,
@@ -2114,6 +2143,8 @@ export function usePipeline() {
     analyzing,
     asrModel,
     audioFile,
+    autoPool,
+    chatKeyOf,
     clearJob,
     file,
     genre,
@@ -2231,7 +2262,7 @@ export function usePipeline() {
             genre,
             glossaryHit: true,
             allowEnterprise,
-            available: pickPool(roomPayRef.current, roomOfferedRef.current, remoteIds),
+            available: autoPool(),
             cooling: job.current.cooling,
             blocked: job.current.blocked,
             escalate: true,
@@ -2255,7 +2286,7 @@ export function usePipeline() {
     let analysisFailed = false;
     try {
       const next = await analyzeFilm({
-        key: token,
+        key: chatKeyOf(),
         model: analysisModel,
         language: target,
         title,
@@ -2293,7 +2324,7 @@ export function usePipeline() {
       if (job.current.abort === controller) job.current.abort = null;
       setAnalyzing(false);
     }
-  }, [allowEnterprise, asrModel, baseGloss, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
+  }, [allowEnterprise, asrModel, autoPool, baseGloss, chatKeyOf, genre, gloss, key, mode, modelId, notes, publish, remoteIds, running, say, source, target, title]);
 
   const retryFailed = useCallback(() => {
     void (async () => {
@@ -2629,6 +2660,7 @@ export function usePipeline() {
     extra,
     target,
     activeKey,
+    chatKey: chatKeyOf,
     roomPay: () => roomPayRef.current,
     remoteIds,
     busy: running || analyzing,
@@ -2642,6 +2674,8 @@ export function usePipeline() {
     keyModels,
     setHouseKey,
     setRoomPay,
+    roomOffer,
+    chatKeyOf,
     target,
     setTarget,
     source,

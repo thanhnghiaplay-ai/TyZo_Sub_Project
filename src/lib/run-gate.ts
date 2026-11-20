@@ -51,6 +51,8 @@ export async function chargeWith(input: {
   ticketId: string;
   body: ArrayBuffer;
   cap: number;
+  /** Sổ giá dùng để quy ra Token dịch (phải có Whisper Turbo của Groq). Thiếu = `book` (cửa Groq). Nhà khác phải truyền bảng Groq. */
+  unitBook?: PriceBook;
   send: () => Promise<Response>;
 }): Promise<GateOutcome> {
   const { sql, book, path, model, userId } = input;
@@ -129,7 +131,7 @@ export async function chargeWith(input: {
     const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${userId}`;
     if (unit[0]?.unit === "token") {
       const { giayForBaseCost } = await import("./token-math.ts");
-      const giay = giayForBaseCost(book, base);
+      const giay = giayForBaseCost(input.unitBook ?? book, base);
       if (giay && giay > 0) {
         const { chargeTokenWith } = await import("./token-flow.ts");
         await chargeTokenWith(sql, input.ticketId, userId, giay);

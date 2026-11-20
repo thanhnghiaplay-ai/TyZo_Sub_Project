@@ -64,7 +64,7 @@ export const openPolishTicket = createServerFn({ method: "POST" })
     await requireServiceOpen("normal");
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
-    const { parseRunDesk, parseModelList } = await import("@/lib/run-desk");
+    const { parseRunDesk } = await import("@/lib/run-desk");
     const { loadPriceBook } = await import("@/lib/run-board.server");
     const { openGiayWith, giayBalance } = await import("@/lib/token-flow");
     const { releaseStaleWith } = await import("@/lib/run-ticket");
@@ -75,12 +75,15 @@ export const openPolishTicket = createServerFn({ method: "POST" })
     if (desk.maintenance) throw new Error(desk.note || "Cửa trả theo lượt đang bảo trì.");
     const allowed = polishIdsFor(parsePolishModels((await sql<{ value: string }>`select value from room_settings where key = 'polish_models'`)[0]?.value), data.genre);
     if (!allowed?.includes(data.model)) throw new Error("Model này chưa được mở để trau chuốt cho thể loại này.");
-    const offered = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'run_models'`)[0]?.value);
-    if (!offered) throw new Error("Phòng chưa đồng bộ danh sách model cho cửa trả theo lượt.");
-    if (!offered.includes(data.model)) throw new Error(`Model ${data.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
+    // Mọi nhà: nhà của model, key và danh sách phòng tra theo bảng chung (room-turn.ts), giá theo bảng của đúng nhà.
+    const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
+    const { roomUse } = await import("@/lib/room-turn");
+    const { bareBookOf } = await import("@/lib/price-rows");
+    const use = roomUse(await loadRoomHouses(sql), data.model, "chat");
+    if ("error" in use) throw new Error(use.error);
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
-    const hold = polishHold(book, data.model, tokens.inn, tokens.out);
+    const hold = polishHold(bareBookOf(use.provider, book, await loadProviderRows(sql)), data.model, tokens.inn, tokens.out, book);
     if (hold == null) throw new Error("Chưa có giá bản Turbo hoặc model này chưa có giá gốc.");
     const id = randomBytes(12).toString("hex");
     await releaseStaleWith(sql, context.userId);
@@ -122,16 +125,21 @@ export const quotePolishChoices = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<PolishQuoteView> => {
     const { polishChoices, polishIdsFor, polishNoModelText } = await import("@/lib/polish-models");
     const { getSql } = await import("@/lib/db");
-    const { parseModelList } = await import("@/lib/run-desk");
     const { loadPriceBook } = await import("@/lib/run-board.server");
     const sql = await getSql();
     const models = parsePolishModels((await sql<{ value: string }>`select value from room_settings where key = 'polish_models'`)[0]?.value);
     const ids = polishIdsFor(models, data.genre) ?? [];
     if (!ids.length) return { rows: [], note: polishNoModelText(models, data.genre) };
     const book = (await loadPriceBook(sql)) ?? undefined;
-    const offered = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'run_models'`)[0]?.value);
+    const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
+    const { roomUse, offerOf } = await import("@/lib/room-turn");
+    const { bareBookOf } = await import("@/lib/price-rows");
+    const { providerOfModel } = await import("@/lib/sub/room-models");
+    const houses = await loadRoomHouses(sql);
+    const rows = await loadProviderRows(sql);
     const plan = { sendable: data.sendable, batches: data.batches, inn: data.inn, out: data.out };
-    const choices = polishChoices({ ids, plan, chatBook: book, groqBook: book });
+    const chatBookFor = (id: string) => (book ? bareBookOf(providerOfModel(id, offerOf(houses)) ?? "groq", book, rows) : undefined);
+    const choices = polishChoices({ ids, plan, chatBook: book, groqBook: book, chatBookFor });
     return {
       rows: choices.map((choice) => ({
         id: choice.id,
@@ -139,7 +147,7 @@ export const quotePolishChoices = createServerFn({ method: "POST" })
         ready: choice.quote.ready,
         reason: choice.quote.reason,
         tokens: choice.quote.tokens,
-        inRoom: Boolean(offered?.includes(choice.id)),
+        inRoom: !("error" in roomUse(houses, choice.id, "chat")),
       })),
       note: "",
     };

@@ -22,9 +22,9 @@ import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
 import { asrHouse, groqListHolds } from "@/lib/sub/asr-house";
 import { linkAsrNote } from "@/lib/sub/link-asr-note";
-import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDERS } from "@/lib/sub/provider";
-import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
-import { DEEPGRAM_BASE_ROWS } from "@/lib/sub/deepgram-base";
+import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDER_LABEL, PROVIDERS } from "@/lib/sub/provider";
+import { BASE_ROWS } from "@/lib/price-rows";
+import { pickPool } from "@/lib/sub/room-models";
 import { asrPickerRows } from "@/lib/asr-picker";
 import { ownKeyAvailable } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
@@ -59,7 +59,7 @@ import { guideTopics } from "@/lib/guide-topics";
 import { takeTourRequest } from "@/lib/tour-request";
 import type { TourId } from "@/lib/tour-steps";
 import { isMediaFile, useFileThumb, type FileThumb } from "@/components/file-thumb";
-import { TIER_LABEL, VOICE_LANES, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
+import { TIER_LABEL, VOICE_LANES, chatProviderOf, modelLabel, resolveVoiceLane, voiceLaneOf } from "@/lib/sub/models";
 import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomTokens } from "@/lib/token-math";
 import { modelRoleNote } from "@/lib/sub/model-role";
@@ -822,6 +822,9 @@ export function Studio() {
     keyModels: { groq: app.remoteIds, ...app.keyModels },
   });
   const lockTurnModels = showRoomPrice && turnLocked;
+  // Model dịch dùng được, MỌI nhà: trả theo lượt theo danh sách phòng, key riêng theo các nhà khách đã nhập key.
+  const chatRing = app.chatKeyOf();
+  const chatUsable = pickPool(showRoomPrice, app.roomOffer, typeof chatRing === "string" ? null : { keys: chatRing.keys, lists: chatRing.lists ?? {} });
 
   const railItems: RailItem[] = [
     { id: "home", label: MENU_ITEM.home, current: product === "sub" && hero, onPick: () => { setProduct("sub"); setForced(false); } },
@@ -1326,6 +1329,7 @@ export function Studio() {
               models={app.catalog}
               value={app.modelId}
               remote={showRoomPrice ? null : ownVoice.ids ? [...ownVoice.ids] : app.remoteIds}
+              usable={chatUsable}
               board={showRoomPrice ? app.board : null}
               door={showRoomPrice ? runDoor : null}
               onChange={app.chooseVoice}
@@ -2101,6 +2105,7 @@ function ModelPicker({
   models,
   value,
   remote,
+  usable,
   board,
   door,
   onChange,
@@ -2108,6 +2113,8 @@ function ModelPicker({
   models: ChatModel[];
   value: string;
   remote: string[] | null;
+  /** Model dịch dùng được theo mọi nhà (phòng hoặc key khách). null = chưa biết, không khóa. */
+  usable: Set<string> | null;
   board: GroqBoard | null;
   door: { markup: number; custom: Record<string, { hour: number; inn: number; out: number }>; offered: string[] | null } | null;
   onChange: (id: string) => void;
@@ -2125,8 +2132,10 @@ function ModelPicker({
             <div className="grid gap-2">
               {list.map((model) => {
                 const on = value === model.id;
-                const missing = remoteSet ? !remoteSet.has(model.id) : false;
-                const held = Boolean(door?.offered && !door.offered.includes(model.id));
+                const house = chatProviderOf(model);
+                // Danh sách key Groq (và bảng Thuê phòng) chỉ nói về model Groq; nhà khác xét theo `usable`.
+                const missing = (house === "groq" && remoteSet ? !remoteSet.has(model.id) : false) || (usable && !door ? !usable.has(model.id) : false);
+                const held = Boolean(door && usable && !usable.has(model.id));
                 const facts = held ? { price: "Chưa cập nhật", detail: "" } : modelFacts(board, door, model.id, model.note);
                 return (
                   <button
@@ -2142,7 +2151,8 @@ function ModelPicker({
                   >
                     <span className="flex items-center justify-between gap-2 text-sm font-semibold">
                       <span>{model.name}</span>
-                      {missing && <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs font-medium">Key chưa mở</span>}
+                      {house !== "groq" && !missing && <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs font-medium">{PROVIDER_LABEL[house]}</span>}
+                      {missing && <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-xs font-medium">{house === "groq" ? "Key chưa mở" : `Cần key ${PROVIDER_LABEL[house]}`}</span>}
                     </span>
                     {facts.price ? <span className={"block text-xs " + (on ? "text-ink/80" : "text-muted")}>{facts.price}</span> : null}
                     {facts.detail ? <span className={"block text-xs " + (on ? "text-ink/70" : "text-muted")}>{facts.detail}</span> : null}
@@ -2168,15 +2178,15 @@ function modelFacts(
   note: string,
 ): { price: string; detail: string } {
   if (!door) return { price: modelRoleNote(id), detail: note };
-  const row = board?.rows.find((item) => item.id === id);
+  const row = board ? roomPriceRow(board, id) : undefined;
   if (!board) return { price: "Đang lấy đơn giá phòng…", detail: "" };
   if (!row) return { price: "Chưa niêm yết", detail: note };
   return { price: formatRoomTokens(row, board) ?? "Chưa niêm yết", detail: "" };
 }
 
-/** Dòng giá của model ở cửa Trả theo lượt: bảng Groq, hoặc bảng dự phòng của Alibaba và Deepgram (tỉ giá lấy từ bảng Groq). */
+/** Dòng giá của model ở cửa Trả theo lượt: bảng Groq, rồi giá gốc của MỌI nhà (price-rows.ts; tỉ giá lấy từ bảng Groq). */
 function roomPriceRow(board: GroqBoard, id: string) {
-  return board.rows.find((item) => item.id === id) ?? ALIBABA_ROWS.find((item) => item.id === id) ?? DEEPGRAM_BASE_ROWS.find((item) => item.id === id);
+  return board.rows.find((item) => item.id === id) ?? Object.values(BASE_ROWS).flat().find((item) => item.id === id);
 }
 
 function roomHeld(door: { offered: string[] | null }, id: string) {

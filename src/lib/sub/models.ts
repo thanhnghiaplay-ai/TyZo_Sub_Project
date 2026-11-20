@@ -231,8 +231,13 @@ export function rankAuto(input: PickInput): string[] {
   } else {
     order = ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b", "llama-3.3-70b-versatile"];
   }
+  // Sau thứ tự ưu tiên trên là mọi model dịch còn lại trong danh mục, của MỌI nhà (nhà mới tự vào đây),
+  // xếp theo điểm hợp việc: phim Á xét điểm tiếng Á, còn lại xét chất lượng. Danh sách `available` lọc tiếp theo key/phòng.
+  const rest = CHAT_MODELS.filter((model) => model.tier !== "safety" && !order.includes(model.id))
+    .sort((a, b) => (cjk ? b.asian - a.asian : 0) || b.quality - a.quality || b.speed - a.speed)
+    .map((model) => model.id);
   const seen = new Set<string>();
-  return order.filter((id) => (seen.has(id) ? false : (seen.add(id), true)));
+  return [...order, ...rest].filter((id) => (seen.has(id) ? false : (seen.add(id), true)));
 }
 
 export function pickAutoModel(input: PickInput): { id: string; via: string } {
@@ -247,7 +252,9 @@ export function pickAutoModel(input: PickInput): { id: string; via: string } {
     if (input.available && !input.available.has(id)) return false;
     return true;
   });
-  const id = open[0] || relaxed[0] || "openai/gpt-oss-120b";
+  // Không model xếp hạng nào dùng được (ví dụ chỉ có key một nhà ngoài danh mục): lấy model dịch có trong `available`.
+  const spare = input.available ? [...input.available].find((id) => !input.blocked.has(id) && BY_ID.get(id)?.tier !== "safety" && !/whisper|orpheus|guard|tts|asr/i.test(id)) : undefined;
+  const id = open[0] || relaxed[0] || spare || "openai/gpt-oss-120b";
   const hard = hardBatch(input);
   const trivial = trivialBatch(input, hard);
   const via =

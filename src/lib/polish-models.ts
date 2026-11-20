@@ -115,14 +115,16 @@ export function polishChoices(input: {
   groqBook: PriceBook | undefined;
   /** Model khách có thể gọi (key của khách hoặc key phòng). null = chưa biết, không lọc. */
   available?: Set<string> | null;
+  /** Giá theo nhà của từng model (mọi nhà). Thiếu thì dùng `chatBook`. */
+  chatBookFor?: (id: string) => PriceBook | undefined;
 }): PolishChoice[] {
-  const { ids, plan, chatBook, groqBook, available } = input;
+  const { ids, plan, groqBook, available } = input;
   return ids
     .filter((id) => !available || available.has(id))
     .map((id) => ({
       id,
       name: chatModel(id)?.name ?? id,
-      quote: quotePolish({ plan, model: id, chatBook, groqBook }),
+      quote: quotePolish({ plan, model: id, chatBook: input.chatBookFor?.(id) ?? input.chatBook, groqBook }),
     }));
 }
 
