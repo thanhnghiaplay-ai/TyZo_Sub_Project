@@ -81,3 +81,22 @@ export const getRoomModelCounts = createServerFn({ method: "GET" })
     }
     return out;
   });
+
+/**
+ * Tên model key PHÒNG của từng nhà, để app chọn đúng model phòng có khi khách trả theo lượt
+ * (dịch, nhận dạng, đọc… đều đi qua danh mục chung `model-catalog.ts`). Chỉ trả tên model, không trả key.
+ * Nhà chưa lưu key phòng thì null. Groq vốn đã công khai danh sách này qua getRunDoor.
+ */
+export const getRoomOffer = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async (): Promise<Partial<Record<ProviderId, string[] | null>>> => {
+    const sql = await openSql();
+    const out: Partial<Record<ProviderId, string[] | null>> = {};
+    const rows = await sql<{ key: string; value: string }>`select key, value from room_settings`;
+    const map = new Map(rows.map((row) => [row.key, row.value]));
+    for (const id of Object.keys(PROVIDERS) as ProviderId[]) {
+      const names = PROVIDERS[id].settings;
+      out[id] = map.get(names.key) ? parseModelList(map.get(names.models)) : null;
+    }
+    return out;
+  });

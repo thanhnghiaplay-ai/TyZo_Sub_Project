@@ -110,9 +110,9 @@ import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
 import { packWavFromReader } from "@/lib/sub/wav-stream";
 import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
-import { pickPool, roomMissing, roomMissingText } from "@/lib/sub/room-models";
+import { pickPool, roomMissing, roomMissingText, type RoomOffer } from "@/lib/sub/room-models";
 import { listKeyModels } from "@/lib/key-models";
-import { getRoomModelCounts } from "@/lib/provider-room";
+import { getRoomModelCounts, getRoomOffer } from "@/lib/provider-room";
 import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
@@ -344,11 +344,8 @@ export function usePipeline() {
     };
   }, [houseKeys]);
   const roomPayRef = useRef(false);
-  /** Model Groq key phòng đang có (run_models). Trả theo lượt thì chỉ chọn trong danh sách này, vì máy chủ chặn model ngoài danh sách. */
-  const roomOfferedRef = useRef<string[] | null>(null);
-  const setRoomOffered = useCallback((ids: string[] | null) => {
-    roomOfferedRef.current = ids;
-  }, []);
+  /** Model key phòng theo từng nhà. Trả theo lượt thì chỉ chọn trong danh sách này, vì máy chủ chặn model ngoài danh sách. */
+  const roomOfferedRef = useRef<RoomOffer | null>(null);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
   keyRef.current = key;
@@ -730,7 +727,16 @@ export function usePipeline() {
 
   const setRoomPay = useCallback((on: boolean) => {
     roomPayRef.current = on;
-    if (on) void refreshModels();
+    if (on) {
+      void refreshModels();
+      void getRoomOffer()
+        .then((offer) => {
+          roomOfferedRef.current = offer;
+        })
+        .catch(() => {
+          /* chưa đọc được: để máy chủ tự kiểm khi chạy */
+        });
+    }
   }, [refreshModels]);
 
   const clearJob = useCallback(() => {
@@ -1058,7 +1064,7 @@ export function usePipeline() {
     let ticketFailed = false;
     let releasePlayback = () => {};
     if (roomPayRef.current) {
-      const missing = roomMissing(roomOfferedRef.current, asrModel, mode === "manual" ? chosen : null);
+      const missing = roomMissing(roomOfferedRef.current, [asrModel, mode === "manual" ? chosen : null]);
       if (missing) return say(roomMissingText(missing), true);
       const chosenFile = audioFile || file;
       const linkRun = asrTakesLink(asrModel) && !chosenFile;
@@ -2636,7 +2642,6 @@ export function usePipeline() {
     keyModels,
     setHouseKey,
     setRoomPay,
-    setRoomOffered,
     target,
     setTarget,
     source,
