@@ -70,9 +70,13 @@ export const orderRoomPlan = createServerFn({ method: "POST" })
     return plan.id;
   })
   .handler(async ({ context, data }) => {
-    const plan = roomPlan(data)!;
     const { requireOpenAccount } = await import("@/lib/guard.server");
     await requireOpenAccount(context.userId);
+    // Giá lấy từ giá Admin đã lưu LÚC ĐẶT ĐƠN; đơn giữ số tiền này dù sau đó đổi giá. Chưa lưu thì dùng giá mặc định.
+    const { readPlanPrices } = await import("@/lib/room-plans-room");
+    const { pricedPlan } = await import("@/lib/room-plan-prices");
+    const plan = pricedPlan(await readPlanPrices(), data);
+    if (!plan) throw new Error("Gói không có.");
     const { placeSale } = await import("@/lib/pay-store");
     return placeSale(context.userId, {
       amount: plan.price,

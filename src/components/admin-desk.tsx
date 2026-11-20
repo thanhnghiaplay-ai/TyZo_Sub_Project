@@ -723,6 +723,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "gia-alibaba": "Đổi giá Alibaba",
   "gia-deepgram": "Đổi giá Deepgram",
   "mo-thue": "Đổi danh sách model cho thuê",
+  "doi-gia-goi": "Đổi giá gói thuê phòng",
   "mo-live": "Đổi danh sách model dịch trực tiếp",
   "mo-trau-chuot": "Đổi danh sách model trau chuốt",
   "goi-dich": "Sửa gói dịch",

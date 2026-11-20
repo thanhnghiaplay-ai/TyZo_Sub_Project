@@ -1,5 +1,6 @@
 import type { Sql } from "./db.ts";
 import { codesIn, PAY_MINUTES, type PayHit } from "./pay-match.ts";
+import { PLAN_PRICE_MAX, PLAN_PRICE_MIN } from "./room-plan-prices.ts";
 import { roomPlan } from "./room-plans.ts";
 
 export type CreditResult = { userId: string; amount: number; code: string; purpose?: string } | null;
@@ -69,7 +70,9 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
   }
   if (order.purpose === "plan") {
     const plan = roomPlan(order.ref);
-    if (!plan || plan.price !== order.amount) return null;
+    // Giá gói Admin chỉnh được. Đơn giữ ĐÚNG giá lúc khách đặt (máy chủ tạo đơn từ giá đang lưu), nên khách đã đặt
+    // trước khi đổi giá vẫn chuyển khoản số cũ và vẫn được giao gói. Chỉ chặn số tiền ngoài khoảng cho phép.
+    if (!plan || !Number.isInteger(order.amount) || order.amount < PLAN_PRICE_MIN || order.amount > PLAN_PRICE_MAX) return null;
     const note = `Thuê phòng ${plan.name}`;
     const applied = await sql<{ user_id: string }>`
       with seen as (

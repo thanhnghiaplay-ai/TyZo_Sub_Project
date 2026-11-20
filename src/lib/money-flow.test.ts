@@ -121,6 +121,26 @@ describe("mua thẳng không cộng số dư", () => {
     assert.equal(row.ok, true);
   });
 
+  it("đơn thuê phòng đặt ở giá cũ vẫn được giao sau khi Admin đổi giá (đơn giữ đúng giá lúc đặt)", async () => {
+    const oldPrice = PLAN.price + 3000;
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('og', 'k', 'sepay', ${oldPrice}, 'TZOLD234', 'pending', 'plan', ${PLAN.id}, '{}')`;
+    const done = await creditHitWith(sql, "sepay", { ref: "G1", amount: oldPrice, text: "TZOLD234" });
+    assert.equal(done?.purpose, "plan");
+    assert.equal(done?.amount, oldPrice);
+    assert.equal(await orderStatus("og"), "paid");
+    const row = (await sql<{ plan: string; ok: boolean }>`select plan, plan_until > now() as ok from room_accounts where user_id = 'k'`)[0];
+    assert.equal(row.plan, PLAN.id);
+    assert.equal(row.ok, true);
+  });
+
+  it("đơn thuê phòng có số tiền ngoài khoảng cho phép thì không giao gói", async () => {
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('ob', 'k', 'sepay', 10, 'TZBAD234', 'pending', 'plan', ${PLAN.id}, '{}')`;
+    const done = await creditHitWith(sql, "sepay", { ref: "B1", amount: 10, text: "TZBAD234" });
+    assert.equal(done, null);
+    const rows = await sql<{ plan: string | null }>`select plan from room_accounts where user_id = 'k'`;
+    assert.ok(!rows[0]?.plan);
+  });
+
   it("đơn lưu nhầm purpose nap nhưng detail là token thì cộng token, không cộng ví", async () => {
     await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('om', 'k', 'sepay', 6407, 'TZZEKV85', 'pending', 'nap', 'nho', '{"tokens":10000,"days":30}')`;
     const done = await creditHitWith(sql, "sepay", { ref: "M1", amount: 6407, text: "TZZEKV85" });
