@@ -2,10 +2,10 @@
 CHỦ BÁO sau khi `main` lên v5.17.4: «Chỉ có 4 câu» (video «Tiểu hòa thượng», trước là 3; Alibaba cho 15). Không gọi được Whisper thật (đã thử: Hugging Face, Groq, model OpenAI đều bị chặn mạng; không có faster_whisper/whisper cài sẵn), nên KHÔNG thấy JSON thô; đây là suy luận, không phải chẩn đoán đã xác nhận.
 SUY LUẬN: Whisper tiếng Trung hay trả segment 30 đến 40 chữ chứa 3 đến 5 câu, sát hoặc dưới ngưỡng tách 30 chữ của `whisper-split.ts` (v5.17.4) nên không bị tách. Alibaba ra 15 câu vì tách ở mọi dấu câu.
 ĐÃ LÀM (v5.17.5, chỉ đổi CJK, chữ khác giữ nguyên): trong `src/lib/sub/whisper-split.ts` `LONG_AT.cjk` 30→14, `TARGET.cjk` 24→18, `HARD_MAX.cjk` 40→28. Segment CJK từ 14 chữ có dấu câu nay tách theo câu; không dấu câu mà > 28 chữ chia đều; câu đơn ≤ 14 chữ hoặc ≤ 28 chữ không dấu giữ một dòng. Test thêm 1 ca (2 câu dưới 30 chữ → 2 mảnh), sửa ca ngưỡng tách cứng. tsc, eslint, `npm test` pass. Nâng 5.17.5, CHANGELOG, ADMIN_LOG.
-CHƯA ĐẨY `main` cho v5.17.5: chờ Chủ nói đúng câu «đẩy chính thức» (`main` đang ở v5.17.4, `c271d4c`).
+ĐÃ ĐẨY `main` cho v5.17.5 (Chủ nói «đẩy chính thức» lần 2): `main` = `work`, fast-forward từ `c271d4c` (v5.17.4). Lần sau vẫn chỉ đẩy `main` khi Chủ nói đúng câu đó.
 NẾU VẪN ÍT CÂU: Chủ xuất file chẩn đoán của lần chạy (mục chẩn đoán, `RawAsrPart`) và gửi cho người làm tiếp. Cần xem: Whisper trả bao nhiêu segment, có dấu câu không, có `words` không, và có câu nào bị lọc («App lọc N câu»). Nếu segment không có dấu câu thì chỉ còn chia đều theo chữ (cắt giữa từ); khi đó cân nhắc cách khác (vd. dùng khoảng cách giữa các `words` để chọn chỗ cắt). Nếu Whisper chỉ trả đúng 3 đến 4 segment ngắn thì lỗi nằm ở bước trước (cắt đoạn/VAD hoặc Whisper bỏ câu), không phải tách câu.
 
-## ĐÃ ĐẨY CHÍNH THỨC (20/11/2026) — `main` = `work` (v5.17.4)
+## ĐÃ ĐẨY CHÍNH THỨC (20/11/2026) — lần 1 `main` = `work` (v5.17.4); lần 2 lên v5.17.5 (xem mục trên)
 Chủ nói đúng câu «đẩy chính thức». `main` được kéo thẳng (fast-forward) từ `0fca538` (v5.17.2) lên cùng commit với `work`, gồm: giá thuê phòng chỉnh được (v5.17.3) và tách câu dài cho Groq/Whisper (v5.17.4). Trước khi đẩy: typecheck sạch, eslint 0 lỗi, `npm test` 198 + 1255 pass, `npm run build` thành công. Từ nay `main` và `work` cùng ở bản mới; các câu «KHÔNG đẩy `main` (đang ở `0fca538`)» ở các mục bên dưới đã cũ. Việc đẩy `main` lần sau vẫn chỉ làm khi Chủ nói đúng câu «đẩy chính thức».
 
 ## BÀN GIAO (20/11/2026, nhánh work) — GROQ CHỈ RA 3 CÂU: ĐÃ SỬA VỀ MÃ (v5.17.4), CHƯA KIỂM VỚI GROQ THẬT — đọc mục này đầu tiên
