@@ -79,7 +79,7 @@ import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } f
 
 const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.";
 const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
-const KEY_MODE_TIP = "Dùng key Groq của bạn. Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ Token dịch cho lượt chạy.";
+const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, Deepgram… tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
 const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số Token dịch ước tính từ gói đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn.";
 
 const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
@@ -1308,10 +1308,12 @@ export function Studio() {
 
       <section id="tool-phim" role="region" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
         {runDoor.ready && runDoor.open && (
-          <button type="button" className="studio-pay-chip" onClick={() => openTool("key")} aria-label={"Cách trả đang chọn: " + (payByRoom ? "Trả theo lượt" : "Key của tôi") + ". Bấm để đổi."}>
+          <div className="studio-pay-chip" role="status">
             <span className="text-muted">Trả bằng:</span> <strong>{payByRoom ? "Trả theo lượt" : "Key của tôi"}</strong>
-            <span aria-hidden="true">›</span>
-          </button>
+            <button type="button" className="studio-pay-change" onClick={() => openTool("run")} aria-label="Đổi cách trả, ở bước cuối Tải và dịch">
+              Đổi
+            </button>
+          </div>
         )}
         <div className="grid gap-3 sm:grid-cols-2">
           <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.17.1",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Theo ảnh Chủ gửi trên v5.17.0. studio.tsx: chip «Trả bằng» thành div trạng thái + nút «Đổi» (studio-pay-change) mở tab run; KEY_MODE_TIP bỏ nói riêng Groq. money-card.tsx MoneyEstimate: chỉ hiện khi estimate.enough=false (thiếu số dư), bỏ câu giữ Token theo gói rẻ nhất và câu nhắc chọn tệp. Không đổi giá, quyền, cách giữ/trừ. Sửa studio-layout.test.ts.",
+  },
+  {
     version: "5.17.0",
     time: "20/11/2026",
     area: "khac",

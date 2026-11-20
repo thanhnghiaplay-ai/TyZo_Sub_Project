@@ -147,18 +147,15 @@ export function MoneyBalance({ money, turn }: { money: MoneyView; turn: boolean 
 
 /** Ô ước tính cho video đang chọn, đặt trên nút bắt đầu. Chỉ có ý nghĩa khi trả theo lượt. */
 export function MoneyEstimate({ money }: { money: MoneyView }) {
-  const { on, account, secs, run, estimate } = money;
+  const { on, account, secs, estimate } = money;
   if (!on || !account) return null;
+  // Ước tính chi tiết nằm ở bước cuối «Tải và dịch». Màn chính chỉ hiện khi số dư không đủ, để khỏi chiếm chỗ.
+  if (!estimate || estimate.enough) return null;
   return (
-    <section aria-label="Ước tính Token dịch" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
-      {estimate && (
-        <p className={estimate.enough ? "text-muted" : "text-danger"} role="status">
-          Video {fmt(secs)}: giữ khoảng <strong className="text-fg">{formatGiay(estimate.hold)}</strong> trước khi chạy
-          {run && !run.exact ? " (theo gói rẻ nhất)" : ""}.
-          {!estimate.enough ? ` Thiếu ${formatGiay(estimate.short)}. Hãy mua Token dịch ở Tài khoản.` : ""}
-        </p>
-      )}
-      {!estimate && secs < 1 && <p className="text-xs text-muted">Chọn một tệp để thấy ước tính cho video đó. Dán link thì chưa biết thời lượng.</p>}
+    <section aria-label="Ước tính Token dịch" className="rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
+      <p className="text-danger" role="status">
+        Video {fmt(secs)}: cần giữ khoảng <strong>{formatGiay(estimate.hold)}</strong>, thiếu {formatGiay(estimate.short)}. Hãy mua Token dịch ở Tài khoản.
+      </p>
     </section>
   );
 }

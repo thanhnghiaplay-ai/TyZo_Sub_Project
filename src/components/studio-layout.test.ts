@@ -345,6 +345,10 @@ describe("Bố cục mới B4 — mở lên tab Phim, chip Trả bằng", () => 
     );
     assert.match(phimTab, /studio-pay-chip/);
     assert.match(phimTab, /Trả bằng:/);
+    // Chỉ là trạng thái; đổi bằng nút «Đổi» riêng, mở bước cuối.
+    assert.match(phimTab, /<div className="studio-pay-chip"[\s\S]*studio-pay-change[\s\S]*openTool\("run"\)/);
+    assert.equal(/<button[^>]*studio-pay-chip/.test(phimTab), false);
+    assert.equal(source.includes("Dùng key Groq của bạn."), false);
     assert.ok(phimTab.indexOf("studio-pay-chip") < phimTab.indexOf("Nhận diện ngôn ngữ"));
     assert.equal(css.includes(".studio-run-bar"), false);
   });
