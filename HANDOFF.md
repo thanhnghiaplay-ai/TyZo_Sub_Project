@@ -1,3 +1,7 @@
+## BÀN GIAO (20/11/2026, nhánh work) — XÁC NHẬN TURBO: v5.17.6 RA 11 CÂU CẢ large-v3 VÀ turbo
+Chủ báo bản chính thức v5.17.6 với `whisper-large-v3-turbo` cũng ra 11 câu (trước khi sửa: turbo 7 câu, large-v3 2 câu). Vậy cả hai model đã hết bỏ lời trên clip «Tiểu hòa thượng». Chưa kiểm: nội dung 11 câu của turbo có đúng chữ không (lần trước turbo từng lệch ra tiếng Anh ở hai câu cuối; Chủ chưa gửi file lần này); clip 18+ (vẫn gửi `ASR_GUARD`).
+VIỆC TIẾP THEO: (a) nếu Chủ gửi file chép của turbo thì soát lệch ngôn ngữ ở đuôi (`needsLangCheck`/`chooseBetter`); (b) clip 18+; (c) cảnh báo «số câu thấp bất thường»; (d) xưng hô «bạn/cậu», «后天»; (e) B4.2 thuật ngữ zh 18 bộ còn lại.
+
 ## BÀN GIAO (20/11/2026, nhánh work) — XÁC NHẬN v5.17.6 TRÊN BẢN CHÍNH THỨC: CLIP «TIỂU HÒA THƯỢNG» RA 11 CÂU
 Chủ chạy lại clip bằng bản chính thức (`main` = `work` ở v5.17.6, KHÔNG `?asrtest`) và báo «11 câu»: khớp lần `noprompt`/`noguard` (trước khi sửa chỉ 2 câu). Lỗi Whisper large-v3 bỏ lời ở thoại thường ĐÃ XONG. Chưa xác nhận (Chủ chưa báo): bản turbo; clip 18+ (vẫn gửi `ASR_GUARD`, xem mục v5.17.6 bên dưới). Chưa đẩy thêm gì lên `main` sau lần đẩy chính thức v5.17.6.
 VIỆC TIẾP THEO (chọn theo ý Chủ): (a) thử turbo và clip 18+; (b) cảnh báo «số câu thấp bất thường»; (c) lệch ngôn ngữ đuôi ở turbo (`needsLangCheck`/`chooseBetter`), xưng hô «bạn/cậu», «后天»; (d) B4.2 thuật ngữ zh cho 18 bộ còn lại.
