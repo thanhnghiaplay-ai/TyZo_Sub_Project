@@ -23,20 +23,44 @@ const phim = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="
 
 describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
   it("ngôn ngữ, thể loại, file và nút chạy đứng trước phần thu gọn", () => {
-    const markers = ["Nhận diện ngôn ngữ", "Dịch sang tiếng", "Thể loại", 'title="Video"', "{app.buttonLabel}"];
+    const markers = [
+      "Nhận diện ngôn ngữ",
+      "Dịch sang tiếng",
+      "Thể loại",
+      'title="Video"',
+      "{app.buttonLabel}",
+    ];
     const at = markers.map((marker) => phim.indexOf(marker));
-    assert.ok(at.every((index) => index >= 0), at.join(","));
-    assert.deepEqual(at, [...at].sort((a, b) => a - b));
+    assert.ok(
+      at.every((index) => index >= 0),
+      at.join(","),
+    );
+    assert.deepEqual(
+      at,
+      [...at].sort((a, b) => a - b),
+    );
     assert.equal(phim.includes("Ngôn ngữ lời nói"), false);
     assert.equal(phim.includes("Ngôn ngữ đích"), false);
     assert.match(phim, /Dịch sang tiếng[\s\S]*value === "Vietnamese"/);
     const lists = readFileSync(new URL("../lib/sub/text.ts", import.meta.url), "utf8");
-    const src = lists.slice(lists.indexOf("export const SRC_LANGS"), lists.indexOf("export function speechLang"));
+    const src = lists.slice(
+      lists.indexOf("export const SRC_LANGS"),
+      lists.indexOf("export function speechLang"),
+    );
     assert.deepEqual(
       [...src.matchAll(/\["(zh|ko|ja|en|vi|th)"/g)].map((match) => match[1]),
       ["zh", "ko", "ja", "en"],
     );
     assert.equal(src.includes("Tự nhận dạng"), false);
+  });
+
+  it("tab Phim gọn: video và link ở ngoài, Âm thanh riêng và file lớn gập trong «Tùy chọn thêm», nút chạy sau cùng", () => {
+    const more = phim.indexOf("Tùy chọn thêm: âm thanh riêng, file lớn");
+    assert.ok(more > phim.indexOf('title="Video"'));
+    assert.ok(more > phim.indexOf("Hoặc link file trực tiếp"));
+    assert.ok(phim.indexOf('title="Âm thanh riêng"') > more);
+    assert.ok(phim.indexOf("studio-run-bar") > phim.indexOf('title="Âm thanh riêng"'));
+    assert.match(phim, /<details[^>]*open=\{app\.audioFile \? true : undefined\}/);
   });
 
   it("cách trả và gói trả theo lượt nằm trong Cài đặt dịch (Menu), Thuật ngữ cùng nhóm Dịch bình thường", () => {
@@ -48,7 +72,10 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(source.includes('id="tool-goi-dich"'), false);
     const thuat = source.slice(source.indexOf('id="tool-thuatngu"'));
     assert.match(thuat, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
-    assert.match(source, /label: MENU_GROUP\.normal[\s\S]{0,400}\[\.\.\.WHEEL_ORDER, "key" as const\]/);
+    assert.match(
+      source,
+      /label: MENU_GROUP\.normal[\s\S]{0,400}\[\.\.\.WHEEL_ORDER, "key" as const\]/,
+    );
     assert.match(key, /Nâng cao: model và nhận dạng/);
     assert.equal(source.includes('id: "nang-cao"'), false);
     assert.match(source, /hidden=\{toolTab !== "thuatngu"\}/);
@@ -57,11 +84,24 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
 
 describe("Bước 6.2 — khung Phụ đề", () => {
   it("video và bảng câu đứng ngoài tab, chỉ có một player", () => {
-    const markers = ['<SideRail', 'data-product="sub"', "data-workspace", "<Stage", "Bản dịch", 'id="tool-phim"'];
+    const markers = [
+      "<SideRail",
+      'data-product="sub"',
+      "data-workspace",
+      "<Stage",
+      "Bản dịch",
+      'id="tool-phim"',
+    ];
     const at = markers.map((marker) => source.indexOf(marker));
     assert.ok(at.every((index) => index >= 0));
-    assert.deepEqual(at, [...at].sort((a, b) => a - b));
-    const workspace = source.slice(source.indexOf("data-workspace"), source.indexOf('id="tool-key"'));
+    assert.deepEqual(
+      at,
+      [...at].sort((a, b) => a - b),
+    );
+    const workspace = source.slice(
+      source.indexOf("data-workspace"),
+      source.indexOf('id="tool-key"'),
+    );
     assert.match(workspace, /<Stage/);
     assert.match(workspace, /Bản dịch/);
     assert.equal(workspace.includes("Groq API key"), false);
@@ -79,7 +119,10 @@ describe("Bước 6.2 — khung Phụ đề", () => {
 describe("Bước 6.3 — mỗi tab một phần", () => {
   it("năm tab ẩn lẫn nhau và vẫn gắn trong cây", () => {
     for (const id of ["key", "phim", "cast", "voice", "check"]) {
-      assert.match(source, new RegExp(`id="tool-${id}"[\\s\\S]{0,160}hidden=\\{toolTab !== "${id}"\\}`));
+      assert.match(
+        source,
+        new RegExp(`id="tool-${id}"[\\s\\S]{0,160}hidden=\\{toolTab !== "${id}"\\}`),
+      );
     }
     assert.equal(source.includes('{toolTab === "phim" &&'), false);
   });
@@ -88,7 +131,10 @@ describe("Bước 6.3 — mỗi tab một phần", () => {
     assert.equal(source.split("Dịch tiếp").length - 1, 1);
     const check = source.slice(source.indexOf('id="tool-check"'));
     assert.match(check, /Dò khoảng trống/);
-    const workspace = source.slice(source.indexOf("data-workspace"), source.indexOf('id="tool-phim"'));
+    const workspace = source.slice(
+      source.indexOf("data-workspace"),
+      source.indexOf('id="tool-phim"'),
+    );
     assert.equal(workspace.includes("Dò khoảng trống"), false);
   });
 });
@@ -147,10 +193,15 @@ describe("Bước 7.1 — không chồng khung", () => {
   it("video không nổi lên tab, màn thấp không dùng tấm phủ", () => {
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     // Chuông, thông báo, huy hiệu vai trò và nhật ký phiên bản là lớp nổi riêng, không thuộc khung video.
-    const stageRules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).filter((rule) => /studio|stage|player|video|sheet/.test(rule.split("{")[0]));
+    const stageRules = (css.match(/[^{}]+\{[^{}]*\}/g) || []).filter((rule) =>
+      /studio|stage|player|video|sheet/.test(rule.split("{")[0]),
+    );
     assert.ok(stageRules.length > 0);
     // Ngoại lệ duy nhất: tab công cụ 80% (`.studio-tools.is-open`) và thanh đầu của nó nổi lên phía trên thanh dưới.
-    const floatingTab = (rule: string) => /(\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?|\.studio-wallet-tab)\s*$/.test(rule.split("{")[0]);
+    const floatingTab = (rule: string) =>
+      /(\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?|\.studio-wallet-tab)\s*$/.test(
+        rule.split("{")[0],
+      );
     for (const rule of stageRules) {
       if (floatingTab(rule)) continue;
       assert.equal(rule.includes("z-index:"), false, rule);
@@ -178,7 +229,10 @@ describe("Bước 7.1 — không chồng khung", () => {
     assert.match(css, /\.studio-shell\s*\{[^}]*overflow-y:\s*auto/);
     // Trang rộng: admin và tài khoản xếp thẻ theo cột tự tăng, thẻ rộng chiếm cả hàng.
     assert.match(css, /\.account-grid\s*\{[^}]*column-width:\s*22rem/);
-    assert.match(css, /\.admin-grid,\s*\.admin-flow\s*\{[^}]*display:\s*grid[^}]*repeat\(auto-fit,\s*minmax\(min\(100%,\s*22rem\),\s*1fr\)\)/);
+    assert.match(
+      css,
+      /\.admin-grid,\s*\.admin-flow\s*\{[^}]*display:\s*grid[^}]*repeat\(auto-fit,\s*minmax\(min\(100%,\s*22rem\),\s*1fr\)\)/,
+    );
     assert.match(css, /\.admin-grid > \.admin-wide\s*\{[^}]*grid-column:\s*1 \/ -1/);
     assert.match(css, /\.account-grid > \.account-wide\s*\{[^}]*column-span:\s*all/);
     assert.match(css, /\.admin-split\s*\{[^}]*display:\s*grid/);
@@ -186,8 +240,14 @@ describe("Bước 7.1 — không chồng khung", () => {
     const accountRoute = readFileSync(new URL("../routes/tai-khoan.tsx", import.meta.url), "utf8");
     assert.match(adminRoute, /room-wide/);
     assert.match(accountRoute, /room-wide/);
-    assert.match(readFileSync(new URL("./admin-desk.tsx", import.meta.url), "utf8"), /className="admin-grid"/);
-    assert.match(readFileSync(new URL("./account-panel.tsx", import.meta.url), "utf8"), /account-grid/);
+    assert.match(
+      readFileSync(new URL("./admin-desk.tsx", import.meta.url), "utf8"),
+      /className="admin-grid"/,
+    );
+    assert.match(
+      readFileSync(new URL("./account-panel.tsx", import.meta.url), "utf8"),
+      /account-grid/,
+    );
     // Bảng cài đặt phụ đề nằm trong khung video: khung phải co và cuộn, ruột không bị bóp méo.
     assert.match(css, /\.studio-video\s*\{[^}]*flex:\s*0 1 auto[^}]*overflow-y:\s*auto/);
     assert.match(css, /\.studio-video \.player-stack > \*\s*\{[^}]*flex-shrink:\s*0/);
@@ -197,11 +257,20 @@ describe("Bước 7.1 — không chồng khung", () => {
 
 describe("Bước 7.2 — tab theo thứ tự dùng", () => {
   it("Cài đặt dịch, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
-    assert.deepEqual([TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check], ["Cài đặt dịch", "Phim", "Nhân vật", "Thuyết minh", "Kiểm tra"]);
+    assert.deepEqual(
+      [TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check],
+      ["Cài đặt dịch", "Phim", "Nhân vật", "Thuyết minh", "Kiểm tra"],
+    );
     const keys = ["key", "phim", "cast", "voice", "check"];
     const at = keys.map((key) => source.indexOf(`["${key}", TOOL_NAME.`));
-    assert.ok(at.every((index) => index >= 0), at.join(","));
-    assert.deepEqual(at, [...at].sort((a, b) => a - b));
+    assert.ok(
+      at.every((index) => index >= 0),
+      at.join(","),
+    );
+    assert.deepEqual(
+      at,
+      [...at].sort((a, b) => a - b),
+    );
     assert.equal(source.includes('id="tool-chat"'), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
     assert.match(key, /Groq API key/);
@@ -216,7 +285,10 @@ describe("Bước 7.2 — tab theo thứ tự dùng", () => {
     assert.match(cast, /app\.setTitle/);
     assert.match(cast, /app\.setNotes/);
     assert.match(cast, /app\.setGloss/);
-    assert.match(source, /if \(!app\.reviewHold\) return;\s*setToolTab\("cast"\);\s*setSheetOpen\(true\);/);
+    assert.match(
+      source,
+      /if \(!app\.reviewHold\) return;\s*setToolTab\("cast"\);\s*setSheetOpen\(true\);/,
+    );
   });
 });
 
@@ -226,10 +298,13 @@ describe("Bước 7.3 — không giật khi chọn file và khi báo trạng th�
     assert.match(css, /html,\s*body\s*\{[^}]*overflow:\s*hidden/);
     assert.match(source, /aria-label="Đóng tab"/);
     assert.match(source, /aria-label="Đóng tab"[\s\S]{0,200}slot="act.close"/);
-    assert.equal(source.includes(">Đóng</button>\n        <section id=\"tool-key\""), false);
+    assert.equal(source.includes('>Đóng</button>\n        <section id="tool-key"'), false);
     assert.match(mediaBlock(css, SHEET_PORTRAIT), /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
     assert.match(mediaBlock(css, SHEET_LANDSCAPE), /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/);
-    assert.equal(/\.studio-sheet-bar\s*\{[^}]*display:\s*flex/.test(css.slice(0, css.indexOf("@media"))), false);
+    assert.equal(
+      /\.studio-sheet-bar\s*\{[^}]*display:\s*flex/.test(css.slice(0, css.indexOf("@media"))),
+      false,
+    );
     assert.match(source, /role="status"/);
     assert.match(source, /line-clamp-2 h-10/);
     assert.match(source, /showModal\(\)/);
@@ -247,26 +322,31 @@ describe("Bước 7.4 — số thuật ngữ nổi, nút X nằm trong khung", (
     assert.match(count, /color:\s*var\(--color-ink\)/);
     assert.equal(source.includes('className="text-ink">{app.glossaryInfo.count}'), false);
     assert.equal(source.split("studio-count").length - 1, 3);
-    const card = source.slice(source.indexOf('className="studio-tool-card"'), source.indexOf('id="tool-key"'));
+    const card = source.slice(
+      source.indexOf('className="studio-tool-card"'),
+      source.indexOf('id="tool-key"'),
+    );
     assert.match(card, /aria-label="Đóng tab"/);
     assert.ok(source.indexOf('className="studio-tool-card"') < source.indexOf('id="tool-check"'));
   });
 });
 
-
-
-
-
 describe("Bố cục mới B4 — Tải và dịch trong tab Phim, chip Trả bằng", () => {
   it("mở lên tab Phim, nút chạy dính đáy tab, chip Cách trả ở đầu tab Phim", () => {
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     assert.match(source, /useState<ToolId>\("phim"\)/);
-    const phimTab = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="tool-cast"'));
+    const phimTab = source.slice(
+      source.indexOf('id="tool-phim"'),
+      source.indexOf('id="tool-cast"'),
+    );
     assert.match(phimTab, /studio-pay-chip/);
     assert.match(phimTab, /Trả bằng:/);
     assert.ok(phimTab.indexOf("studio-pay-chip") < phimTab.indexOf("Nhận diện ngôn ngữ"));
     assert.match(phimTab, /studio-run-bar[\s\S]{0,200}data-tour="run"/);
-    assert.match(mediaBlock(css, SHEET_PORTRAIT), /\.studio-run-bar\s*\{[^}]*position:\s*sticky[^}]*bottom:\s*0/);
+    assert.match(
+      mediaBlock(css, SHEET_PORTRAIT),
+      /\.studio-run-bar\s*\{[^}]*position:\s*sticky[^}]*bottom:\s*0/,
+    );
   });
 });
 
@@ -278,7 +358,10 @@ describe("Bố cục mới B5a — Ví mở cùng kiểu tab 80%", () => {
     assert.match(css, /\n\.product-covered\s*\{[^}]*display:\s*none/);
     const portrait = mediaBlock(css, SHEET_PORTRAIT);
     assert.match(portrait, /\.product-covered\s*\{[^}]*display:\s*contents/);
-    assert.match(portrait, /\.studio-wallet-tab\s*\{[^}]*position:\s*fixed[^}]*calc\(80 \* var\(--vh\)\)/);
+    assert.match(
+      portrait,
+      /\.studio-wallet-tab\s*\{[^}]*position:\s*fixed[^}]*calc\(80 \* var\(--vh\)\)/,
+    );
   });
 });
 

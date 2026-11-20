@@ -1306,10 +1306,7 @@ export function Studio() {
           </button>
         </p>
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          <FileTile icon={<Icon slot="ui.video" className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
-          <FileTile icon={<Icon slot="ui.audio" className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
-        </div>
+        <FileTile icon={<Icon slot="ui.video" className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
         <label className="grid gap-1 text-sm text-muted">
           Hoặc link file trực tiếp
           <span className="relative">
@@ -1334,12 +1331,15 @@ export function Studio() {
             </span>
           )}
         </label>
-        <details className="text-sm text-muted">
-          <summary className="min-tap cursor-pointer">File lớn hơn 1 GB, MKV, AC3/DTS?</summary>
-          <p className="pb-2">
-            Tách âm thanh nhỏ bằng ffmpeg rồi chọn vào Âm thanh riêng. Video vẫn phát từ file gốc. Lệnh:{" "}
-            <code className="text-fg">ffmpeg -i phim.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
-          </p>
+        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2" open={app.audioFile ? true : undefined}>
+          <summary className="min-tap cursor-pointer text-sm font-medium">Tùy chọn thêm: âm thanh riêng, file lớn</summary>
+          <div className="grid gap-3 pt-2">
+            <FileTile icon={<Icon slot="ui.audio" className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
+            <p className="text-sm text-muted">
+              File lớn hơn 1 GB, MKV, AC3/DTS: tách âm thanh nhỏ bằng ffmpeg rồi chọn vào Âm thanh riêng. Video vẫn phát từ file gốc. Lệnh:{" "}
+              <code className="text-fg">ffmpeg -i phim.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
+            </p>
+          </div>
         </details>
 
         <div className="studio-run-bar grid gap-2">

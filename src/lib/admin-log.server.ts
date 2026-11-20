@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.14.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Bước 3 sắp xếp lại trang khách: tab Phim (studio.tsx) chỉ còn chip Trả bằng, ngôn ngữ, thể loại, ô Video, link; Âm thanh riêng và hướng dẫn file lớn gập trong details «Tùy chọn thêm: âm thanh riêng, file lớn» (tự mở khi đã chọn âm thanh). Nút Tải và dịch đã dính đáy sẵn (CSS .studio-run-bar). Thêm 1 ca trong studio-layout.test.ts.",
+  },
+  {
     version: "5.13.0",
     time: "20/11/2026",
     area: "khac",
