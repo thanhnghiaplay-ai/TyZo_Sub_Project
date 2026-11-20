@@ -1064,6 +1064,19 @@ html[data-fx="off"] .pay-end-spark {
     padding: 0 0.75rem 0.75rem;
   }
 
+  /* Trong tấm Ví hẹp, cột chữ báo (column-width) đè lên nút mua gói. Xếp một cột. */
+  .studio-wallet-body .account-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    column-width: auto;
+  }
+
+  .studio-wallet-body > div {
+    overflow: visible;
+    flex: none;
+  }
+
 }
 
 /* C. SHEET_LANDSCAPE: hai cột, video bên trái, bản dịch hoặc công cụ bên phải. */
@@ -1116,12 +1129,15 @@ html[data-fx="off"] .pay-end-spark {
   }
 }
 
-/* Điện thoại đứng: chừa dock và nhãn bánh xe, gọn đầu trang để video lên cao. */
+/* Điện thoại đứng: khung dừng trên dock và nhãn bánh xe, để «Bản dịch» và nút Sửa không bị đè. */
 @media (max-width: 699px) and (orientation: portrait) {
   .studio-shell {
     --chrome: 12.5rem;
+    --dock-clear: calc(11rem + env(safe-area-inset-bottom, 0px));
     gap: 0.35rem;
-    padding-bottom: calc(8.75rem + env(safe-area-inset-bottom, 0px));
+    height: calc(100 * var(--vh) - var(--dock-clear));
+    max-height: calc(100 * var(--vh) - var(--dock-clear));
+    padding-bottom: 0.5rem;
   }
 
   .studio-shell > header h1 {
@@ -3069,6 +3085,13 @@ html[data-motion="off"] :where(*)::after {
 @media (max-width: 1023px) {
   .studio-shell {
     padding-bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Điện thoại đứng: khung đã thấp hơn dock (khối portrait phía trên). Không cộng thêm đệm 6.25rem. */
+@media (max-width: 699px) and (orientation: portrait) {
+  .studio-shell {
+    padding-bottom: 0.5rem;
   }
 }
 

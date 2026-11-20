@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.18.1",
+    time: "20/11/2026",
+    area: "khac",
+    text: "v5.18.1, sửa chỗ đè trên điện thoại (ảnh Chủ gửi). 1) Phòng dịch đứng: .studio-shell cao bằng màn hình trừ 11rem cộng tai thỏ, nên dock và nhãn bánh xe (Phim · n/5) không đè Bản dịch, nút Sửa hay thanh tua. 2) Tấm Ví: .account-grid trong .studio-wallet-body xếp một cột, bỏ column-width, để câu điều kiện gói không đè nút Ngày/Tuần/Tháng. 3) Admin: thanh «Tổng quan / Tìm» không còn sticky trong vùng cuộn; chỉ phần nội dung cuộn, thanh đứng trên. Thẻ khách gập thêm Ghi chú, Bảo mật (mật khẩu tạm, khóa, cấm), Quyền. CHƯA bấm thử trên điện thoại thật.",
+  },
+  {
     version: "5.18.0",
     time: "20/11/2026",
     area: "khac",

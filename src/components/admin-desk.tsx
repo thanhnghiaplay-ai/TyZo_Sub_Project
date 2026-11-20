@@ -39,7 +39,7 @@ import { Fold } from "@/components/admin-fold";
 import { formatGiay } from "@/lib/token-math";
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { useRoomPlans } from "@/lib/use-room-plans";
-import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
+import { canSkipToOwner, ROLE_LABEL, isStaffRole, roleAtLeast } from "@/lib/staff-role";
 import { BadgeBoard } from "@/components/badge-board";
 import { AccountCard } from "@/components/role-mark";
 import { AdminBoot } from "@/components/admin-boot";
@@ -324,7 +324,7 @@ export function AdminDesk() {
   if (!place) return <AdminBoot trying={booting} notice={notice} />;
 
   return (
-    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 pb-2">
+    <div className="flex min-h-0 flex-1 flex-col px-1">
       {role ? (
         <div className="flex items-center gap-2 py-2">
           <BackButton fallback="/" onBack={tab === "tong-quan" && tabStack.length === 0 ? undefined : () => void backFromTab()} label={tab === "tong-quan" && tabStack.length === 0 ? "Quay lại" : tabStack.length > 0 ? "Về tab vừa xem" : "Về Tổng quan"} />
@@ -334,10 +334,10 @@ export function AdminDesk() {
         <p className="pt-2 text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
       )}
       {role && <AdminPalette tabs={tabsFor(role)} open={paletteOpen} onOpenChange={setPaletteOpen} onPick={setTab} />}
-      <AppShell pinned>
+      <AppShell pinned className="flex min-h-0 flex-1 flex-col">
       {role && <AdminNav tabs={tabsFor(role)} current={tab} onPick={setTab} onSearch={() => setPaletteOpen(true)} who={{ name: me?.displayName, email: me?.primaryEmail }} />}
       {role && <AdminBottomBar tabs={tabsFor(role)} current={tab} waiting={stats?.waiting} onPick={setTab} onSearch={() => setPaletteOpen(true)} />}
-      <div className="min-w-0 flex-1 pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
       <div className="admin-grid">
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
       {role && tab === "thao-tac" && <AuditTab rows={audit} />}
@@ -539,6 +539,7 @@ export function AdminDesk() {
                 )}
               </div>
               </Fold>
+              <Fold title="Ghi chú" hint={note.trim() ? "Đã có ghi chú" : "Chưa có ghi chú"}>
               <div className="admin-pane">
               <label className="grid gap-1 text-sm">
                 Ghi chú nội bộ
@@ -548,8 +549,9 @@ export function AdminDesk() {
                 Lưu ghi chú
               </button>
               </div>
+              </Fold>
               {roleAtLeast(role, "quan-ly") && (
-                <>
+                <Fold title="Bảo mật" hint="Mật khẩu tạm, khóa, cấm">
                   <div className="admin-pane">
                   <label className="grid gap-1 text-sm">
                     Mật khẩu tạm
@@ -611,9 +613,10 @@ export function AdminDesk() {
                       </button>
                     </div>
                   )}
-                </>
+                </Fold>
               )}
               {roleAtLeast(role, "chu") && picked.role !== "chu" && (
+                <Fold title="Quyền" hint={isStaffRole(picked.role) ? ROLE_LABEL[picked.role] : "Khách"}>
                 <div className="admin-span flex flex-wrap gap-2">
                   <button type="button" disabled={busy} className="min-tap rounded-full border border-line px-4 disabled:opacity-40" onClick={() => void run(() => setStaffRole({ data: { userId: picked.id, role: "ho-tro" } }), "Đã cho quyền Hỗ trợ.")}>
                     Cho Hỗ trợ
@@ -633,6 +636,7 @@ export function AdminDesk() {
                     Xóa tài khoản
                   </button>
                 </div>
+                </Fold>
               )}
             </AccountCard>
           )}

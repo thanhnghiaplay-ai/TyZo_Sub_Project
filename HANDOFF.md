@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 20/11/2026. **v5.18.0 trên `work`**. `main` vẫn v5.17.7 (đã đẩy chính thức). Điều khoản `2026-11-18.1`.
+Cập nhật 20/11/2026. **v5.18.1 trên `work`**. `main` vẫn v5.17.7 (đã đẩy chính thức). Điều khoản `2026-11-18.1`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -8,7 +8,7 @@ File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại v�
 2. Lấy code: clone nhánh `work` của `thanhnghiaplay-ai/TyZo_Sub_Project`. Mọi việc làm trên `work`.
 3. Kiểm nền: `npm ci`, `npm run typecheck`, `npm run lint` (0 lỗi; 31 cảnh báo có sẵn), `npm test`, `npm run build`.
 4. Mỗi bước: sửa → typecheck → lint → test → (nếu đổi hành vi khách: nâng `APP_VERSION`, thêm `CHANGELOG` mỗi dòng ≤ 100 ký tự và không có từ nội bộ, thêm `ADMIN_LOG`) → commit → đẩy `work` → ghi một dòng ở mục 3.
-5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` vẫn `v5.17.7`. `work` đang v5.18.0, chưa đẩy chính thức.
+5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` vẫn `v5.17.7`. `work` đang v5.18.1, chưa đẩy chính thức.
 6. KHÔNG ghi token hay mật khẩu vào file, commit hay remote; truyền token ở dòng lệnh rồi bỏ. Token GitHub từng dán trong chat phải được Chủ thu hồi.
 7. Lưu ý môi trường Claude: không gọi được `api.groq.com`, Alibaba, Deepgram (nên không tự kiểm với nhà thật); `github.com` thì được. Trong shell, `cut -c`/`head -c` cắt hỏng chữ tiếng Việt, dùng Python.
 8. `AGENTS.md` là mẫu chung của một công cụ khác, không phải quy tắc dự án. Quy tắc dự án: `AGENTS.project.md`, `BANG_DIEU.md`, `huongdan.txt`.
@@ -24,6 +24,7 @@ Các mục 1, 2, 4, 5 cần Chủ, clip thật, key Groq hoặc máy thật nên
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục).
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.18.1**: hết các chỗ đè trên điện thoại còn trong ảnh. Phòng dịch đứng dừng trên dock (11rem), nhãn bánh xe không đè Bản dịch / nút Sửa / thanh tua; đệm 6.25rem không cộng thêm trên điện thoại đứng. Ví xếp một cột nên câu gói dùng thử không đè nút Ngày, Tuần, Tháng. Admin: thanh mục không dính đè tiêu đề; thẻ khách gập đủ Gói và Token, Số tiền, Phiếu, Ghi chú, Bảo mật, Quyền. tsc sạch, eslint 0 lỗi (31 cảnh báo có sẵn), npm test 198 (191 pass, 7 bỏ qua) + 1293 pass. CHƯA bấm thử trên điện thoại thật.
 - **v5.18.0** (khách thấy; chi tiết `CHANGELOG` + `ADMIN_LOG`): (1) lúc đọc file, thanh tiến độ hiện phần trăm ước và số giây, trọng số cắt 5 / nhận dạng 15 / dịch 70 / sửa 10. (2) Ô ngôn ngữ nguồn có «Tự động» (không nạp thuật ngữ, nhận dạng không ép tiếng). (3) Dịch xong hiện khung Trau chuốt / Dịch lại bằng model khác (giữ nhận dạng) / Bỏ qua; nút Tiếp tục ở đầu trang khi còn việc dở. (4) Thuyết minh chỉ đọc trong khoảng có từ (`seg.talk`), giọng đã chọn lỗi thì bỏ câu chứ không đổi sang giọng máy. (5) Admin, Quản lý đặt Token dịch còn hạn (hộp xác nhận của app, nhật ký `chinh-token`); sổ tiền và phiếu gập lại. Điện thoại: thanh Admin không đè đầu trang, chuông nổi trên, phòng dịch chừa dock. tsc sạch, eslint 0 lỗi (31 cảnh báo có sẵn), npm test 198 (191 pass, 7 bỏ qua) + 1293 pass. CHƯA bấm thử trên điện thoại thật.
 - v5.17.6: sửa Whisper large-v3 bỏ lời. `ASR_GUARD` chỉ gửi cho thể loại sex/softcore/adult (`ASR_GUARD_GENRES` ở `text.ts`); thể loại khác chỉ gửi tên phim + thuật ngữ. Clip «Tiểu hòa thượng» từ 2 câu lên 11 câu cả large-v3 và turbo, Chủ đã xác nhận trên bản chính thức.
 - Bộ đo nhận dạng (không đổi hành vi): `npm run asr:score -- file.srt --lang zh [--ref ..] [--duration ..]` (không mạng) và `GROQ_API_KEY=... npm run asr:bench` (so prompt × model). Mã ở `src/lib/sub/asr-score.ts`, `scripts/asr-bench.ts`, dữ liệu ở `eval/asr/` (xem `eval/asr/README.md`).
@@ -41,8 +42,8 @@ Các mục 1, 2, 4, 5 cần Chủ, clip thật, key Groq hoặc máy thật nên
 - Công tắc thử `?asrtest=noprompt | chunkN | noguard | off` (`src/lib/sub/asr-test.ts`), mặc định TẮT, lưu trong trình duyệt.
 - Ngưỡng chữ/giây là mức chung nên có thể chấm oan clip thưa lời. Chấm trên câu thô của Whisper, chưa qua bộ lọc `appFiltered` của app.
 
-## 5. Chưa thấy trên giao diện thật (v5.18.0)
-Đọc file hiện phần trăm; ô «Tự động»; khung sau khi dịch xong; thuyết minh bỏ khoảng im và không rơi giọng máy; Admin chỉnh Token dịch; thanh Admin và dock trên điện thoại. Test, typecheck, lint phải xanh trước khi đẩy, nhưng chưa ai bấm thử trên điện thoại thật. Bản chính thức khách đang dùng vẫn là v5.17.7 trên `main`.
+## 5. Chưa thấy trên giao diện thật (v5.18.1)
+Đọc file có phần trăm; ô «Tự động»; khung sau khi dịch; thuyết minh bỏ khoảng im; Admin chỉnh Token dịch; dock không đè Bản dịch; Ví không đè nút gói; thanh Admin không đè tiêu đề; thẻ khách gập đủ sáu mục. Test phải xanh trước khi đẩy. Chưa ai bấm thử trên điện thoại thật. Bản chính thức khách đang dùng vẫn là v5.17.7 trên `main`.
 
 ## 6. Bản đồ file tài liệu
 | File | Dùng để |
