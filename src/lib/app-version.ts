@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.17.6";
+export const APP_VERSION = "5.17.7";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.17.7",
+    time: "20/11/2026",
+    title: "Báo khi nhận dạng ra quá ít chữ so với độ dài video.",
+    points: [
+      "Video từ 20 giây mà chữ nhận ra quá thưa sẽ có thêm dòng nhắc là có thể đã sót lời.",
+      "Bạn có thể thử model nhận dạng khác hoặc chạy lại để so sánh. Bản dịch không đổi.",
+    ],
+  },
   {
     version: "5.17.6",
     time: "20/11/2026",

@@ -37,6 +37,7 @@ import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stre
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
 import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
+import { sparseSpeechNote } from "@/lib/sub/sparse-note";
 import { loadQualityThresholds } from "@/lib/quality-load";
 import { reportFromSummary } from "@/lib/quality-board";
 import { reportQuality } from "@/lib/quality-room";
@@ -1987,8 +1988,10 @@ export function usePipeline() {
           /* bỏ qua */
         }
       }
+      const sparseNote = sparseSpeechNote({ lang: source, segs: j.segs, seconds: j.parts.reduce((n, [a, b]) => n + (b - a), 0) / SR });
       const retryBit =
-        j.retryReport && (j.retryReport.usedSeconds > 0 || j.retryReport.missing.length > 0) ? ` ${formatRetryStatus(j.retryReport)}` : "";
+        (j.retryReport && (j.retryReport.usedSeconds > 0 || j.retryReport.missing.length > 0) ? ` ${formatRetryStatus(j.retryReport)}` : "") +
+        (sparseNote ? ` ${sparseNote}` : "");
       if (!j.segs.length) {
         say(
           `Không nhận dạng được lời nói. Có thể video không có tiếng hoặc âm thanh quá nhỏ. Đã bỏ qua ${j.skipped} đoạn im lặng.${retryBit}`,

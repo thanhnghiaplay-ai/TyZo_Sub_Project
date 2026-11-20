@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.17.7",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Cảnh báo khách khi nhận dạng quá thưa: src/lib/sub/sparse-note.ts (sparseSpeechNote, dùng scoreAsr của asr-score.ts) nối một câu nhắc vào dòng «Hoàn tất» ở use-pipeline.ts. Điều kiện: ngôn ngữ nguồn zh/ja/ko/en, tổng đoạn từ 20 giây, và scoreAsr báo «quá thưa» (dưới 1,5 chữ/giây với zh/ja/ko, dưới 6 với en) hoặc có câu dài mà ít chữ. Cố ý KHÔNG báo vì câu bịa hay lệch ngôn ngữ (chưa đo đủ). Chữ đo là chữ thô của Whisper (raw, rồi original). Rủi ro: thoại thật sự thưa (ít lời, nhiều nhạc) có thể bị nhắc oan; chỉnh DEFAULT_THRESHOLDS hoặc SPARSE_MIN_SECONDS nếu thấy nhắc oan nhiều. Test: sparse-note.test.ts 6 ca. CHƯA thấy trên giao diện thật.",
+  },
+  {
     version: "5.17.6",
     time: "20/11/2026",
     area: "khac",
