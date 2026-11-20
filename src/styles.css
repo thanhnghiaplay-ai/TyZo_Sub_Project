@@ -1237,7 +1237,7 @@ html[data-fx="off"] .pay-end-spark {
 
 .notice-bell {
   position: relative;
-  z-index: 5;
+  z-index: 20;
 }
 
 .notice-bell-btn {

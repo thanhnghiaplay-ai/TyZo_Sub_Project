@@ -330,7 +330,7 @@ export function AdminDesk() {
       <AppShell pinned>
       {role && <AdminNav tabs={tabsFor(role)} current={tab} onPick={setTab} onSearch={() => setPaletteOpen(true)} who={{ name: me?.displayName, email: me?.primaryEmail }} />}
       {role && <AdminBottomBar tabs={tabsFor(role)} current={tab} waiting={stats?.waiting} onPick={setTab} onSearch={() => setPaletteOpen(true)} />}
-      <div className="min-w-0 flex-1 pb-20 lg:pb-0">
+      <div className="min-w-0 flex-1 pb-[calc(7rem+env(safe-area-inset-bottom,0px))] lg:pb-0">
       <div className="admin-grid">
       {role && tab === "tong-quan" && <AdminOverview owner={role === "chu"} onGo={setTab} />}
       {role && tab === "thao-tac" && <AuditTab rows={audit} />}
