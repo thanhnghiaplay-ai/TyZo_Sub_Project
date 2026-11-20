@@ -9,6 +9,7 @@ export const TOOL_NAME = {
   voice: "Thuyết minh",
   check: "Kiểm tra",
   thuatngu: "Thuật ngữ",
+  run: "Tải và dịch",
 } as const;
 
 export type ToolName = keyof typeof TOOL_NAME;

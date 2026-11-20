@@ -15,6 +15,8 @@ export type TourStep = {
   press?: boolean;
   /** Điện thoại / màn thấp: bước này cần tab công cụ (tấm trượt) mở hay đóng. Bỏ trống thì không đụng tới. Tab đang mở che chỗ cần chỉ thì ghi «closed». */
   sheet?: "open" | "closed";
+  /** Bước này nằm trong tab công cụ này: app chuyển sang tab đó trước khi chỉ (cùng nghĩa với bấm «Tiếp tục» đến đó). */
+  tab?: "key" | "phim" | "cast" | "voice" | "run";
 };
 
 export type TourId = "quick-start" | "phu-de" | "thuyet-minh" | "dich-truc-tiep" | "thuat-ngu" | "nap-tien" | "key-groq" | "mat-khau" | "ho-tro";
@@ -39,7 +41,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "[data-tour=drop]", sheet: "closed", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
     { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở mục Cài đặt dịch: dùng key Groq của bạn, hoặc trả theo lượt bằng Token dịch đã mua." },
     { sel: "#tool-tab-phim", rail: true, press: true, title: "3. Chọn phim", text: "Mở Phim để chọn ngôn ngữ và thể loại." },
-    { sel: "[data-tour=run]", sheet: "open", title: "4. Dịch", text: "Bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
+    { sel: "[data-tour=run]", sheet: "open", tab: "run", title: "4. Dịch", text: "Bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
     { sel: "[data-tour=export]", sheet: "closed", title: "5. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
   ],
   "phu-de": [

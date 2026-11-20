@@ -415,24 +415,33 @@ html[data-fx="off"] .pay-end-spark {
   padding: 0.5rem 0.5rem 0.25rem 0.9rem;
 }
 
+/* Chuỗi bước: đầu mỗi tab có thanh dính «Tiếp tục» (bước cuối là Tải và dịch), cuộn xuống vẫn thấy. */
+.studio-sticky-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-card);
+}
+
+.studio-step-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: var(--line-w, 1px) solid var(--color-line);
+}
+
+.studio-step-count {
+  flex: none;
+  min-width: 2.25rem;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Ví mở lên: ngoài điện thoại đứng thì thay cả trang, trên điện thoại đứng là tab nổi như công cụ. */
 .product-covered {
   display: none;
-}
-
-.studio-next-tool {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.4rem;
-  min-height: 2.75rem;
-  margin: 0 1rem 1rem;
-  padding: 0 0.9rem;
-  border: var(--line-w, 1px) solid var(--color-line);
-  border-radius: var(--radius-ctl);
-  background: var(--color-raised);
-  color: var(--color-fg);
-  font-size: 0.875rem;
 }
 
 .studio-pay-chip {
@@ -1044,23 +1053,6 @@ html[data-fx="off"] .pay-end-spark {
     padding: 0 0.75rem 0.75rem;
   }
 
-  /* Nút hành động (Tải và dịch, Làm lại) dính đáy tab, luôn thấy khi cuộn. */
-  .studio-tools.is-open .studio-run-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 1;
-    margin: 0 -1rem -1rem;
-    padding: 0.75rem 1rem 1rem;
-    background: color-mix(in srgb, var(--color-card) 92%, transparent);
-    border-top: var(--line-w, 1px) solid var(--color-line);
-  }
-
-  .studio-tools.is-open .studio-sheet-bar {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: inherit;
-  }
 }
 
 /* C. SHEET_LANDSCAPE: hai cột, video bên trái, bản dịch hoặc công cụ bên phải. */

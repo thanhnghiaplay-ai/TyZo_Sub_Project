@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.17.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Trang khách thành chuỗi bước theo yêu cầu Chủ. studio-steps.ts (+ test): STEP_ORDER key, phim, cast, voice, run; stepInfo. Tab mới `run` «Tải và dịch» (TOOL_NAME.run, TOOL_ICON.run, TOOLS, MENU_TOOL_ORDER nay key, phim, cast, thuatngu, voice, run, check; nút vàng WHEEL_ORDER giữ nguyên 4). studio.tsx: khối `.studio-sticky-head` (thanh tiêu đề tab + thanh `.studio-step-bar` có «Tiếp tục»), dính đầu tab; ở tab run nút đó là nút chạy/dừng (data-tour=run, app.start/cancel, điều kiện khóa như cũ). Cách trả + TurnPackList dời từ tab Cài đặt dịch sang tab run; tab Cài đặt dịch giữ ô key (khi trả theo lượt hiện dòng chỉ xuống bước cuối). Bỏ run-bar dính đáy ở tab Phim và dòng «Tiếp theo:» cuối tab (xóa CSS .studio-next-tool, .studio-run-bar). Tour: TourStep.tab (sự kiện tyzo-tab), bước «Dịch» của quick-start chỉ tab run. Sửa studio-layout.test.ts và tool-wheel.test.ts theo luồng mới.",
+  },
+  {
     version: "5.16.2",
     time: "20/11/2026",
     area: "khac",

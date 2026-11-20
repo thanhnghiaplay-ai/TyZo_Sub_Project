@@ -73,7 +73,8 @@ test("kéo sang trái thì tiến tới công cụ kế, kéo sang phải thì l
 
 test("mọi công cụ lướt đều có tên trong TOOL_NAME, và Studio gắn nút lướt vào thanh dưới", () => {
   for (const id of WHEEL_ORDER) assert.ok(TOOL_NAME[id], id);
-  assert.equal(Object.keys(TOOL_NAME).length, WHEEL_ORDER.length + 2);
+  assert.equal(Object.keys(TOOL_NAME).length, WHEEL_ORDER.length + 3);
+  assert.equal(TOOL_NAME.run, "Tải và dịch");
   assert.equal(TOOL_NAME.cast, "Ngữ cảnh");
   assert.equal(TOOL_NAME.thuatngu, "Thuật ngữ");
   assert.equal(TOOL_NAME.key, "Cài đặt dịch");
@@ -90,7 +91,8 @@ test("nextTool đi theo luồng Phim → … → Kiểm tra; công cụ cuối v
   for (let i = 0; i < WHEEL_ORDER.length - 1; i++)
     assert.equal(nextTool(WHEEL_ORDER[i]), WHEEL_ORDER[i + 1]);
   const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
-  assert.match(studio, /Tiếp theo:[\s\S]{0,120}TOOL_NAME\[nextTool\(toolTab\)!\]/);
+  // Dòng «Tiếp theo: …» cuối tab đã được thay bằng thanh dính «Tiếp tục» (studio-steps.ts).
+  assert.equal(studio.includes("Tiếp theo:"), false);
 });
 
 test("ringDash: 0% là vòng trống, 100% là vòng đầy, ngoài khoảng thì cắt", () => {

@@ -68,6 +68,7 @@ export function GuidedTour({ open, onClose, tour = "quick-start" }: { open: bool
     // Bước không nằm trong menu thì đóng menu đang mở, để menu không che chỗ cần chỉ.
     if (!now.rail) toggleOf(true)?.click();
     // Tab công cụ (tấm trượt) che chỗ cần chỉ thì đóng; chỗ cần chỉ nằm trong tab thì mở. Trang không có tab công cụ thì bỏ qua.
+    if (now.tab) window.dispatchEvent(new CustomEvent("tyzo-tab", { detail: now.tab }));
     if (now.sheet) window.dispatchEvent(new CustomEvent(SHEET_EVENT, { detail: now.sheet === "open" }));
     const tick = () => {
       const el = now.sel ? document.querySelector<HTMLElement>(now.sel) : null;

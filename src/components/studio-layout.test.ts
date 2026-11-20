@@ -22,13 +22,12 @@ function mediaBlock(css: string, query: string): string {
 const phim = source.slice(source.indexOf('id="tool-phim"'), source.indexOf('id="tool-cast"'));
 
 describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
-  it("ngôn ngữ, thể loại, file và nút chạy đứng trước phần thu gọn", () => {
+  it("ngôn ngữ, thể loại và file đứng trước phần thu gọn", () => {
     const markers = [
       "Nhận diện ngôn ngữ",
       "Dịch sang tiếng",
       "Thể loại",
       'title="Video"',
-      "{app.buttonLabel}",
     ];
     const at = markers.map((marker) => phim.indexOf(marker));
     assert.ok(
@@ -54,21 +53,25 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(src.includes("Tự nhận dạng"), false);
   });
 
-  it("tab Phim gọn: video và link ở ngoài, Âm thanh riêng và file lớn gập trong «Tùy chọn thêm», nút chạy sau cùng", () => {
+  it("tab Phim gọn: video và link ở ngoài, Âm thanh riêng và file lớn gập trong «Tùy chọn thêm», nút chạy đã dời sang bước cuối", () => {
     const more = phim.indexOf("Tùy chọn thêm: âm thanh riêng, file lớn");
     assert.ok(more > phim.indexOf('title="Video"'));
     assert.ok(more > phim.indexOf("Hoặc link file trực tiếp"));
     assert.ok(phim.indexOf('title="Âm thanh riêng"') > more);
-    assert.ok(phim.indexOf("studio-run-bar") > phim.indexOf('title="Âm thanh riêng"'));
+    assert.equal(phim.includes("studio-run-bar"), false);
+    assert.equal(phim.includes("app.buttonLabel"), false);
     assert.match(phim, /<details[^>]*open=\{app\.audioFile \? true : undefined\}/);
   });
 
-  it("cách trả và gói trả theo lượt nằm trong Cài đặt dịch (Menu), Thuật ngữ cùng nhóm Dịch bình thường", () => {
+  it("cách trả và gói trả theo lượt nằm ở bước cuối Tải và dịch, ô key ở Cài đặt dịch, Thuật ngữ cùng nhóm Dịch bình thường", () => {
     assert.equal(phim.includes("Thuật ngữ thể loại"), false);
     assert.equal(phim.includes("<GlossaryEditor"), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
-    assert.match(key, /Cách trả/);
-    assert.match(key, /<TurnPackList/);
+    assert.equal(key.includes("<TurnPackList"), false);
+    assert.match(key, /Groq API key/);
+    const run = source.slice(source.indexOf('id="tool-run"'), source.indexOf('id="tool-check"'));
+    assert.match(run, /Cách trả/);
+    assert.match(run, /<TurnPackList/);
     assert.equal(source.includes('id="tool-goi-dich"'), false);
     const ngucanh = source.slice(
       source.indexOf('id="tool-cast"'),
@@ -200,7 +203,7 @@ describe("Bước 7.1 — không chồng khung", () => {
     assert.ok(stageRules.length > 0);
     // Ngoại lệ duy nhất: tab công cụ 80% (`.studio-tools.is-open`) và thanh đầu của nó nổi lên phía trên thanh dưới.
     const floatingTab = (rule: string) =>
-      /(\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?|\.studio-wallet-tab)\s*$/.test(
+      /(\.studio-tools\.is-open(\s+\.studio-(sheet-bar|run-bar))?|\.studio-sticky-head|\.studio-wallet-tab)\s*$/.test(
         rule.split("{")[0],
       );
     for (const rule of stageRules) {
@@ -332,8 +335,8 @@ describe("Bước 7.4 — số thuật ngữ nổi, nút X nằm trong khung", (
   });
 });
 
-describe("Bố cục mới B4 — Tải và dịch trong tab Phim, chip Trả bằng", () => {
-  it("mở lên tab Phim, nút chạy dính đáy tab, chip Cách trả ở đầu tab Phim", () => {
+describe("Bố cục mới B4 — mở lên tab Phim, chip Trả bằng", () => {
+  it("mở lên tab Phim, chip Cách trả ở đầu tab Phim", () => {
     const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     assert.match(source, /useState<ToolId>\("phim"\)/);
     const phimTab = source.slice(
@@ -343,11 +346,24 @@ describe("Bố cục mới B4 — Tải và dịch trong tab Phim, chip Trả b�
     assert.match(phimTab, /studio-pay-chip/);
     assert.match(phimTab, /Trả bằng:/);
     assert.ok(phimTab.indexOf("studio-pay-chip") < phimTab.indexOf("Nhận diện ngôn ngữ"));
-    assert.match(phimTab, /studio-run-bar[\s\S]{0,200}data-tour="run"/);
-    assert.match(
-      mediaBlock(css, SHEET_PORTRAIT),
-      /\.studio-run-bar\s*\{[^}]*position:\s*sticky[^}]*bottom:\s*0/,
-    );
+    assert.equal(css.includes(".studio-run-bar"), false);
+  });
+});
+
+describe("Chuỗi bước: Cài đặt dịch → Phim → Ngữ cảnh → Thuyết minh → Tải và dịch", () => {
+  it("thanh Tiếp tục dính đầu tab; ở bước cuối nút đó chạy dịch; Cách trả và ước tính dời xuống bước cuối", () => {
+    const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    assert.match(css, /\.studio-sticky-head\s*\{[^}]*position:\s*sticky[^}]*top:\s*0/);
+    const head = source.slice(source.indexOf("studio-sticky-head"), source.indexOf('id="tool-key"'));
+    assert.match(head, /studio-sheet-bar/);
+    assert.match(head, /stepInfo\(toolTab\)/);
+    assert.match(head, /step\.last[\s\S]*data-tour="run"[\s\S]*app\.start\(\)/);
+    assert.match(head, /Tiếp tục/);
+    assert.match(head, /setToolTab\(step\.next!\)/);
+    assert.equal(source.includes("studio-next-tool"), false);
+    // Ô dán key vẫn ở bước đầu.
+    const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
+    assert.match(key, /data-tour="key-input"/);
   });
 });
 

@@ -3,7 +3,8 @@ import { StudioDock } from "@/components/studio-dock";
 import { ToolWheel } from "@/components/tool-wheel";
 import { isStudioSheet } from "@/lib/studio-layout";
 import { TOOL_ICON } from "@/lib/tool-icon";
-import { WHEEL_ORDER, nextTool, type WheelId } from "@/lib/tool-wheel";
+import { WHEEL_ORDER, type WheelId } from "@/lib/tool-wheel";
+import { stepInfo } from "@/lib/studio-steps";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { BackButton } from "@/components/back-button";
@@ -478,6 +479,7 @@ const TOOLS = [
   ["cast", TOOL_NAME.cast],
   ["voice", TOOL_NAME.voice],
   ["check", TOOL_NAME.check],
+  ["run", TOOL_NAME.run],
 ] as const;
 
 /** Chức năng thêm: chỉ Thuật ngữ (cùng nhóm «Dịch bình thường» trên menu). Cách trả và model nằm trong «Cài đặt dịch» (Menu, không lướt bằng nút vàng). */
@@ -487,7 +489,7 @@ const ADVANCED_TOOLS = [
 type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 
 /** Thứ tự mục trên menu (Dịch bình thường): Thuật ngữ là lối tắt vào nhánh của tab Ngữ cảnh. */
-const MENU_TOOL_ORDER = ["phim", "cast", "thuatngu", "voice", "check", "key"] as const;
+const MENU_TOOL_ORDER = ["key", "phim", "cast", "thuatngu", "voice", "run", "check"] as const;
 
 export function Studio() {
   const app = usePipeline();
@@ -768,7 +770,15 @@ export function Studio() {
       if (isStudioSheet()) setSheetOpen(Boolean((event as CustomEvent<boolean>).detail));
     };
     window.addEventListener("tyzo-sheet", onSheet);
-    return () => window.removeEventListener("tyzo-sheet", onSheet);
+    const onTab = (event: Event) => {
+      const id = (event as CustomEvent<string>).detail;
+      if (stepInfo(id)) setToolTab(id as ToolId);
+    };
+    window.addEventListener("tyzo-tab", onTab);
+    return () => {
+      window.removeEventListener("tyzo-sheet", onSheet);
+      window.removeEventListener("tyzo-tab", onTab);
+    };
   }, []);
 
   useEffect(() => {
@@ -1099,6 +1109,7 @@ export function Studio() {
 
       <div className={"studio-tools" + (sheetOpen ? " is-open" : "")}>
         <div className="studio-tool-card">
+        <div className="studio-sticky-head">
         <div className="studio-sheet-bar">
           <span className="studio-sheet-title">
             <Icon slot={TOOL_ICON[toolTab].slot} name={TOOL_ICON[toolTab].name} className="size-5" />
@@ -1108,38 +1119,39 @@ export function Studio() {
             <Icon slot="act.close" className="size-4" />
           </button>
         </div>
-      <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
-        {runDoor.ready && runDoor.open && (
-          <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cách trả</h2>
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
-                Key của tôi
-              </button>
-              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
-                Trả theo lượt
-              </button>
+        {(() => {
+          const step = stepInfo(toolTab);
+          if (!step) return null;
+          return (
+            <div className="studio-step-bar">
+              <span className="studio-step-count" aria-label={`Bước ${step.index} trên ${step.total}`}>
+                {step.index}/{step.total}
+              </span>
+              {step.last ? (
+                <button
+                  type="button"
+                  data-tour="run"
+                  disabled={!app.running && (!online || normalDown)}
+                  title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
+                  className={"min-tap flex-1 rounded-[var(--radius-ctl)] font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
+                  onClick={() => (app.running ? app.cancel() : void app.start())}
+                >
+                  {app.buttonLabel}
+                </button>
+              ) : (
+                <button type="button" className="min-tap flex-1 rounded-[var(--radius-ctl)] bg-accent font-semibold text-ink" onClick={() => setToolTab(step.next!)}>
+                  Tiếp tục
+                </button>
+              )}
             </div>
-            <p id="pay-mode-note" className="flex items-center gap-2 rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
-              <strong className="text-fg">{payByRoom ? "Đang chọn: Trả theo lượt." : "Đang chọn: Key của tôi."}</strong>
-              <InfoTip label="Giải thích cách trả">
-                {payByRoom ? <>{TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.</> : KEY_MODE_TIP}
-              </InfoTip>
-            </p>
-            {payByRoom && (
-              <TurnPackList
-                videoRef={app.videoRef}
-                fileSeconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0}
-                narration={narration.enabled}
-                onLocked={setTurnLocked}
-                onPick={(pack) => {
-                  const next = turnPackModels(pack);
-                  if (next.asr) app.setAsrModel(next.asr);
-                  if (next.chat) app.chooseVoice(next.chat);
-                }}
-              />
-            )}
-          </div>
+          );
+        })()}
+        </div>
+      <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
+        {runDoor.ready && runDoor.open && payByRoom && (
+          <p className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
+            Đang trả theo lượt nên không cần dán key. Cách trả và ước tính Token ở bước cuối «{TOOL_NAME.run}».
+          </p>
         )}
         {!(runDoor.open && payByRoom) && (
         <label className="grid gap-1 text-sm text-muted" htmlFor="key">
@@ -1367,22 +1379,6 @@ export function Studio() {
             </p>
           </div>
         </details>
-
-        <div className="studio-run-bar grid gap-2">
-          <button
-            type="button"
-            data-tour="run"
-            disabled={!app.running && (!online || normalDown)}
-            title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
-            className={"min-tap rounded-[var(--radius-ctl)] font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
-            onClick={() => (app.running ? app.cancel() : void app.start())}
-          >
-            {app.buttonLabel}
-          </button>
-          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line" onClick={app.reset}>
-            Làm lại
-          </button>
-        </div>
       </section>
 
       <section id="tool-cast" role="region" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
@@ -1711,6 +1707,45 @@ export function Studio() {
         </button>
       </section>
 
+      <section id="tool-run" role="region" aria-labelledby="tool-tab-run" hidden={toolTab !== "run"} className="grid gap-3 p-4">
+        <p className="text-sm text-muted">Bước cuối. Chọn cách trả và xem ước tính Token, rồi bấm Tải và dịch ở thanh trên.</p>
+        {runDoor.ready && runDoor.open && (
+          <div className="grid gap-2">
+            <h2 className="text-sm font-semibold">Cách trả</h2>
+            <div className="grid grid-cols-2 gap-2">
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+                Key của tôi
+              </button>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+                Trả theo lượt
+              </button>
+            </div>
+            <p id="pay-mode-note" className="flex items-center gap-2 rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
+              <strong className="text-fg">{payByRoom ? "Đang chọn: Trả theo lượt." : "Đang chọn: Key của tôi."}</strong>
+              <InfoTip label="Giải thích cách trả">
+                {payByRoom ? <>{TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.</> : KEY_MODE_TIP}
+              </InfoTip>
+            </p>
+            {payByRoom && (
+              <TurnPackList
+                videoRef={app.videoRef}
+                fileSeconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0}
+                narration={narration.enabled}
+                onLocked={setTurnLocked}
+                onPick={(pack) => {
+                  const next = turnPackModels(pack);
+                  if (next.asr) app.setAsrModel(next.asr);
+                  if (next.chat) app.chooseVoice(next.chat);
+                }}
+              />
+            )}
+          </div>
+        )}
+        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line" onClick={app.reset}>
+          Làm lại
+        </button>
+      </section>
+
       <section id="tool-check" role="region" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
         <PolishPanel ui={app.polish} segs={app.segs} disabled={app.running} />
         <div className="flex flex-wrap gap-2">
@@ -1762,12 +1797,6 @@ export function Studio() {
         {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một phim trước.</p>}
       </section>
 
-        {nextTool(toolTab) && (
-          <button type="button" className="studio-next-tool" onClick={() => setToolTab(nextTool(toolTab)!)}>
-            <span className="text-muted">Tiếp theo:</span> <strong>{TOOL_NAME[nextTool(toolTab)!]}</strong>
-            <span aria-hidden="true">›</span>
-          </button>
-        )}
         </div>
       </div>
       </div>

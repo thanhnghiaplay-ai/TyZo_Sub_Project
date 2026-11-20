@@ -121,7 +121,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       steps: [
         { text: `Đăng ký hoặc đăng nhập. Tài khoản mới được dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB.` },
         { text: "Ở trang chủ, kéo thả video vào ô lớn hoặc bấm để chọn tệp. Cũng dán được link tải thẳng về tệp, không phải link trang xem phim." },
-        { text: `Mở «${UI.keyTab}» ở menu trái và chọn cách dùng: dán key của bạn (Groq, và Alibaba, Deepgram, AssemblyAI, Speechmatics hay Soniox nếu dùng), hoặc trả theo lượt bằng Token dịch đã mua.` },
+        { text: `Mở «${UI.keyTab}» ở menu trái và dán key của bạn (Groq, và Alibaba, Deepgram, AssemblyAI, Speechmatics hay Soniox nếu dùng). Muốn trả theo lượt bằng Token dịch đã mua thì chọn ở bước cuối «Tải và dịch».` },
         { text: `Mở «${UI.filmTab}», chọn ngôn ngữ và thể loại, rồi bấm «${UI.startRun}». Thanh tiến trình cho biết đang ở bước nào.` },
         { text: `Dịch xong, bấm «${UI.download}» và chọn SRT, VTT hoặc TXT. Bấm một câu trong bản dịch để nhảy tới đúng chỗ trong video. Tài khoản dùng thử chưa xuất được file.` },
       ],
