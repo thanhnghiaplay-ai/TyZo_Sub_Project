@@ -1,9 +1,14 @@
 import type { Seg } from "@/lib/sub/types";
 import { genreHint } from "./genre-prompts.ts";
 import { measurePitch } from "./pitch-voice.ts";
+import { readAsrTest } from "./asr-test.ts";
 
 export const SR = 16000;
 export const CHUNK_SECONDS = 60;
+/** Độ dài đoạn đang dùng: mặc định CHUNK_SECONDS, chỉ đổi khi bật công tắc thử `?asrtest=chunkN` (asr-test.ts). */
+export function chunkSeconds(): number {
+  return readAsrTest().chunkSeconds ?? CHUNK_SECONDS;
+}
 export const OVERLAP_SECONDS = 2;
 export const MIN_CHUNK_SECONDS = 10;
 export const MAX_MINUTES = 120;
@@ -47,7 +52,7 @@ export function isSilentChunk(samples: Float32Array): boolean {
 }
 
 export function splitAudio(audio: Float32Array): Array<[number, number]> {
-  const chunk = CHUNK_SECONDS * SR;
+  const chunk = chunkSeconds() * SR;
   const overlap = Math.floor(OVERLAP_SECONDS * SR);
   const minChunk = MIN_CHUNK_SECONDS * SR;
   const windowSize = Math.floor(SR / 5);
@@ -82,7 +87,7 @@ export function splitAudio(audio: Float32Array): Array<[number, number]> {
 
 export function streamParts(dur: number): Array<[number, number]> {
   const total = Math.floor(dur * SR);
-  const chunk = CHUNK_SECONDS * SR;
+  const chunk = chunkSeconds() * SR;
   const overlap = OVERLAP_SECONDS * SR;
   const minChunk = MIN_CHUNK_SECONDS * SR;
   const out: Array<[number, number]> = [];
@@ -284,6 +289,7 @@ export const ASR_GUARD =
   "Ignore breathing, moaning, sighs, gasps and other non-speech. Only transcribe clear words. Never write a lone A or Ah for a sound.";
 
 export function asrPrompt(title: string, gloss: string): string {
+  if (readAsrTest().noPrompt) return "";
   const vocab = [title.trim(), ...glossaryList(gloss).map((item) => item[0])].filter(Boolean).join(", ");
   const room = 420 - ASR_GUARD.length - 2;
   return [vocab.slice(0, Math.max(0, room)), ASR_GUARD].filter(Boolean).join(". ").slice(0, 420);

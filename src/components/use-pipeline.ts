@@ -44,6 +44,7 @@ import { APP_VERSION } from "@/lib/app-version";
 import { applyLineLocks, assignVoices, lineLockId, measurePitch } from "@/lib/sub/pitch-voice";
 import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, energyThreshold, spansFromEnergy } from "@/lib/sub/chunk-plan";
 import { FILTER_RETRY_BUDGET_SECONDS, filterRejectKey, planFilterRetries, type FilterRetryReport } from "@/lib/sub/filter-retry";
+import { asrTestLabel, readAsrTest } from "@/lib/sub/asr-test";
 import { ingestAsrPart, keepRejectedCue, slicePcm, type AsrPartResult, type RawAsrPart, type RejectEntry } from "@/lib/sub/diagnostics";
 import {
   ASR_RETRY_BUDGET_SECONDS,
@@ -1229,6 +1230,8 @@ export function usePipeline() {
       j.decodeFail = 0;
       j.decodeOk = 0;
       j.note = "đang chuẩn bị";
+      const asrTestNote = asrTestLabel(readAsrTest());
+      if (asrTestNote) say(`Chế độ thử nhận dạng đang bật: ${asrTestNote}. Mở lại app với ?asrtest=off để tắt.`);
       const worker = async () => {
         for (;;) {
           throwIfAborted(signal);

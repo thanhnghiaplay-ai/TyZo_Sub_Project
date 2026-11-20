@@ -1,4 +1,4 @@
-import { CHUNK_SECONDS, MIN_CHUNK_SECONDS, OVERLAP_SECONDS, SILENCE_RMS, SR } from "./text.ts";
+import { chunkSeconds, MIN_CHUNK_SECONDS, OVERLAP_SECONDS, SILENCE_RMS, SR } from "./text.ts";
 
 export const CHUNK_GAP_SECONDS = 1.5;
 export const CHUNK_PAD_SECONDS = 0.3;
@@ -47,11 +47,12 @@ export function chunksFromSpans(spans: TimeSpan[], duration: number): Array<[num
   }
   if (!merged.length) return [[0, duration]];
   const chunks: Array<[number, number]> = [];
+  const maxChunk = chunkSeconds();
   for (const island of merged) {
     let at = island.start;
     while (at < island.end - 0.05) {
-      let end = Math.min(island.end, at + CHUNK_SECONDS);
-      if (island.end - end < MIN_CHUNK_SECONDS && island.end - at <= CHUNK_SECONDS + MIN_CHUNK_SECONDS) end = island.end;
+      let end = Math.min(island.end, at + maxChunk);
+      if (island.end - end < MIN_CHUNK_SECONDS && island.end - at <= maxChunk + MIN_CHUNK_SECONDS) end = island.end;
       const hardCut = at > island.start + 0.05;
       const chunkStart = hardCut ? Math.max(0, at - OVERLAP_SECONDS) : Math.max(0, at - CHUNK_PAD_SECONDS);
       const chunkEnd = Math.min(duration, end + CHUNK_PAD_SECONDS);

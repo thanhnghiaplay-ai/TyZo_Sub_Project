@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.17.5",
     time: "20/11/2026",
     area: "khac",
+    text: "Công tắc THỬ nhận dạng, mặc định TẮT (không đổi hành vi, không nâng phiên bản). Mở app với ?asrtest=noprompt (không gửi prompt tên phim/thuật ngữ/ASR_GUARD lên Whisper), ?asrtest=chunk15 (cắt đoạn 15 giây, số từ 8 đến 60), ghép bằng dấu phẩy, ?asrtest=off để tắt; lưu trong trình duyệt, khi bật có dòng báo ở đầu lượt chạy. File mới src/lib/sub/asr-test.ts (+ test 4 ca), text.ts (chunkSeconds(), asrPrompt), chunk-plan.ts. Lý do: clip «Tiểu hòa thượng» chạy Groq large-v3 chỉ ra 2 câu; chạy Whisper cục bộ (sherpa-onnx, scripts/whisper-local-check.py) thì cả turbo và large-v3 chép đủ 30 giây đầu, kể cả sau nén Opus 20 kbps, nên lỗi nằm ở prompt hoặc cách Groq giải mã, chưa kiểm với Groq thật.",
+  },
+  {
+    version: "5.17.5",
+    time: "20/11/2026",
+    area: "khac",
     text: "Chủ báo sau v5.17.4 video «Tiểu hòa thượng» chạy Groq vẫn chỉ ra 4 câu (trước là 3). Không gọi được Groq/Whisper thật từ đây (mạng chặn), nên chưa thấy JSON thô; suy luận: Whisper trả các segment tiếng Trung khoảng 30 đến 40 chữ chứa 3 đến 5 câu, sát hoặc dưới ngưỡng tách 30 chữ của whisper-split.ts nên đứng yên (Alibaba ra 15 câu vì tách ở mọi dấu câu). SỬA (chỉ CJK, chữ khác giữ nguyên): LONG_AT cjk 30→14, TARGET cjk 24→18, HARD_MAX cjk 40→28 (MIN_SENTENCE 4 giữ). Nghĩa là segment CJK từ 14 chữ có dấu câu đã được tách theo câu, không dấu câu mà > 28 chữ thì chia đều; câu đơn ≤ 14 chữ hoặc ≤ 28 chữ không dấu giữ một dòng. Test thêm 1 ca (2 câu dưới 30 chữ), sửa ca ngưỡng tách cứng. NẾU VẪN ÍT: xuất chẩn đoán (RawAsrPart) để xem Whisper trả bao nhiêu segment, có dấu câu và words không; không dấu câu thì chỉ còn chia đều theo chữ.",
   },
   {
