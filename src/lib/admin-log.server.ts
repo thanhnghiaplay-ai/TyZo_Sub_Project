@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.17.3",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Giá thuê phòng Chủ chỉnh được (hướng 2: lưu trong cơ sở dữ liệu). Bước 1 room-plan-prices.ts (thuần, test): chỉ giá và giá gạch đổi được, mã gói/tên/số giờ cố định; kiểm nguyên đồng, 1.000 đến 5.000.000, giá gạch > giá bán, gói dài đắt hơn gói ngắn; số tiết kiệm tự tính. Bước 2 room-plans-room.ts: khóa room_settings.room_plans, getRoomPlanPrices (ai cũng đọc), saveRoomPlanPrices/resetRoomPlanPrices (chỉ Chủ, ghi nhật ký hành động doi-gia-goi). room-account.ts orderRoomPlan lấy giá đang lưu LÚC ĐẶT ĐƠN. QUAN TRỌNG pay-flow.ts settleDirect: trước đây từ chối giao gói nếu plan.price !== order.amount (đổi giá sẽ làm khách đang chờ chuyển đúng số cũ không được giao gói); nay chỉ kiểm số tiền nằm trong khoảng cho phép và giao theo order.amount (2 ca PGlite ở money-flow.test.ts). Bước 3 giao diện: use-room-plans.ts (hook, mặc định ngay rồi thay bằng giá đã lưu), goi.tsx, account-panel.tsx, terms-document.tsx, admin-desk.tsx, guide-page.tsx, studio.tsx, guide-topics.ts đọc giá động; room-plans-view.tsx thành bảng sửa giá cho Chủ (hộp xác nhận của app, nút «Về giá mặc định»). entry-gate.test.ts: dấu vân tay điều khoản quy ROOM_PLANS.map về plans.map để đổi cách lấy giá không bị tính là đổi chữ. KHÔNG nâng TERMS_VERSION (2026-11-18.1): điều khoản chỉ liệt kê giá và tự đọc giá động; nếu Chủ muốn khách xác nhận lại mỗi lần đổi giá thì phải hỏi Chủ rồi mới thêm. Đổi giá không đụng giá đơn đã tạo, quyền, cách giữ/trừ Token dịch.",
+  },
+  {
     version: "5.17.2",
     time: "20/11/2026",
     area: "khac",
