@@ -30,7 +30,12 @@ const TERMS_TEXT_HASH: Record<string, string> = {
 };
 
 function termsText() {
-  const body = doc.slice(doc.indexOf("<article"), doc.indexOf("</article>") + "</article>".length);
+  const body = doc
+    .slice(doc.indexOf("<article"), doc.indexOf("</article>") + "</article>".length)
+    // Bảng giá đọc giá Chủ đang bán (useRoomPlans) thay vì hằng ROOM_PLANS: cùng một bảng, chữ khách thấy không đổi
+    // khi giá là mặc định. Quy về tên cũ để đổi cách lấy giá không bị tính là đổi chữ điều khoản (khỏi ép khách
+    // đồng ý lại). Mọi thay đổi chữ khác trong <article> vẫn làm hash lệch.
+    .replace(/(?<![A-Za-z_])plans\.map\(/g, "ROOM_PLANS.map(");
   return createHash("sha256").update(body.replace(/\s+/g, " ").trim()).digest("hex");
 }
 
