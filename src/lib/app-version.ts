@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.17.4";
+export const APP_VERSION = "5.17.5";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.17.5",
+    time: "20/11/2026",
+    title: "Thoại tiếng Trung, Nhật, Hàn được tách thành từng câu kỹ hơn.",
+    points: [
+      "Đoạn thoại chứa nhiều câu ngắn nay được tách thành từng câu, thay vì gộp thành vài dòng.",
+      "Câu đơn vẫn giữ nguyên một dòng; chỉ tách ở dấu câu hoặc khi dòng quá dài.",
+    ],
+  },
   {
     version: "5.17.4",
     time: "20/11/2026",

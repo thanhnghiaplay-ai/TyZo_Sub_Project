@@ -44,6 +44,19 @@ describe("splitLongSegment", () => {
     }
   });
 
+  it("segment ngắn dưới 30 chữ mà có 2 câu cũng được tách (Whisper hay gộp 2 đến 4 câu thành 1 segment)", () => {
+    const two = "小和尚你为什么哭啊？师父我的糖被人偷走了。";
+    assert.ok(strip(two).length < 30);
+    const words = charWords(two, 2, 0.2);
+    const pieces = splitLongSegment(two, 0, 2 + words.length * 0.2, words);
+    assert.equal(pieces.length, 2);
+    assert.equal(pieces[0].text, "小和尚你为什么哭啊？");
+    assert.equal(pieces[1].text, "师父我的糖被人偷走了。");
+    assert.ok(pieces[1].start >= pieces[0].end - 1e-9);
+    // Một câu đơn dài 12 chữ vẫn nguyên một dòng.
+    assert.equal(splitLongSegment("师父我的糖被人偷走了。", 0, 3).length, 1);
+  });
+
   it("không có mốc từ thì chia theo số chữ, vẫn tăng dần và nằm trong segment", () => {
     const pieces = splitLongSegment(ZH, 10, 20);
     assert.ok(pieces.length >= 3);
@@ -64,9 +77,10 @@ describe("splitLongSegment", () => {
     const pieces = splitLongSegment(flat, 0, 16);
     assert.ok(pieces.length >= 3, `chỉ ${pieces.length} mảnh`);
     assert.equal(pieces.map((p) => p.text).join(""), flat);
-    for (const p of pieces) assert.ok(strip(p.text).length <= 30, "mảnh vẫn quá dài");
-    // Đúng 40 chữ không dấu vẫn giữ một dòng (chưa tới ngưỡng tách cứng).
-    assert.equal(splitLongSegment(strip(ZH), 0, 8).length, 1);
+    for (const p of pieces) assert.ok(strip(p.text).length <= 28, "mảnh vẫn quá dài");
+    // Đúng 28 chữ không dấu vẫn giữ một dòng (chưa tới ngưỡng tách cứng), 29 chữ thì tách.
+    assert.equal(splitLongSegment(strip(ZH).slice(0, 28), 0, 6).length, 1);
+    assert.ok(splitLongSegment(strip(ZH).slice(0, 29), 0, 6).length >= 2);
   });
 
   it("tiếng Anh dài tách theo câu, số thập phân không bị cắt đôi", () => {

@@ -15,11 +15,14 @@ const SENTENCE_MARK = /[。！？!?…]/;
 const CLAUSE_MARK = /[，,、；;：:]/;
 const TRAILING = /[。！？!?…，,、；;：:”"’'）)」』]/;
 
-/** Ngưỡng theo số chữ nhìn thấy: [chữ CJK, chữ khác]. */
-const LONG_AT = { cjk: 30, other: 100 };
-const TARGET = { cjk: 24, other: 70 };
+/**
+ * Ngưỡng theo số chữ nhìn thấy: [chữ CJK, chữ khác]. Tiếng Trung/Nhật/Hàn một dòng phụ đề chỉ khoảng 14 đến 20 chữ
+ * và mỗi câu thường 8 đến 12 chữ, nên ngưỡng thấp hơn nhiều (Whisper hay gộp 3 đến 5 câu thành một segment 30 đến 40 chữ).
+ */
+const LONG_AT = { cjk: 14, other: 100 };
+const TARGET = { cjk: 18, other: 70 };
 const MIN_SENTENCE = { cjk: 4, other: 12 };
-const HARD_MAX = { cjk: 40, other: 140 };
+const HARD_MAX = { cjk: 28, other: 140 };
 const MIN_VISIBLE = 2;
 const MIN_SECONDS = 0.2;
 
