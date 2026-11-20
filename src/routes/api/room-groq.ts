@@ -101,7 +101,7 @@ export const Route = createFileRoute("/api/room-groq")({
         const offered = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
         const models = parseModelList(offered[0]?.value);
         if (!models) return fail(503, "Phòng chưa đồng bộ danh sách model.");
-        if (!models.includes(parsed.model)) return fail(403, "Model này không có trong cửa trả theo lượt.");
+        if (!models.includes(parsed.model)) return fail(403, `Model ${parsed.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
         const book = await loadPriceBook(sql);
         if (!book) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
 

@@ -604,6 +604,10 @@ export function Studio() {
     if (product !== "account") return;
     app.videoRef.current?.pause();
   }, [product, app.videoRef]);
+  const setRoomOffered = app.setRoomOffered;
+  useEffect(() => {
+    setRoomOffered(runDoor.offered);
+  }, [runDoor.offered, setRoomOffered]);
   useEffect(() => {
     if (!runDoor.ready || runDoor.open) return;
     setPayByRoom(false);

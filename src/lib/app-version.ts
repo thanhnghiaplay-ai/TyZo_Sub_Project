@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.18.2";
+export const APP_VERSION = "5.18.3";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.18.3",
+    time: "20/11/2026",
+    title: "Trả theo lượt không còn báo «Model này không có trong cửa trả theo lượt» khi để Tự động.",
+    points: [
+      "Khi trả bằng Token dịch, chế độ Tự động chỉ chọn model mà phòng đang có.",
+      "Nếu model bạn chọn tay mà phòng chưa có, app báo ngay tên model trước khi giữ Token, kèm cách đổi.",
+    ],
+  },
   {
     version: "5.18.2",
     time: "20/11/2026",

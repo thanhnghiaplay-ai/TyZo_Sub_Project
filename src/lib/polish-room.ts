@@ -77,7 +77,7 @@ export const openPolishTicket = createServerFn({ method: "POST" })
     if (!allowed?.includes(data.model)) throw new Error("Model này chưa được mở để trau chuốt cho thể loại này.");
     const offered = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'run_models'`)[0]?.value);
     if (!offered) throw new Error("Phòng chưa đồng bộ danh sách model cho cửa trả theo lượt.");
-    if (!offered.includes(data.model)) throw new Error("Model này không có trong cửa trả theo lượt.");
+    if (!offered.includes(data.model)) throw new Error(`Model ${data.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
     const hold = polishHold(book, data.model, tokens.inn, tokens.out);

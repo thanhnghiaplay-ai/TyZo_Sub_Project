@@ -79,7 +79,7 @@ export const Route = createFileRoute("/api/room-alibaba")({
         const offered = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_models'`;
         const models = parseModelList(offered[0]?.value);
         if (!models) return fail(503, "Phòng chưa đồng bộ model Alibaba.");
-        if (!models.includes(parsed.model)) return fail(403, "Model này không có trong cửa trả theo lượt.");
+        if (!models.includes(parsed.model)) return fail(403, `Model ${parsed.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
         const live = await loadPriceBook(sql);
         if (!live) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
         const ali = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_desk'`;

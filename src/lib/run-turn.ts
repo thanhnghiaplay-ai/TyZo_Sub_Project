@@ -47,7 +47,9 @@ export const openRunTicket = createServerFn({ method: "POST" })
     const sxAsr = asrHouse(data.asrModel) === "soniox";
     const auto = data.chatModel === "auto";
     if ((!aliAsr && !dgAsr && !aaiAsr && !smAsr && !sxAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
-      throw new Error("Model này không có trong cửa trả theo lượt.");
+      const { roomRefusal } = await import("@/lib/sub/room-models");
+      const asrOff = !aliAsr && !dgAsr && !aaiAsr && !smAsr && !sxAsr && !models.includes(data.asrModel);
+      throw new Error(roomRefusal(asrOff ? data.asrModel : data.chatModel));
     }
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
@@ -58,7 +60,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const dgKey = await sql<{ value: string }>`select value from room_settings where key = 'deepgram_key'`;
       if (!dgKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Deepgram.");
       const offeredDg = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'deepgram_models'`)[0]?.value);
-      if (offeredDg && !offeredDg.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      if (offeredDg && !offeredDg.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
       const { loadDeepgramRows } = await import("@/lib/sub/deepgram-board.server");
       const dgRows = await loadDeepgramRows(sql);
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
@@ -67,7 +69,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const aaiKey = await sql<{ value: string }>`select value from room_settings where key = 'assemblyai_key'`;
       if (!aaiKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key AssemblyAI.");
       const offeredAai = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'assemblyai_models'`)[0]?.value);
-      if (offeredAai && !offeredAai.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      if (offeredAai && !offeredAai.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
       const { loadAssemblyaiRows } = await import("@/lib/sub/assemblyai-board.server");
       const aaiRows = await loadAssemblyaiRows(sql);
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
@@ -76,7 +78,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const smKey = await sql<{ value: string }>`select value from room_settings where key = 'speechmatics_key'`;
       if (!smKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Speechmatics.");
       const offeredSm = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'speechmatics_models'`)[0]?.value);
-      if (offeredSm && !offeredSm.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      if (offeredSm && !offeredSm.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
       const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
       const smRows = await loadSpeechmaticsRows(sql);
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;
@@ -85,7 +87,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       const sxKey = await sql<{ value: string }>`select value from room_settings where key = 'soniox_key'`;
       if (!sxKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Soniox.");
       const offeredSx = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'soniox_models'`)[0]?.value);
-      if (offeredSx && !offeredSx.includes(data.asrModel)) throw new Error("Model này không có trong cửa trả theo lượt.");
+      if (offeredSx && !offeredSx.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
       const { loadSonioxRows } = await import("@/lib/sub/soniox-board.server");
       const sxRows = await loadSonioxRows(sql);
       const chatModel = auto ? pickChat(bare, models) : data.chatModel;

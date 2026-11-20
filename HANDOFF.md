@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.18.3** (nhánh `ccr-bc99847a-xy1bgk`, chưa lên `work`/`main`): sửa «Model này không có trong cửa trả theo lượt». Trả theo lượt thì Tự động chỉ chọn trong `run_models` (danh sách key Groq phòng), chọn tay model phòng không có thì báo tên trước khi giữ Token, câu từ chối máy chủ nêu tên model. Mã `src/lib/sub/room-models.ts` + test. tsc sạch, eslint 0 lỗi (31 cảnh báo có sẵn), npm test 191 + 1296 pass. CHƯA chạy lượt dịch thật.
 - **Đẩy chính thức v5.18.2**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.18.2; `npm run build` xong.
 - **v5.18.2**: tắt hiệu ứng thì góc dưới có dải trống cắt ngang nội dung. Nguyên nhân: v5.18.1 làm `.studio-shell` (điện thoại đứng) thấp hơn màn hình 11rem. Nay cao hết màn hình, 11rem thành `padding-bottom: var(--dock-clear)` (vùng nội dung giữ nguyên, phần cuộn chạy sau dock). tsc sạch, eslint 0 lỗi (31 cảnh báo có sẵn), npm test 191 + 1293 pass. Thử Chromium 412x760 hai chế độ; CHƯA bấm thử máy thật.
 - **Đẩy chính thức**: Chủ nói «đẩy chính thức». `main` kéo thẳng bằng `work` tại v5.18.1. Trước khi đẩy: typecheck sạch, eslint 0 lỗi (31 cảnh báo có sẵn), npm test 198 (191 pass, 7 bỏ qua) + 1293 pass, `npm run build` xong. Không đổi code, không nâng phiên bản.

@@ -68,12 +68,12 @@ export const Route = createFileRoute("/api/room-deepgram")({
         const parsed = await readRequest(path, request.headers.get("content-type"), body);
         if (!parsed) return fail(400, "Không đọc được model trong yêu cầu.");
         if (parsed.problem) return fail(400, parsed.problem);
-        if (!isAuraModel(parsed.model)) return fail(403, "Model này không có trong cửa trả theo lượt.");
+        if (!isAuraModel(parsed.model)) return fail(403, `Model ${parsed.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
         if (parsed.chars > 2000) return fail(413, "Đoạn đọc quá dài.");
         const offered = await sql<{ value: string }>`select value from room_settings where key = 'deepgram_models'`;
         const models = parseModelList(offered[0]?.value);
         if (!models) return fail(503, "Phòng chưa đồng bộ model Deepgram.");
-        if (!models.includes(parsed.model)) return fail(403, "Model này không có trong cửa trả theo lượt.");
+        if (!models.includes(parsed.model)) return fail(403, `Model ${parsed.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
 
         const live = await loadPriceBook(sql);
         if (!live) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");

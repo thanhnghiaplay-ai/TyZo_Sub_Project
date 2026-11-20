@@ -110,6 +110,7 @@ import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
 import { packWavFromReader } from "@/lib/sub/wav-stream";
 import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
+import { pickPool, roomMissing, roomMissingText } from "@/lib/sub/room-models";
 import { listKeyModels } from "@/lib/key-models";
 import { getRoomModelCounts } from "@/lib/provider-room";
 import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
@@ -343,6 +344,11 @@ export function usePipeline() {
     };
   }, [houseKeys]);
   const roomPayRef = useRef(false);
+  /** Model Groq key phòng đang có (run_models). Trả theo lượt thì chỉ chọn trong danh sách này, vì máy chủ chặn model ngoài danh sách. */
+  const roomOfferedRef = useRef<string[] | null>(null);
+  const setRoomOffered = useCallback((ids: string[] | null) => {
+    roomOfferedRef.current = ids;
+  }, []);
   const trialLease = useRef({ media: "", spent: false });
   const keyRef = useRef("");
   keyRef.current = key;
@@ -1052,6 +1058,8 @@ export function usePipeline() {
     let ticketFailed = false;
     let releasePlayback = () => {};
     if (roomPayRef.current) {
+      const missing = roomMissing(roomOfferedRef.current, asrModel, mode === "manual" ? chosen : null);
+      if (missing) return say(roomMissingText(missing), true);
       const chosenFile = audioFile || file;
       const linkRun = asrTakesLink(asrModel) && !chosenFile;
       if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
@@ -1137,7 +1145,7 @@ export function usePipeline() {
                 genre,
                 glossaryHit: true,
                 allowEnterprise,
-                available: remoteIds ? new Set(remoteIds) : null,
+                available: pickPool(roomPayRef.current, roomOfferedRef.current, remoteIds),
                 cooling: j.cooling,
                 blocked: j.blocked,
                 escalate: true,
@@ -1594,7 +1602,7 @@ export function usePipeline() {
                       genre,
                       glossaryHit: glossaryHit(origs, effectiveGloss) || hits > 0,
                       allowEnterprise,
-                      available: remoteIds ? new Set(remoteIds) : null,
+                      available: pickPool(roomPayRef.current, roomOfferedRef.current, remoteIds),
                       cooling: j.cooling,
                       blocked: j.blocked,
                       escalate: attempt > 0,
@@ -2217,7 +2225,7 @@ export function usePipeline() {
             genre,
             glossaryHit: true,
             allowEnterprise,
-            available: remoteIds ? new Set(remoteIds) : null,
+            available: pickPool(roomPayRef.current, roomOfferedRef.current, remoteIds),
             cooling: job.current.cooling,
             blocked: job.current.blocked,
             escalate: true,
@@ -2628,6 +2636,7 @@ export function usePipeline() {
     keyModels,
     setHouseKey,
     setRoomPay,
+    setRoomOffered,
     target,
     setTarget,
     source,
