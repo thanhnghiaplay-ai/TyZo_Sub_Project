@@ -25,82 +25,28 @@ export const openRunTicket = createServerFn({ method: "POST" })
     await requireServiceOpen("normal");
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
-    const { parseRunDesk, parseModelList } = await import("@/lib/run-desk");
-    const { dearestChatModel: pickChat } = await import("@/lib/run-bill");
+    const { parseRunDesk } = await import("@/lib/run-desk");
     const { holdGiay, formatGiay } = await import("@/lib/token-math");
     const { loadPriceBook } = await import("@/lib/run-board.server");
-    const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
     const { openGiayWith, giayBalance } = await import("@/lib/token-flow");
     const { releaseStaleWith } = await import("@/lib/run-ticket");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
     const desk = parseRunDesk(saved[0]?.value);
     if (desk.maintenance) throw new Error(desk.note || "Cửa trả theo lượt đang bảo trì.");
-    const offered = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
-    const models = parseModelList(offered[0]?.value);
-    if (!models) throw new Error("Phòng chưa đồng bộ danh sách model cho cửa trả theo lượt.");
-    const { asrHouse } = await import("@/lib/sub/asr-house");
-    const aliAsr = data.asrModel === "qwen-audio-3.0-asr-flash-filetrans";
-    const dgAsr = asrHouse(data.asrModel) === "deepgram";
-    const aaiAsr = asrHouse(data.asrModel) === "assemblyai";
-    const smAsr = asrHouse(data.asrModel) === "speechmatics";
-    const sxAsr = asrHouse(data.asrModel) === "soniox";
-    const auto = data.chatModel === "auto";
-    if ((!aliAsr && !dgAsr && !aaiAsr && !smAsr && !sxAsr && !models.includes(data.asrModel)) || (!auto && !models.includes(data.chatModel))) {
-      const { roomRefusal } = await import("@/lib/sub/room-models");
-      const asrOff = !aliAsr && !dgAsr && !aaiAsr && !smAsr && !sxAsr && !models.includes(data.asrModel);
-      throw new Error(roomRefusal(asrOff ? data.asrModel : data.chatModel));
-    }
+    // Không nhánh riêng từng nhà: nhà của model, key, danh sách model và giá đều tra theo bảng chung (room-turn.ts).
+    const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
+    const { roomUse, dearestRoomChat } = await import("@/lib/room-turn");
+    const houses = await loadRoomHouses(sql);
+    const asr = roomUse(houses, data.asrModel, "asr");
+    if ("error" in asr) throw new Error(asr.error);
     const book = await loadPriceBook(sql);
     if (!book) throw new Error("Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
-    const bare = { rate: book.rate, rows: book.rows, desk: { markup: 0 as const, custom: {} } };
-    const aliRows = await loadAlibabaRows(sql);
-    let hold: number | null = null;
-    if (dgAsr) {
-      const dgKey = await sql<{ value: string }>`select value from room_settings where key = 'deepgram_key'`;
-      if (!dgKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Deepgram.");
-      const offeredDg = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'deepgram_models'`)[0]?.value);
-      if (offeredDg && !offeredDg.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
-      const { loadDeepgramRows } = await import("@/lib/sub/deepgram-board.server");
-      const dgRows = await loadDeepgramRows(sql);
-      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows, dgRows, asrProvider: "deepgram", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
-    } else if (aaiAsr) {
-      const aaiKey = await sql<{ value: string }>`select value from room_settings where key = 'assemblyai_key'`;
-      if (!aaiKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key AssemblyAI.");
-      const offeredAai = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'assemblyai_models'`)[0]?.value);
-      if (offeredAai && !offeredAai.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
-      const { loadAssemblyaiRows } = await import("@/lib/sub/assemblyai-board.server");
-      const aaiRows = await loadAssemblyaiRows(sql);
-      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows, aaiRows, asrProvider: "assemblyai", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
-    } else if (smAsr) {
-      const smKey = await sql<{ value: string }>`select value from room_settings where key = 'speechmatics_key'`;
-      if (!smKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Speechmatics.");
-      const offeredSm = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'speechmatics_models'`)[0]?.value);
-      if (offeredSm && !offeredSm.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
-      const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
-      const smRows = await loadSpeechmaticsRows(sql);
-      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows, smRows, asrProvider: "speechmatics", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
-    } else if (sxAsr) {
-      const sxKey = await sql<{ value: string }>`select value from room_settings where key = 'soniox_key'`;
-      if (!sxKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Soniox.");
-      const offeredSx = parseModelList((await sql<{ value: string }>`select value from room_settings where key = 'soniox_models'`)[0]?.value);
-      if (offeredSx && !offeredSx.includes(data.asrModel)) throw new Error(`Model ${data.asrModel} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
-      const { loadSonioxRows } = await import("@/lib/sub/soniox-board.server");
-      const sxRows = await loadSonioxRows(sql);
-      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows, sxRows, asrProvider: "soniox", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
-    } else if (aliAsr) {
-      const aliKey = await sql<{ value: string }>`select value from room_settings where key = 'alibaba_key'`;
-      if (!aliKey[0]?.value?.trim()) throw new Error("Phòng chưa lưu key Alibaba.");
-      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows, asrProvider: "alibaba", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
-    } else {
-      const chatModel = auto ? pickChat(bare, models) : data.chatModel;
-      hold = chatModel ? holdGiay({ groq: book, aliRows, asrProvider: "groq", asrModel: data.asrModel, chatModel, seconds: data.seconds }) : null;
-    }
+    const rows = await loadProviderRows(sql);
+    const chat = data.chatModel === "auto" ? dearestRoomChat(houses, book, rows) : roomUse(houses, data.chatModel, "chat");
+    if (!chat) throw new Error("Phòng chưa có model dịch nào có giá cho cửa trả theo lượt.");
+    if ("error" in chat) throw new Error(chat.error);
+    const hold = holdGiay({ groq: book, rows, asrProvider: asr.provider, asrModel: asr.model, chatProvider: chat.provider, chatModel: chat.model, seconds: data.seconds });
     if (hold == null || hold < 1) throw new Error("Chưa có giá bản Turbo hoặc model này chưa có giá gốc.");
     const id = randomBytes(12).toString("hex");
     await releaseStaleWith(sql, context.userId);

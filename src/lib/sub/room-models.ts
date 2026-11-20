@@ -3,8 +3,9 @@
  * (Groq: run_models, Alibaba: alibaba_models, Deepgram: deepgram_models…, đồng bộ khi Chủ lưu key).
  * Không viết riêng cho nhà nào: model thuộc nhà nào, làm việc gì đều hỏi danh mục chung (model-catalog.ts).
  */
-import { MODEL_CATALOG, modelKindOf, type ModelKind } from "./model-catalog.ts";
+import { catalogFor, MODEL_CATALOG, modelKindOf, type ModelKind } from "./model-catalog.ts";
 import { asrHouse } from "./asr-house.ts";
+import { roomListHas } from "./key-list.ts";
 import { PROVIDERS, type ProviderId } from "./provider.ts";
 
 /** Danh sách model phòng theo từng nhà. Thiếu nhà, hoặc null: chưa biết, để máy chủ tự kiểm. */
@@ -23,15 +24,20 @@ export function providerOfModel(id: string, offer: RoomOffer = {}): ProviderId |
 
 /** Mọi model phòng làm được một việc (ví dụ "chat" = dịch), gộp mọi nhà. null khi chưa biết danh sách nhà nào. */
 export function roomPool(offer: RoomOffer, kind: ModelKind): Set<string> | null {
-  let known = false;
+  let seen = false;
   const pool = new Set<string>();
   for (const provider of PROVIDER_IDS) {
     const list = offer[provider];
     if (!list) continue;
-    known = true;
-    for (const id of list) if (modelKindOf(provider, id) === kind) pool.add(id);
+    seen = true;
+    // Danh sách nhà trả cộng model đã biết trong danh mục (tên trong danh sách nhà có thể khác mã của app: key-list.ts).
+    // Chỉ bỏ model khi chắc chắn phòng không có (nhà có danh sách đáng tin mà không thấy).
+    const known = catalogFor(provider, kind).map((model) => model.id);
+    for (const id of new Set([...list, ...known])) {
+      if (modelKindOf(provider, id) === kind && roomListHas(provider, id, list) !== false) pool.add(id);
+    }
   }
-  return known ? pool : null;
+  return seen ? pool : null;
 }
 
 /** Tập model mà chế độ Tự động được chọn cho một việc. Trả theo lượt và đã biết danh sách phòng thì dùng danh sách phòng. */
@@ -51,7 +57,8 @@ export function roomMissing(offer: RoomOffer | null, models: (string | null | un
     if (!id || id === "auto") continue;
     const provider = providerOfModel(id, offer);
     const list = provider ? offer[provider] : null;
-    if (list && !list.includes(id)) missing.push(id);
+    // Chỉ báo thiếu khi chắc chắn: nhà có danh sách đáng tin mà không thấy model (key-list.ts).
+    if (provider && list && roomListHas(provider, id, list) === false) missing.push(id);
   }
   return missing.length ? missing : null;
 }

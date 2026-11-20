@@ -1,9 +1,7 @@
-import { ASSEMBLYAI_BASE_ROWS as ASSEMBLYAI_ROWS } from "./sub/assemblyai-base.ts";
-import { DEEPGRAM_BASE_ROWS as DEEPGRAM_ROWS } from "./sub/deepgram-base.ts";
-import { SPEECHMATICS_BASE_ROWS as SPEECHMATICS_ROWS } from "./sub/speechmatics-base.ts";
-import { SONIOX_BASE_ROWS as SONIOX_ROWS } from "./sub/soniox-base.ts";
+import { bareBookOf, type ProviderRows } from "./price-rows.ts";
+import { isProviderId, type ProviderId } from "./sub/provider.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
-import { asrCost, asrPerSecond, chatCost, estimateHold, estimateHoldSplit, type PriceBook } from "./run-bill.ts";
+import { asrCost, asrPerSecond, chatCost, estimateHoldSplit, type PriceBook } from "./run-bill.ts";
 
 /** 1 Token dịch = 1 giây nhận dạng Turbo theo giá gốc, chưa cộng chênh. */
 export const TURBO_ASR = "whisper-large-v3-turbo";
@@ -33,39 +31,36 @@ export function formatGiay(n: number): string {
 /** Số Token dịch sẽ giữ cho một lần chạy. Tính trên giá gốc, đã gồm đệm giữ chỗ. null khi thiếu giá. */
 export function holdGiay(input: {
   groq: PriceBook;
-  aliRows: GroqLiveRow[];
-  /** Bảng giá Deepgram (loadDeepgramRows). Thiếu thì dùng bảng dự phòng. */
+  /** Bảng giá đã kéo theo từng nhà. Thiếu nhà nào thì dùng giá gốc trong code (price-rows.ts). */
+  rows?: ProviderRows;
+  /** Các trường cũ, vẫn nhận để không vỡ chỗ gọi cũ: gộp vào `rows`. */
+  aliRows?: GroqLiveRow[];
   dgRows?: GroqLiveRow[];
-  /** Bảng giá AssemblyAI (loadAssemblyaiRows). Thiếu thì dùng bảng cố định trong code. */
   aaiRows?: GroqLiveRow[];
-  /** Bảng giá Speechmatics (loadSpeechmaticsRows). Thiếu thì dùng bảng cố định trong code. */
   smRows?: GroqLiveRow[];
-  /** Bảng giá Soniox (loadSonioxRows). Thiếu thì dùng bảng cố định trong code. */
   sxRows?: GroqLiveRow[];
   asrProvider: string;
   asrModel: string;
+  /** Nhà chạy model dịch. Thiếu = Groq. Giá dịch tính theo bảng của đúng nhà này. */
+  chatProvider?: string;
   chatModel: string;
   seconds: number;
 }): number | null {
   const bare: PriceBook = { rate: input.groq.rate, rows: input.groq.rows, desk: { markup: 0, custom: {} } };
   const turbo = asrPerSecond(bare, TURBO_ASR);
   if (!(turbo && turbo > 0)) return null;
-  const asrRows =
-    input.asrProvider === "alibaba"
-      ? input.aliRows
-      : input.asrProvider === "deepgram"
-        ? (input.dgRows ?? DEEPGRAM_ROWS)
-        : input.asrProvider === "assemblyai"
-          ? (input.aaiRows ?? ASSEMBLYAI_ROWS)
-          : input.asrProvider === "speechmatics"
-            ? (input.smRows ?? SPEECHMATICS_ROWS)
-            : input.asrProvider === "soniox"
-              ? (input.sxRows ?? SONIOX_ROWS)
-              : null;
-  const vnd =
-    asrRows
-      ? estimateHoldSplit({ rate: input.groq.rate, rows: asrRows, desk: { markup: 0, custom: {} } }, bare, input.asrModel, input.chatModel, input.seconds)
-      : estimateHold(bare, input.asrModel, input.chatModel, input.seconds);
+  const rows: ProviderRows = {
+    ...(input.aliRows && input.aliRows.length ? { alibaba: input.aliRows } : {}),
+    ...(input.dgRows ? { deepgram: input.dgRows } : {}),
+    ...(input.aaiRows ? { assemblyai: input.aaiRows } : {}),
+    ...(input.smRows ? { speechmatics: input.smRows } : {}),
+    ...(input.sxRows ? { soniox: input.sxRows } : {}),
+    ...input.rows,
+  };
+  const asrHouse = isProviderId(input.asrProvider) ? input.asrProvider : null;
+  const chatHouse = isProviderId(input.chatProvider ?? "groq") ? ((input.chatProvider ?? "groq") as ProviderId) : null;
+  if (!asrHouse || !chatHouse) return null;
+  const vnd = estimateHoldSplit(bareBookOf(asrHouse, input.groq, rows), bareBookOf(chatHouse, input.groq, rows), input.asrModel, input.chatModel, input.seconds);
   if (vnd == null) return null;
   return tokensForBase(vnd, turbo);
 }

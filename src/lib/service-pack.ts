@@ -1,5 +1,5 @@
 import { asrCost, chatCost, speechCost, HOLD_BUFFER, type PriceBook } from "./run-bill.ts";
-import { isProviderId, PROVIDER_IDS, providerHas, type ProviderId } from "./sub/provider.ts";
+import { isProviderId, PROVIDER_IDS, providerHas, type ProviderCap, type ProviderId } from "./sub/provider.ts";
 
 export const PACK_ROLES = ["asr", "translate", "context", "review", "summary", "narration"] as const;
 export type PackRole = (typeof PACK_ROLES)[number];
@@ -22,12 +22,21 @@ export const DOOR_LABEL: Record<ServiceDoor, string> = {
 };
 
 /**
- * Nhà được chọn cho từng việc trong gói. Nhận dạng: mọi nhà có khả năng asr trong bảng PROVIDERS.
- * Các việc khác: Groq và Alibaba. Deepgram chỉ nhận dạng (dịch và đọc chưa làm). Nhà mới có asr tự hiện ở đây.
+ * Mỗi việc cần một khả năng của nhà: nhận dạng cần asr, các việc chữ (dịch, ngữ cảnh, đối chiếu, tóm tắt) cần chat,
+ * thuyết minh cần tts. Kiểu Record bắt buộc mọi việc mới phải khai khả năng.
  */
+export const ROLE_CAP: Record<PackRole, ProviderCap> = {
+  asr: "asr",
+  translate: "chat",
+  context: "chat",
+  review: "chat",
+  summary: "chat",
+  narration: "tts",
+};
+
+/** Nhà được chọn cho từng việc trong gói: mọi nhà (đã ready) có khả năng việc đó cần. Nhà mới tự hiện ở đây theo khả năng khai. */
 export function providersForRole(role: PackRole): ProviderId[] {
-  if (role === "asr") return PROVIDER_IDS.filter((id) => providerHas(id, "asr"));
-  return ["groq", "alibaba"];
+  return PROVIDER_IDS.filter((id) => providerHas(id, ROLE_CAP[role]));
 }
 
 export type RoleAssign = { provider: ProviderId; model: string };

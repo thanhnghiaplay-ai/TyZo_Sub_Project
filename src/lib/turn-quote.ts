@@ -17,16 +17,8 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
       const { getSql } = await import("@/lib/db");
       const { loadPriceBook } = await import("@/lib/run-board.server");
       const sql = await getSql();
-      const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
-      const aliRows = await loadAlibabaRows(sql);
-      const { loadDeepgramRows } = await import("@/lib/sub/deepgram-board.server");
-      const dgRows = await loadDeepgramRows(sql);
-      const { loadAssemblyaiRows } = await import("@/lib/sub/assemblyai-board.server");
-      const aaiRows = await loadAssemblyaiRows(sql);
-      const { loadSpeechmaticsRows } = await import("@/lib/sub/speechmatics-board.server");
-      const smRows = await loadSpeechmaticsRows(sql);
-      const { loadSonioxRows } = await import("@/lib/sub/soniox-board.server");
-      const sxRows = await loadSonioxRows(sql);
+      const { loadProviderRows } = await import("@/lib/price-books.server");
+      const providerRows = await loadProviderRows(sql);
       const book = await loadPriceBook(sql);
       const rows = await sql<{ value: string }>`select value from room_settings where key = 'service_packs'`;
       const packs = turnPacks(parseServicePacks(rows[0]?.value));
@@ -36,13 +28,10 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
         if (!book || !asr || !chat) return { id: pack.id, total: null, hold: 0 };
         const giay = holdGiay({
           groq: book,
-          aliRows,
-          dgRows,
-          aaiRows,
-          smRows,
-          sxRows,
+          rows: providerRows,
           asrProvider: asr.provider,
           asrModel: asr.model,
+          chatProvider: chat.provider,
           chatModel: chat.model,
           seconds: data.seconds,
         });

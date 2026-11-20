@@ -1,10 +1,6 @@
 import type { PriceBook } from "./run-bill.ts";
-import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
-import { ASSEMBLYAI_BASE_ROWS } from "./sub/assemblyai-base.ts";
-import { DEEPGRAM_ROWS } from "./sub/deepgram-catalog.ts";
+import { BASE_ROWS } from "./price-rows.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
-import { SONIOX_BASE_ROWS } from "./sub/soniox-base.ts";
-import { SPEECHMATICS_BASE_ROWS } from "./sub/speechmatics-base.ts";
 import type { ProviderId } from "./sub/provider.ts";
 import { applyUsdFix, type UsdFix } from "./usd-fix.ts";
 
@@ -21,15 +17,16 @@ export function buildPackBooks(input: {
   usdFix?: UsdFix;
   alibabaRows?: GroqLiveRow[];
   deepgramRows?: GroqLiveRow[];
+  /** Bảng giá đã kéo của nhà khác (nhà mới). */
+  rows?: Partial<Record<ProviderId, GroqLiveRow[]>>;
 }): Record<ProviderId, PriceBook> {
   const rows = (list: GroqLiveRow[]) => (input.usdFix ? applyUsdFix(list, input.usdFix) : list);
-  const base = { markup: 0, custom: {} };
-  return {
-    groq: { rate: input.rate, rows: rows(input.groqRows), desk: base },
-    alibaba: { rate: input.rate, rows: rows(input.alibabaRows ?? ALIBABA_ROWS), desk: { markup: input.alibabaMarkup ?? 0, custom: {} } },
-    deepgram: { rate: input.rate, rows: rows(input.deepgramRows ?? DEEPGRAM_ROWS), desk: base },
-    assemblyai: { rate: input.rate, rows: rows(ASSEMBLYAI_BASE_ROWS), desk: base },
-    speechmatics: { rate: input.rate, rows: rows(SPEECHMATICS_BASE_ROWS), desk: base },
-    soniox: { rate: input.rate, rows: rows(SONIOX_BASE_ROWS), desk: base },
-  };
+  const live: Partial<Record<ProviderId, GroqLiveRow[]>> = { groq: input.groqRows, alibaba: input.alibabaRows, deepgram: input.deepgramRows, ...input.rows };
+  // Mọi nhà trong bảng giá chung (price-rows.ts): nhà mới tự có sổ giá, không viết thêm ở đây.
+  return Object.fromEntries(
+    (Object.keys(BASE_ROWS) as ProviderId[]).map((id) => [
+      id,
+      { rate: input.rate, rows: rows(live[id] ?? BASE_ROWS[id]), desk: { markup: id === "alibaba" ? (input.alibabaMarkup ?? 0) : 0, custom: {} } },
+    ]),
+  ) as Record<ProviderId, PriceBook>;
 }
