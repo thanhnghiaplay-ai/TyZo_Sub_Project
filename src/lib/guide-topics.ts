@@ -13,7 +13,8 @@ import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "./customer-menu.ts";
 import { dong } from "./money-format.ts";
 import { PROVIDER_IDS, PROVIDERS } from "./sub/provider.ts";
 import { PAY_MINUTES } from "./pay-minutes.ts";
-import { ROOM_PLANS, TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
+import { plansWith, type PricedPlan } from "./room-plan-prices.ts";
+import { TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
 import type { TourId } from "./tour-steps.ts";
 
 /** Tên hiện trên giao diện mà hướng dẫn nhắc tới. Đổi tên nút ở app thì đổi ở đây. */
@@ -73,18 +74,20 @@ export const GROUP_LABEL: Record<GuideTopic["group"], string> = {
 export type GuideContext = {
   /** Phòng có bật thư đặt lại mật khẩu. `null` khi chưa biết. */
   resetOn?: boolean | null;
+  /** Giá gói thuê phòng Admin đang đặt. Thiếu thì dùng giá mặc định. */
+  plans?: PricedPlan[];
 };
 
 function megabytes(bytes: number): number {
   return Math.round(bytes / (1024 * 1024));
 }
 
-function planLines(): string {
-  return ROOM_PLANS.map((plan) => `${plan.name} ${dong(plan.price)}`).join(", ");
+function planLines(plans: PricedPlan[]): string {
+  return plans.map((plan) => `${plan.name} ${dong(plan.price)}`).join(", ");
 }
 
-function planSaving(): string {
-  const cheaper = ROOM_PLANS.filter((plan) => plan.save != null);
+function planSaving(plans: PricedPlan[]): string {
+  const cheaper = plans.filter((plan) => plan.save != null);
   return cheaper.map((plan) => `gói ${plan.name} rẻ hơn mua lẻ ${dong(plan.save!)}`).join(", ");
 }
 
@@ -109,6 +112,7 @@ function passwordForgotSteps(resetOn: boolean | null | undefined): GuideStep[] {
 }
 
 export function guideTopics(context: GuideContext = {}): GuideTopic[] {
+  const plans = context.plans ?? plansWith(null);
   return [
     {
       id: "bat-dau-nhanh",
@@ -192,7 +196,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       page: { label: "Xem bảng giá", to: "/goi" },
       steps: [
         { text: `Mua Token dịch: mở «${UI.account}» ở menu trái, chọn «${UI.wallet}», bấm gói. Mã QR hiện ra. Chuyển khoản đúng số tiền và nội dung. Đơn còn hiệu lực ${PAY_MINUTES} phút. Tiền về thì được Token dịch, không cộng số dư.` },
-        { text: `Gói thuê phòng: ${planLines()}. Bấm gói thì cũng hiện mã QR, chuyển khoản đúng số thì mở hạn. Trong hạn không giới hạn số tệp và được xuất file Vietsub; ${planSaving()}.` },
+        { text: `Gói thuê phòng: ${planLines(plans)}. Bấm gói thì cũng hiện mã QR, chuyển khoản đúng số thì mở hạn. Trong hạn không giới hạn số tệp và được xuất file Vietsub; ${planSaving(plans)}.` },
         { text: `Dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB, không xuất file Vietsub.` },
         { text: "Trả theo lượt trừ Token dịch. Phòng giữ số ước tính, khi xong trừ số thực và trả phần thừa nếu gói còn hạn. Hết hạn thì phần còn lại mất, không hoàn tiền. Orpheus khi dùng key của phòng và giọng Aura cũng trừ Token dịch. Neural không trừ." },
         { text: "Dịch trực tiếp dùng cùng Token dịch. Phiên không giữ số dư. Hết Token dịch thì phiên dừng." },

@@ -34,6 +34,7 @@ import {
   type MyPlace,
 } from "@/lib/admin-room";
 import { ROOM_PLANS } from "@/lib/room-plans";
+import { useRoomPlans } from "@/lib/use-room-plans";
 import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
 import { BadgeBoard } from "@/components/badge-board";
 import { AccountCard } from "@/components/role-mark";
@@ -152,6 +153,7 @@ function AdminNotes() {
 }
 
 export function AdminDesk() {
+  const plans = useRoomPlans();
   const { user: me } = useCurrentUserState();
   const [place, setPlace] = useState<MyPlace | null>(null);
   const [stats, setStats] = useState<DeskStats | null>(null);
@@ -542,7 +544,7 @@ export function AdminDesk() {
                     </button>
                     {priceOpen && (
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {ROOM_PLANS.map((plan) => (
+                        {plans.map((plan) => (
                           <button key={plan.id} type="button" disabled={busy} className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40" onClick={() => void run(() => grantPlan({ data: { userId: picked.id, planId: plan.id } }), `Đã mở gói ${plan.name}.`)}>
                             Mở {plan.name} · {formatMoney(plan.price)} đ
                           </button>

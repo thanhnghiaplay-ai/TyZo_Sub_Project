@@ -52,7 +52,7 @@ export function ConfigTab() {
       </Page>
       <Page id="gia" current={page}>
         <RunDeskBoard owner part="price" />
-        <Fold title="Giá thuê phòng" hint="Chỉ xem">
+        <Fold title="Giá thuê phòng" hint="Chủ chỉnh được">
           <RoomPlansView />
         </Fold>
       </Page>

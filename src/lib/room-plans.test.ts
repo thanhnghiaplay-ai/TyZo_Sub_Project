@@ -57,7 +57,7 @@ describe("một nguồn giá thuê phòng", () => {
     for (const plan of ROOM_PLANS) {
       assert.ok(!page.includes(String(plan.price).replace(/(\d)(?=(\d{3})+$)/g, "$1_")), `goi.tsx chép giá ${plan.price}`);
     }
-    assert.ok(page.includes("ROOM_PLANS"), "goi.tsx phải đọc ROOM_PLANS");
+    assert.ok(page.includes("useRoomPlans"), "goi.tsx phải đọc giá qua useRoomPlans (giá Admin đã lưu, mặc định ROOM_PLANS)");
     assert.ok(page.includes("TRIAL_MINUTES"), "goi.tsx phải đọc TRIAL_MINUTES");
     assert.ok(!/tối đa 10 phút/.test(page), "goi.tsx chép tay chữ dùng thử");
   });

@@ -1,13 +1,14 @@
 import { dong } from "@/lib/money-format";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "@/components/back-button";
-import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
+import { TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
+import { useRoomPlans } from "@/lib/use-room-plans";
 
 export const Route = createFileRoute("/goi")({
   component: GoiPage,
 });
 
-/** Giá, số ngày, giá gạch và số tiết kiệm lấy hết từ ROOM_PLANS. Ở đây chỉ giữ lời ghi chú. */
+/** Giá, số ngày, giá gạch và số tiết kiệm lấy hết từ giá Admin đã lưu (useRoomPlans, mặc định ROOM_PLANS). Ở đây chỉ giữ lời ghi chú. */
 const PLAN_NOTES: Record<RoomPlanId, string> = {
   ngay: "Một buổi. Trong 24 giờ không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
   tuan: "Trong 7 ngày không giới hạn số tệp. Rẻ hơn mua bảy ngày lẻ.",
@@ -15,6 +16,7 @@ const PLAN_NOTES: Record<RoomPlanId, string> = {
 };
 
 function GoiPage() {
+  const plans = useRoomPlans();
   return (
     <main className="room-wide mx-auto flex h-dvh flex-col bg-bg text-fg">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-line px-4 py-3">
@@ -39,7 +41,7 @@ function GoiPage() {
             <p className="mt-1 text-2xl font-semibold">0 đ</p>
             <p className="mt-2 text-sm text-muted">Đăng ký, chưa mua gói: {TRIAL_FILES} tệp, tối đa {TRIAL_MINUTES} phút, đủ chức năng trên màn hình. Không xuất file Vietsub.</p>
           </article>
-          {ROOM_PLANS.map((plan) => (
+          {plans.map((plan) => (
             <article key={plan.id} className="rounded-[var(--radius-card)] border border-line bg-card p-4">
               <h2 className="font-semibold">{plan.name}</h2>
               <p className="mt-1 text-2xl font-semibold text-accent">{dong(plan.price)}</p>

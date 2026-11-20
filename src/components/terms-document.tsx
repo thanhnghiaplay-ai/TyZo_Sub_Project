@@ -1,4 +1,5 @@
-import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES } from "@/lib/room-plans";
+import { TRIAL_FILES, TRIAL_MINUTES } from "@/lib/room-plans";
+import { useRoomPlans } from "@/lib/use-room-plans";
 
 /**
  * Nội dung điều khoản và chính sách, một chỗ duy nhất.
@@ -7,6 +8,7 @@ import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES } from "@/lib/room-plans";
  * Sửa chữ ở đây thì phải nâng TERMS_VERSION trong lib/terms.ts.
  */
 export function TermsDocument() {
+  const plans = useRoomPlans();
   return (
     <article className="gate-scroll">
       <h2>Tóm tắt</h2>
@@ -71,7 +73,7 @@ export function TermsDocument() {
             <td>0 đ</td>
             <td>{TRIAL_FILES} tệp, {TRIAL_MINUTES} phút, không xuất file</td>
           </tr>
-          {ROOM_PLANS.map((plan) => (
+          {plans.map((plan) => (
             <tr key={plan.id}>
               <td>{plan.name}</td>
               <td>{new Intl.NumberFormat("vi-VN").format(plan.price)} đ</td>

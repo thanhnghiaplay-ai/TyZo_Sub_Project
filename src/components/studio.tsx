@@ -65,6 +65,7 @@ import { formatRoomTokens } from "@/lib/token-math";
 import { modelRoleNote } from "@/lib/sub/model-role";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { effectiveLead, prefetchTargets, slotFor } from "@/lib/sub/narration-sync";
+import { useRoomPlans } from "@/lib/use-room-plans";
 import { auraReady, auraVoices, defaultAuraVoice } from "@/lib/sub/aura";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
@@ -494,6 +495,7 @@ type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 const MENU_TOOL_ORDER = ["key", "phim", "cast", "thuatngu", "voice", "run", "check"] as const;
 
 export function Studio() {
+  const roomPlans = useRoomPlans();
   const app = usePipeline();
   useWakeLock(app.running || app.analyzing);
   const online = useOnline();
@@ -883,7 +885,7 @@ export function Studio() {
     { id: "yeu-cau", label: "Yêu cầu xem lại", hint: "Trang", run: () => void navigate({ to: "/yeu-cau" }) },
     { id: "tour", label: "Xem hướng dẫn nhanh", hint: "Trợ giúp", words: "huong dan help chi toi", run: () => { setTourId("quick-start"); setTourOpen(true); } },
     { id: "huong-dan", label: "Hướng dẫn sử dụng", hint: "Trợ giúp", words: "huong dan help tro giup cach dung tim kiem", run: () => void navigate({ to: "/huong-dan" }) },
-    ...guideTopics().map((topic) => ({ id: `huong-dan-${topic.id}`, label: `Hướng dẫn: ${topic.title}`, hint: "Trợ giúp", words: topic.words, run: () => void navigate({ to: "/huong-dan", hash: topic.id }) })),
+    ...guideTopics({ plans: roomPlans }).map((topic) => ({ id: `huong-dan-${topic.id}`, label: `Hướng dẫn: ${topic.title}`, hint: "Trợ giúp", words: topic.words, run: () => void navigate({ to: "/huong-dan", hash: topic.id }) })),
     ...(place?.role ? [{ id: "admin", label: "Quản lý", hint: "Trang", run: () => void navigate({ to: "/admin" }) }] : []),
   ];
 

@@ -9,7 +9,8 @@ import type { BadgeStyleId } from "@/lib/badge-styles";
 import { canSkipToOwner } from "@/lib/staff-role";
 import { deviceId } from "@/lib/device-id";
 import { orderRoomPlan, claimTrialDevice, getRoomAccount, type RoomState } from "@/lib/room-account";
-import { ROOM_PLANS, roomAccess } from "@/lib/room-plans";
+import { roomAccess } from "@/lib/room-plans";
+import { useRoomPlans } from "@/lib/use-room-plans";
 import { GiayShelf } from "@/components/giay-shelf";
 import { PaySlip } from "@/components/pay-slip";
 import type { PayOrderView } from "@/lib/pay-store";
@@ -20,6 +21,7 @@ import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
 
 export function AccountPanel() {
+  const plans = useRoomPlans();
   const { user, isPending } = useCurrentUserState();
   const [state, setState] = useState<RoomState | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -174,7 +176,7 @@ export function AccountPanel() {
               onClose={() => setPayOpen(null)}
             />
           )}
-          {ROOM_PLANS.map((plan) => (
+          {plans.map((plan) => (
             <button
               key={plan.id}
               type="button"

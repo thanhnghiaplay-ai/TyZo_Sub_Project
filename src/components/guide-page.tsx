@@ -10,6 +10,7 @@ import { BackButton } from "@/components/back-button";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { GROUP_LABEL, GUIDE_FAQ, guideTopics, matchGuide, type GuideStep, type GuideTopic } from "@/lib/guide-topics";
 import { getMailFace } from "@/lib/mail-runtime";
+import { useRoomPlans } from "@/lib/use-room-plans";
 import { contactLinks, EMPTY_CONTACT, type SupportContact } from "@/lib/support-contact";
 import { getSupportContact } from "@/lib/support-room";
 import { requestTour } from "@/lib/tour-request";
@@ -136,7 +137,8 @@ export function GuidePage() {
       .catch(() => setContact({ ...EMPTY_CONTACT }));
   }, []);
 
-  const topics = useMemo(() => guideTopics({ resetOn }), [resetOn]);
+  const plans = useRoomPlans();
+  const topics = useMemo(() => guideTopics({ resetOn, plans }), [resetOn, plans]);
   const found = useMemo(() => matchGuide(query, topics, GUIDE_FAQ), [query, topics]);
   const searching = query.trim().length > 0;
   const nothing = found.topics.length === 0 && found.faqs.length === 0;
