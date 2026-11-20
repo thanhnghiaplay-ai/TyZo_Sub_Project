@@ -1,3 +1,6 @@
+## BÀN GIAO (20/11/2026, nhánh work) — ĐÃ ĐẨY CHÍNH THỨC LẦN 4: `main` = `work` (v5.17.6, kèm bộ đo nhận dạng)
+Chủ nói «Đẩy chính thức». `main` được kéo thẳng (fast-forward) từ `a070c4d` lên cùng commit với `work`, gồm: bộ đo nhận dạng tự động (`src/lib/sub/asr-score.ts`, `scripts/asr-bench.ts`, `eval/asr/`) và các ghi chú xác nhận 11 câu (large-v3 và turbo). Không đổi hành vi app, không nâng phiên bản (vẫn 5.17.6). Trước khi đẩy: typecheck sạch, eslint 0 lỗi, `npm test` 1272 pass, `npm run build` thành công. Lần sau vẫn chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức». CHƯA kiểm: `asr:bench` với Groq thật; đáp án mẫu chưa duyệt tay; clip 18+. Các mục bên dưới còn câu «CHƯA ĐẨY main» là cũ.
+
 ## BÀN GIAO (20/11/2026, nhánh work) — BỘ ĐO NHẬN DẠNG TỰ ĐỘNG (không đổi hành vi app, không nâng phiên bản)
 Chủ hỏi: thay đổi prompt có ảnh hưởng nhà cung cấp khác không, làm sao biết prompt tốt hay không, có script tự động không.
 TRẢ LỜI VỀ NHÀ CUNG CẤP KHÁC: `prompt` chỉ đi qua đường Groq Whisper (`transcribe`/`transcribeOnce` trong `groq.ts`, 4 chỗ gọi `asrPrompt` ở `use-pipeline.ts`). Soát bằng grep: file Deepgram, AssemblyAI, Speechmatics, Soniox, Alibaba KHÔNG có `prompt`/từ khóa tăng cường (`prompt|keyterm|word_boost|boost`), nên v5.17.6 không đổi gì cho các nhà đó. CHƯA đọc từng lời gọi API của họ; nếu sau này họ thêm từ khóa/prompt thì phải đo riêng.
