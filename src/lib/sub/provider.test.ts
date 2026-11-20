@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ALL_PROVIDER_IDS, PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote, clientKeyPlaceholder } from "./provider.ts";
+import { ALL_PROVIDER_IDS, PROVIDERS, PROVIDER_IDS, PROVIDER_LABEL, authHeader, isProviderId, modelIdsFrom, modelListUrl, providerHas, providerKeyNote, providerChat, clientKeyPlaceholder } from "./provider.ts";
 
 describe("địa chỉ danh sách model", () => {
   it("Groq và Alibaba không dùng chung máy", () => {
@@ -77,15 +77,20 @@ describe("ghi chú key phòng sinh từ khả năng của nhà", () => {
   it("nhà không dịch bằng mô hình thì nhắc dịch vẫn bằng nhà có khả năng dịch", () => {
     const note = providerKeyNote("deepgram");
     assert.match(note, /Deepgram làm: nhận dạng giọng, đọc thành tiếng/);
-    assert.match(note, /Dịch vẫn bằng Groq/);
+    assert.match(note, /Dịch bằng nhà có model dịch \(Groq, Alibaba\)/);
   });
   it("nhà có khả năng dịch bằng mô hình thì không nhắc nhà khác dịch thay", () => {
-    assert.doesNotMatch(providerKeyNote("groq"), /Dịch vẫn bằng/);
+    assert.doesNotMatch(providerKeyNote("groq"), /Dịch bằng nhà/);
+    assert.doesNotMatch(providerKeyNote("alibaba"), /Dịch bằng nhà/);
   });
-  it("nhà dịch trực tiếp (Alibaba) nêu đúng khả năng và dịch vẫn bằng Groq", () => {
-    const note = providerKeyNote("alibaba");
-    assert.match(note, /Alibaba làm: nhận dạng giọng, dịch trực tiếp/);
-    assert.match(note, /Dịch vẫn bằng Groq/);
+  it("Alibaba nêu đủ khả năng: nhận dạng, dịch bằng mô hình, dịch trực tiếp", () => {
+    assert.match(providerKeyNote("alibaba"), /Alibaba làm: nhận dạng giọng, dịch bằng mô hình, dịch trực tiếp/);
+  });
+  it("nhà có khả năng dịch phải khai đường dịch, nhà không dịch thì không khai", () => {
+    for (const id of PROVIDER_IDS) {
+      assert.equal(Boolean(providerChat(id)), PROVIDERS[id].caps.includes("chat"), id);
+      if (PROVIDERS[id].caps.includes("chat")) assert.match(PROVIDERS[id].chat!.path, /^\//, id);
+    }
   });
   it("mọi nhà đều có ghi chú, và ghi chú nhắc cửa Trả theo lượt lẫn Thuê phòng", () => {
     for (const id of PROVIDER_IDS) {

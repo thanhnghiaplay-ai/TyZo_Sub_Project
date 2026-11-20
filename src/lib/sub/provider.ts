@@ -45,7 +45,19 @@ export type ProviderInfo = {
   ready: boolean;
   /** Tên dòng trong room_settings. */
   settings: { key: string; models: string; desk: string };
+  /**
+   * Đường dịch bằng mô hình (bắt buộc khi caps có "chat"). Mọi việc dùng mô hình ngôn ngữ (dịch, phân tích phim,
+   * nhận thể loại, trau chuốt) đi qua đường này, theo nhà của model, không gắn cứng nhà nào.
+   */
+  chat?: ProviderChat;
 };
+
+/**
+ * Cách gọi dịch của một nhà (dạng OpenAI `chat/completions`).
+ * path: nối sau `api` · tokenField: tên trường giới hạn chữ trả về ·
+ * browserDirect: trình duyệt gọi thẳng được bằng key khách (nhà cho phép CORS); false thì đi qua cửa chung của phòng, key không lưu.
+ */
+export type ProviderChat = { path: string; tokenField: "max_completion_tokens" | "max_tokens"; browserDirect: boolean };
 
 export const GROQ_API = "https://api.groq.com/openai/v1";
 export const ALIBABA_API = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
@@ -62,6 +74,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     api: GROQ_API,
     auth: "bearer",
     caps: ["asr", "chat", "tts"],
+    chat: { path: "/chat/completions", tokenField: "max_completion_tokens", browserDirect: true },
     intake: "chunks",
     keyPage: "console.groq.com/keys",
     clientStore: "gk",
@@ -76,7 +89,9 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     label: "Alibaba",
     api: ALIBABA_API,
     auth: "bearer",
-    caps: ["asr", "live"],
+    caps: ["asr", "chat", "live"],
+    // Qwen qua cổng tương thích OpenAI (vùng Singapore). Trình duyệt không gọi thẳng được: đi qua cửa chung.
+    chat: { path: "/chat/completions", tokenField: "max_tokens", browserDirect: false },
     intake: "link",
     keyPage: "bailian.console.alibabacloud.com",
     clientStore: "gali",
@@ -193,8 +208,8 @@ const CAP_LABEL: Record<ProviderCap, string> = {
 export function providerKeyNote(id: ProviderId): string {
   const info = PROVIDERS[id];
   const does = info.caps.map((cap) => CAP_LABEL[cap]).join(", ");
-  const chatHouse = PROVIDER_IDS.find((other) => other !== id && PROVIDERS[other].caps.includes("chat"));
-  const translate = !info.caps.includes("chat") && chatHouse ? ` Dịch vẫn bằng ${PROVIDERS[chatHouse].label}.` : "";
+  const chatHouses = PROVIDER_IDS.filter((other) => other !== id && PROVIDERS[other].caps.includes("chat")).map((other) => PROVIDERS[other].label);
+  const translate = !info.caps.includes("chat") && chatHouses.length ? ` Dịch bằng nhà có model dịch (${chatHouses.join(", ")}).` : "";
   return `Chỉ Chủ lưu. Khách không thấy key. ${info.label} làm: ${does}.${translate} Key này chạy cửa Trả theo lượt (phòng trả tiền, trừ Token dịch theo giá gốc). Cửa Thuê phòng dùng key của khách.`;
 }
 
@@ -226,4 +241,15 @@ export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
 export function clientKeyPlaceholder(id: ProviderId): string {
   const info = PROVIDERS[id];
   return `${info.keyHint ?? `Key ${info.label},`} chỉ lưu trên máy này`;
+}
+
+/** Đường dịch của nhà, null khi nhà không dịch. */
+export function providerChat(id: ProviderId): ProviderChat | null {
+  const info = PROVIDERS[id];
+  return info.caps.includes("chat") && info.chat ? info.chat : null;
+}
+
+/** Các nhà (đã ready) làm được một việc. */
+export function providersWith(cap: ProviderCap): ProviderId[] {
+  return PROVIDER_IDS.filter((id) => PROVIDERS[id].caps.includes(cap));
 }

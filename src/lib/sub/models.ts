@@ -82,7 +82,46 @@ export const CHAT_MODELS: ChatModel[] = [
     price: "$0.075 / $0.30",
     note: "Model an toàn. Có thể từ chối thoại 18+.",
   },
+  // Alibaba (Qwen, cổng tương thích OpenAI, vùng Singapore). Giá lấy từ bảng Alibaba (alibaba-catalog.ts / bảng Singapore).
+  {
+    id: "qwen-plus",
+    name: "Qwen Plus",
+    tier: "standard",
+    speed: 300,
+    quality: 8.5,
+    asian: 9.5,
+    price: "$0.40 / $1.20",
+    note: "Alibaba. Mạnh tiếng Trung, ngữ cảnh dài. Cần key Alibaba hoặc phòng có key Alibaba.",
+    provider: "alibaba",
+  },
+  {
+    id: "qwen-max",
+    name: "Qwen Max",
+    tier: "standard",
+    speed: 200,
+    quality: 9,
+    asian: 10,
+    price: "$1.60 / $6.40",
+    note: "Alibaba. Chắc nhất cho phim Trung, đắt hơn.",
+    provider: "alibaba",
+  },
+  {
+    id: "qwen-turbo",
+    name: "Qwen Turbo",
+    tier: "standard",
+    speed: 600,
+    quality: 7,
+    asian: 8.5,
+    price: "$0.05 / $0.20",
+    note: "Alibaba. Rẻ và nhanh, hợp câu ngắn.",
+    provider: "alibaba",
+  },
 ];
+
+/** Nhà chạy một model dịch trong danh mục (thiếu khai = Groq). */
+export function chatProviderOf(model: Pick<ChatModel, "provider">): import("./provider.ts").ProviderId {
+  return model.provider ?? "groq";
+}
 
 export const ASR_MODELS = [
   { id: "whisper-large-v3-turbo", name: "Whisper Turbo", price: "$0.04/giờ", note: "Nhanh, đủ cho hầu hết phim" },
@@ -106,7 +145,9 @@ export function modelLabel(id: string): string {
   return BY_ID.get(id)?.name ?? id.replace(/^.*\//, "");
 }
 
+/** Tham số suy luận riêng của Groq. Model nhà khác (kể cả Qwen trên Alibaba) không nhận các trường này. */
 export function reasoningOpts(model: string): Record<string, string | boolean> {
+  if (CHAT_MODELS.some((row) => row.id === model && row.provider && row.provider !== "groq")) return {};
   if (/qwen/i.test(model)) return { reasoning_effort: "none" };
   if (/gpt-oss/i.test(model)) return { reasoning_effort: "low", include_reasoning: false };
   return {};

@@ -41,7 +41,7 @@ function build(): CatalogModel[] {
     if (provider) out.push({ id: row.id, provider, kind: "asr", label: row.name, intake: asrIntake(row.id) });
   }
   for (const model of CHAT_MODELS) {
-    out.push({ id: model.id, provider: "groq", kind: model.tier === "safety" ? "guard" : "chat", label: model.name, intake: null });
+    out.push({ id: model.id, provider: model.provider ?? "groq", kind: model.tier === "safety" ? "guard" : "chat", label: model.name, intake: null });
   }
   for (const voice of ORPHEUS_MODELS) out.push({ id: voice.id, provider: "groq", kind: "tts", label: voice.label, intake: null });
   for (const lang of Object.keys(AURA_VOICES) as AuraLang[]) {
@@ -80,5 +80,11 @@ export function modelKindOf(provider: ProviderId, id: string): ModelKind | null 
     if (/^(nova|enhanced|base|whisper|flux)/i.test(id)) return "asr";
     return null;
   }
-  return KIND_OF_ROLE[modelRoleOf(id)];
+  const kind = KIND_OF_ROLE[modelRoleOf(id)];
+  // Model lạ chỉ được xem là model dịch khi tên giống mô hình chữ: key của một số nhà trả cả model ảnh, nhúng, đọc ảnh, âm thanh…
+  if (kind === "chat" && NOT_CHAT.test(id)) return null;
+  return kind;
 }
+
+/** Tên model không phải mô hình chữ (dù modelRoleOf mặc định xếp vào «dịch»). */
+const NOT_CHAT = /embed|rerank|image|wan[x\d.-]|(^|[-/])vl([-.]|$)|-vl-|vision|ocr|omni|audio|realtime|video|flux|diffusion|cosyvoice|paraformer|sambert|moderation|-tts|tts-|asr/i;

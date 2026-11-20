@@ -34,6 +34,8 @@ export type ChatModel = {
   asian: number;
   price: string;
   note: string;
+  /** Nhà chạy model này. Thiếu = Groq (danh mục gốc). */
+  provider?: import("./provider.ts").ProviderId;
 };
 
 export type AutoProfile = "fast" | "balanced" | "accurate";
