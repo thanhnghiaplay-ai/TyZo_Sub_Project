@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.18.3";
+export const APP_VERSION = "5.19.0";
 
 export type ReleaseNote = {
   version: string;
@@ -11,12 +11,14 @@ export type ReleaseNote = {
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
   {
-    version: "5.18.3",
+    version: "5.19.0",
     time: "20/11/2026",
-    title: "Trả theo lượt không còn báo «Model này không có trong cửa trả theo lượt» khi để Tự động.",
+    title: "Dịch bằng nhiều nhà: Groq và Alibaba (Qwen), cả trả theo lượt lẫn key riêng.",
     points: [
-      "Khi trả bằng Token dịch, chế độ Tự động chỉ chọn model mà phòng đang có.",
-      "Chọn tay model phòng chưa có thì app báo tên model ngay, trước khi giữ Token dịch.",
+      "Model dịch của Alibaba (Qwen Plus, Max, Turbo) chọn được như model Groq, có nhãn nhà.",
+      "Tự động chỉ chọn model của nhà bạn có key, hoặc phòng đang mở khi trả bằng Token dịch.",
+      "Model phòng chưa có thì app báo tên model ngay, trước khi giữ Token dịch.",
+      "Điều khoản bổ sung nơi chữ thoại được gửi để dịch.",
     ],
   },
   {

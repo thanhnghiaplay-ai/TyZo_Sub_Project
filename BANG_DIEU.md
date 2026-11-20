@@ -58,6 +58,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-20 22:30 | Người dùng chốt | Model dịch, nhận dạng và mọi chức năng dùng model phải theo nhiều nhà cung cấp, phân loại model theo nhà và việc làm được; nhà mới thêm sau cũng vậy. «Claude sửa» | Làm ngay | v5.19.0 trên nhánh phiên `ccr-bc99847a-xy1bgk`, chưa lên `work`. Điều khoản 2026-11-20.1. Thuyết minh (đọc giọng) vẫn mỗi nhà một đường riêng, chưa gom |
 | 2026-11-18 22:23 | Người dùng chốt | Rút gọn năm đoạn nhà nhận dạng trong phòng dịch thành một đoạn | Làm ngay | Đã vào work trong v5.6.1. Không đổi điều khoản |
 | 2026-11-17 00:35 | Người dùng chốt | Làm lại điều khoản và chính sách cho khớp web và luật. Cái cần thì làm | Làm ngay | Đã vào work trong v5.0.1. Một trang, không tách file. Điều khoản 2026-11-17.1 |
 | 2026-11-16 23:55 | Người dùng chốt | Bỏ nạp số dư. Mua Token dịch và thuê phòng tạo mã QR đúng giá. Orpheus trừ Token dịch. Reset số dư test, không hoàn | Làm ngay | Đã vào work trong v5.0.0. Điều khoản 2026-11-16.4 |

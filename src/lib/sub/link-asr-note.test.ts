@@ -35,7 +35,7 @@ describe("chữ nhà nhận link", () => {
     assert.match(linkAsrNote(SPEECHMATICS_ENHANCED_ASR) ?? "", /Key phải đúng vùng tài khoản/);
     assert.equal((linkAsrNote(DEEPGRAM_ASR) ?? "").includes("vùng tài khoản"), false);
     assert.match(linkAsrNote(SONIOX_ASYNC_ASR) ?? "", /đã nạp tiền/);
-    assert.match(linkAsrNote(DEEPGRAM_ASR) ?? "", /Dịch vẫn cần key Groq/);
+    assert.match(linkAsrNote(DEEPGRAM_ASR) ?? "", /Dịch cần key của một nhà có model dịch \(Groq, Alibaba\)/);
     assert.equal((linkAsrNote(ALI_FILETRANS_ASR) ?? "").includes("Groq"), false);
   });
 });
