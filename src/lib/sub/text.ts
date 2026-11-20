@@ -289,8 +289,10 @@ export const ASR_GUARD =
   "Ignore breathing, moaning, sighs, gasps and other non-speech. Only transcribe clear words. Never write a lone A or Ah for a sound.";
 
 export function asrPrompt(title: string, gloss: string): string {
-  if (readAsrTest().noPrompt) return "";
+  const test = readAsrTest();
+  if (test.noPrompt) return "";
   const vocab = [title.trim(), ...glossaryList(gloss).map((item) => item[0])].filter(Boolean).join(", ");
+  if (test.noGuard) return vocab.slice(0, 420);
   const room = 420 - ASR_GUARD.length - 2;
   return [vocab.slice(0, Math.max(0, room)), ASR_GUARD].filter(Boolean).join(". ").slice(0, 420);
 }

@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.17.5",
     time: "20/11/2026",
     area: "khac",
+    text: "Thêm công tắc THỬ ?asrtest=noguard (vẫn gửi tên phim/thuật ngữ, bỏ câu ASR_GUARD tiếng Anh khỏi prompt Whisper), mặc định TẮT, không đổi hành vi, không nâng phiên bản. Lý do: Chủ đã thử clip «Tiểu hòa thượng» với large-v3: prompt đủ chỉ ra 2 câu, ?asrtest=noprompt ra 11 câu đúng, chunk15 ra 6 câu (có ảo giác, mất lời), noprompt+chunk15 ra 13 câu nhưng vụn/lặp. Cần tách xem phần nào của prompt gây bỏ lời trước khi sửa mặc định (ASR_GUARD còn cần cho phim 18+).",
+  },
+  {
+    version: "5.17.5",
+    time: "20/11/2026",
+    area: "khac",
     text: "Công tắc THỬ nhận dạng, mặc định TẮT (không đổi hành vi, không nâng phiên bản). Mở app với ?asrtest=noprompt (không gửi prompt tên phim/thuật ngữ/ASR_GUARD lên Whisper), ?asrtest=chunk15 (cắt đoạn 15 giây, số từ 8 đến 60), ghép bằng dấu phẩy, ?asrtest=off để tắt; lưu trong trình duyệt, khi bật có dòng báo ở đầu lượt chạy. File mới src/lib/sub/asr-test.ts (+ test 4 ca), text.ts (chunkSeconds(), asrPrompt), chunk-plan.ts. Lý do: clip «Tiểu hòa thượng» chạy Groq large-v3 chỉ ra 2 câu; chạy Whisper cục bộ (sherpa-onnx, scripts/whisper-local-check.py) thì cả turbo và large-v3 chép đủ 30 giây đầu, kể cả sau nén Opus 20 kbps, nên lỗi nằm ở prompt hoặc cách Groq giải mã, chưa kiểm với Groq thật.",
   },
   {
