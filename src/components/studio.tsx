@@ -78,6 +78,7 @@ import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
 const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.";
+const THREADS_TIP = "Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn của key (nhất là key miễn phí). App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.";
 const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
 const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, Deepgram… tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
 const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số Token dịch ước tính từ gói đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn.";
@@ -1217,7 +1218,7 @@ export function Studio() {
             </label>
           ))}
         <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao: model và nhận dạng</summary>
+          <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao: model và nhận dạng giọng</summary>
           <div className="grid gap-3 pt-2">
         {!lockTurnModels && (
         <>
@@ -1281,6 +1282,12 @@ export function Studio() {
         {linkAsrNote(app.asrModel) && <p className="text-sm text-muted">{linkAsrNote(app.asrModel)}</p>}
                 </>
         )}
+          </div>
+        </details>
+        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
+          <summary className="min-tap cursor-pointer text-sm font-medium">Tùy chọn nhận dạng (dùng cho cả hai cách trả)</summary>
+          <div className="grid gap-3 pt-2">
+            <p className="text-xs text-muted">Áp dụng cho cả Key của tôi và Trả theo lượt. Chọn model ở mục «Nâng cao: model và nhận dạng giọng» phía trên.</p>
         <div className="flex items-center gap-2">
           <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
@@ -1293,9 +1300,9 @@ export function Studio() {
           <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
           Kiểm tra ngôn ngữ từng đoạn
         </label>
-          <InfoTip label="Giải thích: Kiểm tra ngôn ngữ từng đoạn">Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy. Tắt thì chạy như cũ.</InfoTip>
+          <InfoTip label="Giải thích: Kiểm tra ngôn ngữ từng đoạn">Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy (trả theo lượt thì trừ thêm Token dịch cho phần đó). Tắt thì chạy như cũ.</InfoTip>
         </div>
-        <Select label="Số luồng nhận dạng" tip="Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn key miễn phí. App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng." value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
+        <Select label="Số luồng nhận dạng" tip={THREADS_TIP} value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
           <option value="1">Ổn định · 1 luồng</option>
           <option value="3">Cân bằng · 3 luồng</option>
           <option value="4">Nhanh · 4 luồng</option>

@@ -349,6 +349,14 @@ describe("Bố cục mới B4 — mở lên tab Phim, chip Trả bằng", () => 
     assert.match(phimTab, /<div className="studio-pay-chip"[\s\S]*studio-pay-change[\s\S]*openTool\("run"\)/);
     assert.equal(/<button[^>]*studio-pay-chip/.test(phimTab), false);
     assert.equal(source.includes("Dùng key Groq của bạn."), false);
+    // Ba tùy chọn nhận dạng dùng chung hai cách trả: khối riêng, không nằm trong phần chọn model.
+    const keyTab = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
+    const models = keyTab.slice(keyTab.indexOf("Nâng cao: model và nhận dạng giọng"), keyTab.indexOf("Tùy chọn nhận dạng (dùng cho cả hai cách trả)"));
+    assert.ok(models.length > 0);
+    for (const label of ["Chỉ gửi đoạn có tiếng người", "Kiểm tra ngôn ngữ từng đoạn", "Số luồng nhận dạng"]) {
+      assert.equal(models.includes(label), false, label);
+      assert.ok(keyTab.indexOf(label) > keyTab.indexOf("Tùy chọn nhận dạng (dùng cho cả hai cách trả)"), label);
+    }
     assert.ok(phimTab.indexOf("studio-pay-chip") < phimTab.indexOf("Nhận diện ngôn ngữ"));
     assert.equal(css.includes(".studio-run-bar"), false);
   });
