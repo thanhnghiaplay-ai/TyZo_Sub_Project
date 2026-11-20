@@ -102,7 +102,15 @@ export function streamParts(dur: number): Array<[number, number]> {
 }
 
 export function speechIndex(items: Seg[], clock: number, offset: number): number {
-  return findCueIndex(items, clock - offset);
+  const time = clock - offset;
+  const index = findCueIndex(items, time);
+  if (index < 0) return -1;
+  const talk = items[index].talk;
+  if (!talk?.length) return index;
+  for (const [start, end] of talk) {
+    if (time >= start - 0.08 && time <= end + 0.12) return index;
+  }
+  return -1;
 }
 
 export function findCueIndex(items: Seg[], time: number): number {
@@ -337,6 +345,7 @@ export function acceptSegment(
   item: { no_speech_prob?: number; avg_logprob?: number; compression_ratio?: number } = {},
   samples?: Float32Array | null,
   overlapGate = partIndex > 0,
+  words?: ReadonlyArray<{ start?: number; end?: number } | null> | null,
 ): AcceptResult {
   if (!Number.isFinite(relStart) || !Number.isFinite(relEnd)) return rejected("bad_time", null, null, text);
   const cleaned = text.trim().replace(/(.{2,40}?)(?:[\s,.!?…]+\1){5,}/giu, "$1");
@@ -401,8 +410,42 @@ export function acceptSegment(
     raw: cleaned,
     translation: null,
     ...(typeof heard === "number" ? { pitchHz: heard } : {}),
+    ...talkField(words, relStart, relEnd, chunkStart),
   });
   return { accepted: true, reason: null, start: absStart, end, text: cleaned };
+}
+
+function talkField(
+  words: ReadonlyArray<{ start?: number; end?: number } | null> | null | undefined,
+  relStart: number,
+  relEnd: number,
+  chunkStart: number,
+): { talk: Array<[number, number]> } | Record<string, never> {
+  if (!words?.length) return {};
+  const hits: Array<[number, number]> = [];
+  for (const word of words) {
+    if (!word || !Number.isFinite(word.start) || !Number.isFinite(word.end)) continue;
+    const start = word.start as number;
+    const end = word.end as number;
+    const mid = (start + end) / 2;
+    if (mid < relStart - 0.05 || mid > relEnd + 0.05) continue;
+    hits.push([chunkStart + start, chunkStart + end]);
+  }
+  if (!hits.length) return {};
+  hits.sort((a, b) => a[0] - b[0]);
+  const spans: Array<[number, number]> = [];
+  let from = hits[0][0];
+  let to = hits[0][1];
+  for (let i = 1; i < hits.length; i++) {
+    const [start, end] = hits[i];
+    if (start - to > 0.45) {
+      spans.push([from, to]);
+      from = start;
+      to = end;
+    } else to = Math.max(to, end);
+  }
+  spans.push([from, Math.max(to, from + 0.05)]);
+  return { talk: spans };
 }
 
 function shortLogprobKeeps(avgLogprob: number | undefined) {
@@ -640,6 +683,7 @@ export const LANGS = [
 ] as const;
 
 export const SRC_LANGS = [
+  ["auto", "Tự động"],
   ["zh", "Tiếng Trung"],
   ["ko", "Tiếng Hàn"],
   ["ja", "Tiếng Nhật"],

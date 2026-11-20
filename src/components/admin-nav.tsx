@@ -37,7 +37,7 @@ export function AdminNav({
   const label = tabs.find((tab) => tab.id === current)?.label ?? "Admin";
   return (
     <>
-      <div className="admin-bar sticky top-0 z-10 flex items-center gap-2 border-b border-line bg-bg py-2 lg:hidden">
+      <div className="admin-bar sticky top-0 z-[5] flex items-center gap-2 border-b border-line bg-bg py-2 lg:hidden">
         <RailToggle />
         <p className="min-w-0 flex-1 truncate text-sm font-semibold">{label}</p>
         <button type="button" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-3 text-sm" onClick={onSearch} aria-label="Tìm nhanh">

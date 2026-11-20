@@ -17,6 +17,8 @@ export type Seg = {
   voiceLock?: "female" | "male";
   /** Người dùng đã sửa tay. Đổi model hoặc ngôn ngữ đích không xóa câu này. */
   edited?: boolean;
+  /** Khoảng thật sự có từ, theo đồng hồ video. Thuyết minh không đọc ngoài các khoảng này. */
+  talk?: Array<[number, number]>;
   /** Bản dịch cũ so với model hoặc ngôn ngữ đích hiện tại, cần dịch lại. Câu đã sửa tay (edited) không bị coi là cũ. */
   stale?: boolean;
 };

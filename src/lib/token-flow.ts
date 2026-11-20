@@ -201,3 +201,39 @@ export async function releaseStaleTokensWith(sql: Sql, userId: string, hours = 6
   }
   return n;
 }
+
+/**
+ * Đặt số Token dịch còn hạn về đúng một mức.
+ * Phần thêm được ghi gói mới, hạn 365 ngày, giá 0. Phần bớt lấy gói sắp hết hạn trước.
+ */
+export async function setTokenBalanceWith(sql: Sql, userId: string, target: number) {
+  const before = await giayBalance(sql, userId);
+  const delta = target - before;
+  if (delta > 0) {
+    const id = `adj-${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
+    await sql`
+      insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at)
+      values (${id}, ${userId}, ${delta}::int, ${delta}::int, 0, now() + interval '365 days')
+    `;
+  } else if (delta < 0) {
+    const cut = -delta;
+    await sql`
+      with locked as (
+        select id, left_tokens, expires_at from token_grants
+        where user_id = ${userId} and expires_at > now() and left_tokens > 0
+        order by expires_at, id
+        for update
+      ),
+      ranked as (
+        select id, left_tokens, sum(left_tokens) over (order by expires_at, id) as running from locked
+      ),
+      take as (
+        select id, least(left_tokens, greatest(0, ${cut}::int - (running - left_tokens)))::int as n from ranked
+      )
+      update token_grants g set left_tokens = g.left_tokens - take.n
+      from take
+      where g.id = take.id and take.n > 0
+    `;
+  }
+  return { before, after: await giayBalance(sql, userId) };
+}

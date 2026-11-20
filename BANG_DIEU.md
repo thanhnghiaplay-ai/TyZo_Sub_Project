@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = `work` = v5.17.7 (đẩy chính thức 20/11/2026) |
-| Bản mới nhất | v5.17.7: dòng nhắc «sót lời» khi nhận dạng quá thưa; khối «Chấm nhận dạng» ở Admin → Chất lượng. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.17.7 (đẩy chính thức 20/11/2026). `work` đã hơn `main`. |
+| Bản mới nhất | v5.18.0 trên `work`: đọc file có phần trăm; ngôn ngữ nguồn «Tự động»; khung sau khi dịch; thuyết minh không đọc chỗ im; Admin chỉnh Token dịch. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-18.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |

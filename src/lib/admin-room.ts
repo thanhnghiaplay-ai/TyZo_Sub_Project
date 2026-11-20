@@ -1313,6 +1313,43 @@ export const setUserBalance = createServerFn({ method: "POST" })
     throw new Error("Không đặt số dư. Số dư không dùng để chi.");
   });
 
+export const readUserTokens = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((userId: string) => {
+    const id = userId?.trim();
+    if (!id) throw new Error("Thiếu tài khoản.");
+    return id;
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "quan-ly");
+    const { getSql } = await import("@/lib/db");
+    const { giayBalance } = await import("@/lib/token-flow");
+    const sql = await getSql();
+    return { tokens: await giayBalance(sql, data) };
+  });
+
+export const setUserTokens = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { userId: string; tokens: number }) => {
+    const userId = input.userId?.trim();
+    if (!userId) throw new Error("Thiếu tài khoản.");
+    const tokens = Math.round(Number(input.tokens));
+    if (!Number.isFinite(tokens) || tokens < 0 || tokens > 50_000_000) {
+      throw new Error("Token dịch từ 0 đến 50.000.000.");
+    }
+    return { userId, tokens };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "quan-ly");
+    await assertLower(context.userId, data.userId);
+    const { getSql } = await import("@/lib/db");
+    const { setTokenBalanceWith } = await import("@/lib/token-flow");
+    const sql = await getSql();
+    const next = await setTokenBalanceWith(sql, data.userId, data.tokens);
+    await writeAudit(context.userId, "chinh-token", data.userId, `Token dịch ${next.before} → ${next.after}.`);
+    return next;
+  });
+
 export const getBadgeStyle = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async () => {

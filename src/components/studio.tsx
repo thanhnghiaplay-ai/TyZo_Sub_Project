@@ -554,6 +554,7 @@ export function Studio() {
   const [appeal, setAppeal] = useState("");
   const [appealNotice, setAppealNotice] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(true);
+  const [afterOpen, setAfterOpen] = useState(false);
   // Khách bấm một mục trong menu trái thì hiện khung đầy đủ thay cho trang chủ một ô.
   const [forced, setForced] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -639,6 +640,7 @@ export function Studio() {
         video,
         playbackRate: video.playbackRate || 1,
         onBlocked: (message: string) => pushToast(message, "bad"),
+        onFail: (message: string) => pushToast(message, "bad"),
       };
     };
     void narrator.current.speak({ ...optionsFor(seg), slot: slotFor(segs, index) });
@@ -658,6 +660,7 @@ export function Studio() {
       video: app.videoRef.current,
       playbackRate: 1,
       onBlocked: (message) => pushToast(message, "bad"),
+      onFail: (message) => pushToast(message, "bad"),
     });
   };
 
@@ -760,9 +763,14 @@ export function Studio() {
 
   const wasRunning = useRef(false);
   useEffect(() => {
-    if (wasRunning.current && !app.running) void loadPlace();
+    if (wasRunning.current && !app.running) {
+      void loadPlace();
+      const pending = app.segs.some((seg) => seg.translation === null);
+      const anyOk = app.segs.some((seg) => seg.translation && !seg.translationFailed);
+      if (!pending && anyOk) setAfterOpen(true);
+    }
     wasRunning.current = app.running;
-  }, [app.running, loadPlace]);
+  }, [app.running, app.segs, loadPlace]);
 
   // Bắt đầu dịch hoặc phân tích thì tab công cụ (tấm trượt) tự đóng để thấy video và tiến độ, khỏi phải bấm X.
   const wasBusy = useRef(false);
@@ -1006,11 +1014,61 @@ export function Studio() {
             Dịch tiếp
           </button>
         )}
+        {!hero && !app.running && app.buttonLabel === "Tiếp tục" && (
+          <button
+            type="button"
+            disabled={!online || normalDown}
+            className="min-tap shrink-0 rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40"
+            onClick={() => {
+              if (isStudioSheet()) setSheetOpen(false);
+              void app.start();
+            }}
+          >
+            Tiếp tục
+          </button>
+        )}
         <button type="button" aria-label="Xem hướng dẫn nhanh" title="Hướng dẫn nhanh" className="min-tap grid shrink-0 place-items-center rounded-[var(--radius-ctl)] border border-line px-3" onClick={() => setTourOpen(true)}>
           <Icon slot="ui.help" className="size-4" />
         </button>
       </div>
+      {!hero && payByRoom && (
+        <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} />
+      )}
       <StepsBar report={app.stages} />
+      {afterOpen && !hero && !app.running && (
+        <div className="grid shrink-0 gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
+          <p>Dịch xong. Trau chuốt, dịch lại bằng model khác (giữ nhận dạng), hoặc bỏ qua.</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="min-tap rounded-full bg-accent px-3 font-semibold text-ink"
+              onClick={() => {
+                setAfterOpen(false);
+                setToolTab("check");
+                setSheetOpen(true);
+                void app.polish.prepare();
+              }}
+            >
+              Trau chuốt
+            </button>
+            <button
+              type="button"
+              className="min-tap rounded-full border border-line px-3"
+              onClick={() => {
+                setAfterOpen(false);
+                setToolTab("key");
+                setSheetOpen(true);
+                pushToast("Đổi model rồi bấm Tiếp tục. Phần nhận dạng được giữ.");
+              }}
+            >
+              Dịch lại bằng model khác
+            </button>
+            <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => setAfterOpen(false)}>
+              Bỏ qua
+            </button>
+          </div>
+        </div>
+      )}
       <dialog ref={statusRef} className="studio-note">
         <p className="text-sm">{statusText}</p>
         <button type="button" className="min-tap mt-3 rounded-full border border-line px-4 text-sm" onClick={() => statusRef.current?.close()}>
@@ -1055,9 +1113,6 @@ export function Studio() {
           top={<MoneyBalance money={money} turn={payByRoom} />}
           extra={payByRoom ? <MoneyEstimate money={money} /> : null}
         />
-      )}
-      {!hero && payByRoom && (
-        <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} />
       )}
       <div className={hero ? "hidden" : "contents"} aria-hidden={hero || undefined}>
       <div className={"studio-stage" + (sheetOpen ? " is-sheet" : "")}>
@@ -1143,7 +1198,13 @@ export function Studio() {
                   disabled={!app.running && (!online || normalDown)}
                   title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
                   className={"min-tap flex-1 rounded-[var(--radius-ctl)] font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
-                  onClick={() => (app.running ? app.cancel() : void app.start())}
+                  onClick={() => {
+                    if (app.running) app.cancel();
+                    else {
+                      if (isStudioSheet()) setSheetOpen(false);
+                      void app.start();
+                    }
+                  }}
                 >
                   {app.buttonLabel}
                 </button>
@@ -1346,6 +1407,12 @@ export function Studio() {
             ))}
           </Select>
         </div>
+        {app.heardLang ? (
+          <p className="text-sm text-muted" role="status">
+            Máy nghe ra {({ zh: "Tiếng Trung", ko: "Tiếng Hàn", ja: "Tiếng Nhật", en: "Tiếng Anh" } as Record<string, string>)[app.heardLang] || app.heardLang}
+            {app.source !== "auto" && app.heardLang !== app.source ? ". Khác ngôn ngữ bạn chọn." : "."}
+          </p>
+        ) : null}
 
         <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
           {GENRES.map(([value, label]) => (
@@ -2252,7 +2319,7 @@ function Stage({
     const show = () => {
       setUi(true);
       clearTimeout(hideT.current);
-      if (!video.paused && !panelRef.current) hideT.current = window.setTimeout(() => setUi(false), 3200);
+      if (!panelRef.current) hideT.current = window.setTimeout(() => setUi(false), 3000);
     };
     const onPlay = () => {
       setPaused(false);
@@ -2265,7 +2332,6 @@ function Stage({
       setPaused(true);
       cancelAnimationFrame(raf);
       paint();
-      speakRef.current = "";
       onPauseRef.current();
       show();
     };
@@ -2625,7 +2691,11 @@ function Stage({
         }
         if (stageRef.current) stageRef.current.dataset.tap = String(now);
         clearTimeout(tapT.current);
-        tapT.current = window.setTimeout(() => setUi((open) => !open), 280);
+        tapT.current = window.setTimeout(() => {
+          setUi(true);
+          window.clearTimeout(hideT.current);
+          if (!panelRef.current) hideT.current = window.setTimeout(() => setUi(false), 3000);
+        }, 280);
       }}
       onPointerCancel={(event) => {
         const stage = stageRef.current;
@@ -2776,7 +2846,7 @@ function cueStyle(sub: SubStyle, full: boolean): CSSProperties {
 
 function Tiny({ label, onClick, children, tour }: { label: string; onClick: () => void; children: ReactNode; tour?: string }) {
   return (
-    <button type="button" aria-label={label} data-tour={tour} className="inline-flex min-tap items-center justify-center rounded-full border border-white/30 bg-black/50 px-3 text-sm text-white" onClick={onClick}>
+    <button type="button" aria-label={label} data-tour={tour} className="inline-flex min-tap items-center justify-center rounded-full bg-black/45 px-3 text-sm text-white" onClick={onClick}>
       {children}
     </button>
   );

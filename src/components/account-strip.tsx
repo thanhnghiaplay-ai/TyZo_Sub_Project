@@ -41,5 +41,5 @@ export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
   }, [isPending, payByRoom, user, tick]);
 
   if (isPending || !user || user.isDevFallback) return null;
-  return <p className="text-xs text-muted">{text ?? "Đang xem hạn gói…"}</p>;
+  return <p data-account-strip className="text-xs text-muted">{text ?? "Đang xem hạn gói…"}</p>;
 }

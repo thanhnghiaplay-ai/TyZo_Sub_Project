@@ -72,6 +72,19 @@ export function speakable(text: string, skipCues: boolean) {
   return value;
 }
 
+type SpeakJob = {
+  text: string;
+  settings: NarrationSettings;
+  target: string;
+  key: string;
+  video: HTMLVideoElement | null;
+  playbackRate: number;
+  onBlocked?: (message: string) => void;
+  onFail?: (message: string) => void;
+  slot?: number;
+  prefetch?: boolean;
+};
+
 export function createNarrator() {
   let token = 0;
   let audio: HTMLAudioElement | null = null;
@@ -116,10 +129,13 @@ export function createNarrator() {
   };
 
   let speaking = false;
+  let cloudMissTold = false;
+  const queue: SpeakJob[] = [];
   const stop = (video?: HTMLVideoElement | null) => {
     token++;
     epoch++;
     speaking = false;
+    queue.length = 0;
     try {
       window.speechSynthesis?.cancel();
     } catch {
@@ -163,28 +179,20 @@ export function createNarrator() {
     return pending;
   };
 
-  return {
+  const api = {
     stop,
     busy: () => speaking,
     /** Độ trễ tạo giọng (giây) cần bù cho loại giọng này. Giọng máy đọc ngay nên không bù. */
     compensation: (engine: SpeechEngine) => (engine === "browser" ? 0 : tracker.estimate(engine)),
-    async speak(opts: {
-      text: string;
-      settings: NarrationSettings;
-      target: string;
-      key: string;
-      video: HTMLVideoElement | null;
-      playbackRate: number;
-      /** Báo khách khi giọng bị Chủ khóa (mỗi lần mở trang một lần). */
-      onBlocked?: (message: string) => void;
-      /** Khoảng thoại của câu (giây theo đồng hồ video). Dài hơn thì đọc nhanh vừa phải cho vừa. */
-      slot?: number;
-      /** Chỉ tạo tiếng vào bộ đệm cho câu sắp tới, không phát. */
-      prefetch?: boolean;
-    }) {
+    async speak(opts: SpeakJob) {
       const line = speakable(opts.text, opts.settings.skipCues);
       if (!line) return;
       const prefetchOnly = Boolean(opts.prefetch);
+      if (!prefetchOnly && speaking) {
+        queue.push(opts);
+        if (queue.length > 8) queue.shift();
+        return;
+      }
       const myEpoch = epoch;
       const mine = prefetchOnly ? token : ++token;
       const alive = () => (prefetchOnly ? epoch === myEpoch : mine === token);
@@ -200,6 +208,8 @@ export function createNarrator() {
         if (!prefetchOnly && mine === token) {
           speaking = false;
           restore(opts.video);
+          const next = queue.shift();
+          if (next) void api.speak(next);
         }
       };
       /** Phát một mảnh. Tiếng đã có sẵn thì chờ phần độ trễ còn thiếu, để bắt đầu đúng lúc phụ đề. */
@@ -295,12 +305,21 @@ export function createNarrator() {
           }
         }
         if (prefetchOnly) return;
-        await speakBrowser(line, settings, opts.target, opts.playbackRate, done, slotWall);
+        if (settings.engine === "browser") {
+          await speakBrowser(line, settings, opts.target, opts.playbackRate, done, slotWall);
+          return;
+        }
+        if (!cloudMissTold) {
+          cloudMissTold = true;
+          opts.onFail?.("Giọng đã chọn không đọc được. Câu này bỏ qua, không chuyển sang giọng máy.");
+        }
+        done();
       } catch {
         done();
       }
     },
   };
+  return api;
 }
 
 /** `slot`: khoảng thoại tính bằng giây thật khi nghe. Nếu tiếng dài hơn thì tăng tốc vừa phải (tối đa FIT_MAX_BOOST). */

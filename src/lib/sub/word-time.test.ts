@@ -28,6 +28,7 @@ test("ingestAsrPart dùng mốc từ cho câu đầu phần khó", () => {
   });
   assert.equal(segs.length, 1);
   assert.ok(Math.abs(segs[0].start - 16.4) < 1e-6);
+  assert.deepEqual(segs[0].talk, [[16.4, 16.7], [18, 18.36]]);
 });
 
 test("câu cảm ơn đã xem kéo dài cả đoạn bị loại, thoại lặp thật được giữ", () => {

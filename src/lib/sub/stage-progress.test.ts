@@ -11,10 +11,11 @@ test("chưa chạy: mọi giai đoạn chờ, 0%", () => {
   assert.equal(r.active, null);
 });
 
-test("đang đọc file: giai đoạn cắt đang chạy", () => {
-  const r = computeStages({ ...base, phase: "read" });
+test("đang đọc file: hiện phần trăm ước và số giây", () => {
+  const r = computeStages({ ...base, phase: "read", readRatio: 0.4, readSeconds: 6 });
   assert.equal(r.stages[0].state, "active");
-  assert.equal(r.active, "cut");
+  assert.equal(r.stages[0].text, "40% · 6s");
+  assert.equal(r.percent, 2);
 });
 
 test("đang nhận dạng và dịch song song", () => {
@@ -22,7 +23,7 @@ test("đang nhận dạng và dịch song song", () => {
   assert.deepEqual(r.stages.map((s) => s.state), ["done", "active", "active", "wait"]);
   assert.equal(r.stages[1].text, "5/10 đoạn");
   assert.equal(r.stages[2].text, "20/40 câu");
-  assert.equal(r.percent, 10 + 20 + 20);
+  assert.equal(r.percent, 5 + 8 + 35);
 });
 
 test("xong, không phải sửa: bước sửa lại ghi Không cần, 100%", () => {

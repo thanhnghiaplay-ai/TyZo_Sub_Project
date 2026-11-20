@@ -169,6 +169,9 @@ type Job = {
   blocked: Set<string>;
   uses: Record<string, number>;
   lastModel: string;
+  readAt: number;
+  readRatio: number;
+  heardLang: string;
 };
 
 function readGenderMap(key: string): Record<string, "female" | "male"> {
@@ -198,6 +201,10 @@ function overlayCastLocks(bible: Bible, film: string) {
 
 function cloneBible(bible: Bible): Bible {
   return JSON.parse(JSON.stringify(bible)) as Bible;
+}
+
+function asrLanguageOf(source: string) {
+  return source === "auto" ? "" : source;
 }
 
 const emptyJob = (): Job => ({
@@ -246,6 +253,9 @@ const emptyJob = (): Job => ({
   blocked: new Set(),
   uses: {},
   lastModel: "",
+  readAt: 0,
+  readRatio: 0,
+  heardLang: "",
 });
 
 function readStore(key: string) {
@@ -339,6 +349,7 @@ export function usePipeline() {
   const activeKey = () => (roomPayRef.current ? ROOM_KEY : keyRef.current.trim());
   const [target, setTarget] = useState("Vietnamese");
   const [source, setSource] = useState("zh");
+  const [heardLang, setHeardLang] = useState("");
   const [genre, setGenre] = useState("auto");
   const [pendingGenre, setPendingGenre] = useState<string | null>(null);
   /** Kèm bộ thuật ngữ nền của ngôn ngữ nguồn. Mặc định bật. */
@@ -443,7 +454,7 @@ export function usePipeline() {
     const lang = readStore("glang");
     setTarget(lang === "Vietnamese" ? lang : "Vietnamese");
     const src = readStore("gsrc");
-    setSource(src === "zh" || src === "ko" || src === "ja" || src === "en" ? src : "zh");
+    setSource(src === "auto" || src === "zh" || src === "ko" || src === "ja" || src === "en" ? src : "zh");
     const g = readStore("ggenre");
     // Thể loại 18+ không tự khôi phục: khách phải xác nhận lại trên 18 tuổi mỗi lần chọn.
     if (g) setGenre(needsAgeConfirm(g) ? "auto" : g);
@@ -580,6 +591,8 @@ export function usePipeline() {
         segsDone: j.segs.reduce((n, seg) => n + (seg.translation === null ? 0 : 1), 0),
         repairs: j.decodeRetried.size + j.filterRetried.size + j.langEvents.length,
         failed: j.segs.reduce((n, seg) => n + (seg.translationFailed ? 1 : 0), 0),
+        readRatio: phase === "read" ? j.readRatio : 0,
+        readSeconds: phase === "read" && j.readAt ? (Date.now() - j.readAt) / 1000 : 0,
       }),
     );
   }, []);
@@ -1078,6 +1091,25 @@ export function usePipeline() {
     const pauseForNewBible = { current: true };
     setRunning(true);
     phaseRef.current = asrTakesLink(asrModel) ? "ali" : "read";
+    j.readAt = Date.now();
+    j.readRatio = 0;
+    let readTimer = 0;
+    if (phaseRef.current === "read") {
+      const bytes = (audioFile || file)?.size || 8 * 1048576;
+      const expected = Math.max(6000, Math.min(90000, (bytes / 1048576) * 700));
+      let shownPct = -1;
+      readTimer = window.setInterval(() => {
+        if (my !== j.runId || phaseRef.current !== "read") return;
+        const elapsed = Date.now() - j.readAt;
+        j.readRatio = Math.min(0.9, elapsed / expected);
+        const pct = Math.round(j.readRatio * 100);
+        if (pct !== shownPct && pct >= 10) {
+          shownPct = pct;
+          say(`Đang đọc âm thanh… ${pct}% · ${Math.max(1, Math.round(elapsed / 1000))} giây`);
+        }
+        pushStages();
+      }, 500);
+    }
     pushStages();
     document.documentElement.dataset.tyzoBusy = "1";
     try {
@@ -1198,7 +1230,7 @@ export function usePipeline() {
       partIndex: number,
       startAt: number,
     ): Promise<AsrResult> => {
-      if (!langRef.current || !source || !needsLangCheck(source, res)) return res;
+      if (!langRef.current || !source || source === "auto" || !needsLangCheck(source, res)) return res;
       j.langSuspect++;
       if (j.langRetryUsed + seconds > LANG_RETRY_BUDGET_SECONDS) return res;
       j.langRetryUsed += seconds;
@@ -1269,12 +1301,19 @@ export function usePipeline() {
               j.note = `đoạn ${index + 1}: đang gửi ${Math.max(1, Math.round(packed.blob.size / 1024))} KB`;
               progress();
               const prompt = asrPrompt(title, gloss, genre);
-              const first = await transcribe(packed, token, source, prompt, asrModel, signal, j.gate, onWait, ticketId);
+              const first = await transcribe(packed, token, asrLanguageOf(source), prompt, asrModel, signal, j.gate, onWait, ticketId);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, clip.length / SR) * asrUsd(asrModel);
               const res = await checkLanguage(first, packed, clip.length / SR, index, startAt / SR + gated.offset);
               if (my !== j.runId) return;
+              if (res !== "skip" && res !== "fail" && res.language) {
+                const code = normalizeLang(res.language) || res.language.trim().toLowerCase().slice(0, 12);
+                if (code) {
+                  j.heardLang = code;
+                  setHeardLang(code);
+                }
+              }
               j.asrBuf.set(index, res);
               j.heard.set(index, clip);
               j.heardOffset.set(index, gated.offset);
@@ -1338,7 +1377,7 @@ export function usePipeline() {
               progress();
               const packed = await packAudio(heard, signal);
               throwIfAborted(signal);
-              const result = await transcribe(packed, token, source, asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
+              const result = await transcribe(packed, token, asrLanguageOf(source), asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, heard.length / SR) * asrUsd(asrModel);
@@ -1402,7 +1441,7 @@ export function usePipeline() {
           j.filterRetryUsed += seconds;
           const packed = await packAudio(gated.samples, signal);
           throwIfAborted(signal);
-          const result = await transcribe(packed, token, source, asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
+          const result = await transcribe(packed, token, asrLanguageOf(source), asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
           await ensureTrial();
           if (my !== j.runId) return;
           j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
@@ -1813,7 +1852,7 @@ export function usePipeline() {
           say("Đang gửi link tới Deepgram…");
           const result = await recognizeDeepgramUrl({
             url: runUrl,
-            language: source,
+            language: asrLanguageOf(source),
             key: roomPayRef.current ? "room" : houseKeyOf("deepgram"),
             ticketId,
             signal,
@@ -1835,7 +1874,7 @@ export function usePipeline() {
           say("Đang gửi link tới AssemblyAI…");
           const result = await recognizeAssemblyaiUrl({
             url: runUrl,
-            language: source,
+            language: asrLanguageOf(source),
             model: asrModel,
             key: roomPayRef.current ? "room" : houseKeyOf("assemblyai"),
             ticketId,
@@ -1858,7 +1897,7 @@ export function usePipeline() {
           say("Đang gửi link tới Speechmatics…");
           const result = await recognizeSpeechmaticsUrl({
             url: runUrl,
-            language: source,
+            language: asrLanguageOf(source),
             model: asrModel,
             key: roomPayRef.current ? "room" : houseKeyOf("speechmatics"),
             ticketId,
@@ -1881,7 +1920,7 @@ export function usePipeline() {
           say("Đang gửi link tới Soniox…");
           const result = await recognizeSonioxUrl({
             url: runUrl,
-            language: source,
+            language: asrLanguageOf(source),
             model: asrModel,
             key: roomPayRef.current ? "room" : houseKeyOf("soniox"),
             ticketId,
@@ -1904,7 +1943,7 @@ export function usePipeline() {
           say("Đang gửi file tới Alibaba…");
           const result = await recognizeFileUrl({
             url: runUrl,
-            language: source,
+            language: asrLanguageOf(source),
             key: roomPayRef.current ? "room" : houseKeyOf("alibaba"),
             ticketId,
             signal,
@@ -2031,6 +2070,7 @@ export function usePipeline() {
       const why = j.streamWhy && /lớn hơn|dài hơn/.test(err?.message || "") ? ` (Đọc theo đoạn không dùng được vì: ${j.streamWhy}.)` : "";
       say(`Lỗi: ${err?.message || String(error)}${why}`, true);
     } finally {
+      if (readTimer) window.clearInterval(readTimer);
       outerSignal.removeEventListener("abort", onAbort);
       if (my === j.runId) {
         delete document.documentElement.dataset.tyzoBusy;
@@ -2417,7 +2457,7 @@ export function usePipeline() {
         say(`Đang nhận dạng ${fmt(start)}–${fmt(start + seconds)}. Chỉ khoảng đã xác nhận.`);
         const packed = await packAudio(gated.samples, signal);
         throwIfAborted(signal);
-        const result = await transcribe(packed, token, source, asrPrompt(title, gloss, genre), asrModel, signal, j.gate, (message) => say(message), ticketId);
+        const result = await transcribe(packed, token, asrLanguageOf(source), asrPrompt(title, gloss, genre), asrModel, signal, j.gate, (message) => say(message), ticketId);
         if (my !== j.runId) return;
         j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
         j.gapSpent += Math.max(10, seconds);
@@ -2591,6 +2631,7 @@ export function usePipeline() {
     target,
     setTarget,
     source,
+    heardLang,
     setSource,
     genre,
     setGenre,

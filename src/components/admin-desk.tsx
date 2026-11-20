@@ -21,6 +21,8 @@ import {
   skipAppeal,
   listUserLedger,
   resetUserBalance,
+  readUserTokens,
+  setUserTokens,
   setBadgeStyle,
   setOwnerEmail,
   setStaffRole,
@@ -33,6 +35,8 @@ import {
   type LedgerRow,
   type MyPlace,
 } from "@/lib/admin-room";
+import { Fold } from "@/components/admin-fold";
+import { formatGiay } from "@/lib/token-math";
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { useRoomPlans } from "@/lib/use-room-plans";
 import { canSkipToOwner, ROLE_LABEL, roleAtLeast } from "@/lib/staff-role";
@@ -168,6 +172,9 @@ export function AdminDesk() {
   const [note, setNote] = useState("");
   const [reason, setReason] = useState("");
   const [password, setPassword] = useState("");
+  const [tokenNow, setTokenNow] = useState<number | null>(null);
+  const [tokenDraft, setTokenDraft] = useState("");
+  const [tokenOpen, setTokenOpen] = useState(false);
   const [ownerEmail, setOwnerEmailInput] = useState("");
   const [appeals, setAppeals] = useState<AppealRow[]>([]);
   const [audit, setAudit] = useState<AuditRow[]>([]);
@@ -414,8 +421,16 @@ export function AdminDesk() {
                     setReason(user.reason);
                     setLedger([]);
                     setRuns([]);
+                    setTokenNow(null);
+                    setTokenDraft("");
                     void listUserLedger({ data: user.id }).then(setLedger).catch(() => setLedger([]));
                     void listUserRuns({ data: user.id }).then(setRuns).catch(() => setRuns([]));
+                    void readUserTokens({ data: user.id })
+                      .then((row) => {
+                        setTokenNow(row.tokens);
+                        setTokenDraft(String(row.tokens));
+                      })
+                      .catch(() => setTokenNow(null));
                   }}
                 >
                   <span className="block font-medium">{user.email}</span>
@@ -435,6 +450,28 @@ export function AdminDesk() {
               <p className="admin-span text-sm text-muted">
                 Số dư cũ {dong(picked.balance)} đ, không dùng để chi. {planLine(picked)} Còn {picked.trialLeft} lượt thử.
               </p>
+              {roleAtLeast(role, "quan-ly") && (
+                <Fold title="Gói và Token" hint={tokenNow == null ? "Đang đọc Token" : `${formatGiay(tokenNow)} còn hạn`} defaultOpen>
+                  <label className="grid gap-1 text-sm">
+                    Token dịch còn hạn
+                    <input
+                      value={tokenDraft}
+                      onChange={(event) => setTokenDraft(event.target.value.replace(/[^\d]/g, ""))}
+                      inputMode="numeric"
+                      className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    disabled={busy || tokenDraft === "" || Number(tokenDraft) === tokenNow}
+                    className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-40"
+                    onClick={() => setTokenOpen(true)}
+                  >
+                    Lưu Token
+                  </button>
+                </Fold>
+              )}
+              <Fold title="Số tiền" hint={ledger.length ? `${ledger.length} dòng` : "Chưa có dòng tiền"}>
               <div>
                 <h3 className="text-sm font-semibold">Sổ tiền</h3>
                 {ledger.length === 0 && <p className="text-sm text-muted">Chưa có dòng tiền.</p>}
@@ -446,6 +483,8 @@ export function AdminDesk() {
                   ))}
                 </ul>
               </div>
+              </Fold>
+              <Fold title="Phiếu" hint={runs.length ? `${runs.length} phiếu` : "Chưa có phiếu"}>
               <div>
                 <h3 className="text-sm font-semibold">Phiếu trả theo lượt</h3>
                 {runs.length === 0 && <p className="text-sm text-muted">Chưa có phiếu.</p>}
@@ -499,6 +538,7 @@ export function AdminDesk() {
                   </div>
                 )}
               </div>
+              </Fold>
               <div className="admin-pane">
               <label className="grid gap-1 text-sm">
                 Ghi chú nội bộ
@@ -694,6 +734,23 @@ export function AdminDesk() {
         }}
       />
       <ConfirmDialog
+        open={tokenOpen}
+        title="Lưu Token dịch"
+        message={`Đặt Token dịch còn hạn của ${picked?.email ?? ""} thành ${formatGiay(Number(tokenDraft) || 0)}?\nPhần thêm là gói mới, hạn 365 ngày, giá 0. Phần bớt lấy gói sắp hết hạn trước.`}
+        confirmLabel="Lưu"
+        onCancel={() => setTokenOpen(false)}
+        onConfirm={() => {
+          setTokenOpen(false);
+          if (!picked || tokenDraft === "") return;
+          const tokens = Number(tokenDraft);
+          void run(async () => {
+            const next = await setUserTokens({ data: { userId: picked.id, tokens } });
+            setTokenNow(next.after);
+            setTokenDraft(String(next.after));
+          }, "Đã lưu Token dịch.");
+        }}
+      />
+      <ConfirmDialog
         open={dropOpen}
         title="Xóa tài khoản"
         message={`Xóa tài khoản ${picked?.email ?? ""}? Việc này không hoàn lại.`}
@@ -745,6 +802,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "bao-tri": "Đổi trạng thái Hoạt động/Bảo trì của nhóm dịch",
   "giao-dien": "Công bố giao diện",
   "reset-so-du": "Gỡ số dư cũ",
+  "chinh-token": "Chỉnh Token dịch",
   "reset-tien-test": "Reset số liệu thử",
   "sua-usd": "Sửa số đô la tham chiếu",
   "mo-goi": "Cấp gói",

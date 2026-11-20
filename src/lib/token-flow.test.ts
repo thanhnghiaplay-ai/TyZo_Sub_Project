@@ -4,7 +4,7 @@ import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
 import { closeTicketWith, openTicketWith } from "./run-ticket.ts";
-import { buyGiayWith, chargeTokenWith, closeTokenWith, giayBalance, openGiayWith, releaseStaleTokensWith } from "./token-flow.ts";
+import { buyGiayWith, chargeTokenWith, closeTokenWith, giayBalance, openGiayWith, releaseStaleTokensWith, setTokenBalanceWith } from "./token-flow.ts";
 
 let sql: Sql;
 const START = "2026-11-07T17:00:00.000Z";
@@ -96,5 +96,17 @@ describe("mua và trừ gói giây", () => {
     assert.equal(await releaseStaleTokensWith(sql, "k", 6), 1);
     assert.equal(await left("g"), 20);
     assert.equal(await balance(), 54000);
+  });
+
+  it("chỉnh Token dịch: thêm gói mới, bớt gói sắp hết hạn trước", async () => {
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('soon', 'k', 30, 30, 1, now() + interval '1 day')`;
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('later', 'k', 50, 50, 1, now() + interval '20 day')`;
+    const up = await setTokenBalanceWith(sql, "k", 100);
+    assert.equal(up.before, 80);
+    assert.equal(up.after, 100);
+    const down = await setTokenBalanceWith(sql, "k", 40);
+    assert.equal(down.after, 40);
+    assert.equal(await left("soon"), 0);
+    assert.equal(await left("later"), 20);
   });
 });

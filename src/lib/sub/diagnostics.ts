@@ -189,6 +189,7 @@ export function ingestAsrPart(input: {
         item,
         input.samples,
         input.overlapGate ?? input.partIndex > 0,
+        input.result.words,
       );
       if (decision.accepted || !decision.reason) continue;
       rejects.push({

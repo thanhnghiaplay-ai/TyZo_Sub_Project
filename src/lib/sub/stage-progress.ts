@@ -25,6 +25,10 @@ export type StageInput = {
   repairs: number;
   /** Số câu dịch lỗi còn lại. */
   failed: number;
+  /** 0..1 khi đang đọc file. Trình duyệt giải mã một lần nên đây là ước theo dung lượng. */
+  readRatio?: number;
+  /** Giây đã chạy ở bước đọc file. */
+  readSeconds?: number;
 };
 
 export type StageReport = {
@@ -34,7 +38,7 @@ export type StageReport = {
   active: StageId | null;
 };
 
-const WEIGHT: Record<StageId, number> = { cut: 10, asr: 40, translate: 40, repair: 10 };
+const WEIGHT: Record<StageId, number> = { cut: 5, asr: 15, translate: 70, repair: 10 };
 const LABEL: Record<StageId, string> = { cut: "Cắt", asr: "Nhận dạng", translate: "Dịch", repair: "Sửa lại" };
 
 function ratio(done: number, total: number) {
@@ -60,8 +64,13 @@ export function computeStages(input: StageInput): StageReport {
     cut.done = cut.total = input.partsTotal;
     cut.text = `${input.partsTotal} đoạn`;
   } else if (input.phase === "read") {
+    const ratio = Math.max(0, Math.min(0.92, input.readRatio ?? 0));
+    const pct = Math.round(ratio * 100);
+    const secs = Math.max(0, Math.round(input.readSeconds ?? 0));
     cut.state = "active";
-    cut.text = "Đang đọc và cắt…";
+    cut.done = pct;
+    cut.total = 100;
+    cut.text = secs > 0 ? `${pct}% · ${secs}s` : pct > 0 ? `${pct}%` : "Đang đọc";
   }
 
   const asr: Stage = { id: "asr", label: LABEL.asr, state: "wait", done: input.partsDone, total: input.partsTotal, text: "" };
@@ -98,6 +107,7 @@ export function computeStages(input: StageInput): StageReport {
   for (const stage of stages) {
     const w = WEIGHT[stage.id];
     if (stage.state === "done" || stage.state === "skip") sum += w;
+    else if (stage.id === "cut" && stage.state === "active") sum += w * Math.max(0, Math.min(1, input.readRatio ?? 0));
     else if (stage.id === "asr" || stage.id === "translate") sum += w * ratio(stage.done, stage.total);
   }
   const percent = Math.round(Math.max(0, Math.min(100, sum)));

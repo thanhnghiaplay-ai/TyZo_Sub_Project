@@ -8,8 +8,8 @@ function Dot({ stage }: { stage: Stage }) {
   return <span className="size-3 shrink-0 rounded-full border border-line" aria-hidden />;
 }
 
-/** Vị trí các vạch ngăn giai đoạn trên thanh liền, theo đúng trọng số của computeStages (10, 40, 40, 10). */
-const NOTCHES = [10, 50, 90];
+/** Vị trí các vạch ngăn giai đoạn trên thanh liền, theo đúng trọng số của computeStages (5, 15, 70, 10). */
+const NOTCHES = [5, 20, 90];
 
 /**
  * Dòng thời gian tiến trình: một thanh liền chạy từ trái sang phải, có vạch ngăn bốn giai đoạn,

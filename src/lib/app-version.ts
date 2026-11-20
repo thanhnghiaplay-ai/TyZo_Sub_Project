@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.17.7";
+export const APP_VERSION = "5.18.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.18.0",
+    time: "20/11/2026",
+    title: "Đọc file có phần trăm. Thuyết minh không đọc vào chỗ im.",
+    points: [
+      "Lúc đọc âm thanh, thanh tiến độ hiện phần trăm ước và số giây, không còn đứng ở 0%.",
+      "Ô ngôn ngữ nguồn có thêm «Tự động» khi chưa chắc phim nói tiếng gì.",
+      "Dịch xong có thể trau chuốt, hoặc dịch lại bằng model khác mà không nhận dạng lại.",
+      "Thuyết minh bỏ khoảng im giữa các từ, và không đổi sang giọng máy khi giọng đã chọn lỗi.",
+    ],
+  },
   {
     version: "5.17.7",
     time: "20/11/2026",

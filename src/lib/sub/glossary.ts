@@ -30,6 +30,8 @@ const SPACELESS = new Set(["ja", "zh", "ko", "th", "zh-CN", "zh-TW", "ja-JP", "k
 function normalizeLang(code: string): string {
   if (!code) return "";
   const lower = code.toLowerCase();
+  // «Tự động» ở ô ngôn ngữ nguồn: chưa biết tiếng, không nạp file thuật ngữ.
+  if (lower === "auto") return "";
   if (lower.startsWith("ja")) return "ja";
   if (lower.startsWith("ko")) return "ko";
   if (lower.startsWith("zh")) return "zh";

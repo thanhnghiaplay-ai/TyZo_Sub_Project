@@ -1116,7 +1116,23 @@ html[data-fx="off"] .pay-end-spark {
   }
 }
 
-/* Màn thấp (<= 520px, đứng hoặc ngang): thu gọn đầu trang để dành chỗ. */
+/* Điện thoại đứng: chừa dock và nhãn bánh xe, gọn đầu trang để video lên cao. */
+@media (max-width: 699px) and (orientation: portrait) {
+  .studio-shell {
+    --chrome: 12.5rem;
+    gap: 0.35rem;
+    padding-bottom: calc(8.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .studio-shell > header h1 {
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  .studio-shell > header [data-account-strip] {
+    display: none;
+  }
+}
 @media (max-height: 520px) {
   .studio-shell {
     --chrome: 11rem;
@@ -1302,7 +1318,7 @@ html[data-fx="off"] .pay-end-spark {
 
 .notice-panel {
   position: absolute;
-  z-index: 30;
+  z-index: 80;
   top: 2.6rem;
   right: 0;
   width: min(18rem, calc(100vw - 1.5rem));

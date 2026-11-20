@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.18.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "v5.18.0. 1) Đọc file: stage-progress trọng số cắt/nhận dạng/dịch/sửa = 5/15/70/10. Phase read hiện phần trăm ước (readRatio, trần 92%) và số giây, không đứng 0%. use-pipeline bật timer 500ms theo dung lượng rồi xóa ở finally. steps-bar vạch ở 5/20/90. 2) SRC_LANGS thêm auto «Tự động». asrLanguageOf đổi auto thành rỗng khi gọi nhận dạng. normalizeLang('auto') trả rỗng nên không nạp thuật ngữ (trước đây cắt thành mã au và báo lỗi). 3) Khi lần chạy dừng, không còn câu chờ và có ít nhất một bản dịch: khung Trau chuốt / Dịch lại bằng model khác (mở tab key, giữ nhận dạng) / Bỏ qua. Nút Tiếp tục ở đầu trang khi buttonLabel là Tiếp tục. MoneyCard đưa lên trên thanh tiến độ. 4) seg.talk ghép mốc từ, tách khi im hơn 0,45 giây (talkField trong text.ts, nối ở acceptSegment). speechIndex không đọc ngoài các khoảng talk. Giọng cloud lỗi thì bỏ câu và báo một lần (onFail), không rơi xuống giọng máy. Nếu đang đọc thì xếp hàng tối đa 8 câu. 5) Admin, không đổi điều khoản và khách không thấy: Quản lý đặt Token dịch còn hạn (readUserTokens, setUserTokens, setTokenBalanceWith: thêm thì gói mới hạn 365 ngày giá 0, bớt thì gói sắp hết hạn trước), hộp xác nhận của app, nhật ký chinh-token. Sổ tiền và phiếu gập bằng Fold. Điện thoại: admin-bar z-5 nằm dưới header trang z-40; notice-panel z-80; studio đứng chừa chỗ dock và ẩn dòng hạn gói. CHƯA bấm thử trên điện thoại thật.",
+  },
+  {
     version: "5.17.7",
     time: "20/11/2026",
     area: "khac",
