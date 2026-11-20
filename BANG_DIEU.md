@@ -15,9 +15,9 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.18.2 (đẩy chính thức 20/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.18.2 trên `work`: tắt hiệu ứng không còn dải trống che góc dưới điện thoại. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
-| Điều khoản | 2026-11-18.1 |
+| Bản khách đang dùng | Nhánh `main` = v5.19.0 (đẩy chính thức 20/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.19.0 trên `work`: dịch bằng nhiều nhà (Groq, Alibaba Qwen), phân loại model theo nhà và việc, nhà mới tự theo luật chung. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Điều khoản | 2026-11-20.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Mua Token dịch và thuê phòng bằng chuyển khoản đúng giá (mã QR), không giữ số dư để chi. Số dư cũ đã đưa về 0, không hoàn. Trả theo lượt, dịch trực tiếp và Orpheus khi dùng key phòng trừ Token dịch. Neural không trừ. Hết hạn thì phần còn mất, không hoàn tiền. Cửa giữ số ước tính, trừ số thực khi xong, trả phần thừa nếu gói còn hạn |
@@ -58,7 +58,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
-| 2026-11-20 22:30 | Người dùng chốt | Model dịch, nhận dạng và mọi chức năng dùng model phải theo nhiều nhà cung cấp, phân loại model theo nhà và việc làm được; nhà mới thêm sau cũng vậy. «Claude sửa» | Làm ngay | v5.19.0 trên nhánh phiên `ccr-bc99847a-xy1bgk`, chưa lên `work`. Điều khoản 2026-11-20.1. Thuyết minh (đọc giọng) vẫn mỗi nhà một đường riêng, chưa gom |
+| 2026-11-20 22:30 | Người dùng chốt | Model dịch, nhận dạng và mọi chức năng dùng model phải theo nhiều nhà cung cấp, phân loại model theo nhà và việc làm được; nhà mới thêm sau cũng vậy. «Claude sửa» | Làm ngay | Đã vào `work` và `main` trong v5.19.0 (đẩy chính thức 20/11/2026). Điều khoản 2026-11-20.1. Thuyết minh (đọc giọng) vẫn mỗi nhà một đường riêng, chưa gom |
 | 2026-11-18 22:23 | Người dùng chốt | Rút gọn năm đoạn nhà nhận dạng trong phòng dịch thành một đoạn | Làm ngay | Đã vào work trong v5.6.1. Không đổi điều khoản |
 | 2026-11-17 00:35 | Người dùng chốt | Làm lại điều khoản và chính sách cho khớp web và luật. Cái cần thì làm | Làm ngay | Đã vào work trong v5.0.1. Một trang, không tách file. Điều khoản 2026-11-17.1 |
 | 2026-11-16 23:55 | Người dùng chốt | Bỏ nạp số dư. Mua Token dịch và thuê phòng tạo mã QR đúng giá. Orpheus trừ Token dịch. Reset số dư test, không hoàn | Làm ngay | Đã vào work trong v5.0.0. Điều khoản 2026-11-16.4 |
