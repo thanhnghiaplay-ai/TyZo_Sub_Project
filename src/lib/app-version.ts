@@ -16,7 +16,7 @@ export const CHANGELOG: ReleaseNote[] = [
     title: "Trả theo lượt không còn báo «Model này không có trong cửa trả theo lượt» khi để Tự động.",
     points: [
       "Khi trả bằng Token dịch, chế độ Tự động chỉ chọn model mà phòng đang có.",
-      "Nếu model bạn chọn tay mà phòng chưa có, app báo ngay tên model trước khi giữ Token, kèm cách đổi.",
+      "Nếu model bạn chọn tay mà phòng chưa có, app báo ngay tên model trước khi giữ Token dịch, kèm cách đổi.",
     ],
   },
   {
