@@ -109,7 +109,8 @@ import { packWavFromReader } from "@/lib/sub/wav-stream";
 import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { listKeyModels } from "@/lib/key-models";
-import { KEY_LIST_TRUSTED } from "@/lib/sub/key-list";
+import { getRoomModelCounts } from "@/lib/provider-room";
+import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
@@ -301,13 +302,16 @@ export function usePipeline() {
   }, []);
   const houseKeyOf = (id: ProviderId) => (houseKeysRef.current[id] ?? "").trim();
   // Model có trên key khách của các nhà ngoài Groq (Groq đã có remoteIds). Key chỉ đi qua máy chủ, không lưu.
-  // Chỉ hỏi nhà có danh sách đáng tin (KEY_LIST_TRUSTED); nhà chưa đáng tin thì không gửi key đi vô ích.
+  // Hỏi mọi nhà khách đã nhập key để cộng tổng số model; nhà chưa đáng tin (KEY_LIST_TRUSTED) thì danh sách chỉ để đếm,
+  // việc khóa model vẫn qua keyListHas nên không khóa oan.
   const [keyModels, setKeyModels] = useState<Partial<Record<ProviderId, string[] | null>>>({});
+  const keyModelsRef = useRef(keyModels);
+  keyModelsRef.current = keyModels;
   useEffect(() => {
     const timers: number[] = [];
     let live = true;
     for (const id of PROVIDER_IDS) {
-      if (id === "groq" || !KEY_LIST_TRUSTED[id]) continue;
+      if (id === "groq") continue;
       const token = (houseKeys[id] ?? "").trim();
       if (token.length < 20) {
         setKeyModels((current) => (current[id] ? { ...current, [id]: null } : current));
@@ -687,7 +691,15 @@ export function usePipeline() {
     try {
       const ids = await listModelIds(token);
       setRemoteIds(ids);
-      say(token === ROOM_KEY ? `Đã đồng bộ với key của phòng. Dùng được ${ids.length} model.` : `Key này dùng được ${ids.length} model Groq. Model không có trên key sẽ bị làm mờ.`);
+      // Tổng model của MỌI key: key phòng thì cộng các nhà phòng đã lưu key, key riêng thì cộng các nhà khách đã nhập key.
+      const counts: ModelCounts = { groq: ids.length };
+      if (token === ROOM_KEY) {
+        const room = await getRoomModelCounts().catch(() => ({}) as ModelCounts);
+        for (const id of PROVIDER_IDS) if (id !== "groq") counts[id] = room[id];
+      } else {
+        for (const id of PROVIDER_IDS) if (id !== "groq") counts[id] = keyModelsRef.current[id]?.length ?? null;
+      }
+      say(modelTotalText(token === ROOM_KEY, counts));
     } catch (error) {
       say((error as Error).message || "Không đọc được danh sách model.", true);
     } finally {

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.16.2",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Hai sửa theo ảnh của Chủ. (1) Câu «Dùng được N model» (use-pipeline.ts refreshModels) trước chỉ đếm model Groq; nay cộng mọi nhà: Groq (danh sách trực tiếp) + nhà khác (key khách: listKeyModels cho mọi nhà đã nhập key, trước chỉ nhà KEY_LIST_TRUSTED; key phòng: server fn mới getRoomModelCounts trong provider-room.ts, đọc số model đã lưu, không trả key hay tên model). Hàm thuần model-total.ts (modelTotal, modelTotalText). Việc khóa model vẫn qua keyListHas nên nhà chưa đáng tin không bị khóa oan. (2) Nhãn «(key phòng không thấy)» ở bảng Thuê phòng và Trả theo lượt: rent-rows.ts dùng so khớp includes nên Deepgram (tên nova-3-general) và Alibaba bị báo oan; nay dùng roomListHas (key-list.ts): nhà chưa đáng tin không khớp thì là null (không nhãn), chỉ Groq mới báo false. Test: model-total.test.ts.",
+  },
+  {
     version: "5.16.1",
     time: "20/11/2026",
     area: "khac",

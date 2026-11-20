@@ -5,12 +5,13 @@
  * Giọng Aura (Deepgram) chỉ trả bằng Token dịch nên không có ô tick. Dịch trực tiếp có bảng riêng (live-show.ts).
  */
 import { catalogFor, modelKindOf, type ModelKind } from "./sub/model-catalog.ts";
+import { roomListHas } from "./sub/key-list.ts";
 import { PROVIDERS, type ProviderId } from "./sub/provider.ts";
 
 export type RentRow = {
   id: string;
   name: string;
-  /** true: key phòng gọi được · false: key phòng không thấy model này · null: chưa đồng bộ key phòng */
+  /** true: key phòng gọi được · false: key phòng không thấy model này (chỉ nhà đã kiểm danh sách) · null: chưa đồng bộ key phòng hoặc chưa chắc */
   onKey: boolean | null;
 };
 
@@ -30,7 +31,7 @@ export function rentKindsOf(house: ProviderId): Set<ModelKind> {
 /** Model đã biết của nhà (theo danh mục) rồi tới model lạ trên key phòng (xếp theo tên). Mỗi model một hàng. */
 export function rentRowsFor(house: ProviderId, keyModels: string[] | null): RentRow[] {
   const kinds = rentKindsOf(house);
-  const onKey = (id: string) => (keyModels ? keyModels.includes(id) : null);
+  const onKey = (id: string) => roomListHas(house, id, keyModels);
   const rows: RentRow[] = catalogFor(house)
     .filter((model) => kinds.has(model.kind))
     .map((model) => ({ id: model.id, name: model.label, onKey: onKey(model.id) }));

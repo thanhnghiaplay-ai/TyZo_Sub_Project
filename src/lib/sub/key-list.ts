@@ -23,3 +23,14 @@ export function keyListHas(house: ProviderId, id: string, list: string[] | null 
   if (!KEY_LIST_TRUSTED[house] || !list || list.length === 0) return null;
   return listedAs(house, id, list);
 }
+
+/**
+ * Dùng cho bảng Admin (key PHÒNG): true = danh sách của nhà có model này; false = chắc chắn không có;
+ * null = không biết. Nhà chưa đáng tin (KEY_LIST_TRUSTED) thì tên trong danh sách có thể khác mã của app
+ * (Deepgram: nova-3-general), nên không khớp vẫn chỉ là null, không báo «key phòng không thấy» oan.
+ */
+export function roomListHas(house: ProviderId, id: string, list: string[] | null | undefined): boolean | null {
+  if (!list || list.length === 0) return null;
+  if (listedAs(house, id, list)) return true;
+  return KEY_LIST_TRUSTED[house] ? false : null;
+}

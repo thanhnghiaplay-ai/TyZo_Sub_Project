@@ -62,3 +62,22 @@ export const saveProviderKey = createServerFn({ method: "POST" })
     await writeAudit(context.userId, `key-${data.provider}`, null, `${ids.length} model`);
     return ids;
   });
+
+/**
+ * Số model key PHÒNG của từng nhà (đọc từ danh sách đã lưu lúc Chủ lưu key). Ai đăng nhập cũng hỏi được:
+ * chỉ trả số đếm, không trả key, không trả tên model. Nhà chưa lưu key phòng thì null.
+ */
+export const getRoomModelCounts = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async (): Promise<Partial<Record<ProviderId, number | null>>> => {
+    const sql = await openSql();
+    const out: Partial<Record<ProviderId, number | null>> = {};
+    const rows = await sql<{ key: string; value: string }>`select key, value from room_settings`;
+    const map = new Map(rows.map((row) => [row.key, row.value]));
+    for (const id of Object.keys(PROVIDERS) as ProviderId[]) {
+      const names = PROVIDERS[id].settings;
+      const list = parseModelList(map.get(names.models));
+      out[id] = map.get(names.key) && list ? list.length : null;
+    }
+    return out;
+  });

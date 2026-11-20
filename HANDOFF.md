@@ -1,3 +1,10 @@
+## BÀN GIAO (20/11/2026, nhánh work) — TỔNG MODEL CỦA MỌI KEY + SỬA NHÃN «KEY PHÒNG KHÔNG THẤY» (v5.16.2) — đọc mục này đầu tiên
+Chủ hỏi theo 2 ảnh. (1) Ảnh 1 «Dùng được 11 model» chỉ đếm Groq; Chủ muốn là TỔNG model của mọi key (key riêng nhập bao nhiêu nhà thì cộng bấy nhiêu; key phòng cũng vậy). (2) Ảnh 2 nhãn «(key phòng không thấy)» ở Admin.
+GIẢI THÍCH NHÃN: Admin so danh mục model của app với danh sách `/models` mà key phòng trả về lúc Chủ lưu key; không có trong danh sách thì ghi «key phòng không thấy» (key không gọi được model đó, hoặc danh sách đã cũ: lưu lại key để làm mới). LỖI THẬT: với Deepgram (tên dạng nova-3-general) và Alibaba, so khớp đơn giản nên báo oan.
+ĐÃ SỬA: `model-total.ts` (+ test) cộng model mọi nhà; `use-pipeline.ts` `refreshModels` nêu tổng và số theo nhà; key khách các nhà ngoài Groq nay đều được hỏi danh sách (trước chỉ nhà đáng tin; khóa model vẫn qua `keyListHas`); key phòng: `getRoomModelCounts` (provider-room.ts, ai đăng nhập cũng gọi, chỉ trả số). `key-list.ts` thêm `roomListHas`, `rent-rows.ts` dùng nó (nhà chưa đáng tin không khớp thì không nhãn). Nâng 5.16.2, CHANGELOG, ADMIN_LOG.
+CHƯA KIỂM: chưa chạy với key thật và CSDL thật; con số của key phòng ngoài Groq là danh sách đã lưu lúc Chủ lưu key (có thể cũ). Dòng «Dùng được N model» chỉ hiện khi bấm đồng bộ hoặc bật trả theo lượt, không tự đổi khi khách dán thêm key.
+CHƯA ĐẨY main: chờ câu «đẩy chính thức».
+
 ## BÀN GIAO (20/11/2026, nhánh work) — SỬA LOGIC TAB CÔNG CỤ (TẤM TRƯỢT) + HƯỚNG DẪN (v5.16.1) — đọc mục này đầu tiên
 Chủ báo 2 lỗi trên điện thoại (ảnh chụp bước 5/5 của hướng dẫn): (1) tab Phim che mất chỗ hướng dẫn chỉ, khung sáng lệch; (2) bấm «Tải và dịch» tab Phim không tự đóng, phải bấm X.
 NGUYÊN NHÂN: (1) tuyến `quick-start` bước 5 chỉ vào `[data-tour=export]` nằm ở khung phát phía sau, nhưng tab Phim mở ở bước 3 vẫn đè lên; hướng dẫn không điều khiển tấm trượt. (2) `sheetOpen` chỉ đổi khi khách bấm menu/X; không có chỗ nào đóng khi bắt đầu chạy.
