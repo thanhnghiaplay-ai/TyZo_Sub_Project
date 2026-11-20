@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.16.1",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Sửa logic tab công cụ (tấm trượt) trên điện thoại / màn thấp: (1) studio.tsx thêm hiệu ứng đóng tấm trượt (setSheetOpen(false)) khi app.running hoặc app.analyzing chuyển từ tắt sang bật, chỉ khi isStudioSheet(); mở lại do reviewHold vẫn giữ. (2) Hướng dẫn «Chỉ tôi»: TourStep có trường sheet (open|closed), guided-tour.tsx gửi sự kiện tyzo-sheet khi vào bước, studio.tsx nghe và mở/đóng tấm trượt; tuyến quick-start bước 5 và các bước ở khung phát/bản dịch ghi closed, bước trong tab ghi open. Trước đó tab Phim che nút Tải phụ đề ở bước 5 nên khung sáng lệch. Test thêm ở studio-layout.test.ts và guide-topics.test.ts.",
+  },
+  {
     version: "5.16.0",
     time: "20/11/2026",
     area: "khac",

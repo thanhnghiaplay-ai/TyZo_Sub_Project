@@ -151,6 +151,7 @@ describe("hướng dẫn không lệch giao diện", () => {
       assert.ok(steps.length > 0, id);
       for (const step of steps) {
         assert.ok(step.title && step.text, `${id}: ${step.title}`);
+        assert.ok(step.sheet === undefined || step.sheet === "open" || step.sheet === "closed", `${id}: ${step.title} có sheet lạ`);
         if (!step.sel) {
           assert.ok(!step.press && !step.rail, `${id}: bước không có chỗ chỉ thì không có «press» hay «rail»`);
           continue;
@@ -214,5 +215,14 @@ describe("yêu cầu chạy «Chỉ tôi» giữa các trang", () => {
     (globalThis as { sessionStorage?: unknown }).sessionStorage = undefined;
     assert.doesNotThrow(() => requestTour("quick-start"));
     assert.equal(takeTourRequest(), null);
+  });
+});
+
+describe("tab công cụ và hướng dẫn", () => {
+  it("bước chỉ vào nút Tải phụ đề và bản dịch thì đóng tab công cụ, bước chỉ vào nút Tải và dịch thì mở", () => {
+    const quick = TOURS["quick-start"];
+    assert.equal(quick.find((step) => step.sel === "[data-tour=export]")?.sheet, "closed");
+    assert.equal(quick.find((step) => step.sel === "[data-tour=run]")?.sheet, "open");
+    for (const step of TOURS["phu-de"]) assert.equal(step.sheet, "closed", step.title);
   });
 });

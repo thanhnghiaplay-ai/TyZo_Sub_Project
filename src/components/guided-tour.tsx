@@ -9,6 +9,8 @@ type Box = { top: number; left: number; width: number; height: number };
 const PAD = 6;
 /** Số lần app tự mở menu trái cho một bước. Quá số này thì thôi, để khách tự đóng menu được. */
 const OPEN_TRIES = 6;
+/** Tên sự kiện báo studio mở/đóng tab công cụ. Phải trùng với studio.tsx. */
+const SHEET_EVENT = "tyzo-sheet";
 
 function toggleOf(open: boolean): HTMLElement | null {
   return document.querySelector<HTMLElement>(`button.rail-toggle[aria-expanded=${open ? "true" : "false"}]`);
@@ -65,6 +67,8 @@ export function GuidedTour({ open, onClose, tour = "quick-start" }: { open: bool
     let scrolled = false;
     // Bước không nằm trong menu thì đóng menu đang mở, để menu không che chỗ cần chỉ.
     if (!now.rail) toggleOf(true)?.click();
+    // Tab công cụ (tấm trượt) che chỗ cần chỉ thì đóng; chỗ cần chỉ nằm trong tab thì mở. Trang không có tab công cụ thì bỏ qua.
+    if (now.sheet) window.dispatchEvent(new CustomEvent(SHEET_EVENT, { detail: now.sheet === "open" }));
     const tick = () => {
       const el = now.sel ? document.querySelector<HTMLElement>(now.sel) : null;
       if (el && now.rail && !isShown(el) && tries < OPEN_TRIES) {

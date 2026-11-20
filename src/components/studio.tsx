@@ -754,6 +754,23 @@ export function Studio() {
     wasRunning.current = app.running;
   }, [app.running, loadPlace]);
 
+  // Bắt đầu dịch hoặc phân tích thì tab công cụ (tấm trượt) tự đóng để thấy video và tiến độ, khỏi phải bấm X.
+  const wasBusy = useRef(false);
+  useEffect(() => {
+    const busy = app.running || app.analyzing;
+    if (busy && !wasBusy.current && isStudioSheet()) setSheetOpen(false);
+    wasBusy.current = busy;
+  }, [app.running, app.analyzing]);
+
+  // Hướng dẫn «Chỉ tôi» mở/đóng tab công cụ qua sự kiện này (chỉ có tác dụng ở màn có tấm trượt).
+  useEffect(() => {
+    const onSheet = (event: Event) => {
+      if (isStudioSheet()) setSheetOpen(Boolean((event as CustomEvent<boolean>).detail));
+    };
+    window.addEventListener("tyzo-sheet", onSheet);
+    return () => window.removeEventListener("tyzo-sheet", onSheet);
+  }, []);
+
   useEffect(() => {
     if (!app.reviewHold) return;
     setToolTab("cast");

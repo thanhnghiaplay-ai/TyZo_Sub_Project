@@ -374,3 +374,20 @@ describe("Bố cục mới B5c — màn lớn có cột công cụ bên phải",
     assert.match(block, /\.studio-tools\s*\{[^}]*grid-column:\s*2[^}]*grid-row:\s*1 \/ -1/);
   });
 });
+
+describe("Tab công cụ (tấm trượt) tự đóng và nghe hướng dẫn", () => {
+  it("bắt đầu dịch hoặc phân tích thì đóng tấm trượt, chỉ ở màn có tấm trượt", () => {
+    assert.match(
+      source,
+      /const busy = app\.running \|\| app\.analyzing;\s*if \(busy && !wasBusy\.current && isStudioSheet\(\)\) setSheetOpen\(false\);\s*wasBusy\.current = busy;/,
+    );
+  });
+
+  it("nghe sự kiện tyzo-sheet từ hướng dẫn để mở hoặc đóng, cùng tên với guided-tour", () => {
+    assert.match(source, /addEventListener\("tyzo-sheet", onSheet\)/);
+    assert.match(source, /if \(isStudioSheet\(\)\) setSheetOpen\(Boolean\(\(event as CustomEvent<boolean>\)\.detail\)\)/);
+    const tour = readFileSync(new URL("./guided-tour.tsx", import.meta.url), "utf8");
+    assert.match(tour, /const SHEET_EVENT = "tyzo-sheet"/);
+    assert.match(tour, /if \(now\.sheet\) window\.dispatchEvent\(new CustomEvent\(SHEET_EVENT, \{ detail: now\.sheet === "open" \}\)\)/);
+  });
+});

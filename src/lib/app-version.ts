@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.16.0";
+export const APP_VERSION = "5.16.1";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.16.1",
+    time: "20/11/2026",
+    title: "Tab công cụ tự đóng khi bắt đầu dịch, và không còn che phần hướng dẫn.",
+    points: [
+      "Bấm Tải và dịch thì tab Phim tự đóng, thấy ngay video và tiến độ, không cần bấm X.",
+      "Phần hướng dẫn «Chỉ tôi» tự mở hoặc đóng tab công cụ đúng lúc nên không bị che chỗ cần chỉ.",
+    ],
+  },
   {
     version: "5.16.0",
     time: "20/11/2026",
