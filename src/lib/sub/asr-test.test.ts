@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { asrTestLabel, parseAsrTest, readAsrTest } from "./asr-test.ts";
-import { asrPrompt, splitAudio, SR } from "./text.ts";
+import { ASR_GUARD, asrPrompt, splitAudio, SR } from "./text.ts";
 
 describe("công tắc thử nhận dạng", () => {
   it("không có gì thì TẮT", () => {
@@ -30,8 +30,21 @@ describe("công tắc thử nhận dạng", () => {
     assert.equal(asrTestLabel({ noPrompt: true, noGuard: true, chunkSeconds: null }), "không gửi prompt");
   });
 
+  it("ASR_GUARD chỉ gửi cho thể loại 18+, vẫn kèm tên phim", () => {
+    for (const genre of ["sex", "softcore", "adult", " SEX "]) {
+      const prompt = asrPrompt("Phim", "", genre);
+      assert.ok(prompt.startsWith("Phim"), genre);
+      assert.ok(prompt.includes(ASR_GUARD), genre);
+      assert.ok(prompt.length <= 420, genre);
+    }
+    assert.ok(!asrPrompt("Phim", "", "romance").includes(ASR_GUARD));
+  });
+
   it("mặc định giữ nguyên hành vi cũ", () => {
     assert.ok(asrPrompt("Phim", "").length > 0);
+    assert.equal(asrPrompt("Phim", ""), "Phim");
+    assert.equal(asrPrompt("Phim", "", "auto"), "Phim");
+    assert.equal(asrPrompt("Phim", "", "wuxia"), "Phim");
     assert.equal(splitAudio(new Float32Array(34 * SR)).length, 1);
   });
 });

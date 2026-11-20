@@ -1267,7 +1267,7 @@ export function usePipeline() {
               throwIfAborted(signal);
               j.note = `đoạn ${index + 1}: đang gửi ${Math.max(1, Math.round(packed.blob.size / 1024))} KB`;
               progress();
-              const prompt = asrPrompt(title, gloss);
+              const prompt = asrPrompt(title, gloss, genre);
               const first = await transcribe(packed, token, source, prompt, asrModel, signal, j.gate, onWait, ticketId);
               await ensureTrial();
               if (my !== j.runId) return;
@@ -1337,7 +1337,7 @@ export function usePipeline() {
               progress();
               const packed = await packAudio(heard, signal);
               throwIfAborted(signal);
-              const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
+              const result = await transcribe(packed, token, source, asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
               await ensureTrial();
               if (my !== j.runId) return;
               j.asrCost += Math.max(10, heard.length / SR) * asrUsd(asrModel);
@@ -1401,7 +1401,7 @@ export function usePipeline() {
           j.filterRetryUsed += seconds;
           const packed = await packAudio(gated.samples, signal);
           throwIfAborted(signal);
-          const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, onWait, ticketId);
+          const result = await transcribe(packed, token, source, asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
           await ensureTrial();
           if (my !== j.runId) return;
           j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
@@ -2414,7 +2414,7 @@ export function usePipeline() {
         say(`Đang nhận dạng ${fmt(start)}–${fmt(start + seconds)}. Chỉ khoảng đã xác nhận.`);
         const packed = await packAudio(gated.samples, signal);
         throwIfAborted(signal);
-        const result = await transcribe(packed, token, source, asrPrompt(title, gloss), asrModel, signal, j.gate, (message) => say(message), ticketId);
+        const result = await transcribe(packed, token, source, asrPrompt(title, gloss, genre), asrModel, signal, j.gate, (message) => say(message), ticketId);
         if (my !== j.runId) return;
         j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
         j.gapSpent += Math.max(10, seconds);

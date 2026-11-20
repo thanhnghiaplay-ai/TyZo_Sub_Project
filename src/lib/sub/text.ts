@@ -288,11 +288,15 @@ export function isNonSpeech(raw: string): boolean {
 export const ASR_GUARD =
   "Ignore breathing, moaning, sighs, gasps and other non-speech. Only transcribe clear words. Never write a lone A or Ah for a sound.";
 
-export function asrPrompt(title: string, gloss: string): string {
+/** Thể loại 18+: chỉ ở đây mới gửi ASR_GUARD (chặn tiếng thở/rên bị chép thành «A»). Đo 20/11/2026 trên large-v3: gửi ASR_GUARD cho thoại thường làm Whisper bỏ gần hết lời (11 câu còn 2). */
+export const ASR_GUARD_GENRES = new Set(["adult", "softcore", "sex"]);
+
+export function asrPrompt(title: string, gloss: string, genre = ""): string {
   const test = readAsrTest();
   if (test.noPrompt) return "";
   const vocab = [title.trim(), ...glossaryList(gloss).map((item) => item[0])].filter(Boolean).join(", ");
-  if (test.noGuard) return vocab.slice(0, 420);
+  const guard = ASR_GUARD_GENRES.has(genre.trim().toLowerCase()) && !test.noGuard;
+  if (!guard) return vocab.slice(0, 420);
   const room = 420 - ASR_GUARD.length - 2;
   return [vocab.slice(0, Math.max(0, room)), ASR_GUARD].filter(Boolean).join(". ").slice(0, 420);
 }
