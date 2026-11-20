@@ -70,15 +70,16 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.match(key, /Cách trả/);
     assert.match(key, /<TurnPackList/);
     assert.equal(source.includes('id="tool-goi-dich"'), false);
-    const thuat = source.slice(source.indexOf('id="tool-thuatngu"'));
-    assert.match(thuat, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
-    assert.match(
-      source,
-      /label: MENU_GROUP\.normal[\s\S]{0,400}\[\.\.\.WHEEL_ORDER, "key" as const\]/,
+    const ngucanh = source.slice(
+      source.indexOf('id="tool-cast"'),
+      source.indexOf('id="tool-voice"'),
     );
+    assert.match(ngucanh, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
+    assert.equal(source.includes('id="tool-thuatngu"'), false);
+    assert.match(source, /label: MENU_GROUP\.normal[\s\S]{0,400}MENU_TOOL_ORDER/);
     assert.match(key, /Nâng cao: model và nhận dạng/);
     assert.equal(source.includes('id: "nang-cao"'), false);
-    assert.match(source, /hidden=\{toolTab !== "thuatngu"\}/);
+    assert.match(source, /hidden=\{ctxView !== "terms"\}/);
   });
 });
 
@@ -256,10 +257,10 @@ describe("Bước 7.1 — không chồng khung", () => {
 });
 
 describe("Bước 7.2 — tab theo thứ tự dùng", () => {
-  it("Cài đặt dịch, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
+  it("Cài đặt dịch, Phim, Ngữ cảnh (3 nhánh); các ô nhập vẫn nằm trong trang, không mất dữ liệu", () => {
     assert.deepEqual(
       [TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check],
-      ["Cài đặt dịch", "Phim", "Nhân vật", "Thuyết minh", "Kiểm tra"],
+      ["Cài đặt dịch", "Phim", "Ngữ cảnh", "Thuyết minh", "Kiểm tra"],
     );
     const keys = ["key", "phim", "cast", "voice", "check"];
     const at = keys.map((key) => source.indexOf(`["${key}", TOOL_NAME.`));
@@ -278,16 +279,16 @@ describe("Bước 7.2 — tab theo thứ tự dùng", () => {
     assert.match(key, /Nhận dạng giọng/);
     assert.equal(key.includes("Ngữ cảnh phim"), false);
     const cast = source.slice(source.indexOf('id="tool-cast"'), source.indexOf('id="tool-voice"'));
-    const context = cast.indexOf("Ngữ cảnh phim");
-    const details = cast.lastIndexOf("<details", context);
-    assert.ok(context >= 0 && context < cast.indexOf("Phân tích phim"));
-    assert.equal(/<details[^>]*\sopen/.test(cast.slice(details, context)), false);
+    assert.match(cast, /role="tablist" aria-label="Ngữ cảnh phim"/);
+    assert.ok(cast.indexOf('role="tablist"') < cast.indexOf("Phân tích phim"));
+    assert.match(source, /useState<"cast" \| "terms" \| "note">\("cast"\)/);
+    assert.match(cast, /hidden=\{ctxView !== "note"\}/);
     assert.match(cast, /app\.setTitle/);
     assert.match(cast, /app\.setNotes/);
     assert.match(cast, /app\.setGloss/);
     assert.match(
       source,
-      /if \(!app\.reviewHold\) return;\s*setToolTab\("cast"\);\s*setSheetOpen\(true\);/,
+      /if \(!app\.reviewHold\) return;\s*setToolTab\("cast"\);\s*setCtxView\("cast"\);\s*setSheetOpen\(true\);/,
     );
   });
 });

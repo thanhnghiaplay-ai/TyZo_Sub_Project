@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.15.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Bước 4 sắp xếp lại trang khách: tab «Ngữ cảnh» (id cast, TOOL_NAME.cast) có 3 nhánh theo trạng thái ctxView (cast, terms, note), nhánh ẩn bằng hidden nên ô nhập không mất dữ liệu. Tab tool-thuatngu cũ bỏ; openTool/pickTool đổi «thuatngu» thành cast + ctxView terms; menu dựng từ MENU_TOOL_ORDER (vẫn có lối tắt Thuật ngữ, domId tool-tab-thuatngu cho tour). WHEEL_ORDER còn 4. Ô «Bảng thuật ngữ» (app.gloss) chuyển từ Ghi chú sang nhánh Thuật ngữ. Khi dừng xem bảng nhân vật (reviewHold) tự về nhánh Nhân vật. Sửa tool-wheel.test, studio-layout.test.",
+  },
+  {
     version: "5.14.0",
     time: "20/11/2026",
     area: "khac",

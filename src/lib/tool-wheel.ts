@@ -4,8 +4,8 @@
  * Vị trí `pos` là số thực: số nguyên = đang đúng một công cụ; danh sách xoay vòng.
  */
 
-/** Thứ tự lướt theo luồng làm việc: dịch, chỉnh, hoàn thiện. Cài đặt dịch (chọn một lần) nằm ở Menu, không lướt. */
-export const WHEEL_ORDER = ["phim", "cast", "thuatngu", "voice", "check"] as const;
+/** Thứ tự lướt theo luồng làm việc: dịch, chỉnh, hoàn thiện. Thuật ngữ là nhánh của Ngữ cảnh; Cài đặt dịch (chọn một lần) nằm ở Menu. Cả hai không lướt riêng. */
+export const WHEEL_ORDER = ["phim", "cast", "voice", "check"] as const;
 export type WheelId = (typeof WHEEL_ORDER)[number];
 
 /** Công cụ kế tiếp theo luồng làm việc (cho dòng «Tiếp theo: …»); công cụ cuối và Cài đặt dịch thì không có. */

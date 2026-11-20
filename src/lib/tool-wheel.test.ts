@@ -15,9 +15,10 @@ import {
   ringDash,
 } from "./tool-wheel.ts";
 
-test("thứ tự lướt theo luồng làm việc, đủ 5 công cụ không trùng, Cài đặt dịch không lướt", () => {
-  assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "thuatngu", "voice", "check"]);
-  assert.equal(new Set(WHEEL_ORDER).size, 5);
+test("thứ tự lướt theo luồng làm việc, đủ 4 công cụ không trùng; Thuật ngữ và Cài đặt dịch không lướt riêng", () => {
+  assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "voice", "check"]);
+  assert.equal(new Set(WHEEL_ORDER).size, 4);
+  assert.equal((WHEEL_ORDER as readonly string[]).includes("thuatngu"), false);
   assert.equal((WHEEL_ORDER as readonly string[]).includes("key"), false);
 });
 
@@ -72,7 +73,9 @@ test("kéo sang trái thì tiến tới công cụ kế, kéo sang phải thì l
 
 test("mọi công cụ lướt đều có tên trong TOOL_NAME, và Studio gắn nút lướt vào thanh dưới", () => {
   for (const id of WHEEL_ORDER) assert.ok(TOOL_NAME[id], id);
-  assert.equal(Object.keys(TOOL_NAME).length, WHEEL_ORDER.length + 1);
+  assert.equal(Object.keys(TOOL_NAME).length, WHEEL_ORDER.length + 2);
+  assert.equal(TOOL_NAME.cast, "Ngữ cảnh");
+  assert.equal(TOOL_NAME.thuatngu, "Thuật ngữ");
   assert.equal(TOOL_NAME.key, "Cài đặt dịch");
   const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
   assert.match(studio, /<StudioDock[\s\S]*wheel=\{<ToolWheel /);

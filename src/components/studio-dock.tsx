@@ -4,7 +4,7 @@ import { MENU_GROUP, MENU_ITEM } from "@/lib/customer-menu";
 
 /**
  * Thanh dưới trang khách trên điện thoại: Trang chủ, Trực tiếp, [nút vàng lướt chọn công cụ], Ví, Menu.
- * Nút giữa (`wheel`, xem tool-wheel.tsx): kéo ngang để lướt qua Phim, Nhân vật, Thuật ngữ, Thuyết minh, Kiểm tra (Cài đặt dịch nằm ở Menu);
+ * Nút giữa (`wheel`, xem tool-wheel.tsx): kéo ngang để lướt qua Phim, Ngữ cảnh (Nhân vật, Thuật ngữ, Ghi chú phim), Thuyết minh, Kiểm tra (Cài đặt dịch nằm ở Menu);
  * bấm thì mở tab công cụ đang chọn. «Tải và dịch» nằm ở màn hình đầu và trong tab Phim.
  */
 export function StudioDock({

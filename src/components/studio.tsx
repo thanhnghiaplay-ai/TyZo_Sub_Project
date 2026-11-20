@@ -486,6 +486,9 @@ const ADVANCED_TOOLS = [
 ] as const;
 type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 
+/** Thứ tự mục trên menu (Dịch bình thường): Thuật ngữ là lối tắt vào nhánh của tab Ngữ cảnh. */
+const MENU_TOOL_ORDER = ["phim", "cast", "thuatngu", "voice", "check", "key"] as const;
+
 export function Studio() {
   const app = usePipeline();
   useWakeLock(app.running || app.analyzing);
@@ -526,6 +529,7 @@ export function Studio() {
   const [sub, setSub] = useState<SubStyle>(SUB_DEF);
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<ToolId>("phim");
+  const [ctxView, setCtxView] = useState<"cast" | "terms" | "note">("cast");
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [payByRoom, setPayByRoom] = useState(false);
   const [turnLocked, setTurnLocked] = useState(false);
@@ -655,16 +659,20 @@ export function Studio() {
   const shownVoices = (langVoices.length ? langVoices : voices).filter(
     (voice) => narration.gender === "any" || guessGender(voice) === "any" || guessGender(voice) === narration.gender,
   );
-  const pickTool = (id: ToolId) => {
+  // «Thuật ngữ» là nhánh của tab Ngữ cảnh (id cast): mở nó thì chọn tab cast và nhánh thuật ngữ.
+  const pickTool = (raw: ToolId) => {
+    const id: ToolId = raw === "thuatngu" ? "cast" : raw;
+    if (raw === "thuatngu") setCtxView("terms");
     const sheet = isStudioSheet();
-    setSheetOpen((open) => (sheet && id === toolTab ? !open : true));
+    setSheetOpen((open) => (raw !== "thuatngu" && sheet && id === toolTab ? !open : true));
     setToolTab(id);
   };
-  const openTool = (id: ToolId) => {
+  const openTool = (raw: ToolId) => {
     setProduct("sub");
-    if (forced) return pickTool(id);
+    if (forced) return pickTool(raw);
+    if (raw === "thuatngu") setCtxView("terms");
     setForced(true);
-    setToolTab(id);
+    setToolTab(raw === "thuatngu" ? "cast" : raw);
     setSheetOpen(true);
   };
   const hero = showHomeHero({ hasSegs: !noSubs, running: app.running, analyzing: app.analyzing, reviewHold: app.reviewHold, forced });
@@ -749,6 +757,7 @@ export function Studio() {
   useEffect(() => {
     if (!app.reviewHold) return;
     setToolTab("cast");
+    setCtxView("cast");
     setSheetOpen(true);
   }, [app.reviewHold]);
 
@@ -777,11 +786,11 @@ export function Studio() {
       id: "sub",
       label: MENU_GROUP.normal,
       badge: railBadge(service.status, "normal"),
-      children: [...WHEEL_ORDER, "key" as const].map((id) => [id, TOOL_NAME[id]] as const).map(([id, label]) => ({
+      children: MENU_TOOL_ORDER.map((id) => [id, TOOL_NAME[id]] as const).map(([id, label]) => ({
         id: `tool-${id}`,
         domId: `tool-tab-${id}`,
         label,
-        current: product === "sub" && toolTab === id,
+        current: product === "sub" && (id === "thuatngu" ? toolTab === "cast" && ctxView === "terms" : id === "cast" ? toolTab === "cast" && ctxView !== "terms" : toolTab === id),
         onPick: () => openTool(id),
       })),
     },
@@ -1360,23 +1369,27 @@ export function Studio() {
       </section>
 
       <section id="tool-cast" role="region" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
-          <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
-            <summary className="min-tap cursor-pointer text-sm font-medium">Ngữ cảnh phim</summary>
-            <div className="grid gap-2 pb-2">
-              <input className={FIELD} placeholder="Tên phim + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
-              <textarea className={FIELD} rows={3} placeholder="Dàn diễn viên hoặc tóm tắt cốt truyện" value={app.notes} onChange={(event) => app.setNotes(event.target.value)} />
-              <textarea className={FIELD} rows={4} placeholder="Bảng thuật ngữ, mỗi dòng: tên gốc = cách dịch" value={app.gloss} onChange={(event) => app.setGloss(event.target.value)} />
-              <textarea
-                className={FIELD}
-                rows={2}
-                maxLength={STYLE_EXTRA_MAX}
-                placeholder="Yêu cầu thêm cho bản dịch (giọng văn, mức trang trọng)"
-                value={app.extra}
-                onChange={(event) => app.setExtra(event.target.value)}
-              />
-              <p className="text-xs text-muted">{app.extra.length}/{STYLE_EXTRA_MAX} ký tự. Chỉ chỉnh giọng văn; không đổi định dạng kết quả.</p>
-            </div>
-          </details>
+          <div role="tablist" aria-label="Ngữ cảnh phim" className="grid grid-cols-3 gap-2">
+            {(
+              [
+                ["cast", "Nhân vật"],
+                ["terms", "Thuật ngữ"],
+                ["note", "Ghi chú phim"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={ctxView === id}
+                className={"min-tap rounded-[var(--radius-ctl)] px-2 text-sm font-semibold " + (ctxView === id ? "bg-accent text-ink" : "border border-line")}
+                onClick={() => setCtxView(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div hidden={ctxView !== "cast"} className="grid gap-3">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="flex items-center gap-2 font-semibold">
@@ -1481,7 +1494,63 @@ export function Studio() {
               )}
             </div>
           )}
-        </section>
+          </div>
+          <div hidden={ctxView !== "terms"} className="grid gap-3">        <div data-tour="glossary-genre">
+          <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
+            {GENRES.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        </div>
+        {usesBaseGlossary(app.genre) && (
+          <label className="flex min-h-11 items-center gap-2 text-sm">
+            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
+            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
+          </label>
+        )}
+        <p className="text-sm text-muted">
+          {app.glossaryInfo?.failed ? (
+            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
+          ) : app.glossaryInfo?.count > 0 ? (
+            <>
+              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
+            </>
+          ) : (
+            "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
+          )}
+        </p>
+        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
+          <summary className="min-tap cursor-pointer text-sm font-medium">
+            Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
+          </summary>
+          <p className="pb-2 text-sm text-muted">
+            Mỗi thể loại một bộ riêng, không dùng chung. Thêm tay hoặc nhập CSV vẫn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại.
+            {app.glossaryInfo?.userCount ? ` Trong đó ${app.glossaryInfo.userCount} do bạn thêm.` : ""}
+            {app.glossaryInfo?.sources?.length ? ` ${app.glossaryInfo.sources.map((s: string) => s.replace(/^\/glossaries\//, "")).join(", ")}.` : ""}
+          </p>
+          <GlossaryEditor app={app} />
+        </details>
+            <label className="grid gap-1 text-sm text-muted">
+              Thuật ngữ riêng cho phim này
+              <textarea className={FIELD} rows={4} placeholder="Bảng thuật ngữ, mỗi dòng: tên gốc = cách dịch" value={app.gloss} onChange={(event) => app.setGloss(event.target.value)} />
+            </label>
+          </div>
+          <div hidden={ctxView !== "note"} className="grid gap-2">
+              <input className={FIELD} placeholder="Tên phim + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
+              <textarea className={FIELD} rows={3} placeholder="Dàn diễn viên hoặc tóm tắt cốt truyện" value={app.notes} onChange={(event) => app.setNotes(event.target.value)} />
+              <textarea
+                className={FIELD}
+                rows={2}
+                maxLength={STYLE_EXTRA_MAX}
+                placeholder="Yêu cầu thêm cho bản dịch (giọng văn, mức trang trọng)"
+                value={app.extra}
+                onChange={(event) => app.setExtra(event.target.value)}
+              />
+              <p className="text-xs text-muted">{app.extra.length}/{STYLE_EXTRA_MAX} ký tự. Chỉ chỉnh giọng văn; không đổi định dạng kết quả.</p>
+          </div>
+      </section>
 
       <section id="tool-voice" role="region" aria-labelledby="tool-tab-voice" hidden={toolTab !== "voice"} className="grid gap-3 p-4">
         <div className="flex items-center justify-between gap-3">
@@ -1676,45 +1745,6 @@ export function Studio() {
         {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một phim trước.</p>}
       </section>
 
-      <section id="tool-thuatngu" role="region" aria-labelledby="tool-tab-thuatngu" hidden={toolTab !== "thuatngu"} className="grid gap-3 p-4">
-        <div data-tour="glossary-genre">
-          <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
-            {GENRES.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        {usesBaseGlossary(app.genre) && (
-          <label className="flex min-h-11 items-center gap-2 text-sm">
-            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
-            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
-          </label>
-        )}
-        <p className="text-sm text-muted">
-          {app.glossaryInfo?.failed ? (
-            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
-          ) : app.glossaryInfo?.count > 0 ? (
-            <>
-              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
-            </>
-          ) : (
-            "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
-          )}
-        </p>
-        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">
-            Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
-          </summary>
-          <p className="pb-2 text-sm text-muted">
-            Mỗi thể loại một bộ riêng, không dùng chung. Thêm tay hoặc nhập CSV vẫn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại.
-            {app.glossaryInfo?.userCount ? ` Trong đó ${app.glossaryInfo.userCount} do bạn thêm.` : ""}
-            {app.glossaryInfo?.sources?.length ? ` ${app.glossaryInfo.sources.map((s: string) => s.replace(/^\/glossaries\//, "")).join(", ")}.` : ""}
-          </p>
-          <GlossaryEditor app={app} />
-        </details>
-      </section>
         {nextTool(toolTab) && (
           <button type="button" className="studio-next-tool" onClick={() => setToolTab(nextTool(toolTab)!)}>
             <span className="text-muted">Tiếp theo:</span> <strong>{TOOL_NAME[nextTool(toolTab)!]}</strong>

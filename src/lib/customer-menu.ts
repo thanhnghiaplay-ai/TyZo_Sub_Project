@@ -5,7 +5,7 @@
 export const TOOL_NAME = {
   key: "Cài đặt dịch",
   phim: "Phim",
-  cast: "Nhân vật",
+  cast: "Ngữ cảnh",
   voice: "Thuyết minh",
   check: "Kiểm tra",
   thuatngu: "Thuật ngữ",
