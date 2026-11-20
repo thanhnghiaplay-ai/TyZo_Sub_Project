@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.15.0";
+export const APP_VERSION = "5.16.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.16.0",
+    time: "20/11/2026",
+    title: "Thêm nút chọn cỡ chữ: Vừa, Lớn, Rất lớn.",
+    points: [
+      "Nút «Aa» cạnh nút sáng/tối ở đầu trang; bấm để đổi qua ba cỡ chữ.",
+      "Lựa chọn được nhớ trên máy của bạn, không bị nháy khi mở lại trang.",
+    ],
+  },
   {
     version: "5.15.0",
     time: "20/11/2026",

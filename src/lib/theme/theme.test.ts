@@ -297,3 +297,26 @@ test("fxScript: chỉ đặt data-fx khi khóa là off, không ném lỗi khi kh
   assert.deepEqual(run({}), {});
   assert.deepEqual(run("blocked"), {});
 });
+
+test("fontScript: chỉ đặt --user-font khi khách chọn Lớn hoặc Rất lớn, không ném lỗi khi kho bị chặn", async () => {
+  const { runInNewContext } = await import("node:vm");
+  const { fontScript, FONT_KEY, fontValue, pickUserFont, USER_FONTS } = await import("./theme.ts");
+  const run = (store: Record<string, string> | "blocked") => {
+    const props: Record<string, string> = {};
+    runInNewContext(fontScript(), {
+      document: { documentElement: { style: { setProperty: (k: string, v: string) => void (props[k] = v) } } },
+      localStorage: store === "blocked" ? { getItem: () => { throw new Error("blocked"); } } : { getItem: (k: string) => store[k] ?? null },
+    });
+    return props;
+  };
+  assert.deepEqual(run({ [FONT_KEY]: "large" }), { "--user-font": "1.125" });
+  assert.deepEqual(run({ [FONT_KEY]: "xlarge" }), { "--user-font": "1.25" });
+  assert.deepEqual(run({ [FONT_KEY]: "normal" }), {});
+  assert.deepEqual(run({ [FONT_KEY]: "lạ" }), {});
+  assert.deepEqual(run({}), {});
+  assert.deepEqual(run("blocked"), {});
+  assert.deepEqual(USER_FONTS.map((f) => f[0]), ["normal", "large", "xlarge"]);
+  assert.equal(fontValue("large"), 1.125);
+  assert.equal(pickUserFont("xlarge"), "xlarge");
+  assert.equal(pickUserFont("x"), "normal");
+});

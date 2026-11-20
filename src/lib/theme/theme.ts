@@ -665,6 +665,33 @@ export function fxScript(): string {
   return `(function(){try{if(localStorage.getItem(${JSON.stringify(FX_KEY)})==='off')document.documentElement.setAttribute('data-fx','off')}catch(e){}})();`;
 }
 
+/* ---------- Khách tự chọn: cỡ chữ (Vừa, Lớn, Rất lớn), nhân thêm vào cỡ chữ Admin đặt ---------- */
+
+export const FONT_KEY = "tyzo_font";
+export const USER_FONTS = [
+  ["normal", "Vừa", 1],
+  ["large", "Lớn", 1.125],
+  ["xlarge", "Rất lớn", 1.25],
+] as const;
+export type UserFont = (typeof USER_FONTS)[number][0];
+
+export function fontValue(choice: UserFont): number {
+  return USER_FONTS.find((f) => f[0] === choice)?.[2] ?? 1;
+}
+
+export function pickUserFont(raw: unknown): UserFont {
+  return raw === "large" || raw === "xlarge" ? raw : "normal";
+}
+
+/** Chạy trước khi vẽ: đặt --user-font từ lựa chọn đã lưu. Không có khóa hoặc kho bị chặn thì giữ cỡ Vừa. */
+export function fontScript(): string {
+  return (
+    `(function(){try{var f=localStorage.getItem(${JSON.stringify(FONT_KEY)});` +
+    `var v=f==='large'?${fontValue("large")}:f==='xlarge'?${fontValue("xlarge")}:1;` +
+    "if(v!==1)document.documentElement.style.setProperty('--user-font',String(v))}catch(e){}})();"
+  );
+}
+
 export function paletteDiff(a: Theme, b: Theme): boolean {
   return JSON.stringify(a) !== JSON.stringify(b);
 }

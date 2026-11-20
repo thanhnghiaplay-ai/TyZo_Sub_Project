@@ -2,7 +2,20 @@ import { useEffect, useState } from "react";
 import { AccentPicker } from "@/components/accent-picker";
 import { Icon } from "@/components/ui/icon";
 import { useTheme } from "@/components/ui/theme-context";
-import { DENSITY_KEY, FX_KEY, MODE_KEY, defaultUserDensity, densityValue, pickUserDensity, type UserDensity } from "@/lib/theme/theme";
+import {
+  DENSITY_KEY,
+  FONT_KEY,
+  FX_KEY,
+  MODE_KEY,
+  USER_FONTS,
+  defaultUserDensity,
+  densityValue,
+  fontValue,
+  pickUserDensity,
+  pickUserFont,
+  type UserDensity,
+  type UserFont,
+} from "@/lib/theme/theme";
 
 function remember(key: string, value: string) {
   try {
@@ -22,6 +35,7 @@ export function DisplayToggle() {
   const [mode, setMode] = useState<"dark" | "light">("dark");
   const [density, setDensity] = useState<UserDensity>(defaultUserDensity(theme.density));
   const [fxOff, setFxOff] = useState(false);
+  const [font, setFont] = useState<UserFont>("normal");
 
   useEffect(() => {
     const root = document.documentElement;
@@ -31,6 +45,8 @@ export function DisplayToggle() {
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme[current].bg);
     setDensity(pickUserDensity(root.getAttribute("data-density"), theme.density));
     setFxOff(root.getAttribute("data-fx") === "off");
+    const scale = Number(root.style.getPropertyValue("--user-font")) || 1;
+    setFont(USER_FONTS.find((f) => f[2] === scale)?.[0] ?? pickUserFont(null));
   }, [theme]);
 
   const flipFx = () => {
@@ -66,21 +82,77 @@ export function DisplayToggle() {
     setDensity(next);
   };
 
-  const modeLabel = mode === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối";
-  const densityLabel = density === "compact" ? "Đang gọn. Chuyển sang thoải mái" : "Đang thoải mái. Chuyển sang gọn";
+  const flipFont = () => {
+    const order = USER_FONTS.map((f) => f[0]);
+    const next = order[(order.indexOf(font) + 1) % order.length];
+    const root = document.documentElement;
+    if (next === "normal") {
+      root.style.removeProperty("--user-font");
+      try {
+        localStorage.removeItem(FONT_KEY);
+      } catch {
+        /* kho bị chặn: chỉ giữ đến khi tải lại trang */
+      }
+    } else {
+      root.style.setProperty("--user-font", String(fontValue(next)));
+      remember(FONT_KEY, next);
+    }
+    setFont(next);
+  };
 
-  const fxLabel = fxOff ? "Bật lại hiệu ứng Tương lai" : "Tắt hiệu ứng Tương lai (lưới, kính mờ, hào quang)";
+  const fontName = (id: UserFont) => USER_FONTS.find((f) => f[0] === id)?.[1] ?? "Vừa";
+  const nextFont =
+    USER_FONTS[(USER_FONTS.findIndex((f) => f[0] === font) + 1) % USER_FONTS.length][0];
+  const fontLabel = `Cỡ chữ: ${fontName(font)}. Bấm để chuyển sang ${fontName(nextFont)}`;
+
+  const modeLabel = mode === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối";
+  const densityLabel =
+    density === "compact" ? "Đang gọn. Chuyển sang thoải mái" : "Đang thoải mái. Chuyển sang gọn";
+
+  const fxLabel = fxOff
+    ? "Bật lại hiệu ứng Tương lai"
+    : "Tắt hiệu ứng Tương lai (lưới, kính mờ, hào quang)";
 
   return (
     <div className="flex items-center gap-1.5">
-      <button type="button" className="notice-bell-btn is-glyph" aria-label={modeLabel} title={modeLabel} onClick={flipMode}>
+      <button
+        type="button"
+        className="notice-bell-btn is-glyph"
+        aria-label={modeLabel}
+        title={modeLabel}
+        onClick={flipMode}
+      >
         {mode === "dark" ? <Icon slot="ui.sun" /> : <Icon slot="ui.moon" />}
       </button>
-      <button type="button" className="notice-bell-btn is-glyph" aria-label={densityLabel} title={densityLabel} onClick={flipDensity}>
+      <button
+        type="button"
+        className="notice-bell-btn is-glyph"
+        aria-label={densityLabel}
+        title={densityLabel}
+        onClick={flipDensity}
+      >
         {density === "compact" ? <Icon slot="ui.compact" /> : <Icon slot="ui.roomy" />}
       </button>
+      <button
+        type="button"
+        className="notice-bell-btn is-glyph"
+        aria-label={fontLabel}
+        title={fontLabel}
+        onClick={flipFont}
+      >
+        <span aria-hidden="true" className="text-sm font-bold leading-none">
+          Aa
+        </span>
+      </button>
       {theme.look === "future" && (
-        <button type="button" className="notice-bell-btn is-glyph" aria-label={fxLabel} aria-pressed={!fxOff} title={fxLabel} onClick={flipFx}>
+        <button
+          type="button"
+          className="notice-bell-btn is-glyph"
+          aria-label={fxLabel}
+          aria-pressed={!fxOff}
+          title={fxLabel}
+          onClick={flipFx}
+        >
           <Icon slot="ui.magic" />
         </button>
       )}

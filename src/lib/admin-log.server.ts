@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.16.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Bước 5 sắp xếp lại trang khách: khách tự chọn cỡ chữ 3 mức. theme.ts thêm FONT_KEY (tyzo_font), USER_FONTS (Vừa 1, Lớn 1.125, Rất lớn 1.25), fontValue, pickUserFont, fontScript (chạy đầu trang, đặt --user-font); styles.css: font-size html = 100% × --font-scale (Admin) × --user-font (khách); __root.tsx chèn fontScript; DisplayToggle có nút «Aa» xoay vòng. Bố cục máy tính bảng/máy tính (từ 1024px: video và bản dịch bên trái, công cụ bên phải) đã có từ trước, không đổi. Test fontScript trong theme.test.ts.",
+  },
+  {
     version: "5.15.0",
     time: "20/11/2026",
     area: "khac",
