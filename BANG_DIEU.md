@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đẩy dở. Việc còn lại: `HANDOFF.md` mục 2.
+Không có việc đẩy dở. `HANDOFF.md` mục 2 không còn việc mở (Chủ xác nhận 20/11/2026).
 
 ## Thư — còn lại
 
