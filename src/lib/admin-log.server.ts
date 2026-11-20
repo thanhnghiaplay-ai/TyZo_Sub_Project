@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.17.4",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Groq (Whisper) chỉ ra 3 câu cho video thoại liền mạch (clip «Tiểu hòa thượng» 34 giây, khoảng 15 đến 17 câu thật, không có quãng lặng ≥ 0,25 giây ở -35 dB). NGUYÊN NHÂN: ingestAsrPart (diagnostics.ts) đưa nguyên từng segment Whisper vào phụ đề; Whisper cắt segment theo quãng lặng/cửa sổ chứ không theo câu nên một segment chứa nhiều câu. Alibaba đã sửa trước bằng splitLongSegment (ali-filetrans.ts) nhưng đường Whisper chưa có. SỬA: src/lib/sub/whisper-split.ts (thuần, test whisper-split.test.ts, 9 ca, đã vào script test) splitLongSegment: chỉ tách khi segment dài (> 30 chữ nhìn thấy với CJK, > 100 với chữ khác); tách theo dấu câu (。！？.!? và …), gộp mảnh ngắn (< 4 chữ CJK / 12 chữ khác) và nhóm mảnh tới khoảng 24 chữ CJK / 70 chữ khác; «.» chỉ tính khi theo sau là khoảng trắng, «,» «:» không tính giữa hai số; không có dấu câu mà > 40 chữ CJK / 140 chữ khác thì chia đều; mốc từng mảnh lấy theo words của Whisper (chữ thứ a đến b rơi vào từ nào lấy mốc từ đó, bỏ qua nếu tổng chữ của words lệch > 25% so với câu) hoặc chia theo số chữ; mảnh không chồng nhau, nằm trong [start, end]. diagnostics.ts ingestAsrPart: segment dài đi qua splitLongSegment rồi MỖI MẢNH qua acceptSegment (cùng bộ lọc ảo giác/độ tin, dùng chung chỉ số Whisper của segment gốc); segment ngắn giữ đường cũ nguyên. Diagnostics thô (RawAsrPart.segments, «N câu Whisper trả về») vẫn là segment gốc. Không đổi giá, quyền, điều khoản.",
+  },
+  {
     version: "5.17.3",
     time: "20/11/2026",
     area: "khac",

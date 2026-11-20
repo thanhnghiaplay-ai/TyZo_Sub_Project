@@ -1,6 +1,7 @@
 import { acceptSegment, type AcceptReject } from "./text.ts";
 import { assignVoices } from "./pitch-voice.ts";
 import { refineTimes, type AsrWord } from "./word-time.ts";
+import { splitLongSegment } from "./whisper-split.ts";
 import type { Seg } from "./types.ts";
 
 export type RejectReason = AcceptReject;
@@ -174,29 +175,34 @@ export function ingestAsrPart(input: {
   for (const item of input.result.segments || []) {
     if (!item || typeof item.text !== "string") continue;
     const timing = refineTimes(Number(item.start), Number(item.end), input.result.words);
-    const decision = acceptSegment(
-      input.segs,
-      input.chunkStart,
-      timing.start,
-      timing.end,
-      item.text,
-      input.partIndex,
-      item,
-      input.samples,
-      input.overlapGate ?? input.partIndex > 0,
-    );
-    if (decision.accepted || !decision.reason) continue;
-    rejects.push({
-      reason: decision.reason,
-      partIndex: input.partIndex,
-      start: decision.start,
-      end: decision.end,
-      text: decision.text,
-      no_speech_prob: finite(item.no_speech_prob),
-      avg_logprob: finite(item.avg_logprob),
-      compression_ratio: finite(item.compression_ratio),
-      language,
-    });
+    // Lời thoại liền mạch khiến Whisper gộp nhiều câu vào một segment dài: tách lại từng câu trước khi lọc.
+    const split = splitLongSegment(item.text, timing.start, timing.end, input.result.words);
+    const pieces = split.length > 1 ? split : [{ start: timing.start, end: timing.end, text: item.text }];
+    for (const piece of pieces) {
+      const decision = acceptSegment(
+        input.segs,
+        input.chunkStart,
+        piece.start,
+        piece.end,
+        piece.text,
+        input.partIndex,
+        item,
+        input.samples,
+        input.overlapGate ?? input.partIndex > 0,
+      );
+      if (decision.accepted || !decision.reason) continue;
+      rejects.push({
+        reason: decision.reason,
+        partIndex: input.partIndex,
+        start: decision.start,
+        end: decision.end,
+        text: decision.text,
+        no_speech_prob: finite(item.no_speech_prob),
+        avg_logprob: finite(item.avg_logprob),
+        compression_ratio: finite(item.compression_ratio),
+        language,
+      });
+    }
   }
   assignVoices(input.segs);
   return {

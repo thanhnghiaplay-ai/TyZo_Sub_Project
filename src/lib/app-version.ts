@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.17.3";
+export const APP_VERSION = "5.17.4";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.17.4",
+    time: "20/11/2026",
+    title: "Nhận dạng giọng nói tách đủ từng câu khi lời thoại nói liền không nghỉ.",
+    points: [
+      "Trước đây thoại liền mạch dễ bị gộp thành vài dòng rất dài; nay tách lại thành từng câu.",
+      "Mỗi câu có mốc thời gian riêng, nên phụ đề và thuyết minh khớp với tiếng hơn.",
+      "Câu ngắn và câu đã đủ gọn vẫn giữ nguyên như trước.",
+    ],
+  },
   {
     version: "5.17.3",
     time: "20/11/2026",
