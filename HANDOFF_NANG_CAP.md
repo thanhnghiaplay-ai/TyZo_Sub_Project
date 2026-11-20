@@ -1,3 +1,5 @@
+> **ĐÃ XONG HẾT (giai đoạn A, B, C, kể cả B4 và C4; xác nhận 20/11/2026). CHỈ TRA CỨU, không phải việc cần làm.** Tên file được giữ vì code và `ADMIN_LOG` còn trỏ tới nó.
+
 # HANDOFF NÂNG CẤP — Trau chuốt bản dịch + prompt theo thể loại + thư viện thuật ngữ
 
 Lập ngày 19/11/2026, nhánh `work`. File này là kế hoạch làm từng bước đến khi hoàn thiện. Ai (tài khoản nào) làm tiếp cũng đọc file này trước, rồi đọc `AGENTS.project.md`, `BANG_DIEU.md`, `huongdan.txt`, và mục đầu `HANDOFF.md`. Mỗi bước xong: đánh dấu [x] ở đây, ghi ngắn vào đầu `HANDOFF.md`, commit, đẩy lên `work`.

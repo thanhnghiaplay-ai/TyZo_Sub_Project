@@ -1,4 +1,4 @@
-// Giá thuê phòng Admin chỉnh được (HANDOFF.md, 20/11/2026).
+// Giá thuê phòng Admin chỉnh được (docs/lich-su/HANDOFF_2026-11.md, 20/11/2026).
 // File thuần: chỉ import tương đối, không DB, test được bằng Node.
 //
 // Chỉ GIÁ và GIÁ GẠCH đổi được. Mã gói, tên và số giờ giữ cố định trong `ROOM_PLANS` (room-plans.ts),

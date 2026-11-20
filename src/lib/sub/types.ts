@@ -60,7 +60,7 @@ export const ASR_PRICE: Record<AsrModel, number> = {
   /** Trả theo dùng, xử lý cả file: Standard 0,45 và Enhanced 0,75 đô/giờ, tra trang giá Speechmatics 18/11/2026. Giá dự phòng. */
   "speechmatics-standard": 0.45 / 3600,
   "speechmatics-enhanced": 0.75 / 3600,
-  /** Khoảng 0,10 đô/giờ (async), theo ghi chú bước 1 HANDOFF.md 18/11/2026. Giá dự phòng, cần đối chiếu trang giá Soniox ở bước 6. */
+  /** Khoảng 0,10 đô/giờ (async), theo ghi chú bước 1 docs/lich-su/HANDOFF_2026-11.md 18/11/2026. Giá dự phòng, cần đối chiếu trang giá Soniox ở bước 6. */
   "soniox-stt-async": 0.1 / 3600,
 };
 

@@ -1,4 +1,4 @@
-// Bù độ trễ cho thuyết minh (mục «thuyết minh trễ» trong HANDOFF.md, 20/11/2026).
+// Bù độ trễ cho thuyết minh (mục «thuyết minh trễ» trong docs/lich-su/HANDOFF_2026-11.md, 20/11/2026).
 // File thuần: chỉ import tương đối, không gọi mạng, không đụng DOM, test được bằng Node.
 //
 // Vì sao trễ: câu chỉ bắt đầu được tạo tiếng khi phụ đề hiện, nên tiếng ra chậm đúng bằng thời gian tạo giọng
