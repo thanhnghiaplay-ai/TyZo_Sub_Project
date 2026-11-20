@@ -1,3 +1,8 @@
+## TIẾN ĐỘ PHIÊN TIẾP QUẢN (20/11/2026, nhánh work) — ghi theo từng bước, mới nhất ở trên
+- [XONG] Bước 1: sửa test `no-native-dialog` đỏ (1 fail). Nguyên nhân: câu «biến thể prompt (default/…)» trong `ADMIN_LOG` bị regex hiểu là gọi `prompt()`. Đã đổi chữ ghi chú, không đổi hành vi. `npm test` lại xanh hoàn toàn.
+- KẾ HOẠCH các bước sau (mục 3 «VIỆC CÒN LẠI», làm được bằng code, không cần Groq/clip): Bước 2 cảnh báo khách khi số chữ/giây quá thấp (dùng `scoreAsr` trong `asr-score.ts`); Bước 3 tab «Chấm nhận dạng» trong Admin (dán SRT). Mục 1, 2, 5, 6 cần Chủ/máy thật/Groq nên KHÔNG làm được ở sandbox.
+- QUY TẮC mỗi bước: typecheck, lint 0 lỗi, `npm test`, commit, đẩy `work`, ghi vào đây. KHÔNG đẩy `main` trừ khi Chủ nói «đẩy chính thức».
+
 ## VIỆC CÒN LẠI (tổng hợp 20/11/2026, v5.17.6, `main` = `work`) — ĐỌC MỤC NÀY TRƯỚC, nó thay các câu «VIỆC TIẾP THEO» cũ ở các mục bên dưới
 `HANDOFF_NANG_CAP.md` không còn mục nào chưa tích (A, B, C đều xong; B4 và C4 đã xong). CÁC CÂU «B4.2 / thuật ngữ zh 18 bộ còn lại» Ở CÁC MỤC DƯỚI ĐÃ LỖI THỜI: zh hiện 55 đến 104 mục mỗi bộ, không bộ nào dưới 50.
 Còn lại (theo thứ tự nên làm):
