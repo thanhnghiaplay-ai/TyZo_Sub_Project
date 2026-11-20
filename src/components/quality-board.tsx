@@ -4,6 +4,7 @@ import { forgetQualityThresholds } from "@/lib/quality-load";
 import { pushToast } from "@/components/toast";
 import { DEFAULT_QUALITY_THRESHOLDS, type QualityThresholds } from "@/lib/sub/quality";
 import { compareVersionDesc, groupRollup, hintsFor, langCheckVerdict, rollup, type BoardRow, type Rollup } from "@/lib/quality-board";
+import { AsrScorePanel } from "@/components/asr-score-panel";
 import { BAND_COLOR, BandBar, HealthPill, HEALTH_COLOR, pct } from "@/components/quality-view";
 
 const LANG_NAME: Record<string, string> = { zh: "Tiếng Trung", ko: "Tiếng Hàn", ja: "Tiếng Nhật", en: "Tiếng Anh" };
@@ -239,6 +240,7 @@ export function QualityBoard() {
       </div>
       {fault && <p className="text-sm text-danger">{fault}</p>}
       <ThresholdForm value={thresholds} onSaved={setThresholds} />
+      <AsrScorePanel />
       {rows === null && <p className="text-sm text-muted">Đang tải số liệu.</p>}
       {rows !== null && !fault && view.total.runs === 0 && (
         <p className="text-sm text-muted">Chưa có số liệu trong {days} ngày. Số liệu xuất hiện sau khi khách nhận dạng xong một phim bằng bản app này.</p>

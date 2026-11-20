@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.17.7",
     time: "20/11/2026",
     area: "khac",
+    text: "Admin → Chất lượng có thêm khối «Chấm nhận dạng (dán SRT)» (src/components/asr-score-panel.tsx, logic thuần ở src/lib/sub/asr-score-view.ts, test asr-score-view.test.ts 4 ca). Dán SRT gốc của bất kỳ nhà nhận dạng nào, chọn ngôn ngữ, (tùy chọn) độ dài video và đáp án: ra Đạt / Đạt có cảnh báo / Không đạt cùng chữ mỗi giây, câu thưa, câu bịa, lệch ngôn ngữ, lặp, sai khác so với đáp án. Chạy hoàn toàn trong trình duyệt (scoreAsr), không gọi máy chủ, không lưu. Không đổi hành vi khách nên không nâng phiên bản và không vào CHANGELOG. Ngưỡng là mức chung nên thoại thưa thật có thể bị báo oan. CHƯA bấm thử trên trình duyệt thật.",
+  },
+  {
+    version: "5.17.7",
+    time: "20/11/2026",
+    area: "khac",
     text: "Cảnh báo khách khi nhận dạng quá thưa: src/lib/sub/sparse-note.ts (sparseSpeechNote, dùng scoreAsr của asr-score.ts) nối một câu nhắc vào dòng «Hoàn tất» ở use-pipeline.ts. Điều kiện: ngôn ngữ nguồn zh/ja/ko/en, tổng đoạn từ 20 giây, và scoreAsr báo «quá thưa» (dưới 1,5 chữ/giây với zh/ja/ko, dưới 6 với en) hoặc có câu dài mà ít chữ. Cố ý KHÔNG báo vì câu bịa hay lệch ngôn ngữ (chưa đo đủ). Chữ đo là chữ thô của Whisper (raw, rồi original). Rủi ro: thoại thật sự thưa (ít lời, nhiều nhạc) có thể bị nhắc oan; chỉnh DEFAULT_THRESHOLDS hoặc SPARSE_MIN_SECONDS nếu thấy nhắc oan nhiều. Test: sparse-note.test.ts 6 ca. CHƯA thấy trên giao diện thật.",
   },
   {
