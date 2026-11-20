@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AUTO_LEVELS, autoRoles, buildAutoPack, onlyRentOpen, pickForRole, type AutoCandidate } from "./pack-auto.ts";
+import { AUTO_LEVELS, autoRoles, buildAutoPack, compareLevels, onlyKeyed, onlyRentOpen, pickForRole, type AutoCandidate } from "./pack-auto.ts";
 import type { PriceBook } from "./run-bill.ts";
 import { checkServicePack } from "./service-pack.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
@@ -118,4 +118,35 @@ test("onlyRentOpen: chỉ giữ model đã mở cho thuê phòng, chưa lưu dan
   const out = autoRoles({ levels: {}, candidates: kept, books });
   assert.equal(out.roles.translate?.model, "openai/gpt-oss-120b");
   assert.ok(out.roles.asr);
+});
+
+test("onlyKeyed: chỉ giữ model của nhà đã có key, chưa đọc được key thì không lọc", () => {
+  const keyed = { groq: true, alibaba: false, deepgram: true };
+  const kept = onlyKeyed(all, keyed);
+  assert.ok(kept.length > 0);
+  assert.ok(kept.every((c) => c.provider === "groq" || c.provider === "deepgram"));
+  assert.equal(onlyKeyed(all, null), all);
+  assert.deepEqual(onlyKeyed(all, {}), []);
+  const out = autoRoles({ levels: { translate: "best" }, candidates: kept, books });
+  assert.notEqual(out.roles.translate?.provider, "alibaba");
+  assert.notEqual(out.roles.asr?.provider, "alibaba");
+});
+
+test("compareLevels: khớp pickForRole, điểm tăng và giá không đảo giữa ba mức", () => {
+  for (const role of ["asr", "translate"] as const) {
+    const view = compareLevels(role, { candidates: all, books });
+    for (const level of AUTO_LEVELS) {
+      const pick = pickForRole(role, level, { candidates: all, books });
+      assert.equal(view[level]?.model, pick?.model);
+      assert.equal(view[level]?.provider, pick?.provider);
+    }
+    assert.ok(view.save && view.balanced && view.best);
+    assert.ok(view.save.score <= view.balanced.score && view.balanced.score <= view.best.score);
+    assert.ok(view.save.cost <= view.balanced.cost && view.balanced.cost <= view.best.cost);
+  }
+});
+
+test("compareLevels: không có model hợp lệ thì cả ba mức là null", () => {
+  const view = compareLevels("translate", { candidates: [], books });
+  assert.deepEqual(view, { save: null, balanced: null, best: null });
 });

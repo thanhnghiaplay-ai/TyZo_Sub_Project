@@ -1,12 +1,16 @@
 import { dongOrNull } from "@/lib/money-format";
 import { useMemo, useState } from "react";
-import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, onlyRentOpen, type AutoCandidate, type AutoChoice, type AutoLang, type AutoResult } from "@/lib/pack-auto";
+import { AUTO_LEVELS, AUTO_LEVEL_LABEL, REQUIRED_ROLES, autoRoles, compareLevels, onlyKeyed, onlyRentOpen, type AutoCandidate, type AutoChoice, type AutoLang, type AutoResult } from "@/lib/pack-auto";
 import type { PriceBook } from "@/lib/run-bill";
 import type { RentShow } from "@/lib/rent-show-rule";
 import { PACK_ROLE_LABEL, PACK_ROLES, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
+import { shortModelName } from "@/lib/sub/model-short";
 import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 
 const dong = (n: number | null) => dongOrNull(n, "chưa đủ giá");
+/** Giá một phút của từng model: model rẻ chỉ vài đồng nên dưới 10 giữ một số lẻ, tránh hiện «0 đ». */
+const perMinute = (n: number) => `${n < 10 ? n.toFixed(1).replace(".", ",") : dong(n).replace(" đ", "")} đ/phút`;
+const scoreText = (n: number) => `${n.toFixed(1).replace(".", ",")} điểm`;
 
 export type AutoDraft = { levels: Partial<Record<PackRole, AutoChoice>>; lang: AutoLang };
 
@@ -18,6 +22,7 @@ export function PackAutoBoard({
   candidates,
   books,
   rentShow = null,
+  keyed = null,
   onDraft,
   onCreate,
 }: {
@@ -25,6 +30,8 @@ export function PackAutoBoard({
   books: Partial<Record<ProviderId, PriceBook>> | null;
   /** Danh sách model Chủ đã mở cho thuê phòng. null = chưa lưu, ẩn ô lọc. */
   rentShow?: RentShow | null;
+  /** Nhà nào đã lưu key phòng. null = chưa đọc được, không lọc và ẩn ô lọc. */
+  keyed?: Partial<Record<ProviderId, boolean>> | null;
   /** Báo bản nháp hiện tại cho bên ngoài (để nút Tạo gói dùng ở bước sau). */
   onDraft?: (draft: AutoDraft) => void;
   /** Bấm «Tạo gói»: trả model đã chọn và mức đã dùng. Bên ngoài tự thêm gói nháp, chưa lưu. */
@@ -33,9 +40,18 @@ export function PackAutoBoard({
   const [levels, setLevels] = useState<AutoDraft["levels"]>({ asr: "balanced", translate: "balanced" });
   const [lang, setLang] = useState<AutoLang>("other");
   const [rentOnly, setRentOnly] = useState(false);
+  const [keyedOnly, setKeyedOnly] = useState(true);
 
-  const pool = useMemo(() => (rentOnly ? onlyRentOpen(candidates, rentShow) : candidates), [rentOnly, candidates, rentShow]);
+  const pool = useMemo(() => {
+    const byKey = keyedOnly ? onlyKeyed(candidates, keyed) : candidates;
+    return rentOnly ? onlyRentOpen(byKey, rentShow) : byKey;
+  }, [keyedOnly, rentOnly, candidates, keyed, rentShow]);
   const result = useMemo(() => (books ? autoRoles({ levels, candidates: pool, books, lang }) : null), [levels, pool, books, lang]);
+  // Ba mức của từng việc cạnh nhau, cùng đường chọn với autoRoles nên dòng đang chọn luôn khớp model hiện ở dưới.
+  const compare = useMemo(
+    () => (books ? Object.fromEntries(PACK_ROLES.map((role) => [role, compareLevels(role, { candidates: pool, books, lang })])) as Record<PackRole, ReturnType<typeof compareLevels>> : null),
+    [pool, books, lang],
+  );
   const quote = useMemo(() => {
     if (!books || !result) return null;
     const pack: ServicePack = { id: "pack_preview0", name: "Xem trước", note: "", enabled: false, doors: ["turn", "rent"], roles: result.roles };
@@ -69,6 +85,13 @@ export function PackAutoBoard({
         <button type="button" className={btn(lang === "cjk")} onClick={() => pickLang("cjk")}>Trung, Nhật, Hàn</button>
       </div>
 
+      {keyed && (
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={keyedOnly} onChange={(event) => setKeyedOnly(event.target.checked)} />
+          Chỉ dùng nhà đã có key
+        </label>
+      )}
+
       {rentShow && (
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={rentOnly} onChange={(event) => setRentOnly(event.target.checked)} />
@@ -92,6 +115,20 @@ export function PackAutoBoard({
                 </button>
               ))}
             </div>
+            {current !== "off" && compare && !missing && (
+              <ul className="grid gap-0.5 text-xs text-muted">
+                {AUTO_LEVELS.map((level) => {
+                  const view = compare[role][level];
+                  if (!view) return null;
+                  const on = current === level;
+                  return (
+                    <li key={level} className={on ? "font-semibold text-ink" : ""}>
+                      {AUTO_LEVEL_LABEL[level]}: {shortModelName(view.model)} · {PROVIDER_LABEL[view.provider]} · {scoreText(view.score)} · {perMinute(view.cost)}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
             {chosen && <p className="text-xs text-muted">{PROVIDER_LABEL[chosen.provider]} · {chosen.model}</p>}
             {missing && <p className="text-xs text-danger">Chưa có model đủ điểm và giá cho việc này.</p>}
           </div>

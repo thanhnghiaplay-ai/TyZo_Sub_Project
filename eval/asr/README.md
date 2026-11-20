@@ -17,6 +17,14 @@ Không có `--ref` vẫn chấm được bằng dấu hiệu bỏ lời, ảo gi
 Cần ffmpeg. Biến thể: `default` (đúng như app gửi), `noprompt`, `noguard` (chỉ tên phim + thuật ngữ), `guard` (ép thêm ASR_GUARD như phim 18+). Báo cáo JSON ghi vào `eval/asr/out/` (không vào git). Thoát mã 1 nếu `default` HỎNG, nên gắn được vào lịch chạy định kỳ.
 Chỉ lấy 60 giây đầu của mỗi clip (một đoạn như app). Chấm trên câu thô của Whisper, chưa qua bộ lọc của app.
 
+## 3. Đổi kết quả đo thành điểm model (cho «Dựng gói tự động»)
+Điểm trong `src/lib/sub/model-grade.ts` phần lớn là số ước lượng. Sau khi có báo cáo ở `eval/asr/out/`:
+
+    npm run asr:grade            # chỉ in điểm đo
+    npm run asr:grade -- --write # ghi src/lib/sub/model-grade-measured.ts, đè lên số ước lượng
+
+Quy tắc (`src/lib/sub/grade-measure.ts`): chỉ lấy biến thể `default`, chỉ clip có đáp án (`reference`). `quality` = trung bình mọi clip, `asian` = trung bình clip zh/ja/ko; sai khác 0% được 10 điểm, từ 50% trở lên 0 điểm. Mỗi điểm cần từ 3 clip, thiếu thì giữ số ước lượng. Chỉ đo độ chính xác nhận dạng; tốc độ và chất lượng dịch vẫn là ước lượng. Hiện `asr:bench` chỉ chạy Groq Whisper, các nhà khác (Deepgram, AssemblyAI, Speechmatics, Soniox, Alibaba) chưa có đường đo.
+
 ## Thêm clip mới
 1. Bỏ âm thanh vào `eval/asr/audio/` (không đưa vào git).
 2. Thêm một mục vào `cases.json` (`id`, `audio`, `lang`, `genre`, `title`, `gloss`, `reference`).

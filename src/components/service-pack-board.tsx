@@ -7,6 +7,7 @@ import { shortModelNames } from "@/lib/sub/model-short";
 import { useEffect, useMemo, useState } from "react";
 import { pushToast } from "@/components/toast";
 import { getAlibabaDesk, saveServicePacks } from "@/lib/pack-room";
+import { getProviderKey } from "@/lib/provider-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import type { GroqBoard, GroqLiveRow } from "@/lib/sub/groq-board";
@@ -16,7 +17,7 @@ import { buildPackBooks } from "@/lib/pack-books";
 import type { UsdFix } from "@/lib/usd-fix";
 import { ASR_MODELS } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
-import { PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
+import { PROVIDER_IDS, PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
 import { PackAutoBoard } from "@/components/pack-auto-board";
 import { buildAutoPack, type AutoCandidate } from "@/lib/pack-auto";
@@ -60,6 +61,14 @@ export function ServicePackBoard() {
   const [rentShow, setRentShow] = useState<RentShow | null>(null);
   useEffect(() => {
     void getRentShow().then(setRentShow).catch(() => undefined);
+  }, []);
+
+  // Nhà nào đã lưu key phòng. null = chưa đọc xong hoặc có nhà đọc lỗi (khi đó không lọc theo key).
+  const [keyed, setKeyed] = useState<Partial<Record<ProviderId, boolean>> | null>(null);
+  useEffect(() => {
+    void Promise.all(PROVIDER_IDS.map((id) => getProviderKey({ data: id }).then((view) => [id, view.keyTail.length > 0] as const)))
+      .then((entries) => setKeyed(Object.fromEntries(entries)))
+      .catch(() => setKeyed(null));
   }, []);
 
   useEffect(() => {
@@ -139,7 +148,7 @@ export function ServicePackBoard() {
         Mỗi việc chọn một nhà và một model. Khách ở cửa trả theo lượt chọn gói đã bật. Khách thấy giá theo Token dịch, tính từ giá gốc.
       </p>
 
-      <PackAutoBoard candidates={autoCandidates} books={autoBooks} rentShow={rentShow} onCreate={createAutoPack} />
+      <PackAutoBoard candidates={autoCandidates} books={autoBooks} rentShow={rentShow} keyed={keyed} onCreate={createAutoPack} />
 
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-2">

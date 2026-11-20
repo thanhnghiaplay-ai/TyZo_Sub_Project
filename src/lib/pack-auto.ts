@@ -76,7 +76,7 @@ function score(role: PackRole, list: AutoCandidate[], books: AutoInput["books"],
 const byCostThenQuality = (a: Scored, b: Scored) => a.cost - b.cost || b.eff - a.eff || b.speed - a.speed;
 const byQualityThenCost = (a: Scored, b: Scored) => b.eff - a.eff || a.cost - b.cost || b.speed - a.speed;
 
-export function pickForRole(role: PackRole, level: AutoLevel, input: Pick<AutoInput, "candidates" | "books" | "lang">): RoleAssign | null {
+function chooseScored(role: PackRole, level: AutoLevel, input: Pick<AutoInput, "candidates" | "books" | "lang">): Scored | null {
   const scored = score(role, input.candidates, input.books, input.lang ?? "other");
   if (!scored.length) return null;
   const top = [...scored].sort(byQualityThenCost)[0];
@@ -90,8 +90,25 @@ export function pickForRole(role: PackRole, level: AutoLevel, input: Pick<AutoIn
     if (!pool.length) pool = [top];
     pool.sort(byCostThenQuality);
   }
-  const pick = pool[0];
-  return { provider: pick.c.provider, model: pick.c.model };
+  return pool[0];
+}
+
+export function pickForRole(role: PackRole, level: AutoLevel, input: Pick<AutoInput, "candidates" | "books" | "lang">): RoleAssign | null {
+  const pick = chooseScored(role, level, input);
+  return pick ? { provider: pick.c.provider, model: pick.c.model } : null;
+}
+
+/** Một mức khi đặt cạnh nhau: model chọn được, điểm đang tính (đã tính tiếng Á nếu cjk) và giá một phút theo giá gốc (đồng). */
+export type LevelView = { provider: ProviderId; model: string; score: number; cost: number };
+
+/** Ba mức của một việc, cùng đường chọn với pickForRole. Mức không có model hợp lệ là null. */
+export function compareLevels(role: PackRole, input: Pick<AutoInput, "candidates" | "books" | "lang">): Record<AutoLevel, LevelView | null> {
+  const out = { save: null, balanced: null, best: null } as Record<AutoLevel, LevelView | null>;
+  for (const level of AUTO_LEVELS) {
+    const pick = chooseScored(role, level, input);
+    out[level] = pick ? { provider: pick.c.provider, model: pick.c.model, score: pick.eff, cost: pick.cost } : null;
+  }
+  return out;
 }
 
 export function autoRoles(input: AutoInput): AutoResult {
@@ -131,4 +148,13 @@ export function buildAutoPack(input: { id: string; levels: AutoInput["levels"]; 
 export function onlyRentOpen(candidates: AutoCandidate[], show: RentShow | null): AutoCandidate[] {
   if (!show) return candidates;
   return candidates.filter((c) => show[c.provider].includes(c.model));
+}
+
+/**
+ * Chỉ giữ model của nhà Chủ đã lưu key phòng (nhà chưa có key không chạy được).
+ * keyed = null (chưa đọc được key) thì không lọc. Nhà vắng trong keyed coi như chưa có key.
+ */
+export function onlyKeyed(candidates: AutoCandidate[], keyed: Partial<Record<ProviderId, boolean>> | null): AutoCandidate[] {
+  if (!keyed) return candidates;
+  return candidates.filter((c) => keyed[c.provider] === true);
 }

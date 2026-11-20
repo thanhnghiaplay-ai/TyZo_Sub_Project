@@ -6,6 +6,7 @@
  * Model chưa có điểm thì gradeOf trả null và tự dựng gói bỏ qua model đó (không đoán).
  */
 import { CHAT_MODELS } from "./models.ts";
+import { MEASURED_GRADE } from "./model-grade-measured.ts";
 
 export type ModelGrade = { quality: number; speed: number; asian: number };
 
@@ -40,5 +41,8 @@ const CHAT_GRADE = new Map<string, ModelGrade>(
 );
 
 export function gradeOf(model: string): ModelGrade | null {
-  return GRADE_FIX[model] ?? CHAT_GRADE.get(model) ?? null;
+  const base = GRADE_FIX[model] ?? CHAT_GRADE.get(model);
+  if (!base) return null;
+  const measured = MEASURED_GRADE[model];
+  return measured ? { ...base, ...measured } : base;
 }
