@@ -64,6 +64,7 @@ import { type GroqBoard } from "@/lib/sub/groq-board";
 import { formatRoomTokens } from "@/lib/token-math";
 import { modelRoleNote } from "@/lib/sub/model-role";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
+import { effectiveLead, prefetchTargets, slotFor } from "@/lib/sub/narration-sync";
 import { auraReady, auraVoices, defaultAuraVoice } from "@/lib/sub/aura";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
@@ -624,22 +625,26 @@ export function Studio() {
     }
     const seg = segs[index];
     if (!seg) return;
-    const choice = seg.voiceLock
-      ? { gender: seg.voiceLock, locked: true }
-      : narrationChoice(settings.matchCast, settings.gender, seg.original, cueText(seg), seg.voice, live.current.bible);
-    void narrator.current.speak({
-      text: cueText(seg),
-      settings: {
-        ...settings,
-        gender: choice.gender,
-        matchCast: choice.locked,
-      },
-      target,
-      key: payByRoom ? "room" : key.trim(),
-      video,
-      playbackRate: video.playbackRate || 1,
-      onBlocked: (message) => pushToast(message, "bad"),
-    });
+    const optionsFor = (item: Seg) => {
+      const choice = item.voiceLock
+        ? { gender: item.voiceLock, locked: true }
+        : narrationChoice(settings.matchCast, settings.gender, item.original, cueText(item), item.voice, live.current.bible);
+      return {
+        text: cueText(item),
+        settings: { ...settings, gender: choice.gender, matchCast: choice.locked },
+        target,
+        key: payByRoom ? "room" : key.trim(),
+        video,
+        playbackRate: video.playbackRate || 1,
+        onBlocked: (message: string) => pushToast(message, "bad"),
+      };
+    };
+    void narrator.current.speak({ ...optionsFor(seg), slot: slotFor(segs, index) });
+    // Tạo trước vài câu kế tiếp để câu sau có tiếng sẵn khi tới lượt (giọng máy đọc ngay nên không cần).
+    if (settings.engine === "browser") return;
+    for (const next of prefetchTargets(segs, index, cueText)) {
+      void narrator.current.speak({ ...optionsFor(segs[next]), prefetch: true });
+    }
   };
 
   const previewVoice = () => {
@@ -1065,6 +1070,7 @@ export function Studio() {
           lead={narration.lead}
           onCue={setCurrent}
           onSpeak={speakAt}
+          leadComp={() => narrator.current.compensation(live.current.narration.engine)}
           speechBusy={() => narrator.current.busy()}
           onPause={() => narrator.current.stop(app.videoRef.current)}
           file={pickedFile}
@@ -1687,7 +1693,7 @@ export function Studio() {
           format={(value) => (value === 0 ? "Đúng lúc" : value < 0 ? `Trước ${(-value).toFixed(1)} giây` : `Sau ${value.toFixed(1)} giây`)}
           onCommit={(lead) => patchNarration({ lead })}
         />
-        <p className="text-sm text-muted">Kéo núm để chỉnh. Đúng lúc là đọc khi câu hiện. Trước là đọc sớm, sau là đọc muộn.</p>
+        <p className="text-sm text-muted">Kéo núm để chỉnh thêm. Đúng lúc là đọc khi câu hiện. Trước là đọc sớm, sau là đọc muộn. App đã tự bù độ trễ tạo giọng, tạo trước vài câu kế tiếp và đọc nhanh vừa phải khi câu dài hơn khoảng thoại.</p>
         <div className="flex items-center gap-2">
           <label className="flex min-tap items-center gap-2 text-sm">
           <input type="checkbox" checked={narration.matchCast} onChange={(event) => patchNarration({ matchCast: event.target.checked })} />
@@ -2125,6 +2131,7 @@ function Stage({
   lead,
   onCue,
   onSpeak,
+  leadComp,
   speechBusy,
   onPause,
   file,
@@ -2146,6 +2153,8 @@ function Stage({
   lead: number;
   onCue: (index: number) => void;
   onSpeak: (index: number) => void;
+  /** Độ trễ tạo giọng cần bù (giây): câu được chọn đọc sớm đúng bằng số này, cộng với ô chỉnh tay. */
+  leadComp: () => number;
   speechBusy: () => boolean;
   onPause: () => void;
 }) {
@@ -2172,6 +2181,7 @@ function Stage({
   const narrRef = useRef(narrationOn);
   const onCueRef = useRef(onCue);
   const onSpeakRef = useRef(onSpeak);
+  const compRef = useRef(leadComp);
   const busyRef = useRef(speechBusy);
   const onPauseRef = useRef(onPause);
   segsRef.current = segs;
@@ -2180,6 +2190,7 @@ function Stage({
   narrRef.current = narrationOn;
   onCueRef.current = onCue;
   onSpeakRef.current = onSpeak;
+  compRef.current = leadComp;
   busyRef.current = speechBusy;
   onPauseRef.current = onPause;
   const idxRef = useRef(-1);
@@ -2216,7 +2227,7 @@ function Stage({
         onCueRef.current(shown);
       }
       if (narrRef.current && !video.paused) {
-        const offset = leadRef.current;
+        const offset = effectiveLead(leadRef.current, compRef.current());
         const spoken = speechIndex(segsRef.current, clock, offset);
         const seg = spoken >= 0 ? segsRef.current[spoken] : undefined;
         const waitEarly = Boolean(seg && offset < 0 && busyRef.current() && clock < seg.start);

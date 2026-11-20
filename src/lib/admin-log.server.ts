@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.17.2",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Thuyết minh trễ (mục 3 HANDOFF). Mới src/lib/sub/narration-sync.ts (thuần, có test): đo độ trễ tạo giọng thật từng loại (trung bình trượt, mặc định edge 0,8 / orpheus 1,3 / aura 1,0 / máy 0,1, bù tối đa 1,8 giây), tạo trước 2 câu kế, chờ đúng lúc khi tiếng đã có sẵn, ước thời lượng so với khoảng thoại và tăng tốc tối đa 1,3 lần. narration.ts: bộ nhớ đệm có gộp yêu cầu đang chạy (đọc thật và tạo trước không gọi hai lần cùng một câu, tránh tính tiền đôi Orpheus/Aura), stop() hủy cả tạo trước, giọng máy không tạo trước. studio.tsx: Stage đọc sớm theo effectiveLead(lead tay, độ trễ bù), speakAt gọi tạo trước. Ô lead giữ nguyên. LƯU Ý CHI PHÍ: Orpheus/Aura (có phí) tạo trước 2 câu nên có thể tính tiền cả câu chưa kịp đọc nếu khách tua. Không đổi giá, quyền, điều khoản.",
+  },
+  {
     version: "5.17.1",
     time: "20/11/2026",
     area: "khac",

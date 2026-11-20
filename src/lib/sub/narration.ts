@@ -5,6 +5,7 @@ import { auraPieces, auraReady, auraVoiceOk, defaultAuraVoice } from "@/lib/sub/
 import { synthesizeEdge } from "@/lib/sub/edge-speech";
 import { edgeVoice, prosodyPitch, prosodyRate } from "@/lib/sub/edge-voice";
 import { orpheusReady, SPEAK_SAMPLE, speechLang } from "@/lib/sub/text";
+import { createLatencyTracker, estimateSpeechSeconds, fitBoost, holdSeconds, type SpeechEngine } from "@/lib/sub/narration-sync";
 import type { NarrationSettings } from "@/lib/sub/types";
 
 export const EN_VOICES = [
@@ -78,6 +79,10 @@ export function createNarrator() {
   let savedVolume = 1;
   let savedMuted = false;
   const cache = new Map<string, string>();
+  /** Yêu cầu tạo tiếng đang chạy theo khóa, để tạo trước và đọc thật không gọi (và không tính tiền) hai lần. */
+  const inflight = new Map<string, Promise<string>>();
+  const tracker = createLatencyTracker();
+  let epoch = 0;
   let edgeCoolUntil = 0;
   let rentCache: { at: number; value: RentShow | null } | null = null;
   let rentWarned = false;
@@ -113,6 +118,7 @@ export function createNarrator() {
   let speaking = false;
   const stop = (video?: HTMLVideoElement | null) => {
     token++;
+    epoch++;
     speaking = false;
     try {
       window.speechSynthesis?.cancel();
@@ -138,9 +144,30 @@ export function createNarrator() {
     }
   };
 
+  /** Lấy tiếng của một mảnh: có sẵn trong đệm thì dùng, đang tạo thì chờ chung, chưa có thì tạo và ghi lại độ trễ thật. */
+  const load = (engine: SpeechEngine, cacheKey: string, make: () => Promise<Blob>): Promise<string> => {
+    const hit = cache.get(cacheKey);
+    if (hit) return Promise.resolve(hit);
+    let pending = inflight.get(cacheKey);
+    if (!pending) {
+      const started = performance.now();
+      pending = (async () => {
+        const blob = await make();
+        tracker.record(engine, (performance.now() - started) / 1000);
+        const url = URL.createObjectURL(blob);
+        remember(cacheKey, url);
+        return url;
+      })().finally(() => inflight.delete(cacheKey));
+      inflight.set(cacheKey, pending);
+    }
+    return pending;
+  };
+
   return {
     stop,
     busy: () => speaking,
+    /** Độ trễ tạo giọng (giây) cần bù cho loại giọng này. Giọng máy đọc ngay nên không bù. */
+    compensation: (engine: SpeechEngine) => (engine === "browser" ? 0 : tracker.estimate(engine)),
     async speak(opts: {
       text: string;
       settings: NarrationSettings;
@@ -150,18 +177,41 @@ export function createNarrator() {
       playbackRate: number;
       /** Báo khách khi giọng bị Chủ khóa (mỗi lần mở trang một lần). */
       onBlocked?: (message: string) => void;
+      /** Khoảng thoại của câu (giây theo đồng hồ video). Dài hơn thì đọc nhanh vừa phải cho vừa. */
+      slot?: number;
+      /** Chỉ tạo tiếng vào bộ đệm cho câu sắp tới, không phát. */
+      prefetch?: boolean;
     }) {
       const line = speakable(opts.text, opts.settings.skipCues);
       if (!line) return;
-      speaking = true;
-      const mine = ++token;
+      const prefetchOnly = Boolean(opts.prefetch);
+      const myEpoch = epoch;
+      const mine = prefetchOnly ? token : ++token;
+      const alive = () => (prefetchOnly ? epoch === myEpoch : mine === token);
       const { settings } = opts;
-      duck(opts.video, settings);
+      const startedAt = performance.now();
+      const comp = prefetchOnly || settings.engine === "browser" ? 0 : tracker.estimate(settings.engine);
+      const slotWall = opts.slot && opts.slot > 0 ? opts.slot / Math.max(0.5, opts.playbackRate) : undefined;
+      if (!prefetchOnly) {
+        speaking = true;
+        duck(opts.video, settings);
+      }
       const done = () => {
-        if (mine === token) {
+        if (!prefetchOnly && mine === token) {
           speaking = false;
           restore(opts.video);
         }
+      };
+      /** Phát một mảnh. Tiếng đã có sẵn thì chờ phần độ trễ còn thiếu, để bắt đầu đúng lúc phụ đề. */
+      const play = async (url: string, last: boolean, share: number) => {
+        if (prefetchOnly || !alive()) return;
+        if (!audio) audio = new Audio();
+        const wait = holdSeconds(comp, (performance.now() - startedAt) / 1000);
+        if (wait > 0.02) {
+          await new Promise<void>((resolve) => setTimeout(resolve, (wait / Math.max(0.5, opts.playbackRate)) * 1000));
+          if (!alive()) return;
+        }
+        await playUrl(audio, url, settings, opts.playbackRate, last ? done : () => {}, slotWall ? slotWall * share : undefined);
       };
       try {
         const auraLang = settings.engine === "aura" ? auraReady(opts.target) : null;
@@ -174,35 +224,26 @@ export function createNarrator() {
                 : defaultAuraVoice(auraLang, settings.gender);
             const pieces = auraPieces(line);
             for (let i = 0; i < pieces.length; i++) {
-              if (mine !== token) return;
+              if (!alive()) return;
               const piece = pieces[i];
-              const cacheKey = `aura|${auraLang}|${voice}|${piece}`;
-              let url = cache.get(cacheKey);
-              if (!url) {
-                const blob = await speakAura({ voice, lang: auraLang, text: piece });
-                if (mine !== token) return;
-                url = URL.createObjectURL(blob);
-                remember(cacheKey, url);
-              }
-              if (mine !== token) return;
-              if (!audio) audio = new Audio();
-              const last = i === pieces.length - 1;
-              await playUrl(audio, url, settings, opts.playbackRate, last ? done : () => {});
+              const url = await load("aura", `aura|${auraLang}|${voice}|${piece}`, () => speakAura({ voice, lang: auraLang, text: piece }));
+              if (!alive()) return;
+              await play(url, i === pieces.length - 1, piece.length / line.length);
             }
             return;
           } catch (error) {
             if ((error as { name?: string })?.name === "AbortError") throw error;
-            if (mine !== token) return;
+            if (!alive()) return;
           }
         }
         let cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
         // Thuê phòng bằng key riêng: giọng Orpheus phải nằm trong danh sách Chủ mở. Trả theo lượt (key "room") đã tính bằng Token dịch nên không qua đây.
         if (cloud && opts.key && opts.key !== ROOM_KEY) {
           const blocked = rentVoiceProblem(await rentShow(), orpheusModelId(cloud));
-          if (mine !== token) return;
+          if (!alive()) return;
           if (blocked) {
             cloud = null;
-            if (!rentWarned) {
+            if (!rentWarned && !prefetchOnly) {
               rentWarned = true;
               opts.onBlocked?.(blocked);
             }
@@ -217,38 +258,25 @@ export function createNarrator() {
                 : defaultOrpheusVoice(opts.target, settings.gender);
             const pieces = orpheusPieces(line);
             for (let i = 0; i < pieces.length; i++) {
-              if (mine !== token) return;
+              if (!alive()) return;
               const piece = pieces[i];
-              const cacheKey = `${cloud}|${voice}|${piece}`;
-              let url = cache.get(cacheKey);
-              if (!url) {
-                const blob = await speakOrpheus({
-                  key: opts.key,
-                  text: piece,
-                  voice,
-                  arabic: cloud === "ar",
-                });
-                if (mine !== token) return;
-                url = URL.createObjectURL(blob);
-                remember(cacheKey, url);
-              }
-              if (mine !== token) return;
-              if (!audio) audio = new Audio();
-              const last = i === pieces.length - 1;
-              await playUrl(audio, url, settings, opts.playbackRate, last ? done : () => {});
+              const url = await load("orpheus", `${cloud}|${voice}|${piece}`, () =>
+                speakOrpheus({ key: opts.key, text: piece, voice, arabic: cloud === "ar" }),
+              );
+              if (!alive()) return;
+              await play(url, i === pieces.length - 1, piece.length / line.length);
             }
             return;
           } catch (error) {
             if ((error as { name?: string })?.name === "AbortError") throw error;
-            if (mine !== token) return;
+            if (!alive()) return;
           }
         }
         if (settings.engine === "edge" && Date.now() >= edgeCoolUntil) {
           try {
             const voice = edgeVoice(opts.target, settings.gender);
             const cacheKey = `edge|${voice.id}|${prosodyRate(settings.rate)}|${prosodyPitch(settings.pitch)}|${line}`;
-            let url = cache.get(cacheKey);
-            if (!url) {
+            const url = await load("edge", cacheKey, async () => {
               const result = await synthesizeEdge({
                 data: {
                   text: line,
@@ -257,19 +285,17 @@ export function createNarrator() {
                   pitch: prosodyPitch(settings.pitch),
                 },
               });
-              if (mine !== token) return;
-              url = URL.createObjectURL(base64ToBlob(result.audio));
-              remember(cacheKey, url);
-            }
-            if (mine !== token) return;
-            if (!audio) audio = new Audio();
-            await playUrl(audio, url, settings, opts.playbackRate, done);
+              return base64ToBlob(result.audio);
+            });
+            if (!alive()) return;
+            await play(url, true, 1);
             return;
           } catch {
             edgeCoolUntil = Date.now() + 20000;
           }
         }
-        await speakBrowser(line, settings, opts.target, opts.playbackRate, done);
+        if (prefetchOnly) return;
+        await speakBrowser(line, settings, opts.target, opts.playbackRate, done, slotWall);
       } catch {
         done();
       }
@@ -277,12 +303,19 @@ export function createNarrator() {
   };
 }
 
-function playUrl(audio: HTMLAudioElement, url: string, settings: NarrationSettings, playbackRate: number, done: () => void) {
+/** `slot`: khoảng thoại tính bằng giây thật khi nghe. Nếu tiếng dài hơn thì tăng tốc vừa phải (tối đa FIT_MAX_BOOST). */
+function playUrl(audio: HTMLAudioElement, url: string, settings: NarrationSettings, playbackRate: number, done: () => void, slot?: number) {
   audio.src = url;
   audio.volume = Math.max(0, Math.min(1, settings.volume));
   const rate = settings.rate * (settings.followPlayback ? playbackRate : 1);
-  audio.playbackRate = Math.max(0.5, Math.min(2, rate));
+  const base = Math.max(0.5, Math.min(2, rate));
+  audio.playbackRate = base;
   return new Promise<void>((resolve, reject) => {
+    audio.onloadedmetadata = () => {
+      if (!slot || !Number.isFinite(audio.duration)) return;
+      const boost = fitBoost(audio.duration / base, slot);
+      audio.playbackRate = Math.max(0.5, Math.min(2, base * boost));
+    };
     audio.onended = () => {
       done();
       resolve();
@@ -325,6 +358,7 @@ function speakBrowser(
   target: string,
   playbackRate: number,
   onend: () => void,
+  slot?: number,
 ) {
   return new Promise<void>((resolve) => {
     if (typeof window === "undefined" || !window.speechSynthesis) {
@@ -339,7 +373,8 @@ function speakBrowser(
     if (chosen) utter.voice = chosen;
     utter.lang = chosen?.lang || lang;
     const rate = settings.rate * (settings.followPlayback ? playbackRate : 1);
-    utter.rate = Math.max(0.5, Math.min(2, rate));
+    const boost = slot ? fitBoost(estimateSpeechSeconds(line, rate), slot) : 1;
+    utter.rate = Math.max(0.5, Math.min(2, rate * boost));
     utter.pitch = Math.max(0.5, Math.min(2, settings.pitch));
     utter.volume = Math.max(0, Math.min(1, settings.volume));
     utter.onend = () => {
