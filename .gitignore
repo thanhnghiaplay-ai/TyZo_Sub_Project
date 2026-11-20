@@ -8,3 +8,5 @@ screenshots
 .env
 .env.*
 *.log
+eval/asr/audio/
+eval/asr/out/

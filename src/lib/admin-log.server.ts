@@ -11,6 +11,12 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.17.6",
     time: "20/11/2026",
     area: "khac",
+    text: "Thêm bộ ĐO nhận dạng tự động (chỉ công cụ dòng lệnh + test, không đổi hành vi app, không nâng phiên bản): npm run asr:score -- file.srt --lang zh [--ref ..] chấm một SRT của bất kỳ nhà cung cấp nào (chữ/giây, câu thưa, câu bịa, lệch ngôn ngữ, lặp, CER/WER); GROQ_API_KEY=... npm run asr:bench so biến thể prompt (default/noprompt/noguard/guard) × model trên clip trong eval/asr/cases.json, thoát mã 1 nếu bản default HỎNG. Prompt chỉ đi qua đường Groq Whisper; các nhà cung cấp khác không dùng prompt nên v5.17.6 không ảnh hưởng. Chưa chạy với Groq thật; đáp án mẫu chưa duyệt tay. Xem eval/asr/README.md.",
+  },
+  {
+    version: "5.17.6",
+    time: "20/11/2026",
+    area: "khac",
     text: "Sửa lỗi Whisper large-v3 bỏ lời: ASR_GUARD (câu tiếng Anh «Ignore breathing… Only transcribe clear words…») nay chỉ gửi cho thể loại sex/softcore/adult (ASR_GUARD_GENRES ở text.ts); các thể loại khác chỉ gửi tên phim + thuật ngữ. Số đo của Chủ trên clip «Tiểu hòa thượng»: prompt đủ 2 câu; ?asrtest=noprompt 11 câu đúng; ?asrtest=noguard 11 câu, giống hệt noprompt; chunk15 xấu hơn (ảo giác, lặp ở chỗ nối) nên GIỮ CHUNK_SECONDS 60. asrPrompt(title, gloss, genre) nhận thêm thể loại ở cả 4 chỗ gọi trong use-pipeline.ts. CHƯA kiểm: phim 18+ thật vẫn dùng ASR_GUARD nên có thể vẫn bị bỏ lời; cần clip 18+ để thử ?asrtest=noguard. Khách thấy qua CHANGELOG 5.17.6.",
   },
   {

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "tieu-hoa-thuong",
+    "audio": "eval/asr/audio/tieu-hoa-thuong.mp4",
+    "lang": "zh",
+    "genre": "auto",
+    "title": "Tiểu hòa thượng",
+    "gloss": "",
+    "reference": "eval/asr/tieu-hoa-thuong/ref-noprompt-11.srt",
+    "referenceStatus": "chưa duyệt tay: lấy từ kết quả large-v3 không prompt (nghi chữ cuối «后天/后点»); người rành tiếng Trung nên sửa lại"
+  }
+]
