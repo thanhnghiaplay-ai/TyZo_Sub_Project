@@ -15,7 +15,7 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.17.7 (đẩy chính thức 20/11/2026). `work` đã hơn `main`. |
+| Bản khách đang dùng | Nhánh `main` = v5.18.1 (đẩy chính thức 20/11/2026). `main` = `work`. |
 | Bản mới nhất | v5.18.1 trên `work`: điện thoại hết chỗ đè (dock, Ví, thanh Admin); thẻ khách gập đủ sáu mục. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-18.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
