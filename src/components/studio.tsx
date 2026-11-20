@@ -3,7 +3,7 @@ import { StudioDock } from "@/components/studio-dock";
 import { ToolWheel } from "@/components/tool-wheel";
 import { isStudioSheet } from "@/lib/studio-layout";
 import { TOOL_ICON } from "@/lib/tool-icon";
-import { nextTool } from "@/lib/tool-wheel";
+import { WHEEL_ORDER, nextTool, type WheelId } from "@/lib/tool-wheel";
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { BackButton } from "@/components/back-button";
@@ -480,7 +480,7 @@ const TOOLS = [
   ["check", TOOL_NAME.check],
 ] as const;
 
-/** Chức năng thêm: chỉ Thuật ngữ (cùng nhóm «Dịch bình thường» trên menu). Cách trả nằm trong mục «Cách trả». */
+/** Chức năng thêm: chỉ Thuật ngữ (cùng nhóm «Dịch bình thường» trên menu). Cách trả và model nằm trong «Cài đặt dịch» (Menu, không lướt bằng nút vàng). */
 const ADVANCED_TOOLS = [
   ["thuatngu", TOOL_NAME.thuatngu],
 ] as const;
@@ -777,7 +777,7 @@ export function Studio() {
       id: "sub",
       label: MENU_GROUP.normal,
       badge: railBadge(service.status, "normal"),
-      children: [...TOOLS, ...ADVANCED_TOOLS].map(([id, label]) => ({
+      children: [...WHEEL_ORDER, "key" as const].map((id) => [id, TOOL_NAME[id]] as const).map(([id, label]) => ({
         id: `tool-${id}`,
         domId: `tool-tab-${id}`,
         label,
@@ -862,7 +862,7 @@ export function Studio() {
       onHome={() => { setProduct("sub"); setForced(false); }}
       onLive={() => void navigate({ to: "/dich-truc-tiep" })}
       onWallet={() => setProduct("account")}
-      wheel={<ToolWheel labels={TOOL_NAME} currentId={toolTab} onChange={setToolTab} onPress={openTool} progress={app.running && app.stages ? app.stages.percent : null} />}
+      wheel={<ToolWheel labels={TOOL_NAME} currentId={(WHEEL_ORDER as readonly string[]).includes(toolTab) ? (toolTab as WheelId) : "phim"} onChange={setToolTab} onPress={openTool} progress={app.running && app.stages ? app.stages.percent : null} />}
     />
     <main className="studio-shell">
       <header className="grid shrink-0 gap-1">
@@ -1178,6 +1178,9 @@ export function Studio() {
               </span>
             </label>
           ))}
+        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
+          <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao: model và nhận dạng</summary>
+          <div className="grid gap-3 pt-2">
         {!lockTurnModels && (
         <>
         <div className="flex items-center justify-between gap-2">
@@ -1261,6 +1264,8 @@ export function Studio() {
           <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
           <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
         </Select>
+          </div>
+        </details>
       </section>
 
       <section id="tool-phim" role="region" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">

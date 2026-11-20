@@ -1,3 +1,8 @@
+## BÀN GIAO (20/11/2026, nhánh work) — SẮP XẾP LẠI TRANG KHÁCH, BƯỚC 2/5 XONG: CÀI ĐẶT DỊCH Ở MENU, NÚT VÀNG CÒN 5 (v5.13.0) — đọc mục này đầu tiên
+Kế hoạch 5 bước và bản đồ chức năng: xem mục «BƯỚC 1/5» ngay bên dưới. Bước 2 xong: `WHEEL_ORDER` (tool-wheel.ts) = phim, cast, thuatngu, voice, check (bỏ key); `nextTool(id: string)`; `TOOL_NAME.key` = «Cài đặt dịch» (menu: Dịch bình thường → … → Cài đặt dịch; chip «Trả bằng» và bảng lệnh vẫn mở nó); trong tab này Cách trả + ô key hiện sẵn, còn Cách dịch/model/Nhận dạng giọng/ô tick/Số luồng gập trong «Nâng cao: model và nhận dạng» (đóng sẵn). Sửa tour-steps, tool-icon, tool-wheel.test, studio-layout.test. 
+CHƯA KIỂM: chưa chụp thử giao diện; người dùng chỉ dùng key riêng có thể không thấy ô chọn model vì đã gập (mặc định tự chọn, nhưng chưa thử với key thật).
+VIỆC TIẾP THEO: bước 3 = rút gọn tab Phim (gập «Tùy chọn thêm»: Âm thanh riêng, file lớn, Phân tích phim, Yêu cầu thêm) và dính nút Tải và dịch ở đáy tab; bước 4 = gộp Nhân vật + Thuật ngữ thành «Ngữ cảnh» (nút vàng còn 4); bước 5 = bố cục máy tính bảng/máy tính + 3 mức cỡ chữ.
+
 ## BÀN GIAO (20/11/2026, nhánh work) — SẮP XẾP LẠI TRANG KHÁCH, BƯỚC 1/5 XONG: NÚT (i) (v5.12.0) — đọc mục này đầu tiên
 KẾ HOẠCH 5 BƯỚC (Chủ đã duyệt, làm lần lượt, test + đẩy `work` sau mỗi bước, không hỏi lại): mục tiêu trang khách đơn giản nhưng đủ tính năng; ghi chú gom vào (i); gom nhóm hợp lý. Bản đồ chức năng đã chốt:
 - Phim (màn chính): chọn video/link, Nhận diện ngôn ngữ, Dịch sang, Thể loại, nút Tải và dịch dính đáy, chip «Trả bằng». Gập «Tùy chọn thêm»: Âm thanh riêng, file lớn/MKV/AC3, Phân tích phim, Yêu cầu thêm.

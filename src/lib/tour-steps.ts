@@ -35,7 +35,7 @@ export const TOUR_PAGE: Record<TourId, TourPage> = {
 export const TOURS: Record<TourId, TourStep[]> = {
   "quick-start": [
     { sel: "[data-tour=drop]", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
-    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở mục Cách trả: dùng key Groq của bạn, hoặc trả theo lượt bằng Token dịch đã mua." },
+    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở mục Cài đặt dịch: dùng key Groq của bạn, hoặc trả theo lượt bằng Token dịch đã mua." },
     { sel: "#tool-tab-phim", rail: true, press: true, title: "3. Chọn phim", text: "Mở Phim để chọn ngôn ngữ và thể loại." },
     { sel: "[data-tour=run]", title: "4. Dịch", text: "Bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
     { sel: "[data-tour=export]", title: "5. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
@@ -69,7 +69,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   ],
   "key-groq": [
     { title: "1. Lấy key ở nhà cung cấp", text: "Groq: mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Alibaba, Deepgram, AssemblyAI, Speechmatics và Soniox cũng tạo key theo cách tương tự ở trang của họ, chỉ cần khi bạn dùng nhà đó. Các trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
-    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Mở mục Cách trả", text: "Mục này có ô dán key." },
+    { sel: "#tool-tab-key", rail: true, press: true, title: "2. Mở mục Cài đặt dịch", text: "Mục này có ô dán key." },
     { sel: "[data-tour=key-input]", title: "3. Dán key", text: "Dán key Groq vào ô này hoặc bấm nút dán. Dưới đó là ô key của Alibaba, Deepgram, AssemblyAI, Speechmatics và Soniox. Key chỉ lưu trên máy này. Dán key Groq xong app tự kiểm tra key và model." },
   ],
   "mat-khau": [

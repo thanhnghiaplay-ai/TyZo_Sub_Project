@@ -39,7 +39,7 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(src.includes("Tự nhận dạng"), false);
   });
 
-  it("cách trả và gói trả theo lượt nằm trong mục Cách trả, Thuật ngữ cùng nhóm Dịch bình thường", () => {
+  it("cách trả và gói trả theo lượt nằm trong Cài đặt dịch (Menu), Thuật ngữ cùng nhóm Dịch bình thường", () => {
     assert.equal(phim.includes("Thuật ngữ thể loại"), false);
     assert.equal(phim.includes("<GlossaryEditor"), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
@@ -48,7 +48,8 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(source.includes('id="tool-goi-dich"'), false);
     const thuat = source.slice(source.indexOf('id="tool-thuatngu"'));
     assert.match(thuat, /Thuật ngữ thể loại[\s\S]*<GlossaryEditor/);
-    assert.match(source, /label: MENU_GROUP\.normal[\s\S]{0,400}\[\.\.\.TOOLS, \.\.\.ADVANCED_TOOLS\]/);
+    assert.match(source, /label: MENU_GROUP\.normal[\s\S]{0,400}\[\.\.\.WHEEL_ORDER, "key" as const\]/);
+    assert.match(key, /Nâng cao: model và nhận dạng/);
     assert.equal(source.includes('id: "nang-cao"'), false);
     assert.match(source, /hidden=\{toolTab !== "thuatngu"\}/);
   });
@@ -195,8 +196,8 @@ describe("Bước 7.1 — không chồng khung", () => {
 });
 
 describe("Bước 7.2 — tab theo thứ tự dùng", () => {
-  it("Cách trả, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
-    assert.deepEqual([TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check], ["Cách trả", "Phim", "Nhân vật", "Thuyết minh", "Kiểm tra"]);
+  it("Cài đặt dịch, Phim, Nhân vật; ngữ cảnh đóng và không mất dữ liệu", () => {
+    assert.deepEqual([TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check], ["Cài đặt dịch", "Phim", "Nhân vật", "Thuyết minh", "Kiểm tra"]);
     const keys = ["key", "phim", "cast", "voice", "check"];
     const at = keys.map((key) => source.indexOf(`["${key}", TOOL_NAME.`));
     assert.ok(at.every((index) => index >= 0), at.join(","));

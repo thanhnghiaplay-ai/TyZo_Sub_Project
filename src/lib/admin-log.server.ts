@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.13.0",
+    time: "20/11/2026",
+    area: "khac",
+    text: "Bước 2 sắp xếp lại trang khách: bỏ «key» khỏi WHEEL_ORDER (nút vàng còn 5 công cụ), nextTool nhận string, TOOL_NAME.key đổi thành «Cài đặt dịch» (đổi cả tour-steps, guide qua keyTab), TOOL_ICON nhận thêm «key». Menu Dịch bình thường dựng từ WHEEL_ORDER + key. Tab Cài đặt dịch: Cách trả và ô key hiện sẵn; Cách dịch, model, Nhận dạng giọng, ô tick, Số luồng gập trong «Nâng cao: model và nhận dạng» (details đóng). Chip «Trả bằng» ở tab Phim vẫn mở tab này. Sửa tool-wheel.test.ts và studio-layout.test.ts.",
+  },
+  {
     version: "5.12.0",
     time: "20/11/2026",
     area: "khac",

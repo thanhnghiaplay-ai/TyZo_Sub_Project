@@ -4,13 +4,13 @@
  * Vị trí `pos` là số thực: số nguyên = đang đúng một công cụ; danh sách xoay vòng.
  */
 
-/** Thứ tự lướt theo luồng làm việc: dịch, chỉnh, hoàn thiện; Cách trả (chọn một lần) ở cuối. */
-export const WHEEL_ORDER = ["phim", "cast", "thuatngu", "voice", "check", "key"] as const;
+/** Thứ tự lướt theo luồng làm việc: dịch, chỉnh, hoàn thiện. Cài đặt dịch (chọn một lần) nằm ở Menu, không lướt. */
+export const WHEEL_ORDER = ["phim", "cast", "thuatngu", "voice", "check"] as const;
 export type WheelId = (typeof WHEEL_ORDER)[number];
 
-/** Công cụ kế tiếp theo luồng làm việc (cho dòng «Tiếp theo: …»); công cụ cuối (Cách trả) thì không có. */
-export function nextTool(id: WheelId): WheelId | null {
-  const i = WHEEL_ORDER.indexOf(id);
+/** Công cụ kế tiếp theo luồng làm việc (cho dòng «Tiếp theo: …»); công cụ cuối và Cài đặt dịch thì không có. */
+export function nextTool(id: string): WheelId | null {
+  const i = (WHEEL_ORDER as readonly string[]).indexOf(id);
   return i >= 0 && i < WHEEL_ORDER.length - 1 ? WHEEL_ORDER[i + 1] : null;
 }
 
@@ -36,7 +36,10 @@ export function wheelOffset(index: number, pos: number, n: number): number {
 }
 
 /** Dáng một icon theo độ lệch: đúng giữa thì to và rõ, càng xa càng nhỏ và mờ, quá một ô thì tắt dần. */
-export function wheelSlot(offset: number, spacing = WHEEL_SPACING): { x: number; scale: number; opacity: number } {
+export function wheelSlot(
+  offset: number,
+  spacing = WHEEL_SPACING,
+): { x: number; scale: number; opacity: number } {
   const a = Math.abs(offset);
   const t = Math.min(1, a);
   return {

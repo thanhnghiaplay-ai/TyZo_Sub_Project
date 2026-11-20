@@ -3,7 +3,7 @@
  * hướng dẫn (guide-topics.ts) và tour dùng chung, đổi tên thì đổi ở đây.
  */
 export const TOOL_NAME = {
-  key: "Cách trả",
+  key: "Cài đặt dịch",
   phim: "Phim",
   cast: "Nhân vật",
   voice: "Thuyết minh",

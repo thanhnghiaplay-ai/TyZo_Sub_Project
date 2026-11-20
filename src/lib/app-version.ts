@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.12.0";
+export const APP_VERSION = "5.13.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.13.0",
+    time: "20/11/2026",
+    title: "Cách trả chuyển sang mục Cài đặt dịch trong Menu; nút vàng gọn còn 5 công cụ.",
+    points: [
+      "Cách trả và ô dán key nằm ở Menu, mục Cài đặt dịch; bấm dòng «Trả bằng» ở tab Phim cũng mở được.",
+      "Nút vàng giữa thanh dưới chỉ lướt qua Phim, Nhân vật, Thuật ngữ, Thuyết minh, Kiểm tra.",
+      "Model dịch, nhận dạng giọng, số luồng và các ô tùy chọn gom vào mục «Nâng cao» đóng sẵn.",
+    ],
+  },
   {
     version: "5.12.0",
     time: "20/11/2026",

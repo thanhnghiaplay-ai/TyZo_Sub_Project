@@ -2,11 +2,23 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { TOOL_NAME } from "./customer-menu.ts";
-import { WHEEL_ORDER, dragToPos, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, wrapIndex, nextTool, ringDash } from "./tool-wheel.ts";
+import {
+  WHEEL_ORDER,
+  dragToPos,
+  settleDuration,
+  settleTarget,
+  wheelCurrent,
+  wheelOffset,
+  wheelSlot,
+  wrapIndex,
+  nextTool,
+  ringDash,
+} from "./tool-wheel.ts";
 
-test("thứ tự lướt theo luồng làm việc, đủ 6 công cụ không trùng", () => {
-  assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "thuatngu", "voice", "check", "key"]);
-  assert.equal(new Set(WHEEL_ORDER).size, 6);
+test("thứ tự lướt theo luồng làm việc, đủ 5 công cụ không trùng, Cài đặt dịch không lướt", () => {
+  assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "thuatngu", "voice", "check"]);
+  assert.equal(new Set(WHEEL_ORDER).size, 5);
+  assert.equal((WHEEL_ORDER as readonly string[]).includes("key"), false);
 });
 
 test("danh sách xoay vòng: quá cuối thì về đầu, lùi trước đầu thì ra cuối", () => {
@@ -60,18 +72,20 @@ test("kéo sang trái thì tiến tới công cụ kế, kéo sang phải thì l
 
 test("mọi công cụ lướt đều có tên trong TOOL_NAME, và Studio gắn nút lướt vào thanh dưới", () => {
   for (const id of WHEEL_ORDER) assert.ok(TOOL_NAME[id], id);
-  assert.equal(Object.keys(TOOL_NAME).length, WHEEL_ORDER.length);
+  assert.equal(Object.keys(TOOL_NAME).length, WHEEL_ORDER.length + 1);
+  assert.equal(TOOL_NAME.key, "Cài đặt dịch");
   const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
   assert.match(studio, /<StudioDock[\s\S]*wheel=\{<ToolWheel /);
   const dock = readFileSync(new URL("../components/studio-dock.tsx", import.meta.url), "utf8");
   assert.equal(dock.includes("onPickFile"), false);
 });
 
-test("nextTool đi theo luồng Phim → … → Cách trả, công cụ cuối không có tiếp theo", () => {
+test("nextTool đi theo luồng Phim → … → Kiểm tra; công cụ cuối và Cài đặt dịch không có tiếp theo", () => {
   assert.equal(nextTool("phim"), "cast");
-  assert.equal(nextTool("check"), "key");
+  assert.equal(nextTool("check"), null);
   assert.equal(nextTool("key"), null);
-  for (let i = 0; i < WHEEL_ORDER.length - 1; i++) assert.equal(nextTool(WHEEL_ORDER[i]), WHEEL_ORDER[i + 1]);
+  for (let i = 0; i < WHEEL_ORDER.length - 1; i++)
+    assert.equal(nextTool(WHEEL_ORDER[i]), WHEEL_ORDER[i + 1]);
   const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
   assert.match(studio, /Tiếp theo:[\s\S]{0,120}TOOL_NAME\[nextTool\(toolTab\)!\]/);
 });
