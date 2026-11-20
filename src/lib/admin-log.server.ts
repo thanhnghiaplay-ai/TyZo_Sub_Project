@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.18.2",
+    time: "20/11/2026",
+    area: "khac",
+    text: "v5.18.2, sửa dải che góc dưới khi tắt hiệu ứng (ảnh Chủ gửi). Bản 5.18.1 rút .studio-shell (điện thoại đứng) thấp hơn màn hình 11rem, nên vùng cuộn dừng giữa chừng và cắt nội dung thành một đường ngang trên dock; bật hiệu ứng thì lưới nền làm khó thấy. Nay khung cao hết màn hình, 11rem chuyển thành padding-bottom (--dock-clear): vùng nội dung vẫn dừng trên dock như cũ nhưng phần cuộn chạy xuống sau dock. Đã thử Chromium 412x760, cả hai chế độ hiệu ứng. CHƯA bấm thử trên điện thoại thật.",
+  },
+  {
     version: "5.18.1",
     time: "20/11/2026",
     area: "khac",

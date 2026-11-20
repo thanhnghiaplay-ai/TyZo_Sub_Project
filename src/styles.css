@@ -1129,15 +1129,17 @@ html[data-fx="off"] .pay-end-spark {
   }
 }
 
-/* Điện thoại đứng: khung dừng trên dock và nhãn bánh xe, để «Bản dịch» và nút Sửa không bị đè. */
+/*
+ * Điện thoại đứng: phần nội dung dừng trên dock và nhãn bánh xe, để «Bản dịch» và nút Sửa không bị đè.
+ * Khung vẫn cao hết màn hình, khoảng chừa nằm ở đệm dưới: nội dung cuộn xuống tận đáy (sau dock),
+ * không bị cắt ngang thành một dải trống phía trên dock (lộ rõ khi tắt hiệu ứng).
+ */
 @media (max-width: 699px) and (orientation: portrait) {
   .studio-shell {
     --chrome: 12.5rem;
     --dock-clear: calc(11rem + env(safe-area-inset-bottom, 0px));
     gap: 0.35rem;
-    height: calc(100 * var(--vh) - var(--dock-clear));
-    max-height: calc(100 * var(--vh) - var(--dock-clear));
-    padding-bottom: 0.5rem;
+    padding-bottom: var(--dock-clear);
   }
 
   .studio-shell > header h1 {
@@ -3088,10 +3090,10 @@ html[data-motion="off"] :where(*)::after {
   }
 }
 
-/* Điện thoại đứng: khung đã thấp hơn dock (khối portrait phía trên). Không cộng thêm đệm 6.25rem. */
+/* Điện thoại đứng: đệm dưới là --dock-clear (khối portrait phía trên), không dùng 6.25rem. */
 @media (max-width: 699px) and (orientation: portrait) {
   .studio-shell {
-    padding-bottom: 0.5rem;
+    padding-bottom: var(--dock-clear);
   }
 }
 
