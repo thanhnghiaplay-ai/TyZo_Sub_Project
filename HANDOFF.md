@@ -1,3 +1,6 @@
+## ĐÃ ĐẨY CHÍNH THỨC (20/11/2026) — `main` = `work` (v5.17.4)
+Chủ nói đúng câu «đẩy chính thức». `main` được kéo thẳng (fast-forward) từ `0fca538` (v5.17.2) lên cùng commit với `work`, gồm: giá thuê phòng chỉnh được (v5.17.3) và tách câu dài cho Groq/Whisper (v5.17.4). Trước khi đẩy: typecheck sạch, eslint 0 lỗi, `npm test` 198 + 1255 pass, `npm run build` thành công. Từ nay `main` và `work` cùng ở bản mới; các câu «KHÔNG đẩy `main` (đang ở `0fca538`)» ở các mục bên dưới đã cũ. Việc đẩy `main` lần sau vẫn chỉ làm khi Chủ nói đúng câu «đẩy chính thức».
+
 ## BÀN GIAO (20/11/2026, nhánh work) — GROQ CHỈ RA 3 CÂU: ĐÃ SỬA VỀ MÃ (v5.17.4), CHƯA KIỂM VỚI GROQ THẬT — đọc mục này đầu tiên
 CHỦ BÁO: video «Tiểu hòa thượng» (34 giây, thoại liền mạch, khoảng 15 đến 17 câu thật) nhận dạng bằng Groq chỉ ra 3 câu; Alibaba cũng từng như vậy, sau khi sửa (`splitLongSegment` trong `ali-filetrans.ts`) ra 15 câu. Đã dò file video: không có quãng lặng ≥ 0,25 giây ở -35 dB (trừ 0,28 giây cuối file), nên Whisper không có chỗ cắt segment.
 NGUYÊN NHÂN: `ingestAsrPart` (`src/lib/sub/diagnostics.ts`) đưa NGUYÊN từng segment Whisper vào phụ đề. Whisper cắt segment theo quãng lặng/cửa sổ, không theo câu, nên thoại liền mạch thành vài segment dài, mỗi segment gồm nhiều câu. Đường Alibaba đã có bước tách, đường Whisper chưa.
