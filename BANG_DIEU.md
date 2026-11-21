@@ -46,12 +46,12 @@ Không có việc đẩy dở. `HANDOFF.md` mục 2 không còn việc mở (Ch�
 
 Làm lần lượt khi người dùng yêu cầu. Mục nào xong thì xóa khỏi danh sách này, không gạch và không giữ lại.
 
-1. Gắn tên miền gửi trên Resend. Chưa gắn thì thư chỉ tới email đã đăng ký Resend.
+1. Dự phòng, không bắt buộc (Chủ nói 21/11/2026: đang gửi bằng email cá nhân qua SMTP, Resend và nhà khác chỉ để dự phòng). Gắn tên miền trên Resend khi nào muốn dùng. Lưu ý: app chỉ gửi bằng MỘT đường, không tự chuyển sang dự phòng khi đường chính lỗi. Đường đã lưu ở Admin → Thư thắng; không lưu thì lấy biến môi trường theo thứ tự Resend, SendGrid, Brevo, Mailgun, Postmark, SMTP, nên đặt `RESEND_API_KEY` trên Vercel sẽ giành chỗ SMTP.
 2. Thử xác minh, chưa bật chặn. Bật gửi thư xác minh, nhận thư, bấm liên kết, đăng nhập lại.
 3. Thử quên mật khẩu. Bật công tắc, nhận thư, đặt mật khẩu mới, đăng nhập bằng mật khẩu đó.
 4. Bật chặn chỉ sau khi email Chủ đã xác minh. Bật sớm thì tài khoản chưa xác minh không vào được.
 
-Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này.
+Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này. Mục 5 cũ (thư khi đổi mật khẩu trong trang tài khoản) đã làm ở v5.26.0.
 
 ## Ý đã nêu
 
