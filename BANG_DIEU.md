@@ -58,6 +58,8 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-21 | Người dùng chốt | Khi đề xuất hay sửa phải vào vai người dùng, xét sửa chỗ này đụng tới chỗ nào khác, để ai cũng dùng mượt và ổn định | Làm ngay | Đã ghi thành mục «CÁCH NGHĨ KHI ĐỀ XUẤT VÀ KHI SỬA» ở `huongdan.txt` (A–E), áp cho mọi vai |
+| 2026-11-21 | Người dùng chốt | Sắp lại trang khách. Chưa biết khách đông ở cách trả nào (chưa công bố). Thuê phòng chưa có key thì dẫn sang hướng dẫn lấy key hoặc trả theo lượt | Làm theo giai đoạn | Đề xuất 4 đợt, chờ user nói «làm đợt 1» |
 | 2026-11-21 | Người dùng chốt | Hạn chế tối đa pháp lý bản quyền video, như công cụ SaaS AI theo nhu cầu. Chọn: bỏ «phim mới chiếu», gộp 3 loại người lớn thành «Phim có nhãn 18+»; giữ lưu tên tệp như cũ; xác nhận quyền mỗi tệp một lần; đổi toàn bộ cách gọi | Làm ngay | Đã vào `work` và `main` trong v5.20.0 (đẩy chính thức 21/11/2026). Điều khoản 2026-11-21.1. Nên nhờ luật sư xem điều khoản |
 | 2026-11-20 22:30 | Người dùng chốt | Model dịch, nhận dạng và mọi chức năng dùng model phải theo nhiều nhà cung cấp, phân loại model theo nhà và việc làm được; nhà mới thêm sau cũng vậy. «Claude sửa» | Làm ngay | Đã vào `work` và `main` trong v5.19.0 (đẩy chính thức 20/11/2026). Điều khoản 2026-11-20.1. Thuyết minh (đọc giọng) vẫn mỗi nhà một đường riêng, chưa gom |
 | 2026-11-18 22:23 | Người dùng chốt | Rút gọn năm đoạn nhà nhận dạng trong phòng dịch thành một đoạn | Làm ngay | Đã vào work trong v5.6.1. Không đổi điều khoản |

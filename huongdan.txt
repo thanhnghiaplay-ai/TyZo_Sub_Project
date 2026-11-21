@@ -12,10 +12,10 @@ App đang chạy là React. Không có file HTML standalone. Không tạo lại 
 - Số phiên bản người dùng thấy trên `work`: v5.20.1. Code trong src/lib/app-version.ts. Bảng giá model cho Chủ cũng đã ở `main`, không nâng số phiên bản.
 - Trang Hướng dẫn /huong-dan: nội dung ở src/lib/guide-topics.ts. Đổi tên nút ở app thì sửa bảng UI trong file đó (guide-topics.test.ts báo khi lệch). Giá, hạn dùng thử lấy từ hằng số, không chép số vào chữ. Liên hệ hỗ trợ do Chủ nhập ở tab Cấu hình, không nằm trong code.
 - Điều khoản: chữ ở src/components/terms-document.tsx, TERMS_VERSION = 2026-11-21.1 ở src/lib/terms.ts. Khách tích «Tôi đồng ý Điều khoản và Chính sách» ở Đăng ký/Đăng nhập (login.tsx); liên kết điều khoản chỉ còn ba chỗ: ô tích đó, menu trái, trang Tài khoản; trang /dieu-khoan đọc bất cứ lúc nào; entry-gate.tsx chỉ hỏi lại người đã có tài khoản khi TERMS_VERSION đổi. Đổi chữ điều khoản thì nâng TERMS_VERSION và thêm dấu vân tay mới trong entry-gate.test.ts.
-- Trả theo lượt, dịch trực tiếp và Orpheus khi dùng key của phòng: trừ Token dịch đã mua, không giữ số dư. Mua gói và thuê phòng bằng mã QR đúng giá, không nạp ví. Hết hạn thì phần còn mất, không hoàn tiền. Thuê phòng vẫn 9.000 / 39.000 / 99.000, giá tay. Neural và giọng máy không trừ. Không còn giá riêng từng model. Giá Alibaba lấy bảng Singapore khi đọc được. Gói nhận dạng Alibaba dùng key Alibaba của phòng. Cần link file trực tiếp, không phải trang xem. Dịch vẫn bằng Groq. Việc Alibaba ngoài nhận dạng chưa chạy.
+- Trả theo lượt, dịch trực tiếp và Orpheus khi dùng key của phòng: trừ Token dịch đã mua, không giữ số dư. Mua gói và thuê phòng bằng mã QR đúng giá, không nạp ví. Hết hạn thì phần còn mất, không hoàn tiền. Thuê phòng vẫn 9.000 / 39.000 / 99.000, giá tay. Neural và giọng máy không trừ. Không còn giá riêng từng model. Giá Alibaba lấy bảng Singapore khi đọc được. Gói nhận dạng Alibaba dùng key Alibaba của phòng. Cần link file trực tiếp, không phải trang xem. Dịch chạy bằng mọi nhà có khả năng dịch (Groq, Alibaba Qwen; v5.19.0, xem PROVIDERS.md).
 - Thư còn lại, làm khi được yêu cầu, xong thì xóa mục trong `BANG_DIEU.md` mục «Thư — còn lại»: gắn tên miền Resend; thử xác minh chưa bật chặn; thử quên mật khẩu; bật chặn sau khi email Chủ đã xác minh; thư khi đổi mật khẩu trong trang tài khoản.
 - Giá đã chốt: 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày. Key Groq là của khách.
-- Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub.
+- Dùng thử: đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file phụ đề.
 - Nghe / thuyết minh mặc định bật. Khách tắt thì lần sau giữ tắt.
 - Có quyền Hỗ trợ, Quản lý hoặc Chủ thì thấy nút Quản lý cạnh Tài khoản. Trang Admin là /admin, không nằm trong phòng người dùng thường.
 - Kho GitHub: thanhnghiaplay-ai/TyZo_Sub_Project. Sửa trên nhánh work. Nhánh main chỉ đổi khi user nói «đẩy chính thức». Không ghi token vào file. Quy trình ba vai nằm ở BANG_DIEU.md.
@@ -25,6 +25,27 @@ TRƯỚC KHI LÀM
 2. Với file code lớn, dùng grep và đọc đúng đoạn liên quan, không đọc lại cả file.
 3. Làm đúng việc user vừa yêu cầu trong lượt này. Không tự làm bước kế. Hàng đợi mục 10 đã đánh dấu xong thì không làm lại. Làm đúng vai của mình trong `BANG_DIEU.md`.
 4. Mục 13.2 (chủ web giữ key Groq, tính tiền theo phút, dán link tải video) không được code trừ khi user yêu cầu đúng phần đó. Mục 13.5 (thuê phòng, key của khách) đã gắn vào app. Cửa trả theo lượt đã giữ và trừ ví. Sửa webapp đang chạy ưu tiên trước.
+
+CÁCH NGHĨ KHI ĐỀ XUẤT VÀ KHI SỬA (user đặt 2026-11-21, áp cho mọi đề xuất và mọi lần sửa)
+Mục tiêu: ai dùng cũng mượt và ổn định. Trước khi đề xuất hay sửa, VÀO VAI người dùng và đi hết các bước dưới. Báo cáo nêu ngắn đã xét những gì.
+A. Vào vai, đi hết đường:
+   - Năm kiểu khách: xem phim bộ tiếng Trung; làm phụ đề, thuyết minh thường xuyên; học ngoại ngữ; ít rành công nghệ, chủ yếu dùng điện thoại; dùng nâng cao, cộng tác viên. Thêm Chủ và nhân viên ở Admin.
+   - Mỗi trạng thái: chưa đăng nhập; dùng thử; thuê phòng có key và chưa có key; trả theo lượt còn và hết Token; gói hết hạn; đang chạy dở; mất mạng; nhà cung cấp lỗi hay hết hạn mức.
+B. Hỏi «sửa chỗ này thì đụng tới đâu»:
+   - Cùng thành phần, cùng chữ, cùng hàm còn dùng ở đâu (grep), kể cả trang Admin, Hướng dẫn, tour, test bố cục.
+   - Dữ liệu đã lưu: kho trên máy khách, cơ sở dữ liệu, cài đặt Admin. Đổi mã hay tên thì phải chuyển dữ liệu cũ (ví dụ currentGenre, migration).
+   - Cả HAI cách trả (Thuê phòng key khách, Trả theo lượt key phòng) và MỌI nhà cung cấp: đi qua bảng chung (PROVIDERS, model-catalog, price-rows, room-turn), không viết riêng một nhà.
+   - Giao diện sáng và tối, bật và tắt hiệu ứng, điện thoại đứng (cả màn thấp khi có thanh trình duyệt), điện thoại ngang, máy tính bảng, máy tính.
+   - Điều khoản, Hướng dẫn, CHANGELOG, tiền và Token: đổi dịch vụ thì sửa cùng lúc (mục 12b). Gom các lần đổi điều khoản lại, tránh bắt khách đồng ý lại liên tục.
+C. Ổn định khi dùng:
+   - Không chặn cứng khi còn lối khác; luôn chỉ bước tiếp theo (ví dụ thuê phòng chưa có key: Lấy key, Thêm key, hoặc Dùng Token lần này).
+   - Câu báo nêu rõ thiếu gì, của nhà nào, bấm đâu để sửa. Không câu chung chung.
+   - Không mất việc đang làm. Lỗi mạng hay lỗi nhà cung cấp thì không trừ tiền, không trừ lượt.
+D. Kiểm thật trước khi báo xong: chụp điện thoại sáng và tối (cả màn thấp), bấm thử luồng chính bằng trình duyệt, chạy tsc, lint, test. Ghi rõ cái chưa thử (máy thật, key thật, tiền thật).
+E. Bài học đã gặp (đừng lặp):
+   - Dock: v5.18.1 rút khung trên dock sinh dải cắt ngang khi tắt hiệu ứng; v5.18.2 cho nội dung chạy dưới dock lại lộ quanh mép thanh ở giao diện sáng; v5.20.1 mới gọn (nền mờ sau thanh). Sửa bố cục phải chụp đủ sáng/tối, bật/tắt hiệu ứng, màn thấp.
+   - «Model này không có trong cửa trả theo lượt»: sửa riêng Groq là sai; phải làm chung mọi nhà (v5.19.0).
+   - Hàng nút đầu trang không co, tràn 30 px trên điện thoại 412 px (v5.20.1). Hàng nút mới phải cho xuống dòng hoặc co.
 
 PHẠM VI
 5. Không viết lại cả ứng dụng. Không sửa chức năng không liên quan. Ưu tiên giữ nguyên chức năng đang chạy.
