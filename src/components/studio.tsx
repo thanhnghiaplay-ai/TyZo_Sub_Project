@@ -62,7 +62,7 @@ import { PickerSelect } from "@/components/picker-select";
 import { InfoTip } from "@/components/info-tip";
 import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
-import { tourSeen } from "@/components/tour-seen";
+import { markSeen, tourSeen } from "@/components/tour-seen";
 import { guideTopics } from "@/lib/guide-topics";
 import { takeTourRequest } from "@/lib/tour-request";
 import type { TourId } from "@/lib/tour-steps";
@@ -533,6 +533,7 @@ export function Studio() {
   const pickedFile = app.file || app.audioFile;
   const thumb = useFileThumb(pickedFile);
   const [tourOpen, setTourOpen] = useState(false);
+  const [tourOffer, setTourOffer] = useState(false);
   const [tourId, setTourId] = useState<TourId>("quick-start");
   // «Chỉ tôi» ở trang Hướng dẫn gửi yêu cầu qua sessionStorage. Đọc một lần, giữ trong ref để chạy lại hiệu ứng (StrictMode) không làm mất.
   const askedTour = useRef<TourId | null | undefined>(undefined);
@@ -543,9 +544,8 @@ export function Studio() {
       const asked = window.setTimeout(() => setTourOpen(true), 500);
       return () => window.clearTimeout(asked);
     }
-    if (tourSeen()) return;
-    const timer = window.setTimeout(() => setTourOpen(true), 900);
-    return () => window.clearTimeout(timer);
+    // v5.32.2: không tự mở hướng dẫn nhanh lần đầu (chồng lên chọn cách trả, câu hỏi lần đầu). Hiện dòng mời ở trang chủ.
+    if (!tourSeen()) setTourOffer(true);
   }, []);
   // Câu đang sửa nhớ theo nội dung, không theo số thứ tự: câu mới chen vào danh sách thì ô sửa không nhảy sang câu khác.
   const [editKey, setEditKey] = useState<{ start: number; end: number; original: string } | null>(null);
@@ -1252,6 +1252,20 @@ export function Studio() {
                 onRetry={() => window.dispatchEvent(new Event("tyzo-room-refresh"))}
               />
               {shouldAsk(useAnswer, money.on ? pay.kind : "off") && <FirstAskCard onAnswer={answerUse} />}
+              {/* Một lời mời một lúc: chỉ mời xem hướng dẫn khi không còn câu chọn cách trả hay câu hỏi lần đầu. */}
+              {tourOffer && !tourOpen && pay.kind !== "choose" && !shouldAsk(useAnswer, money.on ? pay.kind : "off") && (
+                <div data-tour-offer className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-card)] border border-line bg-card px-4 py-2 text-sm">
+                  <span>Lần đầu dùng? Xem hướng dẫn 30 giây.</span>
+                  <span className="flex gap-2">
+                    <button type="button" className="min-tap rounded-full bg-accent px-3 font-semibold text-ink" onClick={() => { setTourId("quick-start"); setTourOpen(true); setTourOffer(false); }}>
+                      Xem
+                    </button>
+                    <button type="button" className="min-tap rounded-full border border-line px-3 text-muted" onClick={() => { markSeen(); setTourOffer(false); }}>
+                      Ẩn
+                    </button>
+                  </span>
+                </div>
+              )}
             </div>
           }
           extra={payByRoom ? <MoneyEstimate money={money} /> : null}

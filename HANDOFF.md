@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.32.1 trên `work`**; `main` v5.32.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.32.2 trên `work`**; `main` v5.32.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.32.2**: Mục 4: bỏ tự mở hướng dẫn nhanh, thay dòng mời Xem/Ẩn sau khi xong chọn cách trả và câu hỏi lần đầu. tsc sạch, test pass.
 - **v5.32.1**: Mục 2: nhắc giữ trang mở, hỏi lại khi đóng/tải lại trang lúc chạy, nhắc Tiếp tục khi quay lại từ nền (giữ màn hình sáng đã có sẵn). tsc sạch, test pass.
 - **Đẩy chính thức v5.32.0**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.32.0. Migration 0030 (provider_spend) chạy khi deploy; sổ từng nhà bắt đầu ghi từ lúc này. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1395 pass, vite build xong.
 - **v5.32.0**: Ô «Lời hay lỗ» đầu trang Doanh thu + sổ tiền phải trả từng nhà × model (provider_spend, ghi lúc gọi ở mọi cửa key phòng), cảnh báo lỗ nếu khách dùng hết Token còn hạn. tsc sạch, test 191 + 1395 pass. Sổ từng nhà bắt đầu từ lúc deploy; trước đó ước theo Token.

@@ -79,3 +79,12 @@ describe("v5.32.1: giữ lượt chạy khi điện thoại chuyển ứng dụn
     assert.match(studio, /Date\.now\(\) - hiddenAt > 20_000/);
   });
 });
+
+describe("v5.32.2: lần đầu vào chỉ một lời mời một lúc", () => {
+  it("không tự mở hướng dẫn nhanh; mời xem khi không còn câu chọn cách trả hay câu hỏi lần đầu", () => {
+    assert.doesNotMatch(studio, /window\.setTimeout\(\(\) => setTourOpen\(true\), 900\)/);
+    assert.match(studio, /if \(!tourSeen\(\)\) setTourOffer\(true\);/);
+    assert.match(studio, /tourOffer && !tourOpen && pay\.kind !== "choose" && !shouldAsk\(/);
+    assert.match(studio, /markSeen\(\); setTourOffer\(false\);/);
+  });
+});

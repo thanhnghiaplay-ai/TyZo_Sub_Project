@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.32.2",
+    time: "20:16 21/11/2026",
+    area: "khac",
+    text: "v5.32.2, mục 4. Bỏ tự mở hướng dẫn nhanh 900 ms sau khi vào (chồng lên PayStatusBar choose và FirstAskCard). tourOffer: chưa xem (tourSeen false) thì hiện dòng mời trong khối đầu trang chủ, chỉ khi không còn câu chọn cách trả và câu hỏi lần đầu; Xem mở tuyến quick-start, Ẩn gọi markSeen. «Chỉ tôi» từ trang Hướng dẫn vẫn tự mở như cũ (takeTourRequest). Hộp xác nhận quyền khi bấm chạy giữ nguyên (điều khoản). Kiểm dev 412 px: thứ tự chọn cách trả → câu hỏi lần đầu → lời mời; Ẩn rồi tải lại không hiện lại.",
+  },
+  {
     version: "5.32.1",
     time: "20:11 21/11/2026",
     area: "khac",
