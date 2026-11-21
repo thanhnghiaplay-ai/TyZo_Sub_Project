@@ -24,7 +24,8 @@ export const MENU_GROUP = {
 
 export const MENU_ITEM = {
   home: "Trang chủ",
-  tokens: "Token dịch",
+  /** Mở trang tài khoản: tên, Token dịch, gói, lịch sử, mật khẩu (v5.30.1: khách tìm không ra khi còn tên «Token dịch»). */
+  tokens: "Tài khoản và lịch sử",
   plans: "Thuê phòng và gói",
   partner: "Cộng tác viên",
   guide: "Hướng dẫn",

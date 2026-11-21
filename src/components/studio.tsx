@@ -837,7 +837,16 @@ export function Studio() {
       if (stepInfo(id)) setToolTab(id as ToolId);
     };
     window.addEventListener("tyzo-tab", onTab);
+    // Menu ở trang khác (Dịch trực tiếp, Hướng dẫn) dẫn về «/#vi» để mở thẳng trang tài khoản.
+    const onHash = () => {
+      if (window.location.hash !== "#vi") return;
+      setProduct("account");
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    };
+    onHash();
+    window.addEventListener("hashchange", onHash);
     return () => {
+      window.removeEventListener("hashchange", onHash);
       window.removeEventListener("tyzo-sheet", onSheet);
       window.removeEventListener("tyzo-tab", onTab);
     };
@@ -981,7 +990,7 @@ export function Studio() {
     { id: "fresh", label: "Video mới (làm lại từ đầu)", hint: "Việc", words: "reset lam lai trang chu", disabled: app.running, run: () => { app.reset(); setProduct("sub"); setForced(false); } },
     ...TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: id === "key" ? "key sub groq cach tra theo luot goi" : id === "voice" ? "nghe thuyet minh giong doc" : "phu de cong cu", run: () => openTool(id) })),
     ...ADVANCED_TOOLS.map(([id, label]) => ({ id: `tool-${id}`, label: `Mở ${label}`, hint: "Mục", words: "thuat ngu glossary the loai", run: () => openTool(id) })),
-    { id: "wallet", label: MENU_ITEM.tokens, hint: MENU_GROUP.wallet, words: "token dich goi", run: () => setProduct("account") },
+    { id: "wallet", label: MENU_ITEM.tokens, hint: MENU_GROUP.wallet, words: "tai khoan lich su giao dich token dich goi vi mat khau", run: () => setProduct("account") },
     { id: "dich-truc-tiep", label: "Dịch trực tiếp", hint: "Trang", words: "live truc tiep micro tab giong noi", run: () => void navigate({ to: "/dich-truc-tiep" }) },
     { id: "goi", label: "Thuê phòng và gói", hint: "Trang", words: "mua goi", run: () => void navigate({ to: "/goi" }) },
     { id: "ctv", label: "Cộng tác viên", hint: "Trang", run: () => void navigate({ to: "/ctv" }) },

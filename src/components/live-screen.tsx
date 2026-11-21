@@ -134,6 +134,7 @@ export function LiveScreen() {
         id: "vi-goi",
         label: MENU_GROUP.wallet,
         children: [
+          { id: "so-du", label: MENU_ITEM.tokens, href: "/", hash: "vi" },
           { id: "goi", label: MENU_ITEM.plans, href: "/goi" },
           { id: "ctv", label: MENU_ITEM.partner, href: "/ctv" },
         ],

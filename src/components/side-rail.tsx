@@ -12,6 +12,8 @@ export type RailItem = {
   current?: boolean;
   onPick?: () => void;
   href?: RailLink;
+  /** Phần sau dấu # của liên kết, ví dụ "vi" để mở trang tài khoản ở trang chủ. */
+  hash?: string;
   /** id gắn lên nút, để vùng nội dung trỏ aria-labelledby vào. */
   domId?: string;
   /** Nhãn nhỏ bên phải tên mục, ví dụ «Bảo trì». Trống thì không hiện. */
@@ -139,7 +141,7 @@ export function SideRail({ items, label, top, who }: { items: RailItem[]; label:
     const cur = item.current ? ("page" as const) : undefined;
     if (item.href) {
       return (
-        <Link key={item.id} id={item.domId} to={item.href} className={cls} aria-current={cur} onClick={() => shut(item)}>
+        <Link key={item.id} id={item.domId} to={item.href} hash={item.hash} className={cls} aria-current={cur} onClick={() => shut(item)}>
           <span>{item.label}</span>
           {item.badge && <span className="rail-badge">{item.badge}</span>}
         </Link>

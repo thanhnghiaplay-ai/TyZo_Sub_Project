@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.30.0";
+export const APP_VERSION = "5.30.1";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.30.1",
+    time: "16:45 21/11/2026",
+    title: "Dễ tìm trang tài khoản và lịch sử giao dịch.",
+    points: [
+      "Menu trái, nhóm Ví và gói, có mục Tài khoản và lịch sử, ở mọi trang.",
+      "Khối lịch sử giao dịch luôn hiện, kể cả khi chưa có giao dịch nào.",
+      "Hướng dẫn chỉ đúng tên mục trên menu.",
+    ],
+  },
   {
     version: "5.30.0",
     time: "16:33 21/11/2026",

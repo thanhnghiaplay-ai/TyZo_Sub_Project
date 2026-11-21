@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.30.1",
+    time: "16:45 21/11/2026",
+    area: "khac",
+    text: "v5.30.1, khách báo không tìm thấy mục tài khoản và lịch sử. Nguyên nhân: (1) trang tài khoản chỉ mở được bằng mục «Token dịch» (nhóm Ví và gói) và nút Ví ở thanh dưới; tên «Token dịch» không gợi là tài khoản; Hướng dẫn lại ghi «mở Tài khoản ở menu trái» (UI.account cứng «Tài khoản», không có trên menu từ lần đổi tên trước). (2) Menu ở trang Dịch trực tiếp và Hướng dẫn KHÔNG có mục mở tài khoản. (3) Khối «Lịch sử Token/Gói» ẩn hẳn khi chưa có dòng. Sửa: MENU_ITEM.tokens = «Tài khoản và lịch sử» (customer-menu.test vẫn cấm tên trống «Tài khoản»); live-screen và guide-page thêm mục này dẫn về «/#vi»; RailItem có hash; studio mở trang tài khoản khi hash #vi rồi xóa hash; UI.account = MENU_GROUP.wallet; lệnh Ctrl K tìm được bằng «tai khoan, lich su, mat khau»; khối lịch sử luôn hiện, có câu khi trống. Kiểm Chromium 412 px: từ /huong-dan mở Menu → Ví và gói → Tài khoản và lịch sử về trang chủ mở đúng trang tài khoản, khối lịch sử hiện câu trống.",
+  },
+  {
     version: "5.30.0",
     time: "16:33 21/11/2026",
     area: "khac",

@@ -26,7 +26,7 @@ export const UI = {
   glossary: TOOL_NAME.thuatngu,
   startRun: "Tải và dịch",
   download: "Tải phụ đề",
-  account: "Tài khoản",
+  account: MENU_GROUP.wallet,
   wallet: MENU_ITEM.tokens,
   live: "Dịch trực tiếp",
   tabAudio: "Âm thanh tab",

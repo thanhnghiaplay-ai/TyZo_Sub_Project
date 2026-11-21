@@ -237,9 +237,10 @@ export function AccountPanel() {
           {(turnFirst ? ["token", "rent"] : ["rent", "token"]).map((block) => (
             <Fragment key={block}>{block === "token" ? tokenBlock : rentBlock}</Fragment>
           ))}
-          {rows.length > 0 && (
-            <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3">
+          {/* Luôn hiện khối lịch sử (v5.30.1): ẩn khi chưa có dòng nào thì khách tưởng không có mục này. */}
+          <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3" data-wallet-history>
               <h2 className="text-sm font-semibold">Lịch sử Token/Gói</h2>
+              {rows.length === 0 && <p className="mt-2 text-sm text-muted">Chưa có giao dịch nào. Mua Token dịch, thuê phòng hay mỗi lượt trừ Token đều hiện ở đây.</p>}
               <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
                 {(ledgerOpen ? rows.slice(0, 9) : rows.slice(0, 3)).map((row) => (
                   <li key={row.id} className="flex justify-between gap-3">
@@ -256,8 +257,7 @@ export function AccountPanel() {
                   {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(rows.length, 9) - 3} dòng`}
                 </button>
               )}
-            </section>
-          )}
+          </section>
           <form
             className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
             onSubmit={(event) => {
