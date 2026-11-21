@@ -20,7 +20,7 @@ function currentAccent(): string {
  * Lưu trong máy khách (localStorage `tyzo_accent`), thắng màu Admin đặt chung.
  * Màu quá tối hoặc quá chói so với nền thì tự chỉnh vừa đủ để nút và chữ còn đọc rõ.
  */
-export function AccentPicker() {
+export function AccentPicker({ inline = false }: { /** Mở ngay trong bảng chứa nó (bảng «Hiển thị»), không bật bảng nổi chồng lên. */ inline?: boolean } = {}) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [hex, setHex] = useState("#e7b63a");
@@ -82,24 +82,41 @@ export function AccentPicker() {
 
   const rgb = hexToRgb(hex);
   return (
-    <div ref={box} className="relative">
-      <button
-        type="button"
-        className="notice-bell-btn is-glyph"
-        aria-label="Chọn màu nhấn"
-        title="Chọn màu nhấn"
-        aria-expanded={open}
-        aria-controls={open ? panelId : undefined}
-        onClick={() => (open ? setOpen(false) : openPanel())}
-      >
-        <Icon slot="ui.theme" />
-      </button>
+    <div ref={box} className={inline ? "grid gap-2" : "relative"}>
+      {inline ? (
+        <button
+          type="button"
+          className="min-tap inline-flex w-fit items-center gap-2 rounded-full border border-line px-3 text-sm font-medium hover:border-accent"
+          aria-expanded={open}
+          aria-controls={open ? panelId : undefined}
+          onClick={() => (open ? setOpen(false) : openPanel())}
+        >
+          <span aria-hidden className="size-4 rounded-full border border-line bg-accent" />
+          {open ? "Xong" : "Đổi màu"}
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="notice-bell-btn is-glyph"
+          aria-label="Chọn màu nhấn"
+          title="Chọn màu nhấn"
+          aria-expanded={open}
+          aria-controls={open ? panelId : undefined}
+          onClick={() => (open ? setOpen(false) : openPanel())}
+        >
+          <Icon slot="ui.theme" />
+        </button>
+      )}
       {open && (
         <div
           id={panelId}
           role="group"
           aria-label="Chọn màu nhấn"
-          className="fixed top-16 right-3 z-[60] grid w-[min(20rem,calc(100vw-1.5rem))] gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4 text-sm shadow-xl"
+          className={
+            inline
+              ? "grid gap-3 rounded-[var(--radius-ctl)] border border-line p-3 text-sm"
+              : "fixed top-16 right-3 z-[60] grid w-[min(20rem,calc(100vw-1.5rem))] gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4 text-sm shadow-xl"
+          }
         >
           <div className="flex items-center gap-3">
             <span aria-hidden className="size-10 shrink-0 rounded-full border border-line" style={{ background: hex }} />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { AccentPicker } from "@/components/accent-picker";
 import { Icon } from "@/components/ui/icon";
 import { useTheme } from "@/components/ui/theme-context";
@@ -26,7 +26,9 @@ function remember(key: string, value: string) {
 }
 
 /**
- * Ba nút nhỏ ở đầu trang: sáng/tối, gọn/thoải mái và màu nhấn tự chọn.
+ * Một nút «Hiển thị» ở đầu trang (đợt 1 sắp lại trang khách): bấm mở bảng gồm sáng/tối, gọn/thoải mái, cỡ chữ, hiệu ứng, màu nhấn.
+ * Trước đây là năm nút tròn không chữ, tràn hàng trên điện thoại.
+ * (Ghi chú cũ:) Ba nút nhỏ ở đầu trang: sáng/tối, gọn/thoải mái và màu nhấn tự chọn.
  * Trạng thái nằm ở <html> (data-theme, data-density) do script đầu trang đặt, nên không nháy màu.
  * Lựa chọn của khách luôn thắng mặc định của Admin, nên cả hai nút luôn hiện.
  */
@@ -36,6 +38,26 @@ export function DisplayToggle() {
   const [density, setDensity] = useState<UserDensity>(defaultUserDensity(theme.density));
   const [fxOff, setFxOff] = useState(false);
   const [font, setFont] = useState<UserFont>("normal");
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const panelId = useId();
+
+  // Bấm ra ngoài hoặc Esc thì đóng bảng.
+  useEffect(() => {
+    if (!open) return;
+    const away = (event: PointerEvent) => {
+      if (box.current && !box.current.contains(event.target as Node)) setOpen(false);
+    };
+    const esc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", away);
+    window.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("pointerdown", away);
+      window.removeEventListener("keydown", esc);
+    };
+  }, [open]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -82,9 +104,7 @@ export function DisplayToggle() {
     setDensity(next);
   };
 
-  const flipFont = () => {
-    const order = USER_FONTS.map((f) => f[0]);
-    const next = order[(order.indexOf(font) + 1) % order.length];
+  const pickFont = (next: UserFont) => {
     const root = document.documentElement;
     if (next === "normal") {
       root.style.removeProperty("--user-font");
@@ -101,11 +121,8 @@ export function DisplayToggle() {
   };
 
   const fontName = (id: UserFont) => USER_FONTS.find((f) => f[0] === id)?.[1] ?? "Vừa";
-  const nextFont =
-    USER_FONTS[(USER_FONTS.findIndex((f) => f[0] === font) + 1) % USER_FONTS.length][0];
-  const fontLabel = `Cỡ chữ: ${fontName(font)}. Bấm để chuyển sang ${fontName(nextFont)}`;
+  const fontLabel = `Cỡ chữ đang dùng: ${fontName(font)}`;
 
-  const modeLabel = mode === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối";
   const densityLabel =
     density === "compact" ? "Đang gọn. Chuyển sang thoải mái" : "Đang thoải mái. Chuyển sang gọn";
 
@@ -114,49 +131,76 @@ export function DisplayToggle() {
     : "Tắt hiệu ứng Tương lai (lưới, kính mờ, hào quang)";
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-1.5">
+    <div ref={box} className="relative">
       <button
         type="button"
         className="notice-bell-btn is-glyph"
-        aria-label={modeLabel}
-        title={modeLabel}
-        onClick={flipMode}
+        aria-label="Hiển thị: sáng tối, khoảng cách, cỡ chữ, hiệu ứng, màu"
+        title="Hiển thị"
+        aria-expanded={open}
+        aria-controls={panelId}
+        data-display-open
+        onClick={() => setOpen((value) => !value)}
       >
-        {mode === "dark" ? <Icon slot="ui.sun" /> : <Icon slot="ui.moon" />}
+        <Icon slot="ui.theme" />
       </button>
-      <button
-        type="button"
-        className="notice-bell-btn is-glyph"
-        aria-label={densityLabel}
-        title={densityLabel}
-        onClick={flipDensity}
-      >
-        {density === "compact" ? <Icon slot="ui.compact" /> : <Icon slot="ui.roomy" />}
-      </button>
-      <button
-        type="button"
-        className="notice-bell-btn is-glyph"
-        aria-label={fontLabel}
-        title={fontLabel}
-        onClick={flipFont}
-      >
-        <span aria-hidden="true" className="text-sm font-bold leading-none">
-          Aa
-        </span>
-      </button>
-      {theme.look === "future" && (
-        <button
-          type="button"
-          className="notice-bell-btn is-glyph"
-          aria-label={fxLabel}
-          aria-pressed={!fxOff}
-          title={fxLabel}
-          onClick={flipFx}
+      {open && (
+        <div
+          id={panelId}
+          role="dialog"
+          aria-label="Hiển thị"
+          data-display-panel
+          className="absolute right-0 top-full z-50 mt-2 grid max-h-[calc(100dvh-11rem)] w-[min(19rem,calc(100vw-2rem))] lg:max-h-[calc(100dvh-6rem)] gap-3 overflow-y-auto rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm shadow-xl"
         >
-          <Icon slot="ui.magic" />
-        </button>
+          <Row label="Giao diện">
+            <Seg on={mode === "light"} onClick={() => mode !== "light" && flipMode()} icon={<Icon slot="ui.sun" className="size-4" />}>Sáng</Seg>
+            <Seg on={mode === "dark"} onClick={() => mode !== "dark" && flipMode()} icon={<Icon slot="ui.moon" className="size-4" />}>Tối</Seg>
+          </Row>
+          <Row label="Khoảng cách">
+            <Seg on={density === "compact"} onClick={() => density !== "compact" && flipDensity()} label={densityLabel}>Gọn</Seg>
+            <Seg on={density !== "compact"} onClick={() => density === "compact" && flipDensity()} label={densityLabel}>Thoải mái</Seg>
+          </Row>
+          <Row label="Cỡ chữ">
+            {USER_FONTS.map(([id, name]) => (
+              <Seg key={id} on={font === id} onClick={() => pickFont(id)} label={fontLabel}>{name}</Seg>
+            ))}
+          </Row>
+          {theme.look === "future" && (
+            <Row label="Hiệu ứng">
+              <Seg on={!fxOff} onClick={() => fxOff && flipFx()} label={fxLabel}>Bật</Seg>
+              <Seg on={fxOff} onClick={() => !fxOff && flipFx()} label={fxLabel}>Tắt</Seg>
+            </Row>
+          )}
+          <div className="grid gap-1.5" role="group" aria-label="Màu nhấn">
+            <span className="text-muted">Màu nhấn</span>
+            <AccentPicker inline />
+          </div>
+        </div>
       )}
-      <AccentPicker />
     </div>
+  );
+}
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-1.5" role="group" aria-label={label}>
+      <span className="text-muted">{label}</span>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+function Seg({ on, onClick, children, icon, label }: { on: boolean; onClick: () => void; children: ReactNode; icon?: ReactNode; label?: string }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      title={label}
+      className={"min-tap inline-flex items-center gap-1.5 rounded-full border px-3 text-sm font-medium " + (on ? "border-accent bg-accent text-ink" : "border-line hover:border-accent")}
+      onClick={onClick}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
