@@ -22,7 +22,7 @@ export function TermsDocument() {
         <tbody>
           <tr>
             <td>Nhận dạng lời, dịch, chiếu phụ đề, thuyết minh, xuất file</td>
-            <td>Phòng cung cấp công cụ. Không phát hành phim</td>
+            <td>TyZo Sub cung cấp công cụ AI theo yêu cầu. Không cung cấp, phát hành hay lưu trữ nội dung</td>
           </tr>
           <tr>
             <td>Key Groq, key Alibaba, key Deepgram, key AssemblyAI, key Speechmatics, key Soniox và cước của nhà đó khi bạn tự chọn</td>
@@ -30,7 +30,7 @@ export function TermsDocument() {
           </tr>
           <tr>
             <td>Quyền của video và tiếng đưa vào</td>
-            <td>Bạn. Phòng có kênh nhận khiếu nại bản quyền</td>
+            <td>Bạn, và bạn xác nhận lại cho mỗi tệp. Phòng có kênh nhận khiếu nại bản quyền</td>
           </tr>
           <tr>
             <td>Xem lại bản dịch trước khi đăng hoặc phát</td>
@@ -85,7 +85,7 @@ export function TermsDocument() {
 
       <h2>1. Phòng này làm gì</h2>
       <p>
-        TyZo Sub là công cụ chạy trên trình duyệt. Bạn chọn file video hoặc tiếng trên máy, hoặc dán link file trực tiếp. Phòng nhận dạng lời, dịch, chiếu phụ đề trên video của bạn, có thể đọc thuyết minh, và xuất file phụ đề. Phòng không phải kho phim, không phát hành phim, và không chia sẻ video của bạn cho người khác.
+        TyZo Sub là dịch vụ phần mềm (SaaS): công cụ AI chạy trên trình duyệt, xử lý theo yêu cầu của bạn. Bạn chọn file video hoặc tiếng trên máy, hoặc dán link file trực tiếp, và tự quyết định xử lý gì. Công cụ nhận dạng lời, dịch, hiện phụ đề trên video của bạn, có thể đọc thuyết minh, và xuất file phụ đề. Phòng không chọn, không cung cấp, không phát hành, không phân phối và không lưu trữ video hay tiếng của bạn, và không chia sẻ chúng cho người khác.
       </p>
       <p>
         Link phải là file trực tiếp. Phòng không nhận trang xem, không vượt khóa trả phí, và không tải video hộ bạn. Video được xử lý trên máy bạn. Phòng chỉ gửi phần tiếng hoặc chữ cần thiết tới nhà nhận dạng và dịch mà bạn đang dùng.
@@ -96,7 +96,10 @@ export function TermsDocument() {
 
       <h2>2. Điều kiện để dùng</h2>
       <p>
-        Bạn phải có quyền dùng video và tiếng đưa vào. Bạn tự chịu nội dung đó và cách bạn dùng bản dịch, file phụ đề hoặc tiếng đọc, kể cả khi đăng, phát hoặc giao cho người khác.
+        Bạn phải có quyền dùng video và tiếng đưa vào: bạn sở hữu nội dung, hoặc đã được chủ sở hữu cho phép nhận dạng, dịch, làm phụ đề hay thuyết minh cho nó, hoặc pháp luật cho phép bạn dùng nội dung theo cách đó. Bạn tự chịu nội dung đó và cách bạn dùng bản dịch, file phụ đề hoặc tiếng đọc, kể cả khi đăng, phát hoặc giao cho người khác.
+      </p>
+      <p>
+        Trước lần xử lý đầu của mỗi tệp hoặc link, app hỏi bạn xác nhận quyền này. Phòng ghi lại việc bạn đã xác nhận: tài khoản, một mã rút gọn của tệp (không phải tên tệp hay nội dung), bản điều khoản và thời điểm. Không xác nhận thì không xử lý.
       </p>
       <p>
         Bạn phải đọc và tích đồng ý bản này ở Đăng ký hoặc Đăng nhập. Không đồng ý thì không mở được phòng dịch. Khi phòng bật thư, email dùng để xác minh tài khoản và lấy lại mật khẩu. Liên kết trong thư có thời hạn. Phòng không gửi mật khẩu.
@@ -104,13 +107,19 @@ export function TermsDocument() {
 
       <h2>3. Bản quyền và khiếu nại</h2>
       <p>
-        Câu «bạn tự chịu» không có nghĩa phòng được phép xử lý nội dung không có quyền. Phòng không quảng cáo như nơi Vietsub phim lậu và không lập thư viện video hay phụ đề công khai.
+        Phòng là bên cung cấp công cụ kỹ thuật. Người dùng chọn nội dung, quyết định xử lý và quyết định dùng kết quả. Phòng không kiểm tra nội dung trước khi xử lý, không sửa nội dung đưa vào, và không lập thư viện, kho hay trang chia sẻ công khai video, phụ đề hoặc tiếng đọc. Kết quả nằm trên máy của người dùng. Câu «bạn tự chịu» không có nghĩa phòng cho phép xử lý nội dung không có quyền.
+      </p>
+      <p>Không được dùng công cụ để:</p>
+      <ul className="gate-points">
+        <li>Làm phụ đề, bản dịch hoặc thuyết minh cho tác phẩm của người khác để đăng, phát, bán hay chia sẻ khi chưa được phép.</li>
+        <li>Xử lý nội dung có được bằng cách vượt khóa, gỡ bảo vệ kỹ thuật hoặc từ nguồn phát tán trái phép.</li>
+        <li>Xử lý nội dung mà pháp luật cấm, kể cả nội dung khai thác trẻ em.</li>
+      </ul>
+      <p>
+        Nếu bạn là chủ quyền hoặc người được ủy quyền và cho rằng nội dung của mình bị xử lý không có quyền, hãy gửi thông báo qua mục Hỗ trợ và liên hệ ở trang Hướng dẫn, hoặc qua yêu cầu xem lại. Thông báo cần nêu: tác phẩm bị xâm phạm; căn cứ quyền của bạn (hoặc giấy ủy quyền); thông tin giúp xác định tài khoản hay lần xử lý liên quan (email tài khoản, thời điểm, tên tệp hoặc nơi kết quả bị đăng); cách liên hệ với bạn; và lời cam đoan thông tin là đúng.
       </p>
       <p>
-        Nếu bạn là chủ quyền hoặc người được ủy quyền và thấy nội dung của mình bị xử lý không có quyền, hãy gửi yêu cầu qua mục Hỗ trợ và liên hệ ở trang Hướng dẫn, hoặc qua yêu cầu xem lại. Nêu rõ tác phẩm, tài khoản hoặc tệp liên quan, và căn cứ quyền của bạn.
-      </p>
-      <p>
-        Phòng ghi nhận yêu cầu, tạm dừng xử lý nội dung đó, và có thể khóa tài khoản nếu người dùng tiếp tục sau khi đã được báo. Phòng lưu lại việc đã nhận và đã xử lý. Phòng không thay cơ quan nhà nước kết luận ai đúng.
+        Khi nhận thông báo đủ thông tin, phòng ghi nhận, tạm dừng việc xử lý nội dung đó của tài khoản liên quan và báo cho người dùng. Người dùng có thể gửi giải trình qua yêu cầu xem lại. Phòng có thể khóa tài khoản trong lúc xem xét, và cấm tài khoản tiếp tục đưa nội dung không có quyền sau khi đã được báo, hoặc bị khiếu nại hợp lệ nhiều lần. Phòng lưu lại việc đã nhận và đã xử lý, cung cấp thông tin tài khoản cho cơ quan nhà nước có thẩm quyền khi có yêu cầu theo pháp luật, và không thay cơ quan nhà nước kết luận ai đúng.
       </p>
 
       <h2>4. Thanh toán và Token dịch</h2>
@@ -135,10 +144,10 @@ export function TermsDocument() {
 
       <h2>5. Dữ liệu đi những đâu</h2>
       <p>
-        Key Groq, key Alibaba, key Deepgram, key AssemblyAI, key Speechmatics, key Soniox, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy. Khi bạn đã đăng nhập, máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
+        Key Groq, key Alibaba, key Deepgram, key AssemblyAI, key Speechmatics, key Soniox, tên video, ghi chú, thuật ngữ bạn thêm và giọng đã khóa được lưu trên máy bạn. Lần đồng ý điều khoản cũng lưu trên máy. Khi bạn đã đăng nhập, máy chủ ghi số phiên bản điều khoản theo tài khoản. Xóa dữ liệu trang là mất các mục trên máy, không xóa dòng đã ghi trên máy chủ.
       </p>
       <p>
-        Lời thoại được gửi tới nhà nhận dạng bạn chọn, theo điều khoản của nhà đó. Câu thoại cần dịch, phân tích phim hay trau chuốt được gửi tới nhà có model dịch bạn chọn, hoặc nhà mà chế độ Tự động chọn trong số nhà bạn có key hay phòng đang mở: Groq xử lý ở Hoa Kỳ, Alibaba (Qwen) xử lý theo vùng Singapore. Groq xử lý ở Hoa Kỳ. Alibaba Filetrans xử lý theo vùng Singapore, và link file trực tiếp cũng được gửi tới Alibaba. Deepgram nhận dạng theo điều khoản của Deepgram, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới Deepgram. Chữ cần đọc bằng giọng Aura cũng được gửi tới Deepgram. AssemblyAI nhận dạng theo điều khoản của AssemblyAI, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới AssemblyAI. Speechmatics nhận dạng theo điều khoản của Speechmatics, một công ty Anh, phòng đang dùng máy chủ vùng Hoa Kỳ (US1), và link file trực tiếp cũng được gửi tới Speechmatics. Soniox nhận dạng theo điều khoản của Soniox; nơi đặt máy chủ do Soniox công bố, và link file trực tiếp cũng được gửi tới Soniox. Phòng gửi lệnh xóa bản nhận dạng ngay sau mỗi lần chạy, nhưng việc nhà đó có xóa thật hay không là theo điều khoản của nhà đó. Đây là chuyển dữ liệu ra ngoài Việt Nam để làm đúng việc bạn yêu cầu. File video xử lý trên máy bạn. Phòng không lưu video.
+        Lời thoại được gửi tới nhà nhận dạng bạn chọn, theo điều khoản của nhà đó. Câu thoại cần dịch, phân tích nội dung hay trau chuốt được gửi tới nhà có model dịch bạn chọn, hoặc nhà mà chế độ Tự động chọn trong số nhà bạn có key hay phòng đang mở: Groq xử lý ở Hoa Kỳ, Alibaba (Qwen) xử lý theo vùng Singapore. Groq xử lý ở Hoa Kỳ. Alibaba Filetrans xử lý theo vùng Singapore, và link file trực tiếp cũng được gửi tới Alibaba. Deepgram nhận dạng theo điều khoản của Deepgram, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới Deepgram. Chữ cần đọc bằng giọng Aura cũng được gửi tới Deepgram. AssemblyAI nhận dạng theo điều khoản của AssemblyAI, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới AssemblyAI. Speechmatics nhận dạng theo điều khoản của Speechmatics, một công ty Anh, phòng đang dùng máy chủ vùng Hoa Kỳ (US1), và link file trực tiếp cũng được gửi tới Speechmatics. Soniox nhận dạng theo điều khoản của Soniox; nơi đặt máy chủ do Soniox công bố, và link file trực tiếp cũng được gửi tới Soniox. Phòng gửi lệnh xóa bản nhận dạng ngay sau mỗi lần chạy, nhưng việc nhà đó có xóa thật hay không là theo điều khoản của nhà đó. Đây là chuyển dữ liệu ra ngoài Việt Nam để làm đúng việc bạn yêu cầu. File video xử lý trên máy bạn. Phòng không lưu video.
       </p>
       <p>
         Khi bật thuyết minh Neural, câu chữ được gửi qua phòng tới dịch vụ đọc giọng. Giọng máy của trình duyệt đọc trên thiết bị của bạn. Orpheus khi bạn dùng key của mình thì gửi chữ tới Groq bằng key đó. Orpheus khi dùng key của phòng thì gửi chữ tới Groq bằng key của phòng và trừ Token dịch.
@@ -163,10 +172,13 @@ export function TermsDocument() {
       <p>
         Key sai, hết hạn mức Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics hoặc Soniox, mạng lỗi, file hỏng hoặc trình duyệt chặn tiếng có thể làm một lần chạy thất bại. Phòng không bồi thường cho các lần đó khi bạn dùng key của mình. Ở cửa trả theo lượt, đoạn lỗi không bị trừ và phần giữ thừa được trả lại nếu gói còn hạn. Hết hạn thì không trả lại và không hoàn tiền.
       </p>
-      <p>Phòng không phải Groq, không phải Alibaba, không phải Deepgram, không phải AssemblyAI, không phải Speechmatics, không phải Soniox, không phải nhà sản xuất video, và không phải nơi lưu phim.</p>
+      <p>Phòng không phải Groq, không phải Alibaba, không phải Deepgram, không phải AssemblyAI, không phải Speechmatics, không phải Soniox, không phải nhà sản xuất video, và không phải nơi lưu, phát hay phân phối nội dung.</p>
 
       <h2>7. Phần mỗi bên chịu</h2>
       <p>Bạn chịu nội dung đưa vào và cách bạn dùng bản dịch, file phụ đề, hoặc tiếng đọc.</p>
+      <p>
+        Nếu bên thứ ba khiếu nại hay kiện phòng vì nội dung bạn đưa vào hoặc vì cách bạn dùng kết quả, bạn chịu chi phí và thiệt hại phát sinh từ đó, trong phạm vi pháp luật cho phép.
+      </p>
       <p>
         Phòng cung cấp công cụ và có trách nhiệm nhận khiếu nại, tạm dừng nội dung bị báo, và không cố ý gây hại. Phòng không chịu thiệt hại gián tiếp do bản dịch sai, mất câu, hay key bị người khác thấy vì bạn để họ dùng máy của bạn.
       </p>
@@ -192,6 +204,7 @@ export function TermsDocument() {
         <li>Một tài khoản đang hạn được nhiều người dùng chung.</li>
         <li>Tạo nhiều tài khoản chỉ để lấy thêm lượt dùng thử.</li>
         <li>Gửi yêu cầu hỗ trợ lặp lại để gây rối.</li>
+        <li>Có khiếu nại bản quyền đủ thông tin về nội dung bạn xử lý, trong lúc phòng xem xét.</li>
       </ul>
       <p className="gate-label gate-label-ban">Có thể bị cấm nếu</p>
       <ul className="gate-points gate-points-ban">
@@ -199,7 +212,7 @@ export function TermsDocument() {
         <li>Cố tình tấn công hoặc làm quá tải trang.</li>
         <li>Đưa chứng từ thanh toán giả.</li>
         <li>Bán lại tài khoản hoặc bán lại phòng như dịch vụ của mình.</li>
-        <li>Tiếp tục đưa nội dung không có quyền sau khi đã được báo.</li>
+        <li>Tiếp tục đưa nội dung không có quyền sau khi đã được báo, hoặc bị khiếu nại bản quyền hợp lệ nhiều lần.</li>
       </ul>
       <p className="gate-key">Gỡ khóa hoặc gỡ cấm không xóa lịch sử xử lý.</p>
 

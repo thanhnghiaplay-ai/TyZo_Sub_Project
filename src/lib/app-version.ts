@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.19.0";
+export const APP_VERSION = "5.20.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.20.0",
+    time: "21/11/2026",
+    title: "TyZo Sub là công cụ phụ đề AI theo yêu cầu; xác nhận quyền với nội dung mỗi tệp.",
+    points: [
+      "Trước lần xử lý đầu của mỗi tệp, bạn xác nhận có quyền với nội dung. Chỉ hỏi một lần cho mỗi tệp.",
+      "Ba loại nội dung người lớn gộp thành «Phim có nhãn 18+»; bỏ loại «phim mới chiếu».",
+      "Tab Phim đổi tên thành Video; chữ trên web theo cách gọi của công cụ AI.",
+      "Điều khoản bổ sung quy trình khiếu nại bản quyền và những việc không được làm.",
+    ],
+  },
   {
     version: "5.19.0",
     time: "20/11/2026",

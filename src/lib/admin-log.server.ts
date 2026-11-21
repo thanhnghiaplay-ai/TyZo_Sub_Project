@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.20.0",
+    time: "21/11/2026",
+    area: "khac",
+    text: "v5.20.0, hạn chế rủi ro bản quyền theo mô hình công cụ SaaS AI (Chủ chọn: bỏ «phim mới chiếu», gộp 3 loại người lớn; giữ lưu tên tệp như cũ; xác nhận quyền mỗi tệp; đổi toàn bộ cách gọi). (1) Thể loại: GENRES bỏ series/softcore/sex; adult = «Phim có nhãn 18+», prompt dịch đúng mức bản gốc; currentGenre đổi mã cũ (softcore, sex → adult; series → auto) khi đọc lựa chọn đã lưu, thuật ngữ, prompt, glossaryPair. File thuật ngữ gộp (softcore+sex → adult, series → daily); migration 0027 chuyển glossary_terms/suggestions/packs đã nạp (trùng thì giữ bản ở loại đích; đã thử trên PGlite). (2) rights-consent.ts: hộp xác nhận trước lần xử lý đầu của mỗi tệp/link (trước khi gửi nội dung hay tốn tiền); máy khách nhớ mã băm FNV-1a 64 bit, không nhớ tên tệp; recordRightsConsent + migration 0028 rights_consents (user_id, media_hash, terms_version, confirmed_at) cho cả hai cửa. (3) Chữ: «Phòng chiếu TyZo Sub» → «TyZo Sub · Công cụ phụ đề AI», «file Vietsub» → «file phụ đề», ví dụ link video.mp4, tab Phim → Video, Ghi chú/Phân tích phim → nội dung; /goi và Ví không còn ghi riêng Groq. CHANGELOG cũ giữ nguyên. (4) Điều khoản 2026-11-21.1: mục 1 SaaS, không cung cấp/phát hành/lưu trữ nội dung; mục 2 xác nhận mỗi tệp + bản ghi; mục 3 vai trò công cụ, những việc cấm, thông báo-gỡ (nội dung cần nêu), giải trình, vi phạm lặp lại, cơ quan nhà nước; mục 7 người dùng chịu chi phí khiếu nại của bên thứ ba; mục 10 khóa khi đang xem xét khiếu nại. Hướng dẫn: cách gửi khiếu nại bản quyền. CHƯA có luật sư xem điều khoản.",
+  },
+  {
     version: "5.19.0",
     time: "20/11/2026",
     area: "khac",

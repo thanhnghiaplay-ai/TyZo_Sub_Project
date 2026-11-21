@@ -240,13 +240,16 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       title: "Hỗ trợ và liên hệ",
       group: "tro-giup",
       intro: "Cần hỏi về gói, Token dịch, khóa hoặc cấm tài khoản.",
-      words: "ho tro lien he zalo facebook email hoi yeu cau xem lai khieu nai",
+      words: "ho tro lien he zalo facebook email hoi yeu cau xem lai khieu nai ban quyen go noi dung",
       tour: "ho-tro",
       contact: true,
       page: { label: `Mở «${UI.appeal}»`, to: "/yeu-cau" },
       steps: [
         { text: `Việc cần người xem lại (gói, Token dịch, khóa, cấm): gửi ở «${UI.appeal}». Mô tả rõ việc và thời điểm xảy ra.` },
         { text: "Không gửi key hay mật khẩu trong yêu cầu." },
+        {
+          text: `Khiếu nại bản quyền (chủ quyền hoặc người được ủy quyền): gửi ở «${UI.appeal}» hoặc qua liên hệ bên dưới. Nêu tác phẩm, căn cứ quyền, thông tin xác định tài khoản hay lần xử lý, cách liên hệ, và cam đoan thông tin là đúng (Điều khoản, mục 3).`,
+        },
       ],
     },
   ];
