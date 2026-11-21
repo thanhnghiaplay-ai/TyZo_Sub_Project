@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.21.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.21.0 trên `work`: đợt 1 sắp lại trang khách (dòng cách trả, nhớ cách trả, nút Hiển thị). Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.22.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.22.0 trên `work`: đợt 2 sắp lại trang khách (Thêm key, Ví hai khối); trước đó đợt 1 (dòng cách trả, nút Hiển thị). Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -59,7 +59,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
 | 2026-11-21 | Người dùng chốt | Khi đề xuất hay sửa phải vào vai người dùng, xét sửa chỗ này đụng tới chỗ nào khác, để ai cũng dùng mượt và ổn định | Làm ngay | Đã ghi thành mục «CÁCH NGHĨ KHI ĐỀ XUẤT VÀ KHI SỬA» ở `huongdan.txt` (A–E), áp cho mọi vai; lên `work`/`main` cùng v5.21.0 |
-| 2026-11-21 | Người dùng chốt | Sắp lại trang khách. Chưa biết khách đông ở cách trả nào (chưa công bố). Thuê phòng chưa có key thì dẫn sang hướng dẫn lấy key hoặc trả theo lượt | Làm theo giai đoạn | Đợt 1 xong trong v5.21.0 (đẩy chính thức 21/11/2026). Đợt 2 xong trong v5.22.0 (nhánh phiên). Còn đợt 3 (màn theo trạng thái, thanh dưới 4 việc), đợt 4 (câu hỏi lần đầu, đếm ẩn danh) |
+| 2026-11-21 | Người dùng chốt | Sắp lại trang khách. Chưa biết khách đông ở cách trả nào (chưa công bố). Thuê phòng chưa có key thì dẫn sang hướng dẫn lấy key hoặc trả theo lượt | Làm theo giai đoạn | Đợt 1 xong trong v5.21.0 (đẩy chính thức 21/11/2026). Đợt 2 xong trong v5.22.0 (đẩy chính thức 21/11/2026). Còn đợt 3 (màn theo trạng thái, thanh dưới 4 việc), đợt 4 (câu hỏi lần đầu, đếm ẩn danh) |
 | 2026-11-21 | Người dùng chốt | Hạn chế tối đa pháp lý bản quyền video, như công cụ SaaS AI theo nhu cầu. Chọn: bỏ «phim mới chiếu», gộp 3 loại người lớn thành «Phim có nhãn 18+»; giữ lưu tên tệp như cũ; xác nhận quyền mỗi tệp một lần; đổi toàn bộ cách gọi | Làm ngay | Đã vào `work` và `main` trong v5.20.0 (đẩy chính thức 21/11/2026). Điều khoản 2026-11-21.1. Nên nhờ luật sư xem điều khoản |
 | 2026-11-20 22:30 | Người dùng chốt | Model dịch, nhận dạng và mọi chức năng dùng model phải theo nhiều nhà cung cấp, phân loại model theo nhà và việc làm được; nhà mới thêm sau cũng vậy. «Claude sửa» | Làm ngay | Đã vào `work` và `main` trong v5.19.0 (đẩy chính thức 20/11/2026). Điều khoản 2026-11-20.1. Thuyết minh (đọc giọng) vẫn mỗi nhà một đường riêng, chưa gom |
 | 2026-11-18 22:23 | Người dùng chốt | Rút gọn năm đoạn nhà nhận dạng trong phòng dịch thành một đoạn | Làm ngay | Đã vào work trong v5.6.1. Không đổi điều khoản |
