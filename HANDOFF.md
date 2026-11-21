@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.31.3 trên `work`**; `main` v5.31.2 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.31.3 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.31.3**: Chủ nói «đẩy chính thức» và «không cần thử nữa, chỉ thử khi tôi yêu cầu». `main` kéo thẳng lên v5.31.3. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1390 pass, vite build xong. Chưa thử trên web thật: xuất SRT khi chỉ có Token, trau chuốt kèm yêu cầu thêm, dịch lại bằng model khác. Tài khoản thử `claude.thunghiem.tyzo@gmail.com` chờ Chủ xóa.
 - **v5.31.3**: Sửa chữ tiến độ «Alibaba đang nhận dạng» khi dùng nhà khác. tsc sạch, test pass.
 - **Đẩy chính thức v5.31.2**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.31.2. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1390 pass, vite build xong.
 - **v5.31.2**: Ước tính Token theo hai phần và ẩn lúc đang chạy; thẻ phiếu Admin đúng đơn vị, giữ ban đầu, trả lại, nhãn Phần dịch; phần dịch giữ 2,5 lần (đo thật thấy 1,5 lần chỉ thừa 15). Thử trên bản chính thức v5.31.1: luồng nhận dạng → chờ → Dịch tiếp chạy đúng. tsc sạch, test 191 + 1390 pass.

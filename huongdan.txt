@@ -4,7 +4,7 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
 ĐANG CHẠY (2026-11-20)
-- Số phiên bản trên nhánh `work`: v5.31.3 (`src/lib/app-version.ts`). Nhánh `main` chỉ đổi khi user nói «đẩy chính thức».
+- Số phiên bản trên nhánh `work`: v5.31.3 (`src/lib/app-version.ts`). Nhánh `main` = `work` (đẩy chính thức v5.31.3 ngày 21/11/2026).
 - Tên tệp trong Phiếu: máy chủ che (maskFileName) trước khi gửi nhân viên; chỉ Chủ bấm «Hiện tên đầy đủ» (revealTicketFileName, ghi nhật ký «xem-ten-tep» mỗi lần) và chỉ Chủ tìm theo tên tệp. Không gửi tên đầy đủ về trình duyệt nhân viên khác.
 - Trang mới: html và body khóa cuộn (overflow hidden), nên khung main của trang phải tự có h-dvh overflow-y-auto, không dùng min-h-dvh (back-nav.test.ts kiểm bốn trang đã sửa).
 - QUY ƯỚC (người dùng đặt, từ nay về sau): KHÔNG dùng hộp thoại mặc định của trình duyệt (alert, confirm, prompt) ở bất cứ đâu trong src. Hỏi lại trước việc khó hoàn tác: `askConfirm` (lib/confirm.ts, hộp vẽ ở components/confirm-dialog.tsx, có `danger` cho việc xóa hay ẩn). Báo tin thường: `pushToast`. lib/no-native-dialog.test.ts fail nếu vi phạm.
@@ -42,6 +42,7 @@ C. Ổn định khi dùng:
    - Không chặn cứng khi còn lối khác; luôn chỉ bước tiếp theo (ví dụ thuê phòng chưa có key: Lấy key, Thêm key, hoặc Dùng Token lần này).
    - Câu báo nêu rõ thiếu gì, của nhà nào, bấm đâu để sửa. Không câu chung chung.
    - Không mất việc đang làm. Lỗi mạng hay lỗi nhà cung cấp thì không trừ tiền, không trừ lượt.
+D0. (User chốt 21/11/2026) KHÔNG tự thao tác trên web thật (tyzo-sub.vercel.app) để thử, kể cả khi đã có tài khoản thử. Chỉ thử trên web thật khi user yêu cầu trong lượt đó. Thử trong máy (dev, Chromium) vẫn làm như mục D.
 D. Kiểm thật trước khi báo xong: chụp điện thoại sáng và tối (cả màn thấp), bấm thử luồng chính bằng trình duyệt, chạy tsc, lint, test. Ghi rõ cái chưa thử (máy thật, key thật, tiền thật).
 E. Bài học đã gặp (đừng lặp):
    - Dock: v5.18.1 rút khung trên dock sinh dải cắt ngang khi tắt hiệu ứng; v5.18.2 cho nội dung chạy dưới dock lại lộ quanh mép thanh ở giao diện sáng; v5.20.1 mới gọn (nền mờ sau thanh). Sửa bố cục phải chụp đủ sáng/tối, bật/tắt hiệu ứng, màn thấp.

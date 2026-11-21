@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.31.2 (đẩy chính thức 21/11/2026). `work` mới hơn, chờ «đẩy chính thức». |
-| Bản mới nhất | v5.31.3 trên `work` (chưa đẩy chính thức): tiến độ nhận dạng không còn ghi nhầm Alibaba (v5.31.3). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.31.3 (đẩy chính thức 21/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.31.3 trên `work` và `main`: tiến độ nhận dạng không còn ghi nhầm Alibaba (v5.31.3). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -57,6 +57,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-21 | Người dùng chốt | Không tự thử trên web thật nữa (mỗi lần thử quá lâu); chỉ thử khi Chủ yêu cầu | Làm ngay | Đã ghi vào `huongdan.txt` mục kiểm thử. Tài khoản thử `claude.thunghiem.tyzo@gmail.com` chờ Chủ xóa; còn một phiếu giữ 1.476 Token tự nhả sau 6 giờ |
 | 2026-11-21 | Thẩm định (thử trên bản chính thức) | Người chỉ mua Token dịch bị chặn trả theo lượt và xuất file (quy tắc cũ «chưa từng thuê phòng = dùng thử») | Làm ngay | Chủ nói «làm». Sửa trong v5.31.1: còn Token dịch là chạy và xuất được; chưa chọn gói thì mở bước chọn gói |
 | 2026-11-21 | Người dùng nêu | Mục tài khoản có lịch sử đầy đủ: gói, tệp đã dịch, bao lâu, bao nhiêu Token; lịch sử giữ và hoàn Token bị mất | Làm ngay | Xong trong v5.31.0: tab Lượt dịch (đọc phiếu: giữ/trừ/trả lại), lượt thuê phòng ghi trên máy, tab Mua và gói (gói Token còn/hạn). Lịch sử giữ/hoàn «mất» vì từ v5.0.0 nằm trong phiếu, không trong sổ. Chủ xác nhận 21/11/2026 trên bản chính thức: lịch sử lượt dịch hiện đúng |
 | 2026-11-21 | Thẩm định (Chủ hỏi) | Trau chuốt nghe cứng. Đề xuất: sửa lệnh mặc định (cho viết lại tự nhiên, ví dụ tiếng Việt, nhiệt độ cao hơn chút, ngữ cảnh rộng hơn), ô «yêu cầu thêm» cho khách mỗi lần trau chuốt, Admin sửa được lệnh theo thể loại (phần khung JSON và ký hiệu thuật ngữ cố định), so trước/sau trên clip mẫu trước khi đổi mặc định | Làm theo giai đoạn | Chủ chốt làm theo thứ tự. Mục 1–2 (lệnh mặc định, ô yêu cầu thêm) xong trong v5.28.0; chưa so với model thật. Mục 3 (Admin sửa lệnh theo thể loại) xong trong v5.29.0, chưa có nút thử 20 câu mẫu. Model trau chuốt vẫn chỉ Groq. Ghi chú cũ: chưa có chỗ sửa lệnh ở Admin (lệnh nằm trong code `genre-prompts.ts`, `polish.ts`); Admin chỉ chọn model trau chuốt ở Cấu hình → Gói |
