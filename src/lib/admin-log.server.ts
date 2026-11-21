@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.26.0",
+    time: "13:52 21/11/2026",
+    area: "quyen",
+    text: "v5.26.0, Thư — còn lại mục 5: thư «Mật khẩu đã đổi» khi khách tự đổi trong trang tài khoản. auth/server.ts thêm hooks.after (createAuthMiddleware): đường /change-password trả về có user thì sendAuthLetter('changed', email); lỗi (sai mật khẩu cũ: APIError có status/body/statusCode) thì không. Logic ở auth/changed-letter.ts (thuần, có test). Vẫn theo công tắc «Báo khi mật khẩu vừa đổi» (changedOn) và trần gửi lại của mail-runtime; route /api/auth/$ đã chờ thư (flushAuthLetters). Nhãn công tắc ở Admin ghi rõ hai trường hợp. Kiểm trên PGLite: sai mật khẩu cũ → không gửi; đúng → nhận đúng email (dòng nhật ký tạm, đã gỡ). CHƯA nhận thư thật (môi trường thử không có nhà gửi thư). Không sửa điều khoản: điều khoản đã nói email dùng để xác minh và lấy lại mật khẩu, thư này là thông báo bảo mật, tránh bắt khách đồng ý lại ngay sau 2026-11-21.2.",
+  },
+  {
     version: "5.25.0",
     time: "13:44 21/11/2026",
     area: "du-lieu",

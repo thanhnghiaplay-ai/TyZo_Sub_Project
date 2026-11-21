@@ -39,6 +39,8 @@ import { ensureDbReady, getPglite } from "../db";
 import { emailAndPasswordEnabled } from "./email-password";
 import { mailerName } from "./mailer";
 import { authMail, sendAuthLetter } from "../mail-runtime";
+import { createAuthMiddleware } from "better-auth/api";
+import { changedLetterTo } from "./changed-letter";
 import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
 import { GROK_PROVIDERS } from "./providers";
 import { pgliteDialect } from "./pglite-dialect";
@@ -304,6 +306,15 @@ export const auth = betterAuth({
       account_data: { name: "__Host-grok-auth.account_data" },
       dont_remember: { name: "__Host-grok-auth.dont_remember" },
     },
+  },
+
+  // Khách tự đổi mật khẩu trong trang tài khoản: gửi thư «Mật khẩu đã đổi» như khi đặt lại qua thư
+  // (công tắc «Báo khi mật khẩu vừa đổi» ở Admin vẫn quyết định có gửi hay không, xem mail-runtime.deliver).
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      const to = changedLetterTo(ctx.path, ctx.context.returned, ctx.context.session?.user?.email);
+      if (to) sendAuthLetter("changed", to);
+    }),
   },
 
   plugins: [

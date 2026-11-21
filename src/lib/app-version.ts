@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.25.0";
+export const APP_VERSION = "5.26.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.26.0",
+    time: "13:52 21/11/2026",
+    title: "Đổi mật khẩu trong trang tài khoản cũng có thư báo.",
+    points: [
+      "Đổi mật khẩu xong, bạn nhận thư «Mật khẩu đã đổi» như khi đặt lại qua thư.",
+      "Nhập sai mật khẩu cũ thì không có thư.",
+    ],
+  },
   {
     version: "5.25.0",
     time: "13:44 21/11/2026",

@@ -47,7 +47,7 @@ export function MailPolicyBoard() {
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={policy.verifyOn} onChange={(event) => setPolicy({ ...policy, verifyOn: event.target.checked, verifyRequired: event.target.checked ? policy.verifyRequired : false })} /> Gửi thư xác minh</label>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={policy.verifyRequired} disabled={!policy.verifyOn} onChange={(event) => setPolicy({ ...policy, verifyRequired: event.target.checked })} /> Bắt xác minh rồi mới đăng nhập</label>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={policy.resetOn} onChange={(event) => setPolicy({ ...policy, resetOn: event.target.checked })} /> Cho quên mật khẩu</label>
-      <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={policy.changedOn} onChange={(event) => setPolicy({ ...policy, changedOn: event.target.checked })} /> Báo khi mật khẩu vừa đổi</label>
+      <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={policy.changedOn} onChange={(event) => setPolicy({ ...policy, changedOn: event.target.checked })} /> Báo khi mật khẩu vừa đổi (đặt lại qua thư hoặc đổi trong trang tài khoản)</label>
       <label className="grid gap-1 text-sm">
         Thời hạn liên kết
         <select value={policy.ttlMin} onChange={(event) => setPolicy({ ...policy, ttlMin: Number(event.target.value) as MailPolicy["ttlMin"] })} className="w-full min-w-0 rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none">

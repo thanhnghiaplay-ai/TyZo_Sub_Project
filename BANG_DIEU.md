@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | Nhánh `main` = v5.25.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.25.0 trên `work` và `main`: đợt 4 xong (v5.25.0 đếm ẩn danh, v5.24.0 câu hỏi lần đầu); v5.23.0 đợt 3 sắp lại trang khách (nút chính theo trạng thái, thanh dưới 4 việc có chữ); trước đó đợt 2 (Thêm key, Ví hai khối) và đợt 1 (dòng cách trả, nút Hiển thị). Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản mới nhất | v5.26.0 trên `work` (chưa đẩy chính thức): thư «Mật khẩu đã đổi» khi đổi trong trang tài khoản. v5.25.0 trên `main`: đợt 4 xong (v5.25.0 đếm ẩn danh, v5.24.0 câu hỏi lần đầu); v5.23.0 đợt 3 sắp lại trang khách (nút chính theo trạng thái, thanh dưới 4 việc có chữ); trước đó đợt 2 (Thêm key, Ví hai khối) và đợt 1 (dòng cách trả, nút Hiển thị). Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -50,7 +50,6 @@ Làm lần lượt khi người dùng yêu cầu. Mục nào xong thì xóa kh�
 2. Thử xác minh, chưa bật chặn. Bật gửi thư xác minh, nhận thư, bấm liên kết, đăng nhập lại.
 3. Thử quên mật khẩu. Bật công tắc, nhận thư, đặt mật khẩu mới, đăng nhập bằng mật khẩu đó.
 4. Bật chặn chỉ sau khi email Chủ đã xác minh. Bật sớm thì tài khoản chưa xác minh không vào được.
-5. Thư báo đổi mật khẩu trong trang tài khoản. Công tắc hiện chỉ chạy khi đặt lại qua thư quên mật khẩu.
 
 Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này.
 
