@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.20.1",
+    time: "21/11/2026",
+    area: "khac",
+    text: "v5.20.1, sửa lệch khung trên điện thoại (ảnh Chủ gửi, giao diện sáng). (1) Hàng nút đầu trang (VersionMark, DisplayToggle, chuông) không co, rộng 442 px trên màn 412 px, đẩy .studio-shell rộng hơn màn và cắt chuông: cho flex-wrap, justify-end. (2) Từ v5.18.2 nội dung cuộn xuống sau dock, thanh trong suốt nên lộ ra quanh và dưới mép dock: thêm .dock-scrim (floating-dock.tsx, z-20, dưới dock z-30 và dưới bảng công cụ z-40), mờ dần 1,75rem rồi đặc màu nền; cao 10rem khi có nhãn bánh xe, 6,5rem khi không. Cuộn hết thì nút cuối (Tải và dịch) vẫn trọn trên lớp mờ (đo 412x720: đáy nút 528, lớp mờ bắt đầu 560). Đã chụp sáng và tối. CHƯA bấm thử máy thật.",
+  },
+  {
     version: "5.20.0",
     time: "21/11/2026",
     area: "khac",

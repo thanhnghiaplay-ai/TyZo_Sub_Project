@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.20.1** (nhánh `ccr-bc99847a-xy1bgk`, chưa lên `work`/`main`): sửa lệch khung điện thoại. Hàng nút đầu trang xuống dòng (không tràn 30 px); `.dock-scrim` mờ dần sau thanh dưới để nội dung cuộn không lộ quanh mép thanh. tsc, eslint, test sạch; chụp 412x720 sáng/tối.
 - **Đẩy chính thức v5.20.0**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.20.0; build xong. Migration 0027 (gộp thể loại) và 0028 (rights_consents) chạy khi deploy.
 - **v5.20.0**: hạn chế rủi ro bản quyền theo mô hình công cụ SaaS AI. Thể loại gộp (`currentGenre`, migration 0027), xác nhận quyền mỗi tệp (`rights-consent.ts`, migration 0028), đổi cách gọi (không còn «Phòng chiếu», «Vietsub», tab Phim → Video), điều khoản `2026-11-21.1`. tsc sạch, eslint 0 lỗi (31 cảnh báo có sẵn), npm test 191 + 1320 pass. Thử trình duyệt: hộp xác nhận hiện lần đầu, lưu mã băm, lần sau không hỏi. Tên tệp vẫn lưu đầy đủ ở máy chủ (Chủ chọn giữ). CHƯA có luật sư xem điều khoản.
 - **Đẩy chính thức v5.19.0**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.19.0; `npm run build` xong.

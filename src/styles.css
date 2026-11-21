@@ -3256,3 +3256,15 @@ html[data-look="future"]:not([data-fx="off"]) [data-chip-select] option {
   color: var(--color-fg);
   background-color: var(--color-card);
 }
+
+/*
+ * Nền mờ dần sau thanh dưới (floating-dock.tsx). Thấp hơn vùng đệm cuối trang (--dock-clear) nên khi cuộn hết,
+ * nội dung cuối vẫn rõ; phần cuộn xuống sau thanh mờ đi thay vì lộ ra quanh mép thanh. Có nhãn bánh xe thì cao hơn.
+ */
+.dock-scrim {
+  height: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to bottom, transparent, var(--color-bg) 1.75rem);
+}
+.dock-scrim-tall {
+  height: calc(10rem + env(safe-area-inset-bottom, 0px));
+}

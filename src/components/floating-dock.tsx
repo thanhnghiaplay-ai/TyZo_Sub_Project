@@ -49,6 +49,10 @@ export function FloatingDock({ left, right, center, centerNode, label = "Mục c
   return (
     <RailControl>
       {({ open, setOpen, railId }) => (
+        <>
+        {/* Nền mờ dần sau thanh dưới: nội dung cuộn xuống mờ đi trước khi chạm thanh, không lộ ra quanh mép thanh
+            (nhất là giao diện sáng, thanh trong suốt). Nằm dưới thanh (z-30) và dưới các bảng công cụ (z-40). */}
+        <div aria-hidden="true" data-dock-scrim className={"dock-scrim pointer-events-none fixed inset-x-0 bottom-0 z-20 lg:hidden " + (centerNode ? "dock-scrim-tall" : "")} />
         <nav aria-label={label} className="floating-dock fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 flex items-center justify-around rounded-full border border-line bg-raised/90 px-1.5 py-1.5 shadow-lg backdrop-blur lg:hidden">
           {left.map((item) => <DockButton key={item.id} item={item} />)}
           {centerNode ?? (
@@ -68,6 +72,7 @@ export function FloatingDock({ left, right, center, centerNode, label = "Mục c
             {open && <span className="text-[10px] font-medium leading-none">Menu</span>}
           </button>
         </nav>
+        </>
       )}
     </RailControl>
   );

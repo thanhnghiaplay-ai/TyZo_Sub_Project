@@ -927,7 +927,8 @@ export function Studio() {
             <BrandMark small title="TyZo Sub" />
             <p className="hidden text-xs font-semibold text-accent min-[480px]:block">TyZo Sub · Công cụ phụ đề AI</p>
           </div>
-          <div className="flex items-center gap-2">
+          {/* Hết chỗ thì xuống dòng (điện thoại hẹp), không đẩy khung rộng hơn màn hình. */}
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
             <button
               type="button"
               data-palette-open
