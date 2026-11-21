@@ -789,6 +789,7 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "doi-gia-goi": "Đổi giá gói thuê phòng",
   "mo-live": "Đổi danh sách model dịch trực tiếp",
   "mo-trau-chuot": "Đổi danh sách model trau chuốt",
+  "sua-lenh-trau-chuot": "Sửa lệnh trau chuốt",
   "goi-dich": "Sửa gói dịch",
   "them-cong-tac": "Thêm cộng tác",
   "go-cong-tac": "Gỡ cộng tác",

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.29.0",
+    time: "16:26 21/11/2026",
+    area: "khac",
+    text: "v5.29.0, Admin sửa lệnh trau chuốt theo thể loại (Chủ chốt bước 4). polish-prompts.ts (thuần, có test): room_settings khóa polish_prompts = { mã thể loại: lệnh }, chỉ thể loại trong GENRES, tối đa GENRE_PROMPT_MAX, bỏ ký tự điều khiển; lưu đúng chữ mặc định hoặc để trống = về mặc định (bỏ mục) để mặc định trong code đổi thì theo. effectiveGenrePolish thay genrePrompt(genre).polish qua PolishOpts.genreText; phần khung polish.ts (giữ nghĩa, câu mẫu, yêu cầu thêm, không câu từ chối, JSON) không sửa được. polish-room.ts: getPolishPrompts (ai đăng nhập cũng đọc, máy khách dựng lệnh), savePolishPrompts (requireRole chu, nhật ký sua-lenh-trau-chuot ghi thể loại nào đổi và số ký tự, không chép nguyên lệnh). use-polish đọc lệnh trước khi ước giá. Giao diện: Cấu hình → Gói → «Lệnh trau chuốt theo thể loại» (chọn thể loại, «· đã sửa», Lưu, Bỏ thay đổi, Về mặc định có hỏi lại). Kiểm trình duyệt 1280 px với tài khoản Admin thử: sửa Kiếm hiệp, Lưu, tải lại còn, Về mặc định trở lại lệnh gốc. CHƯA có nút «Thử trên 20 câu mẫu» (cần gọi model thật). Lưu ý: danh sách model trau chuốt hiện chỉ có model Groq (polish-model-board), Qwen chưa chọn được cho trau chuốt.",
+  },
+  {
     version: "5.28.0",
     time: "16:15 21/11/2026",
     area: "khac",

@@ -6,6 +6,7 @@ import { LiveShowBoard } from "@/components/live-show-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { PaySettings } from "@/components/pay-settings";
 import { PolishModelBoard } from "@/components/polish-model-board";
+import { PolishPromptBoard } from "@/components/polish-prompt-board";
 import { R2Board } from "@/components/r2-board";
 import { ProviderKeyBoards } from "@/components/provider-key-board";
 import { RoomPlansView } from "@/components/room-plans-view";
@@ -63,6 +64,9 @@ export function ConfigTab() {
         </Fold>
         <Fold title="Model trau chuốt bản dịch" hint="Có kiểm duyệt cho thể loại thường, không kiểm duyệt cho 18+">
           <PolishModelBoard />
+        </Fold>
+        <Fold title="Lệnh trau chuốt theo thể loại" hint="Admin sửa giọng văn, phần khung cố định">
+          <PolishPromptBoard />
         </Fold>
       </Page>
       <Page id="thue-phong" current={page}>

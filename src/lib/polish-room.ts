@@ -3,6 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { checkPolishModels, parsePolishModels, type PolishModels } from "@/lib/polish-models";
 import { validPolishTokens } from "@/lib/polish-hold";
+import { POLISH_PROMPTS_KEY, checkPolishPrompts, describePolishPrompts, parsePolishPrompts, type PolishPrompts } from "@/lib/polish-prompts";
 
 /**
  * Danh sách model trau chuốt Chủ đã đặt. Ai đăng nhập cũng đọc được (khách cần để chọn), chỉ Chủ lưu được.
@@ -35,6 +36,36 @@ export const savePolishModels = createServerFn({ method: "POST" })
     `;
     const { describePolishModels } = await import("@/lib/audit-note");
     await writeAudit(context.userId, "mo-trau-chuot", null, describePolishModels(before, data));
+    return data;
+  });
+
+/** Lệnh trau chuốt theo thể loại Admin đã sửa. Ai đăng nhập cũng đọc (máy khách dựng lệnh), chỉ Admin lưu. Lỗi thì {} (dùng mặc định). */
+export const getPolishPrompts = createServerFn({ method: "GET" }).handler(async (): Promise<PolishPrompts> => {
+  try {
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const rows = await sql<{ value: string }>`select value from room_settings where key = ${POLISH_PROMPTS_KEY}`;
+    return parsePolishPrompts(rows[0]?.value);
+  } catch {
+    return {};
+  }
+});
+
+export const savePolishPrompts = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: unknown) => checkPolishPrompts(input))
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    const prev = await sql<{ value: string }>`select value from room_settings where key = ${POLISH_PROMPTS_KEY}`;
+    const before = parsePolishPrompts(prev[0]?.value);
+    const value = JSON.stringify(data);
+    await sql`
+      insert into room_settings (key, value) values (${POLISH_PROMPTS_KEY}, ${value})
+      on conflict (key) do update set value = ${value}
+    `;
+    await writeAudit(context.userId, "sua-lenh-trau-chuot", null, describePolishPrompts(before, data));
     return data;
   });
 

@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.28.0 trên `work`**, `main` xem `BANG_DIEU.md`.md`.26.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.29.0 trên `work`**, `main` xem `BANG_DIEU.md`.md`.md`.26.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.29.0**: Admin sửa lệnh trau chuốt theo thể loại ở Cấu hình → Gói (phần khung cố định), nhật ký sua-lenh-trau-chuot. Bấm thử lưu/tải lại/về mặc định ổn. tsc sạch, test 191 + 1366 pass. Chưa có nút thử 20 câu mẫu; model trau chuốt vẫn chỉ Groq.
 - **v5.28.0**: Trau chuốt: lệnh cho viết lại tự nhiên (giữ nghĩa), 6 câu mẫu tiếng Việt, ngữ cảnh 15 câu trước, nhiệt độ 0,3, ô «Yêu cầu thêm» của khách (≤300 ký tự, dưới luật cố định). tsc sạch, test 191 + 1359 pass. CHƯA so trước/sau với model thật: Admin cần chạy clip mẫu và chấm ở khung so sánh.
 - **v5.27.1**: Đổi chữ «Chủ» → «Admin» trên giao diện (57 chỗ). Không đổi mã quyền `chu`, «Chủ tài khoản» ngân hàng, điều khoản (7 chỗ, gom lần đổi điều khoản sau), CHANGELOG cũ. tsc sạch, test 191 + 1355 pass.
 - **v5.27.0**: Luồng dịch bản nhỏ: bước 5/5 lúc chờ xem bảng nhân vật có «Dịch tiếp» (tự đóng tab), Hủy hỏi lại, thanh tiến độ ghi đang chờ, câu giá ghi đã giữ, hộp Làm lại đúng Token dịch, báo đổi model lúc đang chạy áp dụng lần sau. tsc sạch, eslint 0 lỗi, test 191 + 1355 pass. CHƯA bấm thử lúc chờ thật (máy thử không gọi được nhà nhận dạng). Còn 4 bước Chủ chốt: đổi «Chủ» → Admin, trau chuốt, Admin sửa lệnh, chia hai phần.

@@ -50,6 +50,8 @@ export type PolishOpts = {
   language: string;
   /** Yêu cầu thêm của khách cho lần trau chuốt này (tối đa POLISH_REQUEST_MAX ký tự). Đặt dưới luật cố định. */
   request?: string;
+  /** Lệnh giọng văn của thể loại do Admin sửa (polish-prompts.ts). Không có thì dùng mặc định trong code. */
+  genreText?: string;
 };
 
 /** Độ dài tối đa ô «Yêu cầu thêm» của khách. */
@@ -97,7 +99,7 @@ type Line = { i: number; o: string; t: string };
 type CtxLine = { o: string; t: string };
 
 export function polishSystem(count: number, opts: PolishOpts): string {
-  const genre = genrePrompt(opts.genre).polish.slice(0, GENRE_PROMPT_MAX);
+  const genre = (opts.genreText && opts.genreText.trim() ? opts.genreText : genrePrompt(opts.genre).polish).slice(0, GENRE_PROMPT_MAX);
   return [
     `You are a senior subtitle editor polishing an existing ${opts.language} translation of a film or TV show. Each item in "lines" has the source line "o" and its current translation "t". Return the improved translation for every item.`,
     'Goal: make every line sound like what a native speaker would actually say in this scene. Rewrite freely: change word order, drop filler words and literal particles, pick everyday words and natural sentence-final particles, use the right pronoun pair. Word-for-word, textbook or translated-sounding phrasing is the main thing to fix.',

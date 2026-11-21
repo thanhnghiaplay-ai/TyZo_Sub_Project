@@ -8,7 +8,8 @@ import { contextBlock, makePolishCall, ROOM_KEY } from "@/lib/sub/groq";
 import { cleanPolishRequest, polishAll, polishSummary, POLISH_REQUEST_MAX, type PolishItem, type PolishOpts, type PolishResult } from "@/lib/sub/polish";
 import { planPolish, polishConfirmText, type PolishPlan } from "@/lib/polish-estimate";
 import { acceptAll, acceptOne, buildReview, hasPending, rejectOne, revertAll, type PolishReview } from "@/lib/polish-review";
-import { getPolishModels, openPolishTicket, quotePolishChoices, type PolishChoiceView } from "@/lib/polish-room";
+import { getPolishModels, getPolishPrompts, openPolishTicket, quotePolishChoices, type PolishChoiceView } from "@/lib/polish-room";
+import { effectiveGenrePolish, type PolishPrompts } from "@/lib/polish-prompts";
 import { polishIdsFor } from "@/lib/polish-models";
 import { closeRoomTicket } from "@/lib/sub/room-ticket";
 import type { Seg } from "@/lib/sub/types";
@@ -56,6 +57,8 @@ export function usePolish(host: Host) {
       return "";
     }
   });
+  /** Lệnh thể loại Admin đã sửa, đọc mỗi lần mở khung trau chuốt. Đọc lỗi thì dùng mặc định. */
+  const promptsRef = useRef<PolishPrompts>({});
   const requestRef = useRef(request);
   requestRef.current = request;
   const setRequest = useCallback((value: string) => {
@@ -90,7 +93,7 @@ export function usePolish(host: Host) {
     ]
       .filter(Boolean)
       .join("\n\n");
-    const opts: PolishOpts = { genre: h.genre, context, language: h.target, request: cleanPolishRequest(requestRef.current) };
+    const opts: PolishOpts = { genre: h.genre, context, language: h.target, request: cleanPolishRequest(requestRef.current), genreText: effectiveGenrePolish(h.genre, promptsRef.current) };
     return { items, opts, plan: planPolish(items, opts) };
   }, []);
 
@@ -109,6 +112,7 @@ export function usePolish(host: Host) {
     const h = hostRef.current;
     if (h.busy) return h.say("Đang chạy. Hãy đợi xong rồi mới trau chuốt.", true);
     if (!h.getSegs().some((seg) => seg.translation && seg.translation.trim())) return h.say("Chưa có bản dịch để trau chuốt.", true);
+    promptsRef.current = await getPolishPrompts().catch(() => ({}));
     const built = build();
     if (built.plan.sendable === 0) {
       setError("Không có câu nào cần trau chuốt (câu bạn sửa tay được giữ nguyên).");
