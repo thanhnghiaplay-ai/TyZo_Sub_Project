@@ -201,7 +201,7 @@ export function HomeHero({
         <input
           type="url"
           value={url}
-          placeholder="Hoặc dán link file trực tiếp https://…/phim.mp4"
+          placeholder="Hoặc dán link file trực tiếp https://…/video.mp4"
           aria-label="Link file trực tiếp"
           className="min-tap w-full rounded-full border border-line bg-card pr-4 pl-10 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-invalid={Boolean(linkCheck.problem)}

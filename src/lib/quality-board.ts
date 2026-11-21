@@ -257,7 +257,7 @@ export function hintsFor(r: Rollup, th: QualityThresholds = DEFAULT_QUALITY_THRE
   if (r.parts.total && r.parts.decodeFail / r.parts.total > th.yellowDecodeShare) out.push("Nhiều đoạn không giải mã được. Xem lại codec và định dạng video của khách.");
   if (known && r.bands.low / known > th.yellowLowShare) out.push("Nhiều câu có độ tin thấp. Thử model chính xác hơn hoặc bật lọc đoạn có tiếng người.");
   if (r.appFiltered / r.segments > th.yellowFilterRate) out.push("App lọc bỏ nhiều câu Whisper trả về. Xem lại ngưỡng lọc ảo giác.");
-  if (r.parts.total && r.parts.empty / r.parts.total > 0.3) out.push("Nhiều đoạn Whisper không trả câu. Có thể phim ít thoại hoặc nhạc nền lấn tiếng.");
+  if (r.parts.total && r.parts.empty / r.parts.total > 0.3) out.push("Nhiều đoạn Whisper không trả câu. Có thể video ít thoại hoặc nhạc nền lấn tiếng.");
   return out;
 }
 

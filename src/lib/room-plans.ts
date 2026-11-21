@@ -25,7 +25,7 @@ export function roomAccess(
     const name = roomPlan(input.plan!)?.name ?? input.plan;
     return {
       kind: "paid" as const,
-      text: `Gói ${name} còn đến ${until!.toLocaleString("vi-VN")}. Trong hạn không giới hạn số tệp, được xuất file Vietsub.`,
+      text: `Gói ${name} còn đến ${until!.toLocaleString("vi-VN")}. Trong hạn không giới hạn số tệp, được xuất file phụ đề.`,
     };
   }
   if (input.plan && until && !Number.isNaN(until.getTime()) && until.getTime() <= now) {
@@ -34,7 +34,7 @@ export function roomAccess(
   if (input.trialLeft > 0) {
     return {
       kind: "trial" as const,
-      text: `Dùng thử: còn ${input.trialLeft} tệp, tối đa ${TRIAL_MINUTES} phút. Không xuất file Vietsub.`,
+      text: `Dùng thử: còn ${input.trialLeft} tệp, tối đa ${TRIAL_MINUTES} phút. Không xuất file phụ đề.`,
     };
   }
   return { kind: "locked" as const, text: "Hết lượt dùng thử. Hãy mua gói để tải và dịch tiếp." };
@@ -61,10 +61,10 @@ export function exportNotice(
   if (access.kind === "paid") return null;
   const until = input.planUntil ? new Date(input.planUntil) : null;
   if (input.plan && until && !Number.isNaN(until.getTime()) && until.getTime() <= now) {
-    return "Gói đã hết hạn. Không xuất được file Vietsub.";
+    return "Gói đã hết hạn. Không xuất được file phụ đề.";
   }
-  if (access.kind === "trial") return "Tài khoản dùng thử không xuất được file Vietsub.";
-  return "Tài khoản không còn hạn. Không xuất được file Vietsub.";
+  if (access.kind === "trial") return "Tài khoản dùng thử không xuất được file phụ đề.";
+  return "Tài khoản không còn hạn. Không xuất được file phụ đề.";
 }
 
 export function trialFileProblem(seconds: number, bytes: number) {

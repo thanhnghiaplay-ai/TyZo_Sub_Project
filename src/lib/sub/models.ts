@@ -70,7 +70,7 @@ export const CHAT_MODELS: ChatModel[] = [
     quality: 8.5,
     asian: 8.5,
     price: "Enterprise",
-    note: "Ngữ cảnh rất dài. Hợp phim bộ.",
+    note: "Ngữ cảnh rất dài. Hợp nội dung dài nhiều tập.",
   },
   {
     id: "openai/gpt-oss-safeguard-20b",
@@ -102,7 +102,7 @@ export const CHAT_MODELS: ChatModel[] = [
     quality: 9,
     asian: 10,
     price: "$1.60 / $6.40",
-    note: "Alibaba. Chắc nhất cho phim Trung, đắt hơn.",
+    note: "Alibaba. Chắc nhất cho nội dung tiếng Trung, đắt hơn.",
     provider: "alibaba",
   },
   {
@@ -124,7 +124,7 @@ export function chatProviderOf(model: Pick<ChatModel, "provider">): import("./pr
 }
 
 export const ASR_MODELS = [
-  { id: "whisper-large-v3-turbo", name: "Whisper Turbo", price: "$0.04/giờ", note: "Nhanh, đủ cho hầu hết phim" },
+  { id: "whisper-large-v3-turbo", name: "Whisper Turbo", price: "$0.04/giờ", note: "Nhanh, đủ cho hầu hết video" },
   { id: "whisper-large-v3", name: "Whisper Large v3", price: "$0.111/giờ", note: "Chính xác hơn, chậm và đắt hơn" },
   { id: "qwen-audio-3.0-asr-flash-filetrans", name: "Alibaba Filetrans", price: "~$0.126/giờ", note: "Cả file, mạnh tiếng Á, cần link trực tiếp" },
   { id: "deepgram-nova-3", name: "Deepgram Nova-3", price: "~$0.288/giờ", note: "Cả file, hợp Trung, Nhật, Hàn, Anh, cần link trực tiếp" },
@@ -320,13 +320,13 @@ export const VOICE_LANES: readonly VoiceLane[] = [
   {
     id: "clear",
     title: "Xem là hiểu",
-    fit: "Hợp phim thường. Xem, đọc và nghe là hiểu ngay.",
+    fit: "Hợp nội dung thường. Xem, đọc và nghe là hiểu ngay.",
     pace: "Vừa. Nên dùng",
     models: ["openai/gpt-oss-120b"],
   },
   {
     id: "cjk",
-    title: "Phim Trung, Nhật, Hàn",
+    title: "Nội dung Trung, Nhật, Hàn",
     fit: "Hợp khi lời gốc là tiếng Trung, Nhật hoặc Hàn.",
     pace: "Chậm hơn, đắt hơn",
     models: ["qwen/qwen3.8-27b"],

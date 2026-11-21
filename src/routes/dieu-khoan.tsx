@@ -15,7 +15,7 @@ function TermsPage() {
         <BackButton />
         <BrandMark title="TyZo Sub" />
         <div>
-          <p className="gate-kicker">Phòng chiếu TyZo Sub</p>
+          <p className="gate-kicker">TyZo Sub · Công cụ phụ đề AI</p>
           <h1 className="text-xl font-semibold">Điều khoản và Chính sách</h1>
           <p className="text-sm text-muted">Phiên bản {TERMS_VERSION}. Bạn đồng ý bản này bằng ô tích ở màn Đăng ký hoặc Đăng nhập.</p>
           <VersionMark align="start" />

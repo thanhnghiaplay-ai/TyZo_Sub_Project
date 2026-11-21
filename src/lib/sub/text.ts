@@ -194,7 +194,7 @@ export function toTxt(items: Seg[]): string {
   );
 }
 
-/** Bản nhận dạng gốc của Whisper, từng câu theo giờ, trước khi qua bước phân tích phim và dịch. */
+/** Bản nhận dạng gốc của Whisper, từng câu theo giờ, trước khi qua bước phân tích nội dung và dịch. */
 export function toRawSrt(items: Seg[]): string {
   return srtBlocks(items, (seg) => seg.raw ?? seg.original);
 }

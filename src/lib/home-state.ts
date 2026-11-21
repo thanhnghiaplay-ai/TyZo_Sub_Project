@@ -1,6 +1,6 @@
 // Hàm thuần cho trang chủ một ô: khi nào hiện ô thả lớn, và dán chữ nào thì coi là link.
 
-/** Thể loại phim: dùng chung cho chip ở trang chủ và ô chọn trong tab Phim. */
+/** Thể loại nội dung: dùng chung cho chip ở trang chủ và ô chọn trong tab Video. */
 export const GENRES: [string, string][] = [
   ["auto", "Tự động"],
   ["action", "Hành động"],

@@ -10,9 +10,9 @@ export const Route = createFileRoute("/goi")({
 
 /** Giá, số ngày, giá gạch và số tiết kiệm lấy hết từ giá Admin đã lưu (useRoomPlans, mặc định ROOM_PLANS). Ở đây chỉ giữ lời ghi chú. */
 const PLAN_NOTES: Record<RoomPlanId, string> = {
-  ngay: "Một buổi. Trong 24 giờ không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
+  ngay: "Một buổi. Trong 24 giờ không giới hạn số tệp. Cước của nhà cung cấp AI (Groq, Alibaba…) vẫn do bạn tự trả bằng key của bạn.",
   tuan: "Trong 7 ngày không giới hạn số tệp. Rẻ hơn mua bảy ngày lẻ.",
-  thang: "Trong 30 ngày không giới hạn số tệp. Tiền Groq vẫn do bạn tự trả.",
+  thang: "Trong 30 ngày không giới hạn số tệp. Cước của nhà cung cấp AI (Groq, Alibaba…) vẫn do bạn tự trả bằng key của bạn.",
 };
 
 function GoiPage() {
@@ -39,7 +39,7 @@ function GoiPage() {
           <article className="rounded-[var(--radius-card)] border border-line bg-raised p-4">
             <p className="text-sm text-muted">Dùng thử</p>
             <p className="mt-1 text-2xl font-semibold">0 đ</p>
-            <p className="mt-2 text-sm text-muted">Đăng ký, chưa mua gói: {TRIAL_FILES} tệp, tối đa {TRIAL_MINUTES} phút, đủ chức năng trên màn hình. Không xuất file Vietsub.</p>
+            <p className="mt-2 text-sm text-muted">Đăng ký, chưa mua gói: {TRIAL_FILES} tệp, tối đa {TRIAL_MINUTES} phút, đủ chức năng trên màn hình. Không xuất file phụ đề.</p>
           </article>
           {plans.map((plan) => (
             <article key={plan.id} className="rounded-[var(--radius-card)] border border-line bg-card p-4">

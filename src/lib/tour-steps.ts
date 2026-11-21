@@ -40,7 +40,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   "quick-start": [
     { sel: "[data-tour=drop]", sheet: "closed", title: "1. Chọn video", text: "Kéo thả tệp vào khung phát, hoặc bấm để chọn. Cũng dán được link file trực tiếp ở ô bên dưới." },
     { sel: "#tool-tab-key", rail: true, press: true, title: "2. Chọn cách dùng", text: "Mở mục Cài đặt dịch: dùng key Groq của bạn, hoặc trả theo lượt bằng Token dịch đã mua." },
-    { sel: "#tool-tab-phim", rail: true, press: true, title: "3. Chọn phim", text: "Mở Phim để chọn ngôn ngữ và thể loại." },
+    { sel: "#tool-tab-phim", rail: true, press: true, title: "3. Chọn video", text: "Mở Video để chọn ngôn ngữ và thể loại." },
     { sel: "[data-tour=run]", sheet: "open", tab: "run", title: "4. Dịch", text: "Bấm Tải và dịch. Thanh tiến trình cho biết đang ở bước nào." },
     { sel: "[data-tour=export]", sheet: "closed", title: "5. Lấy phụ đề", text: "Dịch xong thì bấm Tải phụ đề rồi chọn SRT, VTT hoặc TXT (gói dùng thử chưa xuất được). Bấm một câu trong bản dịch để nhảy tới đúng chỗ." },
   ],
@@ -63,7 +63,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   ],
   "thuat-ngu": [
     { sel: "#tool-tab-thuatngu", rail: true, press: true, title: "1. Mở Thuật ngữ", text: "Nằm trong nhóm Dịch bình thường của menu trái." },
-    { sel: "[data-tour=glossary-genre]", sheet: "open", title: "2. Chọn thể loại", text: "Chọn thể loại của phim để nạp đúng bộ thuật ngữ. Chọn Tự động thì app không nạp bộ có sẵn." },
+    { sel: "[data-tour=glossary-genre]", sheet: "open", title: "2. Chọn thể loại", text: "Chọn thể loại của nội dung để nạp đúng bộ thuật ngữ. Chọn Tự động thì app không nạp bộ có sẵn." },
   ],
   "nap-tien": [
     { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },

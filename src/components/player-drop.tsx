@@ -85,7 +85,7 @@ export function PlayerDrop({
         <input
           type="url"
           value={url}
-          placeholder="Hoặc dán link file trực tiếp https://…/phim.mp4"
+          placeholder="Hoặc dán link file trực tiếp https://…/video.mp4"
           aria-label="Link file trực tiếp"
           className="h-9 w-full rounded-[var(--radius-ctl)] border border-line bg-bg pr-2 pl-8 text-sm text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
           aria-invalid={Boolean(linkCheck.problem)}

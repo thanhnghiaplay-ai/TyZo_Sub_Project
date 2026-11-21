@@ -58,7 +58,7 @@ export function CueEditor({
           }
         }}
       />
-      <input className={FIELD} placeholder="Áp cho cả phim: tên gốc = cách dịch" aria-label="Thuật ngữ áp cho cả phim" value={rule} onChange={(event) => onRule(event.target.value)} />
+      <input className={FIELD} placeholder="Áp cho cả video: tên gốc = cách dịch" aria-label="Thuật ngữ áp cho cả video" value={rule} onChange={(event) => onRule(event.target.value)} />
       <div className="flex flex-wrap items-center gap-2">
         <button type="submit" className="min-tap inline-flex items-center gap-1.5 rounded-full bg-accent px-4 text-sm font-semibold text-ink">
           <Icon slot="st.ok" className="size-4" />

@@ -69,7 +69,7 @@ function Splash() {
   return (
     <main className="gate-screen gate-splash" aria-live="polite">
       <BrandMark title="TyZo Sub" />
-      <p className="gate-kicker">Phòng chiếu</p>
+      <p className="gate-kicker">Công cụ phụ đề AI</p>
       <h1 className="gate-title">TyZo Sub</h1>
       <p className="gate-wait">Đang mở phòng dịch</p>
     </main>
@@ -84,7 +84,7 @@ function Terms({ onAccept, onDecline }: { onAccept: () => void; onDecline: () =>
       <header className="gate-doc-head">
         <BrandMark title="TyZo Sub" />
         <div>
-          <p className="gate-kicker">Phòng chiếu TyZo Sub</p>
+          <p className="gate-kicker">TyZo Sub · Công cụ phụ đề AI</p>
           <h1 className="text-xl font-semibold">Điều khoản và Chính sách</h1>
           <p className="text-sm text-muted">Phiên bản {TERMS_VERSION}. Đồng ý mới được dùng. Không đồng ý thì dừng ở đây.</p>
           <VersionMark align="start" />

@@ -46,7 +46,7 @@ export type ProviderInfo = {
   /** Tên dòng trong room_settings. */
   settings: { key: string; models: string; desk: string };
   /**
-   * Đường dịch bằng mô hình (bắt buộc khi caps có "chat"). Mọi việc dùng mô hình ngôn ngữ (dịch, phân tích phim,
+   * Đường dịch bằng mô hình (bắt buộc khi caps có "chat"). Mọi việc dùng mô hình ngôn ngữ (dịch, phân tích nội dung,
    * nhận thể loại, trau chuốt) đi qua đường này, theo nhà của model, không gắn cứng nhà nào.
    */
   chat?: ProviderChat;

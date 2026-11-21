@@ -263,7 +263,7 @@ describe("Bước 7.2 — tab theo thứ tự dùng", () => {
   it("Cài đặt dịch, Phim, Ngữ cảnh (3 nhánh); các ô nhập vẫn nằm trong trang, không mất dữ liệu", () => {
     assert.deepEqual(
       [TOOL_NAME.key, TOOL_NAME.phim, TOOL_NAME.cast, TOOL_NAME.voice, TOOL_NAME.check],
-      ["Cài đặt dịch", "Phim", "Ngữ cảnh", "Thuyết minh", "Kiểm tra"],
+      ["Cài đặt dịch", "Video", "Ngữ cảnh", "Thuyết minh", "Kiểm tra"],
     );
     const keys = ["key", "phim", "cast", "voice", "check"];
     const at = keys.map((key) => source.indexOf(`["${key}", TOOL_NAME.`));
@@ -280,10 +280,10 @@ describe("Bước 7.2 — tab theo thứ tự dùng", () => {
     assert.match(key, /Groq API key/);
     assert.match(key, /Đồng bộ key/);
     assert.match(key, /Nhận dạng giọng/);
-    assert.equal(key.includes("Ngữ cảnh phim"), false);
+    assert.equal(key.includes("Ngữ cảnh nội dung"), false);
     const cast = source.slice(source.indexOf('id="tool-cast"'), source.indexOf('id="tool-voice"'));
-    assert.match(cast, /role="tablist" aria-label="Ngữ cảnh phim"/);
-    assert.ok(cast.indexOf('role="tablist"') < cast.indexOf("Phân tích phim"));
+    assert.match(cast, /role="tablist" aria-label="Ngữ cảnh nội dung"/);
+    assert.ok(cast.indexOf('role="tablist"') < cast.indexOf("Phân tích nội dung"));
     assert.match(source, /useState<"cast" \| "terms" \| "note">\("cast"\)/);
     assert.match(cast, /hidden=\{ctxView !== "note"\}/);
     assert.match(cast, /app\.setTitle/);

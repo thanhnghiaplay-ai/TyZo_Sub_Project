@@ -179,5 +179,5 @@ export function formatGapConfirm(plan: GapPlan): string {
   const deferred = plan.deferred.length
     ? ` ${plan.deferred.length} khoảng không vừa ngân sách ${plan.budgetSeconds} giây nên không gửi.`
     : "";
-  return `Sẽ gửi ${plan.selected.length} khoảng (${plan.audioSeconds.toFixed(1)} giây tiếng, tính tiền ${plan.billedSeconds.toFixed(1)} giây). Không gửi cả phim.${deferred} ${list}${extra}. Gửi không?`;
+  return `Sẽ gửi ${plan.selected.length} khoảng (${plan.audioSeconds.toFixed(1)} giây tiếng, tính tiền ${plan.billedSeconds.toFixed(1)} giây). Không gửi cả video.${deferred} ${list}${extra}. Gửi không?`;
 }

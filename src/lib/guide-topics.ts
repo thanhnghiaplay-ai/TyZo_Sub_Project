@@ -124,7 +124,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       page: { label: "Về trang chủ", to: "/" },
       steps: [
         { text: `Đăng ký hoặc đăng nhập. Tài khoản mới được dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB.` },
-        { text: "Ở trang chủ, kéo thả video vào ô lớn hoặc bấm để chọn tệp. Cũng dán được link tải thẳng về tệp, không phải link trang xem phim." },
+        { text: "Ở trang chủ, kéo thả video vào ô lớn hoặc bấm để chọn tệp. Cũng dán được link tải thẳng về tệp, không phải link trang xem video." },
         { text: `Mở «${UI.keyTab}» ở menu trái và dán key của bạn (Groq, và Alibaba, Deepgram, AssemblyAI, Speechmatics hay Soniox nếu dùng). Muốn trả theo lượt bằng Token dịch đã mua thì chọn ở bước cuối «Tải và dịch».` },
         { text: `Mở «${UI.filmTab}», chọn ngôn ngữ và thể loại, rồi bấm «${UI.startRun}». Thanh tiến trình cho biết đang ở bước nào.` },
         { text: `Dịch xong, bấm «${UI.download}» và chọn SRT, VTT hoặc TXT. Bấm một câu trong bản dịch để nhảy tới đúng chỗ trong video. Tài khoản dùng thử chưa xuất được file.` },
@@ -139,7 +139,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       tour: "phu-de",
       steps: [
         { text: "Bản dịch chạy cùng video. Bấm một câu trong danh sách để video nhảy tới đúng chỗ đó." },
-        { text: "Thấy câu dịch chưa ổn thì sửa ngay tại dòng, không cần dịch lại cả phim." },
+        { text: "Thấy câu dịch chưa ổn thì sửa ngay tại dòng, không cần dịch lại cả video." },
         { text: "Trong bảng cài đặt phụ đề có phông, cỡ chữ, màu, nền và vị trí. Khung mẫu ở đầu bảng cho thấy kết quả ngay khi chỉnh." },
       ],
     },
@@ -175,14 +175,14 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
     },
     {
       id: "thuat-ngu",
-      title: "Thuật ngữ theo thể loại phim",
+      title: "Thuật ngữ theo thể loại nội dung",
       group: "tinh-nang",
       intro: "Giúp dịch đúng từ chuyên dụng của từng thể loại.",
       words: "thuat ngu glossary the loai phim tu dien dich dung tu",
       tour: "thuat-ngu",
       steps: [
         { text: `Mở nhóm «${UI.advanced}» ở menu trái, chọn «${UI.glossary}».` },
-        { text: "Chọn thể loại của phim. Bộ thuật ngữ có cho tiếng Nhật, Hàn, Trung và Anh." },
+        { text: "Chọn thể loại của nội dung. Bộ thuật ngữ có cho tiếng Nhật, Hàn, Trung và Anh." },
         { text: "Chọn «Tự động» thì app không nạp bộ thuật ngữ có sẵn. Thuật ngữ bạn tự thêm lưu trên máy này." },
       ],
     },
@@ -196,8 +196,8 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       page: { label: "Xem bảng giá", to: "/goi" },
       steps: [
         { text: `Mua Token dịch: mở «${UI.account}» ở menu trái, chọn «${UI.wallet}», bấm gói. Mã QR hiện ra. Chuyển khoản đúng số tiền và nội dung. Đơn còn hiệu lực ${PAY_MINUTES} phút. Tiền về thì được Token dịch, không cộng số dư.` },
-        { text: `Gói thuê phòng: ${planLines(plans)}. Bấm gói thì cũng hiện mã QR, chuyển khoản đúng số thì mở hạn. Trong hạn không giới hạn số tệp và được xuất file Vietsub; ${planSaving(plans)}.` },
-        { text: `Dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB, không xuất file Vietsub.` },
+        { text: `Gói thuê phòng: ${planLines(plans)}. Bấm gói thì cũng hiện mã QR, chuyển khoản đúng số thì mở hạn. Trong hạn không giới hạn số tệp và được xuất file phụ đề; ${planSaving(plans)}.` },
+        { text: `Dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB, không xuất file phụ đề.` },
         { text: "Trả theo lượt trừ Token dịch. Phòng giữ số ước tính, khi xong trừ số thực và trả phần thừa nếu gói còn hạn. Hết hạn thì phần còn lại mất, không hoàn tiền. Orpheus khi dùng key của phòng và giọng Aura cũng trừ Token dịch. Neural không trừ." },
         { text: "Dịch trực tiếp dùng cùng Token dịch. Phiên không giữ số dư. Hết Token dịch thì phiên dừng." },
         { text: "Nếu bạn dùng key Groq của mình thì Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ Token dịch cho lượt chạy đó." },
@@ -246,7 +246,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       page: { label: `Mở «${UI.appeal}»`, to: "/yeu-cau" },
       steps: [
         { text: `Việc cần người xem lại (gói, Token dịch, khóa, cấm): gửi ở «${UI.appeal}». Mô tả rõ việc và thời điểm xảy ra.` },
-        { text: "Không gửi key Groq hay mật khẩu trong yêu cầu." },
+        { text: "Không gửi key hay mật khẩu trong yêu cầu." },
       ],
     },
   ];
@@ -256,7 +256,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "khong-xuat-duoc",
     q: "Vì sao tôi không tải được file phụ đề?",
-    a: "Tài khoản dùng thử và tài khoản hết hạn gói không xuất được file Vietsub. Mua gói thuê phòng để xuất file. Phụ đề trên màn hình vẫn xem được bình thường.",
+    a: "Tài khoản dùng thử và tài khoản hết hạn gói không xuất được file phụ đề. Mua gói thuê phòng để xuất file. Phụ đề trên màn hình vẫn xem được bình thường.",
     words: "xuat file srt vtt khong tai duoc dung thu het han",
   },
   {
@@ -280,7 +280,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "xoa-du-lieu",
     q: "Xóa dữ liệu trình duyệt thì mất gì?",
-    a: "Key Groq, tên phim, ghi chú, thuật ngữ bạn thêm và giọng đã khóa lưu trên máy bạn nên sẽ mất. Tài khoản, Token dịch và gói thuê nằm ở phòng nên không mất.",
+    a: "Key của bạn, tên video, ghi chú, thuật ngữ bạn thêm và giọng đã khóa lưu trên máy bạn nên sẽ mất. Tài khoản, Token dịch và gói thuê nằm ở phòng nên không mất.",
     words: "xoa du lieu trinh duyet cache mat key luu tren may",
   },
   {

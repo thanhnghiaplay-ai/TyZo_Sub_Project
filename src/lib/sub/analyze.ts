@@ -1,4 +1,4 @@
-// Phần thuần của bước «Phân tích phim» (analyzeFilm ở groq.ts): dựng câu lệnh và đọc kết quả.
+// Phần thuần của bước «Phân tích nội dung» (analyzeFilm ở groq.ts): dựng câu lệnh và đọc kết quả.
 // Tách riêng, chỉ import tương đối, để test được bằng Node không cần mạng (bước C1, HANDOFF_NANG_CAP.md).
 import { glossaryList, stripFence, type Bible } from "./text.ts";
 
@@ -36,6 +36,6 @@ export function analyzeMessages(input: AnalyzeInput): AnalyzeMsg[] {
 /** Đọc JSON model trả về. Hỏng thì ném lỗi để lớp gọi báo «Không tạo được bảng». */
 export function parseBible(content: string): Bible {
   const parsed: unknown = JSON.parse(stripFence(content));
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Phân tích phim trả về dữ liệu không phải đối tượng JSON.");
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("Phân tích nội dung trả về dữ liệu không phải đối tượng JSON.");
   return parsed as Bible;
 }

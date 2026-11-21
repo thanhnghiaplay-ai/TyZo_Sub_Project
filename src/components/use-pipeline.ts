@@ -924,7 +924,7 @@ export function usePipeline() {
 
   const exportSub = useCallback(
     async (format: "srt" | "vtt" | "txt") => {
-      if (!(await exportAllowed("file Vietsub"))) return;
+      if (!(await exportAllowed("file phụ đề"))) return;
       if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
       const segs = job.current.segs;
       saveText(format === "vtt" ? toVtt(segs) : format === "txt" ? toTxt(segs) : toSrt(segs), "." + format);
@@ -1054,7 +1054,7 @@ export function usePipeline() {
       if (verdict.state === "bad") return say(verdict.text, true);
     }
     if (!file && !audioFile && !/^https?:\/\//i.test(link)) return say("Link phải bắt đầu bằng http:// hoặc https://.", true);
-    if (analyzing) return say("Đang phân tích phim, chờ một chút.", true);
+    if (analyzing) return say("Đang phân tích nội dung, chờ một chút.", true);
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return say("Trình duyệt này không hỗ trợ xử lý âm thanh. Hãy cập nhật trình duyệt.", true);
     const idNow = mediaId();
@@ -1176,7 +1176,7 @@ export function usePipeline() {
 
     const ensureAnalysis = async () => {
       if (!j.analysisP) {
-        j.note = "đang phân tích phim…";
+        j.note = "đang phân tích nội dung…";
         setAnalyzing(true);
         progress();
         const analysisModel =
@@ -2282,14 +2282,14 @@ export function usePipeline() {
     if (roomPayRef.current) {
       try {
         const spanSeconds = Math.max(60, Math.ceil(Math.max(0, ...job.current.segs.map((seg) => seg.end))));
-        ticketId = (await openRoomTicket({ fileName: "Phân tích phim", seconds: spanSeconds, asrModel, chatModel: analysisModel })).id;
+        ticketId = (await openRoomTicket({ fileName: "Phân tích nội dung", seconds: spanSeconds, asrModel, chatModel: analysisModel })).id;
         releasePlayback = claimPlayback(ticketId);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần phân tích.", true);
       }
     }
     setAnalyzing(true);
-    say("Đang phân tích phim…");
+    say("Đang phân tích nội dung…");
     const controller = new AbortController();
     job.current.abort = controller;
     let analysisFailed = false;
@@ -2537,7 +2537,7 @@ export function usePipeline() {
       setGapPlanState(null);
       say(
         added
-          ? `Đã thêm ${added} câu từ khoảng trống. Bấm Tiếp tục để dịch phần mới. Không nhận dạng lại cả phim.`
+          ? `Đã thêm ${added} câu từ khoảng trống. Bấm Tiếp tục để dịch phần mới. Không nhận dạng lại cả video.`
           : `Đã gửi ${sent} khoảng nhưng không thêm câu mới. Không gửi thêm.`,
       );
     } catch (error) {

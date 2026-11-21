@@ -85,7 +85,7 @@ describe("dò khoảng trống có tiếng", () => {
     const text = formatGapConfirm(plan);
     assert.match(text, /Sẽ gửi/);
     assert.equal(text.includes("$"), false);
-    assert.match(text, /Không gửi cả phim/);
+    assert.match(text, /Không gửi cả video/);
     assert.match(text, /Gửi không\?/);
   });
 

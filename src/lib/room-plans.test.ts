@@ -15,7 +15,7 @@ describe("hạn gói", () => {
   it("đăng ký chưa nạp là dùng thử", () => {
     assert.equal(
       roomAccess({ plan: null, planUntil: null, trialLeft: 1 }, now).text,
-      "Dùng thử: còn 1 tệp, tối đa 10 phút. Không xuất file Vietsub.",
+      "Dùng thử: còn 1 tệp, tối đa 10 phút. Không xuất file phụ đề.",
     );
   });
 
@@ -36,10 +36,10 @@ describe("hạn gói", () => {
   });
 
   it("xuất file chỉ khi còn hạn", () => {
-    assert.equal(exportNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), "Tài khoản dùng thử không xuất được file Vietsub.");
+    assert.equal(exportNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), "Tài khoản dùng thử không xuất được file phụ đề.");
     assert.equal(
       exportNotice({ plan: "ngay", planUntil: "2026-11-05T09:00:00.000Z", trialLeft: 0 }, now),
-      "Gói đã hết hạn. Không xuất được file Vietsub.",
+      "Gói đã hết hạn. Không xuất được file phụ đề.",
     );
     assert.equal(exportNotice({ plan: "tuan", planUntil: "2026-11-06T10:00:00.000Z", trialLeft: 0 }, now), null);
   });

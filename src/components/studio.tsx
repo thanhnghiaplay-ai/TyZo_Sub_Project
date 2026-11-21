@@ -925,7 +925,7 @@ export function Studio() {
           <div className="flex min-w-0 items-center gap-2">
             <RailToggle />
             <BrandMark small title="TyZo Sub" />
-            <p className="hidden text-xs font-semibold text-accent min-[480px]:block">Phòng chiếu TyZo Sub</p>
+            <p className="hidden text-xs font-semibold text-accent min-[480px]:block">TyZo Sub · Công cụ phụ đề AI</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -1336,7 +1336,7 @@ export function Studio() {
             />
           </div>
         </details>
-          <InfoTip label="Về chọn model">Một lần dịch giữ một lối. Không trộn model nhỏ vào phim đang xem.</InfoTip>
+          <InfoTip label="Về chọn model">Một lần dịch giữ một lối. Không trộn model nhỏ vào video đang dịch.</InfoTip>
         </div>
         <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || showRoomPrice) ? <>{(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
           {asrPick.map((row) => (
@@ -1373,7 +1373,7 @@ export function Studio() {
           <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
           Kiểm tra ngôn ngữ từng đoạn
         </label>
-          <InfoTip label="Giải thích: Kiểm tra ngôn ngữ từng đoạn">Hợp phim lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy (trả theo lượt thì trừ thêm Token dịch cho phần đó). Tắt thì chạy như cũ.</InfoTip>
+          <InfoTip label="Giải thích: Kiểm tra ngôn ngữ từng đoạn">Hợp video lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy (trả theo lượt thì trừ thêm Token dịch cho phần đó). Tắt thì chạy như cũ.</InfoTip>
         </div>
         <Select label="Số luồng nhận dạng" tip={THREADS_TIP} value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
           <option value="1">Ổn định · 1 luồng</option>
@@ -1440,7 +1440,7 @@ export function Studio() {
             <input
               className={FIELD + " pl-9"}
               type="url"
-              placeholder="https://…/phim.mp4"
+              placeholder="https://…/video.mp4"
               value={app.url}
               aria-invalid={Boolean(linkCheck.problem)}
               onChange={(event) => {
@@ -1463,19 +1463,19 @@ export function Studio() {
             <FileTile icon={<Icon slot="ui.audio" className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
             <p className="text-sm text-muted">
               File lớn hơn 1 GB, MKV, AC3/DTS: tách âm thanh nhỏ bằng ffmpeg rồi chọn vào Âm thanh riêng. Video vẫn phát từ file gốc. Lệnh:{" "}
-              <code className="text-fg">ffmpeg -i phim.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
+              <code className="text-fg">ffmpeg -i video.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
             </p>
           </div>
         </details>
       </section>
 
       <section id="tool-cast" role="region" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
-          <div role="tablist" aria-label="Ngữ cảnh phim" className="grid grid-cols-3 gap-2">
+          <div role="tablist" aria-label="Ngữ cảnh nội dung" className="grid grid-cols-3 gap-2">
             {(
               [
                 ["cast", "Nhân vật"],
                 ["terms", "Thuật ngữ"],
-                ["note", "Ghi chú phim"],
+                ["note", "Ghi chú nội dung"],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -1494,8 +1494,8 @@ export function Studio() {
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="flex items-center gap-2 font-semibold">
-                Phân tích phim
-                <InfoTip label="Giải thích phân tích phim">Bước riêng, trước khi dịch. Bảng nhân vật khóa tên, giới và cách xưng hô.</InfoTip>
+                Phân tích nội dung
+                <InfoTip label="Giải thích phân tích nội dung">Bước riêng, trước khi dịch. Bảng nhân vật khóa tên, giới và cách xưng hô.</InfoTip>
               </h2>
             </div>
             <button
@@ -1584,7 +1584,7 @@ export function Studio() {
               </div>
               {(app.bible.terms || []).length > 0 && (
                 <div className="grid gap-2">
-                  <p className="text-sm text-muted">Thuật ngữ trong phim</p>
+                  <p className="text-sm text-muted">Thuật ngữ trong video</p>
                   {(app.bible.terms || []).slice(0, 24).map((term, index) => (
                     <label key={`${term.src || "t"}-${index}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-2 text-sm">
                       <span className="truncate text-muted">{term.src}</span>
@@ -1639,7 +1639,7 @@ export function Studio() {
             </label>
           </div>
           <div hidden={ctxView !== "note"} className="grid gap-2">
-              <input className={FIELD} placeholder="Tên phim + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
+              <input className={FIELD} placeholder="Tên video + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
               <textarea className={FIELD} rows={3} placeholder="Dàn diễn viên hoặc tóm tắt cốt truyện" value={app.notes} onChange={(event) => app.setNotes(event.target.value)} />
               <textarea
                 className={FIELD}
@@ -1882,7 +1882,7 @@ export function Studio() {
           onKeep={app.keepReject}
           onDrop={app.dropReject}
         />
-        {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một phim trước.</p>}
+        {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một video trước.</p>}
       </section>
 
         </div>

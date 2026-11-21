@@ -34,7 +34,7 @@ export function roomFetchTarget(url: string, init: RequestInit, ticketId?: strin
 }
 
 /**
- * Key cho mọi việc chữ (dịch, phân tích phim, trau chuốt): ROOM_KEY (trả theo lượt), một chuỗi (key Groq, cách cũ),
+ * Key cho mọi việc chữ (dịch, phân tích nội dung, trau chuốt): ROOM_KEY (trả theo lượt), một chuỗi (key Groq, cách cũ),
  * hoặc vòng key theo nhà `{ keys, lists }` (key khách của từng nhà + danh sách model key đó có, để biết model lạ thuộc nhà nào).
  */
 export type ChatKey = string | { keys: Partial<Record<ProviderId, string>>; lists?: RoomOffer };
@@ -598,7 +598,7 @@ export async function analyzeFilm(input: {
         messages,
       }),
     }),
-    "Phân tích phim",
+    "Phân tích nội dung",
     input.signal,
     input.gate,
     input.onWait,
