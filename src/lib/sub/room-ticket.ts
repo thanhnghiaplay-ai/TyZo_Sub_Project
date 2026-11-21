@@ -20,6 +20,8 @@ export async function openRoomTicket(input: {
   seconds: number;
   asrModel: string;
   chatModel: string;
+  /** Phần cần giữ: all (mặc định), asr (nhận dạng + phân tích), chat (chỉ dịch). */
+  part?: "all" | "asr" | "chat";
 }): Promise<RunTicketOpen> {
   return openRunTicket({ data: input });
 }

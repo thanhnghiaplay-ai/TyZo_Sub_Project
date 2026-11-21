@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.30.0",
+    time: "16:33 21/11/2026",
+    area: "khac",
+    text: "v5.30.0, chia phiếu trước/sau nhận dạng (Chủ chốt bước 5). run-bill.ts: HoldPart all|asr|chat, estimateHoldSplit(…, part): chat = chat ước × 1,5; asr = (nhận dạng + phân tích ước: vào giây×12+1500, ra 1200) × 1,5; parseHoldPart; CHAT_TICKET_PREFIX «Dịch tiếp · ». token-math holdGiay nhận part. run-turn openRunTicket nhận part, máy chủ tự gắn tên phiếu phần dịch. use-pipeline start(): asrComplete (pcmId khớp tệp, doneSource khớp, nextPart ≥ parts, có câu) → part chat; preRef bật → part asr; tắt → all (dịch xen, một phiếu như cũ). releaseAsrTicket: đóng phiếu asr khi chờ xem bảng nhân vật (trước setReviewHold) và trước khi dịch; ensureChatTicket (một lần, nhiều luồng dùng chung) mở phiếu chat trước lô dịch đầu; thiếu Token thì ném lỗi nói rõ phần nhận dạng được giữ, bấm Tiếp tục mở lại chỉ phần dịch. Luồng dịch không đổi phiếu khi nhận dạng chưa xong (chờ). Tổng quan: lượt chạy không đếm phiếu «Dịch tiếp · », lỗi không vượt số lượt. Hướng dẫn thêm một câu. Điều khoản giữ nguyên (câu «giữ số ước tính, trừ số thực, trả phần thừa» vẫn đúng cho từng phiếu). CHƯA làm: ước phần dịch theo số chữ thật (cần số đo token thật để chỉnh hệ số; đang ước theo số giây như cũ); lưu kết quả nhận dạng qua tải lại trang (đụng sâu luồng đọc tệp, để bản sau). Lưu ý có sẵn: nhận dạng bằng link trực tiếp (không chọn tệp) khi dịch lại vẫn nhận dạng lại vì không có dấu tệp. CHƯA chạy với nhà cung cấp thật và Token thật.",
+  },
+  {
     version: "5.29.0",
     time: "16:26 21/11/2026",
     area: "khac",

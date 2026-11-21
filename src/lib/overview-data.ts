@@ -66,11 +66,13 @@ export async function overviewWith(sql: Sql, range: OverviewRange, owner: boolea
   }
 
   const runRows = await sql.query<{ total: number; errors: number }>(`
-    select count(*)::int as total, count(*) filter (where status = 'loi')::int as errors
+    select count(*) filter (where file_name not like 'Dịch tiếp · %')::int as total,
+      count(*) filter (where status = 'loi')::int as errors
     from run_tickets where created_at >= ${since} and id not like 'tts-%'
   `);
   const total = Number(runRows[0]?.total ?? 0);
-  const errors = Number(runRows[0]?.errors ?? 0);
+  // Một video trả theo lượt có thể có hai phiếu (nhận dạng, «Dịch tiếp · …»): lượt chạy chỉ đếm phiếu đầu, lỗi đếm cả hai nhưng không vượt số lượt.
+  const errors = Math.min(total, Number(runRows[0]?.errors ?? 0));
 
   let quality: Overview["quality"] = null;
   let qualityDrop = false;

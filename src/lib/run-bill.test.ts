@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { asrCost, billedSecondsOf, chatCost, estimateHold, speechCost, type PriceBook } from "./run-bill.ts";
+import { CHAT_TICKET_PREFIX, asrCost, billedSecondsOf, chatCost, estimateHold, estimateHoldSplit, parseHoldPart, speechCost, type PriceBook } from "./run-bill.ts";
+import { readFileSync } from "node:fs";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 
 const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
@@ -59,6 +60,37 @@ describe("tính tiền theo giá Groq", () => {
     const hold = estimateHold(book(), "whisper-large-v3-turbo", "chat-model", 3600)!;
     const raw = asrCost(book(), "whisper-large-v3-turbo", 3600)! + chatCost(book(), "chat-model", 3600 * 12 + 1500, 3600 * 8 + 500)!;
     assert.ok(hold >= raw * 1.5 - 1 && hold <= raw * 1.5 + 2);
+  });
+
+  it("v5.30.0 giữ theo phần: chỉ dịch không giữ tiền nhận dạng; phần nhận dạng có phân tích nhưng nhỏ hơn cả hai", () => {
+    const b = book();
+    const all = estimateHoldSplit(b, b, "whisper-large-v3-turbo", "chat-model", 3600, "all")!;
+    const chat = estimateHoldSplit(b, b, "whisper-large-v3-turbo", "chat-model", 3600, "chat")!;
+    const asr = estimateHoldSplit(b, b, "whisper-large-v3-turbo", "chat-model", 3600, "asr")!;
+    const asrOnly = Math.ceil(asrCost(b, "whisper-large-v3-turbo", 3600)! * 1.5);
+    assert.equal(all, estimateHold(b, "whisper-large-v3-turbo", "chat-model", 3600));
+    assert.ok(Math.abs(chat - Math.ceil(chatCost(b, "chat-model", 3600 * 12 + 1500, 3600 * 8 + 500)! * 1.5)) <= 1);
+    assert.ok(chat < all);
+    assert.ok(asr > asrOnly && asr < all);
+    assert.equal(parseHoldPart("chat"), "chat");
+    assert.equal(parseHoldPart("asr"), "asr");
+    assert.equal(parseHoldPart("la"), "all");
+  });
+
+  it("máy chủ tự gắn tên phiếu phần dịch, không tin máy khách; luồng dịch chia phiếu đúng chỗ", () => {
+    const turn = readFileSync(new URL("./run-turn.ts", import.meta.url), "utf8");
+    assert.match(turn, /part === "chat" \? \(CHAT_TICKET_PREFIX/);
+    assert.match(turn, /part: data\.part/);
+    assert.equal(CHAT_TICKET_PREFIX, "Dịch tiếp · ");
+    const pipe = readFileSync(new URL("../components/use-pipeline.ts", import.meta.url), "utf8");
+    // Phần nhận dạng đã xong (làm nốt, dịch lại) thì chỉ giữ phần dịch.
+    assert.match(pipe, /let ticketPart[^=]*= asrComplete \? "chat" : preRef\.current \? "asr" : "all";/);
+    // Đang chờ xem bảng nhân vật thì đóng phiếu nhận dạng trước khi báo chờ.
+    assert.match(pipe, /await releaseAsrTicket\(\);\s*setReviewHold\(true\);/);
+    // Mở phiếu phần dịch trước khi gửi lô dịch đầu tiên, và không đổi phiếu khi nhận dạng chưa xong.
+    assert.match(pipe, /if \(ticketPart === "asr" && roomPayRef\.current && !done\)[\s\S]{0,120}await ensureChatTicket\(\);[\s\S]{0,120}seg\.busy = true;/);
+    // Thiếu Token cho phần dịch: nói rõ phần nhận dạng được giữ.
+    assert.match(pipe, /Phần nhận dạng đã xong và được giữ lại/);
   });
 
   it("billedSecondsOf lấy duration, không có thì lấy mốc cuối", () => {

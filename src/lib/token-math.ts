@@ -1,7 +1,7 @@
 import { bareBookOf, type ProviderRows } from "./price-rows.ts";
 import { isProviderId, type ProviderId } from "./sub/provider.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
-import { asrCost, asrPerSecond, chatCost, estimateHoldSplit, type PriceBook } from "./run-bill.ts";
+import { asrCost, asrPerSecond, chatCost, estimateHoldSplit, type HoldPart, type PriceBook } from "./run-bill.ts";
 
 /** 1 Token dịch = 1 giây nhận dạng Turbo theo giá gốc, chưa cộng chênh. */
 export const TURBO_ASR = "whisper-large-v3-turbo";
@@ -45,6 +45,8 @@ export function holdGiay(input: {
   chatProvider?: string;
   chatModel: string;
   seconds: number;
+  /** Giữ cho phần nào (run-bill.ts HoldPart). Thiếu = cả hai. */
+  part?: HoldPart;
 }): number | null {
   const bare: PriceBook = { rate: input.groq.rate, rows: input.groq.rows, desk: { markup: 0, custom: {} } };
   const turbo = asrPerSecond(bare, TURBO_ASR);
@@ -60,7 +62,7 @@ export function holdGiay(input: {
   const asrHouse = isProviderId(input.asrProvider) ? input.asrProvider : null;
   const chatHouse = isProviderId(input.chatProvider ?? "groq") ? ((input.chatProvider ?? "groq") as ProviderId) : null;
   if (!asrHouse || !chatHouse) return null;
-  const vnd = estimateHoldSplit(bareBookOf(asrHouse, input.groq, rows), bareBookOf(chatHouse, input.groq, rows), input.asrModel, input.chatModel, input.seconds);
+  const vnd = estimateHoldSplit(bareBookOf(asrHouse, input.groq, rows), bareBookOf(chatHouse, input.groq, rows), input.asrModel, input.chatModel, input.seconds, input.part ?? "all");
   if (vnd == null) return null;
   return tokensForBase(vnd, turbo);
 }

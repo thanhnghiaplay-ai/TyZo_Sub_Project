@@ -199,6 +199,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: `Gói thuê phòng: ${planLines(plans)}. Bấm gói thì cũng hiện mã QR, chuyển khoản đúng số thì mở hạn. Trong hạn không giới hạn số tệp và được xuất file phụ đề; ${planSaving(plans)}.` },
         { text: `Dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB, không xuất file phụ đề.` },
         { text: "Trả theo lượt trừ Token dịch. Phòng giữ số ước tính, khi xong trừ số thực và trả phần thừa nếu gói còn hạn. Hết hạn thì phần còn lại mất, không hoàn tiền. Orpheus khi dùng key của phòng và giọng Aura cũng trừ Token dịch. Neural không trừ." },
+        { text: "Một video giữ Token dịch hai lần: phần nhận dạng lúc bắt đầu, phần dịch lúc bắt đầu dịch. Lúc app chờ bạn xem bảng nhân vật thì không giữ gì. Dịch lại bằng model khác chỉ giữ phần dịch." },
         { text: "Dịch trực tiếp dùng cùng Token dịch. Phiên không giữ số dư. Hết Token dịch thì phiên dừng." },
         { text: "Nếu bạn dùng key Groq của mình thì Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ Token dịch cho lượt chạy đó." },
       ],

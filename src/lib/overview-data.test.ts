@@ -57,6 +57,16 @@ describe("Tổng quan", () => {
     assert.equal(view.topSpend?.[0].email, "a@gmail.com");
   });
 
+  it("phiếu phần dịch («Dịch tiếp · …») không đếm thành lượt chạy thứ hai", async () => {
+    await ticket("p1", "u1", "a.mp4", "da-tru", 500);
+    await ticket("p2", "u1", "Dịch tiếp · a.mp4", "da-tru", 700);
+    await ticket("p3", "u2", "b.mp4", "da-tru", 500);
+    await ticket("p4", "u2", "Dịch tiếp · b.mp4", "loi");
+    const view = await overviewWith(sql, 1, true);
+    assert.equal(view.runs.total, 2);
+    assert.equal(view.runs.errors, 1);
+  });
+
   it("doanh thu chỉ tính tiền nạp và chỉ Chủ thấy", async () => {
     await sql`insert into room_ledger (user_id, kind, amount, note) values ('u1', 'nap', 39000, 'x'), ('u1', 'goi', -39000, 'y'), ('u2', 'nap', 9000, 'z')`;
     const owner = await overviewWith(sql, 1, true);

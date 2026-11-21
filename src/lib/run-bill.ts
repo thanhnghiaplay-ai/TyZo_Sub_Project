@@ -69,12 +69,33 @@ export function estimateHold(book: PriceBook, asrModel: string, chatModel: strin
 }
 
 /** Giữ chỗ khi nhận dạng và dịch lấy từ hai bảng giá khác nhau. */
-export function estimateHoldSplit(asrBook: PriceBook, chatBook: PriceBook, asrModel: string, chatModel: string, seconds: number): number | null {
+export function estimateHoldSplit(asrBook: PriceBook, chatBook: PriceBook, asrModel: string, chatModel: string, seconds: number, part: HoldPart = "all"): number | null {
   const asr = asrCost(asrBook, asrModel, seconds);
   const chat = chatCost(chatBook, chatModel, Math.ceil(seconds * 12) + 1500, Math.ceil(seconds * 8) + 500);
   if (asr == null || chat == null) return null;
+  if (part === "chat") return Math.ceil(chat * HOLD_BUFFER);
+  if (part === "asr") {
+    // Phần nhận dạng gồm cả phân tích nội dung (đọc cả lời thoại một lần bằng model dịch, trả bảng nhân vật ngắn).
+    const analysis = chatCost(chatBook, chatModel, Math.ceil(seconds * 12) + 1500, 1200);
+    if (analysis == null) return null;
+    return Math.ceil((asr + analysis) * HOLD_BUFFER);
+  }
   return Math.ceil((asr + chat) * HOLD_BUFFER);
 }
+
+/**
+ * Phiếu giữ cho phần nào của một lần chạy (v5.30.0).
+ * all: cả nhận dạng và dịch (dịch xen lúc đang nhận dạng). asr: nhận dạng và phân tích, dịch mở phiếu riêng sau.
+ * chat: chỉ dịch (dịch tiếp sau khi chờ, dịch lại bằng model khác, làm nốt khi phần nhận dạng đã xong).
+ */
+export type HoldPart = "all" | "asr" | "chat";
+
+export function parseHoldPart(value: unknown): HoldPart {
+  return value === "asr" || value === "chat" ? value : "all";
+}
+
+/** Tên phiếu phần dịch: Admin thấy một video có hai phiếu, và Tổng quan không đếm phiếu này thành một lượt chạy nữa. */
+export const CHAT_TICKET_PREFIX = "Dịch tiếp · ";
 
 /** Số giây Groq tính tiền cho một kết quả nhận dạng verbose_json. */
 export function billedSecondsOf(result: { duration?: unknown; segments?: Array<{ end?: unknown }> } | null | undefined) {

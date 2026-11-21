@@ -1121,6 +1121,13 @@ export function usePipeline() {
     let ticketId: string | null = null;
     let ticketFailed = false;
     let releasePlayback = () => {};
+    // v5.30.0: chia phiếu trước/sau nhận dạng. «chat»: phần nhận dạng của tệp này đã xong (làm nốt, dịch lại) nên chỉ giữ phần dịch.
+    // «asr»: bước dịch vốn chờ nhận dạng và phân tích xong, nên giữ phần nhận dạng trước, phần dịch mở phiếu riêng khi bắt đầu dịch.
+    // «all»: dịch xen lúc đang nhận dạng (tắt phân tích trước), giữ một phiếu như cũ.
+    const before = job.current;
+    const asrComplete = before.pcmId === mediaId() && before.doneSource === source && before.nextPart >= before.parts.length && before.segs.length > 0;
+    let ticketPart: "all" | "asr" | "chat" | "released" = asrComplete ? "chat" : preRef.current ? "asr" : "all";
+    const ticketFile = (audioFile || file)?.name || "";
     if (roomPayRef.current) {
       const missing = roomMissing(roomOfferedRef.current, [asrModel, mode === "manual" ? chosen : null]);
       if (missing) return say(roomMissingText(missing), true);
@@ -1133,18 +1140,54 @@ export function usePipeline() {
           seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
+          part: ticketPart as "all" | "asr" | "chat",
         });
         ticketId = opened.id;
         releasePlayback = claimPlayback(ticketId);
         rememberTicket(ticketId);
         window.dispatchEvent(new Event("tyzo-room-refresh"));
-        say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} Token dịch (ước tính, số trừ là số thực, phần thừa trả lại nếu gói còn hạn). Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} Token dịch.`);
+        const partBit = ticketPart === "asr" ? " cho phần nhận dạng" : ticketPart === "chat" ? " cho phần dịch" : "";
+        say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} Token dịch${partBit} (ước tính, số trừ là số thực, phần thừa trả lại nếu gói còn hạn). Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} Token dịch.`);
       } catch (error) {
         return say(error instanceof Error ? error.message : "Không giữ được tiền cho lần chạy này.", true);
       }
     }
 
     const j = job.current;
+    /** Đóng phiếu phần nhận dạng (lúc chờ xem bảng nhân vật hoặc trước khi dịch): trừ số thực, trả phần giữ thừa ngay. */
+    const releaseAsrTicket = async () => {
+      if (ticketPart !== "asr" || !ticketId) return;
+      const id = ticketId;
+      ticketId = null;
+      ticketPart = "released";
+      await closeRoomTicket(id, false);
+      forgetTicket(id);
+      releasePlayback();
+      releasePlayback = () => {};
+      window.dispatchEvent(new Event("tyzo-room-refresh"));
+    };
+    let chatSwitch: Promise<void> | null = null;
+    /** Mở phiếu phần dịch đúng một lần (nhiều luồng dịch cùng chờ). Thiếu Token thì ném lỗi; phần nhận dạng vẫn giữ. */
+    const ensureChatTicket = () =>
+      (chatSwitch ??= (async () => {
+        if (!roomPayRef.current || (ticketPart !== "asr" && ticketPart !== "released")) return;
+        await releaseAsrTicket();
+        const seconds = (audioFile || file) ? await readMediaSeconds((audioFile || file)!).catch(() => 0) : 0;
+        const span = seconds > 0 ? seconds : Math.max(1, Math.ceil(j.segs.reduce((end, seg) => Math.max(end, seg.end), 0)));
+        try {
+          const opened = await openRoomTicket({ fileName: ticketFile || "Video", seconds: span, asrModel, chatModel: mode === "manual" ? chosen : "auto", part: "chat" });
+          ticketId = opened.id;
+          ticketPart = "chat";
+          releasePlayback = claimPlayback(ticketId);
+          rememberTicket(ticketId);
+          window.dispatchEvent(new Event("tyzo-room-refresh"));
+          say(`Đã giữ ${new Intl.NumberFormat("vi-VN").format(opened.held)} Token dịch cho phần dịch. Còn ${new Intl.NumberFormat("vi-VN").format(opened.balance)} Token dịch.`);
+        } catch (error) {
+          chatSwitch = null;
+          const why = error instanceof Error ? error.message : "Không giữ được Token dịch cho phần dịch.";
+          throw new Error(`${why} Phần nhận dạng đã xong và được giữ lại: mua thêm Token dịch rồi bấm Tiếp tục, không phải nhận dạng lại.`);
+        }
+      })());
     const my = ++j.runId;
     let audioContext: AudioContext;
     try {
@@ -1597,6 +1640,8 @@ export function usePipeline() {
               if (!j.holdPosted) {
                 j.holdPosted = true;
                 j.note = "chờ bạn xem bảng nhân vật";
+                // Đang chờ khách thì không giữ phiếu nào: phần nhận dạng trừ xong, phần dịch giữ khi bấm Dịch tiếp.
+                await releaseAsrTicket();
                 setReviewHold(true);
                 say("Đã phân tích xong. Sửa bảng nhân vật nếu cần, rồi bấm Dịch tiếp.");
               }
@@ -1617,6 +1662,13 @@ export function usePipeline() {
             await sleep(400, signal);
             continue;
           }
+          // Phiếu phần nhận dạng không giữ cho phần dịch: chưa nhận dạng xong thì chờ, không dịch xen bằng phiếu đó.
+          if (ticketPart === "asr" && roomPayRef.current && !done) {
+            await sleep(400, signal);
+            continue;
+          }
+          await ensureChatTicket();
+          if (my !== j.runId) return;
           group.forEach((seg) => {
             seg.busy = true;
           });
