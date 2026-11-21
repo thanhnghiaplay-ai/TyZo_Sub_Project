@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { currentGenre, needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
+import { dropSaved, loadSaved, savedSummary, snapshotSegs, storeSaved, usableSaved } from "@/lib/saved-runs";
 import { RIGHTS_CONFIRM, RIGHTS_DECLINED, RIGHTS_TEXT, RIGHTS_TITLE, rememberRights, rightsConfirmed } from "@/lib/rights-consent";
 import { TERMS_VERSION } from "@/lib/terms";
 import { usePolish } from "@/components/use-polish";
@@ -846,9 +847,73 @@ export function usePipeline() {
       j.abort = null;
       setRunning(false);
       clearJob();
+      void dropSaved(mediaId());
       say("Đã xóa. Bấm Tải và dịch để chạy lại.");
     });
-  }, [clearJob, say]);
+  }, [clearJob, say, mediaId]);
+
+  // v5.33.0: lưu phụ đề trên máy theo dấu tệp khi nhận dạng đã xong, để tải lại trang không mất phần khách đã trả.
+  useEffect(() => {
+    const j = job.current;
+    const key = mediaId();
+    if (!key || !segs.length || j.pcmId !== key || !j.doneSource || j.nextPart < j.parts.length) return;
+    const timer = window.setTimeout(() => {
+      void storeSaved({
+        key,
+        at: new Date().toISOString(),
+        fileName: (audioFile || file)?.name || "",
+        source: j.doneSource,
+        target,
+        segs: snapshotSegs(j.segs),
+        bible: j.bible,
+      });
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [segs, mediaId, target, file, audioFile]);
+
+  // Chọn lại đúng tệp đã làm (sau khi tải lại trang): hỏi khôi phục, không nhận dạng lại.
+  const offeredSaved = useRef("");
+  useEffect(() => {
+    const key = mediaId();
+    if (!key || offeredSaved.current === key) return;
+    offeredSaved.current = key;
+    if (job.current.segs.length || running) return;
+    let gone = false;
+    void loadSaved(key).then(async (saved) => {
+      if (gone || !usableSaved(saved, key, source)) return;
+      const sum = savedSummary(saved);
+      const ok = await askConfirm({
+        title: "Khôi phục bản đã làm?",
+        text: `Tệp này đã nhận dạng lúc ${sum.when}: ${sum.total} câu, đã dịch ${sum.done}. Khôi phục để xem, xuất file hoặc dịch nốt, không phải nhận dạng lại.`,
+        confirmLabel: "Khôi phục",
+        cancelLabel: "Làm mới",
+      });
+      if (!ok || gone) return;
+      const j = job.current;
+      if (j.segs.length) return;
+      j.segs = saved.segs.map((seg) => ({ ...seg, busy: false }));
+      j.pcmId = key;
+      j.doneSource = saved.source;
+      j.parts = [];
+      j.nextPart = 0;
+      j.appliedSig = "";
+      j.bible = (saved.bible as Bible | null) ?? null;
+      j.bibleGo = true;
+      j.holdPosted = true;
+      if (j.bible) setBible(cloneBible(j.bible));
+      publish(true);
+      pushStages();
+      say(
+        sum.done < sum.total
+          ? `Đã khôi phục ${sum.total} câu (đã dịch ${sum.done}). Bấm Tiếp tục để dịch nốt; phần nhận dạng không làm lại.`
+          : `Đã khôi phục ${sum.total} câu đã dịch.`,
+      );
+    });
+    return () => {
+      gone = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mediaId, source]);
 
   const guardRoom = useCallback(async (paidOnly: string | null, allowSpentTrial = false) => {
     const session = await authClient.getSession().catch(() => null);

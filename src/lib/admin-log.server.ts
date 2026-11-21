@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.33.0",
+    time: "21:19 21/11/2026",
+    area: "khac",
+    text: "v5.33.0, mục 1 trang khách (Chủ «tiếp tục»). saved-runs.ts (IndexedDB tyzo-saved-runs/runs, khóa = mediaId: tên, cỡ, lastModified tệp; có test phần thuần): lưu segs (bỏ busy), bible, tiếng gốc, đích khi nhận dạng xong (pcmId khớp tệp, doneSource có, nextPart ≥ parts), chờ 1,5 giây sau mỗi lần đổi câu; giữ 5 tệp mới nhất. Chọn lại tệp: chưa có câu và không chạy thì loadSaved, đúng tiếng gốc thì askConfirm «Khôi phục bản đã làm?»; đồng ý nạp lại job (pcmId, doneSource, parts rỗng, appliedSig rỗng để không xóa bản dịch, bibleGo + holdPosted để không chờ bảng nhân vật), nên start() thấy asrComplete và chỉ giữ phiếu phần dịch. Làm lại xóa bản lưu. Link trực tiếp không lưu (không có dấu tệp, vốn nhận dạng lại). Điều khoản 2026-11-21.3: mục 5 thêm câu lưu phụ đề trên máy; 9 chữ «Chủ» → «Admin» (gom việc đổi tên đã hẹn). Kiểm dev 412 px: ghi sẵn bản lưu, tải lại, chọn lại tệp → hỏi → khôi phục 2 câu, nút Tiếp tục, câu đã dịch hiện. CHƯA thử với lượt chạy thật.",
+  },
+  {
     version: "5.32.4",
     time: "20:24 21/11/2026",
     area: "khac",
