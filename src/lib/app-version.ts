@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.30.2";
+export const APP_VERSION = "5.30.3";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,14 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.30.3",
+    time: "17:21 21/11/2026",
+    title: "Tắt bàn phím ảo thì thanh dưới và tab Ví về đúng chỗ.",
+    points: [
+      "Tắt bàn phím bằng nút quay lại: thanh dưới hiện lại, tab không lộ khoảng trống.",
+    ],
+  },
   {
     version: "5.30.2",
     time: "17:04 21/11/2026",

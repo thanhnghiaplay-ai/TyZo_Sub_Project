@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.30.2 (đẩy chính thức 21/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.30.2 trên `work` và `main`: trang tự tải lại khi web vừa lên bản mới (v5.30.2); mục Tài khoản và lịch sử (v5.30.1). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.30.2 (đẩy chính thức 21/11/2026). `work` mới hơn, chờ «đẩy chính thức». |
+| Bản mới nhất | v5.30.3 trên `work` (chưa đẩy chính thức): tắt bàn phím ảo thì thanh dưới và tab Ví về đúng chỗ (v5.30.3). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |

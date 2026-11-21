@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.30.3",
+    time: "17:21 21/11/2026",
+    area: "khac",
+    text: "v5.30.3, ảnh khách: gõ tên ở Ví, tắt bàn phím bằng nút quay lại thì tab Ví lệch, lộ trang phía sau, phải đóng tab. Nguyên nhân: useTyping (floating-dock.tsx) ẩn thanh dưới khi có ô chữ được chọn; nút quay lại Android chỉ ẩn bàn phím, ô vẫn focus nên thanh ẩn mãi, còn .studio-wallet-tab vẫn chừa --dock-room 5.75rem ở đáy. Sửa: chỉ ẩn khi có ô chữ được chọn VÀ bàn phím thật sự mở (keyboardOpen ở dock.ts: visualViewport thấp hơn chiều cao lúc không gõ quá max(120 px, 15%)); nghe visualViewport resize và xoay màn; trình duyệt không có visualViewport giữ cách cũ. Kiểm Chromium 412x860 (giả lập bàn phím bằng thu khung còn 430): mở → ẩn, đóng mà ô còn focus → thanh hiện, tab đúng chỗ.",
+  },
+  {
     version: "5.30.2",
     time: "17:04 21/11/2026",
     area: "khac",

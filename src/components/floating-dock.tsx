@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icon";
 import { RailControl } from "@/components/side-rail";
-import { dockBadgeText, isTypingTarget } from "@/lib/dock";
+import { dockBadgeText, isTypingTarget, keyboardOpen } from "@/lib/dock";
 import type { IconSlot } from "@/lib/theme/theme";
 
 export type DockItem = { id: string; label: string; slot: IconSlot; current?: boolean; badge?: number; onPick: () => void };
@@ -10,18 +10,40 @@ export type DockCenter = { label: string; slot: IconSlot; onPress: () => void; d
 const BASE = "relative flex h-14 w-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-full transition-colors motion-reduce:transition-none ";
 const ACTIVE = "bg-[color-mix(in_srgb,var(--color-accent)_16%,transparent)] text-accent";
 
-/** Ẩn khi đang gõ chữ (bàn phím che màn hình) để thanh không đè lên ô nhập. */
+/**
+ * Ẩn khi đang gõ chữ (bàn phím che màn hình) để thanh không đè lên ô nhập.
+ * Chỉ ẩn khi bàn phím ảo thật sự mở: tắt bàn phím bằng nút quay lại mà ô vẫn được chọn thì thanh hiện lại.
+ */
 function useTyping(): boolean {
   const [typing, setTyping] = useState(false);
   useEffect(() => {
-    const check = () => {
+    const vv = window.visualViewport;
+    const height = () => vv?.height ?? window.innerHeight;
+    // Chiều cao lúc không gõ. Cập nhật khi không có ô nhập nào được chọn và khi xoay màn hình.
+    let base = height();
+    const focusedText = () => {
       const el = document.activeElement as HTMLElement | null;
-      setTyping(Boolean(el) && isTypingTarget(el!.tagName, (el as HTMLInputElement).type, el!.isContentEditable));
+      return Boolean(el) && isTypingTarget(el!.tagName, (el as HTMLInputElement).type, el!.isContentEditable);
     };
+    const check = () => {
+      const text = focusedText();
+      if (!text) base = Math.max(base, height());
+      setTyping(text && (vv ? keyboardOpen(height(), base) : true));
+    };
+    const onRotate = () => {
+      base = height();
+      check();
+    };
+    const onFocusOut = () => setTimeout(check, 0);
     document.addEventListener("focusin", check);
-    document.addEventListener("focusout", () => setTimeout(check, 0));
+    document.addEventListener("focusout", onFocusOut);
+    vv?.addEventListener("resize", check);
+    window.addEventListener("orientationchange", onRotate);
     return () => {
       document.removeEventListener("focusin", check);
+      document.removeEventListener("focusout", onFocusOut);
+      vv?.removeEventListener("resize", check);
+      window.removeEventListener("orientationchange", onRotate);
     };
   }, []);
   return typing;
