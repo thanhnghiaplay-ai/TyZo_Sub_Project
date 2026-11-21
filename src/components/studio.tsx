@@ -506,6 +506,27 @@ export function Studio() {
   const roomPlans = useRoomPlans();
   const app = usePipeline();
   useWakeLock(app.running || app.analyzing);
+  // Đang chạy mà lỡ tay đóng tab hay tải lại trang thì trình duyệt hỏi lại (v5.32.1): phần đã nhận dạng chỉ nằm trong trang.
+  useEffect(() => {
+    if (!(app.running || app.analyzing)) return;
+    const onLeave = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onLeave);
+    return () => window.removeEventListener("beforeunload", onLeave);
+  }, [app.running, app.analyzing]);
+  // Quay lại từ ứng dụng khác giữa lúc chạy: nhắc nếu lượt đã dừng thì bấm Tiếp tục.
+  useEffect(() => {
+    if (!app.running) return;
+    let hiddenAt = 0;
+    const onVisible = () => {
+      if (document.visibilityState === "hidden") hiddenAt = Date.now();
+      else if (hiddenAt && Date.now() - hiddenAt > 20_000) pushToast("Trang vừa ở nền một lúc. Nếu tiến độ đứng yên, bấm Tiếp tục; phần đã xong không mất.");
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [app.running]);
   const online = useOnline();
   const linkCheck = useLinkCheck();
   const noSubs = app.segs.length === 0;
@@ -1149,7 +1170,7 @@ export function Studio() {
       {!hero && payByRoom && (
         <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} phase={moneyPhase} />
       )}
-      <StepsBar report={app.stages} waiting={app.reviewHold ? "xem và sửa bảng nhân vật nếu cần, rồi bấm Dịch tiếp" : undefined} />
+      <StepsBar report={app.stages} keepOpen={app.running} waiting={app.reviewHold ? "xem và sửa bảng nhân vật nếu cần, rồi bấm Dịch tiếp" : undefined} />
       {afterOpen && !hero && !app.running && (
         <div className="grid shrink-0 gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
           <p>Dịch xong. Trau chuốt, dịch lại bằng model khác (giữ nhận dạng), hoặc bỏ qua.</p>

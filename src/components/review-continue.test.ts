@@ -24,7 +24,7 @@ describe("Bước cuối khi lượt đang chờ xem bảng nhân vật", () => 
   });
 
   it("thanh tiến độ ghi đang chờ bạn, không ghi «Đang: Dịch»", () => {
-    assert.match(studio, /<StepsBar report=\{app\.stages\} waiting=\{app\.reviewHold \?/);
+    assert.match(studio, /<StepsBar report=\{app\.stages\}[^>]*waiting=\{app\.reviewHold \?/);
     assert.match(steps, /waiting \?[\s\S]{0,200}Đang chờ bạn/);
   });
 
@@ -67,5 +67,15 @@ describe("v5.31.2: ước tính Token không hiện lúc đang chạy", () => {
     assert.match(studio, /<MoneyCard [^>]*phase=\{moneyPhase\}/);
     const card = readFileSync(new URL("./money-card.tsx", import.meta.url), "utf8");
     assert.match(card, /if \(phase === "running"\) return null;/);
+  });
+});
+
+describe("v5.32.1: giữ lượt chạy khi điện thoại chuyển ứng dụng hay lỡ tay đóng trang", () => {
+  it("giữ màn hình sáng, nhắc giữ trang mở, hỏi lại khi đóng hay tải lại trang lúc đang chạy", () => {
+    assert.match(studio, /useWakeLock\(app\.running \|\| app\.analyzing\)/);
+    assert.match(studio, /<StepsBar report=\{app\.stages\} keepOpen=\{app\.running\}/);
+    assert.match(steps, /keepOpen && !waiting[\s\S]{0,200}Giữ trang này mở đến khi xong/);
+    assert.match(studio, /addEventListener\("beforeunload", onLeave\)/);
+    assert.match(studio, /Date\.now\(\) - hiddenAt > 20_000/);
   });
 });

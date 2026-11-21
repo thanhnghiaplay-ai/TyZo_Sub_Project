@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.32.1",
+    time: "20:11 21/11/2026",
+    area: "khac",
+    text: "v5.32.1, mục 2 (Chủ chốt «làm 2–5»). Giữ màn hình sáng đã có từ trước (useWakeLock ở use-caps, studio và live-screen). Thêm: StepsBar keepOpen (studio truyền app.running) dòng nhắc giữ trang mở; beforeunload khi app.running hoặc analyzing (hộp hỏi của trình duyệt khi đóng/tải lại, không phải alert/confirm nên không trái quy ước); visibilitychange: ở nền quá 20 giây lúc đang chạy thì khi quay lại báo bấm Tiếp tục nếu tiến độ đứng yên. Test review-continue thêm ca. CHƯA thử máy thật.",
+  },
+  {
     version: "5.32.0",
     time: "19:44 21/11/2026",
     area: "khac",

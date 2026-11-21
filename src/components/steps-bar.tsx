@@ -16,7 +16,7 @@ const NOTCHES = [5, 20, 90];
  * phần trăm tổng ở bên phải, và tên giai đoạn kèm số đếm ngay bên dưới.
  */
 /** waiting: có chữ thì lượt đang dừng chờ khách (ví dụ xem bảng nhân vật), không ghi «Đang: Dịch» cho khỏi hiểu lầm. */
-export function StepsBar({ report, waiting }: { report: StageReport | null; waiting?: string }) {
+export function StepsBar({ report, waiting, keepOpen = false }: { report: StageReport | null; waiting?: string; /** Đang chạy: nhắc giữ trang mở (v5.32.1). */ keepOpen?: boolean }) {
   if (!report) return null;
   const label = report.stages.map((s) => `${s.label}: ${s.text || (s.state === "wait" ? "chờ" : s.state === "done" ? "xong" : "")}`).join("; ");
   const current = report.stages.find((s) => s.id === report.active);
@@ -51,6 +51,11 @@ export function StepsBar({ report, waiting }: { report: StageReport | null; wait
             {current.text ? ` · ${current.text}` : ""}
           </p>
         )
+      )}
+      {keepOpen && !waiting && (
+        <p className="text-xs text-muted" data-keep-open>
+          Giữ trang này mở đến khi xong. Màn hình được giữ sáng; chuyển sang ứng dụng khác lâu thì điện thoại có thể dừng lượt chạy.
+        </p>
       )}
       <ol className="grid grid-cols-4 gap-1.5">
         {report.stages.map((stage) => (
