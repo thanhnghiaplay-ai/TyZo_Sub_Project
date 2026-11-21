@@ -1,6 +1,7 @@
 import { dong } from "@/lib/money-format";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { readPayChoice, type PayChoice } from "@/lib/pay-status";
 import { authClient } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getBadgeStyle, getMyPlace, listOwnAppeals, skipAppeal, submitAppeal, type MyPlace } from "@/lib/admin-room";
@@ -39,6 +40,14 @@ export function AccountPanel() {
   const [payOpen, setPayOpen] = useState<PayOrderView | null>(null);
   const rows = ledgerRows(state?.ledger ?? []);
   const runDoor = useRunDoor();
+  const [payFirst, setPayFirst] = useState<PayChoice | null>(null);
+  useEffect(() => {
+    try {
+      setPayFirst(readPayChoice(localStorage));
+    } catch {
+      /* kho bị chặn: giữ thứ tự mặc định */
+    }
+  }, []);
 
   useEffect(() => {
     if (user?.displayName) setName(user.displayName);
@@ -71,20 +80,11 @@ export function AccountPanel() {
     };
   }, [user, reload]);
 
-  return (
-    <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
-    {/* Chia cột phải nằm trong khung không bị ép chiều cao, nếu không phần dư bị đẩy sang cột ẩn bên phải. */}
-    <div className="account-grid">
-      {isPending && <p className="text-sm text-muted">Đang kiểm tra phiên…</p>}
-      {!isPending && (!user || user.isDevFallback) && (
-        <div className="space-y-3">
-          <p className="text-sm text-muted">Đăng ký hoặc đăng nhập để dùng phòng.</p>
-          <Link to="/login" className="min-tap block rounded-full bg-accent text-center font-semibold text-ink">
-            Đăng ký hoặc đăng nhập
-          </Link>
-        </div>
-      )}
-      {user && !user.isDevFallback && (
+  // Tài khoản bị khóa hay cấm: ô gửi yêu cầu là việc duy nhất làm được, nên đứng trên cùng. Còn lại đứng cuối Ví.
+  const blocked = place?.status === "locked" || place?.status === "banned";
+  // Khối của cách trả khách đang dùng (lựa chọn đã nhớ ở trang chủ) đứng trước.
+  const turnFirst = payFirst === "turn";
+  const helpForm = (
         <form
           className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
           onSubmit={(event) => {
@@ -100,7 +100,7 @@ export function AccountPanel() {
           }}
         >
           <h2 className="font-semibold">
-            {place?.status === "locked" ? "Tài khoản đang bị khóa" : place?.status === "banned" ? "Tài khoản đang bị cấm" : "Gửi yêu cầu"}
+            {place?.status === "locked" ? "Tài khoản đang bị khóa" : place?.status === "banned" ? "Tài khoản đang bị cấm" : "Cần giúp? Gửi yêu cầu"}
           </h2>
           <p className="text-sm text-muted">
             {place?.status === "open" || !place
@@ -129,40 +129,34 @@ export function AccountPanel() {
             </button>
           ))}
         </form>
-      )}
-      {user && !user.isDevFallback && (
-        <>
-          <AccountCard rank={place?.role ?? null} extra={partner ? ["ctv"] : []} styleId={badge}>
+  );
+  const tokenBlock = (
+          <section aria-label="Token dịch" data-wallet-block="token" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3">
+            <h2 className="font-semibold">Token dịch · trả theo lượt</h2>
             <div data-tour="balance">
-            <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
-            <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
-            <p className="mt-2 text-sm text-muted">Token dịch còn</p>
-            <p className="text-xl font-semibold">{formatGiay(state?.units ?? 0)}</p>
-            <p className="mt-2 text-sm">
-              {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
-            </p>
+              <p className="text-sm text-muted">Token dịch còn</p>
+              <p className="text-xl font-semibold">{formatGiay(state?.units ?? 0)}</p>
+              <p className="text-xs text-muted">Dùng cho trả theo lượt, dịch trực tiếp và Orpheus. Không cần key.</p>
             </div>
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
-                Cộng tác viên
-              </Link>
-            </div>
-          </AccountCard>
           {runDoor.open ? (
-            <section className="grid gap-1 rounded-[var(--radius-ctl)] border border-line bg-card p-3">
-              <h2 className="flex items-center gap-2 text-sm font-semibold">
-                <DoorDot open />
-                Trả theo lượt
-              </h2>
-              <p className="text-sm text-muted">Cửa này trừ Token dịch, không giữ số dư. Mua gói ở dưới. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
-            </section>
+            <p className="flex items-center gap-2 text-sm text-muted">
+              <DoorDot open />
+              Cửa trả theo lượt đang mở. Trừ Token dịch, không giữ số dư.
+            </p>
           ) : (
             <RunDoorClosed note={runDoor.note} />
           )}
           <GiayShelf reload={reload} onBought={(message) => { setNotice(message); setReload((value) => value + 1); window.dispatchEvent(new Event("tyzo-room-refresh")); }} />
-          <div className="grid gap-2" data-tour="plans">
+          </section>
+  );
+  const rentBlock = (
+          <section aria-label="Thuê phòng" data-wallet-block="rent" data-tour="plans" className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3">
+            <h2 className="font-semibold">Thuê phòng · dùng key của bạn</h2>
+            <p className="text-sm">
+              {state ? roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft }).text : "Đang xem hạn gói…"}
+            </p>
           <p className="text-sm text-muted">
-            Đăng ký mà chưa mua gói là dùng thử: 1 tệp, tối đa 10 phút, không xuất file. Gói thuê phòng đã trả thì trong hạn không giới hạn số tệp.
+            Trong hạn gói: không giới hạn số tệp, được xuất file phụ đề. Cước AI trả bằng key của bạn.
           </p>
           {payOpen && (
             <PaySlip
@@ -210,7 +204,60 @@ export function AccountPanel() {
               </span>
             </button>
           ))}
-          </div>
+          </section>
+  );
+
+  return (
+    <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2">
+    {/* Chia cột phải nằm trong khung không bị ép chiều cao, nếu không phần dư bị đẩy sang cột ẩn bên phải. */}
+    <div className="account-grid">
+      {isPending && <p className="text-sm text-muted">Đang kiểm tra phiên…</p>}
+      {!isPending && (!user || user.isDevFallback) && (
+        <div className="space-y-3">
+          <p className="text-sm text-muted">Đăng ký hoặc đăng nhập để dùng phòng.</p>
+          <Link to="/login" className="min-tap block rounded-full bg-accent text-center font-semibold text-ink">
+            Đăng ký hoặc đăng nhập
+          </Link>
+        </div>
+      )}
+      {user && !user.isDevFallback && blocked && helpForm}
+      {user && !user.isDevFallback && (
+        <>
+          <AccountCard rank={place?.role ?? null} extra={partner ? ["ctv"] : []} styleId={badge}>
+            <div>
+            <p className="font-semibold">{user.displayName || "Chưa có tên"}</p>
+            <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
+                Cộng tác viên
+              </Link>
+            </div>
+          </AccountCard>
+          {(turnFirst ? ["token", "rent"] : ["rent", "token"]).map((block) => (
+            <Fragment key={block}>{block === "token" ? tokenBlock : rentBlock}</Fragment>
+          ))}
+          {rows.length > 0 && (
+            <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3">
+              <h2 className="text-sm font-semibold">Lịch sử Token/Gói</h2>
+              <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
+                {(ledgerOpen ? rows.slice(0, 9) : rows.slice(0, 3)).map((row) => (
+                  <li key={row.id} className="flex justify-between gap-3">
+                    <span className={"min-w-0 truncate " + (row.tone === "reject" ? "text-danger" : "")}>{row.label}</span>
+                    <span className={"shrink-0 text-right " + (row.tone === "down" || row.tone === "reject" ? "text-danger" : "text-accent")}>
+                      {row.main}
+                      {row.money && <span className="block text-xs text-muted">{row.money}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {rows.length > 3 && (
+                <button type="button" className="mt-2 text-sm text-muted underline" onClick={() => setLedgerOpen((open) => !open)}>
+                  {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(rows.length, 9) - 3} dòng`}
+                </button>
+              )}
+            </section>
+          )}
           <form
             className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
             onSubmit={(event) => {
@@ -281,27 +328,7 @@ export function AccountPanel() {
             </button>
             <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
           </form>
-          {rows.length > 0 && (
-            <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3">
-              <h2 className="text-sm font-semibold">Lịch sử Token/Gói</h2>
-              <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
-                {(ledgerOpen ? rows.slice(0, 9) : rows.slice(0, 3)).map((row) => (
-                  <li key={row.id} className="flex justify-between gap-3">
-                    <span className={"min-w-0 truncate " + (row.tone === "reject" ? "text-danger" : "")}>{row.label}</span>
-                    <span className={"shrink-0 text-right " + (row.tone === "down" || row.tone === "reject" ? "text-danger" : "text-accent")}>
-                      {row.main}
-                      {row.money && <span className="block text-xs text-muted">{row.money}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {rows.length > 3 && (
-                <button type="button" className="mt-2 text-sm text-muted underline" onClick={() => setLedgerOpen((open) => !open)}>
-                  {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(rows.length, 9) - 3} dòng`}
-                </button>
-              )}
-            </section>
-          )}
+          {!blocked && helpForm}
         </>
       )}
     </div>

@@ -8,7 +8,6 @@ import type { PayOrderView } from "@/lib/pay-store";
 
 /** Kệ mua gói Token dịch. Giá tính lúc mở kệ. Gói đã mua không đổi số Token dịch. */
 export function GiayShelf({ reload, onBought }: { reload: number; onBought: (message: string) => void }) {
-  const [units, setUnits] = useState<number | null>(null);
   const [packs, setPacks] = useState<GiayPackView[]>([]);
   const [priced, setPriced] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -19,12 +18,11 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
     void getGiayShelf()
       .then((shelf) => {
         if (gone) return;
-        setUnits(shelf.units);
         setPacks(shelf.packs);
         setPriced(shelf.priced);
       })
       .catch(() => {
-        if (!gone) setUnits(null);
+        /* chưa đọc được kệ: để trống, lần mở sau thử lại */
       });
     return () => {
       gone = true;
@@ -33,9 +31,9 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
 
   return (
     <section className="grid gap-2" aria-label="Token dịch" data-tour="giay">
-      <h2 className="text-sm font-semibold">Token dịch</h2>
+      {/* Tiêu đề và số dư đã ở đầu khối «Token dịch · trả theo lượt» (account-panel.tsx); ở đây chỉ nói cách mua. */}
       <p className="text-sm text-muted">
-        Dùng cho trả theo lượt, dịch trực tiếp và Orpheus. Còn {units == null ? "…" : formatGiay(units)}. Bấm mua thì hiện mã QR, chuyển khoản đúng số thì được Token dịch. Hết hạn thì phần còn lại mất, không hoàn tiền.
+        Bấm mua thì hiện mã QR, chuyển khoản đúng số thì được Token dịch. Hết hạn thì phần còn lại mất, không hoàn tiền.
       </p>
       {slip && (
         <PaySlip
