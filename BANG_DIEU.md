@@ -15,9 +15,9 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.32.0 (đẩy chính thức 21/11/2026). `work` mới hơn, chờ «đẩy chính thức». |
-| Bản mới nhất | v5.33.0 trên `work` (chưa đẩy chính thức): tải lại trang không mất phụ đề, điều khoản 2026-11-21.3 (v5.33.0). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
-| Điều khoản | 2026-11-21.3 (trên `work`; `main` vẫn 2026-11-21.2 đến lần đẩy chính thức tới) |
+| Bản khách đang dùng | Nhánh `main` = v5.33.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.33.0 trên `work` và `main`: tải lại trang không mất phụ đề, điều khoản 2026-11-21.3 (v5.33.0). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Điều khoản | 2026-11-21.3 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Mua Token dịch và thuê phòng bằng chuyển khoản đúng giá (mã QR), không giữ số dư để chi. Số dư cũ đã đưa về 0, không hoàn. Trả theo lượt, dịch trực tiếp và Orpheus khi dùng key phòng trừ Token dịch. Neural không trừ. Hết hạn thì phần còn mất, không hoàn tiền. Cửa giữ số ước tính, trừ số thực khi xong, trả phần thừa nếu gói còn hạn |
