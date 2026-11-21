@@ -13,10 +13,9 @@ export const CHANGELOG: ReleaseNote[] = [
   {
     version: "5.27.1",
     time: "16:10 21/11/2026",
-    title: "Gọi quyền cao nhất là Admin thay cho Chủ.",
+    title: "Câu báo dùng cách gọi mới cho người phụ trách web.",
     points: [
-      "Thẻ quyền, thông báo và câu báo lỗi ghi Admin thay cho Chủ.",
-      "Quản lý và Hỗ trợ giữ tên như cũ.",
+      "Các câu như «chưa mở model này» không còn ghi «Chủ», dùng cách gọi chung mới.",
     ],
   },
   {
