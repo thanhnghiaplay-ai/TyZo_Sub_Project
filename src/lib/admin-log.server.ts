@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.31.0",
+    time: "17:29 21/11/2026",
+    area: "khac",
+    text: "v5.31.0, khách đề xuất lịch sử đầy đủ và báo «lịch sử giữ và hoàn Token không còn». Nguyên nhân mất: từ v5.0.0 phiếu Token dịch giữ/trả qua token_slices và run_tickets, không ghi room_ledger; ledgerRows còn ẩn dòng giu/nha của tiền đồng cũ. Làm: history-room.ts getMyHistory (authMiddleware, chỉ user_id của phiên, trang 20 phiếu theo created_at, kèm 20 gói token_grants ở trang đầu); history-view.ts (thuần, có test): ticketRow (tên tệp đầy đủ của chính khách, thời lượng, model gọn, trừ/đang giữ/trả lại, trạng thái; nhận phân tích nội dung, trau chuốt, đọc thuyết minh tts-), grantRow (còn/hạn, hết hạn ghi phần đã mất), localRow, mergeHistory. local-runs.ts: lượt thuê phòng (không có phiếu) ghi localStorage tyzo_runs, 50 lượt, không gửi máy chủ; use-pipeline ghi khi xong và !roomPay. history-panel.tsx thay khối «Lịch sử Token/Gói»: tab Lượt dịch / Mua và gói, Xem thêm, Thử lại khi lỗi, tải lại khi tyzo-room-refresh. Nút «Xem lịch sử» trong thẻ tài khoản. Không đổi điều khoản: không thu thêm dữ liệu lên máy chủ (phiếu đã có, điều khoản mục 5 đã nói phiếu có tên tệp và số Token), máy khách vốn lưu tên video. Kiểm 412 px: lượt thuê phòng hiện đúng, tab Mua và gói, không tràn. CHƯA xem với phiếu trả theo lượt thật (máy thử chưa có phiếu).",
+  },
+  {
     version: "5.30.3",
     time: "17:21 21/11/2026",
     area: "khac",

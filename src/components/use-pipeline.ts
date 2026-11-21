@@ -13,6 +13,7 @@ import { deviceId } from "@/lib/device-id";
 import { exportNotice, roomAccess, trialFileProblem } from "@/lib/room-plans";
 import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
+import { addLocalRun } from "@/lib/local-runs";
 import { claimPlayback, closeRoomTicket, forgetTicket, openRoomTicket, recoverOrphanTicket, rememberTicket } from "@/lib/sub/room-ticket";
 import { audioBufferTo16k, packAudio, type PackedAudio } from "@/lib/sub/codec";
 import {
@@ -2181,6 +2182,19 @@ export function usePipeline() {
             : "";
         say(`Hoàn tất: ${j.segs.length} câu · bỏ qua ${j.skipped} đoạn im lặng${mix}.${retryBit}`);
       }
+      // Lịch sử thuê phòng (key của khách) chỉ ghi trên máy này; trả theo lượt đã có phiếu ở máy chủ.
+      if (!roomPayRef.current) {
+        const picked = audioFile || file;
+        addLocalRun(safeStore(), {
+          at: new Date().toISOString(),
+          file: picked?.name || link || "Lượt dịch",
+          seconds: Math.round(j.segs.reduce((end, seg) => Math.max(end, seg.end), 0)),
+          asr: asrModel,
+          chat: mode === "manual" ? chosen : j.lastModel || "auto",
+          lines: j.segs.length,
+          ok: j.segs.every((seg) => seg.translation !== null && !seg.translationFailed),
+        });
+      }
     } catch (error) {
       if (my !== j.runId) return;
       const err = error as Error;
@@ -3006,4 +3020,12 @@ async function decodeTo16k(blob: Blob, audioContext: AudioContext, streamWhy = "
   if (!samples.length) throw new Error("Không tìm thấy âm thanh trong file.");
   if (isSilentChunk(samples)) throw new Error("Không nghe thấy tiếng trong file. Hãy tăng âm lượng hoặc chọn file khác.");
   return samples;
+}
+
+function safeStore(): Storage | null {
+  try {
+    return typeof window === "undefined" ? null : window.localStorage;
+  } catch {
+    return null;
+  }
 }

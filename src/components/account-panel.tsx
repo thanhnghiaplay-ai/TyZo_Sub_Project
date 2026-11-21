@@ -17,6 +17,7 @@ import { PaySlip } from "@/components/pay-slip";
 import type { PayOrderView } from "@/lib/pay-store";
 import { formatGiay } from "@/lib/token-math";
 import { ledgerRows } from "@/lib/ledger-view";
+import { HistoryPanel } from "@/components/history-panel";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
@@ -35,7 +36,6 @@ export function AccountPanel() {
   const [badge, setBadge] = useState<BadgeStyleId>("ribbon");
   const [appeal, setAppeal] = useState("");
   const [ownAppeals, setOwnAppeals] = useState<{ id: number; status: string; holdRole: string; touchedAt: string; reply: string }[]>([]);
-  const [ledgerOpen, setLedgerOpen] = useState(false);
   const [reload, setReload] = useState(0);
   const [payOpen, setPayOpen] = useState<PayOrderView | null>(null);
   const rows = ledgerRows(state?.ledger ?? []);
@@ -232,32 +232,20 @@ export function AccountPanel() {
               <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
                 Cộng tác viên
               </Link>
+              <button
+                type="button"
+                className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none"
+                onClick={() => document.getElementById("lich-su")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              >
+                Xem lịch sử
+              </button>
             </div>
           </AccountCard>
           {(turnFirst ? ["token", "rent"] : ["rent", "token"]).map((block) => (
             <Fragment key={block}>{block === "token" ? tokenBlock : rentBlock}</Fragment>
           ))}
-          {/* Luôn hiện khối lịch sử (v5.30.1): ẩn khi chưa có dòng nào thì khách tưởng không có mục này. */}
-          <section className="account-wide rounded-[var(--radius-card)] border border-line bg-card p-3" data-wallet-history>
-              <h2 className="text-sm font-semibold">Lịch sử Token/Gói</h2>
-              {rows.length === 0 && <p className="mt-2 text-sm text-muted">Chưa có giao dịch nào. Mua Token dịch, thuê phòng hay mỗi lượt trừ Token đều hiện ở đây.</p>}
-              <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
-                {(ledgerOpen ? rows.slice(0, 9) : rows.slice(0, 3)).map((row) => (
-                  <li key={row.id} className="flex justify-between gap-3">
-                    <span className={"min-w-0 truncate " + (row.tone === "reject" ? "text-danger" : "")}>{row.label}</span>
-                    <span className={"shrink-0 text-right " + (row.tone === "down" || row.tone === "reject" ? "text-danger" : "text-accent")}>
-                      {row.main}
-                      {row.money && <span className="block text-xs text-muted">{row.money}</span>}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {rows.length > 3 && (
-                <button type="button" className="mt-2 text-sm text-muted underline" onClick={() => setLedgerOpen((open) => !open)}>
-                  {ledgerOpen ? "Thu gọn" : `Xem thêm ${Math.min(rows.length, 9) - 3} dòng`}
-                </button>
-              )}
-          </section>
+          {/* Lịch sử đầy đủ (v5.31.0): lượt dịch từ phiếu (giữ / trừ / trả lại), lượt thuê phòng trên máy, mua và gói Token. */}
+          <HistoryPanel buys={rows} />
           <form
             className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
             onSubmit={(event) => {
