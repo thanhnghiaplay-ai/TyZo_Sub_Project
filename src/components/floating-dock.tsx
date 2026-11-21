@@ -27,12 +27,12 @@ function useTyping(): boolean {
   return typing;
 }
 
-function DockButton({ item }: { item: DockItem }) {
+function DockButton({ item, showLabel }: { item: DockItem; showLabel: boolean }) {
   const badge = dockBadgeText(item.badge);
   return (
     <button type="button" aria-label={badge ? `${item.label}, ${badge} cần xem` : item.label} aria-current={item.current ? "page" : undefined} className={BASE + (item.current ? ACTIVE : "text-muted")} onClick={item.onPick}>
       <Icon slot={item.slot} size="1.4rem" />
-      {item.current && <span className="text-[10px] font-medium leading-none">{item.label}</span>}
+      {(showLabel || item.current) && <span className="text-[10px] font-medium leading-none">{item.label}</span>}
       {badge && <span className="absolute right-0.5 top-0.5 grid min-w-4 place-items-center rounded-full bg-[#e5484d] px-1 text-[10px] font-semibold leading-4 text-white">{badge}</span>}
     </button>
   );
@@ -43,7 +43,23 @@ function DockButton({ item }: { item: DockItem }) {
  * Hai nút trái, nút giữa tròn lớn nhô lên (việc chính), nút phải, rồi «Menu» mở ngăn trượt.
  * Phải nằm trong <AppShell>. Màu nút giữa và mục đang chọn theo màu nhấn của giao diện.
  */
-export function FloatingDock({ left, right, center, centerNode, label = "Mục chính" }: { left: DockItem[]; right: DockItem[]; center: DockCenter; /** Có thì thay cả nút giữa mặc định (ví dụ nút lướt chọn công cụ). */ centerNode?: ReactNode; label?: string }) {
+export function FloatingDock({
+  left,
+  right,
+  center,
+  centerNode,
+  label = "Mục chính",
+  showLabels = false,
+}: {
+  left: DockItem[];
+  right: DockItem[];
+  center: DockCenter;
+  /** Có thì thay cả nút giữa mặc định (ví dụ nút lướt chọn công cụ). */
+  centerNode?: ReactNode;
+  label?: string;
+  /** true: mọi nút luôn có chữ dưới icon (trang khách). false: chỉ nút đang chọn có chữ (Admin). */
+  showLabels?: boolean;
+}) {
   const typing = useTyping();
   if (typing) return null;
   return (
@@ -54,7 +70,7 @@ export function FloatingDock({ left, right, center, centerNode, label = "Mục c
             (nhất là giao diện sáng, thanh trong suốt). Nằm dưới thanh (z-30) và dưới các bảng công cụ (z-40). */}
         <div aria-hidden="true" data-dock-scrim className={"dock-scrim pointer-events-none fixed inset-x-0 bottom-0 z-20 lg:hidden " + (centerNode ? "dock-scrim-tall" : "")} />
         <nav aria-label={label} className="floating-dock fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30 flex items-center justify-around rounded-full border border-line bg-raised/90 px-1.5 py-1.5 shadow-lg backdrop-blur lg:hidden">
-          {left.map((item) => <DockButton key={item.id} item={item} />)}
+          {left.map((item) => <DockButton key={item.id} item={item} showLabel={showLabels} />)}
           {centerNode ?? (
           <button
             type="button"
@@ -66,10 +82,10 @@ export function FloatingDock({ left, right, center, centerNode, label = "Mục c
             <Icon slot={center.slot} size="1.9rem" />
           </button>
           )}
-          {right.map((item) => <DockButton key={item.id} item={item} />)}
+          {right.map((item) => <DockButton key={item.id} item={item} showLabel={showLabels} />)}
           <button type="button" aria-label="Menu" aria-expanded={open} aria-controls={railId} className={BASE + (open ? ACTIVE : "text-muted")} onClick={() => setOpen(!open)}>
             <Icon slot="nav.menu" size="1.4rem" />
-            {open && <span className="text-[10px] font-medium leading-none">Menu</span>}
+            {(showLabels || open) && <span className="text-[10px] font-medium leading-none">Menu</span>}
           </button>
         </nav>
         </>

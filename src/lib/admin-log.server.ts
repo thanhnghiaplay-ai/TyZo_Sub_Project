@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.23.0",
+    time: "13:28 21/11/2026",
+    area: "khac",
+    text: "v5.23.0, đợt 3 sắp lại trang khách. (1) home-action.ts (thuần, có test): nút chính trang chủ theo trạng thái. Thứ tự: đang chạy → bảo trì → mất mạng → cách trả (choose: «Chọn cách trả để bắt đầu», cuộn và focus dòng hai lựa chọn; key-none: «Thêm key để dịch», mở Cài đặt dịch; key-expired: «Gia hạn để dịch» và turn-empty: «Mua Token dịch», mở Ví) → chưa có tệp → Tải và dịch. Đang đọc hoặc lỗi đọc tài khoản thì không chặn (máy chủ vẫn kiểm ở cửa giữ tiền). Tắt tiền (money.on false) bỏ qua cách trả. Mỗi trạng thái chưa bấm được có dòng vì sao dưới nút (aria-describedby). studio.tsx tính payState một lần, dùng chung cho PayStatusBar và nút; HomeHero bỏ running/online/blocked/onStart, nhận action/onAction. (2) Thanh dưới trang khách 4 việc: Trang chủ, nút lướt công cụ, Ví, Menu; FloatingDock thêm showLabels (trang khách luôn có chữ, Admin giữ như cũ). Bỏ nút Trực tiếp vì đã có ô Dịch trực tiếp (ServiceSwitch) đầu trang chủ và mục trong Menu. (3) Điện thoại ngang: trang chủ chừa thêm đáy (pb-14) để dòng vì sao không nằm dưới nhãn bánh xe. Kiểm Chromium 412x720, 412x640 sáng/tối, bật/tắt hiệu ứng, 800x400, 768x1024: không tràn ngang, không lỗi trang; bấm Thêm key mở Cài đặt dịch, Mua Token dịch mở Ví. Không đổi dịch vụ, không sửa điều khoản. CHƯA bấm máy thật, CHƯA thử key-ready thật và bảo trì thật.",
+  },
+  {
     version: "5.22.0",
     time: "21/11/2026",
     area: "khac",

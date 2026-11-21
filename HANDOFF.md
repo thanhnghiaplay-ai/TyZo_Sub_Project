@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 20/11/2026. **v5.22.0 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.1`.
+Cập nhật 21/11/2026. **v5.23.0 trên `work`**, `main` vẫn v5.22.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.1`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.23.0**: đợt 3 sắp lại trang khách. Nút chính trang chủ theo trạng thái (`home-action.ts`, có test): Thêm key / Gia hạn / Mua Token dịch / Chọn cách trả, có dòng vì sao (chưa chọn tệp, mất mạng, bảo trì). Thanh dưới 4 việc có chữ (Trang chủ, Công cụ, Ví, Menu; `showLabels` ở `floating-dock.tsx`, Admin giữ cũ); bỏ nút Trực tiếp (đã có ô đầu trang chủ và Menu). tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1334 pass, vite build xong. Chụp 412x720, 412x640 sáng/tối, bật/tắt hiệu ứng, 800x400, 768x1024. Chưa bấm máy thật, chưa thử trạng thái có key thật và bảo trì thật. Đã làm: màn theo trạng thái ở trang chủ, thanh dưới. Cố ý không làm: đổi phòng dịch (sau khi dịch) theo trạng thái. Còn đợt 4.
 - **Đẩy chính thức v5.22.0**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.22.0.
 - **v5.22.0**: đợt 2 sắp lại trang khách. «Key AI của bạn» kiểu Thêm key (`key-ring.tsx`), sửa lưu/xóa key, Ví chia khối Thuê phòng/Token dịch theo cách trả đang dùng, hỗ trợ xuống cuối. tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1326 pass. Còn đợt 3, 4.
 - **Đẩy chính thức v5.21.0**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.21.0.

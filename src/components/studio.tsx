@@ -47,6 +47,7 @@ import { CueEditor } from "@/components/cue-editor";
 import { useCaps, useWakeLock } from "@/components/use-caps";
 import { MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
 import { PayStatusBar } from "@/components/pay-status-bar";
+import { homeAction } from "@/lib/home-action";
 import { KeyRing, type KeyCheck } from "@/components/key-ring";
 import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
 import { HomeHero } from "@/components/home-hero";
@@ -843,6 +844,26 @@ export function Studio() {
   const showRoomPrice = runDoor.open && payByRoom;
   // Số dư Token dịch đọc một lần: thanh số dư ở đầu màn hình đầu và ô ước tính trên nút bắt đầu dùng chung.
   const money = useMoney({ active: runDoor.ready && runDoor.open, asr: app.asrModel, chat: app.modelId, seconds: thumb.seconds ?? 0, narration: narration.enabled });
+  // Đợt 3: màn theo trạng thái. Một trạng thái cách trả dùng chung cho dòng đầu trang và nút chính.
+  const pay = payState({
+    choice: choosingPay ? null : payByRoom ? "turn" : payChoice ? "key" : null,
+    account: money.account,
+    failed: money.failed,
+    keys: keyHouses,
+    turnOpen: runDoor.ready && runDoor.open,
+  });
+  const startAction = homeAction({ pay, moneyOn: money.on, hasInput: Boolean(pickedFile) || app.url.trim().length > 0, online, running: app.running, blocked: normalDown });
+  /** Nút chính làm đúng bước còn thiếu: dịch, thêm key, mở Ví, hoặc đưa về hai lựa chọn cách trả. */
+  const runStartAction = () => {
+    if (startAction.kind === "start") return void app.start();
+    if (startAction.kind === "add-key") return openTool("key");
+    if (startAction.kind === "wallet") return setProduct("account");
+    if (startAction.kind === "choose") {
+      const box = document.querySelector<HTMLElement>('[data-pay-status="choose"]');
+      box?.scrollIntoView({ block: "center", behavior: "smooth" });
+      box?.querySelector<HTMLButtonElement>("button")?.focus({ preventScroll: true });
+    }
+  };
   const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
   const dgAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.deepgram ?? null) : null;
@@ -951,7 +972,6 @@ export function Studio() {
       atHome={product === "sub" && hero}
       accountOpen={product === "account"}
       onHome={() => { setProduct("sub"); setForced(false); }}
-      onLive={() => void navigate({ to: "/dich-truc-tiep" })}
       onWallet={() => setProduct("account")}
       wheel={<ToolWheel labels={TOOL_NAME} currentId={(WHEEL_ORDER as readonly string[]).includes(toolTab) ? (toolTab as WheelId) : "phim"} onChange={setToolTab} onPress={openTool} progress={app.running && app.stages ? app.stages.percent : null} />}
     />
@@ -1130,7 +1150,6 @@ export function Studio() {
       )}
       {hero && (
         <HomeHero
-          blocked={normalDown}
           file={pickedFile}
           thumb={thumb}
           url={app.url}
@@ -1144,18 +1163,11 @@ export function Studio() {
           genre={app.genre}
           onGenre={app.pickGenre}
           onOpenTool={openTool}
-          running={app.running}
-          online={online}
-          onStart={() => void app.start()}
+          action={startAction}
+          onAction={runStartAction}
           top={
             <PayStatusBar
-              state={payState({
-                choice: choosingPay ? null : payByRoom ? "turn" : payChoice ? "key" : null,
-                account: money.account,
-                failed: money.failed,
-                keys: keyHouses,
-                turnOpen: runDoor.ready && runDoor.open,
-              })}
+              state={pay}
               money={money}
               onChoose={choosePay}
               onAddKey={() => openTool("key")}

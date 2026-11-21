@@ -7,6 +7,7 @@ import { useLinkCheck } from "@/components/use-link-check";
 import { useCaps } from "@/components/use-caps";
 import { GENRES } from "@/lib/home-state";
 import { PickerSelect } from "@/components/picker-select";
+import type { HomeAction } from "@/lib/home-action";
 
 const CHIP = "min-tap inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-3 text-sm text-fg hover:border-accent focus-visible:ring-2 focus-visible:ring-accent";
 
@@ -44,15 +45,11 @@ export function HomeHero({
   genre,
   onGenre,
   onOpenTool,
-  running,
-  online,
-  onStart,
+  action,
+  onAction,
   extra,
   top,
-  blocked = false,
 }: {
-  /** Nhóm Dịch bình thường đang bảo trì: khóa nút bắt đầu. Chọn tệp và đổi lựa chọn vẫn dùng được. */
-  blocked?: boolean;
   file: File | null;
   thumb: FileThumb;
   url: string;
@@ -63,9 +60,9 @@ export function HomeHero({
   genre: string;
   onGenre: (value: string) => void;
   onOpenTool: (id: "key" | "phim") => void;
-  running: boolean;
-  online: boolean;
-  onStart: () => void;
+  /** Nút chính theo trạng thái (home-action.ts): Tải và dịch, hoặc đúng bước còn thiếu. Chọn tệp và đổi lựa chọn luôn dùng được. */
+  action: HomeAction;
+  onAction: () => void;
   /** Chỗ cho ước tính, đặt ngay trên nút bắt đầu. */
   extra?: ReactNode;
   /** Chỗ cho số dư Token dịch, đặt ngay đầu trang, trên ô thả. */
@@ -77,7 +74,6 @@ export function HomeHero({
   const linkCheck = useLinkCheck();
   const caps = useCaps();
   const isAudio = Boolean(file && (file.type.startsWith("audio/") || /\.(mp3|m4a|aac|ac3|dts|wav|flac|ogg|opus)$/i.test(file.name)));
-  const hasInput = Boolean(file) || url.trim().length > 0;
   const pick = (next: File | null) => {
     if (!next) return;
     if (!isMediaFile(next)) return setNote("Chỉ nhận video hoặc âm thanh (mp4, mkv, webm, mp3…).");
@@ -121,7 +117,7 @@ export function HomeHero({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onFile]);
   return (
-    <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-4 py-4 sm:gap-5 sm:py-8 lg:max-w-5xl lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-x-6">
+    <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-4 py-4 sm:gap-5 sm:py-8 max-lg:landscape:pb-14 lg:max-w-5xl lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-x-6">
       <div className="empty:hidden lg:col-span-2">{top}</div>
       <label
         className={
@@ -250,15 +246,24 @@ export function HomeHero({
 
       <div className="empty:hidden lg:col-span-2 lg:mx-auto lg:w-full lg:max-w-xl">{extra}</div>
 
-      <button
-        type="button"
-        data-home-start
-        disabled={running || !hasInput || !online || blocked}
-        className="min-h-14 rounded-full bg-accent px-8 text-lg lg:col-span-2 lg:mx-auto lg:w-full lg:max-w-xl font-semibold text-ink transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:hover:scale-100 motion-reduce:transition-none motion-reduce:hover:scale-100"
-        onClick={onStart}
-      >
-        {running ? "Đang chạy…" : blocked ? "Đang bảo trì" : "Tải và dịch"}
-      </button>
+      <div className="grid gap-1.5 lg:col-span-2 lg:mx-auto lg:w-full lg:max-w-xl">
+        <button
+          type="button"
+          data-home-start
+          data-home-action={action.kind}
+          disabled={action.kind === "none"}
+          aria-describedby={action.hint ? "home-start-hint" : undefined}
+          className="min-h-14 rounded-full bg-accent px-8 text-lg font-semibold text-ink transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:hover:scale-100 motion-reduce:transition-none motion-reduce:hover:scale-100"
+          onClick={onAction}
+        >
+          {action.label}
+        </button>
+        {action.hint && (
+          <p id="home-start-hint" className="text-center text-xs text-muted" data-home-hint>
+            {action.hint}
+          </p>
+        )}
+      </div>
     </section>
   );
 }
