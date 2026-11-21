@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.30.1 trên `work`**; `main` v5.30.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.30.1 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.30.1**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.30.1. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1369 pass, vite build xong.
 - **v5.30.1**: Sửa «không tìm thấy tài khoản và lịch sử»: mục menu «Tài khoản và lịch sử» ở mọi trang (trang khác dẫn /#vi), khối lịch sử luôn hiện, Hướng dẫn đúng tên. tsc sạch, test 191 + 1369 pass, bấm thử 412 px.
 - **Đẩy chính thức v5.30.0**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.30.0 (gồm v5.27.0–v5.30.0). Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1369 pass, vite build xong. Chủ chưa báo đã thử trên bản thật: cần thử phiếu giữ Token hai phần, Dịch tiếp ở bước 5/5, trau chuốt với lệnh mới.
 - **v5.30.0**: Chia phiếu trước/sau nhận dạng: phiếu asr (nhận dạng + phân tích), đóng khi chờ xem bảng nhân vật; phiếu «Dịch tiếp · …» mở trước lô dịch đầu; dịch lại/làm nốt chỉ giữ phần dịch; thiếu Token thì giữ nhận dạng, bấm Tiếp tục. Tổng quan không đếm đôi. tsc sạch, test 191 + 1369 pass. CHƯA: ước theo số chữ, giữ nhận dạng qua tải lại trang, chạy thật với Token thật.
