@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { USE_CHOICES, USE_KEY, readUse, rememberUse, shouldAsk, usePreset } from "./first-ask.ts";
+import { USE_CHOICES, USE_KEY, readUse, rememberUse, shouldAsk, presetForUse } from "./first-ask.ts";
 
 function memory() {
   const data = new Map<string, string>();
@@ -36,15 +36,15 @@ describe("câu hỏi lần đầu", () => {
   });
 
   it("mỗi câu trả lời có câu báo; chỉ Học ngoại ngữ đổi cài đặt (tắt Thuyết minh) và nói rõ", () => {
-    for (const choice of USE_CHOICES) assert.ok(usePreset(choice.id).tip.length > 10, choice.id);
-    assert.equal(usePreset("hoc").narration, false);
-    assert.match(usePreset("hoc").tip, /tắt Thuyết minh/);
-    for (const id of ["phim", "lam-phu-de", "khac"] as const) assert.equal(usePreset(id).narration, undefined);
+    for (const choice of USE_CHOICES) assert.ok(presetForUse(choice.id).tip.length > 10, choice.id);
+    assert.equal(presetForUse("hoc").narration, false);
+    assert.match(presetForUse("hoc").tip, /tắt Thuyết minh/);
+    for (const id of ["phim", "lam-phu-de", "khac"] as const) assert.equal(presetForUse(id).narration, undefined);
   });
 
   it("câu báo chỉ đúng tên nút đang có", () => {
     const exportMenu = readFileSync(new URL("../components/export-menu.tsx", import.meta.url), "utf8");
-    assert.match(usePreset("lam-phu-de").tip, /Tải phụ đề/);
+    assert.match(presetForUse("lam-phu-de").tip, /Tải phụ đề/);
     assert.match(exportMenu, /Tải phụ đề/);
     const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
     assert.match(studio, /<FirstAskCard /);

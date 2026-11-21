@@ -39,7 +39,7 @@ export function rememberUse(store: Store | null, answer: UseAnswer | "skip") {
 /** Việc đặt sẵn theo câu trả lời, và câu báo cho khách biết đã đặt gì (không âm thầm đổi). */
 export type UsePreset = { narration?: boolean; tip: string };
 
-export function usePreset(answer: UseAnswer): UsePreset {
+export function presetForUse(answer: UseAnswer): UsePreset {
   if (answer === "hoc") {
     return { narration: false, tip: "Đã tắt Thuyết minh để bạn nghe giọng gốc. Danh sách Bản dịch luôn có câu gốc dưới câu dịch." };
   }

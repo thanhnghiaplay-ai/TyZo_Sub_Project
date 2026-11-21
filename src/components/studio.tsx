@@ -48,7 +48,7 @@ import { useCaps, useWakeLock } from "@/components/use-caps";
 import { MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
 import { PayStatusBar } from "@/components/pay-status-bar";
 import { homeAction } from "@/lib/home-action";
-import { readUse, rememberUse, shouldAsk, usePreset, type UseAnswer } from "@/lib/first-ask";
+import { readUse, rememberUse, shouldAsk, presetForUse, type UseAnswer } from "@/lib/first-ask";
 import { FirstAskCard } from "@/components/first-ask-card";
 import { KeyRing, type KeyCheck } from "@/components/key-ring";
 import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
@@ -861,7 +861,7 @@ export function Studio() {
     rememberUse(safeLocalStore(), answer);
     setUseAnswer(answer);
     if (answer === "skip") return;
-    const preset = usePreset(answer);
+    const preset = presetForUse(answer);
     if (preset.narration !== undefined) patchNarration({ enabled: preset.narration });
     pushToast(preset.tip, "ok");
   };
