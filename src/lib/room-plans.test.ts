@@ -47,7 +47,11 @@ describe("hạn gói", () => {
   it("trả theo lượt không lấy câu của gói hết hạn", () => {
     assert.match(payTurnNotice({ plan: "ngay", planUntil: "2026-11-05T09:00:00.000Z", trialLeft: 0 }, now), /trừ Token dịch/i);
     assert.match(payTurnNotice({ plan: "tuan", planUntil: "2026-11-06T10:00:00.000Z", trialLeft: 0 }, now), /Số ngày của gói thuê không bị trừ/);
-    assert.match(payTurnNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), /Bản dùng thử/);
+    // v5.31.1: chưa thuê phòng nhưng có Token dịch thì trả theo lượt được; chưa có Token thì chỉ chỗ mua.
+    assert.match(payTurnNotice({ plan: null, planUntil: null, trialLeft: 1 }, now), /Chưa có Token dịch/);
+    assert.match(payTurnNotice({ plan: null, planUntil: null, trialLeft: 1, units: 5000 }, now), /Trừ Token dịch đã mua/);
+    assert.equal(exportNotice({ plan: null, planUntil: null, trialLeft: 1, units: 5000 }, now), null);
+    assert.equal(exportNotice({ plan: null, planUntil: null, trialLeft: 0, units: 0 }, now), "Tài khoản không còn hạn. Không xuất được file phụ đề.");
   });
 });
 describe("một nguồn giá thuê phòng", () => {

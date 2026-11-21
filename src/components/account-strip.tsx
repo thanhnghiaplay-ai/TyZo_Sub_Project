@@ -28,7 +28,7 @@ export function AccountStrip({ payByRoom = false }: { payByRoom?: boolean }) {
     void claimTrialDevice({ data: id })
       .then((state) => {
         if (!gone) {
-          const input = { plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft };
+          const input = { plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft, units: state.units };
           setText(payByRoom ? payTurnNotice(input) : roomAccess(input).text);
         }
       })

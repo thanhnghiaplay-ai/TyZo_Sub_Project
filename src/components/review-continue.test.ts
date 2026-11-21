@@ -45,3 +45,17 @@ describe("Bước cuối khi lượt đang chờ xem bảng nhân vật", () => 
     assert.match(studio, /data-model-locked[\s\S]{0,200}áp dụng cho lần dịch lại sau/);
   });
 });
+
+describe("v5.31.1: trả theo lượt cho người chỉ mua Token dịch", () => {
+  it("không đòi từng thuê phòng; chỉ cần còn Token dịch, máy chủ tự kiểm khi giữ phiếu", () => {
+    assert.doesNotMatch(pipeline, /Bản dùng thử không dùng cửa trả theo lượt/);
+    assert.match(pipeline, /if \(!\(state\.units > 0\)\) \{\s*say\("Hết Token dịch\./);
+    assert.match(pipeline, /exportNotice\(\{ plan: state\.plan, planUntil: state\.planUntil, trialLeft: state\.trialLeft, units: state\.units \}\)/);
+  });
+
+  it("chưa chọn gói thì mở bước cuối có danh sách gói", () => {
+    assert.match(pipeline, /if \(packed\) \{\s*[\s\S]{0,120}window\.dispatchEvent\(new Event\("tyzo-need-pack"\)\);/);
+    assert.match(studio, /addEventListener\("tyzo-need-pack", onNeedPack\)/);
+    assert.match(studio, /const onNeedPack = \(\) => \{[\s\S]{0,120}setToolTab\("run"\);\s*setSheetOpen\(true\);/);
+  });
+});

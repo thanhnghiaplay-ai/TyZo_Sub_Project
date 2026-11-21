@@ -41,24 +41,28 @@ export function roomAccess(
 }
 
 export function payTurnNotice(
-  input: { plan: string | null; planUntil: string | null; trialLeft: number },
+  input: { plan: string | null; planUntil: string | null; trialLeft: number; units?: number },
   now = Date.now(),
 ) {
   const access = roomAccess(input, now);
+  const hasTokens = (input.units ?? 0) > 0;
   const until = input.planUntil ? new Date(input.planUntil) : null;
   const expired = Boolean(input.plan && until && !Number.isNaN(until.getTime()) && until.getTime() <= now);
   if (access.kind === "paid") return "Đang chọn trả theo lượt. Trừ Token dịch. Số ngày của gói thuê không bị trừ.";
   if (expired) return "Gói thuê đã hết hạn. Cửa trả theo lượt vẫn mở, trừ Token dịch, không trừ vào số ngày của gói.";
-  if (access.kind === "trial") return "Bản dùng thử không dùng cửa trả theo lượt. Hãy chọn key của bạn, hoặc mua gói thuê phòng.";
-  return "Chưa có hạn dùng. Cửa trả theo lượt chưa mở cho tài khoản này.";
+  // v5.31.1: trả theo lượt chỉ cần Token dịch, không cần từng thuê phòng.
+  if (hasTokens) return "Đang chọn trả theo lượt. Trừ Token dịch đã mua.";
+  return "Chưa có Token dịch. Mua Token dịch ở Ví để trả theo lượt, hoặc dùng key AI của bạn.";
 }
 
 export function exportNotice(
-  input: { plan: string | null; planUntil: string | null; trialLeft: number },
+  input: { plan: string | null; planUntil: string | null; trialLeft: number; units?: number },
   now = Date.now(),
 ) {
   const access = roomAccess(input, now);
   if (access.kind === "paid") return null;
+  // v5.31.1: còn Token dịch còn hạn (đã mua gói Token) thì không còn là dùng thử, xuất được file (điều khoản: «chưa mua gói là dùng thử»).
+  if ((input.units ?? 0) > 0) return null;
   const until = input.planUntil ? new Date(input.planUntil) : null;
   if (input.plan && until && !Number.isNaN(until.getTime()) && until.getTime() <= now) {
     return "Gói đã hết hạn. Không xuất được file phụ đề.";

@@ -260,7 +260,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "khong-xuat-duoc",
     q: "Vì sao tôi không tải được file phụ đề?",
-    a: "Tài khoản dùng thử và tài khoản hết hạn gói không xuất được file phụ đề. Mua gói thuê phòng để xuất file. Phụ đề trên màn hình vẫn xem được bình thường.",
+    a: "Tài khoản dùng thử, hoặc đã hết cả gói thuê phòng lẫn Token dịch, không xuất được file phụ đề. Còn gói thuê phòng hoặc còn Token dịch thì xuất được. Phụ đề trên màn hình vẫn xem được bình thường.",
     words: "xuat file srt vtt khong tai duoc dung thu het han",
   },
   {

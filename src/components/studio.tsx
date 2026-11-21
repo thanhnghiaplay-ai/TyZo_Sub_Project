@@ -837,6 +837,14 @@ export function Studio() {
       if (stepInfo(id)) setToolTab(id as ToolId);
     };
     window.addEventListener("tyzo-tab", onTab);
+    // Trả theo lượt mà chưa chọn gói: mở bước cuối có danh sách gói.
+    const onNeedPack = () => {
+      setProduct("sub");
+      setForced(true);
+      setToolTab("run");
+      setSheetOpen(true);
+    };
+    window.addEventListener("tyzo-need-pack", onNeedPack);
     // Menu ở trang khác (Dịch trực tiếp, Hướng dẫn) dẫn về «/#vi» để mở thẳng trang tài khoản.
     const onHash = () => {
       if (window.location.hash !== "#vi") return;
@@ -847,6 +855,7 @@ export function Studio() {
     window.addEventListener("hashchange", onHash);
     return () => {
       window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("tyzo-need-pack", onNeedPack);
       window.removeEventListener("tyzo-sheet", onSheet);
       window.removeEventListener("tyzo-tab", onTab);
     };

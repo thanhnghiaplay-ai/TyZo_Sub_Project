@@ -871,10 +871,9 @@ export function usePipeline() {
       const state = await claimTrialDevice({ data: id });
       const access = roomAccess({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
       if (roomPayRef.current) {
-        const until = state.planUntil ? new Date(state.planUntil).getTime() : 0;
-        const hadPlan = Boolean(state.plan && until);
-        if (!hadPlan && access.kind !== "paid") {
-          say("Bản dùng thử không dùng cửa trả theo lượt. Hãy chọn key của bạn, hoặc mua gói thuê phòng.", true);
+        // v5.31.1: trả theo lượt mở cho ai có Token dịch, không cần từng thuê phòng. Máy chủ tự kiểm Token khi giữ phiếu.
+        if (!(state.units > 0)) {
+          say("Hết Token dịch. Mua Token dịch ở Ví để trả theo lượt, hoặc dùng key AI của bạn.", true);
           return null;
         }
         return access;
@@ -916,7 +915,7 @@ export function usePipeline() {
           return false;
         }
         const state = await claimTrialDevice({ data: id });
-        const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft });
+        const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft, units: state.units });
         if (notice) {
           say(notice, true);
           return false;
@@ -1016,7 +1015,11 @@ export function usePipeline() {
     if (roomPayRef.current) {
       const menu = await getServiceMenu().catch(() => null);
       const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });
-      if (packed) return say(packed, true);
+      if (packed) {
+        // Chỉ đúng chỗ chọn gói (bước cuối «Tải và dịch»), không để khách tưởng nút hỏng.
+        window.dispatchEvent(new Event("tyzo-need-pack"));
+        return say(packed, true);
+      }
     }
     // Kiểm chung cho MỌI nhà (không nhánh riêng từng nhà): key của nhà nhận dạng, link khi nhà đó nhận link,
     // và key của nhà chạy model dịch (dịch có thể bằng bất kỳ nhà nào có model dịch).

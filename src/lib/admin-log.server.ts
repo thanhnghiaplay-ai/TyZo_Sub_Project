@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.31.1",
+    time: "18:09 21/11/2026",
+    area: "khac",
+    text: "v5.31.1, phát hiện khi Claude thử trên bản chính thức (tài khoản thử, Admin cấp 5.000 Token): người chỉ mua Token dịch (chưa từng thuê phòng) bị guardRoom chặn trả theo lượt («Bản dùng thử không dùng cửa trả theo lượt», điều kiện hadPlan có từ trước Token dịch), và exportNotice chỉ cho xuất khi gói thuê còn hạn. Trái điều khoản («chưa mua gói là dùng thử»; gói Token cũng là gói) và trái trang chủ đợt 1. Chủ chốt «làm». Sửa: guardRoom ở cửa trả theo lượt chỉ cần state.units > 0 (máy chủ vẫn kiểm khi giữ phiếu), hết Token thì câu báo chỉ chỗ mua; exportNotice/payTurnNotice nhận units: còn Token dịch còn hạn thì xuất được; dùng thử thuần giữ nguyên. account-strip truyền units. Hướng dẫn câu hỏi xuất file sửa theo. Chưa chọn gói trả theo lượt: start() phát tyzo-need-pack, studio mở tab bước cuối «Tải và dịch» có danh sách gói. Không sửa điều khoản (chữ hiện có đã khớp).",
+  },
+  {
     version: "5.31.0",
     time: "17:29 21/11/2026",
     area: "khac",
