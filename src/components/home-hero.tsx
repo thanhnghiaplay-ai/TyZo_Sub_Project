@@ -43,9 +43,6 @@ export function HomeHero({
   onSource,
   genre,
   onGenre,
-  payMode,
-  onTogglePay,
-  keyReady,
   onOpenTool,
   running,
   online,
@@ -65,10 +62,6 @@ export function HomeHero({
   onSource: (value: string) => void;
   genre: string;
   onGenre: (value: string) => void;
-  /** null: cửa trả theo lượt đóng, không hiện chip. */
-  payMode: "key" | "turn" | null;
-  onTogglePay: () => void;
-  keyReady: boolean;
   onOpenTool: (id: "key" | "phim") => void;
   running: boolean;
   online: boolean;
@@ -247,18 +240,7 @@ export function HomeHero({
           </ChipSelect>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2">
-          {payMode && (
-            <button type="button" className={CHIP} aria-pressed={payMode === "turn"} onClick={onTogglePay} title="Đổi giữa key của bạn và trả theo lượt">
-              <Icon slot="nav.wallet" className="size-4" />
-              <span data-chip-value className="font-medium">{payMode === "turn" ? "Trả theo lượt" : "Key của tôi"}</span>
-            </button>
-          )}
-          {payMode !== "turn" && (
-            <button type="button" className={CHIP} onClick={() => onOpenTool("key")}>
-              <Icon slot="ui.key" className="size-4" />
-              <span {...(keyReady ? { "data-chip-value": "" } : {})} className={keyReady ? "font-medium" : "font-medium text-warning"}>{keyReady ? "Đã có key" : "Nhập key"}</span>
-            </button>
-          )}
+          {/* Cách trả và key nằm ở dòng trạng thái đầu trang (PayStatusBar), không lặp lại ở đây. */}
           <button type="button" className={CHIP} onClick={() => onOpenTool("phim")}>
             <Icon slot="ui.options" className="size-4" />
             <span className="font-medium">Tùy chọn khác</span>

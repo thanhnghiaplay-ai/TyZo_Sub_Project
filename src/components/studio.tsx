@@ -45,7 +45,9 @@ import { StepsBar } from "@/components/steps-bar";
 import { ExportMenu } from "@/components/export-menu";
 import { CueEditor } from "@/components/cue-editor";
 import { useCaps, useWakeLock } from "@/components/use-caps";
-import { MoneyBalance, MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
+import { MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
+import { PayStatusBar } from "@/components/pay-status-bar";
+import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
@@ -538,6 +540,10 @@ export function Studio() {
   const [ctxView, setCtxView] = useState<"cast" | "terms" | "note">("cast");
   const [product, setProduct] = useState<"sub" | "account">("sub");
   const [payByRoom, setPayByRoom] = useState(false);
+  /** Cách trả khách đã chọn và được nhớ trên máy (null = chưa chọn lần nào). «choosing»: đang mở lại hai lựa chọn. */
+  const [payChoice, setPayChoice] = useState<PayChoice | null>(null);
+  const [choosingPay, setChoosingPay] = useState(false);
+  const [payRead, setPayRead] = useState(false);
   const [turnLocked, setTurnLocked] = useState(false);
   const { user: me } = useCurrentUserState();
   const runDoor = useRunDoor();
@@ -604,10 +610,24 @@ export function Studio() {
     if (product !== "account") return;
     app.videoRef.current?.pause();
   }, [product, app.videoRef]);
+  // Lần đầu mở trang: đọc cách trả đã nhớ. Đã chọn trả theo lượt và cửa đang mở thì vào thẳng cách đó.
+  useEffect(() => {
+    if (!runDoor.ready || payRead) return;
+    setPayRead(true);
+    const stored = readPayChoice(safeLocalStore());
+    setPayChoice(stored);
+    if (stored === "turn" && runDoor.open) {
+      setPayByRoom(true);
+      app.setRoomPay(true);
+    }
+  }, [runDoor.ready, runDoor.open, payRead, app]);
   useEffect(() => {
     if (!runDoor.ready || runDoor.open) return;
+    // Chủ bật bảo trì cửa trả theo lượt: lùi về key của khách và nói rõ, không để khách tưởng vẫn đang trả theo lượt.
+    if (payByRoom || payChoice === "turn") pushToast("Trả theo lượt đang bảo trì. Tạm dùng key của bạn.", "bad");
     setPayByRoom(false);
     app.setRoomPay(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ chạy khi cửa đổi trạng thái
   }, [runDoor.ready, runDoor.open, app.setRoomPay]);
 
   const pasteKey = async () => {
@@ -689,12 +709,25 @@ export function Studio() {
     setSheetOpen(true);
   };
   const hero = showHomeHero({ hasSegs: !noSubs, running: app.running, analyzing: app.analyzing, reviewHold: app.reviewHold, forced });
-  const togglePay = () => {
-    const next = !payByRoom;
-    if (next && !runDoor.open) return;
-    setPayByRoom(next);
-    app.setRoomPay(next);
+  /**
+   * Một lối duy nhất để đổi cách trả (dòng trạng thái, chip, tab Video). choice null: mở lại hai lựa chọn.
+   * remember=false: chỉ đổi cho lần này (ví dụ «Dùng Token lần này»), lựa chọn đã nhớ giữ nguyên.
+   */
+  const choosePay = (choice: PayChoice | null, remember: boolean) => {
+    if (choice === null) {
+      setChoosingPay(true);
+      return;
+    }
+    if (choice === "turn" && !runDoor.open) return;
+    setChoosingPay(false);
+    setPayByRoom(choice === "turn");
+    app.setRoomPay(choice === "turn");
+    if (remember) {
+      rememberPayChoice(safeLocalStore(), choice);
+      setPayChoice(choice);
+    }
   };
+  const keyHouses = PROVIDER_IDS.filter((id) => (id === "groq" ? app.key : (app.houseKeys[id] ?? "")).trim()).map((id) => PROVIDERS[id].label);
 
   // Dán link ở bất cứ đâu (ngoài ô gõ chữ) thì nhận link; ở trang chủ một ô thì tự bắt đầu.
   const takeLink = useCallback(
@@ -1107,14 +1140,26 @@ export function Studio() {
           onSource={app.setSource}
           genre={app.genre}
           onGenre={app.pickGenre}
-          payMode={runDoor.ready && runDoor.open ? (payByRoom ? "turn" : "key") : null}
-          onTogglePay={togglePay}
-          keyReady={app.key.trim().length > 0}
           onOpenTool={openTool}
           running={app.running}
           online={online}
           onStart={() => void app.start()}
-          top={<MoneyBalance money={money} turn={payByRoom} />}
+          top={
+            <PayStatusBar
+              state={payState({
+                choice: choosingPay ? null : payByRoom ? "turn" : payChoice ? "key" : null,
+                account: money.account,
+                failed: money.failed,
+                keys: keyHouses,
+                turnOpen: runDoor.ready && runDoor.open,
+              })}
+              money={money}
+              onChoose={choosePay}
+              onAddKey={() => openTool("key")}
+              onWallet={() => setProduct("account")}
+              onRetry={() => window.dispatchEvent(new Event("tyzo-room-refresh"))}
+            />
+          }
           extra={payByRoom ? <MoneyEstimate money={money} /> : null}
         />
       )}
@@ -1802,10 +1847,10 @@ export function Studio() {
           <div className="grid gap-2">
             <h2 className="text-sm font-semibold">Cách trả</h2>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { setPayByRoom(false); app.setRoomPay(false); }}>
+              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => choosePay("key", true)}>
                 Key của tôi
               </button>
-              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => { if (!runDoor.open) return; setPayByRoom(true); app.setRoomPay(true); }}>
+              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => choosePay("turn", true)}>
                 Trả theo lượt
               </button>
             </div>
@@ -2861,4 +2906,13 @@ function Tiny({ label, onClick, children, tour }: { label: string; onClick: () =
       {children}
     </button>
   );
+}
+
+/** localStorage nếu trình duyệt cho dùng; bị chặn (chế độ riêng tư, khung nhúng) thì null: lựa chọn chỉ giữ đến khi tải lại. */
+function safeLocalStore(): Storage | null {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
 }

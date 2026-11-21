@@ -22,6 +22,8 @@ type MoneyInput = {
 export type MoneyView = {
   on: boolean;
   account: RoomState | null;
+  /** Lần đọc tài khoản gần nhất bị lỗi (mất mạng, máy chủ bận). Gửi sự kiện «tyzo-room-refresh» để thử lại. */
+  failed: boolean;
   left: number | null;
   exactRate: boolean;
   secs: number;
@@ -37,6 +39,7 @@ export function useMoney({ active, asr, chat, seconds, narration }: MoneyInput):
   const { user, isPending } = useCurrentUserState();
   const on = active && !isPending && Boolean(user) && !user?.isDevFallback;
   const [account, setAccount] = useState<RoomState | null>(null);
+  const [failed, setFailed] = useState(false);
   const [packs, setPacks] = useState<ServicePack[]>([]);
   const [perMinute, setPerMinute] = useState<TurnPrice[]>([]);
   const [forRun, setForRun] = useState<TurnPrice[]>([]);
@@ -51,11 +54,14 @@ export function useMoney({ active, asr, chat, seconds, narration }: MoneyInput):
   useEffect(() => {
     if (!on) return;
     let gone = false;
+    setFailed(false);
     void getRoomAccount()
       .then((next) => {
         if (!gone) setAccount(next);
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!gone) setFailed(true);
+      });
     return () => {
       gone = true;
     };
@@ -116,7 +122,7 @@ export function useMoney({ active, asr, chat, seconds, narration }: MoneyInput):
   const left = account && rate ? minutesLeft(account.units, rate.row.total) : null;
   const run = pickPrice(forRun, chosen?.id ?? null);
   const estimate = account ? runEstimate(run?.row ?? null, account.units) : null;
-  return { on, account, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
+  return { on, account, failed, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
 }
 
 /** Thanh số dư gọn, đặt ngay đầu màn hình đầu: Token dịch còn và còn khoảng bao nhiêu phút. */
