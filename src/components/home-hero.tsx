@@ -47,6 +47,7 @@ export function HomeHero({
   onOpenTool,
   action,
   onAction,
+  problem = "",
   extra,
   top,
 }: {
@@ -63,6 +64,8 @@ export function HomeHero({
   /** Nút chính theo trạng thái (home-action.ts): Tải và dịch, hoặc đúng bước còn thiếu. Chọn tệp và đổi lựa chọn luôn dùng được. */
   action: HomeAction;
   onAction: () => void;
+  /** Lỗi vừa chặn lần bấm (v5.32.3): hiện đỏ ngay dưới nút, đến khi trạng thái đổi. Không để khách tưởng nút hỏng. */
+  problem?: string;
   /** Chỗ cho ước tính, đặt ngay trên nút bắt đầu. */
   extra?: ReactNode;
   /** Chỗ cho số dư Token dịch, đặt ngay đầu trang, trên ô thả. */
@@ -252,16 +255,22 @@ export function HomeHero({
           data-home-start
           data-home-action={action.kind}
           disabled={action.kind === "none"}
-          aria-describedby={action.hint ? "home-start-hint" : undefined}
+          aria-describedby={problem || action.hint ? "home-start-hint" : undefined}
           className="min-h-14 rounded-full bg-accent px-8 text-lg font-semibold text-ink transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-40 disabled:hover:scale-100 motion-reduce:transition-none motion-reduce:hover:scale-100"
           onClick={onAction}
         >
           {action.label}
         </button>
-        {action.hint && (
-          <p id="home-start-hint" className="text-center text-xs text-muted" data-home-hint>
-            {action.hint}
+        {problem ? (
+          <p id="home-start-hint" role="alert" className="text-center text-sm text-danger" data-home-problem>
+            {problem}
           </p>
+        ) : (
+          action.hint && (
+            <p id="home-start-hint" className="text-center text-xs text-muted" data-home-hint>
+              {action.hint}
+            </p>
+          )
         )}
       </div>
     </section>

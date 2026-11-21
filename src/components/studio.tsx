@@ -928,6 +928,13 @@ export function Studio() {
     if (preset.narration !== undefined) patchNarration({ enabled: preset.narration });
     pushToast(preset.tip, "ok");
   };
+  // Khách đổi tệp, link hay cách trả thì lỗi cũ dưới nút chính ẩn đi (lỗi mới vẫn hiện).
+  const [quietStatus, setQuietStatus] = useState("");
+  const lastStatus = useRef(app.status);
+  lastStatus.current = app.status;
+  useEffect(() => {
+    setQuietStatus(lastStatus.current);
+  }, [pickedFile, app.url, pay.kind]);
   const startAction = homeAction({ pay, moneyOn: money.on, hasInput: Boolean(pickedFile) || app.url.trim().length > 0, online, running: app.running, blocked: normalDown });
   /** Nút chính làm đúng bước còn thiếu: dịch, thêm key, mở Ví, hoặc đưa về hai lựa chọn cách trả. */
   const runStartAction = () => {
@@ -1241,6 +1248,7 @@ export function Studio() {
           onOpenTool={openTool}
           action={startAction}
           onAction={runStartAction}
+          problem={app.isError && !app.running && app.status !== quietStatus ? app.status : ""}
           top={
             <div className="grid gap-3 empty:hidden">
               <PayStatusBar

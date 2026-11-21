@@ -88,3 +88,12 @@ describe("v5.32.2: lần đầu vào chỉ một lời mời một lúc", () => 
     assert.match(studio, /markSeen\(\); setTourOffer\(false\);/);
   });
 });
+
+describe("v5.32.3: lỗi chặn lần bấm hiện ngay dưới nút chính", () => {
+  it("hiện đỏ dưới nút đến khi khách đổi tệp, link hay cách trả", () => {
+    const hero = readFileSync(new URL("./home-hero.tsx", import.meta.url), "utf8");
+    assert.match(hero, /problem \? \([\s\S]{0,120}role="alert"[\s\S]{0,120}data-home-problem/);
+    assert.match(studio, /problem=\{app\.isError && !app\.running && app\.status !== quietStatus \? app\.status : ""\}/);
+    assert.match(studio, /setQuietStatus\(lastStatus\.current\);\s*\}, \[pickedFile, app\.url, pay\.kind\]\);/);
+  });
+});

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.32.3",
+    time: "20:21 21/11/2026",
+    area: "khac",
+    text: "v5.32.3, mục 5. Lỗi chặn khi bấm bắt đầu chỉ nằm ở dòng trạng thái đầu trang (dễ lỡ trên điện thoại, có lúc bị câu khác đè). HomeHero nhận problem: studio truyền app.status khi app.isError và không chạy, trừ khi đã «làm im» (quietStatus đặt bằng trạng thái hiện tại mỗi khi pickedFile, app.url, pay.kind đổi). Hiện role=alert đỏ thay dòng gợi ý. Kiểm dev 412 px: key Groq giả → câu «Key Groq không hợp lệ…» dưới nút; chọn tệp khác → ẩn.",
+  },
+  {
     version: "5.32.2",
     time: "20:16 21/11/2026",
     area: "khac",
