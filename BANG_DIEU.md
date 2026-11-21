@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.26.0 (đẩy chính thức 21/11/2026). `work` mới hơn, chờ «đẩy chính thức». |
-| Bản mới nhất | v5.30.0 trên `work` (chưa đẩy chính thức): phiếu giữ Token tách trước/sau nhận dạng (v5.30.0); Admin sửa lệnh trau chuốt (v5.29.0); trau chuốt tự nhiên (v5.28.0); Admin thay Chủ (v5.27.1); Dịch tiếp ở bước 5/5 (v5.27.0). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.30.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.30.0 trên `work` và `main`: phiếu giữ Token tách trước/sau nhận dạng (v5.30.0); Admin sửa lệnh trau chuốt (v5.29.0); trau chuốt tự nhiên (v5.28.0); Admin thay Chủ (v5.27.1); Dịch tiếp ở bước 5/5 (v5.27.0). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |

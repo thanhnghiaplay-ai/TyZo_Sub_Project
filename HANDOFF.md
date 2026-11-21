@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.30.0 trên `work`**, `main` xem `BANG_DIEU.md`.md`.md`.md`.26.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.30.0 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.30.0**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.30.0 (gồm v5.27.0–v5.30.0). Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1369 pass, vite build xong. Chủ chưa báo đã thử trên bản thật: cần thử phiếu giữ Token hai phần, Dịch tiếp ở bước 5/5, trau chuốt với lệnh mới.
 - **v5.30.0**: Chia phiếu trước/sau nhận dạng: phiếu asr (nhận dạng + phân tích), đóng khi chờ xem bảng nhân vật; phiếu «Dịch tiếp · …» mở trước lô dịch đầu; dịch lại/làm nốt chỉ giữ phần dịch; thiếu Token thì giữ nhận dạng, bấm Tiếp tục. Tổng quan không đếm đôi. tsc sạch, test 191 + 1369 pass. CHƯA: ước theo số chữ, giữ nhận dạng qua tải lại trang, chạy thật với Token thật.
 - **v5.29.0**: Admin sửa lệnh trau chuốt theo thể loại ở Cấu hình → Gói (phần khung cố định), nhật ký sua-lenh-trau-chuot. Bấm thử lưu/tải lại/về mặc định ổn. tsc sạch, test 191 + 1366 pass. Chưa có nút thử 20 câu mẫu; model trau chuốt vẫn chỉ Groq.
 - **v5.28.0**: Trau chuốt: lệnh cho viết lại tự nhiên (giữ nghĩa), 6 câu mẫu tiếng Việt, ngữ cảnh 15 câu trước, nhiệt độ 0,3, ô «Yêu cầu thêm» của khách (≤300 ký tự, dưới luật cố định). tsc sạch, test 191 + 1359 pass. CHƯA so trước/sau với model thật: Admin cần chạy clip mẫu và chấm ở khung so sánh.
