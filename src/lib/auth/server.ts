@@ -205,7 +205,7 @@ const grokOAuthPlugin = authConfigured
 
 const mailReady = mailerName(process.env) !== null;
 if (emailAndPasswordEnabled && !mailReady && process.env.DATABASE_URL?.trim()) {
-  console.error("[auth] Chưa cấu hình gửi thư (MAIL_FROM và một khóa nhà cung cấp): email đăng ký chưa được xác minh, và không ai là Chủ qua đăng nhập mật khẩu.");
+  console.error("[auth] Chưa cấu hình gửi thư (MAIL_FROM và một khóa nhà cung cấp): email đăng ký chưa được xác minh, và không ai là Admin qua đăng nhập mật khẩu.");
 }
 
 export const auth = betterAuth({

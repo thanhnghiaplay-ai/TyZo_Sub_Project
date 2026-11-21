@@ -144,7 +144,7 @@ async function assertLower(actorId: string, targetUserId: string) {
     where u.id = ${targetUserId}
   `;
   if (!target.length) throw new Error("Không thấy tài khoản.");
-  if (target[0].role === "chu") throw new Error("Không xử lý tài khoản Chủ.");
+  if (target[0].role === "chu") throw new Error("Không xử lý tài khoản Admin.");
   const targetRole = isStaffRole(target[0].role) ? target[0].role : null;
   if (!outranks(actor.role, targetRole)) throw new Error("Không xử lý người cùng cấp hoặc cấp trên.");
 }
@@ -423,13 +423,13 @@ export const setUserStatus = createServerFn({ method: "POST" })
       where u.id = ${data.userId}
     `;
     if (!target.length) throw new Error("Không thấy tài khoản.");
-    if (target[0].role === "chu") throw new Error("Không xử lý tài khoản Chủ.");
+    if (target[0].role === "chu") throw new Error("Không xử lý tài khoản Admin.");
     const targetRole = isStaffRole(target[0].role) ? target[0].role : null;
     if (!outranks(actor.role, targetRole)) throw new Error("Không xử lý người cùng cấp hoặc cấp trên.");
-    if (targetRole === "chu") throw new Error("Không khóa hoặc cấm Chủ.");
+    if (targetRole === "chu") throw new Error("Không khóa hoặc cấm Admin.");
     const current = asStanding(target[0].status);
     if (data.status === "banned" || current === "banned") {
-      if (!roleAtLeast(actor.role, "chu")) throw new Error("Chỉ Chủ được cấm hoặc gỡ cấm.");
+      if (!roleAtLeast(actor.role, "chu")) throw new Error("Chỉ Admin được cấm hoặc gỡ cấm.");
     }
     await sql`insert into room_accounts (user_id) values (${data.userId}) on conflict (user_id) do nothing`;
     await sql`
@@ -489,7 +489,7 @@ export const setStaffRole = createServerFn({ method: "POST" })
     const person = await sql<{ email: string }>`select email from "user" where id = ${data.userId}`;
     if (!person.length) throw new Error("Không thấy tài khoản.");
     const target = await sql<{ role: string }>`select role from room_staff where user_id = ${data.userId}`;
-    if (target[0]?.role === "chu") throw new Error("Không đổi quyền Chủ.");
+    if (target[0]?.role === "chu") throw new Error("Không đổi quyền Admin.");
     if (data.role === "none") {
       await sql`delete from room_staff where user_id = ${data.userId}`;
     } else {
@@ -520,7 +520,7 @@ export const removeUser = createServerFn({ method: "POST" })
       select u.email, s.role from "user" u left join room_staff s on s.user_id = u.id where u.id = ${data}
     `;
     if (!person.length) throw new Error("Không thấy tài khoản.");
-    if (person[0].role === "chu") throw new Error("Không xóa Chủ.");
+    if (person[0].role === "chu") throw new Error("Không xóa Admin.");
     let holds: { id: string }[] = [];
     try {
       holds = await sql<{ id: string }>`
@@ -569,7 +569,7 @@ function holdWindowMin(hold: string, hasManager: boolean) {
 
 function appealPace(hold: string, touchedAt: string, hasManager: boolean): { leftMin: number; tone: "green" | "yellow" | "red"; waitLabel: string } {
   const windowMin = holdWindowMin(hold, hasManager);
-  if (!windowMin) return { leftMin: 0, tone: "red" as const, waitLabel: "Cần Chủ xử lý" };
+  if (!windowMin) return { leftMin: 0, tone: "red" as const, waitLabel: "Cần Admin xử lý" };
   const left = Math.max(0, windowMin - Math.floor((Date.now() - new Date(touchedAt).getTime()) / 60000));
   const tone = left === 0 ? "red" : left * 3 <= windowMin ? "yellow" : "green";
   const who = hold === "quan-ly" ? "Quản lý" : "Hỗ trợ";
@@ -906,7 +906,7 @@ export const escalateAppeal = createServerFn({ method: "POST" })
     `;
     if (!rows.length || rows[0].status !== "cho") throw new Error("Yêu cầu này không còn chờ.");
     const hold = isStaffRole(rows[0].hold_role) ? rows[0].hold_role : "ho-tro";
-    if (hold === "chu") throw new Error("Việc đang ở Chủ.");
+    if (hold === "chu") throw new Error("Việc đang ở Admin.");
     if (place.role === "ho-tro" && hold !== "ho-tro") throw new Error("Việc này đã chuyển cấp trên.");
     const managers = await sql<{ n: number }>`select count(*)::int as n from room_staff where role = 'quan-ly'`;
     const next = place.role === "ho-tro" ? nextHold(hold, managers[0]?.n ?? 0) : "chu";
@@ -935,12 +935,12 @@ export const skipAppeal = createServerFn({ method: "POST" })
     if (!canSkipToOwner(touched, Date.now(), hold)) throw new Error("Chưa đủ 2 giờ kể từ lần xử lý gần nhất.");
     const mine = rows[0].user_id === context.userId || rows[0].email.toLowerCase() === place.email.toLowerCase();
     const staff = place.role === "chu" || place.role === hold || (place.role != null && outranks(place.role, isStaffRole(hold) ? hold : "ho-tro"));
-    if (!mine && !staff) throw new Error("Không đủ quyền để báo Chủ.");
+    if (!mine && !staff) throw new Error("Không đủ quyền để báo Admin.");
     await sql`update room_appeals set hold_role = 'chu', touched_at = now() where id = ${data}`;
     const pack = `${rows[0].email}\n${rows[0].body}\nĐã trả lời: ${rows[0].reply || "chưa"}`;
     await writeNotice("chu", "Báo vượt cấp", pack, null, data);
     if (rows[0].user_id && rows[0].user_id !== context.userId) {
-      await writeNotice("user", "Đã báo Chủ", "Yêu cầu của bạn đã được chuyển thẳng tới Chủ.", rows[0].user_id, data);
+      await writeNotice("user", "Đã báo Admin", "Yêu cầu của bạn đã được chuyển thẳng tới Admin.", rows[0].user_id, data);
     }
     await writeAudit(context.userId, "bao-chu", String(data), pack);
     return { ok: true };

@@ -137,11 +137,11 @@ export function pickPolishChoice(choices: PolishChoice[], wanted: string): Polis
 /** Chữ cho khách khi chưa trau chuốt được vì Admin chưa đặt model. */
 export function polishNoModelText(models: PolishModels | null, genre: string): string {
   const pool = poolForGenre(genre);
-  if (!models) return "Chưa mở tính năng trau chuốt. Chủ chưa chọn model.";
+  if (!models) return "Chưa mở tính năng trau chuốt. Admin chưa chọn model.";
   if (models[pool].length === 0) {
     return pool === "uncensored"
-      ? "Thể loại 18+ chưa có model trau chuốt không kiểm duyệt. Chủ chưa chọn model."
-      : "Chưa có model trau chuốt cho thể loại này. Chủ chưa chọn model.";
+      ? "Thể loại 18+ chưa có model trau chuốt không kiểm duyệt. Admin chưa chọn model."
+      : "Chưa có model trau chuốt cho thể loại này. Admin chưa chọn model.";
   }
   return "";
 }

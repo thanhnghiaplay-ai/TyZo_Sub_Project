@@ -47,7 +47,7 @@ export function GiayShelf({ reload, onBought }: { reload: number; onBought: (mes
         />
       )}
       {!priced && <p className="text-sm text-danger">Chưa có giá bản Turbo hoặc tỷ giá nên chưa bán gói.</p>}
-      {packs.length === 0 && <p className="text-sm text-muted">Chủ chưa mở gói Token dịch.</p>}
+      {packs.length === 0 && <p className="text-sm text-muted">Admin chưa mở gói Token dịch.</p>}
       {packs.map((pack) => (
         <button
           key={pack.id}

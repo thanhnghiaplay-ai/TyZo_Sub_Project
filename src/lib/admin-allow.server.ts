@@ -88,7 +88,7 @@ export async function transferOwner(sql: Sql, fromUserId: string, email: string)
     select id, "emailVerified" as verified from "user" where lower(email) = ${email.trim().toLowerCase()}
   `;
   if (!target.length) throw new Error("Chưa có tài khoản nào dùng email này.");
-  if (!target[0].verified && ownerMustBeVerified()) throw new Error("Email này chưa xác minh, chưa thể làm Chủ.");
+  if (!target[0].verified && ownerMustBeVerified()) throw new Error("Email này chưa xác minh, chưa thể làm Admin.");
   await sql`
     insert into room_staff (user_id, role) values (${target[0].id}, 'chu')
     on conflict (user_id) do update set role = 'chu'

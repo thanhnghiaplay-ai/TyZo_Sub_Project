@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.27.1",
+    time: "16:10 21/11/2026",
+    area: "khac",
+    text: "v5.27.1, đổi chữ hiển thị «Chủ» → «Admin» (Chủ chọn cách (a), 21/11/2026): 57 chỗ trong 25 file (staff-role, audit-note, theme «Cấp Admin», admin-desk, admin-room, các câu «Admin chưa mở…», «Chỉ Admin lưu», «Báo Admin»…). KHÔNG đổi: mã quyền `chu` và nhật ký `bao-chu`, `doi-email-chu` trong dữ liệu; «Chủ tài khoản» (tên chủ tài khoản ngân hàng ở trang chuyển khoản); điều khoản (7 chỗ, gom với lần đổi điều khoản sau để khách không phải đồng ý lại); CHANGELOG cũ; chú thích code; tài liệu dự án cũ.",
+  },
+  {
     version: "5.27.0",
     time: "16:06 21/11/2026",
     area: "khac",

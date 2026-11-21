@@ -145,7 +145,7 @@ export function sonioxErrorText(status: number, payload: unknown): string {
   if (status === 429) return "Soniox đang giới hạn tốc độ. Chờ một lát rồi chạy lại.";
   if (/fetch|download|url|unable to access|http/i.test(message)) return "Soniox không tải được link này. Cần link file công khai, mở được không cần đăng nhập.";
   if (/unsupported|invalid.*(audio|file|format)|no audio|corrupt|decode/i.test(message)) return "Soniox không đọc được định dạng file này.";
-  if (/model/i.test(message)) return "Soniox không nhận model này. Chủ cần kiểm tên model ở danh sách model của Soniox.";
+  if (/model/i.test(message)) return "Soniox không nhận model này. Admin cần kiểm tên model ở danh sách model của Soniox.";
   if (status >= 500) return "Soniox đang bận. Hãy thử lại sau.";
   return message ? `Soniox báo lỗi: ${message}` : `Soniox từ chối yêu cầu (mã ${status}).`;
 }

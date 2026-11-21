@@ -104,8 +104,8 @@ function AppealForm({
           </button>
         )}
         {canSkipToOwner(new Date(item.touchedAt).getTime(), Date.now(), item.holdRole) && (
-          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => skipAppeal({ data: item.id }), "Đã báo Chủ.")}>
-            Báo Chủ
+          <button type="button" className="min-tap rounded-full border border-line px-3" onClick={() => void run(() => skipAppeal({ data: item.id }), "Đã báo Admin.")}>
+            Báo Admin
           </button>
         )}
         {roleAtLeast(role, "quan-ly") && mayReply(role, item.holdRole) && (
@@ -230,7 +230,7 @@ export function AdminDesk() {
     void refreshPlace().catch((error) => {
       setBooting(false);
       const message = error instanceof Error ? error.message : "";
-      setNotice(message === "Unauthorized" ? "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này." : message || "Hãy đăng nhập bằng email Chủ, rồi mở lại trang này.");
+      setNotice(message === "Unauthorized" ? "Hãy đăng nhập bằng email Admin, rồi mở lại trang này." : message || "Hãy đăng nhập bằng email Admin, rồi mở lại trang này.");
     });
   }, []);
 
@@ -331,7 +331,7 @@ export function AdminDesk() {
           <RoleChip role={role} />
         </div>
       ) : (
-        <p className="pt-2 text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Chủ, Quản lý hoặc Hỗ trợ.</p>
+        <p className="pt-2 text-sm text-muted">Không có quyền vào trang này. Tài khoản đang đăng nhập chưa được cấp Admin, Quản lý hoặc Hỗ trợ.</p>
       )}
       {role && <AdminPalette tabs={tabsFor(role)} open={paletteOpen} onOpenChange={setPaletteOpen} onPick={setTab} />}
       <AppShell pinned className="flex min-h-0 flex-1 flex-col">
@@ -386,7 +386,7 @@ export function AdminDesk() {
         <>
           <div className="admin-wide admin-card admin-split">
           <h2 className="admin-span font-semibold">Tài khoản</h2>
-          <p className="admin-span text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Chủ được cấm.</p>
+          <p className="admin-span text-sm text-muted">Tìm email, xem sổ tiền và hạn gói, ghi chú, đặt mật khẩu tạm. Quản lý thì khóa hoặc mở hạn. Chỉ Admin được cấm.</p>
           <div className="admin-find">
           <form
             className="flex gap-2"
@@ -695,11 +695,11 @@ export function AdminDesk() {
               className="grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
               onSubmit={(event) => {
                 event.preventDefault();
-                void run(() => setOwnerEmail({ data: ownerEmail }), "Đã đổi email Chủ. Email cũ không còn vào trang này.");
+                void run(() => setOwnerEmail({ data: ownerEmail }), "Đã đổi email Admin. Email cũ không còn vào trang này.");
               }}
             >
-              <h2 className="font-semibold">Email Chủ</h2>
-              <p className="text-sm text-muted">Chỉ email này vào được trang Admin với quyền Chủ. Đổi xong, hãy đăng nhập bằng email mới.</p>
+              <h2 className="font-semibold">Email Admin</h2>
+              <p className="text-sm text-muted">Chỉ email này vào được trang Admin với quyền Admin. Đổi xong, hãy đăng nhập bằng email mới.</p>
               <input
                 type="email"
                 required
@@ -708,7 +708,7 @@ export function AdminDesk() {
                 className="w-full rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-3 outline-none"
               />
               <button type="submit" disabled={busy} className="min-tap w-fit rounded-full border border-line px-4 disabled:opacity-40">
-                Lưu email Chủ
+                Lưu email Admin
               </button>
             </form>
           )}
@@ -815,13 +815,13 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   "xoa-chi-phi": "Xóa chi phí",
   "uoc-gia-von": "Ước giá vốn phiếu cũ",
   "doi-nguong-chat-luong": "Đổi ngưỡng chất lượng",
-  "doi-email-chu": "Đổi email Chủ",
+  "doi-email-chu": "Đổi email Admin",
   "doi-the-quyen": "Đổi thẻ quyền",
   "mat-khau-tam": "Đặt mật khẩu tạm",
   "xoa-tai-khoan": "Xóa tài khoản",
   "tra-loi": "Trả lời yêu cầu",
   "bao-cap": "Báo cấp trên",
-  "bao-chu": "Báo Chủ",
+  "bao-chu": "Báo Admin",
 };
 
 function logLine(item: AuditRow) {

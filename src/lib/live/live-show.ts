@@ -59,7 +59,7 @@ export function cleanLiveShow(ids: unknown): string[] {
 export function liveOpenProblem(show: string[] | null, model: string): string {
   const mode = MODEL_CATALOG.find((item) => item.id === model);
   if (!mode || !liveTickable(liveModeOf(mode))) return "Model này chưa dịch trực tiếp được.";
-  if (show && !show.includes(model)) return "Chủ chưa mở model này cho dịch trực tiếp.";
+  if (show && !show.includes(model)) return "Admin chưa mở model này cho dịch trực tiếp.";
   return "";
 }
 

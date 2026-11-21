@@ -130,7 +130,7 @@ export function MailDesk() {
         </button>
       </form>
       <div className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line p-4">
-        <p className="text-sm text-muted">Thư thử gửi tới {view.email || "email của Chủ"}.</p>
+        <p className="text-sm text-muted">Thư thử gửi tới {view.email || "email của Admin"}.</p>
         <button
           type="button"
           disabled={busy || !canTest}

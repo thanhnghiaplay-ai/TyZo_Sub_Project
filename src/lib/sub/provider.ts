@@ -215,7 +215,7 @@ export function providerKeyNote(id: ProviderId): string {
   const does = info.caps.map((cap) => CAP_LABEL[cap]).join(", ");
   const chatHouses = PROVIDER_IDS.filter((other) => other !== id && PROVIDERS[other].caps.includes("chat")).map((other) => PROVIDERS[other].label);
   const translate = !info.caps.includes("chat") && chatHouses.length ? ` Dịch bằng nhà có model dịch (${chatHouses.join(", ")}).` : "";
-  return `Chỉ Chủ lưu. Khách không thấy key. ${info.label} làm: ${does}.${translate} Key này chạy cửa Trả theo lượt (phòng trả tiền, trừ Token dịch theo giá gốc). Cửa Thuê phòng dùng key của khách.`;
+  return `Chỉ Admin lưu. Khách không thấy key. ${info.label} làm: ${does}.${translate} Key này chạy cửa Trả theo lượt (phòng trả tiền, trừ Token dịch theo giá gốc). Cửa Thuê phòng dùng key của khách.`;
 }
 
 /** Đọc danh sách mã model từ phản hồi `/models` của từng nhà (mỗi nhà một dạng). */

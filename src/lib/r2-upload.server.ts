@@ -37,7 +37,7 @@ export async function createR2Upload(userId: string, input: R2UploadInput): Prom
   await requireServiceOpen("normal");
   await takeRate(`r2-upload:${userId}`, 20, 60);
   const loaded = r2Config();
-  if (!loaded.ok) throw new Error("Chủ chưa cấu hình kho tạm R2 cho máy chủ.");
+  if (!loaded.ok) throw new Error("Admin chưa cấu hình kho tạm R2 cho máy chủ.");
   const problem = r2UploadProblem(input);
   if (problem) throw new Error(problem);
   const ext = r2ExtFor(input.contentType) as string;
@@ -74,7 +74,7 @@ export function r2Ready(): boolean {
 async function requireOwnerUser(userId: string): Promise<void> {
   const { isOwnerId } = await import("@/lib/admin-allow.server");
   const { getSql } = await import("@/lib/db");
-  if (!(await isOwnerId(await getSql(), userId))) throw new Error("Chỉ Chủ xem được cấu hình kho tạm.");
+  if (!(await isOwnerId(await getSql(), userId))) throw new Error("Chỉ Admin xem được cấu hình kho tạm.");
 }
 
 export type R2AdminStatus = { ready: boolean; missing: string[] };

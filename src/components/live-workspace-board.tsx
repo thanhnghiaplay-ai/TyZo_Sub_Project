@@ -35,7 +35,7 @@ export function LiveWorkspaceBoard() {
   return (
     <section className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
       <h3 className="text-sm font-semibold">Dịch trực tiếp: Workspace ID Alibaba</h3>
-      <p className="text-sm text-muted">Vùng Singapore. Dùng chung key Alibaba ở trên. Chỉ Chủ lưu.</p>
+      <p className="text-sm text-muted">Vùng Singapore. Dùng chung key Alibaba ở trên. Chỉ Admin lưu.</p>
       <div className="flex gap-2">
         <input
           className="min-tap min-w-0 flex-1 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 text-sm"

@@ -93,7 +93,7 @@ export function AccountPanel() {
             void submitAppeal({ data: appeal })
               .then(() => {
                 setAppeal("");
-                setNotice("Đã gửi yêu cầu. Chủ hoặc Quản lý xem ở trang Admin.");
+                setNotice("Đã gửi yêu cầu. Admin hoặc Quản lý xem ở trang Admin.");
               })
               .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa gửi được."))
               .finally(() => setBusy(false));
@@ -120,12 +120,12 @@ export function AccountPanel() {
               onClick={() => {
                 setBusy(true);
                 void skipAppeal({ data: item.id })
-                  .then(() => setNotice("Đã báo Chủ. Chủ sẽ thấy đủ nội dung."))
+                  .then(() => setNotice("Đã báo Admin. Admin sẽ thấy đủ nội dung."))
                   .catch((error) => setNotice(error instanceof Error ? error.message : "Chưa báo được."))
                   .finally(() => setBusy(false));
               }}
             >
-              Đã 2 giờ không ai xử lý, báo Chủ
+              Đã 2 giờ không ai xử lý, báo Admin
             </button>
           ))}
         </form>

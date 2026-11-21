@@ -10,7 +10,7 @@ const NOTE_MAX = 480;
 const ROLE_NAME: Record<string, string> = {
   "ho-tro": "Hỗ trợ",
   "quan-ly": "Quản lý",
-  chu: "Chủ",
+  chu: "Admin",
 };
 
 export function roleName(role: string | null | undefined) {

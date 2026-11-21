@@ -64,7 +64,7 @@ export function PayQueue({ owner = false }: { owner?: boolean }) {
           Tải lại
         </button>
       </div>
-      <p className="text-sm text-muted">Khách bấm «Tôi đã chuyển khoản» thì đơn chuyển sang chờ kiểm tra. Tiền khớp thì giao đúng gói, không cộng số dư. Cổng chưa tự cộng thì Chủ bấm xác nhận. Quản lý chỉ xem và từ chối.</p>
+      <p className="text-sm text-muted">Khách bấm «Tôi đã chuyển khoản» thì đơn chuyển sang chờ kiểm tra. Tiền khớp thì giao đúng gói, không cộng số dư. Cổng chưa tự cộng thì Admin bấm xác nhận. Quản lý chỉ xem và từ chối.</p>
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có đơn.</p>}
       <ul className="grid max-h-80 gap-2 overflow-y-auto">
         {rows.map((row) => (

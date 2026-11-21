@@ -144,7 +144,7 @@ function ThresholdForm({ value, onSaved }: { value: QualityThresholds; onSaved: 
 
   return (
     <details className="rounded-[var(--radius-card)] border border-line bg-bg p-3 text-sm">
-      <summary className="cursor-pointer font-semibold">Ngưỡng chất lượng (Chủ chỉnh)</summary>
+      <summary className="cursor-pointer font-semibold">Ngưỡng chất lượng (Admin chỉnh)</summary>
       <p className="mt-2 text-muted">
         Các ngưỡng mặc định là ước lượng ban đầu, chưa chỉnh theo số đo thật. Xem phân bố ở trên rồi chỉnh. Ngưỡng mới chỉ áp dụng cho lần chạy sau;
         số đã báo giữ theo ngưỡng lúc chạy, còn đèn tổng ở bảng này tính lại theo ngưỡng mới.

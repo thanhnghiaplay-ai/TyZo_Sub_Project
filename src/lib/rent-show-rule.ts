@@ -37,10 +37,10 @@ export function ownKeyAvailable(userIds: string[] | null, allow: string[] | null
 export function rentUseProblem(show: RentShow | null, pick: { asr: string; chat: string }): string {
   if (!show) return "";
   const house = asrHouse(pick.asr);
-  if (house && !show[house].includes(pick.asr)) return "Chủ chưa mở model nhận dạng này cho thuê phòng.";
+  if (house && !show[house].includes(pick.asr)) return "Admin chưa mở model nhận dạng này cho thuê phòng.";
   if (!house) return "Model nhận dạng này chưa được mở cho thuê phòng.";
   const chat = pick.chat.trim();
-  if (chat && !PROVIDER_IDS.some((id) => show[id].includes(chat))) return "Chủ chưa mở model dịch này cho thuê phòng.";
+  if (chat && !PROVIDER_IDS.some((id) => show[id].includes(chat))) return "Admin chưa mở model dịch này cho thuê phòng.";
   return "";
 }
 
@@ -57,5 +57,5 @@ export function orpheusModelId(lang: "en" | "ar") {
 export function rentVoiceProblem(show: RentShow | null, voiceModel: string): string {
   if (!show) return "";
   if (show.groq.includes(voiceModel)) return "";
-  return "Chủ chưa mở giọng đọc này cho thuê phòng. Đang dùng giọng khác.";
+  return "Admin chưa mở giọng đọc này cho thuê phòng. Đang dùng giọng khác.";
 }

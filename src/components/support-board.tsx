@@ -38,7 +38,7 @@ export function SupportBoard() {
   return (
     <section className="admin-card grid content-start gap-2">
       <h3 className="text-sm font-semibold">Liên hệ hỗ trợ</h3>
-      <p className="text-sm text-muted">Hiện ở trang Hướng dẫn cho khách. Ô nào để trống thì không hiện. Chỉ Chủ lưu.</p>
+      <p className="text-sm text-muted">Hiện ở trang Hướng dẫn cho khách. Ô nào để trống thì không hiện. Chỉ Admin lưu.</p>
       <label className="grid gap-1 text-xs font-semibold text-muted">
         Email
         <input className={INPUT} value={draft.email} inputMode="email" autoComplete="off" autoCapitalize="off" spellCheck={false} placeholder="ho-tro@ten-mien.vn" onChange={set("email")} />

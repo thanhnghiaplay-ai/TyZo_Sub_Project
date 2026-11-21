@@ -87,7 +87,7 @@ import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/as
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
-const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Chủ đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.";
+const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Admin đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.";
 const THREADS_TIP = "Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn của key (nhất là key miễn phí). App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.";
 const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
 const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, Deepgram… tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
@@ -403,7 +403,7 @@ function GlossaryEditor({ app }: { app: ReturnType<typeof usePipeline> }) {
             setNote(on ? "Sẽ gửi bản sao thuật ngữ của bạn khi bạn thêm." : "Không gửi thuật ngữ lên phòng.");
           }}
         />
-        Gửi thuật ngữ của tôi để phòng xem. Mặc định tắt. Phòng chưa dùng cho người khác cho đến khi Chủ nhận.
+        Gửi thuật ngữ của tôi để phòng xem. Mặc định tắt. Phòng chưa dùng cho người khác cho đến khi Admin nhận.
       </label>
       {note ? <p className="text-xs text-muted">{note}</p> : null}
       <div className="grid max-h-48 gap-1 overflow-auto text-sm">
@@ -1410,7 +1410,7 @@ export function Studio() {
               {row.state === "room"
                 ? ` · ${roomAsrPrice(app.board, runDoor, row.id)}`
                 : row.state === "closed"
-                    ? " · Chủ chưa mở"
+                    ? " · Admin chưa mở"
                     : row.state === "noKey"
                       ? " · key của bạn không có model này"
                       : ""}

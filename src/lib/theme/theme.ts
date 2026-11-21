@@ -24,7 +24,7 @@ export const PALETTE_KEYS = [
   ["rankUser", "--rank-user", "Cấp Người dùng"],
   ["rankSupport", "--rank-support", "Cấp Hỗ trợ"],
   ["rankManager", "--rank-manager", "Cấp Quản lý"],
-  ["rankOwner", "--rank-owner", "Cấp Chủ"],
+  ["rankOwner", "--rank-owner", "Cấp Admin"],
   ["rankPartner", "--rank-partner", "Cấp Cộng tác viên"],
 ] as const;
 

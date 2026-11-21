@@ -96,7 +96,7 @@ export function ServiceStatusBoard() {
       <div>
         <h3 className="text-sm font-semibold">Trạng thái web và các nhóm dịch</h3>
         <p className="text-sm text-muted">
-          Bảo trì chặn lượt chạy mới, khách thấy lời nhắn bên dưới. «Toàn web» che cả trang khách nhưng Admin và Đăng nhập vẫn mở. Lượt đang chạy vẫn chạy nốt, không bị cắt. Chỉ Chủ đặt.
+          Bảo trì chặn lượt chạy mới, khách thấy lời nhắn bên dưới. «Toàn web» che cả trang khách nhưng Admin và Đăng nhập vẫn mở. Lượt đang chạy vẫn chạy nốt, không bị cắt. Chỉ Admin đặt.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">

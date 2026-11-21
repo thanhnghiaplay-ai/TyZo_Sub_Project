@@ -4,7 +4,7 @@ export type RoomStanding = "open" | "locked" | "banned";
 export const ROLE_LABEL: Record<StaffRole, string> = {
   "ho-tro": "Hỗ trợ",
   "quan-ly": "Quản lý",
-  chu: "Chủ",
+  chu: "Admin",
 };
 
 const RANK: Record<StaffRole, number> = { "ho-tro": 1, "quan-ly": 2, chu: 3 };

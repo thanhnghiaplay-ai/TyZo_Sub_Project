@@ -72,7 +72,7 @@ export function TurnPackList({
   }, [ready, seconds, narration, packs.length]);
 
   if (!ready) return <p className="text-sm text-muted">Đang đọc gói trả theo lượt…</p>;
-  if (!packs.length) return <p className="text-sm text-muted">Chủ chưa mở gói. Cửa này vẫn nhận dạng bằng Whisper như trước.</p>;
+  if (!packs.length) return <p className="text-sm text-muted">Admin chưa mở gói. Cửa này vẫn nhận dạng bằng Whisper như trước.</p>;
 
   return (
     <div className="grid gap-2">
