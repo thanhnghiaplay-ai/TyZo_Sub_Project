@@ -48,6 +48,8 @@ import { useCaps, useWakeLock } from "@/components/use-caps";
 import { MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
 import { PayStatusBar } from "@/components/pay-status-bar";
 import { homeAction } from "@/lib/home-action";
+import { readUse, rememberUse, shouldAsk, usePreset, type UseAnswer } from "@/lib/first-ask";
+import { FirstAskCard } from "@/components/first-ask-card";
 import { KeyRing, type KeyCheck } from "@/components/key-ring";
 import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
 import { HomeHero } from "@/components/home-hero";
@@ -543,6 +545,9 @@ export function Studio() {
   const [payByRoom, setPayByRoom] = useState(false);
   /** Cách trả khách đã chọn và được nhớ trên máy (null = chưa chọn lần nào). «choosing»: đang mở lại hai lựa chọn. */
   const [payChoice, setPayChoice] = useState<PayChoice | null>(null);
+  // Câu hỏi lần đầu (đợt 4): "skip" đến khi đọc xong kho trên máy, để không nháy thẻ hỏi lúc vẽ từ máy chủ.
+  const [useAnswer, setUseAnswer] = useState<UseAnswer | "skip" | null>("skip");
+  useEffect(() => setUseAnswer(readUse(safeLocalStore())), []);
   const [choosingPay, setChoosingPay] = useState(false);
   const [payRead, setPayRead] = useState(false);
   const [turnLocked, setTurnLocked] = useState(false);
@@ -852,6 +857,14 @@ export function Studio() {
     keys: keyHouses,
     turnOpen: runDoor.ready && runDoor.open,
   });
+  const answerUse = (answer: UseAnswer | "skip") => {
+    rememberUse(safeLocalStore(), answer);
+    setUseAnswer(answer);
+    if (answer === "skip") return;
+    const preset = usePreset(answer);
+    if (preset.narration !== undefined) patchNarration({ enabled: preset.narration });
+    pushToast(preset.tip, "ok");
+  };
   const startAction = homeAction({ pay, moneyOn: money.on, hasInput: Boolean(pickedFile) || app.url.trim().length > 0, online, running: app.running, blocked: normalDown });
   /** Nút chính làm đúng bước còn thiếu: dịch, thêm key, mở Ví, hoặc đưa về hai lựa chọn cách trả. */
   const runStartAction = () => {
@@ -1166,14 +1179,17 @@ export function Studio() {
           action={startAction}
           onAction={runStartAction}
           top={
-            <PayStatusBar
-              state={pay}
-              money={money}
-              onChoose={choosePay}
-              onAddKey={() => openTool("key")}
-              onWallet={() => setProduct("account")}
-              onRetry={() => window.dispatchEvent(new Event("tyzo-room-refresh"))}
-            />
+            <div className="grid gap-3 empty:hidden">
+              <PayStatusBar
+                state={pay}
+                money={money}
+                onChoose={choosePay}
+                onAddKey={() => openTool("key")}
+                onWallet={() => setProduct("account")}
+                onRetry={() => window.dispatchEvent(new Event("tyzo-room-refresh"))}
+              />
+              {shouldAsk(useAnswer, money.on ? pay.kind : "off") && <FirstAskCard onAnswer={answerUse} />}
+            </div>
           }
           extra={payByRoom ? <MoneyEstimate money={money} /> : null}
         />

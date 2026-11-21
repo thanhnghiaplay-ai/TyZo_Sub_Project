@@ -118,7 +118,7 @@ export function HomeHero({
   }, [onFile]);
   return (
     <section data-tour="drop" data-home-hero aria-label="Chọn video để dịch" className="mx-auto grid w-full max-w-2xl gap-4 py-4 sm:gap-5 sm:py-8 max-lg:landscape:pb-14 lg:max-w-5xl lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-x-6">
-      <div className="empty:hidden lg:col-span-2">{top}</div>
+      <div className="empty:hidden has-[>div:empty]:hidden lg:col-span-2">{top}</div>
       <label
         className={
           "relative grid min-h-[15rem] lg:col-start-1 lg:row-start-2 cursor-pointer place-items-center overflow-hidden rounded-[var(--radius-card)] border-2 border-dashed px-5 py-10 text-center transition-all duration-200 focus-within:border-accent hover:border-accent motion-reduce:transition-none sm:min-h-[19rem] " +

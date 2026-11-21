@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.24.0",
+    time: "13:37 21/11/2026",
+    area: "khac",
+    text: "v5.24.0, đợt 4 bước 1: câu hỏi lần đầu. first-ask.ts (thuần, có test): khóa máy tyzo_use (phim, lam-phu-de, hoc, khac, skip); máy chặn đọc thì coi như skip. FirstAskCard ở trang chủ, dưới dòng cách trả; không hiện khi đang chọn cách trả hay đang đọc tài khoản (một câu hỏi một lúc). usePreset: chỉ «hoc» đổi cài đặt (narration.enabled=false, lưu gnarr như cũ), mọi câu trả lời có toast nói rõ. Chưa gửi câu trả lời lên máy chủ: bước 2 (đếm ẩn danh) làm cùng điều khoản. Kiểm Chromium 412x720 sáng/tối: thẻ hiện, bấm Học ngoại ngữ thì toast, thẻ mất, tải lại không hỏi lại.",
+  },
+  {
     version: "5.23.0",
     time: "13:28 21/11/2026",
     area: "khac",
