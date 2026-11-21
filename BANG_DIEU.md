@@ -15,9 +15,9 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.33.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.35.0 trên nhánh `ccr-6b6ee13d-637k1h` (Claude làm, chưa hợp vào `work`): ElevenLabs nhận dạng (Scribe v3, v2, xóa bản nhận dạng sau mỗi lần chạy) và giọng đọc (Flash v2.5, có tiếng Việt), điều khoản 2026-11-22.1. Trước đó v5.33.0 trên `work` và `main`. Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
-| Điều khoản | 2026-11-22.1 trên nhánh `ccr-6b6ee13d-637k1h` (bản khách: 2026-11-21.3) |
+| Bản khách đang dùng | Nhánh `main` = v5.35.0 (đẩy chính thức 22/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.35.0 trên `work` và `main`: ElevenLabs nhận dạng (Scribe v3, v2, xóa bản nhận dạng sau mỗi lần chạy) và giọng đọc (Flash v2.5, có tiếng Việt), điều khoản 2026-11-22.1. Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Điều khoản | 2026-11-22.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
 | Key | Key Groq là của khách. Mua Token dịch và thuê phòng bằng chuyển khoản đúng giá (mã QR), không giữ số dư để chi. Số dư cũ đã đưa về 0, không hoàn. Trả theo lượt, dịch trực tiếp và Orpheus khi dùng key phòng trừ Token dịch. Neural không trừ. Hết hạn thì phần còn mất, không hoàn tiền. Cửa giữ số ước tính, trừ số thực khi xong, trả phần thừa nếu gói còn hạn |
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-v5.34.0–v5.35.0 (ElevenLabs) nằm trên nhánh `ccr-6b6ee13d-637k1h`, chờ hợp vào `work`. Môi trường của Claude chỉ được đẩy nhánh này, nên Chủ (hoặc vai Làm) hợp nhánh vào `work` rồi mới «đẩy chính thức». Mục 1 trang khách (lưu phụ đề theo tệp) xong trong v5.33.0 trên `work`.
+Không có việc đẩy dở. v5.34.0–v5.35.0 (ElevenLabs) đã hợp vào `work` và đẩy chính thức 22/11/2026 (Chủ nói «hợp nhánh work rồi đẩy chính thức»). Chưa thử với key ElevenLabs thật.
 
 `HANDOFF.md` mục 2 không còn việc mở khác (Chủ xác nhận 20/11/2026).
 
@@ -96,7 +96,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 ## Còn mở
 
-- 2026-11-22: v5.34.0–v5.35.0 ElevenLabs trên `ccr-6b6ee13d-637k1h`. Chưa thử với key thật (cả giọng đọc: danh sách /v2/voices, đọc mp3, trừ Token theo chữ): tên model (scribe_v3, scribe_v2), hình dạng phản hồi, kiểm key qua `/models` (key bị giới hạn quyền có thể báo sai), file dài có kịp 270 giây một yêu cầu không. Điểm chất lượng là ước lượng. Chưa xem bằng mắt màn Thuyết minh có ô ElevenLabs.
+- 2026-11-22: v5.34.0–v5.35.0 ElevenLabs trên `work` và `main` (đẩy chính thức 22/11/2026). Chưa thử với key thật (cả giọng đọc: danh sách /v2/voices, đọc mp3, trừ Token theo chữ): tên model (scribe_v3, scribe_v2), hình dạng phản hồi, kiểm key qua `/models` (key bị giới hạn quyền có thể báo sai), file dài có kịp 270 giây một yêu cầu không. Điểm chất lượng là ước lượng. Chưa xem bằng mắt màn Thuyết minh có ô ElevenLabs.
 - 2026-11-17: v5.0.1 trên work. Điều khoản 2026-11-17.1: bản quyền và khiếu nại, Token dịch không phải tiền, dữ liệu ra Groq và Alibaba. Chưa có tên doanh nghiệp. Chưa bấm cửa đồng ý trên điện thoại.
 - 2026-11-16: v5.0.0 trên work. Mua Token dịch và thuê phòng bằng mã QR, không giữ số dư để chi. Orpheus trừ Token dịch. Số dư test về 0. Điều khoản 2026-11-16.4. Chưa bấm QR và Orpheus trên điện thoại.
 - 2026-11-16: gói giây bước 5–8 đã vào work (v4.1.0). Dịch trực tiếp trừ giây. Thuê phòng giữ giá tay. Đã bỏ ô giá riêng. Alibaba kéo giá Singapore, lỗi thì dùng giá dự phòng.
