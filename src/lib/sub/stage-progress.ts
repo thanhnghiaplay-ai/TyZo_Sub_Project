@@ -76,7 +76,7 @@ export function computeStages(input: StageInput): StageReport {
   const asr: Stage = { id: "asr", label: LABEL.asr, state: "wait", done: input.partsDone, total: input.partsTotal, text: "" };
   if (ali) {
     asr.state = input.segsTotal > 0 ? "done" : "active";
-    asr.text = input.segsTotal > 0 ? `${input.segsTotal} câu` : "Alibaba đang nhận dạng…";
+    asr.text = input.segsTotal > 0 ? `${input.segsTotal} câu` : "Nhà nhận dạng đang xử lý…";
   } else if (planned) {
     asr.text = `${Math.min(input.partsDone, input.partsTotal)}/${input.partsTotal} đoạn`;
     asr.state = asrDone ? "done" : running ? "active" : "wait";

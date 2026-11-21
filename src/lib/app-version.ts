@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.31.2";
+export const APP_VERSION = "5.31.3";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,14 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.31.3",
+    time: "19:07 21/11/2026",
+    title: "Tiến độ nhận dạng ghi đúng nhà đang làm.",
+    points: [
+      "Lúc nhận dạng bằng AssemblyAI, Deepgram hay nhà khác không còn ghi nhầm «Alibaba đang nhận dạng».",
+    ],
+  },
   {
     version: "5.31.2",
     time: "18:53 21/11/2026",

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.31.3",
+    time: "19:07 21/11/2026",
+    area: "khac",
+    text: "v5.31.3, thấy khi thử trên bản chính thức: gói Chất lượng nhận dạng bằng AssemblyAI mà thanh tiến độ ghi «Alibaba đang nhận dạng…». stage-progress.ts dùng phase «ali» cho mọi nhà nhận link (Deepgram, AssemblyAI, Speechmatics, Soniox, Alibaba) nhưng chữ cứng Alibaba; đổi thành «Nhà nhận dạng đang xử lý…».",
+  },
+  {
     version: "5.31.2",
     time: "18:53 21/11/2026",
     area: "khac",
