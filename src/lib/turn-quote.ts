@@ -3,7 +3,8 @@ import { parseServicePacks } from "@/lib/service-pack";
 import { holdGiay } from "@/lib/token-math";
 import { turnPacks } from "@/lib/turn-pack";
 
-export type TurnPrice = { id: string; total: number | null; hold: number };
+/** asrHold, chatHold (v5.31.2): số giữ từng phần, vì từ v5.30.0 nhận dạng và dịch giữ riêng, lần lượt. */
+export type TurnPrice = { id: string; total: number | null; hold: number; asrHold?: number | null; chatHold?: number | null };
 
 /** Số Token dịch sẽ giữ cho cửa trả theo lượt. Không trả giá gốc. */
 export const quoteTurnPacks = createServerFn({ method: "POST" })
@@ -26,7 +27,7 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
         const asr = pack.roles.asr;
         const chat = pack.roles.translate;
         if (!book || !asr || !chat) return { id: pack.id, total: null, hold: 0 };
-        const giay = holdGiay({
+        const input = {
           groq: book,
           rows: providerRows,
           asrProvider: asr.provider,
@@ -34,8 +35,11 @@ export const quoteTurnPacks = createServerFn({ method: "POST" })
           chatProvider: chat.provider,
           chatModel: chat.model,
           seconds: data.seconds,
-        });
-        return { id: pack.id, total: giay, hold: giay ?? 0 };
+        };
+        const giay = holdGiay(input);
+        const asrHold = holdGiay({ ...input, part: "asr" });
+        const chatHold = holdGiay({ ...input, part: "chat" });
+        return { id: pack.id, total: giay, hold: giay ?? 0, asrHold, chatHold };
       });
     } catch {
       return [];

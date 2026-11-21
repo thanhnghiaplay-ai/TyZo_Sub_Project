@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.31.1";
+export const APP_VERSION = "5.31.2";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.31.2",
+    time: "18:53 21/11/2026",
+    title: "Ước tính Token dịch theo từng phần và không hiện sai lúc đang chạy.",
+    points: [
+      "Ước tính ghi riêng phần nhận dạng và phần dịch, giữ lần lượt, xong phần nào trả phần thừa phần đó.",
+      "Đang chạy thì không hiện «cần giữ, thiếu…» nữa; nhận dạng xong thì chỉ tính phần dịch.",
+      "Phần dịch giữ dư hơn để không hụt giữa chừng; phần thừa vẫn trả lại khi xong.",
+    ],
+  },
   {
     version: "5.31.1",
     time: "18:09 21/11/2026",

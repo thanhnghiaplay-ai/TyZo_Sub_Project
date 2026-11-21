@@ -9,11 +9,7 @@ import { RUN_STATUS_LABEL, type RunDesk, type RunStatus } from "@/lib/run-desk";
 import { DoorDot } from "@/components/run-door";
 import { ModelUsdBoard } from "@/components/model-usd-board";
 import { maskFileName } from "@/lib/mask-file-name";
-
-function amount(n: number, unit?: string) {
-  if (unit === "token") return new Intl.NumberFormat("vi-VN").format(n) + " giây";
-  return dong(n);
-}
+import { ticketMoneyLine, ticketPart } from "@/lib/ticket-line";
 
 function label(status: string) {
   return status in RUN_STATUS_LABEL ? RUN_STATUS_LABEL[status as RunStatus] : status;
@@ -22,7 +18,7 @@ function label(status: string) {
 export function ticketLine(ticket: RunTicket) {
   const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút` : "Chưa có thời lượng";
   const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "";
-  return `${when} · ${minutes} · giữ ${amount(ticket.held, ticket.unit)} · trừ ${amount(ticket.charged, ticket.unit)} · ${label(ticket.status)}`;
+  return `${when} · ${minutes} · ${ticketMoneyLine(ticket)} · ${label(ticket.status)}`;
 }
 
 /**
@@ -32,11 +28,14 @@ export function ticketLine(ticket: RunTicket) {
 function FileNameLine({ ticketId, masked, owner }: { ticketId: string; masked: string; owner: boolean }) {
   const [full, setFull] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const shown = full ?? (maskFileName(masked) || "Không tên tệp");
+  const part = ticketPart(masked);
+  // Nhãn phần việc nằm ngoài phần che, để biết phiếu nào là phần dịch, phân tích, trau chuốt.
+  const shown = full !== null ? ticketPart(full).name : part.system ? part.name : maskFileName(part.name) || "Không tên tệp";
   return (
-    <p className="flex min-w-0 items-center gap-2 text-sm font-medium">
-      <span className="min-w-0 break-all">{shown}</span>
-      {owner && masked && (
+    <p className="flex min-w-0 flex-wrap items-center gap-2 text-sm font-medium">
+      {part.tag && <span className="shrink-0 rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">{part.tag}</span>}
+      {!part.system && <span className="min-w-0 break-all">{shown}</span>}
+      {owner && masked && !part.system && (
         <button
           type="button"
           disabled={busy}
@@ -70,7 +69,7 @@ export function TicketCard({ ticket, owner = false, children }: { ticket: RunTic
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
-      <p className="text-sm text-muted">{minutes} · Giữ {amount(ticket.held, ticket.unit)} · Trừ {amount(ticket.charged, ticket.unit)}{ticket.refunded > 0 ? ` · Hoàn ${amount(ticket.refunded, ticket.unit)}` : ""}</p>
+      <p className="text-sm text-muted">{minutes} · {ticketMoneyLine(ticket)}</p>
       {children}
     </article>
   );
@@ -103,7 +102,7 @@ function TicketRowCard({ ticket, owner }: { ticket: TicketRow; owner: boolean })
         <p className="shrink-0 text-xs font-semibold text-accent">{label(ticket.status)}</p>
       </div>
       <p className="text-xs text-muted">{ticket.email || "Không rõ tài khoản"} · {when}</p>
-      <p className="text-sm text-muted">{minutes} · Giữ {amount(ticket.held, ticket.unit)} · Trừ {amount(ticket.charged, ticket.unit)}{ticket.refunded > 0 ? ` · Hoàn ${amount(ticket.refunded, ticket.unit)}` : ""}</p>
+      <p className="text-sm text-muted">{minutes} · {ticketMoneyLine(ticket)}</p>
       <p className="text-xs text-muted">Model: {models || "—"} · Xử lý: {durationText(ticket.processSeconds)}</p>
     </article>
   );

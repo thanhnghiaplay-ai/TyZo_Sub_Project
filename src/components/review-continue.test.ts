@@ -59,3 +59,13 @@ describe("v5.31.1: trả theo lượt cho người chỉ mua Token dịch", () =
     assert.match(studio, /const onNeedPack = \(\) => \{[\s\S]{0,120}setToolTab\("run"\);\s*setSheetOpen\(true\);/);
   });
 });
+
+describe("v5.31.2: ước tính Token không hiện lúc đang chạy", () => {
+  it("studio tính giai đoạn và truyền cho thẻ Token", () => {
+    assert.match(studio, /const moneyPhase[^=]*= app\.running \|\| app\.analyzing \? "running"/);
+    assert.match(studio, /phase: moneyPhase \}\)/);
+    assert.match(studio, /<MoneyCard [^>]*phase=\{moneyPhase\}/);
+    const card = readFileSync(new URL("./money-card.tsx", import.meta.url), "utf8");
+    assert.match(card, /if \(phase === "running"\) return null;/);
+  });
+});

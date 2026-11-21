@@ -33,9 +33,11 @@ test("formatMinutes viết gọn", () => {
 });
 
 test("runEstimate so số giữ với số dư", () => {
-  assert.deepEqual(runEstimate(rows[0], 2000), { total: 900, hold: 1200, enough: true, short: 0 });
-  assert.deepEqual(runEstimate(rows[0], 1000), { total: 900, hold: 1200, enough: false, short: 200 });
-  assert.deepEqual(runEstimate({ id: "x", total: 500, hold: 0 }, 400), { total: 500, hold: 500, enough: false, short: 100 });
+  // v5.31.2: kết quả có thêm asrHold, chatHold, part; so các trường cũ.
+  const core = (e: ReturnType<typeof runEstimate>) => e && { total: e.total, hold: e.hold, enough: e.enough, short: e.short };
+  assert.deepEqual(core(runEstimate(rows[0], 2000)), { total: 900, hold: 1200, enough: true, short: 0 });
+  assert.deepEqual(core(runEstimate(rows[0], 1000)), { total: 900, hold: 1200, enough: false, short: 200 });
+  assert.deepEqual(core(runEstimate({ id: "x", total: 500, hold: 0 }, 400)), { total: 500, hold: 500, enough: false, short: 100 });
   assert.equal(runEstimate(rows[2], 5000), null);
   assert.equal(runEstimate(null, 5000), null);
 });

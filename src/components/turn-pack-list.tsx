@@ -101,7 +101,7 @@ export function TurnPackList({
             <span className="text-sm font-semibold">{pack.name}</span>
             {pack.note && <span className="text-sm text-muted">{pack.note}</span>}
             <span className="text-xs text-muted">{jobs.join(" · ")}</span>
-            <span className="text-sm">{seconds > 0 ? customerVisiblePrice(price?.total ?? null, price?.hold ?? 0, running) : "Chưa có tệp"}</span>
+            <span className="text-sm">{seconds > 0 ? customerVisiblePrice(price?.total ?? null, price?.hold ?? 0, running, { asr: price?.asrHold, chat: price?.chatHold }) : "Chưa có tệp"}</span>
           </button>
         );
       })}

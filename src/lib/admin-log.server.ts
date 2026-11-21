@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.31.2",
+    time: "18:53 21/11/2026",
+    area: "khac",
+    text: "v5.31.2, Chủ hỏi: 55k Token, nhận dạng giữ 30k, xong trả 14k, Dịch tiếp giữ 20k, thẻ vẫn báo «cần 48k». Nguyên nhân: MoneyEstimate/runEstimate dùng số giữ gộp cũ (hold all) và hiện cả lúc đang chạy. Sửa: quoteTurnPacks trả thêm asrHold, chatHold (holdGiay part); runEstimate(row, units, part): chưa nhận dạng cần asrHold + chatHold, đã nhận dạng (còn câu chưa dịch) chỉ cần chatHold; useMoney/MoneyCard nhận phase (studio: running khi app.running hoặc analyzing → ẩn ước tính); câu giá bước cuối ghi hai phần. Thẻ phiếu Admin (ticket-line.ts, có test): đơn vị «Token dịch» thay «giây», giữ ban đầu = đang giữ + trừ + trả lại (không còn «Giữ 0»), ghi trả lại; nhãn «Phần dịch» (tiền tố «Dịch tiếp · » không bị che), việc phụ (Phân tích nội dung, Trau chuốt, Dò khoảng trống) hiện nhãn không che. Phát hiện khi Claude thử trên bản chính thức (clip 35 giây, gói Chất lượng: AssemblyAI + Qwen 3.8 27B): phiếu nhận dạng giữ 1.139 trừ 337; phiếu dịch giữ 636 trừ 621 (chỉ thừa 15) → nguy cơ hết phần giữ giữa chừng khi tách phiếu. CHAT_HOLD_BUFFER = 2,5 cho phần dịch (all và asr giữ 1,5). Đã thấy chạy đúng trên bản chính thức: Dịch tiếp ở bước 5/5 tự đóng tab, dịch 7/7 câu, lịch sử hai phiếu.",
+  },
+  {
     version: "5.31.1",
     time: "18:09 21/11/2026",
     area: "khac",

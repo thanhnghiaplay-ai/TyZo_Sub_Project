@@ -5,6 +5,12 @@ import { quoteVnd, type RunDesk } from "./run-desk.ts";
 export const MIN_BILLED_SECONDS = 10;
 /** Đệm khi giữ chỗ, vì số token dịch chỉ biết sau khi chạy. */
 export const HOLD_BUFFER = 1.5;
+/**
+ * Hệ số đệm riêng cho phiếu phần dịch (v5.31.2). Đo thật trên bản chính thức (clip 35 giây, Qwen 3.8 27B):
+ * ước thô 424, dùng thật 621 (≈ 1,46 lần), giữ 1,5 lần chỉ thừa 15. Lệnh dịch còn kèm thuật ngữ và 14 câu ngữ cảnh
+ * nên dùng nhiều hơn công thức theo giây. Giữ dư không mất gì: phần thừa trả lại ngay khi xong.
+ */
+export const CHAT_HOLD_BUFFER = 2.5;
 export const MAX_RUN_SECONDS = 6 * 3600;
 
 export type PriceBook = { rate: number; rows: GroqLiveRow[]; desk: Pick<RunDesk, "markup" | "custom"> };
@@ -73,7 +79,7 @@ export function estimateHoldSplit(asrBook: PriceBook, chatBook: PriceBook, asrMo
   const asr = asrCost(asrBook, asrModel, seconds);
   const chat = chatCost(chatBook, chatModel, Math.ceil(seconds * 12) + 1500, Math.ceil(seconds * 8) + 500);
   if (asr == null || chat == null) return null;
-  if (part === "chat") return Math.ceil(chat * HOLD_BUFFER);
+  if (part === "chat") return Math.ceil(chat * CHAT_HOLD_BUFFER);
   if (part === "asr") {
     // Phần nhận dạng gồm cả phân tích nội dung (đọc cả lời thoại một lần bằng model dịch, trả bảng nhân vật ngắn).
     const analysis = chatCost(chatBook, chatModel, Math.ceil(seconds * 12) + 1500, 1200);

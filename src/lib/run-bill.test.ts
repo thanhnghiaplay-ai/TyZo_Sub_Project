@@ -69,8 +69,8 @@ describe("tính tiền theo giá Groq", () => {
     const asr = estimateHoldSplit(b, b, "whisper-large-v3-turbo", "chat-model", 3600, "asr")!;
     const asrOnly = Math.ceil(asrCost(b, "whisper-large-v3-turbo", 3600)! * 1.5);
     assert.equal(all, estimateHold(b, "whisper-large-v3-turbo", "chat-model", 3600));
-    assert.ok(Math.abs(chat - Math.ceil(chatCost(b, "chat-model", 3600 * 12 + 1500, 3600 * 8 + 500)! * 1.5)) <= 1);
-    assert.ok(chat < all);
+    // v5.31.2: phần dịch giữ 2,5 lần (đo thật: dùng ≈ 1,46 lần số ước thô).
+    assert.ok(Math.abs(chat - Math.ceil(chatCost(b, "chat-model", 3600 * 12 + 1500, 3600 * 8 + 500)! * 2.5)) <= 1);
     assert.ok(asr > asrOnly && asr < all);
     assert.equal(parseHoldPart("chat"), "chat");
     assert.equal(parseHoldPart("asr"), "asr");

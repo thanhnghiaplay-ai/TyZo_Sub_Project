@@ -4,9 +4,9 @@
 
 | Thông tin | Giá trị |
 |-----------|---------|
-| **Cập nhật lần cuối** | 2026-11-21 — đẩy chính thức v5.31.1: `main` = `work` (người chỉ mua Token dịch dùng được trả theo lượt và xuất file). |
+| **Cập nhật lần cuối** | 2026-11-21 — v5.31.2 trên `work`: ước tính Token theo phần, thẻ phiếu Admin dễ đọc, phần dịch giữ dư (v5.31.2). |
 | **Người báo cáo lỗi** | User (Thanh Khanh) |
-| **Phiên bản code** | **v5.31.1** trên `work` và `main` (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`. |
+| **Phiên bản code** | **v5.31.2** trên `work`; `main` xem `BANG_DIEU.md`. |
 | **Trạng thái tổng** | Phòng dịch và thuê phòng đã gắn. Giá 9.000 / 39.000 / 99.000 đ, giá tay. Mua Token dịch và thuê phòng bằng mã QR đúng giá, không giữ số dư để chi. Trả theo lượt, dịch trực tiếp và Orpheus (key phòng) trừ Token dịch. Thuê phòng bằng key riêng: Chủ tick model nhận dạng, dịch và giọng Orpheus ở Admin, app chặn thật (rent-show-rule.ts, narration.ts); Aura chỉ trả bằng Token dịch. Neural không trừ. Không còn giá riêng từng model và không còn phần chênh Groq/Alibaba (markup luôn 0). Alibaba lấy giá Singapore khi đọc được. Số dư test đã về 0, không hoàn. Mục 13.2 không được code. v2.19.1 đã sửa các lỗi còn mở sau báo cáo Claude, trừ T6 (không khóa máy thật) và S9 (HE-AAC, elst chỉ bản 0). VAD đã đối chiếu tên tensor bằng wasm, chưa bấm trên điện thoại. Quy trình cho AI nằm ở `huongdan.txt`. |
 
 ---

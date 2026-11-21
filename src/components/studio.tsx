@@ -886,7 +886,9 @@ export function Studio() {
   };
   const showRoomPrice = runDoor.open && payByRoom;
   // Số dư Token dịch đọc một lần: thanh số dư ở đầu màn hình đầu và ô ước tính trên nút bắt đầu dùng chung.
-  const money = useMoney({ active: runDoor.ready && runDoor.open, asr: app.asrModel, chat: app.modelId, seconds: thumb.seconds ?? 0, narration: narration.enabled });
+  // Giai đoạn cho ước tính Token: đang chạy thì không hiện; đã có câu mà còn câu chưa dịch thì chỉ còn phần dịch.
+  const moneyPhase: "idle" | "running" | "chat" = app.running || app.analyzing ? "running" : app.segs.length > 0 && app.segs.some((seg) => seg.translation === null) ? "chat" : "idle";
+  const money = useMoney({ active: runDoor.ready && runDoor.open, asr: app.asrModel, chat: app.modelId, seconds: thumb.seconds ?? 0, narration: narration.enabled, phase: moneyPhase });
   // Đợt 3: màn theo trạng thái. Một trạng thái cách trả dùng chung cho dòng đầu trang và nút chính.
   const pay = payState({
     choice: choosingPay ? null : payByRoom ? "turn" : payChoice ? "key" : null,
@@ -1145,7 +1147,7 @@ export function Studio() {
         </button>
       </div>
       {!hero && payByRoom && (
-        <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} />
+        <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} phase={moneyPhase} />
       )}
       <StepsBar report={app.stages} waiting={app.reviewHold ? "xem và sửa bảng nhân vật nếu cần, rồi bấm Dịch tiếp" : undefined} />
       {afterOpen && !hero && !app.running && (

@@ -15,9 +15,11 @@ export function turnPackModels(pack: ServicePack): { asr: AsrModel | null; chat:
 }
 
 /** Khách chỉ thấy số đã cộng phần chênh. Không ghi giá gốc, không ghi phần trăm. */
-export function customerVisiblePrice(total: number | null, hold: number, running = false): string {
+export function customerVisiblePrice(total: number | null, hold: number, running = false, parts?: { asr?: number | null; chat?: number | null }): string {
   if (total == null || !(total > 0)) return "Chưa có giá";
   const n = (value: number) => new Intl.NumberFormat("vi-VN").format(Math.round(value));
+  // v5.31.2: giữ hai phần lần lượt (nhận dạng rồi dịch), mỗi phần trả phần thừa khi xong.
+  if (!running && parts?.asr && parts?.chat) return `Ước tính ${n(total)} Token dịch. Giữ lần lượt: nhận dạng ${n(parts.asr)}, dịch ${n(parts.chat)}; xong phần nào trả phần thừa phần đó.`;
   // Lượt đang chạy đã giữ Token rồi: không nói «giữ trước khi chạy» nữa (số thực trừ khi xong, phần thừa trả lại).
   if (running) return `Ước tính ${n(total)} Token dịch. Lượt đang chạy đã giữ Token, xong thì trả phần thừa.`;
   return `Ước tính ${n(total)} Token dịch. Giữ ${n(hold)} trước khi chạy.`;

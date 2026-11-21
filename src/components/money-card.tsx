@@ -17,10 +17,13 @@ type MoneyInput = {
   /** Thời lượng video đang chọn, 0 nếu chưa biết (ví dụ dán link). */
   seconds: number;
   narration: boolean;
+  /** v5.31.2: idle = chưa chạy (cần cả hai phần), running = đang chạy (không hiện ước tính, số dư đang giữ/trả), chat = đã nhận dạng xong, chỉ còn dịch. */
+  phase?: "idle" | "running" | "chat";
 };
 
 export type MoneyView = {
   on: boolean;
+  phase: "idle" | "running" | "chat";
   account: RoomState | null;
   /** Lần đọc tài khoản gần nhất bị lỗi (mất mạng, máy chủ bận). Gửi sự kiện «tyzo-room-refresh» để thử lại. */
   failed: boolean;
@@ -35,7 +38,7 @@ export type MoneyView = {
  * Đọc số Token dịch, giá mỗi phút và ước tính một lần, để thanh số dư ở đầu trang và ô ước tính
  * ở cuối dùng chung, không gọi máy chủ hai lần.
  */
-export function useMoney({ active, asr, chat, seconds, narration }: MoneyInput): MoneyView {
+export function useMoney({ active, asr, chat, seconds, narration, phase = "idle" }: MoneyInput): MoneyView {
   const { user, isPending } = useCurrentUserState();
   const on = active && !isPending && Boolean(user) && !user?.isDevFallback;
   const [account, setAccount] = useState<RoomState | null>(null);
@@ -121,8 +124,8 @@ export function useMoney({ active, asr, chat, seconds, narration }: MoneyInput):
   const rate = pickPrice(perMinute, chosen?.id ?? null);
   const left = account && rate ? minutesLeft(account.units, rate.row.total) : null;
   const run = pickPrice(forRun, chosen?.id ?? null);
-  const estimate = account ? runEstimate(run?.row ?? null, account.units) : null;
-  return { on, account, failed, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
+  const estimate = account ? runEstimate(run?.row ?? null, account.units, phase === "chat" ? "chat" : "all") : null;
+  return { on, phase, account, failed, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
 }
 
 /** Thanh số dư gọn, đặt ngay đầu màn hình đầu: Token dịch còn và còn khoảng bao nhiêu phút. */
@@ -153,14 +156,29 @@ export function MoneyBalance({ money, turn }: { money: MoneyView; turn: boolean 
 
 /** Ô ước tính cho video đang chọn, đặt trên nút bắt đầu. Chỉ có ý nghĩa khi trả theo lượt. */
 export function MoneyEstimate({ money }: { money: MoneyView }) {
-  const { on, account, secs, estimate } = money;
+  const { on, account, secs, estimate, phase } = money;
   if (!on || !account) return null;
+  // Đang chạy: số dư lên xuống vì giữ rồi trả từng phần, ước tính lúc này chỉ gây hiểu lầm (v5.31.2).
+  if (phase === "running") return null;
   // Ước tính chi tiết nằm ở bước cuối «Tải và dịch». Màn chính chỉ hiện khi số dư không đủ, để khỏi chiếm chỗ.
   if (!estimate || estimate.enough) return null;
+  const parts = estimate.asrHold && estimate.chatHold;
   return (
     <section aria-label="Ước tính Token dịch" className="rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
-      <p className="text-danger" role="status">
-        Video {fmt(secs)}: cần giữ khoảng <strong>{formatGiay(estimate.hold)}</strong>, thiếu {formatGiay(estimate.short)}. Hãy mua Token dịch ở Tài khoản.
+      <p className="text-danger" role="status" data-money-short>
+        {estimate.part === "chat" ? (
+          <>
+            Đã nhận dạng xong. Phần dịch cần giữ khoảng <strong>{formatGiay(estimate.hold)}</strong>, thiếu {formatGiay(estimate.short)}. Mua thêm Token dịch ở Ví rồi bấm Tiếp tục.
+          </>
+        ) : parts ? (
+          <>
+            Video {fmt(secs)}: nhận dạng giữ khoảng {formatGiay(estimate.asrHold!)}, dịch giữ khoảng {formatGiay(estimate.chatHold!)} (giữ lần lượt, xong phần nào trả phần thừa phần đó). Còn thiếu khoảng {formatGiay(estimate.short)}. Hãy mua Token dịch ở Ví.
+          </>
+        ) : (
+          <>
+            Video {fmt(secs)}: cần giữ khoảng <strong>{formatGiay(estimate.hold)}</strong>, thiếu {formatGiay(estimate.short)}. Hãy mua Token dịch ở Ví.
+          </>
+        )}
       </p>
     </section>
   );

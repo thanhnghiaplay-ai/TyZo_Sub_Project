@@ -33,12 +33,27 @@ export function formatMinutes(minutes: number): string {
   return m ? `${h} giờ ${m} phút` : `${h} giờ`;
 }
 
-export type RunEstimate = { total: number; hold: number; enough: boolean; short: number };
+export type RunEstimate = {
+  total: number;
+  hold: number;
+  enough: boolean;
+  short: number;
+  /** Số giữ phần nhận dạng và phần dịch (v5.31.2). null khi máy chủ cũ chưa trả. */
+  asrHold?: number | null;
+  chatHold?: number | null;
+  /** Phần đang tính: «all» chưa nhận dạng (cần cả hai, giữ lần lượt), «chat» đã nhận dạng xong, chỉ còn dịch. */
+  part?: "all" | "chat";
+};
 
 /** Ước tính cho video đang chọn. Phòng giữ `hold` từ ví trước khi chạy, nên đủ hay thiếu so với số giữ. */
-export function runEstimate(row: PriceRow | null, balance: number): RunEstimate | null {
+export function runEstimate(row: (PriceRow & { asrHold?: number | null; chatHold?: number | null }) | null, balance: number, part: "all" | "chat" = "all"): RunEstimate | null {
   if (!row || row.total == null || !(row.total > 0)) return null;
-  const hold = row.hold > 0 ? row.hold : row.total;
   const have = Number.isFinite(balance) ? Math.max(0, balance) : 0;
-  return { total: row.total, hold, enough: have >= hold, short: Math.max(0, hold - have) };
+  const asrHold = row.asrHold ?? null;
+  const chatHold = row.chatHold ?? null;
+  // Hai phần giữ lần lượt, mỗi phần trả phần thừa ngay khi xong: cần đủ cho phần nặng hơn, và tổng hai phần là mức an toàn.
+  let hold = row.hold > 0 ? row.hold : row.total;
+  if (part === "chat" && chatHold) hold = chatHold;
+  else if (asrHold && chatHold) hold = asrHold + chatHold;
+  return { total: row.total, hold, enough: have >= hold, short: Math.max(0, hold - have), asrHold, chatHold, part };
 }
