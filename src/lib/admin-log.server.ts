@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.34.0",
+    time: "03:59 22/11/2026",
+    area: "ha-tang",
+    text: "Thêm nhà nhận dạng ElevenLabs (PROVIDERS.md bước 1 đến 8, Chủ yêu cầu «làm ElevenLabs»). Bảng nhà: id elevenlabs, auth kiểu mới «xi» (header xi-api-key, hàm authHeaders dùng ở listModelIds), caps chỉ asr (ElevenLabs có đọc giọng nhưng app chưa có đường thuyết minh cho nhà này), intake link, listPath /models chỉ để kiểm key, fixedModels scribe_v3/scribe_v2, room_settings elevenlabs_key. Lõi sub/elevenlabs.ts: form multipart (model_id, source_url, tag_audio_events=false, timestamps_granularity=word, language_code khi biết tiếng), gộp words (word/spacing, bỏ audio_event) thành câu, lỗi tiếng Việt; 14 test. Máy chủ elevenlabs-asr.server.ts: một yêu cầu đồng bộ (chờ tối đa 270 giây như Deepgram, không dùng webhook), key khách không lưu, key room thì assertRoomTicket rồi chargeRoomAsr theo giây thực (audio_duration_secs). Model elevenlabs-scribe-v3, elevenlabs-scribe-v2: ASR_MODELS, asrHouse, AsrModel, điểm ƯỚC LƯỢNG. Giá cố định 0,20 đô/giờ cả hai (trang giá đọc 21/11/2026), Admin sửa tay ở bảng giá. Điều khoản 2026-11-22.1: thêm ElevenLabs vào các câu liệt kê nhà, ghi rõ phòng CHƯA gửi lệnh xóa bản nhận dạng ElevenLabs. CHƯA thử với key ElevenLabs thật: hình dạng phản hồi, tên model, file dài có kịp 270 giây không.",
+  },
+  {
     version: "5.33.0",
     time: "21:19 21/11/2026",
     area: "khac",

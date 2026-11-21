@@ -2,13 +2,16 @@
  * BẢNG NHÀ CUNG CẤP. Thêm nhà mới = thêm một dòng vào PROVIDERS và làm theo PROVIDERS.md.
  * Mọi chỗ cần nhãn, địa chỉ, kiểu gửi key, khả năng đều đọc từ đây, không chép tay.
  */
-export type ProviderId = "groq" | "alibaba" | "deepgram" | "assemblyai" | "speechmatics" | "soniox";
+export type ProviderId = "groq" | "alibaba" | "deepgram" | "assemblyai" | "speechmatics" | "soniox" | "elevenlabs";
 
 /** asr: nhận dạng giọng · chat: dịch bằng mô hình ngôn ngữ · tts: đọc thành tiếng · live: dịch trực tiếp */
 export type ProviderCap = "asr" | "chat" | "tts" | "live";
 
-/** bearer: `Authorization: Bearer KEY` (kiểu OpenAI). token: `Authorization: Token KEY` (Deepgram). raw: `Authorization: KEY`, không tiền tố (AssemblyAI). */
-export type ProviderAuth = "bearer" | "token" | "raw";
+/**
+ * bearer: `Authorization: Bearer KEY` (kiểu OpenAI). token: `Authorization: Token KEY` (Deepgram). raw: `Authorization: KEY`, không tiền tố (AssemblyAI).
+ * xi: header riêng `xi-api-key: KEY` (ElevenLabs), không dùng Authorization.
+ */
+export type ProviderAuth = "bearer" | "token" | "raw" | "xi";
 
 /**
  * Cách app đưa âm thanh cho nhà nhận dạng (chỉ nói về cách app đang dùng, không phải mọi khả năng của nhà):
@@ -66,6 +69,7 @@ export const ASSEMBLYAI_API = "https://api.assemblyai.com/v2";
 /** Speechmatics chia máy chủ theo vùng; key của vùng nào chỉ chạy ở vùng đó. Đang khai vùng US1, cần kiểm bằng key thật ở bước máy chủ. */
 export const SPEECHMATICS_API = "https://us1.asr.api.speechmatics.com/v2";
 export const SONIOX_API = "https://api.soniox.com/v1";
+export const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
 
 export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
   groq: {
@@ -160,6 +164,24 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     ready: true,
     settings: { key: "soniox_key", models: "soniox_models", desk: "soniox_desk" },
   },
+  elevenlabs: {
+    id: "elevenlabs",
+    label: "ElevenLabs",
+    api: ELEVENLABS_API,
+    auth: "xi",
+    caps: ["asr"],
+    // Scribe nhận file tải lên hoặc link (source_url); app dùng link, trả kết quả ngay trong một yêu cầu.
+    // ElevenLabs còn đọc thành tiếng, nhưng app chưa có đường thuyết minh cho nhà này nên chưa khai "tts".
+    intake: "link",
+    keyPage: "elevenlabs.io/app/settings/api-keys",
+    clientStore: "gel",
+    keyHint: "sk_…",
+    // /models chỉ liệt kê model đọc giọng: dùng để kiểm key, danh sách nhận dạng khai cố định.
+    listPath: "/models",
+    fixedModels: ["scribe_v3", "scribe_v2"],
+    ready: true,
+    settings: { key: "elevenlabs_key", models: "elevenlabs_models", desk: "elevenlabs_desk" },
+  },
 };
 
 /** Mọi nhà trong bảng, kể cả nhà đang làm dở. Chỉ dùng khi cần cả bảng (kiểu, bài kiểm bảng). */
@@ -184,10 +206,15 @@ export function isProviderId(value: string): value is ProviderId {
   return Object.prototype.hasOwnProperty.call(PROVIDERS, value);
 }
 
-/** Giá trị cho phần đầu Authorization theo kiểu của từng nhà. */
+/** Giá trị cho phần đầu Authorization theo kiểu của từng nhà. Nhà kiểu "xi" không dùng Authorization: gọi `authHeaders`. */
 export function authHeader(id: ProviderId, key: string): string {
   const auth = PROVIDERS[id].auth;
-  return auth === "token" ? `Token ${key}` : auth === "raw" ? key : `Bearer ${key}`;
+  return auth === "token" ? `Token ${key}` : auth === "raw" || auth === "xi" ? key : `Bearer ${key}`;
+}
+
+/** Header đăng nhập đầy đủ (tên và giá trị) theo kiểu của từng nhà. Dùng chỗ này khi gọi chung cho mọi nhà. */
+export function authHeaders(id: ProviderId, key: string): Record<string, string> {
+  return PROVIDERS[id].auth === "xi" ? { "xi-api-key": key } : { Authorization: authHeader(id, key) };
 }
 
 export function providerHas(id: ProviderId, cap: ProviderCap): boolean {

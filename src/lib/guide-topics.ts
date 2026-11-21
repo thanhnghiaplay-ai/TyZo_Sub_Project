@@ -206,10 +206,10 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
     },
     {
       id: "key-groq",
-      title: "Lấy key (Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox)",
+      title: "Lấy key (Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox, ElevenLabs)",
       group: "tai-khoan",
       intro: `Chọn Thuê phòng thì bạn dùng key của chính bạn. Mỗi nhà có một key riêng, nhà nào bạn dùng thì lấy key nhà đó. Dịch cần key của một nhà có model dịch (${providersWith("chat").map((id) => PROVIDERS[id].label).join(" hoặc ")}); nhận dạng cần key của nhà nhận dạng bạn chọn.`,
-      words: "key groq alibaba deepgram assemblyai speechmatics soniox api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper universal",
+      words: "key groq alibaba deepgram assemblyai speechmatics soniox elevenlabs scribe api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper universal",
       tour: "key-groq",
       steps: [
         { text: "Mở trang quản lý key của Groq và đăng nhập (hoặc đăng ký) bằng tài khoản Groq.", link: { label: "console.groq.com/keys", href: "https://console.groq.com/keys" }, image: "groq-tao-key.png" },
@@ -279,7 +279,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
     id: "key-groq-loi",
     q: "App báo key không hợp lệ?",
     a: `Key không hợp lệ hoặc chưa được cấp quyền. Kiểm tra lại key ở trang của nhà đó (${PROVIDER_IDS.map((id) => `${PROVIDERS[id].label}: ${PROVIDERS[id].keyPage}`).join("; ")}). Không được thì tạo key mới rồi dán lại.`,
-    words: "key groq alibaba deepgram assemblyai speechmatics soniox khong hop le sai loi bao loi het han",
+    words: "key groq alibaba deepgram assemblyai speechmatics soniox elevenlabs khong hop le sai loi bao loi het han",
   },
   {
     id: "xoa-du-lieu",

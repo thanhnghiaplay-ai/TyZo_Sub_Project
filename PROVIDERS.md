@@ -1,10 +1,10 @@
-# Thêm nhà cung cấp mới (Groq, Alibaba, Deepgram, ...)
+# Thêm nhà cung cấp mới (Groq, Alibaba, Deepgram, ElevenLabs, ...)
 
 Bảng chung nằm ở `src/lib/sub/provider.ts` (`PROVIDERS`). Mỗi nhà là một dòng: nhãn, địa chỉ API, kiểu gửi key, khả năng (asr, chat, tts, live), trang lấy key, tên dòng lưu trong `room_settings`.
 
 ## Các bước, làm theo thứ tự, đẩy `work` sau mỗi bước
 
-1. **Bảng chung**: thêm id vào `ProviderId`, thêm dòng vào `PROVIDERS` (đặt `ready: false` cho tới khi xong bước 7: nhà chưa `ready` không hiện ra Admin, khách, Hướng dẫn và bài kiểm «đủ hai cửa»; `ALL_PROVIDER_IDS` là cả bảng, `PROVIDER_IDS` chỉ nhà đã `ready`; khai `listPath` là đường kiểm key/đọc model, và `fixedModels` nếu nhà không có lệnh liệt kê model; `auth: "raw"` nếu key gửi không tiền tố), thêm trường hợp vào `modelIdsFrom` nếu `/models` không theo dạng OpenAI. Thêm test ở `provider.test.ts`.
+1. **Bảng chung**: thêm id vào `ProviderId`, thêm dòng vào `PROVIDERS` (đặt `ready: false` cho tới khi xong bước 7: nhà chưa `ready` không hiện ra Admin, khách, Hướng dẫn và bài kiểm «đủ hai cửa»; `ALL_PROVIDER_IDS` là cả bảng, `PROVIDER_IDS` chỉ nhà đã `ready`; khai `listPath` là đường kiểm key/đọc model, và `fixedModels` nếu nhà không có lệnh liệt kê model; `auth: "raw"` nếu key gửi không tiền tố, `auth: "xi"` nếu key đi trong header riêng `xi-api-key` như ElevenLabs; gọi chung thì dùng `authHeaders` thay vì tự đặt `Authorization`), thêm trường hợp vào `modelIdsFrom` nếu `/models` không theo dạng OpenAI. Thêm test ở `provider.test.ts`.
 2. **Lõi thuần** (không import server): hàm dựng yêu cầu, đọc phản hồi ra `Seg`, bảng ngôn ngữ. Có test với phản hồi mẫu.
 3. **Máy chủ**: file `*.server.ts` + server fn mỏng (mẫu: `ali-filetrans.server.ts`, `ali-filetrans.ts`). Key khách đi qua máy chủ, không lưu. Key phòng lấy từ `room_settings`.
 4. **Model + nhà nhận dạng**: thêm vào `ASR_MODELS` (`models.ts`), `asrHouse` (`asr-house.ts`), kiểu `AsrModel` (`types.ts`).

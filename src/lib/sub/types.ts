@@ -50,7 +50,9 @@ export type AsrModel =
   | "assemblyai-universal-2"
   | "speechmatics-standard"
   | "speechmatics-enhanced"
-  | "soniox-stt-async";
+  | "soniox-stt-async"
+  | "elevenlabs-scribe-v3"
+  | "elevenlabs-scribe-v2";
 
 export const ASR_PRICE: Record<AsrModel, number> = {
   "whisper-large-v3-turbo": 0.04 / 3600,
@@ -66,6 +68,9 @@ export const ASR_PRICE: Record<AsrModel, number> = {
   "speechmatics-enhanced": 0.75 / 3600,
   /** Khoảng 0,10 đô/giờ (async), theo ghi chú bước 1 docs/lich-su/HANDOFF_2026-11.md 18/11/2026. Giá dự phòng, cần đối chiếu trang giá Soniox ở bước 6. */
   "soniox-stt-async": 0.1 / 3600,
+  /** Scribe v3 và v2 đều 0,20 đô/giờ, trang giá ElevenLabs đọc 21/11/2026. Giá dự phòng, Admin sửa tay được. */
+  "elevenlabs-scribe-v3": 0.2 / 3600,
+  "elevenlabs-scribe-v2": 0.2 / 3600,
 };
 
 export type NarrationSettings = {

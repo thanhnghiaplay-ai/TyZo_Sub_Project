@@ -111,7 +111,7 @@ test("buildAutoPack: thiếu nhận dạng hoặc dịch thì không dựng gói
 });
 
 test("onlyRentOpen: chỉ giữ model đã mở cho thuê phòng, chưa lưu danh sách thì không lọc", () => {
-  const show = { groq: ["openai/gpt-oss-120b", "whisper-large-v3-turbo"], alibaba: [], deepgram: ["deepgram-nova-3"], assemblyai: [], speechmatics: [], soniox: [] };
+  const show = { groq: ["openai/gpt-oss-120b", "whisper-large-v3-turbo"], alibaba: [], deepgram: ["deepgram-nova-3"], assemblyai: [], speechmatics: [], soniox: [], elevenlabs: [] };
   const kept = onlyRentOpen(all, show);
   assert.deepEqual(kept.map((c) => c.model).sort(), ["deepgram-nova-3", "openai/gpt-oss-120b", "whisper-large-v3-turbo"]);
   assert.equal(onlyRentOpen(all, null), all);

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.33.0";
+export const APP_VERSION = "5.34.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.34.0",
+    time: "03:59 22/11/2026",
+    title: "Thêm nhà nhận dạng giọng ElevenLabs (Scribe v3, Scribe v2).",
+    points: [
+      "Chọn ElevenLabs Scribe ở ô Nhận dạng giọng, dán link file https trực tiếp.",
+      "Dùng được ở cả Thuê phòng (key ElevenLabs của bạn) và Trả theo lượt.",
+      "Điều khoản mục Dữ liệu ghi ElevenLabs nhận lời thoại; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.33.0",
     time: "21:19 21/11/2026",

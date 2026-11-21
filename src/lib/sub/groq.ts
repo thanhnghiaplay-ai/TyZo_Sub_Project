@@ -1,5 +1,5 @@
 import { reasoningOpts } from "@/lib/sub/models";
-import { authHeader, modelIdsFrom, modelListUrl, PROVIDERS, providerApi, providerChat, type ProviderChat, type ProviderId } from "@/lib/sub/provider";
+import { authHeader, authHeaders, modelIdsFrom, modelListUrl, PROVIDERS, providerApi, providerChat, type ProviderChat, type ProviderId } from "@/lib/sub/provider";
 import { providerOfModel, type RoomOffer } from "@/lib/sub/room-models";
 import type { PackedAudio } from "@/lib/sub/codec";
 import {
@@ -191,7 +191,7 @@ export async function requestWithRetry<T>(
 const LIST_TIMEOUT_MS = 30_000;
 
 export async function listModelIds(key: string, signal?: AbortSignal, provider: ProviderId = "groq"): Promise<string[]> {
-  const next = roomFetchTarget(modelListUrl(provider), { headers: { Authorization: authHeader(provider, key) } }, null);
+  const next = roomFetchTarget(modelListUrl(provider), { headers: authHeaders(provider, key) }, null);
   try {
     const data = await withDeadlines(
       (guard) => fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal: guard }),

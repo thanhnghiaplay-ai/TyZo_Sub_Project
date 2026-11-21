@@ -87,7 +87,7 @@ import { formatPartSpan, formatSeconds, type AsrRetryReport } from "@/lib/sub/as
 import type { FilterRetryReport } from "@/lib/sub/filter-retry";
 import { NARRATION_DEFAULT, type ChatModel, type NarrationSettings, type Seg } from "@/lib/sub/types";
 
-const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Admin đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Dịch vẫn dùng model Groq đã mở.";
+const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Admin đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Scribe cần key ElevenLabs của bạn. Dịch vẫn dùng model Groq đã mở.";
 const THREADS_TIP = "Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn của key (nhất là key miễn phí). App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.";
 const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
 const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, Deepgram… tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
@@ -953,11 +953,12 @@ export function Studio() {
   const aaiAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.assemblyai ?? null) : null;
   const smAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.speechmatics ?? null) : null;
   const sxAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.soniox ?? null) : null;
+  const elAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.elevenlabs ?? null) : null;
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
   const asrPick = asrPickerRows({
     showRoomPrice,
-    allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow, assemblyai: aaiAllow, speechmatics: smAllow, soniox: sxAllow },
-    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba, Deepgram, AssemblyAI, Speechmatics và Soniox do máy chủ kiểm khi chạy.
+    allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow, assemblyai: aaiAllow, speechmatics: smAllow, soniox: sxAllow, elevenlabs: elAllow },
+    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox và ElevenLabs do máy chủ kiểm khi chạy.
     roomHeld: (id) => asrHouse(id) === "groq" && roomHeld(runDoor, id),
     keyModels: { groq: app.remoteIds, ...app.keyModels },
   });
@@ -1467,7 +1468,7 @@ export function Studio() {
         </details>
           <InfoTip label="Về chọn model">Một lần dịch giữ một lối. Không trộn model nhỏ vào video đang dịch.</InfoTip>
         </div>
-        <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || showRoomPrice) ? <>{(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
+        <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || elAllow || showRoomPrice) ? <>{(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || elAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
           {asrPick.map((row) => (
             <option key={row.id} value={row.id} disabled={row.disabled}>
               {row.name}

@@ -133,6 +133,8 @@ export const ASR_MODELS = [
   { id: "speechmatics-enhanced", name: "Speechmatics Enhanced", price: "$0.75/giờ", note: "Cả file, chính xác cao, cần link trực tiếp" },
   { id: "speechmatics-standard", name: "Speechmatics Standard", price: "$0.45/giờ", note: "Cả file, rẻ hơn Enhanced, cần link trực tiếp" },
   { id: "soniox-stt-async", name: "Soniox Async", price: "~$0.10/giờ", note: "Cả file, rất rẻ, tự nhận ngôn ngữ, cần link trực tiếp" },
+  { id: "elevenlabs-scribe-v3", name: "ElevenLabs Scribe v3", price: "$0.20/giờ", note: "Cả file, trả kết quả một lần, tự nhận ngôn ngữ, cần link https trực tiếp" },
+  { id: "elevenlabs-scribe-v2", name: "ElevenLabs Scribe v2", price: "$0.20/giờ", note: "Cả file, đời trước của Scribe v3, cần link https trực tiếp" },
 ] as const;
 
 const BY_ID = new Map(CHAT_MODELS.map((model) => [model.id, model]));

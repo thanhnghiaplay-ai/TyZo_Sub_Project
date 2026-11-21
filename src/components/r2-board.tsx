@@ -29,7 +29,7 @@ export function R2Board() {
     <section className="admin-card grid content-start gap-2">
       <h3 className="text-sm font-semibold">Kho tạm R2 (tệp trên máy)</h3>
       <p className="text-sm text-muted">
-        Cho khách chọn tệp trên máy với các nhà chỉ nhận link (Deepgram, AssemblyAI, Speechmatics, Soniox, Alibaba). Âm thanh tách ở máy khách, tải thẳng lên R2, xóa ngay khi nhận dạng xong. Chưa đặt biến môi trường thì tính năng tắt.
+        Cho khách chọn tệp trên máy với các nhà chỉ nhận link (Deepgram, AssemblyAI, Speechmatics, Soniox, ElevenLabs, Alibaba). Âm thanh tách ở máy khách, tải thẳng lên R2, xóa ngay khi nhận dạng xong. Chưa đặt biến môi trường thì tính năng tắt.
       </p>
       <p className="text-sm">
         {info === null ? "Đang đọc…" : info.ready ? "Đã đặt đủ 4 biến môi trường." : `Còn thiếu: ${info.missing.join(", ")}.`}

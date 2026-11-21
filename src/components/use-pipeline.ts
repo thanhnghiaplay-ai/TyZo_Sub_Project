@@ -111,6 +111,8 @@ import { segsFromAssemblyai } from "@/lib/sub/assemblyai";
 import { recognizeSpeechmaticsUrl } from "@/lib/sub/speechmatics-run";
 import { segsFromSpeechmatics } from "@/lib/sub/speechmatics";
 import { recognizeSonioxUrl } from "@/lib/sub/soniox-run";
+import { recognizeElevenlabsUrl } from "@/lib/sub/elevenlabs-run";
+import { segsFromElevenlabs } from "@/lib/sub/elevenlabs";
 import { r2Status } from "@/lib/r2-upload";
 import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
 import { packWavFromReader } from "@/lib/sub/wav-stream";
@@ -1205,7 +1207,7 @@ export function usePipeline() {
       if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : asrHouse(asrModel) === "assemblyai" ? "Link AssemblyAI" : asrHouse(asrModel) === "speechmatics" ? "Link Speechmatics" : asrHouse(asrModel) === "soniox" ? "Link Soniox" : "Link Alibaba"),
+          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : asrHouse(asrModel) === "assemblyai" ? "Link AssemblyAI" : asrHouse(asrModel) === "speechmatics" ? "Link Speechmatics" : asrHouse(asrModel) === "soniox" ? "Link Soniox" : asrHouse(asrModel) === "elevenlabs" ? "Link ElevenLabs" : "Link Alibaba"),
           seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
@@ -2128,6 +2130,29 @@ export function usePipeline() {
           await translateRemaining(() => true);
           publish(true);
           say(j.segs.length ? `Nhận dạng Soniox xong: ${j.segs.length} câu.` : "Soniox không trả câu nào.", !j.segs.length);
+          setRunning(false);
+          delete document.documentElement.dataset.tyzoBusy;
+          return;
+        }
+        if (asrHouse(asrModel) === "elevenlabs") {
+          say("Đang gửi link tới ElevenLabs…");
+          const result = await recognizeElevenlabsUrl({
+            url: runUrl,
+            language: asrLanguageOf(source),
+            model: asrModel,
+            key: roomPayRef.current ? "room" : houseKeyOf("elevenlabs"),
+            ticketId,
+            signal,
+          });
+          if (my !== j.runId) return;
+          j.segs = segsFromElevenlabs(result.sentences);
+          j.parts = [];
+          j.nextPart = 0;
+          j.doneSource = source;
+          publish(true);
+          await translateRemaining(() => true);
+          publish(true);
+          say(j.segs.length ? `Nhận dạng ElevenLabs xong: ${j.segs.length} câu.` : "ElevenLabs không trả câu nào.", !j.segs.length);
           setRunning(false);
           delete document.documentElement.dataset.tyzoBusy;
           return;

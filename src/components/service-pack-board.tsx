@@ -93,7 +93,8 @@ export function ServicePackBoard() {
     const assemblyai = ASR_MODELS.filter((row) => asrHouse(row.id) === "assemblyai").map((row) => row.id);
     const speechmatics = ASR_MODELS.filter((row) => asrHouse(row.id) === "speechmatics").map((row) => row.id);
     const soniox = ASR_MODELS.filter((row) => asrHouse(row.id) === "soniox").map((row) => row.id);
-    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai, speechmatics, soniox };
+    const elevenlabs = ASR_MODELS.filter((row) => asrHouse(row.id) === "elevenlabs").map((row) => row.id);
+    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai, speechmatics, soniox, elevenlabs };
     return byProvider;
   }, [groqModels, models]);
 

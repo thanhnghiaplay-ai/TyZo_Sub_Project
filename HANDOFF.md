@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.33.0 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.3`.
+Cập nhật 22/11/2026. **v5.34.0 (ElevenLabs) trên nhánh `ccr-6b6ee13d-637k1h`, chưa hợp vào `work`.** Trước đó **v5.33.0 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.3`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.34.0 (22/11/2026, Claude, nhánh `ccr-6b6ee13d-637k1h`)**: Chủ yêu cầu «làm ElevenLabs». Đã làm: nhà `elevenlabs` (header `xi-api-key`, auth «xi», `authHeaders`), lõi `sub/elevenlabs.ts` + 14 test, máy chủ `elevenlabs-asr.server.ts` (một yêu cầu, chờ 270 giây), `elevenlabs-run.ts`, model Scribe v3/v2 ở danh mục, nhà nhận dạng, gói dịch, bảng giá Admin (0,20 đô/giờ cố định), hai cửa (bài kiểm `provider-doors` tự chạy, pass), chữ Hướng dẫn, điều khoản 2026-11-22.1. tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1422 pass, vite build xong. Chưa làm: thử key thật, giọng đọc ElevenLabs, lệnh xóa bản nhận dạng, đường webhook cho file dài. Cố ý không làm: `KEY_LIST_TRUSTED.elevenlabs` để false (danh sách `/models` chỉ có model đọc giọng).
 - **Đẩy chính thức v5.33.0**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.33.0 (gồm v5.32.1–v5.33.0). Khách đồng ý lại điều khoản 2026-11-21.3 một lần. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1404 pass, vite build xong. Chưa thử khôi phục phụ đề với lượt thật.
 - **v5.33.0**: Mục 1: lưu phụ đề theo tệp trên máy (IndexedDB, 5 tệp), chọn lại tệp thì hỏi khôi phục, dịch nốt không nhận dạng lại; Làm lại xóa bản lưu. Điều khoản 2026-11-21.3 (thêm câu lưu trên máy, Chủ → Admin): khách đồng ý lại một lần. tsc sạch, test 191 + 1404 pass, thử khôi phục trên dev.
 - **v5.32.4**: Mục 3: dòng gói trả theo lượt ở trang chủ (tên gói, Token video cần giữ, Đổi/Chọn gói). tsc sạch, test pass. Chưa xem bằng mắt (dev không có gói). Mục 1 (lưu phụ đề theo tệp) để cuộc trò chuyện mới, kế hoạch ở BANG_DIEU «Việc đang giữ».

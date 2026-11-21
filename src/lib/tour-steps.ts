@@ -72,7 +72,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
     { sel: "[data-tour=plans]", title: "4. Thuê phòng", text: "Bấm gói thì hiện mã QR. Chuyển khoản đúng số thì mở hạn, không giữ số dư." },
   ],
   "key-groq": [
-    { title: "1. Lấy key ở nhà cung cấp", text: "Groq: mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Alibaba, Deepgram, AssemblyAI, Speechmatics và Soniox cũng tạo key theo cách tương tự ở trang của họ, chỉ cần khi bạn dùng nhà đó. Các trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
+    { title: "1. Lấy key ở nhà cung cấp", text: "Groq: mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox và ElevenLabs cũng tạo key theo cách tương tự ở trang của họ, chỉ cần khi bạn dùng nhà đó. Các trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
     { sel: "#tool-tab-key", rail: true, press: true, title: "2. Mở mục Cài đặt dịch", text: "Mục này có ô dán key." },
     { sel: "[data-tour=key-input]", sheet: "open", title: "3. Dán key", text: "Bấm «Thêm key», chọn nhà (Groq, Alibaba…) rồi dán key. Mỗi key ghi nhà đó làm được việc gì và key đã hợp lệ chưa. Key chỉ lưu trên máy này. Không có key thì trả theo lượt bằng Token dịch." },
   ],

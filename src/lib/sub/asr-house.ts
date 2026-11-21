@@ -1,6 +1,7 @@
 /** Nhà nhận dạng. Danh sách model Groq không quyết định nhà khác. */
 import { ASSEMBLYAI_PRO_ASR, ASSEMBLYAI_V2_ASR } from "./assemblyai.ts";
 import { DEEPGRAM_ASR } from "./deepgram.ts";
+import { ELEVENLABS_V2_ASR, ELEVENLABS_V3_ASR } from "./elevenlabs.ts";
 import { SONIOX_ASYNC_ASR } from "./soniox.ts";
 import { SPEECHMATICS_ENHANCED_ASR, SPEECHMATICS_STANDARD_ASR } from "./speechmatics.ts";
 import { PROVIDERS, type ProviderId, type ProviderIntake } from "./provider.ts";
@@ -20,6 +21,8 @@ const HOUSES: Record<string, AsrHouse> = {
   [SPEECHMATICS_STANDARD_ASR]: "speechmatics",
   [SPEECHMATICS_ENHANCED_ASR]: "speechmatics",
   [SONIOX_ASYNC_ASR]: "soniox",
+  [ELEVENLABS_V3_ASR]: "elevenlabs",
+  [ELEVENLABS_V2_ASR]: "elevenlabs",
 };
 
 export function asrHouse(id: string): AsrHouse | null {

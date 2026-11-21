@@ -8,6 +8,7 @@ import { ASSEMBLYAI_BASE_ROWS } from "./sub/assemblyai-base.ts";
 import { DEEPGRAM_BASE_ROWS } from "./sub/deepgram-base.ts";
 import { SPEECHMATICS_BASE_ROWS } from "./sub/speechmatics-base.ts";
 import { SONIOX_BASE_ROWS } from "./sub/soniox-base.ts";
+import { ELEVENLABS_BASE_ROWS } from "./sub/elevenlabs-base.ts";
 import { asrHouse, asrTakesLink } from "./sub/asr-house.ts";
 import { ASR_MODELS } from "./sub/models.ts";
 import { PROVIDER_IDS, providerHas, type ProviderId } from "./sub/provider.ts";
@@ -26,6 +27,7 @@ const PRICE_ROWS: Record<ProviderId, string[] | "bang-gia-groq"> = {
   assemblyai: ASSEMBLYAI_BASE_ROWS.map((row) => row.id),
   speechmatics: SPEECHMATICS_BASE_ROWS.map((row) => row.id),
   soniox: SONIOX_BASE_ROWS.map((row) => row.id),
+  elevenlabs: ELEVENLABS_BASE_ROWS.map((row) => row.id),
 };
 
 const asrProviders = PROVIDER_IDS.filter((id) => providerHas(id, "asr"));

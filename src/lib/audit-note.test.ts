@@ -31,7 +31,7 @@ describe("ghi chú audit", () => {
   });
 
   it("danh sách thuê phòng ghi model mở và đóng", () => {
-    const note = describeRentShow({ groq: ["a", "b"], alibaba: [], deepgram: [], assemblyai: [], speechmatics: [], soniox: [] }, { groq: ["b", "c"], alibaba: [], deepgram: ["deepgram-nova-3"], assemblyai: [], speechmatics: [], soniox: [] });
+    const note = describeRentShow({ groq: ["a", "b"], alibaba: [], deepgram: [], assemblyai: [], speechmatics: [], soniox: [], elevenlabs: [] }, { groq: ["b", "c"], alibaba: [], deepgram: ["deepgram-nova-3"], assemblyai: [], speechmatics: [], soniox: [], elevenlabs: [] });
     assert.match(note, /mở groq: c/);
     assert.match(note, /đóng groq: a/);
     assert.match(note, /mở deepgram: deepgram-nova-3/);
