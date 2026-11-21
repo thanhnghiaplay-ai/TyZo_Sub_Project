@@ -74,7 +74,7 @@ export const TOURS: Record<TourId, TourStep[]> = {
   "key-groq": [
     { title: "1. Lấy key ở nhà cung cấp", text: "Groq: mở console.groq.com/keys, đăng nhập, chọn Create API Key rồi sao chép key (bắt đầu bằng gsk_). Alibaba, Deepgram, AssemblyAI, Speechmatics và Soniox cũng tạo key theo cách tương tự ở trang của họ, chỉ cần khi bạn dùng nhà đó. Các trang này của bên khác nên app không chỉ vào được. Xong thì bấm Tiếp." },
     { sel: "#tool-tab-key", rail: true, press: true, title: "2. Mở mục Cài đặt dịch", text: "Mục này có ô dán key." },
-    { sel: "[data-tour=key-input]", sheet: "open", title: "3. Dán key", text: "Dán key Groq vào ô này hoặc bấm nút dán. Dưới đó là ô key của Alibaba, Deepgram, AssemblyAI, Speechmatics và Soniox. Key chỉ lưu trên máy này. Dán key Groq xong app tự kiểm tra key và model." },
+    { sel: "[data-tour=key-input]", sheet: "open", title: "3. Dán key", text: "Bấm «Thêm key», chọn nhà (Groq, Alibaba…) rồi dán key. Mỗi key ghi nhà đó làm được việc gì và key đã hợp lệ chưa. Key chỉ lưu trên máy này. Không có key thì trả theo lượt bằng Token dịch." },
   ],
   "mat-khau": [
     { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },

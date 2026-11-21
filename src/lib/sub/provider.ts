@@ -201,6 +201,11 @@ const CAP_LABEL: Record<ProviderCap, string> = {
   live: "dịch trực tiếp",
 };
 
+/** Nhà làm được những việc gì, một dòng cho khách (sinh từ khả năng khai, không viết tay từng nhà). */
+export function providerDoes(id: ProviderId): string {
+  return PROVIDERS[id].caps.map((cap) => CAP_LABEL[cap]).join(", ");
+}
+
 /**
  * Ghi chú dưới ô key phòng ở Admin, sinh từ khả năng của nhà (không viết tay từng nhà).
  * Nhà không có khả năng dịch bằng mô hình thì nhắc dịch vẫn do nhà nào làm.

@@ -40,8 +40,11 @@ describe("Khách: ô key các nhà ngoài Groq sinh từ bảng PROVIDERS", () =
   const studio = read("./studio.tsx");
   const pipe = read("./use-pipeline.ts");
 
-  it("studio vẽ ô key bằng vòng lặp PROVIDER_IDS, không còn ô viết tay Alibaba/Deepgram", () => {
-    assert.match(studio, /PROVIDER_IDS\.filter\(\(id\) => id !== "groq"\)\.map/);
+  it("ô key của khách sinh từ bảng PROVIDERS (KeyRing), không còn ô viết tay Alibaba/Deepgram", () => {
+    const ring = read("./key-ring.tsx");
+    assert.match(studio, /<KeyRing/);
+    assert.match(ring, /PROVIDER_IDS\.filter/);
+    assert.doesNotMatch(ring, /"alibaba"|"deepgram"|"assemblyai"|"speechmatics"|"soniox"/, "không viết tay tên nhà");
     assert.doesNotMatch(studio, /id="ali-key"/);
     assert.doesNotMatch(studio, /id="dg-key"/);
     assert.doesNotMatch(studio, /app\.alibabaKey|app\.deepgramKey/);

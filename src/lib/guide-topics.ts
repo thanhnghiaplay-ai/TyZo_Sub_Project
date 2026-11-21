@@ -11,7 +11,7 @@
 import { foldText } from "./admin-tabs.ts";
 import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "./customer-menu.ts";
 import { dong } from "./money-format.ts";
-import { PROVIDER_IDS, PROVIDERS } from "./sub/provider.ts";
+import { PROVIDER_IDS, PROVIDERS, providerDoes, providersWith } from "./sub/provider.ts";
 import { PAY_MINUTES } from "./pay-minutes.ts";
 import { plansWith, type PricedPlan } from "./room-plan-prices.ts";
 import { TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
@@ -125,7 +125,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       steps: [
         { text: `Đăng ký hoặc đăng nhập. Tài khoản mới được dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB.` },
         { text: "Ở trang chủ, kéo thả video vào ô lớn hoặc bấm để chọn tệp. Cũng dán được link tải thẳng về tệp, không phải link trang xem video." },
-        { text: `Mở «${UI.keyTab}» ở menu trái và dán key của bạn (Groq, và Alibaba, Deepgram, AssemblyAI, Speechmatics hay Soniox nếu dùng). Muốn trả theo lượt bằng Token dịch đã mua thì chọn ở bước cuối «Tải và dịch».` },
+        { text: `Ở dòng cách trả trên trang chủ, chọn dùng key AI của bạn hoặc trả theo lượt bằng Token dịch. Dùng key thì mở «${UI.keyTab}», bấm «Thêm key», chọn nhà (${PROVIDER_IDS.map((id) => PROVIDERS[id].label).join(", ")}) và dán key.` },
         { text: `Mở «${UI.filmTab}», chọn ngôn ngữ và thể loại, rồi bấm «${UI.startRun}». Thanh tiến trình cho biết đang ở bước nào.` },
         { text: `Dịch xong, bấm «${UI.download}» và chọn SRT, VTT hoặc TXT. Bấm một câu trong bản dịch để nhảy tới đúng chỗ trong video. Tài khoản dùng thử chưa xuất được file.` },
       ],
@@ -207,7 +207,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       id: "key-groq",
       title: "Lấy key (Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox)",
       group: "tai-khoan",
-      intro: "Chọn Thuê phòng thì bạn dùng key của chính bạn. Mỗi nhà có một key riêng, nhà nào bạn dùng thì lấy key nhà đó. Groq cần cho dịch, nên gần như ai cũng cần key Groq.",
+      intro: `Chọn Thuê phòng thì bạn dùng key của chính bạn. Mỗi nhà có một key riêng, nhà nào bạn dùng thì lấy key nhà đó. Dịch cần key của một nhà có model dịch (${providersWith("chat").map((id) => PROVIDERS[id].label).join(" hoặc ")}); nhận dạng cần key của nhà nhận dạng bạn chọn.`,
       words: "key groq alibaba deepgram assemblyai speechmatics soniox api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper universal",
       tour: "key-groq",
       steps: [
@@ -215,10 +215,10 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Chọn tạo key mới (Create API Key) và đặt tên tùy ý để bạn nhớ.", },
         { text: "Sao chép key ngay khi tạo xong, vì thường không xem lại được sau đó. Key Groq bắt đầu bằng gsk_." },
         ...PROVIDER_IDS.filter((id) => id !== "groq").map((id) => ({
-          text: `${PROVIDERS[id].label}: mở trang key của ${PROVIDERS[id].label}, đăng nhập, tạo key mới và sao chép ngay. Chỉ cần khi bạn chọn model nhận dạng của ${PROVIDERS[id].label}. Cách tạo y như Groq.`,
+          text: `${PROVIDERS[id].label}: mở trang key của ${PROVIDERS[id].label}, đăng nhập, tạo key mới và sao chép ngay. ${PROVIDERS[id].label} làm: ${providerDoes(id)}. Cách tạo y như Groq.`,
           link: { label: PROVIDERS[id].keyPage, href: `https://${PROVIDERS[id].keyPage}` },
         })),
-        { text: `Quay lại app, mở «${UI.keyTab}» và dán từng key vào đúng ô của nhà đó. Mọi ô đều hiện khi bạn chọn Thuê phòng. Key chỉ lưu trên máy này. Dán key Groq xong app tự kiểm tra key và model.` },
+        { text: `Quay lại app, mở «${UI.keyTab}», bấm «Thêm key», chọn nhà rồi dán key. Mỗi key hiện nhà đó làm được việc gì và key đã hợp lệ chưa; bấm Sửa để thay, bấm thùng rác để xóa. Key chỉ lưu trên máy này.` },
         { text: "Không gửi key cho ai, kể cả khi hỏi hỗ trợ." },
       ],
     },

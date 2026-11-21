@@ -277,6 +277,13 @@ function writeStore(key: string, value: string) {
     /* private mode */
   }
 }
+function removeStore(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* private mode */
+  }
+}
 
 function shareUserTerms(source: string, genre: string, terms: GlossaryTerm[]) {
   try {
@@ -315,7 +322,18 @@ export function usePipeline() {
   houseKeysRef.current = houseKeys;
   const setHouseKey = useCallback((id: ProviderId, value: string) => {
     setHouseKeys((current) => ({ ...current, [id]: value }));
-    if (value) writeStore(PROVIDERS[id].clientStore, value);
+    // Xóa trắng là xóa khỏi máy, để tải lại trang không hiện lại key cũ.
+    if (value.trim()) writeStore(PROVIDERS[id].clientStore, value);
+    else removeStore(PROVIDERS[id].clientStore);
+  }, []);
+  /**
+   * Đặt key Groq và lưu ngay trên máy khi đủ dài (trước đây chỉ lưu lúc bấm chạy, tải lại trang trước đó là mất).
+   * Xóa trắng là xóa khỏi máy. Ô gõ dở (dưới 20 ký tự) không lưu.
+   */
+  const storeGroqKey = useCallback((value: string) => {
+    setKey(value);
+    if (!value.trim()) removeStore(PROVIDERS.groq.clientStore);
+    else if (value.trim().length >= 20) writeStore(PROVIDERS.groq.clientStore, value.trim());
   }, []);
   const houseKeyOf = (id: ProviderId) => (houseKeysRef.current[id] ?? "").trim();
   // Model có trên key khách của các nhà ngoài Groq (Groq đã có remoteIds). Key chỉ đi qua máy chủ, không lưu.
@@ -2683,6 +2701,7 @@ export function usePipeline() {
     keyModels,
     setHouseKey,
     setRoomPay,
+    storeGroqKey,
     roomOffer,
     chatKeyOf,
     target,

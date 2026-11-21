@@ -68,7 +68,8 @@ describe("Bước 6.1 — thứ tự trong thẻ Phim", () => {
     assert.equal(phim.includes("<GlossaryEditor"), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
     assert.equal(key.includes("<TurnPackList"), false);
-    assert.match(key, /Groq API key/);
+    assert.match(key, /<KeyRing/);
+    assert.match(readFileSync(new URL("./key-ring.tsx", import.meta.url), "utf8"), /Groq API key/);
     const run = source.slice(source.indexOf('id="tool-run"'), source.indexOf('id="tool-check"'));
     assert.match(run, /Cách trả/);
     assert.match(run, /<TurnPackList/);
@@ -277,7 +278,8 @@ describe("Bước 7.2 — tab theo thứ tự dùng", () => {
     );
     assert.equal(source.includes('id="tool-chat"'), false);
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
-    assert.match(key, /Groq API key/);
+    assert.match(key, /<KeyRing/);
+    assert.match(readFileSync(new URL("./key-ring.tsx", import.meta.url), "utf8"), /Groq API key/);
     assert.match(key, /Đồng bộ key/);
     assert.match(key, /Nhận dạng giọng/);
     assert.equal(key.includes("Ngữ cảnh nội dung"), false);
@@ -373,9 +375,10 @@ describe("Chuỗi bước: Cài đặt dịch → Phim → Ngữ cảnh → Thuy
     assert.match(head, /Tiếp tục/);
     assert.match(head, /setToolTab\(step\.next!\)/);
     assert.equal(source.includes("studio-next-tool"), false);
-    // Ô dán key vẫn ở bước đầu.
+    // Ô dán key vẫn ở bước đầu: tab key vẽ KeyRing, và KeyRing mang mốc tour key-input (luôn hiện, kể cả khi chưa có key).
     const key = source.slice(source.indexOf('id="tool-key"'), source.indexOf('id="tool-phim"'));
-    assert.match(key, /data-tour="key-input"/);
+    assert.match(key, /<KeyRing/);
+    assert.match(readFileSync(new URL("./key-ring.tsx", import.meta.url), "utf8"), /data-key-ring data-tour="key-input"/);
   });
 });
 

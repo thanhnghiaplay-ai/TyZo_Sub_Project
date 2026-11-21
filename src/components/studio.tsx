@@ -22,7 +22,7 @@ import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
 import { asrHouse, groqListHolds } from "@/lib/sub/asr-house";
 import { linkAsrNote } from "@/lib/sub/link-asr-note";
-import { clientKeyPlaceholder, PROVIDER_IDS, PROVIDER_LABEL, PROVIDERS } from "@/lib/sub/provider";
+import { PROVIDER_IDS, PROVIDER_LABEL, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { BASE_ROWS } from "@/lib/price-rows";
 import { pickPool } from "@/lib/sub/room-models";
 import { asrPickerRows } from "@/lib/asr-picker";
@@ -47,6 +47,7 @@ import { CueEditor } from "@/components/cue-editor";
 import { useCaps, useWakeLock } from "@/components/use-caps";
 import { MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
 import { PayStatusBar } from "@/components/pay-status-bar";
+import { KeyRing, type KeyCheck } from "@/components/key-ring";
 import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
@@ -520,7 +521,6 @@ export function Studio() {
     const timer = window.setTimeout(() => setTourOpen(true), 900);
     return () => window.clearTimeout(timer);
   }, []);
-  const [showKey, setShowKey] = useState(false);
   // Câu đang sửa nhớ theo nội dung, không theo số thứ tự: câu mới chen vào danh sách thì ô sửa không nhảy sang câu khác.
   const [editKey, setEditKey] = useState<{ start: number; end: number; original: string } | null>(null);
   const [draft, setDraft] = useState("");
@@ -630,14 +630,6 @@ export function Studio() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- chỉ chạy khi cửa đổi trạng thái
   }, [runDoor.ready, runDoor.open, app.setRoomPay]);
 
-  const pasteKey = async () => {
-    try {
-      const text = (await navigator.clipboard.readText()).trim();
-      app.setKey(text);
-    } catch {
-      document.getElementById("key")?.focus();
-    }
-  };
 
   const speakAt = (index: number) => {
     const { segs, narration: settings, key, target } = live.current;
@@ -726,6 +718,17 @@ export function Studio() {
       rememberPayChoice(safeLocalStore(), choice);
       setPayChoice(choice);
     }
+  };
+  /** Trạng thái từng key cho danh sách «Key AI của bạn»: Groq theo lần kiểm key, nhà khác theo danh sách model đọc được. */
+  const keyCheck = (id: ProviderId): KeyCheck => {
+    const value = (id === "groq" ? app.key : (app.houseKeys[id] ?? "")).trim();
+    if (!value) return { phase: "idle", text: "" };
+    if (value.length < 20) return { phase: "warn", text: "Key có vẻ chưa đủ, kiểm tra lại." };
+    if (id === "groq") return app.keyStatus.phase === "idle" ? { phase: "checking", text: "Đang kiểm tra key…" } : app.keyStatus;
+    const models = app.keyModels[id];
+    if (models === undefined) return { phase: "checking", text: "Đang kiểm tra key…" };
+    if (models === null) return { phase: "bad", text: "Chưa đọc được key. Kiểm tra lại key hoặc mạng." };
+    return { phase: "ok", text: `Hợp lệ · ${models.length} model` };
   };
   const keyHouses = PROVIDER_IDS.filter((id) => (id === "groq" ? app.key : (app.houseKeys[id] ?? "")).trim()).map((id) => PROVIDERS[id].label);
 
@@ -1273,68 +1276,12 @@ export function Studio() {
           </p>
         )}
         {!(runDoor.open && payByRoom) && (
-        <label className="grid gap-1 text-sm text-muted" htmlFor="key">
-          Groq API key
-          <span className="flex gap-2" data-tour="key-input">
-            <input
-              id="key"
-              className={FIELD}
-              type={showKey ? "text" : "password"}
-              placeholder="gsk_… chỉ lưu trên máy này"
-              autoComplete="off"
-              autoCapitalize="off"
-              spellCheck={false}
-              value={app.key}
-              onChange={(event) => app.setKey(event.target.value)}
-            />
-            <IconButton label="Dán API key" onClick={() => void pasteKey()}>
-              <Icon slot="ui.paste" />
-            </IconButton>
-            <IconButton label={showKey ? "Ẩn API key" : "Hiện API key"} onClick={() => setShowKey((value) => !value)}>
-              {showKey ? <Icon slot="ui.hide" /> : <Icon slot="ui.eye" />}
-            </IconButton>
-          </span>
-          {app.keyStatus.phase !== "idle" && (
-            <span
-              role="status"
-              className={
-                "flex items-start gap-1.5 text-xs " +
-                (app.keyStatus.phase === "ok"
-                  ? "text-success"
-                  : app.keyStatus.phase === "bad"
-                    ? "text-danger"
-                    : app.keyStatus.phase === "warn"
-                      ? "text-warning"
-                      : "text-muted")
-              }
-            >
-              {app.keyStatus.phase === "checking" && <Icon slot="ui.busy" className="mt-0.5 size-3.5 shrink-0 animate-spin" />}
-              {app.keyStatus.phase === "ok" && <Icon slot="st.ok" className="mt-0.5 size-3.5 shrink-0" />}
-              {app.keyStatus.phase === "warn" && <Icon slot="st.warn" className="mt-0.5 size-3.5 shrink-0" />}
-              {app.keyStatus.phase === "bad" && <Icon slot="st.error" className="mt-0.5 size-3.5 shrink-0" />}
-              <span>{app.keyStatus.text}</span>
-            </span>
-          )}
-        </label>
+          <KeyRing
+            values={{ ...app.houseKeys, groq: app.key }}
+            check={keyCheck}
+            onChange={(id, value) => (id === "groq" ? app.storeGroqKey(value) : app.setHouseKey(id, value))}
+          />
         )}
-        {!(runDoor.open && payByRoom) &&
-          PROVIDER_IDS.filter((id) => id !== "groq").map((id) => (
-            <label key={id} className="grid gap-1 text-sm text-muted" htmlFor={`key-${id}`}>
-              Key {PROVIDERS[id].label}
-              <input
-                id={`key-${id}`}
-                className={FIELD}
-                type={showKey ? "text" : "password"}
-                placeholder={clientKeyPlaceholder(id)}
-                autoComplete="off"
-                value={app.houseKeys[id] ?? ""}
-                onChange={(event) => app.setHouseKey(id, event.target.value)}
-              />
-              <span className="text-xs">
-                Lấy key ở {PROVIDERS[id].keyPage}. Chỉ lưu trên máy này. Cách lấy: mục Hướng dẫn, «Lấy key».
-              </span>
-            </label>
-          ))}
         <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
           <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao: model và nhận dạng giọng</summary>
           <div className="grid gap-3 pt-2">
@@ -2017,13 +1964,6 @@ function jump(video: HTMLVideoElement | null, start: number) {
   void video.play().catch(() => {});
 }
 
-function IconButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
-  return (
-    <button type="button" aria-label={label} className="inline-flex min-tap w-11 shrink-0 items-center justify-center rounded-[var(--radius-ctl)] border border-line [&_svg]:size-5" onClick={onClick}>
-      {children}
-    </button>
-  );
-}
 
 /** Key riêng của khách: không cần giá vào/ra, chỉ ghi model làm được việc gì. */
 function ownModelPrice(_board: GroqBoard | null, id: string) {
