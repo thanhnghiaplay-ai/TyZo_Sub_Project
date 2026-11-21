@@ -4,6 +4,7 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { ToastHost } from "@/components/toast";
 import { ConfirmHost } from "@/components/confirm-dialog";
 import { UpdateBanner } from "@/components/update-banner";
+import { StaleBuildGuard } from "@/components/stale-build-guard";
 import { OfflineBanner } from "@/components/offline-banner";
 import { IdleSignOut } from "@/components/idle-sign-out";
 import { ThemeProvider } from "@/components/ui/theme-context";
@@ -67,6 +68,7 @@ function RootDocument() {
       </head>
       <body>
         <PreviewHostBridge />
+        <StaleBuildGuard />
         <ThemeProvider theme={theme}>
           <AuthProvider>
             <OfflineBanner />

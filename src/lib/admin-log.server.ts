@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.30.2",
+    time: "17:04 21/11/2026",
+    area: "khac",
+    text: "v5.30.2, khách gặp màn «Đã xảy ra lỗi: Failed to fetch dynamically imported module …/assets/routes-DsYV_aeZ.js» ngay sau đẩy chính thức v5.30.1. Tệp đó có trên web (đúng mã bản v5.30.1, trả 200), nên lỗi xảy ra lúc Vercel đổi bản (HTML mới, tệp chưa tới) hoặc mạng chập; tải lại là hết. Sửa: stale-build.ts (thuần, có test) nhận lỗi tải tệp bản cũ (Chrome, Firefox, Safari) và claimAutoReload (sessionStorage tyzo_stale_reload_at, cách nhau ít nhất 30 giây, chặn lặp vô hạn khi lỗi do mạng). AppErrorComponent: lỗi này thì tự tải lại một lần, tiêu đề «Web vừa có bản mới», vẫn hiện câu lỗi gốc; mọi lỗi có nút «Tải lại trang». StaleBuildGuard ở __root nghe vite:preloadError, tự tải lại một lần. Kiểm trên dev: chặn tệp tsr-split lần đầu → trang tự tải lại và hiện bình thường. Không chạy được vite preview trong máy thử (thiếu pglite.data trong gói hàm).",
+  },
+  {
     version: "5.30.1",
     time: "16:45 21/11/2026",
     area: "khac",
