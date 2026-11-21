@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.20.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.20.0 trên `work`: công cụ phụ đề AI theo yêu cầu; xác nhận quyền mỗi tệp; gộp thể loại 18+; điều khoản bản quyền. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.20.1 (đẩy chính thức 21/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.20.1 trên `work`: điện thoại không lệch khung ở đầu trang và quanh thanh dưới (sau v5.20.0: công cụ phụ đề AI, xác nhận quyền mỗi tệp). Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
