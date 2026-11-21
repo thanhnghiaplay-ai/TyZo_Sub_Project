@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.31.1 trên `work`**; `main` v5.31.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.31.1 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.31.1**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.31.1. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1383 pass, vite build xong.
 - **v5.31.1**: Người chỉ mua Token dịch nay chạy được trả theo lượt và xuất file (trước bị coi là dùng thử); chưa chọn gói thì mở đúng bước chọn gói. tsc sạch, test 191 + 1383 pass. Phát hiện khi thử trên bản chính thức.
 - **Đẩy chính thức v5.31.0**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.31.0 (gồm v5.30.3). Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1381 pass, vite build xong. Chủ đã xác nhận tab Lượt dịch hiện đúng với phiếu thật. Còn chờ xác nhận: tab Ví sau khi tắt bàn phím (v5.30.3) trên Android thật.
 - **v5.31.0**: Lịch sử đầy đủ trong trang tài khoản: lượt dịch từ phiếu (tệp, thời lượng, model, giữ/trừ/trả lại, trạng thái), lượt thuê phòng ghi trên máy, gói Token còn/hạn, mua và thuê. tsc sạch, test 191 + 1381 pass. Chưa xem với phiếu thật.
