@@ -96,6 +96,7 @@ export const Route = createFileRoute("/api/room-deepgram")({
           outcome = await chargeWith({
             sql,
             book,
+            provider: "deepgram",
             path,
             model: parsed.model,
             chars: parsed.chars,

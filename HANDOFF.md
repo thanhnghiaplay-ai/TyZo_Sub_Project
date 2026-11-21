@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.31.3 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.32.0 trên `work`**; `main` v5.31.3 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.32.0**: Ô «Lời hay lỗ» đầu trang Doanh thu + sổ tiền phải trả từng nhà × model (provider_spend, ghi lúc gọi ở mọi cửa key phòng), cảnh báo lỗ nếu khách dùng hết Token còn hạn. tsc sạch, test 191 + 1395 pass. Sổ từng nhà bắt đầu từ lúc deploy; trước đó ước theo Token.
 - **Đẩy chính thức v5.31.3**: Chủ nói «đẩy chính thức» và «không cần thử nữa, chỉ thử khi tôi yêu cầu». `main` kéo thẳng lên v5.31.3. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1390 pass, vite build xong. Chưa thử trên web thật: xuất SRT khi chỉ có Token, trau chuốt kèm yêu cầu thêm, dịch lại bằng model khác. Tài khoản thử `claude.thunghiem.tyzo@gmail.com` chờ Chủ xóa.
 - **v5.31.3**: Sửa chữ tiến độ «Alibaba đang nhận dạng» khi dùng nhà khác. tsc sạch, test pass.
 - **Đẩy chính thức v5.31.2**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.31.2. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1390 pass, vite build xong.

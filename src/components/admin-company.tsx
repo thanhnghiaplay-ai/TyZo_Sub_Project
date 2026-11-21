@@ -5,6 +5,7 @@ import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney, dong } from "@/lib/money-format";
+import { ProfitVerdict } from "@/components/profit-verdict";
 import { COST_CATEGORIES, bucketTotals, categoryLabel, spanLabel } from "@/lib/money-extra";
 import { RevenueExtra } from "@/components/revenue-extra";
 
@@ -140,6 +141,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         ))}
       </div>
       <p className="text-xs text-muted">Các số bên dưới cộng {spanLabel(span)}.</p>
+      {owner && <ProfitVerdict span={span} />}
       {span === "day" && ready && (
         <p className="text-xs text-muted">Hôm nay ({vnDay()}): thu {dong(bucketTotals(points, vnDay()).revenue)} · chi {dong(bucketTotals(points, vnDay()).cost)}</p>
       )}

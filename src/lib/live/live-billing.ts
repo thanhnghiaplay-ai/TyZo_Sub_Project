@@ -37,7 +37,23 @@ export function createLiveBilling(sql: Sql, env: LiveBillingEnv): LiveBilling {
     },
     charge: ({ userId, ticketId, cost }) => chargeTokenWith(sql, ticketId, userId, cost),
     async close({ userId, ticketId, failed }) {
-      await closeTokenWith(sql, ticketId, userId, failed);
+      const closed = await closeTokenWith(sql, ticketId, userId, failed);
+      // Tiền phải trả nhà cung cấp cho cả phiên (v5.32.0): Token đã trừ quy lại giá gốc. Ghi một lần lúc đóng phiên.
+      if (closed && closed.charged > 0) {
+        try {
+          const { turboBasePerSecond } = await import("../token-cost.server.ts");
+          const { loadPriceBook } = await import("../run-board.server.ts");
+          const { recordSpendWith } = await import("../provider-spend.ts");
+          const { asrHouse } = await import("../sub/asr-house.ts");
+          const turbo = await turboBasePerSecond(sql);
+          const book = await loadPriceBook(sql);
+          const rows = await sql<{ asr_model: string }>`select asr_model from run_tickets where id = ${ticketId} and user_id = ${userId}`;
+          const model = rows[0]?.asr_model || "dich-truc-tiep";
+          if (turbo && book) await recordSpendWith(sql, { provider: asrHouse(model) ?? "khac", model, baseVnd: closed.charged * turbo, rate: book.rate });
+        } catch {
+          /* ghi sổ hỏng không làm hỏng phiên */
+        }
+      }
     },
   };
 }

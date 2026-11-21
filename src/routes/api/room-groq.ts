@@ -110,6 +110,7 @@ export const Route = createFileRoute("/api/room-groq")({
           outcome = await chargeWith({
             sql,
             book,
+            provider: "groq",
             path,
             model: parsed.model,
             chars: parsed.chars,

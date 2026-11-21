@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.32.0",
+    time: "19:44 21/11/2026",
+    area: "khac",
+    text: "v5.32.0, Chủ cần nhìn một lần biết lời hay lỗ, vì nhiều nhà cung cấp phải trả riêng. Trước: giá vốn = Token đã trừ × giá Turbo hiện hành, gộp mọi nhà, không đối chiếu được hóa đơn. Làm: migration 0030 provider_spend (ngày giờ VN × nhà × model: số lần gọi, giá gốc đồng, USD; không có tài khoản khách). provider-spend.ts: recordSpendWith (không bao giờ ném lỗi), spendSummaryWith, verdict. Ghi ở mọi cửa tính tiền bằng key phòng: run-gate chargeWith (chat, nhận dạng Groq, đọc giọng; ghi cả khi phiếu hết phần giữ vì nhà vẫn tính tiền), model-call (provider của cửa), room-groq, room-deepgram, room-asr chargeRoomAsr (AssemblyAI, Alibaba, Speechmatics, Soniox, Deepgram link; nhà theo asrHouse), live-billing (đóng phiên: Token đã trừ quy lại giá gốc). profit-room.ts getProfitView (chỉ Admin): tiền vào (nap) − phải trả các nhà (sổ mới; phần trước ngày có sổ ước theo Token × Turbo như cũ) − hoa hồng − chi phí ghi tay; Token đã bán còn hạn chưa dùng (giá gốc nếu dùng hết); Token hết hạn chưa dùng trong kỳ. profit-verdict.tsx ở đầu trang Doanh thu: ĐANG LỜI / ĐANG LỖ / ĐANG LỜI NHƯNG CÓ THỂ LỖ (nếu khách dùng hết Token còn hạn), bảng từng nhà USD · đồng · số lần, bấm xem từng model. Không thu thêm dữ liệu khách, không sửa điều khoản. Kiểm PGLite và dev 412 px. Giới hạn: USD theo giá niêm yết, chưa gồm thuế, giảm giá, tỷ giá ngân hàng; lượt lỗi phía nhà cung cấp mà nhà vẫn tính tiền chưa ghi được.",
+  },
+  {
     version: "5.31.3",
     time: "19:07 21/11/2026",
     area: "khac",

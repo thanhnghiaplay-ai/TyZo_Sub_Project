@@ -33,6 +33,10 @@ export async function chargeRoomAsr(input: { userId: string; ticketId: string; s
   if (!live) return;
   const bare = { rate: live.rate, rows: input.rows, desk: { markup: 0, custom: {} } };
   const base = asrCost(bare, input.model, input.seconds) ?? 0;
+  // Tiền phải trả nhà nhận dạng (provider-spend.ts). Nhà tra theo model, không viết riêng nhà nào.
+  const { recordSpendWith } = await import("@/lib/provider-spend");
+  const { asrHouse } = await import("@/lib/sub/asr-house");
+  await recordSpendWith(sql, { provider: asrHouse(input.model) ?? "khac", model: input.model, baseVnd: base, rate: live.rate });
   const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${input.userId}`;
   if (unit[0]?.unit === "token") {
     const { giayForBaseCost } = await import("@/lib/token-math");

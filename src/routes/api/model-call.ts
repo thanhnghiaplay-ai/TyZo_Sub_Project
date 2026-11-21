@@ -114,6 +114,7 @@ export const Route = createFileRoute("/api/model-call")({
             sql,
             book,
             unitBook: groq,
+            provider,
             path,
             model: parsed.model,
             chars: parsed.chars,

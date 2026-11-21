@@ -4,6 +4,7 @@ import { chargeTicketWith, ticketLive } from "./run-ticket.ts";
 import { tokensForBase, TURBO_ASR } from "./token-math.ts";
 import { chargeTokenWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
 import { randomBytes } from "node:crypto";
+import { recordSpendWith } from "./provider-spend.ts";
 
 export const MAX_COMPLETION_TOKENS = 8192;
 
@@ -53,6 +54,8 @@ export async function chargeWith(input: {
   cap: number;
   /** Sổ giá dùng để quy ra Token dịch (phải có Whisper Turbo của Groq). Thiếu = `book` (cửa Groq). Nhà khác phải truyền bảng Groq. */
   unitBook?: PriceBook;
+  /** Nhà cung cấp của lần gọi, để ghi tiền phải trả từng nhà (provider-spend.ts). */
+  provider?: string;
   send: () => Promise<Response>;
 }): Promise<GateOutcome> {
   const { sql, book, path, model, userId } = input;
@@ -89,6 +92,7 @@ export async function chargeWith(input: {
     }
     await chargeTokenWith(sql, id, userId, tokens);
     await closeTokenWith(sql, id, userId, false);
+    await recordSpendWith(sql, { provider: input.provider ?? "groq", model, baseVnd: base, rate: book.rate });
     return { kind: "pass", response };
   }
 
@@ -127,6 +131,8 @@ export async function chargeWith(input: {
     cost = path === "/audio/transcriptions" ? asrCost(book, model, 0) : chatCost(book, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS);
     base = path === "/audio/transcriptions" ? asrCost(bare, model, 0) ?? 0 : chatCost(bare, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS) ?? 0;
   }
+  // Tiền phải trả nhà cung cấp: giá gốc thật của lần gọi thành công, kể cả khi phiếu đã hết phần giữ.
+  if (base > 0) await recordSpendWith(sql, { provider: input.provider ?? "groq", model, baseVnd: base, rate: book.rate });
   if (cost && cost > 0) {
     const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${userId}`;
     if (unit[0]?.unit === "token") {
