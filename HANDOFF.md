@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.25.0 trên `work`** (điều khoản `2026-11-21.2`), `main` vẫn v5.22.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.1`.
+Cập nhật 21/11/2026. **v5.25.0 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`. Điều khoản `2026-11-21.1`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.25.0**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.25.0 (gồm đợt 3 và đợt 4). Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1344 pass, vite build xong. Migration 0029 (`usage_tally`) chạy khi deploy. Khách sẽ được hỏi đồng ý lại điều khoản `2026-11-21.2` một lần.
 - **v5.25.0**: đợt 4 bước 2, đếm ẩn danh. Migration 0029 `usage_tally` (ngày, chủ đề, lựa chọn, số lần; không cột tài khoản), `usage-tally.ts` + `usage-tally-room.ts` (`recordTally` cần đăng nhập, không ghi userId), máy khách đếm khi trả lời câu hỏi lần đầu và khi đổi cách trả đã nhớ. Admin → Tổng quan (chỉ Chủ): khối «Khách dùng thế nào» (tài khoản thuê phòng / Token / cả hai / chưa trả từ dữ liệu đã có + số đếm theo khoảng ngày). Điều khoản `2026-11-21.2` (mục 5), khách đồng ý lại một lần. tsc sạch, eslint 0 lỗi, test 191 + 1344 pass, vite build xong. Thử trình duyệt với tài khoản Chủ thử trên PGLite. CHƯA chạy trên Neon thật. Đợt 1–4 xong.
 - **v5.24.0**: đợt 4 bước 1. Câu hỏi lần đầu «Bạn dùng TyZo Sub chủ yếu để làm gì?» (`first-ask.ts`, `first-ask-card.tsx`), lưu máy `tyzo_use`, có Bỏ qua; Học ngoại ngữ tắt Thuyết minh và báo rõ. tsc sạch, eslint 0 lỗi, test 191 + 1339 pass. Chụp 412x720 sáng/tối. Còn bước 2: đếm ẩn danh (bảng đếm mới + khối Admin từ dữ liệu đã có) và sửa điều khoản.
 - **v5.23.0**: đợt 3 sắp lại trang khách. Nút chính trang chủ theo trạng thái (`home-action.ts`, có test): Thêm key / Gia hạn / Mua Token dịch / Chọn cách trả, có dòng vì sao (chưa chọn tệp, mất mạng, bảo trì). Thanh dưới 4 việc có chữ (Trang chủ, Công cụ, Ví, Menu; `showLabels` ở `floating-dock.tsx`, Admin giữ cũ); bỏ nút Trực tiếp (đã có ô đầu trang chủ và Menu). tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1334 pass, vite build xong. Chụp 412x720, 412x640 sáng/tối, bật/tắt hiệu ứng, 800x400, 768x1024. Chưa bấm máy thật, chưa thử trạng thái có key thật và bảo trì thật. Đã làm: màn theo trạng thái ở trang chủ, thanh dưới. Cố ý không làm: đổi phòng dịch (sau khi dịch) theo trạng thái. Còn đợt 4.
