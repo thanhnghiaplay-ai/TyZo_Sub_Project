@@ -46,6 +46,7 @@ import { ExportMenu } from "@/components/export-menu";
 import { CueEditor } from "@/components/cue-editor";
 import { useCaps, useWakeLock } from "@/components/use-caps";
 import { MoneyCard, MoneyEstimate, useMoney } from "@/components/money-card";
+import { askConfirm } from "@/lib/confirm";
 import { PayStatusBar } from "@/components/pay-status-bar";
 import { homeAction } from "@/lib/home-action";
 import { readUse, rememberUse, shouldAsk, presetForUse, type UseAnswer } from "@/lib/first-ask";
@@ -849,6 +850,22 @@ export function Studio() {
     setSheetOpen(true);
   }, [app.reviewHold]);
 
+  /** Dịch tiếp sau khi xem bảng nhân vật: đóng tab công cụ trên điện thoại đứng để thấy bản dịch chạy. */
+  const continueAfterReview = () => {
+    if (isStudioSheet()) setSheetOpen(false);
+    app.approveBible();
+  };
+  /** Dừng lượt đang chạy luôn hỏi lại: lỡ tay bấm thì mất công nhận dạng. */
+  const askStop = async () => {
+    const ok = await askConfirm({
+      title: "Dừng lượt này?",
+      text: "Phần đã nhận dạng được giữ lại để bấm Tiếp tục làm nốt, không gửi lại. Chỉ trừ phần đã chạy; phần giữ thừa được trả lại.",
+      confirmLabel: "Dừng",
+      cancelLabel: "Chạy tiếp",
+      danger: true,
+    });
+    if (ok) app.cancel();
+  };
   const showRoomPrice = runDoor.open && payByRoom;
   // Số dư Token dịch đọc một lần: thanh số dư ở đầu màn hình đầu và ô ước tính trên nút bắt đầu dùng chung.
   const money = useMoney({ active: runDoor.ready && runDoor.open, asr: app.asrModel, chat: app.modelId, seconds: thumb.seconds ?? 0, narration: narration.enabled });
@@ -1088,7 +1105,7 @@ export function Studio() {
         </>
         )}
         {app.reviewHold && (
-          <button type="button" disabled={!online} className="min-tap shrink-0 rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40" onClick={app.approveBible}>
+          <button type="button" disabled={!online} className="min-tap shrink-0 rounded-[var(--radius-ctl)] bg-accent px-3 text-sm font-semibold text-ink disabled:opacity-40" onClick={continueAfterReview}>
             Dịch tiếp
           </button>
         )}
@@ -1112,7 +1129,7 @@ export function Studio() {
       {!hero && payByRoom && (
         <MoneyCard active asr={app.asrModel} chat={app.modelId} seconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0} narration={narration.enabled} />
       )}
-      <StepsBar report={app.stages} />
+      <StepsBar report={app.stages} waiting={app.reviewHold ? "xem và sửa bảng nhân vật nếu cần, rồi bấm Dịch tiếp" : undefined} />
       {afterOpen && !hero && !app.running && (
         <div className="grid shrink-0 gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 text-sm">
           <p>Dịch xong. Trau chuốt, dịch lại bằng model khác (giữ nhận dạng), hoặc bỏ qua.</p>
@@ -1276,7 +1293,24 @@ export function Studio() {
               <span className="studio-step-count" aria-label={`Bước ${step.index} trên ${step.total}`}>
                 {step.index}/{step.total}
               </span>
-              {step.last ? (
+              {step.last && app.reviewHold ? (
+                <>
+                  {/* Lượt đang dừng chờ xem bảng nhân vật: nút chính là Dịch tiếp (tự đóng tab), Hủy nhỏ bên cạnh và hỏi lại. */}
+                  <button
+                    type="button"
+                    data-tour="run"
+                    data-step-continue
+                    disabled={!online}
+                    className="min-tap flex-1 rounded-[var(--radius-ctl)] bg-accent font-semibold text-ink disabled:opacity-40"
+                    onClick={continueAfterReview}
+                  >
+                    Dịch tiếp
+                  </button>
+                  <button type="button" data-step-stop className="min-tap shrink-0 rounded-[var(--radius-ctl)] border border-danger bg-raised px-3 text-sm font-semibold text-danger" onClick={() => void askStop()}>
+                    Hủy
+                  </button>
+                </>
+              ) : step.last ? (
                 <button
                   type="button"
                   data-tour="run"
@@ -1284,7 +1318,7 @@ export function Studio() {
                   title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
                   className={"min-tap flex-1 rounded-[var(--radius-ctl)] font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
                   onClick={() => {
-                    if (app.running) app.cancel();
+                    if (app.running) void askStop();
                     else {
                       if (isStudioSheet()) setSheetOpen(false);
                       void app.start();
@@ -1303,6 +1337,11 @@ export function Studio() {
         })()}
         </div>
       <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
+        {app.running && (
+          <p data-model-locked className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
+            Lượt đang chạy dùng model đã chọn lúc bấm chạy. Đổi model ở đây thì áp dụng cho lần dịch lại sau.
+          </p>
+        )}
         {runDoor.ready && runDoor.open && payByRoom && (
           <p className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
             Đang trả theo lượt nên không cần dán key. Cách trả và ước tính Token ở bước cuối «{TOOL_NAME.run}».
@@ -1842,6 +1881,7 @@ export function Studio() {
             </p>
             {payByRoom && (
               <TurnPackList
+                running={app.running}
                 videoRef={app.videoRef}
                 fileSeconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0}
                 narration={narration.enabled}

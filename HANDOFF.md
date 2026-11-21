@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.26.0 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`. Điều khoản `2026-11-21.1`.
+Cập nhật 21/11/2026. **v5.27.0 trên `work`**; `main` v5.26.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.27.0**: Luồng dịch bản nhỏ: bước 5/5 lúc chờ xem bảng nhân vật có «Dịch tiếp» (tự đóng tab), Hủy hỏi lại, thanh tiến độ ghi đang chờ, câu giá ghi đã giữ, hộp Làm lại đúng Token dịch, báo đổi model lúc đang chạy áp dụng lần sau. tsc sạch, eslint 0 lỗi, test 191 + 1355 pass. CHƯA bấm thử lúc chờ thật (máy thử không gọi được nhà nhận dạng). Còn 4 bước Chủ chốt: đổi «Chủ» → Admin, trau chuốt, Admin sửa lệnh, chia hai phần.
 - **Đẩy chính thức v5.26.0**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.26.0. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1349 pass, vite build xong. Chủ không cần tự chuyển dự phòng thư (gửi bằng SMTP cá nhân).
 - **v5.26.0**: Thư — còn lại mục 5. Đổi mật khẩu trong trang tài khoản gửi thư «Mật khẩu đã đổi» (hook `after` ở `auth/server.ts`, logic `auth/changed-letter.ts` có test), vẫn theo công tắc changedOn. Kiểm PGLite: sai mật khẩu cũ không gửi, đúng thì nhận đúng email. CHƯA nhận thư thật. Không sửa điều khoản. Mục 1–4 của danh sách thư là việc của Chủ (Resend, DNS, hộp thư thật). tsc sạch, eslint 0 lỗi, test 191 + 1349 pass.
 - **Đẩy chính thức v5.25.0**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.25.0 (gồm đợt 3 và đợt 4). Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1344 pass, vite build xong. Migration 0029 (`usage_tally`) chạy khi deploy. Khách sẽ được hỏi đồng ý lại điều khoản `2026-11-21.2` một lần.

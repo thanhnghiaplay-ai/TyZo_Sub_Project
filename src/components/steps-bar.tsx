@@ -15,7 +15,8 @@ const NOTCHES = [5, 20, 90];
  * Dòng thời gian tiến trình: một thanh liền chạy từ trái sang phải, có vạch ngăn bốn giai đoạn,
  * phần trăm tổng ở bên phải, và tên giai đoạn kèm số đếm ngay bên dưới.
  */
-export function StepsBar({ report }: { report: StageReport | null }) {
+/** waiting: có chữ thì lượt đang dừng chờ khách (ví dụ xem bảng nhân vật), không ghi «Đang: Dịch» cho khỏi hiểu lầm. */
+export function StepsBar({ report, waiting }: { report: StageReport | null; waiting?: string }) {
   if (!report) return null;
   const label = report.stages.map((s) => `${s.label}: ${s.text || (s.state === "wait" ? "chờ" : s.state === "done" ? "xong" : "")}`).join("; ");
   const current = report.stages.find((s) => s.id === report.active);
@@ -39,11 +40,17 @@ export function StepsBar({ report }: { report: StageReport | null }) {
           {report.percent}%
         </span>
       </div>
-      {current && (
-        <p className="text-xs text-muted" aria-hidden>
-          Đang: <span className="font-semibold text-accent">{current.label}</span>
-          {current.text ? ` · ${current.text}` : ""}
+      {waiting ? (
+        <p className="text-xs text-muted" data-steps-waiting>
+          <span className="font-semibold text-accent">Đang chờ bạn</span> · {waiting}
         </p>
+      ) : (
+        current && (
+          <p className="text-xs text-muted" aria-hidden>
+            Đang: <span className="font-semibold text-accent">{current.label}</span>
+            {current.text ? ` · ${current.text}` : ""}
+          </p>
+        )
       )}
       <ol className="grid grid-cols-4 gap-1.5">
         {report.stages.map((stage) => (

@@ -12,7 +12,10 @@ export function TurnPackList({
   narration,
   onLocked,
   onPick,
+  running = false,
 }: {
+  /** Lượt đang chạy: câu giá nói đã giữ, không nói «giữ trước khi chạy». */
+  running?: boolean;
   videoRef: RefObject<HTMLVideoElement | null>;
   /** Thời lượng đọc từ tệp, cùng nguồn với thẻ Token phía trên. */
   fileSeconds?: number;
@@ -98,7 +101,7 @@ export function TurnPackList({
             <span className="text-sm font-semibold">{pack.name}</span>
             {pack.note && <span className="text-sm text-muted">{pack.note}</span>}
             <span className="text-xs text-muted">{jobs.join(" · ")}</span>
-            <span className="text-sm">{seconds > 0 ? customerVisiblePrice(price?.total ?? null, price?.hold ?? 0) : "Chưa có tệp"}</span>
+            <span className="text-sm">{seconds > 0 ? customerVisiblePrice(price?.total ?? null, price?.hold ?? 0, running) : "Chưa có tệp"}</span>
           </button>
         );
       })}

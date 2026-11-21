@@ -132,8 +132,11 @@ describe("Bước 6.3 — mỗi tab một phần", () => {
     assert.equal(source.includes('{toolTab === "phim" &&'), false);
   });
 
-  it("một nút Dịch tiếp, khoảng trống nằm ở Kiểm tra", () => {
-    assert.equal(source.split("Dịch tiếp").length - 1, 1);
+  it("hai nút Dịch tiếp (đầu trang và bước cuối) cùng một đường, khoảng trống nằm ở Kiểm tra", () => {
+    // v5.27.0: thêm nút ở bước cuối của tab để khỏi phải đóng tab; cả hai gọi continueAfterReview.
+    const buttons = source.match(/>\s*Dịch tiếp\s*</g) ?? [];
+    assert.equal(buttons.length, 2);
+    assert.equal(source.split("onClick={continueAfterReview}").length - 1, 2);
     const check = source.slice(source.indexOf('id="tool-check"'));
     assert.match(check, /Dò khoảng trống/);
     const workspace = source.slice(

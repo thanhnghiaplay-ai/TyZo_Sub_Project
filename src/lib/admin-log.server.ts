@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.27.0",
+    time: "16:06 21/11/2026",
+    area: "khac",
+    text: "v5.27.0, luồng dịch bản nhỏ (Chủ chốt thứ tự 1–5, 21/11/2026). (1) studio.tsx: bước cuối tab (step.last) khi app.reviewHold có nút «Dịch tiếp» (continueAfterReview: đóng tab nếu isStudioSheet rồi approveBible) và nút «Hủy» nhỏ; nút Dịch tiếp đầu trang dùng cùng continueAfterReview. (2) askStop: mọi nút Hủy lượt đang chạy ở bước cuối hỏi lại bằng askConfirm (danger) trước app.cancel; lệnh «Dừng đang chạy» ở Ctrl K giữ như cũ. (3) StepsBar có prop waiting: lúc reviewHold ghi «Đang chờ bạn · …» thay «Đang: Dịch · 0/n câu». (4) customerVisiblePrice(total, hold, running): đang chạy thì ghi đã giữ, TurnPackList nhận running. (5) Hộp Làm lại: trả theo lượt ghi trừ thêm Token dịch cho nhận dạng và dịch, gợi ý Dịch lại bằng model khác; key riêng ghi nhà cung cấp tính phí key. (6) Cài đặt dịch khi đang chạy: dòng báo model mới áp dụng cho lần dịch lại sau (modelSig chốt lúc bấm chạy). studio-layout.test: «một nút Dịch tiếp» đổi thành hai nút cùng một đường. Test mới review-continue.test.ts. CHƯA bấm thử lúc chờ thật (máy thử không gọi được nhà nhận dạng).",
+  },
+  {
     version: "5.26.0",
     time: "13:52 21/11/2026",
     area: "quyen",

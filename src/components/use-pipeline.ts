@@ -833,7 +833,9 @@ export function usePipeline() {
     }
     void askConfirm({
       title: "Xóa phụ đề và làm lại?",
-      text: "Xóa phụ đề hiện tại và nhận dạng lại từ đầu? Việc này sẽ tính phí Groq thêm một lần.",
+      text: roomPayRef.current
+        ? "Xóa phụ đề hiện tại và nhận dạng lại từ đầu? Lần chạy lại trừ thêm Token dịch cho cả nhận dạng lẫn dịch. Muốn đổi model dịch mà giữ nhận dạng thì dùng Dịch lại bằng model khác."
+        : "Xóa phụ đề hiện tại và nhận dạng lại từ đầu? Nhà cung cấp tính phí key của bạn thêm một lần cho cả nhận dạng lẫn dịch.",
       confirmLabel: "Xóa và làm lại",
       danger: true,
     }).then((ok) => {
