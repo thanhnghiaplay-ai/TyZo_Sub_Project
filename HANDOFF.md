@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.30.2 trên `work`**; `main` v5.30.1 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.30.2 trên `work` và `main`** (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.30.2**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.30.2. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1372 pass, vite build xong.
 - **v5.30.2**: Màn lỗi «Failed to fetch dynamically imported module» sau khi đổi bản: tự tải lại một lần (stale-build.ts, StaleBuildGuard), màn lỗi có nút Tải lại trang. Thử trên dev: chặn tệp lần đầu → tự tải lại, vào được. tsc sạch, test pass.
 - **Đẩy chính thức v5.30.1**: Chủ nói «gộp lại và đẩy chính thức». `main` kéo thẳng lên v5.30.1. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1369 pass, vite build xong.
 - **v5.30.1**: Sửa «không tìm thấy tài khoản và lịch sử»: mục menu «Tài khoản và lịch sử» ở mọi trang (trang khác dẫn /#vi), khối lịch sử luôn hiện, Hướng dẫn đúng tên. tsc sạch, test 191 + 1369 pass, bấm thử 412 px.
