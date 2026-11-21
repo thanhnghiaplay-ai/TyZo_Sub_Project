@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.21.0",
+    time: "21/11/2026",
+    area: "khac",
+    text: "v5.21.0, đợt 1 sắp lại trang khách (theo cách nghĩ huongdan.txt A–E). (1) pay-status.ts (thuần, có test): trạng thái cách trả theo lựa chọn đã nhớ (localStorage tyzo_pay), gói thuê phòng còn hạn/dùng thử/hết, key khách theo bảng nhà (PROVIDER_IDS), Token còn/hết, cửa trả theo lượt mở/đóng, đọc tài khoản lỗi. PayStatusBar thay thanh số dư và hai chip Key của tôi/Nhập key: chưa chọn thì hai cách ngang hàng; thuê phòng chưa key thì Lấy key (/huong-dan#key-groq), Thêm key, Dùng Token lần này (không đổi lựa chọn đã nhớ), Đổi cách trả; hết hạn thì Gia hạn; hết Token thì Mua Token hoặc Dùng key. Sửa câu «đang dùng key của bạn» hiện cả khi chưa có key. Cửa trả theo lượt bảo trì thì lùi về key và báo (toast). Mọi nút đổi cách trả qua choosePay. useMoney có failed + Thử lại. (2) DisplayToggle thành một nút Hiển thị mở bảng có chữ (Giao diện, Khoảng cách, Cỡ chữ, Hiệu ứng, Màu nhấn); AccentPicker có chế độ inline để không chồng bảng; bảng dừng trên thanh dưới, đóng khi bấm ngoài hoặc Esc. Dùng chung ở phòng dịch, Hướng dẫn, Dịch trực tiếp. (3) dock-scrim cao theo vùng đệm từng hướng màn (đứng 10rem, ngang và máy tính bảng 6rem) để nút cuối không bị che khi cuộn hết (đo 800x400, 412x720, 768x1024). Kiểm 12 tổ hợp (đứng/ngang/máy tính x sáng/tối x bật/tắt hiệu ứng): không tràn ngang, không lỗi console. Không đổi dịch vụ, không sửa điều khoản. CHƯA bấm thử máy thật.",
+  },
+  {
     version: "5.20.1",
     time: "21/11/2026",
     area: "khac",

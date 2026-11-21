@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.21.0** (nhánh `ccr-bc99847a-xy1bgk`, chưa lên `work`/`main`): đợt 1 sắp lại trang khách. Dòng trạng thái cách trả (`pay-status.ts`, `pay-status-bar.tsx`), nhớ cách trả, nhánh thuê phòng chưa key; nút Hiển thị gom 5 nút đầu trang; nền mờ sau thanh dưới theo hướng màn. tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1326 pass, build xong. Kiểm 12 tổ hợp màn. Còn đợt 2–4 (BANG_DIEU «Ý đã nêu»).
 - **Đẩy chính thức v5.20.1**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.20.1.
 - **v5.20.1**: sửa lệch khung điện thoại. Hàng nút đầu trang xuống dòng (không tràn 30 px); `.dock-scrim` mờ dần sau thanh dưới để nội dung cuộn không lộ quanh mép thanh. tsc, eslint, test sạch; chụp 412x720 sáng/tối.
 - **Đẩy chính thức v5.20.0**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.20.0; build xong. Migration 0027 (gộp thể loại) và 0028 (rights_consents) chạy khi deploy.
