@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from "react";
 import { askConfirm } from "@/lib/confirm";
 import { addressLock } from "@/lib/sub/text";
 import { contextBlock, makePolishCall, ROOM_KEY } from "@/lib/sub/groq";
-import { polishAll, polishSummary, type PolishItem, type PolishOpts, type PolishResult } from "@/lib/sub/polish";
+import { cleanPolishRequest, polishAll, polishSummary, POLISH_REQUEST_MAX, type PolishItem, type PolishOpts, type PolishResult } from "@/lib/sub/polish";
 import { planPolish, polishConfirmText, type PolishPlan } from "@/lib/polish-estimate";
 import { acceptAll, acceptOne, buildReview, hasPending, rejectOne, revertAll, type PolishReview } from "@/lib/polish-review";
 import { getPolishModels, openPolishTicket, quotePolishChoices, type PolishChoiceView } from "@/lib/polish-room";
@@ -13,6 +13,8 @@ import { polishIdsFor } from "@/lib/polish-models";
 import { closeRoomTicket } from "@/lib/sub/room-ticket";
 import type { Seg } from "@/lib/sub/types";
 import type { Bible } from "@/lib/sub/text";
+
+const REQUEST_KEY = "tyzo_polish_request";
 
 export type PolishPhase = "idle" | "quoting" | "pick" | "running" | "review";
 
@@ -46,6 +48,25 @@ export function usePolish(host: Host) {
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [review, setReview] = useState<PolishReview | null>(null);
   const [error, setError] = useState("");
+  // Ô «Yêu cầu thêm» (v5.28.0): nhớ trên máy cho lần sau, gửi kèm lệnh trau chuốt, dưới luật cố định.
+  const [request, setRequestState] = useState(() => {
+    try {
+      return typeof localStorage === "undefined" ? "" : (localStorage.getItem(REQUEST_KEY) ?? "").slice(0, POLISH_REQUEST_MAX);
+    } catch {
+      return "";
+    }
+  });
+  const requestRef = useRef(request);
+  requestRef.current = request;
+  const setRequest = useCallback((value: string) => {
+    const next = value.slice(0, POLISH_REQUEST_MAX);
+    setRequestState(next);
+    try {
+      localStorage.setItem(REQUEST_KEY, next);
+    } catch {
+      /* máy chặn lưu: chỉ dùng cho lần này */
+    }
+  }, []);
   const hostRef = useRef(host);
   hostRef.current = host;
   const abort = useRef<AbortController | null>(null);
@@ -69,7 +90,7 @@ export function usePolish(host: Host) {
     ]
       .filter(Boolean)
       .join("\n\n");
-    const opts: PolishOpts = { genre: h.genre, context, language: h.target };
+    const opts: PolishOpts = { genre: h.genre, context, language: h.target, request: cleanPolishRequest(requestRef.current) };
     return { items, opts, plan: planPolish(items, opts) };
   }, []);
 
@@ -228,6 +249,8 @@ export function usePolish(host: Host) {
     note,
     picked,
     setPicked,
+    request,
+    setRequest,
     plan,
     progress,
     review,

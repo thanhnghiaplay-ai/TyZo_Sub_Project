@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.28.0",
+    time: "16:15 21/11/2026",
+    area: "khac",
+    text: "v5.28.0, trau chuốt nghe cứng (Chủ chốt bước 3). polish.ts: polishSystem bỏ «return unchanged, character for character» và «improve only what needs improving», thay bằng «Rewrite freely … keep the meaning»; thêm 6 cặp mẫu tiếng Việt cứng → tự nhiên (VI_POLISH_EXAMPLES, chỉ khi đích là tiếng Việt); CTX_BEFORE 8 → 15; PolishOpts.request (cleanPolishRequest, tối đa 300 ký tự) đặt sau ngữ cảnh, TRƯỚC hai luật cố định cuối (không câu từ chối, JSON đúng số câu). groq.ts makePolishCall: POLISH_TEMPERATURE 0.3 (bước dịch vẫn 0). use-polish.ts: request nhớ ở localStorage tyzo_polish_request, gửi qua build() nên ước Token lúc chạy đã tính độ dài; giá hiện ở danh sách model tính trước khi gõ nên có thể thấp hơn chút. polish-panel.tsx: ô Yêu cầu thêm. Bộ kiểm judgePolished giữ nguyên (thuật ngữ, dài bất thường, từ chối). Test polish.test.ts thêm 4 ca. CHƯA so trước/sau với model thật (máy thử không gọi được nhà cung cấp): Admin chạy clip mẫu và xem khung so sánh trước khi coi là xong.",
+  },
+  {
     version: "5.27.1",
     time: "16:10 21/11/2026",
     area: "khac",

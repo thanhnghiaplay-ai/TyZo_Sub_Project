@@ -3,6 +3,10 @@ import { describe, it } from "node:test";
 import { GENRE_PROMPT_MAX, genrePrompt } from "./genre-prompts.ts";
 import {
   PolishRefusal,
+  POLISH_REQUEST_MAX,
+  VI_POLISH_EXAMPLES,
+  batchContext,
+  cleanPolishRequest,
   judgePolished,
   parsePolish,
   polishAll,
@@ -54,6 +58,36 @@ describe("lệnh trau chuốt", () => {
     assert.deepEqual(body.lines, [{ o: "a", t: "b" }]);
     assert.deepEqual(body.context_before, [{ o: "x", t: "y" }]);
     assert.deepEqual(body.context_after, [{ o: "p", t: "q" }]);
+  });
+});
+
+describe("lệnh trau chuốt v5.28.0: viết lại tự nhiên, câu mẫu, yêu cầu thêm", () => {
+  it("cho viết lại tự nhiên nhưng giữ nghĩa, không còn dặn trả nguyên từng ký tự", () => {
+    const sys = polishSystem(2, OPTS);
+    assert.match(sys, /Rewrite freely/);
+    assert.match(sys, /Keep the meaning/);
+    assert.doesNotMatch(sys, /character for character/);
+  });
+
+  it("câu mẫu tiếng Việt chỉ gửi khi dịch sang tiếng Việt", () => {
+    assert.match(polishSystem(1, { ...OPTS, language: "Vietnamese" }), /stiff -> natural/);
+    assert.doesNotMatch(polishSystem(1, { ...OPTS, language: "English" }), /stiff -> natural/);
+    assert.ok(VI_POLISH_EXAMPLES.length >= 4);
+  });
+
+  it("yêu cầu thêm của khách nằm TRÊN luật cố định cuối lệnh, được gọn và cắt ở 300 ký tự", () => {
+    const sys = polishSystem(3, { ...OPTS, request: "  văn kiếm hiệp,\n xưng huynh đệ  " });
+    assert.match(sys, /Viewer's style request[^\n]*văn kiếm hiệp, xưng huynh đệ/);
+    assert.ok(sys.indexOf("Viewer's style request") < sys.indexOf("Never put an apology"));
+    assert.ok(sys.trimEnd().endsWith('with exactly 3 strings in the same order as "lines".'));
+    assert.equal(cleanPolishRequest("a".repeat(500)).length, POLISH_REQUEST_MAX);
+    assert.doesNotMatch(polishSystem(1, { ...OPTS, request: "   " }), /Viewer's style request/);
+  });
+
+  it("ngữ cảnh trước rộng hơn (15 câu)", () => {
+    const list = items(40);
+    const { before } = batchContext(list, list.map((it) => it.translation as string), [30, 31]);
+    assert.equal(before.length, 15);
   });
 });
 

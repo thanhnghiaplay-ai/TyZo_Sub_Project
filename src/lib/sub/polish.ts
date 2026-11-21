@@ -48,7 +48,34 @@ export type PolishOpts = {
   context: string;
   /** Ngôn ngữ đích, ví dụ "Vietnamese". */
   language: string;
+  /** Yêu cầu thêm của khách cho lần trau chuốt này (tối đa POLISH_REQUEST_MAX ký tự). Đặt dưới luật cố định. */
+  request?: string;
 };
+
+/** Độ dài tối đa ô «Yêu cầu thêm» của khách. */
+export const POLISH_REQUEST_MAX = 300;
+
+/** Gọn ô yêu cầu thêm: bỏ xuống dòng thừa, cắt ở giới hạn. */
+export function cleanPolishRequest(value: string | undefined): string {
+  return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, POLISH_REQUEST_MAX);
+}
+
+/**
+ * Cặp mẫu «cứng → tự nhiên» cho bản dịch tiếng Việt (v5.28.0). Cho model thấy mức viết lại mong muốn:
+ * đổi cấu trúc cho giống lời nói, giữ nghĩa, giữ độ dài. Chỉ gửi khi ngôn ngữ đích là tiếng Việt.
+ */
+export const VI_POLISH_EXAMPLES: readonly { stiff: string; natural: string }[] = [
+  { stiff: "Tôi không có cách nào để làm điều đó.", natural: "Tôi chịu, không làm nổi đâu." },
+  { stiff: "Bạn đang làm cái gì ở đây vậy?", natural: "Cậu làm gì ở đây thế?" },
+  { stiff: "Điều này thật sự là quá đáng.", natural: "Thế này thì quá lắm rồi." },
+  { stiff: "Ta sẽ không tha thứ cho ngươi.", natural: "Ta không tha cho ngươi đâu." },
+  { stiff: "Cảm ơn bạn rất nhiều vì đã giúp đỡ tôi.", natural: "Cảm ơn cậu nhiều nhé." },
+  { stiff: "Anh ấy đã đi ra ngoài rồi.", natural: "Anh ấy ra ngoài rồi." },
+];
+
+function isVietnamese(language: string): boolean {
+  return /vietnam|tiếng việt|^vi$/i.test(language.trim());
+}
 
 export class PolishRefusal extends Error {
   constructor(message = "Model từ chối trau chuốt.") {
@@ -58,7 +85,7 @@ export class PolishRefusal extends Error {
 }
 
 export const POLISH_BATCH = 24;
-const CTX_BEFORE = 8;
+const CTX_BEFORE = 15;
 const CTX_AFTER = 4;
 const TOKEN_RE = /\{\{G\d+\}\}/g;
 
@@ -73,14 +100,20 @@ export function polishSystem(count: number, opts: PolishOpts): string {
   const genre = genrePrompt(opts.genre).polish.slice(0, GENRE_PROMPT_MAX);
   return [
     `You are a senior subtitle editor polishing an existing ${opts.language} translation of a film or TV show. Each item in "lines" has the source line "o" and its current translation "t". Return the improved translation for every item.`,
-    'Improve only what needs improving: stiff word-for-word phrasing, wrong or inconsistent pronouns and address forms, flat wording, wrong register. If "t" is already good, return it unchanged, character for character.',
-    "Never change the meaning. Do not add, omit, explain, merge, split or reorder anything. Keep each subtitle concise (about 40 characters per row, at most 2 rows).",
+    'Goal: make every line sound like what a native speaker would actually say in this scene. Rewrite freely: change word order, drop filler words and literal particles, pick everyday words and natural sentence-final particles, use the right pronoun pair. Word-for-word, textbook or translated-sounding phrasing is the main thing to fix.',
+    'Keep the meaning of "o": same facts, names, numbers, intent and emotion. Do not add new information, explain jokes or merge, split or reorder lines. Keep each subtitle short (about 40 characters per row, at most 2 rows); shorter is better when the meaning stays. If a line already sounds natural, return it unchanged.',
     "Keep every speaker's tone, slang, insults and swearing at the same intensity; never censor, soften, tidy up or moralize.",
     ADDRESS_RULE,
     "Glossary tokens look like {{G0}} or {{G12}}. If \"t\" contains one, copy that exact token unchanged into your result. Keep names, titles and glossary terms exactly as the film context and the current translation use them.",
     'Use "context_before" and "context_after" (neighbouring lines, with translations when known) only to understand who speaks to whom and the ongoing topic. Never return or translate the context itself.',
     genre,
     opts.context,
+    isVietnamese(opts.language)
+      ? `Examples of the rewrite level wanted (stiff -> natural):\n${VI_POLISH_EXAMPLES.map((e) => `- ${e.stiff} -> ${e.natural}`).join("\n")}`
+      : "",
+    cleanPolishRequest(opts.request)
+      ? `Viewer's style request for this run (follow it as long as it does not break the rules in this message): ${cleanPolishRequest(opts.request)}`
+      : "",
     "If you cannot polish a line, return its current translation unchanged. Never put an apology, refusal or explanation inside a line.",
     `Return only JSON {"t":["..."]} with exactly ${count} strings in the same order as "lines".`,
   ]

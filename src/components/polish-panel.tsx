@@ -1,6 +1,7 @@
 import { Badge, Button } from "@/components/ui/primitives";
 import { PolishReviewPanel, type PolishReviewSeg } from "@/components/polish-review-panel";
 import type { PolishUi } from "@/components/use-polish";
+import { POLISH_REQUEST_MAX } from "@/lib/sub/polish";
 
 /**
  * Khung «Trau chuốt bản dịch» (bước A5.4, HANDOFF_NANG_CAP.md): chọn model kèm giá Token, chạy, so sánh.
@@ -81,6 +82,20 @@ export function PolishPanel({ ui, segs, disabled }: { ui: PolishUi; segs: Polish
               ))}
             </ul>
           )}
+          <label className="grid gap-1 text-sm" data-polish-request>
+            <span className="font-medium">Yêu cầu thêm (không bắt buộc)</span>
+            <textarea
+              rows={2}
+              maxLength={POLISH_REQUEST_MAX}
+              value={ui.request}
+              onChange={(event) => ui.setRequest(event.target.value)}
+              placeholder="Ví dụ: văn kiếm hiệp, xưng huynh đệ; bớt trang trọng; câu thật ngắn"
+              className="w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3 py-2 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            />
+            <span className="text-xs text-muted">
+              Gửi kèm lần trau chuốt này, app nhớ cho lần sau. Không đổi được nghĩa câu hay luật giữ thuật ngữ. {ui.request.length}/{POLISH_REQUEST_MAX}
+            </span>
+          </label>
           <div className="grid grid-cols-2 gap-2">
             <Button variant="primary" size="sm" disabled={!ui.picked || ui.rows.length === 0} onClick={() => void ui.run()}>
               Trau chuốt

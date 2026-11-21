@@ -510,6 +510,9 @@ export async function translateWithRepair(
  * Nhà cung cấp báo từ chối (`content_filter` hoặc trường `refusal`) thì ném `PolishRefusal` để polishAll
  * chia lô và đánh dấu đúng câu bị từ chối.
  */
+/** Nhiệt độ cho bước trau chuốt. */
+export const POLISH_TEMPERATURE = 0.3;
+
 export function makePolishCall(
   key: ChatKey,
   model: string,
@@ -522,9 +525,10 @@ export function makePolishCall(
     if (!model) throw new Error("Bạn chưa chọn model trau chuốt.");
     const call = chatCall(model, key, ticket);
     const budget = Math.min(8192, 512 + count * 220);
+    // Trau chuốt cần câu chữ mềm hơn bước dịch: nhiệt độ thấp nhưng khác 0 (v5.28.0). Bước dịch vẫn 0.
     const payloads = [
-      { model, temperature: 0, ...reasoningOpts(model), [call.tokenField]: budget, response_format: translationSchema(), messages },
-      { model, temperature: 0, [call.tokenField]: budget, response_format: { type: "json_object" }, messages },
+      { model, temperature: POLISH_TEMPERATURE, ...reasoningOpts(model), [call.tokenField]: budget, response_format: translationSchema(), messages },
+      { model, temperature: POLISH_TEMPERATURE, [call.tokenField]: budget, response_format: { type: "json_object" }, messages },
     ];
     let lastError: Error | undefined;
     for (let index = 0; index < payloads.length; index++) {
