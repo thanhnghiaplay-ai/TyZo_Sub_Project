@@ -23,6 +23,9 @@ type MoneyInput = {
 
 export type MoneyView = {
   on: boolean;
+  /** Gói trả theo lượt đang khớp model đã chọn (v5.32.4). null = chưa chọn gói; packCount = số gói Admin mở. */
+  pack: { id: string; name: string } | null;
+  packCount: number;
   phase: "idle" | "running" | "chat";
   account: RoomState | null;
   /** Lần đọc tài khoản gần nhất bị lỗi (mất mạng, máy chủ bận). Gửi sự kiện «tyzo-room-refresh» để thử lại. */
@@ -125,7 +128,7 @@ export function useMoney({ active, asr, chat, seconds, narration, phase = "idle"
   const left = account && rate ? minutesLeft(account.units, rate.row.total) : null;
   const run = pickPrice(forRun, chosen?.id ?? null);
   const estimate = account ? runEstimate(run?.row ?? null, account.units, phase === "chat" ? "chat" : "all") : null;
-  return { on, phase, account, failed, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
+  return { on, phase, pack: chosen ? { id: chosen.id, name: chosen.name } : null, packCount: packs.length, account, failed, left, exactRate: Boolean(rate?.exact), secs, run, estimate };
 }
 
 /** Thanh số dư gọn, đặt ngay đầu màn hình đầu: Token dịch còn và còn khoảng bao nhiêu phút. */

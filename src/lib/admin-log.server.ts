@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.32.4",
+    time: "20:24 21/11/2026",
+    area: "khac",
+    text: "v5.32.4, mục 3. useMoney trả thêm pack (gói khớp model đã chọn) và packCount. PayStatusBar trạng thái turn có dòng gói: tên gói, «video này cần giữ khoảng» (estimate.hold, đã tính hai phần), nút Đổi gói / Chọn gói (MAIN khi chưa chọn) phát tyzo-need-pack (mở bước cuối có danh sách gói). Admin chưa mở gói nào thì không hiện dòng. CHƯA xem bằng mắt: bản dev không có gói và Token.",
+  },
+  {
     version: "5.32.3",
     time: "20:21 21/11/2026",
     area: "khac",

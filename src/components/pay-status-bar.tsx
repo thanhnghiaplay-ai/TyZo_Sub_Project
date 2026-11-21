@@ -25,7 +25,10 @@ export function PayStatusBar({
   onAddKey,
   onWallet,
   onRetry,
+  onPickPack,
 }: {
+  /** Mở bước cuối có danh sách gói trả theo lượt (v5.32.4). */
+  onPickPack?: () => void;
   state: PayState;
   money: MoneyView;
   /** remember=false: chỉ đổi cho lần này, không đổi lựa chọn đã nhớ. */
@@ -129,19 +132,41 @@ export function PayStatusBar({
       </section>
     );
   }
+  const need = money.estimate?.hold ?? null;
   return (
-    <section aria-label="Cách trả" data-pay-status="turn" className={shell + " flex flex-wrap items-center justify-between"}>
-      <span className="flex min-w-0 items-center gap-2">
-        <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
-        <span className="min-w-0">
-          <strong>Trả theo lượt</strong> · còn {formatGiay(state.units)}
-          {money.left != null && <> · khoảng {formatMinutes(money.left)}{!money.exactRate ? " (theo gói rẻ nhất)" : ""}</>}
+    <section aria-label="Cách trả" data-pay-status="turn" className={shell}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="flex min-w-0 items-center gap-2">
+          <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
+          <span className="min-w-0">
+            <strong>Trả theo lượt</strong> · còn {formatGiay(state.units)}
+            {money.left != null && <> · khoảng {formatMinutes(money.left)}{!money.exactRate ? " (theo gói rẻ nhất)" : ""}</>}
+          </span>
         </span>
-      </span>
-      <span className="flex gap-2">
-        <button type="button" className={BTN} onClick={onWallet}>Mua thêm</button>
-        <button type="button" className={BTN} onClick={() => onChoose(null, false)}>Đổi cách trả</button>
-      </span>
+        <span className="flex gap-2">
+          <button type="button" className={BTN} onClick={onWallet}>Mua thêm</button>
+          <button type="button" className={BTN} onClick={() => onChoose(null, false)}>Đổi cách trả</button>
+        </span>
+      </div>
+      {money.packCount > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-2" data-pay-pack>
+          <span className="min-w-0">
+            {money.pack ? (
+              <>
+                Gói: <strong>{money.pack.name}</strong>
+                {need != null && money.secs > 0 && <> · video này cần giữ khoảng {formatGiay(need)}</>}
+              </>
+            ) : (
+              <span className="text-warning">Chưa chọn gói trả theo lượt.</span>
+            )}
+          </span>
+          {onPickPack && (
+            <button type="button" className={money.pack ? BTN : MAIN} onClick={onPickPack}>
+              {money.pack ? "Đổi gói" : "Chọn gói"}
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }

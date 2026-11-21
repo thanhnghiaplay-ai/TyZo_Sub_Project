@@ -97,3 +97,15 @@ describe("v5.32.3: lỗi chặn lần bấm hiện ngay dưới nút chính", ()
     assert.match(studio, /setQuietStatus\(lastStatus\.current\);\s*\}, \[pickedFile, app\.url, pay\.kind\]\);/);
   });
 });
+
+describe("v5.32.4: trang chủ trả theo lượt cho thấy gói đang dùng", () => {
+  it("dòng gói: tên gói, số cần giữ cho video này, Đổi gói / Chọn gói mở bước cuối", () => {
+    const bar = readFileSync(new URL("./pay-status-bar.tsx", import.meta.url), "utf8");
+    assert.match(bar, /data-pay-pack/);
+    assert.match(bar, /Gói: <strong>\{money\.pack\.name\}<\/strong>/);
+    assert.match(bar, /\{money\.pack \? "Đổi gói" : "Chọn gói"\}/);
+    assert.match(studio, /onPickPack=\{\(\) => window\.dispatchEvent\(new Event\("tyzo-need-pack"\)\)\}/);
+    const card = readFileSync(new URL("./money-card.tsx", import.meta.url), "utf8");
+    assert.match(card, /pack: chosen \? \{ id: chosen\.id, name: chosen\.name \} : null, packCount: packs\.length/);
+  });
+});

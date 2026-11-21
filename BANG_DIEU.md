@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | Nhánh `main` = v5.32.0 (đẩy chính thức 21/11/2026). `work` mới hơn, chờ «đẩy chính thức». |
-| Bản mới nhất | v5.32.3 trên `work` (chưa đẩy chính thức): lỗi chặn hiện dưới nút chính (v5.32.3). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản mới nhất | v5.32.4 trên `work` (chưa đẩy chính thức): dòng gói trả theo lượt ở trang chủ (v5.32.4); lỗi dưới nút chính (v5.32.3); bớt hỏi dồn lần đầu (v5.32.2); giữ lượt chạy trên điện thoại (v5.32.1). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -40,7 +40,13 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đẩy dở. `HANDOFF.md` mục 2 không còn việc mở (Chủ xác nhận 20/11/2026).
+**Mục 1 trang khách: lưu phụ đề theo tệp, khôi phục sau khi tải lại trang** (Chủ chốt «làm 2–5», mục 1 để cuộc trò chuyện mới; câu mở đầu: «Đọc BANG_DIEU.md và làm mục 1 (lưu phụ đề theo tệp)»).
+- Vì sao: kết quả nhận dạng và bản dịch chỉ nằm trong bộ nhớ trang (`job.current` ở `use-pipeline.ts`). Tải lại hay điện thoại xả trang là mất phần khách đã trả Token. Đã có: hỏi lại khi đóng trang lúc đang chạy (v5.32.1).
+- Cách làm đề xuất: lưu `segs` (gốc, dịch, giờ, cờ sửa tay), `parts`, `nextPart`, `doneSource`, bảng nhân vật vào IndexedDB theo `mediaId()` (dấu tệp), lưu dần sau mỗi lô. Chọn lại đúng tệp thì hỏi «Khôi phục bản đã dịch?» bằng askConfirm; đồng ý thì nạp lại job sao cho `asrComplete` đúng (start() chỉ giữ phiếu phần dịch) và nút Tiếp tục chạy nốt câu chưa dịch. Giữ tối đa vài tệp gần nhất, có nút xóa trong Tài khoản và lịch sử.
+- Đụng: `use-pipeline.ts` (clearJob, start, chỗ đặt doneSource/pcmId), điều khoản mục 5 đã nói máy khách lưu tên video và ghi chú; lưu phụ đề trên máy là dữ liệu trên máy khách, nên kiểm lại câu điều khoản trước khi làm.
+- Kiểm: tải lại giữa lúc chờ xem bảng nhân vật, giữa lúc dịch, sau khi xong; tệp khác không bị nạp nhầm; key riêng và trả theo lượt.
+
+`HANDOFF.md` mục 2 không còn việc mở khác (Chủ xác nhận 20/11/2026).
 
 ## Thư — còn lại
 

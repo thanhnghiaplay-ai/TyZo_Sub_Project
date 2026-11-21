@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 21/11/2026. **v5.32.3 trên `work`**; `main` v5.32.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
+Cập nhật 21/11/2026. **v5.32.4 trên `work`**; `main` v5.32.0 (đẩy chính thức 21/11/2026). Điều khoản `2026-11-21.2`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.32.4**: Mục 3: dòng gói trả theo lượt ở trang chủ (tên gói, Token video cần giữ, Đổi/Chọn gói). tsc sạch, test pass. Chưa xem bằng mắt (dev không có gói). Mục 1 (lưu phụ đề theo tệp) để cuộc trò chuyện mới, kế hoạch ở BANG_DIEU «Việc đang giữ».
 - **v5.32.3**: Mục 5: lỗi chặn lần bấm hiện đỏ dưới nút chính đến khi đổi tệp/link/cách trả. tsc sạch, test pass.
 - **v5.32.2**: Mục 4: bỏ tự mở hướng dẫn nhanh, thay dòng mời Xem/Ẩn sau khi xong chọn cách trả và câu hỏi lần đầu. tsc sạch, test pass.
 - **v5.32.1**: Mục 2: nhắc giữ trang mở, hỏi lại khi đóng/tải lại trang lúc chạy, nhắc Tiếp tục khi quay lại từ nền (giữ màn hình sáng đã có sẵn). tsc sạch, test pass.

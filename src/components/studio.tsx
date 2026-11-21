@@ -1258,6 +1258,7 @@ export function Studio() {
                 onAddKey={() => openTool("key")}
                 onWallet={() => setProduct("account")}
                 onRetry={() => window.dispatchEvent(new Event("tyzo-room-refresh"))}
+                onPickPack={() => window.dispatchEvent(new Event("tyzo-need-pack"))}
               />
               {shouldAsk(useAnswer, money.on ? pay.kind : "off") && <FirstAskCard onAnswer={answerUse} />}
               {/* Một lời mời một lúc: chỉ mời xem hướng dẫn khi không còn câu chọn cách trả hay câu hỏi lần đầu. */}
