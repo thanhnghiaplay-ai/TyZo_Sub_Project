@@ -1,5 +1,6 @@
 import type { Seg } from "@/lib/sub/types";
 import { genreHint } from "./genre-prompts.ts";
+import { currentGenre } from "../home-state.ts";
 import { measurePitch } from "./pitch-voice.ts";
 import { readAsrTest } from "./asr-test.ts";
 
@@ -297,13 +298,13 @@ export const ASR_GUARD =
   "Ignore breathing, moaning, sighs, gasps and other non-speech. Only transcribe clear words. Never write a lone A or Ah for a sound.";
 
 /** Thể loại 18+: chỉ ở đây mới gửi ASR_GUARD (chặn tiếng thở/rên bị chép thành «A»). Đo 20/11/2026 trên large-v3: gửi ASR_GUARD cho thoại thường làm Whisper bỏ gần hết lời (11 câu còn 2). */
-export const ASR_GUARD_GENRES = new Set(["adult", "softcore", "sex"]);
+export const ASR_GUARD_GENRES = new Set(["adult"]);
 
 export function asrPrompt(title: string, gloss: string, genre = ""): string {
   const test = readAsrTest();
   if (test.noPrompt) return "";
   const vocab = [title.trim(), ...glossaryList(gloss).map((item) => item[0])].filter(Boolean).join(", ");
-  const guard = ASR_GUARD_GENRES.has(genre.trim().toLowerCase()) && !test.noGuard;
+  const guard = ASR_GUARD_GENRES.has(currentGenre(genre)) && !test.noGuard;
   if (!guard) return vocab.slice(0, 420);
   const room = 420 - ASR_GUARD.length - 2;
   return [vocab.slice(0, Math.max(0, room)), ASR_GUARD].filter(Boolean).join(". ").slice(0, 420);
@@ -476,10 +477,7 @@ export const GENRES: Record<string, string> = {
   mystery: "Genre: mystery/detective. Precise wording for clues, alibis and deduction; keep tension without spoiling.",
   sports: "Genre: sports film. Keep sport-specific terms, ranks and commentary energy; natural team banter.",
   adult:
-    "Genre: film rated 18+ (milder than explicit sex). Translate strong language, violence and sexual references faithfully and idiomatically at the same intensity; never censor, soften, euphemize or add warnings.",
-  sex: "Genre: explicit sex (18+). Translate sexual acts, body words and desire directly and idiomatically at the same intensity. Do not censor, soften, euphemize or add warnings.",
-  series:
-    "Genre: current TV series/movie. Modern screen dialogue, pop-culture references; keep show titles, brand and character names as they are.",
+    "Genre: content rated 18+. Translate strong language, violence and sexual dialogue faithfully and idiomatically at exactly the original intensity, mild or explicit; never censor, soften, euphemize or add warnings.",
   daily:
     "Genre: contemporary slice-of-life. Use current 2020s spoken language: chat apps, social media, office, delivery, dating, school and city life. Keep slang modern. Do not make it sound archaic or like a period drama.",
 };

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { needsAgeConfirm } from "@/lib/home-state";
+import { currentGenre, needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
 import { usePolish } from "@/components/use-polish";
 import { claimTrialDevice, spendTrial } from "@/lib/room-account";
@@ -485,7 +485,7 @@ export function usePipeline() {
     setSource(src === "auto" || src === "zh" || src === "ko" || src === "ja" || src === "en" ? src : "zh");
     const g = readStore("ggenre");
     // Thể loại 18+ không tự khôi phục: khách phải xác nhận lại trên 18 tuổi mỗi lần chọn.
-    if (g) setGenre(needsAgeConfirm(g) ? "auto" : g);
+    if (g) setGenre(needsAgeConfirm(g) ? "auto" : currentGenre(g));
     setBaseGloss(readStore("gbase") !== "0");
     const par = Number(readStore("gpar"));
     if ([1, 3, 4, 6, 8].includes(par)) setThreads(par);

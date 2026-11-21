@@ -1,4 +1,4 @@
-import { GENRES as GENRE_LIST } from "./home-state.ts";
+import { GENRES as GENRE_LIST, currentGenre } from "./home-state.ts";
 
 const LANGS = new Set(["ja", "ko", "zh", "en"]);
 // Danh sách thể loại lấy từ một nơi duy nhất (home-state.ts) để ô chọn, bộ thuật ngữ và kho prompt không lệch nhau.
@@ -8,7 +8,7 @@ export const GENRE_LABELS: Record<string, string> = Object.fromEntries(GENRE_LIS
 
 export function glossaryPair(lang: string, genre: string) {
   const nextLang = lang.trim().toLowerCase();
-  const nextGenre = (genre || "auto").trim().toLowerCase();
+  const nextGenre = currentGenre(genre || "auto");
   if (!LANGS.has(nextLang) || !GENRES.has(nextGenre)) throw new Error("Ngôn ngữ hoặc thể loại không đúng.");
   return { lang: nextLang, genre: nextGenre };
 }

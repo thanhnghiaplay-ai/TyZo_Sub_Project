@@ -7,6 +7,8 @@
  * we do plain substring search; otherwise prefer word boundaries.
  */
 
+import { currentGenre } from "../home-state.ts";
+
 export type GlossaryTerm = {
   source: string;
   target: string;
@@ -62,7 +64,7 @@ export function glossaryTarget(term: GlossaryTerm, targetLang: string): string {
 /** Load one genre file only. Cached per (lang, genre, target). "auto" loads that genre's own file when it exists. */
 export async function loadGenreGlossary(sourceLang: string, genre: string, targetLang = ""): Promise<GlossaryPack> {
   const lang = normalizeLang(sourceLang);
-  const g = (genre || "auto").toLowerCase();
+  const g = currentGenre(genre || "auto");
   const into = normalizeLang(targetLang);
   const key = `${lang}|${g}|${into}`;
   const hit = cache.get(key);
@@ -103,12 +105,12 @@ export function clearGlossaryCache() {
   cache.clear();
 }
 
-/** Thể loại không bao giờ kèm bộ nền: bộ tự động và ba bộ 18+ (18+, cấp 3, thoại kín), mỗi bộ đứng riêng. */
-const NO_BASE_GENRES = new Set(["auto", "adult", "softcore", "sex"]);
+/** Thể loại không bao giờ kèm bộ nền: bộ tự động và bộ nhãn 18+ (đứng riêng). */
+const NO_BASE_GENRES = new Set(["auto", "adult"]);
 
 /** Thể loại này có được kèm bộ nền (bộ `auto`) của ngôn ngữ nguồn hay không. */
 export function usesBaseGlossary(genre: string): boolean {
-  return !NO_BASE_GENRES.has((genre || "auto").trim().toLowerCase());
+  return !NO_BASE_GENRES.has(currentGenre(genre || "auto"));
 }
 
 /** Gộp bộ nền với bộ thể loại. Trùng từ thì bản của thể loại thắng. Khóa trùng theo cùng cách với loadGenreGlossary. */

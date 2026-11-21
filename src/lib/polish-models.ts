@@ -3,7 +3,7 @@
 //
 // Admin đặt HAI danh sách model dịch (chat) của Groq:
 //   - «Kiểm duyệt»: dành cho thể loại thường.
-//   - «Không kiểm duyệt»: dành cho thể loại nhãn 18+ (adult, softcore, sex).
+//   - «Không kiểm duyệt»: dành cho thể loại nhãn 18+ (adult; mã cũ softcore, sex quy về adult).
 // Chỉ model chat. Model nhận dạng, giọng đọc, model kiểm duyệt (guard) KHÔNG đưa vào đây.
 // Người dùng chỉ thấy danh sách ứng với thể loại đang chọn, kèm giá ước bằng Token dịch.
 

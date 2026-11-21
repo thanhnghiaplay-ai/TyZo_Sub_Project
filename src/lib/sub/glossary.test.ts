@@ -32,14 +32,14 @@ describe("glossaryTarget", () => {
   });
 });
 
-describe("thuật ngữ Sex theo ngôn ngữ nguồn", () => {
-  it("Anh, Hàn, Nhật có bản Sex dịch sang tiếng Việt", () => {
+describe("thuật ngữ nhãn 18+ theo ngôn ngữ nguồn (đã gộp ba bộ cũ)", () => {
+  it("Anh, Hàn, Nhật có bộ 18+ dịch sang tiếng Việt, gồm cả mục của bộ thoại kín cũ", () => {
     for (const lang of ["en", "ja", "ko"] as const) {
-      const terms = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/sex.json`, import.meta.url), "utf8"));
+      const terms = JSON.parse(readFileSync(new URL(`../../../data/glossaries/${lang}/adult.json`, import.meta.url), "utf8"));
       assert.ok(terms.length >= 90, lang);
       assert.ok(terms.every((term: { source: string; target: string }) => term.source.length >= 2 && term.target));
     }
-    const en = JSON.parse(readFileSync(new URL("../../../data/glossaries/en/sex.json", import.meta.url), "utf8"));
+    const en = JSON.parse(readFileSync(new URL("../../../data/glossaries/en/adult.json", import.meta.url), "utf8"));
     assert.equal(en.find((term: { source: string }) => term.source === "orgasm").target, "lên đỉnh");
     assert.equal(en.find((term: { source: string }) => term.source === "cum").target, "lên đỉnh");
     for (const lang of ["en", "ja", "ko"] as const) {
@@ -175,7 +175,7 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
   drafts.push(["ko", "wuxia"]);
   for (const lang of ["ja", "ko"]) drafts.push([lang, "ngontinh"]);
   for (const lang of ["ja", "ko"]) drafts.push([lang, "xianxia"]);
-  for (const lang of ["zh", "en", "ja", "ko"]) drafts.push([lang, "softcore"]);
+  for (const lang of ["zh", "en", "ja", "ko"]) drafts.push([lang, "adult"]);
 
   it("có file, mỗi mục đủ nguồn/đích, không trùng nguồn", () => {
     for (const [lang, genre] of drafts) {
@@ -187,7 +187,9 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
       assert.ok(terms.length >= 25, `${lang}/${genre}`);
       const seen = new Set<string>();
       for (const term of terms) {
-        assert.ok(term.source.trim().length >= 2 && term.target.trim(), `${lang}/${genre}`);
+        // Bộ 18+ gộp cả mục đã duyệt của bộ cũ (có từ một chữ Hán); luật ≥ 2 ký tự chỉ áp cho mục nháp.
+        const shortOk = genre === "adult" && term.reviewed !== false;
+        assert.ok((shortOk || term.source.trim().length >= 2) && term.target.trim(), `${lang}/${genre}: ${term.source}`);
         const key = term.source.toLowerCase();
         assert.ok(!seen.has(key), `${lang}/${genre}: trùng ${term.source}`);
         seen.add(key);
@@ -198,7 +200,7 @@ describe("bản nháp thuật ngữ thể loại mới (B1)", () => {
 
 describe("mục bổ sung chưa duyệt vào bộ có sẵn (B4)", () => {
   const expanded: [string, string][] = [];
-  for (const genre of ["action", "crime", "mystery", "horror", "adventure", "comedy", "costume", "daily", "documentary", "family", "historical", "ngontinh", "psychological", "romance", "school", "scifi", "series", "social", "sports", "war", "wuxia", "xianxia"]) expanded.push(["zh", genre]);
+  for (const genre of ["action", "crime", "mystery", "horror", "adventure", "comedy", "costume", "daily", "documentary", "family", "historical", "ngontinh", "psychological", "romance", "school", "scifi", "social", "sports", "war", "wuxia", "xianxia"]) expanded.push(["zh", genre]);
   for (const genre of ["ngontinh", "wuxia", "xianxia", "war", "documentary", "social", "family", "school", "auto"]) expanded.push(["en", genre]);
   for (const genre of ["auto", "documentary", "social", "family", "school", "war", "ngontinh"]) expanded.push(["ja", genre]);
   for (const genre of ["auto", "documentary", "social"]) expanded.push(["ko", genre]);

@@ -18,8 +18,8 @@ function optionsOf(children: ReactNode): Option[] {
 
 /**
  * Ô chọn dùng hộp của web (không dùng danh sách gốc của điện thoại).
- * `trigger` vẽ nút mở theo kiểu của nơi dùng. Khi danh sách có đủ ba mức 18+ (adult, softcore, sex),
- * hộp hiện khu «18+» nổi bật ở trên cùng với thanh Thấp / Vừa / Cao; mỗi mức là một thể loại riêng.
+ * `trigger` vẽ nút mở theo kiểu của nơi dùng. Khi danh sách có thể loại nhãn 18+ (AGE_LEVELS),
+ * hộp hiện khu «18+» riêng ở trên cùng; chọn thì hỏi xác nhận trên 18 tuổi.
  */
 export function PickerSelect({
   label,
@@ -80,28 +80,25 @@ export function PickerSelect({
                   <div className="m-3 grid gap-2 rounded-[var(--radius-card)] border-2 border-accent p-3" data-age-block>
                     <div className="flex items-center gap-2">
                       <span className="rounded-full bg-accent px-2.5 py-0.5 text-sm font-bold text-ink">18+</span>
-                      <span className="text-sm font-semibold text-fg">Thoại người lớn</span>
+                      <span className="text-sm font-semibold text-fg">Nội dung người lớn</span>
                     </div>
-                    <div className="grid grid-cols-3 gap-1 rounded-full border border-line bg-bg p-1" role="group" aria-label="Mức 18+">
-                      {AGE_LEVELS.map(([id, level]) => (
+                    <div className="grid gap-1" role="group" aria-label="Nhãn 18+">
+                      {AGE_LEVELS.map(([id]) => (
                         <button
                           key={id}
                           type="button"
                           role="radio"
                           aria-checked={value === id}
                           className={
-                            "min-tap rounded-full px-2 text-sm font-semibold " + (value === id ? "bg-accent text-ink" : "text-muted hover:text-fg")
+                            "min-tap rounded-full border px-3 text-sm font-semibold " + (value === id ? "border-accent bg-accent text-ink" : "border-line text-muted hover:text-fg")
                           }
                           onClick={() => pick(id)}
                         >
-                          {level}
+                          {options.find((o) => o.value === id)?.label ?? id}
                         </button>
                       ))}
                     </div>
-                    <p className="text-xs text-muted">
-                      {AGE_LEVELS.map(([id, level]) => `${level}: ${options.find((o) => o.value === id)?.label}`).join(" · ")}
-                    </p>
-                    <p className="text-xs text-muted">{levelOn >= 0 ? "Đang chọn mức " + AGE_LEVELS[levelOn][1] + "." : "Chọn mức sẽ hỏi xác nhận trên 18 tuổi."}</p>
+                    <p className="text-xs text-muted">{levelOn >= 0 ? "Đang chọn nội dung có nhãn 18+." : "Chọn sẽ hỏi xác nhận bạn đủ 18 tuổi."}</p>
                   </div>
                 )}
                 {plain.map((o) => (

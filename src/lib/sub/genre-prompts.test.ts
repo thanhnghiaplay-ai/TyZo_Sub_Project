@@ -63,8 +63,11 @@ describe("kho prompt theo thể loại", () => {
   });
 
   it("thể loại 18+ dặn không kiểm duyệt hay làm nhẹ", () => {
-    for (const id of ["adult", "sex", "softcore"]) assert.match(GENRE_PROMPTS[id].polish, /censor/i);
-    for (const id of ["adult", "sex", "softcore"]) assert.match(GENRE_PROMPTS[id].polish, /soften/i);
+    assert.match(GENRE_PROMPTS.adult.polish, /censor/i);
+    assert.match(GENRE_PROMPTS.adult.polish, /soften/i);
+    assert.match(GENRE_PROMPTS.adult.polish, /mild, suggestive or explicit/i, "một loại 18+ phủ cả mức nhẹ lẫn nặng");
+    for (const old of ["sex", "softcore", "series"]) assert.ok(!(old in GENRE_PROMPTS), old);
+    assert.equal(genrePrompt("softcore"), GENRE_PROMPTS.adult, "mã cũ dùng prompt 18+ mới");
   });
 
   it("thể loại cổ trang dặn xưng hô cổ, thể loại hằng ngày dặn xưng hô hiện đại", () => {

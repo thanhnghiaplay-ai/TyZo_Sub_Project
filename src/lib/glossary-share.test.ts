@@ -14,7 +14,10 @@ describe("glossary share", () => {
   });
 
   it("chỉ nhận ngôn ngữ và thể loại đã có", () => {
-    assert.deepEqual(glossaryPair("ZH", "Sex"), { lang: "zh", genre: "sex" });
-    assert.throws(() => glossaryPair("vi", "sex"));
+    assert.deepEqual(glossaryPair("ZH", "Adult"), { lang: "zh", genre: "adult" });
+    // Mã thể loại cũ (v5.20.0 gộp) quy về mã đang dùng, không bị báo sai.
+    assert.deepEqual(glossaryPair("ZH", "Sex"), { lang: "zh", genre: "adult" });
+    assert.deepEqual(glossaryPair("ja", "series"), { lang: "ja", genre: "auto" });
+    assert.throws(() => glossaryPair("vi", "adult"));
   });
 });

@@ -15,14 +15,11 @@ export const GENRES: [string, string][] = [
   ["historical", "Lịch sử / thời kỳ"],
   ["mystery", "Trinh thám / bí ẩn"],
   ["sports", "Thể thao"],
-  ["adult", "Phim gắn nhãn 18+"],
-  ["sex", "Phim thoại kín"],
-  ["series", "Phim bộ / phim mới chiếu"],
+  ["adult", "Phim có nhãn 18+"],
   ["daily", "Hằng ngày"],
   ["wuxia", "Kiếm hiệp"],
   ["xianxia", "Tiên hiệp"],
   ["ngontinh", "Ngôn tình"],
-  ["softcore", "Phim cấp 3"],
   ["social", "Tâm lý xã hội"],
   ["war", "Chiến tranh"],
   ["family", "Gia đình"],
@@ -30,18 +27,25 @@ export const GENRES: [string, string][] = [
   ["documentary", "Tài liệu / phóng sự"],
 ];
 
-/** Ba mức 18+ từ nhẹ đến nặng: Thấp = Phim gắn nhãn 18+, Vừa = Phim cấp 3, Cao = Phim thoại kín. */
-export const AGE_LEVELS: readonly (readonly [string, string])[] = [
-  ["adult", "Thấp"],
-  ["softcore", "Vừa"],
-  ["sex", "Cao"],
-];
+/** Thể loại nhãn 18+: một loại duy nhất (v5.20.0 gộp ba mức cũ «18+», «cấp 3», «thoại kín»). */
+export const AGE_LEVELS: readonly (readonly [string, string])[] = [["adult", "18+"]];
+
+/**
+ * Mã thể loại cũ → mã đang dùng. Lựa chọn khách đã lưu trên máy, dữ liệu Admin và thuật ngữ cũ đều đổi qua đây.
+ * «Phim bộ / phim mới chiếu» bỏ hẳn (không gợi ý dịch phim đang chiếu), quy về Tự động.
+ */
+const OLD_GENRES: Record<string, string> = { softcore: "adult", sex: "adult", series: "auto" };
+
+export function currentGenre(genre: string): string {
+  const id = (genre || "").trim().toLowerCase();
+  return OLD_GENRES[id] ?? id;
+}
 
 /** Thể loại 18+: mỗi bộ đứng riêng, và khách phải xác nhận trên 18 tuổi mới được chọn. */
 export const AGE_GATE_GENRES: ReadonlySet<string> = new Set(AGE_LEVELS.map(([id]) => id));
 
 export function needsAgeConfirm(genre: string): boolean {
-  return AGE_GATE_GENRES.has((genre || "").trim().toLowerCase());
+  return AGE_GATE_GENRES.has(currentGenre(genre));
 }
 
 export type HomeInput = {

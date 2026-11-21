@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { AGE_GATE_GENRES, AGE_LEVELS, GENRES, isTypingTarget, needsAgeConfirm, pastedLink, showHomeHero } from "./home-state.ts";
+import { currentGenre, AGE_GATE_GENRES, AGE_LEVELS, GENRES, isTypingTarget, needsAgeConfirm, pastedLink, showHomeHero } from "./home-state.ts";
 
 const idle = { hasSegs: false, running: false, analyzing: false, reviewHold: false, forced: false };
 
@@ -41,8 +41,16 @@ test("chỉ ba thể loại 18+ phải xác nhận trên 18 tuổi", () => {
   for (const id of ["auto", "action", "romance", "wuxia", "", "khong-co"]) assert.equal(needsAgeConfirm(id), false, id);
 });
 
-test("ba mức 18+ Thấp, Vừa, Cao khớp ba thể loại và thứ tự nhẹ đến nặng", () => {
-  assert.deepEqual(AGE_LEVELS, [["adult", "Thấp"], ["softcore", "Vừa"], ["sex", "Cao"]]);
+test("một thể loại nhãn 18+; bỏ «phim mới chiếu»; mã cũ quy về mã mới", () => {
+  assert.deepEqual(AGE_LEVELS, [["adult", "18+"]]);
+  const all = GENRES.map(([id]) => id);
+  for (const gone of ["softcore", "sex", "series"]) assert.ok(!all.includes(gone), gone);
+  assert.ok(!GENRES.some(([, label]) => /mới chiếu/i.test(label)), "không gợi ý dịch phim đang chiếu");
+  assert.equal(GENRES.find(([id]) => id === "adult")?.[1], "Phim có nhãn 18+");
+  assert.equal(currentGenre("softcore"), "adult");
+  assert.equal(currentGenre(" SEX "), "adult");
+  assert.equal(currentGenre("series"), "auto");
+  assert.equal(currentGenre("wuxia"), "wuxia");
   const ids = new Set(GENRES.map(([id]) => id));
   for (const [id] of AGE_LEVELS) assert.ok(ids.has(id), id);
   assert.deepEqual([...AGE_GATE_GENRES].sort(), AGE_LEVELS.map(([id]) => id).sort());

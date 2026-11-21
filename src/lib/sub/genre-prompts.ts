@@ -2,7 +2,8 @@
 // Mỗi thể loại có prompt RIÊNG: giọng văn, xưng hô, mức thô tục, độ dài câu.
 // Prompt này chỉ NỐI THÊM vào lệnh trau chuốt (bước A2); lệnh gốc đòi JSON giữ cố định ở nơi khác.
 // Thuật ngữ của người dùng và bảng nhân vật vẫn đi kèm, prompt thể loại không thay chúng.
-// File thuần, không import gì để chạy được trong test của Node.
+// File thuần, chỉ import tương đối để chạy được trong test của Node.
+import { currentGenre } from "../home-state.ts";
 
 export type GenrePrompt = {
   /** Tên hiển thị tiếng Việt. */
@@ -90,19 +91,9 @@ export const GENRE_PROMPTS: Record<string, GenrePrompt> = {
       "Sports film. Keep sport-specific terms, positions, scores and ranks correct and consistent. Commentary is fast and energetic; coaches are blunt and motivating; teammates joke in casual tao/mày or tớ/cậu depending on age. Short punchy lines in matches, warmer fuller lines in locker-room scenes.",
   },
   adult: {
-    label: "Phim gắn nhãn 18+",
+    label: "Phim có nhãn 18+",
     polish:
-      "Film rated 18+ (milder than the explicit-sex genre). Translate strong language, violence, dark themes and sexual references faithfully and idiomatically at the same intensity as the original; sexual talk here is suggestive or occasional, not the point of every scene. Use the natural everyday Vietnamese words a real speaker would use in that moment. Never censor, soften, euphemize, moralize or add warnings; if a line is already faithful, leave it. Keep lines short and spoken.",
-  },
-  sex: {
-    label: "Phim thoại kín",
-    polish:
-      "Explicit adult film. Translate sexual acts, body words and desire directly and idiomatically at the same intensity. Do not censor, soften, euphemize or add warnings. Use natural spoken Vietnamese, short lines, and keep the speakers' pronouns consistent. Do not invent words for sounds that are not speech.",
-  },
-  series: {
-    label: "Phim bộ / phim mới chiếu",
-    polish:
-      "Current TV series or new release. Modern screen dialogue with pop-culture references; keep show titles, brand names and character names as they are. Natural, current spoken Vietnamese, brisk pacing, consistent pronoun pairs across episodes. Do not make it archaic or stiff.",
+      "Content rated 18+ for adults. Translate strong language, violence, dark themes and sexual dialogue faithfully and idiomatically at exactly the intensity of the original, whether it is mild, suggestive or explicit: do not escalate a mild line and do not soften an explicit one. Use the natural everyday Vietnamese words a real speaker would use in that moment. Never censor, euphemize, moralize or add warnings; if a line is already faithful, leave it. Keep the speakers' pronoun pairs consistent and lines short and spoken. Do not invent words for sounds that are not speech.",
   },
   daily: {
     label: "Hằng ngày",
@@ -126,12 +117,6 @@ export const GENRE_PROMPTS: Record<string, GenrePrompt> = {
     hint: "Genre: Chinese-style romance drama (ngôn tình). Sweet, emotional lines; careful anh/em, chàng/nàng or ta/nàng address depending on period or modern setting.",
     polish:
       "Ngôn tình romance drama. Emotional, sweet and tender Vietnamese; decide period or modern from context. Modern: anh/em, tôi/cô, cậu/tớ. Period: chàng/nàng, ta/nàng, công tử/tiểu thư. Keep teasing, jealousy, confession and heartbreak lines natural and heartfelt, not purple or overly formal. Hold each couple's pronoun pair constant until the relationship visibly changes.",
-  },
-  softcore: {
-    label: "Phim cấp 3",
-    hint: "Genre: softcore adult drama (phim cấp 3). Translate suggestive and sexual dialogue faithfully at the same intensity; do not censor or soften.",
-    polish:
-      "Softcore adult drama (phim cấp 3). Translate suggestive, flirtatious and sexual dialogue faithfully and idiomatically at the original intensity, with natural everyday Vietnamese; do not censor, soften, moralize or add warnings. Keep the playful or seductive tone of each speaker, pronoun pairs consistent, lines short and spoken. Do not invent words for non-speech sounds.",
   },
   social: {
     label: "Tâm lý xã hội",
@@ -167,17 +152,17 @@ export const GENRE_PROMPTS: Record<string, GenrePrompt> = {
 
 /** Có prompt riêng cho thể loại này (không tính dự phòng) hay không. */
 export function hasGenrePrompt(genre: string): boolean {
-  return Object.prototype.hasOwnProperty.call(GENRE_PROMPTS, (genre || "").trim().toLowerCase());
+  return Object.prototype.hasOwnProperty.call(GENRE_PROMPTS, currentGenre(genre));
 }
 
 /** Prompt trau chuốt của thể loại; thể loại lạ hay để trống thì dùng prompt dự phòng. */
 export function genrePrompt(genre: string): GenrePrompt {
-  const key = (genre || "").trim().toLowerCase();
+  const key = currentGenre(genre);
   return Object.prototype.hasOwnProperty.call(GENRE_PROMPTS, key) ? GENRE_PROMPTS[key] : FALLBACK_GENRE_PROMPT;
 }
 
 /** Gợi ý ngắn cho bước dịch của thể loại mới (rỗng nếu thể loại không có gợi ý riêng). */
 export function genreHint(genre: string): string {
-  const key = (genre || "").trim().toLowerCase();
+  const key = currentGenre(genre);
   return Object.prototype.hasOwnProperty.call(GENRE_PROMPTS, key) ? GENRE_PROMPTS[key].hint || "" : "";
 }
