@@ -40,7 +40,14 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-Không có việc đẩy dở. Mục 1 trang khách (lưu phụ đề theo tệp) xong trong v5.33.0 trên `work`.
+**Thêm nhà cung cấp ElevenLabs** (Chủ chốt 21/11/2026; câu mở đầu cuộc mới: «Đọc BANG_DIEU.md và làm ElevenLabs»).
+- Chủ chọn: gắn như mọi nhà khác, cả HAI cách trả (Thuê phòng: key ElevenLabs của khách; Trả theo lượt: key phòng, trừ Token dịch theo giá gốc); cho chọn cả Flash v2.5 và Multilingual v2 (mặc định Flash v2.5, Admin mở model nào khách chọn model đó); giọng đọc lấy từ tài khoản ElevenLabs (của khách hoặc phòng), có nghe thử.
+- ElevenLabs KHÔNG có model dịch chữ: gắn vào nhận dạng (Scribe, speech-to-text) và giọng đọc (Text to Speech). Bảng nhà khai đúng khả năng (ROLE_CAP), không khai «dịch». Dubbing là sản phẩm khác, không làm.
+- Cách làm theo mẫu có sẵn, không viết riêng: thêm `elevenlabs` vào `ProviderId`/`PROVIDERS` (`src/lib/sub/provider.ts`, xem `PROVIDERS.md` mục thêm nhà); giọng đọc theo mẫu Aura (`aura.ts`, `aura-speak.ts`, `src/routes/api/room-deepgram.ts`, engine trong `NarrationSettings`, độ trễ trong `narration-sync.ts`); nhận dạng theo mẫu nhà nhận link (`assemblyai-asr.server.ts` + `chargeRoomAsr`) hoặc gửi tệp qua kho tạm R2; giá trong `price-rows.ts` (USD mỗi triệu ký tự cho giọng, USD mỗi giờ cho Scribe), Admin chỉnh được; ghi sổ `recordSpendWith` (provider `elevenlabs`) ở mọi cửa tính tiền; key-ring, bảng nhà ở Admin, gói dịch vụ chọn được Scribe/giọng ElevenLabs.
+- Điều khoản: mục 5 thêm ElevenLabs (công ty Hoa Kỳ) nhận lời thoại khi nhận dạng và chữ khi đọc giọng; nâng TERMS_VERSION (khách đồng ý lại). Hướng dẫn: cách lấy key ElevenLabs.
+- Không gọi được api.elevenlabs.io từ máy thử của Claude: kiểm bằng test và bản dev, Chủ thử key thật.
+
+Không có việc đẩy dở khác. Mục 1 trang khách (lưu phụ đề theo tệp) xong trong v5.33.0.
 
 `HANDOFF.md` mục 2 không còn việc mở khác (Chủ xác nhận 20/11/2026).
 
@@ -59,6 +66,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-21 | Người dùng chốt | Thêm ElevenLabs như mọi nhà (nhận dạng, giọng đọc; cả hai cách trả; cả Flash v2.5 và Multilingual v2; giọng đọc từ tài khoản) | Làm ngay (cuộc trò chuyện mới) | Kế hoạch ở «Việc đang giữ». ElevenLabs không có model dịch chữ |
 | 2026-11-21 | Người dùng chốt | Nhìn vào là biết lời hay lỗ, đối chiếu được hóa đơn từng nhà cung cấp | Làm ngay | Xong v5.32.0, đẩy chính thức 21/11/2026 (sổ từng nhà bắt đầu ghi từ đây): sổ provider_spend, ô Lời hay lỗ đầu trang Doanh thu. Còn đề xuất cũ: tách doanh thu Token/Thuê phòng, đổi tên ô «Chi phí» |
 | 2026-11-21 | Người dùng chốt | Không tự thử trên web thật nữa (mỗi lần thử quá lâu); chỉ thử khi Chủ yêu cầu | Làm ngay | Đã ghi vào `huongdan.txt` mục kiểm thử. Tài khoản thử `claude.thunghiem.tyzo@gmail.com` chờ Chủ xóa; còn một phiếu giữ 1.476 Token tự nhả sau 6 giờ |
 | 2026-11-21 | Thẩm định (thử trên bản chính thức) | Người chỉ mua Token dịch bị chặn trả theo lượt và xuất file (quy tắc cũ «chưa từng thuê phòng = dùng thử») | Làm ngay | Chủ nói «làm». Sửa trong v5.31.1: còn Token dịch là chạy và xuất được; chưa chọn gói thì mở bước chọn gói |
