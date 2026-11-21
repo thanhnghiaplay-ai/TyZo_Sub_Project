@@ -4,7 +4,7 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
 ĐANG CHẠY (2026-11-20)
-- Số phiên bản trên nhánh `work`: v5.32.0 (`src/lib/app-version.ts`). Nhánh `main` chỉ đổi khi user nói «đẩy chính thức».
+- Số phiên bản trên nhánh `work`: v5.32.0 (`src/lib/app-version.ts`). Nhánh `main` = `work` (đẩy chính thức v5.32.0 ngày 21/11/2026).
 - Tên tệp trong Phiếu: máy chủ che (maskFileName) trước khi gửi nhân viên; chỉ Chủ bấm «Hiện tên đầy đủ» (revealTicketFileName, ghi nhật ký «xem-ten-tep» mỗi lần) và chỉ Chủ tìm theo tên tệp. Không gửi tên đầy đủ về trình duyệt nhân viên khác.
 - Trang mới: html và body khóa cuộn (overflow hidden), nên khung main của trang phải tự có h-dvh overflow-y-auto, không dùng min-h-dvh (back-nav.test.ts kiểm bốn trang đã sửa).
 - QUY ƯỚC (người dùng đặt, từ nay về sau): KHÔNG dùng hộp thoại mặc định của trình duyệt (alert, confirm, prompt) ở bất cứ đâu trong src. Hỏi lại trước việc khó hoàn tác: `askConfirm` (lib/confirm.ts, hộp vẽ ở components/confirm-dialog.tsx, có `danger` cho việc xóa hay ẩn). Báo tin thường: `pushToast`. lib/no-native-dialog.test.ts fail nếu vi phạm.

@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.31.3 (đẩy chính thức 21/11/2026). `work` mới hơn, chờ «đẩy chính thức». |
-| Bản mới nhất | v5.32.0 trên `work` (chưa đẩy chính thức): ô Lời hay lỗ và sổ phải trả từng nhà cung cấp (v5.32.0). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.32.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.32.0 trên `work` và `main`: ô Lời hay lỗ và sổ phải trả từng nhà cung cấp (v5.32.0). Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-21.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -57,7 +57,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
-| 2026-11-21 | Người dùng chốt | Nhìn vào là biết lời hay lỗ, đối chiếu được hóa đơn từng nhà cung cấp | Làm ngay | Xong v5.32.0 trên `work`: sổ provider_spend, ô Lời hay lỗ đầu trang Doanh thu. Còn đề xuất cũ: tách doanh thu Token/Thuê phòng, đổi tên ô «Chi phí» |
+| 2026-11-21 | Người dùng chốt | Nhìn vào là biết lời hay lỗ, đối chiếu được hóa đơn từng nhà cung cấp | Làm ngay | Xong v5.32.0, đẩy chính thức 21/11/2026 (sổ từng nhà bắt đầu ghi từ đây): sổ provider_spend, ô Lời hay lỗ đầu trang Doanh thu. Còn đề xuất cũ: tách doanh thu Token/Thuê phòng, đổi tên ô «Chi phí» |
 | 2026-11-21 | Người dùng chốt | Không tự thử trên web thật nữa (mỗi lần thử quá lâu); chỉ thử khi Chủ yêu cầu | Làm ngay | Đã ghi vào `huongdan.txt` mục kiểm thử. Tài khoản thử `claude.thunghiem.tyzo@gmail.com` chờ Chủ xóa; còn một phiếu giữ 1.476 Token tự nhả sau 6 giờ |
 | 2026-11-21 | Thẩm định (thử trên bản chính thức) | Người chỉ mua Token dịch bị chặn trả theo lượt và xuất file (quy tắc cũ «chưa từng thuê phòng = dùng thử») | Làm ngay | Chủ nói «làm». Sửa trong v5.31.1: còn Token dịch là chạy và xuất được; chưa chọn gói thì mở bước chọn gói |
 | 2026-11-21 | Người dùng nêu | Mục tài khoản có lịch sử đầy đủ: gói, tệp đã dịch, bao lâu, bao nhiêu Token; lịch sử giữ và hoàn Token bị mất | Làm ngay | Xong trong v5.31.0: tab Lượt dịch (đọc phiếu: giữ/trừ/trả lại), lượt thuê phòng ghi trên máy, tab Mua và gói (gói Token còn/hạn). Lịch sử giữ/hoàn «mất» vì từ v5.0.0 nằm trong phiếu, không trong sổ. Chủ xác nhận 21/11/2026 trên bản chính thức: lịch sử lượt dịch hiện đúng |
