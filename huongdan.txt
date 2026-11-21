@@ -4,7 +4,7 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
 ĐANG CHẠY (2026-11-20)
-- v5.34.0 (thêm nhà nhận dạng ElevenLabs, điều khoản 2026-11-22.1) nằm trên nhánh `ccr-6b6ee13d-637k1h`, chưa hợp vào `work`.
+- v5.35.0 (ElevenLabs: nhận dạng, giọng đọc có tiếng Việt; điều khoản 2026-11-22.1) nằm trên nhánh `ccr-6b6ee13d-637k1h`, chưa hợp vào `work`.
 - Số phiên bản trên nhánh `work`: v5.33.0 (`src/lib/app-version.ts`). Nhánh `main` = `work` (đẩy chính thức v5.33.0 ngày 21/11/2026).
 - Tên tệp trong Phiếu: máy chủ che (maskFileName) trước khi gửi nhân viên; chỉ Chủ bấm «Hiện tên đầy đủ» (revealTicketFileName, ghi nhật ký «xem-ten-tep» mỗi lần) và chỉ Chủ tìm theo tên tệp. Không gửi tên đầy đủ về trình duyệt nhân viên khác.
 - Trang mới: html và body khóa cuộn (overflow hidden), nên khung main của trang phải tự có h-dvh overflow-y-auto, không dùng min-h-dvh (back-nav.test.ts kiểm bốn trang đã sửa).

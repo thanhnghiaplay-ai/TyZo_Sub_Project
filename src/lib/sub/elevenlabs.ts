@@ -9,6 +9,7 @@ import type { Seg } from "@/lib/sub/types";
  * Trả kết quả ngay trong một yêu cầu: `language_code`, `text`, `words[]` (`text`, `start`, `end` theo GIÂY,
  * `type` word, spacing hoặc audio_event), có thể kèm `audio_duration_secs`. Lỗi kiểm dữ liệu 422 `{detail: [{msg}]}`,
  * lỗi khác thường dạng `{detail: {status, message}}`.
+ * Phản hồi có `transcription_id`: phòng gửi DELETE /v1/speech-to-text/transcripts/{id} ngay sau khi đọc xong (như các nhà khác).
  */
 
 /** Mã model của app (hiện ở ô chọn, lưu trong phiếu, gói dịch). */
@@ -105,6 +106,18 @@ export function sentencesFromElevenlabs(payload: unknown, language = ""): { sent
   const last = sentences.length ? sentences[sentences.length - 1].end : 0;
   const duration = isNum(root.audio_duration_secs) ? root.audio_duration_secs : chunk.audio_duration_secs;
   return { sentences, seconds: isNum(duration) && duration > 0 ? duration : last };
+}
+
+/** Mã bản nhận dạng (`transcription_id`) để xóa ở ElevenLabs. Rỗng nếu thiếu hoặc lạ. */
+export function elevenlabsTranscriptId(payload: unknown): string {
+  const value = obj(payload).transcription_id;
+  return typeof value === "string" && /^[A-Za-z0-9_-]{4,100}$/.test(value.trim()) ? value.trim() : "";
+}
+
+/** Đường xóa một bản nhận dạng (nối sau địa chỉ API của nhà). */
+export function elevenlabsDeletePath(id: string): string {
+  if (!/^[A-Za-z0-9_-]{4,100}$/.test(id)) throw new Error("Mã bản nhận dạng không hợp lệ.");
+  return `/speech-to-text/transcripts/${id}`;
 }
 
 /** Câu ElevenLabs → Seg để dịch. */

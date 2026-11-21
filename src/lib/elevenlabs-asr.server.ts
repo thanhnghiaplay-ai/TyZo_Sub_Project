@@ -1,7 +1,7 @@
 import { requireOpenAccount, takeRate } from "@/lib/guard.server";
 import { requireServiceOpen } from "@/lib/service-status.server";
 import { directFileUrlProblem } from "@/lib/sub/ali-filetrans";
-import { cleanElevenlabsKey, elevenlabsErrorText, elevenlabsFormFields, sentencesFromElevenlabs, type ElevenlabsSentence } from "@/lib/sub/elevenlabs";
+import { cleanElevenlabsKey, elevenlabsDeletePath, elevenlabsErrorText, elevenlabsTranscriptId, elevenlabsFormFields, sentencesFromElevenlabs, type ElevenlabsSentence } from "@/lib/sub/elevenlabs";
 import { authHeaders, PROVIDERS } from "@/lib/sub/provider";
 
 export type ElevenlabsAsrInput = { url: string; language: string; model: string; key: string; ticketId?: string };
@@ -51,6 +51,15 @@ export async function runElevenlabsAsr(userId: string, input: ElevenlabsAsrInput
     payload = text ? JSON.parse(text) : null;
   } catch {
     payload = null;
+  }
+  // Xóa bản nhận dạng ở ElevenLabs (kể cả khi lỗi, nếu phản hồi có mã); lỗi xóa không làm hỏng kết quả.
+  const transcriptId = elevenlabsTranscriptId(payload);
+  if (transcriptId) {
+    await fetch(`${PROVIDERS.elevenlabs.api}${elevenlabsDeletePath(transcriptId)}`, {
+      method: "DELETE",
+      headers: authHeaders("elevenlabs", key),
+      signal: AbortSignal.timeout(15_000),
+    }).catch(() => null);
   }
   if (!response.ok) throw new Error(elevenlabsErrorText(response.status, payload));
   const done = sentencesFromElevenlabs(payload, input.language);

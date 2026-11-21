@@ -1,4 +1,5 @@
 import { prependPack } from "@/lib/pack-order";
+import { ELEVEN_TTS_ID } from "@/lib/sub/eleven-voice";
 import { packStatusView } from "@/lib/pack-status";
 import { dongOrNull } from "@/lib/money-format";
 import { askConfirm } from "@/lib/confirm";
@@ -93,7 +94,8 @@ export function ServicePackBoard() {
     const assemblyai = ASR_MODELS.filter((row) => asrHouse(row.id) === "assemblyai").map((row) => row.id);
     const speechmatics = ASR_MODELS.filter((row) => asrHouse(row.id) === "speechmatics").map((row) => row.id);
     const soniox = ASR_MODELS.filter((row) => asrHouse(row.id) === "soniox").map((row) => row.id);
-    const elevenlabs = ASR_MODELS.filter((row) => asrHouse(row.id) === "elevenlabs").map((row) => row.id);
+    // ElevenLabs: model nhận dạng và giọng đọc Flash v2.5 (việc Thuyết minh).
+    const elevenlabs = [...ASR_MODELS.filter((row) => asrHouse(row.id) === "elevenlabs").map((row) => row.id), ELEVEN_TTS_ID];
     const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai, speechmatics, soniox, elevenlabs };
     return byProvider;
   }, [groqModels, models]);

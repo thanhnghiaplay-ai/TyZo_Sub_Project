@@ -8,6 +8,7 @@ describe("hàng model thuê phòng ở Admin", () => {
     assert.deepEqual([...rentKindsOf("groq")].sort(), ["asr", "chat", "guard", "tts"]);
     assert.deepEqual([...rentKindsOf("alibaba")].sort(), ["asr", "chat", "guard"]);
     assert.deepEqual([...rentKindsOf("deepgram")], ["asr"]);
+    assert.deepEqual([...rentKindsOf("elevenlabs")].sort(), ["asr", "tts"]);
   });
 
   it("chưa đồng bộ key phòng vẫn đủ model đã biết, onKey là null", () => {

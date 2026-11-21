@@ -75,7 +75,7 @@ export const ASR_PRICE: Record<AsrModel, number> = {
 
 export type NarrationSettings = {
   enabled: boolean;
-  engine: "browser" | "orpheus" | "edge" | "aura";
+  engine: "browser" | "orpheus" | "edge" | "aura" | "elevenlabs";
   rate: number;
   pitch: number;
   volume: number;
@@ -86,6 +86,8 @@ export type NarrationSettings = {
   orpheusVoice: string;
   /** Giọng Deepgram Aura-2 (thalia, apollo, celeste...). Trừ Token dịch qua cửa của phòng. */
   auraVoice: string;
+  /** Mã giọng ElevenLabs (đọc từ danh sách giọng của key). Rỗng = giọng đầu hợp giới. */
+  elevenVoice: string;
   duck: boolean;
   muteVideo: boolean;
   /** Giây lệch lúc đọc. Âm là đọc trước, dương là đọc sau, 0 là đúng lúc câu hiện. */
@@ -105,6 +107,7 @@ export const NARRATION_DEFAULT: NarrationSettings = {
   voiceURI: "",
   orpheusVoice: "hannah",
   auraVoice: "thalia",
+  elevenVoice: "",
   duck: true,
   muteVideo: false,
   lead: 0,

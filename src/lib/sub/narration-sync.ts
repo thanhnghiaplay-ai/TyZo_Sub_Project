@@ -11,13 +11,14 @@
 
 import type { Seg } from "./types.ts";
 
-export type SpeechEngine = "browser" | "orpheus" | "edge" | "aura";
+export type SpeechEngine = "browser" | "orpheus" | "edge" | "aura" | "elevenlabs";
 
 /** Độ trễ tạo giọng ước tính ban đầu (giây), dùng cho tới khi đo được số thật. */
 export const LATENCY_DEFAULT: Record<SpeechEngine, number> = {
   edge: 0.8,
   orpheus: 1.3,
   aura: 1,
+  elevenlabs: 0.9,
   browser: 0.1,
 };
 

@@ -1,7 +1,7 @@
 /**
  * Hàng model trong bảng Admin «Model khách được chọn khi thuê phòng».
  * Dựng từ danh mục chung (model-catalog.ts) cộng model key phòng gọi được, thay bảng viết tay từng nhà.
- * Chỉ liệt kê loại model mà cửa Thuê phòng THẬT SỰ chặn được hôm nay: nhận dạng và dịch (rentUseProblem), giọng Orpheus (rentVoiceProblem, chặn ở narration.ts).
+ * Chỉ liệt kê loại model mà cửa Thuê phòng THẬT SỰ chặn được hôm nay: nhận dạng và dịch (rentUseProblem), giọng Orpheus và ElevenLabs (rentVoiceProblem, chặn ở narration.ts và cửa /api/room-elevenlabs).
  * Giọng Aura (Deepgram) chỉ trả bằng Token dịch nên không có ô tick. Dịch trực tiếp có bảng riêng (live-show.ts).
  */
 import { catalogFor, modelKindOf, type ModelKind } from "./sub/model-catalog.ts";
@@ -24,7 +24,8 @@ export function rentKindsOf(house: ProviderId): Set<ModelKind> {
     kinds.add("chat");
     kinds.add("guard");
   }
-  if (house === "groq" && caps.includes("tts")) kinds.add("tts");
+  // Giọng đọc chặn được khi dùng key khách: Orpheus (Groq) và ElevenLabs. Aura (Deepgram) chỉ trả bằng Token dịch.
+  if ((house === "groq" || house === "elevenlabs") && caps.includes("tts")) kinds.add("tts");
   return kinds;
 }
 

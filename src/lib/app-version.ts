@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.34.0";
+export const APP_VERSION = "5.35.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.35.0",
+    time: "05:53 22/11/2026",
+    title: "Thuyết minh bằng giọng ElevenLabs, đọc được tiếng Việt.",
+    points: [
+      "Ở mục Thuyết minh, chọn ElevenLabs rồi chọn giọng nam hoặc nữ theo danh sách giọng của key.",
+      "Trả theo lượt trừ Token dịch theo số chữ đọc. Thuê phòng dùng key ElevenLabs của bạn.",
+      "Nhận dạng ElevenLabs xong thì bản nhận dạng được xóa ở ElevenLabs.",
+    ],
+  },
   {
     version: "5.34.0",
     time: "03:59 22/11/2026",

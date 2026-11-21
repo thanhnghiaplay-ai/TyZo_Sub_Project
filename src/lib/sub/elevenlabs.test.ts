@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   cleanElevenlabsKey,
+  elevenlabsDeletePath,
+  elevenlabsTranscriptId,
   elevenlabsErrorText,
   elevenlabsFormFields,
   elevenlabsLanguage,
@@ -134,5 +136,15 @@ describe("lỗi và key ElevenLabs", () => {
     assert.throws(() => cleanElevenlabsKey("room"));
     assert.throws(() => cleanElevenlabsKey("short"));
     assert.throws(() => cleanElevenlabsKey(`sk_${"a".repeat(20)} x`));
+  });
+});
+
+describe("xóa bản nhận dạng ElevenLabs", () => {
+  it("đọc transcription_id, lạ thì rỗng; dựng đường xóa", () => {
+    assert.equal(elevenlabsTranscriptId({ transcription_id: " abc_123 " }), "abc_123");
+    assert.equal(elevenlabsTranscriptId({ transcription_id: "../x" }), "");
+    assert.equal(elevenlabsTranscriptId(null), "");
+    assert.equal(elevenlabsDeletePath("abc_123"), "/speech-to-text/transcripts/abc_123");
+    assert.throws(() => elevenlabsDeletePath("a/b"));
   });
 });

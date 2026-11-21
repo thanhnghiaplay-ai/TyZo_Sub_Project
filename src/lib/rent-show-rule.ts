@@ -50,12 +50,12 @@ export function orpheusModelId(lang: "en" | "ar") {
 }
 
 /**
- * Giọng đọc Orpheus bằng key riêng của khách có được mở không. Chỉ Groq có giọng thuê phòng được;
+ * Giọng đọc bằng key riêng của khách có được mở không: Orpheus (Groq) và Flash v2.5 (ElevenLabs).
  * Aura (Deepgram) chỉ trả bằng Token dịch nên không qua cửa này.
  * show = null: Chủ chưa lưu danh sách, không khóa thêm.
  */
-export function rentVoiceProblem(show: RentShow | null, voiceModel: string): string {
+export function rentVoiceProblem(show: RentShow | null, voiceModel: string, house: ProviderId = "groq"): string {
   if (!show) return "";
-  if (show.groq.includes(voiceModel)) return "";
+  if ((show[house] ?? []).includes(voiceModel)) return "";
   return "Admin chưa mở giọng đọc này cho thuê phòng. Đang dùng giọng khác.";
 }

@@ -169,9 +169,10 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     label: "ElevenLabs",
     api: ELEVENLABS_API,
     auth: "xi",
-    caps: ["asr"],
+    caps: ["asr", "tts"],
     // Scribe nhận file tải lên hoặc link (source_url); app dùng link, trả kết quả ngay trong một yêu cầu.
-    // ElevenLabs còn đọc thành tiếng, nhưng app chưa có đường thuyết minh cho nhà này nên chưa khai "tts".
+    // Đọc thành tiếng: giọng Flash v2.5 qua cửa /api/room-elevenlabs (key phòng trừ Token dịch, key khách chỉ chuyển tiếp).
+    // ElevenLabs không có model dịch chữ nên không khai "chat".
     intake: "link",
     keyPage: "elevenlabs.io/app/settings/api-keys",
     clientStore: "gel",

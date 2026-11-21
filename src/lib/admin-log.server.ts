@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.35.0",
+    time: "05:53 22/11/2026",
+    area: "ha-tang",
+    text: "ElevenLabs đồng bộ với các nhà khác và thêm giọng đọc (Chủ yêu cầu «làm cho đồng bộ», «làm luôn phần giọng đọc»). (1) Nhận dạng: đọc transcription_id trong phản hồi rồi DELETE /v1/speech-to-text/transcripts/{id} (cả khi lỗi), như Soniox/AssemblyAI; điều khoản bỏ câu «chưa gửi lệnh xóa». Vẫn một yêu cầu đồng bộ: đường chạy ngầm của ElevenLabs cần webhook cài ở trang của họ nên không làm. (2) Giọng đọc: caps thêm tts; sub/eleven-voice.ts (model eleven_flash_v2_5, mã app elevenlabs-flash-v2-5, 40 đô/triệu ký tự, 14 tiếng gồm vi, không có Thái; đọc /v2/voices vì giọng mặc định của nhà hết hạn 31/12/2026); route /api/room-elevenlabs (x-eleven-path /audio/speech hoặc /voices; không x-user-key = key phòng, chargeWith theo ký tự, ghi provider_spend; có x-user-key = chuyển tiếp, không lưu key, chặn theo rent_show[elevenlabs]); narration engine «elevenlabs» + settings.elevenVoice; studio chọn giọng theo danh sách của key, lọc nam/nữ; danh mục, gói dịch (việc Thuyết minh), bảng giá Admin, ô tick thuê phòng (rentKindsOf). Điều khoản giữ số 2026-11-22.1 (chưa phát hành tới khách) và ghi lại dấu vân tay. (3) Dịch: ElevenLabs không có API dịch chữ; không khai chat. CHƯA thử key thật.",
+  },
+  {
     version: "5.34.0",
     time: "03:59 22/11/2026",
     area: "ha-tang",

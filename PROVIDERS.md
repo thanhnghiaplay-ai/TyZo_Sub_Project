@@ -41,3 +41,11 @@ Không viết riêng cho nhà nào. Mọi việc chữ chọn model qua một đ
 Thêm nhà dịch mới: khai `chat` ở bảng nhà, thêm model vào `CHAT_MODELS` với `provider`, thêm giá vào `BASE_ROWS` và cách nạp giá vào
 `ROW_LOADERS`, rồi chạy test. Không phải sửa `run-turn.ts`, `model-call.ts`, `groq.ts` hay giao diện.
 Điều khoản: thêm nhà vào câu «Câu thoại cần dịch … được gửi tới …» (`terms-document.tsx`) và nâng `TERMS_VERSION`.
+
+## Giọng đọc (thuyết minh) theo nhà (v5.35.0)
+Mỗi nhà đọc giọng một đường riêng, chưa gom: Orpheus (Groq, `groq.ts` `speakOrpheus`), Aura (Deepgram, `/api/room-deepgram`),
+ElevenLabs Flash v2.5 (`/api/room-elevenlabs`, lõi `sub/eleven-voice.ts`). Nhà có `"tts"` thì việc Thuyết minh trong gói chọn được
+nhà đó (`providersForRole("narration")`). Thêm giọng nhà mới: khai `"tts"`, model ở `model-catalog.ts` (kind `tts`), giá theo ký tự
+(`usdPerMillionChars`) ở bảng giá của nhà, cửa phòng tính tiền bằng `chargeWith` đường `/audio/speech`, engine ở `narration.ts`
+và `NarrationSettings`, ô chọn ở `studio.tsx`. Key khách dùng được giọng thì thêm nhà vào `rentKindsOf` (ô tick thuê phòng) và
+kiểm `rentVoiceProblem(show, model, house)`.

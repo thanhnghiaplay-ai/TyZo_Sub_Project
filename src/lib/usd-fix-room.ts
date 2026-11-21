@@ -6,6 +6,7 @@ import { ASSEMBLYAI_BASE_ROWS } from "@/lib/sub/assemblyai-base";
 import { SPEECHMATICS_BASE_ROWS } from "@/lib/sub/speechmatics-base";
 import { SONIOX_BASE_ROWS } from "@/lib/sub/soniox-base";
 import { ELEVENLABS_BASE_ROWS } from "@/lib/sub/elevenlabs-base";
+import { ELEVEN_TTS_ID } from "@/lib/sub/eleven-voice";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";
 import { isPulledHouse } from "@/lib/price-house";
@@ -132,7 +133,8 @@ function listed(groq: GroqLiveRow[], ali: GroqLiveRow[], dg: GroqLiveRow[], fix:
     const auto = slotOf(row);
     const slot = fix[row.id] ?? emptySlot();
     const effective = applyUsdFix([{ ...blank(row.id), usdPerHour: auto.hour, usdIn: auto.inn, usdOut: auto.out, usdPerMillionChars: auto.chars }], { [row.id]: slot })[0];
-    rows.push({ id: row.id, name: ASR_MODELS.find((item) => item.id === row.id)?.name ?? modelLabel(row.id), house: "ElevenLabs", kind: kindOf(row.id, auto), auto, fix: slot, tokens: tokenPriceLine(effective, turbo) });
+    const name = ASR_MODELS.find((item) => item.id === row.id)?.name ?? (row.id === ELEVEN_TTS_ID ? "ElevenLabs Flash v2.5 (giọng đọc)" : modelLabel(row.id));
+    rows.push({ id: row.id, name, house: "ElevenLabs", kind: kindOf(row.id, auto), auto, fix: slot, tokens: tokenPriceLine(effective, turbo) });
   }
   return rows;
 }

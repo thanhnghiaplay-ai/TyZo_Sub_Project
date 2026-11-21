@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | Nhánh `main` = v5.33.0 (đẩy chính thức 21/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.34.0 trên nhánh `ccr-6b6ee13d-637k1h` (Claude làm, chưa hợp vào `work`): thêm nhà nhận dạng ElevenLabs (Scribe v3, v2), điều khoản 2026-11-22.1. Trước đó v5.33.0 trên `work` và `main`. Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản mới nhất | v5.35.0 trên nhánh `ccr-6b6ee13d-637k1h` (Claude làm, chưa hợp vào `work`): ElevenLabs nhận dạng (Scribe v3, v2, xóa bản nhận dạng sau mỗi lần chạy) và giọng đọc (Flash v2.5, có tiếng Việt), điều khoản 2026-11-22.1. Trước đó v5.33.0 trên `work` và `main`. Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-22.1 trên nhánh `ccr-6b6ee13d-637k1h` (bản khách: 2026-11-21.3) |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -40,7 +40,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
-v5.34.0 (ElevenLabs) nằm trên nhánh `ccr-6b6ee13d-637k1h`, chờ hợp vào `work`. Môi trường của Claude chỉ được đẩy nhánh này, nên Chủ (hoặc vai Làm) hợp nhánh vào `work` rồi mới «đẩy chính thức». Mục 1 trang khách (lưu phụ đề theo tệp) xong trong v5.33.0 trên `work`.
+v5.34.0–v5.35.0 (ElevenLabs) nằm trên nhánh `ccr-6b6ee13d-637k1h`, chờ hợp vào `work`. Môi trường của Claude chỉ được đẩy nhánh này, nên Chủ (hoặc vai Làm) hợp nhánh vào `work` rồi mới «đẩy chính thức». Mục 1 trang khách (lưu phụ đề theo tệp) xong trong v5.33.0 trên `work`.
 
 `HANDOFF.md` mục 2 không còn việc mở khác (Chủ xác nhận 20/11/2026).
 
@@ -59,6 +59,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 | Thời điểm | Vai | Ý | Khả thi | Trạng thái |
 |---|---|---|---|---|
+| 2026-11-22 | Người dùng yêu cầu, Claude làm | ElevenLabs: «làm cho đồng bộ giống các nhà kia», «làm luôn phần giọng đọc», «làm luôn phần dịch» | Đồng bộ và giọng đọc: làm ngay. Dịch: không làm được bằng API của ElevenLabs | Xong v5.35.0 trên `ccr-6b6ee13d-637k1h`: xóa bản nhận dạng sau mỗi lần chạy; giọng Flash v2.5 (tiếng Việt và 13 tiếng khác, không có Thái) ở hai cửa, chọn giọng theo danh sách của key. Dịch: ElevenLabs không có API dịch chữ (chỉ có Dubbing lồng tiếng, 0,33–2,20 đô/phút), chờ Chủ chốt có làm đường Dubbing không. Chạy ngầm kiểu gửi rồi hỏi cần webhook cài ở trang ElevenLabs, chưa làm |
 | 2026-11-22 | Người dùng yêu cầu («làm ElevenLabs»), Claude làm | Thêm ElevenLabs làm nhà nhận dạng theo `PROVIDERS.md` bước 1–8. Khác quy tắc ở hai chỗ: vai Thẩm định sửa code (yêu cầu trực tiếp), và đẩy nhánh `ccr-6b6ee13d-637k1h` thay vì `work` (môi trường chỉ cho đẩy nhánh này) | Làm ngay | Xong v5.34.0 trên `ccr-6b6ee13d-637k1h`: Scribe v3, Scribe v2, đủ hai cửa, giá cố định 0,20 đô/giờ, điều khoản 2026-11-22.1. CHƯA thử key ElevenLabs thật. Chưa làm: đọc thuyết minh bằng giọng ElevenLabs, lệnh xóa bản nhận dạng ở ElevenLabs, đường webhook cho file quá 270 giây |
 | 2026-11-21 | Người dùng chốt | Nhìn vào là biết lời hay lỗ, đối chiếu được hóa đơn từng nhà cung cấp | Làm ngay | Xong v5.32.0, đẩy chính thức 21/11/2026 (sổ từng nhà bắt đầu ghi từ đây): sổ provider_spend, ô Lời hay lỗ đầu trang Doanh thu. Còn đề xuất cũ: tách doanh thu Token/Thuê phòng, đổi tên ô «Chi phí» |
 | 2026-11-21 | Người dùng chốt | Không tự thử trên web thật nữa (mỗi lần thử quá lâu); chỉ thử khi Chủ yêu cầu | Làm ngay | Đã ghi vào `huongdan.txt` mục kiểm thử. Tài khoản thử `claude.thunghiem.tyzo@gmail.com` chờ Chủ xóa; còn một phiếu giữ 1.476 Token tự nhả sau 6 giờ |
@@ -95,7 +96,7 @@ Thư chào mừng và thư đăng nhập lạ không nằm trong danh sách này
 
 ## Còn mở
 
-- 2026-11-22: v5.34.0 ElevenLabs trên `ccr-6b6ee13d-637k1h`. Chưa thử với key thật: tên model (scribe_v3, scribe_v2), hình dạng phản hồi, kiểm key qua `/models` (key bị giới hạn quyền có thể báo sai), file dài có kịp 270 giây một yêu cầu không. Phòng chưa gửi lệnh xóa bản nhận dạng ở ElevenLabs (điều khoản đã ghi rõ). Điểm chất lượng là ước lượng.
+- 2026-11-22: v5.34.0–v5.35.0 ElevenLabs trên `ccr-6b6ee13d-637k1h`. Chưa thử với key thật (cả giọng đọc: danh sách /v2/voices, đọc mp3, trừ Token theo chữ): tên model (scribe_v3, scribe_v2), hình dạng phản hồi, kiểm key qua `/models` (key bị giới hạn quyền có thể báo sai), file dài có kịp 270 giây một yêu cầu không. Điểm chất lượng là ước lượng. Chưa xem bằng mắt màn Thuyết minh có ô ElevenLabs.
 - 2026-11-17: v5.0.1 trên work. Điều khoản 2026-11-17.1: bản quyền và khiếu nại, Token dịch không phải tiền, dữ liệu ra Groq và Alibaba. Chưa có tên doanh nghiệp. Chưa bấm cửa đồng ý trên điện thoại.
 - 2026-11-16: v5.0.0 trên work. Mua Token dịch và thuê phòng bằng mã QR, không giữ số dư để chi. Orpheus trừ Token dịch. Số dư test về 0. Điều khoản 2026-11-16.4. Chưa bấm QR và Orpheus trên điện thoại.
 - 2026-11-16: gói giây bước 5–8 đã vào work (v4.1.0). Dịch trực tiếp trừ giây. Thuê phòng giữ giá tay. Đã bỏ ô giá riêng. Alibaba kéo giá Singapore, lỗi thì dùng giá dự phòng.

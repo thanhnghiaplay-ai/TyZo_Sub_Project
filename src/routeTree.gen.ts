@@ -21,6 +21,7 @@ import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as YeuCauRouteImport } from './routes/yeu-cau'
 import { Route as ApiModelCallRouteImport } from './routes/api/model-call'
 import { Route as ApiRoomDeepgramRouteImport } from './routes/api/room-deepgram'
+import { Route as ApiRoomElevenlabsRouteImport } from './routes/api/room-elevenlabs'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPayCassoRouteImport } from './routes/api/pay/casso'
@@ -86,6 +87,11 @@ const ApiRoomDeepgramRoute = ApiRoomDeepgramRouteImport.update({
   path: '/api/room-deepgram',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRoomElevenlabsRoute = ApiRoomElevenlabsRouteImport.update({
+  id: '/api/room-elevenlabs',
+  path: '/api/room-elevenlabs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRoomGroqRoute = ApiRoomGroqRouteImport.update({
   id: '/api/room-groq',
   path: '/api/room-groq',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/yeu-cau': typeof YeuCauRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
+  '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/yeu-cau': typeof YeuCauRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
+  '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/yeu-cau': typeof YeuCauRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
+  '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/yeu-cau'
     | '/api/model-call'
     | '/api/room-deepgram'
+    | '/api/room-elevenlabs'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/yeu-cau'
     | '/api/model-call'
     | '/api/room-deepgram'
+    | '/api/room-elevenlabs'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/yeu-cau'
     | '/api/model-call'
     | '/api/room-deepgram'
+    | '/api/room-elevenlabs'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   YeuCauRoute: typeof YeuCauRoute
   ApiModelCallRoute: typeof ApiModelCallRoute
   ApiRoomDeepgramRoute: typeof ApiRoomDeepgramRoute
+  ApiRoomElevenlabsRoute: typeof ApiRoomElevenlabsRoute
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPayCassoRoute: typeof ApiPayCassoRoute
@@ -324,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRoomDeepgramRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/room-elevenlabs': {
+      id: '/api/room-elevenlabs'
+      path: '/api/room-elevenlabs'
+      fullPath: '/api/room-elevenlabs'
+      preLoaderRoute: typeof ApiRoomElevenlabsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/room-groq': {
       id: '/api/room-groq'
       path: '/api/room-groq'
@@ -368,6 +388,7 @@ const rootRouteChildren: RootRouteChildren = {
   YeuCauRoute: YeuCauRoute,
   ApiModelCallRoute: ApiModelCallRoute,
   ApiRoomDeepgramRoute: ApiRoomDeepgramRoute,
+  ApiRoomElevenlabsRoute: ApiRoomElevenlabsRoute,
   ApiRoomGroqRoute: ApiRoomGroqRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPayCassoRoute: ApiPayCassoRoute,

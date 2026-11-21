@@ -147,13 +147,13 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       id: "thuyet-minh",
       title: "Thuyết minh (đọc bản dịch thành tiếng)",
       group: "tinh-nang",
-      intro: "Nghe bản dịch được đọc theo video. Neural miễn phí. Orpheus và Aura khi dùng key của phòng thì trừ Token dịch.",
-      words: "thuyet minh doc giong nghe tts neural orpheus aura deepgram am thanh",
+      intro: "Nghe bản dịch được đọc theo video. Neural miễn phí. Orpheus, Aura và ElevenLabs khi dùng key của phòng thì trừ Token dịch.",
+      words: "thuyet minh doc giong nghe tts neural orpheus aura deepgram elevenlabs tieng viet am thanh",
       tour: "thuyet-minh",
       steps: [
         { text: `Mở «${UI.voiceTab}» ở menu trái để bật hoặc tắt thuyết minh và chọn giọng. Bạn tắt thì lần sau app giữ tắt.` },
         { text: "Giọng neural cần mạng. Khi mạng lỗi, app đọc bằng giọng có sẵn trên máy." },
-        { text: "Khi dùng key của phòng, Orpheus trừ Token dịch. Giọng Aura (Deepgram) luôn trừ Token dịch và chỉ đọc tiếng Anh và Tây Ban Nha. Neural và giọng máy không trừ. Giọng Orpheus khi bạn dùng key của mình thì tính vào key đó." },
+        { text: "Khi dùng key của phòng, Orpheus trừ Token dịch. Giọng Aura (Deepgram) luôn trừ Token dịch và chỉ đọc tiếng Anh và Tây Ban Nha. Giọng ElevenLabs đọc được tiếng Việt và nhiều tiếng khác (chưa có tiếng Thái): trả theo lượt thì trừ Token dịch, thuê phòng thì dùng key ElevenLabs của bạn. Neural và giọng máy không trừ. Giọng Orpheus khi bạn dùng key của mình thì tính vào key đó." },
       ],
     },
     {

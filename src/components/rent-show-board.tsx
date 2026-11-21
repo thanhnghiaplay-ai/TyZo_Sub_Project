@@ -66,7 +66,7 @@ export function RentShowBoard() {
         <p className="text-sm text-muted">
           Khách dùng key của họ. Chỉ model được đánh dấu mới chọn được. Danh sách lấy từ model đã biết cộng model key phòng của từng nhà gọi được
           (lưu key phòng ở mục Key của phòng để thấy thêm model). Whisper cần key Groq. Filetrans cần key Alibaba. Nova-3 cần key Deepgram.
-          Dịch khi thuê phòng vẫn là model Groq. Dịch bằng Alibaba hay Deepgram chưa chạy. Giọng Orpheus (Groq) có ô tick riêng: bỏ dấu thì khách key riêng không dùng được giọng đó. Giọng Aura chỉ trả bằng Token dịch nên không có ô. Dịch trực tiếp có bảng riêng.
+          Dịch khi thuê phòng vẫn là model Groq. Dịch bằng Alibaba hay Deepgram chưa chạy. Giọng Orpheus (Groq) và giọng ElevenLabs có ô tick riêng: bỏ dấu thì khách key riêng không dùng được giọng đó. Giọng Aura chỉ trả bằng Token dịch nên không có ô. Dịch trực tiếp có bảng riêng.
         </p>
         <p className="text-xs text-muted">{saved ? "Đã có danh sách. Bỏ hết dấu rồi lưu thì khách không chọn được model nào." : "Chưa lưu. Khách vẫn chọn như trước cho đến khi bạn bấm Lưu."}</p>
       </div>

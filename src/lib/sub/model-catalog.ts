@@ -7,6 +7,7 @@
 import { LIVE_MODEL_35, LIVE_MODEL_38 } from "../live/live-price.ts";
 import { asrHouse, asrIntake } from "./asr-house.ts";
 import { AURA_VOICES, auraModel, type AuraLang } from "./aura.ts";
+import { ELEVEN_TTS_ID } from "./eleven-voice.ts";
 import { modelRoleOf, type ModelRole } from "./model-role.ts";
 import { ASR_MODELS, CHAT_MODELS } from "./models.ts";
 import type { ProviderId, ProviderIntake } from "./provider.ts";
@@ -49,6 +50,7 @@ function build(): CatalogModel[] {
       out.push({ id: auraModel(voice.id, lang), provider: "deepgram", kind: "tts", label: `Aura-2 ${voice.name} (${lang})`, intake: null });
     }
   }
+  out.push({ id: ELEVEN_TTS_ID, provider: "elevenlabs", kind: "tts", label: "ElevenLabs Flash v2.5 (giọng đọc)", intake: null });
   for (const id of [LIVE_MODEL_38, LIVE_MODEL_35]) out.push({ id, provider: "alibaba", kind: "live", label: LIVE_LABEL[id] ?? id, intake: null });
   return out;
 }
