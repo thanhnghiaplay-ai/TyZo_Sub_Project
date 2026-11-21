@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.22.0",
+    time: "21/11/2026",
+    area: "khac",
+    text: "v5.22.0, đợt 2 sắp lại trang khách. (1) key-ring.tsx thay 6 ô key: danh sách key đã thêm (nhà, việc làm được từ providerDoes, trạng thái: Groq theo keyStatus, nhà khác theo keyModels: đang kiểm/hợp lệ N model/chưa đọc được/quá ngắn), Sửa, Xóa (askConfirm); Thêm key → chọn nhà (PROVIDER_IDS) → dán. Khối thêm giữ chỗ tới khi bấm Xong để gõ không mất con trỏ; hàng đang sửa không biến mất khi ô tạm trống. Mốc tour key-input chuyển lên khung danh sách (luôn hiện). (2) Sửa lỗi sẵn có: key Groq trước chỉ lưu lúc bấm chạy (tải lại trước đó là mất) → storeGroqKey lưu khi đủ 20 ký tự; xóa trắng key nhà khác trước không xóa khỏi kho (tải lại hiện lại) → removeStore. (3) Ví (account-panel.tsx): tài khoản → khối của cách trả đang dùng (tyzo_pay) → khối kia → lịch sử → tên, mật khẩu → Cần giúp; khóa/cấm thì ô gửi yêu cầu vẫn trên cùng. Bỏ chữ lặp (cửa trả theo lượt một dòng, kệ Token dịch không lặp tiêu đề và số dư, dùng thử không nói hai lần). (4) Tour và Hướng dẫn tả cách Thêm key; chữ «Groq cần cho dịch» thay bằng nhà có model dịch (providersWith). Kiểm: thêm/gõ/Xong/tải lại/xóa/tải lại, key Groq còn sau tải lại; Ví hai thứ tự; 12 tổ hợp màn. CHƯA kiểm tài khoản bị khóa thật, gói và Token thật, máy thật.",
+  },
+  {
     version: "5.21.0",
     time: "21/11/2026",
     area: "khac",

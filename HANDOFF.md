@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.22.0** (nhánh `ccr-bc99847a-xy1bgk`, chưa lên `work`/`main`): đợt 2 sắp lại trang khách. «Key AI của bạn» kiểu Thêm key (`key-ring.tsx`), sửa lưu/xóa key, Ví chia khối Thuê phòng/Token dịch theo cách trả đang dùng, hỗ trợ xuống cuối. tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1326 pass. Còn đợt 3, 4.
 - **Đẩy chính thức v5.21.0**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.21.0.
 - **v5.21.0**: đợt 1 sắp lại trang khách. Dòng trạng thái cách trả (`pay-status.ts`, `pay-status-bar.tsx`), nhớ cách trả, nhánh thuê phòng chưa key; nút Hiển thị gom 5 nút đầu trang; nền mờ sau thanh dưới theo hướng màn. tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1326 pass, build xong. Kiểm 12 tổ hợp màn. Còn đợt 2–4 (BANG_DIEU «Ý đã nêu»).
 - **Đẩy chính thức v5.20.1**: Chủ nói «gộp sang work rồi đẩy chính thức». `work` và `main` kéo thẳng lên v5.20.1.
