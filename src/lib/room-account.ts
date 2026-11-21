@@ -1,3 +1,4 @@
+import * as rightsShape from "@/lib/rights-consent";
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { roomPlan, type RoomPlanId } from "@/lib/room-plans";
@@ -181,6 +182,28 @@ export const recordTermsConsent = createServerFn({ method: "POST" })
     const sql = await getSql();
     await sql`insert into room_accounts (user_id) values (${context.userId}) on conflict (user_id) do nothing`;
     await sql`update room_accounts set terms_version = ${data} where user_id = ${context.userId}`;
+    return { ok: true as const };
+  });
+
+/** Ghi bằng chứng khách đã xác nhận quyền với một tệp (mã băm, không tên tệp). Gọi lại cùng tệp thì giữ lần đầu. */
+export const recordRightsConsent = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { media: string; terms: string }) => {
+    const { isMediaHash } = rightsShape;
+    if (!isMediaHash(input?.media)) throw new Error("Mã tệp không đúng.");
+    const terms = input?.terms?.trim() ?? "";
+    if (!/^\d{4}-\d{2}-\d{2}\.\d+$/.test(terms)) throw new Error("Phiên bản điều khoản không đúng.");
+    return { media: input.media, terms };
+  })
+  .handler(async ({ context, data }) => {
+    const { takeRate } = await import("@/lib/guard.server");
+    await takeRate(`rights:${context.userId}`, 60, 60);
+    const { getSql } = await import("@/lib/db");
+    const sql = await getSql();
+    await sql`
+      insert into rights_consents (user_id, media_hash, terms_version) values (${context.userId}, ${data.media}, ${data.terms})
+      on conflict (user_id, media_hash) do nothing
+    `;
     return { ok: true as const };
   });
 

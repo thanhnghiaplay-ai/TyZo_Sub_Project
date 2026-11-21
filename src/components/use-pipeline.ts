@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { currentGenre, needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
+import { RIGHTS_CONFIRM, RIGHTS_DECLINED, RIGHTS_TEXT, RIGHTS_TITLE, rememberRights, rightsConfirmed } from "@/lib/rights-consent";
+import { TERMS_VERSION } from "@/lib/terms";
 import { usePolish } from "@/components/use-polish";
-import { claimTrialDevice, spendTrial } from "@/lib/room-account";
+import { claimTrialDevice, recordRightsConsent, spendTrial } from "@/lib/room-account";
 import { getServiceStatus } from "@/lib/service-status-room";
 import { defaultServiceStatus, serviceBlock } from "@/lib/service-status";
 import { getMyPlace } from "@/lib/admin-room";
@@ -1030,6 +1032,13 @@ export function usePipeline() {
     if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
     if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
     if (!file && !audioFile && videoLinkBroken(link)) return say(LINK_WARN, true);
+    // Công cụ theo yêu cầu: khách tự xác nhận quyền với nội dung, mỗi tệp một lần, trước khi gửi nội dung đi đâu hay tốn tiền, lượt thử.
+    if (!rightsConfirmed(mediaId())) {
+      const ok = await askConfirm({ title: RIGHTS_TITLE, text: RIGHTS_TEXT, confirmLabel: RIGHTS_CONFIRM, cancelLabel: "Hủy" });
+      if (!ok) return say(RIGHTS_DECLINED, true);
+      const hash = rememberRights(mediaId());
+      void recordRightsConsent({ data: { media: hash, terms: TERMS_VERSION } }).catch(() => {});
+    }
     // Kiểm key và model trước mọi việc tốn tiền hay tốn lượt thử. Mất mạng hoặc Groq bận thì không chặn.
     if (token && token !== ROOM_KEY && !roomPayRef.current) {
       const known = probeRef.current;
