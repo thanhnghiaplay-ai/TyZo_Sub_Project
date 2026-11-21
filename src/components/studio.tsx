@@ -50,6 +50,7 @@ import { PayStatusBar } from "@/components/pay-status-bar";
 import { homeAction } from "@/lib/home-action";
 import { readUse, rememberUse, shouldAsk, presetForUse, type UseAnswer } from "@/lib/first-ask";
 import { FirstAskCard } from "@/components/first-ask-card";
+import { recordTally } from "@/lib/usage-tally-room";
 import { KeyRing, type KeyCheck } from "@/components/key-ring";
 import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
 import { HomeHero } from "@/components/home-hero";
@@ -721,6 +722,8 @@ export function Studio() {
     setPayByRoom(choice === "turn");
     app.setRoomPay(choice === "turn");
     if (remember) {
+      // Đếm ẩn danh mỗi lần khách đổi cách trả đã nhớ (chọn lại đúng cách cũ thì không đếm).
+      if (choice !== readPayChoice(safeLocalStore())) void recordTally({ data: { topic: "pay", answer: choice } }).catch(() => {});
       rememberPayChoice(safeLocalStore(), choice);
       setPayChoice(choice);
     }
@@ -860,6 +863,8 @@ export function Studio() {
   const answerUse = (answer: UseAnswer | "skip") => {
     rememberUse(safeLocalStore(), answer);
     setUseAnswer(answer);
+    // Đếm ẩn danh: chỉ cộng một vào ô của câu trả lời, không kèm tài khoản. Lỗi mạng thì thôi, không làm phiền khách.
+    void recordTally({ data: { topic: "use", answer } }).catch(() => {});
     if (answer === "skip") return;
     const preset = presetForUse(answer);
     if (preset.narration !== undefined) patchNarration({ enabled: preset.narration });

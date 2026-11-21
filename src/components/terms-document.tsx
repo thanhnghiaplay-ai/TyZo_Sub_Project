@@ -156,6 +156,9 @@ export function TermsDocument() {
         Mỗi lần nhận dạng xong, app gửi lên phòng một bản số liệu chất lượng để Chủ biết hệ thống chạy tốt hay kém. Bản này chỉ có số: phiên bản app, bạn dùng key riêng hay key của phòng, tên model, ngôn ngữ nguồn đã chọn, độ dài âm thanh, số đoạn và số câu, mức tin cậy Whisper tự báo, số đoạn lỗi, và kết quả kiểm tra ngôn ngữ nếu bạn bật. Việc này áp dụng cả khi bạn dùng key riêng và không có công tắc tắt riêng. Không gửi phụ đề, lời thoại, tên file, tên phim, video, âm thanh hay key. Bản số liệu không có mã hay email tài khoản của bạn. Chỉ Chủ xem được các số đã gộp.
       </p>
       <p>
+        Lần đầu vào, app hỏi bạn dùng dịch vụ chủ yếu để làm gì; bạn có thể bỏ qua. Câu trả lời lưu trên máy bạn để đặt sẵn lựa chọn phù hợp. Khi bạn trả lời câu này hoặc chọn cách trả (thuê phòng hay trả theo lượt), app gửi lên phòng một lần đếm ẩn danh: phòng chỉ cộng một vào số lần của lựa chọn đó trong ngày. Lần đếm không kèm mã hay email tài khoản, mã máy hay địa chỉ mạng, nên không ai trong phòng biết bạn đã chọn gì. Chủ xem số đã gộp, cùng số tài khoản đang có gói thuê phòng hay Token dịch còn hạn tính từ sổ gói, để biết khách dùng dịch vụ theo cách nào.
+      </p>
+      <p>
         Khi bạn dùng cửa trả theo lượt, phòng ghi một phiếu cho lần chạy đó. Phiếu có tên tệp, thời lượng, số Token dịch đã giữ và đã trừ. Nhân viên chỉ thấy tên tệp đã che. Chỉ Chủ xem được tên đầy đủ, để đối chiếu khi bạn hỏi về một lượt chạy, và mỗi lần xem được ghi vào nhật ký. Phòng không lưu video nên không ai trong phòng xem được video.
       </p>
       <p>

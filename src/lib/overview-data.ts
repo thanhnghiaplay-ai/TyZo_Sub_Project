@@ -1,6 +1,7 @@
 import type { Sql } from "./db.ts";
 import { maskFileName } from "./mask-file-name.ts";
 import { parseModelList, parseRunDesk } from "./run-desk.ts";
+import { usageMixWith, type UsageMix } from "./usage-tally.ts";
 
 export type OverviewRange = 1 | 7 | 30;
 
@@ -28,6 +29,8 @@ export type Overview = {
   alerts: OverviewAlert[];
   topSpend: TopUser[] | null;
   topErrors: TopUser[];
+  /** Khách dùng thế nào: tài khoản theo cách trả (dữ liệu đã có) và số đếm ẩn danh. Chỉ Chủ. */
+  mix: UsageMix | null;
 };
 
 const DAY_START = `date_trunc('day', now() at time zone 'Asia/Ho_Chi_Minh') at time zone 'Asia/Ho_Chi_Minh'`;
@@ -145,6 +148,7 @@ export async function overviewWith(sql: Sql, range: OverviewRange, owner: boolea
     alerts,
     topSpend,
     topErrors,
+    mix: owner ? await usageMixWith(sql, range) : null,
   };
 }
 

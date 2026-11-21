@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.25.0",
+    time: "13:44 21/11/2026",
+    area: "du-lieu",
+    text: "v5.25.0, đợt 4 bước 2: đếm ẩn danh (Chủ chốt «Cả hai»). (1) Migration 0029 usage_tally (day, topic, answer, n), không có cột tài khoản/mã máy/địa chỉ mạng (test kiểm cột). usage-tally.ts: parseTally chỉ nhận use (phim, lam-phu-de, hoc, khac, skip) và pay (key, turn); tallyWith cộng 1 theo ngày giờ Việt Nam, trần 5000 mỗi ô; usageMixWith ghép số tài khoản lúc này từ room_accounts (gói còn hạn) và token_grants (còn Token, còn hạn): thuê phòng, Token, cả hai, chưa trả gì. (2) recordTally (usage-tally-room.ts) cần đăng nhập nhưng không ghi userId. Máy khách gọi khi trả lời câu hỏi lần đầu (kể cả Bỏ qua) và khi đổi cách trả đã nhớ (chọn lại đúng cách cũ thì không đếm; «Dùng Token lần này» không đếm). Lỗi mạng bỏ qua. (3) Admin → Tổng quan, chỉ Chủ: khối «Khách dùng thế nào» theo khoảng ngày đang xem (Overview.mix). (4) Điều khoản 2026-11-21.2: thêm đoạn ở mục 5. Kiểm: PGLite 5 ca; trình duyệt với tài khoản Chủ thử: chọn Trả theo lượt + Xem phim bộ, khối hiện 1 · 100% mỗi bên. Khách phải đồng ý lại điều khoản một lần. CHƯA chạy trên Neon thật (migration chạy khi build).",
+  },
+  {
     version: "5.24.0",
     time: "13:37 21/11/2026",
     area: "khac",

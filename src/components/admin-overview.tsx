@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { pushToast } from "@/components/toast";
 import { getOverview } from "@/lib/overview-room";
 import type { Overview, OverviewRange, TopUser } from "@/lib/overview-data";
+import type { UsageMix } from "@/lib/usage-tally";
 import type { AdminTab } from "@/lib/admin-tabs";
 import { useServiceStatus } from "@/components/use-service-status";
 import { SERVICE_SCOPES, SERVICE_STATE_LABEL, scopeLabel } from "@/lib/service-status";
@@ -180,6 +181,8 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
             <p className="text-xs text-muted">App chưa ghi hạn dùng và giới hạn tốc độ của key phòng, nên chưa cảnh báo được hai việc đó.</p>
           </article>
 
+          {owner && view.mix && <UsageMixCard mix={view.mix} rangeText={rangeText} />}
+
           <div className="grid gap-3 sm:grid-cols-2">
             {owner && view.topSpend && (
               <article className="grid content-start gap-2 rounded-[var(--radius-card)] border border-line bg-card p-4">
@@ -195,5 +198,63 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
         </>
       )}
     </section>
+  );
+}
+
+const TALLY_LABEL: Record<string, string> = {
+  "use:phim": "Xem phim bộ",
+  "use:lam-phu-de": "Làm phụ đề, thuyết minh",
+  "use:hoc": "Học ngoại ngữ",
+  "use:khac": "Việc khác",
+  "use:skip": "Bỏ qua",
+  "pay:key": "Thuê phòng (key của khách)",
+  "pay:turn": "Trả theo lượt (Token dịch)",
+};
+
+function TallyRows({ rows, empty }: { rows: UsageMix["tally"]; empty: string }) {
+  const sum = rows.reduce((total, row) => total + row.n, 0);
+  if (!sum) return <p className="text-sm text-muted">{empty}</p>;
+  return (
+    <ul className="grid gap-1 text-sm">
+      {rows.map((row) => (
+        <li key={row.answer} className="flex items-center justify-between gap-2">
+          <span className="min-w-0">{TALLY_LABEL[`${row.topic}:${row.answer}`] ?? row.answer}</span>
+          <span className="shrink-0 tabular-nums">
+            <strong>{row.n}</strong> <span className="text-muted">· {Math.round((row.n / sum) * 100)}%</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Khách dùng thế nào (đợt 4): tài khoản theo cách trả từ dữ liệu đã có, và số đếm ẩn danh. Chỉ Chủ. */
+function UsageMixCard({ mix, rangeText }: { mix: UsageMix; rangeText: string }) {
+  const { accounts } = mix;
+  return (
+    <article className="grid gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4" data-usage-mix>
+      <h3 className="text-sm font-semibold text-muted">Khách dùng thế nào</h3>
+      <div className="grid gap-1 text-sm">
+        <p className="font-medium">Tài khoản lúc này (từ gói và Token đã bán)</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <p>Thuê phòng còn hạn<br /><strong>{accounts.rent}</strong></p>
+          <p>Còn Token dịch<br /><strong>{accounts.tokens}</strong></p>
+          <p>Cả hai<br /><strong>{accounts.both}</strong></p>
+          <p>Chưa trả gì<br /><strong>{accounts.none}</strong></p>
+        </div>
+        <p className="text-xs text-muted">Trên {accounts.total} tài khoản đã mở phòng.</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid content-start gap-1">
+          <p className="text-sm font-medium">Cách trả khách chọn ({rangeText})</p>
+          <TallyRows rows={mix.tally.filter((row) => row.topic === "pay")} empty="Chưa có lượt chọn." />
+        </div>
+        <div className="grid content-start gap-1">
+          <p className="text-sm font-medium">Dùng để làm gì ({rangeText})</p>
+          <TallyRows rows={mix.tally.filter((row) => row.topic === "use")} empty="Chưa có câu trả lời." />
+        </div>
+      </div>
+      <p className="text-xs text-muted">Số đếm ẩn danh: chỉ ghi số lần mỗi lựa chọn trong ngày, không ghi ai chọn. Một người đổi cách trả nhiều lần thì đếm nhiều lần.</p>
+    </article>
   );
 }
