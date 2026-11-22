@@ -40,6 +40,8 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 
 ## Việc đang giữ
 
+Đề xuất tối ưu độ trễ và nhà cung cấp realtime (Ý đã nêu, dòng 22/11/2026 «Tối ưu độ trễ…»): Chủ chuyển sang cuộc trò chuyện mới để làm. Câu khởi đầu: «Đọc `BANG_DIEU.md` và làm đúng vai của mình. Làm đợt 1 đề xuất tối ưu độ trễ (A1–A7).» Hai lỗi thật nên làm trước: A2 (cầu nối bỏ tiếng trước khi sẵn sàng) và A6 (tự cập nhật 3:17 cắt ngang phiên). Sửa cầu nối xong phải nhắc Chủ chạy `tyzo` → 2 trên VPS sau khi đẩy chính thức.
+
 Android bước 2 (v5.37.0, điều khoản 2026-11-22.3) đã đẩy chính thức 22/11/2026 (Chủ nói «Đẩy chính thức»; `work` và `main` kéo thẳng lên nhánh `ccr-a8428a75-e8fyfm`). Chờ Chủ thử thật: cầu nối Fly.io chạy, cài ứng dụng 0.2, liên kết bằng mã ở Tài khoản, gửi ảnh.
 
 Không có việc đẩy dở. v5.34.0–v5.35.0 (ElevenLabs) đã hợp vào `work` và đẩy chính thức 22/11/2026 (Chủ nói «hợp nhánh work rồi đẩy chính thức»). Chưa thử với key ElevenLabs thật.
