@@ -290,6 +290,8 @@ describe("cầu nối (Alibaba giả)", () => {
     await t.closed;
     while (!stats.length) await new Promise((r) => setTimeout(r, 20));
     assert.equal(stats[0].model, LIVE_MODEL_38);
+    assert.equal(stats[0].via, "web");
+    assert.ok(stats[0].events >= 2);
     assert.equal(stats[0].endReason, "nguoi-dung-dung");
     assert.ok(stats[0].readyMs != null && stats[0].readyMs >= 0);
     assert.ok(stats[0].firstTextMs != null);

@@ -60,6 +60,10 @@ export type LiveBridgeDeps = {
 
 export type LiveSessionStats = LatencySummary & {
   model: string;
+  /** "app" khi phiên mở từ ứng dụng Android, còn lại "web". */
+  via: "web" | "app";
+  /** Số sự kiện chữ (gốc và dịch) đã chuyển cho khách. 0 mà có tiếng là dấu hiệu Alibaba không trả chữ. */
+  events: number;
   audioSeconds: number;
   reconnects: number;
   endReason: string;
@@ -211,6 +215,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   const idleStopMs = deps.idleStopMs ?? IDLE_STOP_MS;
   let lastSoundAt = now();
   let audioSeconds = 0;
+  let textEvents = 0;
   let endReason = "";
   let finishing = false;
   let closed = false;
@@ -257,7 +262,10 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     if (client.readyState === WebSocket.OPEN) client.close(1000, "done");
     deps.registry?.remove(handle);
     try {
-      deps.onStats?.({ ...latency.summary(), model: ticket!.model, audioSeconds: Math.round(audioSeconds), reconnects, endReason: endReason || (failed ? "loi" : "xong") });
+      const stats: LiveSessionStats = { ...latency.summary(), model: ticket!.model, via: ticket!.via === "app" ? "app" : "web", events: textEvents, audioSeconds: Math.round(audioSeconds), reconnects, endReason: endReason || (failed ? "loi" : "xong") };
+      // Một dòng mỗi phiên trong nhật ký cầu nối (tyzo → 3): đủ để biết phiên dừng ở bước nào, không có tài khoản hay chữ.
+      log(`phiên xong: ${stats.via} ${stats.model} sẵn-sàng=${stats.readyMs ?? "chưa"}ms tiếng=${stats.audioSeconds}s sự-kiện-chữ=${stats.events} câu=${stats.chot.length} nối-lại=${stats.reconnects} lý-do=${stats.endReason}`);
+      deps.onStats?.(stats);
     } catch (error) {
       log(`ghi số đo lỗi: ${String(error)}`);
     }
@@ -286,6 +294,8 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
         latency.mark(event, now());
         continue;
       }
+      if (event.kind === "source" || event.kind === "source-delta" || event.kind === "translation" || event.kind === "translation-delta") textEvents += 1;
+      if (event.kind === "error") log(`Alibaba báo lỗi: ${event.message}`);
       if (event.kind === "source" || event.kind === "source-delta") latency.mark({ kind: "source" }, now());
       else if (event.kind === "translation") latency.mark({ kind: "translation", id: event.id, final: event.final }, now());
       else if (event.kind === "translation-delta") latency.mark({ kind: "translation", id: event.id, final: false }, now());

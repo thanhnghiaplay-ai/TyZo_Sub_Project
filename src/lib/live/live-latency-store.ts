@@ -9,8 +9,8 @@ export const LATENCY_KEEP_DAYS = 30;
 export async function saveLatency(sql: Sql, stats: LiveSessionStats): Promise<void> {
   if (stats.readyMs == null && !stats.audioSeconds) return;
   await sql`
-    insert into live_latency (model, ready_ms, first_text_ms, tam_ms, chot_ms, audio_seconds, reconnects, end_reason)
-    values (${stats.model}, ${stats.readyMs}, ${stats.firstTextMs}, ${stats.tam}, ${stats.chot}, ${stats.audioSeconds}, ${stats.reconnects}, ${stats.endReason.slice(0, 40)})
+    insert into live_latency (model, via, events, ready_ms, first_text_ms, tam_ms, chot_ms, audio_seconds, reconnects, end_reason)
+    values (${stats.model}, ${stats.via}, ${stats.events}, ${stats.readyMs}, ${stats.firstTextMs}, ${stats.tam}, ${stats.chot}, ${stats.audioSeconds}, ${stats.reconnects}, ${stats.endReason.slice(0, 40)})
   `;
   // Dọn dòng cũ thỉnh thoảng (khoảng 1 phiên trong 20), đỡ thêm truy vấn mỗi phiên.
   if (Math.random() < 0.05) await sql`delete from live_latency where at < now() - make_interval(days => ${LATENCY_KEEP_DAYS})`;
@@ -18,14 +18,17 @@ export async function saveLatency(sql: Sql, stats: LiveSessionStats): Promise<vo
 
 /** Bảng cho Admin: gom theo model trong `days` ngày gần nhất. */
 export async function loadLatencyRows(sql: Sql, days: number): Promise<LatencyRow[]> {
-  const rows = await sql<{ model: string; ready_ms: number | null; first_text_ms: number | null; tam_ms: number[] | null; chot_ms: number[] | null; end_reason: string }>`
-    select model, ready_ms, first_text_ms, tam_ms, chot_ms, end_reason from live_latency
+  const rows = await sql<{ model: string; via: string; events: number; audio_seconds: number; ready_ms: number | null; first_text_ms: number | null; tam_ms: number[] | null; chot_ms: number[] | null; end_reason: string }>`
+    select model, via, events, audio_seconds, ready_ms, first_text_ms, tam_ms, chot_ms, end_reason from live_latency
     where at > now() - make_interval(days => ${days})
     order by at desc limit 2000
   `;
   return latencyRows(
     rows.map((row) => ({
       model: row.model,
+      via: row.via === "app" ? "app" : "web",
+      events: row.events,
+      audioSeconds: row.audio_seconds,
       readyMs: row.ready_ms,
       firstTextMs: row.first_text_ms,
       tam: row.tam_ms ?? [],

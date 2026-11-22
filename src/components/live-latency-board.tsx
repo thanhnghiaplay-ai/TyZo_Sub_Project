@@ -53,28 +53,31 @@ export function LiveLatencyBoard() {
         </div>
       </div>
       <p className="text-xs text-muted">
-        Đo ở cầu nối mỗi phiên. Sẵn sàng: từ lúc khách nối tới lúc Alibaba nhận. Chữ tạm: từ lúc bắt đầu nói tới chữ dịch đầu tiên. Câu chốt: từ lúc hết tiếng tới câu dịch chốt. p50 là mức thường gặp, p95 là lúc chậm. Số gần đúng, đủ để so model và so trước, sau khi chỉnh.
+        Đo ở cầu nối mỗi phiên. Sẵn sàng: từ lúc khách nối tới lúc Alibaba nhận. Chữ tạm: từ lúc bắt đầu nói tới chữ dịch đầu tiên. Câu chốt: từ lúc hết tiếng tới câu dịch chốt. p50 là mức thường gặp, p95 là lúc chậm. «Không ra chữ»: phiên đã gửi ít nhất 10 giây tiếng mà không nhận được chữ nào, cần xem nhật ký cầu nối (tyzo → 3). Số gần đúng, đủ để so model và so trước, sau khi chỉnh.
       </p>
       {error ? <p className="text-sm text-danger">{error}</p> : null}
       {rows == null && !error ? <p className="text-sm text-muted">Đang đọc…</p> : null}
       {rows && rows.length === 0 ? <p className="text-sm text-muted">Chưa có phiên nào trong khoảng này. Số đo bắt đầu ghi từ bản cầu nối mới.</p> : null}
       {rows && rows.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[34rem] text-left text-sm tabular-nums">
+          <table className="w-full min-w-[40rem] text-left text-sm tabular-nums">
             <thead className="text-xs text-muted">
               <tr>
                 <th className="py-1 pr-3 font-medium">Model</th>
+                <th className="py-1 pr-3 font-medium">Nơi</th>
                 <th className="py-1 pr-3 font-medium">Phiên</th>
                 <th className="py-1 pr-3 font-medium">Sẵn sàng</th>
                 <th className="py-1 pr-3 font-medium">Chữ tạm p50 / p95</th>
                 <th className="py-1 pr-3 font-medium">Câu chốt p50 / p95</th>
-                <th className="py-1 font-medium">Tự dừng vì im</th>
+                <th className="py-1 pr-3 font-medium">Tự dừng vì im</th>
+                <th className="py-1 font-medium">Không ra chữ</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.model} className="border-t border-line">
+                <tr key={`${row.via}|${row.model}`} className="border-t border-line">
                   <td className="py-1.5 pr-3">{labels.get(row.model) ?? row.model}</td>
+                  <td className="py-1.5 pr-3">{row.via === "app" ? "Ứng dụng" : "Web"}</td>
                   <td className="py-1.5 pr-3">{row.sessions}</td>
                   <td className="py-1.5 pr-3">{sec(row.readyP50)}</td>
                   <td className="py-1.5 pr-3">
@@ -83,7 +86,8 @@ export function LiveLatencyBoard() {
                   <td className="py-1.5 pr-3">
                     {sec(row.chotP50)} / {sec(row.chotP95)} <span className="text-xs text-muted">({row.sentences} câu)</span>
                   </td>
-                  <td className="py-1.5">{row.idleStops}</td>
+                  <td className="py-1.5 pr-3">{row.idleStops}</td>
+                  <td className={"py-1.5" + (row.silentFails ? " font-semibold text-danger" : "")}>{row.silentFails}</td>
                 </tr>
               ))}
             </tbody>

@@ -7,7 +7,7 @@ export const LIVE_MODELS = [LIVE_MODEL_38, LIVE_MODEL_35];
 export const LIVE_TICKET_TTL_MS = 60_000;
 
 /** words: từ cần giữ đúng (gốc → dịch), tối đa 30 cặp. Thiếu hoặc rỗng thì không gửi. */
-export type LiveOpenInput = { model: string; target: string; source: string; audio: boolean; words?: Record<string, string> };
+export type LiveOpenInput = { model: string; target: string; source: string; audio: boolean; words?: Record<string, string>; via?: "app" };
 
 /** Kiểm đầu vào xin vé. Ném lỗi tiếng Việt khi sai. */
 export function parseLiveOpen(input: Partial<LiveOpenInput> | null | undefined): LiveOpenInput {

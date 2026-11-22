@@ -2282,7 +2282,9 @@ html[data-density] .studio-workspace {
 .rail-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  /* Trên mọi bảng nổi của trang (khung Ví điện thoại 41, bảng công cụ 40), dưới menu (50):
+     bấm ra ngoài menu là đóng menu, không bấm trúng nút của trang bên dưới. rail-layer.test.ts kiểm. */
+  z-index: 45;
   background: rgb(0 0 0 / 0.5);
   opacity: 0;
   pointer-events: none;

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.1",
+    time: "22:06 22/11/2026",
+    area: "ha-tang",
+    text: "Chủ báo (ảnh điện thoại): menu mở mà bấm ra ngoài lại mở «Mua Token dịch?»; ứng dụng không dịch dù đã bật; lịch sử dịch trực tiếp web và ứng dụng nên đồng bộ. Menu: khung Ví điện thoại (.studio-wallet-tab, z-index 41) nằm trên nền mờ menu (40) nên cú bấm trúng nút gói; nền mờ lên 45 (dưới menu 50), rail-layer.test.ts kiểm mọi z-index 40–49. Đã tái hiện bằng Chromium 412 px với tài khoản thử trong máy: lớp cũ bấm trúng khung Ví và menu vẫn mở, lớp mới đóng menu. Ứng dụng không dịch: chưa tìm ra nguyên nhân từ mã (tên sự kiện chỉ chữ của Alibaba khớp tài liệu); thêm cách tra: vé ứng dụng mang via=app (chỉ /api/app-ticket gắn), cầu nối ghi mỗi phiên một dòng «phiên xong: …» vào nhật ký và log lỗi Alibaba, bảng live_latency thêm via, events (migration 0035), Admin tách Web/Ứng dụng và cột «Không ra chữ» (≥10 giây tiếng mà 0 sự kiện chữ). Điều khoản 2026-11-22.8 (liệt kê thêm hai trường số đo). Đồng bộ lịch sử: chưa làm, chờ Chủ chốt vì phải lưu chữ phiên trên máy chủ.",
+  },
+  {
     version: "5.42.0",
     time: "21:35 22/11/2026",
     area: "ha-tang",

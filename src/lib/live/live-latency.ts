@@ -107,6 +107,9 @@ export function percentile(values: readonly number[], p: number): number | null 
 /** Một dòng tóm tắt cho bảng Admin (đã gom theo model). */
 export type LatencyRow = {
   model: string;
+  via: "web" | "app";
+  /** Phiên có gửi tiếng (ít nhất 10 giây) mà không nhận được chữ nào: dấu hiệu hỏng. */
+  silentFails: number;
   sessions: number;
   readyP50: number | null;
   firstTextP50: number | null;
@@ -120,22 +123,26 @@ export type LatencyRow = {
 
 /** Gom các phiên đã ghi thành dòng theo model. Hàm thuần để test. */
 export function latencyRows(
-  sessions: ReadonlyArray<{ model: string; readyMs: number | null; firstTextMs: number | null; tam: readonly number[]; chot: readonly number[]; endReason: string }>,
+  sessions: ReadonlyArray<{ model: string; via?: "web" | "app"; events?: number; audioSeconds?: number; readyMs: number | null; firstTextMs: number | null; tam: readonly number[]; chot: readonly number[]; endReason: string }>,
 ): LatencyRow[] {
   const byModel = new Map<string, typeof sessions[number][]>();
   for (const row of sessions) {
-    const list = byModel.get(row.model) ?? [];
+    const key = `${row.via ?? "web"}|${row.model}`;
+    const list = byModel.get(key) ?? [];
     list.push(row);
-    byModel.set(row.model, list);
+    byModel.set(key, list);
   }
   return [...byModel.entries()]
-    .map(([model, list]) => {
+    .map(([key, list]) => {
+      const [via, model] = [key.slice(0, key.indexOf("|")) as "web" | "app", key.slice(key.indexOf("|") + 1)];
       const tam = list.flatMap((row) => row.tam);
       const chot = list.flatMap((row) => row.chot);
       const ready = list.map((row) => row.readyMs).filter((v): v is number => v != null);
       const first = list.map((row) => row.firstTextMs).filter((v): v is number => v != null);
       return {
         model,
+        via,
+        silentFails: list.filter((row) => row.events === 0 && (row.audioSeconds ?? 0) >= 10).length,
         sessions: list.length,
         readyP50: percentile(ready, 50),
         firstTextP50: percentile(first, 50),

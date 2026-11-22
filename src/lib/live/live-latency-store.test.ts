@@ -23,12 +23,18 @@ before(async () => {
 
 describe("sổ độ trễ dịch trực tiếp", () => {
   it("ghi khi phiên đóng, bỏ phiên chưa có gì, gom theo model; bảng không có cột tài khoản", async () => {
-    const base = { readyMs: 400, firstTextMs: 1200, tam: [700, 900], chot: [1500], audioSeconds: 30, reconnects: 0, endReason: "nguoi-dung-dung" };
+    const base = { via: "web" as const, events: 6, readyMs: 400, firstTextMs: 1200, tam: [700, 900], chot: [1500], audioSeconds: 30, reconnects: 0, endReason: "nguoi-dung-dung" };
     await saveLatency(sql, { ...base, model: "m1" });
     await saveLatency(sql, { ...base, model: "m1", tam: [1100], chot: [2500, 3000], endReason: "im-lang" });
     await saveLatency(sql, { ...base, model: "m2", readyMs: null, audioSeconds: 0 }); // không đo được gì
+    // Phiên ứng dụng gửi 40 giây tiếng mà không ra chữ nào: tách dòng riêng, đếm là hỏng.
+    await saveLatency(sql, { ...base, model: "m1", via: "app", events: 0, tam: [], chot: [], audioSeconds: 40 });
     const rows = await loadLatencyRows(sql, 7);
-    assert.equal(rows.length, 1);
+    assert.equal(rows.length, 2);
+    const app = rows.find((r) => r.via === "app")!;
+    assert.equal(app.silentFails, 1);
+    assert.equal(rows.find((r) => r.via === "web")!.silentFails, 0);
+    rows.splice(rows.indexOf(app), 1);
     assert.equal(rows[0].model, "m1");
     assert.equal(rows[0].sessions, 2);
     assert.equal(rows[0].tamP50, 900);
