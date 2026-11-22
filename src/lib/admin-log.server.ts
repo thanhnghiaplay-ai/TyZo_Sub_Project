@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.2",
+    time: "22:21 22/11/2026",
+    area: "ha-tang",
+    text: "Chủ thử ứng dụng (quay màn hình + nhật ký tyzo → 3): ứng dụng vào «Đang dịch» rồi khoảng 12 giây sau báo «Mất kết nối tới cầu nối dịch»; nhật ký cầu nối: Error read ECONNRESET ở pg-pool trong loadPriceBook ← refreshTurbo, rồi Node thoát. Nguyên nhân: refreshTurbo chạy bằng setInterval không bắt lỗi, lời hứa bị từ chối làm Node 22 thoát, cắt mọi phiên; v5.42.0 giữ kết nối nhàn rỗi 5 phút nên dễ dùng lại kết nối Neon đã cắt. Sửa scripts/live-bridge.ts: refreshTurbo bắt lỗi và giữ giá cũ; process.on(unhandledRejection) chỉ ghi nhật ký; truy vấn gặp lỗi kết nối (db-retry.ts: ECONNRESET, EPIPE, 57P0x, 08xxx, Connection terminated…) thử lại một lần bằng kết nối mới; idleTimeoutMillis 50 giây (giá đọc mỗi 60 giây vẫn giữ một kết nối ấm). Test trong live.test.ts. Cảnh báo SSL của pg trong nhật ký là cảnh báo, không phải lỗi. Cần đẩy chính thức rồi tyzo → 2.",
+  },
+  {
     version: "5.42.1",
     time: "22:06 22/11/2026",
     area: "ha-tang",

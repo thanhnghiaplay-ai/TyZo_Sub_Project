@@ -444,3 +444,24 @@ describe("phiên ở trình duyệt nối cầu nối thật (Alibaba giả)", (
     ali.wss.close();
   });
 });
+
+describe("cầu nối không sập vì kết nối cơ sở dữ liệu", () => {
+  it("nhận ra lỗi kết nối để thử lại, không thử lại lỗi câu lệnh", async () => {
+    const { isConnectionError } = await import("./db-retry.ts");
+    assert.equal(isConnectionError(Object.assign(new Error("read ECONNRESET"), { code: "ECONNRESET" })), true);
+    assert.equal(isConnectionError(new Error("Connection terminated unexpectedly")), true);
+    assert.equal(isConnectionError(Object.assign(new Error("terminating connection due to administrator command"), { code: "57P01" })), true);
+    assert.equal(isConnectionError(Object.assign(new Error('relation "x" does not exist'), { code: "42P01" })), false);
+    assert.equal(isConnectionError(null), false);
+  });
+
+  it("tệp chạy cầu nối bắt lỗi đọc giá, có lưới an toàn, không giữ kết nối quá lâu (Chủ báo 22/11/2026: ECONNRESET làm sập cầu nối)", async () => {
+    const { readFileSync } = await import("node:fs");
+    const script = readFileSync(new URL("../../../scripts/live-bridge.ts", import.meta.url), "utf8");
+    assert.match(script, /process\.on\("unhandledRejection"/);
+    assert.match(script, /async function refreshTurbo\(\) \{\s*try \{/);
+    const idle = Number(/idleTimeoutMillis:\s*([\d_]+)/.exec(script)?.[1].replace(/_/g, ""));
+    assert.ok(idle > 0 && idle <= 60_000, "giữ kết nối nhàn rỗi tối đa 60 giây");
+    assert.match(script, /isConnectionError\(error\)/);
+  });
+});

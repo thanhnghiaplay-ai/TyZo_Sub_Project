@@ -14,6 +14,7 @@ import { loadPriceBook } from "../src/lib/run-board.server.ts";
 import { tokensForBase, TURBO_ASR } from "../src/lib/token-math.ts";
 import { loadLiveUpstream } from "../src/lib/live/live-upstream.ts";
 import { cleanSilenceMs } from "../src/lib/live/qwen-protocol.ts";
+import { isConnectionError } from "../src/lib/live/db-retry.ts";
 
 const secret = (process.env.LIVE_BRIDGE_SECRET ?? "").trim();
 if (secret.length < 24) {
@@ -30,14 +31,25 @@ const port = Number(process.env.PORT ?? process.env.LIVE_BRIDGE_PORT ?? 8787);
 pg.types.setTypeParser(20, Number);
 pg.types.setTypeParser(1082, (value: string) => value);
 pg.types.setTypeParser(1186, (value: string) => value);
-// Giữ kết nối ấm 5 phút (mặc định chỉ 10 giây): mở kết nối mới tới Neon Singapore mất 0,3–1 giây,
-// rơi đúng vào lúc khách bấm Bắt đầu. Bảng giá đọc lại mỗi phút nên kết nối không nguội và Neon không ngủ.
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5, idleTimeoutMillis: 5 * 60_000, keepAlive: true });
+// Giữ kết nối ấm 50 giây (mặc định 10 giây): bảng giá đọc lại mỗi 60 giây nên luôn có một kết nối sẵn,
+// khỏi mở kết nối mới tới Neon Singapore (0,3–1 giây) đúng lúc khách bấm Bắt đầu. Không giữ lâu hơn:
+// Neon cắt kết nối nhàn rỗi, dùng lại kết nối đã bị cắt sẽ gặp ECONNRESET (v5.42.0 giữ 5 phút, cầu nối sập).
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5, idleTimeoutMillis: 50_000, keepAlive: true });
 pool.on("error", (error) => console.log(new Date().toISOString(), `kết nối cơ sở dữ liệu lỗi: ${String(error)}`));
+const runQuery = async (text: string, values: unknown[]) => {
+  try {
+    return (await pool.query(text, values)).rows;
+  } catch (error) {
+    // Kết nối bị cắt giữa chừng (Neon, mạng): thử lại một lần bằng kết nối mới. Lỗi câu lệnh thì không thử lại.
+    if (!isConnectionError(error)) throw error;
+    console.log(new Date().toISOString(), `truy vấn gặp lỗi kết nối, thử lại: ${String(error)}`);
+    return (await pool.query(text, values)).rows;
+  }
+};
 const sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
   let text = strings[0];
   for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-  return (await pool.query(text, values)).rows;
+  return runQuery(text, values);
 }) as unknown as Sql;
 
 const server = createServer((request, response) => {
@@ -51,11 +63,20 @@ const server = createServer((request, response) => {
 });
 
 let turboPerSecond = 0;
+/** Đọc lại giá Turbo. Lỗi thì giữ giá cũ và ghi nhật ký, không bao giờ làm sập cầu nối. */
 async function refreshTurbo() {
-  const book = await loadPriceBook(sql);
-  const per = book ? asrPerSecond({ rate: book.rate, rows: book.rows, desk: { markup: 0, custom: {} } }, TURBO_ASR) : null;
-  turboPerSecond = per && per > 0 ? per : 0;
+  try {
+    const book = await loadPriceBook(sql);
+    const per = book ? asrPerSecond({ rate: book.rate, rows: book.rows, desk: { markup: 0, custom: {} } }, TURBO_ASR) : null;
+    turboPerSecond = per && per > 0 ? per : 0;
+  } catch (error) {
+    console.log(new Date().toISOString(), `đọc giá Turbo lỗi, giữ giá cũ: ${String(error)}`);
+  }
 }
+
+// Lưới an toàn: lời hứa bị từ chối mà quên bắt chỉ được ghi lại, không được giết cả cầu nối
+// (Node 22 mặc định thoát, cắt mọi phiên đang dịch của khách).
+process.on("unhandledRejection", (reason) => console.log(new Date().toISOString(), `lỗi chưa bắt (cầu nối vẫn chạy): ${String(reason)}`));
 
 // Số phiên đang chạy ghi ra tệp, để lệnh «tyzo» đọc (docker exec) và chỉ cập nhật khi không ai đang dịch.
 const SESSIONS_FILE = process.env.LIVE_SESSIONS_FILE || "/tmp/tyzo-phien";
