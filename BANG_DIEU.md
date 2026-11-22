@@ -131,6 +131,10 @@ Chỉ mở lại khi người dùng yêu cầu đúng việc đó.
 
 ## Chờ người dùng
 
+- Ứng dụng Android, để sau (Chủ nói 22/11/2026 «để làm sau này»). Cách làm đã trả lời trong cuộc trò chuyện, tóm tắt:
+  (1) Khóa ký cố định: tạo `tyzo.jks` bằng `keytool -genkeypair -v -keystore tyzo.jks -alias tyzo -keyalg RSA -keysize 2048 -validity 10000`, đổi sang base64, thêm 4 bí mật GitHub Actions: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` (= tyzo), `ANDROID_KEY_PASSWORD`; tùy chọn biến `TYZO_WEB_URL`. Rồi Actions → Android thử → Run workflow. Bản ký khóa mới đầu tiên khách phải gỡ bản cũ một lần. Giữ kỹ tệp khóa và mật khẩu, không ghi vào kho hay chat.
+  (2) `ANDROID_APK_URL` trên Vercel (Settings → Environment Variables, Production, rồi Redeploy): đường dẫn https công khai tới tệp cài. Artifacts của GitHub không dùng được (cần đăng nhập, là tệp nén). Claude đề xuất: workflow tự chép tệp cài vào web `public/tai/tyzo-sub.apk` (cần quyền ghi kho, mỗi bản thêm khoảng 1 MB, Vercel deploy lại), chưa làm, chờ Chủ chốt.
+  Chưa làm hai việc này thì: mỗi bản mới phải gỡ bản cũ và liên kết lại; trang Tài khoản ghi «Tệp cài chưa phát hành»; thẻ «Có bản mới» trong ứng dụng không có nút tải.
 - Trên Vercel, `ADMIN_EMAIL` phải là đúng email tài khoản Chủ thì `/admin` mới mở.
 - Bật trên GitHub, nếu muốn khóa cứng: nhánh `main` chỉ nhận bản hợp nhất, model không có quyền xóa kho. Không bật thì luật này chỉ là lời nhắc.
 

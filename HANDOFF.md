@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Để sau (Chủ 22/11/2026)**: khóa ký cố định cho ứng dụng Android (4 bí mật `ANDROID_KEYSTORE_*`) và `ANDROID_APK_URL` trên Vercel. Cách làm ghi ở `BANG_DIEU.md` mục «Chờ người dùng». Chỉ tài liệu, không đổi code.
 - **Đẩy chính thức v5.38.0**: Chủ cho gộp và đẩy chính thức không cần xác nhận lần này. `work` và `main` kéo thẳng lên nhánh `ccr-a8428a75-e8fyfm`. Khách đồng ý lại điều khoản 2026-11-22.4. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1445 pass, vite build xong, GitHub Actions đóng gói ứng dụng 0.4 xong.
 - **v5.38.0 (22/11/2026, Claude)**: ứng dụng Android 0.4 đồng bộ logo, màu, font, chức năng với web (xem ADMIN_LOG). Đã thử trên máy chủ dev: app-me trả bản 0.4, app-ticket kiểm model và nhận words, đổi mật khẩu thì khóa máy bị gỡ (401). Chưa thử 0.4 trên điện thoại thật; chưa có khóa ký cố định và ANDROID_APK_URL.
 - **v5.37.1 (22/11/2026, Claude, trên `work`, chưa đẩy chính thức)**: Chủ thử: liên kết web và app được. Thêm hướng dẫn ứng dụng Android (trang Hướng dẫn, tuyến Chỉ tôi, câu hỏi thường gặp), mã liên kết đếm từng giây và báo máy vừa liên kết, ứng dụng 0.3 có các bước và nút mở hướng dẫn. tsc sạch, eslint 0 lỗi, test 191 + 1443 pass, build xong, kiểm bằng Chromium 390 px.
