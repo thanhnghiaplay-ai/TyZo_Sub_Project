@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.3",
+    time: "22:33 22/11/2026",
+    area: "ha-tang",
+    text: "Chủ gửi nhật ký sau v5.42.2: cầu nối không sập; phiên app qwen3.8 sẵn-sàng=506ms, tiếng=5s, sự-kiện-chữ=7, nối-lại=1, lý-do=khach-roi; Alibaba báo «Response stream timeout (timeout_seconds=60, elapsed_ms=73221)». Kết luận: dịch chạy, nhưng ~70 giây phiên chỉ 5 giây có tiếng (điện thoại không phát gì nghe được, bộ thu Android không gửi khung khi không có tiếng), Alibaba tự cắt sau 60 giây không có kết quả; câu đó được chuyển nguyên văn tiếng Anh cho khách và mỗi lần cắt tính vào 3 lần nối lại hỏng. Sửa live-bridge.ts: lỗi khớp /stream timeout|timeout_seconds/ chỉ ghi nhật ký, không chuyển cho khách; Alibaba đóng sau lỗi đó thì cầu nối «ngủ» (không nối, không tính vào maxReconnects, không gửi reconnecting); khung im (đỉnh < 100) lúc ngủ bị bỏ (không gửi, không trừ Token); khung có tiếng đánh thức, nối lại, đệm tới khi sẵn sàng. Dòng nhật ký «phiên xong» thêm ngủ-dậy=N. Test Alibaba giả cắt vì im trong live.test.ts.",
+  },
+  {
     version: "5.42.2",
     time: "22:21 22/11/2026",
     area: "ha-tang",

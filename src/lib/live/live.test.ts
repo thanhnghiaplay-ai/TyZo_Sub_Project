@@ -465,3 +465,58 @@ describe("cầu nối không sập vì kết nối cơ sở dữ liệu", () => 
     assert.match(script, /isConnectionError\(error\)/);
   });
 });
+
+describe("Alibaba cắt vì im lặng", () => {
+  it("không báo lỗi tiếng Anh cho khách, khung im bị bỏ, có tiếng lại thì nối lại và dịch tiếp", async () => {
+    const wss = new WebSocketServer({ port: 0 });
+    let connections = 0;
+    let chunksAfterWake = 0;
+    wss.on("connection", (ws) => {
+      connections += 1;
+      const mine = connections;
+      ws.on("message", (raw) => {
+        const msg = JSON.parse(raw.toString()) as { type: string };
+        if (msg.type === "session.update") ws.send(JSON.stringify({ type: "session.updated" }));
+        else if (msg.type === "input_audio_buffer.append") {
+          if (mine === 1) {
+            ws.send(JSON.stringify({ type: "error", error: { message: "Response stream timeout (timeout_seconds=60, elapsed_ms=73221)" } }));
+            ws.close();
+          } else chunksAfterWake += 1;
+        } else if (msg.type === "session.finish") ws.send(JSON.stringify({ type: "session.finished" }));
+      });
+    });
+    const url = `ws://127.0.0.1:${(wss.address() as { port: number }).port}/realtime`;
+    const bill = fakeBilling(1_000_000);
+    const server = createServer();
+    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url, key: "K" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500, idleStopMs: 0 });
+    await new Promise<void>((r) => server.listen(0, r));
+    const token = signLiveTicket("k", { uid: "u1", sid: "im", model: LIVE_MODEL_38, target: "vi", source: "", audio: false, exp: Date.now() + 60_000 });
+    const client = new WebSocket(`ws://127.0.0.1:${(server.address() as { port: number }).port}/live?ticket=${encodeURIComponent(token)}`);
+    const msgs: Array<{ type: string; [k: string]: unknown }> = [];
+    client.on("message", (data, isBinary) => {
+      if (!isBinary) msgs.push(JSON.parse(data.toString()));
+    });
+    const closed = new Promise<number>((r) => client.on("close", (code) => r(code)));
+    await new Promise((r) => client.on("open", r));
+    while (!msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
+    const loud = Buffer.alloc(3200);
+    loud.writeInt16LE(9000, 0);
+    client.send(loud); // Alibaba giả cắt ngay sau khung này
+    await new Promise((r) => setTimeout(r, 200));
+    client.send(Buffer.alloc(3200)); // im: không đánh thức
+    await new Promise((r) => setTimeout(r, 200));
+    assert.equal(connections, 1, "khung im không nối lại");
+    client.send(loud); // có tiếng lại
+    while (chunksAfterWake < 1) await new Promise((r) => setTimeout(r, 20));
+    assert.equal(connections, 2);
+    client.send(JSON.stringify({ type: "stop" }));
+    await closed;
+    const shown = msgs.filter((m) => m.type === "error" || (m.type === "event" && (m.event as { kind: string }).kind === "error"));
+    assert.deepEqual(shown, [], "không có câu lỗi nào hiện cho khách");
+    assert.ok(!msgs.some((m) => m.type === "reconnecting"));
+    assert.deepEqual(bill.log.closed, bill.log.opened);
+    server.close();
+    wss.close();
+    client.terminate();
+  });
+});

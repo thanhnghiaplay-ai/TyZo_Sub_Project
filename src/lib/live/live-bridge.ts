@@ -93,6 +93,8 @@ export class LiveRegistry {
 }
 
 const PCM_BYTES_PER_SEC = 16000 * 2;
+/** Câu Alibaba gửi khi tự cắt vì lâu không có tiếng (Response stream timeout (timeout_seconds=60, …)). */
+const IDLE_CUT = /stream timeout|timeout_seconds/i;
 
 function send(ws: WebSocket, data: unknown) {
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
@@ -216,6 +218,11 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   let lastSoundAt = now();
   let audioSeconds = 0;
   let textEvents = 0;
+  /** Alibaba vừa báo cắt vì im lặng. */
+  let idleCut = false;
+  /** Đang ngủ sau khi Alibaba cắt vì im lặng: chưa nối, chờ khung tiếng. */
+  let dormant = false;
+  let wakeUps = 0;
   let endReason = "";
   let finishing = false;
   let closed = false;
@@ -264,7 +271,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     try {
       const stats: LiveSessionStats = { ...latency.summary(), model: ticket!.model, via: ticket!.via === "app" ? "app" : "web", events: textEvents, audioSeconds: Math.round(audioSeconds), reconnects, endReason: endReason || (failed ? "loi" : "xong") };
       // Một dòng mỗi phiên trong nhật ký cầu nối (tyzo → 3): đủ để biết phiên dừng ở bước nào, không có tài khoản hay chữ.
-      log(`phiên xong: ${stats.via} ${stats.model} sẵn-sàng=${stats.readyMs ?? "chưa"}ms tiếng=${stats.audioSeconds}s sự-kiện-chữ=${stats.events} câu=${stats.chot.length} nối-lại=${stats.reconnects} lý-do=${stats.endReason}`);
+      log(`phiên xong: ${stats.via} ${stats.model} sẵn-sàng=${stats.readyMs ?? "chưa"}ms tiếng=${stats.audioSeconds}s sự-kiện-chữ=${stats.events} câu=${stats.chot.length} nối-lại=${stats.reconnects} ngủ-dậy=${wakeUps} lý-do=${stats.endReason}`);
       deps.onStats?.(stats);
     } catch (error) {
       log(`ghi số đo lỗi: ${String(error)}`);
@@ -295,7 +302,15 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
         continue;
       }
       if (event.kind === "source" || event.kind === "source-delta" || event.kind === "translation" || event.kind === "translation-delta") textEvents += 1;
-      if (event.kind === "error") log(`Alibaba báo lỗi: ${event.message}`);
+      if (event.kind === "error") {
+        log(`Alibaba báo lỗi: ${event.message}`);
+        // Alibaba tự cắt khi quá 60 giây không nhận được tiếng (video dừng, điện thoại không phát gì).
+        // Không phải lỗi của khách: không hiện câu tiếng Anh, chờ có tiếng lại mới nối (xem handleClient).
+        if (IDLE_CUT.test(event.message)) {
+          idleCut = true;
+          continue;
+        }
+      }
       if (event.kind === "source" || event.kind === "source-delta") latency.mark({ kind: "source" }, now());
       else if (event.kind === "translation") latency.mark({ kind: "translation", id: event.id, final: event.final }, now());
       else if (event.kind === "translation-delta") latency.mark({ kind: "translation", id: event.id, final: false }, now());
@@ -336,6 +351,15 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     ws.on("close", () => {
       if (closed || ws !== upstream) return;
       if (finishing) return void finalize(false);
+      if (idleCut) {
+        // Cắt vì im lặng: ngủ, không tính vào số lần nối lại hỏng. Khung tiếng kế tiếp sẽ đánh thức.
+        idleCut = false;
+        dormant = true;
+        ready = false;
+        upstream = null;
+        log("Alibaba cắt vì im lặng, chờ có tiếng lại mới nối");
+        return;
+      }
       if (reconnects < maxReconnects) {
         reconnects += 1;
         ready = false;
@@ -381,11 +405,20 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     const bytes = data as Buffer;
     // Im lặng quá lâu (video dừng, tab tắt tiếng) thì tự dừng để khách không bị trừ Token lúc im.
     const at = now();
-    if (pcmPeak(bytes) >= SILENT_PEAK) lastSoundAt = at;
+    const loud = pcmPeak(bytes) >= SILENT_PEAK;
+    if (loud) lastSoundAt = at;
     else if (idleStopMs > 0 && at - lastSoundAt >= idleStopMs) {
       const minutes = Math.round(idleStopMs / 60_000);
       send(client, { type: "error", message: `Đã tự dừng vì ${minutes} phút không nghe thấy tiếng, để không trừ Token lúc im lặng. Bấm Bắt đầu để dịch tiếp.` });
       return stop("im-lang");
+    }
+    if (dormant) {
+      // Đang ngủ vì im: khung im bỏ đi (không gửi, không tính Token). Có tiếng lại thì nối Alibaba,
+      // tiếng được đệm tới khi sẵn sàng.
+      if (!loud) return;
+      dormant = false;
+      wakeUps += 1;
+      connectUpstream();
     }
     if (!ready || !upstream || upstream.readyState !== WebSocket.OPEN) {
       // Alibaba chưa sẵn sàng hoặc đang nối lại: đệm, không bỏ.
