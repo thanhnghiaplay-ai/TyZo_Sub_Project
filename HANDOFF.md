@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 22/11/2026. **v5.38.1 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.4`. Ứng dụng Android 0.4. Cầu nối Dịch trực tiếp trên VPS.
+Cập nhật 22/11/2026. **v5.39.0 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.4`. Ứng dụng Android 0.5. Cầu nối Dịch trực tiếp trên VPS.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -8,7 +8,7 @@ File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại v�
 2. Lấy code: clone nhánh `work` của `thanhnghiaplay-ai/TyZo_Sub_Project`. Mọi việc làm trên `work`.
 3. Kiểm nền: `npm ci`, `npm run typecheck`, `npm run lint` (0 lỗi; 31 cảnh báo có sẵn), `npm test`, `npm run build`.
 4. Mỗi bước: sửa → typecheck → lint → test → (nếu đổi hành vi khách: nâng `APP_VERSION`, thêm `CHANGELOG` mỗi dòng ≤ 100 ký tự và không có từ nội bộ, thêm `ADMIN_LOG`) → commit → đẩy `work` → ghi một dòng ở mục 3.
-5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` = `work` = v5.38.1 (đẩy chính thức 22/11/2026).
+5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` = `work` = v5.39.0 (đẩy chính thức 22/11/2026).
 6. KHÔNG ghi token hay mật khẩu vào file, commit hay remote; truyền token ở dòng lệnh rồi bỏ. Token GitHub từng dán trong chat phải được Chủ thu hồi.
 7. Lưu ý môi trường Claude: không gọi được `api.groq.com`, Alibaba, Deepgram (nên không tự kiểm với nhà thật); `github.com` thì được. Trong shell, `cut -c`/`head -c` cắt hỏng chữ tiếng Việt, dùng Python.
 8. `AGENTS.md` là mẫu chung của một công cụ khác, không phải quy tắc dự án. Quy tắc dự án: `AGENTS.project.md`, `BANG_DIEU.md`, `huongdan.txt`.
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.39.0**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi, test 191 + 1447 pass, build xong. Bản phát hành Android đầu tiên chỉ có sau khi Chủ chạy `tyzo` → 15 (khóa ký).
 - **Đẩy chính thức (công cụ VPS: web đầy đủ, chạy thử, Vercel)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build Vercel xong, `bash -n` tyzo.sh sạch. Web khách không đổi (v5.38.1).
 - **Web đầy đủ trên VPS / đổi tài khoản Vercel (22/11/2026, Claude, trên `work`)**: xem docs/HUONG_DAN_VPS.md. Cần Chủ chạy thử (tyzo → 12) trên VPS riêng. Không đổi giao diện khách, không nâng số phiên bản.
 - **Đẩy chính thức (công cụ VPS)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work` (v5.38.1 cộng deploy/vps/tyzo.sh). tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build xong, `bash -n` tyzo.sh sạch.
