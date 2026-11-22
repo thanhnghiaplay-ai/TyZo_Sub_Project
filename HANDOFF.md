@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 22/11/2026. **v5.36.0 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.2`.
+Cập nhật 22/11/2026. **v5.37.0 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.3`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -8,7 +8,7 @@ File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại v�
 2. Lấy code: clone nhánh `work` của `thanhnghiaplay-ai/TyZo_Sub_Project`. Mọi việc làm trên `work`.
 3. Kiểm nền: `npm ci`, `npm run typecheck`, `npm run lint` (0 lỗi; 31 cảnh báo có sẵn), `npm test`, `npm run build`.
 4. Mỗi bước: sửa → typecheck → lint → test → (nếu đổi hành vi khách: nâng `APP_VERSION`, thêm `CHANGELOG` mỗi dòng ≤ 100 ký tự và không có từ nội bộ, thêm `ADMIN_LOG`) → commit → đẩy `work` → ghi một dòng ở mục 3.
-5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` = `work` = v5.36.0 (đẩy chính thức 22/11/2026).
+5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` = `work` = v5.37.0 (đẩy chính thức 22/11/2026).
 6. KHÔNG ghi token hay mật khẩu vào file, commit hay remote; truyền token ở dòng lệnh rồi bỏ. Token GitHub từng dán trong chat phải được Chủ thu hồi.
 7. Lưu ý môi trường Claude: không gọi được `api.groq.com`, Alibaba, Deepgram (nên không tự kiểm với nhà thật); `github.com` thì được. Trong shell, `cut -c`/`head -c` cắt hỏng chữ tiếng Việt, dùng Python.
 8. `AGENTS.md` là mẫu chung của một công cụ khác, không phải quy tắc dự án. Quy tắc dự án: `AGENTS.project.md`, `BANG_DIEU.md`, `huongdan.txt`.
@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.37.0**: Chủ nói «Đẩy chính thức». `work` và `main` kéo thẳng (fast-forward) lên nhánh `ccr-a8428a75-e8fyfm`. Khách đồng ý lại điều khoản 2026-11-22.3 một lần. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1443 pass, vite build xong. Migration 0031 chạy khi Vercel build.
 - **v5.37.0 (22/11/2026, Claude, nhánh `ccr-a8428a75-e8fyfm`, chưa hợp `work`)**: Ứng dụng Android bước 2. Đã làm: web (migration 0031 app_link_codes, app_devices; /api/app-link, /api/app-me, /api/app-ticket; issueLiveTicket dùng chung; thẻ Ứng dụng Android ở Tài khoản; điều khoản 2026-11-22.3) và ứng dụng 0.2 (`android/`, liên kết bằng mã, phụ đề nổi, trừ Token qua cầu nối). tsc sạch, eslint 0 lỗi, npm test pass, vite build xong, thử các đường API trên máy chủ dev, GitHub Actions đóng gói xong. Chưa làm: phiên thật trên điện thoại (cần web bản này đã deploy và cầu nối chạy), khóa ký cố định (bí mật ANDROID_KEYSTORE_*), đặt ANDROID_APK_URL để khách tải. Cố ý không làm: phát tiếng dịch trong ứng dụng (bộ thu sẽ nghe lại), iPhone.
 - **Đẩy chính thức v5.36.0**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.36.0. Khách đồng ý lại điều khoản 2026-11-22.2 một lần. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1438 pass, vite build xong. Cầu nối Fly.io vẫn cần deploy lại cho «từ cần giữ đúng».
 - **v5.36.0 (22/11/2026, Claude)**: Dịch trực tiếp: phụ đề nổi (`use-caption-window.ts`, `live-caption-view.tsx`), chữ lớn toàn màn hình, tùy chỉnh chữ, từ cần giữ đúng (vé → cầu nối → Qwen corpus), lưu phiên trước trên máy (`live-caption.ts`). Điều khoản 2026-11-22.2. tsc sạch, eslint 0 lỗi, test 191 + 1438 pass, vite build xong, xem bằng Chromium 412/1280 px (PiP mở thật). Việc của Chủ: deploy lại cầu nối Fly.io (`fly deploy`) để «từ cần giữ đúng» có tác dụng. Đã đẩy `work` và `main`.
