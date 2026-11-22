@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức v5.42.0**: Chủ nói «hợp vào work rồi đẩy chính thức». `work` và `main` kéo thẳng bằng nhánh `ccr-c3c6821f-hbpt1y`. tsc sạch, test 191 + 1478 pass, build xong. Khách đồng ý lại điều khoản 2026-11-22.7. Migration 0034 chạy khi Vercel build. Trên VPS: `tyzo` → 2.
 - **v5.42.0 đợt 1 tối ưu độ trễ (22/11/2026 21:35, Claude, nhánh `ccr-c3c6821f-hbpt1y`)**: A1–A7 (xem ADMIN_LOG 5.42.0). tsc sạch, eslint sạch phần đã sửa, test 191 + 1478 pass, build xong; bảng Admin mới chụp ở 390 px sáng/tối (chưa có dữ liệu, cần đăng nhập Quản lý). Chưa làm: ứng dụng Android xin vé song song (cần nâng bản ứng dụng), đợt 2, đợt 3. Cố ý không làm: gọi Neon riêng để giữ thức (cầu nối đã đọc giá mỗi phút). CHƯA thử: phiên thật với Alibaba, VPS thật. Sau khi đẩy chính thức: trên VPS `tyzo` → 2.
 - **Đẩy chính thức (quét vi phạm mỗi đêm)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work` (v5.41.0 + /api/risk-sweep + tyzo mục 16). tsc sạch, eslint 0 lỗi, test 191 + 1472 pass, build xong. Trên VPS: `tyzo` → 2 → 16.
 - **Quét vi phạm mỗi đêm (22/11/2026, Claude, trên `work`)**: /api/risk-sweep + `tyzo` mục 16 (docs/HUONG_DAN_VPS.md mục E1). Không đổi giao diện khách, không đổi điều khoản, không nâng số phiên bản.
