@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức (công cụ VPS)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work` (v5.38.1 cộng deploy/vps/tyzo.sh). tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build xong, `bash -n` tyzo.sh sạch.
 - **Công cụ VPS (22/11/2026, Claude)**: `deploy/vps/tyzo.sh`, cài một lần bằng `bash /opt/tyzo/deploy/vps/tyzo.sh` rồi về sau gõ `tyzo`. Thay cho /opt/cap-nhat.sh. Không đổi mã web, không nâng số phiên bản.
 - **Đẩy chính thức v5.38.1**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1445 pass, build xong. Không đổi điều khoản. Cần chạy `sh /opt/cap-nhat.sh` trên VPS để cầu nối nhận bản mới.
 - **v5.38.1 (22/11/2026, Claude)**: cầu nối Dịch trực tiếp đã chuyển sang VPS (`wss://realtimehub.tyzo.site/live`; trên VPS: mã ở /opt/tyzo, bí mật ở /opt/bridge.env, cập nhật bằng `sh /opt/cap-nhat.sh`, Caddy lo https). Qwen 3.5 chốt câu sau 0,5 giây im lặng (biến LIVE_SILENCE_MS). tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build xong. Chưa thử với Alibaba thật.
