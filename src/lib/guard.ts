@@ -52,6 +52,14 @@ export async function takeRateWith(
     returning hits
   `;
   if (rows[0].hits > limit) {
+    if (rows[0].hits === limit + 1) {
+      // Bằng chứng cho luật «quá tải» (risk-rules.ts): mỗi khung bị vượt ghi một dòng. Lỗi ghi không ảnh hưởng việc chặn.
+      try {
+        await sql`insert into rate_blocks (bucket) values (${bucket})`;
+      } catch {
+        /* bảng chưa có */
+      }
+    }
     throw new RateLimitError(Math.max(1, Math.ceil((start + windowMs - nowMs) / 1000)));
   }
   // Dọn dòng cũ thỉnh thoảng, không cần chặt chẽ.

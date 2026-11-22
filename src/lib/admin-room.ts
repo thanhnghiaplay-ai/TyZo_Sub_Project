@@ -158,8 +158,11 @@ export const getMyPlace = createServerFn({ method: "GET" })
 
 export const touchPresence = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .handler(async ({ context }) => {
+  .validator((device?: string) => (typeof device === "string" ? device.slice(0, 64) : ""))
+  .handler(async ({ context, data }) => {
     await markSeen(context.userId);
+    const { noteEvent } = await import("@/lib/risk-log.server");
+    await noteEvent(context.userId, "hien-dien", { device: data, dedupeMinutes: 30 });
     return { ok: true as const };
   });
 

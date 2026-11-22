@@ -2,6 +2,7 @@ export type AdminTab =
   | "tong-quan"
   | "viec"
   | "tai-khoan"
+  | "rui-ro"
   | "cau-hinh"
   | "so-do"
   | "tien"
@@ -18,6 +19,8 @@ export type AdminTabInfo = {
   label: string;
   /** Chỉ Chủ mới thấy. */
   owner: boolean;
+  /** Quản lý và Chủ thấy (Hỗ trợ không). */
+  manager?: boolean;
   /** Từ khóa phụ để tìm trong Ctrl+K. */
   words: string;
 };
@@ -27,6 +30,7 @@ export const ADMIN_TABS: AdminTabInfo[] = [
   { id: "tong-quan", label: "Tổng quan", owner: false, words: "trang chu dashboard canh bao" },
   { id: "viec", label: "Phiếu và việc", owner: false, words: "phieu luot don nap yeu cau tra theo luot lich su" },
   { id: "tai-khoan", label: "Tài khoản khách", owner: false, words: "email khach tim kiem so tien han goi ghi chu mat khau tam khoa mo cam the quyen" },
+  { id: "rui-ro", label: "Rủi ro", owner: false, manager: true, words: "vi pham khoa cam gian lan dung chung ban lai dung thu chung tu gia qua tai ho so bang chung co" },
   { id: "cau-hinh", label: "Cấu hình", owner: true, words: "key groq alibaba gia goi dich cong nap sepay casso thue phong model lien he ho tro zalo facebook email bao tri hoat dong dich truc tiep dich binh thuong" },
   { id: "so-do", label: "Sơ đồ", owner: false, words: "to chuc nhan vien quyen" },
   { id: "tien", label: "Doanh thu", owner: true, words: "tien chi phi loi lai arpu bieu do" },
@@ -41,7 +45,7 @@ export const ADMIN_TABS: AdminTabInfo[] = [
 
 export function tabsFor(role: string | null): AdminTabInfo[] {
   if (!role) return [];
-  return ADMIN_TABS.filter((tab) => !tab.owner || role === "chu");
+  return ADMIN_TABS.filter((tab) => (!tab.owner || role === "chu") && (!tab.manager || role === "chu" || role === "quan-ly"));
 }
 
 /** Bỏ dấu tiếng Việt và hạ chữ thường để so khớp khi tìm. */

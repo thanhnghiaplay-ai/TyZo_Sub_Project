@@ -422,6 +422,8 @@ export const claimPayOrder = createServerFn({ method: "POST" })
     `;
     const order = claimed[0];
     if (order) {
+      const { noteEvent } = await import("@/lib/risk-log.server");
+      await noteEvent(context.userId, "bao-da-chuyen", { ref: data });
       const who = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
       const email = who[0]?.email ?? "";
       await writePayNotice(

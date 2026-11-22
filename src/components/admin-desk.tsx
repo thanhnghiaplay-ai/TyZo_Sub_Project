@@ -4,6 +4,7 @@ import { backTab, pushTabHistory } from "@/lib/back-nav";
 import { openAdminPlace } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
+import { RiskBoard } from "@/components/risk-board";
 import {
   escalateAppeal,
   getBadgeStyle,
@@ -349,6 +350,7 @@ export function AdminDesk() {
       {role === "chu" && tab === "chat-luong" && <QualityBoard />}
       {role === "chu" && tab === "thuat-ngu" && <GlossaryBoard />}
       {role === "chu" && tab === "ctv" && <AffiliateBoard />}
+      {(role === "chu" || role === "quan-ly") && tab === "rui-ro" && <RiskBoard />}
       {role === "chu" && tab === "giao-dien" && <ThemeBoard />}
       {role === "chu" && tab === "thu" && (
         <div className="admin-grid admin-wide">

@@ -154,6 +154,9 @@ export function TermsDocument() {
         Lời thoại được gửi tới nhà nhận dạng bạn chọn, theo điều khoản của nhà đó. Câu thoại cần dịch, phân tích nội dung hay trau chuốt được gửi tới nhà có model dịch bạn chọn, hoặc nhà mà chế độ Tự động chọn trong số nhà bạn có key hay phòng đang mở: Groq xử lý ở Hoa Kỳ, Alibaba (Qwen) xử lý theo vùng Singapore. Groq xử lý ở Hoa Kỳ. Alibaba Filetrans xử lý theo vùng Singapore, và link file trực tiếp cũng được gửi tới Alibaba. Deepgram nhận dạng theo điều khoản của Deepgram, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới Deepgram. Chữ cần đọc bằng giọng Aura cũng được gửi tới Deepgram. AssemblyAI nhận dạng theo điều khoản của AssemblyAI, một công ty Hoa Kỳ, và link file trực tiếp cũng được gửi tới AssemblyAI. Speechmatics nhận dạng theo điều khoản của Speechmatics, một công ty Anh, phòng đang dùng máy chủ vùng Hoa Kỳ (US1), và link file trực tiếp cũng được gửi tới Speechmatics. Soniox nhận dạng theo điều khoản của Soniox; nơi đặt máy chủ do Soniox công bố, và link file trực tiếp cũng được gửi tới Soniox. ElevenLabs nhận dạng theo điều khoản của ElevenLabs, một công ty Hoa Kỳ, phòng dùng máy chủ chung của ElevenLabs (không chọn vùng lưu riêng), và link file trực tiếp cũng được gửi tới ElevenLabs. Chữ cần đọc bằng giọng ElevenLabs cũng được gửi tới ElevenLabs. Ở Dịch trực tiếp, âm thanh đang thu và các từ bạn ghi ở ô «Từ cần giữ đúng» được gửi tới Alibaba (Qwen LiveTranslate) qua cầu nối của phòng để dịch; phòng không lưu âm thanh đó. Phòng gửi lệnh xóa bản nhận dạng ngay sau mỗi lần chạy, nhưng việc nhà đó có xóa thật hay không là theo điều khoản của nhà đó. Đây là chuyển dữ liệu ra ngoài Việt Nam để làm đúng việc bạn yêu cầu. File video xử lý trên máy bạn. Phòng không lưu video.
       </p>
       <p>
+        Để phát hiện dùng chung, bán lại, lách dùng thử, báo chuyển khoản không có thật và làm quá tải trang (mục 10), phòng ghi theo tài khoản: giờ đăng ký, đăng nhập và lúc đang dùng web; địa chỉ mạng; loại trình duyệt; mã máy do trình duyệt tạo; lần nhận dùng thử; lần bấm «Tôi đã chuyển»; lần bị chặn vì gửi quá nhanh; địa chỉ mạng của mỗi máy ứng dụng Android. Các dữ kiện này giữ 180 ngày rồi tự xóa (lần bị chặn giữ 30 ngày, địa chỉ mạng của máy ứng dụng giữ 90 ngày), chỉ Quản lý và Admin xem được, và không dùng vào việc khác.
+      </p>
+      <p>
         Khi bạn liên kết ứng dụng Android, phòng ghi tên máy (hãng và đời máy) và lúc dùng gần nhất theo tài khoản, để bạn xem và gỡ ở trang Tài khoản. Phòng chỉ giữ bản băm của mã liên kết và khóa máy, không giữ bản gốc; khóa máy nằm trong ứng dụng trên điện thoại của bạn. Bấm Gỡ liên kết, đổi hoặc đặt lại mật khẩu, hay để máy không dùng quá 90 ngày là khóa đó hết dùng được. Tiếng mà ứng dụng thu được gửi qua cầu nối của phòng tới Alibaba (Qwen LiveTranslate) như Dịch trực tiếp trên web; phòng không lưu tiếng đó. Ứng dụng lưu trên điện thoại địa chỉ web, ngôn ngữ, cách hiện phụ đề, các từ bạn ghi ở ô «Từ cần giữ đúng» và chữ của phiên gần nhất (câu gốc, bản dịch, giờ); bấm Xóa bản lưu là xóa chữ của phiên đó. Từ cần giữ đúng được gửi qua cầu nối tới Alibaba như trên web. Tệp phụ đề bạn tải về hay gửi đi nằm ngoài ứng dụng, do bạn giữ.
       </p>
       <p>
@@ -225,6 +228,12 @@ export function TermsDocument() {
         <li>Tiếp tục đưa nội dung không có quyền sau khi đã được báo, hoặc bị khiếu nại bản quyền hợp lệ nhiều lần.</li>
       </ul>
       <p className="gate-key">Gỡ khóa hoặc gỡ cấm không xóa lịch sử xử lý.</p>
+      <p>
+        Phòng tự kiểm các dấu hiệu trên theo ngưỡng công bố trong phòng. Khi có dấu hiệu, phòng lập một hồ sơ (mã RR-…) gồm các dữ kiện cụ thể chụp lại lúc phát hiện (giờ, địa chỉ mạng, máy, đơn, yêu cầu) và mã băm để chứng minh hồ sơ không bị sửa. Người của phòng xem hồ sơ rồi mới khóa hay cấm. Riêng hai việc làm quá tải trang và bấm «Tôi đã chuyển» nhiều lần mà không có tiền về, phòng có thể tự khóa trước để bảo vệ trang, rồi người của phòng xem lại. Lý do khóa hay cấm ghi điều khoản và mã hồ sơ. Bạn có quyền yêu cầu xem hồ sơ của mình qua Yêu cầu xem lại. Hồ sơ giữ đến khi xử lý xong và tối đa 2 năm.
+      </p>
+      <p>
+        Hai tài khoản chỉ bị coi là cùng một người khi dùng chung máy, hoặc chung địa chỉ mạng và cùng đúng một trình duyệt; chỉ chung địa chỉ mạng (thường gặp ở mạng di động, mạng công ty) thì không tính.
+      </p>
 
       <h2>11. Giới thiệu</h2>
       <p>

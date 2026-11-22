@@ -310,6 +310,10 @@ export const requestPayout = createServerFn({ method: "POST" })
     if (!me.length) throw new Error("Bạn chưa đăng ký cộng tác viên.");
     if (me[0].status !== "hoat-dong") throw new Error("Mã giới thiệu đang tạm khóa hoặc chờ duyệt, chưa rút được.");
     if (!me[0].bank_account) throw new Error("Hãy nhập tài khoản ngân hàng nhận tiền trước.");
+    const flagged = await sql<{ id: number }>`
+      select id from risk_flags where user_id = ${context.userId} and rule = 'ctv-tu-gioi-thieu' and status = 'mo' limit 1
+    `.catch(() => [] as { id: number }[]);
+    if (flagged.length) throw new Error(`Tạm chưa rút được: có khách trùng máy hoặc mạng với bạn đang chờ Admin xem lại (hồ sơ RR-${flagged[0].id}). Gửi Yêu cầu xem lại nếu cần.`);
     const bankInfo = JSON.stringify({ bank: me[0].bank_name, account: me[0].bank_account, holder: me[0].bank_holder });
     await sql`update commission_events set status = 'cho-rut' where affiliate_id = ${context.userId} and status = 'da-duyet'`;
     await sql`insert into affiliate_payouts (affiliate_id, amount, bank_info) values (${context.userId}, ${amount}, ${bankInfo})`;

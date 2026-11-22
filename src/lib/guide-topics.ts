@@ -340,6 +340,12 @@ export const GUIDE_FAQ: GuideFaq[] = [
     words: "dich truc tiep khong co tieng tab chia se am thanh micro live",
   },
   {
+    id: "vi-sao-bi-khoa",
+    q: "Vì sao tài khoản bị khóa hoặc bị cấm?",
+    a: "Lý do ghi ngay trên trang, kèm ý điều khoản (mục 10) và mã hồ sơ RR-…. Hồ sơ có các dữ kiện cụ thể lúc phát hiện: giờ, địa chỉ mạng, máy, đơn, yêu cầu. Muốn xem hồ sơ hoặc cho rằng chưa đúng, gửi Yêu cầu xem lại kèm mã hồ sơ.",
+    words: "khoa cam tai khoan bi khoa ly do ho so rr vi pham dung chung ban lai dung thu chuyen khoan qua tai khieu nai",
+  },
+  {
     id: "android-khong-hien-phu-de",
     q: "Ứng dụng Android không hiện phụ đề?",
     a: "Kiểm ba chỗ: đã bật quyền hiện trên ứng dụng khác cho TyZo Sub; lúc Android hỏi chia sẻ đã bấm đồng ý; video đang phát có tiếng (tắt tiếng thì không có gì để dịch). Ứng dụng báo máy đã bị gỡ liên kết thì lấy mã mới ở Tài khoản.",

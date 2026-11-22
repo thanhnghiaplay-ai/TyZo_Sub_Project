@@ -314,6 +314,11 @@ export const auth = betterAuth({
   // (công tắc «Báo khi mật khẩu vừa đổi» ở Admin vẫn quyết định có gửi hay không, xem mail-runtime.deliver).
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
+      // Bằng chứng cho luật phát hiện vi phạm: lần đăng ký, đăng nhập (giờ, địa chỉ mạng, trình duyệt).
+      if (ctx.path === "/sign-in/email" || ctx.path === "/sign-up/email") {
+        const uid = ctx.context.newSession?.user?.id;
+        if (uid) await import("../risk-log.server").then((m) => m.noteEvent(uid, ctx.path === "/sign-up/email" ? "dang-ky" : "dang-nhap")).catch(() => {});
+      }
       const to = changedLetterTo(ctx.path, ctx.context.returned, ctx.context.session?.user?.email);
       if (to) {
         sendAuthLetter("changed", to);

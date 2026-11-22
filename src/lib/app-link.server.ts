@@ -58,12 +58,16 @@ export async function deviceUserId(): Promise<string | null> {
   const token = readDeviceToken(getRequest()?.headers.get("authorization"));
   if (!token) return null;
   const sql = await getSql();
-  const rows = await sql<{ user_id: string }>`
+  const rows = await sql<{ id: string; user_id: string }>`
     update app_devices set last_used_at = now()
     where token_hash = ${hash(token)} and revoked_at is null
       and coalesce(last_used_at, created_at) > ${new Date(Date.now() - DEVICE_IDLE_DAYS * 86_400_000).toISOString()}::timestamptz
-    returning user_id
+    returning id, user_id
   `;
+  if (rows[0]) {
+    const { noteAppIp } = await import("@/lib/risk-log.server");
+    await noteAppIp(rows[0].id, rows[0].user_id);
+  }
   return rows[0]?.user_id ?? null;
 }
 

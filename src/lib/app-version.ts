@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.40.0";
+export const APP_VERSION = "5.41.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.41.0",
+    time: "20:46 22/11/2026",
+    title: "Phòng tự phát hiện dấu hiệu vi phạm điều khoản, mỗi trường hợp có hồ sơ bằng chứng.",
+    points: [
+      "Khóa hay cấm đều ghi rõ ý điều khoản và mã hồ sơ RR-…; bạn yêu cầu xem hồ sơ qua Yêu cầu xem lại.",
+      "Chỉ chung địa chỉ mạng (mạng di động, mạng công ty) không bị coi là cùng một người.",
+      "Điều khoản ghi thêm các dữ kiện được lưu để phát hiện vi phạm; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.40.0",
     time: "20:16 22/11/2026",

@@ -151,6 +151,10 @@ export const claimTrialDevice = createServerFn({ method: "POST" })
       values (${data}, ${context.userId})
       on conflict (device_id) do nothing
     `;
+    {
+      const { noteEvent } = await import("@/lib/risk-log.server");
+      await noteEvent(context.userId, "dung-thu", { device: data, dedupeMinutes: 60 });
+    }
     const owner = await sql<{ user_id: string }>`select user_id from trial_devices where device_id = ${data}`;
     if (owner[0] && owner[0].user_id !== context.userId) {
       await sql`

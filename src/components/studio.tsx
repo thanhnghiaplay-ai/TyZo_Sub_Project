@@ -9,6 +9,7 @@ import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, typ
 import { AccountPanel } from "@/components/account-panel";
 import { BackButton } from "@/components/back-button";
 import { getMyPlace, submitAppeal, touchPresence, type MyPlace } from "@/lib/admin-room";
+import { deviceId } from "@/lib/device-id";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
 import { signOut } from "@/lib/auth/client";
@@ -852,7 +853,7 @@ export function Studio() {
 
   useEffect(() => {
     void loadPlace();
-    const ping = () => void touchPresence().catch(() => undefined);
+    const ping = () => void touchPresence({ data: deviceId() ?? undefined }).catch(() => undefined);
     ping();
     const timer = window.setInterval(ping, 60_000);
     const onShow = () => {

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.41.0",
+    time: "20:46 22/11/2026",
+    area: "khac",
+    text: "Chủ: «luật chặt hơn, chi tiết hơn, có bằng chứng cụ thể để có khiếu nại là mang ra liền; làm xong thì đẩy chính thức». Bộ luật risk-rules.ts (thuần, 13 test): dung-chung (10·khóa·1: trong 24 giờ, tài khoản đang hạn mở từ ≥3 máy VÀ ≥3 địa chỉ mạng), ban-lai (10·cấm·4: 7 ngày, ≥8 máy hoặc ≥12 địa chỉ kèm ≥3 máy, tính cả máy Android), dung-thu-nhieu-tk (10·khóa·2: 30 ngày, ≥2 tài khoản khác chung máy hoặc chung địa chỉ mạng + cùng trình duyệt, ≥2 đã dùng thử), ho-tro-lap (10·khóa·3: ≥6 yêu cầu/24 giờ hoặc ≥15/7 ngày), qua-tai (10·cấm·2: ≥15 lần bị chặn/giờ hoặc ≥40/24 giờ; mặc định tự khóa), chung-tu-gia (10·cấm·3: 7 ngày ≥3 lần bấm «Tôi đã chuyển» mà quá 2 giờ không có tiền; mặc định tự khóa), ctv-tu-gioi-thieu (11: khách trùng máy/mạng+trình duyệt với CTV; chặn rút tiền khi cờ mở), may-ung-dung (10·khóa·1: một máy Android từ ≥6 địa chỉ/24 giờ; mặc định tự gỡ máy), thu-cong (ghi tay: bản quyền, nội dung trẻ em…). Ngưỡng Admin sửa trong khoảng an toàn. Ghi dữ kiện (migration 0033): account_events (đăng ký, đăng nhập qua hook Better Auth, hiện diện kèm mã máy từ touchPresence, dùng thử, báo đã chuyển), rate_blocks (guard.ts, mỗi khung bị vượt một dòng), app_device_ips (deviceUserId). risk.server.ts gom dữ kiện, dựng/cập nhật cờ risk_flags với hồ sơ JSON (điều khoản trích nguyên văn, cách phát hiện theo ngưỡng, kết luận, bảng dữ kiện giờ VN) và mã băm SHA-256 (canonical), tự xử lý theo cài đặt, không dựng lại cờ đã xử lý trong 14 ngày, dọn dữ kiện (180/30/90 ngày). Kiểm ngay sau mỗi dữ kiện (checkSoon, 10 phút/tài khoản) và khi mở tab (quét 10 phút/lần) hoặc bấm Quét ngay. Tab Admin «Rủi ro» (Quản lý và Admin; cấm và ngưỡng chỉ Admin): tìm email hoặc RR-…, xem bảng bằng chứng, Tải hồ sơ .txt, Chép hồ sơ, Bỏ qua (bắt buộc ghi lý do) / Khóa / Cấm (lý do gửi khách tự ghi điều khoản + mã hồ sơ), ghi cờ tay kèm bằng chứng. Điều khoản 2026-11-22.6 (mục 5, mục 10). Hướng dẫn: câu hỏi «Vì sao tài khoản bị khóa».",
+  },
+  {
     version: "5.40.0",
     time: "20:18 22/11/2026",
     area: "khac",
