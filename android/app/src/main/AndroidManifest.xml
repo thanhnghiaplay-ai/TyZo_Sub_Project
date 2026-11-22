@@ -11,11 +11,12 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@drawable/ic_app"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false"
-        android:theme="@android:style/Theme.DeviceDefault.DayNight">
+        android:theme="@style/TyZo">
 
         <activity
             android:name=".MainActivity"

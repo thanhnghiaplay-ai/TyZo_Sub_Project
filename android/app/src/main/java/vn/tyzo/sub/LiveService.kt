@@ -88,6 +88,8 @@ class LiveService : Service() {
         startForeground(NOTIFICATION_ID, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
         finished.set(false)
         transcript.clear()
+        sessionStartMs = 0L
+        lastError = ""
         LiveState.unlinked = false
         LiveState.phase = LiveState.Phase.STARTING
         LiveState.status = "Đang mở phiên dịch…"
@@ -202,7 +204,7 @@ class LiveService : Service() {
 
     private fun openSession() {
         val ticket = try {
-            Api.ticket(prefs.web, prefs.token, prefs.model, prefs.target, prefs.source)
+            Api.ticket(prefs.web, prefs.token, prefs.model, prefs.target, prefs.source, Hotwords.parse(prefs.words))
         } catch (e: ApiError) {
             if (e.status == 401) LiveState.unlinked = true
             main.post { finish(e.message ?: "Chưa mở được phiên dịch.") }
@@ -244,6 +246,7 @@ class LiveService : Service() {
     }
 
     private var lastError = ""
+    private var sessionStartMs = 0L
 
     private fun handle(msg: JSONObject) {
         if (finished.get()) return
@@ -251,6 +254,7 @@ class LiveService : Service() {
             "ready" -> {
                 LiveState.phase = LiveState.Phase.LIVE
                 LiveState.startedAtMs = System.currentTimeMillis()
+                if (sessionStartMs == 0L) sessionStartMs = LiveState.startedAtMs
                 LiveState.status = "Đang dịch"
                 overlay?.message("Đang nghe… mở video có tiếng.")
             }
@@ -259,7 +263,7 @@ class LiveService : Service() {
                 if (event.optString("kind") == "error") {
                     LiveState.status = event.optString("message").ifBlank { "Nhà cung cấp báo lỗi." }
                 } else {
-                    transcript.apply(event)
+                    transcript.apply(event, System.currentTimeMillis() - sessionStartMs)
                     if (LiveState.phase == LiveState.Phase.LIVE) LiveState.status = "Đang dịch"
                 }
             }
@@ -276,7 +280,7 @@ class LiveService : Service() {
                 LiveState.status = lastError
             }
         }
-        overlay?.update(transcript.latest(2), LiveState.status)
+        overlay?.update(transcript.latest(prefs.captionLines), LiveState.status)
     }
 
     private fun closeText(code: Int, reason: String): String = when {
@@ -292,7 +296,7 @@ class LiveService : Service() {
         if (LiveState.phase == LiveState.Phase.STOPPING) return
         LiveState.phase = LiveState.Phase.STOPPING
         LiveState.status = "Đang kết thúc…"
-        overlay?.update(transcript.latest(2), LiveState.status)
+        overlay?.update(transcript.latest(prefs.captionLines), LiveState.status)
         stopReading()
         val ws = socket
         if (ws != null && socketOpen.get()) {
@@ -306,6 +310,8 @@ class LiveService : Service() {
     private fun finish(message: String) {
         if (!finished.compareAndSet(false, true)) return
         stopReading()
+        // Lưu chữ của phiên vừa rồi trên máy, như web (xuất SRT, VTT, TXT sau).
+        if (sessionStartMs > 0) Session.save(this, transcript.cues(), sessionStartMs)
         socket?.let { runCatching { it.close(1000, null) } }
         socket = null
         socketOpen.set(false)
@@ -341,7 +347,8 @@ class LiveService : Service() {
             PendingIntent.FLAG_IMMUTABLE,
         )
         return Notification.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_app)
+            .setSmallIcon(R.drawable.ic_notify)
+            .setColor(Theme.DARK.accent)
             .setContentTitle("Đang dịch")
             .setContentText("Đang trừ Token dịch theo thời gian nghe. Bấm Dừng khi xong.")
             .setContentIntent(open)

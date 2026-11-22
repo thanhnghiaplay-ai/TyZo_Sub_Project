@@ -28,12 +28,25 @@ class Prefs(context: Context) {
     var source: String
         get() = str("source", "")
         set(v) = put("source", v)
-    var textSize: Int
-        get() = p.getInt("text_size", 20)
-        set(v) = p.edit().putInt("text_size", v).apply()
+    /** Cỡ phụ đề như web: s, m, l, xl (CAPTION_PX). */
+    var captionSize: String
+        get() = str("caption_size", "m").takeIf { it in Caption.SIZES } ?: "m"
+        set(v) = put("caption_size", v)
+    /** Số dòng phụ đề nổi, 1 đến 4 (web mặc định 2). */
+    var captionLines: Int
+        get() = p.getInt("caption_lines", 2).coerceIn(1, 4)
+        set(v) = p.edit().putInt("caption_lines", v.coerceIn(1, 4)).apply()
     var showSource: Boolean
         get() = p.getBoolean("show_source", false)
         set(v) = p.edit().putBoolean("show_source", v).apply()
+    /** Nền đậm (dễ đọc trên video sáng), web mặc định bật. */
+    var solid: Boolean
+        get() = p.getBoolean("caption_solid", true)
+        set(v) = p.edit().putBoolean("caption_solid", v).apply()
+    /** Ô «Từ cần giữ đúng»: mỗi dòng «gốc = cách dịch». */
+    var words: String
+        get() = str("words", "")
+        set(v) = put("words", v)
     /** Vị trí dọc của phụ đề nổi, -1 = chưa kéo. */
     var overlayY: Int
         get() = p.getInt("overlay_y", -1)
@@ -53,5 +66,18 @@ object Models {
         M38 -> "Qwen 3.8 (mới nhất)"
         M35 -> "Qwen 3.5"
         else -> id
+    }
+}
+
+/** Tùy chỉnh phụ đề, cùng giá trị với src/lib/live/live-caption.ts. */
+object Caption {
+    val SIZES = listOf("s", "m", "l", "xl")
+    val SIZE_LABELS = listOf("Nhỏ", "Vừa", "Lớn", "Rất lớn")
+    /** Cỡ chữ của phụ đề nổi (px trên web, sp ở đây). */
+    fun sp(size: String) = when (size) {
+        "s" -> 18f
+        "l" -> 28f
+        "xl" -> 34f
+        else -> 22f
     }
 }

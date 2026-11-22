@@ -10,7 +10,10 @@ import org.json.JSONObject
 
 class ApiError(val status: Int, message: String) : Exception(message)
 
-data class Me(val email: String, val balance: Long, val models: List<String>)
+/** Bản ứng dụng mới nhất web đang phát (code 0 = web chưa báo). */
+data class AppRelease(val code: Int, val name: String, val url: String)
+
+data class Me(val email: String, val balance: Long, val models: List<String>, val app: AppRelease)
 data class Ticket(val url: String, val perMinute: Long, val balance: Long)
 
 /**
@@ -69,11 +72,14 @@ object Api {
         val json = call(web, "/api/app-me", "GET", token, null)
         val arr = json.optJSONArray("models")
         val models = if (arr == null) emptyList() else List(arr.length()) { arr.getString(it) }
-        return Me(json.optString("email"), json.optLong("balance"), models)
+        val app = json.optJSONObject("app")
+        val release = AppRelease(app?.optInt("code") ?: 0, app?.optString("name").orEmpty(), app?.optString("url").orEmpty())
+        return Me(json.optString("email"), json.optLong("balance"), models, release)
     }
 
-    fun ticket(web: String, token: String, model: String, target: String, source: String): Ticket {
+    fun ticket(web: String, token: String, model: String, target: String, source: String, words: Map<String, String>): Ticket {
         val body = JSONObject().put("model", model).put("target", target).put("source", source)
+        if (words.isNotEmpty()) body.put("words", JSONObject(words as Map<*, *>))
         val json = call(web, "/api/app-ticket", "POST", token, body)
         return Ticket(json.getString("url"), json.optLong("perMinute"), json.optLong("balance"))
     }

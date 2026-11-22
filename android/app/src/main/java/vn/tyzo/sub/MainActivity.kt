@@ -1,35 +1,36 @@
 package vn.tyzo.sub
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Typeface
+import android.content.res.ColorStateList
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.provider.Settings
 import android.text.InputType
+import android.view.Gravity
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.webkit.MimeTypeMap
 import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
-import android.widget.SeekBar
-import android.widget.Spinner
 import android.widget.TextView
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 /**
- * Màn hình chính. Chưa liên kết: gõ địa chỉ web và mã liên kết (lấy ở trang Tài khoản).
- * Đã liên kết: chọn ngôn ngữ, cỡ chữ, rồi Bắt đầu; phụ đề nổi hiện trên ứng dụng đang phát video.
+ * Màn hình chính, cùng màu, font và kiểu thẻ với web.
+ * Chưa liên kết: gõ địa chỉ web và mã liên kết (lấy ở Tài khoản → Ứng dụng Android).
+ * Đã liên kết: Token dịch, chọn ngôn ngữ, từ cần giữ đúng, tùy chỉnh phụ đề, Bắt đầu/Dừng, phiên gần nhất.
  */
 class MainActivity : Activity() {
 
@@ -39,13 +40,14 @@ class MainActivity : Activity() {
     }
 
     private lateinit var prefs: Prefs
-    private val ui = Handler(Looper.getMainLooper())
-    private val number = NumberFormat.getInstance(Locale("vi", "VN"))
+    private lateinit var ui: Ui
+    private val handler = Handler(Looper.getMainLooper())
+    private val number = NumberFormat.getInstance(Locale.forLanguageTag("vi-VN"))
 
     private var me: Me? = null
     private var note = ""
 
-    // Phần cần cập nhật liên tục trên màn đã liên kết.
+    // Phần cập nhật liên tục.
     private var startButton: Button? = null
     private var statusText: TextView? = null
     private var balanceText: TextView? = null
@@ -55,7 +57,7 @@ class MainActivity : Activity() {
     private val tick = object : Runnable {
         override fun run() {
             refreshLive()
-            ui.postDelayed(this, 300)
+            handler.postDelayed(this, 300)
         }
     }
 
@@ -67,87 +69,120 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        ui.post(tick)
+        handler.post(tick)
         if (prefs.linked) loadMe()
         render()
     }
 
     override fun onPause() {
-        ui.removeCallbacks(tick)
+        handler.removeCallbacks(tick)
         super.onPause()
     }
 
     // ---------- Dựng màn hình ----------
 
-    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
-
-    private fun label(size: Float, value: String = "", bold: Boolean = false) = TextView(this).apply {
-        textSize = size
-        text = value
-        if (bold) setTypeface(typeface, Typeface.BOLD)
-        setPadding(0, dp(6), 0, dp(6))
-    }
-
-    private fun button(value: String, onClick: () -> Unit) = Button(this).apply {
-        text = value
-        isAllCaps = false
-        textSize = 16f
-        setOnClickListener { onClick() }
-    }
-
-    private fun column(): LinearLayout = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setPadding(dp(20), dp(20), dp(20), dp(32))
-    }
-
-    private fun full() = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-
     private fun render() {
+        ui = Ui(this)
         startButton = null
         statusText = null
         balanceText = null
         meter = null
         lastPhase = null
-        val col = column()
-        col.addView(label(24f, "TyZo Sub", bold = true))
-        col.addView(label(14f, "Phụ đề dịch ngay trên video đang phát ở Bilibili, YouTube, TikTok và ứng dụng khác."))
+        window.statusBarColor = ui.p.bg
+        window.navigationBarColor = ui.p.bg
+
+        val col = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(ui.dp(16), ui.dp(20), ui.dp(16), ui.dp(32))
+        }
+        col.addView(header())
+        updateCard()?.let { col.addView(it, ui.full(16)) }
+        if (note.isNotEmpty()) col.addView(ui.text(note, 14f, ui.p.error), ui.full(12))
         if (prefs.linked) buildMain(col) else buildLink(col)
-        if (note.isNotEmpty()) col.addView(label(14f, note).apply { setTextColor(0xFFD93F3F.toInt()) })
-        col.addView(label(12f, "Bản ${BuildConfig.VERSION_NAME} · ${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"))
-        setContentView(ScrollView(this).apply { addView(col) })
+        col.addView(
+            ui.muted("Bản ${BuildConfig.VERSION_NAME} · ${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}", 12f)
+                .apply { gravity = Gravity.CENTER },
+            ui.full(20),
+        )
+        setContentView(ScrollView(this).apply {
+            setBackgroundColor(ui.p.bg)
+            isFillViewport = true
+            addView(col)
+        })
         refreshLive()
     }
 
+    /** Đầu trang như web: logo, dòng nhỏ màu nhấn, tiêu đề. */
+    private fun header(): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        row.addView(View(this).apply { background = getDrawable(R.drawable.ic_logo) }, LinearLayout.LayoutParams(ui.dp(44), ui.dp(44)))
+        val titles = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(ui.dp(12), 0, 0, 0)
+        }
+        titles.addView(ui.eyebrow("TYZO SUB · CÔNG CỤ PHỤ ĐỀ AI"))
+        titles.addView(ui.text("Phụ đề trên video", 20f, bold = true))
+        row.addView(titles)
+        return row
+    }
+
+    /** Web báo có bản mới hơn bản đang cài. */
+    private fun updateCard(): View? {
+        val app = me?.app ?: return null
+        if (app.code <= BuildConfig.VERSION_CODE) return null
+        val card = ui.card().apply { background = ui.round(ui.p.card, 16f, ui.p.accent) }
+        card.addView(ui.text("Có bản mới ${app.name}", 16f, bold = true))
+        if (app.url.isNotBlank()) {
+            card.addView(ui.muted("Gỡ bản đang cài nếu máy báo không cài đè được, rồi liên kết lại."), ui.full(4))
+            card.addView(ui.primary("Tải bản mới") { open(app.url) }, ui.full(10))
+        } else {
+            card.addView(ui.muted("Lấy tệp cài ở trang Tài khoản trên web, mục Ứng dụng Android."), ui.full(4))
+        }
+        return card
+    }
+
+    private fun section(col: LinearLayout, title: String, eyebrow: String? = null): LinearLayout {
+        val card = ui.card()
+        if (eyebrow != null) card.addView(ui.eyebrow(eyebrow))
+        card.addView(ui.text(title, 17f, bold = true))
+        col.addView(card, ui.full(16))
+        return card
+    }
+
     private fun buildLink(col: LinearLayout) {
-        col.addView(label(18f, "Liên kết tài khoản", bold = true))
-        col.addView(label(14f, "1. Trên web (máy tính hoặc điện thoại), đăng nhập rồi mở Tài khoản → Ứng dụng Android.\n" +
+        val card = section(col, "Liên kết tài khoản", "BẮT ĐẦU")
+        card.addView(ui.muted(
+            "1. Trên web, đăng nhập rồi mở Tài khoản → Ứng dụng Android.\n" +
                 "2. Bấm «Lấy mã liên kết». Mã có 8 ký tự, dùng được 10 phút.\n" +
-                "3. Gõ địa chỉ web và mã vào hai ô dưới, bấm Liên kết."))
-        col.addView(label(14f, "Địa chỉ web"))
-        val web = EditText(this).apply {
+                "3. Gõ địa chỉ web và mã vào hai ô dưới, bấm Liên kết.", 14f,
+        ), ui.full(8))
+        card.addView(ui.text("Địa chỉ web", 14f, ui.p.muted), ui.full(14))
+        val web = ui.input("ví dụ: tyzo.vn").apply {
             setText(prefs.web)
-            hint = "ví dụ: tyzo.vn"
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
-            isSingleLine = true
         }
-        col.addView(web, full())
-        col.addView(label(14f, "Mã liên kết"))
-        val code = EditText(this).apply {
-            hint = "ABCD-EFGH"
+        card.addView(web, ui.full(6))
+        card.addView(ui.text("Mã liên kết", 14f, ui.p.muted), ui.full(12))
+        val code = ui.input("ABCD-EFGH").apply {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-            isSingleLine = true
             textSize = 22f
+            letterSpacing = 0.15f
+            typeface = Theme.semibold(this@MainActivity)
         }
-        col.addView(code, full())
+        card.addView(code, ui.full(6))
         lateinit var go: Button
-        go = button("Liên kết") {
+        go = ui.primary("Liên kết") {
             val base = Api.normalizeWeb(web.text.toString())
             if (base == null) {
                 note = "Địa chỉ web không đúng. Gõ dạng tyzo.vn hoặc https://…"
                 render()
-                return@button
+                return@primary
             }
             go.isEnabled = false
+            go.text = "Đang liên kết…"
             note = ""
             val name = "${Build.MANUFACTURER} ${Build.MODEL}"
             Thread {
@@ -169,75 +204,89 @@ class MainActivity : Activity() {
                 }
             }.start()
         }
-        col.addView(go, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(56)))
-        col.addView(guideButton { web.text.toString() }, full())
+        card.addView(go, ui.full(14))
+        card.addView(ui.secondary("Xem hướng dẫn trên web") { openWeb(web.text.toString(), "/huong-dan#ung-dung-android") }, ui.full(8))
     }
 
     private fun buildMain(col: LinearLayout) {
-        col.addView(label(15f, "Tài khoản: ${me?.email?.ifBlank { null } ?: prefs.email}"))
-        balanceText = label(16f, bold = true)
-        col.addView(balanceText)
+        // Tài khoản và Token dịch.
+        val account = section(col, me?.email?.ifBlank { null } ?: prefs.email, "TÀI KHOẢN")
+        balanceText = ui.text("", 16f, ui.p.accent, bold = true)
+        account.addView(balanceText, ui.full(6))
+        account.addView(ui.secondary("Mua Token dịch") { openWeb(prefs.web, "/tai-khoan") }, ui.full(10))
 
-        col.addView(label(16f, "Dịch sang", bold = true))
-        col.addView(spinner(Langs.ALL.map { it.name }, Langs.ALL.indexOfFirst { it.code == prefs.target }) {
-            prefs.target = Langs.ALL[it].code
-        }, full())
-
-        col.addView(label(16f, "Tiếng trong video", bold = true))
-        val sources = listOf(Lang("", "Tự nhận diện")) + Langs.ALL
-        col.addView(spinner(sources.map { it.name }, sources.indexOfFirst { it.code == prefs.source }) {
-            prefs.source = sources[it].code
-        }, full())
-
-        val models = me?.models?.takeIf { it.isNotEmpty() } ?: listOf(Models.M38, Models.M35)
-        if (prefs.model !in models) prefs.model = models.first()
-        col.addView(label(16f, "Model", bold = true))
-        col.addView(spinner(models.map { Models.name(it) }, models.indexOf(prefs.model)) {
-            prefs.model = models[it]
-        }, full())
-
-        val sizeLabel = label(16f, "Cỡ chữ phụ đề: ${prefs.textSize}", bold = true)
-        col.addView(sizeLabel)
-        col.addView(SeekBar(this).apply {
-            max = 36 - 14
-            progress = prefs.textSize - 14
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(s: SeekBar?, value: Int, fromUser: Boolean) {
-                    prefs.textSize = value + 14
-                    sizeLabel.text = "Cỡ chữ phụ đề: ${prefs.textSize}"
-                }
-                override fun onStartTrackingTouch(s: SeekBar?) {}
-                override fun onStopTrackingTouch(s: SeekBar?) {}
-            })
-        }, full())
-        col.addView(CheckBox(this).apply {
-            text = "Hiện cả chữ gốc"
-            isChecked = prefs.showSource
-            setOnCheckedChangeListener { _, checked -> prefs.showSource = checked }
-        })
-
+        // Cho phép hiện trên ứng dụng khác.
         if (!Settings.canDrawOverlays(this)) {
-            col.addView(label(14f, "Cần cho phép hiện phụ đề trên ứng dụng khác."))
-            col.addView(button("Cho phép hiện trên ứng dụng khác") {
+            val perm = ui.card().apply { background = ui.round(ui.p.card, 16f, ui.p.warning) }
+            perm.addView(ui.text("Cần cho phép hiện phụ đề trên ứng dụng khác", 15f, bold = true))
+            perm.addView(ui.muted("Bấm nút dưới, bật quyền cho TyZo Sub rồi quay lại đây."), ui.full(4))
+            perm.addView(ui.primary("Cho phép hiện trên ứng dụng khác") {
                 startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
-            }, full())
+            }, ui.full(10))
+            col.addView(perm, ui.full(16))
         }
 
-        col.addView(label(16f, "Cách dùng", bold = true))
-        col.addView(label(14f, "1. Bấm Bắt đầu. Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình.\n" +
+        // Bắt đầu / Dừng.
+        val run = section(col, "Dịch video đang phát", "DỊCH TRỰC TIẾP")
+        run.addView(ui.muted(
+            "1. Bấm Bắt đầu. Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình.\n" +
                 "2. Mở video có tiếng ở Bilibili, YouTube, TikTok… Phụ đề hiện nổi trên video.\n" +
                 "3. Kéo khung phụ đề lên xuống để đổi chỗ. Bấm «■ Dừng» trên khung hoặc nút Dừng ở đây khi xong.\n" +
-                "Token dịch trừ theo thời gian nghe, kể cả lúc video im lặng."))
-        startButton = button("Bắt đầu") { onStartStop() }.apply { textSize = 18f }
-        col.addView(startButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(60)))
-        meter = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply { max = 90 }
-        col.addView(meter, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(16)))
-        statusText = label(15f)
-        col.addView(statusText)
+                "Token dịch trừ theo thời gian nghe, kể cả lúc video im lặng.", 14f,
+        ), ui.full(8))
+        startButton = ui.primary("Bắt đầu") { onStartStop() }.apply { textSize = 17f; minHeight = ui.dp(52) }
+        run.addView(startButton, ui.full(14))
+        meter = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = 90
+            progressTintList = ColorStateList.valueOf(ui.p.accent)
+            progressBackgroundTintList = ColorStateList.valueOf(ui.p.raised)
+        }
+        run.addView(meter, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ui.dp(10)).apply { topMargin = ui.dp(12) })
+        statusText = ui.text("", 14f, ui.p.muted)
+        run.addView(statusText, ui.full(6))
 
-        col.addView(View(this), LinearLayout.LayoutParams(1, dp(24)))
-        col.addView(guideButton { prefs.web }, full())
-        col.addView(button("Gỡ liên kết máy này") {
+        // Ngôn ngữ và model.
+        val lang = section(col, "Ngôn ngữ", "DỊCH")
+        lang.addView(ui.text("Dịch sang", 14f, ui.p.muted), ui.full(10))
+        lang.addView(ui.select(Langs.ALL.map { it.name }, Langs.ALL.indexOfFirst { it.code == prefs.target }) {
+            prefs.target = Langs.ALL[it].code
+        }, ui.full(6))
+        lang.addView(ui.text("Tiếng trong video", 14f, ui.p.muted), ui.full(12))
+        val sources = listOf(Lang("", "Tự nhận diện")) + Langs.ALL
+        lang.addView(ui.select(sources.map { it.name }, sources.indexOfFirst { it.code == prefs.source }) {
+            prefs.source = sources[it].code
+        }, ui.full(6))
+        val models = me?.models?.takeIf { it.isNotEmpty() } ?: listOf(Models.M38, Models.M35)
+        if (prefs.model !in models) prefs.model = models.first()
+        lang.addView(ui.text("Model", 14f, ui.p.muted), ui.full(12))
+        lang.addView(ui.select(models.map { Models.name(it) }, models.indexOf(prefs.model)) { prefs.model = models[it] }, ui.full(6))
+        lang.addView(ui.text("Từ cần giữ đúng", 14f, ui.p.muted), ui.full(12))
+        lang.addView(ui.muted("Tên nhân vật, thuật ngữ. Mỗi dòng «gốc = cách dịch», tối đa ${Hotwords.MAX} dòng. Áp dụng khi bấm Bắt đầu.", 12f), ui.full(2))
+        val words = ui.input("Ví dụ:\n林动 = Lâm Động", multi = true).apply {
+            setText(prefs.words)
+            setOnFocusChangeListener { _, has -> if (!has) prefs.words = text.toString() }
+        }
+        lang.addView(words, ui.full(6))
+        wordsBox = words
+
+        // Tùy chỉnh phụ đề.
+        val cap = section(col, "Tùy chỉnh chữ", "PHỤ ĐỀ NỔI")
+        cap.addView(ui.text("Cỡ chữ", 14f, ui.p.muted), ui.full(10))
+        cap.addView(ui.segmented(Caption.SIZE_LABELS, Caption.SIZES.indexOf(prefs.captionSize)) { prefs.captionSize = Caption.SIZES[it] }, ui.full(6))
+        cap.addView(ui.text("Số dòng", 14f, ui.p.muted), ui.full(12))
+        cap.addView(ui.segmented(listOf("1", "2", "3", "4"), prefs.captionLines - 1) { prefs.captionLines = it + 1 }, ui.full(6))
+        cap.addView(ui.toggle("Hiện cả chữ gốc", prefs.showSource) { prefs.showSource = it }, ui.full(8))
+        cap.addView(ui.toggle("Nền đậm (dễ đọc trên video sáng)", prefs.solid) { prefs.solid = it }, ui.full(2))
+        cap.addView(ui.muted("Áp dụng từ lần Bắt đầu sau.", 12f), ui.full(4))
+
+        // Phiên gần nhất.
+        Session.load(this)?.let { (at, cues) -> sessionCard(col, at, cues) }
+
+        // Khác.
+        val more = section(col, "Khác")
+        more.addView(ui.secondary("Xem hướng dẫn trên web") { openWeb(prefs.web, "/huong-dan#ung-dung-android") }, ui.full(10))
+        more.addView(ui.secondary("Điều khoản và chính sách") { openWeb(prefs.web, "/dieu-khoan") }, ui.full(8))
+        more.addView(ui.danger("Gỡ liên kết máy này") {
             if (LiveState.running) LiveService.stop(this)
             val web = prefs.web
             val token = prefs.token
@@ -246,44 +295,86 @@ class MainActivity : Activity() {
             me = null
             note = "Đã gỡ liên kết."
             render()
-        }, full())
+        }, ui.full(8))
     }
 
-    /** Mở trang hướng dẫn trên web bằng trình duyệt. Chưa có địa chỉ web thì dùng ô đang gõ. */
-    private fun guideButton(webOf: () -> String) = button("Xem hướng dẫn trên web") {
-        val base = Api.normalizeWeb(webOf())
-        if (base == null) {
-            note = "Gõ địa chỉ web trước, rồi bấm Xem hướng dẫn."
-            render()
-            return@button
+    private var wordsBox: TextView? = null
+
+    private fun sessionCard(col: LinearLayout, at: Long, cues: List<Cue>) {
+        val card = section(col, "Phiên gần nhất", "LƯU TRÊN MÁY")
+        val time = SimpleDateFormat("HH:mm dd/MM", Locale.ROOT).format(Date(at))
+        card.addView(ui.muted("${cues.size} câu, bắt đầu lúc $time. Tải về thư mục Tải xuống hoặc gửi sang ứng dụng khác."), ui.full(4))
+        val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        listOf("srt", "vtt", "txt").forEachIndexed { i, format ->
+            row.addView(ui.secondary(format.uppercase()) { saveFile(cues, at, format) },
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { if (i > 0) marginStart = ui.dp(6) })
         }
-        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$base/huong-dan#ung-dung-android"))) }
-            .onFailure {
-                note = "Máy chưa có trình duyệt để mở hướng dẫn."
-                render()
+        card.addView(row, ui.full(10))
+        card.addView(ui.secondary("Gửi SRT sang ứng dụng khác") {
+            val send = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, Session.name("srt", at))
+                putExtra(Intent.EXTRA_TEXT, Session.export(cues, "srt"))
             }
+            runCatching { startActivity(Intent.createChooser(send, "Gửi phụ đề")) }
+        }, ui.full(8))
+        card.addView(ui.danger("Xóa bản lưu") {
+            Session.clear(this)
+            render()
+        }, ui.full(8))
     }
 
-    private fun spinner(items: List<String>, selected: Int, onPick: (Int) -> Unit) = Spinner(this).apply {
-        adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, items)
-        setSelection(selected.coerceAtLeast(0))
-        onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = onPick(position)
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+    /** Lưu vào Tải xuống (Android 10+ không cần quyền bộ nhớ). Có BOM để Notepad cũ đọc đúng tiếng Việt, như web. */
+    private fun saveFile(cues: List<Cue>, at: Long, format: String) {
+        val name = Session.name(format, at)
+        val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(format) ?: "text/plain"
+        val values = ContentValues().apply {
+            put(MediaStore.Downloads.DISPLAY_NAME, name)
+            put(MediaStore.Downloads.MIME_TYPE, mime)
+            put(MediaStore.Downloads.IS_PENDING, 1)
         }
+        val ok = runCatching {
+            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error("insert")
+            contentResolver.openOutputStream(uri)!!.use { it.write(("﻿" + Session.export(cues, format)).toByteArray(Charsets.UTF_8)) }
+            values.clear()
+            values.put(MediaStore.Downloads.IS_PENDING, 0)
+            contentResolver.update(uri, values, null, null)
+        }.isSuccess
+        LiveState.status = if (ok) "Đã lưu $name vào Tải xuống." else "Chưa lưu được tệp. Hãy dùng nút Gửi."
+        note = ""
+        refreshLive()
+    }
+
+    private fun open(url: String) {
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }.onFailure {
+            note = "Máy chưa có trình duyệt để mở trang này."
+            render()
+        }
+    }
+
+    /** Mở một trang của web bằng trình duyệt. */
+    private fun openWeb(rawWeb: String, path: String) {
+        val base = Api.normalizeWeb(rawWeb)
+        if (base == null) {
+            note = "Gõ địa chỉ web trước."
+            render()
+            return
+        }
+        open(base + path)
     }
 
     private fun refreshLive() {
         if (LiveState.unlinked && prefs.linked) {
             LiveState.unlinked = false
             prefs.unlink()
-            note = "Máy này đã bị gỡ liên kết. Hãy lấy mã mới ở trang Tài khoản."
+            note = "Máy này đã bị gỡ liên kết hoặc lâu không dùng. Hãy lấy mã mới ở trang Tài khoản."
             render()
             return
         }
         val phase = LiveState.phase
         startButton?.text = when (phase) {
             LiveState.Phase.IDLE -> "Bắt đầu"
+            LiveState.Phase.STARTING -> "Đang mở…  (bấm để hủy)"
             LiveState.Phase.STOPPING -> "Đang kết thúc…"
             else -> "Dừng"
         }
@@ -291,15 +382,22 @@ class MainActivity : Activity() {
         meter?.progress = if (LiveState.running) (LiveState.levelDb + 90).toInt().coerceIn(0, 90) else 0
         val per = LiveState.perMinute
         statusText?.text = buildString {
-            append(LiveState.status)
-            if (LiveState.phase == LiveState.Phase.LIVE && LiveState.startedAtMs > 0) {
+            append(LiveState.status.ifBlank { "Sẵn sàng." })
+            if (phase == LiveState.Phase.LIVE && LiveState.startedAtMs > 0) {
                 val s = (System.currentTimeMillis() - LiveState.startedAtMs) / 1000
                 append(" · ${s / 60}:${String.format(Locale.ROOT, "%02d", s % 60)}")
             }
             if (per > 0) append("\nKhoảng ${number.format(per)} Token dịch mỗi phút.")
         }
-        balanceText?.text = me?.let { "Token dịch còn: ${number.format(it.balance)}" } ?: "Token dịch: đang tải…"
-        if (lastPhase != null && lastPhase != LiveState.Phase.IDLE && phase == LiveState.Phase.IDLE) loadMe()
+        balanceText?.text = me?.let {
+            val minutes = if (per > 0) " · khoảng ${number.format(it.balance / per)} phút" else ""
+            "Token dịch còn: ${number.format(it.balance)}$minutes"
+        } ?: "Token dịch: đang tải…"
+        if (lastPhase != null && lastPhase != LiveState.Phase.IDLE && phase == LiveState.Phase.IDLE) {
+            loadMe()
+            render()
+            return
+        }
         lastPhase = phase
     }
 
@@ -311,7 +409,7 @@ class MainActivity : Activity() {
             try {
                 val got = Api.me(web, token)
                 runOnUiThread {
-                    val changed = me?.models != got.models
+                    val changed = me?.models != got.models || me?.app != got.app || me == null
                     me = got
                     if (got.email.isNotBlank()) prefs.email = got.email
                     if (changed && !LiveState.running) render() else refreshLive()
@@ -337,6 +435,7 @@ class MainActivity : Activity() {
             LiveService.stop(this)
             return
         }
+        wordsBox?.let { prefs.words = it.text.toString() }
         note = ""
         if (!Settings.canDrawOverlays(this)) {
             LiveState.status = "Hãy bấm «Cho phép hiện trên ứng dụng khác» trước."

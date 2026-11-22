@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lớp trước của biểu tượng thích ứng (108×108, vùng an toàn 66 ở giữa). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:scaleX="2.25" android:scaleY="2.25" android:translateX="18" android:translateY="18">
+        <path android:strokeColor="@color/logo_accent" android:strokeWidth="2" android:fillColor="#00000000"
+            android:pathData="M6,8h20a2,2 0 0 1 2,2v12a2,2 0 0 1 -2,2h-20a2,2 0 0 1 -2,-2v-12a2,2 0 0 1 2,-2z" />
+        <path android:fillColor="@color/logo_fg" android:pathData="M13,12.5v7l6,-3.5z" />
+    </group>
+</vector>

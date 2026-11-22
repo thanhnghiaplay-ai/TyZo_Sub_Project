@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Đúng logo web: public/favicon.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="32" android:viewportHeight="32">
+    <path android:fillColor="@color/logo_bg"
+        android:pathData="M8,0h16a8,8 0 0 1 8,8v16a8,8 0 0 1 -8,8h-16a8,8 0 0 1 -8,-8v-16a8,8 0 0 1 8,-8z" />
+    <path android:strokeColor="@color/logo_accent" android:strokeWidth="2" android:fillColor="#00000000"
+        android:pathData="M6,8h20a2,2 0 0 1 2,2v12a2,2 0 0 1 -2,2h-20a2,2 0 0 1 -2,-2v-12a2,2 0 0 1 2,-2z" />
+    <path android:fillColor="@color/logo_fg" android:pathData="M13,12.5v7l6,-3.5z" />
+</vector>
