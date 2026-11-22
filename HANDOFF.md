@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.35.2 (22/11/2026, Claude)**: Key ElevenLabs của Chủ thiếu quyền models_read nên không lưu được. Thiếu quyền của lệnh kiểm nay coi là key đúng (chỉ nhà có danh sách model cố định); lỗi thiếu quyền khi chạy báo đúng tên quyền. tsc sạch, eslint 0 lỗi, test 191 + 1431 pass. Đã đẩy `work`, chưa lên `main`.
 - **Đẩy chính thức v5.35.1**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.35.1. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1430 pass, vite build xong.
 - **v5.35.1 (22/11/2026, Claude)**: Chủ báo lưu key ElevenLabs lỗi 401 và thông báo lệch màn hình. Sửa hộp thông báo (xuống dòng, kiểm 412 px), lỗi kiểm key theo nhà bằng tiếng Việt, kiểm key ElevenLabs đúng 51 ký tự. 401 là ElevenLabs từ chối key: Chủ cần sao chép lại key. tsc sạch, eslint 0 lỗi, test 191 + 1430 pass. Đã đẩy `work` và `main`.
 - **Đẩy chính thức v5.35.0**: Chủ nói «hợp nhánh work rồi đẩy chính thức». `work` và `main` kéo thẳng (fast-forward) lên nhánh `ccr-6b6ee13d-637k1h` (v5.34.0–v5.35.0, ElevenLabs). Khách đồng ý lại điều khoản 2026-11-22.1 một lần. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1429 pass, vite build xong. Chưa thử key ElevenLabs thật.

@@ -76,5 +76,7 @@ describe("yêu cầu đọc", () => {
     assert.match(elevenTtsErrorText(402, null), /hết hạn mức/);
     assert.match(elevenTtsErrorText(404, { detail: { status: "voice_not_found", message: "Voice not found" } }), /giọng khác/);
     assert.match(elevenTtsErrorText(429, null), /giới hạn tốc độ/);
+    const perm = { detail: { status: "missing_permissions", message: "The API key you used is missing the permission voices_read to execute this operation." } };
+    assert.match(elevenTtsErrorText(401, perm), /đúng nhưng thiếu quyền voices_read/);
   });
 });

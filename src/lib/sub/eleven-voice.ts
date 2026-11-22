@@ -1,3 +1,5 @@
+import { elevenlabsMissingPermission, elevenlabsPermissionText } from "./elevenlabs.ts";
+
 /**
  * Giọng đọc ElevenLabs. Lõi thuần (không import máy chủ): model, tiếng đọc được, đọc danh sách giọng, dựng đường gọi, cắt câu, lỗi.
  * Theo tài liệu đọc 21/11/2026, CHƯA đối chiếu với key thật:
@@ -119,6 +121,8 @@ export function elevenTtsErrorText(status: number, payload: unknown): string {
   const code = typeof row.status === "string" ? row.status : "";
   const message = (typeof detail === "string" ? detail : typeof row.message === "string" ? row.message : "").trim().slice(0, 160);
   const both = `${code} ${message}`;
+  const missing = elevenlabsMissingPermission(`${code} ${typeof detail === "string" ? detail : typeof row.message === "string" ? row.message : ""}`);
+  if (missing) return elevenlabsPermissionText(missing);
   if (status === 401 || /invalid_api_key/i.test(both)) return "Key ElevenLabs không đúng.";
   if (status === 402 || /quota|credit|insufficient|payment/i.test(both)) return "Tài khoản ElevenLabs hết hạn mức.";
   if (status === 403) return "Key ElevenLabs chưa được cấp quyền đọc giọng (Text to Speech).";

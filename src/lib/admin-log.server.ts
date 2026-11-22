@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.35.2",
+    time: "09:59 22/11/2026",
+    area: "khac",
+    text: "Chủ báo (ảnh): lưu key ElevenLabs của phòng ra «missing the permission models_read». Key đúng nhưng bị giới hạn quyền; app kiểm key bằng /v1/models (cần models_read) dù danh sách model ElevenLabs khai cố định. Sửa: keyKnownButLimited (provider.ts) — nhà có fixedModels mà lệnh kiểm trả 401/403 «missing_permissions» (không phải invalid_api_key) thì coi là key đúng, lưu danh sách cố định (listModelIds). elevenlabsMissingPermission/elevenlabsPermissionText: lỗi thiếu quyền khi nhận dạng (speech_to_text) hay đọc giọng/đọc danh sách giọng (text_to_speech, voices_read) báo đúng tên quyền thay vì «key không đúng» (ElevenLabs trả 401 cho cả hai). Test thêm 3 ca.",
+  },
+  {
     version: "5.35.1",
     time: "08:31 22/11/2026",
     area: "khac",

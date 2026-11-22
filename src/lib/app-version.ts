@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.35.1";
+export const APP_VERSION = "5.35.2";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.35.2",
+    time: "09:59 22/11/2026",
+    title: "Lưu được key ElevenLabs có giới hạn quyền.",
+    points: [
+      "Key ElevenLabs không có quyền đọc danh sách model vẫn lưu được, vì app không cần quyền đó.",
+      "Key thiếu quyền khi nhận dạng hay đọc giọng thì báo đúng tên quyền cần bật.",
+    ],
+  },
   {
     version: "5.35.1",
     time: "08:31 22/11/2026",

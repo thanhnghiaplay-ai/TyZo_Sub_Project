@@ -274,6 +274,15 @@ export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
     .filter((value): value is string => typeof value === "string" && value.length > 0);
 }
 
+/**
+ * Lỗi 401/403 khi kiểm key chỉ vì thiếu quyền của lệnh kiểm (nhà đã nhận ra key). Chỉ áp cho nhà có danh sách model khai cố định,
+ * vì lệnh kiểm của các nhà này chỉ để biết key đúng (ElevenLabs: /models cần models_read, app không dùng quyền đó).
+ */
+export function keyKnownButLimited(provider: ProviderId, raw: string): boolean {
+  if (!PROVIDERS[provider].fixedModels) return false;
+  return /missing_permissions?|missing the permission/i.test(raw) && !/invalid_api_key|invalid api key/i.test(raw);
+}
+
 /** Lỗi định dạng key trước khi gọi nhà (rỗng = được). Chỉ kiểm điều nhà đã quy định rõ (độ dài cố định). */
 export function keyShapeProblem(id: ProviderId, key: string): string {
   const info = PROVIDERS[id];

@@ -1,5 +1,5 @@
 import { reasoningOpts } from "@/lib/sub/models";
-import { authHeader, authHeaders, modelIdsFrom, modelListUrl, PROVIDERS, providerApi, providerChat, type ProviderChat, type ProviderId } from "@/lib/sub/provider";
+import { authHeader, authHeaders, keyKnownButLimited, modelIdsFrom, modelListUrl, PROVIDERS, providerApi, providerChat, type ProviderChat, type ProviderId } from "@/lib/sub/provider";
 import { providerOfModel, type RoomOffer } from "@/lib/sub/room-models";
 import type { PackedAudio } from "@/lib/sub/codec";
 import {
@@ -228,6 +228,12 @@ export async function listModelIds(key: string, signal?: AbortSignal, provider: 
       async (response) => {
         if (!response.ok) {
           if (provider === "groq") throw new Error(await readApiError(response, ""));
+          // Nhà có danh sách model khai cố định: lệnh kiểm chỉ để biết key đúng. Nhà báo «thiếu quyền» nghĩa là đã nhận ra key,
+          // chỉ thiếu quyền của riêng lệnh kiểm (ElevenLabs: models_read, app không dùng) → coi là key đúng.
+          if (response.status === 401 || response.status === 403) {
+            const raw = await response.clone().text().catch(() => "");
+            if (keyKnownButLimited(provider, raw)) return null;
+          }
           throw new Error(await keyListError(response, provider));
         }
         return (await response.json()) as unknown;

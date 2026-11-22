@@ -12,7 +12,7 @@ import {
   sentencesFromElevenlabs,
 } from "./elevenlabs.ts";
 import { asrHouse, asrTakesLink } from "./asr-house.ts";
-import { authHeaders, keyShapeProblem, modelIdsFrom, PROVIDER_IDS } from "./provider.ts";
+import { authHeaders, keyKnownButLimited, keyShapeProblem, modelIdsFrom, PROVIDER_IDS } from "./provider.ts";
 import { modelRoleOf } from "./model-role.ts";
 
 const w = (text: string, start: number, end: number) => ({ text, start, end, type: "word", logprob: -0.1 });
@@ -121,6 +121,16 @@ describe("sentencesFromElevenlabs", () => {
   });
 });
 
+describe("kiểm key ElevenLabs thiếu quyền models_read", () => {
+  it("thiếu quyền của lệnh kiểm vẫn là key đúng; key sai thì không", () => {
+    const limited = '{"detail":{"type":"authorization_error","status":"missing_permissions","message":"The API key you used is missing the permission models_read to execute this operation."}}';
+    assert.equal(keyKnownButLimited("elevenlabs", limited), true);
+    assert.equal(keyKnownButLimited("elevenlabs", '{"detail":{"status":"invalid_api_key","message":"Invalid API key"}}'), false);
+    // Nhà đọc danh sách model thật (Groq) thì không bỏ qua lỗi quyền.
+    assert.equal(keyKnownButLimited("groq", limited), false);
+  });
+});
+
 describe("độ dài key ElevenLabs", () => {
   it("báo ngay khi key không dài 51 ký tự; nhà không quy định thì không kiểm", () => {
     assert.equal(keyShapeProblem("elevenlabs", `sk_${"a".repeat(48)}`), "");
@@ -135,6 +145,10 @@ describe("lỗi và key ElevenLabs", () => {
     assert.match(elevenlabsErrorText(400, { detail: { status: "quota_exceeded", message: "This request exceeds your quota" } }), /hết hạn mức/);
     assert.match(elevenlabsErrorText(403, { detail: { status: "missing_permissions", message: "" } }), /quyền/);
     assert.match(elevenlabsErrorText(429, null), /giới hạn tốc độ/);
+    assert.match(
+      elevenlabsErrorText(401, { detail: { status: "missing_permissions", message: "The API key you used is missing the permission speech_to_text to execute this operation." } }),
+      /thiếu quyền speech_to_text/,
+    );
     assert.match(elevenlabsErrorText(422, { detail: [{ loc: ["body", "source_url"], msg: "Could not download source_url", type: "value_error" }] }), /không tải được link/);
     assert.match(elevenlabsErrorText(503, null), /bận/);
     assert.match(elevenlabsErrorText(400, { detail: "Something odd" }), /ElevenLabs báo lỗi: Something odd/);

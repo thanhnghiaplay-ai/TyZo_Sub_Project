@@ -145,11 +145,26 @@ function errorParts(payload: unknown): { code: string; message: string } {
   return { code: typeof row.status === "string" ? row.status : "", message: typeof row.message === "string" ? row.message : "" };
 }
 
+/** Tên quyền key còn thiếu khi ElevenLabs báo «missing the permission X» (rỗng nếu không phải lỗi thiếu quyền). */
+export function elevenlabsMissingPermission(text: string): string {
+  const hit = /missing the permission ([a-z_]+)/i.exec(text);
+  if (hit) return hit[1];
+  return /missing_permissions?/i.test(text) ? "?" : "";
+}
+
+/** Câu báo thiếu quyền (dùng chung cho nhận dạng và đọc giọng). */
+export function elevenlabsPermissionText(permission: string): string {
+  const name = permission && permission !== "?" ? ` ${permission}` : "";
+  return `Key ElevenLabs đúng nhưng thiếu quyền${name}. Mở elevenlabs.io/app/settings/api-keys, sửa key và bật quyền này (hoặc bỏ giới hạn quyền).`;
+}
+
 /** Câu báo lỗi tiếng Việt từ mã HTTP và thân phản hồi lỗi của ElevenLabs. */
 export function elevenlabsErrorText(status: number, payload: unknown): string {
   const { code, message: raw } = errorParts(payload);
   const message = raw.trim().slice(0, 200);
   const both = `${code} ${message}`;
+  const missing = elevenlabsMissingPermission(`${code} ${raw}`);
+  if (missing) return elevenlabsPermissionText(missing);
   if (status === 401 || /invalid_api_key|api key/i.test(both)) return "Key ElevenLabs không hợp lệ hoặc chưa được cấp quyền nhận dạng giọng. Kiểm tra lại ở elevenlabs.io.";
   if (status === 402 || /quota|credit|insufficient|payment|subscription/i.test(both)) return "Tài khoản ElevenLabs hết hạn mức. Hãy nạp thêm hoặc dùng key khác.";
   if (status === 403) return "Key ElevenLabs chưa được cấp quyền nhận dạng giọng (Speech to Text). Bật quyền này cho key ở elevenlabs.io.";
