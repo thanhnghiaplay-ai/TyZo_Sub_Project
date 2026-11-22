@@ -1,5 +1,5 @@
 import type { Sql } from "@/lib/db";
-import { AFFILIATE_DEFAULT, parseAffiliateRules, planCommission, runCommission } from "@/lib/affiliate";
+import { AFFILIATE_DEFAULT, commissionFor, parseAffiliateRules } from "@/lib/affiliate";
 
 async function rulesOf(sql: Sql) {
   const rows = await sql<{ value: string }>`select value from room_settings where key = 'affiliate'`;
@@ -13,22 +13,36 @@ async function promoteDue(sql: Sql) {
   `;
 }
 
+/** Gói thuê phòng: khách dùng key của mình nên giá vốn model bằng 0; vẫn trừ chi phí vận hành. */
 export async function accruePlan(sql: Sql, userId: string, ref: string, price: number) {
   if (price < 1) return;
-  const rules = await rulesOf(sql);
-  await insertEvent(sql, userId, "goi", ref, price, rules.ratePlanBp, 0, rules);
+  await insertEvent(sql, userId, "goi", ref, price, 0);
 }
 
-export async function accrueRun(sql: Sql, userId: string, ref: string) {
-  const rules = await rulesOf(sql);
-  const rows = await sql<{ charged: number; refunded: number; base_cost: number }>`
-    select charged, refunded, base_cost from run_tickets where id = ${ref} and user_id = ${userId}
-  `;
-  const row = rows[0];
-  if (!row) return;
-  const charged = Math.max(0, Number(row.charged) - Number(row.refunded));
-  if (charged <= Number(row.base_cost)) return;
-  await insertEvent(sql, userId, "luot", ref, charged, rules.rateRunBp, 0, rules);
+/**
+ * Đơn mua Token dịch: giá vốn = số Token × giá gốc Turbo mỗi giây lúc mua (1 Token = 1 giây Turbo giá gốc),
+ * tức giá phải trả nhà model nếu khách dùng hết. Chưa đọc được giá Turbo thì coi giá vốn bằng giá bán (không hoa hồng),
+ * để không bao giờ trả hoa hồng khi chưa chắc có lời.
+ */
+export async function accrueToken(sql: Sql, userId: string, ref: string, price: number, tokens: number) {
+  if (price < 1 || tokens < 1) return;
+  let cost = price;
+  try {
+    const { turboPerSecond } = await import("@/lib/giay-room");
+    const turbo = await turboPerSecond();
+    if (turbo && turbo > 0) cost = Math.ceil(tokens * turbo);
+  } catch {
+    /* giữ cost = price */
+  }
+  await insertEvent(sql, userId, "token", ref, price, cost);
+}
+
+/**
+ * Hoa hồng theo lượt dùng: NGỪNG từ v5.40.0. Hoa hồng đã tính lúc khách mua Token dịch, tính thêm lúc dùng là hai lần.
+ * (Bản cũ còn so số Token với số đồng.) Giữ hàm để các chỗ gọi cũ không lỗi; khoản đã ghi trước đây vẫn giữ nguyên.
+ */
+export async function accrueRun(_sql: Sql, _userId: string, _ref: string) {
+  return;
 }
 
 export async function clawback(sql: Sql, kind: string, ref: string) {
@@ -38,18 +52,10 @@ export async function clawback(sql: Sql, kind: string, ref: string) {
   `;
 }
 
-async function insertEvent(
-  sql: Sql,
-  userId: string,
-  kind: string,
-  ref: string,
-  base: number,
-  rate: number,
-  amount: number,
-  rules: { holdDays: number; windowDays: number },
-) {
-  const own = await sql<{ rate_plan_bp: number; rate_run_bp: number }>`
-    select a.rate_plan_bp, a.rate_run_bp
+async function insertEvent(sql: Sql, userId: string, kind: "goi" | "token", ref: string, revenue: number, cost: number) {
+  const rules = await rulesOf(sql);
+  const own = await sql<{ affiliate_id: string; rate_plan_bp: number; rate_run_bp: number }>`
+    select r.affiliate_id, a.rate_plan_bp, a.rate_run_bp
     from referrals r
     join affiliates a on a.user_id = r.affiliate_id
     where r.user_id = ${userId} and a.status = 'hoat-dong' and a.user_id <> ${userId}
@@ -57,34 +63,12 @@ async function insertEvent(
   `;
   if (!own.length) return;
   const custom = kind === "goi" ? Number(own[0].rate_plan_bp) : Number(own[0].rate_run_bp);
-  const used = custom > 0 ? custom : rate;
-  const finalAmount = kind === "goi" ? planCommission(base, used) : runCommission(base, 0, used);
-  if (kind === "luot") {
-    const ticket = await sql<{ base_cost: number; charged: number; refunded: number }>`
-      select base_cost, charged, refunded from run_tickets where id = ${ref}
-    `;
-    const row = ticket[0];
-    const charged = row ? Math.max(0, Number(row.charged) - Number(row.refunded)) : base;
-    const groq = row ? Number(row.base_cost) : 0;
-    const capped = runCommission(charged, groq, used);
-    if (capped < 1) return;
-    await sql`
-      insert into commission_events (affiliate_id, referred_user_id, source_kind, source_ref, base_amount, rate_bp, amount, available_at)
-      select r.affiliate_id, r.user_id, ${kind}, ${ref}, ${charged}, ${used}, ${capped}, now() + make_interval(days => ${rules.holdDays}::int)
-      from referrals r
-      join affiliates a on a.user_id = r.affiliate_id
-      where r.user_id = ${userId} and a.status = 'hoat-dong'
-      on conflict (source_kind, source_ref) do nothing
-    `;
-    return;
-  }
-  if (finalAmount < 1) return;
+  const rate = custom > 0 ? custom : kind === "goi" ? rules.ratePlanBp : rules.rateRunBp;
+  const calc = commissionFor({ revenue, cost, rateBp: rate, rules });
+  if (calc.amount < 1) return;
   await sql`
-    insert into commission_events (affiliate_id, referred_user_id, source_kind, source_ref, base_amount, rate_bp, amount, available_at)
-    select r.affiliate_id, r.user_id, ${kind}, ${ref}, ${base}, ${used}, ${finalAmount}, now() + make_interval(days => ${rules.holdDays}::int)
-    from referrals r
-    join affiliates a on a.user_id = r.affiliate_id
-    where r.user_id = ${userId} and a.status = 'hoat-dong'
+    insert into commission_events (affiliate_id, referred_user_id, source_kind, source_ref, base_amount, cost_amount, profit_amount, rate_bp, amount, available_at)
+    values (${own[0].affiliate_id}, ${userId}, ${kind}, ${ref}, ${calc.revenue}, ${calc.cost + calc.opex}, ${calc.profit}, ${rate}, ${calc.amount}, now() + make_interval(days => ${rules.holdDays}::int))
     on conflict (source_kind, source_ref) do nothing
   `;
 }

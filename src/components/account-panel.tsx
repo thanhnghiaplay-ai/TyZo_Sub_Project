@@ -216,7 +216,7 @@ export function AccountPanel() {
       {!isPending && (!user || user.isDevFallback) && (
         <div className="space-y-3">
           <p className="text-sm text-muted">Đăng ký hoặc đăng nhập để dùng phòng.</p>
-          <Link to="/login" className="min-tap block rounded-full bg-accent text-center font-semibold text-ink">
+          <Link to="/login" className="min-tap flex items-center justify-center rounded-full bg-accent text-center font-semibold text-ink">
             Đăng ký hoặc đăng nhập
           </Link>
         </div>
@@ -230,7 +230,7 @@ export function AccountPanel() {
             <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Link to="/ctv" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
+              <Link to="/ctv" data-tour="ctv-link" className="inline-flex h-11 items-center justify-center rounded-full border border-line px-4 text-sm leading-none">
                 Cộng tác viên
               </Link>
               <button

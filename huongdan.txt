@@ -9,6 +9,12 @@ CÁCH CẬP NHẬT ỨNG DỤNG ANDROID (Chủ chốt 22/11/2026, «lưu lại c
 - Đường đi: sửa android/ → nâng số bản → «đẩy chính thức» → GitHub Actions (nhánh main, có khóa ký) đăng bản phát hành android-v<versionName> → web đọc tyzo-sub.json (giữ 15 phút) → ứng dụng hiện «Có bản mới» → khách bấm Cập nhật ngay rồi Cài đặt.
 - Giữ tương thích: sửa /api/app-link, /api/app-me, /api/app-ticket hay giao thức cầu nối thì ứng dụng bản cũ vẫn phải chạy (chỉ thêm trường, không đổi hay bỏ trường cũ).
 
+NÚT VÀ CHỮ TRONG NÚT (Chủ chốt 22/11/2026, «làm cho dứt điểm»)
+- Thẻ không phải <button>/<select>/<input>/<textarea>/<summary> mà có min-tap (đường dẫn <a>, <Link>, khối <div>…) phải có flex hoặc inline-flex (kèm items-center justify-center) để chữ nằm giữa. src/components/tap-align.test.ts báo lỗi khi thiếu.
+
+HOA HỒNG CỘNG TÁC VIÊN (Chủ chốt 22/11/2026: lời thật của web không được thấp vì hoa hồng)
+- Mọi khoản hoa hồng đi qua commissionFor (src/lib/affiliate.ts): tính trên lời gộp = doanh thu − giá vốn − chi phí vận hành; không quá MAX_SHARE_CAP_BP (50%) lời gộp; lời dưới ngưỡng thì 0. Không thêm đường tính hoa hồng nào khác.
+
 ĐANG CHẠY (2026-11-20)
 - v5.38.0 (ứng dụng Android 0.4, điều khoản 2026-11-22.4) trên `work` và `main` (đẩy chính thức 22/11/2026). Thư mục `android/` không chạy trên Vercel; ứng dụng gọi /api/app-link, /api/app-me, /api/app-ticket bằng khóa máy (xem android/README.md). Đổi bản ứng dụng thì sửa cả ANDROID_APP trong src/lib/app-link.ts (test so với android/app/build.gradle.kts).
 - Số phiên bản trên nhánh `work`: v5.39.0 (`src/lib/app-version.ts`). Nhánh `main` = `work` (đẩy chính thức v5.39.0 ngày 22/11/2026, điều khoản 2026-11-22.4). Đổi bản ứng dụng Android thì sửa versionCode/versionName và ANDROID_APP cùng lúc; GitHub đăng bản phát hành khi có khóa ký.

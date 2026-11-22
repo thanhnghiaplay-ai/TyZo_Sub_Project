@@ -1130,7 +1130,7 @@ export function Studio() {
       {place?.status === "banned" ? (
         <div className="grid gap-3 p-4">
           <p className="text-sm">Tài khoản đã bị cấm{place.reason ? `: ${place.reason}` : ""}.</p>
-          <Link to="/yeu-cau" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
+          <Link to="/yeu-cau" className="min-tap inline-flex w-fit items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-ink">
             Gửi yêu cầu xem lại
           </Link>
           <button type="button" className="min-tap w-fit rounded-full border border-line px-4 text-sm" onClick={() => void signOut("/login")}>

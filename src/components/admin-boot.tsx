@@ -10,7 +10,7 @@ export function AdminBoot({ trying, notice }: { trying: boolean; notice: string 
         {trying ? "Máy chủ đang khởi động sau bản mới. Đang thử lại…" : "Đang mở trang quản lý"}
       </p>
       {notice && !trying && (
-        <Link to="/login" className="min-tap w-fit rounded-full bg-accent px-4 text-sm font-semibold text-ink">
+        <Link to="/login" className="min-tap inline-flex w-fit items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-ink">
           Đăng nhập
         </Link>
       )}

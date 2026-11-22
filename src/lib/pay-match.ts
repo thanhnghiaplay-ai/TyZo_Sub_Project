@@ -116,6 +116,27 @@ const VIETQR_BIN: Record<string, string> = {
   eximbank: "970431",
 };
 
+/** Ngân hàng chọn được khi cộng tác viên nhập tài khoản nhận tiền (khóa trùng VIETQR_BIN để Admin quét mã chuyển). */
+export const PAYOUT_BANKS: ReadonlyArray<{ id: string; name: string }> = [
+  { id: "vietcombank", name: "Vietcombank" },
+  { id: "techcombank", name: "Techcombank" },
+  { id: "mbbank", name: "MB Bank" },
+  { id: "acb", name: "ACB" },
+  { id: "bidv", name: "BIDV" },
+  { id: "vietinbank", name: "VietinBank" },
+  { id: "vpbank", name: "VPBank" },
+  { id: "tpbank", name: "TPBank" },
+  { id: "agribank", name: "Agribank" },
+  { id: "sacombank", name: "Sacombank" },
+  { id: "msb", name: "MSB" },
+  { id: "ocb", name: "OCB" },
+  { id: "shb", name: "SHB" },
+  { id: "hdbank", name: "HDBank" },
+  { id: "vib", name: "VIB" },
+  { id: "seabank", name: "SeABank" },
+  { id: "eximbank", name: "Eximbank" },
+];
+
 function tlv(id: string, value: string) {
   return id + String(value.length).padStart(2, "0") + value;
 }

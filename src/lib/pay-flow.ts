@@ -66,7 +66,14 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
       )
       select user_id from paid
     `;
-    return applied.length ? { userId: order.user_id, amount: order.amount, code: order.code, purpose: "token" } : null;
+    if (!applied.length) return null;
+    try {
+      const { accrueToken } = await import("@/lib/affiliate-flow");
+      await accrueToken(sql, order.user_id, `token:${order.id}`, order.amount, spec.tokens);
+    } catch {
+      /* cộng Token vẫn xong nếu hoa hồng lỗi */
+    }
+    return { userId: order.user_id, amount: order.amount, code: order.code, purpose: "token" };
   }
   if (order.purpose === "plan") {
     const plan = roomPlan(order.ref);

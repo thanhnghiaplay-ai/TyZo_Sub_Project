@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.40.0 (22/11/2026, Claude, trên `work`)**: cộng tác viên làm lại, hoa hồng tính trên lời (xem ADMIN_LOG), chữ lệch trong nút chặn bằng tap-align.test.ts, lịch sử cuộn, nút sao chép. tsc sạch, eslint 0 lỗi, test 191 + 1458 pass, build xong, thử bằng trình duyệt. Đề xuất phát hiện tài khoản vi phạm chờ Chủ chốt (BANG_DIEU).
 - **Đẩy chính thức v5.39.0**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi, test 191 + 1447 pass, build xong. Bản phát hành Android đầu tiên chỉ có sau khi Chủ chạy `tyzo` → 15 (khóa ký).
 - **Đẩy chính thức (công cụ VPS: web đầy đủ, chạy thử, Vercel)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build Vercel xong, `bash -n` tyzo.sh sạch. Web khách không đổi (v5.38.1).
 - **Web đầy đủ trên VPS / đổi tài khoản Vercel (22/11/2026, Claude, trên `work`)**: xem docs/HUONG_DAN_VPS.md. Cần Chủ chạy thử (tyzo → 12) trên VPS riêng. Không đổi giao diện khách, không nâng số phiên bản.

@@ -85,6 +85,8 @@ h4 {
 
 @utility min-tap {
   min-height: 2.75rem;
+  /* Chữ nằm giữa theo chiều dọc kể cả khi phần tử là đường dẫn hay khối (không chỉ <button>). */
+  align-content: center;
 }
 
 @keyframes pay-rise {

@@ -59,7 +59,7 @@ export type GuideTopic = {
   /** Có tuyến «Chỉ tôi» chạy trên giao diện thật. */
   tour?: TourId;
   /** Trang trong app liên quan tới mục này. */
-  page?: { label: string; to: "/" | "/dich-truc-tiep" | "/goi" | "/yeu-cau" | "/tai-khoan" };
+  page?: { label: string; to: "/" | "/dich-truc-tiep" | "/goi" | "/yeu-cau" | "/tai-khoan" | "/ctv" };
   /** Mục này hiện thêm thẻ thông tin liên hệ do Chủ nhập. */
   contact?: boolean;
 };
@@ -201,6 +201,22 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Phiên gần nhất được lưu trên điện thoại: tải SRT, VTT, TXT về thư mục Tải xuống, hoặc gửi SRT sang ứng dụng khác. Bấm «Xóa bản lưu» để xóa." },
         { text: "Có bản ứng dụng mới thì ứng dụng hiện thẻ «Có bản mới». Cài bản mới mà máy báo không cài đè được thì gỡ bản cũ trước rồi liên kết lại." },
         { text: "Đổi máy hay mất máy: ở mục này trên web, bấm «Gỡ» cạnh tên máy. Mỗi tài khoản liên kết tối đa 3 máy. Đổi mật khẩu, hoặc máy không dùng quá 90 ngày, thì phải liên kết lại." },
+      ],
+    },
+    {
+      id: "cong-tac-vien",
+      title: "Cộng tác viên (giới thiệu nhận hoa hồng)",
+      group: "tai-khoan",
+      intro: "Giới thiệu người khác dùng web, nhận hoa hồng trên phần lời của đơn họ mua.",
+      words: "cong tac vien ctv gioi thieu ma gioi thieu hoa hong rut tien tai khoan ngan hang affiliate referral",
+      tour: "cong-tac-vien",
+      page: { label: "Mở Cộng tác viên", to: "/ctv" },
+      steps: [
+        { text: "Mở Tài khoản, bấm «Cộng tác viên», rồi «Đăng ký mã giới thiệu». Admin duyệt xong thì đường dẫn giới thiệu hiện ra." },
+        { text: "Bấm «Chép đường dẫn» hoặc «Chia sẻ», hoặc cho người khác quét mã QR. Người đăng ký qua đường dẫn đó gắn với mã của bạn." },
+        { text: "Khách mua Token dịch hoặc thuê phòng thì bạn nhận hoa hồng trên phần lời của đơn, theo tỷ lệ ghi ở mục «Cách tính»." },
+        { text: "Mỗi khoản chờ vài ngày rồi chuyển sang «Rút được». Nhập tài khoản ngân hàng nhận tiền, đủ mức tối thiểu thì bấm «Yêu cầu rút»; Admin chuyển khoản và ghi mã giao dịch." },
+        { text: "Lịch sử hoa hồng, lịch sử rút và danh sách khách nằm trong khung riêng, kéo trong khung để xem thêm." },
       ],
     },
     {

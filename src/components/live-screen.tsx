@@ -375,7 +375,7 @@ export function LiveScreen() {
               <Icon slot="nav.wallet" className="size-4 text-muted" />
               <span data-testid="live-balance">{live.money == null ? "Đang xem số giây…" : liveBalanceLine(live.money, live.minutes)}</span>
             </p>
-            <Link to="/tai-khoan" className="min-tap rounded-full border border-line px-4 text-sm font-semibold">
+            <Link to="/tai-khoan" className="min-tap inline-flex items-center justify-center rounded-full border border-line px-4 text-sm font-semibold">
               Mua Token dịch
             </Link>
           </div>

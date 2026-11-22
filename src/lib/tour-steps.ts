@@ -19,7 +19,7 @@ export type TourStep = {
   tab?: "key" | "phim" | "cast" | "voice" | "run";
 };
 
-export type TourId = "quick-start" | "phu-de" | "thuyet-minh" | "dich-truc-tiep" | "thuat-ngu" | "nap-tien" | "key-groq" | "mat-khau" | "ho-tro" | "ung-dung-android";
+export type TourId = "quick-start" | "phu-de" | "thuyet-minh" | "dich-truc-tiep" | "thuat-ngu" | "nap-tien" | "key-groq" | "mat-khau" | "ho-tro" | "ung-dung-android" | "cong-tac-vien";
 
 /** Trang có giao diện thật để chạy tuyến. Mỗi tuyến chạy trọn trên một trang. */
 export type TourPage = "/" | "/dich-truc-tiep";
@@ -35,6 +35,7 @@ export const TOUR_PAGE: Record<TourId, TourPage> = {
   "mat-khau": "/",
   "ho-tro": "/",
   "ung-dung-android": "/",
+  "cong-tac-vien": "/",
 };
 
 export const TOURS: Record<TourId, TourStep[]> = {
@@ -83,6 +84,10 @@ export const TOURS: Record<TourId, TourStep[]> = {
   ],
   "ho-tro": [
     { sel: "#tool-tab-yeu-cau", rail: true, title: "Yêu cầu xem lại", text: "Việc cần người xem lại (gói, Token dịch, khóa, cấm): bấm mục này và mô tả rõ việc cùng thời điểm xảy ra. Thông tin liên hệ nằm ở mục Hỗ trợ và liên hệ của trang Hướng dẫn." },
+  ],
+  "cong-tac-vien": [
+    { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },
+    { sel: "[data-tour=ctv-link]", title: "2. Cộng tác viên", text: "Bấm để đăng ký mã giới thiệu, lấy đường dẫn, nhập tài khoản nhận tiền và xem hoa hồng." },
   ],
   "ung-dung-android": [
     { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },

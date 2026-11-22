@@ -228,7 +228,10 @@ export function TermsDocument() {
 
       <h2>11. Giới thiệu</h2>
       <p>
-        Nếu bạn dùng mã giới thiệu, hoa hồng tính trên gói thuê và trên phần chênh của lượt dùng key phòng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được. Phòng có thể tạm dừng mã.
+        Cộng tác viên nhận hoa hồng khi người đăng ký qua mã của mình mua Token dịch hoặc thuê phòng. Hoa hồng tính trên phần lời của đơn (tiền khách trả trừ giá vốn và chi phí vận hành), theo tỷ lệ Admin công bố ở trang Cộng tác viên, và không quá một nửa phần lời đó; đơn lời quá ít thì không có hoa hồng. Mã gắn một lần, không đổi. Không tự giới thiệu. Hoa hồng chờ một thời gian rồi mới rút được; đơn bị hoàn hay hủy thì khoản hoa hồng của đơn đó bị hủy. Phòng có thể tạm dừng mã.
+      </p>
+      <p>
+        Để nhận tiền, cộng tác viên nhập ngân hàng, số tài khoản và tên chủ tài khoản. Phòng lưu thông tin này theo tài khoản, chép lại vào mỗi lệnh rút để đối soát, và chỉ Admin xem được để chuyển tiền. Người được giới thiệu chỉ hiện với cộng tác viên dưới dạng email đã che, kèm ngày gắn mã và việc đã mua hay chưa.
       </p>
     </article>
   );

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.39.0";
+export const APP_VERSION = "5.40.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.40.0",
+    time: "20:16 22/11/2026",
+    title: "Trang Cộng tác viên làm lại: mã QR, rút tiền về ngân hàng, lịch sử hoa hồng.",
+    points: [
+      "Hoa hồng tính trên phần lời của đơn mua Token dịch và thuê phòng, xem rõ ở mục Cách tính.",
+      "Nhập tài khoản ngân hàng nhận tiền; xem lịch sử hoa hồng, lịch sử rút, khách đã giới thiệu.",
+      "Lịch sử trong Tài khoản cuộn trong khung; mã liên kết ứng dụng có nút sao chép.",
+      "Điều khoản ghi thêm cách tính hoa hồng và thông tin ngân hàng; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.39.0",
     time: "19:23 22/11/2026",

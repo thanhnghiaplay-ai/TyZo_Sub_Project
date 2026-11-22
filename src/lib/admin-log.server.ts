@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.40.0",
+    time: "20:18 22/11/2026",
+    area: "khac",
+    text: "Chủ yêu cầu: chữ lệch trong nút (dứt điểm), nút sao chép mã liên kết, hoàn thiện cộng tác viên, lịch sử cuộn được, hoa hồng không được ăn vào lời của web, xem lại cài đặt Admin liên quan. Hoa hồng (affiliate.ts commissionFor, test thử hơn 600 tổ hợp): tính trên LỜI GỘP = doanh thu − giá vốn − vận hành (opexBp, mặc định 15%); Token dịch giá vốn = số Token × giá gốc Turbo lúc mua (đọc giá lỗi thì coi giá vốn = giá bán, không hoa hồng); thuê phòng giá vốn 0; hoa hồng ≤ maxShareBp (mặc định 40%) lời gộp, trần cứng MAX_SHARE_CAP_BP 50%; lời < minMarginBp (15%) doanh thu thì 0. Thêm hoa hồng cho đơn mua Token dịch (accrueToken trong settleDirect, khóa token:<mã đơn>); NGỪNG hoa hồng theo lượt dùng (accrueRun thành rỗng: tính hai lần với mua Token, và bản cũ so Token với đồng); khoản cũ giữ nguyên. Migration 0032: affiliates thêm ngân hàng, commission_events thêm cost_amount/profit_amount, affiliate_payouts thêm bank_info (chép lúc rút) và note. Rút cần tài khoản ngân hàng và mã đang hoạt động; đổi tài khoản bị chặn khi có lệnh chờ. Admin: tỷ lệ theo % lời gộp, vận hành, trần, lời tối thiểu, ô tính thử, tổng 4 trạng thái, số khách và đã nhận từng CTV, lệnh rút kèm ngân hàng và VietQR (nội dung TYZO CTV <mã>), nút Trả lại (cancelPayout). Trang /ctv làm lại (mã, đường dẫn, QR, chép, chia sẻ, 4 ô tiền, tài khoản ngân hàng, lịch sử hoa hồng/rút/khách trong khung cuộn, Cách tính). Nút sao chép dùng chung (copy-button.tsx). Chữ lệch: min-tap thêm align-content: center, 5 đường dẫn dạng nút thêm flex; tap-align.test.ts chặn tái phạm. Lịch sử Tài khoản cuộn trong khung. Hướng dẫn thêm mục Cộng tác viên và tuyến Chỉ tôi. Điều khoản 2026-11-22.5 (mục 11).",
+  },
+  {
     version: "5.39.0",
     time: "19:23 22/11/2026",
     area: "khac",

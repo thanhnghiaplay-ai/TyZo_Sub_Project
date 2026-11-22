@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAppLinks, makeAppLinkCode, removeAppDevice, type AppLinkView } from "@/lib/app-link-room";
 import { showCode } from "@/lib/app-link";
+import { CopyButton } from "@/components/copy-button";
 
 const when = (iso: string) =>
   new Date(iso).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -69,7 +70,7 @@ export function AppLinkCard() {
         </a>
       </div>
       {view?.apkUrl ? (
-        <a href={view.apkUrl} className="min-tap block rounded-full bg-accent text-center font-semibold text-ink" rel="noopener">
+        <a href={view.apkUrl} className="min-tap flex items-center justify-center rounded-full bg-accent text-center font-semibold text-ink" rel="noopener">
           Tải tệp cài (bản {view.appVersion})
         </a>
       ) : (
@@ -97,7 +98,10 @@ export function AppLinkCard() {
         </button>
         {code && left > 0 && (
           <div className="rounded-[var(--radius-ctl)] border border-line bg-raised p-3 text-center">
-            <p className="font-mono text-2xl font-semibold tracking-widest select-all">{showCode(code.code)}</p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <p className="font-mono text-2xl font-semibold tracking-widest select-all">{showCode(code.code)}</p>
+              <CopyButton text={showCode(code.code)} label="Chép mã" />
+            </div>
             <p className="mt-1 text-xs text-muted">
               Gõ mã này vào ứng dụng. Còn {Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")}, dùng một lần.
             </p>

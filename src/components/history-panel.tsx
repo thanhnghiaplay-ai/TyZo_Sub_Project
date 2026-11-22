@@ -91,7 +91,7 @@ export function HistoryPanel({ buys }: { buys: LedgerRow[] }) {
             </p>
           )}
           {state !== "loading" && rows.length === 0 && <p className="text-sm text-muted">Chưa có lượt dịch nào.</p>}
-          <ul className="grid gap-2">
+          <ul className="grid max-h-[26rem] gap-2 overflow-y-auto overscroll-contain pr-1" data-history-scroll>
             {rows.map((row) => (
               <li key={row.id} className="grid gap-0.5 rounded-[var(--radius-ctl)] border border-line bg-bg px-3 py-2 text-sm">
                 <span className="flex items-start justify-between gap-2">
@@ -117,7 +117,7 @@ export function HistoryPanel({ buys }: { buys: LedgerRow[] }) {
           {grants.length > 0 && (
             <div className="grid gap-1">
               <p className="text-sm font-medium">Gói Token dịch</p>
-              <ul className="grid gap-1 text-sm">
+              <ul className="grid max-h-60 gap-1 overflow-y-auto overscroll-contain pr-1 text-sm" data-history-scroll>
                 {grants.map((grant) => (
                   <li key={grant.id} className="flex justify-between gap-3">
                     <span className={grant.expired ? "text-muted" : ""}>{grant.title}</span>
@@ -130,7 +130,7 @@ export function HistoryPanel({ buys }: { buys: LedgerRow[] }) {
           <div className="grid gap-1">
             <p className="text-sm font-medium">Mua và thuê</p>
             {buys.length === 0 && <p className="text-sm text-muted">Chưa có giao dịch nào.</p>}
-            <ul className="grid gap-1 text-sm">
+            <ul className="grid max-h-[26rem] gap-1 overflow-y-auto overscroll-contain pr-1 text-sm" data-history-scroll>
               {buys.map((row) => (
                 <li key={row.id} className="flex justify-between gap-3">
                   <span className={"min-w-0 break-words " + (row.tone === "reject" ? "text-danger" : "")}>{row.label}</span>
