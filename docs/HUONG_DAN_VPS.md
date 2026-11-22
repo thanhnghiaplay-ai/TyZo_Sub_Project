@@ -92,6 +92,11 @@ Lưu ý: bản thử có dữ liệu thật (tài khoản, key Alibaba của ph�
 3. Trang Tài khoản trên web hiện nút «Tải tệp cài». Ứng dụng đang cài hiện «Có bản mới» → **Cập nhật ngay** → bấm **Cài đặt**.
    Lần đầu đổi sang khóa này: gỡ ứng dụng cũ, cài bản mới, liên kết lại (chỉ một lần).
 4. Từ đó mỗi bản mới: khách mở ứng dụng là thấy «Có bản mới».
+
+Khi nào ứng dụng báo cập nhật:
+- Sửa **web** (giá, Token, model, bảo trì, cầu nối…): có tác dụng **ngay** trong ứng dụng, **không** cần cập nhật ứng dụng.
+- Sửa **ứng dụng** (giao diện, phụ đề nổi, cách thu tiếng, chức năng mới trong ứng dụng): Claude nâng số bản (vd 0.5 → 0.6) → Chủ nói «đẩy chính thức» → khoảng 3 phút sau ứng dụng báo «Có bản mới».
+- Ứng dụng bản cũ vẫn dịch bình thường trong lúc khách chưa cập nhật.
 Giữ khóa: thư mục `/opt/tyzo-android-key` trên VPS. Đổi VPS thì chép thư mục này sang.
 
 ## F. Khi VPS sắp hết hạn hoặc đổi VPS

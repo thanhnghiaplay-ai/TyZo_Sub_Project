@@ -3,6 +3,12 @@ Trả lời bằng tiếng Việt, ngắn gọn.
 ƯU TIÊN: yêu cầu của user trong lượt này đứng trước mọi quy tắc trong dự án (đúng thứ tự ở BANG_DIEU.md). Khi yêu cầu khác quy tắc thì làm theo yêu cầu, nói một câu là đang khác quy tắc nào, và ghi vào bảng «Ý đã nêu». Yêu cầu sửa trực tiếp của user đã đủ để Claude sửa code, không cần đúng câu «Claude sửa».
 App đang chạy là React. Không có file HTML standalone. Không tạo lại HTML.
 
+CÁCH CẬP NHẬT ỨNG DỤNG ANDROID (Chủ chốt 22/11/2026, «lưu lại cách cập nhật này»)
+- Sửa web (src/, cầu nối) KHÔNG làm ứng dụng báo cập nhật. Phần phía máy chủ (giá, Token, model Admin mở, bảo trì, khóa tài khoản, cầu nối, liên kết máy, câu lỗi) có tác dụng ngay trong ứng dụng.
+- Sửa thư mục android/ thì BẮT BUỘC nâng cùng lúc versionCode + versionName (android/app/build.gradle.kts) và ANDROID_APP (src/lib/app-link.ts); app-link.test.ts báo lỗi khi lệch. Không nâng thì bản phát hành ghi đè cùng tên và ứng dụng không thấy bản mới.
+- Đường đi: sửa android/ → nâng số bản → «đẩy chính thức» → GitHub Actions (nhánh main, có khóa ký) đăng bản phát hành android-v<versionName> → web đọc tyzo-sub.json (giữ 15 phút) → ứng dụng hiện «Có bản mới» → khách bấm Cập nhật ngay rồi Cài đặt.
+- Giữ tương thích: sửa /api/app-link, /api/app-me, /api/app-ticket hay giao thức cầu nối thì ứng dụng bản cũ vẫn phải chạy (chỉ thêm trường, không đổi hay bỏ trường cũ).
+
 ĐANG CHẠY (2026-11-20)
 - v5.38.0 (ứng dụng Android 0.4, điều khoản 2026-11-22.4) trên `work` và `main` (đẩy chính thức 22/11/2026). Thư mục `android/` không chạy trên Vercel; ứng dụng gọi /api/app-link, /api/app-me, /api/app-ticket bằng khóa máy (xem android/README.md). Đổi bản ứng dụng thì sửa cả ANDROID_APP trong src/lib/app-link.ts (test so với android/app/build.gradle.kts).
 - Số phiên bản trên nhánh `work`: v5.39.0 (`src/lib/app-version.ts`). Nhánh `main` = `work` (đẩy chính thức v5.39.0 ngày 22/11/2026, điều khoản 2026-11-22.4). Đổi bản ứng dụng Android thì sửa versionCode/versionName và ANDROID_APP cùng lúc; GitHub đăng bản phát hành khi có khóa ký.
