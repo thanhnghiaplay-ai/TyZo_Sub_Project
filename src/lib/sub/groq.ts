@@ -91,13 +91,43 @@ export function sleep(ms: number, signal?: AbortSignal) {
   });
 }
 
-function errorMessage(data: unknown, fallback: string) {
+/** Lấy câu lỗi đọc được từ thân lỗi của nhà (dạng OpenAI `error`, ElevenLabs `detail`, hoặc `message`). Không trả JSON thô. */
+export function errorMessage(data: unknown, fallback: string) {
   if (data && typeof data === "object") {
-    const record = data as { error?: { message?: string; code?: string }; message?: string };
+    const record = data as { error?: { message?: string; code?: string }; message?: string; detail?: unknown; err_msg?: string };
     if (record.error && typeof record.error === "object") return record.error.message || record.error.code || fallback;
     if (typeof record.message === "string") return record.message;
+    if (typeof record.err_msg === "string") return record.err_msg;
+    const detail = record.detail;
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      const first = detail[0] as { msg?: unknown } | undefined;
+      if (first && typeof first.msg === "string") return first.msg;
+    }
+    if (detail && typeof detail === "object") {
+      const row = detail as { message?: unknown; status?: unknown };
+      if (typeof row.message === "string") return row.message;
+      if (typeof row.status === "string") return row.status;
+    }
   }
-  return fallback;
+  return fallback.length > 160 ? `${fallback.slice(0, 160)}…` : fallback;
+}
+
+/** Lỗi khi kiểm key của nhà ngoài Groq: câu tiếng Việt theo nhà, kèm câu lỗi gọn của nhà (không chép JSON thô). */
+async function keyListError(response: Response, provider: ProviderId) {
+  const raw = await response.text().catch(() => "");
+  let detail = raw;
+  try {
+    detail = errorMessage(JSON.parse(raw), raw);
+  } catch {
+    detail = raw.length > 160 ? `${raw.slice(0, 160)}…` : raw;
+  }
+  const info = PROVIDERS[provider];
+  const tail = detail ? ` Nhà báo: ${detail}` : "";
+  if (response.status === 401 || response.status === 403)
+    return `Key ${info.label} không đúng hoặc chưa được cấp quyền (${response.status}). Kiểm tra lại key ở ${info.keyPage}.${tail}`;
+  if (response.status === 429) return `${info.label} đang giới hạn lượt gọi (429). Chờ một lát rồi thử lại.${tail}`;
+  return `${info.label} trả lỗi ${response.status} khi kiểm key.${tail}`;
 }
 
 async function readApiError(response: Response, modelName: string) {
@@ -196,7 +226,10 @@ export async function listModelIds(key: string, signal?: AbortSignal, provider: 
     const data = await withDeadlines(
       (guard) => fetch(next.url, { ...next.init, method: key === ROOM_KEY ? "POST" : "GET", signal: guard }),
       async (response) => {
-        if (!response.ok) throw new Error(await readApiError(response, ""));
+        if (!response.ok) {
+          if (provider === "groq") throw new Error(await readApiError(response, ""));
+          throw new Error(await keyListError(response, provider));
+        }
         return (await response.json()) as unknown;
       },
       { signal, headerMs: LIST_TIMEOUT_MS, bodyMs: LIST_TIMEOUT_MS },

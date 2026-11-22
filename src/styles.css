@@ -1247,6 +1247,7 @@ html[data-fx="off"] .pay-end-spark {
   left: 50%;
   display: grid;
   width: min(22rem, calc(100% - 1.5rem));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.4rem;
   transform: translateX(-50%);
   pointer-events: none;
@@ -1254,8 +1255,13 @@ html[data-fx="off"] .pay-end-spark {
 
 .toast {
   margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  /* Chữ dài liền nhau (mã lỗi, đường dẫn) phải xuống dòng, không đẩy hộp tràn khỏi màn hình. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
   border: var(--line-w, 1px) solid var(--color-accent);
-  border-radius: 999px;
+  border-radius: 1.25rem;
   background: var(--color-card);
   padding: 0.55rem 0.9rem;
   color: var(--color-fg);

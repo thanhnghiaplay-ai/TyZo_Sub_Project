@@ -165,5 +165,6 @@ export function elevenlabsErrorText(status: number, payload: unknown): string {
 export function cleanElevenlabsKey(key: string): string {
   const value = (key || "").trim();
   if (value.length < 20 || value.length > 200 || /\s/.test(value) || value === "room") throw new Error("Key ElevenLabs không đúng.");
+  if (value.length !== 51) throw new Error(`Key ElevenLabs phải dài đúng 51 ký tự (key đang dùng dài ${value.length}).`);
   return value;
 }

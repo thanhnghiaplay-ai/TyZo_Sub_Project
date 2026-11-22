@@ -34,6 +34,8 @@ export type ProviderInfo = {
   clientStore: string;
   /** Đầu key mẫu hiện trong ô nhập của khách (không bắt buộc). */
   keyHint?: string;
+  /** Độ dài đúng của key khi nhà quy định cố định (ElevenLabs: 51). Sai độ dài thì báo ngay, không gọi nhà. */
+  keyLength?: number;
   /**
    * Đường (nối sau `api`) app gọi để kiểm key và đọc danh sách model. Nhà có lệnh liệt kê model thì trỏ vào đó (`/models`);
    * nhà không có thì trỏ vào một lệnh nhẹ chỉ để biết key đúng hay sai (đi cùng `fixedModels`).
@@ -177,6 +179,8 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     keyPage: "elevenlabs.io/app/settings/api-keys",
     clientStore: "gel",
     keyHint: "sk_…",
+    // ElevenLabs báo «API key must be exactly 51 characters» khi key sai độ dài (thử 22/11/2026).
+    keyLength: 51,
     // /models chỉ liệt kê model đọc giọng: dùng để kiểm key, danh sách nhận dạng khai cố định.
     listPath: "/models",
     fixedModels: ["scribe_v3", "scribe_v2"],
@@ -268,6 +272,16 @@ export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
   return rows
     .map((row) => (row && typeof row === "object" ? (row as Record<string, unknown>).id : undefined))
     .filter((value): value is string => typeof value === "string" && value.length > 0);
+}
+
+/** Lỗi định dạng key trước khi gọi nhà (rỗng = được). Chỉ kiểm điều nhà đã quy định rõ (độ dài cố định). */
+export function keyShapeProblem(id: ProviderId, key: string): string {
+  const info = PROVIDERS[id];
+  const value = key.trim();
+  if (info.keyLength && value.length !== info.keyLength) {
+    return `Key ${info.label} phải dài đúng ${info.keyLength} ký tự (key vừa dán dài ${value.length}). Hãy sao chép lại cả key ở ${info.keyPage}.`;
+  }
+  return "";
 }
 
 /** Chữ mẫu trong ô nhập key của khách, đọc từ khai của nhà (không viết tay từng nhà). */

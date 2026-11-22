@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { isProviderId, type ProviderId } from "@/lib/sub/provider";
+import { isProviderId, keyShapeProblem, type ProviderId } from "@/lib/sub/provider";
 
 /**
  * Hỏi danh sách model của key KHÁCH qua máy chủ (trình duyệt gọi thẳng thường bị CORS chặn).
@@ -13,6 +13,8 @@ export const listKeyModels = createServerFn({ method: "POST" })
     if (!isProviderId(provider)) throw new Error("Nhà cung cấp không đúng.");
     const key = input?.key?.trim() ?? "";
     if (key.length < 20 || key.length > 200 || /\s/.test(key)) throw new Error("Key không đúng.");
+    const shape = keyShapeProblem(provider, key);
+    if (shape) throw new Error(shape);
     return { provider, key };
   })
   .handler(async ({ data }): Promise<string[]> => {

@@ -12,7 +12,7 @@ import {
   sentencesFromElevenlabs,
 } from "./elevenlabs.ts";
 import { asrHouse, asrTakesLink } from "./asr-house.ts";
-import { authHeaders, modelIdsFrom, PROVIDER_IDS } from "./provider.ts";
+import { authHeaders, keyShapeProblem, modelIdsFrom, PROVIDER_IDS } from "./provider.ts";
 import { modelRoleOf } from "./model-role.ts";
 
 const w = (text: string, start: number, end: number) => ({ text, start, end, type: "word", logprob: -0.1 });
@@ -121,6 +121,14 @@ describe("sentencesFromElevenlabs", () => {
   });
 });
 
+describe("độ dài key ElevenLabs", () => {
+  it("báo ngay khi key không dài 51 ký tự; nhà không quy định thì không kiểm", () => {
+    assert.equal(keyShapeProblem("elevenlabs", `sk_${"a".repeat(48)}`), "");
+    assert.match(keyShapeProblem("elevenlabs", `sk_${"a".repeat(30)}`), /51 ký tự.*dài 33/);
+    assert.equal(keyShapeProblem("groq", "gsk_short"), "");
+  });
+});
+
 describe("lỗi và key ElevenLabs", () => {
   it("đổi mã lỗi thành câu tiếng Việt", () => {
     assert.match(elevenlabsErrorText(401, { detail: { status: "invalid_api_key", message: "Invalid API key" } }), /không hợp lệ/);
@@ -132,7 +140,8 @@ describe("lỗi và key ElevenLabs", () => {
     assert.match(elevenlabsErrorText(400, { detail: "Something odd" }), /ElevenLabs báo lỗi: Something odd/);
   });
   it("key khách: không nhận room, khoảng trắng hay quá ngắn", () => {
-    assert.equal(cleanElevenlabsKey(`  sk_${"a".repeat(40)} `), `sk_${"a".repeat(40)}`);
+    assert.equal(cleanElevenlabsKey(`  sk_${"a".repeat(48)} `), `sk_${"a".repeat(48)}`);
+    assert.throws(() => cleanElevenlabsKey(`sk_${"a".repeat(40)}`), /51 ký tự/);
     assert.throws(() => cleanElevenlabsKey("room"));
     assert.throws(() => cleanElevenlabsKey("short"));
     assert.throws(() => cleanElevenlabsKey(`sk_${"a".repeat(20)} x`));

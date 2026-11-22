@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.35.1",
+    time: "08:31 22/11/2026",
+    area: "khac",
+    text: "Chủ báo (ảnh điện thoại, Admin → Cấu hình → Key ElevenLabs của phòng): lưu key ra lỗi 401 invalid_api_key và hộp thông báo lệch ra ngoài màn hình. Lỗi 401 là ElevenLabs từ chối key (thử gọi thẳng /v1/models từ máy làm: key sai thì cùng phản hồi; ElevenLabs bắt key đúng 51 ký tự). Sửa: (1) .toast xuống dòng chữ liền (overflow-wrap anywhere, min-width 0, cột minmax(0,1fr)), bo 1,25rem thay vì viên thuốc, thời gian hiện theo độ dài (3,4–9 giây); kiểm 412 px bằng Chromium. (2) errorMessage hiểu thân lỗi `detail` (ElevenLabs), `err_msg` (Deepgram), không chép JSON thô; listModelIds với nhà ngoài Groq báo «Key <nhà> không đúng… kiểm tra ở <trang key>. Nhà báo: …». (3) ProviderInfo.keyLength (ElevenLabs 51) + keyShapeProblem ở saveProviderKey và listKeyModels; cleanElevenlabsKey cũng kiểm 51. Chưa biết vì sao key của Chủ bị từ chối: cần Chủ sao chép lại key ở elevenlabs.io.",
+  },
+  {
     version: "5.35.0",
     time: "05:53 22/11/2026",
     area: "ha-tang",

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { parseModelList } from "@/lib/run-desk";
-import { isProviderId, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
+import { isProviderId, keyShapeProblem, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 
 /**
  * Key phòng theo từng nhà cung cấp, dùng chung cho mọi nhà trong `PROVIDERS` (xem PROVIDERS.md bước 6).
@@ -42,6 +42,8 @@ export const saveProviderKey = createServerFn({ method: "POST" })
     const provider = checkProviderId(input?.provider);
     const key = input?.key?.trim() ?? "";
     if (key.length < 20 || key.length > 200 || /\s/.test(key)) throw new Error("Key không đúng.");
+    const shape = keyShapeProblem(provider, key);
+    if (shape) throw new Error(shape);
     return { provider, key };
   })
   .handler(async ({ context, data }) => {
