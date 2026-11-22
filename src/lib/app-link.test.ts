@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { readFileSync } from "node:fs";
-import { ANDROID_APP, apkUrlFrom, cleanDeviceName, codeFromBytes, LINK_ALPHABET, normalizeCode, readDeviceToken, showCode } from "./app-link.ts";
+import { ANDROID_APK_LATEST, ANDROID_APP, apkUrlFrom, parseReleaseInfo, pickRelease, cleanDeviceName, codeFromBytes, LINK_ALPHABET, normalizeCode, readDeviceToken, showCode } from "./app-link.ts";
 
 describe("mã liên kết ứng dụng", () => {
   it("dựng mã 8 ký tự trong bảng chữ, hiện có gạch giữa", () => {
@@ -41,6 +41,20 @@ describe("mã liên kết ứng dụng", () => {
     assert.equal(apkUrlFrom("http://a.vn/tyzo.apk"), "");
     assert.equal(apkUrlFrom("không phải link"), "");
     assert.equal(apkUrlFrom(undefined), "");
+  });
+
+  it("đọc tyzo-sub.json của bản phát hành", () => {
+    assert.deepEqual(parseReleaseInfo({ code: 5, name: "0.5" }), { code: 5, name: "0.5" });
+    assert.deepEqual(parseReleaseInfo({ code: "7", name: " 1.0 " }), { code: 7, name: "1.0" });
+    assert.equal(parseReleaseInfo({ code: 0, name: "0.5" }), null);
+    assert.equal(parseReleaseInfo({ code: 5, name: "<script>" }), null);
+    assert.equal(parseReleaseInfo("x"), null);
+  });
+
+  it("chọn đường tải: biến môi trường, rồi bản phát hành, rồi chưa có", () => {
+    assert.deepEqual(pickRelease("https://a.vn/x.apk", { code: 9, name: "0.9" }), { code: ANDROID_APP.code, name: ANDROID_APP.name, url: "https://a.vn/x.apk" });
+    assert.deepEqual(pickRelease("", { code: 9, name: "0.9" }), { code: 9, name: "0.9", url: ANDROID_APK_LATEST });
+    assert.deepEqual(pickRelease("", null), { code: ANDROID_APP.code, name: ANDROID_APP.name, url: "" });
   });
 
   it("chỉ đọc khóa máy đúng dạng", () => {

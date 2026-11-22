@@ -1093,6 +1093,93 @@ TXT
 }
 
 # =====================================================================
+# Khóa ký ứng dụng Android (để bản mới cài đè được bản cũ, và để GitHub tự đăng bản phát hành)
+# =====================================================================
+KEY_DIR="/opt/tyzo-android-key"
+REPO_SLUG="thanhnghiaplay-ai/TyZo_Sub_Project"
+
+cai_gh() {
+  co_lenh gh && return 0
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list
+  apt_cai gh
+}
+
+tao_khoa_android() {
+  tieu_de "Khóa ký ứng dụng Android"
+  cat <<'TXT'
+Khóa ký giúp mọi bản ứng dụng sau cài đè lên bản cũ (khách khỏi gỡ, khỏi liên kết lại),
+và cho GitHub tự đăng tệp cài để web hiện nút tải và ứng dụng tự báo cập nhật.
+Chỉ tạo MỘT lần. Tạo khóa khác về sau thì khách phải gỡ ứng dụng cài lại.
+TXT
+  co_lenh docker || cai_nen || return 1
+  mkdir -p "$KEY_DIR"; chmod 700 "$KEY_DIR"
+  local pass
+  if [ -f "$KEY_DIR/tyzo.jks" ] && [ -f "$KEY_DIR/matkhau" ]; then
+    xanh "✔ Đã có khóa ký trên VPS này ($KEY_DIR), dùng lại khóa đó."
+    pass="$(cat "$KEY_DIR/matkhau")"
+  else
+    hoi_co "Tạo khóa ký mới?" || return 0
+    pass="$(openssl rand -hex 16)"
+    docker run --rm -v "$KEY_DIR":/k eclipse-temurin:17-jre keytool -genkeypair -keystore /k/tyzo.jks -storetype PKCS12 \
+      -alias tyzo -keyalg RSA -keysize 2048 -validity 10000 -storepass "$pass" -keypass "$pass" \
+      -dname "CN=TyZo Sub, O=TyZo, C=VN" >/dev/null 2>&1
+    [ -s "$KEY_DIR/tyzo.jks" ] || { do_ "✘ Không tạo được khóa."; return 1; }
+    printf '%s' "$pass" > "$KEY_DIR/matkhau"; chmod 600 "$KEY_DIR"/*
+    xanh "✔ Đã tạo khóa ký, cất ở $KEY_DIR (chỉ root đọc được)"
+  fi
+  echo
+  echo "Nạp khóa vào GitHub:"
+  echo " 1. Tự động (khuyên dùng): dán một mã GitHub, máy tự nạp 4 bí mật và chạy đóng gói"
+  echo " 2. Tay: máy in 4 giá trị để bạn tự dán ở GitHub (chuỗi dài, khó chép trên điện thoại)"
+  read -rp "Chọn 1 hoặc 2 [1]: " c
+  if [ "$c" = "2" ]; then
+    cat <<'TXT'
+GitHub → kho TyZo_Sub_Project → Settings → Secrets and variables → Actions → New repository secret.
+Tạo 4 bí mật với tên và giá trị dưới đây. KHÔNG chụp màn hình gửi ai.
+TXT
+    echo "ANDROID_KEY_ALIAS = tyzo"
+    echo "ANDROID_KEYSTORE_PASSWORD = $pass"
+    echo "ANDROID_KEY_PASSWORD = $pass"
+    echo "ANDROID_KEYSTORE_BASE64 = (cả khối dưới, liền một dòng)"
+    base64 -w0 "$KEY_DIR/tyzo.jks"; echo
+    doi_enter "Dán xong ở GitHub."
+    clear 2>/dev/null
+  else
+    cat <<'TXT'
+Tạo mã GitHub (dùng một lần rồi xóa):
+  github.com → ảnh đại diện → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token
+  • Repository access: Only select repositories → TyZo_Sub_Project
+  • Permissions → Repository permissions: Secrets = Read and write; Actions = Read and write
+  • Generate token → chép
+TXT
+    local tok; tok="$(hoi_an 'Dán mã GitHub (chữ không hiện): ')"
+    [ -n "$tok" ] || { do_ "Chưa có mã."; return 1; }
+    cai_gh || { do_ "✘ Không cài được công cụ GitHub. Chọn cách 2 (tay)."; return 1; }
+    local ok=1
+    printf '%s' "tyzo" | GH_TOKEN="$tok" gh secret set ANDROID_KEY_ALIAS -R "$REPO_SLUG" >/dev/null 2>&1 || ok=0
+    printf '%s' "$pass" | GH_TOKEN="$tok" gh secret set ANDROID_KEYSTORE_PASSWORD -R "$REPO_SLUG" >/dev/null 2>&1 || ok=0
+    printf '%s' "$pass" | GH_TOKEN="$tok" gh secret set ANDROID_KEY_PASSWORD -R "$REPO_SLUG" >/dev/null 2>&1 || ok=0
+    base64 -w0 "$KEY_DIR/tyzo.jks" | GH_TOKEN="$tok" gh secret set ANDROID_KEYSTORE_BASE64 -R "$REPO_SLUG" >/dev/null 2>&1 || ok=0
+    if [ "$ok" = 1 ]; then xanh "✔ Đã nạp 4 bí mật vào GitHub"; else do_ "✘ Chưa nạp được (kiểm quyền Secrets của mã). Chọn cách 2 (tay)."; return 1; fi
+    if GH_TOKEN="$tok" gh workflow run android-thu.yml -R "$REPO_SLUG" --ref main >/dev/null 2>&1; then
+      xanh "✔ Đã cho GitHub đóng gói và đăng bản phát hành (khoảng 3 phút)"
+    else
+      vang "Chưa tự chạy đóng gói được. Vào GitHub → Actions → Android thử → Run workflow (nhánh main)."
+    fi
+    vang "Xóa mã GitHub vừa dùng: github.com → Settings → Developer settings → Fine-grained tokens → Delete."
+  fi
+  cat <<'TXT'
+
+Sau khi GitHub đóng gói xong (Actions → Android thử, dấu tích xanh):
+  • Trang Tài khoản trên web hiện nút «Tải tệp cài».
+  • Ứng dụng đang cài hiện thẻ «Có bản mới» → Cập nhật ngay.
+    Lần ĐẦU đổi sang khóa này: máy báo không cài đè được → gỡ ứng dụng, cài bản mới, liên kết lại (chỉ một lần).
+Giữ khóa: tệp ở /opt/tyzo-android-key trên VPS này. Đổi VPS thì chép thư mục đó sang VPS mới để dùng lại.
+TXT
+}
+
+# =====================================================================
 # Lệnh chung: chọn theo chế độ đang chạy
 # =====================================================================
 kiem_tra() { if [ "$(che_do)" = "full" ]; then kiem_tra_web; else kiem_tra_cau_noi; fi; }
@@ -1161,6 +1248,7 @@ menu() {
     echo "12. CHẠY THỬ web đầy đủ (không đụng web thật)"
     echo "13. Dữ liệu: sao lưu, khôi phục, chép Neon ⇄ VPS"
     echo "14. Đưa web lên tài khoản Vercel (mới hoặc khác)"
+    echo "15. Khóa ký ứng dụng Android (tự cập nhật ứng dụng)"
     echo " 0. Thoát"
     read -rp "Chọn số: " c
     case "$c" in
@@ -1178,8 +1266,9 @@ menu() {
       12) thiet_lap_web thu; cho_enter ;;
       13) menu_du_lieu; cho_enter ;;
       14) dua_len_vercel; cho_enter ;;
+      15) tao_khoa_android; cho_enter ;;
       0|q) exit 0 ;;
-      *) vang "Chọn số từ 0 đến 14." ;;
+      *) vang "Chọn số từ 0 đến 15." ;;
     esac
   done
 }
@@ -1210,7 +1299,8 @@ case "${1:-menu}" in
   web) thiet_lap_web ;;
   thu) thiet_lap_web thu ;;
   vercel) dua_len_vercel ;;
-  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|sao-luu|thiet-lap|web|thu|vercel]"; exit 1 ;;
+  khoa-android) tao_khoa_android ;;
+  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|sao-luu|thiet-lap|web|thu|vercel|khoa-android]"; exit 1 ;;
 esac
 }
 

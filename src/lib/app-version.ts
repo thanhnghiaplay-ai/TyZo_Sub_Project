@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.38.1";
+export const APP_VERSION = "5.39.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.39.0",
+    time: "19:23 22/11/2026",
+    title: "Ứng dụng Android tự cập nhật; nút tải tệp cài luôn là bản mới nhất.",
+    points: [
+      "Trang Tài khoản tự hiện nút Tải tệp cài khi ứng dụng có bản phát hành mới.",
+      "Ứng dụng 0.5: thấy bản mới thì bấm Cập nhật ngay, máy tự tải và mở màn cài.",
+    ],
+  },
   {
     version: "5.38.1",
     time: "16:01 22/11/2026",

@@ -53,6 +53,7 @@ class MainActivity : Activity() {
     private var balanceText: TextView? = null
     private var meter: ProgressBar? = null
     private var lastPhase: LiveState.Phase? = null
+    private var updateText: TextView? = null
 
     private val tick = object : Runnable {
         override fun run() {
@@ -84,6 +85,7 @@ class MainActivity : Activity() {
     private fun render() {
         ui = Ui(this)
         startButton = null
+        updateText = null
         statusText = null
         balanceText = null
         meter = null
@@ -136,8 +138,15 @@ class MainActivity : Activity() {
         val card = ui.card().apply { background = ui.round(ui.p.card, 16f, ui.p.accent) }
         card.addView(ui.text("Có bản mới ${app.name}", 16f, bold = true))
         if (app.url.isNotBlank()) {
-            card.addView(ui.muted("Gỡ bản đang cài nếu máy báo không cài đè được, rồi liên kết lại."), ui.full(4))
-            card.addView(ui.primary("Tải bản mới") { open(app.url) }, ui.full(10))
+            card.addView(ui.muted("Bấm Cập nhật ngay: ứng dụng tự tải rồi mở màn cài, bạn chỉ bấm «Cài đặt». " +
+                "Máy báo «không cài đặt được» thì gỡ bản đang cài rồi cài lại (một lần, khi đổi khóa ký)."), ui.full(4))
+            updateText = ui.text(Updater.status, 13f, ui.p.accent)
+            card.addView(updateText, ui.full(6))
+            card.addView(ui.primary("Cập nhật ngay") {
+                Updater.start(this, app.url, app.name)
+                updateText?.text = Updater.status
+            }, ui.full(10))
+            card.addView(ui.secondary("Tải bằng trình duyệt") { open(app.url) }, ui.full(8))
         } else {
             card.addView(ui.muted("Lấy tệp cài ở trang Tài khoản trên web, mục Ứng dụng Android."), ui.full(4))
         }
@@ -379,6 +388,7 @@ class MainActivity : Activity() {
             else -> "Dừng"
         }
         startButton?.isEnabled = phase != LiveState.Phase.STOPPING
+        updateText?.text = Updater.status
         meter?.progress = if (LiveState.running) (LiveState.levelDb + 90).toInt().coerceIn(0, 90) else 0
         val per = LiveState.perMinute
         statusText?.text = buildString {

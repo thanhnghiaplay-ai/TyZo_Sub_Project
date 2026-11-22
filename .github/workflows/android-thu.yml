@@ -1,10 +1,12 @@
-# Đóng gói tệp cài Android. Chỉ chạy khi thư mục android/ đổi, không đụng tới web (Vercel) hay cầu nối (Fly.io).
+# Đóng gói tệp cài Android. Chỉ chạy khi thư mục android/ đổi, không đụng tới web (Vercel) hay cầu nối.
 #
-# Tùy chọn (Settings → Secrets and variables → Actions):
-#   biến   TYZO_WEB_URL                 địa chỉ web điền sẵn trong ứng dụng, ví dụ https://tyzo.vn
-#   bí mật ANDROID_KEYSTORE_BASE64      tệp khóa ký (.jks) mã hóa base64
-#   bí mật ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
-# Có khóa ký thì mọi bản cùng một chữ ký, khách cài bản mới đè bản cũ. Không có thì ký khóa thử, mỗi lần một khóa.
+# Bí mật (Settings → Secrets and variables → Actions → Secrets), tạo bằng «tyzo» → mục 15 trên VPS:
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# Biến (tab Variables, tùy chọn): TYZO_WEB_URL — địa chỉ web điền sẵn trong ứng dụng.
+#
+# Có khóa ký và chạy trên nhánh main: đăng bản phát hành «android-v<versionName>» (tyzo-sub.apk + tyzo-sub.json).
+# Web đọc bản phát hành mới nhất để hiện nút tải và báo ứng dụng cũ tự cập nhật.
+# Chưa có khóa ký: chỉ đóng gói bản thử (khóa thử), không đăng phát hành.
 name: Android thử
 
 on:
@@ -15,7 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   apk:
@@ -35,15 +37,18 @@ jobs:
         with:
           gradle-version: "8.14.3"
       - name: Lấy khóa ký (nếu có)
+        id: key
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           if [ -n "$KEYSTORE_B64" ]; then
             echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/tyzo.jks"
             echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/tyzo.jks" >> "$GITHUB_ENV"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
             echo "Ký bằng khóa cố định."
           else
-            echo "Chưa có khóa ký: dùng khóa thử."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "Chưa có khóa ký: dùng khóa thử, không đăng phát hành."
           fi
       - name: Đóng gói tệp cài
         env:
@@ -51,10 +56,31 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: gradle --no-daemon assembleRelease
-      - name: Đổi tên tệp cài
-        run: cp app/build/outputs/apk/release/app-release.apk tyzo-sub.apk
+      - name: Đổi tên tệp cài và ghi số bản
+        id: ver
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk tyzo-sub.apk
+          code=$(sed -n 's/.*versionCode = \([0-9]*\).*/\1/p' app/build.gradle.kts | head -1)
+          name=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -1)
+          printf '{"code": %s, "name": "%s"}\n' "$code" "$name" > tyzo-sub.json
+          cat tyzo-sub.json
+          echo "name=$name" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
           name: tyzo-sub-apk
-          path: android/tyzo-sub.apk
+          path: |
+            android/tyzo-sub.apk
+            android/tyzo-sub.json
           retention-days: 30
+      - name: Đăng bản phát hành (chỉ nhánh main, đã có khóa ký)
+        if: github.ref == 'refs/heads/main' && steps.key.outputs.signed == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-v${{ steps.ver.outputs.name }}
+          name: TyZo Sub Android ${{ steps.ver.outputs.name }}
+          body: Tệp cài ứng dụng Android TyZo Sub. Tải tyzo-sub.apk rồi mở để cài (cần Android 10 trở lên).
+          make_latest: "true"
+          overwrite_files: true
+          files: |
+            android/tyzo-sub.apk
+            android/tyzo-sub.json

@@ -19,11 +19,10 @@ export const Route = createFileRoute("/api/app-me")({
           const sql = await getSql();
           const users = await sql<{ email: string | null }>`select email from "user" where id = ${userId}`;
           const shown = await sql<{ value: string }>`select value from room_settings where key = 'live_show'`;
-          const { ANDROID_APP, apkUrlFrom } = await import("@/lib/app-link");
-          const { env } = await import("@/lib/env.server");
+          const { androidRelease } = await import("@/lib/app-release.server");
           return json(200, {
             email: users[0]?.email ?? "",
-            app: { code: ANDROID_APP.code, name: ANDROID_APP.name, url: apkUrlFrom(env("ANDROID_APK_URL")) },
+            app: await androidRelease(),
             balance: await giayBalance(sql, userId),
             models: liveOpenModels(parseLiveShow(shown[0]?.value), LIVE_MODELS),
           });

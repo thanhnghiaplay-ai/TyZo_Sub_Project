@@ -13,6 +13,6 @@ gửi qua cầu nối Dịch trực tiếp và hiện phụ đề nổi trên m�
   Ứng dụng luôn tắt tiếng dịch (tiếng phát ra sẽ bị bộ thu nghe lại).
 - Đóng gói: GitHub Actions `Android thử` (`.github/workflows/android-thu.yml`), chỉ chạy khi `android/` đổi.
   Tệp cài ở mục Artifacts, tên `tyzo-sub-apk`. Khóa ký cố định và địa chỉ web điền sẵn: xem đầu tệp workflow.
-- Phát cho khách: đặt `ANDROID_APK_URL` (https) trên Vercel thì nút «Tải tệp cài» hiện ở trang Tài khoản.
+- Phát cho khách: có khóa ký (tạo bằng `tyzo` → 15 trên VPS) thì mỗi lần `android/` đổi trên `main`, Actions đăng bản phát hành `android-v<versionName>` (tyzo-sub.apk, tyzo-sub.json). Web đọc bản mới nhất (src/lib/app-release.server.ts) để hiện nút tải; ứng dụng tự báo và tải (Updater.kt). `ANDROID_APK_URL` trên Vercel vẫn ghi đè được nếu muốn.
 
 Tự đóng gói trên máy có Android SDK: `cd android && gradle assembleRelease`.

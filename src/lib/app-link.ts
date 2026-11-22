@@ -17,7 +17,37 @@ export const DEVICE_IDLE_DAYS = 90;
  * Bản ứng dụng Android mới nhất. Phải khớp versionCode và versionName trong android/app/build.gradle.kts
  * (app-link.test.ts kiểm). Ứng dụng cũ hơn thấy lời mời tải bản mới.
  */
-export const ANDROID_APP = { code: 4, name: "0.4" } as const;
+export const ANDROID_APP = { code: 5, name: "0.5" } as const;
+
+/**
+ * Nơi GitHub Actions đăng tệp cài (bản phát hành mới nhất của kho, ai cũng tải được).
+ * Mỗi bản phát hành có tyzo-sub.apk và tyzo-sub.json ({"code": 5, "name": "0.5"}).
+ */
+export const ANDROID_RELEASE_BASE = "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/latest/download";
+export const ANDROID_APK_LATEST = `${ANDROID_RELEASE_BASE}/tyzo-sub.apk`;
+export const ANDROID_INFO_LATEST = `${ANDROID_RELEASE_BASE}/tyzo-sub.json`;
+
+export type AndroidRelease = { code: number; name: string; url: string };
+
+/** Đọc tyzo-sub.json của bản phát hành. null khi sai dạng. */
+export function parseReleaseInfo(raw: unknown): { code: number; name: string } | null {
+  if (!raw || typeof raw !== "object") return null;
+  const row = raw as Record<string, unknown>;
+  const code = Number(row.code);
+  const name = typeof row.name === "string" ? row.name.trim() : "";
+  if (!Number.isInteger(code) || code < 1 || code > 100000 || !/^[0-9][0-9A-Za-z.-]{0,19}$/.test(name)) return null;
+  return { code, name };
+}
+
+/**
+ * Bản ứng dụng web báo cho khách. Có ANDROID_APK_URL thì dùng địa chỉ đó (số bản theo mã);
+ * không có thì dùng bản phát hành trên GitHub (số bản theo tyzo-sub.json); chưa phát hành thì không có đường tải.
+ */
+export function pickRelease(envUrl: string, released: { code: number; name: string } | null): AndroidRelease {
+  if (envUrl) return { code: ANDROID_APP.code, name: ANDROID_APP.name, url: envUrl };
+  if (released) return { ...released, url: ANDROID_APK_LATEST };
+  return { code: ANDROID_APP.code, name: ANDROID_APP.name, url: "" };
+}
 
 /** Chỉ nhận địa chỉ tệp cài https. Rỗng khi chưa đặt hoặc sai. */
 export function apkUrlFrom(raw: string | undefined): string {

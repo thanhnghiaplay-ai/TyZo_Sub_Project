@@ -81,8 +81,18 @@ Lưu ý: bản thử có dữ liệu thật (tài khoản, key Alibaba của ph�
 | 12 | Chạy thử web đầy đủ |
 | 13 | Dữ liệu: sao lưu, khôi phục, chép Neon ⇄ VPS |
 | 14 | Đưa web lên tài khoản Vercel |
+| 15 | Khóa ký ứng dụng Android: tạo một lần để ứng dụng tự cập nhật và web có nút tải |
 
 ---
+
+## E2. Ứng dụng Android tự cập nhật (làm một lần)
+
+1. Trên VPS gõ `tyzo` → **15** → tạo khóa ký → chọn **1** (tự động), dán mã GitHub theo hướng dẫn trên màn hình.
+2. Chờ khoảng 3 phút (GitHub → Actions → «Android thử» có dấu tích xanh).
+3. Trang Tài khoản trên web hiện nút «Tải tệp cài». Ứng dụng đang cài hiện «Có bản mới» → **Cập nhật ngay** → bấm **Cài đặt**.
+   Lần đầu đổi sang khóa này: gỡ ứng dụng cũ, cài bản mới, liên kết lại (chỉ một lần).
+4. Từ đó mỗi bản mới: khách mở ứng dụng là thấy «Có bản mới».
+Giữ khóa: thư mục `/opt/tyzo-android-key` trên VPS. Đổi VPS thì chép thư mục này sang.
 
 ## F. Khi VPS sắp hết hạn hoặc đổi VPS
 

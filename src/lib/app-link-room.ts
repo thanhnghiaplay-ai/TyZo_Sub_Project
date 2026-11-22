@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import type { AppDeviceRow } from "@/lib/app-link.server";
-import { ANDROID_APP, apkUrlFrom } from "@/lib/app-link";
 
 export type { AppDeviceRow };
 export type AppLinkView = { devices: AppDeviceRow[]; apkUrl: string; appVersion: string };
@@ -11,8 +10,9 @@ export const getAppLinks = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<AppLinkView> => {
     const { listDevices } = await import("@/lib/app-link.server");
-    const { env } = await import("@/lib/env.server");
-    return { devices: await listDevices(context.userId), apkUrl: apkUrlFrom(env("ANDROID_APK_URL")), appVersion: ANDROID_APP.name };
+    const { androidRelease } = await import("@/lib/app-release.server");
+    const release = await androidRelease();
+    return { devices: await listDevices(context.userId), apkUrl: release.url, appVersion: release.name };
   });
 
 /** Lấy mã liên kết mới (10 phút, dùng một lần). */

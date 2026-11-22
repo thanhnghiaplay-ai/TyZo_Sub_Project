@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.39.0",
+    time: "19:23 22/11/2026",
+    area: "khac",
+    text: "Chủ hỏi «phần lưu app trên web và tự cập nhật app». Lưu tệp cài: GitHub Actions (nhánh main, có khóa ký) đăng bản phát hành android-v<versionName> gồm tyzo-sub.apk và tyzo-sub.json; web đọc releases/latest/download/tyzo-sub.json (app-release.server.ts, giữ 15 phút, không qua API nên không bị giới hạn lượt), pickRelease: ANDROID_APK_URL nếu đặt, không thì bản phát hành, chưa có thì không hiện nút. Tự cập nhật: ứng dụng 0.5 (Updater.kt) tải bằng DownloadManager vào thư mục riêng, mở màn cài Android (REQUEST_INSTALL_PACKAGES; Android bắt khách bấm Cài đặt). Khóa ký: tyzo mục 15 tạo khóa trên VPS (keytool trong eclipse-temurin, cất ở /opt/tyzo-android-key) và nạp 4 bí mật vào GitHub bằng gh với mã Fine-grained (Secrets + Actions) hoặc in ra để dán tay. Lần đầu đổi sang khóa này khách phải gỡ cài lại một lần. Không đổi điều khoản (không thêm dữ liệu khách).",
+  },
+  {
     version: "5.38.1",
     time: "16:01 22/11/2026",
     area: "khac",
