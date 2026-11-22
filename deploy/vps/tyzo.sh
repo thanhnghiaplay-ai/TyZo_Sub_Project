@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Công cụ quản lý cầu nối Dịch trực tiếp trên VPS. Gõ «tyzo» để mở menu.
-# Lệnh nhanh: tyzo kiem-tra | tyzo cap-nhat | tyzo nhat-ky | tyzo cai-dat
+# Lệnh nhanh: tyzo kiem-tra | tyzo cap-nhat | tyzo nhat-ky | tyzo thiet-lap
+# VPS mới, chạy một dòng:  bash <(curl -fsSL https://raw.githubusercontent.com/thanhnghiaplay-ai/TyZo_Sub_Project/main/deploy/vps/tyzo.sh)
 # Tệp này nằm trong kho (deploy/vps/tyzo.sh) nên tự mới theo mỗi lần cập nhật.
 set -uo pipefail
 
@@ -99,8 +100,8 @@ kiem_tra() {
 cap_nhat() {
   local tu_dong="${1:-}"
   tieu_de "Cập nhật cầu nối"
-  [ -d "$DIR/.git" ] || { do_ "Chưa có mã ở $DIR. Chọn mục 9 (Cài đặt từ đầu)."; return 1; }
-  [ -f "$ENV_FILE" ] || { do_ "Chưa có $ENV_FILE. Chọn mục 9 (Cài đặt từ đầu)."; return 1; }
+  [ -d "$DIR/.git" ] || { do_ "Chưa có mã ở $DIR. Chọn mục 9 (Thiết lập từng bước)."; return 1; }
+  [ -f "$ENV_FILE" ] || { do_ "Chưa có $ENV_FILE. Chọn mục 9 (Thiết lập từng bước)."; return 1; }
   local truoc sau
   truoc="$(git -C "$DIR" rev-parse HEAD)"
   git -C "$DIR" fetch -q origin main && git -C "$DIR" reset -q --hard origin/main || { do_ "Không tải được mã mới (kiểm mạng)."; return 1; }
@@ -217,39 +218,207 @@ tu_cap_nhat() {
   fi
 }
 
-# ---------- Cài đặt từ đầu (VPS mới) ----------
-cai_dat() {
-  tieu_de "Cài đặt từ đầu"
-  echo "Dùng cho VPS mới. VPS đang chạy rồi thì không cần."
-  read -rp "Tiếp tục? (c/k): " a; [ "$a" = "c" ] || return 0
-  apt-get update -qq && apt-get install -y -qq curl git gnupg ufw nano openssl cron >/dev/null
-  co_lenh docker || curl -fsSL https://get.docker.com | sh
-  ufw allow 22 >/dev/null; ufw allow 80 >/dev/null; ufw allow 443 >/dev/null; ufw --force enable >/dev/null
-  [ -d "$DIR/.git" ] || git clone -q "$REPO_URL" "$DIR"
-  if [ -z "$(doc_bien DATABASE_URL)" ]; then
-    echo "Dán DATABASE_URL (lấy ở Neon: Connect → Show password → Copy). Chữ dán vào sẽ không hiện:"
-    read -rs db; echo
-    [ -n "$db" ] && dat_bien DATABASE_URL "$db"
+# ---------- Thiết lập từng bước (có hướng dẫn) ----------
+# Dẫn người không biết lập trình đi từ VPS trống tới khi web dùng được cầu nối.
+# Bước nào đã xong thì tự bỏ qua, nên chạy lại bao nhiêu lần cũng được.
+
+hoi_co() { # hoi_co "câu hỏi" → 0 khi trả lời c
+  local a
+  while true; do
+    read -rp "$1 (c = có / k = không): " a
+    case "$a" in c|C|co|có) return 0 ;; k|K|khong|không) return 1 ;; esac
+    vang "Gõ chữ c hoặc chữ k rồi bấm Enter."
+  done
+}
+
+doi_enter() { read -rp "$1 Xong thì bấm Enter..." _; }
+
+buoc() { printf '\n\033[1;36m━━━ BƯỚC %s/%s: %s ━━━\033[0m\n' "$1" 10 "$2"; }
+
+ip_vps() { curl -4 -fsS --max-time 8 https://api.ipify.org 2>/dev/null || hostname -I | awk '{print $1}'; }
+
+thiet_lap() {
+  clear 2>/dev/null || true
+  printf '\033[1;33mTHIẾT LẬP CẦU NỐI DỊCH TRỰC TIẾP — TỪNG BƯỚC\033[0m\n'
+  cat <<'TXT'
+Mất khoảng 20 phút. Cần chuẩn bị:
+  • Tên miền đã trỏ về Cloudflare (vd tyzo.site)
+  • Đăng nhập được Neon (console.neon.tech) và Vercel (vercel.com) trên điện thoại hoặc máy tính
+Máy sẽ tự làm phần cài đặt. Chỗ nào cần bạn làm ở trang khác, máy ghi rõ bấm vào đâu.
+Đang làm dở mà thoát cũng không sao: gõ «tyzo» rồi chọn lại mục này, bước đã xong sẽ được bỏ qua.
+TXT
+  hoi_co "Bắt đầu?" || return 0
+
+  # 1. Phần mềm
+  buoc 1 "Cài phần mềm cần thiết (máy tự làm)"
+  echo "Đang cài, có thể mất 2–5 phút. Nếu thấy chữ «Could not get lock» thì máy đang tự cập nhật, chờ chút sẽ tiếp."
+  local i
+  for i in 1 2 3 4 5 6; do
+    if apt-get update -qq >/dev/null 2>&1 && apt-get install -y -qq curl git gnupg ufw nano openssl cron ca-certificates >/dev/null 2>&1; then break; fi
+    vang "Máy đang bận cập nhật, thử lại sau 20 giây ($i/6)..."; sleep 20
+  done
+  co_lenh docker || { curl -fsSL https://get.docker.com | sh >/dev/null 2>&1; }
+  systemctl enable --now docker >/dev/null 2>&1 || true
+  if co_lenh docker && systemctl is-active --quiet docker; then xanh "✔ Đã có Docker"; else do_ "✘ Chưa cài được Docker. Chụp màn hình gửi Claude."; return 1; fi
+  ufw allow 22 >/dev/null 2>&1; ufw allow 80 >/dev/null 2>&1; ufw allow 443 >/dev/null 2>&1; ufw --force enable >/dev/null 2>&1
+  xanh "✔ Đã mở cổng 22, 80, 443"
+
+  # 2. Mã
+  buoc 2 "Tải mã của web (máy tự làm)"
+  if [ -d "$DIR/.git" ]; then git -C "$DIR" fetch -q origin main && git -C "$DIR" reset -q --hard origin/main; else git clone -q "$REPO_URL" "$DIR"; fi
+  [ -f "$DIR/Dockerfile" ] && xanh "✔ Đã có mã ở $DIR" || { do_ "✘ Không tải được mã. Kiểm mạng rồi chạy lại."; return 1; }
+  cai_lenh
+
+  # 3. Tên miền
+  buoc 3 "Trỏ tên miền phụ về VPS (bạn làm trên Cloudflare)"
+  local ip dom thay
+  ip="$(ip_vps)"
+  dom="$(ten_mien)"; [ "$dom" = ":80" ] && dom=""
+  if [ -n "$dom" ]; then
+    echo "Tên miền đang dùng: $dom"
+    hoi_co "Giữ tên miền này?" || dom=""
   fi
-  if [ -z "$(doc_bien LIVE_BRIDGE_SECRET)" ]; then
-    local s; s="$(openssl rand -hex 32)"; dat_bien LIVE_BRIDGE_SECRET "$s"
-    echo "LIVE_BRIDGE_SECRET mới (dán vào Vercel, không gửi ai): $s"
+  while [ -z "$dom" ]; do
+    read -rp "Gõ tên miền phụ cho cầu nối (vd realtimehub.tyzo.site): " dom
+    dom="$(echo "$dom" | tr 'A-Z' 'a-z' | sed 's#^https\?://##; s#/.*##; s/ //g')"
+    [[ "$dom" =~ ^[a-z0-9.-]+\.[a-z]{2,}$ ]] || { vang "Tên miền chưa đúng dạng."; dom=""; }
+  done
+  cat <<TXT
+Làm trên Cloudflare (dash.cloudflare.com):
+  1. Chọn tên miền chính (${dom#*.}) → menu DNS → Records → bấm «Add record»
+  2. Type: A
+  3. Name: ${dom%%.*}
+  4. IPv4 address: $ip
+  5. Proxy status: bấm cho đám mây chuyển sang MÀU XÁM (DNS only)
+  6. Bấm Save. Nếu đã có bản ghi ${dom%%.*} thì bấm Edit và sửa IP như trên.
+TXT
+  while true; do
+    thay="$(getent ahostsv4 "$dom" 2>/dev/null | awk 'NR==1 {print $1}')"
+    if [ "$thay" = "$ip" ]; then xanh "✔ $dom đã trỏ đúng về VPS ($ip)"; break; fi
+    if [ -z "$thay" ]; then vang "Chưa thấy $dom. Làm theo hướng dẫn trên rồi chờ 1–2 phút."
+    else vang "$dom đang trỏ về $thay, chưa phải $ip. Kiểm lại IP, và đám mây phải màu XÁM."; fi
+    hoi_co "Kiểm lại lần nữa?" || { vang "Bỏ qua bước kiểm tên miền (https có thể chưa chạy)."; break; }
+    sleep 5
+  done
+
+  # 4. Cơ sở dữ liệu
+  buoc 4 "Chuỗi kết nối cơ sở dữ liệu (bạn lấy ở Neon)"
+  if [ -n "$(doc_bien DATABASE_URL)" ] && ! hoi_co "Đã có DATABASE_URL. Muốn nhập lại?"; then
+    xanh "✔ Giữ DATABASE_URL cũ"
+  else
+    cat <<'TXT'
+Làm trên Neon (console.neon.tech):
+  1. Mở project → bấm «Connect»
+  2. Giữ nguyên Role «neondb_owner», bật «Connection pooling»
+  3. Bấm «Show password» rồi «Copy snippet»
+  4. KHÔNG bấm «Reset password» (web sẽ mất kết nối)
+Quay lại đây, giữ lâu màn hình chọn Paste. Chữ dán vào sẽ KHÔNG hiện ra, đó là bình thường.
+TXT
+    local db=""
+    while true; do
+      read -rsp "Dán DATABASE_URL rồi bấm Enter: " db; echo
+      db="$(echo "$db" | tr -d '[:space:]')"
+      [[ "$db" == postgres://* || "$db" == postgresql://* ]] && break
+      vang "Chuỗi phải bắt đầu bằng postgresql://. Thử dán lại."
+    done
+    dat_bien DATABASE_URL "$db"
+    xanh "✔ Đã lưu DATABASE_URL (không in ra màn hình)"
   fi
   [ -n "$(doc_bien PORT)" ] || dat_bien PORT 8080
+
+  # 5. Chuỗi bí mật
+  buoc 5 "Chuỗi bí mật nối web với cầu nối"
+  local moi=""
+  if [ -n "$(doc_bien LIVE_BRIDGE_SECRET)" ]; then
+    xanh "✔ Đã có LIVE_BRIDGE_SECRET, giữ nguyên"
+  elif hoi_co "Bạn có sẵn chuỗi LIVE_BRIDGE_SECRET đang dùng trên Vercel (trong ghi chú)?"; then
+    local sec=""
+    while true; do
+      read -rsp "Dán chuỗi rồi bấm Enter (chữ sẽ không hiện): " sec; echo
+      sec="$(echo "$sec" | tr -d '[:space:]')"
+      [ "${#sec}" -ge 24 ] && break
+      vang "Chuỗi quá ngắn (cần ít nhất 24 ký tự). Thử lại."
+    done
+    dat_bien LIVE_BRIDGE_SECRET "$sec"
+    xanh "✔ Đã lưu chuỗi cũ. Không cần sửa trên Vercel."
+  else
+    moi="$(openssl rand -hex 32)"
+    dat_bien LIVE_BRIDGE_SECRET "$moi"
+    xanh "✔ Đã tạo chuỗi mới. Bước 9 sẽ hướng dẫn dán lên Vercel."
+  fi
+
+  # 6. https
+  buoc 6 "Bật https cho tên miền (máy tự làm)"
   if ! co_lenh caddy; then
-    apt-get install -y -qq debian-keyring debian-archive-keyring apt-transport-https >/dev/null
+    apt-get install -y -qq debian-keyring debian-archive-keyring apt-transport-https >/dev/null 2>&1
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --batch --yes --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
-    apt-get update -qq && apt-get install -y -qq caddy >/dev/null
+    apt-get update -qq >/dev/null 2>&1 && apt-get install -y -qq caddy >/dev/null 2>&1
   fi
-  local dom; dom="$(ten_mien)"
-  if [ -z "$dom" ] || [ "$dom" = ":80" ]; then
-    read -rp "Tên miền cho cầu nối (vd realtimehub.tyzo.site): " dom
-    printf '%s {\n  reverse_proxy 127.0.0.1:8080\n}\n' "$dom" > "$CADDYFILE"
+  printf '%s {\n  reverse_proxy 127.0.0.1:8080\n}\n' "$dom" > "$CADDYFILE"
+  systemctl enable caddy >/dev/null 2>&1; systemctl restart caddy
+  systemctl is-active --quiet caddy && xanh "✔ Caddy đang chạy" || { do_ "✘ Caddy chưa chạy. Chụp màn hình gửi Claude."; journalctl -u caddy --no-pager -n 15; return 1; }
+
+  # 7. Cầu nối
+  buoc 7 "Dựng và chạy cầu nối (máy tự làm, khoảng 3–5 phút)"
+  cap_nhat || { do_ "✘ Cầu nối chưa chạy. Chụp màn hình gửi Claude."; return 1; }
+
+  # 8. Kiểm từ ngoài vào
+  buoc 8 "Kiểm tra từ Internet vào"
+  local ok=""
+  for i in $(seq 1 24); do
+    if [ "$(curl -fsS --max-time 8 "https://$dom/health" 2>/dev/null)" = "ok" ]; then ok=1; break; fi
+    [ "$i" = 1 ] && echo "Đang chờ chứng chỉ https (tối đa 2 phút)..."
+    sleep 5
+  done
+  if [ -n "$ok" ]; then xanh "✔ https://$dom/health trả ok"
+  else do_ "✘ Chưa mở được https://$dom/health. Kiểm đám mây Cloudflare màu XÁM rồi chạy lại mục này."; fi
+
+  # 9. Vercel
+  buoc 9 "Cho web dùng cầu nối này (bạn làm trên Vercel)"
+  cat <<TXT
+Làm trên Vercel (vercel.com) → mở project của web → Settings → Environment Variables:
+  1. LIVE_BRIDGE_URL  (bấm ⋯ → Edit, chưa có thì Add New)
+     Giá trị:  wss://$dom/live
+     Tích Production → Save
+TXT
+  if [ -n "$moi" ]; then
+    cat <<TXT
+  2. LIVE_BRIDGE_SECRET  (bấm ⋯ → Edit)
+     Giá trị là chuỗi dưới đây. Chép vào ghi chú riêng nữa. KHÔNG chụp màn hình gửi ai.
+TXT
+    printf '     \033[1m%s\033[0m\n' "$moi"
+    echo "     Tích Production → Save"
+  else
+    echo "  2. LIVE_BRIDGE_SECRET: KHÔNG cần sửa (đang dùng chuỗi cũ)."
   fi
-  systemctl restart caddy
-  cap_nhat
+  cat <<'TXT'
+  3. Bấm «Deployments» → dòng trên cùng → ⋯ → Redeploy → Redeploy. Chờ hiện «Ready».
+TXT
+  doi_enter "Làm xong trên Vercel."
+  [ -n "$moi" ] && clear 2>/dev/null
+
+  # 10. Hoàn tất
+  buoc 10 "Hoàn tất"
+  if [ ! -f "$CRON_FILE" ] && hoi_co "Bật tự cập nhật mỗi đêm (nên bật)?"; then
+    printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n17 3 * * * root /usr/local/bin/tyzo cap-nhat-tu-dong >> %s 2>&1\n' "$LOG_FILE" > "$CRON_FILE"
+    chmod 644 "$CRON_FILE"; xanh "✔ Đã bật tự cập nhật"
+  fi
   kiem_tra
+  cat > /opt/tyzo-ghi-chu.txt <<TXT
+Cầu nối Dịch trực tiếp — thiết lập ngày $(date '+%d/%m/%Y')
+Tên miền: $dom   (IP VPS: $ip)
+Trên Vercel: LIVE_BRIDGE_URL = wss://$dom/live
+Quản lý: gõ «tyzo» trên VPS. Kiểm tra = mục 1, cập nhật = mục 2.
+Bí mật nằm ở $ENV_FILE (không in ra đây).
+TXT
+  cat <<TXT
+
+Thử ngay: mở web → Dịch trực tiếp → chọn Micro → Bắt đầu → nói vài câu.
+Nếu web chưa dịch được: gõ «tyzo», chọn 3 (nhật ký), chụp màn hình gửi Claude.
+Ghi chú thiết lập lưu ở /opt/tyzo-ghi-chu.txt
+TXT
+  xanh "XONG. Từ nay chỉ cần nhớ một chữ: tyzo"
 }
 
 cai_lenh() {
@@ -268,7 +437,7 @@ menu() {
     echo " 6. Khởi động lại"
     echo " 7. Dọn dung lượng"
     echo " 8. Bật/tắt tự cập nhật mỗi đêm"
-    echo " 9. Cài đặt từ đầu (VPS mới)"
+    echo " 9. Thiết lập từng bước (VPS mới, hoặc làm lại)"
     echo "10. Tạo lại LIVE_BRIDGE_SECRET"
     echo " 0. Thoát"
     read -rp "Chọn số: " c
@@ -281,7 +450,7 @@ menu() {
       6) khoi_dong_lai; cho_enter ;;
       7) don_dep; cho_enter ;;
       8) tu_cap_nhat ;;
-      9) cai_dat; cho_enter ;;
+      9) thiet_lap; cho_enter ;;
       10) doi_bi_mat ;;
       0|q) exit 0 ;;
       *) vang "Chọn số từ 0 đến 10." ;;
@@ -291,7 +460,17 @@ menu() {
 
 main() {
 can_root
+# Chạy bằng một dòng tải về (VPS mới): tự lấy mã rồi chạy bản nằm trong kho.
+if [ ! -f "$DIR/deploy/vps/tyzo.sh" ]; then
+  echo "VPS chưa có mã, đang tải về..."
+  (apt-get update -qq && apt-get install -y -qq git) >/dev/null 2>&1 || true
+  git clone -q "$REPO_URL" "$DIR" || { do_ "Không tải được mã. Kiểm mạng rồi chạy lại."; exit 1; }
+  cai_lenh
+  exec bash "$DIR/deploy/vps/tyzo.sh" "${1:-thiet-lap}"
+fi
 [ -x /usr/local/bin/tyzo ] || cai_lenh 2>/dev/null || true
+# Chưa có cấu hình: vào thẳng thiết lập từng bước.
+if [ "${1:-menu}" = "menu" ] && [ ! -f "$ENV_FILE" ]; then thiet_lap; exit $?; fi
 case "${1:-menu}" in
   menu) menu ;;
   kiem-tra) kiem_tra ;;
@@ -299,8 +478,8 @@ case "${1:-menu}" in
   cap-nhat-tu-dong) echo "--- $(date '+%d/%m/%Y %H:%M') ---"; cap_nhat tu-dong ;;
   nhat-ky) nhat_ky ;;
   khoi-dong-lai) khoi_dong_lai ;;
-  cai-dat) cai_dat ;;
-  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|cai-dat]"; exit 1 ;;
+  cai-dat|thiet-lap) thiet_lap ;;
+  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|thiet-lap]"; exit 1 ;;
 esac
 }
 
