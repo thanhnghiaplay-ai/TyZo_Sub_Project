@@ -4,6 +4,6 @@ Trước khi sửa code, đọc **`BANG_DIEU.md`**, rồi **`huongdan.txt`**, r�
 
 App đang chạy là bản React (TanStack Start). Số phiên bản người dùng thấy nằm ở `src/lib/app-version.ts`. Chữ điều khoản nằm ở `src/components/terms-document.tsx`, số bản `TERMS_VERSION` ở `src/lib/terms.ts`, cửa hỏi lại ở `src/components/entry-gate.tsx`, trang đọc `/dieu-khoan`. Không có file HTML standalone.
 
-Trạng thái: nhánh `work` và `main` cùng v5.35.1 (đẩy chính thức 22/11/2026, điều khoản `2026-11-22.1`).
+Trạng thái: nhánh `work` và `main` cùng v5.35.2 (đẩy chính thức 22/11/2026, điều khoản `2026-11-22.1`).
 
 Cách làm mỗi bước: sửa code, `npm run typecheck`, `npm run lint` (phải 0 lỗi), `npm test` (phải pass hết), nâng `APP_VERSION` + `CHANGELOG` (chữ cho khách, không từ nội bộ) + `ADMIN_LOG` khi đổi hành vi, rồi commit và đẩy. Không ghi token hay mật khẩu vào file hay commit.

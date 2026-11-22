@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.35.1 (đẩy chính thức 22/11/2026). `main` = `work`. |
-| Bản mới nhất | v5.35.2 trên `work` (lưu được key ElevenLabs giới hạn quyền; chưa lên `main`). v5.35.1 trên `main` (thông báo lỗi gọn, lỗi key rõ hơn). v5.35.0: ElevenLabs nhận dạng (Scribe v3, v2, xóa bản nhận dạng sau mỗi lần chạy) và giọng đọc (Flash v2.5, có tiếng Việt), điều khoản 2026-11-22.1. Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.35.2 (đẩy chính thức 22/11/2026). `main` = `work`. |
+| Bản mới nhất | v5.35.2 trên `work` và `main` (lưu được key ElevenLabs giới hạn quyền). v5.35.1: thông báo lỗi gọn, lỗi key rõ hơn. v5.35.0: ElevenLabs nhận dạng (Scribe v3, v2, xóa bản nhận dạng sau mỗi lần chạy) và giọng đọc (Flash v2.5, có tiếng Việt), điều khoản 2026-11-22.1. Bản khách đang dùng xem dòng trên. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-22.1 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |

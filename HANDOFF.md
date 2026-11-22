@@ -1,6 +1,6 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
-Cập nhật 22/11/2026. **v5.35.1 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.1`.
+Cập nhật 22/11/2026. **v5.35.2 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.1`.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 
 ## 1. Bắt đầu nhanh (người hoặc AI tiếp theo)
@@ -8,7 +8,7 @@ File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại v�
 2. Lấy code: clone nhánh `work` của `thanhnghiaplay-ai/TyZo_Sub_Project`. Mọi việc làm trên `work`.
 3. Kiểm nền: `npm ci`, `npm run typecheck`, `npm run lint` (0 lỗi; 31 cảnh báo có sẵn), `npm test`, `npm run build`.
 4. Mỗi bước: sửa → typecheck → lint → test → (nếu đổi hành vi khách: nâng `APP_VERSION`, thêm `CHANGELOG` mỗi dòng ≤ 100 ký tự và không có từ nội bộ, thêm `ADMIN_LOG`) → commit → đẩy `work` → ghi một dòng ở mục 3.
-5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` = `work` = v5.35.1 (đẩy chính thức 22/11/2026).
+5. Chỉ đẩy `main` khi Chủ nói đúng câu «đẩy chính thức» (kéo thẳng `main` = `work`, chạy typecheck, lint, test và build trước). Lần gần nhất: `main` = `work` = v5.35.2 (đẩy chính thức 22/11/2026).
 6. KHÔNG ghi token hay mật khẩu vào file, commit hay remote; truyền token ở dòng lệnh rồi bỏ. Token GitHub từng dán trong chat phải được Chủ thu hồi.
 7. Lưu ý môi trường Claude: không gọi được `api.groq.com`, Alibaba, Deepgram (nên không tự kiểm với nhà thật); `github.com` thì được. Trong shell, `cut -c`/`head -c` cắt hỏng chữ tiếng Việt, dùng Python.
 8. `AGENTS.md` là mẫu chung của một công cụ khác, không phải quy tắc dự án. Quy tắc dự án: `AGENTS.project.md`, `BANG_DIEU.md`, `huongdan.txt`.
@@ -26,7 +26,8 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
-- **v5.35.2 (22/11/2026, Claude)**: Key ElevenLabs của Chủ thiếu quyền models_read nên không lưu được. Thiếu quyền của lệnh kiểm nay coi là key đúng (chỉ nhà có danh sách model cố định); lỗi thiếu quyền khi chạy báo đúng tên quyền. tsc sạch, eslint 0 lỗi, test 191 + 1431 pass. Đã đẩy `work`, chưa lên `main`.
+- **Đẩy chính thức v5.35.2**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.35.2. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1431 pass, vite build xong.
+- **v5.35.2 (22/11/2026, Claude)**: Key ElevenLabs của Chủ thiếu quyền models_read nên không lưu được. Thiếu quyền của lệnh kiểm nay coi là key đúng (chỉ nhà có danh sách model cố định); lỗi thiếu quyền khi chạy báo đúng tên quyền. tsc sạch, eslint 0 lỗi, test 191 + 1431 pass. Đã đẩy `work` và `main`.
 - **Đẩy chính thức v5.35.1**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.35.1. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1430 pass, vite build xong.
 - **v5.35.1 (22/11/2026, Claude)**: Chủ báo lưu key ElevenLabs lỗi 401 và thông báo lệch màn hình. Sửa hộp thông báo (xuống dòng, kiểm 412 px), lỗi kiểm key theo nhà bằng tiếng Việt, kiểm key ElevenLabs đúng 51 ký tự. 401 là ElevenLabs từ chối key: Chủ cần sao chép lại key. tsc sạch, eslint 0 lỗi, test 191 + 1430 pass. Đã đẩy `work` và `main`.
 - **Đẩy chính thức v5.35.0**: Chủ nói «hợp nhánh work rồi đẩy chính thức». `work` và `main` kéo thẳng (fast-forward) lên nhánh `ccr-6b6ee13d-637k1h` (v5.34.0–v5.35.0, ElevenLabs). Khách đồng ý lại điều khoản 2026-11-22.1 một lần. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1429 pass, vite build xong. Chưa thử key ElevenLabs thật.
