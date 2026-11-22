@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Đẩy chính thức (công cụ VPS: web đầy đủ, chạy thử, Vercel)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build Vercel xong, `bash -n` tyzo.sh sạch. Web khách không đổi (v5.38.1).
 - **Web đầy đủ trên VPS / đổi tài khoản Vercel (22/11/2026, Claude, trên `work`)**: xem docs/HUONG_DAN_VPS.md. Cần Chủ chạy thử (tyzo → 12) trên VPS riêng. Không đổi giao diện khách, không nâng số phiên bản.
 - **Đẩy chính thức (công cụ VPS)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work` (v5.38.1 cộng deploy/vps/tyzo.sh). tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build xong, `bash -n` tyzo.sh sạch.
 - **Công cụ VPS (22/11/2026, Claude)**: `deploy/vps/tyzo.sh`, cài một lần bằng `bash /opt/tyzo/deploy/vps/tyzo.sh` rồi về sau gõ `tyzo`. Thay cho /opt/cap-nhat.sh. Không đổi mã web, không nâng số phiên bản.
