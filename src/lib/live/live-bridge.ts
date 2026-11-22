@@ -50,6 +50,21 @@ export type LiveBridgeDeps = {
 };
 
 const PCM_BYTES_PER_SEC = 16000 * 2;
+/** Câu Alibaba gửi khi tự cắt vì lâu không có kết quả (video im): «Response stream timeout (timeout_seconds=60, …)». */
+const IDLE_CUT = /stream timeout|timeout_seconds/i;
+/** Dưới mức này (khoảng -50 dBFS) coi khung là im. */
+const SILENT_PEAK = 100;
+
+/** Đỉnh biên độ của khung PCM 16 bit little-endian. */
+export function pcmPeak(bytes: Uint8Array): number {
+  let peak = 0;
+  for (let i = 0; i + 1 < bytes.length; i += 2) {
+    let v = bytes[i] | (bytes[i + 1] << 8);
+    if (v & 0x8000) v -= 0x10000;
+    if (Math.abs(v) > peak) peak = Math.abs(v);
+  }
+  return peak;
+}
 
 function send(ws: WebSocket, data: unknown) {
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
@@ -141,6 +156,11 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   let finishing = false;
   let closed = false;
   let reconnects = 0;
+  /** Alibaba vừa báo cắt vì im lặng. */
+  let idleCut = false;
+  /** Đã bị cắt vì im lặng: chưa nối lại, chờ khung có tiếng. */
+  let dormant = false;
+  let wakeUps = 0;
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
@@ -159,6 +179,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   async function finalize(failed: boolean) {
     if (closed) return;
     closed = true;
+    log(`phiên đóng: ${ticket!.model} nối-lại=${reconnects} ngủ-dậy=${wakeUps} lỗi=${failed ? "có" : "không"}`);
     if (drainTimer) clearTimeout(drainTimer);
     try {
       upstream?.close();
@@ -216,6 +237,15 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
         void finalize(false);
         continue;
       }
+      if (event.kind === "error") {
+        log(`Alibaba báo lỗi: ${event.message}`);
+        // Alibaba tự cắt khi quá 60 giây không ra kết quả (video im). Không phải lỗi của khách: không hiện câu
+        // tiếng Anh, không tính vào số lần nối lại hỏng; có tiếng lại mới nối (xem client.on message).
+        if (IDLE_CUT.test(event.message)) {
+          idleCut = true;
+          continue;
+        }
+      }
       send(client, { type: "event", event });
     }
   };
@@ -226,9 +256,17 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     ws.on("open", () => ws.send(sessionUpdate));
     ws.on("message", (raw) => void handleUpstream(raw).catch((error) => log(`xử lý tin Alibaba lỗi: ${String(error)}`)));
     ws.on("error", (error) => log(`upstream: ${String(error)}`));
-    ws.on("close", () => {
+    ws.on("close", (code, reason) => {
       if (closed || ws !== upstream) return;
+      log(`Alibaba đóng kết nối: mã ${code} ${reason.toString().slice(0, 120)}`);
       if (finishing) return void finalize(false);
+      if (idleCut) {
+        idleCut = false;
+        dormant = true;
+        ready = false;
+        upstream = null;
+        return;
+      }
       if (reconnects < maxReconnects) {
         reconnects += 1;
         ready = false;
@@ -253,7 +291,16 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
       }
       return;
     }
-    if (finishing || !ready || !upstream || upstream.readyState !== WebSocket.OPEN) return;
+    if (finishing) return;
+    if (dormant) {
+      // Khung im lúc ngủ bỏ đi (không gửi, không trừ Token). Có tiếng lại thì nối Alibaba.
+      if (pcmPeak(data as Buffer) < SILENT_PEAK) return;
+      dormant = false;
+      wakeUps += 1;
+      connectUpstream();
+      return;
+    }
+    if (!ready || !upstream || upstream.readyState !== WebSocket.OPEN) return;
     const bytes = data as Buffer;
     if (meter.mustStop()) return;
     upstream.send(audioAppend(bytes));
