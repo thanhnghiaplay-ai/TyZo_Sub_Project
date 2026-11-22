@@ -1,14 +1,16 @@
-# Android — bước thử thu âm
+# Android — TyZo Sub
 
-Ứng dụng nhỏ để biết Bilibili, YouTube, TikTok có cho thu âm thanh đang phát không
-(Android 10+, `AudioPlaybackCapture`). Chỉ có nút Bắt đầu/Dừng và thanh mức âm.
-Không có quyền INTERNET, không gọi máy chủ, không lưu tiếng.
+Ứng dụng thu tiếng của video đang phát ở ứng dụng khác (Android 10+, `AudioPlaybackCapture`),
+gửi qua cầu nối Dịch trực tiếp và hiện phụ đề nổi trên màn hình. Dùng chung tài khoản và Token dịch với web.
 
-- Mã: `app/src/main/java/vn/tyzo/sub/thu/` (Kotlin, không dùng thư viện ngoài).
+- Mã: `app/src/main/java/vn/tyzo/sub/` (Kotlin, giao diện dựng bằng mã, chỉ dùng thêm OkHttp).
+- Liên kết: web Tài khoản → Ứng dụng Android → «Lấy mã liên kết» (8 ký tự, 10 phút, dùng một lần).
+  Ứng dụng đổi mã lấy khóa máy ở `POST /api/app-link`, rồi gọi `GET /api/app-me` và `POST /api/app-ticket`
+  bằng `Authorization: Bearer <khóa máy>`. Máy chủ chỉ lưu băm của mã và khóa (bảng `app_link_codes`, `app_devices`).
+- Vé và tiền: `/api/app-ticket` dùng chung `issueLiveTicket` với trang web; cầu nối giữ và trừ Token dịch như cũ.
+  Ứng dụng luôn tắt tiếng dịch (tiếng phát ra sẽ bị bộ thu nghe lại).
 - Đóng gói: GitHub Actions `Android thử` (`.github/workflows/android-thu.yml`), chỉ chạy khi `android/` đổi.
-  Tệp cài nằm ở mục Artifacts của lần chạy, tên `tyzo-thu-thu-am`.
-- Tệp cài ký bằng khóa thử của máy đóng gói, mỗi lần đóng gói một khóa khác:
-  muốn cài bản mới thì gỡ bản cũ trước.
-- Không nằm trong web: không nâng `APP_VERSION`, không sửa điều khoản, `.dockerignore` bỏ qua `android/`.
+  Tệp cài ở mục Artifacts, tên `tyzo-sub-apk`. Khóa ký cố định và địa chỉ web điền sẵn: xem đầu tệp workflow.
+- Phát cho khách: đặt `ANDROID_APK_URL` (https) trên Vercel thì nút «Tải tệp cài» hiện ở trang Tài khoản.
 
-Tự đóng gói trên máy có Android SDK: `cd android && gradle assembleDebug`.
+Tự đóng gói trên máy có Android SDK: `cd android && gradle assembleRelease`.
