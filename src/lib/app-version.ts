@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.36.0";
+export const APP_VERSION = "5.37.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.37.0",
+    time: "12:06 22/11/2026",
+    title: "Ứng dụng Android: phụ đề dịch nổi trên video ở Bilibili, YouTube, TikTok.",
+    points: [
+      "Trang Tài khoản có mục Ứng dụng Android: lấy mã liên kết, xem và gỡ máy đã liên kết.",
+      "Nghe tiếng video đang phát rồi hiện phụ đề nổi, trừ Token dịch như Dịch trực tiếp.",
+      "Điều khoản ghi thêm phần ứng dụng Android; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.36.0",
     time: "11:08 22/11/2026",

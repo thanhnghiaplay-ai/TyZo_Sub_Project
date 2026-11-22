@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.37.0",
+    time: "12:06 22/11/2026",
+    area: "khac",
+    text: "Ứng dụng Android bước 2 (Chủ: «làm bước 2 luôn», sau khi bước thử đạt trên Xiaomi Android 12: Bilibili, YouTube, TikTok đều cho thu). Web: bảng app_link_codes và app_devices (migration 0031, chỉ lưu băm SHA-256 của mã và khóa máy). app-link.ts (thuần, 5 test): mã 8 ký tự bỏ chữ dễ nhầm, sống 10 phút, dùng một lần; tối đa 3 máy mỗi tài khoản, liên kết thêm thì gỡ máy cũ nhất. Đường mới: POST /api/app-link (đổi mã lấy khóa máy, giới hạn 10 lần/10 phút mỗi IP và 120 lần/10 phút toàn cửa), DELETE /api/app-link (gỡ chính máy đó), GET /api/app-me (email, Token dịch còn, model đang mở), POST /api/app-ticket (vé cầu nối). Tách luật cấp vé khỏi openLiveTicket sang live-issue.server.ts (issueLiveTicket) để web và ứng dụng cùng một luật; ứng dụng luôn tắt tiếng dịch. Trang Tài khoản: thẻ Ứng dụng Android (AppLinkCard): nút Tải tệp cài khi đặt ANDROID_APK_URL (https) trên Vercel, Lấy mã liên kết, danh sách máy và Gỡ. Ứng dụng (android/, nhánh ccr-a8428a75-e8fyfm): liên kết bằng mã, chọn ngôn ngữ đích, nguồn, model, cỡ chữ, chữ gốc; phụ đề nổi kéo được, nút Dừng trên khung. Điều khoản 2026-11-22.3 (mục 1 và 5). Đã thử trên máy chủ dev: lấy mã, liên kết, dùng lại mã bị từ chối, app-me, gỡ thì khóa hết dùng; app-ticket báo «chưa bật» vì máy thử không có cầu nối. CHƯA thử phiên thật trên điện thoại.",
+  },
+  {
     version: "5.36.0",
     time: "11:08 22/11/2026",
     area: "khac",

@@ -19,6 +19,9 @@ import { Route as HuongDanRouteImport } from './routes/huong-dan'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as YeuCauRouteImport } from './routes/yeu-cau'
+import { Route as ApiAppLinkRouteImport } from './routes/api/app-link'
+import { Route as ApiAppMeRouteImport } from './routes/api/app-me'
+import { Route as ApiAppTicketRouteImport } from './routes/api/app-ticket'
 import { Route as ApiModelCallRouteImport } from './routes/api/model-call'
 import { Route as ApiRoomDeepgramRouteImport } from './routes/api/room-deepgram'
 import { Route as ApiRoomElevenlabsRouteImport } from './routes/api/room-elevenlabs'
@@ -77,6 +80,21 @@ const YeuCauRoute = YeuCauRouteImport.update({
   path: '/yeu-cau',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAppLinkRoute = ApiAppLinkRouteImport.update({
+  id: '/api/app-link',
+  path: '/api/app-link',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAppMeRoute = ApiAppMeRouteImport.update({
+  id: '/api/app-me',
+  path: '/api/app-me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAppTicketRoute = ApiAppTicketRouteImport.update({
+  id: '/api/app-ticket',
+  path: '/api/app-ticket',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiModelCallRoute = ApiModelCallRouteImport.update({
   id: '/api/model-call',
   path: '/api/model-call',
@@ -124,6 +142,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
+  '/api/app-link': typeof ApiAppLinkRoute
+  '/api/app-me': typeof ApiAppMeRoute
+  '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
@@ -143,6 +164,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
+  '/api/app-link': typeof ApiAppLinkRoute
+  '/api/app-me': typeof ApiAppMeRoute
+  '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
@@ -163,6 +187,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
+  '/api/app-link': typeof ApiAppLinkRoute
+  '/api/app-me': typeof ApiAppMeRoute
+  '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
@@ -184,6 +211,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
+    | '/api/app-link'
+    | '/api/app-me'
+    | '/api/app-ticket'
     | '/api/model-call'
     | '/api/room-deepgram'
     | '/api/room-elevenlabs'
@@ -203,6 +233,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
+    | '/api/app-link'
+    | '/api/app-me'
+    | '/api/app-ticket'
     | '/api/model-call'
     | '/api/room-deepgram'
     | '/api/room-elevenlabs'
@@ -222,6 +255,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
+    | '/api/app-link'
+    | '/api/app-me'
+    | '/api/app-ticket'
     | '/api/model-call'
     | '/api/room-deepgram'
     | '/api/room-elevenlabs'
@@ -242,6 +278,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
   YeuCauRoute: typeof YeuCauRoute
+  ApiAppLinkRoute: typeof ApiAppLinkRoute
+  ApiAppMeRoute: typeof ApiAppMeRoute
+  ApiAppTicketRoute: typeof ApiAppTicketRoute
   ApiModelCallRoute: typeof ApiModelCallRoute
   ApiRoomDeepgramRoute: typeof ApiRoomDeepgramRoute
   ApiRoomElevenlabsRoute: typeof ApiRoomElevenlabsRoute
@@ -323,6 +362,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof YeuCauRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/app-link': {
+      id: '/api/app-link'
+      path: '/api/app-link'
+      fullPath: '/api/app-link'
+      preLoaderRoute: typeof ApiAppLinkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/app-me': {
+      id: '/api/app-me'
+      path: '/api/app-me'
+      fullPath: '/api/app-me'
+      preLoaderRoute: typeof ApiAppMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/app-ticket': {
+      id: '/api/app-ticket'
+      path: '/api/app-ticket'
+      fullPath: '/api/app-ticket'
+      preLoaderRoute: typeof ApiAppTicketRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/model-call': {
       id: '/api/model-call'
       path: '/api/model-call'
@@ -386,6 +446,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   TaiKhoanRoute: TaiKhoanRoute,
   YeuCauRoute: YeuCauRoute,
+  ApiAppLinkRoute: ApiAppLinkRoute,
+  ApiAppMeRoute: ApiAppMeRoute,
+  ApiAppTicketRoute: ApiAppTicketRoute,
   ApiModelCallRoute: ApiModelCallRoute,
   ApiRoomDeepgramRoute: ApiRoomDeepgramRoute,
   ApiRoomElevenlabsRoute: ApiRoomElevenlabsRoute,

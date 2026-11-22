@@ -21,6 +21,7 @@ import { HistoryPanel } from "@/components/history-panel";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";
 import { myAffiliate } from "@/lib/affiliate-room";
 import { pushToast } from "@/components/toast";
+import { AppLinkCard } from "@/components/app-link-card";
 
 export function AccountPanel() {
   const plans = useRoomPlans();
@@ -246,6 +247,7 @@ export function AccountPanel() {
           ))}
           {/* Lịch sử đầy đủ (v5.31.0): lượt dịch từ phiếu (giữ / trừ / trả lại), lượt thuê phòng trên máy, mua và gói Token. */}
           <HistoryPanel buys={rows} />
+          {!blocked && <AppLinkCard />}
           <form
             className="space-y-2 rounded-[var(--radius-card)] border border-line bg-card p-4"
             onSubmit={(event) => {
