@@ -19,7 +19,7 @@ export type TourStep = {
   tab?: "key" | "phim" | "cast" | "voice" | "run";
 };
 
-export type TourId = "quick-start" | "phu-de" | "thuyet-minh" | "dich-truc-tiep" | "thuat-ngu" | "nap-tien" | "key-groq" | "mat-khau" | "ho-tro";
+export type TourId = "quick-start" | "phu-de" | "thuyet-minh" | "dich-truc-tiep" | "thuat-ngu" | "nap-tien" | "key-groq" | "mat-khau" | "ho-tro" | "ung-dung-android";
 
 /** Trang có giao diện thật để chạy tuyến. Mỗi tuyến chạy trọn trên một trang. */
 export type TourPage = "/" | "/dich-truc-tiep";
@@ -34,6 +34,7 @@ export const TOUR_PAGE: Record<TourId, TourPage> = {
   "key-groq": "/",
   "mat-khau": "/",
   "ho-tro": "/",
+  "ung-dung-android": "/",
 };
 
 export const TOURS: Record<TourId, TourStep[]> = {
@@ -82,6 +83,10 @@ export const TOURS: Record<TourId, TourStep[]> = {
   ],
   "ho-tro": [
     { sel: "#tool-tab-yeu-cau", rail: true, title: "Yêu cầu xem lại", text: "Việc cần người xem lại (gói, Token dịch, khóa, cấm): bấm mục này và mô tả rõ việc cùng thời điểm xảy ra. Thông tin liên hệ nằm ở mục Hỗ trợ và liên hệ của trang Hướng dẫn." },
+  ],
+  "ung-dung-android": [
+    { sel: "#tool-tab-so-du", rail: true, press: true, title: "1. Mở Token dịch", text: "Nằm trong nhóm Tài khoản của menu trái." },
+    { sel: "[data-tour=android-app]", title: "2. Ứng dụng Android", text: "Tải tệp cài (khi đã phát hành), bấm Lấy mã liên kết rồi gõ mã vào ứng dụng trên điện thoại. Máy đã liên kết hiện ở đây, bấm Gỡ khi đổi máy." },
   ],
 };
 

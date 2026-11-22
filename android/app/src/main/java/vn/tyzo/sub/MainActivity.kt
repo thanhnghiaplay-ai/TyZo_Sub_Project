@@ -120,7 +120,9 @@ class MainActivity : Activity() {
 
     private fun buildLink(col: LinearLayout) {
         col.addView(label(18f, "Liên kết tài khoản", bold = true))
-        col.addView(label(14f, "Trên web, mở Tài khoản → Ứng dụng Android → Lấy mã liên kết, rồi gõ mã vào đây."))
+        col.addView(label(14f, "1. Trên web (máy tính hoặc điện thoại), đăng nhập rồi mở Tài khoản → Ứng dụng Android.\n" +
+                "2. Bấm «Lấy mã liên kết». Mã có 8 ký tự, dùng được 10 phút.\n" +
+                "3. Gõ địa chỉ web và mã vào hai ô dưới, bấm Liên kết."))
         col.addView(label(14f, "Địa chỉ web"))
         val web = EditText(this).apply {
             setText(prefs.web)
@@ -168,6 +170,7 @@ class MainActivity : Activity() {
             }.start()
         }
         col.addView(go, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(56)))
+        col.addView(guideButton { web.text.toString() }, full())
     }
 
     private fun buildMain(col: LinearLayout) {
@@ -220,8 +223,11 @@ class MainActivity : Activity() {
             }, full())
         }
 
-        col.addView(label(13f, "Bấm Bắt đầu, đồng ý chia sẻ (chọn «Toàn bộ màn hình» nếu có), rồi mở video. " +
-                "Kéo khung phụ đề lên xuống để đổi chỗ. Token dịch trừ theo thời gian nghe, kể cả lúc video im lặng."))
+        col.addView(label(16f, "Cách dùng", bold = true))
+        col.addView(label(14f, "1. Bấm Bắt đầu. Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình.\n" +
+                "2. Mở video có tiếng ở Bilibili, YouTube, TikTok… Phụ đề hiện nổi trên video.\n" +
+                "3. Kéo khung phụ đề lên xuống để đổi chỗ. Bấm «■ Dừng» trên khung hoặc nút Dừng ở đây khi xong.\n" +
+                "Token dịch trừ theo thời gian nghe, kể cả lúc video im lặng."))
         startButton = button("Bắt đầu") { onStartStop() }.apply { textSize = 18f }
         col.addView(startButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(60)))
         meter = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply { max = 90 }
@@ -230,6 +236,7 @@ class MainActivity : Activity() {
         col.addView(statusText)
 
         col.addView(View(this), LinearLayout.LayoutParams(1, dp(24)))
+        col.addView(guideButton { prefs.web }, full())
         col.addView(button("Gỡ liên kết máy này") {
             if (LiveState.running) LiveService.stop(this)
             val web = prefs.web
@@ -240,6 +247,21 @@ class MainActivity : Activity() {
             note = "Đã gỡ liên kết."
             render()
         }, full())
+    }
+
+    /** Mở trang hướng dẫn trên web bằng trình duyệt. Chưa có địa chỉ web thì dùng ô đang gõ. */
+    private fun guideButton(webOf: () -> String) = button("Xem hướng dẫn trên web") {
+        val base = Api.normalizeWeb(webOf())
+        if (base == null) {
+            note = "Gõ địa chỉ web trước, rồi bấm Xem hướng dẫn."
+            render()
+            return@button
+        }
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$base/huong-dan#ung-dung-android"))) }
+            .onFailure {
+                note = "Máy chưa có trình duyệt để mở hướng dẫn."
+                render()
+            }
     }
 
     private fun spinner(items: List<String>, selected: Int, onPick: (Int) -> Unit) = Spinner(this).apply {

@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.37.1",
+    time: "12:35 22/11/2026",
+    area: "khac",
+    text: "Chủ báo sau khi thử: liên kết web và app được; web không có hướng dẫn cho app, app không có hướng dẫn; hỏi thời gian mã có đếm từng giây được không. Sửa: guide-topics.ts thêm mục «Ứng dụng Android» (nhóm Tính năng, nút Mở Tài khoản) và câu hỏi «Ứng dụng Android không hiện phụ đề?»; UI.androidApp, UI.appLinkCode được test kiểm còn trong giao diện. tour-steps.ts thêm tuyến «ung-dung-android» (mở Token dịch → [data-tour=android-app]). AppLinkCard: đồng hồ 1 giây, hỏi danh sách máy 3 giây một lần khi mã còn hạn, thấy máy mới thì báo «Đã liên kết với <tên>» và ẩn mã; thêm liên kết «Xem hướng dẫn cài và dùng» tới /huong-dan#ung-dung-android. Ứng dụng 0.3: các bước ngay trên màn liên kết và màn chính, nút «Xem hướng dẫn trên web». Lưu ý: /huong-dan vẫn bọc EntryGate nên mở từ điện thoại chưa đăng nhập sẽ sang trang đăng nhập. Không đổi điều khoản.",
+  },
+  {
     version: "5.37.0",
     time: "12:06 22/11/2026",
     area: "khac",

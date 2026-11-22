@@ -36,6 +36,8 @@ export const UI = {
   forgot: "Quên mật khẩu",
   appeal: MENU_ITEM.appeal,
   autoLang: "Tự nhận biết",
+  androidApp: "Ứng dụng Android",
+  appLinkCode: "Lấy mã liên kết",
 } as const;
 
 export type GuideStep = {
@@ -57,7 +59,7 @@ export type GuideTopic = {
   /** Có tuyến «Chỉ tôi» chạy trên giao diện thật. */
   tour?: TourId;
   /** Trang trong app liên quan tới mục này. */
-  page?: { label: string; to: "/" | "/dich-truc-tiep" | "/goi" | "/yeu-cau" };
+  page?: { label: string; to: "/" | "/dich-truc-tiep" | "/goi" | "/yeu-cau" | "/tai-khoan" };
   /** Mục này hiện thêm thẻ thông tin liên hệ do Chủ nhập. */
   contact?: boolean;
 };
@@ -175,6 +177,26 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Dùng điện thoại cạnh TV hay loa: bấm «Chữ lớn toàn màn hình», có nút Bắt đầu, Dừng ngay trong màn đó. Cỡ chữ, số dòng, chữ gốc, nền đậm chỉnh ở «Tùy chỉnh chữ»." },
         { text: "Tên nhân vật hay bị dịch lệch: ghi vào «Từ cần giữ đúng», mỗi dòng «gốc = cách dịch». Áp dụng khi bấm Bắt đầu." },
         { text: "Tải lại trang không mất chữ: phiên gần nhất được lưu trên máy, vẫn tải được SRT, VTT, TXT." },
+      ],
+    },
+    {
+      id: "ung-dung-android",
+      title: "Ứng dụng Android",
+      group: "tinh-nang",
+      intro: "Phụ đề dịch hiện nổi ngay trên video đang phát ở Bilibili, YouTube, TikTok trên điện thoại. Cần Android 10 trở lên.",
+      words: "ung dung android app dien thoai apk cai dat lien ket ma ghep noi phu de noi bilibili youtube tiktok hien tren ung dung khac chia se man hinh",
+      tour: "ung-dung-android",
+      page: { label: "Mở Tài khoản", to: "/tai-khoan" },
+      steps: [
+        { text: `Cài ứng dụng: mở «Tài khoản», mục «${UI.androidApp}», bấm «Tải tệp cài». Khi điện thoại hỏi, cho phép cài từ nguồn này. Đã có bản cũ mà cài không được thì gỡ bản cũ trước.` },
+        { text: `Liên kết: trên web, ở mục «${UI.androidApp}», bấm «${UI.appLinkCode}». Mã có 8 ký tự, dùng được 10 phút và một lần.` },
+        { text: "Mở ứng dụng, gõ địa chỉ web (ví dụ tên trang bạn đang mở) và mã vừa lấy, bấm «Liên kết». Trên web, mục này hiện tên máy vừa liên kết." },
+        { text: "Lần đầu bấm «Cho phép hiện trên ứng dụng khác» trong ứng dụng, bật quyền cho TyZo Sub rồi quay lại." },
+        { text: "Chọn ngôn ngữ dịch, tiếng trong video (để «Tự nhận diện» nếu chưa rõ), model và cỡ chữ." },
+        { text: `Bấm «${UI.begin}». Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình. Cho phép ghi âm nếu được hỏi.` },
+        { text: "Mở video có tiếng ở ứng dụng khác. Khung phụ đề hiện trên video: kéo lên xuống để đổi chỗ, bấm «■ Dừng» trên khung khi xong." },
+        { text: "Ứng dụng trừ Token dịch như Dịch trực tiếp, tính cả lúc video im lặng, cho tới khi bạn bấm Dừng. Bấm Dừng thì phần giữ thừa được trả lại." },
+        { text: "Đổi máy hay mất máy: ở mục này trên web, bấm «Gỡ» cạnh tên máy. Mỗi tài khoản liên kết tối đa 3 máy." },
       ],
     },
     {
@@ -296,6 +318,12 @@ export const GUIDE_FAQ: GuideFaq[] = [
     q: "Dịch trực tiếp không nghe được tiếng của tab?",
     a: `Khi bấm «${UI.begin}», hộp chọn của trình duyệt phải chọn đúng tab và bật mục chia sẻ âm thanh của tab. Quên bật mục đó thì app không nhận được tiếng. Máy không thu được tab thì dùng «${UI.mic}».`,
     words: "dich truc tiep khong co tieng tab chia se am thanh micro live",
+  },
+  {
+    id: "android-khong-hien-phu-de",
+    q: "Ứng dụng Android không hiện phụ đề?",
+    a: "Kiểm ba chỗ: đã bật quyền hiện trên ứng dụng khác cho TyZo Sub; lúc Android hỏi chia sẻ đã bấm đồng ý; video đang phát có tiếng (tắt tiếng thì không có gì để dịch). Ứng dụng báo máy đã bị gỡ liên kết thì lấy mã mới ở Tài khoản.",
+    words: "android app ung dung khong hien phu de khong co chu quyen hien tren ung dung khac chia se lien ket",
   },
 ];
 
