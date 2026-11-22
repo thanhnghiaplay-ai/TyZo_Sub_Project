@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.38.0 (đẩy chính thức 22/11/2026, Chủ cho đẩy không cần xác nhận lần này). `main` = `work`. Ứng dụng Android 0.4. |
-| Bản mới nhất | v5.38.0 trên `work` và `main` (ứng dụng Android 0.4 đồng bộ logo, màu, font, chức năng Dịch trực tiếp với web; đổi mật khẩu và 90 ngày bỏ không thì gỡ máy; điều khoản 2026-11-22.4). v5.37.1: hướng dẫn ứng dụng, mã đếm từng giây. v5.37.0: ứng dụng Android bước 2. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.38.1 (đẩy chính thức 22/11/2026). `main` = `work`. Ứng dụng Android 0.4. Cầu nối Dịch trực tiếp chạy trên VPS `realtimehub.tyzo.site`. |
+| Bản mới nhất | v5.38.1 trên `work` và `main` (Qwen 3.5 chốt câu sau 0,5 giây im lặng, biến LIVE_SILENCE_MS). v5.38.0: ứng dụng Android 0.4 đồng bộ logo, màu, font, chức năng Dịch trực tiếp với web; đổi mật khẩu và 90 ngày bỏ không thì gỡ máy; điều khoản 2026-11-22.4). v5.37.1: hướng dẫn ứng dụng, mã đếm từng giây. v5.37.0: ứng dụng Android bước 2. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-22.4 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
