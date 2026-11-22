@@ -19,6 +19,7 @@ PHÁT HIỆN VI PHẠM (Chủ chốt 22/11/2026: luật chặt, chi tiết, có 
 - Luật ở src/lib/risk-rules.ts (thuần, có test), bộ máy ở src/lib/risk.server.ts, tab Admin «Rủi ro» (risk-board.tsx, risk-room.ts). Thêm luật: một mục RISK_RULES (trích nguyên văn ý điều khoản, ngưỡng có min/max) + hàm EVALUATORS + chỗ gom dữ kiện trong gatherFacts + test.
 - Luật chỉ dựng cờ kèm hồ sơ; khóa/cấm do người bấm. Tự xử lý chỉ ở luật có autos (quá tải, báo chuyển khoản giả: tự khóa; máy ứng dụng nhiều nơi: tự gỡ máy). Không thêm tự cấm.
 - Chung địa chỉ mạng thôi KHÔNG được coi là cùng một người (mạng di động dùng chung địa chỉ): phải chung máy, hoặc chung địa chỉ mạng VÀ cùng đúng trình duyệt.
+- Quét đêm: VPS gọi POST /api/risk-sweep (src/routes/api/risk-sweep.ts) ký HMAC-SHA256(LIVE_BRIDGE_SECRET, "risk-sweep:<giây>"), lệnh `tyzo quet-rui-ro` (cron 1:37). Đổi cách ký thì sửa cả hai phía (test trong risk-rules.test.ts).
 - Đổi dữ kiện được ghi hay thời gian giữ thì sửa điều khoản mục 5 và nâng TERMS_VERSION.
 
 ĐANG CHẠY (2026-11-20)

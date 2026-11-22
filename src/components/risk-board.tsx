@@ -111,6 +111,11 @@ export function RiskBoard() {
             {busy ? "Đang quét…" : "Quét ngay"}
           </button>
         </form>
+        <p className="text-xs text-muted" data-risk-night>
+          {desk?.night
+            ? `Quét đêm gần nhất (VPS): ${when(desk.night.at)} · ${desk.night.checked} tài khoản · ${desk.night.made} cờ mới.`
+            : "Chưa có quét đêm. Trên VPS gõ «tyzo», chọn mục 16 để bật quét vi phạm mỗi đêm."}
+        </p>
         {note ? <p className="text-sm text-muted">{note}</p> : null}
       </div>
 

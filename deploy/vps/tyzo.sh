@@ -97,6 +97,7 @@ kiem_tra_cau_noi() {
     echo "   Bản mã: $(git -C "$DIR" log -1 --format='%h %cd' --date=format:'%d/%m/%Y %H:%M')"
   fi
   [ -f "$CRON_FILE" ] && echo "   Tự cập nhật mỗi đêm: BẬT" || echo "   Tự cập nhật mỗi đêm: tắt (bật ở mục 8)"
+  [ -f /etc/cron.d/tyzo-quet-rui-ro ] && echo "   Quét vi phạm mỗi đêm: BẬT" || echo "   Quét vi phạm mỗi đêm: tắt (bật ở mục 16)"
   echo "   Ổ đĩa còn trống: $(df -h / | awk 'NR==2 {print $4}') · RAM còn: $(free -h | awk '/^Mem/ {print $7}')"
   [ "$loi" = 0 ] && xanh "Tất cả đều ổn." || vang "Có mục chưa ổn, xem các dòng ✘ ở trên."
   return "$loi"
@@ -417,6 +418,12 @@ TXT
   if [ ! -f "$CRON_FILE" ] && hoi_co "Bật tự cập nhật mỗi đêm (nên bật)?"; then
     printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n17 3 * * * root /usr/local/bin/tyzo cap-nhat-tu-dong >> %s 2>&1\n' "$LOG_FILE" > "$CRON_FILE"
     chmod 644 "$CRON_FILE"; xanh "✔ Đã bật tự cập nhật"
+  fi
+  if [ ! -f /etc/cron.d/tyzo-quet-rui-ro ] && hoi_co "Bật quét vi phạm mỗi đêm (nên bật; cần địa chỉ web)?"; then
+    if [ -n "$(web_url)" ]; then
+      printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n37 1 * * * root /usr/local/bin/tyzo quet-rui-ro >> /var/log/tyzo-quet-rui-ro.log 2>&1\n' > /etc/cron.d/tyzo-quet-rui-ro
+      chmod 644 /etc/cron.d/tyzo-quet-rui-ro; xanh "✔ Đã bật quét vi phạm mỗi đêm"
+    fi
   fi
   kiem_tra_cau_noi
   cat > /opt/tyzo-ghi-chu.txt <<TXT
@@ -908,6 +915,8 @@ TXT
   buoc 10 "Hoàn tất"
   [ -f "$CRON_FILE" ] || { printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n17 3 * * * root /usr/local/bin/tyzo cap-nhat-tu-dong >> %s 2>&1\n' "$LOG_FILE" > "$CRON_FILE"; chmod 644 "$CRON_FILE"; xanh "✔ Tự cập nhật mỗi đêm"; }
   [ "$(conf_get DB)" = "local" ] && { bat_sao_luu_dem; sao_luu; }
+  printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n37 1 * * * root /usr/local/bin/tyzo quet-rui-ro >> /var/log/tyzo-quet-rui-ro.log 2>&1\n' > /etc/cron.d/tyzo-quet-rui-ro
+  chmod 644 /etc/cron.d/tyzo-quet-rui-ro; xanh "✔ Quét vi phạm mỗi đêm"
   kiem_tra_web
   cat > /opt/tyzo-ghi-chu.txt <<TXT
 Web đầy đủ trên VPS — thiết lập ngày $(date '+%d/%m/%Y') $( [ "$thu" = "thu" ] && echo "(BẢN THỬ)")
@@ -1000,6 +1009,7 @@ kiem_tra_web() {
     [ -n "$moi" ] && echo "   Bản sao lưu mới nhất: $(basename "$moi")" || vang "   Chưa có bản sao lưu (mục 13)"
   fi
   [ -f "$CRON_FILE" ] && echo "   Tự cập nhật mỗi đêm: BẬT" || echo "   Tự cập nhật mỗi đêm: tắt (mục 8)"
+  [ -f /etc/cron.d/tyzo-quet-rui-ro ] && echo "   Quét vi phạm mỗi đêm: BẬT" || echo "   Quét vi phạm mỗi đêm: tắt (mục 16)"
   echo "   Bản mã: $(git -C "$DIR" log -1 --format='%h %cd' --date=format:'%d/%m/%Y %H:%M' 2>/dev/null)"
   echo "   Ổ đĩa còn trống: $(df -h / | awk 'NR==2 {print $4}') · RAM còn: $(free -h | awk '/^Mem/ {print $7}')"
   [ "$loi" = 0 ] && xanh "Tất cả đều ổn." || vang "Có mục chưa ổn, xem các dòng ✘ ở trên."
@@ -1180,6 +1190,63 @@ TXT
 }
 
 # =====================================================================
+# Quét vi phạm mỗi đêm (gọi web /api/risk-sweep, ký bằng LIVE_BRIDGE_SECRET)
+# =====================================================================
+RISK_CRON="/etc/cron.d/tyzo-quet-rui-ro"
+
+web_url() { # địa chỉ web để gọi quét
+  if [ "$(che_do)" = "full" ]; then echo "http://127.0.0.1:3000"; return 0; fi
+  local w; w="$(conf_get WEB_URL)"
+  if [ -z "$w" ] && [ -t 0 ]; then
+    read -rp "Địa chỉ web (vd https://tyzo-sub.vercel.app hoặc https://tyzo.site): " w
+    w="$(echo "$w" | tr -d '[:space:]' | sed 's#/*$##')"
+    [[ "$w" == http*://* ]] || w="https://$w"
+    conf_set WEB_URL "$w"
+  fi
+  echo "$w"
+}
+
+quet_rui_ro() { # gọi quét tới hết, in kết quả; dùng cho cron và chạy tay
+  chon_env
+  local secret web t sign after="" body out checked=0 made=0 i
+  secret="$(doc_bien LIVE_BRIDGE_SECRET)"
+  [ -n "$secret" ] || { do_ "✘ Thiếu LIVE_BRIDGE_SECRET trong $ENV_FILE."; return 1; }
+  web="$(web_url)"
+  [ -n "$web" ] || { do_ "✘ Chưa có địa chỉ web."; return 1; }
+  for i in $(seq 1 60); do
+    t="$(date +%s)"
+    sign="$(printf 'risk-sweep:%s' "$t" | openssl dgst -sha256 -hmac "$secret" -hex | awk '{print $NF}')"
+    body="{}"; [ -n "$after" ] && body="{\"after\":\"$after\"}"
+    out="$(curl -s --max-time 60 -X POST "$web/api/risk-sweep" -H "content-type: application/json" -H "x-tyzo-time: $t" -H "x-tyzo-sign: $sign" -d "$body")"
+    if ! echo "$out" | grep -q '"checked"'; then
+      do_ "✘ Quét lỗi: $(echo "$out" | head -c 300)"
+      return 1
+    fi
+    checked=$((checked + $(echo "$out" | sed -n 's/.*"checked":\([0-9]*\).*/\1/p')))
+    made=$((made + $(echo "$out" | sed -n 's/.*"made":\([0-9]*\).*/\1/p')))
+    after="$(echo "$out" | sed -n 's/.*"next":"\([^"]*\)".*/\1/p')"
+    [ -z "$after" ] && break
+  done
+  xanh "✔ Quét xong: $checked tài khoản, $made cờ mới. Xem ở Admin → Rủi ro."
+}
+
+bat_quet_dem() {
+  tieu_de "Quét vi phạm mỗi đêm"
+  echo "Mỗi đêm 1 giờ 37 sáng, VPS nhờ web kiểm mọi tài khoản có hoạt động 7 ngày qua theo các luật ở Admin → Rủi ro."
+  if [ -f "$RISK_CRON" ]; then
+    echo "Đang BẬT. Nhật ký: /var/log/tyzo-quet-rui-ro.log"
+    if hoi_co "Tắt quét đêm?"; then rm -f "$RISK_CRON"; xanh "Đã tắt."; return 0; fi
+  else
+    if hoi_co "Bật quét đêm?"; then
+      [ -n "$(web_url)" ] || return 1
+      printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n37 1 * * * root /usr/local/bin/tyzo quet-rui-ro >> /var/log/tyzo-quet-rui-ro.log 2>&1\n' > "$RISK_CRON"
+      chmod 644 "$RISK_CRON"; xanh "✔ Đã bật."
+    fi
+  fi
+  if hoi_co "Chạy thử một lần ngay bây giờ?"; then quet_rui_ro; fi
+}
+
+# =====================================================================
 # Lệnh chung: chọn theo chế độ đang chạy
 # =====================================================================
 kiem_tra() { if [ "$(che_do)" = "full" ]; then kiem_tra_web; else kiem_tra_cau_noi; fi; }
@@ -1249,6 +1316,7 @@ menu() {
     echo "13. Dữ liệu: sao lưu, khôi phục, chép Neon ⇄ VPS"
     echo "14. Đưa web lên tài khoản Vercel (mới hoặc khác)"
     echo "15. Khóa ký ứng dụng Android (tự cập nhật ứng dụng)"
+    echo "16. Quét vi phạm mỗi đêm (bật/tắt, chạy thử)"
     echo " 0. Thoát"
     read -rp "Chọn số: " c
     case "$c" in
@@ -1267,8 +1335,9 @@ menu() {
       13) menu_du_lieu; cho_enter ;;
       14) dua_len_vercel; cho_enter ;;
       15) tao_khoa_android; cho_enter ;;
+      16) bat_quet_dem; cho_enter ;;
       0|q) exit 0 ;;
-      *) vang "Chọn số từ 0 đến 15." ;;
+      *) vang "Chọn số từ 0 đến 16." ;;
     esac
   done
 }
@@ -1300,7 +1369,8 @@ case "${1:-menu}" in
   thu) thiet_lap_web thu ;;
   vercel) dua_len_vercel ;;
   khoa-android) tao_khoa_android ;;
-  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|sao-luu|thiet-lap|web|thu|vercel|khoa-android]"; exit 1 ;;
+  quet-rui-ro) echo "--- $(date '+%d/%m/%Y %H:%M') ---"; quet_rui_ro ;;
+  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|sao-luu|thiet-lap|web|thu|vercel|khoa-android|quet-rui-ro]"; exit 1 ;;
 esac
 }
 

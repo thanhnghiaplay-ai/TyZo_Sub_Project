@@ -138,3 +138,18 @@ describe("mã máy trong hồ sơ", () => {
     assert.equal(shortDev(""), "—");
   });
 });
+
+import { createHmac } from "node:crypto";
+import { sweepMessage, sweepTimeOk } from "./sweep-sign.ts";
+
+describe("chữ ký quét đêm", () => {
+  it("chỉ nhận trong 5 phút, cùng cách ký với lệnh openssl trên VPS", () => {
+    assert.ok(sweepTimeOk(1000, 1200));
+    assert.equal(sweepTimeOk(1000, 1301), false);
+    assert.equal(sweepTimeOk(Number.NaN, 1000), false);
+    // printf 'risk-sweep:1700000000' | openssl dgst -sha256 -hmac 'khoa-thu-...' -hex
+    const sign = createHmac("sha256", "khoa-thu-0123456789abcdefghij").update(sweepMessage(1700000000.9)).digest("hex");
+    assert.equal(sweepMessage(1700000000.9), "risk-sweep:1700000000");
+    assert.equal(sign.length, 64);
+  });
+});

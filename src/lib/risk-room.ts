@@ -41,8 +41,10 @@ export const getRiskDesk = createServerFn({ method: "GET" })
     if (Date.now() - Number(last[0]?.value ?? 0) > 10 * 60_000) {
       await sql`insert into room_settings (key, value) values ('risk_sweep_at', ${String(Date.now())}) on conflict (key) do update set value = ${String(Date.now())}`;
       const { sweepRisk } = await import("@/lib/risk.server");
-      sweep = await sweepRisk(sql);
+      const r = await sweepRisk(sql);
+      sweep = { checked: r.checked, made: r.made };
     }
+    const night = await sql<{ value: string }>`select value from room_settings where key = 'risk_sweep_night'`;
     const { reportOf, loadRiskSettings } = await import("@/lib/risk.server");
     const like = `%${data.q}%`;
     const rows = await sql<{
@@ -102,6 +104,13 @@ export const getRiskDesk = createServerFn({ method: "GET" })
       canEdit: place.role === "chu",
       canBan: place.role === "chu",
       sweep,
+      night: (() => {
+        try {
+          return JSON.parse(night[0]?.value ?? "null") as { at: string; checked: number; made: number; rounds: number } | null;
+        } catch {
+          return null;
+        }
+      })(),
     };
   });
 
@@ -114,7 +123,18 @@ export const runRiskSweep = createServerFn({ method: "POST" })
     const sql = await getSql();
     await sql`insert into room_settings (key, value) values ('risk_sweep_at', ${String(Date.now())}) on conflict (key) do update set value = ${String(Date.now())}`;
     const { sweepRisk } = await import("@/lib/risk.server");
-    return sweepRisk(sql);
+    // Bấm Quét ngay: quét tới hết (nhiều đợt), tối đa khoảng 50 giây.
+    let after: string | undefined;
+    let checked = 0;
+    let made = 0;
+    const started = Date.now();
+    do {
+      const r = await sweepRisk(sql, { after, budgetMs: 8000 });
+      checked += r.checked;
+      made += r.made;
+      after = r.next ?? undefined;
+    } while (after && Date.now() - started < 50_000);
+    return { checked, made };
   });
 
 /** Xử lý một cờ: bỏ qua, khóa hoặc cấm tài khoản. Lý do khóa/cấm ghi rõ điều khoản và mã hồ sơ để khách đọc được. */

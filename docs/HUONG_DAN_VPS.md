@@ -82,8 +82,16 @@ Lưu ý: bản thử có dữ liệu thật (tài khoản, key Alibaba của ph�
 | 13 | Dữ liệu: sao lưu, khôi phục, chép Neon ⇄ VPS |
 | 14 | Đưa web lên tài khoản Vercel |
 | 15 | Khóa ký ứng dụng Android: tạo một lần để ứng dụng tự cập nhật và web có nút tải |
+| 16 | Quét vi phạm mỗi đêm (1 giờ 37 sáng): bật/tắt, chạy thử ngay |
 
 ---
+
+## E1. Quét vi phạm mỗi đêm (làm một lần)
+
+1. Gõ `tyzo` → **2** (cập nhật) → rồi `tyzo` → **16** → bấm `c` để bật, `c` để chạy thử.
+2. Chế độ chỉ cầu nối: máy hỏi địa chỉ web một lần (vd `https://tyzo-sub.vercel.app`).
+3. Kết quả: «✔ Quét xong: … tài khoản, … cờ mới». Admin → Rủi ro hiện «Quét đêm gần nhất».
+4. Báo «Chữ ký sai»: `LIVE_BRIDGE_SECRET` trên VPS khác trên Vercel, sửa cho giống nhau.
 
 ## E2. Ứng dụng Android tự cập nhật (làm một lần)
 

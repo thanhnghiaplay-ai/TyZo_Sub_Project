@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **Quét vi phạm mỗi đêm (22/11/2026, Claude, trên `work`)**: /api/risk-sweep + `tyzo` mục 16 (docs/HUONG_DAN_VPS.md mục E1). Không đổi giao diện khách, không đổi điều khoản, không nâng số phiên bản.
 - **Đẩy chính thức v5.40.0–v5.41.0**: Chủ cho đẩy khi làm xong luật. `main` kéo thẳng bằng `work`. tsc sạch, eslint 0 lỗi, test 191 + 1470 pass, build xong. Khách đồng ý lại điều khoản 2026-11-22.6. Migration 0032, 0033 chạy khi Vercel build.
 - **v5.41.0 (22/11/2026, Claude)**: phát hiện vi phạm (xem ADMIN_LOG và huongdan.txt «PHÁT HIỆN VI PHẠM»). Đã thử trên Postgres thật. Chưa có: quét định kỳ bằng lịch (hiện quét khi mở tab Rủi ro, tối đa 10 phút một lần, và kiểm ngay sau mỗi dữ kiện).
 - **v5.40.0 (22/11/2026, Claude, trên `work`)**: cộng tác viên làm lại, hoa hồng tính trên lời (xem ADMIN_LOG), chữ lệch trong nút chặn bằng tap-align.test.ts, lịch sử cuộn, nút sao chép. tsc sạch, eslint 0 lỗi, test 191 + 1458 pass, build xong, thử bằng trình duyệt. Đề xuất phát hiện tài khoản vi phạm chờ Chủ chốt (BANG_DIEU).

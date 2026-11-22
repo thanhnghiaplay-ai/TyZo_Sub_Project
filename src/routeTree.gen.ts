@@ -23,6 +23,7 @@ import { Route as ApiAppLinkRouteImport } from './routes/api/app-link'
 import { Route as ApiAppMeRouteImport } from './routes/api/app-me'
 import { Route as ApiAppTicketRouteImport } from './routes/api/app-ticket'
 import { Route as ApiModelCallRouteImport } from './routes/api/model-call'
+import { Route as ApiRiskSweepRouteImport } from './routes/api/risk-sweep'
 import { Route as ApiRoomDeepgramRouteImport } from './routes/api/room-deepgram'
 import { Route as ApiRoomElevenlabsRouteImport } from './routes/api/room-elevenlabs'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
@@ -100,6 +101,11 @@ const ApiModelCallRoute = ApiModelCallRouteImport.update({
   path: '/api/model-call',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRiskSweepRoute = ApiRiskSweepRouteImport.update({
+  id: '/api/risk-sweep',
+  path: '/api/risk-sweep',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiRoomDeepgramRoute = ApiRoomDeepgramRouteImport.update({
   id: '/api/room-deepgram',
   path: '/api/room-deepgram',
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/api/app-me': typeof ApiAppMeRoute
   '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
+  '/api/risk-sweep': typeof ApiRiskSweepRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/api/app-me': typeof ApiAppMeRoute
   '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
+  '/api/risk-sweep': typeof ApiRiskSweepRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/api/app-me': typeof ApiAppMeRoute
   '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
+  '/api/risk-sweep': typeof ApiRiskSweepRoute
   '/api/room-deepgram': typeof ApiRoomDeepgramRoute
   '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/api/app-me'
     | '/api/app-ticket'
     | '/api/model-call'
+    | '/api/risk-sweep'
     | '/api/room-deepgram'
     | '/api/room-elevenlabs'
     | '/api/room-groq'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/api/app-me'
     | '/api/app-ticket'
     | '/api/model-call'
+    | '/api/risk-sweep'
     | '/api/room-deepgram'
     | '/api/room-elevenlabs'
     | '/api/room-groq'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/api/app-me'
     | '/api/app-ticket'
     | '/api/model-call'
+    | '/api/risk-sweep'
     | '/api/room-deepgram'
     | '/api/room-elevenlabs'
     | '/api/room-groq'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   ApiAppMeRoute: typeof ApiAppMeRoute
   ApiAppTicketRoute: typeof ApiAppTicketRoute
   ApiModelCallRoute: typeof ApiModelCallRoute
+  ApiRiskSweepRoute: typeof ApiRiskSweepRoute
   ApiRoomDeepgramRoute: typeof ApiRoomDeepgramRoute
   ApiRoomElevenlabsRoute: typeof ApiRoomElevenlabsRoute
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
@@ -390,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiModelCallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/risk-sweep': {
+      id: '/api/risk-sweep'
+      path: '/api/risk-sweep'
+      fullPath: '/api/risk-sweep'
+      preLoaderRoute: typeof ApiRiskSweepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/room-deepgram': {
       id: '/api/room-deepgram'
       path: '/api/room-deepgram'
@@ -450,6 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAppMeRoute: ApiAppMeRoute,
   ApiAppTicketRoute: ApiAppTicketRoute,
   ApiModelCallRoute: ApiModelCallRoute,
+  ApiRiskSweepRoute: ApiRiskSweepRoute,
   ApiRoomDeepgramRoute: ApiRoomDeepgramRoute,
   ApiRoomElevenlabsRoute: ApiRoomElevenlabsRoute,
   ApiRoomGroqRoute: ApiRoomGroqRoute,

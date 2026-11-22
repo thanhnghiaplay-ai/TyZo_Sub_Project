@@ -254,22 +254,38 @@ export async function checkUser(sql: Sql, userId: string): Promise<number> {
   }
 }
 
-/** Quét các tài khoản có hoạt động gần đây, và dọn dữ kiện quá hạn. */
-export async function sweepRisk(sql: Sql): Promise<{ checked: number; made: number }> {
-  await sql`delete from account_events where at < ${since(180)}::timestamptz`;
-  await sql`delete from rate_blocks where at < ${since(30)}::timestamptz`;
-  await sql`delete from app_device_ips where last_at < ${since(90)}::timestamptz`;
+/**
+ * Quét các tài khoản có hoạt động gần đây theo từng đợt (máy chủ Vercel giới hạn thời gian mỗi lần gọi).
+ * after: mã tài khoản cuối của đợt trước; next: mã để gọi đợt sau, null khi đã quét hết. Đợt đầu dọn dữ kiện quá hạn.
+ */
+export async function sweepRisk(sql: Sql, opts: { after?: string; budgetMs?: number } = {}): Promise<{ checked: number; made: number; next: string | null }> {
+  const started = Date.now();
+  const budget = opts.budgetMs ?? 8000;
+  const after = opts.after ?? "";
+  if (!after) {
+    await sql`delete from account_events where at < ${since(180)}::timestamptz`;
+    await sql`delete from rate_blocks where at < ${since(30)}::timestamptz`;
+    await sql`delete from app_device_ips where last_at < ${since(90)}::timestamptz`;
+  }
   const users = await sql<{ user_id: string }>`
     select distinct user_id from (
       select user_id from account_events where at > ${since(7)}::timestamptz
       union select user_id from room_appeals where user_id is not null and created_at > ${since(7)}::timestamptz
       union select d.user_id from app_devices d join app_device_ips i on i.device_id = d.id where i.last_at > ${since(7)}::timestamptz
       union select affiliate_id as user_id from referrals
-    ) x limit 2000
+    ) x where user_id > ${after} order by user_id limit 300
   `;
   let made = 0;
-  for (const row of users) made += await checkUser(sql, row.user_id);
-  return { checked: users.length, made };
+  let checked = 0;
+  let last = after;
+  for (const row of users) {
+    made += await checkUser(sql, row.user_id);
+    checked += 1;
+    last = row.user_id;
+    if (Date.now() - started > budget) break;
+  }
+  const done = checked === users.length && users.length < 300;
+  return { checked, made, next: done ? null : last };
 }
 
 export function reportOf(evidenceJson: string, hash: string): string {
