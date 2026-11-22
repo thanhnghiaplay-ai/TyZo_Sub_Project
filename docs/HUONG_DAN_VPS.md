@@ -1,71 +1,105 @@
-# Hướng dẫn VPS cho cầu nối Dịch trực tiếp
+# Hướng dẫn VPS (người không biết lập trình đọc được)
 
-Dành cho người không biết lập trình. Mọi việc trên VPS đều qua **một lệnh: `tyzo`**.
+Mọi việc trên VPS đều qua **một lệnh: `tyzo`**. VPS mới chỉ cần dán **một dòng** (mục A).
 
-Cầu nối là phần nhỏ chạy trên VPS, nối Dịch trực tiếp (web và ứng dụng Android) với Alibaba.
-Web chính vẫn ở Vercel. VPS tắt thì chỉ Dịch trực tiếp ngừng, dữ liệu không mất.
+Có bốn cách dùng VPS. Chọn khi chạy lần đầu, đổi được về sau:
+
+| Cách | Web ở đâu | Dùng khi |
+|---|---|---|
+| 1. Chỉ cầu nối | Vercel | Như hiện nay: VPS chỉ lo Dịch trực tiếp |
+| 2. Chạy thử web đầy đủ | VPS thử | Muốn thử chuyển web sang VPS mà không đụng web thật |
+| 3. Web đầy đủ chính thức | VPS | Không dùng Vercel nữa |
+| 4. Đưa web lên tài khoản Vercel khác | Vercel (tài khoản mới) | Đổi tài khoản Vercel, hoặc quay lại Vercel từ VPS |
 
 ---
 
-## A. Dựng trên VPS mới (hoặc làm lại từ đầu)
+## A. VPS mới: dán đúng một dòng
 
-**Cần có:** VPS Ubuntu (RAM từ 1 GB), tên miền đã trỏ về Cloudflare, đăng nhập được Neon và Vercel.
-
-1. Vào dòng lệnh của VPS:
-   - Dễ nhất: trang quản lý VPS → nút **Console** / **Web terminal**.
-   - Hoặc trên máy tính: mở PowerShell, gõ `ssh root@IP_CUA_VPS`, nhập mật khẩu root (gõ không hiện chữ là bình thường).
-2. Dán **đúng một dòng** này rồi bấm Enter:
+1. Vào dòng lệnh của VPS (trang quản lý VPS → **Console**; hoặc PowerShell: `ssh root@IP_CUA_VPS`).
+2. Dán dòng này rồi bấm Enter:
    ```
    bash <(curl -fsSL https://raw.githubusercontent.com/thanhnghiaplay-ai/TyZo_Sub_Project/main/deploy/vps/tyzo.sh)
    ```
-3. Máy tự mở **Thiết lập từng bước** (10 bước). Đọc chữ trên màn hình và làm theo.
-   Chỗ nào cần làm ở Cloudflare, Neon, Vercel, máy ghi rõ bấm vào đâu, gõ gì.
-   Đang làm dở mà thoát cũng không sao: gõ `tyzo` → chọn **9** để làm tiếp.
-
-Xong là web dùng được ngay.
+3. Máy hỏi «Bạn muốn VPS này làm gì?» → chọn 1, 2, 3 hoặc 4 → đọc chữ trên màn hình và làm theo.
+   Chỗ nào cần bấm ở Cloudflare, Neon, Vercel, máy ghi rõ từng nút. Đang làm dở mà thoát: gõ `tyzo` để làm tiếp.
 
 ---
 
-## B. Dùng hằng ngày
+## B. Chạy thử web đầy đủ trước (nên làm trước khi chuyển thật)
 
-Gõ `tyzo` rồi bấm Enter, chọn số:
+1. Thuê thêm một VPS (Ubuntu, RAM từ 2 GB, ổ từ 25 GB).
+2. Làm mục A, chọn **2**.
+3. Tên miền: dùng tên miền phụ riêng cho bản thử, ví dụ `thu.tyzo.site`.
+4. Dữ liệu: chọn chép từ Neon (Neon chỉ bị đọc, web thật không bị đụng).
+5. Xong, mở `https://thu.tyzo.site`: đăng nhập, xem Tài khoản, Dịch trực tiếp, Admin, ứng dụng Android (gõ địa chỉ bản thử).
+6. Thử xong: hủy VPS thử, xóa bản ghi `thu` trên Cloudflare.
 
-| Số | Việc | Khi nào dùng |
-|---|---|---|
-| 1 | Kiểm tra mọi thứ | Khách báo không dịch được, hoặc muốn xem có ổn không |
-| 2 | Cập nhật bản mới | Claude nhắn «cập nhật cầu nối» (bản lỗi thì tự quay về bản cũ) |
-| 3 | Xem nhật ký | Claude cần xem lỗi: chụp màn hình gửi |
-| 4 | Sửa cấu hình | Hiếm khi cần |
-| 5 | Đổi thời gian chờ im lặng | Qwen 3.5 ra chữ chậm (gợi ý 300) |
-| 6 | Khởi động lại | Mục 1 báo ✘ |
-| 7 | Dọn dung lượng | Ổ đĩa còn ít |
-| 8 | Bật/tắt tự cập nhật mỗi đêm | Bật một lần là xong, khỏi phải nhớ cập nhật |
-| 9 | Thiết lập từng bước | VPS mới, hoặc muốn làm lại |
-| 10 | Tạo lại chuỗi bí mật | Lỡ để lộ chuỗi (phải dán lại lên Vercel) |
-| 0 | Thoát | |
-
-Ghi chú thiết lập (tên miền, ngày làm) lưu ở `/opt/tyzo-ghi-chu.txt` trên VPS.
+Lưu ý: bản thử có dữ liệu thật (tài khoản, key Alibaba của phòng). Dịch thử vẫn tốn tiền Alibaba như thật.
 
 ---
 
-## C. Khi VPS sắp hết hạn hoặc đổi VPS
+## C. Chuyển web thật sang VPS
 
-1. Trước hết: **gia hạn** ở trang nhà cung cấp (bật tự gia hạn nếu có).
-2. Phải đổi sang VPS mới: làm lại **mục A** trên VPS mới.
-   - Ở bước 3, Cloudflare chỉ cần **sửa IP** của bản ghi cũ.
-   - Ở bước 5, chọn **c** và dán chuỗi `LIVE_BRIDGE_SECRET` cũ trong ghi chú → **không phải sửa gì trên Vercel**.
-3. Trong lúc chưa có VPS: Admin → đặt nhóm **Dịch trực tiếp** sang **Bảo trì**, để khách thấy thông báo rõ ràng.
+1. Đã chạy thử (mục B) và mọi thứ ổn.
+2. Trên VPS chính thức gõ `tyzo` → **11**. Máy hỏi lần lượt:
+   - **https**: Caddy (khuyên dùng). Không chạy được thì chạy lại và chọn Cloudflare Tunnel.
+   - **Tên miền**: tên miền chính của web. Đổi bản ghi trên Cloudflare là khách bắt đầu vào VPS.
+   - **Dữ liệu**: giữ Neon (khuyên dùng, không phải chuyển gì), hoặc chép về VPS (tự sao lưu mỗi đêm).
+     Chép về VPS thì trước đó bật **Bảo trì toàn web** ở Admin của web cũ để khỏi mất đơn phát sinh lúc chép.
+   - **Chuỗi BETTER_AUTH_SECRET**: có chuỗi cũ thì dán (khách khỏi đăng nhập lại), không có thì máy tạo mới (khách đăng nhập lại một lần, mật khẩu không đổi).
+   - **Email Admin**, cách gửi thư, R2, Workspace Alibaba, đường tải tệp cài Android (bỏ qua được nếu đã lưu ở Admin).
+3. Sau khi xong:
+   - **Sepay/Casso**: đổi địa chỉ nhận báo chuyển khoản sang `https://<tên miền>/api/pay/sepay` (hoặc `/casso`).
+   - Cầu nối Dịch trực tiếp nằm sẵn trong VPS này: VPS cầu nối riêng (realtimehub) không cần nữa.
+   - Để Vercel cũ vài ngày rồi xóa.
 
 ---
 
-## D. Giữ ở chỗ an toàn (ghi chú riêng, không gửi ai)
+## D. Đưa web lên tài khoản Vercel khác
 
-- Chuỗi `LIVE_BRIDGE_SECRET` (máy in ra một lần lúc thiết lập).
-- Cách lấy `DATABASE_URL`: Neon → project → Connect → Show password → Copy snippet. **Không bấm Reset password.**
-- Mật khẩu root của VPS.
+1. Trên một VPS bất kỳ có lệnh `tyzo` (hoặc VPS mới, mục A chọn 4): gõ `tyzo` → **14**.
+2. Cần: mã truy cập của tài khoản Vercel đích (vercel.com → Account Settings → Tokens → Create), chuỗi kết nối Neon.
+3. Máy tự tạo project, nạp biến, đưa web lên. Sau đó làm các việc máy in ra (tên miền trên Cloudflare, nối Git để tự cập nhật, Sepay/Casso).
 
-## E. Đừng làm
+---
 
-- Đừng dán mật khẩu, token hay chuỗi bí mật vào chỗ gõ lệnh, trừ khi máy hỏi và chữ không hiện ra.
+## E. Dùng hằng ngày: gõ `tyzo`
+
+| Số | Việc |
+|---|---|
+| 1 | Kiểm tra mọi thứ (dòng ✘ là chỗ hỏng, kèm cách sửa) |
+| 2 | Cập nhật bản mới (bản mới lỗi thì tự quay về bản cũ) |
+| 3 | Xem nhật ký (chụp gửi Claude khi có lỗi) |
+| 4 | Sửa cấu hình |
+| 5 | Đổi thời gian chờ im lặng của Qwen 3.5 |
+| 6 | Khởi động lại |
+| 7 | Dọn dung lượng |
+| 8 | Bật/tắt tự cập nhật mỗi đêm |
+| 9 | Thiết lập chỉ cầu nối |
+| 10 | Tạo lại chuỗi bí mật cầu nối (chế độ chỉ cầu nối) |
+| 11 | Thiết lập web đầy đủ |
+| 12 | Chạy thử web đầy đủ |
+| 13 | Dữ liệu: sao lưu, khôi phục, chép Neon ⇄ VPS |
+| 14 | Đưa web lên tài khoản Vercel |
+
+---
+
+## F. Khi VPS sắp hết hạn hoặc đổi VPS
+
+- Gia hạn trước (bật tự gia hạn nếu có).
+- Đổi VPS: làm lại mục A trên VPS mới, chọn đúng cách đang dùng.
+  - Chỉ cầu nối: ở bước chuỗi bí mật, dán chuỗi `LIVE_BRIDGE_SECRET` cũ → không phải sửa Vercel.
+  - Web đầy đủ, dữ liệu trên VPS: trên VPS cũ `tyzo` → 13 → 4 chép lên một Neon trống, rồi trên VPS mới chọn chép từ Neon đó. Hoặc giữ Neon ngay từ đầu để khỏi lo.
+- Trong lúc chưa có VPS: Admin → đặt **Bảo trì** cho nhóm đang ngừng.
+
+## G. Giữ ở chỗ an toàn (ghi chú riêng, không gửi ai)
+
+- `LIVE_BRIDGE_SECRET`, `BETTER_AUTH_SECRET` (máy in ra một lần khi tạo).
+- Cách lấy chuỗi Neon: Neon → Connect → Show password → Copy snippet. **Không bấm Reset password.**
+- Mật khẩu root của VPS. Mã truy cập Vercel thì xóa trên Vercel sau khi dùng.
+
+## H. Đừng làm
+
+- Đừng dán mật khẩu, token, chuỗi bí mật vào chỗ gõ lệnh, trừ khi máy hỏi và chữ không hiện ra.
 - Đừng chụp màn hình lúc chuỗi bí mật đang hiện.
-- Đừng bật đám mây **cam** trên Cloudflare cho tên miền cầu nối (để **xám**).
+- Dùng Caddy thì để đám mây Cloudflare **xám**. Dùng Tunnel thì Cloudflare tự đặt, không sửa.

@@ -1,0 +1,56 @@
+# Web + cầu nối (+ Postgres khi chọn dữ liệu trên VPS). Điều khiển bằng lệnh «tyzo», không chạy tay.
+# Biến của web: /opt/tyzo-web.env. Biến của tệp này (DOMAIN, DB_PASSWORD): /opt/tyzo.conf.
+name: tyzo
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/vps/web.Dockerfile
+      args:
+        VITE_PUBLIC_HOSTNAME: ${DOMAIN:-}
+    image: tyzo-web:latest
+    container_name: tyzo-web
+    env_file: /opt/tyzo-web.env
+    environment:
+      PORT: "3000"
+      HOST: "0.0.0.0"
+      NODE_ENV: production
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
+  bridge:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: tyzo-bridge:latest
+    container_name: tyzo-bridge
+    env_file: /opt/tyzo-web.env
+    environment:
+      PORT: "8080"
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
+  db:
+    profiles: ["db"]
+    image: postgres:17
+    container_name: tyzo-db
+    environment:
+      POSTGRES_USER: tyzo
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-}
+      POSTGRES_DB: tyzo
+    volumes:
+      - /opt/tyzo-pg:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tyzo -d tyzo"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
