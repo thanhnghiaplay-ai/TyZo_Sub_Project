@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.41.0";
+export const APP_VERSION = "5.42.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.42.0",
+    time: "21:35 22/11/2026",
+    title: "Dịch trực tiếp bắt đầu nhanh hơn, không mất mấy chữ đầu, tự dừng khi im lặng lâu.",
+    points: [
+      "Bấm Bắt đầu là phòng chuẩn bị phiên ngay trong lúc bạn chọn tab hay cho phép micro.",
+      "Tiếng nghe được lúc phiên đang mở hoặc đang nối lại được giữ lại để dịch, không bị bỏ.",
+      "Không nghe thấy tiếng liền 5 phút thì phiên tự dừng, khỏi trừ Token dịch lúc im lặng.",
+      "Điều khoản ghi thêm việc tự dừng và số đo tốc độ không kèm tài khoản; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.41.0",
     time: "20:46 22/11/2026",

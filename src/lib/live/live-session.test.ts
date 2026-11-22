@@ -76,17 +76,22 @@ function setup(options: { captureFails?: boolean } = {}) {
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 
 describe("phiên dịch trực tiếp", () => {
-  it("chưa sẵn sàng thì chưa thu; có ready mới thu, gửi khung, phát tiếng dịch, chuyển sự kiện chữ", async () => {
+  it("chưa nối thì chưa thu; nối được cầu nối là thu và gửi ngay (cầu nối đệm), ready không thu lần hai", async () => {
     const t = setup();
     t.session.start("ws://cau-noi/live?ticket=x");
     assert.equal(t.socket.binaryType, "arraybuffer");
     assert.deepEqual(t.log, []);
+    t.socket.onopen?.({});
+    await tick();
+    assert.deepEqual(t.log, ["bắt đầu thu"]);
+    t.frames()!.onFrame(new Uint8Array(3200));
+    assert.equal(t.socket.sent.length, 1, "gửi cả khi đang chờ Alibaba sẵn sàng");
     t.socket.say({ type: "ready", audio: true });
     await tick();
     assert.deepEqual(t.states, ["connecting", "live"]);
     assert.deepEqual(t.log, ["bắt đầu thu"]);
     t.frames()!.onFrame(new Uint8Array(3200));
-    assert.equal(t.socket.sent.length, 1);
+    assert.equal(t.socket.sent.length, 2);
     t.socket.audio([100, -100, 200]);
     assert.deepEqual(t.played, [3]);
     t.socket.say({ type: "event", event: { kind: "source", id: "a", text: "xin chào", stash: "", final: true } });

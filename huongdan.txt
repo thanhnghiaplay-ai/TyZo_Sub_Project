@@ -24,6 +24,7 @@ PHÁT HIỆN VI PHẠM (Chủ chốt 22/11/2026: luật chặt, chi tiết, có 
 
 ĐANG CHẠY (2026-11-20)
 - v5.38.0 (ứng dụng Android 0.4, điều khoản 2026-11-22.4) trên `work` và `main` (đẩy chính thức 22/11/2026). Thư mục `android/` không chạy trên Vercel; ứng dụng gọi /api/app-link, /api/app-me, /api/app-ticket bằng khóa máy (xem android/README.md). Đổi bản ứng dụng thì sửa cả ANDROID_APP trong src/lib/app-link.ts (test so với android/app/build.gradle.kts).
+- v5.42.0 (đợt 1 tối ưu độ trễ, điều khoản 2026-11-22.7) trên nhánh `ccr-c3c6821f-hbpt1y`, chưa vào `work`. Cầu nối: đệm tiếng trước khi Alibaba sẵn sàng, tự dừng sau LIVE_IDLE_STOP_MIN phút im (mặc định 5), ghi số đo vào live_latency (không cột tài khoản), số phiên ở /tmp/tyzo-phien để `tyzo` chờ hết phiên mới cập nhật. Đổi cách đo hay thời gian giữ số đo thì sửa điều khoản.
 - Số phiên bản trên nhánh `work`: v5.41.0 (`src/lib/app-version.ts`). Nhánh `main` = `work` (đẩy chính thức v5.41.0 ngày 22/11/2026, điều khoản 2026-11-22.6).
 - Tên tệp trong Phiếu: máy chủ che (maskFileName) trước khi gửi nhân viên; chỉ Chủ bấm «Hiện tên đầy đủ» (revealTicketFileName, ghi nhật ký «xem-ten-tep» mỗi lần) và chỉ Chủ tìm theo tên tệp. Không gửi tên đầy đủ về trình duyệt nhân viên khác.
 - Trang mới: html và body khóa cuộn (overflow hidden), nên khung main của trang phải tự có h-dvh overflow-y-auto, không dùng min-h-dvh (back-nav.test.ts kiểm bốn trang đã sửa).

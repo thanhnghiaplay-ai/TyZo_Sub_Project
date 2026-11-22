@@ -84,6 +84,10 @@ Lưu ý: bản thử có dữ liệu thật (tài khoản, key Alibaba của ph�
 | 15 | Khóa ký ứng dụng Android: tạo một lần để ứng dụng tự cập nhật và web có nút tải |
 | 16 | Quét vi phạm mỗi đêm (1 giờ 37 sáng): bật/tắt, chạy thử ngay |
 
+Cập nhật không cắt ngang khách (từ v5.42.0): `tyzo` dựng bản mới trước, rồi chờ tới khi không còn ai đang dịch mới thay cầu nối. Tự cập nhật đêm chờ tối đa 60 phút, quá thì để đêm sau. Cập nhật bằng tay (mục 2) hỏi: chờ, cập nhật luôn, hay hủy. Mục 1 (Kiểm tra) ghi số phiên đang dịch.
+
+Tự dừng khi im lặng: cầu nối dừng phiên sau 5 phút không nghe thấy tiếng, để khách không bị trừ Token. Đổi số phút: mục 4, thêm dòng `LIVE_IDLE_STOP_MIN=10` (0 = tắt), rồi khởi động lại.
+
 ---
 
 ## E1. Quét vi phạm mỗi đêm (làm một lần)

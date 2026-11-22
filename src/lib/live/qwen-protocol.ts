@@ -97,7 +97,9 @@ const str = (value: unknown): string => (typeof value === "string" ? value : "")
  * Bộ gộp chữ (live-transcript) biết cách xử lý cả hai kiểu.
  */
 export type DeltaEvent = { kind: "source-delta" | "translation-delta"; id: string; delta: string };
-export type ParsedEvent = LiveEvent | DeltaEvent;
+/** Alibaba báo có tiếng hoặc hết tiếng (server_vad). Chỉ cầu nối dùng để đo độ trễ, không gửi cho khách. */
+export type SpeechEvent = { kind: "speech"; phase: "start" | "stop" };
+export type ParsedEvent = LiveEvent | DeltaEvent | SpeechEvent;
 
 export function parseServerEvent(raw: unknown): ParsedEvent[] {
   if (!raw || typeof raw !== "object") return [];
@@ -133,8 +135,11 @@ export function parseServerEvent(raw: unknown): ParsedEvent[] {
       return str(event.delta) ? [{ kind: "audio", base64: str(event.delta) }] : [];
     case "input_audio_buffer.speech_started": {
       const speaker = event.speaker_id;
-      return id && speaker != null ? [{ kind: "speaker", sourceId: id, speakerId: String(speaker) }] : [];
+      const speech: ParsedEvent = { kind: "speech", phase: "start" };
+      return id && speaker != null ? [speech, { kind: "speaker", sourceId: id, speakerId: String(speaker) }] : [speech];
     }
+    case "input_audio_buffer.speech_stopped":
+      return [{ kind: "speech", phase: "stop" }];
     case "conversation.item.created": {
       const item = (event.item ?? {}) as Raw;
       const sourceId = str(event.previous_item_id);

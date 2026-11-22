@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.0",
+    time: "21:35 22/11/2026",
+    area: "ha-tang",
+    text: "Chủ: «làm đợt 1 đề xuất tối ưu độ trễ (A1–A7)», Claude làm theo yêu cầu trực tiếp. A1: cầu nối đo mỗi phiên (sẵn sàng, chữ đầu, chữ tạm và câu chốt từng câu; live-latency.ts thuần, có test), ghi bảng live_latency (migration 0034, không cột tài khoản, xóa sau 30 ngày) khi phiên đóng; Admin → Cấu hình → Dịch trực tiếp có bảng «Độ trễ dịch trực tiếp» p50/p95 theo model (24 giờ, 7, 30 ngày; Quản lý trở lên). A2: cầu nối nghe khách ngay từ đầu, đệm tối đa 10 giây tiếng khi Alibaba chưa sẵn sàng và lúc nối lại thay vì bỏ; trình duyệt thu và gửi ngay khi nối được cầu nối (không đợi ready); khách rời trong lúc kiểm vé thì không giữ Token. A3: web xin vé cùng lúc với hộp chọn tab/micro, vé sắp hết hạn thì xin lại. A4: pool pg của cầu nối giữ kết nối 5 phút (trước 10 giây), bảng giá đọc mỗi phút nên Neon không ngủ khi cầu nối chạy. A5: cấp vé chạy kiểm tài khoản, bảo trì, tần suất, live_show, giá, số dư song song (báo lỗi đúng thứ tự cũ), giá giữ trong bộ nhớ 60 giây. A6: cầu nối ghi số phiên ra /tmp/tyzo-phien, SIGTERM dừng nhẹ mọi phiên (nhả Token) trong 9 giây; tyzo dựng bản mới trước rồi chờ hết phiên (tự động: tối đa 60 phút, quá thì để đêm sau, tệp /opt/tyzo-cho-cap-nhat; gõ tay: hỏi chờ hay cập nhật luôn), docker stop -t 15 thay rm -f; Kiểm tra hiện số phiên. A7: không nghe thấy tiếng (đỉnh dưới 100, khoảng -50 dBFS) liền 5 phút thì tự dừng, biến LIVE_IDLE_STOP_MIN (0 = tắt). Điều khoản 2026-11-22.7. Ứng dụng Android không đổi: ứng dụng vốn gửi tiếng ngay khi nối được cầu nối (cầu nối cũ bỏ các khung đó), nên cầu nối mới đệm là ứng dụng được lợi luôn, không phải nâng bản ứng dụng. Cần đẩy chính thức rồi trên VPS tyzo → 2.",
+  },
+  {
     version: "5.41.0",
     time: "20:46 22/11/2026",
     area: "khac",

@@ -30,3 +30,15 @@ export const saveLiveShow = createServerFn({ method: "POST" })
     await writeAudit(context.userId, "mo-live", null, `${data.length} model`);
     return data;
   });
+
+/** Độ trễ dịch trực tiếp đo ở cầu nối, gom theo model. Chỉ nhân viên (Quản lý trở lên) xem. */
+export const getLiveLatency = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((input: { days?: number } | undefined) => ({ days: Math.min(30, Math.max(1, Math.round(Number(input?.days) || 7))) }))
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "quan-ly");
+    const { getSql } = await import("@/lib/db");
+    const { loadLatencyRows } = await import("@/lib/live/live-latency-store");
+    const sql = await getSql();
+    return loadLatencyRows(sql, data.days);
+  });

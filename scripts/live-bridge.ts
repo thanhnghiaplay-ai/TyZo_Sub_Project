@@ -3,7 +3,10 @@
 import { createServer } from "node:http";
 import pg from "pg";
 import type { Sql } from "../src/lib/db.ts";
-import { attachLiveBridge } from "../src/lib/live/live-bridge.ts";
+import { writeFileSync } from "node:fs";
+import { attachLiveBridge, LiveRegistry } from "../src/lib/live/live-bridge.ts";
+import { cleanIdleStopMs } from "../src/lib/live/live-latency.ts";
+import { saveLatency } from "../src/lib/live/live-latency-store.ts";
 import { createLiveBilling } from "../src/lib/live/live-billing.ts";
 import { loadLiveBook } from "../src/lib/live/live-book.ts";
 import { asrPerSecond } from "../src/lib/run-bill.ts";
@@ -27,7 +30,10 @@ const port = Number(process.env.PORT ?? process.env.LIVE_BRIDGE_PORT ?? 8787);
 pg.types.setTypeParser(20, Number);
 pg.types.setTypeParser(1082, (value: string) => value);
 pg.types.setTypeParser(1186, (value: string) => value);
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
+// Giữ kết nối ấm 5 phút (mặc định chỉ 10 giây): mở kết nối mới tới Neon Singapore mất 0,3–1 giây,
+// rơi đúng vào lúc khách bấm Bắt đầu. Bảng giá đọc lại mỗi phút nên kết nối không nguội và Neon không ngủ.
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5, idleTimeoutMillis: 5 * 60_000, keepAlive: true });
+pool.on("error", (error) => console.log(new Date().toISOString(), `kết nối cơ sở dữ liệu lỗi: ${String(error)}`));
 const sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
   let text = strings[0];
   for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
@@ -51,6 +57,19 @@ async function refreshTurbo() {
   turboPerSecond = per && per > 0 ? per : 0;
 }
 
+// Số phiên đang chạy ghi ra tệp, để lệnh «tyzo» đọc (docker exec) và chỉ cập nhật khi không ai đang dịch.
+const SESSIONS_FILE = process.env.LIVE_SESSIONS_FILE || "/tmp/tyzo-phien";
+const registry = new LiveRegistry();
+const writeCount = (count: number) => {
+  try {
+    writeFileSync(SESSIONS_FILE, `${count}\n`);
+  } catch {
+    /* không ghi được thì tyzo coi như không biết, cập nhật như cũ */
+  }
+};
+registry.onChange = writeCount;
+writeCount(0);
+
 attachLiveBridge(server, {
   secret,
   upstream: (model) => loadLiveUpstream(sql, model, process.env.ALIBABA_WORKSPACE_ID),
@@ -58,8 +77,32 @@ attachLiveBridge(server, {
   toGiay: (base) => (turboPerSecond > 0 ? tokensForBase(base, turboPerSecond) : null),
   // Qwen 3.5: chỉnh thời gian chờ im lặng bằng biến LIVE_SILENCE_MS (200–6000), không cần sửa mã.
   silenceMs: cleanSilenceMs(process.env.LIVE_SILENCE_MS),
+  // Tự dừng khi không nghe thấy tiếng quá LIVE_IDLE_STOP_MIN phút (mặc định 5, 0 = tắt).
+  idleStopMs: cleanIdleStopMs(process.env.LIVE_IDLE_STOP_MIN),
+  registry,
+  onStats: (stats) =>
+    void saveLatency(sql, stats).catch((error) => console.log(new Date().toISOString(), `ghi số đo lỗi: ${String(error)}`)),
   log: (message) => console.log(new Date().toISOString(), message),
 });
+
+// Tắt (cập nhật, khởi động lại): dừng nhẹ mọi phiên để trả phần dịch cuối và nhả Token giữ thừa, rồi mới thoát.
+let shuttingDown = false;
+const shutdown = (signal: string) => {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(new Date().toISOString(), `nhận ${signal}, dừng nhẹ ${registry.size} phiên`);
+  server.close();
+  registry.stopAll("cap-nhat", "Cầu nối đang cập nhật nên phiên dừng. Bấm Bắt đầu lại sau khoảng một phút.");
+  const deadline = Date.now() + 9_000;
+  const wait = setInterval(() => {
+    if (registry.size === 0 || Date.now() > deadline) {
+      clearInterval(wait);
+      void pool.end().finally(() => process.exit(0));
+    }
+  }, 200);
+};
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 void refreshTurbo().then(() => {
   setInterval(() => void refreshTurbo(), 60_000);

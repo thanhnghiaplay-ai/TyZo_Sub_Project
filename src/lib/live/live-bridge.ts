@@ -6,6 +6,7 @@ import { LiveMeter } from "./live-meter.ts";
 import { verifyLiveTicket } from "./live-ticket.ts";
 import { targetHasVoice, liveLang } from "./langs.ts";
 import { audioAppend, buildSessionUpdate, genOf, parseServerEvent, SESSION_FINISH } from "./qwen-protocol.ts";
+import { LiveLatency, pcmPeak, SILENT_PEAK, IDLE_STOP_MS, type LatencySummary } from "./live-latency.ts";
 
 /**
  * Cầu nối dịch trực tiếp: trình duyệt ⇄ cầu nối ⇄ Alibaba.
@@ -47,7 +48,45 @@ export type LiveBridgeDeps = {
   /** Qwen 3.5: thời gian im lặng (ms) để chốt câu. Bỏ trống thì dùng LIVE_SILENCE_MS. */
   silenceMs?: number;
   log?: (message: string) => void;
+  /** Đệm tối đa bao nhiêu giây tiếng khi Alibaba chưa sẵn sàng hoặc đang nối lại. Mặc định 10. */
+  bufferSeconds?: number;
+  /** Không nghe thấy tiếng quá chừng này (ms) thì tự dừng phiên, khỏi trừ Token lúc im. 0 = tắt. Mặc định 5 phút. */
+  idleStopMs?: number;
+  /** Sổ phiên đang chạy, để cầu nối biết lúc nào rảnh mà cập nhật và dừng nhẹ mọi phiên khi tắt. */
+  registry?: LiveRegistry;
+  /** Gọi một lần khi phiên đóng, kèm số đo độ trễ. Không có tài khoản hay chữ. */
+  onStats?: (stats: LiveSessionStats) => void;
 };
+
+export type LiveSessionStats = LatencySummary & {
+  model: string;
+  audioSeconds: number;
+  reconnects: number;
+  endReason: string;
+};
+
+/** Một phiên đang chạy, nhìn từ ngoài: chỉ dừng nhẹ được. */
+export type LiveHandle = { stop(reason: string, message?: string): void };
+
+/** Sổ phiên đang chạy. `onChange` gọi mỗi khi số phiên đổi. */
+export class LiveRegistry {
+  readonly sessions = new Set<LiveHandle>();
+  onChange?: (count: number) => void;
+  add(handle: LiveHandle) {
+    this.sessions.add(handle);
+    this.onChange?.(this.sessions.size);
+  }
+  remove(handle: LiveHandle) {
+    if (this.sessions.delete(handle)) this.onChange?.(this.sessions.size);
+  }
+  get size() {
+    return this.sessions.size;
+  }
+  /** Dừng nhẹ mọi phiên (trả phần dịch cuối, nhả phần giữ thừa). */
+  stopAll(reason: string, message?: string) {
+    for (const handle of [...this.sessions]) handle.stop(reason, message);
+  }
+}
 
 const PCM_BYTES_PER_SEC = 16000 * 2;
 
@@ -79,6 +118,31 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     send(client, { type: "error", message: reason });
     client.close(code, reason.slice(0, 120));
   };
+
+  // Nghe khách ngay từ đầu: trình duyệt mới gửi tiếng trước khi Alibaba sẵn sàng (đỡ mất mấy chữ đầu),
+  // và khách có thể rời trong lúc cầu nối còn đang giữ chỗ. Tin đến sớm được giữ lại, xử lý sau khi mở phiên.
+  const sessionStart = now();
+  const early: Array<{ data: RawData; isBinary: boolean }> = [];
+  let earlyBytes = 0;
+  let onClientMessage: ((data: RawData, isBinary: boolean) => void) | null = null;
+  let clientGone = false;
+  let onClientGone: ((reason: string) => void) | null = null;
+  const bufferLimit = Math.max(0, deps.bufferSeconds ?? 10) * PCM_BYTES_PER_SEC;
+  client.on("message", (data, isBinary) => {
+    if (onClientMessage) return onClientMessage(data, isBinary);
+    const size = isBinary ? (data as Buffer).length : 0;
+    if (isBinary && earlyBytes + size > bufferLimit) return;
+    earlyBytes += size;
+    early.push({ data, isBinary });
+  });
+  client.on("close", () => {
+    clientGone = true;
+    onClientGone?.("khach-roi");
+  });
+  client.on("error", () => {
+    clientGone = true;
+    onClientGone?.("khach-loi");
+  });
 
   const ticket = verifyLiveTicket(deps.secret, token, now());
   if (!ticket) return fail(4401, "Vé không hợp lệ hoặc đã hết hạn.");
@@ -132,12 +196,22 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     if (meter.mustStop()) stop("het-tien");
   };
 
+  // Khách đã rời trong lúc kiểm vé: không giữ Token, không mở Alibaba.
+  if (clientGone) return;
   if (!(await openBlock())) {
     return fail(4402, deps.toGiay ? "Token dịch chưa đủ. Hãy mua thêm gói." : "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm.");
   }
 
   let upstream: WebSocket | null = null;
   let ready = false;
+  /** Tiếng chờ gửi khi Alibaba chưa sẵn sàng hoặc đang nối lại. Đầy thì bỏ khung cũ nhất. */
+  const pending: Buffer[] = [];
+  let pendingBytes = 0;
+  const latency = new LiveLatency(sessionStart);
+  const idleStopMs = deps.idleStopMs ?? IDLE_STOP_MS;
+  let lastSoundAt = now();
+  let audioSeconds = 0;
+  let endReason = "";
   let finishing = false;
   let closed = false;
   let reconnects = 0;
@@ -147,9 +221,15 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}), ...(deps.silenceMs ? { silenceMs: deps.silenceMs } : {}) }),
   );
 
+  const handle: LiveHandle = { stop: (reason, message) => {
+    if (message) send(client, { type: "error", message });
+    stop(reason);
+  } };
+
   function stop(reason: string) {
     if (finishing) return;
     finishing = true;
+    endReason = reason;
     send(client, { type: "closing", reason });
     if (upstream && upstream.readyState === WebSocket.OPEN) upstream.send(SESSION_FINISH);
     else void finalize(false);
@@ -160,6 +240,8 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     if (closed) return;
     closed = true;
     if (drainTimer) clearTimeout(drainTimer);
+    pending.length = 0;
+    pendingBytes = 0;
     try {
       upstream?.close();
     } catch {
@@ -173,6 +255,12 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
       }
     }
     if (client.readyState === WebSocket.OPEN) client.close(1000, "done");
+    deps.registry?.remove(handle);
+    try {
+      deps.onStats?.({ ...latency.summary(), model: ticket!.model, audioSeconds: Math.round(audioSeconds), reconnects, endReason: endReason || (failed ? "loi" : "xong") });
+    } catch (error) {
+      log(`ghi số đo lỗi: ${String(error)}`);
+    }
   }
 
   const handleUpstream = async (raw: RawData) => {
@@ -189,9 +277,18 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
       }
       if (event.kind === "ready") {
         ready = true;
+        latency.ready(now());
         send(client, { type: "ready", audio });
+        flushPending();
         continue;
       }
+      if (event.kind === "speech") {
+        latency.mark(event, now());
+        continue;
+      }
+      if (event.kind === "source" || event.kind === "source-delta") latency.mark({ kind: "source" }, now());
+      else if (event.kind === "translation") latency.mark({ kind: "translation", id: event.id, final: event.final }, now());
+      else if (event.kind === "translation-delta") latency.mark({ kind: "translation", id: event.id, final: false }, now());
       if (event.kind === "usage") {
         const priced = liveCost(book, ticket.model, event.usage);
         let taken = 0;
@@ -242,7 +339,24 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   };
   connectUpstream();
 
-  client.on("message", (data, isBinary) => {
+  const sendAudio = (bytes: Buffer) => {
+    if (!upstream || upstream.readyState !== WebSocket.OPEN) return;
+    upstream.send(audioAppend(bytes));
+    latency.audio(now());
+    const seconds = bytes.length / PCM_BYTES_PER_SEC;
+    audioSeconds += seconds;
+    meter.audio(seconds);
+    topUp();
+  };
+  function flushPending() {
+    while (pending.length && ready && !finishing && !meter.mustStop()) {
+      const bytes = pending.shift()!;
+      pendingBytes -= bytes.length;
+      sendAudio(bytes);
+    }
+  }
+
+  const handleClient = (data: RawData, isBinary: boolean) => {
     if (closed) return;
     if (!isBinary) {
       try {
@@ -253,17 +367,31 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
       }
       return;
     }
-    if (finishing || !ready || !upstream || upstream.readyState !== WebSocket.OPEN) return;
+    if (finishing || meter.mustStop()) return;
     const bytes = data as Buffer;
-    if (meter.mustStop()) return;
-    upstream.send(audioAppend(bytes));
-    meter.audio(bytes.length / PCM_BYTES_PER_SEC);
-    topUp();
-  });
-  client.on("close", () => {
-    if (!closed) stop("khach-roi");
-  });
-  client.on("error", () => {
-    if (!closed) stop("khach-loi");
-  });
+    // Im lặng quá lâu (video dừng, tab tắt tiếng) thì tự dừng để khách không bị trừ Token lúc im.
+    const at = now();
+    if (pcmPeak(bytes) >= SILENT_PEAK) lastSoundAt = at;
+    else if (idleStopMs > 0 && at - lastSoundAt >= idleStopMs) {
+      const minutes = Math.round(idleStopMs / 60_000);
+      send(client, { type: "error", message: `Đã tự dừng vì ${minutes} phút không nghe thấy tiếng, để không trừ Token lúc im lặng. Bấm Bắt đầu để dịch tiếp.` });
+      return stop("im-lang");
+    }
+    if (!ready || !upstream || upstream.readyState !== WebSocket.OPEN) {
+      // Alibaba chưa sẵn sàng hoặc đang nối lại: đệm, không bỏ.
+      pending.push(bytes);
+      pendingBytes += bytes.length;
+      while (pendingBytes > bufferLimit && pending.length) pendingBytes -= pending.shift()!.length;
+      return;
+    }
+    if (pending.length) flushPending();
+    sendAudio(bytes);
+  };
+  onClientMessage = handleClient;
+  onClientGone = (reason) => {
+    if (!closed) stop(reason);
+  };
+  deps.registry?.add(handle);
+  for (const item of early.splice(0)) handleClient(item.data, item.isBinary);
+  if (clientGone) stop("khach-roi");
 }

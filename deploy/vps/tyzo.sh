@@ -19,6 +19,8 @@ NAME="tyzo-bridge"
 IMAGE="tyzo-bridge"
 LOG_FILE="/var/log/tyzo-cap-nhat.log"
 CRON_FILE="/etc/cron.d/tyzo-tu-cap-nhat"
+# Có tệp này = lần trước đã dựng bản mới nhưng chưa thay vì còn người đang dịch; lần sau phải thay dù mã không đổi.
+CHO_FILE="/opt/tyzo-cho-cap-nhat"
 
 xanh() { printf '\033[32m%s\033[0m\n' "$*"; }
 do_() { printf '\033[31m%s\033[0m\n' "$*"; }
@@ -61,7 +63,43 @@ cho_ok() {
   return 1
 }
 
+# Số phiên Dịch trực tiếp đang chạy (cầu nối ghi ra tệp). Rỗng = không biết (cầu nối bản cũ hoặc chưa chạy).
+so_phien() { docker exec "$NAME" cat /tmp/tyzo-phien 2>/dev/null | tr -dc '0-9'; }
+
+# Chờ tới khi không còn ai đang dịch rồi mới thay cầu nối, để không cắt ngang phiên của khách.
+# cho_ranh tu-dong: chờ tối đa 60 phút, quá thì để đêm sau (trả 1). Gõ tay: hỏi chờ hay cập nhật luôn.
+cho_ranh() {
+  local n i
+  n="$(so_phien)"
+  [ -z "$n" ] || [ "$n" = 0 ] && return 0
+  if [ "${1:-}" = "tu-dong" ]; then
+    echo "Đang có $n phiên dịch trực tiếp, chờ họ xong (tối đa 60 phút)..."
+    for i in $(seq 1 180); do
+      sleep 20
+      n="$(so_phien)"
+      [ -z "$n" ] || [ "$n" = 0 ] && { echo "Hết phiên, cập nhật."; return 0; }
+    done
+    echo "Sau 60 phút vẫn còn $n phiên. Để đêm sau, cầu nối cũ vẫn chạy."
+    return 1
+  fi
+  vang "Đang có $n phiên dịch trực tiếp. Cập nhật lúc này sẽ dừng phiên của họ."
+  read -rp "Chờ họ xong rồi cập nhật (c), cập nhật luôn (l), hay hủy (k)? [c]: " a
+  case "$a" in
+    l) return 0 ;;
+    k) return 1 ;;
+  esac
+  echo "Đang chờ (bấm Ctrl+C để thôi)..."
+  while :; do
+    sleep 10
+    n="$(so_phien)"
+    [ -z "$n" ] || [ "$n" = 0 ] && { echo "Hết phiên, cập nhật."; return 0; }
+    printf '\r   Còn %s phiên...' "$n"
+  done
+}
+
 chay_container() {
+  # Dừng nhẹ (cầu nối trả phần dịch cuối, nhả Token giữ thừa) rồi mới gỡ; không cắt ngang bằng rm -f.
+  docker stop -t 15 "$NAME" >/dev/null 2>&1 || true
   docker rm -f "$NAME" >/dev/null 2>&1 || true
   docker run -d --name "$NAME" --restart unless-stopped \
     --env-file "$ENV_FILE" -p 127.0.0.1:8080:8080 "$1" >/dev/null
@@ -93,6 +131,8 @@ kiem_tra_cau_noi() {
   done
   local s; s="$(doc_bien LIVE_SILENCE_MS)"
   echo "   Thời gian chờ im lặng Qwen 3.5: ${s:-500 (mặc định)} ms"
+  local ph; ph="$(so_phien)"
+  echo "   Phiên đang dịch: ${ph:-chưa biết (cầu nối bản cũ)} · tự dừng khi im: $(doc_bien LIVE_IDLE_STOP_MIN | grep . || echo 5) phút"
   if [ -d "$DIR/.git" ]; then
     echo "   Bản mã: $(git -C "$DIR" log -1 --format='%h %cd' --date=format:'%d/%m/%Y %H:%M')"
   fi
@@ -113,7 +153,7 @@ cap_nhat_cau_noi() {
   truoc="$(git -C "$DIR" rev-parse HEAD)"
   git -C "$DIR" fetch -q origin main && git -C "$DIR" reset -q --hard origin/main || { do_ "Không tải được mã mới (kiểm mạng)."; return 1; }
   sau="$(git -C "$DIR" rev-parse HEAD)"
-  if [ "$tu_dong" = "tu-dong" ] && [ "$truoc" = "$sau" ] && [ "$(suc_khoe)" = "ok" ]; then
+  if [ "$tu_dong" = "tu-dong" ] && [ "$truoc" = "$sau" ] && [ ! -f "$CHO_FILE" ] && [ "$(suc_khoe)" = "ok" ]; then
     echo "Không có bản mới, cầu nối vẫn chạy tốt."; return 0
   fi
   [ "$truoc" = "$sau" ] && echo "Mã đã là bản mới nhất, vẫn dựng lại cho chắc." || echo "Có bản mới: ${sau:0:7}"
@@ -124,8 +164,15 @@ cap_nhat_cau_noi() {
     tail -n 15 /tmp/tyzo-build.log | sed 's/^/   /'
     do_ "Dựng bản mới lỗi (dòng trên là lý do). Cầu nối cũ vẫn chạy, không đổi gì."; return 1
   fi
+  if ! cho_ranh "$tu_dong"; then
+    # Bản mới đã dựng: lần sau chạy (đêm sau hoặc gõ tay) mã không đổi nên phải dựng lại, không bỏ qua.
+    docker image inspect "$IMAGE:cu" >/dev/null 2>&1 && docker tag "$IMAGE:cu" "$IMAGE:latest"
+    touch "$CHO_FILE"
+    return 1
+  fi
   chay_container "$IMAGE:latest"
   if cho_ok 90; then
+    rm -f "$CHO_FILE"
     xanh "✔ Cập nhật xong, cầu nối trả lời ok."
     docker image prune -f >/dev/null 2>&1 || true
     return 0
@@ -960,7 +1007,7 @@ cap_nhat_web() { # cap_nhat_web [tu-dong]
   truoc="$(git -C "$DIR" rev-parse HEAD)"
   git -C "$DIR" fetch -q origin main && git -C "$DIR" reset -q --hard origin/main || { do_ "Không tải được mã mới (kiểm mạng)."; return 1; }
   sau="$(git -C "$DIR" rev-parse HEAD)"
-  if [ "$tu_dong" = "tu-dong" ] && [ "$truoc" = "$sau" ] && web_ok && [ "$(suc_khoe)" = "ok" ]; then
+  if [ "$tu_dong" = "tu-dong" ] && [ "$truoc" = "$sau" ] && [ ! -f "$CHO_FILE" ] && web_ok && [ "$(suc_khoe)" = "ok" ]; then
     echo "Không có bản mới, web vẫn chạy tốt."; return 0
   fi
   [ "$(conf_get DB)" = "local" ] && [ "$tu_dong" = "tu-dong" ] && sao_luu >/dev/null
@@ -971,8 +1018,14 @@ cap_nhat_web() { # cap_nhat_web [tu-dong]
     tail -n 20 /tmp/tyzo-build.log | sed 's/^/   /'
     do_ "Đóng gói lỗi (dòng trên là lý do). Bản đang chạy giữ nguyên."; return 1
   fi
-  dc up -d --no-build >/dev/null 2>&1
+  if ! cho_ranh "$tu_dong"; then
+    for img in tyzo-web tyzo-bridge; do docker image inspect "$img:cu" >/dev/null 2>&1 && docker tag "$img:cu" "$img:latest"; done
+    touch "$CHO_FILE"
+    return 1
+  fi
+  dc up -d --no-build --timeout 15 >/dev/null 2>&1
   if cho_web_ok 240; then
+    rm -f "$CHO_FILE"
     xanh "✔ Web và cầu nối chạy, trả lời ok."
     docker image prune -f >/dev/null 2>&1 || true
     return 0

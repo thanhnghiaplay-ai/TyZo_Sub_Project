@@ -6,7 +6,7 @@ import { LIVE_LANGS, targetHasVoice } from "./langs.ts";
 import { liveCost, liveHold, livePerMinute, readUsage, type LiveBook } from "./live-cost.ts";
 import { LiveMeter } from "./live-meter.ts";
 import { LIVE_FALLBACK_ROWS, LIVE_MODEL_35, LIVE_MODEL_38, parseLivePrice, pullLiveBoard, saneLivePrice } from "./live-price.ts";
-import { attachLiveBridge, type LiveBilling } from "./live-bridge.ts";
+import { attachLiveBridge, LiveRegistry, type LiveBilling, type LiveBridgeDeps, type LiveSessionStats } from "./live-bridge.ts";
 import { LiveTranscript } from "./live-transcript.ts";
 import { LiveSession } from "./live-session.ts";
 import { signLiveTicket, verifyLiveTicket } from "./live-ticket.ts";
@@ -211,11 +211,11 @@ function fakeAlibaba() {
 }
 
 describe("cầu nối (Alibaba giả)", () => {
-  async function run(stock: number, ticketOver: Partial<Parameters<typeof signLiveTicket>[1]> = {}) {
+  async function run(stock: number, ticketOver: Partial<Parameters<typeof signLiveTicket>[1]> = {}, extra: Partial<LiveBridgeDeps> = {}) {
     const ali = fakeAlibaba();
     const bill = fakeBilling(stock);
     const server = createServer();
-    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url: ali.url, key: "SECRET-KEY" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500 });
+    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url: ali.url, key: "SECRET-KEY" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500, ...extra });
     await new Promise<void>((r) => server.listen(0, r));
     const port = (server.address() as { port: number }).port;
     const token = signLiveTicket("k", { uid: "u1", sid: "sess", model: LIVE_MODEL_38, target: "vi", source: "", audio: true, exp: Date.now() + 60_000, ...ticketOver });
@@ -270,6 +270,111 @@ describe("cầu nối (Alibaba giả)", () => {
     assert.equal(await t.closed, 4402);
     assert.deepEqual(t.bill.log.opened, []);
     await t.cleanup();
+  });
+
+  it("tiếng gửi trước khi Alibaba sẵn sàng được đệm rồi gửi, không bỏ; số đo độ trễ được ghi", async () => {
+    const stats: LiveSessionStats[] = [];
+    const registry = new LiveRegistry();
+    const counts: number[] = [];
+    registry.onChange = (n) => counts.push(n);
+    const t = await run(1_000_000, {}, { onStats: (s) => stats.push(s), registry });
+    await new Promise((r) => t.client.on("open", r));
+    // Gửi ngay khi mở, chưa đợi «ready».
+    const loud = Buffer.alloc(3200);
+    loud.writeInt16LE(8000, 0);
+    t.client.send(loud);
+    while (!t.msgs.some((m) => m.type === "balance")) await new Promise((r) => setTimeout(r, 20));
+    assert.ok(t.ali.seen.chunks >= 1, "khung đầu phải tới Alibaba");
+    assert.equal(registry.size, 1);
+    t.client.send(JSON.stringify({ type: "stop" }));
+    await t.closed;
+    while (!stats.length) await new Promise((r) => setTimeout(r, 20));
+    assert.equal(stats[0].model, LIVE_MODEL_38);
+    assert.equal(stats[0].endReason, "nguoi-dung-dung");
+    assert.ok(stats[0].readyMs != null && stats[0].readyMs >= 0);
+    assert.ok(stats[0].firstTextMs != null);
+    assert.equal(stats[0].tam.length, 1);
+    assert.deepEqual(counts, [1, 0]);
+    assert.deepEqual(t.bill.log.closed, t.bill.log.opened);
+    await t.cleanup();
+  });
+
+  it("im lặng quá lâu thì tự dừng, báo khách và nhả phần giữ", async () => {
+    const t = await run(1_000_000, {}, { idleStopMs: 60 });
+    await new Promise((r) => t.client.on("open", r));
+    while (!t.msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
+    await new Promise((r) => setTimeout(r, 80));
+    t.client.send(Buffer.alloc(3200)); // im hẳn
+    await t.closed;
+    assert.ok(t.msgs.some((m) => m.type === "closing" && m.reason === "im-lang"));
+    assert.ok(t.msgs.some((m) => m.type === "error" && String(m.message).includes("không nghe thấy tiếng")));
+    assert.equal(t.ali.seen.chunks, 0, "khung im lúc dừng không gửi đi");
+    assert.deepEqual(t.bill.log.closed, t.bill.log.opened);
+    await t.cleanup();
+  });
+
+  it("dừng mọi phiên khi cầu nối tắt (cập nhật)", async () => {
+    const registry = new LiveRegistry();
+    const t = await run(1_000_000, {}, { registry });
+    await new Promise((r) => t.client.on("open", r));
+    while (!t.msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
+    registry.stopAll("cap-nhat", "Cầu nối đang cập nhật.");
+    await t.closed;
+    assert.ok(t.msgs.some((m) => m.type === "closing" && m.reason === "cap-nhat"));
+    assert.equal(registry.size, 0);
+    assert.deepEqual(t.bill.log.closed, t.bill.log.opened);
+    await t.cleanup();
+  });
+});
+
+describe("đo độ trễ", () => {
+  it("chữ tạm tính từ đầu lượt nói, câu chốt tính từ lúc hết tiếng", async () => {
+    const { LiveLatency } = await import("./live-latency.ts");
+    const l = new LiveLatency(0);
+    l.ready(300);
+    l.audio(400);
+    l.mark({ kind: "speech", phase: "start" }, 1000);
+    l.mark({ kind: "source" }, 1400);
+    l.mark({ kind: "translation", id: "t1", final: false }, 1800);
+    l.mark({ kind: "speech", phase: "stop" }, 2500);
+    l.mark({ kind: "source" }, 2700); // chữ gốc chốt sau tin im: không dời mốc
+    l.mark({ kind: "translation", id: "t1", final: true }, 3100);
+    // Lượt sau không có tin im: lấy lần cuối chữ gốc đổi.
+    l.mark({ kind: "source" }, 4000);
+    l.mark({ kind: "source" }, 4500);
+    l.mark({ kind: "translation", id: "t2", final: true }, 5200);
+    const s = l.summary();
+    assert.equal(s.readyMs, 300);
+    assert.equal(s.firstTextMs, 1400);
+    assert.deepEqual(s.tam, [800, 1200]);
+    assert.deepEqual(s.chot, [600, 700]);
+  });
+
+  it("gom theo model, phân vị đúng, đếm lần tự dừng vì im", async () => {
+    const { latencyRows, percentile, pcmPeak, cleanIdleStopMs } = await import("./live-latency.ts");
+    assert.equal(percentile([], 50), null);
+    assert.equal(percentile([5, 1, 3, 2, 4], 50), 3);
+    assert.equal(percentile([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 95), 10);
+    const rows = latencyRows([
+      { model: "a", readyMs: 300, firstTextMs: 900, tam: [500, 700], chot: [1000], endReason: "xong" },
+      { model: "a", readyMs: 500, firstTextMs: null, tam: [600], chot: [2000, 3000], endReason: "im-lang" },
+      { model: "b", readyMs: null, firstTextMs: null, tam: [], chot: [], endReason: "loi" },
+    ]);
+    assert.equal(rows[0].model, "a");
+    assert.equal(rows[0].sessions, 2);
+    assert.equal(rows[0].tamP50, 600);
+    assert.equal(rows[0].chotP95, 3000);
+    assert.equal(rows[0].sentences, 3);
+    assert.equal(rows[0].idleStops, 1);
+    assert.equal(rows[1].tamP50, null);
+    const pcm = Buffer.alloc(8);
+    pcm.writeInt16LE(-1234, 2);
+    assert.equal(pcmPeak(pcm), 1234);
+    assert.equal(cleanIdleStopMs(undefined), 5 * 60_000);
+    assert.equal(cleanIdleStopMs("0"), 0);
+    assert.equal(cleanIdleStopMs("2"), 120_000);
+    assert.equal(cleanIdleStopMs("999"), 3_600_000);
+    assert.equal(cleanIdleStopMs("abc"), 5 * 60_000);
   });
 });
 
