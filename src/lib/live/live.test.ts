@@ -6,7 +6,7 @@ import { LIVE_LANGS, targetHasVoice } from "./langs.ts";
 import { liveCost, liveHold, livePerMinute, readUsage, type LiveBook } from "./live-cost.ts";
 import { LiveMeter } from "./live-meter.ts";
 import { LIVE_FALLBACK_ROWS, LIVE_MODEL_35, LIVE_MODEL_38, parseLivePrice, pullLiveBoard, saneLivePrice } from "./live-price.ts";
-import { attachLiveBridge, LiveRegistry, type LiveBilling, type LiveBridgeDeps, type LiveSessionStats } from "./live-bridge.ts";
+import { attachLiveBridge, type LiveBilling } from "./live-bridge.ts";
 import { LiveTranscript } from "./live-transcript.ts";
 import { LiveSession } from "./live-session.ts";
 import { signLiveTicket, verifyLiveTicket } from "./live-ticket.ts";
@@ -211,11 +211,11 @@ function fakeAlibaba() {
 }
 
 describe("cầu nối (Alibaba giả)", () => {
-  async function run(stock: number, ticketOver: Partial<Parameters<typeof signLiveTicket>[1]> = {}, extra: Partial<LiveBridgeDeps> = {}) {
+  async function run(stock: number, ticketOver: Partial<Parameters<typeof signLiveTicket>[1]> = {}) {
     const ali = fakeAlibaba();
     const bill = fakeBilling(stock);
     const server = createServer();
-    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url: ali.url, key: "SECRET-KEY" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500, ...extra });
+    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url: ali.url, key: "SECRET-KEY" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500 });
     await new Promise<void>((r) => server.listen(0, r));
     const port = (server.address() as { port: number }).port;
     const token = signLiveTicket("k", { uid: "u1", sid: "sess", model: LIVE_MODEL_38, target: "vi", source: "", audio: true, exp: Date.now() + 60_000, ...ticketOver });
@@ -270,113 +270,6 @@ describe("cầu nối (Alibaba giả)", () => {
     assert.equal(await t.closed, 4402);
     assert.deepEqual(t.bill.log.opened, []);
     await t.cleanup();
-  });
-
-  it("tiếng gửi trước khi Alibaba sẵn sàng được đệm rồi gửi, không bỏ; số đo độ trễ được ghi", async () => {
-    const stats: LiveSessionStats[] = [];
-    const registry = new LiveRegistry();
-    const counts: number[] = [];
-    registry.onChange = (n) => counts.push(n);
-    const t = await run(1_000_000, {}, { onStats: (s) => stats.push(s), registry });
-    await new Promise((r) => t.client.on("open", r));
-    // Gửi ngay khi mở, chưa đợi «ready».
-    const loud = Buffer.alloc(3200);
-    loud.writeInt16LE(8000, 0);
-    t.client.send(loud);
-    while (!t.msgs.some((m) => m.type === "balance")) await new Promise((r) => setTimeout(r, 20));
-    assert.ok(t.ali.seen.chunks >= 1, "khung đầu phải tới Alibaba");
-    assert.equal(registry.size, 1);
-    t.client.send(JSON.stringify({ type: "stop" }));
-    await t.closed;
-    while (!stats.length) await new Promise((r) => setTimeout(r, 20));
-    assert.equal(stats[0].model, LIVE_MODEL_38);
-    assert.equal(stats[0].via, "web");
-    assert.ok(stats[0].events >= 2);
-    assert.equal(stats[0].endReason, "nguoi-dung-dung");
-    assert.ok(stats[0].readyMs != null && stats[0].readyMs >= 0);
-    assert.ok(stats[0].firstTextMs != null);
-    assert.equal(stats[0].tam.length, 1);
-    assert.deepEqual(counts, [1, 0]);
-    assert.deepEqual(t.bill.log.closed, t.bill.log.opened);
-    await t.cleanup();
-  });
-
-  it("im lặng quá lâu thì tự dừng, báo khách và nhả phần giữ", async () => {
-    const t = await run(1_000_000, {}, { idleStopMs: 60 });
-    await new Promise((r) => t.client.on("open", r));
-    while (!t.msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
-    await new Promise((r) => setTimeout(r, 80));
-    t.client.send(Buffer.alloc(3200)); // im hẳn
-    await t.closed;
-    assert.ok(t.msgs.some((m) => m.type === "closing" && m.reason === "im-lang"));
-    assert.ok(t.msgs.some((m) => m.type === "error" && String(m.message).includes("không nghe thấy tiếng")));
-    assert.equal(t.ali.seen.chunks, 0, "khung im lúc dừng không gửi đi");
-    assert.deepEqual(t.bill.log.closed, t.bill.log.opened);
-    await t.cleanup();
-  });
-
-  it("dừng mọi phiên khi cầu nối tắt (cập nhật)", async () => {
-    const registry = new LiveRegistry();
-    const t = await run(1_000_000, {}, { registry });
-    await new Promise((r) => t.client.on("open", r));
-    while (!t.msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
-    registry.stopAll("cap-nhat", "Cầu nối đang cập nhật.");
-    await t.closed;
-    assert.ok(t.msgs.some((m) => m.type === "closing" && m.reason === "cap-nhat"));
-    assert.equal(registry.size, 0);
-    assert.deepEqual(t.bill.log.closed, t.bill.log.opened);
-    await t.cleanup();
-  });
-});
-
-describe("đo độ trễ", () => {
-  it("chữ tạm tính từ đầu lượt nói, câu chốt tính từ lúc hết tiếng", async () => {
-    const { LiveLatency } = await import("./live-latency.ts");
-    const l = new LiveLatency(0);
-    l.ready(300);
-    l.audio(400);
-    l.mark({ kind: "speech", phase: "start" }, 1000);
-    l.mark({ kind: "source" }, 1400);
-    l.mark({ kind: "translation", id: "t1", final: false }, 1800);
-    l.mark({ kind: "speech", phase: "stop" }, 2500);
-    l.mark({ kind: "source" }, 2700); // chữ gốc chốt sau tin im: không dời mốc
-    l.mark({ kind: "translation", id: "t1", final: true }, 3100);
-    // Lượt sau không có tin im: lấy lần cuối chữ gốc đổi.
-    l.mark({ kind: "source" }, 4000);
-    l.mark({ kind: "source" }, 4500);
-    l.mark({ kind: "translation", id: "t2", final: true }, 5200);
-    const s = l.summary();
-    assert.equal(s.readyMs, 300);
-    assert.equal(s.firstTextMs, 1400);
-    assert.deepEqual(s.tam, [800, 1200]);
-    assert.deepEqual(s.chot, [600, 700]);
-  });
-
-  it("gom theo model, phân vị đúng, đếm lần tự dừng vì im", async () => {
-    const { latencyRows, percentile, pcmPeak, cleanIdleStopMs } = await import("./live-latency.ts");
-    assert.equal(percentile([], 50), null);
-    assert.equal(percentile([5, 1, 3, 2, 4], 50), 3);
-    assert.equal(percentile([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 95), 10);
-    const rows = latencyRows([
-      { model: "a", readyMs: 300, firstTextMs: 900, tam: [500, 700], chot: [1000], endReason: "xong" },
-      { model: "a", readyMs: 500, firstTextMs: null, tam: [600], chot: [2000, 3000], endReason: "im-lang" },
-      { model: "b", readyMs: null, firstTextMs: null, tam: [], chot: [], endReason: "loi" },
-    ]);
-    assert.equal(rows[0].model, "a");
-    assert.equal(rows[0].sessions, 2);
-    assert.equal(rows[0].tamP50, 600);
-    assert.equal(rows[0].chotP95, 3000);
-    assert.equal(rows[0].sentences, 3);
-    assert.equal(rows[0].idleStops, 1);
-    assert.equal(rows[1].tamP50, null);
-    const pcm = Buffer.alloc(8);
-    pcm.writeInt16LE(-1234, 2);
-    assert.equal(pcmPeak(pcm), 1234);
-    assert.equal(cleanIdleStopMs(undefined), 5 * 60_000);
-    assert.equal(cleanIdleStopMs("0"), 0);
-    assert.equal(cleanIdleStopMs("2"), 120_000);
-    assert.equal(cleanIdleStopMs("999"), 3_600_000);
-    assert.equal(cleanIdleStopMs("abc"), 5 * 60_000);
   });
 });
 
@@ -442,81 +335,5 @@ describe("phiên ở trình duyệt nối cầu nối thật (Alibaba giả)", (
     assert.deepEqual(bill.log.closed, bill.log.opened);
     server.close();
     ali.wss.close();
-  });
-});
-
-describe("cầu nối không sập vì kết nối cơ sở dữ liệu", () => {
-  it("nhận ra lỗi kết nối để thử lại, không thử lại lỗi câu lệnh", async () => {
-    const { isConnectionError } = await import("./db-retry.ts");
-    assert.equal(isConnectionError(Object.assign(new Error("read ECONNRESET"), { code: "ECONNRESET" })), true);
-    assert.equal(isConnectionError(new Error("Connection terminated unexpectedly")), true);
-    assert.equal(isConnectionError(Object.assign(new Error("terminating connection due to administrator command"), { code: "57P01" })), true);
-    assert.equal(isConnectionError(Object.assign(new Error('relation "x" does not exist'), { code: "42P01" })), false);
-    assert.equal(isConnectionError(null), false);
-  });
-
-  it("tệp chạy cầu nối bắt lỗi đọc giá, có lưới an toàn, không giữ kết nối quá lâu (Chủ báo 22/11/2026: ECONNRESET làm sập cầu nối)", async () => {
-    const { readFileSync } = await import("node:fs");
-    const script = readFileSync(new URL("../../../scripts/live-bridge.ts", import.meta.url), "utf8");
-    assert.match(script, /process\.on\("unhandledRejection"/);
-    assert.match(script, /async function refreshTurbo\(\) \{\s*try \{/);
-    const idle = Number(/idleTimeoutMillis:\s*([\d_]+)/.exec(script)?.[1].replace(/_/g, ""));
-    assert.ok(idle > 0 && idle <= 60_000, "giữ kết nối nhàn rỗi tối đa 60 giây");
-    assert.match(script, /isConnectionError\(error\)/);
-  });
-});
-
-describe("Alibaba cắt vì im lặng", () => {
-  it("không báo lỗi tiếng Anh cho khách, khung im bị bỏ, có tiếng lại thì nối lại và dịch tiếp", async () => {
-    const wss = new WebSocketServer({ port: 0 });
-    let connections = 0;
-    let chunksAfterWake = 0;
-    wss.on("connection", (ws) => {
-      connections += 1;
-      const mine = connections;
-      ws.on("message", (raw) => {
-        const msg = JSON.parse(raw.toString()) as { type: string };
-        if (msg.type === "session.update") ws.send(JSON.stringify({ type: "session.updated" }));
-        else if (msg.type === "input_audio_buffer.append") {
-          if (mine === 1) {
-            ws.send(JSON.stringify({ type: "error", error: { message: "Response stream timeout (timeout_seconds=60, elapsed_ms=73221)" } }));
-            ws.close();
-          } else chunksAfterWake += 1;
-        } else if (msg.type === "session.finish") ws.send(JSON.stringify({ type: "session.finished" }));
-      });
-    });
-    const url = `ws://127.0.0.1:${(wss.address() as { port: number }).port}/realtime`;
-    const bill = fakeBilling(1_000_000);
-    const server = createServer();
-    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url, key: "K" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500, idleStopMs: 0 });
-    await new Promise<void>((r) => server.listen(0, r));
-    const token = signLiveTicket("k", { uid: "u1", sid: "im", model: LIVE_MODEL_38, target: "vi", source: "", audio: false, exp: Date.now() + 60_000 });
-    const client = new WebSocket(`ws://127.0.0.1:${(server.address() as { port: number }).port}/live?ticket=${encodeURIComponent(token)}`);
-    const msgs: Array<{ type: string; [k: string]: unknown }> = [];
-    client.on("message", (data, isBinary) => {
-      if (!isBinary) msgs.push(JSON.parse(data.toString()));
-    });
-    const closed = new Promise<number>((r) => client.on("close", (code) => r(code)));
-    await new Promise((r) => client.on("open", r));
-    while (!msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
-    const loud = Buffer.alloc(3200);
-    loud.writeInt16LE(9000, 0);
-    client.send(loud); // Alibaba giả cắt ngay sau khung này
-    await new Promise((r) => setTimeout(r, 200));
-    client.send(Buffer.alloc(3200)); // im: không đánh thức
-    await new Promise((r) => setTimeout(r, 200));
-    assert.equal(connections, 1, "khung im không nối lại");
-    client.send(loud); // có tiếng lại
-    while (chunksAfterWake < 1) await new Promise((r) => setTimeout(r, 20));
-    assert.equal(connections, 2);
-    client.send(JSON.stringify({ type: "stop" }));
-    await closed;
-    const shown = msgs.filter((m) => m.type === "error" || (m.type === "event" && (m.event as { kind: string }).kind === "error"));
-    assert.deepEqual(shown, [], "không có câu lỗi nào hiện cho khách");
-    assert.ok(!msgs.some((m) => m.type === "reconnecting"));
-    assert.deepEqual(bill.log.closed, bill.log.opened);
-    server.close();
-    wss.close();
-    client.terminate();
   });
 });

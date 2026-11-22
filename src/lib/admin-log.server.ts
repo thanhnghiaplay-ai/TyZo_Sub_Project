@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.4",
+    time: "22:42 22/11/2026",
+    area: "ha-tang",
+    text: "Chủ: «Nó bị chậm, nhận dạng không đủ, mất kết nối. Hay là quay về bản trước khi tôi bảo tối ưu». Quay mã Dịch trực tiếp, cầu nối, cấp vé, ứng dụng web (use-live, live-session), tyzo.sh và docs/HUONG_DAN_VPS.md về đúng commit 32253ee (v5.41.0); bỏ live-latency*, db-retry, bảng Admin độ trễ, via/events. Giữ: sửa menu điện thoại (v5.42.1, rail-layer.test.ts), và trong scripts/live-bridge.ts chỉ thêm refreshTurbo bắt lỗi + process.on(unhandledRejection) + pool.on(error) (lỗi sập ECONNRESET có từ trước, v5.42.2 đã thấy trong nhật ký). Migration 0034, 0035 giữ (bảng live_latency đã tạo trên Neon, không còn dùng). Điều khoản 2026-11-22.9 = chữ y hệt 2026-11-22.6 (cùng dấu vân tay). Lưu ý: ứng dụng Android chưa từng chạy phiên thật trước đợt tối ưu nên quay về không chắc làm ứng dụng dịch tốt hơn.",
+  },
+  {
     version: "5.42.3",
     time: "22:33 22/11/2026",
     area: "ha-tang",

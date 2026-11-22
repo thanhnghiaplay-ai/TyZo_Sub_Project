@@ -3,7 +3,6 @@ import { CONFIG_PAGES, DEFAULT_CONFIG_PAGE, type ConfigPageId } from "@/lib/admi
 import { Fold } from "@/components/admin-fold";
 import { GiayPackBoard } from "@/components/giay-pack-board";
 import { LiveShowBoard } from "@/components/live-show-board";
-import { LiveLatencyBoard } from "@/components/live-latency-board";
 import { LiveWorkspaceBoard } from "@/components/live-workspace-board";
 import { PaySettings } from "@/components/pay-settings";
 import { PolishModelBoard } from "@/components/polish-model-board";
@@ -78,7 +77,6 @@ export function ConfigTab() {
       <Page id="truc-tiep" current={page}>
         <LiveWorkspaceBoard />
         <LiveShowBoard />
-        <LiveLatencyBoard />
       </Page>
       <Page id="cong-nap" current={page}>
         <Fold title="Cổng nạp" hint="Sepay, Casso và tài khoản nhận tiền" wide>

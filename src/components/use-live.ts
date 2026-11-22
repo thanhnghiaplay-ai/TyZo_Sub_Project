@@ -125,15 +125,6 @@ export function useLive(): LiveApi {
       } catch (cause) {
         gotStream = Promise.reject(cause);
       }
-      // Xin vé cùng lúc với hộp chọn tab hoặc hỏi quyền micro, không đợi khách chọn xong mới xin.
-      // Vé sống 60 giây và chưa giữ Token nào cho tới khi cầu nối nhận, nên xin sớm mà khách hủy cũng không mất gì.
-      const askTicket = () =>
-        openLiveTicket({
-          data: { model: settings.model, target: settings.target, source: settings.source, audio: settings.audio, ...(settings.words && Object.keys(settings.words).length ? { words: settings.words } : {}) },
-        });
-      const askedAt = Date.now();
-      const gotTicket = askTicket();
-      gotTicket.catch(() => undefined);
 
       void (async () => {
         const giveUp = (message: string) => {
@@ -152,9 +143,9 @@ export function useLive(): LiveApi {
           }
           let ticket: Awaited<ReturnType<typeof openLiveTicket>>;
           try {
-            ticket = await gotTicket;
-            // Khách chọn tab lâu quá, vé sắp hết hạn: xin vé mới thay vì để cầu nối từ chối.
-            if (Date.now() - askedAt > ticket.expiresInSeconds * 1000 - 15_000) ticket = await askTicket();
+            ticket = await openLiveTicket({
+              data: { model: settings.model, target: settings.target, source: settings.source, audio: settings.audio, ...(settings.words && Object.keys(settings.words).length ? { words: settings.words } : {}) },
+            });
           } catch (cause) {
             return giveUp(cause instanceof Error && cause.message ? cause.message : "Chưa mở được phiên dịch trực tiếp. Hãy thử lại.");
           }

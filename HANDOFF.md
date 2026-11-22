@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.42.4 (22/11/2026 22:45, Claude, `work`)**: Chủ báo chậm, nhận dạng không đủ, mất kết nối, bảo quay về. Mã Dịch trực tiếp, cầu nối, tyzo.sh về đúng 32253ee; giữ sửa menu và chống sập cầu nối. Điều khoản 2026-11-22.9 (= .6). tsc sạch, test 191 + 1473 pass, build xong, cầu nối chạy thử khi cơ sở dữ liệu lỗi vẫn trả ok. Chưa đẩy chính thức; sau đó tyzo → 2.
 - **Đẩy chính thức v5.42.3**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, test 191 + 1482 pass. Trên VPS: `tyzo` → 2.
 - **v5.42.3 (22/11/2026 22:33, Claude, `work`)**: Alibaba cắt vì im lặng («Response stream timeout») không còn hiện cho khách và không tính vào lần nối lại hỏng; cầu nối ngủ tới khi có tiếng. Chưa đẩy chính thức.
 - **Đẩy chính thức v5.42.2**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, test 191 + 1481 pass. Trên VPS: `tyzo` → 2, rồi thử lại ứng dụng.

@@ -55,7 +55,7 @@ const CLOSE_TEXT: Record<number, string> = {
 };
 
 /**
- * Một phiên dịch trực tiếp ở trình duyệt: nối cầu nối, thu âm và gửi ngay (cầu nối đệm tới khi Alibaba sẵn sàng),
+ * Một phiên dịch trực tiếp ở trình duyệt: nối cầu nối, đợi sẵn sàng rồi mới thu âm và gửi,
  * phát tiếng dịch về, và dọn sạch (micro, loa, kết nối) trong mọi đường kết thúc.
  */
 export class LiveSession {
@@ -101,11 +101,6 @@ export class LiveSession {
     this.socket = socket;
     socket.binaryType = "arraybuffer";
     socket.onmessage = (event) => this.handleMessage(event.data);
-    // Thu ngay khi nối được cầu nối, không đợi Alibaba sẵn sàng: cầu nối đệm tiếng tới lúc đó,
-    // nên mấy chữ đầu không bị mất. Cầu nối bản cũ chỉ bỏ các khung này, như trước.
-    socket.onopen = () => {
-      if (this.state === "connecting" && !this.userStopped) void this.beginCapture();
-    };
     socket.onerror = () => undefined;
     socket.onclose = (event) => this.finish(event.code);
   }
@@ -177,7 +172,7 @@ export class LiveSession {
 
   private sendFrame(frame: Uint8Array) {
     const socket = this.socket;
-    if (!socket || socket.readyState !== OPEN || (this.state !== "live" && this.state !== "connecting")) return;
+    if (!socket || socket.readyState !== OPEN || this.state !== "live") return;
     if (socket.bufferedAmount > MAX_BUFFERED) return;
     socket.send(frame);
   }

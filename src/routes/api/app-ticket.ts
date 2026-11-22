@@ -19,8 +19,6 @@ export const Route = createFileRoute("/api/app-ticket")({
           const { parseLiveOpen } = await import("@/lib/live/live-open-rules");
           const words = body.words && typeof body.words === "object" && !Array.isArray(body.words) ? (body.words as Record<string, string>) : undefined;
           const data = parseLiveOpen({ model: String(body.model ?? ""), target: String(body.target ?? ""), source: String(body.source ?? ""), audio: false, ...(words ? { words } : {}) });
-          // Chỉ máy chủ gắn nhãn ứng dụng (sau parseLiveOpen), khách web không tự gắn được.
-          data.via = "app";
           const { issueLiveTicket } = await import("@/lib/live/live-issue.server");
           return json(200, await issueLiveTicket(userId, data));
         } catch (error) {

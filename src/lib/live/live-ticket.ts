@@ -15,8 +15,6 @@ export type LiveTicket = {
   audio: boolean;
   /** Từ cần giữ đúng (gốc → dịch). Vé cũ không có trường này. */
   words?: Record<string, string>;
-  /** Phiên mở từ đâu, để đo và tra lỗi riêng ứng dụng. Vé cũ không có thì coi là web. */
-  via?: "app";
   /** Hết hạn, mili giây kể từ epoch. */
   exp: number;
 };
@@ -56,7 +54,6 @@ export function verifyLiveTicket(secret: string, token: string, now: number): Li
       source: typeof data.source === "string" ? data.source : "",
       audio: data.audio === true,
       ...(Object.keys(cleanHotwords(data.words)).length ? { words: cleanHotwords(data.words) } : {}),
-      ...(data.via === "app" ? { via: "app" as const } : {}),
       exp: data.exp,
     };
   } catch {
