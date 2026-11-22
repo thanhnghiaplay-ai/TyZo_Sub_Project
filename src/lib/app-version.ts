@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.42.4";
+export const APP_VERSION = "5.42.5";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.42.5",
+    time: "23:17 22/11/2026",
+    title: "Ứng dụng Android 0.6: tự nối lại khi mất mạng, phụ đề nổi gọn hơn.",
+    points: [
+      "Đường nối bị đứt thì ứng dụng tự nối lại tối đa 3 lần, giữ phụ đề đang có, báo rõ lý do.",
+      "Bài hát hay lời nói liền không còn dồn cả đoạn che video: khung chỉ hiện phần cuối.",
+      "Video im lâu không còn hiện câu báo lỗi tiếng Anh; có tiếng lại là dịch tiếp.",
+    ],
+  },
   {
     version: "5.42.4",
     time: "22:42 22/11/2026",

@@ -80,4 +80,31 @@ object Caption {
         "xl" -> 34f
         else -> 22f
     }
+
+    /**
+     * Số ký tự tối đa của MỘT dòng phụ đề nổi. Bài hát hay lời nói liền không có chỗ ngắt thì Alibaba không chốt câu,
+     * chữ cứ dồn thành một khối che cả video; chỉ giữ phần cuối. Chữ lớn thì giữ ít hơn.
+     */
+    fun maxChars(size: String) = when (size) {
+        "s" -> 140
+        "l" -> 80
+        "xl" -> 60
+        else -> 110
+    }
+
+    /**
+     * Giữ phần cuối của chữ, không quá [max] ký tự, cắt ở đầu câu (sau . ? ! 。 ？ ！) hoặc ở khoảng trắng,
+     * thêm «…» phía trước. Chữ ngắn thì để nguyên.
+     */
+    fun tail(text: String, max: Int): String {
+        val t = text.trim()
+        if (t.length <= max) return t
+        val cut = t.substring(t.length - max)
+        val sentence = cut.indexOfFirst { it == '.' || it == '?' || it == '!' || it == '。' || it == '？' || it == '！' }
+        val start = when {
+            sentence in 0 until cut.length - 1 && sentence < max / 2 -> sentence + 1
+            else -> cut.indexOf(' ').let { if (it in 0 until max / 3) it + 1 else 0 }
+        }
+        return "…" + cut.substring(start).trim()
+    }
 }

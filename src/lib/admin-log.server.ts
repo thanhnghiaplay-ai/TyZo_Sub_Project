@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.5",
+    time: "23:17 22/11/2026",
+    area: "ha-tang",
+    text: "Chủ: «làm ứng dụng 0.6», khóa ký đã tạo. Chủ gửi 2 đoạn quay: ứng dụng dịch đúng nghĩa nhưng chậm 8–10 giây với bài hát (không chỗ ngắt, Qwen 3.8 không chốt câu), khung nổi dồn cả đoạn che video, sau khoảng 2 phút báo «Mất kết nối tới cầu nối dịch» (OkHttp onFailure, pin đã Không hạn chế; chữ đứng yên ~30 giây trước khi đứt). Ứng dụng 0.6 (versionCode 6, ANDROID_APP): LiveService tự nối lại khi onFailure hoặc cầu nối đóng mà khách không bấm Dừng (trừ mã 4400, 4402, 4503): xin vé mới, giữ bộ thu và phụ đề, tối đa 3 lần liên tiếp, chờ 1/2/3 giây, về 0 khi ready; kết nối cũ báo muộn bị bỏ; lý do đứt ngắn (không có mạng, mạng không trả lời, quá giờ chờ, mạng bị ngắt…) hiện trên khung và câu lỗi cuối. CaptionOverlay: mỗi dòng tối đa Caption.maxChars theo cỡ chữ (140/110/80/60), giữ phần cuối cắt ở đầu câu (Caption.tail). Cầu nối (gộp bản nháp 860e4e7): Alibaba báo «Response stream timeout» thì không chuyển cho khách, không tính vào 3 lần nối lại, ngủ tới khi có khung có tiếng (đỉnh ≥ 100), khung im lúc ngủ bỏ; nhật ký ghi Alibaba báo lỗi, Alibaba đóng kết nối (mã), khách rời (mã), phiên đóng (nối-lại, ngủ-dậy). Không đổi điều khoản.",
+  },
+  {
     version: "5.42.4",
     time: "22:42 22/11/2026",
     area: "ha-tang",

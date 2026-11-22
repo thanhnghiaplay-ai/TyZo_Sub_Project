@@ -52,6 +52,10 @@ class LiveService : Service() {
         private const val SAMPLE_RATE = 16_000
         private const val FRAME_SAMPLES = SAMPLE_RATE / 10 // 100 ms = 3200 byte
         private const val DRAIN_MS = 10_000L
+        /** Nối lại tối đa chừng này lần liên tiếp khi đường nối bị đứt. */
+        private const val MAX_RETRIES = 3
+        /** Mã đóng của cầu nối không nên nối lại: model/ngôn ngữ sai, hết Token, chưa cấu hình. */
+        private val FINAL_CODES = setOf(4400, 4402, 4503)
 
         fun stop(context: Context) {
             context.startService(Intent(context, LiveService::class.java).setAction(ACTION_STOP))
@@ -89,6 +93,7 @@ class LiveService : Service() {
         finished.set(false)
         transcript.clear()
         sessionStartMs = 0L
+        retries = 0
         lastError = ""
         LiveState.unlinked = false
         LiveState.phase = LiveState.Phase.STARTING
@@ -202,25 +207,36 @@ class LiveService : Service() {
 
     // ---------- Phiên với cầu nối ----------
 
-    private fun openSession() {
+    /** Số lần nối lại liên tiếp chưa thành công. Về 0 khi cầu nối báo sẵn sàng. */
+    private var retries = 0
+
+    /** first = lần mở đầu (lỗi thì dừng hẳn); lần nối lại thì lỗi mạng được thử tiếp. */
+    private fun openSession(first: Boolean = true) {
         val ticket = try {
             Api.ticket(prefs.web, prefs.token, prefs.model, prefs.target, prefs.source, Hotwords.parse(prefs.words))
         } catch (e: ApiError) {
             if (e.status == 401) LiveState.unlinked = true
-            main.post { finish(e.message ?: "Chưa mở được phiên dịch.") }
+            // Lỗi mạng (status 0) lúc nối lại thì thử tiếp; lỗi của web (hết Token, bảo trì…) thì dừng và báo đúng câu.
+            if (!first && e.status == 0) main.post { reconnect("không gọi được web") }
+            else main.post { finish(e.message ?: "Chưa mở được phiên dịch.") }
             return
         }
         LiveState.perMinute = ticket.perMinute
         LiveState.balance = ticket.balance
-        if (finished.get()) return
+        if (finished.get() || LiveState.phase == LiveState.Phase.STOPPING) return
         val request = Request.Builder().url(ticket.url.replaceFirst("wss://", "https://").replaceFirst("ws://", "http://")).build()
         socket = Api.client.newWebSocket(request, object : WebSocketListener() {
+            // Kết nối cũ (trước khi nối lại) báo muộn thì bỏ qua.
+            private fun current(webSocket: WebSocket) = webSocket === socket
+
             override fun onOpen(webSocket: WebSocket, response: Response) {
+                if (!current(webSocket)) return
                 socketOpen.set(true)
                 main.post { recorder?.let { startReading(it) } }
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
+                if (!current(webSocket)) return
                 val msg = runCatching { JSONObject(text) }.getOrNull() ?: return
                 main.post { handle(msg) }
             }
@@ -234,15 +250,54 @@ class LiveService : Service() {
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                if (!current(webSocket)) return
                 socketOpen.set(false)
-                main.post { finish(closeText(code, reason)) }
+                main.post {
+                    // Cầu nối tự đóng mà khách không bấm Dừng (lỗi cầu nối, vé hết hạn, nhà cung cấp cắt): nối lại.
+                    // Hết Token, model hay ngôn ngữ sai, chưa cấu hình thì dừng và báo đúng câu.
+                    if (LiveState.phase != LiveState.Phase.STOPPING && code !in FINAL_CODES) reconnect("cầu nối đóng, mã $code")
+                    else finish(closeText(code, reason))
+                }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                if (!current(webSocket)) return
                 socketOpen.set(false)
-                main.post { finish(if (LiveState.phase == LiveState.Phase.STOPPING) "" else "Mất kết nối tới cầu nối dịch. Hãy thử lại.") }
+                val why = failureReason(t)
+                main.post { if (LiveState.phase == LiveState.Phase.STOPPING) finish("") else reconnect(why) }
             }
         })
+    }
+
+    /** Đường nối bị đứt: giữ bộ thu và phụ đề, xin vé mới rồi nối lại. Quá MAX_RETRIES lần liên tiếp thì dừng. */
+    private fun reconnect(why: String) {
+        if (finished.get() || LiveState.phase == LiveState.Phase.STOPPING) return
+        socket?.let { runCatching { it.cancel() } }
+        socket = null
+        if (retries >= MAX_RETRIES) {
+            finish("Mất kết nối tới cầu nối dịch ($why). Đã thử nối lại $MAX_RETRIES lần. Kiểm tra mạng rồi bấm Bắt đầu.")
+            return
+        }
+        retries += 1
+        LiveState.status = "Mất kết nối ($why), đang nối lại $retries/$MAX_RETRIES…"
+        overlay?.update(transcript.latest(prefs.captionLines), LiveState.status)
+        main.postDelayed({
+            if (!finished.get() && LiveState.phase != LiveState.Phase.STOPPING) Thread({ openSession(first = false) }, "noi-lai").start()
+        }, 1_000L * retries)
+    }
+
+    /** Lý do đứt ngắn gọn cho khách đọc. */
+    private fun failureReason(t: Throwable): String {
+        val text = (t.message ?: "").lowercase()
+        return when {
+            t is java.net.UnknownHostException -> "không có mạng"
+            text.contains("ping") || text.contains("pong") -> "mạng không trả lời"
+            t is java.net.SocketTimeoutException -> "quá giờ chờ"
+            text.contains("reset") || text.contains("abort") || text.contains("broken pipe") -> "mạng bị ngắt"
+            t is javax.net.ssl.SSLException -> "lỗi bảo mật kết nối"
+            t is java.io.EOFException -> "máy chủ đóng kết nối"
+            else -> t.javaClass.simpleName.ifBlank { "không rõ" }
+        }
     }
 
     private var lastError = ""
@@ -253,10 +308,14 @@ class LiveService : Service() {
         when (msg.optString("type")) {
             "ready" -> {
                 LiveState.phase = LiveState.Phase.LIVE
-                LiveState.startedAtMs = System.currentTimeMillis()
+                val reconnected = sessionStartMs > 0L
+                if (LiveState.startedAtMs == 0L) LiveState.startedAtMs = System.currentTimeMillis()
                 if (sessionStartMs == 0L) sessionStartMs = LiveState.startedAtMs
+                // Nối lại được: đếm lại từ đầu, bỏ câu lỗi của kết nối cũ, giữ phụ đề đang có.
+                retries = 0
+                lastError = ""
                 LiveState.status = "Đang dịch"
-                overlay?.message("Đang nghe… mở video có tiếng.")
+                if (!reconnected) overlay?.message("Đang nghe… mở video có tiếng.")
             }
             "event" -> {
                 val event = msg.optJSONObject("event") ?: return

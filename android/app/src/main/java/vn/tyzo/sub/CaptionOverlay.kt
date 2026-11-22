@@ -120,11 +120,15 @@ class CaptionOverlay(private val context: Context, private val prefs: Prefs, pri
         if (lines.isEmpty()) return
         val out = SpannableStringBuilder()
         val faint = Color.argb(150, 255, 255, 255)
+        val max = Caption.maxChars(prefs.captionSize)
         lines.forEachIndexed { i, line ->
             if (i > 0) out.append('\n')
             val start = out.length
-            out.append(line.translation.trim())
-            val stash = line.translationStash.trim()
+            // Chỉ phần cuối của dòng dài: phần chốt bớt đầu trước, chữ tạm (mờ) giữ ở cuối.
+            val stash = Caption.tail(line.translationStash, max)
+            val room = (max - stash.length - 1).coerceAtLeast(0)
+            val done = if (room < 20) "" else Caption.tail(line.translation, room)
+            out.append(done)
             if (stash.isNotEmpty()) {
                 if (out.length > start) out.append(' ')
                 val s = out.length
@@ -135,7 +139,7 @@ class CaptionOverlay(private val context: Context, private val prefs: Prefs, pri
             if (prefs.showSource && line.shownSource.isNotEmpty()) {
                 out.append('\n')
                 val s = out.length
-                out.append(line.shownSource)
+                out.append(Caption.tail(line.shownSource, max))
                 out.setSpan(ForegroundColorSpan(Color.argb(200, 232, 238, 243)), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 out.setSpan(RelativeSizeSpan(0.7f), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }

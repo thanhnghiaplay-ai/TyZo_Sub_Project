@@ -307,10 +307,13 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     meter.audio(bytes.length / PCM_BYTES_PER_SEC);
     topUp();
   });
-  client.on("close", () => {
+  client.on("close", (code, reason) => {
+    // Mã 1006 = mạng đứt ngang (điện thoại mất mạng, không trả lời ping); 1000 = khách đóng bình thường.
+    if (!closed) log(`khách rời: mã ${code} ${reason.toString().slice(0, 80)}`);
     if (!closed) stop("khach-roi");
   });
-  client.on("error", () => {
+  client.on("error", (error) => {
+    if (!closed) log(`kết nối khách lỗi: ${String(error)}`);
     if (!closed) stop("khach-loi");
   });
 }
