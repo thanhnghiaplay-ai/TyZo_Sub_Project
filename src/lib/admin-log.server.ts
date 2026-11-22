@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.38.1",
+    time: "16:01 22/11/2026",
+    area: "khac",
+    text: "Chủ báo sau khi chuyển cầu nối sang VPS (TP.HCM, đi về Singapore khoảng 0,12–0,14 giây): dịch trực tiếp chờ khá lâu. Đo: VPS không phải nguyên nhân chính (trên Fly chặng VN–Singapore nằm giữa máy khách và Fly, tổng gần như nhau). Tài liệu Alibaba: độ trễ thấp nhất khoảng 2,3 giây; Qwen 3.5 có turn_detection server_vad với silence_duration_ms (200–6000, mặc định 1000); Qwen 3.8 không có tham số chờ im lặng (chỉ speaker_detection hoặc server_vad). Sửa: qwen-protocol.ts gửi turn_detection {server_vad, threshold 0.2, silence_duration_ms} cho 3.5, mặc định LIVE_SILENCE_MS = 500; cầu nối đọc biến LIVE_SILENCE_MS (cleanSilenceMs, kẹp 200–6000) để Chủ chỉnh trên VPS không cần sửa mã. Test live.test.ts thêm 3 kiểm. Cần chạy lại cầu nối trên VPS (sh /opt/cap-nhat.sh) mới có tác dụng. CHƯA thử với Alibaba thật.",
+  },
+  {
     version: "5.38.0",
     time: "13:04 22/11/2026",
     area: "khac",

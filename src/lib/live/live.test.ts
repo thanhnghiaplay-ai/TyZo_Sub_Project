@@ -109,6 +109,11 @@ describe("giao thức Qwen", () => {
     const s = b.session as Record<string, unknown>;
     assert.deepEqual(s.modalities, ["text", "audio"]);
     assert.deepEqual(s.input_audio_transcription, { model: "qwen3-asr-flash-realtime", language: "en" });
+    assert.deepEqual(s.turn_detection, { type: "server_vad", threshold: 0.2, silence_duration_ms: 500 });
+    const c = buildSessionUpdate({ model: LIVE_MODEL_35, target: "vi", audio: false, silenceMs: 50 })!;
+    assert.equal(((c.session as Record<string, unknown>).turn_detection as { silence_duration_ms: number }).silence_duration_ms, 200);
+    // Qwen 3.8 không có tham số chờ im lặng: không gửi turn_detection.
+    assert.equal((a.session as Record<string, unknown>).turn_detection, undefined);
     assert.equal(buildSessionUpdate({ model: "x", target: "vi", audio: true }), null);
   });
   it("ghép chữ gốc và bản dịch dù đến trước hay sau", () => {

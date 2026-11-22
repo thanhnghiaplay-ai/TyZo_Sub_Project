@@ -10,6 +10,7 @@ import { asrPerSecond } from "../src/lib/run-bill.ts";
 import { loadPriceBook } from "../src/lib/run-board.server.ts";
 import { tokensForBase, TURBO_ASR } from "../src/lib/token-math.ts";
 import { loadLiveUpstream } from "../src/lib/live/live-upstream.ts";
+import { cleanSilenceMs } from "../src/lib/live/qwen-protocol.ts";
 
 const secret = (process.env.LIVE_BRIDGE_SECRET ?? "").trim();
 if (secret.length < 24) {
@@ -55,6 +56,8 @@ attachLiveBridge(server, {
   upstream: (model) => loadLiveUpstream(sql, model, process.env.ALIBABA_WORKSPACE_ID),
   billing: createLiveBilling(sql, { book: () => loadLiveBook(sql) }),
   toGiay: (base) => (turboPerSecond > 0 ? tokensForBase(base, turboPerSecond) : null),
+  // Qwen 3.5: chỉnh thời gian chờ im lặng bằng biến LIVE_SILENCE_MS (200–6000), không cần sửa mã.
+  silenceMs: cleanSilenceMs(process.env.LIVE_SILENCE_MS),
   log: (message) => console.log(new Date().toISOString(), message),
 });
 

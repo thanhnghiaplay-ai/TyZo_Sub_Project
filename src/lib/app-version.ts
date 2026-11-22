@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.38.0";
+export const APP_VERSION = "5.38.1";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.38.1",
+    time: "16:01 22/11/2026",
+    title: "Dịch trực tiếp bằng Qwen 3.5 ra chữ sớm hơn.",
+    points: [
+      "Qwen 3.5 chốt câu sau nửa giây im lặng thay vì một giây, chữ dịch hiện sớm hơn.",
+      "Hướng dẫn ghi rõ độ trễ của từng model và cách để chữ ra nhanh nhất.",
+    ],
+  },
   {
     version: "5.38.0",
     time: "13:04 22/11/2026",

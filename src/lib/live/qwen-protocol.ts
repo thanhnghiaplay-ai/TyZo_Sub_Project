@@ -24,7 +24,22 @@ export type SessionOptions = {
   audio: boolean;
   voice?: string;
   hotwords?: Record<string, string>;
+  /**
+   * Chỉ Qwen 3.5: chờ bao lâu im lặng (ms) thì chốt câu và dịch. Alibaba mặc định 1000, nhận 200–6000.
+   * Ngắn hơn thì chữ dịch ra sớm hơn nhưng câu dễ bị cắt vụn. Qwen 3.8 không có tham số này.
+   */
+  silenceMs?: number;
 };
+
+/** Thời gian chờ im lặng mặc định của phòng cho Qwen 3.5 (Alibaba mặc định 1000 ms). */
+export const LIVE_SILENCE_MS = 500;
+
+/** Giữ trong khoảng Alibaba nhận (200–6000 ms). Không phải số thì dùng mặc định của phòng. */
+export function cleanSilenceMs(raw: unknown): number {
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) return LIVE_SILENCE_MS;
+  return Math.min(6000, Math.max(200, Math.round(n)));
+}
 
 export function buildSessionUpdate(options: SessionOptions): Record<string, unknown> | null {
   const gen = genOf(options.model);
@@ -48,6 +63,7 @@ export function buildSessionUpdate(options: SessionOptions): Record<string, unkn
     input_audio_transcription: options.source
       ? { model: "qwen3-asr-flash-realtime", language: options.source }
       : { model: "qwen3-asr-flash-realtime" },
+    turn_detection: { type: "server_vad", threshold: 0.2, silence_duration_ms: cleanSilenceMs(options.silenceMs) },
   };
   if (options.voice) session.voice = options.voice;
   return { type: "session.update", session };

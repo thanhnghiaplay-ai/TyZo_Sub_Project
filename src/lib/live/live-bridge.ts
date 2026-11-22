@@ -44,6 +44,8 @@ export type LiveBridgeDeps = {
   maxReconnects?: number;
   /** Chờ tối đa bao lâu cho phần dịch cuối sau khi dừng, mili giây. Mặc định 8000. */
   drainMs?: number;
+  /** Qwen 3.5: thời gian im lặng (ms) để chốt câu. Bỏ trống thì dùng LIVE_SILENCE_MS. */
+  silenceMs?: number;
   log?: (message: string) => void;
 };
 
@@ -142,7 +144,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
-    buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}) }),
+    buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}), ...(deps.silenceMs ? { silenceMs: deps.silenceMs } : {}) }),
   );
 
   function stop(reason: string) {

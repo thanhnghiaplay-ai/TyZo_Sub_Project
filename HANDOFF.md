@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.38.1 (22/11/2026, Claude)**: cầu nối Dịch trực tiếp đã chuyển sang VPS (`wss://realtimehub.tyzo.site/live`; trên VPS: mã ở /opt/tyzo, bí mật ở /opt/bridge.env, cập nhật bằng `sh /opt/cap-nhat.sh`, Caddy lo https). Qwen 3.5 chốt câu sau 0,5 giây im lặng (biến LIVE_SILENCE_MS). tsc sạch, eslint 0 lỗi, test 191 + 1445 pass, build xong. Chưa thử với Alibaba thật.
 - **Đẩy chính thức (tài liệu)**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work` (v5.38.0 cộng ghi chú việc để sau). tsc sạch, eslint 0 lỗi, test pass, build xong.
 - **Để sau (Chủ 22/11/2026)**: khóa ký cố định cho ứng dụng Android (4 bí mật `ANDROID_KEYSTORE_*`) và `ANDROID_APK_URL` trên Vercel. Cách làm ghi ở `BANG_DIEU.md` mục «Chờ người dùng». Chỉ tài liệu, không đổi code.
 - **Đẩy chính thức v5.38.0**: Chủ cho gộp và đẩy chính thức không cần xác nhận lần này. `work` và `main` kéo thẳng lên nhánh `ccr-a8428a75-e8fyfm`. Khách đồng ý lại điều khoản 2026-11-22.4. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1445 pass, vite build xong, GitHub Actions đóng gói ứng dụng 0.4 xong.
