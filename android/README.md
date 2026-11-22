@@ -4,6 +4,8 @@
 gửi qua cầu nối Dịch trực tiếp và hiện phụ đề nổi trên màn hình. Dùng chung tài khoản và Token dịch với web.
 
 - Mã: `app/src/main/java/vn/tyzo/sub/` (Kotlin, giao diện dựng bằng mã, chỉ dùng thêm OkHttp).
+- Giao diện theo web: biểu tượng vẽ đúng `public/favicon.svg`, màu bảng «Vàng» của `src/lib/theme/theme.ts` (Ui.kt), font Be Vietnam Pro (`res/font`, giấy phép `FONT_OFL.txt`). Tùy chỉnh phụ đề, từ cần giữ đúng và xuất SRT/VTT/TXT cùng luật với `src/lib/live/`.
+- Đổi bản: sửa `versionCode`/`versionName` trong `app/build.gradle.kts` VÀ `ANDROID_APP` trong `src/lib/app-link.ts` (test kiểm hai chỗ khớp).
 - Liên kết: web Tài khoản → Ứng dụng Android → «Lấy mã liên kết» (8 ký tự, 10 phút, dùng một lần).
   Ứng dụng đổi mã lấy khóa máy ở `POST /api/app-link`, rồi gọi `GET /api/app-me` và `POST /api/app-ticket`
   bằng `Authorization: Bearer <khóa máy>`. Máy chủ chỉ lưu băm của mã và khóa (bảng `app_link_codes`, `app_devices`).

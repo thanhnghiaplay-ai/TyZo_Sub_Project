@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { cleanDeviceName, codeFromBytes, LINK_ALPHABET, normalizeCode, readDeviceToken, showCode } from "./app-link.ts";
+import { readFileSync } from "node:fs";
+import { ANDROID_APP, apkUrlFrom, cleanDeviceName, codeFromBytes, LINK_ALPHABET, normalizeCode, readDeviceToken, showCode } from "./app-link.ts";
 
 describe("mã liên kết ứng dụng", () => {
   it("dựng mã 8 ký tự trong bảng chữ, hiện có gạch giữa", () => {
@@ -27,6 +28,19 @@ describe("mã liên kết ứng dụng", () => {
     assert.equal(cleanDeviceName(""), "Điện thoại Android");
     assert.equal(cleanDeviceName(null), "Điện thoại Android");
     assert.equal(cleanDeviceName("x".repeat(100)).length, 60);
+  });
+
+  it("số bản ứng dụng khớp android/app/build.gradle.kts", () => {
+    const gradle = readFileSync(new URL("../../android/app/build.gradle.kts", import.meta.url), "utf8");
+    assert.match(gradle, new RegExp(`versionCode = ${ANDROID_APP.code}\\b`));
+    assert.match(gradle, new RegExp(`versionName = "${ANDROID_APP.name.replace(".", "\\.")}"`));
+  });
+
+  it("chỉ nhận địa chỉ tệp cài https", () => {
+    assert.equal(apkUrlFrom("https://a.vn/tyzo.apk"), "https://a.vn/tyzo.apk");
+    assert.equal(apkUrlFrom("http://a.vn/tyzo.apk"), "");
+    assert.equal(apkUrlFrom("không phải link"), "");
+    assert.equal(apkUrlFrom(undefined), "");
   });
 
   it("chỉ đọc khóa máy đúng dạng", () => {

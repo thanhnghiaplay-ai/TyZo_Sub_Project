@@ -10,6 +10,25 @@ export const LINK_CODE_TTL_SECONDS = 600;
 /** Mỗi tài khoản giữ tối đa bấy nhiêu máy đang liên kết; liên kết thêm thì máy cũ nhất bị gỡ. */
 export const MAX_DEVICES = 3;
 export const DEVICE_TOKEN_PREFIX = "tzd_";
+/** Khóa máy bỏ không quá bấy nhiêu ngày thì hết dùng được, phải liên kết lại. */
+export const DEVICE_IDLE_DAYS = 90;
+
+/**
+ * Bản ứng dụng Android mới nhất. Phải khớp versionCode và versionName trong android/app/build.gradle.kts
+ * (app-link.test.ts kiểm). Ứng dụng cũ hơn thấy lời mời tải bản mới.
+ */
+export const ANDROID_APP = { code: 4, name: "0.4" } as const;
+
+/** Chỉ nhận địa chỉ tệp cài https. Rỗng khi chưa đặt hoặc sai. */
+export function apkUrlFrom(raw: string | undefined): string {
+  if (!raw) return "";
+  try {
+    const url = new URL(raw.trim());
+    return url.protocol === "https:" ? url.toString() : "";
+  } catch {
+    return "";
+  }
+}
 
 /** Dựng mã từ các byte ngẫu nhiên (truyền vào để test được). */
 export function codeFromBytes(bytes: Uint8Array): string {

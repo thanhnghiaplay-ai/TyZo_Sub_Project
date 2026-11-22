@@ -70,10 +70,10 @@ export function AppLinkCard() {
       </div>
       {view?.apkUrl ? (
         <a href={view.apkUrl} className="min-tap block rounded-full bg-accent text-center font-semibold text-ink" rel="noopener">
-          Tải tệp cài
+          Tải tệp cài (bản {view.appVersion})
         </a>
       ) : (
-        <p className="text-sm text-muted">Tệp cài chưa phát hành.</p>
+        <p className="text-sm text-muted">Tệp cài chưa phát hành{view ? ` (bản mới nhất ${view.appVersion})` : ""}.</p>
       )}
       <div className="space-y-2">
         <button

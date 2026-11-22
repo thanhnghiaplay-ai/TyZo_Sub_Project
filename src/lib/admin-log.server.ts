@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.38.0",
+    time: "13:04 22/11/2026",
+    area: "khac",
+    text: "Chủ: «kiểm tra, bổ sung chức năng ở cả web và app, logo app là logo web, màu sắc, giao diện đồng bộ, chặt chẽ nhất; sửa xong gộp và đẩy chính thức không cần xác nhận». Ứng dụng 0.4: biểu tượng thích ứng vẽ đúng public/favicon.svg (nền #0e141b, khung #e7b63a, nút phát), biểu tượng thông báo một màu; bảng màu Vàng sáng/tối của theme.ts theo chế độ máy, font Be Vietnam Pro (OFL, android/FONT_OFL.txt), bo góc 16/12, nút tròn cao 44 như web; thẻ Tài khoản (Token dịch, khoảng N phút, Mua Token dịch mở /tai-khoan), thẻ Dịch, Ngôn ngữ, Tùy chỉnh chữ (cỡ s/m/l/xl = 18/22/28/34 như CAPTION_PX, số dòng 1–4, chữ gốc, nền đậm), Từ cần giữ đúng (Hotwords.kt cùng luật parseHotwords), phiên gần nhất (Session.kt: lưu trên máy, SRT/VTT/TXT cùng cách toSrt/toVtt/toTxt, lưu vào Tải xuống qua MediaStore, gửi SRT), thẻ Có bản mới (app-me trả app.code/name/url), Điều khoản, Hướng dẫn. Web: ANDROID_APP trong app-link.ts (test so với build.gradle.kts), apkUrlFrom dùng chung; /api/app-ticket nhận words qua cleanHotwords; khóa máy bỏ không 90 ngày hết dùng (DEVICE_IDLE_DAYS); đổi mật khẩu (hook change-password) và đặt lại mật khẩu (onPasswordReset) gỡ mọi máy (revokeAllDevices); thẻ Tài khoản ghi bản mới nhất; Hướng dẫn thêm bước Từ cần giữ đúng, Tùy chỉnh chữ, phiên gần nhất, bản mới, 90 ngày. Điều khoản 2026-11-22.4 (mục 5). CHƯA thử 0.4 trên điện thoại thật.",
+  },
+  {
     version: "5.37.1",
     time: "12:35 22/11/2026",
     area: "khac",

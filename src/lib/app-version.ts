@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.37.1";
+export const APP_VERSION = "5.38.0";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.38.0",
+    time: "13:04 22/11/2026",
+    title: "Ứng dụng Android 0.4: cùng logo, màu và chức năng Dịch trực tiếp với web.",
+    points: [
+      "Ứng dụng có Từ cần giữ đúng, Tùy chỉnh chữ (cỡ, số dòng, chữ gốc, nền đậm) như web.",
+      "Phiên gần nhất lưu trên điện thoại, tải SRT, VTT, TXT hoặc gửi sang ứng dụng khác.",
+      "Đổi mật khẩu thì máy đã liên kết phải liên kết lại; máy bỏ không 90 ngày cũng vậy.",
+      "Điều khoản ghi thêm phần ứng dụng lưu trên điện thoại; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.37.1",
     time: "12:35 22/11/2026",

@@ -264,8 +264,10 @@ export const auth = betterAuth({
           sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
             sendAuthLetter("reset", user.email, url);
           },
-          onPasswordReset: async ({ user }: { user: { email: string } }) => {
+          onPasswordReset: async ({ user }: { user: { id: string; email: string } }) => {
             sendAuthLetter("changed", user.email);
+            // Đặt lại mật khẩu thì ứng dụng Android trên mọi máy phải liên kết lại.
+            await import("../app-link.server").then((m) => m.revokeAllDevices(user.id)).catch(() => {});
           },
         },
       }
@@ -313,7 +315,12 @@ export const auth = betterAuth({
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       const to = changedLetterTo(ctx.path, ctx.context.returned, ctx.context.session?.user?.email);
-      if (to) sendAuthLetter("changed", to);
+      if (to) {
+        sendAuthLetter("changed", to);
+        // Đổi mật khẩu (web thoát các phiên khác) thì gỡ cả máy Android đã liên kết.
+        const uid = ctx.context.session?.user?.id;
+        if (uid) await import("../app-link.server").then((m) => m.revokeAllDevices(uid)).catch(() => {});
+      }
     }),
   },
 

@@ -1,9 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import type { AppDeviceRow } from "@/lib/app-link.server";
+import { ANDROID_APP, apkUrlFrom } from "@/lib/app-link";
 
 export type { AppDeviceRow };
-export type AppLinkView = { devices: AppDeviceRow[]; apkUrl: string };
+export type AppLinkView = { devices: AppDeviceRow[]; apkUrl: string; appVersion: string };
 
 /** Trang Tài khoản: máy Android đang liên kết và nơi tải tệp cài. */
 export const getAppLinks = createServerFn({ method: "GET" })
@@ -11,7 +12,7 @@ export const getAppLinks = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<AppLinkView> => {
     const { listDevices } = await import("@/lib/app-link.server");
     const { env } = await import("@/lib/env.server");
-    return { devices: await listDevices(context.userId), apkUrl: apkUrlFrom(env("ANDROID_APK_URL")) };
+    return { devices: await listDevices(context.userId), apkUrl: apkUrlFrom(env("ANDROID_APK_URL")), appVersion: ANDROID_APP.name };
   });
 
 /** Lấy mã liên kết mới (10 phút, dùng một lần). */
@@ -37,13 +38,3 @@ export const removeAppDevice = createServerFn({ method: "POST" })
     return { ok: await revokeDevice(context.userId, data) };
   });
 
-/** Chỉ nhận địa chỉ https. Rỗng khi chưa đặt. */
-function apkUrlFrom(raw: string | undefined): string {
-  if (!raw) return "";
-  try {
-    const url = new URL(raw.trim());
-    return url.protocol === "https:" ? url.toString() : "";
-  } catch {
-    return "";
-  }
-}

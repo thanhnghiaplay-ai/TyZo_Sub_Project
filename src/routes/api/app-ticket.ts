@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 /**
  * Ứng dụng Android xin vé vào cầu nối Dịch trực tiếp. Cùng luật với trang web (issueLiveTicket).
  * Ứng dụng chỉ nhận chữ: tiếng dịch luôn tắt, vì tiếng phát ra sẽ bị chính bộ thu nghe lại.
+ * «Từ cần giữ đúng» (words) qua cùng bộ lọc với web (cleanHotwords: tối đa 30 cặp, mỗi bên 40 ký tự).
  */
 export const Route = createFileRoute("/api/app-ticket")({
   server: {
@@ -16,7 +17,8 @@ export const Route = createFileRoute("/api/app-ticket")({
           const body = await readJson(request);
           if (!body) return fail(400, "Yêu cầu không đúng.");
           const { parseLiveOpen } = await import("@/lib/live/live-open-rules");
-          const data = parseLiveOpen({ model: String(body.model ?? ""), target: String(body.target ?? ""), source: String(body.source ?? ""), audio: false });
+          const words = body.words && typeof body.words === "object" && !Array.isArray(body.words) ? (body.words as Record<string, string>) : undefined;
+          const data = parseLiveOpen({ model: String(body.model ?? ""), target: String(body.target ?? ""), source: String(body.source ?? ""), audio: false, ...(words ? { words } : {}) });
           const { issueLiveTicket } = await import("@/lib/live/live-issue.server");
           return json(200, await issueLiveTicket(userId, data));
         } catch (error) {

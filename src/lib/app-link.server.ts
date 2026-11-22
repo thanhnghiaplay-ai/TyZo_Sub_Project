@@ -4,6 +4,7 @@ import { getSql } from "@/lib/db";
 import {
   cleanDeviceName,
   codeFromBytes,
+  DEVICE_IDLE_DAYS,
   DEVICE_TOKEN_PREFIX,
   LINK_CODE_TTL_SECONDS,
   MAX_DEVICES,
@@ -60,6 +61,7 @@ export async function deviceUserId(): Promise<string | null> {
   const rows = await sql<{ user_id: string }>`
     update app_devices set last_used_at = now()
     where token_hash = ${hash(token)} and revoked_at is null
+      and coalesce(last_used_at, created_at) > ${new Date(Date.now() - DEVICE_IDLE_DAYS * 86_400_000).toISOString()}::timestamptz
     returning user_id
   `;
   return rows[0]?.user_id ?? null;
@@ -88,6 +90,13 @@ export function callerIp(): string {
   const request = getRequest();
   const forwarded = request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
   return forwarded || request?.headers.get("x-real-ip")?.trim() || "";
+}
+
+/** Gỡ mọi máy của tài khoản. Gọi khi đổi hoặc đặt lại mật khẩu (như thoát các phiên khác trên web). */
+export async function revokeAllDevices(userId: string): Promise<void> {
+  const sql = await getSql();
+  await sql`update app_devices set revoked_at = now() where user_id = ${userId} and revoked_at is null`;
+  await sql`delete from app_link_codes where user_id = ${userId}`;
 }
 
 /** Gỡ liên kết của chính máy đang gọi (khách bấm «Gỡ liên kết» trong ứng dụng). */

@@ -316,7 +316,7 @@ export function AccountPanel() {
             <button type="submit" disabled={busy} className="min-tap w-full rounded-full border border-line disabled:opacity-40">
               Đổi mật khẩu
             </button>
-            <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu.</p>
+            <p className="text-xs text-muted">Đổi mật khẩu tại đây. Phòng chưa gửi thư đặt lại mật khẩu. Đổi mật khẩu thì ứng dụng Android phải liên kết lại.</p>
           </form>
           {!blocked && helpForm}
         </>
