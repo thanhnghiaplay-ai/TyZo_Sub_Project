@@ -142,7 +142,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
-    buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio }),
+    buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}) }),
   );
 
   function stop(reason: string) {

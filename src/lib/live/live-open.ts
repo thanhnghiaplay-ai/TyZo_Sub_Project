@@ -58,6 +58,7 @@ export const openLiveTicket = createServerFn({ method: "POST" })
       target: data.target,
       source: data.source,
       audio,
+      ...(data.words ? { words: data.words } : {}),
       exp,
     });
     return { url: `${base}${base.includes("?") ? "&" : "?"}ticket=${ticket}`, perMinute, balance, expiresInSeconds: Math.round(LIVE_TICKET_TTL_MS / 1000) };

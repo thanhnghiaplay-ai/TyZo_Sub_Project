@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.36.0 (22/11/2026, Claude)**: Dịch trực tiếp: phụ đề nổi (`use-caption-window.ts`, `live-caption-view.tsx`), chữ lớn toàn màn hình, tùy chỉnh chữ, từ cần giữ đúng (vé → cầu nối → Qwen corpus), lưu phiên trước trên máy (`live-caption.ts`). Điều khoản 2026-11-22.2. tsc sạch, eslint 0 lỗi, test 191 + 1438 pass, vite build xong, xem bằng Chromium 412/1280 px (PiP mở thật). Việc của Chủ: deploy lại cầu nối Fly.io (`fly deploy`) để «từ cần giữ đúng» có tác dụng. Đã đẩy `work`, chưa lên `main`.
 - **Đẩy chính thức v5.35.2**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.35.2. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1431 pass, vite build xong.
 - **v5.35.2 (22/11/2026, Claude)**: Key ElevenLabs của Chủ thiếu quyền models_read nên không lưu được. Thiếu quyền của lệnh kiểm nay coi là key đúng (chỉ nhà có danh sách model cố định); lỗi thiếu quyền khi chạy báo đúng tên quyền. tsc sạch, eslint 0 lỗi, test 191 + 1431 pass. Đã đẩy `work` và `main`.
 - **Đẩy chính thức v5.35.1**: Chủ nói «đẩy chính thức». `main` kéo thẳng lên v5.35.1. Trước khi đẩy: tsc sạch, eslint 0 lỗi (30 cảnh báo), test 191 + 1430 pass, vite build xong.

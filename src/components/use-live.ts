@@ -11,7 +11,7 @@ import { tabEnv, tabErrorMessage } from "@/lib/live/live-tab";
 import { liveMinutes, liveMoneyLeft, liveWarn, type LiveUiState, type LiveWarn } from "@/lib/live/live-view";
 
 export type LiveInput = "mic" | "tab";
-export type LiveSettings = { model: string; target: string; source: string; audio: boolean; input: LiveInput };
+export type LiveSettings = { model: string; target: string; source: string; audio: boolean; input: LiveInput; words?: Record<string, string> };
 
 export type LiveApi = {
   state: LiveUiState;
@@ -143,7 +143,9 @@ export function useLive(): LiveApi {
           }
           let ticket: Awaited<ReturnType<typeof openLiveTicket>>;
           try {
-            ticket = await openLiveTicket({ data: { model: settings.model, target: settings.target, source: settings.source, audio: settings.audio } });
+            ticket = await openLiveTicket({
+              data: { model: settings.model, target: settings.target, source: settings.source, audio: settings.audio, ...(settings.words && Object.keys(settings.words).length ? { words: settings.words } : {}) },
+            });
           } catch (cause) {
             return giveUp(cause instanceof Error && cause.message ? cause.message : "Chưa mở được phiên dịch trực tiếp. Hãy thử lại.");
           }

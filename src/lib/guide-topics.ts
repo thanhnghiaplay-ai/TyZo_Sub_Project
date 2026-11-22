@@ -161,7 +161,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       title: "Dịch trực tiếp",
       group: "tinh-nang",
       intro: "Nghe tiếng nói và hiện chữ gốc cùng chữ dịch ngay khi đang nói.",
-      words: "dich truc tiep live micro tab giong noi thoi gian thuc hop phat truc tiep",
+      words: "dich truc tiep live micro tab giong noi thoi gian thuc hop phat truc tiep phu de noi pip chu lon toan man hinh tu can giu dung ten nhan vat bilibili youtube",
       tour: "dich-truc-tiep",
       page: { label: "Mở Dịch trực tiếp", to: "/dich-truc-tiep" },
       steps: [
@@ -171,6 +171,10 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Điện thoại và máy tính bảng thường không thu được tiếng của tab. Máy đó app tự chuyển sang micro." },
         { text: "Số giây còn lại và số phút hiện ngay trên màn hình, kèm cảnh báo khi sắp hết. Hết giây thì phiên dừng. Có chữ rồi thì tải được SRT, VTT hoặc TXT của buổi vừa dịch." },
         { text: "Dịch trực tiếp trừ cùng Token dịch đã mua. Phiên không giữ số dư đồng." },
+        { text: "Xem phim ở tab khác: bấm «Phụ đề nổi». Trên Chrome, Edge máy tính, khung phụ đề luôn nằm trên cùng, kể cả khi video toàn màn hình; kéo khung tới chỗ muốn đặt. Trình duyệt khác mở cửa sổ phụ đề riêng." },
+        { text: "Dùng điện thoại cạnh TV hay loa: bấm «Chữ lớn toàn màn hình», có nút Bắt đầu, Dừng ngay trong màn đó. Cỡ chữ, số dòng, chữ gốc, nền đậm chỉnh ở «Tùy chỉnh chữ»." },
+        { text: "Tên nhân vật hay bị dịch lệch: ghi vào «Từ cần giữ đúng», mỗi dòng «gốc = cách dịch». Áp dụng khi bấm Bắt đầu." },
+        { text: "Tải lại trang không mất chữ: phiên gần nhất được lưu trên máy, vẫn tải được SRT, VTT, TXT." },
       ],
     },
     {

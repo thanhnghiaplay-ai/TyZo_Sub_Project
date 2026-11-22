@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { cleanHotwords } from "./live-caption.ts";
 
 /**
  * Vé vào cầu nối. Máy chủ chính (đã biết ai đăng nhập) ký vé; cầu nối chỉ kiểm chữ ký.
@@ -12,6 +13,8 @@ export type LiveTicket = {
   target: string;
   source: string;
   audio: boolean;
+  /** Từ cần giữ đúng (gốc → dịch). Vé cũ không có trường này. */
+  words?: Record<string, string>;
   /** Hết hạn, mili giây kể từ epoch. */
   exp: number;
 };
@@ -50,6 +53,7 @@ export function verifyLiveTicket(secret: string, token: string, now: number): Li
       target: data.target,
       source: typeof data.source === "string" ? data.source : "",
       audio: data.audio === true,
+      ...(Object.keys(cleanHotwords(data.words)).length ? { words: cleanHotwords(data.words) } : {}),
       exp: data.exp,
     };
   } catch {

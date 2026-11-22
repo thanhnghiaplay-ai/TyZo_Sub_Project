@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.36.0",
+    time: "11:08 22/11/2026",
+    area: "khac",
+    text: "Dịch trực tiếp (Chủ: «làm mục 1» phụ đề nổi, «hoàn thiện hơn»). live-caption.ts (thuần, 7 test): CaptionPrefs (cỡ, số dòng 1–4, chữ gốc, nền đậm), captionRows, parseHotwords/cleanHotwords (tối đa 30 cặp, mỗi bên ≤40 ký tự), packSavedLive/parseSavedLive (2.000 câu). use-caption-window.ts: Document Picture-in-Picture (Chrome, Edge), không có thì window.open; vẽ bằng createPortal, khung không có nút (sự kiện React không đi qua tài liệu khác). live-caption-view.tsx kiểu inline. live-screen: khối Hiển thị phụ đề dưới nút Bắt đầu (Tùy chỉnh chữ thu gọn), màn Chữ lớn (requestFullscreen, nút Bắt đầu/Dừng/Đóng, giữ màn hình sáng), ô Từ cần giữ đúng, bản lưu phiên trước (localStorage tyzo-live-last, lưu mỗi 5 giây và khi dừng; thẻ Tải phụ đề / Xóa bản lưu). Từ cần giữ đúng đi qua vé (LiveOpenInput.words → LiveTicket.words → buildSessionUpdate hotwords = translation.corpus.phrases). CẦU NỐI TRÊN FLY.IO CẦN DEPLOY LẠI mới dùng danh sách này; cầu nối cũ bỏ qua trường lạ nên vẫn chạy. Điều khoản 2026-11-22.2 (mục 5 lưu trên máy, mục dữ liệu: âm thanh và từ giữ đúng gửi Alibaba qua cầu nối). Kiểm dev 412 px và 1280 px: PiP mở thật trong Chromium, chữ vẽ vào khung; màn chữ lớn; thứ tự khối. CHƯA thử phiên thật (cần Token và cầu nối), chưa thử Qwen có nhận corpus.phrases không.",
+  },
+  {
     version: "5.35.2",
     time: "09:59 22/11/2026",
     area: "khac",
