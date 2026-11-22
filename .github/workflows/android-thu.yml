@@ -1,0 +1,38 @@
+# Đóng gói tệp cài Android (bước thử thu âm). Chỉ chạy khi thư mục android/ đổi,
+# không đụng tới web (Vercel) hay cầu nối (Fly.io).
+name: Android thử
+
+on:
+  push:
+    paths:
+      - "android/**"
+      - ".github/workflows/android-thu.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+      - name: Đóng gói tệp cài
+        run: gradle --no-daemon assembleDebug
+      - name: Đổi tên tệp cài
+        run: cp app/build/outputs/apk/debug/app-debug.apk tyzo-thu-thu-am.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tyzo-thu-thu-am
+          path: android/tyzo-thu-thu-am.apk
+          retention-days: 30
