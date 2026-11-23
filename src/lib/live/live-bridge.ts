@@ -6,6 +6,7 @@ import { LiveMeter } from "./live-meter.ts";
 import { verifyLiveTicket } from "./live-ticket.ts";
 import { targetHasVoice, liveLang } from "./langs.ts";
 import { audioAppend, buildSessionUpdate, genOf, parseServerEvent, SESSION_FINISH } from "./qwen-protocol.ts";
+import { mulawToPcm16 } from "./mulaw.ts";
 
 /**
  * Cầu nối dịch trực tiếp: trình duyệt ⇄ cầu nối ⇄ Alibaba.
@@ -161,6 +162,8 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   /** Đã bị cắt vì im lặng: chưa nối lại, chờ khung có tiếng. */
   let dormant = false;
   let wakeUps = 0;
+  /** Khách gửi tiếng nén μ-law (ứng dụng 0.7+); mặc định PCM 16 bit. */
+  let mulaw = false;
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
@@ -210,7 +213,9 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
       }
       if (event.kind === "ready") {
         ready = true;
-        send(client, { type: "ready", audio });
+        // codecs: kiểu tiếng cầu nối nhận được. Ứng dụng 0.7+ thấy "mulaw" thì gửi tiếng nén (nửa dữ liệu);
+        // web và ứng dụng cũ bỏ qua trường này, vẫn gửi PCM.
+        send(client, { type: "ready", audio, codecs: ["pcm", "mulaw"] });
         continue;
       }
       if (event.kind === "usage") {
@@ -284,24 +289,27 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
     if (closed) return;
     if (!isBinary) {
       try {
-        const message = JSON.parse(data.toString()) as { type?: string };
+        const message = JSON.parse(data.toString()) as { type?: string; value?: string };
         if (message.type === "stop") stop("nguoi-dung-dung");
+        // Khách chọn kiểu tiếng cho các khung sau (thứ tự tin trên một kết nối được giữ nguyên).
+        if (message.type === "codec") mulaw = message.value === "mulaw";
       } catch {
         /* bỏ qua */
       }
       return;
     }
     if (finishing) return;
+    const pcm = mulaw ? mulawToPcm16(data as Buffer) : (data as Buffer);
     if (dormant) {
       // Khung im lúc ngủ bỏ đi (không gửi, không trừ Token). Có tiếng lại thì nối Alibaba.
-      if (pcmPeak(data as Buffer) < SILENT_PEAK) return;
+      if (pcmPeak(pcm) < SILENT_PEAK) return;
       dormant = false;
       wakeUps += 1;
       connectUpstream();
       return;
     }
     if (!ready || !upstream || upstream.readyState !== WebSocket.OPEN) return;
-    const bytes = data as Buffer;
+    const bytes = pcm;
     if (meter.mustStop()) return;
     upstream.send(audioAppend(bytes));
     meter.audio(bytes.length / PCM_BYTES_PER_SEC);

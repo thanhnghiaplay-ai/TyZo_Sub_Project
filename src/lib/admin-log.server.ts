@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.6",
+    time: "07:08 23/11/2026",
+    area: "ha-tang",
+    text: "Chủ thử 0.6: tự nối lại chạy (đứt rồi dịch tiếp); 5G chậm >10 giây và có nối lại, Wi-Fi chậm ~3 giây không đứt; chữ nhảy khó đọc; nền quá đậm; bấm Bắt đầu phải tự chuyển sang phim; Dừng là mất phải mở lại. Chủ: «dựa theo những quy tắc khi đề xuất hãy tối ưu nó». Nguyên nhân 5G: ứng dụng gửi PCM 32 KB/giây liên tục, OkHttp xếp hàng không giới hạn nên trễ dồn, ping kẹt sau hàng đợi. Ứng dụng 0.7 (versionCode 7): nén μ-law (Audio.kt, 16 KB/giây) khi ready.codecs có mulaw, báo trước bằng tin {type:codec,value:mulaw}; không gửi khi im quá 1,5 giây (đỉnh < 100), gửi kèm 0,3 giây trước tiếng; hàng đợi quá 15 khung thì bỏ khung mới; ping 30 giây; nút ⏸ Tạm dừng / ▶ Tiếp tục trên khung (LiveState.paused, không gửi tiếng, tự kết thúc sau 15 phút); vẽ lại khung tối đa ~3 lần/giây, chữ bám đáy, tối thiểu 2 dòng; nền mờ 95/255 (nền đậm 200); moveTaskToBack sau khi cấp quyền. Cầu nối: ready thêm codecs [pcm, mulaw], tin codec, mulaw.ts giải về PCM (test khứ hồi và test cầu nối). Web và ứng dụng cũ không đổi (bỏ qua codecs, vẫn PCM). Điều khoản 2026-11-23.1 (đoạn ứng dụng: chỉ trừ theo tiếng đã gửi, im lặng hay tạm dừng không trừ, có thể nén tiếng).",
+  },
+  {
     version: "5.42.5",
     time: "23:17 22/11/2026",
     area: "ha-tang",

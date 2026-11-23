@@ -394,3 +394,54 @@ describe("Alibaba cắt vì im lặng", () => {
     client.terminate();
   });
 });
+
+describe("tiếng nén μ-law (ứng dụng 0.7)", () => {
+  it("nén rồi giải nén sai lệch nhỏ (đủ cho nhận dạng), im vẫn là im", async () => {
+    const { encodeMulawSample, mulawToPcm16 } = await import("./mulaw.ts");
+    for (const v of [0, 1, -1, 100, -100, 1000, -1000, 8000, -8000, 30000, -32768, 32767]) {
+      const back = mulawToPcm16(Uint8Array.of(encodeMulawSample(v))).readInt16LE(0);
+      assert.ok(Math.abs(back - v) <= Math.max(8, Math.abs(v) * 0.07), `${v} → ${back}`);
+    }
+    assert.ok(Math.abs(mulawToPcm16(Uint8Array.of(encodeMulawSample(0))).readInt16LE(0)) < 8);
+  });
+
+  it("cầu nối báo nhận mulaw; khách chọn mulaw thì Alibaba nhận PCM dài gấp đôi, tiền tính theo PCM", async () => {
+    const { encodeMulawSample } = await import("./mulaw.ts");
+    const wss = new WebSocketServer({ port: 0 });
+    const sizes: number[] = [];
+    wss.on("connection", (ws) => {
+      ws.on("message", (raw) => {
+        const msg = JSON.parse(raw.toString()) as { type: string; audio?: string };
+        if (msg.type === "session.update") ws.send(JSON.stringify({ type: "session.updated" }));
+        else if (msg.type === "input_audio_buffer.append") sizes.push(Buffer.from(msg.audio ?? "", "base64").length);
+        else if (msg.type === "session.finish") ws.send(JSON.stringify({ type: "session.finished" }));
+      });
+    });
+    const url = `ws://127.0.0.1:${(wss.address() as { port: number }).port}/realtime`;
+    const bill = fakeBilling(1_000_000);
+    const server = createServer();
+    attachLiveBridge(server, { secret: "k", upstream: async () => ({ url, key: "K" }), billing: bill.billing, blockSeconds: 120, drainMs: 1500 });
+    await new Promise<void>((r) => server.listen(0, r));
+    const token = signLiveTicket("k", { uid: "u1", sid: "mu", model: LIVE_MODEL_38, target: "vi", source: "", audio: false, exp: Date.now() + 60_000 });
+    const client = new WebSocket(`ws://127.0.0.1:${(server.address() as { port: number }).port}/live?ticket=${encodeURIComponent(token)}`);
+    const msgs: Array<{ type: string; [k: string]: unknown }> = [];
+    client.on("message", (data, isBinary) => {
+      if (!isBinary) msgs.push(JSON.parse(data.toString()));
+    });
+    const closed = new Promise<number>((r) => client.on("close", (code) => r(code)));
+    await new Promise((r) => client.on("open", r));
+    while (!msgs.some((m) => m.type === "ready")) await new Promise((r) => setTimeout(r, 20));
+    assert.deepEqual(msgs.find((m) => m.type === "ready")!.codecs, ["pcm", "mulaw"]);
+    client.send(JSON.stringify({ type: "codec", value: "mulaw" }));
+    const frame = Buffer.alloc(1600, encodeMulawSample(5000)); // 0,1 giây μ-law
+    client.send(frame);
+    while (sizes.length < 1) await new Promise((r) => setTimeout(r, 20));
+    assert.equal(sizes[0], 3200, "Alibaba nhận PCM 16 bit, 0,1 giây");
+    client.send(JSON.stringify({ type: "stop" }));
+    await closed;
+    assert.deepEqual(bill.log.closed, bill.log.opened);
+    server.close();
+    wss.close();
+    client.terminate();
+  });
+});

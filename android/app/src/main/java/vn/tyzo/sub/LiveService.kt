@@ -52,6 +52,18 @@ class LiveService : Service() {
         private const val SAMPLE_RATE = 16_000
         private const val FRAME_SAMPLES = SAMPLE_RATE / 10 // 100 ms = 3200 byte
         private const val DRAIN_MS = 10_000L
+        /** Dưới mức này (khoảng -50 dBFS) coi khung là im. Cùng ngưỡng với cầu nối. */
+        private const val SILENT_PEAK = 100
+        /** Im lâu hơn chừng này thì ngừng gửi. Đủ dài để Alibaba thấy khoảng lặng và chốt câu. */
+        private const val QUIET_MS = 1_500L
+        /** Số khung im (100 ms mỗi khung) gửi kèm ngay trước khi có tiếng lại. */
+        private const val PREROLL_FRAMES = 3
+        /** Hàng đợi gửi quá chừng này khung (100 ms mỗi khung) thì bỏ khung mới (mạng chậm), giữ phụ đề không trễ dồn. */
+        private const val MAX_QUEUE_FRAMES = 15L
+        /** Tạm dừng quá lâu thì tự kết thúc phiên. */
+        private const val PAUSE_LIMIT_MS = 15 * 60_000L
+        /** Vẽ lại khung phụ đề tối đa chừng này lần mỗi giây, đỡ chữ nhảy liên tục. */
+        private const val REDRAW_MS = 350L
         /** Nối lại tối đa chừng này lần liên tiếp khi đường nối bị đứt. */
         private const val MAX_RETRIES = 3
         /** Mã đóng của cầu nối không nên nối lại: model/ngôn ngữ sai, hết Token, chưa cấu hình. */
@@ -73,6 +85,10 @@ class LiveService : Service() {
     private val socketOpen = AtomicBoolean(false)
     private val finished = AtomicBoolean(false)
     private val transcript = Transcript()
+    /** Cầu nối nhận tiếng nén μ-law (ready.codecs); đặt lại mỗi lần nối. */
+    @Volatile private var mulaw = false
+    private var redrawPending = false
+    private var pausedAtMs = 0L
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -94,6 +110,8 @@ class LiveService : Service() {
         transcript.clear()
         sessionStartMs = 0L
         retries = 0
+        mulaw = false
+        LiveState.paused = false
         lastError = ""
         LiveState.unlinked = false
         LiveState.phase = LiveState.Phase.STARTING
@@ -112,7 +130,7 @@ class LiveService : Service() {
             return START_NOT_STICKY
         }
 
-        overlay = CaptionOverlay(this, prefs) { requestStop() }.also { it.show() }
+        overlay = CaptionOverlay(this, prefs, onStop = { requestStop() }, onPause = { togglePause() }).also { it.show() }
         try {
             openCapture(resultCode, data)
         } catch (e: Exception) {
@@ -172,6 +190,9 @@ class LiveService : Service() {
         worker = Thread({
             val shorts = ShortArray(FRAME_SAMPLES)
             val bytes = ByteBuffer.allocate(FRAME_SAMPLES * 2).order(ByteOrder.LITTLE_ENDIAN)
+            // Vài khung im ngay trước khi có tiếng: gửi kèm để không mất âm đầu của câu.
+            val preroll = ArrayDeque<ByteString>()
+            var lastLoudMs = 0L
             while (capturing.get()) {
                 val n = rec.read(shorts, 0, shorts.size)
                 if (n < 0) {
@@ -180,15 +201,43 @@ class LiveService : Service() {
                 }
                 if (n == 0) continue
                 var sum = 0.0
-                bytes.clear()
+                var peak = 0
                 for (i in 0 until n) {
-                    val s = shorts[i]
+                    val s = shorts[i].toInt()
                     sum += s.toDouble() * s
-                    bytes.putShort(s)
+                    val a = if (s < 0) -s else s
+                    if (a > peak) peak = a
                 }
                 val rms = sqrt(sum / n)
                 LiveState.levelDb = if (rms < 1.0) -90.0 else max(-90.0, 20.0 * log10(rms / 32768.0))
-                if (socketOpen.get()) socket?.send(bytes.array().toByteString(0, n * 2))
+                val ws = socket
+                if (!socketOpen.get() || ws == null || LiveState.paused) {
+                    preroll.clear()
+                    continue
+                }
+                val now = System.currentTimeMillis()
+                if (peak >= SILENT_PEAK) lastLoudMs = now
+                // Nén μ-law (nửa dữ liệu) khi cầu nối nhận được; không thì PCM như cũ.
+                val frame = if (mulaw) {
+                    ByteArray(n) { Audio.mulaw(shorts[it].toInt()) }.toByteString()
+                } else {
+                    bytes.clear()
+                    for (i in 0 until n) bytes.putShort(shorts[i])
+                    bytes.array().toByteString(0, n * 2)
+                }
+                // Im quá QUIET_MS (sau câu đã gửi đủ khoảng lặng để chốt): không gửi, không tốn mạng, không trừ Token.
+                if (now - lastLoudMs > QUIET_MS) {
+                    preroll.addLast(frame)
+                    while (preroll.size > PREROLL_FRAMES) preroll.removeFirst()
+                    continue
+                }
+                // Mạng gửi không kịp (5G yếu): bỏ khung thay vì xếp hàng, để phụ đề không trễ dồn mãi.
+                if (ws.queueSize() > frame.size * MAX_QUEUE_FRAMES) {
+                    preroll.clear()
+                    continue
+                }
+                while (preroll.isNotEmpty()) ws.send(preroll.removeFirst())
+                ws.send(frame)
             }
         }, "thu-tieng").also { it.start() }
     }
@@ -225,6 +274,7 @@ class LiveService : Service() {
         LiveState.balance = ticket.balance
         if (finished.get() || LiveState.phase == LiveState.Phase.STOPPING) return
         val request = Request.Builder().url(ticket.url.replaceFirst("wss://", "https://").replaceFirst("ws://", "http://")).build()
+        mulaw = false
         socket = Api.client.newWebSocket(request, object : WebSocketListener() {
             // Kết nối cũ (trước khi nối lại) báo muộn thì bỏ qua.
             private fun current(webSocket: WebSocket) = webSocket === socket
@@ -313,6 +363,13 @@ class LiveService : Service() {
                 if (sessionStartMs == 0L) sessionStartMs = LiveState.startedAtMs
                 // Nối lại được: đếm lại từ đầu, bỏ câu lỗi của kết nối cũ, giữ phụ đề đang có.
                 retries = 0
+                // Cầu nối nhận tiếng nén thì báo trước rồi mới gửi khung nén (thứ tự tin được giữ nguyên).
+                val codecs = msg.optJSONArray("codecs")
+                val canMulaw = codecs != null && (0 until codecs.length()).any { codecs.optString(it) == "mulaw" }
+                if (canMulaw && !mulaw) {
+                    socket?.send("{\"type\":\"codec\",\"value\":\"mulaw\"}")
+                    mulaw = true
+                }
                 lastError = ""
                 LiveState.status = "Đang dịch"
                 if (!reconnected) overlay?.message("Đang nghe… mở video có tiếng.")
@@ -339,7 +396,33 @@ class LiveService : Service() {
                 LiveState.status = lastError
             }
         }
-        overlay?.update(transcript.latest(prefs.captionLines), LiveState.status)
+        redraw()
+    }
+
+    /** Vẽ lại khung phụ đề, gom các thay đổi dồn dập (chữ tạm Alibaba sửa liên tục) thành tối đa ~3 lần mỗi giây. */
+    private fun redraw() {
+        if (redrawPending) return
+        redrawPending = true
+        main.postDelayed({
+            redrawPending = false
+            if (!finished.get()) overlay?.update(transcript.latest(prefs.captionLines), statusLine())
+        }, REDRAW_MS)
+    }
+
+    private fun statusLine(): String = if (LiveState.paused) "Đã tạm dừng. Bấm ▶ để dịch tiếp." else LiveState.status
+
+    /** Tạm dừng / tiếp tục từ khung phụ đề: giữ phiên và quyền thu, chỉ ngừng gửi tiếng. */
+    private fun togglePause() {
+        if (finished.get() || LiveState.phase == LiveState.Phase.STOPPING) return
+        LiveState.paused = !LiveState.paused
+        overlay?.setPaused(LiveState.paused)
+        if (LiveState.paused) {
+            val at = System.currentTimeMillis()
+            pausedAtMs = at
+            // Quên tiếp tục quá lâu thì tự kết thúc, nhả Token giữ thừa.
+            main.postDelayed({ if (LiveState.paused && pausedAtMs == at) requestStop() }, PAUSE_LIMIT_MS)
+        }
+        overlay?.update(transcript.latest(prefs.captionLines), statusLine())
     }
 
     private fun closeText(code: Int, reason: String): String = when {
@@ -368,6 +451,7 @@ class LiveService : Service() {
 
     private fun finish(message: String) {
         if (!finished.compareAndSet(false, true)) return
+        LiveState.paused = false
         stopReading()
         // Lưu chữ của phiên vừa rồi trên máy, như web (xuất SRT, VTT, TXT sau).
         if (sessionStartMs > 0) Session.save(this, transcript.cues(), sessionStartMs)

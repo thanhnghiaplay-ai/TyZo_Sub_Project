@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.42.5";
+export const APP_VERSION = "5.42.6";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.42.6",
+    time: "07:08 23/11/2026",
+    title: "Ứng dụng Android 0.7: dịch mượt hơn trên 5G, có Tạm dừng, phụ đề dễ đọc hơn.",
+    points: [
+      "Tiếng gửi đi gọn một nửa, mạng chậm thì bỏ phần cũ nên phụ đề không trễ dồn.",
+      "Nút Tạm dừng / Tiếp tục ngay trên khung phụ đề; im lặng hay tạm dừng không trừ Token dịch.",
+      "Bấm Bắt đầu xong ứng dụng tự lùi về phim; khung phụ đề nền nhạt, chữ đứng yên hơn.",
+      "Điều khoản ghi việc không trừ Token dịch lúc im lặng; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.42.5",
     time: "23:17 22/11/2026",

@@ -22,12 +22,18 @@ import android.widget.TextView
  * cỡ chữ, số dòng, chữ gốc, nền đậm; phần chữ tạm (chưa chốt) hiện mờ. Kéo lên xuống để đổi chỗ.
  * Mọi hàm gọi từ luồng chính.
  */
-class CaptionOverlay(private val context: Context, private val prefs: Prefs, private val onStop: () -> Unit) {
+class CaptionOverlay(
+    private val context: Context,
+    private val prefs: Prefs,
+    private val onStop: () -> Unit,
+    private val onPause: () -> Unit,
+) {
     private val wm = context.getSystemService(WindowManager::class.java)
     private val ui = Ui(context)
     private var root: LinearLayout? = null
     private lateinit var body: TextView
     private lateinit var statusView: TextView
+    private lateinit var pauseView: TextView
     private lateinit var params: WindowManager.LayoutParams
 
     @SuppressLint("ClickableViewAccessibility")
@@ -38,14 +44,17 @@ class CaptionOverlay(private val context: Context, private val prefs: Prefs, pri
             orientation = LinearLayout.VERTICAL
             setPadding(ui.dp(14), ui.dp(10), ui.dp(14), ui.dp(8))
             // Nền đậm như web (solid) hoặc nền mờ để thấy video phía sau.
-            background = ui.round(if (prefs.solid) Color.argb(235, 14, 20, 27) else Color.argb(150, 0, 0, 0), 16f)
+            // Nền nhạt để vẫn thấy video phía sau (Chủ góp ý 22/11/2026: nền quá đậm); «Nền đậm» vẫn đậm hơn.
+            background = ui.round(if (prefs.solid) Color.argb(200, 14, 20, 27) else Color.argb(95, 0, 0, 0), 16f)
         }
         body = TextView(context).apply {
             setTextColor(Color.WHITE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, Caption.sp(prefs.captionSize))
             typeface = Theme.semibold(context)
             setShadowLayer(4f, 0f, 1f, Color.BLACK)
-            gravity = Gravity.CENTER_HORIZONTAL
+            // Chữ bám đáy, khung giữ tối thiểu 2 dòng: thêm chữ không làm khung co giãn, mắt đọc một chỗ.
+            gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+            minLines = if (prefs.showSource) 3 else 2
             setLineSpacing(0f, 1.15f)
             text = "Đang mở phiên dịch…"
         }
@@ -61,6 +70,15 @@ class CaptionOverlay(private val context: Context, private val prefs: Prefs, pri
             typeface = Theme.regular(context)
             setPadding(ui.dp(6), 0, 0, 0)
         }
+        pauseView = TextView(context).apply {
+            text = "⏸ Tạm dừng"
+            setTextColor(Color.WHITE)
+            typeface = Theme.semibold(context)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            background = ui.round(Color.argb(90, 255, 255, 255), 999f)
+            setPadding(ui.dp(12), ui.dp(5), ui.dp(12), ui.dp(5))
+            setOnClickListener { onPause() }
+        }
         val stop = TextView(context).apply {
             text = "■ Dừng"
             setTextColor(Theme.DARK.ink)
@@ -72,6 +90,7 @@ class CaptionOverlay(private val context: Context, private val prefs: Prefs, pri
         }
         bar.addView(logo, LinearLayout.LayoutParams(ui.dp(16), ui.dp(16)))
         bar.addView(statusView, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
+        bar.addView(pauseView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = ui.dp(8) })
         bar.addView(stop)
         box.addView(body)
         box.addView(bar)
@@ -145,6 +164,12 @@ class CaptionOverlay(private val context: Context, private val prefs: Prefs, pri
             }
         }
         body.text = out
+    }
+
+    /** Đổi chữ nút: đang tạm dừng thì «▶ Tiếp tục». */
+    fun setPaused(paused: Boolean) {
+        if (root == null) return
+        pauseView.text = if (paused) "▶ Tiếp tục" else "⏸ Tạm dừng"
     }
 
     fun message(text: String) {

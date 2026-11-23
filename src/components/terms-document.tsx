@@ -95,7 +95,7 @@ export function TermsDocument() {
       </p>
 
       <p>
-        Ứng dụng Android (TyZo Sub, Android 10 trở lên) là một cách khác để dùng Dịch trực tiếp. Bạn liên kết ứng dụng với tài khoản bằng mã lấy ở trang Tài khoản. Khi bạn bấm Bắt đầu và đồng ý cho chia sẻ, ứng dụng thu tiếng mà điện thoại đang phát (ví dụ video bạn đang xem ở ứng dụng khác), gửi đi dịch và hiện phụ đề nổi trên màn hình. Android gọi đây là chia sẻ màn hình, nhưng ứng dụng chỉ lấy tiếng, không chụp hay quay hình. Ứng dụng không tải video và không lưu tiếng. Phiên dịch trừ Token dịch như Dịch trực tiếp trên web, kể cả lúc video im lặng, cho tới khi bạn bấm Dừng. Quyền đối với nội dung đang phát vẫn là trách nhiệm của bạn như mục 3.
+        Ứng dụng Android (TyZo Sub, Android 10 trở lên) là một cách khác để dùng Dịch trực tiếp. Bạn liên kết ứng dụng với tài khoản bằng mã lấy ở trang Tài khoản. Khi bạn bấm Bắt đầu và đồng ý cho chia sẻ, ứng dụng thu tiếng mà điện thoại đang phát (ví dụ video bạn đang xem ở ứng dụng khác), gửi đi dịch và hiện phụ đề nổi trên màn hình. Android gọi đây là chia sẻ màn hình, nhưng ứng dụng chỉ lấy tiếng, không chụp hay quay hình. Ứng dụng không tải video và không lưu tiếng. Phiên dịch trừ Token dịch như Dịch trực tiếp trên web theo phần tiếng đã gửi đi dịch. Khi điện thoại im lặng quá khoảng 2 giây hoặc bạn bấm Tạm dừng trên khung phụ đề, ứng dụng không gửi tiếng nên không trừ Token; phiên vẫn mở cho tới khi bạn bấm Dừng, hoặc tự kết thúc sau 15 phút tạm dừng. Để đỡ tốn dữ liệu di động, ứng dụng có thể nén tiếng trước khi gửi. Quyền đối với nội dung đang phát vẫn là trách nhiệm của bạn như mục 3.
       </p>
 
       <h2>2. Điều kiện để dùng</h2>

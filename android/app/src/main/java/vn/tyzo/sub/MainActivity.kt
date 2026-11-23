@@ -238,10 +238,10 @@ class MainActivity : Activity() {
         // Bắt đầu / Dừng.
         val run = section(col, "Dịch video đang phát", "DỊCH TRỰC TIẾP")
         run.addView(ui.muted(
-            "1. Bấm Bắt đầu. Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình.\n" +
-                "2. Mở video có tiếng ở Bilibili, YouTube, TikTok… Phụ đề hiện nổi trên video.\n" +
-                "3. Kéo khung phụ đề lên xuống để đổi chỗ. Bấm «■ Dừng» trên khung hoặc nút Dừng ở đây khi xong.\n" +
-                "Token dịch trừ theo thời gian nghe, kể cả lúc video im lặng.", 14f,
+            "1. Mở phim ở Bilibili, YouTube, TikTok… rồi quay lại đây bấm Bắt đầu. Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình.\n" +
+                "2. Ứng dụng tự lùi về phim. Bấm phát, phụ đề hiện nổi trên video.\n" +
+                "3. Kéo khung phụ đề lên xuống để đổi chỗ. «⏸ Tạm dừng» / «▶ Tiếp tục» ngay trên khung; «■ Dừng» khi xem xong.\n" +
+                "Chỉ trừ Token khi điện thoại đang phát tiếng. Im lặng quá 2 giây hoặc đang Tạm dừng thì không gửi tiếng, không trừ Token.", 14f,
         ), ui.full(8))
         startButton = ui.primary("Bắt đầu") { onStartStop() }.apply { textSize = 17f; minHeight = ui.dp(52) }
         run.addView(startButton, ui.full(14))
@@ -494,5 +494,8 @@ class MainActivity : Activity() {
                 .putExtra(LiveService.EXTRA_RESULT_CODE, resultCode)
                 .putExtra(LiveService.EXTRA_DATA, data),
         )
+        // Lùi về ứng dụng đang xem phim, khách khỏi phải tự chuyển. Phụ đề nổi hiện trên phim;
+        // lúc chưa phát (im lặng) ứng dụng không gửi tiếng nên không trừ Token.
+        moveTaskToBack(true)
     }
 }

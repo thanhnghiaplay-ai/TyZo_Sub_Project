@@ -12,6 +12,8 @@ object LiveState {
     @Volatile var startedAtMs = 0L
     /** Máy chủ báo khóa máy không còn hiệu lực: màn hình đưa về bước liên kết. */
     @Volatile var unlinked = false
+    /** Khách bấm Tạm dừng trên khung phụ đề: giữ phiên, không gửi tiếng (không trừ Token). */
+    @Volatile var paused = false
 
     val running get() = phase != Phase.IDLE
 }
