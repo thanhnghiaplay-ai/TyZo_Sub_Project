@@ -26,6 +26,7 @@ Sáu mục Chủ xác nhận đã xong:
 Đã xong, đừng làm lại: `HANDOFF_NANG_CAP.md` (A, B, C đều xong); thuật ngữ zh (mỗi bộ 55–104 mục); sáu mục trên.
 
 ## 3. Tiến độ phiên gần nhất (20/11/2026, từ v5.17.7)
+- **v5.42.6 + ứng dụng 0.7 (23/11/2026, Claude)**: tối ưu theo phản hồi thử 0.6 (xem ADMIN_LOG 5.42.6). tsc sạch, test 191 + 1476 pass. Kotlin kiểm bằng GitHub Actions. Chưa thử trên điện thoại (5G, Tạm dừng, lùi về phim).
 - **Đẩy chính thức v5.42.5 + ứng dụng 0.6**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. GitHub Actions đăng bản phát hành android-v0.6 (khóa ký). Trên VPS: `tyzo` → 2. Chưa thử 0.6 trên điện thoại.
 - **v5.42.5 + ứng dụng 0.6 (22/11/2026 23:20, Claude)**: tự nối lại khi mất mạng, khung nổi chỉ hiện phần cuối, cầu nối chờ êm khi Alibaba cắt vì im, nhật ký mã khi khách rời. tsc sạch, test 191 + 1474 pass. Kotlin kiểm bằng GitHub Actions (máy Claude không có Android SDK). Chưa thử trên điện thoại. Chưa đẩy chính thức; sau đó tyzo → 2, ứng dụng báo «Có bản mới».
 - **Đẩy chính thức v5.42.4**: Chủ nói «Đẩy chính thức». `main` kéo thẳng bằng `work`. tsc sạch, test 191 + 1473 pass. Khách đồng ý lại điều khoản 2026-11-22.9. Trên VPS: `tyzo` → 2.
