@@ -43,6 +43,18 @@ Cân bằng = Kỹ bỏ bước 5. Nhanh = không Demucs, không VAD (cắt đo�
 - Không cứu được: câu thì thầm tiếng Anh dưới nhạc to (đã thử dải cao, trừ phổ, phần nhạc Demucs, SepFormer: chỉ ra «Thank you»), giọng địa phương (Tứ Xuyên ở thử 1), tiếng lóng nghe sai («kinda goated» → «kinda good»).
 - Không dùng cho Dịch trực tiếp: cần cả nhóm câu và hàng chục giây.
 
+## 3b. Thử DeepFilterNet 3 (đề xuất 8 và 12 bước của Google)
+
+`dfn.py` (model lấy từ Hugging Face `fal/DeepFilterNet3`, GitHub bị chặn). Nhanh: 0,9 s cho clip 29 s trên CPU. Chạy cùng lúc với luồng Kỹ để so công bằng:
+
+| Luồng | Trung | Nhật | Hàn | Anh |
+|---|---|---|---|---|
+| Kỹ (chạy lại) | 5,4% | 9,0% | 23,2% | 26,7% |
+| Kỹ + DeepFilterNet thêm 2 bản ứng viên | 2,3% | 11,4% | 31,0% | 26,7% |
+| Kỹ + DeepFilterNet nối tiếp sau Demucs (kiểu Google) | 5,4% | 12,7% | 34,5% | 26,7% |
+
+Kết luận: KHÔNG dùng. DeepFilterNet coi giọng thì thầm là tiếng ồn (clip Hàn: câu 3 từ -23 dB xuống -37 dB, câu 10 từ -28 dB xuống -35 dB), và hai bản khử ồn ra chữ giống nhau nên «áp đảo số đông» khi hợp nhất. Luồng Kỹ tự nó cũng dao động giữa các lần chạy (Trung 2,3–5,4%, Hàn 19,7–23,2%), nên chênh dưới ~4 điểm chưa chắc là thật.
+
 ## 4. Thời gian và chi phí
 
 Đo trên 4 nhân CPU, clip 38,5 s: Demucs 21,2 s; VAD 0,65 s; SepFormer mọi đoạn 32,1 s; một lần gọi turbo (22 s tiếng) ~1,1 s; Qwen4-Max ~2,2 s; Qwen3.8 trên Groq 0,33 s.

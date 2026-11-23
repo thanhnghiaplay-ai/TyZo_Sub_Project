@@ -107,8 +107,8 @@ def ali(messages, model):
     body = json.dumps({"model": model, "messages": messages, "temperature": 0, "enable_thinking": False, "response_format": {"type": "json_object"}}).encode()
     for k in range(4):
         try:
-            req = urllib.request.Request(os.environ["ALI_BASE"] + "/compatible-mode/v1/chat/completions", body,
-                                         {"Authorization": "Bearer " + os.environ.get("ALI_API_KEY", "x"), "Content-Type": "application/json", "User-Agent": "asr-bench/1.0"})
+            req = urllib.request.Request("https://ws-3cg8k1b2dzc84cbl.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions", body,
+                                         {"Authorization": "Bearer x", "Content-Type": "application/json", "User-Agent": "asr-bench/1.0"})
             return json.load(urllib.request.urlopen(req, timeout=240))["choices"][0]["message"]["content"]
         except Exception as e:
             print("  [ali]", e, flush=True); time.sleep(4)
@@ -164,14 +164,15 @@ def gaps_of(groups, dur, min_gap=1.0):
         res.append([a, b])
     return res
 
-def probe_gap(mix, gap, L):
+def probe_gap(mix, gap, L, dmix=None):
     """Dò một khoảng VAD bỏ qua (thì thầm dưới nhạc). Chỉ nhận khi các lần nhận dạng khớp nhau."""
     from scipy import signal as S
     g = [gap]; agc = norm_spans(mix, g, 0.1); vf = norm_spans(voice_filter(mix), g, 0.1)
     b, a = S.butter(4, [1500 / (SR / 2), 7000 / (SR / 2)], "band"); hi = norm_spans(S.lfilter(b, a, mix), g, 0.1)
     jobs = [lambda: text_of(mix, g, L, words=True), lambda: text_of(agc, g, L, words=True), lambda: text_of(vf, g, L, words=True),
             lambda: text_of(agc, g, L, LARGE, words=True), lambda: text_of(hi, g, L, words=True), lambda: text_of(hi, g, L, LARGE, words=True)]
-    with ThreadPoolExecutor(6) as ex: c = list(ex.map(lambda f: f(), jobs))
+    if dmix is not None: jobs.append(lambda: text_of(norm_spans(dmix, g, 0.1), g, L, words=True))
+    with ThreadPoolExecutor(len(jobs)) as ex: c = list(ex.map(lambda f: f(), jobs))
     nonempty = [x for x in c if SC.norm(x["text"], L) and not interjection_only(x["text"], L)]
     if len(nonempty) < 3: return None, c, 1.0
     d = agreement(nonempty, L)
@@ -271,12 +272,20 @@ def run(F, cfg, L=None):
         groups = [[s] for s in spans]
     else:
         spans = speech_spans(voc, thr=cfg.get("vad", 0.5)); groups = group(spans, max_len=cfg.get("maxlen", 25))
+    dmix = None
+    if cfg.get("dfn"):
+        from dfn import denoise
+        dmix = denoise(mix)
+        if cfg["dfn"] == "chain":      # kiểu Google: Demucs → DeepFilterNet, mọi bước sau dùng bản đã khử ồn
+            voc = denoise(voc); spans = speech_spans(voc, thr=cfg.get("vad", 0.5)); groups = group(spans, max_len=cfg.get("maxlen", 25))
     vocn = norm_spans(voc, spans)
     def cands(g):
         second = (lambda: text_of(agc(voice_filter(mix)), g, L, words=True)) if cfg.get("agc") else (lambda: text_of(vocn, g, L, words=True))
         jobs = [lambda: text_of(mix, g, L, words=True), second]
         if cfg.get("n", 4) >= 3: jobs.append(lambda: text_of(voice_filter(mix), g, L, words=True))
         if cfg.get("n", 4) >= 4: jobs.append(lambda: text_of(vocn, g, L, slowdown=0.85))
+        if cfg.get("dfn") == "add":    # thêm bản: tiếng gốc đã khử ồn, và bản đó chỉnh âm lượng từng câu
+            jobs += [lambda: text_of(dmix, g, L, words=True), lambda: text_of(norm_spans(dmix, g), g, L, words=True)]
         with ThreadPoolExecutor(len(jobs)) as ex: c = list(ex.map(lambda f: f(), jobs))
         d = agreement(c, L)
         if cfg.get("esc", True) and d > cfg.get("esc_thr", 0.12):
@@ -289,7 +298,7 @@ def run(F, cfg, L=None):
     st_probe = []
     if cfg.get("probe", True) and not cfg.get("novad"):
         gaps = gaps_of(groups, len(mix) / SR)
-        with ThreadPoolExecutor(3) as ex: pr = list(ex.map(lambda gp: probe_gap(mix, gp, L), gaps))
+        with ThreadPoolExecutor(3) as ex: pr = list(ex.map(lambda gp: probe_gap(mix, gp, L, dmix if cfg.get("dfn") == "add" else None), gaps))
         for gp, (ok, c, d) in zip(gaps, pr):
             st_probe.append({"gap": [round(gp[0], 1), round(gp[1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "ok": ok is not None})
             if ok is not None: groups.append([gp]); allc.append((ok, 0.0))
