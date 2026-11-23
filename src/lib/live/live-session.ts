@@ -2,6 +2,7 @@ import { pcm16BytesToFloat } from "./live-audio.ts";
 import { parseBridgeMessage, type BridgeMessage } from "./live-inbox.ts";
 import { CaptureError, type CaptureHandle, type CaptureHandlers } from "./live-mic.ts";
 import type { ParsedEvent } from "./qwen-protocol.ts";
+import { LiveFrameGate } from "./live-gate.ts";
 
 export type SessionState = "idle" | "connecting" | "live" | "closing" | "closed";
 
@@ -43,6 +44,23 @@ type SessionHandlers = {
 };
 
 const OPEN = 1;
+
+/** Số lần nối lại liên tiếp tối đa khi đường nối bị đứt (giống ứng dụng 0.6). */
+export const LIVE_MAX_RETRIES = 3;
+/** Cầu nối đóng vì lý do của khách hay của tài khoản: không nối lại. */
+const FINAL_REASONS = new Set(["het-tien", "nguoi-dung-dung", "khach-roi", "khach-loi"]);
+const FINAL_CODES = new Set([4400, 4402, 4503]);
+
+/**
+ * Phiên vừa đóng có nên tự nối lại không: khách không bấm Dừng, không phải hết Token, model hay ngôn ngữ sai,
+ * phòng chưa cấu hình. Mạng đứt (1006), cầu nối lỗi (1011), vé hết hạn (4401), cầu nối bỏ cuộc với Alibaba (1000
+ * không kèm lý do) thì nối lại.
+ */
+export function liveRetryable(info: { code: number; reason: string; userStopped: boolean }): boolean {
+  if (info.userStopped) return false;
+  if (FINAL_REASONS.has(info.reason)) return false;
+  return !FINAL_CODES.has(info.code);
+}
 /** Quá ngưỡng này mà mạng chưa gửi kịp thì bỏ khung mới, tránh dồn bộ nhớ. 1 MB ≈ 31 giây. */
 const MAX_BUFFERED = 1_000_000;
 
@@ -67,6 +85,8 @@ export class LiveSession {
   private reason = "";
   private errorShown = false;
   private timer: unknown = null;
+  private paused = false;
+  private gate: LiveFrameGate | null = null;
 
   private readonly deps: SessionDeps;
   private readonly on: SessionHandlers;
@@ -101,6 +121,11 @@ export class LiveSession {
     this.socket = socket;
     socket.binaryType = "arraybuffer";
     socket.onmessage = (event) => this.handleMessage(event.data);
+    // Thu ngay khi nối được cầu nối; tiếng được giữ tạm trong trình duyệt tới lúc Alibaba sẵn sàng (live-gate.ts),
+    // nên mấy chữ đầu không bị mất mà cầu nối không phải đổi.
+    socket.onopen = () => {
+      if (this.state === "connecting" && !this.userStopped) void this.beginCapture();
+    };
     socket.onerror = () => undefined;
     socket.onclose = (event) => this.finish(event.code);
   }
@@ -123,6 +148,11 @@ export class LiveSession {
         }
         return;
       case "event":
+        // Lỗi của nhà cung cấp (cầu nối đã đổi sang câu tiếng Việt) hiện ở dòng báo lỗi, không lẫn vào phụ đề.
+        if (message.event.kind === "error") {
+          this.on.onError?.(message.event.message);
+          return;
+        }
         this.on.onEvent?.(message.event);
         return;
       case "balance":
@@ -172,9 +202,18 @@ export class LiveSession {
 
   private sendFrame(frame: Uint8Array) {
     const socket = this.socket;
-    if (!socket || socket.readyState !== OPEN || this.state !== "live") return;
-    if (socket.bufferedAmount > MAX_BUFFERED) return;
-    socket.send(frame);
+    if (!socket || socket.readyState !== OPEN || (this.state !== "live" && this.state !== "connecting")) return;
+    const now = Date.now();
+    this.gate ??= new LiveFrameGate(now);
+    for (const out of this.gate.push(frame, now, this.state === "live", this.paused)) {
+      if (socket.bufferedAmount > MAX_BUFFERED) return;
+      socket.send(out);
+    }
+  }
+
+  /** Tạm dừng / tiếp tục: giữ phiên, không gửi tiếng (không trừ Token) trong lúc tạm dừng. */
+  setPaused(paused: boolean) {
+    this.paused = paused;
   }
 
   private async endCapture() {

@@ -2,7 +2,6 @@
  * Phụ đề Dịch trực tiếp: tùy chỉnh hiển thị, chọn dòng để hiện (khung chính, phụ đề nổi, chữ lớn),
  * từ cần giữ đúng (tên riêng) và bản lưu phiên trước trên máy. Hàm thuần, test được bằng Node.
  */
-import type { LiveLine } from "./live-transcript.ts";
 
 export type CaptionSize = "s" | "m" | "l" | "xl";
 
@@ -14,9 +13,11 @@ export type CaptionPrefs = {
   source: boolean;
   /** Nền đậm (dễ đọc trên video sáng). */
   solid: boolean;
+  /** Chỉ hiện câu đã xong: không có chữ đang nhảy, đọc êm hơn, chậm hơn chút. Bản lưu cũ thiếu thì tắt. */
+  finalOnly: boolean;
 };
 
-export const CAPTION_DEFAULT: CaptionPrefs = { size: "m", lines: 2, source: false, solid: true };
+export const CAPTION_DEFAULT: CaptionPrefs = { size: "m", lines: 2, source: false, solid: true, finalOnly: false };
 
 /** Cỡ chữ dịch (px) theo nơi hiện: khung nổi nhỏ, màn chữ lớn to hơn. */
 export const CAPTION_PX: Record<CaptionSize, { float: number; big: number }> = {
@@ -37,26 +38,10 @@ export function parseCaptionPrefs(raw: unknown): CaptionPrefs {
     lines: Number.isFinite(count) ? Math.min(4, Math.max(1, Math.round(count))) : CAPTION_DEFAULT.lines,
     source: typeof row.source === "boolean" ? row.source : CAPTION_DEFAULT.source,
     solid: typeof row.solid === "boolean" ? row.solid : CAPTION_DEFAULT.solid,
+    finalOnly: typeof row.finalOnly === "boolean" ? row.finalOnly : CAPTION_DEFAULT.finalOnly,
   };
 }
 
-type CaptionRow = { id: string; translation: string; pending: string; source: string };
-
-/** Các dòng mới nhất có chữ (dịch hoặc gốc), tối đa `count`, cũ trước mới sau. */
-export function captionRows(lines: readonly LiveLine[], count: number): CaptionRow[] {
-  const out: CaptionRow[] = [];
-  for (let i = lines.length - 1; i >= 0 && out.length < count; i--) {
-    const line = lines[i];
-    const translation = line.translation.trim();
-    const pending = line.translationStash.trim();
-    const source = `${line.source}${line.sourceStash}`.trim();
-    if (!translation && !pending && !source) continue;
-    out.unshift({ id: line.id, translation: line.translation, pending: line.translationStash, source });
-  }
-  return out;
-}
-
-/** Tối đa bao nhiêu cặp từ cần giữ đúng, và độ dài mỗi bên (vé vào cầu nối nằm trong địa chỉ, phải gọn). */
 export const HOTWORD_MAX = 30;
 const SIDE_MAX = 40;
 

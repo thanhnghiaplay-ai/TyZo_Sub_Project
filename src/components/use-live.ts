@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { openLiveTicket } from "@/lib/live/live-open";
 import { getGiayShelf } from "@/lib/giay-room";
-import { LiveSession, type SocketLike } from "@/lib/live/live-session";
+import { LIVE_MAX_RETRIES, LiveSession, liveRetryable, type SocketLike } from "@/lib/live/live-session";
 import { LiveTranscript, type LiveLine } from "@/lib/live/live-transcript";
 import { createBrowserPlayer } from "@/lib/live/live-player-browser";
 import { micEnv, openBrowserGraph } from "@/lib/live/live-mic-browser";
@@ -28,6 +28,9 @@ type LiveApi = {
   warn: LiveWarn;
   elapsedMs: number;
   reconnecting: number;
+  /** Đang tạm dừng (không gửi tiếng, không trừ Token). */
+  paused: boolean;
+  togglePause(): void;
   start(settings: LiveSettings): void;
   stop(): void;
   /** Xóa chữ đã hiện (chỉ khi không đang chạy). */
@@ -36,6 +39,8 @@ type LiveApi = {
 };
 
 const BALANCE_EVERY_MS = 15_000;
+/** Tạm dừng quá chừng này thì tự kết thúc phiên. */
+const PAUSE_LIMIT_MS = 15 * 60_000;
 
 /**
  * Nối LiveSession với đồ thật của trình duyệt. Hàm `start` phải được gọi thẳng từ cú bấm của khách:
@@ -62,6 +67,10 @@ export function useLive(): LiveApi {
   const streamRef = useRef<StreamLike | null>(null);
   const lastBalanceRef = useRef(0);
   const aliveRef = useRef(true);
+  const userStoppedRef = useRef(false);
+  const retriesRef = useRef(0);
+  const pausedRef = useRef(false);
+  const [paused, setPaused] = useState(false);
 
   const bump = useCallback(() => setTick((value) => value + 1), []);
 
@@ -141,68 +150,111 @@ export function useLive(): LiveApi {
           } catch (cause) {
             return giveUp(describe(cause));
           }
-          let ticket: Awaited<ReturnType<typeof openLiveTicket>>;
-          try {
-            ticket = await openLiveTicket({
+          const askTicket = () =>
+            openLiveTicket({
               data: { model: settings.model, target: settings.target, source: settings.source, audio: settings.audio, ...(settings.words && Object.keys(settings.words).length ? { words: settings.words } : {}) },
             });
+          let ticket: Awaited<ReturnType<typeof openLiveTicket>>;
+          try {
+            ticket = await askTicket();
           } catch (cause) {
             return giveUp(cause instanceof Error && cause.message ? cause.message : "Chưa mở được phiên dịch trực tiếp. Hãy thử lại.");
           }
           if (!aliveRef.current) return giveUp("");
           setPerMinute(ticket.perMinute);
           setFree(ticket.balance);
+          // Nguồn tiếng do trang giữ (keepTracks): phiên đóng không tắt tab/micro, nhờ vậy nối lại không phải xin chọn lại.
           const prebuilt: CaptureEnv = { getStream: async () => streamRef.current ?? env.getStream(), openGraph: openBrowserGraph };
           startedAtRef.current = Date.now();
-          const session = new LiveSession(
-            {
-              createSocket: (url) => new WebSocket(url) as unknown as SocketLike,
-              startCapture: (handlers) => startCapture(prebuilt, handlers, describe),
-              player,
-            },
-            {
-              onState: (next) => {
-                if (!aliveRef.current) return;
-                if (next === "idle") setState("idle");
-                else setState(next);
+          userStoppedRef.current = false;
+          retriesRef.current = 0;
+
+          const finishAll = () => {
+            sessionRef.current = null;
+            busyRef.current = false;
+            releaseStream();
+            if (!aliveRef.current) return;
+            setState("closed");
+            setPaused(false);
+            pausedRef.current = false;
+            setLevel(0);
+            setHeldLeft(0);
+            setDenied(false);
+            setReconnecting(0);
+            setElapsedMs(Date.now() - startedAtRef.current);
+            bump();
+            // Phiếu đã đóng, giây thừa đã trả về gói còn hạn.
+            refreshBalance();
+            window.dispatchEvent(new Event("tyzo-room-refresh"));
+          };
+
+          const openSession = (url: string, sessionPlayer: ReturnType<typeof createBrowserPlayer>) => {
+            const session = new LiveSession(
+              {
+                createSocket: (target) => new WebSocket(target) as unknown as SocketLike,
+                startCapture: (handlers) => startCapture(prebuilt, handlers, describe, { keepTracks: true }),
+                player: sessionPlayer,
               },
-              onEvent: (event) => {
-                transcriptRef.current.apply(event, Date.now() - startedAtRef.current);
-                setReconnecting(0);
-                bump();
+              {
+                onState: (next) => {
+                  if (!aliveRef.current) return;
+                  // «Đã đóng» do onClosed quyết: có thể đang nối lại.
+                  if (next === "closed") return;
+                  if (next === "live") {
+                    retriesRef.current = 0;
+                    setReconnecting(0);
+                  }
+                  setState(next);
+                },
+                onEvent: (event) => {
+                  transcriptRef.current.apply(event, Date.now() - startedAtRef.current);
+                  setReconnecting(0);
+                  bump();
+                },
+                onBalance: ({ heldLeft: left, denied: no }) => {
+                  setHeldLeft(left);
+                  setDenied(no);
+                  if (Date.now() - lastBalanceRef.current > BALANCE_EVERY_MS) refreshBalance();
+                },
+                onLow: () => {
+                  setBridgeLow(true);
+                  refreshBalance();
+                },
+                onLevel: (value) => setLevel(value),
+                onReconnecting: (attempt) => setReconnecting(attempt),
+                onError: (message) => setError(message),
+                onClosed: ({ code, reason }) => {
+                  sessionRef.current = null;
+                  // Đứt giữa chừng mà khách không bấm Dừng: xin vé mới và nối lại, giữ nguồn tiếng và phụ đề.
+                  if (aliveRef.current && retriesRef.current < LIVE_MAX_RETRIES && liveRetryable({ code, reason, userStopped: userStoppedRef.current })) {
+                    retriesRef.current += 1;
+                    const attempt = retriesRef.current;
+                    setReconnecting(attempt);
+                    setState("connecting");
+                    window.setTimeout(() => {
+                      if (!aliveRef.current || userStoppedRef.current) return finishAll();
+                      void askTicket()
+                        .then((next) => {
+                          if (!aliveRef.current || userStoppedRef.current) return finishAll();
+                          setError(null);
+                          openSession(next.url, createBrowserPlayer());
+                        })
+                        .catch((cause) => {
+                          setError(cause instanceof Error && cause.message ? cause.message : "Chưa nối lại được. Hãy bấm Bắt đầu.");
+                          finishAll();
+                        });
+                    }, 1000 * attempt);
+                    return;
+                  }
+                  finishAll();
+                },
               },
-              onBalance: ({ heldLeft: left, denied: no }) => {
-                setHeldLeft(left);
-                setDenied(no);
-                setReconnecting(0);
-                if (Date.now() - lastBalanceRef.current > BALANCE_EVERY_MS) refreshBalance();
-              },
-              onLow: () => {
-                setBridgeLow(true);
-                refreshBalance();
-              },
-              onLevel: (value) => setLevel(value),
-              onReconnecting: (attempt) => setReconnecting(attempt),
-              onError: (message) => setError(message),
-              onClosed: () => {
-                sessionRef.current = null;
-                busyRef.current = false;
-                releaseStream();
-                if (!aliveRef.current) return;
-                setLevel(0);
-                setHeldLeft(0);
-                setDenied(false);
-                setReconnecting(0);
-                setElapsedMs(Date.now() - startedAtRef.current);
-                bump();
-                // Phiếu đã đóng, giây thừa đã trả về gói còn hạn.
-                refreshBalance();
-                window.dispatchEvent(new Event("tyzo-room-refresh"));
-              },
-            },
-          );
-          sessionRef.current = session;
-          session.start(ticket.url);
+            );
+            sessionRef.current = session;
+            session.setPaused(pausedRef.current);
+            session.start(url);
+          };
+          openSession(ticket.url, player);
         } catch (cause) {
           giveUp(cause instanceof CaptureError || cause instanceof Error ? cause.message : "Chưa bắt đầu được. Hãy thử lại.");
         }
@@ -212,8 +264,27 @@ export function useLive(): LiveApi {
   );
 
   const stop = useCallback(() => {
-    sessionRef.current?.stop();
+    userStoppedRef.current = true;
+    if (sessionRef.current) sessionRef.current.stop();
   }, []);
+
+  /** Tạm dừng / tiếp tục: giữ phiên và nguồn tiếng, không gửi tiếng nên không trừ Token. */
+  const togglePause = useCallback(() => {
+    const next = !pausedRef.current;
+    pausedRef.current = next;
+    setPaused(next);
+    sessionRef.current?.setPaused(next);
+  }, []);
+
+  // Quên tiếp tục quá lâu thì tự kết thúc phiên, nhả Token giữ thừa.
+  useEffect(() => {
+    if (!paused) return;
+    const id = window.setTimeout(() => {
+      userStoppedRef.current = true;
+      sessionRef.current?.stop();
+    }, PAUSE_LIMIT_MS);
+    return () => window.clearTimeout(id);
+  }, [paused]);
 
   const clear = useCallback(() => {
     if (sessionRef.current || busyRef.current) return;
@@ -242,6 +313,8 @@ export function useLive(): LiveApi {
     warn,
     elapsedMs,
     reconnecting,
+    paused,
+    togglePause,
     start,
     stop,
     clear,

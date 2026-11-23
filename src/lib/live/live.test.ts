@@ -462,3 +462,17 @@ describe("độ nhạy nhận tiếng Qwen 3.5", () => {
     assert.equal(s38.session.turn_detection, undefined);
   });
 });
+
+describe("câu lỗi Alibaba bằng tiếng Việt", () => {
+  it("đổi lỗi hay gặp, giữ câu tiếng Việt, lỗi lạ kèm nguyên văn ngắn", async () => {
+    const { aliErrorText } = await import("./ali-error.ts");
+    assert.match(aliErrorText("Arrearage: Access denied, please make sure your account is in good standing."), /thiếu tiền/);
+    assert.match(aliErrorText("Invalid API-key provided."), /Key Alibaba của phòng không hợp lệ/);
+    assert.match(aliErrorText("Requests rate limit exceeded, please try again later."), /quá tải/);
+    assert.match(aliErrorText("The free tier of the model has been exhausted."), /hết hạn mức/);
+    assert.match(aliErrorText("Model not found: qwen3.9"), /không có model này/);
+    assert.match(aliErrorText("DataInspectionFailed: Input data may contain inappropriate content."), /bộ lọc nội dung/);
+    assert.equal(aliErrorText("Mất kết nối tới dịch vụ dịch."), "Mất kết nối tới dịch vụ dịch.");
+    assert.equal(aliErrorText("Weird thing"), "Dịch vụ dịch (Alibaba) báo lỗi: Weird thing");
+  });
+});

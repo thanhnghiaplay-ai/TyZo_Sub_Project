@@ -401,11 +401,22 @@ export function LiveScreen() {
               {button.stops ? <Icon slot="act.stop" className="size-4" /> : <Icon slot="act.start" className="size-4" />}
               {button.label}
             </button>
+            {running && live.state !== "closing" && (
+              <button
+                type="button"
+                onClick={live.togglePause}
+                aria-pressed={live.paused}
+                className="min-tap inline-flex items-center justify-center gap-2 rounded-full border border-line px-5 text-base font-semibold"
+              >
+                <Icon slot={live.paused ? "act.start" : "act.pause"} className="size-4" />
+                {live.paused ? "Tiếp tục" : "Tạm dừng"}
+              </button>
+            )}
             <ExportMenu disabled={!hasText} onPick={pick} />
           </div>
           {noModel && <p className="text-sm text-warning" role="status">Hiện chưa mở model nào cho Dịch trực tiếp. Bạn tạm dùng Dịch bình thường, hoặc liên hệ hỗ trợ.</p>}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted" aria-live="polite">
-            <span>{liveStateText(live.state, live.reconnecting)}</span>
+            <span>{liveStateText(live.state, live.reconnecting, live.paused)}</span>
             {(running || live.elapsedMs > 0) && <span>{elapsedLabel(live.elapsedMs)}</span>}
           </div>
           {live.state === "live" && (
@@ -481,6 +492,10 @@ export function LiveScreen() {
             <label className="flex min-h-11 items-center gap-2 text-sm">
               <input type="checkbox" className="size-5" checked={caption.solid} onChange={(event) => setCaption({ solid: event.target.checked })} />
               <span>Nền đậm</span>
+            </label>
+            <label className="flex min-h-11 items-center gap-2 text-sm">
+              <input type="checkbox" className="size-5" checked={caption.finalOnly} onChange={(event) => setCaption({ finalOnly: event.target.checked })} />
+              <span>Chỉ hiện câu đã xong (đọc êm, chậm hơn khoảng 1 giây)</span>
             </label>
           </div>
             </div>
@@ -580,8 +595,14 @@ export function LiveScreen() {
             >
               {button.label}
             </button>
+            {running && live.state !== "closing" && (
+              <button type="button" onClick={live.togglePause} aria-pressed={live.paused} className="min-tap inline-flex items-center justify-center gap-1.5 rounded-full border border-white/50 bg-black/60 px-4 text-sm font-semibold text-white">
+                <Icon slot={live.paused ? "act.start" : "act.pause"} className="size-4" />
+                {live.paused ? "Tiếp tục" : "Tạm dừng"}
+              </button>
+            )}
             <span className="truncate text-xs text-white/70" aria-live="polite">
-              {live.error ? live.error : liveStateText(live.state, live.reconnecting)}
+              {live.error ? live.error : liveStateText(live.state, live.reconnecting, live.paused)}
             </span>
             <button type="button" onClick={closeBig} className="min-tap shrink-0 rounded-full border border-white/40 bg-black/60 px-4 text-sm font-semibold text-white">
               Đóng

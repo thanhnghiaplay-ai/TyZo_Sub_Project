@@ -59,8 +59,9 @@ export function elapsedLabel(ms: number): string {
 
 export type LiveUiState = "idle" | "opening" | "connecting" | "live" | "closing" | "closed";
 
-export function liveStateText(state: LiveUiState, reconnecting: number): string {
-  if (reconnecting > 0 && (state === "live" || state === "connecting")) return `Đang nối lại (lần ${reconnecting})…`;
+export function liveStateText(state: LiveUiState, reconnecting: number, paused = false): string {
+  if (reconnecting > 0 && (state === "live" || state === "connecting")) return `Mất kết nối, đang nối lại (lần ${reconnecting}/3)…`;
+  if (paused && (state === "live" || state === "connecting")) return "Đã tạm dừng. Không gửi tiếng, không trừ Token dịch.";
   switch (state) {
     case "opening":
       return "Đang xin vé vào cầu nối…";

@@ -228,3 +228,65 @@ describe("xếp hàng phát tiếng", () => {
     assert.equal(q.queued(1), 0);
   });
 });
+
+describe("phiên web: thu sớm, giữ tạm, tạm dừng", () => {
+  const loudFrame = () => {
+    const b = new Uint8Array(3200);
+    b[1] = 0x40;
+    return b;
+  };
+  it("nối được cầu nối là thu; khung trước lúc sẵn sàng được giữ rồi gửi đủ khi ready", async () => {
+    const t = setup();
+    t.session.start("ws://cau-noi/live?ticket=x");
+    t.socket.onopen?.({});
+    await tick();
+    assert.deepEqual(t.log, ["bắt đầu thu"]);
+    t.frames()!.onFrame(loudFrame());
+    t.frames()!.onFrame(loudFrame());
+    assert.equal(t.socket.sent.length, 0, "chưa ready: chưa gửi");
+    t.socket.say({ type: "ready", audio: true });
+    await tick();
+    assert.deepEqual(t.log, ["bắt đầu thu"], "ready không thu lần hai");
+    t.frames()!.onFrame(loudFrame());
+    assert.equal(t.socket.sent.length, 3, "hai khung giữ tạm + khung mới");
+  });
+  it("tạm dừng thì không gửi, tiếp tục thì gửi lại", async () => {
+    const t = setup();
+    t.session.start("ws://x");
+    t.socket.onopen?.({});
+    t.socket.say({ type: "ready", audio: true });
+    await tick();
+    t.session.setPaused(true);
+    t.frames()!.onFrame(loudFrame());
+    assert.equal(t.socket.sent.length, 0);
+    t.session.setPaused(false);
+    t.frames()!.onFrame(loudFrame());
+    assert.equal(t.socket.sent.length, 1);
+  });
+});
+
+describe("tự nối lại phiên web", () => {
+  it("đứt mạng, cầu nối lỗi, vé hết hạn thì nối lại; khách dừng, hết Token, sai model thì không", async () => {
+    const { liveRetryable } = await import("./live-session.ts");
+    assert.equal(liveRetryable({ code: 1006, reason: "", userStopped: false }), true);
+    assert.equal(liveRetryable({ code: 1011, reason: "", userStopped: false }), true);
+    assert.equal(liveRetryable({ code: 4401, reason: "", userStopped: false }), true);
+    assert.equal(liveRetryable({ code: 1000, reason: "", userStopped: false }), true);
+    assert.equal(liveRetryable({ code: 1000, reason: "", userStopped: true }), false);
+    assert.equal(liveRetryable({ code: 1000, reason: "het-tien", userStopped: false }), false);
+    assert.equal(liveRetryable({ code: 4402, reason: "", userStopped: false }), false);
+    assert.equal(liveRetryable({ code: 4400, reason: "", userStopped: false }), false);
+    assert.equal(liveRetryable({ code: 4503, reason: "", userStopped: false }), false);
+  });
+});
+
+describe("lỗi nhà cung cấp trên web", () => {
+  it("sự kiện lỗi hiện ở dòng báo lỗi, không vào phụ đề", () => {
+    const t = setup();
+    t.session.start("ws://x");
+    t.socket.say({ type: "ready", audio: true });
+    t.socket.say({ type: "event", event: { kind: "error", message: "Phòng đã dùng hết hạn mức của Alibaba." } });
+    assert.deepEqual(t.errors, ["Phòng đã dùng hết hạn mức của Alibaba."]);
+    assert.equal(t.events.length, 0);
+  });
+});

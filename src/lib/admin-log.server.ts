@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.43.0",
+    time: "13:49 23/11/2026",
+    area: "ha-tang",
+    text: "Chủ: «Hãy làm phần việc của bạn» (5 việc Dịch trực tiếp web, ghi «Còn mở» 23/11/2026). (1) use-live: tự nối lại khi phiên đóng mà khách không dừng (liveRetryable: không nối lại khi lý do het-tien/nguoi-dung-dung/khach-roi/khach-loi hoặc mã 4400/4402/4503), xin vé mới, tối đa LIVE_MAX_RETRIES 3 lần liên tiếp, chờ 1/2/3 giây, về 0 khi live; startCapture keepTracks giữ tab/micro qua các lần nối, trang tự nhả khi kết thúc hẳn. (2) caption-layout.ts: bản TS của CaptionLayout (cùng 11 trường hợp với bản Kotlin), LiveCaptionView hai vùng, câu cũ ẩn sau 4 giây, CaptionPrefs.finalOnly + ô «Chỉ hiện câu đã xong»; gỡ captionRows. (3) live-gate.ts: im quá 1,5 giây không gửi (kèm 3 khung trước khi có tiếng lại), Tạm dừng không gửi, tự kết thúc sau 15 phút tạm dừng; nút ở màn thường và chữ lớn. (4) LiveSession thu ngay khi socket mở, giữ tạm tới 5 giây trong trình duyệt tới khi ready (không đổi cầu nối). (5) ali-error.ts ở cầu nối: lỗi Alibaba → câu tiếng Việt; LiveSession đưa sự kiện lỗi vào dòng báo lỗi (trước đây web bỏ qua lỗi Alibaba). Điều khoản 2026-11-23.2 (mục giá: không trừ lúc im/tạm dừng, tự kết thúc 15 phút, tự nối lại 3 lần). Thử bằng Chromium với cầu nối giả (đúng giao thức) và vé giả: bắt đầu, tạm dừng (không gửi khung), tiếp tục, cầu nối cắt ngang 1006 → tự nối lại 1/3 với vé mới, dừng; 0 khung tới cầu nối trước ready; màn chữ lớn với bài hát một mục dài: tách câu, không dồn. Thấy và sửa: câu 44 ký tự bị cắt để lại đuôi «tôi?» → captionChunks chia đều (dấu phẩy gần giữa, không thì khoảng trắng gần giữa), sửa cùng lúc ở CaptionLayout.kt (Kotlin 12/12 đúng) và nâng ứng dụng 0.9. Cần tyzo → 2 cho phần câu lỗi tiếng Việt. CHƯA thử với Alibaba thật (proxy môi trường Claude chặn WebSocket).",
+  },
+  {
     version: "5.42.7",
     time: "08:44 23/11/2026",
     area: "ha-tang",

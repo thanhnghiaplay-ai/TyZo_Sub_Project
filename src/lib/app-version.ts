@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.42.7";
+export const APP_VERSION = "5.43.0";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.43.0",
+    time: "13:49 23/11/2026",
+    title: "Dịch trực tiếp trên web: tự nối lại, có Tạm dừng, phụ đề dễ đọc; ứng dụng Android 0.9.",
+    points: [
+      "Mạng chập chờn thì tự nối lại, giữ phụ đề đang có, không phải bấm Bắt đầu lại.",
+      "Nút Tạm dừng / Tiếp tục; lúc im lặng hay tạm dừng không trừ Token dịch.",
+      "Phụ đề tách theo câu, câu dài chia đều hai dòng, câu cũ tự ẩn; thêm Chỉ hiện câu đã xong.",
+      "Không mất mấy chữ đầu; lỗi của dịch vụ dịch báo bằng tiếng Việt, kèm việc cần làm.",
+    ],
+  },
   {
     version: "5.42.7",
     time: "08:44 23/11/2026",

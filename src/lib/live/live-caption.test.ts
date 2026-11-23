@@ -1,38 +1,19 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { captionRows, cleanHotwords, HOTWORD_MAX, packSavedLive, parseCaptionPrefs, parseHotwords, parseSavedLive, CAPTION_DEFAULT } from "./live-caption.ts";
+import { cleanHotwords, HOTWORD_MAX, packSavedLive, parseCaptionPrefs, parseHotwords, parseSavedLive, CAPTION_DEFAULT } from "./live-caption.ts";
 import { parseLiveOpen } from "./live-open-rules.ts";
 import { signLiveTicket, verifyLiveTicket } from "./live-ticket.ts";
 import { buildSessionUpdate } from "./qwen-protocol.ts";
 import { LIVE_MODEL_38 } from "./live-price.ts";
-import type { LiveLine } from "./live-transcript.ts";
-
-const line = (id: string, translation: string, source = "", stash = ""): LiveLine => ({
-  id,
-  startMs: 0,
-  endMs: 0,
-  source,
-  sourceStash: "",
-  translation,
-  translationStash: stash,
-  speaker: "",
-  final: false,
-});
-
 describe("tùy chỉnh phụ đề", () => {
   it("đọc tùy chỉnh đã lưu, sai thì về mặc định, số dòng 1 đến 4", () => {
     assert.deepEqual(parseCaptionPrefs(null), CAPTION_DEFAULT);
-    assert.deepEqual(parseCaptionPrefs({ size: "xl", lines: 9, source: true, solid: false }), { size: "xl", lines: 4, source: true, solid: false });
+    assert.deepEqual(parseCaptionPrefs({ size: "xl", lines: 9, source: true, solid: false }), { size: "xl", lines: 4, source: true, solid: false, finalOnly: false });
+    assert.equal(parseCaptionPrefs({ finalOnly: true }).finalOnly, true);
     assert.equal(parseCaptionPrefs({ size: "huge", lines: 0 }).size, "m");
     assert.equal(parseCaptionPrefs({ lines: 0 }).lines, 1);
   });
-  it("lấy các dòng mới nhất có chữ, cũ trước mới sau", () => {
-    const rows = captionRows([line("a", "Một"), line("b", ""), line("c", "Hai", "二"), line("d", "", "", "Ba đang")], 2);
-    assert.deepEqual(rows.map((row) => row.id), ["c", "d"]);
-    assert.equal(rows[1].pending, "Ba đang");
-    assert.equal(rows[0].source, "二");
-    assert.deepEqual(captionRows([], 2), []);
-  });
+
 });
 
 describe("từ cần giữ đúng", () => {

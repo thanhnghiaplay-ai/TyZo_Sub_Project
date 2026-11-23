@@ -7,6 +7,7 @@ import { verifyLiveTicket } from "./live-ticket.ts";
 import { targetHasVoice, liveLang } from "./langs.ts";
 import { audioAppend, buildSessionUpdate, genOf, parseServerEvent, SESSION_FINISH } from "./qwen-protocol.ts";
 import { mulawToPcm16 } from "./mulaw.ts";
+import { aliErrorText } from "./ali-error.ts";
 
 /**
  * Cầu nối dịch trực tiếp: trình duyệt ⇄ cầu nối ⇄ Alibaba.
@@ -252,6 +253,9 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
           idleCut = true;
           continue;
         }
+        // Khách đọc câu tiếng Việt (thiếu gì, làm gì tiếp); nguyên văn đã ghi nhật ký ở trên.
+        send(client, { type: "event", event: { ...event, message: aliErrorText(event.message) } });
+        continue;
       }
       send(client, { type: "event", event });
     }

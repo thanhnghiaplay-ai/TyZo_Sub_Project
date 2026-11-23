@@ -43,15 +43,34 @@ object CaptionLayout {
         return out to (rest.isEmpty() && out.isNotEmpty())
     }
 
-    /** Chia câu dài thành các đoạn không quá [max] ký tự, ưu tiên cắt sau dấu phẩy, rồi ở khoảng trắng. */
+    /**
+     * Chia câu dài thành các đoạn không quá [max] ký tự, độ dài gần đều nhau (không để đuôi trơ trọi một chữ).
+     * Mỗi lần cắt nhắm vào điểm chia đều; dấu phẩy gần điểm đó thì cắt sau dấu phẩy, không thì ở khoảng trắng gần nhất;
+     * chữ không có khoảng trắng (tiếng Trung) thì cắt cứng. Cùng cách với web (src/lib/live/caption-layout.ts).
+     */
     fun chunks(sentence: String, max: Int): List<String> {
         val out = mutableListOf<String>()
         var rest = sentence.trim()
         while (rest.length > max) {
-            val window = rest.substring(0, max + 1)
-            var cut = window.lastIndexOfAny(SOFT)
-            if (cut < max / 3) cut = window.lastIndexOf(' ').let { if (it >= max / 3) it - 1 else -1 }
-            if (cut < 0) cut = max - 1 // chữ không có khoảng trắng (tiếng Trung): cắt cứng
+            val parts = (rest.length + max - 1) / max
+            val target = (rest.length + parts - 1) / parts
+            val reach = maxOf(4, max / 4)
+            var cut = -1
+            var d = 0
+            while (d <= reach && cut < 0) {
+                for (i in intArrayOf(target - 1 + d, target - 1 - d)) {
+                    if (i > 0 && i < max && rest[i] in SOFT) { cut = i; break }
+                }
+                d++
+            }
+            d = 0
+            while (cut < 0 && d < max) {
+                for (i in intArrayOf(target + d, target - d)) {
+                    if (i > 0 && i <= max && i < rest.length && rest[i] == ' ') { cut = i - 1; break }
+                }
+                d++
+            }
+            if (cut < 0) cut = minOf(max, target) - 1
             out += rest.substring(0, cut + 1).trim()
             rest = rest.substring(cut + 1).trim()
         }

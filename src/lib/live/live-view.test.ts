@@ -62,7 +62,8 @@ describe("thời gian và nút", () => {
   });
   it("dòng trạng thái, có nói nối lại", () => {
     assert.equal(liveStateText("live", 0), "Đang dịch trực tiếp");
-    assert.match(liveStateText("live", 2), /nối lại \(lần 2\)/);
+    assert.match(liveStateText("live", 2), /nối lại \(lần 2\/3\)/);
+    assert.match(liveStateText("live", 0, true), /tạm dừng/i);
     assert.equal(liveStateText("idle", 0), "Chưa bắt đầu");
   });
 });

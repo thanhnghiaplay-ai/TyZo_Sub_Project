@@ -27,14 +27,22 @@ export class CaptureError extends Error {}
  * Bắt đầu thu: luồng → khung PCM 16 kHz 100 ms. Lỗi nào cũng trả câu tiếng Việt qua `CaptureError`
  * và luôn nhả micro, không để đèn micro cứ sáng khi thất bại.
  */
-export async function startCapture(env: CaptureEnv, handlers: CaptureHandlers, describe: (error: unknown) => string = micErrorMessage): Promise<CaptureHandle> {
+export async function startCapture(
+  env: CaptureEnv,
+  handlers: CaptureHandlers,
+  describe: (error: unknown) => string = micErrorMessage,
+  /** keepTracks: không tắt nguồn tiếng khi dừng thu; bên gọi tự tắt (Dịch trực tiếp web giữ nguồn để nối lại). */
+  options: { keepTracks?: boolean } = {},
+): Promise<CaptureHandle> {
   let stream: StreamLike;
   try {
     stream = await env.getStream();
   } catch (error) {
     throw new CaptureError(describe(error));
   }
-  const release = () => stream.getTracks().forEach((track) => track.stop());
+  const release = () => {
+    if (!options.keepTracks) stream.getTracks().forEach((track) => track.stop());
+  };
   let graph: { sampleRate: number; close(): Promise<void> | void };
   let framer: LiveFramer | null = null;
   let stopped = false;
