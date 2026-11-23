@@ -1,6 +1,6 @@
 import { dong } from "@/lib/money-format";
 import { useEffect, useMemo, useState } from "react";
-import { getMoneyExtra, type MoneyExtra, type MoneyPoint } from "@/lib/admin-room";
+import { getMoneyExtra, type MoneyExtra, type MoneyPoint } from "@/lib/admin-money";
 import { categoryLabel, lineGeometry, pathOf } from "@/lib/money-extra";
 
 type Span = "day" | "week" | "month" | "year";

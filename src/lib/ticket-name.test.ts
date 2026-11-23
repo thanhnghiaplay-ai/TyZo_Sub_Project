@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 const room = read("./overview-room.ts");
-const admin = read("./admin-room.ts");
+const admin = read("./admin-runs.ts"); // ticketOf (tách từ admin-room.ts 23/11/2026)
 const board = read("../components/run-desk-board.tsx");
 const desk = read("../components/admin-desk.tsx");
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listMyNotices, markNoticeRead, type NoticeRow } from "@/lib/admin-room";
+import { listMyNotices, markNoticeRead, type NoticeRow } from "@/lib/admin-appeals";
 import { formatMoney } from "@/lib/money-format";
 
 function formatBody(body: string) {

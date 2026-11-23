@@ -5,37 +5,9 @@ import { openAdminPlace } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
 import { RiskBoard } from "@/components/risk-board";
-import {
-  escalateAppeal,
-  getBadgeStyle,
-  getDeskStats,
-  getAdminLog,
-  getMyPlace,
-  grantPlan,
-  listAppeals,
-  listAudit,
-  removeUser,
-  replyAppeal,
-  saveStaffNote,
-  searchUsers,
-  sendAppealReply,
-  skipAppeal,
-  listUserLedger,
-  resetUserBalance,
-  readUserTokens,
-  setUserTokens,
-  setBadgeStyle,
-  setOwnerEmail,
-  setStaffRole,
-  setTempPassword,
-  setUserStatus,
-  type AdminUser,
-  type AppealRow,
-  type AuditRow,
-  type DeskStats,
-  type LedgerRow,
-  type MyPlace,
-} from "@/lib/admin-room";
+import { getDeskStats, getAdminLog, getMyPlace, listAudit, setOwnerEmail, type AuditRow, type DeskStats, type MyPlace } from "@/lib/admin-room";
+import { getBadgeStyle, grantPlan, removeUser, saveStaffNote, searchUsers, listUserLedger, resetUserBalance, readUserTokens, setUserTokens, setBadgeStyle, setStaffRole, setTempPassword, setUserStatus, type AdminUser, type LedgerRow } from "@/lib/admin-users";
+import { escalateAppeal, listAppeals, replyAppeal, sendAppealReply, skipAppeal, type AppealRow } from "@/lib/admin-appeals";
 import { Fold } from "@/components/admin-fold";
 import { formatGiay } from "@/lib/token-math";
 import { ROOM_PLANS } from "@/lib/room-plans";
@@ -64,7 +36,7 @@ import { maskFileName } from "@/lib/mask-file-name";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
 import { formatMoney, parseMoney, dong } from "@/lib/money-format";
-import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-room";
+import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-runs";
 
 function AppealForm({
   item,
@@ -145,8 +117,9 @@ function AdminNotes() {
       <h2 className="font-semibold">Nhật ký nội bộ</h2>
       {rows.length === 0 && <p className="text-sm text-muted">Chưa có dòng nội bộ.</p>}
       <div className="plan-grid">
-        {rows.map((row) => (
-          <article key={`${row.version}-${row.area}`} className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">
+        {rows.map((row, index) => (
+          // Nhật ký cũ có nhiều dòng cùng phiên bản và cùng nhóm: thêm thứ tự để khóa không trùng.
+          <article key={`${row.version}-${row.area}-${index}`} className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">
             <p className="font-medium text-accent">v{row.version}</p>
             <p className="text-xs text-muted">{row.time}</p>
             <p className="mt-1">{row.text}</p>

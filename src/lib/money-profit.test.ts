@@ -27,7 +27,7 @@ describe("lời lỗ theo tiền thật", () => {
     assert.deepEqual(profitOf({ revenue: Number.NaN, von: -5, hoa: Number.NaN, chi: 0 }), { lai: 0, loi: 0 });
   });
   it("máy chủ và màn hình dùng chung hàm này, không còn công thức goi + luot", () => {
-    const server = readFileSync(new URL("./admin-room.ts", import.meta.url), "utf8");
+    const server = readFileSync(new URL("./admin-money.ts", import.meta.url), "utf8");
     const screen = readFileSync(new URL("../components/admin-company.tsx", import.meta.url), "utf8");
     assert.ok(server.includes("profitOf("));
     assert.ok(!/const lai = goi \+ luot - von/.test(server));
@@ -39,7 +39,7 @@ describe("lời lỗ theo tiền thật", () => {
     assert.equal(tokenCostVnd(600, null), 0);
   });
   it("getMoney cộng giá vốn Token dịch vào von", () => {
-    const server = readFileSync(new URL("./admin-room.ts", import.meta.url), "utf8");
+    const server = readFileSync(new URL("./admin-money.ts", import.meta.url), "utf8");
     assert.ok(server.includes("tokenCostVnd(used.tokens, turbo)"));
   });
 });

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { submitPublicAppeal } from "@/lib/admin-room";
+import { submitPublicAppeal } from "@/lib/admin-appeals";
 
 export const Route = createFileRoute("/yeu-cau")({ component: AppealPage });
 
