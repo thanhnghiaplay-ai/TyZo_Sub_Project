@@ -19,13 +19,13 @@ import {
 } from "./sub/polish.ts";
 
 /** Ký tự mỗi token khi ước. Tiếng Việt có dấu và chữ CJK tốn token hơn tiếng Anh, nên lấy thấp để ước hơi cao. */
-export const POLISH_CHARS_PER_TOKEN = 2.5;
+const POLISH_CHARS_PER_TOKEN = 2.5;
 /** Mỗi câu trả về thêm khoảng này token cho dấu ngoặc kép, dấu phẩy của JSON. */
 const OUT_JSON_PER_LINE = 4;
 /** Bản trau chuốt có thể dài hơn bản cũ một chút. */
 const OUT_GROWTH = 1.15;
 /** Dự phòng cho lô phải chia đôi hoặc gọi lại. */
-export const POLISH_RETRY_MARGIN = 1.15;
+const POLISH_RETRY_MARGIN = 1.15;
 
 export type PolishPlan = {
   /** Số câu sẽ gửi (không `edited`, không dịch lỗi, có bản dịch). */

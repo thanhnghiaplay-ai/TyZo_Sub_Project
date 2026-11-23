@@ -64,7 +64,7 @@ export type GuideTopic = {
   contact?: boolean;
 };
 
-export type GuideFaq = { id: string; q: string; a: string; words: string };
+type GuideFaq = { id: string; q: string; a: string; words: string };
 
 export const GROUP_LABEL: Record<GuideTopic["group"], string> = {
   "dung-ngay": "Dùng ngay",
@@ -73,7 +73,7 @@ export const GROUP_LABEL: Record<GuideTopic["group"], string> = {
   "tro-giup": "Trợ giúp",
 };
 
-export type GuideContext = {
+type GuideContext = {
   /** Phòng có bật thư đặt lại mật khẩu. `null` khi chưa biết. */
   resetOn?: boolean | null;
   /** Giá gói thuê phòng Admin đang đặt. Thiếu thì dùng giá mặc định. */
@@ -353,7 +353,7 @@ export const GUIDE_FAQ: GuideFaq[] = [
   },
 ];
 
-export type GuideMatch = { topics: GuideTopic[]; faqs: GuideFaq[] };
+type GuideMatch = { topics: GuideTopic[]; faqs: GuideFaq[] };
 
 function topicText(topic: GuideTopic): string {
   return [topic.title, topic.intro, topic.words, ...topic.steps.map((step) => step.text)].join(" ");

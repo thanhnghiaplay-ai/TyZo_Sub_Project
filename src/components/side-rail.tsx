@@ -3,7 +3,7 @@ import { askConfirm } from "@/lib/confirm";
 import { createContext, useContext, useEffect, useId, useRef, useState, type HTMLAttributes, type ReactNode, type RefObject } from "react";
 import { signOut } from "@/lib/auth/client";
 
-export type RailLink = "/" | "/admin" | "/goi" | "/ctv" | "/yeu-cau" | "/dich-truc-tiep" | "/huong-dan";
+type RailLink = "/" | "/admin" | "/goi" | "/ctv" | "/yeu-cau" | "/dich-truc-tiep" | "/huong-dan";
 
 /** Một mục menu. Có `children` thì là nhóm lớn, bấm để xổ các mục nhỏ bên dưới. */
 export type RailItem = {

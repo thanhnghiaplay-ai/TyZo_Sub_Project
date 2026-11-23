@@ -1,10 +1,10 @@
 import { LIGHT_DEFAULT } from "./theme/theme.ts";
 
 export type LetterKind = "verify" | "reset" | "changed";
-export type LetterLayout = "plain" | "frame" | "band";
-export type LetterFont = "sans" | "serif";
+type LetterLayout = "plain" | "frame" | "band";
+type LetterFont = "sans" | "serif";
 
-export type LetterCopy = {
+type LetterCopy = {
   subject: string;
   greeting: string;
   body: string;

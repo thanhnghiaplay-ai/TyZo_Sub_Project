@@ -1,7 +1,7 @@
 import { LIVE_PLAY_RATE } from "./live-audio.ts";
 import { PlaybackQueue } from "./live-playback.ts";
 
-export type LivePlayer = { play(samples: Float32Array): void; stop(): void };
+type LivePlayer = { play(samples: Float32Array): void; stop(): void };
 
 /**
  * Phát tiếng dịch (PCM 24 kHz) qua loa. Phải tạo trong lúc xử lý cú bấm của khách

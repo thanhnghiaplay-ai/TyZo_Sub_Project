@@ -5,9 +5,9 @@
  * Hàm thuần, không import gì, chạy được trong test Node.
  */
 export const STEP_ORDER = ["key", "phim", "cast", "voice", "run"] as const;
-export type StepId = (typeof STEP_ORDER)[number];
+type StepId = (typeof STEP_ORDER)[number];
 
-export type StepInfo = { index: number; total: number; next: StepId | null; last: boolean };
+type StepInfo = { index: number; total: number; next: StepId | null; last: boolean };
 
 /** Vị trí của tab trong chuỗi; tab ngoài chuỗi (Kiểm tra) trả null thì không hiện thanh «Tiếp tục». */
 export function stepInfo(id: string): StepInfo | null {

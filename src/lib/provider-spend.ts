@@ -7,7 +7,7 @@ import type { Sql } from "./db.ts";
 
 const TODAY = `(now() at time zone 'Asia/Ho_Chi_Minh')::date`;
 
-export type SpendInput = { provider: string; model: string; baseVnd: number; /** Đồng mỗi USD của bảng giá lúc gọi. */ rate: number };
+type SpendInput = { provider: string; model: string; baseVnd: number; /** Đồng mỗi USD của bảng giá lúc gọi. */ rate: number };
 
 /** Ghi một lần gọi. Không bao giờ ném lỗi: ghi sổ hỏng không được làm hỏng lượt chạy của khách. */
 export async function recordSpendWith(sql: Sql, input: SpendInput): Promise<void> {
@@ -26,7 +26,7 @@ export async function recordSpendWith(sql: Sql, input: SpendInput): Promise<void
   }
 }
 
-export type SpendRow = { provider: string; model: string; calls: number; vnd: number; usd: number };
+type SpendRow = { provider: string; model: string; calls: number; vnd: number; usd: number };
 
 export type SpendSummary = { total: { calls: number; vnd: number; usd: number }; providers: { provider: string; calls: number; vnd: number; usd: number; models: SpendRow[] }[]; since: string | null };
 

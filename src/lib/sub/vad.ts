@@ -2,11 +2,11 @@ import { isSilentChunk, SR } from "./text.ts";
 
 export const VAD_WINDOW = 512;
 export const VAD_WINDOW_SECONDS = VAD_WINDOW / SR;
-export const VAD_THRESHOLD = 0.5;
-export const VAD_NEG_THRESHOLD = 0.35;
-export const VAD_MIN_SPEECH = 0.1;
-export const VAD_MIN_SILENCE = 0.2;
-export const VAD_PAD = 0.25;
+const VAD_THRESHOLD = 0.5;
+const VAD_NEG_THRESHOLD = 0.35;
+const VAD_MIN_SPEECH = 0.1;
+const VAD_MIN_SILENCE = 0.2;
+const VAD_PAD = 0.25;
 
 export type SpeechSpan = { start: number; end: number };
 
@@ -57,14 +57,14 @@ export function trimToSpeech(duration: number, spans: SpeechSpan[], pad = VAD_PA
   return { start, end };
 }
 
-export function sliceByTime(samples: Float32Array, start: number, end: number, sampleRate = SR): Float32Array {
+function sliceByTime(samples: Float32Array, start: number, end: number, sampleRate = SR): Float32Array {
   const from = Math.max(0, Math.floor(start * sampleRate));
   const to = Math.min(samples.length, Math.ceil(end * sampleRate));
   if (to - from < 1) return samples.slice(0, 0);
   return samples.slice(from, to);
 }
 
-export type GatedChunk = { samples: Float32Array; offset: number; fallback: boolean };
+type GatedChunk = { samples: Float32Array; offset: number; fallback: boolean };
 
 /** Bật VAD thì chỉ giữ đoạn có lời. Tắt hoặc lỗi tải thì dùng RMS như cũ. */
 export async function gateChunk(samples: Float32Array, useVad: boolean): Promise<GatedChunk | null> {

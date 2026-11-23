@@ -8,7 +8,7 @@ export const COST_CATEGORIES = [
   { id: "khac", label: "Khác" },
 ] as const;
 
-export type CostCategory = (typeof COST_CATEGORIES)[number]["id"];
+type CostCategory = (typeof COST_CATEGORIES)[number]["id"];
 
 const CATEGORY_IDS = new Set<string>(COST_CATEGORIES.map((item) => item.id));
 
@@ -45,7 +45,7 @@ export function costPerMinute(cost: number, seconds: number): number | null {
   return value === null ? null : Math.round(value);
 }
 
-export type CategoryRow = { category: CostCategory; amount: number };
+type CategoryRow = { category: CostCategory; amount: number };
 
 /** Gộp theo loại, loại lớn nhất lên đầu, bỏ loại bằng 0. */
 export function sortCategories(rows: Array<{ category: unknown; amount: number }>): CategoryRow[] {
@@ -60,7 +60,7 @@ export function sortCategories(rows: Array<{ category: unknown; amount: number }
     .sort((a, b) => b.amount - a.amount);
 }
 
-export type ChartSeries = { x: number; y: number }[];
+type ChartSeries = { x: number; y: number }[];
 
 /**
  * Tọa độ đường biểu đồ cho nhiều dãy trên cùng một trục tung (từ 0 đến mức lớn nhất).
@@ -88,7 +88,7 @@ export function pathOf(points: ChartSeries): string {
   return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
 }
 
-export type SpanId = "day" | "week" | "month" | "year";
+type SpanId = "day" | "week" | "month" | "year";
 
 /** Cửa sổ thật mà máy chủ cộng cho mỗi tab (khớp WINDOW trong money-extra-data.ts và getMoney). */
 export function spanLabel(span: SpanId): string {

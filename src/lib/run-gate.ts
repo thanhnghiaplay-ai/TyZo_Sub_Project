@@ -6,9 +6,9 @@ import { chargeTokenWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
 import { randomBytes } from "node:crypto";
 import { recordSpendWith } from "./provider-spend.ts";
 
-export const MAX_COMPLETION_TOKENS = 8192;
+const MAX_COMPLETION_TOKENS = 8192;
 
-export type GateOutcome = { kind: "pass"; response: Response } | { kind: "reject"; status: number; message: string };
+type GateOutcome = { kind: "pass"; response: Response } | { kind: "reject"; status: number; message: string };
 
 /** Đọc model (và loại bỏ yêu cầu lạ) từ body. Trả null khi không đọc được. */
 export async function readRequest(

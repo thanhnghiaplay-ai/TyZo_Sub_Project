@@ -8,7 +8,7 @@ import { PROVIDERS, type ProviderId, type ProviderIntake } from "./provider.ts";
 
 export const ALI_FILETRANS_ASR = "qwen-audio-3.0-asr-flash-filetrans";
 
-export type AsrHouse = ProviderId;
+type AsrHouse = ProviderId;
 
 /** Mỗi model nhận dạng thuộc đúng một nhà. Thêm model nhận dạng mới thì thêm một dòng ở đây. */
 const HOUSES: Record<string, AsrHouse> = {

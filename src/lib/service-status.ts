@@ -6,7 +6,7 @@
  * Bảo trì «Toàn web» che mọi trang của khách, trừ Admin và Đăng nhập (xem `siteOpenPath`), và chặn luôn lượt mới của cả hai nhóm.
  */
 
-export const SERVICE_GROUPS = ["live", "normal"] as const;
+const SERVICE_GROUPS = ["live", "normal"] as const;
 export type ServiceGroup = (typeof SERVICE_GROUPS)[number];
 export type ServiceState = "active" | "maintenance";
 
@@ -16,7 +16,7 @@ export const SERVICE_LABEL: Record<ServiceGroup, string> = {
 };
 
 /** Mục thứ ba, không phải nhóm dịch: cả web. */
-export const SITE_LABEL = "Toàn web";
+const SITE_LABEL = "Toàn web";
 
 export const SERVICE_STATE_LABEL: Record<ServiceState, string> = {
   active: "Hoạt động",
@@ -55,7 +55,7 @@ export function scopeLabel(scope: ServiceScope): string {
   return scope === "site" ? SITE_LABEL : SERVICE_LABEL[scope];
 }
 
-export const SERVICE_ENTRY_DEFAULT: ServiceEntry = { state: "active", title: "", note: "", until: null };
+const SERVICE_ENTRY_DEFAULT: ServiceEntry = { state: "active", title: "", note: "", until: null };
 
 export function defaultServiceStatus(): ServiceStatus {
   return { live: { ...SERVICE_ENTRY_DEFAULT }, normal: { ...SERVICE_ENTRY_DEFAULT }, site: { ...SERVICE_ENTRY_DEFAULT } };

@@ -11,9 +11,9 @@ export type DgQuote = { id: string; usdPerHour: number | null; usdPerMillionChar
 /** Chủ chỉnh cách tự cập nhật. `auto` tắt thì không kéo giá nữa, dùng số đã lưu hoặc dự phòng. */
 export type DgPriceConfig = { auto: boolean; everyHours: number };
 export const DG_CONFIG_KEY = "dg_price_cfg";
-export const DG_CONFIG_DEFAULT: DgPriceConfig = { auto: true, everyHours: 6 };
-export const DG_EVERY_MIN = 1;
-export const DG_EVERY_MAX = 168;
+const DG_CONFIG_DEFAULT: DgPriceConfig = { auto: true, everyHours: 6 };
+const DG_EVERY_MIN = 1;
+const DG_EVERY_MAX = 168;
 
 export function parseDgConfig(raw: string | null | undefined): DgPriceConfig {
   if (!raw) return { ...DG_CONFIG_DEFAULT };

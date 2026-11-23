@@ -17,7 +17,7 @@ import type { Bible } from "@/lib/sub/text";
 
 const REQUEST_KEY = "tyzo_polish_request";
 
-export type PolishPhase = "idle" | "quoting" | "pick" | "running" | "review";
+type PolishPhase = "idle" | "quoting" | "pick" | "running" | "review";
 
 type Host = {
   getSegs: () => Seg[];

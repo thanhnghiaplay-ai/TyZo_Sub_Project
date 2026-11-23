@@ -44,7 +44,7 @@ export function roomPool(offer: RoomOffer, kind: ModelKind): Set<string> | null 
  * Model dịch dùng được bằng KEY CỦA KHÁCH: mọi nhà khách đã nhập key. Nhà có danh sách model thì lọc theo danh sách
  * (như cửa phòng); chưa đọc được danh sách thì lấy model đã biết của nhà đó. Không nhà nào có key: null (không lọc).
  */
-export function ownPool(keys: Partial<Record<ProviderId, string>>, lists: RoomOffer, kind: ModelKind = "chat"): Set<string> | null {
+function ownPool(keys: Partial<Record<ProviderId, string>>, lists: RoomOffer, kind: ModelKind = "chat"): Set<string> | null {
   const offer: RoomOffer = {};
   let any = false;
   for (const provider of PROVIDER_IDS) {

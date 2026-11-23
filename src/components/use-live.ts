@@ -11,9 +11,9 @@ import { tabEnv, tabErrorMessage } from "@/lib/live/live-tab";
 import { liveMinutes, liveMoneyLeft, liveWarn, type LiveUiState, type LiveWarn } from "@/lib/live/live-view";
 
 export type LiveInput = "mic" | "tab";
-export type LiveSettings = { model: string; target: string; source: string; audio: boolean; input: LiveInput; words?: Record<string, string> };
+type LiveSettings = { model: string; target: string; source: string; audio: boolean; input: LiveInput; words?: Record<string, string> };
 
-export type LiveApi = {
+type LiveApi = {
   state: LiveUiState;
   lines: LiveLine[];
   cues: ReturnType<LiveTranscript["cues"]>;

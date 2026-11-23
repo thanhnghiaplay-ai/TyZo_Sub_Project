@@ -15,7 +15,7 @@ function pageLink(url: string): boolean {
 export const ALI_FILETRANS_MODEL = "qwen-audio-3.0-asr-flash-filetrans";
 
 /** Workspace mặc định (vùng Singapore) khi Chủ chưa đặt Workspace ID. */
-export const ALI_FILETRANS_DEFAULT_WORKSPACE = "ws-u3mqeygepiyqd77d";
+const ALI_FILETRANS_DEFAULT_WORKSPACE = "ws-u3mqeygepiyqd77d";
 
 function okWorkspaceId(value: string | undefined | null): value is string {
   return typeof value === "string" && /^[a-z0-9][a-z0-9-]{2,62}$/i.test(value.trim());
@@ -135,7 +135,7 @@ function mergeTiny(pieces: AliSentence[]): AliSentence[] {
  * Tách lại theo dấu câu, ưu tiên mốc từng từ (words) nếu có, ngắt thêm khi hai từ cách nhau từ 0,5 giây.
  * Câu không có chỗ ngắt thì giữ nguyên.
  */
-export function splitLongSentence(item: Record<string, unknown>, text: string, begin: number, end: number): AliSentence[] {
+function splitLongSentence(item: Record<string, unknown>, text: string, begin: number, end: number): AliSentence[] {
   const whole: AliSentence = { start: Math.max(0, begin / 1000), end: Math.max(begin / 1000 + 0.2, end / 1000), text };
   const words = Array.isArray(item.words) ? item.words : [];
   const usable = words

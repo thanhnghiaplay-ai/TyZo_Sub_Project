@@ -21,9 +21,9 @@ export const REJECT_LABEL: Record<RejectReason, string> = {
 };
 
 /** whisper: Groq trả ít nhất một segment có text. whisper_empty: gọi Whisper nhưng không có text. silence / decode_fail: không gửi Whisper. */
-export type RawPartKind = "whisper" | "whisper_empty" | "silence" | "decode_fail";
+type RawPartKind = "whisper" | "whisper_empty" | "silence" | "decode_fail";
 
-export type RawAsrSegment = {
+type RawAsrSegment = {
   text: string;
   start: number | null;
   end: number | null;
@@ -84,7 +84,7 @@ export type LangStat = {
   appFiltered: number;
 };
 
-export type DiagSummary = {
+type DiagSummary = {
   whisperParts: number;
   whisperEmptyParts: number;
   silenceParts: number;

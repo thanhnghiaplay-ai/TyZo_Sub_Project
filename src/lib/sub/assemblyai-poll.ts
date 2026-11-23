@@ -6,7 +6,7 @@ import { assemblyaiErrorText, assemblyaiId, assemblyaiStatus, type AssemblyaiSub
  */
 export type AaiRequest = (path: string, init?: { method: "GET" | "POST" | "DELETE"; body?: string }) => Promise<{ status: number; payload: unknown }>;
 
-export type AaiJobOptions = {
+type AaiJobOptions = {
   request: AaiRequest;
   body: AssemblyaiSubmit;
   /** Tổng thời gian chờ tối đa (mili giây) tính từ lúc gửi. */
@@ -72,7 +72,7 @@ export async function startAssemblyaiJob(request: AaiRequest, body: AssemblyaiSu
   return id;
 }
 
-export type AaiStep = { state: "running" } | { state: "done"; payload: unknown };
+type AaiStep = { state: "running" } | { state: "done"; payload: unknown };
 
 /** Hỏi một lần. Xong hoặc lỗi thì xóa bản phiên âm ở AssemblyAI; lỗi thì ném câu tiếng Việt. */
 export async function stepAssemblyaiJob(request: AaiRequest, id: string): Promise<AaiStep> {

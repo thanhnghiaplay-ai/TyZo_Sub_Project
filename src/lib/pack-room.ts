@@ -6,7 +6,7 @@ import { checkServicePacks, parseServicePacks, type ServicePack } from "@/lib/se
 import type { GroqLiveRow } from "@/lib/sub/groq-board";
 import { parseUsdFix, type UsdFix } from "@/lib/usd-fix";
 
-export type AlibabaDeskView = {
+type AlibabaDeskView = {
   desk: RunDesk;
   models: string[] | null;
   keyTail: string;
@@ -20,7 +20,7 @@ export type AlibabaDeskView = {
   deepgramRows: GroqLiveRow[];
 };
 
-export type ServiceMenu = {
+type ServiceMenu = {
   packs: ServicePack[];
   alibaba: { markup: number; custom: Record<string, PriceOverride>; models: string[] | null };
 };

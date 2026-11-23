@@ -6,12 +6,8 @@ import { directFileUrlProblem } from "@/lib/sub/ali-filetrans";
 import { authHeader, PROVIDERS } from "@/lib/sub/provider";
 
 export type SpeechmaticsAsrInput = { url: string; language: string; model: string; key: string; ticketId?: string };
-export type SpeechmaticsAsrResult = { sentences: SmSentence[]; seconds: number };
+type SpeechmaticsAsrResult = { sentences: SmSentence[]; seconds: number };
 
-/** Tổng thời gian chờ một file. Quá hạn thì báo lỗi rõ, không treo hàm máy chủ. */
-const DEADLINE_MS = 110_000;
-/** Nhịp hỏi trạng thái job. */
-const INTERVAL_MS = 3_000;
 const REQUEST_MS = 20_000;
 
 export type SpeechmaticsStartResult = { jobId: string };

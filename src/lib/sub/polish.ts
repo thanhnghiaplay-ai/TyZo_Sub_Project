@@ -11,7 +11,7 @@
 import { GENRE_PROMPT_MAX, genrePrompt } from "./genre-prompts.ts";
 import { ADDRESS_RULE, stripFence } from "./text.ts";
 
-export type PolishMsg = { role: string; content: string };
+type PolishMsg = { role: string; content: string };
 
 /** Gửi `messages` cho model, trả nội dung thô (chuỗi). Ném `PolishRefusal` nếu nhà cung cấp báo từ chối. */
 export type PolishCall = (messages: PolishMsg[], count: number) => Promise<string>;
@@ -92,7 +92,7 @@ const CTX_AFTER = 4;
 const TOKEN_RE = /\{\{G\d+\}\}/g;
 
 /** Câu từ chối thường gặp của model (Anh và Việt). Chỉ tính khi bản cũ KHÔNG có sẵn mẫu này. */
-export const REFUSAL_RE =
+const REFUSAL_RE =
   /\b(?:i(?:'m| am)? (?:sorry|unable)|i can(?:'|no)t|i cannot|i won(?:'|)t|as an ai|can(?:'|no)t (?:help|assist|comply|continue)|cannot (?:help|assist|comply|fulfill|continue)|not able to (?:help|assist|comply))\b|tôi xin lỗi|xin lỗi,? (?:tôi|mình)|tôi không thể (?:giúp|hỗ trợ|thực hiện|tiếp tục|trau chuốt|dịch)/i;
 
 type Line = { i: number; o: string; t: string };
@@ -235,7 +235,7 @@ export function batchContext(items: PolishItem[], current: string[], idx: number
   return { before, after };
 }
 
-export type PolishRun = {
+type PolishRun = {
   /** Cùng độ dài và thứ tự với `items`. Luôn có `text`: bản mới nếu `changed`, còn lại là bản cũ. */
   results: PolishResult[];
   /** Có chữ nếu chạy dừng giữa chừng vì lỗi nặng (hết hạn mức, sai key, mạng hỏng liên tục). Các câu chưa chạy là `failed`. */
@@ -298,7 +298,7 @@ export async function polishAll(
   return { results: out.map((r, i) => r ?? { text: current[i], status: "failed" as const }), stopped };
 }
 
-export type PolishSummary = Record<PolishStatus, number>;
+type PolishSummary = Record<PolishStatus, number>;
 
 export function polishSummary(results: PolishResult[]): PolishSummary {
   const sum: PolishSummary = { changed: 0, same: 0, locked: 0, skipped: 0, refused: 0, failed: 0 };

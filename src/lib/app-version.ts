@@ -1,7 +1,7 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
 export const APP_VERSION = "5.42.7";
 
-export type ReleaseNote = {
+type ReleaseNote = {
   version: string;
   time: string;
   title: string;

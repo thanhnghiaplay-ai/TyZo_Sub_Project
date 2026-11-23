@@ -25,15 +25,15 @@ export const LATENCY_DEFAULT: Record<SpeechEngine, number> = {
 /** Bù tối đa (giây): vượt mức này thì thà trễ còn hơn đọc lệch hẳn sang câu trước. */
 export const LATENCY_CAP = 1.8;
 /** Hệ số trung bình trượt khi gộp số đo mới. */
-export const LATENCY_SMOOTH = 0.35;
+const LATENCY_SMOOTH = 0.35;
 /** Số câu kế tiếp được tạo trước. */
-export const PREFETCH_COUNT = 2;
+const PREFETCH_COUNT = 2;
 /** Tăng tốc đọc tối đa khi câu dài hơn khoảng thoại (1,3 = nhanh hơn 30%). */
 export const FIT_MAX_BOOST = 1.3;
 /** Khoảng thoại ngắn nhất tính tới (giây), để câu rất ngắn không bị ép nhanh. */
-export const FIT_MIN_SLOT = 0.8;
+const FIT_MIN_SLOT = 0.8;
 
-export type LatencyTracker = {
+type LatencyTracker = {
   /** Gộp một số đo (giây) cho loại giọng. Số không hợp lệ bị bỏ qua. */
   record: (engine: SpeechEngine, seconds: number) => void;
   /** Độ trễ ước tính hiện tại (giây), đã giới hạn ở LATENCY_CAP. */

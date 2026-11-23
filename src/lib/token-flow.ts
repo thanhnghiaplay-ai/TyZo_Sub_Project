@@ -1,6 +1,6 @@
 import type { Sql } from "./db.ts";
 
-export type GiayOpen = { id: string; held: number } | { error: "het-giay" };
+type GiayOpen = { id: string; held: number } | { error: "het-giay" };
 
 /** Cộng số giây còn hạn. Không tính gói đã hết hạn. */
 export async function giayBalance(sql: Sql, userId: string) {

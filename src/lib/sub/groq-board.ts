@@ -47,7 +47,7 @@ export function parseGroqModelsHtml(html: string): GroqLiveRow[] {
   return rows;
 }
 
-export function parseGroqModelLine(text: string): GroqLiveRow | null {
+function parseGroqModelLine(text: string): GroqLiveRow | null {
   const idMatch = text.match(ID_RE);
   if (!idMatch || idMatch.index == null) return null;
   const id = idMatch[1];

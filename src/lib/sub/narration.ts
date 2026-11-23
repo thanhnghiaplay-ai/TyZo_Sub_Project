@@ -10,7 +10,7 @@ import { orpheusReady, SPEAK_SAMPLE, speechLang } from "@/lib/sub/text";
 import { createLatencyTracker, estimateSpeechSeconds, fitBoost, holdSeconds, type SpeechEngine } from "@/lib/sub/narration-sync";
 import type { NarrationSettings } from "@/lib/sub/types";
 
-export const EN_VOICES = [
+const EN_VOICES = [
   { id: "hannah", name: "Hannah", gender: "female" },
   { id: "autumn", name: "Autumn", gender: "female" },
   { id: "diana", name: "Diana", gender: "female" },
@@ -19,7 +19,7 @@ export const EN_VOICES = [
   { id: "daniel", name: "Daniel", gender: "male" },
 ] as const;
 
-export const AR_VOICES = [
+const AR_VOICES = [
   { id: "lulwa", name: "Lulwa", gender: "female" },
   { id: "noura", name: "Noura", gender: "female" },
   { id: "aisha", name: "Aisha", gender: "female" },
@@ -52,7 +52,7 @@ export function guessGender(voice: SpeechSynthesisVoice): "female" | "male" | "a
 }
 
 /** Orpheus chỉ nhận câu ngắn. Cắt theo dấu câu, mỗi mảnh tối đa 180 ký tự. */
-export function orpheusPieces(text: string, max = 180): string[] {
+function orpheusPieces(text: string, max = 180): string[] {
   const parts: string[] = [];
   let rest = text.trim();
   while (rest.length > max) {

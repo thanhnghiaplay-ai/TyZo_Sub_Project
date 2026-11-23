@@ -7,7 +7,7 @@
 
 import { ROOM_PLANS, type RoomPlanId } from "./room-plans.ts";
 
-export type PlanPrice = { price: number; strike: number | null };
+type PlanPrice = { price: number; strike: number | null };
 export type PlanPrices = Record<RoomPlanId, PlanPrice>;
 
 /** Giá một gói thấp nhất / cao nhất cho phép (đồng). Chặn gõ nhầm thừa hoặc thiếu số 0. */

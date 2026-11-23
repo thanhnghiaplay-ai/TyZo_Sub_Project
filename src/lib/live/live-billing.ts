@@ -4,7 +4,7 @@ import type { LiveBook } from "./live-cost.ts";
 import { releaseStaleWith } from "../run-ticket.ts";
 import { chargeTokenWith, closeTokenWith, openGiayWith } from "../token-flow.ts";
 
-export type LiveBillingEnv = {
+type LiveBillingEnv = {
   /** Bảng giá hiện hành (đã cộng chênh). null khi chưa có giá. */
   book(): Promise<LiveBook | null>;
   now?: () => Date;

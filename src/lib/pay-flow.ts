@@ -3,7 +3,7 @@ import { codesIn, PAY_MINUTES, type PayHit } from "./pay-match.ts";
 import { PLAN_PRICE_MAX, PLAN_PRICE_MIN } from "./room-plan-prices.ts";
 import { roomPlan } from "./room-plans.ts";
 
-export type CreditResult = { userId: string; amount: number; code: string; purpose?: string } | null;
+type CreditResult = { userId: string; amount: number; code: string; purpose?: string } | null;
 
 type SaleOrder = {
   id: string;

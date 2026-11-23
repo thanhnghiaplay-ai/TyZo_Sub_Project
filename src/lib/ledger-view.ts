@@ -1,6 +1,6 @@
 // Lịch sử Token/Gói cho khách. Hàm thuần: đọc sổ, gom dòng cho dễ hiểu. Không gọi mạng.
 
-export type LedgerItem = { id: number; kind: string; amount: number; note: string };
+type LedgerItem = { id: number; kind: string; amount: number; note: string };
 
 export type LedgerRow = {
   id: number;

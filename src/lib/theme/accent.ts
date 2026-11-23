@@ -69,7 +69,7 @@ export function fitAccent(accent: string, bg: string, min: number = ACCENT_MIN_O
   return { color, adjusted: true };
 }
 
-export type AccentVars = {
+type AccentVars = {
   "--accent-dark": string;
   "--ink-dark": string;
   "--accent-light": string;

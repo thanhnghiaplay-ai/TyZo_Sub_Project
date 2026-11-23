@@ -2,7 +2,7 @@
 // Tách riêng, chỉ import tương đối, để test được bằng Node không cần mạng (bước C1, HANDOFF_NANG_CAP.md).
 import { glossaryList, stripFence, type Bible } from "./text.ts";
 
-export type AnalyzeInput = {
+type AnalyzeInput = {
   language: string;
   title: string;
   notes: string;
@@ -10,7 +10,7 @@ export type AnalyzeInput = {
   lines: string[];
 };
 
-export type AnalyzeMsg = { role: string; content: string };
+type AnalyzeMsg = { role: string; content: string };
 
 /** Phiên bản rút gọn phần giữa khi phụ đề quá dài (giữ đầu, giữa, cuối). */
 export const ANALYZE_MAX_CHARS = 40000;

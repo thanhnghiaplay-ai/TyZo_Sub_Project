@@ -10,7 +10,7 @@ export type R2UploadResult = { key: string; putUrl: string; getUrl: string; cont
 type R2Config = { account: string; bucket: string; creds: R2Creds };
 
 /** Đọc cấu hình từ biến môi trường. Thiếu cái nào thì trả danh sách tên còn thiếu (không bao giờ trả giá trị). */
-export function r2Config(): { ok: true; config: R2Config } | { ok: false; missing: string[] } {
+function r2Config(): { ok: true; config: R2Config } | { ok: false; missing: string[] } {
   const account = env("R2_ACCOUNT_ID");
   const accessKeyId = env("R2_ACCESS_KEY_ID");
   const secretAccessKey = env("R2_SECRET_ACCESS_KEY");

@@ -6,7 +6,7 @@
  *
  *   if (!(await askConfirm({ title: "Xóa khoản này?", text: "Không hoàn tác được.", confirmLabel: "Xóa", danger: true }))) return;
  */
-export type ConfirmOptions = {
+type ConfirmOptions = {
   title?: string;
   /** Có thể nhiều dòng; xuống dòng được giữ nguyên. */
   text: string;

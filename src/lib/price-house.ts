@@ -1,15 +1,15 @@
 /** Gom hàng giá theo nhà, mỗi nhà một khối cùng kiểu. Hàm thuần, không đụng máy chủ. */
-export type PriceHouseRow = { id: string; house: string; fix: { hour: number | null; inn: number | null; out: number | null; chars: number | null } };
+type PriceHouseRow = { id: string; house: string; fix: { hour: number | null; inn: number | null; out: number | null; chars: number | null } };
 
 /** Nhà kéo giá từ trang giá (có nút «Lấy lại») và nhà giá gắn sẵn trong code (sửa tay). */
-export const PULLED_HOUSES = ["Groq", "Alibaba", "Deepgram"] as const;
+const PULLED_HOUSES = ["Groq", "Alibaba", "Deepgram"] as const;
 export type PulledHouse = (typeof PULLED_HOUSES)[number];
 
 export function isPulledHouse(house: string): house is PulledHouse {
   return (PULLED_HOUSES as readonly string[]).includes(house);
 }
 
-export type HouseGroup<T extends PriceHouseRow> = { house: string; pulled: boolean; rows: T[]; fixedCount: number };
+type HouseGroup<T extends PriceHouseRow> = { house: string; pulled: boolean; rows: T[]; fixedCount: number };
 
 function hasFix(row: PriceHouseRow): boolean {
   const fix = row.fix;

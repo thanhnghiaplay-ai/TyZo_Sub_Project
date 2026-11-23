@@ -18,7 +18,7 @@ export type SocketLike = {
   onerror: ((event: unknown) => void) | null;
 };
 
-export type SessionDeps = {
+type SessionDeps = {
   createSocket(url: string): SocketLike;
   startCapture(handlers: CaptureHandlers): Promise<CaptureHandle>;
   player: { play(samples: Float32Array): void; stop(): void };
@@ -28,7 +28,7 @@ export type SessionDeps = {
   clearTimer?: (handle: unknown) => void;
 };
 
-export type SessionHandlers = {
+type SessionHandlers = {
   onState?(state: SessionState): void;
   /** Sự kiện chữ gốc, chữ dịch, người nói… để màn hình ghép thành dòng phụ đề. */
   onEvent?(event: ParsedEvent): void;

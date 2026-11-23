@@ -37,7 +37,7 @@ export function rememberUse(store: Store | null, answer: UseAnswer | "skip") {
 }
 
 /** Việc đặt sẵn theo câu trả lời, và câu báo cho khách biết đã đặt gì (không âm thầm đổi). */
-export type UsePreset = { narration?: boolean; tip: string };
+type UsePreset = { narration?: boolean; tip: string };
 
 export function presetForUse(answer: UseAnswer): UsePreset {
   if (answer === "hoc") {

@@ -1,7 +1,7 @@
 import { LiveFramer } from "./live-frames.ts";
 import { micErrorMessage } from "./live-mic-errors.ts";
 
-export type TrackLike = { stop(): void };
+type TrackLike = { stop(): void };
 export type StreamLike = { getTracks(): TrackLike[] };
 
 /** Đồ thật của trình duyệt, tách ra để test bằng đồ giả. */

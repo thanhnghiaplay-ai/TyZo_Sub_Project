@@ -6,7 +6,7 @@
 import type { PayState } from "./pay-status.ts";
 
 /** start: bắt đầu dịch. add-key: mở Cài đặt dịch. wallet: mở Ví. choose: đưa mắt về dòng cách trả. none: chưa bấm được. */
-export type HomeActionKind = "start" | "add-key" | "wallet" | "choose" | "none";
+type HomeActionKind = "start" | "add-key" | "wallet" | "choose" | "none";
 
 export type HomeAction = { kind: HomeActionKind; label: string; hint: string };
 

@@ -23,7 +23,7 @@ export function ringDash(percent: number): { circumference: number; offset: numb
 }
 
 /** Khoảng cách giữa hai icon (px) và số px kéo cho một công cụ. */
-export const WHEEL_SPACING = 46;
+const WHEEL_SPACING = 46;
 export const WHEEL_DRAG_PX = 48;
 
 export function wrapIndex(i: number, n: number): number {

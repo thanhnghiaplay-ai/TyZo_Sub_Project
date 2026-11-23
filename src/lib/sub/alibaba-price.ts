@@ -23,7 +23,7 @@ function headingAt(text: string, index: number): boolean {
 }
 
 /** Ghép mọi khối đứng sau tiêu đề Singapore, dừng trước vùng khác. */
-export function singaporeText(raw: string): string {
+function singaporeText(raw: string): string {
   const text = pageText(raw);
   const marks = [...text.matchAll(REGION)].filter((mark) => headingAt(text, mark.index ?? 0));
   let out = "";

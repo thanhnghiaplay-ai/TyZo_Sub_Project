@@ -1,7 +1,7 @@
 import { r2Remove, r2Upload } from "@/lib/r2-upload";
 import { putWithRetry, xhrPutSend } from "@/lib/sub/r2-put";
 
-export type R2Uploaded = { key: string; url: string };
+type R2Uploaded = { key: string; url: string };
 
 /** Xin link ký ở máy chủ rồi tải thẳng âm thanh lên R2 (không qua máy chủ phòng). Trả link đọc cho nhà nhận dạng. */
 export async function uploadAudioToR2(

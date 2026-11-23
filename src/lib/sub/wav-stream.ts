@@ -62,7 +62,7 @@ export class WavBuilder {
   }
 }
 
-export type SpanRead = (start: number, end: number) => Promise<Float32Array | null>;
+type SpanRead = (start: number, end: number) => Promise<Float32Array | null>;
 
 /** Đọc lần lượt từng đoạn `spanSeconds` giây rồi ghép. Một đoạn không giải mã được thì báo rõ đoạn nào. */
 export async function packWavFromReader(

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRunDoor, type RunDoorView } from "@/lib/admin-room";
 
-export const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {}, offered: null };
+const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {}, offered: null };
 
 export function useRunDoor() {
   const [door, setDoor] = useState<RunDoorView & { ready: boolean }>({ ...DOOR_OPEN, ready: false });

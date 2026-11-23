@@ -48,7 +48,7 @@ export function needsAgeConfirm(genre: string): boolean {
   return AGE_GATE_GENRES.has(currentGenre(genre));
 }
 
-export type HomeInput = {
+type HomeInput = {
   hasSegs: boolean;
   running: boolean;
   analyzing: boolean;

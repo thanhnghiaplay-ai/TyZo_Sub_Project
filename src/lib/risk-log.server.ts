@@ -5,7 +5,7 @@ import { getSql } from "@/lib/db";
  * Ghi dữ kiện dùng làm bằng chứng khi phát hiện vi phạm (xem risk-rules.ts). Không bao giờ làm hỏng việc chính:
  * mọi lỗi ở đây bị nuốt. Giữ 180 ngày (dọn ở risk.server.ts).
  */
-export function requestMeta(): { ip: string; ua: string } {
+function requestMeta(): { ip: string; ua: string } {
   const request = getRequest();
   const forwarded = request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
   const ip = (forwarded || request?.headers.get("x-real-ip")?.trim() || "").slice(0, 64);
@@ -13,7 +13,7 @@ export function requestMeta(): { ip: string; ua: string } {
   return { ip, ua };
 }
 
-export function cleanDevice(raw: unknown): string {
+function cleanDevice(raw: unknown): string {
   return typeof raw === "string" && /^[a-z0-9]{16,64}$/.test(raw) ? raw : "";
 }
 

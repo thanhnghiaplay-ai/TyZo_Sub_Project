@@ -12,7 +12,7 @@ import type { RentShow } from "./rent-show-rule.ts";
 import type { ProviderId } from "./sub/provider.ts";
 
 export const AUTO_LEVELS = ["save", "balanced", "best"] as const;
-export type AutoLevel = (typeof AUTO_LEVELS)[number];
+type AutoLevel = (typeof AUTO_LEVELS)[number];
 /** off chỉ dùng được cho việc không bắt buộc (không phải nhận dạng và dịch). */
 export type AutoChoice = AutoLevel | "off";
 
@@ -26,14 +26,14 @@ export const AUTO_LEVEL_LABEL: Record<AutoChoice, string> = {
 export const REQUIRED_ROLES: readonly PackRole[] = ["asr", "translate"];
 
 /** Điểm tối thiểu để được xét ở mức Tiết kiệm, tránh chọn model rẻ nhưng quá yếu. */
-export const SAVE_FLOOR = 6;
+const SAVE_FLOOR = 6;
 /** Mức Cân bằng: chọn model rẻ nhất trong nhóm cách model tốt nhất không quá ngần này điểm. */
-export const BALANCED_BAND = 1.5;
+const BALANCED_BAND = 1.5;
 
 export type AutoLang = "cjk" | "other";
 export type AutoCandidate = RoleAssign;
 
-export type AutoInput = {
+type AutoInput = {
   levels: Partial<Record<PackRole, AutoChoice>>;
   /** Model đang mở (Chủ đã tick, key chạy được). Người gọi lọc trước. */
   candidates: AutoCandidate[];
@@ -99,7 +99,7 @@ export function pickForRole(role: PackRole, level: AutoLevel, input: Pick<AutoIn
 }
 
 /** Một mức khi đặt cạnh nhau: model chọn được, điểm đang tính (đã tính tiếng Á nếu cjk) và giá một phút theo giá gốc (đồng). */
-export type LevelView = { provider: ProviderId; model: string; score: number; cost: number };
+type LevelView = { provider: ProviderId; model: string; score: number; cost: number };
 
 /** Ba mức của một việc, cùng đường chọn với pickForRole. Mức không có model hợp lệ là null. */
 export function compareLevels(role: PackRole, input: Pick<AutoInput, "candidates" | "books" | "lang">): Record<AutoLevel, LevelView | null> {

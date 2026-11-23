@@ -7,7 +7,7 @@
  */
 export type PollStep<T> = { state: "running" } | ({ state: "done" } & T);
 
-export type PollLoopOptions<T> = {
+type PollLoopOptions<T> = {
   step: () => Promise<PollStep<T>>;
   signal: AbortSignal;
   intervalMs: number;
@@ -25,7 +25,7 @@ function abortError() {
   return error;
 }
 
-export function defaultSleep(ms: number, signal: AbortSignal): Promise<void> {
+function defaultSleep(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) return reject(abortError());
     const onAbort = () => {

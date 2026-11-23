@@ -55,7 +55,7 @@ export function speechmaticsJobConfig(input: { audioUrl: string; appModel: strin
   };
 }
 
-export type SmStatus = "running" | "done" | "rejected" | "deleted" | "expired" | "unknown";
+type SmStatus = "running" | "done" | "rejected" | "deleted" | "expired" | "unknown";
 
 const isNum = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" ? (value as Record<string, unknown>) : {});

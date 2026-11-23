@@ -132,7 +132,7 @@ export function useMoney({ active, asr, chat, seconds, narration, phase = "idle"
 }
 
 /** Thanh số dư gọn, đặt ngay đầu màn hình đầu: Token dịch còn và còn khoảng bao nhiêu phút. */
-export function MoneyBalance({ money, turn }: { money: MoneyView; turn: boolean }) {
+function MoneyBalance({ money, turn }: { money: MoneyView; turn: boolean }) {
   if (!money.on) return null;
   const { account, left, exactRate } = money;
   return (

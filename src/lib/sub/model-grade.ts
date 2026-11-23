@@ -8,7 +8,7 @@
 import { CHAT_MODELS } from "./models.ts";
 import { MEASURED_GRADE } from "./model-grade-measured.ts";
 
-export type ModelGrade = { quality: number; speed: number; asian: number };
+type ModelGrade = { quality: number; speed: number; asian: number };
 
 /** ƯỚC LƯỢNG, chưa đo. Chủ sửa số ở đây khi có kết quả thật. */
 const GRADE_FIX: Record<string, ModelGrade> = {

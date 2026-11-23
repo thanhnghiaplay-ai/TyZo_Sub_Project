@@ -17,7 +17,7 @@ export const LIVE_FALLBACK_ROWS: LivePriceRow[] = [
 ];
 
 /** Trang giá chính thức của từng model, đọc bằng máy chủ. */
-export const LIVE_PRICE_PAGES: Record<string, string> = {
+const LIVE_PRICE_PAGES: Record<string, string> = {
   [LIVE_MODEL_38]: "https://www.alibabacloud.com/help/en/model-studio/qwen3-8-livetranslate-flash-realtime",
 };
 

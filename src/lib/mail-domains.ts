@@ -1,4 +1,4 @@
-export const COMMON_DOMAINS = ["gmail.com", "icloud.com", "outlook.com", "yahoo.com", "hotmail.com", "live.com", "me.com"];
+const COMMON_DOMAINS = ["gmail.com", "icloud.com", "outlook.com", "yahoo.com", "hotmail.com", "live.com", "me.com"];
 
 const TEMP_DOMAINS = [
   "mailinator.com",
@@ -26,7 +26,7 @@ export function withDomain(value: string, domain: string) {
 }
 
 /** Phần trước @; nếu đã có @ thì lấy local, không bắt gõ đuôi. */
-export function mailLocal(value: string) {
+function mailLocal(value: string) {
   return value.trim().split("@")[0]?.trim() || "";
 }
 

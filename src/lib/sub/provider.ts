@@ -11,7 +11,7 @@ export type ProviderCap = "asr" | "chat" | "tts" | "live";
  * bearer: `Authorization: Bearer KEY` (kiểu OpenAI). token: `Authorization: Token KEY` (Deepgram). raw: `Authorization: KEY`, không tiền tố (AssemblyAI).
  * xi: header riêng `xi-api-key: KEY` (ElevenLabs), không dùng Authorization.
  */
-export type ProviderAuth = "bearer" | "token" | "raw" | "xi";
+type ProviderAuth = "bearer" | "token" | "raw" | "xi";
 
 /**
  * Cách app đưa âm thanh cho nhà nhận dạng (chỉ nói về cách app đang dùng, không phải mọi khả năng của nhà):
@@ -64,14 +64,14 @@ export type ProviderInfo = {
  */
 export type ProviderChat = { path: string; tokenField: "max_completion_tokens" | "max_tokens"; browserDirect: boolean };
 
-export const GROQ_API = "https://api.groq.com/openai/v1";
-export const ALIBABA_API = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
+const GROQ_API = "https://api.groq.com/openai/v1";
+const ALIBABA_API = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
 export const DEEPGRAM_API = "https://api.deepgram.com/v1";
-export const ASSEMBLYAI_API = "https://api.assemblyai.com/v2";
+const ASSEMBLYAI_API = "https://api.assemblyai.com/v2";
 /** Speechmatics chia máy chủ theo vùng; key của vùng nào chỉ chạy ở vùng đó. Đang khai vùng US1, cần kiểm bằng key thật ở bước máy chủ. */
 export const SPEECHMATICS_API = "https://us1.asr.api.speechmatics.com/v2";
-export const SONIOX_API = "https://api.soniox.com/v1";
-export const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
+const SONIOX_API = "https://api.soniox.com/v1";
+const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
 
 export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
   groq: {

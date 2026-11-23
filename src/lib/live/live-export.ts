@@ -1,9 +1,9 @@
 import { toSrt, toTxt, toVtt } from "../sub/text.ts";
 import type { Seg } from "../sub/types.ts";
 
-export type LiveExportFormat = "srt" | "vtt" | "txt";
+type LiveExportFormat = "srt" | "vtt" | "txt";
 
-export type LiveCue = { start: number; end: number; original: string; translation: string | null; speaker?: string };
+type LiveCue = { start: number; end: number; original: string; translation: string | null; speaker?: string };
 
 const MIME: Record<LiveExportFormat, string> = {
   srt: "application/x-subrip;charset=utf-8",
@@ -12,7 +12,7 @@ const MIME: Record<LiveExportFormat, string> = {
 };
 
 /** Đổi dòng của LiveTranscript sang kiểu Seg để dùng đúng bộ xuất SRT/VTT/TXT của trang phụ đề. */
-export function liveCuesToSegs(cues: LiveCue[]): Seg[] {
+function liveCuesToSegs(cues: LiveCue[]): Seg[] {
   return cues.map((cue) => ({
     start: cue.start,
     end: cue.end,

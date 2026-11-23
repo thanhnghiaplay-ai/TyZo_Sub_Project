@@ -13,7 +13,7 @@ import { catalogFor, modelKindOf } from "./sub/model-catalog.ts";
 import { quotePolish, type PolishPlan, type PolishQuote } from "./polish-estimate.ts";
 import type { PriceBook } from "./run-bill.ts";
 
-export type PolishPool = "censored" | "uncensored";
+type PolishPool = "censored" | "uncensored";
 
 export const POLISH_POOLS: readonly PolishPool[] = ["censored", "uncensored"];
 
@@ -81,7 +81,7 @@ export function polishIdsFor(models: PolishModels | null, genre: string): string
   return models[poolForGenre(genre)];
 }
 
-export type PolishRow = { id: string; name: string; onKey: boolean | null };
+type PolishRow = { id: string; name: string; onKey: boolean | null };
 
 /**
  * Hàng model trong bảng Admin: chỉ model chat của Groq trong danh mục cộng model lạ trên key phòng (kind chat).
@@ -101,7 +101,7 @@ export function polishRows(keyModels: string[] | null): PolishRow[] {
   return rows;
 }
 
-export type PolishChoice = {
+type PolishChoice = {
   id: string;
   name: string;
   quote: PolishQuote;

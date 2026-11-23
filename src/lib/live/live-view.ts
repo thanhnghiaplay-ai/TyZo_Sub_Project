@@ -6,7 +6,7 @@ import { formatGiay } from "../token-math.ts";
  * Giây đang giữ cho phiên đã trừ khỏi gói, nên tổng còn dùng được = giây còn hạn + giây đang giữ.
  * Không lưu số dư đồng cho phiên này.
  */
-export type LiveMoney = { free: number; heldLeft: number };
+type LiveMoney = { free: number; heldLeft: number };
 
 export function liveMoneyLeft({ free, heldLeft }: LiveMoney): number {
   const a = Number.isFinite(free) ? Math.max(0, free) : 0;

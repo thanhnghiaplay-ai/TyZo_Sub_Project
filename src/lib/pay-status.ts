@@ -28,7 +28,7 @@ export function rememberPayChoice(store: Store | null, choice: PayChoice) {
   }
 }
 
-export type PayAccount = { units: number; plan: string | null; planUntil: string | null; trialLeft: number };
+type PayAccount = { units: number; plan: string | null; planUntil: string | null; trialLeft: number };
 
 /** Quyền dùng key riêng: gói thuê phòng còn hạn, dùng thử còn lượt, hoặc đã hết. */
 export type RentAccess = { kind: "plan"; until: string } | { kind: "trial"; left: number } | { kind: "none" };

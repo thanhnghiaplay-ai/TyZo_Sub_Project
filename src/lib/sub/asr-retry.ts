@@ -4,16 +4,16 @@ import { fmt } from "./text.ts";
 /** Tổng thời lượng âm thanh được giải mã lại trong một lần chạy. Mỗi đoạn chỉ một lần. */
 export const ASR_RETRY_BUDGET_SECONDS = 180;
 
-export type DecodeSpan = { index: number; start: number; end: number };
+type DecodeSpan = { index: number; start: number; end: number };
 
-export type RetryPlan = {
+type RetryPlan = {
   budgetSeconds: number;
   retry: DecodeSpan[];
   deferred: DecodeSpan[];
   plannedSeconds: number;
 };
 
-export type MissingPart = DecodeSpan & { retried: boolean };
+type MissingPart = DecodeSpan & { retried: boolean };
 
 export type AsrRetryReport = {
   budgetSeconds: number;

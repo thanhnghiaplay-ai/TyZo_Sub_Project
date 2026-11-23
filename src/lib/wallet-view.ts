@@ -29,7 +29,7 @@ export function formatMinutes(minutes: number): string {
   return m ? `${h} giờ ${m} phút` : `${h} giờ`;
 }
 
-export type RunEstimate = {
+type RunEstimate = {
   total: number;
   hold: number;
   enough: boolean;

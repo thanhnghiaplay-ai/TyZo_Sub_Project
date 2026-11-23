@@ -2,7 +2,7 @@
  * Ngôn ngữ của Qwen LiveTranslate (60 ngôn ngữ: 29 có cả tiếng lẫn chữ, 31 chỉ có chữ).
  * Nguồn: tài liệu Alibaba Model Studio "Real-time audio and video translation - Qwen", cập nhật 13/11/2026.
  */
-export type LiveLang = { code: string; name: string; audio: boolean };
+type LiveLang = { code: string; name: string; audio: boolean };
 
 const A = (code: string, name: string): LiveLang => ({ code, name, audio: true });
 const T = (code: string, name: string): LiveLang => ({ code, name, audio: false });

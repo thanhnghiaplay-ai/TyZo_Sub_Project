@@ -155,7 +155,7 @@ export function reasoningOpts(model: string): Record<string, string | boolean> {
   return {};
 }
 
-export type PickInput = {
+type PickInput = {
   profile: AutoProfile;
   texts: string[];
   sourceLang: string;
@@ -300,9 +300,9 @@ export const TIER_LABEL: Record<ChatModel["tier"], string> = {
   key: "Thêm từ key",
 };
 
-export type VoiceLaneId = "fast" | "clear" | "cjk" | "soul";
+type VoiceLaneId = "fast" | "clear" | "cjk" | "soul";
 
-export type VoiceLane = {
+type VoiceLane = {
   id: VoiceLaneId;
   title: string;
   fit: string;

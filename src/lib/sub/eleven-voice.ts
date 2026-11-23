@@ -12,11 +12,11 @@ import { elevenlabsMissingPermission, elevenlabsPermissionText } from "./elevenl
 /** Mã model của app (danh mục, bảng giá, gói dịch, danh sách thuê phòng). */
 export const ELEVEN_TTS_ID = "elevenlabs-flash-v2-5";
 /** Mã model ElevenLabs nhận. */
-export const ELEVEN_TTS_API_MODEL = "eleven_flash_v2_5";
+const ELEVEN_TTS_API_MODEL = "eleven_flash_v2_5";
 /** Giá niêm yết Flash: 0,04 đô mỗi 1.000 ký tự = 40 đô mỗi triệu ký tự. */
 export const ELEVEN_TTS_USD_PER_MILLION_CHARS = 40;
 /** Mỗi mảnh gửi đi tối đa từng này ký tự (ngắn thì tiếng tới nhanh hơn; trần của model là 40.000). */
-export const ELEVEN_PIECE_MAX = 400;
+const ELEVEN_PIECE_MAX = 400;
 /** Cửa phòng nhận tối đa từng này ký tự mỗi yêu cầu. */
 export const ELEVEN_REQUEST_MAX = 2000;
 
@@ -47,7 +47,7 @@ export type ElevenVoice = { id: string; name: string; gender: "female" | "male" 
 
 const VOICE_ID = /^[A-Za-z0-9]{8,40}$/;
 
-export function elevenVoiceIdOk(id: string): boolean {
+function elevenVoiceIdOk(id: string): boolean {
   return VOICE_ID.test(id);
 }
 

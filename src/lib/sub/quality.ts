@@ -5,17 +5,17 @@ import type { RawAsrPart, RejectEntry } from "./diagnostics.ts";
  * Độ tin lấy từ avg_logprob của Whisper: đo mức Whisper tự tin vào chữ nó viết, không đo chữ đó đúng hay sai.
  * Các ngưỡng dưới đây là ước lượng ban đầu, chưa chỉnh theo số đo thật. Chủ nên đổi khi đã có dữ liệu.
  */
-export const QUALITY_HIGH_LOGPROB = -0.5;
-export const QUALITY_LOW_LOGPROB = -0.8;
-export const QUALITY_HIGH_COMPRESSION = 2.4;
-export const QUALITY_MIN_SEGMENTS = 5;
+const QUALITY_HIGH_LOGPROB = -0.5;
+const QUALITY_LOW_LOGPROB = -0.8;
+const QUALITY_HIGH_COMPRESSION = 2.4;
+const QUALITY_MIN_SEGMENTS = 5;
 
-export const HEALTH_RED_LOW_SHARE = 0.25;
-export const HEALTH_RED_DECODE_SHARE = 0.1;
-export const HEALTH_YELLOW_LOW_SHARE = 0.12;
-export const HEALTH_YELLOW_NOT_HIGH_SHARE = 0.4;
-export const HEALTH_YELLOW_DECODE_SHARE = 0.03;
-export const HEALTH_YELLOW_FILTER_RATE = 0.3;
+const HEALTH_RED_LOW_SHARE = 0.25;
+const HEALTH_RED_DECODE_SHARE = 0.1;
+const HEALTH_YELLOW_LOW_SHARE = 0.12;
+const HEALTH_YELLOW_NOT_HIGH_SHARE = 0.4;
+const HEALTH_YELLOW_DECODE_SHARE = 0.03;
+const HEALTH_YELLOW_FILTER_RATE = 0.3;
 
 /** Bộ ngưỡng Chủ chỉnh được trong Admin. Mặc định là các hằng số ở trên. */
 export type QualityThresholds = {
@@ -78,7 +78,7 @@ export function parseQualityThresholds(raw: string | null | undefined): QualityT
 }
 
 export type Health = "green" | "yellow" | "red" | "unknown";
-export type Band = "high" | "check" | "low" | "unknown";
+type Band = "high" | "check" | "low" | "unknown";
 
 export type Bands = { high: number; check: number; low: number; unknown: number };
 
@@ -107,7 +107,7 @@ export type LangCheckReport = {
   events: LangEvent[];
 };
 
-export type LangQuality = { language: string; parts: number; segments: number; meanConfidence: number | null };
+type LangQuality = { language: string; parts: number; segments: number; meanConfidence: number | null };
 
 export type QualitySummary = {
   version: 1;

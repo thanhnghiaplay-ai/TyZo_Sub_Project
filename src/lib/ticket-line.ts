@@ -7,7 +7,7 @@ import { CHAT_TICKET_PREFIX } from "./run-bill.ts";
 
 const nf = new Intl.NumberFormat("vi-VN");
 
-export type TicketMoney = { held: number; charged: number; released: number; refunded: number; status: string; unit: string };
+type TicketMoney = { held: number; charged: number; released: number; refunded: number; status: string; unit: string };
 
 function amount(n: number, unit: string): string {
   return unit === "token" ? `${nf.format(n)} Token dịch` : `${nf.format(Math.round(n))} đ`;

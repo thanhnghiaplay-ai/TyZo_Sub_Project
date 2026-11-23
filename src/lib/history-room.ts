@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import type { GrantRecord, TicketRecord } from "@/lib/history-view";
 
-export type MyHistory = { tickets: TicketRecord[]; next: string | null; grants: GrantRecord[] };
+type MyHistory = { tickets: TicketRecord[]; next: string | null; grants: GrantRecord[] };
 
 const PAGE = 20;
 

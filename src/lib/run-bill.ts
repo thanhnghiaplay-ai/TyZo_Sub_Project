@@ -2,7 +2,7 @@ import type { GroqLiveRow } from "./sub/groq-board.ts";
 import { quoteVnd, type RunDesk } from "./run-desk.ts";
 
 /** Groq tính tối thiểu 10 giây cho mỗi lần nhận dạng. */
-export const MIN_BILLED_SECONDS = 10;
+const MIN_BILLED_SECONDS = 10;
 /** Đệm khi giữ chỗ, vì số token dịch chỉ biết sau khi chạy. */
 export const HOLD_BUFFER = 1.5;
 /**

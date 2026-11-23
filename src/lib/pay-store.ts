@@ -6,7 +6,7 @@ import type { Sql } from "@/lib/db";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { accountMatches, cassoHits, randomPayCode, PAY_MINUTES, sepayHit, vietqrPayload, type PayHit } from "@/lib/pay-match";
 
-export type PayPublic = { sepay: boolean; casso: boolean };
+type PayPublic = { sepay: boolean; casso: boolean };
 
 export type PaySettingsView = PayPublic & {
   sepayOn: boolean;

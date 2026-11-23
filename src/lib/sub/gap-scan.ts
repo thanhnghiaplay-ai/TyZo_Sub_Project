@@ -2,8 +2,8 @@ import { fmt, rms, SILENCE_RMS, SR } from "./text.ts";
 
 export const GAP_MIN_SECONDS = 2;
 export const GAP_BUDGET_SECONDS = 120;
-export const GAP_BLOCK_SECONDS = 60;
-export const GAP_HOP_SECONDS = 58;
+const GAP_BLOCK_SECONDS = 60;
+const GAP_HOP_SECONDS = 58;
 
 export type SpeechSpan = { start: number; end: number };
 
@@ -85,7 +85,7 @@ export function collectSpeechSpans(input: {
   return found;
 }
 
-export function mergeSpans(spans: SpeechSpan[]): SpeechSpan[] {
+function mergeSpans(spans: SpeechSpan[]): SpeechSpan[] {
   const ordered = spans
     .filter((span) => Number.isFinite(span.start) && Number.isFinite(span.end) && span.end > span.start)
     .sort((a, b) => a.start - b.start || a.end - b.end);

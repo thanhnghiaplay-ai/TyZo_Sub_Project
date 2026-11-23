@@ -1,4 +1,4 @@
-export type AdminNote = {
+type AdminNote = {
   version: string;
   time: string;
   area: "tien" | "quyen" | "ha-tang" | "du-lieu" | "khac";

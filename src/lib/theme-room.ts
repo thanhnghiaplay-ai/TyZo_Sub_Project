@@ -8,7 +8,7 @@ const DRAFT = "theme_draft";
 const HISTORY = "theme_history";
 const HISTORY_MAX = 10;
 
-export type ThemeHistoryItem = { at: string; by: string; theme: Theme };
+type ThemeHistoryItem = { at: string; by: string; theme: Theme };
 export type ThemeAdminView = { live: Theme; draft: Theme; history: ThemeHistoryItem[]; issues: ThemeIssue[] };
 
 async function readTheme(key: string): Promise<Theme | null> {

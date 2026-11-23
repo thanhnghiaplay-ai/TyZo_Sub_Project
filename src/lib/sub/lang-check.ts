@@ -6,13 +6,13 @@
  */
 
 export const LANG_RETRY_BUDGET_SECONDS = 120;
-export const LANG_MIN_LETTERS = 12;
-export const LANG_LOW_LOGPROB = -0.8;
-export const LANG_BETTER_MARGIN = 0.2;
+const LANG_MIN_LETTERS = 12;
+const LANG_LOW_LOGPROB = -0.8;
+const LANG_BETTER_MARGIN = 0.2;
 
-export type ScriptCount = { han: number; kana: number; hangul: number; latin: number; total: number };
+type ScriptCount = { han: number; kana: number; hangul: number; latin: number; total: number };
 
-export type LangResult = {
+type LangResult = {
   language?: string;
   segments?: Array<{ text?: string; avg_logprob?: number; start?: number; end?: number } | null>;
 };

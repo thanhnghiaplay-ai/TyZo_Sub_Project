@@ -105,7 +105,7 @@ function parseAsc(a: Uint8Array) {
   return type >= 1 && type <= 4 && ch >= 1 && ch <= 7 ? { type, fi, ch } : null;
 }
 
-export type ByteRead = (a: number, b: number, sig?: AbortSignal) => Promise<Uint8Array>;
+type ByteRead = (a: number, b: number, sig?: AbortSignal) => Promise<Uint8Array>;
 
 export type Mp4Stream = {
   dur: number;
@@ -223,7 +223,7 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
   throw new Error(sawAudio ? `âm thanh không phải AAC-LC (${audioKinds.join(", ") || "không rõ loại"})` : "không có luồng âm thanh");
 }
 
-export function hostOf(url: string) {
+function hostOf(url: string) {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
   } catch {

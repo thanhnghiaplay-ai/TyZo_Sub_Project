@@ -2,18 +2,18 @@ import type { RawAsrPart, RejectEntry, RejectReason } from "./diagnostics.ts";
 
 /** Riêng với ngân sách giải mã lỗi. Không cộng chung. */
 export const FILTER_RETRY_BUDGET_SECONDS = 120;
-export const FILTER_RETRY_PAD = 0.35;
+const FILTER_RETRY_PAD = 0.35;
 
 const REASONS = new Set<RejectReason>(["low_confidence", "short_uncertain", "brief_uncertain"]);
 
-export type FilterClip = {
+type FilterClip = {
   key: string;
   start: number;
   end: number;
   reason: RejectReason | "whisper_empty";
 };
 
-export type FilterRetryPlan = {
+type FilterRetryPlan = {
   budgetSeconds: number;
   retry: FilterClip[];
   deferred: FilterClip[];

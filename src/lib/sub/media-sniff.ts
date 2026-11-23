@@ -7,10 +7,10 @@
  * vì sao không đọc được, và đưa sẵn lệnh ffmpeg để đổi sang M4A.
  */
 
-export type Container = "mp4" | "matroska" | "webm" | "avi" | "wav" | "mp3" | "ogg" | "flac" | "aac" | "ac3" | "ts" | "flv" | "asf" | "unknown";
-export type AudioCodec = "aac" | "mp3" | "ac3" | "eac3" | "dts" | "truehd" | "opus" | "vorbis" | "flac" | "alac" | "pcm" | "wma";
+type Container = "mp4" | "matroska" | "webm" | "avi" | "wav" | "mp3" | "ogg" | "flac" | "aac" | "ac3" | "ts" | "flv" | "asf" | "unknown";
+type AudioCodec = "aac" | "mp3" | "ac3" | "eac3" | "dts" | "truehd" | "opus" | "vorbis" | "flac" | "alac" | "pcm" | "wma";
 
-export type Sniffed = { container: Container; codecs: AudioCodec[] };
+type Sniffed = { container: Container; codecs: AudioCodec[] };
 
 /** Số byte đầu cần đọc để nhận diện. MKV có thể để bảng track sau phần phông chữ nhúng nên lấy rộng. */
 export const SNIFF_BYTES = 2 * 1024 * 1024;
@@ -139,7 +139,7 @@ const UNSUPPORTED: AudioCodec[] = ["ac3", "eac3", "dts", "truehd", "wma"];
 /** Gói mà trình duyệt thường không đọc được dù âm thanh bên trong là gì. */
 const RARE_CONTAINERS: Container[] = ["avi", "ts", "flv", "asf"];
 
-export function isUnsupportedCodec(codec: AudioCodec): boolean {
+function isUnsupportedCodec(codec: AudioCodec): boolean {
   return UNSUPPORTED.includes(codec);
 }
 

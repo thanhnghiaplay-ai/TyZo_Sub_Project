@@ -8,7 +8,7 @@ import { isProviderId, keyShapeProblem, PROVIDERS, type ProviderId } from "@/lib
  * Key phòng theo từng nhà cung cấp, dùng chung cho mọi nhà trong `PROVIDERS` (xem PROVIDERS.md bước 6).
  * Tên dòng trong `room_settings` lấy từ `PROVIDERS[id].settings`, không viết tay.
  */
-export type ProviderKeyView = { keyTail: string; models: string[] | null };
+type ProviderKeyView = { keyTail: string; models: string[] | null };
 
 function checkProviderId(input: unknown): ProviderId {
   const id = typeof input === "string" ? input : "";

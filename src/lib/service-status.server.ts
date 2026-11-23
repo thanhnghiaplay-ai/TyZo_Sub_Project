@@ -2,7 +2,7 @@ import { getSql } from "./db";
 import { parseServiceStatus, serviceBlock, SERVICE_KEY, type ServiceGroup } from "./service-status";
 
 /** Câu chặn của nhóm đang bảo trì, trống nếu đang hoạt động. Đọc lỗi thì coi là hoạt động (dòng cài đặt hỏng không khóa cả web). */
-export async function serviceClosedText(group: ServiceGroup): Promise<string> {
+async function serviceClosedText(group: ServiceGroup): Promise<string> {
   try {
     const sql = await getSql();
     const rows = await sql<{ value: string }>`select value from room_settings where key = ${SERVICE_KEY}`;

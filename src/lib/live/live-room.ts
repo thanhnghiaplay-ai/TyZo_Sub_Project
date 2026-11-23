@@ -3,7 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { requireRole, writeAudit } from "@/lib/admin-room";
 import { validWorkspaceId } from "@/lib/live/live-upstream";
 
-export type LiveSetupView = { workspaceId: string; hasKey: boolean };
+type LiveSetupView = { workspaceId: string; hasKey: boolean };
 
 /** Workspace ID không phải bí mật nên hiện đủ cho Chủ. Chỉ Chủ đọc và lưu. */
 export const getLiveSetup = createServerFn({ method: "GET" })

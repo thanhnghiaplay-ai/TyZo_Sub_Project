@@ -5,7 +5,7 @@ export const SPARSE_MIN_SECONDS = 20;
 
 const LANGS: readonly string[] = ["zh", "ja", "ko", "en"];
 
-export type SparseInput = {
+type SparseInput = {
   /** Mã ngôn ngữ nguồn đang chạy (zh, ja, ko, en). Ngôn ngữ khác thì không đo. */
   lang: string;
   /** Các câu nhận dạng được, chữ thô của máy nhận dạng (chưa dịch). */

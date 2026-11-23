@@ -11,7 +11,7 @@ async function save(sql: Sql, board: LiveBoard) {
 }
 
 /** Kéo giá từ trang Alibaba và lưu lại. Chạy nền, lỗi thì giữ giá cũ. */
-export async function refreshLiveBoard(sql: Sql, stored: LiveBoard | null, fetchPage: (url: string) => Promise<string>, now = Date.now()) {
+async function refreshLiveBoard(sql: Sql, stored: LiveBoard | null, fetchPage: (url: string) => Promise<string>, now = Date.now()) {
   if (refreshing) return;
   refreshing = true;
   try {

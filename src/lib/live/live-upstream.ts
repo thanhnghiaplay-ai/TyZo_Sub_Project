@@ -1,6 +1,6 @@
 import type { Sql } from "../db.ts";
 
-export const LIVE_REGION = "ap-southeast-1";
+const LIVE_REGION = "ap-southeast-1";
 
 /** Workspace ID của Alibaba chỉ gồm chữ, số, gạch ngang. Sai dạng thì không ghép vào địa chỉ. */
 export function validWorkspaceId(value: string | undefined | null): value is string {

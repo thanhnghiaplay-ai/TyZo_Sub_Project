@@ -69,7 +69,7 @@ export const savePolishPrompts = createServerFn({ method: "POST" })
     return data;
   });
 
-export type PolishTicketOpen = { id: string; held: number; balance: number };
+type PolishTicketOpen = { id: string; held: number; balance: number };
 
 /**
  * Mở phiếu giữ Token dịch cho một lần trau chuốt bằng cửa trả theo lượt (key phòng).
@@ -142,7 +142,7 @@ export type PolishChoiceView = {
   /** Model này có trong cửa trả theo lượt (key phòng) không. */
   inRoom: boolean;
 };
-export type PolishQuoteView = { rows: PolishChoiceView[]; note: string };
+type PolishQuoteView = { rows: PolishChoiceView[]; note: string };
 
 /** Giá ước từng model Chủ đã mở cho thể loại này, bằng Token dịch, theo số token ước của lần trau chuốt hiện tại. */
 export const quotePolishChoices = createServerFn({ method: "POST" })

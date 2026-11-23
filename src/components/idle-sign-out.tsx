@@ -3,7 +3,7 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { signOut } from "@/lib/auth/client";
 
 /** 30 phút không tương tác thì đăng xuất — mức phổ biến trên dịch vụ có số dư/ví. */
-export const IDLE_MS = 30 * 60 * 1000;
+const IDLE_MS = 30 * 60 * 1000;
 
 const EVENTS = ["pointerdown", "keydown", "touchstart", "mousemove", "scroll", "visibilitychange"] as const;
 

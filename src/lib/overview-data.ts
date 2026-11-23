@@ -11,7 +11,7 @@ export function parseRange(value: unknown): OverviewRange {
 
 export type TopUser = { userId: string; email: string; amount: number; runs: number };
 
-export type OverviewAlert = {
+type OverviewAlert = {
   id: string;
   level: "red" | "yellow";
   text: string;
@@ -36,7 +36,7 @@ export type Overview = {
 const DAY_START = `date_trunc('day', now() at time zone 'Asia/Ho_Chi_Minh') at time zone 'Asia/Ho_Chi_Minh'`;
 
 /** Ngưỡng cảnh báo. Chỉ để nhắc, không chặn gì. */
-export const OVERVIEW_LIMITS = {
+const OVERVIEW_LIMITS = {
   errorRate: 0.1,
   minRunsForRate: 5,
   qualityDrop: 0.1,
@@ -154,7 +154,7 @@ export async function overviewWith(sql: Sql, range: OverviewRange, owner: boolea
   };
 }
 
-export const TICKET_FILTERS = ["all", "dang-giu", "da-tru", "da-nha", "loi"] as const;
+const TICKET_FILTERS = ["all", "dang-giu", "da-tru", "da-nha", "loi"] as const;
 export type TicketFilter = (typeof TICKET_FILTERS)[number];
 
 export function parseTicketFilter(value: unknown): TicketFilter {

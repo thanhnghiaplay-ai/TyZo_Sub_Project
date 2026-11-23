@@ -10,9 +10,9 @@
  * Số tiêu từ số dư cũ (goi, luot) không đưa vào đây: tiền đó đã nằm trong
  * revenue lúc khách nạp, cộng thêm sẽ đếm hai lần.
  */
-export type ProfitInput = { revenue: number; von: number; hoa: number; chi: number };
+type ProfitInput = { revenue: number; von: number; hoa: number; chi: number };
 
-export type Profit = {
+type Profit = {
   /** Lãi gộp = tiền vào − giá vốn. */
   lai: number;
   /** Lời lỗ = lãi gộp − hoa hồng − chi phí ghi tay. */

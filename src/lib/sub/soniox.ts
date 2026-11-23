@@ -52,7 +52,7 @@ export function sonioxSubmitBody(input: { audioUrl: string; appModel: string; la
     : { model, audio_url: url, enable_language_identification: true };
 }
 
-export type SonioxStatus = "queued" | "processing" | "completed" | "error" | "unknown";
+type SonioxStatus = "queued" | "processing" | "completed" | "error" | "unknown";
 
 const isNum = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" ? (value as Record<string, unknown>) : {});

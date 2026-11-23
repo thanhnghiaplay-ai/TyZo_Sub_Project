@@ -12,7 +12,7 @@ import type { PolishResult, PolishStatus } from "./sub/polish.ts";
 
 export type SegLike = { translation: string | null; edited?: boolean };
 
-export type ReviewDecision = "pending" | "accepted" | "rejected" | "conflict";
+type ReviewDecision = "pending" | "accepted" | "rejected" | "conflict";
 
 export type ReviewEntry = {
   /** Chỉ số câu trong mảng phụ đề. */
@@ -62,7 +62,7 @@ function findEntry(review: PolishReview, index: number): ReviewEntry | undefined
   return review.entries.find((e) => e.index === index);
 }
 
-export type ReviewApply<T extends SegLike> = { segs: T[]; review: PolishReview };
+type ReviewApply<T extends SegLike> = { segs: T[]; review: PolishReview };
 
 function applyText<T extends SegLike>(segs: T[], index: number, text: string): T[] {
   return segs.map((seg, i) => (i === index ? { ...seg, translation: text } : seg));
@@ -107,7 +107,7 @@ export function revertAll<T extends SegLike>(segs: T[], review: PolishReview): R
   return state;
 }
 
-export type ReviewCounts = {
+type ReviewCounts = {
   /** Số câu model đề xuất đổi. */
   changed: number;
   pending: number;

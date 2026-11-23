@@ -5,8 +5,8 @@
  */
 import type { Seg } from "./sub/types.ts";
 
-export const SAVED_DB = "tyzo-saved-runs";
-export const SAVED_STORE = "runs";
+const SAVED_DB = "tyzo-saved-runs";
+const SAVED_STORE = "runs";
 /** Giữ bấy nhiêu tệp gần nhất; cũ hơn thì xóa. */
 export const SAVED_MAX = 5;
 

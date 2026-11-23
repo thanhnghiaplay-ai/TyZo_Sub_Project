@@ -10,7 +10,7 @@ import { mailerName } from "./auth/mailer.ts";
  * tài khoản có đúng email đó được ghi vào room_staff. Chuyển quyền xong thì biến này không đòi lại quyền.
  */
 
-export function bootstrapEmail() {
+function bootstrapEmail() {
   const value = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   return value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? value : "";
 }

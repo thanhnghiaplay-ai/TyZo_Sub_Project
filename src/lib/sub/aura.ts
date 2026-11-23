@@ -7,7 +7,7 @@ import { DEEPGRAM_API } from "./provider.ts";
  */
 export type AuraLang = "en" | "es";
 
-export type AuraVoice = { id: string; name: string; gender: "female" | "male" };
+type AuraVoice = { id: string; name: string; gender: "female" | "male" };
 
 /** Giá niêm yết Aura-2: 0,030 đô mỗi 1.000 ký tự = 30 đô mỗi triệu ký tự (một mức cho mọi giọng). */
 export const AURA_USD_PER_MILLION_CHARS = 30;

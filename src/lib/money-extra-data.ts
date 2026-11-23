@@ -2,7 +2,7 @@ import type { Sql } from "./db.ts";
 import { arpu, conversionRate, costPerMinute, sortCategories } from "./money-extra.ts";
 import { tokenCostVnd } from "./money-profit.ts";
 
-export type MoneySpan = "day" | "week" | "month" | "year";
+type MoneySpan = "day" | "week" | "month" | "year";
 
 export type MoneyExtra = {
   /** Số khách đã nạp tiền trong khoảng đang xem. */

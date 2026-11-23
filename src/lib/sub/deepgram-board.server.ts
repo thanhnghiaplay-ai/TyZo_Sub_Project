@@ -6,7 +6,7 @@ import type { GroqLiveRow } from "./groq-board.ts";
 const KEY = "dg_board";
 let refreshing = false;
 
-export type DgStored = { at: number; quotes: DgQuote[] };
+type DgStored = { at: number; quotes: DgQuote[] };
 
 const fetchText = async (url: string) => {
   const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
@@ -14,7 +14,7 @@ const fetchText = async (url: string) => {
   return response.text();
 };
 
-export async function readDgStored(sql: Sql): Promise<DgStored | null> {
+async function readDgStored(sql: Sql): Promise<DgStored | null> {
   const raw = await sql<{ value: string }>`select value from room_settings where key = ${KEY}`;
   return parseDgBoard(raw[0]?.value);
 }

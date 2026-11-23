@@ -3,7 +3,7 @@ import type { CaptureEnv } from "./live-mic.ts";
 
 type TrackLite = { stop(): void };
 export type DisplayStreamLike = { getAudioTracks(): TrackLite[]; getVideoTracks(): TrackLite[]; getTracks(): TrackLite[] };
-export type NavLike = { userAgent?: string; maxTouchPoints?: number; mediaDevices?: { getDisplayMedia?: unknown } };
+type NavLike = { userAgent?: string; maxTouchPoints?: number; mediaDevices?: { getDisplayMedia?: unknown } };
 
 /** Máy có thu được âm thanh của tab không. Điện thoại và máy tính bảng không có, dù trình duyệt đôi khi khai có hàm. */
 export function canCaptureTab(nav: NavLike | undefined): boolean {

@@ -245,7 +245,7 @@ async function samplesToOpusWebm(samples: Float32Array, signal?: AbortSignal): P
   return blob;
 }
 
-export function toWav(samples: Float32Array): Blob {
+function toWav(samples: Float32Array): Blob {
   const buffer = new ArrayBuffer(44 + samples.length * 2);
   const view = new DataView(buffer);
   const write = (offset: number, string: string) => {
@@ -271,7 +271,7 @@ export function toWav(samples: Float32Array): Blob {
   return new Blob([buffer], { type: "audio/wav" });
 }
 
-export function linearResample(audioBuffer: AudioBuffer): Float32Array {
+function linearResample(audioBuffer: AudioBuffer): Float32Array {
   const from = audioBuffer.sampleRate || SR;
   const length = audioBuffer.length;
   const channels = audioBuffer.numberOfChannels;

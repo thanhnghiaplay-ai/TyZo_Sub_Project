@@ -44,25 +44,6 @@ export function Button({ variant = "secondary", size = "md", icon, iconName, bus
   );
 }
 
-/* ---------- IconButton (chỉ có icon, bắt buộc có nhãn) ---------- */
-export function IconButton({ label, icon, iconName, variant = "ghost", className, ...rest }: Omit<ButtonProps, "children" | "size"> & { label: string }) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      className={cx(
-        "inline-flex size-11 shrink-0 items-center justify-center border rounded-[var(--radius-ctl)] transition disabled:opacity-50",
-        BUTTON_TONE[variant],
-        className,
-      )}
-      {...rest}
-    >
-      <Icon slot={icon} name={iconName} size="1.3em" />
-    </button>
-  );
-}
-
 /* ---------- Card ---------- */
 export function Card({ className, ...rest }: HTMLAttributes<HTMLElement>) {
   return <section className={cx("grid gap-3 border border-line bg-card p-4 rounded-[var(--radius-card)]", className)} {...rest} />;

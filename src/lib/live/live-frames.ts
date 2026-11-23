@@ -1,7 +1,7 @@
 import { LIVE_SEND_RATE, Resampler, floatToPcm16, levelOf, mixToMono, pcm16ToBytes } from "./live-audio.ts";
 
 /** Mỗi khung gửi lên cầu nối dài 100 ms: 1600 mẫu 16 kHz × 2 byte = 3200 byte. */
-export const FRAME_MS = 100;
+const FRAME_MS = 100;
 
 /**
  * Gom âm thanh thô từ micro (mọi tần số, nhiều kênh) thành khung PCM 16 kHz mono đều nhau.

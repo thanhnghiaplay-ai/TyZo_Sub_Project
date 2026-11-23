@@ -7,7 +7,7 @@ export const HEALTH_COLOR: Record<Health, string> = {
   unknown: "var(--color-muted)",
 };
 
-export const HEALTH_LABEL: Record<Health, string> = {
+const HEALTH_LABEL: Record<Health, string> = {
   green: "Tốt",
   yellow: "Cần chú ý",
   red: "Kém",

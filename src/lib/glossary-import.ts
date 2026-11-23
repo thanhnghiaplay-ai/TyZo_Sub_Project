@@ -2,16 +2,16 @@
 // Chỉ import tương đối để test được bằng Node. Không chạm CSDL: máy chủ đưa vào bảng từ đã có.
 import { parseGlossaryCsv } from "./sub/glossary.ts";
 
-export const IMPORT_TERM_MAX = 80;
+const IMPORT_TERM_MAX = 80;
 /** Số dòng ghi mỗi lượt gọi máy chủ (khớp `importGlossary`). */
 export const IMPORT_CHUNK = 400;
 /** Tối đa dòng đọc từ một file. */
 export const IMPORT_MAX_ROWS = 5000;
 
 export type ImportRow = { source: string; target: string };
-export type ImportRejected = { line: number; source: string; reason: string };
+type ImportRejected = { line: number; source: string; reason: string };
 export type ExistingTerm = { target: string; hidden: boolean };
-export type ImportPlan = {
+type ImportPlan = {
   /** Số dòng đọc được từ file (trước khi lọc). */
   total: number;
   add: ImportRow[];

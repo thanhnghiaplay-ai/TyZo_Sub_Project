@@ -1,7 +1,7 @@
 import type { Bible } from "@/lib/sub/text";
 import type { NarrationSettings } from "@/lib/sub/types";
 
-export type CastGender = NarrationSettings["gender"];
+type CastGender = NarrationSettings["gender"];
 
 function escapeReg(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

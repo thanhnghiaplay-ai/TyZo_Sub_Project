@@ -10,7 +10,7 @@ import { DEEPGRAM_API } from "./provider.ts";
 /** Mã model của app (hiện ở ô chọn, lưu trong phiếu, gói dịch). */
 export const DEEPGRAM_ASR = "deepgram-nova-3";
 /** Mã Deepgram nhận. */
-export const DEEPGRAM_MODEL = "nova-3";
+const DEEPGRAM_MODEL = "nova-3";
 
 export type DgSentence = { start: number; end: number; text: string };
 

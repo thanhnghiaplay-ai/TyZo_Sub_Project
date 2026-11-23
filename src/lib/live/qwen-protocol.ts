@@ -6,7 +6,7 @@ import { LIVE_MODEL_35, LIVE_MODEL_38 } from "./live-price.ts";
  * 3.8: output_modalities, chữ gốc luôn bật, nhận diện người nói, sự kiện *.delta.
  * 3.5: modalities, chữ gốc nhờ model ASR riêng, sự kiện *.text kèm `stash` (chữ tạm).
  */
-export type QwenGen = "3.8" | "3.5";
+type QwenGen = "3.8" | "3.5";
 
 export function genOf(model: string): QwenGen | null {
   if (model === LIVE_MODEL_38) return "3.8";
@@ -14,7 +14,7 @@ export function genOf(model: string): QwenGen | null {
   return null;
 }
 
-export type SessionOptions = {
+type SessionOptions = {
   model: string;
   /** Mã ngôn ngữ đích, ví dụ "en". */
   target: string;
@@ -92,7 +92,7 @@ export function audioAppend(pcm: Uint8Array): string {
 export const SESSION_FINISH = JSON.stringify({ type: "session.finish" });
 
 /** Sự kiện đã chuẩn hóa. Đây là thứ cầu nối gửi cho trình duyệt, không lộ định dạng của nhà cung cấp. */
-export type LiveEvent =
+type LiveEvent =
   | { kind: "ready" }
   /** `text` là phần đã chốt cộng dồn, `stash` là phần tạm có thể bị viết lại. */
   | { kind: "source"; id: string; text: string; stash: string; final: boolean }
@@ -112,7 +112,7 @@ const str = (value: unknown): string => (typeof value === "string" ? value : "")
  * Với kiểu *.delta thì `append` là true: nối thêm vào chữ đã có.
  * Bộ gộp chữ (live-transcript) biết cách xử lý cả hai kiểu.
  */
-export type DeltaEvent = { kind: "source-delta" | "translation-delta"; id: string; delta: string };
+type DeltaEvent = { kind: "source-delta" | "translation-delta"; id: string; delta: string };
 export type ParsedEvent = LiveEvent | DeltaEvent;
 
 export function parseServerEvent(raw: unknown): ParsedEvent[] {

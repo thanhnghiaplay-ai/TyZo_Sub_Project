@@ -7,9 +7,9 @@
  *   off          tắt hết
  * Ghép bằng dấu phẩy: `?asrtest=noprompt,chunk15`.
  */
-export type AsrTest = { noPrompt: boolean; noGuard: boolean; chunkSeconds: number | null };
+type AsrTest = { noPrompt: boolean; noGuard: boolean; chunkSeconds: number | null };
 
-export const ASR_TEST_KEY = "tyzo-asr-test";
+const ASR_TEST_KEY = "tyzo-asr-test";
 const OFF: AsrTest = { noPrompt: false, noGuard: false, chunkSeconds: null };
 
 export function parseAsrTest(raw: string | null | undefined): AsrTest {

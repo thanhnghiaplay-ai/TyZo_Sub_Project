@@ -86,7 +86,7 @@ export function readSupportContact(stored: unknown): SupportContact {
   return { email: pick("email", cleanEmail), zalo: pick("zalo", cleanZalo), facebook: pick("facebook", cleanFacebook), note: pick("note", cleanNote) };
 }
 
-export type ContactLink = { kind: "email" | "zalo" | "facebook"; label: string; value: string; href: string };
+type ContactLink = { kind: "email" | "zalo" | "facebook"; label: string; value: string; href: string };
 
 /** Các cách liên hệ đã điền, kèm liên kết an toàn để bấm. */
 export function contactLinks(contact: SupportContact): ContactLink[] {

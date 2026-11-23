@@ -5,7 +5,7 @@
 // File thuần, chỉ import tương đối để chạy được trong test của Node.
 import { currentGenre } from "../home-state.ts";
 
-export type GenrePrompt = {
+type GenrePrompt = {
   /** Tên hiển thị tiếng Việt. */
   label: string;
   /** Gợi ý ngắn cho bước DỊCH. Chỉ cần với thể loại mà `GENRES` trong `text.ts` chưa có. */

@@ -15,7 +15,7 @@ export type KeyProbe = {
   remainingTokens: number | null;
 };
 
-export type KeyVerdict = {
+type KeyVerdict = {
   /** ok: chạy được. warn: chưa kiểm được, vẫn cho chạy. bad: chắc chắn chạy không được. */
   state: "ok" | "warn" | "bad";
   text: string;

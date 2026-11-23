@@ -5,7 +5,7 @@ import { dockBadgeText, isTypingTarget, keyboardOpen } from "@/lib/dock";
 import type { IconSlot } from "@/lib/theme/theme";
 
 export type DockItem = { id: string; label: string; slot: IconSlot; current?: boolean; badge?: number; onPick: () => void };
-export type DockCenter = { label: string; slot: IconSlot; onPress: () => void; disabled?: boolean };
+type DockCenter = { label: string; slot: IconSlot; onPress: () => void; disabled?: boolean };
 
 const BASE = "relative flex h-14 w-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-full transition-colors motion-reduce:transition-none ";
 const ACTIVE = "bg-[color-mix(in_srgb,var(--color-accent)_16%,transparent)] text-accent";

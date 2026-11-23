@@ -58,7 +58,7 @@ export function assemblyaiSubmitBody(input: { audioUrl: string; appModel: string
   return body;
 }
 
-export type AaiStatus = "queued" | "processing" | "completed" | "error" | "unknown";
+type AaiStatus = "queued" | "processing" | "completed" | "error" | "unknown";
 
 const isNum = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" ? (value as Record<string, unknown>) : {});

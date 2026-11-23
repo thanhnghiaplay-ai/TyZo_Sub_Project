@@ -9,7 +9,7 @@ export type SonioxRequest = (
   init?: { method: "GET" | "POST" | "DELETE"; body?: SonioxBody },
 ) => Promise<{ status: number; payload: unknown }>;
 
-export type SonioxJobOptions = {
+type SonioxJobOptions = {
   request: SonioxRequest;
   body: SonioxBody;
   /** Tổng thời gian chờ tối đa (mili giây) tính từ lúc gửi. */
@@ -83,7 +83,7 @@ export async function startSonioxJob(request: SonioxRequest, body: SonioxBody): 
   return id;
 }
 
-export type SonioxStep = { state: "running" } | { state: "done"; payload: unknown };
+type SonioxStep = { state: "running" } | { state: "done"; payload: unknown };
 
 /** Hỏi một lần. Completed thì lấy transcript (gộp audio_duration_ms của lần hỏi này) rồi xóa; lỗi thì xóa rồi ném lỗi tiếng Việt. */
 export async function stepSonioxJob(request: SonioxRequest, id: string): Promise<SonioxStep> {

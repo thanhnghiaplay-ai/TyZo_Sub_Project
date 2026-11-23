@@ -56,7 +56,7 @@ export function deskToEnv(desk: { provider: MailProvider; from: string; key: str
   return env;
 }
 
-export function bareAddress(from: string) {
+function bareAddress(from: string) {
   return (from.match(/<([^>]+)>/)?.[1] ?? from).trim();
 }
 

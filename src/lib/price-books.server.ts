@@ -30,7 +30,7 @@ export async function loadProviderRows(sql: Sql): Promise<ProviderRows> {
   return out;
 }
 
-export type RoomHouse = { key: string | null; models: string[] | null };
+type RoomHouse = { key: string | null; models: string[] | null };
 
 /** Key và danh sách model PHÒNG của mọi nhà, đọc một lần. Tên dòng lấy từ PROVIDERS[id].settings, không viết tay. */
 export async function loadRoomHouses(sql: Sql): Promise<Record<ProviderId, RoomHouse>> {

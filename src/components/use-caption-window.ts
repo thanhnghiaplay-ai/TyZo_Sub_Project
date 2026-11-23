@@ -7,9 +7,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
  */
 type PipApi = { requestWindow(options: { width: number; height: number }): Promise<Window> };
 
-export type CaptionWindowKind = "pip" | "popup";
+type CaptionWindowKind = "pip" | "popup";
 
-export function captionWindowKind(win: Window | undefined): CaptionWindowKind | null {
+function captionWindowKind(win: Window | undefined): CaptionWindowKind | null {
   if (!win) return null;
   if ((win as unknown as { documentPictureInPicture?: PipApi }).documentPictureInPicture) return "pip";
   return typeof win.open === "function" ? "popup" : null;

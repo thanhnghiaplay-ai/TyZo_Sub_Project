@@ -30,7 +30,7 @@ export type LiveBilling = {
   close(args: { userId: string; ticketId: string; failed: boolean }): Promise<void>;
 };
 
-export type LiveBridgeDeps = {
+type LiveBridgeDeps = {
   secret: string;
   /** Địa chỉ WebSocket và key của Alibaba. Key không bao giờ rời cầu nối. */
   upstream(model: string): Promise<{ url: string; key: string } | null>;
@@ -59,7 +59,7 @@ const IDLE_CUT = /stream timeout|timeout_seconds/i;
 const SILENT_PEAK = 100;
 
 /** Đỉnh biên độ của khung PCM 16 bit little-endian. */
-export function pcmPeak(bytes: Uint8Array): number {
+function pcmPeak(bytes: Uint8Array): number {
   let peak = 0;
   for (let i = 0; i + 1 < bytes.length; i += 2) {
     let v = bytes[i] | (bytes[i + 1] << 8);
@@ -90,7 +90,7 @@ export function attachLiveBridge(server: Server, deps: LiveBridgeDeps, path = "/
   return wss;
 }
 
-export async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps): Promise<void> {
+async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps): Promise<void> {
   const now = deps.now ?? Date.now;
   const log = deps.log ?? (() => {});
   const fail = (code: number, reason: string) => {

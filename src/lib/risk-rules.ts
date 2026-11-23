@@ -20,12 +20,12 @@ export type RiskRuleId =
   | "may-ung-dung"
   | "thu-cong";
 
-export type RiskRecommend = "khoa" | "cam";
+type RiskRecommend = "khoa" | "cam";
 export type RiskAuto = "khong" | "khoa" | "thu-hoi-may";
 
-export type RiskParamDef = { key: string; label: string; min: number; max: number; def: number };
+type RiskParamDef = { key: string; label: string; min: number; max: number; def: number };
 
-export type RiskRuleDef = {
+type RiskRuleDef = {
   id: RiskRuleId;
   title: string;
   /** Vị trí trong điều khoản, ví dụ «Mục 10 · Có thể bị khóa nếu · ý 1». */
@@ -184,7 +184,7 @@ export function ruleOf(id: string): RiskRuleDef | undefined {
 
 // ---------- Cài đặt (Admin sửa) ----------
 
-export type RiskRuleSetting = { on: boolean; auto: RiskAuto; p: Record<string, number> };
+type RiskRuleSetting = { on: boolean; auto: RiskAuto; p: Record<string, number> };
 export type RiskSettings = Record<RiskRuleId, RiskRuleSetting>;
 
 export function riskDefaults(): RiskSettings {
@@ -218,8 +218,8 @@ export function parseRiskSettings(raw: unknown): RiskSettings {
 
 // ---------- Dữ kiện và đánh giá ----------
 
-export type RiskEvent = { at: string; kind: string; ip: string; device: string; ua: string };
-export type RiskSection = { title: string; columns: string[]; rows: string[][] };
+type RiskEvent = { at: string; kind: string; ip: string; device: string; ua: string };
+type RiskSection = { title: string; columns: string[]; rows: string[][] };
 export type RiskFinding = { rule: RiskRuleId; score: number; summary: string; sections: RiskSection[]; extra?: Record<string, unknown> };
 
 export type RiskFacts = {
@@ -251,7 +251,7 @@ export function shortUa(ua: string): string {
 }
 
 /** Giờ Việt Nam dễ đọc: 22/11/2026 14:05:09. */
-export function vnTime(iso: string): string {
+function vnTime(iso: string): string {
   const d = new Date(new Date(iso).getTime() + 7 * 3600 * 1000);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;

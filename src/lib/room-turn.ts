@@ -12,7 +12,7 @@ import { PROVIDER_IDS, PROVIDERS, providerHas, type ProviderCap, type ProviderId
 import { providerOfModel, roomRefusal, type RoomOffer } from "./sub/room-models.ts";
 
 export type RoomHouses = Record<ProviderId, { key: string | null; models: string[] | null }>;
-export type RoomPick = { provider: ProviderId; model: string };
+type RoomPick = { provider: ProviderId; model: string };
 
 const KIND_OF_CAP: Record<ProviderCap, ModelKind> = { asr: "asr", chat: "chat", tts: "tts", live: "live" };
 

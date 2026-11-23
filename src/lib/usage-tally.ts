@@ -6,15 +6,15 @@
 import type { Sql } from "./db.ts";
 import { USE_CHOICES } from "./first-ask.ts";
 
-export const TALLY_TOPICS = {
+const TALLY_TOPICS = {
   /** Câu hỏi lần đầu: dùng để làm gì (kể cả Bỏ qua). */
   use: [...USE_CHOICES.map((choice) => choice.id), "skip"] as string[],
   /** Cách trả khách chọn và nhớ (key = Thuê phòng, turn = Trả theo lượt). */
   pay: ["key", "turn"] as string[],
 } as const;
 
-export type TallyTopic = keyof typeof TALLY_TOPICS;
-export type TallyInput = { topic: TallyTopic; answer: string };
+type TallyTopic = keyof typeof TALLY_TOPICS;
+type TallyInput = { topic: TallyTopic; answer: string };
 
 /** Mỗi ô (ngày, chủ đề, lựa chọn) không vượt trần này: một người bấm liên tục cũng không làm số lệch quá mức. */
 export const TALLY_DAY_CAP = 5000;

@@ -24,7 +24,7 @@ export function readUsage(raw: unknown): LiveUsage {
   };
 }
 
-export function usdOf(row: LivePriceRow, usage: LiveUsage): number {
+function usdOf(row: LivePriceRow, usage: LiveUsage): number {
   // Token chữ ở đầu vào (lời dặn, từ khóa) bảng giá không niêm yết riêng nên tính theo giá âm thanh vào, nghiêng về phía an toàn.
   return (
     ((usage.audioIn + usage.textIn) * row.usdAudioIn +
@@ -54,7 +54,7 @@ export function liveCost(book: LiveBook, model: string, usage: LiveUsage): { cos
  * cho thấy token chữ ra thấp hơn nhiều token tiếng. Chỉ dùng để giữ chỗ và hiện "còn N phút";
  * tiền thật luôn tính theo token Alibaba báo.
  */
-export const TEXT_OUT_TOKENS_PER_SEC = 5;
+const TEXT_OUT_TOKENS_PER_SEC = 5;
 
 /** Token ước tính cho một khoảng thời lượng đang nghe. */
 export function usageForSeconds(seconds: number, audioOut: boolean): LiveUsage {

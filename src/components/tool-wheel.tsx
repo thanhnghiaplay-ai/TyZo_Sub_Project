@@ -3,7 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { TOOL_ICON } from "@/lib/tool-icon";
 import { RING_RADIUS, WHEEL_ORDER, dragToPos, ringDash, settleDuration, settleTarget, wheelCurrent, wheelOffset, wheelSlot, type WheelId } from "@/lib/tool-wheel";
 
-export type WheelLabels = Record<WheelId, string>;
+type WheelLabels = Record<WheelId, string>;
 
 /**
  * Nút vàng giữa thanh dưới: kéo ngang để lướt liên tục qua các công cụ, thả ở đâu chọn công cụ đó

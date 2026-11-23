@@ -10,7 +10,7 @@
 import { catalogModel, MODEL_CATALOG, type CatalogModel } from "../sub/model-catalog.ts";
 import type { ProviderId } from "../sub/provider.ts";
 
-export type LiveMode = "real" | "chunked" | "none";
+type LiveMode = "real" | "chunked" | "none";
 
 /** Chế độ live của một model trong danh mục. Dựng từ khai sẵn: kind live → real; nhận dạng cắt đoạn được → chunked; còn lại none. */
 export function liveModeOf(model: CatalogModel): LiveMode {

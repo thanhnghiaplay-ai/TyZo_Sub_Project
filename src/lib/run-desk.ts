@@ -8,7 +8,7 @@ export type RunDesk = {
   custom: Record<string, PriceOverride>;
 };
 
-export const RUN_DESK_DEFAULT: RunDesk = {
+const RUN_DESK_DEFAULT: RunDesk = {
   maintenance: false,
   note: "",
   cap: 0,
@@ -21,7 +21,7 @@ const OLD_CLOSED = new Set([
   "Cửa trả theo lượt đang tạm ngưng để hoàn thiện. Bạn vẫn dùng key Groq của mình.",
 ]);
 
-const STATUSES = ["dang-giu", "da-tru", "da-nha", "dung-tien", "loi", "da-hoan"] as const;
+export const STATUSES = ["dang-giu", "da-tru", "da-nha", "dung-tien", "loi", "da-hoan"] as const;
 export type RunStatus = (typeof STATUSES)[number];
 
 export const RUN_STATUS_LABEL: Record<RunStatus, string> = {
@@ -45,7 +45,7 @@ function percent(value: unknown) {
   return amount;
 }
 
-export function emptyOverride(): PriceOverride {
+function emptyOverride(): PriceOverride {
   return { hour: 0, inn: 0, out: 0 };
 }
 

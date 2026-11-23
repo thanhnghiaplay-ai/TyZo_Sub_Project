@@ -34,7 +34,7 @@ const ORDER_STATUS: Record<string, string> = {
   void: "Khách hủy",
 };
 
-export async function gatherFacts(sql: Sql, userId: string, email: string): Promise<RiskFacts> {
+async function gatherFacts(sql: Sql, userId: string, email: string): Promise<RiskFacts> {
   const from = since(60);
   const active = await sql<{ active: boolean }>`
     select (
@@ -127,7 +127,7 @@ export function hashEvidence(evidence: RiskEvidence): string {
   return createHash("sha256").update(canonical(evidence)).digest("hex");
 }
 
-export function buildEvidence(input: { id: number; finding: RiskFinding; email: string; createdAt: string; settings: RiskSettings; createdIso?: string; note?: string }): RiskEvidence {
+function buildEvidence(input: { id: number; finding: RiskFinding; email: string; createdAt: string; settings: RiskSettings; createdIso?: string; note?: string }): RiskEvidence {
   const rule = ruleOf(input.finding.rule)!;
   return {
     hoSo: `RR-${input.id}`,

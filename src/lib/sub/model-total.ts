@@ -6,7 +6,7 @@ import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "./provider.ts";
 
 export type ModelCounts = Partial<Record<ProviderId, number | null | undefined>>;
 
-export type ModelTotal = { total: number; parts: { id: ProviderId; label: string; count: number }[] };
+type ModelTotal = { total: number; parts: { id: ProviderId; label: string; count: number }[] };
 
 /** Nhà không có key hoặc chưa đọc được (null, 0) thì bỏ qua. */
 export function modelTotal(counts: ModelCounts): ModelTotal {

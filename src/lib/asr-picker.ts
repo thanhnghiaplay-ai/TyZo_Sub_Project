@@ -10,8 +10,8 @@ import { keyListHas } from "./sub/key-list.ts";
 import { catalogFor } from "./sub/model-catalog.ts";
 import { PROVIDER_IDS, type ProviderId } from "./sub/provider.ts";
 
-export type AsrPickState = "room" | "closed" | "noKey" | "open";
-export type AsrPickRow = { id: string; name: string; house: ProviderId; state: AsrPickState; disabled: boolean };
+type AsrPickState = "room" | "closed" | "noKey" | "open";
+type AsrPickRow = { id: string; name: string; house: ProviderId; state: AsrPickState; disabled: boolean };
 
 export function asrPickerRows(input: {
   showRoomPrice: boolean;

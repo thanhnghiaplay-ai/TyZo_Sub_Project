@@ -47,7 +47,7 @@ export function amzDate(now: Date): string {
   return now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
 
-export type PresignInput = {
+type PresignInput = {
   method: "GET" | "PUT" | "DELETE" | "HEAD";
   target: R2Target;
   creds: R2Creds;

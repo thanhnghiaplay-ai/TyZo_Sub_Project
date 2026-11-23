@@ -11,7 +11,7 @@
 export const HEADER_TIMEOUT_MS = 120_000;
 export const BODY_TIMEOUT_MS = 120_000;
 
-export type DeadlinePhase = "header" | "body";
+type DeadlinePhase = "header" | "body";
 
 /** Hạn chót của chính mình đã hết. Khác với người dùng bấm hủy và khác với lỗi mạng. */
 export class DeadlineError extends Error {
@@ -31,7 +31,7 @@ function cancelled(): Error {
   return error;
 }
 
-export type DeadlineOptions = {
+type DeadlineOptions = {
   /** Tín hiệu hủy của người dùng. */
   signal?: AbortSignal;
   headerMs?: number;

@@ -9,7 +9,7 @@ import type { GroqLiveRow } from "./groq-board.ts";
 export const DEEPGRAM_NOVA_ID = "deepgram-nova-3";
 export const DEEPGRAM_MULTI_ID = "deepgram-nova-3-multi";
 export const DEEPGRAM_NOVA3_USD_PER_MINUTE = 0.0048;
-export const DEEPGRAM_MULTI_USD_PER_MINUTE = 0.0058;
+const DEEPGRAM_MULTI_USD_PER_MINUTE = 0.0058;
 
 function row(id: string, usdPerHour: number | null, usdPerMillionChars: number | null): GroqLiveRow {
   return { id, speed: null, usdIn: null, usdOut: null, usdPerHour, usdPerMillionChars, unlisted: false, limits: [], contextTokens: null, maxCompletionTokens: null, maxFile: null };

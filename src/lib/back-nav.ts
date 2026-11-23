@@ -7,7 +7,7 @@ export function canGoBack(state: unknown): boolean {
   return typeof index === "number" && index > 0;
 }
 
-export type TabBack<T extends string> = { tab: T; stack: T[] } | null;
+type TabBack<T extends string> = { tab: T; stack: T[] } | null;
 
 /** Ghi lại tab vừa rời để mũi tên quay về đúng tab đó. Không ghi trùng tab liền trước. */
 export function pushTabHistory<T extends string>(stack: T[], from: T, to: T): T[] {

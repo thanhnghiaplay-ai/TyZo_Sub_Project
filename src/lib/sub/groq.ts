@@ -22,7 +22,7 @@ import { analyzeMessages, parseBible } from "@/lib/sub/analyze";
 export const API = "https://api.groq.com/openai/v1";
 export const ROOM_KEY = "room";
 
-export function roomFetchTarget(url: string, init: RequestInit, ticketId?: string | null): { url: string; init: RequestInit } {
+function roomFetchTarget(url: string, init: RequestInit, ticketId?: string | null): { url: string; init: RequestInit } {
   const headers = new Headers(init.headers);
   if (headers.get("Authorization") !== `Bearer ${ROOM_KEY}`) return { url, init };
   const path = url.startsWith(API) ? url.slice(API.length) : "";
@@ -39,7 +39,7 @@ export function roomFetchTarget(url: string, init: RequestInit, ticketId?: strin
  */
 export type ChatKey = string | { keys: Partial<Record<ProviderId, string>>; lists?: RoomOffer };
 
-export type ChatCall = { provider: ProviderId; url: string; headers: Record<string, string>; tokenField: ProviderChat["tokenField"] };
+type ChatCall = { provider: ProviderId; url: string; headers: Record<string, string>; tokenField: ProviderChat["tokenField"] };
 
 /**
  * Đường gọi cho một model dịch, theo NHÀ của model (danh mục chung + danh sách key), không gắn cứng Groq.
@@ -427,7 +427,7 @@ async function translateOnce(
   throw lastError || new Error("Dịch văn bản thất bại.");
 }
 
-export async function translateBatch(
+async function translateBatch(
   texts: string[],
   language: string,
   key: ChatKey,

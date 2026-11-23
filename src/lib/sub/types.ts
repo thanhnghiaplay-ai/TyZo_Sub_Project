@@ -23,7 +23,7 @@ export type Seg = {
   stale?: boolean;
 };
 
-export type ChatTier = "standard" | "preview" | "enterprise" | "safety" | "key";
+type ChatTier = "standard" | "preview" | "enterprise" | "safety" | "key";
 
 export type ChatModel = {
   id: string;

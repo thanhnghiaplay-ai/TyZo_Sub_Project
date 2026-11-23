@@ -6,12 +6,8 @@ import { directFileUrlProblem } from "@/lib/sub/ali-filetrans";
 import { authHeader, PROVIDERS } from "@/lib/sub/provider";
 
 export type AssemblyaiAsrInput = { url: string; language: string; model: string; key: string; ticketId?: string };
-export type AssemblyaiAsrResult = { sentences: AaiSentence[]; seconds: number };
+type AssemblyaiAsrResult = { sentences: AaiSentence[]; seconds: number };
 
-/** Tổng thời gian chờ một file. Quá hạn thì báo lỗi rõ, không treo hàm máy chủ. */
-const DEADLINE_MS = 110_000;
-/** 3 giây một lần hỏi = 20 lần mỗi phút, dưới mức 60 lần mỗi phút mà AssemblyAI cho phép. */
-const INTERVAL_MS = 3_000;
 const REQUEST_MS = 20_000;
 
 export type AssemblyaiStartResult = { jobId: string };

@@ -9,7 +9,7 @@
 export type Cue = { start: number; end: number; text: string };
 export type Lang = "zh" | "ja" | "ko" | "en";
 
-export type Thresholds = {
+type Thresholds = {
   /** Chữ (hoặc ký tự) tối thiểu mỗi giây thoại. Dưới mức này coi là bỏ lời. */
   minCharsPerSec: number;
   /** Câu dài hơn số giây này mà ít chữ thì là «câu thưa» (Whisper gộp cả cửa sổ vào vài chữ). */
@@ -138,7 +138,7 @@ function speechSeconds(cues: Cue[]): number {
   return total;
 }
 
-export type AsrMetrics = {
+type AsrMetrics = {
   cues: number;
   durationSec: number;
   speechSec: number;
@@ -157,7 +157,7 @@ export type AsrMetrics = {
 
 export type AsrVerdict = { status: "pass" | "warn" | "fail"; fails: string[]; warns: string[]; metrics: AsrMetrics };
 
-export type ScoreInput = {
+type ScoreInput = {
   cues: Cue[];
   lang: Lang;
   /** Độ dài âm thanh (giây). Không có thì lấy mốc kết thúc câu cuối. */

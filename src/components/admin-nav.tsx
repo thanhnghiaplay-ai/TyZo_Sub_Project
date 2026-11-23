@@ -3,7 +3,7 @@ import { ADMIN_GROUPS } from "@/lib/admin-groups";
 import { RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 
 /** Dựng cây menu từ danh sách tab được phép. Tổng quan đứng riêng, cuối là «Về phòng». */
-export function adminRailItems(tabs: AdminTabInfo[], current: AdminTab, onPick: (id: AdminTab) => void): RailItem[] {
+function adminRailItems(tabs: AdminTabInfo[], current: AdminTab, onPick: (id: AdminTab) => void): RailItem[] {
   const byId = new Map(tabs.map((tab) => [tab.id, tab]));
   const leaf = (tab: AdminTabInfo): RailItem => ({ id: tab.id, label: tab.label, current: current === tab.id, onPick: () => onPick(tab.id) });
   const items: RailItem[] = [];

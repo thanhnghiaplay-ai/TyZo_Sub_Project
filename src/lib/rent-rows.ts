@@ -8,7 +8,7 @@ import { catalogFor, modelKindOf, type ModelKind } from "./sub/model-catalog.ts"
 import { roomListHas } from "./sub/key-list.ts";
 import { PROVIDERS, type ProviderId } from "./sub/provider.ts";
 
-export type RentRow = {
+type RentRow = {
   id: string;
   name: string;
   /** true: key phòng gọi được · false: key phòng không thấy model này (chỉ nhà đã kiểm danh sách) · null: chưa đồng bộ key phòng hoặc chưa chắc */

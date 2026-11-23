@@ -1,9 +1,9 @@
 import { chunkSeconds, MIN_CHUNK_SECONDS, OVERLAP_SECONDS, SILENCE_RMS, SR } from "./text.ts";
 
-export const CHUNK_GAP_SECONDS = 1.5;
-export const CHUNK_PAD_SECONDS = 0.3;
+const CHUNK_GAP_SECONDS = 1.5;
+const CHUNK_PAD_SECONDS = 0.3;
 
-export type TimeSpan = { start: number; end: number };
+type TimeSpan = { start: number; end: number };
 
 /** Ngưỡng im lặng. File nói nhỏ hơn mốc cố định thì lấy 20% đỉnh, khỏi coi cả tệp là im. */
 export function energyThreshold(levels: number[], floor = SILENCE_RMS): number {

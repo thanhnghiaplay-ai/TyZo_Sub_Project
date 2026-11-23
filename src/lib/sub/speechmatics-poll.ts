@@ -10,7 +10,7 @@ export type SmRequest = (
   init?: { method: "GET" | "POST" | "DELETE"; config?: SpeechmaticsConfig },
 ) => Promise<{ status: number; payload: unknown }>;
 
-export type SmJobOptions = {
+type SmJobOptions = {
   request: SmRequest;
   config: SpeechmaticsConfig;
   /** Tổng thời gian chờ tối đa (mili giây) tính từ lúc gửi. */
@@ -79,7 +79,7 @@ export async function startSpeechmaticsJob(request: SmRequest, config: Speechmat
   return id;
 }
 
-export type SmStep = { state: "running" } | { state: "done"; payload: unknown };
+type SmStep = { state: "running" } | { state: "done"; payload: unknown };
 
 /** Hỏi một lần. Done thì lấy transcript rồi xóa job; bị từ chối hoặc lỗi thì xóa job rồi ném lỗi tiếng Việt. */
 export async function stepSpeechmaticsJob(request: SmRequest, id: string): Promise<SmStep> {

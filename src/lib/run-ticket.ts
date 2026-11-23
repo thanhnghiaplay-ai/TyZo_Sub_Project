@@ -1,6 +1,6 @@
 import type { Sql } from "./db.ts";
 
-export type OpenResult = { id: string; held: number } | { error: "het-tien" | "qua-han-muc" };
+type OpenResult = { id: string; held: number } | { error: "het-tien" | "qua-han-muc" };
 
 /** Nhả các phiếu giữ quá lâu (khách đóng tab giữa chừng) về ví. Trả số tiền đã nhả. */
 export async function releaseStaleWith(sql: Sql, userId: string, hours = 6) {

@@ -5,7 +5,7 @@
  * Khóa máy: 32 byte ngẫu nhiên, ứng dụng giữ, máy chủ chỉ lưu băm.
  */
 export const LINK_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-export const LINK_CODE_LENGTH = 8;
+const LINK_CODE_LENGTH = 8;
 export const LINK_CODE_TTL_SECONDS = 600;
 /** Mỗi tài khoản giữ tối đa bấy nhiêu máy đang liên kết; liên kết thêm thì máy cũ nhất bị gỡ. */
 export const MAX_DEVICES = 3;
@@ -23,7 +23,7 @@ export const ANDROID_APP = { code: 8, name: "0.8" } as const;
  * Nơi GitHub Actions đăng tệp cài (bản phát hành mới nhất của kho, ai cũng tải được).
  * Mỗi bản phát hành có tyzo-sub.apk và tyzo-sub.json ({"code": 5, "name": "0.5"}).
  */
-export const ANDROID_RELEASE_BASE = "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/latest/download";
+const ANDROID_RELEASE_BASE = "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/latest/download";
 export const ANDROID_APK_LATEST = `${ANDROID_RELEASE_BASE}/tyzo-sub.apk`;
 export const ANDROID_INFO_LATEST = `${ANDROID_RELEASE_BASE}/tyzo-sub.json`;
 

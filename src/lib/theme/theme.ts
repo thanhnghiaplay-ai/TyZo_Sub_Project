@@ -4,7 +4,7 @@
  * Mọi thứ admin chỉnh được đều đi qua parseTheme (làm sạch) và checkTheme (tương phản) trước khi lưu.
  */
 
-export const THEME_VERSION = 1;
+const THEME_VERSION = 1;
 
 /** [khóa, biến CSS, nhãn tiếng Việt]. Thêm màu mới chỉ cần thêm một dòng ở đây. */
 export const PALETTE_KEYS = [
@@ -43,7 +43,7 @@ export const FONTS = [
   { id: "quicksand", name: "Quicksand", css: '"Quicksand"', gf: "Quicksand:wght@400;500;600;700" },
   { id: "system", name: "Phông hệ thống (không tải)", css: "", gf: "" },
 ] as const;
-export type FontId = (typeof FONTS)[number]["id"];
+type FontId = (typeof FONTS)[number]["id"];
 
 export const ICON_WEIGHTS = [
   ["thin", "Rất mảnh"],
@@ -134,7 +134,7 @@ export const DENSITIES = [
   ["cozy", "Vừa", 1],
   ["roomy", "Thoáng", 1.15],
 ] as const;
-export type Density = (typeof DENSITIES)[number][0];
+type Density = (typeof DENSITIES)[number][0];
 
 /** Chế độ lúc khách mở trang lần đầu. Khách bấm nút sáng/tối thì lựa chọn của khách luôn thắng. */
 export const MODES = [
@@ -142,7 +142,7 @@ export const MODES = [
   ["dark", "Mặc định tối"],
   ["light", "Mặc định sáng"],
 ] as const;
-export type Mode = (typeof MODES)[number][0];
+type Mode = (typeof MODES)[number][0];
 
 /**
  * Các "chỗ đặt icon" theo chức năng. Màn hình chỉ gọi theo tên chỗ (slot), không gọi tên icon.
@@ -513,7 +513,7 @@ function channel(v: number): number {
   return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 }
 
-export function luminance(hex: string): number {
+function luminance(hex: string): number {
   const h = hex.replace("#", "");
   const r = parseInt(h.slice(0, 2), 16);
   const g = parseInt(h.slice(2, 4), 16);
@@ -554,7 +554,7 @@ export function checkTheme(theme: Theme): ThemeIssue[] {
   return issues;
 }
 
-export function fontOf(id: FontId) {
+function fontOf(id: FontId) {
   return FONTS.find((f) => f.id === id) ?? FONTS[0];
 }
 
@@ -628,7 +628,7 @@ export const USER_DENSITIES = [
 ] as const;
 export type UserDensity = (typeof USER_DENSITIES)[number][0];
 
-export function adminDensityValue(density: Density): number {
+function adminDensityValue(density: Density): number {
   return DENSITIES.find((d) => d[0] === density)?.[2] ?? 1;
 }
 

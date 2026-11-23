@@ -1,6 +1,6 @@
 import { parseSrt, scoreAsr, type AsrVerdict, type Lang } from "./asr-score.ts";
 
-export type ScoreRun =
+type ScoreRun =
   | { ok: false; error: string }
   | { ok: true; verdict: AsrVerdict; statusLabel: string; rows: [string, string][] };
 

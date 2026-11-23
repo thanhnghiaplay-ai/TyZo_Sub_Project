@@ -11,7 +11,7 @@ export const ERROR_ZERO_AT = 0.5;
 export const MIN_CASES = 3;
 
 export type BenchEntry = { case: string; model: string; variant: string; verdict?: { metrics?: { errorRate?: number | null } } };
-export type MeasuredGrade = { quality?: number; asian?: number; cases: number };
+type MeasuredGrade = { quality?: number; asian?: number; cases: number };
 
 const ASIAN: readonly Lang[] = ["zh", "ja", "ko"];
 

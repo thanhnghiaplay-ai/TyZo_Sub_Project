@@ -4,7 +4,7 @@
  */
 import type { LocalRun } from "./history-view.ts";
 
-export const LOCAL_RUNS_KEY = "tyzo_runs";
+const LOCAL_RUNS_KEY = "tyzo_runs";
 export const LOCAL_RUNS_MAX = 50;
 
 type Store = Pick<Storage, "getItem" | "setItem">;

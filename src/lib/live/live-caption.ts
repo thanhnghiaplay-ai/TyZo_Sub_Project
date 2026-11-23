@@ -40,7 +40,7 @@ export function parseCaptionPrefs(raw: unknown): CaptionPrefs {
   };
 }
 
-export type CaptionRow = { id: string; translation: string; pending: string; source: string };
+type CaptionRow = { id: string; translation: string; pending: string; source: string };
 
 /** Các dòng mới nhất có chữ (dịch hoặc gốc), tối đa `count`, cũ trước mới sau. */
 export function captionRows(lines: readonly LiveLine[], count: number): CaptionRow[] {
@@ -98,7 +98,7 @@ export function cleanHotwords(raw: unknown): Record<string, string> {
   return out;
 }
 
-export type SavedCue = { start: number; end: number; original: string; translation: string | null; speaker?: string };
+type SavedCue = { start: number; end: number; original: string; translation: string | null; speaker?: string };
 export type SavedLive = { at: number; cues: SavedCue[] };
 
 /** Bản lưu phiên trước trên máy (chỉ trên máy khách). Giữ tối đa 2.000 câu, bỏ câu trống. */

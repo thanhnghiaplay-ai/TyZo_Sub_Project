@@ -1,8 +1,8 @@
 // Tiến trình theo giai đoạn: cắt → nhận dạng → dịch → sửa lại.
 // Hàm thuần, chỉ đọc số đếm của lần chạy. Không gọi mạng, không ghi gì.
 
-export type StageId = "cut" | "asr" | "translate" | "repair";
-export type StageState = "wait" | "active" | "done" | "skip";
+type StageId = "cut" | "asr" | "translate" | "repair";
+type StageState = "wait" | "active" | "done" | "skip";
 export type RunPhase = "idle" | "read" | "asr" | "ali";
 
 export type Stage = {
@@ -15,7 +15,7 @@ export type Stage = {
   text: string;
 };
 
-export type StageInput = {
+type StageInput = {
   phase: RunPhase;
   partsTotal: number;
   partsDone: number;

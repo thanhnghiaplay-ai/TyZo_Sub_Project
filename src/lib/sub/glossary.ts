@@ -19,7 +19,7 @@ export type GlossaryTerm = {
   renders?: Partial<Record<"vi" | "ko" | "ja" | "en", string>>;
 };
 
-export type GlossaryPack = {
+type GlossaryPack = {
   terms: GlossaryTerm[];
   sources: string[];
   error?: boolean;
@@ -320,7 +320,7 @@ export function restoreTerms(lines: string[], restoreMap: Map<string, string>): 
 }
 
 /** Indexes of the exact tokens protectTerms inserts, in order. */
-export function placeholderIndexes(line: string): number[] {
+function placeholderIndexes(line: string): number[] {
   const found: number[] = [];
   for (const match of line.matchAll(/\{\{G(\d+)\}\}/g)) found.push(Number(match[1]));
   return found;
@@ -337,7 +337,7 @@ function leftoverPlaceholderPattern(): RegExp {
   return /(?:\{\{\s*|\[\[\s*|\{\s*)[Gg]\s*\d+\s*(?:\}\}|\]\]|\})/g;
 }
 
-export function lineHasPlaceholder(line: string, index: number): boolean {
+function lineHasPlaceholder(line: string, index: number): boolean {
   return placeholderVariant(index).test(line);
 }
 

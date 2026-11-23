@@ -14,7 +14,7 @@ export const PACK_ROLE_LABEL: Record<PackRole, string> = {
 };
 
 export const DOORS = ["turn", "rent"] as const;
-export type ServiceDoor = (typeof DOORS)[number];
+type ServiceDoor = (typeof DOORS)[number];
 
 export const DOOR_LABEL: Record<ServiceDoor, string> = {
   turn: "Trả theo lượt",
@@ -50,7 +50,7 @@ export type ServicePack = {
   roles: Partial<Record<PackRole, RoleAssign>>;
 };
 
-export type QuoteLine = {
+type QuoteLine = {
   role: PackRole;
   provider: ProviderId;
   model: string;
@@ -60,7 +60,7 @@ export type QuoteLine = {
   marked: number | null;
 };
 
-export type PackQuote = {
+type PackQuote = {
   lines: QuoteLine[];
   base: number | null;
   marked: number | null;
@@ -76,15 +76,15 @@ const PACK_RE = /^pack_[a-z0-9]{4,24}$/;
 /** Một lần phân tích ngữ cảnh, không theo từng giây. */
 export const CONTEXT_TOKENS = { inn: 8000, out: 2000 };
 /** Lượt tóm tắt riêng, khi model khác model ngữ cảnh. */
-export const SUMMARY_TOKENS = { inn: 4000, out: 800 };
-export const TRANSLATE_IN_PER_SEC = 12;
-export const TRANSLATE_OUT_PER_SEC = 8;
-export const TRANSLATE_IN_FIXED = 1500;
-export const TRANSLATE_OUT_FIXED = 500;
+const SUMMARY_TOKENS = { inn: 4000, out: 800 };
+const TRANSLATE_IN_PER_SEC = 12;
+const TRANSLATE_OUT_PER_SEC = 8;
+const TRANSLATE_IN_FIXED = 1500;
+const TRANSLATE_OUT_FIXED = 500;
 /** Phần đối chiếu ước bằng 35% lượt dịch. */
-export const REVIEW_SHARE = 0.35;
+const REVIEW_SHARE = 0.35;
 /** Ký tự thuyết minh ước theo giây hình. */
-export const NARRATION_CHARS_PER_SEC = 14;
+const NARRATION_CHARS_PER_SEC = 14;
 
 export function translateTokens(seconds: number) {
   const span = Math.max(0, seconds);

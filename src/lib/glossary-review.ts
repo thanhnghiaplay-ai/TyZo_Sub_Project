@@ -21,7 +21,7 @@ export function reviewFilterValue(filter: ReviewFilter): boolean | null {
 }
 
 export type StatRow = { lang: string; genre: string; total: number; reviewed: number; hidden: number };
-export type GenreStat = { genre: string; label: string; total: number; reviewed: number; draft: number; hidden: number };
+type GenreStat = { genre: string; label: string; total: number; reviewed: number; draft: number; hidden: number };
 export type LangStat = { lang: string; total: number; reviewed: number; draft: number; genres: GenreStat[] };
 
 /** Gộp các dòng đếm từ CSDL theo ngôn ngữ, mỗi ngôn ngữ liệt kê thể loại (nhiều mục nhất trước). */

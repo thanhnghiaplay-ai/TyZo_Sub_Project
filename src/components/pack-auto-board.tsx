@@ -12,7 +12,7 @@ const dong = (n: number | null) => dongOrNull(n, "chưa đủ giá");
 const perMinute = (n: number) => `${n < 10 ? n.toFixed(1).replace(".", ",") : dong(n).replace(" đ", "")} đ/phút`;
 const scoreText = (n: number) => `${n.toFixed(1).replace(".", ",")} điểm`;
 
-export type AutoDraft = { levels: Partial<Record<PackRole, AutoChoice>>; lang: AutoLang };
+type AutoDraft = { levels: Partial<Record<PackRole, AutoChoice>>; lang: AutoLang };
 
 /**
  * Bảng kéo thanh dựng gói: mỗi việc một thanh ba mức (Tiết kiệm / Cân bằng / Chất lượng), việc không bắt buộc có thêm «Tắt».

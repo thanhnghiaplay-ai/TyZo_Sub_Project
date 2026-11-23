@@ -61,7 +61,7 @@ export function parseAffiliateRules(raw: string | null | undefined): AffiliateRu
   }
 }
 
-export type CommissionCalc = {
+type CommissionCalc = {
   revenue: number;
   cost: number;
   opex: number;

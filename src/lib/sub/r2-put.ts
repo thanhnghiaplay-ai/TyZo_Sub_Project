@@ -1,6 +1,6 @@
 /** Tải một Blob lên link PUT đã ký, tự thử lại khi mạng chập chờn. Phần gửi được truyền vào nên test bằng bản giả. */
 
-export type PutOutcome = { status: number };
+type PutOutcome = { status: number };
 export type PutSend = (onProgress: (sent: number, total: number) => void) => Promise<PutOutcome>;
 
 export function putFailedText(status: number): string {

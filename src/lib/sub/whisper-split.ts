@@ -1,6 +1,6 @@
 import type { AsrWord } from "./word-time.ts";
 
-export type SegmentPiece = { start: number; end: number; text: string };
+type SegmentPiece = { start: number; end: number; text: string };
 
 /**
  * Whisper (Groq) cắt «segment» theo quãng lặng và cửa sổ 30 giây, không theo câu. Lời thoại liền nhau không nghỉ

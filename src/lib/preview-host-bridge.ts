@@ -15,8 +15,8 @@ export {
   resolveParentEmbedderOrigin,
 } from "./preview-embedder-origin";
 
-export const PREVIEW_BRIDGE_CHANNEL = "grok-preview-bridge" as const;
-export const PREVIEW_BRIDGE_VERSION = 1 as const;
+const PREVIEW_BRIDGE_CHANNEL = "grok-preview-bridge" as const;
+const PREVIEW_BRIDGE_VERSION = 1 as const;
 
 const EnvelopeSchema = z.object({
   channel: z.literal(PREVIEW_BRIDGE_CHANNEL),
@@ -42,14 +42,14 @@ const ConnectorTokenReadySchema = EnvelopeSchema.extend({
   type: z.literal("connector-token-ready"),
 });
 
-export type PreviewHostBridgeOptions = {
+type PreviewHostBridgeOptions = {
   /** Prefer the app router when available; falls back to history.pushState. */
   navigate?: (path: string) => void;
   /** Best-effort registered paths for host autosuggest (may be empty). */
   getRoutePaths?: () => string[];
 };
 
-export function isSafeBridgePath(path: string): boolean {
+function isSafeBridgePath(path: string): boolean {
   if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) {
     return false;
   }
@@ -66,7 +66,7 @@ export function isSafeBridgePath(path: string): boolean {
  * top-level (download/export, local `npm run dev`, deployed sites) or under a
  * non-Grok parent. Client-only; null during SSR.
  */
-export function resolveCurrentEmbedderOrigin(): string | null {
+function resolveCurrentEmbedderOrigin(): string | null {
   if (typeof window === "undefined") return null;
   const ancestorOrigin =
     typeof location.ancestorOrigins !== 'undefined' && location.ancestorOrigins.length > 0

@@ -238,7 +238,7 @@ export function contiguousRuns(indexes: number[]): number[][] {
   return runs;
 }
 
-export type TranslationOpts = {
+type TranslationOpts = {
   ctx?: Array<string | { o: string; t: string }>;
   nxt?: string[];
   fix?: boolean;
@@ -324,7 +324,7 @@ export type AcceptReject =
   | "overlap"
   | "duplicate";
 
-export type AcceptResult = {
+type AcceptResult = {
   accepted: boolean;
   reason: AcceptReject | null;
   start: number | null;

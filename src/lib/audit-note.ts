@@ -13,7 +13,7 @@ const ROLE_NAME: Record<string, string> = {
   chu: "Admin",
 };
 
-export function roleName(role: string | null | undefined) {
+function roleName(role: string | null | undefined) {
   if (!role) return "không có quyền";
   return ROLE_NAME[role] ?? role;
 }
@@ -22,7 +22,7 @@ export function vnd(value: number) {
   return `${Math.round(value).toLocaleString("vi-VN")}đ`;
 }
 
-export function joinNote(parts: string[], empty = "Lưu lại, không có gì đổi") {
+function joinNote(parts: string[], empty = "Lưu lại, không có gì đổi") {
   const text = parts.filter(Boolean).join("; ");
   if (!text) return empty;
   return text.length > NOTE_MAX ? `${text.slice(0, NOTE_MAX - 1)}…` : text;

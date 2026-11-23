@@ -48,7 +48,7 @@ export function formatSpan(seconds: number): string {
   return `${r} giây`;
 }
 
-export function formatWhen(iso: string): string {
+function formatWhen(iso: string): string {
   const t = Date.parse(iso);
   if (!Number.isFinite(t)) return "";
   return new Date(t).toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" });
