@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNo
 import { BrandMark } from "@/components/brand-mark";
 import { useTheme } from "@/components/ui/theme-context";
 import { useServiceStatus } from "@/components/use-service-status";
-import { startMaintenanceScene, type SceneHandle } from "@/lib/maintenance-scene";
+import type { SceneHandle } from "@/lib/maintenance-scene";
 import { siteMaintenanceText, siteOpenPath, untilLabel, type ServiceEntry, type ServiceStatus } from "@/lib/service-status";
 
 const WARN_DEFAULT = "Web sắp bảo trì.";
@@ -162,10 +162,19 @@ export function SiteMaintenancePage({ entry, onClose }: { entry: ServiceEntry; o
     const root = rootRef.current;
     if (!root) return;
     noteRef.current = note;
-    const scene = startMaintenanceScene(root, () => noteRef.current);
-    sceneRef.current = scene;
+    // Hoạt hình chỉ cần khi trang bảo trì thật sự hiện: tải mã lúc đó, khách bình thường không phải tải.
+    // Trang (chữ, robot tĩnh) đã dựng sẵn từ máy chủ nên không nháy trong lúc chờ.
+    let alive = true;
+    let scene: SceneHandle | null = null;
+    void import("@/lib/maintenance-scene").then(({ startMaintenanceScene }) => {
+      if (!alive || !rootRef.current) return;
+      scene = startMaintenanceScene(rootRef.current, () => noteRef.current);
+      sceneRef.current = scene;
+      scene.setMessage(noteRef.current);
+    });
     return () => {
-      scene.dispose();
+      alive = false;
+      scene?.dispose();
       sceneRef.current = null;
     };
     // Chỉ chạy một lần: đổi chữ giữa chừng đi qua `setMessage`, không dựng lại cảnh.
