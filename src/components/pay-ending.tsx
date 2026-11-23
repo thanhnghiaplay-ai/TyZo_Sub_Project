@@ -1,7 +1,7 @@
 import { BrandMark } from "@/components/brand-mark";
 
 /**
- * Màn kết thúc thanh toán, dùng chung cho thanh toán gói (pay-slip) và nạp tiền (top-up).
+ * Màn kết thúc thanh toán gói (pay-slip).
  * Cảm ơn: vòng sáng màu nhấn, dấu tích vẽ nét, tia sáng tỏa ra, tiêu đề chuyển màu.
  * Xin lỗi: dịu hơn, không tia sáng, biểu tượng đồng hồ cát màu mờ.
  * Màu lấy từ --color-accent / --color-success / --color-error nên đổi bộ màu của web thì màn này đổi theo.

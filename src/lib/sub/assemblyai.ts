@@ -10,7 +10,6 @@ import type { Seg } from "@/lib/sub/types";
 /** Mã model của app (hiện ở ô chọn, lưu trong phiếu, gói dịch). */
 export const ASSEMBLYAI_PRO_ASR = "assemblyai-universal-3-5-pro";
 export const ASSEMBLYAI_V2_ASR = "assemblyai-universal-2";
-export const ASSEMBLYAI_ASR_IDS = [ASSEMBLYAI_PRO_ASR, ASSEMBLYAI_V2_ASR] as const;
 
 /** Mã model AssemblyAI nhận, theo mã của app. Không phải model AssemblyAI thì trả chuỗi rỗng. */
 export function assemblyaiModel(appId: string): string {

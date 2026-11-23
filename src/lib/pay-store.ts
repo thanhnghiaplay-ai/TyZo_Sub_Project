@@ -139,12 +139,6 @@ async function requireOwner(userId: string) {
   if (!(await isOwnerId(await getSql(), userId))) throw new Error("Chi Chu duoc sua cong thanh toan.");
 }
 
-export const getPayPublic = createServerFn({ method: "GET" }).handler(async (): Promise<PayPublic> => {
-  const row = await readSettings();
-  const view = viewOf(row);
-  return { sepay: view.sepay, casso: view.casso };
-});
-
 export const getPaySettings = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<PaySettingsView> => {
@@ -248,19 +242,6 @@ export async function placeSale(
   };
 }
 
-export const createPayOrder = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((input: { provider: string; amount: number }) => {
-    const provider = input.provider;
-    if (provider !== "sepay" && provider !== "casso") throw new Error("Cổng không đúng.");
-    const amount = Math.round(Number(input.amount));
-    if (!Number.isFinite(amount) || amount < 10_000 || amount > 1_000_000) throw new Error("So tien tu 10.000 den 1.000.000 dong.");
-    return { provider, amount };
-  })
-  .handler(async (): Promise<PayOrderView> => {
-    throw new Error("Không còn nạp số dư. Hãy mua Token dịch hoặc thuê phòng.");
-  });
-
 export const readPayOrder = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => id.trim())
@@ -294,68 +275,6 @@ export const cancelMyPayOrder = createServerFn({ method: "POST" })
     `;
     if (!rows.length) throw new Error("Đơn này không còn để hủy.");
     return { ok: true as const };
-  });
-
-export type PayHistoryItem = {
-  id: string;
-  provider: string;
-  amount: number;
-  code: string;
-  status: string;
-  createdAt: string;
-};
-
-export const getPayDesk = createServerFn({ method: "GET" })
-  .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<{ live: PayOrderView | null; history: PayHistoryItem[] }> => {
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    await expireMine(sql, context.userId);
-    const settings = await readSettings();
-    const rows = await sql<{
-      id: string;
-      provider: string;
-      amount: number;
-      code: string;
-      status: string;
-      created_at: Date | string;
-    }>`
-      select id, provider, amount, code, status, created_at
-      from pay_orders
-      where user_id = ${context.userId}
-      order by created_at desc
-      limit 8
-    `;
-    const history = rows.map((row) => ({
-      id: row.id,
-      provider: row.provider,
-      amount: row.amount,
-      code: row.code,
-      status: row.status,
-      createdAt: new Date(row.created_at).toISOString(),
-    }));
-    const open = rows.find((row) => row.status === "pending" || row.status === "claimed");
-    if (!open || (open.provider !== "sepay" && open.provider !== "casso")) return { live: null, history };
-    const bank = open.provider === "sepay" ? settings.sepay_bank : settings.casso_bank;
-    const account = open.provider === "sepay" ? settings.sepay_account : settings.casso_account;
-    const name = open.provider === "sepay" ? settings.sepay_name : settings.casso_name;
-    const picture = await qrUrl(bank, account, open.amount, open.code);
-    return {
-      live: {
-        id: open.id,
-        provider: open.provider,
-        amount: open.amount,
-        code: open.code,
-        status: open.status,
-        bank,
-        account,
-        name,
-        qr: picture.qr,
-        qrLive: picture.qrLive,
-        createdAt: new Date(open.created_at).toISOString(),
-      },
-      history,
-    };
   });
 
 export const syncCasso = createServerFn({ method: "POST" })

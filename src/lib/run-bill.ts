@@ -115,16 +115,3 @@ export function billedSecondsOf(result: { duration?: unknown; segments?: Array<{
   return last;
 }
 
-/** Model dịch đắt nhất trong danh sách được phép, dùng để giữ chỗ khi chế độ Auto. null khi không model nào có giá. */
-export function dearestChatModel(book: PriceBook, offered: string[]): string | null {
-  let best: string | null = null;
-  let bestCost = -1;
-  for (const id of offered) {
-    const cost = chatCost(book, id, 1_000_000, 1_000_000);
-    if (cost != null && cost > bestCost) {
-      best = id;
-      bestCost = cost;
-    }
-  }
-  return best;
-}

@@ -13,7 +13,6 @@ import type { Seg } from "@/lib/sub/types";
 /** Mã model của app (hiện ở ô chọn, lưu trong phiếu, gói dịch). */
 export const SPEECHMATICS_STANDARD_ASR = "speechmatics-standard";
 export const SPEECHMATICS_ENHANCED_ASR = "speechmatics-enhanced";
-export const SPEECHMATICS_ASR_IDS = [SPEECHMATICS_STANDARD_ASR, SPEECHMATICS_ENHANCED_ASR] as const;
 
 /** Tên trường trong `transcription_config` để chọn mức model (standard hoặc enhanced). */
 export const SPEECHMATICS_MODEL_FIELD = "operating_point";

@@ -1,5 +1,4 @@
 import type { Sql } from "../db.ts";
-import { parseRunDesk } from "../run-desk.ts";
 import type { LiveBook } from "./live-cost.ts";
 import { LIVE_FALLBACK_ROWS, pullLiveBoard, type LiveBoard } from "./live-price.ts";
 
@@ -55,7 +54,3 @@ export async function loadLiveBook(sql: Sql, fetchPage: (url: string) => Promise
   return { rate, rows: stored?.rows?.length ? stored.rows : LIVE_FALLBACK_ROWS };
 }
 
-export async function loadLiveCap(sql: Sql): Promise<number> {
-  const raw = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
-  return parseRunDesk(raw[0]?.value).cap;
-}

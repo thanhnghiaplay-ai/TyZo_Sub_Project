@@ -88,17 +88,6 @@ export const orderRoomPlan = createServerFn({ method: "POST" })
     });
   });
 
-export const buyRoomPlan = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((id: string) => {
-    const plan = roomPlan(id);
-    if (!plan) throw new Error("Gói không có.");
-    return plan.id;
-  })
-  .handler(async () => {
-    throw new Error("Không trừ số dư. Hãy chuyển khoản theo mã QR.");
-  });
-
 export const spendTrial = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<RoomState> => {

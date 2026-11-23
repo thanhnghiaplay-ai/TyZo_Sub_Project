@@ -15,12 +15,6 @@ function label(status: string) {
   return status in RUN_STATUS_LABEL ? RUN_STATUS_LABEL[status as RunStatus] : status;
 }
 
-export function ticketLine(ticket: RunTicket) {
-  const minutes = ticket.seconds > 0 ? `${Math.max(1, Math.round(ticket.seconds / 60))} phút` : "Chưa có thời lượng";
-  const when = ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("vi-VN") : "";
-  return `${when} · ${minutes} · ${ticketMoneyLine(ticket)} · ${label(ticket.status)}`;
-}
-
 /**
  * Tên tệp đã che. Chủ có nút «Hiện tên đầy đủ»: mỗi lần bấm máy chủ ghi nhật ký thao tác.
  * Nhân viên khác không có nút và máy chủ không gửi tên đầy đủ cho họ.

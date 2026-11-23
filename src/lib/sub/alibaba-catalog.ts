@@ -27,6 +27,3 @@ export const ALIBABA_ROWS: GroqLiveRow[] = [
   blank({ id: "qwen3-tts-flash", usdPerMillionChars: 10 }),
 ];
 
-export function alibabaRow(id: string) {
-  return ALIBABA_ROWS.find((row) => row.id === id) ?? null;
-}

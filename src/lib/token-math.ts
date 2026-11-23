@@ -1,7 +1,7 @@
 import { bareBookOf, type ProviderRows } from "./price-rows.ts";
 import { isProviderId, type ProviderId } from "./sub/provider.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
-import { asrCost, asrPerSecond, chatCost, estimateHoldSplit, type HoldPart, type PriceBook } from "./run-bill.ts";
+import { asrPerSecond, chatCost, estimateHoldSplit, type HoldPart, type PriceBook } from "./run-bill.ts";
 
 /** 1 Token dịch = 1 giây nhận dạng Turbo theo giá gốc, chưa cộng chênh. */
 export const TURBO_ASR = "whisper-large-v3-turbo";
@@ -73,11 +73,6 @@ export function giayForBaseCost(groq: PriceBook, baseVnd: number): number | null
   const turbo = asrPerSecond(bare, TURBO_ASR);
   if (!(turbo && turbo > 0)) return null;
   return tokensForBase(baseVnd, turbo);
-}
-
-export function bareAsrVnd(book: PriceBook, model: string, seconds: number): number {
-  const bare: PriceBook = { rate: book.rate, rows: book.rows, desk: { markup: 0, custom: {} } };
-  return asrCost(bare, model, seconds) ?? 0;
 }
 
 export function bareChatVnd(book: PriceBook, model: string, inn: number, out: number): number {

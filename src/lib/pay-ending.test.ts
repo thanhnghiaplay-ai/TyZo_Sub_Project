@@ -7,7 +7,7 @@ const css = read("../styles.css");
 const block = css.slice(css.indexOf("/* PAY-END"), css.indexOf("/* Bước 6.4"));
 
 test("hai màn thanh toán dùng chung PayEnding, không còn chép riêng lời cảm ơn/xin lỗi", () => {
-  for (const file of ["../components/pay-slip.tsx", "../components/top-up.tsx"]) {
+  for (const file of ["../components/pay-slip.tsx"]) {
     const source = read(file);
     assert.ok(source.includes("<PayEnding"), file);
     assert.ok(!source.includes("Xin cảm ơn"), `${file} còn chép lời cảm ơn`);

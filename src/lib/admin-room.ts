@@ -1623,26 +1623,6 @@ export const getRunDoor = createServerFn({ method: "GET" }).handler(async (): Pr
   }
 });
 
-export const saveRunModels = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((ids: string[]) => {
-    if (!Array.isArray(ids)) throw new Error("Danh sách model không đúng.");
-    const next = ids.filter((id) => typeof id === "string" && /^[a-z0-9./_-]{2,80}$/i.test(id)).slice(0, 400);
-    return next;
-  })
-  .handler(async ({ context, data }) => {
-    await requireRole(context.userId, "chu");
-    const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    const value = JSON.stringify(data);
-    await sql`
-      insert into room_settings (key, value) values ('run_models', ${value})
-      on conflict (key) do update set value = ${value}
-    `;
-    await writeAudit(context.userId, "key-model", null, `${data.length} model`);
-    return data;
-  });
-
 export const getAdminLog = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {

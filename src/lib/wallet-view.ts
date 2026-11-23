@@ -3,10 +3,6 @@
 /** Cùng hình dạng với TurnPrice của báo giá trả theo lượt, khai báo lại để file này chạy được không cần máy chủ. */
 export type PriceRow = { id: string; total: number | null; hold: number };
 
-export function formatDong(n: number): string {
-  return new Intl.NumberFormat("vi-VN").format(Math.max(0, Math.round(n))) + " đ";
-}
-
 /** Chọn dòng giá theo gói khách đang chọn; không có thì lấy gói rẻ nhất có giá (exact = false). */
 export function pickPrice(rows: PriceRow[], preferredId: string | null): { row: PriceRow; exact: boolean } | null {
   const priced = rows.filter((row) => row.total != null && row.total > 0);

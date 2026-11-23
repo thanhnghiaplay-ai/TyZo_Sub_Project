@@ -692,6 +692,3 @@ export function fontScript(): string {
   );
 }
 
-export function paletteDiff(a: Theme, b: Theme): boolean {
-  return JSON.stringify(a) !== JSON.stringify(b);
-}

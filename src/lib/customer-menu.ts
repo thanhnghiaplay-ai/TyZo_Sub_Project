@@ -12,8 +12,6 @@ export const TOOL_NAME = {
   run: "Tải và dịch",
 } as const;
 
-export type ToolName = keyof typeof TOOL_NAME;
-
 export const MENU_GROUP = {
   /** Trùng tên dịch vụ ở bảng trạng thái của Admin (Dịch bình thường / Dịch trực tiếp). */
   normal: "Dịch bình thường",

@@ -2135,10 +2135,3 @@ export const CHANGELOG: ReleaseNote[] = [
   },
 ];
 
-export function versionKind(version = APP_VERSION) {
-  const [major, minor, patch] = version.split(".").map((part) => Number(part) || 0);
-  if (patch > 0) return "sửa chữ";
-  if (minor > 0) return "chức năng nhỏ";
-  if (major > 1) return "chức năng lớn";
-  return "bản đầu";
-}

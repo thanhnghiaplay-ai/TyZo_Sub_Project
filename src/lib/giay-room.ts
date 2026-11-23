@@ -65,17 +65,6 @@ export const orderGiayPack = createServerFn({ method: "POST" })
     });
   });
 
-export const buyGiayPack = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((id: string) => {
-    const packId = String(id || "").trim().toLowerCase();
-    if (!/^[a-z0-9-]{1,40}$/.test(packId)) throw new Error("Gói không có.");
-    return packId;
-  })
-  .handler(async () => {
-    throw new Error("Không trừ số dư. Hãy chuyển khoản theo mã QR.");
-  });
-
 export const getGiayDesk = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {

@@ -41,9 +41,6 @@ export function aliErrorText(message: string, workspaceId?: string | null): stri
   return message;
 }
 
-/** $0.000035 mỗi giây, niêm yết Singapore trên trang model. */
-export const ALI_FILETRANS_USD_PER_SECOND = 0.000035;
-
 export type AliSentence = { start: number; end: number; text: string };
 
 const HINTS = new Set(["zh", "ko", "ja", "en"]);

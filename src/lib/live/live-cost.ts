@@ -5,18 +5,6 @@ export type LiveBook = { rate: number; rows: LivePriceRow[] };
 /** Token thật Alibaba trả trong response.done. */
 export type LiveUsage = { audioIn: number; textIn: number; imageIn: number; textOut: number; audioOut: number };
 
-export const EMPTY_USAGE: LiveUsage = { audioIn: 0, textIn: 0, imageIn: 0, textOut: 0, audioOut: 0 };
-
-export function addUsage(a: LiveUsage, b: LiveUsage): LiveUsage {
-  return {
-    audioIn: a.audioIn + b.audioIn,
-    textIn: a.textIn + b.textIn,
-    imageIn: a.imageIn + b.imageIn,
-    textOut: a.textOut + b.textOut,
-    audioOut: a.audioOut + b.audioOut,
-  };
-}
-
 function num(value: unknown): number {
   const n = Number(value);
   return Number.isFinite(n) && n > 0 ? n : 0;

@@ -101,10 +101,6 @@ export async function loadGenreGlossary(sourceLang: string, genre: string, targe
   return pack;
 }
 
-export function clearGlossaryCache() {
-  cache.clear();
-}
-
 /** Thể loại không bao giờ kèm bộ nền: bộ tự động và bộ nhãn 18+ (đứng riêng). */
 const NO_BASE_GENRES = new Set(["auto", "adult"]);
 

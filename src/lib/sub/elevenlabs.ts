@@ -15,7 +15,6 @@ import type { Seg } from "@/lib/sub/types";
 /** Mã model của app (hiện ở ô chọn, lưu trong phiếu, gói dịch). */
 export const ELEVENLABS_V3_ASR = "elevenlabs-scribe-v3";
 export const ELEVENLABS_V2_ASR = "elevenlabs-scribe-v2";
-export const ELEVENLABS_ASR_IDS = [ELEVENLABS_V3_ASR, ELEVENLABS_V2_ASR] as const;
 
 const API_MODEL: Record<string, string> = { [ELEVENLABS_V3_ASR]: "scribe_v3", [ELEVENLABS_V2_ASR]: "scribe_v2" };
 

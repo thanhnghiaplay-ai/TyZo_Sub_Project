@@ -13,7 +13,6 @@ import type { Seg } from "@/lib/sub/types";
 
 /** Mã model của app (hiện ở ô chọn, lưu trong phiếu, gói dịch). */
 export const SONIOX_ASYNC_ASR = "soniox-stt-async";
-export const SONIOX_ASR_IDS = [SONIOX_ASYNC_ASR] as const;
 
 /** Tên model gửi cho Soniox. Kiểm danh sách /models khi có key thật rồi sửa tại đây nếu lệch. */
 export const SONIOX_API_MODEL = "stt-async-v5";
