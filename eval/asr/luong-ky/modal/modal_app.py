@@ -14,8 +14,9 @@ import modal
 HERE = os.path.dirname(os.path.abspath(__file__))
 LUONG = os.path.dirname(HERE)
 # Trên máy Modal tệp này nằm ở /root, còn cấu hình được chép vào /root/luong-ky/modal.
-_CFG_PATH = next(p for p in (os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json") if os.path.exists(p))
-CFG = json.load(open(_CFG_PATH))
+_CFG_PATH = next((p for p in (os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json") if os.path.exists(p)), None)
+CFG = json.load(open(_CFG_PATH)) if _CFG_PATH else {   # dự phòng: không thấy tệp thì dùng mặc định, không làm máy lỗi
+    "hop_nhat": {"gpu": {"model": "Qwen/Qwen3.8-27B-FP8"}}, "gpu": {"nhan_dang": ["L4", "A10"], "model_chu": ["L40S", "A100-80GB"]}}
 SECRET = modal.Secret.from_name("tyzo-asr")
 LLM_MODEL = CFG["hop_nhat"]["gpu"]["model"]
 
@@ -37,6 +38,7 @@ llm_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("vllm==0.34.0")
     .env({"HF_HOME": "/cache/hf", "VLLM_CACHE_ROOT": "/cache/vllm"})
+    .add_local_file(os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json")
 )
 asr_cache = modal.Volume.from_name("tyzo-asr-cache", create_if_missing=True)
 llm_cache = modal.Volume.from_name("tyzo-llm-cache", create_if_missing=True)
