@@ -21,7 +21,9 @@ def demucs(L):
     if os.environ.get("NOCACHE") and os.path.exists(out):
         os.remove(out)
     if not os.path.exists(out):
-        subprocess.run(["python3", "-m", "demucs", "--two-stems=vocals", "-n", "htdemucs", "-o", "sep", f"{L}44.wav"], check=True, capture_output=True)
+        import sys
+        dev = ["-d", os.environ["ASR_DEVICE"]] if os.environ.get("ASR_DEVICE") else []
+        subprocess.run([sys.executable, "-m", "demucs", "--two-stems=vocals", "-n", "htdemucs", *dev, "-o", "sep", f"{L}44.wav"], check=True, capture_output=True)
     return load(out)
 
 def agc(x, win=0.5, max_gain_db=20, target=0.08):
@@ -217,10 +219,11 @@ def sepformer(y):
     from scipy import signal as S
     if _SEP is None:
         from speechbrain.inference.separation import SepformerSeparation
-        _SEP = SepformerSeparation.from_hparams(source="speechbrain/sepformer-libri2mix", savedir="pretrained/sepformer-libri2mix")
+        _SEP = SepformerSeparation.from_hparams(source="speechbrain/sepformer-libri2mix", savedir=os.environ.get("SEP_DIR", "pretrained/sepformer-libri2mix"),
+                                                run_opts={"device": os.environ.get("ASR_DEVICE", "cpu")})
     with torch.no_grad():
         est = _SEP.separate_batch(torch.tensor(S.resample_poly(y, 1, 2).astype(np.float32))[None])
-    return [S.resample_poly(est[0, :, k].numpy(), 2, 1)[:len(y)] for k in range(2)]
+    return [S.resample_poly(est[0, :, k].float().cpu().numpy(), 2, 1)[:len(y)] for k in range(2)]
 
 def overlap_cands(voc, g, L):
     """Tách người nói trên từng đoạn VAD (≤ 8 s). Đoạn nào có hai người cùng nói thì thêm lời của từng người."""

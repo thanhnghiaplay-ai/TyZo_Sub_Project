@@ -55,6 +55,22 @@ Cân bằng = Kỹ bỏ bước 5. Nhanh = không Demucs, không VAD (cắt đo�
 
 Kết luận: KHÔNG dùng. DeepFilterNet coi giọng thì thầm là tiếng ồn (clip Hàn: câu 3 từ -23 dB xuống -37 dB, câu 10 từ -28 dB xuống -35 dB), và hai bản khử ồn ra chữ giống nhau nên «áp đảo số đông» khi hợp nhất. Luồng Kỹ tự nó cũng dao động giữa các lần chạy (Trung 2,3–5,4%, Hàn 19,7–23,2%), nên chênh dưới ~4 điểm chưa chắc là thật.
 
+## 3c. Dịch bằng model nhỏ tự chạy (đề xuất «faster-whisper + Qwen2.5-7B trên một GPU»)
+
+32 câu thoại thử dịch sang tiếng Việt; DeepSeek chấm mù 0–10, có bản dịch tham khảo (`ket-qua/so-sanh-dich.json`):
+
+| Model | Điểm TB | Trung | Nhật | Hàn | Anh |
+|---|---|---|---|---|---|
+| Qwen2.5-7B 4-bit (đề xuất) | 3,4 | 5,6 | 4,0 | 0,0 | 3,9 |
+| Qwen3.8-27B (Groq) | 7,8 | 8,2 | 8,0 | 7,1 | 7,9 |
+| Qwen4-Max (Alibaba) | 9,0 | 9,2 | 8,9 | 8,9 | 9,0 |
+
+Bản 7B dịch sai tiếng lóng («破防» → «Tôi ốp», «躺平» → «nằm flat», «尊い» → «quá tôn trọng») và với tiếng Hàn trả về một đoạn tiếng Trung tự giải thích. KHÔNG dùng model 7B để dịch; giữ API mạnh. Modal không có RTX 4090 (24 GB gần nhất: L4 0,80 USD/giờ, A10 1,10 USD/giờ).
+
+## 3d. Chạy trên Modal (`modal/`)
+
+`modal/backend.py` chạy luồng Kỹ tại chỗ: nhận dạng bằng faster-whisper (turbo và large-v3) thay Groq, nên không vướng giới hạn lượt gọi; hợp nhất vẫn gọi Qwen4-Max. `modal/modal_app.py` đưa lên Modal GPU L4, tự tắt sau 60 giây không có việc, có mã bảo vệ. `modal/goi_thu.py` gửi một video và đo thời gian chờ. Cách triển khai ghi ở đầu `modal_app.py`.
+
 ## 4. Thời gian và chi phí
 
 Đo trên 4 nhân CPU, clip 38,5 s: Demucs 21,2 s; VAD 0,65 s; SepFormer mọi đoạn 32,1 s; một lần gọi turbo (22 s tiếng) ~1,1 s; Qwen4-Max ~2,2 s; Qwen3.8 trên Groq 0,33 s.

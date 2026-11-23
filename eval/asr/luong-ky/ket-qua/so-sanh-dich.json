@@ -1,0 +1,236 @@
+{
+ "ghi_chu": "Dịch 32 câu thoại thử (zh, ja, ko, en) sang tiếng Việt. DeepSeek v4.1 flash chấm mù 0-10 từng câu, có bản dịch tham khảo của Chủ. Qwen2.5-7B bản 4-bit Q4_K_M chạy CPU (llama.cpp); cùng model như đề xuất chạy GPU.",
+ "diem": {
+  "Qwen2.5-7B (Google đề xuất)": {
+   "tb": 3.4,
+   "zh": 5.6,
+   "ja": 4.0,
+   "ko": 0.0,
+   "en": 3.9
+  },
+  "Qwen3.8-27B (Groq)": {
+   "tb": 7.8,
+   "zh": 8.2,
+   "ja": 8.0,
+   "ko": 7.1,
+   "en": 7.9
+  },
+  "Qwen4-Max (Alibaba)": {
+   "tb": 9.0,
+   "zh": 9.2,
+   "ja": 8.9,
+   "ko": 8.9,
+   "en": 9.0
+  }
+ },
+ "ban_dich": {
+  "zh": {
+   "src": [
+    "我靠！你看到没有？这个视频直接破防了，绝了绝了！",
+    "哎呀，别激动，这不就是个普通的整活视频嘛。",
+    "小声点，老板在后面，别被他发现我们在摸鱼。",
+    "什么？内卷这么厉害，我真想躺平！",
+    "对对对，打工人太难了，yyds！",
+    "啊——别吓我！",
+    "反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的！",
+    "好吧，那就火锅，不过说好了，下次轮到你们买单。"
+   ],
+   "ref": [
+    "Trời ơi! Cậu xem chưa? Video này làm mình sụp đổ luôn, đỉnh quá đỉnh quá!",
+    "Ôi dào, đừng kích động, đây chỉ là video chơi trò thôi mà.",
+    "Nói nhỏ thôi, sếp ở phía sau, đừng để ông ấy phát hiện tụi mình đang trốn việc.",
+    "Cái gì? Cạnh tranh khốc liệt thế này, mình chỉ muốn nằm yên thôi!",
+    "Đúng đúng đúng, dân đi làm khổ quá, đỉnh nhất luôn!",
+    "Á! Đừng dọa mình!",
+    "Dù sao tối nay mình mời, ăn nướng hay lẩu, mau chọn đi, đừng lề mề nữa!",
+    "Được rồi, vậy ăn lẩu, nhưng nói trước nhé, lần sau tới lượt các cậu trả tiền."
+   ],
+   "Qwen2.5-7B (Google đề xuất)": [
+    "Tôi ốp! Cậu thấy chưa? Video này quá mạnh, tuyệt quá!",
+    "Ê, đừng hưng phấn quá, chỉ là video đùa bình thường mà.",
+    "Nói nhỏ đi, sếp đang ở sau, đừng bị phát hiện tụi mình lười biếng.",
+    " Sao? Nội chiến quá, tụi mình thật sự muốn nằm flat!",
+    " Đúng đúng, người làm việc thật khó, yyds!",
+    " Ôi—— đừng giỡn với tụi mình!",
+    " Thôi thì hôm nay mình mời, ăn lẩu hay nướng, mau chọn đi, đừng lê lết!",
+    " Được, thì ăn lẩu, nhưng lần sau tới lượt các cậu mời."
+   ],
+   "Qwen3.8-27B (Groq)": [
+    "Trời ơi! Thấy chưa? Video này làm tui khóc luôn, đỉnh quá trời!",
+    "Ê, bình tĩnh đi, có gì đâu, chỉ là video troll bình thường thôi.",
+    "Nhỏ tiếng lại, sếp ở sau kìa, đừng để bị phát hiện đang lười biếng.",
+    "Gì cơ? Cạnh tranh khốc liệt vậy hả, tui muốn nằm im luôn!",
+    "Đúng đúng, làm thuê khổ quá, đỉnh của chóp luôn!",
+    "Á—— đừng dọa tui!",
+    "Tối nay tui mời, ăn BBQ hay lẩu, chọn nhanh đi, đừng lề mề nữa!",
+    "Được, lẩu nhé, nhưng nói trước nha, lần tới đến lượt tụi cậu trả tiền."
+   ],
+   "Qwen4-Max (Alibaba)": [
+    "Trời ơi! Cậu thấy chưa? Video này làm mình vỡ tim luôn, đỉnh quá đỉnh!",
+    "Ơ kìa, bình tĩnh đi, video troll bình thường thôi mà.",
+    "Nói nhỏ thôi, sếp ở phía sau kìa, đừng để ổng bắt gặp tụi mình lười biếng nha.",
+    "Gì cơ? Cạnh tranh khốc liệt vậy, mình muốn nằm thẳng luôn!",
+    "Đúng đúng đúng, dân đi làm khổ quá mà, mãi đỉnh!",
+    "Á——đừng dọa mình!",
+    "Dù sao tối nay mình bao, ăn nướng hay lẩu, mấy cậu chọn nhanh đi, đừng lề mề nữa!",
+    "Thôi được, vậy lẩu đi, nhưng nói trước nha, lần sau tới lượt mấy cậu trả tiền."
+   ]
+  },
+  "ja": {
+   "src": [
+    "ねえねえ、これ見た？マジでやばいんだけど、ガチで神回じゃん！",
+    "うわ、それな！ウケる、鳥肌立ったわ。",
+    "静かにして、先生が来るよ、見つかったらヤバいって。",
+    "でもさ、この推し、マジで尊くない？",
+    "わかる、エモすぎて、ぴえんだよ！",
+    "うわっ、びっくりした！心臓止まるかと思ったわ！",
+    "とりあえず今夜は私のおごりね、焼肉かラーメン、早く決めて、時間ないから！",
+    "じゃあラーメンにしよう、その代わり次は君の番だからね。"
+   ],
+   "ref": [
+    "Này này, cậu xem cái này chưa? Thật sự quá đỉnh, đúng là tập thần thánh luôn!",
+    "Òa, đúng vậy! Buồn cười thật, nổi da gà luôn.",
+    "Im lặng đi, thầy/cô tới rồi, bị phát hiện là toi đấy.",
+    "Nhưng mà, thần tượng này, thật sự quá đáng quý phải không? (尊い)",
+    "Hiểu mà, cảm xúc quá nên muốn khóc luôn! (エモい, ぴえん)",
+    "Úi, giật cả mình! Tưởng tim ngừng đập rồi!",
+    "Trước tiên tối nay mình bao nhé, thịt nướng hay ramen, chọn nhanh lên, không có thời gian đâu!",
+    "Vậy ăn ramen đi, đổi lại lần sau tới lượt cậu đấy nhé."
+   ],
+   "Qwen2.5-7B (Google đề xuất)": [
+    "Nè nè, tớ xem rồi, thật sự quá hay!",
+    "Oh, tớ cũng thấy!",
+    " im một chút, thầy giáo sắp về rồi, bị phát hiện thì toi!",
+    "Nhưng mà, cái crush này, thật sự quá tôn trọng phải không?",
+    "Tớ hiểu, quá cảm xúc, sắp nổ tung!",
+    "Oh, tớ shock quá! Sắp bị tim ngừng đập!",
+    "Tối nay tớ mời nhé, lẩu nướng hay phở, nhanh lên, thời gian không chờ!",
+    "Thế thì phở đi, nhưng lần sau đến lượt cậu nhé."
+   ],
+   "Qwen3.8-27B (Groq)": [
+    "Nè nè, mày xem cái này chưa? Thật sự đỉnh quá trời, tập này là thần tập luôn!",
+    "Trời, đúng luôn! Haha, rợn cả tóc gáy luôn á.",
+    "Im đi, thầy sắp tới rồi, bị bắt thì toi.",
+    "Nhưng mà nè, idol của tao, thật sự là quá đỉnh không?",
+    "Hiểu luôn, cảm xúc quá trời, muốn khóc luôn á!",
+    "Trời ơi, giật mình quá! Tao tưởng tim sắp ngừng đập luôn!",
+    "Tối nay tao mời trước nha, thịt nướng hay mì, chọn nhanh đi, hết giờ rồi!",
+    "Vậy chọn mì đi, nhưng lần sau tới lượt mày nha."
+   ],
+   "Qwen4-Max (Alibaba)": [
+    "Ê ê, cậu xem cái này chưa? Đỉnh vl luôn, tập này đúng là thần thánh!",
+    "Uầy, chuẩn luôn! Cười xỉu, nổi da gà hết cả người.",
+    "Suỵt, im đi, thầy sắp tới rồi đó, bị bắt là chết chắc!",
+    "Nhưng mà idol của mình đỉnh quá trời không?",
+    "Hiểu mà, cảm xúc dâng trào muốn khóc luôn á!",
+    "Á, giật cả mình! Tưởng tim ngừng đập luôn rồi!",
+    "Tối nay mình bao nha, thịt nướng hay mì ramen, chọn lẹ đi, không còn thời gian đâu!",
+    "Vậy ăn ramen đi, nhưng lần sau tới lượt cậu trả đó nha."
+   ]
+  },
+  "ko": {
+   "src": [
+    "야 야 야, 이거 봤어? 진짜 대박이야, 완전 레전드라니까!",
+    "헐, 실화냐? 나 지금 소름 돋았어, 개웃겨.",
+    "조용히 해, 선생님 오신다, 걸리면 다 끝이야.",
+    "아니 근데 이거 완전 갓생 아니야?",
+    "인정, 인정! 존맛에 꿀잼이야!",
+    "으악, 깜짝이야! 심장 떨어지는 줄 알았네!",
+    "일단 오늘 저녁은 내가 쏠게, 치킨이랑 떡볶이 중에 빨리 골라, 시간 없어!",
+    "그럼 치킨으로 하자, 대신 다음엔 네가 사야 돼, 알았지?"
+   ],
+   "ref": [
+    "Này này này, cậu xem cái này chưa? Thật sự đỉnh lắm, đúng là huyền thoại luôn!",
+    "Hả, thật á? Mình nổi da gà rồi, buồn cười chết đi được.",
+    "Im đi, thầy/cô tới kìa, bị bắt là tiêu hết.",
+    "Mà này, thế này chẳng phải là sống cực kỳ chăm chỉ tích cực sao? (갓생)",
+    "Công nhận, công nhận! Ngon tuyệt mà lại còn vui nữa!",
+    "Á, giật cả mình! Tưởng tim rơi ra ngoài rồi!",
+    "Trước tiên tối nay mình bao, chọn nhanh gà rán hay tteokbokki đi, không có thời gian đâu!",
+    "Vậy ăn gà rán đi, đổi lại lần sau cậu phải mua, nhé?"
+   ],
+   "Qwen2.5-7B (Google đề xuất)": [
+    "Ê ê ê, tao đã thấy rồi! Thật sự quá h 自动生成的对话记录，似乎是一段关于翻译电影/视频字幕的对话。根据要求，我会将这些句子翻译成符合年轻人使用的自然、口语化的越南语。以下是翻译结果，每条翻译对应原文的一条。请确认是否需要将这些翻译放入JSON格式中返回，还是直接以文本形式返回。",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "Qwen3.8-27B (Groq)": [
+    "Ê ê ê, mày thấy cái này chưa? Cháy hết cỡ luôn, đỉnh của chóp luôn đó!",
+    "Trời, thật á? Tao rợn tóc gáy luôn, cười muốn xỉu.",
+    "Im đi, thầy cô tới rồi, bị bắt là toi hết.",
+    "Nhưng mà cái này không phải sống ảo đỉnh cao sao?",
+    "Chốt đơn, chốt đơn! Ngon tuyệt mà vui cực luôn!",
+    "Á, giật mình quá! Tao tưởng tim rơi ra ngoài luôn!",
+    "Tối nay tao mời, chọn nhanh gà hay bánh gạo đi, hết giờ rồi!",
+    "Thì gà đi, nhưng lần sau mày phải trả tiền, nghe chưa?"
+   ],
+   "Qwen4-Max (Alibaba)": [
+    "Ê ê ê, cậu xem cái này chưa? Đỉnh thật sự, đúng kiểu huyền thoại luôn!",
+    "Trời ơi, thật hả? Mình nổi da gà luôn, cười xỉu.",
+    "Im lặng đi, thầy tới kìa, bị bắt là tiêu đời cả đám.",
+    "Ơ mà cái này sống đỉnh quá chứ còn gì?",
+    "Công nhận, công nhận! Ngon xỉu mà vui cực!",
+    "Á á, giật cả mình! Tưởng rớt tim ra ngoài luôn!",
+    "Tối nay mình bao nha, gà rán hay tokbokki chọn lẹ đi, hết giờ rồi!",
+    "Vậy gà rán đi, nhưng lần sau cậu phải bao đó, nhớ chưa?"
+   ]
+  },
+  "en": {
+   "src": [
+    "Dude, did you see this? It's literally insane, no cap, this is straight fire!",
+    "Bruh, I'm literally dead. That's so sus, I got goosebumps.",
+    "Shh, keep it down, the boss is coming. We're toast if he sees us.",
+    "But lowkey, this whole vibe is kinda goated, don't you think?",
+    "Yeah yeah, totally! It slaps, I'm gonna lose it!",
+    "Whoa, you scared me! I almost had a heart attack!",
+    "Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late!",
+    "Fine, pizza. But next time, you're paying, got it?"
+   ],
+   "ref": [
+    "Này, cậu xem cái này chưa? Điên thật sự luôn, không đùa đâu, đỉnh vãi!",
+    "Trời ơi, mình xỉu mất. Đáng ngờ quá, nổi da gà luôn.",
+    "Suỵt, nói nhỏ thôi, sếp tới kìa. Ổng thấy là tụi mình toi.",
+    "Nhưng nói thật, cái không khí này đỉnh ra phết, cậu không nghĩ vậy sao?",
+    "Ừ ừ, chuẩn luôn! Đỉnh thật, mình sắp phát điên rồi!",
+    "Úi, cậu làm mình giật mình! Suýt nữa thì đau tim rồi!",
+    "Dù sao tối nay mình bao. Pizza hay tacos? Chọn nhanh lên, sắp trễ rồi!",
+    "Được rồi, pizza. Nhưng lần sau cậu trả tiền nhé, hiểu chưa?"
+   ],
+   "Qwen2.5-7B (Google đề xuất)": [
+    "Có bạn thấy chưa hả? Đúng là quá sướng, không nói đùa, quá đỉnh luôn!",
+    "Cậu ơi, tôi sướng muốn chết. Đúng là quá nghi ngờ, tôi còn nổi da gà luôn!",
+    " Câm đi吧，我吓到你了！我都快心脏病发作了！",
+    " Nhưng thực tế, cái cảm giác này cũng khá là đỉnh, bạn đồng ý không?",
+    " Đúng rồi, hoàn toàn! Đúng là quá sướng, tôi sắp khóc luôn!",
+    " ồ, làm tôi sợ quá! Tôi còn tưởng mình chết luôn!",
+    " Ở lại, bữa tối tôi mời. Pizza hay tacos? Chọn nhanh, chúng ta sắp trễ rồi!",
+    " Được, pizza. Nhưng下次轮到你请！明白了吗？"
+   ],
+   "Qwen3.8-27B (Groq)": [
+    "Ê, mày thấy cái này chưa? Nó điên rồ luôn, không nói đùa, đỉnh chóp luôn!",
+    "Trời ơi, tao chết luôn. Cái đó ghê quá, tao nổi da gà hết rồi.",
+    "Im đi, nhỏ tiếng lại, sếp sắp tới rồi. Mất toi nếu bị bắt gặp.",
+    "Nhưng mà nói thật, vibe này đỉnh thật, mày thấy không?",
+    "Đúng đúng, chuẩn luôn! Nghe đã tai, tao sắp phát điên lên!",
+    "Trời ơi, mày làm tao giật mình! Tao tưởng tao lên cơn đau tim!",
+    "Thôi, bữa tối tao mời. Pizza hay tacos? Chọn nhanh đi, sắp muộn rồi!",
+    "Được, pizza. Nhưng lần sau mày trả, nghe chưa?"
+   ],
+   "Qwen4-Max (Alibaba)": [
+    "Ê, cậu thấy cái này chưa? Điên thật sự luôn, không đùa đâu, đỉnh cháy máy!",
+    "Trời ơi, mình cười chết mất. Susp quá đi, nổi hết da gà luôn.",
+    "Suỵt, nhỏ tiếng thôi, sếp tới kìa. Ổng thấy là tụi mình tiêu đời.",
+    "Nhưng nói thật nha, cái vibe này đỉnh lắm đó, cậu thấy vậy không?",
+    "Ừ ừ, chuẩn luôn! Đỉnh quá, mình sắp xỉu rồi!",
+    "Ối, cậu làm mình hết hồn! Suýt đứng tim luôn á!",
+    "Thôi kệ, bữa tối mình bao. Pizza hay tacos? Chọn lẹ đi, trễ giờ rồi!",
+    "Ok, pizza. Nhưng lần sau cậu trả đó, nhớ chưa?"
+   ]
+  }
+ }
+}

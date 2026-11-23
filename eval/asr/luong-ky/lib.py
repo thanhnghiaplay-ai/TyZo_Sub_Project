@@ -96,7 +96,7 @@ _vad = None
 def vad_probs(x):
     global _vad
     if _vad is None:
-        _vad = ort.InferenceSession("silero_vad.int8.onnx")
+        _vad = ort.InferenceSession(os.environ.get("VAD_MODEL", "silero_vad.int8.onnx"))
     h = np.zeros((2, 1, 64), np.float32); c = np.zeros((2, 1, 64), np.float32)
     out = []
     for i in range(0, len(x) - 512, 512):
