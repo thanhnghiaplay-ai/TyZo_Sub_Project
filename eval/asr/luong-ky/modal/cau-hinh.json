@@ -1,0 +1,63 @@
+{
+  "_ghi_chu": "Cấu hình luồng nhận dạng. Thêm luồng mới: thêm một mục vào 'luong'. Đổi xong: tyzo-ai → Cập nhật. Khách chọn luồng bằng trường 'profile' khi gọi.",
+  "luong_mac_dinh": "ky",
+  "luong": {
+    "ky": {
+      "mo_ta": "Chính xác nhất: tách giọng, 4 bản tiếng, tách người nói chồng, hợp nhất",
+      "n": 4,
+      "ovl": "all"
+    },
+    "can-bang": {
+      "mo_ta": "Bỏ tách người nói chồng: nhanh hơn, rẻ hơn",
+      "n": 4
+    },
+    "nhanh": {
+      "mo_ta": "2 bản tiếng, không gọi large-v3, không tách người nói",
+      "n": 2,
+      "esc": false
+    }
+  },
+  "hop_nhat": {
+    "_ghi_chu": "Chế độ do TYZO_FUSE trong secret quyết định: gpu (Qwen trên GPU Modal, lỗi thì sang Alibaba), ali (chỉ Alibaba), khong (không dùng model chữ).",
+    "gpu": {
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "so_lan": 3
+    },
+    "ali": {
+      "model": "qwen4-max",
+      "so_lan": 1,
+      "chi_khi_lech": 0.03
+    },
+    "gia_usd_1tr_token": {
+      "qwen4-max": [
+        1.5,
+        4.5
+      ],
+      "qwen3.8-27b": [
+        0.5,
+        3.0
+      ],
+      "qwen-plus": [
+        0.4,
+        1.2
+      ]
+    }
+  },
+  "gpu": {
+    "_ghi_chu": "Danh sách GPU theo thứ tự ưu tiên: loại đầu hết chỗ thì Modal dùng loại sau (đỡ chờ máy).",
+    "nhan_dang": [
+      "L4",
+      "A10"
+    ],
+    "model_chu": [
+      "L40S",
+      "A100-80GB"
+    ]
+  },
+  "gia_gpu_usd_gio": {
+    "L4": 0.8,
+    "A10": 1.1,
+    "L40S": 1.95,
+    "A100-80GB": 2.5
+  }
+}

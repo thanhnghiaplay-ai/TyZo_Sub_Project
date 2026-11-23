@@ -111,17 +111,40 @@ def ali_base():
     ws = os.environ.get("ALI_WORKSPACE", "").strip().lower()
     return f"https://{ws}.ap-southeast-1.maas.aliyuncs.com" if ws else "https://dashscope-intl.aliyuncs.com"
 
-def ali(messages, model):
+import threading
+USAGE = {}           # {"ali:qwen4-max": {"goi": n, "vao": token, "ra": token}, "gpu:...": {...}}
+_ulock = threading.Lock()
+
+def _count(key, r):
+    u = r.get("usage") or {}
+    with _ulock:
+        d = USAGE.setdefault(key, {"goi": 0, "vao": 0, "ra": 0})
+        d["goi"] += 1; d["vao"] += int(u.get("prompt_tokens") or 0); d["ra"] += int(u.get("completion_tokens") or 0)
+
+def ali(messages, model, tries=4):
     import urllib.request
     body = json.dumps({"model": model, "messages": messages, "temperature": 0, "enable_thinking": False, "response_format": {"type": "json_object"}}).encode()
-    for k in range(4):
+    for k in range(tries):
         try:
             req = urllib.request.Request(ali_base() + "/compatible-mode/v1/chat/completions", body,
                                          {"Authorization": "Bearer " + os.environ.get("ALI_API_KEY", "x"), "Content-Type": "application/json", "User-Agent": "asr-bench/1.0"})
-            return json.load(urllib.request.urlopen(req, timeout=240))["choices"][0]["message"]["content"]
+            r = json.load(urllib.request.urlopen(req, timeout=240)); _count("ali:" + model, r)
+            return r["choices"][0]["message"]["content"]
         except Exception as e:
             print("  [ali]", e, flush=True); time.sleep(4)
     raise RuntimeError("ali")
+
+def local_chat(messages, model, timeout=None):
+    """Model chữ tự chạy (vLLM trên GPU Modal hay bất kỳ máy chủ dạng OpenAI): LLM_BASE, LLM_KEY, LLM_EXTRA (JSON)."""
+    import urllib.request
+    extra = json.loads(os.environ.get("LLM_EXTRA", '{"chat_template_kwargs": {"enable_thinking": false}}'))
+    body = json.dumps({"model": model, "messages": messages, "temperature": 0, "max_tokens": 1024,
+                       "response_format": {"type": "json_object"}, **extra}).encode()
+    req = urllib.request.Request(os.environ["LLM_BASE"].rstrip("/") + "/v1/chat/completions", body,
+                                 {"Authorization": "Bearer " + os.environ.get("LLM_KEY", "x"), "Content-Type": "application/json", "User-Agent": "tyzo-asr/1.0"})
+    r = json.load(urllib.request.urlopen(req, timeout=timeout or float(os.environ.get("LLM_TIMEOUT", "90"))))
+    _count("gpu:" + model, r)
+    return r["choices"][0]["message"]["content"]
 
 def pick(txt):
     try: d = json.loads(txt)
@@ -140,6 +163,8 @@ def fuse(c, prev, lang, model, provider):
     msg = [{"role": "system", "content": FUSE.format(lname=NAMES[lang], rhint=RH[lang], extra=EXTRA[lang], prev=prev or "(none)")},
            {"role": "user", "content": "\n".join(rows)}]
     if provider == "ali": return pick(ali(msg, model))
+    if provider == "ali1": return pick(ali(msg, model, tries=1))   # trong chuỗi dự phòng: lỗi thì chuyển bậc sau ngay
+    if provider == "local": return pick(local_chat(msg, model))
     try:
         return pick(chat(msg, model=model, response_format={"type": "json_object"}))
     except RuntimeError:
@@ -318,29 +343,43 @@ def run(F, cfg, L=None):
         order = sorted(range(len(groups)), key=lambda i: groups[i][0][0]); groups = [groups[i] for i in order]; allc = [allc[i] for i in order]
     t_asr = time.time() - t0 - t_sep
     segs, log, prev, st = [], [], "", {"esc": 0, "unclear": 0, "guard": 0}
+    def medoid(texts):
+        return min(texts, key=lambda o: sum(dist(o, q, L) for q in texts))
+    def tier_outs(models, c):
+        def safe(mp):
+            try: return fuse(c, "", L, mp[0], mp[1])
+            except Exception as e: print("  [fuse]", mp[0], type(e).__name__, str(e)[:120], flush=True); return None
+        with ThreadPoolExecutor(len(models)) as ex: return [o for o in ex.map(safe, models) if o]
     def one(args):
+        """Trả (chữ, cách hợp nhất). Cách: tên bậc trong fuse_chain, "khop" (các bản đã khớp, bỏ qua model chữ) hay "khong"."""
         g, (c, d) = args
-        if d > cfg.get("unclear", 0.6): return None
-        if not cfg.get("fuse"): return c[0]["text"]
+        if d > cfg.get("unclear", 0.6): return None, "khong-ro"
+        chain = cfg.get("fuse_chain")
+        if chain:   # bậc 1 lỗi hoặc chưa sẵn sàng thì sang bậc 2…
+            for tier in chain:
+                if tier.get("when") == "disagree" and d <= tier.get("thr", 0.03):
+                    return medoid([x["text"] for x in c]), "khop"
+                if tier.get("ready") and not tier["ready"](): continue
+                outs = tier_outs(tier["models"], c)
+                if outs: return medoid(outs), tier["name"]
+            return medoid([x["text"] for x in c]), "khong"
+        if not cfg.get("fuse"): return c[0]["text"], "khong"
         if isinstance(cfg["fuse"], list):   # nhiều model song song → lấy bản ở giữa (giống các bản kia nhất)
-            def safe(mp):
-                try: return fuse(c, "", L, mp[0], mp[1])
-                except Exception as e: print("  [fuse]", mp[0], e, flush=True); return None
-            with ThreadPoolExecutor(len(cfg["fuse"])) as ex: outs = [o for o in ex.map(safe, cfg["fuse"]) if o]
-            if not outs: return c[0]["text"]
-            return min(outs, key=lambda o: sum(dist(o, q, L) for q in outs))
-        return fuse(c, "", L, cfg["fuse"], cfg.get("prov", "groq"))
-    # hợp nhất song song (không chờ nhau) để giảm độ trễ; ngữ cảnh trước = chữ của ứng viên A
-    with ThreadPoolExecutor(4) as ex: outs = list(ex.map(one, zip(groups, allc)))
-    for g, (c, d), text in zip(groups, allc, outs):
+            outs = tier_outs(cfg["fuse"], c)
+            return (medoid(outs), "fuse") if outs else (c[0]["text"], "khong")
+        return fuse(c, "", L, cfg["fuse"], cfg.get("prov", "groq")), "fuse"
+    # hợp nhất song song (không chờ nhau) để giảm độ trễ
+    st["hop_nhat"] = {}
+    with ThreadPoolExecutor(4) as ex: res = list(ex.map(one, zip(groups, allc)))
+    for g, (c, d), (text, how) in zip(groups, allc, res):
+        st["hop_nhat"][how] = st["hop_nhat"].get(how, 0) + 1
         if len(c) > cfg.get("n", 4): st["esc"] += 1
         if text is None:
             st["unclear"] += 1; log.append({"t": [g[0][0], g[-1][1]], "d": round(d, 2), "c": [x["text"] for x in c], "out": "(?)"}); continue
         L2 = [len(SC.norm(x["text"], L)) for x in c]
-        if cfg.get("fuse") and not isinstance(cfg["fuse"], list) and False: pass
-        if cfg.get("fuse") and (META.search(text) or len(SC.norm(text, L)) > 1.4 * max(L2) + 4 or len(SC.norm(text, L)) < 0.6 * float(np.median(L2))):
-            st["guard"] += 1; text = min(c, key=lambda x: sum(dist(x["text"], y["text"], L) for y in c))["text"]
-        segs += [s for s in align(text, c, g, L) if not interjection_only(s["text"], L)]; log.append({"t": [round(g[0][0], 1), round(g[-1][1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "out": text})
+        if how not in ("khop", "khong") and (META.search(text) or len(SC.norm(text, L)) > 1.4 * max(L2) + 4 or len(SC.norm(text, L)) < 0.6 * float(np.median(L2))):
+            st["guard"] += 1; text = medoid([x["text"] for x in c])
+        segs += [s for s in align(text, c, g, L) if not interjection_only(s["text"], L)]; log.append({"t": [round(g[0][0], 1), round(g[-1][1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "out": text, "cach": how})
     st["probe"] = st_probe
     st["time"] = {"sep": round(t_sep, 1), "asr": round(t_asr, 1), "total": round(time.time() - t0, 1)}
     return segs, log, st

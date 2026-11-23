@@ -1,0 +1,277 @@
+#!/usr/bin/env bash
+# tyzo-ai: cài và quản lý dịch vụ nhận dạng AI trên Modal (GPU tự tắt khi không có việc). Gõ «tyzo-ai» để mở menu.
+# Lệnh nhanh: tyzo-ai kiem-tra [video|link] [zh] [ky] | tyzo-ai cap-nhat | tyzo-ai nhat-ky | tyzo-ai dia-chi
+# VPS mới, dán một dòng (thay <nhánh> bằng nhánh có code, ví dụ main):
+#   bash <(curl -fsSL https://raw.githubusercontent.com/thanhnghiaplay-ai/TyZo_Sub_Project/<nhánh>/deploy/modal/tyzo-ai.sh)
+# Tệp này nằm trong kho nên tự mới theo mỗi lần «Cập nhật». Không đụng web, cầu nối hay lệnh «tyzo».
+set -uo pipefail
+
+REPO_URL="https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project.git"
+DIR="/opt/tyzo-ai"
+CODE="$DIR/code"
+VENV="$DIR/venv"
+CONF="$DIR/tyzo-ai.conf"
+APP_FILE="eval/asr/luong-ky/modal/modal_app.py"
+CAU_HINH="eval/asr/luong-ky/modal/cau-hinh.json"
+APP_NAME="tyzo-asr"
+SECRET_NAME="tyzo-asr"
+NHANH_MAC_DINH="${TYZO_AI_BRANCH:-ccr-562e47af-b438ur}"
+MODAL="$VENV/bin/modal"
+PY="$VENV/bin/python3"
+
+xanh() { printf '\033[32m%s\033[0m\n' "$*"; }
+do_() { printf '\033[31m%s\033[0m\n' "$*"; }
+vang() { printf '\033[33m%s\033[0m\n' "$*"; }
+tieu_de() { printf '\n\033[1;33m== %s ==\033[0m\n' "$*"; }
+cho_enter() { [ -t 0 ] && read -rp "Bấm Enter để quay lại menu..." _ || true; }
+hoi_co() { local a; read -rp "$1 (c/k): " a; [ "${a,,}" = "c" ]; }
+hoi_an() { local v; read -rsp "$1" v; echo >&2; printf '%s' "$v" | tr -d '[:space:]'; }
+
+can_root() { if [ "$(id -u)" != "0" ]; then do_ "Hãy chạy bằng root (gõ: sudo -i rồi gõ lại tyzo-ai)."; exit 1; fi; }
+
+# ---------- cấu hình trên VPS (/opt/tyzo-ai/tyzo-ai.conf, chỉ root đọc được) ----------
+conf_get() { [ -f "$CONF" ] && grep "^$1=" "$CONF" | tail -1 | cut -d= -f2- || true; }
+conf_set() {
+  local tmp; mkdir -p "$DIR"; touch "$CONF"; tmp="$(mktemp)"
+  grep -v "^$1=" "$CONF" > "$tmp" || true
+  printf '%s=%s\n' "$1" "$2" >> "$tmp"; cat "$tmp" > "$CONF"; rm -f "$tmp"; chmod 600 "$CONF"
+}
+nhanh() { local b; b="$(conf_get BRANCH)"; echo "${b:-$NHANH_MAC_DINH}"; }
+da_cai() { [ -x "$MODAL" ] && [ -d "$CODE/.git" ]; }
+
+# ---------- cài nền ----------
+cai_nen() {
+  tieu_de "Cài Python và tải code"
+  if ! command -v git >/dev/null || ! command -v python3 >/dev/null || ! python3 -c 'import venv, ensurepip' 2>/dev/null; then
+    apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3-venv python3-pip git curl openssl >/dev/null || { do_ "Cài gói hệ thống lỗi."; return 1; }
+  fi
+  mkdir -p "$DIR"
+  local b; b="$(nhanh)"
+  if [ -d "$CODE/.git" ]; then
+    git -C "$CODE" fetch -q origin "$b" && git -C "$CODE" checkout -q -B "$b" "origin/$b" && git -C "$CODE" reset -q --hard "origin/$b" || { do_ "Không tải được nhánh $b."; return 1; }
+  else
+    git clone -q -b "$b" "$REPO_URL" "$CODE" || { do_ "Không tải được code (nhánh $b). Kho riêng tư: khi hỏi Password hãy dán token GitHub."; return 1; }
+  fi
+  conf_set BRANCH "$b"
+  [ -x "$PY" ] || python3 -m venv "$VENV" || return 1
+  "$VENV/bin/pip" install -q -U pip modal || { do_ "Cài modal lỗi."; return 1; }
+  ln -sf "$CODE/deploy/modal/tyzo-ai.sh" /usr/local/bin/tyzo-ai && chmod +x "$CODE/deploy/modal/tyzo-ai.sh"
+  xanh "Xong. Từ giờ gõ: tyzo-ai"
+}
+
+da_dang_nhap() { "$MODAL" app list >/dev/null 2>&1; }
+
+dang_nhap_modal() {
+  tieu_de "Đăng nhập Modal"
+  if da_dang_nhap; then xanh "Đã đăng nhập Modal."; return 0; fi
+  echo " 1. Mở link (khuyên dùng): máy in một đường link, mở trên điện thoại đang đăng nhập modal.com rồi bấm Approve"
+  echo " 2. Dán Token ID và Token Secret (modal.com → Settings → API Tokens → New Token)"
+  local c; read -rp "Chọn [1]: " c
+  if [ "${c:-1}" = "2" ]; then
+    local id sec; read -rp "  Token ID (ak-...): " id; sec="$(hoi_an '  Token Secret (as-..., không hiện chữ): ')"
+    "$MODAL" token set --token-id "$id" --token-secret "$sec" >/dev/null || { do_ "Sai token."; return 1; }
+  else
+    "$MODAL" token new || return 1
+  fi
+  da_dang_nhap && xanh "Đăng nhập Modal xong." || { do_ "Chưa đăng nhập được Modal."; return 1; }
+}
+
+hoi_ali() {
+  tieu_de "Key Alibaba (dự phòng cho bước hợp nhất)"
+  echo "Dùng chính key và ID Workspace Alibaba đang lưu ở Admin web (Cấu hình → Dịch trực tiếp)."
+  echo "Bỏ trống key nếu không muốn dùng Alibaba (khi đó chỉ dùng model trên GPU Modal)."
+  local k w; k="$(hoi_an '  Key Alibaba (sk-..., không hiện chữ, Enter để bỏ qua): ')"
+  if [ -n "$k" ]; then
+    read -rp "  ID Workspace (ws-..., Enter nếu dùng Workspace mặc định): " w
+    conf_set ALI_API_KEY "$k"; conf_set ALI_WORKSPACE "$(printf '%s' "$w" | tr -d '[:space:]')"
+  else
+    conf_set ALI_API_KEY ""; conf_set ALI_WORKSPACE ""
+  fi
+}
+
+ma_moi() { conf_set TYZO_ASR_TOKEN "$(openssl rand -hex 32)"; xanh "Đã tạo chuỗi bảo vệ mới (lưu trong $CONF, xem bằng mục «Địa chỉ và chuỗi bảo vệ»)."; }
+
+luu_bi_mat() {
+  local args=("TYZO_ASR_TOKEN=$(conf_get TYZO_ASR_TOKEN)" "TYZO_FUSE=$(conf_get TYZO_FUSE)")
+  [ -n "$(conf_get ALI_API_KEY)" ] && args+=("ALI_API_KEY=$(conf_get ALI_API_KEY)")
+  [ -n "$(conf_get ALI_WORKSPACE)" ] && args+=("ALI_WORKSPACE=$(conf_get ALI_WORKSPACE)")
+  "$MODAL" secret create --force "$SECRET_NAME" "${args[@]}" >/dev/null || { do_ "Lưu key lên Modal lỗi."; return 1; }
+  xanh "Đã lưu key và cài đặt lên Modal."
+}
+
+trien_khai() {
+  tieu_de "Đưa dịch vụ lên Modal"
+  vang "Lần đầu mất 5–15 phút (Modal cài thư viện). Các lần sau vài giây."
+  local out
+  out="$(cd "$CODE" && TYZO_ASR_WARM="$(conf_get ASR_WARM)" TYZO_LLM_WARM="$(conf_get LLM_WARM)" "$MODAL" deploy "$APP_FILE" 2>&1 | tee /dev/stderr)" || true
+  local url; url="$(printf '%s\n' "$out" | grep -A2 'Asr.run' | grep -o 'https://[^ ]*\.modal\.run' | head -1)"
+  if [ -z "$url" ]; then do_ "Đưa lên Modal chưa xong. Đọc chữ đỏ ở trên, hoặc chụp gửi người hỗ trợ."; return 1; fi
+  conf_set URL "$url"
+  xanh "Dịch vụ đang ở: $url"
+  vang "Máy GPU chỉ bật khi có việc. Lần gọi đầu sau khi đưa lên phải chờ máy bật và tải model."
+}
+
+chon_hop_nhat() {
+  tieu_de "Cách hợp nhất (bước sửa chữ từ nhiều lần nghe)"
+  echo " 1. GPU (khuyên dùng): Qwen3.8-27B chạy trên GPU Modal riêng, không tốn tiền Alibaba."
+  echo "    Máy đó chưa bật xong hoặc lỗi thì tự dùng Alibaba (nếu đã nhập key)."
+  echo " 2. Alibaba: Qwen4-Max, chỉ gọi khi các lần nghe lệch nhau (tốn tiền Alibaba theo token)."
+  echo " 3. Không dùng model chữ: rẻ nhất, kém chính xác hơn."
+  local c; read -rp "Chọn [1]: " c
+  case "${c:-1}" in 2) conf_set TYZO_FUSE ali ;; 3) conf_set TYZO_FUSE khong ;; *) conf_set TYZO_FUSE gpu ;; esac
+  xanh "Đã chọn: $(conf_get TYZO_FUSE)"
+}
+
+cai_dat() {
+  can_root
+  tieu_de "CÀI DỊCH VỤ NHẬN DẠNG AI TRÊN MODAL"
+  echo "Cần: tài khoản modal.com (gói Starter tặng 30 USD mỗi tháng). Key Alibaba là tùy chọn."
+  cai_nen || return 1
+  dang_nhap_modal || return 1
+  [ -n "$(conf_get TYZO_ASR_TOKEN)" ] || ma_moi
+  [ -n "$(conf_get TYZO_FUSE)" ] || chon_hop_nhat
+  if [ -z "$(conf_get ALI_SET)" ]; then hoi_ali; conf_set ALI_SET 1; fi
+  luu_bi_mat && trien_khai || return 1
+  if hoi_co "Chạy thử ngay bằng video mẫu 38 giây?"; then kiem_tra; fi
+}
+
+kiem_tra() { # kiem_tra [video|link] [ngôn ngữ] [luồng]
+  [ -n "$(conf_get URL)" ] || { do_ "Chưa có địa chỉ dịch vụ. Chạy mục 1 trước."; return 1; }
+  local f="${1:-}" l="${2:-}" p="${3:-}"
+  if [ -z "$f" ] && [ -t 0 ]; then
+    read -rp "Video hoặc link tải trực tiếp (Enter = video mẫu tiếng Trung 38 giây): " f
+  fi
+  if [ -z "$f" ]; then f="$CODE/eval/asr/luong-ky/modal/mau/zh_thu_38s.mp4"; l="${l:-zh}"; fi
+  if [ -z "$l" ] && [ -t 0 ]; then read -rp "Ngôn ngữ (zh, ja, ko, en, yue, ru, cs) [zh]: " l; fi
+  if [ -z "$p" ] && [ -t 0 ]; then danh_sach_luong; read -rp "Luồng (Enter = mặc định): " p; fi
+  TYZO_ASR_URL="$(conf_get URL)" TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/goi_thu.py" "$f" "${l:-zh}" ${p:+"$p"}
+}
+
+danh_sach_luong() {
+  "$PY" - "$CODE/$CAU_HINH" <<'EOF'
+import json, sys
+c = json.load(open(sys.argv[1]))
+for k, v in c["luong"].items():
+    print(f"  {k:10s} {'(mặc định) ' if k == c['luong_mac_dinh'] else ''}{v.get('mo_ta', '')}")
+EOF
+}
+
+cap_nhat() {
+  can_root
+  tieu_de "Cập nhật bản mới"
+  local b cu moi; b="$(nhanh)"; cu="$(git -C "$CODE" rev-parse --short HEAD 2>/dev/null)"
+  git -C "$CODE" fetch -q origin "$b" || { do_ "Không tải được nhánh $b."; return 1; }
+  moi="$(git -C "$CODE" rev-parse --short "origin/$b")"
+  if [ "$cu" = "$moi" ]; then xanh "Code đã mới nhất ($cu)."; hoi_co "Vẫn đưa lại lên Modal?" || return 0
+  else
+    echo "Thay đổi mới:"; git -C "$CODE" log --oneline "HEAD..origin/$b" | head -20
+    git -C "$CODE" reset -q --hard "origin/$b"
+  fi
+  "$VENV/bin/pip" install -q -U modal >/dev/null 2>&1 || true
+  chmod +x "$CODE/deploy/modal/tyzo-ai.sh"
+  luu_bi_mat && trien_khai
+}
+
+dia_chi() {
+  tieu_de "Địa chỉ và chuỗi bảo vệ"
+  echo "Địa chỉ dịch vụ : $(conf_get URL)"
+  echo "Nhánh code      : $(nhanh)"
+  echo "Hợp nhất        : $(conf_get TYZO_FUSE)    Alibaba dự phòng: $([ -n "$(conf_get ALI_API_KEY)" ] && echo có || echo không)"
+  echo "Máy luôn bật    : nhận dạng $(conf_get ASR_WARM || true) · model chữ $(conf_get LLM_WARM || true)"
+  if hoi_co "Hiện chuỗi bảo vệ? (đừng chụp màn hình gửi ai)"; then echo "Chuỗi bảo vệ    : $(conf_get TYZO_ASR_TOKEN)"; fi
+}
+
+may_luon_bat() {
+  tieu_de "Giữ máy luôn bật (khách khỏi chờ máy khởi động)"
+  vang "Máy luôn bật tốn tiền cả lúc không có khách: nhận dạng L4 khoảng 0,8 USD/giờ, model chữ L40S khoảng 1,95 USD/giờ."
+  echo " 1. Tắt hết (mặc định, rẻ nhất)"
+  echo " 2. Giữ 1 máy nhận dạng"
+  echo " 3. Giữ 1 máy nhận dạng + 1 máy model chữ"
+  local c; read -rp "Chọn: " c
+  case "$c" in 2) conf_set ASR_WARM 1; conf_set LLM_WARM 0 ;; 3) conf_set ASR_WARM 1; conf_set LLM_WARM 1 ;; *) conf_set ASR_WARM 0; conf_set LLM_WARM 0 ;; esac
+  trien_khai
+}
+
+doi_nhanh() {
+  tieu_de "Đổi nhánh code"
+  echo "Đang dùng: $(nhanh). Bản chính thức thường là main."
+  local b; read -rp "Nhánh mới: " b; [ -n "$b" ] || return 0
+  git -C "$CODE" fetch -q origin "$b" || { do_ "Không có nhánh $b."; return 1; }
+  conf_set BRANCH "$b"; git -C "$CODE" checkout -q -B "$b" "origin/$b"; cap_nhat
+}
+
+tat_bat() {
+  tieu_de "Tạm tắt / bật lại"
+  echo " 1. Tạm tắt dịch vụ (không nhận việc, chắc chắn không tốn tiền GPU)"
+  echo " 2. Bật lại"
+  local c; read -rp "Chọn: " c
+  case "$c" in 1) "$MODAL" app stop "$APP_NAME" ;; 2) luu_bi_mat && trien_khai ;; esac
+}
+
+go_bo() {
+  can_root
+  tieu_de "Gỡ bỏ"
+  hoi_co "Xóa dịch vụ trên Modal và thư mục $DIR trên VPS?" || return 0
+  "$MODAL" app stop "$APP_NAME" || true
+  hoi_co "Xóa luôn model đã tải trên Modal (lần cài sau phải tải lại)?" && { "$MODAL" volume delete tyzo-asr-cache; "$MODAL" volume delete tyzo-llm-cache; } || true
+  "$MODAL" secret delete "$SECRET_NAME" || true
+  rm -f /usr/local/bin/tyzo-ai; rm -rf "$DIR"
+  xanh "Đã gỡ."
+  exit 0
+}
+
+menu() {
+  while true; do
+    tieu_de "TYZO AI (Modal) · nhánh $(nhanh) · hợp nhất: $(conf_get TYZO_FUSE)"
+    echo " 1. Cài đặt / cài lại"
+    echo " 2. Kiểm tra (chạy thử một video, in thời gian chờ và tiền)"
+    echo " 3. Cập nhật bản mới"
+    echo " 4. Xem các luồng nhận dạng"
+    echo " 5. Đổi cách hợp nhất (GPU / Alibaba / không)"
+    echo " 6. Đổi key Alibaba"
+    echo " 7. Đổi chuỗi bảo vệ (khi bị lộ)"
+    echo " 8. Giữ máy luôn bật (giờ cao điểm)"
+    echo " 9. Nhật ký trên Modal (Ctrl+C để thoát)"
+    echo "10. Địa chỉ và chuỗi bảo vệ"
+    echo "11. Tạm tắt / bật lại"
+    echo "12. Đổi nhánh code"
+    echo "13. Gỡ bỏ"
+    echo " 0. Thoát"
+    local c; read -rp "Chọn: " c
+    case "$c" in
+      1) cai_dat ;;
+      2) kiem_tra ;;
+      3) cap_nhat ;;
+      4) danh_sach_luong; vang "Thêm hay sửa luồng: sửa $CAU_HINH trong kho rồi chọn 3. Cập nhật." ;;
+      5) chon_hop_nhat; luu_bi_mat && trien_khai ;;
+      6) hoi_ali; luu_bi_mat && trien_khai ;;
+      7) ma_moi; luu_bi_mat && trien_khai ;;
+      8) may_luon_bat ;;
+      9) "$MODAL" app logs "$APP_NAME" ;;
+      10) dia_chi ;;
+      11) tat_bat ;;
+      12) doi_nhanh ;;
+      13) go_bo ;;
+      0|q) exit 0 ;;
+      *) vang "Chọn số trong menu." ;;
+    esac
+    cho_enter
+  done
+}
+
+# Chạy từ dòng curl khi chưa cài: cài xong thì mở bản đã cài (bản này tự mới theo «Cập nhật»).
+if ! da_cai; then
+  can_root
+  cai_dat
+  da_cai && exec /usr/local/bin/tyzo-ai
+  exit 1
+fi
+
+case "${1:-}" in
+  kiem-tra) shift; kiem_tra "$@" ;;
+  cap-nhat) cap_nhat ;;
+  nhat-ky) "$MODAL" app logs "$APP_NAME" ;;
+  dia-chi) dia_chi ;;
+  cai-dat) cai_dat ;;
+  *) menu ;;
+esac
