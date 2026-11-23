@@ -47,6 +47,8 @@ export type LiveBridgeDeps = {
   drainMs?: number;
   /** Qwen 3.5: thời gian im lặng (ms) để chốt câu. Bỏ trống thì dùng LIVE_SILENCE_MS. */
   silenceMs?: number;
+  /** Qwen 3.5: độ nhạy nhận tiếng (0,1–0,9). Bỏ trống thì 0,2 như cũ. Đặt bằng LIVE_VAD_THRESHOLD. */
+  vadThreshold?: number;
   log?: (message: string) => void;
 };
 
@@ -167,7 +169,7 @@ export async function runSession(client: WebSocket, token: string, deps: LiveBri
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
-    buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}), ...(deps.silenceMs ? { silenceMs: deps.silenceMs } : {}) }),
+    buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}), ...(deps.silenceMs ? { silenceMs: deps.silenceMs } : {}), ...(deps.vadThreshold ? { vadThreshold: deps.vadThreshold } : {}) }),
   );
 
   function stop(reason: string) {

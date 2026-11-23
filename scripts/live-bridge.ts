@@ -10,7 +10,7 @@ import { asrPerSecond } from "../src/lib/run-bill.ts";
 import { loadPriceBook } from "../src/lib/run-board.server.ts";
 import { tokensForBase, TURBO_ASR } from "../src/lib/token-math.ts";
 import { loadLiveUpstream } from "../src/lib/live/live-upstream.ts";
-import { cleanSilenceMs } from "../src/lib/live/qwen-protocol.ts";
+import { cleanSilenceMs, cleanVadThreshold } from "../src/lib/live/qwen-protocol.ts";
 
 const secret = (process.env.LIVE_BRIDGE_SECRET ?? "").trim();
 if (secret.length < 24) {
@@ -67,6 +67,8 @@ attachLiveBridge(server, {
   toGiay: (base) => (turboPerSecond > 0 ? tokensForBase(base, turboPerSecond) : null),
   // Qwen 3.5: chỉnh thời gian chờ im lặng bằng biến LIVE_SILENCE_MS (200–6000), không cần sửa mã.
   silenceMs: cleanSilenceMs(process.env.LIVE_SILENCE_MS),
+  // Qwen 3.5: độ nhạy nhận tiếng, LIVE_VAD_THRESHOLD (0,1–0,9, mặc định 0,2). Cao hơn thì nhạc nền ít làm câu dài.
+  vadThreshold: cleanVadThreshold(process.env.LIVE_VAD_THRESHOLD),
   log: (message) => console.log(new Date().toISOString(), message),
 });
 

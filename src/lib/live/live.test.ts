@@ -445,3 +445,20 @@ describe("tiếng nén μ-law (ứng dụng 0.7)", () => {
     client.terminate();
   });
 });
+
+describe("độ nhạy nhận tiếng Qwen 3.5", () => {
+  it("mặc định 0,2 như cũ; LIVE_VAD_THRESHOLD trong 0,1–0,9; 3.8 không có tham số này", async () => {
+    const { cleanVadThreshold } = await import("./qwen-protocol.ts");
+    assert.equal(cleanVadThreshold(undefined), 0.2);
+    assert.equal(cleanVadThreshold("0.5"), 0.5);
+    assert.equal(cleanVadThreshold("0,5"), 0.5);
+    assert.equal(cleanVadThreshold("2"), 0.9);
+    assert.equal(cleanVadThreshold("abc"), 0.2);
+    const s35 = buildSessionUpdate({ model: LIVE_MODEL_35, target: "vi", audio: false, vadThreshold: 0.5 }) as { session: { turn_detection: { threshold: number } } };
+    assert.equal(s35.session.turn_detection.threshold, 0.5);
+    const def = buildSessionUpdate({ model: LIVE_MODEL_35, target: "vi", audio: false }) as { session: { turn_detection: { threshold: number } } };
+    assert.equal(def.session.turn_detection.threshold, 0.2);
+    const s38 = buildSessionUpdate({ model: LIVE_MODEL_38, target: "vi", audio: false, vadThreshold: 0.5 }) as { session: Record<string, unknown> };
+    assert.equal(s38.session.turn_detection, undefined);
+  });
+});

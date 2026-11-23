@@ -330,7 +330,7 @@ class LiveService : Service() {
         }
         retries += 1
         LiveState.status = "Mất kết nối ($why), đang nối lại $retries/$MAX_RETRIES…"
-        overlay?.update(transcript.latest(prefs.captionLines), LiveState.status)
+        paint()
         main.postDelayed({
             if (!finished.get() && LiveState.phase != LiveState.Phase.STOPPING) Thread({ openSession(first = false) }, "noi-lai").start()
         }, 1_000L * retries)
@@ -405,8 +405,37 @@ class LiveService : Service() {
         redrawPending = true
         main.postDelayed({
             redrawPending = false
-            if (!finished.get()) overlay?.update(transcript.latest(prefs.captionLines), statusLine())
+            if (!finished.get()) paint()
         }, REDRAW_MS)
+    }
+
+    private var lastShownKey = ""
+    private var shownChangedAt = 0L
+
+    /**
+     * Vẽ khung phụ đề theo CaptionLayout: câu đã xong đứng yên, câu đang nói mờ.
+     * Không có câu đang nói mà câu xong đã đứng HIDE_MS thì ẩn, như phụ đề phim.
+     */
+    private fun paint() {
+        val o = overlay ?: return
+        val pieces = transcript.pieces(6)
+        if (pieces.isEmpty()) return o.setStatus(statusLine())
+        val lines = prefs.captionLines.coerceIn(1, 4)
+        var shown = CaptionLayout.build(pieces, lines, Caption.maxChars(prefs.captionSize), prefs.finalOnly)
+        // Có câu đang nói thì nhường một dòng cho nó: tổng số dòng đúng như khách chọn.
+        if (shown.live.isNotEmpty() && shown.done.size >= lines) shown = shown.copy(done = shown.done.takeLast(lines - 1))
+        val now = System.currentTimeMillis()
+        val key = shown.done.lastOrNull().orEmpty() + "|" + shown.live
+        if (key != lastShownKey) {
+            lastShownKey = key
+            shownChangedAt = now
+        }
+        if (shown.live.isEmpty() && !shown.isEmpty) {
+            val left = CaptionLayout.HIDE_MS - (now - shownChangedAt)
+            if (left <= 0) shown = CaptionLayout.Shown(emptyList(), "")
+            else main.postDelayed({ if (!finished.get()) paint() }, left + 50)
+        }
+        o.update(shown, transcript.latestSource(), statusLine())
     }
 
     private fun statusLine(): String = if (LiveState.paused) "Đã tạm dừng. Bấm ▶ để dịch tiếp." else LiveState.status
@@ -422,7 +451,7 @@ class LiveService : Service() {
             // Quên tiếp tục quá lâu thì tự kết thúc, nhả Token giữ thừa.
             main.postDelayed({ if (LiveState.paused && pausedAtMs == at) requestStop() }, PAUSE_LIMIT_MS)
         }
-        overlay?.update(transcript.latest(prefs.captionLines), statusLine())
+        paint()
     }
 
     private fun closeText(code: Int, reason: String): String = when {
@@ -438,7 +467,7 @@ class LiveService : Service() {
         if (LiveState.phase == LiveState.Phase.STOPPING) return
         LiveState.phase = LiveState.Phase.STOPPING
         LiveState.status = "Đang kết thúc…"
-        overlay?.update(transcript.latest(prefs.captionLines), LiveState.status)
+        paint()
         stopReading()
         val ws = socket
         if (ws != null && socketOpen.get()) {

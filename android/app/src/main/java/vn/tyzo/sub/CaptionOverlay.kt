@@ -44,24 +44,30 @@ class CaptionOverlay(
             orientation = LinearLayout.VERTICAL
             setPadding(ui.dp(14), ui.dp(10), ui.dp(14), ui.dp(8))
             // Nền đậm như web (solid) hoặc nền mờ để thấy video phía sau.
-            // Nền nhạt để vẫn thấy video phía sau (Chủ góp ý 22/11/2026: nền quá đậm); «Nền đậm» vẫn đậm hơn.
-            background = ui.round(if (prefs.solid) Color.argb(200, 14, 20, 27) else Color.argb(95, 0, 0, 0), 16f)
+            // Mặc định không nền, chữ viền đen như phụ đề phim (Chủ: nền quá đậm); «Nền đậm» thì có nền.
+            background = if (prefs.solid) ui.round(Color.argb(200, 14, 20, 27), 16f) else null
         }
         body = TextView(context).apply {
             setTextColor(Color.WHITE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, Caption.sp(prefs.captionSize))
             typeface = Theme.semibold(context)
-            setShadowLayer(4f, 0f, 1f, Color.BLACK)
+            // Viền đen quanh chữ để đọc được trên mọi cảnh phim khi không có nền.
+            setShadowLayer(if (prefs.solid) 4f else 7f, 0f, 0f, Color.BLACK)
             // Chữ bám đáy, khung giữ tối thiểu 2 dòng: thêm chữ không làm khung co giãn, mắt đọc một chỗ.
             gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-            minLines = if (prefs.showSource) 3 else 2
+            minLines = prefs.captionLines.coerceIn(1, 4) + if (prefs.showSource) 1 else 0
             setLineSpacing(0f, 1.15f)
             text = "Đang mở phiên dịch…"
         }
         val bar = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, ui.dp(6), 0, 0)
+            // Không nền thì riêng thanh nút có nền mờ nhỏ để chữ trạng thái và nút vẫn đọc được.
+            if (prefs.solid) setPadding(0, ui.dp(6), 0, 0)
+            else {
+                background = ui.round(Color.argb(110, 0, 0, 0), 999f)
+                setPadding(ui.dp(10), ui.dp(4), ui.dp(4), ui.dp(4))
+            }
         }
         val logo = View(context).apply { background = context.getDrawable(R.drawable.ic_logo) }
         statusView = TextView(context).apply {
@@ -93,7 +99,7 @@ class CaptionOverlay(
         bar.addView(pauseView, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginEnd = ui.dp(8) })
         bar.addView(stop)
         box.addView(body)
-        box.addView(bar)
+        box.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = ui.dp(4) })
 
         val screen = context.resources.displayMetrics.heightPixels
         params = WindowManager.LayoutParams(
@@ -133,37 +139,38 @@ class CaptionOverlay(
         return runCatching { wm.addView(box, params) }.onSuccess { root = box }.isSuccess
     }
 
-    fun update(lines: List<Transcript.Line>, status: String) {
+    /**
+     * Vẽ hai vùng như phụ đề phim: câu đã xong (trắng, đứng yên) và câu đang nói (mờ hơn, chỉ vùng này đổi).
+     * Rỗng (đã ẩn sau HIDE_MS) thì khung chỉ còn thanh trạng thái.
+     */
+    fun update(shown: CaptionLayout.Shown, source: String, status: String) {
         if (root == null) return
         statusView.text = status
-        if (lines.isEmpty()) return
         val out = SpannableStringBuilder()
-        val faint = Color.argb(150, 255, 255, 255)
-        val max = Caption.maxChars(prefs.captionSize)
-        lines.forEachIndexed { i, line ->
-            if (i > 0) out.append('\n')
-            val start = out.length
-            // Chỉ phần cuối của dòng dài: phần chốt bớt đầu trước, chữ tạm (mờ) giữ ở cuối.
-            val stash = Caption.tail(line.translationStash, max)
-            val room = (max - stash.length - 1).coerceAtLeast(0)
-            val done = if (room < 20) "" else Caption.tail(line.translation, room)
-            out.append(done)
-            if (stash.isNotEmpty()) {
-                if (out.length > start) out.append(' ')
-                val s = out.length
-                out.append(stash)
-                out.setSpan(ForegroundColorSpan(faint), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            }
-            if (out.length == start) out.append("…")
-            if (prefs.showSource && line.shownSource.isNotEmpty()) {
-                out.append('\n')
-                val s = out.length
-                out.append(Caption.tail(line.shownSource, max))
-                out.setSpan(ForegroundColorSpan(Color.argb(200, 232, 238, 243)), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                out.setSpan(RelativeSizeSpan(0.7f), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            }
+        shown.done.forEach {
+            if (out.isNotEmpty()) out.append('\n')
+            out.append(it)
+        }
+        if (shown.live.isNotEmpty()) {
+            if (out.isNotEmpty()) out.append('\n')
+            val s = out.length
+            out.append(shown.live)
+            out.setSpan(ForegroundColorSpan(Color.argb(190, 255, 255, 255)), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        if (prefs.showSource && source.isNotEmpty() && !shown.isEmpty) {
+            out.append('\n')
+            val s = out.length
+            out.append(Caption.tail(source, Caption.maxChars(prefs.captionSize) * 2))
+            out.setSpan(ForegroundColorSpan(Color.argb(210, 232, 238, 243)), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            out.setSpan(RelativeSizeSpan(0.7f), s, out.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         body.text = out
+    }
+
+    /** Chỉ đổi dòng trạng thái, giữ chữ trong khung (vd. «Đang nghe… mở video có tiếng.» lúc chưa có phụ đề). */
+    fun setStatus(status: String) {
+        if (root == null) return
+        statusView.text = status
     }
 
     /** Đổi chữ nút: đang tạm dừng thì «▶ Tiếp tục». */

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.42.6";
+export const APP_VERSION = "5.42.7";
 
 export type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ export type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.42.7",
+    time: "08:44 23/11/2026",
+    title: "Ứng dụng Android 0.8: phụ đề nổi hiện như phụ đề phim, dễ đọc khi thoại liên tục.",
+    points: [
+      "Tách theo câu: câu đã xong đứng yên, câu đang nói mờ hơn, câu cũ tự ẩn sau vài giây.",
+      "Mặc định chữ viền đen không nền; vẫn bật được Nền đậm.",
+      "Thêm lựa chọn Chỉ hiện câu đã xong để đọc êm hơn.",
+      "Qwen 3.5 chốt câu đúng lúc hơn trên phim có nhạc nền.",
+    ],
+  },
   {
     version: "5.42.6",
     time: "07:08 23/11/2026",

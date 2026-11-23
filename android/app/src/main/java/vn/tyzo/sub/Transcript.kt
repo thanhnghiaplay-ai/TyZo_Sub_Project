@@ -72,6 +72,13 @@ class Transcript {
     fun latest(n: Int): List<Line> =
         lines.values.filter { it.shownTranslation.isNotEmpty() || it.shownSource.isNotEmpty() }.takeLast(n)
 
+    /** n mục gần nhất cho khung phụ đề (CaptionLayout tự tách câu). */
+    fun pieces(n: Int): List<CaptionLayout.Piece> =
+        latest(n).map { CaptionLayout.Piece(it.translation, it.translationStash, it.final) }
+
+    /** Chữ gốc của mục mới nhất (khi bật «Hiện cả chữ gốc»). */
+    fun latestSource(): String = latest(1).firstOrNull()?.shownSource.orEmpty()
+
     fun cues(): List<Cue> {
         val list = lines.values.filter { it.source.isNotBlank() || it.translation.isNotBlank() }
         return list.mapIndexed { i, line ->

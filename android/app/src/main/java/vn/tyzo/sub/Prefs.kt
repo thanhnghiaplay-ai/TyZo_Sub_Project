@@ -41,8 +41,13 @@ class Prefs(context: Context) {
         set(v) = p.edit().putBoolean("show_source", v).apply()
     /** Nền đậm (dễ đọc trên video sáng), web mặc định bật. */
     var solid: Boolean
-        get() = p.getBoolean("caption_solid", true)
-        set(v) = p.edit().putBoolean("caption_solid", v).apply()
+        // Từ 0.8 mặc định không nền, chữ viền đen như phụ đề phim (Chủ: nền quá đậm). Khóa mới để mọi máy nhận mặc định mới.
+        get() = p.getBoolean("caption_solid_v8", false)
+        set(v) = p.edit().putBoolean("caption_solid_v8", v).apply()
+    /** Chỉ hiện câu đã xong: không có chữ đang nhảy, đọc êm hơn, chậm hơn chút. */
+    var finalOnly: Boolean
+        get() = p.getBoolean("caption_final_only", false)
+        set(v) = p.edit().putBoolean("caption_final_only", v).apply()
     /** Ô «Từ cần giữ đúng»: mỗi dòng «gốc = cách dịch». */
     var words: String
         get() = str("words", "")
@@ -86,10 +91,10 @@ object Caption {
      * chữ cứ dồn thành một khối che cả video; chỉ giữ phần cuối. Chữ lớn thì giữ ít hơn.
      */
     fun maxChars(size: String) = when (size) {
-        "s" -> 140
-        "l" -> 80
-        "xl" -> 60
-        else -> 110
+        "s" -> 52
+        "l" -> 34
+        "xl" -> 28
+        else -> 42
     }
 
     /**

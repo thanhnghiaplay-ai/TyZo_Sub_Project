@@ -194,7 +194,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Mở ứng dụng, gõ địa chỉ web (ví dụ tên trang bạn đang mở) và mã vừa lấy, bấm «Liên kết». Trên web, mục này hiện tên máy vừa liên kết." },
         { text: "Lần đầu bấm «Cho phép hiện trên ứng dụng khác» trong ứng dụng, bật quyền cho TyZo Sub rồi quay lại." },
         { text: "Chọn ngôn ngữ dịch, tiếng trong video (để «Tự nhận diện» nếu chưa rõ) và model. Tên nhân vật hay bị dịch lệch thì ghi vào «Từ cần giữ đúng», mỗi dòng «gốc = cách dịch», như trên web." },
-        { text: "«Tùy chỉnh chữ» trong ứng dụng giống web: cỡ chữ, số dòng, hiện cả chữ gốc, nền đậm. Áp dụng từ lần bấm Bắt đầu sau." },
+        { text: "Phụ đề nổi hiện như phụ đề phim: câu đã xong đứng yên, câu đang nói mờ hơn, câu cũ tự ẩn sau vài giây. «Tùy chỉnh chữ»: cỡ chữ, số dòng, hiện cả chữ gốc, nền đậm, «Chỉ hiện câu đã xong» (đọc êm hơn, chậm hơn chút). Áp dụng từ lần bấm Bắt đầu sau." },
         { text: `Bấm «${UI.begin}». Android hỏi chia sẻ: chọn «Toàn bộ màn hình» nếu có. Ứng dụng chỉ lấy tiếng, không quay hình. Cho phép ghi âm nếu được hỏi.` },
         { text: "Ứng dụng tự lùi về ứng dụng đang xem phim (nên mở phim trước rồi mới bấm Bắt đầu). Bấm phát, khung phụ đề hiện trên video: kéo lên xuống để đổi chỗ, «⏸ Tạm dừng» / «▶ Tiếp tục» ngay trên khung, «■ Dừng» khi xem xong." },
         { text: "Ứng dụng chỉ trừ Token dịch khi điện thoại đang phát tiếng. Im lặng quá 2 giây hoặc bấm «⏸ Tạm dừng» trên khung thì không trừ. Bấm «■ Dừng» khi xem xong, phần giữ thừa được trả lại." },

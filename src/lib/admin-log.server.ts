@@ -8,6 +8,12 @@ export type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.42.7",
+    time: "08:44 23/11/2026",
+    area: "ha-tang",
+    text: "Chủ: «làm đợt A và B» (đề xuất 23/11/2026: phụ đề nổi dễ đọc, ngắt câu). Đợt A, ứng dụng 0.8 (versionCode 8): CaptionLayout.kt thuần (tách câu theo . ? ! … 。？！, câu dài chia ở dấu phẩy rồi khoảng trắng, tối đa Caption.maxChars 52/42/34/28 theo cỡ chữ; hai vùng done đứng yên và live mờ; mục cũ coi như xong; finalOnly). LiveService.paint(): số dòng đúng captionLines (có câu đang nói thì nhường một dòng), câu xong đứng một mình quá 4 giây thì ẩn. CaptionOverlay: không nền mặc định (khóa caption_solid_v8, mặc định false), chữ viền bóng đen 7f, thanh nút có nền mờ riêng, minLines theo số dòng. Prefs.finalOnly + công tắc «Chỉ hiện câu đã xong». 11 phép thử CaptionLayout chạy bằng Kotlin JVM trên máy Claude (bài hát một mục dài, hai mục, đã chốt hết, câu đang nói dài, chữ Trung không khoảng trắng). Đợt B: qwen-protocol vadThreshold + cleanVadThreshold (0,1–0,9, mặc định 0,2 như cũ), cầu nối đọc LIVE_VAD_THRESHOLD, tyzo mục 5 hỏi cả chờ im lặng và độ nhạy (gợi ý 0.5 cho phim có nhạc). Không đổi điều khoản.",
+  },
+  {
     version: "5.42.6",
     time: "07:08 23/11/2026",
     area: "ha-tang",

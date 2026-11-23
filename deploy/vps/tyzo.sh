@@ -92,7 +92,7 @@ kiem_tra_cau_noi() {
     if [ -n "$(doc_bien "$k")" ]; then xanh "✔ Có $k trong cấu hình"; else do_ "✘ Thiếu $k trong $ENV_FILE"; loi=1; fi
   done
   local s; s="$(doc_bien LIVE_SILENCE_MS)"
-  echo "   Thời gian chờ im lặng Qwen 3.5: ${s:-500 (mặc định)} ms"
+  echo "   Thời gian chờ im lặng Qwen 3.5: ${s:-500 (mặc định)} ms · độ nhạy nhận tiếng: $(doc_bien LIVE_VAD_THRESHOLD | grep . || echo "0.2 (mặc định)")"
   if [ -d "$DIR/.git" ]; then
     echo "   Bản mã: $(git -C "$DIR" log -1 --format='%h %cd' --date=format:'%d/%m/%Y %H:%M')"
   fi
@@ -164,16 +164,26 @@ sua_cau_hinh() {
 }
 
 doi_im_lang() {
-  tieu_de "Thời gian chờ im lặng (Qwen 3.5)"
-  local cu; cu="$(doc_bien LIVE_SILENCE_MS)"
-  echo "Hiện tại: ${cu:-500 (mặc định)} ms. Nhỏ = chữ ra nhanh hơn nhưng câu dễ vụn. Cho phép 200–6000."
-  echo "Gợi ý: 300 (nhanh), 500 (vừa), 800 (câu trọn hơn)."
-  read -rp "Nhập số mới (bỏ trống để giữ nguyên): " v
-  [ -z "$v" ] && return 0
-  if ! [[ "$v" =~ ^[0-9]+$ ]] || [ "$v" -lt 200 ] || [ "$v" -gt 6000 ]; then do_ "Số không hợp lệ."; return 1; fi
-  dat_bien LIVE_SILENCE_MS "$v"
-  xanh "Đã đặt $v ms."
-  khoi_dong_lai
+  tieu_de "Ngắt câu (Qwen 3.5): thời gian chờ im lặng và độ nhạy nhận tiếng"
+  local cu doi=0; cu="$(doc_bien LIVE_SILENCE_MS)"
+  echo "1) Chờ im lặng: hiện ${cu:-500 (mặc định)} ms. Nhỏ = chữ ra nhanh hơn nhưng câu dễ vụn. Cho phép 200–6000."
+  echo "   Gợi ý: 300 (nhanh), 500 (vừa), 800 (câu trọn hơn)."
+  read -rp "   Nhập số mới (bỏ trống để giữ nguyên): " v
+  if [ -n "$v" ]; then
+    if ! [[ "$v" =~ ^[0-9]+$ ]] || [ "$v" -lt 200 ] || [ "$v" -gt 6000 ]; then do_ "Số không hợp lệ."; return 1; fi
+    dat_bien LIVE_SILENCE_MS "$v"; xanh "   Đã đặt $v ms."; doi=1
+  fi
+  cu="$(doc_bien LIVE_VAD_THRESHOLD)"
+  echo "2) Độ nhạy nhận tiếng: hiện ${cu:-0.2 (mặc định)}. Thấp = nhạy, nhạc nền cũng bị coi là đang nói nên câu dài,"
+  echo "   khó chốt. Cao = chỉ giọng rõ mới tính, câu chốt đúng lúc hơn, có thể sót giọng rất nhỏ. Cho phép 0.1–0.9."
+  echo "   Gợi ý: 0.5 cho phim, video có nhạc nền; 0.2 cho giọng nói nhỏ, ít nhạc."
+  read -rp "   Nhập số mới (vd. 0.5, bỏ trống để giữ nguyên): " v
+  if [ -n "$v" ]; then
+    v="${v/,/.}"
+    if ! [[ "$v" =~ ^0\.[1-9]$ ]]; then do_ "Số không hợp lệ (0.1–0.9)."; return 1; fi
+    dat_bien LIVE_VAD_THRESHOLD "$v"; xanh "   Đã đặt $v."; doi=1
+  fi
+  [ "$doi" = 1 ] && khoi_dong_lai || echo "Không đổi gì."
 }
 
 doi_bi_mat() {
@@ -1305,7 +1315,7 @@ menu() {
     echo " 2. Cập nhật bản mới (lỗi thì tự quay về bản cũ)"
     echo " 3. Xem nhật ký"
     echo " 4. Sửa cấu hình"
-    echo " 5. Đổi thời gian chờ im lặng (Qwen 3.5)"
+    echo " 5. Ngắt câu Qwen 3.5 (chờ im lặng, độ nhạy nhận tiếng)"
     echo " 6. Khởi động lại"
     echo " 7. Dọn dung lượng"
     echo " 8. Bật/tắt tự cập nhật mỗi đêm"

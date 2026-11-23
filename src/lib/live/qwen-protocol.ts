@@ -29,10 +29,26 @@ export type SessionOptions = {
    * Ngắn hơn thì chữ dịch ra sớm hơn nhưng câu dễ bị cắt vụn. Qwen 3.8 không có tham số này.
    */
   silenceMs?: number;
+  /**
+   * Chỉ Qwen 3.5: độ nhạy nhận tiếng của server_vad (0,1–0,9). Thấp = nhạy, nhạc nền cũng bị coi là đang nói nên câu
+   * khó được chốt; cao = chỉ giọng rõ mới tính, câu chốt đúng lúc hơn nhưng có thể bỏ sót giọng rất nhỏ.
+   */
+  vadThreshold?: number;
 };
 
 /** Thời gian chờ im lặng mặc định của phòng cho Qwen 3.5 (Alibaba mặc định 1000 ms). */
 export const LIVE_SILENCE_MS = 500;
+
+/** Ngưỡng nhận tiếng mặc định của phòng cho Qwen 3.5 (giữ như cũ; Admin đổi bằng LIVE_VAD_THRESHOLD). */
+export const LIVE_VAD_THRESHOLD = 0.2;
+
+/** Giữ trong khoảng 0,1–0,9. Không phải số thì dùng mặc định của phòng. */
+export function cleanVadThreshold(raw: unknown): number {
+  if (raw == null || String(raw).trim() === "") return LIVE_VAD_THRESHOLD;
+  const n = Number(String(raw).replace(",", "."));
+  if (!Number.isFinite(n) || n <= 0) return LIVE_VAD_THRESHOLD;
+  return Math.round(Math.min(0.9, Math.max(0.1, n)) * 100) / 100;
+}
 
 /** Giữ trong khoảng Alibaba nhận (200–6000 ms). Không phải số thì dùng mặc định của phòng. */
 export function cleanSilenceMs(raw: unknown): number {
@@ -63,7 +79,7 @@ export function buildSessionUpdate(options: SessionOptions): Record<string, unkn
     input_audio_transcription: options.source
       ? { model: "qwen3-asr-flash-realtime", language: options.source }
       : { model: "qwen3-asr-flash-realtime" },
-    turn_detection: { type: "server_vad", threshold: 0.2, silence_duration_ms: cleanSilenceMs(options.silenceMs) },
+    turn_detection: { type: "server_vad", threshold: cleanVadThreshold(options.vadThreshold), silence_duration_ms: cleanSilenceMs(options.silenceMs) },
   };
   if (options.voice) session.voice = options.voice;
   return { type: "session.update", session };

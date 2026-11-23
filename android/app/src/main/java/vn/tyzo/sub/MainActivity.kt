@@ -286,6 +286,7 @@ class MainActivity : Activity() {
         cap.addView(ui.segmented(listOf("1", "2", "3", "4"), prefs.captionLines - 1) { prefs.captionLines = it + 1 }, ui.full(6))
         cap.addView(ui.toggle("Hiện cả chữ gốc", prefs.showSource) { prefs.showSource = it }, ui.full(8))
         cap.addView(ui.toggle("Nền đậm (dễ đọc trên video sáng)", prefs.solid) { prefs.solid = it }, ui.full(2))
+        cap.addView(ui.toggle("Chỉ hiện câu đã xong (đọc êm, chậm hơn khoảng 1 giây)", prefs.finalOnly) { prefs.finalOnly = it }, ui.full(2))
         cap.addView(ui.muted("Áp dụng từ lần Bắt đầu sau.", 12f), ui.full(4))
 
         // Phiên gần nhất.
