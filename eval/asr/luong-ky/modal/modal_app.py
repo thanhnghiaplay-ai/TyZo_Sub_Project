@@ -6,8 +6,8 @@ Triển khai (trên VPS hoặc máy của Chủ, KHÔNG dán token vào chat):
     (ALI_WORKSPACE = ID Workspace Alibaba như ở Admin; hoặc ALI_BASE = địa chỉ đầy đủ)
     modal deploy eval/asr/luong-ky/modal/modal_app.py
 
-Gọi: POST <địa chỉ Modal in ra>  header "Authorization: Bearer <TYZO_ASR_TOKEN>"
-     body JSON {"audio_b64": "...", "ext": "mp4", "lang": "zh", "profile": "ky" | "can-bang"}
+Gọi: POST <địa chỉ Modal in ra>
+     body JSON {"token": "<TYZO_ASR_TOKEN>", "audio_b64": "...", "ext": "mp4", "lang": "zh", "profile": "ky" | "can-bang"}
      trả {"srt": "...", "segs": [...], "stats": {...}}. Xem goi_thu.py.
 """
 import os
@@ -48,17 +48,16 @@ class Asr:
         cache.commit()
 
     @modal.fastapi_endpoint(method="POST")
-    async def run(self, request: "fastapi.Request"):  # noqa: F821
-        import asyncio, base64, hmac, tempfile
+    def run(self, item: dict):
+        """Nhận JSON {"token", "audio_b64", "ext", "lang", "profile"}; việc quá 150 s thì Modal trả 303 để hỏi lại kết quả."""
+        import base64, hmac, tempfile
         from fastapi import HTTPException
-        want = "Bearer " + os.environ["TYZO_ASR_TOKEN"]
-        if not hmac.compare_digest(request.headers.get("authorization", ""), want):
+        if not hmac.compare_digest(str(item.get("token", "")), os.environ["TYZO_ASR_TOKEN"]):
             raise HTTPException(401, "sai mã")
-        body = await request.json()
-        lang = body.get("lang")
+        lang = item.get("lang")
         if lang not in ("zh", "ja", "ko", "en", "yue", "ru", "cs", "vi"):
             raise HTTPException(400, "ngôn ngữ không hỗ trợ")
-        with tempfile.NamedTemporaryFile(suffix="." + body.get("ext", "wav")) as f:
-            f.write(base64.b64decode(body["audio_b64"])); f.flush()
-            r = await asyncio.to_thread(self.backend.process, f.name, lang, body.get("profile", "ky"))
+        with tempfile.NamedTemporaryFile(suffix="." + str(item.get("ext", "wav"))) as f:
+            f.write(base64.b64decode(item["audio_b64"])); f.flush()
+            r = self.backend.process(f.name, lang, item.get("profile", "ky"))
         return {"srt": self.backend.to_srt(r["segs"]), **r}

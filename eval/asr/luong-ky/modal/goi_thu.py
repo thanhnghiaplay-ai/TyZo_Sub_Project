@@ -12,10 +12,9 @@ if path.startswith("http://") or path.startswith("https://"):   # dán link tả
     print("Đang tải video về VPS…")
     urllib.request.urlretrieve(path, local); path = local
 profile = sys.argv[3] if len(sys.argv) > 3 else "ky"
-body = json.dumps({"audio_b64": base64.b64encode(open(path, "rb").read()).decode(), "ext": path.rsplit(".", 1)[-1],
+body = json.dumps({"token": os.environ["TYZO_ASR_TOKEN"], "audio_b64": base64.b64encode(open(path, "rb").read()).decode(), "ext": path.rsplit(".", 1)[-1],
                    "lang": lang, "profile": profile}).encode()
-req = urllib.request.Request(os.environ["TYZO_ASR_URL"], body, {"Content-Type": "application/json",
-                             "Authorization": "Bearer " + os.environ["TYZO_ASR_TOKEN"], "User-Agent": "tyzo-asr-client/1.0"})
+req = urllib.request.Request(os.environ["TYZO_ASR_URL"], body, {"Content-Type": "application/json", "User-Agent": "tyzo-asr-client/1.0"})
 # Modal: việc quá 150 giây được trả 303 về một địa chỉ hỏi lại kết quả, lặp tới khi xong → cho phép hỏi lại nhiều lần.
 class Doi(urllib.request.HTTPRedirectHandler):
     max_repeats = 1000
