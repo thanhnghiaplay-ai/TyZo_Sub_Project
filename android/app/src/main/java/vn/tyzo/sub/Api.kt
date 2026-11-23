@@ -6,6 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
 
 class ApiError(val status: Int, message: String) : Exception(message)
@@ -15,6 +16,8 @@ data class AppRelease(val code: Int, val name: String, val url: String)
 
 data class Me(val email: String, val balance: Long, val models: List<String>, val app: AppRelease)
 data class Ticket(val url: String, val perMinute: Long, val balance: Long)
+/** Một phiên trong lịch sử chung với web. via: "web" hoặc "app". */
+data class HistoryItem(val id: String, val via: String, val startedAt: String, val durationMs: Long, val lines: Int, val preview: String)
 
 /**
  * Gọi các đường /api/app-* của web. Hàm chặn luồng: gọi từ luồng nền.
@@ -82,6 +85,38 @@ object Api {
         if (words.isNotEmpty()) body.put("words", JSONObject(words as Map<*, *>))
         val json = call(web, "/api/app-ticket", "POST", token, body)
         return Ticket(json.getString("url"), json.optLong("perMinute"), json.optLong("balance"))
+    }
+
+    /** Lịch sử Dịch trực tiếp chung với web (src/routes/api/app-history.ts). */
+    fun historySave(web: String, token: String, clientId: String, model: String, target: String, startedAtMs: Long, cues: List<Cue>) {
+        val arr = JSONArray()
+        cues.forEach { arr.put(JSONObject().put("s", it.start).put("e", it.end).put("o", it.original).put("t", it.translation ?: JSONObject.NULL)) }
+        val body = JSONObject().put("clientId", clientId).put("model", model).put("target", target).put("startedAt", startedAtMs).put("cues", arr)
+        call(web, "/api/app-history", "POST", token, body)
+    }
+
+    fun historyList(web: String, token: String): List<HistoryItem> {
+        val arr = call(web, "/api/app-history", "GET", token, null).optJSONArray("items") ?: return emptyList()
+        return List(arr.length()) {
+            val o = arr.getJSONObject(it)
+            HistoryItem(o.optString("id"), o.optString("via"), o.optString("startedAt"), o.optLong("durationMs"), o.optInt("lines"), o.optString("preview"))
+        }
+    }
+
+    fun historyRead(web: String, token: String, id: String): Pair<Long, List<Cue>> {
+        val json = call(web, "/api/app-history?id=" + java.net.URLEncoder.encode(id, "UTF-8"), "GET", token, null)
+        val arr = json.optJSONArray("cues") ?: JSONArray()
+        val at = runCatching { java.time.Instant.parse(json.optString("startedAt")).toEpochMilli() }.getOrDefault(System.currentTimeMillis())
+        return at to List(arr.length()) {
+            val o = arr.getJSONObject(it)
+            Cue(o.optDouble("s"), o.optDouble("e"), o.optString("o"), if (o.isNull("t")) null else o.optString("t"))
+        }
+    }
+
+    /** id null: xóa hết. */
+    fun historyDelete(web: String, token: String, id: String?) {
+        val query = if (id == null) "?all=1" else "?id=" + java.net.URLEncoder.encode(id, "UTF-8")
+        call(web, "/api/app-history$query", "DELETE", token, null)
     }
 
     fun unlink(web: String, token: String) {

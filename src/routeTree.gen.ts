@@ -19,6 +19,7 @@ import { Route as HuongDanRouteImport } from './routes/huong-dan'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as TaiKhoanRouteImport } from './routes/tai-khoan'
 import { Route as YeuCauRouteImport } from './routes/yeu-cau'
+import { Route as ApiAppHistoryRouteImport } from './routes/api/app-history'
 import { Route as ApiAppLinkRouteImport } from './routes/api/app-link'
 import { Route as ApiAppMeRouteImport } from './routes/api/app-me'
 import { Route as ApiAppTicketRouteImport } from './routes/api/app-ticket'
@@ -79,6 +80,11 @@ const TaiKhoanRoute = TaiKhoanRouteImport.update({
 const YeuCauRoute = YeuCauRouteImport.update({
   id: '/yeu-cau',
   path: '/yeu-cau',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAppHistoryRoute = ApiAppHistoryRouteImport.update({
+  id: '/api/app-history',
+  path: '/api/app-history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAppLinkRoute = ApiAppLinkRouteImport.update({
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
+  '/api/app-history': typeof ApiAppHistoryRoute
   '/api/app-link': typeof ApiAppLinkRoute
   '/api/app-me': typeof ApiAppMeRoute
   '/api/app-ticket': typeof ApiAppTicketRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
+  '/api/app-history': typeof ApiAppHistoryRoute
   '/api/app-link': typeof ApiAppLinkRoute
   '/api/app-me': typeof ApiAppMeRoute
   '/api/app-ticket': typeof ApiAppTicketRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/tai-khoan': typeof TaiKhoanRoute
   '/yeu-cau': typeof YeuCauRoute
+  '/api/app-history': typeof ApiAppHistoryRoute
   '/api/app-link': typeof ApiAppLinkRoute
   '/api/app-me': typeof ApiAppMeRoute
   '/api/app-ticket': typeof ApiAppTicketRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
+    | '/api/app-history'
     | '/api/app-link'
     | '/api/app-me'
     | '/api/app-ticket'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
+    | '/api/app-history'
     | '/api/app-link'
     | '/api/app-me'
     | '/api/app-ticket'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/tai-khoan'
     | '/yeu-cau'
+    | '/api/app-history'
     | '/api/app-link'
     | '/api/app-me'
     | '/api/app-ticket'
@@ -290,6 +302,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   TaiKhoanRoute: typeof TaiKhoanRoute
   YeuCauRoute: typeof YeuCauRoute
+  ApiAppHistoryRoute: typeof ApiAppHistoryRoute
   ApiAppLinkRoute: typeof ApiAppLinkRoute
   ApiAppMeRoute: typeof ApiAppMeRoute
   ApiAppTicketRoute: typeof ApiAppTicketRoute
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/yeu-cau'
       fullPath: '/yeu-cau'
       preLoaderRoute: typeof YeuCauRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/app-history': {
+      id: '/api/app-history'
+      path: '/api/app-history'
+      fullPath: '/api/app-history'
+      preLoaderRoute: typeof ApiAppHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/app-link': {
@@ -466,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   TaiKhoanRoute: TaiKhoanRoute,
   YeuCauRoute: YeuCauRoute,
+  ApiAppHistoryRoute: ApiAppHistoryRoute,
   ApiAppLinkRoute: ApiAppLinkRoute,
   ApiAppMeRoute: ApiAppMeRoute,
   ApiAppTicketRoute: ApiAppTicketRoute,

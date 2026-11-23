@@ -483,7 +483,13 @@ class LiveService : Service() {
         LiveState.paused = false
         stopReading()
         // Lưu chữ của phiên vừa rồi trên máy, như web (xuất SRT, VTT, TXT sau).
-        if (sessionStartMs > 0) Session.save(this, transcript.cues(), sessionStartMs)
+        if (sessionStartMs > 0) {
+            Session.save(this, transcript.cues(), sessionStartMs, prefs.model, prefs.target)
+            val app = applicationContext
+            val web = prefs.web
+            val token = prefs.token
+            Thread { runCatching { Session.sync(app, web, token) } }.start()
+        }
         socket?.let { runCatching { it.close(1000, null) } }
         socket = null
         socketOpen.set(false)

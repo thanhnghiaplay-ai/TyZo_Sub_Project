@@ -35,6 +35,8 @@ import { TourHost } from "@/components/tour-host";
 import { LIVE_LANGS, liveLang, targetHasVoice } from "@/lib/live/langs";
 import { downloadLiveFile, hasLiveCues, liveExportFile } from "@/lib/live/live-export";
 import { getLiveShow } from "@/lib/live/live-show-room";
+import { saveLiveHistory } from "@/lib/live/live-history-room";
+import { LIVE_HISTORY_EVENT, LiveHistoryPanel } from "@/components/live-history-panel";
 import { liveOpenModels } from "@/lib/live/live-show";
 import { LIVE_MODELS } from "@/lib/live/live-open-rules";
 import { LIVE_MODEL_35, LIVE_MODEL_38 } from "@/lib/live/live-price";
@@ -164,12 +166,28 @@ export function LiveScreen() {
     }, 5000);
     return () => window.clearInterval(id);
   }, [running]);
+  // Mỗi phiên một mã riêng: gửi lại cùng mã thì máy chủ ghi đè, không tạo bản trùng.
+  const sessionRef = useRef<{ clientId: string; startedAt: number; model: string; target: string } | null>(null);
+  useEffect(() => {
+    if (!running || sessionRef.current) return;
+    const clientId = `w${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+    sessionRef.current = { clientId, startedAt: Date.now(), model: settings.model, target: settings.target };
+  }, [running, settings.model, settings.target]);
   useEffect(() => {
     if (live.state !== "closed") return;
     const packed = packSavedLive(cuesRef.current, Date.now());
+    const session = sessionRef.current;
+    sessionRef.current = null;
     if (packed) {
       writeLast(packed);
       setLast(packed);
+    }
+    // Lưu lên lịch sử chung với ứng dụng (live-history.ts). Lỗi mạng thì vẫn còn bản lưu trên máy.
+    if (packed && session) {
+      const cues = packed.cues.map((cue) => ({ s: cue.start, e: cue.end, o: cue.original, t: cue.translation }));
+      void saveLiveHistory({ data: { ...session, cues } })
+        .then(() => window.dispatchEvent(new Event(LIVE_HISTORY_EVENT)))
+        .catch(() => undefined);
     }
   }, [live.state]);
 
@@ -528,6 +546,8 @@ export function LiveScreen() {
             </span>
           </section>
         )}
+
+        {!running && <LiveHistoryPanel />}
 
         <section className="flex min-h-48 flex-1 flex-col rounded-[var(--radius-card)] border border-line bg-card" aria-label="Chữ dịch">
           <div

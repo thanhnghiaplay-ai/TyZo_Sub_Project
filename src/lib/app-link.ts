@@ -17,7 +17,7 @@ export const DEVICE_IDLE_DAYS = 90;
  * Bản ứng dụng Android mới nhất. Phải khớp versionCode và versionName trong android/app/build.gradle.kts
  * (app-link.test.ts kiểm). Ứng dụng cũ hơn thấy lời mời tải bản mới.
  */
-export const ANDROID_APP = { code: 9, name: "0.9" } as const;
+export const ANDROID_APP = { code: 10, name: "0.10" } as const;
 
 /**
  * Nơi GitHub Actions đăng tệp cài (bản phát hành mới nhất của kho, ai cũng tải được).

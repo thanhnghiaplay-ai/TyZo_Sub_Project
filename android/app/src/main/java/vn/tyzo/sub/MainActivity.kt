@@ -1,6 +1,7 @@
 package vn.tyzo.sub
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -45,6 +46,10 @@ class MainActivity : Activity() {
     private val number = NumberFormat.getInstance(Locale.forLanguageTag("vi-VN"))
 
     private var me: Me? = null
+    /** Lịch sử chung với web: null = chưa tải, lỗi thì [historyError]. */
+    private var history: List<HistoryItem>? = null
+    private var historyError = ""
+    private var historyBox: LinearLayout? = null
     private var note = ""
 
     // Phần cập nhật liên tục.
@@ -71,7 +76,10 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         handler.post(tick)
-        if (prefs.linked) loadMe()
+        if (prefs.linked) {
+            loadMe()
+            loadHistory()
+        }
         render()
     }
 
@@ -85,6 +93,7 @@ class MainActivity : Activity() {
     private fun render() {
         ui = Ui(this)
         startButton = null
+        historyBox = null
         updateText = null
         statusText = null
         balanceText = null
@@ -292,6 +301,14 @@ class MainActivity : Activity() {
         // Phiên gần nhất.
         Session.load(this)?.let { (at, cues) -> sessionCard(col, at, cues) }
 
+        // Lịch sử chung với web (máy chủ giữ 30 phiên gần nhất trong 30 ngày).
+        val hist = section(col, "Lịch sử (web và ứng dụng)", "ĐỒNG BỘ")
+        hist.addView(ui.muted("Phiên dịch trực tiếp trên web và trên ứng dụng của tài khoản này. Giữ 30 phiên gần nhất trong 30 ngày.", 12f), ui.full(4))
+        val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        hist.addView(box, ui.full(6))
+        historyBox = box
+        fillHistory()
+
         // Khác.
         val more = section(col, "Khác")
         more.addView(ui.secondary("Xem hướng dẫn trên web") { openWeb(prefs.web, "/huong-dan#ung-dung-android") }, ui.full(10))
@@ -302,6 +319,7 @@ class MainActivity : Activity() {
             val token = prefs.token
             Thread { Api.unlink(web, token) }.start()
             prefs.unlink()
+            history = null
             me = null
             note = "Đã gỡ liên kết."
             render()
@@ -320,18 +338,115 @@ class MainActivity : Activity() {
                 LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { if (i > 0) marginStart = ui.dp(6) })
         }
         card.addView(row, ui.full(10))
-        card.addView(ui.secondary("Gửi SRT sang ứng dụng khác") {
-            val send = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, Session.name("srt", at))
-                putExtra(Intent.EXTRA_TEXT, Session.export(cues, "srt"))
-            }
-            runCatching { startActivity(Intent.createChooser(send, "Gửi phụ đề")) }
-        }, ui.full(8))
+        card.addView(ui.secondary("Gửi SRT sang ứng dụng khác") { sendSrt(cues, at) }, ui.full(8))
         card.addView(ui.danger("Xóa bản lưu") {
             Session.clear(this)
             render()
         }, ui.full(8))
+    }
+
+    /** Gửi phiên gần nhất nếu chưa gửi, rồi tải danh sách lịch sử. */
+    private fun loadHistory() {
+        val web = prefs.web
+        val token = prefs.token
+        val app = applicationContext
+        Thread {
+            runCatching { Session.sync(app, web, token) }
+            val result = runCatching { Api.historyList(web, token) }
+            runOnUiThread {
+                result.onSuccess { history = it; historyError = "" }
+                    .onFailure { historyError = it.message ?: "Chưa tải được lịch sử." }
+                fillHistory()
+            }
+        }.start()
+    }
+
+    private fun fillHistory() {
+        val box = historyBox ?: return
+        box.removeAllViews()
+        val list = history
+        if (list == null) {
+            box.addView(ui.muted(historyError.ifBlank { "Đang tải…" }))
+            if (historyError.isNotBlank()) box.addView(ui.secondary("Thử lại") { historyError = ""; fillHistory(); loadHistory() }, ui.full(8))
+            return
+        }
+        if (list.isEmpty()) {
+            box.addView(ui.muted("Chưa có phiên nào. Phiên dịch xong sẽ tự lưu vào đây."))
+            return
+        }
+        list.forEach { item -> box.addView(historyRow(item), ui.full(10)) }
+        box.addView(ui.danger("Xóa hết lịch sử") {
+            confirm("Xóa hết lịch sử?", "Mọi phiên bị xóa khỏi máy chủ, ở cả web và ứng dụng. Không lấy lại được.") { removeHistory(null) }
+        }, ui.full(12))
+    }
+
+    private fun historyRow(item: HistoryItem): LinearLayout {
+        val row = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        val at = runCatching { java.time.Instant.parse(item.startedAt).toEpochMilli() }.getOrDefault(0L)
+        val time = SimpleDateFormat("HH:mm dd/MM", Locale.ROOT).format(Date(at))
+        val secs = item.durationMs / 1000
+        val length = if (secs < 60) "$secs giây" else "${secs / 60} phút"
+        val via = if (item.via == "app") "Ứng dụng" else "Web"
+        row.addView(ui.text("$via · $time · ${item.lines} câu · $length", 14f, bold = true))
+        if (item.preview.isNotBlank()) row.addView(ui.muted(item.preview, 12f).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }, ui.full(2))
+        val buttons = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        listOf("srt", "vtt", "txt", "gửi", "xóa").forEachIndexed { i, action ->
+            val label = action.uppercase(Locale.ROOT).let { if (action == "gửi") "Gửi" else if (action == "xóa") "Xóa" else it }
+            val tap: () -> Unit = when (action) {
+                "xóa" -> { { confirm("Xóa phiên này?", "Chữ của phiên bị xóa khỏi máy chủ, ở cả web và ứng dụng. Không lấy lại được.") { removeHistory(item.id) } } }
+                "gửi" -> { { withHistory(item) { at2, cues -> sendSrt(cues, at2) } } }
+                else -> { { withHistory(item) { at2, cues -> saveFile(cues, at2, action) } } }
+            }
+            val view = if (action == "xóa") ui.danger(label, tap) else ui.secondary(label, tap)
+            buttons.addView(view, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { if (i > 0) marginStart = ui.dp(4) })
+        }
+        row.addView(buttons, ui.full(6))
+        return row
+    }
+
+    /** Tải chữ của một phiên từ máy chủ rồi làm việc [then] trên luồng giao diện. */
+    private fun withHistory(item: HistoryItem, then: (Long, List<Cue>) -> Unit) {
+        val web = prefs.web
+        val token = prefs.token
+        LiveState.status = "Đang tải phiên…"
+        refreshLive()
+        Thread {
+            val result = runCatching { Api.historyRead(web, token, item.id) }
+            runOnUiThread {
+                result.onSuccess { (at, cues) -> then(at, cues) }
+                    .onFailure { LiveState.status = it.message ?: "Chưa tải được phiên này."; refreshLive() }
+            }
+        }.start()
+    }
+
+    private fun removeHistory(id: String?) {
+        val web = prefs.web
+        val token = prefs.token
+        Thread {
+            val result = runCatching { Api.historyDelete(web, token, id) }
+            runOnUiThread {
+                result.onFailure { LiveState.status = it.message ?: "Chưa xóa được."; refreshLive() }
+                loadHistory()
+            }
+        }.start()
+    }
+
+    private fun confirm(title: String, body: String, yes: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(body)
+            .setNegativeButton("Hủy", null)
+            .setPositiveButton("Xóa") { _, _ -> yes() }
+            .show()
+    }
+
+    private fun sendSrt(cues: List<Cue>, at: Long) {
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, Session.name("srt", at))
+            putExtra(Intent.EXTRA_TEXT, Session.export(cues, "srt"))
+        }
+        runCatching { startActivity(Intent.createChooser(send, "Gửi phụ đề")) }
     }
 
     /** Lưu vào Tải xuống (Android 10+ không cần quyền bộ nhớ). Có BOM để Notepad cũ đọc đúng tiếng Việt, như web. */
@@ -377,6 +492,7 @@ class MainActivity : Activity() {
         if (LiveState.unlinked && prefs.linked) {
             LiveState.unlinked = false
             prefs.unlink()
+            history = null
             note = "Máy này đã bị gỡ liên kết hoặc lâu không dùng. Hãy lấy mã mới ở trang Tài khoản."
             render()
             return
@@ -406,6 +522,8 @@ class MainActivity : Activity() {
         } ?: "Token dịch: đang tải…"
         if (lastPhase != null && lastPhase != LiveState.Phase.IDLE && phase == LiveState.Phase.IDLE) {
             loadMe()
+            // Phiên vừa xong: dịch vụ đang gửi lên lịch sử, chờ chút rồi tải lại danh sách.
+            handler.postDelayed({ if (prefs.linked) loadHistory() }, 2500)
             render()
             return
         }
@@ -429,6 +547,7 @@ class MainActivity : Activity() {
                 runOnUiThread {
                     if (e.status == 401) {
                         prefs.unlink()
+                        history = null
                         note = e.message ?: "Máy này đã bị gỡ liên kết."
                         render()
                     } else {

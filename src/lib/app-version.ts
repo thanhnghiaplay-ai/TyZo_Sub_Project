@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.43.0";
+export const APP_VERSION = "5.44.0";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.44.0",
+    time: "14:59 23/11/2026",
+    title: "Lịch sử Dịch trực tiếp chung giữa web và ứng dụng Android 0.10.",
+    points: [
+      "Phiên dịch xong tự lưu theo tài khoản: mở web hay ứng dụng đều thấy.",
+      "Giữ 30 phiên gần nhất trong 30 ngày; tải SRT, VTT, TXT hoặc xóa từng phiên, xóa hết.",
+      "Điều khoản nói rõ nhà nào phòng gửi lệnh xóa bản nhận dạng, nhà nào không.",
+    ],
+  },
   {
     version: "5.43.0",
     time: "13:49 23/11/2026",

@@ -333,6 +333,12 @@ export const removeUser = createServerFn({ method: "POST" })
     } catch {
       /* bảng có sau lần xây mới */
     }
+    try {
+      // Lịch sử Dịch trực tiếp (chữ của phiên) đi cùng tài khoản: xóa tài khoản là xóa hết.
+      await sql`delete from live_history where user_id = ${data}`;
+    } catch {
+      /* bảng có sau lần xây mới */
+    }
     const gone = await sql<{ id: string }>`delete from "user" where id = ${data} returning id`;
     if (!gone.length) throw new Error("Không thấy tài khoản.");
     await writeAudit(context.userId, "xoa-tai-khoan", data, "Xóa tài khoản");

@@ -25,7 +25,7 @@ PHÁT HIỆN VI PHẠM (Chủ chốt 22/11/2026: luật chặt, chi tiết, có 
 ĐANG CHẠY (2026-11-20)
 - v5.38.0 (ứng dụng Android 0.4, điều khoản 2026-11-22.4) trên `work` và `main` (đẩy chính thức 22/11/2026). Thư mục `android/` không chạy trên Vercel; ứng dụng gọi /api/app-link, /api/app-me, /api/app-ticket bằng khóa máy (xem android/README.md). Đổi bản ứng dụng thì sửa cả ANDROID_APP trong src/lib/app-link.ts (test so với android/app/build.gradle.kts).
 - v5.42.0–v5.42.3 (đợt 1 tối ưu độ trễ) đã gỡ ở v5.42.4 theo yêu cầu Chủ. Còn giữ: nền mờ menu 45, cầu nối bắt lỗi đọc giá và unhandledRejection.
-- Số phiên bản trên nhánh `work`: v5.43.0 + ứng dụng 0.9 (`src/lib/app-version.ts`, điều khoản 2026-11-23.2). Nhánh `main` = `work` (đẩy chính thức 23/11/2026).
+- Số phiên bản trên nhánh `work`: v5.44.0 + ứng dụng 0.10 (`src/lib/app-version.ts`, điều khoản 2026-11-23.3). Nhánh `main` = `work` (đẩy chính thức 23/11/2026).
 - Phụ đề nổi ứng dụng: sắp chữ ở CaptionLayout.kt (thuần, thử bằng android/tools/CaptionLayoutCheck.kt). Qwen 3.5: LIVE_SILENCE_MS và LIVE_VAD_THRESHOLD trong /opt/bridge.env, đổi bằng tyzo mục 5.
 - Ứng dụng 0.7: gửi μ-law khi ready.codecs có mulaw (tin {"type":"codec","value":"mulaw"} trước khung đầu), không gửi lúc im, bỏ khung khi hàng đợi quá 1,5 giây, có Tạm dừng. Web vẫn gửi PCM. Đổi giao thức thì giữ tương thích: cầu nối mặc định PCM.
 - Ứng dụng 0.6 tự nối lại (LiveService.reconnect, tối đa 3 lần, không nối lại khi mã 4400/4402/4503). Cầu nối không chuyển «Response stream timeout» cho khách và ngủ tới khi có tiếng.

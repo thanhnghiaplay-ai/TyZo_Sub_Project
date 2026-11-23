@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.44.0",
+    time: "14:59 23/11/2026",
+    area: "ha-tang",
+    text: "Chủ: «Điều khoản nên sửa đúng theo web. Đồng bộ lịch sử web với app.» (1) Bảng live_history (migration 0036, unique user_id+client_id), live-history.ts: cleanHistory (mã phiên 8–64 ký tự, giờ trong 30 ngày, mỗi câu tối đa 600 ký tự, tối đa 2.000 câu), saveHistoryWith (gửi lại cùng mã thì ghi đè, rồi dọn quá 30 phiên hoặc quá 30 ngày), list/read/delete theo tài khoản. Web: server fn live-history-room (lưu lúc phiên đóng, giới hạn 30 lần/phút), LiveHistoryPanel (tải SRT/VTT/TXT, xóa, xóa hết). Ứng dụng 0.10 (versionCode 10): /api/app-history (GET danh sách/chi tiết, POST, DELETE) bằng khóa máy; Session.save ghi mã phiên + synced, Session.sync gửi lúc kết thúc phiên và gửi lại khi mở ứng dụng nếu lần trước lỗi mạng; mục Lịch sử trong ứng dụng. Xóa khách (removeUser) xóa cả live_history. (2) Điều khoản 2026-11-23.3: lệnh xóa bản nhận dạng chỉ gửi cho AssemblyAI, Speechmatics, Soniox, ElevenLabs (đúng code); Groq, Alibaba, Deepgram không có lệnh xóa; bỏ câu «Groq xử lý ở Hoa Kỳ» lặp; thêm dữ liệu lịch sử trên máy chủ. Không đổi cầu nối, không cần tyzo.",
+  },
+  {
     version: "5.43.0",
     time: "13:49 23/11/2026",
     area: "ha-tang",

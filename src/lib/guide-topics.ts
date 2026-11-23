@@ -178,6 +178,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Dùng điện thoại cạnh TV hay loa: bấm «Chữ lớn toàn màn hình», có nút Bắt đầu, Dừng ngay trong màn đó. Cỡ chữ, số dòng, chữ gốc, nền đậm, «Chỉ hiện câu đã xong» chỉnh ở «Tùy chỉnh chữ»." },
         { text: "Tên nhân vật hay bị dịch lệch: ghi vào «Từ cần giữ đúng», mỗi dòng «gốc = cách dịch». Áp dụng khi bấm Bắt đầu." },
         { text: "Tải lại trang không mất chữ: phiên gần nhất được lưu trên máy, vẫn tải được SRT, VTT, TXT." },
+        { text: "Mục «Lịch sử (web và ứng dụng)» dưới nút Bắt đầu: phiên dịch xong tự lưu theo tài khoản, chung với ứng dụng Android. Giữ 30 phiên gần nhất trong 30 ngày; tải SRT, VTT, TXT hoặc xóa từng phiên, xóa hết." },
       ],
     },
     {
@@ -199,6 +200,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: "Ứng dụng tự lùi về ứng dụng đang xem phim (nên mở phim trước rồi mới bấm Bắt đầu). Bấm phát, khung phụ đề hiện trên video: kéo lên xuống để đổi chỗ, «⏸ Tạm dừng» / «▶ Tiếp tục» ngay trên khung, «■ Dừng» khi xem xong." },
         { text: "Ứng dụng chỉ trừ Token dịch khi điện thoại đang phát tiếng. Im lặng quá 2 giây hoặc bấm «⏸ Tạm dừng» trên khung thì không trừ. Bấm «■ Dừng» khi xem xong, phần giữ thừa được trả lại." },
         { text: "Phiên gần nhất được lưu trên điện thoại: tải SRT, VTT, TXT về thư mục Tải xuống, hoặc gửi SRT sang ứng dụng khác. Bấm «Xóa bản lưu» để xóa." },
+        { text: "Mục «Lịch sử (web và ứng dụng)» trong ứng dụng hiện cả phiên dịch trên web và trên điện thoại của tài khoản này. Bấm SRT, VTT, TXT để tải, «Gửi» để gửi sang ứng dụng khác, «Xóa» để xóa khỏi máy chủ." },
         { text: "Có bản ứng dụng mới thì ứng dụng hiện thẻ «Có bản mới». Cài bản mới mà máy báo không cài đè được thì gỡ bản cũ trước rồi liên kết lại." },
         { text: "Đổi máy hay mất máy: ở mục này trên web, bấm «Gỡ» cạnh tên máy. Mỗi tài khoản liên kết tối đa 3 máy. Đổi mật khẩu, hoặc máy không dùng quá 90 ngày, thì phải liên kết lại." },
       ],
