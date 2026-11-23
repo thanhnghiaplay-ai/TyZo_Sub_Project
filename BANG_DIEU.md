@@ -137,8 +137,9 @@ Chỉ mở lại khi người dùng yêu cầu đúng việc đó.
 
 ## Chờ người dùng
 
-- Ứng dụng Android, khóa ký (Chủ đã để sau 22/11/2026, nay có cách dễ): trên VPS gõ `tyzo` → 15, chọn tự động, dán mã GitHub Fine-grained (Secrets + Actions: Read and write). Máy tạo khóa, nạp 4 bí mật, chạy đóng gói; GitHub đăng bản phát hành, web tự hiện nút tải (không cần ANDROID_APK_URL nữa), ứng dụng 0.5 tự báo và tải bản mới. Xem docs/HUONG_DAN_VPS.md mục E2.
-  Chưa làm thì: mỗi bản mới phải gỡ bản cũ và liên kết lại; trang Tài khoản ghi «Tệp cài chưa phát hành».
+- Thử thật Dịch trực tiếp web v5.43.0 (tạm dừng, nối lại, phụ đề nổi) và ứng dụng 0.9; `tyzo` → 2 trên VPS.
+- Alibaba: nạp tiền hoặc gắn thẻ trước khi mở cho nhiều khách (hạn mức miễn phí hết thì Qwen ngừng dịch).
+- Xóa key Groq và Alibaba đã lưu ở môi trường Claude (chỉ dùng để thử).
 - Trên Vercel, `ADMIN_EMAIL` phải là đúng email tài khoản Chủ thì `/admin` mới mở.
 - Bật trên GitHub, nếu muốn khóa cứng: nhánh `main` chỉ nhận bản hợp nhất, model không có quyền xóa kho. Không bật thì luật này chỉ là lời nhắc.
 
