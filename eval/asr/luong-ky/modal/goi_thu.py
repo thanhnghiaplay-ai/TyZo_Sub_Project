@@ -1,10 +1,16 @@
 """Gửi một video/tệp tiếng lên dịch vụ Modal, ghi phụ đề ra tệp .srt và in thời gian chờ.
 
     TYZO_ASR_URL=https://...modal.run TYZO_ASR_TOKEN=... python3 goi_thu.py video.mp4 zh [ky|can-bang]
+    Có thể thay video.mp4 bằng link tải trực tiếp (https://…/video.mp4).
+    Video thử có sẵn: eval/asr/luong-ky/modal/mau/zh_thu_38s.mp4 (tiếng Trung, 38 giây, giọng máy tự dựng).
 """
 import base64, json, os, sys, time, urllib.request
 
 path, lang = sys.argv[1], sys.argv[2]
+if path.startswith("http://") or path.startswith("https://"):   # dán link tải trực tiếp video
+    local = os.path.join(os.path.expanduser("~"), "video_thu." + (path.split("?")[0].rsplit(".", 1)[-1] if "." in path.split("/")[-1] else "mp4"))
+    print("Đang tải video về VPS…")
+    urllib.request.urlretrieve(path, local); path = local
 profile = sys.argv[3] if len(sys.argv) > 3 else "ky"
 body = json.dumps({"audio_b64": base64.b64encode(open(path, "rb").read()).decode(), "ext": path.rsplit(".", 1)[-1],
                    "lang": lang, "profile": profile}).encode()
