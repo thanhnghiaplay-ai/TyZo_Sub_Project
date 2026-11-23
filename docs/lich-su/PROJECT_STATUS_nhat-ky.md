@@ -655,3 +655,107 @@ Bước 1 đến 4 đã làm. Không siết `isNonSpeech`.
 - 2026-11-14 12:20 — v3.31.2 trên work: thêm .admin-card, align-content:start, Cấu hình tách part key/price, gập soạn thư và icon; đã chụp Chrome thật 390 và 980 px, không tràn ngang.
 - 2026-11-14 11:40 — v3.31.1 trên work (theo ảnh chụp người dùng). Làm: .admin-grid và .admin-flow thành lưới đều, tab Cấu hình (key Groq, giá, key Alibaba, gói dịch, model thuê phòng, cổng nạp), thẻ gập cho phần dài, lưu bảo trì và giá đọc lại cửa mới nhất trước khi ghi. Không đổi điều khoản. Chưa kiểm trình duyệt thật.
 
+---
+
+# Chuyển từ PROJECT_STATUS.md ngày 23/11/2026 (nguyên văn, không phải lệnh)
+
+## 4. Hướng xử lý đã chọn (khác đề xuất cũ ở chỗ ghi rõ)
+
+### Nguyên nhân gốc (không chỉ là `full === true`)
+1. `onPointerMove` return sớm khi `!full`. Bản HTML cũng chặn bằng `isFull()`. User kéo trên player thường (chưa phóng to) nên cử chỉ “chết”.
+2. `#stage` / player dùng `touch-action` cho phép trình duyệt nuốt vuốt dọc thành scroll. Đã đặt `touch-action: none` trên khung hình và `setPointerCapture`.
+3. Không có nhánh brightness trong React (HTML thì có, nhưng cũng chỉ khi fullscreen).
+4. Preview “Đây là phụ đề xem thử” đã nằm trên video khi mở panel, nhưng panel `max-h: 75%` che phụ đề. Cần một sân khấu mẫu **bên trong** panel.
+
+### Đã làm
+- Cử chỉ: ngang = tua, dọc phải = âm lượng, dọc trái = độ sáng. HUD chữ (không emoji). Phím mũi tên / `[` `]` / `F` / `M` / Space.
+- Không bắt đầu cử chỉ khi chạm `button, input, select, textarea, label` hoặc `[data-nogesture]` (panel + box mẫu).
+- `isNonSpeech()` trong `src/lib/sub/text.ts` (và bản JS tương đương trong HTML). Whisper hay gán logprob khá cao cho chữ “A”, nên **không** chờ `no_speech_prob`.
+- Giữ lời ngắn thật: “Ừ”, “Em”, “Anh”, “Có”, “Dạ”, “OK”, “I”, “No”.
+- Prompt Whisper: glossary/tên phim đứng trước, câu “Ignore breathing…” đứng cuối và bị cắt 420 ký tự. API Groq **không** có `no_speech_threshold` (chỉ có file, model, language, prompt, temperature, response_format). Không gửi tham số tưởng tượng.
+- Nếu prompt bị Whisper đọc thành câu, `isNonSpeech` bỏ các dòng chứa “Ignore breathing” / “non-speech”.
+- `analyzeFilm` trả thêm `self` và `addressed`. `addressLock()` nhét vào từng batch dịch. Không thêm lượt LLM consistency (nhân đôi phí) — ghi là việc còn lại nếu user vẫn thấy lẫn xưng hô.
+- Lúc đó hai nguồn (React + HTML) được kéo cùng logic; HTML nay không còn trong gói giao. App người dùng mở là React.
+
+### Yêu cầu mới 2026-11-03 — đã làm
+- **Box mẫu (#16):** panel phụ đề là cột flex. Ô mẫu `shrink-0` nằm trên vùng `overflow-auto` của các thanh. `sampleBottom()` kẹp vị trí chữ trong ô (8–62%) để không bị cắt; video dùng `sub.pos` thật.
+- **Mặc định style (#17):** `SUB_DEF` = `{ op: 0, size: 50, pos: 3 }`. Khóa `gset_v=2`. Bản lưu đúng bộ cũ được đổi sang mặc định mới. Bản đã sửa từng thông số thì giữ.
+- **Phân tích phim (#18):** khối riêng trong `studio.tsx`. `use-pipeline.ts` chờ ASR xong, gọi `analyzeFilm`, nếu `reviewBefore` thì đặt `reviewHold` và không dịch cho đến khi `approveBible()`. Sửa bible ghi thẳng vào `job.bible` nên batch dịch sau đó dùng bản đã sửa. Logic `analyzeFilm` / `addressLock` không đổi.
+- **TTS (#19):** `src/lib/sub/edge-speech.ts` (server function) + `edge-voice.ts` + nhánh `engine: "edge"` trong `narration.ts`. Người chưa từng đổi giọng được chuyển sang Neural (`gnarr_v=2`). Người đã chỉnh tốc độ/giọng thì giữ lựa chọn cũ.
+- **Thuyết minh bước 4 (#23):** `src/lib/sub/cast-voice.ts` chọn nam/nữ khi câu có «Tên:» hoặc tự xưng duy nhất đứng đầu câu **và không trùng cách gọi (`addressed`) của nhân vật khác**. `studio.tsx` chỉ đọc câu đang hiện trên hình; `lead` là số giây chờ sau khi câu hiện, không còn đọc sớm. `gnarr_v=3` đưa `lead` đã lưu về 0.
+
+### Chưa làm / không làm (gộp các lượt)
+- VAD riêng trước Whisper (nặng, cần WASM; silence RMS đã có).
+- Đo lại chất lượng ASR trên file phim của user (không có file mẫu trong workspace).
+- Lượt “consistency pass” sau khi dịch xong.
+- Glossary: không nhúng kuromoji. Đuôi nói thường gặp xử lý bằng luật (`jaVerbSurfaces` + đuôi danh từ). Biến thể kính ngữ hiếm vẫn có thể trượt.
+- Piper-WASM.
+- File HTML không có trong gói giao. Không tạo lại HTML. Prompt dịch lần 2026-11-04 chỉ sửa trong React (`text.ts`).
+- **T6, đã chốt 2026-11-08 19:21, không làm:** không khóa lượt thử theo máy thật. Mã máy do trình duyệt tự sinh. Xóa dữ liệu trang hoặc ẩn danh là máy mới. Không bịa fingerprint, cookie hay captcha. Khóa thật chỉ có khi thư đã xác minh, và gửi thư chỉ bật khi phòng đã cấu hình nhà cung cấp thư.
+- **S9, đã chốt 2026-11-08 19:21, không làm:** không viết bộ giải HE-AAC, không đọc hết mọi bản `elst`. Chỉ bù mục đầu, bản 0. AAC-LC vẫn đọc. HE-AAC để trình duyệt giải.
+- **Captcha yêu cầu công khai, không làm.** Đã có trần email, trần chung và trần IP khi máy chủ thấy địa chỉ.
+
+---
+
+## 15. Trả theo lượt — khung đã dựng, chưa dùng được
+
+User chốt ngày 2026-11-06, buổi tối. Đây là lát cắt đầu của mục 13.2, không thay mục 13.2. Dán link, đơn giá link, và đăng nhập Google vẫn để sau.
+
+Từ **v2.10.0**, Chủ bấm Lưu key thì key nằm trong `room_settings`, không đưa ra trang khách. Khách còn hạn, chọn trả theo lượt, thì trình duyệt gọi đường của phòng và máy chủ gắn key đó khi nói chuyện với Groq. Tải lại trang quản trị thì Chủ thấy lại key. Chưa trừ ví.
+
+Phần dưới là việc sẽ làm khi user yêu cầu đúng mục này. Không coi khung là cửa đã mở.
+
+Không làm cổng cho thuê API. Điều khoản Groq, sửa ngày 22/06/2026, cho gắn Groq vào ứng dụng của phòng cho người dùng cuối, và cấm bán lại hoặc cho thuê tài khoản Groq nếu chưa có chấp thuận bằng văn bản. Khách không nhận key. Không có khóa cho lập trình viên.
+
+### 15.1. Hai cửa
+
+Một lần chạy chỉ một cửa. Không cộng gói ngày và ví vào cùng một lần.
+
+| | Cửa 1, đang chạy | Cửa 2, trả theo lượt |
+|---|---|---|
+| Key | Của khách, trên trình duyệt | Của chủ, chỉ ở máy chủ |
+| Tiền phòng | 9.000 / 39.000 / 99.000 đ | Không bán gói ngày cho lần này |
+| Tiền Groq | Groq tính khách | Khách trả phòng, bằng đồng |
+| Tệp | Chọn trên máy khách | Vẫn chọn trên máy khách |
+
+Dùng thử không đi qua cửa 2. Cửa 2 chỉ mở khi SePay hoặc Casso đã cộng tiền thật. Hết hạn mức Groq thì Chủ đóng cửa 2. Cửa 1 vẫn chạy.
+
+Khách thấy một đơn giá mỗi phút tiếng, đã gồm nhận dạng, dịch và phần chênh. Không hiện hóa đơn gốc của Groq. Turbo và Large có hai ô giá, vì cước Groq khác nhau. Nội bộ vẫn ghi giờ tiếng và token để đối soát. Phim dài thì tiền dịch có thể lớn hơn tiền nhận dạng, nên đơn giá phải có đệm. Đổi đơn giá không sửa phiếu cũ.
+
+Trước khi gửi Groq, hiện thời lượng, đơn giá, số giữ chỗ và số dư còn lại. Khách bấm giữ chỗ thì mới chạy. Hết số đã giữ thì dừng ở đoạn kế. Phần đã dịch trên máy khách không xóa. Đoạn Groq lỗi không tính tiền. Xong thì trừ số thực, nhả phần giữ thừa. Khách xuất được file của đúng lần đã trả, kể cả khi không có gói ngày.
+
+### 15.2. Chỗ trên màn hình
+
+Tab Key Sub có hai lựa chọn: **Key của tôi** và **Trả theo lượt**. Cửa 2 thì ẩn ô key, hiện số dư, đơn giá của model đang chọn, và nút nạp tiền.
+
+Trong Tài khoản thêm số dư, đơn giá đang áp, và sổ phiếu. Có nút xem thêm. Không thêm trang mới.
+
+### 15.3. Phiếu
+
+Mỗi lần chạy một phiếu. Ghi giờ, tên tệp, cửa đã chọn, phút tiếng, đơn giá lúc chạy, số giữ, số trừ, số nhả. Không ghi lời thoại, không ghi video, không ghi key.
+
+Trạng thái chỉ dùng: Đang giữ, Đã trừ, Đã nhả, Dừng vì hết tiền, Lỗi nhận dạng, Đã hoàn vào ví.
+
+Nút **Hỏi về lần này** tạo yêu cầu kèm mã phiếu. Phòng không giữ tệp, nên không chạy lại giúp. Khách muốn chạy tiếp thì chọn lại tệp trên máy.
+
+### 15.4. Quyền trên sổ lượt
+
+Hỗ trợ, khi tìm email, thấy sổ lượt của người đó. Được trả lời và ghi chú. Không khóa, không hoàn tiền, không đổi giá. Không thấy key, phụ đề, hay video. Việc hỏi về tiền chuyển thẳng cho Quản lý, không chờ hai giờ.
+
+Câu trả lời sẵn: lần này trừ đúng số phút đã chạy, đơn giá là giá lúc bấm chạy. Phần giữ thừa đã về số dư. Đoạn lỗi không tính tiền. Tệp không còn trên phòng. Cửa trả theo lượt đang đóng thì key của khách vẫn dùng được.
+
+Quản lý, trên một phiếu, được nhả khoản đang giữ nếu phiếu kẹt, và được hoàn vào ví một phần hoặc toàn bộ số đã trừ của đúng phiếu đó. Bắt buộc có lý do. Không hoàn quá số đã trừ. Không hoàn ra ngân hàng ở bản này. Khóa, mở hạn và mật khẩu tạm giữ như hiện tại. Quản lý không xem sổ của Chủ.
+
+Chủ sửa hai đơn giá, đóng hoặc mở cửa 2, và viết câu khách thấy khi cửa đóng. Đặt hạn mức đồng mỗi khách mỗi ngày. Đủ hạn thì chỉ khách đó dừng. Ba số trong ngày: tổng đang giữ, tổng đã trừ, số phiếu lỗi. Không có nội dung phim. Trang Quản lý không hiện key của phòng. Key chỉ là biến môi trường của máy chủ, không bắt đầu bằng `VITE_`.
+
+Nhân viên không chấm phụ đề đúng hay sai. Phòng không giữ lời thoại. Chất lượng nằm ở mục 14.3.
+
+### 15.5. Điều khoản khi bật
+
+Phải nâng `TERMS_VERSION`. Viết rõ tiếng và chữ đi qua máy chủ rồi tới Groq, chỉ giữ lúc xử lý rồi xóa. Giá là ước tính, số trừ là số thực. Khách đồng ý bản mới trước lần trả tiền đầu của cửa 2. Không hứa dịch đúng hết.
+
+### 15.6. Chưa làm trong lát cắt này
+
+Không nhận link video. Không có khóa API cho lập trình viên. Không hiện hóa đơn Groq. Không cộng tiền gói ngày vào lần trả theo lượt. Không hoàn ra ngân hàng.
+
+---
