@@ -16,30 +16,14 @@ import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { addLocalRun } from "@/lib/local-runs";
 import { claimPlayback, closeRoomTicket, forgetTicket, openRoomTicket, recoverOrphanTicket, rememberTicket } from "@/lib/sub/room-ticket";
-import { audioBufferTo16k, packAudio, type PackedAudio } from "@/lib/sub/codec";
-import {
-  abortError,
-  analyzeFilm,
-  applyNameFixes,
-  contextBlock,
-  chatCall,
-  listModelIds,
-  probeKey,
-  ROOM_KEY,
-  type ChatKey,
-  sleep,
-  throwIfAborted,
-  transcribe,
-  translateIndexes,
-  translateWithRepair,
-} from "@/lib/sub/groq";
+import { packAudio, type PackedAudio } from "@/lib/sub/codec";
+import { analyzeFilm, applyNameFixes, contextBlock, chatCall, listModelIds, probeKey, ROOM_KEY, type ChatKey, sleep, throwIfAborted, transcribe, translateIndexes, translateWithRepair } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
 import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
 import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
 import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
-import { describeDecodeFailure, SNIFF_BYTES } from "@/lib/sub/media-sniff";
-import { looksLikePageLink, openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
+import { openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
 import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
@@ -53,55 +37,10 @@ import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, energyThreshol
 import { FILTER_RETRY_BUDGET_SECONDS, filterRejectKey, planFilterRetries, type FilterRetryReport } from "@/lib/sub/filter-retry";
 import { asrTestLabel, readAsrTest } from "@/lib/sub/asr-test";
 import { ingestAsrPart, keepRejectedCue, slicePcm, type AsrPartResult, type RawAsrPart, type RejectEntry } from "@/lib/sub/diagnostics";
-import {
-  ASR_RETRY_BUDGET_SECONDS,
-  formatRetryStatus,
-  partSeconds,
-  planDecodeRetries,
-  spansForDecodeRetry,
-  type AsrRetryReport,
-} from "@/lib/sub/asr-retry";
-import {
-  addressLock,
-  asrPrompt,
-  BATCH,
-  glossaryHit,
-  isSilentChunk,
-  fmt,
-  MAX_BYTES,
-  MAX_MINUTES,
-  MAX_STREAM_HOURS,
-  splitAudio,
-  STYLE_EXTRA_MAX,
-  SR,
-  toSrt,
-  toTxt,
-  toVtt,
-  toRawSrt,
-  untranslated,
-  windowRms,
-  type Bible,
-} from "@/lib/sub/text";
-import {
-  loadGenreGlossary,
-  loadRunGlossary,
-  protectTerms,
-  restoreTerms,
-  settleGlossaryLines,
-  stripLeftoverPlaceholders,
-  mergeIntoGloss,
-  overlayUserTerms,
-  parseGlossaryCsv,
-  type GlossaryTerm,
-} from "@/lib/sub/glossary";
-import { suggestTerms } from "@/lib/glossary-room";
-import {
-  budgetSpeechGaps,
-  formatGapConfirm,
-  GAP_BUDGET_SECONDS,
-  spansFromBlocks,
-  type GapPlan,
-} from "@/lib/sub/gap-scan";
+import { ASR_RETRY_BUDGET_SECONDS, formatRetryStatus, partSeconds, planDecodeRetries, spansForDecodeRetry, type AsrRetryReport } from "@/lib/sub/asr-retry";
+import { addressLock, asrPrompt, BATCH, glossaryHit, isSilentChunk, fmt, MAX_MINUTES, MAX_STREAM_HOURS, splitAudio, STYLE_EXTRA_MAX, SR, toSrt, toTxt, toVtt, toRawSrt, untranslated, windowRms, type Bible } from "@/lib/sub/text";
+import { loadGenreGlossary, loadRunGlossary, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, mergeIntoGloss, overlayUserTerms, parseGlossaryCsv, type GlossaryTerm } from "@/lib/sub/glossary";
+import { budgetSpeechGaps, formatGapConfirm, GAP_BUDGET_SECONDS, spansFromBlocks, type GapPlan } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
 import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
@@ -129,6 +68,8 @@ import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";
 import { getServiceMenu } from "@/lib/pack-room";
 import { turnPackProblem } from "@/lib/turn-pack";
+import { readGenderMap, voiceStore, overlayCastLocks, cloneBible, readStore, writeStore, removeStore, shareUserTerms, userGlossKey, readUserTerms, safeStore } from "@/components/pipeline-store";
+import { loadBlob, waitForMetadata, decodeTo16k } from "@/components/pipeline-media";
 
 type AsrResult = AsrPartResult;
 
@@ -183,34 +124,6 @@ type Job = {
   heardLang: string;
 };
 
-function readGenderMap(key: string): Record<string, "female" | "male"> {
-  try {
-    const data = JSON.parse(readStore(key) || "{}") as Record<string, string>;
-    const out: Record<string, "female" | "male"> = {};
-    for (const [name, value] of Object.entries(data)) {
-      if (value === "male" || value === "female") out[name] = value;
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-function voiceStore(kind: "line" | "cast", film: string) {
-  return `g${kind}_` + (film.trim().toLowerCase() || "_");
-}
-
-function overlayCastLocks(bible: Bible, film: string) {
-  const saved = readGenderMap(voiceStore("cast", film));
-  for (const character of bible.characters || []) {
-    const gender = saved[(character.name || "").trim().toLowerCase()];
-    if (gender) character.gender = gender;
-  }
-}
-
-function cloneBible(bible: Bible): Bible {
-  return JSON.parse(JSON.stringify(bible)) as Bible;
-}
 
 function asrLanguageOf(source: string) {
   return source === "auto" ? "" : source;
@@ -267,51 +180,6 @@ const emptyJob = (): Job => ({
   heardLang: "",
 });
 
-function readStore(key: string) {
-  try {
-    return localStorage.getItem(key) || "";
-  } catch {
-    return "";
-  }
-}
-function writeStore(key: string, value: string) {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    /* private mode */
-  }
-}
-function removeStore(key: string) {
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    /* private mode */
-  }
-}
-
-function shareUserTerms(source: string, genre: string, terms: GlossaryTerm[]) {
-  try {
-    if (localStorage.getItem("gshare") !== "1") return;
-  } catch {
-    return;
-  }
-  void suggestTerms({ data: { lang: source, genre, terms } }).catch(() => {});
-}
-
-function userGlossKey(source: string, genre: string) {
-  return "guser_" + (source || "_") + "_" + (genre || "auto");
-}
-
-function readUserTerms(source: string, genre: string): GlossaryTerm[] {
-  try {
-    const raw = readStore(userGlossKey(source, genre));
-    if (!raw) return [];
-    const data = JSON.parse(raw) as GlossaryTerm[];
-    return Array.isArray(data) ? data.filter((t) => t && t.source) : [];
-  } catch {
-    return [];
-  }
-}
 
 /** Dòng trạng thái lúc mới mở, chưa có việc nào. Studio đổi chữ này khi Dịch bình thường đang bảo trì. */
 export const READY_STATUS = "Sẵn sàng. Chọn video rồi bấm Tải và dịch.";
@@ -3019,106 +2887,4 @@ export function usePipeline() {
     dropReject,
     polish,
   };
-}
-
-async function loadBlob(file: File | null, url: string, signal: AbortSignal, status: (message: string) => void) {
-  if (file) return file;
-  if (!/^https?:\/\//i.test(url)) throw new Error("Link phải bắt đầu bằng http:// hoặc https://.");
-  if (looksLikePageLink(url))
-    throw new Error("Link này là trang video, không phải file mp4/mp3 trực tiếp. Hãy tải video về máy rồi chọn file.");
-  if (/\.m3u8(\?|#|$)/i.test(url)) throw new Error("Link .m3u8 (luồng HLS) chưa hỗ trợ. Hãy dùng link mp4/mkv/mp3 trực tiếp.");
-  let response: Response;
-  try {
-    response = await fetch(url, { signal, mode: "cors", credentials: "omit" });
-  } catch (error) {
-    if (signal.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
-    throw new Error("Video vẫn phát được nhưng máy chủ chặn CORS nên không lấy được âm thanh. Hãy tải file về máy rồi chọn file.");
-  }
-  if (!response.ok) throw new Error(`Không tải được link video: HTTP ${response.status}.`);
-  const type = response.headers.get("content-type") || "";
-  if (/text\/html|application\/json|text\/plain/.test(type))
-    throw new Error("Link trả về một trang web, không phải file video hoặc âm thanh.");
-  const total = Number(response.headers.get("content-length")) || 0;
-  const tooBig = "File lớn hơn 1 GB. Hãy tách riêng âm thanh bằng ffmpeg rồi chọn vào ô Âm thanh riêng.";
-  if (total > MAX_BYTES) throw new Error(tooBig);
-  if (!response.body?.getReader) return response.blob();
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let got = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    got += value.length;
-    if (got > MAX_BYTES) {
-      reader.cancel().catch(() => {});
-      throw new Error(tooBig);
-    }
-    status(`Đang tải video… ${(got / 1048576).toFixed(0)} MB${total ? ` / ${(total / 1048576).toFixed(0)} MB (${Math.round((got / total) * 100)}%)` : ""}`);
-  }
-  const parts: BlobPart[] = chunks.map((chunk) => {
-    const copy = new ArrayBuffer(chunk.byteLength);
-    new Uint8Array(copy).set(chunk);
-    return copy;
-  });
-  return new Blob(parts, { type });
-}
-
-function waitForMetadata(video: HTMLVideoElement | null) {
-  if (!video || video.readyState >= 1) return Promise.resolve();
-  return new Promise<void>((resolve, reject) => {
-    const cleanup = () => {
-      video.removeEventListener("loadedmetadata", ok);
-      video.removeEventListener("error", bad);
-    };
-    const ok = () => {
-      cleanup();
-      resolve();
-    };
-    const bad = () => {
-      cleanup();
-      reject(new Error("Không đọc được file media."));
-    };
-    video.addEventListener("loadedmetadata", ok);
-    video.addEventListener("error", bad);
-  });
-}
-
-async function decodeTo16k(blob: Blob, audioContext: AudioContext, streamWhy = "") {
-  if (blob.size > MAX_BYTES)
-    throw new Error("File lớn hơn 1 GB và không đọc theo đoạn được. Hãy chọn thêm Âm thanh riêng.");
-  let encoded: ArrayBuffer;
-  try {
-    encoded = await blob.arrayBuffer();
-  } catch {
-    throw new Error("Không đọc được dữ liệu file.");
-  }
-  let audioBuffer: AudioBuffer;
-  try {
-    audioBuffer = await audioContext.decodeAudioData(encoded.slice(0));
-  } catch {
-    // Đọc vài MB đầu để nói rõ file là gì (MKV, AC3, DTS…) thay vì một câu chung chung.
-    let head = new Uint8Array(0);
-    try {
-      head = new Uint8Array(await blob.slice(0, SNIFF_BYTES).arrayBuffer());
-    } catch {
-      /* không đọc được thì báo theo nội dung đã có */
-    }
-    throw new Error(describeDecodeFailure({ fileName: blob instanceof File ? blob.name : "", head, hint: streamWhy }));
-  }
-  if (!audioBuffer.duration || !Number.isFinite(audioBuffer.duration)) throw new Error("Không đọc được thời lượng âm thanh.");
-  if (audioBuffer.duration > MAX_MINUTES * 60)
-    throw new Error(`File dài hơn ${MAX_MINUTES} phút sẽ làm đầy bộ nhớ máy. Hãy cắt thành đoạn ngắn hơn.`);
-  const samples = await audioBufferTo16k(audioBuffer);
-  if (!samples.length) throw new Error("Không tìm thấy âm thanh trong file.");
-  if (isSilentChunk(samples)) throw new Error("Không nghe thấy tiếng trong file. Hãy tăng âm lượng hoặc chọn file khác.");
-  return samples;
-}
-
-function safeStore(): Storage | null {
-  try {
-    return typeof window === "undefined" ? null : window.localStorage;
-  } catch {
-    return null;
-  }
 }
