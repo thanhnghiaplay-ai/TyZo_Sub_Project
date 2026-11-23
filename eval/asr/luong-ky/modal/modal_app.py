@@ -13,7 +13,9 @@ import modal
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LUONG = os.path.dirname(HERE)
-CFG = json.load(open(os.path.join(HERE, "cau-hinh.json")))
+# Trên máy Modal tệp này nằm ở /root, còn cấu hình được chép vào /root/luong-ky/modal.
+_CFG_PATH = next(p for p in (os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json") if os.path.exists(p))
+CFG = json.load(open(_CFG_PATH))
 SECRET = modal.Secret.from_name("tyzo-asr")
 LLM_MODEL = CFG["hop_nhat"]["gpu"]["model"]
 
