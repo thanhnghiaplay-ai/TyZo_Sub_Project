@@ -109,8 +109,8 @@ def ali(messages, model):
     body = json.dumps({"model": model, "messages": messages, "temperature": 0, "enable_thinking": False, "response_format": {"type": "json_object"}}).encode()
     for k in range(4):
         try:
-            req = urllib.request.Request("https://ws-3cg8k1b2dzc84cbl.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions", body,
-                                         {"Authorization": "Bearer x", "Content-Type": "application/json", "User-Agent": "asr-bench/1.0"})
+            req = urllib.request.Request(os.environ["ALI_BASE"] + "/compatible-mode/v1/chat/completions", body,
+                                         {"Authorization": "Bearer " + os.environ.get("ALI_API_KEY", "x"), "Content-Type": "application/json", "User-Agent": "asr-bench/1.0"})
             return json.load(urllib.request.urlopen(req, timeout=240))["choices"][0]["message"]["content"]
         except Exception as e:
             print("  [ali]", e, flush=True); time.sleep(4)
