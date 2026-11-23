@@ -16,8 +16,15 @@ body = json.dumps({"audio_b64": base64.b64encode(open(path, "rb").read()).decode
                    "lang": lang, "profile": profile}).encode()
 req = urllib.request.Request(os.environ["TYZO_ASR_URL"], body, {"Content-Type": "application/json",
                              "Authorization": "Bearer " + os.environ["TYZO_ASR_TOKEN"], "User-Agent": "tyzo-asr-client/1.0"})
+# Modal: việc quá 150 giây được trả 303 về một địa chỉ hỏi lại kết quả, lặp tới khi xong → cho phép hỏi lại nhiều lần.
+class Doi(urllib.request.HTTPRedirectHandler):
+    max_repeats = 1000
+    max_redirections = 1000
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        print(f"  … máy đang xử lý ({time.time() - t:.0f} s), hỏi lại kết quả", flush=True)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 t = time.time()
-r = json.load(urllib.request.urlopen(req, timeout=1800))
+r = json.load(urllib.request.build_opener(Doi).open(req, timeout=1800))
 out = os.path.splitext(path)[0] + f".{profile}.srt"
 open(out, "w").write(r["srt"])
 print(f"Xong sau {time.time() - t:.1f} s (máy xử lý {r['stats'].get('giay_xu_ly')} s). Phụ đề: {out}")
