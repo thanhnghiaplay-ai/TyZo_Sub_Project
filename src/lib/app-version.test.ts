@@ -20,6 +20,11 @@ describe("CHANGELOG cho khách", () => {
     }
   });
 
+  it("giữ gọn: tối đa 30 bản trong ứng dụng (bản cũ chuyển sang docs/lich-su/CHANGELOG-cu.md)", () => {
+    // Cả danh sách được gửi xuống trình duyệt mà màn «có gì mới» chỉ hiện 8 bản.
+    assert.ok(CHANGELOG.length <= 30, `CHANGELOG có ${CHANGELOG.length} bản: chuyển bản cũ sang docs/lich-su/CHANGELOG-cu.md`);
+  });
+
   it("không có từ nội bộ", () => {
     for (const note of CHANGELOG) {
       for (const text of [note.title, ...note.points]) {
