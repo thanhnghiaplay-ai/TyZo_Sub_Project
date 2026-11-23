@@ -42,7 +42,7 @@ app = modal.App("tyzo-asr")
 
 
 @app.function(image=llm_image, gpu=CFG["gpu"]["model_chu"], volumes={"/cache": llm_cache}, secrets=[SECRET],
-              scaledown_window=300, timeout=24 * 3600, min_containers=int(os.environ.get("TYZO_LLM_WARM", "0")))
+              scaledown_window=300, timeout=24 * 3600, min_containers=int(os.environ.get("TYZO_LLM_WARM") or 0))
 @modal.concurrent(max_inputs=64)
 @modal.web_server(port=8000, startup_timeout=1500)
 def llm():
@@ -55,7 +55,7 @@ def llm():
 
 
 @app.cls(gpu=CFG["gpu"]["nhan_dang"], image=asr_image, volumes={"/cache": asr_cache}, secrets=[SECRET],
-         scaledown_window=60, timeout=1800, min_containers=int(os.environ.get("TYZO_ASR_WARM", "0")))
+         scaledown_window=60, timeout=1800, min_containers=int(os.environ.get("TYZO_ASR_WARM") or 0))
 class Asr:
     @modal.enter()
     def load(self):
