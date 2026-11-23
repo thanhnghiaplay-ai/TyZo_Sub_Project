@@ -9,7 +9,7 @@ import score as SC
 KK = pykakasi.kakasi()
 TURBO, LARGE = "whisper-large-v3-turbo", "whisper-large-v3"
 NAMES = {"zh": "Mandarin Chinese (Simplified)", "ja": "Japanese", "ko": "Korean", "en": "English"}
-BAIT = re.compile(r"点赞|订阅|转发|打赏|栏目|字幕由|谢谢观看|感谢观看|请不吝|明镜|下期再见|ご視聴|チャンネル登録|字幕|시청해|구독|좋아요|자막|独播剧场|优优|yoyo|television series|字幕组|中文字幕|thanks? for watching|subscribe|like and share|amara|請不吝|ご覧いただき", re.I)
+BAIT = re.compile(r"点赞|订阅|转发|打赏|栏目|字幕由|谢谢观看|感谢观看|请不吝|明镜|下期再见|ご視聴|チャンネル登録|字幕|시청해|구독|좋아요|자막|独播剧场|优优|yoyo|ming pao|明报|television series|字幕组|中文字幕|thanks? for watching|subscribe|like and share|amara|請不吝|ご覧いただき", re.I)
 INTERJ = re.compile(r"^(啊|呀|哈|嗯|呃|哦|哇|唔|嘿|ああ|あ|ん|う|うわ|わあ|ひゃ|きゃ|ふふ|은|음|으|아|어|까|꺄|악|윽|누|와|우|ugh|oh|ah|aah|uh|um|hmm|ha|whoa|ow|ooh|yeah)+$", re.I)
 
 def interjection_only(t, lang):

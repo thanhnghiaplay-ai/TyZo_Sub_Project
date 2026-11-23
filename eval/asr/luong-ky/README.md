@@ -71,6 +71,8 @@ Bản 7B dịch sai tiếng lóng («破防» → «Tôi ốp», «躺平» → 
 
 `modal/backend.py` chạy luồng Kỹ tại chỗ: nhận dạng bằng faster-whisper (turbo và large-v3) thay Groq, nên không vướng giới hạn lượt gọi; hợp nhất vẫn gọi Qwen4-Max. `modal/modal_app.py` đưa lên Modal GPU L4, tự tắt sau 60 giây không có việc, có mã bảo vệ. `modal/goi_thu.py` gửi một video và đo thời gian chờ. Cách triển khai ghi ở đầu `modal_app.py`.
 
+Đã chạy thử `backend.py` trên CPU 4 nhân (chưa chạy trên Modal vì cần token của Chủ), clip Trung làm lại 38,5 s, mức Kỹ: **lỗi 1,5%** (Groq turbo cùng luồng: 2,3–5,4%), không ra chữ bịa. Thời gian trên CPU: tách giọng 22,8 s, nhận dạng + tách người nói + hợp nhất 175,7 s, tổng 202 s. Trên GPU L4 phải đo lại bằng `goi_thu.py`. Dò khoảng trống gặp thêm một câu bịa kinh điển «MING PAO CANADA // MING PAO TORONTO» (bị chặn vì các bản không khớp; đã thêm vào danh sách chặn).
+
 ## 4. Thời gian và chi phí
 
 Đo trên 4 nhân CPU, clip 38,5 s: Demucs 21,2 s; VAD 0,65 s; SepFormer mọi đoạn 32,1 s; một lần gọi turbo (22 s tiếng) ~1,1 s; Qwen4-Max ~2,2 s; Qwen3.8 trên Groq 0,33 s.
