@@ -105,6 +105,9 @@ trien_khai() {
   local out
   out="$(cd "$CODE" && TYZO_ASR_WARM="$(conf_get ASR_WARM)" TYZO_LLM_WARM="$(conf_get LLM_WARM)" "$MODAL" deploy "$APP_FILE" 2>&1 | tee /dev/stderr)" || true
   local url; url="$(printf '%s\n' "$out" | grep -A2 'Asr.run' | grep -o 'https://[^ ]*\.modal\.run' | head -1)"
+  # modal mới không in địa chỉ Asr.run khi app có nhiều phần: hỏi thẳng Modal, không được thì suy từ địa chỉ máy model chữ
+  [ -n "$url" ] || url="$("$PY" -c "import modal; print(modal.Cls.from_name('$APP_NAME', 'Asr')().run.get_web_url() or '')" 2>/dev/null | grep -o 'https://[^ ]*\.modal\.run' | head -1)"
+  [ -n "$url" ] || url="$(printf '%s\n' "$out" | grep -o 'https://[^ ]*-llm\.[^ ]*\.modal\.run' | head -1 | sed 's/-llm\./-asr-run./')"
   if [ -z "$url" ]; then do_ "Đưa lên Modal chưa xong. Đọc chữ đỏ ở trên, hoặc chụp gửi người hỗ trợ."; return 1; fi
   conf_set URL "$url"
   xanh "Dịch vụ đang ở: $url"
