@@ -23,9 +23,11 @@ image = (
         "torch==2.15.0", "torchaudio==2.11.1", "demucs==4.1.0", "speechbrain==1.1.2", "faster-whisper==1.2.1",
         "onnxruntime==1.29.0", "numpy==2.5.5", "scipy==1.18.1", "soundfile", "jiwer", "opencc-python-reimplemented",
         "cn2an", "pykakasi", "pypinyin", "fastapi[standard]",
+        "nvidia-cublas-cu12", "nvidia-cudnn-cu12==9.*",   # faster-whisper (CTranslate2) cần CUDA 12
     )
     .env({"ASR_DEVICE": "cuda", "HF_HOME": "/cache/hf", "TORCH_HOME": "/cache/torch", "FW_DIR": "/cache/fw",
-          "SEP_DIR": "/cache/sepformer-libri2mix", "VAD_MODEL": "/root/luong-ky/modal/silero_vad.int8.onnx"})
+          "SEP_DIR": "/cache/sepformer-libri2mix",
+          "LD_LIBRARY_PATH": "/usr/local/lib/python3.12/site-packages/nvidia/cublas/lib:/usr/local/lib/python3.12/site-packages/nvidia/cudnn/lib", "VAD_MODEL": "/root/luong-ky/modal/silero_vad.int8.onnx"})
     .add_local_dir(LUONG, "/root/luong-ky", ignore=["**/__pycache__", "ket-qua/**", "thu-1-kiem-hiep/**"])
 )
 cache = modal.Volume.from_name("tyzo-asr-cache", create_if_missing=True)
@@ -57,7 +59,13 @@ class Asr:
         lang = item.get("lang")
         if lang not in ("zh", "ja", "ko", "en", "yue", "ru", "cs", "vi"):
             raise HTTPException(400, "ngôn ngữ không hỗ trợ")
-        with tempfile.NamedTemporaryFile(suffix="." + str(item.get("ext", "wav"))) as f:
-            f.write(base64.b64decode(item["audio_b64"])); f.flush()
-            r = self.backend.process(f.name, lang, item.get("profile", "ky"))
+        import traceback
+        from fastapi.responses import JSONResponse
+        try:
+            with tempfile.NamedTemporaryFile(suffix="." + str(item.get("ext", "wav"))) as f:
+                f.write(base64.b64decode(item["audio_b64"])); f.flush()
+                r = self.backend.process(f.name, lang, item.get("profile", "ky"))
+        except Exception:
+            # trả đoạn lỗi về cho người gọi (không chứa key: key nằm trong biến môi trường)
+            return JSONResponse({"loi": traceback.format_exc()[-3000:]}, status_code=500)
         return {"srt": self.backend.to_srt(r["segs"]), **r}
