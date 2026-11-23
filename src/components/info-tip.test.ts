@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { studioSource } from "./studio-source.ts";
 
 /** Nút (i): ghi chú giải thích gom vào đây cho gọn. Cảnh báo và lỗi vẫn hiện sẵn, không đưa vào (i). */
 const tip = readFileSync(new URL("./info-tip.tsx", import.meta.url), "utf8");
-const studio = readFileSync(new URL("./studio.tsx", import.meta.url), "utf8");
+const studio = studioSource();
 
 describe("InfoTip (i)", () => {
   it("bấm được trên điện thoại, rê chuột chỉ tính với chuột, có tên cho trình đọc màn hình, vùng chạm 44px", () => {

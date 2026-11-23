@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { studioSource } from "./studio-source.ts";
 
 const read = (file: string) => readFileSync(new URL(file, import.meta.url), "utf8");
 
@@ -37,7 +38,7 @@ describe("Admin: ô key các nhà sinh từ bảng PROVIDERS", () => {
 });
 
 describe("Khách: ô key các nhà ngoài Groq sinh từ bảng PROVIDERS", () => {
-  const studio = read("./studio.tsx");
+  const studio = studioSource();
   const pipe = read("./use-pipeline.ts");
 
   it("ô key của khách sinh từ bảng PROVIDERS (KeyRing), không còn ô viết tay Alibaba/Deepgram", () => {

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { USE_CHOICES, USE_KEY, readUse, rememberUse, shouldAsk, presetForUse } from "./first-ask.ts";
+import { studioSource } from "../components/studio-source.ts";
 
 function memory() {
   const data = new Map<string, string>();
@@ -46,7 +47,7 @@ describe("câu hỏi lần đầu", () => {
     const exportMenu = readFileSync(new URL("../components/export-menu.tsx", import.meta.url), "utf8");
     assert.match(presetForUse("lam-phu-de").tip, /Tải phụ đề/);
     assert.match(exportMenu, /Tải phụ đề/);
-    const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+    const studio = studioSource();
     assert.match(studio, /<FirstAskCard /);
   });
 });

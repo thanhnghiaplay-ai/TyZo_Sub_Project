@@ -14,6 +14,7 @@ import {
   nextTool,
   ringDash,
 } from "./tool-wheel.ts";
+import { studioSource } from "../components/studio-source.ts";
 
 test("thứ tự lướt theo luồng làm việc, đủ 4 công cụ không trùng; Thuật ngữ và Cài đặt dịch không lướt riêng", () => {
   assert.deepEqual([...WHEEL_ORDER], ["phim", "cast", "voice", "check"]);
@@ -78,7 +79,7 @@ test("mọi công cụ lướt đều có tên trong TOOL_NAME, và Studio gắn
   assert.equal(TOOL_NAME.cast, "Ngữ cảnh");
   assert.equal(TOOL_NAME.thuatngu, "Thuật ngữ");
   assert.equal(TOOL_NAME.key, "Cài đặt dịch");
-  const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+  const studio = studioSource();
   assert.match(studio, /<StudioDock[\s\S]*wheel=\{<ToolWheel /);
   const dock = readFileSync(new URL("../components/studio-dock.tsx", import.meta.url), "utf8");
   assert.equal(dock.includes("onPickFile"), false);
@@ -90,7 +91,7 @@ test("nextTool đi theo luồng Phim → … → Kiểm tra; công cụ cuối v
   assert.equal(nextTool("key"), null);
   for (let i = 0; i < WHEEL_ORDER.length - 1; i++)
     assert.equal(nextTool(WHEEL_ORDER[i]), WHEEL_ORDER[i + 1]);
-  const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+  const studio = studioSource();
   // Dòng «Tiếp theo: …» cuối tab đã được thay bằng thanh dính «Tiếp tục» (studio-steps.ts).
   assert.equal(studio.includes("Tiếp theo:"), false);
 });
@@ -103,6 +104,6 @@ test("ringDash: 0% là vòng trống, 100% là vòng đầy, ngoài khoảng th�
   assert.equal(ringDash(-5).offset, circumference);
   assert.equal(ringDash(250).offset, 0);
   assert.equal(ringDash(Number.NaN).offset, circumference);
-  const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+  const studio = studioSource();
   assert.match(studio, /progress=\{app\.running && app\.stages \? app\.stages\.percent : null\}/);
 });

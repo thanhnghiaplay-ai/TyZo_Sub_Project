@@ -7,6 +7,7 @@ import { GROUP_LABEL, GUIDE_FAQ, guideTopics, matchGuide, UI } from "./guide-top
 import { ROOM_PLANS, TRIAL_MINUTES } from "./room-plans.ts";
 import { isTourId, TOUR_PAGE, TOURS } from "./tour-steps.ts";
 import { takeTourRequest, requestTour } from "./tour-request.ts";
+import { studioSource } from "../components/studio-source.ts";
 
 const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -23,7 +24,7 @@ function walk(dir: string, out: string[] = []): string[] {
 const UI_SOURCES = walk(SRC)
   .filter((file) => !file.endsWith(path.join("lib", "guide-topics.ts")))
   .map((file) => readFileSync(file, "utf8"));
-const STUDIO = readFileSync(path.join(SRC, "components", "studio.tsx"), "utf8");
+const STUDIO = studioSource();
 
 function appearsAsLabel(label: string): boolean {
   const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

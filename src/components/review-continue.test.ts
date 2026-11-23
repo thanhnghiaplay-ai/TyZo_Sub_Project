@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { customerVisiblePrice } from "../lib/turn-pack.ts";
+import { studioSource } from "./studio-source.ts";
 
-const studio = readFileSync(new URL("./studio.tsx", import.meta.url), "utf8");
+const studio = studioSource();
 const steps = readFileSync(new URL("./steps-bar.tsx", import.meta.url), "utf8");
 const pipeline = readFileSync(new URL("./use-pipeline.ts", import.meta.url), "utf8");
 

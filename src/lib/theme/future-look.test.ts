@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { studioSource } from "../../components/studio-source.ts";
 
 const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
 const hero = readFileSync(new URL("../../components/home-hero.tsx", import.meta.url), "utf8");
-const studio = readFileSync(new URL("../../components/studio.tsx", import.meta.url), "utf8");
+const studio = studioSource();
 
 test("Tương lai B6: chỗ gắn hiệu ứng có trong mã trang khách", () => {
   assert.match(hero, /data-drop-ring/);

@@ -3,8 +3,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { STUDIO_SHEET_QUERY } from "../lib/studio-layout.ts";
+import { studioSource } from "./studio-source.ts";
 
-const source = readFileSync(new URL("./studio.tsx", import.meta.url), "utf8");
+const source = studioSource();
 
 const [SHEET_PORTRAIT, SHEET_LANDSCAPE] = [
   "(max-width: 699px) and (orientation: portrait), (max-height: 520px) and (orientation: portrait)",

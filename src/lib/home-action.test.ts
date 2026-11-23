@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { homeAction } from "./home-action.ts";
 import type { PayState } from "./pay-status.ts";
+import { studioSource } from "../components/studio-source.ts";
 
 const ready: PayState = { kind: "key-ready", access: { kind: "trial", left: 1 }, keys: ["Groq"] };
 const base = { pay: ready, moneyOn: true, hasInput: true, online: true, running: false, blocked: false };
@@ -50,7 +51,7 @@ describe("nút chính trang chủ theo trạng thái", () => {
   });
 
   it("trang chủ dùng homeAction cho nút bắt đầu", () => {
-    const studio = readFileSync(new URL("../components/studio.tsx", import.meta.url), "utf8");
+    const studio = studioSource();
     assert.match(studio, /homeAction\(/);
     const hero = readFileSync(new URL("../components/home-hero.tsx", import.meta.url), "utf8");
     assert.match(hero, /action\.label/);
