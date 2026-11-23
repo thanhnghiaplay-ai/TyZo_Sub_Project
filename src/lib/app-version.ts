@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.44.0";
+export const APP_VERSION = "5.45.0";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.45.0",
+    time: "15:25 23/11/2026",
+    title: "Dịch trực tiếp nhận dạng rõ hơn khi lấy tiếng thẳng từ tab hay điện thoại; ứng dụng 0.11.",
+    points: [
+      "Lọc cho giọng nói: bớt nhạc nền và tiếng trầm, tự chỉnh âm lượng như micro.",
+      "Video tiếng nhỏ vẫn nhận đủ câu; lúc im vẫn không gửi, không trừ thêm Token dịch.",
+      "Bật sẵn; tắt được ở ô «Lọc cho giọng nói» trên web và trong ứng dụng.",
+    ],
+  },
   {
     version: "5.44.0",
     time: "14:59 23/11/2026",

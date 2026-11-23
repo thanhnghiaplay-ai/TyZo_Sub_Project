@@ -48,6 +48,10 @@ class Prefs(context: Context) {
     var finalOnly: Boolean
         get() = p.getBoolean("caption_final_only", false)
         set(v) = p.edit().putBoolean("caption_final_only", v).apply()
+    /** Lọc cho giọng nói (VoiceFilter): bớt nhạc nền, tự chỉnh âm lượng. Mặc định bật. */
+    var voiceFilter: Boolean
+        get() = p.getBoolean("voice_filter", true)
+        set(v) = p.edit().putBoolean("voice_filter", v).apply()
     /** Ô «Từ cần giữ đúng»: mỗi dòng «gốc = cách dịch». */
     var words: String
         get() = str("words", "")

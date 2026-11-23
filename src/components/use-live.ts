@@ -11,7 +11,7 @@ import { tabEnv, tabErrorMessage } from "@/lib/live/live-tab";
 import { liveMinutes, liveMoneyLeft, liveWarn, type LiveUiState, type LiveWarn } from "@/lib/live/live-view";
 
 export type LiveInput = "mic" | "tab";
-type LiveSettings = { model: string; target: string; source: string; audio: boolean; input: LiveInput; words?: Record<string, string> };
+type LiveSettings = { model: string; target: string; source: string; audio: boolean; input: LiveInput; words?: Record<string, string>; voice?: boolean };
 
 type LiveApi = {
   state: LiveUiState;
@@ -192,7 +192,7 @@ export function useLive(): LiveApi {
             const session = new LiveSession(
               {
                 createSocket: (target) => new WebSocket(target) as unknown as SocketLike,
-                startCapture: (handlers) => startCapture(prebuilt, handlers, describe, { keepTracks: true }),
+                startCapture: (handlers) => startCapture(prebuilt, handlers, describe, { keepTracks: true, voice: settings.input === "tab" && settings.voice !== false }),
                 player: sessionPlayer,
               },
               {

@@ -51,8 +51,8 @@ const SAVED = "tyzo-live-settings";
 /** Chữ của phiên gần nhất, chỉ lưu trên máy khách: tải lại trang vẫn tải được phụ đề. */
 const LAST = "tyzo-live-last";
 
-type Saved = { model: string; target: string; source: string; audio: boolean; input: LiveInput; caption: CaptionPrefs; words: string };
-const DEFAULTS: Saved = { model: LIVE_MODELS[0], target: "vi", source: "", audio: true, input: "tab", caption: CAPTION_DEFAULT, words: "" };
+type Saved = { model: string; target: string; source: string; audio: boolean; input: LiveInput; caption: CaptionPrefs; words: string; voice: boolean };
+const DEFAULTS: Saved = { model: LIVE_MODELS[0], target: "vi", source: "", audio: true, input: "tab", caption: CAPTION_DEFAULT, words: "", voice: true };
 
 function readLast(): SavedLive | null {
   try {
@@ -87,6 +87,7 @@ function readSaved(): Saved {
       source: raw.source && liveLang(String(raw.source)) ? String(raw.source) : "",
       audio: raw.audio !== false,
       input: raw.input === "mic" ? "mic" : "tab",
+      voice: raw.voice !== false,
       caption: parseCaptionPrefs(raw.caption),
       words: typeof raw.words === "string" ? raw.words.slice(0, 4000) : "",
     };
@@ -315,6 +316,14 @@ export function LiveScreen() {
           </div>
           {!caps.tabAudio && loaded && <p className="text-xs text-muted">Thu âm thanh của tab chỉ có trên Chrome hoặc Edge ở máy tính. Trên điện thoại hãy dùng micro.</p>}
           {input === "tab" && caps.tabAudio && <p className="text-xs text-muted">Khi bấm Bắt đầu, chọn tab trình duyệt và bật mục chia sẻ âm thanh của tab.</p>}
+          {input === "tab" && caps.tabAudio && (
+            <label className="flex min-h-11 items-center gap-2 text-sm" data-voice-filter>
+              <input type="checkbox" className="size-5" disabled={locked} checked={settings.voice} onChange={(event) => setSettings((s) => ({ ...s, voice: event.target.checked }))} />
+              <span>
+                Lọc cho giọng nói <span className="text-xs text-muted">(bớt nhạc nền, tự chỉnh âm lượng: nhận dạng rõ hơn)</span>
+              </span>
+            </label>
+          )}
           {noInput && <p className="text-sm text-danger">Trình duyệt này không thu được âm thanh. Hãy mở trang bằng https trên Chrome, Edge hoặc Safari mới.</p>}
 
           <div className="grid gap-3 sm:grid-cols-2" data-tour="live-lang">
@@ -413,7 +422,7 @@ export function LiveScreen() {
               data-tour="live-start"
               disabled={button.disabled || startBlocked || (noModel && !button.stops)}
               title={startBlocked ? "Dịch trực tiếp đang bảo trì" : undefined}
-              onClick={() => (button.stops ? live.stop() : live.start({ model: settings.model, target: settings.target, source: settings.source, input, audio: voice && settings.audio, words }))}
+              onClick={() => (button.stops ? live.stop() : live.start({ model: settings.model, target: settings.target, source: settings.source, input, audio: voice && settings.audio, words, voice: settings.voice }))}
               className={"min-tap inline-flex min-w-40 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold disabled:opacity-50 " + (button.stops ? "border border-error text-danger" : "bg-accent text-ink")}
             >
               {button.stops ? <Icon slot="act.stop" className="size-4" /> : <Icon slot="act.start" className="size-4" />}
@@ -610,7 +619,7 @@ export function LiveScreen() {
             <button
               type="button"
               disabled={button.disabled || startBlocked || (noModel && !button.stops)}
-              onClick={() => (button.stops ? live.stop() : live.start({ model: settings.model, target: settings.target, source: settings.source, input, audio: voice && settings.audio, words }))}
+              onClick={() => (button.stops ? live.stop() : live.start({ model: settings.model, target: settings.target, source: settings.source, input, audio: voice && settings.audio, words, voice: settings.voice }))}
               className={"min-tap rounded-full px-5 text-sm font-semibold disabled:opacity-50 " + (button.stops ? "border border-white/50 bg-black/60 text-white" : "bg-accent text-ink")}
             >
               {button.label}

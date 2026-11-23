@@ -32,7 +32,7 @@ export async function startCapture(
   handlers: CaptureHandlers,
   describe: (error: unknown) => string = micErrorMessage,
   /** keepTracks: không tắt nguồn tiếng khi dừng thu; bên gọi tự tắt (Dịch trực tiếp web giữ nguồn để nối lại). */
-  options: { keepTracks?: boolean } = {},
+  options: { keepTracks?: boolean; voice?: boolean } = {},
 ): Promise<CaptureHandle> {
   let stream: StreamLike;
   try {
@@ -52,7 +52,7 @@ export async function startCapture(
       for (const frame of framer.push(channels)) handlers.onFrame(frame);
       handlers.onLevel?.(framer.level);
     });
-    framer = new LiveFramer(graph.sampleRate);
+    framer = new LiveFramer(graph.sampleRate, options.voice === true);
   } catch (error) {
     release();
     throw new CaptureError(describe(error));

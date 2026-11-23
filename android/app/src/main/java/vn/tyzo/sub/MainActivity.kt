@@ -286,6 +286,7 @@ class MainActivity : Activity() {
         }
         lang.addView(words, ui.full(6))
         wordsBox = words
+        lang.addView(ui.toggle("Lọc cho giọng nói (bớt nhạc nền, tự chỉnh âm lượng: nhận dạng rõ hơn). Áp dụng khi bấm Bắt đầu.", prefs.voiceFilter) { prefs.voiceFilter = it }, ui.full(10))
 
         // Tùy chỉnh phụ đề.
         val cap = section(col, "Tùy chỉnh chữ", "PHỤ ĐỀ NỔI")

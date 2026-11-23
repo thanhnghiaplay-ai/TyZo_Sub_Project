@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.45.0",
+    time: "15:25 23/11/2026",
+    area: "ha-tang",
+    text: "Chủ hỏi vì sao micro nhận dạng chuẩn hơn tiếng lấy thẳng; trả lời: micro qua lọc ồn và tự chỉnh âm lượng của trình duyệt (live-mic-browser), tab và ứng dụng thì thô. Chủ: «Ok làm ngay, sau đó đẩy chính thức». voice-filter.ts và VoiceFilter.kt (cùng cách): trên tiếng 16 kHz mono trước khi gửi, lọc thông cao 150 Hz + thông thấp 6 kHz (bậc hai Butterworth), tự chỉnh âm lượng về RMS 0,1 (tăng tối đa 8 lần, giảm còn 0,5, theo dõi 0,4 giây, đổi mức trong 50 ms), đoạn có đỉnh thô dưới SILENT_PEAK thì không tăng (giữ đúng cổng im của live-gate và LiveService), chặn đỉnh mềm từ 0,9. Web: LiveFramer(rate, voice) chỉ khi nguồn là tab, ô «Lọc cho giọng nói» (mặc định bật). Ứng dụng 0.11 (versionCode 11): lọc sau khi đo đỉnh thô, trước khi nén μ-law; Prefs.voiceFilter, công tắc ở mục ngôn ngữ. Thử: 3 phép thử TS + 4 phép thử Kotlin JVM (android/tools/VoiceFilterCheck.kt): nhạc trầm 40 Hz lấn giọng 1 kHz thì sau lọc tỉ lệ giọng/trầm tăng khoảng 200 lần; tiếng nhỏ 0,02 lên RMS 0,1; tiếng to không vỡ; ồn nền vẫn dưới ngưỡng im. Không đổi cầu nối, không đổi điều khoản (xử lý trên máy, không thêm dữ liệu gửi đi). CHƯA thử với Alibaba thật.",
+  },
+  {
     version: "5.44.0",
     time: "14:59 23/11/2026",
     area: "ha-tang",

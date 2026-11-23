@@ -1,3 +1,4 @@
+import { VoiceFilter } from "./voice-filter.ts";
 import { LIVE_SEND_RATE, Resampler, floatToPcm16, levelOf, mixToMono, pcm16ToBytes } from "./live-audio.ts";
 
 /** Mỗi khung gửi lên cầu nối dài 100 ms: 1600 mẫu 16 kHz × 2 byte = 3200 byte. */
@@ -14,14 +15,19 @@ export class LiveFramer {
   /** Mức âm lượng 0..1 của đoạn vừa đẩy vào. */
   level = 0;
 
-  constructor(inputRate: number) {
+  /** «Lọc cho giọng nói» (voice-filter.ts): chỉ cho tiếng lấy thẳng từ tab. */
+  private readonly voice: VoiceFilter | null;
+
+  constructor(inputRate: number, voice = false) {
     this.resampler = new Resampler(inputRate, LIVE_SEND_RATE);
+    this.voice = voice ? new VoiceFilter(LIVE_SEND_RATE) : null;
   }
 
   push(channels: Float32Array[]): Uint8Array[] {
     const mono = mixToMono(channels);
     this.level = levelOf(mono);
-    const pcm = floatToPcm16(this.resampler.push(mono));
+    const resampled = this.resampler.push(mono);
+    const pcm = floatToPcm16(this.voice ? this.voice.process(resampled) : resampled);
     const joined = new Int16Array(this.pending.length + pcm.length);
     joined.set(this.pending, 0);
     joined.set(pcm, this.pending.length);

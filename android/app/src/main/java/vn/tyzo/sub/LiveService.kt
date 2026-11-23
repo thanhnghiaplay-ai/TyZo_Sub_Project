@@ -192,6 +192,7 @@ class LiveService : Service() {
             val bytes = ByteBuffer.allocate(FRAME_SAMPLES * 2).order(ByteOrder.LITTLE_ENDIAN)
             // Vài khung im ngay trước khi có tiếng: gửi kèm để không mất âm đầu của câu.
             val preroll = ArrayDeque<ByteString>()
+            val voice = if (prefs.voiceFilter) VoiceFilter(SAMPLE_RATE) else null
             var lastLoudMs = 0L
             while (capturing.get()) {
                 val n = rec.read(shorts, 0, shorts.size)
@@ -217,6 +218,8 @@ class LiveService : Service() {
                 }
                 val now = System.currentTimeMillis()
                 if (peak >= SILENT_PEAK) lastLoudMs = now
+                // Lọc cho giọng nói sau khi đo mức thô (ngưỡng im vẫn tính trên tiếng gốc).
+                voice?.process(shorts, n)
                 // Nén μ-law (nửa dữ liệu) khi cầu nối nhận được; không thì PCM như cũ.
                 val frame = if (mulaw) {
                     ByteArray(n) { Audio.mulaw(shorts[it].toInt()) }.toByteString()
