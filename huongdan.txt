@@ -30,6 +30,7 @@ PHÁT HIỆN VI PHẠM (Chủ chốt 22/11/2026: luật chặt, chi tiết, có 
 - Ứng dụng 0.7: gửi μ-law khi ready.codecs có mulaw (tin {"type":"codec","value":"mulaw"} trước khung đầu), không gửi lúc im, bỏ khung khi hàng đợi quá 1,5 giây, có Tạm dừng. Web vẫn gửi PCM. Đổi giao thức thì giữ tương thích: cầu nối mặc định PCM.
 - Ứng dụng 0.6 tự nối lại (LiveService.reconnect, tối đa 3 lần, không nối lại khi mã 4400/4402/4503). Cầu nối không chuyển «Response stream timeout» cho khách và ngủ tới khi có tiếng.
 - Cầu nối (scripts/live-bridge.ts): việc chạy nền phải tự bắt lỗi; có process.on(unhandledRejection) làm lưới an toàn.
+- Bố cục mã (23/11/2026): Admin chia theo nhóm việc admin-room (kiểm quyền requireRole, nhật ký writeAudit), admin-users, admin-appeals, admin-money, admin-runs. Phòng dịch: studio.tsx + studio-stage/diag/glossary/parts/price/shared; test đọc mã phòng dịch bằng studioSource(). Luồng dịch: use-pipeline.ts + pipeline-store, pipeline-media.
 - Lớp nổi: nền mờ menu trượt (.rail-backdrop) là 45, menu 50. Bảng nổi mới của trang phải dưới 45 (rail-layer.test.ts).
 - Tên tệp trong Phiếu: máy chủ che (maskFileName) trước khi gửi nhân viên; chỉ Chủ bấm «Hiện tên đầy đủ» (revealTicketFileName, ghi nhật ký «xem-ten-tep» mỗi lần) và chỉ Chủ tìm theo tên tệp. Không gửi tên đầy đủ về trình duyệt nhân viên khác.
 - Trang mới: html và body khóa cuộn (overflow hidden), nên khung main của trang phải tự có h-dvh overflow-y-auto, không dùng min-h-dvh (back-nav.test.ts kiểm bốn trang đã sửa).
