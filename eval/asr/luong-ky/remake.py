@@ -3,7 +3,7 @@ import json, urllib.request, subprocess, sys, numpy as np, soundfile as sf
 sys.path.insert(0, "thu-1-kiem-hiep")
 from scipy import signal
 SR = 16000; rng = np.random.default_rng(3)
-H = os.environ["ALI_BASE"] + "/api/v1/services/aigc/multimodal-generation/generation"
+H = __import__("pml").ali_base() + "/api/v1/services/aigc/multimodal-generation/generation"
 exec(open("thu-1-kiem-hiep/mix.py").read().split("script={l")[0].split("SR=16000; rng=np.random.default_rng(7)")[1])  # lấy hàm nhạc, nổ, lọc
 def tts(text, voice, lt):
     body = json.dumps({"model": "qwen3-tts-flash", "input": {"text": text, "voice": voice, "language_type": lt}}).encode()

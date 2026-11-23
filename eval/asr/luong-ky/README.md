@@ -83,7 +83,7 @@ Bản 7B dịch sai tiếng lóng («破防» → «Tôi ốp», «躺平» → 
 ## 5. Chạy lại
 
 Cần Python 3.11+, ffmpeg và các gói: `numpy scipy soundfile jiwer opencc-python-reimplemented cn2an pykakasi pypinyin onnxruntime torch torchaudio demucs speechbrain`.
-Biến môi trường: `GROQ_API_KEY`; `ALI_API_KEY` và `ALI_BASE` (địa chỉ Workspace Alibaba Model Studio, dạng `https://…aliyuncs.com`) cho Qwen4-Max và Qwen TTS. Không ghi key vào file.
+Biến môi trường: `GROQ_API_KEY`; `ALI_API_KEY` và `ALI_WORKSPACE` (ID Workspace Alibaba như ở Admin; hoặc `ALI_BASE` là địa chỉ đầy đủ) cho Qwen4-Max và Qwen TTS. Không ghi key vào file.
 
 Chạy trong một thư mục làm việc ngoài git (code tạo `cache/`, `sep/`, `pretrained/`):
 

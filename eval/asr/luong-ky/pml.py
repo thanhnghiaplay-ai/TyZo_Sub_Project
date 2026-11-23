@@ -104,12 +104,18 @@ EXTRA = {"zh": ", simplified characters, Chinese punctuation, numbers in Chinese
          "ko": ", standard Korean spelling and spacing", "en": ", standard spelling and punctuation"}
 RH = {"zh": ", plus pinyin", "ja": ", plus a hiragana reading", "ko": "", "en": ""}
 
+def ali_base():
+    """Địa chỉ Alibaba: ALI_BASE nếu có; không thì dựng từ ID Workspace như app (ALI_WORKSPACE, ví dụ ws-xxxx)."""
+    if os.environ.get("ALI_BASE"): return os.environ["ALI_BASE"].rstrip("/")
+    ws = os.environ.get("ALI_WORKSPACE", "").strip().lower()
+    return f"https://{ws}.ap-southeast-1.maas.aliyuncs.com" if ws else "https://dashscope-intl.aliyuncs.com"
+
 def ali(messages, model):
     import urllib.request
     body = json.dumps({"model": model, "messages": messages, "temperature": 0, "enable_thinking": False, "response_format": {"type": "json_object"}}).encode()
     for k in range(4):
         try:
-            req = urllib.request.Request(os.environ["ALI_BASE"] + "/compatible-mode/v1/chat/completions", body,
+            req = urllib.request.Request(ali_base() + "/compatible-mode/v1/chat/completions", body,
                                          {"Authorization": "Bearer " + os.environ.get("ALI_API_KEY", "x"), "Content-Type": "application/json", "User-Agent": "asr-bench/1.0"})
             return json.load(urllib.request.urlopen(req, timeout=240))["choices"][0]["message"]["content"]
         except Exception as e:

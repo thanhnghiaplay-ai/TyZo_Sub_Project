@@ -2,7 +2,8 @@
 
 Triển khai (trên VPS hoặc máy của Chủ, KHÔNG dán token vào chat):
     pip install modal && modal token new          # đăng nhập Modal một lần
-    modal secret create tyzo-asr ALI_API_KEY=... ALI_BASE=https://... TYZO_ASR_TOKEN=<chuỗi ngẫu nhiên dài>
+    modal secret create tyzo-asr ALI_API_KEY=sk-... ALI_WORKSPACE=ws-... TYZO_ASR_TOKEN=$(openssl rand -hex 32)
+    (ALI_WORKSPACE = ID Workspace Alibaba như ở Admin; hoặc ALI_BASE = địa chỉ đầy đủ)
     modal deploy eval/asr/luong-ky/modal/modal_app.py
 
 Gọi: POST <địa chỉ Modal in ra>  header "Authorization: Bearer <TYZO_ASR_TOKEN>"
