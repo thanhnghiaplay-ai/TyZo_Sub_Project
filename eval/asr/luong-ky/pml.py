@@ -95,6 +95,7 @@ Reconstruct EXACTLY what was said:
 1. Candidates are complementary: some versions catch quiet/whispered lines that others miss entirely. Keep EVERY phrase that at least two candidates contain (in time order), even if other candidates are empty there. For the wording of each phrase, take what the majority agree on.
 2. Where they disagree or the text makes no sense, compare how they SOUND and choose the spelling that sounds the same or nearly the same and makes sense in the conversation (including well-known slang). You may choose a correct word none of them wrote if it sounds almost identical.
 2b. Candidates marked SPEAKER-SEPARATED come from splitting two simultaneous speakers. If such a candidate contains a whole line that the other candidates garbled or missed (because two people talked at once), include that line as its own sentence, right after the line it overlapped with. Do not merge two speakers' words into one sentence.
+2c. Keep abbreviations, letters and foreign words exactly as spoken (e.g. YYDS, OK, no cap) — never expand or explain them.
 3. Never add content that has no acoustic support in the candidates; do not paraphrase, polish or translate.
 4. Drop pure non-verbal noises: screaming, moaning, groaning, laughter with no words. Recognizers often write these as bursts like 啊啊 / うわー / 까아 까아 / 으아악 / "I'm sorry, oh yeah" / "aah" that do not fit the conversation — delete such fragments entirely. Keep real words and an interjection that starts a real sentence.
 5. Output in {lname}{extra}.
@@ -209,7 +210,10 @@ def align(text, c, g, lang):
             bl = [b for b in sm.get_matching_blocks() if b.size]
             m = sum(b.size for b in bl)
             if m and (best is None or m > best[0]): best = (m, [ts[b.b + k] for b in bl for k in range(b.size)])
-        if best and best[0] >= max(1, 0.3 * len(cp)): out.append({"start": min(best[1]) - 0.15, "end": max(best[1]) + 0.15, "text": p})
+        if best and best[0] >= max(1, 0.3 * len(cp)):
+            ts = sorted(best[1]); med = ts[len(ts) // 2]; span = 0.35 * len(cp) + 1.0
+            ts = [x for x in ts if abs(x - med) <= span] or [med]   # bỏ chữ khớp nhầm ở chỗ xa (câu bị kéo dài cả bài)
+            out.append({"start": min(ts) - 0.15, "end": max(ts) + 0.15, "text": p})
         else: out.append({"start": None, "end": None, "text": p})
     for i, o in enumerate(out):   # câu không khớp chữ nào: đặt giữa hai câu bên cạnh
         if o["start"] is None:
