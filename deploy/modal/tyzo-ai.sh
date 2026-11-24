@@ -13,7 +13,7 @@ VENV="$DIR/venv"
 CONF="$DIR/tyzo-ai.conf"
 APP_FILE="eval/asr/luong-ky/modal/modal_app.py"
 CAU_HINH="eval/asr/luong-ky/modal/cau-hinh.json"
-TEST_DIR_MAC_DINH="$DIR/mau-test"   # thư mục để zh2.mp4 ja2.mp4 ko.mp4 en.mp4 (clip thử có đáp án)
+TEST_DIR_MAC_DINH="$DIR/mau-test"   # thư mục để zh.mp4 ja.mp4 ko.mp4 en.mp4 (clip thử có đáp án)
 TEST_OUT="$DIR/test"               # kết quả so sánh + phụ đề từng luồng (không bị «Cập nhật» xóa)
 APP_NAME="tyzo-asr"
 SECRET_NAME="tyzo-asr"
@@ -173,11 +173,11 @@ so_sanh_test() { # so_sanh_test [thư mục clip] [số lần] [luồng,luồng|
   local d="${1:-}" n="${2:-}" p="${3:-}"
   if [ -z "$d" ]; then
     d="$(conf_get TEST_DIR)"; d="${d:-$TEST_DIR_MAC_DINH}"
-    if [ -t 0 ]; then read -rp "Thư mục chứa zh2.mp4 ja2.mp4 ko.mp4 en.mp4 [$d]: " x; d="${x:-$d}"; fi
+    if [ -t 0 ]; then read -rp "Thư mục chứa zh.mp4 ja.mp4 ko.mp4 en.mp4 [$d]: " x; d="${x:-$d}"; fi
   fi
-  if ! compgen -G "$d/zh2.*" >/dev/null && ! compgen -G "$d/ja2.*" >/dev/null && ! compgen -G "$d/ko.*" >/dev/null && ! compgen -G "$d/en.*" >/dev/null; then
-    do_ "Không thấy clip nào trong $d (cần ít nhất một trong: zh2, ja2, ko, en; đuôi mp4/wav/mp3/m4a)."
-    vang "Chép clip lên VPS, ví dụ từ máy bạn:  scp zh2.mp4 ja2.mp4 ko.mp4 en.mp4 root@<VPS>:$d/"
+  if ! compgen -G "$d/zh*.*" >/dev/null && ! compgen -G "$d/ja*.*" >/dev/null && ! compgen -G "$d/ko.*" >/dev/null && ! compgen -G "$d/en.*" >/dev/null; then
+    do_ "Không thấy clip nào trong $d (cần ít nhất một trong: zh, ja, ko, en; đuôi mp4/wav/mp3/m4a)."
+    vang "Chép clip lên VPS, ví dụ từ máy bạn:  scp zh.mp4 ja.mp4 ko.mp4 en.mp4 root@<VPS>:$d/"
     mkdir -p "$d"; return 1
   fi
   conf_set TEST_DIR "$d"
@@ -201,7 +201,7 @@ xem_srt_test() { # xem_srt_test [clip] [luồng] [lần]
   local c="${1:-}" l="${2:-}" i="${3:-}"
   if [ -z "$c" ] && [ -t 0 ]; then
     TYZO_TEST_OUT="$TEST_OUT" "$PY" "$CODE/eval/asr/luong-ky/modal/xem_srt_test.py"
-    read -rp "Xem clip nào? (zh2, ja2, ko, en; Enter = thoát): " c; [ -n "$c" ] || return 0
+    read -rp "Xem clip nào? (zh, ja, ko, en; Enter = thoát): " c; [ -n "$c" ] || return 0
     read -rp "Luồng nào? (Enter = tất cả luồng, có kèm đáp án): " l
   fi
   [ -n "$c" ] || { TYZO_TEST_OUT="$TEST_OUT" "$PY" "$CODE/eval/asr/luong-ky/modal/xem_srt_test.py"; return 0; }

@@ -1,9 +1,9 @@
 """So Whisper turbo với Qwen3-ASR trên 4 clip thử (Trung, Nhật, Hàn, Anh) qua dịch vụ Modal, chấm bằng score.py.
 
-    python3 so_sanh_asr.py <thư mục có zh2.mp4 ja2.mp4 ko.mp4 en.mp4> [số lần chạy=3] [luồng,luồng,...|all]
+    python3 so_sanh_asr.py <thư mục có zh.mp4 ja.mp4 ko.mp4 en.mp4 (zh2/ja2 nếu có thì dùng thay zh/ja)> [số lần chạy=3] [luồng,luồng,...|all]
 Mặc định so TẤT CẢ luồng trong cau-hinh.json (thêm luồng mới vào đó là tự được so). Mỗi luồng chạy nhiều lần vì kết quả tự dao động.
 Cuối cùng xếp hạng và chỉ ra luồng tốt nhất. Phụ đề từng lần chạy lưu ở <ra>/srt-test/<clip>.<luồng>.<lần>.srt (xem bằng xem_srt_test.py hoặc tyzo-ai → «Xem srt test»).
-Tên tệp: zh2, ja2, ko, en (đuôi mp4/wav/mp3/m4a). Đáp án lấy ở ../dap-an/<tên>_dap_an.json.
+Tên tệp: zh (hoặc zh2), ja (hoặc ja2), ko, en (đuôi mp4/wav/mp3/m4a). Đáp án lấy ở ../dap-an/<tên>_dap_an.json.
 Địa chỉ và chuỗi bảo vệ: TYZO_ASR_URL / TYZO_ASR_TOKEN hoặc /opt/tyzo-ai/tyzo-ai.conf. Máy phải được cài với «tyzo-ai» đặt QWEN_PRELOAD=1.
 Chạy tuần tự từng việc (luồng Qwen dùng biến chung của máy, không được chạy chung với luồng khác). Kết quả: <ra>/so-sanh-test.json, với <ra> = biến TYZO_TEST_OUT, không có thì ../ket-qua
 """
@@ -13,7 +13,8 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from score import score
 
-SETS = [("zh2", "zh"), ("ja2", "ja"), ("ko", "ko"), ("en", "en")]
+# mỗi tiếng thử theo thứ tự: có tệp nào thì dùng tệp đó (zh2/ja2 là bản dựng lại, zh/ja là bản gốc của Chủ)
+SETS = [("zh2", "zh"), ("zh", "zh"), ("ja2", "ja"), ("ja", "ja"), ("ko", "ko"), ("en", "en")]
 OUT_DIR = os.environ.get("TYZO_TEST_OUT") or os.path.join(ROOT, "ket-qua")
 SRT_DIR = os.path.join(OUT_DIR, "srt-test")
 CFG = json.load(open(os.path.join(HERE, "cau-hinh.json"), encoding="utf-8"))
@@ -50,12 +51,14 @@ def main():
     profiles = list(CFG["luong"]) if arg == "all" else arg.split(",")
     for p in profiles:
         if p not in CFG["luong"]: sys.exit(f"Luồng '{p}' không có. Có: {', '.join(CFG['luong'])}")
-    clips = []
+    clips, have = [], set()
     for F, L in SETS:
+        if L in have: continue
         p = next((os.path.join(folder, F + e) for e in (".mp4", ".wav", ".mp3", ".m4a") if os.path.exists(os.path.join(folder, F + e))), None)
-        if p: clips.append((F, L, p))
-        else: print(f"(bỏ qua {F}: không thấy tệp trong {folder})")
-    if not clips: sys.exit(f"Không có clip nào trong {folder} (cần: zh2, ja2, ko, en với đuôi mp4/wav/mp3/m4a).")
+        if p: clips.append((F, L, p)); have.add(L)
+    for L in ("zh", "ja", "ko", "en"):
+        if L not in have: print(f"(bỏ qua tiếng {L}: không thấy tệp {L}.mp4 trong {folder})")
+    if not clips: sys.exit(f"Không có clip nào trong {folder} (cần: zh hoặc zh2, ja hoặc ja2, ko, en với đuôi mp4/wav/mp3/m4a).")
     os.makedirs(SRT_DIR, exist_ok=True)
     gia = CFG["gia_gpu_usd_gio"][CFG["gpu"]["nhan_dang"][0]]
     out, table, loi = {}, {}, {}
