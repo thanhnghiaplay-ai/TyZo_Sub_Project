@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tyzo-ai: cài và quản lý dịch vụ nhận dạng AI trên Modal (GPU tự tắt khi không có việc). Gõ «tyzo-ai» để mở menu.
-# Lệnh nhanh: tyzo-ai kiem-tra [video|link] [zh] [ky] | tyzo-ai cap-nhat | tyzo-ai nhat-ky | tyzo-ai dia-chi
+# Lệnh nhanh: tyzo-ai kiem-tra [video|link] [zh] [ky] | tyzo-ai so-sanh [thư mục] [số lần] [luồng,..|all] | tyzo-ai xem-srt [clip] [luồng] | tyzo-ai cap-nhat | tyzo-ai nhat-ky | tyzo-ai dia-chi
 # VPS mới, dán một dòng (thay <nhánh> bằng nhánh có code, ví dụ main):
 #   bash <(curl -fsSL https://raw.githubusercontent.com/thanhnghiaplay-ai/TyZo_Sub_Project/<nhánh>/deploy/modal/tyzo-ai.sh)
 # Tệp này nằm trong kho nên tự mới theo mỗi lần «Cập nhật». Không đụng web, cầu nối hay lệnh «tyzo».
@@ -13,6 +13,8 @@ VENV="$DIR/venv"
 CONF="$DIR/tyzo-ai.conf"
 APP_FILE="eval/asr/luong-ky/modal/modal_app.py"
 CAU_HINH="eval/asr/luong-ky/modal/cau-hinh.json"
+TEST_DIR_MAC_DINH="$DIR/mau-test"   # thư mục để zh2.mp4 ja2.mp4 ko.mp4 en.mp4 (clip thử có đáp án)
+TEST_OUT="$DIR/test"               # kết quả so sánh + phụ đề từng luồng (không bị «Cập nhật» xóa)
 APP_NAME="tyzo-asr"
 SECRET_NAME="tyzo-asr"
 NHANH_MAC_DINH="${TYZO_AI_BRANCH:-ccr-562e47af-b438ur}"
@@ -159,6 +161,57 @@ for k, v in c["luong"].items():
 EOF
 }
 
+# ---------- so sánh test: chạy TẤT CẢ luồng trên clip thử có đáp án, chấm lỗi chữ, chỉ ra luồng tốt nhất ----------
+cai_cham_diem() {
+  "$PY" -c 'import jiwer, opencc, cn2an, pykakasi' 2>/dev/null && return 0
+  vang "Cài thư viện chấm điểm (jiwer, opencc, cn2an, pykakasi), chỉ lần đầu..."
+  "$VENV/bin/pip" install -q jiwer opencc-python-reimplemented cn2an pykakasi || { do_ "Cài thư viện chấm điểm lỗi."; return 1; }
+}
+
+so_sanh_test() { # so_sanh_test [thư mục clip] [số lần] [luồng,luồng|all]
+  [ -n "$(conf_get URL)" ] || { do_ "Chưa có địa chỉ dịch vụ. Chạy mục 1 trước."; return 1; }
+  local d="${1:-}" n="${2:-}" p="${3:-}"
+  if [ -z "$d" ]; then
+    d="$(conf_get TEST_DIR)"; d="${d:-$TEST_DIR_MAC_DINH}"
+    if [ -t 0 ]; then read -rp "Thư mục chứa zh2.mp4 ja2.mp4 ko.mp4 en.mp4 [$d]: " x; d="${x:-$d}"; fi
+  fi
+  if ! compgen -G "$d/zh2.*" >/dev/null && ! compgen -G "$d/ja2.*" >/dev/null && ! compgen -G "$d/ko.*" >/dev/null && ! compgen -G "$d/en.*" >/dev/null; then
+    do_ "Không thấy clip nào trong $d (cần ít nhất một trong: zh2, ja2, ko, en; đuôi mp4/wav/mp3/m4a)."
+    vang "Chép clip lên VPS, ví dụ từ máy bạn:  scp zh2.mp4 ja2.mp4 ko.mp4 en.mp4 root@<VPS>:$d/"
+    mkdir -p "$d"; return 1
+  fi
+  conf_set TEST_DIR "$d"
+  if [ -z "$n" ] && [ -t 0 ]; then read -rp "Mỗi luồng chạy mấy lần? (1 = nhanh, 3 = đáng tin hơn vì kết quả tự dao động) [1]: " n; fi
+  n="${n:-1}"
+  if [ -z "$p" ] && [ -t 0 ]; then
+    echo "Các luồng hiện có:"; danh_sach_luong
+    read -rp "Luồng cần so (cách nhau bằng dấu phẩy, Enter = TẤT CẢ): " p
+  fi
+  p="${p:-all}"
+  cai_cham_diem || return 1
+  mkdir -p "$TEST_OUT"
+  vang "Chạy lần lượt từng luồng trên từng clip; máy GPU bật lần đầu và luồng Qwen nạp model nên có thể mất vài chục phút. Có thể bấm Ctrl+C: kết quả đã chạy vẫn được giữ."
+  TYZO_ASR_URL="$(conf_get URL)" TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" TYZO_TEST_OUT="$TEST_OUT" \
+    "$PY" "$CODE/eval/asr/luong-ky/modal/so_sanh_asr.py" "$d" "$n" "$p" 2>&1 | tee "$TEST_OUT/lan-cuoi.txt"
+  xanh "Xem phụ đề từng luồng: tyzo-ai → 15 (Xem srt test). Bảng điểm lưu ở $TEST_OUT/lan-cuoi.txt"
+}
+
+xem_srt_test() { # xem_srt_test [clip] [luồng] [lần]
+  [ -f "$TEST_OUT/so-sanh-test.json" ] || { do_ "Chưa có kết quả. Chạy «So sánh test» (mục 14) trước."; return 1; }
+  local c="${1:-}" l="${2:-}" i="${3:-}"
+  if [ -z "$c" ] && [ -t 0 ]; then
+    TYZO_TEST_OUT="$TEST_OUT" "$PY" "$CODE/eval/asr/luong-ky/modal/xem_srt_test.py"
+    read -rp "Xem clip nào? (zh2, ja2, ko, en; Enter = thoát): " c; [ -n "$c" ] || return 0
+    read -rp "Luồng nào? (Enter = tất cả luồng, có kèm đáp án): " l
+  fi
+  [ -n "$c" ] || { TYZO_TEST_OUT="$TEST_OUT" "$PY" "$CODE/eval/asr/luong-ky/modal/xem_srt_test.py"; return 0; }
+  if [ -t 1 ] && command -v less >/dev/null; then
+    TYZO_TEST_OUT="$TEST_OUT" "$PY" "$CODE/eval/asr/luong-ky/modal/xem_srt_test.py" "$c" ${l:+"$l"} ${i:+"$i"} | less -R
+  else
+    TYZO_TEST_OUT="$TEST_OUT" "$PY" "$CODE/eval/asr/luong-ky/modal/xem_srt_test.py" "$c" ${l:+"$l"} ${i:+"$i"}
+  fi
+}
+
 cap_nhat() {
   can_root
   tieu_de "Cập nhật bản mới"
@@ -239,6 +292,8 @@ menu() {
     echo "11. Tạm tắt / bật lại"
     echo "12. Đổi nhánh code"
     echo "13. Gỡ bỏ"
+    echo "14. So sánh test (chạy TẤT CẢ luồng trên clip thử, tìm luồng tốt nhất)"
+    echo "15. Xem srt test (phụ đề từng luồng, đặt cạnh đáp án)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -255,6 +310,8 @@ menu() {
       11) tat_bat ;;
       12) doi_nhanh ;;
       13) go_bo ;;
+      14) so_sanh_test ;;
+      15) xem_srt_test ;;
       0|q) exit 0 ;;
       *) vang "Chọn số trong menu." ;;
     esac
@@ -272,6 +329,8 @@ fi
 
 case "${1:-}" in
   kiem-tra) shift; kiem_tra "$@" ;;
+  so-sanh) shift; so_sanh_test "$@" ;;
+  xem-srt) shift; xem_srt_test "$@" ;;
   cap-nhat) cap_nhat ;;
   nhat-ky) "$MODAL" app logs "$APP_NAME" ;;
   dia-chi) dia_chi ;;
