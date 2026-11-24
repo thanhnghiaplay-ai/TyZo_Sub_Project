@@ -10,6 +10,15 @@ Khách chờ 17–40 s, bật máy ~10–13 s. App web CHƯA gọi dịch vụ n
 - [ ] Đo 1–2 video thật ~10 phút: thời gian chờ, tiền mỗi giờ thật.
 - [ ] Giảm tiền hướng B: máy nhận dạng đang ngồi chờ máy model chữ (cả hai cùng bị tính). Hiện A rẻ và chính xác hơn → dùng A làm mặc định, B dự phòng.
 
+## 1b. Thử Qwen3-ASR thay Whisper (đề xuất ghi 24/11/2026, CHƯA đo)
+Số liệu của Alibaba tự công bố, chưa ai đo trên clip của Chủ. Đã viết xong code, chưa chạy trên GPU thật (không có token Modal ở phiên này).
+- Code: `modal/qwen_engine.py` (Qwen3-ASR-1.7B/0.6B + Qwen3-ForcedAligner lấy mốc từng chữ, thay mốc Groq/Whisper), nối vào `modal/backend.py`. Luồng có trường `"engine"` trong `cau-hinh.json` thì nhận dạng bằng Qwen; luồng thử: `qwen` (như ky), `qwen-nhanh` (như nhanh), `qwen-0.6b-nhanh`.
+- Qwen3-ASR không trả độ tin cậy từng câu, nên avg_logprob/no_speech_prob là số giữ chỗ (-0,3 / 0). Hai bản của một nhóm cùng ra từ Qwen sẽ giống nhau hơn bản Whisper, nên cần xem lớp hợp nhất còn hữu ích không.
+- Cách đo: `tyzo-ai` đặt `QWEN_PRELOAD=1` rồi Cập nhật (nạp sẵn model, bật máy chậm thêm), sau đó
+  `python3 eval/asr/luong-ky/modal/so_sanh_asr.py <thư mục có zh2.mp4 ja2.mp4 ko.mp4 en.mp4> 3`
+  (mỗi luồng chạy 3 lần, chấm bằng `score.py`, so với «nhanh»/«ky» Whisper). Kết quả: `ket-qua/so-sanh-qwen-asr.json`.
+- Còn lại: đo thời gian và VRAM trên L4 (1.7B bf16 + aligner + Demucs + SepFormer cùng một máy), kiểm tra qwen-asr ghim transformers==4.57.6 không vướng gói khác, quyết định có thêm Fun-ASR / Cohere Transcribe vào so sánh không. Phần dịch chưa tìm.
+
 ## 2. Dịch trực tiếp giá rẻ (ưu tiên cho khách công nhân)
 - [ ] Groq «cắt câu» trong cầu nối (`scripts/live-bridge.ts`): VAD → Whisper turbo từng câu → model rẻ dịch. Giá gốc ~1.000–2.000đ/giờ (Alibaba ~7.800đ).
 - [ ] Modal GPU cho dịch trực tiếp giờ cao điểm: WebSocket, VAD + turbo + lọc bịa, máy bật sẵn theo giờ; lỗi/đang bật máy thì sang Alibaba.

@@ -27,6 +27,7 @@ asr_image = (
         "torch==2.15.0", "torchaudio==2.11.1", "demucs==4.1.0", "speechbrain==1.1.2", "faster-whisper==1.2.1",
         "onnxruntime==1.29.0", "numpy==2.5.5", "scipy==1.18.1", "soundfile", "jiwer", "opencc-python-reimplemented",
         "cn2an", "pykakasi", "pypinyin", "fastapi[standard]",
+        "qwen-asr==0.0.6",                                   # Qwen3-ASR (luồng thử «qwen…»); ghim transformers==4.57.6
         "nvidia-cublas-cu12", "nvidia-cudnn-cu12==9.*",   # faster-whisper (CTranslate2) cần CUDA 12
     )
     .env({"ASR_DEVICE": "cuda", "HF_HOME": "/cache/hf", "TORCH_HOME": "/cache/torch", "FW_DIR": "/cache/fw",
@@ -77,6 +78,8 @@ class Asr:
                 B["loi_dia_chi_model_chu"] = str(e)[:200]
         t = time.time(); backend._model("whisper-large-v3-turbo"); B["nap_turbo_s"] = round(time.time() - t, 1)
         t = time.time(); backend._model("whisper-large-v3"); B["nap_large_v3_s"] = round(time.time() - t, 1)
+        if os.environ.get("TYZO_QWEN_PRELOAD") == "1":      # chỉ nạp sẵn khi cần đo Qwen3-ASR: nạp thêm làm bật máy chậm hơn
+            t = time.time(); backend.qwen_engine.load("qwen3-asr-1.7b", "cuda", os.environ.get("HF_HOME")); B["nap_qwen3_asr_s"] = round(time.time() - t, 1)
         import numpy as np, pml
         t = time.time(); pml.sepformer(np.zeros(16000, dtype=np.float32)); B["nap_sepformer_s"] = round(time.time() - t, 1)
         t = time.time(); asr_cache.commit(); B["luu_o_s"] = round(time.time() - t, 1)

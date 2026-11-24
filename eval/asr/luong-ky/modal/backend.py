@@ -16,6 +16,7 @@ import numpy as np
 import soundfile as sf
 from faster_whisper import WhisperModel
 import pml
+import qwen_engine
 
 CFG = json.load(open(os.path.join(HERE, "cau-hinh.json")))
 BOOT = {}                                          # thời gian từng bước lúc bật máy (giây)
@@ -35,8 +36,13 @@ def _model(name):
                                          num_workers=4, download_root=os.environ.get("FW_DIR"))
         return _models[name]
 
+ENGINE = None   # tên bộ nhận dạng thay Whisper cho lần chạy hiện tại (luồng có "engine" trong cau-hinh.json), None = faster-whisper.
+                # Biến chung của máy: luồng thử Qwen chạy một lần một, không chạy chung với luồng khác cùng lúc.
+
 def transcribe_local(x, model="whisper-large-v3-turbo", language=None, prompt=None, temperature=None, words=False):
     """Trả kết quả cùng dạng `verbose_json` của Groq để `pml` dùng nguyên."""
+    if qwen_engine.is_qwen(ENGINE):    # cả turbo lẫn large-v3 đều chuyển sang Qwen (luồng thử nên đặt esc=false)
+        return qwen_engine.transcribe(qwen_engine.load(ENGINE, _dev(), os.environ.get("HF_HOME")), x, language, prompt, words)
     segs, _ = _model(model).transcribe(np.asarray(x, dtype=np.float32), language=language, initial_prompt=prompt,
                                        temperature=0.0, beam_size=5, word_timestamps=words, vad_filter=False,
                                        condition_on_previous_text=False)
@@ -123,12 +129,17 @@ def process(audio_path, lang, profile=None):
     if profile not in CFG["luong"]:
         raise ValueError(f"luồng '{profile}' không có; có: {', '.join(CFG['luong'])}")
     cfg = {k: v for k, v in CFG["luong"][profile].items() if k != "mo_ta"}
+    engine = cfg.pop("engine", None)
+    if engine and not qwen_engine.is_qwen(engine):
+        raise ValueError(f"bộ nhận dạng '{engine}' không có; có: {', '.join(qwen_engine.MODELS)}")
+    global ENGINE
     mode = os.environ.get("TYZO_FUSE", "gpu" if os.environ.get("LLM_BASE") else ("ali" if os.environ.get("ALI_API_KEY") else "khong"))
     ready = LlmReady() if mode == "gpu" else None
     cfg["fuse_chain"] = fuse_chain(mode, ready)
     work = tempfile.mkdtemp(prefix="asr-")
     old = os.getcwd()
     pml.USAGE.clear()
+    ENGINE = engine
     try:
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", audio_path, "-ar", "16000", "-ac", "1", os.path.join(work, "job.wav")], check=True)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", audio_path, "-ar", "44100", "-ac", "2", os.path.join(work, "job44.wav")], check=True)
@@ -137,11 +148,12 @@ def process(audio_path, lang, profile=None):
         segs, log, st = pml.run("job", cfg, lang)
         st["giay_xu_ly"] = round(time.time() - t0, 1)
         st["giay_tieng"] = round(sf.info("job.wav").duration, 1)
-        st["luong"] = profile; st["che_do_hop_nhat"] = mode
+        st["luong"] = profile; st["che_do_hop_nhat"] = mode; st["nhan_dang"] = engine or "faster-whisper"
         st["model_chu"] = dict(pml.USAGE); st["tien_model_chu_usd"] = cost(pml.USAGE)
         st["bat_may"] = dict(BOOT)
         return {"segs": segs, "stats": st}
     finally:
+        ENGINE = None
         if ready: ready.stop = True
         os.chdir(old)
         shutil.rmtree(work, ignore_errors=True)

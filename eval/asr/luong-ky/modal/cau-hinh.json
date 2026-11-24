@@ -15,6 +15,25 @@
       "mo_ta": "2 bản tiếng, không gọi large-v3, không tách người nói",
       "n": 2,
       "esc": false
+    },
+    "qwen": {
+      "mo_ta": "THỬ: như «ky» nhưng nhận dạng bằng Qwen3-ASR-1.7B thay Whisper",
+      "engine": "qwen3-asr-1.7b",
+      "n": 4,
+      "ovl": "all",
+      "esc": false
+    },
+    "qwen-nhanh": {
+      "mo_ta": "THỬ: như «nhanh» nhưng nhận dạng bằng Qwen3-ASR-1.7B",
+      "engine": "qwen3-asr-1.7b",
+      "n": 2,
+      "esc": false
+    },
+    "qwen-0.6b-nhanh": {
+      "mo_ta": "THỬ: như «nhanh» nhưng Qwen3-ASR-0.6B (nhỏ, nhanh hơn)",
+      "engine": "qwen3-asr-0.6b",
+      "n": 2,
+      "esc": false
     }
   },
   "hop_nhat": {
