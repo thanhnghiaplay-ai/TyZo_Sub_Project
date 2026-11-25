@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.46.0",
+    time: "18:26 25/11/2026",
+    area: "khac",
+    text: "Chủ gửi giao diện landing (tyzo-landing.html) và nhờ: nối nút đúng, dùng logo thật, chữ quảng cáo đúng điều khoản (công cụ SaaS tạo phụ đề bằng AI), đẩy chính thức. Làm: src/components/landing/landing-page.tsx + landing.css (mọi lớp CSS có tiền tố lp- và nằm trong khung .lp, không đụng styles.css), route /gioi-thieu (công khai, vẽ phía máy chủ, có title và description), và src/routes/index.tsx: khách chưa đăng nhập (hết đợi phiên, không có user) thấy landing; đang đợi phiên hoặc đã đăng nhập vẫn qua EntryGate như cũ; mã ?ref= vẫn được lưu (remember-referral.ts, cùng khóa tyzo-ref với EntryGate). Liên kết: Dùng thử, Đăng nhập → /login; Chọn gói, Bảng giá → /goi; Hướng dẫn → /huong-dan; Điều khoản → /dieu-khoan; Tải ứng dụng → ANDROID_APK_LATEST (bản phát hành GitHub, đã kiểm tải được, 0.11). Giá lấy từ useRoomPlans (giá Admin), dùng thử lấy TRIAL_FILES/TRIAL_MINUTES/TRIAL_BYTES, không chép số. Sửa so với bản gốc cho khớp điều khoản và mã: bỏ «nhiều thứ tiếng khác» (tệp: nguồn Trung, Hàn, Nhật, Anh → Việt; Dịch trực tiếp: hàng chục ngôn ngữ); bỏ «mọi việc nặng chạy trên máy chủ» (điều khoản: video xử lý trên máy khách, phòng không lưu video); bỏ «được chọn nhiều nhất», «chữ hiện sau ~2 giây», «Phim vừa ra chưa ai Vietsub», tên Bilibili/YouTube/TikTok, vì không chứng minh được hoặc khuyến khích làm phụ đề tác phẩm người khác (điều khoản mục 3); thêm câu «không cam kết đúng hết câu, đúng ý, đúng giọng», câu quyền với nội dung, câu dữ liệu đi đâu, ghi chú ví dụ so sánh là minh họa; dùng thử ghi rõ chưa xuất file. Không đổi dịch vụ, giá, dữ liệu lưu, quyền lợi nên KHÔNG sửa điều khoản (mục 12b), TERMS_VERSION giữ 2026-11-23.3. Không đổi cầu nối, không đổi android/. tsc sạch, eslint 0 lỗi, npm test 1496 pass, vite build xong; kiểm HTML vẽ phía máy chủ của /gioi-thieu (200, logo, giá, liên kết). CHƯA xem bằng trình duyệt thật (môi trường Claude không cài được Chromium): chưa chụp điện thoại sáng/tối, chưa thử hoạt hình, cuộn mượt và nút dính trên máy thật.",
+  },
+  {
     version: "5.45.0",
     time: "15:25 23/11/2026",
     area: "ha-tang",

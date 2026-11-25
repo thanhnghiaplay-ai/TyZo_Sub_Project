@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CtvRouteImport } from './routes/ctv'
 import { Route as DichTrucTiepRouteImport } from './routes/dich-truc-tiep'
 import { Route as DieuKhoanRouteImport } from './routes/dieu-khoan'
+import { Route as GioiThieuRouteImport } from './routes/gioi-thieu'
 import { Route as GoiRouteImport } from './routes/goi'
 import { Route as HuongDanRouteImport } from './routes/huong-dan'
 import { Route as LoginRouteImport } from './routes/login'
@@ -55,6 +56,11 @@ const DichTrucTiepRoute = DichTrucTiepRouteImport.update({
 const DieuKhoanRoute = DieuKhoanRouteImport.update({
   id: '/dieu-khoan',
   path: '/dieu-khoan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GioiThieuRoute = GioiThieuRouteImport.update({
+  id: '/gioi-thieu',
+  path: '/gioi-thieu',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GoiRoute = GoiRouteImport.update({
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/ctv': typeof CtvRoute
   '/dich-truc-tiep': typeof DichTrucTiepRoute
   '/dieu-khoan': typeof DieuKhoanRoute
+  '/gioi-thieu': typeof GioiThieuRoute
   '/goi': typeof GoiRoute
   '/huong-dan': typeof HuongDanRoute
   '/login': typeof LoginRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/ctv': typeof CtvRoute
   '/dich-truc-tiep': typeof DichTrucTiepRoute
   '/dieu-khoan': typeof DieuKhoanRoute
+  '/gioi-thieu': typeof GioiThieuRoute
   '/goi': typeof GoiRoute
   '/huong-dan': typeof HuongDanRoute
   '/login': typeof LoginRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/ctv': typeof CtvRoute
   '/dich-truc-tiep': typeof DichTrucTiepRoute
   '/dieu-khoan': typeof DieuKhoanRoute
+  '/gioi-thieu': typeof GioiThieuRoute
   '/goi': typeof GoiRoute
   '/huong-dan': typeof HuongDanRoute
   '/login': typeof LoginRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/ctv'
     | '/dich-truc-tiep'
     | '/dieu-khoan'
+    | '/gioi-thieu'
     | '/goi'
     | '/huong-dan'
     | '/login'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/ctv'
     | '/dich-truc-tiep'
     | '/dieu-khoan'
+    | '/gioi-thieu'
     | '/goi'
     | '/huong-dan'
     | '/login'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/ctv'
     | '/dich-truc-tiep'
     | '/dieu-khoan'
+    | '/gioi-thieu'
     | '/goi'
     | '/huong-dan'
     | '/login'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   CtvRoute: typeof CtvRoute
   DichTrucTiepRoute: typeof DichTrucTiepRoute
   DieuKhoanRoute: typeof DieuKhoanRoute
+  GioiThieuRoute: typeof GioiThieuRoute
   GoiRoute: typeof GoiRoute
   HuongDanRoute: typeof HuongDanRoute
   LoginRoute: typeof LoginRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       path: '/dieu-khoan'
       fullPath: '/dieu-khoan'
       preLoaderRoute: typeof DieuKhoanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gioi-thieu': {
+      id: '/gioi-thieu'
+      path: '/gioi-thieu'
+      fullPath: '/gioi-thieu'
+      preLoaderRoute: typeof GioiThieuRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/goi': {
@@ -481,6 +501,7 @@ const rootRouteChildren: RootRouteChildren = {
   CtvRoute: CtvRoute,
   DichTrucTiepRoute: DichTrucTiepRoute,
   DieuKhoanRoute: DieuKhoanRoute,
+  GioiThieuRoute: GioiThieuRoute,
   GoiRoute: GoiRoute,
   HuongDanRoute: HuongDanRoute,
   LoginRoute: LoginRoute,

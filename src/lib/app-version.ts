@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.45.0";
+export const APP_VERSION = "5.46.0";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.46.0",
+    time: "18:26 25/11/2026",
+    title: "Trang giới thiệu mới: xem TyZo Sub làm được gì trước khi đăng ký.",
+    points: [
+      "Khách chưa đăng nhập vào trang chủ sẽ thấy trang giới thiệu, có nút Đăng nhập và Dùng thử.",
+      "Xem cách dùng, tính năng, bảng giá, ứng dụng Android và hỏi đáp ngay trên một trang.",
+      "Mở thẳng tại địa chỉ /gioi-thieu; giá và hạn mức dùng thử luôn khớp với trang Bảng giá.",
+    ],
+  },
   {
     version: "5.45.0",
     time: "15:25 23/11/2026",
