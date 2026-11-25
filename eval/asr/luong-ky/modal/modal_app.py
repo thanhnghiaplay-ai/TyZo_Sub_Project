@@ -77,7 +77,7 @@ class Asr:
         if os.environ.get("TYZO_FUSE", "gpu") == "gpu":
             try:
                 os.environ["LLM_BASE"] = llm.get_web_url(); os.environ["LLM_KEY"] = os.environ["TYZO_ASR_TOKEN"]
-                backend.LlmReady()      # gọi trước để máy model chữ bật song song
+                # không đánh thức máy model chữ lúc bật máy nhận dạng: process() chỉ đánh thức khi tệp đủ dài
             except Exception as e:
                 B["loi_dia_chi_model_chu"] = str(e)[:200]
         t = time.time(); backend._model("whisper-large-v3-turbo"); B["nap_turbo_s"] = round(time.time() - t, 1)

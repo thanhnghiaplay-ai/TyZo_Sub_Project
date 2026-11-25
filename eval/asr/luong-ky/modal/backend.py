@@ -77,6 +77,13 @@ pml.transcribe = transcribe_local
 pml.demucs = demucs_inproc
 
 # ---------- model chữ trên GPU Modal: gọi trước để máy bật song song lúc đang nhận dạng ----------
+class NoLlm:
+    """Tệp ngắn: không đánh thức máy model chữ; luôn báo chưa sẵn sàng."""
+    ok = False; stop = False
+    def __call__(self): return False
+    def wait(self, limit=0): return False
+
+
 class LlmReady:
     def __init__(self):
         self.ok = False; self.stop = False
@@ -107,9 +114,12 @@ def fuse_chain(mode, ready):
     h = CFG["hop_nhat"]
     ali = {"name": "ali", "models": [[h["ali"]["model"], "ali1"]] * h["ali"]["so_lan"], "when": "disagree", "thr": h["ali"]["chi_khi_lech"]}
     if mode == "gpu":
+        # chỉ gọi model chữ khi các bản lệch nhau; các bản đã khớp thì dùng luôn (giống bậc ali)
+        gpu = {"name": "gpu", "models": [[os.environ.get("LLM_MODEL", h["gpu"]["model"]), "local"]] * h["gpu"]["so_lan"],
+               "when": "disagree", "thr": h["gpu"].get("chi_khi_lech", h["ali"]["chi_khi_lech"])}
         if os.environ.get("ALI_API_KEY"):   # có dự phòng: máy model chữ chưa bật xong thì dùng Alibaba ngay
-            return [{"name": "gpu", "models": [[os.environ.get("LLM_MODEL", h["gpu"]["model"]), "local"]] * h["gpu"]["so_lan"], "ready": ready}, ali]
-        return [{"name": "gpu", "models": [[os.environ.get("LLM_MODEL", h["gpu"]["model"]), "local"]] * h["gpu"]["so_lan"], "ready": ready.wait}]
+            return [dict(gpu, ready=ready), ali]
+        return [dict(gpu, ready=ready.wait)]
     if mode == "ali":
         return [ali]
     return []
@@ -134,8 +144,7 @@ def process(audio_path, lang, profile=None):
         raise ValueError(f"bộ nhận dạng '{engine}' không có; có: {', '.join(qwen_engine.MODELS)}")
     global ENGINE
     mode = os.environ.get("TYZO_FUSE", "gpu" if os.environ.get("LLM_BASE") else ("ali" if os.environ.get("ALI_API_KEY") else "khong"))
-    ready = LlmReady() if mode == "gpu" else None
-    cfg["fuse_chain"] = fuse_chain(mode, ready)
+    ready = None
     work = tempfile.mkdtemp(prefix="asr-")
     old = os.getcwd()
     pml.USAGE.clear()
@@ -143,6 +152,11 @@ def process(audio_path, lang, profile=None):
     try:
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", audio_path, "-ar", "16000", "-ac", "1", os.path.join(work, "job.wav")], check=True)
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", audio_path, "-ar", "44100", "-ac", "2", os.path.join(work, "job44.wav")], check=True)
+        # tệp đủ dài mới đánh thức máy model chữ (bật song song lúc nhận dạng); tệp ngắn bật máy chữ thường xong khi việc đã xong
+        long_enough = sf.info(os.path.join(work, "job.wav")).duration >= CFG["hop_nhat"]["gpu"].get("bat_san_tu_giay", 0)
+        if mode == "gpu":
+            ready = LlmReady() if long_enough else NoLlm()
+        cfg["fuse_chain"] = fuse_chain(mode, ready)
         os.chdir(work)
         t0 = time.time()
         segs, log, st = pml.run("job", cfg, lang)
@@ -151,6 +165,7 @@ def process(audio_path, lang, profile=None):
         st["luong"] = profile; st["che_do_hop_nhat"] = mode; st["nhan_dang"] = engine or "faster-whisper"
         st["model_chu"] = dict(pml.USAGE); st["tien_model_chu_usd"] = cost(pml.USAGE)
         st["bat_may"] = dict(BOOT)
+        st["bat_san_may_chu"] = isinstance(ready, LlmReady)
         return {"segs": segs, "stats": st}
     finally:
         ENGINE = None

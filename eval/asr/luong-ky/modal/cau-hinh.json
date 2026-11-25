@@ -41,7 +41,10 @@
     "_ghi_chu": "Chế độ do TYZO_FUSE trong secret quyết định: gpu (Qwen trên GPU Modal, lỗi thì sang Alibaba), ali (chỉ Alibaba), khong (không dùng model chữ).",
     "gpu": {
       "model": "Qwen/Qwen3.8-27B-FP8",
-      "so_lan": 3
+      "so_lan": 3,
+      "chi_khi_lech": 0.03,
+      "bat_san_tu_giay": 120,
+      "_ghi_chu": "chi_khi_lech: chỉ gọi model chữ khi các bản nhận dạng lệch hơn mức này (như bậc ali). bat_san_tu_giay: chỉ gọi bật sẵn máy chữ khi âm thanh dài từ mức này; tệp ngắn hơn không đánh thức máy chữ."
     },
     "ali": {
       "model": "qwen4-max",
