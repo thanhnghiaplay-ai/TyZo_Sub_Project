@@ -16,6 +16,6 @@
              "must": ["Hợp bang"], "any": ["ban đầu", "trước hết", "trước tiên", "lúc đầu", "đầu tiên"],
              "must_not": ["ưu tiên", "thương mại"]},
     "1674": {"topic": "An toàn nước uống khi du lịch", "glossary": {},
-             "must": ["một phút"], "any": ["vài phút", "nhiều phút", "một vài phút"]}
+             "must": ["một phút|1 phút"], "any": ["vài phút", "nhiều phút", "một vài phút"]}
   }
 }

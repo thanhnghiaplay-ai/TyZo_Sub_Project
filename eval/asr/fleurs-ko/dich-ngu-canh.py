@@ -40,7 +40,7 @@ def user_message(text, case, glossary):
 
 def checks(vi, case):
     low = vi.lower()
-    bad = [w for w in case.get("must", []) if w.lower() not in low]
+    bad = [w for w in case.get("must", []) if not any(alt.lower() in low for alt in w.split("|"))]
     if case.get("any") and not any(w.lower() in low for w in case["any"]):
         bad.append("/".join(case["any"]))
     bad += [f"không được có '{w}'" for w in case.get("must_not", []) if w.lower() in low]
