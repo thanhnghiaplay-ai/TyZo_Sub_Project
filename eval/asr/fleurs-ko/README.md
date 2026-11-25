@@ -40,4 +40,10 @@ Khi đủ kết quả, `report.json` lưu CER và lỗi từng câu. Các JSON p
 - 1663 có tên Cochamó xuất hiện bằng chữ Hàn và Latin trong đáp án. Khi duyệt bản Việt, một lần viết đúng địa danh là đủ.
 - 1660 kiểm tên Goethe, Fichte, Schlegel. 1673 kiểm số 13 bang và tên Các Điều khoản Hợp bang. 1674 kiểm phân biệt một phút với vài phút.
 
+### Mục 29 · xem riêng ID 1673 (CPU, chỉ đọc)
+
+[`xem-1673.py`](xem-1673.py) đọc báo cáo mục 26 mới nhất có ID 1673 ở cả hai luồng, đối chiếu SHA-256 và `config_id`, rồi in câu Hàn chuẩn, bản chép nhanh và ky, từng lỗi ký tự kèm vị trí so với cụm 연합 규약 (Các Điều khoản Hợp bang), các đoạn có mốc thời gian, và bản dịch đã lưu ở `dich-ko-vi/1673-*.json`. Công cụ dừng nếu số lỗi tính lại khác báo cáo. Không gửi yêu cầu Modal.
+
+Đọc kết quả theo hai câu hỏi: (1) bản chép còn giữ 연합 규약 hay đã thành từ khác, ví dụ một từ mang nghĩa thương mại như 교역/통상/무역 hoặc 연방; (2) bản dịch hiểu 우선 (“trước hết/ban đầu”) thành “ưu tiên”. Nếu bản chép đã giữ đúng cụm mà bản dịch vẫn sai, lỗi nằm ở bước dịch; khi đó mới cần dịch riêng câu Hàn chuẩn của 1673.
+
 Đối chiếu nghĩa, tên riêng, số liệu và độ tự nhiên theo từng ID. Ghi rõ khi một lỗi bắt đầu từ bản chép. Các câu FLEURS độc lập nên cần bài riêng để đánh giá hội thoại hoặc chia phụ đề.
