@@ -3,9 +3,10 @@
   "luong_mac_dinh": "ky",
   "luong": {
     "ky": {
-      "mo_ta": "Chính xác nhất: tách giọng, 4 bản tiếng, tách người nói chồng, hợp nhất",
+      "mo_ta": "Chính xác thích nghi: tách giọng, 4 bản tiếng, chỉ tách người nói khi các bản lệch nhau",
       "n": 4,
-      "ovl": "all"
+      "ovl": "disagree",
+      "ovl_thr": 0.12
     },
     "can-bang": {
       "mo_ta": "Bỏ tách người nói chồng: nhanh hơn, rẻ hơn",

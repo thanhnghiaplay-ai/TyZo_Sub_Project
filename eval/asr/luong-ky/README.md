@@ -1,5 +1,9 @@
 # Luồng nhận dạng nhiều lớp (thử nghiệm 23/11/2026)
 
+## Cập nhật tối ưu
+
+Luồng `ky` hiện chỉ chạy SepFormer khi các bản nhận dạng ban đầu lệch nhau vượt `ovl_thr` (mặc định 0,12). Trước đây SepFormer chạy trên mọi nhóm thoại, làm tăng thời gian và chi phí dù phần lớn đoạn không có chồng giọng. Đổi cấu hình tại `modal/cau-hinh.json`, sau đó deploy lại Modal.
+
 Thử nghiệm của Claude theo yêu cầu Chủ: «tạo chuỗi luồng xử lý để Whisper Turbo nhận dạng chuẩn từng chữ», rồi «dùng hết khả năng để giảm tỉ lệ lỗi thấp nhất, độ trễ thấp nhất» trên bộ video thử 4 thứ tiếng của Chủ.
 Đây là code thử (Python) để đo, CHƯA nằm trong app. Không đổi hành vi app, không đổi điều khoản.
 

@@ -328,7 +328,7 @@ def run(F, cfg, L=None):
         d = agreement(c, L)
         if cfg.get("esc", True) and d > cfg.get("esc_thr", 0.12):
             with ThreadPoolExecutor(2) as ex: c += list(ex.map(lambda f: f(), [lambda: text_of(mix, g, L, LARGE, words=True), lambda: text_of(vocn, g, L, LARGE, words=True)]))
-        if cfg.get("ovl") and (cfg.get("ovl") == "all" or d > cfg.get("esc_thr", 0.12)):
+        if cfg.get("ovl") and (cfg.get("ovl") == "all" or d > cfg.get("ovl_thr", cfg.get("esc_thr", 0.12))):
             c += overlap_cands(voc_raw, g, L)
         return c, d
     voc_raw = voc
