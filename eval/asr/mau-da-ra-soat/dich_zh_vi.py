@@ -1,4 +1,5 @@
 """Dịch bản SRT nhanh của mục 20 qua dịch vụ chữ trên Modal."""
+import base64
 import json
 import os
 import sys
@@ -10,7 +11,7 @@ from pathlib import Path
 DATA = Path(__file__).resolve().parent
 
 
-def translate(source, url, token, model, merge=False):
+def translate(source, url, token, model, merge=False, mobile=False):
     blocks = [block.splitlines() for block in source.strip().split("\n\n")]
     lines = {b[0]: " ".join(b[2:]) for b in blocks}
     if not lines or len(lines) != len(blocks) or any(not text for text in lines.values()):
@@ -29,6 +30,14 @@ def translate(source, url, token, model, merge=False):
                   "dưới dạng số nguyên. Nhóm đầu bắt đầu ở 1, mỗi nhóm sau tiếp ngay nhóm trước, "
                   "phải dùng hết mọi mục đúng thứ tự.")
         lines = {b[0]: {"time": b[1], "zh": lines[b[0]]} for b in blocks}
+    if mobile:
+        prompt += (" Đây là cuộc họp công sở. Khi chưa rõ vai vế, ưu tiên lược xưng hô hoặc dùng "
+                   "tôi, bạn, chúng ta theo ngữ cảnh; giữ vai của từng người xuyên suốt. "
+                   "Với người thứ ba chưa rõ giới tính, lặp chức danh hoặc lược chủ ngữ. "
+                   "Dịch nghĩa thực tế của thành ngữ trong công việc. Mỗi khung phụ đề diễn đạt "
+                   "một ý ngắn dễ đọc. Tách câu dài tại ranh giới mục đầu vào phù hợp, ưu tiên "
+                   "1–2 dòng ngắn; tránh để từ đệm, hô ngữ lóe lên riêng. Đọc lại toàn bộ "
+                   "để kiểm tra ai giao việc cho ai và ai nhận việc trước khi trả JSON.")
     payload = {"model": model, "temperature": 0, "max_tokens": 2048,
                "chat_template_kwargs": {"enable_thinking": False},
                "response_format": {"type": "json_object"},
@@ -67,6 +76,32 @@ def translate(source, url, token, model, merge=False):
     return "\n\n".join(f"{b[0]}\n{b[1]}\n{translations[b[0]].strip()}" for b in blocks) + "\n"
 
 
+def track(srt):
+    def seconds(stamp):
+        h, m, s = stamp.replace(",", ".").split(":")
+        return int(h) * 3600 + int(m) * 60 + float(s)
+
+    cues = []
+    for block in srt.strip().split("\n\n"):
+        _, stamp, text = block.split("\n", 2)
+        start, end = map(seconds, stamp.split(" --> "))
+        cues.append([start, end, text])
+    return cues
+
+
+def mobile_preview(output, previous):
+    versions = {"22": track(previous.read_text()), "23": track(output.read_text())}
+    audio = base64.b64encode((DATA / "cho-duyet/zh.wav").read_bytes()).decode("ascii")
+    page = (DATA / "xem_phu_de.html").read_text().replace("__AUDIO__", audio)
+    tracks = json.dumps(versions, ensure_ascii=False).replace("<", "\\u003c")
+    preview = output.with_name("trung-viet-22-23.html")
+    preview.write_text(page.replace("__TRACKS__", tracks))
+    for version, cues in versions.items():
+        peak = max(len(text) / max(0.001, end-start) for start, end, text in cues)
+        print(f"Mục {version}: {len(cues)} đoạn · đoạn đọc nhanh nhất {peak:.1f} ký tự/giây")
+    print(f"Tải tệp này qua SFTP, mở bằng trình duyệt điện thoại: {preview}")
+
+
 def main():
     runs = sorted((DATA / "ket-qua-zh").glob("lan-*/so-sanh-test.json"),
                   key=lambda f: f.stat().st_mtime_ns, reverse=True)
@@ -79,11 +114,17 @@ def main():
     source = (report.parent / run["srt"]).read_text()
     output = report.parent / "zh-nhanh-vi.srt"
     baseline = output
-    merge = sys.argv[1:] == ["--ghep"]
+    mobile = sys.argv[1:] == ["--dien-thoai"]
+    merge = mobile or sys.argv[1:] == ["--ghep"]
     if merge:
         if not baseline.is_file():
             sys.exit("Chạy mục 21 cho lượt nhận dạng này trước để có bản đối chiếu.")
         output = report.parent / "zh-nhanh-vi-ghep.srt"
+    if mobile:
+        previous = output
+        if not previous.is_file():
+            sys.exit("Chạy mục 22 trước để có bản so sánh.")
+        output = report.parent / "zh-nhanh-vi-dien-thoai.srt"
     if not output.exists():
         import modal
         config = json.loads((DATA.parent / "luong-ky/modal/cau-hinh.json").read_text())
@@ -92,12 +133,16 @@ def main():
             sys.exit("Thiếu chuỗi bảo vệ dịch vụ trong cấu hình VPS.")
         url = modal.Function.from_name("tyzo-asr", "llm").get_web_url()
         start = time.monotonic()
-        translated = translate(source, url, token, config["hop_nhat"]["gpu"]["model"], merge=merge)
+        translated = translate(source, url, token, config["hop_nhat"]["gpu"]["model"], merge=merge, mobile=mobile)
         with tempfile.NamedTemporaryFile(mode="w", dir=output.parent, delete=False) as tmp:
             tmp.write(translated)
         os.replace(tmp.name, output)
         print(f"Thời gian yêu cầu dịch: {time.monotonic() - start:.1f} giây")
     print(f"Bản dịch từ lượt {report.parent.name}: {output}")
+    if mobile:
+        mobile_preview(output, previous)
+        print(output.read_text())
+        return
     if merge:
         original = baseline.read_text().strip().split("\n\n")
         zh_cues = source.strip().split("\n\n")

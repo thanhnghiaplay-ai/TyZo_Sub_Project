@@ -301,6 +301,7 @@ menu() {
     echo "20. So sánh nhanh và ky trên mẫu tiếng Trung (2 lượt GPU)"
     echo "21. Dịch SRT Trung của mục 20 sang tiếng Việt (Modal, dùng lại bản đã dịch)"
     echo "22. So bản dịch 21 với bản ghép câu theo ngữ cảnh (Modal)"
+    echo "23. Thử phụ đề công sở và xem bản 22/23 trên điện thoại (Modal)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -321,6 +322,7 @@ menu() {
       15) xem_srt_test ;;
       21) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" ;;
       22) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" --ghep ;;
+      23) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" --dien-thoai ;;
       20) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --tieng-trung ;;
       19) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --xem-noi-chong ;;
       18) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --noi-chong ;;
