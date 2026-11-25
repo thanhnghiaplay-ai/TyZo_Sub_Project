@@ -4,8 +4,9 @@ import sys
 from pathlib import Path
 
 data = Path(__file__).resolve().parent
-if len(sys.argv) != 2:
-    sys.exit("Cách dùng: python3 so_sanh_en.py /duong/dan/TyZo_Sub_Project")
+music = sys.argv[2:] == ["--nhac-nen"]
+if len(sys.argv) != 2 and not music:
+    sys.exit("Cách dùng: python3 so_sanh_en.py /duong/dan/TyZo_Sub_Project [--nhac-nen]")
 entry = Path(sys.argv[1]).resolve() / "eval/asr/luong-ky/modal/so_sanh_asr.py"
 if not entry.is_file():
     sys.exit(f"Thiếu công cụ so sánh: {entry}")
@@ -13,7 +14,9 @@ spec = importlib.util.spec_from_file_location("tyzo_compare", entry)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 module.ROOT = str(data)
-module.OUT_DIR = str(data / "ket-qua-en")
-module.SRT_DIR = str(data / "ket-qua-en" / "srt-test")
-sys.argv = [str(entry), str(data / "thu-ngay"), "1", "nhanh,ky"]
+out = data / ("ket-qua-en-nhac-nen" if music else "ket-qua-en")
+clips = data / ("thu-nhac-nen" if music else "thu-ngay")
+module.OUT_DIR = str(out)
+module.SRT_DIR = str(out / "srt-test")
+sys.argv = [str(entry), str(clips), "1", "nhanh,ky"]
 module.main()
