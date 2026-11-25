@@ -1,5 +1,7 @@
 # Việc tiếp theo (ghi 24/11/2026)
 
+Bản bàn giao ngày 25/11/2026 và kết quả VPS mới nhất của đợt mục 16–24 nằm ở [bảng bàn giao ASR và dịch](../BAN-GIAO-2026-11-25.md).
+
 Trạng thái: dịch vụ nhận dạng trên Modal chạy được (lệnh `tyzo-ai`, nhánh `ccr-562e47af-b438ur`). Luồng Kỹ, clip Trung 38 s:
 hợp nhất Alibaba lỗi 1,5–4,6 %, hợp nhất Qwen3.8-27B trên GPU lỗi ~5,4 % (sót cụm «我们在摸鱼»); như app hiện nay 21,5 %.
 Khách chờ 17–40 s, bật máy ~10–13 s. App web CHƯA gọi dịch vụ này.
