@@ -2,7 +2,7 @@
 
 Nguồn là Google FLEURS, cấu hình `ko_kr`, tập `test`, giấy phép CC BY 4.0. Khi chia sẻ mẫu, ghi công Google FLEURS, liên kết nguồn và giấy phép, ghi rõ việc chọn tập con và chuẩn hóa văn bản. [Dataset card](https://huggingface.co/datasets/google/fleurs) · [Giấy phép](https://creativecommons.org/licenses/by/4.0/)
 
-Trên VPS, chọn mục **25** khi menu đã có mục này. Dữ liệu được giữ ở `/opt/tyzo-ai/test/fleurs-ko`. Mở lại mục 25 để kiểm tra mã băm 8 WAV đã lưu mà không gọi mạng hoặc GPU. Muốn chạy riêng từ gốc kho, dùng lệnh sau trên Linux có Bash, curl, flock, Python 3 và ffprobe.
+Trên VPS, chọn mục **25** khi menu đã có mục này. Dữ liệu được giữ ở `/opt/tyzo-ai/test/fleurs-ko`. Mở lại mục 25 để kiểm tra mã băm 8 WAV đã lưu mà không gọi mạng hoặc GPU. Muốn chạy riêng từ gốc kho, dùng lệnh sau trên Linux có Bash, curl, flock, Python 3. Công cụ đọc WAV PCM và IEEE float bằng thư viện chuẩn Python.
 
 ```bash
 bash eval/asr/fleurs-ko/prepare-set.sh eval/asr/out/fleurs-ko
