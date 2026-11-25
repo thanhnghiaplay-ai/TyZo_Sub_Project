@@ -31,3 +31,13 @@ Chọn mục **26** sau khi mục 25 đã chuẩn bị mẫu. Nhập mã phiên 
 Mục 26 đọc manifest gốc, kiểm mã băm WAV và báo số bản chép khớp cấu hình cùng số lượt còn thiếu. Nhập `c` để gửi phần còn thiếu lên Modal, tối đa 16 yêu cầu nếu cache trống. Nhập `k` để dừng sau khi kiểm tra. Mỗi phản hồi thành công được lưu thành một JSON riêng trong thư mục `asr/<config_id>/` ngay cạnh manifest. Giữ nguyên mã phiên bản khi chạy tiếp. Nếu mất kết nối trước khi lưu phản hồi, lượt đó vẫn có thể đã được Modal tính tiền.
 
 Khi đủ kết quả, `report.json` lưu CER và lỗi từng câu. Các JSON phản hồi lưu thời gian xử lý, thời gian chờ và chi phí ước tính từng WAV. Chi phí dùng thời gian xử lý nhân đơn giá GPU cộng chi phí model chữ được server báo. Hóa đơn thực tế có thể khác. Kết quả cũ mang tên clip `ko` thiếu bằng chứng khớp SHA-256 và cấu hình nên không được tính vào lượt FLEURS.
+
+### Thử dịch Hàn sang Việt từ bản chép đã lưu
+
+[Bộ 8 câu thử dịch](ko-vi-cases.json) có SHA-256, số lỗi ASR và đáp án Việt tạm soạn từ câu Hàn chuẩn. Đáp án Việt chờ rà soát song ngữ. Nguồn và giấy phép như trên. Ghép từng mẫu theo SHA-256 với `results.nhanh.clips` trong báo cáo thật trên VPS và đối chiếu ID. Lấy `text` làm đầu vào dịch và `reference` làm câu chuẩn. Khi đo, gửi từng câu độc lập và giữ nguyên bản chép. Có thể dịch thêm câu chuẩn bằng cùng cấu hình để xác định lỗi bắt đầu từ ASR hay bước dịch.
+
+- 1662 và 1663 có câu chào thừa “다음 영상에서 만나요.” trong bản chép cả hai luồng. Kiểm tra câu này có lọt vào bản dịch hay không.
+- 1663 có tên Cochamó xuất hiện bằng chữ Hàn và Latin trong đáp án. Khi duyệt bản Việt, một lần viết đúng địa danh là đủ.
+- 1660 kiểm tên Goethe, Fichte, Schlegel. 1673 kiểm số 13 bang và tên Các Điều khoản Hợp bang. 1674 kiểm phân biệt một phút với vài phút.
+
+Đối chiếu nghĩa, tên riêng, số liệu và độ tự nhiên theo từng ID. Ghi rõ khi một lỗi bắt đầu từ bản chép. Các câu FLEURS độc lập nên cần bài riêng để đánh giá hội thoại hoặc chia phụ đề.
