@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "speaker": "由美",
+    "text": "健太さん、先週出した企画書、もう目を通していただけましたか。まだ迷っているんです。",
+    "vi": "Kenta, anh đã xem qua bản kế hoạch tôi nộp tuần trước chưa? Tôi vẫn còn đang phân vân.",
+    "start": 0,
+    "end": 4.99
+  },
+  {
+    "id": 2,
+    "speaker": "健太",
+    "text": "ええ、ざっと読みました。正直、スケジュールが楽観的すぎる気がします。三つの部署を同時に変えるのは無理がありますよ。",
+    "vi": "Rồi, tôi đọc lướt qua. Thật lòng thì lịch trình có vẻ quá lạc quan. Thay đổi ba bộ phận cùng lúc là quá sức.",
+    "start": 5.49,
+    "end": 13.64
+  },
+  {
+    "id": 3,
+    "speaker": "由美",
+    "text": "私もそこが心配でした。ただ、経営陣は先延ばしにすれば予算不足がさらに悪化すると言っています。",
+    "vi": "Tôi cũng lo điểm đó. Nhưng ban lãnh đạo nói nếu trì hoãn thì thiếu hụt ngân sách sẽ càng tệ hơn.",
+    "start": 14.14,
+    "end": 20.73
+  },
+  {
+    "id": 4,
+    "speaker": "健太",
+    "text": "一理ありますが、急ぎすぎて裏目に出る恐れもあります。去年のシステム移行の件を覚えていますか。",
+    "vi": "Cũng có lý, nhưng vội vàng có thể phản tác dụng. Chị còn nhớ vụ chuyển đổi hệ thống năm ngoái không?",
+    "start": 21.23,
+    "end": 27.8
+  },
+  {
+    "id": 5,
+    "speaker": "由美",
+    "text": "忘れるわけがありません。何週間も対応に追われましたから。それでも、ただ反対するより妥協案を出したいんです。",
+    "vi": "Sao quên được. Mấy tuần liền chúng ta chạy theo xử lý sự cố. Dù vậy, tôi muốn đưa ra phương án dung hòa hơn là chỉ phản đối.",
+    "start": 28.3,
+    "end": 35.22
+  },
+  {
+    "id": 6,
+    "speaker": "健太",
+    "text": "どんな案ですか。",
+    "vi": "Chị nghĩ đến phương án nào?",
+    "start": 35.72,
+    "end": 36.61
+  },
+  {
+    "id": 7,
+    "speaker": "由美",
+    "text": "段階的に進めるんです。まず一つの部署で試験的に導入して、問題点を直してから、第二四半期の終わりまでに広げます。",
+    "vi": "Triển khai theo từng giai đoạn: thí điểm ở một bộ phận trước, sửa các vấn đề rồi mở rộng trước cuối quý hai.",
+    "start": 37.11,
+    "end": 45.39
+  },
+  {
+    "id": 8,
+    "speaker": "健太",
+    "text": "それならずっと現実的ですね。由美さんが概要を作ってくれたら、僕が数字を計算して、コスト削減の効果が保てるか確認します。",
+    "vi": "Vậy thực tế hơn nhiều. Nếu chị soạn đề cương, tôi sẽ tính số liệu và kiểm tra hiệu quả cắt giảm chi phí có giữ được không.",
+    "start": 45.89,
+    "end": 55.13
+  },
+  {
+    "id": 9,
+    "speaker": "由美",
+    "text": "お願いします。木曜日に部長に報告しましょう。取り返しのつかない決定を下される前に。",
+    "vi": "Nhờ anh nhé. Thứ Năm mình báo cáo với trưởng phòng, trước khi trưởng phòng đưa ra quyết định khó đảo ngược.",
+    "start": 55.63,
+    "end": 61.3
+  },
+  {
+    "id": 10,
+    "speaker": "健太",
+    "text": "そうしましょう。もし反対されても、用意したデータで説得できますよ。",
+    "vi": "Vậy nhé. Nếu trưởng phòng phản đối, chúng ta có thể dùng số liệu đã chuẩn bị để thuyết phục.",
+    "start": 61.8,
+    "end": 66.0
+  }
+]

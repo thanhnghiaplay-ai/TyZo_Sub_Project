@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "speaker": "Emma",
+    "text": "So, did you read the proposal I sent over? I'm still on the fence about the whole restructuring.",
+    "vi": "Đã xem bản đề xuất tôi gửi chưa? Tôi vẫn còn phân vân về chuyện tái cơ cấu.",
+    "start": 0.0,
+    "end": 5.35
+  },
+  {
+    "id": 2,
+    "speaker": "Daniel",
+    "text": "I skimmed it. Honestly, the timeline strikes me as wildly optimistic. Rolling out three departments simultaneously is asking for trouble.",
+    "vi": "Tôi đọc lướt qua. Thật lòng thì lịch trình có vẻ lạc quan quá mức. Triển khai ba phòng ban cùng lúc là tự rước rắc rối.",
+    "start": 5.95,
+    "end": 14.53
+  },
+  {
+    "id": 3,
+    "speaker": "Emma",
+    "text": "That's what worried me, too. Though management insists that delaying would only exacerbate the budget shortfall.",
+    "vi": "Tôi cũng lo điều đó. Nhưng ban quản lý khẳng định trì hoãn chỉ làm thâm hụt ngân sách thêm trầm trọng.",
+    "start": 15.13,
+    "end": 21.45
+  },
+  {
+    "id": 4,
+    "speaker": "Daniel",
+    "text": "Fair enough, but cutting corners now could backfire spectacularly down the line. Remember the software migration fiasco last year?",
+    "vi": "Cũng phải, nhưng làm tắt cho nhanh lúc này có thể gây hậu quả lớn về sau. Chị còn nhớ vụ chuyển đổi phần mềm năm ngoái chứ?",
+    "start": 22.05,
+    "end": 29.53
+  },
+  {
+    "id": 5,
+    "speaker": "Emma",
+    "text": "How could I forget? We were firefighting for weeks. Still, I'd rather propose a compromise than flatly oppose it.",
+    "vi": "Sao quên được? Chúng ta chữa cháy suốt mấy tuần. Dù vậy, tôi thà đề xuất một giải pháp dung hòa còn hơn phản đối thẳng thừng.",
+    "start": 30.13,
+    "end": 36.92
+  },
+  {
+    "id": 6,
+    "speaker": "Daniel",
+    "text": "What did you have in mind?",
+    "vi": "Chị có ý tưởng gì?",
+    "start": 37.52,
+    "end": 38.88
+  },
+  {
+    "id": 7,
+    "speaker": "Emma",
+    "text": "A phased approach. We'd pilot the changes in one department, iron out the kinks, and then scale up by the end of the second quarter.",
+    "vi": "Làm theo từng giai đoạn. Thí điểm ở một phòng ban, xử lý các trục trặc rồi mở rộng chậm nhất vào cuối quý hai.",
+    "start": 39.48,
+    "end": 47.44
+  },
+  {
+    "id": 8,
+    "speaker": "Daniel",
+    "text": "That sounds far more reasonable. If you draft the outline, I'll crunch the numbers and see whether the savings still add up.",
+    "vi": "Nghe hợp lý hơn nhiều. Nếu chị soạn đề cương, tôi sẽ tính số liệu xem khoản tiết kiệm có còn khớp không.",
+    "start": 48.04,
+    "end": 54.55
+  },
+  {
+    "id": 9,
+    "speaker": "Emma",
+    "text": "Deal. Let's run it by the director on Thursday, before she signs off on anything irreversible.",
+    "vi": "Chốt. Hãy trình giám đốc vào thứ Năm, trước khi bà ấy phê duyệt điều gì không thể đảo ngược.",
+    "start": 55.15,
+    "end": 60.69
+  },
+  {
+    "id": 10,
+    "speaker": "Daniel",
+    "text": "Agreed. And if she pushes back, we'll have the data to make our case.",
+    "vi": "Đồng ý. Nếu bà ấy phản đối, chúng ta sẽ có số liệu để bảo vệ quan điểm.",
+    "start": 61.29,
+    "end": 64.9
+  }
+]

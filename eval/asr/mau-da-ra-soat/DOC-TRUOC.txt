@@ -1,0 +1,9 @@
+TyZo • Bộ duyệt phụ đề và so sánh ASR
+Mẫu Anh đã khớp 175/175 từ với Whisper Base sau chuẩn hóa ở lần kiểm tra trước. Bản Việt là một cách dịch tham khảo. Có thể chấp nhận cách diễn đạt tương đương.
+Mẫu Trung cần chấp nhận khác biệt phồn thể/giản thể. Với tên riêng và đại từ đồng âm, ghi riêng lỗi chính tả và lỗi nghe sai nghĩa.
+Mẫu Nhật cần nghe duyệt tên riêng và câu 9. Mẫu Hàn có bản Việt dịch theo kịch bản, âm thanh còn chờ xác nhận.
+Gửi riêng thư mục nghe-mu cho người biết tiếng. Nhờ họ chép lại từng đoạn, đánh dấu chỗ không nghe rõ rồi mới đối chiếu dap-an. Hai trích đoạn chỉ dùng sàng lọc bước đầu.
+Để chạy một lượt nhanh và một lượt ky trên máy đã cấu hình dịch vụ TyZo và cài phụ thuộc của so_sanh_asr.py, giải nén và chạy:
+python3 so_sanh_en.py /duong/dan/TyZo_Sub_Project
+Công cụ đọc cấu hình dịch vụ có sẵn, dùng chính đáp án Anh trong gói và ghi vào ket-qua-en. Sao lưu kết quả trước khi chạy lần tiếp theo vì tên đầu ra được dùng lại.
+Hai lượt có chỉ định ngôn ngữ và chấm lời gốc. Hãy đọc cho_s, xu_ly_s và SRT riêng. Trường usd chỉ là ước tính của repo. Muốn so chi phí thực, đối chiếu thời gian và tài nguyên của lượt chạy với hóa đơn Modal và Alibaba nếu có. Khi so dịch, đưa hai bản chép qua cùng cấu hình dịch rồi đếm các câu tiếng Việt cần sửa vì sai nghĩa. Hai lượt liên tiếp có thể có trạng thái nóng/lạnh khác nhau.
