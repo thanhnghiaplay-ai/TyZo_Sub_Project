@@ -12,6 +12,8 @@ Công cụ chọn trước 4 dòng MALE rồi 4 dòng FEMALE, theo ID câu tăng
 
 Khi đo, đối chiếu kết quả VPS đã lưu theo SHA-256 WAV, cấu hình model và profile. Dùng cùng 8 WAV, ngôn ngữ ko cho nhanh và ky. Chuẩn hóa cả dự đoán và tham chiếu bằng hàm normalize (NFC, casefold, chỉ giữ chữ và số). Tính CER bằng tổng khoảng cách Levenshtein chia tổng độ dài tham chiếu. Giữ lỗi, thời gian từng câu và ghi rõ chi phí ước tính hoặc thực trả. Chỉ so sánh sau khi cả hai luồng đủ mẫu.
 
+[Bản tham chiếu ghi lại từ ảnh VPS](manifest-vps.json) lưu ID, tên WAV, lời tham chiếu và SHA-256 của 8 mẫu. Dùng manifest sinh trực tiếp trên VPS khi chấm để tránh sai lệch do chép từ ảnh.
+
 ### Chấm bản chép đã lưu
 
 Với mỗi kết quả VPS khớp đúng WAV và ngôn ngữ Hàn, ghi một dòng JSON có `profile` (nhanh hoặc ky), `config_id` (phiên bản model và cấu hình thực chạy), `sha256` của WAV đầu vào và `text` (lời máy chép, có thể rỗng). Giữ số liệu thời gian, chi phí và tệp đầu ra gốc cạnh JSONL. Dùng một cấu hình nhất quán cho từng profile. Tệp JSONL rỗng cho danh sách toàn bộ ID còn thiếu.
