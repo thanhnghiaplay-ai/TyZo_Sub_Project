@@ -56,4 +56,8 @@ Khi đủ kết quả, `report.json` lưu CER và lỗi từng câu. Các JSON p
 
 Bộ lọc chỉ có hiệu lực trên Modal sau khi cập nhật bằng mục 3. Mã cấu hình của mục 26 dựa trên nhãn triển khai người vận hành nhập, không dựa trên code; khi đo lại sau cập nhật, nhập nhãn mới để không dùng lại phản hồi cũ.
 
+### Mục 32 · dịch có chủ đề và bảng thuật ngữ
+
+[`dich-ngu-canh.py`](dich-ngu-canh.py) dịch 8 bản chép nhanh (đã qua bộ lọc câu chào) và câu Hàn chuẩn 1673 theo ba cách: `goc` (lời nhắc mục 27), `ngucanh` (lời nhắc chung về lỗi nghe máy + chủ đề video), `thuatngu` (thêm bảng thuật ngữ). Chủ đề và thuật ngữ ở [`ko-vi-ngu-canh.json`](ko-vi-ngu-canh.json), viết như tiêu đề video và danh sách tên riêng mà người dùng có thể nhập. Lời nhắc không chứa gợi ý riêng cho lỗi đã biết. Mỗi bản dịch được kiểm bằng danh sách từ bắt buộc/cấm; đây là kiểm tra thô, vẫn cần đọc bản dịch. Trên VPS đã có mục 27 và 30, mục 32 cần thêm 16 yêu cầu Modal chữ và hỏi `c/k` trước khi gửi.
+
 Đối chiếu nghĩa, tên riêng, số liệu và độ tự nhiên theo từng ID. Ghi rõ khi một lỗi bắt đầu từ bản chép. Các câu FLEURS độc lập nên cần bài riêng để đánh giá hội thoại hoặc chia phụ đề.

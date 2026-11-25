@@ -15,11 +15,11 @@ PROMPT = ("Dịch toàn bộ lời chép tiếng Hàn sau sang tiếng Việt t�
           "Giữ đúng ý, tên riêng và số liệu. Chỉ trả bản dịch, không giải thích.")
 
 
-def request(text, model, out, clip_id, sha, url=None, tag=""):
+def request(text, model, out, clip_id, sha, url=None, tag="", system=PROMPT):
     """Translate one Korean text, reusing the saved reply for the same request body."""
     payload = dict(model=model, temperature=0, max_tokens=512,
                    chat_template_kwargs={"enable_thinking": False},
-                   messages=[dict(role="system", content=PROMPT), dict(role="user", content=text)])
+                   messages=[dict(role="system", content=system), dict(role="user", content=text)])
     body = json.dumps(payload, ensure_ascii=False).encode()
     key = hashlib.sha256(body).hexdigest()
     saved = out / f"{clip_id}-{tag}{key}.json"
