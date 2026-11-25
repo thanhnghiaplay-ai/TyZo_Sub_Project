@@ -171,7 +171,7 @@ cai_cham_diem() {
 nhat_ky_bat_may() { # chỉ đọc nhật ký Modal, lọc các dòng ghi thời gian bật máy chữ; không bật máy
   vang "Đọc nhật ký Modal trong 30 giây rồi lọc (Ctrl+C để dừng sớm)..."
   timeout 30 "$MODAL" app logs "$APP_NAME" 2>&1 \
-    | grep -aE 'Loading weights|Model loading took|loading took|init engine|Starting vLLM|Warming up|torch.compile|compil(e|ation) took|Graph capturing|Resolved architecture|Downloading|Application startup complete|shutdown triggered|Started server process' \
+    | grep -aE '\[tyzo\]|Loading weights|Model loading took|loading took|init engine|Starting vLLM|Warming up|torch.compile|compil(e|ation) took|Graph capturing|Resolved architecture|Downloading|Application startup complete|shutdown triggered|Started server process' \
     | tail -n 60
   return 0
 }
