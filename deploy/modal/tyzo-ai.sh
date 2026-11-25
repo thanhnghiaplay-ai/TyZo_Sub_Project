@@ -294,6 +294,7 @@ menu() {
     echo "13. Gỡ bỏ"
     echo "14. So sánh test (chạy TẤT CẢ luồng trên clip thử, tìm luồng tốt nhất)"
     echo "15. Xem srt test (phụ đề từng luồng, đặt cạnh đáp án)"
+    echo "16. So sánh nhanh và ky trên mẫu Anh đã rà soát (2 lượt GPU)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -312,6 +313,7 @@ menu() {
       13) go_bo ;;
       14) so_sanh_test ;;
       15) xem_srt_test ;;
+      16) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" ;;
       0|q) exit 0 ;;
       *) vang "Chọn số trong menu." ;;
     esac
