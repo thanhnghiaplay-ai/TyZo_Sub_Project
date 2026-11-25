@@ -7,7 +7,9 @@ Tên tệp: zh (hoặc zh2), ja (hoặc ja2), ko, en (đuôi mp4/wav/mp3/m4a). �
 Địa chỉ và chuỗi bảo vệ: TYZO_ASR_URL / TYZO_ASR_TOKEN hoặc /opt/tyzo-ai/tyzo-ai.conf. Máy phải được cài với «tyzo-ai» đặt QWEN_PRELOAD=1.
 Chạy tuần tự từng việc (luồng Qwen dùng biến chung của máy, không được chạy chung với luồng khác). Kết quả: <ra>/so-sanh-test.json, với <ra> = biến TYZO_TEST_OUT, không có thì ../ket-qua
 """
-import base64, json, os, statistics, sys, time, urllib.request, urllib.error
+import json, os, statistics, sys
+
+from asr_client import request_asr
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
@@ -30,19 +32,10 @@ def conf(key):
 
 URL = os.environ.get("TYZO_ASR_URL") or conf("URL"); TOKEN = os.environ.get("TYZO_ASR_TOKEN") or conf("TYZO_ASR_TOKEN")
 
-class Doi(urllib.request.HTTPRedirectHandler):      # Modal trả 303 cho việc quá 150 s: hỏi lại tới khi xong
-    max_repeats = 1000; max_redirections = 1000
-
 def goi(path, lang, profile):
-    body = json.dumps({"token": TOKEN, "audio_b64": base64.b64encode(open(path, "rb").read()).decode(), "ext": path.rsplit(".", 1)[-1],
-                       "lang": lang, "profile": profile}).encode()
-    req = urllib.request.Request(URL, body, {"Content-Type": "application/json", "User-Agent": "tyzo-asr-client/1.0"})
-    t = time.time()
-    try:
-        r = json.load(urllib.request.build_opener(Doi).open(req, timeout=3600))
-    except urllib.error.HTTPError as e:
-        raise RuntimeError(f"{profile}: lỗi {e.code}: {e.read().decode('utf-8', 'replace')[-600:]}")
-    return r, time.time() - t
+    with open(path, "rb") as source:
+        return request_asr(source.read(), path.rsplit(".", 1)[-1], lang, profile, URL, TOKEN)
+
 
 def main():
     if not URL or not TOKEN: sys.exit("Thiếu địa chỉ hoặc chuỗi bảo vệ (TYZO_ASR_URL, TYZO_ASR_TOKEN).")

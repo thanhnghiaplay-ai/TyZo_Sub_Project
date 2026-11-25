@@ -276,6 +276,14 @@ go_bo() {
   exit 0
 }
 
+do_fleurs_ko() {
+  local version
+  read -rp "Mã phiên bản đang chạy trên Modal (giữ nguyên khi chạy tiếp): " version
+  [[ "$version" =~ ^[a-zA-Z0-9._-]+$ ]] || { vang "Chưa có mã phiên bản."; return 1; }
+  TYZO_ASR_URL="$(conf_get URL)" TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" \
+    TYZO_FUSE="$(conf_get TYZO_FUSE)" "$PY" "$CODE/eval/asr/fleurs-ko/run.py" "$TEST_OUT/fleurs-ko" "$version"
+}
+
 menu() {
   while true; do
     tieu_de "TYZO AI (Modal) · nhánh $(nhanh) · hợp nhất: $(conf_get TYZO_FUSE)"
@@ -304,6 +312,7 @@ menu() {
     echo "23. Thử phụ đề công sở và xem bản 22/23 trên điện thoại (Modal)"
     echo "24. So sánh nhanh và ky trên mẫu tiếng Nhật (2 lượt GPU)"
     echo "25. Chuẩn bị 8 mẫu Hàn FLEURS có lời tham chiếu (CPU, dùng lại dữ liệu đã tải)"
+    echo "26. So nhanh và ky trên FLEURS Hàn (kiểm tra cache trước khi hỏi chạy GPU)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -325,6 +334,7 @@ menu() {
       21) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" ;;
       22) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" --ghep ;;
       23) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" --dien-thoai ;;
+      26) do_fleurs_ko ;;
       25) bash "$CODE/eval/asr/fleurs-ko/prepare-set.sh" "$DIR/test/fleurs-ko" ;;
       24) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --tieng-nhat ;;
       20) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --tieng-trung ;;
