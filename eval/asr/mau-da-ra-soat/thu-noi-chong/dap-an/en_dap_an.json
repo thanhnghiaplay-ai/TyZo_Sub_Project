@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "speaker": "Emma",
+    "text": "How could I forget? We were firefighting for weeks. Still, I'd rather propose a compromise than flatly oppose it.",
+    "vi": "Sao quên được? Chúng ta chữa cháy suốt mấy tuần. Dù vậy, tôi thà đề xuất một giải pháp dung hòa còn hơn phản đối thẳng thừng.",
+    "start": 0.0,
+    "end": 6.79
+  },
+  {
+    "id": 2,
+    "speaker": "Daniel",
+    "text": "What did you have in mind?",
+    "vi": "Chị có ý tưởng gì?",
+    "start": 1.8,
+    "end": 3.16
+  }
+]

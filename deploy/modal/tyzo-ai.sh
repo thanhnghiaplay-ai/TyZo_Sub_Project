@@ -296,6 +296,7 @@ menu() {
     echo "15. Xem srt test (phụ đề từng luồng, đặt cạnh đáp án)"
     echo "16. So sánh nhanh và ky trên mẫu Anh đã rà soát (2 lượt GPU)"
     echo "17. So sánh nhanh và ky trên cùng mẫu Anh có nhạc nền (2 lượt GPU)"
+    echo "18. Thử hai giọng Anh nói chồng (2 lượt GPU, chấm riêng giọng thứ hai)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -314,6 +315,7 @@ menu() {
       13) go_bo ;;
       14) so_sanh_test ;;
       15) xem_srt_test ;;
+      18) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --noi-chong ;;
       17) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --nhac-nen ;;
       16) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" ;;
       0|q) exit 0 ;;
