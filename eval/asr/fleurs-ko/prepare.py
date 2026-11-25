@@ -8,7 +8,8 @@ import shutil
 import tarfile
 import tempfile
 import unicodedata
-import wave
+import subprocess
+from fractions import Fraction
 from pathlib import Path
 
 
@@ -58,10 +59,17 @@ def prepare(tsv, audio, output, revision):
                     continue
                 with (stage / name).open("xb") as dest:
                     shutil.copyfileobj(archive.extractfile(member), dest)
-                with wave.open(str(stage / name)) as wav:
-                    if (wav.getframerate(), wav.getnchannels(), wav.getnframes()) != (
-                            16000, 1, selected[name]["samples"]):
-                        raise ValueError(f"Unexpected WAV metadata for {name}")
+                # ffprobe also reads IEEE float WAVs on older VPS Python versions.
+                probe = subprocess.check_output([
+                    "ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries",
+                    "stream=sample_rate,channels,duration_ts,time_base", "-of", "json",
+                    str(stage / name),
+                ])
+                stream, = json.loads(probe)["streams"]
+                rate = int(stream["sample_rate"])
+                frames = int(stream["duration_ts"]) * Fraction(stream["time_base"]) * rate
+                if (rate, stream["channels"], frames) != (16000, 1, selected[name]["samples"]):
+                    raise ValueError(f"Unexpected WAV metadata for {name}")
                 selected[name]["sha256"] = hashlib.sha256((stage / name).read_bytes()).hexdigest()
         if any("sha256" not in item for item in selected.values()):
             raise ValueError("Missing selected WAV")
