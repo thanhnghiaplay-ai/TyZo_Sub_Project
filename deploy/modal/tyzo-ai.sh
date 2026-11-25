@@ -330,6 +330,7 @@ menu() {
     echo "33. Đo thời gian bật máy Modal từ kết quả đã lưu (CPU, không gọi Modal)"
     echo "34. Lọc nhật ký Modal: các bước bật máy chữ và thời gian (chỉ đọc, không bật máy)"
     echo "35. Bật máy model chữ bằng 1 câu ngắn, đo thời gian rồi lọc nhật ký (tốn GPU nếu máy đang tắt, hỏi trước)"
+    echo "36. So hai lượt mục 26 gần nhất theo từng ID, xem câu chào đã bỏ/còn lại (CPU, không gọi Modal)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -357,6 +358,7 @@ menu() {
       30) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/xem-1673.py" --dich-chuan "$TEST_OUT/fleurs-ko" ;;
       31) "$PY" "$CODE/eval/asr/fleurs-ko/loc-chao.py" "$TEST_OUT/fleurs-ko" ;;
       34) nhat_ky_bat_may ;;
+      36) "$PY" "$CODE/eval/asr/fleurs-ko/so-hai-luot.py" "$TEST_OUT/fleurs-ko" ;;
       35) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" && sleep 5 && nhat_ky_bat_may ;;
       33) "$PY" "$CODE/eval/asr/luong-ky/modal/khoi_dong.py" "$TEST_OUT" "$CODE/eval/asr/mau-da-ra-soat" ;;
       32) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/dich-ngu-canh.py" "$TEST_OUT/fleurs-ko" ;;
