@@ -313,6 +313,7 @@ menu() {
     echo "24. So sánh nhanh và ky trên mẫu tiếng Nhật (2 lượt GPU)"
     echo "25. Chuẩn bị 8 mẫu Hàn FLEURS có lời tham chiếu (CPU, dùng lại dữ liệu đã tải)"
     echo "26. So nhanh và ky trên FLEURS Hàn (kiểm tra cache trước khi hỏi chạy GPU)"
+    echo "27. Dịch 8 câu Hàn sang Việt (Modal chữ, dùng lại mục 26 và bản dịch đã lưu)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -335,6 +336,7 @@ menu() {
       22) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" --ghep ;;
       23) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/mau-da-ra-soat/dich_zh_vi.py" --dien-thoai ;;
       26) do_fleurs_ko ;;
+      27) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/translate.py" "$TEST_OUT/fleurs-ko" ;;
       25) bash "$CODE/eval/asr/fleurs-ko/prepare-set.sh" "$DIR/test/fleurs-ko" ;;
       24) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --tieng-nhat ;;
       20) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --tieng-trung ;;

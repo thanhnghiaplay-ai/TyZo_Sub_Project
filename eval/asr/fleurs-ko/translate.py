@@ -1,0 +1,68 @@
+"""Translate the eight saved nhanh transcripts independently using Modal's text model."""
+import fcntl
+import hashlib
+import json
+import os
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+from run import write_json
+
+HERE = Path(__file__).resolve().parent
+PROMPT = ("Dịch toàn bộ lời chép tiếng Hàn sau sang tiếng Việt tự nhiên. "
+          "Giữ đúng ý, tên riêng và số liệu. Chỉ trả bản dịch, không giải thích.")
+
+
+def translate(cache):
+    cases = json.loads((HERE / "ko-vi-cases.json").read_text())
+    root = cache / ("set-" + cases["revision"])
+    reports = sorted(root.glob("asr/*/report.json"), key=lambda p: p.stat().st_mtime_ns, reverse=True)
+    for path in reports:
+        clips = json.loads(path.read_text())["results"]["nhanh"]["clips"]
+        if all(clips.get(c["sha256"], {}).get("id") == c["id"] for c in cases["cases"]):
+            break
+    else:
+        sys.exit("Thiếu báo cáo mục 26 có đủ 8 bản chép nhanh.")
+    model = json.loads((HERE.parent / "luong-ky/modal/cau-hinh.json").read_text())["hop_nhat"]["gpu"]["model"]
+    out = path.parent / "dich-ko-vi"
+    out.mkdir(exist_ok=True)
+    url = None
+    print(f"Báo cáo mục 26: {path}", flush=True)
+    with (out / "run.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        for case in cases["cases"]:
+            clip = clips[case["sha256"]]
+            text = clip["text"]
+            payload = dict(model=model, temperature=0, max_tokens=512,
+                           chat_template_kwargs={"enable_thinking": False},
+                           messages=[dict(role="system", content=PROMPT), dict(role="user", content=text)])
+            body = json.dumps(payload, ensure_ascii=False).encode()
+            key = hashlib.sha256(body).hexdigest()
+            saved = out / f"{clip['id']}-{key}.json"
+            if not saved.exists():
+                if url is None:
+                    import modal
+                    token = os.environ["TYZO_ASR_TOKEN"]
+                    if not token:
+                        raise ValueError("Thiếu chuỗi bảo vệ dịch vụ chữ.")
+                    url = modal.Function.from_name("tyzo-asr", "llm").get_web_url().rstrip("/")
+                req = urllib.request.Request(url + "/v1/chat/completions", body, {
+                    "Content-Type": "application/json", "Authorization": "Bearer " + token})
+                start = time.monotonic()
+                with urllib.request.urlopen(req, timeout=1500) as response:
+                    result = json.load(response)
+                choice = result["choices"][0]
+                vi = choice["message"]["content"].strip()
+                if not vi or choice.get("finish_reason") == "length":
+                    raise ValueError(f"Bản dịch thiếu ở ID {clip['id']}.")
+                write_json(saved, dict(id=clip["id"], sha256=case["sha256"], model=model,
+                                       text=text, vi=vi, seconds=time.monotonic()-start,
+                                       usage=result.get("usage")))
+            print(f"{clip['id']} · {json.loads(saved.read_text())['vi']}", flush=True)
+    print(f"Đã có đủ 8 bản dịch · {out}")
+
+
+if __name__ == "__main__":
+    translate(Path(sys.argv[1]))
