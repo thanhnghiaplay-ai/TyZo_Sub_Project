@@ -58,6 +58,34 @@ def fmt_time(ts):
     return datetime.fromtimestamp(ts).strftime("%d/%m %H:%M:%S")
 
 
+HOW = {"khop": "các bản khớp nhau, không gọi model chữ", "gpu": "model chữ trên GPU Modal",
+       "ali": "Alibaba", "khong": "không model chữ nào trả lời, lấy bản ở giữa",
+       "khong-ro": "lời không rõ, bỏ đoạn", "fuse": "model chữ (cấu hình cũ)"}
+
+
+def fusion_report(asr):
+    """Mỗi đoạn nhận dạng được hợp nhất bằng cách nào, và model chữ có thật sự được gọi không."""
+    groups = {}
+    for when, path, stats, elapsed in asr:
+        key = (stats.get("che_do_hop_nhat", "?"), stats.get("luong", "?"))
+        g = groups.setdefault(key, {"n": 0, "how": {}, "calls": {}, "ready": 0, "usd": 0.0})
+        g["n"] += 1
+        for how, count in (stats.get("hop_nhat") or {}).items():
+            g["how"][how] = g["how"].get(how, 0) + count
+        for model, use in (stats.get("model_chu") or {}).items():
+            g["calls"][model] = g["calls"].get(model, 0) + int(use.get("goi", 0))
+        g["ready"] += "model_chu_san_sang_sau_s" in stats.get("bat_may", {})
+        g["usd"] += float(stats.get("tien_model_chu_usd") or 0)
+    print("\n== Hợp nhất trong phản hồi nhận dạng ==")
+    for (mode, profile), g in sorted(groups.items()):
+        print(f"\nChế độ {mode} · luồng {profile} · {g['n']} phản hồi")
+        for how, count in sorted(g["how"].items(), key=lambda kv: -kv[1]):
+            print(f"  {count:4} đoạn · {how} ({HOW.get(how, '?')})")
+        calls = ", ".join(f"{m}: {c} lần" for m, c in g["calls"].items()) or "không có lần gọi thành công"
+        print(f"  Model chữ được gọi: {calls} · tiền model chữ ghi nhận {g['usd']:.5f} USD")
+        print(f"  Phản hồi có số máy chữ sẵn sàng: {g['ready']}/{g['n']}")
+
+
 def main(roots):
     asr, translations = scan(roots)
     asr.sort(key=lambda row: row[0])
@@ -99,6 +127,8 @@ def main(roots):
     print("\n== Tóm tắt ==")
     summary("Máy nhận dạng tự nạp xong (bat_may_tong_s, chưa gồm thời gian Modal cấp máy và tải ảnh)", totals)
     summary("Máy model chữ trả /health sau (đo từ máy nhận dạng)", llm_ready)
+
+    fusion_report(asr)
 
     if translations:
         print(f"\n== Bản dịch đã lưu (yêu cầu > {SLOW_TRANSLATION_S:.0f} s đánh dấu có thể bật máy chữ) ==")
