@@ -23,3 +23,11 @@ python3 eval/asr/fleurs-ko/score.py "$manifest" "$predictions_jsonl"
 ```
 
 Kết quả ghi ra stdout, gồm lời tham chiếu, lời máy chép, số lỗi ký tự từng câu và các ID còn thiếu. CER của mỗi profile chỉ xuất hiện khi đủ 8 WAV.
+
+### Đo cả hai luồng qua VPS
+
+Chọn mục **26** sau khi mục 25 đã chuẩn bị mẫu. Nhập mã phiên bản đang chạy trên Modal. Nếu chỉ có tên đợt triển khai nội bộ, dùng một nhãn duy nhất cho đúng lần triển khai đó và ghi lại nhãn. Dùng nhãn mới khi triển khai lại hoặc đổi cấu hình máy chủ.
+
+Mục 26 đọc manifest gốc, kiểm mã băm WAV và báo số bản chép khớp cấu hình cùng số lượt còn thiếu. Nhập `c` để gửi phần còn thiếu lên Modal, tối đa 16 yêu cầu nếu cache trống. Nhập `k` để dừng sau khi kiểm tra. Mỗi phản hồi thành công được lưu thành một JSON riêng trong thư mục `asr/<config_id>/` ngay cạnh manifest. Giữ nguyên mã phiên bản khi chạy tiếp. Nếu mất kết nối trước khi lưu phản hồi, lượt đó vẫn có thể đã được Modal tính tiền.
+
+Khi đủ kết quả, `report.json` lưu CER và lỗi từng câu. Các JSON phản hồi lưu thời gian xử lý, thời gian chờ và chi phí ước tính từng WAV. Chi phí dùng thời gian xử lý nhân đơn giá GPU cộng chi phí model chữ được server báo. Hóa đơn thực tế có thể khác. Kết quả cũ mang tên clip `ko` thiếu bằng chứng khớp SHA-256 và cấu hình nên không được tính vào lượt FLEURS.
