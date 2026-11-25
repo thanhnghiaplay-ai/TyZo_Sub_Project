@@ -168,6 +168,14 @@ cai_cham_diem() {
   "$VENV/bin/pip" install -q jiwer opencc-python-reimplemented cn2an pykakasi || { do_ "Cài thư viện chấm điểm lỗi."; return 1; }
 }
 
+nhat_ky_bat_may() { # chỉ đọc nhật ký Modal, lọc các dòng ghi thời gian bật máy chữ; không bật máy
+  vang "Đọc nhật ký Modal trong 30 giây rồi lọc (Ctrl+C để dừng sớm)..."
+  timeout 30 "$MODAL" app logs "$APP_NAME" 2>&1 \
+    | grep -aE 'Loading weights|Model loading took|loading took|init engine|Starting vLLM|Warming up|torch.compile|compil(e|ation) took|Graph capturing|Resolved architecture|Downloading|Application startup complete|shutdown triggered|Started server process' \
+    | tail -n 60
+  return 0
+}
+
 so_sanh_test() { # so_sanh_test [thư mục clip] [số lần] [luồng,luồng|all]
   [ -n "$(conf_get URL)" ] || { do_ "Chưa có địa chỉ dịch vụ. Chạy mục 1 trước."; return 1; }
   local d="${1:-}" n="${2:-}" p="${3:-}"
@@ -320,6 +328,7 @@ menu() {
     echo "31. Thử bộ lọc tự động câu chào bịa trên 16 phản hồi FLEURS đã lưu (CPU, không gọi Modal)"
     echo "32. So dịch Hàn → Việt: gốc / có chủ đề / thêm thuật ngữ (Modal chữ, hỏi trước khi gửi, dùng lại bản đã lưu)"
     echo "33. Đo thời gian bật máy Modal từ kết quả đã lưu (CPU, không gọi Modal)"
+    echo "34. Lọc nhật ký Modal: các bước bật máy chữ và thời gian (chỉ đọc, không bật máy)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -346,6 +355,7 @@ menu() {
       29) "$PY" "$CODE/eval/asr/fleurs-ko/xem-1673.py" "$TEST_OUT/fleurs-ko" ;;
       30) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/xem-1673.py" --dich-chuan "$TEST_OUT/fleurs-ko" ;;
       31) "$PY" "$CODE/eval/asr/fleurs-ko/loc-chao.py" "$TEST_OUT/fleurs-ko" ;;
+      34) nhat_ky_bat_may ;;
       33) "$PY" "$CODE/eval/asr/luong-ky/modal/khoi_dong.py" "$TEST_OUT" "$CODE/eval/asr/mau-da-ra-soat" ;;
       32) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/dich-ngu-canh.py" "$TEST_OUT/fleurs-ko" ;;
       27) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/translate.py" "$TEST_OUT/fleurs-ko" ;;
