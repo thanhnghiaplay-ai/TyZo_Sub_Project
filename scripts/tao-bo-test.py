@@ -19,7 +19,9 @@ def main():
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     manifest = []
     for short, lang in LANGS.items():
-        ds = load_dataset('google/fleurs', lang, split=a.split, trust_remote_code=True)
+        # FLEURS hiện đã chuyển sang Parquet chuẩn; datasets 5.x không còn hỗ trợ
+        # tham số trust_remote_code nữa.
+        ds = load_dataset('google/fleurs', lang, split=a.split)
         for i, row in enumerate(ds.select(range(min(a.per_lang, len(ds))))):
             stem = f'{short}-{i+1}'
             base = {'en': 'en', 'zh': 'zh', 'ja': 'ja', 'ko': 'ko'}[short] if i == 0 else stem
