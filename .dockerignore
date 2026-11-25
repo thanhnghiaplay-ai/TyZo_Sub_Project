@@ -5,3 +5,5 @@ dist
 .vercel
 *.md
 android
+graphify-out
+.claude
