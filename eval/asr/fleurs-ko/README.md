@@ -50,4 +50,10 @@ Khi đủ kết quả, `report.json` lưu CER và lỗi từng câu. Các JSON p
 
 `xem-1673.py --dich-chuan` lấy câu Hàn chuẩn của 1673 từ cùng báo cáo, dùng đúng lời nhắc, model và tham số của mục 27, lưu thành `dich-ko-vi/1673-chuan-<sha>.json`. Nếu chưa có bản lưu, công cụ hỏi `c/k` trước khi gửi đúng 1 yêu cầu Modal chữ. Chạy lại sẽ dùng bản đã lưu. Kết quả in cạnh bản dịch từ bản chép nhanh và đáp án Việt tạm. Mục này trả lời câu hỏi: khi đầu vào đúng 연합 규약, bước dịch có còn biến 우선 thành “ưu tiên” không.
 
+### Mục 31 · bộ lọc tự động câu chào bịa (CPU)
+
+[`luong-ky/loc_chao.py`](../luong-ky/loc_chao.py) bỏ một đoạn khi cả đoạn đúng bằng một câu chào kết video trong danh sách (Hàn, Nhật, Trung, Anh), phía sau còn lời, và đoạn đó là đoạn đầu hoặc chồng thời gian lên đoạn kế. Đoạn cuối bài luôn được giữ vì có thể là lời chào thật; câu dài chứa cụm chào cũng được giữ. `pml.run` áp dụng bộ lọc trước khi trả kết quả và ghi các đoạn đã bỏ vào `stats.bo_chao`. Mục 31 ([`loc-chao.py`](loc-chao.py)) chạy cùng quy tắc trên mọi đoạn đã lưu của cả hai luồng, không chọn tay như mục 28, rồi in đoạn bị bỏ và CER trước/sau.
+
+Bộ lọc chỉ có hiệu lực trên Modal sau khi cập nhật bằng mục 3. Mã cấu hình của mục 26 dựa trên nhãn triển khai người vận hành nhập, không dựa trên code; khi đo lại sau cập nhật, nhập nhãn mới để không dùng lại phản hồi cũ.
+
 Đối chiếu nghĩa, tên riêng, số liệu và độ tự nhiên theo từng ID. Ghi rõ khi một lỗi bắt đầu từ bản chép. Các câu FLEURS độc lập nên cần bài riêng để đánh giá hội thoại hoặc chia phụ đề.

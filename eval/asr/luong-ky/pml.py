@@ -51,6 +51,7 @@ def bad(seg):
     return (not t) or bool(BAIT.search(t)) or seg.get("compression_ratio", 0) > 2.4 or (seg.get("no_speech_prob", 0) > 0.6 and seg.get("avg_logprob", 0) < -0.8)
 
 from lib import remap
+from loc_chao import drop_misplaced_outro
 HALLU_ONLY = {"ko": ["감사합니다", "시청해주셔서감사합니다", "구독과좋아요부탁드립니다"], "ja": ["ご視聴ありがとうございました", "ありがとうございました", "おやすみなさい"],
               "zh": ["谢谢", "谢谢观看", "谢谢大家", "别忘了"], "en": ["thank you", "thanks for watching", "you", "bye", "thank you for watching"]}
 
@@ -380,6 +381,8 @@ def run(F, cfg, L=None):
         if how not in ("khop", "khong") and (META.search(text) or len(SC.norm(text, L)) > 1.4 * max(L2) + 4 or len(SC.norm(text, L)) < 0.6 * float(np.median(L2))):
             st["guard"] += 1; text = medoid([x["text"] for x in c])
         segs += [s for s in align(text, c, g, L) if not interjection_only(s["text"], L)]; log.append({"t": [round(g[0][0], 1), round(g[-1][1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "out": text, "cach": how})
+    segs, outro = drop_misplaced_outro(segs, L)
+    st["bo_chao"] = [s["text"] for s in outro]
     st["probe"] = st_probe
     st["time"] = {"sep": round(t_sep, 1), "asr": round(t_asr, 1), "total": round(time.time() - t0, 1)}
     return segs, log, st
