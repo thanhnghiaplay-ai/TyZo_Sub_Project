@@ -46,4 +46,8 @@ Khi đủ kết quả, `report.json` lưu CER và lỗi từng câu. Các JSON p
 
 Đọc kết quả theo hai câu hỏi: (1) bản chép còn giữ 연합 규약 hay đã thành từ khác, ví dụ một từ mang nghĩa thương mại như 교역/통상/무역 hoặc 연방; (2) bản dịch hiểu 우선 (“trước hết/ban đầu”) thành “ưu tiên”. Nếu bản chép đã giữ đúng cụm mà bản dịch vẫn sai, lỗi nằm ở bước dịch; khi đó mới cần dịch riêng câu Hàn chuẩn của 1673.
 
+### Mục 30 · dịch câu Hàn chuẩn của 1673
+
+`xem-1673.py --dich-chuan` lấy câu Hàn chuẩn của 1673 từ cùng báo cáo, dùng đúng lời nhắc, model và tham số của mục 27, lưu thành `dich-ko-vi/1673-chuan-<sha>.json`. Nếu chưa có bản lưu, công cụ hỏi `c/k` trước khi gửi đúng 1 yêu cầu Modal chữ. Chạy lại sẽ dùng bản đã lưu. Kết quả in cạnh bản dịch từ bản chép nhanh và đáp án Việt tạm. Mục này trả lời câu hỏi: khi đầu vào đúng 연합 규약, bước dịch có còn biến 우선 thành “ưu tiên” không.
+
 Đối chiếu nghĩa, tên riêng, số liệu và độ tự nhiên theo từng ID. Ghi rõ khi một lỗi bắt đầu từ bản chép. Các câu FLEURS độc lập nên cần bài riêng để đánh giá hội thoại hoặc chia phụ đề.

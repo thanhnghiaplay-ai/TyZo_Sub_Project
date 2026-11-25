@@ -15,6 +15,36 @@ PROMPT = ("Dịch toàn bộ lời chép tiếng Hàn sau sang tiếng Việt t�
           "Giữ đúng ý, tên riêng và số liệu. Chỉ trả bản dịch, không giải thích.")
 
 
+def request(text, model, out, clip_id, sha, url=None, tag=""):
+    """Translate one Korean text, reusing the saved reply for the same request body."""
+    payload = dict(model=model, temperature=0, max_tokens=512,
+                   chat_template_kwargs={"enable_thinking": False},
+                   messages=[dict(role="system", content=PROMPT), dict(role="user", content=text)])
+    body = json.dumps(payload, ensure_ascii=False).encode()
+    key = hashlib.sha256(body).hexdigest()
+    saved = out / f"{clip_id}-{tag}{key}.json"
+    if saved.exists():
+        return saved, url
+    token = os.environ.get("TYZO_ASR_TOKEN", "")
+    if not token:
+        raise ValueError("Thiếu chuỗi bảo vệ dịch vụ chữ.")
+    if url is None:
+        import modal
+        url = modal.Function.from_name("tyzo-asr", "llm").get_web_url().rstrip("/")
+    req = urllib.request.Request(url + "/v1/chat/completions", body, {
+        "Content-Type": "application/json", "Authorization": "Bearer " + token})
+    start = time.monotonic()
+    with urllib.request.urlopen(req, timeout=1500) as response:
+        result = json.load(response)
+    choice = result["choices"][0]
+    vi = choice["message"]["content"].strip()
+    if not vi or choice.get("finish_reason") == "length":
+        raise ValueError(f"Bản dịch thiếu ở ID {clip_id}.")
+    write_json(saved, dict(id=clip_id, sha256=sha, model=model, text=text, vi=vi,
+                           seconds=time.monotonic()-start, usage=result.get("usage")))
+    return saved, url
+
+
 def translate(cache):
     cases = json.loads((HERE / "ko-vi-cases.json").read_text())
     root = cache / ("set-" + cases["revision"])
@@ -35,31 +65,7 @@ def translate(cache):
         for case in cases["cases"]:
             clip = clips[case["sha256"]]
             text = clip["text"]
-            payload = dict(model=model, temperature=0, max_tokens=512,
-                           chat_template_kwargs={"enable_thinking": False},
-                           messages=[dict(role="system", content=PROMPT), dict(role="user", content=text)])
-            body = json.dumps(payload, ensure_ascii=False).encode()
-            key = hashlib.sha256(body).hexdigest()
-            saved = out / f"{clip['id']}-{key}.json"
-            if not saved.exists():
-                if url is None:
-                    import modal
-                    token = os.environ["TYZO_ASR_TOKEN"]
-                    if not token:
-                        raise ValueError("Thiếu chuỗi bảo vệ dịch vụ chữ.")
-                    url = modal.Function.from_name("tyzo-asr", "llm").get_web_url().rstrip("/")
-                req = urllib.request.Request(url + "/v1/chat/completions", body, {
-                    "Content-Type": "application/json", "Authorization": "Bearer " + token})
-                start = time.monotonic()
-                with urllib.request.urlopen(req, timeout=1500) as response:
-                    result = json.load(response)
-                choice = result["choices"][0]
-                vi = choice["message"]["content"].strip()
-                if not vi or choice.get("finish_reason") == "length":
-                    raise ValueError(f"Bản dịch thiếu ở ID {clip['id']}.")
-                write_json(saved, dict(id=clip["id"], sha256=case["sha256"], model=model,
-                                       text=text, vi=vi, seconds=time.monotonic()-start,
-                                       usage=result.get("usage")))
+            saved, url = request(text, model, out, clip["id"], case["sha256"], url)
             print(f"{clip['id']} · {json.loads(saved.read_text())['vi']}", flush=True)
     print(f"Đã có đủ 8 bản dịch · {out}")
 

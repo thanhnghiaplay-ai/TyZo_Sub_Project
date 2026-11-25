@@ -3,7 +3,8 @@
 Shows each character edit against the reference, the saved segments around the phrase
 연합 규약 (Articles of Confederation), and the saved Vietnamese translation, so the point
 where "Các Điều khoản Hợp bang" became "thương mại liên bang" can be located without any
-Modal request.
+Modal request. With --dich-chuan it sends at most one Modal text request: the reference
+Korean sentence of 1673, with the same prompt, model and parameters as item 27.
 """
 import json
 import sys
@@ -96,5 +97,47 @@ def main(cache):
     print(f"\nĐáp án Việt tạm: {case['reference_vi']}")
 
 
+def translate_reference(cache):
+    import fcntl
+    from translate import request
+    cases = json.loads((HERE / "ko-vi-cases.json").read_text())
+    case = next(c for c in cases["cases"] if c["id"] == CASE_ID)
+    sha = case["sha256"]
+    path = find_report(cache / ("set-" + cases["revision"]), sha)
+    clips = json.loads(path.read_text())["results"]["nhanh"]["clips"]
+    reference, asr = clips[sha]["reference"], clips[sha]["text"]
+    model = json.loads((HERE.parent / "luong-ky/modal/cau-hinh.json").read_text())["hop_nhat"]["gpu"]["model"]
+    out = path.parent / "dich-ko-vi"
+    out.mkdir(exist_ok=True)
+    print(f"Báo cáo: {path}\nModel: {model}\nHàn chuẩn: {reference}")
+    with (out / "run.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        saved = None
+        for name in sorted(out.glob(f"{CASE_ID}-chuan-*.json")):
+            row = json.loads(name.read_text())
+            if row["text"] == reference and row["model"] == model:
+                saved = name
+        if saved is None:
+            answer = input("Chưa có bản dịch câu chuẩn. Gửi 1 yêu cầu Modal chữ? (c/k): ") if sys.stdin.isatty() else "k"
+            if answer.strip().lower() != "c":
+                sys.exit("Đã dừng, không gửi yêu cầu.")
+            saved, _ = request(reference, model, out, CASE_ID, sha, tag="chuan-")
+        else:
+            print("Dùng bản dịch đã lưu, không gửi yêu cầu.")
+    rows = [("Từ câu Hàn chuẩn", json.loads(saved.read_text()))]
+    for name in sorted(out.glob(f"{CASE_ID}-*.json")):
+        row = json.loads(name.read_text())
+        if "-chuan-" not in name.name and row["text"] == asr and row["model"] == model:
+            rows.append(("Từ bản chép nhanh (mục 27)", row))
+    for label, row in rows:
+        print(f"\n{label} · {row.get('seconds') or 0:.1f} s · {row['vi']}")
+        print("  có trong bản dịch: " + ", ".join(k for k in VI_HINTS if k in row["vi"]))
+    print(f"\nĐáp án Việt tạm: {case['reference_vi']}")
+    print(f"Tệp: {saved}")
+
+
 if __name__ == "__main__":
-    main(Path(sys.argv[1]))
+    if sys.argv[1] == "--dich-chuan":
+        translate_reference(Path(sys.argv[2]))
+    else:
+        main(Path(sys.argv[1]))
