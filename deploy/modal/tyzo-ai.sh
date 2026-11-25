@@ -336,7 +336,7 @@ menu() {
     case "$c" in
       1) cai_dat ;;
       2) kiem_tra ;;
-      3) cap_nhat ;;
+      3) cap_nhat; cho_enter; vang "Mở lại menu bằng bản vừa cập nhật..."; exec "$CODE/deploy/modal/tyzo-ai.sh" ;;
       4) danh_sach_luong; vang "Thêm hay sửa luồng: sửa $CAU_HINH trong kho rồi chọn 3. Cập nhật." ;;
       5) chon_hop_nhat; luu_bi_mat && trien_khai ;;
       6) hoi_ali; luu_bi_mat && trien_khai ;;

@@ -51,7 +51,7 @@ def bad(seg):
     return (not t) or bool(BAIT.search(t)) or seg.get("compression_ratio", 0) > 2.4 or (seg.get("no_speech_prob", 0) > 0.6 and seg.get("avg_logprob", 0) < -0.8)
 
 from lib import remap
-from loc_chao import drop_misplaced_outro
+from loc_chao import drop_misplaced_outro, is_outro
 HALLU_ONLY = {"ko": ["감사합니다", "시청해주셔서감사합니다", "구독과좋아요부탁드립니다"], "ja": ["ご視聴ありがとうございました", "ありがとうございました", "おやすみなさい"],
               "zh": ["谢谢", "谢谢观看", "谢谢大家", "别忘了"], "en": ["thank you", "thanks for watching", "you", "bye", "thank you for watching"]}
 
@@ -208,7 +208,8 @@ def probe_gap(mix, gap, L, dmix=None):
             lambda: text_of(agc, g, L, LARGE, words=True), lambda: text_of(hi, g, L, words=True), lambda: text_of(hi, g, L, LARGE, words=True)]
     if dmix is not None: jobs.append(lambda: text_of(norm_spans(dmix, g, 0.1), g, L, words=True))
     with ThreadPoolExecutor(len(jobs)) as ex: c = list(ex.map(lambda f: f(), jobs))
-    nonempty = [x for x in c if SC.norm(x["text"], L) and not interjection_only(x["text"], L)]
+    # khoảng lặng: câu chào kết video ("다음 영상에서 만나요"…) gần như chắc là Whisper bịa, dù các lần nhận dạng khớp nhau
+    nonempty = [x for x in c if SC.norm(x["text"], L) and not interjection_only(x["text"], L) and not is_outro(x["text"], L)]
     if len(nonempty) < 3: return None, c, 1.0
     d = agreement(nonempty, L)
     return (c if d < 0.5 else None), c, d

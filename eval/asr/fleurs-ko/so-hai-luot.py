@@ -40,6 +40,9 @@ def main(cache):
                     flag = (" ← câu chào riêng một đoạn" if is_outro(s["text"], "ko")
                             else " ← câu chào dính trong đoạn" if has_outro(s["text"]) else "")
                     print(f"      {s['start']:.3f}–{s['end']:.3f} s · {s['text']}{flag}")
+                for gap in stats.get("probe") or []:
+                    texts = " | ".join(t for t in gap.get("c", []) if t.strip()) or "(trống)"
+                    print(f"      dò khoảng lặng {gap.get('gap')} · {'NHẬN' if gap.get('ok') else 'bỏ'} · lệch {gap.get('d')} · {texts[:160]}")
 
 
 if __name__ == "__main__":
