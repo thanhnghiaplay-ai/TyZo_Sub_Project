@@ -319,6 +319,7 @@ menu() {
     echo "30. Dịch câu Hàn chuẩn 1673 sang Việt (1 yêu cầu Modal chữ, hỏi trước khi gửi, dùng lại bản đã lưu)"
     echo "31. Thử bộ lọc tự động câu chào bịa trên 16 phản hồi FLEURS đã lưu (CPU, không gọi Modal)"
     echo "32. So dịch Hàn → Việt: gốc / có chủ đề / thêm thuật ngữ (Modal chữ, hỏi trước khi gửi, dùng lại bản đã lưu)"
+    echo "33. Đo thời gian bật máy Modal từ kết quả đã lưu (CPU, không gọi Modal)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -345,6 +346,7 @@ menu() {
       29) "$PY" "$CODE/eval/asr/fleurs-ko/xem-1673.py" "$TEST_OUT/fleurs-ko" ;;
       30) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/xem-1673.py" --dich-chuan "$TEST_OUT/fleurs-ko" ;;
       31) "$PY" "$CODE/eval/asr/fleurs-ko/loc-chao.py" "$TEST_OUT/fleurs-ko" ;;
+      33) "$PY" "$CODE/eval/asr/luong-ky/modal/khoi_dong.py" "$TEST_OUT" "$CODE/eval/asr/mau-da-ra-soat" ;;
       32) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/dich-ngu-canh.py" "$TEST_OUT/fleurs-ko" ;;
       27) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/translate.py" "$TEST_OUT/fleurs-ko" ;;
       25) bash "$CODE/eval/asr/fleurs-ko/prepare-set.sh" "$DIR/test/fleurs-ko" ;;
