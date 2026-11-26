@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
-import { PGlite } from "@electric-sql/pglite";
+import { pgliteSql } from "../test-sql.ts";
 import type { Sql } from "../db.ts";
-import { buyPlanWith, creditHitWith, refundRunWith, releaseHoldWith, repairMissedTokens, wipeTestData } from "./pay-flow.ts";
+import { buyPlanWith, consumeResetCodeWith, creditHitWith, issueResetCodeWith, refundRunWith, releaseHoldWith, repairMissedTokens, wipeTestData } from "./pay-flow.ts";
 import { chargeTicketWith, closeTicketWith, openTicketWith } from "../billing/run-ticket.ts";
 import { ROOM_PLANS } from "../room-plans.ts";
 
@@ -12,14 +11,7 @@ const START = "2026-11-07T17:00:00.000Z";
 const PLAN = ROOM_PLANS[0];
 
 before(async () => {
-  const db = new PGlite();
-  const dir = new URL("../../../migrations/", import.meta.url);
-  for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) await db.exec(readFileSync(new URL(file, dir), "utf8"));
-  sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
-    let text = strings[0];
-    for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-    return (await db.query(text, values)).rows;
-  }) as unknown as Sql;
+  sql = await pgliteSql();
 });
 
 const balanceOf = async (user: string) => Number((await sql<{ balance: number }>`select balance from room_accounts where user_id = ${user}`)[0]?.balance ?? 0);
@@ -277,5 +269,38 @@ describe("trả theo lượt rồi hoàn tiền", () => {
     const results = await Promise.allSettled([releaseHoldWith(sql, "t1"), releaseHoldWith(sql, "t1")]);
     assert.equal(results.filter((r) => r.status === "fulfilled").length, 1);
     assert.equal(await balanceOf("k"), 100000);
+  });
+});
+
+describe("reset số liệu thử an toàn (kiểm toán R4-001, R4-002)", () => {
+  beforeEach(reset);
+
+  it("R4-002: một bảng xóa lỗi thì không bảng nào bị xóa", async () => {
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('g1', 'k', 10000, 10000, 6407, now() + interval '30 day')`;
+    await sql`insert into room_audit (actor_id, action, note) values ('k', 'test', 'cu')`;
+    await sql.query(`create or replace function thu_chan_xoa() returns trigger language plpgsql as $$ begin raise exception 'loi gia lap'; end $$`);
+    await sql.query(`create trigger thu_chan_xoa before delete on room_audit for each row execute function thu_chan_xoa()`);
+    try {
+      await assert.rejects(wipeTestData(sql), /loi gia lap/);
+      assert.equal((await sql`select 1 from token_grants`).length, 1, "Token còn nguyên");
+      assert.equal((await sql`select 1 from pay_orders`).length, 1, "đơn còn nguyên");
+    } finally {
+      await sql.query(`drop trigger thu_chan_xoa on room_audit`);
+    }
+  });
+
+  it("R4-001: mã do máy chủ cấp, đúng người, dùng một lần", async () => {
+    const code = await issueResetCodeWith(sql, "chu");
+    assert.match(code, /^[A-Z2-9]{6}$/);
+    assert.equal(await consumeResetCodeWith(sql, "chu", "AAAAAA"), code === "AAAAAA");
+    assert.equal(await consumeResetCodeWith(sql, "nguoi-khac", code), false);
+    assert.equal(await consumeResetCodeWith(sql, "chu", code), true);
+    assert.equal(await consumeResetCodeWith(sql, "chu", code), false, "không dùng lại được");
+  });
+
+  it("R4-001: mã quá 5 phút thì hết hạn", async () => {
+    const code = await issueResetCodeWith(sql, "chu");
+    await sql`update room_settings set value = ${JSON.stringify({ user: "chu", code, until: Date.now() - 1 })} where key = 'reset_test_code'`;
+    assert.equal(await consumeResetCodeWith(sql, "chu", code), false);
   });
 });

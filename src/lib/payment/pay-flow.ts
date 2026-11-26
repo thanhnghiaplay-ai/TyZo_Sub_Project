@@ -314,24 +314,58 @@ export async function releaseHoldWith(sql: Sql, id: string, note = "") {
  * Giữ tài khoản, vai trò, cấu hình, key, điều khoản, cộng tác viên và thuật ngữ.
  */
 export async function wipeTestData(sql: Sql) {
-  await sql`delete from token_slices`;
-  await sql`delete from token_grants`;
-  await sql`delete from run_tickets`;
-  await sql`delete from pay_orders`;
-  await sql`delete from pay_seen`;
-  await sql`delete from room_ledger`;
-  await sql`delete from room_costs`;
-  await sql`delete from room_notices`;
-  await sql`delete from commission_events`;
-  await sql`delete from affiliate_payouts`;
-  await sql`delete from quality_runs`;
-  await sql`delete from room_appeals`;
-  await sql`delete from trial_devices`;
-  await sql`delete from room_presence`;
-  await sql`delete from rate_hits`;
-  await sql`delete from room_audit`;
-  await sql`
-    update room_accounts
-    set balance = 0, plan = null, plan_until = null, trial_left = 1
-  `;
+  // MỘT giao dịch (kiểm toán R4-002): lỗi giữa chừng thì không bảng nào bị xóa, không còn cảnh xóa sổ mà giữ Token.
+  const { inTransaction } = await import("../db-tx.ts");
+  await inTransaction(sql, async (tx) => {
+    await tx`delete from token_slices`;
+    await tx`delete from token_grants`;
+    await tx`delete from run_tickets`;
+    await tx`delete from pay_orders`;
+    await tx`delete from pay_seen`;
+    await tx`delete from room_ledger`;
+    await tx`delete from room_costs`;
+    await tx`delete from room_notices`;
+    await tx`delete from commission_events`;
+    await tx`delete from affiliate_payouts`;
+    await tx`delete from quality_runs`;
+    await tx`delete from room_appeals`;
+    await tx`delete from trial_devices`;
+    await tx`delete from room_presence`;
+    await tx`delete from rate_hits`;
+    await tx`delete from room_audit`;
+    await tx`
+      update room_accounts
+      set balance = 0, plan = null, plan_until = null, trial_left = 1
+    `;
+  });
+}
+
+/**
+ * Mã xác nhận reset do MÁY CHỦ cấp (kiểm toán R4-001): 6 ký tự, dùng một lần, hết hạn sau 5 phút, gắn đúng tài khoản Chủ.
+ * Trước đây mã do trình duyệt tự sinh và máy chủ chỉ kiểm định dạng.
+ */
+const RESET_KEY = "reset_test_code";
+const RESET_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+export async function issueResetCodeWith(sql: Sql, userId: string): Promise<string> {
+  const { randomInt } = await import("node:crypto");
+  const code = Array.from({ length: 6 }, () => RESET_ALPHABET[randomInt(RESET_ALPHABET.length)]).join("");
+  const value = JSON.stringify({ user: userId, code, until: Date.now() + 5 * 60_000 });
+  await sql`insert into room_settings (key, value) values (${RESET_KEY}, ${value}) on conflict (key) do update set value = excluded.value`;
+  return code;
+}
+
+/** Dùng mã: đúng người, đúng mã, còn hạn thì xóa mã và trả true. Sai thì giữ nguyên, trả false. */
+export async function consumeResetCodeWith(sql: Sql, userId: string, code: string): Promise<boolean> {
+  const rows = await sql<{ value: string }>`select value from room_settings where key = ${RESET_KEY}`;
+  if (!rows.length) return false;
+  let saved: { user?: string; code?: string; until?: number };
+  try {
+    saved = JSON.parse(rows[0].value);
+  } catch {
+    return false;
+  }
+  if (saved.user !== userId || saved.code !== code || !(Number(saved.until) > Date.now())) return false;
+  const taken = await sql`delete from room_settings where key = ${RESET_KEY} and value = ${rows[0].value} returning 1`;
+  return taken.length > 0;
 }

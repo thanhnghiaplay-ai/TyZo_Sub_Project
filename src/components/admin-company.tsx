@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin/admin-money";
+import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, startTestReset, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin/admin-money";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
@@ -321,9 +321,12 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
             type="button"
             className="min-tap rounded-full border border-danger px-4 text-sm font-semibold text-danger"
             onClick={() => {
-              const code = Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
-              setResetCode(code);
-              setResetOpen(true);
+              void startTestReset()
+                .then(({ code }) => {
+                  setResetCode(code);
+                  setResetOpen(true);
+                })
+                .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa lấy được mã xác nhận.", "bad"));
             }}
           >
             Reset về sạch

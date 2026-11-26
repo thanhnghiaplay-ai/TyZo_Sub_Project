@@ -301,6 +301,16 @@ export const deleteCost = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Cấp mã xác nhận reset (máy chủ giữ, 5 phút, một lần). */
+export const startTestReset = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const { issueResetCodeWith } = await import("@/lib/payment/pay-flow");
+    return { code: await issueResetCodeWith(await getSql(), context.userId) };
+  });
+
 export const resetTestMoney = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((code: string) => {
@@ -308,11 +318,12 @@ export const resetTestMoney = createServerFn({ method: "POST" })
     if (!/^[A-Z2-9]{6}$/.test(value)) throw new Error("Hãy nhập đúng mã xác nhận 6 ký tự.");
     return value;
   })
-  .handler(async ({ context }) => {
+  .handler(async ({ context, data }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
-    const { wipeTestData } = await import("@/lib/payment/pay-flow");
+    const { wipeTestData, consumeResetCodeWith } = await import("@/lib/payment/pay-flow");
     const sql = await getSql();
+    if (!(await consumeResetCodeWith(sql, context.userId, data))) throw new Error("Mã xác nhận sai hoặc đã hết hạn. Bấm Reset về sạch để lấy mã mới.");
     await wipeTestData(sql);
     await writeAudit(context.userId, "reset-tien-test", null, "Xóa số liệu thử: Token dịch, đơn, phiếu, chuông, nhật ký, gói thuê. Giữ tài khoản.");
     return { ok: true as const };

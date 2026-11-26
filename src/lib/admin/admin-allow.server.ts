@@ -89,12 +89,23 @@ export async function transferOwner(sql: Sql, fromUserId: string, email: string)
   `;
   if (!target.length) throw new Error("Chưa có tài khoản nào dùng email này.");
   if (!target[0].verified && ownerMustBeVerified()) throw new Error("Email này chưa xác minh, chưa thể làm Admin.");
-  await sql`
-    insert into room_staff (user_id, role) values (${target[0].id}, 'chu')
-    on conflict (user_id) do update set role = 'chu'
-  `;
-  if (target[0].id !== fromUserId) {
-    await sql`update room_staff set role = 'quan-ly' where user_id = ${fromUserId} and role = 'chu'`;
-  }
+  // MỘT câu lệnh (kiểm toán MAIN-042): cấp Chủ mới và hạ Chủ cũ cùng có hiệu lực, không còn lúc có hai Chủ khi lệnh
+  // thứ hai lỗi. Chỉ chạy khi người chuyển vẫn đang là Chủ lúc chạy lệnh.
+  const done = await sql<{ user_id: string }>`
+    with me as (
+      select user_id from room_staff where user_id = ${fromUserId} and role = 'chu' for update
+    ),
+    up as (
+      insert into room_staff (user_id, role) select ${target[0].id}, 'chu' from me
+      on conflict (user_id) do update set role = 'chu'
+      returning user_id
+    ),
+    down as (
+      update room_staff set role = 'quan-ly'
+      where user_id = ${fromUserId} and role = 'chu' and ${target[0].id} <> ${fromUserId} and exists (select 1 from me)
+      returning user_id
+    )
+    select user_id from up where (select count(*) from down) >= 0`;
+  if (!done.length) throw new Error("Bạn không còn là Admin chính, không chuyển quyền được.");
   return target[0].id;
 }

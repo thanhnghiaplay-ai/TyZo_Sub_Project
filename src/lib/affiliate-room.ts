@@ -125,16 +125,8 @@ export const markPayout = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     await owner(context.userId);
     const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    await sql`
-      update affiliate_payouts set status = 'da-chi', paid_ref = ${data.ref}, paid_at = now()
-      where id = ${data.id} and status = 'cho-chi'
-    `;
-    await sql`
-      update commission_events set status = 'da-chi'
-      where affiliate_id = (select affiliate_id from affiliate_payouts where id = ${data.id}) and status = 'cho-rut'
-    `;
-    return { ok: true as const };
+    const { markPayoutWith } = await import("@/lib/affiliate-payout");
+    return markPayoutWith(await getSql(), data.id, data.ref);
   });
 
 /** Admin từ chối một lệnh rút: trả các khoản về «Rút được» để CTV sửa tài khoản rồi rút lại. */
@@ -148,15 +140,8 @@ export const cancelPayout = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     await owner(context.userId);
     const { getSql } = await import("@/lib/db");
-    const sql = await getSql();
-    const rows = await sql<{ affiliate_id: string }>`
-      update affiliate_payouts set status = 'huy', note = ${data.note}
-      where id = ${data.id} and status = 'cho-chi' returning affiliate_id
-    `;
-    if (rows.length) {
-      await sql`update commission_events set status = 'da-duyet' where affiliate_id = ${rows[0].affiliate_id} and status = 'cho-rut'`;
-    }
-    return { ok: rows.length > 0 };
+    const { cancelPayoutWith } = await import("@/lib/affiliate-payout");
+    return cancelPayoutWith(await getSql(), data.id, data.note);
   });
 
 export const applyAffiliate = createServerFn({ method: "POST" })
@@ -296,26 +281,7 @@ export const requestPayout = createServerFn({ method: "POST" })
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'affiliate'`;
     const rules = parseAffiliateRules(saved[0]?.value);
-    const ready = await sql<{ amount: number }>`
-      select coalesce(sum(amount), 0)::int as amount from commission_events
-      where affiliate_id = ${context.userId} and status = 'da-duyet'
-    `;
-    const amount = Number(ready[0]?.amount ?? 0);
-    if (amount < rules.minPayout) throw new Error("Chưa đủ số tiền tối thiểu để rút.");
-    const open = await sql<{ id: number }>`select id from affiliate_payouts where affiliate_id = ${context.userId} and status = 'cho-chi'`;
-    if (open.length) throw new Error("Đang có một lệnh rút chờ duyệt.");
-    const me = await sql<{ status: string; bank_name: string; bank_account: string; bank_holder: string }>`
-      select status, bank_name, bank_account, bank_holder from affiliates where user_id = ${context.userId}
-    `;
-    if (!me.length) throw new Error("Bạn chưa đăng ký cộng tác viên.");
-    if (me[0].status !== "hoat-dong") throw new Error("Mã giới thiệu đang tạm khóa hoặc chờ duyệt, chưa rút được.");
-    if (!me[0].bank_account) throw new Error("Hãy nhập tài khoản ngân hàng nhận tiền trước.");
-    const flagged = await sql<{ id: number }>`
-      select id from risk_flags where user_id = ${context.userId} and rule = 'ctv-tu-gioi-thieu' and status = 'mo' limit 1
-    `.catch(() => [] as { id: number }[]);
-    if (flagged.length) throw new Error(`Tạm chưa rút được: có khách trùng máy hoặc mạng với bạn đang chờ Admin xem lại (hồ sơ RR-${flagged[0].id}). Gửi Yêu cầu xem lại nếu cần.`);
-    const bankInfo = JSON.stringify({ bank: me[0].bank_name, account: me[0].bank_account, holder: me[0].bank_holder });
-    await sql`update commission_events set status = 'cho-rut' where affiliate_id = ${context.userId} and status = 'da-duyet'`;
-    await sql`insert into affiliate_payouts (affiliate_id, amount, bank_info) values (${context.userId}, ${amount}, ${bankInfo})`;
+    const { requestPayoutWith } = await import("@/lib/affiliate-payout");
+    const { amount } = await requestPayoutWith(sql, context.userId, rules);
     return { ok: true as const, amount };
   });

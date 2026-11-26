@@ -90,7 +90,8 @@ describe("tính tiền theo giá Groq", () => {
     // Đang chờ xem bảng nhân vật thì đóng phiếu nhận dạng trước khi báo chờ.
     assert.match(step, /await releaseAsrTicket\(\);\s*setReviewHold\(true\);/);
     // Mở phiếu phần dịch trước khi gửi lô dịch đầu tiên, và không đổi phiếu khi nhận dạng chưa xong.
-    assert.match(step, /if \(ticketPart\(\) === "asr" && roomPayRef\.current && !done\)[\s\S]{0,120}await ensureChatTicket\(\);[\s\S]{0,120}seg\.busy = true;/);
+    // Kiểm toán SPLIT-008: nhận lô (busy) TRƯỚC khi chờ đổi phiếu, để luồng khác không lấy trùng lô.
+    assert.match(step, /if \(ticketPart\(\) === "asr" && roomPayRef\.current && !done\)[\s\S]{0,400}seg\.busy = true;[\s\S]{0,120}await ensureChatTicket\(\);/);
     // Thiếu Token cho phần dịch: nói rõ phần nhận dạng được giữ.
     assert.match(pipe, /Phần nhận dạng đã xong và được giữ lại/);
   });

@@ -1,21 +1,13 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
 import { afterEach, before, beforeEach, describe, it } from "node:test";
-import { PGlite } from "@electric-sql/pglite";
+import { pgliteSql } from "../test-sql.ts";
 import type { Sql } from "../db.ts";
 import { isOwnerId, ownerEmails, transferOwner } from "./admin-allow.server.ts";
 
 let sql: Sql;
 
 before(async () => {
-  const db = new PGlite();
-  const dir = new URL("../../../migrations/", import.meta.url);
-  for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) await db.exec(readFileSync(new URL(file, dir), "utf8"));
-  sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
-    let text = strings[0];
-    for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-    return (await db.query(text, values)).rows;
-  }) as unknown as Sql;
+  sql = await pgliteSql();
 });
 
 async function user(id: string, email: string, verified: boolean) {
@@ -104,5 +96,21 @@ describe("quyền Chủ nằm trong database", () => {
     await user("c", "chua@tyzo.test", false);
     await assert.rejects(transferOwner(sql, "a", "khong-co@tyzo.test"), /Chưa có tài khoản/);
     await assert.rejects(transferOwner(sql, "a", "chua@tyzo.test"), /chưa xác minh/);
+  });
+
+  it("MAIN-042: người không còn là Chủ thì không chuyển được, không sinh Chủ mới", async () => {
+    await user("a", "chu@tyzo.test", true);
+    await user("b", "moi@tyzo.test", true);
+    await user("x", "x@tyzo.test", true);
+    await sql`insert into room_staff (user_id, role) values ('a', 'chu')`;
+    await assert.rejects(transferOwner(sql, "x", "moi@tyzo.test"), /không còn là Admin chính/);
+    assert.equal(await isOwnerId(sql, "b"), false);
+  });
+
+  it("MAIN-042: chuyển cho chính mình thì vẫn là Chủ, không bị hạ", async () => {
+    await user("a", "chu@tyzo.test", true);
+    await sql`insert into room_staff (user_id, role) values ('a', 'chu')`;
+    await transferOwner(sql, "a", "chu@tyzo.test");
+    assert.equal(await isOwnerId(sql, "a"), true);
   });
 });
