@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = v5.48.0 + ứng dụng 0.11 (đẩy chính thức 26/11/2026: chỉ còn Groq, Alibaba, TyZo; Chủ nói «Giữ lại nhà cung cấp là groq, alibaba và tyzo của tôi», «Xóa vĩnh viễn»). Trước đó v5.47.0 (26/11/2026: nhận dạng TyZo Modal ở cửa trả theo lượt, PR #3). `main` = `work`. Trước đó v5.46.0 (25/11/2026: trang giới thiệu). Trước đó v5.45.0 (đẩy chính thức 23/11/2026, Chủ nói «Ok làm ngay, sau đó đẩy chính thức»). Ứng dụng Android 0.11 (khóa ký đã tạo). Cầu nối Dịch trực tiếp trên VPS `realtimehub.tyzo.site`. |
-| Bản mới nhất | v5.45.0 + ứng dụng 0.11 trên `work` và `main`: «Lọc cho giọng nói» cho tiếng lấy thẳng từ tab và điện thoại (bớt nhạc nền, tự chỉnh âm lượng như micro), bật sẵn. Trước đó v5.44.0 + ứng dụng 0.10 trên `work` và `main`: lịch sử Dịch trực tiếp chung web và ứng dụng (máy chủ giữ 30 phiên trong 30 ngày), điều khoản 2026-11-23.3 nói đúng nhà nào nhận lệnh xóa bản nhận dạng. Trước đó v5.43.0 + ứng dụng 0.9 trên `work` và `main`: Dịch trực tiếp web tự nối lại, Tạm dừng, không trừ Token lúc im, phụ đề tách câu, lỗi Alibaba tiếng Việt; điều khoản 2026-11-23.2. Trước đó v5.42.7 + ứng dụng 0.8 trên `work` và `main`: phụ đề nổi như phụ đề phim, «Chỉ hiện câu đã xong», Qwen 3.5 chỉnh độ nhạy nhận tiếng (LIVE_VAD_THRESHOLD, tyzo mục 5). v5.42.6 + ứng dụng 0.7 trên `work` và `main`: dịch mượt trên 5G (nén tiếng, không gửi lúc im, bỏ phần cũ khi mạng chậm), Tạm dừng trên khung, tự lùi về phim, phụ đề nền nhạt ít nhảy; điều khoản 2026-11-23.1. v5.42.5 + ứng dụng 0.6 trên `work` và `main`: ứng dụng tự nối lại khi mất mạng, phụ đề nổi gọn, cầu nối chờ êm khi im. v5.42.4 trên `work` và `main`: Dịch trực tiếp quay về cách chạy của v5.41.0 theo Chủ yêu cầu, giữ sửa menu và chống sập cầu nối, điều khoản 2026-11-22.9 (= chữ 2026-11-22.6). Trước đó v5.42.3 trên `work` và `main`: Alibaba cắt vì im lặng thì cầu nối chờ êm, có tiếng lại mới nối. v5.42.2 trên `work` và `main`: sửa cầu nối sập vì ECONNRESET (ứng dụng và web bị «Mất kết nối» giữa phiên). v5.42.1 trên `work` và `main`: menu điện thoại đóng đúng khi bấm ra ngoài, cách tra phiên ứng dụng không ra chữ, điều khoản 2026-11-22.8. v5.42.0 trên `work` và `main`: đợt 1 tối ưu độ trễ A1–A7, điều khoản 2026-11-22.7. v5.41.0 trên `work` và `main` (phát hiện vi phạm có hồ sơ bằng chứng, tab Rủi ro; điều khoản 2026-11-22.6). v5.40.0: cộng tác viên làm lại, hoa hồng tính trên lời. v5.39.0: (ứng dụng tự cập nhật, web đọc bản phát hành trên GitHub). v5.38.1: (Qwen 3.5 chốt câu sau 0,5 giây im lặng, biến LIVE_SILENCE_MS). v5.38.0: ứng dụng Android 0.4 đồng bộ logo, màu, font, chức năng Dịch trực tiếp với web; đổi mật khẩu và 90 ngày bỏ không thì gỡ máy; điều khoản 2026-11-22.4). v5.37.1: hướng dẫn ứng dụng, mã đếm từng giây. v5.37.0: ứng dụng Android bước 2. Lịch sử: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Nhánh `main` = v5.49.0 + ứng dụng 0.11 (sửa sau kiểm tra trang khách và Admin, cả nhóm B; Chủ xác nhận 26/11/2026). Trước đó v5.48.0 (26/11/2026: chỉ còn Groq, Alibaba, TyZo; Chủ nói «Giữ lại nhà cung cấp là groq, alibaba và tyzo của tôi», «Xóa vĩnh viễn»). Trước đó v5.47.0 (nhận dạng TyZo Modal ở cửa trả theo lượt, PR #3). Ứng dụng Android 0.11 (khóa ký đã tạo). Cầu nối Dịch trực tiếp trên VPS `realtimehub.tyzo.site`. |
+| Bản mới nhất | v5.49.0 + ứng dụng 0.11 (giống bản khách). Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-26.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -59,7 +59,7 @@ Không có việc đẩy dở. v5.48.0 (26/11/2026) đã XÓA HẲN Deepgram, As
 
 `HANDOFF.md` mục 2 không còn việc mở khác (Chủ xác nhận 20/11/2026).
 
-## Tách file (đang làm, nhánh `tyzo/tach-file`, CHƯA đẩy chính thức)
+## Tách file (XONG, đã gộp vào `main` 26/11/2026)
 
 Chủ yêu cầu 26/11/2026: tách file cho dễ quản lý, bảo trì, nâng cấp. Giữ nguyên cách web chạy. Mỗi đợt: `npx tsc --noEmit`, `npm test`, dựng thử sạch rồi mới lưu. Xong cả 5 đợt mới gộp `main` và đẩy MỘT lần.
 
@@ -70,7 +70,7 @@ Chủ yêu cầu 26/11/2026: tách file cho dễ quản lý, bảo trì, nâng c
 4. XONG: mọi tệp tiền dời vào `src/lib/billing/` (run-bill, token-math, run-turn, run-ticket, token-flow, room-asr.server, tyzo-modal-charge, run-gate + test), có `README.md` vẽ đường đi của tiền. CHỈ dời chỗ, KHÔNG đổi cách tính (an toàn tiền). Cách trừ đã dùng chung sẵn: Groq/Alibaba qua `chargeRoomAsr`, TyZo qua `runModalPartWith`, cả hai trừ bằng `chargeTokenWith`.
 5. XONG: `studio.tsx` 1.677 → 1.084 dòng; 6 thẻ thành tệp riêng ở `src/components/studio-panels/` (key, film, cast, voice, run, check), chữ JSX chuyển nguyên văn, props đúng kiểu (lấy bằng trình biên dịch TypeScript). Test đọc mã dùng `studioSource()` (chèn mã thẻ đúng chỗ). Gom `src/lib`: `admin/`, `payment/` (pay-, money-), `packs/`, `polish/` (61 tệp kể cả test); `src/lib` còn 116 tệp lẻ. Đã mở phòng dịch trên máy thử (tài khoản tạm, CSDL tạm): 6 thẻ có nội dung, không lỗi console.
 
-CÒN: Chủ thử 1 phim ngắn ở bản xem trước, rồi gộp `tyzo/tach-file` vào `main` và đẩy chính thức MỘT lần.
+CÒN: Chủ thử 1 phim ngắn trên `sub.tyzo.site` (xem «Việc đang dở» mục 1).
 
 ## Thư — còn lại
 
