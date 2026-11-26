@@ -8,9 +8,6 @@ describe("địa chỉ danh sách model", () => {
     assert.match(modelListUrl("alibaba"), /dashscope-intl\.aliyuncs\.com/);
     assert.notEqual(modelListUrl("groq"), modelListUrl("alibaba"));
   });
-  it("Deepgram có máy riêng", () => {
-    assert.equal(modelListUrl("deepgram"), "https://api.deepgram.com/v1/models");
-  });
 });
 
 describe("bảng nhà cung cấp", () => {
@@ -34,24 +31,23 @@ describe("bảng nhà cung cấp", () => {
   it("kiểu gửi key đúng từng nhà", () => {
     assert.equal(authHeader("groq", "abc"), "Bearer abc");
     assert.equal(authHeader("alibaba", "abc"), "Bearer abc");
-    assert.equal(authHeader("deepgram", "abc"), "Token abc");
   });
   it("mỗi nhà khai cách nhận âm thanh (intake) hợp lệ", () => {
     const allowed = ["chunks", "link", "upload", "stream"];
     for (const id of PROVIDER_IDS) assert.ok(allowed.includes(PROVIDERS[id].intake), `${id} thiếu intake`);
     assert.equal(PROVIDERS.groq.intake, "chunks");
     assert.equal(PROVIDERS.alibaba.intake, "link");
-    assert.equal(PROVIDERS.deepgram.intake, "link");
+    assert.equal(PROVIDERS["tyzo-modal"].intake, "chunks");
   });
   it("isProviderId chỉ nhận nhà có trong bảng", () => {
-    assert.ok(isProviderId("deepgram"));
+    assert.ok(isProviderId("tyzo-modal"));
+    assert.ok(!isProviderId("deepgram"));
     assert.ok(!isProviderId("toString"));
     assert.ok(!isProviderId("openai"));
   });
   it("khả năng từng nhà", () => {
-    assert.ok(providerHas("deepgram", "asr"));
-    assert.ok(providerHas("deepgram", "tts"));
-    assert.ok(!providerHas("deepgram", "chat"));
+    assert.ok(providerHas("tyzo-modal", "asr"));
+    assert.ok(!providerHas("tyzo-modal", "chat"));
     assert.ok(providerHas("groq", "chat"));
   });
 });
@@ -60,25 +56,13 @@ describe("đọc danh sách model", () => {
   it("dạng OpenAI (Groq, Alibaba)", () => {
     assert.deepEqual(modelIdsFrom("groq", { data: [{ id: "a" }, { id: "b" }, {}] }), ["a", "b"]);
   });
-  it("dạng Deepgram: stt và tts, bỏ trùng", () => {
-    const ids = modelIdsFrom("deepgram", {
-      stt: [{ canonical_name: "nova-3" }, { name: "nova-2" }],
-      tts: [{ canonical_name: "aura-2-thalia-en" }, { canonical_name: "nova-3" }],
-    });
-    assert.deepEqual(ids, ["nova-3", "nova-2", "aura-2-thalia-en"]);
-  });
   it("phản hồi lạ thì ra danh sách rỗng", () => {
-    assert.deepEqual(modelIdsFrom("deepgram", null), []);
+    assert.deepEqual(modelIdsFrom("alibaba", null), []);
     assert.deepEqual(modelIdsFrom("groq", "x"), []);
   });
 });
 
 describe("ghi chú key phòng sinh từ khả năng của nhà", () => {
-  it("nhà không dịch bằng mô hình thì nhắc dịch vẫn bằng nhà có khả năng dịch", () => {
-    const note = providerKeyNote("deepgram");
-    assert.match(note, /Deepgram làm: nhận dạng giọng, đọc thành tiếng/);
-    assert.match(note, /Dịch bằng nhà có model dịch \(Groq, Alibaba\)/);
-  });
   it("nhà có khả năng dịch bằng mô hình thì không nhắc nhà khác dịch thay", () => {
     assert.doesNotMatch(providerKeyNote("groq"), /Dịch bằng nhà/);
     assert.doesNotMatch(providerKeyNote("alibaba"), /Dịch bằng nhà/);
@@ -115,61 +99,16 @@ describe("khóa kho và chữ mẫu ô key của khách", () => {
   it("giữ đúng khóa kho cũ để khách đã lưu key không mất key", () => {
     assert.equal(PROVIDERS.groq.clientStore, "gk");
     assert.equal(PROVIDERS.alibaba.clientStore, "gali");
-    assert.equal(PROVIDERS.deepgram.clientStore, "gdg");
   });
   it("chữ mẫu giữ đúng như các ô viết tay trước đây", () => {
     assert.equal(clientKeyPlaceholder("groq"), "gsk_… chỉ lưu trên máy này");
     assert.equal(clientKeyPlaceholder("alibaba"), "sk-… chỉ lưu trên máy này");
-    assert.equal(clientKeyPlaceholder("deepgram"), "Key Deepgram, chỉ lưu trên máy này");
   });
 });
 
-describe("AssemblyAI, Speechmatics và Soniox (đã ready)", () => {
-  const NEW = ["assemblyai", "speechmatics", "soniox"] as const;
-  it("ba nhà mới đã hiện ra Admin, khách (ready: true) và có trong bảng đầy đủ (ALL_PROVIDER_IDS)", () => {
-    for (const id of NEW) {
-      assert.ok(ALL_PROVIDER_IDS.includes(id));
-      assert.equal(isProviderId(id), true);
-    }
-    for (const id of NEW) {
-      assert.equal(PROVIDERS[id].ready, true);
-      assert.ok(PROVIDER_IDS.includes(id));
-    }
-    for (const id of ["groq", "alibaba", "deepgram"] as const) assert.ok(PROVIDER_IDS.includes(id));
-  });
-  it("địa chỉ API mỗi nhà một máy riêng", () => {
-    assert.equal(PROVIDERS.assemblyai.api, "https://api.assemblyai.com/v2");
-    assert.match(PROVIDERS.speechmatics.api, /^https:\/\/[a-z0-9]+\.asr\.api\.speechmatics\.com\/v2$/);
-    assert.equal(PROVIDERS.soniox.api, "https://api.soniox.com/v1");
-  });
-  it("AssemblyAI gửi key không tiền tố, hai nhà kia dùng Bearer", () => {
-    assert.equal(authHeader("assemblyai", "abc"), "abc");
-    assert.equal(authHeader("speechmatics", "abc"), "Bearer abc");
-    assert.equal(authHeader("soniox", "abc"), "Bearer abc");
-  });
-  it("nhà không có lệnh liệt kê model dùng danh sách khai cố định, bất kể phản hồi", () => {
-    assert.deepEqual(modelIdsFrom("assemblyai", {}), ["universal-3-5-pro", "universal-2"]);
-    assert.deepEqual(modelIdsFrom("assemblyai", { data: [{ id: "x" }] }), ["universal-3-5-pro", "universal-2"]);
-    assert.deepEqual(modelIdsFrom("speechmatics", null), ["standard", "enhanced"]);
-    assert.match(modelListUrl("assemblyai"), /\/v2\/transcript\?limit=1$/);
-    assert.match(modelListUrl("speechmatics"), /\/v2\/jobs\/\?limit=1$/);
-  });
-  it("Soniox đọc danh sách model từ khóa models (và vẫn đọc data)", () => {
-    assert.equal(modelListUrl("soniox"), "https://api.soniox.com/v1/models");
-    assert.deepEqual(modelIdsFrom("soniox", { models: [{ id: "stt-async-v5" }, { id: "" }, {}] }), ["stt-async-v5"]);
-    assert.deepEqual(modelIdsFrom("soniox", { data: [{ id: "a" }] }), ["a"]);
-  });
-  it("tên dòng lưu và kho trình duyệt không trùng nhà nào trong bảng đầy đủ", () => {
-    const names = new Set<string>();
-    const stores = new Set<string>();
-    for (const id of ALL_PROVIDER_IDS) {
-      for (const name of Object.values(PROVIDERS[id].settings)) {
-        if (id === "groq") continue;
-        assert.ok(!names.has(name), `trùng ${name}`);
-        names.add(name);
-      }
-      assert.ok(!stores.has(PROVIDERS[id].clientStore), `trùng kho ${PROVIDERS[id].clientStore}`);
-      stores.add(PROVIDERS[id].clientStore);
-    }
+describe("chỉ còn ba nhà", () => {
+  it("Groq, Alibaba và TyZo; năm nhà cũ đã xóa", () => {
+    assert.deepEqual([...ALL_PROVIDER_IDS].sort(), ["alibaba", "groq", "tyzo-modal"]);
+    for (const id of ["deepgram", "assemblyai", "speechmatics", "soniox", "elevenlabs"]) assert.equal(isProviderId(id), false);
   });
 });

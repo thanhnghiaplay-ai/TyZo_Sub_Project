@@ -44,14 +44,6 @@ describe("cửa trả theo lượt theo gói", () => {
       },
     });
     assert.equal(turnPackProblem([aliChat], { asr: "qwen-audio-3.0-asr-flash-filetrans", chat: "qwen-turbo" }), "", "Alibaba dịch được ở cửa trả theo lượt");
-    const dgChat = pack({
-      id: "pack_dg001",
-      roles: {
-        asr: { provider: "deepgram", model: "deepgram-nova-3" },
-        translate: { provider: "deepgram", model: "nova-3" },
-      },
-    });
-    assert.match(turnPackProblem([dgChat], { asr: "deepgram-nova-3", chat: "nova-3" }), /Deepgram không làm việc đó/);
     assert.equal(turnPackModels(groq).chat, "llama-3.3-70b-versatile");
   });
 

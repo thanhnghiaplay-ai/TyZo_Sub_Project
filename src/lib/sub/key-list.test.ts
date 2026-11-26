@@ -16,5 +16,4 @@ test("Groq: có / không có / chưa đọc được", () => {
 
 test("nhà chưa đáng tin thì không bao giờ khóa", () => {
   assert.equal(keyListHas("alibaba", "qwen-audio-3.0-asr-flash-filetrans", ["qwen-plus"]), null);
-  assert.equal(keyListHas("deepgram", "deepgram-nova-3", ["aura-2-thalia-en"]), null);
 });

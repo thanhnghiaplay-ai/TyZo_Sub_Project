@@ -12,7 +12,6 @@ import {
   translateTokens,
   type ServicePack,
 } from "./service-pack.ts";
-import { DEEPGRAM_ROWS } from "./sub/deepgram-catalog.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 
 const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
@@ -204,44 +203,37 @@ describe("báo giá gói dịch", () => {
   });
 });
 
-describe("Deepgram trong gói dịch", () => {
+describe("TyZo trong gói dịch", () => {
   const mk = (over: Partial<ServicePack>): ServicePack => ({
-    id: "pack_dg0001",
-    name: "Gói Deepgram",
+    id: "pack_tz0001",
+    name: "Gói TyZo",
     note: "",
     enabled: true,
-    doors: ["rent"],
+    doors: ["turn"],
     roles: {
-      asr: { provider: "deepgram", model: "deepgram-nova-3" },
+      asr: { provider: "tyzo-modal", model: "tyzo-modal-nhanh" },
       translate: { provider: "groq", model: "chat-model" },
     },
     ...over,
   });
 
-  it("nhận dạng chọn được Deepgram, các việc khác thì không", () => {
-    assert.deepEqual(providersForRole("asr"), ["tyzo-modal", "groq", "alibaba", "deepgram", "assemblyai", "speechmatics", "soniox", "elevenlabs"]);
+  it("chỉ còn ba nhà: TyZo, Groq, Alibaba", () => {
+    assert.deepEqual(providersForRole("asr"), ["tyzo-modal", "groq", "alibaba"]);
     assert.deepEqual(providersForRole("translate"), ["groq", "alibaba"]);
-    // Thuyết minh theo khả năng đọc thành tiếng: Orpheus (Groq), Aura (Deepgram), Flash v2.5 (ElevenLabs). Alibaba chưa có đường đọc.
-    assert.deepEqual(providersForRole("narration"), ["groq", "deepgram", "elevenlabs"]);
+    assert.deepEqual(providersForRole("narration"), ["groq"]);
   });
 
-  it("lưu được gói Deepgram nhận dạng ở cửa thuê phòng", () => {
-    assert.equal(checkServicePacks([mk({})])[0].roles.asr?.provider, "deepgram");
+  it("lưu được gói TyZo ở cửa Trả theo lượt", () => {
+    assert.equal(checkServicePacks([mk({})])[0].roles.asr?.provider, "tyzo-modal");
   });
 
-  it("gói Deepgram mở được cả hai cửa", () => {
-    assert.deepEqual(checkServicePacks([mk({ doors: ["turn", "rent"] })])[0].doors, ["turn", "rent"]);
+  it("chặn TyZo ở cửa Thuê phòng", () => {
+    assert.throws(() => checkServicePacks([mk({ doors: ["rent"] })]), /Trả theo lượt/);
+    assert.throws(() => checkServicePacks([mk({ doors: ["turn", "rent"] })]), /Trả theo lượt/);
   });
 
-  it("chặn Deepgram ở việc dịch", () => {
-    const bad = mk({ roles: { asr: { provider: "groq", model: "whisper-large-v3-turbo" }, translate: { provider: "deepgram", model: "deepgram-nova-3" } } });
+  it("chặn TyZo ở việc dịch", () => {
+    const bad = mk({ roles: { asr: { provider: "groq", model: "whisper-large-v3-turbo" }, translate: { provider: "tyzo-modal", model: "tyzo-modal-nhanh" } } });
     assert.throws(() => checkServicePacks([bad]), /chưa chạy/);
-  });
-
-  it("báo giá nhận dạng Deepgram theo giá giờ trong bảng", () => {
-    const dgBook: PriceBook = { rate: 25000, rows: DEEPGRAM_ROWS, desk: { markup: 0, custom: {} } };
-    const quote = quotePack({ pack: mk({}), seconds: 3600, door: "rent", narration: false, books: { groq: book(0), deepgram: dgBook } });
-    const line = quote.lines.find((item) => item.role === "asr");
-    assert.equal(Math.round(line?.base ?? 0), Math.round(0.288 * 25000));
   });
 });

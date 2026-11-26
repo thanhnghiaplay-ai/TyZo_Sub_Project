@@ -1,13 +1,11 @@
 /**
  * DANH MỤC MODEL CHUNG. Một chỗ để hỏi "model này của nhà nào, làm việc gì, nhận âm thanh kiểu nào".
- * Danh mục được DỰNG từ các bảng đã có (ASR_MODELS, CHAT_MODELS, giọng Aura, model dịch trực tiếp), không chép dữ liệu lần hai.
+ * Danh mục được DỰNG từ các bảng đã có (ASR_MODELS, CHAT_MODELS, model dịch trực tiếp), không chép dữ liệu lần hai.
  * Model chưa có trong danh mục (key của khách trả về thêm model lạ) thì `modelKindOf` đoán theo nhà và tên.
  * Thêm nhà mới (PROVIDERS.md): nhà khai khả năng nào thì phải có ít nhất một model loại đó ở đây, test sẽ báo nếu thiếu.
  */
 import { LIVE_MODEL_35, LIVE_MODEL_38 } from "../live/live-price.ts";
 import { asrHouse, asrIntake } from "./asr-house.ts";
-import { AURA_VOICES, auraModel, type AuraLang } from "./aura.ts";
-import { ELEVEN_TTS_ID } from "./eleven-voice.ts";
 import { modelRoleOf, type ModelRole } from "./model-role.ts";
 import { ASR_MODELS, CHAT_MODELS } from "./models.ts";
 import type { ProviderId, ProviderIntake } from "./provider.ts";
@@ -45,12 +43,6 @@ function build(): CatalogModel[] {
     out.push({ id: model.id, provider: model.provider ?? "groq", kind: model.tier === "safety" ? "guard" : "chat", label: model.name, intake: null });
   }
   for (const voice of ORPHEUS_MODELS) out.push({ id: voice.id, provider: "groq", kind: "tts", label: voice.label, intake: null });
-  for (const lang of Object.keys(AURA_VOICES) as AuraLang[]) {
-    for (const voice of AURA_VOICES[lang]) {
-      out.push({ id: auraModel(voice.id, lang), provider: "deepgram", kind: "tts", label: `Aura-2 ${voice.name} (${lang})`, intake: null });
-    }
-  }
-  out.push({ id: ELEVEN_TTS_ID, provider: "elevenlabs", kind: "tts", label: "ElevenLabs Flash v2.5 (giọng đọc)", intake: null });
   for (const id of [LIVE_MODEL_38, LIVE_MODEL_35]) out.push({ id, provider: "alibaba", kind: "live", label: LIVE_LABEL[id] ?? id, intake: null });
   return out;
 }
@@ -77,11 +69,6 @@ const KIND_OF_ROLE: Record<ModelRole, ModelKind> = { asr: "asr", tts: "tts", gua
 export function modelKindOf(provider: ProviderId, id: string): ModelKind | null {
   const known = catalogModel(provider, id);
   if (known) return known.kind;
-  if (provider === "deepgram") {
-    if (/^aura/i.test(id)) return "tts";
-    if (/^(nova|enhanced|base|whisper|flux)/i.test(id)) return "asr";
-    return null;
-  }
   const kind = KIND_OF_ROLE[modelRoleOf(id)];
   // Model lạ chỉ được xem là model dịch khi tên giống mô hình chữ: key của một số nhà trả cả model ảnh, nhúng, đọc ảnh, âm thanh…
   if (kind === "chat" && NOT_CHAT.test(id)) return null;

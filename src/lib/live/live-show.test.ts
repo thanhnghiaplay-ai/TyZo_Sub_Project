@@ -8,7 +8,6 @@ describe("dịch trực tiếp theo khả năng model", () => {
   it("Qwen LiveTranslate là real; Whisper (cắt đoạn) là chunked; link-only và giọng đọc là none", () => {
     assert.equal(liveModeFor("alibaba", LIVE_MODEL_38), "real");
     assert.equal(liveModeFor("groq", "whisper-large-v3-turbo"), "chunked");
-    assert.equal(liveModeFor("deepgram", "deepgram-nova-3"), "none");
     assert.equal(liveModeFor("alibaba", "qwen-audio-3.0-asr-flash-filetrans"), "none");
     assert.equal(liveModeFor("groq", "canopylabs/orpheus-v1-english"), "none");
   });

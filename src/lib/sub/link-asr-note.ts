@@ -13,13 +13,7 @@ export function linkAsrNote(modelId: string): string | null {
   if (!asrTakesLink(modelId)) return null;
   const house = asrHouse(modelId);
   if (!house || house === "groq") return null;
-  const extra =
-    house === "speechmatics" ? " Key phải đúng vùng tài khoản." : house === "soniox"
-        ? " Tài khoản cần đã nạp tiền."
-        : house === "elevenlabs"
-          ? " Link phải là https; key cần quyền Speech to Text."
-          : "";
   const chatHouses = providersWith("chat").map((id) => PROVIDERS[id].label);
   const translate = providerHas(house, "chat") ? "" : ` Dịch cần key của một nhà có model dịch (${chatHouses.join(", ")}).`;
-  return `${PROVIDERS[house].label} ${SHARED}${extra}${translate}`;
+  return `${PROVIDERS[house].label} ${SHARED}${translate}`;
 }

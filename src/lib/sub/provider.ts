@@ -2,7 +2,7 @@
  * BẢNG NHÀ CUNG CẤP. Thêm nhà mới = thêm một dòng vào PROVIDERS và làm theo PROVIDERS.md.
  * Mọi chỗ cần nhãn, địa chỉ, kiểu gửi key, khả năng đều đọc từ đây, không chép tay.
  */
-export type ProviderId = "groq" | "alibaba" | "deepgram" | "assemblyai" | "speechmatics" | "soniox" | "elevenlabs" | "tyzo-modal";
+export type ProviderId = "groq" | "alibaba" | "tyzo-modal";
 
 /** asr: nhận dạng giọng · chat: dịch bằng mô hình ngôn ngữ · tts: đọc thành tiếng · live: dịch trực tiếp */
 export type ProviderCap = "asr" | "chat" | "tts" | "live";
@@ -66,12 +66,7 @@ export type ProviderChat = { path: string; tokenField: "max_completion_tokens" |
 
 const GROQ_API = "https://api.groq.com/openai/v1";
 const ALIBABA_API = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
-export const DEEPGRAM_API = "https://api.deepgram.com/v1";
-const ASSEMBLYAI_API = "https://api.assemblyai.com/v2";
 /** Speechmatics chia máy chủ theo vùng; key của vùng nào chỉ chạy ở vùng đó. Đang khai vùng US1, cần kiểm bằng key thật ở bước máy chủ. */
-export const SPEECHMATICS_API = "https://us1.asr.api.speechmatics.com/v2";
-const SONIOX_API = "https://api.soniox.com/v1";
-const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
 
 export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
   "tyzo-modal": {
@@ -110,87 +105,6 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     listPath: "/models",
     ready: true,
     settings: { key: "alibaba_key", models: "alibaba_models", desk: "alibaba_desk" },
-  },
-  deepgram: {
-    id: "deepgram",
-    label: "Deepgram",
-    api: DEEPGRAM_API,
-    auth: "token",
-    caps: ["asr", "tts"],
-    // Deepgram nhận được cả link, file và luồng; app hiện chỉ dùng link công khai (gửi file từ máy chưa làm).
-    intake: "link",
-    keyPage: "console.deepgram.com",
-    clientStore: "gdg",
-    listPath: "/models",
-    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
-    settings: { key: "deepgram_key", models: "deepgram_models", desk: "deepgram_desk" },
-  },
-  assemblyai: {
-    id: "assemblyai",
-    label: "AssemblyAI",
-    api: ASSEMBLYAI_API,
-    auth: "raw",
-    caps: ["asr"],
-    // AssemblyAI nhận link công khai (audio_url) hoặc file tải lên; app dùng link trước.
-    intake: "link",
-    keyPage: "www.assemblyai.com/dashboard",
-    clientStore: "gaai",
-    // Không có lệnh liệt kê model: hỏi một lượt phiên âm gần nhất để kiểm key.
-    listPath: "/transcript?limit=1",
-    fixedModels: ["universal-3-5-pro", "universal-2"],
-    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
-    settings: { key: "assemblyai_key", models: "assemblyai_models", desk: "assemblyai_desk" },
-  },
-  speechmatics: {
-    id: "speechmatics",
-    label: "Speechmatics",
-    api: SPEECHMATICS_API,
-    auth: "bearer",
-    caps: ["asr"],
-    // Speechmatics nhận link (fetch_data) hoặc file tải lên; app dùng link trước.
-    intake: "link",
-    keyPage: "portal.speechmatics.com",
-    clientStore: "gsm",
-    // Không có lệnh liệt kê model: hỏi danh sách việc gần nhất để kiểm key.
-    listPath: "/jobs/?limit=1",
-    fixedModels: ["standard", "enhanced"],
-    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
-    settings: { key: "speechmatics_key", models: "speechmatics_models", desk: "speechmatics_desk" },
-  },
-  soniox: {
-    id: "soniox",
-    label: "Soniox",
-    api: SONIOX_API,
-    auth: "bearer",
-    caps: ["asr"],
-    // Soniox nhận link (audio_url) hoặc file tải lên; app dùng link trước.
-    intake: "link",
-    keyPage: "console.soniox.com",
-    clientStore: "gsx",
-    listPath: "/models",
-    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
-    settings: { key: "soniox_key", models: "soniox_models", desk: "soniox_desk" },
-  },
-  elevenlabs: {
-    id: "elevenlabs",
-    label: "ElevenLabs",
-    api: ELEVENLABS_API,
-    auth: "xi",
-    caps: ["asr", "tts"],
-    // Scribe nhận file tải lên hoặc link (source_url); app dùng link, trả kết quả ngay trong một yêu cầu.
-    // Đọc thành tiếng: giọng Flash v2.5 qua cửa /api/room-elevenlabs (key phòng trừ Token dịch, key khách chỉ chuyển tiếp).
-    // ElevenLabs không có model dịch chữ nên không khai "chat".
-    intake: "link",
-    keyPage: "elevenlabs.io/app/settings/api-keys",
-    clientStore: "gel",
-    keyHint: "sk_…",
-    // ElevenLabs báo «API key must be exactly 51 characters» khi key sai độ dài (thử 22/11/2026).
-    keyLength: 51,
-    // /models chỉ liệt kê model đọc giọng: dùng để kiểm key, danh sách nhận dạng khai cố định.
-    listPath: "/models",
-    fixedModels: ["scribe_v3", "scribe_v2"],
-    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
-    settings: { key: "elevenlabs_key", models: "elevenlabs_models", desk: "elevenlabs_desk" },
   },
 };
 
@@ -260,19 +174,7 @@ export function modelIdsFrom(id: ProviderId, payload: unknown): string[] {
   const fixed = PROVIDERS[id].fixedModels;
   if (fixed) return [...fixed];
   const root = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
-  if (id === "deepgram") {
-    const out: string[] = [];
-    for (const group of ["stt", "tts"] as const) {
-      const rows = Array.isArray(root[group]) ? (root[group] as unknown[]) : [];
-      for (const row of rows) {
-        const item = row && typeof row === "object" ? (row as Record<string, unknown>) : {};
-        const name = typeof item.canonical_name === "string" ? item.canonical_name : typeof item.name === "string" ? item.name : "";
-        if (name && !out.includes(name)) out.push(name);
-      }
-    }
-    return out;
-  }
-  // Dạng OpenAI trả `data`; Soniox trả `models`.
+  // Dạng OpenAI trả `data`.
   const rows = Array.isArray(root.data) ? (root.data as unknown[]) : Array.isArray(root.models) ? (root.models as unknown[]) : [];
   return rows
     .map((row) => (row && typeof row === "object" ? (row as Record<string, unknown>).id : undefined))

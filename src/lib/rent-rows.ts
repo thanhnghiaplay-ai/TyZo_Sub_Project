@@ -24,8 +24,8 @@ export function rentKindsOf(house: ProviderId): Set<ModelKind> {
     kinds.add("chat");
     kinds.add("guard");
   }
-  // Giọng đọc chặn được khi dùng key khách: Orpheus (Groq) và ElevenLabs. Aura (Deepgram) chỉ trả bằng Token dịch.
-  if ((house === "groq" || house === "elevenlabs") && caps.includes("tts")) kinds.add("tts");
+  // Giọng đọc chặn được khi dùng key khách: Orpheus (Groq).
+  if (house === "groq" && caps.includes("tts")) kinds.add("tts");
   return kinds;
 }
 

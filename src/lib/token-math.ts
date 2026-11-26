@@ -53,10 +53,6 @@ export function holdGiay(input: {
   if (!(turbo && turbo > 0)) return null;
   const rows: ProviderRows = {
     ...(input.aliRows && input.aliRows.length ? { alibaba: input.aliRows } : {}),
-    ...(input.dgRows ? { deepgram: input.dgRows } : {}),
-    ...(input.aaiRows ? { assemblyai: input.aaiRows } : {}),
-    ...(input.smRows ? { speechmatics: input.smRows } : {}),
-    ...(input.sxRows ? { soniox: input.sxRows } : {}),
     ...input.rows,
   };
   const asrHouse = isProviderId(input.asrProvider) ? input.asrProvider : null;

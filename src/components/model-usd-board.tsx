@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { pushToast } from "@/components/toast";
-import { getModelPrices, reloadModelPrices, saveDeepgramPriceConfig, saveUsdFix, type ModelPriceRow } from "@/lib/usd-fix-room";
+import { getModelPrices, reloadModelPrices, saveUsdFix, type ModelPriceRow } from "@/lib/usd-fix-room";
 import { type UsdFix, type UsdSlot } from "@/lib/usd-fix";
 import { groupByHouse, houseHeadline, houseSourceLine, isPulledHouse, toggleHouse, type PulledHouse } from "@/lib/price-house";
 
@@ -17,24 +17,16 @@ function pack(draft: Record<string, UsdSlot>): UsdFix {
 }
 
 type Draft = { hour: string; inn: string; out: string; chars: string };
-type DgState = { auto: boolean; everyHours: string; at: number | null };
 
 export function ModelUsdBoard() {
   const [rows, setRows] = useState<ModelPriceRow[]>([]);
   const [rate, setRate] = useState<number | null>(null);
   const [text, setText] = useState<Record<string, Draft>>({});
   const [busy, setBusy] = useState(false);
-  const [dg, setDg] = useState<DgState>({ auto: true, everyHours: "6", at: null });
   // Nhà đang mở. Mặc định rỗng: mọi nhà thu gọn. Ô đang sửa vẫn giữ trong `text` khi thu lại.
   const [openHouses, setOpenHouses] = useState<string[]>([]);
-  const [dgSaved, setDgSaved] = useState<{ auto: boolean; everyHours: string }>({ auto: true, everyHours: "6" });
 
-  function take(next: { rate: number | null; rows: ModelPriceRow[]; deepgram?: { auto: boolean; everyHours: number; at: number | null } }) {
-    if (next.deepgram) {
-      const state = { auto: next.deepgram.auto, everyHours: String(next.deepgram.everyHours) };
-      setDg({ ...state, at: next.deepgram.at });
-      setDgSaved(state);
-    }
+  function take(next: { rate: number | null; rows: ModelPriceRow[] }) {
     setRate(next.rate);
     setRows(next.rows);
     const slots: Record<string, Draft> = {};
@@ -57,21 +49,14 @@ export function ModelUsdBoard() {
     });
   }
 
-  /** Một chỗ lưu cho cả bảng: số đô la sửa tay, và cách cập nhật Deepgram nếu có đổi. */
+  /** Một chỗ lưu cho cả bảng: số đô la sửa tay. */
   async function saveAll() {
     const draft: Record<string, UsdSlot> = {};
     for (const [id, slot] of Object.entries(text)) {
       draft[id] = { hour: num(slot.hour), inn: num(slot.inn), out: num(slot.out), chars: num(slot.chars) };
     }
-    const dgChanged = dg.auto !== dgSaved.auto || dg.everyHours !== dgSaved.everyHours;
-    const hours = Number(dg.everyHours);
-    if (dgChanged && !(Number.isInteger(hours) && hours >= 1 && hours <= 168)) {
-      pushToast("Chu kỳ lấy lại phải từ 1 đến 168 giờ.", "bad");
-      return;
-    }
     setBusy(true);
     try {
-      if (dgChanged) await saveDeepgramPriceConfig({ data: { auto: dg.auto, everyHours: hours } });
       const next = await saveUsdFix({ data: pack(draft) });
       take(next);
       pushToast("Đã lưu giá.");
@@ -137,17 +122,7 @@ export function ModelUsdBoard() {
             <>
           <p className="text-xs text-muted">
             {houseSourceLine(group)}
-            {group.house === "Deepgram" && (dg.at ? ` Lần lấy gần nhất: ${new Date(dg.at).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}.` : " Chưa lấy lần nào, đang dùng giá dự phòng.")}
           </p>
-          {group.house === "Deepgram" && (
-            <div className="grid gap-2 sm:grid-cols-2 sm:items-end">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={dg.auto} onChange={(event) => setDg((cur) => ({ ...cur, auto: event.target.checked }))} />
-                Tự cập nhật theo trang giá
-              </label>
-              <UsdField label="Chu kỳ lấy lại (giờ, 1 đến 168)" placeholder="6" value={dg.everyHours} onChange={(value) => setDg((cur) => ({ ...cur, everyHours: value.replace(/\D/g, "") }))} />
-            </div>
-          )}
           <ul className="grid gap-2">
             {group.rows.map((row) => {
               const slot = text[row.id] ?? { hour: "", inn: "", out: "", chars: "" };

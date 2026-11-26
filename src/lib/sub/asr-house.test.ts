@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { asrHouse, asrIntake, asrTakesLink, groqListHolds } from "./asr-house.ts";
-import { catalogModel } from "./model-catalog.ts";
 import { ASR_MODELS } from "./models.ts";
 import { ASR_PRICE } from "./types.ts";
 
@@ -22,60 +21,17 @@ describe("nhà nhận dạng", () => {
   });
 });
 
-describe("AssemblyAI trong bảng nhà nhận dạng", () => {
-  it("nhận ra hai model AssemblyAI, nhận link, có trong danh mục model", () => {
-    for (const id of ["assemblyai-universal-3-5-pro", "assemblyai-universal-2"]) {
-      assert.equal(asrHouse(id), "assemblyai");
-      assert.equal(asrIntake(id), "link");
-      assert.equal(asrTakesLink(id), true);
-      assert.equal(catalogModel("assemblyai", id)?.kind, "asr");
-      assert.equal(groqListHolds(["whisper-large-v3-turbo"], id), false);
-    }
-    assert.equal(catalogModel("groq", "assemblyai-universal-2"), null);
-  });
-});
-
-describe("Speechmatics trong bảng nhà nhận dạng", () => {
-  it("nhận ra hai model Speechmatics, nhận link, có giá dự phòng", () => {
-    for (const id of ["speechmatics-standard", "speechmatics-enhanced"]) {
-      assert.equal(asrHouse(id), "speechmatics");
-      assert.equal(asrIntake(id), "link");
-      assert.equal(asrTakesLink(id), true);
-      assert.equal(catalogModel("speechmatics", id)?.kind, "asr");
-      assert.equal(groqListHolds(["whisper-large-v3-turbo"], id), false);
-      assert.ok(ASR_MODELS.some((row) => row.id === id));
-      assert.ok((ASR_PRICE as Record<string, number>)[id] > 0);
-    }
-    assert.ok(ASR_PRICE["speechmatics-enhanced"] > ASR_PRICE["speechmatics-standard"]);
-    assert.equal(catalogModel("groq", "speechmatics-standard"), null);
-  });
-});
-
-describe("Soniox trong bảng nhà nhận dạng", () => {
-  it("nhận ra model Soniox, nhận link, có giá dự phòng", () => {
-    const id = "soniox-stt-async";
-    assert.equal(asrHouse(id), "soniox");
-    assert.equal(asrIntake(id), "link");
-    assert.equal(asrTakesLink(id), true);
-    assert.equal(catalogModel("soniox", id)?.kind, "asr");
-    assert.equal(groqListHolds(["whisper-large-v3-turbo"], id), false);
-    assert.ok(ASR_MODELS.some((row) => row.id === id));
-    assert.ok((ASR_PRICE as Record<string, number>)[id] > 0);
-    assert.equal(catalogModel("groq", id), null);
-  });
-});
-
-describe("Deepgram trong bảng nhà nhận dạng", () => {
-  it("nhận ra Nova-3 là của Deepgram, nhận link", () => {
-    assert.equal(asrHouse("deepgram-nova-3"), "deepgram");
-    assert.equal(asrTakesLink("deepgram-nova-3"), true);
+describe("cách nhận âm thanh của từng model", () => {
+  it("TyZo cắt đoạn trên máy, Alibaba nhận link", () => {
+    assert.equal(asrHouse("tyzo-modal-nhanh"), "tyzo-modal");
+    assert.equal(asrTakesLink("tyzo-modal-ky"), false);
+    assert.equal(asrHouse("deepgram-nova-3"), null);
     assert.equal(asrTakesLink("qwen-audio-3.0-asr-flash-filetrans"), true);
     assert.equal(asrTakesLink("whisper-large-v3"), false);
   });
   it("cách nhận âm thanh đọc từ khai của nhà, model lạ thì null", () => {
     assert.equal(asrIntake("whisper-large-v3-turbo"), "chunks");
     assert.equal(asrIntake("qwen-audio-3.0-asr-flash-filetrans"), "link");
-    assert.equal(asrIntake("deepgram-nova-3"), "link");
     assert.equal(asrIntake("openai/gpt-oss-120b"), null);
     assert.equal(asrIntake("toString"), null);
   });
@@ -83,8 +39,8 @@ describe("Deepgram trong bảng nhà nhận dạng", () => {
     assert.equal(asrHouse("toString"), null);
     assert.equal(asrHouse("__proto__"), null);
   });
-  it("danh sách Groq không khóa Deepgram", () => {
-    assert.equal(groqListHolds(["whisper-large-v3-turbo"], "deepgram-nova-3"), false);
+  it("danh sách Groq không khóa TyZo", () => {
+    assert.equal(groqListHolds(["whisper-large-v3-turbo"], "tyzo-modal-nhanh"), false);
   });
   it("mọi model nhận dạng trong danh sách đều có nhà và có giá dự phòng", () => {
     for (const row of ASR_MODELS) {

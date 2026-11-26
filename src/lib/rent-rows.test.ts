@@ -4,11 +4,9 @@ import { rentKindsOf, rentRowsFor } from "./rent-rows.ts";
 import { PROVIDER_IDS } from "./sub/provider.ts";
 
 describe("hàng model thuê phòng ở Admin", () => {
-  it("loại chặn được theo khả năng nhà: Groq nhận dạng, dịch và giọng đọc, Alibaba nhận dạng và dịch, Deepgram chỉ nhận dạng", () => {
+  it("loại chặn được theo khả năng nhà: Groq nhận dạng, dịch và giọng đọc, Alibaba nhận dạng và dịch", () => {
     assert.deepEqual([...rentKindsOf("groq")].sort(), ["asr", "chat", "guard", "tts"]);
     assert.deepEqual([...rentKindsOf("alibaba")].sort(), ["asr", "chat", "guard"]);
-    assert.deepEqual([...rentKindsOf("deepgram")], ["asr"]);
-    assert.deepEqual([...rentKindsOf("elevenlabs")].sort(), ["asr", "tts"]);
   });
 
   it("chưa đồng bộ key phòng vẫn đủ model đã biết, onKey là null", () => {
@@ -17,7 +15,6 @@ describe("hàng model thuê phòng ở Admin", () => {
     assert.ok(groq.some((row) => row.id === "llama-3.3-70b-versatile"));
     assert.ok(groq.every((row) => row.onKey === null));
     assert.deepEqual(rentRowsFor("alibaba", null).map((row) => row.id).sort(), ["qwen-audio-3.0-asr-flash-filetrans", "qwen-max", "qwen-plus", "qwen-turbo"]);
-    assert.deepEqual(rentRowsFor("deepgram", null).map((row) => row.id), ["deepgram-nova-3"]);
   });
 
   it("giọng Orpheus có ô tick; giọng Aura và dịch trực tiếp thì không", () => {
@@ -42,14 +39,6 @@ describe("hàng model thuê phòng ở Admin", () => {
     const ids = rentRowsFor("alibaba", ["qwen-plus", "qwen3-max", "text-embedding-v3", "wanx2.1-t2i-turbo", "qwen-vl-max", "qwen-omni-turbo", "qwen3-tts-flash"]).map((row) => row.id);
     assert.ok(ids.includes("qwen3-max"), "model chữ lạ phải hiện");
     for (const bad of ["text-embedding-v3", "wanx2.1-t2i-turbo", "qwen-vl-max", "qwen-omni-turbo", "qwen3-tts-flash"]) assert.ok(!ids.includes(bad), bad);
-  });
-
-  it("Deepgram: tên lạ không đoán bừa thành model dịch, giọng Aura không hiện", () => {
-    const rows = rentRowsFor("deepgram", ["nova-3", "nova-3-medical", "aura-2-thalia-en", "something-else"]);
-    const ids = rows.map((row) => row.id);
-    assert.ok(ids.includes("nova-3-medical"));
-    assert.ok(!ids.includes("aura-2-thalia-en"));
-    assert.ok(!ids.includes("something-else"));
   });
 
   it("không trùng hàng và mã nào cũng hợp lệ để lưu", () => {

@@ -19,11 +19,6 @@ const ROW_LOADERS: Record<Exclude<ProviderId, "groq">, (sql: Sql) => Promise<Gro
       speed:null, usdIn:null, usdOut:null, usdPerMillionChars:null, unlisted:false, limits:[], contextTokens:null, maxCompletionTokens:null, maxFile:null }));
   },
   alibaba: async (sql) => (await import("./sub/alibaba-board.server")).loadAlibabaRows(sql),
-  deepgram: async (sql) => (await import("./sub/deepgram-board.server")).loadDeepgramRows(sql),
-  assemblyai: async (sql) => (await import("./sub/assemblyai-board.server")).loadAssemblyaiRows(sql),
-  speechmatics: async (sql) => (await import("./sub/speechmatics-board.server")).loadSpeechmaticsRows(sql),
-  soniox: async (sql) => (await import("./sub/soniox-board.server")).loadSonioxRows(sql),
-  elevenlabs: async (sql) => (await import("./sub/elevenlabs-board.server")).loadElevenlabsRows(sql),
 };
 
 /** Bảng giá đã kéo của mọi nhà ngoài Groq. Nhà nạp lỗi thì bỏ qua (dùng giá gốc trong code). */

@@ -26,8 +26,6 @@ import { Route as ApiAppMeRouteImport } from './routes/api/app-me'
 import { Route as ApiAppTicketRouteImport } from './routes/api/app-ticket'
 import { Route as ApiModelCallRouteImport } from './routes/api/model-call'
 import { Route as ApiRiskSweepRouteImport } from './routes/api/risk-sweep'
-import { Route as ApiRoomDeepgramRouteImport } from './routes/api/room-deepgram'
-import { Route as ApiRoomElevenlabsRouteImport } from './routes/api/room-elevenlabs'
 import { Route as ApiRoomGroqRouteImport } from './routes/api/room-groq'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiPayCassoRouteImport } from './routes/api/pay/casso'
@@ -118,16 +116,6 @@ const ApiRiskSweepRoute = ApiRiskSweepRouteImport.update({
   path: '/api/risk-sweep',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiRoomDeepgramRoute = ApiRoomDeepgramRouteImport.update({
-  id: '/api/room-deepgram',
-  path: '/api/room-deepgram',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiRoomElevenlabsRoute = ApiRoomElevenlabsRouteImport.update({
-  id: '/api/room-elevenlabs',
-  path: '/api/room-elevenlabs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiRoomGroqRoute = ApiRoomGroqRouteImport.update({
   id: '/api/room-groq',
   path: '/api/room-groq',
@@ -167,8 +155,6 @@ export interface FileRoutesByFullPath {
   '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/risk-sweep': typeof ApiRiskSweepRoute
-  '/api/room-deepgram': typeof ApiRoomDeepgramRoute
-  '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -192,8 +178,6 @@ export interface FileRoutesByTo {
   '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/risk-sweep': typeof ApiRiskSweepRoute
-  '/api/room-deepgram': typeof ApiRoomDeepgramRoute
-  '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -218,8 +202,6 @@ export interface FileRoutesById {
   '/api/app-ticket': typeof ApiAppTicketRoute
   '/api/model-call': typeof ApiModelCallRoute
   '/api/risk-sweep': typeof ApiRiskSweepRoute
-  '/api/room-deepgram': typeof ApiRoomDeepgramRoute
-  '/api/room-elevenlabs': typeof ApiRoomElevenlabsRoute
   '/api/room-groq': typeof ApiRoomGroqRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/pay/casso': typeof ApiPayCassoRoute
@@ -245,8 +227,6 @@ export interface FileRouteTypes {
     | '/api/app-ticket'
     | '/api/model-call'
     | '/api/risk-sweep'
-    | '/api/room-deepgram'
-    | '/api/room-elevenlabs'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -270,8 +250,6 @@ export interface FileRouteTypes {
     | '/api/app-ticket'
     | '/api/model-call'
     | '/api/risk-sweep'
-    | '/api/room-deepgram'
-    | '/api/room-elevenlabs'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -295,8 +273,6 @@ export interface FileRouteTypes {
     | '/api/app-ticket'
     | '/api/model-call'
     | '/api/risk-sweep'
-    | '/api/room-deepgram'
-    | '/api/room-elevenlabs'
     | '/api/room-groq'
     | '/api/auth/$'
     | '/api/pay/casso'
@@ -321,8 +297,6 @@ export interface RootRouteChildren {
   ApiAppTicketRoute: typeof ApiAppTicketRoute
   ApiModelCallRoute: typeof ApiModelCallRoute
   ApiRiskSweepRoute: typeof ApiRiskSweepRoute
-  ApiRoomDeepgramRoute: typeof ApiRoomDeepgramRoute
-  ApiRoomElevenlabsRoute: typeof ApiRoomElevenlabsRoute
   ApiRoomGroqRoute: typeof ApiRoomGroqRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiPayCassoRoute: typeof ApiPayCassoRoute
@@ -450,20 +424,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRiskSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/room-deepgram': {
-      id: '/api/room-deepgram'
-      path: '/api/room-deepgram'
-      fullPath: '/api/room-deepgram'
-      preLoaderRoute: typeof ApiRoomDeepgramRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/room-elevenlabs': {
-      id: '/api/room-elevenlabs'
-      path: '/api/room-elevenlabs'
-      fullPath: '/api/room-elevenlabs'
-      preLoaderRoute: typeof ApiRoomElevenlabsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/room-groq': {
       id: '/api/room-groq'
       path: '/api/room-groq'
@@ -513,8 +473,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAppTicketRoute: ApiAppTicketRoute,
   ApiModelCallRoute: ApiModelCallRoute,
   ApiRiskSweepRoute: ApiRiskSweepRoute,
-  ApiRoomDeepgramRoute: ApiRoomDeepgramRoute,
-  ApiRoomElevenlabsRoute: ApiRoomElevenlabsRoute,
   ApiRoomGroqRoute: ApiRoomGroqRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiPayCassoRoute: ApiPayCassoRoute,

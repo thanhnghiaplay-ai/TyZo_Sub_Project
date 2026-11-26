@@ -20,7 +20,7 @@ const textOf = (s: Seg) => s.translation ?? "";
 describe("đo độ trễ giọng đọc", () => {
   it("chưa đo thì dùng mặc định của từng loại, loại nào cũng có", () => {
     const t = createLatencyTracker();
-    for (const engine of ["edge", "orpheus", "aura", "browser"] as const) assert.equal(t.estimate(engine), LATENCY_DEFAULT[engine]);
+    for (const engine of ["edge", "orpheus", "browser"] as const) assert.equal(t.estimate(engine), LATENCY_DEFAULT[engine]);
   });
   it("số đo đầu thay mặc định, số sau gộp trượt", () => {
     const t = createLatencyTracker();
@@ -29,7 +29,7 @@ describe("đo độ trễ giọng đọc", () => {
     t.record("edge", 0.5);
     assert.ok(t.estimate("edge") < 2 && t.estimate("edge") > 0.5);
     assert.equal(t.samples("edge"), 2);
-    assert.equal(t.samples("aura"), 0);
+    assert.equal(t.samples("orpheus"), 0);
   });
   it("từng loại giọng đo riêng", () => {
     const t = createLatencyTracker();

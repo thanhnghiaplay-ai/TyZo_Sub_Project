@@ -2,7 +2,7 @@
 // File thuần: chỉ import tương đối, không gọi mạng, không đụng DOM, test được bằng Node.
 //
 // Vì sao trễ: câu chỉ bắt đầu được tạo tiếng khi phụ đề hiện, nên tiếng ra chậm đúng bằng thời gian tạo giọng
-// (Neural, Orpheus, Aura đều gọi qua mạng). Cách chữa, dùng chung cho MỌI loại giọng:
+// (Neural, Orpheus đều gọi qua mạng). Cách chữa, dùng chung cho MỌI loại giọng:
 //   1. Đo độ trễ tạo giọng thật của từng loại (trung bình trượt) và bắt đầu tạo sớm đúng bằng độ trễ đó.
 //   2. Tạo trước vài câu kế tiếp (có bộ nhớ đệm) nên câu sau gần như có tiếng sẵn.
 //   3. Câu đã có tiếng sẵn thì chờ cho đến đúng lúc, nên không bị đọc sớm hơn phụ đề.
@@ -11,14 +11,12 @@
 
 import type { Seg } from "./types.ts";
 
-export type SpeechEngine = "browser" | "orpheus" | "edge" | "aura" | "elevenlabs";
+export type SpeechEngine = "browser" | "orpheus" | "edge";
 
 /** Độ trễ tạo giọng ước tính ban đầu (giây), dùng cho tới khi đo được số thật. */
 export const LATENCY_DEFAULT: Record<SpeechEngine, number> = {
   edge: 0.8,
   orpheus: 1.3,
-  aura: 1,
-  elevenlabs: 0.9,
   browser: 0.1,
 };
 

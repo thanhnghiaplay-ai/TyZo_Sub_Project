@@ -8,7 +8,7 @@ import { applyUsdFix, type UsdFix } from "./usd-fix.ts";
  * Sổ giá của đủ 6 nhà cho phần xem trước giá và «Dựng gói tự động» ở Admin (thuần, không đụng mạng).
  * Giá Alibaba lấy markup của bàn Alibaba nếu có; các nhà còn lại markup 0.
  * `usdFix` là số Chủ sửa tay: phủ lên mọi nhà, ô trống giữ giá đang có. Groq nếu người gọi đã phủ rồi thì phủ lần nữa không đổi số.
- * `alibabaRows` / `deepgramRows` là bảng đã gộp giá tự kéo (`ali_board`, `dg_board`). Thiếu thì dùng giá gốc trong code.
+ * `alibabaRows` là bảng đã gộp giá tự kéo (`ali_board`). Thiếu thì dùng giá gốc trong code.
  */
 export function buildPackBooks(input: {
   rate: number;
@@ -16,12 +16,11 @@ export function buildPackBooks(input: {
   alibabaMarkup?: number;
   usdFix?: UsdFix;
   alibabaRows?: GroqLiveRow[];
-  deepgramRows?: GroqLiveRow[];
   /** Bảng giá đã kéo của nhà khác (nhà mới). */
   rows?: Partial<Record<ProviderId, GroqLiveRow[]>>;
 }): Record<ProviderId, PriceBook> {
   const rows = (list: GroqLiveRow[]) => (input.usdFix ? applyUsdFix(list, input.usdFix) : list);
-  const live: Partial<Record<ProviderId, GroqLiveRow[]>> = { groq: input.groqRows, alibaba: input.alibabaRows, deepgram: input.deepgramRows, ...input.rows };
+  const live: Partial<Record<ProviderId, GroqLiveRow[]>> = { groq: input.groqRows, alibaba: input.alibabaRows, ...input.rows };
   // Mọi nhà trong bảng giá chung (price-rows.ts): nhà mới tự có sổ giá, không viết thêm ở đây.
   return Object.fromEntries(
     (Object.keys(BASE_ROWS) as ProviderId[]).map((id) => [

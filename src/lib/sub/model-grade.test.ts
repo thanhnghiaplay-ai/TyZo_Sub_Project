@@ -20,7 +20,7 @@ test("mọi model chat, nhận dạng và dịch của Alibaba trong catalog đ�
 });
 
 test("điểm nằm trong 0 đến 10, model lạ thì null", () => {
-  for (const id of ["qwen-turbo", "qwen-plus", "qwen-max", "whisper-large-v3", "deepgram-nova-3"]) {
+  for (const id of ["qwen-turbo", "qwen-plus", "qwen-max", "whisper-large-v3", "tyzo-modal-ky"]) {
     const g = gradeOf(id)!;
     for (const v of [g.quality, g.speed, g.asian]) assert.ok(v >= 0 && v <= 10, id);
   }

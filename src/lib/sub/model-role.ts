@@ -6,11 +6,8 @@ export type ModelRole = "asr" | "tts" | "guard" | "translate" | "live";
 export function modelRoleOf(id: string): ModelRole {
   const name = id.toLowerCase();
   if (/livetranslate/.test(name)) return "live";
-  // Các nhà/model chỉ làm nhận dạng (ElevenLabs Scribe cũng vậy); id có chữ «speech» (speechmatics-*) không được rơi vào đọc thuyết minh.
-  if (/^(assemblyai|speechmatics|soniox)-|^elevenlabs-scribe|(^|[-/])scribe[-_]v\d/.test(name)) return "asr";
-  if (/^elevenlabs-(flash|turbo|multilingual|v\d)|^eleven_(flash|turbo|multilingual|v\d)/.test(name)) return "tts";
-  if (/whisper|asr|filetrans|transcri|(^|[-/])nova-\d/.test(name)) return "asr";
-  if (/tts|orpheus|speech|voice|(^|[-/])aura-/.test(name)) return "tts";
+  if (/^tyzo-modal-|whisper|asr|filetrans|transcri/.test(name)) return "asr";
+  if (/tts|orpheus|speech|voice/.test(name)) return "tts";
   if (/guard|safeguard|moderat/.test(name)) return "guard";
   return "translate";
 }

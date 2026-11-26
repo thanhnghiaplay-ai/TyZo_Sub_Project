@@ -1,5 +1,4 @@
 import { prependPack } from "@/lib/pack-order";
-import { ELEVEN_TTS_ID } from "@/lib/sub/eleven-voice";
 import { packStatusView } from "@/lib/pack-status";
 import { dongOrNull } from "@/lib/money-format";
 import { askConfirm } from "@/lib/confirm";
@@ -16,8 +15,6 @@ import type { RunDesk } from "@/lib/run-desk";
 import { PACK_ROLE_LABEL, PACK_ROLES, providersForRole, quotePack, type PackRole, type ServicePack } from "@/lib/service-pack";
 import { buildPackBooks } from "@/lib/pack-books";
 import type { UsdFix } from "@/lib/usd-fix";
-import { ASR_MODELS } from "@/lib/sub/models";
-import { asrHouse } from "@/lib/sub/asr-house";
 import { PROVIDER_IDS, PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
 import type { PriceBook } from "@/lib/run-bill";
 import { PackAutoBoard } from "@/components/pack-auto-board";
@@ -53,7 +50,6 @@ export function ServicePackBoard() {
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [usdFix, setUsdFix] = useState<UsdFix>({});
   const [alibabaRows, setAlibabaRows] = useState<GroqLiveRow[] | undefined>(undefined);
-  const [deepgramRows, setDeepgramRows] = useState<GroqLiveRow[] | undefined>(undefined);
 
   // Nhà đã chọn nhưng chưa có model hợp việc (vd. Alibaba ở Thuyết minh). Chỉ để hiển thị, không lưu.
   const [emptyPick, setEmptyPick] = useState<Record<string, ProviderId>>({});
@@ -81,7 +77,6 @@ export function ServicePackBoard() {
         setPacks(next.packs);
         setUsdFix(next.usdFix);
         setAlibabaRows(next.alibabaRows);
-        setDeepgramRows(next.deepgramRows);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn Alibaba.", "bad"));
     void loadGroqBoard().then(setBoard).catch(() => undefined);
@@ -90,13 +85,7 @@ export function ServicePackBoard() {
   const choices = useMemo(() => {
     const groq = [...new Set([...(groqModels ?? []), "whisper-large-v3-turbo", "whisper-large-v3"])];
     const alibaba = [...new Set([...(models ?? []), ...ALIBABA_ROWS.map((row) => row.id)])];
-    const deepgram = ASR_MODELS.filter((row) => asrHouse(row.id) === "deepgram").map((row) => row.id);
-    const assemblyai = ASR_MODELS.filter((row) => asrHouse(row.id) === "assemblyai").map((row) => row.id);
-    const speechmatics = ASR_MODELS.filter((row) => asrHouse(row.id) === "speechmatics").map((row) => row.id);
-    const soniox = ASR_MODELS.filter((row) => asrHouse(row.id) === "soniox").map((row) => row.id);
-    // ElevenLabs: model nhận dạng và giọng đọc Flash v2.5 (việc Thuyết minh).
-    const elevenlabs = [...ASR_MODELS.filter((row) => asrHouse(row.id) === "elevenlabs").map((row) => row.id), ELEVEN_TTS_ID];
-    const byProvider: Record<ProviderId, string[]> = { "tyzo-modal": ["tyzo-modal-nhanh", "tyzo-modal-ky"], groq, alibaba, deepgram, assemblyai, speechmatics, soniox, elevenlabs };
+    const byProvider: Record<ProviderId, string[]> = { "tyzo-modal": ["tyzo-modal-nhanh", "tyzo-modal-ky"], groq, alibaba };
     return byProvider;
   }, [groqModels, models]);
 
@@ -106,8 +95,8 @@ export function ServicePackBoard() {
   );
   const autoBooks = useMemo<Partial<Record<ProviderId, PriceBook>> | null>(() => {
     if (!board) return null;
-    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix, alibabaRows, deepgramRows });
-  }, [board, usdFix, alibabaRows, deepgramRows]);
+    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix, alibabaRows });
+  }, [board, usdFix, alibabaRows]);
 
   function createAutoPack(roles: ServicePack["roles"], draft: { levels: Parameters<typeof buildAutoPack>[0]["levels"]; lang: "cjk" | "other" }) {
     const id = `pack_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
@@ -176,7 +165,7 @@ export function ServicePackBoard() {
                 seconds: 600,
                 door: "turn",
                 narration: Boolean(pack.roles.narration),
-                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix, alibabaRows, deepgramRows }),
+                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix, alibabaRows }),
               })
             : null;
           const open = openId === pack.id;

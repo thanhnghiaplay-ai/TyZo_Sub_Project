@@ -1,4 +1,6 @@
-# Thêm nhà cung cấp mới (Groq, Alibaba, Deepgram, ElevenLabs, ...)
+# Thêm nhà cung cấp mới (hiện có: Groq, Alibaba, TyZo Modal)
+
+> 26/11/2026 (v5.48.0): Deepgram, AssemblyAI, Speechmatics, Soniox, ElevenLabs đã xóa hẳn theo yêu cầu Chủ. Lấy lại thì xem lịch sử git trước v5.48.0.
 
 Bảng chung nằm ở `src/lib/sub/provider.ts` (`PROVIDERS`). Mỗi nhà là một dòng: nhãn, địa chỉ API, kiểu gửi key, khả năng (asr, chat, tts, live), trang lấy key, tên dòng lưu trong `room_settings`.
 

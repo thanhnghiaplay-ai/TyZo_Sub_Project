@@ -69,9 +69,6 @@ import { useFileThumb } from "@/components/file-thumb";
 import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
 import { prefetchTargets, slotFor } from "@/lib/sub/narration-sync";
 import { useRoomPlans } from "@/lib/use-room-plans";
-import { auraReady, auraVoices, defaultAuraVoice } from "@/lib/sub/aura";
-import { elevenReady, type ElevenVoice } from "@/lib/sub/eleven-voice";
-import { listElevenVoices } from "@/lib/sub/eleven-speak";
 import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
 import { LANGS, SRC_LANGS, STYLE_EXTRA_MAX, cueText, fmt, orpheusReady, speechLang } from "@/lib/sub/text";
@@ -84,10 +81,10 @@ import { Choice, CueRow, FileTile, ModelPicker, Select, VoiceLanes } from "@/com
 import { Stage } from "@/components/studio-stage";
 import { jump, ownModelPrice, modelFacts, roomHeld, roomAsrPrice } from "@/components/studio-price";
 
-const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Admin đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. Nova-3 cần key Deepgram của bạn. Universal cần key AssemblyAI của bạn. Speechmatics cần key Speechmatics của bạn. Soniox cần key Soniox của bạn. Scribe cần key ElevenLabs của bạn. Dịch vẫn dùng model Groq đã mở.";
+const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Admin đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. TyZo chỉ có ở Trả theo lượt. Dịch vẫn dùng model Groq đã mở.";
 const THREADS_TIP = "Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn của key (nhất là key miễn phí). App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.";
 const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
-const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, Deepgram… tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
+const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
 const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số Token dịch ước tính từ gói đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn.";
 
 const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
@@ -121,6 +118,7 @@ function loadNarration(): NarrationSettings {
     }
     const parsed = JSON.parse(raw) as Partial<NarrationSettings>;
     const merged = { ...NARRATION_DEFAULT, ...parsed };
+    if (!["browser", "orpheus", "edge"].includes(merged.engine)) merged.engine = NARRATION_DEFAULT.engine;   // giọng đã bỏ (Aura, ElevenLabs)
     if (merged.engine === "edge" && merged.gender === "any") merged.gender = "female";
     if (version === "4") return merged;
     localStorage.setItem("gnarr_v", "4");
@@ -210,9 +208,6 @@ export function Studio() {
   const jumpTo = useCallback((start: number) => jump(app.videoRef.current, start), [app.videoRef]);
   const [narration, setNarration] = useState<NarrationSettings>(NARRATION_DEFAULT);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  /** Giọng ElevenLabs của key đang dùng (key phòng khi trả theo lượt). null = chưa đọc. */
-  const [elevenVoices, setElevenVoices] = useState<ElevenVoice[] | null>(null);
-  const [elevenNote, setElevenNote] = useState("");
   const [sub, setSub] = useState<SubStyle>(SUB_DEF);
   const [current, setCurrent] = useState(-1);
   const [toolTab, setToolTab] = useState<ToolId>("phim");
@@ -251,8 +246,8 @@ export function Studio() {
   const statusRef = useRef<HTMLDialogElement>(null);
   const [hydrated, setHydrated] = useState(false);
   const narrator = useRef(createNarrator());
-  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible, elevenKey: "", elevenVoices: [] as ElevenVoice[] });
-  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible, elevenKey: (app.houseKeys.elevenlabs ?? "").trim(), elevenVoices: elevenVoices ?? [] };
+  const live = useRef({ segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible });
+  live.current = { segs: app.segs, narration, key: app.key, target: app.target, bible: app.bible };
 
   useEffect(() => {
     setNarration(loadNarration());
@@ -331,8 +326,6 @@ export function Studio() {
         settings: { ...settings, gender: choice.gender, matchCast: choice.locked },
         target,
         key: payByRoom ? "room" : key.trim(),
-        elevenKey: live.current.elevenKey,
-        elevenVoices: live.current.elevenVoices,
         video,
         playbackRate: video.playbackRate || 1,
         onBlocked: (message: string) => pushToast(message, "bad"),
@@ -353,8 +346,6 @@ export function Studio() {
       settings: { ...narration, enabled: true, matchCast: false },
       target: app.target,
       key: payByRoom ? "room" : app.key.trim(),
-      elevenKey: (app.houseKeys.elevenlabs ?? "").trim(),
-      elevenVoices: elevenVoices ?? [],
       video: app.videoRef.current,
       playbackRate: 1,
       onBlocked: (message) => pushToast(message, "bad"),
@@ -364,36 +355,6 @@ export function Studio() {
 
   const patchNarration = (patch: Partial<NarrationSettings>) => setNarration((prev) => ({ ...prev, ...patch }));
   const cloud = orpheusReady(app.target);
-  const auraLang = auraReady(app.target);
-  const elevenLang = elevenReady(app.target);
-  const elevenKeyNow = payByRoom ? "room" : (app.houseKeys.elevenlabs ?? "").trim();
-  const elevenWanted = narration.engine === "elevenlabs";
-  // Đọc danh sách giọng ElevenLabs của key đang dùng khi chọn giọng ElevenLabs (giọng mặc định của nhà có hạn, nên không ghi cứng).
-  useEffect(() => {
-    if (!elevenWanted) return;
-    if (!elevenKeyNow || (elevenKeyNow !== "room" && elevenKeyNow.length < 20)) {
-      setElevenVoices(null);
-      setElevenNote("Cần key ElevenLabs của bạn (ô key), hoặc chọn Trả theo lượt.");
-      return;
-    }
-    let stale = false;
-    setElevenNote("Đang đọc danh sách giọng…");
-    listElevenVoices(elevenKeyNow)
-      .then((list) => {
-        if (stale) return;
-        setElevenVoices(list);
-        setElevenNote(list.length ? "" : "Key ElevenLabs chưa có giọng nào.");
-      })
-      .catch((error: unknown) => {
-        if (stale) return;
-        setElevenVoices(null);
-        setElevenNote(error instanceof Error ? error.message : "Không đọc được danh sách giọng ElevenLabs.");
-      });
-    return () => {
-      stale = true;
-    };
-  }, [elevenWanted, elevenKeyNow]);
-  const elevenShown = (elevenVoices ?? []).filter((voice) => narration.gender === "any" || voice.gender === "any" || voice.gender === narration.gender);
   const prefix = speechLang(app.target).slice(0, 2).toLowerCase();
   const langVoices = voices.filter((voice) => voice.lang.replace("_", "-").toLowerCase().startsWith(prefix));
   const shownVoices = (langVoices.length ? langVoices : voices).filter(
@@ -635,16 +596,11 @@ export function Studio() {
   };
   const groqAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.groq ?? null) : null;
   const aliAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.alibaba ?? null) : null;
-  const dgAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.deepgram ?? null) : null;
-  const aaiAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.assemblyai ?? null) : null;
-  const smAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.speechmatics ?? null) : null;
-  const sxAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.soniox ?? null) : null;
-  const elAllow = !showRoomPrice && rentShow.ready ? (rentShow.show?.elevenlabs ?? null) : null;
   const ownVoice = ownKeyAvailable(app.remoteIds, groqAllow);
   const asrPick = asrPickerRows({
     showRoomPrice,
-    allow: { groq: groqAllow, alibaba: aliAllow, deepgram: dgAllow, assemblyai: aaiAllow, speechmatics: smAllow, soniox: sxAllow, elevenlabs: elAllow },
-    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox và ElevenLabs do máy chủ kiểm khi chạy.
+    allow: { groq: groqAllow, alibaba: aliAllow },
+    // Danh sách «phòng mở» (offered) chỉ nói về model Groq; Alibaba và TyZo do máy chủ kiểm khi chạy.
     roomHeld: (id) => asrHouse(id) === "groq" && roomHeld(runDoor, id),
     keyModels: { groq: app.remoteIds, ...app.keyModels },
   });
@@ -1154,7 +1110,7 @@ export function Studio() {
         </details>
           <InfoTip label="Về chọn model">Một lần dịch giữ một lối. Không trộn model nhỏ vào video đang dịch.</InfoTip>
         </div>
-        <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || elAllow || showRoomPrice) ? <>{(groqAllow || aliAllow || dgAllow || aaiAllow || smAllow || sxAllow || elAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
+        <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || showRoomPrice) ? <>{(groqAllow || aliAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
           {asrPick.map((row) => (
             <option key={row.id} value={row.id} disabled={row.disabled}>
               {row.name}
@@ -1497,18 +1453,6 @@ export function Studio() {
             title="Orpheus"
             text={cloud ? "Có phí" : "Anh, Ả Rập"}
           />
-          <Choice
-            on={narration.engine === "aura"}
-            onClick={() => patchNarration({ engine: "aura", auraVoice: auraLang ? defaultAuraVoice(auraLang, narration.gender) : narration.auraVoice })}
-            title="Aura"
-            text={auraLang ? "Có phí" : "Anh, Tây Ban Nha"}
-          />
-          <Choice
-            on={narration.engine === "elevenlabs"}
-            onClick={() => patchNarration({ engine: "elevenlabs" })}
-            title="ElevenLabs"
-            text={elevenLang ? "Có phí, có tiếng Việt" : "Chưa đọc tiếng này"}
-          />
         </div>
         {narration.engine === "edge" && (
           <p className="text-sm text-muted">
@@ -1519,15 +1463,6 @@ export function Studio() {
           </p>
         )}
         {narration.engine === "orpheus" && !cloud && <p className="text-sm text-danger">Orpheus chưa đọc tiếng này. Máy sẽ dùng giọng có sẵn.</p>}
-        {narration.engine === "aura" && !auraLang && <p className="text-sm text-danger">Aura chưa đọc tiếng này. Máy sẽ dùng giọng có sẵn.</p>}
-        {narration.engine === "aura" && auraLang && <p className="text-sm text-muted">Aura trừ Token dịch theo số chữ đọc. Hết Token dịch thì máy dùng giọng có sẵn.</p>}
-        {narration.engine === "elevenlabs" && !elevenLang && <p className="text-sm text-danger">ElevenLabs chưa đọc tiếng này. Câu sẽ bỏ qua.</p>}
-        {narration.engine === "elevenlabs" && elevenLang && (
-          <p className="text-sm text-muted">
-            {payByRoom ? "ElevenLabs trừ Token dịch theo số chữ đọc." : "ElevenLabs dùng key ElevenLabs của bạn, cước tính ở tài khoản ElevenLabs."}
-            {elevenNote ? ` ${elevenNote}` : ""}
-          </p>
-        )}
         <p className="text-sm text-muted">Giọng dự phòng khi không đo được cao độ, hoặc khi tắt đọc theo video.</p>
         <div className={"grid gap-2 " + (narration.engine === "edge" ? "grid-cols-2" : "grid-cols-3")}>
           {(
@@ -1537,13 +1472,13 @@ export function Studio() {
               ["any", "Bất kỳ"],
             ] as const
           )
-            .filter(([id]) => narration.engine === "browser" || narration.engine === "orpheus" || narration.engine === "aura" || narration.engine === "elevenlabs" || id !== "any")
+            .filter(([id]) => narration.engine === "browser" || narration.engine === "orpheus" || id !== "any")
             .map(([id, label]) => (
             <button
               key={id}
               type="button"
               className={"min-tap rounded-[var(--radius-ctl)] border text-sm " + (narration.gender === id ? "border-accent bg-accent text-ink" : "border-line")}
-              onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id), ...(auraLang ? { auraVoice: defaultAuraVoice(auraLang, id) } : {}) })}
+              onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id) })}
             >
               {label}
             </button>
@@ -1568,29 +1503,9 @@ export function Studio() {
                 </option>
               ))}
           </Select>
-        ) : narration.engine === "aura" && auraLang ? (
-          <Select label="Giọng Aura" value={narration.auraVoice} onChange={(auraVoice) => patchNarration({ auraVoice })}>
-            {auraVoices(auraLang)
-              .filter((voice) => narration.gender === "any" || voice.gender === narration.gender)
-              .map((voice) => (
-                <option key={voice.id} value={voice.id}>
-                  {voice.name} · {voice.gender === "female" ? "nữ" : "nam"}
-                </option>
-              ))}
-          </Select>
-        ) : narration.engine === "elevenlabs" && elevenLang && elevenShown.length ? (
-          <Select label="Giọng ElevenLabs" value={elevenShown.some((voice) => voice.id === narration.elevenVoice) ? narration.elevenVoice : ""} onChange={(elevenVoice) => patchNarration({ elevenVoice })}>
-            <option value="">Tự chọn theo giới</option>
-            {elevenShown.map((voice) => (
-              <option key={voice.id} value={voice.id}>
-                {voice.name}
-                {voice.gender === "female" ? " · nữ" : voice.gender === "male" ? " · nam" : ""}
-              </option>
-            ))}
-          </Select>
         ) : null}
         <DragSlider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} defaultValue={1} marks={[1]} format={(value) => `${value.toFixed(1)}×`} onCommit={(rate) => patchNarration({ rate })} />
-        {narration.engine !== "orpheus" && narration.engine !== "aura" && narration.engine !== "elevenlabs" && (
+        {narration.engine !== "orpheus" && (
           <DragSlider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} defaultValue={1} marks={[1]} format={(value) => value.toFixed(1)} onCommit={(pitch) => patchNarration({ pitch })} />
         )}
         <DragSlider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} defaultValue={1} format={(value) => `${Math.round(value * 100)}%`} onCommit={(volume) => patchNarration({ volume })} />

@@ -215,6 +215,8 @@ export function checkServicePack(input: ServicePack): ServicePack {
     const assign = roles[role];
     if (assign && !providersForRole(role).includes(assign.provider)) throw new Error(`Việc ${PACK_ROLE_LABEL[role]} chưa chạy bằng ${assign.provider}.`);
   }
+  // TyZo chạy bằng máy GPU của phòng, chỉ thu tiền qua phiếu Trả theo lượt; Thuê phòng dùng key của khách nên không có TyZo.
+  if (roles.asr.provider === "tyzo-modal" && doors.includes("rent")) throw new Error("TyZo chỉ mở ở cửa Trả theo lượt.");
   return { id, name, note, enabled: Boolean(input.enabled), doors: [...new Set(doors)], roles };
 }
 

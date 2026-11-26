@@ -43,14 +43,11 @@ describe("cửa trả theo lượt, mọi nhà", () => {
     const noAli = { ...houses, alibaba: { key: null, models: null } };
     const out = roomUse(noAli, "qwen-plus", "chat");
     assert.ok("error" in out && /Alibaba/.test(out.error));
-    const dg = roomUse(houses, "deepgram-nova-3", "asr");
-    assert.ok("error" in dg && /Deepgram/.test(dg.error));
   });
 
   it("nhận dạng mọi nhà đi cùng một đường", () => {
     assert.deepEqual(roomUse(houses, "whisper-large-v3", "asr"), { provider: "groq", model: "whisper-large-v3" });
-    const withDg = { ...houses, deepgram: { key: "k", models: ["nova-3-general"] } };
-    assert.deepEqual(roomUse(withDg, "deepgram-nova-3", "asr"), { provider: "deepgram", model: "deepgram-nova-3" });
+    assert.deepEqual(roomUse(houses, "qwen-audio-3.0-asr-flash-filetrans", "asr"), { provider: "alibaba", model: "qwen-audio-3.0-asr-flash-filetrans" });
   });
 
   it("Tự động: gom model dịch mọi nhà, không lẫn model ảnh, nhúng, kiểm duyệt", () => {

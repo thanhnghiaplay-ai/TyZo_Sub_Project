@@ -46,18 +46,13 @@ describe("danh mục model chung", () => {
   });
 
   it("tra một model", () => {
-    assert.equal(catalogModel("deepgram", "deepgram-nova-3")?.intake, "link");
+    assert.equal(catalogModel("alibaba", "qwen-audio-3.0-asr-flash-filetrans")?.intake, "link");
     assert.equal(catalogModel("groq", "whisper-large-v3")?.intake, "chunks");
-    assert.equal(catalogModel("groq", "deepgram-nova-3"), null);
+    assert.equal(catalogModel("groq", "qwen-audio-3.0-asr-flash-filetrans"), null);
   });
 });
 
 describe("đoán việc của model ngoài danh mục", () => {
-  it("Deepgram", () => {
-    assert.equal(modelKindOf("deepgram", "nova-2"), "asr");
-    assert.equal(modelKindOf("deepgram", "aura-2-luna-en"), "tts");
-    assert.equal(modelKindOf("deepgram", "something-else"), null);
-  });
   it("Groq và Alibaba", () => {
     assert.equal(modelKindOf("groq", "whisper-large-v3"), "asr");
     assert.equal(modelKindOf("groq", "playai-tts"), "tts");
@@ -70,10 +65,8 @@ describe("đoán việc của model ngoài danh mục", () => {
 });
 
 describe("ghi chú vai của model (model-role)", () => {
-  it("nhận ra model Deepgram và dịch trực tiếp, không còn gán nhầm là dịch", () => {
-    assert.equal(modelRoleOf("deepgram-nova-3"), "asr");
-    assert.equal(modelRoleOf("nova-3"), "asr");
-    assert.equal(modelRoleOf("aura-2-thalia-en"), "tts");
+  it("nhận ra model TyZo và dịch trực tiếp, không còn gán nhầm là dịch", () => {
+    assert.equal(modelRoleOf("tyzo-modal-nhanh"), "asr");
     assert.equal(modelRoleOf("qwen3.8-livetranslate-flash-realtime"), "live");
     assert.match(modelRoleNote("qwen3.8-livetranslate-flash-realtime"), /trực tiếp/);
   });

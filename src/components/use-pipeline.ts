@@ -43,19 +43,9 @@ import { loadGenreGlossary, loadRunGlossary, protectTerms, restoreTerms, settleG
 import { budgetSpeechGaps, formatGapConfirm, GAP_BUDGET_SECONDS, spansFromBlocks, type GapPlan } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { recognizeFileUrl } from "@/lib/sub/ali-run";
-import { recognizeDeepgramUrl } from "@/lib/sub/deepgram-run";
-import { DEEPGRAM_ASR, segsFromDeepgram } from "@/lib/sub/deepgram";
-import { recognizeAssemblyaiUrl } from "@/lib/sub/assemblyai-run";
-import { segsFromAssemblyai } from "@/lib/sub/assemblyai";
-import { recognizeSpeechmaticsUrl } from "@/lib/sub/speechmatics-run";
-import { segsFromSpeechmatics } from "@/lib/sub/speechmatics";
-import { recognizeSonioxUrl } from "@/lib/sub/soniox-run";
-import { recognizeElevenlabsUrl } from "@/lib/sub/elevenlabs-run";
-import { segsFromElevenlabs } from "@/lib/sub/elevenlabs";
 import { r2Status } from "@/lib/r2-upload";
 import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
 import { packWavFromReader } from "@/lib/sub/wav-stream";
-import { segsFromSoniox } from "@/lib/sub/soniox";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { pickPool, providerOfModel, roomMissing, roomMissingText, type RoomOffer } from "@/lib/sub/room-models";
 import { listKeyModels } from "@/lib/key-models";
@@ -1076,7 +1066,7 @@ export function usePipeline() {
       if (!chosenFile && !linkRun) return say("Trả theo lượt chưa nhận link. Hãy chọn một tệp trên máy.", true);
       try {
         const opened = await openRoomTicket({
-          fileName: chosenFile?.name || (asrModel === DEEPGRAM_ASR ? "Link Deepgram" : asrHouse(asrModel) === "assemblyai" ? "Link AssemblyAI" : asrHouse(asrModel) === "speechmatics" ? "Link Speechmatics" : asrHouse(asrModel) === "soniox" ? "Link Soniox" : asrHouse(asrModel) === "elevenlabs" ? "Link ElevenLabs" : "Link Alibaba"),
+          fileName: chosenFile?.name || "Link Alibaba",
           seconds: chosenFile ? await readMediaSeconds(chosenFile) : 1800,
           asrModel,
           chatModel: mode === "manual" ? chosen : "auto",
@@ -1911,120 +1901,6 @@ export function usePipeline() {
           r2Key = uploaded.key;
           runUrl = uploaded.url;
           if (my !== j.runId) return;
-        }
-        if (asrModel === DEEPGRAM_ASR) {
-          say("Đang gửi link tới Deepgram…");
-          const result = await recognizeDeepgramUrl({
-            url: runUrl,
-            language: asrLanguageOf(source),
-            key: roomPayRef.current ? "room" : houseKeyOf("deepgram"),
-            ticketId,
-            signal,
-          });
-          if (my !== j.runId) return;
-          j.segs = segsFromDeepgram(result.sentences);
-          j.parts = [];
-          j.nextPart = 0;
-          j.doneSource = source;
-          publish(true);
-          await translateRemaining(() => true);
-          publish(true);
-          say(j.segs.length ? `Nhận dạng Deepgram xong: ${j.segs.length} câu.` : "Deepgram không trả câu nào.", !j.segs.length);
-          setRunning(false);
-          delete document.documentElement.dataset.tyzoBusy;
-          return;
-        }
-        if (asrHouse(asrModel) === "assemblyai") {
-          say("Đang gửi link tới AssemblyAI…");
-          const result = await recognizeAssemblyaiUrl({
-            url: runUrl,
-            language: asrLanguageOf(source),
-            model: asrModel,
-            key: roomPayRef.current ? "room" : houseKeyOf("assemblyai"),
-            ticketId,
-            signal,
-          });
-          if (my !== j.runId) return;
-          j.segs = segsFromAssemblyai(result.sentences);
-          j.parts = [];
-          j.nextPart = 0;
-          j.doneSource = source;
-          publish(true);
-          await translateRemaining(() => true);
-          publish(true);
-          say(j.segs.length ? `Nhận dạng AssemblyAI xong: ${j.segs.length} câu.` : "AssemblyAI không trả câu nào.", !j.segs.length);
-          setRunning(false);
-          delete document.documentElement.dataset.tyzoBusy;
-          return;
-        }
-        if (asrHouse(asrModel) === "speechmatics") {
-          say("Đang gửi link tới Speechmatics…");
-          const result = await recognizeSpeechmaticsUrl({
-            url: runUrl,
-            language: asrLanguageOf(source),
-            model: asrModel,
-            key: roomPayRef.current ? "room" : houseKeyOf("speechmatics"),
-            ticketId,
-            signal,
-          });
-          if (my !== j.runId) return;
-          j.segs = segsFromSpeechmatics(result.sentences);
-          j.parts = [];
-          j.nextPart = 0;
-          j.doneSource = source;
-          publish(true);
-          await translateRemaining(() => true);
-          publish(true);
-          say(j.segs.length ? `Nhận dạng Speechmatics xong: ${j.segs.length} câu.` : "Speechmatics không trả câu nào.", !j.segs.length);
-          setRunning(false);
-          delete document.documentElement.dataset.tyzoBusy;
-          return;
-        }
-        if (asrHouse(asrModel) === "soniox") {
-          say("Đang gửi link tới Soniox…");
-          const result = await recognizeSonioxUrl({
-            url: runUrl,
-            language: asrLanguageOf(source),
-            model: asrModel,
-            key: roomPayRef.current ? "room" : houseKeyOf("soniox"),
-            ticketId,
-            signal,
-          });
-          if (my !== j.runId) return;
-          j.segs = segsFromSoniox(result.sentences);
-          j.parts = [];
-          j.nextPart = 0;
-          j.doneSource = source;
-          publish(true);
-          await translateRemaining(() => true);
-          publish(true);
-          say(j.segs.length ? `Nhận dạng Soniox xong: ${j.segs.length} câu.` : "Soniox không trả câu nào.", !j.segs.length);
-          setRunning(false);
-          delete document.documentElement.dataset.tyzoBusy;
-          return;
-        }
-        if (asrHouse(asrModel) === "elevenlabs") {
-          say("Đang gửi link tới ElevenLabs…");
-          const result = await recognizeElevenlabsUrl({
-            url: runUrl,
-            language: asrLanguageOf(source),
-            model: asrModel,
-            key: roomPayRef.current ? "room" : houseKeyOf("elevenlabs"),
-            ticketId,
-            signal,
-          });
-          if (my !== j.runId) return;
-          j.segs = segsFromElevenlabs(result.sentences);
-          j.parts = [];
-          j.nextPart = 0;
-          j.doneSource = source;
-          publish(true);
-          await translateRemaining(() => true);
-          publish(true);
-          say(j.segs.length ? `Nhận dạng ElevenLabs xong: ${j.segs.length} câu.` : "ElevenLabs không trả câu nào.", !j.segs.length);
-          setRunning(false);
-          delete document.documentElement.dataset.tyzoBusy;
-          return;
         }
         if (asrModel === ALI_FILETRANS_MODEL) {
           say("Đang gửi file tới Alibaba…");

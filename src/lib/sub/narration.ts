@@ -1,9 +1,5 @@
 import { speakOrpheus, ROOM_KEY } from "@/lib/sub/groq";
 import { getRentShow, orpheusModelId, rentVoiceProblem, type RentShow } from "@/lib/rent-show";
-import { speakAura } from "@/lib/sub/aura-speak";
-import { auraPieces, auraReady, auraVoiceOk, defaultAuraVoice } from "@/lib/sub/aura";
-import { speakEleven } from "@/lib/sub/eleven-speak";
-import { elevenPieces, elevenReady, pickElevenVoice, type ElevenVoice } from "@/lib/sub/eleven-voice";
 import { synthesizeEdge } from "@/lib/sub/edge-speech";
 import { edgeVoice, prosodyPitch, prosodyRate } from "@/lib/sub/edge-voice";
 import { orpheusReady, SPEAK_SAMPLE, speechLang } from "@/lib/sub/text";
@@ -79,10 +75,6 @@ type SpeakJob = {
   settings: NarrationSettings;
   target: string;
   key: string;
-  /** Key ElevenLabs của khách (Thuê phòng). Trả theo lượt thì `key` là "room" và giọng ElevenLabs dùng key phòng. */
-  elevenKey?: string;
-  /** Giọng ElevenLabs đọc được từ key (để đổi giọng nam/nữ theo phim). */
-  elevenVoices?: readonly ElevenVoice[];
   video: HTMLVideoElement | null;
   playbackRate: number;
   onBlocked?: (message: string) => void;
@@ -136,7 +128,6 @@ export function createNarrator() {
 
   let speaking = false;
   let cloudMissTold = false;
-  let elevenTold = false;
   const queue: SpeakJob[] = [];
   const stop = (video?: HTMLVideoElement | null) => {
     token++;
@@ -231,56 +222,6 @@ export function createNarrator() {
         await playUrl(audio, url, settings, opts.playbackRate, last ? done : () => {}, slotWall ? slotWall * share : undefined);
       };
       try {
-        const auraLang = settings.engine === "aura" ? auraReady(opts.target) : null;
-        if (settings.engine === "aura" && auraLang) {
-          try {
-            const voice = settings.matchCast
-              ? defaultAuraVoice(auraLang, settings.gender)
-              : auraVoiceOk(auraLang, settings.auraVoice)
-                ? settings.auraVoice
-                : defaultAuraVoice(auraLang, settings.gender);
-            const pieces = auraPieces(line);
-            for (let i = 0; i < pieces.length; i++) {
-              if (!alive()) return;
-              const piece = pieces[i];
-              const url = await load("aura", `aura|${auraLang}|${voice}|${piece}`, () => speakAura({ voice, lang: auraLang, text: piece }));
-              if (!alive()) return;
-              await play(url, i === pieces.length - 1, piece.length / line.length);
-            }
-            return;
-          } catch (error) {
-            if ((error as { name?: string })?.name === "AbortError") throw error;
-            if (!alive()) return;
-          }
-        }
-        const elevenLang = settings.engine === "elevenlabs" ? elevenReady(opts.target) : null;
-        const elevenKey = opts.key === ROOM_KEY ? ROOM_KEY : (opts.elevenKey ?? "").trim();
-        if (settings.engine === "elevenlabs" && elevenLang && elevenKey) {
-          try {
-            const voice = pickElevenVoice(opts.elevenVoices ?? [], settings.elevenVoice, settings.gender, settings.matchCast) ?? settings.elevenVoice;
-            if (voice) {
-              const pieces = elevenPieces(line);
-              for (let i = 0; i < pieces.length; i++) {
-                if (!alive()) return;
-                const piece = pieces[i];
-                const url = await load("elevenlabs", `eleven|${elevenLang}|${voice}|${piece}`, () =>
-                  speakEleven({ key: elevenKey, voice, lang: elevenLang, text: piece }),
-                );
-                if (!alive()) return;
-                await play(url, i === pieces.length - 1, piece.length / line.length);
-              }
-              return;
-            }
-          } catch (error) {
-            if ((error as { name?: string })?.name === "AbortError") throw error;
-            if (!alive()) return;
-            if (!prefetchOnly && !elevenTold && error instanceof Error && error.message) {
-              elevenTold = true;
-              cloudMissTold = true;
-              opts.onFail?.(`${error.message} Câu này bỏ qua.`);
-            }
-          }
-        }
         let cloud = settings.engine === "orpheus" ? orpheusReady(opts.target) : null;
         // Thuê phòng bằng key riêng: giọng Orpheus phải nằm trong danh sách Chủ mở. Trả theo lượt (key "room") đã tính bằng Token dịch nên không qua đây.
         if (cloud && opts.key && opts.key !== ROOM_KEY) {

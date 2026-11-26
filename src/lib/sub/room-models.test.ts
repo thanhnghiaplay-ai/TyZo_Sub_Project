@@ -8,7 +8,6 @@ import { pickPool, providerOfModel, roomMissing, roomPool, roomRefusal, type Roo
 // Danh sách thật của key phòng lúc báo lỗi (20/11/2026). Groq không có minimax, llama-3.3, muse-spark.
 const OFFER: RoomOffer = {
   groq: ["whisper-large-v3", "whisper-large-v3-turbo", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b", "openai/gpt-oss-safeguard-20b", "canopylabs/orpheus-v1-english"],
-  deepgram: ["deepgram-nova-3"],
   alibaba: null,
 };
 
@@ -20,7 +19,7 @@ describe("room-models", () => {
     assert.ok(!chat.has("openai/gpt-oss-safeguard-20b"), "kiểm duyệt không lọt vào dịch");
     assert.ok(!chat.has("canopylabs/orpheus-v1-english"), "giọng đọc không lọt vào dịch");
     const asr = roomPool(OFFER, "asr")!;
-    assert.ok(asr.has("whisper-large-v3") && asr.has("deepgram-nova-3"));
+    assert.ok(asr.has("whisper-large-v3"));
     assert.equal(roomPool({}, "chat"), null);
   });
 
@@ -58,7 +57,7 @@ describe("room-models", () => {
   });
 
   it("nêu tên model phòng không có, đúng nhà của model", () => {
-    assert.equal(providerOfModel("deepgram-nova-3"), "deepgram");
+    assert.equal(providerOfModel("tyzo-modal-ky"), "tyzo-modal");
     assert.equal(providerOfModel("qwen/qwen3.8-27b"), "groq");
     assert.equal(roomMissing(OFFER, ["whisper-large-v3", "auto"]), null);
     assert.deepEqual(roomMissing(OFFER, ["whisper-large-v3", "llama-3.3-70b-versatile"]), ["llama-3.3-70b-versatile"]);

@@ -4,7 +4,6 @@ import { AUTO_LEVELS, autoRoles, buildAutoPack, compareLevels, onlyKeyed, onlyRe
 import type { PriceBook } from "./run-bill.ts";
 import { checkServicePack } from "./service-pack.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
-import { DEEPGRAM_ROWS } from "./sub/deepgram-catalog.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 
 const row = (id: string, over: Partial<GroqLiveRow> = {}): GroqLiveRow => ({
@@ -25,8 +24,7 @@ const groq: PriceBook = {
   ],
 };
 const alibaba: PriceBook = { rate: 25000, desk, rows: ALIBABA_ROWS };
-const deepgram: PriceBook = { rate: 25000, desk, rows: DEEPGRAM_ROWS };
-const books = { groq, alibaba, deepgram };
+const books = { groq, alibaba };
 
 const C = (provider: AutoCandidate["provider"], model: string): AutoCandidate => ({ provider, model });
 const all: AutoCandidate[] = [
@@ -34,7 +32,7 @@ const all: AutoCandidate[] = [
   C("groq", "openai/gpt-oss-safeguard-20b"), C("groq", "whisper-large-v3-turbo"), C("groq", "whisper-large-v3"),
   C("groq", "canopylabs/orpheus-v1-english"),
   C("alibaba", "qwen-turbo"), C("alibaba", "qwen-plus"), C("alibaba", "qwen-max"),
-  C("alibaba", "qwen-audio-3.0-asr-flash-filetrans"), C("deepgram", "deepgram-nova-3"),
+  C("alibaba", "qwen-audio-3.0-asr-flash-filetrans"),
 ];
 
 test("ba mức lồng nhau: model dịch Tiết kiệm không đắt hơn Cân bằng, Cân bằng không đắt hơn Chất lượng", () => {
@@ -68,9 +66,9 @@ test("mỗi việc chỉ nhận đúng loại model: dịch không lấy whisper
   assert.equal(pickForRole("narration", "best", { candidates: all, books })?.model, "canopylabs/orpheus-v1-english");
 });
 
-test("nhận dạng chọn được cả ba nhà", () => {
+test("nhận dạng chọn được cả hai nhà", () => {
   const only = (p: AutoCandidate["provider"]) => all.filter((c) => c.provider === p);
-  for (const p of ["groq", "alibaba", "deepgram"] as const) {
+  for (const p of ["groq", "alibaba"] as const) {
     const got = pickForRole("asr", "best", { candidates: only(p), books });
     assert.equal(got?.provider, p);
   }
@@ -111,9 +109,9 @@ test("buildAutoPack: thiếu nhận dạng hoặc dịch thì không dựng gói
 });
 
 test("onlyRentOpen: chỉ giữ model đã mở cho thuê phòng, chưa lưu danh sách thì không lọc", () => {
-  const show = { groq: ["openai/gpt-oss-120b", "whisper-large-v3-turbo"], alibaba: [], deepgram: ["deepgram-nova-3"], assemblyai: [], speechmatics: [], soniox: [], elevenlabs: [], "tyzo-modal": [] };
+  const show = { groq: ["openai/gpt-oss-120b", "whisper-large-v3-turbo"], alibaba: ["qwen-audio-3.0-asr-flash-filetrans"], "tyzo-modal": [] };
   const kept = onlyRentOpen(all, show);
-  assert.deepEqual(kept.map((c) => c.model).sort(), ["deepgram-nova-3", "openai/gpt-oss-120b", "whisper-large-v3-turbo"]);
+  assert.deepEqual(kept.map((c) => c.model).sort(), ["openai/gpt-oss-120b", "qwen-audio-3.0-asr-flash-filetrans", "whisper-large-v3-turbo"]);
   assert.equal(onlyRentOpen(all, null), all);
   const out = autoRoles({ levels: {}, candidates: kept, books });
   assert.equal(out.roles.translate?.model, "openai/gpt-oss-120b");
@@ -121,10 +119,10 @@ test("onlyRentOpen: chỉ giữ model đã mở cho thuê phòng, chưa lưu dan
 });
 
 test("onlyKeyed: chỉ giữ model của nhà đã có key, chưa đọc được key thì không lọc", () => {
-  const keyed = { groq: true, alibaba: false, deepgram: true };
+  const keyed = { groq: true, alibaba: false };
   const kept = onlyKeyed(all, keyed);
   assert.ok(kept.length > 0);
-  assert.ok(kept.every((c) => c.provider === "groq" || c.provider === "deepgram"));
+  assert.ok(kept.every((c) => c.provider === "groq"));
   assert.equal(onlyKeyed(all, null), all);
   assert.deepEqual(onlyKeyed(all, {}), []);
   const out = autoRoles({ levels: { translate: "best" }, candidates: kept, books });

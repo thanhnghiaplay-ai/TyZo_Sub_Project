@@ -149,13 +149,13 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
       id: "thuyet-minh",
       title: "Thuyết minh (đọc bản dịch thành tiếng)",
       group: "tinh-nang",
-      intro: "Nghe bản dịch được đọc theo video. Neural miễn phí. Orpheus, Aura và ElevenLabs khi dùng key của phòng thì trừ Token dịch.",
-      words: "thuyet minh doc giong nghe tts neural orpheus aura deepgram elevenlabs tieng viet am thanh",
+      intro: "Nghe bản dịch được đọc theo video. Neural miễn phí. Orpheus khi dùng key của phòng thì trừ Token dịch.",
+      words: "thuyet minh doc giong nghe tts neural orpheus edge tieng viet am thanh",
       tour: "thuyet-minh",
       steps: [
         { text: `Mở «${UI.voiceTab}» ở menu trái để bật hoặc tắt thuyết minh và chọn giọng. Bạn tắt thì lần sau app giữ tắt.` },
         { text: "Giọng neural cần mạng. Khi mạng lỗi, app đọc bằng giọng có sẵn trên máy." },
-        { text: "Khi dùng key của phòng, Orpheus trừ Token dịch. Giọng Aura (Deepgram) luôn trừ Token dịch và chỉ đọc tiếng Anh và Tây Ban Nha. Giọng ElevenLabs đọc được tiếng Việt và nhiều tiếng khác (chưa có tiếng Thái): trả theo lượt thì trừ Token dịch, thuê phòng thì dùng key ElevenLabs của bạn. Neural và giọng máy không trừ. Giọng Orpheus khi bạn dùng key của mình thì tính vào key đó." },
+        { text: "Khi dùng key của phòng, Orpheus trừ Token dịch. Neural và giọng máy không trừ. Giọng Orpheus khi bạn dùng key của mình thì tính vào key đó." },
       ],
     },
     {
@@ -248,7 +248,7 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
         { text: `Mua Token dịch: mở «${UI.account}» ở menu trái, chọn «${UI.wallet}», bấm gói. Mã QR hiện ra. Chuyển khoản đúng số tiền và nội dung. Đơn còn hiệu lực ${PAY_MINUTES} phút. Tiền về thì được Token dịch, không cộng số dư.` },
         { text: `Gói thuê phòng: ${planLines(plans)}. Bấm gói thì cũng hiện mã QR, chuyển khoản đúng số thì mở hạn. Trong hạn không giới hạn số tệp và được xuất file phụ đề; ${planSaving(plans)}.` },
         { text: `Dùng thử: ${TRIAL_FILES} tệp, tối đa ${TRIAL_MINUTES} phút, không quá ${megabytes(TRIAL_BYTES)} MB, không xuất file phụ đề.` },
-        { text: "Trả theo lượt trừ Token dịch. Phòng giữ số ước tính, khi xong trừ số thực và trả phần thừa nếu gói còn hạn. Hết hạn thì phần còn lại mất, không hoàn tiền. Orpheus khi dùng key của phòng và giọng Aura cũng trừ Token dịch. Neural không trừ." },
+        { text: "Trả theo lượt trừ Token dịch. Phòng giữ số ước tính, khi xong trừ số thực và trả phần thừa nếu gói còn hạn. Hết hạn thì phần còn lại mất, không hoàn tiền. Orpheus khi dùng key của phòng cũng trừ Token dịch. Neural không trừ." },
         { text: "Một video giữ Token dịch hai lần: phần nhận dạng lúc bắt đầu, phần dịch lúc bắt đầu dịch. Lúc app chờ bạn xem bảng nhân vật thì không giữ gì. Dịch lại bằng model khác chỉ giữ phần dịch." },
         { text: "Dịch trực tiếp dùng cùng Token dịch. Phiên không giữ số dư. Hết Token dịch thì phiên dừng." },
         { text: "Nếu bạn dùng key Groq của mình thì Groq tính tiền nhận dạng và dịch cho bạn, phòng không trừ Token dịch cho lượt chạy đó." },
@@ -256,16 +256,16 @@ export function guideTopics(context: GuideContext = {}): GuideTopic[] {
     },
     {
       id: "key-groq",
-      title: "Lấy key (Groq, Alibaba, Deepgram, AssemblyAI, Speechmatics, Soniox, ElevenLabs)",
+      title: "Lấy key (Groq, Alibaba)",
       group: "tai-khoan",
       intro: `Chọn Thuê phòng thì bạn dùng key của chính bạn. Mỗi nhà có một key riêng, nhà nào bạn dùng thì lấy key nhà đó. Dịch cần key của một nhà có model dịch (${providersWith("chat").map((id) => PROVIDERS[id].label).join(" hoặc ")}); nhận dạng cần key của nhà nhận dạng bạn chọn.`,
-      words: "key groq alibaba deepgram assemblyai speechmatics soniox elevenlabs scribe api gsk sk console tao key lay key dan key khoa dashscope bailian nova whisper universal",
+      words: "key groq alibaba api gsk sk console tao key lay key dan key khoa dashscope bailian whisper",
       tour: "key-groq",
       steps: [
         { text: "Mở trang quản lý key của Groq và đăng nhập (hoặc đăng ký) bằng tài khoản Groq.", link: { label: "console.groq.com/keys", href: "https://console.groq.com/keys" }, image: "groq-tao-key.png" },
         { text: "Chọn tạo key mới (Create API Key) và đặt tên tùy ý để bạn nhớ.", },
         { text: "Sao chép key ngay khi tạo xong, vì thường không xem lại được sau đó. Key Groq bắt đầu bằng gsk_." },
-        ...PROVIDER_IDS.filter((id) => id !== "groq").map((id) => ({
+        ...PROVIDER_IDS.filter((id) => id !== "groq" && PROVIDERS[id].keyPage).map((id) => ({
           text: `${PROVIDERS[id].label}: mở trang key của ${PROVIDERS[id].label}, đăng nhập, tạo key mới và sao chép ngay. ${PROVIDERS[id].label} làm: ${providerDoes(id)}. Cách tạo y như Groq.`,
           link: { label: PROVIDERS[id].keyPage, href: `https://${PROVIDERS[id].keyPage}` },
         })),
@@ -328,8 +328,8 @@ export const GUIDE_FAQ: GuideFaq[] = [
   {
     id: "key-groq-loi",
     q: "App báo key không hợp lệ?",
-    a: `Key không hợp lệ hoặc chưa được cấp quyền. Kiểm tra lại key ở trang của nhà đó (${PROVIDER_IDS.map((id) => `${PROVIDERS[id].label}: ${PROVIDERS[id].keyPage}`).join("; ")}). Không được thì tạo key mới rồi dán lại.`,
-    words: "key groq alibaba deepgram assemblyai speechmatics soniox elevenlabs khong hop le sai loi bao loi het han",
+    a: `Key không hợp lệ hoặc chưa được cấp quyền. Kiểm tra lại key ở trang của nhà đó (${PROVIDER_IDS.filter((id) => PROVIDERS[id].keyPage).map((id) => `${PROVIDERS[id].label}: ${PROVIDERS[id].keyPage}`).join("; ")}). Không được thì tạo key mới rồi dán lại.`,
+    words: "key groq alibaba khong hop le sai loi bao loi het han",
   },
   {
     id: "xoa-du-lieu",

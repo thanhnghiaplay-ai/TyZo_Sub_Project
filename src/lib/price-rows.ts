@@ -5,24 +5,14 @@
  * Groq không có giá gốc trong code: luôn lấy từ bảng giá đã kéo (loadPriceBook), vì Token dịch quy theo Whisper Turbo của Groq.
  */
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
-import { ASSEMBLYAI_BASE_ROWS } from "./sub/assemblyai-base.ts";
-import { DEEPGRAM_BASE_ROWS } from "./sub/deepgram-base.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 import type { ProviderId } from "./sub/provider.ts";
-import { ELEVENLABS_BASE_ROWS } from "./sub/elevenlabs-base.ts";
-import { SONIOX_BASE_ROWS } from "./sub/soniox-base.ts";
-import { SPEECHMATICS_BASE_ROWS } from "./sub/speechmatics-base.ts";
 import type { PriceBook } from "./run-bill.ts";
 
 export const BASE_ROWS: Record<ProviderId, GroqLiveRow[]> = {
   "tyzo-modal": [],
   groq: [],
   alibaba: ALIBABA_ROWS,
-  deepgram: DEEPGRAM_BASE_ROWS,
-  assemblyai: ASSEMBLYAI_BASE_ROWS,
-  speechmatics: SPEECHMATICS_BASE_ROWS,
-  soniox: SONIOX_BASE_ROWS,
-  elevenlabs: ELEVENLABS_BASE_ROWS,
 };
 
 /** Bảng giá đã kéo của từng nhà (thiếu nhà nào thì dùng BASE_ROWS của nhà đó). */

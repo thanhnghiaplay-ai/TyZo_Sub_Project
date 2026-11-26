@@ -2,7 +2,7 @@
 type PriceHouseRow = { id: string; house: string; fix: { hour: number | null; inn: number | null; out: number | null; chars: number | null } };
 
 /** Nhà kéo giá từ trang giá (có nút «Lấy lại») và nhà giá gắn sẵn trong code (sửa tay). */
-const PULLED_HOUSES = ["Groq", "Alibaba", "Deepgram"] as const;
+const PULLED_HOUSES = ["Groq", "Alibaba"] as const;
 export type PulledHouse = (typeof PULLED_HOUSES)[number];
 
 export function isPulledHouse(house: string): house is PulledHouse {

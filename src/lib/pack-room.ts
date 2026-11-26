@@ -16,8 +16,6 @@ type AlibabaDeskView = {
   usdFix: UsdFix;
   /** Bảng Alibaba đã gộp giá tự kéo (`ali_board`). Chưa phủ `usdFix`. */
   alibabaRows: GroqLiveRow[];
-  /** Bảng Deepgram đã gộp giá tự kéo (`dg_board`). Chưa phủ `usdFix`. */
-  deepgramRows: GroqLiveRow[];
 };
 
 type ServiceMenu = {
@@ -55,10 +53,9 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
     await requireRole(context.userId, "chu");
     const { sql, map } = await readSettings();
     const groqRows = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
-    const boards = await sql<{ key: string; value: string }>`select key, value from room_settings where key in ('ali_board', 'dg_board')`;
+    const boards = await sql<{ key: string; value: string }>`select key, value from room_settings where key in ('ali_board')`;
     const boardMap = new Map(boards.map((row) => [row.key, row.value]));
     const { rowsFromStoredAlibaba } = await import("@/lib/sub/alibaba-price");
-    const { rowsFromStoredDeepgram } = await import("@/lib/sub/deepgram-price");
     const key = map.get("alibaba_key") || "";
     return {
       desk: parseRunDesk(map.get("alibaba_desk")),
@@ -68,7 +65,6 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
       groqModels: parseModelList(groqRows[0]?.value),
       usdFix: parseUsdFix(map.get("usd_fix")),
       alibabaRows: rowsFromStoredAlibaba(boardMap.get("ali_board")),
-      deepgramRows: rowsFromStoredDeepgram(boardMap.get("dg_board")),
     };
   });
 

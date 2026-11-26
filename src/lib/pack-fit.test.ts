@@ -23,6 +23,6 @@ test("thuyết minh chỉ giọng đọc; Alibaba chưa có thì rỗng", () => 
 });
 
 test("nhà nhận dạng không được gán việc dịch", () => {
-  assert.equal(fitsRole("translate", { provider: "deepgram", model: "deepgram-nova-3" }), false);
-  assert.equal(fitsRole("asr", { provider: "deepgram", model: "deepgram-nova-3" }), true);
+  assert.equal(fitsRole("translate", { provider: "tyzo-modal", model: "tyzo-modal-nhanh" }), false);
+  assert.equal(fitsRole("asr", { provider: "tyzo-modal", model: "tyzo-modal-ky" }), true);
 });

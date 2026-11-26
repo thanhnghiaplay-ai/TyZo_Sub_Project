@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.47.0";
+export const APP_VERSION = "5.48.0";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.48.0",
+    time: "21:00 26/11/2026",
+    title: "Phòng chỉ còn ba nhà: Groq, Alibaba và TyZo.",
+    points: [
+      "Bỏ Deepgram, AssemblyAI, Speechmatics, Soniox, ElevenLabs và giọng Aura.",
+      "Ai đang chọn giọng Aura hoặc ElevenLabs sẽ tự về giọng Neural.",
+      "TyZo tính theo thời gian máy GPU thật sự xử lý, chỉ có ở cửa Trả theo lượt.",
+      "Điều khoản 2026-11-26.2: dữ liệu không còn gửi tới năm nhà đã bỏ; bạn đồng ý lại một lần.",
+    ],
+  },
   {
     version: "5.47.0",
     time: "15:00 26/11/2026",
