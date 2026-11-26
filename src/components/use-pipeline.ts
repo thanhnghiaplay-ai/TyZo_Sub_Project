@@ -16,8 +16,8 @@ import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { addLocalRun } from "@/lib/local-runs";
 import { claimPlayback, closeRoomTicket, forgetTicket, openRoomTicket, recoverOrphanTicket, rememberTicket } from "@/lib/sub/room-ticket";
-import { packAudio, type PackedAudio } from "@/lib/sub/codec";
-import { analyzeFilm, applyNameFixes, contextBlock, chatCall, listModelIds, probeKey, ROOM_KEY, type ChatKey, sleep, throwIfAborted, translateIndexes, translateWithRepair } from "@/lib/sub/groq";
+import { packAudio } from "@/lib/sub/codec";
+import { analyzeFilm, applyNameFixes, chatCall, listModelIds, probeKey, ROOM_KEY, type ChatKey, throwIfAborted } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
 import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
 import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
@@ -25,7 +25,7 @@ import { liveAsrPerSecond, type GroqBoard } from "@/lib/sub/groq-board";
 import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
-import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
+import { LANG_RETRY_BUDGET_SECONDS } from "@/lib/sub/lang-check";
 import { summarizeQuality, type LangCheckReport } from "@/lib/sub/quality";
 import { sparseSpeechNote } from "@/lib/sub/sparse-note";
 import { loadQualityThresholds } from "@/lib/quality-load";
@@ -34,12 +34,11 @@ import { reportQuality } from "@/lib/quality-room";
 import { APP_VERSION } from "@/lib/app-version";
 import { applyLineLocks, assignVoices, lineLockId, measurePitch } from "@/lib/sub/pitch-voice";
 import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, energyThreshold, spansFromEnergy } from "@/lib/sub/chunk-plan";
-import { FILTER_RETRY_BUDGET_SECONDS, filterRejectKey, planFilterRetries, type FilterRetryReport } from "@/lib/sub/filter-retry";
-import { asrTestLabel, readAsrTest } from "@/lib/sub/asr-test";
+import { type FilterRetryReport } from "@/lib/sub/filter-retry";
 import { ingestAsrPart, keepRejectedCue, slicePcm, type RawAsrPart, type RejectEntry } from "@/lib/sub/diagnostics";
-import { ASR_RETRY_BUDGET_SECONDS, formatRetryStatus, partSeconds, planDecodeRetries, spansForDecodeRetry, type AsrRetryReport } from "@/lib/sub/asr-retry";
-import { addressLock, asrPrompt, BATCH, glossaryHit, isSilentChunk, fmt, MAX_MINUTES, MAX_STREAM_HOURS, splitAudio, STYLE_EXTRA_MAX, SR, untranslated, windowRms, type Bible } from "@/lib/sub/text";
-import { loadGenreGlossary, loadRunGlossary, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, mergeIntoGloss, overlayUserTerms, parseGlossaryCsv, type GlossaryTerm } from "@/lib/sub/glossary";
+import { formatRetryStatus, type AsrRetryReport } from "@/lib/sub/asr-retry";
+import { asrPrompt, isSilentChunk, fmt, MAX_MINUTES, MAX_STREAM_HOURS, splitAudio, STYLE_EXTRA_MAX, SR, windowRms, type Bible } from "@/lib/sub/text";
+import { loadRunGlossary, overlayUserTerms, parseGlossaryCsv, type GlossaryTerm } from "@/lib/sub/glossary";
 import { budgetSpeechGaps, formatGapConfirm, GAP_BUDGET_SECONDS, spansFromBlocks, type GapPlan } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { asrRunnerOf, transcribe } from "@/lib/providers";
@@ -57,9 +56,11 @@ import { getServiceMenu } from "@/lib/pack-room";
 import { turnPackProblem } from "@/lib/turn-pack";
 import { readGenderMap, voiceStore, overlayCastLocks, cloneBible, readStore, writeStore, removeStore, shareUserTerms, userGlossKey, readUserTerms, safeStore } from "@/components/pipeline-store";
 import { loadBlob, waitForMetadata, decodeTo16k } from "@/components/pipeline-media";
-import { asrLanguageOf, emptyJob, type AsrResult, type Job } from "@/lib/pipeline/job";
+import { asrLanguageOf, emptyJob, type Job } from "@/lib/pipeline/job";
 import { uploadLocalAudio } from "@/lib/pipeline/link-upload";
 import { downloadText, exportProblem, subtitleFile } from "@/lib/pipeline/export";
+import { createRecognizer } from "@/lib/pipeline/recognize";
+import { createTranslator } from "@/lib/pipeline/translate";
 
 /** Dòng trạng thái lúc mới mở, chưa có việc nào. Studio đổi chữ này khi Dịch bình thường đang bảo trì. */
 export const READY_STATUS = "Sẵn sàng. Chọn video rồi bấm Tải và dịch.";
@@ -1122,485 +1123,22 @@ export function usePipeline() {
       say("Không tải được bộ lọc tiếng người. Đoạn này gửi theo mức năng lượng.");
     };
 
-    /** Chỉ khi bật công tắc. Đoạn nghi lệch ngôn ngữ thì gửi lại không ép ngôn ngữ, một lần, có ngân sách. Lỗi thì giữ kết quả cũ. */
-    const checkLanguage = async (
-      res: Exclude<AsrResult, "skip" | "fail">,
-      packed: PackedAudio,
-      seconds: number,
-      partIndex: number,
-      startAt: number,
-    ): Promise<AsrResult> => {
-      if (!langRef.current || !source || source === "auto" || !needsLangCheck(source, res)) return res;
-      j.langSuspect++;
-      if (j.langRetryUsed + seconds > LANG_RETRY_BUDGET_SECONDS) return res;
-      j.langRetryUsed += seconds;
-      let again: Awaited<ReturnType<typeof transcribe>>;
-      try {
-        again = await transcribe(packed, token, "", "", asrModel, signal, j.gate, onWait, ticketId);
-      } catch (error) {
-        if (signal.aborted || (error as { name?: string })?.name === "AbortError") throw error;
-        return res;
-      }
-      await ensureTrial();
-      j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
-      const pick = chooseBetter(source, res, again);
-      j.langEvents.push({
-        partIndex,
-        start: startAt,
-        requested: source,
-        detected: normalizeLang(again.language),
-        swapped: pick === "auto",
-        logprobBefore: meanLogprob(res),
-        logprobAfter: meanLogprob(again),
-        before: resultText(res).slice(0, 80),
-        after: resultText(again).slice(0, 80),
-      });
-      return pick === "auto" ? again : res;
-    };
+    const { transcribeRemaining } = createRecognizer({
+      j, my, signal, audioContext, token, source, asrModel, title, gloss, genre, threads,
+      ticket: () => ticketId,
+      vad: () => vadRef.current,
+      langCheck: () => langRef.current,
+      lineLocks: () => lineLocksRef.current,
+      onWait, ensureTrial, asrUsd, publish, progress, say, warnVad, applyReady, setHeardLang,
+    });
 
-    const transcribeRemaining = async () => {
-      let next = j.nextPart;
-      j.decodeFail = 0;
-      j.decodeOk = 0;
-      j.note = "đang chuẩn bị";
-      const asrTestNote = asrTestLabel(readAsrTest());
-      if (asrTestNote) say(`Chế độ thử nhận dạng đang bật: ${asrTestNote}. Mở lại app với ?asrtest=off để tắt.`);
-      const worker = async () => {
-        for (;;) {
-          throwIfAborted(signal);
-          if (my !== j.runId) return;
-          while (j.asrBuf.has(next)) next++;
-          const index = next++;
-          if (index >= j.parts.length) return;
-          const [startAt, endAt] = j.parts[index];
-          j.note = `đoạn ${index + 1}: đang giải mã âm thanh`;
-          progress();
-          let samples = j.pcm ? j.pcm.subarray(startAt, endAt) : await streamSamples(j.stream!, audioContext, startAt / SR, endAt / SR, signal);
-          if (!samples && !j.pcm && j.stream) samples = await streamSamples(j.stream, audioContext, startAt / SR, endAt / SR, signal);
-          throwIfAborted(signal);
-          if (!samples) {
-            j.decodeFail++;
-            if (!j.pcm && j.decodeFail >= 2 && j.decodeOk === 0) {
-              j.forceOld = true;
-              throw new Error("Trình duyệt không giải mã được âm thanh theo đoạn. Bấm Tải và dịch lần nữa để dùng chế độ cũ (tối đa 2 giờ, 1 GB).");
-            }
-            j.asrBuf.set(index, "fail");
-          } else {
-            const gated = await gateChunk(samples, vadRef.current);
-            if (!gated) {
-              j.decodeOk++;
-              j.asrBuf.set(index, "skip");
-            } else {
-              if (gated.fallback) warnVad();
-              j.decodeOk++;
-              const clip = gated.samples;
-              j.note = `đoạn ${index + 1}: đang nén âm thanh`;
-              progress();
-              const packed = await packAudio(clip, signal);
-              throwIfAborted(signal);
-              j.note = `đoạn ${index + 1}: đang gửi ${Math.max(1, Math.round(packed.blob.size / 1024))} KB`;
-              progress();
-              const prompt = asrPrompt(title, gloss, genre);
-              const first = await transcribe(packed, token, asrLanguageOf(source), prompt, asrModel, signal, j.gate, onWait, ticketId);
-              await ensureTrial();
-              if (my !== j.runId) return;
-              j.asrCost += Math.max(10, clip.length / SR) * asrUsd(asrModel);
-              const res = await checkLanguage(first, packed, clip.length / SR, index, startAt / SR + gated.offset);
-              if (my !== j.runId) return;
-              if (res !== "skip" && res !== "fail" && res.language) {
-                const code = normalizeLang(res.language) || res.language.trim().toLowerCase().slice(0, 12);
-                if (code) {
-                  j.heardLang = code;
-                  setHeardLang(code);
-                }
-              }
-              j.asrBuf.set(index, res);
-              j.heard.set(index, clip);
-              j.heardOffset.set(index, gated.offset);
-            }
-          }
-          applyReady();
-        }
-      };
-      await Promise.all(Array.from({ length: (() => { const runner = asrRunnerOf(asrModel); return runner.intake === "chunks" && runner.parallel ? Math.min(runner.parallel, j.parts.length) : Math.max(1, threads); })() }, worker));
-      const swappedN = j.langEvents.filter((e) => e.swapped).length;
-      if (swappedN) say(`Đã nhận dạng lại ${swappedN} đoạn có ngôn ngữ khác ngôn ngữ đã chọn.`);
-      await retryDecodeFails();
-      await retryFilterMisses();
-    };
-
-    const retryDecodeFails = async () => {
-      if (!j.pcm && !j.stream) return;
-      const spans = spansForDecodeRetry(j.rawParts, j.decodeRetried);
-      const remaining = Math.max(0, ASR_RETRY_BUDGET_SECONDS - j.retryUsedSeconds);
-      const plan = planDecodeRetries(spans, j.decodeRetried, remaining);
-      if (!plan.retry.length && !plan.deferred.length) return;
-      const finishReport = () => {
-        if (my !== j.runId) return;
-        const missing = j.rawParts
-          .filter((row) => row.kind === "decode_fail")
-          .map((row) => ({
-            index: row.partIndex,
-            start: row.start,
-            end: row.end,
-            retried: j.decodeRetried.has(row.partIndex),
-          }))
-          .sort((a, b) => a.index - b.index);
-        j.retryReport = { budgetSeconds: ASR_RETRY_BUDGET_SECONDS, usedSeconds: j.retryUsedSeconds, missing };
-        j.note = "";
-        publish(true);
-      };
-      try {
-        for (const part of plan.retry) {
-          throwIfAborted(signal);
-          if (my !== j.runId) return;
-          const [startAt, endAt] = j.parts[part.index];
-          const seconds = partSeconds({ index: part.index, start: startAt / SR, end: endAt / SR });
-          j.note = `thử lại đoạn ${part.index + 1}`;
-          progress();
-          const samples = j.pcm ? j.pcm.subarray(startAt, endAt) : await streamSamples(j.stream!, audioContext, startAt / SR, endAt / SR, signal);
-          throwIfAborted(signal);
-          let res: AsrResult;
-          let heard: Float32Array | null = null;
-          let chunkStart = startAt / SR;
-          let chunkEnd = endAt / SR;
-          if (!samples) res = "fail";
-          else {
-            const gated = await gateChunk(samples, vadRef.current);
-            if (!gated) res = "skip";
-            else {
-              if (gated.fallback) warnVad();
-              heard = gated.samples;
-              chunkStart += gated.offset;
-              chunkEnd = chunkStart + heard.length / SR;
-              j.note = `thử lại đoạn ${part.index + 1}: đang gửi`;
-              progress();
-              const packed = await packAudio(heard, signal);
-              throwIfAborted(signal);
-              const result = await transcribe(packed, token, asrLanguageOf(source), asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
-              await ensureTrial();
-              if (my !== j.runId) return;
-              j.asrCost += Math.max(10, heard.length / SR) * asrUsd(asrModel);
-              res = result;
-            }
-          }
-          j.decodeRetried.add(part.index);
-          j.retryUsedSeconds += seconds;
-          j.rawParts = j.rawParts.filter((row) => row.partIndex !== part.index);
-          j.rejects = j.rejects.filter((row) => row.partIndex !== part.index);
-          const ingested = ingestAsrPart({
-            partIndex: part.index,
-            chunkStart,
-            chunkEnd,
-            requestedLanguage: j.diagLang,
-            result: res,
-            segs: j.segs,
-            samples: heard,
-            overlapGate: chunkOverlapsPrevious(j.parts, part.index),
-          });
-          j.rawParts.push(ingested.raw);
-          j.rawParts.sort((a, b) => a.partIndex - b.partIndex);
-          if (ingested.rejects.length) j.rejects.push(...ingested.rejects);
-          j.failedParts = j.failedParts.filter((index) => index !== part.index);
-          if (ingested.skipped) j.skipped++;
-          else if (ingested.failed) j.failedParts.push(part.index);
-          else j.segs.sort((a, b) => a.start - b.start || a.end - b.end);
-        }
-      } finally {
-        applyLineLocks(j.segs, lineLocksRef.current);
-        finishReport();
-      }
-    };
-
-    const retryFilterMisses = async () => {
-      const plan = planFilterRetries({
-        rejects: j.rejects,
-        raw: j.rawParts,
-        already: j.filterRetried,
-        budgetSeconds: Math.max(0, FILTER_RETRY_BUDGET_SECONDS - j.filterRetryUsed),
-      });
-      if (!plan.retry.length && !plan.deferred.length) return;
-      let sent = 0;
-      try {
-        for (const clip of plan.retry) {
-          throwIfAborted(signal);
-          if (my !== j.runId) return;
-          j.filterRetried.add(clip.key);
-          j.note = `thử lại câu không chắc ${fmt(clip.start)}`;
-          progress();
-          const from = Math.max(0, Math.floor(clip.start * SR));
-          const to = Math.max(from + 1, Math.ceil(clip.end * SR));
-          const samples = j.pcm ? j.pcm.subarray(from, Math.min(j.pcm.length, to)) : await streamSamples(j.stream!, audioContext, clip.start, clip.end, signal);
-          throwIfAborted(signal);
-          if (!samples?.length) continue;
-          const gated = await gateChunk(samples, vadRef.current);
-          if (!gated) continue;
-          if (gated.fallback) warnVad();
-          const start = clip.start + gated.offset;
-          const seconds = gated.samples.length / SR;
-          j.filterRetryUsed += seconds;
-          const packed = await packAudio(gated.samples, signal);
-          throwIfAborted(signal);
-          const result = await transcribe(packed, token, asrLanguageOf(source), asrPrompt(title, gloss, genre), asrModel, signal, j.gate, onWait, ticketId);
-          await ensureTrial();
-          if (my !== j.runId) return;
-          j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
-          const before = j.segs.length;
-          const ingested = ingestAsrPart({
-            partIndex: -1,
-            chunkStart: start,
-            chunkEnd: start + seconds,
-            requestedLanguage: j.diagLang,
-            result,
-            segs: j.segs,
-            samples: gated.samples,
-            overlapGate: false,
-          });
-          if (j.segs.length > before && clip.reason !== "whisper_empty") {
-            j.rejects = j.rejects.filter((row) => filterRejectKey(row) !== clip.key);
-          }
-          if (clip.reason === "whisper_empty") {
-            const index = Number(clip.key.slice("whisper_empty:".length));
-            j.rawParts = j.rawParts.filter((row) => !(row.kind === "whisper_empty" && row.partIndex === index));
-          }
-          j.rawParts.push(ingested.raw);
-          for (const row of ingested.rejects) {
-            const dup = j.rejects.some((old) => old.text === row.text && old.reason === row.reason && old.start === row.start);
-            if (!dup) j.rejects.push(row);
-          }
-          j.segs.sort((a, b) => a.start - b.start || a.end - b.end);
-          sent++;
-        }
-      } finally {
-        if (my === j.runId) {
-          applyLineLocks(j.segs, lineLocksRef.current);
-          j.filterRetryReport = {
-            budgetSeconds: FILTER_RETRY_BUDGET_SECONDS,
-            usedSeconds: j.filterRetryUsed,
-            sent,
-            deferred: plan.deferred.length,
-          };
-          j.note = "";
-          publish(true);
-        }
-      }
-    };
-
-    const translateRemaining = async (asrDone: () => boolean) => {
-      const sig = `${target}|${modelSig}`;
-      if (j.appliedSig && j.appliedSig !== sig) {
-        for (const seg of j.segs) {
-          if (seg.edited) continue;
-          seg.translation = null;
-          seg.translationFailed = false;
-        }
-        publish(true);
-      }
-      j.appliedSig = sig;
-      const take = (done: boolean) => {
-        const limit = done ? j.segs.length : Math.max(0, j.segs.length - 2);
-        let start = 0;
-        while (start < limit && (j.segs[start].translation !== null || j.segs[start].busy)) start++;
-        const out: Seg[] = [];
-        for (let i = start; i < limit && out.length < BATCH; i++) {
-          const seg = j.segs[i];
-          if (seg.translation !== null || seg.busy) break;
-          out.push(seg);
-        }
-        return out;
-      };
-      const worker = async () => {
-        for (;;) {
-          throwIfAborted(signal);
-          if (my !== j.runId) return;
-          const done = asrDone();
-          if (preRef.current && reviewRef.current && pauseForNewBible.current && !j.bibleGo) {
-            if (!done) {
-              await sleep(500, signal);
-              continue;
-            }
-            if (!j.bible) await ensureAnalysis();
-            if (my !== j.runId) return;
-            if (j.bible && !j.bible.failed && !j.bibleGo) {
-              if (!j.holdPosted) {
-                j.holdPosted = true;
-                j.note = "chờ bạn xem bảng nhân vật";
-                // Đang chờ khách thì không giữ phiếu nào: phần nhận dạng trừ xong, phần dịch giữ khi bấm Dịch tiếp.
-                await releaseAsrTicket();
-                setReviewHold(true);
-                say("Đã phân tích xong. Sửa bảng nhân vật nếu cần, rồi bấm Dịch tiếp.");
-              }
-              await sleep(300, signal);
-              continue;
-            }
-          } else if (preRef.current && !j.bible) {
-            if (!done) {
-              await sleep(500, signal);
-              continue;
-            }
-            await ensureAnalysis();
-            if (my !== j.runId) return;
-          }
-          const group = take(done);
-          if (!group.length) {
-            if (done) return;
-            await sleep(400, signal);
-            continue;
-          }
-          // Phiếu phần nhận dạng không giữ cho phần dịch: chưa nhận dạng xong thì chờ, không dịch xen bằng phiếu đó.
-          if (ticketPart === "asr" && roomPayRef.current && !done) {
-            await sleep(400, signal);
-            continue;
-          }
-          await ensureChatTicket();
-          if (my !== j.runId) return;
-          group.forEach((seg) => {
-            seg.busy = true;
-          });
-          try {
-            const origs = group.map((seg) => seg.original);
-            const at = j.segs.indexOf(group[0]);
-            const nxt = j.segs.slice(at + group.length, at + group.length + 5).map((item) => item.original);
-            const ctx = j.segs.slice(Math.max(0, at - 14), at).map((seg) =>
-              seg.translation && seg.translation.trim() ? { o: seg.original, t: seg.translation } : seg.original,
-            );
-            const prior = j.segs.slice(Math.max(0, at - 14), at).map((seg) => seg.original);
-
-            // Structured glossary (genre × source language) — hard override via placeholder
-            let packTerms: Awaited<ReturnType<typeof loadGenreGlossary>>["terms"] = [];
-            try {
-              const pack = await loadRunGlossary(source, genre, target, baseGloss);
-              packTerms = overlayUserTerms(pack.terms, userTermsRef.current);
-            } catch {
-              packTerms = overlayUserTerms([], userTermsRef.current);
-            }
-            const effectiveGloss = packTerms.length ? mergeIntoGloss(gloss, packTerms) : gloss;
-            const { protected: protectedOrigs, restoreMap, hits } = protectTerms(origs, packTerms, source);
-
-            const opts = {
-              ctx,
-              nxt,
-              genre,
-              context: [
-                contextBlock({ title, notes, gloss: effectiveGloss, bible: j.bible, extra }),
-                addressLock([...prior, ...origs, ...nxt], j.bible),
-              ]
-                .filter(Boolean)
-                .join("\n\n"),
-            };
-            let translated: string[] | null = null;
-            let used = mode === "manual" ? chosen : "";
-            let lastError: Error | undefined;
-            const attempts = mode === "manual" ? 1 : 3;
-            for (let attempt = 0; attempt < attempts; attempt++) {
-              const picked =
-                mode === "manual"
-                  ? { id: chosen, via: "chọn tay" }
-                  : pickAutoModel({
-                      profile,
-                      texts: origs,
-                      sourceLang: source,
-                      genre,
-                      glossaryHit: glossaryHit(origs, effectiveGloss) || hits > 0,
-                      allowEnterprise,
-                      available: autoPool(),
-                      cooling: j.cooling,
-                      blocked: j.blocked,
-                      escalate: attempt > 0,
-                    });
-              used = picked.id;
-              j.lastModel = used;
-              j.note = picked.via;
-              progress();
-              try {
-                // Send protected lines (terms → placeholders) so LLM cannot rewrite forced terms
-                translated = await translateWithRepair(
-                  protectedOrigs,
-                  target,
-                  chatKeyOf(),
-                  used,
-                  signal,
-                  j.gate,
-                  opts,
-                  onWait,
-                  ticketId,
-                );
-                break;
-              } catch (error) {
-                if ((error as Error)?.name === "AbortError") throw error;
-                lastError = error as Error;
-                const message = lastError.message || "";
-                if (/429|giới hạn/.test(message)) j.cooling.set(used, Date.now() + 20000);
-                if (/404|không tìm thấy model|decommissioned|model .* not found/i.test(message)) j.blocked.add(used);
-                if (mode === "manual") throw lastError;
-              }
-            }
-            if (!translated) throw lastError || new Error("Dịch văn bản thất bại.");
-            const settled = settleGlossaryLines(protectedOrigs, translated, restoreMap);
-            translated = settled.lines;
-            if (settled.retryIndexes.length) {
-              try {
-                const again = protectTerms(origs, packTerms, source);
-                const redo = await translateIndexes(
-                  again.protected,
-                  settled.retryIndexes,
-                  target,
-                  chatKeyOf(),
-                  used,
-                  signal,
-                  j.gate,
-                  { ...opts, fix: true },
-                  onWait,
-                  settled.lines,
-                  ticketId,
-                );
-                const restored = restoreTerms(redo, again.restoreMap).map((line) => stripLeftoverPlaceholders(line));
-                settled.retryIndexes.forEach((index, k) => {
-                  const line = restored[k] || "";
-                  if (!line.trim() || untranslated(origs[index], line)) return;
-                  translated![index] = line;
-                });
-              } catch (error) {
-                if ((error as Error)?.name === "AbortError") throw error;
-              }
-            }
-            if (my !== j.runId) return;
-            let failedInGroup = 0;
-            let changed = 0;
-            group.forEach((seg, offset) => {
-              // Người dùng vừa sửa tay câu này trong lúc máy đang dịch: giữ câu của người dùng.
-              if (seg.edited && seg.translation !== null) return;
-              if (seg.original !== origs[offset]) {
-                seg.translation = null;
-                seg.translationFailed = false;
-                changed++;
-                return;
-              }
-              const line = (translated![offset] || "").trim();
-              seg.model = used;
-              if (!line || untranslated(seg.original, line)) {
-                seg.translation = "";
-                seg.translationFailed = true;
-                failedInGroup++;
-              } else {
-                seg.translation = translated![offset];
-                seg.translationFailed = false;
-              }
-            });
-            j.uses[used] = (j.uses[used] || 0) + (group.length - failedInGroup - changed);
-            j.note = "";
-            publish();
-            progress();
-          } finally {
-            group.forEach((seg) => {
-              seg.busy = false;
-            });
-          }
-        }
-      };
-      const translators = Math.min(4, Math.max(2, threads));
-      await Promise.all(Array.from({ length: translators }, worker));
-    };
+    const { translateRemaining } = createTranslator({
+      j, my, signal, source, target, mode, chosen, genre, gloss, title, notes, extra, profile, allowEnterprise, baseGloss, threads, modelSig,
+      ticket: () => ticketId,
+      ticketPart: () => ticketPart,
+      preRef, reviewRef, roomPayRef, userTermsRef, pauseForNewBible,
+      chatKeyOf, autoPool, ensureAnalysis, releaseAsrTicket, ensureChatTicket, setReviewHold, publish, progress, say, onWait,
+    });
 
     let r2Key: string | null = null;
     try {

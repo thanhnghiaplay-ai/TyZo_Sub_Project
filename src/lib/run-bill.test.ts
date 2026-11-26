@@ -85,10 +85,12 @@ describe("tính tiền theo giá Groq", () => {
     const pipe = readFileSync(new URL("../components/use-pipeline.ts", import.meta.url), "utf8");
     // Phần nhận dạng đã xong (làm nốt, dịch lại) thì chỉ giữ phần dịch.
     assert.match(pipe, /let ticketPart[^=]*= asrComplete \? "chat" : preRef\.current \? "asr" : "all";/);
+    // Bước dịch đã tách sang src/lib/pipeline/translate.ts (đợt 2b tách file).
+    const step = readFileSync(new URL("./pipeline/translate.ts", import.meta.url), "utf8");
     // Đang chờ xem bảng nhân vật thì đóng phiếu nhận dạng trước khi báo chờ.
-    assert.match(pipe, /await releaseAsrTicket\(\);\s*setReviewHold\(true\);/);
+    assert.match(step, /await releaseAsrTicket\(\);\s*setReviewHold\(true\);/);
     // Mở phiếu phần dịch trước khi gửi lô dịch đầu tiên, và không đổi phiếu khi nhận dạng chưa xong.
-    assert.match(pipe, /if \(ticketPart === "asr" && roomPayRef\.current && !done\)[\s\S]{0,120}await ensureChatTicket\(\);[\s\S]{0,120}seg\.busy = true;/);
+    assert.match(step, /if \(ticketPart\(\) === "asr" && roomPayRef\.current && !done\)[\s\S]{0,120}await ensureChatTicket\(\);[\s\S]{0,120}seg\.busy = true;/);
     // Thiếu Token cho phần dịch: nói rõ phần nhận dạng được giữ.
     assert.match(pipe, /Phần nhận dạng đã xong và được giữ lại/);
   });
