@@ -24,6 +24,35 @@ CRON_FILE="/etc/cron.d/tyzo-tu-cap-nhat"
 xanh() { printf '\033[32m%s\033[0m\n' "$*"; }
 do_() { printf '\033[31m%s\033[0m\n' "$*"; }
 vang() { printf '\033[33m%s\033[0m\n' "$*"; }
+
+# Chạy một việc lâu, hiện vòng xoay + đồng hồ + % (khi đọc được «bước x/y» của Docker) + dòng việc đang làm.
+# chay_cho "Nhãn" tệp-nhật-ký lệnh... ; trả về mã thoát của lệnh. Không có màn hình (cron) thì chạy im như cũ.
+chay_cho() {
+  local nhan="$1" log="$2"; shift 2
+  if [ ! -t 1 ]; then "$@" > "$log" 2>&1; return $?; fi
+  "$@" > "$log" 2>&1 &
+  local pid=$! i=0 bd=$SECONDS khung='|/-\' w dong pt buoc ma
+  w=$(( $(tput cols 2>/dev/null || echo 80) - 4 )); [ "$w" -lt 30 ] && w=30
+  tput civis 2>/dev/null || true
+  printf '\n\n'
+  while kill -0 "$pid" 2>/dev/null; do
+    dong="$(tail -n 1 "$log" 2>/dev/null | tr -d '\r' | sed 's/\x1b\[[0-9;]*m//g')"
+    buoc="$(grep -oE '\[[^]]* [0-9]+/[0-9]+\]' "$log" 2>/dev/null | tail -n 1 | grep -oE '[0-9]+/[0-9]+')"
+    pt=""
+    if [ -n "$buoc" ]; then
+      local a=${buoc%/*} b=${buoc#*/}; [ "$b" -gt 0 ] && pt=" $(( a * 100 / b ))% (bước $buoc)"
+    fi
+    printf '\033[2A\r\033[K\033[36m%s\033[0m %s \033[33m%02d:%02d\033[0m%s\n\r\033[K\033[2;32m> %s\033[0m\n' \
+      "${khung:i++%4:1}" "$nhan" $(( (SECONDS-bd)/60 )) $(( (SECONDS-bd)%60 )) "$pt" "${dong:0:$w}"
+    sleep 0.3
+  done
+  wait "$pid"; ma=$?
+  tput cnorm 2>/dev/null || true
+  printf '\033[2A\r\033[K'
+  if [ "$ma" -eq 0 ]; then xanh "✔ $nhan ($(( (SECONDS-bd)/60 )) phút $(( (SECONDS-bd)%60 )) giây)"; else do_ "✘ $nhan lỗi"; fi
+  printf '\033[K\n\033[1A'
+  return "$ma"
+}
 tieu_de() { printf '\n\033[1;33m== %s ==\033[0m\n' "$*"; }
 co_lenh() { command -v "$1" >/dev/null 2>&1; }
 cho_enter() { [ -t 0 ] && read -rp "Bấm Enter để quay lại menu..." _ || true; }
@@ -120,8 +149,7 @@ cap_nhat_cau_noi() {
   [ "$truoc" = "$sau" ] && echo "Mã đã là bản mới nhất, vẫn dựng lại cho chắc." || echo "Có bản mới: ${sau:0:7}"
   # Giữ bản đang chạy để quay về nếu bản mới lỗi.
   docker image inspect "$IMAGE:latest" >/dev/null 2>&1 && docker tag "$IMAGE:latest" "$IMAGE:cu"
-  echo "Đang dựng (khoảng 3 phút)..."
-  if ! docker build -t "$IMAGE:latest" "$DIR" > /tmp/tyzo-build.log 2>&1; then
+  if ! chay_cho "Đang dựng cầu nối (khoảng 3 phút)" /tmp/tyzo-build.log docker build -t "$IMAGE:latest" "$DIR"; then
     tail -n 15 /tmp/tyzo-build.log | sed 's/^/   /'
     do_ "Dựng bản mới lỗi (dòng trên là lý do). Cầu nối cũ vẫn chạy, không đổi gì."; return 1
   fi
@@ -493,7 +521,7 @@ cho_web_ok() {
 apt_cai() {
   local i
   for i in 1 2 3 4 5 6; do
-    if apt-get update -qq >/dev/null 2>&1 && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "$@" >/dev/null 2>&1; then return 0; fi
+    if chay_cho "Cài $*" /tmp/tyzo-apt.log bash -c 'apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"' _ "$@"; then return 0; fi
     vang "Máy đang bận cập nhật, thử lại sau 20 giây ($i/6)..."; sleep 20
   done
   return 1
@@ -504,7 +532,7 @@ cai_nen() {
   apt_cai curl git gnupg ufw nano openssl cron ca-certificates jq || vang "Một số gói chưa cài được, vẫn thử tiếp."
   if ! co_lenh docker; then
     echo "Cài Docker (đường chính: bộ cài chính thức)..."
-    curl -fsSL https://get.docker.com | sh >/dev/null 2>&1 || true
+    chay_cho "Cài Docker" /tmp/tyzo-docker.log bash -c 'curl -fsSL https://get.docker.com | sh' || true
   fi
   if ! co_lenh docker; then
     vang "Đường chính lỗi, thử đường dự phòng (gói docker.io của Ubuntu)..."
@@ -623,13 +651,12 @@ TXT
 # =====================================================================
 # Dữ liệu: Postgres trên VPS, chép từ/đến Neon, sao lưu, khôi phục
 # =====================================================================
+db_san_sang() { local i; for i in $(seq 1 60); do docker exec tyzo-db pg_isready -U tyzo -d tyzo && return 0; sleep 2; done; return 1; }
 db_len() {
-  dc up -d db >/dev/null 2>&1
-  local i
-  for i in $(seq 1 60); do
-    docker exec tyzo-db pg_isready -U tyzo -d tyzo >/dev/null 2>&1 && return 0
-    sleep 2
-  done
+  if ! docker ps --format '{{.Names}}' 2>/dev/null | grep -qx tyzo-db; then
+    chay_cho "Bật cơ sở dữ liệu trên VPS (lần đầu tải Postgres khoảng 150 MB)" /tmp/tyzo-db.log dc up -d db || true
+  fi
+  chay_cho "Chờ cơ sở dữ liệu sẵn sàng" /tmp/tyzo-db.log db_san_sang && return 0
   do_ "✘ Postgres trên VPS không lên."; return 1
 }
 
@@ -640,6 +667,7 @@ dem_bang() { # số bảng trong cơ sở dữ liệu trên VPS
 pg_tu_xa() { # chạy công cụ Postgres với máy chủ ngoài (Neon); thử bản 17 rồi 18
   local img
   for img in postgres:17 postgres:18; do
+    docker image inspect "$img" >/dev/null 2>&1 || chay_cho "Tải công cụ $img (lần đầu)" /tmp/tyzo-pull.log docker pull "$img" || true
     if docker run --rm --network host "$img" "$@" 2>/tmp/tyzo-pg.err; then return 0; fi
     grep -qi "version mismatch\|server version" /tmp/tyzo-pg.err || break
   done
@@ -657,10 +685,10 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v�
     dc stop web bridge >/dev/null 2>&1 || true
     docker exec tyzo-db psql -U tyzo -d tyzo -qc "drop schema public cascade; create schema public;" >/dev/null
   fi
-  echo "Đang đọc dữ liệu từ Neon (chỉ đọc, không sửa gì ở Neon)..."
-  pg_tu_xa pg_dump --no-owner --no-privileges -Fc "$url" > /tmp/tyzo-neon.dump || { do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối."; rm -f /tmp/tyzo-neon.dump; return 1; }
-  echo "Đang chép vào VPS..."
-  docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < /tmp/tyzo-neon.dump 2>/tmp/tyzo-restore.err || true
+  # Tải trước công cụ (có thanh tiến độ), rồi đọc Neon (chỉ đọc, không sửa gì ở Neon).
+  docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
+  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối."; rm -f /tmp/tyzo-neon.dump; return 1; }
+  chay_cho "Chép vào cơ sở dữ liệu trên VPS" /tmp/tyzo-restore.err bash -c 'docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < /tmp/tyzo-neon.dump' || true
   rm -f /tmp/tyzo-neon.dump
   n="$(dem_bang)"
   if [ "${n:-0}" -gt 5 ]; then xanh "✔ Đã chép xong ($n bảng)"; else do_ "✘ Chép chưa được:"; tail -5 /tmp/tyzo-restore.err; return 1; fi
@@ -706,8 +734,8 @@ khoi_phuc() {
   dc stop web bridge >/dev/null 2>&1
   docker exec tyzo-db psql -U tyzo -d tyzo -qc "drop schema public cascade; create schema public;" >/dev/null
   docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < "$f" 2>/dev/null || true
-  dc up -d --no-build >/dev/null 2>&1
-  cho_web_ok 180 && xanh "✔ Đã khôi phục, web chạy lại." || do_ "✘ Web chưa lên. Xem nhật ký."
+  chay_cho "Bật web" /tmp/tyzo-up.log dc up -d --no-build || true
+  chay_cho "Chờ web trả lời (tối đa 3 phút)" /tmp/tyzo-cho.log cho_web_ok 180 && xanh "✔ Đã khôi phục, web chạy lại." || do_ "✘ Web chưa lên. Xem nhật ký."
 }
 
 bat_sao_luu_dem() {
@@ -1151,12 +1179,12 @@ cap_nhat_web() { # cap_nhat_web [tu-dong]
   local img
   for img in tyzo-web tyzo-bridge; do docker image inspect "$img:latest" >/dev/null 2>&1 && docker tag "$img:latest" "$img:cu"; done
   echo "Đang đóng gói (5–15 phút, VPS yếu thì lâu hơn)..."
-  if ! dc build > /tmp/tyzo-build.log 2>&1; then
+  if ! chay_cho "Đang dựng web (lần đầu 5–10 phút)" /tmp/tyzo-build.log dc build; then
     tail -n 20 /tmp/tyzo-build.log | sed 's/^/   /'
     do_ "Đóng gói lỗi (dòng trên là lý do). Bản đang chạy giữ nguyên."; return 1
   fi
-  dc up -d --no-build >/dev/null 2>&1
-  if cho_web_ok 240; then
+  chay_cho "Bật web" /tmp/tyzo-up.log dc up -d --no-build || true
+  if chay_cho "Chờ web trả lời (tối đa 4 phút)" /tmp/tyzo-cho.log cho_web_ok 240; then
     xanh "✔ Web và cầu nối chạy, trả lời ok."
     docker image prune -f >/dev/null 2>&1 || true
     return 0
@@ -1164,8 +1192,8 @@ cap_nhat_web() { # cap_nhat_web [tu-dong]
   do_ "✘ Bản mới không chạy lên. Đang quay về bản cũ..."
   docker logs --tail 25 tyzo-web 2>&1 | sed 's/^/   /'
   for img in tyzo-web tyzo-bridge; do docker image inspect "$img:cu" >/dev/null 2>&1 && docker tag "$img:cu" "$img:latest"; done
-  dc up -d --no-build >/dev/null 2>&1
-  cho_web_ok 180 && vang "Đã quay về bản cũ. Chụp các dòng lỗi phía trên gửi Claude." || do_ "Bản cũ cũng không chạy. Xem nhật ký (mục 3)."
+  chay_cho "Bật web" /tmp/tyzo-up.log dc up -d --no-build || true
+  chay_cho "Chờ web trả lời (tối đa 3 phút)" /tmp/tyzo-cho.log cho_web_ok 180 && vang "Đã quay về bản cũ. Chụp các dòng lỗi phía trên gửi Claude." || do_ "Bản cũ cũng không chạy. Xem nhật ký (mục 3)."
   return 1
 }
 
