@@ -10,7 +10,7 @@ RUN npm ci --no-audit --no-fund --include=dev
 COPY . .
 ARG VITE_PUBLIC_HOSTNAME=""
 ENV VITE_PUBLIC_HOSTNAME=${VITE_PUBLIC_HOSTNAME}
-RUN PATH=/app/node_modules/.bin:$PATH node scripts/with-app-env.mjs vite build
+RUN PATH=/app/node_modules/.bin:$PATH node scripts/with-app-env.mjs vite build && node scripts/fix-css-ref.mjs
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 NODE_OPTIONS=
 EXPOSE 3000
 CMD ["sh", "-c", "node scripts/migrate.mjs && exec node .output/server/index.mjs"]
