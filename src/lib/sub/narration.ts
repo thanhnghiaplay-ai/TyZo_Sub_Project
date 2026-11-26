@@ -1,3 +1,4 @@
+import { playAudio as playUrl, cancelAudioPlayback } from "./audio-playback.ts";
 import { speakOrpheus, ROOM_KEY } from "@/lib/sub/groq";
 import { getRentShow, orpheusModelId, rentVoiceProblem, type RentShow } from "@/lib/rent-show";
 import { synthesizeEdge } from "@/lib/sub/edge-speech";
@@ -94,6 +95,7 @@ export function createNarrator() {
   const inflight = new Map<string, Promise<string>>();
   const tracker = createLatencyTracker();
   let epoch = 0;
+  let synthesis = new AbortController();
   let edgeCoolUntil = 0;
   let rentCache: { at: number; value: RentShow | null } | null = null;
   let rentWarned = false;
@@ -132,6 +134,9 @@ export function createNarrator() {
   const stop = (video?: HTMLVideoElement | null) => {
     token++;
     epoch++;
+    synthesis.abort();
+    synthesis = new AbortController();
+    inflight.clear();
     speaking = false;
     queue.length = 0;
     try {
@@ -140,6 +145,7 @@ export function createNarrator() {
       /* không có speech */
     }
     if (audio) {
+      cancelAudioPlayback(audio);
       audio.pause();
       audio.src = "";
     }
@@ -159,19 +165,22 @@ export function createNarrator() {
   };
 
   /** Lấy tiếng của một mảnh: có sẵn trong đệm thì dùng, đang tạo thì chờ chung, chưa có thì tạo và ghi lại độ trễ thật. */
-  const load = (engine: SpeechEngine, cacheKey: string, make: () => Promise<Blob>): Promise<string> => {
+  const load = (engine: SpeechEngine, cacheKey: string, make: (signal: AbortSignal) => Promise<Blob>): Promise<string> => {
     const hit = cache.get(cacheKey);
     if (hit) return Promise.resolve(hit);
     let pending = inflight.get(cacheKey);
     if (!pending) {
       const started = performance.now();
+      const generation = epoch;
+      const signal = synthesis.signal;
       pending = (async () => {
-        const blob = await make();
+        const blob = await make(signal);
+        if (signal.aborted || epoch !== generation) throw new DOMException("Đã hủy.", "AbortError");
         tracker.record(engine, (performance.now() - started) / 1000);
         const url = URL.createObjectURL(blob);
         remember(cacheKey, url);
         return url;
-      })().finally(() => inflight.delete(cacheKey));
+      })().finally(() => { if (inflight.get(cacheKey) === pending) inflight.delete(cacheKey); });
       inflight.set(cacheKey, pending);
     }
     return pending;
@@ -246,8 +255,8 @@ export function createNarrator() {
             for (let i = 0; i < pieces.length; i++) {
               if (!alive()) return;
               const piece = pieces[i];
-              const url = await load("orpheus", `${cloud}|${voice}|${piece}`, () =>
-                speakOrpheus({ key: opts.key, text: piece, voice, arabic: cloud === "ar" }),
+              const url = await load("orpheus", `${cloud}|${voice}|${piece}`, (signal) =>
+                speakOrpheus({ key: opts.key, text: piece, voice, arabic: cloud === "ar", signal }),
               );
               if (!alive()) return;
               await play(url, i === pieces.length - 1, piece.length / line.length);
@@ -262,8 +271,9 @@ export function createNarrator() {
           try {
             const voice = edgeVoice(opts.target, settings.gender);
             const cacheKey = `edge|${voice.id}|${prosodyRate(settings.rate)}|${prosodyPitch(settings.pitch)}|${line}`;
-            const url = await load("edge", cacheKey, async () => {
+            const url = await load("edge", cacheKey, async (signal) => {
               const result = await synthesizeEdge({
+                signal,
                 data: {
                   text: line,
                   voice: voice.id,
@@ -296,28 +306,6 @@ export function createNarrator() {
     },
   };
   return api;
-}
-
-/** `slot`: khoảng thoại tính bằng giây thật khi nghe. Nếu tiếng dài hơn thì tăng tốc vừa phải (tối đa FIT_MAX_BOOST). */
-function playUrl(audio: HTMLAudioElement, url: string, settings: NarrationSettings, playbackRate: number, done: () => void, slot?: number) {
-  audio.src = url;
-  audio.volume = Math.max(0, Math.min(1, settings.volume));
-  const rate = settings.rate * (settings.followPlayback ? playbackRate : 1);
-  const base = Math.max(0.5, Math.min(2, rate));
-  audio.playbackRate = base;
-  return new Promise<void>((resolve, reject) => {
-    audio.onloadedmetadata = () => {
-      if (!slot || !Number.isFinite(audio.duration)) return;
-      const boost = fitBoost(audio.duration / base, slot);
-      audio.playbackRate = Math.max(0.5, Math.min(2, base * boost));
-    };
-    audio.onended = () => {
-      done();
-      resolve();
-    };
-    audio.onerror = () => reject(new Error("Không phát được âm thanh."));
-    audio.play().catch(reject);
-  });
 }
 
 function base64ToBlob(audio: string) {
