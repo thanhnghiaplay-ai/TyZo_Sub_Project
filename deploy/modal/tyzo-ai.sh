@@ -176,6 +176,28 @@ nhat_ky_bat_may() { # chỉ đọc nhật ký Modal, lọc các dòng ghi thời
   return 0
 }
 
+thu_phim() { # cắt một đoạn phim trên VPS, nhận dạng và dịch sang tiếng Việt
+  local d="$TEST_OUT/phim/goc" f bd dai l p
+  mkdir -p "$d"
+  if ! command -v ffmpeg >/dev/null; then
+    hoi_co "VPS chưa có ffmpeg (cần để cắt phim, chạy CPU). Cài bằng apt-get?" || return 1
+    apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ffmpeg >/dev/null || { do_ "Cài ffmpeg lỗi."; return 1; }
+  fi
+  echo "Tải phim lên VPS vào thư mục: $d  (ứng dụng terminal → SFTP / tải tệp lên)"
+  ls -lh "$d" 2>/dev/null | tail -n +2
+  read -rp "Đường dẫn hoặc tên tệp phim trong thư mục trên: " f
+  [ -n "$f" ] || return 0
+  [ -f "$f" ] || f="$d/$f"
+  [ -f "$f" ] || { do_ "Không thấy tệp $f"; return 1; }
+  read -rp "Bắt đầu từ phút:giây [10:00]: " bd; bd="${bd:-10:00}"
+  bd=$(( 10#${bd%%:*} * 60 + 10#${bd##*:} ))
+  read -rp "Độ dài (giây) [300]: " dai; dai="${dai:-300}"
+  read -rp "Ngôn ngữ (ja, ko, zh, en) [ja]: " l; l="${l:-ja}"
+  read -rp "Luồng [nhanh]: " p; p="${p:-nhanh}"
+  TYZO_TEST_OUT="$TEST_OUT" TYZO_ASR_URL="$(conf_get URL)" TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" \
+    "$PY" "$CODE/eval/asr/phim/thu_phim.py" "$f" "$bd" "$dai" "$l" "$p"
+}
+
 so_sanh_test() { # so_sanh_test [thư mục clip] [số lần] [luồng,luồng|all]
   [ -n "$(conf_get URL)" ] || { do_ "Chưa có địa chỉ dịch vụ. Chạy mục 1 trước."; return 1; }
   local d="${1:-}" n="${2:-}" p="${3:-}"
@@ -340,6 +362,7 @@ menu() {
     echo "35. Bật máy model chữ bằng 1 câu ngắn, đo thời gian rồi lọc nhật ký (tốn GPU nếu máy đang tắt, hỏi trước)"
     echo "36. So hai lượt mục 26 gần nhất theo từng ID, xem câu chào đã bỏ/còn lại (CPU, không gọi Modal)"
     echo "37. Thử bản chụp máy chữ: bật 4 lần, mỗi lần cách 3 phút để máy tự tắt (tốn GPU, hỏi trước)"
+    echo "38. Thử phim thật: cắt một đoạn, nhận dạng và dịch sang tiếng Việt (tốn GPU, hỏi trước từng bước)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -367,6 +390,7 @@ menu() {
       30) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/fleurs-ko/xem-1673.py" --dich-chuan "$TEST_OUT/fleurs-ko" ;;
       31) "$PY" "$CODE/eval/asr/fleurs-ko/loc-chao.py" "$TEST_OUT/fleurs-ko" ;;
       34) nhat_ky_bat_may ;;
+      38) thu_phim ;;
       37) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" --lap 4 180 && sleep 5 && nhat_ky_bat_may ;;
       36) "$PY" "$CODE/eval/asr/fleurs-ko/so-hai-luot.py" "$TEST_OUT/fleurs-ko" ;;
       35) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" && sleep 5 && nhat_ky_bat_may ;;
