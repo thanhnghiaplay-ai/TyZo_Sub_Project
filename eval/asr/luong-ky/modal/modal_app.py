@@ -38,9 +38,9 @@ asr_image = (
 llm_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("vllm==0.34.0")
-    # Đã thử đặt TRITON_CACHE_DIR/XDG_CACHE_HOME dưới /cache (7fce2aa): máy chữ lỗi «runtime initialization»
-    # liên tục từ 25/11 22:39, nên gỡ lại về như cũ.
-    .env({"HF_HOME": "/cache/hf", "VLLM_CACHE_ROOT": "/cache/vllm"})
+    # 7fce2aa đặt cả TRITON_CACHE_DIR và XDG_CACHE_HOME dưới /cache: máy chữ lỗi «runtime initialization» liên tục.
+    # Thử lại riêng TRITON_CACHE_DIR (bộ đệm biên dịch kernel Triton) để lần bật sau không biên dịch lại.
+    .env({"HF_HOME": "/cache/hf", "VLLM_CACHE_ROOT": "/cache/vllm", "TRITON_CACHE_DIR": "/cache/triton"})
     .add_local_file(os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json")
 )
 asr_cache = modal.Volume.from_name("tyzo-asr-cache", create_if_missing=True)
@@ -54,8 +54,32 @@ app = modal.App("tyzo-asr")
 @modal.web_server(port=8000, startup_timeout=1500)
 def llm():
     """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi máy nhận dạng gọi /health, tắt sau 5 phút rảnh."""
-    import subprocess, time
-    print("[tyzo] may chu bat " + time.strftime("%H:%M:%S", time.gmtime()) + " UTC", flush=True)
+    import subprocess, threading, time, urllib.request
+
+    def count_triton():
+        try:
+            return sum(len(files) for _, _, files in os.walk("/cache/triton"))
+        except OSError:
+            return 0
+
+    print(f"[tyzo] may chu bat {time.strftime('%H:%M:%S', time.gmtime())} UTC; bo dem Triton {count_triton()} tep", flush=True)
+
+    def save_cache():
+        """Khi vLLM đã nhận việc, lưu Volume một lần để bộ đệm Triton còn ở lần bật sau. Lỗi ở đây không làm hỏng máy."""
+        t0 = time.time()
+        while time.time() - t0 < 1500:
+            try:
+                if urllib.request.urlopen("http://127.0.0.1:8000/health", timeout=5).status == 200:
+                    break
+            except Exception:
+                time.sleep(5)
+        try:
+            llm_cache.commit()
+            print(f"[tyzo] san sang sau {time.time() - t0:.0f} s; da luu Volume, bo dem Triton {count_triton()} tep", flush=True)
+        except Exception as e:
+            print(f"[tyzo] luu Volume loi: {type(e).__name__}: {str(e)[:200]}", flush=True)
+
+    threading.Thread(target=save_cache, daemon=True).start()
     subprocess.Popen(["vllm", "serve", LLM_MODEL, "--host", "0.0.0.0", "--port", "8000",
                       "--api-key", os.environ["TYZO_ASR_TOKEN"], "--max-model-len", "8192",
                       "--gpu-memory-utilization", "0.92", "--enforce-eager",          # enforce-eager: bật máy nhanh hơn
