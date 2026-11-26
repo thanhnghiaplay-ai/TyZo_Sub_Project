@@ -4,7 +4,7 @@ import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import type { Sql } from "./db.ts";
 import { buyPlanWith, creditHitWith, refundRunWith, releaseHoldWith, repairMissedTokens, wipeTestData } from "./pay-flow.ts";
-import { chargeTicketWith, closeTicketWith, openTicketWith } from "./run-ticket.ts";
+import { chargeTicketWith, closeTicketWith, openTicketWith } from "./billing/run-ticket.ts";
 import { ROOM_PLANS } from "./room-plans.ts";
 
 let sql: Sql;

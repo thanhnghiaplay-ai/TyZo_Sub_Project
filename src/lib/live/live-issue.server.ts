@@ -26,8 +26,8 @@ export async function issueLiveTicket(userId: string, data: LiveOpenInput): Prom
   const { targetHasVoice } = await import("@/lib/live/langs");
   const { signLiveTicket } = await import("@/lib/live/live-ticket");
   const { turboPerSecond } = await import("@/lib/giay-room");
-  const { giayBalance } = await import("@/lib/token-flow");
-  const { tokensForBase, formatGiay } = await import("@/lib/token-math");
+  const { giayBalance } = await import("@/lib/billing/token-flow");
+  const { tokensForBase, formatGiay } = await import("@/lib/billing/token-math");
   const sql = await getSql();
   // Chủ chỉ mở model làm được; chặn thật ở đây, không chỉ ẩn ở ô chọn.
   const { liveOpenProblem, parseLiveShow } = await import("@/lib/live/live-show");

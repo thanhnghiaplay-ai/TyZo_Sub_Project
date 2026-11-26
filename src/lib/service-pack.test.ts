@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { chatCost, type PriceBook } from "./run-bill.ts";
-import { HOLD_BUFFER } from "./run-bill.ts";
+import { chatCost, type PriceBook } from "./billing/run-bill.ts";
+import { HOLD_BUFFER } from "./billing/run-bill.ts";
 import {
   checkServicePacks,
   CONTEXT_TOKENS,

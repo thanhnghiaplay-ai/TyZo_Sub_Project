@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
-import type { Sql } from "./db.ts";
+import type { Sql } from "../db.ts";
 import { buyGiayWith, closeTokenWith, giayBalance, openGiayWith } from "./token-flow.ts";
 import { runModalPartWith } from "./tyzo-modal-charge.ts";
 
@@ -12,7 +12,7 @@ const SEG = [{ text: "こんにちは", start: 0, end: 1 }];
 
 before(async () => {
   const db = new PGlite();
-  const dir = new URL("../../migrations/", import.meta.url);
+  const dir = new URL("../../../migrations/", import.meta.url);
   for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) await db.exec(readFileSync(new URL(file, dir), "utf8"));
   sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
     let text = strings[0];

@@ -388,7 +388,7 @@ export const readUserTokens = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
-    const { giayBalance } = await import("@/lib/token-flow");
+    const { giayBalance } = await import("@/lib/billing/token-flow");
     const sql = await getSql();
     return { tokens: await giayBalance(sql, data) };
   });
@@ -408,7 +408,7 @@ export const setUserTokens = createServerFn({ method: "POST" })
     await requireRole(context.userId, "quan-ly");
     await assertLower(context.userId, data.userId);
     const { getSql } = await import("@/lib/db");
-    const { setTokenBalanceWith } = await import("@/lib/token-flow");
+    const { setTokenBalanceWith } = await import("@/lib/billing/token-flow");
     const sql = await getSql();
     const next = await setTokenBalanceWith(sql, data.userId, data.tokens);
     await writeAudit(context.userId, "chinh-token", data.userId, `Token dịch ${next.before} → ${next.after}.`);

@@ -6,8 +6,8 @@
 // với `polishAll`), đo số ký tự, đổi ra token. Đây là ƯỚC LƯỢNG THẬN TRỌNG (hơi cao), không phải số thật.
 // Số trừ cuối cùng ở A5 phải là số thật theo lượng model báo về, phần ước dư không thu.
 
-import { bareChatVnd, formatGiay, giayForBaseCost } from "./token-math.ts";
-import { chatPerMillion, type PriceBook } from "./run-bill.ts";
+import { bareChatVnd, formatGiay, giayForBaseCost } from "./billing/token-math.ts";
+import { chatPerMillion, type PriceBook } from "./billing/run-bill.ts";
 import { pickAutoModel } from "./sub/models.ts";
 import {
   POLISH_BATCH,

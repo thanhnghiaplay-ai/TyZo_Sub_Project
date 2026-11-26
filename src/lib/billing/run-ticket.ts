@@ -1,4 +1,4 @@
-import type { Sql } from "./db.ts";
+import type { Sql } from "../db.ts";
 
 type OpenResult = { id: string; held: number } | { error: "het-tien" | "qua-han-muc" };
 

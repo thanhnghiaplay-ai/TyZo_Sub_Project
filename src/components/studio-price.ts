@@ -1,7 +1,7 @@
 import { groqListHolds } from "@/lib/sub/asr-house";
 import { BASE_ROWS } from "@/lib/price-rows";
 import { type GroqBoard } from "@/lib/sub/groq-board";
-import { formatRoomTokens } from "@/lib/token-math";
+import { formatRoomTokens } from "@/lib/billing/token-math";
 import { modelRoleNote } from "@/lib/sub/model-role";
 
 /** Hàm thường của phòng dịch: tua video, giá và ghi chú model theo cửa trả. Tách từ studio.tsx (23/11/2026). */

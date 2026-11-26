@@ -1,6 +1,6 @@
 import type { Sql } from "./db";
 import { parseRunDesk } from "./run-desk";
-import type { PriceBook } from "./run-bill";
+import type { PriceBook } from "./billing/run-bill";
 import { withDeadline } from "./retry-load";
 import type { GroqBoard } from "./sub/groq-board";
 

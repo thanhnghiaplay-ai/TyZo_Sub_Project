@@ -16,7 +16,7 @@ import { PACK_ROLE_LABEL, PACK_ROLES, providersForRole, quotePack, type PackRole
 import { buildPackBooks } from "@/lib/pack-books";
 import type { UsdFix } from "@/lib/usd-fix";
 import { PROVIDER_IDS, PROVIDER_LABEL, type ProviderId } from "@/lib/sub/provider";
-import type { PriceBook } from "@/lib/run-bill";
+import type { PriceBook } from "@/lib/billing/run-bill";
 import { PackAutoBoard } from "@/components/pack-auto-board";
 import { buildAutoPack, type AutoCandidate } from "@/lib/pack-auto";
 import { modelsForRole } from "@/lib/pack-fit";

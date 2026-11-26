@@ -3,7 +3,7 @@
  * Phiếu Token dịch ghi đúng đơn vị «Token dịch» (trước ghi nhầm «giây»), ghi số giữ ban đầu thay vì «Giữ 0» sau khi đóng,
  * và ghi số trả lại. Phiếu phần dịch («Dịch tiếp · …») và phiếu việc phụ (phân tích, trau chuốt, khoảng trống) có nhãn rõ.
  */
-import { CHAT_TICKET_PREFIX } from "./run-bill.ts";
+import { CHAT_TICKET_PREFIX } from "./billing/run-bill.ts";
 
 const nf = new Intl.NumberFormat("vi-VN");
 

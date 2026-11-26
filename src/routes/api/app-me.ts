@@ -13,7 +13,7 @@ export const Route = createFileRoute("/api/app-me")({
           const { takeRate } = await import("@/lib/guard.server");
           await takeRate(`app-me:${userId}`, 60, 60);
           const { getSql } = await import("@/lib/db");
-          const { giayBalance } = await import("@/lib/token-flow");
+          const { giayBalance } = await import("@/lib/billing/token-flow");
           const { liveOpenModels, parseLiveShow } = await import("@/lib/live/live-show");
           const { LIVE_MODELS } = await import("@/lib/live/live-open-rules");
           const sql = await getSql();

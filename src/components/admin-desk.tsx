@@ -9,7 +9,7 @@ import { getDeskStats, getAdminLog, getMyPlace, listAudit, setOwnerEmail, type A
 import { getBadgeStyle, grantPlan, removeUser, saveStaffNote, searchUsers, listUserLedger, resetUserBalance, readUserTokens, setUserTokens, setBadgeStyle, setStaffRole, setTempPassword, setUserStatus, type AdminUser, type LedgerRow } from "@/lib/admin-users";
 import { escalateAppeal, listAppeals, replyAppeal, sendAppealReply, skipAppeal, type AppealRow } from "@/lib/admin-appeals";
 import { Fold } from "@/components/admin-fold";
-import { formatGiay } from "@/lib/token-math";
+import { formatGiay } from "@/lib/billing/token-math";
 import { ROOM_PLANS } from "@/lib/room-plans";
 import { useRoomPlans } from "@/lib/use-room-plans";
 import { canSkipToOwner, ROLE_LABEL, isStaffRole, roleAtLeast } from "@/lib/staff-role";

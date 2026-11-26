@@ -274,7 +274,7 @@ export async function refundRunWith(sql: Sql, id: string, amount: number, reason
 export async function releaseHoldWith(sql: Sql, id: string, note = "") {
   const kind = await sql<{ unit: string; user_id: string }>`select unit, user_id from run_tickets where id = ${id} and status = 'dang-giu'`;
   if (kind[0]?.unit === "token") {
-    const { closeTokenWith } = await import("./token-flow.ts");
+    const { closeTokenWith } = await import("./billing/token-flow.ts");
     const closed = await closeTokenWith(sql, id, kind[0].user_id, false);
     if (!closed) throw new Error("Không nhả được phiếu này.");
     return kind[0].user_id;

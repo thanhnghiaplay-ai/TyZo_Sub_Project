@@ -1,8 +1,8 @@
 import type { Sql } from "../db.ts";
 import type { LiveBilling } from "./live-bridge.ts";
 import type { LiveBook } from "./live-cost.ts";
-import { releaseStaleWith } from "../run-ticket.ts";
-import { chargeTokenWith, closeTokenWith, openGiayWith } from "../token-flow.ts";
+import { releaseStaleWith } from "../billing/run-ticket.ts";
+import { chargeTokenWith, closeTokenWith, openGiayWith } from "../billing/token-flow.ts";
 
 type LiveBillingEnv = {
   /** Bảng giá hiện hành (đã cộng chênh). null khi chưa có giá. */

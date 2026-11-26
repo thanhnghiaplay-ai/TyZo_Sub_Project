@@ -7,7 +7,7 @@ import type { GroqLiveRow } from "@/lib/sub/groq-board";
 export async function assertRoomTicket(userId: string, ticketId: string | undefined) {
   if (!ticketId || !/^[a-f0-9]{24}$/.test(ticketId)) throw new Error("Thiếu phiếu giữ chỗ. Hãy bấm chạy lại.");
   const { getSql } = await import("@/lib/db");
-  const { ticketLive } = await import("@/lib/run-ticket");
+  const { ticketLive } = await import("@/lib/billing/run-ticket");
   const sql = await getSql();
   if (!(await ticketLive(sql, ticketId, userId))) throw new Error("Phiếu đã đóng hoặc không còn phần giữ.");
 }
@@ -26,8 +26,8 @@ export async function roomKeyOf(settingKey: string, label: string, minLength: nu
 export async function chargeRoomAsr(input: { userId: string; ticketId: string; seconds: number; model: string; rows: GroqLiveRow[] }) {
   const { getSql } = await import("@/lib/db");
   const { loadPriceBook } = await import("@/lib/run-board.server");
-  const { asrCost } = await import("@/lib/run-bill");
-  const { chargeTicketWith } = await import("@/lib/run-ticket");
+  const { asrCost } = await import("@/lib/billing/run-bill");
+  const { chargeTicketWith } = await import("@/lib/billing/run-ticket");
   const sql = await getSql();
   const live = await loadPriceBook(sql);
   if (!live) return;
@@ -39,10 +39,10 @@ export async function chargeRoomAsr(input: { userId: string; ticketId: string; s
   await recordSpendWith(sql, { provider: asrHouse(input.model) ?? "khac", model: input.model, baseVnd: base, rate: live.rate });
   const unit = await sql<{ unit: string }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${input.userId}`;
   if (unit[0]?.unit === "token") {
-    const { giayForBaseCost } = await import("@/lib/token-math");
+    const { giayForBaseCost } = await import("@/lib/billing/token-math");
     const giay = giayForBaseCost(live, base);
     if (giay && giay > 0) {
-      const { chargeTokenWith } = await import("@/lib/token-flow");
+      const { chargeTokenWith } = await import("@/lib/billing/token-flow");
       await chargeTokenWith(sql, input.ticketId, input.userId, giay);
     }
     return;

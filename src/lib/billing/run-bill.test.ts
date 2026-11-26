@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { CHAT_TICKET_PREFIX, asrCost, billedSecondsOf, chatCost, estimateHold, estimateHoldSplit, parseHoldPart, speechCost, type PriceBook } from "./run-bill.ts";
 import { readFileSync } from "node:fs";
-import type { GroqLiveRow } from "./sub/groq-board.ts";
+import type { GroqLiveRow } from "../sub/groq-board.ts";
 
 const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
   id: "x", speed: null, usdIn: null, usdOut: null, usdPerHour: null, usdPerMillionChars: null,
@@ -82,11 +82,11 @@ describe("tính tiền theo giá Groq", () => {
     assert.match(turn, /part === "chat" \? \(CHAT_TICKET_PREFIX/);
     assert.match(turn, /part: data\.part/);
     assert.equal(CHAT_TICKET_PREFIX, "Dịch tiếp · ");
-    const pipe = readFileSync(new URL("../components/use-pipeline.ts", import.meta.url), "utf8");
+    const pipe = readFileSync(new URL("../../components/use-pipeline.ts", import.meta.url), "utf8");
     // Phần nhận dạng đã xong (làm nốt, dịch lại) thì chỉ giữ phần dịch.
     assert.match(pipe, /let ticketPart[^=]*= asrComplete \? "chat" : preRef\.current \? "asr" : "all";/);
     // Bước dịch đã tách sang src/lib/pipeline/translate.ts (đợt 2b tách file).
-    const step = readFileSync(new URL("./pipeline/translate.ts", import.meta.url), "utf8");
+    const step = readFileSync(new URL("../pipeline/translate.ts", import.meta.url), "utf8");
     // Đang chờ xem bảng nhân vật thì đóng phiếu nhận dạng trước khi báo chờ.
     assert.match(step, /await releaseAsrTicket\(\);\s*setReviewHold\(true\);/);
     // Mở phiếu phần dịch trước khi gửi lô dịch đầu tiên, và không đổi phiếu khi nhận dạng chưa xong.

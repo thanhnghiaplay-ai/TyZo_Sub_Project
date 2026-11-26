@@ -17,7 +17,7 @@ import { useRoomPlans } from "@/lib/use-room-plans";
 import { GiayShelf } from "@/components/giay-shelf";
 import { PaySlip } from "@/components/pay-slip";
 import type { PayOrderView } from "@/lib/pay-store";
-import { formatGiay } from "@/lib/token-math";
+import { formatGiay } from "@/lib/billing/token-math";
 import { ledgerRows } from "@/lib/ledger-view";
 import { HistoryPanel } from "@/components/history-panel";
 import { DoorDot, RunDoorClosed, useRunDoor } from "@/components/run-door";

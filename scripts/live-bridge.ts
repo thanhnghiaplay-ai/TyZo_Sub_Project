@@ -6,9 +6,9 @@ import type { Sql } from "../src/lib/db.ts";
 import { attachLiveBridge } from "../src/lib/live/live-bridge.ts";
 import { createLiveBilling } from "../src/lib/live/live-billing.ts";
 import { loadLiveBook } from "../src/lib/live/live-book.ts";
-import { asrPerSecond } from "../src/lib/run-bill.ts";
+import { asrPerSecond } from "../src/lib/billing/run-bill.ts";
 import { loadPriceBook } from "../src/lib/run-board.server.ts";
-import { tokensForBase, TURBO_ASR } from "../src/lib/token-math.ts";
+import { tokensForBase, TURBO_ASR } from "../src/lib/billing/token-math.ts";
 import { loadLiveUpstream } from "../src/lib/live/live-upstream.ts";
 import { cleanSilenceMs, cleanVadThreshold } from "../src/lib/live/qwen-protocol.ts";
 

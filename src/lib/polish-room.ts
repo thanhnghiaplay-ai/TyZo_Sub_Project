@@ -97,9 +97,9 @@ export const openPolishTicket = createServerFn({ method: "POST" })
     const { getSql } = await import("@/lib/db");
     const { parseRunDesk } = await import("@/lib/run-desk");
     const { loadPriceBook } = await import("@/lib/run-board.server");
-    const { openGiayWith, giayBalance } = await import("@/lib/token-flow");
-    const { releaseStaleWith } = await import("@/lib/run-ticket");
-    const { formatGiay } = await import("@/lib/token-math");
+    const { openGiayWith, giayBalance } = await import("@/lib/billing/token-flow");
+    const { releaseStaleWith } = await import("@/lib/billing/run-ticket");
+    const { formatGiay } = await import("@/lib/billing/token-math");
     const { polishIdsFor } = await import("@/lib/polish-models");
     const sql = await getSql();
     const desk = parseRunDesk((await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`)[0]?.value);

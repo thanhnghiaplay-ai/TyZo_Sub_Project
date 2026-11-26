@@ -1,4 +1,4 @@
-import type { Sql } from "./db.ts";
+import type { Sql } from "../db.ts";
 
 type GiayOpen = { id: string; held: number } | { error: "het-giay" };
 

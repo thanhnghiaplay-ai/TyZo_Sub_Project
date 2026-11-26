@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { legacyMarkupOf, parseRunDesk } from "./run-desk.ts";
+import { legacyMarkupOf, parseRunDesk } from "../run-desk.ts";
 import { formatRoomTokens, packPriceVnd, tokensForBase } from "./token-math.ts";
 
 describe("quy giây dịch", () => {
@@ -50,7 +50,7 @@ describe("một tên gọi: Token dịch", () => {
   it("chữ khách thấy không còn «gói giây» hay «giây dịch»", async () => {
     const { readFileSync, readdirSync, statSync } = await import("node:fs");
     const { join } = await import("node:path");
-    const root = new URL("..", import.meta.url).pathname;
+    const root = new URL("../..", import.meta.url).pathname;
     // Lịch sử (CHANGELOG khách, nhật ký Admin) giữ nguyên chữ cũ; test không đọc chính nó.
     const skip = new Set(["app-version.ts", "admin-log.server.ts", "token-math.test.ts"]);
     const bad: string[] = [];

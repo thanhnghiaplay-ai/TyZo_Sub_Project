@@ -6,7 +6,7 @@
  * lượng đã giữ; còn phải giữ đủ Token cho ước tính đoạn này; (3) gọi Modal; lỗi thì trả lại thời lượng và xóa đoạn;
  * (4) trừ Token theo số thực; phiếu không còn đủ thì trừ phần còn lại và ghi phần thiếu vào modal_short.
  */
-import type { Sql } from "./db.ts";
+import type { Sql } from "../db.ts";
 import { chargeTokenWith } from "./token-flow.ts";
 
 export type ModalPartResult = { segments: { text: string; start: number; end: number }[]; tokens: number; short: number; reused: boolean };

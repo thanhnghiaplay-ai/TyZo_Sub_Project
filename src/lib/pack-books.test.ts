@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { pickForRole, type AutoCandidate } from "./pack-auto.ts";
 import { buildPackBooks } from "./pack-books.ts";
-import { asrPerSecond } from "./run-bill.ts";
+import { asrPerSecond } from "./billing/run-bill.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
 import { ALL_PROVIDER_IDS } from "./sub/provider.ts";
 import { ASR_MODELS } from "./sub/models.ts";

@@ -1,4 +1,4 @@
-import type { PriceBook } from "./run-bill.ts";
+import type { PriceBook } from "./billing/run-bill.ts";
 import { BASE_ROWS } from "./price-rows.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
 import type { ProviderId } from "./sub/provider.ts";

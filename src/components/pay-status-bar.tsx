@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Icon } from "@/components/ui/icon";
 import type { MoneyView } from "@/components/money-card";
 import { formatMinutes } from "@/lib/wallet-view";
-import { formatGiay } from "@/lib/token-math";
+import { formatGiay } from "@/lib/billing/token-math";
 import { TRIAL_MINUTES } from "@/lib/room-plans";
 import type { PayChoice, PayState, RentAccess } from "@/lib/pay-status";
 

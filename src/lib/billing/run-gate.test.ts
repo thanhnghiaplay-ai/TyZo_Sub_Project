@@ -2,11 +2,11 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
-import type { Sql } from "./db.ts";
+import type { Sql } from "../db.ts";
 import type { PriceBook } from "./run-bill.ts";
 import { chargeWith, readRequest } from "./run-gate.ts";
 import { openTicketWith } from "./run-ticket.ts";
-import type { GroqLiveRow } from "./sub/groq-board.ts";
+import type { GroqLiveRow } from "../sub/groq-board.ts";
 
 let sql: Sql;
 const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
@@ -26,7 +26,7 @@ const book: PriceBook = {
 
 before(async () => {
   const db = new PGlite();
-  const dir = new URL("../../migrations/", import.meta.url);
+  const dir = new URL("../../../migrations/", import.meta.url);
   for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) await db.exec(readFileSync(new URL(file, dir), "utf8"));
   sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
     let text = strings[0];

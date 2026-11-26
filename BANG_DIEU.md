@@ -56,7 +56,7 @@ Chủ yêu cầu 26/11/2026: tách file cho dễ quản lý, bảo trì, nâng c
 2a. XONG: `src/lib/pipeline/job.ts` (trạng thái một lần chạy), `link-upload.ts` (đưa tệp lên kho tạm cho nhà nhận link), `export.ts` (xuất phụ đề, kiểm quyền xuất). `use-pipeline.ts` còn 2.605 dòng.
 2b. XONG: `recognize.ts` (nhận dạng từng đoạn, nhận dạng lại khi lỗi giải mã, câu bị lọc, lệch ngôn ngữ) và `translate.ts` (dịch theo lô, đổi phiếu sang phần dịch, thuật ngữ). Mỗi tệp nhận một đối tượng ngữ cảnh (biến dùng chung của `start()`); giá trị có thể đổi giữa chừng (phiếu) truyền bằng hàm đọc. `use-pipeline.ts` còn 2.143 dòng. Chưa thử một lần chạy thật trên web (cần key/Token); nên thử trước khi đẩy chính thức.
 3. XONG: `src/lib/pipeline/choice.ts`: `RunChoice` (cửa trả, model nhận dạng gồm luồng Nhanh/Kỹ, model dịch tay/Tự động, tệp hay link, key), `planChoice` (nhà nào, có phải tải tệp lên kho tạm không), `choiceProblem` (mọi bước kiểm trước khi chạy, đúng thứ tự cũ). `use-pipeline.ts` còn 2.107 dòng. Gộp tiếng cảm thán HIỆN LUÔN BẬT (máy chủ, tyzo-modal-call.ts), CHƯA có công tắc cho khách: làm khi Chủ yêu cầu.
-4. Tiền một chỗ: giữ, trừ theo số thật, trả thừa, dùng chung cho 3 nhà (gom từ run-turn, room-asr, tyzo-modal-charge).
+4. XONG: mọi tệp tiền dời vào `src/lib/billing/` (run-bill, token-math, run-turn, run-ticket, token-flow, room-asr.server, tyzo-modal-charge, run-gate + test), có `README.md` vẽ đường đi của tiền. CHỈ dời chỗ, KHÔNG đổi cách tính (an toàn tiền). Cách trừ đã dùng chung sẵn: Groq/Alibaba qua `chargeRoomAsr`, TyZo qua `runModalPartWith`, cả hai trừ bằng `chargeTokenWith`.
 5. Chia `studio.tsx` (1.677 dòng) theo khung: Cách trả, Nhận dạng, Thuyết minh, Phụ đề; gom `src/lib` (257 tệp) vào thư mục theo việc.
 
 ## Thư — còn lại

@@ -1,5 +1,5 @@
 import { formatMinutes, minutesLeft } from "../wallet-view.ts";
-import { formatGiay } from "../token-math.ts";
+import { formatGiay } from "../billing/token-math.ts";
 
 /**
  * Số liệu hiện ở màn hình Dịch trực tiếp. Hàm thuần, không gọi mạng, test được bằng Node.

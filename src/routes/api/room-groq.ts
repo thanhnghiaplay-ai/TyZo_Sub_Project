@@ -93,7 +93,7 @@ export const Route = createFileRoute("/api/room-groq")({
           }
         }
 
-        const { readRequest, chargeWith } = await import("@/lib/run-gate");
+        const { readRequest, chargeWith } = await import("@/lib/billing/run-gate");
         const { loadPriceBook } = await import("@/lib/run-board.server");
         const parsed = await readRequest(path, contentType, body!);
         if (!parsed) return fail(400, "Không đọc được model trong yêu cầu.");

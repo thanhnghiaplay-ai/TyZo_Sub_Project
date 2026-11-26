@@ -13,7 +13,7 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     const {recognizeModalWav, isTransientModalError} = await import("./sub/tyzo-modal.server");
     const {mergeInterjections} = await import("./sub/merge-interjections");
     const {loadPriceBook} = await import("./run-board.server");
-    const {giayForBaseCost} = await import("./token-math");
+    const {giayForBaseCost} = await import("./billing/token-math");
     await requireOpenAccount(context.userId);
     await takeRate("tyzo-modal:"+context.userId,120,60);
     const wav = Buffer.from(data.audio,"base64");
@@ -27,7 +27,7 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     if (!book || !giayForBaseCost(book,1)) throw new Error("Chưa có tỷ giá Token dịch.");
     const model = "tyzo-modal-"+data.profile;
     const {createHash} = await import("node:crypto");
-    const {runModalPartWith} = await import("./tyzo-modal-charge");
+    const {runModalPartWith} = await import("./billing/tyzo-modal-charge");
     const toTokens = (usd:number) => {
       const n = giayForBaseCost(book, usd*book.rate);
       if (n === null) throw new Error("Thiếu tỷ giá Token dịch.");

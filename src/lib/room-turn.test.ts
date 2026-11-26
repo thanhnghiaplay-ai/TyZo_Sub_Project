@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { GroqLiveRow } from "./sub/groq-board.ts";
-import type { PriceBook } from "./run-bill.ts";
+import type { PriceBook } from "./billing/run-bill.ts";
 import { dearestRoomChat, roomChatModels, roomUse, type RoomHouses } from "./room-turn.ts";
-import { holdGiay } from "./token-math.ts";
+import { holdGiay } from "./billing/token-math.ts";
 import { PROVIDERS, type ProviderId } from "./sub/provider.ts";
 
 function liveRow(id: string, extra: Partial<GroqLiveRow>): GroqLiveRow {

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
-import type { Sql } from "./db.ts";
+import type { Sql } from "../db.ts";
 import { chargeSpeechWith, chargeTicketWith, closeTicketWith, openTicketWith, refundSpeechWith, releaseStaleWith, ticketLive } from "./run-ticket.ts";
 
 let sql: Sql;
@@ -11,7 +11,7 @@ const START = "2026-11-07T17:00:00.000Z";
 
 before(async () => {
   const db = new PGlite();
-  const dir = new URL("../../migrations/", import.meta.url);
+  const dir = new URL("../../../migrations/", import.meta.url);
   for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) {
     await db.exec(readFileSync(new URL(file, dir), "utf8"));
   }

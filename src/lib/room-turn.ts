@@ -4,7 +4,7 @@
  * Không viết riêng cho nhà nào: nhà và việc hỏi danh mục chung (model-catalog.ts), khả năng hỏi PROVIDERS,
  * tên trong danh sách nhà hỏi key-list.ts, giá hỏi price-rows.ts. Thêm nhà mới không phải sửa file này.
  */
-import { chatPerMillion, type PriceBook } from "./run-bill.ts";
+import { chatPerMillion, type PriceBook } from "./billing/run-bill.ts";
 import { bareBookOf, type ProviderRows } from "./price-rows.ts";
 import { catalogFor, modelKindOf, type ModelKind } from "./sub/model-catalog.ts";
 import { KEY_LIST_TRUSTED, roomListHas } from "./sub/key-list.ts";

@@ -2,7 +2,7 @@ import { dong } from "@/lib/money-format";
 import { useEffect, useState } from "react";
 import { askConfirm } from "@/lib/confirm";
 import { getGiayShelf, orderGiayPack, type GiayPackView } from "@/lib/giay-room";
-import { formatGiay } from "@/lib/token-math";
+import { formatGiay } from "@/lib/billing/token-math";
 import { PaySlip } from "@/components/pay-slip";
 import type { PayOrderView } from "@/lib/pay-store";
 

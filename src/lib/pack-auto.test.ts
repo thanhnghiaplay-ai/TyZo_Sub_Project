@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { AUTO_LEVELS, autoRoles, buildAutoPack, compareLevels, onlyKeyed, onlyRentOpen, pickForRole, type AutoCandidate } from "./pack-auto.ts";
-import type { PriceBook } from "./run-bill.ts";
+import type { PriceBook } from "./billing/run-bill.ts";
 import { checkServicePack } from "./service-pack.ts";
 import { ALIBABA_ROWS } from "./sub/alibaba-catalog.ts";
 import type { GroqLiveRow } from "./sub/groq-board.ts";

@@ -110,7 +110,7 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   if (input.op === "submit") await requireServiceOpen("normal");
   await takeRate(`ali-asr:${userId}`, 30, 60);
   const usingRoom = input.key === "room";
-  const { assertRoomTicket, roomKeyOf } = await import("@/lib/room-asr.server");
+  const { assertRoomTicket, roomKeyOf } = await import("@/lib/billing/room-asr.server");
   const key = usingRoom ? await roomKeyOf("alibaba_key", "Alibaba", 20) : cleanKey(input.key);
   if (usingRoom) await assertRoomTicket(userId, input.ticketId);
   const workspace = usingRoom ? await roomWorkspace() : filetransWorkspace(null);
@@ -143,7 +143,7 @@ export async function runAliFiletrans(userId: string, input: AliFiletransInput):
   if (usingRoom && input.ticketId) {
     const { loadAlibabaRows } = await import("@/lib/sub/alibaba-board.server");
     const { getSql } = await import("@/lib/db");
-    const { chargeRoomAsr } = await import("@/lib/room-asr.server");
+    const { chargeRoomAsr } = await import("@/lib/billing/room-asr.server");
     const rows = await loadAlibabaRows(await getSql());
     await chargeRoomAsr({ userId, ticketId: input.ticketId, seconds: done.seconds, model: "qwen-audio-3.0-asr-flash-filetrans", rows });
   }

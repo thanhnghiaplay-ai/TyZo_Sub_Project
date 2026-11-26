@@ -88,7 +88,7 @@ export const Route = createFileRoute("/api/model-call")({
 
         const { getSql } = await import("@/lib/db");
         const { parseRunDesk } = await import("@/lib/run-desk");
-        const { readRequest, chargeWith } = await import("@/lib/run-gate");
+        const { readRequest, chargeWith } = await import("@/lib/billing/run-gate");
         const { loadPriceBook } = await import("@/lib/run-board.server");
         const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
         const { roomUse } = await import("@/lib/room-turn");

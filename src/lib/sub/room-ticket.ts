@@ -1,4 +1,4 @@
-import { closeRunTicket, openRunTicket, type RunTicketOpen } from "@/lib/run-turn";
+import { closeRunTicket, openRunTicket, type RunTicketOpen } from "@/lib/billing/run-turn";
 
 /** Phiếu của lần chạy đang phát, chỉ để lời đọc gắn đúng phiếu khi hàm gọi không chỉ định. */
 let playback: string | null = null;

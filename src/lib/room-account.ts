@@ -23,7 +23,7 @@ async function readState(userId: string): Promise<RoomState> {
   const { getSql } = await import("@/lib/db");
   const sql = await getSql();
   await sql`insert into room_accounts (user_id) values (${userId}) on conflict (user_id) do nothing`;
-  const { releaseStaleWith } = await import("@/lib/run-ticket");
+  const { releaseStaleWith } = await import("@/lib/billing/run-ticket");
   await releaseStaleWith(sql, userId);
   const { repairMissedTokens } = await import("@/lib/pay-flow");
   await repairMissedTokens(sql, userId);

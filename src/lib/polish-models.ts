@@ -11,7 +11,7 @@ import { needsAgeConfirm } from "./home-state.ts";
 import { chatModel } from "./sub/models.ts";
 import { catalogFor, modelKindOf } from "./sub/model-catalog.ts";
 import { quotePolish, type PolishPlan, type PolishQuote } from "./polish-estimate.ts";
-import type { PriceBook } from "./run-bill.ts";
+import type { PriceBook } from "./billing/run-bill.ts";
 
 type PolishPool = "censored" | "uncensored";
 

@@ -6,7 +6,7 @@ import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
 import { turnPackModels, turnPacks } from "@/lib/turn-pack";
 import type { ServicePack } from "@/lib/service-pack";
 import { formatMinutes, minutesLeft, pickPrice, runEstimate } from "@/lib/wallet-view";
-import { formatGiay } from "@/lib/token-math";
+import { formatGiay } from "@/lib/billing/token-math";
 import { fmt } from "@/lib/sub/text";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 

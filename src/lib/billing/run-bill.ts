@@ -1,5 +1,5 @@
-import type { GroqLiveRow } from "./sub/groq-board.ts";
-import { quoteVnd, type RunDesk } from "./run-desk.ts";
+import type { GroqLiveRow } from "../sub/groq-board.ts";
+import { quoteVnd, type RunDesk } from "../run-desk.ts";
 
 /** Groq tính tối thiểu 10 giây cho mỗi lần nhận dạng. */
 const MIN_BILLED_SECONDS = 10;

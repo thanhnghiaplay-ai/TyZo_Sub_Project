@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { CHAT_TICKET_PREFIX, MAX_RUN_SECONDS, parseHoldPart } from "@/lib/run-bill";
+import { CHAT_TICKET_PREFIX, MAX_RUN_SECONDS, parseHoldPart } from "@/lib/billing/run-bill";
 
 export type RunTicketOpen = { id: string; held: number; perMinute: number; balance: number };
 
@@ -29,10 +29,10 @@ export const openRunTicket = createServerFn({ method: "POST" })
     await takeRate(`run-open:${context.userId}`, 20, 60);
     const { getSql } = await import("@/lib/db");
     const { parseRunDesk } = await import("@/lib/run-desk");
-    const { holdGiay, formatGiay } = await import("@/lib/token-math");
+    const { holdGiay, formatGiay } = await import("@/lib/billing/token-math");
     const { loadPriceBook } = await import("@/lib/run-board.server");
-    const { openGiayWith, giayBalance } = await import("@/lib/token-flow");
-    const { releaseStaleWith } = await import("@/lib/run-ticket");
+    const { openGiayWith, giayBalance } = await import("@/lib/billing/token-flow");
+    const { releaseStaleWith } = await import("@/lib/billing/run-ticket");
     const sql = await getSql();
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`;
     const desk = parseRunDesk(saved[0]?.value);
@@ -55,7 +55,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
     if (asr.provider === "tyzo-modal" && data.part !== "chat") {
       const settings = await sql<{value:string}>`select value from room_settings where key='tyzo_modal_price'`;
       if (!settings.length) throw new Error("Chủ chưa đặt giá TyZo Modal.");
-      const { parseModalPrice, holdUsdPerFilmHour } = await import("./sub/tyzo-modal-price");
+      const { parseModalPrice, holdUsdPerFilmHour } = await import("../sub/tyzo-modal-price");
       const price = parseModalPrice(JSON.parse(settings[0].value));
       if (rows["tyzo-modal"]?.find(r => r.id === asr.model)?.usdPerHour !== holdUsdPerFilmHour(price, asr.model.endsWith("-ky") ? "ky" : "nhanh")) throw new Error("Giá vừa thay đổi. Vui lòng thử lại.");
       modalPrice = JSON.stringify(price);
@@ -87,7 +87,7 @@ export const closeRunTicket = createServerFn({ method: "POST" })
   })
   .handler(async ({ context, data }) => {
     const { getSql } = await import("@/lib/db");
-    const { closeTicketWith } = await import("@/lib/run-ticket");
+    const { closeTicketWith } = await import("@/lib/billing/run-ticket");
     const sql = await getSql();
     const done = await closeTicketWith(sql, data.id, context.userId, data.failed);
     return { closed: Boolean(done), charged: done?.charged ?? 0, freed: done?.freed ?? 0 };
