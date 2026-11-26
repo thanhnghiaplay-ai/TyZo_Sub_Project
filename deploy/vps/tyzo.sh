@@ -1105,6 +1105,8 @@ TXT
   read -rp "Chọn 1 hoặc 2 [1]: " edge
   [ "$edge" = "2" ] && edge=tunnel || edge=caddy
   conf_set EDGE "$edge"
+  # R3-008: Cloudflare Tunnel authenticates CF-Connecting-IP; Caddy overwrites XFF.
+  [ "$edge" = tunnel ] && dat_bien TRUSTED_IP_HEADER cf-connecting-ip || dat_bien TRUSTED_IP_HEADER x-forwarded-for
 
   buoc 4 "Tên miền của web"
   dom="$(conf_get DOMAIN)"
@@ -1236,6 +1238,12 @@ tat_web_day_du() {
 
 cap_nhat_web() { # cap_nhat_web [tu-dong]
   local tu_dong="${1:-}" truoc sau
+  # R3-008: update the trust source on upgrades, not only fresh installs.
+  local ip_header=x-forwarded-for
+  [ "$(conf_get EDGE)" = tunnel ] && ip_header=cf-connecting-ip
+  local old_env="$ENV_FILE"; ENV_FILE="$WEB_ENV"
+  dat_bien TRUSTED_IP_HEADER "$ip_header"
+  ENV_FILE="$old_env"
   tieu_de "Cập nhật web"
   [ -d "$DIR/.git" ] || { do_ "Chưa có mã. Chọn mục 11."; return 1; }
   truoc="$(git -C "$DIR" rev-parse HEAD)"

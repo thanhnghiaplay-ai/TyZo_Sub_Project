@@ -1,5 +1,6 @@
 import { getRequest } from "@tanstack/react-start/server";
 import { getSql } from "@/lib/db";
+import { trustedClientIp } from "./request-ip.server.ts";
 
 /**
  * Ghi dữ kiện dùng làm bằng chứng khi phát hiện vi phạm (xem risk-rules.ts). Không bao giờ làm hỏng việc chính:
@@ -7,8 +8,7 @@ import { getSql } from "@/lib/db";
  */
 function requestMeta(): { ip: string; ua: string } {
   const request = getRequest();
-  const forwarded = request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
-  const ip = (forwarded || request?.headers.get("x-real-ip")?.trim() || "").slice(0, 64);
+  const ip = trustedClientIp(request);
   const ua = (request?.headers.get("user-agent") ?? "").slice(0, 300);
   return { ip, ua };
 }

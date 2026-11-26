@@ -1,3 +1,4 @@
+import { trustedClientIp } from "./request-ip.server.ts";
 import { createHash, randomBytes } from "node:crypto";
 import { getRequest } from "@tanstack/react-start/server";
 import { getSql } from "@/lib/db";
@@ -103,9 +104,7 @@ export async function revokeDevice(userId: string, id: string): Promise<boolean>
 
 /** Địa chỉ mạng của người gọi khi máy chủ thấy được. */
 export function callerIp(): string {
-  const request = getRequest();
-  const forwarded = request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
-  return forwarded || request?.headers.get("x-real-ip")?.trim() || "";
+  return trustedClientIp(getRequest());
 }
 
 /** Gỡ mọi máy của tài khoản. Gọi khi đổi hoặc đặt lại mật khẩu (như thoát các phiên khác trên web). */
