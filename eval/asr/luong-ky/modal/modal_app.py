@@ -61,10 +61,20 @@ def _count_triton():
         return 0
 
 
+def _gpu_name():
+    import subprocess
+    try:
+        return subprocess.run(["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"], capture_output=True,
+                              text=True, timeout=20).stdout.strip().replace("\n", ", ") or "?"
+    except Exception:
+        return "?"
+
+
 def _start_vllm():
     """Chạy vLLM dạng OpenAI (khóa bằng TYZO_ASR_TOKEN) trong tiến trình con, trả tiến trình."""
     import subprocess, time
-    print(f"[tyzo] may chu bat {time.strftime('%H:%M:%S', time.gmtime())} UTC; bo dem Triton {_count_triton()} tep", flush=True)
+    print(f"[tyzo] may chu bat {time.strftime('%H:%M:%S', time.gmtime())} UTC; GPU {_gpu_name()}; "
+          f"bo dem Triton {_count_triton()} tep", flush=True)
     return subprocess.Popen(["vllm", "serve", LLM_MODEL, "--host", "0.0.0.0", "--port", "8000",
                              "--api-key", os.environ["TYZO_ASR_TOKEN"], "--max-model-len", "8192",
                              "--gpu-memory-utilization", "0.92", "--enforce-eager",          # enforce-eager: bật máy nhanh hơn
@@ -103,12 +113,12 @@ if LLM_SNAPSHOT:
             self.proc = _start_vllm()
             if not _wait_ready_and_save():
                 raise RuntimeError("vLLM không sẵn sàng trong 1500 s")
-            print(f"[tyzo] chup bo nho luc {time.strftime('%H:%M:%S', time.gmtime())} UTC", flush=True)
+            print(f"[tyzo] chup bo nho luc {time.strftime('%H:%M:%S', time.gmtime())} UTC; GPU {_gpu_name()}", flush=True)
 
         @modal.enter(snap=False)
         def restored(self):
             import time
-            print(f"[tyzo] may chu nhan viec {time.strftime('%H:%M:%S', time.gmtime())} UTC", flush=True)
+            print(f"[tyzo] may chu nhan viec {time.strftime('%H:%M:%S', time.gmtime())} UTC; GPU {_gpu_name()}", flush=True)
 
         @modal.web_server(port=8000, startup_timeout=1500)
         def serve(self):
