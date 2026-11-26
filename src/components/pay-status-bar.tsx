@@ -140,7 +140,10 @@ export function PayStatusBar({
           <Icon slot="nav.wallet" className="size-4 shrink-0 text-accent" />
           <span className="min-w-0">
             <strong>Trả theo lượt</strong> · còn {formatGiay(state.units)}
-            {money.left != null && <> · khoảng {formatMinutes(money.left)}{!money.exactRate ? " (theo gói rẻ nhất)" : ""}</>}
+            {/* Dòng thời gian luôn giữ chỗ (kể cả lúc chưa tính xong) để ô không dài ra và xô trang. */}
+            <span className="block min-h-[1.25rem] text-xs text-muted">
+              {money.left != null ? <>Đủ khoảng {formatMinutes(money.left)} phim{!money.exactRate ? " (theo gói rẻ nhất)" : ""}</> : "\u00a0"}
+            </span>
           </span>
         </span>
         <span className="flex gap-2">

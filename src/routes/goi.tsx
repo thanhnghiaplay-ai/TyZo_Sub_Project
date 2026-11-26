@@ -3,6 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "@/components/back-button";
 import { TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
 import { useRoomPlans } from "@/lib/use-room-plans";
+import { useEffect, useState } from "react";
+import { getGiayPrices, type GiayPackView } from "@/lib/giay-room";
+import { formatGiay } from "@/lib/billing/token-math";
 
 export const Route = createFileRoute("/goi")({
   component: GoiPage,
@@ -24,7 +27,7 @@ function GoiPage() {
           <BackButton />
           <div>
             <p className="text-xs font-medium tracking-wide text-accent">Bảng giá</p>
-            <h1 className="text-base leading-none font-semibold">Thuê phòng TyZo Sub</h1>
+            <h1 className="text-base leading-none font-semibold">TyZo Sub</h1>
           </div>
         </div>
         <Link to="/" className="room-back">
@@ -33,9 +36,10 @@ function GoiPage() {
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
         <p className="rounded-[var(--radius-card)] border border-line bg-card px-3 py-2 text-sm text-muted">
-          Trang này chỉ xem giá, không thu tiền và không giữ số dư. Muốn thuê thì mở Tài khoản trong phòng dịch rồi bấm gói. Mã QR hiện ra. Chuyển khoản đúng số thì mở hạn.
+          Có hai cách trả. Thuê phòng: dùng key AI của bạn, trả theo ngày, tuần, tháng. Token dịch: không cần key, dùng tới đâu trừ tới đó. Bấm «Mua» để sang Tài khoản, mã QR hiện ra, chuyển khoản đúng số là xong.
         </p>
-        <section className="plan-grid mt-4">
+        <h2 className="mt-4 font-semibold">Thuê phòng · dùng key AI của bạn</h2>
+        <section className="plan-grid mt-2">
           <article className="rounded-[var(--radius-card)] border border-line bg-raised p-4">
             <p className="text-sm text-muted">Dùng thử</p>
             <p className="mt-1 text-2xl font-semibold">0 đ</p>
@@ -55,10 +59,43 @@ function GoiPage() {
                 <p className="text-sm text-muted">Giá một ngày. Gói 7 ngày và 30 ngày tiết kiệm hơn.</p>
               )}
               <p className="mt-2 text-sm text-muted">{PLAN_NOTES[plan.id]}</p>
+              <Link to="/tai-khoan" className="room-back mt-3 inline-flex">Mua</Link>
             </article>
           ))}
         </section>
+        <TokenPacks />
       </div>
     </main>
+  );
+}
+
+/** Gói Token dịch (trả theo lượt): giá tính từ giá gốc lúc xem, giống kệ mua ở Tài khoản. */
+function TokenPacks() {
+  const [shelf, setShelf] = useState<{ packs: GiayPackView[]; priced: boolean } | null>(null);
+  useEffect(() => {
+    let gone = false;
+    void getGiayPrices()
+      .then((next) => { if (!gone) setShelf(next); })
+      .catch(() => { if (!gone) setShelf({ packs: [], priced: false }); });
+    return () => { gone = true; };
+  }, []);
+  return (
+    <>
+      <h2 className="mt-6 font-semibold">Token dịch · trả theo lượt, không cần key</h2>
+      <p className="mt-1 text-sm text-muted">Dùng cho Dịch bình thường (kể cả nhận dạng TyZo), Dịch trực tiếp và đọc thuyết minh. Phim dài trừ nhiều hơn phim ngắn. Hết hạn thì phần còn lại mất, không hoàn tiền.</p>
+      <section className="plan-grid mt-2">
+        {shelf === null && <p className="text-sm text-muted">Đang tải giá…</p>}
+        {shelf && shelf.packs.length === 0 && <p className="text-sm text-muted">Gói Token dịch tạm chưa mở bán.</p>}
+        {shelf && !shelf.priced && shelf.packs.length > 0 && <p className="text-sm text-muted">Gói Token đang cập nhật giá, quay lại sau ít phút.</p>}
+        {shelf?.packs.map((pack) => (
+          <article key={pack.id} className="rounded-[var(--radius-card)] border border-line bg-card p-4">
+            <h3 className="font-semibold">{formatGiay(pack.tokens)}</h3>
+            <p className="mt-1 text-2xl font-semibold text-accent">{pack.price == null ? "—" : dong(pack.price)}</p>
+            <p className="text-sm text-muted">Hạn {pack.days} ngày</p>
+            {pack.price != null && <Link to="/tai-khoan" className="room-back mt-3 inline-flex">Mua</Link>}
+          </article>
+        ))}
+      </section>
+    </>
   );
 }

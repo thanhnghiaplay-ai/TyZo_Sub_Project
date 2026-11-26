@@ -3284,3 +3284,10 @@ html[data-look="future"]:not([data-fx="off"]) [data-chip-select] option {
     height: calc(10rem + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Màn chờ hiện đủ ngay một lần (trước đây từng phần hiện dần 0,25–0,55 giây, trên điện thoại trông như hai màn chờ). */
+.gate-splash .gate-kicker,
+.gate-splash .gate-title,
+.gate-splash .gate-wait {
+  animation: none;
+}

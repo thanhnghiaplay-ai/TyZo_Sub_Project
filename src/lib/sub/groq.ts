@@ -138,6 +138,9 @@ async function readApiError(response: Response, modelName: string) {
   } catch {
     /* body không phải JSON */
   }
+  // Lỗi do máy chủ của phòng trả (cửa trả theo lượt: bảo trì, chưa mở, hết phiếu…) đã viết sẵn cho khách: hiện nguyên câu,
+  // không gắn mã lỗi hay «API key không hợp lệ» (khách không dùng key ở cửa này).
+  if (detail && response.headers.get("x-tyzo-room") === "1") return detail;
   if (response.status === 401 || response.status === 403)
     return `API key không hợp lệ hoặc chưa được cấp quyền (${response.status}). ${detail}`;
   if (response.status === 404)

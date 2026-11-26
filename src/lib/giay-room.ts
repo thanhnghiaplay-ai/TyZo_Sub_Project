@@ -36,6 +36,15 @@ export const getGiayShelf = createServerFn({ method: "GET" })
     return { units: await giayBalance(sql, context.userId), packs: priced(desk, per), priced: per != null };
   });
 
+/** Giá gói Token dịch cho trang Bảng giá (ai cũng xem được, kể cả chưa đăng nhập). Chỉ giá và hạn, không đọc tài khoản. */
+export const getGiayPrices = createServerFn({ method: "GET" }).handler(async () => {
+  const { getSql } = await import("@/lib/db");
+  const sql = await getSql();
+  const saved = await sql<{ value: string }>`select value from room_settings where key = 'token_desk'`;
+  const per = await turboPerSecond();
+  return { packs: priced(parseGiayDesk(saved[0]?.value), per), priced: per != null };
+});
+
 export const orderGiayPack = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((id: string) => {
@@ -54,7 +63,7 @@ export const orderGiayPack = createServerFn({ method: "POST" })
     if (!pack) throw new Error("Gói không có.");
     const per = await turboPerSecond();
     const price = per ? packPriceVnd(pack.tokens, per, desk.markup, desk.buffer) : null;
-    if (price == null) throw new Error("Chưa có giá bản Turbo hoặc tỷ giá. Chưa bán được gói này.");
+    if (price == null) throw new Error("Gói Token đang cập nhật giá, tạm chưa mua được. Vui lòng quay lại sau ít phút.");
     const { placeSale } = await import("@/lib/payment/pay-store");
     return placeSale(context.userId, {
       amount: price,

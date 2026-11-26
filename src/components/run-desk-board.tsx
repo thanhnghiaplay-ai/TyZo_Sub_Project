@@ -1,4 +1,3 @@
-import { dong } from "@/lib/payment/money-format";
 import { useEffect, useState, type ReactNode } from "react";
 import { pushToast } from "@/components/toast";
 import { getRunDesk, saveRunDesk, type RunDeskView, type RunTicket } from "@/lib/admin/admin-runs";
@@ -10,6 +9,10 @@ import { DoorDot } from "@/components/run-door";
 import { ModelUsdBoard } from "@/components/model-usd-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { ticketMoneyLine, ticketPart } from "@/lib/ticket-line";
+
+const tokenCount = (n: number) => `${n.toLocaleString("vi-VN")} Token`;
+
+
 
 function label(status: string) {
   return status in RUN_STATUS_LABEL ? RUN_STATUS_LABEL[status as RunStatus] : status;
@@ -280,8 +283,8 @@ export function RunDeskBoard({ owner, part = "ops" }: { owner: boolean; part?: "
       <p className="text-sm text-muted">Cửa mặc định mở. Muốn báo bảo trì thì nhập nội dung rồi lưu. Key, giá và hạn mức nằm ở tab Cấu hình.</p>
       {owner && (
       <div className="grid grid-cols-3 gap-2">
-        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Đang giữ<br />{dong(view?.holding ?? 0)}</p>
-        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{dong(view?.charged ?? 0)}</p>
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Đang giữ<br />{tokenCount(view?.holding ?? 0)}</p>
+        <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Đã trừ hôm nay<br />{tokenCount(view?.charged ?? 0)}</p>
         <p className="rounded-[var(--radius-ctl)] border border-line px-3 py-2 text-sm">Phiếu lỗi<br />{view?.errors ?? 0}</p>
       </div>
       )}

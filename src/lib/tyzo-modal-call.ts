@@ -50,6 +50,9 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
         out = await run();
       }
       const merged = mergeInterjections(out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), data.language);
+      // Chi phí GPU thật (cộng phí mô hình chữ nếu có) vào sổ «Phải trả nhà cung cấp» để trang Doanh thu tính đúng lời lỗ.
+      const {recordSpendWith} = await import("./provider-spend");
+      await recordSpendWith(sql, { provider: "tyzo-modal", model, baseVnd: out.usd * book.rate, rate: book.rate });
       return {segments: merged, tokens: toTokens(out.usd)};
     });
     return {segments: result.segments};

@@ -54,7 +54,7 @@ describe("tiền phải trả từng nhà cung cấp", () => {
 });
 
 describe("mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà", () => {
-  it("cửa gọi model, cửa Groq, nhận dạng bằng link, dịch trực tiếp", () => {
+  it("cửa gọi model, cửa Groq, nhận dạng bằng link, dịch trực tiếp, TyZo", () => {
     const gate = readFileSync(new URL("./billing/run-gate.ts", import.meta.url), "utf8");
     assert.equal(gate.split("recordSpendWith(sql,").length - 1, 2);
     for (const [file, mark] of [
@@ -62,6 +62,7 @@ describe("mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà
       ["../routes/api/room-groq.ts", /provider: "groq",/],
       ["./billing/room-asr.server.ts", /recordSpendWith\(sql, \{ provider: asrHouse\(input\.model\)/],
       ["./live/live-billing.ts", /recordSpendWith\(sql, \{ provider: asrHouse\(model\)/],
+      ["./tyzo-modal-call.ts", /recordSpendWith\(sql, \{ provider: "tyzo-modal", model, baseVnd: out\.usd \* book\.rate/],
     ] as const) {
       assert.match(readFileSync(new URL(file, import.meta.url), "utf8"), mark, file);
     }

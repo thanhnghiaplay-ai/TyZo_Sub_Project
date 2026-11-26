@@ -27,7 +27,9 @@ export type RunDeskView = {
   desk: RunDesk;
   models: string[] | null;
   keyTail: string;
+  /** Token dịch đang giữ trên các phiếu mở hôm nay (phiếu Token; phiếu đồng không còn tạo từ v5.0.0). */
   holding: number;
+  /** Token dịch đã trừ hôm nay. */
   charged: number;
   errors: number;
   recent: RunTicket[];
@@ -78,8 +80,8 @@ export const getRunDesk = createServerFn({ method: "GET" })
     const start = dayStartIso();
     const totals = await sql<{ holding: number; charged: number; errors: number }>`
       select
-        coalesce(sum(case when status = 'dang-giu' and unit = 'vnd' then held else 0 end), 0)::int as holding,
-        coalesce(sum(case when unit = 'vnd' then charged else 0 end), 0)::int as charged,
+        coalesce(sum(case when status = 'dang-giu' and unit = 'token' then held else 0 end), 0)::int as holding,
+        coalesce(sum(case when unit = 'token' then charged else 0 end), 0)::int as charged,
         coalesce(sum(case when status = 'loi' then 1 else 0 end), 0)::int as errors
       from run_tickets
       where created_at >= ${start}

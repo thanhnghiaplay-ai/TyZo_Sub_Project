@@ -25,7 +25,8 @@ function isTimeout(error: unknown) {
 function fail(status: number, message: string, extra?: Record<string, string>) {
   return new Response(JSON.stringify({ error: { message } }), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", ...extra },
+    // x-tyzo-room: lỗi do chính phòng tạo, đã viết cho khách (groq.ts hiện nguyên câu).
+    headers: { "content-type": "application/json; charset=utf-8", "x-tyzo-room": "1", ...extra },
   });
 }
 
@@ -71,7 +72,7 @@ export const Route = createFileRoute("/api/room-groq")({
         if (desk.maintenance) return fail(403, desk.note || "Cửa trả theo lượt đang bảo trì.");
         const keys = await sql<{ value: string }>`select value from room_settings where key = 'run_key'`;
         const key = keys[0]?.value?.trim();
-        if (!key) return fail(503, "Phòng chưa lưu key cho cửa trả theo lượt.");
+        if (!key) return fail(503, "Trả theo lượt đang tạm đóng. Vui lòng quay lại sau, hoặc chọn «Dùng key AI của tôi».");
 
         const headers = new Headers();
         headers.set("Authorization", `Bearer ${key}`);

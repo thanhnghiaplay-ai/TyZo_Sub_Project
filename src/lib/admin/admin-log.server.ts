@@ -8,6 +8,24 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.0",
+    time: "26/11/2026",
+    area: "tien",
+    text: "Sửa sau kiểm tra trang khách và Admin. (1) Doanh thu: chi phí GPU TyZo (Modal, kể cả phí mô hình chữ) nay ghi vào sổ «Phải trả nhà cung cấp» (provider_spend, nhà tyzo-modal) mỗi đoạn chạy mới; trước đó lời lỗ không trừ GPU. (2) Phiếu và việc: «Đang giữ» và «Đã trừ hôm nay» đếm phiếu Token (trước chỉ đếm phiếu đồng, luôn 0). (3) Khách không còn thấy câu kỹ thuật «API trả về lỗi 503…»: lỗi do phòng tạo gắn header x-tyzo-room, app hiện nguyên câu; bảo trì không còn bị báo nhầm «API key không hợp lệ». (4) Bảng giá /goi có thêm gói Token dịch (getGiayPrices, công khai, chỉ giá) và nút Mua. (5) Màn chờ một kiểu, giữ chỗ dòng trạng thái để trang không xô.",
+  },
+  {
+    version: "5.48.0",
+    time: "26/11/2026",
+    area: "ha-tang",
+    text: "Chỉ giữ Groq, Alibaba, TyZo: xóa hẳn Deepgram, AssemblyAI, Speechmatics, Soniox, ElevenLabs (cả giọng Aura, ElevenLabs). Gói TyZo chỉ mở cửa Trả theo lượt (kiểm ở máy chủ). Giá TyZo = giây GPU thật × giá GPU × hệ số bù. Điều khoản 2026-11-26.2. Sau đó tách file 5 đợt (providers/, pipeline/, billing/, admin|payment|packs|polish/, studio-panels/), chỉ dời chỗ, cách chạy giữ nguyên. Bộ công cụ phát triển: docs/CONG-CU.md.",
+  },
+  {
+    version: "5.47.0",
+    time: "26/11/2026",
+    area: "tien",
+    text: "Nhận dạng TyZo Modal (Nhanh, Kỹ) ở cửa Trả theo lượt: tối đa 9 máy cùng lúc, mỗi đoạn chỉ trừ một lần (run_modal_parts theo mã băm âm thanh, xóa sau 24 giờ), thiếu thì ghi modal_short, gộp tiếng cảm thán. Điều khoản 2026-11-26.1.",
+  },
+  {
     version: "5.46.0",
     time: "18:26 25/11/2026",
     area: "khac",

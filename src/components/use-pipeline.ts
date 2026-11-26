@@ -509,7 +509,8 @@ export function usePipeline() {
       } else {
         for (const id of PROVIDER_IDS) if (id !== "groq") counts[id] = keyModelsRef.current[id]?.length ?? null;
       }
-      say(modelTotalText(token === ROOM_KEY, counts));
+      // Trả theo lượt: số model của key phòng là chuyện nội bộ, không đè dòng trạng thái của khách (đỡ xô trang).
+      if (token !== ROOM_KEY) say(modelTotalText(false, counts));
     } catch (error) {
       say((error as Error).message || "Không đọc được danh sách model.", true);
     } finally {

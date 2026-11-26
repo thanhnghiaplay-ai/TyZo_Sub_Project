@@ -14,7 +14,8 @@ const UPSTREAM_TIMEOUT_MS = 100_000;
 function fail(status: number, message: string, extra?: Record<string, string>) {
   return new Response(JSON.stringify({ error: { message } }), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8", ...extra },
+    // x-tyzo-room: lỗi do chính phòng tạo, đã viết cho khách (groq.ts hiện nguyên câu).
+    headers: { "content-type": "application/json; charset=utf-8", "x-tyzo-room": "1", ...extra },
   });
 }
 
