@@ -99,6 +99,12 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     client.close(code, reason.slice(0, 120));
   };
 
+  // DEEP-006: khách có thể rời trong lúc cầu nối còn đọc giá / giữ tiền (trước khi gắn client.on("close") bên dưới).
+  let gone = client.readyState !== WebSocket.OPEN;
+  client.once("close", () => {
+    gone = true;
+  });
+
   const ticket = verifyLiveTicket(deps.secret, token, now());
   if (!ticket) return fail(4401, "Vé không hợp lệ hoặc đã hết hạn.");
   const gen = genOf(ticket.model);
@@ -114,6 +120,8 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   if (holdUnits == null || !(holdUnits > 0)) return fail(4402, "Model này chưa có giá niêm yết.");
   const route = await deps.upstream(ticket.model);
   if (!route) return fail(4503, "Phòng chưa cấu hình Alibaba cho dịch trực tiếp.");
+
+  if (gone) return;
 
   const meter = new LiveMeter(holdUnits, blockSeconds);
   const tickets: string[] = [];
@@ -133,7 +141,8 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     return true;
   };
   const topUp = () => {
-    if (opening || !meter.wantsMore()) return;
+    // DEEP-005: phiên đã đóng thì không xin giữ thêm (phiếu mới sẽ không ai nhả).
+    if (closed || opening || !meter.wantsMore()) return;
     opening = openBlock()
       .catch(() => {
         meter.denied = true;
@@ -168,6 +177,9 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   /** Khách gửi tiếng nén μ-law (ứng dụng 0.7+); mặc định PCM 16 bit. */
   let mulaw = false;
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  /** DEEP-001: các lần trừ tiền đang chạy; đóng phiếu phải chờ hết. */
+  const charging = new Set<Promise<unknown>>();
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
     buildSessionUpdate({ model: ticket.model, target: ticket.target, source: ticket.source || undefined, audio, ...(ticket.words ? { hotwords: ticket.words } : {}), ...(deps.silenceMs ? { silenceMs: deps.silenceMs } : {}), ...(deps.vadThreshold ? { vadThreshold: deps.vadThreshold } : {}) }),
@@ -187,11 +199,16 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     closed = true;
     log(`phiên đóng: ${ticket!.model} nối-lại=${reconnects} ngủ-dậy=${wakeUps} lỗi=${failed ? "có" : "không"}`);
     if (drainTimer) clearTimeout(drainTimer);
+    if (reconnectTimer) clearTimeout(reconnectTimer);
     try {
       upstream?.close();
     } catch {
       /* đã đóng */
     }
+    // DEEP-001, DEEP-005: chờ lần giữ thêm và các lần trừ tiền đang chạy xong rồi mới nhả phiếu,
+    // để không trừ vào phiếu đã đóng và không bỏ sót phiếu vừa mở.
+    if (opening) await opening.catch(() => undefined);
+    while (charging.size) await Promise.allSettled([...charging]);
     for (const id of tickets) {
       try {
         await deps.billing.close({ userId: ticket!.uid, ticketId: id, failed });
@@ -229,10 +246,18 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
           if (amount != null && amount > 0) {
           // Trừ vào phiếu mới nhất trước; phần tràn sang phiếu cũ hơn nếu phiếu mới đã cạn.
           let left = amount;
-          for (let i = tickets.length - 1; i >= 0 && left > 0; i -= 1) {
-            const part = await deps.billing.charge({ userId: ticket.uid, ticketId: tickets[i], cost: left, base: i === tickets.length - 1 ? priced.base : 0 });
-            taken += part;
-            left -= part;
+          const run = (async () => {
+            for (let i = tickets.length - 1; i >= 0 && left > 0; i -= 1) {
+              const part = await deps.billing.charge({ userId: ticket.uid, ticketId: tickets[i], cost: left, base: i === tickets.length - 1 ? priced.base : 0 });
+              taken += part;
+              left -= part;
+            }
+          })();
+          charging.add(run);
+          try {
+            await run;
+          } finally {
+            charging.delete(run);
           }
           }
         }
@@ -262,6 +287,9 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   };
 
   const connectUpstream = () => {
+    reconnectTimer = null;
+    // DEEP-004: phiên đã đóng hoặc đang dừng thì không mở kết nối Alibaba mới.
+    if (closed || finishing) return;
     const ws = deps.connect ? deps.connect(route.url, route.key) : new WebSocket(route.url, { headers: { Authorization: `Bearer ${route.key}` } });
     upstream = ws;
     ws.on("open", () => ws.send(sessionUpdate));
@@ -282,7 +310,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
         reconnects += 1;
         ready = false;
         send(client, { type: "reconnecting", attempt: reconnects });
-        setTimeout(connectUpstream, 300 * reconnects);
+        reconnectTimer = setTimeout(connectUpstream, 300 * reconnects);
       } else {
         send(client, { type: "error", message: "Mất kết nối tới dịch vụ dịch." });
         void finalize(true);
@@ -317,6 +345,11 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     if (!ready || !upstream || upstream.readyState !== WebSocket.OPEN) return;
     const bytes = pcm;
     if (meter.mustStop()) return;
+    // DEEP-002: phần giữ đã hết mà lần xin giữ thêm chưa về: bỏ khung này (không gửi tiếng chưa có tiền giữ).
+    if (meter.exposure() <= 0) {
+      topUp();
+      return;
+    }
     upstream.send(audioAppend(bytes));
     meter.audio(bytes.length / PCM_BYTES_PER_SEC);
     topUp();
@@ -330,4 +363,6 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     if (!closed) log(`kết nối khách lỗi: ${String(error)}`);
     if (!closed) stop("khach-loi");
   });
+  // DEEP-006: khách rời trước khi các hàm trên được gắn thì đóng phiên ngay, nhả phiếu vừa giữ.
+  if (gone || client.readyState !== WebSocket.OPEN) stop("khach-roi");
 }
