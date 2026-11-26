@@ -12,6 +12,7 @@ WEB_ENV="/opt/tyzo-web.env"
 CONF="/opt/tyzo.conf"
 BACKUP_DIR="/opt/tyzo-backup"
 BACKUP_CRON="/etc/cron.d/tyzo-sao-luu"
+TRANSFER_FORMAT="1"
 COMPOSE_FILE="/opt/tyzo/deploy/vps/compose.yml"
 ENV_FILE="$BRIDGE_ENV"
 CADDYFILE="/etc/caddy/Caddyfile"
@@ -714,13 +715,175 @@ bat_sao_luu_dem() {
   chmod 644 "$BACKUP_CRON"; xanh "✔ Sao lưu tự động mỗi đêm (giữ 14 bản gần nhất ở $BACKUP_DIR)"
 }
 
+hoi_mat_khau_chuyen() {
+  local lan_hai
+  MAT_KHAU_CHUYEN=""
+  while [ "${#MAT_KHAU_CHUYEN}" -lt 12 ]; do
+    read -rsp "Đặt mật khẩu cho tệp (ít nhất 12 ký tự, chữ không hiện): " MAT_KHAU_CHUYEN; echo
+    [ "${#MAT_KHAU_CHUYEN}" -ge 12 ] || vang "Mật khẩu cần ít nhất 12 ký tự."
+  done
+  read -rsp "Gõ lại mật khẩu: " lan_hai; echo
+  [ "$MAT_KHAU_CHUYEN" = "$lan_hai" ] || { do_ "Hai lần nhập không giống nhau."; MAT_KHAU_CHUYEN=""; return 1; }
+}
+
+chep_neu_co() { # chep_neu_co <nguồn> <đích trong thư mục tạm>
+  [ -e "$1" ] || return 0
+  mkdir -p "$(dirname "$2")"
+  cp -aL "$1" "$2"
+}
+
+tao_ban_chuyen_vps() (
+  tieu_de "Tạo bản sao lưu để chuyển VPS"
+  co_lenh openssl && co_lenh tar && co_lenh sha256sum || { do_ "✘ Thiếu openssl, tar hoặc sha256sum."; return 1; }
+  hoi_mat_khau_chuyen || return 1
+  mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
+  local tmp noi_dung pass_file out db_kind mode
+  tmp="$(mktemp -d)"; noi_dung="$tmp/noi-dung"; pass_file="$tmp/mat-khau"
+  mkdir -p "$noi_dung/cau-hinh"; chmod 700 "$tmp" "$noi_dung"
+  printf '%s' "$MAT_KHAU_CHUYEN" > "$pass_file"; chmod 600 "$pass_file"; MAT_KHAU_CHUYEN=""
+  trap 'rm -rf -- "$tmp"' EXIT INT TERM
+
+  mode="$(che_do)"; db_kind="$(conf_get DB)"
+  [ -n "$mode" ] || { do_ "✘ VPS này chưa được thiết lập bằng tyzo."; return 1; }
+  printf 'FORMAT=%s\nCREATED=%s\nMODE=%s\nDB=%s\n' \
+    "$TRANSFER_FORMAT" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$mode" "${db_kind:-neon}" > "$noi_dung/thong-tin"
+
+  chep_neu_co "$CONF" "$noi_dung/cau-hinh/tyzo.conf"
+  [ -f "$noi_dung/cau-hinh/tyzo.conf" ] || printf 'MODE=%s\nDB=%s\n' "$mode" "${db_kind:-neon}" > "$noi_dung/cau-hinh/tyzo.conf"
+  chep_neu_co "$WEB_ENV" "$noi_dung/cau-hinh/tyzo-web.env"
+  chep_neu_co "$BRIDGE_ENV" "$noi_dung/cau-hinh/bridge.env"
+  chep_neu_co /opt/tyzo-vercel.env "$noi_dung/cau-hinh/tyzo-vercel.env"
+  chep_neu_co /opt/tyzo-ghi-chu.txt "$noi_dung/cau-hinh/tyzo-ghi-chu.txt"
+  chep_neu_co "$CADDYFILE" "$noi_dung/cau-hinh/Caddyfile"
+  chep_neu_co /opt/tyzo-android-key "$noi_dung/cau-hinh/tyzo-android-key"
+  chep_neu_co /etc/cloudflared "$noi_dung/cau-hinh/cloudflared"
+  chep_neu_co /etc/systemd/system/cloudflared.service "$noi_dung/cau-hinh/cloudflared.service"
+  chep_neu_co "$CRON_FILE" "$noi_dung/cau-hinh/tyzo-tu-cap-nhat"
+  chep_neu_co "$BACKUP_CRON" "$noi_dung/cau-hinh/tyzo-sao-luu"
+  chep_neu_co /etc/cron.d/tyzo-quet-rui-ro "$noi_dung/cau-hinh/tyzo-quet-rui-ro"
+
+  if [ "$db_kind" = "local" ]; then
+    echo "Đang xuất Postgres..."
+    db_len || return 1
+    docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > "$noi_dung/postgres.dump" 2>/dev/null
+    [ -s "$noi_dung/postgres.dump" ] || { do_ "✘ Không xuất được Postgres."; return 1; }
+  fi
+
+  (cd "$noi_dung" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+  out="$BACKUP_DIR/tyzo-chuyen-vps-$(date '+%Y%m%d-%H%M%S').tar.enc"
+  if tar -C "$noi_dung" -cf - . | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 -pass file:"$pass_file" -out "$out"; then
+    chmod 600 "$out"
+  else
+    rm -f "$out"; do_ "✘ Không tạo được tệp sao lưu."; return 1
+  fi
+  rm -rf -- "$tmp"; trap - EXIT INT TERM
+  xanh "✔ Đã tạo: $out ($(du -h "$out" | cut -f1))"
+  cat <<TXT
+Tệp đã được mã hóa. Hãy giữ mật khẩu riêng, mất mật khẩu thì không mở được.
+Chép tệp này sang thư mục /root trên VPS mới, rồi chạy đúng một lệnh:
+  bash <(curl -fsSL https://raw.githubusercontent.com/thanhnghiaplay-ai/TyZo_Sub_Project/main/deploy/vps/tyzo.sh) khoi-phuc-vps /root/$(basename "$out")
+TXT
+)
+
+doc_thong_tin() { [ -f "$1" ] && grep "^$2=" "$1" | tail -1 | cut -d= -f2- || true; }
+
+cai_cloudflared_khong_hoi() {
+  co_lenh cloudflared && return 0
+  local arch; arch="$(dpkg --print-architecture 2>/dev/null || echo amd64)"
+  curl -fsSL -o /tmp/cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${arch}.deb" && \
+    dpkg -i /tmp/cloudflared.deb >/dev/null 2>&1
+  rm -f /tmp/cloudflared.deb
+  co_lenh cloudflared
+}
+
+khoi_phuc_vps() ( # khoi_phuc_vps <tệp tyzo-chuyen-vps-*.tar.enc>
+  local tep="${1:-}" tmp pass_file archive noi_dung format mode db_kind dom dong_y n
+  [ -f "$tep" ] || { do_ "✘ Không thấy tệp: ${tep:-chưa nhập đường dẫn}"; return 1; }
+  tieu_de "Khôi phục sang VPS này"
+  vang "Lệnh này sẽ ghi cấu hình TyZo và dữ liệu Postgres trong bản sao lên VPS này."
+  read -rp "Gõ dong-y để tiếp tục: " dong_y
+  [ "$dong_y" = "dong-y" ] || { echo "Đã hủy."; return 0; }
+  read -rsp "Mật khẩu của tệp (chữ không hiện): " MAT_KHAU_CHUYEN; echo
+  tmp="$(mktemp -d)"; pass_file="$tmp/mat-khau"; archive="$tmp/ban-sao.tar"; noi_dung="$tmp/noi-dung"
+  chmod 700 "$tmp"; printf '%s' "$MAT_KHAU_CHUYEN" > "$pass_file"; chmod 600 "$pass_file"; MAT_KHAU_CHUYEN=""
+  trap 'rm -rf -- "$tmp"' EXIT INT TERM
+  openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass file:"$pass_file" -in "$tep" -out "$archive" 2>/dev/null || \
+    { do_ "✘ Sai mật khẩu hoặc tệp bị hỏng."; return 1; }
+  tar -tf "$archive" | awk '$0 ~ /^\// || $0 ~ /(^|\/)\.\.(\/|$)/ { loi=1 } END { exit loi }' || \
+    { do_ "✘ Tệp có đường dẫn không an toàn."; return 1; }
+  tar -tvf "$archive" | awk 'substr($1,1,1) == "l" || substr($1,1,1) == "h" { loi=1 } END { exit loi }' || \
+    { do_ "✘ Tệp chứa liên kết không an toàn."; return 1; }
+  mkdir -p "$noi_dung"; tar --no-same-owner --no-same-permissions -xf "$archive" -C "$noi_dung"
+  awk 'NF != 2 || length($1) != 64 || $2 !~ /^\.\// || $2 ~ /(^|\/)\.\.(\/|$)/ { loi=1 } END { exit loi }' "$noi_dung/SHA256SUMS" || \
+    { do_ "✘ Danh sách kiểm tra trong tệp không hợp lệ."; return 1; }
+  (cd "$noi_dung" && sha256sum -c SHA256SUMS >/dev/null) || { do_ "✘ Tệp bị thiếu hoặc sai nội dung."; return 1; }
+  format="$(doc_thong_tin "$noi_dung/thong-tin" FORMAT)"
+  mode="$(doc_thong_tin "$noi_dung/thong-tin" MODE)"
+  db_kind="$(doc_thong_tin "$noi_dung/thong-tin" DB)"
+  [ "$format" = "$TRANSFER_FORMAT" ] && [[ "$mode" = bridge || "$mode" = full ]] || \
+    { do_ "✘ Bản sao lưu không đúng định dạng TyZo."; return 1; }
+  [ "$db_kind" != local ] || [ -s "$noi_dung/postgres.dump" ] || { do_ "✘ Bản sao thiếu dữ liệu Postgres."; return 1; }
+
+  echo "Đang cài phần mềm và lấy mã mới nhất..."
+  cai_nen || return 1
+  lay_ma || return 1
+  install -m 600 "$noi_dung/cau-hinh/tyzo.conf" "$CONF"
+  [ -f "$noi_dung/cau-hinh/tyzo-web.env" ] && install -m 600 "$noi_dung/cau-hinh/tyzo-web.env" "$WEB_ENV"
+  [ -f "$noi_dung/cau-hinh/bridge.env" ] && install -m 600 "$noi_dung/cau-hinh/bridge.env" "$BRIDGE_ENV"
+  [ -f "$noi_dung/cau-hinh/tyzo-vercel.env" ] && install -m 600 "$noi_dung/cau-hinh/tyzo-vercel.env" /opt/tyzo-vercel.env
+  [ -f "$noi_dung/cau-hinh/tyzo-ghi-chu.txt" ] && install -m 600 "$noi_dung/cau-hinh/tyzo-ghi-chu.txt" /opt/tyzo-ghi-chu.txt
+  if [ -d "$noi_dung/cau-hinh/tyzo-android-key" ]; then
+    mkdir -p /opt/tyzo-android-key; cp -a "$noi_dung/cau-hinh/tyzo-android-key/." /opt/tyzo-android-key/
+    find /opt/tyzo-android-key -type d -exec chmod 700 {} +
+    find /opt/tyzo-android-key -type f -exec chmod 600 {} +
+  fi
+  chon_env
+
+  if [ "$mode" = full ] && [ "$db_kind" = local ]; then
+    mkdir -p /opt/tyzo-pg
+    db_len || return 1
+    dc stop web bridge >/dev/null 2>&1 || true
+    docker exec tyzo-db psql -U tyzo -d tyzo -qc "drop schema public cascade; create schema public;" >/dev/null
+    docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < "$noi_dung/postgres.dump" 2>/tmp/tyzo-restore.err || true
+    n="$(dem_bang)"
+    [ "${n:-0}" -gt 5 ] || { do_ "✘ Khôi phục Postgres chưa thành công:"; tail -5 /tmp/tyzo-restore.err; return 1; }
+  fi
+
+  cai_caddy || { do_ "✘ Không cài được Caddy."; return 1; }
+  [ -f "$noi_dung/cau-hinh/Caddyfile" ] && install -m 644 "$noi_dung/cau-hinh/Caddyfile" "$CADDYFILE"
+  systemctl enable --now caddy >/dev/null 2>&1 || true
+  if [ -f "$noi_dung/cau-hinh/cloudflared.service" ]; then
+    cai_cloudflared_khong_hoi || { do_ "✘ Không cài được Cloudflare Tunnel."; return 1; }
+    if [ -d "$noi_dung/cau-hinh/cloudflared" ]; then
+      mkdir -p /etc/cloudflared; cp -a "$noi_dung/cau-hinh/cloudflared/." /etc/cloudflared/
+      find /etc/cloudflared -type d -exec chmod 700 {} +
+      find /etc/cloudflared -type f -exec chmod 600 {} +
+    fi
+    install -m 600 "$noi_dung/cau-hinh/cloudflared.service" /etc/systemd/system/cloudflared.service
+    systemctl daemon-reload; systemctl enable --now cloudflared >/dev/null 2>&1 || true
+  fi
+
+  if [ "$mode" = full ]; then cap_nhat_web || return 1; else cap_nhat_cau_noi || return 1; fi
+  [ -f "$noi_dung/cau-hinh/tyzo-tu-cap-nhat" ] && install -m 644 "$noi_dung/cau-hinh/tyzo-tu-cap-nhat" "$CRON_FILE"
+  [ -f "$noi_dung/cau-hinh/tyzo-sao-luu" ] && install -m 644 "$noi_dung/cau-hinh/tyzo-sao-luu" "$BACKUP_CRON"
+  [ -f "$noi_dung/cau-hinh/tyzo-quet-rui-ro" ] && install -m 644 "$noi_dung/cau-hinh/tyzo-quet-rui-ro" /etc/cron.d/tyzo-quet-rui-ro
+  rm -rf -- "$tmp"; trap - EXIT INT TERM
+  dom="$(conf_get DOMAIN)"; [ -n "$dom" ] || dom="$(ten_mien)"
+  xanh "✔ Đã khôi phục xong trên VPS mới."
+  if [ "$(conf_get EDGE)" != tunnel ] && [ -n "$dom" ]; then
+    vang "Việc cuối: đổi bản ghi A của $dom trên Cloudflare sang IP mới: $(ip_vps)"
+  fi
+)
+
 menu_du_lieu() {
-  tieu_de "Dữ liệu"
+  tieu_de "Sao lưu / Chuyển VPS"
   echo "Dữ liệu đang ở: $( [ "$(conf_get DB)" = "local" ] && echo "Postgres trên VPS" || echo "Neon")"
   echo " 1. Sao lưu ngay"
   echo " 2. Khôi phục từ bản sao lưu"
   echo " 3. Chép dữ liệu từ Neon về VPS (Neon chỉ bị đọc)"
   echo " 4. Chép dữ liệu từ VPS lên một Neon trống (khi quay lại Vercel)"
+  echo " 5. Tạo tệp có mật khẩu để chuyển toàn bộ sang VPS mới"
+  echo " 6. Khôi phục tệp chuyển VPS trên máy này"
   echo " 0. Quay lại"
   read -rp "Chọn số: " c
   case "$c" in
@@ -730,6 +893,8 @@ menu_du_lieu() {
        local u; read -rsp "Dán chuỗi kết nối Neon (chữ không hiện): " u; echo; chep_tu_neon "$(echo "$u" | tr -d '[:space:]')" && dc up -d --no-build >/dev/null 2>&1 ;;
     4) [ "$(conf_get DB)" = "local" ] || { vang "Dữ liệu đang ở Neon sẵn rồi."; return 0; }
        local u; read -rsp "Dán chuỗi kết nối Neon TRỐNG (chữ không hiện): " u; echo; chep_len_neon "$(echo "$u" | tr -d '[:space:]')" ;;
+    5) tao_ban_chuyen_vps ;;
+    6) local f; read -rp "Đường dẫn tệp .tar.enc: " f; khoi_phuc_vps "$f" ;;
   esac
 }
 
@@ -1323,7 +1488,7 @@ menu() {
     echo "10. Tạo lại LIVE_BRIDGE_SECRET (chế độ chỉ cầu nối)"
     echo "11. Thiết lập WEB ĐẦY ĐỦ trên VPS này"
     echo "12. CHẠY THỬ web đầy đủ (không đụng web thật)"
-    echo "13. Dữ liệu: sao lưu, khôi phục, chép Neon ⇄ VPS"
+    echo "13. Sao lưu / Chuyển VPS"
     echo "14. Đưa web lên tài khoản Vercel (mới hoặc khác)"
     echo "15. Khóa ký ứng dụng Android (tự cập nhật ứng dụng)"
     echo "16. Quét vi phạm mỗi đêm (bật/tắt, chạy thử)"
@@ -1374,13 +1539,15 @@ case "${1:-menu}" in
   nhat-ky) nhat_ky ;;
   khoi-dong-lai) khoi_dong_lai ;;
   sao-luu) echo "--- $(date '+%d/%m/%Y %H:%M') ---"; sao_luu ;;
+  tao-ban-chuyen-vps) tao_ban_chuyen_vps ;;
+  khoi-phuc-vps) khoi_phuc_vps "${2:-}" ;;
   thiet-lap|cai-dat) thiet_lap ;;
   web) thiet_lap_web ;;
   thu) thiet_lap_web thu ;;
   vercel) dua_len_vercel ;;
   khoa-android) tao_khoa_android ;;
   quet-rui-ro) echo "--- $(date '+%d/%m/%Y %H:%M') ---"; quet_rui_ro ;;
-  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|sao-luu|thiet-lap|web|thu|vercel|khoa-android|quet-rui-ro]"; exit 1 ;;
+  *) echo "Dùng: tyzo [kiem-tra|cap-nhat|nhat-ky|khoi-dong-lai|sao-luu|tao-ban-chuyen-vps|khoi-phuc-vps TEP|thiet-lap|web|thu|vercel|khoa-android|quet-rui-ro]"; exit 1 ;;
 esac
 }
 
