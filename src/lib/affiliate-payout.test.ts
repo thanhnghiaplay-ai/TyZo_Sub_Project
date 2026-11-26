@@ -6,7 +6,8 @@ import assert from "node:assert/strict";
 import { after, before, beforeEach, describe, it } from "node:test";
 import type { Sql } from "./db.ts";
 import { pgliteSql, realPgSql } from "./test-sql.ts";
-import { cancelPayoutWith, markPayoutWith, requestPayoutWith } from "./affiliate-payout.ts";
+import { readFileSync } from "node:fs";
+import { cancelPayoutWith, markPayoutWith, payoutReconcileWith, requestPayoutWith } from "./affiliate-payout.ts";
 
 let sql: Sql;
 let end: (() => Promise<void>) | undefined;
@@ -96,12 +97,39 @@ describe("lệnh rút hoa hồng", () => {
     assert.equal((await requestPayoutWith(sql, "ctv", RULES)).amount, 60000);
   });
 
-  it("khoản cũ chưa gắn lệnh (trước bản này) vẫn được xác nhận đúng", async () => {
+  it("RE-006: lệnh cũ chưa gắn khoản và không khớp tiền → không xác nhận, không hủy; đối soát liệt kê ra", async () => {
+    // 3 khoản cũ 20.000 đ đang chờ rút (chưa gắn lệnh), lệnh cũ ghi 50.000 đ: không khớp.
     await sql`update commission_events set status = 'cho-rut'`;
-    const made = await sql<{ id: number }>`insert into affiliate_payouts (affiliate_id, amount) values ('ctv', 60000) returning id`;
-    await markPayoutWith(sql, Number(made[0].id), "CK-cu");
+    const made = await sql<{ id: number }>`insert into affiliate_payouts (affiliate_id, amount) values ('ctv', 50000) returning id`;
+    const id = Number(made[0].id);
+    await assert.rejects(markPayoutWith(sql, id, "CK-cu"), /chưa đối soát/);
+    await assert.rejects(cancelPayoutWith(sql, id, ""), /chưa đối soát/);
     const ev = await sql<{ status: string }>`select status from commission_events`;
-    assert.ok(ev.every((e) => e.status === "da-chi"));
+    assert.ok(ev.every((e) => e.status === "cho-rut"), "không khoản nào bị đổi");
+    const r = await payoutReconcileWith(sql);
+    assert.deepEqual(r.mismatched.map((m) => [m.id, m.amount, m.linked]), [[id, 50000, 0]]);
+    assert.deepEqual(r.orphans.map((o) => [o.count, o.total]), [[3, 60000]]);
+  });
+
+  it("RE-006: migration 0042 chỉ gắn khi chắc chắn (một lệnh mở, tổng khớp); khoản đã chi không đụng", async () => {
+    const backfill = readFileSync(new URL("../../migrations/0042_payout_backfill.sql", import.meta.url), "utf8");
+    await sql`update commission_events set status = 'cho-rut'`;
+    await sql`insert into commission_events (affiliate_id, referred_user_id, source_kind, source_ref, base_amount, rate_bp, amount, status, available_at)
+              values ('ctv', 'k', 'goi', 'cu-da-chi', 1, 1, 5000, 'da-chi', now())`;
+    const ok = await sql<{ id: number }>`insert into affiliate_payouts (affiliate_id, amount) values ('ctv', 60000) returning id`;
+    // CTV thứ hai: tổng không khớp → để nguyên.
+    await sql`insert into affiliates (user_id, code, status) values ('ctv2', 'MA2', 'hoat-dong')`;
+    await sql`insert into commission_events (affiliate_id, referred_user_id, source_kind, source_ref, base_amount, rate_bp, amount, status, available_at)
+              values ('ctv2', 'k', 'goi', 'x2', 1, 1, 7000, 'cho-rut', now())`;
+    await sql`insert into affiliate_payouts (affiliate_id, amount) values ('ctv2', 9000)`;
+    await sql.query(backfill);
+    const linked = await sql<{ affiliate_id: string; status: string; payout_id: number | null }>`select affiliate_id, status, payout_id from commission_events order by id`;
+    assert.ok(linked.filter((e) => e.affiliate_id === "ctv" && e.status === "cho-rut").every((e) => Number(e.payout_id) === Number(ok[0].id)));
+    assert.equal(linked.find((e) => e.status === "da-chi")?.payout_id, null, "khoản đã chi không đụng");
+    assert.equal(linked.find((e) => e.affiliate_id === "ctv2")?.payout_id, null, "không khớp tiền thì không gắn");
+    await markPayoutWith(sql, Number(ok[0].id), "CK-1");
+    const paid = await sql<{ n: number }>`select count(*)::int as n from commission_events where affiliate_id = 'ctv' and status = 'da-chi'`;
+    assert.equal(paid[0].n, 4);
   });
 
   it("R5-004: có cờ rủi ro mở thì không rút được", async () => {

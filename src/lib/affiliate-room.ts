@@ -114,6 +114,16 @@ export const setAffiliateState = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+/** RE-006: đối soát chỉ đọc — lệnh chờ chuyển chưa khớp khoản, khoản «cho-rut» chưa gắn lệnh. Chỉ Chủ. */
+export const getPayoutReconcile = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await owner(context.userId);
+    const { getSql } = await import("@/lib/db");
+    const { payoutReconcileWith } = await import("@/lib/affiliate-payout");
+    return payoutReconcileWith(await getSql());
+  });
+
 export const markPayout = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: { id: number; ref: string }) => {

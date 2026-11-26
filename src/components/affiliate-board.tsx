@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { cancelPayout, getAffiliateDesk, markPayout, saveAffiliateRules, setAffiliateState } from "@/lib/affiliate-room";
+import { cancelPayout, getAffiliateDesk, getPayoutReconcile, markPayout, saveAffiliateRules, setAffiliateState } from "@/lib/affiliate-room";
 import { AFFILIATE_DEFAULT, COMMISSION_REASON, commissionFor, MAX_SHARE_CAP_BP, parseAffiliateRules } from "@/lib/affiliate";
 import { dong } from "@/lib/payment/money-format";
 
@@ -24,6 +24,7 @@ export function AffiliateBoard() {
   type Desk = NonNullable<Awaited<ReturnType<typeof getAffiliateDesk>>>;
   const [people, setPeople] = useState<Desk["people"]>([]);
   const [payouts, setPayouts] = useState<Desk["payouts"]>([]);
+  const [recon, setRecon] = useState<Awaited<ReturnType<typeof getPayoutReconcile>> | null>(null);
   const [q, setQ] = useState("");
 
   function load() {
@@ -39,6 +40,7 @@ export function AffiliateBoard() {
         setMargin(String(desk.rules.minMarginBp / 100));
         setPeople(desk.people);
         setPayouts(desk.payouts);
+        void getPayoutReconcile().then(setRecon).catch(() => setRecon(null));
         setTotals(desk.totals);
       })
       .catch((error: Error) => setNote(error.message));
@@ -184,6 +186,17 @@ export function AffiliateBoard() {
           </article>
         ))}
       </div>
+      {recon && (recon.mismatched.length > 0 || recon.orphans.length > 0) && (
+        <div className="space-y-1 rounded-[var(--radius-ctl)] border border-danger/40 bg-danger/5 p-3 text-sm" data-payout-reconcile>
+          <h3 className="font-semibold text-danger">Đối soát lệnh rút (cần Admin xem)</h3>
+          {recon.mismatched.map((m) => (
+            <p key={m.id}>Lệnh #{m.id}: ghi {dong(m.amount)}, khoản đã gắn {dong(m.linked)}. Chưa xác nhận hay trả lại được cho tới khi khớp.</p>
+          ))}
+          {recon.orphans.map((o) => (
+            <p key={o.affiliateId}>{o.count} khoản cũ ({dong(o.total)}) đang chờ rút nhưng chưa gắn lệnh nào (mã CTV {o.affiliateId.slice(0, 8)}…).</p>
+          ))}
+        </div>
+      )}
       {payouts.length > 0 && (
         <div className="space-y-3" data-affiliate-payouts>
           <h3 className="text-sm font-semibold">Lệnh rút chờ chuyển</h3>
