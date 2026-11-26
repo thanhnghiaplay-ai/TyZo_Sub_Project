@@ -54,6 +54,8 @@ type LiveBridgeDeps = {
 };
 
 const PCM_BYTES_PER_SEC = 16000 * 2;
+/** Hàng chờ gửi Alibaba tối đa (byte JSON base64). Quá thì bỏ khung mới (kiểm toán DEEP-008). */
+const UPSTREAM_BACKLOG_BYTES = 1024 * 1024;
 /** Câu Alibaba gửi khi tự cắt vì lâu không có kết quả (video im): «Response stream timeout (timeout_seconds=60, …)». */
 const IDLE_CUT = /stream timeout|timeout_seconds/i;
 /** Dưới mức này (khoảng -50 dBFS) coi khung là im. */
@@ -178,6 +180,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   let mulaw = false;
   let drainTimer: ReturnType<typeof setTimeout> | null = null;
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let backlogNoted = false;
   /** DEEP-001: các lần trừ tiền đang chạy; đóng phiếu phải chờ hết. */
   const charging = new Set<Promise<unknown>>();
   const maxReconnects = deps.maxReconnects ?? 3;
@@ -350,6 +353,13 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
       topUp();
       return;
     }
+    // DEEP-008: mạng tới Alibaba nghẽn (hàng chờ gửi quá ~1 MB, khoảng 20 giây tiếng) thì bỏ khung, không dồn bộ nhớ.
+    if (upstream.bufferedAmount > UPSTREAM_BACKLOG_BYTES) {
+      if (!backlogNoted) log("hàng chờ gửi Alibaba quá lớn, bỏ bớt khung tiếng");
+      backlogNoted = true;
+      return;
+    }
+    backlogNoted = false;
     upstream.send(audioAppend(bytes));
     meter.audio(bytes.length / PCM_BYTES_PER_SEC);
     topUp();

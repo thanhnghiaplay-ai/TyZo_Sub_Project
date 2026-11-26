@@ -267,7 +267,12 @@ export const auth = betterAuth({
           onPasswordReset: async ({ user }: { user: { id: string; email: string } }) => {
             sendAuthLetter("changed", user.email);
             // Đặt lại mật khẩu thì ứng dụng Android trên mọi máy phải liên kết lại.
-            await import("../app-link.server").then((m) => m.revokeAllDevices(user.id)).catch(() => {});
+            // Kiểm toán R3-004: lỗi thì thử lại một lần và ghi nhật ký (trước đây nuốt lỗi im lặng).
+            const revoke = () => import("../app-link.server").then((m) => m.revokeAllDevices(user.id));
+            await revoke().catch(async (first) => {
+              console.error("[auth] gỡ máy Android sau khi đặt lại mật khẩu lỗi, thử lại:", first);
+              await revoke().catch((again) => console.error("[auth] gỡ máy Android vẫn lỗi:", again));
+            });
           },
         },
       }

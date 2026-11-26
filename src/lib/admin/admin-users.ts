@@ -175,7 +175,12 @@ export const setTempPassword = createServerFn({ method: "POST" })
       returning id
     `;
     if (!updated.length) throw new Error("Tài khoản này không có mật khẩu để đặt lại.");
-    await writeAudit(context.userId, "mat-khau-tam", data.userId, "Đặt mật khẩu tạm");
+    // Kiểm toán R4-008: giống «đặt lại mật khẩu» của khách: đăng xuất mọi phiên và gỡ mọi máy Android đã liên kết,
+    // để người giữ mật khẩu cũ (hoặc phiên cũ) không còn vào được.
+    await sql`delete from "session" where "userId" = ${data.userId}`;
+    const { revokeAllDevices } = await import("@/lib/app-link.server");
+    await revokeAllDevices(data.userId);
+    await writeAudit(context.userId, "mat-khau-tam", data.userId, "Đặt mật khẩu tạm, đăng xuất mọi phiên và gỡ máy Android");
     return { ok: true };
   });
 
@@ -300,48 +305,28 @@ export const removeUser = createServerFn({ method: "POST" })
     `;
     if (!person.length) throw new Error("Không thấy tài khoản.");
     if (person[0].role === "chu") throw new Error("Không xóa Admin.");
-    let holds: { id: string }[] = [];
-    try {
-      holds = await sql<{ id: string }>`
-        select id from run_tickets where user_id = ${data} and status = 'dang-giu' and held > 0
-      `;
-    } catch {
-      holds = [];
-    }
+    // Kiểm toán R4-004/R4-005: mọi bước trong MỘT giao dịch (một bước lỗi thì không bước nào có hiệu lực, không còn
+    // nửa xóa nửa giữ), không nuốt lỗi; gỡ luôn máy Android và mã liên kết (bảng app_devices không nối khóa ngoại với "user").
+    const { inTransaction } = await import("@/lib/db-tx");
     const { releaseHoldWith } = await import("@/lib/payment/pay-flow");
-    for (const row of holds) {
-      try {
-        await releaseHoldWith(sql, row.id, `Nhả khoản giữ khi xóa tài khoản, bởi ${place.email}`);
-      } catch {
-        /* phiếu đã đổi trạng thái */
-      }
-    }
-    await sql`delete from room_staff where user_id = ${data}`;
-    await sql`update pay_orders set status = 'cancelled' where user_id = ${data} and status in ('pending', 'claimed')`;
-    await sql`update room_appeals set user_id = null where user_id = ${data}`;
-    try {
-      await sql`delete from trial_devices where user_id = ${data}`;
-    } catch {
-      /* bảng có sau lần xây mới */
-    }
-    try {
-      await sql`delete from room_presence where user_id = ${data}`;
-    } catch {
-      /* bảng có sau lần xây mới */
-    }
-    try {
-      await sql`delete from room_notices where user_id = ${data}`;
-    } catch {
-      /* bảng có sau lần xây mới */
-    }
-    try {
+    await inTransaction(sql, async (tx) => {
+      const holds = await tx<{ id: string }>`
+        select id from run_tickets where user_id = ${data} and status = 'dang-giu' and held > 0 for update
+      `;
+      for (const row of holds) await releaseHoldWith(tx, row.id, `Nhả khoản giữ khi xóa tài khoản, bởi ${place.email}`);
+      await tx`delete from room_staff where user_id = ${data}`;
+      await tx`update pay_orders set status = 'cancelled' where user_id = ${data} and status in ('pending', 'claimed')`;
+      await tx`update room_appeals set user_id = null where user_id = ${data}`;
+      await tx`delete from trial_devices where user_id = ${data}`;
+      await tx`delete from room_presence where user_id = ${data}`;
+      await tx`delete from room_notices where user_id = ${data}`;
       // Lịch sử Dịch trực tiếp (chữ của phiên) đi cùng tài khoản: xóa tài khoản là xóa hết.
-      await sql`delete from live_history where user_id = ${data}`;
-    } catch {
-      /* bảng có sau lần xây mới */
-    }
-    const gone = await sql<{ id: string }>`delete from "user" where id = ${data} returning id`;
-    if (!gone.length) throw new Error("Không thấy tài khoản.");
+      await tx`delete from live_history where user_id = ${data}`;
+      await tx`update app_devices set revoked_at = now() where user_id = ${data} and revoked_at is null`;
+      await tx`delete from app_link_codes where user_id = ${data}`;
+      const gone = await tx<{ id: string }>`delete from "user" where id = ${data} returning id`;
+      if (!gone.length) throw new Error("Không thấy tài khoản.");
+    });
     await writeAudit(context.userId, "xoa-tai-khoan", data, "Xóa tài khoản");
     return { ok: true };
   });

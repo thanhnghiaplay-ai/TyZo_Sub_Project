@@ -30,8 +30,14 @@ export async function readRequest(
       return { model, chars: input.length, problem: input ? null : "Không có chữ để đọc." };
     }
     if (json.stream === true) return { model, chars: 0, problem: "Cửa trả theo lượt chưa hỗ trợ stream." };
-    const cap = Number(json.max_completion_tokens ?? json.max_tokens ?? 0);
-    if (cap > MAX_COMPLETION_TOKENS) return { model, chars: 0, problem: "Số token trả lời tối đa quá lớn." };
+    // Kiểm toán R3-002: có ghi giới hạn thì phải là số nguyên 1–8192 (trước đây «abc», -1, 1.5 đều lọt).
+    // Không ghi thì vẫn nhận như cũ (mọi lệnh của app đều ghi; khi nhà không trả usage, phần trừ tính theo mức trần 8192).
+    const rawCap = json.max_completion_tokens ?? json.max_tokens;
+    if (rawCap !== undefined && rawCap !== null) {
+      const cap = Number(rawCap);
+      if (typeof rawCap !== "number" || !Number.isInteger(cap) || cap < 1) return { model, chars: 0, problem: "Số token trả lời tối đa không hợp lệ." };
+      if (cap > MAX_COMPLETION_TOKENS) return { model, chars: 0, problem: "Số token trả lời tối đa quá lớn." };
+    }
     return { model, chars: 0, problem: null };
   } catch {
     return null;

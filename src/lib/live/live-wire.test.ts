@@ -132,6 +132,9 @@ describe("luật xin vé", () => {
   it("địa chỉ cầu nối chỉ nhận ws hoặc wss và bỏ phần vé", () => {
     assert.equal(bridgeBase("wss://cau-noi.example.com/live?ticket=x#y"), "wss://cau-noi.example.com/live");
     assert.equal(bridgeBase("https://cau-noi.example.com"), null);
+    // DEEP-009: ws không mã hóa chỉ cho máy này.
+    assert.equal(bridgeBase("ws://cau-noi.example.com/live"), null);
+    assert.equal(bridgeBase("ws://127.0.0.1:8787/live"), "ws://127.0.0.1:8787/live");
     assert.equal(bridgeBase(undefined), null);
     assert.equal(bridgeBase("không phải địa chỉ"), null);
   });

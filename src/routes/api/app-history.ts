@@ -56,6 +56,9 @@ export const Route = createFileRoute("/api/app-history")({
           const params = new URL(request.url).searchParams;
           const id = params.get("id");
           if (!id && params.get("all") !== "1") return fail(400, "Thiếu phiên cần xóa.");
+          // Kiểm toán R4-007: giới hạn tần suất như GET/POST.
+          const { takeRate } = await import("@/lib/guard.server");
+          await takeRate(`live-history-del:${userId}`, 30, 60);
           const { getSql } = await import("@/lib/db");
           const { deleteHistoryWith } = await import("@/lib/live/live-history");
           return json(200, { deleted: await deleteHistoryWith(await getSql(), userId, id ? id.slice(0, 160) : null) });

@@ -21,12 +21,16 @@ export function parseLiveOpen(input: Partial<LiveOpenInput> | null | undefined):
   return { model, target, source, audio: input?.audio === true, ...(Object.keys(words).length ? { words } : {}) };
 }
 
-/** Địa chỉ cầu nối công khai phải là ws hoặc wss, không kèm vé. */
+/**
+ * Địa chỉ cầu nối công khai phải là wss (mã hóa), không kèm vé. Kiểm toán DEEP-009: vé nằm trong địa chỉ, nên ws không
+ * mã hóa chỉ được dùng với máy này (localhost, 127.0.0.1, ::1) để thử.
+ */
 export function bridgeBase(raw: string | undefined): string | null {
   if (!raw) return null;
   try {
     const url = new URL(raw.trim());
-    if (url.protocol !== "wss:" && url.protocol !== "ws:") return null;
+    const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+    if (url.protocol !== "wss:" && !(url.protocol === "ws:" && local)) return null;
     url.search = "";
     url.hash = "";
     return url.toString();

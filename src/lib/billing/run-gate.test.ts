@@ -105,6 +105,11 @@ describe("đọc yêu cầu", () => {
     assert.deepEqual(await readRequest("/chat/completions", "application/json", enc({ model: "m" })), { model: "m", chars: 0, problem: null });
     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", stream: true })))?.problem);
     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_completion_tokens: 999999 })))?.problem);
+    // R3-002: giá trị lạ bị chặn, giá trị đúng vẫn qua.
+    for (const bad of ["abc", -1, 0, 1.5, "100", true]) {
+      assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_tokens: bad })))?.problem, String(bad));
+    }
+    assert.equal((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_completion_tokens: 4096 })))?.problem, null);
   });
   it("speech: đếm ký tự; nhận dạng: lấy model từ form", async () => {
     assert.equal((await readRequest("/audio/speech", "application/json", enc({ model: "m", input: "xin chào" })))?.chars, 8);

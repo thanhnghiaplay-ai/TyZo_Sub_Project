@@ -18,7 +18,9 @@ export type HistoryInput = { clientId: string; via: "web" | "app"; model: string
 export type HistoryItem = { id: string; via: "web" | "app"; model: string; target: string; startedAt: string; durationMs: number; lines: number; preview: string };
 
 const str = (value: unknown, max: number) => (typeof value === "string" ? value.slice(0, max) : "");
-const num = (value: unknown) => (typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.round(value * 1000) / 1000) : 0);
+/** Một phiên dài nhất 2 ngày (giây). Kiểm toán DEEP-007: số giây lớn hơn làm tràn cột duration_ms (integer). */
+const MAX_SECONDS = 2 * 86_400;
+const num = (value: unknown) => (typeof value === "number" && Number.isFinite(value) ? Math.min(MAX_SECONDS, Math.max(0, Math.round(value * 1000) / 1000)) : 0);
 
 /** Kiểm dữ liệu khách gửi lên. Sai hoặc không có câu nào có chữ thì trả null (không lưu). */
 export function cleanHistory(raw: unknown, via: "web" | "app", now = Date.now()): HistoryInput | null {

@@ -514,6 +514,18 @@ function headerSecret(request: Request) {
   return { apikey, secure };
 }
 
+/** Thân webhook: tối đa 256 KB (kiểm toán DEEP-010), đọc sau khi đã kiểm khóa bí mật. Sai dạng hay quá lớn thì null. */
+async function webhookJson(request: Request): Promise<unknown> {
+  const { readCapped } = await import("@/lib/app-api.server");
+  const text = await readCapped(request, 256 * 1024).catch(() => null);
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 export async function handleSepay(request: Request) {
   const { sameSecret } = await import("@/lib/payment/pay-secret.server");
   const settings = await readSettings();
@@ -521,7 +533,7 @@ export async function handleSepay(request: Request) {
   if (!settings.sepay_key || !sameSecret(apikey, settings.sepay_key)) {
     return Response.json({ success: false }, { status: 401 });
   }
-  const body = await request.json().catch(() => null);
+  const body = await webhookJson(request);
   const hit = sepayHit(body);
   if (hit && accountMatches(hit.account, settings.sepay_account)) await creditHit("sepay", hit);
   return Response.json({ success: true });
@@ -534,7 +546,7 @@ export async function handleCasso(request: Request) {
   const tokenOk = Boolean(settings.casso_token) && sameSecret(secure, settings.casso_token);
   const keyOk = Boolean(settings.casso_key) && sameSecret(apikey, settings.casso_key);
   if (!tokenOk && !keyOk) return Response.json({ success: false }, { status: 401 });
-  const body = await request.json().catch(() => null);
+  const body = await webhookJson(request);
   for (const hit of cassoHits(body)) {
     if (accountMatches(hit.account, settings.casso_account)) await creditHit("casso", hit);
   }

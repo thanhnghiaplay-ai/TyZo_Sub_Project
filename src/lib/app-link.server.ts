@@ -19,12 +19,17 @@ export type AppDeviceRow = { id: string; name: string; createdAt: string; lastUs
 /** Tạo mã liên kết mới cho tài khoản. Mã cũ chưa dùng của tài khoản bị xóa. */
 export async function createLinkCode(userId: string): Promise<{ code: string; expiresInSeconds: number }> {
   const sql = await getSql();
-  await sql`delete from app_link_codes where user_id = ${userId} or expires_at < now()`;
   const code = codeFromBytes(randomBytes(16));
-  await sql`
-    insert into app_link_codes (code_hash, user_id, expires_at)
-    values (${hash(code)}, ${userId}, ${new Date(Date.now() + LINK_CODE_TTL_SECONDS * 1000).toISOString()}::timestamptz)
-  `;
+  // Kiểm toán R3-005: một giao dịch, khóa theo tài khoản: hai lần bấm cùng lúc chỉ còn MỘT mã dùng được.
+  const { inTransaction } = await import("@/lib/db-tx");
+  await inTransaction(sql, async (tx) => {
+    await tx`select pg_advisory_xact_lock(hashtext(${"app-link:" + userId}))`;
+    await tx`delete from app_link_codes where user_id = ${userId} or expires_at < now()`;
+    await tx`
+      insert into app_link_codes (code_hash, user_id, expires_at)
+      values (${hash(code)}, ${userId}, ${new Date(Date.now() + LINK_CODE_TTL_SECONDS * 1000).toISOString()}::timestamptz)
+    `;
+  });
   return { code, expiresInSeconds: LINK_CODE_TTL_SECONDS };
 }
 
@@ -33,23 +38,29 @@ export async function redeemLinkCode(rawCode: unknown, rawName: unknown): Promis
   const code = normalizeCode(rawCode);
   if (!code) return null;
   const sql = await getSql();
-  const rows = await sql<{ user_id: string }>`
-    delete from app_link_codes where code_hash = ${hash(code)} and expires_at > now() returning user_id
-  `;
-  const userId = rows[0]?.user_id;
-  if (!userId) return null;
   const token = `${DEVICE_TOKEN_PREFIX}${randomBytes(32).toString("base64url")}`;
   const id = randomBytes(8).toString("hex");
-  await sql`
-    insert into app_devices (id, user_id, token_hash, name) values (${id}, ${userId}, ${hash(token)}, ${cleanDeviceName(rawName)})
-  `;
-  // Giữ tối đa MAX_DEVICES máy: gỡ máy cũ nhất.
-  await sql`
-    update app_devices set revoked_at = now()
-    where user_id = ${userId} and revoked_at is null and id not in (
-      select id from app_devices where user_id = ${userId} and revoked_at is null order by created_at desc limit ${MAX_DEVICES}
-    )
-  `;
+  // Kiểm toán AZ-007: dùng mã và ghi máy trong một giao dịch: ghi máy lỗi thì mã vẫn còn, khách thử lại được.
+  const { inTransaction } = await import("@/lib/db-tx");
+  const userId = await inTransaction(sql, async (tx) => {
+    const rows = await tx<{ user_id: string }>`
+      delete from app_link_codes where code_hash = ${hash(code)} and expires_at > now() returning user_id
+    `;
+    const owner = rows[0]?.user_id;
+    if (!owner) return null;
+    await tx`
+      insert into app_devices (id, user_id, token_hash, name) values (${id}, ${owner}, ${hash(token)}, ${cleanDeviceName(rawName)})
+    `;
+    // Giữ tối đa MAX_DEVICES máy: gỡ máy cũ nhất.
+    await tx`
+      update app_devices set revoked_at = now()
+      where user_id = ${owner} and revoked_at is null and id not in (
+        select id from app_devices where user_id = ${owner} and revoked_at is null order by created_at desc limit ${MAX_DEVICES}
+      )
+    `;
+    return owner;
+  });
+  if (!userId) return null;
   return { token, userId };
 }
 
@@ -61,6 +72,7 @@ export async function deviceUserId(): Promise<string | null> {
   const rows = await sql<{ id: string; user_id: string }>`
     update app_devices set last_used_at = now()
     where token_hash = ${hash(token)} and revoked_at is null
+      and exists (select 1 from "user" u where u.id = app_devices.user_id)
       and coalesce(last_used_at, created_at) > ${new Date(Date.now() - DEVICE_IDLE_DAYS * 86_400_000).toISOString()}::timestamptz
     returning id, user_id
   `;

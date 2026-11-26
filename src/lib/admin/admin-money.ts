@@ -124,7 +124,7 @@ export const getMoney = createServerFn({ method: "POST" })
     const window = data === "year" ? "5 years" : data === "month" ? "12 months" : data === "week" ? "8 weeks" : "14 days";
     // Doanh thu = mọi tiền nạp đã vào ví, kể cả Chủ xác nhận tay khi cổng chưa tự cộng. Không tính tiền thử.
     const revenue = await sql<{ bucket: string; amount: number }>`
-      select to_char(date_trunc(${data}::text, created_at at time zone 'Asia/Ho_Chi_Minh'), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      select to_char(date_trunc(${data}::text, created_at at time zone 'Asia/Ho_Chi_Minh'), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::bigint as amount
       from room_ledger
       where kind = 'nap' and created_at > now() - ${window}::interval
       group by 1 order by 1
@@ -137,26 +137,26 @@ export const getMoney = createServerFn({ method: "POST" })
       limit 80
     `;
     const costs = await sql<{ bucket: string; amount: number }>`
-      select to_char(date_trunc(${data}::text, spent_on::timestamp), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::int as amount
+      select to_char(date_trunc(${data}::text, spent_on::timestamp), 'YYYY-MM-DD') as bucket, coalesce(sum(amount), 0)::bigint as amount
       from room_costs
       where spent_on::timestamp > now() - ${window}::interval
       group by 1 order by 1
     `;
     const kinds = await sql<{ kind: string; amount: number }>`
-      select kind, coalesce(sum(amount), 0)::int as amount
+      select kind, coalesce(sum(amount), 0)::bigint as amount
       from room_ledger
       where created_at > now() - ${window}::interval
         and kind in ('nap', 'goi', 'hoan', 'nha')
       group by kind
     `;
     const runSum = await sql<{ charged: number; refunded: number; von: number; uoc: number }>`
-      select coalesce(sum(charged), 0)::int as charged, coalesce(sum(refunded), 0)::int as refunded, coalesce(sum(base_cost), 0)::int as von,
-        coalesce(sum(base_cost) filter (where base_est), 0)::int as uoc
+      select coalesce(sum(charged), 0)::bigint as charged, coalesce(sum(refunded), 0)::bigint as refunded, coalesce(sum(base_cost), 0)::bigint as von,
+        coalesce(sum(base_cost) filter (where base_est), 0)::bigint as uoc
       from run_tickets
       where created_at > now() - ${window}::interval and unit = 'vnd'
     `;
     const hoaRows = await sql<{ hoa: number }>`
-      select coalesce(sum(amount), 0)::int as hoa from commission_events
+      select coalesce(sum(amount), 0)::bigint as hoa from commission_events
       where status <> 'huy' and created_at > now() - ${window}::interval
     `;
     const byKind = Object.fromEntries(kinds.map((row) => [row.kind, row.amount]));

@@ -63,6 +63,13 @@ describe("lịch sử dịch trực tiếp", () => {
     assert.deepEqual(await listHistoryWith(sql, "u1"), []);
   });
 
+  it("DEEP-007: giây quá lớn bị chặn ở 2 ngày, không tràn cột duration_ms", async () => {
+    const x = cleanHistory({ clientId: "test12345", startedAt: Date.now(), cues: [{ s: 0, e: 3_000_000, o: "a" }] }, "app");
+    assert.ok(x);
+    assert.equal(x.cues[0].e, 2 * 86_400);
+    await saveHistoryWith(sql, "u-tran", x);
+  });
+
   it("giữ tối đa 30 phiên, bỏ phiên cũ nhất", async () => {
     const now = Date.now();
     for (let i = 0; i < KEEP_SESSIONS + 3; i++) {
