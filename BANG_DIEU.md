@@ -16,7 +16,7 @@ Thứ tự khi các câu khác nhau:
 | Mục | Giá trị |
 |---|---|
 | Bản khách đang dùng | Nhánh `main` = `work` = v5.49.1 + ứng dụng 0.11 (đẩy chính thức 27/11/2026 02:19, Chủ nói «Đẩy chính thức»: kiểm toán v5.49, migration 0038/0039, điều khoản không đổi). Trước đó v5.49.0 (sửa sau kiểm tra trang khách và Admin, cả nhóm B). Trước đó v5.48.0 (26/11/2026: chỉ còn Groq, Alibaba, TyZo; Chủ nói «Giữ lại nhà cung cấp là groq, alibaba và tyzo của tôi», «Xóa vĩnh viễn»). Trước đó v5.47.0 (nhận dạng TyZo Modal ở cửa trả theo lượt, PR #3). Ứng dụng Android 0.11 (khóa ký đã tạo). Cầu nối Dịch trực tiếp trên VPS `realtimehub.tyzo.site`. |
-| Bản mới nhất | v5.49.1 trên `main` và `work` (kiểm toán v5.49). Báo cáo: `docs/kiem-toan/v5.49/BAO_CAO.md`. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản mới nhất | v5.49.2 được Chủ duyệt đẩy chính thức; Git/deployment xem phiếu PHAT_HANH_5.49.2.md (trước đó5.49.1). Báo cáo: `docs/kiem-toan/v5.49/BAO_CAO.md`. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
 | Điều khoản | 2026-11-26.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -38,10 +38,11 @@ Không ai vừa đề xuất vừa tự nhận là đã duyệt.
 
 Người dùng là người chốt. Câu khởi đầu cho model khác chỉ cần: «Đọc `BANG_DIEU.md` và làm đúng vai của mình.»
 
-## Ý đã nêu — tiếp tục trên nhánh kiểm toán
+## Ý đã nêu — phát hành5.49.2
 
-- Chủ chỉ định `ccr-9f1afcc8-iv7067` làm gốc, không gộp main; cho phép trực tiếp tiếp tục sửa. Chỉ thị này ưu tiên hơn quy tắc nhánh work/vai cũ.
-- Chủ đã làm mới giới hạn và yêu cầu tiếp tục. Ứng viên **5.49.2**, trạng thái **PARTIAL**, chưa push/deploy. Log cổng cuối và việc còn mở: `docs/kiem-toan/v5.49.1/BAO_CAO.md`; phiếu tiếp theo: `docs/kiem-toan/v5.49.1/BAN_GIAO_PHIEN_SAU.md`. Mục lịch sử bên dưới không phải trạng thái ứng viên mới.
+- Chủ nói «Đẩy chính thức», sau đó xác nhận «Đã có bản sao lưu/điểm khôi phục». Được phép đưa nhánh `ccr-9f1afcc8-iv7067` lên main/work bằng fast-forward; không gộp main ngược vào nhánh nguồn, không force push.
+- Bản5.49.2 đã qua cổng local; chất lượng kiểm toán vẫn PARTIAL với các giới hạn trong `docs/kiem-toan/v5.49.1/BAO_CAO.md`. Chấp thuận phát hành không đổi kết quả các kiểm tra còn thiếu.
+- Phiếu phát hành: `docs/kiem-toan/v5.49.1/PHAT_HANH_5.49.2.md`. Trạng thái thực tế của Vercel phải kiểm trên commit được đẩy, không suy ra từ push thành công. Quy tắc giữ nguyên backup và migration gate.
 
 ## Việc đang dở (cập nhật 27/11/2026, đọc trước tiên)
 

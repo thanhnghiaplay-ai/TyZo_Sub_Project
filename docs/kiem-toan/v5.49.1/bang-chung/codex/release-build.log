@@ -1,0 +1,20 @@
+
+> build
+> node scripts/with-app-env.mjs vite build && npm run db:migrate
+
+[info] [nitro:vercel] Using `nodejs24.x` runtime.
+[info] [nitro:vercel] Using `web` entry format.
+[start] [nitro] Building [Nitro] (preset: `vercel`, compatibility: `2026-11-26`)
+[success] [nitro] Generated public .vercel/output/static
+[info] Tracing dependencies:
+- `tslib` (2.8.1)
+[success] Traced 1 dependencies (4 files) in 38ms.
+[info] Ensure your production environment matches the builder OS and architecture (`linux-x64`) to avoid native module issues.
+[info] Generated .vercel/output/nitro.json
+[success] [nitro] You can preview this build using `npx vite preview`
+[success] [nitro] You can deploy this build using `npx nitro deploy --prebuilt`
+
+> db:migrate
+> node scripts/migrate.mjs
+
+[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).

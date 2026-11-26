@@ -12,7 +12,7 @@ type ReleaseNote = {
 export const CHANGELOG: ReleaseNote[] = [
   {
     version: "5.49.2",
-    time: "26/11/2026",
+    time: "05:33 27/11/2026",
     title: "Giữ bản phụ đề riêng và dừng xử lý an toàn hơn.",
     points: [
       "Bản phụ đề lưu trên máy được tách theo từng tài khoản.",

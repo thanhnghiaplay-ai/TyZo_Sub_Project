@@ -9,7 +9,7 @@ type AdminNote = {
 export const ADMIN_LOG: AdminNote[] = [
   {
     version: "5.49.2",
-    time: "26/11/2026 — ứng viên, chưa phát hành",
+    time: "05:33 27/11/2026 — Chủ duyệt đẩy chính thức",
     area: "du-lieu",
     text: "Tiếp tục nhánh ccr-9f1afcc8-iv7067, không gộp main. Tách IndexedDB theo chủ; gom IP theo TRUSTED_IP_HEADER; ASR thiếu usage dùng ước lượng và cờ can-doi-soat; dọn R2 khi PUT mất phản hồi; hủy TTS/metadata, chặn kết quả giải mã cũ; bảo vệ số/phủ định/tên khi polish; glossary retry hữu hạn; ngăn reload lúc đang chạy. Migration0046 thêm trigger thu hồi thiết bị và làm hết hạn mã liên kết trong cùng giao dịch đổi mật khẩu, không xóa dữ liệu sẵn có. Sửa lỗi 500 lộ thông báo và kiểm Content-Range trước cấp phát. Workflow build Android read, release write riêng. Kiểm thử local không thay cho nghiệm thu Android/ingress/nhà cung cấp thật; xem docs/kiem-toan/v5.49.1/BAO_CAO.md.",
   },

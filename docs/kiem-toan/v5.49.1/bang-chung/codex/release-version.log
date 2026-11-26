@@ -1,0 +1,14 @@
+▶ CHANGELOG cho khách
+  ✔ dòng đầu khớp APP_VERSION (0.796353ms)
+  ✔ đủ 3 lớp, ngắn gọn (0.645786ms)
+  ✔ giữ gọn: tối đa 30 bản trong ứng dụng (bản cũ chuyển sang docs/lich-su/CHANGELOG-cu.md) (0.401356ms)
+  ✔ không có từ nội bộ (0.912217ms)
+✔ CHANGELOG cho khách (5.989085ms)
+ℹ tests 4
+ℹ suites 1
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 170.05517
