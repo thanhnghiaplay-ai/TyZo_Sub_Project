@@ -332,12 +332,30 @@ export async function wipeTestData(sql: Sql) {
     await tx`delete from trial_devices`;
     await tx`delete from room_presence`;
     await tx`delete from rate_hits`;
-    await tx`delete from room_audit`;
+    // R4-003 (Chủ duyệt 27/11/2026): CSDL thử reset cả sổ «Phải trả nhà cung cấp» cho khớp doanh thu đã xóa.
+    await tx`delete from provider_spend`;
+    // RE-004: GIỮ nhật ký thao tác (room_audit); trước đây bị xóa cùng số liệu thử nên không còn dấu vết lần reset.
     await tx`
       update room_accounts
       set balance = 0, plan = null, plan_until = null, trial_left = 1
     `;
   });
+}
+
+/**
+ * RE-004: reset chỉ được chạy trên CSDL THỬ đã khai báo rõ, kiểm ở máy chủ cho cả lúc cấp mã lẫn lúc xóa:
+ *   - biến môi trường TYZO_TEST_RESET=1, VÀ
+ *   - tên CSDL đang nối (current_database()) nằm trong TYZO_TEST_RESET_DB (danh sách cách nhau bằng dấu phẩy), VÀ
+ *   - không phải bản production của Vercel (VERCEL_ENV=production).
+ * Thiếu bất kỳ điều nào thì từ chối (mặc định là khóa), kể cả với tài khoản Chủ.
+ */
+export async function testResetGateWith(sql: Sql, env: Record<string, string | undefined> = process.env): Promise<{ ok: boolean; why: string }> {
+  if (env.VERCEL_ENV === "production") return { ok: false, why: "Không reset trên bản chính thức." };
+  if (env.TYZO_TEST_RESET !== "1") return { ok: false, why: "Reset số liệu thử chỉ bật trên máy chủ thử (TYZO_TEST_RESET=1)." };
+  const allow = (env.TYZO_TEST_RESET_DB ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+  const db = (await sql<{ name: string }>`select current_database() as name`)[0]?.name ?? "";
+  if (!allow.includes(db)) return { ok: false, why: `CSDL «${db}» không nằm trong danh sách CSDL thử được phép reset (TYZO_TEST_RESET_DB).` };
+  return { ok: true, why: "" };
 }
 
 /**

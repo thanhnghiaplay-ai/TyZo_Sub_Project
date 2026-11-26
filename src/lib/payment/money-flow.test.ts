@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { before, beforeEach, describe, it } from "node:test";
 import { pgliteSql } from "../test-sql.ts";
 import type { Sql } from "../db.ts";
-import { buyPlanWith, consumeResetCodeWith, creditHitWith, issueResetCodeWith, refundRunWith, releaseHoldWith, repairMissedTokens, wipeTestData } from "./pay-flow.ts";
+import { buyPlanWith, consumeResetCodeWith, creditHitWith, issueResetCodeWith, refundRunWith, releaseHoldWith, repairMissedTokens, testResetGateWith, wipeTestData } from "./pay-flow.ts";
 import { chargeTicketWith, closeTicketWith, openTicketWith } from "../billing/run-ticket.ts";
 import { ROOM_PLANS } from "../room-plans.ts";
 
@@ -176,7 +176,8 @@ describe("xóa số liệu thử", () => {
     assert.equal((await sql`select 1 from room_ledger`).length, 0);
     assert.equal((await sql`select 1 from room_notices`).length, 0);
     assert.equal((await sql`select 1 from run_tickets`).length, 0);
-    assert.equal((await sql`select 1 from room_audit`).length, 0);
+    // RE-004: nhật ký thao tác được GIỮ qua reset (trước đây bị xóa).
+    assert.equal((await sql`select 1 from room_audit`).length, 1);
     assert.equal((await sql`select 1 from "user" where id = 'k'`).length, 1);
     assert.equal((await sql<{ value: string }>`select value from room_settings where key = 'giu'`)[0].value, "con");
   });
@@ -277,15 +278,17 @@ describe("reset số liệu thử an toàn (kiểm toán R4-001, R4-002)", () =>
 
   it("R4-002: một bảng xóa lỗi thì không bảng nào bị xóa", async () => {
     await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('g1', 'k', 10000, 10000, 6407, now() + interval '30 day')`;
-    await sql`insert into room_audit (actor_id, action, note) values ('k', 'test', 'cu')`;
+    // Bảng xóa gần cuối: provider_spend (room_audit nay được giữ, RE-004).
+    await sql`insert into provider_spend (day, provider, model, calls, base_vnd, usd_micro) values (current_date, 'groq', 'loi', 1, 1, 1)`;
     await sql.query(`create or replace function thu_chan_xoa() returns trigger language plpgsql as $$ begin raise exception 'loi gia lap'; end $$`);
-    await sql.query(`create trigger thu_chan_xoa before delete on room_audit for each row execute function thu_chan_xoa()`);
+    await sql.query(`create trigger thu_chan_xoa before delete on provider_spend for each row execute function thu_chan_xoa()`);
     try {
       await assert.rejects(wipeTestData(sql), /loi gia lap/);
       assert.equal((await sql`select 1 from token_grants`).length, 1, "Token còn nguyên");
       assert.equal((await sql`select 1 from pay_orders`).length, 1, "đơn còn nguyên");
     } finally {
-      await sql.query(`drop trigger thu_chan_xoa on room_audit`);
+      await sql.query(`drop trigger thu_chan_xoa on provider_spend`);
+      await sql`delete from provider_spend where model = 'loi'`;
     }
   });
 
@@ -302,5 +305,24 @@ describe("reset số liệu thử an toàn (kiểm toán R4-001, R4-002)", () =>
     const code = await issueResetCodeWith(sql, "chu");
     await sql`update room_settings set value = ${JSON.stringify({ user: "chu", code, until: Date.now() - 1 })} where key = 'reset_test_code'`;
     assert.equal(await consumeResetCodeWith(sql, "chu", code), false);
+  });
+});
+
+describe("RE-004, R4-003: reset chỉ trên CSDL thử đã khai báo", () => {
+  it("mặc định khóa; production khóa kể cả khi bật; CSDL ngoài danh sách khóa; đúng cả hai thì mở", async () => {
+    const db = (await sql<{ name: string }>`select current_database() as name`)[0].name;
+    assert.equal((await testResetGateWith(sql, {})).ok, false);
+    assert.equal((await testResetGateWith(sql, { TYZO_TEST_RESET: "1", TYZO_TEST_RESET_DB: db, VERCEL_ENV: "production" })).ok, false);
+    assert.equal((await testResetGateWith(sql, { TYZO_TEST_RESET: "1", TYZO_TEST_RESET_DB: "neondb" })).ok, false);
+    assert.equal((await testResetGateWith(sql, { TYZO_TEST_RESET: "0", TYZO_TEST_RESET_DB: db })).ok, false);
+    assert.equal((await testResetGateWith(sql, { TYZO_TEST_RESET: "1", TYZO_TEST_RESET_DB: `khac, ${db}` })).ok, true);
+  });
+
+  it("R4-003: reset trên CSDL thử xóa cả sổ phải trả nhà cung cấp, giữ nhật ký thao tác", async () => {
+    await sql`insert into provider_spend (day, provider, model, calls, base_vnd, usd_micro) values (current_date, 'groq', 'm', 1, 100, 4)`;
+    await sql`insert into room_audit (actor_id, action, note) values ('chu', 'thu', 'giu')`;
+    await wipeTestData(sql);
+    assert.equal((await sql`select 1 from provider_spend`).length, 0);
+    assert.ok((await sql`select 1 from room_audit where note = 'giu'`).length === 1);
   });
 });

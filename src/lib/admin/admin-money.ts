@@ -307,8 +307,21 @@ export const startTestReset = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
-    const { issueResetCodeWith } = await import("@/lib/payment/pay-flow");
-    return { code: await issueResetCodeWith(await getSql(), context.userId) };
+    const { issueResetCodeWith, testResetGateWith } = await import("@/lib/payment/pay-flow");
+    const sql = await getSql();
+    const gate = await testResetGateWith(sql);
+    if (!gate.ok) throw new Error(gate.why);
+    return { code: await issueResetCodeWith(sql, context.userId) };
+  });
+
+/** Máy chủ này có cho reset số liệu thử không (để giao diện ẩn nút và nói rõ vì sao). */
+export const testResetState = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("@/lib/db");
+    const { testResetGateWith } = await import("@/lib/payment/pay-flow");
+    return testResetGateWith(await getSql());
   });
 
 export const resetTestMoney = createServerFn({ method: "POST" })
@@ -321,10 +334,12 @@ export const resetTestMoney = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
-    const { wipeTestData, consumeResetCodeWith } = await import("@/lib/payment/pay-flow");
+    const { wipeTestData, consumeResetCodeWith, testResetGateWith } = await import("@/lib/payment/pay-flow");
     const sql = await getSql();
+    const gate = await testResetGateWith(sql);
+    if (!gate.ok) throw new Error(gate.why);
     if (!(await consumeResetCodeWith(sql, context.userId, data))) throw new Error("Mã xác nhận sai hoặc đã hết hạn. Bấm Reset về sạch để lấy mã mới.");
     await wipeTestData(sql);
-    await writeAudit(context.userId, "reset-tien-test", null, "Xóa số liệu thử: Token dịch, đơn, phiếu, chuông, nhật ký, gói thuê. Giữ tài khoản.");
+    await writeAudit(context.userId, "reset-tien-test", null, "Xóa số liệu thử: Token dịch, đơn, phiếu, chuông, gói thuê, sổ phải trả nhà cung cấp. Giữ tài khoản và nhật ký thao tác.");
     return { ok: true as const };
   });

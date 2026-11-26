@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, startTestReset, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin/admin-money";
+import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, startTestReset, testResetState, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin/admin-money";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
@@ -109,6 +109,14 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
   const [saving, setSaving] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
+  // RE-004: máy chủ quyết reset có được phép ở đây không (chỉ CSDL thử đã khai báo); giao diện chỉ hiện theo đó.
+  const [resetGate, setResetGate] = useState<{ ok: boolean; why: string } | null>(null);
+  useEffect(() => {
+    if (!owner) return;
+    void testResetState()
+      .then(setResetGate)
+      .catch(() => setResetGate({ ok: false, why: "Chưa kiểm được máy chủ có cho reset không." }));
+  }, [owner]);
 
   function load(next = span) {
     void getMoney({ data: next }).then((result) => {
@@ -315,11 +323,13 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
         <div className="grid gap-2 rounded-[var(--radius-card)] border border-danger/40 bg-danger/5 p-3">
           <h2 className="font-semibold text-danger">Reset số liệu thử</h2>
           <p className="text-sm text-muted">
-            Xóa Token dịch, chuông, đơn, phiếu, nhật ký thao tác, hoa hồng thử và gói thuê đang mở. Lượt thử về 1. Giữ tài khoản, cấu hình và key. Không hoàn tiền.
+            Chỉ dùng trên máy chủ thử. Xóa Token dịch, chuông, đơn, phiếu, hoa hồng thử, gói thuê đang mở và sổ phải trả nhà cung cấp. Lượt thử về 1. Giữ tài khoản, cấu hình, key và nhật ký thao tác. Không hoàn tiền.
           </p>
+          {resetGate && !resetGate.ok && <p className="text-sm text-danger">Đang khóa: {resetGate.why}</p>}
           <button
+            disabled={!resetGate?.ok}
             type="button"
-            className="min-tap rounded-full border border-danger px-4 text-sm font-semibold text-danger"
+            className="min-tap rounded-full border border-danger px-4 text-sm font-semibold text-danger disabled:opacity-40"
             onClick={() => {
               void startTestReset()
                 .then(({ code }) => {
@@ -337,7 +347,7 @@ export function MoneyBoard({ owner }: { owner: boolean }) {
       <ConfirmCodeDialog
         open={resetOpen}
         title="Reset số liệu thử"
-        message="Xóa hết số liệu thử? Không hoàn tiền. Xóa Token dịch, chuông, đơn, phiếu, nhật ký, hoa hồng thử và gói thuê. Lượt thử về 1. Giữ tài khoản, cấu hình và key."
+        message="Xóa hết số liệu thử? Không hoàn tiền. Xóa Token dịch, chuông, đơn, phiếu, hoa hồng thử, gói thuê và sổ phải trả nhà cung cấp. Lượt thử về 1. Giữ tài khoản, cấu hình, key và nhật ký thao tác."
         code={resetCode}
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
