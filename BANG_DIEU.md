@@ -15,8 +15,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Nhánh `main` = `work` = v5.49.1 + ứng dụng 0.11 (đẩy chính thức 27/11/2026 02:19, Chủ nói «Đẩy chính thức»: kiểm toán v5.49, migration 0038/0039, điều khoản không đổi). Trước đó v5.49.0 (sửa sau kiểm tra trang khách và Admin, cả nhóm B). Trước đó v5.48.0 (26/11/2026: chỉ còn Groq, Alibaba, TyZo; Chủ nói «Giữ lại nhà cung cấp là groq, alibaba và tyzo của tôi», «Xóa vĩnh viễn»). Trước đó v5.47.0 (nhận dạng TyZo Modal ở cửa trả theo lượt, PR #3). Ứng dụng Android 0.11 (khóa ký đã tạo). Cầu nối Dịch trực tiếp trên VPS `realtimehub.tyzo.site`. |
-| Bản mới nhất | v5.49.2 được Chủ duyệt đẩy chính thức; Git/deployment xem phiếu PHAT_HANH_5.49.2.md (trước đó5.49.1). Báo cáo: `docs/kiem-toan/v5.49/BAO_CAO.md`. Lịch sử các bản: `CHANGELOG` trong `src/lib/app-version.ts` |
+| Bản khách đang dùng | Web5.49.2: Chủ yêu cầu đẩy chính thức, đã xác nhận backup; commitứngdụng a864bb2, Vercel SUCCESS. Android0.11: Actionsapk/release SUCCESS. VPS chưa cập nhật (cần tyzo →2). Các mốc cũ xem lịch sử. |
+| Bản mới nhất |5.49.2 trên main/work/nhánh nguồn; xem docs/kiem-toan/v5.49.1/PHAT_HANH_5.49.2.md. Chất lượng kiểm toán còn PARTIAL theo BAO_CAO.md; không đồng nhất release thành công với audit đã đóng hết. |
 | Điều khoản | 2026-11-26.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |

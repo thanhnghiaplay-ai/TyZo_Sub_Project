@@ -1,0 +1,180 @@
+{
+  "repository": "thanhnghiaplay-ai/TyZo_Sub_Project",
+  "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+  "events": [
+    {
+      "at": "2026-11-26T22:35:20.049614+00:00",
+      "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+      "state": "success",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "description": "Deployment has completed",
+          "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+        }
+      ],
+      "checks": [
+        {
+          "name": "Vercel Preview Comments",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://vercel.com/github"
+        },
+        {
+          "name": "apk",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-26T22:35:30.885776+00:00",
+      "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+      "state": "success",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "description": "Deployment has completed",
+          "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+        }
+      ],
+      "checks": [
+        {
+          "name": "Vercel Preview Comments",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://vercel.com/github"
+        },
+        {
+          "name": "apk",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-26T22:35:41.731129+00:00",
+      "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+      "state": "success",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "description": "Deployment has completed",
+          "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+        }
+      ],
+      "checks": [
+        {
+          "name": "Vercel Preview Comments",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://vercel.com/github"
+        },
+        {
+          "name": "apk",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-26T22:35:52.483923+00:00",
+      "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+      "state": "success",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "description": "Deployment has completed",
+          "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+        }
+      ],
+      "checks": [
+        {
+          "name": "Vercel Preview Comments",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://vercel.com/github"
+        },
+        {
+          "name": "apk",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-26T22:36:03.300538+00:00",
+      "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+      "state": "success",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "description": "Deployment has completed",
+          "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+        }
+      ],
+      "checks": [
+        {
+          "name": "release",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140202137395"
+        },
+        {
+          "name": "Vercel Preview Comments",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://vercel.com/github"
+        },
+        {
+          "name": "apk",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-26T22:36:14.277402+00:00",
+      "sha": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+      "state": "success",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "description": "Deployment has completed",
+          "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+        }
+      ],
+      "checks": [
+        {
+          "name": "release",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140202137395"
+        },
+        {
+          "name": "Vercel Preview Comments",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://vercel.com/github"
+        },
+        {
+          "name": "apk",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+        }
+      ]
+    }
+  ]
+}

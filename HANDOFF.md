@@ -1,5 +1,7 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
+> **Kết quả phát hành5.49.2:** Vercel SUCCESS tại a864bb2; Androidapk+release SUCCESS (run45905657250, phiên bản0.11). main/work/nhánh nguồn đồng bộ; VPS chưa cập nhật, cần tyzo →2. Bằng chứng: docs/kiem-toan/v5.49.1/KET_QUA_PHAT_HANH.json.
+
 > **Phát hành 05:33 27/11/2026:** Chủ yêu cầu đẩy chính thức5.49.2 và xác nhận đã có backup/điểm khôi phục. Xem docs/kiem-toan/v5.49.1/PHAT_HANH_5.49.2.md. Các câu «chưa push/deploy» trong nhật ký dưới đây là trạng thái trước yêu cầu phát hành, không phải hạn chế quyền hiện tại.
 
 > **Trạng thái tiếp tục Codex (2026-11-26UTC):** ứng viên5.49.2 trên `ccr-9f1afcc8-iv7067`, gốcd5a2fed, không gộpmain/chưa push/deploy. PARTIAL. Đọc `docs/kiem-toan/v5.49.1/BAO_CAO.md` và `BAN_GIAO_PHIEN_SAU.md` cùng thư mục. Các mốc bên dưới là lịch sử, không phải chứng nhận ứng viên đã lên production.

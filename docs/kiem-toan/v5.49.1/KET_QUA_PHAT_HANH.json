@@ -1,0 +1,51 @@
+{
+  "source_commit": "a864bb2385b36bc43f3bf2b1d3a5621e42c4a446",
+  "backup": "User confirmed recovery point; not independently inspected",
+  "vercel": [
+    {
+      "context": "Vercel",
+      "state": "success",
+      "description": "Deployment has completed",
+      "target_url": "https://vercel.com/ty-zo/tyzo-sub/61tpfFY11ZYjVppp1g7PNpKgXg4D"
+    }
+  ],
+  "android": {
+    "run_id": "45905657250",
+    "jobs": [
+      {
+        "name": "apk",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140201632346"
+      },
+      {
+        "name": "release",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/45905657250/job/140202137395"
+      }
+    ],
+    "release_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/tag/android-v0.11",
+    "version": "0.11",
+    "assets": [
+      {
+        "name": "tyzo-sub.apk",
+        "size": 3255384,
+        "updated_at": "2026-11-26T22:36:04Z",
+        "browser_download_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/download/android-v0.11/tyzo-sub.apk"
+      },
+      {
+        "name": "tyzo-sub.json",
+        "size": 29,
+        "updated_at": "2026-11-26T22:36:04Z",
+        "browser_download_url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/download/android-v0.11/tyzo-sub.json"
+      }
+    ]
+  },
+  "vps": {
+    "status": "BLOCKED",
+    "reason": "No SSH connection or VPS management credentials in this session",
+    "required_action": "tyzo -> 2"
+  },
+  "production_functional_testing_performed": false
+}
