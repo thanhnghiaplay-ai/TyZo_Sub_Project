@@ -675,23 +675,59 @@ pg_tu_xa() { # chạy công cụ Postgres với máy chủ ngoài (Neon); thử 
   return 1
 }
 
+pg_sys() { # lệnh quản trị trên CSDL «postgres» của máy Postgres trên VPS (tạo, đổi tên CSDL)
+  docker exec tyzo-db psql -U tyzo -d postgres -v ON_ERROR_STOP=1 -qtAc "$1"
+}
+
+so_bang_tep() { # số bảng ghi trong tệp .dump (đọc mục lục, không nạp gì)
+  docker exec -i tyzo-db pg_restore -l < "$1" 2>/dev/null | grep -c ' TABLE public '
+}
+
+nap_dump() { # nap_dump <tệp .dump>: nạp AN TOÀN vào Postgres trên VPS (kiểm toán v5.49: R8-001, REF-013, AZ-001)
+  # Không xóa gì trước: nạp vào CSDL tạm «tyzo_moi», đếm đủ bảng theo mục lục tệp, lỗi thì hỏi; đạt mới đổi chỗ.
+  # CSDL đang chạy được giữ nguyên dưới tên tyzo_cu_<giờ> để quay về.
+  local f="$1" can co ma=0 cu a
+  [ -s "$f" ] || { do_ "✘ Tệp dữ liệu trống hoặc không có."; return 1; }
+  can="$(so_bang_tep "$f")"
+  [ "${can:-0}" -gt 5 ] || { do_ "✘ Tệp dữ liệu hỏng hoặc chỉ có ${can:-0} bảng. Không nạp, dữ liệu đang chạy không bị đụng."; return 1; }
+  pg_sys "drop database if exists tyzo_moi" >/dev/null && pg_sys "create database tyzo_moi owner tyzo" >/dev/null || { do_ "✘ Không tạo được CSDL tạm."; return 1; }
+  chay_cho "Nạp dữ liệu vào CSDL tạm" /tmp/tyzo-restore.err bash -c 'docker exec -i tyzo-db pg_restore -U tyzo -d tyzo_moi --no-owner --no-privileges < "$1"' _ "$f" || ma=$?
+  co="$(docker exec tyzo-db psql -U tyzo -d tyzo_moi -tAc "select count(*) from pg_tables where schemaname='public'" 2>/dev/null | tr -d '[:space:]')"
+  if [ "${co:-0}" != "$can" ]; then
+    do_ "✘ Nạp thiếu bảng (${co:-0}/$can). Dữ liệu đang chạy KHÔNG bị đụng."; tail -5 /tmp/tyzo-restore.err | sed 's/^/   /'
+    pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1
+  fi
+  if [ "$ma" != 0 ]; then
+    vang "Đã đủ $co bảng nhưng công cụ nạp báo lỗi (mã $ma):"; grep -i 'error' /tmp/tyzo-restore.err | tail -5 | sed 's/^/   /'
+    read -rp "Gõ dong-y để dùng bản vừa nạp, Enter để hủy (dữ liệu đang chạy giữ nguyên): " a
+    [ "$a" = "dong-y" ] || { pg_sys "drop database if exists tyzo_moi" >/dev/null; echo "Đã hủy."; return 1; }
+  fi
+  dc stop web bridge >/dev/null 2>&1 || true
+  cu="tyzo_cu_$(date '+%Y%m%d_%H%M%S')"
+  pg_sys "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('tyzo','tyzo_moi') and pid <> pg_backend_pid()" >/dev/null || true
+  if ! pg_sys "alter database tyzo rename to $cu" >/dev/null; then
+    do_ "✘ Không đổi chỗ được (còn kết nối vào CSDL?). Dữ liệu đang chạy giữ nguyên."; pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1
+  fi
+  if ! pg_sys "alter database tyzo_moi rename to tyzo" >/dev/null; then
+    pg_sys "alter database $cu rename to tyzo" >/dev/null; do_ "✘ Đổi chỗ lỗi, đã trả CSDL cũ về."; return 1
+  fi
+  xanh "✔ Đã nạp $co bảng. Dữ liệu trước đó giữ ở CSDL $cu."
+  echo "   Khi chắc chắn bản mới đúng, xóa bản cũ để lấy lại ổ đĩa: docker exec tyzo-db psql -U tyzo -d postgres -c 'drop database $cu'"
+}
+
 chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon về Postgres trên VPS (Neon chỉ bị đọc)
   local url="$1" n
   db_len || return 1
   n="$(dem_bang)"
   if [ "${n:-0}" != "0" ]; then
-    vang "Cơ sở dữ liệu trên VPS đang có $n bảng. Chép từ Neon sẽ XÓA dữ liệu trên VPS (Neon không bị đụng)."
+    vang "Cơ sở dữ liệu trên VPS đang có $n bảng. Chép từ Neon sẽ THAY dữ liệu trên VPS (bản cũ được giữ lại để quay về; Neon không bị đụng)."
     read -rp "Gõ dong-y để tiếp tục: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy."; return 1; }
-    dc stop web bridge >/dev/null 2>&1 || true
-    docker exec tyzo-db psql -U tyzo -d tyzo -qc "drop schema public cascade; create schema public;" >/dev/null
   fi
-  # Tải trước công cụ (có thanh tiến độ), rồi đọc Neon (chỉ đọc, không sửa gì ở Neon).
+  # Đọc Neon xong mới đụng VPS (trước đây xóa dữ liệu VPS rồi mới đọc Neon: Neon lỗi là mất cả hai).
   docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
-  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối."; rm -f /tmp/tyzo-neon.dump; return 1; }
-  chay_cho "Chép vào cơ sở dữ liệu trên VPS" /tmp/tyzo-restore.err bash -c 'docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < /tmp/tyzo-neon.dump' || true
+  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump; return 1; }
+  nap_dump /tmp/tyzo-neon.dump || { rm -f /tmp/tyzo-neon.dump; return 1; }
   rm -f /tmp/tyzo-neon.dump
-  n="$(dem_bang)"
-  if [ "${n:-0}" -gt 5 ]; then xanh "✔ Đã chép xong ($n bảng)"; else do_ "✘ Chép chưa được:"; tail -5 /tmp/tyzo-restore.err; return 1; fi
 }
 
 chep_len_neon() { # chép dữ liệu trên VPS lên một Neon TRỐNG (khi quay lại Vercel)
@@ -701,10 +737,18 @@ chep_len_neon() { # chép dữ liệu trên VPS lên một Neon TRỐNG (khi qua
   [ "$n" = "0" ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG (tạo project/branch mới trên Neon) để khỏi ghi đè."; return 1; }
   echo "Đang chép từ VPS lên Neon..."
   docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > /tmp/tyzo-vps.dump || { do_ "✘ Không đọc được dữ liệu trên VPS."; return 1; }
-  docker run --rm -i --network host postgres:17 pg_restore --no-owner --no-privileges -d "$url" < /tmp/tyzo-vps.dump 2>/tmp/tyzo-restore.err || true
+  local can ma=0
+  can="$(so_bang_tep /tmp/tyzo-vps.dump)"
+  docker run --rm -i --network host postgres:17 pg_restore --no-owner --no-privileges -d "$url" < /tmp/tyzo-vps.dump 2>/tmp/tyzo-restore.err || ma=$?
   rm -f /tmp/tyzo-vps.dump
-  n="$(pg_tu_xa psql "$url" -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')"
-  [ "${n:-0}" -gt 5 ] && xanh "✔ Đã chép lên Neon ($n bảng)" || { do_ "✘ Chép chưa được:"; tail -5 /tmp/tyzo-restore.err; return 1; }
+  n="$(pg_tu_xa psql "$url" -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')"
+  # Đủ bảng theo mục lục bản sao mới tính là xong; công cụ báo lỗi thì in ra để xem (dữ liệu trên VPS không bị đụng).
+  if [ "${can:-0}" -gt 5 ] && [ "${n:-0}" = "$can" ]; then
+    xanh "✔ Đã chép lên Neon ($n bảng)"
+    [ "$ma" = 0 ] || { vang "Công cụ nạp báo lỗi (mã $ma), xem trước khi dùng:"; grep -i error /tmp/tyzo-restore.err | tail -5 | sed 's/^/   /'; }
+  else
+    do_ "✘ Chép chưa đủ (${n:-0}/${can:-?} bảng):"; tail -5 /tmp/tyzo-restore.err; return 1
+  fi
 }
 
 sao_luu() {
@@ -731,9 +775,8 @@ khoi_phuc() {
   vang "Khôi phục sẽ THAY toàn bộ dữ liệu hiện tại bằng bản $(basename "$f"). Máy sao lưu bản hiện tại trước."
   read -rp "Gõ dong-y để tiếp tục: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy."; return 0; }
   sao_luu || return 1
-  dc stop web bridge >/dev/null 2>&1
-  docker exec tyzo-db psql -U tyzo -d tyzo -qc "drop schema public cascade; create schema public;" >/dev/null
-  docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < "$f" 2>/dev/null || true
+  # nap_dump nạp vào CSDL tạm, kiểm đủ bảng rồi mới đổi chỗ; lỗi thì dữ liệu đang chạy giữ nguyên (trước đây lỗi bị bỏ qua).
+  nap_dump "$f" || do_ "✘ Không khôi phục được bản $(basename "$f"). Dữ liệu trước đó giữ nguyên."
   chay_cho "Bật web" /tmp/tyzo-up.log dc up -d --no-build || true
   chay_cho "Chờ web trả lời (tối đa 3 phút)" /tmp/tyzo-cho.log cho_web_ok 180 && xanh "✔ Đã khôi phục, web chạy lại." || do_ "✘ Web chưa lên. Xem nhật ký."
 }
@@ -879,11 +922,7 @@ khoi_phuc_vps() ( # khoi_phuc_vps <tệp tyzo-chuyen-vps-*.tar.enc>
   if [ "$mode" = full ] && [ "$db_kind" = local ]; then
     mkdir -p /opt/tyzo-pg
     db_len || return 1
-    dc stop web bridge >/dev/null 2>&1 || true
-    docker exec tyzo-db psql -U tyzo -d tyzo -qc "drop schema public cascade; create schema public;" >/dev/null
-    docker exec -i tyzo-db pg_restore -U tyzo -d tyzo --no-owner --no-privileges < "$noi_dung/postgres.dump" 2>/tmp/tyzo-restore.err || true
-    n="$(dem_bang)"
-    [ "${n:-0}" -gt 5 ] || { do_ "✘ Khôi phục Postgres chưa thành công:"; tail -5 /tmp/tyzo-restore.err; return 1; }
+    nap_dump "$noi_dung/postgres.dump" || { do_ "✘ Khôi phục Postgres chưa thành công."; return 1; }
   fi
 
   cai_caddy || { do_ "✘ Không cài được Caddy."; return 1; }
