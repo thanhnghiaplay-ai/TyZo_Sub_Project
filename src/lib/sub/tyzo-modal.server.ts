@@ -26,7 +26,17 @@ export async function recognizeModalWav(audio: Uint8Array, language: string, pro
     await response.body?.cancel();
     response = await fetch(next, { redirect: "manual", signal: deadline });
   }
-  if (!response.ok) throw new Error(`TyZo Modal báo lỗi HTTP ${response.status}.`);
+  if (!response.ok) throw new ModalHttpError(response.status);
   const result = await response.json();
   return { segments: modalSegments(result, offset), usd: modalCostUsd(price, profile, result.stats) };
+}
+
+export class ModalHttpError extends Error {
+  constructor(readonly status: number) { super(`TyZo Modal báo lỗi HTTP ${status}.`); }
+}
+
+/** Lỗi tạm đáng thử lại: mạng rớt, hết giờ, máy Modal báo 5xx hoặc 429. Lỗi 4xx khác (sai chuỗi bảo vệ, sai dữ liệu) thì không. */
+export function isTransientModalError(error: unknown): boolean {
+  if (error instanceof ModalHttpError) return error.status >= 500 || error.status === 429;
+  return error instanceof TypeError || (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError"));
 }

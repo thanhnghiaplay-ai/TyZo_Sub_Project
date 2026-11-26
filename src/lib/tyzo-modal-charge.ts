@@ -22,6 +22,8 @@ export async function runModalPartWith(
     where id = ${ticket} and user_id = ${userId} and asr_model = ${model} and unit = 'token'`;
   if (!own.length || !own[0].modal_price) throw new Error("Phiếu Modal không hợp lệ.");
   const price = own[0].modal_price;
+  // Chữ nhận dạng giữ để chống trừ lặp chỉ cần trong lúc chạy; xóa sau 24 giờ (điều khoản mục dữ liệu).
+  await sql`delete from run_modal_parts where created_at < now() - interval '24 hours'`;
 
   const seen = await sql<{ status: string; tokens: number; segments: string | null }>`
     insert into run_modal_parts (ticket_id, part_hash, seconds) values (${ticket}, ${partHash}, ${seconds})

@@ -32,6 +32,10 @@ export function TyzoModalPriceBoard() {
     finally { setReady(true); }
   }}>
     <h3>Giá TyZo Modal</h3>
+    <p className="text-sm opacity-80">
+      Một cách tính dùng chung cho mọi gói có TyZo Modal. Đổi giá chỉ áp dụng cho lượt mở sau; lượt đang chạy giữ giá lúc mở.
+      «Theo thời gian xử lý» tính từ số máy Modal báo, chưa gồm thời gian bật máy và máy chạy không, nên đối chiếu hóa đơn Modal trước khi chọn.
+    </p>
     <fieldset disabled={!ready} className="grid gap-2">
       <label>Cách tính <select value={mode} onChange={e => {
         setMode(e.target.value as ModalPrice["mode"]); setNhanh(""); setKy(""); setMessage("");

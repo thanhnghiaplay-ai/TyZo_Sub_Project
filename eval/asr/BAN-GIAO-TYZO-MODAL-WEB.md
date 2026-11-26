@@ -41,3 +41,12 @@ PR #2 đã gộp vào main. Bản đó xử lý menu tyzo, chưa chép tyzo-ai.c
   2. Cửa web (`use-pipeline.ts`, `groq.ts`) mới gửi đoạn và giới hạn 9; CHƯA nối gộp cảm thán, giới hạn ký tự dịch, dự phòng sang nhà khác khi Modal lỗi.
   3. Hai gói khác cách tính giá cùng lúc: Admin mới lưu một chế độ cho cả phòng.
   4. Điều khoản (nhà nhận dữ liệu tiếng mới: Modal), nâng phiên bản và CHANGELOG: chưa làm. Chưa thử trình duyệt, Postgres thật, Modal thật.
+
+## Claude làm 4 việc còn mở · 26/11/2026 (v5.47.0, điều khoản 2026-11-26.1)
+
+1. **Khách hủy giữa chừng:** cửa máy chủ không còn gắn với kết nối trình duyệt; đoạn đã gửi chạy xong, được tính và lưu, gửi lại nhận kết quả cũ, không trừ lần hai. Điều khoản ghi rõ.
+2. **Cửa web:** gộp cảm thán lặp (`src/lib/sub/merge-interjections.ts`, 2 bài thử) áp cho kết quả Modal; lỗi tạm (mạng, HTTP 5xx/429, hết giờ) thử lại 1 lần sau 3 giây (`isTransientModalError`). CHƯA làm, cố ý để PR khác: chuyển sang nhà khác khi Modal lỗi hẳn (cần đổi model nhận dạng trên phiếu đang mở, ảnh hưởng cách tính tiền), và giới hạn ký tự theo thời gian từng câu (lời nhắc dịch dùng chung cho mọi nhà, hiện đã có quy tắc khoảng 40 ký tự mỗi dòng, tối đa 2 dòng). Đoạn lỗi hẳn đi theo đường lỗi sẵn có của phiếu (đóng phiếu thì trả phần giữ thừa).
+3. **Hai gói khác cách tính:** giữ một cách tính cho cả phòng; màn Admin ghi rõ, phiếu đã mở giữ giá lúc mở.
+4. **Điều khoản 2026-11-26.1** (Modal Labs Hoa Kỳ nhận âm thanh, hợp nhất chữ trên Modal hoặc Alibaba Singapore, giữ chữ từng đoạn tối đa 24 giờ, cách tính khi hủy, giá TyZo do phòng đặt), dấu vân tay ở `entry-gate.test.ts`, v5.47.0 và CHANGELOG. `run_modal_parts` tự xóa dòng quá 24 giờ.
+
+Kiểm tra: tsc, `npm test` 1 508 bài, eslint tệp sửa, `vite build`: qua. CHƯA: trình duyệt, Modal thật, Postgres thật nhiều kết nối, tiền thật. BANG_DIEU.md chưa sửa (chỉ sửa khi lên `work`/`main`).

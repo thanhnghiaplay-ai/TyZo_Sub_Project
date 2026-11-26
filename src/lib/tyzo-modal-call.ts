@@ -7,11 +7,11 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
       !["nhanh","ky"].includes(input.profile) || !["","zh","ja","ko","en"].includes(input.language)) throw new Error("Đoạn âm thanh hoặc phiếu Modal không hợp lệ.");
     return input;
   }).handler(async ({context,data}) => {
-    const {getRequest} = await import("@tanstack/react-start/server");
     const {getSql} = await import("./db");
     const {requireOpenAccount,takeRate} = await import("./guard.server");
     const {parseModalPrice} = await import("./sub/tyzo-modal-price");
-    const {recognizeModalWav} = await import("./sub/tyzo-modal.server");
+    const {recognizeModalWav, isTransientModalError} = await import("./sub/tyzo-modal.server");
+    const {mergeInterjections} = await import("./sub/merge-interjections");
     const {loadPriceBook} = await import("./run-board.server");
     const {giayForBaseCost} = await import("./token-math");
     await requireOpenAccount(context.userId);
@@ -39,8 +39,18 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
       // Ước tính đoạn này theo giá Chủ đặt trên phiếu (giờ phim × đơn giá); phải còn giữ đủ mới gọi GPU.
       estimateTokens: price => toTokens(parseModalPrice(JSON.parse(price))[data.profile]*seconds/3600),
     }, async price => {
-      const out = await recognizeModalWav(wav,data.language,data.profile,0,getRequest().signal,parseModalPrice(JSON.parse(price)));
-      return {segments: out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), tokens: toTokens(out.usd)};
+      // Không gắn với kết nối của trình duyệt: khách bấm hủy hay mất mạng thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại;
+      // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Lỗi tạm (mạng, HTTP 5xx) thử lại một lần.
+      const run = () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price)));
+      let out;
+      try { out = await run(); }
+      catch (error) {
+        if (!isTransientModalError(error)) throw error;
+        await new Promise(r => setTimeout(r, 3000));
+        out = await run();
+      }
+      const merged = mergeInterjections(out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), data.language);
+      return {segments: merged, tokens: toTokens(out.usd)};
     });
     return {segments: result.segments};
   });
