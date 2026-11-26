@@ -1,0 +1,91 @@
+{
+  "dataset": "google/fleurs",
+  "revision": "70bb2e84b976b7e960aa89f1c648e09c59f894dd",
+  "config": "ko_kr",
+  "split": "test",
+  "license": "CC-BY-4.0",
+  "source": "Google FLEURS and TyZo VPS report screenshots, 25/11/2026 21:04.",
+  "reference_vi_status": "Drafted from the Korean source, awaiting bilingual review.",
+  "cases": [
+    {
+      "id": 1661,
+      "sha256": "9acd42f712e3890d9462481f9d3092f8a0338aed093de0ad173d6a9fcaf777ce",
+      "reference_vi": "Ông cho biết mức cắt giảm sản lượng sẽ được xác định dựa trên sản lượng kinh tế của Trung Quốc, nhưng không công bố con số cụ thể.",
+      "characters": 39,
+      "errors": {
+        "nhanh": 0,
+        "ky": 0
+      }
+    },
+    {
+      "id": 1662,
+      "sha256": "b0177b461a1dd431090f279954bebf2d12d08cf906705f1b0c174e4f5e631d94",
+      "reference_vi": "Về cơ bản, hợp kim là hỗn hợp của từ hai kim loại trở lên. Hãy nhớ rằng bảng tuần hoàn có nhiều nguyên tố.",
+      "characters": 40,
+      "errors": {
+        "nhanh": 9,
+        "ky": 9
+      }
+    },
+    {
+      "id": 1663,
+      "sha256": "9578e482073c2d18384ec8a77b8b64705a8385086eabaae58c3a379ec4af3ae1",
+      "reference_vi": "Thung lũng Cochamó, được mệnh danh là Yosemite của Nam Mỹ, là điểm leo núi hàng đầu ở Chile, với nhiều vách đá granit lớn và núi đá.",
+      "characters": 64,
+      "errors": {
+        "nhanh": 19,
+        "ky": 19
+      }
+    },
+    {
+      "id": 1664,
+      "sha256": "d1a9de58c7018b71de196e1c2acc95e7f055a0063001991e9a0fcd8fa99a1159",
+      "reference_vi": "Trộn đều hai loại bột khô, sau đó dùng tay sạch đã làm ướt để nặn hỗn hợp thành viên tròn.",
+      "characters": 30,
+      "errors": {
+        "nhanh": 0,
+        "ky": 0
+      }
+    },
+    {
+      "id": 1660,
+      "sha256": "f36dd3c0463f2a9d7e8f18329014754e063a76ce189acb76e653a94eb9d925ee",
+      "reference_vi": "Chủ nghĩa lãng mạn mang nhiều yếu tố của thuyết quyết định văn hóa, chịu ảnh hưởng từ những tác giả như Goethe, Fichte và Schlegel.",
+      "characters": 47,
+      "errors": {
+        "nhanh": 1,
+        "ky": 1
+      }
+    },
+    {
+      "id": 1666,
+      "sha256": "21b846dbc1a9262e40cd3e09f95cb10802f63196a25c9c70b8c83db4c0d3c8f3",
+      "reference_vi": "Có thể bạn muốn nghe quan điểm của chính phủ thay vì quan điểm của chính mình, nhưng khuyến nghị của chính phủ mỗi nước được điều chỉnh cho người dân nước đó.",
+      "characters": 41,
+      "errors": {
+        "nhanh": 0,
+        "ky": 0
+      }
+    },
+    {
+      "id": 1673,
+      "sha256": "17a474b20fb7f8511185de3c5f50317e2d0f940bcd68c79a1d3470e22ec92779",
+      "reference_vi": "Trong Chiến tranh giành độc lập, 13 bang ban đầu lập một chính quyền trung ương có quyền lực hạn chế theo Các Điều khoản Hợp bang, với Quốc hội là cơ quan duy nhất.",
+      "characters": 50,
+      "errors": {
+        "nhanh": 2,
+        "ky": 3
+      }
+    },
+    {
+      "id": 1674,
+      "sha256": "32edf138b41fe9475085ee516f54aa4432968d113721401ec9763b3f55122d17",
+      "reference_vi": "Ở một số nơi, đun sôi nước trong một phút là đủ. Ở những nơi khác, cần đun sôi trong vài phút.",
+      "characters": 42,
+      "errors": {
+        "nhanh": 0,
+        "ky": 0
+      }
+    }
+  ]
+}

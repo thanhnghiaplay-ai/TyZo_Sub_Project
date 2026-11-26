@@ -1,0 +1,858 @@
+{
+ "ghi_chu": "Tỉ lệ lỗi chữ (CER), tiếng Anh theo từ (WER). zh2/ja2 = clip làm lại bằng giọng Qwen; zh/ja = clip gốc giọng Kokoro (phát âm sai). Không chấm câu [La hét]/[Rên rỉ].",
+ "luong": {
+  "P0 như app": {
+   "zh2": {
+    "loi": 0.215,
+    "S": 4,
+    "D": 24,
+    "I": 0,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "啊 别吓我",
+     "反正今晚我请客"
+    ],
+    "ra": "我靠 你看到没有 这个视频直接破防了 绝了绝了 哎呀 别激动 这不就是个普通的整合视频吗 小声点 老板在后面别被他发现 我们在那里 什么 内卷这么厉害 我真想躺平 啊 别吓我 反正今晚我请客 吃烧烤还是火锅 你们赶紧选 别磨磨蹭蹭的 好吧 那就火锅 不过说好了 下次轮到你们买单"
+   },
+   "ja2": {
+    "loi": 0.157,
+    "S": 10,
+    "D": 16,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見たマジでやばいんだけどガチで神回じゃん わあそれなウケル鳥肌だったわ 静かにして先生がクリを見つかったらやばいって でもさこのおしマジで尊くない? びっくりした心臓止まるかと思ったわ とりあえず今夜は私のおごりね 焼肉かラーメン早く決めて時間ないから じゃあラーメンにしよう その代わり次は君の番だからね",
+    "loi_kana": 0.112
+   },
+   "ko": {
+    "loi": 0.282,
+    "S": 24,
+    "D": 13,
+    "I": 3,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "까아 까아",
+     "우아야 빼압"
+    ],
+    "ra": " 나야야 이거 봤어 진짜 대박이야 완전 레전드라니  걸리시라니야 나 지금은 소름 돋았어 개웃겨  조용히 해 선생님의 신과 걸리면 다 끝이야  아니 근데 이거 완전 깔쌍 아니야  까아 까아  나 그 깜짝이야 신장 떨어지는 줄 알았는  우아야 빼압  일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 딸립 골라 주시면 없어  그럼 치킨으로 하다 드신다면 내가 사업을 알아"
+   },
+   "en": {
+    "loi": 0.344,
+    "S": 4,
+    "D": 27,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "Ugh, oh, my stomach hurts."
+    ],
+    "ra": " Did you see this? It's literally insane. No cap. This is straight fire.  Bruh, I'm literally dead. That's so sus, I got goosebumps.  But Loki, this whole vibe is kind of good.  It slaps. I'm gonna lose it.  Whoa, you scared me. I almost had a heart attack.  Ugh, oh, my stomach hurts.  Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late.  Got it."
+   }
+  },
+  "P1 + khai ngôn ngữ": {
+   "zh2": {
+    "loi": 0.215,
+    "S": 4,
+    "D": 24,
+    "I": 0,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "啊 别吓我",
+     "反正今晚我请客"
+    ],
+    "ra": "我靠 你看到没有 这个视频直接破防了 绝了绝了 哎呀 别激动 这不就是个普通的整合视频吗 小声点 老板在后面别被他发现 我们在那里 什么 内卷这么厉害 我真想躺平 啊 别吓我 反正今晚我请客 吃烧烤还是火锅 你们赶紧选 别磨磨蹭蹭的 好吧 那就火锅 不过说好了 下次轮到你们买单"
+   },
+   "ja2": {
+    "loi": 0.157,
+    "S": 10,
+    "D": 16,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見たマジでやばいんだけどガチで神回じゃん わあそれなウケル鳥肌だったわ 静かにして先生がクリを見つかったらやばいって でもさこのおしマジで尊くない? びっくりした心臓止まるかと思ったわ とりあえず今夜は私のおごりね 焼肉かラーメン早く決めて時間ないから じゃあラーメンにしよう その代わり次は君の番だからね",
+    "loi_kana": 0.112
+   },
+   "ko": {
+    "loi": 0.282,
+    "S": 24,
+    "D": 13,
+    "I": 3,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "까아 까아",
+     "우아야 빼압"
+    ],
+    "ra": " 나야야 이거 봤어 진짜 대박이야 완전 레전드라니  걸리시라니야 나 지금은 소름 돋았어 개웃겨  조용히 해 선생님의 신과 걸리면 다 끝이야  아니 근데 이거 완전 깔쌍 아니야  까아 까아  나 그 깜짝이야 신장 떨어지는 줄 알았는  우아야 빼압  일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 딸립 골라 주시면 없어  그럼 치킨으로 하다 드신다면 내가 사업을 알아"
+   },
+   "en": {
+    "loi": 0.344,
+    "S": 4,
+    "D": 27,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "Ugh, oh, my stomach hurts."
+    ],
+    "ra": " Did you see this? It's literally insane. No cap. This is straight fire.  Bruh, I'm literally dead. That's so sus, I got goosebumps.  But Loki, this whole vibe is kind of good.  It slaps. I'm gonna lose it.  Whoa, you scared me. I almost had a heart attack.  Ugh, oh, my stomach hurts.  Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late.  Got it."
+   }
+  },
+  "P1L large-v3": {
+   "zh2": {
+    "loi": 0.177,
+    "S": 3,
+    "D": 20,
+    "I": 0,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "反正今晚我请客"
+    ],
+    "ra": "我靠,你看到没有,这个视频直接破防了,绝了绝了。 哎呀,别激动,这不就是个普通的整活视频吗? 小声点,老板在后面,别被他发现,我们在后面。 什么?内卷这么厉害,我真想躺平。 啊,别吓我。 反正今晚我请客 吃烧烤还是火锅 你们赶紧选 别磨磨蹭蹭的 好吧 那就火锅 不过说好了 下次轮到你们买单"
+   },
+   "ja2": {
+    "loi": 0.163,
+    "S": 9,
+    "D": 16,
+    "I": 2,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見たマジでヤバいんだけどガチで神簡易じゃん わあそれなウケる鳥肌だったわ 静かにして先生がクリオン見つかったらヤバいって でもさこの推しマジで尊くない びっくりした心臓止まるかと思ったわ とりあえず今夜は私のおごりね 焼肉かラーメン早く決めて時間ないから じゃあラーメンにしよう その代わり次は君の番だからね",
+    "loi_kana": 0.122
+   },
+   "ko": {
+    "loi": 0.254,
+    "S": 20,
+    "D": 13,
+    "I": 3,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "까아악 까아악",
+     "으아아악 뾰옥"
+    ],
+    "ra": " 나야야 이거 봤어 진짜 대박이야 완전 레전드라니  걸릴수란이야 나 지금은 소름 돋았어 개웃겨  조용히해 선생님 계신다 걸리면 다 끝이야  아니 근데 이거 완전 갓생아니야  까아악 까아악  나 그 깜짝이야 신장 떨어지는 줄 알았는  으아아악 뾰옥  일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 딸릴 골라 필요는 없어  그럼 치킨으로 하자고 신다면 내가 사와도 알았"
+   },
+   "en": {
+    "loi": 0.367,
+    "S": 4,
+    "D": 29,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "Ugh, oh, my stomach hurts."
+    ],
+    "ra": " Dude, did you see this? It's literally insane, no cap, this is straight fire.  Bruh, I'm literally dead. That's so sus, I got goosebumps.  But low-key, this whole vibe is kinda good, don't you think?  Whoa, you scared me. I almost had a heart attack.  Ugh, oh, my stomach hurts.  Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late.  Got it."
+   }
+  },
+  "B: đủ + Qwen3.8": {
+   "zh2": {
+    "loi": 0.123,
+    "S": 1,
+    "D": 14,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.151,
+    "S": 6,
+    "D": 19,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見たマジでヤバいんだけどガチで神回じゃんわあそれなウケる鳥肌だったわ静かにして先生が来るよ見つかったらヤバいってでもさこのおしマジで尊くない / びっくりした、心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないからラーメンにしよう。その代わり、次は君の番だからね。",
+    "loi_kana": 0.117
+   },
+   "ko": {
+    "loi": 0.387,
+    "S": 20,
+    "D": 33,
+    "I": 2,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니, 걸리시라니. 야, 나 지금 소름 돋았어. 개웃겨. 아니 근데 이거 완전 발생하냐? 나 그 깜짝이야, 심장 떨어지는 줄 알았어. 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 딸린 콜라 시련 없어. / 그럼 치킨으로 하자고 하신데 내가 사야 돼요."
+   },
+   "en": {
+    "loi": 0.256,
+    "S": 9,
+    "D": 14,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "my stomach hurts."
+    ],
+    "ra": "Dude, did you see this? It's literally insane. No cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. They changed. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh, my stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay. Got it."
+   }
+  },
+  "C: đủ + GPT-OSS-120B": {
+   "zh2": {
+    "loi": 0.131,
+    "S": 1,
+    "D": 15,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有，这个视频直接破防了，绝了绝了，哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面别被他发现，我们在摸，什么，内卷这么厉害，我真想躺平。 / 啊，别吓我啊 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.157,
+    "S": 5,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見たマジでヤバいんだけど、ガチで神回じゃん。わあ、それな、ウケる。鳥肌だったわ。静かにして。先生が来たら、見つかったらヤバいって、でもさ、この推しマジで尊くない。 / びっくりした心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね焼肉かラーメン、早く決めて時間ないからラーメンにしよう。その代わり次は君の番だからね。",
+    "loi_kana": 0.133
+   },
+   "ko": {
+    "loi": 0.324,
+    "S": 29,
+    "D": 10,
+    "I": 7,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어 진짜 대박이야 완전 레전드라니 걸리시라니야 나 지금은 소름 돋았어 개웃겨 조용히 해 선생님 외신다 걸리면 다 끝이야 아니 근데 이거 완전 가슴은야 까아 까아 나 그 깜짝이야 신장 떨어지는 줄 알았는 누아야 빼압 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 딸립 골라 시련 없어 / 그럼 치킨으로 하게 하겠습니다. 내가 사야 돼요."
+   },
+   "en": {
+    "loi": 0.256,
+    "S": 5,
+    "D": 18,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "I'm sorry,",
+     "Oya.",
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But Loki, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. I'm sorry, Oya. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  },
+  "D: đủ + Qwen4-Max": {
+   "zh2": {
+    "loi": 0.123,
+    "S": 1,
+    "D": 14,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊！ / 反正今晚我请客，吃烧烤还是火锅？你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.145,
+    "S": 3,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん。わあ、それな、ウケる。鳥肌だったわ。静かにして、先生が来るよ。見つかったらヤバいって。でもさ、この推しマジで尊くない？ / びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね焼肉かラーメン早く決めて時間ないからラーメンにしようその代わり次は君の番だからね",
+    "loi_kana": 0.117
+   },
+   "ko": {
+    "loi": 0.225,
+    "S": 11,
+    "D": 17,
+    "I": 4,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "누아야 왜요."
+    ],
+    "ra": "야야야 이거 봤어? 진짜 대박이야 완전 레전드라니까 걸리시라니까. 나 지금 소름 돋았어 개웃겨. 조용히 해 선생님 오신다 걸리면 다 끝이야. 아니 근데 이거 완전 갓생 아니야? 나 그 깜짝이야 심장 떨어지는 줄 알았잖아. 누아야 왜요. 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 뭘 골라 시간 없어. / 그럼 치킨으로 하자고 하신대. 내가 사야 돼."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  },
+  "E: 3 model, lấy bản giữa": {
+   "zh2": {
+    "loi": 0.123,
+    "S": 1,
+    "D": 14,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.151,
+    "S": 6,
+    "D": 19,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見たマジでヤバいんだけどガチで神回じゃんわあそれなウケる鳥肌だったわ静かにして先生が来るよ見つかったらヤバいってでもさこのおしマジで尊くない / びっくりした、心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないからラーメンにしよう。その代わり、次は君の番だからね。",
+    "loi_kana": 0.117
+   },
+   "ko": {
+    "loi": 0.268,
+    "S": 14,
+    "D": 16,
+    "I": 8,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어 진짜 대박이야 완전 레전드라니 걸리시라니야 나 지금은 소름 돋았어 개웃겨 조용히 해 선생님 오신다 걸리면 다 끝이야 아니 근데 이거 완전 갓생 아니야 나 그 깜짝이야 심장 떨어지는 줄 알았어 누아야 왜요 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 뭘 골라 시간 없어 / 그럼 치킨으로 하자고 하신데 내가 사야 돼요."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "my stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh, my stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay. Got it."
+   }
+  },
+  "F: Qwen4-Max ×3, lấy bản giữa": {
+   "zh2": {
+    "loi": 0.123,
+    "S": 1,
+    "D": 14,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅？你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.145,
+    "S": 3,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん！わあ、それな、ウケる。鳥肌だったわ。静かにして、先生が来るよ。見つかったらヤバいって。でもさ、この推しマジで尊くない？ / びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないからラーメンにしよう。その代わり次は君の番だからね。",
+    "loi_kana": 0.117
+   },
+   "ko": {
+    "loi": 0.225,
+    "S": 13,
+    "D": 17,
+    "I": 2,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어? 진짜 대박이야 완전 레전드라니 걸리시라니야 나 지금 소름 돋았어 개웃겨 조용히 해 선생님 오신다 걸리면 다 끝이야 아니 근데 이거 완전 갓생 아니야 나 그 깜짝이야 심장 떨어지는 줄 알았어 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 뭘 골라 시간 없어 / 그럼 치킨으로 하자고 하신대. 내가 사야 돼."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine, pizza. The next time you pay, got it?"
+   }
+  },
+  "G2: tách người nói theo đoạn": {
+   "zh2": {
+    "loi": 0.023,
+    "S": 1,
+    "D": 1,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平！对对对，打工人太难了，YYDS。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.09,
+    "S": 5,
+    "D": 8,
+    "I": 2,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん。わあ、それな。ウケる。鳥肌だったわ。静かにして、先生が来るよ。見つかったらヤバいって。でもさ、この推しマジで尊くない？でもわかる、エモすぎてピーんだよ。 / びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね焼肉かラーメン早く決めて時間ないからラーメンにしようその代わり次は君の番だからね",
+    "loi_kana": 0.064
+   },
+   "ko": {
+    "loi": 0.197,
+    "S": 9,
+    "D": 16,
+    "I": 3,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "누아야 왜요."
+    ],
+    "ra": "야야야 이거 봤어? 진짜 대박이야 완전 레전드라니까. 걸리시라니야 나 지금 소름 돋았어 개웃겨. 조용히 해 선생님 오신다 걸리면 다 끝이야. 아니 근데 이거 완전 갓생 아니야? 나 그 깜짝이야 심장 떨어지는 줄 알았어. 누아야 왜요. 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 빨리 골라 시간 없어. / 그럼 치킨으로 하자고 하신다. 내가 사야 돼."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  },
+  "NHANH": {
+   "zh2": {
+    "loi": 0.154,
+    "S": 3,
+    "D": 16,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了！绝了绝了！哎呀别激动，这不就是个普通的整活视频吗？小 / 老板在后面，别被他发现我们在哪里。 / 什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊！ / 反正今晚我请客，吃烧烤还是火锅？你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次…… / 轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.199,
+    "S": 9,
+    "D": 23,
+    "I": 1,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん。わあ、それな。ウケる。鳥肌だったわ。 / 静かにして、先生がクリオン見つかったらヤバいって / でもさ、この推し、マジで尊くない？ / ふふふ、びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないからしよう。 / その代わり次は君の番だからね。",
+    "loi_kana": 0.16
+   },
+   "ko": {
+    "loi": 0.465,
+    "S": 9,
+    "D": 56,
+    "I": 1,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니, 걸리시라니야. 나 지금 소름 돋았어. 개웃겨. / 아니 근데 이거 완전 갓생이야. 나 그 깜짝이야, 심장 떨어지는 줄 알았어. 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 골라."
+   },
+   "en": {
+    "loi": 0.333,
+    "S": 6,
+    "D": 24,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "my stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane. No cap, this is straight fire. Bruh, I'm literally dead. That's so sus. I got goosebumps. / {\"text\": \"But Loki, this whole vibe is kinda gutted, don't you think? Whoa, you scared me. I almost had a heart attack.\"} / Ugh, oh, my stomach hurts. / Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late. / Fine pizza. The next time you pay. Got it."
+   }
+  },
+  "NHANH-Groq (Qwen3.8)": {
+   "zh2": {
+    "loi": 0.154,
+    "S": 4,
+    "D": 15,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了！哎呀，别激动，这不就是个普通的整活视频吗？小 / 老板在后面，别被他发现我们在做什么。 / 什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅？你们赶紧选，别磨磨蹭蹭的，好吧？那就火锅。不过说好了，下次…… / 轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.223,
+    "S": 9,
+    "D": 27,
+    "I": 1,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見た、マジでヤバいんだけど、ガチで神回じゃん。わあ、それな。ウケる、鳥肌だったわし。 / 静かにして、先生が栗を見つかったらヤバいって / でもさ、この押し、マジで尊くない？ / ふふふ、びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないから。 / その代わり次は君の番だからね。",
+    "loi_kana": 0.176
+   },
+   "ko": {
+    "loi": 0.458,
+    "S": 14,
+    "D": 49,
+    "I": 2,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니, 걸리시라니. 야, 나 지금은 소름 돋았어. 개웃겨. / 아니 근데 이거 완전 갓생은이야. 나 그 깜짝이야, 심장 떨어지는 줄 알았어. 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 둘 다 골라. 치면 없어."
+   },
+   "en": {
+    "loi": 0.333,
+    "S": 5,
+    "D": 25,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "my stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane. No cap. This is straight fire. Bruh, I'm literally dead. That's so sus. I got goosebumps. / But Loki, this whole vibe is kinda gutted, don't you think? Whoa, you scared me. I almost had a heart attack. / Ugh, oh, my stomach hurts. / Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late. / Fine pizza. The next time you pay. Got it."
+   }
+  },
+  "CÂN BẰNG": {
+   "zh2": {
+    "loi": 0.123,
+    "S": 1,
+    "D": 14,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.145,
+    "S": 3,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん！\nわあ、それな！ウケる。鳥肌だったわ。\n静かにして！先生が来るよ。見つかったらヤバいって。\nでもさ、この推しマジで尊くない？ / びっくりした、心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね焼肉かラーメン早く決めて時間ないからラーメンにしようその代わり次は君の番だからね",
+    "loi_kana": 0.117
+   },
+   "ko": {
+    "loi": 0.218,
+    "S": 12,
+    "D": 17,
+    "I": 2,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "누아야 왜요?"
+    ],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니 걸리시라니야. 나 지금 소름 돋았어. 개웃겨. 조용히 해, 선생님 오신다. 걸리면 다 끝이야. 아니 근데 이거 완전 갓생 아니야? 나 그 깜짝이야, 심장 떨어지는 줄 알았어. 누아야 왜요? 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 뭘 골라? 시간 없어. / 그럼 치킨으로 하자고 하신다. 내가 사야 돼."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  },
+  "KỸ (tách người khi khó)": {
+   "zh2": {
+    "loi": 0.123,
+    "S": 1,
+    "D": 14,
+    "I": 1,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.145,
+    "S": 3,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえこれ見た？マジでヤバいんだけど。ガチで神回じゃん！わあ、それな！ウケる～鳥肌だったわ。静かにして！先生が来るよ、見つかったらヤバいって。でもさ、この推しマジで尊くない？ふふ / びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないからラーメンにしよう。その代わり次は君の番だからね。",
+    "loi_kana": 0.117
+   },
+   "ko": {
+    "loi": 0.204,
+    "S": 11,
+    "D": 16,
+    "I": 2,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "누아야 왜요?"
+    ],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니, 걸리시라니야. 나 지금 소름 돋았어. 개웃겨. 조용히 해, 선생님 오신다. 걸리면 다 끝이야. 아니 근데 이거 완전 갓생 아니야? 나 그 깜짝이야, 심장 떨어지는 줄 알았어. 누아야 왜요? 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 빨리 골라, 시간 없어. / 그럼 치킨으로 하자고 하신다. 내가 사야 돼."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "my stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh, my stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late. / Fine, pizza. The next time you pay, got it?"
+   }
+  },
+  "NHANH2: cả đoạn, 2 bản, Qwen4-Max": {
+   "zh2": {
+    "loi": 0.146,
+    "S": 4,
+    "D": 13,
+    "I": 2,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了！哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在那里什么。对对对，那卷这么厉害，我真想躺平。 / 别吓我。反正今晚我请客，吃烧烤还是火锅？你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.151,
+    "S": 4,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでやばいんだけど。ガチで神回じゃん。わあ、それな。ウケる。鳥肌だったわ。静かにして、先生に見つかったらやばいって。でもさ、この推しマジで尊くない？びっくりした、心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないから。じゃあラーメンにしよう。その代わり次は君の番だからね。",
+    "loi_kana": 0.122
+   },
+   "ko": {
+    "loi": 0.366,
+    "S": 20,
+    "D": 30,
+    "I": 2,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니 걸리시라니야. 나 지금은 소름 돋았어. 개웃겨. 아니 근데 이거 완전 깔생 아니야? 나 그 깜짝이야 신장 떨어지는 줄 알았는. 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 딸립 골라 시련 없어. / 그럼 치킨으로 하자. 계신다면 내가 사업을 알아."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 5,
+    "D": 19,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane. No cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. But lowkey, this whole vibe is kinda good, don't you think? It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. / My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. Want pizza? The next time you pick, got it."
+   }
+  },
+  "NHANH3: cả đoạn, 3 bản, Qwen4-Max": {
+   "zh2": {
+    "loi": 0.146,
+    "S": 4,
+    "D": 13,
+    "I": 2,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了！哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在那里什么。对对对，那卷这么厉害，我真想躺平。 / 别吓我，反正今晚我请客。吃烧烤还是火锅？你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.157,
+    "S": 5,
+    "D": 21,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ、これ見た？マジでやばいんだけど。ガチで神回じゃん。わあ、それな。ウケル。鳥肌だったわ。静かにして、先生に見つかったらやばいって。でもさ、この推しマジで尊くない？びっくりした、心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないから。じゃあラーメンにしよう。その代わり次は君の番だからね。",
+    "loi_kana": 0.122
+   },
+   "ko": {
+    "loi": 0.373,
+    "S": 15,
+    "D": 37,
+    "I": 1,
+    "N": 142,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "나 그 깜짝이야,"
+    ],
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니, 걸리시라니야. 나 지금 소름 돋았어. 개웃겨. 아니 근데 이거 완전 깔생 아니야? 나 그 깜짝이야, 심장 떨어지는 줄 알았네. 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 뭘 골라, 시련 없어. / 그럼 치킨으로 하자. 계신다면 내가 사업을 알아."
+   },
+   "en": {
+    "loi": 0.256,
+    "S": 5,
+    "D": 18,
+    "I": 0,
+    "N": 90,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "My stomach hurts."
+    ],
+    "ra": "Did you see this? It's literally insane. No cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. But lowkey, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. / My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. Want pizza? The next time you pick, got it."
+   }
+  },
+  "KỸ trên clip gốc Kokoro": {
+   "zh": {
+    "loi": 0.677,
+    "S": 42,
+    "D": 46,
+    "I": 0,
+    "N": 130,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [
+     "对我好，",
+     "对我好，"
+    ],
+    "ra": "我靠，你看到没有？做过细评计借破防了，绝了绝了！哎呀，别激动，做不就是个普通的整我细评嘛。 / 在末日前，周末里我真想躺平。对我好，对我好，阿扁想我喂我。我老太安生就让我亲口气。稍好爱戏，无辜里面的精选别磨磨蹭蹭的。"
+   },
+   "ja": {
+    "loi": 0.904,
+    "S": 22,
+    "D": 128,
+    "I": 0,
+    "N": 166,
+    "chu_o_vung_khong_loi": [],
+    "chu_o_vung_het_ren": [],
+    "ra": "ねえねえ小姉妹、マリデイビンけどがちでくみきるうぬそぜんうんけいぶるとりへっと / (?)",
+    "loi_kana": 0.883
+   }
+  },
+  "KỸ (chạy lại)": {
+   "zh2": {
+    "loi": 0.054,
+    "S": 5,
+    "D": 1,
+    "I": 1,
+    "N": 130,
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平！对对对，打工人太难了，永远的神。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.09,
+    "S": 5,
+    "D": 8,
+    "I": 2,
+    "N": 166,
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん。わあ、それな。ウケる。鳥肌だったわ。静かにして、先生が来るよ。見つかったらヤバいって。でもさ、この推しマジで尊くない？でもわかる、エモすぎてピーんだよ。 / びっくりした心臓止まるかと思ったわ / とりあえず今夜は私のおごりね焼肉かラーメン早く決めて時間ないからラーメンにしようその代わり次は君の番だからね",
+    "loi_kana": 0.064
+   },
+   "ko": {
+    "loi": 0.232,
+    "S": 10,
+    "D": 16,
+    "I": 7,
+    "N": 142,
+    "ra": "야야야 이거 봤어? 진짜 대박이야 완전 레전드라니 걸리시라니야 나 지금 소름 돋았어 개웃겨 조용히 해 선생님 오신다 걸리면 다 끝이야 아니 근데 이거 완전 갓생 아니야 나 그 깜짝이야 심장 떨어지는 줄 알았어 누아야 왜요 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 빨리 골라 시간 없어 / 그럼 치킨으로 하자고 하신다. 내가 사야 돼."
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  },
+  "KỸ + DFN thêm bản": {
+   "zh2": {
+    "loi": 0.023,
+    "S": 1,
+    "D": 1,
+    "I": 1,
+    "N": 130,
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害，我真想躺平！对对对，打工人太难了，YYDS。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.114,
+    "S": 8,
+    "D": 5,
+    "I": 6,
+    "N": 166,
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん。わあ、それな。ウケる。鳥肌だったわ。静かにして、先生が来るよ。見つかったらヤバいって。でもさ、この推しマジで尊くない？ふふっ。でもわかる、エモすぎてピーんだよ。尊くない？ / びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね。焼肉かラーメン、早く決めて。時間ないからラーメンにしよう。その代わり次は君の番だからね。",
+    "loi_kana": 0.096
+   },
+   "ko": {
+    "loi": 0.31,
+    "S": 10,
+    "D": 33,
+    "I": 1,
+    "N": 142,
+    "ra": "나야야 이거 봤어? 진짜 대박이야. 완전 레전드라니, 걸리시라니야. 나 지금 소름 돋았어, 개웃겨. 조용히 해, 선생님 오신다. 걸리면 다 끝이야. 아니 근데 이거 완전 갓생 아니야? 나 그 깜짝이야, 심장 떨어지는 줄 알았어. 누아야 왜요? 일단 오늘 저녁은 내가 쏠게. 치킨이랑 떡볶이 중에 뭘 골라, 시간 없어. / (?)"
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh, my stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  },
+  "KỸ + DFN nối tiếp (kiểu Google)": {
+   "zh2": {
+    "loi": 0.054,
+    "S": 5,
+    "D": 1,
+    "I": 1,
+    "N": 130,
+    "ra": "我靠，你看到没有？这个视频直接破防了，绝了绝了。哎呀，别激动，这不就是个普通的整活视频吗？小声点，老板在后面，别被他发现我们在摸鱼。什么？内卷这么厉害？我真想躺平！对对对，打工人太难了，永远的神。 / 啊，别吓我啊。 / 反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的。好吧，那就火锅。不过说好了，下次轮到你们买单。"
+   },
+   "ja2": {
+    "loi": 0.127,
+    "S": 9,
+    "D": 6,
+    "I": 6,
+    "N": 166,
+    "ra": "ねえねえ、これ見た？マジでヤバいんだけど。ガチで神回じゃん。うわー、それな、ウケる、鳥肌だったわ。静かにして、先生に見つかったらヤバいって。でもさ、この推しマジで尊くない？ふふっ。でもわかる、エモすぎてピーんだよ。 / ふふふ、びっくりした。心臓止まるかと思ったわ。 / とりあえず今夜は私のおごりね焼肉かラーメン早く決めて時間ないからラーメンにしようその代わり次は君の番だからね",
+    "loi_kana": 0.096
+   },
+   "ko": {
+    "loi": 0.345,
+    "S": 9,
+    "D": 32,
+    "I": 8,
+    "N": 142,
+    "ra": "나야야 이거 봤어 진짜 대박이야 완전 레전드라니 걸리시라니야 나 지금은 소름 돋았어 개웃겨 조용히 해 선생님 오신다 걸리면 다 끝이야 아니 근데 이거 완전 갓생 아니야 나 그 깜짝이야 심장 떨어지는 줄 알았는데 누아야 빼야 일단 오늘 저녁은 내가 쏠게 치킨이랑 떡볶이 중에 빨리 골라 시간 없어 / (?)"
+   },
+   "en": {
+    "loi": 0.267,
+    "S": 7,
+    "D": 17,
+    "I": 0,
+    "N": 90,
+    "ra": "Did you see this? It's literally insane, no cap, this is straight fire. Bruh, I'm literally dead. That's so sus, I got goosebumps. / But low-key, this whole vibe is kinda good, don't you think? Yeah, yeah, totally. It slaps. I'm gonna lose it. Whoa, you scared me. I almost had a heart attack. Ugh. Oh. My stomach hurts. Anyway, dinner's on me. Pizza or tacos? Pick quick. We're gonna be late. / Fine pizza. The next time you pay, got it."
+   }
+  }
+ },
+ "do_thoi_gian_clip_38_5s_4_nhan": {
+  "demucs_s": 21.2,
+  "vad_s": 0.65,
+  "sepformer_moi_doan_s": 32.1,
+  "goi_turbo_22s_tieng_s": 1.1,
+  "qwen4max_s": 2.2,
+  "qwen3_8_groq_s": 0.33
+ },
+ "kiem_giong_doc_kokoro": {
+  "zh_turbo_tren_giong_qwen_sach": 0.023,
+  "ja_turbo_tren_giong_qwen_sach": 0.084
+ },
+ "deepfilternet_lam_nho_thi_tham_ko": {
+  "cau3_truoc_db": -23,
+  "cau3_sau_db": -37,
+  "cau10_truoc_db": -28,
+  "cau10_sau_db": -35
+ }
+}

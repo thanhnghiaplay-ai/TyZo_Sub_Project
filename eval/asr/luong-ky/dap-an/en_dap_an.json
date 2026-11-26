@@ -1,0 +1,92 @@
+[
+  {
+    "n": 1,
+    "start": 0.2,
+    "end": 3.12,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "Dude, did you see this? It's literally insane, no cap, this is straight fire!",
+    "vi": "Này, cậu xem cái này chưa? Điên thật sự luôn, không đùa đâu, đỉnh vãi!",
+    "factors": "Nói nhanh, giọng to, tiếng lóng (no cap, straight fire), nhạc nền"
+  },
+  {
+    "n": 2,
+    "start": 3.37,
+    "end": 6.76,
+    "speaker": "B (nam, giọng Anh)",
+    "text": "Bruh, I'm literally dead. That's so sus, I got goosebumps.",
+    "vi": "Trời ơi, mình xỉu mất. Đáng ngờ quá, nổi da gà luôn.",
+    "factors": "Giọng nam Anh bình thường, tiếng lóng (bruh, literally dead, sus)"
+  },
+  {
+    "n": 3,
+    "start": 7.01,
+    "end": 11.54,
+    "speaker": "C (nữ, thì thầm)",
+    "text": "Shh, keep it down, the boss is coming. We're toast if he sees us.",
+    "vi": "Suỵt, nói nhỏ thôi, sếp tới kìa. Ổng thấy là tụi mình toi.",
+    "factors": "Thì thầm, âm lượng rất nhỏ, nhạc nền bắt đầu to"
+  },
+  {
+    "n": 4,
+    "start": 11.79,
+    "end": 14.48,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "But lowkey, this whole vibe is kinda goated, don't you think?",
+    "vi": "Nhưng nói thật, cái không khí này đỉnh ra phết, cậu không nghĩ vậy sao?",
+    "factors": "Tiếng lóng (lowkey, vibe, goated), nhạc nền to"
+  },
+  {
+    "n": 5,
+    "start": 12.04,
+    "end": 14.66,
+    "speaker": "B (nam, giọng Anh)",
+    "text": "Yeah yeah, totally! It slaps, I'm gonna lose it!",
+    "vi": "Ừ ừ, chuẩn luôn! Đỉnh thật, mình sắp phát điên rồi!",
+    "factors": "Nhiều người nói chồng lên nhau, tiếng lóng (it slaps, gonna)"
+  },
+  {
+    "n": 6,
+    "start": 14.96,
+    "end": 17.69,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "[La hét, tiếng thét]",
+    "vi": "(tiếng thét chói tai)",
+    "factors": "Âm thanh phi lời nói: la hét"
+  },
+  {
+    "n": 7,
+    "start": 17.84,
+    "end": 20.14,
+    "speaker": "B (nam, giọng Anh)",
+    "text": "Whoa, you scared me! I almost had a heart attack!",
+    "vi": "Úi, cậu làm mình giật mình! Suýt nữa thì đau tim rồi!",
+    "factors": "Giọng rất to, hoảng hốt"
+  },
+  {
+    "n": 8,
+    "start": 20.44,
+    "end": 24.52,
+    "speaker": "C (nữ, thì thầm)",
+    "text": "[Rên rỉ, tiếng ú ớ]",
+    "vi": "Ư... ái... đau bụng quá...",
+    "factors": "Giọng rên rỉ yếu ớt, chậm"
+  },
+  {
+    "n": 9,
+    "start": 24.77,
+    "end": 27.56,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "Anyway, dinner's on me. Pizza or tacos? Pick quick, we're gonna be late!",
+    "vi": "Dù sao tối nay mình bao. Pizza hay tacos? Chọn nhanh lên, sắp trễ rồi!",
+    "factors": "Nói rất nhanh, nhạc nền to, từ nói tắt (gonna)"
+  },
+  {
+    "n": 10,
+    "start": 27.86,
+    "end": 30.91,
+    "speaker": "C (nữ, thì thầm)",
+    "text": "Fine, pizza. But next time, you're paying, got it?",
+    "vi": "Được rồi, pizza. Nhưng lần sau cậu trả tiền nhé, hiểu chưa?",
+    "factors": "Thì thầm, âm lượng rất nhỏ, kết thúc"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "speaker": "지연",
+    "text": "민수 씨, 지난주에 제출한 기획안 검토해 보셨어요? 아직 확신이 서지 않아서요.",
+    "start": 0,
+    "end": 5.18,
+    "vi": "Anh Minsu, anh đã xem qua bản kế hoạch tôi nộp tuần trước chưa? Tôi vẫn chưa chắc lắm."
+  },
+  {
+    "id": 2,
+    "speaker": "민수",
+    "text": "네, 훑어봤어요. 솔직히 일정이 너무 낙관적인 것 같아요. 세 개 부서를 동시에 바꾸는 건 무리라고 생각해요.",
+    "start": 5.68,
+    "end": 12.67,
+    "vi": "Tôi đọc lướt rồi. Nói thật, lịch trình có vẻ quá lạc quan. Thay đổi cả ba phòng ban cùng lúc thì quá sức."
+  },
+  {
+    "id": 3,
+    "speaker": "지연",
+    "text": "저도 그 점이 걱정됐어요. 그런데 경영진은 미루면 예산 부족이 더 심해질 거라고 주장하더라고요.",
+    "start": 13.17,
+    "end": 19.29,
+    "vi": "Tôi cũng lo chuyện đó. Nhưng ban lãnh đạo cho rằng càng trì hoãn thì ngân sách sẽ càng thiếu hụt."
+  },
+  {
+    "id": 4,
+    "speaker": "민수",
+    "text": "일리는 있지만, 서두르다가 오히려 일을 그르칠 수도 있어요. 작년 시스템 이전 때 일을 기억하세요?",
+    "start": 19.79,
+    "end": 25.58,
+    "vi": "Cũng có lý, nhưng vội quá có khi lại hỏng việc. Chị còn nhớ lần chuyển đổi hệ thống năm ngoái chứ?"
+  },
+  {
+    "id": 5,
+    "speaker": "지연",
+    "text": "어떻게 잊겠어요. 몇 주 동안 문제 수습하느라 정신이 없었잖아요. 그래도 무작정 반대하기보다는 절충안을 내고 싶어요.",
+    "start": 26.08,
+    "end": 33.73,
+    "vi": "Sao quên được. Mấy tuần liền chúng ta tất bật xử lý sự cố. Dù vậy, tôi vẫn muốn đề xuất một phương án dung hòa thay vì cứ phản đối."
+  },
+  {
+    "id": 6,
+    "speaker": "민수",
+    "text": "어떤 방법을 생각하고 계세요?",
+    "start": 34.23,
+    "end": 36.31,
+    "vi": "Chị đang nghĩ đến cách nào?"
+  },
+  {
+    "id": 7,
+    "speaker": "지연",
+    "text": "단계적으로 진행하는 거예요. 한 부서에서 먼저 시범 운영을 하고, 문제점을 보완한 뒤에 2분기 말까지 확대하는 거죠.",
+    "start": 36.81,
+    "end": 44.17,
+    "vi": "Mình làm theo từng giai đoạn. Thử ở một phòng ban trước, khắc phục các vấn đề rồi mở rộng chậm nhất vào cuối quý hai."
+  },
+  {
+    "id": 8,
+    "speaker": "민수",
+    "text": "훨씬 현실적이네요. 지연 씨가 개요를 작성해 주시면 제가 수치를 계산해서 비용 절감 효과가 유지되는지 확인해 볼게요.",
+    "start": 44.67,
+    "end": 52.81,
+    "vi": "Như vậy thực tế hơn nhiều. Nếu chị Jiyeon soạn đề cương, tôi sẽ tính toán để xem có duy trì được mức tiết kiệm chi phí không."
+  },
+  {
+    "id": 9,
+    "speaker": "지연",
+    "text": "좋아요. 목요일에 팀장님께 보고드리죠. 되돌릴 수 없는 결정을 내리시기 전에요.",
+    "start": 53.31,
+    "end": 58.46,
+    "vi": "Được. Thứ Năm mình báo cáo với trưởng nhóm nhé, trước khi trưởng nhóm đưa ra quyết định khó đảo ngược."
+  },
+  {
+    "id": 10,
+    "speaker": "민수",
+    "text": "그래요. 만약 반대하시면 우리가 준비한 자료로 설득하면 됩니다.",
+    "start": 58.96,
+    "end": 63.38,
+    "vi": "Được. Nếu trưởng nhóm phản đối, chúng ta có thể dùng số liệu đã chuẩn bị để thuyết phục."
+  }
+]

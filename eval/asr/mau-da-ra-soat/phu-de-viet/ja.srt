@@ -1,0 +1,39 @@
+1
+00:00:00,000 --> 00:00:04,992
+Kenta, anh đã xem qua bản kế hoạch tôi nộp tuần trước chưa? Tôi vẫn còn đang phân vân.
+
+2
+00:00:05,492 --> 00:00:13,641
+Rồi, tôi đọc lướt qua. Thật lòng thì lịch trình có vẻ quá lạc quan. Thay đổi ba bộ phận cùng lúc là quá sức.
+
+3
+00:00:14,141 --> 00:00:20,733
+Tôi cũng lo điểm đó. Nhưng ban lãnh đạo nói nếu trì hoãn thì thiếu hụt ngân sách sẽ càng tệ hơn.
+
+4
+00:00:21,233 --> 00:00:27,803
+Cũng có lý, nhưng vội vàng có thể phản tác dụng. Chị còn nhớ vụ chuyển đổi hệ thống năm ngoái không?
+
+5
+00:00:28,303 --> 00:00:35,216
+Sao quên được. Mấy tuần liền chúng ta chạy theo xử lý sự cố. Dù vậy, tôi muốn đưa ra phương án dung hòa hơn là chỉ phản đối.
+
+6
+00:00:35,716 --> 00:00:36,612
+Chị nghĩ đến phương án nào?
+
+7
+00:00:37,112 --> 00:00:45,389
+Triển khai theo từng giai đoạn: thí điểm ở một bộ phận trước, sửa các vấn đề rồi mở rộng trước cuối quý hai.
+
+8
+00:00:45,889 --> 00:00:55,126
+Vậy thực tế hơn nhiều. Nếu chị soạn đề cương, tôi sẽ tính số liệu và kiểm tra hiệu quả cắt giảm chi phí có giữ được không.
+
+9
+00:00:55,626 --> 00:01:01,301
+Nhờ anh nhé. Thứ Năm mình báo cáo với trưởng phòng, trước khi trưởng phòng đưa ra quyết định khó đảo ngược.
+
+10
+00:01:01,801 --> 00:01:06,004
+Vậy nhé. Nếu trưởng phòng phản đối, chúng ta có thể dùng số liệu đã chuẩn bị để thuyết phục.

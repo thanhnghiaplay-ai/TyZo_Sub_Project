@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TyZo · So phụ đề Trung–Việt</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#151819;color:#fafafa;font:1rem system-ui,sans-serif}main{max-width:44rem;margin:8vh auto;padding:1rem}h1{font-size:1.35rem}select{font:inherit;padding:.45rem}#cue{display:grid;place-items:center;text-align:center;background:#070909;min-height:9rem;padding:1rem;line-height:1.45;font-size:clamp(1.15rem,5vw,1.55rem);border-radius:.5rem}audio{width:100%}
+</style>
+<main><h1>So phụ đề Trung–Việt</h1>
+<label>Bản dịch <select id="version"><option value="23">23 · Nhịp đọc trên điện thoại</option><option value="22">22 · Ghép câu</option></select></label>
+<p id="cue"></p><audio controls id="audio" src="data:audio/wav;base64,__AUDIO__"></audio></main>
+<script type="application/json" id="tracks">__TRACKS__</script>
+<script>
+const tracks = JSON.parse(document.getElementById('tracks').textContent);
+const audio = document.getElementById('audio');
+const version = document.getElementById('version');
+const cue = document.getElementById('cue');
+function update() {
+  const t = audio.currentTime;
+  const line = tracks[version.value].filter(item => item[0] <= t && t < item[1]).pop();
+  cue.textContent = line ? line[2] : '';
+}
+for (const event of ['timeupdate','seeked','loadedmetadata','ended']) audio.addEventListener(event, update);
+version.addEventListener('change', update);
+update();
+</script></html>

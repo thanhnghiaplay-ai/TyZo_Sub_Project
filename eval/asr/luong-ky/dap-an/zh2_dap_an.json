@@ -1,0 +1,92 @@
+[
+ {
+  "n": 1,
+  "start": 0.2,
+  "end": 5.16,
+  "speaker": "A (nữ, to, nhanh)",
+  "text": "我靠！你看到没有？这个视频直接破防了，绝了绝了！",
+  "vi": "Trời ơi! Cậu xem chưa? Video này làm mình sụp đổ luôn, đỉnh quá đỉnh quá!",
+  "factors": "Nói nhanh, giọng to, tiếng lóng (破防, 绝了), có nhạc nền"
+ },
+ {
+  "n": 2,
+  "start": 5.41,
+  "end": 9.09,
+  "speaker": "B (nam)",
+  "text": "哎呀，别激动，这不就是个普通的整活视频嘛。",
+  "vi": "Ôi dào, đừng kích động, đây chỉ là video chơi trò thôi mà.",
+  "factors": "Giọng nam bình thường, tiếng lóng (整活)"
+ },
+ {
+  "n": 3,
+  "start": 9.34,
+  "end": 15.18,
+  "speaker": "C (nam, thì thầm)",
+  "text": "小声点，老板在后面，别被他发现我们在摸鱼。",
+  "vi": "Nói nhỏ thôi, sếp ở phía sau, đừng để ông ấy phát hiện tụi mình đang trốn việc.",
+  "factors": "Giọng rất nhỏ/thì thầm, tiếng lóng (摸鱼), nhạc nền bắt đầu to"
+ },
+ {
+  "n": 4,
+  "start": 15.43,
+  "end": 19.59,
+  "speaker": "A (nữ, to, nhanh)",
+  "text": "什么？内卷这么厉害，我真想躺平！",
+  "vi": "Cái gì? Cạnh tranh khốc liệt thế này, mình chỉ muốn nằm yên thôi!",
+  "factors": "Tiếng lóng (内卷, 躺平), nhạc nền to"
+ },
+ {
+  "n": 5,
+  "start": 15.68,
+  "end": 19.6,
+  "speaker": "B (nam)",
+  "text": "对对对，打工人太难了，yyds！",
+  "vi": "Đúng đúng đúng, dân đi làm khổ quá, đỉnh nhất luôn!",
+  "factors": "Nhiều người nói chồng lên nhau, lẫn tiếng Anh viết tắt (yyds)"
+ },
+ {
+  "n": 6,
+  "start": 20.09,
+  "end": 22.59,
+  "speaker": "A (nữ, to, nhanh)",
+  "text": "[La hét, tiếng thét]",
+  "vi": "(tiếng thét chói tai)",
+  "factors": "Âm thanh phi lời nói: la hét"
+ },
+ {
+  "n": 7,
+  "start": 22.84,
+  "end": 24.04,
+  "speaker": "B (nam)",
+  "text": "啊——别吓我！",
+  "vi": "Á! Đừng dọa mình!",
+  "factors": "Giọng cực to, hoảng hốt"
+ },
+ {
+  "n": 8,
+  "start": 24.29,
+  "end": 26.29,
+  "speaker": "C (nam, thì thầm)",
+  "text": "[Rên rỉ, tiếng ú ớ]",
+  "vi": "(tiếng rên rỉ) Ưm… ưm… đau quá…",
+  "factors": "Âm thanh phi lời nói: rên rỉ yếu ớt, chậm"
+ },
+ {
+  "n": 9,
+  "start": 26.54,
+  "end": 32.06,
+  "speaker": "A (nữ, to, nhanh)",
+  "text": "反正今晚我请客，吃烧烤还是火锅，你们赶紧选，别磨磨蹭蹭的！",
+  "vi": "Dù sao tối nay mình mời, ăn nướng hay lẩu, mau chọn đi, đừng lề mề nữa!",
+  "factors": "Nói rất nhanh, nhạc nền to"
+ },
+ {
+  "n": 10,
+  "start": 32.31,
+  "end": 37.67,
+  "speaker": "C (nam, thì thầm)",
+  "text": "好吧，那就火锅，不过说好了，下次轮到你们买单。",
+  "vi": "Được rồi, vậy ăn lẩu, nhưng nói trước nhé, lần sau tới lượt các cậu trả tiền.",
+  "factors": "Giọng rất nhỏ, nhạc nền vẫn còn"
+ }
+]
