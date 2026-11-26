@@ -393,7 +393,7 @@ menu() {
       31) "$PY" "$CODE/eval/asr/fleurs-ko/loc-chao.py" "$TEST_OUT/fleurs-ko" ;;
       34) nhat_ky_bat_may ;;
       38) thu_phim ;;
-      39) ls -1 "$TEST_OUT/phim" | grep -v '^goc$'; read -rp "Thư mục kết quả (tên ở trên): " x; [ -n "$x" ] && "$PY" "$CODE/eval/asr/phim/xem_thu_tu.py" "$TEST_OUT/phim/$x" ;;
+      39) ls -1 "$TEST_OUT/phim" | grep -v '^goc$'; read -rp "Thư mục kết quả (tên ở trên): " x; read -rp "Luồng [nhanh]: " y; [ -n "$x" ] && "$PY" "$CODE/eval/asr/phim/xem_thu_tu.py" "$TEST_OUT/phim/$x" "${y:-nhanh}" ;;
       37) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" --lap 4 180 && sleep 5 && nhat_ky_bat_may ;;
       36) "$PY" "$CODE/eval/asr/fleurs-ko/so-hai-luot.py" "$TEST_OUT/fleurs-ko" ;;
       35) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" && sleep 5 && nhat_ky_bat_may ;;
