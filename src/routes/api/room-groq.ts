@@ -96,7 +96,8 @@ export const Route = createFileRoute("/api/room-groq")({
 
         const { readRequest, chargeWith } = await import("@/lib/billing/run-gate");
         const { loadPriceBook } = await import("@/lib/run-board.server");
-        const parsed = await readRequest(path, contentType, body!);
+        // RE-005: chuẩn hóa giới hạn token trả lời (Groq: max_completion_tokens); gửi Groq đúng thân đã chuẩn hóa.
+        const parsed = await readRequest(path, contentType, body!, "max_completion_tokens");
         if (!parsed) return fail(400, "Không đọc được model trong yêu cầu.");
         if (parsed.problem) return fail(400, parsed.problem);
         const offered = await sql<{ value: string }>`select value from room_settings where key = 'run_models'`;
@@ -119,8 +120,10 @@ export const Route = createFileRoute("/api/room-groq")({
             ticketId: request.headers.get("x-run-ticket") || "",
             body: body!,
             cap: desk.cap,
+            outCap: parsed.cap,
+            contentType,
             send: () =>
-              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: body!, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
+              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: parsed.body ?? body!, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
           });
         } catch (error) {
           if (isTimeout(error)) return fail(504, TIMEOUT_TEXT);

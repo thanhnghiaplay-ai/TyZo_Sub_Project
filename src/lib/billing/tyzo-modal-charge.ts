@@ -12,7 +12,7 @@ import type { Sql } from "../db.ts";
 import { randomBytes } from "node:crypto";
 import { inTransaction } from "../db-tx.ts";
 import { LEASE_STALE, startBeat } from "./work-lease.ts";
-import { chargeTokenWith, closeTokenWith } from "./token-flow.ts";
+import { chargeTokenWith, closeIfWantedWith } from "./token-flow.ts";
 
 export type ModalPartResult = { segments: { text: string; start: number; end: number }[]; tokens: number; short: number; reused: boolean };
 
@@ -112,7 +112,7 @@ export async function runModalPartWith(
     return { segments: result.segments, tokens: 0, short: 0, reused: true };
   }
   const short = Math.max(0, tokens - settled.taken);
-  await closeIfWanted(sql, ticket, userId);
+  await closeIfWantedWith(sql, ticket, userId);
   return { segments: result.segments, tokens: settled.taken, short, reused: false };
 }
 
@@ -139,12 +139,5 @@ async function releasePart(sql: Sql, ticket: string, userId: string, partHash: s
     update run_tickets set modal_seconds = greatest(0, modal_seconds - coalesce((select sum(seconds) from p), 0)),
       modal_reserved = greatest(0, modal_reserved - coalesce((select sum(reserved) from p), 0))
     where id = ${ticket} and user_id = ${userId} and exists (select 1 from p)`;
-  await closeIfWanted(sql, ticket, userId);
-}
-
-/** Khách đã bấm đóng lúc đoạn còn chạy: đoạn cuối xong thì đóng phiếu (trả phần dư). Còn đoạn khác chạy thì để đoạn đó đóng. */
-async function closeIfWanted(sql: Sql, ticket: string, userId: string) {
-  const want = await sql<{ close_failed: boolean }>`
-    select close_failed from run_tickets where id = ${ticket} and user_id = ${userId} and status = 'dang-giu' and close_wanted`;
-  if (want.length) await closeTokenWith(sql, ticket, userId, Boolean(want[0].close_failed));
+  await closeIfWantedWith(sql, ticket, userId);
 }

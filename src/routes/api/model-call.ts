@@ -97,7 +97,8 @@ export const Route = createFileRoute("/api/model-call")({
         const sql = await getSql();
         const desk = parseRunDesk((await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`)[0]?.value);
         if (desk.maintenance) return fail(403, desk.note || "Cửa trả theo lượt đang bảo trì.");
-        const parsed = await readRequest(path, contentType, body);
+        // RE-005: chuẩn hóa giới hạn token trả lời theo trường của nhà; gửi nhà đúng thân đã chuẩn hóa.
+        const parsed = await readRequest(path, contentType, body, chat.tokenField);
         if (!parsed) return fail(400, "Không đọc được model trong yêu cầu.");
         if (parsed.problem) return fail(400, parsed.problem);
         const houses = await loadRoomHouses(sql);
@@ -123,7 +124,9 @@ export const Route = createFileRoute("/api/model-call")({
             ticketId: request.headers.get("x-run-ticket") || "",
             body,
             cap: desk.cap,
-            send: () => fetch(target, { method: "POST", headers: headersWith(key), body, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
+            outCap: parsed.cap,
+            contentType,
+            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: parsed.body ?? body, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
           });
           if (outcome.kind === "reject") return fail(outcome.status, outcome.message);
           return relay(outcome.response);

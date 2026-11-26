@@ -102,7 +102,9 @@ describe("cổng tính tiền", () => {
 describe("đọc yêu cầu", () => {
   const enc = (o: unknown) => new TextEncoder().encode(JSON.stringify(o)).buffer as ArrayBuffer;
   it("chat: lấy model, chặn stream và token trả lời quá lớn", async () => {
-    assert.deepEqual(await readRequest("/chat/completions", "application/json", enc({ model: "m" })), { model: "m", chars: 0, problem: null });
+    // RE-005: không ghi giới hạn thì dùng trần mặc định và gửi thân đã chuẩn hóa (trước đây gửi nguyên, không trần).
+    const plain = await readRequest("/chat/completions", "application/json", enc({ model: "m" }));
+    assert.deepEqual([plain?.model, plain?.problem, plain?.cap], ["m", null, 4096]);
     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", stream: true })))?.problem);
     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_completion_tokens: 999999 })))?.problem);
     // R3-002: giá trị lạ bị chặn, giá trị đúng vẫn qua.

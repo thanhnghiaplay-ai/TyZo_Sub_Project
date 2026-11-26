@@ -179,6 +179,9 @@ export async function closeTokenWith(sql: Sql, id: string, userId: string, faile
         and exists (
           select 1 from run_modal_parts p
           where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.heartbeat_at > now() - ${LEASE_STALE}::interval
+          union all
+          select 1 from run_gate_calls c
+          where c.ticket_id = run_tickets.id and c.status = 'dang-chay' and c.heartbeat_at > now() - ${LEASE_STALE}::interval
         )
       returning 1`;
     if (deferred.length) return null;
@@ -196,6 +199,9 @@ async function closeTokenNow(sql: Sql, id: string, userId: string, failed: boole
         and (${force}::boolean or not exists (
           select 1 from run_modal_parts p
           where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.heartbeat_at > now() - ${LEASE_STALE}::interval
+          union all
+          select 1 from run_gate_calls c
+          where c.ticket_id = run_tickets.id and c.status = 'dang-chay' and c.heartbeat_at > now() - ${LEASE_STALE}::interval
         ))
       for update
     ),
@@ -229,6 +235,16 @@ async function closeTokenNow(sql: Sql, id: string, userId: string, failed: boole
   `;
   if (!rows.length) return null;
   return { freed: Number(rows[0].freed), charged: Number(rows[0].charged), status: rows[0].status };
+}
+
+/**
+ * Khách đã bấm đóng lúc còn việc đang chạy (đoạn TyZo, lệnh Groq/Alibaba): việc cuối xong thì đóng phiếu (trả phần dư).
+ * Còn việc khác đang chạy thì để việc đó đóng.
+ */
+export async function closeIfWantedWith(sql: Sql, ticket: string, userId: string) {
+  const want = await sql<{ close_failed: boolean }>`
+    select close_failed from run_tickets where id = ${ticket} and user_id = ${userId} and status = 'dang-giu' and close_wanted`;
+  if (want.length) await closeTokenWith(sql, ticket, userId, Boolean(want[0].close_failed));
 }
 
 /** Nhả các phiếu giây giữ quá lâu. Phần còn hạn trả về gói. Không cộng ví đồng. */
