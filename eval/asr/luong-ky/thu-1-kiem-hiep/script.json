@@ -1,0 +1,20 @@
+[
+  {"id": 1,  "voice": "Ethan",   "text": "师父，山下的李家庄出事了，昨夜一共失踪了七个人。", "scene": "talk"},
+  {"id": 2,  "voice": "Elias",   "text": "慌什么？先把玄天剑拿来，再去请慕容雪姑娘。", "scene": "talk"},
+  {"id": 3,  "voice": "Cherry",  "text": "我早就来了。你们说的那个黑衣人，我在破庙里见过一次。", "scene": "talk"},
+  {"id": 4,  "voice": "Ethan",   "text": "破庙？就是城西那座已经荒废了三十多年的观音庙吗？", "scene": "talk"},
+  {"id": 5,  "voice": "Cherry",  "text": "嘘，小声点，外面有人在听。", "scene": "whisper"},
+  {"id": 6,  "voice": "Elias",   "text": "雨这么大，他们走不远的，今晚子时我们就动手。", "scene": "rain"},
+  {"id": 7,  "voice": "Dylan",   "text": "站住！交出那本天机秘录，饶你们不死！", "scene": "fight"},
+  {"id": 8,  "voice": "Ethan",   "text": "师妹小心左边，他的暗器上有毒！", "scene": "fight_fast"},
+  {"id": 9,  "voice": "Cherry",  "text": "别管我，快带师父从后门走，我来挡住他们！", "scene": "fight_fast"},
+  {"id": 10, "voice": "Dylan",   "text": "哈哈哈，今天谁也别想离开这里。", "scene": "fight"},
+  {"id": 11, "voice": "Elias",   "text": "喂，是王掌柜吗？我们欠你的三百七十二两银子，下个月初八一定还清。", "scene": "phone"},
+  {"id": 12, "voice": "Jennifer","text": "OK，没问题，不过这次的利息要按百分之五算。", "scene": "phone"},
+  {"id": 13, "voice": "Ethan",   "text": "这个山洞里怎么会有回声？好像有人在里面说话。", "scene": "cave"},
+  {"id": 14, "voice": "Sunny",   "text": "莫要再往前走了，那下面全是机关，掉下去就上不来了。", "scene": "cave"},
+  {"id": 15, "voice": "Cherry",  "text": "你到底是谁？为什么一直跟着我们？", "scene": "overlap_a"},
+  {"id": 16, "voice": "Elias",   "text": "等等，先别动手，他可能知道真相。", "scene": "overlap_b"},
+  {"id": 17, "voice": "Sunny",   "text": "二十年前，你的父亲就是在这里被人害死的。", "scene": "song"},
+  {"id": 18, "voice": "Cherry",  "text": "原来如此，那我一定要为他报仇。", "scene": "song"}
+]

@@ -1,0 +1,92 @@
+{
+  "_ghi_chu": "Cấu hình luồng nhận dạng. Thêm luồng mới: thêm một mục vào 'luong'. Đổi xong: tyzo-ai → Cập nhật. Khách chọn luồng bằng trường 'profile' khi gọi.",
+  "luong_mac_dinh": "ky",
+  "luong": {
+    "ky": {
+      "mo_ta": "Chính xác thích nghi: tách giọng, 4 bản tiếng, chỉ tách người nói khi các bản lệch nhau",
+      "n": 4,
+      "ovl": "disagree",
+      "ovl_thr": 0.12
+    },
+    "can-bang": {
+      "mo_ta": "Bỏ tách người nói chồng: nhanh hơn, rẻ hơn",
+      "n": 4
+    },
+    "nhanh": {
+      "mo_ta": "2 bản tiếng, không gọi large-v3, không tách người nói",
+      "n": 2,
+      "esc": false
+    },
+    "qwen": {
+      "mo_ta": "THỬ: như «ky» nhưng nhận dạng bằng Qwen3-ASR-1.7B thay Whisper",
+      "engine": "qwen3-asr-1.7b",
+      "n": 4,
+      "ovl": "all",
+      "esc": false
+    },
+    "qwen-nhanh": {
+      "mo_ta": "THỬ: như «nhanh» nhưng nhận dạng bằng Qwen3-ASR-1.7B",
+      "engine": "qwen3-asr-1.7b",
+      "n": 2,
+      "esc": false
+    },
+    "qwen-0.6b-nhanh": {
+      "mo_ta": "THỬ: như «nhanh» nhưng Qwen3-ASR-0.6B (nhỏ, nhanh hơn)",
+      "engine": "qwen3-asr-0.6b",
+      "n": 2,
+      "esc": false
+    }
+  },
+  "hop_nhat": {
+    "_ghi_chu": "Chế độ do TYZO_FUSE trong secret quyết định: gpu (Qwen trên GPU Modal, lỗi thì sang Alibaba), ali (chỉ Alibaba), khong (không dùng model chữ).",
+    "gpu": {
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "so_lan": 3,
+      "chi_khi_lech": 0.03,
+      "bat_san_tu_giay": 120,
+      "_ghi_chu": "chi_khi_lech: chỉ gọi model chữ khi các bản nhận dạng lệch hơn mức này (như bậc ali). bat_san_tu_giay: chỉ gọi bật sẵn máy chữ khi âm thanh dài từ mức này; tệp ngắn hơn không đánh thức máy chữ."
+    },
+    "ali": {
+      "model": "qwen4-max",
+      "so_lan": 1,
+      "chi_khi_lech": 0.03
+    },
+    "gia_usd_1tr_token": {
+      "qwen4-max": [
+        1.5,
+        4.5
+      ],
+      "qwen3.8-27b": [
+        0.5,
+        3.0
+      ],
+      "qwen-plus": [
+        0.4,
+        1.2
+      ]
+    }
+  },
+  "gpu": {
+    "_ghi_chu": "Danh sách GPU theo thứ tự ưu tiên: loại đầu hết chỗ thì Modal dùng loại sau (đỡ chờ máy).",
+    "nhan_dang": [
+      "L4",
+      "A10"
+    ],
+    "model_chu": [
+      "L40S"
+    ],
+    "snapshot_may_chu": true,
+    "_ghi_chu_snapshot": "snapshot_may_chu: true = máy model chữ là lớp Llm có chụp bộ nhớ cả GPU sau khi vLLM sẵn sàng (thử nghiệm của Modal, khôi phục lỗi thì Modal tự bật theo cách thường). false = hàm llm như trước. Đổi xong chọn «Cập nhật».",
+    "tat_may_chu_sau_giay": 60,
+    "_ghi_chu_tat_may": "tat_may_chu_sau_giay: máy model chữ rảnh bao lâu thì tự tắt (Modal scaledown_window, tối thiểu 2 s). Khi đang nhận dạng tệp dài, máy nhận dạng gọi /health 30 s một lần để giữ máy chữ bật.",
+    "_ghi_chu_gpu_chu": "model_chu chỉ L40S (26/11): bản chụp bộ nhớ GPU và bộ đệm Triton gắn với loại GPU; đổi sang A100 làm lần bật đó chậm 2,5–3,5 phút. Thêm lại \"A100-80GB\" nếu L40S thường hết chỗ.",
+    "snapshot_nhan_dang": true,
+    "_ghi_chu_snapshot_nhan_dang": "snapshot_nhan_dang: true = máy nhận dạng chụp bộ nhớ (cả GPU) sau khi nạp Whisper, SepFormer, Demucs (thử nghiệm alpha của Modal). false = bật máy như cũ. Đổi xong chọn «Cập nhật»."
+  },
+  "gia_gpu_usd_gio": {
+    "L4": 0.8,
+    "A10": 1.1,
+    "L40S": 1.95,
+    "A100-80GB": 2.5
+  }
+}

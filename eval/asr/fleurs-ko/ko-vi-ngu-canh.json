@@ -1,0 +1,21 @@
+{
+  "note": "Chủ đề viết như tiêu đề video mà người đăng có thể ghi; thuật ngữ chỉ gồm tên riêng và thuật ngữ chuyên môn, như danh sách người dùng có thể nhập. Thuật ngữ 1673 chứa đúng tên văn bản cần dịch nên chỉ kiểm model có theo bảng thuật ngữ hay không, kể cả khi bản chép nghe sai cụm đó.",
+  "cases": {
+    "1660": {"topic": "Lịch sử văn học châu Âu: chủ nghĩa lãng mạn",
+             "glossary": {"괴테": "Goethe", "피히테": "Fichte", "슐레겔": "Schlegel", "낭만주의": "chủ nghĩa lãng mạn"},
+             "must": ["Goethe", "Fichte", "Schlegel"]},
+    "1661": {"topic": "Tin thời sự kinh tế Trung Quốc", "glossary": {}, "must": ["Trung Quốc"]},
+    "1662": {"topic": "Hóa học cơ bản: hợp kim", "glossary": {"주기율표": "bảng tuần hoàn"},
+             "must": ["hợp kim"], "must_not": ["hẹn gặp", "video sau", "video tiếp"]},
+    "1663": {"topic": "Du lịch leo núi ở Chile", "glossary": {"코차모 밸리": "thung lũng Cochamó", "요세미티": "Yosemite"},
+             "must": ["Cochamó", "Yosemite"], "must_not": ["hẹn gặp", "video sau", "video tiếp"]},
+    "1664": {"topic": "Hướng dẫn nấu ăn", "glossary": {}, "must": ["bột"]},
+    "1666": {"topic": "Lời khuyên khi du lịch nước ngoài", "glossary": {}, "must": ["chính phủ"]},
+    "1673": {"topic": "Lịch sử Hoa Kỳ: thời kỳ lập quốc",
+             "glossary": {"연합 규약": "Các Điều khoản Hợp bang", "독립 전쟁": "Chiến tranh giành độc lập"},
+             "must": ["Hợp bang"], "any": ["ban đầu", "trước hết", "trước tiên", "lúc đầu", "đầu tiên"],
+             "must_not": ["ưu tiên", "thương mại"]},
+    "1674": {"topic": "An toàn nước uống khi du lịch", "glossary": {},
+             "must": ["một phút|1 phút"], "any": ["vài phút", "nhiều phút", "một vài phút"]}
+  }
+}

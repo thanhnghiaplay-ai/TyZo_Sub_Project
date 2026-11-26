@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "speaker": "丽娜",
+    "text": "大伟,我上周交的方案你看了吗?我还在犹豫要不要推进。",
+    "vi": "Đại Vỹ, bản phương án tôi nộp tuần trước anh xem chưa? Tôi vẫn còn đang phân vân có nên triển khai không.",
+    "start": 0,
+    "end": 4.91
+  },
+  {
+    "id": 2,
+    "speaker": "大伟",
+    "text": "大致看了一遍。说实话,时间表太乐观了,三个部门同时调整,恐怕有些勉强。",
+    "vi": "Tôi xem qua đại khái rồi. Nói thật, lịch trình quá lạc quan, điều chỉnh ba bộ phận cùng lúc e là hơi quá sức.",
+    "start": 5.41,
+    "end": 11.12
+  },
+  {
+    "id": 3,
+    "speaker": "丽娜",
+    "text": "我也担心这一点。不过管理层坚持认为,再拖下去预算缺口只会更大。",
+    "vi": "Tôi cũng lo điểm đó. Nhưng ban lãnh đạo khăng khăng rằng kéo dài nữa thì thâm hụt ngân sách chỉ càng lớn.",
+    "start": 11.62,
+    "end": 18.34
+  },
+  {
+    "id": 4,
+    "speaker": "大伟",
+    "text": "有道理,但操之过急可能适得其反。你还记得去年系统迁移那次吗?",
+    "vi": "Có lý, nhưng quá vội vàng có thể phản tác dụng. Chị còn nhớ lần chuyển đổi hệ thống năm ngoái không?",
+    "start": 18.84,
+    "end": 23.92
+  },
+  {
+    "id": 5,
+    "speaker": "丽娜",
+    "text": "怎么会忘?我们忙着救火忙了好几个星期。不过,与其一味反对,我更想提个折中方案。",
+    "vi": "Sao quên được? Chúng ta chạy đi chữa cháy mấy tuần liền. Nhưng thay vì cứ phản đối, tôi muốn đưa ra phương án dung hòa.",
+    "start": 24.42,
+    "end": 31.97
+  },
+  {
+    "id": 6,
+    "speaker": "大伟",
+    "text": "你有什么想法?",
+    "vi": "Chị có ý tưởng gì?",
+    "start": 32.47,
+    "end": 33.77
+  },
+  {
+    "id": 7,
+    "speaker": "丽娜",
+    "text": "分阶段推进。先在一个部门试点,解决问题之后,再在第二季度末全面推广。",
+    "vi": "Triển khai theo giai đoạn. Thí điểm ở một bộ phận trước, giải quyết vấn đề xong thì mở rộng toàn bộ vào cuối quý hai.",
+    "start": 34.27,
+    "end": 41.38
+  },
+  {
+    "id": 8,
+    "speaker": "大伟",
+    "text": "这样现实多了。你来起草大纲,我来核算数据,看看节省的成本能不能保住。",
+    "vi": "Vậy thực tế hơn nhiều. Chị soạn đề cương, tôi tính toán số liệu xem chi phí tiết kiệm có giữ được không.",
+    "start": 41.88,
+    "end": 47.36
+  },
+  {
+    "id": 9,
+    "speaker": "丽娜",
+    "text": "一言为定。周四向主管汇报,免得她做出无法挽回的决定。",
+    "vi": "Nhất trí. Thứ Năm báo cáo với trưởng phòng, kẻo bà ấy đưa ra quyết định không thể cứu vãn.",
+    "start": 47.86,
+    "end": 53.24
+  },
+  {
+    "id": 10,
+    "speaker": "大伟",
+    "text": "好。要是她反对,我们就拿准备好的数据说服她。",
+    "vi": "Được. Nếu bà ấy phản đối, chúng ta dùng số liệu đã chuẩn bị để thuyết phục.",
+    "start": 53.74,
+    "end": 57.41
+  }
+]

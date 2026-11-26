@@ -1,0 +1,92 @@
+[
+  {
+    "n": 1,
+    "start": 0.2,
+    "end": 3.22,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "야 야 야, 이거 봤어? 진짜 대박이야, 완전 레전드라니까!",
+    "vi": "Này này này, cậu xem cái này chưa? Thật sự đỉnh lắm, đúng là huyền thoại luôn!",
+    "factors": "Nói nhanh, giọng to, tiếng lóng (대박, 레전드), nhạc nền"
+  },
+  {
+    "n": 2,
+    "start": 3.47,
+    "end": 6.57,
+    "speaker": "B (nam)",
+    "text": "헐, 실화냐? 나 지금 소름 돋았어, 개웃겨.",
+    "vi": "Hả, thật á? Mình nổi da gà rồi, buồn cười chết đi được.",
+    "factors": "Giọng nam bình thường, tiếng lóng (헐, 실화냐, 개웃겨)"
+  },
+  {
+    "n": 3,
+    "start": 6.82,
+    "end": 9.68,
+    "speaker": "C (nữ, thì thầm)",
+    "text": "조용히 해, 선생님 오신다, 걸리면 다 끝이야.",
+    "vi": "Im đi, thầy/cô tới kìa, bị bắt là tiêu hết.",
+    "factors": "Thì thầm, âm lượng rất nhỏ, nhạc nền bắt đầu to"
+  },
+  {
+    "n": 4,
+    "start": 9.93,
+    "end": 12.23,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "아니 근데 이거 완전 갓생 아니야?",
+    "vi": "Mà này, thế này chẳng phải là sống cực kỳ chăm chỉ tích cực sao? (갓생)",
+    "factors": "Tiếng lóng (갓생), nhạc nền to"
+  },
+  {
+    "n": 5,
+    "start": 10.18,
+    "end": 12.94,
+    "speaker": "B (nam)",
+    "text": "인정, 인정! 존맛에 꿀잼이야!",
+    "vi": "Công nhận, công nhận! Ngon tuyệt mà lại còn vui nữa!",
+    "factors": "Nhiều người nói chồng lên nhau, tiếng lóng (인정, 존맛, 꿀잼)"
+  },
+  {
+    "n": 6,
+    "start": 13.24,
+    "end": 14.73,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "[La hét, tiếng thét]",
+    "vi": "(tiếng thét chói tai)",
+    "factors": "Âm thanh phi lời nói: la hét"
+  },
+  {
+    "n": 7,
+    "start": 14.88,
+    "end": 17.66,
+    "speaker": "B (nam)",
+    "text": "으악, 깜짝이야! 심장 떨어지는 줄 알았네!",
+    "vi": "Á, giật cả mình! Tưởng tim rơi ra ngoài rồi!",
+    "factors": "Giọng rất to, hoảng hốt, tiếng lóng đời thường"
+  },
+  {
+    "n": 8,
+    "start": 17.96,
+    "end": 19.29,
+    "speaker": "C (nữ, thì thầm)",
+    "text": "[Rên rỉ, tiếng ú ớ]",
+    "vi": "Ư ư… Ái da… đau bụng quá…",
+    "factors": "Giọng rên rỉ yếu ớt, chậm"
+  },
+  {
+    "n": 9,
+    "start": 19.54,
+    "end": 23.93,
+    "speaker": "A (nữ, to, nhanh)",
+    "text": "일단 오늘 저녁은 내가 쏠게, 치킨이랑 떡볶이 중에 빨리 골라, 시간 없어!",
+    "vi": "Trước tiên tối nay mình bao, chọn nhanh gà rán hay tteokbokki đi, không có thời gian đâu!",
+    "factors": "Nói rất nhanh, nhạc nền to, tiếng lóng (쏠게)"
+  },
+  {
+    "n": 10,
+    "start": 24.23,
+    "end": 27.69,
+    "speaker": "C (nữ, thì thầm)",
+    "text": "그럼 치킨으로 하자, 대신 다음엔 네가 사야 돼, 알았지?",
+    "vi": "Vậy ăn gà rán đi, đổi lại lần sau cậu phải mua, nhé?",
+    "factors": "Thì thầm, âm lượng rất nhỏ, kết thúc"
+  }
+]

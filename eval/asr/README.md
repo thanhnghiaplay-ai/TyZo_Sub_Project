@@ -37,3 +37,6 @@ Nên có đủ: thoại có nhạc nền, thoại yên tĩnh, câu dài, phim 18
 - `chunk15-6.srt`: cắt đoạn 15 giây có prompt: ảo giác + mất lời.
 - `noprompt-chunk15-13.srt`: không prompt + cắt 15 giây: 13 câu nhưng lặp/vụn.
 Nhãn gán theo nội dung file Chủ gửi (tên file gốc trùng nhau), không phải theo nhãn Chủ ghi.
+
+## Luồng nhiều lớp `luong-ky/` (thử nghiệm 23/11/2026)
+Tách giọng, VAD, dò khoảng trống, turbo nhiều bản, tách người nói, hợp nhất bằng model chữ. Kết quả trên video thử 4 thứ tiếng và cách chạy lại: `luong-ky/README.md`. Code Python, chưa nằm trong app.
