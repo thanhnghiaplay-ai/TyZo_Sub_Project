@@ -26,9 +26,14 @@ export function asrPerSecond(book: PriceBook, model: string): number | null {
   return perHour > 0 ? perHour / 3600 : null;
 }
 
-/** Đơn giá dịch: đồng mỗi triệu token vào và ra, đã gồm phần chênh. null khi thiếu giá. */
+/**
+ * Đơn giá dịch: đồng mỗi triệu token vào và ra, đã gồm phần chênh. null khi thiếu giá.
+ * R3-003 (Chủ duyệt 27/11/2026): THIẾU giá một chiều (không ghi số) thì coi như chưa có giá, chặn model — trước đây chiều
+ * thiếu bị tính như miễn phí. Số 0 ghi rõ trong bảng giá là khai báo miễn phí chiều đó; cả hai chiều 0 vẫn không bán.
+ */
 export function chatPerMillion(book: PriceBook, model: string): { inn: number; out: number } | null {
   const row = rowOf(book, model);
+  if (row?.usdIn == null || row?.usdOut == null) return null;
   const inn = quoteVnd(row?.usdIn == null ? null : row.usdIn * book.rate, book.desk.markup, 0);
   const out = quoteVnd(row?.usdOut == null ? null : row.usdOut * book.rate, book.desk.markup, 0);
   return inn > 0 || out > 0 ? { inn, out } : null;

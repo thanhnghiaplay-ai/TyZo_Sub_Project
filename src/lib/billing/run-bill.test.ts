@@ -101,4 +101,15 @@ describe("tính tiền theo giá Groq", () => {
     assert.equal(billedSecondsOf({ segments: [{ end: 3 }, { end: 9 }] }), 9);
     assert.equal(billedSecondsOf(null), 0);
   });
+
+  it("R3-003: thiếu giá một chiều thì chặn model; số 0 ghi rõ là miễn phí chiều đó", async () => {
+    const { chatPerMillion: per } = await import("./run-bill.ts");
+    const mk = (usdIn: number | null, usdOut: number | null) =>
+      ({ rate: 25_000, desk: { markup: 0, custom: {} }, rows: [{ id: "m", speed: null, usdIn, usdOut, usdPerHour: null, usdPerMillionChars: null, unlisted: false, limits: [], contextTokens: null, maxCompletionTokens: null, maxFile: null }] }) as never;
+    assert.equal(per(mk(0.1, null), "m"), null);
+    assert.equal(per(mk(null, 0.3), "m"), null);
+    assert.equal(per(mk(0, 0), "m"), null);
+    assert.ok(per(mk(0, 0.3), "m"));
+    assert.ok(per(mk(0.1, 0.3), "m"));
+  });
 });
