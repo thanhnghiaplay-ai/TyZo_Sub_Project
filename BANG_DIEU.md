@@ -38,9 +38,14 @@ Không ai vừa đề xuất vừa tự nhận là đã duyệt.
 
 Người dùng là người chốt. Câu khởi đầu cho model khác chỉ cần: «Đọc `BANG_DIEU.md` và làm đúng vai của mình.»
 
+## Ý đã nêu — tiếp tục trên nhánh kiểm toán
+
+- Chủ chỉ định `ccr-9f1afcc8-iv7067` làm gốc, không gộp main; cho phép trực tiếp tiếp tục sửa. Chỉ thị này ưu tiên hơn quy tắc nhánh work/vai cũ.
+- Chủ đã làm mới giới hạn và yêu cầu tiếp tục. Ứng viên **5.49.2**, trạng thái **PARTIAL**, chưa push/deploy. Log cổng cuối và việc còn mở: `docs/kiem-toan/v5.49.1/BAO_CAO.md`; phiếu tiếp theo: `docs/kiem-toan/v5.49.1/BAN_GIAO_PHIEN_SAU.md`. Mục lịch sử bên dưới không phải trạng thái ứng viên mới.
+
 ## Việc đang dở (cập nhật 27/11/2026, đọc trước tiên)
 
-000. **Sửa triệt để v5.49.1 — ĐANG DỞ, đọc `docs/kiem-toan/v5.49.1/BAN_GIAO_PHIEN_SAU.md`** (nhánh `ccr-9f1afcc8-iv7067`, chưa gộp `main`): xong RE-001…006, R3-003, R5-005, R5-006, MAIN-038, R8-003, AZ-006, DEEP-003; còn R3-008, R3-009, R5-008, R6-006, R7-001/003/006, R8-004/005, Android, tái nghiệm thu, cổng cuối và hồ sơ cho ChatGPT.
+000. **Sửa triệt để v5.49.1 — ĐANG DỞ, đọc `docs/kiem-toan/v5.49.1/BAN_GIAO_PHIEN_SAU.md`** (nhánh `ccr-9f1afcc8-iv7067`, chưa gộp `main`): xong RE-001…006, R3-003, R5-005, R5-006, MAIN-038, R8-003, AZ-006, DEEP-003; Codex đã tiếp tục sửa và thêm test cho các mục R3/R5/R6/R7/R8 còn dở; xem BAO_CAO.md và matrix23 mới. Còn Android, ingress thật, corpus polish, E2E active-chunk/auth transport và triage scanner. Ứng viên5.49.2 chưa phát hành.
 00. **Kiểm toán v5.49 → v5.49.1** (27/11/2026, Claude, ĐÃ ĐẨY CHÍNH THỨC 27/11/2026 02:19; Chủ đã tắt dựng nhánh phụ trên Vercel): 80 mục theo hồ sơ Handoff FINAL. Đã sửa 54 (14/15 P0), 17 mục có test tái hiện trước/sau. **Chờ Chủ quyết 6 mục** (bảng mục 4 trong `docs/kiem-toan/v5.49/BAO_CAO.md`): R3-001 (P0, giữ ước tính từng yêu cầu ở cửa Groq/Alibaba), R3-003, R4-003, R5-005, MAIN-038, R8-003. R8-003: Chủ đã tắt dựng nhánh phụ trên Vercel (27/11/2026). Sau khi gộp: VPS `tyzo` → 2 (cầu nối mới), kiểm `LIVE_BRIDGE_URL` là `wss://`. Android (AZ-002/003/004/008, R3-006) chưa sửa vì không có SDK để dựng thử.
 0. **v5.49.0** (sửa sau kiểm tra trang khách và Admin): chi phí GPU TyZo vào Doanh thu; «Đang giữ / Đã trừ hôm nay» đếm Token; khách không thấy «API trả về lỗi 503…»; Bảng giá có gói Token + nút Mua; màn chờ một lần, trang không xô; Nhật ký hệ thống có 5.47–5.49. Nhóm B cũng xong (‹ › mở luôn bước, Admin điện thoại 2 hàng đầu, danh sách khách mới, Thẻ quyền sang Giao diện, Doanh thu, Thư, chữ Orpheus). Không sửa: dòng «Dùng thử: còn…» cố ý ẩn trên điện thoại (hiện trong ô Cách trả); «9 nút không tên» là báo nhầm (mục menu đang đóng).
 1. **Tách file 5 đợt ĐÃ GỘP vào `main`** (26/11/2026, Chủ nói «Gộp ngay»). Cấu trúc mới: `src/lib/providers/`, `src/lib/pipeline/`, `src/lib/billing/`, `src/lib/admin|payment|packs|polish/`, `src/components/studio-panels/`, `studio-tools.ts`. Còn: Chủ chạy thử phim ngắn trên `sub.tyzo.site` sau khi `tyzo` → 2 (Cập nhật).

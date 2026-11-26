@@ -1,5 +1,8 @@
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
+> **Trạng thái tiếp tục Codex (2026-11-26UTC):** ứng viên5.49.2 trên `ccr-9f1afcc8-iv7067`, gốcd5a2fed, không gộpmain/chưa push/deploy. PARTIAL. Đọc `docs/kiem-toan/v5.49.1/BAO_CAO.md` và `BAN_GIAO_PHIEN_SAU.md` cùng thư mục. Các mốc bên dưới là lịch sử, không phải chứng nhận ứng viên đã lên production.
+
+
 Cập nhật 22/11/2026. **v5.41.0 trên `work` và `main`** (đẩy chính thức 22/11/2026). Điều khoản `2026-11-22.6`. Ứng dụng Android 0.5. Cầu nối Dịch trực tiếp trên VPS.
 File này ngắn có chủ ý: chỉ ghi việc đang làm, việc còn lại và cách tiếp tục. Nhật ký cũ đã chuyển sang `docs/lich-su/` (xem mục 7).
 

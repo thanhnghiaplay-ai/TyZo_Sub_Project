@@ -1,0 +1,123 @@
+[
+  {
+    "commit": "595dc1571072ae684bd76603f7ee871beaf36548",
+    "message": "fix(ip): select validated client IP from configured trusted ingress",
+    "files": [
+      "src/lib/request-ip.server.ts",
+      "src/lib/request-ip.test.ts",
+      "src/lib/app-link.server.ts",
+      "src/lib/risk-log.server.ts",
+      "src/lib/appeal-rate.server.ts",
+      "deploy/vps/tyzo.sh"
+    ]
+  },
+  {
+    "commit": "fa1c3efeb81b06d974c5738b38fbcb481875d8cb",
+    "message": "fix(billing): reconcile ASR responses without duration",
+    "files": [
+      "src/lib/billing/gate-reserve.ts",
+      "src/lib/billing/run-gate.ts",
+      "src/lib/billing/run-gate.test.ts"
+    ]
+  },
+  {
+    "commit": "2bb86462175b58382a1d00c7f36256fa481c7139",
+    "message": "fix(upload): clean R2 grants after failed or aborted PUT",
+    "files": [
+      "src/lib/sub/r2-upload-run.ts",
+      "src/lib/sub/r2-upload-run.test.ts"
+    ]
+  },
+  {
+    "commit": "76c07802e4ba6e6ed0b3bee1ae91432390e11fdf",
+    "message": "fix(polish): preserve numbers negations and names conservatively",
+    "files": [
+      "src/lib/sub/polish.ts",
+      "src/lib/sub/polish.test.ts"
+    ]
+  },
+  {
+    "commit": "e3cf384635da9a7b4e438bfa5b808e49e9d81f67",
+    "message": "fix(glossary): bound retries and warn once per run",
+    "files": [
+      "src/lib/pipeline/translate.ts",
+      "src/lib/pipeline/translate-claim.test.ts"
+    ]
+  },
+  {
+    "commit": "90c8ccc124a8971674c414ec840f685be2e0a6d0",
+    "message": "fix(narration): settle cancelled audio and abort stale synthesis",
+    "files": [
+      "src/lib/sub/narration.ts",
+      "src/lib/sub/audio-playback.ts",
+      "src/lib/sub/audio-playback.test.ts"
+    ]
+  },
+  {
+    "commit": "5c31fee9562bf50c01e9b1b22edfd2fb07d3cd8e",
+    "message": "ci(android): isolate release permissions and pin actions",
+    "files": [
+      ".github/workflows/android-thu.yml"
+    ]
+  },
+  {
+    "commit": "7b27f6558d3cd0ce674e3af5d1e57190006b5ef9",
+    "message": "fix(pipeline): isolate account saves and guard active or stale work",
+    "files": [
+      "src/components/use-pipeline.ts",
+      "src/components/live-screen.tsx",
+      "src/components/pipeline-media.ts",
+      "src/components/stale-build-guard.tsx",
+      "src/lib/error-component.tsx",
+      "src/lib/saved-runs.ts",
+      "src/lib/saved-runs.test.ts",
+      "src/lib/stale-build.ts",
+      "src/lib/stale-build.test.ts",
+      "src/lib/page-activity.ts",
+      "src/lib/pipeline/job.ts",
+      "src/lib/pipeline/job-race.test.ts",
+      "src/lib/pipeline/recognize.ts",
+      "src/lib/pipeline/recognize-race.test.ts",
+      "src/lib/sub/media-lifecycle.test.ts"
+    ]
+  },
+  {
+    "commit": "8b61a1afa7945fd122d30464f7b978acdb0deb45",
+    "message": "fix(mp4): bound streamed ranges and validate content positions",
+    "files": [
+      "src/lib/sub/mp4.ts",
+      "src/lib/sub/mp4-range.ts",
+      "src/lib/sub/mp4-range.test.ts"
+    ]
+  },
+  {
+    "commit": "afa54cea37a555a475a4dc77e5539683b80071c7",
+    "message": "fix(api): redact coded server failures from public responses",
+    "files": [
+      "src/lib/app-api.server.ts",
+      "src/lib/app-api.test.ts"
+    ]
+  },
+  {
+    "commit": "e495bb57ed5caa868429603443d4ede36bea2328",
+    "message": "fix(auth): revoke devices atomically on credential password updates",
+    "files": [
+      "migrations/0046_password_device_revoke.sql",
+      "src/lib/backend-audit.test.ts"
+    ]
+  },
+  {
+    "commit": "e9151ebf219437d9f7f6848bc5db7160e86c782c",
+    "message": "test(live): verify upstream backpressure with local WebSockets",
+    "files": [
+      "src/lib/live/live-bridge-audit.test.ts"
+    ]
+  },
+  {
+    "commit": "b5c73c7bb0f3129d79f418143c7f638921d4b334",
+    "message": "test(migrations): fail closed on unreadable migration directories",
+    "files": [
+      "scripts/migration-read-permission.test.mjs"
+    ]
+  }
+]

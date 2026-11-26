@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/workspace/tyzo-tooling-runtime/venv/bin/graphify",
+    "extract",
+    ".",
+    "--code-only",
+    "--out",
+    "/workspace/tyzo-continuation-evidence/graph",
+    "--max-workers",
+    "2"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 9.03,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

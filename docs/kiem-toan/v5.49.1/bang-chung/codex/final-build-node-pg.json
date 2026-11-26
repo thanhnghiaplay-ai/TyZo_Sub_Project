@@ -1,0 +1,14 @@
+{
+  "command": [
+    "env",
+    "NITRO_PRESET=node-server",
+    "DATABASE_URL=postgresql://tyzo_test@127.0.0.1:55439/tyzo_test?sslmode=disable&options=-csearch_path%3Dapp_browser_5492",
+    "npm",
+    "run",
+    "build"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 11.51,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

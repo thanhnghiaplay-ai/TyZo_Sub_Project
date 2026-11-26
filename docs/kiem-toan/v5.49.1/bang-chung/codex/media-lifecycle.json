@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "--experimental-strip-types",
+    "--import",
+    "./scripts/register-ts.mjs",
+    "--test",
+    "src/lib/sub/media-lifecycle.test.ts",
+    "src/lib/pipeline/job-race.test.ts"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.93,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

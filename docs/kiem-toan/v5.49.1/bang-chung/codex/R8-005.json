@@ -1,0 +1,8 @@
+{
+  "status": "PASS_STATIC",
+  "build_permissions": "read",
+  "write_only_release_job": true,
+  "release_main_signed_only": true,
+  "all_action_refs_full_sha": true,
+  "live_actions_run": false
+}

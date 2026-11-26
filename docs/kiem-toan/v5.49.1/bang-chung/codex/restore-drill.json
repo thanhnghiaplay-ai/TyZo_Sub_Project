@@ -1,0 +1,20 @@
+[
+  {
+    "case": "fk",
+    "exit_code": 1,
+    "retained_rows": 7,
+    "status": "PASS"
+  },
+  {
+    "case": "cut",
+    "exit_code": 1,
+    "retained_rows": 7,
+    "status": "PASS"
+  },
+  {
+    "case": "good",
+    "exit_code": 0,
+    "retained_rows": 3,
+    "status": "PASS"
+  }
+]

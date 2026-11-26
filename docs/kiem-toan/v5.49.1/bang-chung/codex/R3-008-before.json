@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "--experimental-strip-types",
+    "--test",
+    "src/lib/request-ip.test.ts"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 0.16,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

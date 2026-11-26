@@ -1,0 +1,16 @@
+{
+  "desktop_render": "PASS",
+  "mobile_overflow_px": 0,
+  "admin_reset_disabled": "PASS",
+  "built_version": "v5.49.2",
+  "affiliate_reconciliation_warning": "PASS",
+  "risk_sweep_statuses": [
+    200,
+    401
+  ],
+  "page_errors": [],
+  "external_requests_blocked": [
+    "https://fonts.googleapis.com/css2",
+    "https://grok.com/grok-app-builder/extensions.js"
+  ]
+}

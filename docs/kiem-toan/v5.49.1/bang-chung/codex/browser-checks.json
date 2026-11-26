@@ -1,0 +1,11 @@
+{
+  "fixture_origin_only": true,
+  "business_services_called": false,
+  "checks": [
+    "R5-008: real IndexedDB account A/B/anonymous isolation and edited subtitles preserved",
+    "R5-009: aborted transaction did not persist",
+    "R7-006: native Audio cancellation settles without advancing old queue",
+    "R5-008: owner A survives actual page reload"
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "--experimental-strip-types",
+    "--test",
+    "src/lib/billing/tyzo-modal-race.test.ts",
+    "src/lib/billing/gate-reserve.test.ts",
+    "src/lib/billing/token-balance-race.test.ts",
+    "src/lib/affiliate-payout.test.ts"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 3.08,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": true
+}

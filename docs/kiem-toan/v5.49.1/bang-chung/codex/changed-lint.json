@@ -1,0 +1,33 @@
+{
+  "command": [
+    "node",
+    "node_modules/eslint/bin/eslint.js",
+    "src/components/use-pipeline.ts",
+    "src/components/live-screen.tsx",
+    "src/components/stale-build-guard.tsx",
+    "src/lib/error-component.tsx",
+    "src/lib/saved-runs.ts",
+    "src/lib/saved-runs.test.ts",
+    "src/lib/request-ip.server.ts",
+    "src/lib/request-ip.test.ts",
+    "src/lib/billing/run-gate.ts",
+    "src/lib/billing/run-gate.test.ts",
+    "src/lib/billing/gate-reserve.ts",
+    "src/lib/sub/polish.ts",
+    "src/lib/sub/polish.test.ts",
+    "src/lib/sub/narration.ts",
+    "src/lib/sub/audio-playback.ts",
+    "src/lib/sub/audio-playback.test.ts",
+    "src/lib/sub/r2-upload-run.ts",
+    "src/lib/sub/r2-upload-run.test.ts",
+    "src/lib/pipeline/translate.ts",
+    "src/lib/pipeline/translate-claim.test.ts",
+    "src/lib/stale-build.ts",
+    "src/lib/stale-build.test.ts",
+    "src/lib/page-activity.ts"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 2.54,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

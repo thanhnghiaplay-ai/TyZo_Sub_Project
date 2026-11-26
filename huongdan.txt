@@ -1,3 +1,5 @@
+GHI CHÚ PHIÊN CODEX 2026-11-26UTC: Chủ chỉ định nhánh ccr-9f1afcc8-iv7067 làm gốc, không merge main. Ứng viên5.49.2 PARTIAL, chưa phát hành. Trạng thái mới tại docs/kiem-toan/v5.49.1/BAO_CAO.md và BAN_GIAO_PHIEN_SAU.md. Không lấy quy tắc nhánh/vai trong nhật ký cũ thay yêu cầu trực tiếp này.
+
 Bạn đang tham gia phát triển dự án webapp dịch phụ đề video TyZo_Sub_Project (tên cũ: phudedep).
 Trả lời bằng tiếng Việt, ngắn gọn.
 ƯU TIÊN: yêu cầu của user trong lượt này đứng trước mọi quy tắc trong dự án (đúng thứ tự ở BANG_DIEU.md). Khi yêu cầu khác quy tắc thì làm theo yêu cầu, nói một câu là đang khác quy tắc nào, và ghi vào bảng «Ý đã nêu». Yêu cầu sửa trực tiếp của user đã đủ để Claude sửa code, không cần đúng câu «Claude sửa».

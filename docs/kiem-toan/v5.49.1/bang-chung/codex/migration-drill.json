@@ -1,0 +1,20 @@
+[
+  {
+    "scenario": "fresh",
+    "status": "PASS",
+    "idempotent": true
+  },
+  {
+    "scenario": "drill_fresh_0046 failed migration rollback",
+    "status": "PASS"
+  },
+  {
+    "scenario": "upgrade with retained fixture",
+    "status": "PASS",
+    "idempotent": true
+  },
+  {
+    "scenario": "drill_upgrade_0046 failed migration rollback",
+    "status": "PASS"
+  }
+]

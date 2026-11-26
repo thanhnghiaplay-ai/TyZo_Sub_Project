@@ -1,0 +1,15 @@
+{
+  "command": [
+    "node",
+    "/workspace/tyzo-tooling-runtime/npm/node_modules/dependency-cruiser/bin/dependency-cruiser.mjs",
+    "src",
+    "--config",
+    ".dependency-cruiser.cjs",
+    "--output-type",
+    "err"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 9.13,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

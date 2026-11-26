@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "node_modules/eslint/bin/eslint.js",
+    "src",
+    "--quiet"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 9.84,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "--experimental-strip-types",
+    "--test",
+    "src/lib/billing/run-gate.test.ts"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 13.64,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

@@ -1,0 +1,42 @@
+[
+ {
+  "RuleID": "generic-api-key",
+  "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+  "StartLine": 169,
+  "EndLine": 169,
+  "StartColumn": 153,
+  "EndColumn": 200,
+  "Match": "excluded.sepay_key,REDACTED`",
+  "Secret": "REDACTED",
+  "File": "src/lib/backend-audit.test.ts",
+  "SymlinkFile": "",
+  "Commit": "",
+  "Entropy": 3.6375375,
+  "Author": "",
+  "Email": "",
+  "Date": "",
+  "Message": "",
+  "Tags": [],
+  "Fingerprint": "src/lib/backend-audit.test.ts:generic-api-key:169"
+ },
+ {
+  "RuleID": "generic-api-key",
+  "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+  "StartLine": 156,
+  "EndLine": 156,
+  "StartColumn": 12,
+  "EndColumn": 51,
+  "Match": "secret = \"REDACTED\"",
+  "Secret": "REDACTED",
+  "File": "src/lib/risk-rules.test.ts",
+  "SymlinkFile": "",
+  "Commit": "",
+  "Entropy": 4.5560884,
+  "Author": "",
+  "Email": "",
+  "Date": "",
+  "Message": "",
+  "Tags": [],
+  "Fingerprint": "src/lib/risk-rules.test.ts:generic-api-key:156"
+ }
+]

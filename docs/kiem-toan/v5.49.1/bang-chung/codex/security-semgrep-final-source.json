@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/workspace/tyzo-tooling-runtime/venv/bin/semgrep",
+    "scan",
+    "--metrics=off",
+    "--disable-version-check",
+    "--no-git-ignore",
+    "--error",
+    "--config",
+    "/workspace/tyzo-tooling-runtime/semgrep-rules/typescript",
+    "--config",
+    "/workspace/tyzo-tooling-runtime/semgrep-rules/javascript",
+    "--severity",
+    "ERROR",
+    "--severity",
+    "WARNING",
+    "--json",
+    "-o",
+    "/workspace/tyzo-continuation-evidence/semgrep-final-source.json",
+    "src/lib/pipeline/recognize.ts",
+    "src/lib/app-version.ts",
+    "src/lib/admin/admin-log.server.ts"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 20.15,
+  "credentials_filtered": true,
+  "uses_local_pg_fixture": false
+}

@@ -1,81 +1,40 @@
-# Bàn giao cho phiên sau — sửa triệt để v5.49.1 (đang dở)
+# Bàn giao tiếp — ứng viên v5.49.2
 
-- **Chỉ thị gốc:** tệp `TyZo_v5.49.1_Claude_Handoff_Triet_De.md` Chủ gửi ngày 27/11/2026. Tệp này không có trong kho; xin Chủ gửi lại cho phiên sau.
-- **Sáu quyết định của Chủ (mục 2 của chỉ thị):** đã duyệt hết.
-- **Gốc:** `93bee64` (= `main`). Nhánh làm việc: `ccr-9f1afcc8-iv7067`. **Chưa gộp `main`, chưa deploy.** Chủ đã tắt dựng nhánh phụ trên Vercel.
-- **Câu mở đầu cho phiên sau:** «Đọc `BANG_DIEU.md` và `docs/kiem-toan/v5.49.1/BAN_GIAO_PHIEN_SAU.md`, làm tiếp phần còn dở.»
+**PARTIAL; chưa phát hành, chưa push, không gộp main.**
 
-## Môi trường thử (mỗi phiên mới phải dựng lại)
+- Gốc do Chủ chỉ định: nhánh `ccr-9f1afcc8-iv7067`, commit `d5a2fed119456b1b33cbb7934763ec1b365ce355`.
+- Worktree: `/workspace/TyZo-ccr-9f1afcc8-iv7067`. Không dùng checkout `/workspace/TyZo_Sub_Project` làm gốc; checkout đó giữ công việc tooling cũ.
+- Chủ đã yêu cầu tiếp tục sau khi làm mới giới hạn. Bàn giao tạm dừng trước đây đã được thay bằng trạng thái này.
+- Đọc `BAO_CAO.md`, `TAI_NGHIEM_THU_23.md`, `SECURITY_REVIEW.json`, `KET_QUA.json` và `COVERAGE_TEP.json` cùng thư mục trước khi làm tiếp. Chỉ thị gốc đã lưu tại `TyZo_v5.49.1_Claude_Handoff_Triet_De.md`; bàn giao phiên trước Codex ở `BAN_GIAO_TRUOC_PHIEN_CODEX.md`.
 
-```bash
-npm ci
-pg_ctlcluster 16 main start
-su postgres -c "psql -c \"create role tyzo login superuser password 'thu'\" -c 'create database tyzo_thu owner tyzo'"
-# Test tranh chấp trên Postgres thật (CSDL thử, không phải dữ liệu thật):
-TYZO_TEST_PG_URL=postgres://tyzo:thu@127.0.0.1:5432/tyzo_thu node --experimental-strip-types --test \
-  src/lib/billing/tyzo-modal-race.test.ts src/lib/billing/gate-reserve.test.ts \
-  src/lib/billing/token-balance-race.test.ts src/lib/affiliate-payout.test.ts
-```
+## Đã thực hiện
 
-- **Bằng chứng trước/sau:** `docs/kiem-toan/v5.49.1/bang-chung/`.
-- **Diễn tập khôi phục:** `re003-run.sh` cùng `re003-harness.sh`.
-- **Diễn tập migration:** `mig-drill-final.log`. Kịch bản gốc nằm trong `docs/kiem-toan/v5.49/bang-chung/mig-0037-drill.sh`.
+R3008 IP helper; R3009 usage dự phòng; R5008 bản lưu theo chủ; R6006 cleanup PUT; R7001 chặn polish đổi số/phủ định/tên; R7003 glossary retry hữu hạn; R7006 settle Audio khi stop; R8004 ngăn reload active; R8005 quyền workflow riêng. Tái nghiệm thu23mục bằng test cụ thể; thêm sửa coded500 lộ message, MP4range bounded, metadata abort, language-check cũ và trigger0046 thu hồi thiết bị cùng transaction mật khẩu.
 
-## Đã xong trong phiên này
+Không được coi các mục PARTIAL là đã nghiệm thu production. Version5.49.2 chỉ là ứng viên. Giá/điều khoản/providers/Token không đổi; đoạn phụ đề sửa tay giữ trong test nativeIDB.
 
-Mỗi mục là một commit riêng, có test, và đều đạt.
+## Còn mở theo thứ tự
 
-| Mục | Commit | Tóm tắt | Bằng chứng trước → sau |
-|---|---|---|---|
-| RE-001 (P0) | `ace090d` | Đoạn TyZo «đang chạy» tính theo nhịp sống (30 giây, quá 150 giây coi là chết) và mã lượt chạy; đóng ép thì ghi nhật ký thao tác. Migration 0040 | Đoạn gửi 20 phút trước vẫn chạy: phiếu bị đóng, trả hết 100 Token, không trừ được 0 → nay phiếu chờ, trừ đúng 12 |
-| RE-002 (P0) + RE-005 | `c00b163` | Cửa Groq/Alibaba giữ trước phần tiền của từng lệnh (`gate-reserve.ts`, bảng `run_gate_calls`, migration 0041). Phiếu bận thì máy chủ chờ tối đa 20 giây rồi trả 429. Trần token bắt buộc: thiếu thì đặt 4096, thân gửi nhà cung cấp được chuẩn hóa | 8 lệnh cùng lúc: nhà gọi 8 lần ≈ 264 Token, khách trừ 100 → nay 4 lần ≈ 132, tổng phần giữ không vượt `held` |
-| RE-003 (P0) | `b766c1c` | Khôi phục dữ liệu VPS: `--exit-on-error --single-transaction`, kiểm đủ bảng, khóa ngoại, ràng buộc, chỉ mục, ổ đĩa; bỏ đường «dong-y» | Gõ «dong-y» nhận bản thiếu khóa ngoại → nay mọi ca lỗi đều dừng, dữ liệu cũ nguyên |
-| RE-004 (P0) + R4-003 | `b7eaf62` | Reset chỉ chạy khi có `TYZO_TEST_RESET=1`, tên CSDL nằm trong `TYZO_TEST_RESET_DB`, và không phải production. Giữ `room_audit`, xóa `provider_spend` | Test 29/29 đạt |
-| RE-006 | `450fe73` | Gắn khoản hoa hồng cũ vào lệnh rút chỉ khi chắc chắn (migration 0042); bỏ cách đoán theo CTV; đối soát chỉ đọc ở trang Cộng tác | Lệnh 50.000 đ đánh dấu 60.000 đ là đã chi → nay báo lỗi |
-| R5-005 + R5-006 | `e1aac22` | Hoa hồng tính trên `order.amount`; hàng đợi `commission_outbox` ghi cùng câu lệnh với thanh toán (migration 0043) | Tính trên 9.000 thay vì 12.000 → nay 12.000; lỗi khi ghi hoa hồng không còn bị nuốt |
-| MAIN-038 | `9a3a178` | Trừ Token ở gói hết hạn sớm nhất trước; hạn chụp lúc giữ (`token_slices.expires_at`, migration 0044) | Còn A 50 / Z 70 → nay A 100 / Z 20 |
-| R3-003 | `f82ecb0` | Giá dịch thiếu một chiều thì chặn model | Model thiếu giá ra vẫn mở → nay chặn |
-| R8-003 | `e7366b3` | `scripts/migration-gate.mjs`: bản xem trước chỉ chạy migration khi có `TYZO_PREVIEW_DB=rieng`; migration phá dữ liệu cần `TYZO_ALLOW_DESTRUCTIVE=<tệp>`; CSDL mới tinh không bị chặn | Diễn tập 4 ca đều đạt |
-| AZ-006 | `00f5127` | Chữ ký quét đêm v2 gắn nonce, phương thức, đường dẫn và sha256 của thân; chống gửi lại (`sweep_nonces`, migration 0045); script VPS ký giống hệt | So bằng `openssl` + `sha256sum` |
-| DEEP-003 | `f15eb73` | Chi phí Dịch trực tiếp ghi theo usage thật từng lượt (`billing.spend`) | Test thu thiếu vẫn ghi đúng giá gốc |
+1. Android AZ002/003/004/008,R3006: cần SDK/emulator hoặc máy thử. Hiện BLOCKED.
+2. IP: ingress staging thật phải ghi đè header tin cậy và cấm truy cập origin; chưa có bằng chứng runtime.
+3. Polish: corpus đa ngôn ngữ adversarial; chưa chứng minh ngữ nghĩa mọi tên/số bằng chữ/phủ định.
+4. E2E gây lỗi chunk khi pipeline/Live còn chạy; negative transport E2E từng polish endpoint. Module/registration test không thay thế hai việc này.
+5. Triage86Semgrep findings/2analysiserror và10dependencywarning, xem phân loại trong báo cáo; chưa audit từng callsite toàn80mục. Không tự mở rộng refactor nghiệp vụ.
+6. Review độc lập gói hồ sơ, rồi chỉ triển khai khi Chủ yêu cầu rõ. Migration0046 chưa chạy production. VPS/header/Neon thật/nhà cung cấp trả phí chưa kiểm.
 
-`npm test` gần nhất: 196 + 1372 + 1 đạt, 0 lỗi. `tsc` và `eslint` sạch.
+## Cổng và bằng chứng
 
-## Còn dở, theo thứ tự nên làm
+`bang-chung/codex/` giữ log/JSON cuối, fixture harness và scanner redacted. Xem `final-unit.json`, `final-typecheck.json`, `final-lint.json`, hai `final-build-*.json`, `app-browser-checks.json`, `migration-drill.json`, `restore-drill.json`. Full suite dùng PG thật local, không credentials production. Các test skipped là thiếu .grok trong kho sạch. Báo cáo giữ nguyên exit1 scanner có findings; không bịa PASS.
 
-1. **R3-008 (đang làm dở lúc dừng): lấy IP khách đáng tin.** Đang dùng `x-forwarded-for` phần tử đầu, ở `app-link.server.ts:107` và `risk-log.server.ts:10`.
-   - Context7 xác nhận: Caddy mặc định **bỏ** giá trị X-Forwarded-For khách tự gửi và tự đặt lại. Vercel cũng tự đặt.
-   - Riêng chế độ Cloudflare Tunnel thì Caddy không đứng trước, nên khách có thể giả header.
-   - Đề xuất: thêm biến `TRUSTED_IP_HEADER` (mặc định `x-forwarded-for`; chế độ tunnel đặt `cf-connecting-ip`, `tyzo.sh` tự đặt theo `EDGE`). Gom vào một hàm dùng chung, kèm test.
-2. **R3-009:** ASR thiếu `duration` thì tính 0. Sửa: dùng số giây ước từ thân (`audioSecondsEstimate` trong `run-gate.ts`) làm sàn và ghi cờ đối soát.
-3. **R5-008:** bản lưu phụ đề trong IndexedDB chưa gắn theo tài khoản. Cần id tài khoản phía máy khách. Không sửa các tệp nền tảng `auth/client.ts` và `scripts/sign-out-plan.mjs`.
-4. **R6-006:** dọn key R2 khi PUT lỗi hoặc mất trả lời (`r2-upload-run.ts`).
-5. **R7-001:** bộ chấm trau chuốt phải giữ nguyên số và phủ định. Không chắc thì giữ bản gốc. Cần test.
-6. **R7-003:** thuật ngữ nạp lỗi thì báo một lần (`translate.ts`, khối `catch` quanh `loadRunGlossary`).
-7. **R7-006:** dừng giọng đọc thì kết thúc promise của `playUrl` (`narration.ts`). Cần thử trên trình duyệt.
-8. **R8-004:** hoãn tự tải lại trang khi đang có việc chạy (`stale-build-guard.tsx`).
-9. **R8-005:** workflow Android tách quyền theo job, job đăng bản phát hành riêng.
-10. **Android** (AZ-002/003/004/008, R3-006): máy không có Android SDK nên ghi BLOCKED, trừ khi phiên sau có SDK.
-11. **Tái nghiệm thu 23 mục FIXED_CODE** của đợt v5.49 (danh sách ở `docs/kiem-toan/v5.49/KET_QUA.json`, `result_status = FIXED_CODE`): thêm test riêng cho từng mục.
-12. **Cổng cuối:**
-    - `npx tsc --noEmit`, `npx eslint src --quiet`, `npm test`.
-    - `env -u DATABASE_URL npm run build`, và dựng thêm bản `NITRO_PRESET=node-server` chạy trên Postgres thử.
-    - Playwright: Admin → Doanh thu, nút Reset phải bị khóa khi không đặt `TYZO_TEST_RESET`; trang Cộng tác có khung đối soát.
-    - Gọi thử `/api/risk-sweep` hai lần cùng nonce: lần hai phải bị 401.
-    - `bash scripts/tools/cong-cu.sh bi-mat | bao-mat | phu-thuoc`, `graphify update . --force`.
-    - Viết báo cáo `docs/kiem-toan/v5.49.1/BAO_CAO.md` theo mẫu mục 5 của chỉ thị.
-    - Đóng gói hồ sơ cho ChatGPT kiểm toán độc lập.
-    - Cập nhật `BANG_DIEU.md`, `PROJECT_STATUS.md`, `HANDOFF.md`.
-    - Nâng phiên bản (`APP_VERSION`, `CHANGELOG`, `ADMIN_LOG`).
+## Môi trường có thể tái dùng nếu cùng máy
 
-## Lưu ý khi gộp (Chủ quyết)
+- `node_modules` là symlink sang dependencies checkout cũ, cùng lockfile. Máy mới dùng npm ci theo lock, không nâng gói.
+- PostgreSQL17.7 local user-owned `/workspace/tyzo-pg-test`, data riêng, bind127.0.0.1:55439. `tyzo_test` NOSUPERUSER/NOCREATEDB/NOCREATEROLE, DBtyzo_test. Mỗi helper test tự tạo/drop schema riêng.
+- `TYZO_LOCAL_PG_TEST=1 python3 /workspace/tyzo-continuation-evidence/run.py <nhãn-mới> npm test` để lọc env và bật localPG.
+- Schema app browser riêng `app_browser_5492`, chỉ dữ liệu giả; không sao chép cookies hay fixture key vào Git. Nativebrowser script chặn request ngoài localhost. Server Node fixture ở127.0.0.1:8081 nếu còn chạy.
+- Khởi PG khi cần: `/workspace/tyzo-pg-test/bin/pg_ctl -D /workspace/tyzo-pg-test/data -l /workspace/tyzo-continuation-evidence/postgres-server.log -o '-h 127.0.0.1 -p 55439 -k /workspace/tyzo-pg-test' start`. Không initdb đè dữ liệu.
+- Máy mới không bảo đảm có runtime này. Dùng scripts/harness đã bàn giao làm căn cứ; đọc trước URL/env/port, không chạy harness cũ hardcode vào hệ thống thật.
 
-- Migration mới: 0040–0045. Tất cả chỉ thêm bảng, cột, chỉ mục; riêng 0042 có cập nhật dữ liệu khi chắc chắn. Không có lệnh phá dữ liệu.
-- Chưa thử trên Neon và VPS thật.
-- Sau khi gộp:
-  - VPS chạy `tyzo` → 2 để có cầu nối mới và chữ ký quét đêm v2. Web và VPS phải lên cùng lúc, nếu không lần quét đêm đó báo 401.
-  - Muốn bật Reset trên máy chủ thử: đặt `TYZO_TEST_RESET=1` và `TYZO_TEST_RESET_DB=<tên CSDL thử>`.
-  - Bản xem trước dùng CSDL riêng: đặt `TYZO_PREVIEW_DB=rieng` cùng `DATABASE_URL` riêng ở mục Preview trên Vercel.
-- Đổi hành vi cần biết:
-  - Cửa trả theo lượt có thể chờ tối đa 20 giây hoặc trả 429 khi phần giữ đang thuộc các lệnh khác.
-  - Model thiếu giá một chiều bị chặn: xem trang Giá trên CSDL thật.
+## Git và rollback
+
+Xem `COMMITS_CODEX.md` để biết commit nhóm sửa trong phiên này. Không reset/clean hay gộp main. Revert commit cần chọn sau khi lưu thay đổi người dùng. Migration0046 chỉ thêm trigger/function; rollback code không tự drop trigger, không xóa ledger hoặc database thật. Gói kiểm toán ZIP chứa patch từ baseline, các file đổi, graph/provenance và bằng chứng; không thay thế việc push lên repository. Chưa được phép push/deploy trong nhiệm vụ này.

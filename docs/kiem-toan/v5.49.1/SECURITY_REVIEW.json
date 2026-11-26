@@ -1,0 +1,35 @@
+{
+  "status": "PARTIAL",
+  "gitleaks": {
+    "raw_exit": 1,
+    "findings": 2,
+    "verified_false_positives": [
+      {
+        "path": "src/lib/backend-audit.test.ts",
+        "reason": "literal synthetic-fixture only in explicit local SQL test"
+      },
+      {
+        "path": "src/lib/risk-rules.test.ts",
+        "reason": "literal local HMAC test key; no real service use"
+      }
+    ]
+  },
+  "semgrep": {
+    "all_findings": 86,
+    "all_errors": 2,
+    "triage_all_complete": false,
+    "changed_source_findings": 1,
+    "changed_source_errors": 0,
+    "changed_finding_review": {
+      "path": "src/lib/sub/narration.ts",
+      "rule": "detect-non-literal-regexp",
+      "result": "false positive at current callsites: word only fixed literal allowlist"
+    }
+  },
+  "dependency_cruiser": {
+    "errors": 0,
+    "warnings": 10,
+    "refactor_not_performed": true
+  },
+  "production_certified": false
+}

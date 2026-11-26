@@ -1,5 +1,8 @@
 # PROJECT STATUS — Dịch phụ đề video (TyZo_Sub_Project, tên cũ: phudedep)
 
+> **Trạng thái tiếp tục Codex (2026-11-26UTC):** ứng viên5.49.2 trên `ccr-9f1afcc8-iv7067`, gốcd5a2fed, không gộpmain/chưa push/deploy. PARTIAL. Đọc `docs/kiem-toan/v5.49.1/BAO_CAO.md` và `BAN_GIAO_PHIEN_SAU.md` cùng thư mục. Các mốc bên dưới là lịch sử, không phải chứng nhận ứng viên đã lên production.
+
+
 > **Nhìn nhanh:** đọc `BANG_DIEU.md` trước, rồi `huongdan.txt`, rồi `HANDOFF.md`. File này là hồ sơ. Bảng đầu là trạng thái hiện tại. Mục 6 cũ và các mục 9–12 đã chuyển sang `docs/lich-su/`; các mục 7, 8, 13, 14, 15 còn ở đây và vẫn có hiệu lực.
 
 | Thông tin | Giá trị |
