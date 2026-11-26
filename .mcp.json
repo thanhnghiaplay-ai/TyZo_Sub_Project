@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.85", "--headless", "--isolated", "--no-sandbox", "--executable-path", "/opt/pw-browsers/chromium", "--output-dir", "/tmp/tyzo-playwright"]
+    },
+    "postgres": {
+      "command": "postgres-mcp",
+      "args": ["--access-mode=restricted"],
+      "env": { "DATABASE_URI": "${TYZO_DB_RO_URL:-postgresql://tyzo_ro:ro@127.0.0.1:55432/tyzo_test}" }
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking@2.1.1"]
+    }
+  }
+}

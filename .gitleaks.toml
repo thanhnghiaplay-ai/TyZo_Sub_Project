@@ -1,0 +1,12 @@
+# gitleaks cho TyZo: dùng luật mặc định, chỉ bỏ các chỗ ĐÃ KIỂM là không phải bí mật (26/11/2026).
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Bộ nhớ đệm graphify (chuỗi băm của tệp) và bản dựng Vercel (thư viện edge-tts, mã công khai)"
+paths = ['''graphify-out/cache/''', '''^\.vercel/''']
+
+[[allowlists]]
+description = "Chuỗi giả trong test cầu nối Dịch trực tiếp"
+regexTarget = "line"
+regexes = ['''const secret = "''']

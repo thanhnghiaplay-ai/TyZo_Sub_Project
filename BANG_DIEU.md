@@ -38,6 +38,16 @@ Không ai vừa đề xuất vừa tự nhận là đã duyệt.
 
 Người dùng là người chốt. Câu khởi đầu cho model khác chỉ cần: «Đọc `BANG_DIEU.md` và làm đúng vai của mình.»
 
+## Việc đang dở (cập nhật 26/11/2026, đọc trước tiên)
+
+1. **Nhánh `tyzo/tach-file`: tách file 5 đợt XONG**, chưa gộp `main`. Kế hoạch và kết quả từng đợt ghi trong `BANG_DIEU.md` CỦA NHÁNH ĐÓ (mục «Tách file»). Đã gộp `main` vào nhánh (sửa giá TyZo Admin). Còn: Chủ chạy thử 1 phim ngắn trên bản xem trước, rồi gộp vào `main` (Chủ nói «Gộp và đẩy chính thức»).
+2. **Bản thử web đầy đủ trên VPS 2** (`sub.tyzo.site`, IP 103.74.102.106, chạy `main`, dữ liệu chép từ Neon). Đăng nhập được. Còn: thêm `TYZO_ASR_URL`/`TYZO_ASR_TOKEN` (`tyzo` → 4), thử Groq và TyZo bằng phim 1–2 phút. VPS 1 vẫn là cầu nối cho web Vercel. Bản ghi `@` (tyzo.site) trỏ VPS 2 nhưng chưa có gì chạy ở đó.
+3. **Trang giới thiệu `tyzo.site`** (Chủ muốn: tyzo.site = giới thiệu, bấm vào sang `sub.tyzo.site` = ứng dụng). Chưa làm. Sau đó mới chuyển hẳn khỏi Vercel/Neon (chép lại dữ liệu, đổi mật khẩu Admin vì đã lộ trong ảnh).
+4. **`tyzo-ai` (VPS 1) đã đổi sang nhánh `main`** và đưa lại lên Modal (có giới hạn 9 máy).
+5. **`tyzo` có thanh tiến độ** cho mọi bước cài/dựng/chép dữ liệu.
+6. **Bộ công cụ phát triển** (`docs/CONG-CU.md`): mở phiên mới chọn môi trường **`TyZo_Sub_Project`** (tự cài công cụ, có Context7 + key); Postgres MCP chưa nối Neon (cần vai chỉ-đọc); `.claude/settings.json` chỉ là đề xuất, Chủ tự tạo. 8 vòng import (cụm thanh toán, đăng nhập/thư) nên gỡ dần.
+7. **Vercel gói Hobby** chạm 100 lượt dựng/ngày ngày 26/11. Nên lên Pro khi bán thật (Hobby không cho kinh doanh), hoặc chuyển hẳn sang VPS. Đề xuất: cấu hình Vercel bỏ nhánh phụ (chưa làm).
+
 ## Việc đang giữ
 
 Đợt 1 tối ưu độ trễ (A1–A7) ĐÃ GỠ ở v5.42.4 (Chủ: «Nó bị chậm, nhận dạng không đủ, mất kết nối. Hay là quay về bản trước khi tôi bảo tối ưu»). Không làm lại đợt 1, 2, 3 cho tới khi Chủ yêu cầu. Trước đó: Chờ Chủ: trên VPS `tyzo` → 2 (cầu nối mới) và xem Admin → Cấu hình → Dịch trực tiếp → «Độ trễ dịch trực tiếp» sau vài phiên thật. Đợt 2, đợt 3 chờ Chủ chốt.
