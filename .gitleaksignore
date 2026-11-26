@@ -1,0 +1,6 @@
+# Mã OAuth dùng chung cho bản xem trước của nền tảng tạo web (preview-only, quyền thấp, cố ý để trong mã;
+# bản chạy thật dùng GROK_AUTH_CLIENT_SECRET riêng). Xem src/lib/auth/preview.ts.
+src/lib/auth/preview.ts:generic-api-key:20
+66b39c6862f30bc97d84090d8eeedada081a237d:src/lib/auth/preview.ts:generic-api-key:20
+398034323010a4b06a00d3e81c9cc48dcb22a900:src/lib/auth/preview.ts:generic-api-key:20
+9785dde332e3870f1d7890700c807e9ecebe932e:src/lib/auth/preview.ts:generic-api-key:20
