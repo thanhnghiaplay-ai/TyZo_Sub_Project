@@ -754,6 +754,10 @@ tao_ban_chuyen_vps() (
   chep_neu_co "$BRIDGE_ENV" "$noi_dung/cau-hinh/bridge.env"
   chep_neu_co /opt/tyzo-vercel.env "$noi_dung/cau-hinh/tyzo-vercel.env"
   chep_neu_co /opt/tyzo-ghi-chu.txt "$noi_dung/cau-hinh/tyzo-ghi-chu.txt"
+  # Menu tyzo-ai (nhận dạng TyZo trên Modal): chuỗi bảo vệ, địa chỉ, key Alibaba và phiên đăng nhập Modal.
+  # Thiếu tệp này thì cài lại tyzo-ai sẽ tạo chuỗi bảo vệ mới và web không gọi được Modal nữa.
+  chep_neu_co /opt/tyzo-ai/tyzo-ai.conf "$noi_dung/cau-hinh/tyzo-ai.conf"
+  chep_neu_co /root/.modal.toml "$noi_dung/cau-hinh/modal.toml"
   chep_neu_co "$CADDYFILE" "$noi_dung/cau-hinh/Caddyfile"
   chep_neu_co /opt/tyzo-android-key "$noi_dung/cau-hinh/tyzo-android-key"
   chep_neu_co /etc/cloudflared "$noi_dung/cau-hinh/cloudflared"
@@ -832,6 +836,11 @@ khoi_phuc_vps() ( # khoi_phuc_vps <tệp tyzo-chuyen-vps-*.tar.enc>
   [ -f "$noi_dung/cau-hinh/bridge.env" ] && install -m 600 "$noi_dung/cau-hinh/bridge.env" "$BRIDGE_ENV"
   [ -f "$noi_dung/cau-hinh/tyzo-vercel.env" ] && install -m 600 "$noi_dung/cau-hinh/tyzo-vercel.env" /opt/tyzo-vercel.env
   [ -f "$noi_dung/cau-hinh/tyzo-ghi-chu.txt" ] && install -m 600 "$noi_dung/cau-hinh/tyzo-ghi-chu.txt" /opt/tyzo-ghi-chu.txt
+  if [ -f "$noi_dung/cau-hinh/tyzo-ai.conf" ]; then
+    mkdir -p /opt/tyzo-ai && chmod 700 /opt/tyzo-ai
+    install -m 600 "$noi_dung/cau-hinh/tyzo-ai.conf" /opt/tyzo-ai/tyzo-ai.conf
+  fi
+  [ -f "$noi_dung/cau-hinh/modal.toml" ] && install -m 600 "$noi_dung/cau-hinh/modal.toml" /root/.modal.toml
   if [ -d "$noi_dung/cau-hinh/tyzo-android-key" ]; then
     mkdir -p /opt/tyzo-android-key; cp -a "$noi_dung/cau-hinh/tyzo-android-key/." /opt/tyzo-android-key/
     find /opt/tyzo-android-key -type d -exec chmod 700 {} +
