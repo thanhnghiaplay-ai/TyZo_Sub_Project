@@ -181,6 +181,8 @@ def main():
     print(f"Tệp tiếng: {audio.stat().st_size / 1e6:.2f} MB")
 
     saved = folder / f"nhan-dang-{profile}.json"
+    if saved.exists() and ask("Đã có kết quả nhận dạng lưu. Nhận dạng lại bằng code mới trên Modal (tốn GPU; bản cũ được giữ)? (c/k): ") == "c":
+        saved.rename(folder / f"nhan-dang-{profile}-cu-{time.strftime('%Y%m%d-%H%M%S')}.json")
     if not saved.exists() and ask(f"Gửi {length} s {NAMES.get(lang, lang)} lên máy nhận dạng (luồng {profile}, tốn GPU)? (c/k): ") != "c":
         sys.exit("Đã dừng, không gửi.")
     result = recognize(audio, lang, profile, saved)

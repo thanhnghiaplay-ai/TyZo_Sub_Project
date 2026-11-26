@@ -229,18 +229,23 @@ def align(text, c, g, lang):
                 seq.append(ch); ts.append(w["s"] + (w["e"] - w["s"]) * (i + 0.5) / len(cs))
         tracks.append(("".join(seq), ts))
     if not tracks: return split_to_spans(text, g, lang)
-    out = []
+    out, cur = [], -1e9   # cur: mốc cuối của câu trước; câu sau chỉ khớp với chữ nằm sau mốc này (theo thứ tự lời nói)
     for p in parts:
         cp = chars(p); best = None
         for seq, ts in tracks:
-            sm = difflib.SequenceMatcher(None, cp, seq, autojunk=False)
+            k0 = next((i for i, t in enumerate(ts) if t > cur), len(ts))
+            sm = difflib.SequenceMatcher(None, cp, seq[k0:], autojunk=False)
             bl = [b for b in sm.get_matching_blocks() if b.size]
             m = sum(b.size for b in bl)
-            if m and (best is None or m > best[0]): best = (m, [ts[b.b + k] for b in bl for k in range(b.size)])
-        if best and best[0] >= max(1, 0.3 * len(cp)):
+            if m and (best is None or m > best[0]): best = (m, [ts[k0 + b.b + k] for b in bl for k in range(b.size)])
+        same = bool(out) and bool(cp) and chars(out[-1]["text"]) == cp
+        if best and best[0] >= max(1, 0.3 * len(cp)) and not (same and best[0] < 0.6 * len(cp)):
             ts = sorted(best[1]); med = ts[len(ts) // 2]; span = 0.35 * len(cp) + 1.0
             ts = [x for x in ts if abs(x - med) <= span] or [med]   # bỏ chữ khớp nhầm ở chỗ xa (câu bị kéo dài cả bài)
             out.append({"start": min(ts) - 0.15, "end": max(ts) + 0.15, "text": p})
+            if best[0] >= 0.5 * len(cp): cur = max(ts)
+        elif same:
+            continue   # câu lặp y hệt câu trước mà phía sau không còn chữ nào để khớp: chữ lặp do máy, bỏ
         else: out.append({"start": None, "end": None, "text": p})
     for i, o in enumerate(out):   # câu không khớp chữ nào: đặt giữa hai câu bên cạnh
         if o["start"] is None:
