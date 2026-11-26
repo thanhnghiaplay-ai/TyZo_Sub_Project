@@ -148,6 +148,18 @@ function tokensOf(text: string): string {
   return (text.match(TOKEN_RE) || []).sort().join("|");
 }
 
+function factsOf(text: string) {
+  const normalized = text.normalize("NFKC");
+  const numbers = (normalized.match(/\p{Nd}+(?:[.,:/-]\p{Nd}+)*/gu) || []).sort().join("|");
+  // Conservative guards, not a semantic-equivalence judge. Reject uncertain
+  // factual changes and keep the already translated/edited original.
+  const negations = (normalized.toLowerCase().match(/(?<!\p{L})(?:không|chẳng|chả|chưa|đừng|chớ|not|never|no|without|nunca|sin|nicht|kein\p{L}*)(?!\p{L})|n['’]t\b|不|没|無|ない|ません|않|못|없/gu) || [])
+    .map((word) => /^(?:không|chẳng|chả)$/.test(word) ? "vi-not" : /^(?:đừng|chớ)$/.test(word) ? "vi-dont" : /^(?:not|n['’]t)$/.test(word) ? "en-not" : word).sort().join("|");
+  const pronouns = /^(?:Tôi|Ta|Anh|Em|Hắn|Nó|Cô|Chị|Ông|Bà|Người|Đừng|Không|Chúng|Tại|Nếu|Đây|Đó|Một|Hai|The|This|That|You|She|He|We|They|It|No|Not)$/u;
+  const names = (normalized.match(/(?<!\p{L})\p{Lu}[\p{L}\p{M}]+/gu) || []).filter((word) => !pronouns.test(word)).sort().join("|");
+  return { numbers, negations, names };
+}
+
 /** Kiểm một câu model trả về so với bản cũ. Không hợp lệ thì giữ bản cũ và nói lý do. */
 export function judgePolished(old: string, next: string): PolishResult {
   const cleaned = typeof next === "string" ? next.trim() : "";
@@ -157,6 +169,11 @@ export function judgePolished(old: string, next: string): PolishResult {
   }
   if (tokensOf(cleaned) !== tokensOf(old)) {
     return { text: old, status: "failed", note: "Bản mới làm mất hoặc đổi ký hiệu thuật ngữ, giữ bản cũ." };
+  }
+  const before = factsOf(old);
+  const after = factsOf(cleaned);
+  if (before.numbers !== after.numbers || before.negations !== after.negations || before.names !== after.names) {
+    return { text: old, status: "failed", note: "Bản mới có thể đổi số, tên hoặc phủ định, giữ bản cũ." };
   }
   if (cleaned.length > old.trim().length * 2.5 + 20) {
     return { text: old, status: "failed", note: "Bản mới dài bất thường, giữ bản cũ." };

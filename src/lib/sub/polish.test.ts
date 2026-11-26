@@ -329,3 +329,9 @@ describe("polishAll", () => {
     assert.deepEqual(run.results, []);
   });
 });
+
+it("R7-001: không nhận câu trau chuốt đổi số hoặc bỏ phủ định", () => {
+  assert.equal(judgePolished("Tôi không nợ 12 đô.", "Tôi nợ 12 đô.").status, "failed");
+  assert.equal(judgePolished("Tôi nợ 12 đô.", "Tôi nợ 120 đô.").status, "failed");
+  assert.equal(judgePolished("Alice không tới.", "Bob không tới.").status, "failed");
+});
