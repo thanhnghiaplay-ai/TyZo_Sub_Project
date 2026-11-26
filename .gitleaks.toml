@@ -4,7 +4,7 @@ useDefault = true
 
 [[allowlists]]
 description = "Bộ nhớ đệm graphify (chuỗi băm của tệp) và bản dựng Vercel (thư viện edge-tts, mã công khai)"
-paths = ['''graphify-out/cache/''', '''^\.vercel/''']
+paths = ['''graphify-out/cache/''', '''^\.vercel/''', '''^\.output/''']
 
 [[allowlists]]
 # Kiểm toán NEW-004: chỉ bỏ ĐÚNG chuỗi giả này, ĐÚNG trong tệp test này (trước đây bỏ mọi dòng `const secret = "` ở mọi tệp).

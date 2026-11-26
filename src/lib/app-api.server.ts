@@ -20,7 +20,7 @@ export function failFrom(error: unknown) {
   const retry = (error as { retryAfter?: unknown })?.retryAfter;
   const raw = error instanceof Error && error.message ? error.message : "";
   console.error("[app-api]", raw || String(error));
-  const forCustomer = coded !== null || /[^\x00-\x7f]/.test(raw);
+  const forCustomer = coded !== null || /[\u00c0-\u1ef9]/.test(raw);
   const message = forCustomer && raw ? raw : "Có lỗi, hãy thử lại.";
   const status = coded !== null ? coded : forCustomer ? 400 : 500;
   return fail(status >= 400 && status < 600 ? status : 400, message, typeof retry === "number" ? { "retry-after": String(retry) } : undefined);
