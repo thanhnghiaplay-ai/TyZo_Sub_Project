@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.46.0";
+export const APP_VERSION = "5.47.0";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.47.0",
+    time: "15:00 26/11/2026",
+    title: "Nhận dạng TyZo Modal (Nhanh và Kỹ) ở cửa trả theo lượt, khi phòng mở gói có TyZo.",
+    points: [
+      "Phim dài chia nhiều đoạn chạy cùng lúc (tối đa 9), ghép phụ đề đúng thứ tự.",
+      "Tiếng cảm thán lặp sát nhau gộp thành một dòng, đỡ nhấp nháy khi đọc.",
+      "Mỗi đoạn chỉ tính một lần, kể cả khi mạng rớt và gửi lại; điều khoản 2026-11-26.1.",
+    ],
+  },
   {
     version: "5.46.0",
     time: "18:26 25/11/2026",

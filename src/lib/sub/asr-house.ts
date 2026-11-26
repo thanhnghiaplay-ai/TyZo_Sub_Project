@@ -12,6 +12,7 @@ type AsrHouse = ProviderId;
 
 /** Mỗi model nhận dạng thuộc đúng một nhà. Thêm model nhận dạng mới thì thêm một dòng ở đây. */
 const HOUSES: Record<string, AsrHouse> = {
+  "tyzo-modal-nhanh": "tyzo-modal", "tyzo-modal-ky": "tyzo-modal",
   "whisper-large-v3": "groq",
   "whisper-large-v3-turbo": "groq",
   [ALI_FILETRANS_ASR]: "alibaba",

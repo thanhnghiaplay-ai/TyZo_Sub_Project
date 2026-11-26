@@ -93,7 +93,7 @@ export function ProviderKeyBoard({ provider, note }: { provider: ProviderId; not
 export function ProviderKeyBoards() {
   return (
     <>
-      {PROVIDER_IDS.map((id) => (
+      {PROVIDER_IDS.map((id) => id === "tyzo-modal" ? null : (
         <ProviderKeyBoard key={id} provider={id} />
       ))}
     </>

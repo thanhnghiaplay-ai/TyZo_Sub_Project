@@ -9,6 +9,14 @@ import { PROVIDERS, type ProviderId } from "./sub/provider";
  * Kiểu `Record` bắt buộc đủ mọi nhà: thêm nhà mới mà quên khai cách nạp giá thì tsc báo lỗi.
  */
 const ROW_LOADERS: Record<Exclude<ProviderId, "groq">, (sql: Sql) => Promise<GroqLiveRow[]>> = {
+  "tyzo-modal": async sql => {
+    const rows = await sql<{value:string}>`select value from room_settings where key = 'tyzo_modal_price'`;
+    if (!rows.length) return [];
+    const { parseModalPrice } = await import("./sub/tyzo-modal-price");
+    const price = parseModalPrice(JSON.parse(rows[0].value));
+    return (["nhanh","ky"] as const).map(profile => ({ id: "tyzo-modal-"+profile, usdPerHour: price[profile],
+      speed:null, usdIn:null, usdOut:null, usdPerMillionChars:null, unlisted:false, limits:[], contextTokens:null, maxCompletionTokens:null, maxFile:null }));
+  },
   alibaba: async (sql) => (await import("./sub/alibaba-board.server")).loadAlibabaRows(sql),
   deepgram: async (sql) => (await import("./sub/deepgram-board.server")).loadDeepgramRows(sql),
   assemblyai: async (sql) => (await import("./sub/assemblyai-board.server")).loadAssemblyaiRows(sql),
@@ -41,5 +49,6 @@ export async function loadRoomHouses(sql: Sql): Promise<Record<ProviderId, RoomH
     const names = PROVIDERS[id].settings;
     out[id] = { key: map.get(names.key)?.trim() || null, models: parseModelList(map.get(names.models)) };
   }
+  out["tyzo-modal"] = { key: process.env.TYZO_ASR_TOKEN && process.env.TYZO_ASR_URL ? "configured" : null, models: PROVIDERS["tyzo-modal"].fixedModels ?? null };
   return out;
 }

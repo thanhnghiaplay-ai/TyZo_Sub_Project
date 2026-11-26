@@ -22,6 +22,10 @@ const GRADE_FIX: Record<string, ModelGrade> = {
   "qwen-audio-3.0-asr-flash-filetrans": { quality: 8, speed: 5, asian: 9 },
   "qwen3-asr-flash": { quality: 7.5, speed: 8, asian: 9 },
   "deepgram-nova-3": { quality: 8.5, speed: 7, asian: 8 },
+  // TyZo Modal: ƯỚC LƯỢNG từ số đo eval/asr (FLEURS Hàn CER khoảng 5%, phim Nhật 74 phút xong khoảng 3 phút với 9 máy),
+  // chưa so cùng bộ với các nhà khác; Chủ xem lại ở đây.
+  "tyzo-modal-nhanh": { quality: 8, speed: 7, asian: 8.5 },
+  "tyzo-modal-ky": { quality: 8.5, speed: 5, asian: 9 },
   "deepgram-nova-3-multi": { quality: 8, speed: 7, asian: 8 },
   // AssemblyAI: ĐIỂM ƯỚC LƯỢNG của người làm (18/11/2026), CHƯA đo bằng phim thật; Chủ xem lại ở đây.
   "assemblyai-universal-3-5-pro": { quality: 9, speed: 6, asian: 8 },

@@ -11,7 +11,7 @@ test("mọi model nhận dạng của nhà đã ready đều có hàng; nhà ch�
   const rows = asrPickerRows({ showRoomPrice: false, allow: {}, roomHeld: none });
   const shown = ASR_MODELS.filter((model) => {
     const house = asrHouse(model.id);
-    return house !== null && PROVIDER_IDS.includes(house);
+    return house !== "tyzo-modal" && house !== null && PROVIDER_IDS.includes(house);
   });
   for (const model of shown) assert.ok(rows.some((row) => row.id === model.id), model.id);
   assert.equal(rows.length, shown.length);

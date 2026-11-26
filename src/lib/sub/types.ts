@@ -42,6 +42,7 @@ export type AutoProfile = "fast" | "balanced" | "accurate";
 export type ModelMode = "manual" | "auto";
 
 export type AsrModel =
+  | "tyzo-modal-nhanh" | "tyzo-modal-ky"
   | "whisper-large-v3-turbo"
   | "whisper-large-v3"
   | "qwen-audio-3.0-asr-flash-filetrans"
@@ -55,6 +56,9 @@ export type AsrModel =
   | "elevenlabs-scribe-v2";
 
 export const ASR_PRICE: Record<AsrModel, number> = {
+  // Giá dự phòng để ước tính khi chưa nạp bảng giá phòng (USD mỗi giây phim). Lấy từ chi phí GPU đo được
+  // (nhanh khoảng 0,18–0,25 USD, kỹ khoảng 0,4–0,5 USD mỗi giờ phim); cửa thu tiền luôn dùng giá Chủ đặt.
+  "tyzo-modal-nhanh": 0.25 / 3600, "tyzo-modal-ky": 0.5 / 3600,
   "whisper-large-v3-turbo": 0.04 / 3600,
   "whisper-large-v3": 0.111 / 3600,
   "qwen-audio-3.0-asr-flash-filetrans": 0.000035,

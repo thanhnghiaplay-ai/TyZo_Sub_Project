@@ -294,6 +294,20 @@ export async function transcribe(
   onWait?: (message: string) => void,
   ticket?: string | null,
 ) {
+  if (asrModel === "tyzo-modal-nhanh" || asrModel === "tyzo-modal-ky") {
+    const room = ticket ?? roomTicketId();
+    if (key !== ROOM_KEY || !room) throw new Error("TyZo Modal cần phiếu Trả theo lượt.");
+    const wav = packed.wav?.() ?? packed.blob;
+    const audio = await new Promise<string>((resolve,reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(",")[1]);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(wav);
+    });
+    const {callTyzoModal} = await import("../tyzo-modal-call");
+    const result = await callTyzoModal({data:{ticket:room,audio,language,profile:asrModel === "tyzo-modal-ky" ? "ky" : "nhanh"},signal});
+    return {segments:result.segments, language: language || undefined, words:undefined};
+  }
   // Mốc từ là phần thêm. Groq từ chối (400) thì gửi lại như cũ, không có mốc từ, để không mất câu.
   let words = true;
   let usable = packed;

@@ -2,7 +2,7 @@
  * BẢNG NHÀ CUNG CẤP. Thêm nhà mới = thêm một dòng vào PROVIDERS và làm theo PROVIDERS.md.
  * Mọi chỗ cần nhãn, địa chỉ, kiểu gửi key, khả năng đều đọc từ đây, không chép tay.
  */
-export type ProviderId = "groq" | "alibaba" | "deepgram" | "assemblyai" | "speechmatics" | "soniox" | "elevenlabs";
+export type ProviderId = "groq" | "alibaba" | "deepgram" | "assemblyai" | "speechmatics" | "soniox" | "elevenlabs" | "tyzo-modal";
 
 /** asr: nhận dạng giọng · chat: dịch bằng mô hình ngôn ngữ · tts: đọc thành tiếng · live: dịch trực tiếp */
 export type ProviderCap = "asr" | "chat" | "tts" | "live";
@@ -74,6 +74,11 @@ const SONIOX_API = "https://api.soniox.com/v1";
 const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
 
 export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
+  "tyzo-modal": {
+    id: "tyzo-modal", label: "TyZo (Modal)", api: "", auth: "bearer", caps: ["asr"], intake: "chunks",
+    keyPage: "", clientStore: "tyzo-modal", listPath: "", fixedModels: ["tyzo-modal-nhanh", "tyzo-modal-ky"], ready: true,
+    settings: { key: "tyzo_modal_enabled", models: "tyzo_modal_models", desk: "tyzo_modal_price" },
+  },
   groq: {
     id: "groq",
     label: "Groq",

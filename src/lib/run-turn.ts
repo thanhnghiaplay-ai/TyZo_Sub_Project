@@ -51,6 +51,15 @@ export const openRunTicket = createServerFn({ method: "POST" })
     if ("error" in chat) throw new Error(chat.error);
     const hold = holdGiay({ groq: book, rows, asrProvider: asr.provider, asrModel: asr.model, chatProvider: chat.provider, chatModel: chat.model, seconds: data.seconds, part: data.part });
     if (hold == null || hold < 1) throw new Error("Chưa có giá bản Turbo hoặc model này chưa có giá gốc.");
+    let modalPrice: string | undefined;
+    if (asr.provider === "tyzo-modal" && data.part !== "chat") {
+      const settings = await sql<{value:string}>`select value from room_settings where key='tyzo_modal_price'`;
+      if (!settings.length) throw new Error("Chủ chưa đặt giá TyZo Modal.");
+      const { parseModalPrice } = await import("./sub/tyzo-modal-price");
+      const price = parseModalPrice(JSON.parse(settings[0].value));
+      if (rows["tyzo-modal"]?.find(r => r.id === asr.model)?.usdPerHour !== price[asr.model.endsWith("-ky") ? "ky" : "nhanh"]) throw new Error("Giá vừa thay đổi. Vui lòng thử lại.");
+      modalPrice = JSON.stringify(price);
+    }
     const id = randomBytes(12).toString("hex");
     await releaseStaleWith(sql, context.userId);
     const result = await openGiayWith(sql, {
@@ -59,7 +68,7 @@ export const openRunTicket = createServerFn({ method: "POST" })
       fileName: data.fileName,
       seconds: data.seconds,
       rate: Math.round((hold * 60) / data.seconds),
-      hold,
+      hold, modalPrice,
       asrModel: data.asrModel,
       chatModel: data.chatModel,
     });

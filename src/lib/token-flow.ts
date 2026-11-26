@@ -51,7 +51,7 @@ export async function buyGiayWith(
  */
 export async function openGiayWith(
   sql: Sql,
-  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; asrModel?: string; chatModel?: string },
+  input: { id: string; userId: string; fileName: string; seconds: number; rate: number; hold: number; asrModel?: string; chatModel?: string; modalPrice?: string },
 ): Promise<GiayOpen> {
   const { id, userId, fileName, seconds, rate, hold } = input;
   const asrModel = input.asrModel ?? "";
@@ -85,8 +85,8 @@ export async function openGiayWith(
       returning 1
     ),
     tk as (
-      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status, asr_model, chat_model, unit)
-      select ${id}::text, ${userId}::text, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu', ${asrModel}::text, ${chatModel}::text, 'token'
+      insert into run_tickets (id, user_id, file_name, seconds, rate, held, status, asr_model, chat_model, unit, modal_price)
+      select ${id}::text, ${userId}::text, ${fileName}::text, ${seconds}::int, ${rate}::int, ${hold}::int, 'dang-giu', ${asrModel}::text, ${chatModel}::text, 'token', ${input.modalPrice ?? null}
       where exists (select 1 from ok where total >= ${hold}::int)
       returning id
     )
