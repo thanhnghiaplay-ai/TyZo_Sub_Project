@@ -207,3 +207,25 @@ describe("cầu nối Dịch trực tiếp: vòng đời phiên và tiền", () 
     assert.deepEqual(spent, [want]);
   });
 });
+
+
+it("DEEP-008: upstream backlog drops audio and recovers after draining", {timeout:5000}, async () => {
+  const ali=fakeAli(); const bill=slowBilling({}); const s=await session(ali,bill.billing);
+  const previous=Object.getOwnPropertyDescriptor(WebSocket.prototype,"bufferedAmount")!;
+  let congested=true;
+  try {
+    await s.ready();
+    Object.defineProperty(WebSocket.prototype,"bufferedAmount",{configurable:true,get:function(this:WebSocket){
+      if(congested && this.url?.includes("/realtime")) return 2*1024*1024;
+      return previous.get?.call(this) ?? 0;
+    }});
+    s.client.send(Buffer.alloc(3200,1));await wait(100);
+    assert.equal(ali.seen.audioBytes,0);
+    congested=false;s.client.send(Buffer.alloc(3200,1));
+    for(let i=0;i<100&&!ali.seen.audioBytes;i++)await wait(10);
+    assert.ok(ali.seen.audioBytes>0);
+    s.client.send(JSON.stringify({type:"stop"}));await s.closed;
+  } finally {
+    Object.defineProperty(WebSocket.prototype,"bufferedAmount",previous);s.done();
+  }
+});
