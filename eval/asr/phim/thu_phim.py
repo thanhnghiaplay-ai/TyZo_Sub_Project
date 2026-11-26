@@ -107,6 +107,13 @@ def recognize(audio, lang, profile, saved):
 MIN_PART = 120   # phần ngắn hơn không đánh thức sẵn máy model chữ (backend: bat_san_tu_giay)
 
 
+def duration(audio):
+    """Độ dài tệp tiếng (giây), đọc dòng Duration của ffmpeg; 0 nếu không đọc được."""
+    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", str(audio)], capture_output=True, text=True)
+    m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", r.stderr)
+    return int(m[1]) * 3600 + int(m[2]) * 60 + float(m[3]) if m else 0.0
+
+
 def silences(audio):
     """Giữa các khoảng lặng ≥ 0,4 s (giây), tìm bằng ffmpeg silencedetect trên CPU."""
     r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", str(audio), "-af",
@@ -256,7 +263,11 @@ def main():
     audio = folder / "tieng.ogg"
     print(f"Cắt {length} s từ giây {start} của {src.name} → {audio}")
     cut_audio(src, start, length, audio)
-    print(f"Tệp tiếng: {audio.stat().st_size / 1e6:.2f} MB")
+    real = duration(audio)
+    print(f"Tệp tiếng: {audio.stat().st_size / 1e6:.2f} MB · dài {real:.1f} s")
+    if real and real < length - 1:
+        print(f"Phim chỉ còn {real:.1f} s từ mốc bắt đầu: chỉ nhận dạng {real:.1f} s (không gửi phần rỗng, tránh chữ bịa).")
+        length = int(real + 0.999)
 
     saved = folder / f"nhan-dang-{profile}.json"
     if saved.exists() and ask("Đã có kết quả nhận dạng lưu. Nhận dạng lại bằng code mới trên Modal (tốn GPU; bản cũ được giữ)? (c/k): ") == "c":
