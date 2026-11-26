@@ -11,13 +11,14 @@
  *
  * No DATABASE_URL (local builds) -> skip; the PGLite fallback applies
  * the same files at startup instead (see src/lib/db.ts).
- * Preview applies them too, because the preview site uses the same database.
+ * Preview: chỉ chạy khi đã khai báo CSDL riêng (TYZO_PREVIEW_DB=rieng), xem scripts/migration-gate.mjs (R8-003).
  */
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import pg from "pg";
 import { pendingMigrations } from "./migration-plan.mjs";
+import { destructiveGate, previewGate } from "./migration-gate.mjs";
 
 const vercelEnv = process.env.VERCEL_ENV || "";
 const databaseUrl = process.env.DATABASE_URL?.trim() || "";
@@ -33,6 +34,13 @@ if (!databaseUrl) {
 }
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "..", "migrations");
+
+// R8-003: bản xem trước chỉ chạy migration khi đã khai báo CSDL riêng.
+const preview = previewGate(process.env);
+if (!preview.run) {
+  console.log(`[migrate] ${preview.reason}`);
+  process.exit(0);
+}
 
 async function main() {
   let entries;
@@ -75,6 +83,9 @@ async function main() {
       if (/^\s*(begin|commit|rollback)\b/im.test(text)) {
         throw new Error(`${name} chứa BEGIN, COMMIT hoặc ROLLBACK. Để migrate.mjs bọc giao dịch.`);
       }
+      // R8-003: lệnh phá dữ liệu cần Chủ sao lưu và cho phép đúng tệp.
+      const refused = destructiveGate(name, text, process.env, { fresh: applied.length === 0 });
+      if (refused) throw new Error(refused);
       try {
         await client.query("BEGIN");
         // pg's simple-query protocol runs a whole multi-statement file at once.

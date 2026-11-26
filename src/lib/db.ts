@@ -1,4 +1,5 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
+import { destructiveGate, previewGate } from "../../scripts/migration-gate.mjs";
 
 /** Which database backend is active. */
 type DbSource = "neon" | "pglite";
@@ -112,10 +113,16 @@ function createNeonSql(): Promise<Sql> {
       const appliedNames = async () =>
         (await client.query<{ name: string }>("select name from _migrations")).rows.map((row) => row.name);
       const pending = async () => pendingMigrations(Object.keys(migrations), await appliedNames());
-      if ((await pending()).length > 0) {
+      // R8-003: bản xem trước dùng CSDL chung thì không tự chạy migration lúc khởi động.
+      const gate = previewGate(process.env);
+      if (!gate.run) console.warn(`[db] ${gate.reason}`);
+      if (gate.run && (await pending()).length > 0) {
         await client.query("SELECT pg_advisory_lock($1)", [84201911]);
         try {
+          const fresh = (await appliedNames()).length === 0;
           for (const { name, path } of await pending()) {
+            const refused = destructiveGate(name, migrations[path], process.env, { fresh });
+            if (refused) throw new Error(refused);
             try {
               await client.query("BEGIN");
               await client.query(migrations[path]);
