@@ -2094,9 +2094,9 @@
     "semantic_hash": ""
   },
   "src/lib/app-version.ts": {
-    "mtime": 1795715717.1676788,
-    "seen": 1795719492.3313913,
-    "ast_hash": "1348977fdf3b34f17de4b02ba386ec63",
+    "mtime": 1795719565.482829,
+    "seen": 1795719896.463271,
+    "ast_hash": "97b79fcbac2bc83d4aeb8bf5af022e70",
     "semantic_hash": ""
   },
   "src/lib/appeal-rate.server.ts": {
@@ -4440,15 +4440,15 @@
     "semantic_hash": ""
   },
   "BANG_DIEU.md": {
-    "mtime": 1795715991.851605,
-    "seen": 1795719492.3318446,
-    "ast_hash": "63da87036d8f6a295018d20a686d8742",
+    "mtime": 1795719760.6086848,
+    "seen": 1795719896.471537,
+    "ast_hash": "8bcd1d5de87ead8f86a66e1af6ae9e44",
     "semantic_hash": ""
   },
   "HANDOFF.md": {
-    "mtime": 1795715716.815549,
-    "seen": 1795719492.3318467,
-    "ast_hash": "357d49e772a883da29bb767f03cb8786",
+    "mtime": 1795719760.6063166,
+    "seen": 1795719896.4715576,
+    "ast_hash": "408aec779dc10154c93deeacc78be1d1",
     "semantic_hash": ""
   },
   "HANDOFF_NANG_CAP.md": {
@@ -4458,9 +4458,9 @@
     "semantic_hash": ""
   },
   "PROJECT_STATUS.md": {
-    "mtime": 1795716064.4723709,
-    "seen": 1795719492.3318481,
-    "ast_hash": "13d62c62f73d40b253f48d00c52a0952",
+    "mtime": 1795719760.60747,
+    "seen": 1795719896.4715745,
+    "ast_hash": "eaeaa7b10ef4d42ca46307e1bf3f4a73",
     "semantic_hash": ""
   },
   "PROVIDERS.md": {
@@ -4578,9 +4578,9 @@
     "semantic_hash": ""
   },
   "huongdan.txt": {
-    "mtime": 1795716064.4709132,
-    "seen": 1795719492.3318696,
-    "ast_hash": "13439493eca514fa811810bb831a9a41",
+    "mtime": 1795719760.6079168,
+    "seen": 1795719896.4719326,
+    "ast_hash": "44e5290d514ef510240bea14ac9b27ac",
     "semantic_hash": ""
   },
   "scripts/install-page.html": {
@@ -4908,9 +4908,9 @@
     "semantic_hash": ""
   },
   "src/lib/admin/admin-log.server.ts": {
-    "mtime": 1795715717.1645887,
-    "seen": 1795719492.3313613,
-    "ast_hash": "c9d3b3e86152af39d17e2598b1a83820",
+    "mtime": 1795719559.4001918,
+    "seen": 1795719896.4626577,
+    "ast_hash": "d728b2f4a26f4ae411789e6d9dde5c88",
     "semantic_hash": ""
   },
   "src/lib/admin/admin-money.ts": {
@@ -5529,6 +5529,24 @@
     "mtime": 1795716555.7883763,
     "seen": 1795719492.3317876,
     "ast_hash": "6f043c255680ba6f1aa8e91e7749a10b",
+    "semantic_hash": ""
+  },
+  "docs/kiem-toan/v5.49/KET_QUA.json": {
+    "mtime": 1795719635.8482606,
+    "seen": 1795719896.4583788,
+    "ast_hash": "6827f644b4a4707601cd448e385bcd5a",
+    "semantic_hash": ""
+  },
+  "docs/kiem-toan/v5.49/BAO_CAO.md": {
+    "mtime": 1795719734.1524901,
+    "seen": 1795719896.4716547,
+    "ast_hash": "ed50264c6af9093eac30dedadde43165",
+    "semantic_hash": ""
+  },
+  "docs/kiem-toan/v5.49/TOOLS.md": {
+    "mtime": 1795719658.912605,
+    "seen": 1795719896.4716558,
+    "ast_hash": "3ad024f3009a6529e00cfd8d9565d861",
     "semantic_hash": ""
   },
   "package-lock.json": {
