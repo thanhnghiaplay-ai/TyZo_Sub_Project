@@ -171,7 +171,7 @@ cai_cham_diem() {
 nhat_ky_bat_may() { # chỉ đọc nhật ký Modal, lọc các dòng ghi thời gian bật máy chữ; không bật máy
   vang "Đọc nhật ký Modal trong 30 giây rồi lọc (Ctrl+C để dừng sớm)..."
   timeout 30 "$MODAL" app logs "$APP_NAME" 2>&1 \
-    | grep -aE '\[tyzo\]|Loading weights|Model loading took|loading took|init engine|Starting vLLM|Warming up|torch.compile|compil(e|ation) took|Graph capturing|Resolved architecture|Downloading|Application startup complete|shutdown triggered|Started server process' \
+    | grep -aE '\[tyzo\]|Snapshot created|Restoring Function from memory snapshot|snapshot|Loading weights|Model loading took|loading took|init engine|Starting vLLM|Warming up|torch.compile|compil(e|ation) took|Graph capturing|Resolved architecture|Downloading|Application startup complete|shutdown triggered|Started server process' \
     | tail -n 60
   return 0
 }
@@ -229,7 +229,15 @@ cap_nhat() {
   if [ "$cu" = "$moi" ]; then xanh "Code đã mới nhất ($cu)."; hoi_co "Vẫn đưa lại lên Modal?" || return 0
   else
     echo "Thay đổi mới:"; git -C "$CODE" log --oneline "HEAD..origin/$b" | head -20
+    # Mỗi lần đưa lên Modal, bản chụp bộ nhớ của máy chữ bị làm lại (2–3 lần bật chậm). Chỉ đưa lên khi code chạy trên Modal đổi.
+    local doi_modal; doi_modal="$(git -C "$CODE" diff --name-only HEAD "origin/$b" -- eval/asr/luong-ky)"
     git -C "$CODE" reset -q --hard "origin/$b"
+    if [ -z "$doi_modal" ]; then
+      chmod +x "$CODE/deploy/modal/tyzo-ai.sh"
+      xanh "Chỉ đổi menu/công cụ trên VPS; code chạy trên Modal không đổi nên không đưa lại lên Modal (giữ bản chụp bộ nhớ)."
+      return 0
+    fi
+    echo "Code chạy trên Modal đổi:"; printf '  %s\n' $doi_modal | head -20
   fi
   "$VENV/bin/pip" install -q -U modal >/dev/null 2>&1 || true
   chmod +x "$CODE/deploy/modal/tyzo-ai.sh"
