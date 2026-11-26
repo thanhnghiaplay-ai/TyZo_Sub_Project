@@ -207,6 +207,41 @@ def recognize_parallel(audio, length, lang, profile, folder, workers):
     return merged
 
 
+# Cùng danh sách tiếng cảm thán với luong-ky/pml.py (INTERJ), thêm え/ええ/おお/ねえ.
+INTERJ = re.compile(r"^(啊|呀|哈|嗯|呃|哦|哇|唔|嘿|ああ|あ|ん|う|うわ|わあ|ひゃ|きゃ|ふふ|은|음|으|아|어|까|꺄|악|윽|누|와|우|ugh|oh|ah|aah|uh|um|hmm|ha|whoa|ow|ooh|yeah)+$", re.I)
+EXTRA_INTERJ = re.compile(r"^(え|ええ|おお|ねえ|ねぇ|はぁ|ふう|ふぅ|うう|んん)+$")
+
+
+def _core(text):
+    return re.sub(r"[^\w]|_", "", text.lower())
+
+
+def _is_interj(core):
+    base = re.sub(r"[ー〜~っッ]", "", core)   # bỏ dấu kéo dài và âm ngắt: あー → あ, えっ → え
+    return bool(base) and len(core) <= 8 and bool(INTERJ.match(base) or EXTRA_INTERJ.match(base))
+
+
+def merge_interjections(segs, max_gap=1.5):
+    """Gộp cùng một tiếng cảm thán ngắn lặp liền nhau (cách < max_gap s) thành một câu, giữ tối đa 3 lần + “…”."""
+    out, merged = [], 0
+    for s in segs:
+        core = _core(s["text"])
+        prev = out[-1] if out else None
+        if (prev and _is_interj(core) and prev["_core"] == core
+                and s["start"] - prev["end"] < max_gap):
+            prev["end"] = max(prev["end"], s["end"])
+            prev["_n"] += 1
+            merged += 1
+            continue
+        out.append(dict(s, _core=core, _n=1))
+    for s in out:
+        if s["_n"] > 1:
+            word = s["text"].strip().rstrip("、。,.!！?？…〜~")
+            s["text"] = "、".join([word] * min(s["_n"], 3)) + ("…" if s["_n"] > 3 else "")
+        del s["_core"], s["_n"]
+    return out, merged
+
+
 def chat(url, token, model, system, user, max_tokens):
     body = json.dumps(dict(model=model, temperature=0, max_tokens=max_tokens,
                            chat_template_kwargs={"enable_thinking": False},
@@ -352,9 +387,10 @@ def main():
     else:
         result = recognize_parallel(audio, length, lang, profile, folder, workers)
     segs = [s for s in result["segs"] if s["text"].strip()]
+    segs, merged = merge_interjections(segs)
     st = result["stats"]
     (folder / f"goc-{profile}.srt").write_text(srt([(s["start"], s["end"], s["text"].strip()) for s in segs]))
-    print(f"\nNhận dạng: {len(segs)} câu · {result.get('so_may', 1)} máy · chờ {result.get('cho_s', '?')} s · xử lý {st.get('giay_xu_ly')} s"
+    print(f"\nNhận dạng: {len(segs)} câu (gộp {merged} tiếng cảm thán lặp) · {result.get('so_may', 1)} máy · chờ {result.get('cho_s', '?')} s · xử lý {st.get('giay_xu_ly')} s"
           f" cho {st.get('giay_tieng')} s tiếng · hợp nhất {st.get('hop_nhat')} · gọi model chữ {st.get('model_chu')}"
           f" · bật sẵn máy chữ {st.get('bat_san_may_chu')} · bỏ câu chào {st.get('bo_chao')}"
           f" · máy chữ sẵn sàng sau {st.get('bat_may', {}).get('model_chu_san_sang_sau_s')} s")
