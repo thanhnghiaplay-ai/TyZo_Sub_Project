@@ -25,3 +25,19 @@ Giá cố định = giờ âm thanh × đơn giá của luồng. Giá theo sử 
 ## Ghi chú riêng về sao lưu
 
 PR #2 đã gộp vào main. Bản đó xử lý menu tyzo, chưa chép tyzo-ai.conf như ghi chú bàn giao ban đầu. Cần báo chủ trước khi dựa vào bản sao đó để chuyển VPS Modal.
+
+## Claude kiểm tra tính Token · 26/11/2026
+
+- `npm ci`, `npm run typecheck`, `npm test` (1 506 bài), `eslint` các tệp TyZo: đều qua. Ba bài hỏng trước đó là do nhà mới: thêm `tyzo-modal` vào danh sách nhà nhận dạng trong `service-pack.test.ts`, điểm ƯỚC LƯỢNG ở `model-grade.ts`, giá dự phòng (chỉ để hiện ước tính) ở `types.ts`.
+- Thu tiền tách sang `src/lib/tyzo-modal-charge.ts` (`runModalPartWith`), cửa `tyzo-modal-call.ts` chỉ còn kiểm WAV, giá và gọi Modal.
+  - Chống trừ lặp: bảng `run_modal_parts` (phiếu, SHA-256 âm thanh). Gửi lại đoạn đã xong thì trả kết quả cũ, không gọi GPU, không trừ; gửi trùng lúc đang chạy thì từ chối.
+  - Trước khi gọi GPU: còn giữ đủ Token cho ước tính đoạn (giờ phim × đơn giá trên phiếu) và không vượt thời lượng phiếu.
+  - Modal lỗi: trả lại thời lượng, xóa đoạn, gửi lại được.
+  - Số thực vượt phần còn giữ: trừ hết phần còn lại, ghi phần thiếu vào `run_tickets.modal_short` để Chủ đối soát (không trừ thêm của khách).
+  - Migration 0037 thêm `modal_short` và bảng `run_modal_parts` (0037 chưa lên `main`).
+  - 10 bài thử trên PGlite (`tyzo-modal-charge.test.ts`): trừ đúng, gửi lại, gửi trùng, lỗi, 9 đoạn cùng lúc, thiếu giữ, vượt thời lượng, thu thiếu, đóng phiếu hoàn phần thừa, sai chủ phiếu/model. PGlite chạy tuần tự; khóa khi nhiều kết nối dựa vào `for update` trong `chargeTokenWith` và câu cập nhật nguyên khối, chưa thử trên Postgres nhiều kết nối.
+- Còn mở (chưa làm, trước khi bật cho khách):
+  1. Khách hủy giữa chừng: Modal vẫn chạy và tốn GPU nhưng phiếu trả lại thời lượng, không thu. Giới hạn bởi takeRate 120/60 giây; cần chính sách (ví dụ chế độ giá cố định vẫn thu khi Modal đã nhận đoạn).
+  2. Cửa web (`use-pipeline.ts`, `groq.ts`) mới gửi đoạn và giới hạn 9; CHƯA nối gộp cảm thán, giới hạn ký tự dịch, dự phòng sang nhà khác khi Modal lỗi.
+  3. Hai gói khác cách tính giá cùng lúc: Admin mới lưu một chế độ cho cả phòng.
+  4. Điều khoản (nhà nhận dữ liệu tiếng mới: Modal), nâng phiên bản và CHANGELOG: chưa làm. Chưa thử trình duyệt, Postgres thật, Modal thật.

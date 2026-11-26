@@ -219,7 +219,7 @@ describe("Deepgram trong gói dịch", () => {
   });
 
   it("nhận dạng chọn được Deepgram, các việc khác thì không", () => {
-    assert.deepEqual(providersForRole("asr"), ["groq", "alibaba", "deepgram", "assemblyai", "speechmatics", "soniox", "elevenlabs"]);
+    assert.deepEqual(providersForRole("asr"), ["tyzo-modal", "groq", "alibaba", "deepgram", "assemblyai", "speechmatics", "soniox", "elevenlabs"]);
     assert.deepEqual(providersForRole("translate"), ["groq", "alibaba"]);
     // Thuyết minh theo khả năng đọc thành tiếng: Orpheus (Groq), Aura (Deepgram), Flash v2.5 (ElevenLabs). Alibaba chưa có đường đọc.
     assert.deepEqual(providersForRole("narration"), ["groq", "deepgram", "elevenlabs"]);

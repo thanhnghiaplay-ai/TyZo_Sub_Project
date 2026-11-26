@@ -14,7 +14,6 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     const {recognizeModalWav} = await import("./sub/tyzo-modal.server");
     const {loadPriceBook} = await import("./run-board.server");
     const {giayForBaseCost} = await import("./token-math");
-    const {chargeTokenWith} = await import("./token-flow");
     await requireOpenAccount(context.userId);
     await takeRate("tyzo-modal:"+context.userId,120,60);
     const wav = Buffer.from(data.audio,"base64");
@@ -27,19 +26,21 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     const book = await loadPriceBook(sql);
     if (!book || !giayForBaseCost(book,1)) throw new Error("Chưa có tỷ giá Token dịch.");
     const model = "tyzo-modal-"+data.profile;
-    const ticket = await sql<{modal_price:string}>`update run_tickets set modal_seconds=modal_seconds+${seconds}
-      where id=${data.ticket} and user_id=${context.userId} and asr_model=${model} and status='dang-giu' and unit='token'
-      and held>0 and modal_price is not null and modal_seconds+${seconds} <= seconds+1 returning modal_price`;
-    if (!ticket.length) throw new Error("Phiếu Modal đã hết hoặc vượt thời lượng.");
-    let result;
-    try {
-      result = await recognizeModalWav(wav,data.language,data.profile,0,getRequest().signal,parseModalPrice(JSON.parse(ticket[0].modal_price)));
-    } catch(error) {
-      await sql`update run_tickets set modal_seconds=modal_seconds-${seconds} where id=${data.ticket}`;
-      throw error;
-    }
-    const tokens = giayForBaseCost(book,result.usd*book.rate);
-    if (tokens === null) throw new Error("Thiếu tỷ giá Token dịch.");
-    await chargeTokenWith(sql,data.ticket,context.userId,tokens);
-    return {segments:result.segments.map(s=>({text:s.original,start:s.start,end:s.end}))};
+    const {createHash} = await import("node:crypto");
+    const {runModalPartWith} = await import("./tyzo-modal-charge");
+    const toTokens = (usd:number) => {
+      const n = giayForBaseCost(book, usd*book.rate);
+      if (n === null) throw new Error("Thiếu tỷ giá Token dịch.");
+      return n;
+    };
+    const result = await runModalPartWith(sql, {
+      ticket: data.ticket, userId: context.userId, model, seconds,
+      partHash: createHash("sha256").update(wav).digest("hex"),
+      // Ước tính đoạn này theo giá Chủ đặt trên phiếu (giờ phim × đơn giá); phải còn giữ đủ mới gọi GPU.
+      estimateTokens: price => toTokens(parseModalPrice(JSON.parse(price))[data.profile]*seconds/3600),
+    }, async price => {
+      const out = await recognizeModalWav(wav,data.language,data.profile,0,getRequest().signal,parseModalPrice(JSON.parse(price)));
+      return {segments: out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), tokens: toTokens(out.usd)};
+    });
+    return {segments: result.segments};
   });
