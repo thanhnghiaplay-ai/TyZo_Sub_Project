@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import { SAVED_MAX, keysToDrop, savedSummary, snapshotSegs, usableSaved, type SavedRun } from "./saved-runs.ts";
 
 const run = (over: Partial<SavedRun> = {}): SavedRun => ({
+  ownerId: "account-A",
   key: "file:a.mp4:1:2|",
   at: "2026-11-21T10:00:00Z",
   fileName: "a.mp4",
@@ -31,11 +32,11 @@ describe("phụ đề lưu trên máy theo tệp (v5.33.0)", () => {
   });
 
   it("chỉ dùng bản lưu đúng tệp và đúng tiếng gốc", () => {
-    assert.equal(usableSaved(run(), "file:a.mp4:1:2|", "zh"), true);
-    assert.equal(usableSaved(run(), "file:b.mp4:1:2|", "zh"), false);
-    assert.equal(usableSaved(run(), "file:a.mp4:1:2|", "ja"), false);
-    assert.equal(usableSaved(run({ segs: [] }), "file:a.mp4:1:2|", "zh"), false);
-    assert.equal(usableSaved(null, "x", "zh"), false);
+    assert.equal(usableSaved(run(), "file:a.mp4:1:2|", "zh", "account-A"), true);
+    assert.equal(usableSaved(run(), "file:b.mp4:1:2|", "zh", "account-A"), false);
+    assert.equal(usableSaved(run(), "file:a.mp4:1:2|", "ja", "account-A"), false);
+    assert.equal(usableSaved(run({ segs: [] }), "file:a.mp4:1:2|", "zh", "account-A"), false);
+    assert.equal(usableSaved(null, "x", "zh", "account-A"), false);
   });
 
   it("giữ tối đa 5 tệp gần nhất", () => {
@@ -48,8 +49,16 @@ describe("phụ đề lưu trên máy theo tệp (v5.33.0)", () => {
     assert.match(pipe, /if \(!key \|\| !segs\.length \|\| j\.pcmId !== key \|\| !j\.doneSource \|\| j\.nextPart < j\.parts\.length\) return;/);
     assert.match(pipe, /title: "Khôi phục bản đã làm\?"/);
     assert.match(pipe, /j\.pcmId = key;\s*j\.doneSource = saved\.source;/);
-    assert.match(pipe, /clearJob\(\);\s*void dropSaved\(mediaId\(\)\);/);
+    assert.match(pipe, /clearJob\(\);\s*void dropSaved\(savedOwnerRef\.current, mediaId\(\)\);/);
     const terms = readFileSync(new URL("../components/terms-document.tsx", import.meta.url), "utf8");
     assert.match(terms, /Phụ đề bạn đã làm[^.]*tối đa 5 tệp gần nhất cũng được lưu trên máy bạn/);
   });
+});
+
+// Cross-account reproduction uses the public eligibility predicate before touching IndexedDB.
+it("R5-008: cùng tệp của A không được khôi phục cho B hoặc phiên chưa đăng nhập", () => {
+  const check = usableSaved as unknown as (value: SavedRun, key: string, source: string, owner: string) => boolean;
+  const saved = { ...run(), ownerId: "account-A" };
+  assert.equal(check(saved, saved.key, saved.source, "account-B"), false);
+  assert.equal(check(saved, saved.key, saved.source, ""), false);
 });

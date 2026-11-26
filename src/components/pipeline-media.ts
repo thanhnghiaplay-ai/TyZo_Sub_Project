@@ -50,7 +50,8 @@ export async function loadBlob(file: File | null, url: string, signal: AbortSign
 }
 
 /** Kiểm toán R6-002: chờ thông tin video có hạn (mặc định 30 giây), không treo mãi khi tệp hỏng không báo lỗi. */
-export function waitForMetadata(video: HTMLVideoElement | null, timeoutMs = 30_000) {
+export function waitForMetadata(video: HTMLVideoElement | null, timeoutMs = 30_000, signal?: AbortSignal) {
+  if (signal?.aborted) return Promise.reject(abortError());
   if (!video || video.readyState >= 1) return Promise.resolve();
   return new Promise<void>((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -61,6 +62,7 @@ export function waitForMetadata(video: HTMLVideoElement | null, timeoutMs = 30_0
       clearTimeout(timer);
       video.removeEventListener("loadedmetadata", ok);
       video.removeEventListener("error", bad);
+      signal?.removeEventListener("abort", stopped);
     };
     const ok = () => {
       cleanup();
@@ -70,8 +72,10 @@ export function waitForMetadata(video: HTMLVideoElement | null, timeoutMs = 30_0
       cleanup();
       reject(new Error("Không đọc được file media."));
     };
+    const stopped = () => { cleanup(); reject(abortError()); };
     video.addEventListener("loadedmetadata", ok);
     video.addEventListener("error", bad);
+    signal?.addEventListener("abort", stopped, { once: true });
   });
 }
 

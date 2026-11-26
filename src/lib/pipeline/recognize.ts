@@ -64,7 +64,7 @@ export function createRecognizer(ctx: RecognizeContext) {
     partIndex: number,
     startAt: number,
   ): Promise<AsrResult> => {
-    if (!langCheck() || !source || source === "auto" || !needsLangCheck(source, res)) return res;
+    if (my !== j.runId || signal.aborted || !langCheck() || !source || source === "auto" || !needsLangCheck(source, res)) return res;
     j.langSuspect++;
     if (j.langRetryUsed + seconds > LANG_RETRY_BUDGET_SECONDS) return res;
     j.langRetryUsed += seconds;
@@ -75,6 +75,7 @@ export function createRecognizer(ctx: RecognizeContext) {
       if (signal.aborted || (error as { name?: string })?.name === "AbortError") throw error;
       return res;
     }
+    if (my !== j.runId || signal.aborted) return res;
     await ensureTrial();
     // Kiểm toán R6-008: khách đã bắt đầu lần chạy khác thì không ghi số liệu vào lần chạy mới.
     if (my !== j.runId) return res;

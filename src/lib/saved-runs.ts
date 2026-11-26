@@ -5,12 +5,13 @@
  */
 import type { Seg } from "./sub/types.ts";
 
-const SAVED_DB = "tyzo-saved-runs";
+const SAVED_DB = "tyzo-saved-runs-v2";
 const SAVED_STORE = "runs";
 /** Giữ bấy nhiêu tệp gần nhất; cũ hơn thì xóa. */
 export const SAVED_MAX = 5;
 
 export type SavedRun = {
+  ownerId: string;
   key: string;
   at: string;
   fileName: string;
@@ -33,8 +34,8 @@ export function savedSummary(run: Pick<SavedRun, "segs" | "at">): { total: numbe
 }
 
 /** Bản lưu dùng được cho tệp đang chọn: đúng dấu tệp, đúng tiếng gốc, có câu. */
-export function usableSaved(run: SavedRun | null | undefined, key: string, source: string): run is SavedRun {
-  return Boolean(run && key && run.key === key && run.source === source && Array.isArray(run.segs) && run.segs.length > 0);
+export function usableSaved(run: SavedRun | null | undefined, key: string, source: string, ownerId: string): run is SavedRun {
+  return Boolean(ownerId && run?.ownerId === ownerId && run && key && run.key === key && run.source === source && Array.isArray(run.segs) && run.segs.length > 0);
 }
 
 /** Xếp mới nhất trước, giữ SAVED_MAX; trả các khóa cần xóa. */
@@ -42,11 +43,13 @@ export function keysToDrop(runs: Pick<SavedRun, "key" | "at">[], max = SAVED_MAX
   return [...runs].sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(max).map((run) => run.key);
 }
 
-function openDb(): Promise<IDBDatabase | null> {
+function openDb(ownerId: string): Promise<IDBDatabase | null> {
+  // Legacy unowned records remain untouched, never assigned to the next login.
+  if (!ownerId) return Promise.resolve(null);
   return new Promise((resolve) => {
     try {
       if (typeof indexedDB === "undefined") return resolve(null);
-      const req = indexedDB.open(SAVED_DB, 1);
+      const req = indexedDB.open(`${SAVED_DB}:${encodeURIComponent(ownerId)}`, 1);
       req.onupgradeneeded = () => {
         if (!req.result.objectStoreNames.contains(SAVED_STORE)) req.result.createObjectStore(SAVED_STORE, { keyPath: "key" });
       };
@@ -58,8 +61,8 @@ function openDb(): Promise<IDBDatabase | null> {
   });
 }
 
-function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRequest<T>): Promise<T | null> {
-  return openDb().then(
+function run<T>(ownerId: string, mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRequest<T>): Promise<T | null> {
+  return openDb(ownerId).then(
     (db) =>
       new Promise<T | null>((resolve) => {
         if (!db) return resolve(null);
@@ -84,23 +87,25 @@ function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRe
   );
 }
 
-export async function loadSaved(key: string): Promise<SavedRun | null> {
-  if (!key) return null;
-  return ((await run("readonly", (store) => store.get(key))) as SavedRun | undefined) ?? null;
+export async function loadSaved(ownerId: string, key: string): Promise<SavedRun | null> {
+  if (!ownerId || !key) return null;
+  const saved = ((await run(ownerId, "readonly", (store) => store.get(key))) as SavedRun | undefined) ?? null;
+  return saved?.ownerId === ownerId ? saved : null;
 }
 
 /** Lưu (đè) bản của tệp này, rồi xóa bớt bản cũ. Lỗi thì bỏ qua: lưu hỏng không làm hỏng lượt chạy. */
 export async function storeSaved(item: SavedRun): Promise<void> {
+  if (!item.ownerId) return;
   try {
-    await run("readwrite", (store) => store.put(item));
-    const all = ((await run("readonly", (store) => store.getAll())) as SavedRun[] | null) ?? [];
-    for (const key of keysToDrop(all)) await run("readwrite", (store) => store.delete(key));
+    await run(item.ownerId, "readwrite", (store) => store.put(item));
+    const all = ((await run(item.ownerId, "readonly", (store) => store.getAll())) as SavedRun[] | null) ?? [];
+    for (const key of keysToDrop(all)) await run(item.ownerId, "readwrite", (store) => store.delete(key));
   } catch {
     /* bỏ qua */
   }
 }
 
-export async function dropSaved(key: string): Promise<void> {
-  if (!key) return;
-  await run("readwrite", (store) => store.delete(key));
+export async function dropSaved(ownerId: string, key: string): Promise<void> {
+  if (!ownerId || !key) return;
+  await run(ownerId, "readwrite", (store) => store.delete(key));
 }

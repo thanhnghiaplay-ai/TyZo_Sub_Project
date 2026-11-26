@@ -1,3 +1,4 @@
+import { holdPageActivity } from "@/lib/page-activity";
 import { MENU_GROUP, MENU_ITEM } from "@/lib/customer-menu";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -157,6 +158,7 @@ export function LiveScreen() {
   const running = live.state === "live" || live.state === "connecting" || live.state === "closing";
   const locked = running || live.state === "opening";
   useWakeLock(running || big);
+  useEffect(() => { if (locked) return holdPageActivity(); }, [locked]);
 
   // Lưu chữ của phiên trên máy: mỗi 5 giây khi đang dịch và một lần khi dừng. Phiên mới thay bản cũ.
   useEffect(() => {

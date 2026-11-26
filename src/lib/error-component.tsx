@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { Icon } from "@/components/ui/icon";
 import { claimAutoReload, isStaleBuildError, sessionStore } from "@/lib/stale-build";
+import { hasPageActivity } from "./page-activity";
 
 const FALLBACK_MESSAGE = "Không rõ lỗi gì. Hãy tải lại trang.";
 
@@ -15,7 +16,7 @@ export function AppErrorComponent({ error }: ErrorComponentProps) {
   const stale = isStaleBuildError(error);
   // Trang mở từ bản cũ mà web vừa lên bản mới: tự tải lại một lần để lấy bản mới.
   useEffect(() => {
-    if (stale && claimAutoReload(sessionStore())) window.location.reload();
+    if (stale && claimAutoReload(sessionStore(), Date.now(), hasPageActivity())) window.location.reload();
   }, [stale]);
   return (
     <main

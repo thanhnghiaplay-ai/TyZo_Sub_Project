@@ -21,7 +21,8 @@ export function isStaleBuildError(error: unknown): boolean {
 type Store = Pick<Storage, "getItem" | "setItem">;
 
 /** true nếu được tự tải lại lúc này (và ghi mốc). Máy chặn lưu thì không tự tải lại, để khách bấm nút. */
-export function claimAutoReload(store: Store | null, now = Date.now()): boolean {
+export function claimAutoReload(store: Store | null, now = Date.now(), active = false): boolean {
+  if (active) return false;
   try {
     if (!store) return false;
     const last = Number(store.getItem(RELOAD_KEY) || 0);

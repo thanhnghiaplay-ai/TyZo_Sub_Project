@@ -1,3 +1,4 @@
+import { holdPageActivity } from "@/lib/page-activity";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { currentGenre, needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
@@ -49,7 +50,7 @@ import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { readGenderMap, voiceStore, overlayCastLocks, cloneBible, readStore, writeStore, removeStore, shareUserTerms, userGlossKey, readUserTerms, safeStore } from "@/components/pipeline-store";
 import { loadBlob, waitForMetadata, decodeTo16k } from "@/components/pipeline-media";
-import { asrLanguageOf, emptyJob, type Job } from "@/lib/pipeline/job";
+import { asrLanguageOf, emptyJob, commitDecodedJob, type Job } from "@/lib/pipeline/job";
 import { uploadLocalAudio } from "@/lib/pipeline/link-upload";
 import { downloadText, exportProblem, subtitleFile } from "@/lib/pipeline/export";
 import { createRecognizer } from "@/lib/pipeline/recognize";
@@ -60,6 +61,11 @@ import { choiceProblem, planChoice, type RunChoice } from "@/lib/pipeline/choice
 export const READY_STATUS = "Sẵn sàng. Chọn video rồi bấm Tải và dịch.";
 
 export function usePipeline() {
+  const { data: savedSession, isPending: savedSessionPending } = authClient.useSession();
+  const savedOwner = savedSession?.user?.id ?? "";
+  const savedOwnerRef = useRef(savedOwner);
+  savedOwnerRef.current = savedSessionPending ? "" : savedOwner;
+  const priorSavedOwner = useRef("");
   const job = useRef<Job>(emptyJob());
   const lineLocksRef = useRef<Record<string, "female" | "male">>({});
   const [key, setKey] = useState("");
@@ -573,6 +579,19 @@ export function usePipeline() {
     publish(true);
   }, [publish]);
 
+  // R5-008: discard previous account's in-memory job before any autosave for a new owner.
+  useEffect(() => {
+    if (savedSessionPending) return;
+    const previous = priorSavedOwner.current;
+    priorSavedOwner.current = savedOwner;
+    if (previous && previous !== savedOwner) {
+      job.current.runId++;
+      job.current.abort?.abort();
+      setRunning(false);
+      clearJob();
+    }
+  }, [savedOwner, savedSessionPending, clearJob]);
+
   const reset = useCallback(() => {
     const j = job.current;
     if (!j.segs.length && !j.pcm && !j.pcmId) {
@@ -593,7 +612,7 @@ export function usePipeline() {
       j.abort = null;
       setRunning(false);
       clearJob();
-      void dropSaved(mediaId());
+      void dropSaved(savedOwnerRef.current, mediaId());
       say("Đã xóa. Bấm Tải và dịch để chạy lại.");
     });
   }, [clearJob, say, mediaId]);
@@ -602,9 +621,12 @@ export function usePipeline() {
   useEffect(() => {
     const j = job.current;
     const key = mediaId();
+    if (!savedOwner || savedSessionPending) return;
     if (!key || !segs.length || j.pcmId !== key || !j.doneSource || j.nextPart < j.parts.length) return;
     const timer = window.setTimeout(() => {
+      if (savedOwnerRef.current !== savedOwner) return;
       void storeSaved({
+        ownerId: savedOwner,
         key,
         at: new Date().toISOString(),
         fileName: (audioFile || file)?.name || "",
@@ -615,18 +637,20 @@ export function usePipeline() {
       });
     }, 1500);
     return () => window.clearTimeout(timer);
-  }, [segs, mediaId, target, file, audioFile]);
+  }, [segs, mediaId, target, file, audioFile, savedOwner, savedSessionPending]);
 
   // Chọn lại đúng tệp đã làm (sau khi tải lại trang): hỏi khôi phục, không nhận dạng lại.
   const offeredSaved = useRef("");
   useEffect(() => {
     const key = mediaId();
-    if (!key || offeredSaved.current === key) return;
-    offeredSaved.current = key;
+    if (!savedOwner || savedSessionPending) return;
+    const offerKey = `${savedOwner}:${key}`;
+    if (!key || offeredSaved.current === offerKey) return;
+    offeredSaved.current = offerKey;
     if (job.current.segs.length || running) return;
     let gone = false;
-    void loadSaved(key).then(async (saved) => {
-      if (gone || !usableSaved(saved, key, source)) return;
+    void loadSaved(savedOwner, key).then(async (saved) => {
+      if (gone || !usableSaved(saved, key, source, savedOwner)) return;
       const sum = savedSummary(saved);
       const ok = await askConfirm({
         title: "Khôi phục bản đã làm?",
@@ -634,7 +658,7 @@ export function usePipeline() {
         confirmLabel: "Khôi phục",
         cancelLabel: "Làm mới",
       });
-      if (!ok || gone) return;
+      if (!ok || gone || savedOwnerRef.current !== savedOwner) return;
       const j = job.current;
       if (j.segs.length) return;
       j.segs = saved.segs.map((seg) => ({ ...seg, busy: false }));
@@ -659,7 +683,7 @@ export function usePipeline() {
       gone = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaId, source]);
+  }, [mediaId, source, savedOwner, savedSessionPending]);
 
   const guardRoom = useCallback(async (paidOnly: string | null, allowSpentTrial = false) => {
     const session = await authClient.getSession().catch(() => null);
@@ -1147,16 +1171,16 @@ export function usePipeline() {
               video.src = j.videoUrl;
               video.load();
             }
-            await waitForMetadata(video).catch(() => {});
+            await waitForMetadata(video, 30_000, signal).catch((error) => {
+              if (signal.aborted || (error as { name?: string })?.name === "AbortError") throw error;
+            });
+            if (my !== j.runId) return;
             if (video && Number.isFinite(video.duration) && video.duration > MAX_MINUTES * 60)
               throw new Error(`File dài hơn ${MAX_MINUTES} phút sẽ làm đầy bộ nhớ máy. Hãy cắt thành đoạn ngắn hơn.`);
             say("Đang giải mã và đưa âm thanh về 16 kHz…");
             // Kiểm toán R6-001: giải mã vào biến riêng, chỉ gán cho lần chạy này nếu khách chưa bắt đầu lần khác.
             const decoded = await decodeTo16k(blob, audioContext, j.streamWhy);
-            if (my !== j.runId) return;
-            j.pcm = decoded;
-            j.pcmId = id;
-            j.stream = null;
+            if (!commitDecodedJob(j, my, decoded, id)) return;
           }
         }
         j.segs = [];
@@ -1942,6 +1966,10 @@ export function usePipeline() {
     busy: running || analyzing,
     say,
   });
+
+  useEffect(() => {
+    if (running || analyzing || polish.phase === "running" || polish.phase === "quoting") return holdPageActivity();
+  }, [running, analyzing, polish.phase]);
 
   return {
     key,

@@ -69,6 +69,15 @@ export function asrLanguageOf(source: string) {
   return source === "auto" ? "" : source;
 }
 
+/** An old decode completion must never replace the newer run's PCM. */
+export function commitDecodedJob(job: Job, runId: number, pcm: Float32Array, mediaId: string): boolean {
+  if (job.runId !== runId) return false;
+  job.pcm = pcm;
+  job.pcmId = mediaId;
+  job.stream = null;
+  return true;
+}
+
 export const emptyJob = (): Job => ({
   segs: [],
   pcm: null,

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { claimAutoReload, sessionStore } from "@/lib/stale-build";
+import { hasPageActivity } from "@/lib/page-activity";
+import { pushToast } from "@/components/toast";
 
 /**
  * Vite báo `vite:preloadError` khi không tải được tệp của bản cũ (web vừa lên bản mới).
@@ -7,7 +9,14 @@ import { claimAutoReload, sessionStore } from "@/lib/stale-build";
  */
 export function StaleBuildGuard() {
   useEffect(() => {
+    let warned = false;
     const onPreload = (event: Event) => {
+      if (hasPageActivity()) {
+        event.preventDefault();
+        if (!warned) pushToast("Có bản mới. Hãy đợi tác vụ xong và lưu hoặc xuất phụ đề trước khi tải lại trang.");
+        warned = true;
+        return;
+      }
       if (!claimAutoReload(sessionStore())) return;
       event.preventDefault();
       window.location.reload();

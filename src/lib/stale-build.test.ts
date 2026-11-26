@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { RELOAD_GAP_MS, RELOAD_KEY, claimAutoReload, isStaleBuildError } from "./stale-build.ts";
+import { holdPageActivity, hasPageActivity } from "./page-activity.ts";
 
 function memory() {
   const data = new Map<string, string>();
@@ -9,6 +10,17 @@ function memory() {
 }
 
 describe("trang mở từ bản cũ sau khi web lên bản mới", () => {
+  it("R8-004: active tasks block reload without consuming the later reload allowance", () => {
+    const first = holdPageActivity();
+    const second = holdPageActivity();
+    const store = memory();
+    assert.equal(claimAutoReload(store, 1_000_000, hasPageActivity()), false);
+    assert.equal(store.getItem(RELOAD_KEY), null);
+    first(); first();
+    assert.equal(hasPageActivity(), true);
+    second();
+    assert.equal(claimAutoReload(store, 1_000_000, hasPageActivity()), true);
+  });
   it("nhận ra lỗi không tải được tệp bản cũ trên các trình duyệt", () => {
     assert.ok(isStaleBuildError(new Error("Failed to fetch dynamically imported module: https://x/assets/routes-DsYV_aeZ.js")));
     assert.ok(isStaleBuildError(new Error("error loading dynamically imported module")));
