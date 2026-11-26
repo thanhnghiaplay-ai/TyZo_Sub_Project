@@ -124,6 +124,8 @@ export function chatProviderOf(model: Pick<ChatModel, "provider">): import("./pr
 }
 
 export const ASR_MODELS = [
+  { id: "tyzo-modal-nhanh", name: "TyZo Modal · Nhanh", price: "Theo giá phòng", note: "Trả theo lượt" },
+  { id: "tyzo-modal-ky", name: "TyZo Modal · Kỹ", price: "Theo giá phòng", note: "Trả theo lượt" },
   { id: "whisper-large-v3-turbo", name: "Whisper Turbo", price: "$0.04/giờ", note: "Nhanh, đủ cho hầu hết video" },
   { id: "whisper-large-v3", name: "Whisper Large v3", price: "$0.111/giờ", note: "Chính xác hơn, chậm và đắt hơn" },
   { id: "qwen-audio-3.0-asr-flash-filetrans", name: "Alibaba Filetrans", price: "~$0.126/giờ", note: "Cả file, mạnh tiếng Á, cần link trực tiếp" },

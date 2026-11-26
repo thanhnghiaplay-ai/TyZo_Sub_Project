@@ -1,7 +1,8 @@
+import { modalCostUsd, type ModalPrice } from "./tyzo-modal-price.ts";
 import { modalRequest, modalSegments, type TyzoProfile } from "./tyzo-modal.ts";
 
 // URL và chuỗi bảo vệ do quản trị đặt trên máy chủ.
-export async function recognizeModalWav(audio: Uint8Array, language: string, profile: TyzoProfile, offset: number, signal: AbortSignal) {
+export async function recognizeModalWav(audio: Uint8Array, language: string, profile: TyzoProfile, offset: number, signal: AbortSignal, price: ModalPrice) {
   const endpoint = process.env.TYZO_ASR_URL;
   const token = process.env.TYZO_ASR_TOKEN;
   if (!endpoint || !token) throw new Error("Phòng chưa cấu hình TyZo Modal.");
@@ -26,5 +27,6 @@ export async function recognizeModalWav(audio: Uint8Array, language: string, pro
     response = await fetch(next, { redirect: "manual", signal: deadline });
   }
   if (!response.ok) throw new Error(`TyZo Modal báo lỗi HTTP ${response.status}.`);
-  return modalSegments(await response.json(), offset);
+  const result = await response.json();
+  return { segments: modalSegments(result, offset), usd: modalCostUsd(price, profile, result.stats) };
 }

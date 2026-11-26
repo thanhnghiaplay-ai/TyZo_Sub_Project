@@ -960,6 +960,7 @@ export function usePipeline() {
     // và key của nhà chạy model dịch (dịch có thể bằng bất kỳ nhà nào có model dịch).
     const asrOwner = asrHouse(asrModel) ?? "groq";
     const asrLabel = PROVIDERS[asrOwner].label;
+    if (asrOwner === "tyzo-modal" && !roomPayRef.current) return say("TyZo Modal dùng ở cửa Trả theo lượt.", true);
     if (!roomPayRef.current) {
       const asrKey = asrOwner === "groq" ? token : houseKeyOf(asrOwner);
       if (!asrKey) return say(asrOwner === "groq" ? "Vui lòng nhập Groq API key." : `Nhận dạng ${asrLabel} cần key ${asrLabel} của bạn.`, true);
@@ -1376,7 +1377,7 @@ export function usePipeline() {
           applyReady();
         }
       };
-      await Promise.all(Array.from({ length: Math.max(1, threads) }, worker));
+      await Promise.all(Array.from({ length: asrOwner === "tyzo-modal" ? Math.min(9, j.parts.length) : Math.max(1, threads) }, worker));
       const swappedN = j.langEvents.filter((e) => e.swapped).length;
       if (swappedN) say(`Đã nhận dạng lại ${swappedN} đoạn có ngôn ngữ khác ngôn ngữ đã chọn.`);
       await retryDecodeFails();

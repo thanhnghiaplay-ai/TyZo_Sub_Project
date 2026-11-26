@@ -8,6 +8,7 @@ import { PaySettings } from "@/components/pay-settings";
 import { PolishModelBoard } from "@/components/polish-model-board";
 import { PolishPromptBoard } from "@/components/polish-prompt-board";
 import { R2Board } from "@/components/r2-board";
+import { TyzoModalPriceBoard } from "@/components/tyzo-modal-price-board";
 import { ProviderKeyBoards } from "@/components/provider-key-board";
 import { RoomPlansView } from "@/components/room-plans-view";
 import { RentShowBoard } from "@/components/rent-show-board";
@@ -49,6 +50,7 @@ export function ConfigTab() {
       </Page>
       <Page id="nha-cung-cap" current={page}>
         <ProviderKeyBoards />
+        <TyzoModalPriceBoard />
         <R2Board />
       </Page>
       <Page id="gia" current={page}>

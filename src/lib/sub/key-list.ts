@@ -7,7 +7,7 @@
  */
 import type { ProviderId } from "./provider.ts";
 
-export const KEY_LIST_TRUSTED: Record<ProviderId, boolean> = { groq: true, alibaba: false, deepgram: false, assemblyai: false, speechmatics: false, soniox: false, elevenlabs: false };
+export const KEY_LIST_TRUSTED: Record<ProviderId, boolean> = { "tyzo-modal": true, groq: true, alibaba: false, deepgram: false, assemblyai: false, speechmatics: false, soniox: false, elevenlabs: false };
 
 /** Mã model của app → tên trong danh sách của nhà. Deepgram bỏ chữ "deepgram-" và khớp theo đầu tên (nova-3 ~ nova-3-general). */
 function listedAs(house: ProviderId, id: string, list: string[]): boolean {

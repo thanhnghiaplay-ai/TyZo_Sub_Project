@@ -31,7 +31,7 @@ export function KeyRing({
   const [show, setShow] = useState(false);
   // Hàng đang sửa vẫn giữ dù ô tạm trống (khách xóa để dán lại), không biến mất giữa lúc gõ.
   const added = PROVIDER_IDS.filter((id) => id !== pending && ((values[id] ?? "").trim() || id === editing));
-  const free = PROVIDER_IDS.filter((id) => !added.includes(id) && id !== pending);
+  const free = PROVIDER_IDS.filter((id) => id !== "tyzo-modal" && !added.includes(id) && id !== pending);
 
   const remove = async (id: ProviderId) => {
     const ok = await askConfirm({

@@ -96,7 +96,7 @@ export function ServicePackBoard() {
     const soniox = ASR_MODELS.filter((row) => asrHouse(row.id) === "soniox").map((row) => row.id);
     // ElevenLabs: model nhận dạng và giọng đọc Flash v2.5 (việc Thuyết minh).
     const elevenlabs = [...ASR_MODELS.filter((row) => asrHouse(row.id) === "elevenlabs").map((row) => row.id), ELEVEN_TTS_ID];
-    const byProvider: Record<ProviderId, string[]> = { groq, alibaba, deepgram, assemblyai, speechmatics, soniox, elevenlabs };
+    const byProvider: Record<ProviderId, string[]> = { "tyzo-modal": ["tyzo-modal-nhanh", "tyzo-modal-ky"], groq, alibaba, deepgram, assemblyai, speechmatics, soniox, elevenlabs };
     return byProvider;
   }, [groqModels, models]);
 

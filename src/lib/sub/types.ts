@@ -42,6 +42,7 @@ export type AutoProfile = "fast" | "balanced" | "accurate";
 export type ModelMode = "manual" | "auto";
 
 export type AsrModel =
+  | "tyzo-modal-nhanh" | "tyzo-modal-ky"
   | "whisper-large-v3-turbo"
   | "whisper-large-v3"
   | "qwen-audio-3.0-asr-flash-filetrans"
@@ -55,6 +56,7 @@ export type AsrModel =
   | "elevenlabs-scribe-v2";
 
 export const ASR_PRICE: Record<AsrModel, number> = {
+  "tyzo-modal-nhanh": 0, "tyzo-modal-ky": 0,
   "whisper-large-v3-turbo": 0.04 / 3600,
   "whisper-large-v3": 0.111 / 3600,
   "qwen-audio-3.0-asr-flash-filetrans": 0.000035,

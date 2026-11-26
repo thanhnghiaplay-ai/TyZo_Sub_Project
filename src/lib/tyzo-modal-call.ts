@@ -1,0 +1,45 @@
+import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "./auth/middleware";
+
+export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMiddleware])
+  .validator((input: {ticket:string; audio:string; language:string; profile:"nhanh"|"ky"}) => {
+    if (!/^[a-f0-9]{24}$/.test(input.ticket) || typeof input.audio !== "string" || !input.audio.length || input.audio.length > 24_000_000 ||
+      !["nhanh","ky"].includes(input.profile) || !["","zh","ja","ko","en"].includes(input.language)) throw new Error("Đoạn âm thanh hoặc phiếu Modal không hợp lệ.");
+    return input;
+  }).handler(async ({context,data}) => {
+    const {getRequest} = await import("@tanstack/react-start/server");
+    const {getSql} = await import("./db");
+    const {requireOpenAccount,takeRate} = await import("./guard.server");
+    const {parseModalPrice} = await import("./sub/tyzo-modal-price");
+    const {recognizeModalWav} = await import("./sub/tyzo-modal.server");
+    const {loadPriceBook} = await import("./run-board.server");
+    const {giayForBaseCost} = await import("./token-math");
+    const {chargeTokenWith} = await import("./token-flow");
+    await requireOpenAccount(context.userId);
+    await takeRate("tyzo-modal:"+context.userId,120,60);
+    const wav = Buffer.from(data.audio,"base64");
+    if (wav.length <= 44 || wav.toString("ascii",0,4)!=="RIFF" || wav.toString("ascii",8,12)!=="WAVE" ||
+      wav.toString("ascii",12,16)!=="fmt " || wav.readUInt16LE(20)!==1 || wav.readUInt16LE(22)!==1 ||
+      wav.readUInt32LE(24)!==16000 || wav.readUInt16LE(34)!==16 || wav.toString("ascii",36,40)!=="data" ||
+      wav.readUInt32LE(40)!==wav.length-44) throw new Error("Cần âm thanh WAV mono 16 kHz.");
+    const seconds = (wav.length-44)/32000;
+    const sql = await getSql();
+    const book = await loadPriceBook(sql);
+    if (!book || !giayForBaseCost(book,1)) throw new Error("Chưa có tỷ giá Token dịch.");
+    const model = "tyzo-modal-"+data.profile;
+    const ticket = await sql<{modal_price:string}>`update run_tickets set modal_seconds=modal_seconds+${seconds}
+      where id=${data.ticket} and user_id=${context.userId} and asr_model=${model} and status='dang-giu' and unit='token'
+      and held>0 and modal_price is not null and modal_seconds+${seconds} <= seconds+1 returning modal_price`;
+    if (!ticket.length) throw new Error("Phiếu Modal đã hết hoặc vượt thời lượng.");
+    let result;
+    try {
+      result = await recognizeModalWav(wav,data.language,data.profile,0,getRequest().signal,parseModalPrice(JSON.parse(ticket[0].modal_price)));
+    } catch(error) {
+      await sql`update run_tickets set modal_seconds=modal_seconds-${seconds} where id=${data.ticket}`;
+      throw error;
+    }
+    const tokens = giayForBaseCost(book,result.usd*book.rate);
+    if (tokens === null) throw new Error("Thiếu tỷ giá Token dịch.");
+    await chargeTokenWith(sql,data.ticket,context.userId,tokens);
+    return {segments:result.segments.map(s=>({text:s.original,start:s.start,end:s.end}))};
+  });

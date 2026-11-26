@@ -24,6 +24,7 @@ export function asrPickerRows(input: {
 }): AsrPickRow[] {
   const rows: AsrPickRow[] = [];
   for (const house of PROVIDER_IDS) {
+    if (house === "tyzo-modal" && !input.showRoomPrice) continue;
     for (const model of catalogFor(house, "asr")) {
       const allow = input.allow[house] ?? null;
       const open = !allow || allow.includes(model.id);

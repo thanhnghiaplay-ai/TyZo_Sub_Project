@@ -21,6 +21,7 @@ import { ASR_PRICE } from "./sub/types.ts";
  * Làm theo PROVIDERS.md bước 4 đến 7.
  */
 const PRICE_ROWS: Record<ProviderId, string[] | "bang-gia-groq"> = {
+  "tyzo-modal": ["tyzo-modal-nhanh", "tyzo-modal-ky"],
   groq: "bang-gia-groq",
   alibaba: ALIBABA_ROWS.map((row) => row.id),
   deepgram: DEEPGRAM_BASE_ROWS.map((row) => row.id),
@@ -30,7 +31,7 @@ const PRICE_ROWS: Record<ProviderId, string[] | "bang-gia-groq"> = {
   elevenlabs: ELEVENLABS_BASE_ROWS.map((row) => row.id),
 };
 
-const asrProviders = PROVIDER_IDS.filter((id) => providerHas(id, "asr"));
+const asrProviders = PROVIDER_IDS.filter((id) => id !== "tyzo-modal" && providerHas(id, "asr"));
 
 function packFor(provider: ProviderId, model: string) {
   return {

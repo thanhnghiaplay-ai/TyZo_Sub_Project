@@ -15,6 +15,7 @@ import { SPEECHMATICS_BASE_ROWS } from "./sub/speechmatics-base.ts";
 import type { PriceBook } from "./run-bill.ts";
 
 export const BASE_ROWS: Record<ProviderId, GroqLiveRow[]> = {
+  "tyzo-modal": [],
   groq: [],
   alibaba: ALIBABA_ROWS,
   deepgram: DEEPGRAM_BASE_ROWS,
