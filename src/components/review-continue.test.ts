@@ -7,6 +7,7 @@ import { studioSource } from "./studio-source.ts";
 const studio = studioSource();
 const steps = readFileSync(new URL("./steps-bar.tsx", import.meta.url), "utf8");
 const pipeline = readFileSync(new URL("./use-pipeline.ts", import.meta.url), "utf8");
+const exportStep = readFileSync(new URL("../lib/pipeline/export.ts", import.meta.url), "utf8");
 
 describe("Bước cuối khi lượt đang chờ xem bảng nhân vật", () => {
   it("nút chính là Dịch tiếp, tự đóng tab trên điện thoại đứng rồi cho dịch tiếp", () => {
@@ -51,7 +52,8 @@ describe("v5.31.1: trả theo lượt cho người chỉ mua Token dịch", () =
   it("không đòi từng thuê phòng; chỉ cần còn Token dịch, máy chủ tự kiểm khi giữ phiếu", () => {
     assert.doesNotMatch(pipeline, /Bản dùng thử không dùng cửa trả theo lượt/);
     assert.match(pipeline, /if \(!\(state\.units > 0\)\) \{\s*say\("Hết Token dịch\./);
-    assert.match(pipeline, /exportNotice\(\{ plan: state\.plan, planUntil: state\.planUntil, trialLeft: state\.trialLeft, units: state\.units \}\)/);
+    // Kiểm hạn khi xuất phụ đề đã tách sang src/lib/pipeline/export.ts (đợt 2 tách file).
+    assert.match(exportStep, /exportNotice\(\{ plan: state\.plan, planUntil: state\.planUntil, trialLeft: state\.trialLeft, units: state\.units \}\)/);
   });
 
   it("chưa chọn gói thì mở bước cuối có danh sách gói", () => {

@@ -11,7 +11,7 @@ import { defaultServiceStatus, serviceBlock } from "@/lib/service-status";
 import { getMyPlace } from "@/lib/admin-room";
 import { authClient } from "@/lib/auth/client";
 import { deviceId } from "@/lib/device-id";
-import { exportNotice, roomAccess, trialFileProblem } from "@/lib/room-plans";
+import { roomAccess, trialFileProblem } from "@/lib/room-plans";
 import { standingBlock } from "@/lib/staff-role";
 import { readMediaSeconds } from "@/lib/trial-media";
 import { addLocalRun } from "@/lib/local-runs";
@@ -26,7 +26,7 @@ import { loadGroqBoard } from "@/lib/sub/groq-board-load";
 import { openStream, streamParts, streamSamples, type Mp4Stream } from "@/lib/sub/mp4";
 import { gateChunk, speechSpansFromProbs } from "@/lib/sub/vad";
 import { chooseBetter, LANG_RETRY_BUDGET_SECONDS, meanLogprob, needsLangCheck, normalizeLang, resultText } from "@/lib/sub/lang-check";
-import { summarizeQuality, type LangCheckReport, type LangEvent } from "@/lib/sub/quality";
+import { summarizeQuality, type LangCheckReport } from "@/lib/sub/quality";
 import { sparseSpeechNote } from "@/lib/sub/sparse-note";
 import { loadQualityThresholds } from "@/lib/quality-load";
 import { reportFromSummary } from "@/lib/quality-board";
@@ -36,16 +36,15 @@ import { applyLineLocks, assignVoices, lineLockId, measurePitch } from "@/lib/su
 import { chunkOverlapsPrevious, chunksFromSpans, chunksToSamples, energyThreshold, spansFromEnergy } from "@/lib/sub/chunk-plan";
 import { FILTER_RETRY_BUDGET_SECONDS, filterRejectKey, planFilterRetries, type FilterRetryReport } from "@/lib/sub/filter-retry";
 import { asrTestLabel, readAsrTest } from "@/lib/sub/asr-test";
-import { ingestAsrPart, keepRejectedCue, slicePcm, type AsrPartResult, type RawAsrPart, type RejectEntry } from "@/lib/sub/diagnostics";
+import { ingestAsrPart, keepRejectedCue, slicePcm, type RawAsrPart, type RejectEntry } from "@/lib/sub/diagnostics";
 import { ASR_RETRY_BUDGET_SECONDS, formatRetryStatus, partSeconds, planDecodeRetries, spansForDecodeRetry, type AsrRetryReport } from "@/lib/sub/asr-retry";
-import { addressLock, asrPrompt, BATCH, glossaryHit, isSilentChunk, fmt, MAX_MINUTES, MAX_STREAM_HOURS, splitAudio, STYLE_EXTRA_MAX, SR, toSrt, toTxt, toVtt, toRawSrt, untranslated, windowRms, type Bible } from "@/lib/sub/text";
+import { addressLock, asrPrompt, BATCH, glossaryHit, isSilentChunk, fmt, MAX_MINUTES, MAX_STREAM_HOURS, splitAudio, STYLE_EXTRA_MAX, SR, untranslated, windowRms, type Bible } from "@/lib/sub/text";
 import { loadGenreGlossary, loadRunGlossary, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, mergeIntoGloss, overlayUserTerms, parseGlossaryCsv, type GlossaryTerm } from "@/lib/sub/glossary";
 import { budgetSpeechGaps, formatGapConfirm, GAP_BUDGET_SECONDS, spansFromBlocks, type GapPlan } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { asrRunnerOf, transcribe } from "@/lib/providers";
 import { r2Status } from "@/lib/r2-upload";
-import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
-import { packWavFromReader } from "@/lib/sub/wav-stream";
+import { removeAudioFromR2 } from "@/lib/sub/r2-upload-run";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { pickPool, providerOfModel, roomMissing, roomMissingText, type RoomOffer } from "@/lib/sub/room-models";
 import { listKeyModels } from "@/lib/key-models";
@@ -58,116 +57,9 @@ import { getServiceMenu } from "@/lib/pack-room";
 import { turnPackProblem } from "@/lib/turn-pack";
 import { readGenderMap, voiceStore, overlayCastLocks, cloneBible, readStore, writeStore, removeStore, shareUserTerms, userGlossKey, readUserTerms, safeStore } from "@/components/pipeline-store";
 import { loadBlob, waitForMetadata, decodeTo16k } from "@/components/pipeline-media";
-
-type AsrResult = AsrPartResult;
-
-type Job = {
-  segs: Seg[];
-  pcm: Float32Array | null;
-  pcmId: string;
-  stream: Mp4Stream | null;
-  parts: Array<[number, number]>;
-  nextPart: number;
-  skipped: number;
-  asrCost: number;
-  appliedSig: string;
-  doneSource: string;
-  asrBuf: Map<number, AsrResult>;
-  heard: Map<number, Float32Array>;
-  heardOffset: Map<number, number>;
-  failedParts: number[];
-  decodeRetried: Set<number>;
-  retryUsedSeconds: number;
-  retryReport: AsrRetryReport | null;
-  filterRetried: Set<string>;
-  filterRetryUsed: number;
-  langRetryUsed: number;
-  langSuspect: number;
-  langEvents: LangEvent[];
-  qualitySent: boolean;
-  filterRetryReport: FilterRetryReport | null;
-  gapSpent: number;
-  rawParts: RawAsrPart[];
-  rejects: RejectEntry[];
-  diagLang: string;
-  bible: Bible | null;
-  analysisP: Promise<Bible | null> | null;
-  bibleGo: boolean;
-  holdPosted: boolean;
-  note: string;
-  decodeFail: number;
-  decodeOk: number;
-  forceOld: boolean;
-  streamWhy: string;
-  runId: number;
-  abort: AbortController | null;
-  videoUrl: string | null;
-  gate: { blockedUntil: number };
-  cooling: Map<string, number>;
-  blocked: Set<string>;
-  uses: Record<string, number>;
-  lastModel: string;
-  readAt: number;
-  readRatio: number;
-  heardLang: string;
-};
-
-
-function asrLanguageOf(source: string) {
-  return source === "auto" ? "" : source;
-}
-
-const emptyJob = (): Job => ({
-  segs: [],
-  pcm: null,
-  pcmId: "",
-  stream: null,
-  parts: [],
-  nextPart: 0,
-  skipped: 0,
-  asrCost: 0,
-  appliedSig: "",
-  doneSource: "",
-  asrBuf: new Map(),
-  heard: new Map(),
-  heardOffset: new Map(),
-  failedParts: [],
-  decodeRetried: new Set(),
-  retryUsedSeconds: 0,
-  retryReport: null,
-  filterRetried: new Set(),
-  filterRetryUsed: 0,
-  langRetryUsed: 0,
-  langSuspect: 0,
-  langEvents: [],
-  qualitySent: false,
-  filterRetryReport: null,
-  gapSpent: 0,
-  rawParts: [],
-  rejects: [],
-  diagLang: "",
-  bible: null,
-  analysisP: null,
-  bibleGo: false,
-  holdPosted: false,
-  note: "",
-  decodeFail: 0,
-  decodeOk: 0,
-  forceOld: false,
-  streamWhy: "",
-  runId: 0,
-  abort: null,
-  videoUrl: null,
-  gate: { blockedUntil: 0 },
-  cooling: new Map(),
-  blocked: new Set(),
-  uses: {},
-  lastModel: "",
-  readAt: 0,
-  readRatio: 0,
-  heardLang: "",
-});
-
+import { asrLanguageOf, emptyJob, type AsrResult, type Job } from "@/lib/pipeline/job";
+import { uploadLocalAudio } from "@/lib/pipeline/link-upload";
+import { downloadText, exportProblem, subtitleFile } from "@/lib/pipeline/export";
 
 /** Dòng trạng thái lúc mới mở, chưa có việc nào. Studio đổi chữ này khi Dịch bình thường đang bảo trì. */
 export const READY_STATUS = "Sẵn sàng. Chọn video rồi bấm Tải và dịch.";
@@ -820,57 +712,21 @@ export function usePipeline() {
   /** Cùng một cửa cho mọi nút xuất file: đăng nhập, tình trạng tài khoản, gói. Trả true khi được xuất. */
   const exportAllowed = useCallback(
     async (what: string) => {
-      const session = await authClient.getSession().catch(() => null);
-      if (!session?.data?.user) {
-        say(`Chưa đăng nhập. Hãy đăng ký hoặc đăng nhập rồi mới xuất ${what}.`, true);
-        return false;
-      }
-      const id = deviceId();
-      if (!id) {
-        say("Trình duyệt không cho lưu máy này, không mở được lượt thử.", true);
-        return false;
-      }
-      try {
-        const place = await getMyPlace();
-        const blocked = standingBlock(place.status, place.reason);
-        if (blocked) {
-          say(blocked, true);
-          return false;
-        }
-        const state = await claimTrialDevice({ data: id });
-        const notice = exportNotice({ plan: state.plan, planUntil: state.planUntil, trialLeft: state.trialLeft, units: state.units });
-        if (notice) {
-          say(notice, true);
-          return false;
-        }
-      } catch {
-        say("Chưa đọc được tài khoản. Hãy đăng nhập lại.", true);
-        return false;
-      }
-      return true;
+      const problem = await exportProblem(what);
+      if (problem) say(problem, true);
+      return !problem;
     },
     [say],
   );
 
-  const saveText = useCallback(
-    (text: string, suffix: string) => {
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const link = document.createElement("a");
-      const href = URL.createObjectURL(blob);
-      link.href = href;
-      link.download = ((file?.name || audioFile?.name || "phu-de").replace(/\.[^.]+$/, "") || "phu-de") + suffix;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(href), 1000);
-    },
-    [file, audioFile],
-  );
+  const saveText = useCallback((text: string, suffix: string) => downloadText(text, file?.name || audioFile?.name, suffix), [file, audioFile]);
 
   const exportSub = useCallback(
     async (format: "srt" | "vtt" | "txt") => {
       if (!(await exportAllowed("file phụ đề"))) return;
       if (!job.current.segs.length) return say("Chưa có phụ đề để xuất.", true);
-      const segs = job.current.segs;
-      saveText(format === "vtt" ? toVtt(segs) : format === "txt" ? toTxt(segs) : toSrt(segs), "." + format);
+      const out = subtitleFile(job.current.segs, format);
+      saveText(out.text, out.suffix);
     },
     [exportAllowed, saveText, say],
   );
@@ -879,7 +735,8 @@ export function usePipeline() {
   const exportRaw = useCallback(async () => {
     if (!(await exportAllowed("bản nhận dạng gốc"))) return;
     if (!job.current.segs.length) return say("Chưa có bản nhận dạng để xuất.", true);
-    saveText(toRawSrt(job.current.segs), ".whisper.srt");
+    const out = subtitleFile(job.current.segs, "raw");
+    saveText(out.text, out.suffix);
   }, [exportAllowed, saveText, say]);
 
   const saveGloss = useCallback(
@@ -1875,27 +1732,8 @@ export function usePipeline() {
         };
         let runUrl = link;
         if (asrTakesLink(asrModel) && !link && (file || audioFile)) {
-          const pcm = j.pcm;
-          const stream = j.stream;
-          const seconds = pcm ? pcm.length / SR : stream?.dur || 0;
-          if (!(seconds > 0)) throw new Error("Không đọc được âm thanh của tệp này.");
-          let shown = -1;
-          const tell = (label: string, done: number, total: number) => {
-            const pct = Math.floor((done / Math.max(1, total)) * 100 / 5) * 5;
-            if (pct === shown) return;
-            shown = pct;
-            if (my === j.runId) say(`${label} ${pct}%`);
-          };
-          say("Đang tách âm thanh trên máy…");
-          const wav = await packWavFromReader(
-            async (from, to) => (pcm ? pcm.subarray(Math.max(0, Math.floor(from * SR)), Math.min(pcm.length, Math.floor(to * SR))) : streamSamples(stream!, audioContext, from, to, signal)),
-            seconds,
-            { signal, onProgress: (done, total) => tell("Đang tách âm thanh trên máy…", done, total) },
-          );
-          if (my !== j.runId) return;
-          shown = -1;
-          say("Đang tải âm thanh lên kho tạm…");
-          const uploaded = await uploadAudioToR2(wav, { signal, onProgress: (sent, total) => tell("Đang tải âm thanh lên kho tạm…", sent, total) });
+          const uploaded = await uploadLocalAudio({ pcm: j.pcm, stream: j.stream, audioContext, signal, say, alive: () => my === j.runId });
+          if (!uploaded) return;
           r2Key = uploaded.key;
           runUrl = uploaded.url;
           if (my !== j.runId) return;
