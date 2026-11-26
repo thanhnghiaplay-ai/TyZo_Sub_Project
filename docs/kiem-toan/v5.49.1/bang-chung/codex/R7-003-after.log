@@ -1,0 +1,12 @@
+(node:19705) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19705) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ 4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi dịch một lần (107.613186ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 307.153449

@@ -1,0 +1,19 @@
+(node:20705) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20705) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ AZ-007 / R3-005: serialized link codes and rollback after device-insert failure (210.451662ms)
+✔ R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success (52.859313ms)
+✔ R4-008: temporary password revokes web sessions and Android credentials (280.334642ms)
+✔ R4-006: real revenue aggregation exceeds int32 without truncation (24.744903ms)
+✔ R3-004: database password update and device revocation fail or commit together (14.096506ms)
+✔ R5-007: conflicting referral code reports false and preserves original affiliation (22.128116ms)
+✔ R3-007: all three read/quote polish endpoints register authentication (31.677376ms)
+✔ R4-007: actual Android history-delete handler applies per-account rate limit (19.626528ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 979.471445

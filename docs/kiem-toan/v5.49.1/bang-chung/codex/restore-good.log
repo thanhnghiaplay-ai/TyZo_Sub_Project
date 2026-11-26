@@ -1,0 +1,3 @@
+[32m✔ Đã nạp trọn vẹn: 7 bảng, 1 khóa ngoại, 1 ràng buộc, 0 chỉ mục. Dữ liệu trước đó giữ ở CSDL tyzo_cu_20261126_221626.[0m
+   Khi chắc chắn bản mới đúng, xóa bản cũ để lấy lại ổ đĩa: docker exec tyzo-db psql -U tyzo -d postgres -c 'drop database tyzo_cu_20261126_221626'
+NOTICE:  database "tyzo_moi" does not exist, skipping

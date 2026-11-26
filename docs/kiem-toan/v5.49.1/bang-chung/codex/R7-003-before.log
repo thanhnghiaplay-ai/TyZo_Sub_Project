@@ -1,0 +1,31 @@
+(node:19681) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19681) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✖ 4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi dịch một lần (104.929426ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 364.772707
+
+✖ failing tests:
+
+test at src/lib/pipeline/translate-claim.test.ts:32:1
+✖ 4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi dịch một lần (104.929426ms)
+  AssertionError [ERR_ASSERTION]: R7-003: retry glossary once, shared between workers
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (file:///workspace/TyZo-ccr-9f1afcc8-iv7067/src/lib/pipeline/translate-claim.test.ts:51:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

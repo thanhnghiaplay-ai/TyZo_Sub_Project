@@ -1,0 +1,15 @@
+✖ src/lib/sub/polish.test.ts (206.843502ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 214.25418
+
+✖ failing tests:
+
+test at src/lib/sub/polish.test.ts:1:1
+✖ src/lib/sub/polish.test.ts (206.843502ms)
+  'test failed'

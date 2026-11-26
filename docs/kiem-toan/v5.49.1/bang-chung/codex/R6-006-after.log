@@ -1,0 +1,13 @@
+(node:19505) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19505) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure (2.484483ms)
+✔ R6-006: cleanup failure never masks upload failure; successful PUT is retained (0.31126ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 243.50946

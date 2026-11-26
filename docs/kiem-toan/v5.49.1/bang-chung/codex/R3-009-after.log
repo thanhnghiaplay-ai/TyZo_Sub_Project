@@ -1,0 +1,22 @@
+▶ cổng tính tiền
+  ✔ dịch thành công: trừ theo token thật trong usage (50.050426ms)
+  ✔ Groq trả lỗi thì không tính tiền (11.177901ms)
+  ✔ nhận dạng: trừ theo duration thật, tối thiểu 10 giây (17.149669ms)
+  ✔ R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát (32.876921ms)
+  ✔ thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq (17.36904ms)
+  ✔ model chưa có giá bị từ chối, không gọi Groq (6.941673ms)
+  ✔ đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi (24.431897ms)
+✔ cổng tính tiền (3663.415788ms)
+▶ đọc yêu cầu
+  ✔ chat: lấy model, chặn stream và token trả lời quá lớn (1.19859ms)
+  ✔ speech: đếm ký tự; nhận dạng: lấy model từ form (4.122475ms)
+  ✔ body hỏng thì null (0.266423ms)
+✔ đọc yêu cầu (5.892799ms)
+ℹ tests 10
+ℹ suites 2
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13562.483868

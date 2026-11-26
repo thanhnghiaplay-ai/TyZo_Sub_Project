@@ -1,0 +1,11 @@
+✔ R6-004: same-sized wrong range and changed total are rejected (34.073209ms)
+✔ R6-004: oversized streamed body is canceled before all chunks are consumed (1.004487ms)
+✔ R6-003: corrupt AAC sample count/truncated table fail before allocating sample arrays (1.423621ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 284.439327

@@ -1,0 +1,24 @@
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 23 files with 250 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin   Rules                                                                   
+ ─────────────────────────────        ────────────────                                                                  
+  ts              189      23          Custom     250                                                                   
+  <multilang>      49      23                                                                                           
+                                                                                                                        
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 1 (1 blocking)
+ • Rules run: 238
+ • Targets scanned: 23
+ • Parsed lines: ~100.0%
+ • No ignore information available
+Ran 238 rules on 23 files: 1 finding.

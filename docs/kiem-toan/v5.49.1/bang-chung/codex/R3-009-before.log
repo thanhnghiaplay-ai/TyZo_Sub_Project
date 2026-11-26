@@ -1,0 +1,32 @@
+▶ cổng tính tiền
+  ✖ R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát (62.559052ms)
+✖ cổng tính tiền (2601.419819ms)
+ℹ tests 1
+ℹ suites 1
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12582.574875
+
+✖ failing tests:
+
+test at src/lib/billing/run-gate.test.ts:65:3
+✖ R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát (62.559052ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  6 !== 34
+  
+      at TestContext.<anonymous> (file:///workspace/TyZo-ccr-9f1afcc8-iv7067/src/lib/billing/run-gate.test.ts:76:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Promise.all (index 3)
+      at async Suite.run (node:internal/test_runner/test:1905:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 6,
+    expected: 34,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,24 @@
+(node:21344) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21344) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ AZ-007 / R3-005: serialized link codes and rollback after device-insert failure (237.504151ms)
+✔ R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success (64.603552ms)
+✔ R4-008: temporary password revokes web sessions and Android credentials (301.775977ms)
+✔ R4-006: real revenue aggregation exceeds int32 without truncation (32.518703ms)
+✔ R3-004: database password update and device revocation fail or commit together (15.618329ms)
+✔ R5-007: conflicting referral code reports false and preserves original affiliation (17.622215ms)
+✔ R3-007: all three read/quote polish endpoints register authentication (34.867206ms)
+✔ R4-007: actual Android history-delete handler applies per-account rate limit (17.653317ms)
+✔ DEEP-010: real webhook handlers authenticate before reading and cap oversized bodies (29.124197ms)
+(node:21369) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21369) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✔ R6-008: old language-check response cannot alter new run's cost/events after trial await (328.965141ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1573.489115

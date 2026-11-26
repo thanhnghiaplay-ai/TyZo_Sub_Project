@@ -1,0 +1,36 @@
+(node:19480) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19480) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+✖ R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure (3.668701ms)
+✔ R6-006: cleanup failure never masks upload failure; successful PUT is retained (0.530501ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 235.997627
+
+✖ failing tests:
+
+test at src/lib/sub/r2-upload-run.test.ts:17:1
+✖ R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure (3.668701ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'synthetic/owned-key'
+  - ]
+  
+      at TestContext.<anonymous> (file:///workspace/TyZo-ccr-9f1afcc8-iv7067/src/lib/sub/r2-upload-run.test.ts:22:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'synthetic/owned-key' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,24 @@
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 3 files with 201 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin   Rules                                                                   
+ ─────────────────────────────        ────────────────                                                                  
+  ts              189       3          Custom     201                                                                   
+  <multilang>       1       3                                                                                           
+                                                                                                                        
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 0 (0 blocking)
+ • Rules run: 190
+ • Targets scanned: 3
+ • Parsed lines: ~100.0%
+ • No ignore information available
+Ran 190 rules on 3 files: 0 findings.

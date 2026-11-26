@@ -1,0 +1,44 @@
+▶ lệnh rút hoa hồng
+  ✔ TRƯỚC SỬA (ghi lại): hai lần bấm cùng lúc theo cách cũ (191.214421ms)
+  ℹ cách cũ, 20 lượt × 5 lần bấm: tổng lệnh rút lớn nhất trong một lượt 300000 đ (số dư thật 60000 đ)
+  ✔ R5-001: 5 lần bấm Rút cùng lúc chỉ ra MỘT lệnh đúng 60.000 đ (17.591242ms)
+  ✔ R5-002: xác nhận một lệnh đã hủy thì báo lỗi, không đánh dấu khoản của lệnh mới là đã chi (11.370025ms)
+  ✔ R5-003: hủy lệnh trả đúng khoản về «Rút được», rút lại được (9.720212ms)
+  ✔ RE-006: lệnh cũ chưa gắn khoản và không khớp tiền → không xác nhận, không hủy; đối soát liệt kê ra (6.558937ms)
+  ✔ RE-006: migration 0042 chỉ gắn khi chắc chắn (một lệnh mở, tổng khớp); khoản đã chi không đụng (7.731949ms)
+  ✔ R5-004: có cờ rủi ro mở thì không rút được (5.084967ms)
+  ✔ giữ câu báo cũ: chưa đủ tối thiểu (3.619938ms)
+✔ lệnh rút hoa hồng (361.973129ms)
+▶ RE-002: giữ trước từng lệnh Groq/Alibaba
+  ✔ 8 lệnh cùng lúc, mỗi lệnh ~30 Token, giữ 100 → phần giữ không bao giờ vượt held, nhà chỉ được gọi khi còn phần giữ (341.960696ms)
+  ℹ SAU: nhà được gọi 4 lần (≈132 Token), cùng lúc tối đa 4, khách bị trừ 100 Token (phần giữ 100).
+  ✔ nhà báo lỗi: nhả phần giữ, không trừ (14.786195ms)
+  ✔ mất trả lời (hết giờ): nhả phần giữ, ghi «mat-phan-hoi» để đối soát (12.078765ms)
+  ✔ tiến trình chết giữa chừng (mất nhịp): lệnh sau dọn phần giữ của lệnh chết rồi chạy được (15.613564ms)
+  ✔ khách đóng phiếu khi lệnh đang gọi nhà → chờ lệnh xong mới trả phần dư; lệnh vẫn được trừ (114.647731ms)
+✔ RE-002: giữ trước từng lệnh Groq/Alibaba (588.70616ms)
+▶ RE-005: nhà luôn nhận yêu cầu có trần token
+  ✔ không ghi hoặc null → trần mặc định, đúng trường của nhà (0.84114ms)
+  ✔ âm, chuỗi, thập phân, 0, 8193, hai trường khác nhau → từ chối; hai trường bằng nhau → nhận (0.404251ms)
+  ✔ nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền (10.218931ms)
+✔ RE-005: nhà luôn nhận yêu cầu có trần token (11.814992ms)
+✔ ba lần đặt 100 Token cùng lúc (đang có 40) → còn đúng 100, lặp 20 lượt (273.979629ms)
+▶ TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song
+  ✔ MAIN-023: 9 đoạn ước 30 Token, giữ 100 → tối đa 3 đoạn được gọi GPU cùng lúc (321.631227ms)
+  ✔ MAIN-024: lỗi khi lưu kết quả thì không trừ Token (không có tiền mà không có chữ) (16.35878ms)
+  ✔ MAIN-036: khách đóng phiếu khi đoạn đang chạy → đoạn vẫn được trừ, phần dư trả về sau đó (115.144988ms)
+  ✔ đóng phiếu khi không có đoạn nào chạy vẫn trả hết ngay như cũ (7.963689ms)
+  ✔ đoạn mất nhịp (tiến trình chết) không giữ phiếu mãi: đóng được ngay (6.551165ms)
+  ✔ RE-001: đoạn GPU chạy quá 15 phút (gửi từ 20 phút trước, vẫn còn nhịp) → đóng phiếu phải chờ, không trả phần giữ trước quyết toán (131.568616ms)
+  ✔ RE-001: tiến trình chết (mất nhịp) → đóng phiếu được ngay, phần giữ trả đủ; gửi lại đoạn đó chạy và trừ một lần (14.145968ms)
+  ✔ RE-001: lượt cũ bị coi là chết rồi mới xong → không trừ lần hai (mã lượt chặn) (134.592893ms)
+  ✔ RE-001: nhịp sống được ghi đều trong lúc GPU chạy (269.574404ms)
+✔ TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song (1098.108302ms)
+ℹ tests 26
+ℹ suites 4
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3002.720634

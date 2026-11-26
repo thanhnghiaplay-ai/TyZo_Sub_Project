@@ -1,0 +1,11 @@
+✔ AZ-005: body cap cancels a chunked request before consuming all input (31.943649ms)
+✔ DEEP-010: shared webhook reader enforces 256KiB without Content-Length (2.748842ms)
+✔ AZ-009: a coded internal 500 never exposes its detail; public 429 preserves retry hint (1.622941ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 138.121651

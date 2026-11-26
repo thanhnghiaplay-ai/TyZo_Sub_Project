@@ -1,0 +1,3 @@
+[31m✘ Nạp không trọn vẹn (mã 1; có: 0 0 0 0; cần: 7 1 1 0 — bảng, khóa ngoại, ràng buộc, chỉ mục). Dữ liệu đang chạy KHÔNG bị đụng.[0m
+   pg_restore: error: could not execute query: ERROR:  insert or update on table "con" violates foreign key constraint "con_id_fkey"
+NOTICE:  database "tyzo_moi" does not exist, skipping

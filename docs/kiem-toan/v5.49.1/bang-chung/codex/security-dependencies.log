@@ -1,0 +1,44 @@
+
+  warn lib-khong-import-giao-dien: src/lib/error-component.tsx → src/components/ui/icon.tsx
+  warn khong-vong-tron: src/lib/sub/vad-runtime.ts → 
+      src/lib/sub/vad.ts →
+      src/lib/sub/vad-runtime.ts
+  warn khong-vong-tron: src/lib/payment/pay-store.ts → 
+      src/lib/payment/pay-flow.ts →
+      src/lib/affiliate-flow.ts →
+      src/lib/giay-room.ts →
+      src/lib/payment/pay-store.ts
+  warn khong-vong-tron: src/lib/glossary-import.ts → 
+      src/lib/sub/glossary.ts →
+      src/lib/glossary-room.ts →
+      src/lib/glossary-import.ts
+  warn khong-vong-tron: src/lib/giay-room.ts → 
+      src/lib/payment/pay-store.ts →
+      src/lib/payment/pay-confirm.ts →
+      src/lib/payment/pay-flow.ts →
+      src/lib/affiliate-flow.ts →
+      src/lib/giay-room.ts
+  warn khong-vong-tron: src/lib/db.ts → 
+      src/lib/glossary-seed.server.ts →
+      src/lib/db.ts
+  warn khong-vong-tron: src/lib/auth/middleware.ts → 
+      src/lib/auth/verify.server.ts →
+      src/lib/auth/server.ts →
+      src/lib/mail-runtime.ts →
+      src/lib/auth/middleware.ts
+  warn khong-vong-tron: src/lib/auth/mailer.ts → 
+      src/lib/auth/smtp.server.ts →
+      src/lib/auth/mailer.ts
+  warn khong-vong-tron: src/lib/affiliate-flow.ts → 
+      src/lib/giay-room.ts →
+      src/lib/payment/pay-flow.ts →
+      src/lib/affiliate-flow.ts
+  warn khong-vong-tron: src/lib/admin/admin-room.ts → 
+      src/lib/auth/middleware.ts →
+      src/lib/auth/verify.server.ts →
+      src/lib/auth/server.ts →
+      src/lib/mail-runtime.ts →
+      src/lib/admin/admin-room.ts
+
+x 10 dependency violations (0 errors, 10 warnings). 703 modules, 2707 dependencies cruised.
+

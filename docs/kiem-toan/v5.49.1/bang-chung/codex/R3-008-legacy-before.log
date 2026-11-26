@@ -1,0 +1,21 @@
+legacy observed IP 198.51.100.99 expected trusted tunnel IP 203.0.113.7
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '198.51.100.99'
+- '203.0.113.7'
+
+    at file:///workspace/tyzo-continuation-evidence/legacy_repro.mjs:12:121 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '198.51.100.99',
+  expected: '203.0.113.7',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.3

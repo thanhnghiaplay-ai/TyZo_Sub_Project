@@ -1,0 +1,17 @@
+
+> build
+> node scripts/with-app-env.mjs vite build && npm run db:migrate
+
+[start] [nitro] Building [Nitro] (preset: `node-server`, compatibility: `2026-11-26`)
+[success] [nitro] Generated public .output/public
+[info] Tracing dependencies:
+- `tslib` (2.8.1)
+[success] Traced 1 dependencies (4 files) in 33ms.
+[info] Ensure your production environment matches the builder OS and architecture (`linux-x64`) to avoid native module issues.
+[info] Generated .output/nitro.json
+[success] [nitro] You can preview this build using `npx vite preview`
+
+> db:migrate
+> node scripts/migrate.mjs
+
+[migrate] up to date.

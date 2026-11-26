@@ -1,0 +1,15 @@
+[graphify extract] incremental scan of /workspace/TyZo-ccr-9f1afcc8-iv7067
+[graphify extract] --code-only: skipping 47 non-code file(s) (39 docs, 0 papers, 8 images) — no LLM extraction
+[graphify extract] 64 code, 0 docs, 0 papers, 0 images changed; 952 unchanged; 0 deleted
+[graphify extract] 52 path(s) ignored by ignore rules (pruned directories count once): '.output/', '.vercel/', 'docs/kiem-toan/v5.49.1/bang-chung/codex/AZ-009-after.log' (+49 more)
+[graphify extract] Review ignore rules if source is missing; --no-gitignore bypasses VCS ignore rules only; .graphifyignore and --exclude still apply.
+[graphify extract] 46 file(s) not classified (no supported extension or shebang), skipped: .dockerignore, .git, .gitignore, .gitleaks.toml, .gitleaksignore, .node_modules.lock (+40 more)
+[graphify extract] 1 file(s) skipped as potentially sensitive (rename or move if wrongly flagged): .npmrc
+[graphify extract] AST extraction on 64 code files...
+  AST cache: 0/64 files served from cache (0%); 64 to extract
+  warning: 3 code file(s) yielded no symbols (0.01 MB) — a data file, or source this extractor models no symbols for: docs/kiem-toan/v5.49.1/bang-chung/codex/browser_checks.py, docs/kiem-toan/v5.49.1/bang-chung/codex/run.py, src/lib/pipeline/recognize-race.test.ts
+[graphify] Replaced 4 node(s) from re-extracted source file(s).
+[graphify extract] wrote /workspace/tyzo-continuation-evidence/graph/graphify-out/graph.json: 5754 nodes, 16784 edges, 238 communities
+[graphify extract] wrote /workspace/tyzo-continuation-evidence/graph/graphify-out/.graphify_analysis.json
+[graphify extract] incremental summary: 952 files cached/unchanged, 64 re-extracted, 0 deleted
+[graphify extract] next: run `graphify cluster-only /workspace/tyzo-continuation-evidence/graph` to generate GRAPH_REPORT.md and name communities

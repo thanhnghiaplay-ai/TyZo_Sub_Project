@@ -1,0 +1,17 @@
+▶ cầu nối Dịch trực tiếp: vòng đời phiên và tiền
+  ✔ DEEP-001: Alibaba báo «finished» ngay sau usage → phiếu chỉ đóng sau khi trừ xong (486.875814ms)
+  ✔ DEEP-002: xin giữ thêm đang chậm → không gửi tiếng vượt phần đã giữ (1518.588764ms)
+  ✔ DEEP-005: lần giữ thêm trả về sau khi phiên đóng → phiếu đó vẫn được nhả (1216.061347ms)
+  ✔ DEEP-004: Alibaba cắt, khách rời trong lúc chờ nối lại → không mở lại kết nối Alibaba (1513.192152ms)
+  ✔ DEEP-006: khách rời trong lúc cầu nối đang đọc giá → không giữ tiền, hoặc giữ rồi nhả ngay (804.563433ms)
+  ✔ DEEP-003: chi phí nhà cung cấp ghi theo usage thật của từng lượt, kể cả khi thu thiếu (314.892195ms)
+✔ cầu nối Dịch trực tiếp: vòng đời phiên và tiền (5856.380868ms)
+✔ DEEP-008: upstream backlog drops audio and recovers after draining (124.062823ms)
+ℹ tests 7
+ℹ suites 1
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6176.089437

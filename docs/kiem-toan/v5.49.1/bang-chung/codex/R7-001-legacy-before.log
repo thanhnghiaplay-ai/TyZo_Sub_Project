@@ -1,0 +1,11 @@
+file:///workspace/tyzo-continuation-evidence/legacy_repro.mjs:16
+ const refusal=src.match(/const REFUSAL_RE =[^\n]+/)[0];const m=await load(token+refusal+funcs);
+                                                    ^
+
+TypeError: Cannot read properties of null (reading '0')
+    at file:///workspace/tyzo-continuation-evidence/legacy_repro.mjs:16:53
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.22.3
