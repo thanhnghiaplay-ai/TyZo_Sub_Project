@@ -13,10 +13,6 @@ if (!existsSync(pub)) {
   process.exit(0);
 }
 const real = readdirSync(pub).filter((name) => /^styles-[\w-]+\.css$/.test(name));
-if (real.length !== 1) {
-  console.log(`fix-css-ref: thấy ${real.length} tệp styles-*.css, không đoán, bỏ qua.`);
-  process.exit(0);
-}
 const files = [];
 const walk = (dir) => {
   for (const name of readdirSync(dir)) {
@@ -26,6 +22,23 @@ const walk = (dir) => {
   }
 };
 walk(join(root, "server"));
+/** Tên CSS mã máy chủ đang trỏ tới mà không có tệp thật. */
+const missingRefs = () => {
+  const out = new Set();
+  for (const path of files) for (const m of readFileSync(path, "utf8").matchAll(/\/assets\/(styles-[\w-]+\.css)/g)) if (!existsSync(join(pub, m[1]))) out.add(m[1]);
+  return [...out];
+};
+if (real.length !== 1) {
+  // Kiểm toán NEW-008: không đoán được tệp đúng thì vẫn kiểm; còn chỗ trỏ sai là làm hỏng lần dựng (VPS giữ bản cũ),
+  // không để lên bản trang hiện trần.
+  const bad = missingRefs();
+  if (bad.length) {
+    console.error(`fix-css-ref: thấy ${real.length} tệp styles-*.css và mã máy chủ trỏ tới tệp không có: ${bad.join(", ")}. Dừng.`);
+    process.exit(1);
+  }
+  console.log(`fix-css-ref: thấy ${real.length} tệp styles-*.css, chỗ trỏ đều đúng, không sửa.`);
+  process.exit(0);
+}
 let fixed = 0;
 for (const path of files) {
   const text = readFileSync(path, "utf8");
@@ -38,3 +51,8 @@ for (const path of files) {
   if (next !== text) writeFileSync(path, next);
 }
 if (!fixed) console.log("fix-css-ref: tên CSS khớp, không cần sửa.");
+const left = missingRefs();
+if (left.length) {
+  console.error(`fix-css-ref: sau khi sửa vẫn còn chỗ trỏ tới tệp không có: ${left.join(", ")}. Dừng.`);
+  process.exit(1);
+}

@@ -157,14 +157,19 @@ export async function openMp4(read: ByteRead, size: number, gap: number, signal?
     if (!stts || !stsz || !stsc || !(stco || co64)) continue;
     const count = u32(moov, stsz.s + 8);
     if (!count || !ts) throw new Error("MP4 phân mảnh (fragmented) chưa hỗ trợ");
-    const sizes = new Uint32Array(count);
     const fixed = u32(moov, stsz.s + 4);
+    // Kiểm toán R6-003: số mẫu đọc từ tệp phải hợp lý và bảng phải nằm gọn trong hộp, trước khi cấp bộ nhớ theo số đó.
+    // 20 triệu khung AAC ≈ 100 giờ ở 48 kHz. Sai thì báo lỗi (app đọc theo cách cũ), không cấp hàng GB bộ nhớ.
+    if (count > 20_000_000 || (!fixed && stsz.s + 12 + count * 4 > stsz.e)) throw new Error("bảng mẫu MP4 không hợp lệ");
+    const sizes = new Uint32Array(count);
     for (let i = 0; i < count; i++) sizes[i] = fixed || u32(moov, stsz.s + 12 + i * 4);
     const nsc = u32(moov, stsc.s + 4);
+    if (stsc.s + 8 + nsc * 12 > stsc.e) throw new Error("bảng mẫu MP4 không hợp lệ");
     const sc: Array<[number, number]> = [];
     for (let i = 0; i < nsc; i++) sc.push([u32(moov, stsc.s + 8 + i * 12), u32(moov, stsc.s + 12 + i * 12)]);
     const cbox = (stco || co64)!;
     const nch = u32(moov, cbox.s + 4);
+    if (cbox.s + 8 + nch * (stco ? 4 : 8) > cbox.e) throw new Error("bảng mẫu MP4 không hợp lệ");
     const offs = new Float64Array(count);
     for (let c = 0, e = 0, si = 0; c < nch && si < count; c++) {
       while (e + 1 < sc.length && sc[e + 1][0] <= c + 1) e++;
@@ -276,7 +281,10 @@ export async function openStream(
             r.body?.cancel().catch(() => {});
             throw new Error("máy chủ không hỗ trợ tải theo đoạn (Range)");
           }
-          return new Uint8Array(await r.arrayBuffer());
+          const got = new Uint8Array(await r.arrayBuffer());
+          // Kiểm toán R6-004: máy chủ phải trả đúng đoạn đã xin (đúng số byte); sai thì báo lỗi, không đọc lệch.
+          if (got.length !== b - a) throw new Error("máy chủ trả đoạn video không đúng kích thước");
+          return got;
         } catch (error) {
           if (sig?.aborted) throw error;
           if (guard.signal.aborted) throw new Error("tải đoạn video quá 60 giây không xong");

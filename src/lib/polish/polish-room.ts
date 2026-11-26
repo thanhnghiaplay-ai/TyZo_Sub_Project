@@ -9,7 +9,8 @@ import { POLISH_PROMPTS_KEY, checkPolishPrompts, describePolishPrompts, parsePol
  * Danh sách model trau chuốt Chủ đã đặt. Ai đăng nhập cũng đọc được (khách cần để chọn), chỉ Chủ lưu được.
  * null = Chủ chưa lưu: khách chưa trau chuốt được.
  */
-export const getPolishModels = createServerFn({ method: "GET" }).handler(async (): Promise<PolishModels | null> => {
+// Kiểm toán R3-007: chỉ người đã đăng nhập (trước đây ai cũng gọi được).
+export const getPolishModels = createServerFn({ method: "GET" }).middleware([authMiddleware]).handler(async (): Promise<PolishModels | null> => {
   try {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -40,7 +41,8 @@ export const savePolishModels = createServerFn({ method: "POST" })
   });
 
 /** Lệnh trau chuốt theo thể loại Admin đã sửa. Ai đăng nhập cũng đọc (máy khách dựng lệnh), chỉ Admin lưu. Lỗi thì {} (dùng mặc định). */
-export const getPolishPrompts = createServerFn({ method: "GET" }).handler(async (): Promise<PolishPrompts> => {
+// Kiểm toán R3-007: chỉ người đã đăng nhập (trước đây ai cũng gọi được).
+export const getPolishPrompts = createServerFn({ method: "GET" }).middleware([authMiddleware]).handler(async (): Promise<PolishPrompts> => {
   try {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -146,6 +148,7 @@ type PolishQuoteView = { rows: PolishChoiceView[]; note: string };
 
 /** Giá ước từng model Chủ đã mở cho thể loại này, bằng Token dịch, theo số token ước của lần trau chuốt hiện tại. */
 export const quotePolishChoices = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
   .validator((input: { genre: string; sendable: number; batches: number; inn: number; out: number }) => {
     const tokens = validPolishTokens(input?.inn, input?.out);
     if (!tokens) throw new Error("Số lượng cần trau chuốt không đúng.");

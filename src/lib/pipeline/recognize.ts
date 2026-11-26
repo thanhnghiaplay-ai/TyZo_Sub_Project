@@ -76,6 +76,8 @@ export function createRecognizer(ctx: RecognizeContext) {
       return res;
     }
     await ensureTrial();
+    // Kiểm toán R6-008: khách đã bắt đầu lần chạy khác thì không ghi số liệu vào lần chạy mới.
+    if (my !== j.runId) return res;
     j.asrCost += Math.max(10, seconds) * asrUsd(asrModel);
     const pick = chooseBetter(source, res, again);
     j.langEvents.push({

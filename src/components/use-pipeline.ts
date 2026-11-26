@@ -1151,8 +1151,10 @@ export function usePipeline() {
             if (video && Number.isFinite(video.duration) && video.duration > MAX_MINUTES * 60)
               throw new Error(`File dài hơn ${MAX_MINUTES} phút sẽ làm đầy bộ nhớ máy. Hãy cắt thành đoạn ngắn hơn.`);
             say("Đang giải mã và đưa âm thanh về 16 kHz…");
-            j.pcm = await decodeTo16k(blob, audioContext, j.streamWhy);
+            // Kiểm toán R6-001: giải mã vào biến riêng, chỉ gán cho lần chạy này nếu khách chưa bắt đầu lần khác.
+            const decoded = await decodeTo16k(blob, audioContext, j.streamWhy);
             if (my !== j.runId) return;
+            j.pcm = decoded;
             j.pcmId = id;
             j.stream = null;
           }
