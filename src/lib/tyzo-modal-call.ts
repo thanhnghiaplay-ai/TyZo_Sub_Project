@@ -9,7 +9,7 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
   }).handler(async ({context,data}) => {
     const {getSql} = await import("./db");
     const {requireOpenAccount,takeRate} = await import("./guard.server");
-    const {parseModalPrice} = await import("./sub/tyzo-modal-price");
+    const {parseModalPrice, holdUsdPerFilmHour} = await import("./sub/tyzo-modal-price");
     const {recognizeModalWav, isTransientModalError} = await import("./sub/tyzo-modal.server");
     const {mergeInterjections} = await import("./sub/merge-interjections");
     const {loadPriceBook} = await import("./run-board.server");
@@ -36,8 +36,8 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     const result = await runModalPartWith(sql, {
       ticket: data.ticket, userId: context.userId, model, seconds,
       partHash: createHash("sha256").update(wav).digest("hex"),
-      // Ước tính đoạn này theo giá Chủ đặt trên phiếu (giờ phim × đơn giá); phải còn giữ đủ mới gọi GPU.
-      estimateTokens: price => toTokens(parseModalPrice(JSON.parse(price))[data.profile]*seconds/3600),
+      // Ước tính đoạn này theo giá chụp trên phiếu (giờ phim × giá GPU × hệ số bù × tỉ lệ giữ); phải còn giữ đủ mới gọi GPU.
+      estimateTokens: price => toTokens(holdUsdPerFilmHour(parseModalPrice(JSON.parse(price)), data.profile)*seconds/3600),
     }, async price => {
       // Không gắn với kết nối của trình duyệt: khách bấm hủy hay mất mạng thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại;
       // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Lỗi tạm (mạng, HTTP 5xx) thử lại một lần.

@@ -122,7 +122,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     keyPage: "console.deepgram.com",
     clientStore: "gdg",
     listPath: "/models",
-    ready: true,
+    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
     settings: { key: "deepgram_key", models: "deepgram_models", desk: "deepgram_desk" },
   },
   assemblyai: {
@@ -138,7 +138,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     // Không có lệnh liệt kê model: hỏi một lượt phiên âm gần nhất để kiểm key.
     listPath: "/transcript?limit=1",
     fixedModels: ["universal-3-5-pro", "universal-2"],
-    ready: true,
+    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
     settings: { key: "assemblyai_key", models: "assemblyai_models", desk: "assemblyai_desk" },
   },
   speechmatics: {
@@ -154,7 +154,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     // Không có lệnh liệt kê model: hỏi danh sách việc gần nhất để kiểm key.
     listPath: "/jobs/?limit=1",
     fixedModels: ["standard", "enhanced"],
-    ready: true,
+    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
     settings: { key: "speechmatics_key", models: "speechmatics_models", desk: "speechmatics_desk" },
   },
   soniox: {
@@ -168,7 +168,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     keyPage: "console.soniox.com",
     clientStore: "gsx",
     listPath: "/models",
-    ready: true,
+    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
     settings: { key: "soniox_key", models: "soniox_models", desk: "soniox_desk" },
   },
   elevenlabs: {
@@ -189,7 +189,7 @@ export const PROVIDERS: Record<ProviderId, ProviderInfo> = {
     // /models chỉ liệt kê model đọc giọng: dùng để kiểm key, danh sách nhận dạng khai cố định.
     listPath: "/models",
     fixedModels: ["scribe_v3", "scribe_v2"],
-    ready: true,
+    ready: false, // Chủ 26/11/2026: chỉ giữ Groq, Alibaba và TyZo. Đặt lại true để mở lại.
     settings: { key: "elevenlabs_key", models: "elevenlabs_models", desk: "elevenlabs_desk" },
   },
 };

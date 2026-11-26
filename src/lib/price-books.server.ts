@@ -12,9 +12,10 @@ const ROW_LOADERS: Record<Exclude<ProviderId, "groq">, (sql: Sql) => Promise<Gro
   "tyzo-modal": async sql => {
     const rows = await sql<{value:string}>`select value from room_settings where key = 'tyzo_modal_price'`;
     if (!rows.length) return [];
-    const { parseModalPrice } = await import("./sub/tyzo-modal-price");
-    const price = parseModalPrice(JSON.parse(rows[0].value));
-    return (["nhanh","ky"] as const).map(profile => ({ id: "tyzo-modal-"+profile, usdPerHour: price[profile],
+    const { parseModalPrice, holdUsdPerFilmHour } = await import("./sub/tyzo-modal-price");
+    let price;
+    try { price = parseModalPrice(JSON.parse(rows[0].value)); } catch { return []; }   // giá cũ hoặc hỏng: coi như chưa đặt giá
+    return (["nhanh","ky"] as const).map(profile => ({ id: "tyzo-modal-"+profile, usdPerHour: holdUsdPerFilmHour(price, profile),
       speed:null, usdIn:null, usdOut:null, usdPerMillionChars:null, unlisted:false, limits:[], contextTokens:null, maxCompletionTokens:null, maxFile:null }));
   },
   alibaba: async (sql) => (await import("./sub/alibaba-board.server")).loadAlibabaRows(sql),

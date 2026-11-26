@@ -55,9 +55,9 @@ export const openRunTicket = createServerFn({ method: "POST" })
     if (asr.provider === "tyzo-modal" && data.part !== "chat") {
       const settings = await sql<{value:string}>`select value from room_settings where key='tyzo_modal_price'`;
       if (!settings.length) throw new Error("Chủ chưa đặt giá TyZo Modal.");
-      const { parseModalPrice } = await import("./sub/tyzo-modal-price");
+      const { parseModalPrice, holdUsdPerFilmHour } = await import("./sub/tyzo-modal-price");
       const price = parseModalPrice(JSON.parse(settings[0].value));
-      if (rows["tyzo-modal"]?.find(r => r.id === asr.model)?.usdPerHour !== price[asr.model.endsWith("-ky") ? "ky" : "nhanh"]) throw new Error("Giá vừa thay đổi. Vui lòng thử lại.");
+      if (rows["tyzo-modal"]?.find(r => r.id === asr.model)?.usdPerHour !== holdUsdPerFilmHour(price, asr.model.endsWith("-ky") ? "ky" : "nhanh")) throw new Error("Giá vừa thay đổi. Vui lòng thử lại.");
       modalPrice = JSON.stringify(price);
     }
     const id = randomBytes(12).toString("hex");

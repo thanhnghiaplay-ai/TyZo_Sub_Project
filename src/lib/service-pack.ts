@@ -226,13 +226,37 @@ export function checkServicePacks(input: unknown): ServicePack[] {
   return packs;
 }
 
+/**
+ * Đọc gói đã lưu. Mỗi gói đọc riêng: một gói hỏng không làm mất các gói khác. Việc phụ (thuyết minh, ngữ cảnh,
+ * đối chiếu, tóm tắt) giao cho nhà đã tắt (ready: false) thì bỏ việc đó, giữ gói; nhận dạng hoặc dịch giao cho nhà
+ * đã tắt thì bỏ gói đó (Admin sửa lại ở Cấu hình → Gói).
+ */
 export function parseServicePacks(raw: string | null | undefined): ServicePack[] {
   if (!raw) return [];
+  let list: unknown;
   try {
-    return checkServicePacks(JSON.parse(raw));
+    list = JSON.parse(raw);
   } catch {
     return [];
   }
+  if (!Array.isArray(list)) return [];
+  const out: ServicePack[] = [];
+  for (const item of list.slice(0, 24)) {
+    if (!item || typeof item !== "object") continue;
+    const pack = item as ServicePack;
+    const roles: ServicePack["roles"] = { ...(pack.roles ?? {}) };
+    for (const role of PACK_ROLES) {
+      const assign = assignOf(roles[role]);
+      if (role !== "asr" && role !== "translate" && assign && !providersForRole(role).includes(assign.provider)) delete roles[role];
+    }
+    try {
+      const checked = checkServicePack({ ...pack, roles });
+      if (!out.some((p) => p.id === checked.id)) out.push(checked);
+    } catch {
+      // gói này không dùng được nữa; các gói khác vẫn giữ
+    }
+  }
+  return out;
 }
 
 export function packsForDoor(packs: ServicePack[], door: ServiceDoor) {
