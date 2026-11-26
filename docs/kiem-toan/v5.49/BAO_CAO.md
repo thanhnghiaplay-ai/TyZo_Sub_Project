@@ -224,3 +224,19 @@ Bản lịch sử `TyZo_v5.48.0_AI_Handoff_FULL.zip` có 3 phần: 44 mã MAIN, 
 3. Sau khi `main` có bản này: trên VPS chạy `tyzo` → 2 để cập nhật cầu nối.
 4. Kiểm `LIVE_BRIDGE_URL` trên Vercel bắt đầu bằng `wss://`. Nếu là `ws://`, Dịch trực tiếp sẽ báo chưa cấu hình.
 5. R4-008 (đặt mật khẩu tạm đăng xuất khách): Chủ xem có cần thêm một câu vào điều khoản không. Đợt này chưa đổi điều khoản.
+
+## 9. Sự cố sau khi đẩy chính thức (27/11/2026 02:27) và cách sửa
+
+- **Hiện tượng:** VPS `tyzo` → 2 báo `error applying 0038_modal_reserve.sql: relation "run_modal_parts" does not exist`. Bản mới không lên, VPS tự quay về bản cũ, dữ liệu không đổi.
+- **Gốc lỗi 1:** migration 0037 bị sửa sau khi đã chạy. Bản đầu (`f5ebf7c`, 26/11 07:11) chỉ thêm 2 cột. Bản sau (`7b21719`, 07:19) mới thêm `modal_short` và bảng `run_modal_parts`. CSDL nào đã chạy bản đầu thì có ghi «0037 đã chạy» nhưng thiếu bảng, và 0038 hỏng khi đụng bảng đó. Neon có thể cũng ở tình trạng này.
+- **Gốc lỗi 2:** khối `do $$ … $$` của 0039 viết nhiều dòng, có dòng mở đầu bằng `begin`, nên `scripts/migrate.mjs` từ chối. Lỗi này làm hỏng mọi lần dựng có `DATABASE_URL`, cả Vercel lẫn VPS. Lần kiểm trước của tôi không bắt được vì chỉ dùng bộ chạy lúc khởi động app.
+- **Sửa:**
+  - 0038 dựng lại phần của 0037 nếu thiếu (mọi lệnh đều `if not exists`).
+  - 0039 viết khối `do` trên một dòng.
+  - Thêm `scripts/migration-files.test.mjs` để chặn tái phạm.
+- **Diễn tập** (`bang-chung/mig-0037-drill.log`), chạy trên CSDL có bản đầu của 0037 giống VPS:
+  - 0038 cũ: lỗi y như ảnh chụp từ VPS.
+  - 0038/0039 mới qua `migrate.mjs`: đạt, đủ bảng và cột.
+  - Chạy lại lần 2: không làm gì.
+  - CSDL trống: chạy đủ 39 migration.
+- **Bài học:** không sửa một migration đã chạy; muốn đổi thì thêm migration mới. Mỗi lần có migration mới phải thử qua `scripts/migrate.mjs` trên Postgres thật.
