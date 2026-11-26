@@ -65,10 +65,10 @@ export async function openGiayWith(
       for update
     ),
     ranked as (
-      select id, left_tokens, sum(left_tokens) over (order by expires_at, id) as running from locked
+      select id, left_tokens, expires_at, sum(left_tokens) over (order by expires_at, id) as running from locked
     ),
     take as (
-      select id, least(left_tokens, greatest(0, ${hold}::int - (running - left_tokens)))::int as n from ranked
+      select id, expires_at, least(left_tokens, greatest(0, ${hold}::int - (running - left_tokens)))::int as n from ranked
     ),
     ok as (
       select coalesce(sum(n), 0)::int as total from take
@@ -80,8 +80,8 @@ export async function openGiayWith(
       returning take.n
     ),
     sl as (
-      insert into token_slices (ticket_id, grant_id, left_tokens, charged)
-      select ${id}::text, take.id, take.n, 0 from take, ok
+      insert into token_slices (ticket_id, grant_id, left_tokens, charged, expires_at)
+      select ${id}::text, take.id, take.n, 0, take.expires_at from take, ok
       where take.n > 0 and ok.total >= ${hold}::int
       returning 1
     ),
@@ -107,14 +107,15 @@ export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost
       for update
     ),
     locked as (
-      select s.grant_id, s.left_tokens from token_slices s
+      -- MAIN-038 (Chủ duyệt): trừ phần của gói hết hạn sớm nhất trước, hòa thì theo mã gói (hạn chụp lúc giữ).
+      select s.grant_id, s.left_tokens, s.expires_at from token_slices s
       join o on o.id = s.ticket_id
       where s.left_tokens > 0
-      order by s.grant_id
+      order by s.expires_at nulls last, s.grant_id
       for update
     ),
     ranked as (
-      select grant_id, left_tokens, sum(left_tokens) over (order by grant_id) as running from locked
+      select grant_id, left_tokens, sum(left_tokens) over (order by expires_at nulls last, grant_id) as running from locked
     ),
     take as (
       select grant_id, least(left_tokens, greatest(0, ${cost}::int - (running - left_tokens)))::int as n from ranked

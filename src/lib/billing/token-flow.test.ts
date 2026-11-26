@@ -90,6 +90,18 @@ describe("mua và trừ gói giây", () => {
     assert.equal(await balance(), 54000);
   });
 
+  it("MAIN-038: trừ phần của gói hết hạn sớm nhất trước (dù mã gói xếp sau); đóng phiếu trả dư, gói hạn dài còn nguyên", async () => {
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values
+      ('a-hanxa', 'k', 100, 100, 1, now() + interval '30 days'), ('z-hangan', 'k', 100, 100, 1, now() + interval '1 day')`;
+    const opened = await openGiayWith(sql, { id: "tm", userId: "k", fileName: "a", seconds: 60, rate: 1, hold: 150 });
+    assert.ok("id" in opened);
+    await chargeTokenWith(sql, "tm", "k", 80);
+    await closeTokenWith(sql, "tm", "k", false);
+    const left = Object.fromEntries((await sql<{ id: string; left_tokens: number }>`select id, left_tokens from token_grants where id in ('a-hanxa', 'z-hangan')`).map((r) => [r.id, r.left_tokens]));
+    // Gói hết hạn sau 1 ngày chịu 80; gói 30 ngày không bị đụng.
+    assert.deepEqual(left, { "a-hanxa": 100, "z-hangan": 20 });
+  });
+
   it("chỉnh Token dịch: thêm gói mới, bớt gói sắp hết hạn trước", async () => {
     await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('soon', 'k', 30, 30, 1, now() + interval '1 day')`;
     await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at) values ('later', 'k', 50, 50, 1, now() + interval '20 day')`;
