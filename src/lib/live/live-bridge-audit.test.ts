@@ -184,4 +184,26 @@ describe("cầu nối Dịch trực tiếp: vòng đời phiên và tiền", () 
     assert.deepEqual(closed.sort(), opened.sort(), JSON.stringify(bill.events));
     assert.equal(ali.seen.connections, 0, "không cần nối Alibaba cho khách đã rời");
   });
+
+  it("DEEP-003: chi phí nhà cung cấp ghi theo usage thật của từng lượt, kể cả khi thu thiếu", async () => {
+    const ali = fakeAli({
+      onAudio: (ws, n) => {
+        if (n === 1) ws.send(usage(5000));
+      },
+    });
+    const bill = slowBilling({});
+    const spent: number[] = [];
+    // Sổ giả trừ tối đa 1 đơn vị mỗi lần: khách bị thu thiếu so với giá thật.
+    const billing = { ...bill.billing, charge: async () => 1, spend: async ({ base }: { base: number }) => void spent.push(base) };
+    const s = await session(ali, billing);
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    await wait(300);
+    s.client.send(JSON.stringify({ type: "stop" }));
+    await s.closed;
+    s.done();
+    const { liveCost } = await import("./live-cost.ts");
+    const want = liveCost(book, LIVE_MODEL_38, { audioIn: 5000, textIn: 0, imageIn: 0, textOut: 5, audioOut: 0 })!.base;
+    assert.deepEqual(spent, [want]);
+  });
 });

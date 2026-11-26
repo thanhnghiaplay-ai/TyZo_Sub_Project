@@ -29,6 +29,11 @@ export type LiveBilling = {
   charge(args: { userId: string; ticketId: string; cost: number; base: number }): Promise<number>;
   /** Nhả phần giữ thừa. */
   close(args: { userId: string; ticketId: string; failed: boolean }): Promise<void>;
+  /**
+   * DEEP-003: ghi chi phí phải trả nhà cung cấp theo usage THẬT của từng lượt (giá gốc, đồng), độc lập với số Token
+   * thu được của khách (thu thiếu hay giá Turbo đổi đều không làm sai sổ chi phí). Không bao giờ ném lỗi.
+   */
+  spend?(args: { userId: string; model: string; base: number }): Promise<void>;
 };
 
 type LiveBridgeDeps = {
@@ -244,6 +249,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
       if (event.kind === "usage") {
         const priced = liveCost(book, ticket.model, event.usage);
         let taken = 0;
+        if (priced && priced.base > 0) void deps.billing.spend?.({ userId: ticket.uid, model: ticket.model, base: priced.base }).catch(() => undefined);
         if (priced && priced.base > 0) {
           const amount = deps.toGiay ? deps.toGiay(priced.base) : priced.cost;
           if (amount != null && amount > 0) {
