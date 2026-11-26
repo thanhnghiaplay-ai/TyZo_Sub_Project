@@ -35,6 +35,11 @@ export interface Sql {
     text: string,
     params?: unknown[],
   ): Promise<T[]>;
+  /**
+   * Chạy nhiều lệnh trong MỘT giao dịch trên cùng một kết nối: lỗi ở bất kỳ lệnh nào thì không lệnh nào có hiệu lực.
+   * Gọi lồng trên `tx` thì dùng lại giao dịch đang mở. Dùng qua `inTransaction` (db-tx.ts).
+   */
+  begin?: <R>(fn: (tx: Sql) => Promise<R>) => Promise<R>;
 }
 
 /**
@@ -140,6 +145,26 @@ function createNeonSql(): Promise<Sql> {
       const res = await pool.query(text, params);
       return res.rows as T[];
     });
+    sql.begin = async <R>(fn: (tx: Sql) => Promise<R>): Promise<R> => {
+      const conn = await pool.connect();
+      try {
+        await conn.query("BEGIN");
+        const tx = toSql(async <T>(text: string, params: unknown[]) => (await conn.query(text, params)).rows as T[]);
+        tx.begin = (inner) => inner(tx);
+        const out = await fn(tx);
+        await conn.query("COMMIT");
+        return out;
+      } catch (error) {
+        try {
+          await conn.query("ROLLBACK");
+        } catch {
+          /* giữ lỗi gốc */
+        }
+        throw error;
+      } finally {
+        conn.release();
+      }
+    };
     void import("@/lib/glossary-seed.server")
       .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
       .catch(() => undefined);
@@ -210,6 +235,13 @@ async function createPgliteSql(): Promise<Sql> {
     const result = await pg.query<T>(text, params);
     return result.rows;
   });
+  // PGLite chỉ có một phiên: giao dịch nguyên tử (lỗi thì quay lại) nhưng không cô lập với lệnh ngoài giao dịch.
+  sql.begin = <R>(fn: (tx: Sql) => Promise<R>): Promise<R> =>
+    pg.transaction(async (t) => {
+      const tx = toSql(async <T>(text: string, params: unknown[]) => (await t.query<T>(text, params)).rows);
+      tx.begin = (inner) => inner(tx);
+      return fn(tx);
+    });
   void import("@/lib/glossary-seed.server")
     .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
     .catch(() => undefined);

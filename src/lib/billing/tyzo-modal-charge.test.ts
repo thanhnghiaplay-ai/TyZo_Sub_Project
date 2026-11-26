@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
 import { before, beforeEach, describe, it } from "node:test";
-import { PGlite } from "@electric-sql/pglite";
+import { pgliteSql } from "../test-sql.ts";
 import type { Sql } from "../db.ts";
 import { buyGiayWith, closeTokenWith, giayBalance, openGiayWith } from "./token-flow.ts";
 import { runModalPartWith } from "./tyzo-modal-charge.ts";
@@ -11,14 +10,7 @@ const PRICE = JSON.stringify({ mode: "fixed", nhanh: 1, ky: 2 });
 const SEG = [{ text: "こんにちは", start: 0, end: 1 }];
 
 before(async () => {
-  const db = new PGlite();
-  const dir = new URL("../../../migrations/", import.meta.url);
-  for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) await db.exec(readFileSync(new URL(file, dir), "utf8"));
-  sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
-    let text = strings[0];
-    for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-    return (await db.query(text, values)).rows;
-  }) as unknown as Sql;
+  sql = await pgliteSql();
 });
 
 async function open(hold: number, seconds = 600) {

@@ -144,15 +144,47 @@ export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost
   return Number(rows[0]?.taken ?? 0);
 }
 
+/** Một đoạn TyZo Modal tính là «đang chạy» trong 15 phút kể từ lúc gửi; quá thời gian thì coi như đã chết. */
+export const MODAL_PART_LIVE = "15 minutes";
+
 /**
  * Đóng phiếu giây: phần giữ chưa trừ trả về gói còn hạn. Gói đã hết hạn thì mất.
  * Không cộng ví đồng, không tính hoa hồng.
+ *
+ * Còn đoạn TyZo Modal đang chạy (kiểm toán MAIN-036): không đóng ngay mà ghi «muốn đóng» (close_wanted), trả null;
+ * đoạn cuối quyết toán xong sẽ đóng (tyzo-modal-charge.ts). Nhờ vậy đoạn đã gửi GPU vẫn được trừ đúng như điều khoản
+ * nói («khách bấm hủy thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại»). `force` (Admin nhả tay, phiếu treo
+ * quá 6 giờ) đóng luôn như trước.
  */
-export async function closeTokenWith(sql: Sql, id: string, userId: string, failed: boolean) {
+export async function closeTokenWith(sql: Sql, id: string, userId: string, failed: boolean, opts: { force?: boolean } = {}) {
+  const force = Boolean(opts.force);
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const closed = await closeTokenNow(sql, id, userId, failed, force);
+    if (closed || force) return closed;
+    const deferred = await sql`
+      update run_tickets set close_wanted = true, close_failed = close_failed or ${failed}::boolean
+      where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'token'
+        and exists (
+          select 1 from run_modal_parts p
+          where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.created_at > now() - ${MODAL_PART_LIVE}::interval
+        )
+      returning 1`;
+    if (deferred.length) return null;
+    const still = await sql`select 1 from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'token'`;
+    if (!still.length) return null;
+  }
+  return null;
+}
+
+async function closeTokenNow(sql: Sql, id: string, userId: string, failed: boolean, force: boolean) {
   const rows = await sql<{ freed: number; charged: number; status: string }>`
     with o as (
       select id, held from run_tickets
       where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'token'
+        and (${force}::boolean or not exists (
+          select 1 from run_modal_parts p
+          where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.created_at > now() - ${MODAL_PART_LIVE}::interval
+        ))
       for update
     ),
     slices as (
@@ -173,8 +205,8 @@ export async function closeTokenWith(sql: Sql, id: string, userId: string, faile
     ),
     t as (
       update run_tickets
-      set released = released + o.held, held = 0, closed_at = now(),
-          status = case when charged > 0 then 'da-tru' when ${failed}::boolean then 'loi' else 'da-nha' end
+      set released = released + o.held, held = 0, closed_at = now(), modal_reserved = 0, close_wanted = false,
+          status = case when charged > 0 then 'da-tru' when ${failed}::boolean or close_failed then 'loi' else 'da-nha' end
       from o where run_tickets.id = o.id
       returning o.held as freed, run_tickets.charged as charged, run_tickets.status as status
     )
@@ -196,7 +228,7 @@ export async function releaseStaleTokensWith(sql: Sql, userId: string, hours = 6
   `;
   let n = 0;
   for (const row of rows) {
-    const closed = await closeTokenWith(sql, row.id, userId, false);
+    const closed = await closeTokenWith(sql, row.id, userId, false, { force: true });
     if (closed) n += 1;
   }
   return n;
