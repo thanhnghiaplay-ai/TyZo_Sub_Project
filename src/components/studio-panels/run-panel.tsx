@@ -4,7 +4,7 @@ import { turnPackModels } from "@/lib/turn-pack";
 import { type PayChoice } from "@/lib/payment/pay-status";
 import { InfoTip } from "@/components/info-tip";
 import type * as React from "react";
-import type { ToolId } from "@/components/studio";
+import type { ToolId } from "@/components/studio-tools";
 
 type PipelineApp = ReturnType<typeof usePipeline>;
 const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";

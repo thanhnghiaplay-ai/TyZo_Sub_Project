@@ -6,7 +6,7 @@ import { edgeVoice } from "@/lib/sub/edge-voice";
 import { type NarrationSettings } from "@/lib/sub/types";
 import { Choice, Select } from "@/components/studio-parts";
 import type * as React from "react";
-import type { ToolId } from "@/components/studio";
+import type { ToolId } from "@/components/studio-tools";
 
 type PipelineApp = ReturnType<typeof usePipeline>;
 

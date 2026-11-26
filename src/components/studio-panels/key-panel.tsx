@@ -8,7 +8,7 @@ import { InfoTip } from "@/components/info-tip";
 import { ModelPicker, Select, VoiceLanes } from "@/components/studio-parts";
 import { ownModelPrice, modelFacts, roomAsrPrice } from "@/components/studio-price";
 import type * as React from "react";
-import type { ToolId } from "@/components/studio";
+import type { ToolId } from "@/components/studio-tools";
 import type { AsrPickRow } from "@/lib/asr-picker";
 
 type PipelineApp = ReturnType<typeof usePipeline>;

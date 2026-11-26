@@ -1,4 +1,5 @@
 import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "@/lib/customer-menu";
+import { ADVANCED_TOOLS, TOOLS, type ToolId } from "@/components/studio-tools";
 import { StudioDock } from "@/components/studio-dock";
 import { ToolWheel } from "@/components/tool-wheel";
 import { isStudioSheet } from "@/lib/studio-layout";
@@ -124,20 +125,6 @@ function loadNarration(): NarrationSettings {
   }
 }
 
-const TOOLS = [
-  ["key", TOOL_NAME.key],
-  ["phim", TOOL_NAME.phim],
-  ["cast", TOOL_NAME.cast],
-  ["voice", TOOL_NAME.voice],
-  ["check", TOOL_NAME.check],
-  ["run", TOOL_NAME.run],
-] as const;
-
-/** Chức năng thêm: chỉ Thuật ngữ (cùng nhóm «Dịch bình thường» trên menu). Cách trả và model nằm trong «Cài đặt dịch» (Menu, không lướt bằng nút vàng). */
-const ADVANCED_TOOLS = [
-  ["thuatngu", TOOL_NAME.thuatngu],
-] as const;
-export type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 
 /** Thứ tự mục trên menu (Dịch bình thường): Thuật ngữ là lối tắt vào nhánh của tab Ngữ cảnh. */
 const MENU_TOOL_ORDER = ["key", "phim", "cast", "thuatngu", "voice", "run", "check"] as const;

@@ -7,7 +7,7 @@ import { FIELD } from "@/components/studio-shared";
 import { GlossaryEditor } from "@/components/studio-glossary";
 import { Select } from "@/components/studio-parts";
 import type * as React from "react";
-import type { ToolId } from "@/components/studio";
+import type { ToolId } from "@/components/studio-tools";
 
 type PipelineApp = ReturnType<typeof usePipeline>;
 

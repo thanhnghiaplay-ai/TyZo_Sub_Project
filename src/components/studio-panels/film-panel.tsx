@@ -5,7 +5,7 @@ import { LANGS, SRC_LANGS } from "@/lib/sub/text";
 import { FIELD } from "@/components/studio-shared";
 import { FileTile, Select } from "@/components/studio-parts";
 import type * as React from "react";
-import type { ToolId } from "@/components/studio";
+import type { ToolId } from "@/components/studio-tools";
 
 type PipelineApp = ReturnType<typeof usePipeline>;
 

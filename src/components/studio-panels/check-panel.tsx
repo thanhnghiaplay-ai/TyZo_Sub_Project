@@ -3,7 +3,7 @@ import { PolishPanel } from "@/components/polish-panel";
 import { fmt } from "@/lib/sub/text";
 import { AsrDiag } from "@/components/studio-diag";
 import type * as React from "react";
-import type { ToolId } from "@/components/studio";
+import type { ToolId } from "@/components/studio-tools";
 
 type PipelineApp = ReturnType<typeof usePipeline>;
 
