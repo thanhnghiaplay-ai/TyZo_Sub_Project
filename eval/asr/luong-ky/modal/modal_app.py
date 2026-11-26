@@ -144,7 +144,7 @@ ASR_SNAPSHOT = bool(CFG["gpu"].get("snapshot_nhan_dang", False))   # đổi tron
 
 
 @app.cls(gpu=CFG["gpu"]["nhan_dang"], image=asr_image, volumes={"/cache": asr_cache}, secrets=[SECRET],
-         scaledown_window=60, timeout=1800, min_containers=int(os.environ.get("TYZO_ASR_WARM") or 0),
+         scaledown_window=60, timeout=1800, max_containers=9, min_containers=min(9, int(os.environ.get("TYZO_ASR_WARM") or 0)),
          enable_memory_snapshot=ASR_SNAPSHOT,
          **({"experimental_options": {"enable_gpu_snapshot": True}} if ASR_SNAPSHOT else {}))
 class Asr:
