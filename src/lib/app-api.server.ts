@@ -19,8 +19,10 @@ export function failFrom(error: unknown) {
   const coded = typeof (error as { status?: unknown })?.status === "number" ? (error as { status: number }).status : null;
   const retry = (error as { retryAfter?: unknown })?.retryAfter;
   const raw = error instanceof Error && error.message ? error.message : "";
-  console.error("[app-api]", raw || String(error));
-  const forCustomer = coded !== null || /[\u00c0-\u1ef9]/.test(raw);
+  // Status alone does not make a 5xx message public. Never log raw messages
+  // here: driver errors may contain queries, connection strings or user data.
+  console.error("[app-api]", { kind: error instanceof Error ? error.name : "unknown", status: coded ?? 500 });
+  const forCustomer = coded !== null ? coded >= 400 && coded < 500 : /[\u00c0-\u1ef9]/.test(raw);
   const message = forCustomer && raw ? raw : "Có lỗi, hãy thử lại.";
   const status = coded !== null ? coded : forCustomer ? 400 : 500;
   return fail(status >= 400 && status < 600 ? status : 400, message, typeof retry === "number" ? { "retry-after": String(retry) } : undefined);
