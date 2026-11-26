@@ -50,7 +50,8 @@ app = modal.App("tyzo-asr")
 
 LLM_SNAPSHOT = bool(CFG["gpu"].get("snapshot_may_chu", False))   # đổi trong cau-hinh.json rồi «Cập nhật»
 LLM_KW = dict(image=llm_image, gpu=CFG["gpu"]["model_chu"], volumes={"/cache": llm_cache}, secrets=[SECRET],
-              scaledown_window=300, timeout=24 * 3600, min_containers=int(os.environ.get("TYZO_LLM_WARM") or 0))
+              scaledown_window=int(CFG["gpu"].get("tat_may_chu_sau_giay", 300)), timeout=24 * 3600,
+              min_containers=int(os.environ.get("TYZO_LLM_WARM") or 0))
 
 
 def _count_triton():
@@ -120,7 +121,7 @@ else:
     @modal.concurrent(max_inputs=64)
     @modal.web_server(port=8000, startup_timeout=1500)
     def llm():
-        """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi có yêu cầu, tắt sau 5 phút rảnh."""
+        """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi có yêu cầu, tắt khi rảnh quá `tat_may_chu_sau_giay`."""
         import threading
         threading.Thread(target=_wait_ready_and_save, daemon=True).start()
         _start_vllm()

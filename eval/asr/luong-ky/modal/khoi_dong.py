@@ -140,7 +140,7 @@ def main(roots):
             else:
                 fast.append(seconds)
         summary("Yêu cầu dịch khi máy đã bật", fast)
-    print("\nGiờ theo thời điểm ghi tệp trên VPS. Một máy có thể phục vụ nhiều lượt nếu chưa tắt (chữ 5 phút, nhận dạng 60 s).")
+    print("\nGiờ theo thời điểm ghi tệp trên VPS. Một máy có thể phục vụ nhiều lượt nếu chưa tắt (chữ theo tat_may_chu_sau_giay, nhận dạng 60 s).")
 
 
 if __name__ == "__main__":

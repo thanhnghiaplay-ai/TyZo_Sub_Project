@@ -95,12 +95,19 @@ class LlmReady:
 
     def _poll(self, base):
         t0 = time.time()
-        while not self.stop and time.time() - t0 < 1500:
+        while not self.stop and (self.ok or time.time() - t0 < 1500):
             try:
                 if urllib.request.urlopen(base.rstrip("/") + "/health", timeout=20).status == 200:
-                    self.ok = True; BOOT.setdefault("model_chu_san_sang_sau_s", round(time.time() - t0, 1)); return
+                    if not self.ok:
+                        self.ok = True; BOOT.setdefault("model_chu_san_sang_sau_s", round(time.time() - t0, 1))
+                    # giữ máy chữ bật trong lúc còn nhận dạng (máy chữ tự tắt sau tat_may_chu_sau_giay rảnh)
+                    for _ in range(30):
+                        if self.stop: return
+                        time.sleep(1)
+                    continue
             except Exception:
-                time.sleep(3)
+                pass
+            time.sleep(3)
 
     def __call__(self):
         return self.ok
