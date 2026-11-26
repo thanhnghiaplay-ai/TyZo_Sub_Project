@@ -7,7 +7,7 @@
  */
 import { addressLock, BATCH, glossaryHit, untranslated } from "@/lib/sub/text";
 import { contextBlock, sleep, throwIfAborted, translateIndexes, translateWithRepair, type ChatKey } from "@/lib/sub/groq";
-import { loadGenreGlossary, loadRunGlossary, mergeIntoGloss, overlayUserTerms, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, type GlossaryTerm } from "@/lib/sub/glossary";
+import { loadRunGlossary, mergeIntoGloss, overlayUserTerms, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, type GlossaryTerm } from "@/lib/sub/glossary";
 import { pickAutoModel } from "@/lib/sub/models";
 import type { AutoProfile, ModelMode, Seg } from "@/lib/sub/types";
 import type { Job } from "./job";
@@ -58,6 +58,23 @@ export function createTranslator(ctx: TranslateContext) {
   const { j, my, signal, source, target, mode, chosen, genre, gloss, title, notes, extra, profile, allowEnterprise, baseGloss, threads, modelSig, ticket, ticketPart, preRef, reviewRef, roomPayRef, userTermsRef, pauseForNewBible, chatKeyOf, autoPool, ensureAnalysis, releaseAsrTicket, ensureChatTicket, setReviewHold, publish, progress, say, onWait } = ctx;
 
   const translateRemaining = async (asrDone: () => boolean) => {
+    // One bounded request/retry shared by concurrent workers. Keep user terms
+    // available even when the server glossary fails, and make the loss visible.
+    let glossaryPending: Promise<GlossaryTerm[]> | null = null;
+    const baseTerms = () => glossaryPending ??= (async () => {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        throwIfAborted(signal);
+        try {
+          const pack = await loadRunGlossary(source, genre, target, baseGloss);
+          if (!pack.error) return pack.terms;
+        } catch {
+          throwIfAborted(signal);
+        }
+        if (attempt === 0) await sleep(200, signal);
+      }
+      say("Chưa tải được bảng thuật ngữ sau khi thử lại. Lần dịch này vẫn dùng thuật ngữ bạn nhập; hãy kiểm tra các tên riêng.", true);
+      return [];
+    })();
     const sig = `${target}|${modelSig}`;
     if (j.appliedSig && j.appliedSig !== sig) {
       for (const seg of j.segs) {
@@ -140,13 +157,7 @@ export function createTranslator(ctx: TranslateContext) {
           const prior = j.segs.slice(Math.max(0, at - 14), at).map((seg) => seg.original);
 
           // Structured glossary (genre × source language) — hard override via placeholder
-          let packTerms: Awaited<ReturnType<typeof loadGenreGlossary>>["terms"] = [];
-          try {
-            const pack = await loadRunGlossary(source, genre, target, baseGloss);
-            packTerms = overlayUserTerms(pack.terms, userTermsRef.current);
-          } catch {
-            packTerms = overlayUserTerms([], userTermsRef.current);
-          }
+          const packTerms = overlayUserTerms(await baseTerms(), userTermsRef.current);
           const effectiveGloss = packTerms.length ? mergeIntoGloss(gloss, packTerms) : gloss;
           const { protected: protectedOrigs, restoreMap, hits } = protectTerms(origs, packTerms, source);
 

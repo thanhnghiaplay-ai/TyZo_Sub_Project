@@ -22,6 +22,13 @@ mock.module("../sub/groq.ts", {
   },
 });
 
+const glossary = await import("../sub/glossary.ts");
+let glossaryLoads = 0;
+const glossaryNotices: string[] = [];
+mock.module("../sub/glossary.ts", { namedExports: { ...glossary,
+  loadRunGlossary: async () => { glossaryLoads++; return { terms: [], sources: [], error: true }; },
+} });
+
 test("4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi dịch một lần", async () => {
   const { createTranslator } = await import("./translate.ts");
   const segs = Array.from({ length: 6 }, (_, i) => ({ original: `câu ${i}`, translation: null as string | null, start: i, end: i + 1, busy: false }));
@@ -35,10 +42,12 @@ test("4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi d
     pauseForNewBible: ref(false), chatKeyOf: () => ({}) as never, autoPool: () => [] as never, ensureAnalysis: async () => null,
     releaseAsrTicket: async () => {},
     ensureChatTicket: () => (switched ??= new Promise((r) => setTimeout(r, 50))),
-    setReviewHold: () => {}, publish: () => {}, progress: () => {}, say: () => {}, onWait: () => {},
+    setReviewHold: () => {}, publish: () => {}, progress: () => {}, say: (message) => { glossaryNotices.push(message); }, onWait: () => {},
   });
   await translateRemaining(() => true);
   const sent = calls.flat();
   assert.equal(sent.length, new Set(sent).size, `câu bị gửi trùng: ${JSON.stringify(calls)}`);
   assert.ok(segs.every((s) => s.translation?.startsWith("dịch")));
+  assert.equal(glossaryLoads, 2, "R7-003: retry glossary once, shared between workers");
+  assert.equal(glossaryNotices.filter((text) => text.includes("thuật ngữ")).length, 1, "R7-003: warn once when glossary unavailable");
 });
