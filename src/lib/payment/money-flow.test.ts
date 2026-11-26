@@ -113,6 +113,47 @@ describe("mua thẳng không cộng số dư", () => {
     assert.equal(row.ok, true);
   });
 
+  it("R5-005: hoa hồng gói tính trên số tiền thực thu của đơn (giá lúc đặt), không trên giá gói hiện tại; trả dư không tính", async () => {
+    await sql`delete from commission_events`;
+    await sql`delete from referrals`;
+    await sql`delete from affiliates`;
+    await sql`insert into "user" (id, name, email, "emailVerified", "createdAt", "updatedAt") values ('ctv', 'CTV', 'ctv@tyzo.test', true, now(), now()) on conflict do nothing`;
+    await sql`insert into affiliates (user_id, code, status) values ('ctv', 'MACTV', 'hoat-dong')`;
+    await sql`insert into referrals (user_id, affiliate_id) values ('k', 'ctv')`;
+    const oldPrice = PLAN.price + 3000;
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('oc', 'k', 'sepay', ${oldPrice}, 'TZCOM234', 'pending', 'plan', ${PLAN.id}, '{}')`;
+    // Khách chuyển dư 5.000 đ: đơn vẫn ghi đúng số tiền đơn, hoa hồng không tính phần dư.
+    await creditHitWith(sql, "sepay", { ref: "C1", amount: oldPrice + 5000, text: "TZCOM234" });
+    const ev = await sql<{ base_amount: number }>`select base_amount from commission_events where source_ref = 'goi:oc'`;
+    assert.equal(ev.length, 1);
+    assert.equal(Number(ev[0].base_amount), oldPrice);
+  });
+
+  it("R5-006: ghi hoa hồng lỗi thì đơn vẫn trả xong, việc nằm trong hàng đợi và lần sau ghi được đúng một lần", async () => {
+    await sql`delete from commission_events`;
+    await sql`delete from commission_outbox`;
+    await sql`delete from referrals`;
+    await sql`delete from affiliates`;
+    await sql`insert into affiliates (user_id, code, status) values ('ctv', 'MACTV', 'hoat-dong')`;
+    await sql`insert into referrals (user_id, affiliate_id) values ('k', 'ctv')`;
+    await sql.query(`create or replace function thu_chan_hh() returns trigger language plpgsql as $$ begin raise exception 'loi tam thoi'; end $$`);
+    await sql.query(`create trigger thu_chan_hh before insert on commission_events for each row execute function thu_chan_hh()`);
+    await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('oo', 'k', 'sepay', ${PLAN.price}, 'TZOUT234', 'pending', 'plan', ${PLAN.id}, '{}')`;
+    try {
+      const done = await creditHitWith(sql, "sepay", { ref: "O1", amount: PLAN.price, text: "TZOUT234" });
+      assert.equal(done?.purpose, "plan", "đơn vẫn trả xong");
+      const wait = await sql<{ tries: number; done: boolean }>`select tries, done_at is not null as done from commission_outbox where source_ref = 'goi:oo'`;
+      assert.deepEqual([wait.length, wait[0].done], [1, false]);
+    } finally {
+      await sql.query(`drop trigger thu_chan_hh on commission_events`);
+    }
+    const { drainCommissionOutbox } = await import("../affiliate-flow.ts");
+    assert.equal(await drainCommissionOutbox(sql), 1);
+    assert.equal(await drainCommissionOutbox(sql), 0, "không ghi lần hai");
+    const ev = await sql<{ n: number }>`select count(*)::int as n from commission_events where source_ref = 'goi:oo'`;
+    assert.equal(ev[0].n, 1);
+  });
+
   it("đơn thuê phòng đặt ở giá cũ vẫn được giao sau khi Admin đổi giá (đơn giữ đúng giá lúc đặt)", async () => {
     const oldPrice = PLAN.price + 3000;
     await sql`insert into pay_orders (id, user_id, provider, amount, code, status, purpose, ref, detail) values ('og', 'k', 'sepay', ${oldPrice}, 'TZOLD234', 'pending', 'plan', ${PLAN.id}, '{}')`;

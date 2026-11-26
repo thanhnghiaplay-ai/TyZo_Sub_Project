@@ -1,5 +1,5 @@
-import type { Sql } from "@/lib/db";
-import { AFFILIATE_DEFAULT, commissionFor, parseAffiliateRules } from "@/lib/affiliate";
+import type { Sql } from "./db.ts";
+import { AFFILIATE_DEFAULT, commissionFor, parseAffiliateRules } from "./affiliate.ts";
 
 async function rulesOf(sql: Sql) {
   const rows = await sql<{ value: string }>`select value from room_settings where key = 'affiliate'`;
@@ -73,7 +73,32 @@ async function insertEvent(sql: Sql, userId: string, kind: "goi" | "token", ref:
   `;
 }
 
+/**
+ * R5-006: xử lý hàng đợi hoa hồng (đơn đã trả mà chưa ghi được hoa hồng). Gọi ngay sau khi trả, và mỗi lần mở trang
+ * Cộng tác. Mỗi nguồn chỉ một khoản (on conflict do nothing), nên chạy lại bao nhiêu lần cũng không cộng hai lần.
+ * Trả số việc đã xong.
+ */
+export async function drainCommissionOutbox(sql: Sql, limit = 50): Promise<number> {
+  const rows = await sql<{ source_kind: string; source_ref: string; user_id: string; revenue: number; tokens: number }>`
+    select source_kind, source_ref, user_id, revenue, tokens from commission_outbox
+    where done_at is null and tries < 20 order by created_at limit ${limit}`;
+  let done = 0;
+  for (const row of rows) {
+    try {
+      if (row.source_kind === "goi") await accruePlan(sql, row.user_id, row.source_ref, Number(row.revenue));
+      else if (row.source_kind === "token") await accrueToken(sql, row.user_id, row.source_ref, Number(row.revenue), Number(row.tokens));
+      await sql`update commission_outbox set done_at = now(), tries = tries + 1, last_error = '' where source_kind = ${row.source_kind} and source_ref = ${row.source_ref}`;
+      done += 1;
+    } catch (error) {
+      const why = (error instanceof Error ? error.message : String(error)).slice(0, 300);
+      await sql`update commission_outbox set tries = tries + 1, last_error = ${why} where source_kind = ${row.source_kind} and source_ref = ${row.source_ref}`;
+    }
+  }
+  return done;
+}
+
 export async function settleAffiliate(sql: Sql) {
+  await drainCommissionOutbox(sql).catch(() => 0);
   await promoteDue(sql);
 }
 

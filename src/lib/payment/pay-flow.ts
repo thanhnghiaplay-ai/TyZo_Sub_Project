@@ -28,6 +28,16 @@ function tokenSpec(detail: string): { tokens: number; days: number } | null {
   }
 }
 
+/** Xử lý hàng đợi hoa hồng; lỗi không làm hỏng việc thanh toán (việc còn trong hàng, lần sau thử lại). */
+async function drainOutboxQuietly(sql: Sql) {
+  try {
+    const { drainCommissionOutbox } = await import("../affiliate-flow.ts");
+    await drainCommissionOutbox(sql, 5);
+  } catch (error) {
+    console.error("[hoa-hong] chưa ghi được, để hàng đợi thử lại:", error instanceof Error ? error.message : error);
+  }
+}
+
 /** Đơn token kể cả khi purpose lưu nhầm thành nap, miễn detail có tokens và days. */
 export function saleKind(order: { purpose: string; detail: string }): "token" | "plan" | "nap" {
   if (order.purpose === "plan") return "plan";
@@ -63,16 +73,18 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
         insert into room_ledger (user_id, kind, amount, note)
         select user_id, 'nap', ${order.amount}::int, ${note}::text from paid
         returning 1
+      ),
+      ob as (
+        -- R5-006: xếp hàng ghi hoa hồng CÙNG câu lệnh đánh dấu đã trả.
+        insert into commission_outbox (source_kind, source_ref, user_id, revenue, tokens)
+        select 'token', ${`token:${order.id}`}::text, user_id, ${order.amount}::int, ${spec.tokens}::int from paid
+        on conflict do nothing
+        returning 1
       )
-      select user_id from paid
+      select user_id from paid where (select count(*) from ob) >= 0
     `;
     if (!applied.length) return null;
-    try {
-      const { accrueToken } = await import("@/lib/affiliate-flow");
-      await accrueToken(sql, order.user_id, `token:${order.id}`, order.amount, spec.tokens);
-    } catch {
-      /* cộng Token vẫn xong nếu hoa hồng lỗi */
-    }
+    await drainOutboxQuietly(sql);
     return { userId: order.user_id, amount: order.amount, code: order.code, purpose: "token" };
   }
   if (order.purpose === "plan") {
@@ -106,16 +118,20 @@ export async function settleDirect(sql: Sql, order: SaleOrder, mark: { provider:
         insert into room_ledger (user_id, kind, amount, note)
         select user_id, 'nap', ${order.amount}::int, ${note}::text from acct
         returning 1
+      ),
+      ob as (
+        -- R5-005 (Chủ duyệt 27/11/2026): hoa hồng trên số tiền THỰC THU hợp lệ của đơn (giá lúc đặt, đúng số ghi sổ),
+        -- không trên giá gói hiện tại; trả dư không tính; tỷ lệ giữ nguyên; khoản đã ghi trước đây không tính lại.
+        -- R5-006: xếp hàng cùng câu lệnh đánh dấu đã trả.
+        insert into commission_outbox (source_kind, source_ref, user_id, revenue)
+        select 'goi', ${`goi:${order.id}`}::text, user_id, ${order.amount}::int from paid
+        on conflict do nothing
+        returning 1
       )
-      select user_id from paid
+      select user_id from paid where (select count(*) from ob) >= 0
     `;
     if (!applied.length) return null;
-    try {
-      const { accruePlan } = await import("@/lib/affiliate-flow");
-      await accruePlan(sql, order.user_id, `goi:${order.id}`, plan.price);
-    } catch {
-      /* mở hạn vẫn xong nếu hoa hồng lỗi */
-    }
+    await drainOutboxQuietly(sql);
     return { userId: order.user_id, amount: order.amount, code: order.code, purpose: "plan" };
   }
   return null;
@@ -217,18 +233,23 @@ export async function buyPlanWith(sql: Sql, userId: string, plan: { id: string; 
             + make_interval(hours => ${plan.hours})
       where user_id = ${userId} and balance >= ${plan.price}
       returning user_id, balance
+    ),
+    led as (
+      insert into room_ledger (user_id, kind, amount, note)
+      select user_id, 'goi', ${-plan.price}, ${"Mua gói " + plan.name} from upd
+      returning user_id
+    ),
+    ob as (
+      -- R5-006: xếp hàng hoa hồng cùng câu lệnh trừ số dư.
+      insert into commission_outbox (source_kind, source_ref, user_id, revenue)
+      select 'goi', ${`goi:${userId}:${plan.id}:${Date.now()}`}::text, user_id, ${plan.price}::int from upd
+      on conflict do nothing
+      returning 1
     )
-    insert into room_ledger (user_id, kind, amount, note)
-    select user_id, 'goi', ${-plan.price}, ${"Mua gói " + plan.name} from upd
-    returning user_id
+    select user_id from led where (select count(*) from ob) >= 0
   `;
   if (!updated.length) throw new Error("Số dư chưa đủ.");
-  try {
-    const { accruePlan } = await import("@/lib/affiliate-flow");
-    await accruePlan(sql, userId, `goi:${userId}:${plan.id}:${Date.now()}`, plan.price);
-  } catch {
-    /* mua gói vẫn xong nếu hoa hồng lỗi */
-  }
+  await drainOutboxQuietly(sql);
 }
 
 /**
@@ -255,7 +276,7 @@ export async function refundRunWith(sql: Sql, id: string, amount: number, reason
   `;
   if (applied.length) {
     try {
-      const { clawback, accrueRun } = await import("@/lib/affiliate-flow");
+      const { clawback, accrueRun } = await import("../affiliate-flow.ts");
       await clawback(sql, "luot", id);
       const owner = applied[0].user_id;
       if (owner) await accrueRun(sql, owner, id);
