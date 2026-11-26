@@ -62,6 +62,22 @@ describe("cổng tính tiền", () => {
     assert.equal((await t(TID)).charged, 2000); // 1.000 đ/giờ × (1+100%) = 2.000
   });
 
+  it("R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát", async () => {
+    const form = new FormData();
+    const bytes = new Uint8Array(44 + 16000 * 2 * 60);
+    const view = new DataView(bytes.buffer);
+    bytes.set(new TextEncoder().encode("RIFF"), 0);
+    bytes.set(new TextEncoder().encode("WAVE"), 8);
+    view.setUint32(28, 32000, true);
+    form.set("file", new Blob([bytes], { type: "audio/wav" }), "fixture.wav");
+    form.set("model", "asr");
+    const request = new Request("http://fixture.test", { method: "POST", body: form });
+    await call({ path: "/audio/transcriptions", model: "asr", body: await request.arrayBuffer(), contentType: request.headers.get("content-type"), send: json({ text: "synthetic" }) });
+    assert.equal((await t(TID)).charged, 34);
+    const rows = await sql<{ status: string }>`select status from run_gate_calls where ticket_id = ${TID}`;
+    assert.equal(rows[0].status, "can-doi-soat");
+  });
+
   it("thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq", async () => {
     let called = 0;
     const send = async () => { called++; return new Response("{}"); };

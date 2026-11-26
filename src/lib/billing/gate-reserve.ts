@@ -68,7 +68,7 @@ export function beatGateCall(sql: Sql, callId: string) {
  * Nhả phần giữ của lệnh (một lần). `status`: xong (đã trừ trong cùng giao dịch), loi (nhà báo lỗi), mat-phan-hoi.
  * Trả true nếu lệnh này vừa được nhả bởi lần gọi này.
  */
-export async function releaseGateCall(sql: Sql, callId: string, status: "xong" | "loi" | "mat-phan-hoi") {
+export async function releaseGateCall(sql: Sql, callId: string, status: "xong" | "loi" | "mat-phan-hoi" | "can-doi-soat") {
   const rows = await sql`
     with c as (
       select id, ticket_id, reserved from run_gate_calls where id = ${callId} and status = 'dang-chay' for update

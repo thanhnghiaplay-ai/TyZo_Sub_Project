@@ -169,13 +169,14 @@ export async function chargeWith(input: {
   const bareBook = { ...book, desk: { markup: 0, custom: {} } };
   const unitRow = await sql<{ unit: string }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${userId}`;
   const tokenUnit = unitRow[0]?.unit === "token";
+  const estimatedSeconds = path === "/audio/transcriptions" ? await audioSecondsEstimate(input.contentType ?? null, input.body) : 0;
   const estBase =
     path === "/audio/transcriptions"
-      ? asrCost(bareBook, model, await audioSecondsEstimate(input.contentType ?? null, input.body)) ?? 0
+      ? asrCost(bareBook, model, estimatedSeconds) ?? 0
       : chatCost(bareBook, model, Math.ceil(input.body.byteLength / 3), input.outCap ?? MAX_COMPLETION_TOKENS) ?? 0;
   const estCost =
     path === "/audio/transcriptions"
-      ? asrCost(book, model, await audioSecondsEstimate(input.contentType ?? null, input.body)) ?? 0
+      ? asrCost(book, model, estimatedSeconds) ?? 0
       : chatCost(book, model, Math.ceil(input.body.byteLength / 3), input.outCap ?? MAX_COMPLETION_TOKENS) ?? 0;
   const { giayForBaseCost } = await import("./token-math.ts");
   const estimate = tokenUnit ? giayForBaseCost(input.unitBook ?? book, estBase) ?? 0 : estCost;
@@ -211,6 +212,7 @@ export async function chargeWith(input: {
   const text = await response.text();
   let cost: number | null = null;
   let base = 0;
+  let needsReconciliation = false;
   const bare = { ...book, desk: { markup: 0, custom: {} } };
   try {
     const data = JSON.parse(text) as {
@@ -219,7 +221,11 @@ export async function chargeWith(input: {
       usage?: { prompt_tokens?: number; completion_tokens?: number };
     };
     if (path === "/audio/transcriptions") {
-      const seconds = billedSecondsOf(data);
+      const reportedSeconds = billedSecondsOf(data);
+      needsReconciliation = !(reportedSeconds > 0);
+      // Only missing/invalid upstream usage falls back. Never inflate valid
+      // duration using the conservative reservation estimate for compressed audio.
+      const seconds = needsReconciliation ? estimatedSeconds : reportedSeconds;
       cost = asrCost(book, model, seconds);
       base = asrCost(bare, model, seconds) ?? 0;
     } else {
@@ -231,8 +237,9 @@ export async function chargeWith(input: {
       base = chatCost(bare, model, inn, out) ?? 0;
     }
   } catch {
-    cost = path === "/audio/transcriptions" ? asrCost(book, model, 0) : chatCost(book, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS);
-    base = path === "/audio/transcriptions" ? asrCost(bare, model, 0) ?? 0 : chatCost(bare, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS) ?? 0;
+    needsReconciliation = path === "/audio/transcriptions";
+    cost = path === "/audio/transcriptions" ? asrCost(book, model, estimatedSeconds) : chatCost(book, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS);
+    base = path === "/audio/transcriptions" ? asrCost(bare, model, estimatedSeconds) ?? 0 : chatCost(bare, model, Math.ceil(input.body.byteLength / 3), MAX_COMPLETION_TOKENS) ?? 0;
   }
   // Tiền phải trả nhà cung cấp: giá gốc thật của lần gọi thành công, kể cả khi phiếu đã hết phần giữ.
   if (base > 0) await recordSpendWith(sql, { provider: input.provider ?? "groq", model, baseVnd: base, rate: book.rate });
@@ -245,7 +252,7 @@ export async function chargeWith(input: {
         if (giay && giay > 0) await chargeTokenWith(tx, input.ticketId, userId, giay);
       } else await chargeTicketWith(tx, input.ticketId, userId, cost, base);
     }
-    await releaseGateCall(tx, callId, "xong");
+    await releaseGateCall(tx, callId, needsReconciliation ? "can-doi-soat" : "xong");
   });
   const { closeIfWantedWith } = await import("./token-flow.ts");
   await closeIfWantedWith(sql, input.ticketId, userId);
