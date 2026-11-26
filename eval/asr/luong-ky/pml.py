@@ -401,7 +401,8 @@ def run(F, cfg, L=None):
         if d > cfg.get("unclear", 0.6):   # ghi lại nhóm khó để xem vì sao các bản lệch
             st.setdefault("kho", []).append({"t": [round(g[0][0], 2), round(g[-1][1], 2)], "d": round(d, 2),
                                              "c": [x["text"] for x in c], "out": text, "cach": how})
-        segs += [s for s in split_long(align(text, c, g, L), L) if not interjection_only(s["text"], L)]; log.append({"t": [round(g[0][0], 1), round(g[-1][1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "out": text, "cach": how})
+        segs += [s for s in split_long(align(text, c, g, L), L)
+                 if re.sub(r"[^\w]|_", "", s["text"]) and not interjection_only(s["text"], L)]   # bỏ câu chỉ có dấu (“?”); log.append({"t": [round(g[0][0], 1), round(g[-1][1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "out": text, "cach": how})
     segs, outro = drop_misplaced_outro(segs, L)
     st["bo_chao"] = [s["text"] for s in outro]
     st["probe"] = st_probe
