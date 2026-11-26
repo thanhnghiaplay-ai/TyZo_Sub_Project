@@ -207,23 +207,55 @@ def parse(text, n):
     for line in text.splitlines():
         head, sep, rest = line.strip().partition(".")
         if sep and head.strip().isdigit():
-            out[int(head)] = rest.strip()
+            out[int(head)] = re.sub(r"^\[tối đa \d+\]\s*", "", rest.strip())
     if sorted(out) != list(range(1, n + 1)):
         raise ValueError(f"trả {len(out)} dòng, cần {n}")
     return [out[i] for i in range(1, n + 1)]
 
 
-def plan(lines, lang, title, model, folder):
+READ_CPS = 15          # tốc độ đọc phụ đề tiếng Việt mục tiêu (ký tự/giây)
+MAX_EXTEND = 2.0       # được kéo dài câu thêm tối đa bấy nhiêu giây vào khoảng trống
+MIN_SHOW = 1.0         # mỗi câu hiện ít nhất 1 giây nếu còn chỗ
+GAP = 0.08             # khoảng cách tối thiểu tới câu sau
+
+
+def room(segs):
+    """Thời gian tối đa mỗi câu có thể hiện: tới câu sau (trừ GAP), không quá MAX_EXTEND sau mốc cuối."""
+    out = []
+    for i, s in enumerate(segs):
+        nxt = segs[i + 1]["start"] - GAP if i + 1 < len(segs) else s["end"] + MAX_EXTEND
+        out.append(max(s["end"] - s["start"], min(nxt, s["end"] + MAX_EXTEND) - s["start"]))
+    return out
+
+
+def budgets(segs):
+    return [max(8, int(READ_CPS * r)) for r in room(segs)]
+
+
+def fit_times(segs, vi):
+    """Kéo dài câu vào khoảng trống phía sau để đủ thời gian đọc (không chồng câu sau)."""
+    cues = []
+    for (s, v), r in zip(zip(segs, vi), room(segs)):
+        need = max(MIN_SHOW, len(v) / READ_CPS)
+        end = s["start"] + min(r, max(s["end"] - s["start"], need))
+        cues.append((s["start"], end, v))
+    return cues
+
+
+def plan(lines, lang, title, model, folder, limits):
     """Các nhóm câu cần dịch: (tệp lưu, câu gốc, lời nhắc hệ thống, lời nhắc người dùng)."""
     system = (f"Bạn dịch phụ đề phim {NAMES.get(lang, lang)} sang tiếng Việt tự nhiên, ngắn gọn, dễ đọc trên điện thoại. "
               "Lời gốc do máy nghe nên có thể sai vài chữ; dựa vào các câu xung quanh để hiểu đúng, không thêm ý. "
               "Giữ tên riêng và số liệu. Xưng hô hợp với quan hệ nhân vật nếu đoán được. "
-              "Trả đúng số dòng, mỗi dòng dạng `số. bản dịch`, không giải thích.")
+              "Mỗi dòng có [tối đa N]: số ký tự tối đa của bản dịch để người xem kịp đọc. Giữ đúng ý chính, "
+              "bỏ từ đệm và tiếng cảm thán lặp lại để vừa giới hạn (ví dụ “mềm quá, mềm quá, mềm quá” → “Mềm quá…”). "
+              "Trả đúng số dòng, mỗi dòng dạng `số. bản dịch` (không chép lại phần [tối đa N]), không giải thích.")
     head = f"Tên phim: {title}\n" if title else ""
     jobs = []
     for i in range(0, len(lines), BATCH):
         part = lines[i:i + BATCH]
-        user = head + "Phụ đề gốc:\n" + "\n".join(f"{k}. {t}" for k, t in enumerate(part, 1))
+        lim = limits[i:i + BATCH]
+        user = head + "Phụ đề gốc:\n" + "\n".join(f"{k}. [tối đa {n}] {t}" for k, (t, n) in enumerate(zip(part, lim), 1))
         key = hashlib.sha256((model + system + user).encode()).hexdigest()[:16]
         jobs.append((folder / f"dich-{i // BATCH + 1:03d}-{key}.json", part, system, user, head))
     return jobs
@@ -318,13 +350,14 @@ def main():
     title = title_file.read_text().strip() if title_file.exists() else ""
     model = cfg["hop_nhat"]["gpu"]["model"]
     lines = [s["text"].strip() for s in segs]
-    jobs = plan(lines, lang, title, model, folder)
+    limits = budgets(segs)
+    jobs = plan(lines, lang, title, model, folder, limits)
     if any(not j[0].exists() for j in jobs) and sys.stdin.isatty():
         typed = input(f"Tên phim để làm ngữ cảnh (Enter = {title or 'bỏ qua'}): ").strip()
         if typed and typed != title:
             title = typed
             title_file.write_text(title + "\n")
-            jobs = plan(lines, lang, title, model, folder)
+            jobs = plan(lines, lang, title, model, folder, limits)
     missing = sum(not j[0].exists() for j in jobs)
     if missing and ask(f"Dịch sang tiếng Việt: {missing}/{len(jobs)} nhóm chưa có, gửi {missing} yêu cầu máy model chữ? (c/k): ") != "c":
         sys.exit("Đã dừng trước khi dịch. Phụ đề gốc đã lưu.")
@@ -334,13 +367,16 @@ def main():
     vi = translate(jobs, state)
     if state["sent"]:
         print(f"Dịch xong {state['sent']} nhóm trong {time.monotonic() - t0:.1f} s (gồm thời gian bật máy chữ nếu đang tắt)")
-    cues = [(s["start"], s["end"], v) for s, v in zip(segs, vi)]
+    cues = fit_times(segs, vi)
     (folder / f"viet-{profile}.srt").write_text(srt(cues))
     pairs = "\n\n".join(f"{ts(s['start'])[:8]}  {s['text'].strip()}\n          → {v}" for s, v in zip(segs, vi))
     (folder / f"canh-nhau-{profile}.txt").write_text(pairs + "\n")
     long_lines = [v for v in vi if len(v) > 42]
-    fast = [v for s, v in zip(segs, vi) if len(v) / max(s["end"] - s["start"], 0.5) > 17]
-    print(f"\nPhụ đề Việt: {len(vi)} câu · {len(long_lines)} câu dài hơn 42 ký tự · {len(fast)} câu cần đọc nhanh hơn 17 ký tự/giây")
+    raw = sum(len(v) / max(s["end"] - s["start"], 0.5) > 17 for s, v in zip(segs, vi))
+    fast = [v for a, b, v in cues if len(v) / max(b - a, 0.5) > 17]
+    over = sum(len(v) > n for v, n in zip(vi, limits))
+    print(f"\nPhụ đề Việt: {len(vi)} câu · {len(long_lines)} câu dài hơn 42 ký tự · {len(fast)} câu cần đọc nhanh hơn 17 ký tự/giây"
+          f" (trước khi kéo dài thời gian hiện: {raw}) · {over} câu vượt giới hạn ký tự đã giao")
     print(f"Tệp: {folder}/goc-{profile}.srt · viet-{profile}.srt · canh-nhau-{profile}.txt\n")
     print(pairs[:3000])
 
