@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -96,7 +97,15 @@ def recognize(audio, lang, profile, saved):
     req = urllib.request.Request(url, body, {"Content-Type": "application/json", "User-Agent": "tyzo-asr-client/1.0"})
     start = time.monotonic()
     print(f"Gửi nhận dạng lúc {time.strftime('%H:%M:%S')}…", flush=True)
-    result = json.load(urllib.request.build_opener(Redirect).open(req, timeout=3600))
+    try:
+        result = json.load(urllib.request.build_opener(Redirect).open(req, timeout=3600))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")
+        try:
+            body = json.loads(body).get("loi", body)
+        except ValueError:
+            pass
+        raise RuntimeError(f"Máy nhận dạng lỗi {e.code} ở {audio.name}:\n{body[-1500:]}") from None
     if "loi" in result:
         sys.exit("Máy nhận dạng báo lỗi:\n" + result["loi"][-1500:])
     result["cho_s"] = round(time.monotonic() - start, 1)
@@ -153,8 +162,19 @@ def recognize_parallel(audio, length, lang, profile, folder, workers):
                             "-i", str(audio), "-c:a", "libopus", "-b:a", "32k", str(piece)], check=True)
         jobs.append((a, b, piece, folder / f"nhan-dang-{profile}-phan-{a:.1f}-{b:.1f}.json"))
     t0 = time.monotonic()
+    def safe(j):
+        try:
+            return recognize(j[2], lang, profile, j[3])
+        except Exception as e:
+            return e
     with ThreadPoolExecutor(min(workers, len(jobs))) as ex:
-        results = list(ex.map(lambda j: recognize(j[2], lang, profile, j[3]), jobs))
+        results = list(ex.map(safe, jobs))
+    failed = [(j, r) for j, r in zip(jobs, results) if isinstance(r, Exception)]
+    if failed:
+        for (a, b, _, _), e in failed:
+            print(f"\nPhần {a:.0f}–{b:.0f} s lỗi: {e}", flush=True)
+        sys.exit(f"{len(failed)}/{len(jobs)} phần lỗi. Các phần xong đã lưu; chạy lại mục 38 với cùng thông số "
+                 "để chỉ gửi lại phần lỗi.")
     wall = round(time.monotonic() - t0, 1)
     segs, st = [], {"hop_nhat": {}, "model_chu": {}, "giay_xu_ly": 0.0, "giay_tieng": 0.0, "bo_chao": [],
                     "probe": [], "tien_model_chu_usd": 0.0, "phan": []}
