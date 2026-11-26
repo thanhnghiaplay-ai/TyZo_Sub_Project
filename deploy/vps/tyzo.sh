@@ -1489,16 +1489,18 @@ web_url() { # địa chỉ web để gọi quét
 
 quet_rui_ro() { # gọi quét tới hết, in kết quả; dùng cho cron và chạy tay
   chon_env
-  local secret web t sign after="" body out checked=0 made=0 i
+  local secret web t sign nonce after="" body out checked=0 made=0 i
   secret="$(doc_bien LIVE_BRIDGE_SECRET)"
   [ -n "$secret" ] || { do_ "✘ Thiếu LIVE_BRIDGE_SECRET trong $ENV_FILE."; return 1; }
   web="$(web_url)"
   [ -n "$web" ] || { do_ "✘ Chưa có địa chỉ web."; return 1; }
   for i in $(seq 1 60); do
     t="$(date +%s)"
-    sign="$(printf 'risk-sweep:%s' "$t" | openssl dgst -sha256 -hmac "$secret" -hex | awk '{print $NF}')"
     body="{}"; [ -n "$after" ] && body="{\"after\":\"$after\"}"
-    out="$(curl -s --max-time 60 -X POST "$web/api/risk-sweep" -H "content-type: application/json" -H "x-tyzo-time: $t" -H "x-tyzo-sign: $sign" -d "$body")"
+    # AZ-006: ký cả mã dùng một lần, phương thức, đường dẫn và sha256 của đúng thân gửi đi (xem src/lib/sweep-sign.ts).
+    nonce="$(openssl rand -hex 16)"
+    sign="$(printf 'risk-sweep:v2:%s:%s:POST:/api/risk-sweep:%s' "$t" "$nonce" "$(printf '%s' "$body" | sha256sum | awk '{print $1}')" | openssl dgst -sha256 -hmac "$secret" -hex | awk '{print $NF}')"
+    out="$(curl -s --max-time 60 -X POST "$web/api/risk-sweep" -H "content-type: application/json" -H "x-tyzo-time: $t" -H "x-tyzo-nonce: $nonce" -H "x-tyzo-sign: $sign" --data-binary "$body")"
     if ! echo "$out" | grep -q '"checked"'; then
       do_ "✘ Quét lỗi: $(echo "$out" | head -c 300)"
       return 1

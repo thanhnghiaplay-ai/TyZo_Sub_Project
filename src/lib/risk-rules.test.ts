@@ -140,16 +140,30 @@ describe("mã máy trong hồ sơ", () => {
 });
 
 import { createHmac } from "node:crypto";
-import { sweepMessage, sweepTimeOk } from "./sweep-sign.ts";
+import { execFileSync } from "node:child_process";
+import { sweepMessage, sweepNonceOk, sweepTimeOk } from "./sweep-sign.ts";
 
-describe("chữ ký quét đêm", () => {
-  it("chỉ nhận trong 5 phút, cùng cách ký với lệnh openssl trên VPS", () => {
+describe("chữ ký quét đêm (AZ-006: gắn mã dùng một lần, phương thức, đường dẫn, thân)", () => {
+  it("chỉ nhận trong 5 phút; mã dùng một lần đúng dạng", () => {
     assert.ok(sweepTimeOk(1000, 1200));
     assert.equal(sweepTimeOk(1000, 1301), false);
     assert.equal(sweepTimeOk(Number.NaN, 1000), false);
-    // printf 'risk-sweep:1700000000' | openssl dgst -sha256 -hmac 'khoa-thu-...' -hex
-    const sign = createHmac("sha256", "khoa-thu-0123456789abcdefghij").update(sweepMessage(1700000000.9)).digest("hex");
-    assert.equal(sweepMessage(1700000000.9), "risk-sweep:1700000000");
-    assert.equal(sign.length, 64);
+    assert.ok(sweepNonceOk("0123456789abcdef0123456789abcdef"));
+    assert.equal(sweepNonceOk("abc"), false);
+  });
+
+  it("máy chủ ký giống hệt lệnh openssl + sha256sum trong script VPS; đổi thân thì chữ ký khác", () => {
+    const secret = "khoa-thu-0123456789abcdefghij";
+    const nonce = "0123456789abcdef0123456789abcdef";
+    const body = '{"after":"u1"}';
+    const hash = createHash("sha256").update(body).digest("hex");
+    const msg = sweepMessage(1700000000.9, nonce, "post", "/api/risk-sweep", hash);
+    assert.equal(msg, `risk-sweep:v2:1700000000:${nonce}:POST:/api/risk-sweep:${hash}`);
+    const node = createHmac("sha256", secret).update(msg).digest("hex");
+    // Đúng dòng lệnh trong deploy/vps/tyzo.sh (quet_rui_ro).
+    const sh = execFileSync("bash", ["-c", `printf 'risk-sweep:v2:%s:%s:POST:/api/risk-sweep:%s' 1700000000 "$1" "$(printf '%s' "$2" | sha256sum | awk '{print $1}')" | openssl dgst -sha256 -hmac "$3" -hex | awk '{print $NF}'`, "_", nonce, body, secret]).toString().trim();
+    assert.equal(sh, node);
+    const other = createHmac("sha256", secret).update(sweepMessage(1700000000, nonce, "POST", "/api/risk-sweep", createHash("sha256").update('{"after":"u2"}').digest("hex"))).digest("hex");
+    assert.notEqual(other, node);
   });
 });
