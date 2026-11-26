@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.1",
+    time: "27/11/2026",
+    area: "tien",
+    text: "Kiểm toán v5.49 (hồ sơ TyZo_v5.49.0_Claude_Handoff_FINAL, báo cáo docs/kiem-toan/v5.49/BAO_CAO.md). Tiền: TyZo Modal giữ riêng ước tính từng đoạn (modal_reserved), quyết toán một giao dịch, đóng phiếu khi còn đoạn chạy thì chờ (close_wanted); luồng dịch nhận lô trước khi chờ đổi phiếu; Admin đặt số Token khóa theo khách; cầu nối Dịch trực tiếp chờ trừ xong mới đóng phiếu, không gửi tiếng vượt phần giữ, nhả phiếu giữ thêm muộn, không nối lại sau khi đóng. CTV: lệnh rút một giao dịch, khoản gắn payout_id, xác nhận/hủy đúng lệnh, lỗi đọc cờ rủi ro thì không cho rút. Quyền: chuyển Chủ một câu lệnh; mật khẩu tạm đăng xuất mọi phiên và gỡ máy Android; xóa tài khoản một giao dịch và gỡ máy. Reset số liệu thử: mã do máy chủ cấp, một giao dịch. VPS: khôi phục Postgres nạp vào CSDL tạm, đủ bảng mới đổi chỗ, giữ bản cũ tyzo_cu_<giờ>. Migration 0038, 0039 chỉ thêm cột/chỉ mục.",
+  },
+  {
     version: "5.49.0",
     time: "26/11/2026",
     area: "tien",

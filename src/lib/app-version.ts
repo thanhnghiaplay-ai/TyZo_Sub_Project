@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.0";
+export const APP_VERSION = "5.49.1";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,17 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.1",
+    time: "01:59 27/11/2026",
+    title: "Trừ Token dịch chính xác và an toàn hơn khi chạy nhiều đoạn cùng lúc.",
+    points: [
+      "Bấm hủy khi đoạn TyZo đang chạy: đoạn đó vẫn có kết quả, phần Token dịch dư trả về ngay sau.",
+      "Một lô câu không còn bị gửi dịch nhiều lần cùng lúc.",
+      "Dịch trực tiếp tạm ngưng gửi tiếng khi phần Token dịch đã giữ vừa hết, chờ giữ thêm.",
+      "Lệnh rút hoa hồng bấm nhiều lần cùng lúc chỉ tạo một lệnh.",
+    ],
+  },
   {
     version: "5.49.0",
     time: "22:30 26/11/2026",
