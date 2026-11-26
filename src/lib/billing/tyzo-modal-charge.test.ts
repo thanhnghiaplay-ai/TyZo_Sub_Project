@@ -35,7 +35,7 @@ describe("thu tiền từng đoạn TyZo Modal", () => {
 
   it("trừ đúng số thực của đoạn", async () => {
     let calls = 0;
-    const r = await runModalPartWith(sql, part("a"), async () => (calls++, { segments: SEG, tokens: 12 }));
+    const r = await runModalPartWith(sql, part("a", 60, 12), async () => (calls++, { segments: SEG, tokens: 12 }));
     assert.deepEqual([r.tokens, r.short, r.reused, calls], [12, 0, false, 1]);
     const t = await ticket();
     assert.deepEqual([t.held, t.charged, Number(t.modal_seconds)], [88, 12, 60]);
@@ -43,7 +43,7 @@ describe("thu tiền từng đoạn TyZo Modal", () => {
 
   it("gửi lại cùng đoạn sau khi đã xong: trả kết quả cũ, không gọi GPU, không trừ lần hai", async () => {
     let calls = 0;
-    const run = () => runModalPartWith(sql, part("a"), async () => (calls++, { segments: SEG, tokens: 12 }));
+    const run = () => runModalPartWith(sql, part("a", 60, 12), async () => (calls++, { segments: SEG, tokens: 12 }));
     await run();
     const again = await run();
     assert.deepEqual([again.reused, again.tokens, calls], [true, 12, 1]);
@@ -87,15 +87,15 @@ describe("thu tiền từng đoạn TyZo Modal", () => {
     await assert.rejects(runModalPartWith(sql, part("a", 700), async () => ({ segments: SEG, tokens: 1 })), /đã hết/);
   });
 
-  it("số thực vượt phần còn giữ: trừ hết phần còn lại, ghi phần thiếu để đối soát", async () => {
+  it("số thực vượt phần giữ riêng: không chiếm ngân sách khác, ghi phần thiếu", async () => {
     const r = await runModalPartWith(sql, part("a"), async () => ({ segments: SEG, tokens: 130 }));
-    assert.deepEqual([r.tokens, r.short], [100, 30]);
+    assert.deepEqual([r.tokens, r.short], [10, 120]);
     const t = await ticket();
-    assert.deepEqual([t.held, t.charged, t.modal_short], [0, 100, 30]);
+    assert.deepEqual([t.held, t.charged, t.modal_short], [90, 10, 120]);
   });
 
   it("đóng phiếu trả lại phần chưa dùng; sau đó không chạy thêm đoạn được", async () => {
-    await runModalPartWith(sql, part("a"), async () => ({ segments: SEG, tokens: 12 }));
+    await runModalPartWith(sql, part("a", 60, 12), async () => ({ segments: SEG, tokens: 12 }));
     await closeTokenWith(sql, "t1", "k", false);
     assert.equal(await giayBalance(sql, "k"), 1000 - 12);
     await assert.rejects(runModalPartWith(sql, part("b"), async () => ({ segments: SEG, tokens: 1 })), /đã hết|đã đóng/);

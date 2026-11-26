@@ -45,7 +45,7 @@ describe("cổng tính tiền", () => {
 
   it("dịch thành công: trừ theo token thật trong usage", async () => {
     // vào 1.875×2=3.750 đ/triệu, ra 7.500×2=15.000 đ/triệu; 100.000 vào + 100.000 ra = 375 + 1.500
-    const out = await call({ send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 100_000 } }) });
+    const out = await call({ body: new ArrayBuffer(300_000), outCap: 100_000, send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 100_000 } }) });
     assert.equal(out.kind, "pass");
     assert.equal((await t(TID)).charged, 1875);
     assert.equal((await t(TID)).held, 125);
@@ -58,7 +58,10 @@ describe("cổng tính tiền", () => {
   });
 
   it("nhận dạng: trừ theo duration thật, tối thiểu 10 giây", async () => {
-    await call({ path: "/audio/transcriptions", model: "asr", send: json({ duration: 3600, segments: [] }) });
+    const form = new FormData();
+    form.set("file", new Blob([new Uint8Array(7_200_000)]), "fixture.opus");
+    const req = new Request("http://fixture.test", { method: "POST", body: form });
+    await call({ path: "/audio/transcriptions", model: "asr", body: await req.arrayBuffer(), contentType: req.headers.get("content-type"), send: json({ duration: 3600, segments: [] }) });
     assert.equal((await t(TID)).charged, 2000); // 1.000 đ/giờ × (1+100%) = 2.000
   });
 
@@ -86,7 +89,7 @@ describe("cổng tính tiền", () => {
       assert.equal(out.kind, "reject");
       assert.equal(out.kind === "reject" && out.status, 402);
     }
-    await call({ send: json({ usage: { prompt_tokens: 10_000_000, completion_tokens: 0 } }) });
+    await sql`update run_tickets set held = 0, status = 'dung-tien' where id = ${TID}`;
     assert.equal((await t(TID)).status, "dung-tien");
     assert.equal((await call({ send })).kind, "reject");
     assert.equal(called, 0);

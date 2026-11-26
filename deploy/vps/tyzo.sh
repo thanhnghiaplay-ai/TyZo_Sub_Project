@@ -761,23 +761,31 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v�
 }
 
 chep_len_neon() { # chép dữ liệu trên VPS lên một Neon TRỐNG (khi quay lại Vercel)
-  local url="$1" n
-  n="$(pg_tu_xa psql "$url" -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')"
-  [ -n "$n" ] || { do_ "✘ Không kết nối được Neon."; return 1; }
-  [ "$n" = "0" ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG (tạo project/branch mới trên Neon) để khỏi ghi đè."; return 1; }
+  local url="$1" n can ma=0 thu
+  # Private, unique paths prevent symlink/clobber attacks and concurrent restore collisions.
+  thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-restore.XXXXXXXX")" || return 1
+  n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')"
+  [[ "$n" =~ ^[0-9]+$ ]] || { do_ "✘ Không kết nối được Neon."; rmdir "$thu"; return 1; }
+  [ "$n" = "0" ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG."; rmdir "$thu"; return 1; }
   echo "Đang chép từ VPS lên Neon..."
-  docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > /tmp/tyzo-vps.dump || { do_ "✘ Không đọc được dữ liệu trên VPS."; return 1; }
-  local can ma=0
-  can="$(so_bang_tep /tmp/tyzo-vps.dump)"
-  docker run --rm -i --network host postgres:17 pg_restore --no-owner --no-privileges -d "$url" < /tmp/tyzo-vps.dump 2>/tmp/tyzo-restore.err || ma=$?
-  rm -f /tmp/tyzo-vps.dump
-  n="$(pg_tu_xa psql "$url" -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')"
-  # Đủ bảng theo mục lục bản sao mới tính là xong; công cụ báo lỗi thì in ra để xem (dữ liệu trên VPS không bị đụng).
-  if [ "${can:-0}" -gt 5 ] && [ "${n:-0}" = "$can" ]; then
-    xanh "✔ Đã chép lên Neon ($n bảng)"
-    [ "$ma" = 0 ] || { vang "Công cụ nạp báo lỗi (mã $ma), xem trước khi dùng:"; grep -i error /tmp/tyzo-restore.err | tail -5 | sed 's/^/   /'; }
+  (umask 077; docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > "$thu/source.dump") || {
+    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; return 1;
+  }
+  can="$(so_bang_tep "$thu/source.dump")"
+  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; return 1; }
+  docker run --rm -i --network host postgres:17 pg_restore --exit-on-error --single-transaction --no-owner --no-privileges -d "$url" < "$thu/source.dump" 2>"$thu/restore.err" || ma=$?
+  # Exit status is authoritative. Matching table counts cannot validate a failed restore.
+  if [ "$ma" != 0 ]; then
+    do_ "✘ Nạp thất bại (mã $ma); không chuyển nguồn dữ liệu. Bản sao và log riêng: $thu"
+    return 1
+  fi
+  n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')"
+  if [[ "$n" =~ ^[0-9]+$ ]] && [ "$n" = "$can" ]; then
+    xanh "✔ Đã nạp lên Neon ($n bảng). Chưa chuyển nguồn; cần đối soát dữ liệu trước khi chuyển."
+    rm -f "$thu/source.dump" "$thu/restore.err"; rmdir "$thu"
   else
-    do_ "✘ Chép chưa đủ (${n:-0}/${can:-?} bảng):"; tail -5 /tmp/tyzo-restore.err; return 1
+    do_ "✘ Kiểm tra sau nạp không đạt (${n:-0}/$can bảng); không chuyển nguồn. Giữ bản sao tại $thu"
+    return 1
   fi
 }
 

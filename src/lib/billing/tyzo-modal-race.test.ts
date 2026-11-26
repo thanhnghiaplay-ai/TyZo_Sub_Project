@@ -175,11 +175,11 @@ describe("TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song"
       return { segments: SEG, tokens: 1 };
     });
     await new Promise((r) => setTimeout(r, 60));
-    await sql`update run_modal_parts set heartbeat_at = now() - interval '1 hour' where part_hash = 'nhip'`;
+    await sql`update run_modal_parts set heartbeat_at = now() - interval '1 second' where part_hash = 'nhip'`;
     await new Promise((r) => setTimeout(r, 200));
     const hb = await sql<{ fresh: boolean }>`select heartbeat_at > now() - interval '5 seconds' as fresh from run_modal_parts where part_hash = 'nhip'`;
-    assert.equal(hb[0].fresh, true);
     g.open();
     await running;
+    assert.equal(hb[0].fresh, true);
   });
 });

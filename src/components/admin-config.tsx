@@ -15,6 +15,7 @@ import { RentShowBoard } from "@/components/rent-show-board";
 import { RunDeskBoard } from "@/components/run-desk-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
 import { ServiceStatusBoard } from "@/components/service-status-board";
+import { WorkCapacityBoard } from "@/components/work-capacity-board";
 import { SupportBoard } from "@/components/support-board";
 
 /** Một trang con: chỉ ẩn khi không chọn, không gỡ khỏi trang, nên ô đang nhập dở không mất khi chuyển qua lại. */
@@ -46,6 +47,7 @@ export function ConfigTab() {
       </div>
       <Page id="trang-thai" current={page}>
         <ServiceStatusBoard />
+        <WorkCapacityBoard />
         <SupportBoard />
       </Page>
       <Page id="nha-cung-cap" current={page}>

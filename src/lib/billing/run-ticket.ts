@@ -90,13 +90,14 @@ export async function ticketLive(sql: Sql, id: string, userId: string) {
  * Trừ một đoạn đã chạy xong vào phiếu, không bao giờ trừ quá số đang giữ.
  * Trả số thực trừ (có thể nhỏ hơn cost nếu phiếu hết tiền giữ).
  */
-export async function chargeTicketWith(sql: Sql, id: string, userId: string, cost: number, base = 0) {
+export async function chargeTicketWith(sql: Sql, id: string, userId: string, cost: number, base = 0, ownedReservation = 0) {
+  const owned = Number.isFinite(ownedReservation) ? Math.max(0, ownedReservation) : 0;
   const peek = await sql<{ unit: string }>`select unit from run_tickets where id = ${id} and user_id = ${userId}`;
   if (peek[0]?.unit === "token") throw new Error("Phiếu Token dịch không trừ bằng đồng.");
   const safeBase = Math.max(0, Math.round(base));
   const rows = await sql<{ taken: number; left_held: number }>`
     with o as (
-      select id, held as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' for update
+      select id, greatest(0, floor(held - modal_reserved + least(modal_reserved, ${owned}::numeric)))::int as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' for update
     )
     update run_tickets
     set charged = charged + least(${cost}::int, o.h),
@@ -112,11 +113,25 @@ export async function chargeTicketWith(sql: Sql, id: string, userId: string, cos
 
 /** Kết thúc phiếu: nhả phần giữ thừa về ví. Chạy lại lần hai không làm gì. */
 export async function closeTicketWith(sql: Sql, id: string, userId: string, failed: boolean) {
+  const { inTransaction } = await import("../db-tx.ts");
+  return inTransaction(sql, async (tx) => {
+    await tx`select id from run_tickets where id = ${id} and user_id = ${userId} for update`;
+    return closeTicketLocked(tx, id, userId, failed);
+  });
+}
+
+async function closeTicketLocked(sql: Sql, id: string, userId: string, failed: boolean) {
   const peek = await sql<{ unit: string }>`select unit from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu'`;
   if (peek[0]?.unit === "token") {
     const { closeTokenWith } = await import("./token-flow.ts");
     return closeTokenWith(sql, id, userId, failed);
   }
+  const { LEASE_STALE } = await import("./work-lease.ts");
+  const pending = await sql`update run_tickets set close_wanted = true, close_failed = close_failed or ${failed}
+    where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'vnd'
+      and exists (select 1 from run_gate_calls where ticket_id = ${id} and status = 'dang-chay'
+        and (heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval or exists(select 1 from run_async_asr_jobs j where j.call_id = run_gate_calls.id and j.state in ('pending','running','unknown') and j.deadline_at > clock_timestamp()))) returning id`;
+  if (pending.length) return null;
   const rows = await sql<{ freed: number; charged: number; status: string }>`
     with o as (
       select id, held as h from run_tickets where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'vnd' for update

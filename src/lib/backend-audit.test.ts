@@ -179,3 +179,19 @@ test("DEEP-010: real webhook handlers authenticate before reading and cap oversi
     assert.equal(accepted.status,200);assert.equal(canceled,true);assert.ok(pulls<=3);
   }
 });
+
+test("SCALE: capacity settings require Admin, reject bad bounds, and audit atomically", async (t) => {
+  if (!sql) return t.skip("Requires explicitly isolated TYZO_TEST_PG_URL");
+  const capacity = await import("./admin/work-capacity-room.ts");
+  const { DEFAULT_ADMISSION } = await import("./billing/work-admission.ts");
+  await assert.rejects(call(capacity.getWorkCapacity, undefined, "ordinary-user"), /forbidden/);
+  await assert.rejects(call(capacity.saveWorkCapacity, { ...DEFAULT_ADMISSION, batch: 0 }), /không hợp lệ/);
+  await call(capacity.saveWorkCapacity, { ...DEFAULT_ADMISSION, enabled: false });
+  assert.equal(JSON.parse((await sql<{ value: string }>`select value from room_settings where key='work_admission'`)[0].value).enabled, false);
+  assert.equal(Number((await sql<{ n: number }>`select count(*)::int n from room_audit where action='gioi-han-nhan-viec'`)[0].n), 1);
+  await sql.query("create function fail_capacity_audit() returns trigger language plpgsql as $$begin raise exception 'synthetic audit fault'; end$$");
+  await sql.query("create trigger fail_capacity_audit before insert on room_audit for each row execute function fail_capacity_audit()");
+  await assert.rejects(call(capacity.saveWorkCapacity, DEFAULT_ADMISSION), /synthetic audit fault/);
+  assert.equal(JSON.parse((await sql<{ value: string }>`select value from room_settings where key='work_admission'`)[0].value).enabled, false);
+  await sql.query("drop trigger fail_capacity_audit on room_audit");
+});

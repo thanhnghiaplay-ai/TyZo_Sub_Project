@@ -85,7 +85,7 @@ export const Route = createFileRoute("/api/room-groq")({
             const upstream = await fetch("https://api.groq.com/openai/v1/models", {
               method: "GET",
               headers,
-              signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+              signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]),
             });
             return relay(upstream);
           } catch (error) {
@@ -94,7 +94,7 @@ export const Route = createFileRoute("/api/room-groq")({
           }
         }
 
-        const { readRequest, chargeWith } = await import("@/lib/billing/run-gate");
+        const { readRequest, chargeAdmittedWith: chargeWith } = await import("@/lib/billing/run-gate");
         const { loadPriceBook } = await import("@/lib/run-board.server");
         // RE-005: chuẩn hóa giới hạn token trả lời (Groq: max_completion_tokens); gửi Groq đúng thân đã chuẩn hóa.
         const parsed = await readRequest(path, contentType, body!, "max_completion_tokens");
@@ -122,14 +122,19 @@ export const Route = createFileRoute("/api/room-groq")({
             cap: desk.cap,
             outCap: parsed.cap,
             contentType,
+            signal: request.signal,
             send: () =>
-              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: parsed.body ?? body!, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
+              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: parsed.body ?? body!, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
           });
         } catch (error) {
           if (isTimeout(error)) return fail(504, TIMEOUT_TEXT);
           throw error;
         }
-        if (outcome.kind === "reject") return fail(outcome.status, outcome.message);
+        if (outcome.kind === "reject") {
+            const rejected = fail(outcome.status, outcome.message);
+            if (outcome.status === 429) rejected.headers.set("retry-after", "2");
+            return rejected;
+          }
         return relay(outcome.response);
       },
     },

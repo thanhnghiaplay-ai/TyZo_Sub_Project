@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
-import { before, beforeEach, describe, it } from "node:test";
-import { PGlite } from "@electric-sql/pglite";
+import { after, before, beforeEach, describe, it } from "node:test";
+import { pgliteSql, realPgSql } from "../test-sql.ts";
 import type { Sql } from "../db.ts";
 import { chargeSpeechWith, chargeTicketWith, closeTicketWith, openTicketWith, refundSpeechWith, releaseStaleWith, ticketLive } from "./run-ticket.ts";
 
@@ -9,18 +8,13 @@ let sql: Sql;
 const DAY = "2026-11-08";
 const START = "2026-11-07T17:00:00.000Z";
 
+let end: (() => Promise<void>) | undefined;
 before(async () => {
-  const db = new PGlite();
-  const dir = new URL("../../../migrations/", import.meta.url);
-  for (const file of readdirSync(dir).filter((name) => name.endsWith(".sql")).sort()) {
-    await db.exec(readFileSync(new URL(file, dir), "utf8"));
-  }
-  sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
-    let text = strings[0];
-    for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-    return (await db.query(text, values)).rows;
-  }) as unknown as Sql;
+  const real = await realPgSql();
+  if (real) ({ sql, end } = real);
+  else sql = await pgliteSql();
 });
+after(async () => { await end?.(); });
 
 async function fresh(user: string, balance: number) {
   await sql`delete from run_tickets where user_id = ${user}`;

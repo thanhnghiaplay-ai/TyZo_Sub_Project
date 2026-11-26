@@ -80,7 +80,7 @@ export const Route = createFileRoute("/api/model-call")({
 
         if (!roomDoor) {
           try {
-            return relay(await fetch(target, { method: "POST", headers: headersWith(userKey), body, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }));
+            return relay(await fetch(target, { method: "POST", headers: headersWith(userKey), body, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }));
           } catch (error) {
             if (isTimeout(error)) return fail(504, timeoutText);
             throw error;
@@ -89,7 +89,7 @@ export const Route = createFileRoute("/api/model-call")({
 
         const { getSql } = await import("@/lib/db");
         const { parseRunDesk } = await import("@/lib/run-desk");
-        const { readRequest, chargeWith } = await import("@/lib/billing/run-gate");
+        const { readRequest, chargeAdmittedWith: chargeWith } = await import("@/lib/billing/run-gate");
         const { loadPriceBook } = await import("@/lib/run-board.server");
         const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
         const { roomUse } = await import("@/lib/room-turn");
@@ -126,9 +126,14 @@ export const Route = createFileRoute("/api/model-call")({
             cap: desk.cap,
             outCap: parsed.cap,
             contentType,
-            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: parsed.body ?? body, signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS) }),
+            signal: request.signal,
+            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: parsed.body ?? body, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
           });
-          if (outcome.kind === "reject") return fail(outcome.status, outcome.message);
+          if (outcome.kind === "reject") {
+            const rejected = fail(outcome.status, outcome.message);
+            if (outcome.status === 429) rejected.headers.set("retry-after", "2");
+            return rejected;
+          }
           return relay(outcome.response);
         } catch (error) {
           if (isTimeout(error)) return fail(504, timeoutText);

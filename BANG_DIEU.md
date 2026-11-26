@@ -1,5 +1,7 @@
 # Bảng điều khiển — TyZo Sub
 
+> **Bàn giao giữa chừng RE2:** nhánh `fix/v5.49.2-re2`, ứng viên cục bộ5.49.3, CHƯA NGHIỆM THU/CHƯA DEPLOY. Người dùng yêu cầu dừng và chuyển phiên. Đọc `BAN_GIAO_RE2_DANG_DO.md`. Release cũ dưới đây không áp dụng cho ứng viên này.
+
 Đọc file này trước khi làm bất cứ việc gì. Đây là chỗ nhìn một lần để biết dự án đang ở đâu. Không đọc nhật ký cũ để lấy lệnh.
 
 Thứ tự khi các câu khác nhau:

@@ -99,10 +99,11 @@ export async function openGiayWith(
 }
 
 /** Trừ giây đã giữ trên phiếu. Không trừ quá phần còn giữ. Không đụng ví đồng. */
-export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost: number) {
+export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost: number, ownedReservation = 0) {
+  const owned = Number.isFinite(ownedReservation) ? Math.max(0, ownedReservation) : 0;
   const rows = await sql<{ taken: number }>`
     with o as (
-      select id from run_tickets
+      select id, greatest(0, floor(held - modal_reserved + least(modal_reserved, ${owned}::numeric)))::int as allowance from run_tickets
       where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'token'
       for update
     ),
@@ -118,7 +119,7 @@ export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost
       select grant_id, left_tokens, sum(left_tokens) over (order by expires_at nulls last, grant_id) as running from locked
     ),
     take as (
-      select grant_id, least(left_tokens, greatest(0, ${cost}::int - (running - left_tokens)))::int as n from ranked
+      select grant_id, least(left_tokens, greatest(0, least(${cost}::int, (select allowance from o)) - (running - left_tokens)))::int as n from ranked
     ),
     upd as (
       update token_slices s
@@ -157,17 +158,32 @@ export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost
  * quá 6 giờ) đóng luôn như trước.
  */
 export async function closeTokenWith(sql: Sql, id: string, userId: string, failed: boolean, opts: { force?: boolean } = {}) {
+  const { inTransaction } = await import("../db-tx.ts");
+  return inTransaction(sql, async (tx) => {
+    await tx`select id from run_tickets where id = ${id} and user_id = ${userId} for update`;
+    return closeTokenLocked(tx, id, userId, failed, opts);
+  });
+}
+
+async function closeTokenLocked(sql: Sql, id: string, userId: string, failed: boolean, opts: { force?: boolean }) {
   const force = Boolean(opts.force);
   if (force) {
     // RE-001: đóng ép khi còn đoạn có nhịp sống thì ghi nhật ký thao tác (đoạn đó quyết toán sau sẽ ghi thiếu, không trừ khách).
     const live = await sql<{ n: number }>`
-      select count(*)::int as n from run_modal_parts p join run_tickets t on t.id = p.ticket_id
-      where p.ticket_id = ${id} and t.user_id = ${userId} and t.status = 'dang-giu' and p.status <> 'xong'
-        and p.heartbeat_at > now() - ${LEASE_STALE}::interval`;
+      select count(*)::int as n from (
+        select p.ticket_id from run_modal_parts p join run_tickets t on t.id = p.ticket_id
+        where p.ticket_id = ${id} and t.user_id = ${userId} and t.status = 'dang-giu' and p.status <> 'xong'
+          and p.heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval
+        union all
+        select c.ticket_id from run_gate_calls c join run_tickets t on t.id = c.ticket_id
+        where c.ticket_id = ${id} and t.user_id = ${userId} and t.status = 'dang-giu' and c.status = 'dang-chay'
+          and (c.heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval
+            or exists(select 1 from run_async_asr_jobs j where j.call_id = c.id and j.state in ('pending','running','unknown') and j.deadline_at > clock_timestamp()))
+      ) active`;
     const closed = await closeTokenNow(sql, id, userId, failed, true);
     if (closed && Number(live[0]?.n ?? 0) > 0) {
       await sql`insert into room_audit (actor_id, action, target_id, note)
-                values ('he-thong', 'dong-phieu-ep', ${userId}, ${`Phiếu ${id} đóng ép khi còn ${live[0].n} đoạn TyZo đang chạy`})`;
+                values ('he-thong', 'dong-phieu-ep', ${userId}, ${`Phiếu ${id} đóng ép khi còn ${live[0].n} lệnh đang chạy`})`;
     }
     return closed;
   }
@@ -183,6 +199,9 @@ export async function closeTokenWith(sql: Sql, id: string, userId: string, faile
           union all
           select 1 from run_gate_calls c
           where c.ticket_id = run_tickets.id and c.status = 'dang-chay' and c.heartbeat_at > now() - ${LEASE_STALE}::interval
+          union all
+          select 1 from run_async_asr_jobs j where j.ticket_id = run_tickets.id
+            and j.state in ('pending','running','unknown') and j.deadline_at > clock_timestamp()
         )
       returning 1`;
     if (deferred.length) return null;
@@ -203,6 +222,9 @@ async function closeTokenNow(sql: Sql, id: string, userId: string, failed: boole
           union all
           select 1 from run_gate_calls c
           where c.ticket_id = run_tickets.id and c.status = 'dang-chay' and c.heartbeat_at > now() - ${LEASE_STALE}::interval
+          union all
+          select 1 from run_async_asr_jobs j where j.ticket_id = run_tickets.id
+            and j.state in ('pending','running','unknown') and j.deadline_at > clock_timestamp()
         ))
       for update
     ),

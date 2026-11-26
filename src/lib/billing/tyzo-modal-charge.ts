@@ -14,12 +14,44 @@ import { inTransaction } from "../db-tx.ts";
 import { LEASE_STALE, startBeat } from "./work-lease.ts";
 import { chargeTokenWith, closeIfWantedWith } from "./token-flow.ts";
 
-export type ModalPartResult = { segments: { text: string; start: number; end: number }[]; tokens: number; short: number; reused: boolean };
+export type ModalPartResult = {
+  segments: { text: string; start: number; end: number }[];
+  tokens: number;
+  short: number;
+  reused: boolean;
+};
+
+export async function runAdmittedModalPartWith(
+  sql: Sql,
+  input: {
+    ticket: string;
+    userId: string;
+    model: string;
+    partHash: string;
+    seconds: number;
+    estimateTokens: (price: string) => number;
+    /** Chỉ để test: nhịp sống (ms). Mặc định LEASE_BEAT_MS. */
+    beatMs?: number;
+  },
+  recognize: (price: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
+): Promise<ModalPartResult> {
+  const { withWorkAdmission } = await import("./work-admission.ts");
+  return withWorkAdmission(
+    sql,
+    { userId: input.userId, provider: "tyzo-modal", model: input.model, lane: "modal" },
+    () => runModalPartWith(sql, input, recognize),
+  );
+}
 
 export async function runModalPartWith(
   sql: Sql,
   input: {
-    ticket: string; userId: string; model: string; partHash: string; seconds: number; estimateTokens: (price: string) => number;
+    ticket: string;
+    userId: string;
+    model: string;
+    partHash: string;
+    seconds: number;
+    estimateTokens: (price: string) => number;
     /** Chỉ để test: nhịp sống (ms). Mặc định LEASE_BEAT_MS. */
     beatMs?: number;
   },
@@ -46,13 +78,23 @@ export async function runModalPartWith(
     const old = await sql<{ status: string; tokens: number; segments: string | null }>`
       select status, tokens, segments from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash}`;
     if (old[0]?.status === "xong" && old[0].segments) {
-      return { segments: JSON.parse(old[0].segments), tokens: old[0].tokens, short: 0, reused: true };
+      return {
+        segments: JSON.parse(old[0].segments),
+        tokens: old[0].tokens,
+        short: 0,
+        reused: true,
+      };
     }
     throw new Error("Đoạn này đang được nhận dạng. Vui lòng chờ.");
   }
 
   // Ước tính đoạn này (không làm tròn từng đoạn, để tổng các đoạn không vượt phần giữ của cả phim chỉ vì làm tròn).
-  const need = Math.max(0, Number(input.estimateTokens(price)) || 0);
+  const rawNeed = input.estimateTokens(price);
+  if (!Number.isFinite(rawNeed) || rawNeed <= 0 || !Number.isFinite(seconds) || seconds <= 0) {
+    await sql`delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
+    throw new Error("Ước tính đoạn nhận dạng không hợp lệ.");
+  }
+  const need = Math.ceil(rawNeed);
   // MAIN-023: giữ riêng phần ước tính của đoạn ngay trong một câu lệnh. Đoạn mới chỉ được gọi GPU khi phần giữ còn lại,
   // SAU KHI trừ các đoạn đang chạy, còn đủ. Phiếu đang chờ đóng thì không nhận đoạn mới.
   const took = await sql`
@@ -70,74 +112,127 @@ export async function runModalPartWith(
     throw new Error("Phiếu Modal đã hết, đã đóng hoặc không còn đủ Token cho đoạn này.");
   }
 
+  try {
+    await sql`insert into run_modal_settlements(attempt, ticket_id, part_hash) values (${attempt}, ${ticket}, ${partHash})`;
+  } catch (error) {
+    await releasePart(sql, ticket, userId, partHash, attempt);
+    throw error;
+  }
+
   // RE-001: ghi nhịp sống trong suốt lúc GPU chạy (có thể quá 15 phút); phiếu chỉ đóng khi đoạn hết nhịp hoặc xong.
   const stopBeat = startBeat(
-    () => sql`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong'`,
+    () =>
+      sql`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval`,
     input.beatMs,
   );
-  let result: Awaited<ReturnType<typeof recognize>>;
   try {
-    result = await recognize(price);
-  } catch (error) {
-    stopBeat();
-    await releasePart(sql, ticket, userId, partHash, attempt);
-    throw error;
-  }
-  stopBeat();
+    let result: Awaited<ReturnType<typeof recognize>>;
+    try {
+      result = await recognize(price);
+    } catch (error) {
+      await releasePart(sql, ticket, userId, partHash, attempt);
+      throw error;
+    }
 
-  // MAIN-024: trừ Token, ghi phần thiếu, nhả phần giữ riêng và lưu chữ của đoạn trong MỘT giao dịch.
-  // RE-001: nhận đoạn bằng mã lượt TRƯỚC khi trừ; lượt đã bị thay (mất nhịp, có lượt khác nhận) thì không trừ gì.
-  const tokens = Math.max(0, Math.ceil(result.tokens));
-  let settled: { taken: number; owned: boolean };
-  try {
-    settled = await inTransaction(sql, async (tx) => {
-      const mine = await tx<{ reserved: string }>`
+    // MAIN-024: trừ Token, ghi phần thiếu, nhả phần giữ riêng và lưu chữ của đoạn trong MỘT giao dịch.
+    // RE-001: nhận đoạn bằng mã lượt TRƯỚC khi trừ; lượt đã bị thay (mất nhịp, có lượt khác nhận) thì không trừ gì.
+    if (!Number.isFinite(result.tokens) || result.tokens < 0) {
+      await releasePart(sql, ticket, userId, partHash, attempt);
+      throw new Error("Số Token nhận dạng không hợp lệ.");
+    }
+    const tokens = Math.ceil(result.tokens);
+    let settled: { taken: number; owned: boolean };
+    try {
+      settled = await inTransaction(sql, async (tx) => {
+        const tickets = await tx<{ held: number; modal_reserved: string; status: string }>`
+        select held, modal_reserved, status from run_tickets where id = ${ticket} and user_id = ${userId} for update`;
+        const observation = await tx<{ observed_at: unknown; charged_tokens: number }>`
+        select observed_at, charged_tokens from run_modal_settlements where attempt = ${attempt} for update`;
+        if (observation[0]?.observed_at)
+          return { taken: Number(observation[0].charged_tokens), owned: true };
+        const mine = await tx<{ reserved: string }>`
         update run_modal_parts set status = 'xong', segments = ${JSON.stringify(result.segments)}, heartbeat_at = now()
-        where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong'
+        where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval
         returning reserved`;
-      if (!mine.length) return { taken: 0, owned: false };
-      const got = tokens > 0 ? await chargeTokenWith(tx, ticket, userId, tokens) : 0;
-      await tx`update run_tickets set modal_short = modal_short + ${Math.max(0, tokens - got)},
+        if (!mine.length) {
+          await tx`update run_modal_settlements set status = 'can-doi-soat', actual_tokens = ${tokens}, short_tokens = ${tokens}, observed_at = clock_timestamp() where attempt = ${attempt}`;
+          await tx`update run_tickets set modal_short = modal_short + ${tokens} where id = ${ticket}`;
+          return { taken: 0, owned: false };
+        }
+        const ownReserved = Number(mine[0].reserved);
+        const available =
+          tickets[0]?.status === "dang-giu"
+            ? Math.max(
+                0,
+                tickets[0].held - Math.max(0, Number(tickets[0].modal_reserved) - ownReserved),
+              )
+            : 0;
+        const debit = Math.max(0, Math.floor(Math.min(tokens, ownReserved, available)));
+        const got = debit > 0 ? await chargeTokenWith(tx, ticket, userId, debit, ownReserved) : 0;
+        await tx`update run_tickets set modal_short = modal_short + ${Math.max(0, tokens - got)},
                  modal_reserved = greatest(0, modal_reserved - ${Number(mine[0].reserved)}::numeric)
                where id = ${ticket}`;
-      await tx`update run_modal_parts set tokens = ${got}, reserved = 0 where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
-      return { taken: got, owned: true };
-    });
-  } catch (error) {
-    await releasePart(sql, ticket, userId, partHash, attempt);
-    throw error;
+        await tx`update run_modal_parts set tokens = ${got}, reserved = 0 where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
+        await tx`update run_modal_settlements set status = ${got < tokens ? "can-doi-soat" : "xong"}, actual_tokens = ${tokens},
+        charged_tokens = ${got}, short_tokens = ${Math.max(0, tokens - got)}, observed_at = clock_timestamp() where attempt = ${attempt}`;
+        return { taken: got, owned: true };
+      });
+    } catch (error) {
+      await releasePart(sql, ticket, userId, partHash, attempt);
+      throw error;
+    }
+    if (!settled.owned) {
+      // Đoạn đã được lượt khác nhận (lượt này bị coi là chết): trả chữ cho khách, không trừ lần hai.
+      return { segments: result.segments, tokens: 0, short: tokens, reused: true };
+    }
+    const short = Math.max(0, tokens - settled.taken);
+    await closeIfWantedWith(sql, ticket, userId);
+    return { segments: result.segments, tokens: settled.taken, short, reused: false };
+  } finally {
+    stopBeat();
   }
-  if (!settled.owned) {
-    // Đoạn đã được lượt khác nhận (lượt này bị coi là chết): trả chữ cho khách, không trừ lần hai.
-    return { segments: result.segments, tokens: 0, short: 0, reused: true };
-  }
-  const short = Math.max(0, tokens - settled.taken);
-  await closeIfWantedWith(sql, ticket, userId);
-  return { segments: result.segments, tokens: settled.taken, short, reused: false };
 }
 
 /** Đoạn mất nhịp quá LEASE_STALE: tiến trình đã chết. Trả phần giữ, thời lượng cho phiếu, bỏ đoạn (gửi lại được). */
 async function reapStale(sql: Sql, ticket: string) {
-  await sql`
+  await inTransaction(sql, async (tx) => {
+    await tx`select id from run_tickets where id = ${ticket} for update`;
+    await tx`
     with p as (
       delete from run_modal_parts
       where ticket_id = ${ticket} and status <> 'xong' and heartbeat_at < now() - ${LEASE_STALE}::interval
-      returning reserved, seconds
+      returning reserved, seconds, attempt
+    ), marked as (
+      update run_modal_settlements set status = 'mat-phan-hoi'
+      where attempt in (select attempt from p) and observed_at is null returning 1
     )
     update run_tickets set modal_seconds = greatest(0, modal_seconds - coalesce((select sum(seconds) from p), 0)),
       modal_reserved = greatest(0, modal_reserved - coalesce((select sum(reserved) from p), 0))
-    where id = ${ticket} and exists (select 1 from p)`;
+    where id = ${ticket} and exists (select 1 from p) and (select count(*) from marked) >= 0`;
+  });
 }
 
 /** Đoạn lỗi: trả lại thời lượng và phần giữ riêng, bỏ đoạn (gửi lại được). Một câu lệnh, chỉ đụng đúng lượt của mình. */
-async function releasePart(sql: Sql, ticket: string, userId: string, partHash: string, attempt: string) {
-  await sql`
+async function releasePart(
+  sql: Sql,
+  ticket: string,
+  userId: string,
+  partHash: string,
+  attempt: string,
+) {
+  await inTransaction(sql, async (tx) => {
+    await tx`select id from run_tickets where id = ${ticket} and user_id = ${userId} for update`;
+    await tx`
     with p as (
       delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong'
-      returning reserved, seconds
+      returning reserved, seconds, attempt
+    ), marked as (
+      update run_modal_settlements set status = 'mat-phan-hoi'
+      where attempt in (select attempt from p) and observed_at is null returning 1
     )
     update run_tickets set modal_seconds = greatest(0, modal_seconds - coalesce((select sum(seconds) from p), 0)),
       modal_reserved = greatest(0, modal_reserved - coalesce((select sum(reserved) from p), 0))
-    where id = ${ticket} and user_id = ${userId} and exists (select 1 from p)`;
+    where id = ${ticket} and user_id = ${userId} and exists (select 1 from p) and (select count(*) from marked) >= 0`;
+  });
   await closeIfWantedWith(sql, ticket, userId);
 }

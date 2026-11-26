@@ -28,11 +28,30 @@ pg.types.setTypeParser(20, Number);
 pg.types.setTypeParser(1082, (value: string) => value);
 pg.types.setTypeParser(1186, (value: string) => value);
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
-const sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
-  let text = strings[0];
-  for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
-  return (await pool.query(text, values)).rows;
-}) as unknown as Sql;
+function wrapSql(run: (text: string, values: unknown[]) => Promise<unknown[]>): Sql {
+  const sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
+    let text = strings[0];
+    for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
+    return run(text, values);
+  }) as Sql;
+  sql.query = ((text: string, values: unknown[] = []) => run(text, values)) as Sql["query"];
+  return sql;
+}
+const sql = wrapSql(async (text, values) => (await pool.query(text, values)).rows);
+sql.begin = async (fn) => {
+  const conn = await pool.connect();
+  try {
+    await conn.query("BEGIN");
+    const tx = wrapSql(async (text, values) => (await conn.query(text, values)).rows);
+    tx.begin = (inner) => inner(tx);
+    const result = await fn(tx);
+    await conn.query("COMMIT");
+    return result;
+  } catch (error) {
+    await conn.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally { conn.release(); }
+};
 
 const server = createServer((request, response) => {
   if (request.url === "/health") {
@@ -64,6 +83,10 @@ attachLiveBridge(server, {
   secret,
   upstream: (model) => loadLiveUpstream(sql, model, process.env.ALIBABA_WORKSPACE_ID),
   billing: createLiveBilling(sql, { book: () => loadLiveBook(sql) }),
+  admit: async ({ userId, model }) => {
+    const { beginWork } = await import("../src/lib/billing/work-admission.ts");
+    return beginWork(sql, { userId, model, provider: "alibaba", lane: "live" });
+  },
   toGiay: (base) => (turboPerSecond > 0 ? tokensForBase(base, turboPerSecond) : null),
   // Qwen 3.5: chỉnh thời gian chờ im lặng bằng biến LIVE_SILENCE_MS (200–6000), không cần sửa mã.
   silenceMs: cleanSilenceMs(process.env.LIVE_SILENCE_MS),

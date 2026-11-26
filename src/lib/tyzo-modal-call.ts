@@ -27,7 +27,7 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     if (!book || !giayForBaseCost(book,1)) throw new Error("Chưa có tỷ giá Token dịch.");
     const model = "tyzo-modal-"+data.profile;
     const {createHash} = await import("node:crypto");
-    const {runModalPartWith} = await import("./billing/tyzo-modal-charge");
+    const {runAdmittedModalPartWith:runModalPartWith} = await import("./billing/tyzo-modal-charge");
     const toTokens = (usd:number) => {
       const n = giayForBaseCost(book, usd*book.rate);
       if (n === null) throw new Error("Thiếu tỷ giá Token dịch.");

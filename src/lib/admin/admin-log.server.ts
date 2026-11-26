@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.3",
+    time: "06:11 27/11/2026",
+    area: "ha-tang",
+    text: "Ứng viên RE2: chặn giữ thiếu dự toán; quyết toán theo callId, lưu số thực/số trừ/phần thiếu; heartbeat đến hết body và quyết toán, timeout đọc, khóa phiếu trước lệnh. Admission PostgreSQL cho batch/Modal/live, trả 429 Retry-After thay polling. Restore Neon fail closed với tệp riêng. Chưa deploy; hồ sơ docs/kiem-toan/v5.49.3/.",
+  },
+  {
     version: "5.49.2",
     time: "05:33 27/11/2026 — Chủ duyệt đẩy chính thức",
     area: "du-lieu",

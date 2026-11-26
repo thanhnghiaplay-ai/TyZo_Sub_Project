@@ -41,6 +41,8 @@ type LiveBridgeDeps = {
   /** Địa chỉ WebSocket và key của Alibaba. Key không bao giờ rời cầu nối. */
   upstream(model: string): Promise<{ url: string; key: string } | null>;
   billing: LiveBilling;
+  /** Cross-instance admission. Absence is retained for fixtures and embedded integrations. */
+  admit?: (input: { userId: string; model: string }) => Promise<(() => Promise<void>) | null>;
   now?: () => number;
   /** Đổi giá gốc (đồng) ra Token dịch. Có hàm này thì cầu nối không giữ ví đồng. */
   toGiay?: (baseVnd: number) => number | null;
@@ -86,6 +88,10 @@ export function attachLiveBridge(server: Server, deps: LiveBridgeDeps, path = "/
   server.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
     const url = new URL(request.url ?? "/", "http://bridge");
     if (url.pathname !== path) return;
+    if (wss.clients.size >= 300) {
+      socket.end("HTTP/1.1 429 Too Many Requests\r\nRetry-After: 2\r\nConnection: close\r\n\r\n");
+      return;
+    }
     wss.handleUpgrade(request, socket, head, (client) => {
       // Lỗi của một phiên (vd. cơ sở dữ liệu đứt) chỉ đóng phiên đó, không được làm sập cả cầu nối.
       runSession(client, url.searchParams.get("ticket") ?? "", deps).catch((error) => {
@@ -129,6 +135,13 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   if (!route) return fail(4503, "Phòng chưa cấu hình Alibaba cho dịch trực tiếp.");
 
   if (gone) return;
+  const releaseAdmission = await deps.admit?.({ userId: ticket.uid, model: ticket.model });
+  if (deps.admit && !releaseAdmission) return fail(4429, "Hệ thống đang bận. Vui lòng thử lại sau ít giây.");
+  if (gone) { await releaseAdmission?.(); return; }
+  let admissionManaged = false;
+  client.once("close", () => {
+    if (!admissionManaged) void releaseAdmission?.().catch((error) => log(`nhả chỗ phiên lỗi: ${String(error)}`));
+  });
 
   const meter = new LiveMeter(holdUnits, blockSeconds);
   const tickets: string[] = [];
@@ -168,9 +181,11 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   };
 
   if (!(await openBlock())) {
+    await releaseAdmission?.();
     return fail(4402, deps.toGiay ? "Token dịch chưa đủ. Hãy mua thêm gói." : "Số dư chưa đủ hoặc đã quá hạn mức hôm nay. Hãy nạp thêm.");
   }
 
+  admissionManaged = true;
   let upstream: WebSocket | null = null;
   let ready = false;
   let finishing = false;
@@ -224,6 +239,8 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
         log(`nhả phiếu ${id} lỗi: ${String(error)}`);
       }
     }
+    try { await releaseAdmission?.(); }
+    catch (error) { log(`nhả chỗ phiên lỗi, cần kiểm tra lease: ${String(error)}`); }
     if (client.readyState === WebSocket.OPEN) client.close(1000, "done");
   }
 

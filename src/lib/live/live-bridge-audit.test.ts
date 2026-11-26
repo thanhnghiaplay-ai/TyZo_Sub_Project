@@ -229,3 +229,34 @@ it("DEEP-008: upstream backlog drops audio and recovers after draining", {timeou
     Object.defineProperty(WebSocket.prototype,"bufferedAmount",previous);s.done();
   }
 });
+
+it("SCALE: denied live admission never opens a billing ticket or upstream", async () => {
+  const ali = fakeAli();
+  const bill = slowBilling({});
+  const s = await session(ali, bill.billing, { admit: async () => null });
+  try {
+    assert.equal(await s.closed, 4429);
+    assert.equal(ali.seen.connections, 0);
+    assert.equal(bill.events.length, 0);
+  } finally { s.done(); }
+});
+
+it("SCALE: live admission is retained until pending debits and closes finish", async () => {
+  const ali = fakeAli({ onAudio: (ws) => ws.send(usage(500)) });
+  const bill = slowBilling({ chargeDelay: 100 });
+  let releases = 0;
+  const s = await session(ali, bill.billing, { admit: async () => async () => {
+    assert.ok(bill.events.some((e) => e.kind === "close"));
+    assert.ok(!bill.events.some((e) => e.kind === "charge-sau-dong"));
+    releases++;
+  } });
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200, 10));
+    await wait(30);
+    s.client.close();
+    await s.closed;
+    await wait(250);
+    assert.equal(releases, 1);
+  } finally { s.done(); }
+});
