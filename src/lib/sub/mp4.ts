@@ -1,3 +1,4 @@
+import { readMp4Range } from "./mp4-range.ts";
 import { audioBufferTo16k } from "@/lib/sub/codec";
 import { SR, streamParts } from "@/lib/sub/text";
 
@@ -281,10 +282,7 @@ export async function openStream(
             r.body?.cancel().catch(() => {});
             throw new Error("máy chủ không hỗ trợ tải theo đoạn (Range)");
           }
-          const got = new Uint8Array(await r.arrayBuffer());
-          // Kiểm toán R6-004: máy chủ phải trả đúng đoạn đã xin (đúng số byte); sai thì báo lỗi, không đọc lệch.
-          if (got.length !== b - a) throw new Error("máy chủ trả đoạn video không đúng kích thước");
-          return got;
+          return await readMp4Range(r, a, b, size);
         } catch (error) {
           if (sig?.aborted) throw error;
           if (guard.signal.aborted) throw new Error("tải đoạn video quá 60 giây không xong");
