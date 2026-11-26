@@ -111,9 +111,75 @@ describe("TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song"
     assert.equal(await giayBalance(sql, "k"), 1000);
   });
 
-  it("đoạn treo quá 15 phút không giữ phiếu mãi: đóng được ngay", async () => {
-    await sql`insert into run_modal_parts (ticket_id, part_hash, seconds, created_at) values ('t1', 'cu', 60, now() - interval '20 minutes')`;
+  // RE-001: «đoạn chết» nay là mất nhịp sống (heartbeat), không còn là gửi quá 15 phút.
+  it("đoạn mất nhịp (tiến trình chết) không giữ phiếu mãi: đóng được ngay", async () => {
+    await sql`insert into run_modal_parts (ticket_id, part_hash, seconds, created_at, heartbeat_at) values ('t1', 'cu', 60, now() - interval '20 minutes', now() - interval '10 minutes')`;
     const closed = await closeTokenWith(sql, "t1", "k", false);
     assert.equal(closed?.freed, 100);
+  });
+
+  it("RE-001: đoạn GPU chạy quá 15 phút (gửi từ 20 phút trước, vẫn còn nhịp) → đóng phiếu phải chờ, không trả phần giữ trước quyết toán", async () => {
+    const g = gate();
+    const running = runModalPartWith(sql, { ...part("dai"), beatMs: 40 }, async () => {
+      await g.wait;
+      return { segments: SEG, tokens: 12 };
+    });
+    await new Promise((r) => setTimeout(r, 120));
+    await sql`update run_modal_parts set created_at = now() - interval '20 minutes'`;
+    const closed = await closeTokenWith(sql, "t1", "k", false);
+    assert.equal(closed, null, "không được đóng khi GPU còn chạy");
+    assert.equal((await ticket()).status, "dang-giu");
+    g.open();
+    const r = await running;
+    assert.deepEqual([r.tokens, r.short], [12, 0]);
+    const t = await ticket();
+    assert.deepEqual([t.charged, t.held], [12, 0]);
+    assert.notEqual(t.status, "dang-giu");
+  });
+
+  it("RE-001: tiến trình chết (mất nhịp) → đóng phiếu được ngay, phần giữ trả đủ; gửi lại đoạn đó chạy và trừ một lần", async () => {
+    await sql`update run_tickets set modal_reserved = 30, modal_seconds = 60 where id = 't1'`;
+    await sql`insert into run_modal_parts (ticket_id, part_hash, seconds, reserved, attempt, heartbeat_at)
+              values ('t1', 'chet', 60, 30, 'cu', now() - interval '10 minutes')`;
+    let calls = 0;
+    const r = await runModalPartWith(sql, part("chet"), async () => (calls++, { segments: SEG, tokens: 12 }));
+    assert.deepEqual([calls, r.tokens, r.reused], [1, 12, false]);
+    const t = await ticket();
+    assert.deepEqual([t.charged, Number(t.modal_reserved ?? 0)], [12, 0]);
+    const closed = await closeTokenWith(sql, "t1", "k", false);
+    assert.equal(closed?.freed, 88);
+  });
+
+  it("RE-001: lượt cũ bị coi là chết rồi mới xong → không trừ lần hai (mã lượt chặn)", async () => {
+    const g = gate();
+    const oldRun = runModalPartWith(sql, part("hang"), async () => {
+      await g.wait;
+      return { segments: SEG, tokens: 12 };
+    });
+    await new Promise((r) => setTimeout(r, 120));
+    await sql`update run_modal_parts set heartbeat_at = now() - interval '10 minutes' where part_hash = 'hang'`;
+    const fresh = await runModalPartWith(sql, part("hang"), async () => ({ segments: SEG, tokens: 12 }));
+    assert.equal(fresh.tokens, 12);
+    g.open();
+    const late = await oldRun;
+    assert.equal(late.tokens, 0, "lượt cũ không được trừ");
+    const t = await ticket();
+    assert.equal(t.charged, 12, "chỉ trừ một lần");
+    assert.equal(Number(t.modal_reserved ?? 0), 0);
+  });
+
+  it("RE-001: nhịp sống được ghi đều trong lúc GPU chạy", async () => {
+    const g = gate();
+    const running = runModalPartWith(sql, { ...part("nhip"), beatMs: 40 }, async () => {
+      await g.wait;
+      return { segments: SEG, tokens: 1 };
+    });
+    await new Promise((r) => setTimeout(r, 60));
+    await sql`update run_modal_parts set heartbeat_at = now() - interval '1 hour' where part_hash = 'nhip'`;
+    await new Promise((r) => setTimeout(r, 200));
+    const hb = await sql<{ fresh: boolean }>`select heartbeat_at > now() - interval '5 seconds' as fresh from run_modal_parts where part_hash = 'nhip'`;
+    assert.equal(hb[0].fresh, true);
+    g.open();
+    await running;
   });
 });

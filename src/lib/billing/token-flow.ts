@@ -1,4 +1,5 @@
 import type { Sql } from "../db.ts";
+import { LEASE_STALE } from "./work-lease.ts";
 
 type GiayOpen = { id: string; held: number } | { error: "het-giay" };
 
@@ -144,29 +145,40 @@ export async function chargeTokenWith(sql: Sql, id: string, userId: string, cost
   return Number(rows[0]?.taken ?? 0);
 }
 
-/** Một đoạn TyZo Modal tính là «đang chạy» trong 15 phút kể từ lúc gửi; quá thời gian thì coi như đã chết. */
-export const MODAL_PART_LIVE = "15 minutes";
 
 /**
  * Đóng phiếu giây: phần giữ chưa trừ trả về gói còn hạn. Gói đã hết hạn thì mất.
  * Không cộng ví đồng, không tính hoa hồng.
  *
- * Còn đoạn TyZo Modal đang chạy (kiểm toán MAIN-036): không đóng ngay mà ghi «muốn đóng» (close_wanted), trả null;
+ * Còn đoạn TyZo Modal đang chạy, tức còn nhịp sống trong LEASE_STALE (MAIN-036, RE-001): không đóng ngay mà ghi «muốn đóng» (close_wanted), trả null;
  * đoạn cuối quyết toán xong sẽ đóng (tyzo-modal-charge.ts). Nhờ vậy đoạn đã gửi GPU vẫn được trừ đúng như điều khoản
  * nói («khách bấm hủy thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại»). `force` (Admin nhả tay, phiếu treo
  * quá 6 giờ) đóng luôn như trước.
  */
 export async function closeTokenWith(sql: Sql, id: string, userId: string, failed: boolean, opts: { force?: boolean } = {}) {
   const force = Boolean(opts.force);
+  if (force) {
+    // RE-001: đóng ép khi còn đoạn có nhịp sống thì ghi nhật ký thao tác (đoạn đó quyết toán sau sẽ ghi thiếu, không trừ khách).
+    const live = await sql<{ n: number }>`
+      select count(*)::int as n from run_modal_parts p join run_tickets t on t.id = p.ticket_id
+      where p.ticket_id = ${id} and t.user_id = ${userId} and t.status = 'dang-giu' and p.status <> 'xong'
+        and p.heartbeat_at > now() - ${LEASE_STALE}::interval`;
+    const closed = await closeTokenNow(sql, id, userId, failed, true);
+    if (closed && Number(live[0]?.n ?? 0) > 0) {
+      await sql`insert into room_audit (actor_id, action, target_id, note)
+                values ('he-thong', 'dong-phieu-ep', ${userId}, ${`Phiếu ${id} đóng ép khi còn ${live[0].n} đoạn TyZo đang chạy`})`;
+    }
+    return closed;
+  }
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const closed = await closeTokenNow(sql, id, userId, failed, force);
-    if (closed || force) return closed;
+    if (closed) return closed;
     const deferred = await sql`
       update run_tickets set close_wanted = true, close_failed = close_failed or ${failed}::boolean
       where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'token'
         and exists (
           select 1 from run_modal_parts p
-          where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.created_at > now() - ${MODAL_PART_LIVE}::interval
+          where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.heartbeat_at > now() - ${LEASE_STALE}::interval
         )
       returning 1`;
     if (deferred.length) return null;
@@ -183,7 +195,7 @@ async function closeTokenNow(sql: Sql, id: string, userId: string, failed: boole
       where id = ${id} and user_id = ${userId} and status = 'dang-giu' and unit = 'token'
         and (${force}::boolean or not exists (
           select 1 from run_modal_parts p
-          where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.created_at > now() - ${MODAL_PART_LIVE}::interval
+          where p.ticket_id = run_tickets.id and p.status <> 'xong' and p.heartbeat_at > now() - ${LEASE_STALE}::interval
         ))
       for update
     ),

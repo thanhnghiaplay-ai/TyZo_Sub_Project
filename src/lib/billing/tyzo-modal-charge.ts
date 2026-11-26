@@ -9,14 +9,20 @@
  * và khách đóng phiếu lúc đoạn còn chạy thì đoạn cuối xong mới đóng (closeTokenWith).
  */
 import type { Sql } from "../db.ts";
+import { randomBytes } from "node:crypto";
 import { inTransaction } from "../db-tx.ts";
+import { LEASE_STALE, startBeat } from "./work-lease.ts";
 import { chargeTokenWith, closeTokenWith } from "./token-flow.ts";
 
 export type ModalPartResult = { segments: { text: string; start: number; end: number }[]; tokens: number; short: number; reused: boolean };
 
 export async function runModalPartWith(
   sql: Sql,
-  input: { ticket: string; userId: string; model: string; partHash: string; seconds: number; estimateTokens: (price: string) => number },
+  input: {
+    ticket: string; userId: string; model: string; partHash: string; seconds: number; estimateTokens: (price: string) => number;
+    /** Chỉ để test: nhịp sống (ms). Mặc định LEASE_BEAT_MS. */
+    beatMs?: number;
+  },
   recognize: (price: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
 ): Promise<ModalPartResult> {
   const { ticket, userId, model, partHash, seconds } = input;
@@ -26,10 +32,14 @@ export async function runModalPartWith(
   if (!own.length || !own[0].modal_price) throw new Error("Phiếu Modal không hợp lệ.");
   const price = own[0].modal_price;
   // Chữ nhận dạng giữ để chống trừ lặp chỉ cần trong lúc chạy; xóa sau 24 giờ (điều khoản mục dữ liệu).
-  await sql`delete from run_modal_parts where created_at < now() - interval '24 hours'`;
+  await sql`delete from run_modal_parts where created_at < now() - interval '24 hours' and status = 'xong'`;
+  // RE-001: đoạn mất nhịp (tiến trình đã chết, không ai quyết toán được nữa) trả lại phần giữ và thời lượng cho phiếu.
+  await reapStale(sql, ticket);
 
+  // Mã lượt (fencing): chỉ lượt đang giữ mã mới được ghi nhịp, quyết toán hay bỏ đoạn.
+  const attempt = randomBytes(9).toString("hex");
   const seen = await sql<{ status: string; tokens: number; segments: string | null }>`
-    insert into run_modal_parts (ticket_id, part_hash, seconds) values (${ticket}, ${partHash}, ${seconds})
+    insert into run_modal_parts (ticket_id, part_hash, seconds, attempt, heartbeat_at) values (${ticket}, ${partHash}, ${seconds}, ${attempt}, now())
     on conflict (ticket_id, part_hash) do nothing
     returning status, tokens, segments`;
   if (!seen.length) {
@@ -53,54 +63,82 @@ export async function runModalPartWith(
       returning id
     )
     update run_modal_parts p set reserved = ${need}::numeric
-    from t where p.ticket_id = t.id and p.part_hash = ${partHash}
+    from t where p.ticket_id = t.id and p.part_hash = ${partHash} and p.attempt = ${attempt}
     returning 1`;
   if (!took.length) {
-    await sql`delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash}`;
+    await sql`delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
     throw new Error("Phiếu Modal đã hết, đã đóng hoặc không còn đủ Token cho đoạn này.");
   }
 
+  // RE-001: ghi nhịp sống trong suốt lúc GPU chạy (có thể quá 15 phút); phiếu chỉ đóng khi đoạn hết nhịp hoặc xong.
+  const stopBeat = startBeat(
+    () => sql`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong'`,
+    input.beatMs,
+  );
   let result: Awaited<ReturnType<typeof recognize>>;
   try {
     result = await recognize(price);
   } catch (error) {
-    await releasePart(sql, ticket, userId, partHash, seconds);
+    stopBeat();
+    await releasePart(sql, ticket, userId, partHash, attempt);
     throw error;
   }
+  stopBeat();
 
   // MAIN-024: trừ Token, ghi phần thiếu, nhả phần giữ riêng và lưu chữ của đoạn trong MỘT giao dịch.
-  // Lỗi giữa chừng thì không trừ gì và bỏ đoạn để gửi lại (không có chuyện mất Token mà không có chữ).
+  // RE-001: nhận đoạn bằng mã lượt TRƯỚC khi trừ; lượt đã bị thay (mất nhịp, có lượt khác nhận) thì không trừ gì.
   const tokens = Math.max(0, Math.ceil(result.tokens));
-  let taken = 0;
+  let settled: { taken: number; owned: boolean };
   try {
-    taken = await inTransaction(sql, async (tx) => {
+    settled = await inTransaction(sql, async (tx) => {
+      const mine = await tx<{ reserved: string }>`
+        update run_modal_parts set status = 'xong', segments = ${JSON.stringify(result.segments)}, heartbeat_at = now()
+        where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong'
+        returning reserved`;
+      if (!mine.length) return { taken: 0, owned: false };
       const got = tokens > 0 ? await chargeTokenWith(tx, ticket, userId, tokens) : 0;
       await tx`update run_tickets set modal_short = modal_short + ${Math.max(0, tokens - got)},
-                 modal_reserved = greatest(0, modal_reserved - coalesce((select reserved from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash}), 0))
+                 modal_reserved = greatest(0, modal_reserved - ${Number(mine[0].reserved)}::numeric)
                where id = ${ticket}`;
-      await tx`update run_modal_parts set status = 'xong', tokens = ${got}, reserved = 0, segments = ${JSON.stringify(result.segments)}
-               where ticket_id = ${ticket} and part_hash = ${partHash}`;
-      return got;
+      await tx`update run_modal_parts set tokens = ${got}, reserved = 0 where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
+      return { taken: got, owned: true };
     });
   } catch (error) {
-    await releasePart(sql, ticket, userId, partHash, seconds);
+    await releasePart(sql, ticket, userId, partHash, attempt);
     throw error;
   }
-  const short = Math.max(0, tokens - taken);
+  if (!settled.owned) {
+    // Đoạn đã được lượt khác nhận (lượt này bị coi là chết): trả chữ cho khách, không trừ lần hai.
+    return { segments: result.segments, tokens: 0, short: 0, reused: true };
+  }
+  const short = Math.max(0, tokens - settled.taken);
   await closeIfWanted(sql, ticket, userId);
-  return { segments: result.segments, tokens: taken, short, reused: false };
+  return { segments: result.segments, tokens: settled.taken, short, reused: false };
 }
 
-/** Đoạn lỗi: trả lại thời lượng và phần giữ riêng, bỏ đoạn (gửi lại được). Một câu lệnh. */
-async function releasePart(sql: Sql, ticket: string, userId: string, partHash: string, seconds: number) {
+/** Đoạn mất nhịp quá LEASE_STALE: tiến trình đã chết. Trả phần giữ, thời lượng cho phiếu, bỏ đoạn (gửi lại được). */
+async function reapStale(sql: Sql, ticket: string) {
   await sql`
     with p as (
-      delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and status <> 'xong'
-      returning reserved
+      delete from run_modal_parts
+      where ticket_id = ${ticket} and status <> 'xong' and heartbeat_at < now() - ${LEASE_STALE}::interval
+      returning reserved, seconds
     )
-    update run_tickets set modal_seconds = greatest(0, modal_seconds - ${seconds}),
+    update run_tickets set modal_seconds = greatest(0, modal_seconds - coalesce((select sum(seconds) from p), 0)),
       modal_reserved = greatest(0, modal_reserved - coalesce((select sum(reserved) from p), 0))
-    where id = ${ticket} and user_id = ${userId}`;
+    where id = ${ticket} and exists (select 1 from p)`;
+}
+
+/** Đoạn lỗi: trả lại thời lượng và phần giữ riêng, bỏ đoạn (gửi lại được). Một câu lệnh, chỉ đụng đúng lượt của mình. */
+async function releasePart(sql: Sql, ticket: string, userId: string, partHash: string, attempt: string) {
+  await sql`
+    with p as (
+      delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong'
+      returning reserved, seconds
+    )
+    update run_tickets set modal_seconds = greatest(0, modal_seconds - coalesce((select sum(seconds) from p), 0)),
+      modal_reserved = greatest(0, modal_reserved - coalesce((select sum(reserved) from p), 0))
+    where id = ${ticket} and user_id = ${userId} and exists (select 1 from p)`;
   await closeIfWanted(sql, ticket, userId);
 }
 
