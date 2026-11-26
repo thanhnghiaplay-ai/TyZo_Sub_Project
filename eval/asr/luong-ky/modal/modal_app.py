@@ -38,9 +38,9 @@ asr_image = (
 llm_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("vllm==0.34.0")
-    # Bộ nhớ đệm biên dịch kernel (Triton, FlashInfer…) để trên Volume: lần bật sau không biên dịch lại.
-    .env({"HF_HOME": "/cache/hf", "VLLM_CACHE_ROOT": "/cache/vllm", "TRITON_CACHE_DIR": "/cache/triton",
-          "XDG_CACHE_HOME": "/cache/xdg"})
+    # Đã thử đặt TRITON_CACHE_DIR/XDG_CACHE_HOME dưới /cache (7fce2aa): máy chữ lỗi «runtime initialization»
+    # liên tục từ 25/11 22:39, nên gỡ lại về như cũ.
+    .env({"HF_HOME": "/cache/hf", "VLLM_CACHE_ROOT": "/cache/vllm"})
     .add_local_file(os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json")
 )
 asr_cache = modal.Volume.from_name("tyzo-asr-cache", create_if_missing=True)
@@ -55,8 +55,7 @@ app = modal.App("tyzo-asr")
 def llm():
     """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi máy nhận dạng gọi /health, tắt sau 5 phút rảnh."""
     import subprocess, time
-    print("[tyzo] may chu bat " + time.strftime("%H:%M:%S", time.gmtime()) + " UTC; bo dem Triton "
-          + ("co san" if os.path.isdir("/cache/triton") and os.listdir("/cache/triton") else "trong"), flush=True)
+    print("[tyzo] may chu bat " + time.strftime("%H:%M:%S", time.gmtime()) + " UTC", flush=True)
     subprocess.Popen(["vllm", "serve", LLM_MODEL, "--host", "0.0.0.0", "--port", "8000",
                       "--api-key", os.environ["TYZO_ASR_TOKEN"], "--max-model-len", "8192",
                       "--gpu-memory-utilization", "0.92", "--enforce-eager",          # enforce-eager: bật máy nhanh hơn
