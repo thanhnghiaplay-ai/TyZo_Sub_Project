@@ -1,6 +1,9 @@
 """Mục 38: thử trọn quy trình trên một đoạn phim thật (không có đáp án).
 
-    thu_phim.py <tệp phim> [giây bắt đầu] [số giây] [ngôn ngữ] [luồng]
+    thu_phim.py <tệp phim> [giây bắt đầu] [số giây] [ngôn ngữ] [luồng] [số máy song song]
+
+Với số máy song song > 1: chia tiếng thành các phần (ít nhất 120 s, cắt ở chỗ lặng gần nhất), gửi cùng lúc,
+rồi ghép phụ đề theo giờ. Tổng tiền GPU gần như không đổi, thời gian chờ giảm theo số máy.
 
 1. Cắt đoạn, tách tiếng, nén Opus mono 16 kHz bằng ffmpeg trên VPS (CPU).
 2. Gửi lên máy nhận dạng Modal (hỏi c/k), lưu phản hồi; chạy lại không gửi lần nữa.
@@ -9,6 +12,7 @@
 Kết quả ở /opt/tyzo-ai/test/phim/<tên tệp>-<bắt đầu>-<độ dài>/.
 """
 import hashlib
+import re
 import json
 import os
 import shutil
@@ -100,6 +104,78 @@ def recognize(audio, lang, profile, saved):
     return result
 
 
+MIN_PART = 120   # phần ngắn hơn không đánh thức sẵn máy model chữ (backend: bat_san_tu_giay)
+
+
+def silences(audio):
+    """Giữa các khoảng lặng ≥ 0,4 s (giây), tìm bằng ffmpeg silencedetect trên CPU."""
+    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", str(audio), "-af",
+                        "silencedetect=noise=-35dB:d=0.4", "-f", "null", "-"], capture_output=True, text=True)
+    starts = [float(x) for x in re.findall(r"silence_start: ([\d.]+)", r.stderr)]
+    ends = [float(x) for x in re.findall(r"silence_end: ([\d.]+)", r.stderr)]
+    return [(a + b) / 2 for a, b in zip(starts, ends)]
+
+
+def plan_parts(length, workers, quiet):
+    if workers <= 1 or length < 2 * MIN_PART:
+        return [(0.0, float(length))]
+    size = max(MIN_PART, length / workers)
+    cuts, t = [0.0], size
+    while t < length - MIN_PART / 2:
+        near = [q for q in quiet if abs(q - t) <= min(30, size / 4) and q - cuts[-1] >= MIN_PART / 2]
+        cut = min(near, key=lambda q: abs(q - t)) if near else t
+        cuts.append(round(cut, 2))
+        t = cut + size
+    return list(zip(cuts, cuts[1:] + [float(length)]))
+
+
+def recognize_parallel(audio, length, lang, profile, folder, workers):
+    from concurrent.futures import ThreadPoolExecutor
+    parts = plan_parts(length, workers, silences(audio) if workers > 1 else [])
+    if len(parts) == 1:
+        return recognize(audio, lang, profile, folder / f"nhan-dang-{profile}.json")
+    print(f"Chia {len(parts)} phần: " + ", ".join(f"{a:.0f}–{b:.0f} s" for a, b in parts), flush=True)
+    jobs = []
+    for a, b in parts:
+        piece = folder / f"phan-{a:.1f}-{b:.1f}.ogg"
+        if not piece.exists():
+            subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-ss", str(a), "-t", str(b - a),
+                            "-i", str(audio), "-c:a", "libopus", "-b:a", "32k", str(piece)], check=True)
+        jobs.append((a, b, piece, folder / f"nhan-dang-{profile}-phan-{a:.1f}-{b:.1f}.json"))
+    t0 = time.monotonic()
+    with ThreadPoolExecutor(min(workers, len(jobs))) as ex:
+        results = list(ex.map(lambda j: recognize(j[2], lang, profile, j[3]), jobs))
+    wall = round(time.monotonic() - t0, 1)
+    segs, st = [], {"hop_nhat": {}, "model_chu": {}, "giay_xu_ly": 0.0, "giay_tieng": 0.0, "bo_chao": [],
+                    "probe": [], "tien_model_chu_usd": 0.0, "phan": []}
+    for (a, b, _, _), r in zip(jobs, results):
+        rs = r["stats"]
+        segs += [dict(x, start=x["start"] + a, end=x["end"] + a) for x in r["segs"]]
+        for k, v in (rs.get("hop_nhat") or {}).items():
+            st["hop_nhat"][k] = st["hop_nhat"].get(k, 0) + v
+        for k, v in (rs.get("model_chu") or {}).items():
+            d = st["model_chu"].setdefault(k, {"goi": 0, "vao": 0, "ra": 0})
+            for f in d:
+                d[f] += int(v.get(f, 0))
+        st["giay_xu_ly"] += rs.get("giay_xu_ly") or 0
+        st["giay_tieng"] += rs.get("giay_tieng") or 0
+        st["bo_chao"] += rs.get("bo_chao") or []
+        st["tien_model_chu_usd"] += rs.get("tien_model_chu_usd") or 0
+        st["probe"] += [dict(p, gap=[p["gap"][0] + a, p["gap"][1] + a]) for p in rs.get("probe") or []]
+        st["phan"].append({"tu": a, "den": b, "cho_s": r.get("cho_s"), "giay_xu_ly": rs.get("giay_xu_ly"),
+                           "bat_may": rs.get("bat_may"), "bat_san_may_chu": rs.get("bat_san_may_chu")})
+    st["giay_xu_ly"] = round(st["giay_xu_ly"], 1)
+    st["bat_san_may_chu"] = any(p["bat_san_may_chu"] for p in st["phan"])
+    st["bat_may"] = results[0]["stats"].get("bat_may", {})
+    merged = {"segs": sorted(segs, key=lambda x: x["start"]), "stats": st, "cho_s": wall, "so_may": len(jobs)}
+    write_json(folder / f"nhan-dang-{profile}.json", merged)
+    for p in st["phan"]:
+        bm = p["bat_may"] or {}
+        print(f"  phần {p['tu']:.0f}–{p['den']:.0f} s · chờ {p['cho_s']} s · xử lý {p['giay_xu_ly']} s · "
+              f"máy từ bản chụp {bm.get('khoi_phuc_tu_ban_chup')} · máy chữ sẵn sàng sau {bm.get('model_chu_san_sang_sau_s')} s")
+    return merged
+
+
 def chat(url, token, model, system, user, max_tokens):
     body = json.dumps(dict(model=model, temperature=0, max_tokens=max_tokens,
                            chat_template_kwargs={"enable_thinking": False},
@@ -171,6 +247,7 @@ def main():
     length = int(sys.argv[3]) if len(sys.argv) > 3 else 300
     lang = sys.argv[4] if len(sys.argv) > 4 else "ja"
     profile = sys.argv[5] if len(sys.argv) > 5 else "nhanh"
+    workers = int(sys.argv[6]) if len(sys.argv) > 6 else 1
     if not src.is_file():
         sys.exit(f"Không thấy tệp {src}")
     folder = OUT_ROOT / f"{src.stem}-{start}-{length}"
@@ -182,14 +259,22 @@ def main():
 
     saved = folder / f"nhan-dang-{profile}.json"
     if saved.exists() and ask("Đã có kết quả nhận dạng lưu. Nhận dạng lại bằng code mới trên Modal (tốn GPU; bản cũ được giữ)? (c/k): ") == "c":
-        saved.rename(folder / f"nhan-dang-{profile}-cu-{time.strftime('%Y%m%d-%H%M%S')}.json")
-    if not saved.exists() and ask(f"Gửi {length} s {NAMES.get(lang, lang)} lên máy nhận dạng (luồng {profile}, tốn GPU)? (c/k): ") != "c":
+        old = folder / f"cu-{time.strftime('%Y%m%d-%H%M%S')}"
+        old.mkdir()
+        for f in [saved, *folder.glob(f"nhan-dang-{profile}-phan-*.json")]:
+            f.rename(old / f.name)
+    many = f", chia tối đa {workers} máy chạy cùng lúc" if workers > 1 else ""
+    if not saved.exists() and ask(f"Gửi {length} s {NAMES.get(lang, lang)} lên máy nhận dạng (luồng {profile}{many}, tốn GPU)? (c/k): ") != "c":
         sys.exit("Đã dừng, không gửi.")
-    result = recognize(audio, lang, profile, saved)
+    if saved.exists():
+        print("Dùng kết quả nhận dạng đã lưu, không gửi lại.")
+        result = json.loads(saved.read_text())
+    else:
+        result = recognize_parallel(audio, length, lang, profile, folder, workers)
     segs = [s for s in result["segs"] if s["text"].strip()]
     st = result["stats"]
     (folder / f"goc-{profile}.srt").write_text(srt([(s["start"], s["end"], s["text"].strip()) for s in segs]))
-    print(f"\nNhận dạng: {len(segs)} câu · chờ {result.get('cho_s', '?')} s · xử lý {st.get('giay_xu_ly')} s"
+    print(f"\nNhận dạng: {len(segs)} câu · {result.get('so_may', 1)} máy · chờ {result.get('cho_s', '?')} s · xử lý {st.get('giay_xu_ly')} s"
           f" cho {st.get('giay_tieng')} s tiếng · hợp nhất {st.get('hop_nhat')} · gọi model chữ {st.get('model_chu')}"
           f" · bật sẵn máy chữ {st.get('bat_san_may_chu')} · bỏ câu chào {st.get('bo_chao')}"
           f" · máy chữ sẵn sàng sau {st.get('bat_may', {}).get('model_chu_san_sang_sau_s')} s")

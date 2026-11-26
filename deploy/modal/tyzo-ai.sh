@@ -194,8 +194,9 @@ thu_phim() { # cắt một đoạn phim trên VPS, nhận dạng và dịch sang
   read -rp "Độ dài (giây) [300]: " dai; dai="${dai:-300}"
   read -rp "Ngôn ngữ (ja, ko, zh, en) [ja]: " l; l="${l:-ja}"
   read -rp "Luồng [nhanh]: " p; p="${p:-nhanh}"
+  local m; read -rp "Số máy nhận dạng chạy cùng lúc (mỗi phần ít nhất 2 phút) [1]: " m; m="${m:-1}"
   TYZO_TEST_OUT="$TEST_OUT" TYZO_ASR_URL="$(conf_get URL)" TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" \
-    "$PY" "$CODE/eval/asr/phim/thu_phim.py" "$f" "$bd" "$dai" "$l" "$p"
+    "$PY" "$CODE/eval/asr/phim/thu_phim.py" "$f" "$bd" "$dai" "$l" "$p" "$m"
 }
 
 so_sanh_test() { # so_sanh_test [thư mục clip] [số lần] [luồng,luồng|all]

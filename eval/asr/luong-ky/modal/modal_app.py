@@ -140,10 +140,15 @@ else:
         return llm.get_web_url()
 
 
+ASR_SNAPSHOT = bool(CFG["gpu"].get("snapshot_nhan_dang", False))   # đổi trong cau-hinh.json rồi «Cập nhật»
+
+
 @app.cls(gpu=CFG["gpu"]["nhan_dang"], image=asr_image, volumes={"/cache": asr_cache}, secrets=[SECRET],
-         scaledown_window=60, timeout=1800, min_containers=int(os.environ.get("TYZO_ASR_WARM") or 0))
+         scaledown_window=60, timeout=1800, min_containers=int(os.environ.get("TYZO_ASR_WARM") or 0),
+         enable_memory_snapshot=ASR_SNAPSHOT,
+         **({"experimental_options": {"enable_gpu_snapshot": True}} if ASR_SNAPSHOT else {}))
 class Asr:
-    @modal.enter()
+    @modal.enter(snap=ASR_SNAPSHOT)
     def load(self):
         import sys, time
         t0 = time.time()
@@ -163,8 +168,22 @@ class Asr:
             t = time.time(); backend.qwen_engine.load("qwen3-asr-1.7b", "cuda", os.environ.get("HF_HOME")); B["nap_qwen3_asr_s"] = round(time.time() - t, 1)
         import numpy as np, pml
         t = time.time(); pml.sepformer(np.zeros(16000, dtype=np.float32)); B["nap_sepformer_s"] = round(time.time() - t, 1)
+        t = time.time()
+        from demucs.pretrained import get_model                 # nạp sẵn model tách giọng để nằm trong bản chụp
+        backend._demucs = get_model("htdemucs").to(backend._dev()).eval(); B["nap_demucs_s"] = round(time.time() - t, 1)
         t = time.time(); asr_cache.commit(); B["luu_o_s"] = round(time.time() - t, 1)
         B["bat_may_tong_s"] = round(time.time() - t0, 1)
+        self._loaded_at = time.time()
+        print(f"[tyzo] may nhan dang nap xong sau {B['bat_may_tong_s']} s", flush=True)
+
+    @modal.enter(snap=False)
+    def ready(self):
+        """Chạy sau khi khôi phục từ bản chụp (hoặc ngay sau load nếu không chụp). Ghi máy này có khôi phục không."""
+        import time
+        B = self.backend.BOOT
+        B["khoi_phuc_tu_ban_chup"] = ASR_SNAPSHOT and time.time() - self._loaded_at > 5
+        B["nhan_viec_luc"] = time.strftime("%H:%M:%S", time.gmtime())
+        print(f"[tyzo] may nhan dang nhan viec {B['nhan_viec_luc']} UTC; tu ban chup {B['khoi_phuc_tu_ban_chup']}", flush=True)
 
     @modal.fastapi_endpoint(method="POST")
     def run(self, item: dict):

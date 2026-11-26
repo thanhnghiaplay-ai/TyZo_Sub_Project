@@ -79,7 +79,9 @@
     "_ghi_chu_snapshot": "snapshot_may_chu: true = máy model chữ là lớp Llm có chụp bộ nhớ cả GPU sau khi vLLM sẵn sàng (thử nghiệm của Modal, khôi phục lỗi thì Modal tự bật theo cách thường). false = hàm llm như trước. Đổi xong chọn «Cập nhật».",
     "tat_may_chu_sau_giay": 60,
     "_ghi_chu_tat_may": "tat_may_chu_sau_giay: máy model chữ rảnh bao lâu thì tự tắt (Modal scaledown_window, tối thiểu 2 s). Khi đang nhận dạng tệp dài, máy nhận dạng gọi /health 30 s một lần để giữ máy chữ bật.",
-    "_ghi_chu_gpu_chu": "model_chu chỉ L40S (26/11): bản chụp bộ nhớ GPU và bộ đệm Triton gắn với loại GPU; đổi sang A100 làm lần bật đó chậm 2,5–3,5 phút. Thêm lại \"A100-80GB\" nếu L40S thường hết chỗ."
+    "_ghi_chu_gpu_chu": "model_chu chỉ L40S (26/11): bản chụp bộ nhớ GPU và bộ đệm Triton gắn với loại GPU; đổi sang A100 làm lần bật đó chậm 2,5–3,5 phút. Thêm lại \"A100-80GB\" nếu L40S thường hết chỗ.",
+    "snapshot_nhan_dang": true,
+    "_ghi_chu_snapshot_nhan_dang": "snapshot_nhan_dang: true = máy nhận dạng chụp bộ nhớ (cả GPU) sau khi nạp Whisper, SepFormer, Demucs (thử nghiệm alpha của Modal). false = bật máy như cũ. Đổi xong chọn «Cập nhật»."
   },
   "gia_gpu_usd_gio": {
     "L4": 0.8,
