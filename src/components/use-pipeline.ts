@@ -17,7 +17,7 @@ import { readMediaSeconds } from "@/lib/trial-media";
 import { addLocalRun } from "@/lib/local-runs";
 import { claimPlayback, closeRoomTicket, forgetTicket, openRoomTicket, recoverOrphanTicket, rememberTicket } from "@/lib/sub/room-ticket";
 import { packAudio, type PackedAudio } from "@/lib/sub/codec";
-import { analyzeFilm, applyNameFixes, contextBlock, chatCall, listModelIds, probeKey, ROOM_KEY, type ChatKey, sleep, throwIfAborted, transcribe, translateIndexes, translateWithRepair } from "@/lib/sub/groq";
+import { analyzeFilm, applyNameFixes, contextBlock, chatCall, listModelIds, probeKey, ROOM_KEY, type ChatKey, sleep, throwIfAborted, translateIndexes, translateWithRepair } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
 import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
 import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
@@ -42,7 +42,7 @@ import { addressLock, asrPrompt, BATCH, glossaryHit, isSilentChunk, fmt, MAX_MIN
 import { loadGenreGlossary, loadRunGlossary, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, mergeIntoGloss, overlayUserTerms, parseGlossaryCsv, type GlossaryTerm } from "@/lib/sub/glossary";
 import { budgetSpeechGaps, formatGapConfirm, GAP_BUDGET_SECONDS, spansFromBlocks, type GapPlan } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
-import { recognizeFileUrl } from "@/lib/sub/ali-run";
+import { asrRunnerOf, transcribe } from "@/lib/providers";
 import { r2Status } from "@/lib/r2-upload";
 import { removeAudioFromR2, uploadAudioToR2 } from "@/lib/sub/r2-upload-run";
 import { packWavFromReader } from "@/lib/sub/wav-stream";
@@ -52,9 +52,7 @@ import { listKeyModels } from "@/lib/key-models";
 import { getRoomModelCounts, getRoomOffer } from "@/lib/provider-room";
 import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
 import { PROVIDER_IDS, PROVIDERS, providersWith, type ProviderId } from "@/lib/sub/provider";
-import { segsFromAli } from "@/lib/sub/ali-asr-to-segs";
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
-import { ALI_FILETRANS_MODEL } from "@/lib/sub/ali-filetrans";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";
 import { getServiceMenu } from "@/lib/pack-room";
 import { turnPackProblem } from "@/lib/turn-pack";
@@ -950,7 +948,7 @@ export function usePipeline() {
     // và key của nhà chạy model dịch (dịch có thể bằng bất kỳ nhà nào có model dịch).
     const asrOwner = asrHouse(asrModel) ?? "groq";
     const asrLabel = PROVIDERS[asrOwner].label;
-    if (asrOwner === "tyzo-modal" && !roomPayRef.current) return say("TyZo Modal dùng ở cửa Trả theo lượt.", true);
+    if (asrRunnerOf(asrModel).turnOnly && !roomPayRef.current) return say(`${asrLabel} dùng ở cửa Trả theo lượt.`, true);
     if (!roomPayRef.current) {
       const asrKey = asrOwner === "groq" ? token : houseKeyOf(asrOwner);
       if (!asrKey) return say(asrOwner === "groq" ? "Vui lòng nhập Groq API key." : `Nhận dạng ${asrLabel} cần key ${asrLabel} của bạn.`, true);
@@ -1367,7 +1365,7 @@ export function usePipeline() {
           applyReady();
         }
       };
-      await Promise.all(Array.from({ length: asrOwner === "tyzo-modal" ? Math.min(9, j.parts.length) : Math.max(1, threads) }, worker));
+      await Promise.all(Array.from({ length: (() => { const runner = asrRunnerOf(asrModel); return runner.intake === "chunks" && runner.parallel ? Math.min(runner.parallel, j.parts.length) : Math.max(1, threads); })() }, worker));
       const swappedN = j.langEvents.filter((e) => e.swapped).length;
       if (swappedN) say(`Đã nhận dạng lại ${swappedN} đoạn có ngôn ngữ khác ngôn ngữ đã chọn.`);
       await retryDecodeFails();
@@ -1902,25 +1900,27 @@ export function usePipeline() {
           runUrl = uploaded.url;
           if (my !== j.runId) return;
         }
-        if (asrModel === ALI_FILETRANS_MODEL) {
-          say("Đang gửi file tới Alibaba…");
-          const result = await recognizeFileUrl({
+        const linkRunner = asrRunnerOf(asrModel);
+        if (linkRunner.intake === "link") {
+          const label = PROVIDERS[linkRunner.id].label;
+          say(`Đang gửi file tới ${label}…`);
+          const segs = await linkRunner.recognize({
             url: runUrl,
             language: asrLanguageOf(source),
-            key: roomPayRef.current ? "room" : houseKeyOf("alibaba"),
+            key: roomPayRef.current ? "room" : houseKeyOf(linkRunner.id),
             ticketId,
             signal,
             onWait: (m) => { if (my === j.runId) say(m); },
           });
           if (my !== j.runId) return;
-          j.segs = segsFromAli(result.sentences);
+          j.segs = segs;
           j.parts = [];
           j.nextPart = 0;
           j.doneSource = source;
           publish(true);
           await translateRemaining(() => true);
           publish(true);
-          say(j.segs.length ? `Nhận dạng Alibaba xong: ${j.segs.length} câu.` : "Alibaba không trả câu nào.", !j.segs.length);
+          say(j.segs.length ? `Nhận dạng ${label} xong: ${j.segs.length} câu.` : `${label} không trả câu nào.`, !j.segs.length);
           setRunning(false);
           delete document.documentElement.dataset.tyzoBusy;
           return;

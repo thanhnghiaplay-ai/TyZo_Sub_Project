@@ -48,6 +48,16 @@ Không có việc đẩy dở. v5.48.0 (26/11/2026) đã XÓA HẲN Deepgram, As
 
 `HANDOFF.md` mục 2 không còn việc mở khác (Chủ xác nhận 20/11/2026).
 
+## Tách file (đang làm, nhánh `tyzo/tach-file`, CHƯA đẩy chính thức)
+
+Chủ yêu cầu 26/11/2026: tách file cho dễ quản lý, bảo trì, nâng cấp. Giữ nguyên cách web chạy. Mỗi đợt: `npx tsc --noEmit`, `npm test`, dựng thử sạch rồi mới lưu. Xong cả 5 đợt mới gộp `main` và đẩy MỘT lần.
+
+1. XONG: khuôn chung nhà nhận dạng `src/lib/providers/` (types.ts, groq.ts, alibaba.ts, tyzo.ts, index.ts). `use-pipeline.ts` gọi `asrRunnerOf(model)` / `transcribe`, không còn `if` theo tên nhà.
+2. Tách các bước pipeline khỏi `use-pipeline.ts` (2.767 dòng): tách tiếng và cắt đoạn, nhận dạng từng đoạn, nhận dạng qua link, dịch, trau chuốt, xuất phụ đề → `src/lib/pipeline/`.
+3. Lựa chọn của khách một chỗ (`src/lib/pipeline/choice.ts`): cách trả (lượt/thuê phòng), gói, luồng Nhanh/Kỹ, gộp cảm thán, giọng đọc → quyết định bước nào chạy, nhà nào, tính tiền ra sao.
+4. Tiền một chỗ: giữ, trừ theo số thật, trả thừa, dùng chung cho 3 nhà (gom từ run-turn, room-asr, tyzo-modal-charge).
+5. Chia `studio.tsx` (1.677 dòng) theo khung: Cách trả, Nhận dạng, Thuyết minh, Phụ đề; gom `src/lib` (257 tệp) vào thư mục theo việc.
+
 ## Thư — còn lại
 
 Làm lần lượt khi người dùng yêu cầu. Mục nào xong thì xóa khỏi danh sách này, không gạch và không giữ lại.
