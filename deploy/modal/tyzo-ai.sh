@@ -363,6 +363,7 @@ menu() {
     echo "36. So hai lượt mục 26 gần nhất theo từng ID, xem câu chào đã bỏ/còn lại (CPU, không gọi Modal)"
     echo "37. Thử bản chụp máy chữ: bật 4 lần, mỗi lần cách 3 phút để máy tự tắt (tốn GPU, hỏi trước)"
     echo "38. Thử phim thật: cắt một đoạn, nhận dạng và dịch sang tiếng Việt (tốn GPU, hỏi trước từng bước)"
+    echo "39. Soi thứ tự giờ và câu lặp trong kết quả mục 38 (CPU, không gọi Modal)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -391,6 +392,7 @@ menu() {
       31) "$PY" "$CODE/eval/asr/fleurs-ko/loc-chao.py" "$TEST_OUT/fleurs-ko" ;;
       34) nhat_ky_bat_may ;;
       38) thu_phim ;;
+      39) ls -1 "$TEST_OUT/phim" | grep -v '^goc$'; read -rp "Thư mục kết quả (tên ở trên): " x; [ -n "$x" ] && "$PY" "$CODE/eval/asr/phim/xem_thu_tu.py" "$TEST_OUT/phim/$x" ;;
       37) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" --lap 4 180 && sleep 5 && nhat_ky_bat_may ;;
       36) "$PY" "$CODE/eval/asr/fleurs-ko/so-hai-luot.py" "$TEST_OUT/fleurs-ko" ;;
       35) TYZO_ASR_TOKEN="$(conf_get TYZO_ASR_TOKEN)" "$PY" "$CODE/eval/asr/luong-ky/modal/bat_may_chu.py" && sleep 5 && nhat_ky_bat_may ;;
