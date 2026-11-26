@@ -62,3 +62,11 @@ test("packWavFromReader báo đoạn không giải mã được, hủy được,
   await assert.rejects(() => packWavFromReader(async () => new Float32Array(10), 10, { signal: controller.signal }), { name: "AbortError" });
   await assert.rejects(() => packWavFromReader(async () => new Float32Array(10), 0));
 });
+
+test("R6-007: thời lượng hoặc độ dài đoạn không hữu hạn thì báo lỗi, không lặp mãi", async () => {
+  const { packWavFromReader } = await import("./wav-stream.ts");
+  const read = async () => new Float32Array(10);
+  await assert.rejects(packWavFromReader(read, Infinity), /thời lượng/);
+  await assert.rejects(packWavFromReader(read, 10, { spanSeconds: 0 }), /đoạn/);
+  await assert.rejects(packWavFromReader(read, 10, { spanSeconds: Number.NaN }), /đoạn/);
+});

@@ -49,10 +49,16 @@ export async function loadBlob(file: File | null, url: string, signal: AbortSign
   return new Blob(parts, { type });
 }
 
-export function waitForMetadata(video: HTMLVideoElement | null) {
+/** Kiểm toán R6-002: chờ thông tin video có hạn (mặc định 30 giây), không treo mãi khi tệp hỏng không báo lỗi. */
+export function waitForMetadata(video: HTMLVideoElement | null, timeoutMs = 30_000) {
   if (!video || video.readyState >= 1) return Promise.resolve();
   return new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("Không đọc được thông tin file media (quá 30 giây). Hãy thử lại hoặc chọn file khác."));
+    }, timeoutMs);
     const cleanup = () => {
+      clearTimeout(timer);
       video.removeEventListener("loadedmetadata", ok);
       video.removeEventListener("error", bad);
     };

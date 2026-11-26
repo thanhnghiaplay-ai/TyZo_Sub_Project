@@ -71,7 +71,9 @@ export async function packWavFromReader(
   options: { spanSeconds?: number; signal?: AbortSignal; onProgress?: (done: number, total: number) => void } = {},
 ): Promise<Blob> {
   const span = options.spanSeconds ?? 300;
-  if (!(duration > 0)) throw new Error("Không đọc được thời lượng âm thanh.");
+  // Kiểm toán R6-007: thời lượng và độ dài đoạn phải là số dương hữu hạn (Infinity làm vòng lặp không dừng).
+  if (!(duration > 0) || !Number.isFinite(duration)) throw new Error("Không đọc được thời lượng âm thanh.");
+  if (!(span > 0) || !Number.isFinite(span)) throw new Error("Độ dài đoạn đọc âm thanh không hợp lệ.");
   const builder = new WavBuilder();
   for (let start = 0; start < duration; start += span) {
     if (options.signal?.aborted) {

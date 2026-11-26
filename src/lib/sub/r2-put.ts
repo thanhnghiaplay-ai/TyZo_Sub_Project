@@ -38,32 +38,53 @@ export async function putWithRetry(
   throw new Error(putFailedText(last));
 }
 
+/** Quá chừng này không nhích byte nào thì coi lần tải là treo, hủy và thử lại (kiểm toán R6-005). */
+export const PUT_STALL_MS = 60_000;
+
 /** Bản chạy ở trình duyệt: XMLHttpRequest vì fetch chưa có tiến độ tải lên. */
-export function xhrPutSend(url: string, blob: Blob, contentType: string, signal?: AbortSignal): PutSend {
+export function xhrPutSend(url: string, blob: Blob, contentType: string, signal?: AbortSignal, stallMs = PUT_STALL_MS): PutSend {
   return (onProgress) =>
     new Promise<PutOutcome>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
+      let stalled = false;
+      let watch: ReturnType<typeof setTimeout> | null = null;
+      // Hạn theo «không nhích», không theo tổng thời gian: tệp 1 GB trên mạng chậm vẫn tải được.
+      const arm = () => {
+        if (watch) clearTimeout(watch);
+        watch = setTimeout(() => {
+          stalled = true;
+          xhr.abort();
+        }, stallMs);
+      };
+      const done = () => {
+        if (watch) clearTimeout(watch);
+        signal?.removeEventListener("abort", abort);
+      };
       const abort = () => xhr.abort();
       signal?.addEventListener("abort", abort, { once: true });
       xhr.open("PUT", url);
       xhr.setRequestHeader("content-type", contentType);
       xhr.upload.onprogress = (event) => {
+        arm();
         if (event.lengthComputable) onProgress(event.loaded, event.total);
       };
       xhr.onload = () => {
-        signal?.removeEventListener("abort", abort);
+        done();
         resolve({ status: xhr.status });
       };
       xhr.onerror = () => {
-        signal?.removeEventListener("abort", abort);
+        done();
         resolve({ status: 0 });
       };
       xhr.onabort = () => {
-        signal?.removeEventListener("abort", abort);
+        done();
+        // Treo do mạng: trả lỗi tạm để vòng thử lại gửi lần nữa. Khách bấm hủy: báo hủy.
+        if (stalled) return resolve({ status: 0 });
         const error = new Error("Đã hủy.");
         error.name = "AbortError";
         reject(error);
       };
+      arm();
       xhr.send(blob);
     });
 }

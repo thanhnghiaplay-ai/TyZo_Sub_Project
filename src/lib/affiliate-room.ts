@@ -183,11 +183,17 @@ export const attachReferral = createServerFn({ method: "POST" })
     `;
     const me = await sql<{ email: string }>`select email from "user" where id = ${context.userId}`;
     if (!host.length || host[0].user_id === context.userId || host[0].email === me[0]?.email) return { ok: false as const };
-    await sql`
+    // Kiểm toán R5-007: khách đã gắn mã khác từ trước thì không ghi được: báo đúng là chưa gắn mã này.
+    const added = await sql`
       insert into referrals (user_id, affiliate_id)
       values (${context.userId}, ${host[0].user_id})
       on conflict (user_id) do nothing
+      returning 1
     `;
+    if (!added.length) {
+      const already = await sql<{ affiliate_id: string }>`select affiliate_id from referrals where user_id = ${context.userId}`;
+      return { ok: already[0]?.affiliate_id === host[0].user_id };
+    }
     return { ok: true as const };
   });
 

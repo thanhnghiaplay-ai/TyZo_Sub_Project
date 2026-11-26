@@ -7,6 +7,9 @@ description = "Bộ nhớ đệm graphify (chuỗi băm của tệp) và bản d
 paths = ['''graphify-out/cache/''', '''^\.vercel/''']
 
 [[allowlists]]
+# Kiểm toán NEW-004: chỉ bỏ ĐÚNG chuỗi giả này, ĐÚNG trong tệp test này (trước đây bỏ mọi dòng `const secret = "` ở mọi tệp).
 description = "Chuỗi giả trong test cầu nối Dịch trực tiếp"
+condition = "AND"
+paths = ['''^src/lib/live/live-wire\.test\.ts$''']
 regexTarget = "line"
-regexes = ['''const secret = "''']
+regexes = ['''const secret = "bi-mat-thu-nghiem-24-ky-tu-xx";''']

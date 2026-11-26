@@ -38,9 +38,13 @@ async function main() {
   let entries;
   try {
     entries = await readdir(migrationsDir);
-  } catch {
-    console.log("[migrate] no migrations/ directory — nothing to do.");
-    return;
+  } catch (error) {
+    // Kiểm toán R8-002: chỉ «không có thư mục» mới bỏ qua; lỗi đọc khác (quyền, ổ đĩa) phải làm hỏng lần dựng.
+    if (error && error.code === "ENOENT") {
+      console.log("[migrate] no migrations/ directory — nothing to do.");
+      return;
+    }
+    throw error;
   }
   // An app with no schema of its own must not pay for a database connection.
   if (pendingMigrations(entries, []).length === 0) {

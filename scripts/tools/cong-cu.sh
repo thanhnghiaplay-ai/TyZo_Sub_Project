@@ -38,12 +38,18 @@ bao_mat() {
     git clone -q --filter=blob:none --sparse https://github.com/semgrep/semgrep-rules "$r"
     git -C "$r" sparse-checkout set typescript javascript generic/secrets
   fi
-  git -C "$r" fetch -q --depth 1 origin "$SEMGREP_RULES_REF" 2>/dev/null; git -C "$r" checkout -q "$SEMGREP_RULES_REF" 2>/dev/null || true
-  semgrep scan --metrics=off --disable-version-check \
+  # Kiểm toán NEW-007: luật phải đúng commit đã ghim; không lấy được thì DỪNG (trước đây lỗi bị bỏ qua, quét bằng luật khác).
+  git -C "$r" fetch -q --depth 1 origin "$SEMGREP_RULES_REF" 2>/dev/null || true
+  git -C "$r" checkout -q "$SEMGREP_RULES_REF" 2>/dev/null || { echo "✘ Không lấy được luật semgrep $SEMGREP_RULES_REF" >&2; return 2; }
+  [ "$(git -C "$r" rev-parse HEAD)" = "$SEMGREP_RULES_REF" ] || { echo "✘ Luật semgrep không đúng commit đã ghim" >&2; return 2; }
+  # NEW-002: --error để có phát hiện mức ERROR/WARNING thì trả mã khác 0; giữ mã của semgrep, không để echo che.
+  semgrep scan --metrics=off --disable-version-check --error \
     --config "$r/typescript" --config "$r/javascript" --config "$r/generic/secrets" \
     --exclude '*.test.ts' --exclude 'routeTree.gen.ts' --severity ERROR --severity WARNING \
     --json -o "$OUT/semgrep.json" src server scripts deploy
-  echo "Báo cáo: $OUT/semgrep.json (bỏ mức INFO; xem phân loại đúng/sai ở docs/CONG-CU.md)"
+  local ma=$?
+  echo "Báo cáo: $OUT/semgrep.json (bỏ mức INFO; xem phân loại đúng/sai ở docs/CONG-CU.md). Mã thoát: $ma"
+  return $ma
 }
 
 phu_thuoc() { npx -y "dependency-cruiser@$DEPCRUISE_VER" src --config .dependency-cruiser.cjs --output-type err; }
@@ -56,6 +62,7 @@ case "${1:-}" in
   bao-mat) bao_mat ;;
   phu-thuoc) phu_thuoc ;;
   so-do) so_do ;;
-  tat-ca) bi_mat; bao_mat; phu_thuoc; so_do ;;
+  # NEW-001: chạy đủ 4 việc, nhưng mã thoát là lỗi đầu tiên gặp (trước đây chỉ theo việc cuối cùng).
+  tat-ca) ma=0; for viec in bi_mat bao_mat phu_thuoc so_do; do "$viec"; m=$?; [ "$ma" -eq 0 ] && ma=$m; done; exit "$ma" ;;
   *) sed -n '2,9p' "$0" ;;
 esac

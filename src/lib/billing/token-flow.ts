@@ -239,6 +239,18 @@ export async function releaseStaleTokensWith(sql: Sql, userId: string, hours = 6
  * Phần thêm được ghi gói mới, hạn 365 ngày, giá 0. Phần bớt lấy gói sắp hết hạn trước.
  */
 export async function setTokenBalanceWith(sql: Sql, userId: string, target: number) {
+  // Kiểm toán MAIN-039: đọc số dư và chỉnh trong MỘT giao dịch, khóa các gói của khách trước khi đọc. Khách đang giữ
+  // Token cùng lúc (openGiayWith cũng khóa các gói này) thì chờ nhau, không còn tính chênh lệch từ số dư đã cũ.
+  const { inTransaction } = await import("../db-tx.ts");
+  return inTransaction(sql, async (tx) => {
+    // Khóa theo khách (kể cả khi khách chưa có gói nào để khóa dòng), rồi khóa các gói còn hạn.
+    await tx`select pg_advisory_xact_lock(hashtext(${"token-balance:" + userId}))`;
+    await tx`select id from token_grants where user_id = ${userId} and expires_at > now() and left_tokens > 0 order by expires_at, id for update`;
+    return setTokenBalanceLocked(tx, userId, target);
+  });
+}
+
+async function setTokenBalanceLocked(sql: Sql, userId: string, target: number) {
   const before = await giayBalance(sql, userId);
   const delta = target - before;
   if (delta > 0) {

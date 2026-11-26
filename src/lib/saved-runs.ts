@@ -64,9 +64,17 @@ function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRe
       new Promise<T | null>((resolve) => {
         if (!db) return resolve(null);
         try {
-          const req = work(db.transaction(SAVED_STORE, mode).objectStore(SAVED_STORE));
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => resolve(null);
+          const tx = db.transaction(SAVED_STORE, mode);
+          const req = work(tx.objectStore(SAVED_STORE));
+          if (mode === "readonly") {
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+          } else {
+            // Kiểm toán R5-009: ghi chỉ tính là xong khi giao dịch đã lưu (oncomplete), không phải lúc yêu cầu vừa nhận.
+            tx.oncomplete = () => resolve(req.result);
+            tx.onerror = () => resolve(null);
+            tx.onabort = () => resolve(null);
+          }
         } catch {
           resolve(null);
         } finally {
