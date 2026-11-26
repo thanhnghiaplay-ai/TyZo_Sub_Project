@@ -1,10 +1,10 @@
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { useEffect, useState } from "react";
 import { askConfirm } from "@/lib/confirm";
 import { getGiayShelf, orderGiayPack, type GiayPackView } from "@/lib/giay-room";
 import { formatGiay } from "@/lib/billing/token-math";
 import { PaySlip } from "@/components/pay-slip";
-import type { PayOrderView } from "@/lib/pay-store";
+import type { PayOrderView } from "@/lib/payment/pay-store";
 
 /** Kệ mua gói Token dịch. Giá tính lúc mở kệ. Gói đã mua không đổi số Token dịch. */
 export function GiayShelf({ reload, onBought }: { reload: number; onBought: (message: string) => void }) {

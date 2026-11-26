@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { cleanLiveShow, parseLiveShow } from "@/lib/live/live-show";
 
 /** Model dịch trực tiếp Chủ đã mở. null = chưa lưu (mở hết model làm được). Ai cũng đọc được (khách cần lọc ô chọn). */

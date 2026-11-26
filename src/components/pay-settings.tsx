@@ -1,4 +1,4 @@
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { useEffect, useState } from "react";
 import { DoorDot } from "@/components/run-door";
 import { ConfirmDialog } from "@/components/confirm-code";
@@ -12,7 +12,7 @@ import {
   setPayGate,
   type PayClaim,
   type PaySettingsView,
-} from "@/lib/pay-store";
+} from "@/lib/payment/pay-store";
 
 const BLANK: PaySettingsView = {
   sepay: false,

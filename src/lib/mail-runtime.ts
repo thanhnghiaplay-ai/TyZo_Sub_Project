@@ -106,7 +106,7 @@ export const getMailFace = createServerFn({ method: "GET" }).handler(async (): P
 export const getMailPolicy = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<MailPolicy> => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     try {
       const { policy } = await load();
@@ -120,7 +120,7 @@ export const saveMailPolicy = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: unknown) => readMailPolicy(JSON.stringify(input ?? {})))
   .handler(async ({ context, data }) => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();

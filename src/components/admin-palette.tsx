@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { looksLikeEmail, matchTabs, type AdminTab, type AdminTabInfo } from "@/lib/admin-tabs";
+import { looksLikeEmail, matchTabs, type AdminTab, type AdminTabInfo } from "@/lib/admin/admin-tabs";
 
 type Item = { key: string; label: string; hint: string; run: () => void };
 

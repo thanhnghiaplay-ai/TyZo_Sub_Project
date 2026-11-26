@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { getProfitView, type ProfitView } from "@/lib/profit-room";
 import { PROVIDERS, isProviderId } from "@/lib/sub/provider";
 

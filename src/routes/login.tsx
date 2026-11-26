@@ -2,7 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useOnline } from "@/lib/use-online";
 import { OFFLINE_TEXT } from "@/components/offline-banner";
-import { getMyPlace } from "@/lib/admin-room";
+import { getMyPlace } from "@/lib/admin/admin-room";
 import { authClient, authEnabled, signOut } from "@/lib/auth/client";
 import { TermsLink } from "@/components/terms-link";
 import { hasAcceptedTerms, rememberTermsAccepted } from "@/lib/terms";

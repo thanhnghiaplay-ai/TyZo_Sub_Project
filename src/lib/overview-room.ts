@@ -7,7 +7,7 @@ export const getOverview = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((range: unknown) => parseRange(range))
   .handler(async ({ context, data }): Promise<Overview> => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const { overviewWith } = await import("@/lib/overview-data");
@@ -22,7 +22,7 @@ export const searchRunTickets = createServerFn({ method: "POST" })
     q: typeof input?.q === "string" ? input.q.trim().slice(0, 80) : "",
   }))
   .handler(async ({ context, data }): Promise<TicketRow[]> => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const { searchTicketsWith } = await import("@/lib/overview-data");
@@ -41,7 +41,7 @@ export const revealTicketFileName = createServerFn({ method: "POST" })
     return ticket;
   })
   .handler(async ({ context, data }): Promise<{ fileName: string }> => {
-    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    const { requireRole, writeAudit } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -58,7 +58,7 @@ export type DoorChange = { id: number; at: string; actorEmail: string; actorRole
 export const listDoorHistory = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<DoorChange[]> => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "ho-tro");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();

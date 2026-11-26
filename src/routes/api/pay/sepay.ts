@@ -4,7 +4,7 @@ export const Route = createFileRoute("/api/pay/sepay")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { handleSepay } = await import("@/lib/pay-store");
+        const { handleSepay } = await import("@/lib/payment/pay-store");
         return handleSepay(request);
       },
     },

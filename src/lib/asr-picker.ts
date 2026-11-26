@@ -11,7 +11,7 @@ import { catalogFor } from "./sub/model-catalog.ts";
 import { PROVIDER_IDS, type ProviderId } from "./sub/provider.ts";
 
 type AsrPickState = "room" | "closed" | "noKey" | "open";
-type AsrPickRow = { id: string; name: string; house: ProviderId; state: AsrPickState; disabled: boolean };
+export type AsrPickRow = { id: string; name: string; house: ProviderId; state: AsrPickState; disabled: boolean };
 
 export function asrPickerRows(input: {
   showRoomPrice: boolean;

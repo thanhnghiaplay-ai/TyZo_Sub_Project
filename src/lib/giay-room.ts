@@ -28,7 +28,7 @@ export const getGiayShelf = createServerFn({ method: "GET" })
     const { getSql } = await import("@/lib/db");
     const { giayBalance } = await import("@/lib/billing/token-flow");
     const sql = await getSql();
-    const { repairMissedTokens } = await import("@/lib/pay-flow");
+    const { repairMissedTokens } = await import("@/lib/payment/pay-flow");
     await repairMissedTokens(sql, context.userId);
     const saved = await sql<{ value: string }>`select value from room_settings where key = 'token_desk'`;
     const desk = parseGiayDesk(saved[0]?.value);
@@ -55,7 +55,7 @@ export const orderGiayPack = createServerFn({ method: "POST" })
     const per = await turboPerSecond();
     const price = per ? packPriceVnd(pack.tokens, per, desk.markup, desk.buffer) : null;
     if (price == null) throw new Error("Chưa có giá bản Turbo hoặc tỷ giá. Chưa bán được gói này.");
-    const { placeSale } = await import("@/lib/pay-store");
+    const { placeSale } = await import("@/lib/payment/pay-store");
     return placeSale(context.userId, {
       amount: price,
       purpose: "token",
@@ -68,7 +68,7 @@ export const orderGiayPack = createServerFn({ method: "POST" })
 export const getGiayDesk = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -82,7 +82,7 @@ export const saveGiayDesk = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: GiayDesk) => checkGiayDesk(input))
   .handler(async ({ context, data }) => {
-    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    const { requireRole, writeAudit } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();

@@ -23,7 +23,7 @@ async function sqlOf() {
 }
 
 async function ownerOnly(userId: string) {
-  const { requireRole } = await import("@/lib/admin-room");
+  const { requireRole } = await import("@/lib/admin/admin-room");
   return requireRole(userId, "chu");
 }
 

@@ -32,7 +32,7 @@ export const getRiskDesk = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .validator((input: { q?: string; all?: boolean } | undefined) => ({ q: String(input?.q ?? "").trim().toLowerCase().slice(0, 120), all: input?.all === true }))
   .handler(async ({ context, data }) => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -117,7 +117,7 @@ export const getRiskDesk = createServerFn({ method: "GET" })
 export const runRiskSweep = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -149,7 +149,7 @@ export const decideRiskFlag = createServerFn({ method: "POST" })
     return { id, action: input.action, note };
   })
   .handler(async ({ context, data }) => {
-    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    const { requireRole, writeAudit } = await import("@/lib/admin/admin-room");
     const { isStaffRole, outranks, roleAtLeast } = await import("@/lib/staff-role");
     const actor = await requireRole(context.userId, "quan-ly");
     if (data.action === "cam" && !roleAtLeast(actor.role, "chu")) throw new Error("Chỉ Admin được cấm.");
@@ -202,7 +202,7 @@ export const addManualFlag = createServerFn({ method: "POST" })
     return { email, terms, note, proof };
   })
   .handler(async ({ context, data }) => {
-    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    const { requireRole, writeAudit } = await import("@/lib/admin/admin-room");
     const actor = await requireRole(context.userId, "quan-ly");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -234,7 +234,7 @@ export const saveRiskSettings = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: RiskSettings) => parseRiskSettings(input))
   .handler(async ({ context, data }) => {
-    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    const { requireRole, writeAudit } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();

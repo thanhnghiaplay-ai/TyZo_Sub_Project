@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { listMyNotices, markNoticeRead, type NoticeRow } from "@/lib/admin-appeals";
-import { formatMoney } from "@/lib/money-format";
+import { listMyNotices, markNoticeRead, type NoticeRow } from "@/lib/admin/admin-appeals";
+import { formatMoney } from "@/lib/payment/money-format";
 
 function formatBody(body: string) {
   return body.replace(/(?<![\p{L}\d.])(\d{4,})(?![\p{L}\d@])/gu, (match) => formatMoney(match));

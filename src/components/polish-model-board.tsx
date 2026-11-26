@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { pushToast } from "@/components/toast";
-import { getPolishModels, savePolishModels } from "@/lib/polish-room";
+import { getPolishModels, savePolishModels } from "@/lib/polish/polish-room";
 import { getProviderKey } from "@/lib/provider-room";
-import { POLISH_POOLS, POLISH_POOL_HINT, POLISH_POOL_LABEL, polishRows, type PolishModels } from "@/lib/polish-models";
+import { POLISH_POOLS, POLISH_POOL_HINT, POLISH_POOL_LABEL, polishRows, type PolishModels } from "@/lib/polish/polish-models";
 
 function toggle(list: string[], id: string, on: boolean) {
   return on ? [...new Set([...list, id])] : list.filter((item) => item !== id);

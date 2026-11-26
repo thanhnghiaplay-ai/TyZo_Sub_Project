@@ -1,4 +1,4 @@
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BackButton } from "@/components/back-button";
 import { TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";

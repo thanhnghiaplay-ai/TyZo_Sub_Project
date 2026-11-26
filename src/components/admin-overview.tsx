@@ -1,10 +1,10 @@
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { pushToast } from "@/components/toast";
 import { getOverview } from "@/lib/overview-room";
 import type { Overview, OverviewRange, TopUser } from "@/lib/overview-data";
 import type { UsageMix } from "@/lib/usage-tally";
-import type { AdminTab } from "@/lib/admin-tabs";
+import type { AdminTab } from "@/lib/admin/admin-tabs";
 import { useServiceStatus } from "@/components/use-service-status";
 import { SERVICE_SCOPES, SERVICE_STATE_LABEL, scopeLabel } from "@/lib/service-status";
 

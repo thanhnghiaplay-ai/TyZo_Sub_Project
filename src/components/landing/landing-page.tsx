@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { BrandMark } from "@/components/brand-mark";
 import { ANDROID_APK_LATEST, ANDROID_APP } from "@/lib/app-link";
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
 import { useRoomPlans } from "@/lib/use-room-plans";
 import landingCss from "./landing.css?raw";

@@ -1,10 +1,10 @@
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { PayEnding } from "@/components/pay-ending";
 import { Icon } from "@/components/ui/icon";
-import { cancelMyPayOrder, claimPayOrder, readPayOrder, syncCasso, type PayOrderView } from "@/lib/pay-store";
-import { PAY_MINUTES } from "@/lib/pay-minutes";
+import { cancelMyPayOrder, claimPayOrder, readPayOrder, syncCasso, type PayOrderView } from "@/lib/payment/pay-store";
+import { PAY_MINUTES } from "@/lib/payment/pay-minutes";
 
 function clock(seconds: number) {
   const safe = Math.max(0, seconds);

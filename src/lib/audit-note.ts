@@ -1,7 +1,7 @@
 import type { RunDesk } from "./run-desk.ts";
 import type { RentShow } from "./rent-show-rule.ts";
 import { PROVIDER_IDS } from "./sub/provider.ts";
-import { POLISH_POOLS, POLISH_POOL_LABEL, type PolishModels } from "./polish-models.ts";
+import { POLISH_POOLS, POLISH_POOL_LABEL, type PolishModels } from "./polish/polish-models.ts";
 
 /** Ghi chú audit dễ đọc: nói rõ cái gì đổi, từ gì sang gì. Không chứa key hay mật khẩu. */
 

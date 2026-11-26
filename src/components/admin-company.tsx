@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin-money";
+import { addCost, deleteCost, estimateOldCost, getMoney, getOrg, resetTestMoney, setNickname, updateCost, type CostRow, type MoneyBreakdown, type MoneyPoint, type OrgCard, type OrgPartner } from "@/lib/admin/admin-money";
 import { ROLE_LABEL } from "@/lib/staff-role";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
 import { ConfirmCodeDialog } from "@/components/confirm-code";
-import { formatMoney, parseMoney, dong } from "@/lib/money-format";
+import { formatMoney, parseMoney, dong } from "@/lib/payment/money-format";
 import { ProfitVerdict } from "@/components/profit-verdict";
-import { COST_CATEGORIES, bucketTotals, categoryLabel, spanLabel } from "@/lib/money-extra";
+import { COST_CATEGORIES, bucketTotals, categoryLabel, spanLabel } from "@/lib/payment/money-extra";
 import { RevenueExtra } from "@/components/revenue-extra";
 
 function vnDay(now = new Date()) {

@@ -1,4 +1,4 @@
-import { PAYOUT_BANKS } from "./pay-match.ts";
+import { PAYOUT_BANKS } from "./payment/pay-match.ts";
 
 /**
  * Hoa hồng cộng tác viên TÍNH TRÊN LỜI, không tính trên doanh thu (Chủ chốt 22/11/2026:

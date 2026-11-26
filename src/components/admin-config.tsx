@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { CONFIG_PAGES, DEFAULT_CONFIG_PAGE, type ConfigPageId } from "@/lib/admin-config-pages";
+import { CONFIG_PAGES, DEFAULT_CONFIG_PAGE, type ConfigPageId } from "@/lib/admin/admin-config-pages";
 import { Fold } from "@/components/admin-fold";
 import { GiayPackBoard } from "@/components/giay-pack-board";
 import { LiveShowBoard } from "@/components/live-show-board";

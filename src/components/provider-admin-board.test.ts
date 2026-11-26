@@ -30,7 +30,7 @@ describe("Admin: ô key các nhà sinh từ bảng PROVIDERS", () => {
     assert.doesNotMatch(run, /Key Groq của phòng/);
   });
   it("không còn hàm lưu giá Alibaba và key Alibaba riêng ở bảng gói", () => {
-    const packs = read("../lib/pack-room.ts");
+    const packs = read("../lib/packs/pack-room.ts");
     const service = read("./service-pack-board.tsx");
     assert.doesNotMatch(packs, /saveAlibabaDesk|saveAlibabaKey/);
     assert.doesNotMatch(service, /saveAlibabaDesk|saveAlibabaKey/);

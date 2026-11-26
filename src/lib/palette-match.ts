@@ -1,4 +1,4 @@
-import { foldText } from "./admin-tabs.ts";
+import { foldText } from "./admin/admin-tabs.ts";
 
 export type PaletteCommand = {
   id: string;

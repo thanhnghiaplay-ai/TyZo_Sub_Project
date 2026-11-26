@@ -2,7 +2,7 @@
  * BƯỚC CUỐI: xuất phụ đề ra tệp (SRT, VTT, TXT, bản nhận dạng gốc).
  * Chỉ người đã đăng nhập, không bị khóa, còn hạn dùng hoặc lượt thử mới được xuất.
  */
-import { getMyPlace } from "@/lib/admin-room";
+import { getMyPlace } from "@/lib/admin/admin-room";
 import { authClient } from "@/lib/auth/client";
 import { deviceId } from "@/lib/device-id";
 import { claimTrialDevice } from "@/lib/room-account";

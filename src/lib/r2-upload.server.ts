@@ -72,7 +72,7 @@ export function r2Ready(): boolean {
 }
 
 async function requireOwnerUser(userId: string): Promise<void> {
-  const { isOwnerId } = await import("@/lib/admin-allow.server");
+  const { isOwnerId } = await import("@/lib/admin/admin-allow.server");
   const { getSql } = await import("@/lib/db");
   if (!(await isOwnerId(await getSql(), userId))) throw new Error("Chỉ Admin xem được cấu hình kho tạm.");
 }

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { homeAction } from "./home-action.ts";
-import type { PayState } from "./pay-status.ts";
+import type { PayState } from "./payment/pay-status.ts";
 import { studioSource } from "../components/studio-source.ts";
 
 const ready: PayState = { kind: "key-ready", access: { kind: "trial", left: 1 }, keys: ["Groq"] };

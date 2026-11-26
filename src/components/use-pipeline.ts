@@ -6,7 +6,7 @@ import { RIGHTS_CONFIRM, RIGHTS_DECLINED, RIGHTS_TEXT, RIGHTS_TITLE, rememberRig
 import { TERMS_VERSION } from "@/lib/terms";
 import { usePolish } from "@/components/use-polish";
 import { claimTrialDevice, recordRightsConsent, spendTrial } from "@/lib/room-account";
-import { getMyPlace } from "@/lib/admin-room";
+import { getMyPlace } from "@/lib/admin/admin-room";
 import { authClient } from "@/lib/auth/client";
 import { deviceId } from "@/lib/device-id";
 import { roomAccess, trialFileProblem } from "@/lib/room-plans";

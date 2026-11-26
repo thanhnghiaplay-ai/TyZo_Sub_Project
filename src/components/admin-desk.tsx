@@ -5,9 +5,9 @@ import { openAdminPlace } from "@/lib/retry-load";
 import { GlossaryBoard } from "@/components/glossary-board";
 import { AffiliateBoard } from "@/components/affiliate-board";
 import { RiskBoard } from "@/components/risk-board";
-import { getDeskStats, getAdminLog, getMyPlace, listAudit, setOwnerEmail, type AuditRow, type DeskStats, type MyPlace } from "@/lib/admin-room";
-import { getBadgeStyle, grantPlan, removeUser, saveStaffNote, searchUsers, listUserLedger, resetUserBalance, readUserTokens, setUserTokens, setBadgeStyle, setStaffRole, setTempPassword, setUserStatus, type AdminUser, type LedgerRow } from "@/lib/admin-users";
-import { escalateAppeal, listAppeals, replyAppeal, sendAppealReply, skipAppeal, type AppealRow } from "@/lib/admin-appeals";
+import { getDeskStats, getAdminLog, getMyPlace, listAudit, setOwnerEmail, type AuditRow, type DeskStats, type MyPlace } from "@/lib/admin/admin-room";
+import { getBadgeStyle, grantPlan, removeUser, saveStaffNote, searchUsers, listUserLedger, resetUserBalance, readUserTokens, setUserTokens, setBadgeStyle, setStaffRole, setTempPassword, setUserStatus, type AdminUser, type LedgerRow } from "@/lib/admin/admin-users";
+import { escalateAppeal, listAppeals, replyAppeal, sendAppealReply, skipAppeal, type AppealRow } from "@/lib/admin/admin-appeals";
 import { Fold } from "@/components/admin-fold";
 import { formatGiay } from "@/lib/billing/token-math";
 import { ROOM_PLANS } from "@/lib/room-plans";
@@ -21,7 +21,7 @@ import { MoneyBoard, OrgBoard } from "@/components/admin-company";
 import { MailDesk } from "@/components/mail-desk";
 import { QualityBoard } from "@/components/quality-board";
 import { AdminOverview } from "@/components/admin-overview";
-import { tabsFor, type AdminTab } from "@/lib/admin-tabs";
+import { tabsFor, type AdminTab } from "@/lib/admin/admin-tabs";
 import { AdminNav } from "@/components/admin-nav";
 import { ConfigTab } from "@/components/admin-config";
 import { AdminBottomBar } from "@/components/admin-bottom-bar";
@@ -35,8 +35,8 @@ import { RunDeskBoard, TicketCard } from "@/components/run-desk-board";
 import { maskFileName } from "@/lib/mask-file-name";
 import { pushToast } from "@/components/toast";
 import { ConfirmCodeDialog, ConfirmDialog } from "@/components/confirm-code";
-import { formatMoney, parseMoney, dong } from "@/lib/money-format";
-import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin-runs";
+import { formatMoney, parseMoney, dong } from "@/lib/payment/money-format";
+import { listUserRuns, refundRun, releaseRunHold, type RunTicket } from "@/lib/admin/admin-runs";
 
 function AppealForm({
   item,

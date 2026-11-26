@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole } from "@/lib/admin-room";
+import { requireRole } from "@/lib/admin/admin-room";
 import type { SpendSummary } from "@/lib/provider-spend";
 
 export type ProfitView = {

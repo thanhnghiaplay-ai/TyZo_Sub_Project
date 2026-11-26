@@ -6,7 +6,7 @@
  * Các bước cần hỏi khách (xác nhận quyền nội dung) hoặc kiểm key Groq bằng mạng vẫn nằm ở use-pipeline.ts.
  */
 import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
-import { getServiceMenu } from "@/lib/pack-room";
+import { getServiceMenu } from "@/lib/packs/pack-room";
 import { asrRunnerOf, type AsrRunner } from "@/lib/providers";
 import { r2Status } from "@/lib/r2-upload";
 import { getRentShow, rentUseProblem } from "@/lib/rent-show";

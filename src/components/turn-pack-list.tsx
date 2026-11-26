@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
-import { getServiceMenu } from "@/lib/pack-room";
+import { getServiceMenu } from "@/lib/packs/pack-room";
 import { PACK_ROLE_LABEL, PACK_ROLES, type ServicePack } from "@/lib/service-pack";
 import { PROVIDER_LABEL } from "@/lib/sub/provider";
 import { customerVisiblePrice, turnPacks } from "@/lib/turn-pack";

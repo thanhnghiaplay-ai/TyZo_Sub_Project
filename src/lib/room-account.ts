@@ -25,7 +25,7 @@ async function readState(userId: string): Promise<RoomState> {
   await sql`insert into room_accounts (user_id) values (${userId}) on conflict (user_id) do nothing`;
   const { releaseStaleWith } = await import("@/lib/billing/run-ticket");
   await releaseStaleWith(sql, userId);
-  const { repairMissedTokens } = await import("@/lib/pay-flow");
+  const { repairMissedTokens } = await import("@/lib/payment/pay-flow");
   await repairMissedTokens(sql, userId);
   const rows = await sql<{ balance: number; plan: string | null; plan_until: unknown; trial_left: number }>`
     select balance, plan, plan_until, trial_left from room_accounts where user_id = ${userId}
@@ -78,7 +78,7 @@ export const orderRoomPlan = createServerFn({ method: "POST" })
     const { pricedPlan } = await import("@/lib/room-plan-prices");
     const plan = pricedPlan(await readPlanPrices(), data);
     if (!plan) throw new Error("Gói không có.");
-    const { placeSale } = await import("@/lib/pay-store");
+    const { placeSale } = await import("@/lib/payment/pay-store");
     return placeSale(context.userId, {
       amount: plan.price,
       purpose: "plan",

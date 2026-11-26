@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getRunDoor, type RunDoorView } from "@/lib/admin-runs";
+import { getRunDoor, type RunDoorView } from "@/lib/admin/admin-runs";
 
 const DOOR_OPEN: RunDoorView = { open: true, note: "", markup: 0, custom: {}, offered: null };
 

@@ -1,5 +1,5 @@
-import type { AdminTab, AdminTabInfo } from "@/lib/admin-tabs";
-import { BOTTOM_LABEL, BOTTOM_SLOT, bottomTabIds } from "@/lib/admin-bottom-tabs";
+import type { AdminTab, AdminTabInfo } from "@/lib/admin/admin-tabs";
+import { BOTTOM_LABEL, BOTTOM_SLOT, bottomTabIds } from "@/lib/admin/admin-bottom-tabs";
 import { FloatingDock, type DockItem } from "@/components/floating-dock";
 
 /**

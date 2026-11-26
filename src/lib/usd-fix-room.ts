@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { ALIBABA_ROWS } from "@/lib/sub/alibaba-catalog";
 import { ASR_MODELS, CHAT_MODELS, modelLabel } from "@/lib/sub/models";
 import { asrHouse } from "@/lib/sub/asr-house";

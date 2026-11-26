@@ -1,6 +1,6 @@
 import { Badge, Button, cx } from "@/components/ui/primitives";
 import { fmt } from "@/lib/sub/text";
-import { reviewCounts, type PolishReview, type ReviewEntry } from "@/lib/polish-review";
+import { reviewCounts, type PolishReview, type ReviewEntry } from "@/lib/polish/polish-review";
 
 /**
  * Màn so sánh «Bản dịch» và «Bản trau chuốt» (bước A4, HANDOFF_NANG_CAP.md).

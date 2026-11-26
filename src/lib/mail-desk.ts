@@ -25,7 +25,7 @@ async function loadStored() {
 export const getMailDesk = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<MailDeskView> => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "chu");
     const { stored } = await loadStored();
     return mailDeskView(stored, mailerName(process.env), place.email);
@@ -46,7 +46,7 @@ export const saveMailDesk = createServerFn({ method: "POST" })
     return { provider, from, key, domain };
   })
   .handler(async ({ context, data }) => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "chu");
     const { sql, stored } = await loadStored();
     const key = data.key || stored?.key || "";
@@ -76,7 +76,7 @@ export const saveMailDesk = createServerFn({ method: "POST" })
 export const sendTestMail = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     const place = await requireRole(context.userId, "chu");
     const { sql, stored } = await loadStored();
     const savedReady = stored ? mailerName(deskToEnv(stored)) === stored.provider : false;

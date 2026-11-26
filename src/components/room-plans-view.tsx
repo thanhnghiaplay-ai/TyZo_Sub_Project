@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
-import { dong, formatMoney, parseMoney } from "@/lib/money-format";
+import { dong, formatMoney, parseMoney } from "@/lib/payment/money-format";
 import { describePlanPrices, planPricesProblem, plansWith, type PlanPrices } from "@/lib/room-plan-prices";
 import { ROOM_PLANS, TRIAL_FILES, TRIAL_MINUTES, type RoomPlanId } from "@/lib/room-plans";
 import { resetRoomPlanPrices, saveRoomPlanPrices } from "@/lib/room-plans-room";

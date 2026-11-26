@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { cleanSupportContact, EMPTY_CONTACT, filledFields, readSupportContact, type SupportContact } from "@/lib/support-contact";
 
 const KEY = "support_contact";

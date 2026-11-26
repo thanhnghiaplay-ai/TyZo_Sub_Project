@@ -9,7 +9,7 @@ function missingTable(error: unknown): never {
 }
 
 async function owner(userId: string) {
-  const { requireRole } = await import("@/lib/admin-room");
+  const { requireRole } = await import("@/lib/admin/admin-room");
   await requireRole(userId, "chu");
 }
 
@@ -50,7 +50,7 @@ export const getAffiliateDesk = createServerFn({ method: "GET" })
         order by p.requested_at
         limit 20
       `;
-      const { vietqrPayload } = await import("@/lib/pay-match");
+      const { vietqrPayload } = await import("@/lib/payment/pay-match");
       const { toDataURL } = await import("qrcode");
       const payouts = await Promise.all(
         rows.map(async (row) => {

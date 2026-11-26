@@ -8,11 +8,11 @@
  *  - Mục «Đổi mật khẩu và quên mật khẩu» đổi theo việc phòng có bật thư đặt lại mật khẩu hay không.
  *  - Ảnh minh họa (nếu có) đặt ở `public/huong-dan/<tên>.png` rồi điền tên vào `image`. Thiếu ảnh thì trang tự bỏ khung ảnh.
  */
-import { foldText } from "./admin-tabs.ts";
+import { foldText } from "./admin/admin-tabs.ts";
 import { MENU_GROUP, MENU_ITEM, TOOL_NAME } from "./customer-menu.ts";
-import { dong } from "./money-format.ts";
+import { dong } from "./payment/money-format.ts";
 import { PROVIDER_IDS, PROVIDERS, providerDoes, providersWith } from "./sub/provider.ts";
-import { PAY_MINUTES } from "./pay-minutes.ts";
+import { PAY_MINUTES } from "./payment/pay-minutes.ts";
 import { plansWith, type PricedPlan } from "./room-plan-prices.ts";
 import { TRIAL_BYTES, TRIAL_FILES, TRIAL_MINUTES } from "./room-plans.ts";
 import type { TourId } from "./tour-steps.ts";

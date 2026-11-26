@@ -1,5 +1,5 @@
-import type { AdminTab, AdminTabInfo } from "@/lib/admin-tabs";
-import { ADMIN_GROUPS } from "@/lib/admin-groups";
+import type { AdminTab, AdminTabInfo } from "@/lib/admin/admin-tabs";
+import { ADMIN_GROUPS } from "@/lib/admin/admin-groups";
 import { RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 
 /** Dựng cây menu từ danh sách tab được phép. Tổng quan đứng riêng, cuối là «Về phòng». */

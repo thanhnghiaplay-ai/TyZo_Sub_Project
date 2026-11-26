@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { parseRentShow, type RentShow } from "@/lib/rent-show-rule";
 
 export { orpheusModelId, ownKeyAvailable, parseRentShow, rentOpen, rentUseProblem, rentVoiceProblem, type RentShow } from "@/lib/rent-show-rule";

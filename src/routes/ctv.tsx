@@ -5,8 +5,8 @@ import { CopyButton } from "@/components/copy-button";
 import { TermsLink } from "@/components/terms-link";
 import { applyAffiliate, myAffiliate, requestPayout, saveAffiliateBank } from "@/lib/affiliate-room";
 import { EVENT_STATUS_LABEL, MAX_SHARE_CAP_BP, SOURCE_LABEL } from "@/lib/affiliate";
-import { PAYOUT_BANKS } from "@/lib/pay-match";
-import { dong } from "@/lib/money-format";
+import { PAYOUT_BANKS } from "@/lib/payment/pay-match";
+import { dong } from "@/lib/payment/money-format";
 
 export const Route = createFileRoute("/ctv")({ component: PartnerPage });
 

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { THEME_DEFAULT, checkTheme, parseTheme, type Theme, type ThemeIssue } from "@/lib/theme/theme";
 
 const LIVE = "theme_live";

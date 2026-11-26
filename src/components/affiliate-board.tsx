@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { cancelPayout, getAffiliateDesk, markPayout, saveAffiliateRules, setAffiliateState } from "@/lib/affiliate-room";
 import { AFFILIATE_DEFAULT, COMMISSION_REASON, commissionFor, MAX_SHARE_CAP_BP, parseAffiliateRules } from "@/lib/affiliate";
-import { dong } from "@/lib/money-format";
+import { dong } from "@/lib/payment/money-format";
 
 const field = "min-h-11 w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3";
 

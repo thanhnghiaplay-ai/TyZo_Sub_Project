@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { describePlanPrices, parsePlanPrices, planPricesProblem, type PlanPrices } from "@/lib/room-plan-prices";
 
 const KEY = "room_plans";

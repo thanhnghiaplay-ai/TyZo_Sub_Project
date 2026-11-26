@@ -8,8 +8,8 @@ import { stepInfo } from "@/lib/studio-steps";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { BackButton } from "@/components/back-button";
-import { getMyPlace, touchPresence, type MyPlace } from "@/lib/admin-room";
-import { submitAppeal } from "@/lib/admin-appeals";
+import { getMyPlace, touchPresence, type MyPlace } from "@/lib/admin/admin-room";
+import { submitAppeal } from "@/lib/admin/admin-appeals";
 import { deviceId } from "@/lib/device-id";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { retryLoad } from "@/lib/retry-load";
@@ -18,19 +18,21 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { AppShell, RailToggle, SideRail, type RailItem } from "@/components/side-rail";
 import { Icon } from "@/components/ui/icon";
 import { READY_STATUS, usePipeline } from "@/components/use-pipeline";
-import { PolishPanel } from "@/components/polish-panel";
+import { KeyPanel } from "@/components/studio-panels/key-panel";
+import { FilmPanel } from "@/components/studio-panels/film-panel";
+import { CastPanel } from "@/components/studio-panels/cast-panel";
+import { VoicePanel } from "@/components/studio-panels/voice-panel";
+import { RunPanel } from "@/components/studio-panels/run-panel";
+import { CheckPanel } from "@/components/studio-panels/check-panel";
 import { useOnline } from "@/lib/use-online";
 import { useLinkCheck } from "@/components/use-link-check";
 import { pushToast } from "@/components/toast";
 import { asrHouse } from "@/lib/sub/asr-house";
-import { linkAsrNote } from "@/lib/sub/link-asr-note";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { pickPool } from "@/lib/sub/room-models";
 import { asrPickerRows } from "@/lib/asr-picker";
 import { ownKeyAvailable } from "@/lib/rent-show";
 import { useRentShow } from "@/components/rent-show-board";
-import { TurnPackList } from "@/components/turn-pack-list";
-import { turnPackModels } from "@/lib/turn-pack";
 import { AccountStrip } from "@/components/account-strip";
 import { BrandMark } from "@/components/brand-mark";
 import { NoticeBell } from "@/components/notice-bell";
@@ -39,7 +41,6 @@ import { useRunDoor } from "@/components/run-door";
 import { MaintenanceNotice, ServiceSwitch } from "@/components/service-notice";
 import { useServiceStatus } from "@/components/use-service-status";
 import { railBadge } from "@/lib/service-status";
-import { DragSlider } from "@/components/drag-slider";
 import { VersionMark } from "@/components/version-mark";
 import { StepsBar } from "@/components/steps-bar";
 import { ExportMenu } from "@/components/export-menu";
@@ -52,40 +53,31 @@ import { homeAction } from "@/lib/home-action";
 import { readUse, rememberUse, shouldAsk, presetForUse, type UseAnswer } from "@/lib/first-ask";
 import { FirstAskCard } from "@/components/first-ask-card";
 import { recordTally } from "@/lib/usage-tally-room";
-import { KeyRing, type KeyCheck } from "@/components/key-ring";
-import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/pay-status";
+import { type KeyCheck } from "@/components/key-ring";
+import { payState, readPayChoice, rememberPayChoice, type PayChoice } from "@/lib/payment/pay-status";
 import { HomeHero } from "@/components/home-hero";
 import { StudioPalette } from "@/components/studio-palette";
 import type { PaletteCommand } from "@/lib/palette-match";
 import { ConfirmDialog } from "@/components/confirm-code";
 import { InfoTip } from "@/components/info-tip";
-import { GENRES, isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
+import { isTypingTarget, pastedLink, showHomeHero } from "@/lib/home-state";
 import { GuidedTour } from "@/components/guided-tour";
 import { markSeen, tourSeen } from "@/components/tour-seen";
 import { guideTopics } from "@/lib/guide-topics";
 import { takeTourRequest } from "@/lib/tour-request";
 import type { TourId } from "@/lib/tour-steps";
 import { useFileThumb } from "@/components/file-thumb";
-import { createNarrator, defaultOrpheusVoice, guessGender, orpheusVoices, sampleLine } from "@/lib/sub/narration";
+import { createNarrator, guessGender, sampleLine } from "@/lib/sub/narration";
 import { prefetchTargets, slotFor } from "@/lib/sub/narration-sync";
 import { useRoomPlans } from "@/lib/use-room-plans";
-import { edgeVoice } from "@/lib/sub/edge-voice";
 import { narrationChoice } from "@/lib/sub/cast-voice";
-import { LANGS, SRC_LANGS, STYLE_EXTRA_MAX, cueText, fmt, orpheusReady, speechLang } from "@/lib/sub/text";
-import { usesBaseGlossary } from "@/lib/sub/glossary";
+import { cueText, orpheusReady, speechLang } from "@/lib/sub/text";
 import { NARRATION_DEFAULT, type NarrationSettings, type Seg } from "@/lib/sub/types";
-import { FIELD, SUB_DEF, type SubStyle } from "@/components/studio-shared";
-import { AsrDiag } from "@/components/studio-diag";
-import { GlossaryEditor } from "@/components/studio-glossary";
-import { Choice, CueRow, FileTile, ModelPicker, Select, VoiceLanes } from "@/components/studio-parts";
+import { SUB_DEF, type SubStyle } from "@/components/studio-shared";
+import { CueRow } from "@/components/studio-parts";
 import { Stage } from "@/components/studio-stage";
-import { jump, ownModelPrice, modelFacts, roomHeld, roomAsrPrice } from "@/components/studio-price";
+import { jump, roomHeld } from "@/components/studio-price";
 
-const ASR_ROOM_TIP = "Thuê phòng chỉ chọn model Admin đã mở. Whisper cần key Groq của bạn. Filetrans cần key Alibaba của bạn. TyZo chỉ có ở Trả theo lượt. Dịch vẫn dùng model Groq đã mở.";
-const THREADS_TIP = "Nhiều luồng chạy nhanh hơn nhưng 6–8 luồng dễ chạm giới hạn của key (nhất là key miễn phí). App sẽ tự chờ rồi gửi lại, không mất đoạn đã nhận dạng.";
-const ASR_PRICE_TIP = "Đơn giá là giá dịch vụ của phòng, đã gồm phần vận hành. Không dùng số này để so với tài khoản Groq riêng.";
-const KEY_MODE_TIP = "Dùng các key bạn đã nhập (Groq, Alibaba, tùy nhà bạn có key). Nhà cung cấp tính tiền cho bạn, phòng không trừ Token dịch cho lượt chạy.";
-const TURN_MODE_TIP = "Dùng key của phòng, bạn không nhập key. Phòng giữ số Token dịch ước tính từ gói đã mua, trừ số thực khi xong và trả phần thừa nếu gói còn hạn.";
 
 const EXPORT_EMPTY = "Chưa có phụ đề nào. Hãy chọn video và bấm Tải và dịch trước.";
 
@@ -145,7 +137,7 @@ const TOOLS = [
 const ADVANCED_TOOLS = [
   ["thuatngu", TOOL_NAME.thuatngu],
 ] as const;
-type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
+export type ToolId = (typeof TOOLS)[number][0] | (typeof ADVANCED_TOOLS)[number][0];
 
 /** Thứ tự mục trên menu (Dịch bình thường): Thuật ngữ là lối tắt vào nhánh của tab Ngữ cảnh. */
 const MENU_TOOL_ORDER = ["key", "phim", "cast", "thuatngu", "voice", "run", "check"] as const;
@@ -1043,602 +1035,17 @@ export function Studio() {
           );
         })()}
         </div>
-      <section id="tool-key" role="region" aria-labelledby="tool-tab-key" hidden={toolTab !== "key"} className="grid gap-3 p-4">
-        {app.running && (
-          <p data-model-locked className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
-            Lượt đang chạy dùng model đã chọn lúc bấm chạy. Đổi model ở đây thì áp dụng cho lần dịch lại sau.
-          </p>
-        )}
-        {runDoor.ready && runDoor.open && payByRoom && (
-          <p className="rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
-            Đang trả theo lượt nên không cần dán key. Cách trả và ước tính Token ở bước cuối «{TOOL_NAME.run}».
-          </p>
-        )}
-        {!(runDoor.open && payByRoom) && (
-          <KeyRing
-            values={{ ...app.houseKeys, groq: app.key }}
-            check={keyCheck}
-            onChange={(id, value) => (id === "groq" ? app.storeGroqKey(value) : app.setHouseKey(id, value))}
-          />
-        )}
-        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">Nâng cao: model và nhận dạng giọng</summary>
-          <div className="grid gap-3 pt-2">
-        {!lockTurnModels && (
-        <>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-muted">Cách dịch</span>
-          {!showRoomPrice && (
-            <button
-              type="button"
-              className="inline-flex min-tap items-center gap-1 rounded-full border border-line px-3 text-sm text-fg disabled:opacity-50"
-              onClick={() => void app.refreshModels()}
-              disabled={app.modelBusy || !online}
-            >
-              {app.modelBusy ? <Icon slot="ui.busy" className="size-4 animate-spin" /> : <Icon slot="act.retry" className="size-4" />}
-              Đồng bộ key
-            </button>
-          )}
-        </div>
-        <VoiceLanes
-          modelId={app.modelId}
-          available={showRoomPrice ? (runDoor.offered ? new Set(runDoor.offered) : null) : ownVoice.ids}
-          allowEnterprise={showRoomPrice ? true : app.allowEnterprise}
-          known={showRoomPrice ? Boolean(runDoor.offered) : ownVoice.known}
-          priceFor={(id) =>
-            showRoomPrice
-              ? modelFacts(app.board, runDoor, id, "").price
-              : ownModelPrice(app.board, id)
-          }
-          onPick={(id) => app.chooseVoice(id)}
-        />
-        
-        <div className="flex items-start gap-2">
-          <details className="min-w-0 flex-1 text-sm text-muted">
-          <summary className="cursor-pointer">Nhập mã model khác</summary>
-          <div className="pt-2">
-            <ModelPicker
-              models={app.catalog}
-              value={app.modelId}
-              remote={showRoomPrice ? null : ownVoice.ids ? [...ownVoice.ids] : app.remoteIds}
-              usable={chatUsable}
-              board={showRoomPrice ? app.board : null}
-              door={showRoomPrice ? runDoor : null}
-              onChange={app.chooseVoice}
-            />
-          </div>
-        </details>
-          <InfoTip label="Về chọn model">Một lần dịch giữ một lối. Không trộn model nhỏ vào video đang dịch.</InfoTip>
-        </div>
-        <Select label="Nhận dạng giọng" tip={(groqAllow || aliAllow || showRoomPrice) ? <>{(groqAllow || aliAllow) ? ASR_ROOM_TIP : null}{showRoomPrice ? " " + ASR_PRICE_TIP : null}</> : undefined} value={app.asrModel} onChange={(value) => app.setAsrModel(value as typeof app.asrModel)}>
-          {asrPick.map((row) => (
-            <option key={row.id} value={row.id} disabled={row.disabled}>
-              {row.name}
-              {row.state === "room"
-                ? ` · ${roomAsrPrice(app.board, runDoor, row.id)}`
-                : row.state === "closed"
-                    ? " · Admin chưa mở"
-                    : row.state === "noKey"
-                      ? " · key của bạn không có model này"
-                      : ""}
-            </option>
-          ))}
-        </Select>
-        {linkAsrNote(app.asrModel) && <p className="text-sm text-muted">{linkAsrNote(app.asrModel)}</p>}
-                </>
-        )}
-          </div>
-        </details>
-        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">Tùy chọn nhận dạng (dùng cho cả hai cách trả)</summary>
-          <div className="grid gap-3 pt-2">
-            <p className="text-xs text-muted">Áp dụng cho cả Key của tôi và Trả theo lượt. Chọn model ở mục «Nâng cao: model và nhận dạng giọng» phía trên.</p>
-        <div className="flex items-center gap-2">
-          <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={app.speechVad} onChange={(event) => app.setSpeechVad(event.target.checked)} />
-          Chỉ gửi đoạn có tiếng người
-        </label>
-          <InfoTip label="Giải thích: Chỉ gửi đoạn có tiếng người">Tắt thì chỉ bỏ đoạn im. Bật thì lần đầu tải thêm khoảng 15 MB, rồi cắt phần không phải lời ở đầu và cuối mỗi đoạn. Không tải được thì dùng lại mức năng lượng. Mỗi đoạn vẫn là một lần gửi.</InfoTip>
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={app.langCheck} onChange={(event) => app.setLangCheck(event.target.checked)} />
-          Kiểm tra ngôn ngữ từng đoạn
-        </label>
-          <InfoTip label="Giải thích: Kiểm tra ngôn ngữ từng đoạn">Hợp video lẫn nhiều thứ tiếng. Đoạn có chữ lệch ngôn ngữ đã chọn hoặc độ tin thấp được nhận dạng lại một lần, không ép ngôn ngữ, và chỉ đổi khi kết quả tốt hơn rõ. Tốn thêm lượt nhận dạng, tối đa khoảng 2 phút âm thanh mỗi lần chạy (trả theo lượt thì trừ thêm Token dịch cho phần đó). Tắt thì chạy như cũ.</InfoTip>
-        </div>
-        <Select label="Số luồng nhận dạng" tip={THREADS_TIP} value={String(app.threads)} onChange={(value) => app.setThreads(Number(value))}>
-          <option value="1">Ổn định · 1 luồng</option>
-          <option value="3">Cân bằng · 3 luồng</option>
-          <option value="4">Nhanh · 4 luồng</option>
-          <option value="6">Mạnh · 6 luồng (hợp key trả phí)</option>
-          <option value="8">Tối đa · 8 luồng (hợp key trả phí)</option>
-        </Select>
-          </div>
-        </details>
-      </section>
+      <KeyPanel toolTab={toolTab} app={app} runDoor={runDoor} payByRoom={payByRoom} keyCheck={keyCheck} lockTurnModels={lockTurnModels} showRoomPrice={showRoomPrice} online={online} ownVoice={ownVoice} chatUsable={chatUsable} groqAllow={groqAllow} aliAllow={aliAllow} asrPick={asrPick} />
 
-      <section id="tool-phim" role="region" aria-labelledby="tool-tab-phim" hidden={toolTab !== "phim"} className="grid gap-3 p-4">
-        {runDoor.ready && runDoor.open && (
-          <div className="studio-pay-chip" role="status">
-            <span className="text-muted">Trả bằng:</span> <strong>{payByRoom ? "Trả theo lượt" : "Key của tôi"}</strong>
-            <button type="button" className="studio-pay-change" onClick={() => openTool("run")} aria-label="Đổi cách trả, ở bước cuối Tải và dịch">
-              Đổi
-            </button>
-          </div>
-        )}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Select label="Nhận diện ngôn ngữ" value={app.source} onChange={app.setSource}>
-            {SRC_LANGS.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-          <Select label="Dịch sang tiếng" value={app.target} onChange={app.setTarget}>
-            {LANGS.filter(([value]) => value === "Vietnamese").map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        {app.heardLang ? (
-          <p className="text-sm text-muted" role="status">
-            Máy nghe ra {({ zh: "Tiếng Trung", ko: "Tiếng Hàn", ja: "Tiếng Nhật", en: "Tiếng Anh" } as Record<string, string>)[app.heardLang] || app.heardLang}
-            {app.source !== "auto" && app.heardLang !== app.source ? ". Khác ngôn ngữ bạn chọn." : "."}
-          </p>
-        ) : null}
+      <FilmPanel toolTab={toolTab} runDoor={runDoor} payByRoom={payByRoom} openTool={openTool} app={app} thumb={thumb} linkCheck={linkCheck} />
 
-        <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
-          {GENRES.map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </Select>
-        <p className="text-sm text-muted">
-          {app.glossaryInfo?.failed ? "Không tải được thuật ngữ có sẵn. Hãy thử lại." : <>Đã nạp <strong className="studio-count">{app.glossaryInfo?.count || 0}</strong> thuật ngữ. </>}
-          <button type="button" className="font-semibold text-accent underline" onClick={() => openTool("thuatngu")}>
-            Xem và sửa thuật ngữ
-          </button>
-        </p>
+      <CastPanel toolTab={toolTab} ctxView={ctxView} setCtxView={setCtxView} app={app} />
 
-        <FileTile icon={<Icon slot="ui.video" className="size-5" />} image={app.file ? thumb.image : null} title="Video" name={app.file?.name} hint="mp4, mkv, webm…" accept="video/*,audio/*" onFile={app.setFile} />
-        <label className="grid gap-1 text-sm text-muted">
-          Hoặc link file trực tiếp
-          <span className="relative">
-            <Icon slot="act.link" className="pointer-events-none absolute top-3.5 left-3 size-4 text-muted" />
-            <input
-              className={FIELD + " pl-9"}
-              type="url"
-              placeholder="https://…/video.mp4"
-              value={app.url}
-              aria-invalid={Boolean(linkCheck.problem)}
-              onChange={(event) => {
-                if (linkCheck.problem) linkCheck.check(event.target.value);
-                app.setUrl(event.target.value);
-              }}
-              onBlur={(event) => linkCheck.check(event.target.value)}
-              onPaste={(event) => linkCheck.check(event.clipboardData.getData("text"))}
-            />
-          </span>
-          {linkCheck.problem && (
-            <span role="alert" className="text-xs text-danger">
-              {linkCheck.problem}
-            </span>
-          )}
-        </label>
-        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2" open={app.audioFile ? true : undefined}>
-          <summary className="min-tap cursor-pointer text-sm font-medium">Tùy chọn thêm: âm thanh riêng, file lớn</summary>
-          <div className="grid gap-3 pt-2">
-            <FileTile icon={<Icon slot="ui.audio" className="size-5" />} title="Âm thanh riêng" name={app.audioFile?.name} hint="Khi file quá lớn" accept="audio/*,video/*" onFile={app.setAudioFile} />
-            <p className="text-sm text-muted">
-              File lớn hơn 1 GB, MKV, AC3/DTS: tách âm thanh nhỏ bằng ffmpeg rồi chọn vào Âm thanh riêng. Video vẫn phát từ file gốc. Lệnh:{" "}
-              <code className="text-fg">ffmpeg -i video.mkv -vn -ac 1 -ar 16000 -c:a aac -b:a 48k -movflags +faststart am-thanh.m4a</code>
-            </p>
-          </div>
-        </details>
-      </section>
+      <VoicePanel toolTab={toolTab} narration={narration} patchNarration={patchNarration} app={app} cloud={cloud} shownVoices={shownVoices} voices={voices} previewVoice={previewVoice} />
 
-      <section id="tool-cast" role="region" aria-labelledby="tool-tab-cast" hidden={toolTab !== "cast"} className="grid gap-3 p-4">
-          <div role="tablist" aria-label="Ngữ cảnh nội dung" className="grid grid-cols-3 gap-2">
-            {(
-              [
-                ["cast", "Nhân vật"],
-                ["terms", "Thuật ngữ"],
-                ["note", "Ghi chú nội dung"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                aria-selected={ctxView === id}
-                className={"min-tap rounded-[var(--radius-ctl)] px-2 text-sm font-semibold " + (ctxView === id ? "bg-accent text-ink" : "border border-line")}
-                onClick={() => setCtxView(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <div hidden={ctxView !== "cast"} className="grid gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h2 className="flex items-center gap-2 font-semibold">
-                Phân tích nội dung
-                <InfoTip label="Giải thích phân tích nội dung">Bước riêng, trước khi dịch. Bảng nhân vật khóa tên, giới và cách xưng hô.</InfoTip>
-              </h2>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={app.pre}
-              className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (app.pre ? "bg-accent text-ink" : "border border-line")}
-              onClick={() => app.setPre(!app.pre)}
-            >
-              {app.pre ? "Đang bật" : "Tắt"}
-            </button>
-          </div>
-          <label className="flex items-start gap-2 text-sm">
-            <input className="mt-1" type="checkbox" checked={app.reviewBefore} onChange={(event) => app.setReviewBefore(event.target.checked)} />
-            Dừng lại để xem và sửa bảng nhân vật trước khi dịch.
-          </label>
-          <div className="grid gap-2">
-            <button
-              type="button"
-              className="min-tap rounded-[var(--radius-ctl)] border border-line text-sm disabled:opacity-50"
-              disabled={app.running || app.segs.length === 0}
-              onClick={() => (app.analyzing ? app.cancel() : void app.analyzeNow())}
-            >
-              {app.analyzing ? "Hủy phân tích" : "Phân tích ngay"}
-            </button>
-            {!app.segs.length && <p className="text-xs text-muted">Chưa có lời thoại. Bật phân tích rồi bấm Tải và dịch — app sẽ dừng để bạn xem bảng trước khi dịch.</p>}
-          </div>
-          {app.bible?.failed && <p className="text-sm text-danger">Không tạo được bảng: {app.bible.failed}</p>}
-          {app.bible && !app.bible.failed && (
-            <div className="grid gap-2">
-              <label className="grid gap-1 text-sm text-muted">
-                Tóm tắt
-                <textarea className={FIELD} rows={3} value={app.bible.summary || ""} onChange={(event) => app.patchSummary(event.target.value)} />
-              </label>
-              <div className="grid max-h-80 gap-2 overflow-auto">
-                {(app.bible.characters || []).map((character, index) => (
-                  // key chỉ theo vị trí: key có tên thì gõ một chữ là hàng bị dựng lại, mất focus, bàn phím ảo tắt
-                  <div key={`character-${index}`} className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-card p-3">
-                    <p className="text-xs font-semibold text-muted">Nhân vật {index + 1}</p>
-                    <label className="grid gap-1 text-xs text-muted">
-                      Tên nhân vật
-                      <input
-                        className={FIELD}
-                        aria-label="Tên nhân vật"
-                        placeholder="Tên nhân vật"
-                        value={character.name || ""}
-                        onChange={(event) => app.patchCharacter(index, { name: event.target.value })}
-                      />
-                    </label>
-                    <label className="grid gap-1 text-xs text-muted">
-                      Nam / nữ
-                      <select
-                        className={FIELD}
-                        aria-label="Giới"
-                        value={character.gender === "male" || character.gender === "female" ? character.gender : "unknown"}
-                        onChange={(event) => app.patchCharacter(index, { gender: event.target.value })}
-                      >
-                        <option value="female">Nữ</option>
-                        <option value="male">Nam</option>
-                        <option value="unknown">Chưa rõ</option>
-                      </select>
-                    </label>
-                    <p className="text-xs text-muted">Giới này được giữ khi phân tích lại, và thắng cao độ lúc đọc.</p>
-                    <label className="grid gap-1 text-xs text-muted">
-                      Tự xưng
-                      <input
-                        className={FIELD}
-                        aria-label="Tự xưng"
-                        placeholder="Tự xưng, ví dụ: tôi / em"
-                        value={character.self || ""}
-                        onChange={(event) => app.patchCharacter(index, { self: event.target.value })}
-                      />
-                    </label>
-                    <label className="grid gap-1 text-xs text-muted">
-                      Được gọi
-                      <input
-                        className={FIELD}
-                        aria-label="Được gọi"
-                        placeholder="Được gọi, ví dụ: anh / chị"
-                        value={character.addressed || ""}
-                        onChange={(event) => app.patchCharacter(index, { addressed: event.target.value })}
-                      />
-                    </label>
-                  </div>
-                ))}
-              </div>
-              {(app.bible.terms || []).length > 0 && (
-                <div className="grid gap-2">
-                  <p className="text-sm text-muted">Thuật ngữ trong video</p>
-                  {(app.bible.terms || []).slice(0, 24).map((term, index) => (
-                    <label key={`${term.src || "t"}-${index}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-2 text-sm">
-                      <span className="truncate text-muted">{term.src}</span>
-                      <input className={FIELD} aria-label="Cách dịch" value={term.tgt || ""} onChange={(event) => app.patchTerm(index, event.target.value)} />
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          </div>
-          <div hidden={ctxView !== "terms"} className="grid gap-3">        <div data-tour="glossary-genre">
-          <Select label="Thể loại" value={app.genre} onChange={app.pickGenre}>
-            {GENRES.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        {usesBaseGlossary(app.genre) && (
-          <label className="flex min-h-11 items-center gap-2 text-sm">
-            <input type="checkbox" checked={app.baseGloss} onChange={(event) => app.setBaseGloss(event.target.checked)} />
-            Tự thêm thuật ngữ nền của ngôn ngữ nguồn
-          </label>
-        )}
-        <p className="text-sm text-muted">
-          {app.glossaryInfo?.failed ? (
-            "Không tải được thuật ngữ có sẵn. Hãy thử lại."
-          ) : app.glossaryInfo?.count > 0 ? (
-            <>
-              Đã nạp <strong className="studio-count">{app.glossaryInfo.count}</strong> thuật ngữ{app.glossaryInfo?.sources?.length > 1 ? " (thể loại này và bộ nền)" : " của thể loại này"}.
-            </>
-          ) : (
-            "Chọn thể loại để nạp thuật ngữ. Thêm tay hoặc nhập CSV ở dưới."
-          )}
-        </p>
-        <details className="rounded-[var(--radius-ctl)] border border-line bg-raised px-3 py-2">
-          <summary className="min-tap cursor-pointer text-sm font-medium">
-            Thuật ngữ thể loại <span className="studio-count">{app.glossaryInfo?.count || 0}</span>
-          </summary>
-          <p className="pb-2 text-sm text-muted">
-            Mỗi thể loại một bộ riêng, không dùng chung. Thêm tay hoặc nhập CSV vẫn lưu trên máy này, theo đúng cặp ngôn ngữ × thể loại.
-            {app.glossaryInfo?.userCount ? ` Trong đó ${app.glossaryInfo.userCount} do bạn thêm.` : ""}
-            {app.glossaryInfo?.sources?.length ? ` ${app.glossaryInfo.sources.map((s: string) => s.replace(/^\/glossaries\//, "")).join(", ")}.` : ""}
-          </p>
-          <GlossaryEditor app={app} />
-        </details>
-            <label className="grid gap-1 text-sm text-muted">
-              Thuật ngữ riêng cho phim này
-              <textarea className={FIELD} rows={4} placeholder="Bảng thuật ngữ, mỗi dòng: tên gốc = cách dịch" value={app.gloss} onChange={(event) => app.setGloss(event.target.value)} />
-            </label>
-          </div>
-          <div hidden={ctxView !== "note"} className="grid gap-2">
-              <input className={FIELD} placeholder="Tên video + năm" value={app.title} onChange={(event) => app.setTitle(event.target.value)} />
-              <textarea className={FIELD} rows={3} placeholder="Dàn diễn viên hoặc tóm tắt cốt truyện" value={app.notes} onChange={(event) => app.setNotes(event.target.value)} />
-              <textarea
-                className={FIELD}
-                rows={2}
-                maxLength={STYLE_EXTRA_MAX}
-                placeholder="Yêu cầu thêm cho bản dịch (giọng văn, mức trang trọng)"
-                value={app.extra}
-                onChange={(event) => app.setExtra(event.target.value)}
-              />
-              <p className="text-xs text-muted">{app.extra.length}/{STYLE_EXTRA_MAX} ký tự. Chỉ chỉnh giọng văn; không đổi định dạng kết quả.</p>
-          </div>
-      </section>
+      <RunPanel toolTab={toolTab} runDoor={runDoor} payByRoom={payByRoom} choosePay={choosePay} app={app} thumb={thumb} narration={narration} setTurnLocked={setTurnLocked} />
 
-      <section id="tool-voice" role="region" aria-labelledby="tool-tab-voice" hidden={toolTab !== "voice"} className="grid gap-3 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="flex items-center gap-2 font-semibold">
-              Thuyết minh bản dịch
-              <InfoTip label="Giải thích thuyết minh">Giọng neural miễn phí đọc tự nhiên hơn. Lỗi mạng thì máy đọc bằng giọng có sẵn.</InfoTip>
-            </h2>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            data-tour="voice-on"
-            aria-checked={narration.enabled}
-            className={"min-tap shrink-0 rounded-full px-4 text-sm font-semibold " + (narration.enabled ? "bg-accent text-ink" : "border border-line")}
-            onClick={() => patchNarration({ enabled: !narration.enabled })}
-          >
-            {narration.enabled ? "Đang bật" : "Tắt"}
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" data-tour="voice-engine">
-          <Choice on={narration.engine === "edge"} onClick={() => patchNarration({ engine: "edge", gender: narration.gender === "any" ? "female" : narration.gender })} title="Neural" text="Miễn phí, tự nhiên" />
-          <Choice on={narration.engine === "browser"} onClick={() => patchNarration({ engine: "browser" })} title="Giọng máy" text="Có sẵn trên máy" />
-          <Choice
-            on={narration.engine === "orpheus"}
-            onClick={() => patchNarration({ engine: "orpheus", orpheusVoice: defaultOrpheusVoice(app.target, narration.gender) })}
-            title="Orpheus"
-            text={cloud ? "Có phí" : "Anh, Ả Rập"}
-          />
-        </div>
-        {narration.engine === "edge" && (
-          <p className="text-sm text-muted">
-            {narration.matchCast
-              ? `Theo tiếng trong video: ${edgeVoice(app.target, "female").label} (nữ) và ${edgeVoice(app.target, "male").label} (nam). `
-              : `Giọng ${edgeVoice(app.target, narration.gender === "any" ? "female" : narration.gender).label}. `}
-            Không cần API key. Nếu dịch vụ giọng tắt, app tự chuyển sang giọng máy khoảng 20 giây.
-          </p>
-        )}
-        {narration.engine === "orpheus" && !cloud && <p className="text-sm text-danger">Orpheus chưa đọc tiếng này. Máy sẽ dùng giọng có sẵn.</p>}
-        <p className="text-sm text-muted">Giọng dự phòng khi không đo được cao độ, hoặc khi tắt đọc theo video.</p>
-        <div className={"grid gap-2 " + (narration.engine === "edge" ? "grid-cols-2" : "grid-cols-3")}>
-          {(
-            [
-              ["female", "Nữ"],
-              ["male", "Nam"],
-              ["any", "Bất kỳ"],
-            ] as const
-          )
-            .filter(([id]) => narration.engine === "browser" || narration.engine === "orpheus" || id !== "any")
-            .map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className={"min-tap rounded-[var(--radius-ctl)] border text-sm " + (narration.gender === id ? "border-accent bg-accent text-ink" : "border-line")}
-              onClick={() => patchNarration({ gender: id, orpheusVoice: defaultOrpheusVoice(app.target, id) })}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        {narration.engine === "browser" ? (
-          <Select label="Giọng trên máy" value={narration.voiceURI} onChange={(voiceURI) => patchNarration({ voiceURI })}>
-            <option value="">Tự chọn theo ngôn ngữ</option>
-            {(shownVoices.length ? shownVoices : voices).map((voice) => (
-              <option key={voice.voiceURI} value={voice.voiceURI}>
-                {voice.name} · {voice.lang}
-              </option>
-            ))}
-          </Select>
-        ) : narration.engine === "orpheus" ? (
-          <Select label="Giọng Orpheus" value={narration.orpheusVoice} onChange={(orpheusVoice) => patchNarration({ orpheusVoice })}>
-            {orpheusVoices(app.target)
-              .filter((voice) => narration.gender === "any" || voice.gender === narration.gender)
-              .map((voice) => (
-                <option key={voice.id} value={voice.id}>
-                  {voice.name} · {voice.gender === "female" ? "nữ" : "nam"}
-                </option>
-              ))}
-          </Select>
-        ) : null}
-        <DragSlider label="Tốc độ nói" value={narration.rate} min={0.6} max={1.8} step={0.1} defaultValue={1} marks={[1]} format={(value) => `${value.toFixed(1)}×`} onCommit={(rate) => patchNarration({ rate })} />
-        {narration.engine !== "orpheus" && (
-          <DragSlider label="Cao độ" value={narration.pitch} min={0.6} max={1.6} step={0.1} defaultValue={1} marks={[1]} format={(value) => value.toFixed(1)} onCommit={(pitch) => patchNarration({ pitch })} />
-        )}
-        <DragSlider label="Âm lượng thuyết minh" value={narration.volume} min={0.2} max={1} step={0.05} defaultValue={1} format={(value) => `${Math.round(value * 100)}%`} onCommit={(volume) => patchNarration({ volume })} />
-        <DragSlider
-          label="Đọc trước / sau phụ đề"
-          value={narration.lead}
-          min={-1.5}
-          max={2}
-          step={0.1}
-          defaultValue={0}
-          marks={[0]}
-          format={(value) => (value === 0 ? "Đúng lúc" : value < 0 ? `Trước ${(-value).toFixed(1)} giây` : `Sau ${value.toFixed(1)} giây`)}
-          onCommit={(lead) => patchNarration({ lead })}
-        />
-        <p className="text-sm text-muted">Kéo núm để chỉnh thêm. Đúng lúc là đọc khi câu hiện. Trước là đọc sớm, sau là đọc muộn. App đã tự bù độ trễ tạo giọng, tạo trước vài câu kế tiếp và đọc nhanh vừa phải khi câu dài hơn khoảng thoại.</p>
-        <div className="flex items-center gap-2">
-          <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={narration.matchCast} onChange={(event) => patchNarration({ matchCast: event.target.checked })} />
-          Đọc theo nhân vật, rồi theo cao độ
-        </label>
-          <InfoTip label="Giải thích: Đọc theo nhân vật">Câu có tên hoặc tự xưng rõ trong bảng nhân vật thì dùng giới đó. Không chắc thì so cao độ trong video: nhóm thấp là nam, nhóm cao là nữ. Bấm Đổi giọng trên một câu để khóa nam hoặc nữ. Không đoán anh/em.</InfoTip>
-        </div>
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={narration.duck} onChange={(event) => patchNarration({ duck: event.target.checked })} />
-          Hạ tiếng phim khi đang đọc
-        </label>
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={narration.muteVideo} onChange={(event) => patchNarration({ muteVideo: event.target.checked })} />
-          Tắt hẳn tiếng gốc lúc thuyết minh
-        </label>
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={narration.followPlayback} onChange={(event) => patchNarration({ followPlayback: event.target.checked })} />
-          Bám tốc độ phát của video
-        </label>
-        <label className="flex min-tap items-center gap-2 text-sm">
-          <input type="checkbox" checked={narration.skipCues} onChange={(event) => patchNarration({ skipCues: event.target.checked })} />
-          Bỏ qua chú thích trong ngoặc, ví dụ [nhạc]
-        </label>
-        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line" onClick={previewVoice}>
-          Nghe thử một câu
-        </button>
-      </section>
-
-      <section id="tool-run" role="region" aria-labelledby="tool-tab-run" hidden={toolTab !== "run"} className="grid gap-3 p-4">
-        <p className="text-sm text-muted">Bước cuối. Chọn cách trả và xem ước tính Token, rồi bấm Tải và dịch ở thanh trên.</p>
-        {runDoor.ready && runDoor.open && (
-          <div className="grid gap-2">
-            <h2 className="text-sm font-semibold">Cách trả</h2>
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" title={KEY_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (!payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => choosePay("key", true)}>
-                Key của tôi
-              </button>
-              <button type="button" title={TURN_MODE_TIP} aria-describedby="pay-mode-note" className={"min-tap rounded-[var(--radius-ctl)] text-sm font-semibold " + (payByRoom ? "bg-accent text-ink" : "border border-line")} onClick={() => choosePay("turn", true)}>
-                Trả theo lượt
-              </button>
-            </div>
-            <p id="pay-mode-note" className="flex items-center gap-2 rounded-[var(--radius-ctl)] border border-line bg-card px-3 py-2 text-sm text-muted">
-              <strong className="text-fg">{payByRoom ? "Đang chọn: Trả theo lượt." : "Đang chọn: Key của tôi."}</strong>
-              <InfoTip label="Giải thích cách trả">
-                {payByRoom ? <>{TURN_MODE_TIP} Số giây từng gói bên dưới là ước tính; số trừ thật là số thực khi xong.</> : KEY_MODE_TIP}
-              </InfoTip>
-            </p>
-            {payByRoom && (
-              <TurnPackList
-                running={app.running}
-                videoRef={app.videoRef}
-                fileSeconds={thumb.seconds ?? app.videoRef.current?.duration ?? 0}
-                narration={narration.enabled}
-                onLocked={setTurnLocked}
-                onPick={(pack) => {
-                  const next = turnPackModels(pack);
-                  if (next.asr) app.setAsrModel(next.asr);
-                  if (next.chat) app.chooseVoice(next.chat);
-                }}
-              />
-            )}
-          </div>
-        )}
-        <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line" onClick={app.reset}>
-          Làm lại
-        </button>
-      </section>
-
-      <section id="tool-check" role="region" aria-labelledby="tool-tab-check" hidden={toolTab !== "check"} className="grid gap-3 p-4">
-        <PolishPanel ui={app.polish} segs={app.segs} disabled={app.running} />
-        <div className="flex flex-wrap gap-2">
-          <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm" disabled={app.running || app.segs.length === 0} onClick={() => void app.scanGaps()}>
-            Dò khoảng trống
-          </button>
-          {app.segs.some((seg) => seg.translationFailed) && (
-            <button type="button" className="min-tap rounded-[var(--radius-ctl)] border border-danger px-3 text-sm font-semibold text-danger" onClick={app.retryFailed}>
-              Dịch lại các câu lỗi
-            </button>
-          )}
-        </div>
-        {app.gapPlan && (app.gapPlan.selected.length > 0 || app.gapPlan.deferred.length > 0) && (
-          <div className="grid gap-2 rounded-[var(--radius-ctl)] border border-line bg-bg p-3 text-sm">
-            <p>
-              {app.gapPlan.selected.length
-                ? `${app.gapPlan.selected.length} khoảng có tiếng nhưng chưa có câu, ${app.gapPlan.audioSeconds.toFixed(1)} giây. Chưa gửi.`
-                : "Không còn khoảng nào vừa ngân sách."}
-              {app.gapPlan.deferred.length ? ` ${app.gapPlan.deferred.length} khoảng vượt ngân sách ${app.gapPlan.budgetSeconds} giây, không gửi.` : ""}
-            </p>
-            {app.gapPlan.selected.length > 0 && (
-              <ul className="grid gap-1 text-muted">
-                {app.gapPlan.selected.slice(0, 6).map((span) => (
-                  <li key={`${span.start}-${span.end}`}>
-                    {fmt(span.start)}–{fmt(span.end)}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {app.gapPlan.selected.length > 0 && (
-              <button type="button" className="min-tap rounded-[var(--radius-ctl)] bg-accent font-semibold text-ink" disabled={app.running} onClick={() => void app.fillGaps()}>
-                Nhận dạng các khoảng này
-              </button>
-            )}
-          </div>
-        )}
-        <AsrDiag
-          raw={app.diag.raw}
-          rejects={app.diag.rejects}
-          kept={app.segs.length}
-          fileName={app.file?.name || app.audioFile?.name}
-          retry={app.asrRetry}
-          filterRetry={app.filterRetry}
-          lang={app.langReport}
-          onPlay={app.playReject}
-          onKeep={app.keepReject}
-          onDrop={app.dropReject}
-        />
-        {!app.diag.raw.length && !app.diag.rejects.length && !app.gapPlan && <p className="text-sm text-muted">Chưa có gì để kiểm tra. Hãy nhận dạng một video trước.</p>}
-      </section>
+      <CheckPanel toolTab={toolTab} app={app} />
 
         </div>
       </div>

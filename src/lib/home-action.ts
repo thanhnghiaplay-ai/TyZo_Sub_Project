@@ -3,7 +3,7 @@
  * Nút không đứng im với chữ «Tải và dịch» khi chưa dịch được: nó đổi thành đúng bước còn thiếu
  * (thêm key, gia hạn, mua Token, chọn cách trả), và có một dòng nói vì sao. Không có ngõ cụt (huongdan.txt mục C).
  */
-import type { PayState } from "./pay-status.ts";
+import type { PayState } from "./payment/pay-status.ts";
 
 /** start: bắt đầu dịch. add-key: mở Cài đặt dịch. wallet: mở Ví. choose: đưa mắt về dòng cách trả. none: chưa bấm được. */
 type HomeActionKind = "start" | "add-key" | "wallet" | "choose" | "none";

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "./auth/middleware";
-import { requireRole } from "./admin-room";
+import { requireRole } from "./admin/admin-room";
 import { parseModalPrice } from "./sub/tyzo-modal-price";
 
 export const getModalPrice = createServerFn({ method: "GET" }).middleware([authMiddleware]).handler(async ({ context }) => {

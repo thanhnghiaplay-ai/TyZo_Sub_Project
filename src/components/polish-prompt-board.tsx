@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { pushToast } from "@/components/toast";
 import { askConfirm } from "@/lib/confirm";
 import { GENRES } from "@/lib/home-state";
-import { getPolishPrompts, savePolishPrompts } from "@/lib/polish-room";
-import type { PolishPrompts } from "@/lib/polish-prompts";
+import { getPolishPrompts, savePolishPrompts } from "@/lib/polish/polish-room";
+import type { PolishPrompts } from "@/lib/polish/polish-prompts";
 import { GENRE_PROMPT_MAX, genrePrompt } from "@/lib/sub/genre-prompts";
 
 const FIELD = "w-full rounded-[var(--radius-ctl)] border border-line bg-bg px-3 py-2 text-base text-fg outline-none focus-visible:ring-2 focus-visible:ring-accent";

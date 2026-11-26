@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { parseModelList } from "@/lib/run-desk";
 import { isProviderId, keyShapeProblem, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 

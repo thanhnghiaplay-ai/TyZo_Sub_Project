@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
-import { requireRole, writeAudit } from "@/lib/admin-room";
+import { requireRole, writeAudit } from "@/lib/admin/admin-room";
 import { cleanServiceStatus, defaultServiceStatus, describeServiceChange, parseServiceStatus, SERVICE_KEY, type ServiceStatus } from "@/lib/service-status";
 
 /** Ai cũng đọc được: trang dịch cần biết nhóm nào đang bảo trì. Lỗi đọc thì coi như Hoạt động, trang vẫn mở. */

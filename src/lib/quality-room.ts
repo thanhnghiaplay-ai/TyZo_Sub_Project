@@ -74,7 +74,7 @@ export const getQualityBoard = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((days: number) => (days === 7 || days === 90 ? days : 30))
   .handler(async ({ context, data }): Promise<{ rows: BoardRow[]; days: number; thresholds: QualityThresholds }> => {
-    const { requireRole } = await import("@/lib/admin-room");
+    const { requireRole } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -168,7 +168,7 @@ export const saveQualityThresholds = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((input: unknown) => checkQualityThresholds(input))
   .handler(async ({ context, data }): Promise<QualityThresholds> => {
-    const { requireRole, writeAudit } = await import("@/lib/admin-room");
+    const { requireRole, writeAudit } = await import("@/lib/admin/admin-room");
     await requireRole(context.userId, "chu");
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();

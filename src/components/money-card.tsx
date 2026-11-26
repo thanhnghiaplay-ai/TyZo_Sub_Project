@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { getRoomAccount, type RoomState } from "@/lib/room-account";
-import { getServiceMenu } from "@/lib/pack-room";
+import { getServiceMenu } from "@/lib/packs/pack-room";
 import { quoteTurnPacks, type TurnPrice } from "@/lib/turn-quote";
 import { turnPackModels, turnPacks } from "@/lib/turn-pack";
 import type { ServicePack } from "@/lib/service-pack";

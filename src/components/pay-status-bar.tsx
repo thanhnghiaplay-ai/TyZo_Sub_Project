@@ -4,7 +4,7 @@ import type { MoneyView } from "@/components/money-card";
 import { formatMinutes } from "@/lib/wallet-view";
 import { formatGiay } from "@/lib/billing/token-math";
 import { TRIAL_MINUTES } from "@/lib/room-plans";
-import type { PayChoice, PayState, RentAccess } from "@/lib/pay-status";
+import type { PayChoice, PayState, RentAccess } from "@/lib/payment/pay-status";
 
 const BTN = "min-tap inline-flex items-center justify-center gap-1.5 rounded-full border border-line bg-card px-3 text-sm font-medium hover:border-accent focus-visible:ring-2 focus-visible:ring-accent";
 const MAIN = "min-tap inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 text-sm font-semibold text-ink focus-visible:ring-2 focus-visible:ring-accent";
