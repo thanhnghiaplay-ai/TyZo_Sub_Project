@@ -75,7 +75,9 @@
     "model_chu": [
       "L40S",
       "A100-80GB"
-    ]
+    ],
+    "snapshot_may_chu": true,
+    "_ghi_chu_snapshot": "snapshot_may_chu: true = máy model chữ là lớp Llm có chụp bộ nhớ cả GPU sau khi vLLM sẵn sàng (thử nghiệm của Modal, khôi phục lỗi thì Modal tự bật theo cách thường). false = hàm llm như trước. Đổi xong chọn «Cập nhật»."
   },
   "gia_gpu_usd_gio": {
     "L4": 0.8,

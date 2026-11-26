@@ -9,6 +9,8 @@ import urllib.request
 from pathlib import Path
 
 from run import write_json
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "luong-ky" / "modal"))
+from dia_chi_llm import llm_url  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 PROMPT = ("Dịch toàn bộ lời chép tiếng Hàn sau sang tiếng Việt tự nhiên. "
@@ -30,7 +32,7 @@ def request(text, model, out, clip_id, sha, url=None, tag="", system=PROMPT):
         raise ValueError("Thiếu chuỗi bảo vệ dịch vụ chữ.")
     if url is None:
         import modal
-        url = modal.Function.from_name("tyzo-asr", "llm").get_web_url().rstrip("/")
+        url = llm_url()
     req = urllib.request.Request(url + "/v1/chat/completions", body, {
         "Content-Type": "application/json", "Authorization": "Bearer " + token})
     start = time.monotonic()

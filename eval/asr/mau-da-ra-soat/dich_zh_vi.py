@@ -7,6 +7,8 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "luong-ky" / "modal"))
+from dia_chi_llm import llm_url  # noqa: E402
 
 DATA = Path(__file__).resolve().parent
 
@@ -131,7 +133,7 @@ def main():
         token = os.environ.get("TYZO_ASR_TOKEN")
         if not token:
             sys.exit("Thiếu chuỗi bảo vệ dịch vụ trong cấu hình VPS.")
-        url = modal.Function.from_name("tyzo-asr", "llm").get_web_url()
+        url = llm_url()
         start = time.monotonic()
         translated = translate(source, url, token, config["hop_nhat"]["gpu"]["model"], merge=merge, mobile=mobile)
         with tempfile.NamedTemporaryFile(mode="w", dir=output.parent, delete=False) as tmp:

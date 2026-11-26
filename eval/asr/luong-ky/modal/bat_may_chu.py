@@ -8,6 +8,8 @@ import os
 import sys
 import time
 import urllib.request
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from dia_chi_llm import llm_url  # noqa: E402
 
 
 def main():
@@ -22,7 +24,7 @@ def main():
     if answer.strip().lower() != "c":
         sys.exit("Đã dừng, không gửi yêu cầu.")
     import modal
-    url = modal.Function.from_name("tyzo-asr", "llm").get_web_url().rstrip("/")
+    url = llm_url()
     body = json.dumps(dict(model=model, temperature=0, max_tokens=8,
                            chat_template_kwargs={"enable_thinking": False},
                            messages=[dict(role="user", content="Trả lời đúng một chữ: OK")])).encode()

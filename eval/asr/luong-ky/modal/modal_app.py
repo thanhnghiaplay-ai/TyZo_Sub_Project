@@ -48,42 +48,85 @@ llm_cache = modal.Volume.from_name("tyzo-llm-cache", create_if_missing=True)
 app = modal.App("tyzo-asr")
 
 
-@app.function(image=llm_image, gpu=CFG["gpu"]["model_chu"], volumes={"/cache": llm_cache}, secrets=[SECRET],
+LLM_SNAPSHOT = bool(CFG["gpu"].get("snapshot_may_chu", False))   # đổi trong cau-hinh.json rồi «Cập nhật»
+LLM_KW = dict(image=llm_image, gpu=CFG["gpu"]["model_chu"], volumes={"/cache": llm_cache}, secrets=[SECRET],
               scaledown_window=300, timeout=24 * 3600, min_containers=int(os.environ.get("TYZO_LLM_WARM") or 0))
-@modal.concurrent(max_inputs=64)
-@modal.web_server(port=8000, startup_timeout=1500)
-def llm():
-    """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi máy nhận dạng gọi /health, tắt sau 5 phút rảnh."""
-    import subprocess, threading, time, urllib.request
 
-    def count_triton():
+
+def _count_triton():
+    try:
+        return sum(len(files) for _, _, files in os.walk("/cache/triton"))
+    except OSError:
+        return 0
+
+
+def _start_vllm():
+    """Chạy vLLM dạng OpenAI (khóa bằng TYZO_ASR_TOKEN) trong tiến trình con, trả tiến trình."""
+    import subprocess, time
+    print(f"[tyzo] may chu bat {time.strftime('%H:%M:%S', time.gmtime())} UTC; bo dem Triton {_count_triton()} tep", flush=True)
+    return subprocess.Popen(["vllm", "serve", LLM_MODEL, "--host", "0.0.0.0", "--port", "8000",
+                             "--api-key", os.environ["TYZO_ASR_TOKEN"], "--max-model-len", "8192",
+                             "--gpu-memory-utilization", "0.92", "--enforce-eager",          # enforce-eager: bật máy nhanh hơn
+                             "--limit-mm-per-prompt", json.dumps({"image": 0, "video": 0})])
+
+
+def _wait_ready_and_save(limit=1500):
+    """Chờ vLLM trả /health 200 rồi lưu Volume một lần (giữ bộ đệm Triton). Lỗi lưu chỉ in ra, không làm hỏng máy."""
+    import time, urllib.request
+    t0 = time.time()
+    ok = False
+    while time.time() - t0 < limit:
         try:
-            return sum(len(files) for _, _, files in os.walk("/cache/triton"))
-        except OSError:
-            return 0
+            if urllib.request.urlopen("http://127.0.0.1:8000/health", timeout=5).status == 200:
+                ok = True
+                break
+        except Exception:
+            time.sleep(3)
+    try:
+        llm_cache.commit()
+        print(f"[tyzo] san sang sau {time.time() - t0:.0f} s; da luu Volume, bo dem Triton {_count_triton()} tep", flush=True)
+    except Exception as e:
+        print(f"[tyzo] luu Volume loi: {type(e).__name__}: {str(e)[:200]}", flush=True)
+    return ok
 
-    print(f"[tyzo] may chu bat {time.strftime('%H:%M:%S', time.gmtime())} UTC; bo dem Triton {count_triton()} tep", flush=True)
 
-    def save_cache():
-        """Khi vLLM đã nhận việc, lưu Volume một lần để bộ đệm Triton còn ở lần bật sau. Lỗi ở đây không làm hỏng máy."""
-        t0 = time.time()
-        while time.time() - t0 < 1500:
-            try:
-                if urllib.request.urlopen("http://127.0.0.1:8000/health", timeout=5).status == 200:
-                    break
-            except Exception:
-                time.sleep(5)
-        try:
-            llm_cache.commit()
-            print(f"[tyzo] san sang sau {time.time() - t0:.0f} s; da luu Volume, bo dem Triton {count_triton()} tep", flush=True)
-        except Exception as e:
-            print(f"[tyzo] luu Volume loi: {type(e).__name__}: {str(e)[:200]}", flush=True)
+if LLM_SNAPSHOT:
+    # Chụp bộ nhớ (cả GPU) sau khi vLLM đã nạp model và sẵn sàng: lần bật sau khôi phục từ bản chụp thay vì nạp lại.
+    # Modal tự chạy lại theo cách thường nếu khôi phục GPU lỗi. Bản chụp làm lại sau mỗi lần triển khai.
+    @app.cls(**LLM_KW, enable_memory_snapshot=True, experimental_options={"enable_gpu_snapshot": True})
+    @modal.concurrent(max_inputs=64)
+    class Llm:
+        @modal.enter(snap=True)
+        def start(self):
+            import time
+            self.proc = _start_vllm()
+            if not _wait_ready_and_save():
+                raise RuntimeError("vLLM không sẵn sàng trong 1500 s")
+            print(f"[tyzo] chup bo nho luc {time.strftime('%H:%M:%S', time.gmtime())} UTC", flush=True)
 
-    threading.Thread(target=save_cache, daemon=True).start()
-    subprocess.Popen(["vllm", "serve", LLM_MODEL, "--host", "0.0.0.0", "--port", "8000",
-                      "--api-key", os.environ["TYZO_ASR_TOKEN"], "--max-model-len", "8192",
-                      "--gpu-memory-utilization", "0.92", "--enforce-eager",          # enforce-eager: bật máy nhanh hơn
-                      "--limit-mm-per-prompt", json.dumps({"image": 0, "video": 0})])
+        @modal.enter(snap=False)
+        def restored(self):
+            import time
+            print(f"[tyzo] may chu nhan viec {time.strftime('%H:%M:%S', time.gmtime())} UTC", flush=True)
+
+        @modal.web_server(port=8000, startup_timeout=1500)
+        def serve(self):
+            """Máy model chữ: cổng 8000 do vLLM mở trong start()."""
+
+    def llm_web_url():
+        return Llm().serve.get_web_url()
+else:
+    @app.function(**LLM_KW)
+    @modal.concurrent(max_inputs=64)
+    @modal.web_server(port=8000, startup_timeout=1500)
+    def llm():
+        """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi có yêu cầu, tắt sau 5 phút rảnh."""
+        import threading
+        threading.Thread(target=_wait_ready_and_save, daemon=True).start()
+        _start_vllm()
+
+    def llm_web_url():
+        return llm.get_web_url()
 
 
 @app.cls(gpu=CFG["gpu"]["nhan_dang"], image=asr_image, volumes={"/cache": asr_cache}, secrets=[SECRET],
@@ -99,7 +142,7 @@ class Asr:
         B["nap_thu_vien_s"] = round(time.time() - t0, 1)
         if os.environ.get("TYZO_FUSE", "gpu") == "gpu":
             try:
-                os.environ["LLM_BASE"] = llm.get_web_url(); os.environ["LLM_KEY"] = os.environ["TYZO_ASR_TOKEN"]
+                os.environ["LLM_BASE"] = llm_web_url(); os.environ["LLM_KEY"] = os.environ["TYZO_ASR_TOKEN"]
                 # không đánh thức máy model chữ lúc bật máy nhận dạng: process() chỉ đánh thức khi tệp đủ dài
             except Exception as e:
                 B["loi_dia_chi_model_chu"] = str(e)[:200]
