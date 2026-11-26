@@ -683,35 +683,65 @@ so_bang_tep() { # số bảng ghi trong tệp .dump (đọc mục lục, không 
   docker exec -i tyzo-db pg_restore -l < "$1" 2>/dev/null | grep -c ' TABLE public '
 }
 
-nap_dump() { # nap_dump <tệp .dump>: nạp AN TOÀN vào Postgres trên VPS (kiểm toán v5.49: R8-001, REF-013, AZ-001)
-  # Không xóa gì trước: nạp vào CSDL tạm «tyzo_moi», đếm đủ bảng theo mục lục tệp, lỗi thì hỏi; đạt mới đổi chỗ.
-  # CSDL đang chạy được giữ nguyên dưới tên tyzo_cu_<giờ> để quay về.
-  local f="$1" can co ma=0 cu a
+so_muc_tep() { # so_muc_tep <tệp> <loại>: số mục loại đó (TABLE, FK CONSTRAINT, CONSTRAINT, INDEX) trong mục lục tệp
+  docker exec -i tyzo-db pg_restore -l < "$1" 2>/dev/null | grep -cE "^[0-9]+; [0-9]+ [0-9]+ $2 public "
+}
+
+so_muc_csdl() { # so_muc_csdl <csdl>: "bảng khóa-ngoại ràng-buộc-khác chỉ-mục-rời" của schema public
+  docker exec tyzo-db psql -U tyzo -d "$1" -tA -F' ' -c "select
+    (select count(*) from pg_tables where schemaname='public'),
+    (select count(*) from pg_constraint c join pg_namespace n on n.oid=c.connamespace where n.nspname='public' and c.contype='f'),
+    (select count(*) from pg_constraint c join pg_namespace n on n.oid=c.connamespace where n.nspname='public' and c.contype in ('p','u','x')),
+    (select count(*) from pg_indexes i where i.schemaname='public' and not exists (select 1 from pg_constraint c where c.conname=i.indexname))" 2>/dev/null
+}
+
+cho_trong_du() { # cho_trong_du <tệp>: ổ đĩa của Postgres còn ít nhất 4 lần dung lượng tệp
+  local can con
+  can=$(( $(stat -c %s "$1") * 4 / 1024 ))
+  con="$(docker exec tyzo-db df -Pk /var/lib/postgresql/data 2>/dev/null | awk 'NR==2{print $4}')"
+  [ -n "$con" ] && [ "$con" -ge "$can" ]
+}
+
+nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ DỪNG (RE-003; trước đó R8-001, REF-013, AZ-001)
+  # Không xóa gì trước. Nạp vào CSDL tạm «tyzo_moi» bằng MỘT giao dịch, dừng ở lỗi đầu tiên; kiểm đủ bảng, khóa ngoại,
+  # ràng buộc và chỉ mục theo mục lục tệp; đạt hết mới đổi chỗ. Không còn đường «dong-y» để dùng bản nạp có lỗi.
+  # CSDL đang chạy giữ nguyên dưới tên tyzo_cu_<giờ> để quay về. Web và cầu nối dừng trong lúc nạp (không ghi mất).
+  local f="$1" can fk ct ix co cu dung=0 ma=0
   [ -s "$f" ] || { do_ "✘ Tệp dữ liệu trống hoặc không có."; return 1; }
-  can="$(so_bang_tep "$f")"
+  can="$(so_muc_tep "$f" TABLE)"
   [ "${can:-0}" -gt 5 ] || { do_ "✘ Tệp dữ liệu hỏng hoặc chỉ có ${can:-0} bảng. Không nạp, dữ liệu đang chạy không bị đụng."; return 1; }
+  cho_trong_du "$f" || { do_ "✘ Ổ đĩa không đủ chỗ (cần khoảng 4 lần dung lượng tệp). Không nạp, dữ liệu đang chạy không bị đụng."; return 1; }
+  fk="$(so_muc_tep "$f" 'FK CONSTRAINT')"; ct="$(so_muc_tep "$f" CONSTRAINT)"; ix="$(so_muc_tep "$f" INDEX)"
   pg_sys "drop database if exists tyzo_moi" >/dev/null && pg_sys "create database tyzo_moi owner tyzo" >/dev/null || { do_ "✘ Không tạo được CSDL tạm."; return 1; }
-  chay_cho "Nạp dữ liệu vào CSDL tạm" /tmp/tyzo-restore.err bash -c 'docker exec -i tyzo-db pg_restore -U tyzo -d tyzo_moi --no-owner --no-privileges < "$1"' _ "$f" || ma=$?
-  co="$(docker exec tyzo-db psql -U tyzo -d tyzo_moi -tAc "select count(*) from pg_tables where schemaname='public'" 2>/dev/null | tr -d '[:space:]')"
-  if [ "${co:-0}" != "$can" ]; then
-    do_ "✘ Nạp thiếu bảng (${co:-0}/$can). Dữ liệu đang chạy KHÔNG bị đụng."; tail -5 /tmp/tyzo-restore.err | sed 's/^/   /'
-    pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1
-  fi
-  if [ "$ma" != 0 ]; then
-    vang "Đã đủ $co bảng nhưng công cụ nạp báo lỗi (mã $ma):"; grep -i 'error' /tmp/tyzo-restore.err | tail -5 | sed 's/^/   /'
-    read -rp "Gõ dong-y để dùng bản vừa nạp, Enter để hủy (dữ liệu đang chạy giữ nguyên): " a
-    [ "$a" = "dong-y" ] || { pg_sys "drop database if exists tyzo_moi" >/dev/null; echo "Đã hủy."; return 1; }
-  fi
+  # Dừng ghi trước khi nạp: dữ liệu ghi trong lúc nạp sẽ không bị bỏ lại trong CSDL cũ mà không ai biết.
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
   dc stop web bridge >/dev/null 2>&1 || true
+  chay_cho "Nạp dữ liệu vào CSDL tạm (một giao dịch, dừng ở lỗi đầu)" /tmp/tyzo-restore.err bash -c 'docker exec -i tyzo-db pg_restore -U tyzo -d tyzo_moi --no-owner --no-privileges --exit-on-error --single-transaction < "$1"' _ "$f" || ma=$?
+  co="$(so_muc_csdl tyzo_moi)"
+  if [ "$ma" != 0 ] || [ "$co" != "$can $fk $ct $ix" ]; then
+    do_ "✘ Nạp không trọn vẹn (mã $ma; có: ${co:-?}; cần: $can $fk $ct $ix — bảng, khóa ngoại, ràng buộc, chỉ mục). Dữ liệu đang chạy KHÔNG bị đụng."
+    grep -i 'error' /tmp/tyzo-restore.err | tail -5 | sed 's/^/   /'
+    pg_sys "drop database if exists tyzo_moi" >/dev/null
+    [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
+    return 1
+  fi
   cu="tyzo_cu_$(date '+%Y%m%d_%H%M%S')"
   pg_sys "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('tyzo','tyzo_moi') and pid <> pg_backend_pid()" >/dev/null || true
   if ! pg_sys "alter database tyzo rename to $cu" >/dev/null; then
-    do_ "✘ Không đổi chỗ được (còn kết nối vào CSDL?). Dữ liệu đang chạy giữ nguyên."; pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1
+    do_ "✘ Không đổi chỗ được (còn kết nối vào CSDL?). Dữ liệu đang chạy giữ nguyên."
+    pg_sys "drop database if exists tyzo_moi" >/dev/null; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
   fi
   if ! pg_sys "alter database tyzo_moi rename to tyzo" >/dev/null; then
-    pg_sys "alter database $cu rename to tyzo" >/dev/null; do_ "✘ Đổi chỗ lỗi, đã trả CSDL cũ về."; return 1
+    if pg_sys "alter database $cu rename to tyzo" >/dev/null; then do_ "✘ Đổi chỗ lỗi, đã trả CSDL cũ về."
+    else do_ "✘ Đổi chỗ lỗi và chưa trả về được: dữ liệu cũ đang ở CSDL $cu, bản mới ở tyzo_moi. Gõ: docker exec tyzo-db psql -U tyzo -d postgres -c 'alter database $cu rename to tyzo'"; fi
+    [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
   fi
-  xanh "✔ Đã nạp $co bảng. Dữ liệu trước đó giữ ở CSDL $cu."
+  # Kiểm lại sau khi đổi chỗ: CSDL «tyzo» phải đúng bản vừa nạp.
+  if [ "$(so_muc_csdl tyzo)" != "$can $fk $ct $ix" ]; then
+    pg_sys "alter database tyzo rename to tyzo_hong_$(date '+%H%M%S')" >/dev/null && pg_sys "alter database $cu rename to tyzo" >/dev/null
+    do_ "✘ Kiểm sau đổi chỗ không khớp, đã trả CSDL cũ về."; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+  fi
+  xanh "✔ Đã nạp trọn vẹn: $can bảng, $fk khóa ngoại, $ct ràng buộc, $ix chỉ mục. Dữ liệu trước đó giữ ở CSDL $cu."
   echo "   Khi chắc chắn bản mới đúng, xóa bản cũ để lấy lại ổ đĩa: docker exec tyzo-db psql -U tyzo -d postgres -c 'drop database $cu'"
 }
 
@@ -725,7 +755,7 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v�
   fi
   # Đọc Neon xong mới đụng VPS (trước đây xóa dữ liệu VPS rồi mới đọc Neon: Neon lỗi là mất cả hai).
   docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
-  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump; return 1; }
+  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump; return 1; }
   nap_dump /tmp/tyzo-neon.dump || { rm -f /tmp/tyzo-neon.dump; return 1; }
   rm -f /tmp/tyzo-neon.dump
 }
