@@ -18,12 +18,12 @@ test at src/lib/sub/r2-upload-run.test.ts:17:1
 ✖ R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure (3.668701ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
   + actual - expected
-  
+
   + []
   - [
   -   'synthetic/owned-key'
   - ]
-  
+
       at TestContext.<anonymous> (file:///workspace/TyZo-ccr-9f1afcc8-iv7067/src/lib/sub/r2-upload-run.test.ts:22:12)
       at async Test.run (node:internal/test_runner/test:1409:7)
       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {

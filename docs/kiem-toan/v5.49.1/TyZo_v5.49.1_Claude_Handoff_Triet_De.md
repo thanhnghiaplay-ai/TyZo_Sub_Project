@@ -32,7 +32,7 @@ Dẫn chứng: [src/lib/billing/token-flow.ts:147--186](https://github.com/thanh
 ``` text
 147: /** Một đoạn TyZo Modal tính là «đang chạy» trong 15 phút kể từ lúc gửi; quá thời gian thì coi như đã chết. */
 148: export const MODAL_PART_LIVE = "15 minutes";
-149: 
+149:
 150: /**
 151:  * Đóng phiếu giây: phần giữ chưa trừ trả về gói còn hạn. Gói đã hết hạn thì mất.
 152:  * Không cộng ví đồng, không tính hoa hồng.
@@ -61,7 +61,7 @@ Dẫn chứng: [src/lib/billing/token-flow.ts:147--186](https://github.com/thanh
 175:   }
 176:   return null;
 177: }
-178: 
+178:
 179: async function closeTokenNow(sql: Sql, id: string, userId: string, failed: boolean, force: boolean) {
 180:   const rows = await sql<{ freed: number; charged: number; status: string }>`
 181:     with o as (
@@ -93,7 +93,7 @@ Dẫn chứng: [src/lib/billing/run-gate.ts:105--151](https://github.com/thanhng
 110:   }
 111:   const response = await input.send();
 112:   if (!response.ok) return { kind: "pass", response };
-113: 
+113:
 114:   const text = await response.text();
 115:   let cost: number | null = null;
 116:   let base = 0;
@@ -191,7 +191,7 @@ Dẫn chứng: [src/lib/admin/admin-money.ts:304--329](https://github.com/thanhn
 310:     const { issueResetCodeWith } = await import("@/lib/payment/pay-flow");
 311:     return { code: await issueResetCodeWith(await getSql(), context.userId) };
 312:   });
-313: 
+313:
 314: export const resetTestMoney = createServerFn({ method: "POST" })
 315:   .middleware([authMiddleware])
 316:   .validator((code: string) => {
@@ -261,7 +261,7 @@ Dẫn chứng: [src/lib/affiliate-payout.ts:50--74](https://github.com/thanhnghi
 60:     return { ok: true as const };
 61:   });
 62: }
-63: 
+63:
 64: /** Admin từ chối lệnh rút: trả đúng các khoản của lệnh đó về «Rút được». */
 65: export async function cancelPayoutWith(sql: Sql, id: number, note: string) {
 66:   return inTransaction(sql, async (tx) => {

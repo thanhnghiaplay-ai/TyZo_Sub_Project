@@ -16,9 +16,9 @@
 test at src/lib/pipeline/recognize-race.test.ts:7:1
 ✖ R6-008: old language-check response cannot alter new run's cost/events after trial await (266.369302ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   0 !== 1
-  
+
       at TestContext.<anonymous> (file:///workspace/TyZo-ccr-9f1afcc8-iv7067/src/lib/pipeline/recognize-race.test.ts:13:10)
       at async Test.run (node:internal/test_runner/test:1409:7)
       at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {

@@ -1,0 +1,97 @@
+{
+  "operation": "trim trailing whitespace and terminal blank lines only; no test result/content changed",
+  "raw_logs_location": "/workspace/tyzo-continuation-evidence",
+  "raw_instruction_in_zip": "originals/TyZo_v5.49.1_Claude_Handoff_Triet_De.md",
+  "files": [
+    {
+      "file": "bang-chung/codex/postgres-install.log",
+      "raw_sha256": "48fbb1542e1fa6c34ab0d876c74c04020b5ef8a8abe7d68ff1beabeff22dc8fc",
+      "normalized_sha256": "ba15adcecd4ccfe73a9c9ef68de4f38dfef749e78444c2881e230bb364547e00"
+    },
+    {
+      "file": "bang-chung/codex/current-typecheck.log",
+      "raw_sha256": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f",
+      "normalized_sha256": "dac125c794db702133345f3a0d33f3193f975fddc564ca4f1498b0d4132ed500"
+    },
+    {
+      "file": "bang-chung/codex/postgres-build.log",
+      "raw_sha256": "2dc439f9221575c0c12a5c4bc9d1370ae98b6c41349458917380645576b5c390",
+      "normalized_sha256": "19dc2bbae2adf40f763435de1a5b1d841db21820badb5149519d38e9f9fdd9df"
+    },
+    {
+      "file": "bang-chung/codex/security-semgrep-changed.log",
+      "raw_sha256": "1227beb934a7cc3d04e06b87fc6f797a2ff6141ae435391ae9be713a27f24a62",
+      "normalized_sha256": "b47f23f42c4030ccfafbdcf6cae6cf1a52dde837d28e86afce876abf9c844e26"
+    },
+    {
+      "file": "bang-chung/codex/final-typecheck.log",
+      "raw_sha256": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f",
+      "normalized_sha256": "dac125c794db702133345f3a0d33f3193f975fddc564ca4f1498b0d4132ed500"
+    },
+    {
+      "file": "bang-chung/codex/security-dependencies.log",
+      "raw_sha256": "7a0bccdadcc97bc7a0e23662c7fb5e885a485f3dc5ae298d799053178a08f76b",
+      "normalized_sha256": "a0ef57fb68d56e38c88a2748ee21cd64b55be675316cc3a93bf98f6f53c0f159"
+    },
+    {
+      "file": "bang-chung/codex/AZ-009-before.log",
+      "raw_sha256": "c1abc0f1df9579a1d7b2246769d598ec84acb0255544b0a2c8cbdc299d4e7b7a",
+      "normalized_sha256": "6e1c39910c6d763d3578ca0e97ef5d888be6a709e04555182f3b7b652cfc7ec3"
+    },
+    {
+      "file": "bang-chung/codex/R6-006-before.log",
+      "raw_sha256": "e6382c72a6d79760f803097ff85bff913e919f3a7bf0f5b27c9d631fb77f2a5a",
+      "normalized_sha256": "101b2c8097f0c267e269e9e22479c880b0622ffce484097486dfeb26c35b7748"
+    },
+    {
+      "file": "bang-chung/codex/R6-008-after.log",
+      "raw_sha256": "0c88505db67bd5032ce990ca76cab051da4bcb2b8d2ea9afad61ff24a7b558a0",
+      "normalized_sha256": "d0ba5561276af81e22c2fe98dfee01f541b89d450b24eb7edbad7fcc571e52f8"
+    },
+    {
+      "file": "bang-chung/codex/security-semgrep.log",
+      "raw_sha256": "2ade965f1aefb6c15c9ce8fed25b2cd2e784b72bc4bc18455955b3a7b2b8f34b",
+      "normalized_sha256": "7a8d5c8c314de0f6eb4d45471a9ec7ae1ac24070abd8da46b1f865496e5710ab"
+    },
+    {
+      "file": "bang-chung/codex/postgres-configure.log",
+      "raw_sha256": "5d3648678926d5ee0a7cf87c6e22c99409f6269218b309c914f90088ab3b0f3e",
+      "normalized_sha256": "4befc4d311196f6a2818cac2b3cd416deacc2cda1e7853e8cef8615694bc8f9d"
+    },
+    {
+      "file": "bang-chung/codex/R3-009-before.log",
+      "raw_sha256": "c74dd6929737f68e3bb8725078d9ea9cb36bc692932fe7e6582f39365fc21c05",
+      "normalized_sha256": "a88e6ecfa9b2808af960fe4297c7dcad11341a1a3a5df7f7ef36c10280b15c87"
+    },
+    {
+      "file": "bang-chung/codex/baseline-typecheck.log",
+      "raw_sha256": "8fa1cf5506304e8abac55868e7f1a136c9b1dde57a3981a382da4c21ea129a6f",
+      "normalized_sha256": "dac125c794db702133345f3a0d33f3193f975fddc564ca4f1498b0d4132ed500"
+    },
+    {
+      "file": "bang-chung/codex/R7-003-before.log",
+      "raw_sha256": "93a4a2ddb2cf46ee3f0dc84067811490928e612a3232df9a1af65a4e97db2dc4",
+      "normalized_sha256": "47dba3d4f5f07436f88693f4c0a64c0facf6da62cfc3b745276054bb2b5b62fb"
+    },
+    {
+      "file": "bang-chung/codex/changed-lint.log",
+      "raw_sha256": "a43f1bba30c5792d61aec4cfe830726c017526c197b4dea348915c887ab7eb0e",
+      "normalized_sha256": "a288a6b1470db76add97b362043d3d5cf8932426e917bffee2d8a125aff9c579"
+    },
+    {
+      "file": "bang-chung/codex/security-semgrep-final-source.log",
+      "raw_sha256": "30460a5592a940bd4165fb2544f81eb6cda70a3c1d821cbf19f695ae0fcb272f",
+      "normalized_sha256": "677cf6b254d6d0ced7b24af1551dcbad8fe44b8987da631e7819ab0cec6cef5e"
+    },
+    {
+      "file": "bang-chung/codex/postgres-initdb.log",
+      "raw_sha256": "1209203ce5254d7061e090e1405e4e60c1f59458a99f45ff0fd047ff2584e742",
+      "normalized_sha256": "fcdf97c3ec4a1ef18e8825667b4724258e7a8cfa4d65fae3a10d7754d514a2bb"
+    },
+    {
+      "file": "TyZo_v5.49.1_Claude_Handoff_Triet_De.md",
+      "raw_sha256": "d07121f8cfe0dd324a1ba7a6d048b3817c433b67783996e5014779cece729edf",
+      "normalized_sha256": "b90edb87a06446e3e50a791666b1b71ef0f5d9f10ee636eb5e3befad8093b421"
+    }
+  ]
+}

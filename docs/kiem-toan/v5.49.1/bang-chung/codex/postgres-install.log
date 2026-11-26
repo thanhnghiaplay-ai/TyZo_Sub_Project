@@ -846,7 +846,7 @@ make -C ../../../src/common all
 make[4]: Entering directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common'
 make[4]: Nothing to be done for 'all'.
 make[4]: Leaving directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common'
-/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig' 
+/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig'
 /usr/bin/mkdir -p '/workspace/tyzo-pg-test/include' '/workspace/tyzo-pg-test/include/postgresql/internal' '/workspace/tyzo-pg-test/share/postgresql'
 /usr/bin/install -c -m 755  libpq.so.5.17 '/workspace/tyzo-pg-test/lib/libpq.so.5.17'
 cd '/workspace/tyzo-pg-test/lib' && \
@@ -883,7 +883,7 @@ make -C ../../../../src/common all
 make[5]: Entering directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common'
 make[5]: Nothing to be done for 'all'.
 make[5]: Leaving directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common'
-/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig' 
+/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig'
 /usr/bin/install -c -m 755  libpgtypes.so.3.17 '/workspace/tyzo-pg-test/lib/libpgtypes.so.3.17'
 cd '/workspace/tyzo-pg-test/lib' && \
 rm -f libpgtypes.so.3 && \
@@ -918,7 +918,7 @@ make[6]: Entering directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common
 make[6]: Nothing to be done for 'all'.
 make[6]: Leaving directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common'
 make[5]: Leaving directory '/workspace/tyzo-pg-build/postgresql-17.7/src/interfaces/ecpg/pgtypeslib'
-/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig' 
+/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig'
 /usr/bin/install -c -m 755  libecpg.so.6.17 '/workspace/tyzo-pg-test/lib/libecpg.so.6.17'
 cd '/workspace/tyzo-pg-test/lib' && \
 rm -f libecpg.so.6 && \
@@ -967,7 +967,7 @@ make[6]: Entering directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common
 make[6]: Nothing to be done for 'all'.
 make[6]: Leaving directory '/workspace/tyzo-pg-build/postgresql-17.7/src/common'
 make[5]: Leaving directory '/workspace/tyzo-pg-build/postgresql-17.7/src/interfaces/ecpg/pgtypeslib'
-/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig' 
+/usr/bin/mkdir -p '/workspace/tyzo-pg-test/lib' '/workspace/tyzo-pg-test/lib/pkgconfig'
 /usr/bin/install -c -m 755  libecpg_compat.so.3.17 '/workspace/tyzo-pg-test/lib/libecpg_compat.so.3.17'
 cd '/workspace/tyzo-pg-test/lib' && \
 rm -f libecpg_compat.so.3 && \

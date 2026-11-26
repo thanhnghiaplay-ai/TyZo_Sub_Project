@@ -1,17 +1,17 @@
-               
-               
+
+
 ┌─────────────┐
 │ Scan Status │
 └─────────────┘
   Scanning 23 files with 250 Code rules:
-                                                                                                                        
-  Language      Rules   Files          Origin   Rules                                                                   
- ─────────────────────────────        ────────────────                                                                  
-  ts              189      23          Custom     250                                                                   
-  <multilang>      49      23                                                                                           
-                                                                                                                        
-                
-                
+
+  Language      Rules   Files          Origin   Rules
+ ─────────────────────────────        ────────────────
+  ts              189      23          Custom     250
+  <multilang>      49      23
+
+
+
 ┌──────────────┐
 │ Scan Summary │
 └──────────────┘

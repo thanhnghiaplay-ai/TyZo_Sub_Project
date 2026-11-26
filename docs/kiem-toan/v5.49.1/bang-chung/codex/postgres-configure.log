@@ -9,7 +9,7 @@ checking for WAL block size... 8kB
 checking for gcc... gcc
 checking whether the C compiler works... yes
 checking for C compiler default output file name... a.out
-checking for suffix of executables... 
+checking for suffix of executables...
 checking whether we are cross compiling... no
 checking for suffix of object files... o
 checking whether we are using the GNU C compiler... yes
@@ -295,7 +295,7 @@ checking whether gcc supports -Wl,--as-needed, for LDFLAGS... yes
 checking whether gcc supports -Wl,--export-dynamic, for LDFLAGS_EX_BE... yes
 configure: using compiler=gcc (Debian 14.2.0-19) 14.2.0
 configure: using CFLAGS=-Wall -Wmissing-prototypes -Wpointer-arith -Wdeclaration-after-statement -Werror=vla -Wendif-labels -Wmissing-format-attribute -Wimplicit-fallthrough=3 -Wcast-function-type -Wshadow=compatible-local -Wformat-security -fno-strict-aliasing -fwrapv -fexcess-precision=standard -Wno-format-truncation -Wno-stringop-truncation -O2
-configure: using CPPFLAGS= -D_GNU_SOURCE 
+configure: using CPPFLAGS= -D_GNU_SOURCE
 configure: using LDFLAGS=  -Wl,--as-needed
 configure: creating ./config.status
 config.status: creating GNUmakefile

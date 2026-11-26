@@ -16,10 +16,10 @@ test at src/lib/app-api.test.ts:17:1
 ✖ AZ-009: a coded internal 500 never exposes its detail; public 429 preserves retry hint (2.424262ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
   + actual - expected
-  
+
   + 'synthetic private database detail'
   - 'Có lỗi, hãy thử lại.'
-  
+
       at TestContext.<anonymous> (file:///workspace/TyZo-ccr-9f1afcc8-iv7067/src/lib/app-api.test.ts:22:12)
       at async Test.run (node:internal/test_runner/test:1409:7)
       at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {

@@ -20,4 +20,3 @@ syncing data to disk ... ok
 Success. You can now start the database server using:
 
     /workspace/tyzo-pg-test/bin/pg_ctl -D /workspace/tyzo-pg-test/data -l logfile start
-

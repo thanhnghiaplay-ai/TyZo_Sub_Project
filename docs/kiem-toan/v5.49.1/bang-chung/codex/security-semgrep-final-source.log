@@ -1,17 +1,17 @@
-               
-               
+
+
 ┌─────────────┐
 │ Scan Status │
 └─────────────┘
   Scanning 3 files with 201 Code rules:
-                                                                                                                        
-  Language      Rules   Files          Origin   Rules                                                                   
- ─────────────────────────────        ────────────────                                                                  
-  ts              189       3          Custom     201                                                                   
-  <multilang>       1       3                                                                                           
-                                                                                                                        
-                
-                
+
+  Language      Rules   Files          Origin   Rules
+ ─────────────────────────────        ────────────────
+  ts              189       3          Custom     201
+  <multilang>       1       3
+
+
+
 ┌──────────────┐
 │ Scan Summary │
 └──────────────┘
