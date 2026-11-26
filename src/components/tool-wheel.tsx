@@ -92,18 +92,25 @@ export function ToolWheel({
 
   const id = WHEEL_ORDER[cur];
   const go = (delta: number) => tween(Math.round(pos.current) + delta, 220);
+  /** Mũi tên ‹ ›: chuyển sang công cụ bên cạnh VÀ mở luôn (khách hiểu là đi qua từng bước; trước đây chỉ đổi biểu tượng nút giữa). */
+  const step = (delta: number) => {
+    const target = Math.round(pos.current) + delta;
+    go(delta);
+    onPress(WHEEL_ORDER[wheelCurrent(target, n)]);
+  };
 
   return (
     <div className="relative -mt-9 size-16 shrink-0">
       <div className="pointer-events-none absolute -top-9 left-1/2 z-10 flex -translate-x-1/2 items-center">
         <div className="pointer-events-auto flex items-center rounded-full border border-line bg-raised/90 text-accent shadow-md backdrop-blur">
-          <button type="button" className="grid size-9 place-items-center rounded-full text-lg leading-none" aria-label="Công cụ trước" onClick={() => go(-1)}>
+          <button type="button" className="grid size-9 place-items-center rounded-full text-lg leading-none" aria-label="Bước trước" onClick={() => step(-1)}>
             ‹
           </button>
-          <span className="min-w-24 whitespace-nowrap text-center text-xs font-semibold" aria-live="polite">
-            {labels[id]} · {cur + 1}/{n}
-          </span>
-          <button type="button" className="grid size-9 place-items-center rounded-full text-lg leading-none" aria-label="Công cụ sau" onClick={() => go(1)}>
+          <button type="button" className="min-w-24 whitespace-nowrap text-center text-xs font-semibold" aria-live="polite" aria-label={`Mở ${labels[id]}`} onClick={() => onPress(id)}>
+            {/* Chỉ tên bước: số thứ tự bước nằm ở đầu ngăn công cụ (x/5), không đếm thêm một kiểu ở đây. */}
+            {labels[id]}
+          </button>
+          <button type="button" className="grid size-9 place-items-center rounded-full text-lg leading-none" aria-label="Bước sau" onClick={() => step(1)}>
             ›
           </button>
         </div>

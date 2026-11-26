@@ -72,7 +72,7 @@ export function MailDesk() {
           >
             {MAIL_PROVIDERS.map((id) => (
               <option key={id} value={id}>
-                {NAMES[id]}{id === "resend" || id === "brevo" ? " — nên dùng" : id === "smtp" ? " — không cần tên miền" : ""}
+                {NAMES[id]}{id === "resend" ? " — nên dùng (có tên miền)" : id === "brevo" ? " — dự phòng tốt" : id === "smtp" ? " — không cần tên miền" : ""}
               </option>
             ))}
           </select>

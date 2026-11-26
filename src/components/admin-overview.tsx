@@ -112,7 +112,7 @@ export function AdminOverview({ owner, onGo }: { owner: boolean; onGo: (tab: Adm
   return (
     <section className="admin-wide space-y-3" aria-busy={loading}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-semibold">Tổng quan</h2>
+        <h2 className="hidden font-semibold lg:block">Tổng quan</h2>
         <div className="flex gap-2" role="group" aria-label="Khoảng thời gian">
           {RANGES.map((item) => (
             <button

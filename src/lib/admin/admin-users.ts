@@ -45,7 +45,8 @@ export const searchUsers = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator((q: string) => {
     const term = q.trim();
-    if (term.length < 2) throw new Error("Gõ ít nhất 2 ký tự.");
+    // Rỗng = 20 tài khoản mới nhất (mở thẻ là thấy ngay). Có gõ thì phải từ 2 ký tự.
+    if (term.length === 1) throw new Error("Gõ ít nhất 2 ký tự.");
     return term.slice(0, 80);
   })
   .handler(async ({ context, data }): Promise<AdminUser[]> => {

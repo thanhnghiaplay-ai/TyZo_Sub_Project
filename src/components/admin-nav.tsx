@@ -1,6 +1,6 @@
 import type { AdminTab, AdminTabInfo } from "@/lib/admin/admin-tabs";
 import { ADMIN_GROUPS } from "@/lib/admin/admin-groups";
-import { RailToggle, SideRail, type RailItem } from "@/components/side-rail";
+import { SideRail, type RailItem } from "@/components/side-rail";
 
 /** Dựng cây menu từ danh sách tab được phép. Tổng quan đứng riêng, cuối là «Về phòng». */
 function adminRailItems(tabs: AdminTabInfo[], current: AdminTab, onPick: (id: AdminTab) => void): RailItem[] {
@@ -34,16 +34,9 @@ export function AdminNav({
   onSearch: () => void;
   who?: { name?: string | null; email?: string | null };
 }) {
-  const label = tabs.find((tab) => tab.id === current)?.label ?? "Admin";
   return (
     <>
-      <div className="admin-bar flex shrink-0 items-center gap-2 border-b border-line bg-bg py-2 lg:hidden">
-        <RailToggle />
-        <p className="min-w-0 flex-1 truncate text-sm font-semibold">{label}</p>
-        <button type="button" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-line px-3 text-sm" onClick={onSearch} aria-label="Tìm nhanh">
-          Tìm
-        </button>
-      </div>
+      {/* Màn hẹp: nút Menu và Tìm nhanh đã ở thanh đáy (AdminBottomBar), tên thẻ ở hàng nút quay lại (admin-desk.tsx). */}
       <SideRail
         label="Các mục Admin"
         items={adminRailItems(tabs, current, onPick)}

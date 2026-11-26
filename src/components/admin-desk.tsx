@@ -199,6 +199,15 @@ export function AdminDesk() {
     if (badgeNext) setBadge(badgeNext);
   }
 
+  // Mở thẻ Tài khoản khách: hiện sẵn 20 khách mới nhất (chưa gõ gì).
+  useEffect(() => {
+    if (tab !== "tai-khoan" || query.trim() || users.length) return;
+    let gone = false;
+    void searchUsers({ data: "" }).then((found) => { if (!gone) setUsers(found); }).catch(() => {});
+    return () => { gone = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
+
   useEffect(() => {
     setBooting(true);
     void refreshPlace().catch((error) => {
@@ -302,6 +311,7 @@ export function AdminDesk() {
       {role ? (
         <div className="flex items-center gap-2 py-2">
           <BackButton fallback="/" onBack={tab === "tong-quan" && tabStack.length === 0 ? undefined : () => void backFromTab()} label={tab === "tong-quan" && tabStack.length === 0 ? "Quay lại" : tabStack.length > 0 ? "Về tab vừa xem" : "Về Tổng quan"} />
+          <p className="min-w-0 flex-1 truncate text-sm font-semibold lg:hidden">{tabsFor(role).find((item) => item.id === tab)?.label ?? "Admin"}</p>
           <RoleChip role={role} />
         </div>
       ) : (
@@ -325,6 +335,19 @@ export function AdminDesk() {
       {role === "chu" && tab === "ctv" && <AffiliateBoard />}
       {(role === "chu" || role === "quan-ly") && tab === "rui-ro" && <RiskBoard />}
       {role === "chu" && tab === "giao-dien" && <ThemeBoard />}
+      {role === "chu" && tab === "giao-dien" && (
+        <BadgeBoard
+          current={badge}
+          busy={busy}
+          onPick={(id) => {
+            void run(async () => {
+              await setBadgeStyle({ data: id });
+              setBadge(id);
+            }, "Đã đổi kiểu thẻ quyền.");
+          }}
+        />
+      )}
+
       {role === "chu" && tab === "thu" && (
         <div className="admin-grid admin-wide">
           <MailDesk />
@@ -384,6 +407,7 @@ export function AdminDesk() {
               Tìm
             </button>
           </form>
+          {!query.trim() && users.length > 0 && <p className="text-xs text-muted">Khách mới đăng ký (20 người gần nhất). Gõ email hoặc tên để tìm người khác.</p>}
           <ul className="space-y-2">
             {users.map((user) => (
               <li key={user.id}>
@@ -616,18 +640,6 @@ export function AdminDesk() {
             </AccountCard>
           )}
           </div>
-          {role === "chu" && (
-        <BadgeBoard
-          current={badge}
-          busy={busy}
-          onPick={(id) => {
-            void run(async () => {
-              await setBadgeStyle({ data: id });
-              setBadge(id);
-            }, "Đã đổi kiểu thẻ quyền.");
-          }}
-        />
-      )}
         </>
       )}
       {role && tab === "viec" && (

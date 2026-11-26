@@ -18,6 +18,7 @@ export const CHANGELOG: ReleaseNote[] = [
       "Trang Bảng giá hiện cả gói Thuê phòng và gói Token dịch, có nút Mua.",
       "Khi Trả theo lượt tạm đóng hay bảo trì, app báo rõ bằng lời thường, không hiện mã lỗi.",
       "Màn chờ hiện một lần, trang không còn bị xô khi vừa mở.",
+      "Bấm ‹ › ở thanh dưới là chuyển và mở luôn bước đó.",
     ],
   },
   {

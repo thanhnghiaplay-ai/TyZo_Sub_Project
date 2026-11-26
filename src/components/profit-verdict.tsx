@@ -6,6 +6,8 @@ import { PROVIDERS, isProviderId } from "@/lib/sub/provider";
 const nf = new Intl.NumberFormat("vi-VN");
 const usd = (n: number) => `${n < 0.01 && n > 0 ? n.toFixed(4) : n.toFixed(2)} USD`;
 const signed = (n: number) => (n > 0 ? "+" : n < 0 ? "−" : "") + dong(Math.abs(n));
+/** Khoản chi: 0 thì không có dấu trừ (tránh «−0 đ»). */
+const minus = (n: number) => (n > 0 ? "−" : "") + dong(n);
 function houseName(id: string) {
   return isProviderId(id) ? PROVIDERS[id].label : id === "khac" ? "Khác" : id;
 }
@@ -56,11 +58,11 @@ export function ProfitVerdict({ span }: { span: "day" | "week" | "month" | "year
       </div>
 
       <ul className="grid gap-1 text-sm">
-        <li className="flex justify-between gap-2"><span>Tiền vào (chuyển khoản đã xác nhận)</span><span className="font-semibold tabular-nums">{dong(view.revenue)}</span></li>
-        <li className="flex justify-between gap-2"><span>Phải trả các nhà cung cấp ({usd(view.spend.total.usd)})</span><span className="font-semibold tabular-nums text-danger">−{dong(view.providers)}</span></li>
-        <li className="flex justify-between gap-2"><span>Hoa hồng cộng tác viên</span><span className="tabular-nums text-danger">−{dong(view.commission)}</span></li>
-        <li className="flex justify-between gap-2"><span>Chi phí ghi tay</span><span className="tabular-nums text-danger">−{dong(view.manual)}</span></li>
-        <li className="flex justify-between gap-2 border-t border-line pt-1 font-semibold"><span>Lời / lỗ</span><span className={"tabular-nums " + tone.text}>{signed(view.verdict.now)}</span></li>
+        <li className="flex justify-between gap-2"><span>Tiền vào (chuyển khoản đã xác nhận)</span><span className="shrink-0 whitespace-nowrap font-semibold tabular-nums">{dong(view.revenue)}</span></li>
+        <li className="flex justify-between gap-2"><span>Phải trả các nhà cung cấp ({usd(view.spend.total.usd)})</span><span className="shrink-0 whitespace-nowrap font-semibold tabular-nums text-danger">{minus(view.providers)}</span></li>
+        <li className="flex justify-between gap-2"><span>Hoa hồng cộng tác viên</span><span className="shrink-0 whitespace-nowrap tabular-nums text-danger">{minus(view.commission)}</span></li>
+        <li className="flex justify-between gap-2"><span>Chi phí ghi tay</span><span className="shrink-0 whitespace-nowrap tabular-nums text-danger">{minus(view.manual)}</span></li>
+        <li className="flex justify-between gap-2 border-t border-line pt-1 font-semibold"><span>Lời / lỗ</span><span className={"shrink-0 whitespace-nowrap tabular-nums " + tone.text}>{signed(view.verdict.now)}</span></li>
       </ul>
 
       <div className="grid gap-1 text-sm">

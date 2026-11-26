@@ -139,7 +139,7 @@ export function AccountPanel() {
             <div data-tour="balance">
               <p className="text-sm text-muted">Token dịch còn</p>
               <p className="text-xl font-semibold">{formatGiay(state?.units ?? 0)}</p>
-              <p className="text-xs text-muted">Dùng cho trả theo lượt, dịch trực tiếp và Orpheus. Không cần key.</p>
+              <p className="text-xs text-muted">Dùng cho trả theo lượt, dịch trực tiếp và giọng đọc thuyết minh có phí. Không cần key.</p>
             </div>
           {runDoor.open ? (
             <p className="flex items-center gap-2 text-sm text-muted">
