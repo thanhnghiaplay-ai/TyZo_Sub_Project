@@ -10,7 +10,7 @@ Thiết lập 26/11/2026. Mọi công cụ ở đây chỉ **đọc và báo cá
 | 2 | Filesystem MCP | npm `@modelcontextprotocol/server-filesystem` | — | SKIPPED | Trùng công cụ có sẵn của Claude Code (Read, Grep, Glob, Edit), vốn đã giới hạn trong thư mục dự án |
 | 3 | Postgres MCP Pro | github.com/crystaldba/postgres-mcp | commit `7136a30` | PARTIAL | Thử đạt trên CSDL thử (đọc được, CHẶN `DELETE`). Chưa nối Neon thật: cần vai chỉ-đọc (mục 4) |
 | 4 | GitHub MCP | có sẵn trong Claude Code trên web | — | PASS | Chỉ trong kho TyZo. Không tự đẩy hay gộp |
-| 5 | Context7 MCP | mcp.context7.com (Upstash) | máy chủ từ xa | BLOCKED | Mạng của môi trường đám mây chặn `context7.com` (Chủ chưa mở). Đã khai sẵn, mở mạng là dùng được |
+| 5 | Context7 MCP | mcp.context7.com (Upstash) | máy chủ từ xa | PASS | Chạy trong môi trường `TyZo_Sub_Project` (đã mở `context7.com`). API key miễn phí lưu ở bí mật mạng của môi trường, máy chủ tự gắn; không có trong kho |
 | 6 | Sequential Thinking MCP | npm `@modelcontextprotocol/server-sequential-thinking` | 2.1.1 | PASS, để TẮT | Claude đã có suy luận nhiều bước; bật tay khi thật cần |
 | 7 | Graphify | PyPI `graphifyy` | 0.9.119 | PASS | Đã dựng lại sơ đồ theo cấu trúc mới |
 | 8 | Semgrep | PyPI `semgrep` + github.com/semgrep/semgrep-rules | 1.185.0 | PASS | Luật lấy từ kho chính thức qua git (trang semgrep.dev bị chặn mạng) |
@@ -121,7 +121,7 @@ Không cần gọi cả 10 công cụ cho mọi việc.
 
 ## 9. Giới hạn còn lại
 
-- Context7: BLOCKED cho tới khi Chủ cho phép `context7.com` và `mcp.context7.com` ở cài đặt mạng của môi trường.
+- Context7 chỉ chạy trong môi trường `TyZo_Sub_Project` (môi trường Default không mở `context7.com`, không có key). Key hết hạn hay hết lượt: Chủ tạo key mới ở context7.com/dashboard, Claude mở lại ô nhập bảo mật.
 - Postgres MCP với Neon: cần vai chỉ-đọc và chỗ chạy mở được cổng 5432.
-- Môi trường đám mây cài lại từ đầu mỗi phiên: phiên mới chạy `bash scripts/tools/cong-cu.sh cai` (hoặc Chủ lưu lệnh này làm setup script của môi trường).
+- Môi trường `TyZo_Sub_Project` (tạo 26/11/2026, chỉ của Chủ) có setup script tự cài semgrep, postgres-mcp, gitleaks, graphify mỗi khi mở phiên (thêm khoảng 3–5 phút). Mở phiên mới nhớ chọn môi trường này. Setup script chưa được kiểm ở một phiên mới hoàn toàn: phiên đầu tiên nên chạy `bash scripts/tools/cong-cu.sh cai` để xác nhận (đã có thì lệnh bỏ qua).
 - Hook tự động: KHÔNG đặt (theo yêu cầu: không tự đẩy, gộp, deploy, sửa database).

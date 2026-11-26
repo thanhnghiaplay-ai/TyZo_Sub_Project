@@ -45,7 +45,7 @@ Người dùng là người chốt. Câu khởi đầu cho model khác chỉ c�
 3. **Trang giới thiệu `tyzo.site`** (Chủ muốn: tyzo.site = giới thiệu, bấm vào sang `sub.tyzo.site` = ứng dụng). Chưa làm. Sau đó mới chuyển hẳn khỏi Vercel/Neon (chép lại dữ liệu, đổi mật khẩu Admin vì đã lộ trong ảnh).
 4. **`tyzo-ai` (VPS 1) đã đổi sang nhánh `main`** và đưa lại lên Modal (có giới hạn 9 máy).
 5. **`tyzo` có thanh tiến độ** cho mọi bước cài/dựng/chép dữ liệu.
-6. **Bộ công cụ phát triển** (`docs/CONG-CU.md`): Context7 bị chặn mạng (Chủ chưa mở); Postgres MCP chưa nối Neon (cần vai chỉ-đọc); `.claude/settings.json` chỉ là đề xuất, Chủ tự tạo. 8 vòng import (cụm thanh toán, đăng nhập/thư) nên gỡ dần.
+6. **Bộ công cụ phát triển** (`docs/CONG-CU.md`): mở phiên mới chọn môi trường **`TyZo_Sub_Project`** (tự cài công cụ, có Context7 + key); Postgres MCP chưa nối Neon (cần vai chỉ-đọc); `.claude/settings.json` chỉ là đề xuất, Chủ tự tạo. 8 vòng import (cụm thanh toán, đăng nhập/thư) nên gỡ dần.
 7. **Vercel gói Hobby** chạm 100 lượt dựng/ngày ngày 26/11. Nên lên Pro khi bán thật (Hobby không cho kinh doanh), hoặc chuyển hẳn sang VPS. Đề xuất: cấu hình Vercel bỏ nhánh phụ (chưa làm).
 
 ## Việc đang giữ
