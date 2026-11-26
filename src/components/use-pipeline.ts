@@ -6,8 +6,6 @@ import { RIGHTS_CONFIRM, RIGHTS_DECLINED, RIGHTS_TEXT, RIGHTS_TITLE, rememberRig
 import { TERMS_VERSION } from "@/lib/terms";
 import { usePolish } from "@/components/use-polish";
 import { claimTrialDevice, recordRightsConsent, spendTrial } from "@/lib/room-account";
-import { getServiceStatus } from "@/lib/service-status-room";
-import { defaultServiceStatus, serviceBlock } from "@/lib/service-status";
 import { getMyPlace } from "@/lib/admin-room";
 import { authClient } from "@/lib/auth/client";
 import { deviceId } from "@/lib/device-id";
@@ -17,7 +15,7 @@ import { readMediaSeconds } from "@/lib/trial-media";
 import { addLocalRun } from "@/lib/local-runs";
 import { claimPlayback, closeRoomTicket, forgetTicket, openRoomTicket, recoverOrphanTicket, rememberTicket } from "@/lib/sub/room-ticket";
 import { packAudio } from "@/lib/sub/codec";
-import { analyzeFilm, applyNameFixes, chatCall, listModelIds, probeKey, ROOM_KEY, type ChatKey, throwIfAborted } from "@/lib/sub/groq";
+import { analyzeFilm, applyNameFixes, listModelIds, probeKey, ROOM_KEY, type ChatKey, throwIfAborted } from "@/lib/sub/groq";
 import { mergeCatalog, modelLabel, pickAutoModel } from "@/lib/sub/models";
 import { judgeKey, type KeyNeed, type KeyProbe } from "@/lib/sub/key-check";
 import { computeStages, type RunPhase, type StageReport } from "@/lib/sub/stage-progress";
@@ -42,18 +40,13 @@ import { loadRunGlossary, overlayUserTerms, parseGlossaryCsv, type GlossaryTerm 
 import { budgetSpeechGaps, formatGapConfirm, GAP_BUDGET_SECONDS, spansFromBlocks, type GapPlan } from "@/lib/sub/gap-scan";
 import { ASR_PRICE, type AsrModel, type AutoProfile, type ChatModel, type ModelMode, type Seg } from "@/lib/sub/types";
 import { asrRunnerOf, transcribe } from "@/lib/providers";
-import { r2Status } from "@/lib/r2-upload";
 import { removeAudioFromR2 } from "@/lib/sub/r2-upload-run";
 import { asrHouse, asrTakesLink } from "@/lib/sub/asr-house";
 import { pickPool, providerOfModel, roomMissing, roomMissingText, type RoomOffer } from "@/lib/sub/room-models";
 import { listKeyModels } from "@/lib/key-models";
 import { getRoomModelCounts, getRoomOffer } from "@/lib/provider-room";
 import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
-import { PROVIDER_IDS, PROVIDERS, providersWith, type ProviderId } from "@/lib/sub/provider";
-import { LINK_WARN, videoLinkBroken } from "@/lib/link-check";
-import { getRentShow, rentUseProblem } from "@/lib/rent-show";
-import { getServiceMenu } from "@/lib/pack-room";
-import { turnPackProblem } from "@/lib/turn-pack";
+import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { readGenderMap, voiceStore, overlayCastLocks, cloneBible, readStore, writeStore, removeStore, shareUserTerms, userGlossKey, readUserTerms, safeStore } from "@/components/pipeline-store";
 import { loadBlob, waitForMetadata, decodeTo16k } from "@/components/pipeline-media";
 import { asrLanguageOf, emptyJob, type Job } from "@/lib/pipeline/job";
@@ -61,6 +54,7 @@ import { uploadLocalAudio } from "@/lib/pipeline/link-upload";
 import { downloadText, exportProblem, subtitleFile } from "@/lib/pipeline/export";
 import { createRecognizer } from "@/lib/pipeline/recognize";
 import { createTranslator } from "@/lib/pipeline/translate";
+import { choiceProblem, planChoice, type RunChoice } from "@/lib/pipeline/choice";
 
 /** Dòng trạng thái lúc mới mở, chưa có việc nào. Studio đổi chữ này khi Dịch bình thường đang bảo trì. */
 export const READY_STATUS = "Sẵn sàng. Chọn video rồi bấm Tải và dịch.";
@@ -789,55 +783,25 @@ export function usePipeline() {
     const token = activeKey();
     const link = url.trim();
     const chosen = modelId.trim();
-    // Nhóm Dịch bình thường đang bảo trì thì không bắt đầu lượt mới, kể cả khi dùng key riêng (khi đó máy chủ không nằm trong đường đi).
-    // Không đọc được trạng thái (mất mạng, máy chủ bận) thì không chặn: máy chủ vẫn chặn thật ở chỗ giữ tiền và trừ lượt thử.
-    const closed = serviceBlock((await getServiceStatus().catch(() => null)) ?? defaultServiceStatus(), "normal");
-    if (closed) return say(closed, true);
-    if (roomPayRef.current) {
-      const menu = await getServiceMenu().catch(() => null);
-      const packed = turnPackProblem(menu?.packs ?? [], { asr: asrModel, chat: chosen });
-      if (packed) {
-        // Chỉ đúng chỗ chọn gói (bước cuối «Tải và dịch»), không để khách tưởng nút hỏng.
-        window.dispatchEvent(new Event("tyzo-need-pack"));
-        return say(packed, true);
-      }
+    const choice: RunChoice = {
+      door: roomPayRef.current ? "turn" : "rent",
+      asrModel,
+      chatMode: mode,
+      chatModel: chosen,
+      link,
+      hasFile: Boolean(file || audioFile),
+      groqKey: token,
+      houseKey: houseKeyOf,
+      chatKey: chatKeyOf,
+      autoPool,
+    };
+    const problem = await choiceProblem(choice);
+    if (problem) {
+      // Chỉ đúng chỗ chọn gói (bước cuối «Tải và dịch»), không để khách tưởng nút hỏng.
+      if (problem.needPack) window.dispatchEvent(new Event("tyzo-need-pack"));
+      return say(problem.text, true);
     }
-    // Kiểm chung cho MỌI nhà (không nhánh riêng từng nhà): key của nhà nhận dạng, link khi nhà đó nhận link,
-    // và key của nhà chạy model dịch (dịch có thể bằng bất kỳ nhà nào có model dịch).
-    const asrOwner = asrHouse(asrModel) ?? "groq";
-    const asrLabel = PROVIDERS[asrOwner].label;
-    if (asrRunnerOf(asrModel).turnOnly && !roomPayRef.current) return say(`${asrLabel} dùng ở cửa Trả theo lượt.`, true);
-    if (!roomPayRef.current) {
-      const asrKey = asrOwner === "groq" ? token : houseKeyOf(asrOwner);
-      if (!asrKey) return say(asrOwner === "groq" ? "Vui lòng nhập Groq API key." : `Nhận dạng ${asrLabel} cần key ${asrLabel} của bạn.`, true);
-    }
-    if (asrTakesLink(asrModel) && !link && !(file || audioFile)) return say(`${asrLabel} cần link file trực tiếp (http/https) hoặc một tệp trên máy.`, true);
-    if (!roomPayRef.current) {
-      const ring = chatKeyOf();
-      if (mode === "manual" && chosen) {
-        try {
-          chatCall(chosen, ring);
-        } catch (error) {
-          return say((error as Error).message, true);
-        }
-      } else if (mode !== "manual") {
-        const pool = autoPool();
-        if (pool && pool.size === 0) return say(`Chưa có key của nhà nào có model dịch. Hãy nhập key ${providersWith("chat").map((id) => PROVIDERS[id].label).join(" hoặc ")}.`, true);
-      }
-    }
-    if (asrTakesLink(asrModel) && !link && (file || audioFile)) {
-      // Tệp trên máy đi qua kho tạm R2 (âm thanh tách ở máy khách). Chủ chưa cấu hình thì không nhận, báo trước khi giữ tiền.
-      const ready = await r2Status().catch(() => null);
-      if (!ready?.ready) return say("Kho tạm để gửi tệp trên máy tới nhà nhận dạng chưa được bật. Hãy dán link file trực tiếp hoặc chọn nhận dạng Whisper.", true);
-    }
-    if (!roomPayRef.current) {
-      const opened = await getRentShow().catch(() => null);
-      const blocked = rentUseProblem(opened, { asr: asrModel, chat: chosen });
-      if (blocked) return say(blocked, true);
-    }
-    if (mode === "manual" && !chosen) return say("Vui lòng chọn model dịch.", true);
-    if (!file && !audioFile && !link) return say("Vui lòng chọn file video/âm thanh hoặc dán link trực tiếp.", true);
-    if (!file && !audioFile && videoLinkBroken(link)) return say(LINK_WARN, true);
+    const { asrOwner } = planChoice(choice);
     // Công cụ theo yêu cầu: khách tự xác nhận quyền với nội dung, mỗi tệp một lần, trước khi gửi nội dung đi đâu hay tốn tiền, lượt thử.
     if (!rightsConfirmed(mediaId())) {
       const ok = await askConfirm({ title: RIGHTS_TITLE, text: RIGHTS_TEXT, confirmLabel: RIGHTS_CONFIRM, cancelLabel: "Hủy" });

@@ -57,7 +57,10 @@ describe("v5.31.1: trả theo lượt cho người chỉ mua Token dịch", () =
   });
 
   it("chưa chọn gói thì mở bước cuối có danh sách gói", () => {
-    assert.match(pipeline, /if \(packed\) \{\s*[\s\S]{0,120}window\.dispatchEvent\(new Event\("tyzo-need-pack"\)\);/);
+    // Kiểm gói đã tách sang src/lib/pipeline/choice.ts (đợt 3 tách file); use-pipeline mở bước chọn gói khi choice báo needPack.
+    const choice = readFileSync(new URL("../lib/pipeline/choice.ts", import.meta.url), "utf8");
+    assert.match(choice, /if \(packed\) return \{ text: packed, needPack: true \};/);
+    assert.match(pipeline, /if \(problem\.needPack\) window\.dispatchEvent\(new Event\("tyzo-need-pack"\)\);/);
     assert.match(studio, /addEventListener\("tyzo-need-pack", onNeedPack\)/);
     assert.match(studio, /const onNeedPack = \(\) => \{[\s\S]{0,120}setToolTab\("run"\);\s*setSheetOpen\(true\);/);
   });
