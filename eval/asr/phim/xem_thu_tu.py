@@ -49,6 +49,15 @@ def main(folder, profile="nhanh"):
     print(f"\nCâu lặp gần nhau (cùng chữ, cách < 15 s): {len(dup)} cặp")
     for j, i in dup:
         print(f"  {show(j)}\n   = {show(i)}")
+    kho = st.get("kho")
+    if kho is None:
+        print("\nĐoạn lệch nhiều: bản nhận dạng này chưa ghi (code cũ)")
+    else:
+        print(f"\nĐoạn lệch nhiều (trước đây bị bỏ): {len(kho)} · bỏ {sum(k['out'] is None for k in kho)}")
+        for k in kho:
+            print(f"  {k['t'][0]:.1f}–{k['t'][1]:.1f} s · lệch {k['d']} · {k['cach']} → {k['out']}")
+            for c in k["c"]:
+                print(f"      · {c[:90]}")
     probes = [p for p in st.get("probe", []) if p.get("ok")]
     print(f"\nKhoảng lặng dò được và nhận: {len(probes)}")
     for p in probes:

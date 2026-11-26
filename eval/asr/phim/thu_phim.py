@@ -162,6 +162,7 @@ def recognize_parallel(audio, length, lang, profile, folder, workers):
         st["bo_chao"] += rs.get("bo_chao") or []
         st["tien_model_chu_usd"] += rs.get("tien_model_chu_usd") or 0
         st["probe"] += [dict(p, gap=[p["gap"][0] + a, p["gap"][1] + a]) for p in rs.get("probe") or []]
+        st.setdefault("kho", []).extend(dict(k, t=[k["t"][0] + a, k["t"][1] + a]) for k in rs.get("kho") or [])
         st["phan"].append({"tu": a, "den": b, "cho_s": r.get("cho_s"), "giay_xu_ly": rs.get("giay_xu_ly"),
                            "bat_may": rs.get("bat_may"), "bat_san_may_chu": rs.get("bat_san_may_chu")})
     st["giay_xu_ly"] = round(st["giay_xu_ly"], 1)

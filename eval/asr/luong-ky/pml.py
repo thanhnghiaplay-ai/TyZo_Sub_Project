@@ -361,7 +361,15 @@ def run(F, cfg, L=None):
     def one(args):
         """Trả (chữ, cách hợp nhất). Cách: tên bậc trong fuse_chain, "khop" (các bản đã khớp, bỏ qua model chữ) hay "khong"."""
         g, (c, d) = args
-        if d > cfg.get("unclear", 0.6): return None, "khong-ro"
+        tag = ""
+        if d > cfg.get("unclear", 0.6):
+            # các bản lệch nhiều: trước đây bỏ cả nhóm (mất lời); giờ vẫn hợp nhất nếu có ít nhất 2 bản có lời thật
+            real = [x for x in c if len(SC.norm(x["text"], L)) >= 2 and not interjection_only(x["text"], L)]
+            if len(real) < 2: return None, "khong-ro"
+            c, tag = real, "-lech"
+        text, how = _one(c, d)
+        return text, how + tag
+    def _one(c, d):
         chain = cfg.get("fuse_chain")
         if chain:   # bậc 1 lỗi hoặc chưa sẵn sàng thì sang bậc 2…
             for tier in chain:
@@ -383,10 +391,16 @@ def run(F, cfg, L=None):
         st["hop_nhat"][how] = st["hop_nhat"].get(how, 0) + 1
         if len(c) > cfg.get("n", 4): st["esc"] += 1
         if text is None:
-            st["unclear"] += 1; log.append({"t": [g[0][0], g[-1][1]], "d": round(d, 2), "c": [x["text"] for x in c], "out": "(?)"}); continue
+            st["unclear"] += 1
+            st.setdefault("kho", []).append({"t": [round(g[0][0], 2), round(g[-1][1], 2)], "d": round(d, 2),
+                                             "c": [x["text"] for x in c], "out": None, "cach": how})
+            log.append({"t": [g[0][0], g[-1][1]], "d": round(d, 2), "c": [x["text"] for x in c], "out": "(?)"}); continue
         L2 = [len(SC.norm(x["text"], L)) for x in c]
-        if how not in ("khop", "khong") and (META.search(text) or len(SC.norm(text, L)) > 1.4 * max(L2) + 4 or len(SC.norm(text, L)) < 0.6 * float(np.median(L2))):
+        if how.split("-")[0] not in ("khop", "khong") and (META.search(text) or len(SC.norm(text, L)) > 1.4 * max(L2) + 4 or len(SC.norm(text, L)) < 0.6 * float(np.median(L2))):
             st["guard"] += 1; text = medoid([x["text"] for x in c])
+        if d > cfg.get("unclear", 0.6):   # ghi lại nhóm khó để xem vì sao các bản lệch
+            st.setdefault("kho", []).append({"t": [round(g[0][0], 2), round(g[-1][1], 2)], "d": round(d, 2),
+                                             "c": [x["text"] for x in c], "out": text, "cach": how})
         segs += [s for s in split_long(align(text, c, g, L), L) if not interjection_only(s["text"], L)]; log.append({"t": [round(g[0][0], 1), round(g[-1][1], 1)], "d": round(d, 2), "c": [x["text"] for x in c], "out": text, "cach": how})
     segs, outro = drop_misplaced_outro(segs, L)
     st["bo_chao"] = [s["text"] for s in outro]

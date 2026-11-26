@@ -60,7 +60,8 @@ def fmt_time(ts):
 
 HOW = {"khop": "các bản khớp nhau, không gọi model chữ", "gpu": "model chữ trên GPU Modal",
        "ali": "Alibaba", "khong": "không model chữ nào trả lời, lấy bản ở giữa",
-       "khong-ro": "lời không rõ, bỏ đoạn", "fuse": "model chữ (cấu hình cũ)"}
+       "khong-ro": "lời không rõ, bỏ đoạn", "gpu-lech": "lệch nhiều, model chữ GPU", "ali-lech": "lệch nhiều, Alibaba",
+       "khong-lech": "lệch nhiều, lấy bản ở giữa", "fuse": "model chữ (cấu hình cũ)"}
 
 
 def fusion_report(asr):

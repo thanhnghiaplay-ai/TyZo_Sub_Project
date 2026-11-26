@@ -174,6 +174,7 @@ class Asr:
         t = time.time(); asr_cache.commit(); B["luu_o_s"] = round(time.time() - t, 1)
         B["bat_may_tong_s"] = round(time.time() - t0, 1)
         self._loaded_at = time.time()
+        self._task = os.environ.get("MODAL_TASK_ID", "")
         print(f"[tyzo] may nhan dang nap xong sau {B['bat_may_tong_s']} s", flush=True)
 
     @modal.enter(snap=False)
@@ -181,7 +182,14 @@ class Asr:
         """Chạy sau khi khôi phục từ bản chụp (hoặc ngay sau load nếu không chụp). Ghi máy này có khôi phục không."""
         import time
         B = self.backend.BOOT
-        B["khoi_phuc_tu_ban_chup"] = ASR_SNAPSHOT and time.time() - self._loaded_at > 5
+        task = os.environ.get("MODAL_TASK_ID", "")
+        # máy khôi phục là một tác vụ mới (mã tác vụ khác máy đã chụp); máy vừa tạo bản chụp thì giữ nguyên mã
+        if task and self._task:
+            B["khoi_phuc_tu_ban_chup"] = ASR_SNAPSHOT and task != self._task
+        else:
+            B["khoi_phuc_tu_ban_chup"] = None    # không đọc được mã tác vụ: không kết luận
+        B["ma_tac_vu"] = [self._task[-6:], task[-6:]]
+        B["cach_nap_xong_s"] = round(time.time() - self._loaded_at, 1)
         B["nhan_viec_luc"] = time.strftime("%H:%M:%S", time.gmtime())
         print(f"[tyzo] may nhan dang nhan viec {B['nhan_viec_luc']} UTC; tu ban chup {B['khoi_phuc_tu_ban_chup']}", flush=True)
 
