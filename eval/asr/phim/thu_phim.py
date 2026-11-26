@@ -104,6 +104,9 @@ def recognize(audio, lang, profile, saved):
     return result
 
 
+# Gói Starter của Modal: tối đa 10 GPU chạy cùng lúc cho cả tài khoản (email Modal 26/11/2026).
+# Để 1 GPU cho máy model chữ, máy nhận dạng chạy cùng lúc tối đa 9.
+MAX_ASR_MACHINES = 9
 MIN_PART = 120   # phần ngắn hơn không đánh thức sẵn máy model chữ (backend: bat_san_tu_giay)
 
 
@@ -265,6 +268,10 @@ def main():
     lang = sys.argv[4] if len(sys.argv) > 4 else "ja"
     profile = sys.argv[5] if len(sys.argv) > 5 else "nhanh"
     workers = int(sys.argv[6]) if len(sys.argv) > 6 else 1
+    limit = MAX_ASR_MACHINES
+    if workers > limit:
+        print(f"Giới hạn GPU của tài khoản: dùng tối đa {limit} máy nhận dạng (đã nhập {workers}).")
+        workers = limit
     if not src.is_file():
         sys.exit(f"Không thấy tệp {src}")
     folder = OUT_ROOT / f"{src.stem}-{start}-{length}"
