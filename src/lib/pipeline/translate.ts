@@ -123,12 +123,14 @@ export function createTranslator(ctx: TranslateContext) {
           await sleep(400, signal);
           continue;
         }
-        await ensureChatTicket();
-        if (my !== j.runId) return;
+        // Nhận lô NGAY (trước mọi await): luồng khác đang chờ không lấy lại đúng lô này (kiểm toán SPLIT-008: trước đây
+        // cả 4 luồng cùng gửi một lô trong lúc chờ đổi phiếu, mỗi lô trả tiền 4 lần).
         group.forEach((seg) => {
           seg.busy = true;
         });
         try {
+          await ensureChatTicket();
+          if (my !== j.runId) return;
           const origs = group.map((seg) => seg.original);
           const at = j.segs.indexOf(group[0]);
           const nxt = j.segs.slice(at + group.length, at + group.length + 5).map((item) => item.original);
@@ -239,8 +241,11 @@ export function createTranslator(ctx: TranslateContext) {
           let failedInGroup = 0;
           let changed = 0;
           group.forEach((seg, offset) => {
-            // Người dùng vừa sửa tay câu này trong lúc máy đang dịch: giữ câu của người dùng.
-            if (seg.edited && seg.translation !== null) return;
+            // Người dùng vừa sửa tay câu này trong lúc máy đang dịch: giữ câu của người dùng (không tính cho model, R7-004).
+            if (seg.edited && seg.translation !== null) {
+              changed++;
+              return;
+            }
             if (seg.original !== origs[offset]) {
               seg.translation = null;
               seg.translationFailed = false;
