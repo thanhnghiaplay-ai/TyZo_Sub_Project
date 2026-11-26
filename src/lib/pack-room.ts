@@ -16,6 +16,8 @@ type AlibabaDeskView = {
   usdFix: UsdFix;
   /** Bảng Alibaba đã gộp giá tự kéo (`ali_board`). Chưa phủ `usdFix`. */
   alibabaRows: GroqLiveRow[];
+  /** Giá TyZo Modal theo GPU (rỗng khi Chủ chưa đặt giá). */
+  tyzoRows: GroqLiveRow[];
 };
 
 type ServiceMenu = {
@@ -65,6 +67,8 @@ export const getAlibabaDesk = createServerFn({ method: "GET" })
       groqModels: parseModelList(groqRows[0]?.value),
       usdFix: parseUsdFix(map.get("usd_fix")),
       alibabaRows: rowsFromStoredAlibaba(boardMap.get("ali_board")),
+      // Giá TyZo (theo GPU Chủ đặt) để bảng gói xem trước được giá; chưa đặt giá thì rỗng.
+      tyzoRows: (await (await import("@/lib/price-books.server")).loadProviderRows(sql))["tyzo-modal"] ?? [],
     };
   });
 

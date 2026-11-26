@@ -50,6 +50,7 @@ export function ServicePackBoard() {
   const [board, setBoard] = useState<GroqBoard | null>(null);
   const [usdFix, setUsdFix] = useState<UsdFix>({});
   const [alibabaRows, setAlibabaRows] = useState<GroqLiveRow[] | undefined>(undefined);
+  const [tyzoRows, setTyzoRows] = useState<GroqLiveRow[]>([]);
 
   // Nhà đã chọn nhưng chưa có model hợp việc (vd. Alibaba ở Thuyết minh). Chỉ để hiển thị, không lưu.
   const [emptyPick, setEmptyPick] = useState<Record<string, ProviderId>>({});
@@ -77,6 +78,7 @@ export function ServicePackBoard() {
         setPacks(next.packs);
         setUsdFix(next.usdFix);
         setAlibabaRows(next.alibabaRows);
+        setTyzoRows(next.tyzoRows);
       })
       .catch((error) => pushToast(error instanceof Error ? error.message : "Chưa đọc được bàn Alibaba.", "bad"));
     void loadGroqBoard().then(setBoard).catch(() => undefined);
@@ -95,8 +97,8 @@ export function ServicePackBoard() {
   );
   const autoBooks = useMemo<Partial<Record<ProviderId, PriceBook>> | null>(() => {
     if (!board) return null;
-    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix, alibabaRows });
-  }, [board, usdFix, alibabaRows]);
+    return buildPackBooks({ rate: board.rate, groqRows: board.rows, usdFix, alibabaRows, rows: { "tyzo-modal": tyzoRows } });
+  }, [board, usdFix, alibabaRows, tyzoRows]);
 
   function createAutoPack(roles: ServicePack["roles"], draft: { levels: Parameters<typeof buildAutoPack>[0]["levels"]; lang: "cjk" | "other" }) {
     const id = `pack_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
@@ -165,7 +167,7 @@ export function ServicePackBoard() {
                 seconds: 600,
                 door: "turn",
                 narration: Boolean(pack.roles.narration),
-                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix, alibabaRows }),
+                books: buildPackBooks({ rate: board.rate, groqRows: board.rows, alibabaMarkup: desk?.markup, usdFix, alibabaRows, rows: { "tyzo-modal": tyzoRows } }),
               })
             : null;
           const open = openId === pack.id;
