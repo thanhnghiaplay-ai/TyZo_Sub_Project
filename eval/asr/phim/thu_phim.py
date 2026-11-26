@@ -226,12 +226,17 @@ def plan(lines, lang, title, model, folder):
     return jobs
 
 
-def translate(jobs, state):
-    results = []
-    for n, (saved, part, system, user, head) in enumerate(jobs, 1):
+def translate(jobs, state, workers=8):
+    """Dịch các nhóm song song (máy model chữ nhận tới 64 yêu cầu cùng lúc), giữ đúng thứ tự."""
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    lock = threading.Lock()
+    if any(not j[0].exists() for j in jobs) and state["url"] is None:
+        state["url"] = llm_url()
+
+    def one(item):
+        n, (saved, part, system, user, head) = item
         if not saved.exists():
-            if state["url"] is None:
-                state["url"] = llm_url()
             start = time.monotonic()
             text = chat(state["url"], state["token"], state["model"], system, user, max_tokens=60 * len(part) + 200)
             try:
@@ -241,10 +246,14 @@ def translate(jobs, state):
                 vi = [chat(state["url"], state["token"], state["model"], system,
                            head + "Phụ đề gốc:\n1. " + t, 200).partition(".")[2].strip() or t for t in part]
             write_json(saved, dict(src=part, vi=vi, seconds=round(time.monotonic() - start, 1)))
-            print(f"  nhóm {n}: {len(part)} câu · {time.monotonic() - start:.1f} s", flush=True)
-            state["sent"] += 1
-        results += json.loads(saved.read_text())["vi"]
-    return results
+            print(f"  nhóm {n}/{len(jobs)}: {len(part)} câu · {time.monotonic() - start:.1f} s", flush=True)
+            with lock:
+                state["sent"] += 1
+        return json.loads(saved.read_text())["vi"]
+
+    with ThreadPoolExecutor(workers) as ex:
+        parts = list(ex.map(one, enumerate(jobs, 1)))
+    return [v for p in parts for v in p]
 
 
 def main():
