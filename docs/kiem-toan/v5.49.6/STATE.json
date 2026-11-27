@@ -2,10 +2,10 @@
   "baseline": "39510ccae1196b283e794976d6e99fe5158c0786",
   "branchBase": "6bbf292 (baseline + 1 commit tài liệu Claude chưa đẩy: làm mới hồ sơ ChatGPT)",
   "branch": "audit/v5.49.6-claude-re5",
-  "effort": "MEDIUM",
-  "effortRequested": "HIGH",
-  "status": "CHECKPOINT_RE5-003_REPRODUCED",
-  "next": "HIGH: sửa RE5-003 bằng migration tiến tới 0057, bỏ todo; rồi xin MEDIUM cho RE5-005 (đo lại admission sau sửa), sau đó LOW.",
+  "effort": "HIGH",
+  "effortRequested": "MEDIUM",
+  "status": "CHECKPOINT_RE5-003_FIXED",
+  "next": "MEDIUM: RE5-005 (đo admission theo lane/cửa sổ trên 0057, mixed soak 60–120 phút nếu đủ thời gian; không nới cap). Sau đó LOW: RE5-006 tài liệu rollback, graph từ SHA sạch, manifest, ZIP. HIGH còn chờ staging: RE5-004 C/D.",
   "local_sha": "xem git log; commit checkpoint này",
   "remote_sha": "xem git ls-remote origin audit/v5.49.6-claude-re5",
   "environment": {
@@ -17,14 +17,25 @@
     {
       "cmd": "npm test (UID tyzo, PG 16.15)",
       "exit": 0,
-      "pass": 1786,
+      "pass": 1790,
       "skip": 7,
-      "todo": 2,
+      "todo": 0,
       "fail": 0,
-      "log": "docs/kiem-toan/v5.49.6/RE5-003/npm-test.log"
+      "log": "docs/kiem-toan/v5.49.6/RE5-003/npm-test-after-fix.log"
+    },
+    {
+      "cmd": "migrate.mjs drill (fresh, 0056→0057 có tải, lặp, lỗi giữa chừng)",
+      "exit": 0,
+      "log": "docs/kiem-toan/v5.49.6/RE5-003/migration-drill.log"
+    },
+    {
+      "cmd": "admission-bench.ts 10",
+      "exit": 0,
+      "log": "docs/kiem-toan/v5.49.6/RE5-003/admission-10s-0057.json"
     }
   ],
   "filesChanged": [
+    "migrations/0057_admission_shared_cap_fairness.sql",
     "src/lib/billing/work-admission-pg.test.ts"
   ],
   "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17."

@@ -251,8 +251,8 @@ pgTest("RE4-003: nhiều người chờ batch chỉ giữ số suất lane có t
 });
 
 // RE5-003 (v5.49.6): hàng chờ ưu tiên chỉ lọc cùng provider+model, nhưng trần provider và lane dùng chung.
-// `todo` = đã tái hiện, chờ sửa bằng migration tiến tới ở mức HIGH.
-pgTest("RE5-003: khách chờ model Y không bị khách mới model X cùng nhà chen khi trần nhà đã đầy", { todo: "RE5-003: chờ sửa mức HIGH" }, async () => {
+// Đã tái hiện (todo) ở 0bb6f25; sửa bằng migrations/0057_admission_shared_cap_fairness.sql.
+pgTest("RE5-003: khách chờ model Y không bị khách mới model X cùng nhà chen khi trần nhà đã đầy", async () => {
   await limits({ perProvider: 2, perModel: 5, batch: 10, live: 10, perUser: 1 });
   const x = (userId: string) => ({ userId, provider: "groq", model: "x", lane: "batch" as const });
   const a1 = await acquireWork(sql, x("x-1"));
@@ -264,7 +264,7 @@ pgTest("RE5-003: khách chờ model Y không bị khách mới model X cùng nh�
   assert.ok(await acquireWork(sql, { userId: "waiting-y", provider: "groq", model: "y", lane: "batch" }));
 });
 
-pgTest("RE5-003: khách chờ nhà B không bị khách mới nhà A chen khi trần lane đã đầy", { todo: "RE5-003: chờ sửa mức HIGH" }, async () => {
+pgTest("RE5-003: khách chờ nhà B không bị khách mới nhà A chen khi trần lane đã đầy", async () => {
   await limits({ perProvider: 10, perModel: 10, batch: 2, live: 10, perUser: 1 });
   const a = (userId: string) => ({ userId, provider: "groq", model: "m", lane: "batch" as const });
   const a1 = await acquireWork(sql, a("a-1"));
@@ -285,4 +285,34 @@ pgTest("RE5-003: khách chờ đã bỏ đi (quá 6 giây không quay lại) kh�
   await sql`update work_waiters set since = since - interval '20 seconds', seen_at = seen_at - interval '10 seconds' where user_id='gone'`;
   await releaseWork(sql, a1!);
   assert.ok(await acquireWork(sql, k("fresh")), "khách chờ đã bỏ đi không được chặn khách mới");
+});
+
+pgTest("RE5-003: khách chờ bị chặn bởi trần model của chính mình không giữ suất nhà của khách khác", async () => {
+  await limits({ perProvider: 3, perModel: 1, batch: 10, live: 10, perUser: 1 });
+  const k = (userId: string, model: string) => ({ userId, provider: "groq", model, lane: "batch" as const });
+  const y1 = await acquireWork(sql, k("y-running", "y"));
+  const x1 = await acquireWork(sql, k("x-running", "x"));
+  assert.ok(y1 && x1);
+  // Khách chờ model y: trần model y đã đầy (perModel 1) dù nhà còn chỗ.
+  assert.equal(await acquireWork(sql, k("waiting-y", "y")), null);
+  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='waiting-y'`;
+  // Nhà còn 1 suất; khách chờ y không dùng được (model y đầy) nên không được giữ suất đó.
+  assert.ok(await acquireWork(sql, k("z-new", "z")), "khách chờ không nhận được suất thì không chặn người khác");
+});
+
+pgTest("RE5-003: 60 yêu cầu xuyên nhà/model/lane đồng thời không vượt trần nào", async () => {
+  await limits({ perProvider: 4, perModel: 3, batch: 5, live: 3, perUser: 1, liveReserve: 1 });
+  const providers = ["groq", "alibaba"], models = ["m1", "m2", "m3"], lanes = ["batch", "live"] as const;
+  const got = await Promise.all(Array.from({ length: 60 }, (_, i) =>
+    acquireWork(sql, { userId: `c${i}`, provider: providers[i % 2], model: models[i % 3], lane: lanes[Math.floor(i / 6) % 2] })));
+  assert.ok(got.some(Boolean));
+  const rows = await sql<{ provider: string; model: string; lane: string }>`select provider, model, lane from work_admissions where status = 'running'`;
+  const count = (f: (r: { provider: string; model: string; lane: string }) => boolean) => rows.filter(f).length;
+  for (const p of providers) {
+    assert.ok(count((r) => r.provider === p) <= 4, `provider ${p}`);
+    assert.ok(count((r) => r.provider === p && r.lane !== "live") <= 3, `non-live ${p} (reserve 1)`);
+    for (const m of models) assert.ok(count((r) => r.provider === p && r.model === m) <= 3, `model ${p}/${m}`);
+  }
+  assert.ok(count((r) => r.lane === "batch") <= 5);
+  assert.ok(count((r) => r.lane === "live") <= 3);
 });

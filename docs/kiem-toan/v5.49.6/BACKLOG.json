@@ -109,11 +109,15 @@
     "location": "migrations/0056_admission_lane_fairness.sql:87–118",
     "hypothesis": "Waiter cùng provider/model mới được bảo vệ trong khi cap provider/lane dùng chung. Kiểm xuyên model/provider/lane, eligibility và reserve. Không sửa migration đã áp dụng.",
     "acceptance": "PG thật: A liên tục đến, B chờ; nhiều model/provider, live reserve, cap, unknown, waiter hết hạn, mixed version migration.",
-    "status": "REPRODUCED",
+    "status": "FIXED_LOCAL",
     "finding": "0056 rivals chỉ lọc w.provider = p_provider and w.model = p_model, nhưng trần perProvider và trần lane dùng chung giữa model/nhà. (1) Khách chờ model Y bị khách mới model X cùng nhà chen khi trần nhà đầy. (2) Khách chờ nhà B bị khách mới nhà A chen khi trần lane đầy. Cả hai có thể đói kéo dài nếu dòng khách kia liên tục.",
-    "tests": "work-admission-pg.test.ts: 2 todo (hỏng đúng ở khẳng định «chen»), 1 test đạt (khách chờ bỏ đi >6 s không giữ suất). npm test 1786/7 skip/2 todo/0 fail.",
+    "tests": "work-admission-pg.test.ts 18/18 (2 test RE5-003 hỏng trên 0056, đạt trên 0057; thêm: khách chờ bị chặn bởi trần model riêng không giữ suất nhà; 60 yêu cầu xuyên nhà/model/lane đồng thời không vượt trần). npm test 1790/7/0.",
     "fixProposal": "Migration tiến tới 0057 (create or replace tyzo_admit, giữ chữ ký; không sửa 0056): rivals gồm mọi waiter còn hiện diện, đã chờ ≥3 s, có chung ÍT NHẤT một tài nguyên với khách mới (cùng lane, hoặc cùng provider, hoặc cùng provider+model). Rival chỉ được tính nếu chính nó nhận được suất (lane, provider, model, perUser, nonlive còn chỗ; không uncertain). Đếm claim riêng theo từng tài nguyên của khách mới; nhận khi mọi tài nguyên còn chỗ sau claim. Cần test: hai trường hợp trên, rival bị chặn bởi tài nguyên khác không giữ suất (bài học RE4-003), không vượt cap, không bỏ đói, hiệu năng dưới advisory lock (admission p95).",
-    "effortNeeded": "HIGH"
+    "effortNeeded": "HIGH",
+    "fix": "migrations/0057_admission_shared_cap_fairness.sql: create or replace tyzo_admit (giữ chữ ký, bảng, trần). Đếm mức dùng một lần thành bảng tra (lane, provider, provider+model, không-live theo provider, suất khách theo lane, lượt không chắc). Duyệt khách chờ còn hiện diện, chờ ≥3 s, đến trước, dùng chung ít nhất một tài nguyên (cùng lane hoặc cùng provider); khách chờ chỉ giữ chỗ khi chính họ nhận được suất trên mọi tài nguyên; giữ thì trừ phần trống từng tài nguyên. Khách mới nhận khi mọi tài nguyên của mình còn chỗ. 0056 không sửa.",
+    "migrationDrill": "migrate.mjs: cài mới 57/57; nâng 0056→0057 khi đang có lượt chạy + khách chờ (0056 chen, 0057 nhường đúng); chạy lặp up-to-date; nạp lại tệp ok; lỗi giữa chừng (chèn 1/0) → rollback, còn 56 và thân hàm 0056. Log: RE5-003/migration-drill.log.",
+    "perf": "admission-bench 10 s rảnh: 200 khách p95 280 ms (0056: 275), 300 đợt p95 402 (381); 0 đói, 0 vượt trần. Vòng lặp chạy dưới advisory lock: chi phí tăng theo số khách chờ dùng chung tài nguyên; cần đo trên staging (RE5-005).",
+    "rollback": "Rollback app không đổi hành vi SQL (chữ ký giữ nguyên, app cũ vẫn gọi được). Muốn quay về hành vi 0056: migration tiến tới 0058 nạp lại thân hàm 0056; không sửa/xóa 0057 đã áp dụng."
   },
   {
     "id": "RE5-005",

@@ -2,7 +2,20 @@
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 
-## RE5-003 · ĐÃ TÁI HIỆN (chờ HIGH)
+## RE5-003 · ĐÃ SỬA CỤC BỘ (HIGH, migration 0057)
+
+`migrations/0057_admission_shared_cap_fairness.sql` nạp lại `tyzo_admit`: giữ chữ ký, bảng và mọi trần; 0056 không sửa.
+- Khách chờ được xét nếu còn hiện diện, đã chờ ít nhất 3 giây, đến trước và dùng chung ít nhất một tài nguyên với khách mới (cùng lane hoặc cùng nhà).
+- Khách chờ chỉ giữ chỗ khi chính họ nhận được suất trên mọi tài nguyên của họ.
+
+Kết quả:
+- Test: 18/18 test admission trên PG thật. Hai test RE5-003 hỏng trên 0056, đạt trên 0057. Có thêm test chống chặn oan và test 60 yêu cầu đồng thời không vượt trần.
+- Diễn tập migration: cài mới; nâng từ 0056 khi đang có tải; chạy lặp; lỗi giữa chừng thì rollback về 0056.
+- Hiệu năng gần như cũ: mức 200 khách p95 280 ms (0056: 275).
+- npm test 1.790 đạt, 7 bỏ qua, 0 lỗi.
+- Rollback: app cũ vẫn gọi được hàm. Muốn quay lại hành vi 0056 thì viết migration tiến tới 0058.
+
+### Ghi chép lúc tái hiện
 
 Trong 0056, hàng chờ ưu tiên chỉ xét khách chờ **cùng provider và cùng model**, trong khi trần theo nhà và trần theo lane dùng chung. Đã tái hiện trên PG thật hai trường hợp:
 1. Khách chờ model Y bị khách mới model X cùng nhà chen khi trần nhà đã đầy.
