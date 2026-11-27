@@ -1,0 +1,104 @@
+[
+  {
+    "id": "RE4-001",
+    "priority": "P0",
+    "title": "Dự toán LLM không phải cận trên",
+    "path": "src/lib/billing/run-gate.ts",
+    "lines": [
+      345,
+      365
+    ],
+    "status": "BLOCKED",
+    "cause": "byteLength/3 có thể đánh giá thiếu tokenizer và overhead.",
+    "fix": "Dùng tokenizer đúng model và overhead; nếu không biết thì cận trên bảo thủ có chứng minh hoặc từ chối. Giữ đủ ngân sách trước gọi, quyết toán riêng; không đổi giá.",
+    "acceptance": "Test tiếng Việt, CJK, emoji, JSON, tool schema, cap đầu ra, nhiều request đồng thời; không gọi khi thiếu hold; so usage thật trong ngân sách thử được duyệt.",
+    "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
+    "priorStatus": "OPEN_STATIC_RISK",
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  },
+  {
+    "id": "RE4-002",
+    "priority": "P1",
+    "title": "Heartbeat treo khi pool hoặc mạng treo",
+    "path": "src/lib/billing/work-lease.ts",
+    "lines": [
+      58,
+      108
+    ],
+    "status": "BLOCKED",
+    "cause": "await beat có thể không kết thúc; kiểm tra deadline và stop phụ thuộc promise.",
+    "fix": "Deadline độc lập, timeout pool/connect, fencing, hủy hoặc cách ly kết quả muộn; không tạo heartbeat chồng.",
+    "acceptance": "Mock promise không resolve, mất mạng, pool cạn, DB restart, stop hữu hạn; không hồi sinh lease cũ.",
+    "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
+    "priorStatus": "OPEN_STATIC_RISK",
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  },
+  {
+    "id": "RE4-003",
+    "priority": "P1",
+    "title": "Fair queue xuyên lane có thể chặn live",
+    "path": "migrations/0055_admission_fair_queue.sql",
+    "lines": [
+      65,
+      100
+    ],
+    "status": "BLOCKED",
+    "cause": "ahead đếm cùng provider/model nhưng không lọc lane; waiter batch có thể giữ suất live không dùng được.",
+    "fix": "Phân biệt tài nguyên chung và suất dành riêng; chỉ waiter đủ điều kiện tranh cùng tài nguyên mới chặn; migration mới, không sửa 0055 đã áp dụng.",
+    "acceptance": "Postgres đa kết nối: batch đầy, live còn suất, waiter cũ >3s; live được cấp nếu đủ cap chung; không vượt cap và không bỏ đói batch.",
+    "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
+    "priorStatus": "OPEN_STATIC_RISK",
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  },
+  {
+    "id": "RE4-004",
+    "priority": "P0",
+    "title": "Khóa ghi cutover bỏ qua lỗi",
+    "path": "deploy/vps/tyzo.sh",
+    "lines": [
+      840,
+      900
+    ],
+    "status": "BLOCKED",
+    "cause": "dc stop web bridge || true cho phép tiếp tục khi dừng lỗi; hash không thay thế write fence.",
+    "fix": "Fail closed, xác minh container và mọi writer, khóa ghi đến khi chuyển nguồn; đối soát snapshot, rollback có kiểm chứng; không thao tác production.",
+    "acceptance": "Giả lập stop fail, writer ngoài compose, ghi sau snapshot, restore fail, mất mạng, rollback fail; không cutover khi bất kỳ gate lỗi.",
+    "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
+    "priorStatus": "OPEN_STATIC_RISK",
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  },
+  {
+    "id": "RE4-005",
+    "priority": "P1",
+    "title": "WebM parser thiếu giới hạn độ sâu",
+    "path": "src/lib/billing/audio-probe.ts",
+    "lines": [
+      215,
+      250
+    ],
+    "status": "BLOCKED",
+    "cause": "walk đệ quy với depth ngữ nghĩa đặt lại, không phải bộ đếm độ sâu thực; stop chỉ so b.length.",
+    "fix": "Giới hạn nesting thực, grammar hợp lệ, biên cha và tiến triển con trỏ; giới hạn CPU/bytes; xử lý lỗi có kiểm soát.",
+    "acceptance": "Fuzz nested TRACKS/CLUSTER, unknown size, vượt biên cha, truncated, file MediaRecorder hợp lệ; so FFprobe, không stack overflow hoặc gọi AI với audio lỗi.",
+    "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
+    "priorStatus": "OPEN_STATIC_RISK",
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  },
+  {
+    "id": "RE4-006",
+    "priority": "P2",
+    "title": "Graphify lệch commit",
+    "path": "graphify-out/GRAPH_REPORT.md",
+    "lines": [
+      1,
+      35
+    ],
+    "status": "BLOCKED",
+    "cause": "Graph tạo trước mã cuối; cần phân loại file không biểu diễn.",
+    "fix": "Tạo graph sau khi chốt code, ghi SHA code snapshot và hash graph; commit tài liệu riêng không yêu cầu graph tự tham chiếu SHA của chính nó.",
+    "acceptance": "Kiểm tra provenance, parser, danh sách file bỏ qua và giải thích; không coi graph là bằng chứng logic đã kiểm toán.",
+    "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
+    "priorStatus": "OPEN_STATIC_RISK",
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  }
+]

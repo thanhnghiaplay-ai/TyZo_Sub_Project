@@ -1,0 +1,8 @@
+Repository: thanhnghiaplay-ai/TyZo_Sub_Project
+Baseline and remote main at intake: 0edb82a8d2115e86d025d9f51f36f033bb55bbd4
+Initial remote checkpoint branch: codex/tyzo-v5.49.4-audit (verified with git ls-remote)
+Prior local checkout: 6d906ba07f12e4f6938c3f493fe29f08472313f3 (ancestor, preserved)
+Baseline manifest: 2590 listed, 2590 tracked, 0 mismatches, 0 unlisted
+Handoff ZIP SHA-256: 8d821422aceb45c2e904529f5ad9c67e0f666ed4873e1b5bb158ce922db98e0f
+Archive CRC check: outer ZIP and four nested ZIPs passed
+Default sandbox Git read failed at proxy; approved Git fetch and remote ref read succeeded.
