@@ -154,7 +154,12 @@ async function readApiError(response: Response, modelName: string) {
  * Hai hạn chót cho mỗi lần gọi: chờ đầu phản hồi, rồi đọc hết phần thân (xem `http-deadline.ts`).
  * Quá hạn ở bước nào thì thử lại, không đứng mãi. Việc đọc thân phải nằm trong `read`, vì hạn chót chỉ dừng khi `read` xong.
  */
-type Outcome<T> = { done: true; value: T } | { done: false; status: number; retryAfter: number; error: Error };
+type Outcome<T> =
+  | { done: true; value: T }
+  | { done: false; status: number; retryAfter: number; queue: number; error: Error };
+
+/** RE2-004: chờ trong hàng công bằng tối đa bao lâu (không tính vào số lần thử lại). */
+const MAX_QUEUE_WAIT_MS = 15 * 60_000;
 
 export async function requestWithRetry<T>(
   url: string,
@@ -168,6 +173,7 @@ export async function requestWithRetry<T>(
   read: (response: Response) => Promise<T>,
 ): Promise<T> {
   let lastError: Error | undefined;
+  let queuedMs = 0;
   for (let attempt = 0; attempt < 5; attempt++) {
     let pause = 1500 * (attempt + 1);
     throwIfAborted(signal);
@@ -186,7 +192,13 @@ export async function requestWithRetry<T>(
         async (response) => {
           if (response.ok) return { done: true, value: await read(response) };
           const error = new Error(await readApiError(response, modelName));
-          return { done: false, status: response.status, retryAfter: Number(response.headers.get("retry-after")) || 0, error };
+          return {
+            done: false,
+            status: response.status,
+            retryAfter: Number(response.headers.get("retry-after")) || 0,
+            queue: Number(response.headers.get("x-queue-position")) || 0,
+            error,
+          };
         },
         { signal, headerMs: HEADER_TIMEOUT_MS, bodyMs: BODY_TIMEOUT_MS },
       );
@@ -213,6 +225,16 @@ export async function requestWithRetry<T>(
       // request without a durable request ID would create a second paid call.
       if (paidRoomCall && outcome.status >= 500) throw outcome.error;
       lastError = outcome.error;
+      // RE2-004: đang trong hàng chờ công bằng của phòng: thử lại đúng nhịp máy chủ báo để giữ chỗ,
+      // không tính vào 5 lần thử; quá 15 phút thì dừng như lỗi thường.
+      if (outcome.status === 429 && outcome.queue > 0 && queuedMs < MAX_QUEUE_WAIT_MS) {
+        const wait = Math.min(2000, Math.max(500, (outcome.retryAfter || 1) * 1000));
+        queuedMs += wait;
+        onWait?.(`Đang xếp hàng chờ xử lý: vị trí ${outcome.queue}…`);
+        await sleep(wait, signal);
+        attempt -= 1;
+        continue;
+      }
       if (outcome.status === 429) {
         const ra = outcome.retryAfter;
         if (ra > 90)

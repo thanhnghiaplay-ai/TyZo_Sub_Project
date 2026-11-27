@@ -19,7 +19,8 @@ import { definitiveProviderRejection } from "./upstream-outcome.ts";
 const MAX_COMPLETION_TOKENS = 8192;
 
 type GateOutcome =
-  { kind: "pass"; response: Response } | { kind: "reject"; status: number; message: string };
+  | { kind: "pass"; response: Response }
+  | { kind: "reject"; status: number; message: string; retryAfter?: number; queuePosition?: number };
 
 /** Giới hạn token trả lời mặc định khi yêu cầu không ghi (RE-005): hữu hạn, đủ cho một lô dịch của app. */
 export const DEFAULT_COMPLETION_TOKENS = 4096;
@@ -187,7 +188,13 @@ export async function chargeAdmittedWith(input: ChargeInput): Promise<GateOutcom
     );
   } catch (error) {
     if (error instanceof AdmissionBusy)
-      return { kind: "reject", status: error.status, message: error.message };
+      return {
+        kind: "reject",
+        status: error.status,
+        message: error.message,
+        retryAfter: error.retryAfter,
+        queuePosition: error.position,
+      };
     throw error;
   }
 }

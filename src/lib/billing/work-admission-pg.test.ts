@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { after, before, beforeEach, test } from "node:test";
 import type { Sql } from "../db.ts";
 import { realPgSql } from "../test-sql.ts";
-import { acquireWork, releaseWork, sweepAdmissions, tagWork, AdmissionUncertain } from "./work-admission.ts";
+import { acquireWork, acquireWorkInfo, releaseWork, sweepAdmissions, tagWork, AdmissionUncertain } from "./work-admission.ts";
 
 const pgTest = process.env.TYZO_TEST_PG_URL ? test : test.skip;
 let sql: Sql;
@@ -137,4 +137,55 @@ pgTest("RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứn
   const second = await sweepAdmissions(sql, 20);
   assert.deepEqual([first.resolved, second.resolved], [20, 10]);
   assert.ok(await acquireWork(sql, { userId: "new", provider: "groq", model: "m", lane: "batch" }));
+});
+
+pgTest("RE2-004: hàng chờ công bằng — suất trống trao cho người xếp trước, người đến sau thấy vị trí", async () => {
+  await sql`delete from work_waiters`;
+  await limits({ perProvider: 50, perModel: 1, batch: 50, live: 50, perUser: 5 });
+  const key = (u: string) => ({ userId: u, provider: "groq", model: "q", lane: "batch" as const });
+  const a = await acquireWorkInfo(sql, key("A"));
+  assert.ok(a.id);
+  const b = await acquireWorkInfo(sql, key("B"));
+  const c = await acquireWorkInfo(sql, key("C"));
+  assert.deepEqual([b.id, b.position, c.id, c.position], [null, 1, null, 2]);
+  await releaseWork(sql, a.id!);
+  // C thử lại trước B: vẫn phải nhường B (B đang chờ, xếp trước).
+  const c2 = await acquireWorkInfo(sql, key("C"));
+  assert.deepEqual([c2.id, c2.position], [null, 2]);
+  const b2 = await acquireWorkInfo(sql, key("B"));
+  assert.ok(b2.id, "người xếp trước phải nhận suất");
+  await releaseWork(sql, b2.id!);
+  const c3 = await acquireWorkInfo(sql, key("C"));
+  assert.ok(c3.id);
+  await releaseWork(sql, c3.id!);
+});
+
+pgTest("RE2-004: người xếp trước đã bỏ đi (quá 6 giây không thử lại) không giữ suất trống", async () => {
+  await sql`delete from work_waiters`;
+  await limits({ perProvider: 50, perModel: 1, batch: 50, live: 50, perUser: 5 });
+  const key = (u: string) => ({ userId: u, provider: "groq", model: "g", lane: "batch" as const });
+  const a = await acquireWorkInfo(sql, key("A"));
+  await acquireWorkInfo(sql, key("GONE"));
+  await releaseWork(sql, a.id!);
+  await sql`update work_waiters set seen_at = clock_timestamp() - interval '7 seconds' where user_id = 'GONE'`;
+  const d = await acquireWorkInfo(sql, key("D"));
+  assert.ok(d.id, "suất trống không được giữ cho người đã bỏ đi");
+  await releaseWork(sql, d.id!);
+});
+
+pgTest("RE2-004: khách đã dùng đủ suất riêng không xếp hàng chặn người khác; hàng chờ không vượt cap khi chạy đua", async () => {
+  await sql`delete from work_waiters`;
+  await limits({ perProvider: 50, perModel: 3, batch: 50, live: 50, perUser: 1 });
+  const key = (u: string) => ({ userId: u, provider: "groq", model: "r", lane: "batch" as const });
+  const own = await acquireWorkInfo(sql, key("U"));
+  const again = await acquireWorkInfo(sql, key("U"));
+  assert.deepEqual([again.id, again.position], [null, 0]);
+  assert.equal((await sql`select 1 from work_waiters where user_id = 'U'`).length, 0);
+  const many = await Promise.all(Array.from({ length: 30 }, (_, i) => acquireWorkInfo(sql, key(`m${i}`))));
+  assert.equal(many.filter((x) => x.id).length, 2);
+  const running = await sql<{ n: number }>`select count(*)::int n from work_admissions where model = 'r' and status = 'running'`;
+  assert.equal(running[0].n, 3);
+  const positions = many.filter((x) => !x.id).map((x) => x.position).sort((p, q) => p - q);
+  assert.equal(new Set(positions).size, positions.length, "mỗi người một vị trí khác nhau");
+  await releaseWork(sql, own.id!);
 });

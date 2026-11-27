@@ -134,7 +134,10 @@ export const Route = createFileRoute("/api/model-call")({
           });
           if (outcome.kind === "reject") {
             const rejected = fail(outcome.status, outcome.message);
-            if (outcome.status === 429) rejected.headers.set("retry-after", "2");
+            if (outcome.status === 429) {
+              rejected.headers.set("retry-after", String(outcome.retryAfter ?? 2));
+              if (outcome.queuePosition) rejected.headers.set("x-queue-position", String(outcome.queuePosition));
+            }
             return rejected;
           }
           return relay(outcome.response);

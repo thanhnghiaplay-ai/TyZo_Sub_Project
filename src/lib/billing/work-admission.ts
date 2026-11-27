@@ -60,9 +60,18 @@ export function readLimits(value?: string) {
 
 export class AdmissionBusy extends Error {
   readonly status: number = 429;
-  readonly retryAfter = 2;
-  constructor() {
-    super("Hệ thống đang xử lý đủ số việc cùng lúc. Vui lòng thử lại sau ít giây.");
+  /** RE2-004: vị trí trong hàng chờ công bằng (0 = không xếp hàng, vd. đã dùng đủ suất riêng). */
+  readonly position: number;
+  readonly retryAfter: number;
+  constructor(position = 0) {
+    super(
+      position > 0
+        ? `Đang xếp hàng chờ xử lý (vị trí ${position}). Hệ thống tự thử lại, phần đã làm không mất.`
+        : "Hệ thống đang xử lý đủ số việc cùng lúc. Vui lòng thử lại sau ít giây.",
+    );
+    this.position = position;
+    // Người đầu hàng thử lại sớm hơn để suất không bị bỏ trống lâu.
+    this.retryAfter = position === 1 ? 1 : 2;
   }
 }
 
@@ -87,10 +96,15 @@ const MAX_PENDING_ADMISSIONS = 32;
  * trong hàm (chỉ mục riêng). RE3-005: nhà/model đếm trên MỌI lane; lane và người dùng đếm theo lane.
  */
 export async function acquireWork(sql: Sql, key: WorkKey): Promise<string | null> {
+  return (await acquireWorkInfo(sql, key)).id;
+}
+
+/** Như acquireWork, kèm vị trí trong hàng chờ công bằng khi bị từ chối (RE2-004). */
+export async function acquireWorkInfo(sql: Sql, key: WorkKey): Promise<{ id: string | null; position: number }> {
   const lanes = pendingAdmissions.get(sql) ?? new Map<WorkLane, number>();
   pendingAdmissions.set(sql, lanes);
   const pending = lanes.get(key.lane) ?? 0;
-  if (pending >= MAX_PENDING_ADMISSIONS) return null;
+  if (pending >= MAX_PENDING_ADMISSIONS) return { id: null, position: 0 };
   lanes.set(key.lane, pending + 1);
   try {
     maybeSweep(sql);
@@ -99,7 +113,8 @@ export async function acquireWork(sql: Sql, key: WorkKey): Promise<string | null
       ${key.lane}, ${JSON.stringify(DEFAULT_ADMISSION)}::jsonb, ${LEASE_STALE_SECONDS}::int, ${key.ref ?? null}::text) as r`;
     const r = rows[0]?.r;
     if (r === "uncertain") throw new AdmissionUncertain();
-    return r === id ? id : null;
+    if (r === id) return { id, position: 0 };
+    return { id: null, position: r?.startsWith("busy:") ? Number(r.slice(5)) || 0 : 0 };
   } finally {
     lanes.set(key.lane, (lanes.get(key.lane) ?? 1) - 1);
   }
@@ -178,6 +193,10 @@ export async function beginWork(
 ): Promise<(((end?: WorkEnd) => Promise<void>) & { id: string }) | null> {
   const id = await acquireWork(sql, key);
   if (!id) return null;
+  return startLease(sql, id);
+}
+
+function startLease(sql: Sql, id: string) {
   const stop = startBeat(
     () =>
       boundedBeat(
@@ -206,8 +225,9 @@ export async function withWorkAdmission<T>(
   run: (admission: { id: string }) => Promise<T>,
   outcome?: { uncertain: () => boolean },
 ): Promise<T> {
-  const release = await beginWork(sql, key);
-  if (!release) throw new AdmissionBusy();
+  const info = await acquireWorkInfo(sql, key);
+  if (!info.id) throw new AdmissionBusy(info.position);
+  const release = startLease(sql, info.id);
   let result: T;
   try {
     result = await run({ id: release.id });
