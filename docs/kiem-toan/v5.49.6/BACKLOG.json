@@ -88,9 +88,11 @@
       },
       {
         "id": "RE5-004-C",
-        "status": "OPEN",
+        "status": "DESIGN_VERIFIED_ON_NEON_BRANCH",
         "what": "Neon→VPS: chỉ đối soát trước/sau, KHÔNG khóa ghi Neon. Sau khi chép xong, Vercel vẫn ghi vào Neon tới lúc đổi DNS → ghi trong khoảng đó mất.",
-        "proposal": "Sau đối soát cuối: ALTER DATABASE <neon> SET default_transaction_read_only=on + pg_terminate_backend phiên cùng role, đối soát lại, rồi mới đổi DNS; mở lại bằng RESET. Cần xác minh quyền role Neon trên staging (Chủ duyệt)."
+        "proposal": "Tắt endpoint ghi bằng Neon API (đã chứng minh khóa hoàn toàn), chép/đối soát qua endpoint chỉ đọc, lỗi thì bật lại. ALTER DATABASE read-only đã thử: KHÔNG khóa được — bác bỏ.",
+        "evidence": "docs/kiem-toan/v5.49.6/RE5-004/NEON-FENCE-STAGING.md",
+        "remaining": "Viết vào tyzo.sh + test (HIGH); cần Neon API key trên VPS."
       },
       {
         "id": "RE5-004-D",

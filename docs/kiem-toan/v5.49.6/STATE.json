@@ -5,7 +5,7 @@
   "effort": "LOW",
   "effortRequested": null,
   "status": "SESSION_END_PACKAGED",
-  "next": "Chờ Chủ: duyệt gộp/đẩy main; staging cho RE4-004 và RE5-004 C/D; ngân sách thử cho usage thật (RE4-001) và GPU; MAIN-040-B (migration thêm cột usd).",
+  "next": "HIGH: viết khóa ghi Neon (endpoint disable + endpoint chỉ đọc) vào tyzo.sh cho chiều Neon→VPS (RE5-004-C) và lệnh hồi phục (D). Việc 3 cần key Groq/Alibaba + hạn mức chi.",
   "local_sha": "xem git log; commit checkpoint này",
   "remote_sha": "xem git ls-remote origin audit/v5.49.6-claude-re5",
   "environment": {
@@ -23,5 +23,9 @@
     "scripts/admission-bench.ts",
     "docs/kiem-toan/v5.49.6/RE5-005/*"
   ],
-  "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17."
+  "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17.",
+  "productionChecks": {
+    "neonMigrations": "0057 đã áp dụng (đọc trên bản sao 27/11)",
+    "canDoiSoatBetweenPushes": "0 (run_gate_calls trống)"
+  }
 }
