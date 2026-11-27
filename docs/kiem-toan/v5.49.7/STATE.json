@@ -1,14 +1,15 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "8b733b5ea9d78aa270ebe2e93de6d0851cde50ae",
+  "previous_checkpoint_sha": "0a1c405a6863be23958306505fc0942c57756c47",
   "effort": "Medium",
   "status": "IN_PROGRESS",
-  "completed_item": "RE6-005",
-  "item_status": "PARTIAL",
+  "completed_item": "RE6-007",
+  "item_status": "PASS_LOCAL",
   "tests": {
-    "live_fake": "7/7 + leftover 6/6",
-    "evidence": "RE6-005/REPORT.md"
+    "postgres": "18.7",
+    "admission_pg": "7/7",
+    "evidence": "RE6-007/REPORT.md"
   },
-  "next": "RE6-007"
+  "next": "RE6-008 (High) — dừng chờ Chủ chuyển mức"
 }

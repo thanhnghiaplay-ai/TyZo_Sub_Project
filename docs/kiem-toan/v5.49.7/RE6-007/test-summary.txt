@@ -1,0 +1,11 @@
+RE6-007 · PostgreSQL 18.7 (Debian 18.7-1.pgdg12+5) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit · node v22.23.5 · 4 CPU
+ok 1 - RE6-007: ký tự lạ trong mã khách/nhà/model không làm lẫn khóa JSON
+ok 2 - RE6-007: 5k khách chờ cũ/mới/không chung tài nguyên không chặn khách mới
+ok 3 - RE6-007: 1k khách chờ đủ điều kiện, chung lane, được nhường theo thứ tự đến; vị trí đúng
+ok 4 - RE6-007: khách chờ không nhận được suất trên tài nguyên của chính họ thì không giữ chỗ
+ok 5 - RE6-007: phần dành cho live: batch không lấy, khách chờ batch không giữ phần dành riêng
+ok 6 - RE6-007: burst 300 đồng thời, trộn lane/nhà/model, không vượt trần nào
+ok 7 - RE6-007: đo độ trễ theo số khách chờ (0/1k/5k) và đồng thời 25/50/100/200
+# tests 7
+# pass 7
+# fail 0
