@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.3";
+export const APP_VERSION = "5.49.4";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.4",
+    time: "20:42 27/11/2026",
+    title: "Chia lượt công bằng khi đông khách, tính phí dịch trực tiếp chắc chắn hơn.",
+    points: [
+      "Khi hệ thống đông, bạn được xếp hàng và thấy vị trí; người chờ lâu được ưu tiên.",
+      "Dịch trực tiếp trừ phí đúng một lần, kể cả khi mạng chập chờn.",
+      "Độ dài đoạn âm thanh được kiểm chính xác trước khi giữ Token dịch.",
+    ],
+  },
   {
     version: "5.49.3",
     time: "16:33 27/11/2026",
@@ -304,16 +314,5 @@ export const CHANGELOG: ReleaseNote[] = [
       "Nhận dạng ElevenLabs xong thì bản nhận dạng được xóa ở ElevenLabs.",
     ],
   },
-  {
-    version: "5.34.0",
-    time: "03:59 22/11/2026",
-    title: "Thêm nhà nhận dạng giọng ElevenLabs (Scribe v3, Scribe v2).",
-    points: [
-      "Chọn ElevenLabs Scribe ở ô Nhận dạng giọng, dán link file https trực tiếp.",
-      "Dùng được ở cả Thuê phòng (key ElevenLabs của bạn) và Trả theo lượt.",
-      "Điều khoản mục Dữ liệu ghi ElevenLabs nhận lời thoại; bạn đồng ý lại một lần.",
-    ],
-  },
-  // Bản cũ hơn: docs/lich-su/CHANGELOG-cu.md (giữ 20 bản gần nhất ở đây, màn «có gì mới» chỉ hiện 8).
 ];
 

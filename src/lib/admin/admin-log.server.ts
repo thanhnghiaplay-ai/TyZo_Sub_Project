@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.4",
+    time: "20:42 27/11/2026",
+    area: "tien",
+    text: "Kiểm toán RE3/RE2 (docs/kiem-toan/v5.49.4/). Live: quyết toán nguyên tử biên nhận+journal+trừ phiếu (migration0053). Dò độ dài audio WAV/WebM/Ogg, không xác minh trả 422. Nhịp lease single-flight + timeout. Cửa nhận việc tyzo_admit một câu lệnh, cap nhà/model mọi lane, liveReserve (mặc định 0), tự mở unknown theo bằng chứng, Admin phân trang (0054). Hàng đợi công bằng chống đói 3 giây (0055). tyzo.sh đối soát bảng kê khi chuyển dữ liệu, sửa Neon→VPS. Migration chỉ thêm. VPS: tyzo → 2 để cập nhật cầu nối.",
+  },
+  {
     version: "5.49.3",
     time: "16:33 27/11/2026",
     area: "ha-tang",

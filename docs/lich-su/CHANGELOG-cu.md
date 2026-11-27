@@ -2,6 +2,14 @@
 
 Chép từ `src/lib/app-version.ts` ngày 23/11/2026. Ứng dụng chỉ giữ 20 bản gần nhất (màn «có gì mới» chỉ hiện 8). Đây là 214 bản cũ hơn, nguyên văn, mới trước cũ sau.
 
+## 5.34.0 · 03:59 22/11/2026
+
+Thêm nhà nhận dạng giọng ElevenLabs (Scribe v3, Scribe v2).
+
+- Chọn ElevenLabs Scribe ở ô Nhận dạng giọng, dán link file https trực tiếp.
+- Dùng được ở cả Thuê phòng (key ElevenLabs của bạn) và Trả theo lượt.
+- Điều khoản mục Dữ liệu ghi ElevenLabs nhận lời thoại; bạn đồng ý lại một lần.
+
 ## 5.33.0 · 21:19 21/11/2026
 
 Tải lại trang không mất phụ đề đã làm; điều khoản cập nhật.
