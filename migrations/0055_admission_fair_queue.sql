@@ -2,7 +2,8 @@
 -- Chống đói có ngưỡng, không bỏ trống suất: bình thường ai tới cũng lấy được suất trống (như cũ). Chỉ người đã chờ
 -- quá `starve` giây mới được giữ suất, theo thứ tự xếp trước, cho tới khi nhận được. «Còn đang chờ» = vừa thử lại
 -- trong `wait_live` giây; người đã bỏ đi không giữ suất.
--- Không chứa dữ liệu khách ngoài mã người dùng; dòng cũ hơn 60 giây tự dọn trong chính hàm.
+-- Không chứa dữ liệu khách ngoài mã người dùng. Migration không xóa gì: chỗ chờ đã nhận suất chỉ bị đánh dấu hết hiệu lực;
+-- dòng cũ được tác vụ đối soát của ứng dụng dọn (sweepAdmissions).
 create table if not exists work_waiters (
   user_id text not null,
   provider text not null,
@@ -63,21 +64,20 @@ declare
   if free <= 0 then
     -- Hết suất: chỉ ghi chỗ chờ và tính vị trí (đường bận ngắn nhất dưới khóa).
     insert into work_waiters (user_id, provider, model, lane) values (p_user, p_provider, p_model, p_lane)
-      on conflict (provider, model, lane, user_id) do update set seen_at = clock_timestamp()
+      on conflict (provider, model, lane, user_id) do update set seen_at = clock_timestamp(),
+        -- Đã rời hàng (nhận suất rồi, hoặc bỏ đi quá wait_live) thì xếp lại từ cuối.
+        since = case when work_waiters.seen_at <= clock_timestamp() - make_interval(secs => wait_live)
+                     then clock_timestamp() else work_waiters.since end
       returning since into my_since;
     select count(*) into ahead from work_waiters w
       where w.provider = p_provider and w.model = p_model and w.user_id <> p_user
         and w.seen_at > clock_timestamp() - make_interval(secs => wait_live)
         and (w.since, w.user_id) < (my_since, p_user);
-    -- Dọn chỗ chờ bỏ đi đã lâu, thỉnh thoảng (không mỗi lần).
-    if random() < 0.02 then
-      delete from work_waiters where ctid in (
-        select ctid from work_waiters where seen_at < clock_timestamp() - interval '60 seconds' limit 200);
-    end if;
     return 'busy:' || (ahead + 1);
   end if;
   select since into my_since from work_waiters
-    where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user;
+    where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user
+      and seen_at > clock_timestamp() - make_interval(secs => wait_live);
   -- Còn suất: chỉ người chờ lâu (quá `starve` giây), còn đang thử lại và xếp trước mình mới được giữ suất trước mình.
   select count(*) into ahead from work_waiters w
     where w.provider = p_provider and w.model = p_model and w.user_id <> p_user
@@ -86,11 +86,14 @@ declare
       and (my_since is null or (w.since, w.user_id) < (my_since, p_user));
   if ahead >= free then
     insert into work_waiters (user_id, provider, model, lane) values (p_user, p_provider, p_model, p_lane)
-      on conflict (provider, model, lane, user_id) do update set seen_at = clock_timestamp();
+      on conflict (provider, model, lane, user_id) do update set seen_at = clock_timestamp(),
+        -- Đã rời hàng (nhận suất rồi, hoặc bỏ đi quá wait_live) thì xếp lại từ cuối.
+        since = case when work_waiters.seen_at <= clock_timestamp() - make_interval(secs => wait_live)
+                     then clock_timestamp() else work_waiters.since end;
     return 'busy:' || (ahead + 1);
   end if;
   if my_since is not null then
-    delete from work_waiters where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user;
+    update work_waiters set seen_at = '-infinity' where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user;
   end if;
   insert into work_admissions (id, user_id, provider, model, lane, ref)
   values (p_id, p_user, p_provider, p_model, p_lane, p_ref);

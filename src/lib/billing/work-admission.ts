@@ -153,6 +153,8 @@ function maybeSweep(sql: Sql) {
 }
 
 export async function sweepAdmissions(sql: Sql, limit = 50) {
+  // RE2-004: dọn chỗ chờ đã rời hàng quá 60 giây (bảng nhỏ; không ảnh hưởng thứ tự hàng đang chờ).
+  await sql`delete from work_waiters where seen_at < clock_timestamp() - interval '60 seconds'`;
   await sql`update work_admissions set status = 'unknown', finished_at = clock_timestamp()
     where status = 'running' and heartbeat_at <= clock_timestamp() - ${LEASE_STALE}::interval`;
   const proven = await sql<{ id: string; user_id: string; ref: string; evidence: string }>`

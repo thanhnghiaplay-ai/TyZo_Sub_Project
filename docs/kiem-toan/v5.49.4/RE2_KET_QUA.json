@@ -126,13 +126,17 @@
    "soak-results.json"
   ],
   "reaccept_v5_49_4": {
-   "status": "PARTIAL",
-   "head": "c5c39c7",
+   "status": "PASS_LOCAL",
+   "head": "(checkpoint 10)",
    "evidence": [
     "re2-004-fairness-bench.log",
-    "re3-004-after-bench.log"
+    "re2-004-after-fair-queue-bench.log",
+    "re2-004-after-fair-queue-bench-2.log",
+    "re2-004-after-fair-queue-bench-3.log",
+    "re2-004-after-fair-queue-bench-4.log",
+    "gate-cp10b-test-group2.log"
    ],
-   "note": "Không polling CSDL; 200 khách p95 30–68 ms, 0 vượt cap, ~1342 lượt thử/giây; NHƯNG 2/200 khách không được lượt nào trong 8 s khi quá tải ~5× (chưa có hàng đợi công bằng). Cần thiết kế hàng đợi bền + ETA (quyết định trải nghiệm khách)."
+   "note": "Chủ duyệt làm hàng đợi công bằng (27/11). Migration 0055 + tyzo_admit chống đói có ngưỡng 3 s, không bỏ trống suất; app giữ chỗ bằng nhịp Retry-After, hiện vị trí. 200 khách: 0 đói (trước 2), min 6 lượt/8 s, 4363 lượt (trước 4495), p95 54 ms, p99 105 ms; đợt 300 p99 138 ms; 0 vượt cap. Lần đo -1 (hàng đợi nghiêm ngặt: 1936 lượt) và -2/-3 giữ làm bằng chứng tối ưu dần. Chưa kiểm trình duyệt dòng «Đang xếp hàng…»."
   }
  },
  {

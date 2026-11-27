@@ -1,0 +1,34 @@
+# label=migration-drill-0055
+# head=eeb02173ce29bb98dafeb7d8fb84be686df4b69b dirty=12
+# fingerprint(src,scripts,migrations,server,package*)=e06e7f11bb9b58231d34b30f7afa2e5d8ed21b774c173bcdd86800910722a580
+# start=2026-11-27T12:34:05Z
+# cmd=bash docs/kiem-toan/v5.49.4/migration-drill.sh
+NOTICE:  database "mig_fresh" does not exist, skipping
+NOTICE:  database "mig_upgrade" does not exist, skipping
+== 1. Cài mới (mọi migration)
+[migrate] applied 0054_admission_kernel.sql
+[migrate] applied 0055_admission_fair_queue.sql
+[migrate] done — 55 migration(s) applied.
+exit=0
+== 2. Lặp lại (phải không làm gì)
+[migrate] up to date.
+== 3. Nâng cấp: dựng tới 0052 + dữ liệu cũ, rồi chạy migrate
+[migrate] done — 52 migration(s) applied.
+[migrate] applied 0054_admission_kernel.sql
+[migrate] applied 0055_admission_fair_queue.sql
+[migrate] done — 3 migration(s) applied.
+dữ liệu cũ work_admissions giữ nguyên: CO
+ev|1
+ref-null|2
+fn|newid
+unknown-giu-nguyen|unknown
+== 4. Lỗi giữa migration: 0054 hỏng phải rollback cả tệp
+NOTICE:  database "mig_fault" does not exist, skipping
+[migrate] done — 52 migration(s) applied.
+exit=1 (khác 0 là đúng)
+ref-col|0
+fn|0
+applied|0053_live_usage_receipts.sql
+[migrate] done — 1 migration(s) applied.
+after-fix applied|0053_live_usage_receipts.sql,0054_admission_kernel.sql
+# exit=0 seconds=3 end=2026-11-27T12:34:08Z

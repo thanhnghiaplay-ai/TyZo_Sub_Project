@@ -1,0 +1,562 @@
+# label=gate-cp10-test-group2
+# head=eeb02173ce29bb98dafeb7d8fb84be686df4b69b dirty=5
+# fingerprint(src,scripts,migrations,server,package*)=814ad10234a03eb4aadb46c48b4952b795de2730e49be33fb5af7bc14b689658
+# start=2026-11-27T12:30:56Z
+# cmd=bash /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/group2.sh
+TAP version 13
+# (node:8623) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: AZ-007 / R3-005: serialized link codes and rollback after device-insert failure
+ok 1 - AZ-007 / R3-005: serialized link codes and rollback after device-insert failure
+  ---
+  duration_ms: 354.886771
+  type: 'test'
+  ...
+# Subtest: R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success
+ok 2 - R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success
+  ---
+  duration_ms: 64.005568
+  type: 'test'
+  ...
+# Subtest: R4-008: temporary password revokes web sessions and Android credentials
+ok 3 - R4-008: temporary password revokes web sessions and Android credentials
+  ---
+  duration_ms: 126.637939
+  type: 'test'
+  ...
+# Subtest: R4-006: real revenue aggregation exceeds int32 without truncation
+ok 4 - R4-006: real revenue aggregation exceeds int32 without truncation
+  ---
+  duration_ms: 25.307422
+  type: 'test'
+  ...
+# Subtest: R3-004: database password update and device revocation fail or commit together
+ok 5 - R3-004: database password update and device revocation fail or commit together
+  ---
+  duration_ms: 19.004642
+  type: 'test'
+  ...
+# Subtest: R5-007: conflicting referral code reports false and preserves original affiliation
+ok 6 - R5-007: conflicting referral code reports false and preserves original affiliation
+  ---
+  duration_ms: 15.80231
+  type: 'test'
+  ...
+# Subtest: R3-007: all three read/quote polish endpoints register authentication
+ok 7 - R3-007: all three read/quote polish endpoints register authentication
+  ---
+  duration_ms: 33.187864
+  type: 'test'
+  ...
+# Subtest: R4-007: actual Android history-delete handler applies per-account rate limit
+ok 8 - R4-007: actual Android history-delete handler applies per-account rate limit
+  ---
+  duration_ms: 19.057853
+  type: 'test'
+  ...
+# Subtest: DEEP-010: real webhook handlers authenticate before reading and cap oversized bodies
+ok 9 - DEEP-010: real webhook handlers authenticate before reading and cap oversized bodies
+  ---
+  duration_ms: 34.206488
+  type: 'test'
+  ...
+# Subtest: SCALE: capacity settings require Admin, reject bad bounds, and audit atomically
+ok 10 - SCALE: capacity settings require Admin, reject bad bounds, and audit atomically
+  ---
+  duration_ms: 23.040923
+  type: 'test'
+  ...
+# Subtest: SCALE: resolving uncertain capacity needs Admin evidence, is audited atomically, and never changes financial records
+ok 11 - SCALE: resolving uncertain capacity needs Admin evidence, is audited atomically, and never changes financial records
+  ---
+  duration_ms: 16.680632
+  type: 'test'
+  ...
+# Subtest: AZ-002: app link/me identity is derived from authenticated device, never client input
+ok 12 - AZ-002: app link/me identity is derived from authenticated device, never client input
+  ---
+  duration_ms: 35.943694
+  type: 'test'
+  ...
+# (node:8624) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ASYNC-P0: duplicate submit/status returns one upstream job, one debit and one spend
+ok 13 - ASYNC-P0: duplicate submit/status returns one upstream job, one debit and one spend
+  ---
+  duration_ms: 480.053473
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: unknown or foreign task/receipt is rejected before contacting provider
+ok 14 - ASYNC-P0: unknown or foreign task/receipt is rejected before contacting provider
+  ---
+  duration_ms: 50.982913
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: durable queued job retains budget beyond a web request lease, then drains close
+ok 15 - ASYNC-P0: durable queued job retains budget beyond a web request lease, then drains close
+  ---
+  duration_ms: 81.74363
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: lost submission response cannot automatically submit duplicate work
+ok 16 - ASYNC-P0: lost submission response cannot automatically submit duplicate work
+  ---
+  duration_ms: 46.589747
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: known failed job releases once; response after force-close only records reconciliation
+ok 17 - ASYNC-P0: known failed job releases once; response after force-close only records reconciliation
+  ---
+  duration_ms: 77.339615
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: definitive submission rejection releases budget and allows a corrected retry
+ok 18 - ASYNC-P0: definitive submission rejection releases budget and allows a corrected retry
+  ---
+  duration_ms: 266.227908
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: ambiguous HTTP 408 retains uncertainty and cannot auto-resubmit
+ok 19 - ASYNC-P0: ambiguous HTTP 408 retains uncertainty and cannot auto-resubmit
+  ---
+  duration_ms: 46.270761
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: ambiguous HTTP 500 retains uncertainty and cannot auto-resubmit
+ok 20 - ASYNC-P0: ambiguous HTTP 500 retains uncertainty and cannot auto-resubmit
+  ---
+  duration_ms: 35.736321
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: an error response containing a task ID retains that owned task for reconciliation
+ok 21 - ASYNC-P0: an error response containing a task ID retains that owned task for reconciliation
+  ---
+  duration_ms: 52.963307
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+ok 22 - RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+  ---
+  duration_ms: 47.152416
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+ok 23 - RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+  ---
+  duration_ms: 16.476624
+  type: 'test'
+  ...
+# Subtest: RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+ok 24 - RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+  ---
+  duration_ms: 10.998723
+  type: 'test'
+  ...
+# Subtest: RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+ok 25 - RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+  ---
+  duration_ms: 10.431966
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+ok 26 - RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+  ---
+  duration_ms: 16.108615
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+ok 27 - RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+  ---
+  duration_ms: 6.256242
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+ok 28 - RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+  ---
+  duration_ms: 4.244181
+  type: 'test'
+  ...
+# Subtest: RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+ok 29 - RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+  ---
+  duration_ms: 4.997482
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+ok 30 - RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+  ---
+  duration_ms: 5.070718
+  type: 'test'
+  ...
+# Subtest: RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+ok 31 - RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+  ---
+  duration_ms: 552.117178
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM cluster kích thước không rõ (MediaRecorder) + BlockGroup
+ok 32 - RE3-002: WebM cluster kích thước không rõ (MediaRecorder) + BlockGroup
+  ---
+  duration_ms: 1.1649
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM lacing Xiph / cố định / EBML đếm đủ từng gói
+ok 33 - RE3-002: WebM lacing Xiph / cố định / EBML đếm đủ từng gói
+  ---
+  duration_ms: 0.237295
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM hai track, codec không phải Opus, block của track lạ → không xác minh
+ok 34 - RE3-002: WebM hai track, codec không phải Opus, block của track lạ → không xác minh
+  ---
+  duration_ms: 0.336425
+  type: 'test'
+  ...
+# Subtest: RE3-002: Ogg Opus đếm theo TOC (granule khai sai không ảnh hưởng), gói dài ≥255 byte
+ok 35 - RE3-002: Ogg Opus đếm theo TOC (granule khai sai không ảnh hưởng), gói dài ≥255 byte
+  ---
+  duration_ms: 1.887203
+  type: 'test'
+  ...
+# Subtest: RE3-002: TOC Opus — bảng thời lượng theo RFC 6716
+ok 36 - RE3-002: TOC Opus — bảng thời lượng theo RFC 6716
+  ---
+  duration_ms: 0.144232
+  type: 'test'
+  ...
+# Subtest: cổng tính tiền
+    # Subtest: dịch thành công: trừ theo token thật trong usage
+    ok 1 - dịch thành công: trừ theo token thật trong usage
+      ---
+      duration_ms: 81.003301
+      type: 'test'
+      ...
+    # Subtest: Groq trả lỗi thì không tính tiền
+    ok 2 - Groq trả lỗi thì không tính tiền
+      ---
+      duration_ms: 24.110088
+      type: 'test'
+      ...
+    # Subtest: nhận dạng: trừ theo duration thật, tối thiểu 10 giây
+    ok 3 - nhận dạng: trừ theo duration thật, tối thiểu 10 giây
+      ---
+      duration_ms: 81.92274
+      type: 'test'
+      ...
+    # Subtest: R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát
+    ok 4 - R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát
+      ---
+      duration_ms: 45.133855
+      type: 'test'
+      ...
+    # Subtest: RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà
+    ok 5 - RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà
+      ---
+      duration_ms: 15.820644
+      type: 'test'
+      ...
+    # Subtest: thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq
+    ok 6 - thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq
+      ---
+      duration_ms: 8.165219
+      type: 'test'
+      ...
+    # Subtest: model chưa có giá bị từ chối, không gọi Groq
+    ok 7 - model chưa có giá bị từ chối, không gọi Groq
+      ---
+      duration_ms: 11.604356
+      type: 'test'
+      ...
+    # Subtest: đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi
+    ok 8 - đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi
+      ---
+      duration_ms: 47.728877
+      type: 'test'
+      ...
+    1..8
+ok 37 - cổng tính tiền
+  ---
+  duration_ms: 2640.890763
+  type: 'suite'
+  ...
+# Subtest: đọc yêu cầu
+    # Subtest: chat: lấy model, chặn stream và token trả lời quá lớn
+    ok 1 - chat: lấy model, chặn stream và token trả lời quá lớn
+      ---
+      duration_ms: 1.473496
+      type: 'test'
+      ...
+    # Subtest: speech: đếm ký tự; nhận dạng: lấy model từ form
+    ok 2 - speech: đếm ký tự; nhận dạng: lấy model từ form
+      ---
+      duration_ms: 2.176857
+      type: 'test'
+      ...
+    # Subtest: body hỏng thì null
+    ok 3 - body hỏng thì null
+      ---
+      duration_ms: 0.245383
+      type: 'test'
+      ...
+    1..3
+ok 38 - đọc yêu cầu
+  ---
+  duration_ms: 4.199533
+  type: 'suite'
+  ...
+# Subtest: lost upstream reply keeps capacity and blocks a blind new call until owner evidence
+ok 39 - lost upstream reply keeps capacity and blocks a blind new call until owner evidence
+  ---
+  duration_ms: 326.117093
+  type: 'test'
+  ...
+# Subtest: definite 429 releases capacity; ambiguous 500 holds it without charging
+ok 40 - definite 429 releases capacity; ambiguous 500 holds it without charging
+  ---
+  duration_ms: 23.511702
+  type: 'test'
+  ...
+# Subtest: TTS waits for the audio body and observes/debits exactly once
+ok 41 - TTS waits for the audio body and observes/debits exactly once
+  ---
+  duration_ms: 54.472751
+  type: 'test'
+  ...
+# Subtest: TTS body timeout refunds its unused hold and retains uncertain capacity
+ok 42 - TTS body timeout refunds its unused hold and retains uncertain capacity
+  ---
+  duration_ms: 71.739275
+  type: 'test'
+  ...
+# Subtest: TTS provider-spend failure rolls back the debit and retains a traceable receipt
+ok 43 - TTS provider-spend failure rolls back the debit and retains a traceable receipt
+  ---
+  duration_ms: 32.311393
+  type: 'test'
+  ...
+# Subtest: a paid room request is not replayed after its successful debit but lost client body
+ok 44 - a paid room request is not replayed after its successful debit but lost client body
+  ---
+  duration_ms: 30.869322
+  type: 'test'
+  ...
+# Subtest: paid room 5xx is not automatically submitted as another paid request
+ok 45 - paid room 5xx is not automatically submitted as another paid request
+  ---
+  duration_ms: 13.869206
+  type: 'test'
+  ...
+# Subtest: Modal transport/5xx uncertainty is not blindly retried and occupies its admission
+ok 46 - Modal transport/5xx uncertainty is not blindly retried and occupies its admission
+  ---
+  duration_ms: 98.755407
+  type: 'test'
+  ...
+# Subtest: validation errors before dispatch do not leave uncertain capacity
+ok 47 - validation errors before dispatch do not leave uncertain capacity
+  ---
+  duration_ms: 36.341274
+  type: 'test'
+  ...
+# Subtest: completed history is excluded by the active-admission index
+ok 48 - completed history is excluded by the active-admission index
+  ---
+  duration_ms: 576.901501
+  type: 'test'
+  ...
+# Subtest: supplier USD uses raw model usage while customer Token rounding stays unchanged
+ok 49 - supplier USD uses raw model usage while customer Token rounding stays unchanged
+  ---
+  duration_ms: 178.063722
+  type: 'test'
+  ...
+# Subtest: RE3-005: cap mỗi nhà đếm trên mọi lane — batch + live đồng thời không vượt
+ok 50 - RE3-005: cap mỗi nhà đếm trên mọi lane — batch + live đồng thời không vượt
+  ---
+  duration_ms: 450.401928
+  type: 'test'
+  ...
+# Subtest: RE3-005: cap mỗi model đếm trên mọi lane
+ok 51 - RE3-005: cap mỗi model đếm trên mọi lane
+  ---
+  duration_ms: 25.727437
+  type: 'test'
+  ...
+# Subtest: RE3-005: suất dành cho live — batch không chiếm được phần dành riêng
+ok 52 - RE3-005: suất dành cho live — batch không chiếm được phần dành riêng
+  ---
+  duration_ms: 77.000005
+  type: 'test'
+  ...
+# Subtest: RE3-005: job async đang gửi (suất cùng mã lệnh) không bị đếm hai lần; sau khi nhả suất thì job vẫn chiếm chỗ
+ok 53 - RE3-005: job async đang gửi (suất cùng mã lệnh) không bị đếm hai lần; sau khi nhả suất thì job vẫn chiếm chỗ
+  ---
+  duration_ms: 18.264637
+  type: 'test'
+  ...
+# Subtest: RE3-006: unknown KHÔNG tự giải phóng theo thời gian; chỉ khi có bằng chứng định đoạt, có nhật ký
+ok 54 - RE3-006: unknown KHÔNG tự giải phóng theo thời gian; chỉ khi có bằng chứng định đoạt, có nhật ký
+  ---
+  duration_ms: 47.038688
+  type: 'test'
+  ...
+# Subtest: RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứng được mở dần theo lô, cửa nhận việc hồi phục
+ok 55 - RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứng được mở dần theo lô, cửa nhận việc hồi phục
+  ---
+  duration_ms: 310.812681
+  type: 'test'
+  ...
+# Subtest: RE2-004: hàng chờ công bằng — suất trống trao cho người xếp trước, người đến sau thấy vị trí
+ok 56 - RE2-004: hàng chờ công bằng — suất trống trao cho người xếp trước, người đến sau thấy vị trí
+  ---
+  duration_ms: 65.984493
+  type: 'test'
+  ...
+# Subtest: RE2-004: người xếp trước đã bỏ đi (quá 6 giây không thử lại) không giữ suất trống
+ok 57 - RE2-004: người xếp trước đã bỏ đi (quá 6 giây không thử lại) không giữ suất trống
+  ---
+  duration_ms: 55.897091
+  type: 'test'
+  ...
+# Subtest: RE2-004: khách đã dùng đủ suất riêng không xếp hàng chặn người khác; hàng chờ không vượt cap khi chạy đua
+ok 58 - RE2-004: khách đã dùng đủ suất riêng không xếp hàng chặn người khác; hàng chờ không vượt cap khi chạy đua
+  ---
+  duration_ms: 132.016937
+  type: 'test'
+  ...
+# Subtest: RE2-004: không bỏ trống suất — người mới chờ chưa tới 3 giây không chặn người đến lấy suất trống
+ok 59 - RE2-004: không bỏ trống suất — người mới chờ chưa tới 3 giây không chặn người đến lấy suất trống
+  ---
+  duration_ms: 43.808364
+  type: 'test'
+  ...
+# Subtest: RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn
+ok 60 - RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn
+  ---
+  duration_ms: 1180.670789
+  type: 'test'
+  ...
+# Subtest: RE3-003: lease đã bị quét thành unknown → nhịp 0 dòng (fenced); hoàn tất muộn ghi done một lần
+ok 61 - RE3-003: lease đã bị quét thành unknown → nhịp 0 dòng (fenced); hoàn tất muộn ghi done một lần
+  ---
+  duration_ms: 14.636018
+  type: 'test'
+  ...
+# Subtest: RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+ok 62 - RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+  ---
+  duration_ms: 560.238188
+  type: 'test'
+  ...
+# Subtest: RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+ok 63 - RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+  ---
+  duration_ms: 211.033883
+  type: 'test'
+  ...
+# Subtest: RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+ok 64 - RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+  ---
+  duration_ms: 151.843602
+  type: 'test'
+  ...
+# Subtest: RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+ok 65 - RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+  ---
+  duration_ms: 200.822105
+  type: 'test'
+  ...
+# Subtest: RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc
+ok 66 - RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc
+  ---
+  duration_ms: 0.251028
+  type: 'test'
+  ...
+# Subtest: R6-001: late A decode cannot overwrite the edited/current run B
+ok 67 - R6-001: late A decode cannot overwrite the edited/current run B
+  ---
+  duration_ms: 0.616265
+  type: 'test'
+  ...
+# (node:8747) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: R6-008: old language-check response cannot alter new run's cost/events after trial await
+ok 68 - R6-008: old language-check response cannot alter new run's cost/events after trial await
+  ---
+  duration_ms: 170.023706
+  type: 'test'
+  ...
+# Subtest: R6-008: obsolete language check cannot even alter suspicion or retry budget
+ok 69 - R6-008: obsolete language check cannot even alter suspicion or retry budget
+  ---
+  duration_ms: 0.996944
+  type: 'test'
+  ...
+# (node:8755) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi dịch một lần
+ok 70 - 4 luồng dịch, đổi phiếu mất 50 ms: mỗi câu chỉ gửi đi dịch một lần
+  ---
+  duration_ms: 107.204987
+  type: 'test'
+  ...
+# Subtest: R6-002: metadata waiter times out and can be canceled before/after waiting
+ok 71 - R6-002: metadata waiter times out and can be canceled before/after waiting
+  ---
+  duration_ms: 6.379955
+  type: 'test'
+  ...
+# Subtest: R6-005: stalled PUT is retryable while user cancel remains AbortError
+ok 72 - R6-005: stalled PUT is retryable while user cancel remains AbortError
+  ---
+  duration_ms: 5.482146
+  type: 'test'
+  ...
+# Subtest: R6-009: aborting FileReader stops TyZo encoding before any Modal request
+ok 73 - R6-009: aborting FileReader stops TyZo encoding before any Modal request
+  ---
+  duration_ms: 0.557914
+  type: 'test'
+  ...
+# Subtest: R6-004: same-sized wrong range and changed total are rejected
+ok 74 - R6-004: same-sized wrong range and changed total are rejected
+  ---
+  duration_ms: 17.531736
+  type: 'test'
+  ...
+# Subtest: R6-004: oversized streamed body is canceled before all chunks are consumed
+ok 75 - R6-004: oversized streamed body is canceled before all chunks are consumed
+  ---
+  duration_ms: 0.672612
+  type: 'test'
+  ...
+# Subtest: R6-003: corrupt AAC sample count/truncated table fail before allocating sample arrays
+ok 76 - R6-003: corrupt AAC sample count/truncated table fail before allocating sample arrays
+  ---
+  duration_ms: 0.964616
+  type: 'test'
+  ...
+# (node:8779) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure
+ok 77 - R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure
+  ---
+  duration_ms: 1.62454
+  type: 'test'
+  ...
+# Subtest: R6-006: cleanup failure never masks upload failure; successful PUT is retained
+ok 78 - R6-006: cleanup failure never masks upload failure; successful PUT is retained
+  ---
+  duration_ms: 0.275921
+  type: 'test'
+  ...
+1..78
+# tests 87
+# suites 2
+# pass 87
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13192.529361
+# exit=0 seconds=13 end=2026-11-27T12:31:09Z

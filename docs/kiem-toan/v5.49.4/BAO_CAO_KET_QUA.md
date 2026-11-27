@@ -25,7 +25,7 @@ Chi tiết từng mục (nguyên nhân, sửa, giới hạn, rollback): `RE3-001
 
 ## 2. Sáu mục RE2 (`RE2_KET_QUA.json`)
 RE2-001, 002, 003, 005, 006: **PASS cục bộ** (test PG thật theo đúng tiêu chí; 003/005 được củng cố bởi RE3-003/007).
-**RE2-004: PARTIAL** — không còn polling CSDL; 200 khách p95 30–68 ms, 0 vượt cap; nhưng **2/200 khách không được lượt nào trong 8 s** khi quá tải ~5× (`re2-004-fairness-bench.log`). Cần hàng đợi bền công bằng theo người dùng + ETA → thay đổi trải nghiệm khách, cần Chủ quyết.
+**RE2-004: PASS cục bộ** (sau Chủ duyệt 27/11). Trước: 2/200 khách không được lượt nào trong 8 s khi quá tải ~5× (`re2-004-fairness-bench.log`). Sửa: migration `0055_admission_fair_queue.sql` (chỉ thêm, không lệnh xóa) — hàng đợi theo (nhà, model, lane, khách); bình thường ai tới cũng lấy suất trống; người chờ quá 3 s được giữ suất theo thứ tự; người bỏ đi quá 6 s không giữ suất. App: 429 có `x-queue-position` thì thử lại theo Retry-After 1–2 s, không tính vào 5 lần, tối đa 15 phút, hiện «Đang xếp hàng chờ xử lý: vị trí N…». Sau (`re2-004-after-fair-queue-bench-4.log`): 200 khách 0 đói, ít nhất 6 lượt, 4363 lượt (cũ 4495), p95 54 ms, p99 105 ms; đợt 300 p99 138 ms; 0 vượt cap. Chưa kiểm dòng chữ xếp hàng trên trình duyệt; soak lần 2 phủ mã này.
 
 ## 3. Tám mươi mục lịch sử (`DOI_CHIEU_80.json`)
 Giữ nguyên mọi trường lịch sử; thêm `reaccept_v5_49_4` (HEAD, bằng chứng, ghi chú).
