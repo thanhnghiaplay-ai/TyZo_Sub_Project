@@ -1,0 +1,124 @@
+TAP version 13
+# Subtest: RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+ok 1 - RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+  ---
+  duration_ms: 172.718743
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+ok 2 - RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+  ---
+  duration_ms: 34.206247
+  type: 'test'
+  ...
+# Subtest: RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+ok 3 - RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+  ---
+  duration_ms: 9.321761
+  type: 'test'
+  ...
+# Subtest: RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+ok 4 - RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+  ---
+  duration_ms: 10.94492
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+ok 5 - RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+  ---
+  duration_ms: 28.856738
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+ok 6 - RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+  ---
+  duration_ms: 19.033084
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+ok 7 - RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+  ---
+  duration_ms: 10.774746
+  type: 'test'
+  ...
+# Subtest: RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+ok 8 - RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+  ---
+  duration_ms: 13.038854
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+ok 9 - RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+  ---
+  duration_ms: 3.51549
+  type: 'test'
+  ...
+# Subtest: RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+not ok 10 - RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+  ---
+  duration_ms: 1086.849222
+  type: 'test'
+  location: 'src/lib/billing/audio-probe.test.ts:114:1'
+  failureType: 'testCodeFailure'
+  error: 'bộ nhớ tăng quá 200 MB'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://src/lib/billing/audio-probe.test.ts:122:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+# Subtest: RE3-002: WebM cluster kích thước không rõ (MediaRecorder) + BlockGroup
+ok 11 - RE3-002: WebM cluster kích thước không rõ (MediaRecorder) + BlockGroup
+  ---
+  duration_ms: 1.238088
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM lacing Xiph / cố định / EBML đếm đủ từng gói
+ok 12 - RE3-002: WebM lacing Xiph / cố định / EBML đếm đủ từng gói
+  ---
+  duration_ms: 0.332866
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM hai track, codec không phải Opus, block của track lạ → không xác minh
+ok 13 - RE3-002: WebM hai track, codec không phải Opus, block của track lạ → không xác minh
+  ---
+  duration_ms: 0.352961
+  type: 'test'
+  ...
+# Subtest: RE3-002: Ogg Opus đếm theo TOC (granule khai sai không ảnh hưởng), gói dài ≥255 byte
+ok 14 - RE3-002: Ogg Opus đếm theo TOC (granule khai sai không ảnh hưởng), gói dài ≥255 byte
+  ---
+  duration_ms: 1.252677
+  type: 'test'
+  ...
+# Subtest: RE3-002: TOC Opus — bảng thời lượng theo RFC 6716
+ok 15 - RE3-002: TOC Opus — bảng thời lượng theo RFC 6716
+  ---
+  duration_ms: 0.127974
+  type: 'test'
+  ...
+# Subtest: RE4-005: cấu trúc WebM sai cấp bị từ chối dù có gói Opus đọc được
+ok 16 - RE4-005: cấu trúc WebM sai cấp bị từ chối dù có gói Opus đọc được
+  ---
+  duration_ms: 0.621951
+  type: 'test'
+  ...
+# Subtest: RE4-005: khai kích thước vượt cha, cụt Segment hoặc unknown-size ngoài Cluster bị từ chối
+ok 17 - RE4-005: khai kích thước vượt cha, cụt Segment hoặc unknown-size ngoài Cluster bị từ chối
+  ---
+  duration_ms: 0.2575
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 16
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1627.722836

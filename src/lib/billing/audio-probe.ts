@@ -86,12 +86,12 @@ function probeWav(b: Uint8Array): AudioProbe {
 }
 
 /** Đọc số nguyên độ dài thay đổi của EBML. `marker` true = giữ bit đánh dấu (ID). */
-function vint(b: Uint8Array, at: number, marker: boolean): { value: number; len: number; unknown: boolean } | null {
+function vint(b: Uint8Array, at: number, marker: boolean, end: number): { value: number; len: number; unknown: boolean } | null {
   const first = b[at];
-  if (first === undefined || first === 0) return null;
+  if (at >= end || first === undefined || first === 0) return null;
   let len = 1;
   while (len <= 8 && !(first & (0x80 >> (len - 1)))) len += 1;
-  if (len > 8 || at + len > b.length) return null;
+  if (len > (marker ? 4 : 8) || at + len > end) return null;
   let value = marker ? first : first & (0xff >> len);
   let allOnes = value === (0xff >> len);
   for (let i = 1; i < len; i += 1) {
@@ -114,18 +114,7 @@ const SEGMENT = 0x18538067,
 const LEVEL1 = new Set([0x114d9b74, 0x1549a966, TRACKS, CLUSTER, 0x1c53bb6b, 0x1941a469, 0x1043a770, 0x1254c367]);
 
 function probeWebm(b: Uint8Array): AudioProbe {
-  const head = vint(b, 0, true);
-  const headSize = head && vint(b, head.len, false);
-  if (!head || head.value !== 0x1a45dfa3 || !headSize) return fail("webm: thiếu EBML");
-  const docEnd = head.len + headSize.len + headSize.value;
-  const doc = new TextDecoder().decode(b.subarray(head.len + headSize.len, docEnd));
-  if (!doc.includes("webm") && !doc.includes("matroska")) return fail("webm: DocType lạ");
-  const seg = vint(b, docEnd, true);
-  const segSize = seg && vint(b, docEnd + seg.len, false);
-  if (!seg || seg.value !== SEGMENT || !segSize) return fail("webm: thiếu Segment");
-  const segStart = docEnd + seg.len + segSize.len;
-  const segEnd = segSize.unknown ? b.length : Math.min(b.length, segStart + segSize.value);
-
+  if (b.length > 25 * 1024 * 1024) return fail("webm: tệp quá lớn");
   let audioTrack = -1;
   let tracks = 0;
   let samples = 0;
@@ -133,7 +122,44 @@ function probeWebm(b: Uint8Array): AudioProbe {
   let elements = 0;
   let bad: string | null = null;
 
+  const readElement = (at: number, end: number) => {
+    if (++elements > MAX_ELEMENTS) {
+      bad = "webm: quá nhiều phần tử";
+      return null;
+    }
+    const id = vint(b, at, true, end);
+    const size = id && vint(b, at + id.len, false, end);
+    if (!id || !size) {
+      bad = "webm: phần tử hỏng";
+      return null;
+    }
+    const body = at + id.len + size.len;
+    if (!size.unknown && (!Number.isSafeInteger(size.value) || size.value > end - body)) {
+      bad = "webm: phần tử vượt biên cha";
+      return null;
+    }
+    return { id: id.value, body, stop: size.unknown ? end : body + size.value, unknown: size.unknown };
+  };
+
+  const head = readElement(0, b.length);
+  if (!head || head.id !== 0x1a45dfa3 || head.unknown) return fail(bad ?? "webm: thiếu EBML");
+  const decoder = new TextDecoder();
+  let docType = "";
+  for (let at = head.body; at < head.stop;) {
+    const field = readElement(at, head.stop);
+    if (!field || field.unknown) return fail(bad ?? "webm: EBML hỏng");
+    if (field.id === 0x4282) {
+      if (docType || field.stop - field.body > 8) return fail("webm: DocType lạ");
+      docType = decoder.decode(b.subarray(field.body, field.stop));
+    }
+    at = field.stop;
+  }
+  if (docType !== "webm" && docType !== "matroska") return fail("webm: DocType lạ");
+  const seg = readElement(head.stop, b.length);
+  if (!seg || seg.id !== SEGMENT || seg.stop !== b.length) return fail(bad ?? "webm: Segment hỏng");
+
   const addPacket = (data: Uint8Array) => {
+    if (packets >= MAX_PACKETS) return void (bad = "webm: quá nhiều gói");
     const s = opusPacketSamples(data);
     if (s === null) bad = "webm: gói Opus hỏng";
     else samples += s;
@@ -141,13 +167,14 @@ function probeWebm(b: Uint8Array): AudioProbe {
   };
 
   const readBlock = (at: number, end: number) => {
-    const track = vint(b, at, false);
+    const track = vint(b, at, false, end);
     if (!track || at + track.len + 3 > end) return void (bad = "webm: block hỏng");
     if (track.value !== audioTrack) return void (bad = "webm: block của track lạ");
     const flags = b[at + track.len + 2];
     let p = at + track.len + 3;
     const lacing = (flags >> 1) & 3;
     if (lacing === 0) return addPacket(b.subarray(p, end));
+    if (p >= end || b[p] === 0) return void (bad = "webm: lacing hỏng");
     const count = b[p] + 1;
     p += 1;
     const sizes: number[] = [];
@@ -167,14 +194,14 @@ function probeWebm(b: Uint8Array): AudioProbe {
       if (!Number.isInteger(each)) return void (bad = "webm: lacing cố định hỏng");
       for (let i = 0; i < count - 1; i += 1) sizes.push(each);
     } else {
-      const first = vint(b, p, false);
-      if (!first) return void (bad = "webm: lacing EBML hỏng");
+      const first = vint(b, p, false, end);
+      if (!first || first.value > end - p) return void (bad = "webm: lacing EBML hỏng");
       p += first.len;
       let size = first.value;
       sizes.push(size);
       for (let i = 1; i < count - 1; i += 1) {
-        const d = vint(b, p, false);
-        if (!d) return void (bad = "webm: lacing EBML hỏng");
+        const d = vint(b, p, false, end);
+        if (!d || !Number.isSafeInteger(d.value)) return void (bad = "webm: lacing EBML hỏng");
         p += d.len;
         size += d.value - (2 ** (7 * d.len - 1) - 1);
         if (size < 0) return void (bad = "webm: lacing EBML hỏng");
@@ -185,70 +212,78 @@ function probeWebm(b: Uint8Array): AudioProbe {
     if (p + used > end) return void (bad = "webm: lacing vượt block");
     sizes.push(end - p - used);
     for (const size of sizes) {
+      if (bad) break;
       addPacket(b.subarray(p, p + size));
       p += size;
     }
   };
 
   const readTrackEntry = (at: number, end: number) => {
-    let codec = "",
-      number = -1,
-      type = -1;
+    let codec = "";
+    let number = -1;
+    let type = -1;
     while (at < end) {
-      const id = vint(b, at, true);
-      const size = id && vint(b, at + id.len, false);
-      if (!id || !size || size.unknown) return void (bad = "webm: track hỏng");
-      const body = at + id.len + size.len;
-      const data = b.subarray(body, Math.min(end, body + size.value));
-      const uint = () => data.reduce((n, x) => n * 256 + x, 0);
-      if (id.value === CODEC_ID) codec = new TextDecoder().decode(data);
-      else if (id.value === TRACK_NUMBER) number = uint();
-      else if (id.value === TRACK_TYPE) type = uint();
-      at = body + size.value;
+      const field = readElement(at, end);
+      if (!field || field.unknown) return void (bad ??= "webm: track hỏng");
+      const { id, body, stop } = field;
+      if (id === CODEC_ID) {
+        if (codec || stop - body !== 6) return void (bad = "webm: codec lạ");
+        codec = decoder.decode(b.subarray(body, stop));
+      } else if (id === TRACK_NUMBER || id === TRACK_TYPE) {
+        if (stop - body < 1 || stop - body > 6) return void (bad = "webm: track hỏng");
+        const value = b.subarray(body, stop).reduce((n, byte) => n * 256 + byte, 0);
+        if (id === TRACK_NUMBER && number < 0) number = value;
+        else if (id === TRACK_TYPE && type < 0) type = value;
+        else return void (bad = "webm: trùng trường track");
+      } else if (structural(id)) {
+        return void (bad = "webm: phần tử sai cấp");
+      }
+      at = stop;
     }
     tracks += 1;
-    if (type !== 2 || codec !== "A_OPUS") bad = "webm: không phải track Opus duy nhất";
+    if (type !== 2 || codec !== "A_OPUS" || number <= 0) bad = "webm: không phải track Opus duy nhất";
     else audioTrack = number;
   };
 
-  // Đi theo cây phần tử, chỉ vào Segment / Tracks / TrackEntry / Cluster / BlockGroup.
-  const walk = (at: number, end: number, depth: number): number => {
+  const structural = (id: number) =>
+    id === SEGMENT || id === 0x1a45dfa3 || id === TRACK_ENTRY || id === SIMPLE_BLOCK ||
+    id === BLOCK_GROUP || id === BLOCK || LEVEL1.has(id);
+
+  // Only Segment → Tracks → TrackEntry or Segment → Cluster → BlockGroup
+  // is traversed. Extra masters cannot increase the call stack.
+  type Parent = "segment" | "tracks" | "cluster" | "open-cluster" | "block-group";
+  const walk = (at: number, end: number, parent: Parent): number => {
     while (at < end && !bad) {
-      if (++elements > MAX_ELEMENTS || packets > MAX_PACKETS) {
-        bad = "webm: quá nhiều phần tử";
-        break;
-      }
-      const id = vint(b, at, true);
-      const size = id && vint(b, at + id.len, false);
-      if (!id || !size) {
-        bad = "webm: phần tử hỏng";
-        break;
-      }
-      // Cluster kích thước «không rõ» (MediaRecorder): kéo tới phần tử cấp 1 kế tiếp.
-      if (depth === 2 && LEVEL1.has(id.value)) return at;
-      const body = at + id.len + size.len;
-      const stop = size.unknown ? end : body + size.value;
-      if (stop > b.length) {
-        bad = "webm: tệp cụt";
-        break;
-      }
-      if (id.value === TRACKS) walk(body, stop, 1);
-      else if (id.value === TRACK_ENTRY && depth === 1) readTrackEntry(body, stop);
-      else if (id.value === CLUSTER) {
-        if (audioTrack < 0) bad = "webm: cluster trước track";
-        else {
-          const resume = walk(body, stop, 2);
-          at = size.unknown ? resume : stop;
-          continue;
+      const field = readElement(at, end);
+      if (!field) break;
+      const { id, body, stop, unknown } = field;
+      const inCluster = parent === "cluster" || parent === "open-cluster";
+      if (parent === "open-cluster" && LEVEL1.has(id)) return at;
+      if (parent === "segment" && id === CLUSTER) {
+        if (audioTrack < 0) {
+          bad = "webm: cluster trước track";
+          break;
         }
-      } else if (id.value === SIMPLE_BLOCK && depth === 2) readBlock(body, stop);
-      else if (id.value === BLOCK_GROUP && depth === 2) walk(body, stop, 3);
-      else if (id.value === BLOCK && depth === 3) readBlock(body, stop);
+        const resume = walk(body, stop, unknown ? "open-cluster" : "cluster");
+        at = unknown ? resume : stop;
+        continue;
+      }
+      if (unknown) {
+        bad = "webm: không được để trống kích thước phần tử này";
+        break;
+      }
+      if (parent === "segment" && id === TRACKS) walk(body, stop, "tracks");
+      else if (parent === "tracks" && id === TRACK_ENTRY) readTrackEntry(body, stop);
+      else if (inCluster && id === SIMPLE_BLOCK) readBlock(body, stop);
+      else if (inCluster && id === BLOCK_GROUP) walk(body, stop, "block-group");
+      else if (parent === "block-group" && id === BLOCK) readBlock(body, stop);
+      else if (structural(id) && !(parent === "segment" && LEVEL1.has(id)))
+        bad = "webm: phần tử sai cấp";
       at = stop;
     }
     return end;
   };
-  walk(segStart, segEnd, 0);
+  walk(seg.body, seg.stop, "segment");
   if (bad) return fail(bad);
   if (tracks !== 1 || audioTrack < 0) return fail("webm: cần đúng một track Opus");
   if (!packets) return fail("webm: không có gói");

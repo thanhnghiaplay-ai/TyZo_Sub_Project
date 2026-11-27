@@ -76,13 +76,13 @@
       215,
       250
     ],
-    "status": "BLOCKED",
+    "status": "PASS",
     "cause": "walk đệ quy với depth ngữ nghĩa đặt lại, không phải bộ đếm độ sâu thực; stop chỉ so b.length.",
     "fix": "Giới hạn nesting thực, grammar hợp lệ, biên cha và tiến triển con trỏ; giới hạn CPU/bytes; xử lý lỗi có kiểm soát.",
     "acceptance": "Fuzz nested TRACKS/CLUSTER, unknown size, vượt biên cha, truncated, file MediaRecorder hợp lệ; so FFprobe, không stack overflow hoặc gọi AI với audio lỗi.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-005/REPORT.md"
   },
   {
     "id": "RE4-006",

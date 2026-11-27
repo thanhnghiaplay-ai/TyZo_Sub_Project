@@ -1,5 +1,7 @@
 > **Codex — checkpoint tiếp quản v5.49.4.** Nhánh `codex/tyzo-v5.49.4-audit` xuất phát từ `0edb82a8`; manifest khớp 2.590 tệp. Xem STATE.json, BACKLOG.json và NEXT_PROMPT.md trước khi tiếp tục. Bằng chứng tại docs/kiem-toan/codex/. Các mục dưới đây là lịch sử.
 
+- **RE4-005 PASS.** WebM sai cấp và vượt biên bị từ chối; Node 22 đạt 29/29 và Chromium/FFprobe cùng đo 2,22 s. Xem docs/kiem-toan/codex/RE4-005/REPORT.md.
+
 - **RE4-003 PASS.** Migration 0056 tách suất có thể dùng khỏi suất riêng của live; 46/46 test và diễn tập migration đạt trên PostgreSQL cô lập. Xem docs/kiem-toan/codex/RE4-003/REPORT.md.
 
 - **RE4-002 PASS.** Đạt 43/43 trên PostgreSQL cô lập, có restart thật và hai hồi quy cho promise treo. Xem docs/kiem-toan/codex/RE4-002/REPORT.md.

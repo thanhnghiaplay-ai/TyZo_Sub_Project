@@ -234,3 +234,47 @@ test("RE3-002: TOC Opus — bảng thời lượng theo RFC 6716", () => {
   assert.equal(opusPacketSamples(Uint8Array.of((19 << 3) | 3, 7)), null); // 7 × 20 ms > 120 ms
   assert.equal(opusPacketSamples(new Uint8Array(0)), 5760);
 });
+
+test("RE4-005: cấu trúc WebM sai cấp bị từ chối dù có gói Opus đọc được", () => {
+  const tracks = el("1654AE6B", track(1, "A_OPUS"));
+  const cluster = el("1F43B675", simple(1, 0x80, opus20(5)));
+  const invalid = [
+    cat(el("1654AE6B", tracks), cluster),
+    cat(tracks, el("A0", cluster)),
+    cat(tracks, el("1F43B675", cat(el("1654AE6B", new Uint8Array()), simple(1, 0x80, opus20(5))))),
+  ];
+  for (const body of invalid) {
+    assert.equal(probeAudioBytes(cat(ebmlHead, el("18538067", body))).ok, false);
+  }
+});
+
+test("RE4-005: khai kích thước vượt cha, cụt Segment hoặc unknown-size ngoài Cluster bị từ chối", () => {
+  const tracks = el("1654AE6B", track(1, "A_OPUS"));
+  const block = simple(1, 0x80, opus20(5));
+  const invalid = [
+    el("18538067", cat(tracks, idb("1F43B675"), size8(block.length - 1), block)),
+    cat(idb("18538067"), size8(tracks.length + 1), tracks),
+    el("18538067", cat(idb("1654AE6B"), UNKNOWN, track(1, "A_OPUS"), el("1F43B675", block))),
+  ];
+  for (const segment of invalid) {
+    assert.equal(probeAudioBytes(cat(ebmlHead, segment)).ok, false);
+  }
+});
+
+test("RE4-005: biến thiên cấu trúc trả kết quả có kiểm soát, không ném lỗi", async () => {
+  const valid = cat(ebmlHead, el("18538067", cat(
+    el("1654AE6B", track(1, "A_OPUS")),
+    el("1F43B675", simple(1, 0x80, opus20(5))),
+  )));
+  for (let i = 0; i < valid.length; i++) {
+    for (const mask of [0x01, 0x80, 0xff]) {
+      const changed = valid.slice();
+      changed[i] ^= mask;
+      const result = probeAudioBytes(changed);
+      if (result.ok) assert.ok(Number.isFinite(result.seconds) && result.seconds > 0);
+    }
+  }
+  const nested = el("1654AE6B", el("1654AE6B", track(1, "A_OPUS")));
+  const invalid = cat(ebmlHead, el("18538067", cat(nested, el("1F43B675", simple(1, 0x80, opus20(5))))));
+  assert.equal(await estimate(new Blob([invalid]), "malformed.webm"), null);
+});
