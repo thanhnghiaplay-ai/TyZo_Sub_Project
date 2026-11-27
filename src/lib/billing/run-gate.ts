@@ -100,6 +100,17 @@ export async function readRequest(
       delete json.reasoning_effort;
       if (model === "qwen-plus" || model === "qwen-turbo") json.enable_thinking = false;
     }
+    // RE4-001: cận byte chỉ đúng với chữ. Ảnh, âm thanh, tệp trong tin nhắn có thể tốn token vượt xa số byte
+    // của URL/thân yêu cầu, nên cửa trả theo lượt chỉ nhận nội dung chữ.
+    if (json.messages != null) {
+      if (!Array.isArray(json.messages)) return { model, chars: 0, problem: "Tin nhắn không hợp lệ." };
+      const textOnly = json.messages.every((m) => {
+        const c = (m as { content?: unknown } | null)?.content;
+        return c == null || typeof c === "string" ||
+          (Array.isArray(c) && c.every((part) => part?.type === "text" && typeof part.text === "string"));
+      });
+      if (!textOnly) return { model, chars: 0, problem: "Cửa trả theo lượt chỉ nhận nội dung chữ." };
+    }
     // Only client-side function schemas have no separately billed tool execution.
     if ((json.enable_search != null && json.enable_search !== false) ||
       (json.tools != null && (!Array.isArray(json.tools) || json.tools.some((tool) => tool?.type !== "function"))))

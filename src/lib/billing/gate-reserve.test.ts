@@ -174,6 +174,24 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
     assert.equal(JSON.parse(new TextDecoder().decode(turbo!.body!)).enable_thinking, false);
   });
 
+  it("RE4-001: ảnh, âm thanh, tệp trong tin nhắn bị chặn vì cận byte không phủ được", async () => {
+    const path = "/chat/completions";
+    for (const content of [
+      [{ type: "image_url", image_url: { url: "https://x.test/a.png" } }],
+      [{ type: "input_audio", input_audio: { data: "AAAA", format: "wav" } }],
+      [{ type: "text", text: "a" }, { type: "file", file: { file_id: "f" } }],
+      [{ type: "text", text: 1 }],
+    ]) {
+      const r = await readRequest(path, "application/json", enc({ model: "chat", messages: [{ role: "user", content }] }));
+      assert.ok(r?.problem, JSON.stringify(content));
+    }
+    assert.ok((await readRequest(path, "application/json", enc({ model: "chat", messages: "x" })))?.problem);
+    for (const content of ["chữ", [{ type: "text", text: "chữ" }], null]) {
+      const r = await readRequest(path, "application/json", enc({ model: "chat", messages: [{ role: "user", content }] }));
+      assert.equal(r?.problem, null, JSON.stringify(content));
+    }
+  });
+
   it("RE4-001: usage vượt cận byte được đánh dấu đối soát", async () => {
     const body = enc({ model: "chat", messages: [{ role: "user", content: "a" }] });
     const over = promptTokenBound(body.byteLength, null) + 1;
