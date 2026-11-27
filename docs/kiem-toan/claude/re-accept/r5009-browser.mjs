@@ -1,3 +1,4 @@
+/* global SR */
 import { createRequire } from "node:module"; const { chromium } = createRequire(import.meta.url)("playwright");
 import { readFileSync } from "node:fs";
 const b = await chromium.launch(); const p = await b.newPage();

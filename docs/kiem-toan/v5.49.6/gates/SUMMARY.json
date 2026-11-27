@@ -1,0 +1,5 @@
+{"codeHead":"444cae1","typecheck":"PASS","lint":"0 lỗi / 24 cảnh báo (sửa 5 lỗi no-undef trong script bằng chứng r5009)","buildVercel":"PASS","buildNode":"PASS",
+ "npmTest":{"pass":1790,"skip":7,"fail":0,"log":"RE5-005/npm-test.log"},
+ "semgrep":{"version":"1.185.0","rules":"a5ad1714","findings":92,"newUnclassified":0,"exit":1,"note":"exit 1 do --error theo thiết kế; mọi phát hiện cùng luật+tệp đã phân loại ở docs/kiem-toan/claude/semgrep-triage-b829fd9.json"},
+ "gitleaks":{"history":"0 rò rỉ","tree":"0 rò rỉ"},"dependencyCruiser":{"modules":733,"errors":0,"warnings":9},
+ "graph":"RE4-006/provenance.json (nguồn 444cae1)"}

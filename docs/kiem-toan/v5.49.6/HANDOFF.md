@@ -1,4 +1,21 @@
-# v5.49.6 · Bàn giao (Claude, MEDIUM → xin HIGH)
+# v5.49.6 · Bàn giao (Claude) — đóng phiên
+
+## Tổng kết (mã chốt 444cae1, nhánh audit/v5.49.6-claude-re5; main không đổi, vẫn ở 39510cc)
+
+| Mục | Trạng thái |
+|---|---|
+| RE5-001 | FIXED_LOCAL: cận tính trên thân gửi đi; allowlist model dịch |
+| RE5-002 | FIXED_LOCAL: thiếu usage thì không trừ theo trần, ghi nghĩa vụ đối soát |
+| RE5-003 | FIXED_LOCAL: migration 0057, công bằng xuyên trần chung |
+| RE5-004 | PARTIAL: A (env ghi đè), B (nhật ký bền) đã sửa; C (khóa ghi Neon→VPS), D (lệnh hồi phục) mở, cần staging |
+| RE5-005 | PASS_LOCAL: soak 3614 s; p95 < 100 ms tới 100 khách, ~200 ms ở 200 khách |
+| RE5-006 | DONE_DOC |
+| MAIN-040 | PASS_LOCAL; MAIN-040-B mở |
+| RE4-001 / RE4-004 | vẫn PARTIAL (usage thật / staging) |
+
+Cổng cuối: `gates/SUMMARY.json`. Danh sách tệp mã đổi: `MANIFEST-code.txt`. Graph: `RE4-006/provenance.json`.
+
+## Ghi chép theo mục
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 

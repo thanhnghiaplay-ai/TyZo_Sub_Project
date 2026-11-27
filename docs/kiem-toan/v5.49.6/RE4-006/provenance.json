@@ -1,0 +1,20 @@
+{
+ "sourceCommit": "444cae1f13c74a071d6845fc62f1994a748ebc1c",
+ "sourceTree": "0497d3c8cddfeefb533f1ee32cf9bf1c6cec5001",
+ "method": "git archive <sourceCommit> | tar -x vào thư mục sạch; graphify update . --force (chỉ AST, 0 token)",
+ "graphify": "0.9.119",
+ "graphJsonSha256": "f3c358202444de65a62a53cfde1e7cb2d4ad5bee8aa60d758e7608f68253939a",
+ "graphReportSha256": "69fd483ff3cfc4b18097b12fa7062c31965dd1865bdd66893dd43b06579cbfcc",
+ "manifestSha256": "3b308b4d7980d957eb32cde8f946cf1004289e755b4c3b162c000671b5f50379",
+ "nodes": 6966,
+ "edges": 19199,
+ "communities": 266,
+ "manifestFiles": 2052,
+ "parserWarnings": [
+  "warning: 58 .sql file(s) contributed nothing to the graph because a dependency is missing: tree_sitter_sql not installed. Install it with: pip install \"graphifyy[sql]\" (#1745)",
+  "warning: 3 file(s) had syntax errors and may be partially extracted: android/app/src/main/java/vn/tyzo/sub/MainActivity.kt (error region at line 36, 10 symbol(s) extracted), src/lib/payment/pay-confirm.test.ts (error region at line 26, no symbols extracted), src/lib/usage-tally.test.ts (error region at line 40, no symbols extracted)",
+  "warning: 92 code file(s) yielded no symbols (0.18 MB) — a data file, or source this extractor models no symbols for: .dependency-cruiser.cjs, android/app/build.gradle.kts, android/build.gradle.kts, android/settings.gradle.kts, docs/kiem-toan/v5.49.1/bang-chung/codex/browser_checks.py (+87 more)"
+ ],
+ "postEdits": "Dòng 1 GRAPH_REPORT.md và scan_root trong .graphify_build_state.json đổi về đường dẫn kho; graph.json giữ nguyên.",
+ "limits": "Bản đồ cấu trúc, không phải bằng chứng logic. Không có SQL (thiếu tree_sitter_sql) nên 0057 không có trong graph."
+}

@@ -2,10 +2,10 @@
   "baseline": "39510ccae1196b283e794976d6e99fe5158c0786",
   "branchBase": "6bbf292 (baseline + 1 commit tài liệu Claude chưa đẩy: làm mới hồ sơ ChatGPT)",
   "branch": "audit/v5.49.6-claude-re5",
-  "effort": "MEDIUM",
-  "effortRequested": "LOW",
-  "status": "CHECKPOINT_RE5-005_PASS_LOCAL",
-  "next": "LOW: RE5-006 (tài liệu rollback/tương thích 0056↔0057), Graphify từ SHA mã sạch + provenance, manifest, cổng cuối (tsc, lint, build Node/Vercel, Semgrep, Gitleaks, dependency-cruiser), ZIP kết quả.",
+  "effort": "LOW",
+  "effortRequested": null,
+  "status": "SESSION_END_PACKAGED",
+  "next": "Chờ Chủ: duyệt gộp/đẩy main; staging cho RE4-004 và RE5-004 C/D; ngân sách thử cho usage thật (RE4-001) và GPU; MAIN-040-B (migration thêm cột usd).",
   "local_sha": "xem git log; commit checkpoint này",
   "remote_sha": "xem git ls-remote origin audit/v5.49.6-claude-re5",
   "environment": {
@@ -15,22 +15,8 @@
   },
   "tests": [
     {
-      "cmd": "mixed-soak.sh 3600 s",
-      "exit": 0,
-      "iterations": 203,
-      "log": "docs/kiem-toan/v5.49.6/RE5-005/soak/"
-    },
-    {
-      "cmd": "admission-bench.ts 3 và 10 (rảnh)",
-      "exit": 0
-    },
-    {
-      "cmd": "npm test (UID tyzo, PG 16.15)",
-      "exit": 0,
-      "pass": 1790,
-      "skip": 7,
-      "fail": 0,
-      "log": "docs/kiem-toan/v5.49.6/RE5-005/npm-test.log"
+      "cmd": "cổng cuối",
+      "log": "docs/kiem-toan/v5.49.6/gates/SUMMARY.json"
     }
   ],
   "filesChanged": [
