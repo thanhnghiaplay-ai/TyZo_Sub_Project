@@ -7,7 +7,7 @@ import { after, before, beforeEach, describe, it } from "node:test";
 import type { Sql } from "../db.ts";
 import { pgliteSql, realPgSql } from "../test-sql.ts";
 import type { PriceBook } from "./run-bill.ts";
-import { chargeWith, DEFAULT_COMPLETION_TOKENS, readRequest } from "./run-gate.ts";
+import { chargeWith, DEFAULT_COMPLETION_TOKENS, PROMPT_FRAME_TOKENS, promptTokenBound, readRequest } from "./run-gate.ts";
 import { chatCost } from "./run-bill.ts";
 import { giayForBaseCost } from "./token-math.ts";
 import { buyGiayWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
@@ -97,9 +97,10 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
   });
 
   it("RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà", async () => {
+    // ~6 KB tiếng Việt/CJK/emoji + schema: cận 2×byte + khung vượt phần giữ 100 Token.
     const body = enc({
       model: "chat",
-      messages: [{ role: "user", content: "Tiếng Việt 中文 🎬" }],
+      messages: [{ role: "user", content: "Tiếng Việt 中文 🎬 ".repeat(300) }],
       tools: [{ type: "function", function: { name: "caption", parameters: { type: "object" } } }],
     });
     const priced = {
@@ -115,24 +116,76 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
         return Response.json({ usage: { prompt_tokens: 100, completion_tokens: 100 } });
       },
     });
+    assert.ok(promptTokenBound(body.byteLength, 40_000) > 10_000);
     assert.equal(sends, 0);
     assert.equal(out.kind === "reject" && out.status, 402);
     assert.equal((await ticket()).charged, 0);
     assert.equal((await sql`select 1 from run_gate_calls`).length, 0);
   });
 
-  it("RE4-001: model thiếu giới hạn ngữ cảnh được chặn trước khi gửi", async () => {
+  it("RE4-001: cận theo byte không phụ thuộc cửa sổ chưa xác minh; cửa sổ đã biết chỉ làm cận chặt hơn", () => {
+    assert.equal(promptTokenBound(1000, null), 2 * 1000 + PROMPT_FRAME_TOKENS);
+    assert.equal(promptTokenBound(1000, 1_000_000), 2 * 1000 + PROMPT_FRAME_TOKENS);
+    assert.equal(promptTokenBound(1000, 300), 300);
+    assert.equal(promptTokenBound(1000, 0), 2 * 1000 + PROMPT_FRAME_TOKENS);
+  });
+
+  it("RE4-001: phiếu nhỏ chạy được với model cửa sổ 1 triệu token; quyết toán theo usage thật", async () => {
+    const priced = {
+      ...book,
+      rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: 1_000_000 } : r),
+    };
+    const body = enc({ model: "chat", messages: [{ role: "user", content: "Xin chào 你好 🎬" }], max_tokens: 200 });
+    // Theo cả cửa sổ: 1.000.000 vào + 200 ra ≈ 9.000 Token > phần giữ 100 → bị chặn oan.
+    assert.ok(giayForBaseCost(book, chatCost(book, "chat", 1_000_000, 200)!)! > 100);
+    let sends = 0;
+    const out = await chargeWith({
+      sql, book: priced, unitBook: book, path: "/chat/completions", model: "chat", chars: 0,
+      userId: "k", ticketId: TID, body, cap: 0, outCap: 200,
+      send: async () => {
+        sends++;
+        return Response.json({ usage: { prompt_tokens: 40, completion_tokens: 30 } });
+      },
+    });
+    assert.equal(out.kind, "pass");
+    assert.equal(sends, 1);
+    const t = await ticket();
+    assert.equal(t.charged, giayForBaseCost(book, chatCost(book, "chat", 40, 30)!));
+    assert.equal(Number(t.modal_reserved), 0);
+  });
+
+  it("RE4-001: model chưa có cửa sổ (qwen-turbo) giữ theo cận byte thay vì bị chặn", async () => {
     const priced = {
       ...book,
       rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: null } : r),
     };
+    let sends = 0;
     const out = await chargeWith({
-      sql, book: priced, path: "/chat/completions", model: "chat", chars: 0,
+      sql, book: priced, unitBook: book, path: "/chat/completions", model: "chat", chars: 0,
       userId: "k", ticketId: TID, body: enc({ model: "chat" }), cap: 0, outCap: 20,
-      send: async () => assert.fail("upstream must not run"),
+      send: async () => {
+        sends++;
+        return Response.json({ usage: { prompt_tokens: 5, completion_tokens: 5 } });
+      },
     });
-    assert.equal(out.kind === "reject" && out.status, 422);
-    assert.equal((await sql`select 1 from run_gate_calls`).length, 0);
+    assert.equal(out.kind, "pass");
+    assert.equal(sends, 1);
+    const turbo = await readRequest("/chat/completions", "application/json", enc({ model: "qwen-turbo", max_tokens: 50 }), "max_tokens");
+    assert.equal(JSON.parse(new TextDecoder().decode(turbo!.body!)).enable_thinking, false);
+  });
+
+  it("RE4-001: usage vượt cận byte được đánh dấu đối soát", async () => {
+    const body = enc({ model: "chat", messages: [{ role: "user", content: "a" }] });
+    const over = promptTokenBound(body.byteLength, null) + 1;
+    const priced = { ...book, rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: null } : r) };
+    const out = await chargeWith({
+      sql, book: priced, unitBook: book, path: "/chat/completions", model: "chat", chars: 0,
+      userId: "k", ticketId: TID, body, cap: 0, outCap: 20,
+      send: async () => Response.json({ usage: { prompt_tokens: over, completion_tokens: 1 } }),
+    });
+    assert.equal(out.kind, "pass");
+    const calls = await sql<{ status: string }>`select status from run_gate_calls`;
+    assert.deepEqual(calls.map((c) => c.status), ["can-doi-soat"]);
   });
 
   it("nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả", async () => {

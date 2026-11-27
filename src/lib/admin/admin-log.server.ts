@@ -11,7 +11,7 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.49.5",
     time: "27/11/2026",
     area: "tien",
-    text: "Ứng viên kiểm toán Codex. RE4-001: giữ theo giới hạn ngữ cảnh đã xác minh và trần một câu trả lời; quyết toán theo usage. Cần kiểm khả năng đáp ứng phiếu nhỏ trước khi phát hành.",
+    text: "Ứng viên kiểm toán Codex. RE4-001: giữ theo cận byte của yêu cầu (2×byte + 512, không quá cửa sổ đã biết) và trần một câu trả lời; quyết toán theo usage. Phiếu nhỏ và qwen-turbo chạy lại được. Chưa so usage thật với nhà.",
   },
   {
     version: "5.49.4",

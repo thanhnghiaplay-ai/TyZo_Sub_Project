@@ -24,6 +24,21 @@ type GateOutcome =
 
 /** Giới hạn token trả lời mặc định khi yêu cầu không ghi (RE-005): hữu hạn, đủ cho một lô dịch của app. */
 export const DEFAULT_COMPLETION_TOKENS = 4096;
+
+/** RE4-001: khung cố định cho phần nhà cung cấp tự chèn (system mặc định, Harmony, lời dẫn công cụ). */
+export const PROMPT_FRAME_TOKENS = 512;
+
+/**
+ * RE4-001: cận trên số token đầu vào của một yêu cầu chat, chỉ từ số byte thân JSON đã chuẩn hóa.
+ * Tokenizer byte-level BPE (o200k/Harmony, Llama 3, Qwen) cho mỗi token ít nhất một byte UTF-8, nên
+ * token của chữ ≤ byte của chữ ≤ byte thân JSON. Lần byte thứ hai phủ khung mỗi tin nhắn và schema công cụ
+ * được nhà viết lại (khung mỗi tin nhắn < 25 byte JSON của chính nó). Đối chiếu: docs/kiem-toan/claude/RE4-001.
+ * Nếu biết cửa sổ ngữ cảnh thì lấy số nhỏ hơn (nhà từ chối yêu cầu vượt cửa sổ).
+ */
+export function promptTokenBound(bodyBytes: number, context: number | null | undefined): number {
+  const bound = 2 * Math.max(0, Math.ceil(bodyBytes)) + PROMPT_FRAME_TOKENS;
+  return Number.isSafeInteger(context) && (context as number) > 0 ? Math.min(bound, context as number) : bound;
+}
 export type TokenField = "max_completion_tokens" | "max_tokens";
 
 export type GateRequest = {
@@ -83,7 +98,7 @@ export async function readRequest(
         (json.reasoning_effort != null && json.reasoning_effort !== "none"))
         return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ dịch trực tiếp từ văn bản." };
       delete json.reasoning_effort;
-      if (model === "qwen-plus") json.enable_thinking = false;
+      if (model === "qwen-plus" || model === "qwen-turbo") json.enable_thinking = false;
     }
     // Only client-side function schemas have no separately billed tool execution.
     if ((json.enable_search != null && json.enable_search !== false) ||
@@ -364,20 +379,19 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
   const estimatedSeconds = probed;
   const isAsr = path === "/audio/transcriptions";
   const outCap = input.outCap ?? MAX_COMPLETION_TOKENS;
-  // Use the full documented window as an upper bound for accepted prompt tokens,
-  // including provider framing and tool/schema tokens. Do not subtract outCap:
-  // prompt and generation limits need not share the same accounting.
-  const context = isAsr ? 0 : (book.rows.find((row) => row.id === model)?.contextTokens ?? 0);
-  if (!isAsr && (!Number.isSafeInteger(context) || context <= 0))
-    return { kind: "reject", status: 422, message: "Chưa xác minh được giới hạn đầu vào của model." };
+  // RE4-001: giữ theo cận byte của chính yêu cầu (gồm khung nhà và schema công cụ), không theo cả cửa sổ
+  // ngữ cảnh, để phiếu nhỏ vẫn chạy được. Cửa sổ đã biết chỉ làm cận chặt hơn. Không trừ outCap khỏi cận vào.
+  const promptCap = isAsr
+    ? 0
+    : promptTokenBound(input.body.byteLength, book.rows.find((row) => row.id === model)?.contextTokens);
   if (!isAsr && capProblem(outCap))
     return { kind: "reject", status: 422, message: "Số token trả lời tối đa không hợp lệ." };
   const estBase = isAsr
     ? asrCost(bareBook, model, estimatedSeconds)
-    : chatCost(bareBook, model, context, outCap);
+    : chatCost(bareBook, model, promptCap, outCap);
   const estCost = isAsr
     ? asrCost(book, model, estimatedSeconds)
-    : chatCost(book, model, context, outCap);
+    : chatCost(book, model, promptCap, outCap);
   const { giayForBaseCost } = await import("./token-math.ts");
   const estimate = tokenUnit ? (giayForBaseCost(input.unitBook ?? book, estBase ?? 0) ?? 0) : (estCost ?? 0);
   const { reserveGateCall, releaseGateCall, beatGateCall, settleGateCall } =
@@ -458,7 +472,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
               prompt < 0 ||
               !Number.isSafeInteger(completion) ||
               completion < 0 ||
-              prompt > context ||
+              prompt > promptCap ||
               completion > outCap;
             const inn =
               Number.isSafeInteger(prompt) && prompt >= 0
