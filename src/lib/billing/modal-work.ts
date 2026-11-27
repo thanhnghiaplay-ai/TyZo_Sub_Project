@@ -34,6 +34,8 @@ export async function modalPartWork<S>(sql: Sql, attempt: string, deps: ModalWor
   }
   const segments = deps.shape(out.segments);
   try {
+    // MAIN-040-B: giữ số tiền GPU thật trên lượt trước khi ghi chứng từ; chứng từ lỗi thì đối soát vẫn có số.
+    await sql`update run_modal_settlements set provider_usd = ${out.usd} where attempt = ${attempt}`;
     await recordSpendDurablyWith(sql, { id: "modal:" + attempt, provider: "tyzo-modal", model: deps.model, baseVnd: out.usd * deps.rate, rate: deps.rate });
   } catch (error) {
     throw new UncertainUpstreamError(error);

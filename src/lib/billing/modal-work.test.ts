@@ -92,12 +92,20 @@ describe("MAIN-040: ghi chi phí GPU Modal", () => {
     assert.equal(await charged(), 12);
   });
 
-  it("ghi chứng từ chi phí lỗi: báo «không chắc», không trừ khách, lượt giữ dấu mất phản hồi để đối soát", async () => {
-    const err = await runModalPartWith(sql, part("e"), (_p, a) => modalPartWork(sql, a, deps(async () => ({ segments: SEG, usd: Number.NaN })))).catch((e) => e);
+  it("ghi chứng từ chi phí lỗi: báo «không chắc», không trừ khách, lượt giữ dấu mất phản hồi KÈM số USD thật (MAIN-040-B)", async () => {
+    // Tên model quá dài làm recordSpendDurablyWith từ chối: GPU đã chạy nhưng chứng từ không ghi được.
+    const err = await runModalPartWith(sql, part("e"), (_p, a) => modalPartWork(sql, a, deps(async () => ({ segments: SEG, usd: 0.0123 }), { model: "m".repeat(130) }))).catch((e) => e);
     assert.ok(err instanceof UncertainUpstreamError, String(err));
     assert.equal((await events()).length, 0);
     assert.equal(await charged(), 0);
-    assert.deepEqual((await settlements()).map((s) => s.status), ["mat-phan-hoi"]);
+    const rows = await sql<{ status: string; usd: string | null }>`select status, provider_usd::text as usd from run_modal_settlements`;
+    assert.deepEqual(rows.map((r) => [r.status, Number(r.usd)]), [["mat-phan-hoi", 0.0123]]);
+  });
+
+  it("thành công: lượt cũng lưu số USD GPU (khớp chứng từ)", async () => {
+    await runModalPartWith(sql, part("f"), (_p, a) => modalPartWork(sql, a, deps(async () => ({ segments: SEG, usd: 0.007 }))));
+    const rows = await sql<{ usd: string }>`select provider_usd::text as usd from run_modal_settlements`;
+    assert.deepEqual(rows.map((r) => Number(r.usd)), [0.007]);
   });
 
   it("cùng lượt ghi chi phí hai lần (thử lại sau mất kết nối DB) không nhân đôi chứng từ", async () => {
