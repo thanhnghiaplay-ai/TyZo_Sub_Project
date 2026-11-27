@@ -4,8 +4,8 @@
   "branch": "audit/v5.49.6-claude-re5",
   "effort": "MEDIUM",
   "effortRequested": null,
-  "status": "CHECKPOINT_RE5-002_FIXED",
-  "next": "MEDIUM: MAIN-040, RE5-003, RE5-005; rồi LOW RE5-006/graph/đóng gói.",
+  "status": "CHECKPOINT_MAIN-040_PASS_LOCAL",
+  "next": "MEDIUM: RE5-003, RE5-005; rồi LOW RE5-006/graph/đóng gói.",
   "local_sha": "xem git log; commit checkpoint này",
   "remote_sha": "xem git ls-remote origin audit/v5.49.6-claude-re5",
   "environment": {
@@ -17,20 +17,26 @@
     {
       "cmd": "npm test (UID tyzo, PG 16.15)",
       "exit": 0,
-      "pass": 1779,
+      "pass": 1785,
       "skip": 7,
       "fail": 0,
-      "log": "docs/kiem-toan/v5.49.6/RE5-002/npm-test.log"
+      "log": "docs/kiem-toan/v5.49.6/MAIN-040/npm-test.log"
     },
     {
-      "cmd": "gate-reserve.test.ts --test-name-pattern RE5-002 trên mã cũ",
-      "result": "1 pass / 6 fail — test bắt lỗi"
+      "cmd": "vite build",
+      "exit": 0
+    },
+    {
+      "cmd": "tsc; eslint",
+      "exit": 0
     }
   ],
   "filesChanged": [
-    "src/lib/billing/run-gate.ts",
-    "src/lib/billing/gate-reserve.ts",
-    "src/lib/billing/gate-reserve.test.ts"
+    "src/lib/billing/modal-work.ts",
+    "src/lib/billing/modal-work.test.ts",
+    "src/lib/tyzo-modal-call.ts",
+    "src/lib/provider-spend.test.ts",
+    "package.json"
   ],
   "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17."
 }

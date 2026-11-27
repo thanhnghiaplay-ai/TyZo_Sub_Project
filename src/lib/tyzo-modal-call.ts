@@ -41,24 +41,14 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     }, async (price, attempt) => {
       // Không gắn với kết nối của trình duyệt: khách bấm hủy hay mất mạng thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại;
       // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Chỉ khi nhà từ chối 429 trước khi nhận việc mới thử lại một lần; mất phản hồi phải đối soát.
-      const run = () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price)));
-      let out;
-      try { out = await run(); }
-      catch (error) {
-        if (!isTransientModalError(error)) throw error;
-        await new Promise(r => setTimeout(r, 3000));
-        out = await run();
-      }
-      const merged = mergeInterjections(out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), data.language);
-      // Chi phí GPU thật (cộng phí mô hình chữ nếu có) vào sổ «Phải trả nhà cung cấp» để trang Doanh thu tính đúng lời lỗ.
-      const {recordSpendDurablyWith} = await import("./provider-spend-journal");
-      try {
-        await recordSpendDurablyWith(sql, { id: "modal:"+attempt, provider: "tyzo-modal", model, baseVnd: out.usd * book.rate, rate: book.rate });
-      } catch(error) {
-        const {UncertainUpstreamError} = await import("./billing/upstream-outcome");
-        throw new UncertainUpstreamError(error);
-      }
-      return {segments: merged, tokens: toTokens(out.usd)};
+      // MAIN-040: chi phí GPU thật vào sổ «Phải trả nhà cung cấp» (modal-work.ts, có test hành vi).
+      const {modalPartWork} = await import("./billing/modal-work");
+      return modalPartWork(sql, attempt, {
+        run: () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price))),
+        isTransient: isTransientModalError,
+        shape: segs => mergeInterjections(segs.map(s=>({text:s.original,start:s.start,end:s.end})), data.language),
+        toTokens, rate: book.rate, model,
+      });
     });
     return {segments: result.segments};
   });

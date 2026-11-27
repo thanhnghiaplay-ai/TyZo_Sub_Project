@@ -54,7 +54,16 @@
     "location": "src/lib/billing/tyzo-modal* (xác định đường dẫn thật)",
     "hypothesis": "Thiếu test hành vi ghi chi phí GPU Modal; truy đường gọi và ghi journal.",
     "acceptance": "Success/failure/retry/duplicate/unknown; chi phí khớp journal, không trừ trùng.",
-    "status": "UNVERIFIED"
+    "status": "PASS_LOCAL",
+    "path": "src/lib/billing/modal-work.ts (tách từ src/lib/tyzo-modal-call.ts)",
+    "fix": "Phần việc sau khi giữ phiếu (gọi GPU, thử lại một lần khi 429, ghi chứng từ chi phí modal:<attempt>, quy ra Token) tách thành modalPartWork, server function gọi lại; hành vi giữ nguyên.",
+    "tests": "modal-work.test.ts 6/6 PG thật: thành công (1 chứng từ đúng số tiền, trừ đúng); 429 rồi chạy (GPU 2 lần, chứng từ 1); lỗi hẳn (0 chứng từ, 0 trừ, nhả giữ, dấu mat-phan-hoi); gửi lại đoạn đã xong (không gọi GPU, không trừ lại); ghi chứng từ lỗi (UncertainUpstreamError, không trừ); cùng mã ghi hai lần không nhân đôi, khác số thì chặn. npm test 1785/7/0; build Vercel PASS.",
+    "openFinding": {
+      "id": "MAIN-040-B",
+      "status": "OPEN",
+      "what": "GPU đã chạy nhưng ghi chứng từ chi phí lỗi: lượt giữ dấu mat-phan-hoi nhưng số USD thật không lưu ở đâu → đối soát không biết số tiền.",
+      "proposal": "Ghi usd vào run_modal_settlements (migration tiến tới thêm cột) trước khi ghi chứng từ, hoặc ghi chứng từ trong cùng giao dịch quyết toán."
+    }
   },
   {
     "id": "RE5-004",

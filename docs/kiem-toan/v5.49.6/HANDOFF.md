@@ -2,6 +2,18 @@
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 
+## MAIN-040 · PASS_LOCAL (MEDIUM)
+
+Tách phần việc sau khi giữ phiếu thành `modalPartWork` (`src/lib/billing/modal-work.ts`), server function gọi lại hàm này, hành vi giữ nguyên. Test hành vi trên PG thật đạt 6/6:
+- thành công;
+- 429 rồi chạy lại;
+- lỗi hẳn;
+- gửi lại đoạn đã xong;
+- ghi chứng từ chi phí lỗi;
+- cùng mã ghi hai lần (không nhân đôi; khác số tiền thì chặn).
+
+npm test 1.785 đạt, 7 bỏ qua, 0 lỗi; build Vercel đạt. **Còn mở MAIN-040-B:** khi GPU đã chạy mà ghi chứng từ lỗi, số USD thật không được lưu nên đối soát không biết số tiền. Đề xuất migration tiến tới thêm cột usd cho `run_modal_settlements`.
+
 ## RE5-002 · ĐÃ SỬA CỤC BỘ (MEDIUM)
 
 Dịch: khi nhà không trả usage hợp lệ (thiếu, âm, sai kiểu, hoặc thân không phải JSON), bản cũ trừ khách theo ước tính, trong đó phần ra lấy bằng trần `outCap`, tức tự trừ theo cận trên. Nay quyết toán chạy với `deferDebit`: trừ 0, toàn bộ ước tính ghi vào `short_units` với trạng thái `can-doi-soat`. Phần giữ vẫn được nhả và chi phí nhà vẫn được ghi trong cùng giao dịch. Usage hợp lệ nhưng vượt cận thì vẫn trừ theo số thật (trong phần giữ) và đánh dấu đối soát. ASR thiếu `duration` vẫn tính theo số giây đã dò, vì đó là số đo thật; nếu đổi thành 0 thì khách chọn định dạng `text` là dùng miễn phí. Đã kiểm lại: chạy lại cùng lệnh không trừ hai lần; 6 lệnh đồng thời đều đúng. Test: 7/7 (mã cũ hỏng 6/7); npm test 1.779 đạt, 7 bỏ qua, 0 lỗi. Còn thiếu: công cụ Admin để đối soát các nghĩa vụ này; quy trình là quyết định của Chủ.
