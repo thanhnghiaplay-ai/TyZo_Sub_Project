@@ -1,0 +1,23 @@
+{
+  "fixture": "synthetic historical 0046, not customer/anonymized backup",
+  "results": [
+    {
+      "case": "migration-upgrade",
+      "exit": 0,
+      "old_fixture_unchanged": true,
+      "migration_count": 52
+    },
+    {
+      "case": "migration-idempotent",
+      "exit": 0,
+      "old_fixture_unchanged": true,
+      "migration_count": 52
+    },
+    {
+      "case": "migration transaction rollback on fault",
+      "exit": 1,
+      "ddl_and_bookkeeping_rolled_back": true,
+      "old_fixture_unchanged": true
+    }
+  ]
+}

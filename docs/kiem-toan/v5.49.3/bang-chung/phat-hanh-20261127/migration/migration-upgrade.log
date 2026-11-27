@@ -1,0 +1,7 @@
+[migrate] applied 0047_gate_settlement.sql
+[migrate] applied 0048_work_admission.sql
+[migrate] applied 0049_modal_settlement_evidence.sql
+[migrate] applied 0050_async_asr_jobs.sql
+[migrate] applied 0051_active_admission_index.sql
+[migrate] applied 0052_provider_spend_journal.sql
+[migrate] done — 6 migration(s) applied.

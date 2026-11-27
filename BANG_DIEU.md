@@ -1,6 +1,6 @@
 # Bảng điều khiển — TyZo Sub
 
-> **Bàn giao giữa chừng RE2:** nhánh `fix/v5.49.2-re2`, ứng viên cục bộ5.49.3, CHƯA NGHIỆM THU/CHƯA DEPLOY. Người dùng yêu cầu dừng và chuyển phiên. Đọc `BAN_GIAO_RE2_DANG_DO.md`. Release cũ dưới đây không áp dụng cho ứng viên này.
+> **Phát hành5.49.3 — 17:07 27/11/2026:** Chủ đã yêu cầu «Đẩy chính thức» và xác nhận web đang phát triển, chưa phát hành cho khách; tiếp tục đưa lên main/work. Đây là phê duyệt phát hành, không phải nghiệm thu tải100–200/300khách. Xem `docs/kiem-toan/v5.49.3/PHAT_HANH_5.49.3.md`.
 
 Đọc file này trước khi làm bất cứ việc gì. Đây là chỗ nhìn một lần để biết dự án đang ở đâu. Không đọc nhật ký cũ để lấy lệnh.
 
@@ -17,8 +17,8 @@ Thứ tự khi các câu khác nhau:
 
 | Mục | Giá trị |
 |---|---|
-| Bản khách đang dùng | Web5.49.2: Chủ yêu cầu đẩy chính thức, đã xác nhận backup; commitứngdụng a864bb2, Vercel SUCCESS. Android0.11: Actionsapk/release SUCCESS. VPS chưa cập nhật (cần tyzo →2). Các mốc cũ xem lịch sử. |
-| Bản mới nhất |5.49.2 trên main/work/nhánh nguồn; xem docs/kiem-toan/v5.49.1/PHAT_HANH_5.49.2.md. Chất lượng kiểm toán còn PARTIAL theo BAO_CAO.md; không đồng nhất release thành công với audit đã đóng hết. |
+| Bản khách đang dùng | Chủ xác nhận web đang phát triển, chưa phát hành cho khách. Bản được duyệt5.49.3, Android0.12; theo dõi deploy theo SHA main/work. VPS chưa được cập nhật từ phiên này. |
+| Bản mới nhất |5.49.3 được Chủ duyệt phát hành từ nhánh fix/v5.49.2-re2. Xem docs/kiem-toan/v5.49.3/PHAT_HANH_5.49.3.md; chất lượng tổng thể PARTIAL, chưa chứng nhận tải hoặc hoàn tất80mục. |
 | Điều khoản | 2026-11-26.2 |
 | Giá | 9.000 đ / 24 giờ, 39.000 đ / 7 ngày, 99.000 đ / 30 ngày |
 | Dùng thử | Đã đăng nhập, 1 tệp, tối đa 10 phút, không quá 100 MB, không xuất file Vietsub |
@@ -39,6 +39,12 @@ Không ai vừa đề xuất vừa tự nhận là đã duyệt.
 | Cố vấn | ChatGPT | Đề xuất hướng đi. Ghi khả thi: làm ngay, làm sau, hoặc không làm | Sửa code, đẩy kho, đổi giá, đổi điều khoản |
 
 Người dùng là người chốt. Câu khởi đầu cho model khác chỉ cần: «Đọc `BANG_DIEU.md` và làm đúng vai của mình.»
+
+## Ý đã nêu — phát hành5.49.3
+
+- 17:07 27/11/2026: Chủ nói «Đẩy chính thức», sau đó xác nhận «bạn cứ đẩy, do web hiện tại chưa phát hành chính thức, đang trong giai đoạn phát triển». Được phép phát hành main/work; không còn áp dụng lệnh tạm dừng/không deploy của phiếu bàn giao trước cho bước phát hành này.
+- Không tự ghi đã có backup production: Chủ cung cấp bối cảnh phát triển, không phải công cụ xác minh backup. Migration mới đã thử trên dữ liệu tổng hợp, không xóa ledger.
+- Release không đóng các mục kiểm toán còn thiếu; không tự thuê GPU hoặc suy ra VPS đã cập nhật.
 
 ## Ý đã nêu — phát hành5.49.2
 

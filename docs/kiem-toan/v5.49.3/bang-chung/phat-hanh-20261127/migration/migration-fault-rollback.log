@@ -1,0 +1,4 @@
+[migrate] error applying 0053_fixture_failure.sql
+[migrate] failed: relation "intentionally_missing_fixture_table" does not exist
+[migrate]   code: 42P01
+[migrate]   position: 55

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "check:auth"
+  ],
+  "exit_code": 0,
+  "seconds": 0.308,
+  "log": "release5493-auth-20261127.log",
+  "source_before_sha256": "4e140080bf90edbe7cb29d39b2f9f34b8b2404750ba0d2364055214d4f16475f",
+  "source_after_sha256": "4e140080bf90edbe7cb29d39b2f9f34b8b2404750ba0d2364055214d4f16475f",
+  "application_before_sha256": "2d036c766f5491156577c45cccc7d52f0af33b9eae780e8705698646420a31b3",
+  "application_after_sha256": "2d036c766f5491156577c45cccc7d52f0af33b9eae780e8705698646420a31b3",
+  "ended_utc": "2026-11-27T10:07:54.787275+00:00"
+}

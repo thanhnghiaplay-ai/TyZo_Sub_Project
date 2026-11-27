@@ -1,4 +1,5 @@
-> **Bàn giao mới27/11/2026:** người dùng yêu cầu dừng sau một bước nhỏ. Đọc `BAN_GIAO_RE2_DANG_DO.md`; ứng viên5.49.3 chưa nghiệm thu, không deploy.
+> **Phát hành5.49.3 — 17:07 27/11/2026:** Chủ đã yêu cầu «Đẩy chính thức» và xác nhận web đang phát triển, chưa phát hành cho khách; tiếp tục đưa lên main/work. Đây là phê duyệt phát hành, không phải nghiệm thu tải100–200/300khách. Xem `docs/kiem-toan/v5.49.3/PHAT_HANH_5.49.3.md`.
+
 
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
