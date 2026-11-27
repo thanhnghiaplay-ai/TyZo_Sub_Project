@@ -1,0 +1,11 @@
+# label=gate-final-smoke-node-build
+# head=c5e6dc6db4b22807b5cb3984260459e19b20a5d3 dirty=5
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:25:33Z
+# cmd=node scripts/browser-smoke.mjs http://127.0.0.1:8081/gioi-thieu
+{
+  "ok": false,
+  "url": "http://127.0.0.1:8081/gioi-thieu",
+  "error": "browserType.launch: Executable doesn't exist at /root/.cache/ms-playwright/chromium_headless_shell-1248/chrome-headless-shell-linux64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║                                                            ║\n║ <3 Playwright Team                                         ║\n╚════════════════════════════════════════════════════════════╝"
+}
+# exit=1 seconds=0 end=2026-11-27T11:25:33Z

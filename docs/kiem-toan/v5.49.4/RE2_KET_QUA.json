@@ -1,0 +1,203 @@
+[
+ {
+  "id": "RE2-001",
+  "priority": "P0",
+  "title": "Giữ thiếu ngân sách",
+  "path": "src/lib/billing/gate-reserve.ts",
+  "lines": [
+   34,
+   51
+  ],
+  "url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/552eab1f9122cdc04bee11c242a2d5eadf607dd7/src/lib/billing/gate-reserve.ts#L34-L51",
+  "cause": "least cho phép giữ ít hơn estimate nhưng trả ok.",
+  "fix": "Chặn nếu estimate không hữu hạn hoặc không đủ; chia request hợp lệ trước khi giữ; phân biệt busy và hết tiền.",
+  "acceptance": "Giữ 10, dự toán 100: không gọi upstream; 100 request cạnh tranh không vượt held.",
+  "status": "OPEN_STATIC",
+  "expected": "Đạt tiêu chí nghiệm thu; không làm mất dữ liệu hoặc thay đổi giá.",
+  "actual": "Đã sửa mã và có regression cục bộ; chưa đóng toàn bộ tiêu chí staging, fault injection và tải thật.",
+  "rollback": "Revert commit riêng; migration tương thích ngược, không xóa ledger; phục hồi chỉ trên bản sao đã kiểm chứng.",
+  "handoff_status": "PARTIAL",
+  "evidence": [
+   "re2-before-valid.log",
+   "re2-extended.log",
+   "root-protection-after.log",
+   "async-final-check.log"
+  ],
+  "reaccept_v5_49_4": {
+   "status": "PASS_LOCAL",
+   "head": "c5c39c7",
+   "evidence": [
+    "re3-002-after-related.log",
+    "gate-cp6-test-group1.log"
+   ],
+   "note": "Test PG thật: giữ 10/dự toán 100 không gọi nhà; dự toán không hợp lệ fail closed; 100 đồng thời không vượt 100. Dự toán audio nay xác minh (RE3-002)."
+  }
+ },
+ {
+  "id": "RE2-002",
+  "priority": "P0",
+  "title": "Quyết toán vượt phần giữ",
+  "path": "src/lib/billing/run-gate.ts",
+  "lines": [
+   244,
+   258
+  ],
+  "url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/552eab1f9122cdc04bee11c242a2d5eadf607dd7/src/lib/billing/run-gate.ts#L244-L258",
+  "cause": "Trừ từ phiếu chung trước khi xác minh quyền sở hữu và trạng thái callId.",
+  "fix": "Transaction khóa phiếu và call theo thứ tự nhất quán; fencing, idempotency, charge <= reserved; ghi chi phí thực và khoản thiếu để đối soát, không tự thu thêm.",
+  "acceptance": "Hai call giữ 60/40, call A tốn 90: B vẫn giữ đủ 40; replay và late response không trừ lần hai.",
+  "status": "OPEN_STATIC",
+  "expected": "Đạt tiêu chí nghiệm thu; không làm mất dữ liệu hoặc thay đổi giá.",
+  "actual": "Đã sửa mã và có regression cục bộ; chưa đóng toàn bộ tiêu chí staging, fault injection và tải thật.",
+  "rollback": "Revert commit riêng; migration tương thích ngược, không xóa ledger; phục hồi chỉ trên bản sao đã kiểm chứng.",
+  "handoff_status": "PARTIAL",
+  "evidence": [
+   "re2-before-valid.log",
+   "re2-extended.log",
+   "root-protection-after.log",
+   "async-final-check.log"
+  ],
+  "reaccept_v5_49_4": {
+   "status": "PASS_LOCAL",
+   "head": "c5c39c7",
+   "evidence": [
+    "gate-cp6-test-group1.log",
+    "re3-001-after-settle-unit.log"
+   ],
+   "note": "Test PG thật 60/40 vs 90, phản hồi muộn sau mất lease, replay no-op, chéo nhà Modal/Groq; live nay quyết toán nguyên tử, ghi shortfall không thu thêm."
+  }
+ },
+ {
+  "id": "RE2-003",
+  "priority": "P1",
+  "title": "Heartbeat dừng sớm",
+  "path": "src/lib/billing/run-gate.ts",
+  "lines": [
+   196,
+   212
+  ],
+  "url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/552eab1f9122cdc04bee11c242a2d5eadf607dd7/src/lib/billing/run-gate.ts#L196-L212",
+  "cause": "stopBeat trước response.text và quyết toán.",
+  "fix": "Duy trì lease đến trạng thái cuối, finally dọn timer; timeout body, fencing và phục hồi khi crash.",
+  "acceptance": "Body chậm, DB chậm, mất lease, crash: không ghi muộn hoặc treo giữ.",
+  "status": "OPEN_STATIC",
+  "expected": "Đạt tiêu chí nghiệm thu; không làm mất dữ liệu hoặc thay đổi giá.",
+  "actual": "Đã sửa mã và có regression cục bộ; chưa đóng toàn bộ tiêu chí staging, fault injection và tải thật.",
+  "rollback": "Revert commit riêng; migration tương thích ngược, không xóa ledger; phục hồi chỉ trên bản sao đã kiểm chứng.",
+  "handoff_status": "PARTIAL",
+  "evidence": [
+   "re2-before-valid.log",
+   "re2-extended.log",
+   "root-protection-after.log",
+   "async-final-check.log"
+  ],
+  "reaccept_v5_49_4": {
+   "status": "PASS_LOCAL",
+   "head": "c5c39c7",
+   "evidence": [
+    "re3-003-after-related.log",
+    "gate-cp6-test-group1.log"
+   ],
+   "note": "Nhịp trong lúc đọc body, deadline body, lease hết không hồi sinh; CSDL chậm/treo nay single-flight + timeout máy chủ (RE3-003)."
+  }
+ },
+ {
+  "id": "RE2-004",
+  "priority": "P1",
+  "title": "Polling gây tải DB",
+  "path": "src/lib/billing/run-gate.ts",
+  "lines": [
+   185,
+   193
+  ],
+  "url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/552eab1f9122cdc04bee11c242a2d5eadf607dd7/src/lib/billing/run-gate.ts#L185-L193",
+  "cause": "Vòng lặp 300ms tối đa 20s cho mỗi request.",
+  "fix": "Hàng đợi giới hạn, backoff jitter, đánh thức khi có tài nguyên, hủy khi disconnect; không giữ connection DB khi chờ.",
+  "acceptance": "200 request chờ: đo QPS, pool, p95; không starvation; không vượt giới hạn cấu hình.",
+  "status": "OPEN_STATIC",
+  "expected": "Đạt tiêu chí nghiệm thu; không làm mất dữ liệu hoặc thay đổi giá.",
+  "actual": "Đã sửa mã và có regression cục bộ; chưa đóng toàn bộ tiêu chí staging, fault injection và tải thật.",
+  "rollback": "Revert commit riêng; migration tương thích ngược, không xóa ledger; phục hồi chỉ trên bản sao đã kiểm chứng.",
+  "handoff_status": "PARTIAL",
+  "evidence": [
+   "scale-regressions.log",
+   "load-results.json",
+   "web-load-results.json",
+   "soak-results.json"
+  ],
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "c5c39c7",
+   "evidence": [
+    "re2-004-fairness-bench.log",
+    "re3-004-after-bench.log"
+   ],
+   "note": "Không polling CSDL; 200 khách p95 30–68 ms, 0 vượt cap, ~1342 lượt thử/giây; NHƯNG 2/200 khách không được lượt nào trong 8 s khi quá tải ~5× (chưa có hàng đợi công bằng). Cần thiết kế hàng đợi bền + ETA (quyết định trải nghiệm khách)."
+  }
+ },
+ {
+  "id": "RE2-005",
+  "priority": "P0",
+  "title": "Restore Neon báo thành công khi lỗi",
+  "path": "deploy/vps/tyzo.sh",
+  "lines": [
+   763,
+   782
+  ],
+  "url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/552eab1f9122cdc04bee11c242a2d5eadf607dd7/deploy/vps/tyzo.sh#L763-L782",
+  "cause": "pg_restore lỗi nhưng đủ bảng vẫn in thành công.",
+  "fix": "Restore đích thử nghiệm với --exit-on-error --single-transaction nếu tương thích; kiểm tra exit, dữ liệu, constraints, sequence, ledger; giữ dump riêng quyền 0600; dừng writers khi cutover, rollback.",
+  "acceptance": "Giả lập lỗi restore dù đủ bảng: exit khác 0, không cutover; nguồn nguyên vẹn; đối soát hai chiều.",
+  "status": "OPEN_STATIC",
+  "expected": "Đạt tiêu chí nghiệm thu; không làm mất dữ liệu hoặc thay đổi giá.",
+  "actual": "Đã sửa mã và có regression cục bộ; chưa đóng toàn bộ tiêu chí staging, fault injection và tải thật.",
+  "rollback": "Revert commit riêng; migration tương thích ngược, không xóa ledger; phục hồi chỉ trên bản sao đã kiểm chứng.",
+  "handoff_status": "PARTIAL",
+  "evidence": [
+   "restore-before.log",
+   "restore-after.log",
+   "restore-real-results.json"
+  ],
+  "reaccept_v5_49_4": {
+   "status": "PASS_LOCAL",
+   "head": "c5c39c7",
+   "evidence": [
+    "re3-007-after-restore-3.log"
+   ],
+   "note": "Lỗi nạp dù đủ bảng: không thành công; thiếu dòng/ghi phát sinh bị phát hiện; hai chiều; nguồn nguyên vẹn (RE3-007)."
+  }
+ },
+ {
+  "id": "RE2-006",
+  "priority": "P1",
+  "title": "Phiếu chờ đóng nhận việc mới",
+  "path": "src/lib/billing/gate-reserve.ts",
+  "lines": [
+   39,
+   50
+  ],
+  "url": "https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/552eab1f9122cdc04bee11c242a2d5eadf607dd7/src/lib/billing/gate-reserve.ts#L39-L50",
+  "cause": "Điều kiện cấp phát thiếu not close_wanted.",
+  "fix": "Kiểm tra trạng thái đóng trong cùng khóa cấp phát cho mọi provider; drain tác vụ cũ rồi hoàn dư một lần.",
+  "acceptance": "Close cạnh tranh reserve: sau khi close được ghi nhận không cấp việc mới; quyết toán cũ đúng.",
+  "status": "OPEN_STATIC",
+  "expected": "Đạt tiêu chí nghiệm thu; không làm mất dữ liệu hoặc thay đổi giá.",
+  "actual": "Đã sửa mã và có regression cục bộ; chưa đóng toàn bộ tiêu chí staging, fault injection và tải thật.",
+  "rollback": "Revert commit riêng; migration tương thích ngược, không xóa ledger; phục hồi chỉ trên bản sao đã kiểm chứng.",
+  "handoff_status": "PARTIAL",
+  "evidence": [
+   "re2-before-valid.log",
+   "re2-extended.log",
+   "root-protection-after.log",
+   "async-final-check.log"
+  ],
+  "reaccept_v5_49_4": {
+   "status": "PASS_LOCAL",
+   "head": "c5c39c7",
+   "evidence": [
+    "gate-cp6-test-group1.log"
+   ],
+   "note": "Test PG thật: close_wanted chặn giữ mới khi lệnh cũ còn chạy; quyết toán cũ đúng."
+  }
+ }
+]

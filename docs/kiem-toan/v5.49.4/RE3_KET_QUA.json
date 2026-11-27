@@ -1,0 +1,122 @@
+[
+ {
+  "id": "RE3-001",
+  "priority": "P0",
+  "title": "Quyết toán live không nguyên tử",
+  "status": "PASS_LOCAL",
+  "commit": "0caa1c9",
+  "evidence": [
+   "re3-001-before-fault-2.log",
+   "re3-001-after-fault-2.log",
+   "re3-001-after-settle-unit.log",
+   "re3-001-after-related-2.log",
+   "re3-001-after-native-bench-3.log"
+  ],
+  "fix": "Một giao dịch biên nhận+journal+trừ phiếu; replay trả kết quả đã lưu; bộ đếm tiến sau commit; chưa rõ thì giữ phiếu + unknown.",
+  "limits": "Chưa Alibaba thật/nhiều tiến trình cầu nối thật; biên nhận chưa rõ khi CSDL chết hẳn chỉ còn trong log.",
+  "rollback": "Revert 0caa1c9; giữ bảng live_usage_receipts (additive)."
+ },
+ {
+  "id": "RE3-002",
+  "priority": "P0",
+  "title": "Dự toán audio không đáng tin",
+  "status": "PASS_LOCAL",
+  "commit": "dc8cf4e",
+  "evidence": [
+   "re3-002-before-probe.log",
+   "re3-002-real-encoder.log",
+   "re3-002-chromium-encoder-3.log",
+   "re3-002-after-probe-2.log",
+   "re3-002-after-related.log"
+  ],
+  "fix": "Bộ dò WAV/WebM/Ogg Opus theo TOC, fail closed 422 trước khi giữ/gửi.",
+  "limits": "Định dạng khác bị từ chối; chưa đo với Groq thật.",
+  "rollback": "Revert dc8cf4e (không migration)."
+ },
+ {
+  "id": "RE3-003",
+  "priority": "P1",
+  "title": "Heartbeat chồng truy vấn",
+  "status": "PASS_LOCAL",
+  "commit": "a65d0e7",
+  "evidence": [
+   "re3-003-before-lease-2.log",
+   "re3-003-after-lease.log",
+   "re3-003-after-related.log"
+  ],
+  "fix": "Single-flight, jitter, statement_timeout máy chủ, fenced/deadline, số đo, stop chờ.",
+  "limits": "Thời gian thu nhỏ; chưa treo CSDL >150 s trên staging.",
+  "rollback": "Revert a65d0e7."
+ },
+ {
+  "id": "RE3-004",
+  "priority": "P1",
+  "title": "Khóa admission toàn cục",
+  "status": "PASS_LOCAL",
+  "commit": "5341d35",
+  "evidence": [
+   "re3-004-before-bench.log",
+   "re3-004-after-bench.log",
+   "re2-004-fairness-bench.log"
+  ],
+  "fix": "tyzo_admit một câu lệnh tự commit; 200 khách p95 300→68 ms, p99 331→102 ms; đợt 300 p99 389→177 ms; 0 vượt cap/0 lỗi.",
+  "limits": "PG cục bộ (RTT≈0), chưa Neon/VPS thật.",
+  "rollback": "Revert 5341d35; hàm/cột 0054 để lại vô hại."
+ },
+ {
+  "id": "RE3-005",
+  "priority": "P1",
+  "title": "Provider/model cap theo lane",
+  "status": "PASS_LOCAL",
+  "commit": "5341d35",
+  "evidence": [
+   "re3-004-before-bench.log",
+   "re3-005-006-after-3.log"
+  ],
+  "fix": "Nhà/model đếm mọi lane; liveReserve (mặc định 0); job async không đếm đôi.",
+  "limits": "Giá trị liveReserve và các cap cho 100–200 khách là quyết định của Chủ.",
+  "rollback": "Như RE3-004."
+ },
+ {
+  "id": "RE3-006",
+  "priority": "P1",
+  "title": "Unknown giữ suất lâu",
+  "status": "PASS_LOCAL",
+  "commit": "5341d35",
+  "evidence": [
+   "re3-005-006-after-3.log",
+   "re3-006-admin-ui-3.log"
+  ],
+  "fix": "Tự mở chỉ khi có bằng chứng định đoạt + room_audit; không theo TTL; Admin phân trang + cảnh báo (ảnh máy tính/điện thoại).",
+  "limits": "Nhà không có API tra cứu (Groq đồng bộ) vẫn cần Chủ xác nhận tay.",
+  "rollback": "Như RE3-004."
+ },
+ {
+  "id": "RE3-007",
+  "priority": "P1",
+  "title": "Restore thiếu đối soát",
+  "status": "PASS_LOCAL",
+  "commit": "42a6cf2",
+  "evidence": [
+   "re3-007-before-restore.log",
+   "re3-007-after-restore-3.log"
+  ],
+  "fix": "Bảng kê số dòng+băm/sequence/migration, khóa ghi, so ba chiều, cổng chuyển Vercel có xác nhận; sửa Neon→VPS «schema public».",
+  "limits": "Docker giả + PG16; chưa VPS/Neon thật; chưa CDC.",
+  "rollback": "Revert 42a6cf2."
+ },
+ {
+  "id": "RE3-008",
+  "priority": "P2",
+  "title": "Graphify cũ",
+  "status": "PASS",
+  "commit": "c5e6dc6",
+  "evidence": [
+   "re3-008-graphify-update.log",
+   "re3-008-graphify-update-2.log"
+  ],
+  "fix": "Dựng lại từ c5c39c7, 0 token, hash ghi trong RE3-008_GRAPHIFY.md.",
+  "limits": "Graphify không phân tích .sql.",
+  "rollback": "Revert c5e6dc6."
+ }
+]

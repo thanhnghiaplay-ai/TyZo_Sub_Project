@@ -1,0 +1,44 @@
+# label=gate-final-smoke-node-build-2
+# head=c5e6dc6db4b22807b5cb3984260459e19b20a5d3 dirty=7
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:25:45Z
+# cmd=node docs/kiem-toan/v5.49.4/node-build-smoke.mjs http://127.0.0.1:8081 /home/user/TyZo_Sub_Project/docs/kiem-toan/v5.49.4/anh
+[
+ {
+  "name": "desktop",
+  "path": "/gioi-thieu",
+  "status": 200,
+  "bodyChars": 6387,
+  "overflow": false,
+  "appErrors": [],
+  "externalBlocked": 1
+ },
+ {
+  "name": "desktop",
+  "path": "/login",
+  "status": 200,
+  "bodyChars": 234,
+  "overflow": false,
+  "appErrors": [],
+  "externalBlocked": 1
+ },
+ {
+  "name": "mobile",
+  "path": "/gioi-thieu",
+  "status": 200,
+  "bodyChars": 6370,
+  "overflow": false,
+  "appErrors": [],
+  "externalBlocked": 1
+ },
+ {
+  "name": "mobile",
+  "path": "/login",
+  "status": 200,
+  "bodyChars": 234,
+  "overflow": false,
+  "appErrors": [],
+  "externalBlocked": 1
+ }
+]
+# exit=0 seconds=5 end=2026-11-27T11:25:50Z

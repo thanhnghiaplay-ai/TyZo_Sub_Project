@@ -1,0 +1,25 @@
+# label=gate-final-build-node
+# head=c5e6dc6db4b22807b5cb3984260459e19b20a5d3 dirty=4
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:25:02Z
+# cmd=env NITRO_PRESET=node-server npm run build
+
+> build
+> node scripts/with-app-env.mjs vite build && npm run db:migrate
+
+
+[nitro] ◐ Building [Nitro] (preset: node-server, compatibility: 2026-11-27)
+[nitro] ✔ Generated public .output/public
+ℹ Tracing dependencies:
+- tslib (2.8.1)
+✔ Traced 1 dependencies (4 files) in 50ms.
+ℹ Ensure your production environment matches the builder OS and architecture (linux-x64) to avoid native module issues.
+ℹ Generated .output/nitro.json
+
+[nitro] ✔ You can preview this build using npx vite preview
+
+> db:migrate
+> node scripts/migrate.mjs
+
+[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).
+# exit=0 seconds=6 end=2026-11-27T11:25:08Z
