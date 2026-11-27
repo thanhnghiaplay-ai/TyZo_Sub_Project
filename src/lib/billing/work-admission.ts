@@ -77,7 +77,7 @@ export async function acquireWork(sql: Sql, key: WorkKey): Promise<string | null
       where status = 'running' and heartbeat_at <= clock_timestamp() - ${LEASE_STALE}::interval`;
       const rows = await tx<{ lane: number; own: number; provider: number; model: number }>`
       with active as (
-        select lane, user_id, provider, model from work_admissions where status = 'running'
+        select lane, user_id, provider, model from work_admissions where status in ('running','unknown')
         union all
         select 'batch', user_id, provider, model from run_async_asr_jobs where state in ('pending','running','unknown') and deadline_at > clock_timestamp()
       )
@@ -148,5 +148,27 @@ export async function withWorkAdmission<T>(
 
 /** Exposed for long lived bridge sessions; no implicit retry of upstream work. */
 export async function releaseWork(sql: Sql, id: string) {
-  await sql`update work_admissions set status = 'done', finished_at = clock_timestamp() where id = ${id} and status = 'running'`;
+  await sql`update work_admissions set status = 'done', finished_at = clock_timestamp() where id = ${id} and status in ('running','unknown')`;
+}
+
+/** Only the owner-facing server handler may authorize this, after checking upstream evidence.
+ * Releases capacity only: never changes a customer's ticket, debit, or provider-spend journal.
+ */
+export async function resolveAdmissionWith(
+  sql: Sql,
+  actorId: string,
+  id: string,
+  evidence: string,
+) {
+  return inTransaction(sql, async (tx) => {
+    await tx`select pg_advisory_xact_lock(84201912)`;
+    const rows = await tx<{ user_id: string; provider: string; model: string }>`
+      select user_id, provider, model from work_admissions where id = ${id}
+        and (status = 'unknown' or (status = 'running' and heartbeat_at <= clock_timestamp() - ${LEASE_STALE}::interval)) for update`;
+    if (!rows.length) return false;
+    await tx`update work_admissions set status = 'resolved', finished_at = clock_timestamp() where id = ${id}`;
+    await tx`insert into room_audit(actor_id, action, target_id, note)
+      values (${actorId}, 'xac-nhan-chuong-trinh-da-ket-thuc', ${rows[0].user_id}, ${JSON.stringify({ admission: id, provider: rows[0].provider, model: rows[0].model, evidence })})`;
+    return true;
+  });
 }

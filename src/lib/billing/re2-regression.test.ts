@@ -362,9 +362,11 @@ pgTest(
     assert.equal(ids.filter(Boolean).length, 2);
     assert.ok(await acquireWork(sql, { ...key, lane: "live" }));
     await sql`update work_admissions set heartbeat_at = now() - interval '10 minutes'`;
+    assert.equal(await acquireWork(sql, key), null, "unknown work must still occupy its quota");
+    for (const id of ids) if (id) await releaseWork(sql, id);
     const fresh = await acquireWork(sql, key);
     assert.ok(fresh);
-    assert.equal((await sql`select 1 from work_admissions where status = 'unknown'`).length, 3);
+    assert.equal((await sql`select 1 from work_admissions where status = 'unknown'`).length, 1);
     await sql`insert into room_settings (key, value) values ('work_admission', '{"enabled":false}')`;
     assert.equal(await acquireWork(sql, { ...key, userId: "different" }), null);
     await releaseWork(sql, fresh!);
@@ -469,5 +471,49 @@ pgTest(
     assert.equal(await chargeTokenWith(sql, TID, "re2", 100), 60);
     assert.equal((await ticket()).held, 40);
     assert.equal(Number((await ticket()).modal_reserved), 40);
+  },
+);
+
+pgTest(
+  "SCALE: expired live work retains admission until its late completion releases it",
+  async () => {
+    const { withWorkAdmission, AdmissionBusy } = await import("./work-admission.ts");
+    await sql`delete from work_admissions`;
+    await sql`insert into room_settings(key,value)values('work_admission','{"perUser":1}') on conflict(key)do update set value=excluded.value`;
+    let finish!: () => void;
+    let entered!: () => void;
+    const started = new Promise<void>((r) => {
+      entered = r;
+    });
+    const wait = new Promise<void>((r) => {
+      finish = r;
+    });
+    const key = {
+      userId: "capacity-user",
+      provider: "groq",
+      model: "chat",
+      lane: "batch" as const,
+    };
+    const running = withWorkAdmission(sql, key, async () => {
+      entered();
+      await wait;
+    });
+    await started;
+    try {
+      await sql`update work_admissions set heartbeat_at=now()-interval '10 minutes'`;
+      await assert.rejects(
+        withWorkAdmission(sql, key, async () => assert.fail("must not call provider")),
+        AdmissionBusy,
+      );
+    } finally {
+      finish();
+      await running;
+    }
+    await withWorkAdmission(sql, key, async () => undefined);
+    assert.equal(
+      (await sql`select 1 from work_admissions where status in ('running','unknown')`).length,
+      0,
+    );
+    await sql`delete from room_settings where key='work_admission'`;
   },
 );

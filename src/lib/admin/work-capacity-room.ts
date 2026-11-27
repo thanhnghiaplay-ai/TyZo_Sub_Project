@@ -8,6 +8,13 @@ export type CapacitySnapshot = {
   limits: CapacityLimits;
   lanes: { lane: string; running: number; unknown: number }[];
   reconciliation: { unit: string; calls: number; short: number }[];
+  uncertainAdmissions: {
+    id: string;
+    provider: string;
+    model: string;
+    lane: string;
+    created: string;
+  }[];
 };
 
 export const getWorkCapacity = createServerFn({ method: "GET" })
@@ -42,7 +49,17 @@ export const getWorkCapacity = createServerFn({ method: "GET" })
         from run_modal_settlements where status in ('mat-phan-hoi', 'can-doi-soat') having count(*) > 0
       ) pending group by unit`;
 
-    return { limits: readLimits(settings[0]?.value), lanes, reconciliation };
+    const uncertainAdmissions = await sql<{
+      id: string;
+      provider: string;
+      model: string;
+      lane: string;
+      created: string;
+    }>`
+      select id, provider, model, lane, created_at::text as created from work_admissions
+      where status = 'unknown' or (status = 'running' and heartbeat_at <= clock_timestamp() - interval '150 seconds')
+      order by created_at, id limit 20`;
+    return { limits: readLimits(settings[0]?.value), lanes, reconciliation, uncertainAdmissions };
   });
 
 export const saveWorkCapacity = createServerFn({ method: "POST" })
@@ -61,4 +78,27 @@ export const saveWorkCapacity = createServerFn({ method: "POST" })
       await tx`insert into room_audit (actor_id, action, target_id, note) values (${context.userId}, 'gioi-han-nhan-viec', null, ${value})`;
     });
     return next;
+  });
+
+export const resolveWorkAdmission = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: unknown) => {
+    if (!input || typeof input !== "object") throw new Error("Hồ sơ xác nhận không hợp lệ.");
+    const value = input as { id?: unknown; evidence?: unknown };
+    if (
+      typeof value.id !== "string" ||
+      !/^[a-f0-9]{24}$/.test(value.id) ||
+      typeof value.evidence !== "string" ||
+      value.evidence.trim().length < 12 ||
+      value.evidence.length > 500
+    ) {
+      throw new Error("Hãy ghi bằng chứng kiểm tra từ 12 đến 500 ký tự.");
+    }
+    return { id: value.id, evidence: value.evidence.trim() };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRole(context.userId, "chu");
+    const { getSql } = await import("../db");
+    const { resolveAdmissionWith } = await import("../billing/work-admission");
+    return resolveAdmissionWith(await getSql(), context.userId, data.id, data.evidence);
   });

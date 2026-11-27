@@ -195,3 +195,32 @@ test("SCALE: capacity settings require Admin, reject bad bounds, and audit atomi
   assert.equal(JSON.parse((await sql<{ value: string }>`select value from room_settings where key='work_admission'`)[0].value).enabled, false);
   await sql.query("drop trigger fail_capacity_audit on room_audit");
 });
+
+test("SCALE: resolving uncertain capacity needs Admin evidence, is audited atomically, and never changes financial records", async (t) => {
+  if (!sql) return t.skip("Requires explicitly isolated TYZO_TEST_PG_URL");
+  const capacity = await import("./admin/work-capacity-room.ts");
+  const id = "f".repeat(24);
+  const data = { id, evidence: "Provider fixture shows work ended; checked operator log 42." };
+  await sql`insert into work_admissions(id,user_id,provider,model,lane,status)values(${id},'fixture-owner','groq','chat','batch','unknown')`;
+  const balances = async () => JSON.stringify(await sql`select
+    (select coalesce(sum(held),0)::text from run_tickets) as held,
+    (select coalesce(sum(charged),0)::text from run_tickets) as charged,
+    (select coalesce(sum(left_tokens),0)::text from token_grants) as tokens,
+    (select coalesce(sum(base_vnd),0)::text from provider_spend) as provider_spend`);
+  const before = await balances();
+  await assert.rejects(call(capacity.resolveWorkAdmission,data,"ordinary-user"),/forbidden/);
+  await assert.rejects(call(capacity.resolveWorkAdmission,{id,evidence:"short"}),/bằng chứng/);
+  await sql.query("create function fail_resolution_audit() returns trigger language plpgsql as $$begin raise exception 'synthetic resolution audit fault'; end$$");
+  await sql.query("create trigger fail_resolution_audit before insert on room_audit for each row execute function fail_resolution_audit()");
+  await assert.rejects(call(capacity.resolveWorkAdmission,data),/synthetic resolution audit fault/);
+  assert.equal((await sql`select status from work_admissions where id=${id}`)[0].status,"unknown");
+  await sql.query("drop trigger fail_resolution_audit on room_audit");
+  assert.equal(await call(capacity.resolveWorkAdmission,data),true);
+  assert.equal(await call(capacity.resolveWorkAdmission,data),false);
+  assert.equal(Number((await sql`select count(*)::int n from room_audit where action='xac-nhan-chuong-trinh-da-ket-thuc'`)[0].n),1);
+  assert.equal(await balances(),before);
+  const live = "d".repeat(24);
+  await sql`insert into work_admissions(id,user_id,provider,model,lane)values(${live},'fixture-owner','groq','chat','batch')`;
+  assert.equal(await call(capacity.resolveWorkAdmission,{...data,id:live}),false);
+  assert.equal((await sql`select status from work_admissions where id=${live}`)[0].status,"running");
+});
