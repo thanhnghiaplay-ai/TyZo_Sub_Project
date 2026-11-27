@@ -18,6 +18,7 @@ export const CHANGELOG: ReleaseNote[] = [
       "Dịch trực tiếp mặc định dùng Qwen 3.5: chữ hiện sau khoảng nửa giây thay vì vài giây.",
       "Bạn vẫn chọn được Qwen 3.8 trong mục Model; lựa chọn đã lưu được giữ nguyên.",
       "Nhận dạng giọng nói trên máy TyZo phục vụ nhiều người cùng lúc nhanh hơn.",
+      "Bản dịch không còn sót chữ Hán, Nhật, Hàn; ứng dụng Android 0.13 cũng mặc định Qwen 3.5.",
     ],
   },
   {

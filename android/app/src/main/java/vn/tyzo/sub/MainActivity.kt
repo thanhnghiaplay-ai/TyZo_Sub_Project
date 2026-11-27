@@ -274,7 +274,7 @@ class MainActivity : Activity() {
         lang.addView(ui.select(sources.map { it.name }, sources.indexOfFirst { it.code == prefs.source }) {
             prefs.source = sources[it].code
         }, ui.full(6))
-        val models = me?.models?.takeIf { it.isNotEmpty() } ?: listOf(Models.M38, Models.M35)
+        val models = me?.models?.takeIf { it.isNotEmpty() } ?: listOf(Models.M35, Models.M38)
         if (prefs.model !in models) prefs.model = models.first()
         lang.addView(ui.text("Model", 14f, ui.p.muted), ui.full(12))
         lang.addView(ui.select(models.map { Models.name(it) }, models.indexOf(prefs.model)) { prefs.model = models[it] }, ui.full(6))

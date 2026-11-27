@@ -94,7 +94,8 @@ class AccountAccess(val web: String, val token: String, val userId: String) {
 object Models {
     const val M38 = "qwen3.8-livetranslate-flash-realtime"
     const val M35 = "qwen3.5-livetranslate-flash-realtime"
-    const val DEFAULT = M38
+    /** Qwen 3.5 hiện chữ sau ~0,4 s, 3.8 sau ~2,9 s (đo thật 28/11/2026). */
+    const val DEFAULT = M35
 
     fun name(id: String) = when (id) {
         M38 -> "Qwen 3.8 (mới nhất)"

@@ -21,6 +21,7 @@ import {
 } from "./qwen-protocol.ts";
 import { mulawToPcm16 } from "./mulaw.ts";
 import { aliErrorText } from "./ali-error.ts";
+import { dropLeftoverScript } from "./leftover-script.ts";
 import { createHash, randomBytes } from "node:crypto";
 
 /**
@@ -559,6 +560,15 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
         }
         // Khách đọc câu tiếng Việt (thiếu gì, làm gì tiếp); nguyên văn đã ghi nhật ký ở trên.
         send(client, { type: "event", event: { ...event, message: aliErrorText(event.message) } });
+        continue;
+      }
+      // Bỏ chữ gốc sót trong bản dịch (vd «luôn如一») khi đích không dùng chữ Hán/kana/Hangul. Web, ứng dụng và lịch sử cùng sạch.
+      if (event.kind === "translation") {
+        send(client, { type: "event", event: { ...event, text: dropLeftoverScript(event.text, ticket.target, event.final), stash: dropLeftoverScript(event.stash, ticket.target, false) } });
+        continue;
+      }
+      if (event.kind === "translation-delta") {
+        send(client, { type: "event", event: { ...event, delta: dropLeftoverScript(event.delta, ticket.target, false) } });
         continue;
       }
       send(client, { type: "event", event });
