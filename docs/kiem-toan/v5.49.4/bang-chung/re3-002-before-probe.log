@@ -1,0 +1,155 @@
+# label=re3-002-before-probe
+# head=0caa1c9c6db2514f0dccc31af5db830b1a12db3b dirty=2
+# fingerprint(src,scripts,migrations,server,package*)=05eeb6ca7645ece6bfd716bdc815b9f4bd13ff6256dd8bf01857a51edf4d021a
+# start=2026-11-27T10:40:03Z
+# cmd=node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/audio-probe.test.ts
+TAP version 13
+# Subtest: RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+ok 1 - RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+  ---
+  duration_ms: 42.629815
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+not ok 2 - RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+  ---
+  duration_ms: 20.323476
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:55:1'
+  failureType: 'testCodeFailure'
+  error: 'webm 20k: ước 84.0965 giây quá dư so với 60 giây'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    assertUpper (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:48:10)
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:57:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+not ok 3 - RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+  ---
+  duration_ms: 6.119419
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:60:1'
+  failureType: 'testCodeFailure'
+  error: 'webm thấp: ước 13.595 giây < thật 60 giây (giữ thiếu)'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    assertUpper (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:47:10)
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:62:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+not ok 4 - RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+  ---
+  duration_ms: 8.654553
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:65:1'
+  failureType: 'testCodeFailure'
+  error: 'webm 120ms: ước 20.227 giây < thật 600 giây (giữ thiếu)'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    assertUpper (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:47:10)
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:67:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+not ok 5 - RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+  ---
+  duration_ms: 12.013843
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:70:1'
+  failureType: 'testCodeFailure'
+  error: 'header giả cho 0.00024 giây (thật 30 giây)'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:74:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+ok 6 - RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+  ---
+  duration_ms: 4.237492
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+ok 7 - RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+  ---
+  duration_ms: 2.816127
+  type: 'test'
+  ...
+# Subtest: RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+not ok 8 - RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+  ---
+  duration_ms: 2.407537
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:96:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    rác
+    
+    100 !== null
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ~
+  actual: 100
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:98:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+ok 9 - RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+  ---
+  duration_ms: 2.76918
+  type: 'test'
+  ...
+# Subtest: RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+not ok 10 - RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+  ---
+  duration_ms: 426.489343
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:114:1'
+  failureType: 'testCodeFailure'
+  error: '801.079'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/audio-probe.test.ts:126:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 4
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 720.328055
+# exit=1 seconds=1 end=2026-11-27T10:40:04Z

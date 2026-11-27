@@ -1,0 +1,11 @@
+# label=gate-cp5-auth
+# head=42a6cf23cddbfb0260dc81d71afa820293f01f42 dirty=0
+# fingerprint(src,scripts,migrations,server,package*)=78c3bbce4f0985b5cb8eeaa586a45a81305e1d218d278afc414433cf77d76c04
+# start=2026-11-27T11:10:02Z
+# cmd=npm run check:auth
+
+> check:auth
+> node scripts/check-auth-invariant.mjs
+
+[auth-invariant] could not read the dev server's resolved VITE_AUTH_ENABLED
+# exit=2 seconds=1 end=2026-11-27T11:10:03Z

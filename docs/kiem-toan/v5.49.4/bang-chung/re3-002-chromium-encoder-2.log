@@ -1,0 +1,19 @@
+# label=re3-002-chromium-encoder-2
+# head=0caa1c9c6db2514f0dccc31af5db830b1a12db3b dirty=8
+# fingerprint(src,scripts,migrations,server,package*)=0dc6fada03c5332a9d91f37db64d8e2ede19a2fe2022fc6520c5b197832abaa6
+# start=2026-11-27T10:43:24Z
+# cmd=node --experimental-strip-types --import ./scripts/register-ts.mjs docs/kiem-toan/v5.49.4/probe-chromium-encoder.ts
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.evaluate: ReferenceError: AudioEncoder is not defined
+    at eval (eval at evaluate (:370:30), <anonymous>:5:17)
+    at UtilityScript.evaluate (<anonymous>:372:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at /home/user/TyZo_Sub_Project/docs/kiem-toan/v5.49.4/probe-chromium-encoder.ts:10:26 {
+  log: []
+}
+
+Node.js v22.23.5
+# exit=1 seconds=1 end=2026-11-27T10:43:25Z

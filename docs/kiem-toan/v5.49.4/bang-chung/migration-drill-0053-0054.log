@@ -1,0 +1,48 @@
+# label=migration-drill-0053-0054
+# head=42a6cf23cddbfb0260dc81d71afa820293f01f42 dirty=2
+# fingerprint(src,scripts,migrations,server,package*)=8ab6ed75fa8a2c618215830ab3c5953ecb6d23f7870ebc83b669641bfcb4604b
+# start=2026-11-27T11:10:59Z
+# cmd=bash docs/kiem-toan/v5.49.4/migration-drill.sh
+NOTICE:  database "mig_fresh" does not exist, skipping
+NOTICE:  database "mig_upgrade" does not exist, skipping
+== 1. Cài mới (mọi migration)
+[migrate] failed: The server does not support SSL connections
+exit=0
+== 2. Lặp lại (phải không làm gì)
+[migrate] failed: The server does not support SSL connections
+== 3. Nâng cấp: dựng tới 0052 + dữ liệu cũ, rồi chạy migrate
+[migrate] failed: The server does not support SSL connections
+ERROR:  relation "work_admissions" does not exist
+LINE 1: insert into work_admissions (id,user_id,provider,model,lane,...
+                    ^
+ERROR:  relation "provider_spend_events" does not exist
+LINE 1: insert into provider_spend_events (id,provider,model,base_vn...
+                    ^
+ERROR:  relation "work_admissions" does not exist
+LINE 1: ...select id,user_id,provider,model,lane,status from work_admis...
+                                                             ^
+[migrate] failed: The server does not support SSL connections
+ERROR:  relation "work_admissions" does not exist
+LINE 1: ...select id,user_id,provider,model,lane,status from work_admis...
+                                                             ^
+dữ liệu cũ work_admissions giữ nguyên: CO
+ERROR:  relation "provider_spend_events" does not exist
+LINE 1: select 'ev', count(*) from provider_spend_events; select 're...
+                                   ^
+ERROR:  relation "work_admissions" does not exist
+LINE 1: select 'unknown-giu-nguyen', status from work_admissions whe...
+                                                 ^
+== 4. Lỗi giữa migration: 0054 hỏng phải rollback cả tệp
+NOTICE:  database "mig_fault" does not exist, skipping
+[migrate] failed: The server does not support SSL connections
+exit=1 (khác 0 là đúng)
+ref-col|0
+fn|0
+ERROR:  relation "_migrations" does not exist
+LINE 1: ...pplied', string_agg(name, ',' order by name) from _migration...
+                                                             ^
+[migrate] failed: The server does not support SSL connections
+ERROR:  relation "_migrations" does not exist
+LINE 1: ...pplied', string_agg(name, ',' order by name) from _migration...
+                                                             ^
+# exit=0 seconds=1 end=2026-11-27T11:11:00Z

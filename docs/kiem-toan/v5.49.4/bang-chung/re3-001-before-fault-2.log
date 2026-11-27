@@ -1,0 +1,75 @@
+# label=re3-001-before-fault-2
+# head=6d906ba07f12e4f6938c3f493fe29f08472313f3 dirty=2
+# fingerprint(src,scripts,migrations,server,package*)=b6f0e32bfa44f428d99f56e4b7f82896cfd4929a508f820f0e68f9d82405b991
+# start=2026-11-27T10:31:00Z
+# cmd=node --experimental-strip-types --import ./scripts/register-ts.mjs --test src/lib/live/live-settle-fault.test.ts
+TAP version 13
+# Subtest: RE3-001: đối chứng không lỗi trừ đúng và ghi đủ quan sát
+ok 1 - RE3-001: đối chứng không lỗi trừ đúng và ghi đủ quan sát
+  ---
+  duration_ms: 883.331602
+  type: 'test'
+  ...
+# Subtest: RE3-001: lỗi sau khi journal đã ghi, trước khi trừ phiếu → tổng trừ và chi phí bằng đối chứng, đúng một lần
+not ok 2 - RE3-001: lỗi sau khi journal đã ghi, trước khi trừ phiếu → tổng trừ và chi phí bằng đối chứng, đúng một lần
+  ---
+  duration_ms: 1445.964527
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/live/live-settle-fault.test.ts:196:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Token đã trừ lệch: lỗi=2210 đối chứng=3220; logs=ghi sổ usage lỗi, cần đối soát: Error: synthetic fault before statement | phiên đóng: qwen3.8-livetranslate-flash-realtime nối-lại=0 ngủ-dậy=0 lỗi=không
+    
+    2210 !== 3220
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 3220
+  actual: 2210
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/live/live-settle-fault.test.ts:201:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-001: mất ACK sau khi journal đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+not ok 3 - RE3-001: mất ACK sau khi journal đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+  ---
+  duration_ms: 1443.4031
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/live/live-settle-fault.test.ts:196:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Token đã trừ lệch: lỗi=2210 đối chứng=3220; logs=ghi sổ usage lỗi, cần đối soát: Error: synthetic fault after statement | phiên đóng: qwen3.8-livetranslate-flash-realtime nối-lại=0 ngủ-dậy=0 lỗi=không
+    
+    2210 !== 3220
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 3220
+  actual: 2210
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/live/live-settle-fault.test.ts:201:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# provider-spend-pending live:sid-f-mtACKsaukhig190524:36553a36ab4faed147c1bf6f69fa9e4a3635859a4b19b8bfc0a8372e19dc4d2e 08006
+# Subtest: RE3-001: mất ACK sau khi giao dịch quyết toán đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+ok 4 - RE3-001: mất ACK sau khi giao dịch quyết toán đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+  ---
+  duration_ms: 1444.249975
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 2
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5468.568213
+# exit=1 seconds=6 end=2026-11-27T10:31:06Z

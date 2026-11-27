@@ -4,3 +4,9 @@ src/lib/auth/preview.ts:generic-api-key:20
 66b39c6862f30bc97d84090d8eeedada081a237d:src/lib/auth/preview.ts:generic-api-key:20
 398034323010a4b06a00d3e81c9cc48dcb22a900:src/lib/auth/preview.ts:generic-api-key:20
 9785dde332e3870f1d7890700c807e9ecebe932e:src/lib/auth/preview.ts:generic-api-key:20
+# v5.49.4 (27/11/2026): chuỗi giả trong test, đã xem từng chỗ — không phải bí mật:
+#  backend-audit.test.ts:169 khóa webhook 'synthetic-fixture'; risk-rules.test.ts:156 khóa ký thử "khoa-thu-…".
+00f5127df85fa46ff767fba30570172f8acad267:src/lib/risk-rules.test.ts:generic-api-key:156
+e495bb57ed5caa868429603443d4ede36bea2328:src/lib/backend-audit.test.ts:generic-api-key:169
+src/lib/backend-audit.test.ts:generic-api-key:169
+src/lib/risk-rules.test.ts:generic-api-key:156

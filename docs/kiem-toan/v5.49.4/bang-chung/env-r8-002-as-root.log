@@ -1,0 +1,36 @@
+# label=env-r8-002-as-root
+# head=42a6cf23cddbfb0260dc81d71afa820293f01f42 dirty=1
+# fingerprint(src,scripts,migrations,server,package*)=8ab6ed75fa8a2c618215830ab3c5953ecb6d23f7870ebc83b669641bfcb4604b
+# start=2026-11-27T11:10:34Z
+# cmd=node --test scripts/migration-read-permission.test.mjs
+TAP version 13
+# Subtest: R8-002: unreadable migrations directory fails before any database connection
+not ok 1 - R8-002: unreadable migrations directory fails before any database connection
+  ---
+  duration_ms: 52.529643
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/scripts/migration-read-permission.test.mjs:9:1'
+  failureType: 'testCodeFailure'
+  error: 'Expected "actual" to be strictly unequal to: 0'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 0
+  operator: 'notStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/scripts/migration-read-permission.test.mjs:19:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 100.623345
+# exit=1 seconds=0 end=2026-11-27T11:10:34Z

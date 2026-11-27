@@ -1,0 +1,119 @@
+# label=re3-003-before-lease
+# head=dc8cf4e13718f2562e2b067c10116266cce06d3c dirty=1
+# fingerprint(src,scripts,migrations,server,package*)=2a253f75d68f81f9b21fd9bca67734cbc79268b2725bc9a6ce796114702e0394
+# start=2026-11-27T10:46:02Z
+# cmd=node --experimental-strip-types --test src/lib/billing/work-lease.test.ts
+TAP version 13
+# Subtest: RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+not ok 1 - RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+  ---
+  duration_ms: 502.225626
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:11:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    có 6 nhịp chạy cùng lúc
+    
+    6 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 6
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:25:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+not ok 2 - RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+  ---
+  duration_ms: 40.056918
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:29:1'
+  failureType: 'testCodeFailure'
+  error: 'stop() phải trả promise chờ được'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:40:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+not ok 3 - RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+  ---
+  duration_ms: 151.199716
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:48:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'fenced'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'fenced'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:64:10)
+    runNextTicks (node:internal/process/task_queues:64:5)
+    process.processTimers (node:internal/timers:518:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+not ok 4 - RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+  ---
+  duration_ms: 200.889869
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:68:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'deadline'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'deadline'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-lease.test.ts:83:10)
+    runNextTicks (node:internal/process/task_queues:64:5)
+    process.processTimers (node:internal/timers:518:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-003: nhịp có jitter (không đồng loạt) và nằm trong ±10% chu kỳ
+ok 5 - RE3-003: nhịp có jitter (không đồng loạt) và nằm trong ±10% chu kỳ
+  ---
+  duration_ms: 701.090588
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 1
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1695.317309
+# exit=1 seconds=1 end=2026-11-27T10:46:03Z

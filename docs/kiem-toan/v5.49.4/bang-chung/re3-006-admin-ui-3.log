@@ -1,0 +1,40 @@
+# label=re3-006-admin-ui-3
+# head=eaadb2119b08f9c4b4ce615b04dbe078058caa1e dirty=5
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:21:45Z
+# cmd=node docs/kiem-toan/v5.49.4/admin-ui-check.mjs /home/user/TyZo_Sub_Project/screenshots
+[
+ {
+  "name": "desktop-light",
+  "signIn": 200,
+  "url": "http://127.0.0.1:8080/admin",
+  "before": 20,
+  "hasMore": 1,
+  "after": 25,
+  "alert": 1,
+  "shown": [
+   "Chưa biết công việc đã kết thúc hay chưa nên hệ thống giữ chỗ để tránh gọi thêm quá mức. Kiểm tra phía nhà cung cấp trước khi xác nhận. Việc đã có kết quả rõ trong sổ được hệ thống tự xác nhận và ghi nhật ký. Đang hiện 25/25 hồ sơ."
+  ],
+  "overflow": false,
+  "errors": [
+   "Failed to load resource: net::ERR_NAME_NOT_RESOLVED"
+  ]
+ },
+ {
+  "name": "mobile-dark",
+  "signIn": 200,
+  "url": "http://127.0.0.1:8080/admin",
+  "before": 20,
+  "hasMore": 1,
+  "after": 25,
+  "alert": 1,
+  "shown": [
+   "Chưa biết công việc đã kết thúc hay chưa nên hệ thống giữ chỗ để tránh gọi thêm quá mức. Kiểm tra phía nhà cung cấp trước khi xác nhận. Việc đã có kết quả rõ trong sổ được hệ thống tự xác nhận và ghi nhật ký. Đang hiện 25/25 hồ sơ."
+  ],
+  "overflow": false,
+  "errors": [
+   "Failed to load resource: net::ERR_NAME_NOT_RESOLVED"
+  ]
+ }
+]
+# exit=0 seconds=13 end=2026-11-27T11:21:58Z

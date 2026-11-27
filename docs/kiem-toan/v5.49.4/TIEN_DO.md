@@ -14,10 +14,11 @@ Nhánh `ccr-20605d15-2nil6k`, gốc `6d906ba` (khớp 1468/1468 hash manifest ZI
 | 3 | RE3-003 nhịp lease single-flight, timeout máy chủ, mất lease | PASS fixture/PG thật; PARTIAL staging | a65d0e7 |
 | 4 | RE3-004/005/006 nhân admission, cap mọi lane, đối soát unknown theo bằng chứng, Admin phân trang | PASS PG thật + benchmark; PARTIAL Neon/UI | 5341d35 |
 | 5 | RE3-007 bảng kê + khóa ghi + cổng chuyển; sửa Neon→VPS «schema public» | PASS PG thật + docker giả; PARTIAL VPS thật | 42a6cf2 |
-| 6 | Sửa 0054 (dòng `begin` bị migrate.mjs từ chối — phát hiện bởi cổng toàn bộ); diễn tập migration; số đo công bằng RE2-004 | PASS; RE2-004 PARTIAL (2/200 đói 8 s) | (checkpoint 6) |
+| 6 | Sửa 0054 (dòng `begin` bị migrate.mjs từ chối — phát hiện bởi cổng toàn bộ); diễn tập migration; số đo công bằng RE2-004 | PASS; RE2-004 PARTIAL (2/200 đói 8 s) | eaadb21 |
+| 7 | Đối chiếu 80 mục (DOI_CHIEU_80.json: 68 PASS/8 PARTIAL/2 BLOCKED/2 BY_DESIGN), Android JVM 10/10, gitleaks/semgrep/depcruise triage, UI Admin RE3-006 (ảnh), check:auth, log bằng chứng vào git | xem từng mục | (checkpoint 7) |
 
 ## Cổng toàn bộ lần 1 (HEAD 42a6cf2)
 typecheck 0; lint 0 lỗi/23 cảnh báo có sẵn; test 209/218 pass, 7 skip, **2 fail**: (a) migration-files: 0054 có dòng `begin` → đã sửa ở checkpoint 6; (b) R8-002 chmod 0 không chặn được root (phiên chạy bằng root, `env-r8-002-as-root.log`) — giới hạn môi trường, không sửa mã. check:auth cần dev server (chạy ở đợt UI). build mặc định 0.
 
 ## Việc tiếp theo
-RE2 ×6 → 80 lịch sử → scanner → gates → Graphify → hồ sơ cuối.
+Graphify (RE3-008) → soak 3600 s → cổng cuối (build Node) → hồ sơ cuối.

@@ -1,0 +1,20 @@
+# label=android-jvm-session-api
+# head=eaadb2119b08f9c4b4ce615b04dbe078058caa1e dirty=1
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:15:38Z
+# cmd=env PATH=/tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/kt/kotlinc/bin:/root/.claude/rm-guard/91ef48fe40fd32ba8f9ec8c7646b1d52/refuse:/nix/var/nix/profiles/default/bin:/root/.local/bin:/root/.cargo/bin:/usr/local/go/bin:/opt/node22/bin:/opt/maven/bin:/opt/gradle/bin:/opt/rbenv/bin:/root/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin TYZO_ANDROID_TEST_LIBS=/tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/libs JAVA_TOOL_OPTIONS= bash android/tools/check-session.sh
+Picked up JAVA_TOOL_OPTIONS: 
+Picked up JAVA_TOOL_OPTIONS: 
+PASS account+origin namespace isolation
+PASS late sync cannot overwrite newer save or another account
+PASS rejected sync remains retryable and successful acknowledgement is durable
+PASS clear wins over old completion
+PASS legacy retained, corrupt file not reported synced, failed write reported
+PASS SRT/VTT/TXT export unchanged
+Picked up JAVA_TOOL_OPTIONS: 
+Picked up JAVA_TOOL_OPTIONS: 
+PASS history requires saved=true and receipt id
+PASS unlink rejects server/network failure and requires acknowledgement
+PASS stable authenticated account identity parsed; old server fails closed
+PASS offline unlink reports failure
+# exit=0 seconds=13 end=2026-11-27T11:15:51Z

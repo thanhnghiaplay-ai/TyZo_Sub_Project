@@ -1,0 +1,89 @@
+# label=re3-005-006-after-2
+# head=a65d0e77f1f7ce3b580e173c7066f76270ce3ad4 dirty=12
+# fingerprint(src,scripts,migrations,server,package*)=49f62492a3a3f657e963c74808506222fbf9e9ff0c4b8db4222e14ecd8a2f174
+# start=2026-11-27T10:59:36Z
+# cmd=node --experimental-strip-types --test src/lib/billing/work-admission-pg.test.ts
+TAP version 13
+# Subtest: RE3-005: cap mỗi nhà đếm trên mọi lane — batch + live đồng thời không vượt
+ok 1 - RE3-005: cap mỗi nhà đếm trên mọi lane — batch + live đồng thời không vượt
+  ---
+  duration_ms: 230.612602
+  type: 'test'
+  ...
+# Subtest: RE3-005: cap mỗi model đếm trên mọi lane
+ok 2 - RE3-005: cap mỗi model đếm trên mọi lane
+  ---
+  duration_ms: 9.770542
+  type: 'test'
+  ...
+# Subtest: RE3-005: suất dành cho live — batch không chiếm được phần dành riêng
+ok 3 - RE3-005: suất dành cho live — batch không chiếm được phần dành riêng
+  ---
+  duration_ms: 24.978983
+  type: 'test'
+  ...
+# Subtest: RE3-005: job async đang gửi (suất cùng mã lệnh) không bị đếm hai lần; sau khi nhả suất thì job vẫn chiếm chỗ
+ok 4 - RE3-005: job async đang gửi (suất cùng mã lệnh) không bị đếm hai lần; sau khi nhả suất thì job vẫn chiếm chỗ
+  ---
+  duration_ms: 12.674973
+  type: 'test'
+  ...
+# Subtest: RE3-006: unknown KHÔNG tự giải phóng theo thời gian; chỉ khi có bằng chứng định đoạt, có nhật ký
+not ok 5 - RE3-006: unknown KHÔNG tự giải phóng theo thời gian; chỉ khi có bằng chứng định đoạt, có nhật ký
+  ---
+  duration_ms: 15.094981
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/work-admission-pg.test.ts:94:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'resolved'
+    - 'unknown'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'unknown'
+  actual: 'resolved'
+  operator: 'strictEqual'
+  stack: |-
+    staleUnknown (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-admission-pg.test.ts:90:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-admission-pg.test.ts:105:96)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứng được mở dần theo lô, cửa nhận việc hồi phục
+not ok 6 - RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứng được mở dần theo lô, cửa nhận việc hồi phục
+  ---
+  duration_ms: 52.427717
+  type: 'test'
+  location: '/home/user/TyZo_Sub_Project/src/lib/billing/work-admission-pg.test.ts:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(id)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///home/user/TyZo_Sub_Project/src/lib/billing/work-admission-pg.test.ts:130:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 4
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 488.921472
+# exit=1 seconds=0 end=2026-11-27T10:59:36Z

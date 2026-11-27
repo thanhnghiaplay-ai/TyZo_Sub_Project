@@ -1,0 +1,2303 @@
+[
+ {
+  "id": "MAIN-023",
+  "priority": "P0",
+  "title": "Giữ ngân sách riêng từng đoạn",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "3622bcc",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/billing/tyzo-modal-race.test.ts (Postgres 16 thật, 12 kết nối)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/tyzo-modal-charge.ts",
+  "source_sha256_at_handoff": "1b58eb69906d50a048524a5edaf56dfd8d540b75d45e7f12df3f299e13e8b2ef",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: MAIN-023: 9 đoạn ước 30 Token, giữ 100 → tối đa 3 đoạn được gọi GPU cùng lúc",
+   "test_files": [
+    "src/lib/billing/tyzo-modal-race.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "MAIN-024",
+  "priority": "P0",
+  "title": "Quyết toán và lưu kết quả",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "3622bcc",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tyzo-modal-race.test.ts: trigger giả lập lỗi lưu kết quả",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/tyzo-modal-charge.ts",
+  "source_sha256_at_handoff": "1b58eb69906d50a048524a5edaf56dfd8d540b75d45e7f12df3f299e13e8b2ef",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: MAIN-024: lỗi khi lưu kết quả thì không trừ Token (không có tiền mà không có chữ)",
+   "test_files": [
+    "src/lib/billing/tyzo-modal-race.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "MAIN-036",
+  "priority": "P0",
+  "title": "Đóng phiếu đang chạy",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "3622bcc",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tyzo-modal-race.test.ts",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/token-flow.ts",
+  "source_sha256_at_handoff": "0163338dcdb1d734504918d6316e270d9c5a040d3622ee5d6dc204ff879fbf02",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: MAIN-036: khách đóng phiếu khi đoạn đang chạy → đoạn vẫn được trừ, phần dư trả về sau đó",
+   "test_files": [
+    "src/lib/billing/tyzo-modal-race.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "SPLIT-008",
+  "priority": "P0",
+  "title": "Worker dịch trùng",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "2ce19fd",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/pipeline/translate-claim.test.ts (mock module groq)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/pipeline/translate.ts",
+  "source_sha256_at_handoff": "e27e10706007ee7f7fc103390d95f3d9705286d656c583dc4eaed02df4d856ce",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ đạt: src/lib/billing/run-bill.test.ts, src/lib/pipeline/translate-claim.test.ts",
+   "test_files": [
+    "src/lib/billing/run-bill.test.ts",
+    "src/lib/pipeline/translate-claim.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "REF-013",
+  "priority": "P0",
+  "title": "Restore bỏ qua lỗi",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "17f3351",
+  "current_review_status": "PARTIAL",
+  "historical_test": "Diễn tập trên Postgres 16 cục bộ với docker giả (docs/kiem-toan/v5.49/bang-chung/restore-drill.log, restore-drill-harness.sh)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "deploy/vps/tyzo.sh",
+  "source_sha256_at_handoff": "c2c16d87513f45a8244b46dba4d582b08487022ecd4582e37dbe73668e584c80",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "re3-007-after-restore-3.log"
+   ],
+   "note": "nap_dump dừng ở lỗi đầu, không đổi chỗ khi lỗi; thêm bảng kê (RE3-007).",
+   "test_files": []
+  }
+ },
+ {
+  "id": "AZ-001",
+  "priority": "P0",
+  "title": "Restore gói chuyển máy cũng bỏ qua lỗi",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "17f3351",
+  "current_review_status": "PARTIAL",
+  "historical_test": "Diễn tập trên Postgres 16 cục bộ với docker giả (docs/kiem-toan/v5.49/bang-chung/restore-drill.log, restore-drill-harness.sh)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "deploy/vps/tyzo.sh",
+  "source_sha256_at_handoff": "c2c16d87513f45a8244b46dba4d582b08487022ecd4582e37dbe73668e584c80",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "re3-007-after-restore-3.log"
+   ],
+   "note": "khoi_phuc_vps gọi nap_dump (exit-on-error, một giao dịch, kiểm cấu trúc). Gói chuyển VPS không kèm bảng kê nguồn nên chưa so số dòng/mã băm.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "MAIN-042",
+  "priority": "P0",
+  "title": "Chuyển Chủ không nguyên tử",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/admin/admin-allow.test.ts (+2 test)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/admin/admin-allow.server.ts",
+  "source_sha256_at_handoff": "e1d290d36e45c4e05c43ebfe6a254baea37958d532439545549bd216aa17cb05",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: MAIN-042: người không còn là Chủ thì không chuyển được, không sinh Chủ mới | MAIN-042: chuyển cho chính mình thì vẫn là Chủ, không bị hạ",
+   "test_files": [
+    "src/lib/admin/admin-allow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "MAIN-038",
+  "priority": "P1",
+  "title": "Thứ tự tiêu Token",
+  "historical_result_status": "NEEDS_OWNER",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/token-flow.ts",
+  "source_sha256_at_handoff": "0163338dcdb1d734504918d6316e270d9c5a040d3622ee5d6dc204ff879fbf02",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: MAIN-038: trừ phần của gói hết hạn sớm nhất trước (dù mã gói xếp sau); đóng phiếu trả dư, gói hạn dài còn nguyên",
+   "test_files": [
+    "src/lib/billing/token-flow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "MAIN-039",
+  "priority": "P1",
+  "title": "Chỉnh số dư đồng thời",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/billing/token-balance-race.test.ts (Postgres thật)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/token-flow.ts",
+  "source_sha256_at_handoff": "0163338dcdb1d734504918d6316e270d9c5a040d3622ee5d6dc204ff879fbf02",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ đạt: src/lib/billing/token-balance-race.test.ts",
+   "test_files": [
+    "src/lib/billing/token-balance-race.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "MAIN-040",
+  "priority": "P1",
+  "title": "Ghi chi phí GPU đã bổ sung",
+  "historical_result_status": "VERIFIED_ALREADY_FIXED",
+  "historical_result_commit": "48b6a19",
+  "current_review_status": "PARTIAL",
+  "historical_test": "đọc mã",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/tyzo-modal-call.ts",
+  "source_sha256_at_handoff": "741c1e9ad5853404d34c37fbc11072fd7dc0f45b9cf6fbea642ea6bb6d330e2a",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Đọc mã: tyzo-modal-call.ts ghi recordSpendDurablyWith; chưa có test hành vi riêng.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "NEW-001",
+  "priority": "P1",
+  "title": "Script tổng hợp mất exit code",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "chạy thật: bao-mat trả exit 1 khi có phát hiện (docs/kiem-toan/v5.49/bang-chung/../TOOLS.md)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "scripts/tools/cong-cu.sh",
+  "source_sha256_at_handoff": "29fd0c4ea0e2621958eab483181fe6c76c3ee74be55b32668929cf8b8e12b3b4",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "quet/semgrep-triage.json"
+   ],
+   "note": "cong-cu.sh bao-mat: luật ghim đúng commit, có phát hiện → mã thoát 1 (đã chạy 27/11/2026).",
+   "test_files": []
+  }
+ },
+ {
+  "id": "NEW-002",
+  "priority": "P1",
+  "title": "Semgrep không gate đúng",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "chạy thật: bao-mat trả exit 1 khi có phát hiện (docs/kiem-toan/v5.49/bang-chung/../TOOLS.md)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "scripts/tools/cong-cu.sh",
+  "source_sha256_at_handoff": "29fd0c4ea0e2621958eab483181fe6c76c3ee74be55b32668929cf8b8e12b3b4",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "quet/semgrep-triage.json"
+   ],
+   "note": "cong-cu.sh bao-mat: luật ghim đúng commit, có phát hiện → mã thoát 1 (đã chạy 27/11/2026).",
+   "test_files": []
+  }
+ },
+ {
+  "id": "NEW-004",
+  "priority": "P1",
+  "title": "Allowlist rộng",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ae2048d 29e6c06",
+  "current_review_status": "PARTIAL",
+  "historical_test": "gitleaks dir: no leaks; gitleaks git: no leaks",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": ".gitleaks.toml",
+  "source_sha256_at_handoff": "157376c1df2a328487a9b2194374d79c40c14e8da2b0725fcc654d8a6a5b433b",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "quet/gitleaks-sau-triage.txt"
+   ],
+   "note": "gitleaks git + dir: no leaks sau khi ghi 2 vân tay test giả cụ thể (không nới luật chung).",
+   "test_files": []
+  }
+ },
+ {
+  "id": "NEW-007",
+  "priority": "P2",
+  "title": "Rules không đúng commit",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "chạy thật: bao-mat trả exit 1 khi có phát hiện (docs/kiem-toan/v5.49/bang-chung/../TOOLS.md)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "scripts/tools/cong-cu.sh",
+  "source_sha256_at_handoff": "29fd0c4ea0e2621958eab483181fe6c76c3ee74be55b32668929cf8b8e12b3b4",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "quet/semgrep-triage.json"
+   ],
+   "note": "cong-cu.sh bao-mat: luật ghim đúng commit, có phát hiện → mã thoát 1 (đã chạy 27/11/2026).",
+   "test_files": []
+  }
+ },
+ {
+  "id": "NEW-008",
+  "priority": "P1",
+  "title": "CSS deploy chưa được nghiệm thu",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "6a768a3",
+  "current_review_status": "PARTIAL",
+  "historical_test": "2 ca thử: 1 tệp CSS → sửa đúng, exit 0; 2 tệp + trỏ sai → exit 1; bản dựng node-server thật exit 0",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "scripts/fix-css-ref.mjs",
+  "source_sha256_at_handoff": "e8388fb7302b734eb9d3a84de5448e6c8a474553152c2833488c25cb3f0b42bd",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Không có test trong npm test; chưa chạy lại kịch bản 2 ca.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "AZ-002",
+  "priority": "P1",
+  "title": "Lịch sử Android lẫn tài khoản",
+  "historical_result_status": "BLOCKED",
+  "historical_result_commit": "",
+  "current_review_status": "BLOCKED",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "android/app/src/main/java/vn/tyzo/sub/Session.kt",
+  "source_sha256_at_handoff": "30e1366f9c25a6a5ba46b243d605b6fac953df247101d032dda5e1c87d514d17",
+  "note": "Không hạ kết quả lịch sử thành lỗi mới; đây là trạng thái tái nghiệm thu phiên hiện tại. Chưa hoàn tất ma trận 80 tiêu chí. Android cần SDK/thiết bị.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [
+    "android-jvm-session-api.log"
+   ],
+   "note": "Backend test + JVM 10/10; chưa máy Android thật.",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "AZ-003",
+  "priority": "P1",
+  "title": "Race lưu và sync Android",
+  "historical_result_status": "BLOCKED",
+  "historical_result_commit": "",
+  "current_review_status": "BLOCKED",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "android/app/src/main/java/vn/tyzo/sub/Session.kt",
+  "source_sha256_at_handoff": "30e1366f9c25a6a5ba46b243d605b6fac953df247101d032dda5e1c87d514d17",
+  "note": "Không hạ kết quả lịch sử thành lỗi mới; đây là trạng thái tái nghiệm thu phiên hiện tại. Chưa hoàn tất ma trận 80 tiêu chí. Android cần SDK/thiết bị.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [
+    "android-jvm-session-api.log"
+   ],
+   "note": "JVM: late sync cannot overwrite newer save; chưa máy thật.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "AZ-004",
+  "priority": "P1",
+  "title": "Báo sync dù server không lưu",
+  "historical_result_status": "BLOCKED",
+  "historical_result_commit": "",
+  "current_review_status": "BLOCKED",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "android/app/src/main/java/vn/tyzo/sub/Api.kt",
+  "source_sha256_at_handoff": "c162e2d47880bb0be2da1812e1244be7618e7cdcdb50e4558868dfeab85ccfef",
+  "note": "Không hạ kết quả lịch sử thành lỗi mới; đây là trạng thái tái nghiệm thu phiên hiện tại. Chưa hoàn tất ma trận 80 tiêu chí. Android cần SDK/thiết bị.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [
+    "android-jvm-session-api.log"
+   ],
+   "note": "JVM: history requires saved=true and receipt id; chưa máy thật.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "AZ-005",
+  "priority": "P1",
+  "title": "Giới hạn body sau khi đọc",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, lint, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/app-api.test.ts",
+   "evidence": "Stream cap, cancel before full body",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/app-api.server.ts",
+  "source_sha256_at_handoff": "759084c18a188f9301c2f8be8a69fe8f57da00a7f578dc0949e53dbcab0dac50",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: AZ-005: body cap cancels a chunked request before consuming all input",
+   "test_files": [
+    "src/lib/app-api.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "AZ-006",
+  "priority": "P1",
+  "title": "HMAC quét đêm không gắn body",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/sweep-sign.ts",
+  "source_sha256_at_handoff": "22f215c185f71e0c460766b5492195c2f9e026b514220229f7fa0c5e589682eb",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: chữ ký quét đêm (AZ-006: gắn mã dùng một lần, phương thức, đường dẫn, thân)",
+   "test_files": [
+    "src/lib/risk-rules.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "AZ-007",
+  "priority": "P2",
+  "title": "Đổi mã thiết bị không nguyên tử",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test (app-link.test.ts)",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "SQL rollback when device insert fails",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/app-link.server.ts",
+  "source_sha256_at_handoff": "ea3c565ec47cb4d838e9fc226a1b2d30204600732c4dee6ae011b3472d726167",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: AZ-007 / R3-005: serialized link codes and rollback after device-insert failure",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "AZ-008",
+  "priority": "P2",
+  "title": "Gỡ thiết bị báo thành công khi offline",
+  "historical_result_status": "BLOCKED",
+  "historical_result_commit": "",
+  "current_review_status": "BLOCKED",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "android/app/src/main/java/vn/tyzo/sub/MainActivity.kt",
+  "source_sha256_at_handoff": "d2e8e6fc553c8b94d6b3666ee8a9aa83334bbec5ddc72062feecc7b045e89a92",
+  "note": "Không hạ kết quả lịch sử thành lỗi mới; đây là trạng thái tái nghiệm thu phiên hiện tại. Chưa hoàn tất ma trận 80 tiêu chí. Android cần SDK/thiết bị.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [
+    "android-jvm-session-api.log"
+   ],
+   "note": "JVM: offline unlink reports failure; chưa máy thật.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "AZ-009",
+  "priority": "P2",
+  "title": "Lỗi nội bộ trả ra client",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474 29e6c06",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, lint",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/app-api.test.ts",
+   "evidence": "coded500 generic response and redacted log",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/app-api.server.ts",
+  "source_sha256_at_handoff": "759084c18a188f9301c2f8be8a69fe8f57da00a7f578dc0949e53dbcab0dac50",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: AZ-009: a coded internal 500 never exposes its detail; public 429 preserves retry hint",
+   "test_files": [
+    "src/lib/app-api.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "AZ-010",
+  "priority": "P2",
+  "title": "Test hiện hữu không nằm trong npm test",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "npm test",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "package.json",
+  "source_sha256_at_handoff": "d3db4769705c8c7bf04f8d2e2858f9489abe107a142f92d1fb32ebc872ef1a65",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ đạt: scripts/test-list.test.mjs",
+   "test_files": [
+    "scripts/test-list.test.mjs"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-001",
+  "priority": "P0",
+  "title": "Streaming đóng phiếu trước khi quyết toán xong",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "8a3de38",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/live/live-bridge-audit.test.ts (Alibaba giả, sổ tiền giả có độ trễ)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-bridge.ts",
+  "source_sha256_at_handoff": "4aa90e1ccf0b624ef03db6c569dafb34b16b1708002d6f74150a5022c5f81acd",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: DEEP-001: Alibaba báo «finished» ngay sau usage → phiếu chỉ đóng sau khi trừ xong",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-002",
+  "priority": "P0",
+  "title": "Streaming vượt ngân sách trong lúc top-up",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "8a3de38",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/live/live-bridge-audit.test.ts (Alibaba giả, sổ tiền giả có độ trễ)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-meter.ts",
+  "source_sha256_at_handoff": "39b88a1f42497ae99b028c46ee15359fe2494da9ea0f230d4246c7132ec96045",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: DEEP-002: xin giữ thêm đang chậm → không gửi tiếng vượt phần đã giữ",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-003",
+  "priority": "P1",
+  "title": "Chi phí streaming suy ra từ Token thực thu",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-billing.ts",
+  "source_sha256_at_handoff": "5a486a7216258be8d805b47239444bc33d8c446fe9e78d3c4f41c5326aec02b4",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "re3-001-after-fault-2.log",
+    "re3-001-after-related-2.log"
+   ],
+   "note": "Chi phí theo usage thật, nay ghi nguyên tử cùng khoản trừ (RE3-001).",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-004",
+  "priority": "P1",
+  "title": "Reconnect sau khi phiên đã đóng",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "8a3de38",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/live/live-bridge-audit.test.ts (Alibaba giả, sổ tiền giả có độ trễ)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-bridge.ts",
+  "source_sha256_at_handoff": "4aa90e1ccf0b624ef03db6c569dafb34b16b1708002d6f74150a5022c5f81acd",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: DEEP-004: Alibaba cắt, khách rời trong lúc chờ nối lại → không mở lại kết nối Alibaba",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-005",
+  "priority": "P1",
+  "title": "Top-up hoàn thành sau finalize",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "8a3de38",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/live/live-bridge-audit.test.ts (Alibaba giả, sổ tiền giả có độ trễ)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-bridge.ts",
+  "source_sha256_at_handoff": "4aa90e1ccf0b624ef03db6c569dafb34b16b1708002d6f74150a5022c5f81acd",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: DEEP-005: lần giữ thêm trả về sau khi phiên đóng → phiếu đó vẫn được nhả",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-006",
+  "priority": "P1",
+  "title": "Client rời trước khi gắn close handler",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "8a3de38",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/live/live-bridge-audit.test.ts (Alibaba giả, sổ tiền giả có độ trễ)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-bridge.ts",
+  "source_sha256_at_handoff": "4aa90e1ccf0b624ef03db6c569dafb34b16b1708002d6f74150a5022c5f81acd",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: DEEP-006: khách rời trong lúc cầu nối đang đọc giá → không giữ tiền, hoặc giữ rồi nhả ngay",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-007",
+  "priority": "P2",
+  "title": "Timestamp lịch sử vượt integer DB",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "live-history.test.ts (+1)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-history.ts",
+  "source_sha256_at_handoff": "15fb850e54ec4d62ea7f188b60e0c357f28764fa2616aeb35af2140e1c1b878e",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: DEEP-007: giây quá lớn bị chặn ở 2 ngày, không tràn cột duration_ms",
+   "test_files": [
+    "src/lib/live/live-history.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-008",
+  "priority": "P1",
+  "title": "Thiếu backpressure phía bridge",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "live tests đạt; chưa đo trên mạng thật",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/live/live-bridge-audit.test.ts",
+   "evidence": "real local WebSocket bufferedAmount backpressure",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/live/live-bridge.ts",
+  "source_sha256_at_handoff": "4aa90e1ccf0b624ef03db6c569dafb34b16b1708002d6f74150a5022c5f81acd",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Test fixture đạt; chưa đo trên mạng thật.",
+   "test_files": [
+    "src/lib/live/live-bridge-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-009",
+  "priority": "P1",
+  "title": "Vé live có thể đi qua ws không mã hóa",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "live-wire.test.ts (+2)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/live/live-open-rules.ts",
+  "source_sha256_at_handoff": "9c5e55ff5ad1a4b269c102d275516285974d1db36a0ee7b80cd95b3487dcb150",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ đạt: src/lib/live/live-wire.test.ts",
+   "test_files": [
+    "src/lib/live/live-wire.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "DEEP-010",
+  "priority": "P1",
+  "title": "Webhook nhận JSON không giới hạn tại handler",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, pay tests",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "actual webhook handlers auth-before-read and body cap",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/payment/pay-store.ts",
+  "source_sha256_at_handoff": "5c6afcf44d84bba5c05eddcac68f53b357adfe453a6d00cdaa41ac0344316b7a",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: DEEP-010: shared webhook reader enforces 256KiB without Content-Length | DEEP-010: real webhook handlers authenticate before reading and cap oversized bodies",
+   "test_files": [
+    "src/lib/app-api.test.ts",
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-001",
+  "priority": "P0",
+  "title": "Groq/Alibaba gọi trước khi reserve riêng",
+  "historical_result_status": "NEEDS_OWNER",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/run-gate.ts",
+  "source_sha256_at_handoff": "acf7368a4ca49f3990fc3ad0eec92132265fed91e57f9272a2a01a49a4706b5b",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "re3-002-after-related.log"
+   ],
+   "note": "Giữ trước khi gọi nhà (R01) + dự toán audio xác minh (RE3-002).",
+   "test_files": [
+    "src/lib/billing/gate-reserve.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-002",
+  "priority": "P1",
+  "title": "Giới hạn output token chưa fail closed",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "run-gate.test.ts; audit_tools/repro_cap.mjs",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/run-gate.ts",
+  "source_sha256_at_handoff": "acf7368a4ca49f3990fc3ad0eec92132265fed91e57f9272a2a01a49a4706b5b",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ đạt: src/lib/billing/run-gate.test.ts",
+   "test_files": [
+    "src/lib/billing/run-gate.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-003",
+  "priority": "P1",
+  "title": "Giá chat thiếu một chiều vẫn được mở",
+  "historical_result_status": "NEEDS_OWNER",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/billing/run-bill.ts",
+  "source_sha256_at_handoff": "892ecc7398eeb7dd0a28583d94b38618acc219cc4f3560f8346dc9be3e7126c7",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R3-003: thiếu giá một chiều thì chặn model; số 0 ghi rõ là miễn phí chiều đó",
+   "test_files": [
+    "src/lib/billing/run-bill.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-004",
+  "priority": "P1",
+  "title": "Thu hồi thiết bị khi đổi mật khẩu có thể thất bại im lặng",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "password/device trigger atomic rollback + expired pending link",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/auth/server.ts",
+  "source_sha256_at_handoff": "b7d5b3043d5ef26dd61a6b745d52561a6543295e924fa6ef185d273d70853ab9",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R3-004: database password update and device revocation fail or commit together",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-005",
+  "priority": "P1",
+  "title": "Mã liên kết mới không serialize theo tài khoản",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test (app-link.test.ts)",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "12 concurrent link-code requests serialize",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/app-link.server.ts",
+  "source_sha256_at_handoff": "ea3c565ec47cb4d838e9fc226a1b2d30204600732c4dee6ae011b3472d726167",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: AZ-007 / R3-005: serialized link codes and rollback after device-insert failure",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-006",
+  "priority": "P2",
+  "title": "Android updater có race đăng ký receiver",
+  "historical_result_status": "BLOCKED",
+  "historical_result_commit": "",
+  "current_review_status": "BLOCKED",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "android/app/src/main/java/vn/tyzo/sub/Updater.kt",
+  "source_sha256_at_handoff": "30440825f5d498549f0af1f8c24d4d7a4d7805bac03d5480693ceee14535d2fe",
+  "note": "Không hạ kết quả lịch sử thành lỗi mới; đây là trạng thái tái nghiệm thu phiên hiện tại. Chưa hoàn tất ma trận 80 tiêu chí. Android cần SDK/thiết bị.",
+  "reaccept_v5_49_4": {
+   "status": "BLOCKED",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Updater/receiver cần Android SDK + máy thật; không có bộ kiểm JVM.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "R3-007",
+  "priority": "P1",
+  "title": "Polish endpoint thiếu auth middleware trực tiếp",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "6a768a3",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc; Playwright: phòng dịch và Admin không lỗi console",
+  "historical_continuation": {
+   "status": "PARTIAL",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "three endpoints register auth middleware; transport fixture",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/polish/polish-room.ts",
+  "source_sha256_at_handoff": "563cd653e6add601b9328be568d888e96675194779a3565184c809d1f71bb9ec",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R3-007: all three read/quote polish endpoints register authentication",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-008",
+  "priority": "P1",
+  "title": "Gateway tin IP header nếu proxy không chuẩn hóa",
+  "historical_result_status": "BLOCKED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PARTIAL",
+   "note": "IP tests pass, actual ingress header overwrite/origin access unverified",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/app-link.server.ts",
+  "source_sha256_at_handoff": "ea3c565ec47cb4d838e9fc226a1b2d30204600732c4dee6ae011b3472d726167",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "4 test mang ID đạt trên HEAD: R3-008: tunnel trusts only CF's configured IP header, never spoofed XFF | R3-008: missing trusted header fails closed without trying untrusted headers",
+   "test_files": [
+    "src/lib/request-ip.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R3-009",
+  "priority": "P1",
+  "title": "Giá ASR fallback theo kết quả thiếu duration",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PASS",
+   "note": "estimated ASR usage + reconciliation flag local test",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/billing/run-gate.ts",
+  "source_sha256_at_handoff": "acf7368a4ca49f3990fc3ad0eec92132265fed91e57f9272a2a01a49a4706b5b",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát",
+   "test_files": [
+    "src/lib/billing/run-gate.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-001",
+  "priority": "P0",
+  "title": "Reset dữ liệu thử thiếu rào chắn môi trường và xác nhận server",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "money-flow.test.ts + Playwright thật dev và bản dựng node-server trên Postgres (Reset đạt, mã máy chủ)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/admin/admin-money.ts",
+  "source_sha256_at_handoff": "7aa764738294a0a0fa34ca24d9b60e05d3a2829e3469b105d181e567f42f8243",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "3 test mang ID đạt trên HEAD: R4-001: mã do máy chủ cấp, đúng người, dùng một lần | R4-001: mã quá 5 phút thì hết hạn",
+   "test_files": [
+    "src/lib/payment/money-flow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-002",
+  "priority": "P0",
+  "title": "Reset nhiều bảng không nguyên tử",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "money-flow.test.ts: trigger chặn xóa room_audit → Token và đơn còn nguyên",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/payment/pay-flow.ts",
+  "source_sha256_at_handoff": "9ceb9f6887948b41929d235285b680ac1644c9a84869d4cf2e8fa7887381ef0e",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R4-002: một bảng xóa lỗi thì không bảng nào bị xóa | reset số liệu thử an toàn (kiểm toán R4-001, R4-002)",
+   "test_files": [
+    "src/lib/payment/money-flow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-003",
+  "priority": "P1",
+  "title": "Reset không đồng bộ sổ chi phí provider",
+  "historical_result_status": "NEEDS_OWNER",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/payment/pay-flow.ts",
+  "source_sha256_at_handoff": "9ceb9f6887948b41929d235285b680ac1644c9a84869d4cf2e8fa7887381ef0e",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R4-003: reset trên CSDL thử xóa cả sổ phải trả nhà cung cấp, giữ nhật ký thao tác | RE-004, R4-003: reset chỉ trên CSDL thử đã khai báo",
+   "test_files": [
+    "src/lib/payment/money-flow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-004",
+  "priority": "P1",
+  "title": "Xóa tài khoản không thu hồi khóa Android tại luồng xóa",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "device invalid after user removal",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/admin/admin-users.ts",
+  "source_sha256_at_handoff": "b58665b9a824ae5a43e28cd891dbd9e8215450f228ea8eaa67e9477ac266e264",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-005",
+  "priority": "P1",
+  "title": "Xóa tài khoản có nhiều bước bỏ qua lỗi",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "fault inside removal rolls all changes back",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/admin/admin-users.ts",
+  "source_sha256_at_handoff": "b58665b9a824ae5a43e28cd891dbd9e8215450f228ea8eaa67e9477ac266e264",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-006",
+  "priority": "P1",
+  "title": "Tổng doanh thu ép int32",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "revenue aggregate >=3.2 billion",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/admin/admin-money.ts",
+  "source_sha256_at_handoff": "7aa764738294a0a0fa34ca24d9b60e05d3a2829e3469b105d181e567f42f8243",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R4-006: real revenue aggregation exceeds int32 without truncation",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-007",
+  "priority": "P2",
+  "title": "API Android xóa lịch sử không có rate limit tại handler",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "actual history DELETE per-account rate call",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/routes/api/app-history.ts",
+  "source_sha256_at_handoff": "b6a5b33245454c8a91ba6cd3da533d7ffa9b04d76eda238b4e4b985830a11f87",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R4-007: actual Android history-delete handler applies per-account rate limit",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R4-008",
+  "priority": "P1",
+  "title": "Mật khẩu tạm cập nhật trực tiếp credential",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "b692474",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "temp password invalidates web and Android sessions",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/admin/admin-users.ts",
+  "source_sha256_at_handoff": "b58665b9a824ae5a43e28cd891dbd9e8215450f228ea8eaa67e9477ac266e264",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R4-008: temporary password revokes web sessions and Android credentials",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-001",
+  "priority": "P0",
+  "title": "Hai lệnh rút có thể dùng cùng số dư",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/affiliate-payout.test.ts (Postgres thật)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/affiliate-room.ts",
+  "source_sha256_at_handoff": "2b802f5504b3e741f10805600e2463856783b2367ca21b823a8d4fbc383e83d0",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-001: 5 lần bấm Rút cùng lúc chỉ ra MỘT lệnh đúng 60.000 đ",
+   "test_files": [
+    "src/lib/affiliate-payout.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-002",
+  "priority": "P0",
+  "title": "Xác nhận chi tiền không gắn đúng lệnh rút",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "affiliate-payout.test.ts",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/affiliate-room.ts",
+  "source_sha256_at_handoff": "2b802f5504b3e741f10805600e2463856783b2367ca21b823a8d4fbc383e83d0",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-002: xác nhận một lệnh đã hủy thì báo lỗi, không đánh dấu khoản của lệnh mới là đã chi",
+   "test_files": [
+    "src/lib/affiliate-payout.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-003",
+  "priority": "P1",
+  "title": "Hủy lệnh rút không nguyên tử",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "affiliate-payout.test.ts",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/affiliate-room.ts",
+  "source_sha256_at_handoff": "2b802f5504b3e741f10805600e2463856783b2367ca21b823a8d4fbc383e83d0",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-003: hủy lệnh trả đúng khoản về «Rút được», rút lại được",
+   "test_files": [
+    "src/lib/affiliate-payout.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-004",
+  "priority": "P1",
+  "title": "Kiểm tra cờ rủi ro rút tiền fail-open",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ee37429",
+  "current_review_status": "PARTIAL",
+  "historical_test": "affiliate-payout.test.ts (cờ mở → chặn)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/affiliate-room.ts",
+  "source_sha256_at_handoff": "2b802f5504b3e741f10805600e2463856783b2367ca21b823a8d4fbc383e83d0",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-004: có cờ rủi ro mở thì không rút được",
+   "test_files": [
+    "src/lib/affiliate-payout.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-005",
+  "priority": "P1",
+  "title": "Hoa hồng gói dùng giá mặc định thay vì giá đơn",
+  "historical_result_status": "NEEDS_OWNER",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/payment/pay-flow.ts",
+  "source_sha256_at_handoff": "9ceb9f6887948b41929d235285b680ac1644c9a84869d4cf2e8fa7887381ef0e",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-005: hoa hồng gói tính trên số tiền thực thu của đơn (giá lúc đặt), không trên giá gói hiện tại; trả dư không tính",
+   "test_files": [
+    "src/lib/payment/money-flow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-006",
+  "priority": "P1",
+  "title": "Hoa hồng lỗi sau thanh toán không có retry tại luồng này",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/payment/pay-flow.ts",
+  "source_sha256_at_handoff": "9ceb9f6887948b41929d235285b680ac1644c9a84869d4cf2e8fa7887381ef0e",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-006: ghi hoa hồng lỗi thì đơn vẫn trả xong, việc nằm trong hàng đợi và lần sau ghi được đúng một lần",
+   "test_files": [
+    "src/lib/payment/money-flow.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-007",
+  "priority": "P2",
+  "title": "Gắn mã giới thiệu trả thành công dù không ghi",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/backend-audit.test.ts",
+   "evidence": "conflicting affiliate reports false and preserves original",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/affiliate-room.ts",
+  "source_sha256_at_handoff": "2b802f5504b3e741f10805600e2463856783b2367ca21b823a8d4fbc383e83d0",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-007: conflicting referral code reports false and preserves original affiliation",
+   "test_files": [
+    "src/lib/backend-audit.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-008",
+  "priority": "P1",
+  "title": "Bản lưu phụ đề không có namespace tài khoản",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PASS",
+   "note": "owner-scoped unit and native IndexedDB browser fixtures",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/saved-runs.ts",
+  "source_sha256_at_handoff": "402b115343c8711cdcaf3d95b0934dd89901adebbd9da795cf26149647f50c61",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R5-008: cùng tệp của A không được khôi phục cho B hoặc phiên chưa đăng nhập",
+   "test_files": [
+    "src/lib/saved-runs.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R5-009",
+  "priority": "P2",
+  "title": "Lưu IndexedDB báo hoàn tất trước transaction commit",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, saved-runs.test.ts",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "browser-checks.json",
+   "evidence": "native IndexedDB abort after request success persists nothing",
+   "log": "bang-chung/codex/browser-checks.json"
+  },
+  "source_path": "src/lib/saved-runs.ts",
+  "source_sha256_at_handoff": "402b115343c8711cdcaf3d95b0934dd89901adebbd9da795cf26149647f50c61",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "IndexedDB cần trình duyệt; chỉ tsc.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "R6-001",
+  "priority": "P1",
+  "title": "Giải mã cũ có thể ghi PCM vào lần chạy mới",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "6a768a3",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/pipeline/job-race.test.ts",
+   "evidence": "late decoded A cannot replace B",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/components/use-pipeline.ts",
+  "source_sha256_at_handoff": "221fcf6110b42f96ec8d70f35343364fc79674d31bf8cd022be9c96af7177d55",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R6-001: late A decode cannot overwrite the edited/current run B",
+   "test_files": [
+    "src/lib/pipeline/job-race.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-002",
+  "priority": "P1",
+  "title": "Chờ metadata không có timeout hoặc hủy",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/sub/media-lifecycle.test.ts",
+   "evidence": "metadata timeout + abort before/during wait",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/components/pipeline-media.ts",
+  "source_sha256_at_handoff": "4bee606b11fc0a30132ca6371f07455aa10985a296ff5147919e0d31c6d62968",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R6-002: metadata waiter times out and can be canceled before/after waiting",
+   "test_files": [
+    "src/lib/sub/media-lifecycle.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-003",
+  "priority": "P1",
+  "title": "MP4 cấp phát theo sample count chưa kiểm tra",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "6a768a3",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/sub/mp4-range.test.ts",
+   "evidence": "invalid sample count rejected",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/sub/mp4.ts",
+  "source_sha256_at_handoff": "81c6f5c8a2a753a29da1ee26a54df372cb8afac34e0bd2a8a58379bdc980738a",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R6-003: corrupt AAC sample count/truncated table fail before allocating sample arrays",
+   "test_files": [
+    "src/lib/sub/mp4-range.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-004",
+  "priority": "P1",
+  "title": "HTTP Range không xác minh kích thước hoặc Content-Range",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "6a768a3",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/sub/mp4-range.test.ts",
+   "evidence": "Content-Range + length + streamed byte cap",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/sub/mp4.ts",
+  "source_sha256_at_handoff": "81c6f5c8a2a753a29da1ee26a54df372cb8afac34e0bd2a8a58379bdc980738a",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R6-004: same-sized wrong range and changed total are rejected | R6-004: oversized streamed body is canceled before all chunks are consumed",
+   "test_files": [
+    "src/lib/sub/mp4-range.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-005",
+  "priority": "P1",
+  "title": "PUT R2 không có timeout",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "r2-put.test.ts, tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/sub/media-lifecycle.test.ts",
+   "evidence": "XHR stall yields retryable failure; user abort distinct",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/sub/r2-put.ts",
+  "source_sha256_at_handoff": "af3a62b1dec3d9fac5a957fd7e07be7dfbb79fc493560d5b6a4931d0b7d9fb62",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R6-005: stalled PUT is retryable while user cancel remains AbortError",
+   "test_files": [
+    "src/lib/sub/media-lifecycle.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-006",
+  "priority": "P1",
+  "title": "Không dọn key R2 khi PUT thất bại",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PASS",
+   "note": "transport fault injection cleanup",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/sub/r2-upload-run.ts",
+  "source_sha256_at_handoff": "2be683e141b0f583874c73a16e47b89b15dfd6225d6dcd2067889ef0b99242bb",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R6-006: server stored PUT but reply lost: cleanup granted key and retain original failure | R6-006: cleanup failure never masks upload failure; successful PUT is retained",
+   "test_files": [
+    "src/lib/sub/r2-upload-run.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-007",
+  "priority": "P2",
+  "title": "WAV reader thiếu kiểm tra tham số hữu hạn",
+  "historical_result_status": "FIXED_TESTED",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "wav-stream.test.ts (+1)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/sub/wav-stream.ts",
+  "source_sha256_at_handoff": "4c680dd42e169a5ce98121152adf3fe114cb64b8000ffdc3aac7d084804fd312",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R6-007: thời lượng hoặc độ dài đoạn không hữu hạn thì báo lỗi, không lặp mãi",
+   "test_files": [
+    "src/lib/sub/wav-stream.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-008",
+  "priority": "P1",
+  "title": "ASR kiểm ngôn ngữ ghi trạng thái sau await không kiểm runId",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "6a768a3",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc, npm test",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/pipeline/recognize-race.test.ts",
+   "evidence": "new run after trial await retains its cost/events",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/pipeline/recognize.ts",
+  "source_sha256_at_handoff": "f958aa580d53d9a241bef952605e7185576512d7592bba3d461fd13bfc2f056e",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R6-008: old language-check response cannot alter new run's cost/events after trial await | R6-008: obsolete language check cannot even alter suspicion or retry budget",
+   "test_files": [
+    "src/lib/pipeline/recognize-race.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R6-009",
+  "priority": "P2",
+  "title": "FileReader TyZo không hỗ trợ hủy",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "tsc",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "src/lib/sub/media-lifecycle.test.ts",
+   "evidence": "FileReader aborted before provider request",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "src/lib/providers/tyzo.ts",
+  "source_sha256_at_handoff": "c1ee71b04d16424ba45337c02b9991624b0ff328e4e6e912365959da7573ee50",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R6-009: aborting FileReader stops TyZo encoding before any Modal request",
+   "test_files": [
+    "src/lib/sub/media-lifecycle.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R7-001",
+  "priority": "P1",
+  "title": "Trau chuốt chấp nhận đảo nghĩa và số",
+  "historical_result_status": "NEEDS_DESIGN",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PARTIAL",
+   "note": "conservative heuristic fixtures pass; full semantic corpus unverified",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/sub/polish.ts",
+  "source_sha256_at_handoff": "eed3201ad47d86e9eeb7c85a70297f7c12abaa595f6ec0cabe93fd3da66d4788",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R7-001: không nhận câu trau chuốt đổi số hoặc bỏ phủ định",
+   "test_files": [
+    "src/lib/sub/polish.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R7-002",
+  "priority": "P1",
+  "title": "Chia lô trau chuốt làm tăng số lần gọi",
+  "historical_result_status": "BY_DESIGN",
+  "historical_result_commit": "",
+  "current_review_status": "BY_DESIGN",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/sub/polish.ts",
+  "source_sha256_at_handoff": "eed3201ad47d86e9eeb7c85a70297f7c12abaa595f6ec0cabe93fd3da66d4788",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "BY_DESIGN",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Giữ quyết định lịch sử.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "R7-003",
+  "priority": "P2",
+  "title": "Glossary lỗi không báo tại worker",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PASS",
+   "note": "two bounded glossary attempts, one warning",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/pipeline/translate.ts",
+  "source_sha256_at_handoff": "e27e10706007ee7f7fc103390d95f3d9705286d656c583dc4eaed02df4d856ce",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ đạt: src/lib/pipeline/translate-claim.test.ts",
+   "test_files": [
+    "src/lib/pipeline/translate-claim.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R7-004",
+  "priority": "P2",
+  "title": "Thống kê model tính cả câu sửa tay trong lúc dịch",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "2ce19fd",
+  "current_review_status": "PARTIAL",
+  "historical_test": "src/lib/pipeline/translate-claim.test.ts (mock module groq)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/pipeline/translate.ts",
+  "source_sha256_at_handoff": "e27e10706007ee7f7fc103390d95f3d9705286d656c583dc4eaed02df4d856ce",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PARTIAL",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Không có test tái hiện trên HEAD.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "R7-005",
+  "priority": "P2",
+  "title": "Hàng đợi TTS bỏ câu cũ im lặng",
+  "historical_result_status": "BY_DESIGN",
+  "historical_result_commit": "",
+  "current_review_status": "BY_DESIGN",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "src/lib/sub/narration.ts",
+  "source_sha256_at_handoff": "38654bc826fb61c75f5b8b97f0d6cf847ea81c81593ef4f405bc371ef9282a07",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "BY_DESIGN",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Giữ quyết định lịch sử.",
+   "test_files": []
+  }
+ },
+ {
+  "id": "R7-006",
+  "priority": "P1",
+  "title": "Dừng TTS không quyết toán promise phát",
+  "historical_result_status": "NEEDS_BROWSER_VERIFY",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PASS",
+   "note": "Audio cancel unit/native browser",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/lib/sub/narration.ts",
+  "source_sha256_at_handoff": "38654bc826fb61c75f5b8b97f0d6cf847ea81c81593ef4f405bc371ef9282a07",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R7-006: cancel and replacement settle waiters without advancing old queues | R7-006: ended resolves once; media error rejects; next playback works",
+   "test_files": [
+    "src/lib/sub/audio-playback.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R8-001",
+  "priority": "P0",
+  "title": "Xóa schema VPS trước khi dump Neon thành công",
+  "historical_result_status": "FIXED_VERIFIED",
+  "historical_result_commit": "17f3351",
+  "current_review_status": "PARTIAL",
+  "historical_test": "Diễn tập trên Postgres 16 cục bộ với docker giả (docs/kiem-toan/v5.49/bang-chung/restore-drill.log, restore-drill-harness.sh)",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "deploy/vps/tyzo.sh",
+  "source_sha256_at_handoff": "c2c16d87513f45a8244b46dba4d582b08487022ecd4582e37dbe73668e584c80",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "re3-007-after-restore-3.log"
+   ],
+   "note": "Neon → VPS với dump hỏng: dữ liệu VPS không đổi (test dump-fail).",
+   "test_files": []
+  }
+ },
+ {
+  "id": "R8-002",
+  "priority": "P1",
+  "title": "Migration bỏ qua thư mục không đọc được",
+  "historical_result_status": "FIXED_CODE",
+  "historical_result_commit": "ae2048d",
+  "current_review_status": "PARTIAL",
+  "historical_test": "node --check; build đạt",
+  "historical_continuation": {
+   "status": "PASS",
+   "scope": "local isolated fixtures, not production",
+   "test": "scripts/migration-read-permission.test.mjs",
+   "evidence": "EACCES migrations fails before DB connect",
+   "log": "bang-chung/codex/final-unit.log"
+  },
+  "source_path": "scripts/migrate.mjs",
+  "source_sha256_at_handoff": "7bb980d7be5b5bcfa751022e8495966999a9b3e8e8045bcaa274a69bbbab9813",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "BLOCKED",
+   "head": "eaadb21",
+   "evidence": [
+    "env-r8-002-as-root.log"
+   ],
+   "note": "Test chmod 0 không chặn được root (phiên chạy bằng root). Mã migrate.mjs không đổi từ khi đạt (R8). Chạy lại bằng user thường.",
+   "test_files": [
+    "scripts/migration-read-permission.test.mjs"
+   ]
+  }
+ },
+ {
+  "id": "R8-003",
+  "priority": "P1",
+  "title": "Preview build chạy migration trên DB chung",
+  "historical_result_status": "NEEDS_OWNER",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "NOT_REASSESSED",
+   "note": "Preserved historical result; see BAO_CAO for newly continued items and limits."
+  },
+  "source_path": "scripts/migrate.mjs",
+  "source_sha256_at_handoff": "7bb980d7be5b5bcfa751022e8495966999a9b3e8e8045bcaa274a69bbbab9813",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "2 test mang ID đạt trên HEAD: R8-003: bản xem trước không chạy migration nếu chưa khai báo CSDL riêng | R8-003: migration có lệnh phá dữ liệu cần cho phép đúng tệp",
+   "test_files": [
+    "scripts/migration-gate.test.mjs"
+   ]
+  }
+ },
+ {
+  "id": "R8-004",
+  "priority": "P2",
+  "title": "Tự reload khi đang chạy tác vụ",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PARTIAL",
+   "note": "activity unit + compiled integration, active-work app E2E unverified",
+   "scope": "local test/static only"
+  },
+  "source_path": "src/components/stale-build-guard.tsx",
+  "source_sha256_at_handoff": "32126b38b5a8a94c585c8f5b3dd1b4f0f33d39ec33781fe68948744e15eb9b41",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [
+    "gate-cp6-test.log",
+    "gate-cp6-test-group1.log",
+    "gate-cp6-test-group2.log"
+   ],
+   "note": "1 test mang ID đạt trên HEAD: R8-004: active tasks block reload without consuming the later reload allowance",
+   "test_files": [
+    "src/lib/stale-build.test.ts"
+   ]
+  }
+ },
+ {
+  "id": "R8-005",
+  "priority": "P2",
+  "title": "Workflow Android cấp quyền ghi cho cả job",
+  "historical_result_status": "DEFERRED",
+  "historical_result_commit": "",
+  "current_review_status": "PARTIAL",
+  "historical_test": "",
+  "historical_continuation": {
+   "status": "PARTIAL",
+   "note": "YAML permissions/SHA static check, Actions not run",
+   "scope": "local test/static only"
+  },
+  "source_path": ".github/workflows/android-thu.yml",
+  "source_sha256_at_handoff": "5ca3b945546a28dd1243787a4bb8d6bd1fb125a9c8d481185925b8ea3d3106c1",
+  "note": "Giữ kết quả lịch sử và mã không liên quan; chưa có bằng chứng tái nghiệm thu đầy đủ từng tiêu chí trong phiên này.",
+  "reaccept_v5_49_4": {
+   "status": "PASS",
+   "head": "eaadb21",
+   "evidence": [],
+   "note": "Kiểm tĩnh .github/workflows/android-thu.yml: mặc định contents: read; chỉ job phát hành contents: write.",
+   "test_files": []
+  }
+ }
+]

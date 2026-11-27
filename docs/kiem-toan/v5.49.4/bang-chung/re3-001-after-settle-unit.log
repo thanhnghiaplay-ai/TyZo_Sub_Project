@@ -1,0 +1,53 @@
+# label=re3-001-after-settle-unit
+# head=6d906ba07f12e4f6938c3f493fe29f08472313f3 dirty=8
+# fingerprint(src,scripts,migrations,server,package*)=20fdce2104571bf8a519f1dfacb9a3538e532bed4fa4ff9e7ae04dd8cc2ef078
+# start=2026-11-27T10:34:32Z
+# cmd=node --experimental-strip-types --import ./scripts/register-ts.mjs --test src/lib/live/live-settle.test.ts
+TAP version 13
+# Subtest: RE3-001: 20 lần gửi đồng thời cùng biên nhận → trừ đúng một lần, một quan sát chi phí
+ok 1 - RE3-001: 20 lần gửi đồng thời cùng biên nhận → trừ đúng một lần, một quan sát chi phí
+  ---
+  duration_ms: 230.325415
+  type: 'test'
+  ...
+# Subtest: RE3-001: tràn sang phiếu cũ; lỗi giữa hai phiếu hủy cả giao dịch, thử lại trừ đúng một lần
+ok 2 - RE3-001: tràn sang phiếu cũ; lỗi giữa hai phiếu hủy cả giao dịch, thử lại trừ đúng một lần
+  ---
+  duration_ms: 24.605193
+  type: 'test'
+  ...
+# Subtest: RE3-001: vượt phần giữ → trừ tối đa phần giữ, ghi khoản thiếu để đối soát, không thu thêm
+ok 3 - RE3-001: vượt phần giữ → trừ tối đa phần giữ, ghi khoản thiếu để đối soát, không thu thêm
+  ---
+  duration_ms: 9.647155
+  type: 'test'
+  ...
+# Subtest: RE3-001: cùng mã nhưng số liệu khác → từ chối, không trừ thêm
+ok 4 - RE3-001: cùng mã nhưng số liệu khác → từ chối, không trừ thêm
+  ---
+  duration_ms: 7.16539
+  type: 'test'
+  ...
+# provider-spend-pending live:77d723748d5bacc726523f5835a64945db09c341ce0980ce092987466fc310db 53300
+# Subtest: RE3-001: tổng hợp ngày lỗi sau commit → quan sát chờ, phát lại cộng đúng một lần
+ok 5 - RE3-001: tổng hợp ngày lỗi sau commit → quan sát chờ, phát lại cộng đúng một lần
+  ---
+  duration_ms: 7.534796
+  type: 'test'
+  ...
+# Subtest: RE3-001: bảo toàn — Token gói + giữ + đã trừ không đổi qua nhiều biên nhận
+ok 6 - RE3-001: bảo toàn — Token gói + giữ + đã trừ không đổi qua nhiều biên nhận
+  ---
+  duration_ms: 49.268456
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 524.632012
+# exit=0 seconds=0 end=2026-11-27T10:34:32Z

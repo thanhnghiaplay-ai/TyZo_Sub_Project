@@ -1,0 +1,112 @@
+# label=re3-001-after-native-bench-3
+# head=6d906ba07f12e4f6938c3f493fe29f08472313f3 dirty=10
+# fingerprint(src,scripts,migrations,server,package*)=8766264f3d8ec6198d206629eec1da586d9682d28b09a389b1d343f5b1a096ac
+# start=2026-11-27T10:37:05Z
+# cmd=env TYZO_BENCH_OUT=/tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/live-bench.json node --experimental-strip-types --import ./scripts/register-ts.mjs scripts/re2-live-bench.ts
+{"concurrency":1,"statuses":{"200":1},"peakUpstreamSockets":1,"p50Ms":90.42,"p95Ms":90.42,"p99Ms":90.42,"acceptedP95Ms":90.42,"rejectedP95Ms":null}
+{"concurrency":5,"statuses":{"200":5},"peakUpstreamSockets":5,"p50Ms":90.47,"p95Ms":94.92,"p99Ms":94.92,"acceptedP95Ms":94.92,"rejectedP95Ms":null}
+{"concurrency":25,"statuses":{"200":25},"peakUpstreamSockets":24,"p50Ms":213,"p95Ms":229.6,"p99Ms":235.68,"acceptedP95Ms":229.6,"rejectedP95Ms":null}
+{"concurrency":50,"statuses":{"200":24,"429":26},"peakUpstreamSockets":24,"p50Ms":109.55,"p95Ms":209.53,"p99Ms":211.39,"acceptedP95Ms":209.58,"rejectedP95Ms":109.55}
+{"concurrency":100,"statuses":{"200":25,"429":75},"peakUpstreamSockets":24,"p50Ms":57.14,"p95Ms":221.19,"p99Ms":224.85,"acceptedP95Ms":224.85,"rejectedP95Ms":114.75}
+{"concurrency":200,"statuses":{"200":25,"429":175},"peakUpstreamSockets":24,"p50Ms":120.13,"p95Ms":304.53,"p99Ms":315.31,"acceptedP95Ms":315.95,"rejectedP95Ms":190.11}
+{"concurrency":300,"statuses":{"200":24,"429":276},"peakUpstreamSockets":24,"p50Ms":106.75,"p95Ms":274.37,"p99Ms":286.58,"acceptedP95Ms":289.52,"rejectedP95Ms":161.88}
+{
+  "scope": "native local WebSocket + real isolated PostgreSQL, synthetic cumulative usage with replays; no GPU/provider/browser audio",
+  "reports": [
+    {
+      "concurrency": 1,
+      "statuses": {
+        "200": 1
+      },
+      "peakUpstreamSockets": 1,
+      "p50Ms": 90.42,
+      "p95Ms": 90.42,
+      "p99Ms": 90.42,
+      "acceptedP95Ms": 90.42,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 5,
+      "statuses": {
+        "200": 5
+      },
+      "peakUpstreamSockets": 5,
+      "p50Ms": 90.47,
+      "p95Ms": 94.92,
+      "p99Ms": 94.92,
+      "acceptedP95Ms": 94.92,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 25,
+      "statuses": {
+        "200": 25
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 213,
+      "p95Ms": 229.6,
+      "p99Ms": 235.68,
+      "acceptedP95Ms": 229.6,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 50,
+      "statuses": {
+        "200": 24,
+        "429": 26
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 109.55,
+      "p95Ms": 209.53,
+      "p99Ms": 211.39,
+      "acceptedP95Ms": 209.58,
+      "rejectedP95Ms": 109.55
+    },
+    {
+      "concurrency": 100,
+      "statuses": {
+        "200": 25,
+        "429": 75
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 57.14,
+      "p95Ms": 221.19,
+      "p99Ms": 224.85,
+      "acceptedP95Ms": 224.85,
+      "rejectedP95Ms": 114.75
+    },
+    {
+      "concurrency": 200,
+      "statuses": {
+        "200": 25,
+        "429": 175
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 120.13,
+      "p95Ms": 304.53,
+      "p99Ms": 315.31,
+      "acceptedP95Ms": 315.95,
+      "rejectedP95Ms": 190.11
+    },
+    {
+      "concurrency": 300,
+      "statuses": {
+        "200": 24,
+        "429": 276
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 106.75,
+      "p95Ms": 274.37,
+      "p99Ms": 286.58,
+      "acceptedP95Ms": 289.52,
+      "rejectedP95Ms": 161.88
+    }
+  ],
+  "accepted": 129,
+  "charged": 3612,
+  "supplierCalls": 258,
+  "expectedObservations": 258,
+  "ledgerViolations": 0,
+  "duplicateCharges": 0
+}
+# exit=0 seconds=2 end=2026-11-27T10:37:07Z

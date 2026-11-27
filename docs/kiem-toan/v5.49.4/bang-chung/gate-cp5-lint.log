@@ -1,0 +1,72 @@
+# label=gate-cp5-lint
+# head=42a6cf23cddbfb0260dc81d71afa820293f01f42 dirty=0
+# fingerprint(src,scripts,migrations,server,package*)=78c3bbce4f0985b5cb8eeaa586a45a81305e1d218d278afc414433cf77d76c04
+# start=2026-11-27T11:09:36Z
+# cmd=npm run lint
+
+> lint
+> eslint .
+
+
+/home/user/TyZo_Sub_Project/scripts/asr-eval.mjs
+  47:20  warning  'i' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/user/TyZo_Sub_Project/scripts/ts-loader.mjs
+  3:25  warning  'pathToFileURL' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/user/TyZo_Sub_Project/src/components/admin-company.tsx
+  139:6  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/components/admin-desk.tsx
+   44:3  warning  'busy' is defined but never used. Allowed unused args must match /^_/u                                          @typescript-eslint/no-unused-vars
+  305:6  warning  React Hook useEffect has a missing dependency: 'openByEmail'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/components/money-card.tsx
+  44:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/notice-bell.tsx
+  28:6  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/components/quality-view.tsx
+   3:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  19:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/rent-show-board.tsx
+  8:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/run-desk-board.tsx
+  75:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/run-door.tsx
+  6:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/side-rail.tsx
+  132:6  warning  React Hook useEffect has a missing dependency: 'armFocus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/components/studio-stage.tsx
+  207:6  warning  React Hook useEffect has a missing dependency: 'applyAspect'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  339:6  warning  React Hook useEffect has a missing dependency: 'toggleFull'. Either include it or remove the dependency array   react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/components/studio.tsx
+  453:16  warning  The ref value 'placeSeq.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'placeSeq.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/components/toast.tsx
+  7:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/ui/primitives.tsx
+  5:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/ui/theme-context.tsx
+  11:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/user/TyZo_Sub_Project/src/components/use-pipeline.ts
+  1441:6  warning  React Hook useCallback has a missing dependency: 'baseGloss'. Either include it or remove the dependency array                                react-hooks/exhaustive-deps
+  1627:6  warning  React Hook useCallback has unnecessary dependencies: 'baseGloss', 'key', and 'remoteIds'. Either exclude them or remove the dependency array  react-hooks/exhaustive-deps
+  1853:6  warning  React Hook useCallback has a missing dependency: 'genre'. Either include it or remove the dependency array                                    react-hooks/exhaustive-deps
+
+/home/user/TyZo_Sub_Project/src/lib/sub/gap-scan.test.ts
+  6:3  warning  'collectSpeechSpans' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+✖ 23 problems (0 errors, 23 warnings)
+
+# exit=0 seconds=8 end=2026-11-27T11:09:44Z

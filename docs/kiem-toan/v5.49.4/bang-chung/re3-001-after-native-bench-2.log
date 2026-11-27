@@ -1,0 +1,128 @@
+# label=re3-001-after-native-bench-2
+# head=6d906ba07f12e4f6938c3f493fe29f08472313f3 dirty=10
+# fingerprint(src,scripts,migrations,server,package*)=8766264f3d8ec6198d206629eec1da586d9682d28b09a389b1d343f5b1a096ac
+# start=2026-11-27T10:36:49Z
+# cmd=node --experimental-strip-types --import ./scripts/register-ts.mjs scripts/re2-live-bench.ts
+{"concurrency":1,"statuses":{"200":1},"peakUpstreamSockets":1,"p50Ms":89.39,"p95Ms":89.39,"p99Ms":89.39,"acceptedP95Ms":89.39,"rejectedP95Ms":null}
+{"concurrency":5,"statuses":{"200":5},"peakUpstreamSockets":5,"p50Ms":91.85,"p95Ms":96.35,"p99Ms":96.35,"acceptedP95Ms":96.35,"rejectedP95Ms":null}
+{"concurrency":25,"statuses":{"200":24,"429":1},"peakUpstreamSockets":23,"p50Ms":192.5,"p95Ms":208.16,"p99Ms":208.94,"acceptedP95Ms":208.16,"rejectedP95Ms":112.2}
+{"concurrency":50,"statuses":{"200":24,"429":26},"peakUpstreamSockets":23,"p50Ms":120,"p95Ms":222.82,"p99Ms":224.82,"acceptedP95Ms":223.71,"rejectedP95Ms":120}
+{"concurrency":100,"statuses":{"200":24,"429":76},"peakUpstreamSockets":24,"p50Ms":50.96,"p95Ms":231.79,"p99Ms":239.12,"acceptedP95Ms":239.12,"rejectedP95Ms":120.4}
+{"concurrency":200,"statuses":{"200":25,"429":175},"peakUpstreamSockets":24,"p50Ms":111.88,"p95Ms":293.62,"p99Ms":307.55,"acceptedP95Ms":307.77,"rejectedP95Ms":178.8}
+{"concurrency":300,"statuses":{"200":24,"429":276},"peakUpstreamSockets":22,"p50Ms":181.38,"p95Ms":422.03,"p99Ms":432.86,"acceptedP95Ms":436.02,"rejectedP95Ms":277.64}
+{
+  "scope": "native local WebSocket + real isolated PostgreSQL, synthetic cumulative usage with replays; no GPU/provider/browser audio",
+  "reports": [
+    {
+      "concurrency": 1,
+      "statuses": {
+        "200": 1
+      },
+      "peakUpstreamSockets": 1,
+      "p50Ms": 89.39,
+      "p95Ms": 89.39,
+      "p99Ms": 89.39,
+      "acceptedP95Ms": 89.39,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 5,
+      "statuses": {
+        "200": 5
+      },
+      "peakUpstreamSockets": 5,
+      "p50Ms": 91.85,
+      "p95Ms": 96.35,
+      "p99Ms": 96.35,
+      "acceptedP95Ms": 96.35,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 25,
+      "statuses": {
+        "200": 24,
+        "429": 1
+      },
+      "peakUpstreamSockets": 23,
+      "p50Ms": 192.5,
+      "p95Ms": 208.16,
+      "p99Ms": 208.94,
+      "acceptedP95Ms": 208.16,
+      "rejectedP95Ms": 112.2
+    },
+    {
+      "concurrency": 50,
+      "statuses": {
+        "200": 24,
+        "429": 26
+      },
+      "peakUpstreamSockets": 23,
+      "p50Ms": 120,
+      "p95Ms": 222.82,
+      "p99Ms": 224.82,
+      "acceptedP95Ms": 223.71,
+      "rejectedP95Ms": 120
+    },
+    {
+      "concurrency": 100,
+      "statuses": {
+        "200": 24,
+        "429": 76
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 50.96,
+      "p95Ms": 231.79,
+      "p99Ms": 239.12,
+      "acceptedP95Ms": 239.12,
+      "rejectedP95Ms": 120.4
+    },
+    {
+      "concurrency": 200,
+      "statuses": {
+        "200": 25,
+        "429": 175
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 111.88,
+      "p95Ms": 293.62,
+      "p99Ms": 307.55,
+      "acceptedP95Ms": 307.77,
+      "rejectedP95Ms": 178.8
+    },
+    {
+      "concurrency": 300,
+      "statuses": {
+        "200": 24,
+        "429": 276
+      },
+      "peakUpstreamSockets": 22,
+      "p50Ms": 181.38,
+      "p95Ms": 422.03,
+      "p99Ms": 432.86,
+      "acceptedP95Ms": 436.02,
+      "rejectedP95Ms": 277.64
+    }
+  ],
+  "accepted": 127,
+  "charged": 3556,
+  "supplierCalls": 254,
+  "expectedObservations": 254,
+  "ledgerViolations": 0,
+  "duplicateCharges": 0
+}
+node:fs:2430
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open '/workspace/tyzo-results/evidence/live-load-results.json'
+    at writeFileSync (node:fs:2430:20)
+    at file:///home/user/TyZo_Sub_Project/scripts/re2-live-bench.ts:261:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/workspace/tyzo-results/evidence/live-load-results.json'
+}
+
+Node.js v22.23.5
+# exit=1 seconds=3 end=2026-11-27T10:36:52Z

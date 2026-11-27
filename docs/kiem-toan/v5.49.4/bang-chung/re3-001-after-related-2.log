@@ -1,0 +1,928 @@
+# label=re3-001-after-related-2
+# head=6d906ba07f12e4f6938c3f493fe29f08472313f3 dirty=9
+# fingerprint(src,scripts,migrations,server,package*)=02637b9715619efd2df9711c2fe1966f60f190e88962bda6433ab25c5eed7981
+# start=2026-11-27T10:35:59Z
+# cmd=node --experimental-strip-types --test src/lib/live/live-bridge-audit.test.ts src/lib/live/cumulative-usage.test.ts src/lib/live/live-settle.test.ts src/lib/live/live-settle-fault.test.ts src/lib/provider-spend-journal.test.ts src/lib/billing/re2-regression.test.ts src/lib/live/live.test.ts src/lib/live/live-wire.test.ts src/lib/live/live-session.test.ts src/lib/billing/token-flow.test.ts src/lib/provider-spend.test.ts
+TAP version 13
+# Subtest: RE2-001: 10 held versus 100 estimate rejects before upstream
+ok 1 - RE2-001: 10 held versus 100 estimate rejects before upstream
+  ---
+  duration_ms: 263.986149
+  type: 'test'
+  ...
+# Subtest: RE2-001: invalid estimates fail closed without creating calls
+ok 2 - RE2-001: invalid estimates fail closed without creating calls
+  ---
+  duration_ms: 8.139497
+  type: 'test'
+  ...
+# Subtest: RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+ok 3 - RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+  ---
+  duration_ms: 188.648143
+  type: 'test'
+  ...
+# Subtest: RE2-006: close intent rejects a new reservation while an old call drains
+ok 4 - RE2-006: close intent rejects a new reservation while an old call drains
+  ---
+  duration_ms: 11.293664
+  type: 'test'
+  ...
+# Subtest: RE2-002: cost above own reservation cannot spend another call's 40
+ok 5 - RE2-002: cost above own reservation cannot spend another call's 40
+  ---
+  duration_ms: 9.235187
+  type: 'test'
+  ...
+# Subtest: RE2-002: reaped late response cannot debit after lease lost
+ok 6 - RE2-002: reaped late response cannot debit after lease lost
+  ---
+  duration_ms: 37.501319
+  type: 'test'
+  ...
+# Subtest: RE2-003: heartbeat continues while response body is being read
+ok 7 - RE2-003: heartbeat continues while response body is being read
+  ---
+  duration_ms: 120.183911
+  type: 'test'
+  ...
+# Subtest: RE2-003: failed response body releases into reconciliation
+ok 8 - RE2-003: failed response body releases into reconciliation
+  ---
+  duration_ms: 15.294034
+  type: 'test'
+  ...
+# Subtest: RE2-002: release replay is a no-op
+ok 9 - RE2-002: release replay is a no-op
+  ---
+  duration_ms: 12.054441
+  type: 'test'
+  ...
+# Subtest: RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+ok 10 - RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+  ---
+  duration_ms: 15.515286
+  type: 'test'
+  ...
+# Subtest: RE2-002: settlement replay and rollback retain one debit and one provider observation
+ok 11 - RE2-002: settlement replay and rollback retain one debit and one provider observation
+  ---
+  duration_ms: 33.244073
+  type: 'test'
+  ...
+# Subtest: RE2-003: body deadline cancels a stuck stream and releases its budget
+ok 12 - RE2-003: body deadline cancels a stuck stream and releases its budget
+  ---
+  duration_ms: 39.761177
+  type: 'test'
+  ...
+# Subtest: RE2-003: expired heartbeat cannot revive an old call
+ok 13 - RE2-003: expired heartbeat cannot revive an old call
+  ---
+  duration_ms: 9.653559
+  type: 'test'
+  ...
+# Admission: 200 contenders, accepted 24, rejected 176, 78ms total
+# Subtest: SCALE: 200 contenders across connections obey global/model caps and release replay
+ok 14 - SCALE: 200 contenders across connections obey global/model caps and release replay
+  ---
+  duration_ms: 85.095925
+  type: 'test'
+  ...
+# Subtest: SCALE: per-user limits, independent live lane, expired leases and kill switch
+ok 15 - SCALE: per-user limits, independent live lane, expired leases and kill switch
+  ---
+  duration_ms: 21.613925
+  type: 'test'
+  ...
+# Subtest: SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+ok 16 - SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+  ---
+  duration_ms: 8.777196
+  type: 'test'
+  ...
+# Subtest: RE2-002: Modal late result retains actual cost evidence after reaping
+ok 17 - RE2-002: Modal late result retains actual cost evidence after reaping
+  ---
+  duration_ms: 18.397719
+  type: 'test'
+  ...
+# Subtest: RE2-002 root: unreserved charging paths cannot consume another call's reservation
+ok 18 - RE2-002 root: unreserved charging paths cannot consume another call's reservation
+  ---
+  duration_ms: 6.198798
+  type: 'test'
+  ...
+# Subtest: SCALE: expired live work retains admission until its late completion releases it
+ok 19 - SCALE: expired live work retains admission until its late completion releases it
+  ---
+  duration_ms: 11.711972
+  type: 'test'
+  ...
+# Subtest: mua và trừ gói giây
+    # Subtest: mua trừ ví, ghi gói, không hoàn khi thiếu tiền
+    ok 1 - mua trừ ví, ghi gói, không hoàn khi thiếu tiền
+      ---
+      duration_ms: 9.947959
+      type: 'test'
+      ...
+    # Subtest: giữ gần hết hạn trước, không đủ thì không đụng gói
+    ok 2 - giữ gần hết hạn trước, không đủ thì không đụng gói
+      ---
+      duration_ms: 12.767803
+      type: 'test'
+      ...
+    # Subtest: trừ đúng phần đã chạy và trả phần thừa nếu còn hạn
+    ok 3 - trừ đúng phần đã chạy và trả phần thừa nếu còn hạn
+      ---
+      duration_ms: 18.57888
+      type: 'test'
+      ...
+    # Subtest: hết hạn thì phần giữ thừa mất, không cộng ví
+    ok 4 - hết hạn thì phần giữ thừa mất, không cộng ví
+      ---
+      duration_ms: 10.297379
+      type: 'test'
+      ...
+    # Subtest: phiếu đồng vẫn nhả về ví, phiếu giây quá hạn trả về gói
+    ok 5 - phiếu đồng vẫn nhả về ví, phiếu giây quá hạn trả về gói
+      ---
+      duration_ms: 23.002431
+      type: 'test'
+      ...
+    # Subtest: MAIN-038: trừ phần của gói hết hạn sớm nhất trước (dù mã gói xếp sau); đóng phiếu trả dư, gói hạn dài còn nguyên
+    ok 6 - MAIN-038: trừ phần của gói hết hạn sớm nhất trước (dù mã gói xếp sau); đóng phiếu trả dư, gói hạn dài còn nguyên
+      ---
+      duration_ms: 10.421446
+      type: 'test'
+      ...
+    # Subtest: chỉnh Token dịch: thêm gói mới, bớt gói sắp hết hạn trước
+    ok 7 - chỉnh Token dịch: thêm gói mới, bớt gói sắp hết hạn trước
+      ---
+      duration_ms: 9.003596
+      type: 'test'
+      ...
+    1..7
+ok 20 - mua và trừ gói giây
+  ---
+  duration_ms: 2032.88405
+  type: 'suite'
+  ...
+# Subtest: cumulative high-water marks ignore repeats, older packets, and the non-billed fixed prompt
+ok 21 - cumulative high-water marks ignore repeats, older packets, and the non-billed fixed prompt
+  ---
+  duration_ms: 0.976018
+  type: 'test'
+  ...
+# Subtest: video/image tokens follow the provider schema and malformed usage stays uncertain
+ok 22 - video/image tokens follow the provider schema and malformed usage stays uncertain
+  ---
+  duration_ms: 0.441456
+  type: 'test'
+  ...
+# Subtest: cầu nối Dịch trực tiếp: vòng đời phiên và tiền
+    # Subtest: DEEP-001: Alibaba báo «finished» ngay sau usage → phiếu chỉ đóng sau khi trừ xong
+    ok 1 - DEEP-001: Alibaba báo «finished» ngay sau usage → phiếu chỉ đóng sau khi trừ xong
+      ---
+      duration_ms: 481.772188
+      type: 'test'
+      ...
+    # Subtest: DEEP-002: xin giữ thêm đang chậm → không gửi tiếng vượt phần đã giữ
+    ok 2 - DEEP-002: xin giữ thêm đang chậm → không gửi tiếng vượt phần đã giữ
+      ---
+      duration_ms: 1512.653463
+      type: 'test'
+      ...
+    # Subtest: DEEP-005: lần giữ thêm trả về sau khi phiên đóng → phiếu đó vẫn được nhả
+    ok 3 - DEEP-005: lần giữ thêm trả về sau khi phiên đóng → phiếu đó vẫn được nhả
+      ---
+      duration_ms: 1215.613373
+      type: 'test'
+      ...
+    # Subtest: DEEP-004: Alibaba cắt, khách rời trong lúc chờ nối lại → không mở lại kết nối Alibaba
+    ok 4 - DEEP-004: Alibaba cắt, khách rời trong lúc chờ nối lại → không mở lại kết nối Alibaba
+      ---
+      duration_ms: 1512.569602
+      type: 'test'
+      ...
+    # Subtest: DEEP-006: khách rời trong lúc cầu nối đang đọc giá → không giữ tiền, hoặc giữ rồi nhả ngay
+    ok 5 - DEEP-006: khách rời trong lúc cầu nối đang đọc giá → không giữ tiền, hoặc giữ rồi nhả ngay
+      ---
+      duration_ms: 805.606266
+      type: 'test'
+      ...
+    # Subtest: DEEP-003: chi phí nhà cung cấp ghi theo usage thật của từng lượt, kể cả khi thu thiếu
+    ok 6 - DEEP-003: chi phí nhà cung cấp ghi theo usage thật của từng lượt, kể cả khi thu thiếu
+      ---
+      duration_ms: 314.72743
+      type: 'test'
+      ...
+    1..6
+ok 23 - cầu nối Dịch trực tiếp: vòng đời phiên và tiền
+  ---
+  duration_ms: 5844.2749
+  type: 'suite'
+  ...
+# Subtest: DEEP-008: upstream backlog drops audio and recovers after draining
+ok 24 - DEEP-008: upstream backlog drops audio and recovers after draining
+  ---
+  duration_ms: 124.787724
+  type: 'test'
+  ...
+# Subtest: SCALE: denied live admission never opens a billing ticket or upstream
+ok 25 - SCALE: denied live admission never opens a billing ticket or upstream
+  ---
+  duration_ms: 5.276874
+  type: 'test'
+  ...
+# Subtest: SCALE: live admission is retained until pending debits and closes finish
+ok 26 - SCALE: live admission is retained until pending debits and closes finish
+  ---
+  duration_ms: 293.371265
+  type: 'test'
+  ...
+# Subtest: R08: finalization waits for supplier-cost persistence before releasing the ticket
+ok 27 - R08: finalization waits for supplier-cost persistence before releasing the ticket
+  ---
+  duration_ms: 165.865099
+  type: 'test'
+  ...
+# Subtest: R08: failed persistence stops new audio, exposes the fault, and retains uncertain admission
+ok 28 - R08: failed persistence stops new audio, exposes the fault, and retains uncertain admission
+  ---
+  duration_ms: 1518.322953
+  type: 'test'
+  ...
+# Subtest: R08: duplicate provider response IDs do not repeat the debit
+ok 29 - R08: duplicate provider response IDs do not repeat the debit
+  ---
+  duration_ms: 112.933433
+  type: 'test'
+  ...
+# Subtest: R09: cumulative and replayed usage bills only its delta, excluding the free fixed system prompt
+ok 30 - R09: cumulative and replayed usage bills only its delta, excluding the free fixed system prompt
+  ---
+  duration_ms: 113.247273
+  type: 'test'
+  ...
+# Subtest: R09: an upstream reconnect resets only that connection's cumulative counter
+ok 31 - R09: an upstream reconnect resets only that connection's cumulative counter
+  ---
+  duration_ms: 448.304472
+  type: 'test'
+  ...
+# Subtest: R09: missing provider usage stops the session for reconciliation instead of assuming zero expense
+ok 32 - R09: missing provider usage stops the session for reconciliation instead of assuming zero expense
+  ---
+  duration_ms: 12.225249
+  type: 'test'
+  ...
+# Subtest: phiên dịch trực tiếp
+    # Subtest: chưa sẵn sàng thì chưa thu; có ready mới thu, gửi khung, phát tiếng dịch, chuyển sự kiện chữ
+    ok 1 - chưa sẵn sàng thì chưa thu; có ready mới thu, gửi khung, phát tiếng dịch, chuyển sự kiện chữ
+      ---
+      duration_ms: 4.834679
+      type: 'test'
+      ...
+    # Subtest: bấm dừng: dừng thu, báo cầu nối dừng nhẹ, đợi cầu nối đóng rồi dọn sạch
+    ok 2 - bấm dừng: dừng thu, báo cầu nối dừng nhẹ, đợi cầu nối đóng rồi dọn sạch
+      ---
+      duration_ms: 0.657784
+      type: 'test'
+      ...
+    # Subtest: cầu nối im lặng quá hạn thì ép đóng
+    ok 3 - cầu nối im lặng quá hạn thì ép đóng
+      ---
+      duration_ms: 0.319438
+      type: 'test'
+      ...
+    # Subtest: hết tiền: cầu nối báo closing rồi đóng, lý do được chuyển lên
+    ok 4 - hết tiền: cầu nối báo closing rồi đóng, lý do được chuyển lên
+      ---
+      duration_ms: 1.216864
+      type: 'test'
+      ...
+    # Subtest: vé sai (4401) đóng trước khi sẵn sàng: không thu, báo câu tiếng Việt
+    ok 5 - vé sai (4401) đóng trước khi sẵn sàng: không thu, báo câu tiếng Việt
+      ---
+      duration_ms: 0.201739
+      type: 'test'
+      ...
+    # Subtest: đứt mạng bất ngờ (1006) thì báo mất kết nối và nhả micro
+    ok 6 - đứt mạng bất ngờ (1006) thì báo mất kết nối và nhả micro
+      ---
+      duration_ms: 0.741887
+      type: 'test'
+      ...
+    # Subtest: không thu được âm thanh thì báo lỗi và tự dừng phiên
+    ok 7 - không thu được âm thanh thì báo lỗi và tự dừng phiên
+      ---
+      duration_ms: 0.661446
+      type: 'test'
+      ...
+    # Subtest: mạng nghẽn thì bỏ khung mới thay vì dồn bộ nhớ
+    ok 8 - mạng nghẽn thì bỏ khung mới thay vì dồn bộ nhớ
+      ---
+      duration_ms: 0.504728
+      type: 'test'
+      ...
+    # Subtest: tin hỏng bị bỏ qua, bấm Bắt đầu hai lần không mở hai kết nối
+    ok 9 - tin hỏng bị bỏ qua, bấm Bắt đầu hai lần không mở hai kết nối
+      ---
+      duration_ms: 0.322136
+      type: 'test'
+      ...
+    # Subtest: khách dừng khi micro còn đang xin quyền: micro vừa mở xong thì nhả ngay
+    ok 10 - khách dừng khi micro còn đang xin quyền: micro vừa mở xong thì nhả ngay
+      ---
+      duration_ms: 0.833933
+      type: 'test'
+      ...
+    1..10
+ok 33 - phiên dịch trực tiếp
+  ---
+  duration_ms: 11.170784
+  type: 'suite'
+  ...
+# Subtest: xếp hàng phát tiếng
+    # Subtest: các đoạn nối liền nhau, đoạn đầu có đệm nhỏ
+    ok 1 - các đoạn nối liền nhau, đoạn đầu có đệm nhỏ
+      ---
+      duration_ms: 0.146739
+      type: 'test'
+      ...
+    # Subtest: hụt tiếng thì đoạn sau đệm lại từ giờ hiện tại, không phát vào quá khứ
+    ok 2 - hụt tiếng thì đoạn sau đệm lại từ giờ hiện tại, không phát vào quá khứ
+      ---
+      duration_ms: 0.044633
+      type: 'test'
+      ...
+    # Subtest: reset xóa hàng đợi
+    ok 3 - reset xóa hàng đợi
+      ---
+      duration_ms: 0.043434
+      type: 'test'
+      ...
+    1..3
+ok 34 - xếp hàng phát tiếng
+  ---
+  duration_ms: 0.302602
+  type: 'suite'
+  ...
+# Subtest: phiên web: thu sớm, giữ tạm, tạm dừng
+    # Subtest: nối được cầu nối là thu; khung trước lúc sẵn sàng được giữ rồi gửi đủ khi ready
+    ok 1 - nối được cầu nối là thu; khung trước lúc sẵn sàng được giữ rồi gửi đủ khi ready
+      ---
+      duration_ms: 2.539547
+      type: 'test'
+      ...
+    # Subtest: tạm dừng thì không gửi, tiếp tục thì gửi lại
+    ok 2 - tạm dừng thì không gửi, tiếp tục thì gửi lại
+      ---
+      duration_ms: 0.654631
+      type: 'test'
+      ...
+    1..2
+ok 35 - phiên web: thu sớm, giữ tạm, tạm dừng
+  ---
+  duration_ms: 3.305245
+  type: 'suite'
+  ...
+# Subtest: tự nối lại phiên web
+    # Subtest: đứt mạng, cầu nối lỗi, vé hết hạn thì nối lại; khách dừng, hết Token, sai model thì không
+    ok 1 - đứt mạng, cầu nối lỗi, vé hết hạn thì nối lại; khách dừng, hết Token, sai model thì không
+      ---
+      duration_ms: 0.300088
+      type: 'test'
+      ...
+    1..1
+ok 36 - tự nối lại phiên web
+  ---
+  duration_ms: 0.405973
+  type: 'suite'
+  ...
+# Subtest: lỗi nhà cung cấp trên web
+    # Subtest: sự kiện lỗi hiện ở dòng báo lỗi, không vào phụ đề
+    ok 1 - sự kiện lỗi hiện ở dòng báo lỗi, không vào phụ đề
+      ---
+      duration_ms: 0.111424
+      type: 'test'
+      ...
+    1..1
+ok 37 - lỗi nhà cung cấp trên web
+  ---
+  duration_ms: 0.156392
+  type: 'suite'
+  ...
+# Subtest: RE3-001: đối chứng không lỗi trừ đúng và ghi đủ quan sát
+ok 38 - RE3-001: đối chứng không lỗi trừ đúng và ghi đủ quan sát
+  ---
+  duration_ms: 923.18943
+  type: 'test'
+  ...
+# Subtest: RE3-001: lỗi sau khi journal đã ghi, trước khi trừ phiếu → tổng trừ và chi phí bằng đối chứng, đúng một lần
+ok 39 - RE3-001: lỗi sau khi journal đã ghi, trước khi trừ phiếu → tổng trừ và chi phí bằng đối chứng, đúng một lần
+  ---
+  duration_ms: 1456.432634
+  type: 'test'
+  ...
+# Subtest: RE3-001: mất ACK sau khi journal đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+ok 40 - RE3-001: mất ACK sau khi journal đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+  ---
+  duration_ms: 1448.598163
+  type: 'test'
+  ...
+# Subtest: RE3-001: mất ACK sau khi giao dịch quyết toán đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+ok 41 - RE3-001: mất ACK sau khi giao dịch quyết toán đã commit → tổng trừ và chi phí bằng đối chứng, đúng một lần
+  ---
+  duration_ms: 1448.402347
+  type: 'test'
+  ...
+# Subtest: RE3-001: CSDL mất kéo dài → không nhả phiếu, không trừ đoán, admission unknown để đối soát
+ok 42 - RE3-001: CSDL mất kéo dài → không nhả phiếu, không trừ đoán, admission unknown để đối soát
+  ---
+  duration_ms: 1824.172326
+  type: 'test'
+  ...
+# Subtest: RE3-001: CSDL hồi trước khi đóng phiên → phát lại biên nhận, tổng bằng đối chứng
+ok 43 - RE3-001: CSDL hồi trước khi đóng phiên → phát lại biên nhận, tổng bằng đối chứng
+  ---
+  duration_ms: 1831.511125
+  type: 'test'
+  ...
+# Subtest: RE3-001: 20 lần gửi đồng thời cùng biên nhận → trừ đúng một lần, một quan sát chi phí
+ok 44 - RE3-001: 20 lần gửi đồng thời cùng biên nhận → trừ đúng một lần, một quan sát chi phí
+  ---
+  duration_ms: 180.585637
+  type: 'test'
+  ...
+# Subtest: RE3-001: tràn sang phiếu cũ; lỗi giữa hai phiếu hủy cả giao dịch, thử lại trừ đúng một lần
+ok 45 - RE3-001: tràn sang phiếu cũ; lỗi giữa hai phiếu hủy cả giao dịch, thử lại trừ đúng một lần
+  ---
+  duration_ms: 12.062237
+  type: 'test'
+  ...
+# Subtest: RE3-001: vượt phần giữ → trừ tối đa phần giữ, ghi khoản thiếu để đối soát, không thu thêm
+ok 46 - RE3-001: vượt phần giữ → trừ tối đa phần giữ, ghi khoản thiếu để đối soát, không thu thêm
+  ---
+  duration_ms: 5.922566
+  type: 'test'
+  ...
+# Subtest: RE3-001: cùng mã nhưng số liệu khác → từ chối, không trừ thêm
+ok 47 - RE3-001: cùng mã nhưng số liệu khác → từ chối, không trừ thêm
+  ---
+  duration_ms: 6.922165
+  type: 'test'
+  ...
+# provider-spend-pending live:77d723748d5bacc726523f5835a64945db09c341ce0980ce092987466fc310db 53300
+# Subtest: RE3-001: tổng hợp ngày lỗi sau commit → quan sát chờ, phát lại cộng đúng một lần
+ok 48 - RE3-001: tổng hợp ngày lỗi sau commit → quan sát chờ, phát lại cộng đúng một lần
+  ---
+  duration_ms: 7.235813
+  type: 'test'
+  ...
+# Subtest: RE3-001: bảo toàn — Token gói + giữ + đã trừ không đổi qua nhiều biên nhận
+ok 49 - RE3-001: bảo toàn — Token gói + giữ + đã trừ không đổi qua nhiều biên nhận
+  ---
+  duration_ms: 44.340827
+  type: 'test'
+  ...
+# Subtest: LiveBilling nối vào DB
+    # Subtest: giữ giây, trừ theo phần đã dịch, nhả phần thừa về gói
+    ok 1 - giữ giây, trừ theo phần đã dịch, nhả phần thừa về gói
+      ---
+      duration_ms: 22.729376
+      type: 'test'
+      ...
+    # Subtest: không trừ quá số giây đang giữ
+    ok 2 - không trừ quá số giây đang giữ
+      ---
+      duration_ms: 10.208775
+      type: 'test'
+      ...
+    # Subtest: hết giây thì báo het-tien, không tạo phiếu
+    ok 3 - hết giây thì báo het-tien, không tạo phiếu
+      ---
+      duration_ms: 7.071748
+      type: 'test'
+      ...
+    # Subtest: hạn mức đồng không chặn gói giây
+    ok 4 - hạn mức đồng không chặn gói giây
+      ---
+      duration_ms: 6.321416
+      type: 'test'
+      ...
+    # Subtest: phiên lỗi trả giây về gói, đóng hai lần không trả hai lần
+    ok 5 - phiên lỗi trả giây về gói, đóng hai lần không trả hai lần
+      ---
+      duration_ms: 15.560563
+      type: 'test'
+      ...
+    1..5
+ok 50 - LiveBilling nối vào DB
+  ---
+  duration_ms: 1920.796209
+  type: 'suite'
+  ...
+# Subtest: bảng giá live từ cài đặt phòng
+    # Subtest: chưa có tỉ giá thì null, không đoán
+    ok 1 - chưa có tỉ giá thì null, không đoán
+      ---
+      duration_ms: 3.657433
+      type: 'test'
+      ...
+    # Subtest: có tỉ giá thì dùng giá dự phòng khi chưa kéo được giá, phần chênh cũ đã lưu không còn được cộng
+    ok 2 - có tỉ giá thì dùng giá dự phòng khi chưa kéo được giá, phần chênh cũ đã lưu không còn được cộng
+      ---
+      duration_ms: 8.007137
+      type: 'test'
+      ...
+    1..2
+ok 51 - bảng giá live từ cài đặt phòng
+  ---
+  duration_ms: 12.100926
+  type: 'suite'
+  ...
+# Subtest: địa chỉ Alibaba
+    # Subtest: ghép đúng dạng wss theo Workspace ID
+    ok 1 - ghép đúng dạng wss theo Workspace ID
+      ---
+      duration_ms: 2.015009
+      type: 'test'
+      ...
+    # Subtest: Workspace ID sai dạng bị loại
+    ok 2 - Workspace ID sai dạng bị loại
+      ---
+      duration_ms: 2.005508
+      type: 'test'
+      ...
+    # Subtest: thiếu key hoặc thiếu Workspace ID thì null
+    ok 3 - thiếu key hoặc thiếu Workspace ID thì null
+      ---
+      duration_ms: 3.029751
+      type: 'test'
+      ...
+    # Subtest: Workspace ID lấy từ biến môi trường hoặc từ cài đặt phòng
+    ok 4 - Workspace ID lấy từ biến môi trường hoặc từ cài đặt phòng
+      ---
+      duration_ms: 3.484268
+      type: 'test'
+      ...
+    1..4
+ok 52 - địa chỉ Alibaba
+  ---
+  duration_ms: 10.803359
+  type: 'suite'
+  ...
+# Subtest: luật xin vé
+    # Subtest: chỉ nhận model và ngôn ngữ đã hỗ trợ
+    ok 1 - chỉ nhận model và ngôn ngữ đã hỗ trợ
+      ---
+      duration_ms: 0.474982
+      type: 'test'
+      ...
+    # Subtest: địa chỉ cầu nối chỉ nhận ws hoặc wss và bỏ phần vé
+    ok 2 - địa chỉ cầu nối chỉ nhận ws hoặc wss và bỏ phần vé
+      ---
+      duration_ms: 0.230398
+      type: 'test'
+      ...
+    1..2
+ok 53 - luật xin vé
+  ---
+  duration_ms: 0.769776
+  type: 'suite'
+  ...
+# Subtest: cầu nối không sập khi một phiên lỗi
+    # Subtest: cơ sở dữ liệu đứt giữa chừng thì chỉ đóng phiên đó và vẫn nhận phiên sau
+    ok 1 - cơ sở dữ liệu đứt giữa chừng thì chỉ đóng phiên đó và vẫn nhận phiên sau
+      ---
+      duration_ms: 111.921306
+      type: 'test'
+      ...
+    1..1
+ok 54 - cầu nối không sập khi một phiên lỗi
+  ---
+  duration_ms: 112.09303
+  type: 'suite'
+  ...
+# Subtest: ngôn ngữ
+    # Subtest: đủ 60, trong đó 29 có tiếng
+    ok 1 - đủ 60, trong đó 29 có tiếng
+      ---
+      duration_ms: 0.516764
+      type: 'test'
+      ...
+    1..1
+ok 55 - ngôn ngữ
+  ---
+  duration_ms: 1.107013
+  type: 'suite'
+  ...
+# Subtest: giá
+    # Subtest: đọc giá quốc tế từ markdown và HTML, bỏ bảng Beijing
+    ok 1 - đọc giá quốc tế từ markdown và HTML, bỏ bảng Beijing
+      ---
+      duration_ms: 1.460771
+      type: 'test'
+      ...
+    # Subtest: thiếu một giá thì không đoán
+    ok 2 - thiếu một giá thì không đoán
+      ---
+      duration_ms: 0.200807
+      type: 'test'
+      ...
+    # Subtest: giá lệch quá xa bị loại
+    ok 3 - giá lệch quá xa bị loại
+      ---
+      duration_ms: 0.178754
+      type: 'test'
+      ...
+    # Subtest: kéo giá hỏng thì giữ giá đã lưu và báo model lỗi
+    ok 4 - kéo giá hỏng thì giữ giá đã lưu và báo model lỗi
+      ---
+      duration_ms: 0.231994
+      type: 'test'
+      ...
+    1..4
+ok 56 - giá
+  ---
+  duration_ms: 2.230621
+  type: 'suite'
+  ...
+# Subtest: tiền
+    # Subtest: một phút có tiếng khoảng 0,032 USD (vào + chữ ra + tiếng ra)
+    ok 1 - một phút có tiếng khoảng 0,032 USD (vào + chữ ra + tiếng ra)
+      ---
+      duration_ms: 0.294762
+      type: 'test'
+      ...
+    # Subtest: chỉ chữ rẻ hơn có tiếng
+    ok 2 - chỉ chữ rẻ hơn có tiếng
+      ---
+      duration_ms: 0.152166
+      type: 'test'
+      ...
+    # Subtest: không cộng chênh: giá khách trả bằng giá gốc
+    ok 3 - không cộng chênh: giá khách trả bằng giá gốc
+      ---
+      duration_ms: 0.316703
+      type: 'test'
+      ...
+    # Subtest: đọc usage của response.done, thiếu thì 0
+    ok 4 - đọc usage của response.done, thiếu thì 0
+      ---
+      duration_ms: 0.280178
+      type: 'test'
+      ...
+    # Subtest: model chưa có giá thì null
+    ok 5 - model chưa có giá thì null
+      ---
+      duration_ms: 0.186559
+      type: 'test'
+      ...
+    1..5
+ok 57 - tiền
+  ---
+  duration_ms: 2.511166
+  type: 'suite'
+  ...
+# Subtest: sổ giữ tiền
+    # Subtest: xin thêm khi còn dưới 40%, dừng nhẹ khi hết mà không xin được
+    ok 1 - xin thêm khi còn dưới 40%, dừng nhẹ khi hết mà không xin được
+      ---
+      duration_ms: 0.135983
+      type: 'test'
+      ...
+    # Subtest: token thật thay cho ước tính
+    ok 2 - token thật thay cho ước tính
+      ---
+      duration_ms: 0.056441
+      type: 'test'
+      ...
+    1..2
+ok 58 - sổ giữ tiền
+  ---
+  duration_ms: 0.239752
+  type: 'suite'
+  ...
+# Subtest: giao thức Qwen
+    # Subtest: 3.8 dùng output_modalities, 3.5 dùng modalities
+    ok 1 - 3.8 dùng output_modalities, 3.5 dùng modalities
+      ---
+      duration_ms: 0.304404
+      type: 'test'
+      ...
+    # Subtest: ghép chữ gốc và bản dịch dù đến trước hay sau
+    ok 2 - ghép chữ gốc và bản dịch dù đến trước hay sau
+      ---
+      duration_ms: 0.38558
+      type: 'test'
+      ...
+    1..2
+ok 59 - giao thức Qwen
+  ---
+  duration_ms: 0.76633
+  type: 'suite'
+  ...
+# Subtest: vé
+    # Subtest: đúng chữ ký còn hạn thì qua
+    ok 1 - đúng chữ ký còn hạn thì qua
+      ---
+      duration_ms: 0.604051
+      type: 'test'
+      ...
+    # Subtest: sai khóa, hết hạn hoặc bị sửa thì không qua
+    ok 2 - sai khóa, hết hạn hoặc bị sửa thì không qua
+      ---
+      duration_ms: 0.185465
+      type: 'test'
+      ...
+    1..2
+ok 60 - vé
+  ---
+  duration_ms: 0.854054
+  type: 'suite'
+  ...
+# Subtest: cầu nối (Alibaba giả)
+    # Subtest: dịch trọn một phiên, giữ key kín, trừ tiền thật và nhả phần dư
+    ok 1 - dịch trọn một phiên, giữ key kín, trừ tiền thật và nhả phần dư
+      ---
+      duration_ms: 65.30659
+      type: 'test'
+      ...
+    # Subtest: vé sai bị đóng 4401, không mở kết nối Alibaba
+    ok 2 - vé sai bị đóng 4401, không mở kết nối Alibaba
+      ---
+      duration_ms: 3.608943
+      type: 'test'
+      ...
+    # Subtest: không đủ tiền giữ thì đóng 4402
+    ok 3 - không đủ tiền giữ thì đóng 4402
+      ---
+      duration_ms: 2.929167
+      type: 'test'
+      ...
+    1..3
+ok 61 - cầu nối (Alibaba giả)
+  ---
+  duration_ms: 72.037447
+  type: 'suite'
+  ...
+# Subtest: phiên ở trình duyệt nối cầu nối thật (Alibaba giả)
+    # Subtest: bắt đầu, gửi tiếng, nhận chữ và tiếng dịch, dừng nhẹ, tiền được trừ và nhả đúng
+    ok 1 - bắt đầu, gửi tiếng, nhận chữ và tiếng dịch, dừng nhẹ, tiền được trừ và nhả đúng
+      ---
+      duration_ms: 27.537066
+      type: 'test'
+      ...
+    1..1
+ok 62 - phiên ở trình duyệt nối cầu nối thật (Alibaba giả)
+  ---
+  duration_ms: 27.674572
+  type: 'suite'
+  ...
+# Subtest: Alibaba cắt vì im lặng
+    # Subtest: không báo lỗi tiếng Anh cho khách, khung im bị bỏ, có tiếng lại thì nối lại và dịch tiếp
+    ok 1 - không báo lỗi tiếng Anh cho khách, khung im bị bỏ, có tiếng lại thì nối lại và dịch tiếp
+      ---
+      duration_ms: 527.663195
+      type: 'test'
+      ...
+    1..1
+ok 63 - Alibaba cắt vì im lặng
+  ---
+  duration_ms: 527.990514
+  type: 'suite'
+  ...
+# Subtest: tiếng nén μ-law (ứng dụng 0.7)
+    # Subtest: nén rồi giải nén sai lệch nhỏ (đủ cho nhận dạng), im vẫn là im
+    ok 1 - nén rồi giải nén sai lệch nhỏ (đủ cho nhận dạng), im vẫn là im
+      ---
+      duration_ms: 0.997158
+      type: 'test'
+      ...
+    # Subtest: cầu nối báo nhận mulaw; khách chọn mulaw thì Alibaba nhận PCM dài gấp đôi, tiền tính theo PCM
+    ok 2 - cầu nối báo nhận mulaw; khách chọn mulaw thì Alibaba nhận PCM dài gấp đôi, tiền tính theo PCM
+      ---
+      duration_ms: 49.355317
+      type: 'test'
+      ...
+    1..2
+ok 64 - tiếng nén μ-law (ứng dụng 0.7)
+  ---
+  duration_ms: 50.59578
+  type: 'suite'
+  ...
+# Subtest: độ nhạy nhận tiếng Qwen 3.5
+    # Subtest: mặc định 0,2 như cũ; LIVE_VAD_THRESHOLD trong 0,1–0,9; 3.8 không có tham số này
+    ok 1 - mặc định 0,2 như cũ; LIVE_VAD_THRESHOLD trong 0,1–0,9; 3.8 không có tham số này
+      ---
+      duration_ms: 0.42322
+      type: 'test'
+      ...
+    1..1
+ok 65 - độ nhạy nhận tiếng Qwen 3.5
+  ---
+  duration_ms: 0.49294
+  type: 'suite'
+  ...
+# Subtest: câu lỗi Alibaba bằng tiếng Việt
+    # Subtest: đổi lỗi hay gặp, giữ câu tiếng Việt, lỗi lạ kèm nguyên văn ngắn
+    ok 1 - đổi lỗi hay gặp, giữ câu tiếng Việt, lỗi lạ kèm nguyên văn ngắn
+      ---
+      duration_ms: 1.837574
+      type: 'test'
+      ...
+    1..1
+ok 66 - câu lỗi Alibaba bằng tiếng Việt
+  ---
+  duration_ms: 1.900261
+  type: 'suite'
+  ...
+# Subtest: fractional supplier cost and twenty competing replays yield one posted observation
+ok 67 - fractional supplier cost and twenty competing replays yield one posted observation
+  ---
+  duration_ms: 171.117883
+  type: 'test'
+  ...
+# provider-spend-pending live-fixture P0001
+# Subtest: live aggregate SQL fault keeps a durable visible pending cost; concurrent replay posts once
+ok 68 - live aggregate SQL fault keeps a durable visible pending cost; concurrent replay posts once
+  ---
+  duration_ms: 24.003473
+  type: 'test'
+  ...
+# provider-spend-pending fixture-event P0001
+# Subtest: posting bookkeeping failure rolls back the aggregate while retaining the observation
+ok 69 - posting bookkeeping failure rolls back the aggregate while retaining the observation
+  ---
+  duration_ms: 10.943518
+  type: 'test'
+  ...
+# Subtest: failure to persist an observation is propagated and never silently replaced by an aggregate
+ok 70 - failure to persist an observation is propagated and never silently replaced by an aggregate
+  ---
+  duration_ms: 6.245635
+  type: 'test'
+  ...
+# Subtest: bounded replay rejects invalid limits without touching observations
+ok 71 - bounded replay rejects invalid limits without touching observations
+  ---
+  duration_ms: 3.418136
+  type: 'test'
+  ...
+# Subtest: tiền phải trả từng nhà cung cấp
+    # Subtest: cộng dồn theo ngày × nhà × model, quy USD theo tỷ giá lúc gọi
+    ok 1 - cộng dồn theo ngày × nhà × model, quy USD theo tỷ giá lúc gọi
+      ---
+      duration_ms: 13.545441
+      type: 'test'
+      ...
+    # Subtest: bỏ qua lần gọi không tốn, không bao giờ ném lỗi
+    ok 2 - bỏ qua lần gọi không tốn, không bao giờ ném lỗi
+      ---
+      duration_ms: 5.378725
+      type: 'test'
+      ...
+    # Subtest: phán lời lỗ: lời, lỗ, và lời nhưng lỗ nếu khách dùng hết Token còn hạn
+    ok 3 - phán lời lỗ: lời, lỗ, và lời nhưng lỗ nếu khách dùng hết Token còn hạn
+      ---
+      duration_ms: 2.484162
+      type: 'test'
+      ...
+    1..3
+ok 72 - tiền phải trả từng nhà cung cấp
+  ---
+  duration_ms: 1889.893937
+  type: 'suite'
+  ...
+# Subtest: mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà
+    # Subtest: cửa gọi model, cửa Groq, nhận dạng bằng link, dịch trực tiếp, TyZo
+    ok 1 - cửa gọi model, cửa Groq, nhận dạng bằng link, dịch trực tiếp, TyZo
+      ---
+      duration_ms: 2.473922
+      type: 'test'
+      ...
+    # Subtest: trang Doanh thu có ô lời lỗ ở đầu, chỉ Admin
+    ok 2 - trang Doanh thu có ô lời lỗ ở đầu, chỉ Admin
+      ---
+      duration_ms: 2.069189
+      type: 'test'
+      ...
+    1..2
+ok 73 - mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà
+  ---
+  duration_ms: 4.7788
+  type: 'suite'
+  ...
+1..73
+# tests 121
+# suites 26
+# pass 121
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 23572.194305
+# exit=0 seconds=24 end=2026-11-27T10:36:23Z

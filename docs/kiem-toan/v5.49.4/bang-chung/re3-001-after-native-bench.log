@@ -1,0 +1,28 @@
+# label=re3-001-after-native-bench
+# head=6d906ba07f12e4f6938c3f493fe29f08472313f3 dirty=9
+# fingerprint(src,scripts,migrations,server,package*)=02637b9715619efd2df9711c2fe1966f60f190e88962bda6433ab25c5eed7981
+# start=2026-11-27T10:36:38Z
+# cmd=node --experimental-strip-types --import ./scripts/register-ts.mjs scripts/re2-live-bench.ts
+{"concurrency":1,"statuses":{"200":1},"peakUpstreamSockets":1,"p50Ms":96.08,"p95Ms":96.08,"p99Ms":96.08,"acceptedP95Ms":96.08,"rejectedP95Ms":null}
+{"concurrency":5,"statuses":{"200":5},"peakUpstreamSockets":5,"p50Ms":89.01,"p95Ms":93.1,"p99Ms":93.1,"acceptedP95Ms":93.1,"rejectedP95Ms":null}
+{"concurrency":25,"statuses":{"200":24,"429":1},"peakUpstreamSockets":24,"p50Ms":153.16,"p95Ms":162.64,"p99Ms":163.32,"acceptedP95Ms":162.64,"rejectedP95Ms":72.17}
+{"concurrency":50,"statuses":{"200":24,"429":26},"peakUpstreamSockets":24,"p50Ms":78.16,"p95Ms":169.77,"p99Ms":172.92,"acceptedP95Ms":170.78,"rejectedP95Ms":78.16}
+{"concurrency":100,"statuses":{"200":24,"429":76},"peakUpstreamSockets":24,"p50Ms":37.9,"p95Ms":160.96,"p99Ms":161.94,"acceptedP95Ms":161.94,"rejectedP95Ms":80.37}
+{"concurrency":200,"statuses":{"200":24,"429":176},"peakUpstreamSockets":24,"p50Ms":76.85,"p95Ms":213.56,"p99Ms":214.9,"acceptedP95Ms":214.95,"rejectedP95Ms":122.39}
+{"concurrency":300,"statuses":{"200":24,"429":276},"peakUpstreamSockets":24,"p50Ms":82.06,"p95Ms":221.94,"p99Ms":231.87,"acceptedP95Ms":233.16,"rejectedP95Ms":142.35}
+node:fs:2430
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open '/workspace/tyzo-results/evidence/live-load-results.json'
+    at writeFileSync (node:fs:2430:20)
+    at file:///home/user/TyZo_Sub_Project/scripts/re2-live-bench.ts:259:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/workspace/tyzo-results/evidence/live-load-results.json'
+}
+
+Node.js v22.23.5
+# exit=1 seconds=1 end=2026-11-27T10:36:39Z

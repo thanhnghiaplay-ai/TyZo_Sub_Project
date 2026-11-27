@@ -1,0 +1,46 @@
+# label=re3-003-after-lease
+# head=dc8cf4e13718f2562e2b067c10116266cce06d3c dirty=2
+# fingerprint(src,scripts,migrations,server,package*)=2462421e591cd72b8ad39fda61ccf2d60a89d9c43da5e87f51ef20b58a22a6bb
+# start=2026-11-27T10:46:41Z
+# cmd=node --experimental-strip-types --test src/lib/billing/work-lease.test.ts
+TAP version 13
+# Subtest: RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+ok 1 - RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+  ---
+  duration_ms: 561.38229
+  type: 'test'
+  ...
+# Subtest: RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+ok 2 - RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+  ---
+  duration_ms: 209.963211
+  type: 'test'
+  ...
+# Subtest: RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+ok 3 - RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+  ---
+  duration_ms: 151.413355
+  type: 'test'
+  ...
+# Subtest: RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+ok 4 - RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+  ---
+  duration_ms: 200.229359
+  type: 'test'
+  ...
+# Subtest: RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc
+ok 5 - RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc
+  ---
+  duration_ms: 0.283827
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1199.699964
+# exit=0 seconds=2 end=2026-11-27T10:46:43Z

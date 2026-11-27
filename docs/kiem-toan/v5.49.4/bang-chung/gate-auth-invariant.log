@@ -1,0 +1,11 @@
+# label=gate-auth-invariant
+# head=eaadb2119b08f9c4b4ce615b04dbe078058caa1e dirty=4
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:20:02Z
+# cmd=npm run check:auth
+
+> check:auth
+> node scripts/check-auth-invariant.mjs
+
+[auth-invariant] dev and build agree: sign-in on
+# exit=0 seconds=0 end=2026-11-27T11:20:02Z

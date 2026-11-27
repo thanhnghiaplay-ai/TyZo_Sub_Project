@@ -1,0 +1,76 @@
+# label=re3-002-after-probe
+# head=0caa1c9c6db2514f0dccc31af5db830b1a12db3b dirty=4
+# fingerprint(src,scripts,migrations,server,package*)=6b42ff0865d1076c9b14239c6ea314472adc00f02a9c3941ca2cfdcc2b707546
+# start=2026-11-27T10:41:16Z
+# cmd=node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/audio-probe.test.ts
+TAP version 13
+# Subtest: RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+ok 1 - RE3-002: WAV PCM16 16 kHz của app — đúng độ dài
+  ---
+  duration_ms: 44.02641
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+ok 2 - RE3-002: WebM/Opus 20 kbit/s của app — đúng độ dài
+  ---
+  duration_ms: 22.953887
+  type: 'test'
+  ...
+# Subtest: RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+ok 3 - RE3-002: Opus bitrate rất thấp (im lặng, gói 3 byte) — không được giữ thiếu
+  ---
+  duration_ms: 7.292504
+  type: 'test'
+  ...
+# Subtest: RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+ok 4 - RE3-002: Opus gói 120 ms nhỏ — 10 phút trong tệp nhỏ vẫn đúng
+  ---
+  duration_ms: 9.141953
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+ok 5 - RE3-002: WAV header giả byteRate khổng lồ → không chấp nhận số nhỏ
+  ---
+  duration_ms: 14.961075
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+ok 6 - RE3-002: WAV khai data lớn hơn phần có thật (cụt) → theo phần có thật
+  ---
+  duration_ms: 3.313998
+  type: 'test'
+  ...
+# Subtest: RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+ok 7 - RE3-002: WAV có chunk phụ trước data (LIST) vẫn đúng
+  ---
+  duration_ms: 4.060182
+  type: 'test'
+  ...
+# Subtest: RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+ok 8 - RE3-002: định dạng không xác minh được (mp3/rác/multipart hỏng/không có file) → null
+  ---
+  duration_ms: 3.168152
+  type: 'test'
+  ...
+# Subtest: RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+ok 9 - RE3-002: WebM cụt giữa chừng → null hoặc không thấp hơn phần còn đọc được
+  ---
+  duration_ms: 2.556687
+  type: 'test'
+  ...
+# Subtest: RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+ok 10 - RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn
+  ---
+  duration_ms: 469.146358
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 755.377443
+# exit=0 seconds=1 end=2026-11-27T10:41:17Z

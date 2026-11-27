@@ -1,0 +1,23 @@
+# label=re3-006-admin-ui
+# head=eaadb2119b08f9c4b4ce615b04dbe078058caa1e dirty=4
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:21:08Z
+# cmd=node /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/ui.mjs /home/user/TyZo_Sub_Project/screenshots
+node:internal/modules/package_json_reader:314
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'playwright' imported from /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/ui.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)
+    at packageResolve (node:internal/modules/esm/resolve:772:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:989:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v22.23.5
+# exit=1 seconds=0 end=2026-11-27T11:21:08Z

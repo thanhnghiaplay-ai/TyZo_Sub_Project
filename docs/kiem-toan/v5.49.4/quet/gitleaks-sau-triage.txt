@@ -1,0 +1,6 @@
+[90m11:19AM[0m [32mINF[0m [1m116 commits scanned.[0m
+[90m11:19AM[0m [32mINF[0m [1mscanned ~75244056 bytes (75.24 MB) in 55.5s[0m
+[90m11:19AM[0m [32mINF[0m [1mno leaks found[0m
+[90m11:19AM[0m [32mINF[0m [1mscanned ~39972257 bytes (39.97 MB) in 9.46s[0m
+[90m11:19AM[0m [32mINF[0m [1mno leaks found[0m
+Báo cáo (đã che giá trị): /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/tools-out/gitleaks-*.json

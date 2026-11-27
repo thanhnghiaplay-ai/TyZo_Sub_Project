@@ -1,0 +1,100 @@
+# label=re3-007-after-restore-3
+# head=5341d3532f55ca18a6e903fe78c7fb1c9c3ec9fe dirty=3
+# fingerprint(src,scripts,migrations,server,package*)=670e18c564f2a2ac90c4d67c8e51812b071fc021b30cc568399d78f9c29ea5b1
+# start=2026-11-27T11:08:10Z
+# cmd=node --test scripts/re3-restore-pg.test.mjs scripts/re2-restore.test.mjs
+TAP version 13
+# Subtest: RE2-005: restore error despite matching table counts cannot report success
+ok 1 - RE2-005: restore error despite matching table counts cannot report success
+  ---
+  duration_ms: 35.360309
+  type: 'test'
+  ...
+# Subtest: RE2-005: restore success requires atomic fail-fast flags
+ok 2 - RE2-005: restore success requires atomic fail-fast flags
+  ---
+  duration_ms: 33.233084
+  type: 'test'
+  ...
+# Subtest: RE3-007: restore exit 0 and equal table counts but different rows cannot report success
+ok 3 - RE3-007: restore exit 0 and equal table counts but different rows cannot report success
+  ---
+  duration_ms: 30.595708
+  type: 'test'
+  ...
+# Subtest: RE3-007: bảng kê ổn định, phân biệt khác một dòng
+ok 4 - RE3-007: bảng kê ổn định, phân biệt khác một dòng
+  ---
+  duration_ms: 491.728788
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon trống: khớp bảng kê, web VPS bật lại, thành công
+ok 5 - RE3-007: VPS → Neon trống: khớp bảng kê, web VPS bật lại, thành công
+  ---
+  duration_ms: 974.054962
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon với lỗi dump-fail → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+ok 6 - RE3-007: VPS → Neon với lỗi dump-fail → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+  ---
+  duration_ms: 601.702575
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon với lỗi missing-rows → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+ok 7 - RE3-007: VPS → Neon với lỗi missing-rows → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+  ---
+  duration_ms: 1184.584257
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon với lỗi write-during-vps → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+ok 8 - RE3-007: VPS → Neon với lỗi write-during-vps → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+  ---
+  duration_ms: 1209.994551
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS: khớp bảng kê, bản VPS cũ giữ dưới tyzo_cu_*
+ok 9 - RE3-007: Neon → VPS: khớp bảng kê, bản VPS cũ giữ dưới tyzo_cu_*
+  ---
+  duration_ms: 2093.283108
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi missing-rows → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 10 - RE3-007: Neon → VPS với lỗi missing-rows → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 2111.079673
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi write-during-neon → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 11 - RE3-007: Neon → VPS với lỗi write-during-neon → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 2025.905146
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi rename-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 12 - RE3-007: Neon → VPS với lỗi rename-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 1920.053868
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi dump-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 13 - RE3-007: Neon → VPS với lỗi dump-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 1309.96613
+  type: 'test'
+  ...
+# Subtest: RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyển và bật lại web VPS; khớp thì giữ web dừng
+ok 14 - RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyển và bật lại web VPS; khớp thì giữ web dừng
+  ---
+  duration_ms: 1328.730081
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15460.857145
+# exit=0 seconds=16 end=2026-11-27T11:08:26Z

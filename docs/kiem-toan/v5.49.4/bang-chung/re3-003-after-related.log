@@ -1,0 +1,737 @@
+# label=re3-003-after-related
+# head=dc8cf4e13718f2562e2b067c10116266cce06d3c dirty=7
+# fingerprint(src,scripts,migrations,server,package*)=d978da25ce57e3178415947ffa7fbc0b2d19823c73cceed507f93ed6c5284610
+# start=2026-11-27T10:48:00Z
+# cmd=node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/work-lease.test.ts src/lib/billing/work-lease-pg.test.ts src/lib/billing/tyzo-modal-race.test.ts src/lib/billing/tyzo-modal-charge.test.ts src/lib/billing/re2-regression.test.ts src/lib/billing/run-gate.test.ts src/lib/billing/gate-reserve.test.ts src/lib/billing/upstream-outcome.test.ts src/lib/billing/async-asr.test.ts src/lib/live/live-bridge-audit.test.ts src/lib/backend-audit.test.ts
+TAP version 13
+# (node:3132) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: AZ-007 / R3-005: serialized link codes and rollback after device-insert failure
+ok 1 - AZ-007 / R3-005: serialized link codes and rollback after device-insert failure
+  ---
+  duration_ms: 383.190197
+  type: 'test'
+  ...
+# Subtest: R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success
+ok 2 - R4-004 / R4-005: remove-user rolls back all steps on fault and revokes device on success
+  ---
+  duration_ms: 77.735265
+  type: 'test'
+  ...
+# Subtest: R4-008: temporary password revokes web sessions and Android credentials
+ok 3 - R4-008: temporary password revokes web sessions and Android credentials
+  ---
+  duration_ms: 161.283158
+  type: 'test'
+  ...
+# Subtest: R4-006: real revenue aggregation exceeds int32 without truncation
+ok 4 - R4-006: real revenue aggregation exceeds int32 without truncation
+  ---
+  duration_ms: 34.144682
+  type: 'test'
+  ...
+# Subtest: R3-004: database password update and device revocation fail or commit together
+ok 5 - R3-004: database password update and device revocation fail or commit together
+  ---
+  duration_ms: 25.753834
+  type: 'test'
+  ...
+# Subtest: R5-007: conflicting referral code reports false and preserves original affiliation
+ok 6 - R5-007: conflicting referral code reports false and preserves original affiliation
+  ---
+  duration_ms: 17.623509
+  type: 'test'
+  ...
+# Subtest: R3-007: all three read/quote polish endpoints register authentication
+ok 7 - R3-007: all three read/quote polish endpoints register authentication
+  ---
+  duration_ms: 43.671592
+  type: 'test'
+  ...
+# Subtest: R4-007: actual Android history-delete handler applies per-account rate limit
+ok 8 - R4-007: actual Android history-delete handler applies per-account rate limit
+  ---
+  duration_ms: 31.467513
+  type: 'test'
+  ...
+# Subtest: DEEP-010: real webhook handlers authenticate before reading and cap oversized bodies
+ok 9 - DEEP-010: real webhook handlers authenticate before reading and cap oversized bodies
+  ---
+  duration_ms: 35.751605
+  type: 'test'
+  ...
+# Subtest: SCALE: capacity settings require Admin, reject bad bounds, and audit atomically
+ok 10 - SCALE: capacity settings require Admin, reject bad bounds, and audit atomically
+  ---
+  duration_ms: 21.685078
+  type: 'test'
+  ...
+# Subtest: SCALE: resolving uncertain capacity needs Admin evidence, is audited atomically, and never changes financial records
+ok 11 - SCALE: resolving uncertain capacity needs Admin evidence, is audited atomically, and never changes financial records
+  ---
+  duration_ms: 26.234151
+  type: 'test'
+  ...
+# Subtest: AZ-002: app link/me identity is derived from authenticated device, never client input
+ok 12 - AZ-002: app link/me identity is derived from authenticated device, never client input
+  ---
+  duration_ms: 39.96455
+  type: 'test'
+  ...
+# (node:3133) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: ASYNC-P0: duplicate submit/status returns one upstream job, one debit and one spend
+ok 13 - ASYNC-P0: duplicate submit/status returns one upstream job, one debit and one spend
+  ---
+  duration_ms: 574.512276
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: unknown or foreign task/receipt is rejected before contacting provider
+ok 14 - ASYNC-P0: unknown or foreign task/receipt is rejected before contacting provider
+  ---
+  duration_ms: 37.138182
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: durable queued job retains budget beyond a web request lease, then drains close
+ok 15 - ASYNC-P0: durable queued job retains budget beyond a web request lease, then drains close
+  ---
+  duration_ms: 49.945691
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: lost submission response cannot automatically submit duplicate work
+ok 16 - ASYNC-P0: lost submission response cannot automatically submit duplicate work
+  ---
+  duration_ms: 59.61389
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: known failed job releases once; response after force-close only records reconciliation
+ok 17 - ASYNC-P0: known failed job releases once; response after force-close only records reconciliation
+  ---
+  duration_ms: 99.735922
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: definitive submission rejection releases budget and allows a corrected retry
+ok 18 - ASYNC-P0: definitive submission rejection releases budget and allows a corrected retry
+  ---
+  duration_ms: 194.513445
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: ambiguous HTTP 408 retains uncertainty and cannot auto-resubmit
+ok 19 - ASYNC-P0: ambiguous HTTP 408 retains uncertainty and cannot auto-resubmit
+  ---
+  duration_ms: 36.540217
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: ambiguous HTTP 500 retains uncertainty and cannot auto-resubmit
+ok 20 - ASYNC-P0: ambiguous HTTP 500 retains uncertainty and cannot auto-resubmit
+  ---
+  duration_ms: 31.212881
+  type: 'test'
+  ...
+# Subtest: ASYNC-P0: an error response containing a task ID retains that owned task for reconciliation
+ok 21 - ASYNC-P0: an error response containing a task ID retains that owned task for reconciliation
+  ---
+  duration_ms: 53.423642
+  type: 'test'
+  ...
+# Subtest: RE-002: giữ trước từng lệnh Groq/Alibaba
+    # Subtest: 8 lệnh cùng lúc, mỗi lệnh ~30 Token, giữ 100 → phần giữ không bao giờ vượt held, nhà chỉ được gọi khi còn phần giữ
+    ok 1 - 8 lệnh cùng lúc, mỗi lệnh ~30 Token, giữ 100 → phần giữ không bao giờ vượt held, nhà chỉ được gọi khi còn phần giữ
+      ---
+      duration_ms: 221.272802
+      type: 'test'
+      ...
+    # SAU: nhà được gọi 3 lần (≈99 Token), cùng lúc tối đa 3, khách bị trừ 99 Token (phần giữ 100).
+    # Subtest: nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả
+    ok 2 - nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả
+      ---
+      duration_ms: 31.951007
+      type: 'test'
+      ...
+    # Subtest: mất trả lời (hết giờ): nhả phần giữ, ghi «mat-phan-hoi» để đối soát
+    ok 3 - mất trả lời (hết giờ): nhả phần giữ, ghi «mat-phan-hoi» để đối soát
+      ---
+      duration_ms: 15.601381
+      type: 'test'
+      ...
+    # Subtest: tiến trình chết giữa chừng (mất nhịp): lệnh sau dọn phần giữ của lệnh chết rồi chạy được
+    ok 4 - tiến trình chết giữa chừng (mất nhịp): lệnh sau dọn phần giữ của lệnh chết rồi chạy được
+      ---
+      duration_ms: 30.222528
+      type: 'test'
+      ...
+    # Subtest: khách đóng phiếu khi lệnh đang gọi nhà → chờ lệnh xong mới trả phần dư; lệnh vẫn được trừ
+    ok 5 - khách đóng phiếu khi lệnh đang gọi nhà → chờ lệnh xong mới trả phần dư; lệnh vẫn được trừ
+      ---
+      duration_ms: 129.037802
+      type: 'test'
+      ...
+    1..5
+ok 22 - RE-002: giữ trước từng lệnh Groq/Alibaba
+  ---
+  duration_ms: 663.843244
+  type: 'suite'
+  ...
+# Subtest: RE-005: nhà luôn nhận yêu cầu có trần token
+    # Subtest: không ghi hoặc null → trần mặc định, đúng trường của nhà
+    ok 1 - không ghi hoặc null → trần mặc định, đúng trường của nhà
+      ---
+      duration_ms: 0.980621
+      type: 'test'
+      ...
+    # Subtest: âm, chuỗi, thập phân, 0, 8193, hai trường khác nhau → từ chối; hai trường bằng nhau → nhận
+    ok 2 - âm, chuỗi, thập phân, 0, 8193, hai trường khác nhau → từ chối; hai trường bằng nhau → nhận
+      ---
+      duration_ms: 0.397072
+      type: 'test'
+      ...
+    # Subtest: nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền
+    ok 3 - nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền
+      ---
+      duration_ms: 36.516139
+      type: 'test'
+      ...
+    1..3
+ok 23 - RE-005: nhà luôn nhận yêu cầu có trần token
+  ---
+  duration_ms: 38.235237
+  type: 'suite'
+  ...
+# Subtest: RE2-001: 10 held versus 100 estimate rejects before upstream
+ok 24 - RE2-001: 10 held versus 100 estimate rejects before upstream
+  ---
+  duration_ms: 241.689821
+  type: 'test'
+  ...
+# Subtest: RE2-001: invalid estimates fail closed without creating calls
+ok 25 - RE2-001: invalid estimates fail closed without creating calls
+  ---
+  duration_ms: 14.290618
+  type: 'test'
+  ...
+# Subtest: RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+ok 26 - RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+  ---
+  duration_ms: 344.666211
+  type: 'test'
+  ...
+# Subtest: RE2-006: close intent rejects a new reservation while an old call drains
+ok 27 - RE2-006: close intent rejects a new reservation while an old call drains
+  ---
+  duration_ms: 26.504281
+  type: 'test'
+  ...
+# Subtest: RE2-002: cost above own reservation cannot spend another call's 40
+ok 28 - RE2-002: cost above own reservation cannot spend another call's 40
+  ---
+  duration_ms: 11.44356
+  type: 'test'
+  ...
+# Subtest: RE2-002: reaped late response cannot debit after lease lost
+ok 29 - RE2-002: reaped late response cannot debit after lease lost
+  ---
+  duration_ms: 32.576178
+  type: 'test'
+  ...
+# Subtest: RE2-003: heartbeat continues while response body is being read
+ok 30 - RE2-003: heartbeat continues while response body is being read
+  ---
+  duration_ms: 121.74112
+  type: 'test'
+  ...
+# Subtest: RE2-003: failed response body releases into reconciliation
+ok 31 - RE2-003: failed response body releases into reconciliation
+  ---
+  duration_ms: 32.673096
+  type: 'test'
+  ...
+# Subtest: RE2-002: release replay is a no-op
+ok 32 - RE2-002: release replay is a no-op
+  ---
+  duration_ms: 17.650371
+  type: 'test'
+  ...
+# Subtest: RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+ok 33 - RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+  ---
+  duration_ms: 21.867526
+  type: 'test'
+  ...
+# Subtest: RE2-002: settlement replay and rollback retain one debit and one provider observation
+ok 34 - RE2-002: settlement replay and rollback retain one debit and one provider observation
+  ---
+  duration_ms: 72.319613
+  type: 'test'
+  ...
+# Subtest: RE2-003: body deadline cancels a stuck stream and releases its budget
+ok 35 - RE2-003: body deadline cancels a stuck stream and releases its budget
+  ---
+  duration_ms: 50.523474
+  type: 'test'
+  ...
+# Subtest: RE2-003: expired heartbeat cannot revive an old call
+ok 36 - RE2-003: expired heartbeat cannot revive an old call
+  ---
+  duration_ms: 28.295701
+  type: 'test'
+  ...
+# Admission: 200 contenders, accepted 24, rejected 176, 123ms total
+# Subtest: SCALE: 200 contenders across connections obey global/model caps and release replay
+ok 37 - SCALE: 200 contenders across connections obey global/model caps and release replay
+  ---
+  duration_ms: 149.432111
+  type: 'test'
+  ...
+# Subtest: SCALE: per-user limits, independent live lane, expired leases and kill switch
+ok 38 - SCALE: per-user limits, independent live lane, expired leases and kill switch
+  ---
+  duration_ms: 142.761762
+  type: 'test'
+  ...
+# Subtest: SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+ok 39 - SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+  ---
+  duration_ms: 87.923731
+  type: 'test'
+  ...
+# Subtest: RE2-002: Modal late result retains actual cost evidence after reaping
+ok 40 - RE2-002: Modal late result retains actual cost evidence after reaping
+  ---
+  duration_ms: 98.3693
+  type: 'test'
+  ...
+# Subtest: RE2-002 root: unreserved charging paths cannot consume another call's reservation
+ok 41 - RE2-002 root: unreserved charging paths cannot consume another call's reservation
+  ---
+  duration_ms: 58.163557
+  type: 'test'
+  ...
+# Subtest: SCALE: expired live work retains admission until its late completion releases it
+ok 42 - SCALE: expired live work retains admission until its late completion releases it
+  ---
+  duration_ms: 83.379576
+  type: 'test'
+  ...
+# Subtest: cổng tính tiền
+    # Subtest: dịch thành công: trừ theo token thật trong usage
+    ok 1 - dịch thành công: trừ theo token thật trong usage
+      ---
+      duration_ms: 66.270623
+      type: 'test'
+      ...
+    # Subtest: Groq trả lỗi thì không tính tiền
+    ok 2 - Groq trả lỗi thì không tính tiền
+      ---
+      duration_ms: 31.48381
+      type: 'test'
+      ...
+    # Subtest: nhận dạng: trừ theo duration thật, tối thiểu 10 giây
+    ok 3 - nhận dạng: trừ theo duration thật, tối thiểu 10 giây
+      ---
+      duration_ms: 120.582608
+      type: 'test'
+      ...
+    # Subtest: R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát
+    ok 4 - R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát
+      ---
+      duration_ms: 35.858603
+      type: 'test'
+      ...
+    # Subtest: RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà
+    ok 5 - RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà
+      ---
+      duration_ms: 10.423795
+      type: 'test'
+      ...
+    # Subtest: thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq
+    ok 6 - thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq
+      ---
+      duration_ms: 11.478978
+      type: 'test'
+      ...
+    # Subtest: model chưa có giá bị từ chối, không gọi Groq
+    ok 7 - model chưa có giá bị từ chối, không gọi Groq
+      ---
+      duration_ms: 18.790364
+      type: 'test'
+      ...
+    # Subtest: đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi
+    ok 8 - đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi
+      ---
+      duration_ms: 54.138568
+      type: 'test'
+      ...
+    1..8
+ok 43 - cổng tính tiền
+  ---
+  duration_ms: 2739.285626
+  type: 'suite'
+  ...
+# Subtest: đọc yêu cầu
+    # Subtest: chat: lấy model, chặn stream và token trả lời quá lớn
+    ok 1 - chat: lấy model, chặn stream và token trả lời quá lớn
+      ---
+      duration_ms: 1.423559
+      type: 'test'
+      ...
+    # Subtest: speech: đếm ký tự; nhận dạng: lấy model từ form
+    ok 2 - speech: đếm ký tự; nhận dạng: lấy model từ form
+      ---
+      duration_ms: 0.98746
+      type: 'test'
+      ...
+    # Subtest: body hỏng thì null
+    ok 3 - body hỏng thì null
+      ---
+      duration_ms: 0.092343
+      type: 'test'
+      ...
+    1..3
+ok 44 - đọc yêu cầu
+  ---
+  duration_ms: 2.653253
+  type: 'suite'
+  ...
+# Subtest: thu tiền từng đoạn TyZo Modal
+    # Subtest: trừ đúng số thực của đoạn
+    ok 1 - trừ đúng số thực của đoạn
+      ---
+      duration_ms: 23.483436
+      type: 'test'
+      ...
+    # Subtest: gửi lại cùng đoạn sau khi đã xong: trả kết quả cũ, không gọi GPU, không trừ lần hai
+    ok 2 - gửi lại cùng đoạn sau khi đã xong: trả kết quả cũ, không gọi GPU, không trừ lần hai
+      ---
+      duration_ms: 20.655678
+      type: 'test'
+      ...
+    # Subtest: gửi trùng khi đoạn đang chạy thì từ chối, không trừ
+    ok 3 - gửi trùng khi đoạn đang chạy thì từ chối, không trừ
+      ---
+      duration_ms: 64.381047
+      type: 'test'
+      ...
+    # Subtest: Modal lỗi: trả lại thời lượng, không trừ, gửi lại được
+    ok 4 - Modal lỗi: trả lại thời lượng, không trừ, gửi lại được
+      ---
+      duration_ms: 26.601271
+      type: 'test'
+      ...
+    # Subtest: chín đoạn chạy cùng lúc: trừ đúng tổng, không vượt số giữ
+    ok 5 - chín đoạn chạy cùng lúc: trừ đúng tổng, không vượt số giữ
+      ---
+      duration_ms: 94.798276
+      type: 'test'
+      ...
+    # Subtest: không còn giữ đủ cho ước tính thì từ chối trước khi gọi GPU
+    ok 6 - không còn giữ đủ cho ước tính thì từ chối trước khi gọi GPU
+      ---
+      duration_ms: 9.260831
+      type: 'test'
+      ...
+    # Subtest: vượt thời lượng phiếu thì từ chối
+    ok 7 - vượt thời lượng phiếu thì từ chối
+      ---
+      duration_ms: 15.918485
+      type: 'test'
+      ...
+    # Subtest: số thực vượt phần giữ riêng: không chiếm ngân sách khác, ghi phần thiếu
+    ok 8 - số thực vượt phần giữ riêng: không chiếm ngân sách khác, ghi phần thiếu
+      ---
+      duration_ms: 17.768522
+      type: 'test'
+      ...
+    # Subtest: đóng phiếu trả lại phần chưa dùng; sau đó không chạy thêm đoạn được
+    ok 9 - đóng phiếu trả lại phần chưa dùng; sau đó không chạy thêm đoạn được
+      ---
+      duration_ms: 20.264561
+      type: 'test'
+      ...
+    # Subtest: phiếu của người khác hoặc model khác thì từ chối
+    ok 10 - phiếu của người khác hoặc model khác thì từ chối
+      ---
+      duration_ms: 5.331883
+      type: 'test'
+      ...
+    1..10
+ok 45 - thu tiền từng đoạn TyZo Modal
+  ---
+  duration_ms: 2593.728396
+  type: 'suite'
+  ...
+# Subtest: TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song
+    # Subtest: MAIN-023: 9 đoạn ước 30 Token, giữ 100 → tối đa 3 đoạn được gọi GPU cùng lúc
+    ok 1 - MAIN-023: 9 đoạn ước 30 Token, giữ 100 → tối đa 3 đoạn được gọi GPU cùng lúc
+      ---
+      duration_ms: 343.572728
+      type: 'test'
+      ...
+    # Subtest: MAIN-024: lỗi khi lưu kết quả thì không trừ Token (không có tiền mà không có chữ)
+    ok 2 - MAIN-024: lỗi khi lưu kết quả thì không trừ Token (không có tiền mà không có chữ)
+      ---
+      duration_ms: 59.399942
+      type: 'test'
+      ...
+    # Subtest: MAIN-036: khách đóng phiếu khi đoạn đang chạy → đoạn vẫn được trừ, phần dư trả về sau đó
+    ok 3 - MAIN-036: khách đóng phiếu khi đoạn đang chạy → đoạn vẫn được trừ, phần dư trả về sau đó
+      ---
+      duration_ms: 146.93148
+      type: 'test'
+      ...
+    # Subtest: đóng phiếu khi không có đoạn nào chạy vẫn trả hết ngay như cũ
+    ok 4 - đóng phiếu khi không có đoạn nào chạy vẫn trả hết ngay như cũ
+      ---
+      duration_ms: 13.452422
+      type: 'test'
+      ...
+    # Subtest: đoạn mất nhịp (tiến trình chết) không giữ phiếu mãi: đóng được ngay
+    ok 5 - đoạn mất nhịp (tiến trình chết) không giữ phiếu mãi: đóng được ngay
+      ---
+      duration_ms: 13.891146
+      type: 'test'
+      ...
+    # Subtest: RE-001: đoạn GPU chạy quá 15 phút (gửi từ 20 phút trước, vẫn còn nhịp) → đóng phiếu phải chờ, không trả phần giữ trước quyết toán
+    ok 6 - RE-001: đoạn GPU chạy quá 15 phút (gửi từ 20 phút trước, vẫn còn nhịp) → đóng phiếu phải chờ, không trả phần giữ trước quyết toán
+      ---
+      duration_ms: 147.907895
+      type: 'test'
+      ...
+    # Subtest: RE-001: tiến trình chết (mất nhịp) → đóng phiếu được ngay, phần giữ trả đủ; gửi lại đoạn đó chạy và trừ một lần
+    ok 7 - RE-001: tiến trình chết (mất nhịp) → đóng phiếu được ngay, phần giữ trả đủ; gửi lại đoạn đó chạy và trừ một lần
+      ---
+      duration_ms: 17.552942
+      type: 'test'
+      ...
+    # Subtest: RE-001: lượt cũ bị coi là chết rồi mới xong → không trừ lần hai (mã lượt chặn)
+    ok 8 - RE-001: lượt cũ bị coi là chết rồi mới xong → không trừ lần hai (mã lượt chặn)
+      ---
+      duration_ms: 133.995814
+      type: 'test'
+      ...
+    # Subtest: RE-001: nhịp sống được ghi đều trong lúc GPU chạy
+    ok 9 - RE-001: nhịp sống được ghi đều trong lúc GPU chạy
+      ---
+      duration_ms: 270.952851
+      type: 'test'
+      ...
+    1..9
+ok 46 - TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song
+  ---
+  duration_ms: 1452.18003
+  type: 'suite'
+  ...
+# Subtest: lost upstream reply keeps capacity and blocks a blind new call until owner evidence
+ok 47 - lost upstream reply keeps capacity and blocks a blind new call until owner evidence
+  ---
+  duration_ms: 176.877006
+  type: 'test'
+  ...
+# Subtest: definite 429 releases capacity; ambiguous 500 holds it without charging
+ok 48 - definite 429 releases capacity; ambiguous 500 holds it without charging
+  ---
+  duration_ms: 14.882751
+  type: 'test'
+  ...
+# Subtest: TTS waits for the audio body and observes/debits exactly once
+ok 49 - TTS waits for the audio body and observes/debits exactly once
+  ---
+  duration_ms: 35.624853
+  type: 'test'
+  ...
+# Subtest: TTS body timeout refunds its unused hold and retains uncertain capacity
+ok 50 - TTS body timeout refunds its unused hold and retains uncertain capacity
+  ---
+  duration_ms: 37.234847
+  type: 'test'
+  ...
+# Subtest: TTS provider-spend failure rolls back the debit and retains a traceable receipt
+ok 51 - TTS provider-spend failure rolls back the debit and retains a traceable receipt
+  ---
+  duration_ms: 17.428409
+  type: 'test'
+  ...
+# Subtest: a paid room request is not replayed after its successful debit but lost client body
+ok 52 - a paid room request is not replayed after its successful debit but lost client body
+  ---
+  duration_ms: 11.649931
+  type: 'test'
+  ...
+# Subtest: paid room 5xx is not automatically submitted as another paid request
+ok 53 - paid room 5xx is not automatically submitted as another paid request
+  ---
+  duration_ms: 2.974725
+  type: 'test'
+  ...
+# Subtest: Modal transport/5xx uncertainty is not blindly retried and occupies its admission
+ok 54 - Modal transport/5xx uncertainty is not blindly retried and occupies its admission
+  ---
+  duration_ms: 12.297855
+  type: 'test'
+  ...
+# Subtest: validation errors before dispatch do not leave uncertain capacity
+ok 55 - validation errors before dispatch do not leave uncertain capacity
+  ---
+  duration_ms: 4.116212
+  type: 'test'
+  ...
+# Subtest: completed history is excluded by the active-admission index
+ok 56 - completed history is excluded by the active-admission index
+  ---
+  duration_ms: 374.996936
+  type: 'test'
+  ...
+# Subtest: supplier USD uses raw model usage while customer Token rounding stays unchanged
+ok 57 - supplier USD uses raw model usage while customer Token rounding stays unchanged
+  ---
+  duration_ms: 36.554222
+  type: 'test'
+  ...
+# Subtest: RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn
+ok 58 - RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn
+  ---
+  duration_ms: 1090.84042
+  type: 'test'
+  ...
+# Subtest: RE3-003: lease đã bị quét thành unknown → nhịp 0 dòng (fenced); hoàn tất muộn ghi done một lần
+ok 59 - RE3-003: lease đã bị quét thành unknown → nhịp 0 dòng (fenced); hoàn tất muộn ghi done một lần
+  ---
+  duration_ms: 8.680657
+  type: 'test'
+  ...
+# Subtest: RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+ok 60 - RE3-003: CSDL treo lâu hơn nhịp → không chồng nhịp (tối đa 1 đang chạy)
+  ---
+  duration_ms: 561.910675
+  type: 'test'
+  ...
+# Subtest: RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+ok 61 - RE3-003: dừng giữa nhịp → stop() chờ nhịp đang chạy, không có nhịp mới sau stop
+  ---
+  duration_ms: 209.031515
+  type: 'test'
+  ...
+# Subtest: RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+ok 62 - RE3-003: nhịp cập nhật 0 dòng (lease đã bị thay/đánh unknown) → báo mất lease, ngừng nhịp
+  ---
+  duration_ms: 151.356601
+  type: 'test'
+  ...
+# Subtest: RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+ok 63 - RE3-003: lỗi liên tục tới quá hạn lease → báo mất lease theo hạn, đếm lỗi (không nuốt im)
+  ---
+  duration_ms: 200.349052
+  type: 'test'
+  ...
+# Subtest: RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc
+ok 64 - RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc
+  ---
+  duration_ms: 0.586913
+  type: 'test'
+  ...
+# Subtest: cầu nối Dịch trực tiếp: vòng đời phiên và tiền
+    # Subtest: DEEP-001: Alibaba báo «finished» ngay sau usage → phiếu chỉ đóng sau khi trừ xong
+    ok 1 - DEEP-001: Alibaba báo «finished» ngay sau usage → phiếu chỉ đóng sau khi trừ xong
+      ---
+      duration_ms: 479.143347
+      type: 'test'
+      ...
+    # Subtest: DEEP-002: xin giữ thêm đang chậm → không gửi tiếng vượt phần đã giữ
+    ok 2 - DEEP-002: xin giữ thêm đang chậm → không gửi tiếng vượt phần đã giữ
+      ---
+      duration_ms: 1515.680274
+      type: 'test'
+      ...
+    # Subtest: DEEP-005: lần giữ thêm trả về sau khi phiên đóng → phiếu đó vẫn được nhả
+    ok 3 - DEEP-005: lần giữ thêm trả về sau khi phiên đóng → phiếu đó vẫn được nhả
+      ---
+      duration_ms: 1215.154546
+      type: 'test'
+      ...
+    # Subtest: DEEP-004: Alibaba cắt, khách rời trong lúc chờ nối lại → không mở lại kết nối Alibaba
+    ok 4 - DEEP-004: Alibaba cắt, khách rời trong lúc chờ nối lại → không mở lại kết nối Alibaba
+      ---
+      duration_ms: 1512.801332
+      type: 'test'
+      ...
+    # Subtest: DEEP-006: khách rời trong lúc cầu nối đang đọc giá → không giữ tiền, hoặc giữ rồi nhả ngay
+    ok 5 - DEEP-006: khách rời trong lúc cầu nối đang đọc giá → không giữ tiền, hoặc giữ rồi nhả ngay
+      ---
+      duration_ms: 803.616396
+      type: 'test'
+      ...
+    # Subtest: DEEP-003: chi phí nhà cung cấp ghi theo usage thật của từng lượt, kể cả khi thu thiếu
+    ok 6 - DEEP-003: chi phí nhà cung cấp ghi theo usage thật của từng lượt, kể cả khi thu thiếu
+      ---
+      duration_ms: 314.116407
+      type: 'test'
+      ...
+    1..6
+ok 65 - cầu nối Dịch trực tiếp: vòng đời phiên và tiền
+  ---
+  duration_ms: 5841.5999
+  type: 'suite'
+  ...
+# Subtest: DEEP-008: upstream backlog drops audio and recovers after draining
+ok 66 - DEEP-008: upstream backlog drops audio and recovers after draining
+  ---
+  duration_ms: 122.740911
+  type: 'test'
+  ...
+# Subtest: SCALE: denied live admission never opens a billing ticket or upstream
+ok 67 - SCALE: denied live admission never opens a billing ticket or upstream
+  ---
+  duration_ms: 3.748679
+  type: 'test'
+  ...
+# Subtest: SCALE: live admission is retained until pending debits and closes finish
+ok 68 - SCALE: live admission is retained until pending debits and closes finish
+  ---
+  duration_ms: 294.603954
+  type: 'test'
+  ...
+# Subtest: R08: finalization waits for supplier-cost persistence before releasing the ticket
+ok 69 - R08: finalization waits for supplier-cost persistence before releasing the ticket
+  ---
+  duration_ms: 166.763094
+  type: 'test'
+  ...
+# Subtest: R08: failed persistence stops new audio, exposes the fault, and retains uncertain admission
+ok 70 - R08: failed persistence stops new audio, exposes the fault, and retains uncertain admission
+  ---
+  duration_ms: 1516.999454
+  type: 'test'
+  ...
+# Subtest: R08: duplicate provider response IDs do not repeat the debit
+ok 71 - R08: duplicate provider response IDs do not repeat the debit
+  ---
+  duration_ms: 114.195491
+  type: 'test'
+  ...
+# Subtest: R09: cumulative and replayed usage bills only its delta, excluding the free fixed system prompt
+ok 72 - R09: cumulative and replayed usage bills only its delta, excluding the free fixed system prompt
+  ---
+  duration_ms: 112.068999
+  type: 'test'
+  ...
+# Subtest: R09: an upstream reconnect resets only that connection's cumulative counter
+ok 73 - R09: an upstream reconnect resets only that connection's cumulative counter
+  ---
+  duration_ms: 447.926301
+  type: 'test'
+  ...
+# Subtest: R09: missing provider usage stops the session for reconciliation instead of assuming zero expense
+ok 74 - R09: missing provider usage stops the session for reconciliation instead of assuming zero expense
+  ---
+  duration_ms: 11.604036
+  type: 'test'
+  ...
+1..74
+# tests 111
+# suites 7
+# pass 111
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16903.513979
+# exit=0 seconds=17 end=2026-11-27T10:48:17Z

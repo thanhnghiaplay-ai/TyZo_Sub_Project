@@ -1,0 +1,10 @@
+# label=re3-002-real-encoder
+# head=0caa1c9c6db2514f0dccc31af5db830b1a12db3b dirty=7
+# fingerprint(src,scripts,migrations,server,package*)=0dc6fada03c5332a9d91f37db64d8e2ede19a2fe2022fc6520c5b197832abaa6
+# start=2026-11-27T10:42:56Z
+# cmd=node --experimental-strip-types docs/kiem-toan/v5.49.4/probe-real-audio.ts /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/audio/tone6k.webm /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/audio/silence.ogg /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/audio/pcm.wav /tmp/claude-0/-home-user-TyZo-Sub-Project/12ec4c17-36cc-54ce-85b4-97662314d7c6/scratchpad/audio/silence120.webm
+{"file":"tone6k.webm","bytes":36021,"ffprobe":37.008,"oldEstimate":18.011,"probe":37.02,"format":"webm-opus","ms":2.43,"ok":true}
+{"file":"silence.ogg","bytes":44144,"ffprobe":45.0065,"oldEstimate":22.072,"probe":45.02,"format":"ogg-opus","ms":2.86,"ok":true}
+{"file":"pcm.wav","bytes":672078,"ffprobe":21,"oldEstimate":336.039,"probe":21,"format":"wav","ms":0.29,"ok":true}
+{"file":"silence120.webm","bytes":73250,"ffprobe":120.008,"oldEstimate":36.625,"probe":120.02,"format":"webm-opus","ms":1.88,"ok":true}
+# exit=0 seconds=1 end=2026-11-27T10:42:57Z

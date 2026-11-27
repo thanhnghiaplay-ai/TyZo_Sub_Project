@@ -1,0 +1,6 @@
+# label=gate-cp5-typecheck
+# head=42a6cf23cddbfb0260dc81d71afa820293f01f42 dirty=0
+# fingerprint(src,scripts,migrations,server,package*)=78c3bbce4f0985b5cb8eeaa586a45a81305e1d218d278afc414433cf77d76c04
+# start=2026-11-27T11:09:24Z
+# cmd=npx tsc --noEmit
+# exit=0 seconds=12 end=2026-11-27T11:09:36Z
