@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { formatLiveDetail, formatLivePrice, formatUsdCost, parseGroqModelsHtml } from "./groq-board.ts";
+import { spawnSync } from "node:child_process";
+import {
+  formatLiveDetail,
+  formatLivePrice,
+  formatUsdCost,
+  parseGroqModelsHtml,
+} from "./groq-board.ts";
 
 const html = `
 <table>
@@ -11,6 +17,22 @@ const html = `
 `;
 
 describe("bảng giá Groq", () => {
+  it("không khóa tiến trình khi dòng upstream chứa chuỗi ID dài nhưng sai định dạng", () => {
+    const result = spawnSync(
+      process.execPath,
+      [
+        "--experimental-strip-types",
+        "--input-type=module",
+        "-e",
+        `import {parseGroqModelsHtml} from ${JSON.stringify(new URL("./groq-board.ts", import.meta.url).href)};
+       const rows = parseGroqModelsHtml('<tr><td>'+'a-'.repeat(100000)+'Z x</td></tr>');
+       if(rows.length!==0) process.exit(1);`,
+      ],
+      { timeout: 5000, encoding: "utf8" },
+    );
+    assert.equal(result.error, undefined, String(result.error));
+    assert.equal(result.status, 0, result.stderr);
+  });
   it("đọc giá, hạn mức và token rồi viết bằng tiếng Việt, đơn vị đồng", () => {
     const rows = parseGroqModelsHtml(html);
     assert.equal(rows.length, 3);

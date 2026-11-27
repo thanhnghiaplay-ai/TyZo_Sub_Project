@@ -18,7 +18,9 @@ export type GroqBoard = {
   rows: GroqLiveRow[];
 };
 
-const ID_RE = /\b((?:[a-z0-9]+[./_-])+[a-z0-9]+)\s+(?=-|\d+\s)/;
+// Consume each ID candidate once. Putting the trailing-column condition in
+// this regex makes a malformed long chain retry every suffix (quadratic).
+const ID_RE = /\b[a-z0-9]+(?:[./_-][a-z0-9]+)+/g;
 const LIMIT_UNITS = "TPM|RPM|ASH|ASD|RPD|TPD";
 
 const UNIT_VI: Record<string, string> = {
@@ -48,9 +50,11 @@ export function parseGroqModelsHtml(html: string): GroqLiveRow[] {
 }
 
 function parseGroqModelLine(text: string): GroqLiveRow | null {
-  const idMatch = text.match(ID_RE);
-  if (!idMatch || idMatch.index == null) return null;
-  const id = idMatch[1];
+  const idMatch = [...text.matchAll(ID_RE)].find((match) =>
+    /^\s+(?=-|\d+\s)/.test(text.slice(match.index + match[0].length)),
+  );
+  if (!idMatch) return null;
+  const id = idMatch[0];
   const rest = text.slice(idMatch.index + id.length).trim();
   const tail = rest.match(/^(?<speed>-|\d+)\s+(?<mid>.+?)\s+(?<context>[\d,]+|-)\s+(?<max>[\d,]+|-)\s+(?<file>\d+(?:\.\d+)?\s*MB|-)$/);
   if (!tail?.groups) return null;
