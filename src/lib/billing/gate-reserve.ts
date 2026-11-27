@@ -102,6 +102,8 @@ export async function settleGateCall(
     model: string;
     rate: number;
     reconcile: boolean;
+    /** RE5-002: chưa trừ khách; toàn bộ `units` ghi thành short_units chờ đối soát. */
+    deferDebit?: boolean;
   },
 ) {
   const providerBase = input.providerBase ?? input.base;
@@ -140,7 +142,7 @@ export async function settleGateCall(
       ? Math.max(0, Math.floor(Math.min(reserved, ticket[0].held - other)))
       : 0;
     const units = Math.ceil(input.units);
-    const debit = Math.min(units, allowance);
+    const debit = input.deferDebit ? 0 : Math.min(units, allowance);
     const taken =
       debit > 0
         ? ticket[0].unit === "token"
@@ -162,7 +164,7 @@ export async function settleGateCall(
       values ((now() at time zone 'Asia/Ho_Chi_Minh')::date, ${input.provider}, ${input.model}, 1, ${base}, ${Math.round((providerBase / input.rate) * 1_000_000)})
       on conflict (day, provider, model) do update set calls = provider_spend.calls + 1,
         base_vnd = provider_spend.base_vnd + excluded.base_vnd, usd_micro = provider_spend.usd_micro + excluded.usd_micro`;
-    const status = input.reconcile || taken < units || !owned ? "can-doi-soat" : "xong";
+    const status = input.reconcile || input.deferDebit || taken < units || !owned ? "can-doi-soat" : "xong";
     await tx`update run_gate_calls set status = ${status}, reserved = 0, observed_at = clock_timestamp(),
       actual_units = ${units}, charged_units = ${taken}, short_units = ${Math.max(0, units - taken)},
       base_vnd = ${providerBase}, provider = ${input.provider}, model = ${input.model} where id = ${input.callId}`;

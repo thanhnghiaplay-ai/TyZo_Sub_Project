@@ -459,6 +459,9 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
         let base = 0;
         let providerBase: number | null = null;
         let needsReconciliation = false;
+        // RE5-002: dịch mà nhà không trả usage hợp lệ thì KHÔNG trừ khách theo ước tính (phần ra là trần outCap);
+        // ghi ước tính thành nghĩa vụ chờ đối soát. ASR vẫn tính theo số giây đã dò (đo thật, không phải trần).
+        let deferDebit = false;
         const bare = { ...book, desk: { markup: 0, custom: {} } };
         try {
           const data = JSON.parse(text) as {
@@ -478,13 +481,12 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           } else {
             const prompt = Number(data.usage?.prompt_tokens);
             const completion = Number(data.usage?.completion_tokens);
-            needsReconciliation =
+            deferDebit =
               !Number.isSafeInteger(prompt) ||
               prompt < 0 ||
               !Number.isSafeInteger(completion) ||
-              completion < 0 ||
-              prompt > promptCap ||
-              completion > outCap;
+              completion < 0;
+            needsReconciliation = deferDebit || prompt > promptCap || completion > outCap;
             const inn =
               Number.isSafeInteger(prompt) && prompt >= 0
                 ? prompt
@@ -499,6 +501,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           }
         } catch {
           needsReconciliation = true;
+          deferDebit = path !== "/audio/transcriptions";
           cost =
             path === "/audio/transcriptions"
               ? asrCost(book, model, estimatedSeconds)
@@ -544,6 +547,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           model,
           rate: book.rate,
           reconcile: needsReconciliation,
+          deferDebit,
         });
         const out = new Headers();
         const type = response.headers.get("content-type");

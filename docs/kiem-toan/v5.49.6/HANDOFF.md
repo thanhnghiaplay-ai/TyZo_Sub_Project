@@ -2,6 +2,10 @@
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 
+## RE5-002 · ĐÃ SỬA CỤC BỘ (MEDIUM)
+
+Dịch: khi nhà không trả usage hợp lệ (thiếu, âm, sai kiểu, hoặc thân không phải JSON), bản cũ trừ khách theo ước tính, trong đó phần ra lấy bằng trần `outCap`, tức tự trừ theo cận trên. Nay quyết toán chạy với `deferDebit`: trừ 0, toàn bộ ước tính ghi vào `short_units` với trạng thái `can-doi-soat`. Phần giữ vẫn được nhả và chi phí nhà vẫn được ghi trong cùng giao dịch. Usage hợp lệ nhưng vượt cận thì vẫn trừ theo số thật (trong phần giữ) và đánh dấu đối soát. ASR thiếu `duration` vẫn tính theo số giây đã dò, vì đó là số đo thật; nếu đổi thành 0 thì khách chọn định dạng `text` là dùng miễn phí. Đã kiểm lại: chạy lại cùng lệnh không trừ hai lần; 6 lệnh đồng thời đều đúng. Test: 7/7 (mã cũ hỏng 6/7); npm test 1.779 đạt, 7 bỏ qua, 0 lỗi. Còn thiếu: công cụ Admin để đối soát các nghĩa vụ này; quy trình là quyết định của Chủ.
+
 ## RE5-004 · PARTIAL (HIGH; A, B đã sửa cục bộ; C, D còn mở)
 
 - **A.** Bản cũ chạy `env rm` rồi mới `env add` cho từng biến; nếu bước thêm lỗi thì production mất biến. Đã tái hiện: `BETTER_AUTH_SECRET` mất, xem `RE5-004/before-old-script.log`. Nay `chay_vercel_sh` dùng `vercel@65.14.0` ghim và `env add --environment production --force` qua stdin (giá trị không nằm trên dòng lệnh), không còn `env rm`. Deploy phải trả địa chỉ `https://…` và `inspect` báo Ready; nếu không thì thoát mã 3 (không rõ kết quả).

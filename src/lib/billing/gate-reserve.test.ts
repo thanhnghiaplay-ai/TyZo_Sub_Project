@@ -206,6 +206,67 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
     assert.deepEqual(calls.map((c) => c.status), ["can-doi-soat"]);
   });
 
+  describe("RE5-002: dịch thiếu usage không trừ khách theo ước tính", () => {
+    const run = (reply: () => Response) => chargeWith({
+      sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID,
+      body: new ArrayBuffer(300), cap: 0, outCap: 1000, send: async () => reply(),
+    });
+    const calls = () => sql<{ id: string; status: string; actual_units: string; charged_units: string; short_units: string; reserved: string }>`
+      select id, status, actual_units, charged_units, short_units, reserved from run_gate_calls`;
+    for (const [name, reply] of [
+      ["không có usage", () => Response.json({ choices: [] })],
+      ["thiếu completion_tokens", () => Response.json({ usage: { prompt_tokens: 10 } })],
+      ["usage âm", () => Response.json({ usage: { prompt_tokens: -1, completion_tokens: 5 } })],
+      ["thân không phải JSON", () => new Response("không phải json")],
+    ] as const) {
+      it(`${name}: trừ 0, ghi nghĩa vụ chờ đối soát, nhả phần giữ, ghi chi phí nhà`, async () => {
+        const out = await run(reply);
+        assert.equal(out.kind, "pass");
+        const t = await ticket();
+        assert.equal(t.charged, 0);
+        assert.equal(Number(t.modal_reserved), 0);
+        const [c] = await calls();
+        assert.equal(c.status, "can-doi-soat");
+        assert.equal(Number(c.charged_units), 0);
+        assert.ok(Number(c.actual_units) > 0);
+        assert.equal(Number(c.short_units), Number(c.actual_units));
+        assert.equal(Number(c.reserved), 0);
+        const spend = await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`;
+        assert.equal(spend[0].n, 1);
+      });
+    }
+
+    it("quyết toán lại cùng lệnh (replay) không trừ thêm và không ghi chi phí lần hai", async () => {
+      await run(() => Response.json({}));
+      const [c] = await calls();
+      const { settleGateCall } = await import("./gate-reserve.ts");
+      const again = await settleGateCall(sql, { callId: c.id, ticketId: TID, userId: "k", units: 50, base: 1, provider: "groq", model: "chat", rate: 25_000, reconcile: false });
+      assert.deepEqual(again, { taken: 0, replay: true });
+      assert.equal((await ticket()).charged, 0);
+      assert.equal((await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`)[0].n, 1);
+    });
+
+    it("6 lệnh đồng thời thiếu usage: không trừ, phần giữ về 0, mỗi lệnh một nghĩa vụ", async () => {
+      const outs = await Promise.all(Array.from({ length: 6 }, () =>
+        chargeWith({ sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID,
+          body: new ArrayBuffer(30), cap: 0, outCap: 100, busyWaitMs: 3000, send: async () => Response.json({}) })));
+      const passed = outs.filter((o) => o.kind === "pass").length;
+      const t = await ticket();
+      assert.equal(t.charged, 0);
+      assert.equal(Number(t.modal_reserved), 0);
+      const rows = await calls();
+      assert.equal(rows.filter((r) => r.status === "can-doi-soat" && Number(r.short_units) > 0).length, passed);
+      assert.ok(passed >= 1);
+    });
+
+    it("usage hợp lệ nhưng vượt trần ra vẫn trừ theo số thật (trong phần giữ) và đánh dấu đối soát", async () => {
+      const out = await run(() => Response.json({ usage: { prompt_tokens: 10, completion_tokens: 1001 } }));
+      assert.equal(out.kind, "pass");
+      assert.ok((await ticket()).charged > 0);
+      assert.equal((await calls())[0].status, "can-doi-soat");
+    });
+  });
+
   it("nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả", async () => {
     const out = await chargeWith({ sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID, body: new ArrayBuffer(300), cap: 0, outCap: 1000, send: async () => new Response("{}", { status: 500 }) });
     assert.equal(out.kind, "pass");

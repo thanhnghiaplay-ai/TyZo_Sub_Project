@@ -2,10 +2,10 @@
   "baseline": "39510ccae1196b283e794976d6e99fe5158c0786",
   "branchBase": "6bbf292 (baseline + 1 commit tài liệu Claude chưa đẩy: làm mới hồ sơ ChatGPT)",
   "branch": "audit/v5.49.6-claude-re5",
-  "effort": "HIGH",
-  "effortRequested": "MEDIUM",
-  "status": "CHECKPOINT_RE5-004_PARTIAL",
-  "next": "MEDIUM: RE5-002 (fallback thiếu usage), MAIN-040 (test ghi chi phí Modal), RE5-003 (0056 xuyên model/provider/lane), RE5-005 (đo admission theo lane). Sau đó LOW: RE5-006 tài liệu, graph, đóng gói. RE5-004-C/D cần HIGH + staging.",
+  "effort": "MEDIUM",
+  "effortRequested": null,
+  "status": "CHECKPOINT_RE5-002_FIXED",
+  "next": "MEDIUM: MAIN-040, RE5-003, RE5-005; rồi LOW RE5-006/graph/đóng gói.",
   "local_sha": "xem git log; commit checkpoint này",
   "remote_sha": "xem git ls-remote origin audit/v5.49.6-claude-re5",
   "environment": {
@@ -15,34 +15,22 @@
   },
   "tests": [
     {
-      "cmd": "npm test (UID tyzo, PG 16.15 tyzo_test)",
+      "cmd": "npm test (UID tyzo, PG 16.15)",
       "exit": 0,
-      "pass": 1772,
+      "pass": 1779,
       "skip": 7,
-      "todo": 0,
       "fail": 0,
-      "log": "docs/kiem-toan/v5.49.6/RE5-004/npm-test.log"
+      "log": "docs/kiem-toan/v5.49.6/RE5-002/npm-test.log"
     },
     {
-      "cmd": "node --test scripts/re5-004-vercel.test.mjs",
-      "exit": 0,
-      "pass": 5
-    },
-    {
-      "cmd": "mã cũ 39510cc + npx giả, add-fail",
-      "result": "biến bị xóa — tái hiện",
-      "log": "docs/kiem-toan/v5.49.6/RE5-004/before-old-script.log"
-    },
-    {
-      "cmd": "bash -n deploy/vps/tyzo.sh",
-      "exit": 0
+      "cmd": "gate-reserve.test.ts --test-name-pattern RE5-002 trên mã cũ",
+      "result": "1 pass / 6 fail — test bắt lỗi"
     }
   ],
   "filesChanged": [
-    "deploy/vps/tyzo.sh",
-    "scripts/re5-004-vercel.test.mjs",
-    "scripts/re3-restore-pg.test.mjs",
-    "docs/kiem-toan/v5.49.6/*"
+    "src/lib/billing/run-gate.ts",
+    "src/lib/billing/gate-reserve.ts",
+    "src/lib/billing/gate-reserve.test.ts"
   ],
   "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17."
 }

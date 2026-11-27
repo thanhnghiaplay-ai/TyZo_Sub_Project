@@ -40,7 +40,12 @@
     "location": "src/lib/billing/run-gate.ts:479–529",
     "hypothesis": "Fallback byteLength/3 khi thiếu usage; phân biệt giữ, quyết toán, nghĩa vụ chưa rõ; chống lặp sai lệch, không tự tăng tiền khách.",
     "acceptance": "Missing/invalid usage, replay, crash, concurrent settle, reconciliation; kiểm sổ cái và chi phí nhà.",
-    "status": "UNVERIFIED"
+    "status": "FIXED_LOCAL",
+    "finding": "Dịch: nhà không trả usage hợp lệ (thiếu, âm, không phải số, thân không phải JSON) thì cũ trừ khách theo ước tính, phần ra = trần outCap (ví dụ 4096 token) → tự trừ cận trên.",
+    "fix": "settleGateCall(deferDebit): trừ 0, toàn bộ ước tính ghi vào short_units, status can-doi-soat; vẫn nhả phần giữ, vẫn ghi chi phí nhà (ước tính) cùng giao dịch. Usage hợp lệ nhưng vượt cận/trần: vẫn trừ theo số thật trong phần giữ và đánh dấu đối soát (không đổi). ASR thiếu duration: giữ tính theo số giây đã dò (đo thật; đổi thành 0 thì khách chọn định dạng text là dùng miễn phí).",
+    "verified": "Đã có sẵn và kiểm lại: replay (observed_at) không trừ/không ghi chi phí lần hai; khóa phiếu; trừ ≤ phần giữ; chi phí nhà cùng giao dịch.",
+    "tests": "gate-reserve.test.ts RE5-002 7/7 (mã cũ hỏng 6/7); npm test 1779/7/0",
+    "remaining": "Chưa có công cụ Admin đối soát nghĩa vụ can-doi-soat (trừ bù hoặc xóa nợ) — quy trình đối soát là quyết định của Chủ."
   },
   {
     "id": "MAIN-040",
