@@ -96,13 +96,13 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
     assert.equal(Number(spend[0].n), sends);
   });
 
-  it("nhà báo lỗi: nhả phần giữ, không trừ", async () => {
+  it("nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả", async () => {
     const out = await chargeWith({ sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID, body: new ArrayBuffer(300), cap: 0, outCap: 1000, send: async () => new Response("{}", { status: 500 }) });
     assert.equal(out.kind, "pass");
     const t = await ticket();
     assert.deepEqual([t.charged, Number(t.modal_reserved)], [0, 0]);
     const c = await sql<{ status: string }>`select status from run_gate_calls`;
-    assert.deepEqual(c.map((x) => x.status), ["loi"]);
+    assert.deepEqual(c.map((x) => x.status), ["mat-phan-hoi"]);
   });
 
   it("mất trả lời (hết giờ): nhả phần giữ, ghi «mat-phan-hoi» để đối soát", async () => {

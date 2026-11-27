@@ -362,7 +362,11 @@ pgTest(
     assert.equal(ids.filter(Boolean).length, 2);
     assert.ok(await acquireWork(sql, { ...key, lane: "live" }));
     await sql`update work_admissions set heartbeat_at = now() - interval '10 minutes'`;
-    assert.equal(await acquireWork(sql, key), null, "unknown work must still occupy its quota");
+    await assert.rejects(
+      acquireWork(sql, key),
+      /cần đối soát/,
+      "unknown work must require evidence, not a capacity retry",
+    );
     for (const id of ids) if (id) await releaseWork(sql, id);
     const fresh = await acquireWork(sql, key);
     assert.ok(fresh);

@@ -11,9 +11,9 @@ import {
 } from "./run-bill.ts";
 import { closeTicketWith, ticketLive } from "./run-ticket.ts";
 import { tokensForBase, TURBO_ASR } from "./token-math.ts";
-import { chargeTokenWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
+import { closeTokenWith, openGiayWith } from "./token-flow.ts";
 import { randomBytes } from "node:crypto";
-import { recordSpendWith } from "../provider-spend.ts";
+import { definitiveProviderRejection } from "./upstream-outcome.ts";
 
 const MAX_COMPLETION_TOKENS = 8192;
 
@@ -151,11 +151,15 @@ type ChargeInput = {
   signal?: AbortSignal;
   beatMs?: number;
   bodyTimeoutMs?: number;
+  /** Internal admission signal: a complete response proves remote work ended, even if DB settlement fails. */
+  upstreamComplete?: () => void;
   send: () => Promise<Response>;
 };
 
 export async function chargeAdmittedWith(input: ChargeInput): Promise<GateOutcome> {
   const { withWorkAdmission, AdmissionBusy } = await import("./work-admission.ts");
+  let dispatched = false;
+  let complete = false;
   try {
     return await withWorkAdmission(
       input.sql,
@@ -165,11 +169,22 @@ export async function chargeAdmittedWith(input: ChargeInput): Promise<GateOutcom
         model: input.model,
         lane: "batch",
       },
-      () => chargeWith(input),
+      () =>
+        chargeWith({
+          ...input,
+          send: () => {
+            dispatched = true;
+            return input.send();
+          },
+          upstreamComplete: () => {
+            complete = true;
+          },
+        }),
+      { uncertain: () => dispatched && !complete },
     );
   } catch (error) {
     if (error instanceof AdmissionBusy)
-      return { kind: "reject", status: 429, message: error.message };
+      return { kind: "reject", status: error.status, message: error.message };
     throw error;
   }
 }
@@ -198,26 +213,75 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     });
     if ("error" in opened)
       return { kind: "reject", status: 402, message: "Chưa đủ Token dịch. Hãy mua gói." };
-    let response: Response;
+    const { reserveGateCall, releaseGateCall, settleGateCall, beatGateCall } =
+      await import("./gate-reserve.ts");
+    const { startBeat } = await import("./work-lease.ts");
+    let callId: string | undefined;
+    let sent = false;
+    let failure: unknown;
+    let stopBeat = () => {};
     try {
-      response = await input.send();
+      const held = await reserveGateCall(sql, {
+        ticketId: id,
+        userId,
+        estimate: tokens,
+        provider: input.provider ?? "groq",
+        model,
+      });
+      if (held.kind !== "ok") throw new Error("Chưa giữ được ngân sách đọc thuyết minh.");
+      callId = held.callId;
+      stopBeat = startBeat(() => beatGateCall(sql, held.callId), input.beatMs);
+      if (input.signal?.aborted) throw input.signal.reason;
+      sent = true;
+      const response = await input.send();
+      if (!response.ok) {
+        const known = definitiveProviderRejection(response.status);
+        if (known) input.upstreamComplete?.();
+        await releaseGateCall(sql, held.callId, known ? "loi" : "mat-phan-hoi");
+        await closeTokenWith(sql, id, userId, true);
+        return { kind: "pass", response };
+      }
+      // The app consumes a complete Blob, so no playback is lost by completing
+      // the bounded audio body before the atomic financial settlement.
+      const audio = await readBytesWithDeadline(
+        response,
+        input.bodyTimeoutMs ?? 120_000,
+        input.signal,
+        32 * 1024 * 1024,
+      );
+      input.upstreamComplete?.();
+      if (!audio.byteLength) throw new Error("Nhà cung cấp chưa trả âm thanh.");
+      await settleGateCall(sql, {
+        callId: held.callId,
+        ticketId: id,
+        userId,
+        units: tokens,
+        base,
+        provider: input.provider ?? "groq",
+        model,
+        rate: book.rate,
+        reconcile: false,
+      });
+      await closeTokenWith(sql, id, userId, false);
+      const headers = new Headers();
+      const type = response.headers.get("content-type");
+      if (type) headers.set("content-type", type);
+      return { kind: "pass", response: new Response(audio, { status: response.status, headers }) };
     } catch (error) {
-      await closeTokenWith(sql, id, userId, true);
-      throw error;
+      failure = error;
+      try {
+        if (callId) await releaseGateCall(sql, callId, sent ? "mat-phan-hoi" : "loi");
+        await closeTokenWith(sql, id, userId, true);
+      } catch (cleanupError) {
+        failure = new AggregateError(
+          [error, cleanupError],
+          "Lỗi đọc thuyết minh và ghi trạng thái đối soát.",
+        );
+      }
+      throw failure;
+    } finally {
+      stopBeat();
     }
-    if (!response.ok) {
-      await closeTokenWith(sql, id, userId, true);
-      return { kind: "pass", response };
-    }
-    await chargeTokenWith(sql, id, userId, tokens);
-    await closeTokenWith(sql, id, userId, false);
-    await recordSpendWith(sql, {
-      provider: input.provider ?? "groq",
-      model,
-      baseVnd: base,
-      rate: book.rate,
-    });
-    return { kind: "pass", response };
   }
 
   const priced =
@@ -270,7 +334,13 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
   const { startBeat } = await import("./work-lease.ts");
   if (input.signal?.aborted) throw input.signal.reason;
   // Backpressure immediately: no polling loop, no waiting request holds a DB connection.
-  const held = await reserveGateCall(sql, { ticketId: input.ticketId, userId, estimate });
+  const held = await reserveGateCall(sql, {
+    ticketId: input.ticketId,
+    userId,
+    estimate,
+    provider: input.provider ?? "groq",
+    model,
+  });
   if (held.kind === "busy")
     return {
       kind: "reject",
@@ -281,101 +351,139 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
   const callId = held.callId;
 
   const stopBeat = startBeat(() => beatGateCall(sql, callId), input.beatMs);
-  try {
-    const response = await input.send();
-    if (!response.ok) {
-      await releaseGateCall(sql, callId, "loi");
-      return { kind: "pass", response };
-    }
+  let primaryFailure: unknown;
+  let sent = false;
+  return finishGateCall(
+    async () => {
+      try {
+        if (input.signal?.aborted) throw input.signal.reason;
+        sent = true;
+        const response = await input.send();
+        if (!response.ok) {
+          const known = definitiveProviderRejection(response.status);
+          if (known) input.upstreamComplete?.();
+          await releaseGateCall(sql, callId, known ? "loi" : "mat-phan-hoi");
+          return { kind: "pass", response };
+        }
 
-    const text = await readBodyWithDeadline(response, input.bodyTimeoutMs ?? 120_000, input.signal);
-    let cost: number | null = null;
-    let base = 0;
-    let needsReconciliation = false;
-    const bare = { ...book, desk: { markup: 0, custom: {} } };
-    try {
-      const data = JSON.parse(text) as {
-        duration?: unknown;
-        segments?: Array<{ end?: unknown }>;
-        usage?: { prompt_tokens?: number; completion_tokens?: number };
-      };
-      if (path === "/audio/transcriptions") {
-        const reportedSeconds = billedSecondsOf(data);
-        needsReconciliation = !(reportedSeconds > 0);
-        // Only missing/invalid upstream usage falls back. Never inflate valid
-        // duration using the conservative reservation estimate for compressed audio.
-        const seconds = needsReconciliation ? estimatedSeconds : reportedSeconds;
-        cost = asrCost(book, model, seconds);
-        base = asrCost(bare, model, seconds) ?? 0;
-      } else {
-        const prompt = Number(data.usage?.prompt_tokens);
-        const completion = Number(data.usage?.completion_tokens);
-        needsReconciliation =
-          !Number.isSafeInteger(prompt) ||
-          prompt < 0 ||
-          !Number.isSafeInteger(completion) ||
-          completion < 0;
-        const inn =
-          Number.isSafeInteger(prompt) && prompt >= 0
-            ? prompt
-            : Math.ceil(input.body.byteLength / 3);
-        const out =
-          Number.isSafeInteger(completion) && completion >= 0
-            ? completion
-            : (input.outCap ?? MAX_COMPLETION_TOKENS);
-        cost = chatCost(book, model, inn, out);
-        base = chatCost(bare, model, inn, out) ?? 0;
+        const text = await readBodyWithDeadline(
+          response,
+          input.bodyTimeoutMs ?? 120_000,
+          input.signal,
+        );
+        input.upstreamComplete?.();
+        let cost: number | null = null;
+        let base = 0;
+        let needsReconciliation = false;
+        const bare = { ...book, desk: { markup: 0, custom: {} } };
+        try {
+          const data = JSON.parse(text) as {
+            duration?: unknown;
+            segments?: Array<{ end?: unknown }>;
+            usage?: { prompt_tokens?: number; completion_tokens?: number };
+          };
+          if (path === "/audio/transcriptions") {
+            const reportedSeconds = billedSecondsOf(data);
+            needsReconciliation = !(reportedSeconds > 0);
+            // Only missing/invalid upstream usage falls back. Never inflate valid
+            // duration using the conservative reservation estimate for compressed audio.
+            const seconds = needsReconciliation ? estimatedSeconds : reportedSeconds;
+            cost = asrCost(book, model, seconds);
+            base = asrCost(bare, model, seconds) ?? 0;
+          } else {
+            const prompt = Number(data.usage?.prompt_tokens);
+            const completion = Number(data.usage?.completion_tokens);
+            needsReconciliation =
+              !Number.isSafeInteger(prompt) ||
+              prompt < 0 ||
+              !Number.isSafeInteger(completion) ||
+              completion < 0;
+            const inn =
+              Number.isSafeInteger(prompt) && prompt >= 0
+                ? prompt
+                : Math.ceil(input.body.byteLength / 3);
+            const out =
+              Number.isSafeInteger(completion) && completion >= 0
+                ? completion
+                : (input.outCap ?? MAX_COMPLETION_TOKENS);
+            cost = chatCost(book, model, inn, out);
+            base = chatCost(bare, model, inn, out) ?? 0;
+          }
+        } catch {
+          needsReconciliation = true;
+          cost =
+            path === "/audio/transcriptions"
+              ? asrCost(book, model, estimatedSeconds)
+              : chatCost(
+                  book,
+                  model,
+                  Math.ceil(input.body.byteLength / 3),
+                  input.outCap ?? MAX_COMPLETION_TOKENS,
+                );
+          base =
+            path === "/audio/transcriptions"
+              ? (asrCost(bare, model, estimatedSeconds) ?? 0)
+              : (chatCost(
+                  bare,
+                  model,
+                  Math.ceil(input.body.byteLength / 3),
+                  input.outCap ?? MAX_COMPLETION_TOKENS,
+                ) ?? 0);
+        }
+        const units = tokenUnit ? giayForBaseCost(input.unitBook ?? book, base) : cost;
+        if (units == null) throw new Error("Chưa tính được số Token quyết toán.");
+        await settleGateCall(sql, {
+          callId,
+          ticketId: input.ticketId,
+          userId,
+          units,
+          base,
+          provider: input.provider ?? "groq",
+          model,
+          rate: book.rate,
+          reconcile: needsReconciliation,
+        });
+        const out = new Headers();
+        const type = response.headers.get("content-type");
+        if (type) out.set("content-type", type);
+        return {
+          kind: "pass",
+          response: new Response(text, { status: response.status, headers: out }),
+        };
+      } catch (error) {
+        primaryFailure = error;
+        try {
+          await releaseGateCall(sql, callId, sent ? "mat-phan-hoi" : "loi");
+        } catch (cleanupError) {
+          primaryFailure = new AggregateError(
+            [error, cleanupError],
+            "Lỗi xử lý và ghi trạng thái đối soát.",
+          );
+        }
+        throw primaryFailure;
+      } finally {
+        stopBeat();
       }
-    } catch {
-      needsReconciliation = true;
-      cost =
-        path === "/audio/transcriptions"
-          ? asrCost(book, model, estimatedSeconds)
-          : chatCost(
-              book,
-              model,
-              Math.ceil(input.body.byteLength / 3),
-              input.outCap ?? MAX_COMPLETION_TOKENS,
-            );
-      base =
-        path === "/audio/transcriptions"
-          ? (asrCost(bare, model, estimatedSeconds) ?? 0)
-          : (chatCost(
-              bare,
-              model,
-              Math.ceil(input.body.byteLength / 3),
-              input.outCap ?? MAX_COMPLETION_TOKENS,
-            ) ?? 0);
+    },
+    () => closePending(sql, input.ticketId, userId),
+  );
+}
+
+/** Preserve both the original failure and any bookkeeping failure without throwing from finally. */
+async function finishGateCall<T>(run: () => Promise<T>, close: () => Promise<void>): Promise<T> {
+  let result: T;
+  try {
+    result = await run();
+  } catch (primaryError) {
+    try {
+      await close();
+    } catch (cleanupError) {
+      throw new AggregateError([primaryError, cleanupError], "Lỗi xử lý và đóng phiếu chờ.");
     }
-    const units = tokenUnit ? giayForBaseCost(input.unitBook ?? book, base) : cost;
-    if (units == null) throw new Error("Chưa tính được số Token quyết toán.");
-    await settleGateCall(sql, {
-      callId,
-      ticketId: input.ticketId,
-      userId,
-      units,
-      base,
-      provider: input.provider ?? "groq",
-      model,
-      rate: book.rate,
-      reconcile: needsReconciliation,
-    });
-    await closePending(sql, input.ticketId, userId);
-    const out = new Headers();
-    const type = response.headers.get("content-type");
-    if (type) out.set("content-type", type);
-    return {
-      kind: "pass",
-      response: new Response(text, { status: response.status, headers: out }),
-    };
-  } catch (error) {
-    // Body disconnect, deadline and DB errors all retain an explicit uncertain outcome.
-    await releaseGateCall(sql, callId, "mat-phan-hoi");
-    throw error;
-  } finally {
-    stopBeat();
-    await closePending(sql, input.ticketId, userId);
+    throw primaryError;
   }
+  await close();
+  return result;
 }
 
 /** Header arrival is not completion. Bound body reading and actively cancel it on timeout/disconnect. */
@@ -384,8 +492,19 @@ async function readBodyWithDeadline(
   timeoutMs: number,
   signal?: AbortSignal,
 ): Promise<string> {
+  return new TextDecoder().decode(
+    await readBytesWithDeadline(response, timeoutMs, signal, 16 * 1024 * 1024),
+  );
+}
+
+async function readBytesWithDeadline(
+  response: Response,
+  timeoutMs: number,
+  signal: AbortSignal | undefined,
+  limit: number,
+): Promise<Uint8Array<ArrayBuffer>> {
   const reader = response.body?.getReader();
-  if (!reader) return "";
+  if (!reader) return new Uint8Array(0);
   let rejectAbort: (reason: unknown) => void = () => undefined;
   const aborted = new Promise<never>((_, reject) => {
     rejectAbort = reject;
@@ -401,18 +520,25 @@ async function readBodyWithDeadline(
   signal?.addEventListener("abort", abort, { once: true });
   if (signal?.aborted) abort();
   try {
-    const decode = new TextDecoder();
-    let text = "";
+    const parts: Uint8Array[] = [];
     let bytes = 0;
     for (;;) {
       const part = await Promise.race([reader.read(), aborted]);
-      if (part.done) return text + decode.decode();
+      if (part.done) {
+        const all = new Uint8Array(bytes);
+        let at = 0;
+        for (const chunk of parts) {
+          all.set(chunk, at);
+          at += chunk.byteLength;
+        }
+        return all;
+      }
       bytes += part.value.byteLength;
-      if (bytes > 16 * 1024 * 1024) {
+      if (bytes > limit) {
         void reader.cancel().catch(() => undefined);
         throw new Error("Trả lời vượt giới hạn kích thước.");
       }
-      text += decode.decode(part.value, { stream: true });
+      parts.push(part.value);
     }
   } finally {
     clearTimeout(timer);

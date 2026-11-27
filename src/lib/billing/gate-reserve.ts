@@ -33,7 +33,7 @@ export async function reapGateCalls(sql: Sql, ticketId: string) {
 
 export async function reserveGateCall(
   sql: Sql,
-  input: { ticketId: string; userId: string; estimate: number },
+  input: { ticketId: string; userId: string; estimate: number; provider?: string; model?: string },
 ): Promise<GateReserve> {
   if (!Number.isFinite(input.estimate) || input.estimate <= 0) return { kind: "none" };
   // Both ledger units are integers. Never authorize a fractional amount that cannot cover its rounded debit.
@@ -50,7 +50,8 @@ export async function reserveGateCall(
     if (Number(live[0].held) - Number(live[0].modal_reserved) < estimate) return { kind: "busy" };
     const callId = randomBytes(12).toString("hex");
     await tx`update run_tickets set modal_reserved = modal_reserved + ${estimate}::numeric where id = ${input.ticketId}`;
-    await tx`insert into run_gate_calls (id, ticket_id, reserved) values (${callId}, ${input.ticketId}, ${estimate})`;
+    await tx`insert into run_gate_calls (id, ticket_id, reserved, provider, model)
+      values (${callId}, ${input.ticketId}, ${estimate}, ${input.provider ?? ""}, ${input.model ?? ""})`;
     return { kind: "ok", callId, reserved: estimate };
   });
 }

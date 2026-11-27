@@ -40,7 +40,7 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
       estimateTokens: price => toTokens(holdUsdPerFilmHour(parseModalPrice(JSON.parse(price)), data.profile)*seconds/3600),
     }, async price => {
       // Không gắn với kết nối của trình duyệt: khách bấm hủy hay mất mạng thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại;
-      // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Lỗi tạm (mạng, HTTP 5xx) thử lại một lần.
+      // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Chỉ khi nhà từ chối 429 trước khi nhận việc mới thử lại một lần; mất phản hồi phải đối soát.
       const run = () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price)));
       let out;
       try { out = await run(); }

@@ -18,6 +18,7 @@ export const CHANGELOG: ReleaseNote[] = [
       "Các đoạn chạy cùng lúc có phần Token dịch được giữ riêng.",
       "Đóng lần chạy sẽ chờ đoạn đang xử lý hoàn tất trước khi trả phần dư.",
       "Khi hệ thống bận, bạn được nhắc thử lại sau ít giây.",
+      "Mất phản hồi khi dùng Token dịch: không tự gửi lại để tránh tính phí hai lần.",
     ],
   },
   {

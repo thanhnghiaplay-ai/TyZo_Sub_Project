@@ -173,10 +173,14 @@ export async function requestWithRetry<T>(
     throwIfAborted(signal);
     if (gate.blockedUntil > Date.now()) await sleep(gate.blockedUntil - Date.now(), signal);
     let outcome: Outcome<T> | null = null;
+    let paidRoomCall = false;
     try {
       outcome = await withDeadlines<Outcome<T>>(
         (guard) => {
           const next = roomFetchTarget(url, makeInit(), ticket);
+          const headers = new Headers(next.init.headers);
+          paidRoomCall = Boolean(headers.get("x-run-ticket")) && !headers.has("x-user-key") &&
+            (next.url === "/api/room-groq" || next.url === "/api/model-call");
           return fetch(next.url, { ...next.init, signal: guard });
         },
         async (response) => {
@@ -188,6 +192,8 @@ export async function requestWithRetry<T>(
       );
     } catch (error) {
       if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
+      if (paidRoomCall && (error instanceof DeadlineError || error instanceof TypeError))
+        throw new Error(`${label}: chưa xác minh được kết quả. Không tự gửi lại để tránh tính phí hai lần; hãy kiểm tra trước khi tiếp tục.`);
       if (error instanceof DeadlineError) {
         lastError = new Error(
           error.phase === "header"
@@ -203,6 +209,9 @@ export async function requestWithRetry<T>(
     if (outcome?.done) return outcome.value;
     if (outcome) {
       if (outcome.status !== 429 && outcome.status < 500) throw outcome.error;
+      // A room 5xx can happen after a successful debit/COMMIT. Retrying a new
+      // request without a durable request ID would create a second paid call.
+      if (paidRoomCall && outcome.status >= 500) throw outcome.error;
       lastError = outcome.error;
       if (outcome.status === 429) {
         const ra = outcome.retryAfter;

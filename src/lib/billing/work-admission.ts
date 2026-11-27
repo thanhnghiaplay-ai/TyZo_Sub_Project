@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import type { Sql } from "../db.ts";
 import { inTransaction } from "../db-tx.ts";
 import { LEASE_STALE, startBeat } from "./work-lease.ts";
+import { UncertainUpstreamError } from "./upstream-outcome.ts";
 
 export type WorkLane = "batch" | "modal" | "live";
 export type WorkKey = { userId: string; provider: string; model: string; lane: WorkLane };
@@ -46,10 +47,20 @@ export function readLimits(value?: string) {
 }
 
 export class AdmissionBusy extends Error {
-  readonly status = 429;
+  readonly status: number = 429;
   readonly retryAfter = 2;
   constructor() {
     super("Hệ thống đang xử lý đủ số việc cùng lúc. Vui lòng thử lại sau ít giây.");
+  }
+}
+
+/** Conflict requires evidence, rather than a short capacity retry. */
+export class AdmissionUncertain extends AdmissionBusy {
+  readonly status = 409;
+  constructor() {
+    super();
+    this.message =
+      "Có công việc đang gửi hoặc cần đối soát. Không tự gửi lại; hãy kiểm tra kết quả trước khi tiếp tục.";
   }
 }
 
@@ -75,18 +86,26 @@ export async function acquireWork(sql: Sql, key: WorkKey): Promise<string | null
       if (!limits.enabled) return null;
       await tx`update work_admissions set status = 'unknown', finished_at = clock_timestamp()
       where status = 'running' and heartbeat_at <= clock_timestamp() - ${LEASE_STALE}::interval`;
-      const rows = await tx<{ lane: number; own: number; provider: number; model: number }>`
+      const rows = await tx<{
+        lane: number;
+        own: number;
+        provider: number;
+        model: number;
+        uncertain_own: number;
+      }>`
       with active as (
-        select lane, user_id, provider, model from work_admissions where status in ('running','unknown')
+        select lane, user_id, provider, model, status = 'unknown' as uncertain from work_admissions where status in ('running','unknown')
         union all
-        select 'batch', user_id, provider, model from run_async_asr_jobs where state in ('pending','running','unknown') and deadline_at > clock_timestamp()
+        select 'batch', user_id, provider, model, state = 'unknown' from run_async_asr_jobs where state in ('pending','running','unknown') and deadline_at > clock_timestamp()
       )
       select count(*)::int as lane,
         count(*) filter (where user_id = ${key.userId})::int as own,
         count(*) filter (where provider = ${key.provider})::int as provider,
-        count(*) filter (where provider = ${key.provider} and model = ${key.model})::int as model
+        count(*) filter (where provider = ${key.provider} and model = ${key.model})::int as model,
+        count(*) filter (where user_id = ${key.userId} and provider = ${key.provider} and uncertain)::int as uncertain_own
       from active where lane = ${key.lane}`;
       const n = rows[0];
+      if (n.uncertain_own > 0) throw new AdmissionUncertain();
       if (
         n.lane >= limits[key.lane] ||
         n.own >= (key.lane === "modal" ? limits.perUserModal : limits.perUser) ||
@@ -103,7 +122,11 @@ export async function acquireWork(sql: Sql, key: WorkKey): Promise<string | null
   }
 }
 
-export async function beginWork(sql: Sql, key: WorkKey): Promise<(() => Promise<void>) | null> {
+type WorkEnd = "done" | "unknown";
+export async function beginWork(
+  sql: Sql,
+  key: WorkKey,
+): Promise<((end?: WorkEnd) => Promise<void>) | null> {
   const id = await acquireWork(sql, key);
   if (!id) return null;
   const stop = startBeat(
@@ -111,9 +134,9 @@ export async function beginWork(sql: Sql, key: WorkKey): Promise<(() => Promise<
     where id = ${id} and status = 'running' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval`,
   );
   let release: Promise<void> | undefined;
-  return () => {
+  return (end: WorkEnd = "done") => {
     stop();
-    release ??= releaseWork(sql, id).catch((error) => {
+    release ??= releaseWork(sql, id, end).catch((error) => {
       release = undefined;
       throw error;
     });
@@ -125,6 +148,7 @@ export async function withWorkAdmission<T>(
   sql: Sql,
   key: WorkKey,
   run: () => Promise<T>,
+  outcome?: { uncertain: () => boolean },
 ): Promise<T> {
   const release = await beginWork(sql, key);
   if (!release) throw new AdmissionBusy();
@@ -133,7 +157,9 @@ export async function withWorkAdmission<T>(
     result = await run();
   } catch (primaryError) {
     try {
-      await release();
+      await release(
+        primaryError instanceof UncertainUpstreamError || outcome?.uncertain() ? "unknown" : "done",
+      );
     } catch (cleanupError) {
       throw new AggregateError(
         [primaryError, cleanupError],
@@ -142,13 +168,13 @@ export async function withWorkAdmission<T>(
     }
     throw primaryError;
   }
-  await release();
+  await release(outcome?.uncertain() ? "unknown" : "done");
   return result;
 }
 
 /** Exposed for long lived bridge sessions; no implicit retry of upstream work. */
-export async function releaseWork(sql: Sql, id: string) {
-  await sql`update work_admissions set status = 'done', finished_at = clock_timestamp() where id = ${id} and status in ('running','unknown')`;
+export async function releaseWork(sql: Sql, id: string, end: WorkEnd = "done") {
+  await sql`update work_admissions set status = ${end}, finished_at = clock_timestamp() where id = ${id} and status in ('running','unknown')`;
 }
 
 /** Only the owner-facing server handler may authorize this, after checking upstream evidence.

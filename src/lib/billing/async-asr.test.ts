@@ -211,24 +211,26 @@ test("ASYNC-P0: definitive submission rejection releases budget and allows a cor
   assert.equal(Number((await sql`select charged from run_tickets where id=${tid}`)[0].charged), 8);
 });
 
-test("ASYNC-P0: ambiguous timeout or server failure retains uncertainty and cannot auto-resubmit", async (t) => {
-  if (!sql) return t.skip("Local PostgreSQL fixture required");
-  for (const status of [408, 500]) {
+for (const status of [408, 500])
+  test(`ASYNC-P0: ambiguous HTTP ${status} retains uncertainty and cannot auto-resubmit`, async (t) => {
+    if (!sql) return t.skip("Local PostgreSQL fixture required");
     submitStatus = status;
     const url = `https://media.example.invalid/uncertain-${status}.wav`;
     await assert.rejects(start(url));
     await assert.rejects(start(url), /đang gửi hoặc cần đối soát/);
-  }
-  assert.equal(submits, 2);
-  assert.equal(
-    Number((await sql`select count(*)::int n from run_async_asr_jobs where state='unknown'`)[0].n),
-    2,
-  );
-  assert.equal(
-    Number((await sql`select modal_reserved from run_tickets where id=${tid}`)[0].modal_reserved),
-    16,
-  );
-});
+    await assert.rejects(start(url + "-different"), /cần đối soát/);
+    assert.equal(submits, 1);
+    assert.equal(
+      Number(
+        (await sql`select count(*)::int n from run_async_asr_jobs where state='unknown'`)[0].n,
+      ),
+      1,
+    );
+    assert.equal(
+      Number((await sql`select modal_reserved from run_tickets where id=${tid}`)[0].modal_reserved),
+      8,
+    );
+  });
 
 test("ASYNC-P0: an error response containing a task ID retains that owned task for reconciliation", async (t) => {
   if (!sql) return t.skip("Local PostgreSQL fixture required");

@@ -56,7 +56,8 @@ describe("tiền phải trả từng nhà cung cấp", () => {
 describe("mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà", () => {
   it("cửa gọi model, cửa Groq, nhận dạng bằng link, dịch trực tiếp, TyZo", () => {
     const gate = readFileSync(new URL("./billing/run-gate.ts", import.meta.url), "utf8");
-    assert.equal(gate.split("recordSpendWith(sql,").length - 1, 1); // speech; gate spend commits atomically with settlement
+    // Speech, chat and ASR all use atomic settlement; none may silently ignore a spend failure.
+    assert.doesNotMatch(gate, /recordSpendWith/);
     assert.match(gate, /await settleGateCall\(sql,/);
     const settle = readFileSync(new URL("./billing/gate-reserve.ts", import.meta.url), "utf8");
     assert.match(settle, /insert into provider_spend/);

@@ -11,7 +11,7 @@ export const ADMIN_LOG: AdminNote[] = [
     version: "5.49.3",
     time: "06:11 27/11/2026",
     area: "ha-tang",
-    text: "Ứng viên RE2: chặn giữ thiếu dự toán; quyết toán theo callId, lưu số thực/số trừ/phần thiếu; heartbeat đến hết body và quyết toán, timeout đọc, khóa phiếu trước lệnh. Admission PostgreSQL cho batch/Modal/live, trả 429 Retry-After thay polling. Restore Neon fail closed với tệp riêng. Chưa deploy; hồ sơ docs/kiem-toan/v5.49.3/.",
+    text: "Ứng viên RE2: chặn giữ thiếu dự toán; quyết toán theo callId, lưu số thực/số trừ/phần thiếu; heartbeat đến hết body và quyết toán, timeout đọc, khóa phiếu trước lệnh. Admission PostgreSQL cho batch/Modal/live, trả 429 Retry-After thay polling. Restore Neon fail closed với tệp riêng. R07: TTS nhận đủ audio rồi quyết toán nguyên tử cùng provider_spend; mất phản hồi giữ admission unknown, không tự gửi lại yêu cầu trả phí hoặc Modal 5xx. Migration0051 chỉ thêm chỉ mục active. Chưa deploy; hồ sơ docs/kiem-toan/v5.49.3/.",
   },
   {
     version: "5.49.2",
