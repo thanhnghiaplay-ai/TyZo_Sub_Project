@@ -228,7 +228,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     let callId: string | undefined;
     let sent = false;
     let failure: unknown;
-    let stopBeat = () => {};
+    let stopBeat: () => Promise<void> = async () => {};
     try {
       const held = await reserveGateCall(sql, {
         ticketId: id,
@@ -239,7 +239,10 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
       });
       if (held.kind !== "ok") throw new Error("Chưa giữ được ngân sách đọc thuyết minh.");
       callId = held.callId;
-      stopBeat = startBeat(() => beatGateCall(sql, held.callId), input.beatMs);
+      stopBeat = startBeat(() => beatGateCall(sql, held.callId), {
+        everyMs: input.beatMs,
+        onLost: (why) => console.warn("lease-lost", "gate", held.callId, why),
+      });
       if (input.signal?.aborted) throw input.signal.reason;
       sent = true;
       const response = await input.send();
@@ -290,7 +293,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
       }
       throw failure;
     } finally {
-      stopBeat();
+      await stopBeat();
     }
   }
 
@@ -368,7 +371,10 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
   if (held.kind === "none") return { kind: "reject", status: 402, message: spent };
   const callId = held.callId;
 
-  const stopBeat = startBeat(() => beatGateCall(sql, callId), input.beatMs);
+  const stopBeat = startBeat(() => beatGateCall(sql, callId), {
+    everyMs: input.beatMs,
+    onLost: (why) => console.warn("lease-lost", "gate", callId, why),
+  });
   let primaryFailure: unknown;
   let sent = false;
   return finishGateCall(
@@ -497,7 +503,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
         }
         throw primaryFailure;
       } finally {
-        stopBeat();
+        await stopBeat();
       }
     },
     () => closePending(sql, input.ticketId, userId),

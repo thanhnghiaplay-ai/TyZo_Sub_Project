@@ -2,7 +2,7 @@
 import { randomBytes } from "node:crypto";
 import type { Sql } from "../db.ts";
 import { inTransaction } from "../db-tx.ts";
-import { LEASE_STALE } from "./work-lease.ts";
+import { LEASE_STALE, boundedBeat } from "./work-lease.ts";
 import { chargeTokenWith } from "./token-flow.ts";
 import { chargeTicketWith } from "./run-ticket.ts";
 
@@ -57,9 +57,13 @@ export async function reserveGateCall(
 }
 
 /** An expired lease cannot be revived by a delayed heartbeat. */
+/** RE3-003: timeout thật ở CSDL; RETURNING để biết lease còn (mảng rỗng = đã mất). */
 export function beatGateCall(sql: Sql, callId: string) {
-  return sql`update run_gate_calls set heartbeat_at = clock_timestamp()
-    where id = ${callId} and status = 'dang-chay' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`;
+  return boundedBeat(
+    sql,
+    (tx) => tx`update run_gate_calls set heartbeat_at = clock_timestamp()
+    where id = ${callId} and status = 'dang-chay' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`,
+  );
 }
 
 export async function releaseGateCall(

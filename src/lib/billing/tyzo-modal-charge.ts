@@ -11,7 +11,7 @@
 import type { Sql } from "../db.ts";
 import { randomBytes } from "node:crypto";
 import { inTransaction } from "../db-tx.ts";
-import { LEASE_STALE, startBeat } from "./work-lease.ts";
+import { LEASE_STALE, boundedBeat, startBeat } from "./work-lease.ts";
 import { chargeTokenWith, closeIfWantedWith } from "./token-flow.ts";
 
 export type ModalPartResult = {
@@ -122,8 +122,16 @@ export async function runModalPartWith(
   // RE-001: ghi nhịp sống trong suốt lúc GPU chạy (có thể quá 15 phút); phiếu chỉ đóng khi đoạn hết nhịp hoặc xong.
   const stopBeat = startBeat(
     () =>
-      sql`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval`,
-    input.beatMs,
+      boundedBeat(
+        sql,
+        (tx) =>
+          tx`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning 1`,
+      ),
+    {
+      everyMs: input.beatMs,
+      // Lượt đã bị thay (mất nhịp, lượt khác nhận): quyết toán phía dưới tự từ chối theo mã lượt (RE-001).
+      onLost: (why) => console.warn("lease-lost", "modal", partHash, attempt, why),
+    },
   );
   try {
     let result: Awaited<ReturnType<typeof recognize>>;
@@ -189,7 +197,7 @@ export async function runModalPartWith(
     await closeIfWantedWith(sql, ticket, userId);
     return { segments: result.segments, tokens: settled.taken, short, reused: false };
   } finally {
-    stopBeat();
+    await stopBeat();
   }
 }
 

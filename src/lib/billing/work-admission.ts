@@ -2,7 +2,7 @@
 import { randomBytes } from "node:crypto";
 import type { Sql } from "../db.ts";
 import { inTransaction } from "../db-tx.ts";
-import { LEASE_STALE, startBeat } from "./work-lease.ts";
+import { LEASE_STALE, boundedBeat, startBeat } from "./work-lease.ts";
 import { UncertainUpstreamError } from "./upstream-outcome.ts";
 
 export type WorkLane = "batch" | "modal" | "live";
@@ -130,12 +130,18 @@ export async function beginWork(
   const id = await acquireWork(sql, key);
   if (!id) return null;
   const stop = startBeat(
-    () => sql`update work_admissions set heartbeat_at = clock_timestamp()
-    where id = ${id} and status = 'running' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval`,
+    () =>
+      boundedBeat(
+        sql,
+        (tx) => tx`update work_admissions set heartbeat_at = clock_timestamp()
+    where id = ${id} and status = 'running' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`,
+      ),
+    // RE3-003: mất lease = suất đã bị đánh unknown (vẫn giữ chỗ, không gửi trùng). Ghi lại để đối soát.
+    { onLost: (why) => console.warn("lease-lost", "admission", id, why) },
   );
   let release: Promise<void> | undefined;
-  return (end: WorkEnd = "done") => {
-    stop();
+  return async (end: WorkEnd = "done") => {
+    await stop();
     release ??= releaseWork(sql, id, end).catch((error) => {
       release = undefined;
       throw error;
