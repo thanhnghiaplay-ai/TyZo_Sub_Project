@@ -748,7 +748,7 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
   # ràng buộc và chỉ mục theo mục lục tệp; đạt hết mới đổi chỗ. Không còn đường «dong-y» để dùng bản nạp có lỗi.
   # CSDL đang chạy giữ nguyên dưới tên tyzo_cu_<giờ> để quay về. Web và cầu nối dừng trong lúc nạp (không ghi mất).
   # RE3-007: $2 = bảng kê nguồn (tệp), $3 = tên hàm in lại bảng kê nguồn (phát hiện ghi phát sinh trong lúc chép).
-  local f="$1" ky="${2:-}" kiem_lai="${3:-}" can fk ct ix co cu dung=0 ma=0
+  local f="$1" ky="${2:-}" kiem_lai="${3:-}" chuyen="${4:-}" can fk ct ix co cu dung=0 ma=0
   [ -s "$f" ] || { do_ "✘ Tệp dữ liệu trống hoặc không có."; return 1; }
   can="$(so_muc_tep "$f" TABLE)"
   [ "${can:-0}" -gt 5 ] || { do_ "✘ Tệp dữ liệu hỏng hoặc chỉ có ${can:-0} bảng. Không nạp, dữ liệu đang chạy không bị đụng."; return 1; }
@@ -763,8 +763,10 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
     docker exec tyzo-db psql -U tyzo -d tyzo_moi -v ON_ERROR_STOP=1 -qtAc "drop schema public" >/dev/null || { do_ "✘ Không chuẩn bị được CSDL tạm."; pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1; }
   fi
   # Dừng ghi trước khi nạp: dữ liệu ghi trong lúc nạp sẽ không bị bỏ lại trong CSDL cũ mà không ai biết.
-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
-  dc stop web bridge >/dev/null 2>&1 || true
+  if [ "$chuyen" != neon ]; then
+    if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
+    dung_web_vps || { do_ "✘ Chưa xác nhận dịch vụ VPS đã dừng."; return 1; }
+  fi
   chay_cho "Nạp dữ liệu vào CSDL tạm (một giao dịch, dừng ở lỗi đầu)" /tmp/tyzo-restore.err bash -c 'docker exec -i tyzo-db pg_restore -U tyzo -d tyzo_moi --no-owner --no-privileges --exit-on-error --single-transaction < "$1"' _ "$f" || ma=$?
   co="$(so_muc_csdl tyzo_moi)"
   if [ "$ma" != 0 ] || [ "$co" != "$can $fk $ct $ix" ]; then
@@ -776,15 +778,13 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
   fi
   if [ -n "$ky" ]; then
     local moi lai; moi="$(mktemp)"; lai="$(mktemp)"
-    bang_ke_vps tyzo_moi > "$moi" 2>/dev/null
-    if ! khop_bang_ke "$ky" "$moi"; then
+    if ! { if [ "$chuyen" = neon ]; then tom_tat_nguon_da_khoa tyzo_moi; else bang_ke_vps tyzo_moi; fi; } > "$moi" 2>/dev/null || ! khop_bang_ke "$ky" "$moi"; then
       do_ "✘ Dữ liệu nạp không khớp bảng kê nguồn (số dòng/mã băm). Không chuyển. Dữ liệu đang chạy KHÔNG bị đụng."
       rm -f "$moi" "$lai"; pg_sys "drop database if exists tyzo_moi" >/dev/null
       [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
     fi
     if [ -n "$kiem_lai" ]; then
-      "$kiem_lai" > "$lai" 2>/dev/null
-      if ! khop_bang_ke "$ky" "$lai"; then
+      if ! "$kiem_lai" > "$lai" 2>/dev/null || ! khop_bang_ke "$ky" "$lai"; then
         do_ "✘ Nguồn đã có ghi mới trong lúc chép. Không chuyển. Tạm dừng nơi đang ghi (bảo trì/tắt web nguồn) rồi chạy lại."
         rm -f "$moi" "$lai"; pg_sys "drop database if exists tyzo_moi" >/dev/null
         [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
@@ -793,22 +793,33 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
     rm -f "$moi" "$lai"
   fi
   cu="tyzo_cu_$(date '+%Y%m%d_%H%M%S')"
-  pg_sys "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('tyzo','tyzo_moi') and pid <> pg_backend_pid()" >/dev/null || true
-  if ! pg_sys "alter database tyzo rename to $cu" >/dev/null; then
-    do_ "✘ Không đổi chỗ được (còn kết nối vào CSDL?). Dữ liệu đang chạy giữ nguyên."
-    pg_sys "drop database if exists tyzo_moi" >/dev/null; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+  if [ "$chuyen" = neon ]; then
+    neon_trang_thai true || { do_ "✘ Chưa xác minh Neon còn khóa ghi."; return 1; }
+    ghi_chuyen neon-swap-intent "$NEON_P $NEON_BR $NEON_EP $NEON_RO $cu $(dirname "$f")" || return 1
+    dung_web_vps || { do_ "✘ Chưa xác nhận dịch vụ VPS đã dừng."; return 1; }
+    # Đổi hai tên trong một giao dịch. Phiên đang kết nối hoặc giao dịch prepared làm lệnh thất bại.
+    pg_sys "set lock_timeout = '5s'; alter database tyzo with allow_connections false;
+      alter database tyzo_moi with allow_connections false; alter database tyzo rename to $cu;
+      alter database tyzo_moi rename to tyzo" >/dev/null || return 1
+    [ "$(pg_sys "select count(*) from pg_database where datname in ('tyzo','$cu') and not datallowconn")" = 2 ] || return 1
+    ghi_chuyen neon-swap-xong "$cu" || return 1
+    xanh "✔ Đã nạp trọn vẹn, khớp bảng kê nguồn. Bản cũ giữ tại $cu."
+    return 0
   fi
-  if ! pg_sys "alter database tyzo_moi rename to tyzo" >/dev/null; then
-    if pg_sys "alter database $cu rename to tyzo" >/dev/null; then do_ "✘ Đổi chỗ lỗi, đã trả CSDL cũ về."
-    else do_ "✘ Đổi chỗ lỗi và chưa trả về được: dữ liệu cũ đang ở CSDL $cu, bản mới ở tyzo_moi. Gõ: docker exec tyzo-db psql -U tyzo -d postgres -c 'alter database $cu rename to tyzo'"; fi
-    [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+  pg_sys "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('tyzo','tyzo_moi') and pid <> pg_backend_pid()" >/dev/null || true
+  if ! pg_sys "set lock_timeout = '5s'; alter database tyzo rename to $cu; alter database tyzo_moi rename to tyzo" >/dev/null; then
+    do_ "✘ Chưa xác nhận đổi chỗ. Kiểm tra tên CSDL và giữ các bản sao trước khi mở dịch vụ."
+    return 1
   fi
   # Kiểm lại sau khi đổi chỗ: CSDL «tyzo» phải đúng bản vừa nạp (và đúng bảng kê nguồn nếu có).
   local sau_ok=1
   if [ -n "$ky" ]; then local sau; sau="$(mktemp)"; bang_ke_vps tyzo > "$sau" 2>/dev/null; khop_bang_ke "$ky" "$sau" >/dev/null || sau_ok=0; rm -f "$sau"; fi
   if [ "$sau_ok" != 1 ] || [ "$(so_muc_csdl tyzo)" != "$can $fk $ct $ix" ]; then
-    pg_sys "alter database tyzo rename to tyzo_hong_$(date '+%H%M%S')" >/dev/null && pg_sys "alter database $cu rename to tyzo" >/dev/null
-    do_ "✘ Kiểm sau đổi chỗ không khớp, đã trả CSDL cũ về."; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+    if pg_sys "alter database tyzo rename to tyzo_hong_$(date '+%H%M%S'); alter database $cu rename to tyzo" >/dev/null; then
+      do_ "✘ Kiểm sau đổi chỗ không khớp, đã trả CSDL cũ về."
+      [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
+    else do_ "✘ Chưa xác minh quay về CSDL $cu. Giữ dịch vụ dừng."; fi
+    return 1
   fi
   xanh "✔ Đã nạp trọn vẹn: $can bảng, $fk khóa ngoại, $ct ràng buộc, $ix chỉ mục${ky:+, khớp bảng kê nguồn (số dòng, mã băm, sequence, migration)}. Dữ liệu trước đó giữ ở CSDL $cu."
   echo "   Khi chắc chắn bản mới đúng, xóa bản cũ để lấy lại ổ đĩa: docker exec tyzo-db psql -U tyzo -d postgres -c 'drop database $cu'"
@@ -823,103 +834,165 @@ neon_api() { # neon_api METHOD /đường-dẫn [JSON] → in JSON trả về; l
   printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" |
     curl -sS -f -m 30 -K - -X "$1" -H 'Content-Type: application/json' ${3:+-d "$3"} "https://console.neon.tech/api/v2$2"
 }
-neon_ep_of_url() { # mã endpoint (ep-…) từ chuỗi kết nối Neon; không phải Neon thì rỗng
-  printf '%s' "$1" | sed -E 's#^[a-z]+://[^@]*@##; s#[:/?].*##; s#\..*##; s#-pooler$##' | grep -E '^ep-[a-z0-9-]+$' || true
+neon_ep_of_url() {
+  # Không cho libpq đổi host/port/service qua query hoặc kết nối nhiều host.
+  local re='^postgres(ql)?://[^@/?#]+@(ep-[a-z0-9-]+)\.([a-z0-9-]+\.)*neon\.tech(:[0-9]+)?/[a-zA-Z0-9_%.-]+(\?(sslmode=(require|verify-ca|verify-full)|channel_binding=(require|prefer))(&(sslmode=(require|verify-ca|verify-full)|channel_binding=(require|prefer)))?)?$'
+  [[ "$1" =~ $re ]] || return 1
+  local ep="${BASH_REMATCH[2]}"
+  printf '%s\n' "${ep%-pooler}"
 }
-neon_thay_ep() { printf '%s' "$1" | sed "s#@$2#@$3#"; } # đổi endpoint trong chuỗi kết nối (giữ -pooler, vùng, CSDL)
-neon_tim() { # đặt NEON_P, NEON_BR theo NEON_EP
-  local p br
-  for p in $(neon_api GET "/projects?limit=100" | jq -r '.projects[].id'); do
-    br="$(neon_api GET "/projects/$p/endpoints" | jq -r --arg e "$NEON_EP" '.endpoints[] | select(.id == $e) | .branch_id')"
-    [ -n "$br" ] && { NEON_P="$p"; NEON_BR="$br"; return 0; }
+neon_thay_ep() { printf '%s' "$1" | sed -E "s#@$2(-pooler)?\.#@$3.#"; }
+
+neon_tim() {
+  local trang p ds br cursor="" i
+  for ((i=0; i<20; i++)); do
+    trang="$(neon_api GET "/projects?limit=100${cursor:+&cursor=$cursor}")" || return 1
+    ds="$(jq -er '.projects | if type == "array" then map(.id | select(test("^[a-z0-9-]+$"))) | join("\n") else error("projects") end' <<<"$trang")" || return 1
+    for p in $ds; do
+      br="$(neon_api GET "/projects/$p/endpoints" | jq -er --arg e "$NEON_EP" '
+        .endpoints | if type == "array" then [.[] | select(.id == $e)] else error("endpoints") end |
+        if length == 0 then "" elif length == 1 and .[0].type == "read_write" then .[0].branch_id else error("writer") end')" || return 1
+      if [ -n "$br" ]; then
+        [[ "$br" =~ ^br-[a-z0-9-]+$ ]] || return 1
+        NEON_P="$p"; NEON_BR="$br"; return 0
+      fi
+    done
+    cursor="$(jq -er '.pagination.cursor // ""' <<<"$trang")" || return 1
+    [[ "$cursor" =~ ^[a-zA-Z0-9._~-]+$ ]] || return 1
   done
   return 1
 }
-neon_cho() { # neon_cho <url> <ket-noi-duoc|bi-chan>: chờ tối đa 90 s
+
+neon_trang_thai() { # Một compute ghi duy nhất trên branch, có đúng trạng thái mong đợi.
+  local disabled="$1"
+  neon_api GET "/projects/$NEON_P/branches/$NEON_BR/endpoints" 2>/dev/null |
+    jq -e --arg id "$NEON_EP" --arg br "$NEON_BR" --argjson disabled "$disabled" '
+      .endpoints | select(type == "array" and all(.[]; .branch_id == $br and (.type == "read_only" or .type == "read_write"))) |
+      [.[] | select(.type == "read_write")] |
+      length == 1 and .[0].id == $id and .[0].disabled == $disabled and
+        (if $disabled then .[0].current_state == "idle" and (.[0].pending_state == null)
+         else (.[0].current_state == "idle" or .[0].current_state == "active") and (.[0].pending_state == null) end)' >/dev/null 2>&1
+}
+
+neon_cho() { # Trạng thái khóa chỉ do API xác nhận; kiểm SQL riêng khi cần kết nối.
   local i
-  for i in $(seq 1 18); do
-    if pg_tu_xa psql "$1" -v ON_ERROR_STOP=1 -tAc "select 1" >/dev/null 2>&1; then [ "$2" = ket-noi-duoc ] && return 0
-    else [ "$2" = bi-chan ] && return 0; fi
-    sleep 5
+  for ((i=0; i<6; i++)); do
+    case "$2" in
+      bi-chan) neon_trang_thai true && return 0 ;;
+      doc) [ "$(pg_tu_xa psql "$1" -XqAt -v ON_ERROR_STOP=1 -c 'show transaction_read_only' 2>/dev/null)" = on ] && return 0 ;;
+      ghi) neon_trang_thai false &&
+        [ "$(pg_tu_xa psql "$1" -XqAt -v ON_ERROR_STOP=1 -c 'show transaction_read_only' 2>/dev/null)" = off ] && return 0 ;;
+      *) return 1 ;;
+    esac
+    [ "$i" = 5 ] || sleep 2
   done
   return 1
 }
-neon_mo_ghi() { # bật lại endpoint ghi, xác minh, xóa endpoint chỉ đọc
-  neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":false}}' >/dev/null &&
-    neon_cho "$NEON_URL" ket-noi-duoc || { do_ "✘ Chưa bật lại được ghi trên Neon ($NEON_EP). Vào console.neon.tech → Compute → bật lại."; return 1; }
-  [ -n "${NEON_RO:-}" ] && neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1
-  ghi_chuyen da-mo-lai "neon $NEON_P $NEON_EP"
+
+neon_mo_ghi() {
+  if ! neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":false}}' >/dev/null 2>&1 ||
+    ! neon_cho "$NEON_URL" ghi; then
+    do_ "✘ Chưa xác minh được ghi trên Neon. Giữ nhật ký để kiểm tra lại."; return 1
+  fi
+  if [ -n "${NEON_RO:-}" ] && ! neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1; then
+    vang "Neon đã mở ghi. Endpoint chỉ đọc tạm cần kiểm tra lại ($NEON_RO)."
+  fi
+  ghi_chuyen da-mo-lai "neon $NEON_P $NEON_EP" || return 1
   xanh "✔ Neon ghi lại được như cũ."
 }
-neon_khoa_ghi() { # neon_khoa_ghi <url>: đặt NEON_RO_URL (chép qua đây). Lỗi thì tự mở lại.
-  NEON_URL="$1"; NEON_EP="$(neon_ep_of_url "$1")"; NEON_RO=""
-  [ -n "$NEON_EP" ] || { do_ "✘ Chuỗi kết nối không phải Neon (thiếu ep-…)."; return 1; }
-  neon_tim || { do_ "✘ Key Neon không thấy endpoint $NEON_EP (sai key hoặc khác tài khoản)."; return 1; }
-  NEON_RO="$(neon_api POST "/projects/$NEON_P/endpoints" "{\"endpoint\":{\"branch_id\":\"$NEON_BR\",\"type\":\"read_only\"}}" | jq -r '.endpoint.id // empty')"
-  [ -n "$NEON_RO" ] || { do_ "✘ Không tạo được endpoint chỉ đọc trên Neon."; return 1; }
+
+neon_khoa_ghi() {
+  local ro
+  NEON_URL="$1"; NEON_EP="$(neon_ep_of_url "$1")" || { do_ "✘ Chuỗi kết nối Neon không hợp lệ."; return 1; }
+  NEON_RO=""
+  neon_tim && neon_trang_thai false || { do_ "✘ Key Neon không thấy endpoint hoặc branch không có đúng một máy ghi đang mở."; return 1; }
+  ghi_chuyen neon-ro-intent "$NEON_P $NEON_BR $NEON_EP" || return 1
+  ro="$(neon_api POST "/projects/$NEON_P/endpoints" "{\"endpoint\":{\"branch_id\":\"$NEON_BR\",\"type\":\"read_only\"}}" 2>/dev/null)" || return 1
+  NEON_RO="$(jq -er --arg br "$NEON_BR" '.endpoint | select(.branch_id == $br and .type == "read_only") | .id | select(test("^ep-[a-z0-9-]+$"))' <<<"$ro")" || return 1
+  [ "$NEON_RO" != "$NEON_EP" ] || return 1
   NEON_RO_URL="$(neon_thay_ep "$1" "$NEON_EP" "$NEON_RO")"
-  neon_cho "$NEON_RO_URL" ket-noi-duoc || { do_ "✘ Endpoint chỉ đọc chưa sẵn sàng."; neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1; return 1; }
-  ghi_chuyen neon-khoa "$NEON_P $NEON_EP $NEON_RO"
-  if ! neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":true}}' >/dev/null || ! neon_cho "$1" bi-chan; then
-    do_ "✘ Chưa khóa được ghi trên Neon. Mở lại như cũ, không chép."; neon_mo_ghi; return 1
+  ghi_chuyen neon-ro "$NEON_P $NEON_BR $NEON_EP $NEON_RO" || return 1
+  neon_cho "$NEON_RO_URL" doc || { do_ "✘ Chưa xác minh được phiên chỉ đọc Neon."; neon_mo_ghi; return 1; }
+  ghi_chuyen neon-khoa "$NEON_P $NEON_EP $NEON_RO $NEON_BR" || return 1
+  if ! neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":true}}' >/dev/null 2>&1 ||
+    ! neon_cho "$1" bi-chan || ! neon_cho "$NEON_RO_URL" doc; then
+    do_ "✘ Chưa khóa được ghi trên Neon. Không chép dữ liệu."; neon_mo_ghi; return 1
   fi
-  xanh "✔ Neon đã khóa ghi (web cũ không ghi được nữa); chép qua endpoint chỉ đọc."
+  xanh "✔ Neon đã khóa ghi; chép qua endpoint chỉ đọc."
 }
-mo_lai_neon_do_dang() { # mục menu: mở lại ghi Neon theo nhật ký (sau khi đã chắc chắn không cần giữ khóa)
-  local dong; dong="$(grep -E ' neon-khoa ' "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" 2>/dev/null | tail -n 1)"
-  [ -n "$dong" ] || { echo "Nhật ký không có lần khóa Neon nào."; return 0; }
-  read -r _ _ NEON_P NEON_EP NEON_RO <<<"$dong"
-  echo "Lần khóa gần nhất: $dong"
-  vang "Chỉ mở lại khi web và dữ liệu KHÔNG dùng VPS làm nguồn chính (mở cả hai sẽ ghi tách đôi)."
-  local a; read -rp "Gõ mo-lai-neon để bật lại ghi trên Neon: " a; [ "$a" = mo-lai-neon ] || { echo "Đã hủy."; return 1; }
+
+mo_lai_neon_do_dang() (
+  khoa_quy_trinh_neon || return 1
+  local buoc a dong
+  dong="$(tail -n 1 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" 2>/dev/null)" || return 1
+  read -r _ buoc NEON_P NEON_EP NEON_RO NEON_BR <<<"$dong"
+  if [ "$buoc" != neon-khoa ] || [[ ! "$NEON_P" =~ ^[a-z0-9-]+$ || ! "$NEON_EP" =~ ^ep-[a-z0-9-]+$ ||
+      ! "$NEON_RO" =~ ^ep-[a-z0-9-]+$ || ! "$NEON_BR" =~ ^br-[a-z0-9-]+$ ]]; then
+    do_ "✘ Nhật ký không chứng minh đích chưa ghi. Giữ khóa nguồn và đối soát trước khi phục hồi."; return 1
+  fi
+  read -rp "Gõ mo-lai-neon để hủy lần chuyển trước bước đổi CSDL: " a; [ "$a" = mo-lai-neon ] || return 1
   NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
-  NEON_URL="$(hoi_an 'Dán chuỗi kết nối Neon cũ (chữ không hiện, để kiểm đã ghi lại được): ')"
-  neon_mo_ghi
-}
+  NEON_URL="$(hoi_an 'Dán chuỗi kết nối Neon cũ (chữ không hiện): ')"
+  [ "$(neon_ep_of_url "$NEON_URL")" = "$NEON_EP" ] && neon_mo_ghi
+)
 
-mo_lai_vps_do_dang() { # RE5-004-D: mở lại CSDL và web VPS sau lần chuyển sang Vercel dở dang (có xác nhận)
-  [ "$(conf_get DB)" = "local" ] || { echo "Dữ liệu không đặt trên VPS."; return 0; }
-  [ -s "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" ] && tail -n 5 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" | sed 's/^/   /'
-  if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" = t ]; then echo "Nguồn VPS đang mở sẵn."; return 0; fi
-  vang "Trước khi mở: vào vercel.com → project → Deployments, chắc chắn bản mới KHÔNG chạy (hoặc đã xóa), và Neon chưa nhận ghi của khách."
-  local a; read -rp "Gõ mo-lai-vps nếu đã kiểm: " a; [ "$a" = mo-lai-vps ] || { echo "Đã hủy."; return 1; }
-  khoi_phuc_nguon_vps "bridge web" && xanh "✔ Nguồn VPS và web đã mở lại."
-}
+mo_lai_vps_do_dang() (
+  khoa_quy_trinh_neon || return 1
+  local buoc a services dong
+  [ "$(conf_get DB)" = local ] || return 1
+  dong="$(tail -n 1 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" 2>/dev/null)" || return 1
+  read -r _ buoc services <<<"$dong"
+  [ "$buoc" != khoa-nguon ] || services="${services#neon-khop }"
+  if [[ "$buoc" != vps-dung && "$buoc" != khoa-nguon && "$buoc" != vps-ban-sao ]] || [[ ! "$services" =~ ^(none|web|bridge|bridge\ web)$ ]]; then
+    do_ "✘ Nhật ký không chứng minh đích chưa được mở cho deployment. Giữ khóa nguồn để đối soát."; return 1
+  fi
+  read -rp "Gõ mo-lai-vps để hủy lần chuyển trước bước Vercel: " a; [ "$a" = mo-lai-vps ] || return 1
+  khoi_phuc_nguon_vps "${services#none}"
+)
 
-chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon về Postgres trên VPS (Neon chỉ bị đọc)
-  local url="$1" n
+chep_tu_neon() (
+  local url="$1" n a thu
+  khoa_quy_trinh_neon || return 1
+  chuyen_dang_do && { do_ "✘ Lần chuyển trước chưa kết thúc."; return 1; }
+  neon_ep_of_url "$url" >/dev/null || { do_ "✘ Cần chuỗi kết nối Neon xác định được máy ghi."; return 1; }
   db_len || return 1
-  n="$(dem_bang)"
-  if [ "${n:-0}" != "0" ]; then
-    vang "Cơ sở dữ liệu trên VPS đang có $n bảng. Chép từ Neon sẽ THAY dữ liệu trên VPS (bản cũ được giữ lại để quay về; Neon không bị đụng)."
-    read -rp "Gõ dong-y để tiếp tục: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy."; return 1; }
+  n="$(dem_bang)" || return 1
+  [[ "$n" =~ ^[0-9]+$ ]] || return 1
+  if [ "$n" != 0 ]; then
+    vang "CSDL trên VPS đang có $n bảng. Bản cũ được giữ để phục hồi."
+    read -rp "Gõ dong-y để tiếp tục: " a; [ "$a" = dong-y ] || return 1
   fi
-  # Đọc Neon xong mới đụng VPS (trước đây xóa dữ liệu VPS rồi mới đọc Neon: Neon lỗi là mất cả hai).
-  docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
-  # RE3-007: bảng kê Neon trước khi đọc; nạp xong phải khớp, và Neon đọc lại vẫn khớp (không có ghi phát sinh).
-  # RE5-004-C: khóa ghi Neon (tắt endpoint ghi) rồi chép qua endpoint chỉ đọc, để không mất ghi phát sinh sau lần đối soát cuối.
-  local src="$url" khoa=0
-  if [ -n "$(neon_ep_of_url "$url")" ] && hoi_co "Khóa ghi trên Neon trong lúc chép (khuyên dùng; cần Neon API key: console.neon.tech → Account settings → API keys)?"; then
-    NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
-    neon_khoa_ghi "$url" || return 1
-    src="$NEON_RO_URL"; khoa=1
-  else
-    vang "Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển."
+  hoi_co "Khóa ghi trên Neon để chép sang VPS (cần Neon API key)?" || { do_ "✘ Cần khóa nguồn trước khi chép."; return 1; }
+  NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
+  [ -n "$NEON_API_KEY" ] || return 1
+  thu="$(umask 077; mktemp -d "$(dirname "$CONF")/.tyzo-neon-to-vps.XXXXXXXX")" || return 1
+  trap 'case "$(buoc_chuyen_cuoi 2>/dev/null)" in neon-swap-*|neon-dich-co-the-ghi) vang "Giữ hồ sơ riêng tại $thu." ;; *) rm -rf -- "$thu" ;; esac' EXIT
+  neon_khoa_ghi "$url" || return 1
+  if ! bang_ke_xa "$NEON_RO_URL" > "$thu/nguon.txt" 2>/dev/null || ! grep -q '^bang|' "$thu/nguon.txt"; then
+    do_ "✘ Không lập được bảng kê Neon."; neon_mo_ghi; return 1
   fi
-  local ky; ky="$(umask 077; mktemp)"
-  bang_ke_xa "$src" > "$ky" 2>/dev/null
-  grep -q '^bang|' "$ky" || { do_ "✘ Không lập được bảng kê Neon. Dữ liệu trên VPS không bị đụng."; rm -f "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
-  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$src" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
-  NGUON_NEON="$src"
-  nap_dump /tmp/tyzo-neon.dump "$ky" bang_ke_nguon_neon || { rm -f /tmp/tyzo-neon.dump "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
-  rm -f /tmp/tyzo-neon.dump "$ky"
-  if [ "$khoa" = 1 ]; then
-    neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1 || true
-    ghi_chuyen xong "neon-giu-khoa $NEON_P $NEON_EP"
-    vang "Neon VẪN KHÓA GHI để web cũ không ghi thêm. Việc tiếp: đổi DNS/web sang VPS."
-    echo "   Cần quay lại dùng Neon: tyzo → 13 (Sao lưu / Chuyển VPS) → 7 (Mở lại ghi trên Neon)."
+  if ! pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc "$NEON_RO_URL" > "$thu/source.dump" 2>/dev/null; then
+    do_ "✘ Không đọc được Neon."; neon_mo_ghi; return 1
   fi
-}
+  NGUON_NEON="$NEON_RO_URL"
+  if ! nap_dump "$thu/source.dump" "$thu/nguon.txt" bang_ke_nguon_neon neon; then
+    # Sau intent đổi tên, mất kết nối có thể xảy ra sau commit. Không tự mở nguồn.
+    if [ "$(buoc_chuyen_cuoi)" = neon-khoa ]; then neon_mo_ghi
+    else do_ "✘ Chưa rõ trạng thái đổi CSDL. Giữ Neon khóa ghi để đối soát."; fi
+    return 1
+  fi
+  if ! neon_trang_thai true ||
+    ! ghi_chuyen neon-dich-co-the-ghi "$NEON_P $NEON_BR $NEON_EP $NEON_RO" ||
+    ! pg_sys "alter database tyzo with allow_connections true" >/dev/null ||
+    [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
+    do_ "✘ Chưa xác minh mở được CSDL đích khi Neon đã khóa."; return 1
+  fi
+  if ! neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1; then
+    vang "Cần kiểm tra endpoint chỉ đọc tạm ($NEON_RO)."
+  fi
+  ghi_chuyen xong "neon-giu-khoa $NEON_P $NEON_EP" || return 1
+  vang "Neon VẪN KHÓA GHI. CSDL VPS đã sẵn sàng. Kiểm tra dịch vụ và DNS trước khi đưa khách sang VPS."
+)
 
 trang_thai_web_vps() {
   docker ps --format '{{.Names}}' | awk '/^tyzo-(web|bridge)$/ { sub(/^tyzo-/, ""); print }' | LC_ALL=C sort | paste -sd ' ' -
@@ -951,6 +1024,8 @@ khoa_quy_trinh_neon() {
 }
 
 tom_tat_nguon_da_khoa() {
+  local db="${1:-tyzo}"
+  [[ "$db" =~ ^tyzo(_moi)?$ ]] || return 1
   # Mở đúng một phiên quản trị để đọc nguồn sau khi chặn mọi kết nối mới.
   # Lệnh ALTER chạy autocommit. Nếu còn phiên khác (kể cả ngoài Compose), dừng ngay.
   {
@@ -972,7 +1047,8 @@ END;
 $fence$;
 SQL
     sql_bang_ke
-  } | docker exec -i tyzo-db psql -X -q -tA -v ON_ERROR_STOP=1 -U tyzo -d tyzo -f - |
+  } | sed "s/ALTER DATABASE tyzo WITH/ALTER DATABASE $db WITH/" |
+    docker exec -i tyzo-db psql -X -q -tA -v ON_ERROR_STOP=1 -U tyzo -d "$db" -f - |
     sed '/^$/d' | LC_ALL=C sort
 }
 
@@ -982,13 +1058,14 @@ khoi_phuc_nguon_vps() {
     do_ "✘ Chưa mở lại được kết nối CSDL VPS. Dịch vụ VPS vẫn phải dừng cho tới khi kiểm tra xong."
     return 1
   fi
-  chuyen_dang_do && ghi_chuyen da-mo-lai "nguon-vps"
-  mo_lai_web_vps "$1"
+  mo_lai_web_vps "$1" || return 1
+  if chuyen_dang_do; then ghi_chuyen da-mo-lai "nguon-vps" || return 1; fi
 }
 
 chep_len_neon() ( # Chép VPS lên Neon trống. Mục 14 khóa CSDL khi chuyển nguồn.
   local url="$1" n thu dung
   khoa_quy_trinh_neon || return 1
+  chuyen_dang_do && { do_ "✘ Lần chuyển trước chưa kết thúc."; return 1; }
   thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-restore.XXXXXXXX")" || return 1
   if ! n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')" ||
     ! [[ "$n" =~ ^[0-9]+$ ]]; then
@@ -998,14 +1075,16 @@ chep_len_neon() ( # Chép VPS lên Neon trống. Mục 14 khóa CSDL khi chuyể
   if ! dung="$(trang_thai_web_vps)"; then
     do_ "✘ Không kiểm tra được dịch vụ VPS."; rmdir "$thu"; return 1
   fi
+  ghi_chuyen vps-ban-sao "${dung:-none}" || return 1
   if ! dung_web_vps; then
     do_ "✘ Không xác nhận được web và cầu nối đã dừng. Không chép dữ liệu."
-    mo_lai_web_vps "$dung"; rmdir "$thu"; return 1
+    mo_lai_web_vps "$dung" && ghi_chuyen da-mo-lai "vps-ban-sao"; rmdir "$thu"; return 1
   fi
   echo "Đang chép từ VPS lên Neon (web và cầu nối VPS đã dừng)..."
   local kq=0
   chep_len_neon_da_dung "$url" "$thu" || kq=$?
   mo_lai_web_vps "$dung" || return 1
+  ghi_chuyen da-mo-lai "vps-ban-sao" || return 1
   [ "$kq" = 0 ] || return 1
   xanh "✔ Đã nạp lên Neon, khớp bảng kê VPS: số dòng, mã băm từng bảng, sequence, migration. Chưa chuyển nguồn."
   echo "   Mục 14 sẽ khóa kết nối vào nguồn VPS và đối soát lần cuối."
@@ -1061,9 +1140,10 @@ khoa_va_doi_soat_chuyen() {
   if ! dung="$(trang_thai_web_vps)"; then
     do_ "✘ Không kiểm tra được dịch vụ VPS."; rmdir "$thu"; return 1
   fi
+  ghi_chuyen vps-dung "${dung:-none}" || return 1
   if ! dung_web_vps; then
     do_ "✘ Không xác nhận được web và cầu nối đã dừng. Không chuyển nguồn."
-    mo_lai_web_vps "$dung"; rmdir "$thu"; return 1
+    mo_lai_web_vps "$dung" && ghi_chuyen da-mo-lai "nguon-vps"; rmdir "$thu"; return 1
   fi
   if ! tom_tat_nguon_da_khoa > "$thu/nguon.txt" 2> "$thu/loi-nguon.txt" ||
     ! bang_ke_xa "$url" > "$thu/dich.txt" 2> "$thu/loi-dich.txt" ||
@@ -1077,25 +1157,31 @@ khoa_va_doi_soat_chuyen() {
   fi
   rm -f "$thu/nguon.txt" "$thu/dich.txt" "$thu/loi-nguon.txt" "$thu/loi-dich.txt"
   rmdir "$thu"
-  ghi_chuyen khoa-nguon "neon-khop"
+  ghi_chuyen khoa-nguon "neon-khop ${dung:-none}" || return 1
   xanh "✔ Neon khớp dữ liệu VPS. CSDL nguồn tiếp tục chặn kết nối."
   CHUYEN_DA_KHOA=1
   return 0
 }
 
-sao_luu() {
+sao_luu() (
   [ "$(conf_get DB)" = "local" ] || { echo "Dữ liệu đang ở Neon: Neon tự sao lưu, không cần làm ở đây."; return 0; }
-  mkdir -p "$BACKUP_DIR"; chmod 700 "$BACKUP_DIR"
-  local f; f="$BACKUP_DIR/tyzo-$(date '+%Y%m%d-%H%M').dump"
-  if docker exec tyzo-db pg_dump -U tyzo -Fc tyzo > "$f" 2>/dev/null && [ -s "$f" ]; then
-    chmod 600 "$f"; xanh "✔ Đã sao lưu: $f ($(du -h "$f" | cut -f1))"
+  mkdir -p "$BACKUP_DIR" && chmod 700 "$BACKUP_DIR" || return 1
+  local f tmp n
+  tmp="$(mktemp "$BACKUP_DIR/.tyzo-dump.XXXXXXXX")" || return 1
+  trap 'rm -f -- "$tmp"' EXIT
+  f="$BACKUP_DIR/tyzo-$(date '+%Y%m%d-%H%M%S')-${tmp##*.}.dump"
+  if docker exec tyzo-db pg_dump -U tyzo -Fc tyzo > "$tmp" 2>/dev/null &&
+    n="$(so_muc_tep "$tmp" TABLE)" && [ "$n" -gt 5 ] && sync -f "$tmp" && mv -T "$tmp" "$f" && sync -f "$BACKUP_DIR"; then
+    xanh "✔ Đã sao lưu: $f ($(du -h "$f" | cut -f1))"
     ls -1t "$BACKUP_DIR"/tyzo-*.dump 2>/dev/null | tail -n +15 | xargs -r rm -f
   else
-    rm -f "$f"; do_ "✘ Sao lưu lỗi."; return 1
+    do_ "✘ Sao lưu lỗi."; return 1
   fi
-}
+)
 
-khoi_phuc() {
+khoi_phuc() (
+  khoa_quy_trinh_neon || return 1
+  chuyen_dang_do && { do_ "✘ Lần chuyển trước chưa kết thúc."; return 1; }
   local files f a
   mapfile -t files < <(ls -1t "$BACKUP_DIR"/tyzo-*.dump 2>/dev/null)
   [ "${#files[@]}" -gt 0 ] || { vang "Chưa có bản sao lưu nào."; return 0; }
@@ -1107,11 +1193,13 @@ khoi_phuc() {
   vang "Khôi phục sẽ THAY toàn bộ dữ liệu hiện tại bằng bản $(basename "$f"). Máy sao lưu bản hiện tại trước."
   read -rp "Gõ dong-y để tiếp tục: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy."; return 0; }
   sao_luu || return 1
-  # nap_dump nạp vào CSDL tạm, kiểm đủ bảng rồi mới đổi chỗ; lỗi thì dữ liệu đang chạy giữ nguyên (trước đây lỗi bị bỏ qua).
-  nap_dump "$f" || do_ "✘ Không khôi phục được bản $(basename "$f"). Dữ liệu trước đó giữ nguyên."
-  chay_cho "Bật web" /tmp/tyzo-up.log dc up -d --no-build || true
-  chay_cho "Chờ web trả lời (tối đa 3 phút)" /tmp/tyzo-cho.log cho_web_ok 180 && xanh "✔ Đã khôi phục, web chạy lại." || do_ "✘ Web chưa lên. Xem nhật ký."
-}
+  ghi_chuyen vps-khoi-phuc "$(basename "$f")" || return 1
+  nap_dump "$f" || { do_ "✘ Chưa xác minh bản khôi phục. Giữ các bản sao và kiểm tra trạng thái CSDL."; return 1; }
+  chay_cho "Bật web" /tmp/tyzo-up.log dc up -d --no-build &&
+    chay_cho "Chờ web trả lời (tối đa 3 phút)" /tmp/tyzo-cho.log cho_web_ok 180 || return 1
+  ghi_chuyen xong "vps-khoi-phuc" || return 1
+  xanh "✔ Đã khôi phục, web chạy lại."
+)
 
 bat_sao_luu_dem() {
   printf 'SHELL=/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n47 2 * * * root /usr/local/bin/tyzo sao-luu >> /var/log/tyzo-sao-luu.log 2>&1\n' > "$BACKUP_CRON"
@@ -1205,6 +1293,8 @@ cai_cloudflared_khong_hoi() {
 
 khoi_phuc_vps() ( # khoi_phuc_vps <tệp tyzo-chuyen-vps-*.tar.enc>
   local tep="${1:-}" tmp pass_file archive noi_dung format mode db_kind dom dong_y n
+  khoa_quy_trinh_neon || return 1
+  chuyen_dang_do && { do_ "✘ Lần chuyển trước chưa kết thúc."; return 1; }
   [ -f "$tep" ] || { do_ "✘ Không thấy tệp: ${tep:-chưa nhập đường dẫn}"; return 1; }
   tieu_de "Khôi phục sang VPS này"
   vang "Lệnh này sẽ ghi cấu hình TyZo và dữ liệu Postgres trong bản sao lên VPS này."
@@ -1231,6 +1321,7 @@ khoi_phuc_vps() ( # khoi_phuc_vps <tệp tyzo-chuyen-vps-*.tar.enc>
     { do_ "✘ Bản sao lưu không đúng định dạng TyZo."; return 1; }
   [ "$db_kind" != local ] || [ -s "$noi_dung/postgres.dump" ] || { do_ "✘ Bản sao thiếu dữ liệu Postgres."; return 1; }
 
+  ghi_chuyen vps-khoi-phuc-goi || return 1
   echo "Đang cài phần mềm và lấy mã mới nhất..."
   cai_nen || return 1
   lay_ma || return 1
@@ -1277,6 +1368,7 @@ khoi_phuc_vps() ( # khoi_phuc_vps <tệp tyzo-chuyen-vps-*.tar.enc>
   [ -f "$noi_dung/cau-hinh/tyzo-quet-rui-ro" ] && install -m 644 "$noi_dung/cau-hinh/tyzo-quet-rui-ro" /etc/cron.d/tyzo-quet-rui-ro
   rm -rf -- "$tmp"; trap - EXIT INT TERM
   dom="$(conf_get DOMAIN)"; [ -n "$dom" ] || dom="$(ten_mien)"
+  ghi_chuyen xong "vps-khoi-phuc-goi" || return 1
   xanh "✔ Đã khôi phục xong trên VPS mới."
   if [ "$(conf_get EDGE)" != tunnel ] && [ -n "$dom" ]; then
     vang "Việc cuối: đổi bản ghi A của $dom trên Cloudflare sang IP mới: $(ip_vps)"
@@ -1644,13 +1736,16 @@ SH
 NHAT_KY_CHUYEN_SUFFIX=".chuyen"
 ghi_chuyen() {
   local f="${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
-  (umask 077; printf '%s %s %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1" "${2:-}" >> "$f")
+  (umask 077; printf '%s %s %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1" "${2:-}" >> "$f" && sync -f "$f")
 }
+buoc_chuyen_cuoi() { tail -n 1 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" | awk '{print $2}'; }
 # 0 = có lần chuyển chưa kết thúc (bước cuối không phải «xong» hay «da-mo-lai»).
 chuyen_dang_do() {
   local f="${CONF}${NHAT_KY_CHUYEN_SUFFIX}" last
+  [ -e "$f" ] || return 1
+  [ -f "$f" ] && [ -r "$f" ] || return 0
   [ -s "$f" ] || return 1
-  last="$(tail -n 1 "$f" | awk '{print $2}')"
+  last="$(buoc_chuyen_cuoi)" || return 0
   [ "$last" != "xong" ] && [ "$last" != "da-mo-lai" ]
 }
 # Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh.
@@ -1722,7 +1817,7 @@ TXT
   if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
     khoa_va_doi_soat_chuyen "$neon_url" || return 1
   fi
-  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen vercel-bat-dau "$proj"
+  if [ "$CHUYEN_DA_KHOA" = 1 ]; then ghi_chuyen vercel-bat-dau "$proj" || return 1; fi
   docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" \
     -e VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" node:22 bash /x/chay.sh | tee "$thu_vercel/ra.txt"
   local kq=${PIPESTATUS[0]} buoc

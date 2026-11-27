@@ -1,7 +1,7 @@
-# Bàn giao RE6-001 · High
+# Bàn giao RE6-002 · High
 
-Nhánh `audit/v5.49.7-codex-re6`. Tiếp tục từ `dba1a054ba34cb21f1ab4894bf574f57cd13f16e`. SHA checkpoint mới lấy từ commit chứa tài liệu và đối chiếu bằng `git ls-remote origin refs/heads/audit/v5.49.7-codex-re6`.
+Nhánh `audit/v5.49.7-codex-re6`. Phát triển từ `017cad371595f641d681da7f79eeeb62d617b40b`. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu trên GitHub trước khi làm tiếp.
 
-RE6-001 hoàn tất phần triển khai và kiểm thử cục bộ. Giới hạn ngân sách mặc định tắt, chờ Chủ duyệt chính sách trước khi bật. Admin có thể xác minh chi phí nhà cung cấp với bằng chứng và audit, không trừ khách. Xem [hồ sơ RE6-001](RE6-001/REPORT.md). RE6-006 giữ kết luận trên bộ thử cục bộ. Kiểm migration đã được chạy trong hồi quy vì có 0059.
+RE6-002 đã qua nghiệm thu cục bộ với API giả và PG18.7. Bản sửa dùng trạng thái chính xác từ Neon API, ghi intent trước thao tác, giữ khóa khi kết quả chưa rõ và bảo toàn bản cũ. [Hồ sơ RE6-002](RE6-002/REPORT.md)
 
-Dừng sau checkpoint theo yêu cầu của Chủ. Đề xuất RE6-002 ở mức High vì cần kiểm tính nhất quán giữa hai nguồn ghi, nhật ký và khôi phục khi kết quả thao tác chưa xác định.
+Theo chỉ đạo mới nhất, dừng ở RE6-002 để phiên sau làm RE6-003. Khuyến nghị **High** để kiểm API Vercel có cấu trúc, đối chiếu deployment, DB và phiên bản, giữ nhật ký theo các bước env/deploy/promote, rồi thử timeout và phục hồi. Không dùng Vercel, Neon hay VPS thật trong test. RE6-001 giữ giới hạn ở trạng thái tắt, chờ duyệt chính sách. [Hồ sơ RE6-001](RE6-001/REPORT.md)

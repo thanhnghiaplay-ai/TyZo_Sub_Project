@@ -17,7 +17,9 @@
     "location": "deploy/vps/tyzo.sh: neon_cho, neon_khoa_ghi, chep_tu_neon",
     "hypothesis": "Lỗi mạng bị coi là khóa ghi; khóa tùy chọn",
     "acceptance": "API trạng thái chính xác, xác minh mọi writer/endpoint, fail closed, journal trước side effect, fault injection kill/network/auth, không mở nguồn cũ khi đích có thể đã ghi.",
-    "status": "OPEN_VERIFY"
+    "status": "PASS_LOCAL",
+    "evidence": "RE6-002/REPORT.md",
+    "remaining": "Staging thật chỉ khi Chủ duyệt."
   },
   {
     "id": "RE6-003",

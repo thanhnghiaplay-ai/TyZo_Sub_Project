@@ -1,0 +1,19 @@
+PG18.7 restore regression run
+ℹ tests 33
+ℹ pass 33
+ℹ fail 0
+ℹ skipped 0
+
+PG18.7 checkpoint verification (selected cases)
+✔ RE2-005: restore error despite matching table counts cannot report success (32.225123ms)
+✔ RE2-005: restore success requires atomic fail-fast flags (31.191741ms)
+✔ RE6-002: status-timeout không cho đổi CSDL VPS (1546.094785ms)
+✔ RE6-002: active-writer không cho đổi CSDL VPS (1443.870879ms)
+✔ RE6-002: extra-writer không cho đổi CSDL VPS (1269.994682ms)
+✔ RE6-002: SIGKILL sau commit đổi CSDL giữ cả hai nguồn khóa và chặn mở Neon bằng menu (3266.879364ms)
+✔ RE6-002: lỗi lưu nhật ký không được bắt đầu tác động (887.149901ms)
+✔ RE6-002: sao lưu thất bại không công bố tệp dở và giữ bản tốt (719.611593ms)
+ℹ tests 8
+ℹ pass 8
+ℹ fail 0
+ℹ skipped 0

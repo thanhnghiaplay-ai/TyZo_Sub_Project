@@ -4,7 +4,8 @@ import { spawnSync } from "node:child_process";
 import { test } from "node:test";
 
 const text = readFileSync(new URL("../deploy/vps/tyzo.sh", import.meta.url), "utf8");
-const fn = text.slice(text.indexOf("trang_thai_web_vps() {"), text.indexOf("\nsao_luu() {"));
+const fn = text.slice(text.indexOf("trang_thai_web_vps() {"), text.indexOf("\nsao_luu() ("));
+const journal = text.slice(text.indexOf('NHAT_KY_CHUYEN_SUFFIX=".chuyen"'), text.indexOf("# Bước cuối Vercel"));
 const compare = text.slice(text.indexOf("khop_bang_ke() {"), text.indexOf("\nnap_dump() {"));
 function drill(code, { destManifest = "bang|a|1|x" } = {}) {
   const shim = `
@@ -29,10 +30,11 @@ docker() {
 fixture_counter=$(mktemp)
 rm -f "$fixture_counter"
 ${compare}
+${journal}
 ${fn}
 chep_len_neon fixture-target
 rc=$?
-rm -f "$fixture_counter" "$CONF" "$CONF.neon.lock"
+rm -f "$fixture_counter" "$CONF" "$CONF.neon.lock" "$CONF.chuyen"
 exit "$rc"
 `;
   return spawnSync("bash", ["-c", shim], {
