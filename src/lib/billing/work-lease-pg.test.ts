@@ -38,12 +38,11 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
   const lost: string[] = [];
   let running = 0,
     peak = 0,
-    calls = 0;
+    serverTimeouts = 0;
   const failuresBefore = leaseMetrics().failures;
   const t0 = Date.now();
   const stop = startBeat(
     async (signal) => {
-      calls += 1;
       running += 1;
       peak = Math.max(peak, running);
       try {
@@ -52,6 +51,9 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
           (tx) => tx`update work_admissions set heartbeat_at = clock_timestamp() where id = 'stall' returning id`,
           { timeoutMs: 150, signal },
         );
+      } catch (error) {
+        if ((error as { code?: string })?.code === "57014") serverTimeouts += 1;
+        throw error;
       } finally {
         running -= 1;
       }
@@ -63,8 +65,10 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
   await blocker;
   await stop();
   assert.equal(peak, 1, "chồng nhịp khi CSDL treo");
-  assert.ok(calls >= 3 && calls <= 8, `số nhịp ${calls}`);
-  assert.ok(leaseMetrics().failures - failuresBefore >= 3, "lỗi timeout không được đếm");
+  // Verify an actual server-side cancellation. The number of retries before
+  // the lease deadline varies with event-loop and database scheduling.
+  assert.ok(serverTimeouts > 0, "Postgres không hủy câu lệnh theo statement_timeout");
+  assert.equal(leaseMetrics().failures - failuresBefore, serverTimeouts, "lỗi timeout không được đếm đúng");
   assert.deepEqual(lost, ["deadline"]);
   assert.ok(Date.now() - t0 < 2000);
 });

@@ -1,0 +1,20 @@
+Baseline scripts and original TypeScript group one
+ℹ tests 238
+ℹ pass 231
+ℹ fail 0
+ℹ skipped 7
+ℹ tests 1472
+ℹ pass 1472
+ℹ fail 0
+ℹ skipped 0
+
+Final TypeScript group two after heartbeat regression test correction
+✔ RE3-002: dò 25 MB trong thời gian và bộ nhớ giới hạn (1196.384516ms)
+✔ RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn (1133.721448ms)
+ℹ tests 101
+ℹ pass 101
+ℹ fail 0
+ℹ skipped 0
+
+PG18 migration in baseline suite with added regression test
+✔ RE6-006: PG18 fresh, 0056 → 0058, rollback and repeat (1652.938195ms)
