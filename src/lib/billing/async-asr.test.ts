@@ -12,6 +12,8 @@ let requests = 0;
 let submits = 0;
 let state = "SUCCEEDED";
 let disconnect = false;
+let submitStatus = 200;
+let rejectionHasTask = false;
 const model = "qwen-audio-3.0-asr-flash-filetrans";
 const tid = "a".repeat(24);
 const rows = [
@@ -47,6 +49,14 @@ globalThis.fetch = async (url) => {
   if (String(url).includes("/services/")) {
     submits++;
     if (disconnect) throw new TypeError("fixture reply lost");
+    if (submitStatus !== 200)
+      return Response.json(
+        {
+          message: "synthetic rejected submission",
+          ...(rejectionHasTask ? { output: { task_id: `fixture-task-${submits}` } } : {}),
+        },
+        { status: submitStatus },
+      );
     return Response.json({ output: { task_id: `fixture-task-${submits}` } });
   }
   return Response.json(
@@ -81,6 +91,8 @@ beforeEach(async () => {
   submits = 0;
   state = "SUCCEEDED";
   disconnect = false;
+  submitStatus = 200;
+  rejectionHasTask = false;
   if (!sql) return;
   await sql`delete from run_tickets`;
   await sql`delete from token_grants`;
@@ -91,13 +103,13 @@ beforeEach(async () => {
   await sql`insert into run_tickets(id,user_id,file_name,held,unit,status,seconds)values(${tid},'u','fixture',1000,'token','dang-giu',60)`;
   await sql`insert into token_slices(ticket_id,grant_id,left_tokens)values(${tid},'g',1000)`;
 });
-const start = async () => {
+const start = async (url = "https://media.example.invalid/fixture.wav") => {
   const { runAliFiletrans } = await import("../ali-filetrans.server.ts");
   const queued = await runAliFiletrans("u", {
     op: "submit",
     key: "room",
     ticketId: tid,
-    url: "https://media.example.invalid/fixture.wav",
+    url,
     language: "en",
   });
   assert.equal(queued.state, "queued");
@@ -177,4 +189,58 @@ test("ASYNC-P0: known failed job releases once; response after force-close only 
     await sql`select short_units,status from run_gate_calls where observed_at is not null`
   )[0];
   assert.deepEqual([Number(receipt.short_units), receipt.status], [8, "can-doi-soat"]);
+});
+
+test("ASYNC-P0: definitive submission rejection releases budget and allows a corrected retry", async (t) => {
+  if (!sql) return t.skip("Local PostgreSQL fixture required");
+  for (const status of [400, 401, 403, 404, 413, 415, 422, 429]) {
+    submitStatus = status;
+    await assert.rejects(start());
+    assert.equal(
+      (await sql`select state from run_async_asr_jobs order by created_at desc limit 1`)[0].state,
+      "failed",
+    );
+    assert.equal(
+      Number((await sql`select modal_reserved from run_tickets where id=${tid}`)[0].modal_reserved),
+      0,
+    );
+  }
+  submitStatus = 200;
+  const task = await start();
+  await finish(task);
+  assert.equal(Number((await sql`select charged from run_tickets where id=${tid}`)[0].charged), 8);
+});
+
+test("ASYNC-P0: ambiguous timeout or server failure retains uncertainty and cannot auto-resubmit", async (t) => {
+  if (!sql) return t.skip("Local PostgreSQL fixture required");
+  for (const status of [408, 500]) {
+    submitStatus = status;
+    const url = `https://media.example.invalid/uncertain-${status}.wav`;
+    await assert.rejects(start(url));
+    await assert.rejects(start(url), /đang gửi hoặc cần đối soát/);
+  }
+  assert.equal(submits, 2);
+  assert.equal(
+    Number((await sql`select count(*)::int n from run_async_asr_jobs where state='unknown'`)[0].n),
+    2,
+  );
+  assert.equal(
+    Number((await sql`select modal_reserved from run_tickets where id=${tid}`)[0].modal_reserved),
+    16,
+  );
+});
+
+test("ASYNC-P0: an error response containing a task ID retains that owned task for reconciliation", async (t) => {
+  if (!sql) return t.skip("Local PostgreSQL fixture required");
+  submitStatus = 500;
+  rejectionHasTask = true;
+  await assert.rejects(start());
+  const job = (await sql`select state,task_id from run_async_asr_jobs`)[0];
+  assert.equal(job.state, "unknown");
+  assert.equal(job.task_id, "fixture-task-1");
+  assert.equal(await start(), "fixture-task-1");
+  assert.equal(submits, 1);
+  submitStatus = 200;
+  await finish("fixture-task-1");
+  assert.equal(Number((await sql`select charged from run_tickets where id=${tid}`)[0].charged), 8);
 });

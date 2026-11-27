@@ -82,10 +82,30 @@ async function aliJson(
   } catch {
     payload = null;
   }
-  if (!response.ok)
-    throw new Error(
-      aliErrorText(messageOf(payload, `Nhận dạng lỗi ${response.status}.`), workspace),
+  if (!response.ok) {
+    const message = aliErrorText(
+      messageOf(payload, `Nhận dạng lỗi ${response.status}.`),
+      workspace,
     );
+    const row = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
+    const output =
+      row.output && typeof row.output === "object" ? (row.output as Record<string, unknown>) : {};
+    const hasTask = typeof output.task_id === "string" || typeof row.task_id === "string";
+    if (
+      body !== undefined &&
+      !hasTask &&
+      [400, 401, 403, 404, 413, 415, 422, 429].includes(response.status)
+    ) {
+      const { AsyncAsrSubmissionRejected } = await import("@/lib/billing/async-asr");
+      throw new AsyncAsrSubmissionRejected(message);
+    }
+    if (body !== undefined && hasTask) {
+      const id = taskIdOf(payload);
+      const { AsyncAsrSubmissionUncertain } = await import("@/lib/billing/async-asr");
+      throw new AsyncAsrSubmissionUncertain(message, id);
+    }
+    throw new Error(message);
+  }
   return payload;
 }
 

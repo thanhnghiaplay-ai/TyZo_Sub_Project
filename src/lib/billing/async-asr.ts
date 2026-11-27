@@ -21,6 +21,18 @@ type Job = {
   provider: string;
 };
 
+/** A provider explicitly rejected the submission before returning any task identifier. */
+export class AsyncAsrSubmissionRejected extends Error {}
+
+/** The provider returned an identifier even though the HTTP response was an error. */
+export class AsyncAsrSubmissionUncertain extends Error {
+  readonly taskId: string;
+  constructor(message: string, taskId: string) {
+    super(message);
+    this.taskId = taskId;
+  }
+}
+
 export async function submitAsyncAsr(
   sql: Sql,
   input: {
@@ -95,7 +107,20 @@ export async function submitAsyncAsr(
       } catch (error) {
         // Lost response may mean a real upstream job exists. Keep its identity and budget for reconciliation;
         // no automatic resubmission of this request hash. Existing six-hour force-release policy is unchanged.
-        await sql`update run_async_asr_jobs set state = 'unknown', updated_at = clock_timestamp() where id = ${opened.id}`;
+        try {
+          if (error instanceof AsyncAsrSubmissionRejected) {
+            const rows = await sql<Job>`select * from run_async_asr_jobs where id = ${opened.id}`;
+            if (rows.length) await failAsyncAsr(sql, rows[0]);
+          } else {
+            const taskId = error instanceof AsyncAsrSubmissionUncertain ? error.taskId : null;
+            await sql`update run_async_asr_jobs set state = 'unknown', task_id = coalesce(${taskId}, task_id), updated_at = clock_timestamp() where id = ${opened.id}`;
+          }
+        } catch (cleanupError) {
+          throw new AggregateError(
+            [error, cleanupError],
+            "Gửi nhận dạng thất bại và chưa ghi được trạng thái đối soát.",
+          );
+        }
         throw error;
       }
       await sql`update run_async_asr_jobs set task_id = ${taskId}, state = 'running', updated_at = clock_timestamp() where id = ${opened.id}`;
