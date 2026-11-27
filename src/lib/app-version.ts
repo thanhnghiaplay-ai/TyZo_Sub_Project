@@ -12,10 +12,10 @@ type ReleaseNote = {
 export const CHANGELOG: ReleaseNote[] = [
   {
     version: "5.49.3",
-    time: "06:11 27/11/2026",
+    time: "16:33 27/11/2026",
     title: "Xử lý nhiều đoạn an toàn hơn khi hệ thống bận.",
     points: [
-      "Các đoạn chạy cùng lúc có phần Token dịch được giữ riêng.",
+      "Giữ riêng ngân sách từng đoạn; dịch trực tiếp không tính lặp phần đã nhận.",
       "Đóng lần chạy sẽ chờ đoạn đang xử lý hoàn tất trước khi trả phần dư.",
       "Khi hệ thống bận, bạn được nhắc thử lại sau ít giây.",
       "Mất phản hồi khi dùng Token dịch: không tự gửi lại để tránh tính phí hai lần.",

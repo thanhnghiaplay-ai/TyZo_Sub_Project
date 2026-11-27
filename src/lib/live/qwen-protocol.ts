@@ -1,4 +1,4 @@
-import { readUsage, type LiveUsage } from "./live-cost.ts";
+import { readUsage, hasBillableUsage, type LiveUsage } from "./live-cost.ts";
 import { LIVE_MODEL_35, LIVE_MODEL_38 } from "./live-price.ts";
 
 /**
@@ -79,14 +79,21 @@ export function buildSessionUpdate(options: SessionOptions): Record<string, unkn
     input_audio_transcription: options.source
       ? { model: "qwen3-asr-flash-realtime", language: options.source }
       : { model: "qwen3-asr-flash-realtime" },
-    turn_detection: { type: "server_vad", threshold: cleanVadThreshold(options.vadThreshold), silence_duration_ms: cleanSilenceMs(options.silenceMs) },
+    turn_detection: {
+      type: "server_vad",
+      threshold: cleanVadThreshold(options.vadThreshold),
+      silence_duration_ms: cleanSilenceMs(options.silenceMs),
+    },
   };
   if (options.voice) session.voice = options.voice;
   return { type: "session.update", session };
 }
 
 export function audioAppend(pcm: Uint8Array): string {
-  return JSON.stringify({ type: "input_audio_buffer.append", audio: Buffer.from(pcm).toString("base64") });
+  return JSON.stringify({
+    type: "input_audio_buffer.append",
+    audio: Buffer.from(pcm).toString("base64"),
+  });
 }
 
 export const SESSION_FINISH = JSON.stringify({ type: "session.finish" });
@@ -100,7 +107,7 @@ type LiveEvent =
   | { kind: "pair"; translationId: string; sourceId: string }
   | { kind: "speaker"; sourceId: string; speakerId: string }
   | { kind: "audio"; base64: string }
-  | { kind: "usage"; usage: LiveUsage; ok: boolean; id?: string }
+  | { kind: "usage"; usage: LiveUsage; ok: boolean; id?: string; uncertain?: true }
   | { kind: "error"; message: string }
   | { kind: "finished" };
 
@@ -134,22 +141,40 @@ export function parseServerEvent(raw: unknown): ParsedEvent[] {
       return id ? [{ kind: "translation-delta", id, delta: str(event.delta) }] : [];
     case "response.text.text":
     case "response.audio_transcript.text":
-      return id ? [{ kind: "translation", id, text: str(event.text), stash: str(event.stash), final: false }] : [];
+      return id
+        ? [
+            {
+              kind: "translation",
+              id,
+              text: str(event.text),
+              stash: str(event.stash),
+              final: false,
+            },
+          ]
+        : [];
     case "response.text.done":
       return id ? [{ kind: "translation", id, text: str(event.text), stash: "", final: true }] : [];
     case "response.audio_transcript.done":
-      return id ? [{ kind: "translation", id, text: str(event.transcript), stash: "", final: true }] : [];
+      return id
+        ? [{ kind: "translation", id, text: str(event.transcript), stash: "", final: true }]
+        : [];
     case "conversation.item.input_audio_transcription.delta":
       return id ? [{ kind: "source-delta", id, delta: str(event.delta) }] : [];
     case "conversation.item.input_audio_transcription.text":
-      return id ? [{ kind: "source", id, text: str(event.text), stash: str(event.stash), final: false }] : [];
+      return id
+        ? [{ kind: "source", id, text: str(event.text), stash: str(event.stash), final: false }]
+        : [];
     case "conversation.item.input_audio_transcription.completed":
-      return id ? [{ kind: "source", id, text: str(event.transcript), stash: "", final: true }] : [];
+      return id
+        ? [{ kind: "source", id, text: str(event.transcript), stash: "", final: true }]
+        : [];
     case "response.audio.delta":
       return str(event.delta) ? [{ kind: "audio", base64: str(event.delta) }] : [];
     case "input_audio_buffer.speech_started": {
       const speaker = event.speaker_id;
-      return id && speaker != null ? [{ kind: "speaker", sourceId: id, speakerId: String(speaker) }] : [];
+      return id && speaker != null
+        ? [{ kind: "speaker", sourceId: id, speakerId: String(speaker) }]
+        : [];
     }
     case "conversation.item.created": {
       const item = (event.item ?? {}) as Raw;
@@ -160,7 +185,15 @@ export function parseServerEvent(raw: unknown): ParsedEvent[] {
     case "response.done": {
       const response = (event.response ?? {}) as Raw;
       const id = str(response.id);
-      return [{ kind: "usage", usage: readUsage(response.usage), ok: str(response.status) === "completed", ...(id ? {id}: {}) }];
+      return [
+        {
+          kind: "usage",
+          usage: readUsage(response.usage),
+          ok: str(response.status) === "completed",
+          ...(id ? { id } : {}),
+          ...(!hasBillableUsage(response.usage) ? { uncertain: true as const } : {}),
+        },
+      ];
     }
     default:
       return [];

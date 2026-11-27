@@ -454,3 +454,117 @@ it("R08: duplicate provider response IDs do not repeat the debit", async () => {
     s.done();
   }
 });
+
+it("R09: cumulative and replayed usage bills only its delta, excluding the free fixed system prompt", async () => {
+  const report = (audio: number, text: number, id: string) => {
+    const r = JSON.parse(usage(audio));
+    r.response.id = id;
+    r.response.usage.input_tokens_details.text_tokens = 50;
+    r.response.usage.output_tokens_details.text_tokens = text;
+    return JSON.stringify(r);
+  };
+  const first = report(500, 5, "cumulative-r1"),
+    last = report(1000, 10, "cumulative-r2");
+  const ali = fakeAli({
+    onAudio: (ws, n) => {
+      if (n === 1) {
+        for (const r of [first, last, last, first]) ws.send(r);
+      }
+    },
+  });
+  const bill = slowBilling({});
+  const spent: number[] = [];
+  const s = await session(ali, {
+    ...bill.billing,
+    spend: async ({ base }) => {
+      spent.push(base);
+    },
+  });
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    await wait(100);
+    s.client.send(JSON.stringify({ type: "stop" }));
+    await s.closed;
+    const row = book.rows.find((r) => r.id === LIVE_MODEL_38)!;
+    const expected = ((1000 * row.usdAudioIn + 10 * row.usdTextOut) / 1_000_000) * book.rate;
+    assert.equal(spent.length, 2);
+    assert.ok(Math.abs(spent.reduce((a, b) => a + b, 0) - expected) < 1e-9);
+    const charges = bill.events.filter((e) => e.kind === "charge");
+    assert.equal(charges.length, 2);
+    const each = ((500 * row.usdAudioIn + 5 * row.usdTextOut) / 1_000_000) * book.rate;
+    assert.equal(
+      charges.reduce((s, e) => s + (e.n ?? 0), 0),
+      2 * Math.ceil(each - 1e-9),
+    );
+  } finally {
+    s.done();
+  }
+});
+it("R09: an upstream reconnect resets only that connection's cumulative counter", async () => {
+  const ali = fakeAli({
+    onAudio: (ws, n) => {
+      if (n === 1) {
+        ws.send(usage(500));
+        setTimeout(() => ws.close(1011, "fixture reconnect"), 30);
+      }
+      if (n === 2) ws.send(usage(200));
+    },
+  });
+  const bill = slowBilling({});
+  const spent: number[] = [];
+  const s = await session(ali, {
+    ...bill.billing,
+    spend: async ({ base }) => {
+      spent.push(base);
+    },
+  });
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    for (let i = 0; i < 150 && s.msgs.filter((m) => m.type === "ready").length < 2; i++)
+      await wait(10);
+    assert.equal(s.msgs.filter((m) => m.type === "ready").length, 2);
+    s.client.send(Buffer.alloc(3200));
+    await wait(100);
+    s.client.send(JSON.stringify({ type: "stop" }));
+    await s.closed;
+    const row = book.rows.find((r) => r.id === LIVE_MODEL_38)!;
+    const want = ((700 * row.usdAudioIn + 10 * row.usdTextOut) / 1_000_000) * book.rate;
+    assert.equal(spent.length, 2);
+    assert.ok(Math.abs(spent.reduce((a, b) => a + b, 0) - want) < 1e-9);
+    assert.equal(bill.events.filter((e) => e.kind === "charge").length, 2);
+  } finally {
+    s.done();
+  }
+});
+it("R09: missing provider usage stops the session for reconciliation instead of assuming zero expense", async () => {
+  const ali = fakeAli({
+    onAudio: (ws, n) => {
+      if (n === 1)
+        ws.send(
+          JSON.stringify({
+            type: "response.done",
+            response: { id: "missing-usage", status: "completed" },
+          }),
+        );
+    },
+  });
+  const bill = slowBilling({});
+  const states: unknown[] = [];
+  const s = await session(ali, bill.billing, {
+    admit: async () => async (end: unknown) => {
+      states.push(end);
+    },
+  });
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    await s.closed;
+    assert.deepEqual(states, ["unknown"]);
+    assert.equal(bill.events.filter((e) => e.kind === "charge").length, 0);
+    assert.ok(s.msgs.some((m) => m.type === "error"));
+  } finally {
+    s.done();
+  }
+});

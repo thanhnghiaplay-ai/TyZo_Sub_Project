@@ -28,10 +28,48 @@ export function readUsage(raw: unknown): LiveUsage {
   return {
     audioIn: num(inn.audio_tokens),
     textIn: num(inn.text_tokens),
-    imageIn: num(inn.image_tokens),
+    imageIn: num(inn.video_tokens ?? inn.image_tokens),
     textOut: num(out.text_tokens),
     audioOut: num(out.audio_tokens),
   };
+}
+
+/** LiveTranslate response.done counters are cumulative for one upstream session.
+ * Keep a component-wise high-water mark so repeats/older reports cannot bill again.
+ * The fixed input system prompt is explicitly not billed by this API.
+ */
+export function cumulativeUsageDelta(previous: LiveUsage, reported: LiveUsage) {
+  const next = { ...previous };
+  const usage = { ...previous };
+  for (const key of ["audioIn", "textIn", "imageIn", "textOut", "audioOut"] as const) {
+    next[key] = Math.max(previous[key], reported[key]);
+    usage[key] = next[key] - previous[key];
+  }
+  usage.textIn = 0;
+  return { next, usage };
+}
+
+/** Missing/malformed billable counters require reconciliation, never an assumed zero bill. */
+export function hasBillableUsage(raw: unknown): boolean {
+  if (!raw || typeof raw !== "object") return false;
+  const u = raw as Record<string, unknown>;
+  if (
+    !u.input_tokens_details ||
+    typeof u.input_tokens_details !== "object" ||
+    !u.output_tokens_details ||
+    typeof u.output_tokens_details !== "object"
+  )
+    return false;
+  const inn = u.input_tokens_details as Record<string, unknown>,
+    out = u.output_tokens_details as Record<string, unknown>;
+  const count = (n: unknown) => typeof n === "number" && Number.isSafeInteger(n) && n >= 0;
+  return (
+    count(inn.audio_tokens) &&
+    (count(out.text_tokens) || count(out.audio_tokens)) &&
+    [inn.video_tokens, inn.image_tokens, out.text_tokens, out.audio_tokens].every(
+      (n) => n === undefined || count(n),
+    )
+  );
 }
 
 function usdOf(row: LivePriceRow, usage: LiveUsage): number {

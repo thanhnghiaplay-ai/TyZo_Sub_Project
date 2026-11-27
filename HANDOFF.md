@@ -1,3 +1,5 @@
+> **Bàn giao mới27/11/2026:** người dùng yêu cầu dừng sau một bước nhỏ. Đọc `BAN_GIAO_RE2_DANG_DO.md`; ứng viên5.49.3 chưa nghiệm thu, không deploy.
+
 # HANDOFF — TyZo_Sub_Project (phụ đề video)
 
 > **Kết quả phát hành5.49.2:** Vercel SUCCESS tại a864bb2; Androidapk+release SUCCESS (run45905657250, phiên bản0.11). main/work/nhánh nguồn đồng bộ; VPS chưa cập nhật, cần tyzo →2. Bằng chứng: docs/kiem-toan/v5.49.1/KET_QUA_PHAT_HANH.json.

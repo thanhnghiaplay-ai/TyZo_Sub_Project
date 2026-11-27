@@ -1,7 +1,14 @@
 import type { IncomingMessage, Server } from "node:http";
 import type { Duplex } from "node:stream";
 import WebSocket, { WebSocketServer, type RawData } from "ws";
-import { liveCost, liveSupplierCost, liveHold, type LiveBook } from "./live-cost.ts";
+import {
+  cumulativeUsageDelta,
+  liveCost,
+  liveSupplierCost,
+  liveHold,
+  type LiveBook,
+  type LiveUsage,
+} from "./live-cost.ts";
 import { LiveMeter } from "./live-meter.ts";
 import { verifyLiveTicket } from "./live-ticket.ts";
 import { targetHasVoice, liveLang } from "./langs.ts";
@@ -320,7 +327,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     if (client.readyState === WebSocket.OPEN) client.close(1000, "done");
   }
 
-  const handleUpstream = async (raw: RawData) => {
+  const handleUpstream = async (raw: RawData, counter: { latest: LiveUsage }) => {
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw.toString());
@@ -340,7 +347,21 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
         continue;
       }
       if (event.kind === "usage") {
-        const priced = liveCost(book, ticket.model, event.usage);
+        if (event.uncertain) {
+          reconciliationNeeded = true;
+          log("usage nhà cung cấp thiếu hoặc không hợp lệ; cần đối soát");
+          send(client, {
+            type: "error",
+            message:
+              "Chưa xác minh được mức sử dụng của phiên. Phần đã nhận vẫn còn; cần đối soát trước khi chạy tiếp.",
+          });
+          stop("can-doi-soat");
+          continue;
+        }
+        const delta = cumulativeUsageDelta(counter.latest, event.usage);
+        counter.latest = delta.next;
+        const usage = delta.usage;
+        const priced = liveCost(book, ticket.model, usage);
         let taken = 0;
         if (priced && priced.base > 0) {
           const amount = deps.toGiay ? deps.toGiay(priced.base) : priced.cost;
@@ -353,7 +374,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
             const observation = await deps.billing.spend?.({
               userId: ticket.uid,
               model: ticket.model,
-              base: liveSupplierCost(book, ticket.model, event.usage) ?? priced.base,
+              base: liveSupplierCost(book, ticket.model, usage) ?? priced.base,
               id: usageId,
             });
             if (observation?.duplicate) return true;
@@ -385,7 +406,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
             charging.delete(run);
           }
         }
-        meter.settle(taken, event.usage.audioIn);
+        meter.settle(taken, usage.audioIn);
         topUp();
         report();
         continue;
@@ -418,12 +439,16 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     const ws = deps.connect
       ? deps.connect(route.url, route.key)
       : new WebSocket(route.url, { headers: { Authorization: `Bearer ${route.key}` } });
+    // Each new upstream WebSocket has its own cumulative usage counter.
+    const counter = { latest: { audioIn: 0, textIn: 0, imageIn: 0, textOut: 0, audioOut: 0 } };
     upstream = ws;
     ws.on("open", () => ws.send(sessionUpdate));
     ws.on(
       "message",
       (raw) =>
-        void handleUpstream(raw).catch((error) => log(`xử lý tin Alibaba lỗi: ${String(error)}`)),
+        void handleUpstream(raw, counter).catch((error) =>
+          log(`xử lý tin Alibaba lỗi: ${String(error)}`),
+        ),
     );
     ws.on("error", (error) => log(`upstream: ${String(error)}`));
     ws.on("close", (code, reason) => {

@@ -1,66 +1,58 @@
-# Bàn giao giữa chừng TyZo ứng viên 5.49.3
+# Bàn giao theo yêu cầu dừng — 27/11/2026
 
-**PARTIAL — DỪNG THEO YÊU CẦU NGƯỜI DÙNG do gần hết giới hạn phiên. CHƯA NGHIỆM THU.** Không push, merge main, deploy, thuê GPU, gọi AI trả phí hoặc truy cập dữ liệu khách thật. Phiên bản 5.49.3 chỉ là ứng viên cục bộ.
+**CHƯA NGHIỆM THU.** Người dùng yêu cầu làm xong một bước nhỏ rồi dừng để phiên khác tiếp tục. Không khởi động lại soak hoặc mở nhiệm vụ mới sau khi xuất bàn giao.
 
-## Nguồn và nhánh
+## Kho và phạm vi
 
-- Checkout `/workspace/TyZo_Sub_Project`, nhánh `fix/v5.49.2-re2`.
-- Baseline chính xác `552eab1f9122cdc04bee11c242a2d5eadf607dd7`. Đã fetch từ GitHub và xác minh **1402/1402 SHA-256 khớp manifest** (`evidence/source-verification.json`).
-- Môi trường ban đầu ở `93bee64682593867dbd00e0312522a11918261e6`; đã giữ nhánh `backup/pre-re2-93bee64`. Không dùng checkout ban đầu thay baseline này.
-- Hồ sơ gốc giải nén ở `/workspace/tyzo-handoff`, gồm các ZIP lịch sử lồng nhau. Source ứng dụng lấy theo SHA, không nằm trong ZIP đầu vào.
-- SHA bản lưu WIP và danh sách file đổi nằm trong STATE.json của gói bàn giao. WIP không đồng nghĩa các gate đã đạt.
-- Đọc BANG_DIEU.md, huongdan.txt, AGENTS.project.md, 00_README/04_PROMPT gốc trước khi tiếp tục; yêu cầu user mới nhất đứng trên quy tắc audit-only cũ. Không reset/clean hoặc bỏ các thay đổi đang làm.
+- Repo `/workspace/TyZo_Sub_Project`, nhánh `fix/v5.49.2-re2`, PR nháp https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/pull/5.
+- Baseline `552eab1f9122cdc04bee11c242a2d5eadf607dd7`; nguồn gói gốc đã đối chiếu1402/1402 hash. Không reset/clean hoặc dùng checkout cũ93bee64.
+- Các commit đã lên GitHub trước bước cuối:8860a38,9218e4f,20f3cc8,c36ae80,a43fb41,aa834af,01b4a64,47f27ca (R07),c4ccdbf (R08). HEAD bàn giao được ghi trong STATE.json của bộ ZIP để tránh ghi SHA tự tham chiếu.
+- Không merge main, deploy, dùng DB khách thật hoặc thuê GPU. Không đổi giá/điều khoản/quy Token/package-lock, không xóa chức năng/provider theo ý riêng. Nhánh main vẫn phải kiểm lại từ remote trước khi tiếp tục.
 
-## Phần đã sửa trong mã
+## Những gì đã làm
 
-1. **RE2-001:** gate-reserve không còn giữ min(estimate, available) rồi trả ok; từ chối dự toán không hữu hạn/không dương, giữ đủ số nguyên trong transaction khóa phiếu. 100 request cạnh tranh 100/30 chỉ nhận 3 call.
-2. **RE2-002:** settleGateCall khóa phiếu → call, kiểm owner/status/lease, giới hạn debit theo phần giữ riêng; quan sát chi phí provider và debit cùng transaction; replay không trừ/ghi spend lần hai. Migration 0047 lưu actual/charged/short/provider/model/observed_at.
-3. **Ảnh hưởng liên module:** Modal quyết toán cũng giới hạn phần giữ riêng; migration 0049 giữ bằng chứng số liệu từng attempt kể cả khi part đã bị reaper xóa. Phản hồi muộn không trừ khách nhưng ghi thiếu. Hàm trừ chung chargeTokenWith/chargeTicketWith chỉ tiêu phần tự do, trừ khi caller truyền phần giữ mình sở hữu. Thay đổi hàm chung là phần mới cần full regression cuối.
-4. **RE2-003:** heartbeat qua body và settlement, finally dọn timer; deadline/cancel stream/body cap 16 MiB; lỗi body có dấu đối soát. Lease đã hết không được hồi sinh bởi heartbeat muộn. Gateway kết hợp request.signal và timeout gửi upstream.
-5. **RE2-004:** bỏ polling 300 ms; backpressure 429 + Retry-After 2. Migration 0048/work-admission dùng PostgreSQL làm chốt liên tiến trình, quota batch/Modal/live riêng và theo user/provider/model. Giới hạn 32 request chờ admission mỗi process/mỗi lane, không giữ DB connection trong lúc gọi mạng. Mặc định batch48/Modal8/live48, user2/lane, Modal3/user, provider40/lane, model24/lane; đây là cấu hình bảo vệ tải ban đầu, không phải benchmark GPU.
-6. **Bridge/Admin:** scripts/live-bridge có Sql.query/begin thật; script bridge nối admission, slot giữ đến khi debit/close xong, giới hạn cửa upgrade 300 socket. Admin Cấu hình → Trạng thái có kill switch nhận mới/limits/counters; chỉ chu đọc/lưu, settings+audit cùng transaction. Không polling Admin.
-7. **RE2-005:** chep_len_neon fail closed trên exit khác0, --exit-on-error --single-transaction, mktemp riêng/dump0600; giữ dump/log khi lỗi, không tự cutover. Đã thử PostgreSQL thật: FK sai rollback đích, nguồn nguyên vẹn; dump tốt khớp sổ/constraints/sequence; đích có dữ liệu bị từ chối.
-8. **RE2-006:** chặn close_wanted trong cấp phát; close khóa phiếu trước kiểm việc sống; drain cả token và vnd cũ. Một vòng import mới token-flow→run-ticket đã làm build fail; đã bỏ cạnh gọi ngược, đặt closePending ở run-gate. Không tắt import protection. Các thử tách token-unit/giay-room đã hoàn lại, không còn trong patch.
-9. **ASYNC-P0 bổ sung, mới nhất:** baseline Alibaba filetrans hỏi cùng status thành công hai lần trừ 8→16 Token. Migration 0050 + async-asr.ts ghi owner/ticket/hash yêu cầu/call giữ trước/task ID/snapshot giá, không lưu URL media, transcript hay key. Submit trùng dùng lại task; mất phản hồi ghi unknown, không tự submit lại. Status kiểm owner/ticket/task trước gọi nhà; 20 status song song chỉ một debit/spend. Async job được tính vào admission/reaper/close/force-audit/Admin counters, không coi hết HTTP lease là job provider đã chết. Chính sách force 6 giờ cũ giữ nguyên.
+Đọc R01_ADMISSION…R09_CUMULATIVE_LIVE trong thư mục này. R01–R06: reservation/settlement/fencing, admission chia lane và quản lý unknown của Chủ; Alibaba owned task/uncertain submission; pool PostgreSQL phục hồi disconnect; regex model tránh bậc hai; Android0.12 tách tài khoản/sync/receipt, có JVM và debugAPK; ingress lazy stream bounded trước parser, ưu tiên control/webhook.
 
-**Rào chắn triển khai async:** task Alibaba còn chạy từ bản cũ chưa có mapping tin cậy. Code mới từ chối task không có hồ sơ; không tự gán chủ. Trước deploy cần drain task cũ hoặc kế hoạch nhập mapping có chứng cứ/Chủ duyệt. Chưa động task thật. Chưa có worker nền đối soát unknown hoàn chỉnh; không gọi đây là queue durable/exactly-once cho mọi API.
+R07 (`47f27ca`): TTS nhận đủ audio rồi quyết toán nguyên tử cùng chi phí; mất phản hồi giữ unknown; không tự gửi lại paid request/Modal5xx; unknown trả409 cần đối soát, bận thật429/Retry-After2; metadata provider/model lưu trước gửi. Migration0051 thêm active index.
 
-## Bằng chứng đã chạy và độ mới
+R08 (`c4ccdbf`): journal chi phí bền, pending vẫn được tính trong báo cáo, replay hữu hạn/idempotent; live chờ ghi trước đóng, lỗi lưu quan sát dừng/unknown; tách chi phí nhà cung cấp thô khỏi làm tròn Token; migration0052 chỉ thêm journal và mở rộng bigint→numeric giữ giá trị cũ; sandbox reset xóa journal cùng aggregate trong giao dịch. Chưa chỉnh khoản lịch sử.
 
-- `baseline-stable`: npm test đầy đủ trên bản source baseline đóng băng PASS. Lần baseline-unit đầu bị sửa source trong khi chạy, không dùng chứng nhận baseline.
-- `re2-before-valid`: 8 fail/1 pass tái hiện sản phẩm. Lần re2-before đầu fixture thiếu số dư là lỗi harness, không dùng làm before sản phẩm.
-- `billing-after`, `re2-extended`, `scale-regressions`, `root-protection-after`: regression cục bộ PASS, xem JSON exit/log. `async-replay-before` ghi 8→16 và assertion fail; `async-after` PASS.
-- **`async-final-check`: 33 test PASS**, không skip, gồm async transport giả + PostgreSQL thật + finance + Admin fixture. Đây là bộ test gần bản cuối nhất.
-- **`gate-unit` PASS nhưng trước thay đổi hàm trừ chung cuối và ASYNC-P0/0050; phải chạy lại npm test trên WIP cuối.** `handoff-typecheck`/`handoff-lint` nếu có là kiểm tra cuối đóng gói; đọc exit thực tế. 23 lint warning cũ không có nghĩa scan sạch.
-- Default/Vercel và node-server build đã PASS trước nhóm async mới nhất. **Chưa build bản cuối có0050**. Build không DATABASE_URL nên migration CLI skip; không deploy.
-- Migration drill nâng fixture synthetic từ0046, idempotency, rollback DDL/bookkeeping đã thử trước0050; cần chạy lại0046→0050. Chưa có anonymous backup thật từ Chủ.
-- Gitleaks history exit1:2 finding synthetic test; không thêm allowlist để làm xanh. Semgrep full:192 finding/2 analysis error ở snapshot trung gian; scan src/scripts sau đó vẫn giữ exit1. Chưa triage hết và chưa quét async cuối. dependency-cruiser0error ở snapshot trước async; warnings còn mở. Graphify đóng gói nếu chạy xong phải có provenance, nếu chưa xong giữ BLOCKED/PARTIAL.
-- Context7/OpenAI Docs MCP initialize+tools/list+query PASS qua lệnh có quyền mạng; không có nghĩa mọi phiên tự đăng ký tool. Playwright MCP initialize+navigate app local PASS sau đặt XDG_CACHE_HOME. Không nối Postgres MCP vào DB thật.
-- Browser Admin desktop/mobile: đăng nhập user fixture, save/reload kill switch PASS, không pageerror/consoleerror trong fixture chặn font/extension ngoài. Ảnh cho thấy input bị tràn nội bộ; class đã sửa nhưng **chưa chụp lại bản cuối**. DOM overflow=false không chứng minh bố cục đúng. Không chứng nhận font/extension thật.
-- Load1/5/25/50/100/200/300 batch/live-admission-simulation/mixed: ledger không sai; ghi riêng p95 accepted/rejected và429. Một lần mixed accepted p95 khoảng183–245ms ở burst200–300, nhiều request429; KHÔNG phải300AIjob cùng chạy. Web SSR local300/300HTTP200, p95≈859ms, không phải300browser session.
-- **Soak60phút CHƯA đạt:** lần khởi động dừng sau~60giây vì fingerprint source đổi; soak-results.json ghi FAILED_OR_INTERRUPTED đúng. Không có soak đang chạy để chờ tiếp.
+R09 (commit bàn giao): usage LiveTranslate cộng dồn lấy delta theo từng WebSocket; bỏ fixed system prompt không tính phí; nhận video_tokens; thiếu/malformed usage cần đối soát. Thêm native WebSocket benchmark với PostgreSQL thật, upstream giả lập.
+
+## Kết quả và giới hạn bằng chứng
+
+- Full R07:1666 pass/0 fail/7 skip; full R08:1675/0/7; R09 full:1680/0/7. Typecheck/lint/build mặc định+Node pass. **Các full/build/scanner R09 dùng fingerprint trước lần sửa benchmark cuối**, không gọi là cổng cuối của toàn bộ HEAD bàn giao.
+- Fingerprint ứng dụng cuối: `2d036c766f5491156577c45cccc7d52f0af33b9eae780e8705698646420a31b3`. Khác snapshot full gần nhất (`b258f10…`) ở bộ benchmark native; mã sản phẩm không đổi ở bước nhỏ cuối. Có5 vòng native-stability cuối PASS và typecheck/lint bàn giao; đọc JSON thực tế.
+- HTTP built Node:413 trước body lớn;32 upload giữ chỗ thì lượt tiếp429; webhook401 và Web200 vẫn tới được; đóng socket nhả chỗ, ledger không đổi. UI Chủ/khách thường desktop/mobile sáng/tối PASS (`r09-browser-admin`); ảnh có trong hồ sơ. UI mới về chi phí pending **chưa** kiểm trực tiếp trên trình duyệt.
+- PostgreSQL riêng17.12: race tài chính/owner transfer, DB restart idle/giữa giao dịch, trigger fault, migration0046→0052, idempotence và rollback fault0053 PASS trên dữ liệu tổng hợp. Không thay cho backup khách cũ ẩn danh.
+- Android: JVM/session/API receipt, compile SDK thật và debugAPK0.12 đã PASS trước R07–R09; mã Android không đổi sau đó. Chưa máy thật/lifecycle/permission/DownloadManager; R3-006 updater vẫn OPEN/P2.
+- Semgrep R09:120 findings+2 parse errors, infra61+1 parse error; có taint timeout. Gitleaks tracked snapshot4 phát hiện redacted (1 cấu hình preview nền tảng có sẵn,3 fixture); dependency-cruiser0 errors/10 warnings. **Triage từng cảnh báo chưa hoàn tất**, không suppress để xanh. Không có provider key thật trong DB thử.
+- MCP GitHub dùng thật; Context7/OpenAI Docs initialize/list/query và Playwright MCP built navigation PASS; không đồng nhất protocol smoke với toàn bộ công cụ đã đăng ký trong phiên. Postgres MCP chưa kết nối; DB thử dùng driver trực tiếp. Không dùng tracked `.mcp.json` fallback.
+- Graphify còn ở snapshot trước Android/ingress/R07–R09 (graph timestamp03:37UTC); phải resync cuối bằng wrapper no-cluster/noLLM, chạy parser compatibility rồi ghi provenance commit/hash. Không dùng graph cũ như chứng cứ source mới.
+- `DOI_CHIEU_80_DANG_DO.json` giữ đủ80 lịch sử nhưng current review phần lớn còn generic PARTIAL; **chưa** đối chiếu cập nhật hết. Không sửa lại mục lịch sử đã đúng. RE2_DANG_DO.json cũng cần cập nhật bằng chứng cụ thể.
+
+## Soak: không có bài nào đạt60phút
+
+Không có soak/resource monitor đang chạy ở thời điểm dừng. Canonical evidence/soak-results.json là FAILED_OR_INTERRUPTED sau26giây, vòng3 fail do fixture trả finished trước usage. Các lần cũ38phút,14phút,80giây đều bị ngắt và để riêng; không cộng dồn. Sau sửa fixture, timer-lag kiểm200ms PASS. Stress chẩn đoán cho thấy số receipt có thể1 hoặc2 theo thứ tự báo cáo cộng dồn; tổng chi phí/Token mới là bất biến. Năm ladder native cuối PASS nhưng chưa phải soak.
+
+Một log lỗi stability235/256 bị ghi đè do tái dùng nhãn; trường hợp độc lập debug-stress-3 (259/260, tổng tiền980,20 đúng) còn nguyên. Phải ghi rõ hạn chế, không dựng lại log và gọi là bản gốc. Khi chạy tiếp, dùng nhãn mới và chặn ghi đè trong runner trước khi bắt đầu.
 
 ## Thứ tự tiếp tục
 
-1. Review diff WIP và `async-asr.ts`, các caller chargeTokenWith/chargeTicketWith; kiểm unknown/failed/late/forceclose, khóa phiếu→job/call, mapping legacy và giá snapshot. Không tự nới rào sở hữu task cũ.
-2. Typecheck, lint, **npm test đầy đủ**, build default rồi node-server trên cùng snapshot; không dùng log cũ chứng nhận source mới. Test mới async đã đăng ký ở phase module-mocks của npm test.
-3. Chạy lại migration/restore/rollback/fault injection kể cả0050, DB restart trên cluster riêng; không restart DB đang phục vụ test khác.
-4. Dựng lại node-server preview đúng source, kiểm/chụp Admin desktop/mobile/sáng-tối sau sửa layout, quyền thường, các negative transport. Preview đang tồn tại có thể là build cũ.
-5. Quét và triage Semgrep/Gitleaks/dependency-cruiser bản cuối; không che exit/analysis errors, không allowlist rộng. Đồng bộ Graphify đúng commit/code hash.
-6. Hoàn thiện `DOI_CHIEU_80_DANG_DO.json`: đủ80dòng, chưa tái nghiệm thu đủ. Kết quả lịch sử giữ riêng, không suy ra mọi NEEDS_OWNER cũ còn mở hoặc mọi FIXED cũ đã kiểm lại.
-7. Đóng băng source rồi load/soak60phút. Còn thiếu: retry/dead-letter/reconcile/worker, fairness, GPU budget giờ/ngày, Faster-Whisper/vLLM/chất lượng, DB pool/QPS/VRAM/RTF/TTFT/audio latency thật, E2E account switch/active chunk/polish corpus, ingress và Android.
-8. Cần staging, cấu hình VPS/Vercel thật, anonymous backup, SDK/thiết bị Android, ngân sách provider/GPU được duyệt cho phần phụ thuộc. Không load production, không tự thuê GPU/merge/deploy. Không tuyên bố phục vụ ổn định100–200khách trước đủ gate.
-9. Khi đạt gate mới xuất bộ hồ sơ kết quả cuối cho kiểm toán độc lập. Gói này là **WIP chuyển phiên**.
+1. Xác minh git status/HEAD/remote; đọc STATE.json và manifest ZIP; giữ nguyên mọi thay đổi bàn giao.
+2. Đọc00_README/04_PROMPT/03_SCALE gốc và R01…R09. Source hiện tại không phải release đã nghiệm thu.
+3. Khóa snapshot ứng dụng cuối; rerun full/typecheck/lint/auth/build mặc định rồi Node, các scanner và kiểm UI pending chi phí. Không chạy build song song với một build khác. `npm run build` có migrate: runner phải bỏ DATABASE_URL thật; chỉ fixture riêng được migrate.
+4. Start preview fixture đúng bản Node; ingress/admin E2E; chụp và nhìn ảnh sáng/tối desktop/mobile. Không tạo/giả cookie từ secret tiến trình. Có một lần auto-review từ chối đọc secret `/proc`; phương án đó đã bỏ. Chỉ đăng nhập hợp lệ qua API local, tôn trọng rate limit3/phút.
+5. Start mới `/workspace/tyzo-results/soak.py` và resource-monitor.py sau khi mọi mã ứng dụng đã khóa; liên tục3600giây, DB billing+native WebSocket+Web SSR,1..300. Nếu source đổi/fail thì archive và tính lại từ0. Latency synthetic p95 có lúc vượt300ms, chưa chứng nhận API/GPU/audio SLO.
+6. Triage scanner theo từng finding+parser/timeout; cập nhật đủ80 và6RE2, bảo toàn lịch sử. Xác nhận lại những mục NEEDS_OWNER/DEFERRED đã được sửa đúng ở baseline (MAIN-038,R3-003,R4-003,R5-005/006,AZ-006,DEEP-003…), không hỏi lại hoặc đổi chính sách chỉ vì nhãn cũ.
+7. Còn thực tế: thiết bị Android, ingress deployment, corpus chất lượng, active-job browser reload, backup ẩn danh; Alibaba legacy task phải drain hoặc có ánh xạ sở hữu đáng tin trước cutover; chưa có budget/approval staging GPU. Không gọi phần thiếu là đã xong.
+8. Resync Graphify đúng commit, cập nhật tài liệu và xuất **một bộ kết quả mới** cho kiểm toán độc lập. Giữ PR draft; không merge/deploy/thuê GPU.
 
-## Môi trường có thể tái dùng
+## Công cụ và đường dẫn
 
-- `/workspace/tyzo-tools/STATUS.md`, `skills/tyzo-audit/SKILL.md`, `activate.sh`; hướng dẫn audit-only cũ nhường yêu cầu sửa trực tiếp, nhưng bảo vệ DB thật vẫn giữ. Không dùng Postgres fallback trong .mcp.json.
-- PG17.12 `/workspace/tyzo-pg/data`, binaries `/workspace/tyzo-pg/usr/lib/postgresql/17/bin`, loopback127.0.0.1:55439. Role `tyzo_test` NOSUPERUSER/NOCREATEDB/NOCREATEROLE, DB `tyzo_test`; helper tự tạo/drop schema thu_*.
-- Runner `/workspace/tyzo-results/run.py` lọc env và đặt TYZO_TEST_PG_URL loopback. Ví dụ `python /workspace/tyzo-results/run.py next-full npm test`; build node dùng `TYZO_AUDIT_PRESET=node-server`. Cần quyền mạng của exec cho socket/PG cục bộ.
-- PG nếu dừng: `pg_ctl -D /workspace/tyzo-pg/data -l /workspace/tyzo-pg/server.log -o '-h 127.0.0.1 -p 55439 -k /workspace/tyzo-pg' start` bằng binary trên. Không initdb đè data.
-- DB browser `tyzo_browser_re2` chỉ có user giả. Credentials/cookies/PG data/runtime không đóng gói. Harness tham chiếu /workspace: đọc/chỉnh đường trước khi chạy ở máy mới.
-- Không mặc định process/tooling đã khôi phục sau khi chuyển phiên. Phiên đóng gói bị rớt kết nối một lần; kiểm trạng thái thực tế.
-
-## Rollback
-
-Chưa thay production. Giữ WIP/patch/source baseline trước revert. 0047–0050 chỉ thêm cấu trúc; không drop ledger/bảng/cột khi rollback code. Baseline có lỗi tài chính đã tái hiện, không tự deploy baseline làm rollback. Nếu về sau rollout lỗi: ngừng nhận mới, drain, backup/audit, chọn forward-fix hoặc revert kiểm chứng staging. Rollback cấu hình qua Admin có audit; không xóa lịch sử cho khớp số.
+- Activate `/workspace/tyzo-tools/activate.sh`; skill `/workspace/tyzo-tools/skills/tyzo-audit/SKILL.md` (user đã cho sửa trực tiếp, không áp audit-only để dừng nhiệm vụ). Graph chỉ wrapper `tyzo-graphify update /workspace/TyZo_Sub_Project --no-cluster`, không upload/label/LLM.
+- Runner `/workspace/tyzo-results/run.py <nhãn-mới> <command...>` sạch env, chỉ `TYZO_TEST_PG_URL=127.0.0.1:55439/tyzo_test`; khi sandbox cần mạng loopback dùng quyền network bổ sung. Evidence gồm exit/time/fingerprint.
+- Build Node: `TYZO_AUDIT_PRESET=node-server python /workspace/tyzo-results/run.py <nhãn> npm run build` sau build mặc định.
+- Preview fixture: `/workspace/tyzo-results/browser-server.py`; restart cũ có zombie false-positive: chỉ sau khi xác minh cổng đã trống mới chạy lại. Không kill dịch vụ khác.
+- Soak/fingerprint/resource monitor/native-stability/migration/fault scripts ở `/workspace/tyzo-results/`, không chứa trong mã sản phẩm. Runtime credentials dưới runtime/ không được đưa vào ZIP/Git.
+- Kotlin/JDK17/Gradle/SDK đã cài riêng trong tyzo-tools; gradle-build.py dùng proxy cấu hình sẵn, không tắt TLS. Không biến lỗi harness Robolectric thành sửa mã Android không liên quan.
