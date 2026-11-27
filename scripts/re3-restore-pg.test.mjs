@@ -68,6 +68,9 @@ F="$FAKE_DIR"
 fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
 pgq() { psql -X -q -tA -U tyzo -d "$1" -c "$2" >/dev/null; }
 run_cmd() {
+  # RE5-004-C: endpoint ghi Neon bị tắt thì mọi kết nối tới nó lỗi; endpoint chỉ đọc thì phiên read-only.
+  if [[ "$*" == *ep-rw-1* ]] && [ -f "$F/neon_disabled" ]; then echo "The endpoint has been disabled." >&2; return 1; fi
+  if [[ "$*" == *ep-ro-1* ]]; then export PGOPTIONS="-c default_transaction_read_only=on"; fi
   local cmd="$1"; shift
   case "$cmd" in
     df) echo "Filesystem 1K-blocks Used Available Use% Mounted"; echo "fake 999999999 1 999999999 1% /"; return 0 ;;
@@ -132,6 +135,24 @@ esac
 echo "docker giả: lệnh lạ $*" >&2; exit 2
 `;
 
+// Neon API giả (RE5-004-C). Key đến qua stdin (-K -), không có trên dòng lệnh.
+const fakeCurl = `#!/usr/bin/env bash
+F="$FAKE_DIR"; cfg="$(cat)"; m=GET; d=""; url=""
+while [ $# -gt 0 ]; do case "$1" in -X) m="$2"; shift 2 ;; -d) d="$2"; shift 2 ;; -H|-m|-K) shift 2 ;; -*) shift ;; *) url="$1"; shift ;; esac; done
+fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
+echo "$m $url $d" >> "$F/neon-calls.log"
+[[ "$cfg" == *"Authorization: Bearer neon-key-thu"* ]] || { echo "401" >&2; exit 22; }
+case "$m $url" in
+  "GET https://console.neon.tech/api/v2/projects?limit=100") echo '{"projects":[{"id":"p1"}]}' ;;
+  "GET https://console.neon.tech/api/v2/projects/p1/endpoints") echo '{"endpoints":[{"id":"ep-rw-1","branch_id":"br-1"}]}' ;;
+  "POST https://console.neon.tech/api/v2/projects/p1/endpoints") fault ro-fail && exit 22; echo '{"endpoint":{"id":"ep-ro-1"}}' ;;
+  "PATCH https://console.neon.tech/api/v2/projects/p1/endpoints/ep-rw-1")
+    if [[ "$d" == *'"disabled":true'* ]]; then fault disable-fail && exit 22; touch "$F/neon_disabled"; else rm -f "$F/neon_disabled"; fi; echo '{}' ;;
+  "DELETE https://console.neon.tech/api/v2/projects/p1/endpoints/ep-ro-1") echo '{}' ;;
+  *) echo "lạ" >&2; exit 22 ;;
+esac
+`;
+
 function sh(body, { fault = "", input = "" } = {}) {
   const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
   const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
@@ -152,6 +173,7 @@ ${body}`;
       PGPORT: "55439",
       FAKE_DIR: work,
       FAKE_FAULT: fault,
+      PGHOSTADDR: "127.0.0.1",
     },
     timeout: 120_000,
   });
@@ -163,6 +185,8 @@ before(async () => {
   spawnSync("mkdir", ["-p", join(work, "bin")]);
   writeFileSync(join(work, "bin", "docker"), fakeDocker);
   chmodSync(join(work, "bin", "docker"), 0o755);
+  writeFileSync(join(work, "bin", "curl"), fakeCurl);
+  chmodSync(join(work, "bin", "curl"), 0o755);
   await adminQ(`do $$ begin if not exists (select 1 from pg_roles where rolname = 'tyzo') then create role tyzo login superuser; end if; end $$`);
 });
 after(async () => {
@@ -357,4 +381,76 @@ pgTest("RE3-007: đọc hết mục lục pg_restore khi stdout lớn và có sc
   const r = sh(`chep_tu_neon "${NEON}"`, { fault: "toc-stream", input: "dong-y\n" });
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.equal(manifest("tyzo"), manifest(NEON));
+});
+
+// ---- RE5-004-C: khóa ghi Neon (tắt endpoint ghi, chép qua endpoint chỉ đọc) ----
+const NEON_EP = "postgresql://tyzo@ep-rw-1-pooler.test:55439/r3_neon";
+const resetNeon = () => { for (const f of ["neon_disabled", "neon-calls.log"]) spawnSync("rm", ["-f", join(work, f)]); };
+const neonCalls = () => (existsSync(join(work, "neon-calls.log")) ? readFileSync(join(work, "neon-calls.log"), "utf8") : "");
+const journal = () => (existsSync(join(work, "tyzo.conf.chuyen")) ? readFileSync(join(work, "tyzo.conf.chuyen"), "utf8") : "");
+
+pgTest("RE5-004-C: Neon → VPS có khóa ghi: chép qua endpoint chỉ đọc, xong thì Neon giữ khóa, nhật ký ghi lại", async () => {
+  await freshVps(); await freshNeon(true); resetNeon();
+  const r = sh(`chep_tu_neon "${NEON_EP}"`, { input: "dong-y\nc\nneon-key-thu\n" });
+  const j = journal(); // đọc trước: mỗi lần sh() (kể cả manifest) đặt lại nhật ký
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /Neon đã khóa ghi/);
+  assert.match(r.stdout, /Neon VẪN KHÓA GHI/);
+  assert.equal(manifest("tyzo"), manifest(NEON));
+  assert.ok(existsSync(join(work, "neon_disabled")), "endpoint ghi phải còn tắt sau khi chép xong");
+  const calls = neonCalls();
+  assert.match(calls, /POST .*endpoints .*read_only/);
+  assert.match(calls, /PATCH .*ep-rw-1 .*"disabled":true/);
+  assert.match(calls, /DELETE .*ep-ro-1/);
+  assert.doesNotMatch(calls, /neon-key-thu/, "key không nằm trong tham số dòng lệnh");
+  assert.match(j, / neon-khoa p1 ep-rw-1 ep-ro-1\n.* xong neon-giu-khoa p1 ep-rw-1\n$/);
+});
+
+for (const [fault, why] of [["dump-fail", /Không đọc được Neon/], ["missing-rows", /không khớp bảng kê nguồn/]]) {
+  pgTest(`RE5-004-C: khóa Neon rồi chép lỗi (${fault}) → mở lại ghi Neon, VPS giữ nguyên, nhật ký đóng`, async () => {
+    await freshVps(); await freshNeon(true); resetNeon();
+    const before = manifest("tyzo");
+    const r = sh(`chep_tu_neon "${NEON_EP}"`, { fault, input: "dong-y\nc\nneon-key-thu\n" });
+    const j = journal();
+    assert.notEqual(r.status, 0);
+    assert.match(r.stdout + r.stderr, why);
+    assert.match(r.stdout, /Neon ghi lại được như cũ/);
+    assert.ok(!existsSync(join(work, "neon_disabled")), "endpoint ghi phải được bật lại");
+    assert.equal(manifest("tyzo"), before);
+    assert.match(j, / da-mo-lai neon p1 ep-rw-1\n$/);
+  });
+}
+
+pgTest("RE5-004-C: không tắt được endpoint ghi → không chép, xóa endpoint chỉ đọc, Neon vẫn ghi được", async () => {
+  await freshVps(); await freshNeon(true); resetNeon();
+  const before = manifest("tyzo");
+  const r = sh(`chep_tu_neon "${NEON_EP}"`, { fault: "disable-fail", input: "dong-y\nc\nneon-key-thu\n" });
+  assert.notEqual(r.status, 0);
+  assert.match(r.stdout + r.stderr, /Chưa khóa được ghi trên Neon/);
+  assert.ok(!existsSync(join(work, "neon_disabled")));
+  assert.match(neonCalls(), /DELETE .*ep-ro-1/);
+  assert.equal(manifest("tyzo"), before);
+});
+
+pgTest("RE5-004-C: key Neon sai → dừng trước khi khóa hay chép", async () => {
+  await freshVps(); await freshNeon(true); resetNeon();
+  const before = manifest("tyzo");
+  const r = sh(`chep_tu_neon "${NEON_EP}"`, { input: "dong-y\nc\nkey-sai\n" });
+  assert.notEqual(r.status, 0);
+  assert.match(r.stdout + r.stderr, /Key Neon không thấy endpoint/);
+  assert.doesNotMatch(neonCalls(), /PATCH|POST/);
+  assert.equal(manifest("tyzo"), before);
+});
+
+pgTest("RE5-004-D: mục mở lại Neon đọc nhật ký, cần gõ xác nhận, bật lại endpoint ghi", async () => {
+  await freshVps(); await freshNeon(true); resetNeon();
+  writeFileSync(join(work, "neon_disabled"), "");
+  const body = `printf '2026-11-28T00:00:00Z neon-khoa p1 ep-rw-1 ep-ro-1\\n2026-11-28T00:01:00Z xong neon-giu-khoa p1 ep-rw-1\\n' > "$CONF.chuyen"; mo_lai_neon_do_dang`;
+  let r = sh(body, { input: "khong\n" });
+  assert.notEqual(r.status, 0);
+  assert.ok(existsSync(join(work, "neon_disabled")), "không gõ xác nhận thì không mở");
+  r = sh(body, { input: `mo-lai-neon\nneon-key-thu\n${NEON_EP}\n` });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.ok(!existsSync(join(work, "neon_disabled")));
+  assert.match(r.stdout, /Neon ghi lại được như cũ/);
 });

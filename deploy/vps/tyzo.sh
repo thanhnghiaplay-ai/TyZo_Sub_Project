@@ -816,6 +816,76 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
 
 bang_ke_nguon_neon() { bang_ke_xa "$NGUON_NEON"; }
 
+# ---- RE5-004-C: khóa ghi Neon trong lúc chép Neon → VPS (đã diễn tập trên branch Neon thử, docs/kiem-toan/v5.49.6/RE5-004) ----
+# ALTER DATABASE … read-only KHÔNG khóa được trên Neon; tắt endpoint ghi bằng Neon API thì khóa hẳn. Chép và đối soát qua
+# một endpoint chỉ đọc cùng branch. Key Neon chỉ ở biến NEON_API_KEY của lần chạy, đưa cho curl qua stdin.
+neon_api() { # neon_api METHOD /đường-dẫn [JSON] → in JSON trả về; lỗi HTTP thì mã khác 0
+  printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" |
+    curl -sS -f -m 30 -K - -X "$1" -H 'Content-Type: application/json' ${3:+-d "$3"} "https://console.neon.tech/api/v2$2"
+}
+neon_ep_of_url() { # mã endpoint (ep-…) từ chuỗi kết nối Neon; không phải Neon thì rỗng
+  printf '%s' "$1" | sed -E 's#^[a-z]+://[^@]*@##; s#[:/?].*##; s#\..*##; s#-pooler$##' | grep -E '^ep-[a-z0-9-]+$' || true
+}
+neon_thay_ep() { printf '%s' "$1" | sed "s#@$2#@$3#"; } # đổi endpoint trong chuỗi kết nối (giữ -pooler, vùng, CSDL)
+neon_tim() { # đặt NEON_P, NEON_BR theo NEON_EP
+  local p br
+  for p in $(neon_api GET "/projects?limit=100" | jq -r '.projects[].id'); do
+    br="$(neon_api GET "/projects/$p/endpoints" | jq -r --arg e "$NEON_EP" '.endpoints[] | select(.id == $e) | .branch_id')"
+    [ -n "$br" ] && { NEON_P="$p"; NEON_BR="$br"; return 0; }
+  done
+  return 1
+}
+neon_cho() { # neon_cho <url> <ket-noi-duoc|bi-chan>: chờ tối đa 90 s
+  local i
+  for i in $(seq 1 18); do
+    if pg_tu_xa psql "$1" -v ON_ERROR_STOP=1 -tAc "select 1" >/dev/null 2>&1; then [ "$2" = ket-noi-duoc ] && return 0
+    else [ "$2" = bi-chan ] && return 0; fi
+    sleep 5
+  done
+  return 1
+}
+neon_mo_ghi() { # bật lại endpoint ghi, xác minh, xóa endpoint chỉ đọc
+  neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":false}}' >/dev/null &&
+    neon_cho "$NEON_URL" ket-noi-duoc || { do_ "✘ Chưa bật lại được ghi trên Neon ($NEON_EP). Vào console.neon.tech → Compute → bật lại."; return 1; }
+  [ -n "${NEON_RO:-}" ] && neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1
+  ghi_chuyen da-mo-lai "neon $NEON_P $NEON_EP"
+  xanh "✔ Neon ghi lại được như cũ."
+}
+neon_khoa_ghi() { # neon_khoa_ghi <url>: đặt NEON_RO_URL (chép qua đây). Lỗi thì tự mở lại.
+  NEON_URL="$1"; NEON_EP="$(neon_ep_of_url "$1")"; NEON_RO=""
+  [ -n "$NEON_EP" ] || { do_ "✘ Chuỗi kết nối không phải Neon (thiếu ep-…)."; return 1; }
+  neon_tim || { do_ "✘ Key Neon không thấy endpoint $NEON_EP (sai key hoặc khác tài khoản)."; return 1; }
+  NEON_RO="$(neon_api POST "/projects/$NEON_P/endpoints" "{\"endpoint\":{\"branch_id\":\"$NEON_BR\",\"type\":\"read_only\"}}" | jq -r '.endpoint.id // empty')"
+  [ -n "$NEON_RO" ] || { do_ "✘ Không tạo được endpoint chỉ đọc trên Neon."; return 1; }
+  NEON_RO_URL="$(neon_thay_ep "$1" "$NEON_EP" "$NEON_RO")"
+  neon_cho "$NEON_RO_URL" ket-noi-duoc || { do_ "✘ Endpoint chỉ đọc chưa sẵn sàng."; neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1; return 1; }
+  ghi_chuyen neon-khoa "$NEON_P $NEON_EP $NEON_RO"
+  if ! neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":true}}' >/dev/null || ! neon_cho "$1" bi-chan; then
+    do_ "✘ Chưa khóa được ghi trên Neon. Mở lại như cũ, không chép."; neon_mo_ghi; return 1
+  fi
+  xanh "✔ Neon đã khóa ghi (web cũ không ghi được nữa); chép qua endpoint chỉ đọc."
+}
+mo_lai_neon_do_dang() { # mục menu: mở lại ghi Neon theo nhật ký (sau khi đã chắc chắn không cần giữ khóa)
+  local dong; dong="$(grep -E ' neon-khoa ' "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" 2>/dev/null | tail -n 1)"
+  [ -n "$dong" ] || { echo "Nhật ký không có lần khóa Neon nào."; return 0; }
+  read -r _ _ NEON_P NEON_EP NEON_RO <<<"$dong"
+  echo "Lần khóa gần nhất: $dong"
+  vang "Chỉ mở lại khi web và dữ liệu KHÔNG dùng VPS làm nguồn chính (mở cả hai sẽ ghi tách đôi)."
+  local a; read -rp "Gõ mo-lai-neon để bật lại ghi trên Neon: " a; [ "$a" = mo-lai-neon ] || { echo "Đã hủy."; return 1; }
+  NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
+  NEON_URL="$(hoi_an 'Dán chuỗi kết nối Neon cũ (chữ không hiện, để kiểm đã ghi lại được): ')"
+  neon_mo_ghi
+}
+
+mo_lai_vps_do_dang() { # RE5-004-D: mở lại CSDL và web VPS sau lần chuyển sang Vercel dở dang (có xác nhận)
+  [ "$(conf_get DB)" = "local" ] || { echo "Dữ liệu không đặt trên VPS."; return 0; }
+  [ -s "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" ] && tail -n 5 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" | sed 's/^/   /'
+  if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" = t ]; then echo "Nguồn VPS đang mở sẵn."; return 0; fi
+  vang "Trước khi mở: vào vercel.com → project → Deployments, chắc chắn bản mới KHÔNG chạy (hoặc đã xóa), và Neon chưa nhận ghi của khách."
+  local a; read -rp "Gõ mo-lai-vps nếu đã kiểm: " a; [ "$a" = mo-lai-vps ] || { echo "Đã hủy."; return 1; }
+  khoi_phuc_nguon_vps "bridge web" && xanh "✔ Nguồn VPS và web đã mở lại."
+}
+
 chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon về Postgres trên VPS (Neon chỉ bị đọc)
   local url="$1" n
   db_len || return 1
@@ -827,14 +897,28 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v�
   # Đọc Neon xong mới đụng VPS (trước đây xóa dữ liệu VPS rồi mới đọc Neon: Neon lỗi là mất cả hai).
   docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
   # RE3-007: bảng kê Neon trước khi đọc; nạp xong phải khớp, và Neon đọc lại vẫn khớp (không có ghi phát sinh).
-  vang "Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển."
+  # RE5-004-C: khóa ghi Neon (tắt endpoint ghi) rồi chép qua endpoint chỉ đọc, để không mất ghi phát sinh sau lần đối soát cuối.
+  local src="$url" khoa=0
+  if [ -n "$(neon_ep_of_url "$url")" ] && hoi_co "Khóa ghi trên Neon trong lúc chép (khuyên dùng; cần Neon API key: console.neon.tech → Account settings → API keys)?"; then
+    NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
+    neon_khoa_ghi "$url" || return 1
+    src="$NEON_RO_URL"; khoa=1
+  else
+    vang "Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển."
+  fi
   local ky; ky="$(umask 077; mktemp)"
-  bang_ke_xa "$url" > "$ky" 2>/dev/null
-  grep -q '^bang|' "$ky" || { do_ "✘ Không lập được bảng kê Neon. Dữ liệu trên VPS không bị đụng."; rm -f "$ky"; return 1; }
-  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump "$ky"; return 1; }
-  NGUON_NEON="$url"
-  nap_dump /tmp/tyzo-neon.dump "$ky" bang_ke_nguon_neon || { rm -f /tmp/tyzo-neon.dump "$ky"; return 1; }
+  bang_ke_xa "$src" > "$ky" 2>/dev/null
+  grep -q '^bang|' "$ky" || { do_ "✘ Không lập được bảng kê Neon. Dữ liệu trên VPS không bị đụng."; rm -f "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
+  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$src" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
+  NGUON_NEON="$src"
+  nap_dump /tmp/tyzo-neon.dump "$ky" bang_ke_nguon_neon || { rm -f /tmp/tyzo-neon.dump "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
   rm -f /tmp/tyzo-neon.dump "$ky"
+  if [ "$khoa" = 1 ]; then
+    neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1 || true
+    ghi_chuyen xong "neon-giu-khoa $NEON_P $NEON_EP"
+    vang "Neon VẪN KHÓA GHI để web cũ không ghi thêm. Việc tiếp: đổi DNS/web sang VPS."
+    echo "   Cần quay lại dùng Neon: tyzo → 13 (Sao lưu / Chuyển VPS) → 7 (Mở lại ghi trên Neon)."
+  fi
 }
 
 trang_thai_web_vps() {
@@ -1208,6 +1292,9 @@ menu_du_lieu() {
   echo " 4. Chép dữ liệu từ VPS lên một Neon trống (khi quay lại Vercel)"
   echo " 5. Tạo tệp có mật khẩu để chuyển toàn bộ sang VPS mới"
   echo " 6. Khôi phục tệp chuyển VPS trên máy này"
+  echo " 7. Mở lại ghi trên Neon (sau lần chép đã khóa Neon)"
+  echo " 8. Xem nhật ký chuyển nguồn"
+  echo " 9. Mở lại nguồn VPS (sau lần đưa lên Vercel bị lỗi)"
   echo " 0. Quay lại"
   read -rp "Chọn số: " c
   case "$c" in
@@ -1219,6 +1306,9 @@ menu_du_lieu() {
        local u; read -rsp "Dán chuỗi kết nối Neon TRỐNG (chữ không hiện): " u; echo; chep_len_neon "$(echo "$u" | tr -d '[:space:]')" ;;
     5) tao_ban_chuyen_vps ;;
     6) local f; read -rp "Đường dẫn tệp .tar.enc: " f; khoi_phuc_vps "$f" ;;
+    7) mo_lai_neon_do_dang ;;
+    9) mo_lai_vps_do_dang ;;
+    8) if [ -s "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" ]; then tail -n 15 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}"; chuyen_dang_do && vang "Có lần chuyển CHƯA kết thúc (dòng cuối). Gửi ảnh cho Claude trước khi làm tiếp."; else echo "Chưa có lần chuyển nào."; fi ;;
   esac
 }
 

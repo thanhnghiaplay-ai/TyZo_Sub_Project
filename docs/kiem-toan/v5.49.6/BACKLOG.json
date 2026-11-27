@@ -73,7 +73,7 @@
     "location": "deploy/vps/tyzo.sh:1578–1599",
     "hypothesis": "Xóa rồi thêm env Vercel có thể lỗi giữa chừng; cutover cần trạng thái bền vững, xác minh deployment, không mở nguồn cũ khi chưa rõ ghi đích. Kiểm cả chiều Neon→VPS.",
     "acceptance": "Fault injection từng bước, mất mạng, kill/restart, env partial, deploy unknown, destination writer; staging thật cần duyệt.",
-    "status": "PARTIAL",
+    "status": "FIXED_LOCAL",
     "findings": [
       {
         "id": "RE5-004-A",
@@ -89,21 +89,23 @@
       },
       {
         "id": "RE5-004-C",
-        "status": "DESIGN_VERIFIED_ON_NEON_BRANCH",
+        "status": "FIXED_LOCAL",
         "what": "Neon→VPS: chỉ đối soát trước/sau, KHÔNG khóa ghi Neon. Sau khi chép xong, Vercel vẫn ghi vào Neon tới lúc đổi DNS → ghi trong khoảng đó mất.",
         "proposal": "Tắt endpoint ghi bằng Neon API (đã chứng minh khóa hoàn toàn), chép/đối soát qua endpoint chỉ đọc, lỗi thì bật lại. ALTER DATABASE read-only đã thử: KHÔNG khóa được — bác bỏ.",
         "evidence": "docs/kiem-toan/v5.49.6/RE5-004/NEON-FENCE-STAGING.md",
-        "remaining": "Viết vào tyzo.sh + test (HIGH); cần Neon API key trên VPS."
+        "remaining": "Viết vào tyzo.sh + test (HIGH); cần Neon API key trên VPS.",
+        "fix": "chep_tu_neon: chuỗi Neon (ep-…) thì hỏi khóa ghi; neon_khoa_ghi tạo endpoint chỉ đọc, tắt endpoint ghi qua Neon API (xác minh bị chặn), chép + đối soát qua endpoint chỉ đọc; lỗi thì neon_mo_ghi bật lại + xác minh; xong thì giữ khóa, xóa endpoint chỉ đọc, nhật ký «neon-khoa»/«xong neon-giu-khoa». Key Neon chỉ trong biến của lần chạy, đưa curl qua stdin."
       },
       {
         "id": "RE5-004-D",
-        "status": "OPEN",
+        "status": "FIXED_LOCAL",
         "what": "Sau loi-deploy-chua-ro chưa có lệnh hướng dẫn kiểm Vercel/Neon rồi mở lại nguồn VPS hoặc đóng nhật ký; hiện phải làm tay.",
-        "proposal": "Thêm mục menu đọc nhật ký, kiểm deployment (vercel inspect) và bảng kê Neon so với VPS trước khi cho mở lại."
+        "proposal": "Thêm mục menu đọc nhật ký, kiểm deployment (vercel inspect) và bảng kê Neon so với VPS trước khi cho mở lại.",
+        "fix": "Menu tyzo → 13: 7 mở lại ghi Neon theo nhật ký (gõ mo-lai-neon), 8 xem nhật ký chuyển nguồn, 9 mở lại nguồn VPS sau lần đưa lên Vercel lỗi (gõ mo-lai-vps, khoi_phuc_nguon_vps)."
       }
     ],
-    "tests": "scripts/re5-004-vercel.test.mjs 5/5 (npx giả); re3-restore-pg.test.mjs thêm khẳng định nhật ký, 27/27 cùng re2-restore; npm test 1772/7/0",
-    "remaining": "Staging thật (Vercel/Neon/VPS) cần Chủ duyệt; RE5-004-C, RE5-004-D."
+    "tests": "re3-restore-pg.test.mjs +6 ca RE5-004 (Neon API giả qua curl, endpoint ghi tắt/endpoint chỉ đọc giả lập trong docker giả, PG 16 thật): khóa-chép-giữ khóa; dump-fail/missing-rows → mở lại; disable-fail; key sai; mở lại theo nhật ký. 33/33 cùng test restore cũ; npm test 1803/7/0.",
+    "remaining": "Chưa chạy trên Neon/VPS thật với dữ liệu thật (cơ chế đã diễn tập trên branch Neon thử)."
   },
   {
     "id": "RE5-003",
