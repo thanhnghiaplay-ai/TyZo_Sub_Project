@@ -207,3 +207,45 @@ pgTest("RE2-004: không bỏ trống suất — người mới chờ chưa tới
   assert.ok(c.id, "B mới chờ dưới 3 giây: suất trống không bị giữ");
   await releaseWork(sql, c.id!);
 });
+
+pgTest("RE4-003: batch đã đầy không giữ mất suất live cho cùng model", async () => {
+  await limits({ perProvider: 2, perModel: 2, batch: 1, live: 1, perUser: 2, liveReserve: 0 });
+  const key = (userId: string, lane: "batch" | "live") => ({ userId, provider: "groq", model: "same", lane });
+  const active = await acquireWork(sql, key("batch-running", "batch"));
+  assert.ok(active);
+  assert.equal(await acquireWork(sql, key("older-batch", "batch")), null);
+  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='older-batch'`;
+  const live = await acquireWork(sql, key("live-new", "live"));
+  assert.ok(live, "a batch waiter cannot consume the free live slot");
+  assert.equal(await acquireWork(sql, key("live-over-cap", "live")), null);
+  await releaseWork(sql, active);
+  assert.equal(await acquireWork(sql, key("late-batch", "batch")), null);
+  assert.ok(await acquireWork(sql, key("older-batch", "batch")));
+});
+
+pgTest("RE4-003: live lấy suất dành riêng, batch chờ đủ điều kiện giữ suất chung", async () => {
+  await limits({ perProvider: 2, perModel: 2, batch: 3, live: 2, perUser: 2, liveReserve: 1 });
+  const key = (userId: string, lane: "batch" | "live") => ({ userId, provider: "groq", model: "same", lane });
+  const active = await acquireWork(sql, key("batch-running", "batch"));
+  assert.ok(active);
+  assert.equal(await acquireWork(sql, key("older-batch", "batch")), null);
+  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='older-batch'`;
+  assert.ok(await acquireWork(sql, key("live-reserved", "live")));
+  await releaseWork(sql, active);
+  assert.equal(await acquireWork(sql, key("live-later", "live")), null);
+  assert.ok(await acquireWork(sql, key("older-batch", "batch")));
+});
+
+pgTest("RE4-003: nhiều người chờ batch chỉ giữ số suất lane có thể dùng", async () => {
+  await limits({ perProvider: 2, perModel: 2, batch: 1, live: 1, perUser: 2 });
+  const key = (userId: string, lane: "batch" | "live") => ({ userId, provider: "groq", model: "same", lane });
+  const active = await acquireWork(sql, key("batch-running", "batch"));
+  assert.ok(active);
+  assert.equal(await acquireWork(sql, key("older-batch-1", "batch")), null);
+  assert.equal(await acquireWork(sql, key("older-batch-2", "batch")), null);
+  await sql`update work_waiters set since = since - interval '4 seconds'`;
+  await releaseWork(sql, active);
+  assert.ok(await acquireWork(sql, key("live-new", "live")));
+  assert.equal(await acquireWork(sql, key("older-batch-2", "batch")), null);
+  assert.ok(await acquireWork(sql, key("older-batch-1", "batch")));
+});

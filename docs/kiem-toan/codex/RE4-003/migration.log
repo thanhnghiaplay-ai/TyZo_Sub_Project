@@ -1,0 +1,11 @@
+[migrate] applied 0055_admission_fair_queue.sql
+[migrate] applied 0056_admission_lane_fairness.sql
+[migrate] done — 56 migration(s) applied.
+[migrate] up to date.
+[migrate] applied 0054_admission_kernel.sql
+[migrate] applied 0055_admission_fair_queue.sql
+[migrate] done — 55 migration(s) applied.
+PASS: migration fault leaves 0055 function and its tracking intact
+[migrate] applied 0056_admission_lane_fairness.sql
+[migrate] done — 1 migration(s) applied.
+PASS: fresh, repeat, upgrade from 0055 and rollback before retry; existing waiter retained

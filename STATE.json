@@ -2,14 +2,13 @@
   "repository": "thanhnghiaplay-ai/TyZo_Sub_Project",
   "branch": "codex/tyzo-v5.49.4-audit",
   "baseline": "0edb82a8d2115e86d025d9f51f36f033bb55bbd4",
-  "checkpoint": "RE4-002",
-  "evidence": "docs/kiem-toan/codex/RE4-002",
+  "checkpoint": "RE4-003",
+  "evidence": "docs/kiem-toan/codex/RE4-003",
   "next": [
-    "RE4-003",
     "RE4-005",
     "RE2/RE3/80",
     "integration/load/soak",
     "RE4-006"
   ],
-  "parentCommit": "b8a4609268817e90a7ee79300be67b48d36f5b79"
+  "parentCommit": "2b169b1be8f87c33e890986164466604852de1c1"
 }

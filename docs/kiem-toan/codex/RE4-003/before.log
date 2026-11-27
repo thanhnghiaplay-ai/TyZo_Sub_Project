@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: RE4-003: batch đã đầy không giữ mất suất live cho cùng model
+not ok 1 - RE4-003: batch đã đầy không giữ mất suất live cho cùng model
+  ---
+  duration_ms: 350.928399
+  type: 'test'
+  location: 'src/lib/billing/work-admission-pg.test.ts:211:1'
+  failureType: 'testCodeFailure'
+  error: 'a batch waiter cannot consume the free live slot'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://src/lib/billing/work-admission-pg.test.ts:219:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: RE4-003: live lấy suất dành riêng, batch chờ đủ điều kiện giữ suất chung
+not ok 2 - RE4-003: live lấy suất dành riêng, batch chờ đủ điều kiện giữ suất chung
+  ---
+  duration_ms: 17.699454
+  type: 'test'
+  location: 'src/lib/billing/work-admission-pg.test.ts:226:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(await acquireWork(sql, key("live-reserved", "live")))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file://src/lib/billing/work-admission-pg.test.ts:233:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 769.133918

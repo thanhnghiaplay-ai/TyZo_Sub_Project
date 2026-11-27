@@ -1,0 +1,287 @@
+TAP version 13
+# Subtest: migration không có dòng mở đầu bằng BEGIN/COMMIT/ROLLBACK
+ok 1 - migration không có dòng mở đầu bằng BEGIN/COMMIT/ROLLBACK
+  ---
+  duration_ms: 6.494236
+  type: 'test'
+  ...
+# Subtest: RE2-001: 10 held versus 100 estimate rejects before upstream
+ok 2 - RE2-001: 10 held versus 100 estimate rejects before upstream
+  ---
+  duration_ms: 458.137936
+  type: 'test'
+  ...
+# Subtest: RE2-001: invalid estimates fail closed without creating calls
+ok 3 - RE2-001: invalid estimates fail closed without creating calls
+  ---
+  duration_ms: 14.626041
+  type: 'test'
+  ...
+# Subtest: RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+ok 4 - RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+  ---
+  duration_ms: 753.030134
+  type: 'test'
+  ...
+# Subtest: RE2-006: close intent rejects a new reservation while an old call drains
+ok 5 - RE2-006: close intent rejects a new reservation while an old call drains
+  ---
+  duration_ms: 47.226095
+  type: 'test'
+  ...
+# Subtest: RE2-002: cost above own reservation cannot spend another call's 40
+ok 6 - RE2-002: cost above own reservation cannot spend another call's 40
+  ---
+  duration_ms: 49.587821
+  type: 'test'
+  ...
+# Subtest: RE2-002: reaped late response cannot debit after lease lost
+ok 7 - RE2-002: reaped late response cannot debit after lease lost
+  ---
+  duration_ms: 95.781212
+  type: 'test'
+  ...
+# Subtest: RE2-003: heartbeat continues while response body is being read
+ok 8 - RE2-003: heartbeat continues while response body is being read
+  ---
+  duration_ms: 151.240346
+  type: 'test'
+  ...
+# Subtest: RE2-003: failed response body releases into reconciliation
+ok 9 - RE2-003: failed response body releases into reconciliation
+  ---
+  duration_ms: 38.808913
+  type: 'test'
+  ...
+# Subtest: RE2-002: release replay is a no-op
+ok 10 - RE2-002: release replay is a no-op
+  ---
+  duration_ms: 61.10284
+  type: 'test'
+  ...
+# Subtest: RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+ok 11 - RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+  ---
+  duration_ms: 53.118074
+  type: 'test'
+  ...
+# Subtest: RE2-002: settlement replay and rollback retain one debit and one provider observation
+ok 12 - RE2-002: settlement replay and rollback retain one debit and one provider observation
+  ---
+  duration_ms: 114.672119
+  type: 'test'
+  ...
+# Subtest: RE2-003: body deadline cancels a stuck stream and releases its budget
+ok 13 - RE2-003: body deadline cancels a stuck stream and releases its budget
+  ---
+  duration_ms: 72.34923
+  type: 'test'
+  ...
+# Subtest: RE2-003: expired heartbeat cannot revive an old call
+ok 14 - RE2-003: expired heartbeat cannot revive an old call
+  ---
+  duration_ms: 22.101079
+  type: 'test'
+  ...
+# Admission: 200 contenders, accepted 24, rejected 176, 267ms total
+# Subtest: SCALE: 200 contenders across connections obey global/model caps and release replay
+ok 15 - SCALE: 200 contenders across connections obey global/model caps and release replay
+  ---
+  duration_ms: 293.636682
+  type: 'test'
+  ...
+# Subtest: SCALE: per-user limits, independent live lane, expired leases and kill switch
+ok 16 - SCALE: per-user limits, independent live lane, expired leases and kill switch
+  ---
+  duration_ms: 49.923561
+  type: 'test'
+  ...
+# Subtest: SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+ok 17 - SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+  ---
+  duration_ms: 44.602101
+  type: 'test'
+  ...
+# Subtest: RE2-002: Modal late result retains actual cost evidence after reaping
+ok 18 - RE2-002: Modal late result retains actual cost evidence after reaping
+  ---
+  duration_ms: 43.285921
+  type: 'test'
+  ...
+# Subtest: RE2-002 root: unreserved charging paths cannot consume another call's reservation
+ok 19 - RE2-002 root: unreserved charging paths cannot consume another call's reservation
+  ---
+  duration_ms: 42.162295
+  type: 'test'
+  ...
+# Subtest: SCALE: expired live work retains admission until its late completion releases it
+ok 20 - SCALE: expired live work retains admission until its late completion releases it
+  ---
+  duration_ms: 26.170251
+  type: 'test'
+  ...
+# Subtest: lost upstream reply keeps capacity and blocks a blind new call until owner evidence
+ok 21 - lost upstream reply keeps capacity and blocks a blind new call until owner evidence
+  ---
+  duration_ms: 557.170069
+  type: 'test'
+  ...
+# Subtest: definite 429 releases capacity; ambiguous 500 holds it without charging
+ok 22 - definite 429 releases capacity; ambiguous 500 holds it without charging
+  ---
+  duration_ms: 171.164034
+  type: 'test'
+  ...
+# Subtest: TTS waits for the audio body and observes/debits exactly once
+ok 23 - TTS waits for the audio body and observes/debits exactly once
+  ---
+  duration_ms: 79.727946
+  type: 'test'
+  ...
+# Subtest: TTS body timeout refunds its unused hold and retains uncertain capacity
+ok 24 - TTS body timeout refunds its unused hold and retains uncertain capacity
+  ---
+  duration_ms: 40.984144
+  type: 'test'
+  ...
+# Subtest: TTS provider-spend failure rolls back the debit and retains a traceable receipt
+ok 25 - TTS provider-spend failure rolls back the debit and retains a traceable receipt
+  ---
+  duration_ms: 42.169065
+  type: 'test'
+  ...
+# Subtest: a paid room request is not replayed after its successful debit but lost client body
+ok 26 - a paid room request is not replayed after its successful debit but lost client body
+  ---
+  duration_ms: 27.72962
+  type: 'test'
+  ...
+# Subtest: paid room 5xx is not automatically submitted as another paid request
+ok 27 - paid room 5xx is not automatically submitted as another paid request
+  ---
+  duration_ms: 9.368091
+  type: 'test'
+  ...
+# Subtest: Modal transport/5xx uncertainty is not blindly retried and occupies its admission
+ok 28 - Modal transport/5xx uncertainty is not blindly retried and occupies its admission
+  ---
+  duration_ms: 42.984802
+  type: 'test'
+  ...
+# Subtest: validation errors before dispatch do not leave uncertain capacity
+ok 29 - validation errors before dispatch do not leave uncertain capacity
+  ---
+  duration_ms: 10.004048
+  type: 'test'
+  ...
+# Subtest: completed history is excluded by the active-admission index
+ok 30 - completed history is excluded by the active-admission index
+  ---
+  duration_ms: 952.381274
+  type: 'test'
+  ...
+# Subtest: supplier USD uses raw model usage while customer Token rounding stays unchanged
+ok 31 - supplier USD uses raw model usage while customer Token rounding stays unchanged
+  ---
+  duration_ms: 110.334587
+  type: 'test'
+  ...
+# Subtest: RE3-005: cap mỗi nhà đếm trên mọi lane — batch + live đồng thời không vượt
+ok 32 - RE3-005: cap mỗi nhà đếm trên mọi lane — batch + live đồng thời không vượt
+  ---
+  duration_ms: 504.901308
+  type: 'test'
+  ...
+# Subtest: RE3-005: cap mỗi model đếm trên mọi lane
+ok 33 - RE3-005: cap mỗi model đếm trên mọi lane
+  ---
+  duration_ms: 37.443673
+  type: 'test'
+  ...
+# Subtest: RE3-005: suất dành cho live — batch không chiếm được phần dành riêng
+ok 34 - RE3-005: suất dành cho live — batch không chiếm được phần dành riêng
+  ---
+  duration_ms: 88.365076
+  type: 'test'
+  ...
+# Subtest: RE3-005: job async đang gửi (suất cùng mã lệnh) không bị đếm hai lần; sau khi nhả suất thì job vẫn chiếm chỗ
+ok 35 - RE3-005: job async đang gửi (suất cùng mã lệnh) không bị đếm hai lần; sau khi nhả suất thì job vẫn chiếm chỗ
+  ---
+  duration_ms: 25.787584
+  type: 'test'
+  ...
+# Subtest: RE3-006: unknown KHÔNG tự giải phóng theo thời gian; chỉ khi có bằng chứng định đoạt, có nhật ký
+ok 36 - RE3-006: unknown KHÔNG tự giải phóng theo thời gian; chỉ khi có bằng chứng định đoạt, có nhật ký
+  ---
+  duration_ms: 62.867983
+  type: 'test'
+  ...
+# Subtest: RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứng được mở dần theo lô, cửa nhận việc hồi phục
+ok 37 - RE3-006: sự cố diện rộng — 30 suất unknown có bằng chứng được mở dần theo lô, cửa nhận việc hồi phục
+  ---
+  duration_ms: 162.567691
+  type: 'test'
+  ...
+# Subtest: RE2-004: hàng chờ công bằng — suất trống trao cho người xếp trước, người đến sau thấy vị trí
+ok 38 - RE2-004: hàng chờ công bằng — suất trống trao cho người xếp trước, người đến sau thấy vị trí
+  ---
+  duration_ms: 28.394115
+  type: 'test'
+  ...
+# Subtest: RE2-004: người xếp trước đã bỏ đi (quá 6 giây không thử lại) không giữ suất trống
+ok 39 - RE2-004: người xếp trước đã bỏ đi (quá 6 giây không thử lại) không giữ suất trống
+  ---
+  duration_ms: 12.55391
+  type: 'test'
+  ...
+# Subtest: RE2-004: khách đã dùng đủ suất riêng không xếp hàng chặn người khác; hàng chờ không vượt cap khi chạy đua
+ok 40 - RE2-004: khách đã dùng đủ suất riêng không xếp hàng chặn người khác; hàng chờ không vượt cap khi chạy đua
+  ---
+  duration_ms: 54.219866
+  type: 'test'
+  ...
+# Subtest: RE2-004: không bỏ trống suất — người mới chờ chưa tới 3 giây không chặn người đến lấy suất trống
+ok 41 - RE2-004: không bỏ trống suất — người mới chờ chưa tới 3 giây không chặn người đến lấy suất trống
+  ---
+  duration_ms: 14.921802
+  type: 'test'
+  ...
+# Subtest: RE4-003: batch đã đầy không giữ mất suất live cho cùng model
+ok 42 - RE4-003: batch đã đầy không giữ mất suất live cho cùng model
+  ---
+  duration_ms: 15.708662
+  type: 'test'
+  ...
+# Subtest: RE4-003: live lấy suất dành riêng, batch chờ đủ điều kiện giữ suất chung
+ok 43 - RE4-003: live lấy suất dành riêng, batch chờ đủ điều kiện giữ suất chung
+  ---
+  duration_ms: 15.892427
+  type: 'test'
+  ...
+# Subtest: RE4-003: nhiều người chờ batch chỉ giữ số suất lane có thể dùng
+ok 44 - RE4-003: nhiều người chờ batch chỉ giữ số suất lane có thể dùng
+  ---
+  duration_ms: 25.152726
+  type: 'test'
+  ...
+# Subtest: RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn
+ok 45 - RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, không chồng, mất lease theo hạn
+  ---
+  duration_ms: 1114.400495
+  type: 'test'
+  ...
+# Subtest: RE3-003: lease đã bị quét thành unknown → nhịp 0 dòng (fenced); hoàn tất muộn ghi done một lần
+ok 46 - RE3-003: lease đã bị quét thành unknown → nhịp 0 dòng (fenced); hoàn tất muộn ghi done một lần
+  ---
+  duration_ms: 34.397857
+  type: 'test'
+  ...
+1..46
+# tests 46
+# suites 0
+# pass 46
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9776.222679

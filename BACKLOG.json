@@ -42,13 +42,13 @@
       65,
       100
     ],
-    "status": "BLOCKED",
+    "status": "PASS",
     "cause": "ahead đếm cùng provider/model nhưng không lọc lane; waiter batch có thể giữ suất live không dùng được.",
     "fix": "Phân biệt tài nguyên chung và suất dành riêng; chỉ waiter đủ điều kiện tranh cùng tài nguyên mới chặn; migration mới, không sửa 0055 đã áp dụng.",
     "acceptance": "Postgres đa kết nối: batch đầy, live còn suất, waiter cũ >3s; live được cấp nếu đủ cap chung; không vượt cap và không bỏ đói batch.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-003/REPORT.md"
   },
   {
     "id": "RE4-004",
