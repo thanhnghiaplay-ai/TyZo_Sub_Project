@@ -1,0 +1,18 @@
+RE6-004 · Modal giả trên loopback · Python 3.13.18
+test_bad_config_rejected_and_token_not_in_rows (__main__.T.test_bad_config_rejected_and_token_not_in_rows) ... ok
+test_full_run_stays_under_budget (__main__.T.test_full_run_stays_under_budget) ... ok
+test_invalid_stats_are_unknown (__main__.T.test_invalid_stats_are_unknown) ... ok
+test_known_cost_counts (__main__.T.test_known_cost_counts) ... ok
+test_parallel_cannot_exceed_budget (__main__.T.test_parallel_cannot_exceed_budget) ... ok
+test_redirect_cap_and_deadline (__main__.T.test_redirect_cap_and_deadline) ... ok
+test_redirect_same_host_followed_offhost_refused (__main__.T.test_redirect_same_host_followed_offhost_refused) ... ok
+test_timeout_charges_reserve_as_unknown (__main__.T.test_timeout_charges_reserve_as_unknown) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.231s
+
+OK
+ok 1 - RE6-004: do-modal giữ ngân sách, chi phí không rõ, hạn chót và chuyển hướng
+# tests 1
+# pass 1
+# fail 0

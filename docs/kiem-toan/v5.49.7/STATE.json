@@ -1,14 +1,14 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "c0bcf6fc3b7c1a3766679b0707c580b8ec4a8abe",
+  "previous_checkpoint_sha": "30ed3ba2913d7a3ff06fb8914a5d18ffad8077a4",
   "effort": "Medium",
   "status": "IN_PROGRESS",
-  "completed_item": "RE6-003",
+  "completed_item": "RE6-004",
   "item_status": "PASS_LOCAL",
   "tests": {
-    "vercel_fake": "24/24",
-    "evidence": "RE6-003/REPORT.md"
+    "modal_fake": "8/8",
+    "evidence": "RE6-004/REPORT.md"
   },
-  "next": "RE6-004"
+  "next": "RE6-005"
 }

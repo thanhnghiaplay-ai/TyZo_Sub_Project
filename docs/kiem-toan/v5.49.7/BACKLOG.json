@@ -39,7 +39,9 @@
     "location": "deploy/vps/do-modal/do-modal.py",
     "hypothesis": "Kiểm trần trước nhưng cộng sau; timeout không ghi chi phí",
     "acceptance": "Giữ ngân sách đồng thời, unknown cost, deadline/redirect cap, kiểm finite/nonnegative, mock 4 luồng và timeout; không quảng cáo trần tuyệt đối nếu provider không bảo đảm.",
-    "status": "OPEN_VERIFY"
+    "status": "PASS_LOCAL",
+    "evidence": "RE6-004/REPORT.md",
+    "remaining": "Đo Modal thật cần Chủ duyệt chi GPU."
   },
   {
     "id": "RE6-005",

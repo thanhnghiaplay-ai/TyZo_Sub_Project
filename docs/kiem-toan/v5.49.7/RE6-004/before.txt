@@ -1,0 +1,8 @@
+Trước sửa (deploy/vps/do-modal/do-modal.py tại 30ed3ba):
+- call(): kiểm `spent >= BUDGET_USD` dưới khóa rồi nhả khóa, gửi lệnh; chỉ cộng `spent` sau khi có stats.
+  4 luồng song song đều thấy spent cũ → cả 4 lệnh được gửi dù trần chỉ đủ 1 (kiểm trước, cộng sau).
+- Lỗi mạng / timeout / HTTP lỗi / thiếu stats → không cộng gì (chi phí bị coi là 0 dù GPU có thể đã chạy).
+- `urlopen(timeout=1800)` là timeout từng lần đọc socket, không phải hạn chót tổng; vòng 303 không giới hạn số lần,
+  không kiểm máy đích của Location.
+- stats không kiểm hữu hạn/không âm: giay_xu_ly âm hoặc NaN làm giảm/hỏng `spent`.
+- Nhãn «Dừng ngay khi chi ước tính chạm trần» ngụ ý trần tuyệt đối; tiền máy chờ Modal sau lệnh không được tính.
