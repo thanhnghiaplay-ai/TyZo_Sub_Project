@@ -15,7 +15,9 @@
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
     "checkpointEvidence": "docs/kiem-toan/codex/RE4-001/REPORT.md",
-    "providerFollowup": "docs/kiem-toan/codex/integration-recovery/REPORT.md"
+    "providerFollowup": "docs/kiem-toan/codex/integration-recovery/REPORT.md",
+    "claudeEvidence": "docs/kiem-toan/claude/RE4-001/REPORT.md",
+    "claudeNote": "c5e9db0: giữ theo cận 2×byte+512 (≤ cửa sổ đã biết); tokenizer thật 36/36 ca dưới cận; còn so usage thật với nhà."
   },
   {
     "id": "RE4-002",
@@ -66,7 +68,8 @@
     "acceptance": "Giả lập stop fail, writer ngoài compose, ghi sau snapshot, restore fail, mất mạng, rollback fail; không cutover khi bất kỳ gate lỗi.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "docs/kiem-toan/codex/RE4-004/REPORT.md"
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-004/REPORT.md",
+    "claudeNote": "Chưa làm: cần staging Vercel/Neon/VPS."
   },
   {
     "id": "RE4-005",
@@ -94,21 +97,25 @@
       1,
       35
     ],
-    "status": "BLOCKED",
+    "status": "PASS",
     "cause": "Graph tạo trước mã cuối; cần phân loại file không biểu diễn.",
     "fix": "Tạo graph sau khi chốt code, ghi SHA code snapshot và hash graph; commit tài liệu riêng không yêu cầu graph tự tham chiếu SHA của chính nó.",
     "acceptance": "Kiểm tra provenance, parser, danh sách file bỏ qua và giải thích; không coi graph là bằng chứng logic đã kiểm toán.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản.",
+    "claudeEvidence": "docs/kiem-toan/claude/RE4-006/REPORT.md",
+    "claudeNote": "Graph từ c899afd, provenance SHA nguồn/graph, parser và tệp bỏ qua đã ghi."
   },
   {
     "id": "INTEGRATION-SOAK",
     "priority": "GATE",
-    "status": "PARTIAL",
+    "status": "PASS_LOCAL",
     "title": "Soak liên tục 60 phút, API/Web/AI và streaming",
     "checkpointEvidence": "docs/kiem-toan/codex/claude-handoff/soak-progress.json",
-    "remaining": "Lượt 2 đang chạy khi bàn giao. Kiểm artifact cuối và thời lượng liên tục; nếu mất runtime thì chạy lại."
+    "remaining": "Lượt 2 đang chạy khi bàn giao. Kiểm artifact cuối và thời lượng liên tục; nếu mất runtime thì chạy lại.",
+    "claudeEvidence": "docs/kiem-toan/claude/soak/REPORT.md",
+    "claudeNote": "Một mạch 3.614 s PASS; admission đói trong cửa sổ 3 s dưới tải hỗn hợp, 10 s khi rảnh 0 đói; chưa đo âm thanh→chữ với nhà thật."
   },
   {
     "id": "CODEX-PGLITE-BUILD",
@@ -124,5 +131,22 @@
     "title": "Đọc đủ mục lục restore để nhận biết schema public",
     "path": "deploy/vps/tyzo.sh",
     "checkpointEvidence": "docs/kiem-toan/codex/claude-handoff/REPORT.md"
+  },
+  {
+    "id": "ADMISSION-MIXED-3S",
+    "priority": "P2",
+    "status": "PARTIAL",
+    "title": "Đói trong cửa sổ 3 s khi tải hỗn hợp",
+    "path": "scripts/admission-bench.ts",
+    "checkpointEvidence": "docs/kiem-toan/claude/soak/REPORT.md",
+    "note": "Đo lại trên staging; cửa sổ 10 s rảnh 0 đói."
+  },
+  {
+    "id": "MAIN-040",
+    "priority": "P2",
+    "status": "PARTIAL",
+    "title": "Ghi chi phí GPU Modal chưa có test hành vi",
+    "path": "src/lib/tyzo-modal-call.ts",
+    "checkpointEvidence": "docs/kiem-toan/claude/re-accept/DOI_CHIEU_80_b829fd9.json"
   }
 ]

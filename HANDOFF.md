@@ -1,3 +1,5 @@
+> **Claude Code · checkpoint tiếp quản 1 (27/11/2026).** Nhánh `ccr-76aead9f-jp8d0r` từ `b829fd9`; mã chốt `c899afd`. npm test đầy đủ UID thường 1.762 đạt/7 bỏ qua/0 lỗi; tsc, lint, build Vercel+Node, Chromium đạt. Soak một mạch 3.614 s PASS. RE4-001 cận byte (còn usage thật), RE4-006 PASS. 80 mục: 69 PASS, 3 PASS_LOCAL, 5 PARTIAL, 1 BLOCKED, 2 BY_DESIGN. Đọc docs/kiem-toan/claude/REPORT.md và NEXT_PROMPT.md. Trạng thái tổng PARTIAL; chưa merge/deploy.
+
 > **Bàn giao Claude Code · TyZo 5.49.5.** Lấy nhánh `codex/tyzo-v5.49.4-audit`. Mục cuối CODEX-RESTORE-TOC đạt 22/22 ca restore/cutover trên PostgreSQL cô lập. Đọc NEXT_PROMPT.md và docs/kiem-toan/codex/claude-handoff/REPORT.md trước. Trạng thái tổng PARTIAL.
 
 > **Codex — checkpoint tiếp quản v5.49.4.** Nhánh `codex/tyzo-v5.49.4-audit` xuất phát từ `0edb82a8`; manifest khớp 2.590 tệp. Xem STATE.json, BACKLOG.json và NEXT_PROMPT.md trước khi tiếp tục. Bằng chứng tại docs/kiem-toan/codex/. Các mục dưới đây là lịch sử.

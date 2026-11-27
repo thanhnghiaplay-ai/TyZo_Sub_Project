@@ -1,0 +1,848 @@
+{
+ "snapshot": "b829fd9c9a2f5ca6b19d90832cbf181650802a7c",
+ "tool": "semgrep 1.185.0",
+ "rulesCommit": "a5ad1714f00c9f7fde980cab0ea1d6dc6d414fd2",
+ "targets": 537,
+ "exit": 1,
+ "findings": 92,
+ "parseErrors": [
+  "Syntax error at line src/components/landing/landing-page.tsx:145:\n `&display=swap` was unexpected"
+ ],
+ "verdicts": {
+  "FALSE_POSITIVE": 78,
+  "ACCEPTED": 13,
+  "ACCEPTED_CODE_SMELL": 1
+ },
+ "open": 0,
+ "note": "Không còn phát hiện chưa phân loại. Mã thoát 1 là thiết kế (--error, NEW-002). ACCEPTED_CODE_SMELL: run-desk.ts:140 ternary thừa, vô hại.",
+ "rows": [
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 59,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 60,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 61,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 73,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 98,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 105,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 106,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 107,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 108,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 127,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 153,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 165,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 199,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 211,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 279,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 281,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 290,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "scripts/brand-check.test.mjs",
+   "line": 294,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "unknown-value-with-script-tag",
+   "path": "scripts/grok-pwa-plugin.test.mjs",
+   "line": 509,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Thuộc phần nền tảng grok-pwa (chèn thuộc tính đã escape) và test của nó.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 32,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 32,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 32,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 32,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 32,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 42,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 42,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 42,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 42,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 42,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 158,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 158,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 196,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 233,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 234,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 243,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 247,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "unknown-value-with-script-tag",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 248,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Thuộc phần nền tảng grok-pwa (chèn thuộc tính đã escape) và test của nó.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 356,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 360,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 373,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 379,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 409,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 411,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 415,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 470,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/grok-pwa-shared.mjs",
+   "line": 477,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-insecure-websocket",
+   "path": "scripts/live-try.ts",
+   "line": 3,
+   "severity": "ERROR",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Chỉ là ví dụ ws://địa-chỉ trong chú thích hướng dẫn chạy thử của scripts/live-try.ts; bản thật bắt wss (DEEP-009).",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "react-insecure-request",
+   "path": "scripts/preview.mjs",
+   "line": 287,
+   "severity": "ERROR",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Script cục bộ (preview.mjs, re2-web-bench.mjs) gọi http://127.0.0.1; không chạy phía khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "react-insecure-request",
+   "path": "scripts/re2-web-bench.mjs",
+   "line": 10,
+   "severity": "ERROR",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Script cục bộ (preview.mjs, re2-web-bench.mjs) gọi http://127.0.0.1; không chạy phía khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 34,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 35,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 36,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 37,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 94,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 94,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 97,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 97,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "scripts/studio-layout-matrix.mjs",
+   "line": 98,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-replaceall",
+   "path": "scripts/test-list.test.mjs",
+   "line": 11,
+   "severity": "WARNING",
+   "verdict": "ACCEPTED",
+   "reason": "Tương thích trình duyệt rất cũ; app nhắm trình duyệt hiện đại (ES2021+), Node 22. Không phải lỗi bảo mật.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/components/affiliate-board.tsx",
+   "line": 90,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/affiliate-payout.ts",
+   "line": 35,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/affiliate-payout.ts",
+   "line": 35,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/affiliate-payout.ts",
+   "line": 35,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/affiliate-payout.ts",
+   "line": 38,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/affiliate-payout.ts",
+   "line": 46,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/auth/mailer.ts",
+   "line": 154,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/auth/popup.server.ts",
+   "line": 131,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/async-asr.ts",
+   "line": 64,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/async-asr.ts",
+   "line": 77,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/tyzo-modal-charge.ts",
+   "line": 177,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 176; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/tyzo-modal-charge.ts",
+   "line": 188,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 187; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/work-admission.ts",
+   "line": 114,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 100; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/work-admission.ts",
+   "line": 276,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 253; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/billing/work-admission.ts",
+   "line": 276,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 253; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/live/live-price.ts",
+   "line": 36,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/mail-letter.ts",
+   "line": 186,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/mail-letter.ts",
+   "line": 188,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/mail-letter.ts",
+   "line": 193,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/mail-letter.ts",
+   "line": 194,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "html-in-template-string",
+   "path": "src/lib/mail-letter.ts",
+   "line": 195,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Biến chèn đều qua escapeHtml hoặc là hằng/mã màu đã kiểm HEX (mail-letter), giá trị nền tảng đã escape (grok-pwa-shared), hoặc script kiểm thử/bố cục (studio-layout-matrix) không phục vụ khách.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/polish/polish-models.ts",
+   "line": 65,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "useless-ternary",
+   "path": "src/lib/run-desk.ts",
+   "line": 140,
+   "severity": "ERROR",
+   "verdict": "ACCEPTED_CODE_SMELL",
+   "reason": "run-desk.ts:140 `maintenance ? note : note` thừa nhưng vô hại; không đổi hành vi. Đề xuất dọn khi có đợt sửa run-desk.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/alibaba-price.ts",
+   "line": 40,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/cast-voice.ts",
+   "line": 18,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/cast-voice.ts",
+   "line": 24,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/glossary.ts",
+   "line": 330,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/sub/groq.ts",
+   "line": 434,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 412; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "no-stringify-keys",
+   "path": "src/lib/sub/groq.ts",
+   "line": 615,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Luật bắt nhầm truy cập chỉ số/khóa (vd. rows[0], warnings[0]); không có chỗ nào dùng JSON.stringify làm khóa băm/so sánh. Chỗ stringify thật (cấu hình jsonb, ghi chú room_audit) không phụ thuộc thứ tự khóa.",
+   "match": "dời dòng từ 593; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/groq.ts",
+   "line": 697,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "dời dòng từ 675; đã đọc lại dòng hiện tại, cùng mẫu"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/narration.ts",
+   "line": 39,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-non-literal-regexp",
+   "path": "src/lib/sub/r2-key.ts",
+   "line": 41,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "Đầu vào đã escape (escapeReg/esc/replace ký tự đặc biệt), là hằng trong mã (danh sách từ, RegExp có sẵn), hoặc đã lọc [A-Za-z0-9_-] (r2-key). R04 đã kiểm độ phức tạp regex.",
+   "match": "khớp vị trí lịch sử"
+  },
+  {
+   "rule": "detect-redos",
+   "path": "src/lib/sub/text.ts",
+   "line": 493,
+   "severity": "WARNING",
+   "verdict": "FALSE_POSITIVE",
+   "reason": "KEPT_INTERJECTION: các lượng từ liền nhau trên ký tự khác nhau (h+a+), không mơ hồ; đầu vào là từng từ đã tách.",
+   "match": "khớp vị trí lịch sử"
+  }
+ ]
+}

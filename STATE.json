@@ -1,48 +1,43 @@
 {
   "repository": "thanhnghiaplay-ai/TyZo_Sub_Project",
-  "branch": "codex/tyzo-v5.49.4-audit",
+  "branch": "ccr-76aead9f-jp8d0r",
   "baseline": "0edb82a8d2115e86d025d9f51f36f033bb55bbd4",
-  "checkpoint": "claude-handoff",
-  "evidence": "docs/kiem-toan/codex/claude-handoff",
+  "checkpoint": "claude-takeover-1",
+  "evidence": "docs/kiem-toan/claude",
   "next": [
-    "RE2/RE3/80",
-    "integration/load/soak",
-    "RE4-006"
+    "RE4-001 usage thật",
+    "RE4-004 staging",
+    "admission 3s dưới tải hỗn hợp trên staging",
+    "Android máy thật",
+    "MAIN-040 test hành vi"
   ],
-  "parentCommit": "aa73aca5f02944627392e0b3d7673dc83a2344e5",
+  "parentCommit": "b829fd9c9a2f5ca6b19d90832cbf181650802a7c",
   "previousSoak": {
-    "snapshot": "aaba2aab1b2d4faa38b5249bb967f658269fc1ab",
-    "startedUtc": "2026-11-27T15:00:02Z",
-    "minContinuousSeconds": 3600,
-    "status": "ABORTED",
-    "runtimeArtifacts": "/workspace/tyzo-audit-mixed-run",
-    "evidence": "docs/kiem-toan/codex/integration-recovery/initial-soak-exit.txt"
+    "snapshot": "aa73aca5f02944627392e0b3d7673dc83a2344e5",
+    "status": "ARTIFACTS_LOST",
+    "note": "/workspace/tyzo-audit-mixed-final không có trên máy Claude; không công nhận, không cộng thời gian"
   },
   "overall": "PARTIAL",
   "currentSmallItem": {
-    "id": "CODEX-RESTORE-TOC",
-    "status": "PASS",
-    "tests": 22,
-    "report": "docs/kiem-toan/codex/claude-handoff/REPORT.md"
+    "id": "RE4-001",
+    "status": "PARTIAL",
+    "note": "Mã PASS cục bộ (cận byte); thiếu so usage thật",
+    "report": "docs/kiem-toan/claude/RE4-001/REPORT.md"
   },
   "activeSoak": {
-    "start": "2026-11-27T15:07:33Z",
-    "seconds": 3600,
-    "head": "aa73aca5f02944627392e0b3d7673dc83a2344e5",
-    "completion": "RUNNING_AT_CAPTURE",
-    "lastRecordedIteration": {
-      "iter": 14,
-      "t": 350,
-      "ms": 26792,
-      "live_exit": 0,
-      "adm_exit": 0,
-      "pg_rss_kb": 153420
-    },
-    "totalCompletedIterations": 14,
-    "database": "PostgreSQL 17.12 loopback",
+    "start": "2026-11-27T15:29:00Z",
+    "end": "2026-11-27T16:30:10Z",
+    "seconds": 3614,
+    "head": "b829fd9c9a2f5ca6b19d90832cbf181650802a7c",
+    "completion": "PASS",
+    "iterations": 199,
+    "aiExit": 0,
+    "webExit": 0,
+    "database": "PostgreSQL 16.15 loopback",
     "upstream": "synthetic",
-    "web": "k6 300 virtual users, localhost",
-    "workspaceArtifacts": "/workspace/tyzo-audit-mixed-final"
+    "web": "k6 300 VU, 313340 yêu cầu, 0% lỗi, p95 13,4 ms",
+    "evidence": "docs/kiem-toan/claude/soak/REPORT.md",
+    "caveat": "~15:41Z một test gate-reserve chạy chung tyzo_test khoảng 15 s; mọi vòng vẫn exit 0"
   },
   "staging": {
     "status": "BLOCKED",
@@ -53,5 +48,23 @@
       "approved spending or usage limit",
       "Android device"
     ]
+  },
+  "sourceBranch": "codex/tyzo-v5.49.4-audit",
+  "sourceHead": "b829fd9c9a2f5ca6b19d90832cbf181650802a7c",
+  "codeHead": "c899afd3838b84f1cb896be8b6f7c6236e08a9bd",
+  "gates": {
+    "head": "c899afd",
+    "npmTest": {
+      "pass": 1762,
+      "skip": 7,
+      "fail": 0,
+      "uid": "tyzo",
+      "pg": "16.15 loopback"
+    },
+    "typecheck": "PASS",
+    "lint": "0 lỗi / 23 cảnh báo",
+    "buildVercel": "PASS",
+    "buildNode": "PASS",
+    "chromium": "PASS desktop+mobile"
   }
 }

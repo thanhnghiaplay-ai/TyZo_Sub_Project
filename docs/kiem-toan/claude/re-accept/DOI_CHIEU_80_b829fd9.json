@@ -1,0 +1,814 @@
+{
+ "head": "b829fd9",
+ "testLog": "docs/kiem-toan/claude/npm-test-b829fd9.log",
+ "summary": {
+  "PASS": 69,
+  "PARTIAL": 5,
+  "PASS_LOCAL": 3,
+  "BLOCKED": 1,
+  "BY_DESIGN": 2
+ },
+ "rule": "Không hạ kết quả lịch sử; chỉ nâng khi có bằng chứng mới trong phiên này. Mục đụng run-gate.ts (R3-001/R3-002/R3-009) chạy lại sau c5e9db0, xem REPORT.md.",
+ "items": [
+  {
+   "id": "MAIN-023",
+   "title": "Giữ ngân sách riêng từng đoạn",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "MAIN-024",
+   "title": "Quyết toán và lưu kết quả",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "MAIN-036",
+   "title": "Đóng phiếu đang chạy",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "SPLIT-008",
+   "title": "Worker dịch trùng",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: src/lib/billing/run-bill.test.ts, src/lib/pipeline/translate-claim.test.ts"
+  },
+  {
+   "id": "REF-013",
+   "title": "Restore bỏ qua lỗi",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Test restore RE2-005/RE3-007 trong npm test đạt (13 + 2 test mang ID); CODEX-RESTORE-TOC 22/22 của Codex không lặp lại."
+  },
+  {
+   "id": "AZ-001",
+   "title": "Restore gói chuyển máy cũng bỏ qua lỗi",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Như REF-013; khoi_phuc_vps gọi nap_dump. Giới hạn cũ giữ nguyên: gói chuyển VPS chưa kèm bảng kê nguồn."
+  },
+  {
+   "id": "MAIN-042",
+   "title": "Chuyển Chủ không nguyên tử",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "MAIN-038",
+   "title": "Thứ tự tiêu Token",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "MAIN-039",
+   "title": "Chỉnh số dư đồng thời",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: src/lib/billing/token-balance-race.test.ts"
+  },
+  {
+   "id": "MAIN-040",
+   "title": "Ghi chi phí GPU đã bổ sung",
+   "priority": "P1",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PARTIAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: Đọc mã: tyzo-modal-call.ts ghi recordSpendDurablyWith; chưa có test hành vi riêng."
+  },
+  {
+   "id": "NEW-001",
+   "title": "Script tổng hợp mất exit code",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "semgrep 1.185.0 luật ghim a5ad1714 chạy lại trên b829fd9: 92 phát hiện, mã thoát 1, phân loại hết (semgrep-triage-b829fd9.json)."
+  },
+  {
+   "id": "NEW-002",
+   "title": "Semgrep không gate đúng",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Như NEW-001: --error trả mã 1 khi có phát hiện; đã chạy lại."
+  },
+  {
+   "id": "NEW-004",
+   "title": "Allowlist rộng",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "gitleaks: 734 commit + cây tệp, 0 rò rỉ (gitleaks-summary.json)."
+  },
+  {
+   "id": "NEW-007",
+   "title": "Rules không đúng commit",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Như NEW-001: checkout đúng commit luật ghim; HEAD luật = a5ad1714."
+  },
+  {
+   "id": "NEW-008",
+   "title": "CSS deploy chưa được nghiệm thu",
+   "priority": "P1",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PASS_LOCAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Chạy lại 3 ca: 1 CSS trỏ sai → sửa, exit 0; 2 CSS + trỏ sai → exit 1, tệp giữ nguyên; bản dựng node-server thật b829fd9 → exit 0, trang phục vụ /assets/styles-*.css 200 text/css. Chưa xem trên VPS thật."
+  },
+  {
+   "id": "AZ-002",
+   "title": "Lịch sử Android lẫn tài khoản",
+   "priority": "P1",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PARTIAL",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: Backend test + JVM 10/10; chưa máy Android thật."
+  },
+  {
+   "id": "AZ-003",
+   "title": "Race lưu và sync Android",
+   "priority": "P1",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PARTIAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: JVM: late sync cannot overwrite newer save; chưa máy thật."
+  },
+  {
+   "id": "AZ-004",
+   "title": "Báo sync dù server không lưu",
+   "priority": "P1",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PARTIAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: JVM: history requires saved=true and receipt id; chưa máy thật."
+  },
+  {
+   "id": "AZ-005",
+   "title": "Giới hạn body sau khi đọc",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "AZ-006",
+   "title": "HMAC quét đêm không gắn body",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "AZ-007",
+   "title": "Đổi mã thiết bị không nguyên tử",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "AZ-008",
+   "title": "Gỡ thiết bị báo thành công khi offline",
+   "priority": "P2",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PARTIAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: JVM: offline unlink reports failure; chưa máy thật."
+  },
+  {
+   "id": "AZ-009",
+   "title": "Lỗi nội bộ trả ra client",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "AZ-010",
+   "title": "Test hiện hữu không nằm trong npm test",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: scripts/test-list.test.mjs"
+  },
+  {
+   "id": "DEEP-001",
+   "title": "Streaming đóng phiếu trước khi quyết toán xong",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-002",
+   "title": "Streaming vượt ngân sách trong lúc top-up",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-003",
+   "title": "Chi phí streaming suy ra từ Token thực thu",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-004",
+   "title": "Reconnect sau khi phiên đã đóng",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-005",
+   "title": "Top-up hoàn thành sau finalize",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-006",
+   "title": "Client rời trước khi gắn close handler",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-007",
+   "title": "Timestamp lịch sử vượt integer DB",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-008",
+   "title": "Thiếu backpressure phía bridge",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "DEEP-009",
+   "title": "Vé live có thể đi qua ws không mã hóa",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: src/lib/live/live-wire.test.ts"
+  },
+  {
+   "id": "DEEP-010",
+   "title": "Webhook nhận JSON không giới hạn tại handler",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R3-001",
+   "title": "Groq/Alibaba gọi trước khi reserve riêng",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: src/lib/billing/gate-reserve.test.ts"
+  },
+  {
+   "id": "R3-002",
+   "title": "Giới hạn output token chưa fail closed",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: src/lib/billing/run-gate.test.ts"
+  },
+  {
+   "id": "R3-003",
+   "title": "Giá chat thiếu một chiều vẫn được mở",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R3-004",
+   "title": "Thu hồi thiết bị khi đổi mật khẩu có thể thất bại im lặng",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R3-005",
+   "title": "Mã liên kết mới không serialize theo tài khoản",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R3-006",
+   "title": "Android updater có race đăng ký receiver",
+   "priority": "P2",
+   "prior_v5_49_4": "BLOCKED",
+   "reaccept_claude_b829fd9": "BLOCKED",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: Updater/receiver cần Android SDK + máy thật; không có bộ kiểm JVM."
+  },
+  {
+   "id": "R3-007",
+   "title": "Polish endpoint thiếu auth middleware trực tiếp",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R3-008",
+   "title": "Gateway tin IP header nếu proxy không chuẩn hóa",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 4,
+   "named_tests_failed": 0,
+   "note": "4 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R3-009",
+   "title": "Giá ASR fallback theo kết quả thiếu duration",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-001",
+   "title": "Reset dữ liệu thử thiếu rào chắn môi trường và xác nhận server",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 3,
+   "named_tests_failed": 0,
+   "note": "3 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-002",
+   "title": "Reset nhiều bảng không nguyên tử",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-003",
+   "title": "Reset không đồng bộ sổ chi phí provider",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-004",
+   "title": "Xóa tài khoản không thu hồi khóa Android tại luồng xóa",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-005",
+   "title": "Xóa tài khoản có nhiều bước bỏ qua lỗi",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-006",
+   "title": "Tổng doanh thu ép int32",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-007",
+   "title": "API Android xóa lịch sử không có rate limit tại handler",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R4-008",
+   "title": "Mật khẩu tạm cập nhật trực tiếp credential",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-001",
+   "title": "Hai lệnh rút có thể dùng cùng số dư",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-002",
+   "title": "Xác nhận chi tiền không gắn đúng lệnh rút",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-003",
+   "title": "Hủy lệnh rút không nguyên tử",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-004",
+   "title": "Kiểm tra cờ rủi ro rút tiền fail-open",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-005",
+   "title": "Hoa hồng gói dùng giá mặc định thay vì giá đơn",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-006",
+   "title": "Hoa hồng lỗi sau thanh toán không có retry tại luồng này",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-007",
+   "title": "Gắn mã giới thiệu trả thành công dù không ghi",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-008",
+   "title": "Bản lưu phụ đề không có namespace tài khoản",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R5-009",
+   "title": "Lưu IndexedDB báo hoàn tất trước transaction commit",
+   "priority": "P2",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PASS_LOCAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Chromium 158 trên bản Node b829fd9: storeSaved trả về sau oncomplete; chủ khác đọc null; giao dịch bị hủy giữ bản cũ (re-accept/r5009-browser.json)."
+  },
+  {
+   "id": "R6-001",
+   "title": "Giải mã cũ có thể ghi PCM vào lần chạy mới",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-002",
+   "title": "Chờ metadata không có timeout hoặc hủy",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-003",
+   "title": "MP4 cấp phát theo sample count chưa kiểm tra",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-004",
+   "title": "HTTP Range không xác minh kích thước hoặc Content-Range",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-005",
+   "title": "PUT R2 không có timeout",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-006",
+   "title": "Không dọn key R2 khi PUT thất bại",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-007",
+   "title": "WAV reader thiếu kiểm tra tham số hữu hạn",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-008",
+   "title": "ASR kiểm ngôn ngữ ghi trạng thái sau await không kiểm runId",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R6-009",
+   "title": "FileReader TyZo không hỗ trợ hủy",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R7-001",
+   "title": "Trau chuốt chấp nhận đảo nghĩa và số",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R7-002",
+   "title": "Chia lô trau chuốt làm tăng số lần gọi",
+   "priority": "P1",
+   "prior_v5_49_4": "BY_DESIGN",
+   "reaccept_claude_b829fd9": "BY_DESIGN",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: Giữ quyết định lịch sử."
+  },
+  {
+   "id": "R7-003",
+   "title": "Glossary lỗi không báo tại worker",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Tệp test có ID nằm trong npm test, toàn bộ suite đạt: src/lib/pipeline/translate-claim.test.ts"
+  },
+  {
+   "id": "R7-004",
+   "title": "Thống kê model tính cả câu sửa tay trong lúc dịch",
+   "priority": "P2",
+   "prior_v5_49_4": "PARTIAL",
+   "reaccept_claude_b829fd9": "PASS_LOCAL",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Test hành vi mới src/lib/pipeline/translate-edit.test.ts (commit sau c5e9db0): câu sửa tay giữ chữ khách, không ghi model, uses={m:5}. Bỏ nhánh seg.edited thì test hỏng (đã thử)."
+  },
+  {
+   "id": "R7-005",
+   "title": "Hàng đợi TTS bỏ câu cũ im lặng",
+   "priority": "P2",
+   "prior_v5_49_4": "BY_DESIGN",
+   "reaccept_claude_b829fd9": "BY_DESIGN",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Giữ trạng thái: Giữ quyết định lịch sử."
+  },
+  {
+   "id": "R7-006",
+   "title": "Dừng TTS không quyết toán promise phát",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R8-001",
+   "title": "Xóa schema VPS trước khi dump Neon thành công",
+   "priority": "P0",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Test dump-fail trong npm test đạt."
+  },
+  {
+   "id": "R8-002",
+   "title": "Migration bỏ qua thư mục không đọc được",
+   "priority": "P1",
+   "prior_v5_49_4": "BLOCKED",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "Chạy dưới UID thường (tyzo): test R8-002 đạt trong npm test đầy đủ."
+  },
+  {
+   "id": "R8-003",
+   "title": "Preview build chạy migration trên DB chung",
+   "priority": "P1",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 2,
+   "named_tests_failed": 0,
+   "note": "2 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R8-004",
+   "title": "Tự reload khi đang chạy tác vụ",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 1,
+   "named_tests_failed": 0,
+   "note": "1 test mang ID đạt trong npm test b829fd9 (UID thường, PG 16.15)."
+  },
+  {
+   "id": "R8-005",
+   "title": "Workflow Android cấp quyền ghi cho cả job",
+   "priority": "P2",
+   "prior_v5_49_4": "PASS",
+   "reaccept_claude_b829fd9": "PASS",
+   "named_tests_passed": 0,
+   "named_tests_failed": 0,
+   "note": "Kiểm tĩnh lại: mặc định contents: read (dòng 19–20, 24–25); chỉ job phát hành contents: write (dòng 87–88)."
+  }
+ ]
+}

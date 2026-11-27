@@ -1,0 +1,4 @@
+head=b829fd9c9a2f5ca6b19d90832cbf181650802a7c
+node=v22.23.5
+k6 v0.55.0 (commit/90bb9415d0, go1.23.3, linux/amd64)
+start=2026-11-27T15:29:00Z

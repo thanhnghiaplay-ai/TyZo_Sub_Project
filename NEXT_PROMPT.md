@@ -1,9 +1,12 @@
-# Tiếp quản TyZo 5.49.5 từ Codex
+# Tiếp TyZo 5.49.5 từ checkpoint Claude Code
 
-Repository `thanhnghiaplay-ai/TyZo_Sub_Project`. Fetch và checkout nhánh `codex/tyzo-v5.49.4-audit` từ origin. Mốc đối chiếu là `0edb82a8d2115e86d025d9f51f36f033bb55bbd4`. Kiểm SHA bằng `git ls-remote`, đọc `STATE.json`, `BACKLOG.json`, `HANDOFF.md` và `docs/kiem-toan/codex/claude-handoff/REPORT.md`. Bảo toàn commit đã có và xác nhận chỉ một agent ghi nhánh tại một thời điểm.
+Repository `thanhnghiaplay-ai/TyZo_Sub_Project`. Fetch nhánh `ccr-76aead9f-jp8d0r`, kiểm SHA bằng `git ls-remote`. Mã chốt `c899afd`, gốc Codex `b829fd9`, mốc `0edb82a8`. Đọc `STATE.json`, `BACKLOG.json`, `HANDOFF.md`, `docs/kiem-toan/claude/REPORT.md`. Bảo toàn commit đã có; mỗi nhánh chỉ một agent ghi.
 
-1. Mục cuối CODEX-RESTORE-TOC đã sửa và đạt 22/22 ca trên PostgreSQL 17.12 thử, Docker giả. Không lặp lại phần đã đạt. Chạy lại `npm test` đầy đủ dưới UID thường, Node 22 với PostgreSQL thử, không chạy song song hai lệnh restore vì fixture dùng tên CSDL cố định. Xem thêm báo cáo và vị trí log đã có.
-2. Kiểm kết quả soak lượt 2 nếu runtime còn: `/workspace/tyzo-audit-mixed-final`, snapshot `aa73aca5f02944627392e0b3d7673dc83a2344e5`. Lấy `exit.txt`, `ai/result.json`, k6 và runtime CSV. Nếu runtime mất hoặc kết quả thiếu, chạy lại một mạch bằng `docs/kiem-toan/codex/integration-load-soak/mixed-soak.sh` với Node 22, PostgreSQL loopback port 55439 và bản Node web loopback port 17750. Không cộng thời gian hai lượt. Báo riêng admission, web và latency audio đến chữ hiển thị.
-3. Tái nghiệm thu RE2, RE3 và từng mục trong `docs/kiem-toan/v5.49.4/DOI_CHIEU_80.json`. Tiếp RE4-001: cận hiện tại giữ theo toàn bộ ngữ cảnh, có thể chặn phiếu nhỏ; qwen-turbo chưa có cận đã xác minh. Tìm phương án xác thực tokenizer/template hoặc giới hạn nhà cung cấp, kiểm tra định giá actual usage. RE4-004 cần diễn tập staging ngoài fixture.
-4. Chốt Semgrep, đối chiếu dependency warnings, dựng Graphify trên code chốt. Lưu SHA nguồn, SHA graph, file bị bỏ qua và kết quả parser cho RE4-006. Tiếp nghiệm thu Android máy thật và qua nhà cung cấp khi có định danh staging, Secret và giới hạn thử đã duyệt; hiện Chủ chưa biết vị trí cấu hình.
-5. Mỗi checkpoint cập nhật bốn tệp bàn giao, lưu log đã che và push nhánh phát triển. So SHA remote sau push. Nếu push lỗi, ngừng mở rộng sửa và giữ patch. Không merge main, deploy production, dùng DB production, phát sinh chi phí, đổi giá/quy tắc Token hoặc sửa migration đã áp dụng.
+Đã xong, không lặp lại: npm test đầy đủ dưới UID thường; soak hỗn hợp một mạch 3.614 s; Semgrep/dependency-cruiser/gitleaks; Graphify từ c899afd (RE4-006); tái đối chiếu 80 mục; RE4-001 phần mã (cận 2×byte+512).
+
+1. RE4-001: khi Chủ duyệt ngân sách thử, mỗi model trả theo lượt (Groq gpt-oss, llama, qwen3; Alibaba qwen-turbo/plus/max) gửi 1 lệnh dịch thật; so `usage.prompt_tokens` với `promptTokenBound` và số Token đã trừ. Không đổi giá.
+2. RE4-004: diễn tập cutover/restore trên staging Vercel/Neon/VPS ngoài fixture, khi có URL, Secret và hạn mức.
+3. Admission: đo lại chống đói 3 s dưới tải hỗn hợp trên staging (cục bộ có đói trong cửa sổ 3 s, cửa sổ 10 s khi rảnh 0 đói). Đo độ trễ âm thanh → chữ hiển thị với nhà thật.
+4. Android máy thật: AZ-002/003/004/008, R3-006. MAIN-040: test hành vi cho ghi chi phí Modal.
+5. Đổi mã thì dựng lại Graphify từ commit mã mới và cập nhật `docs/kiem-toan/claude/RE4-006/provenance.json`. Test PG dùng CSDL riêng, không chung CSDL với soak.
+6. Mỗi checkpoint cập nhật bốn tệp bàn giao, lưu log đã che, push nhánh phát triển, so SHA remote. Không merge main, deploy production, dùng DB production, phát sinh chi phí, đổi giá/quy tắc Token hoặc sửa migration đã áp dụng.

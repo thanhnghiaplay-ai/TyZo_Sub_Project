@@ -1,0 +1,54 @@
+{
+ "sourceCommit": "c899afd3838b84f1cb896be8b6f7c6236e08a9bd",
+ "sourceTree": "95e63c63a153fe303254335c0296dfbefa28afa1",
+ "method": "git archive <sourceCommit> | tar -x vào thư mục sạch; graphify update . --force (chỉ AST, không gọi AI, 0 token)",
+ "graphify": "0.9.119",
+ "graphJsonSha256": "266f42d449a192760d2bdbad68e53321e43d12a6f5c260d76dc7aa5db15e261d",
+ "graphReportSha256": "02729bd9f2820f7cd833feed7f26afe9cac4ef2599b0cf0cd4cb49bc263bac86",
+ "manifestSha256": "28604640d7e2d3ff7477b5a84ab6433c3b97fc2019a8f8594bfcf357ec96ff9a",
+ "nodes": 6833,
+ "edges": 19008,
+ "communities": 266,
+ "manifestFiles": 1996,
+ "parser": {
+  "sql": {
+   "files": 57,
+   "status": "NOT_PARSED",
+   "reason": "thiếu tree_sitter_sql (graphifyy[sql]); migration không có trong graph"
+  },
+  "syntaxErrorsPartial": [
+   "android/app/src/main/java/vn/tyzo/sub/MainActivity.kt (L36; vẫn rút 10 ký hiệu)",
+   "src/lib/payment/pay-confirm.test.ts (L26; 0 ký hiệu)",
+   "src/lib/usage-tally.test.ts (L40; 0 ký hiệu)"
+  ],
+  "codeFilesNoSymbols": {
+   "reported": 92,
+   "note": "cấu hình, gradle, script bằng chứng; extractor không mô hình ký hiệu"
+  }
+ },
+ "filesWithoutNodes": {
+  "count": 1092,
+  "byExtension": {
+   "json": 1053,
+   "wav": 14,
+   "png": 9,
+   "txt": 8,
+   "svg": 5,
+   "html": 2,
+   "mp4": 1
+  },
+  "codeLike": []
+ },
+ "unclassified": {
+  "count": 132,
+  "top": {
+   ".log": 83,
+   ".srt": 14,
+   ".xml": 11
+  },
+  "reason": "định dạng graphify không phân loại"
+ },
+ "postEdits": "GRAPH_REPORT.md dòng 1 và .graphify_build_state.json scan_root đổi đường dẫn thư mục quét tạm về đường dẫn kho. graph.json không sửa.",
+ "selfReference": "Commit chứa graph khác sourceCommit; graph không ghi SHA của chính commit chứa nó.",
+ "limits": "Graph là bản đồ cấu trúc để tra phạm vi ảnh hưởng, không phải bằng chứng logic đã kiểm toán. Không có SQL. Cạnh INFERRED ~4%."
+}

@@ -1,0 +1,56 @@
+{
+ "snapshot": "b829fd9",
+ "tool": "dependency-cruiser 18.7.2",
+ "totalCruised": 729,
+ "error": 0,
+ "warn": 9,
+ "violations": [
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/admin/admin-room.ts",
+   "to": "src/lib/auth/middleware.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/affiliate-flow.ts",
+   "to": "src/lib/giay-room.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/auth/mailer.ts",
+   "to": "src/lib/auth/smtp.server.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/auth/middleware.ts",
+   "to": "src/lib/auth/verify.server.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/giay-room.ts",
+   "to": "src/lib/payment/pay-store.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/glossary-import.ts",
+   "to": "src/lib/sub/glossary.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/payment/pay-store.ts",
+   "to": "src/lib/payment/pay-flow.ts"
+  },
+  {
+   "rule": "khong-vong-tron",
+   "from": "src/lib/sub/vad-runtime.ts",
+   "to": "src/lib/sub/vad.ts"
+  },
+  {
+   "rule": "lib-khong-import-giao-dien",
+   "from": "src/lib/error-component.tsx",
+   "to": "src/components/ui/icon.tsx"
+  }
+ ],
+ "compare": "Codex aa73aca: 10 cảnh báo. Nay 9: mất vòng db.ts ↔ glossary-seed.server.ts (chỉ import type, đi ngược bằng import() động). Không có thay đổi src giữa aa73aca và b829fd9; khác biệt do cách công cụ bỏ import type.",
+ "verdict": "0 lỗi. 8 vòng tròn đều có cạnh import() động hoặc type-only, không phải vòng khởi tạo lúc nạp; 1 lib→components (error-component.tsx dùng icon) có sẵn từ trước. Giữ nguyên, không chặn phát hành."
+}
