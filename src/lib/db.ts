@@ -1,5 +1,6 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 import { destructiveGate, previewGate } from "../../scripts/migration-gate.mjs";
+import { createPgPool } from "./pg-pool.server";
 
 /** Which database backend is active. */
 type DbSource = "neon" | "pglite";
@@ -95,11 +96,11 @@ function createNeonSql(): Promise<Sql> {
   globalRef.__pgSqlPromise__ ??= (async () => {
     // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
     // pooled endpoint. One pool per process; warm serverless instances reuse it.
-    const { Pool, types } = await import("pg");
+    const { types } = await import("pg");
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const pool = new Pool({ connectionString: databaseUrl });
+    const pool = createPgPool({ connectionString: databaseUrl });
     const migrations = import.meta.glob("/migrations/*.sql", {
       query: "?raw",
       import: "default",
