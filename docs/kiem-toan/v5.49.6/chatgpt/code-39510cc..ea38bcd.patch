@@ -1,0 +1,1980 @@
+diff --git a/android/app/build.gradle.kts b/android/app/build.gradle.kts
+index e8523b6..303b021 100644
+--- a/android/app/build.gradle.kts
++++ b/android/app/build.gradle.kts
+@@ -19,8 +19,8 @@ android {
+         // Thu âm ứng dụng khác (AudioPlaybackCapture) chỉ có từ Android 10 (API 29).
+         minSdk = 29
+         targetSdk = 35
+-        versionCode = 12
+-        versionName = "0.12"
++        versionCode = 13
++        versionName = "0.13"
+         buildConfigField("String", "WEB_URL", "\"$webUrl\"")
+     }
+ 
+diff --git a/android/app/src/main/java/vn/tyzo/sub/MainActivity.kt b/android/app/src/main/java/vn/tyzo/sub/MainActivity.kt
+index 1b35397..896de04 100644
+--- a/android/app/src/main/java/vn/tyzo/sub/MainActivity.kt
++++ b/android/app/src/main/java/vn/tyzo/sub/MainActivity.kt
+@@ -274,7 +274,7 @@ class MainActivity : Activity() {
+         lang.addView(ui.select(sources.map { it.name }, sources.indexOfFirst { it.code == prefs.source }) {
+             prefs.source = sources[it].code
+         }, ui.full(6))
+-        val models = me?.models?.takeIf { it.isNotEmpty() } ?: listOf(Models.M38, Models.M35)
++        val models = me?.models?.takeIf { it.isNotEmpty() } ?: listOf(Models.M35, Models.M38)
+         if (prefs.model !in models) prefs.model = models.first()
+         lang.addView(ui.text("Model", 14f, ui.p.muted), ui.full(12))
+         lang.addView(ui.select(models.map { Models.name(it) }, models.indexOf(prefs.model)) { prefs.model = models[it] }, ui.full(6))
+diff --git a/android/app/src/main/java/vn/tyzo/sub/Prefs.kt b/android/app/src/main/java/vn/tyzo/sub/Prefs.kt
+index 8a88a4d..13c395b 100644
+--- a/android/app/src/main/java/vn/tyzo/sub/Prefs.kt
++++ b/android/app/src/main/java/vn/tyzo/sub/Prefs.kt
+@@ -94,7 +94,8 @@ class AccountAccess(val web: String, val token: String, val userId: String) {
+ object Models {
+     const val M38 = "qwen3.8-livetranslate-flash-realtime"
+     const val M35 = "qwen3.5-livetranslate-flash-realtime"
+-    const val DEFAULT = M38
++    /** Qwen 3.5 hiện chữ sau ~0,4 s, 3.8 sau ~2,9 s (đo thật 28/11/2026). */
++    const val DEFAULT = M35
+ 
+     fun name(id: String) = when (id) {
+         M38 -> "Qwen 3.8 (mới nhất)"
+diff --git a/deploy/vps/do-live/chay-direct.sh b/deploy/vps/do-live/chay-direct.sh
+new file mode 100644
+index 0000000..fc640ef
+--- /dev/null
++++ b/deploy/vps/do-live/chay-direct.sh
+@@ -0,0 +1,11 @@
++#!/usr/bin/env bash
++# So độ trễ Dịch trực tiếp theo model/tham số, nối thẳng Alibaba từ container cầu nối. Chạy: bash /opt/tyzo/deploy/vps/do-live/chay-direct.sh
++set -euo pipefail
++cd "$(dirname "$0")/../../.."
++docker ps --format '{{.Names}}' | grep -qx tyzo-bridge || { echo "✘ Cầu nối tyzo-bridge chưa chạy"; exit 1; }
++docker exec tyzo-bridge mkdir -p /app/deploy/vps
++docker cp deploy/vps/do-live tyzo-bridge:/app/deploy/vps/ >/dev/null
++docker cp deploy/vps/do-modal tyzo-bridge:/app/deploy/vps/ >/dev/null
++echo "Đo 5 cấu hình × 4 đoạn (khoảng 12 phút)…"
++docker exec tyzo-bridge node --no-warnings --experimental-strip-types --import ./scripts/register-ts.mjs deploy/vps/do-live/do-live-direct.ts
++docker exec tyzo-bridge rm -rf /app/deploy/vps/do-live /app/deploy/vps/do-modal
+diff --git a/deploy/vps/do-live/chay.sh b/deploy/vps/do-live/chay.sh
+new file mode 100755
+index 0000000..f45b132
+--- /dev/null
++++ b/deploy/vps/do-live/chay.sh
+@@ -0,0 +1,12 @@
++#!/usr/bin/env bash
++# Đo Dịch trực tiếp thật trên VPS. Chạy: bash /opt/tyzo/deploy/vps/do-live/chay.sh
++set -euo pipefail
++cd "$(dirname "$0")/../../.."
++docker ps --format '{{.Names}}' | grep -qx tyzo-bridge || { echo "✘ Cầu nối tyzo-bridge chưa chạy"; exit 1; }
++read -rp "Email tài khoản TyZo dùng để thử (bị trừ Token như dùng thật): " email
++[ -n "$email" ] || { echo "✘ Chưa có email"; exit 1; }
++docker exec tyzo-bridge mkdir -p /app/deploy/vps
++docker cp deploy/vps/do-live tyzo-bridge:/app/deploy/vps/
++docker cp deploy/vps/do-modal tyzo-bridge:/app/deploy/vps/
++docker exec tyzo-bridge node --experimental-strip-types --import ./scripts/register-ts.mjs deploy/vps/do-live/do-live.ts "$email" "${1:-wss://realtimehub.tyzo.site/live}"
++docker exec tyzo-bridge rm -rf /app/deploy/vps/do-live /app/deploy/vps/do-modal
+diff --git a/deploy/vps/do-live/do-live-direct.ts b/deploy/vps/do-live/do-live-direct.ts
+new file mode 100644
+index 0000000..49b9371
+--- /dev/null
++++ b/deploy/vps/do-live/do-live-direct.ts
+@@ -0,0 +1,81 @@
++// So độ trễ Dịch trực tiếp theo model/tham số, nối THẲNG tới Alibaba (bỏ qua cầu nối; không trừ Token khách, chỉ tốn
++// hạn mức key Alibaba của phòng). Chạy trong container cầu nối: deploy/vps/do-live/chay-direct.sh. Không in key.
++import { readFileSync, writeFileSync } from "node:fs";
++import pg from "pg";
++import WebSocket from "ws";
++import { LIVE_MODEL_35, LIVE_MODEL_38 } from "../../../src/lib/live/live-price.ts";
++import { liveUpstreamUrl, validWorkspaceId } from "../../../src/lib/live/live-upstream.ts";
++import { audioAppend, buildSessionUpdate, parseServerEvent, SESSION_FINISH } from "../../../src/lib/live/qwen-protocol.ts";
++
++const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
++await db.connect();
++const setting = async (k: string) => (await db.query("select value from room_settings where key = $1", [k])).rows[0]?.value?.trim() as string | undefined;
++const key = await setting("alibaba_key");
++const ws0 = process.env.ALIBABA_WORKSPACE_ID?.trim();
++const workspace = validWorkspaceId(ws0) ? ws0 : await setting("alibaba_workspace");
++await db.end();
++if (!key || !validWorkspaceId(workspace)) { console.error("✘ Phòng chưa có key hoặc Workspace Alibaba."); process.exit(1); }
++
++type Variant = { name: string; model: string; session: (lang: string) => Record<string, unknown> };
++const base = (model: string, lang: string, extra: { source?: string; silenceMs?: number; vadThreshold?: number } = {}) =>
++  buildSessionUpdate({ model, target: "vi", audio: false, ...extra })!;
++const variants: Variant[] = [
++  { name: "3.8 như app", model: LIVE_MODEL_38, session: (l) => base(LIVE_MODEL_38, l) },
++  { name: "3.8 speaker_detection 0.2", model: LIVE_MODEL_38, session: (l) => {
++    const s = base(LIVE_MODEL_38, l) as { session: Record<string, unknown> };
++    s.session.audio = { input: { turn_detection: { type: "speaker_detection", threshold: 0.2 } } };
++    return s;
++  } },
++  { name: "3.5 như phòng (tự dò, 300ms, 0.5)", model: LIVE_MODEL_35, session: (l) => base(LIVE_MODEL_35, l, { silenceMs: 300, vadThreshold: 0.5 }) },
++  { name: "3.5 báo nguồn (300ms, 0.5)", model: LIVE_MODEL_35, session: (l) => base(LIVE_MODEL_35, l, { source: l, silenceMs: 300, vadThreshold: 0.5 }) },
++  { name: "3.5 báo nguồn (200ms, 0.2)", model: LIVE_MODEL_35, session: (l) => base(LIVE_MODEL_35, l, { source: l, silenceMs: 200, vadThreshold: 0.2 }) },
++];
++
++const HERE = new URL(".", import.meta.url).pathname;
++const pct = (xs: number[], p: number) => (xs.length ? [...xs].sort((a, b) => a - b)[Math.min(xs.length - 1, Math.round((p / 100) * (xs.length - 1)))] : null);
++const s3 = (x: number | null) => (x == null ? null : Math.round(x) / 1000);
++const ONSET_MS = 200; const offsetOf = (pcm: Buffer) => Math.round(pcm.length / 32) - 300; // đo trước: lời bắt đầu ~0,2 s, kết thúc gần cuối đoạn
++
++function run(v: Variant, lang: string) {
++  const pcm = readFileSync(`${HERE}../do-modal/${lang}.wav`).subarray(44);
++  return new Promise<{ src: number | null; tr: number | null; last: number | null; finals: number; err: string[] }>((resolve) => {
++    const ws = new WebSocket(liveUpstreamUrl(workspace!, v.model), { headers: { Authorization: `Bearer ${key}` } });
++    let t0 = 0; const src: number[] = []; const tr: number[] = []; const fin: number[] = []; const err: string[] = []; let started = false;
++    const end = () => resolve({ src: src.length ? src[0] - ONSET_MS : null, tr: tr.length ? tr[0] - ONSET_MS : null,
++      last: fin.length ? fin[fin.length - 1] - offsetOf(pcm) : null, finals: fin.length, err });
++    const kill = setTimeout(() => { ws.terminate(); }, 120_000);
++    ws.on("open", () => ws.send(JSON.stringify(v.session(lang))));
++    ws.on("message", (data) => {
++      for (const e of parseServerEvent(JSON.parse(data.toString()))) {
++        const now = Date.now() - t0;
++        if (e.kind === "ready" && !started) {
++          started = true; t0 = Date.now(); let off = 0;
++          const timer = setInterval(() => {
++            if (off >= pcm.length) { clearInterval(timer); ws.send(SESSION_FINISH); return; }
++            ws.send(audioAppend(pcm.subarray(off, off + 3200))); off += 3200;
++          }, 100);
++        } else if (e.kind === "source" || e.kind === "source-delta") src.push(now);
++        else if (e.kind === "translation" || e.kind === "translation-delta") { tr.push(now); if ("final" in e && e.final) fin.push(now); }
++        else if (e.kind === "error") err.push(e.message.slice(0, 140));
++        else if (e.kind === "finished") ws.close();
++      }
++    });
++    ws.on("close", () => { clearTimeout(kill); end(); });
++    ws.on("error", (e) => err.push(String(e).slice(0, 140)));
++  });
++}
++
++const out: Record<string, unknown>[] = [];
++for (const v of variants) {
++  const rows = [];
++  for (const lang of ["zh", "ja", "ko", "en"]) { rows.push({ lang, ...(await run(v, lang)) }); await new Promise((r) => setTimeout(r, 2000)); }
++  const col = (k: "src" | "tr" | "last") => rows.map((r) => r[k]).filter((x): x is number => x != null);
++  const sum = { variant: v.name, chuGocDau_p50: s3(pct(col("src"), 50)), chuGocDau_max: s3(Math.max(...col("src"))),
++    banDichDau_p50: s3(pct(col("tr"), 50)), cauCuoiSauHetTieng_p50: s3(pct(col("last"), 50)),
++    cauChot: rows.map((r) => r.finals).join("/"), loi: rows.flatMap((r) => r.err) };
++  out.push({ ...sum, rows });
++  console.log(`${v.name.padEnd(32)} chữ gốc đầu p50 ${sum.chuGocDau_p50} s (max ${sum.chuGocDau_max}) · dịch đầu p50 ${sum.banDichDau_p50} s · câu cuối ${sum.cauCuoiSauHetTieng_p50} s · chốt ${sum.cauChot} · ${sum.loi.length ? "LỖI " + sum.loi[0] : "không lỗi"}`);
++}
++const file = `/tmp/do-live-direct-${Date.now()}.json`;
++writeFileSync(file, JSON.stringify(out, null, 1));
++console.log(`✔ Xong. Chụp bảng trên gửi Claude.`);
+diff --git a/deploy/vps/do-live/do-live.ts b/deploy/vps/do-live/do-live.ts
+new file mode 100644
+index 0000000..d9289fe
+--- /dev/null
++++ b/deploy/vps/do-live/do-live.ts
+@@ -0,0 +1,104 @@
++// Đo Dịch trực tiếp thật: âm thanh → chữ gốc tạm → bản dịch tạm → câu chốt, qua cầu nối thật và Alibaba thật.
++// Chạy TRONG container cầu nối (có sẵn LIVE_BRIDGE_SECRET, DATABASE_URL, thư viện) — xem deploy/vps/do-live/chay.sh.
++// Gửi 4 đoạn mẫu 30 s (zh/ja/ko/en) theo nhịp thời gian thực 100 ms/khung. Trừ Token của tài khoản được nhập như dùng thật.
++// Không in khóa; kết quả JSON không chứa vé hay khóa.
++import { readFileSync, writeFileSync } from "node:fs";
++import pg from "pg";
++import WebSocket from "ws";
++import { signLiveTicket } from "../../../src/lib/live/live-ticket.ts";
++import { LIVE_MODEL_38 } from "../../../src/lib/live/live-price.ts";
++
++const [, , email, bridge = "wss://realtimehub.tyzo.site/live", target = "vi"] = process.argv;
++const secret = (process.env.LIVE_BRIDGE_SECRET ?? "").trim();
++if (!email || !secret || !process.env.DATABASE_URL) {
++  console.error("Cách dùng: do-live.ts <email tài khoản> [địa chỉ cầu nối] [đích=vi]; cần LIVE_BRIDGE_SECRET và DATABASE_URL.");
++  process.exit(1);
++}
++const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
++await db.connect();
++const found = await db.query(`select id from "user" where lower(email) = lower($1)`, [email]);
++await db.end();
++if (!found.rows.length) { console.error("✘ Không thấy tài khoản có email này."); process.exit(1); }
++const uid = String(found.rows[0].id);
++
++const HERE = new URL(".", import.meta.url).pathname;
++const pct = (xs: number[], p: number) => (xs.length ? [...xs].sort((a, b) => a - b)[Math.min(xs.length - 1, Math.round((p / 100) * (xs.length - 1)))] : null);
++const r1 = (x: number | null | undefined) => (x == null ? null : Math.round(x) / 1000);
++
++/** Mốc có tiếng nói đầu và cuối (năng lượng khung 100 ms vượt ngưỡng), tính bằng ms từ đầu đoạn. */
++function speechSpan(pcm: Buffer) {
++  const frame = 3200; const rms: number[] = [];
++  for (let o = 0; o + frame <= pcm.length; o += frame) {
++    let s = 0; for (let i = o; i < o + frame; i += 2) { const v = pcm.readInt16LE(i); s += v * v; }
++    rms.push(Math.sqrt(s / (frame / 2)));
++  }
++  const thr = Math.max(300, (pct(rms, 90) ?? 0) * 0.15);
++  const first = rms.findIndex((v) => v > thr); const last = rms.length - 1 - [...rms].reverse().findIndex((v) => v > thr);
++  return { onsetMs: Math.max(0, first) * 100, offsetMs: (last + 1) * 100 };
++}
++
++async function measure(lang: string) {
++  const wav = readFileSync(`${HERE}../do-modal/${lang}.wav`);
++  const pcm = wav.subarray(44);
++  const { onsetMs, offsetMs } = speechSpan(pcm);
++  const ticket = signLiveTicket(secret, { uid, sid: `do${Date.now().toString(36)}${lang}`, model: LIVE_MODEL_38, target, source: "", audio: false, exp: Date.now() + 60_000 });
++  return new Promise<Record<string, unknown>>((resolve) => {
++    const ws = new WebSocket(`${bridge}?ticket=${ticket}`);
++    let t0 = 0; let sentEnd = 0;
++    const srcT: number[] = []; const trT: number[] = []; const finals: number[] = []; const errors: string[] = [];
++    let usage: unknown = null; let opened = 0; const tOpen = Date.now();
++    const done = (why: string) => {
++      const gaps = (ts: number[]) => ts.slice(1).map((t, i) => t - ts[i]);
++      resolve({
++        lang, why, connectMs: opened ? opened - tOpen : null, audioMs: Math.round(pcm.length / 32), onsetMs, offsetMs,
++        firstSourcePartial_s: srcT.length ? r1(srcT[0] - onsetMs) : null,
++        firstTranslationPartial_s: trT.length ? r1(trT[0] - onsetMs) : null,
++        sourceUpdateGap_s: { p50: r1(pct(gaps(srcT), 50)), p95: r1(pct(gaps(srcT), 95)) },
++        translationUpdateGap_s: { p50: r1(pct(gaps(trT), 50)), p95: r1(pct(gaps(trT), 95)) },
++        finals: finals.length, lastFinalAfterSpeechEnd_s: finals.length ? r1(finals[finals.length - 1] - offsetMs) : null,
++        sendEndToClose_s: sentEnd ? r1(Date.now() - t0 - sentEnd) : null, usage, errors,
++      });
++    };
++    const kill = setTimeout(() => { ws.terminate(); done("het-gio"); }, 120_000);
++    ws.on("message", (data, isBinary) => {
++      if (isBinary) return;
++      const m = JSON.parse(data.toString()) as { type: string; event?: { kind: string; final?: boolean; usage?: unknown; message?: string }; message?: string };
++      const now = () => Date.now() - t0;
++      if (m.type === "ready") {
++        opened = Date.now(); t0 = Date.now(); let off = 0;
++        const timer = setInterval(() => {
++          if (off >= pcm.length) { clearInterval(timer); sentEnd = Date.now() - t0; ws.send(JSON.stringify({ type: "stop" })); return; }
++          ws.send(pcm.subarray(off, off + 3200)); off += 3200;
++        }, 100);
++      } else if (m.type === "event" && m.event) {
++        const k = m.event.kind;
++        if (k === "source" || k === "source-delta") srcT.push(now());
++        if (k === "translation" || k === "translation-delta") { trT.push(now()); if (m.event.final) finals.push(now()); }
++        if (k === "usage") usage = m.event.usage;
++        if (k === "error") errors.push(String(m.event.message).slice(0, 160));
++      } else if (m.type === "error") errors.push(String(m.message).slice(0, 160));
++    });
++    ws.on("close", (code) => { clearTimeout(kill); done(`dong-${code}`); });
++    ws.on("error", (e) => errors.push(String(e).slice(0, 160)));
++  });
++}
++
++const rows = [];
++for (const lang of ["zh", "ja", "ko", "en"]) {
++  const r = await measure(lang);
++  rows.push(r);
++  console.log(`  ${lang}: chữ gốc đầu ${r.firstSourcePartial_s} s · bản dịch đầu ${r.firstTranslationPartial_s} s · câu cuối sau khi hết tiếng ${r.lastFinalAfterSpeechEnd_s} s · câu chốt ${r.finals} · ${(r.errors as string[]).join("; ") || "không lỗi"}`);
++  await new Promise((res) => setTimeout(res, 3000));
++}
++const col = (k: string) => rows.map((r) => r[k] as number | null).filter((x): x is number => x != null);
++const summary = {
++  bridge, target, model: LIVE_MODEL_38, clips: rows.length,
++  firstSourcePartial_s: { p50: pct(col("firstSourcePartial_s"), 50), max: Math.max(...col("firstSourcePartial_s")) },
++  firstTranslationPartial_s: { p50: pct(col("firstTranslationPartial_s"), 50), max: Math.max(...col("firstTranslationPartial_s")) },
++  lastFinalAfterSpeechEnd_s: { p50: pct(col("lastFinalAfterSpeechEnd_s"), 50), max: Math.max(...col("lastFinalAfterSpeechEnd_s")) },
++  errors: rows.flatMap((r) => r.errors as string[]),
++};
++const out = `/tmp/do-live-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
++writeFileSync(out, JSON.stringify({ summary, rows }, null, 1));
++console.log(JSON.stringify(summary, null, 1));
++console.log(`✔ Đã lưu ${out} trong container — chụp phần trên gửi Claude.`);
+diff --git a/deploy/vps/do-modal/__pycache__/do-modal.cpython-313.pyc b/deploy/vps/do-modal/__pycache__/do-modal.cpython-313.pyc
+new file mode 100644
+index 0000000..3a86072
+Binary files /dev/null and b/deploy/vps/do-modal/__pycache__/do-modal.cpython-313.pyc differ
+diff --git a/deploy/vps/do-modal/do-modal.py b/deploy/vps/do-modal/do-modal.py
+new file mode 100644
+index 0000000..b4dcfd7
+--- /dev/null
++++ b/deploy/vps/do-modal/do-modal.py
+@@ -0,0 +1,92 @@
++#!/usr/bin/env python3
++"""Đo GPU TyZo Modal thật từ VPS (RE5-005/GPU). Chạy: python3 /opt/tyzo/deploy/vps/do-modal/do-modal.py
++
++Hỏi địa chỉ (TYZO_ASR_URL) và token (TYZO_ASR_TOKEN, chữ không hiện) — lấy trên Vercel → Settings → Environment Variables.
++Token chỉ nằm trong bộ nhớ khi chạy, không ghi ra tệp. Gửi đúng định dạng app (WAV mono 16 kHz, base64 trong JSON).
++Đo: lần đầu (máy GPU khởi động lạnh), các lần sau (máy nóng), 4 lệnh song song. Dừng ngay khi chi ước tính chạm trần.
++Kết quả: /opt/tyzo-do-modal-<giờ>.json (không có token) — gửi tệp này cho Claude.
++"""
++import base64, getpass, json, os, statistics, sys, threading, time, urllib.error, urllib.parse, urllib.request
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++CLIPS = ["zh", "ja", "ko", "en"]
++GPU_USD_PER_HOUR = 0.8  # L40 theo Chủ; chỉ để chặn trần, số thật lấy từ stats
++BUDGET_USD = float(os.environ.get("TRAN_USD", "1.0"))
++
++url = input("Dán TYZO_ASR_URL (https://….modal.run): ").strip()
++u = urllib.parse.urlparse(url)
++if u.scheme != "https" or not u.hostname or not u.hostname.endswith(".modal.run") or u.username or u.password:
++    sys.exit("✘ Địa chỉ phải là https://….modal.run")
++token = getpass.getpass("Dán TYZO_ASR_TOKEN (chữ không hiện): ").strip()
++if not token:
++    sys.exit("✘ Chưa có token")
++profile = (input("Hồ sơ [nhanh/ky, Enter = nhanh]: ").strip() or "nhanh")
++if profile not in ("nhanh", "ky"):
++    sys.exit("✘ Hồ sơ chỉ nhận nhanh hoặc ky")
++
++spent = 0.0
++rows = []
++lock = threading.Lock()
++
++
++def call(lang, tag):
++    global spent
++    with lock:
++        if spent >= BUDGET_USD:
++            return None
++    audio = open(os.path.join(HERE, f"{lang}.wav"), "rb").read()
++    body = json.dumps({"token": token, "audio_b64": base64.b64encode(audio).decode(), "ext": "wav", "lang": lang, "profile": profile}).encode()
++    t0 = time.time()
++    row = {"tag": tag, "lang": lang, "audio_s": round((len(audio) - 44) / 32000, 1)}
++    try:
++        req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"}, method="POST")
++        target = url
++        while True:  # Modal trả 303 khi việc dài; đi theo như app
++            try:
++                with urllib.request.urlopen(req, timeout=1800) as r:
++                    data = json.loads(r.read()); row["http"] = r.status; break
++            except urllib.error.HTTPError as e:
++                if e.code == 303 and e.headers.get("location"):
++                    target = urllib.parse.urljoin(target, e.headers["location"])
++                    req = urllib.request.Request(target, method="GET"); continue
++                row["http"] = e.code; data = None; break
++        row["seconds"] = round(time.time() - t0, 2)
++        if data:
++            st = data.get("stats") or {}
++            row["stats"] = {k: v for k, v in st.items() if isinstance(v, (int, float, str))}
++            row["segments"] = len(data.get("segs") or [])
++            usd = (st.get("giay_xu_ly", 0) / 3600) * GPU_USD_PER_HOUR + st.get("tien_model_chu_usd", 0)
++            row["usd_est"] = round(usd, 5)
++            with lock:
++                spent += usd
++    except Exception as e:  # mạng, timeout
++        row["seconds"] = round(time.time() - t0, 2); row["error"] = str(e)[:160]
++    with lock:
++        rows.append(row)
++    print(f"  {tag:10} {lang} {row.get('http','—')} {row['seconds']} s  câu={row.get('segments','—')}  ~{row.get('usd_est','?')} USD", flush=True)
++    return row
++
++
++print(f"Trần chi: {BUDGET_USD} USD. Bắt đầu đo…")
++call("zh", "lanh")                      # lần đầu: máy GPU khởi động lạnh
++for rnd in range(3):                     # máy nóng: 3 vòng × 4 ngôn ngữ
++    for lang in CLIPS:
++        call(lang, f"nong-{rnd + 1}")
++threads = [threading.Thread(target=call, args=(lang, "song-song")) for lang in CLIPS]
++[t.start() for t in threads]; [t.join() for t in threads]
++
++warm = [r["seconds"] for r in rows if r["tag"].startswith("nong") and r.get("http") == 200]
++par = [r["seconds"] for r in rows if r["tag"] == "song-song" and r.get("http") == 200]
++pct = lambda xs, p: sorted(xs)[min(len(xs) - 1, int(round(p / 100 * (len(xs) - 1))))] if xs else None
++summary = {
++    "profile": profile, "budget_usd": BUDGET_USD, "spent_usd_est": round(spent, 4), "calls": len(rows),
++    "cold_s": next((r["seconds"] for r in rows if r["tag"] == "lanh"), None),
++    "warm_s": {"n": len(warm), "p50": pct(warm, 50), "p95": pct(warm, 95), "max": max(warm) if warm else None},
++    "parallel4_s": {"n": len(par), "max": max(par) if par else None},
++    "realtime_factor_warm": round(statistics.median(warm) / 30, 3) if warm else None,
++    "errors": [r for r in rows if r.get("http") != 200],
++}
++out = f"/opt/tyzo-do-modal-{time.strftime('%Y%m%d-%H%M%S')}.json"
++json.dump({"summary": summary, "rows": rows}, open(out, "w"), ensure_ascii=False, indent=1)
++print(json.dumps(summary, ensure_ascii=False, indent=1))
++print(f"✔ Đã lưu {out} — gửi tệp này (hoặc ảnh phần trên) cho Claude.")
+diff --git a/deploy/vps/tyzo.sh b/deploy/vps/tyzo.sh
+index daf1751..07f2a74 100755
+--- a/deploy/vps/tyzo.sh
++++ b/deploy/vps/tyzo.sh
+@@ -816,6 +816,76 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ
+ 
+ bang_ke_nguon_neon() { bang_ke_xa "$NGUON_NEON"; }
+ 
++# ---- RE5-004-C: khóa ghi Neon trong lúc chép Neon → VPS (đã diễn tập trên branch Neon thử, docs/kiem-toan/v5.49.6/RE5-004) ----
++# ALTER DATABASE … read-only KHÔNG khóa được trên Neon; tắt endpoint ghi bằng Neon API thì khóa hẳn. Chép và đối soát qua
++# một endpoint chỉ đọc cùng branch. Key Neon chỉ ở biến NEON_API_KEY của lần chạy, đưa cho curl qua stdin.
++neon_api() { # neon_api METHOD /đường-dẫn [JSON] → in JSON trả về; lỗi HTTP thì mã khác 0
++  printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" |
++    curl -sS -f -m 30 -K - -X "$1" -H 'Content-Type: application/json' ${3:+-d "$3"} "https://console.neon.tech/api/v2$2"
++}
++neon_ep_of_url() { # mã endpoint (ep-…) từ chuỗi kết nối Neon; không phải Neon thì rỗng
++  printf '%s' "$1" | sed -E 's#^[a-z]+://[^@]*@##; s#[:/?].*##; s#\..*##; s#-pooler$##' | grep -E '^ep-[a-z0-9-]+$' || true
++}
++neon_thay_ep() { printf '%s' "$1" | sed "s#@$2#@$3#"; } # đổi endpoint trong chuỗi kết nối (giữ -pooler, vùng, CSDL)
++neon_tim() { # đặt NEON_P, NEON_BR theo NEON_EP
++  local p br
++  for p in $(neon_api GET "/projects?limit=100" | jq -r '.projects[].id'); do
++    br="$(neon_api GET "/projects/$p/endpoints" | jq -r --arg e "$NEON_EP" '.endpoints[] | select(.id == $e) | .branch_id')"
++    [ -n "$br" ] && { NEON_P="$p"; NEON_BR="$br"; return 0; }
++  done
++  return 1
++}
++neon_cho() { # neon_cho <url> <ket-noi-duoc|bi-chan>: chờ tối đa 90 s
++  local i
++  for i in $(seq 1 18); do
++    if pg_tu_xa psql "$1" -v ON_ERROR_STOP=1 -tAc "select 1" >/dev/null 2>&1; then [ "$2" = ket-noi-duoc ] && return 0
++    else [ "$2" = bi-chan ] && return 0; fi
++    sleep 5
++  done
++  return 1
++}
++neon_mo_ghi() { # bật lại endpoint ghi, xác minh, xóa endpoint chỉ đọc
++  neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":false}}' >/dev/null &&
++    neon_cho "$NEON_URL" ket-noi-duoc || { do_ "✘ Chưa bật lại được ghi trên Neon ($NEON_EP). Vào console.neon.tech → Compute → bật lại."; return 1; }
++  [ -n "${NEON_RO:-}" ] && neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1
++  ghi_chuyen da-mo-lai "neon $NEON_P $NEON_EP"
++  xanh "✔ Neon ghi lại được như cũ."
++}
++neon_khoa_ghi() { # neon_khoa_ghi <url>: đặt NEON_RO_URL (chép qua đây). Lỗi thì tự mở lại.
++  NEON_URL="$1"; NEON_EP="$(neon_ep_of_url "$1")"; NEON_RO=""
++  [ -n "$NEON_EP" ] || { do_ "✘ Chuỗi kết nối không phải Neon (thiếu ep-…)."; return 1; }
++  neon_tim || { do_ "✘ Key Neon không thấy endpoint $NEON_EP (sai key hoặc khác tài khoản)."; return 1; }
++  NEON_RO="$(neon_api POST "/projects/$NEON_P/endpoints" "{\"endpoint\":{\"branch_id\":\"$NEON_BR\",\"type\":\"read_only\"}}" | jq -r '.endpoint.id // empty')"
++  [ -n "$NEON_RO" ] || { do_ "✘ Không tạo được endpoint chỉ đọc trên Neon."; return 1; }
++  NEON_RO_URL="$(neon_thay_ep "$1" "$NEON_EP" "$NEON_RO")"
++  neon_cho "$NEON_RO_URL" ket-noi-duoc || { do_ "✘ Endpoint chỉ đọc chưa sẵn sàng."; neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1; return 1; }
++  ghi_chuyen neon-khoa "$NEON_P $NEON_EP $NEON_RO"
++  if ! neon_api PATCH "/projects/$NEON_P/endpoints/$NEON_EP" '{"endpoint":{"disabled":true}}' >/dev/null || ! neon_cho "$1" bi-chan; then
++    do_ "✘ Chưa khóa được ghi trên Neon. Mở lại như cũ, không chép."; neon_mo_ghi; return 1
++  fi
++  xanh "✔ Neon đã khóa ghi (web cũ không ghi được nữa); chép qua endpoint chỉ đọc."
++}
++mo_lai_neon_do_dang() { # mục menu: mở lại ghi Neon theo nhật ký (sau khi đã chắc chắn không cần giữ khóa)
++  local dong; dong="$(grep -E ' neon-khoa ' "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" 2>/dev/null | tail -n 1)"
++  [ -n "$dong" ] || { echo "Nhật ký không có lần khóa Neon nào."; return 0; }
++  read -r _ _ NEON_P NEON_EP NEON_RO <<<"$dong"
++  echo "Lần khóa gần nhất: $dong"
++  vang "Chỉ mở lại khi web và dữ liệu KHÔNG dùng VPS làm nguồn chính (mở cả hai sẽ ghi tách đôi)."
++  local a; read -rp "Gõ mo-lai-neon để bật lại ghi trên Neon: " a; [ "$a" = mo-lai-neon ] || { echo "Đã hủy."; return 1; }
++  NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
++  NEON_URL="$(hoi_an 'Dán chuỗi kết nối Neon cũ (chữ không hiện, để kiểm đã ghi lại được): ')"
++  neon_mo_ghi
++}
++
++mo_lai_vps_do_dang() { # RE5-004-D: mở lại CSDL và web VPS sau lần chuyển sang Vercel dở dang (có xác nhận)
++  [ "$(conf_get DB)" = "local" ] || { echo "Dữ liệu không đặt trên VPS."; return 0; }
++  [ -s "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" ] && tail -n 5 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" | sed 's/^/   /'
++  if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" = t ]; then echo "Nguồn VPS đang mở sẵn."; return 0; fi
++  vang "Trước khi mở: vào vercel.com → project → Deployments, chắc chắn bản mới KHÔNG chạy (hoặc đã xóa), và Neon chưa nhận ghi của khách."
++  local a; read -rp "Gõ mo-lai-vps nếu đã kiểm: " a; [ "$a" = mo-lai-vps ] || { echo "Đã hủy."; return 1; }
++  khoi_phuc_nguon_vps "bridge web" && xanh "✔ Nguồn VPS và web đã mở lại."
++}
++
+ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon về Postgres trên VPS (Neon chỉ bị đọc)
+   local url="$1" n
+   db_len || return 1
+@@ -827,14 +897,28 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v
+   # Đọc Neon xong mới đụng VPS (trước đây xóa dữ liệu VPS rồi mới đọc Neon: Neon lỗi là mất cả hai).
+   docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
+   # RE3-007: bảng kê Neon trước khi đọc; nạp xong phải khớp, và Neon đọc lại vẫn khớp (không có ghi phát sinh).
+-  vang "Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển."
++  # RE5-004-C: khóa ghi Neon (tắt endpoint ghi) rồi chép qua endpoint chỉ đọc, để không mất ghi phát sinh sau lần đối soát cuối.
++  local src="$url" khoa=0
++  if [ -n "$(neon_ep_of_url "$url")" ] && hoi_co "Khóa ghi trên Neon trong lúc chép (khuyên dùng; cần Neon API key: console.neon.tech → Account settings → API keys)?"; then
++    NEON_API_KEY="$(hoi_an 'Dán Neon API key (chữ không hiện): ')"
++    neon_khoa_ghi "$url" || return 1
++    src="$NEON_RO_URL"; khoa=1
++  else
++    vang "Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển."
++  fi
+   local ky; ky="$(umask 077; mktemp)"
+-  bang_ke_xa "$url" > "$ky" 2>/dev/null
+-  grep -q '^bang|' "$ky" || { do_ "✘ Không lập được bảng kê Neon. Dữ liệu trên VPS không bị đụng."; rm -f "$ky"; return 1; }
+-  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump "$ky"; return 1; }
+-  NGUON_NEON="$url"
+-  nap_dump /tmp/tyzo-neon.dump "$ky" bang_ke_nguon_neon || { rm -f /tmp/tyzo-neon.dump "$ky"; return 1; }
++  bang_ke_xa "$src" > "$ky" 2>/dev/null
++  grep -q '^bang|' "$ky" || { do_ "✘ Không lập được bảng kê Neon. Dữ liệu trên VPS không bị đụng."; rm -f "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
++  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$src" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
++  NGUON_NEON="$src"
++  nap_dump /tmp/tyzo-neon.dump "$ky" bang_ke_nguon_neon || { rm -f /tmp/tyzo-neon.dump "$ky"; [ "$khoa" = 1 ] && neon_mo_ghi; return 1; }
+   rm -f /tmp/tyzo-neon.dump "$ky"
++  if [ "$khoa" = 1 ]; then
++    neon_api DELETE "/projects/$NEON_P/endpoints/$NEON_RO" >/dev/null 2>&1 || true
++    ghi_chuyen xong "neon-giu-khoa $NEON_P $NEON_EP"
++    vang "Neon VẪN KHÓA GHI để web cũ không ghi thêm. Việc tiếp: đổi DNS/web sang VPS."
++    echo "   Cần quay lại dùng Neon: tyzo → 13 (Sao lưu / Chuyển VPS) → 7 (Mở lại ghi trên Neon)."
++  fi
+ }
+ 
+ trang_thai_web_vps() {
+@@ -898,6 +982,7 @@ khoi_phuc_nguon_vps() {
+     do_ "✘ Chưa mở lại được kết nối CSDL VPS. Dịch vụ VPS vẫn phải dừng cho tới khi kiểm tra xong."
+     return 1
+   fi
++  chuyen_dang_do && ghi_chuyen da-mo-lai "nguon-vps"
+   mo_lai_web_vps "$1"
+ }
+ 
+@@ -962,6 +1047,11 @@ chep_len_neon_da_dung() {
+ khoa_va_doi_soat_chuyen() {
+   local url="$1" a thu dung
+   [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ] || return 0
++  if chuyen_dang_do; then
++    do_ "✘ Lần chuyển nguồn trước chưa kết thúc. Không chuyển tiếp. Nhật ký: ${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
++    tail -n 5 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" | sed 's/^/   /'
++    return 1
++  fi
+   if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
+     do_ "✘ CSDL nguồn chưa sẵn sàng hoặc đang bị khóa. Kiểm tra lần chuyển trước."; return 1
+   fi
+@@ -987,6 +1077,7 @@ khoa_va_doi_soat_chuyen() {
+   fi
+   rm -f "$thu/nguon.txt" "$thu/dich.txt" "$thu/loi-nguon.txt" "$thu/loi-dich.txt"
+   rmdir "$thu"
++  ghi_chuyen khoa-nguon "neon-khop"
+   xanh "✔ Neon khớp dữ liệu VPS. CSDL nguồn tiếp tục chặn kết nối."
+   CHUYEN_DA_KHOA=1
+   return 0
+@@ -1201,6 +1292,9 @@ menu_du_lieu() {
+   echo " 4. Chép dữ liệu từ VPS lên một Neon trống (khi quay lại Vercel)"
+   echo " 5. Tạo tệp có mật khẩu để chuyển toàn bộ sang VPS mới"
+   echo " 6. Khôi phục tệp chuyển VPS trên máy này"
++  echo " 7. Mở lại ghi trên Neon (sau lần chép đã khóa Neon)"
++  echo " 8. Xem nhật ký chuyển nguồn"
++  echo " 9. Mở lại nguồn VPS (sau lần đưa lên Vercel bị lỗi)"
+   echo " 0. Quay lại"
+   read -rp "Chọn số: " c
+   case "$c" in
+@@ -1212,6 +1306,9 @@ menu_du_lieu() {
+        local u; read -rsp "Dán chuỗi kết nối Neon TRỐNG (chữ không hiện): " u; echo; chep_len_neon "$(echo "$u" | tr -d '[:space:]')" ;;
+     5) tao_ban_chuyen_vps ;;
+     6) local f; read -rp "Đường dẫn tệp .tar.enc: " f; khoi_phuc_vps "$f" ;;
++    7) mo_lai_neon_do_dang ;;
++    9) mo_lai_vps_do_dang ;;
++    8) if [ -s "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" ]; then tail -n 15 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}"; chuyen_dang_do && vang "Có lần chuyển CHƯA kết thúc (dòng cuối). Gửi ảnh cho Claude trước khi làm tiếp."; else echo "Chưa có lần chuyển nào."; fi ;;
+   esac
+ }
+ 
+@@ -1516,6 +1613,54 @@ kiem_tra_web() {
+   return "$loi"
+ }
+ 
++# RE5-004: phiên bản Vercel CLI ghim (không dùng @latest). Đã kiểm: env add --force, giá trị qua stdin, deploy chờ xong.
++VERCEL_CLI_VERSION="65.14.0"
++
++# Kịch bản chạy trong container node:22 để đặt env và đưa lên Vercel. In mốc «BUOC …» để máy ghi nhật ký chuyển nguồn.
++# Không xóa biến trước khi thêm (trước đây env rm rồi env add: thêm lỗi là production mất biến); --force ghi đè một bước.
++chay_vercel_sh() {
++  cat <<'SH'
++set -uo pipefail
++V="npx -y vercel@${VERCEL_CLI_VERSION:?} --token $TOK ${SCOPE:+--scope $SCOPE}"
++ENVF="${ENVF:-/x/env}"
++$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
++echo "BUOC env-bat-dau"
++while IFS= read -r line; do
++  [ -z "$line" ] && continue
++  k="${line%%=*}"; val="${line#*=}"
++  printf '%s' "$val" | $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
++done < "$ENVF"
++echo "BUOC env-xong"
++echo "BUOC deploy-bat-dau"
++url="$($V deploy --prod --yes 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; exit 3; }
++case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; exit 3 ;; esac
++$V inspect "$url" 2>&1 | grep -qi 'ready' || { echo "LOI: bản dựng $url chưa Ready"; exit 3; }
++echo "BUOC deploy-xong $url"
++if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
++SH
++}
++
++# Nhật ký chuyển nguồn bền (sống qua mất SSH, kill, khởi động lại). Mỗi dòng: thời điểm UTC, bước, ghi chú.
++NHAT_KY_CHUYEN_SUFFIX=".chuyen"
++ghi_chuyen() {
++  local f="${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
++  (umask 077; printf '%s %s %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1" "${2:-}" >> "$f")
++}
++# 0 = có lần chuyển chưa kết thúc (bước cuối không phải «xong» hay «da-mo-lai»).
++chuyen_dang_do() {
++  local f="${CONF}${NHAT_KY_CHUYEN_SUFFIX}" last
++  [ -s "$f" ] || return 1
++  last="$(tail -n 1 "$f" | awk '{print $2}')"
++  [ "$last" != "xong" ] && [ "$last" != "da-mo-lai" ]
++}
++# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh.
++buoc_vercel() {
++  if grep -q '^BUOC deploy-xong' "$1"; then echo xong
++  elif grep -q '^BUOC deploy-bat-dau' "$1"; then echo deploy-chua-ro
++  elif grep -q '^BUOC env-bat-dau' "$1"; then echo env-do-dang
++  else echo chua-doi-vercel; fi
++}
++
+ # =====================================================================
+ # Đưa web lên một tài khoản Vercel (mới hoặc khác)
+ # =====================================================================
+@@ -1573,28 +1718,24 @@ TXT
+   thu_vercel="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-vercel.XXXXXXXX")" || return 1
+   trap 'rm -f "$thu_vercel/env" "$thu_vercel/chay.sh"; rmdir "$thu_vercel"' EXIT
+   cp "$f" "$thu_vercel/env" || return 1
+-  cat > "$thu_vercel/chay.sh" <<'SH'
+-set -uo pipefail
+-V="npx -y vercel@latest --token $TOK ${SCOPE:+--scope $SCOPE}"
+-$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
+-while IFS= read -r line; do
+-  [ -z "$line" ] && continue
+-  k="${line%%=*}"; val="${line#*=}"
+-  $V env rm "$k" production --yes >/dev/null 2>&1 || true
+-  printf '%s' "$val" | $V env add "$k" production >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
+-done < /x/env
+-$V deploy --prod --yes 2>&1 | tail -n 5 || exit 1
+-if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
+-SH
++  chay_vercel_sh > "$thu_vercel/chay.sh"
+   if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
+     khoa_va_doi_soat_chuyen "$neon_url" || return 1
+   fi
+-  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
+-  local kq=$?
+-  if [ "$kq" != 0 ]; then
+-    do_ "✘ Chưa đưa lên được. Chụp màn hình gửi Claude."
++  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen vercel-bat-dau "$proj"
++  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" \
++    -e VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" node:22 bash /x/chay.sh | tee "$thu_vercel/ra.txt"
++  local kq=${PIPESTATUS[0]} buoc
++  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
++  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj"
++  if [ "$kq" != 0 ] || [ "$buoc" != xong ]; then
++    do_ "✘ Chưa đưa lên được (bước: $buoc). Chụp màn hình gửi Claude."
++    case "$buoc" in
++      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa: Vercel có thể đã ghi vào Neon." ;;
++      env-do-dang) vang "Một phần biến môi trường trên Vercel đã được ghi đè, bản đang chạy chưa đổi." ;;
++    esac
+     if [ "$CHUYEN_DA_KHOA" = 1 ]; then
+-      vang "Nguồn VPS vẫn khóa. Kiểm tra trạng thái Vercel và các ghi trên Neon trước khi quyết định mở nguồn cũ."
++      vang "Nguồn VPS vẫn khóa. Kiểm tra trạng thái Vercel và các ghi trên Neon trước khi quyết định mở nguồn cũ. Nhật ký: ${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
+     fi
+     return 1
+   fi
+diff --git a/eval/asr/luong-ky/modal/cau-hinh.json b/eval/asr/luong-ky/modal/cau-hinh.json
+index 9e1bbd7..deb5500 100644
+--- a/eval/asr/luong-ky/modal/cau-hinh.json
++++ b/eval/asr/luong-ky/modal/cau-hinh.json
+@@ -81,7 +81,9 @@
+     "_ghi_chu_tat_may": "tat_may_chu_sau_giay: máy model chữ rảnh bao lâu thì tự tắt (Modal scaledown_window, tối thiểu 2 s). Khi đang nhận dạng tệp dài, máy nhận dạng gọi /health 30 s một lần để giữ máy chữ bật.",
+     "_ghi_chu_gpu_chu": "model_chu chỉ L40S (26/11): bản chụp bộ nhớ GPU và bộ đệm Triton gắn với loại GPU; đổi sang A100 làm lần bật đó chậm 2,5–3,5 phút. Thêm lại \"A100-80GB\" nếu L40S thường hết chỗ.",
+     "snapshot_nhan_dang": true,
+-    "_ghi_chu_snapshot_nhan_dang": "snapshot_nhan_dang: true = máy nhận dạng chụp bộ nhớ (cả GPU) sau khi nạp Whisper, SepFormer, Demucs (thử nghiệm alpha của Modal). false = bật máy như cũ. Đổi xong chọn «Cập nhật»."
++    "_ghi_chu_snapshot_nhan_dang": "snapshot_nhan_dang: true = máy nhận dạng chụp bộ nhớ (cả GPU) sau khi nạp Whisper, SepFormer, Demucs (thử nghiệm alpha của Modal). false = bật máy như cũ. Đổi xong chọn «Cập nhật».",
++    "may_du_phong_nhan_dang": 2,
++    "_ghi_chu_may_du_phong": "may_du_phong_nhan_dang: khi đang có việc, Modal giữ sẵn thêm N máy nhận dạng rảnh (buffer_containers, 0–8) để khách đến cùng lúc không chờ máy mới khởi động. Chỉ tốn tiền lúc đang có việc; rảnh 60 s thì tắt. 0 = như trước. Đổi xong chọn «Cập nhật»."
+   },
+   "gia_gpu_usd_gio": {
+     "L4": 0.8,
+diff --git a/eval/asr/luong-ky/modal/modal_app.py b/eval/asr/luong-ky/modal/modal_app.py
+index 02532cc..dc6d6ed 100644
+--- a/eval/asr/luong-ky/modal/modal_app.py
++++ b/eval/asr/luong-ky/modal/modal_app.py
+@@ -145,6 +145,8 @@ ASR_SNAPSHOT = bool(CFG["gpu"].get("snapshot_nhan_dang", False))   # đổi tron
+ 
+ @app.cls(gpu=CFG["gpu"]["nhan_dang"], image=asr_image, volumes={"/cache": asr_cache}, secrets=[SECRET],
+          scaledown_window=60, timeout=1800, max_containers=9, min_containers=min(9, int(os.environ.get("TYZO_ASR_WARM") or 0)),
++         # Đang có việc thì giữ sẵn N máy rảnh: khách đến cùng lúc không phải xếp hàng chờ máy mới khởi động (đo 28/11: 4 lệnh song song bị xử lý lần lượt, người cuối chờ 31 s).
++         buffer_containers=max(0, min(8, int(CFG["gpu"].get("may_du_phong_nhan_dang", 2)))),
+          enable_memory_snapshot=ASR_SNAPSHOT,
+          **({"experimental_options": {"enable_gpu_snapshot": True}} if ASR_SNAPSHOT else {}))
+ class Asr:
+diff --git a/migrations/0057_admission_shared_cap_fairness.sql b/migrations/0057_admission_shared_cap_fairness.sql
+new file mode 100644
+index 0000000..e651e1e
+--- /dev/null
++++ b/migrations/0057_admission_shared_cap_fairness.sql
+@@ -0,0 +1,133 @@
++-- RE5-003 (v5.49.6): 0056 chỉ bảo vệ khách chờ cùng provider+model, nhưng trần provider và trần lane dùng chung.
++-- Khách mới model khác (cùng nhà) hoặc nhà khác (cùng lane) chen được suất khách chờ đang cần.
++-- Bản này giữ chữ ký, bảng và mọi trần của 0055/0056; chỉ đổi cách tính chỗ phải nhường:
++--   * khách chờ được xét nếu còn hiện diện (≤ 6 s), đã chờ ≥ 3 s, đến trước, và dùng chung ÍT NHẤT một tài nguyên
++--     có trần với khách mới (cùng lane, hoặc cùng provider — trần provider và phần không-live tính theo provider);
++--   * duyệt theo thứ tự đến; khách chờ chỉ giữ chỗ khi CHÍNH họ nhận được suất trên mọi tài nguyên của họ
++--     (lane, provider, provider+model, phần không-live, suất riêng, không có lượt «không chắc») — bài học RE4-003;
++--   * giữ chỗ thì trừ phần còn trống của từng tài nguyên; khách mới được nhận khi mọi tài nguyên của mình còn chỗ.
++create or replace function tyzo_admit(
++  p_id text, p_user text, p_provider text, p_model text, p_lane text,
++  p_defaults jsonb, p_stale_seconds integer, p_ref text
++) returns text language plpgsql as $$
++declare
++  cfg jsonb; lim jsonb; my_since timestamptz; now_at timestamptz; ahead integer := 0; free integer;
++  n_lane integer; n_own integer; n_provider integer; n_model integer; n_uncertain integer; n_provider_nonlive integer;
++  c_lane integer; c_user integer; c_provider integer; c_model integer; c_reserve integer;
++  m_lane jsonb; m_prov jsonb; m_model jsonb; m_nonlive jsonb; m_own jsonb; m_unc jsonb;
++  r record; k_lane text; k_prov text; k_model text; k_own text; r_lane_cap integer; r_user_cap integer;
++  wait_live integer := 6; starve integer := 3;
++  -- Từ khóa mở thân hàm để cuối dòng: migrate.mjs từ chối dòng mở đầu bằng BEGIN/COMMIT/ROLLBACK.
++  claimed boolean; begin
++  perform pg_advisory_xact_lock(84201912);
++  now_at := clock_timestamp();
++  select value::jsonb into cfg from room_settings where key = 'work_admission';
++  lim := p_defaults || coalesce(cfg, '{}'::jsonb);
++  if not coalesce((lim->>'enabled')::boolean, true) then return 'disabled'; end if;
++  c_lane := (lim->>p_lane)::int;
++  c_user := (lim->>(case when p_lane = 'modal' then 'perUserModal' else 'perUser' end))::int;
++  c_provider := (lim->>'perProvider')::int;
++  c_model := (lim->>'perModel')::int;
++  c_reserve := greatest(0, coalesce((lim->>'liveReserve')::int, 0));
++  if c_lane is null or c_user is null or c_provider is null or c_model is null then
++    raise exception 'Cấu hình nhận việc không hợp lệ.';
++  end if;
++  update work_admissions set status = 'unknown', finished_at = clock_timestamp()
++    where status = 'running' and heartbeat_at <= now_at - make_interval(secs => p_stale_seconds);
++  -- Mức đang dùng, một lần, thành các bảng tra (khóa là mảng JSON để không lẫn ký tự phân cách).
++  with active as (
++    select lane, user_id, provider, model, status = 'unknown' as uncertain
++    from work_admissions where status in ('running', 'unknown')
++    union all
++    select 'batch', j.user_id, j.provider, j.model, j.state = 'unknown'
++    from run_async_asr_jobs j
++    where j.state in ('pending', 'running', 'unknown') and j.deadline_at > now_at
++      and not exists (select 1 from work_admissions w where w.ref = j.call_id and w.status in ('running', 'unknown'))
++  )
++  select
++    coalesce((select jsonb_object_agg(k, n) from (select lane as k, count(*) n from active group by lane) x), '{}'),
++    coalesce((select jsonb_object_agg(k, n) from (select provider as k, count(*) n from active group by provider) x), '{}'),
++    coalesce((select jsonb_object_agg(k, n) from (select jsonb_build_array(provider, model)::text as k, count(*) n from active group by provider, model) x), '{}'),
++    coalesce((select jsonb_object_agg(k, n) from (select provider as k, count(*) n from active where lane <> 'live' group by provider) x), '{}'),
++    coalesce((select jsonb_object_agg(k, n) from (select jsonb_build_array(user_id, lane)::text as k, count(*) n from active group by user_id, lane) x), '{}'),
++    coalesce((select jsonb_object_agg(k, true) from (select distinct jsonb_build_array(user_id, lane, provider)::text as k from active where uncertain) x), '{}')
++  into m_lane, m_prov, m_model, m_nonlive, m_own, m_unc;
++  n_lane := coalesce((m_lane->>p_lane)::int, 0);
++  n_provider := coalesce((m_prov->>p_provider)::int, 0);
++  n_model := coalesce((m_model->>jsonb_build_array(p_provider, p_model)::text)::int, 0);
++  n_provider_nonlive := coalesce((m_nonlive->>p_provider)::int, 0);
++  n_own := coalesce((m_own->>jsonb_build_array(p_user, p_lane)::text)::int, 0);
++  n_uncertain := case when m_unc ? jsonb_build_array(p_user, p_lane, p_provider)::text then 1 else 0 end;
++  if n_uncertain > 0 then return 'uncertain'; end if;
++  -- Khách đã dùng đủ suất riêng: chờ chính mình, không xếp hàng chặn người khác.
++  if n_own >= c_user then return 'busy'; end if;
++  free := least(c_lane - n_lane, c_provider - n_provider, c_model - n_model);
++  -- Phần dành riêng cho live giới hạn việc không-live đã nhận; live đang dùng phần đó không tính lại.
++  if p_lane <> 'live' then free := least(free, c_provider - c_reserve - n_provider_nonlive); end if;
++  if free <= 0 then
++    -- Hết suất: chỉ ghi chỗ chờ và tính vị trí (đường bận ngắn nhất dưới khóa).
++    insert into work_waiters (user_id, provider, model, lane) values (p_user, p_provider, p_model, p_lane)
++      on conflict (provider, model, lane, user_id) do update set seen_at = now_at,
++        -- Đã rời hàng (nhận suất rồi, hoặc bỏ đi quá wait_live) thì xếp lại từ cuối.
++        since = case when work_waiters.seen_at <= now_at - make_interval(secs => wait_live)
++                     then now_at else work_waiters.since end
++      returning since into my_since;
++    select count(*) into ahead from work_waiters w
++      where (w.lane = p_lane or w.provider = p_provider) and w.user_id <> p_user
++        and w.seen_at > now_at - make_interval(secs => wait_live)
++        and (w.since, w.user_id) < (my_since, p_user);
++    return 'busy:' || (ahead + 1);
++  end if;
++  select min(since) into my_since from work_waiters
++    where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user
++      and seen_at > now_at - make_interval(secs => wait_live);
++  -- Nhường theo thứ tự đến cho khách chờ đủ điều kiện, trừ dần phần còn trống của từng tài nguyên.
++  for r in
++    select w.user_id, w.provider, w.model, w.lane from work_waiters w
++    where w.user_id <> p_user
++      and (w.lane = p_lane or w.provider = p_provider)
++      and w.seen_at > now_at - make_interval(secs => wait_live)
++      and w.since <= now_at - make_interval(secs => starve)
++      and (my_since is null or (w.since, w.user_id) < (my_since, p_user))
++    order by w.since, w.user_id, w.provider, w.model, w.lane
++  loop
++    k_lane := r.lane; k_prov := r.provider; k_model := jsonb_build_array(r.provider, r.model)::text;
++    k_own := jsonb_build_array(r.user_id, r.lane)::text;
++    r_lane_cap := (lim->>r.lane)::int;
++    r_user_cap := (lim->>(case when r.lane = 'modal' then 'perUserModal' else 'perUser' end))::int;
++    claimed := r_lane_cap is not null
++      and not (m_unc ? jsonb_build_array(r.user_id, r.lane, r.provider)::text)
++      and coalesce((m_own->>k_own)::int, 0) < r_user_cap
++      and coalesce((m_lane->>k_lane)::int, 0) < r_lane_cap
++      and coalesce((m_prov->>k_prov)::int, 0) < c_provider
++      and coalesce((m_model->>k_model)::int, 0) < c_model
++      and (r.lane = 'live' or coalesce((m_nonlive->>k_prov)::int, 0) < c_provider - c_reserve);
++    if claimed then
++      m_lane := jsonb_set(m_lane, array[k_lane], to_jsonb(coalesce((m_lane->>k_lane)::int, 0) + 1));
++      m_prov := jsonb_set(m_prov, array[k_prov], to_jsonb(coalesce((m_prov->>k_prov)::int, 0) + 1));
++      m_model := jsonb_set(m_model, array[k_model], to_jsonb(coalesce((m_model->>k_model)::int, 0) + 1));
++      m_own := jsonb_set(m_own, array[k_own], to_jsonb(coalesce((m_own->>k_own)::int, 0) + 1));
++      if r.lane <> 'live' then
++        m_nonlive := jsonb_set(m_nonlive, array[k_prov], to_jsonb(coalesce((m_nonlive->>k_prov)::int, 0) + 1));
++      end if;
++      ahead := ahead + 1;
++    end if;
++  end loop;
++  if coalesce((m_lane->>p_lane)::int, 0) >= c_lane
++    or coalesce((m_prov->>p_provider)::int, 0) >= c_provider
++    or coalesce((m_model->>jsonb_build_array(p_provider, p_model)::text)::int, 0) >= c_model
++    or (p_lane <> 'live' and coalesce((m_nonlive->>p_provider)::int, 0) >= c_provider - c_reserve) then
++    insert into work_waiters (user_id, provider, model, lane) values (p_user, p_provider, p_model, p_lane)
++      on conflict (provider, model, lane, user_id) do update set seen_at = now_at,
++        -- Đã rời hàng (nhận suất rồi, hoặc bỏ đi quá wait_live) thì xếp lại từ cuối.
++        since = case when work_waiters.seen_at <= now_at - make_interval(secs => wait_live)
++                     then now_at else work_waiters.since end;
++    return 'busy:' || (ahead + 1);
++  end if;
++  if my_since is not null then
++    update work_waiters set seen_at = '-infinity' where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user;
++  end if;
++  insert into work_admissions (id, user_id, provider, model, lane, ref)
++  values (p_id, p_user, p_provider, p_model, p_lane, p_ref);
++  return p_id;
++end $$;
+diff --git a/migrations/0058_modal_settlement_usd.sql b/migrations/0058_modal_settlement_usd.sql
+new file mode 100644
+index 0000000..90d8fa9
+--- /dev/null
++++ b/migrations/0058_modal_settlement_usd.sql
+@@ -0,0 +1,3 @@
++-- MAIN-040-B (v5.49.6): chi phí GPU Modal thật của từng lượt, ghi TRƯỚC chứng từ chi phí bền.
++-- Nếu ghi chứng từ lỗi (lượt thành «mat-phan-hoi»), đối soát vẫn biết số tiền nhà cung cấp đã tính. Chỉ thêm cột.
++alter table run_modal_settlements add column if not exists provider_usd numeric;
+diff --git a/package.json b/package.json
+index 237ee1e..6306cbf 100644
+--- a/package.json
++++ b/package.json
+@@ -19,7 +19,7 @@
+     "typecheck": "tsc --noEmit",
+     "check:auth": "node scripts/check-auth-invariant.mjs",
+     "check:layout": "vite build && node scripts/studio-layout-matrix.mjs",
+-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/pg-pool.test.ts src/lib/request-body.test.ts src/lib/sub/asr-test.test.ts src/lib/sub/asr-score.test.ts src/lib/sub/sparse-note.test.ts src/lib/sub/asr-score-view.test.ts src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/admin/admin-groups.test.ts src/lib/dock.test.ts src/lib/tool-wheel.test.ts src/lib/customer-menu.test.ts src/lib/admin/admin-bottom-tabs.test.ts src/lib/admin/admin-config-pages.test.ts src/lib/sub/glossary.test.ts src/lib/sub/ali-filetrans.test.ts src/lib/sub/ali-asr-to-segs.test.ts src/lib/sub/genre-prompts.test.ts src/lib/sub/polish.test.ts src/lib/polish/polish-prompts.test.ts src/lib/polish/polish-estimate.test.ts src/lib/polish/polish-models.test.ts src/lib/polish/polish-hold.test.ts src/lib/polish/polish-review.test.ts src/lib/sub/cast-voice.test.ts src/lib/sub/narration-sync.test.ts src/lib/sub/audio-playback.test.ts src/lib/room-plan-prices.test.ts src/lib/sub/pitch-voice.test.ts src/lib/sub/diagnostics.test.ts src/lib/sub/translate-batch.test.ts src/lib/sub/analyze.test.ts src/lib/sub/asr-retry.test.ts src/lib/sub/lang-check.test.ts src/lib/sub/quality.test.ts src/lib/theme/theme.test.ts src/lib/theme/future-look.test.ts src/lib/theme/accent.test.ts src/lib/sub/key-check.test.ts src/lib/sub/http-deadline.test.ts src/lib/sub/media-sniff.test.ts src/lib/quality-board.test.ts src/lib/sub/overlap.test.ts src/lib/sub/silence.test.ts src/lib/sub/gap-scan.test.ts src/lib/sub/vad-eval.test.ts src/lib/sub/vad.test.ts src/lib/sub/chunk-plan.test.ts src/lib/sub/filter-retry.test.ts src/lib/sub/groq-board.test.ts src/lib/sub/alibaba-price.test.ts src/lib/run-desk.test.ts src/lib/app-version.test.ts src/lib/affiliate.test.ts src/lib/affiliate-payout.test.ts src/lib/glossary-share.test.ts src/lib/glossary-import.test.ts src/lib/glossary-review.test.ts src/lib/sub/speech-index.test.ts src/lib/sub/stage-progress.test.ts src/lib/room-plans.test.ts src/lib/guard.test.ts src/lib/retry-load.test.ts src/lib/sub/raw-srt.test.ts src/lib/sub/word-time.test.ts src/lib/sub/whisper-split.test.ts src/lib/billing/run-bill.test.ts src/lib/billing/token-math.test.ts src/lib/token-desk.test.ts src/lib/billing/token-flow.test.ts src/lib/billing/tyzo-modal-charge.test.ts src/lib/billing/tyzo-modal-race.test.ts src/lib/billing/token-balance-race.test.ts src/lib/billing/gate-reserve.test.ts src/lib/billing/re2-regression.test.ts src/lib/sub/merge-interjections.test.ts src/lib/billing/run-ticket.test.ts src/lib/payment/pay-confirm.test.ts src/lib/payment/money-flow.test.ts src/lib/auth/mailer.test.ts src/lib/auth/changed-letter.test.ts src/lib/staff-role.test.ts src/lib/admin/admin-allow.test.ts src/lib/payment/pay-match.test.ts src/lib/mail-domains.test.ts src/lib/link-check.test.ts src/lib/overview-data.test.ts src/lib/mask-file-name.test.ts src/lib/cost-estimate.test.ts src/lib/sub/asr-house.test.ts src/lib/sub/room-models.test.ts src/lib/room-turn.test.ts src/lib/rights-consent.test.ts src/lib/payment/pay-status.test.ts src/lib/sub/link-asr-note.test.ts src/lib/sub/provider.test.ts src/lib/client-bundle.test.ts src/lib/sub/poll-loop.test.ts src/lib/sub/r2-sign.test.ts src/lib/sub/r2-key.test.ts src/lib/sub/wav-stream.test.ts src/lib/sub/r2-put.test.ts src/lib/sub/r2-guide.test.ts src/lib/packs/pack-assign.test.ts src/lib/rent-show.test.ts src/lib/audit-note.test.ts src/lib/turn-pack.test.ts src/lib/service-pack.test.ts src/lib/admin/admin-tabs.test.ts src/lib/payment/money-extra.test.ts src/lib/payment/money-profit.test.ts src/lib/payment/money-extra-data.test.ts src/components/studio-layout.test.ts src/components/review-continue.test.ts src/components/info-tip.test.ts src/components/entry-gate.test.ts src/components/version-mark.test.ts src/lib/home-state.test.ts src/lib/home-action.test.ts src/lib/stale-build.test.ts src/lib/history-view.test.ts src/lib/ticket-line.test.ts src/lib/provider-spend.test.ts src/lib/provider-spend-journal.test.ts src/lib/saved-runs.test.ts src/lib/first-ask.test.ts src/lib/usage-tally.test.ts src/lib/palette-match.test.ts src/lib/sub/export-format.test.ts src/lib/wallet-view.test.ts src/lib/ledger-view.test.ts src/lib/sub/model-role.test.ts src/lib/sub/model-grade.test.ts src/lib/sub/grade-measure.test.ts src/lib/packs/pack-auto.test.ts src/lib/packs/pack-fit.test.ts src/lib/sub/model-short.test.ts src/lib/packs/pack-summary.test.ts src/lib/packs/pack-order.test.ts src/lib/packs/pack-status.test.ts src/lib/price-house.test.ts src/lib/sub/model-catalog.test.ts src/lib/device-caps.test.ts src/lib/live/live.test.ts src/lib/live/cumulative-usage.test.ts src/lib/live/live-bridge-audit.test.ts src/lib/live/live-settle.test.ts src/lib/live/live-settle-fault.test.ts src/lib/live/live-wire.test.ts src/lib/live/live-audio.test.ts src/lib/live/live-mic.test.ts src/lib/live/live-tab.test.ts src/lib/live/live-session.test.ts src/lib/live/live-view.test.ts src/lib/live/live-export.test.ts src/lib/support-contact.test.ts src/lib/guide-topics.test.ts src/lib/terms.test.ts src/lib/back-nav.test.ts src/lib/ticket-name.test.ts src/lib/service-status.test.ts src/lib/provider-doors.test.ts src/lib/packs/pack-books.test.ts src/lib/payment/money-format.test.ts src/components/provider-admin-board.test.ts src/lib/rent-rows.test.ts src/lib/asr-picker.test.ts src/lib/sub/key-list.test.ts src/lib/sub/model-total.test.ts src/lib/live/live-show.test.ts src/lib/live/live-caption.test.ts src/lib/no-native-dialog.test.ts src/lib/payment/pay-ending.test.ts src/lib/app-api.test.ts src/lib/app-link.test.ts src/lib/request-ip.test.ts src/components/tap-align.test.ts src/lib/risk-rules.test.ts src/components/rail-layer.test.ts src/lib/live/caption-layout.test.ts src/lib/live/live-gate.test.ts src/lib/live/live-history.test.ts src/lib/live/voice-filter.test.ts src/lib/mail-desk.test.ts src/lib/mail-letter.test.ts src/lib/studio-steps.test.ts src/lib/sub/voice-lane.test.ts src/lib/usd-fix.test.ts && node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/upstream-outcome.test.ts src/lib/pipeline/translate-claim.test.ts src/lib/pipeline/translate-edit.test.ts src/lib/sub/r2-upload-run.test.ts src/lib/backend-audit.test.ts src/lib/billing/async-asr.test.ts src/lib/sub/mp4-range.test.ts src/lib/sub/media-lifecycle.test.ts src/lib/pipeline/job-race.test.ts src/lib/pipeline/recognize-race.test.ts src/lib/billing/run-gate.test.ts src/lib/billing/audio-probe.test.ts src/lib/billing/work-lease.test.ts src/lib/billing/work-lease-pg.test.ts src/lib/billing/work-admission-pg.test.ts",
++    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/pg-pool.test.ts src/lib/request-body.test.ts src/lib/sub/asr-test.test.ts src/lib/sub/asr-score.test.ts src/lib/sub/sparse-note.test.ts src/lib/sub/asr-score-view.test.ts src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/admin/admin-groups.test.ts src/lib/dock.test.ts src/lib/tool-wheel.test.ts src/lib/customer-menu.test.ts src/lib/admin/admin-bottom-tabs.test.ts src/lib/admin/admin-config-pages.test.ts src/lib/sub/glossary.test.ts src/lib/sub/ali-filetrans.test.ts src/lib/sub/ali-asr-to-segs.test.ts src/lib/sub/genre-prompts.test.ts src/lib/sub/polish.test.ts src/lib/polish/polish-prompts.test.ts src/lib/polish/polish-estimate.test.ts src/lib/polish/polish-models.test.ts src/lib/polish/polish-hold.test.ts src/lib/polish/polish-review.test.ts src/lib/sub/cast-voice.test.ts src/lib/sub/narration-sync.test.ts src/lib/sub/audio-playback.test.ts src/lib/room-plan-prices.test.ts src/lib/sub/pitch-voice.test.ts src/lib/sub/diagnostics.test.ts src/lib/sub/translate-batch.test.ts src/lib/sub/analyze.test.ts src/lib/sub/asr-retry.test.ts src/lib/sub/lang-check.test.ts src/lib/sub/quality.test.ts src/lib/theme/theme.test.ts src/lib/theme/future-look.test.ts src/lib/theme/accent.test.ts src/lib/sub/key-check.test.ts src/lib/sub/http-deadline.test.ts src/lib/sub/media-sniff.test.ts src/lib/quality-board.test.ts src/lib/sub/overlap.test.ts src/lib/sub/silence.test.ts src/lib/sub/gap-scan.test.ts src/lib/sub/vad-eval.test.ts src/lib/sub/vad.test.ts src/lib/sub/chunk-plan.test.ts src/lib/sub/filter-retry.test.ts src/lib/sub/groq-board.test.ts src/lib/sub/alibaba-price.test.ts src/lib/run-desk.test.ts src/lib/app-version.test.ts src/lib/affiliate.test.ts src/lib/affiliate-payout.test.ts src/lib/glossary-share.test.ts src/lib/glossary-import.test.ts src/lib/glossary-review.test.ts src/lib/sub/speech-index.test.ts src/lib/sub/stage-progress.test.ts src/lib/room-plans.test.ts src/lib/guard.test.ts src/lib/retry-load.test.ts src/lib/sub/raw-srt.test.ts src/lib/sub/word-time.test.ts src/lib/sub/whisper-split.test.ts src/lib/billing/run-bill.test.ts src/lib/billing/token-math.test.ts src/lib/token-desk.test.ts src/lib/billing/token-flow.test.ts src/lib/billing/tyzo-modal-charge.test.ts src/lib/billing/tyzo-modal-race.test.ts src/lib/billing/modal-work.test.ts src/lib/billing/token-balance-race.test.ts src/lib/billing/gate-reserve.test.ts src/lib/billing/re2-regression.test.ts src/lib/billing/re5-001.test.ts src/lib/sub/merge-interjections.test.ts src/lib/billing/run-ticket.test.ts src/lib/payment/pay-confirm.test.ts src/lib/payment/money-flow.test.ts src/lib/auth/mailer.test.ts src/lib/auth/changed-letter.test.ts src/lib/staff-role.test.ts src/lib/admin/admin-allow.test.ts src/lib/payment/pay-match.test.ts src/lib/mail-domains.test.ts src/lib/link-check.test.ts src/lib/overview-data.test.ts src/lib/mask-file-name.test.ts src/lib/cost-estimate.test.ts src/lib/sub/asr-house.test.ts src/lib/sub/room-models.test.ts src/lib/room-turn.test.ts src/lib/rights-consent.test.ts src/lib/payment/pay-status.test.ts src/lib/sub/link-asr-note.test.ts src/lib/sub/provider.test.ts src/lib/client-bundle.test.ts src/lib/sub/poll-loop.test.ts src/lib/sub/r2-sign.test.ts src/lib/sub/r2-key.test.ts src/lib/sub/wav-stream.test.ts src/lib/sub/r2-put.test.ts src/lib/sub/r2-guide.test.ts src/lib/packs/pack-assign.test.ts src/lib/rent-show.test.ts src/lib/audit-note.test.ts src/lib/turn-pack.test.ts src/lib/service-pack.test.ts src/lib/admin/admin-tabs.test.ts src/lib/payment/money-extra.test.ts src/lib/payment/money-profit.test.ts src/lib/payment/money-extra-data.test.ts src/components/studio-layout.test.ts src/components/review-continue.test.ts src/components/info-tip.test.ts src/components/entry-gate.test.ts src/components/version-mark.test.ts src/lib/home-state.test.ts src/lib/home-action.test.ts src/lib/stale-build.test.ts src/lib/history-view.test.ts src/lib/ticket-line.test.ts src/lib/provider-spend.test.ts src/lib/provider-spend-journal.test.ts src/lib/saved-runs.test.ts src/lib/first-ask.test.ts src/lib/usage-tally.test.ts src/lib/palette-match.test.ts src/lib/sub/export-format.test.ts src/lib/wallet-view.test.ts src/lib/ledger-view.test.ts src/lib/sub/model-role.test.ts src/lib/sub/model-grade.test.ts src/lib/sub/grade-measure.test.ts src/lib/packs/pack-auto.test.ts src/lib/packs/pack-fit.test.ts src/lib/sub/model-short.test.ts src/lib/packs/pack-summary.test.ts src/lib/packs/pack-order.test.ts src/lib/packs/pack-status.test.ts src/lib/price-house.test.ts src/lib/sub/model-catalog.test.ts src/lib/device-caps.test.ts src/lib/live/live.test.ts src/lib/live/cumulative-usage.test.ts src/lib/live/live-bridge-audit.test.ts src/lib/live/live-settle.test.ts src/lib/live/live-settle-fault.test.ts src/lib/live/live-wire.test.ts src/lib/live/live-audio.test.ts src/lib/live/live-mic.test.ts src/lib/live/live-tab.test.ts src/lib/live/live-session.test.ts src/lib/live/live-view.test.ts src/lib/live/live-export.test.ts src/lib/support-contact.test.ts src/lib/guide-topics.test.ts src/lib/terms.test.ts src/lib/back-nav.test.ts src/lib/ticket-name.test.ts src/lib/service-status.test.ts src/lib/provider-doors.test.ts src/lib/packs/pack-books.test.ts src/lib/payment/money-format.test.ts src/components/provider-admin-board.test.ts src/lib/rent-rows.test.ts src/lib/asr-picker.test.ts src/lib/sub/key-list.test.ts src/lib/sub/model-total.test.ts src/lib/live/live-show.test.ts src/lib/live/live-caption.test.ts src/lib/no-native-dialog.test.ts src/lib/payment/pay-ending.test.ts src/lib/app-api.test.ts src/lib/app-link.test.ts src/lib/request-ip.test.ts src/components/tap-align.test.ts src/lib/risk-rules.test.ts src/components/rail-layer.test.ts src/lib/live/caption-layout.test.ts src/lib/live/live-gate.test.ts src/lib/live/live-history.test.ts src/lib/live/voice-filter.test.ts src/lib/live/leftover-script.test.ts src/lib/mail-desk.test.ts src/lib/mail-letter.test.ts src/lib/studio-steps.test.ts src/lib/sub/voice-lane.test.ts src/lib/usd-fix.test.ts && node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/upstream-outcome.test.ts src/lib/pipeline/translate-claim.test.ts src/lib/pipeline/translate-edit.test.ts src/lib/sub/r2-upload-run.test.ts src/lib/backend-audit.test.ts src/lib/billing/async-asr.test.ts src/lib/sub/mp4-range.test.ts src/lib/sub/media-lifecycle.test.ts src/lib/pipeline/job-race.test.ts src/lib/pipeline/recognize-race.test.ts src/lib/billing/run-gate.test.ts src/lib/billing/audio-probe.test.ts src/lib/billing/work-lease.test.ts src/lib/billing/work-lease-pg.test.ts src/lib/billing/work-admission-pg.test.ts",
+     "lint": "eslint .",
+     "format": "prettier --write .",
+     "asr:score": "node --experimental-strip-types --import ./scripts/register-ts.mjs scripts/asr-bench.ts score",
+diff --git a/scripts/admission-bench.ts b/scripts/admission-bench.ts
+index 842492b..3c30fa6 100644
+--- a/scripts/admission-bench.ts
++++ b/scripts/admission-bench.ts
+@@ -131,7 +131,13 @@ async function cohort(clients: number, durationMs: number) {
+   const stopAt = performance.now() + durationMs;
+   const sampler = sampleViolations(stopAt + 300);
+   const perClient = new Array<number>(clients).fill(0);
++  // RE5-005: theo lane, và thời gian dài nhất một khách không được nhận (không phụ thuộc độ dài cửa sổ).
++  const byLane = new Map<string, { lat: number[]; ok: number; busy: number }>();
++  const laneOf = (i: number) => keyFor(i).lane;
++  const lastOk = new Array<number>(clients).fill(0);
++  const maxGap = new Array<number>(clients).fill(0);
+   const t0 = performance.now();
++  lastOk.fill(t0);
+   await Promise.all(
+     Array.from({ length: clients }, async (_, i) => {
+       const sql = sqls[i % INSTANCES];
+@@ -146,16 +152,30 @@ async function cohort(clients: number, durationMs: number) {
+           lat.push(entered - t);
+           out.ok += 1;
+           perClient[i] += 1;
++          const L = byLane.get(laneOf(i)) ?? { lat: [], ok: 0, busy: 0 };
++          L.lat.push(entered - t); L.ok += 1; byLane.set(laneOf(i), L);
++          maxGap[i] = Math.max(maxGap[i], entered - lastOk[i]);
++          lastOk[i] = performance.now();
+         } catch (e) {
+           classify(e, out, errors);
+           lat.push(performance.now() - t);
++          const L = byLane.get(laneOf(i)) ?? { lat: [], ok: 0, busy: 0 };
++          L.busy += 1; byLane.set(laneOf(i), L);
+           await new Promise((r) => setTimeout(r, 100 + Math.random() * 100)); // Retry-After thu nhỏ
+         }
+       }
+     }),
+   );
+   const s = await sampler;
+-  const seconds = (performance.now() - t0) / 1000;
++  const end = performance.now();
++  const seconds = (end - t0) / 1000;
++  // Khách chưa được nhận lần nào: khoảng chờ tính tới cuối đợt.
++  for (let i = 0; i < clients; i++) maxGap[i] = Math.max(maxGap[i], end - lastOk[i]);
++  const lanes = Object.fromEntries([...byLane].map(([lane, v]) => {
++    const gaps = maxGap.filter((_, i) => laneOf(i) === lane);
++    return [lane, { clients: gaps.length, ok: v.ok, busy: v.busy, p50: pct(v.lat, 50), p95: pct(v.lat, 95), p99: pct(v.lat, 99),
++      maxGapMs: { p50: pct(gaps, 50), p95: pct(gaps, 95), max: pct(gaps, 100) } }];
++  }));
+   // RE2-004: công bằng — mỗi khách được nhận bao nhiêu lượt; 0 lượt = bị «đói».
+   const fairness = {
+     starved: perClient.filter((n) => n === 0).length,
+@@ -165,7 +185,7 @@ async function cohort(clients: number, durationMs: number) {
+     admissionsPerSecond: +(out.ok / seconds).toFixed(1),
+     attemptsPerSecond: +((out.ok + out.busy + out.uncertain + out.error) / seconds).toFixed(1),
+   };
+-  return { clients, ...out, p50: pct(lat, 50), p95: pct(lat, 95), p99: pct(lat, 99), max: pct(lat, 100), fairness, errors, ...s };
++  return { clients, ...out, p50: pct(lat, 50), p95: pct(lat, 95), p99: pct(lat, 99), max: pct(lat, 100), fairness, lanes, errors, ...s };
+ }
+ 
+ async function burst(n: number) {
+diff --git a/scripts/re3-restore-pg.test.mjs b/scripts/re3-restore-pg.test.mjs
+index 41358cb..363d025 100644
+--- a/scripts/re3-restore-pg.test.mjs
++++ b/scripts/re3-restore-pg.test.mjs
+@@ -68,6 +68,9 @@ F="$FAKE_DIR"
+ fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
+ pgq() { psql -X -q -tA -U tyzo -d "$1" -c "$2" >/dev/null; }
+ run_cmd() {
++  # RE5-004-C: endpoint ghi Neon bị tắt thì mọi kết nối tới nó lỗi; endpoint chỉ đọc thì phiên read-only.
++  if [[ "$*" == *ep-rw-1* ]] && [ -f "$F/neon_disabled" ]; then echo "The endpoint has been disabled." >&2; return 1; fi
++  if [[ "$*" == *ep-ro-1* ]]; then export PGOPTIONS="-c default_transaction_read_only=on"; fi
+   local cmd="$1"; shift
+   case "$cmd" in
+     df) echo "Filesystem 1K-blocks Used Available Use% Mounted"; echo "fake 999999999 1 999999999 1% /"; return 0 ;;
+@@ -132,13 +135,31 @@ esac
+ echo "docker giả: lệnh lạ $*" >&2; exit 2
+ `;
+ 
++// Neon API giả (RE5-004-C). Key đến qua stdin (-K -), không có trên dòng lệnh.
++const fakeCurl = `#!/usr/bin/env bash
++F="$FAKE_DIR"; cfg="$(cat)"; m=GET; d=""; url=""
++while [ $# -gt 0 ]; do case "$1" in -X) m="$2"; shift 2 ;; -d) d="$2"; shift 2 ;; -H|-m|-K) shift 2 ;; -*) shift ;; *) url="$1"; shift ;; esac; done
++fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
++echo "$m $url $d" >> "$F/neon-calls.log"
++[[ "$cfg" == *"Authorization: Bearer neon-key-thu"* ]] || { echo "401" >&2; exit 22; }
++case "$m $url" in
++  "GET https://console.neon.tech/api/v2/projects?limit=100") echo '{"projects":[{"id":"p1"}]}' ;;
++  "GET https://console.neon.tech/api/v2/projects/p1/endpoints") echo '{"endpoints":[{"id":"ep-rw-1","branch_id":"br-1"}]}' ;;
++  "POST https://console.neon.tech/api/v2/projects/p1/endpoints") fault ro-fail && exit 22; echo '{"endpoint":{"id":"ep-ro-1"}}' ;;
++  "PATCH https://console.neon.tech/api/v2/projects/p1/endpoints/ep-rw-1")
++    if [[ "$d" == *'"disabled":true'* ]]; then fault disable-fail && exit 22; touch "$F/neon_disabled"; else rm -f "$F/neon_disabled"; fi; echo '{}' ;;
++  "DELETE https://console.neon.tech/api/v2/projects/p1/endpoints/ep-ro-1") echo '{}' ;;
++  *) echo "lạ" >&2; exit 22 ;;
++esac
++`;
++
+ function sh(body, { fault = "", input = "" } = {}) {
+   const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
+   const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
+   const libFile = join(work, "lib.sh");
+   writeFileSync(libFile, lib);
+   const script = `source "${libFile}"
+-CONF="${work}/tyzo.conf"; printf 'MODE=full\\nDB=local\\n' > "$CONF"
++CONF="${work}/tyzo.conf"; printf 'MODE=full\\nDB=local\\n' > "$CONF"; [ -n "\${KEEP_JOURNAL:-}" ] || rm -f "$CONF.chuyen"
+ COMPOSE_FILE=/dev/null
+ ${body}`;
+   return spawnSync("bash", ["-c", script], {
+@@ -152,6 +173,7 @@ ${body}`;
+       PGPORT: "55439",
+       FAKE_DIR: work,
+       FAKE_FAULT: fault,
++      PGHOSTADDR: "127.0.0.1",
+     },
+     timeout: 120_000,
+   });
+@@ -163,6 +185,8 @@ before(async () => {
+   spawnSync("mkdir", ["-p", join(work, "bin")]);
+   writeFileSync(join(work, "bin", "docker"), fakeDocker);
+   chmodSync(join(work, "bin", "docker"), 0o755);
++  writeFileSync(join(work, "bin", "curl"), fakeCurl);
++  chmodSync(join(work, "bin", "curl"), 0o755);
+   await adminQ(`do $$ begin if not exists (select 1 from pg_roles where rolname = 'tyzo') then create role tyzo login superuser; end if; end $$`);
+ });
+ after(async () => {
+@@ -271,6 +295,8 @@ pgTest("RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyể
+   r = sh(`chep_len_neon "${NEON}" && khoa_va_doi_soat_chuyen "${NEON}"`, { input: "dong-y\n" });
+   assert.equal(r.status, 0, r.stdout + r.stderr);
+   assert.match(r.stdout, /Neon khớp dữ liệu VPS/);
++  // RE5-004: bước khóa nguồn được ghi bền để lần chạy sau (sau mất SSH/kill) nhận ra lần chuyển dở dang.
++  assert.match(readFileSync(join(work, "tyzo.conf.chuyen"), "utf8"), /^\S+ khoa-nguon neon-khop$/m);
+   assert.ok(!existsSync(join(work, "web_running")), "web VPS phải dừng để không ghi tách đôi");
+   assert.deepEqual(await adminQ("select datallowconn from pg_database where datname='tyzo'"), [{ datallowconn: false }]);
+   await assert.rejects(q("tyzo", "select 1"), { code: "55000" });
+@@ -356,3 +382,75 @@ pgTest("RE3-007: đọc hết mục lục pg_restore khi stdout lớn và có sc
+   assert.equal(r.status, 0, r.stdout + r.stderr);
+   assert.equal(manifest("tyzo"), manifest(NEON));
+ });
++
++// ---- RE5-004-C: khóa ghi Neon (tắt endpoint ghi, chép qua endpoint chỉ đọc) ----
++const NEON_EP = "postgresql://tyzo@ep-rw-1-pooler.test:55439/r3_neon";
++const resetNeon = () => { for (const f of ["neon_disabled", "neon-calls.log"]) spawnSync("rm", ["-f", join(work, f)]); };
++const neonCalls = () => (existsSync(join(work, "neon-calls.log")) ? readFileSync(join(work, "neon-calls.log"), "utf8") : "");
++const journal = () => (existsSync(join(work, "tyzo.conf.chuyen")) ? readFileSync(join(work, "tyzo.conf.chuyen"), "utf8") : "");
++
++pgTest("RE5-004-C: Neon → VPS có khóa ghi: chép qua endpoint chỉ đọc, xong thì Neon giữ khóa, nhật ký ghi lại", async () => {
++  await freshVps(); await freshNeon(true); resetNeon();
++  const r = sh(`chep_tu_neon "${NEON_EP}"`, { input: "dong-y\nc\nneon-key-thu\n" });
++  const j = journal(); // đọc trước: mỗi lần sh() (kể cả manifest) đặt lại nhật ký
++  assert.equal(r.status, 0, r.stdout + r.stderr);
++  assert.match(r.stdout, /Neon đã khóa ghi/);
++  assert.match(r.stdout, /Neon VẪN KHÓA GHI/);
++  assert.equal(manifest("tyzo"), manifest(NEON));
++  assert.ok(existsSync(join(work, "neon_disabled")), "endpoint ghi phải còn tắt sau khi chép xong");
++  const calls = neonCalls();
++  assert.match(calls, /POST .*endpoints .*read_only/);
++  assert.match(calls, /PATCH .*ep-rw-1 .*"disabled":true/);
++  assert.match(calls, /DELETE .*ep-ro-1/);
++  assert.doesNotMatch(calls, /neon-key-thu/, "key không nằm trong tham số dòng lệnh");
++  assert.match(j, / neon-khoa p1 ep-rw-1 ep-ro-1\n.* xong neon-giu-khoa p1 ep-rw-1\n$/);
++});
++
++for (const [fault, why] of [["dump-fail", /Không đọc được Neon/], ["missing-rows", /không khớp bảng kê nguồn/]]) {
++  pgTest(`RE5-004-C: khóa Neon rồi chép lỗi (${fault}) → mở lại ghi Neon, VPS giữ nguyên, nhật ký đóng`, async () => {
++    await freshVps(); await freshNeon(true); resetNeon();
++    const before = manifest("tyzo");
++    const r = sh(`chep_tu_neon "${NEON_EP}"`, { fault, input: "dong-y\nc\nneon-key-thu\n" });
++    const j = journal();
++    assert.notEqual(r.status, 0);
++    assert.match(r.stdout + r.stderr, why);
++    assert.match(r.stdout, /Neon ghi lại được như cũ/);
++    assert.ok(!existsSync(join(work, "neon_disabled")), "endpoint ghi phải được bật lại");
++    assert.equal(manifest("tyzo"), before);
++    assert.match(j, / da-mo-lai neon p1 ep-rw-1\n$/);
++  });
++}
++
++pgTest("RE5-004-C: không tắt được endpoint ghi → không chép, xóa endpoint chỉ đọc, Neon vẫn ghi được", async () => {
++  await freshVps(); await freshNeon(true); resetNeon();
++  const before = manifest("tyzo");
++  const r = sh(`chep_tu_neon "${NEON_EP}"`, { fault: "disable-fail", input: "dong-y\nc\nneon-key-thu\n" });
++  assert.notEqual(r.status, 0);
++  assert.match(r.stdout + r.stderr, /Chưa khóa được ghi trên Neon/);
++  assert.ok(!existsSync(join(work, "neon_disabled")));
++  assert.match(neonCalls(), /DELETE .*ep-ro-1/);
++  assert.equal(manifest("tyzo"), before);
++});
++
++pgTest("RE5-004-C: key Neon sai → dừng trước khi khóa hay chép", async () => {
++  await freshVps(); await freshNeon(true); resetNeon();
++  const before = manifest("tyzo");
++  const r = sh(`chep_tu_neon "${NEON_EP}"`, { input: "dong-y\nc\nkey-sai\n" });
++  assert.notEqual(r.status, 0);
++  assert.match(r.stdout + r.stderr, /Key Neon không thấy endpoint/);
++  assert.doesNotMatch(neonCalls(), /PATCH|POST/);
++  assert.equal(manifest("tyzo"), before);
++});
++
++pgTest("RE5-004-D: mục mở lại Neon đọc nhật ký, cần gõ xác nhận, bật lại endpoint ghi", async () => {
++  await freshVps(); await freshNeon(true); resetNeon();
++  writeFileSync(join(work, "neon_disabled"), "");
++  const body = `printf '2026-11-28T00:00:00Z neon-khoa p1 ep-rw-1 ep-ro-1\\n2026-11-28T00:01:00Z xong neon-giu-khoa p1 ep-rw-1\\n' > "$CONF.chuyen"; mo_lai_neon_do_dang`;
++  let r = sh(body, { input: "khong\n" });
++  assert.notEqual(r.status, 0);
++  assert.ok(existsSync(join(work, "neon_disabled")), "không gõ xác nhận thì không mở");
++  r = sh(body, { input: `mo-lai-neon\nneon-key-thu\n${NEON_EP}\n` });
++  assert.equal(r.status, 0, r.stdout + r.stderr);
++  assert.ok(!existsSync(join(work, "neon_disabled")));
++  assert.match(r.stdout, /Neon ghi lại được như cũ/);
++});
+diff --git a/scripts/re5-004-vercel.test.mjs b/scripts/re5-004-vercel.test.mjs
+new file mode 100644
+index 0000000..531f110
+--- /dev/null
++++ b/scripts/re5-004-vercel.test.mjs
+@@ -0,0 +1,128 @@
++/**
++ * RE5-004: đưa web lên Vercel khi chuyển nguồn. Chạy đúng chay_vercel_sh / buoc_vercel / ghi_chuyen / chuyen_dang_do
++ * trong deploy/vps/tyzo.sh với một «npx» giả lưu env vào tệp và chèn lỗi theo FAKE_FAULT. Không gọi Vercel thật.
++ */
++import assert from "node:assert/strict";
++import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { spawnSync } from "node:child_process";
++import { test } from "node:test";
++
++const root = new URL("..", import.meta.url).pathname;
++const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
++const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
++
++// npx giả: «vercel env add K --environment production [--force]» đọc giá trị từ stdin; không --force mà đã có thì lỗi.
++const fakeNpx = `#!/usr/bin/env bash
++F="$FAKE_DIR"; echo "$*" >> "$F/calls.log"
++fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
++args=("$@"); i=0; while [[ "\${args[$i]}" != vercel@* ]]; do i=$((i+1)); done
++[ "\${args[$i]}" = "vercel@$EXPECT_VERSION" ] || { echo "sai phiên bản \${args[$i]}" >&2; exit 9; }
++rest=("\${args[@]:$((i+1))}")
++sub=""; for a in "\${rest[@]}"; do case "$a" in link|env|deploy|inspect|domains) sub="$a"; break ;; esac; done
++case "$sub" in
++  link) exit 0 ;;
++  env)
++    act=""; k=""; force=0; take=0
++    for a in "\${rest[@]}"; do
++      if [ "$take" = 1 ]; then k="$a"; take=0; continue; fi
++      case "$a" in add|rm) act="$a"; take=1 ;; --force) force=1 ;; esac
++    done
++    if [ "$act" = rm ]; then rm -f "$F/env/$k"; exit 0; fi
++    val="$(cat)"
++    if fault "add-fail-$k"; then exit 1; fi
++    if [ -f "$F/env/$k" ] && [ "$force" != 1 ]; then echo "exists" >&2; exit 1; fi
++    printf '%s' "$val" > "$F/env/$k"; exit 0 ;;
++  deploy)
++    if fault deploy-lost; then exit 1; fi
++    cp -r "$F/env" "$F/deployed-env"; echo "Building..."; echo "https://tyzo-abc.vercel.app"; exit 0 ;;
++  inspect) if fault not-ready; then echo "status ● Error"; else echo "status ● Ready"; fi; exit 0 ;;
++  domains) exit 0 ;;
++esac
++exit 2
++`;
++
++function run(fault = "", { journal = "" } = {}) {
++  const work = mkdtempSync(join(tmpdir(), "re5-004-"));
++  mkdirSync(join(work, "bin")); mkdirSync(join(work, "env"));
++  writeFileSync(join(work, "bin", "npx"), fakeNpx); chmodSync(join(work, "bin", "npx"), 0o755);
++  // Vercel đang có giá trị cũ cho mọi biến.
++  for (const k of ["DATABASE_URL", "BETTER_AUTH_SECRET", "LIVE_BRIDGE_URL"]) writeFileSync(join(work, "env", k), `old-${k}`);
++  writeFileSync(join(work, "vars"), "DATABASE_URL=postgres://neon/new\nBETTER_AUTH_SECRET=new-secret\nLIVE_BRIDGE_URL=wss://x/live\n");
++  if (journal) writeFileSync(join(work, "tyzo.conf.chuyen"), journal);
++  const script = `source "${join(work, "lib.sh")}"
++CONF="${work}/tyzo.conf"
++chay_vercel_sh > "${work}/chay.sh"
++ghi_chuyen vercel-bat-dau tyzo-sub
++VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" ENVF="${work}/vars" TOK=t PROJ=tyzo-sub SCOPE= DOM= bash "${work}/chay.sh" > "${work}/ra.txt" 2>&1
++kq=$?
++b="$(buoc_vercel "${work}/ra.txt")"
++ghi_chuyen "$([ "$kq" = 0 ] && [ "$b" = xong ] && echo xong || echo "loi-$b")" tyzo-sub
++echo "kq=$kq buoc=$b"
++if chuyen_dang_do; then echo dang-do; else echo da-ket-thuc; fi`;
++  writeFileSync(join(work, "lib.sh"), lib);
++  const r = spawnSync("bash", ["-c", script], {
++    encoding: "utf8",
++    env: { PATH: `${work}/bin:${process.env.PATH}`, HOME: work, TMPDIR: work, FAKE_DIR: work, FAKE_FAULT: fault, EXPECT_VERSION: /VERCEL_CLI_VERSION="([^"]+)"/.exec(text)[1] },
++    timeout: 60_000,
++  });
++  const env = (k) => readFileSync(join(work, "env", k), "utf8");
++  return { r, work, env, calls: readFileSync(join(work, "calls.log"), "utf8"), journal: readFileSync(join(work, "tyzo.conf.chuyen"), "utf8") };
++}
++
++test("RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin", () => {
++  assert.match(text, /^VERCEL_CLI_VERSION="\d+\.\d+\.\d+"$/m);
++  assert.doesNotMatch(text, /vercel@latest/);
++  const { r, env, calls, journal } = run();
++  assert.match(r.stdout, /kq=0 buoc=xong/);
++  assert.match(r.stdout, /da-ket-thuc/);
++  assert.doesNotMatch(calls, /\benv rm\b/);
++  assert.equal(env("DATABASE_URL"), "postgres://neon/new");
++  assert.doesNotMatch(calls, /postgres:\/\/neon\/new|new-secret/, "giá trị bí mật không nằm trên dòng lệnh");
++  assert.match(journal, /vercel-bat-dau tyzo-sub\n.* xong tyzo-sub\n$/);
++});
++
++test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang", () => {
++  const { r, env, calls, journal, work } = run("add-fail-BETTER_AUTH_SECRET");
++  assert.match(r.stdout, /kq=1 buoc=env-do-dang/);
++  assert.match(r.stdout, /dang-do/);
++  assert.equal(env("DATABASE_URL"), "postgres://neon/new");
++  assert.equal(env("BETTER_AUTH_SECRET"), "old-BETTER_AUTH_SECRET", "biến lỗi giữ giá trị cũ, không bị xóa");
++  assert.equal(env("LIVE_BRIDGE_URL"), "old-LIVE_BRIDGE_URL");
++  assert.doesNotMatch(calls, / deploy /);
++  assert.equal(existsSync(join(work, "deployed-env")), false);
++  assert.match(journal, / loi-env-do-dang tyzo-sub\n$/);
++});
++
++test("RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang", () => {
++  const { r, journal } = run("deploy-lost");
++  assert.match(r.stdout, /kq=3 buoc=deploy-chua-ro/);
++  assert.match(r.stdout, /dang-do/);
++  assert.match(journal, / loi-deploy-chua-ro /);
++});
++
++test("RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong", () => {
++  const { r } = run("not-ready");
++  assert.match(r.stdout, /kq=3 buoc=deploy-chua-ro/);
++});
++
++test("RE5-004: nhật ký dở dang từ lần trước (mất SSH/kill) được nhận ra; «da-mo-lai» hoặc «xong» kết thúc", () => {
++  const work = mkdtempSync(join(tmpdir(), "re5-004j-"));
++  writeFileSync(join(work, "lib.sh"), lib);
++  const probe = (j) => {
++    writeFileSync(join(work, "tyzo.conf.chuyen"), j);
++    return spawnSync("bash", ["-c", `source "${work}/lib.sh"; CONF="${work}/tyzo.conf"; chuyen_dang_do && echo dang-do || echo da-ket-thuc`], { encoding: "utf8" }).stdout.trim();
++  };
++  assert.equal(probe("2026-11-27T00:00:00Z khoa-nguon neon-khop\n"), "dang-do");
++  assert.equal(probe("2026-11-27T00:00:00Z khoa-nguon neon-khop\n2026-11-27T00:01:00Z vercel-bat-dau p\n"), "dang-do");
++  assert.equal(probe("2026-11-27T00:00:00Z khoa-nguon x\n2026-11-27T00:02:00Z xong p\n"), "da-ket-thuc");
++  assert.equal(probe("2026-11-27T00:00:00Z khoa-nguon x\n2026-11-27T00:02:00Z da-mo-lai nguon-vps\n"), "da-ket-thuc");
++  // khoa_va_doi_soat_chuyen phải từ chối trước khi đụng dịch vụ/CSDL khi nhật ký dở dang.
++  writeFileSync(join(work, "tyzo.conf.chuyen"), "2026-11-27T00:00:00Z loi-deploy-chua-ro p\n");
++  const r = spawnSync("bash", ["-c", `source "${work}/lib.sh"; CONF="${work}/tyzo.conf"; printf 'MODE=full\\nDB=local\\n' > "$CONF"
++pg_sys() { echo "PG_DUNG" >&2; echo t; }; dung_web_vps() { echo "DUNG_WEB" >&2; }
++khoa_va_doi_soat_chuyen postgres://x </dev/null; echo "kq=$?"`], { encoding: "utf8" });
++  assert.match(r.stdout, /kq=1/);
++  assert.doesNotMatch(r.stderr + r.stdout, /PG_DUNG|DUNG_WEB/);
++});
+diff --git a/src/components/live-screen.tsx b/src/components/live-screen.tsx
+index e25f143..cd8d5b9 100644
+--- a/src/components/live-screen.tsx
++++ b/src/components/live-screen.tsx
+@@ -53,7 +53,8 @@ const SAVED = "tyzo-live-settings";
+ const LAST = "tyzo-live-last";
+ 
+ type Saved = { model: string; target: string; source: string; audio: boolean; input: LiveInput; caption: CaptionPrefs; words: string; voice: boolean };
+-const DEFAULTS: Saved = { model: LIVE_MODELS[0], target: "vi", source: "", audio: true, input: "tab", caption: CAPTION_DEFAULT, words: "", voice: true };
++// Mặc định Qwen 3.5: chữ tạm hiện sau ~0,4 s, 3.8 sau ~2,9 s (đo thật 28/11/2026, docs/kiem-toan/v5.49.6/LIVE).
++const DEFAULTS: Saved = { model: LIVE_MODEL_35, target: "vi", source: "", audio: true, input: "tab", caption: CAPTION_DEFAULT, words: "", voice: true };
+ 
+ function readLast(): SavedLive | null {
+   try {
+diff --git a/src/lib/admin/admin-log.server.ts b/src/lib/admin/admin-log.server.ts
+index 3c9aa4a..cf9d9ed 100644
+--- a/src/lib/admin/admin-log.server.ts
++++ b/src/lib/admin/admin-log.server.ts
+@@ -7,6 +7,12 @@ type AdminNote = {
+ 
+ /** Nhật ký nội bộ. Không import từ giao diện khách. */
+ export const ADMIN_LOG: AdminNote[] = [
++  {
++    version: "5.49.6",
++    time: "28/11/2026",
++    area: "tien",
++    text: "Kiểm toán RE5 (docs/kiem-toan/v5.49.6/): cận giữ trên thân gửi đi + chỉ model dịch trong danh mục; thiếu usage không trừ theo trần; migration 0057 công bằng xuyên trần chung; tyzo.sh ghi đè env Vercel + nhật ký chuyển nguồn. Dịch trực tiếp mặc định Qwen 3.5 (đo 0,4 s so với 2,9 s). Modal giữ 2 máy dự phòng khi có việc.",
++  },
+   {
+     version: "5.49.5",
+     time: "27/11/2026",
+diff --git a/src/lib/app-link.ts b/src/lib/app-link.ts
+index 3ab6780..7c32b80 100644
+--- a/src/lib/app-link.ts
++++ b/src/lib/app-link.ts
+@@ -17,7 +17,7 @@ export const DEVICE_IDLE_DAYS = 90;
+  * Bản ứng dụng Android mới nhất. Phải khớp versionCode và versionName trong android/app/build.gradle.kts
+  * (app-link.test.ts kiểm). Ứng dụng cũ hơn thấy lời mời tải bản mới.
+  */
+-export const ANDROID_APP = { code: 12, name: "0.12" } as const;
++export const ANDROID_APP = { code: 13, name: "0.13" } as const;
+ 
+ /**
+  * Nơi GitHub Actions đăng tệp cài (bản phát hành mới nhất của kho, ai cũng tải được).
+diff --git a/src/lib/app-version.ts b/src/lib/app-version.ts
+index 3de47c8..3644919 100644
+--- a/src/lib/app-version.ts
++++ b/src/lib/app-version.ts
+@@ -1,5 +1,5 @@
+ /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
+-export const APP_VERSION = "5.49.5";
++export const APP_VERSION = "5.49.6";
+ 
+ type ReleaseNote = {
+   version: string;
+@@ -10,6 +10,17 @@ type ReleaseNote = {
+ 
+ /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
+ export const CHANGELOG: ReleaseNote[] = [
++  {
++    version: "5.49.6",
++    time: "28/11/2026",
++    title: "Dịch trực tiếp hiện chữ nhanh hơn.",
++    points: [
++      "Dịch trực tiếp mặc định dùng Qwen 3.5: chữ hiện sau khoảng nửa giây thay vì vài giây.",
++      "Bạn vẫn chọn được Qwen 3.8 trong mục Model; lựa chọn đã lưu được giữ nguyên.",
++      "Nhận dạng giọng nói trên máy TyZo phục vụ nhiều người cùng lúc nhanh hơn.",
++      "Bản dịch không còn sót chữ Hán, Nhật, Hàn; ứng dụng Android 0.13 cũng mặc định Qwen 3.5.",
++    ],
++  },
+   {
+     version: "5.49.5",
+     time: "27/11/2026",
+@@ -304,15 +315,5 @@ export const CHANGELOG: ReleaseNote[] = [
+       "Key thiếu quyền khi nhận dạng hay đọc giọng thì báo đúng tên quyền cần bật.",
+     ],
+   },
+-  {
+-    version: "5.35.1",
+-    time: "08:31 22/11/2026",
+-    title: "Thông báo lỗi gọn trên điện thoại; lỗi key rõ ràng hơn.",
+-    points: [
+-      "Thông báo dài tự xuống dòng, không tràn ra ngoài màn hình, hiện lâu hơn để kịp đọc.",
+-      "Key sai báo bằng tiếng Việt theo từng nhà, kèm trang lấy key, không hiện mã lỗi thô.",
+-      "Key ElevenLabs dán thiếu hay thừa ký tự được báo ngay khi lưu.",
+-    ],
+-  },
+ ];
+ 
+diff --git a/src/lib/billing/gate-reserve.test.ts b/src/lib/billing/gate-reserve.test.ts
+index 162bc69..29612b4 100644
+--- a/src/lib/billing/gate-reserve.test.ts
++++ b/src/lib/billing/gate-reserve.test.ts
+@@ -206,6 +206,67 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
+     assert.deepEqual(calls.map((c) => c.status), ["can-doi-soat"]);
+   });
+ 
++  describe("RE5-002: dịch thiếu usage không trừ khách theo ước tính", () => {
++    const run = (reply: () => Response) => chargeWith({
++      sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID,
++      body: new ArrayBuffer(300), cap: 0, outCap: 1000, send: async () => reply(),
++    });
++    const calls = () => sql<{ id: string; status: string; actual_units: string; charged_units: string; short_units: string; reserved: string }>`
++      select id, status, actual_units, charged_units, short_units, reserved from run_gate_calls`;
++    for (const [name, reply] of [
++      ["không có usage", () => Response.json({ choices: [] })],
++      ["thiếu completion_tokens", () => Response.json({ usage: { prompt_tokens: 10 } })],
++      ["usage âm", () => Response.json({ usage: { prompt_tokens: -1, completion_tokens: 5 } })],
++      ["thân không phải JSON", () => new Response("không phải json")],
++    ] as const) {
++      it(`${name}: trừ 0, ghi nghĩa vụ chờ đối soát, nhả phần giữ, ghi chi phí nhà`, async () => {
++        const out = await run(reply);
++        assert.equal(out.kind, "pass");
++        const t = await ticket();
++        assert.equal(t.charged, 0);
++        assert.equal(Number(t.modal_reserved), 0);
++        const [c] = await calls();
++        assert.equal(c.status, "can-doi-soat");
++        assert.equal(Number(c.charged_units), 0);
++        assert.ok(Number(c.actual_units) > 0);
++        assert.equal(Number(c.short_units), Number(c.actual_units));
++        assert.equal(Number(c.reserved), 0);
++        const spend = await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`;
++        assert.equal(spend[0].n, 1);
++      });
++    }
++
++    it("quyết toán lại cùng lệnh (replay) không trừ thêm và không ghi chi phí lần hai", async () => {
++      await run(() => Response.json({}));
++      const [c] = await calls();
++      const { settleGateCall } = await import("./gate-reserve.ts");
++      const again = await settleGateCall(sql, { callId: c.id, ticketId: TID, userId: "k", units: 50, base: 1, provider: "groq", model: "chat", rate: 25_000, reconcile: false });
++      assert.deepEqual(again, { taken: 0, replay: true });
++      assert.equal((await ticket()).charged, 0);
++      assert.equal((await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`)[0].n, 1);
++    });
++
++    it("6 lệnh đồng thời thiếu usage: không trừ, phần giữ về 0, mỗi lệnh một nghĩa vụ", async () => {
++      const outs = await Promise.all(Array.from({ length: 6 }, () =>
++        chargeWith({ sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID,
++          body: new ArrayBuffer(30), cap: 0, outCap: 100, busyWaitMs: 3000, send: async () => Response.json({}) })));
++      const passed = outs.filter((o) => o.kind === "pass").length;
++      const t = await ticket();
++      assert.equal(t.charged, 0);
++      assert.equal(Number(t.modal_reserved), 0);
++      const rows = await calls();
++      assert.equal(rows.filter((r) => r.status === "can-doi-soat" && Number(r.short_units) > 0).length, passed);
++      assert.ok(passed >= 1);
++    });
++
++    it("usage hợp lệ nhưng vượt trần ra vẫn trừ theo số thật (trong phần giữ) và đánh dấu đối soát", async () => {
++      const out = await run(() => Response.json({ usage: { prompt_tokens: 10, completion_tokens: 1001 } }));
++      assert.equal(out.kind, "pass");
++      assert.ok((await ticket()).charged > 0);
++      assert.equal((await calls())[0].status, "can-doi-soat");
++    });
++  });
++
+   it("nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả", async () => {
+     const out = await chargeWith({ sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID, body: new ArrayBuffer(300), cap: 0, outCap: 1000, send: async () => new Response("{}", { status: 500 }) });
+     assert.equal(out.kind, "pass");
+diff --git a/src/lib/billing/gate-reserve.ts b/src/lib/billing/gate-reserve.ts
+index 614447e..3aeef3d 100644
+--- a/src/lib/billing/gate-reserve.ts
++++ b/src/lib/billing/gate-reserve.ts
+@@ -102,6 +102,8 @@ export async function settleGateCall(
+     model: string;
+     rate: number;
+     reconcile: boolean;
++    /** RE5-002: chưa trừ khách; toàn bộ `units` ghi thành short_units chờ đối soát. */
++    deferDebit?: boolean;
+   },
+ ) {
+   const providerBase = input.providerBase ?? input.base;
+@@ -140,7 +142,7 @@ export async function settleGateCall(
+       ? Math.max(0, Math.floor(Math.min(reserved, ticket[0].held - other)))
+       : 0;
+     const units = Math.ceil(input.units);
+-    const debit = Math.min(units, allowance);
++    const debit = input.deferDebit ? 0 : Math.min(units, allowance);
+     const taken =
+       debit > 0
+         ? ticket[0].unit === "token"
+@@ -162,7 +164,7 @@ export async function settleGateCall(
+       values ((now() at time zone 'Asia/Ho_Chi_Minh')::date, ${input.provider}, ${input.model}, 1, ${base}, ${Math.round((providerBase / input.rate) * 1_000_000)})
+       on conflict (day, provider, model) do update set calls = provider_spend.calls + 1,
+         base_vnd = provider_spend.base_vnd + excluded.base_vnd, usd_micro = provider_spend.usd_micro + excluded.usd_micro`;
+-    const status = input.reconcile || taken < units || !owned ? "can-doi-soat" : "xong";
++    const status = input.reconcile || input.deferDebit || taken < units || !owned ? "can-doi-soat" : "xong";
+     await tx`update run_gate_calls set status = ${status}, reserved = 0, observed_at = clock_timestamp(),
+       actual_units = ${units}, charged_units = ${taken}, short_units = ${Math.max(0, units - taken)},
+       base_vnd = ${providerBase}, provider = ${input.provider}, model = ${input.model} where id = ${input.callId}`;
+diff --git a/src/lib/billing/modal-work.test.ts b/src/lib/billing/modal-work.test.ts
+new file mode 100644
+index 0000000..2669495
+--- /dev/null
++++ b/src/lib/billing/modal-work.test.ts
+@@ -0,0 +1,117 @@
++/**
++ * MAIN-040: hành vi ghi chi phí GPU TyZo Modal trên PostgreSQL thật (TYZO_TEST_PG_URL) hoặc PGlite.
++ * Chạy đúng runModalPartWith + modalPartWork; GPU là hàm giả.
++ */
++import assert from "node:assert/strict";
++import { after, before, beforeEach, describe, it } from "node:test";
++import type { Sql } from "../db.ts";
++import { pgliteSql, realPgSql } from "../test-sql.ts";
++import { buyGiayWith, openGiayWith } from "./token-flow.ts";
++import { runModalPartWith } from "./tyzo-modal-charge.ts";
++import { modalPartWork, type ModalWorkDeps } from "./modal-work.ts";
++import { UncertainUpstreamError } from "./upstream-outcome.ts";
++
++let sql: Sql;
++let end: (() => Promise<void>) | undefined;
++before(async () => {
++  const real = await realPgSql();
++  if (real) ({ sql, end } = real);
++  else sql = await pgliteSql();
++});
++after(async () => { await end?.(); });
++
++const TID = "e".repeat(24);
++const RATE = 25_000;
++const MODEL = "tyzo-modal-nhanh";
++const SEG = [{ original: "你好", start: 0, end: 1 }];
++async function open() {
++  await sql`delete from run_modal_settlements`;
++  await sql`delete from run_modal_parts`;
++  await sql`delete from provider_spend_events`;
++  await sql`delete from provider_spend`;
++  await sql`delete from token_slices`;
++  await sql`delete from run_tickets`;
++  await sql`delete from token_grants`;
++  await sql`delete from room_ledger`;
++  await sql`delete from room_accounts`;
++  await sql`insert into room_accounts (user_id, balance) values ('m', 100000)`;
++  await buyGiayWith(sql, "m", { grantId: "gm", tokens: 1000, days: 30, price: 1, note: "thử" });
++  const o = await openGiayWith(sql, { id: TID, userId: "m", fileName: "a", seconds: 600, rate: 1, hold: 200 });
++  assert.ok("id" in o);
++  await sql`update run_tickets set asr_model = ${MODEL}, modal_price = '{}' where id = ${TID}`;
++}
++const part = (hash: string) => ({ ticket: TID, userId: "m", model: MODEL, partHash: hash, seconds: 10, estimateTokens: () => 20 });
++type Line = { text: string; start: number; end: number };
++const deps = (run: () => Promise<{ segments: typeof SEG; usd: number }>, over: Partial<ModalWorkDeps<Line>> = {}): ModalWorkDeps<Line> => ({
++  run, isTransient: (e: unknown) => (e as Error)?.message === "429", shape: (s) => s.map((x) => ({ text: x.original, start: x.start, end: x.end })), toTokens: (usd: number) => Math.ceil(usd * 1000),
++  rate: RATE, model: MODEL, retryDelayMs: 1, ...over,
++});
++const events = () => sql<{ id: string; base_vnd: string }>`select id, base_vnd from provider_spend_events order by id`;
++const charged = async () => (await sql<{ charged: number }>`select charged from run_tickets where id = ${TID}`)[0].charged;
++const settlements = () => sql<{ status: string; charged_tokens: number | null }>`select status, charged_tokens from run_modal_settlements`;
++
++describe("MAIN-040: ghi chi phí GPU Modal", () => {
++  beforeEach(open);
++
++  it("thành công: một chứng từ chi phí modal:<attempt> đúng số tiền, trừ đúng Token", async () => {
++    let attemptSeen = "";
++    const r = await runModalPartWith(sql, part("a"), (_p, attempt) => { attemptSeen = attempt; return modalPartWork(sql, attempt, deps(async () => ({ segments: SEG, usd: 0.012 }))); });
++    assert.equal(r.reused, false);
++    assert.deepEqual((await events()).map((e) => [e.id, Number(e.base_vnd)]), [[`modal:${attemptSeen}`, 0.012 * RATE]]);
++    assert.equal(await charged(), 12);
++    assert.deepEqual((await settlements()).map((s) => s.status), ["xong"]);
++  });
++
++  it("nhà từ chối tạm thời (429) rồi chạy: GPU gọi hai lần, chi phí ghi một lần", async () => {
++    let calls = 0;
++    await runModalPartWith(sql, part("b"), (_p, attempt) => modalPartWork(sql, attempt, deps(async () => {
++      calls++;
++      if (calls === 1) throw new Error("429");
++      return { segments: SEG, usd: 0.01 };
++    })));
++    assert.equal(calls, 2);
++    assert.equal((await events()).length, 1);
++    assert.equal(await charged(), 10);
++  });
++
++  it("lỗi hẳn: không ghi chi phí, không trừ, nhả phần giữ, giữ dấu lượt mất phản hồi", async () => {
++    await assert.rejects(runModalPartWith(sql, part("c"), (_p, attempt) => modalPartWork(sql, attempt, deps(async () => { throw new Error("500"); }))));
++    assert.equal((await events()).length, 0);
++    assert.equal(await charged(), 0);
++    assert.equal(Number((await sql<{ r: string }>`select modal_reserved as r from run_tickets where id = ${TID}`)[0].r), 0);
++    assert.deepEqual((await settlements()).map((s) => s.status), ["mat-phan-hoi"]);
++  });
++
++  it("gửi lại cùng đoạn sau khi xong: dùng kết quả đã lưu, không gọi GPU, không ghi chi phí, không trừ lần hai", async () => {
++    await runModalPartWith(sql, part("d"), (_p, a) => modalPartWork(sql, a, deps(async () => ({ segments: SEG, usd: 0.012 }))));
++    let gpu = 0;
++    const again = await runModalPartWith(sql, part("d"), (_p, a) => modalPartWork(sql, a, deps(async () => { gpu++; return { segments: SEG, usd: 0.012 }; })));
++    assert.equal(again.reused, true);
++    assert.equal(gpu, 0);
++    assert.equal((await events()).length, 1);
++    assert.equal(await charged(), 12);
++  });
++
++  it("ghi chứng từ chi phí lỗi: báo «không chắc», không trừ khách, lượt giữ dấu mất phản hồi KÈM số USD thật (MAIN-040-B)", async () => {
++    // Tên model quá dài làm recordSpendDurablyWith từ chối: GPU đã chạy nhưng chứng từ không ghi được.
++    const err = await runModalPartWith(sql, part("e"), (_p, a) => modalPartWork(sql, a, deps(async () => ({ segments: SEG, usd: 0.0123 }), { model: "m".repeat(130) }))).catch((e) => e);
++    assert.ok(err instanceof UncertainUpstreamError, String(err));
++    assert.equal((await events()).length, 0);
++    assert.equal(await charged(), 0);
++    const rows = await sql<{ status: string; usd: string | null }>`select status, provider_usd::text as usd from run_modal_settlements`;
++    assert.deepEqual(rows.map((r) => [r.status, Number(r.usd)]), [["mat-phan-hoi", 0.0123]]);
++  });
++
++  it("thành công: lượt cũng lưu số USD GPU (khớp chứng từ)", async () => {
++    await runModalPartWith(sql, part("f"), (_p, a) => modalPartWork(sql, a, deps(async () => ({ segments: SEG, usd: 0.007 }))));
++    const rows = await sql<{ usd: string }>`select provider_usd::text as usd from run_modal_settlements`;
++    assert.deepEqual(rows.map((r) => Number(r.usd)), [0.007]);
++  });
++
++  it("cùng lượt ghi chi phí hai lần (thử lại sau mất kết nối DB) không nhân đôi chứng từ", async () => {
++    await modalPartWork(sql, "fixed-attempt", deps(async () => ({ segments: SEG, usd: 0.02 })));
++    await modalPartWork(sql, "fixed-attempt", deps(async () => ({ segments: SEG, usd: 0.02 })));
++    assert.deepEqual((await events()).map((e) => e.id), ["modal:fixed-attempt"]);
++    await assert.rejects(modalPartWork(sql, "fixed-attempt", deps(async () => ({ segments: SEG, usd: 0.03 }))), UncertainUpstreamError, "cùng mã mà số khác phải bị chặn");
++  });
++});
+diff --git a/src/lib/billing/modal-work.ts b/src/lib/billing/modal-work.ts
+new file mode 100644
+index 0000000..848f41e
+--- /dev/null
++++ b/src/lib/billing/modal-work.ts
+@@ -0,0 +1,44 @@
++/**
++ * MAIN-040: phần việc của một đoạn TyZo Modal sau khi đã giữ phiếu (gọi GPU, ghi chi phí nhà bền, quy ra Token).
++ * Tách khỏi server function (tyzo-modal-call.ts) để kiểm hành vi trên PostgreSQL thật. Không import mã máy chủ.
++ */
++import type { Sql } from "../db.ts";
++import { recordSpendDurablyWith } from "../provider-spend-journal.ts";
++import { UncertainUpstreamError } from "./upstream-outcome.ts";
++
++export type ModalSeg = { original: string; start: number; end: number };
++export type ModalWorkDeps<S> = {
++  /** Gọi GPU một lần cho đoạn này. */
++  run: () => Promise<{ segments: ModalSeg[]; usd: number }>;
++  isTransient: (error: unknown) => boolean;
++  /** Gộp/đổi dạng câu trả về khách (mergeInterjections ở bản thật). */
++  shape: (segments: ModalSeg[]) => S[];
++  toTokens: (usd: number) => number;
++  rate: number;
++  model: string;
++  retryDelayMs?: number;
++};
++
++/**
++ * Chỉ thử lại một lần khi nhà từ chối tạm thời (429 trước khi nhận việc). Chi phí GPU ghi vào sổ bền với mã
++ * `modal:<attempt>` (một lượt chỉ ghi một lần); ghi lỗi thì báo «không chắc» để không trả kết quả chưa có chứng từ.
++ */
++export async function modalPartWork<S>(sql: Sql, attempt: string, deps: ModalWorkDeps<S>) {
++  let out: { segments: ModalSeg[]; usd: number };
++  try {
++    out = await deps.run();
++  } catch (error) {
++    if (!deps.isTransient(error)) throw error;
++    await new Promise((r) => setTimeout(r, deps.retryDelayMs ?? 3000));
++    out = await deps.run();
++  }
++  const segments = deps.shape(out.segments);
++  try {
++    // MAIN-040-B: giữ số tiền GPU thật trên lượt trước khi ghi chứng từ; chứng từ lỗi thì đối soát vẫn có số.
++    await sql`update run_modal_settlements set provider_usd = ${out.usd} where attempt = ${attempt}`;
++    await recordSpendDurablyWith(sql, { id: "modal:" + attempt, provider: "tyzo-modal", model: deps.model, baseVnd: out.usd * deps.rate, rate: deps.rate });
++  } catch (error) {
++    throw new UncertainUpstreamError(error);
++  }
++  return { segments, tokens: deps.toTokens(out.usd) };
++}
+diff --git a/src/lib/billing/re5-001.test.ts b/src/lib/billing/re5-001.test.ts
+new file mode 100644
+index 0000000..001a74d
+--- /dev/null
++++ b/src/lib/billing/re5-001.test.ts
+@@ -0,0 +1,54 @@
++/**
++ * RE5-001 (v5.49.6): tái hiện các đường vượt cận 2×byte+512 của cửa trả theo lượt.
++ * Đã tái hiện ở 0ef9539 (todo), sửa sau đó; nay là hồi quy.
++ * Bằng chứng tokenizer: docs/kiem-toan/v5.49.6/RE5-001/.
++ */
++import assert from "node:assert/strict";
++import { readFileSync } from "node:fs";
++import { describe, it } from "node:test";
++import { promptTokenBound, readRequest } from "./run-gate.ts";
++import { payPerTurnChat } from "../sub/model-catalog.ts";
++
++const enc = (s: string) => {
++  const u = new TextEncoder().encode(s);
++  return u.buffer.slice(u.byteOffset, u.byteOffset + u.byteLength) as ArrayBuffer;
++};
++// 4 byte "1e20" → 21 byte "100000000000000000000" sau JSON.parse/stringify; Qwen tách mỗi chữ số một token.
++const expanding = `{"model":"qwen-plus","max_tokens":10,"messages":[{"role":"user","content":"a"}],"tools":[{"type":"function","function":{"name":"f","parameters":{"type":"object","properties":{"x":{"type":"number","enum":[${Array(4000).fill("1e20").join(",")}]}}}}}]}`;
++
++describe("RE5-001: cận đầu vào phải tính trên đúng thân gửi cho nhà", () => {
++  it("cơ chế: thân chuẩn hóa dài hơn thân gốc hơn 4 lần, cận theo thân gốc thấp hơn số chữ số gửi đi", async () => {
++    const original = enc(expanding);
++    const parsed = await readRequest("/chat/completions", "application/json", original, "max_tokens");
++    assert.equal(parsed?.problem, null);
++    const sent = parsed!.body!.byteLength;
++    assert.ok(sent > 4 * original.byteLength, `${sent} vs ${original.byteLength}`);
++    // Mỗi chữ số là một token với tokenizer Qwen: 4000 × 21 chữ số > cận tính trên thân gốc.
++    assert.ok(4000 * 21 > promptTokenBound(original.byteLength, 1_000_000));
++    assert.ok(4000 * 21 < promptTokenBound(sent, 1_000_000));
++  });
++
++  for (const route of ["src/routes/api/model-call.ts", "src/routes/api/room-groq.ts"]) {
++    it(`${route}: cận giữ trước và lệnh gửi nhà dùng cùng một thân đã chuẩn hóa`, () => {
++      const src = readFileSync(route, "utf8");
++      assert.match(src, /const outbound = parsed\.body \?\? body!?;/);
++      const start = src.indexOf("await chargeWith({");
++      const call = src.slice(start, src.indexOf("});", src.indexOf("send:", start)));
++      const bodies = [...call.matchAll(/\bbody(?::\s*([^,}]+))?[,}]/g)].map((m) => (m[1] ?? "body").trim());
++      assert.deepEqual(bodies, ["outbound", "outbound"], call);
++    });
++  }
++
++  it("chỉ model dịch trong danh mục đi cửa trả theo lượt: chặn Groq compound và model lạ", () => {
++    for (const id of ["groq/compound", "groq/compound-mini", "some-new-model", "meta-llama/llama-4-scout-17b-16e-instruct"])
++      assert.equal(payPerTurnChat("groq", id), false, id);
++    assert.equal(payPerTurnChat("alibaba", "qwen-long"), false);
++    for (const id of ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]) assert.equal(payPerTurnChat("groq", id), true, id);
++    for (const id of ["qwen-turbo", "qwen-plus", "qwen-max"]) assert.equal(payPerTurnChat("alibaba", id), true, id);
++    for (const route of ["src/routes/api/model-call.ts", "src/routes/api/room-groq.ts"]) {
++      const src = readFileSync(route, "utf8");
++      const check = src.indexOf("payPerTurnChat(");
++      assert.ok(check > 0 && check < src.indexOf("await chargeWith({"), `${route}: kiểm danh mục trước khi giữ/gọi nhà`);
++    }
++  });
++});
+diff --git a/src/lib/billing/run-gate.ts b/src/lib/billing/run-gate.ts
+index ed3f0fc..0dbf083 100644
+--- a/src/lib/billing/run-gate.ts
++++ b/src/lib/billing/run-gate.ts
+@@ -459,6 +459,9 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+         let base = 0;
+         let providerBase: number | null = null;
+         let needsReconciliation = false;
++        // RE5-002: dịch mà nhà không trả usage hợp lệ thì KHÔNG trừ khách theo ước tính (phần ra là trần outCap);
++        // ghi ước tính thành nghĩa vụ chờ đối soát. ASR vẫn tính theo số giây đã dò (đo thật, không phải trần).
++        let deferDebit = false;
+         const bare = { ...book, desk: { markup: 0, custom: {} } };
+         try {
+           const data = JSON.parse(text) as {
+@@ -478,13 +481,12 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+           } else {
+             const prompt = Number(data.usage?.prompt_tokens);
+             const completion = Number(data.usage?.completion_tokens);
+-            needsReconciliation =
++            deferDebit =
+               !Number.isSafeInteger(prompt) ||
+               prompt < 0 ||
+               !Number.isSafeInteger(completion) ||
+-              completion < 0 ||
+-              prompt > promptCap ||
+-              completion > outCap;
++              completion < 0;
++            needsReconciliation = deferDebit || prompt > promptCap || completion > outCap;
+             const inn =
+               Number.isSafeInteger(prompt) && prompt >= 0
+                 ? prompt
+@@ -499,6 +501,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+           }
+         } catch {
+           needsReconciliation = true;
++          deferDebit = path !== "/audio/transcriptions";
+           cost =
+             path === "/audio/transcriptions"
+               ? asrCost(book, model, estimatedSeconds)
+@@ -544,6 +547,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+           model,
+           rate: book.rate,
+           reconcile: needsReconciliation,
++          deferDebit,
+         });
+         const out = new Headers();
+         const type = response.headers.get("content-type");
+diff --git a/src/lib/billing/work-admission-pg.test.ts b/src/lib/billing/work-admission-pg.test.ts
+index 8f5c0fd..97c1721 100644
+--- a/src/lib/billing/work-admission-pg.test.ts
++++ b/src/lib/billing/work-admission-pg.test.ts
+@@ -249,3 +249,70 @@ pgTest("RE4-003: nhiều người chờ batch chỉ giữ số suất lane có t
+   assert.equal(await acquireWork(sql, key("older-batch-2", "batch")), null);
+   assert.ok(await acquireWork(sql, key("older-batch-1", "batch")));
+ });
++
++// RE5-003 (v5.49.6): hàng chờ ưu tiên chỉ lọc cùng provider+model, nhưng trần provider và lane dùng chung.
++// Đã tái hiện (todo) ở 0bb6f25; sửa bằng migrations/0057_admission_shared_cap_fairness.sql.
++pgTest("RE5-003: khách chờ model Y không bị khách mới model X cùng nhà chen khi trần nhà đã đầy", async () => {
++  await limits({ perProvider: 2, perModel: 5, batch: 10, live: 10, perUser: 1 });
++  const x = (userId: string) => ({ userId, provider: "groq", model: "x", lane: "batch" as const });
++  const a1 = await acquireWork(sql, x("x-1"));
++  assert.ok(a1 && (await acquireWork(sql, x("x-2"))));
++  assert.equal(await acquireWork(sql, { userId: "waiting-y", provider: "groq", model: "y", lane: "batch" }), null);
++  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='waiting-y'`;
++  await releaseWork(sql, a1!);
++  assert.equal(await acquireWork(sql, x("x-new")), null, "khách mới model X chen suất nhà của khách chờ model Y");
++  assert.ok(await acquireWork(sql, { userId: "waiting-y", provider: "groq", model: "y", lane: "batch" }));
++});
++
++pgTest("RE5-003: khách chờ nhà B không bị khách mới nhà A chen khi trần lane đã đầy", async () => {
++  await limits({ perProvider: 10, perModel: 10, batch: 2, live: 10, perUser: 1 });
++  const a = (userId: string) => ({ userId, provider: "groq", model: "m", lane: "batch" as const });
++  const a1 = await acquireWork(sql, a("a-1"));
++  assert.ok(a1 && (await acquireWork(sql, a("a-2"))));
++  assert.equal(await acquireWork(sql, { userId: "waiting-b", provider: "alibaba", model: "qwen-plus", lane: "batch" }), null);
++  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='waiting-b'`;
++  await releaseWork(sql, a1!);
++  assert.equal(await acquireWork(sql, a("a-new")), null, "khách mới nhà A chen suất lane của khách chờ nhà B");
++  assert.ok(await acquireWork(sql, { userId: "waiting-b", provider: "alibaba", model: "qwen-plus", lane: "batch" }));
++});
++
++pgTest("RE5-003: khách chờ đã bỏ đi (quá 6 giây không quay lại) không giữ suất", async () => {
++  await limits({ perProvider: 1, perModel: 1, batch: 10, live: 10, perUser: 1 });
++  const k = (userId: string) => ({ userId, provider: "groq", model: "m", lane: "batch" as const });
++  const a1 = await acquireWork(sql, k("r-1"));
++  assert.ok(a1);
++  assert.equal(await acquireWork(sql, k("gone")), null);
++  await sql`update work_waiters set since = since - interval '20 seconds', seen_at = seen_at - interval '10 seconds' where user_id='gone'`;
++  await releaseWork(sql, a1!);
++  assert.ok(await acquireWork(sql, k("fresh")), "khách chờ đã bỏ đi không được chặn khách mới");
++});
++
++pgTest("RE5-003: khách chờ bị chặn bởi trần model của chính mình không giữ suất nhà của khách khác", async () => {
++  await limits({ perProvider: 3, perModel: 1, batch: 10, live: 10, perUser: 1 });
++  const k = (userId: string, model: string) => ({ userId, provider: "groq", model, lane: "batch" as const });
++  const y1 = await acquireWork(sql, k("y-running", "y"));
++  const x1 = await acquireWork(sql, k("x-running", "x"));
++  assert.ok(y1 && x1);
++  // Khách chờ model y: trần model y đã đầy (perModel 1) dù nhà còn chỗ.
++  assert.equal(await acquireWork(sql, k("waiting-y", "y")), null);
++  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='waiting-y'`;
++  // Nhà còn 1 suất; khách chờ y không dùng được (model y đầy) nên không được giữ suất đó.
++  assert.ok(await acquireWork(sql, k("z-new", "z")), "khách chờ không nhận được suất thì không chặn người khác");
++});
++
++pgTest("RE5-003: 60 yêu cầu xuyên nhà/model/lane đồng thời không vượt trần nào", async () => {
++  await limits({ perProvider: 4, perModel: 3, batch: 5, live: 3, perUser: 1, liveReserve: 1 });
++  const providers = ["groq", "alibaba"], models = ["m1", "m2", "m3"], lanes = ["batch", "live"] as const;
++  const got = await Promise.all(Array.from({ length: 60 }, (_, i) =>
++    acquireWork(sql, { userId: `c${i}`, provider: providers[i % 2], model: models[i % 3], lane: lanes[Math.floor(i / 6) % 2] })));
++  assert.ok(got.some(Boolean));
++  const rows = await sql<{ provider: string; model: string; lane: string }>`select provider, model, lane from work_admissions where status = 'running'`;
++  const count = (f: (r: { provider: string; model: string; lane: string }) => boolean) => rows.filter(f).length;
++  for (const p of providers) {
++    assert.ok(count((r) => r.provider === p) <= 4, `provider ${p}`);
++    assert.ok(count((r) => r.provider === p && r.lane !== "live") <= 3, `non-live ${p} (reserve 1)`);
++    for (const m of models) assert.ok(count((r) => r.provider === p && r.model === m) <= 3, `model ${p}/${m}`);
++  }
++  assert.ok(count((r) => r.lane === "batch") <= 5);
++  assert.ok(count((r) => r.lane === "live") <= 3);
++});
+diff --git a/src/lib/live/leftover-script.test.ts b/src/lib/live/leftover-script.test.ts
+new file mode 100644
+index 0000000..4534b43
+--- /dev/null
++++ b/src/lib/live/leftover-script.test.ts
+@@ -0,0 +1,37 @@
++import assert from "node:assert/strict";
++import { describe, it } from "node:test";
++import { dropLeftoverScript, keepsSourceScript } from "./leftover-script.ts";
++
++describe("Dịch trực tiếp: bỏ chữ gốc sót trong bản dịch", () => {
++  it("bỏ chữ Hán sót khi dịch sang tiếng Việt (ca thật 28/11/2026)", () => {
++    assert.equal(dropLeftoverScript("Bạn phải luôn如一.", "vi"), "Bạn phải luôn.");
++    assert.equal(dropLeftoverScript("Xin chào 你好 bạn。", "vi"), "Xin chào bạn.");
++  });
++  it("bỏ kana, Hangul; đổi dấu câu toàn khổ", () => {
++    assert.equal(dropLeftoverScript("Cảm ơn ありがとう，hẹn gặp 안녕！", "vi"), "Cảm ơn, hẹn gặp!");
++    assert.equal(dropLeftoverScript("Hello カタカナー world？", "en"), "Hello world?");
++  });
++  it("giữ nguyên khi đích là Trung, Nhật, Hàn, Quảng Đông", () => {
++    for (const t of ["zh", "ja", "ko", "yue", "zh-TW"]) {
++      assert.ok(keepsSourceScript(t));
++      assert.equal(dropLeftoverScript("你好，こんにちは。", t), "你好，こんにちは。");
++    }
++  });
++  it("mẩu tạm: chỉ bỏ ký tự, không cắt khoảng trắng đầu/cuối", () => {
++    assert.equal(dropLeftoverScript(" luôn如", "vi", false), " luôn");
++    assert.equal(dropLeftoverScript("一 ", "vi", false), " ");
++  });
++  it("chữ Việt có dấu, số và chữ Latin không bị đụng", () => {
++    const s = "Đừng vì vinh hoa phú quý nhất thời, năm 2026 (OK).";
++    assert.equal(dropLeftoverScript(s, "vi"), s);
++  });
++});
++
++describe("cầu nối dùng bộ lọc cho mọi chữ dịch gửi xuống", () => {
++  it("translation (câu, phần chờ) và translation-delta đều qua dropLeftoverScript với đích của vé", async () => {
++    const { readFileSync } = await import("node:fs");
++    const src = readFileSync(new URL("./live-bridge.ts", import.meta.url), "utf8");
++    assert.match(src, /event\.kind === "translation"\) \{\s*send\(client, \{ type: "event", event: \{ \.\.\.event, text: dropLeftoverScript\(event\.text, ticket\.target, event\.final\), stash: dropLeftoverScript\(event\.stash, ticket\.target, false\)/);
++    assert.match(src, /event\.kind === "translation-delta"\) \{\s*send\(client, \{ type: "event", event: \{ \.\.\.event, delta: dropLeftoverScript\(event\.delta, ticket\.target, false\)/);
++  });
++});
+diff --git a/src/lib/live/leftover-script.ts b/src/lib/live/leftover-script.ts
+new file mode 100644
+index 0000000..44ad3da
+--- /dev/null
++++ b/src/lib/live/leftover-script.ts
+@@ -0,0 +1,21 @@
++/**
++ * Dịch trực tiếp: model đôi khi để sót chữ gốc chưa dịch (vd «Bạn phải luôn如一.»). Khi ngôn ngữ đích không dùng
++ * chữ Hán/kana/Hangul thì bỏ các chữ đó khỏi bản dịch và đổi dấu câu toàn khổ sang dấu thường. Đích Trung/Nhật/Hàn
++ * (và Quảng Đông) giữ nguyên. Chạy trên cả mẩu tạm (delta): chỉ bỏ ký tự, không cắt khoảng trắng của mẩu.
++ */
++const CJK_TARGETS = new Set(["zh", "ja", "ko", "yue"]);
++const LEFTOVER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}々ー]+/gu;
++const WIDE: Record<string, string> = { "，": ", ", "。": ". ", "！": "! ", "？": "? ", "：": ": ", "；": "; ", "、": ", ", "（": "(", "）": ")", "「": "\"", "」": "\"", "『": "\"", "』": "\"", "　": " " };
++const WIDE_RE = new RegExp(`[${Object.keys(WIDE).join("")}]`, "g");
++
++export function keepsSourceScript(target: string): boolean {
++  return CJK_TARGETS.has(target.trim().toLowerCase().split("-")[0]);
++}
++
++/** Bỏ chữ sót. `whole` = câu đầy đủ (dọn khoảng trắng thừa); mẩu tạm thì chỉ bỏ ký tự. */
++export function dropLeftoverScript(text: string, target: string, whole = true): string {
++  if (!text || keepsSourceScript(target)) return text;
++  const out = text.replace(LEFTOVER, "").replace(WIDE_RE, (c) => WIDE[c]);
++  if (!whole) return out;
++  return out.replace(/[ \t]{2,}/g, " ").replace(/ +([,.!?:;)])/g, "$1").replace(/\( +/g, "(").trim();
++}
+diff --git a/src/lib/live/live-bridge.ts b/src/lib/live/live-bridge.ts
+index fdbf0c4..4cbd511 100644
+--- a/src/lib/live/live-bridge.ts
++++ b/src/lib/live/live-bridge.ts
+@@ -21,6 +21,7 @@ import {
+ } from "./qwen-protocol.ts";
+ import { mulawToPcm16 } from "./mulaw.ts";
+ import { aliErrorText } from "./ali-error.ts";
++import { dropLeftoverScript } from "./leftover-script.ts";
+ import { createHash, randomBytes } from "node:crypto";
+ 
+ /**
+@@ -561,6 +562,15 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
+         send(client, { type: "event", event: { ...event, message: aliErrorText(event.message) } });
+         continue;
+       }
++      // Bỏ chữ gốc sót trong bản dịch (vd «luôn如一») khi đích không dùng chữ Hán/kana/Hangul. Web, ứng dụng và lịch sử cùng sạch.
++      if (event.kind === "translation") {
++        send(client, { type: "event", event: { ...event, text: dropLeftoverScript(event.text, ticket.target, event.final), stash: dropLeftoverScript(event.stash, ticket.target, false) } });
++        continue;
++      }
++      if (event.kind === "translation-delta") {
++        send(client, { type: "event", event: { ...event, delta: dropLeftoverScript(event.delta, ticket.target, false) } });
++        continue;
++      }
+       send(client, { type: "event", event });
+     }
+   };
+diff --git a/src/lib/provider-spend.test.ts b/src/lib/provider-spend.test.ts
+index 1b4ad9e..8876860 100644
+--- a/src/lib/provider-spend.test.ts
++++ b/src/lib/provider-spend.test.ts
+@@ -66,7 +66,8 @@ describe("mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà
+       ["../routes/api/room-groq.ts", /provider: "groq",/],
+       ["./billing/room-asr.server.ts", /recordSpendWith\(sql, \{ provider: asrHouse\(input\.model\)/],
+       ["./live/live-billing.ts", /recordSpendDurablyWith\(sql,/],
+-      ["./tyzo-modal-call.ts", /recordSpendDurablyWith\(sql,/],
++      ["./tyzo-modal-call.ts", /modalPartWork\(sql, attempt,/],
++      ["./billing/modal-work.ts", /recordSpendDurablyWith\(sql,/],
+     ] as const) {
+       assert.match(readFileSync(new URL(file, import.meta.url), "utf8"), mark, file);
+     }
+diff --git a/src/lib/room-turn.ts b/src/lib/room-turn.ts
+index 4998eca..f003285 100644
+--- a/src/lib/room-turn.ts
++++ b/src/lib/room-turn.ts
+@@ -6,7 +6,7 @@
+  */
+ import { chatPerMillion, type PriceBook } from "./billing/run-bill.ts";
+ import { bareBookOf, type ProviderRows } from "./price-rows.ts";
+-import { catalogFor, modelKindOf, type ModelKind } from "./sub/model-catalog.ts";
++import { catalogFor, modelKindOf, payPerTurnChat, type ModelKind } from "./sub/model-catalog.ts";
+ import { KEY_LIST_TRUSTED, roomListHas } from "./sub/key-list.ts";
+ import { PROVIDER_IDS, PROVIDERS, providerHas, type ProviderCap, type ProviderId } from "./sub/provider.ts";
+ import { providerOfModel, roomRefusal, type RoomOffer } from "./sub/room-models.ts";
+@@ -44,7 +44,8 @@ export function roomChatModels(houses: RoomHouses): RoomPick[] {
+     if (!house?.key || !house.models) continue;
+     const ids = new Set([...house.models, ...catalogFor(provider, "chat").map((model) => model.id)]);
+     for (const id of ids) {
+-      if (modelKindOf(provider, id) !== "chat") continue;
++      // RE5-001: cùng quy tắc với cửa trả theo lượt — chỉ model dịch trong danh mục.
++      if (!payPerTurnChat(provider, id)) continue;
+       if (roomListHas(provider, id, house.models) === false) continue;
+       out.push({ provider, model: id });
+     }
+diff --git a/src/lib/sub/model-catalog.ts b/src/lib/sub/model-catalog.ts
+index 382d91b..838a072 100644
+--- a/src/lib/sub/model-catalog.ts
++++ b/src/lib/sub/model-catalog.ts
+@@ -55,6 +55,15 @@ export function catalogModel(provider: ProviderId, id: string): CatalogModel | n
+   return BY_KEY.get(`${provider}:${id}`) ?? null;
+ }
+ 
++/**
++ * RE5-001: cửa trả theo lượt (key phòng) chỉ nhận model dịch có trong danh mục. Cận giữ trước 2×byte+512 chỉ được
++ * chứng minh cho model chữ có tokenizer đã biết; model lạ hoặc model chạy công cụ tại nhà (Groq compound: tìm web,
++ * chạy mã, kết quả thành token đầu vào) có thể tốn vượt xa số byte yêu cầu. Key riêng của khách không qua cửa này.
++ */
++export function payPerTurnChat(provider: ProviderId, id: string): boolean {
++  return catalogModel(provider, id)?.kind === "chat";
++}
++
+ /** Model của một nhà, có thể lọc theo loại. */
+ export function catalogFor(provider: ProviderId, kind?: ModelKind): CatalogModel[] {
+   return MODEL_CATALOG.filter((model) => model.provider === provider && (!kind || model.kind === kind));
+diff --git a/src/lib/tyzo-modal-call.ts b/src/lib/tyzo-modal-call.ts
+index 6aa36cb..6c6e480 100644
+--- a/src/lib/tyzo-modal-call.ts
++++ b/src/lib/tyzo-modal-call.ts
+@@ -41,24 +41,14 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
+     }, async (price, attempt) => {
+       // Không gắn với kết nối của trình duyệt: khách bấm hủy hay mất mạng thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại;
+       // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Chỉ khi nhà từ chối 429 trước khi nhận việc mới thử lại một lần; mất phản hồi phải đối soát.
+-      const run = () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price)));
+-      let out;
+-      try { out = await run(); }
+-      catch (error) {
+-        if (!isTransientModalError(error)) throw error;
+-        await new Promise(r => setTimeout(r, 3000));
+-        out = await run();
+-      }
+-      const merged = mergeInterjections(out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), data.language);
+-      // Chi phí GPU thật (cộng phí mô hình chữ nếu có) vào sổ «Phải trả nhà cung cấp» để trang Doanh thu tính đúng lời lỗ.
+-      const {recordSpendDurablyWith} = await import("./provider-spend-journal");
+-      try {
+-        await recordSpendDurablyWith(sql, { id: "modal:"+attempt, provider: "tyzo-modal", model, baseVnd: out.usd * book.rate, rate: book.rate });
+-      } catch(error) {
+-        const {UncertainUpstreamError} = await import("./billing/upstream-outcome");
+-        throw new UncertainUpstreamError(error);
+-      }
+-      return {segments: merged, tokens: toTokens(out.usd)};
++      // MAIN-040: chi phí GPU thật vào sổ «Phải trả nhà cung cấp» (modal-work.ts, có test hành vi).
++      const {modalPartWork} = await import("./billing/modal-work");
++      return modalPartWork(sql, attempt, {
++        run: () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price))),
++        isTransient: isTransientModalError,
++        shape: segs => mergeInterjections(segs.map(s=>({text:s.original,start:s.start,end:s.end})), data.language),
++        toTokens, rate: book.rate, model,
++      });
+     });
+     return {segments: result.segments};
+   });
+diff --git a/src/routes/api/model-call.ts b/src/routes/api/model-call.ts
+index 616c192..5ed2ce4 100644
+--- a/src/routes/api/model-call.ts
++++ b/src/routes/api/model-call.ts
+@@ -96,6 +96,7 @@ export const Route = createFileRoute("/api/model-call")({
+         const { loadPriceBook } = await import("@/lib/run-board.server");
+         const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
+         const { roomUse } = await import("@/lib/room-turn");
++        const { payPerTurnChat } = await import("@/lib/sub/model-catalog");
+         const { rowsOf } = await import("@/lib/price-rows");
+         const sql = await getSql();
+         const desk = parseRunDesk((await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`)[0]?.value);
+@@ -108,6 +109,10 @@ export const Route = createFileRoute("/api/model-call")({
+         const use = roomUse(houses, parsed.model, "chat");
+         if ("error" in use) return fail(403, use.error);
+         if (use.provider !== provider) return fail(400, `Model ${parsed.model} không thuộc ${label}.`);
++        // RE5-001: chỉ model dịch trong danh mục mới đi cửa trả theo lượt (cận giữ trước đã chứng minh cho chúng).
++        if (!payPerTurnChat(provider, parsed.model)) return fail(403, `Model ${parsed.model} chưa mở cho cửa trả theo lượt.`);
++        // RE5-001: cận giữ trước và lệnh gửi nhà dùng CÙNG một thân (đã chuẩn hóa), không lệch nhau được.
++        const outbound = parsed.body ?? body;
+         const groq = await loadPriceBook(sql);
+         if (!groq) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
+         const rows = await loadProviderRows(sql);
+@@ -125,12 +130,12 @@ export const Route = createFileRoute("/api/model-call")({
+             chars: parsed.chars,
+             userId: user.id,
+             ticketId: request.headers.get("x-run-ticket") || "",
+-            body,
++            body: outbound,
+             cap: desk.cap,
+             outCap: parsed.cap,
+             contentType,
+             signal: request.signal,
+-            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: parsed.body ?? body, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
++            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: outbound, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
+           });
+           if (outcome.kind === "reject") {
+             const rejected = fail(outcome.status, outcome.message);
+diff --git a/src/routes/api/room-groq.ts b/src/routes/api/room-groq.ts
+index 088917c..c7f7803 100644
+--- a/src/routes/api/room-groq.ts
++++ b/src/routes/api/room-groq.ts
+@@ -101,6 +101,13 @@ export const Route = createFileRoute("/api/room-groq")({
+         const models = parseModelList(offered[0]?.value);
+         if (!models) return fail(503, "Phòng chưa đồng bộ danh sách model.");
+         if (!models.includes(parsed.model)) return fail(403, `Model ${parsed.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
++        if (path === "/chat/completions") {
++          const { payPerTurnChat } = await import("@/lib/sub/model-catalog");
++          // RE5-001: chỉ model dịch trong danh mục (không model lạ, không Groq compound chạy công cụ tại nhà).
++          if (!payPerTurnChat("groq", parsed.model)) return fail(403, `Model ${parsed.model} chưa mở cho cửa trả theo lượt.`);
++        }
++        // RE5-001: cận giữ trước và lệnh gửi nhà dùng CÙNG một thân (đã chuẩn hóa).
++        const outbound = parsed.body ?? body!;
+         const book = await loadPriceBook(sql);
+         if (!book) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
+ 
+@@ -115,13 +122,13 @@ export const Route = createFileRoute("/api/room-groq")({
+             chars: parsed.chars,
+             userId: user.id,
+             ticketId: request.headers.get("x-run-ticket") || "",
+-            body: body!,
++            body: outbound,
+             cap: desk.cap,
+             outCap: parsed.cap,
+             contentType,
+             signal: request.signal,
+             send: () =>
+-              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: parsed.body ?? body!, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
++              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: outbound, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
+           });
+         } catch (error) {
+           if (isTimeout(error)) return fail(504, TIMEOUT_TEXT);
