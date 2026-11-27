@@ -61,7 +61,7 @@ function opusPrivate(description: Uint8Array | null, sampleRate: number, channel
   return head;
 }
 
-function buildOpusWebm(packets: OpusPacket[], description: Uint8Array | null, sampleRate: number, channels: number) {
+export function buildOpusWebm(packets: OpusPacket[], description: Uint8Array | null, sampleRate: number, channels: number) {
   const head = opusPrivate(description, sampleRate, channels);
   const preSkip = head.length >= 12 ? head[10] | (head[11] << 8) : 3840;
   const delayNs = Math.round((preSkip / 48000) * 1e9);
@@ -245,7 +245,7 @@ async function samplesToOpusWebm(samples: Float32Array, signal?: AbortSignal): P
   return blob;
 }
 
-function toWav(samples: Float32Array): Blob {
+export function toWav(samples: Float32Array): Blob {
   const buffer = new ArrayBuffer(44 + samples.length * 2);
   const view = new DataView(buffer);
   const write = (offset: number, string: string) => {

@@ -6,6 +6,16 @@ import type { PriceBook } from "./run-bill.ts";
 import { chargeWith, readRequest } from "./run-gate.ts";
 import { openTicketWith } from "./run-ticket.ts";
 import type { GroqLiveRow } from "../sub/groq-board.ts";
+import { buildOpusWebm, toWav } from "../sub/codec.ts";
+
+/** WebM/Opus hợp lệ: `n` gói SILK 120 ms. */
+const opusWebm = (n: number) =>
+  buildOpusWebm(
+    Array.from({ length: n }, (_, i) => ({ data: Uint8Array.of((3 << 3) | 1, 0), timestampUs: i * 120_000, durationUs: 120_000 })),
+    null,
+    48000,
+    1,
+  );
 
 let sql: Sql;
 const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
@@ -59,7 +69,8 @@ describe("cổng tính tiền", () => {
 
   it("nhận dạng: trừ theo duration thật, tối thiểu 10 giây", async () => {
     const form = new FormData();
-    form.set("file", new Blob([new Uint8Array(7_200_000)]), "fixture.opus");
+    // RE3-002: tệp phải dò được độ dài; 3.600 giây Opus (gói 120 ms) thay cho 7,2 MB số 0 không phải audio.
+    form.set("file", opusWebm(30_000), "fixture.webm");
     const req = new Request("http://fixture.test", { method: "POST", body: form });
     await call({ path: "/audio/transcriptions", model: "asr", body: await req.arrayBuffer(), contentType: req.headers.get("content-type"), send: json({ duration: 3600, segments: [] }) });
     assert.equal((await t(TID)).charged, 2000); // 1.000 đ/giờ × (1+100%) = 2.000
@@ -67,18 +78,27 @@ describe("cổng tính tiền", () => {
 
   it("R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát", async () => {
     const form = new FormData();
-    const bytes = new Uint8Array(44 + 16000 * 2 * 60);
-    const view = new DataView(bytes.buffer);
-    bytes.set(new TextEncoder().encode("RIFF"), 0);
-    bytes.set(new TextEncoder().encode("WAVE"), 8);
-    view.setUint32(28, 32000, true);
-    form.set("file", new Blob([bytes], { type: "audio/wav" }), "fixture.wav");
+    // RE3-002: WAV PCM16 đầy đủ header (60 giây), thay cho header thiếu fmt không xác minh được.
+    form.set("file", toWav(new Float32Array(16000 * 60)), "fixture.wav");
     form.set("model", "asr");
     const request = new Request("http://fixture.test", { method: "POST", body: form });
     await call({ path: "/audio/transcriptions", model: "asr", body: await request.arrayBuffer(), contentType: request.headers.get("content-type"), send: json({ text: "synthetic" }) });
     assert.equal((await t(TID)).charged, 34);
     const rows = await sql<{ status: string }>`select status from run_gate_calls where ticket_id = ${TID}`;
     assert.equal(rows[0].status, "can-doi-soat");
+  });
+
+  it("RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà", async () => {
+    let called = 0;
+    const form = new FormData();
+    form.set("file", new Blob([new Uint8Array(500_000).fill(9)]), "fixture.mp3");
+    form.set("model", "asr");
+    const req = new Request("http://fixture.test", { method: "POST", body: form });
+    const out = await call({ path: "/audio/transcriptions", model: "asr", body: await req.arrayBuffer(), contentType: req.headers.get("content-type"), send: async () => { called++; return new Response("{}"); } });
+    assert.equal(out.kind === "reject" && out.status, 422);
+    assert.equal(called, 0);
+    assert.equal((await t(TID)).held, 2000);
+    assert.equal((await sql`select 1 from run_gate_calls where ticket_id = ${TID}`).length, 0);
   });
 
   it("thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq", async () => {

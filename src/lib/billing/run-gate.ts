@@ -100,28 +100,27 @@ export async function readRequest(
   }
 }
 
-/** Ước số giây âm thanh trong yêu cầu nhận dạng để GIỮ TRƯỚC (trừ thật theo số giây nhà báo). WAV đọc đầu tệp; dạng nén ước rộng tay. */
+/**
+ * RE3-002: số giây âm thanh để GIỮ TRƯỚC (trừ thật theo số giây nhà báo). Cận trên đã xác minh bằng bộ dò
+ * metadata (audio-probe.ts); null = không xác minh được → cửa từ chối trước khi giữ hoặc gửi nhà cung cấp.
+ * Không còn ước theo dung lượng (size/2000 không phải cận trên với Opus bitrate thấp).
+ */
 export async function audioSecondsEstimate(
   contentType: string | null,
   body: ArrayBuffer,
-): Promise<number> {
+): Promise<number | null> {
   try {
+    if (!/^multipart\/form-data/i.test(contentType ?? "")) return null;
     const form = await new Response(body, {
       headers: { "content-type": contentType || "" },
     }).formData();
-    const file = form.get("file");
-    if (!file || typeof file === "string") return body.byteLength / 2000;
-    const head = new Uint8Array(await file.slice(0, 64).arrayBuffer());
-    const tag = (at: number) => String.fromCharCode(...head.slice(at, at + 4));
-    if (tag(0) === "RIFF" && tag(8) === "WAVE") {
-      const view = new DataView(head.buffer);
-      const byteRate = view.getUint32(28, true);
-      if (byteRate > 0) return Math.max(0, file.size - 44) / byteRate;
-    }
-    // Opus/WebM của app khoảng 16–32 kbit/s: chia cho 2.000 byte/giây là ước dư (giữ dư, trừ theo số thật).
-    return file.size / 2000;
+    const files = form.getAll("file");
+    if (files.length !== 1 || typeof files[0] === "string") return null;
+    const { probeAudioBytes } = await import("./audio-probe.ts");
+    const probe = probeAudioBytes(new Uint8Array(await files[0].arrayBuffer()));
+    return probe.ok && Number.isFinite(probe.seconds) && probe.seconds > 0 ? probe.seconds : null;
   } catch {
-    return body.byteLength / 2000;
+    return null;
   }
 }
 
@@ -316,10 +315,18 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     unit: string;
   }>`select unit from run_tickets where id = ${input.ticketId} and user_id = ${userId}`;
   const tokenUnit = unitRow[0]?.unit === "token";
-  const estimatedSeconds =
+  const probed =
     path === "/audio/transcriptions"
       ? await audioSecondsEstimate(input.contentType ?? null, input.body)
       : 0;
+  // RE3-002: không xác minh được độ dài thì không giữ, không gửi nhà (fail closed).
+  if (probed === null)
+    return {
+      kind: "reject",
+      status: 422,
+      message: "Không kiểm được độ dài đoạn âm thanh. Hãy tải lại trang rồi chạy lại.",
+    };
+  const estimatedSeconds = probed;
   const estBase =
     path === "/audio/transcriptions"
       ? (asrCost(bareBook, model, estimatedSeconds) ?? 0)
