@@ -109,7 +109,11 @@
     "location": "migrations/0056_admission_lane_fairness.sql:87–118",
     "hypothesis": "Waiter cùng provider/model mới được bảo vệ trong khi cap provider/lane dùng chung. Kiểm xuyên model/provider/lane, eligibility và reserve. Không sửa migration đã áp dụng.",
     "acceptance": "PG thật: A liên tục đến, B chờ; nhiều model/provider, live reserve, cap, unknown, waiter hết hạn, mixed version migration.",
-    "status": "UNVERIFIED"
+    "status": "REPRODUCED",
+    "finding": "0056 rivals chỉ lọc w.provider = p_provider and w.model = p_model, nhưng trần perProvider và trần lane dùng chung giữa model/nhà. (1) Khách chờ model Y bị khách mới model X cùng nhà chen khi trần nhà đầy. (2) Khách chờ nhà B bị khách mới nhà A chen khi trần lane đầy. Cả hai có thể đói kéo dài nếu dòng khách kia liên tục.",
+    "tests": "work-admission-pg.test.ts: 2 todo (hỏng đúng ở khẳng định «chen»), 1 test đạt (khách chờ bỏ đi >6 s không giữ suất). npm test 1786/7 skip/2 todo/0 fail.",
+    "fixProposal": "Migration tiến tới 0057 (create or replace tyzo_admit, giữ chữ ký; không sửa 0056): rivals gồm mọi waiter còn hiện diện, đã chờ ≥3 s, có chung ÍT NHẤT một tài nguyên với khách mới (cùng lane, hoặc cùng provider, hoặc cùng provider+model). Rival chỉ được tính nếu chính nó nhận được suất (lane, provider, model, perUser, nonlive còn chỗ; không uncertain). Đếm claim riêng theo từng tài nguyên của khách mới; nhận khi mọi tài nguyên còn chỗ sau claim. Cần test: hai trường hợp trên, rival bị chặn bởi tài nguyên khác không giữ suất (bài học RE4-003), không vượt cap, không bỏ đói, hiệu năng dưới advisory lock (admission p95).",
+    "effortNeeded": "HIGH"
   },
   {
     "id": "RE5-005",

@@ -2,6 +2,14 @@
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 
+## RE5-003 · ĐÃ TÁI HIỆN (chờ HIGH)
+
+Trong 0056, hàng chờ ưu tiên chỉ xét khách chờ **cùng provider và cùng model**, trong khi trần theo nhà và trần theo lane dùng chung. Đã tái hiện trên PG thật hai trường hợp:
+1. Khách chờ model Y bị khách mới model X cùng nhà chen khi trần nhà đã đầy.
+2. Khách chờ nhà B bị khách mới nhà A chen khi trần lane đã đầy.
+
+Hai trường hợp nằm trong `work-admission-pg.test.ts` dưới dạng `todo`. Đề xuất sửa bằng migration tiến tới 0057 (chi tiết ở `BACKLOG.json`): khách chờ được ưu tiên nếu dùng chung ít nhất một tài nguyên với khách mới, nhưng chỉ khi chính khách chờ đó nhận được suất. Không sửa 0056.
+
 ## MAIN-040 · PASS_LOCAL (MEDIUM)
 
 Tách phần việc sau khi giữ phiếu thành `modalPartWork` (`src/lib/billing/modal-work.ts`), server function gọi lại hàm này, hành vi giữ nguyên. Test hành vi trên PG thật đạt 6/6:

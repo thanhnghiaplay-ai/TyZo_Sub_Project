@@ -3,9 +3,9 @@
   "branchBase": "6bbf292 (baseline + 1 commit tài liệu Claude chưa đẩy: làm mới hồ sơ ChatGPT)",
   "branch": "audit/v5.49.6-claude-re5",
   "effort": "MEDIUM",
-  "effortRequested": null,
-  "status": "CHECKPOINT_MAIN-040_PASS_LOCAL",
-  "next": "MEDIUM: RE5-003, RE5-005; rồi LOW RE5-006/graph/đóng gói.",
+  "effortRequested": "HIGH",
+  "status": "CHECKPOINT_RE5-003_REPRODUCED",
+  "next": "HIGH: sửa RE5-003 bằng migration tiến tới 0057, bỏ todo; rồi xin MEDIUM cho RE5-005 (đo lại admission sau sửa), sau đó LOW.",
   "local_sha": "xem git log; commit checkpoint này",
   "remote_sha": "xem git ls-remote origin audit/v5.49.6-claude-re5",
   "environment": {
@@ -17,26 +17,15 @@
     {
       "cmd": "npm test (UID tyzo, PG 16.15)",
       "exit": 0,
-      "pass": 1785,
+      "pass": 1786,
       "skip": 7,
+      "todo": 2,
       "fail": 0,
-      "log": "docs/kiem-toan/v5.49.6/MAIN-040/npm-test.log"
-    },
-    {
-      "cmd": "vite build",
-      "exit": 0
-    },
-    {
-      "cmd": "tsc; eslint",
-      "exit": 0
+      "log": "docs/kiem-toan/v5.49.6/RE5-003/npm-test.log"
     }
   ],
   "filesChanged": [
-    "src/lib/billing/modal-work.ts",
-    "src/lib/billing/modal-work.test.ts",
-    "src/lib/tyzo-modal-call.ts",
-    "src/lib/provider-spend.test.ts",
-    "package.json"
+    "src/lib/billing/work-admission-pg.test.ts"
   ],
   "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17."
 }

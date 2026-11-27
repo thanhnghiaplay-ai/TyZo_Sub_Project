@@ -249,3 +249,40 @@ pgTest("RE4-003: nhiều người chờ batch chỉ giữ số suất lane có t
   assert.equal(await acquireWork(sql, key("older-batch-2", "batch")), null);
   assert.ok(await acquireWork(sql, key("older-batch-1", "batch")));
 });
+
+// RE5-003 (v5.49.6): hàng chờ ưu tiên chỉ lọc cùng provider+model, nhưng trần provider và lane dùng chung.
+// `todo` = đã tái hiện, chờ sửa bằng migration tiến tới ở mức HIGH.
+pgTest("RE5-003: khách chờ model Y không bị khách mới model X cùng nhà chen khi trần nhà đã đầy", { todo: "RE5-003: chờ sửa mức HIGH" }, async () => {
+  await limits({ perProvider: 2, perModel: 5, batch: 10, live: 10, perUser: 1 });
+  const x = (userId: string) => ({ userId, provider: "groq", model: "x", lane: "batch" as const });
+  const a1 = await acquireWork(sql, x("x-1"));
+  assert.ok(a1 && (await acquireWork(sql, x("x-2"))));
+  assert.equal(await acquireWork(sql, { userId: "waiting-y", provider: "groq", model: "y", lane: "batch" }), null);
+  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='waiting-y'`;
+  await releaseWork(sql, a1!);
+  assert.equal(await acquireWork(sql, x("x-new")), null, "khách mới model X chen suất nhà của khách chờ model Y");
+  assert.ok(await acquireWork(sql, { userId: "waiting-y", provider: "groq", model: "y", lane: "batch" }));
+});
+
+pgTest("RE5-003: khách chờ nhà B không bị khách mới nhà A chen khi trần lane đã đầy", { todo: "RE5-003: chờ sửa mức HIGH" }, async () => {
+  await limits({ perProvider: 10, perModel: 10, batch: 2, live: 10, perUser: 1 });
+  const a = (userId: string) => ({ userId, provider: "groq", model: "m", lane: "batch" as const });
+  const a1 = await acquireWork(sql, a("a-1"));
+  assert.ok(a1 && (await acquireWork(sql, a("a-2"))));
+  assert.equal(await acquireWork(sql, { userId: "waiting-b", provider: "alibaba", model: "qwen-plus", lane: "batch" }), null);
+  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='waiting-b'`;
+  await releaseWork(sql, a1!);
+  assert.equal(await acquireWork(sql, a("a-new")), null, "khách mới nhà A chen suất lane của khách chờ nhà B");
+  assert.ok(await acquireWork(sql, { userId: "waiting-b", provider: "alibaba", model: "qwen-plus", lane: "batch" }));
+});
+
+pgTest("RE5-003: khách chờ đã bỏ đi (quá 6 giây không quay lại) không giữ suất", async () => {
+  await limits({ perProvider: 1, perModel: 1, batch: 10, live: 10, perUser: 1 });
+  const k = (userId: string) => ({ userId, provider: "groq", model: "m", lane: "batch" as const });
+  const a1 = await acquireWork(sql, k("r-1"));
+  assert.ok(a1);
+  assert.equal(await acquireWork(sql, k("gone")), null);
+  await sql`update work_waiters set since = since - interval '20 seconds', seen_at = seen_at - interval '10 seconds' where user_id='gone'`;
+  await releaseWork(sql, a1!);
+  assert.ok(await acquireWork(sql, k("fresh")), "khách chờ đã bỏ đi không được chặn khách mới");
+});
