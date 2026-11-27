@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.7",
+    time: "27/11/2026",
+    area: "tien",
+    text: "RE6-001: số Token nhà cung cấp báo phải là số nguyên an toàn, không âm. Phản hồi sai kiểu được đưa vào đối soát, không trừ Token dịch. Hồ sơ tại docs/kiem-toan/v5.49.7/.",
+  },
+  {
     version: "5.49.6",
     time: "28/11/2026",
     area: "tien",

@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.6";
+export const APP_VERSION = "5.49.7";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,12 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.7",
+    time: "27/11/2026",
+    title: "Kiểm tra số liệu sử dụng khi tính Token dịch.",
+    points: ["Lượt dịch có số liệu sử dụng sai định dạng được đưa vào đối soát trước khi tính Token dịch."],
+  },
   {
     version: "5.49.6",
     time: "28/11/2026",
@@ -304,15 +310,6 @@ export const CHANGELOG: ReleaseNote[] = [
       "Chữ lớn toàn màn hình cho điện thoại, có nút Bắt đầu, Dừng; chỉnh cỡ chữ, số dòng, chữ gốc.",
       "Ô Từ cần giữ đúng cho tên nhân vật, thuật ngữ. Tải lại trang vẫn tải được phụ đề phiên trước.",
       "Điều khoản ghi thêm việc lưu chữ phiên trước trên máy; bạn đồng ý lại một lần.",
-    ],
-  },
-  {
-    version: "5.35.2",
-    time: "09:59 22/11/2026",
-    title: "Lưu được key ElevenLabs có giới hạn quyền.",
-    points: [
-      "Key ElevenLabs không có quyền đọc danh sách model vẫn lưu được, vì app không cần quyền đó.",
-      "Key thiếu quyền khi nhận dạng hay đọc giọng thì báo đúng tên quyền cần bật.",
     ],
   },
 ];

@@ -18,6 +18,10 @@ import { definitiveProviderRejection } from "./upstream-outcome.ts";
 
 const MAX_COMPLETION_TOKENS = 8192;
 
+function reportedChatTokens(value: unknown): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
 type GateOutcome =
   | { kind: "pass"; response: Response }
   | { kind: "reject"; status: number; message: string; retryAfter?: number; queuePosition?: number };
@@ -467,7 +471,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           const data = JSON.parse(text) as {
             duration?: unknown;
             segments?: Array<{ end?: unknown }>;
-            usage?: { prompt_tokens?: number; completion_tokens?: number };
+            usage?: { prompt_tokens?: unknown; completion_tokens?: unknown };
           };
           if (path === "/audio/transcriptions") {
             const reportedSeconds = billedSecondsOf(data);
@@ -479,22 +483,12 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
             base = asrCost(bare, model, seconds) ?? 0;
             providerBase = supplierBaseCost(book, model, "asr", { seconds }, input.provider);
           } else {
-            const prompt = Number(data.usage?.prompt_tokens);
-            const completion = Number(data.usage?.completion_tokens);
-            deferDebit =
-              !Number.isSafeInteger(prompt) ||
-              prompt < 0 ||
-              !Number.isSafeInteger(completion) ||
-              completion < 0;
-            needsReconciliation = deferDebit || prompt > promptCap || completion > outCap;
-            const inn =
-              Number.isSafeInteger(prompt) && prompt >= 0
-                ? prompt
-                : Math.ceil(input.body.byteLength / 3);
-            const out =
-              Number.isSafeInteger(completion) && completion >= 0
-                ? completion
-                : (input.outCap ?? MAX_COMPLETION_TOKENS);
+            const prompt = reportedChatTokens(data.usage?.prompt_tokens);
+            const completion = reportedChatTokens(data.usage?.completion_tokens);
+            deferDebit = prompt === null || completion === null;
+            needsReconciliation = deferDebit || (prompt ?? 0) > promptCap || (completion ?? 0) > outCap;
+            const inn = prompt ?? Math.ceil(input.body.byteLength / 3);
+            const out = completion ?? input.outCap ?? MAX_COMPLETION_TOKENS;
             cost = chatCost(book, model, inn, out);
             base = chatCost(bare, model, inn, out) ?? 0;
             providerBase = supplierBaseCost(book, model, "chat", { inn, out }, input.provider);

@@ -1,0 +1,95 @@
+[
+  {
+    "id": "RE6-001",
+    "priority": "P0",
+    "effort": "High",
+    "location": "src/lib/billing/run-gate.ts; routes model-call/room-groq",
+    "hypothesis": "Missing usage trả kết quả nhưng nhả giữ; nghĩa vụ tích lũy",
+    "acceptance": "Test 100 lượt thiếu usage, concurrent/replay/crash, nghĩa vụ bền, giới hạn rủi ro nguyên tử; admin đối soát có audit/RBAC/idempotency. Không tự trừ ước tính hay đổi quyền lợi; xin duyệt chính sách trước khi bật.",
+    "status": "PARTIAL",
+    "evidence": "HANDOFF.md",
+    "remaining": "Nghĩa vụ bền, giới hạn nguyên tử, đối soát Admin và phê duyệt chính sách trước khi bật"
+  },
+  {
+    "id": "RE6-002",
+    "priority": "P0",
+    "effort": "High",
+    "location": "deploy/vps/tyzo.sh: neon_cho, neon_khoa_ghi, chep_tu_neon",
+    "hypothesis": "Lỗi mạng bị coi là khóa ghi; khóa tùy chọn",
+    "acceptance": "API trạng thái chính xác, xác minh mọi writer/endpoint, fail closed, journal trước side effect, fault injection kill/network/auth, không mở nguồn cũ khi đích có thể đã ghi.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-003",
+    "priority": "P1",
+    "effort": "High",
+    "location": "deploy/vps/tyzo.sh: chay_vercel_sh",
+    "hypothesis": "grep ready có thể khớp not ready; env partial",
+    "acceptance": "Mock not ready, unknown deploy, wrong ID/DB/version, env partial; trạng thái cấu trúc, health check, recovery không lộ bí mật.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-004",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "deploy/vps/do-modal/do-modal.py",
+    "hypothesis": "Kiểm trần trước nhưng cộng sau; timeout không ghi chi phí",
+    "acceptance": "Giữ ngân sách đồng thời, unknown cost, deadline/redirect cap, kiểm finite/nonnegative, mock 4 luồng và timeout; không quảng cáo trần tuyệt đối nếu provider không bảo đảm.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-005",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "deploy/vps/do-live; leftover-script.ts; client Web/Android",
+    "hypothesis": "Benchmark ít mẫu, hardcode 3.8, không đo render; lọc chữ có thể mất ý",
+    "acceptance": "Chọn model, monotonic clock, cleanup timer khi close, lỗi/thiếu mẫu tính riêng, P50/95/99 onset→render và final, corpus đa ngôn ngữ, delta/final không mất tên riêng; mock trước, real cần duyệt.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-006",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "migrations/0057,0058; CI/test/restore",
+    "hypothesis": "PG16 khác PG18 production",
+    "acceptance": "PG18 isolated: full suite, fresh/upgrade/repeat/fault rollback, restore TOC, mixed version; không sửa migration đã áp dụng.",
+    "status": "PASS_LOCAL",
+    "evidence": "RE6-006/REPORT.md"
+  },
+  {
+    "id": "RE6-007",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "migrations/0057_admission_shared_cap_fairness.sql",
+    "hypothesis": "Vòng lặp dưới global lock, nhiều waiter, khóa JSON và lane không cap",
+    "acceptance": "Test 1k/5k waiter, ký tự lạ, eligibility, shared caps, live reserve, benchmark 25/50/100/200 và burst 300; chỉ tối ưu khi có bằng chứng.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-008",
+    "priority": "P1",
+    "effort": "High",
+    "location": "run-gate.ts; model-call.ts; room-groq.ts",
+    "hypothesis": "Cận token chưa được bảo đảm cho mọi model; route test regex",
+    "acceptance": "Test route hành vi, allowlist trường/model, schema/tool/output cap, Unicode, phiếu nhỏ, usage vượt cận; không giữ toàn context mặc định; 5 model chưa đo thật ghi BLOCKED.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-009",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "modal-work.ts; modal_app.py; Android",
+    "hypothesis": "Chi phí unknown/idle buffer, chất lượng và Android chưa nghiệm thu",
+    "acceptance": "Đối soát 0058, crash giữa ghi USD và journal, idle/cold/warm cost; Android thiết bị thật và chất lượng 3.5/3.8 cần chủ hỗ trợ.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE6-010",
+    "priority": "P2",
+    "effort": "Low",
+    "location": "docs/kiem-toan; graphify-out",
+    "hypothesis": "Hồ sơ STATE cũ và provenance",
+    "acceptance": "Cập nhật trạng thái thật, graph theo source commit, lịch sử 80 mục, manifest và ZIP; không sửa logic ở Low.",
+    "status": "OPEN_VERIFY"
+  }
+]

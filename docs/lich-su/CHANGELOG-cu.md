@@ -2,6 +2,13 @@
 
 Các mục sau được chuyển nguyên văn từ `src/lib/app-version.ts`. Các bản gần đây nằm trong ứng dụng, mục «Có gì mới» hiển thị 8 bản.
 
+## 5.35.2 · 09:59 22/11/2026
+
+Lưu được key ElevenLabs có giới hạn quyền.
+
+- Key ElevenLabs không có quyền đọc danh sách model vẫn lưu được, vì app không cần quyền đó.
+- Key thiếu quyền khi nhận dạng hay đọc giọng thì báo đúng tên quyền cần bật.
+
 ## 5.35.1 · 08:31 22/11/2026
 
 Thông báo lỗi gọn trên điện thoại; lỗi key rõ ràng hơn.

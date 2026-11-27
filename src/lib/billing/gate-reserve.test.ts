@@ -217,6 +217,9 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
       ["không có usage", () => Response.json({ choices: [] })],
       ["thiếu completion_tokens", () => Response.json({ usage: { prompt_tokens: 10 } })],
       ["usage âm", () => Response.json({ usage: { prompt_tokens: -1, completion_tokens: 5 } })],
+      ["usage có null", () => Response.json({ usage: { prompt_tokens: null, completion_tokens: 100 } })],
+      ["usage có boolean", () => Response.json({ usage: { prompt_tokens: true, completion_tokens: 100 } })],
+      ["usage có chuỗi số", () => Response.json({ usage: { prompt_tokens: 100, completion_tokens: "100" } })],
       ["thân không phải JSON", () => new Response("không phải json")],
     ] as const) {
       it(`${name}: trừ 0, ghi nghĩa vụ chờ đối soát, nhả phần giữ, ghi chi phí nhà`, async () => {
@@ -235,6 +238,13 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
         assert.equal(spend[0].n, 1);
       });
     }
+
+    it("usage bằng 0 hợp lệ, không tạo nghĩa vụ ước tính", async () => {
+      const out = await run(() => Response.json({ usage: { prompt_tokens: 0, completion_tokens: 0 } }));
+      assert.equal(out.kind, "pass");
+      const [c] = await calls();
+      assert.deepEqual([c.status, Number(c.short_units), Number(c.charged_units)], ["xong", 0, 0]);
+    });
 
     it("quyết toán lại cùng lệnh (replay) không trừ thêm và không ghi chi phí lần hai", async () => {
       await run(() => Response.json({}));
