@@ -1,0 +1,11 @@
+# label=release-check-auth
+# head=9d99433a3c01321720af390898dcf154035a3c90 dirty=11
+# fingerprint(src,scripts,migrations,server,package*)=85f6f5f2a5efc1e73256ffffe22e3f6c713abd8e8bc8d65f81642e953e18b849
+# start=2026-11-27T13:46:50Z
+# cmd=npm run check:auth
+
+> check:auth
+> node scripts/check-auth-invariant.mjs
+
+[auth-invariant] dev and build agree: sign-in on
+# exit=0 seconds=0 end=2026-11-27T13:46:50Z
