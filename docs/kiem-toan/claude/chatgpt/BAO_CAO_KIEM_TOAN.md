@@ -2,6 +2,8 @@
 
 Ngày: 27/11/2026. Người lập: Claude Code (tiếp quản từ Codex). Ngôn ngữ: tiếng Việt.
 
+**Bản cập nhật sau khi gộp lên main.** `main` = nhánh `ccr-76aead9f-jp8d0r` = `39510cc` (đẩy kiểu fast-forward từ `0edb82a`, không có merge commit). Mọi commit trong mục 3, gồm cả bản vá `4c6e6ad`, đều đã ở trên main.
+
 ## 0. Yêu cầu cho người kiểm toán
 
 Bạn là kiểm toán viên độc lập. Hãy **tìm lỗi**, đừng xác nhận lại các kết luận dưới đây. Với mỗi phát hiện, ghi:
@@ -14,8 +16,9 @@ Bạn là kiểm toán viên độc lập. Hãy **tìm lỗi**, đừng xác nh�
 Ưu tiên đường đi của tiền (giữ, trừ, trả, đối soát), tranh chấp đồng thời, khôi phục dữ liệu và những chỗ dữ liệu khách có thể bị trừ sai hoặc TyZo chịu lỗ. Mục 7 liệt kê những điểm Claude tự thấy yếu, hãy kiểm chúng trước.
 
 Tài liệu đi kèm:
-- `code-0edb82a..4c6e6ad.patch`: toàn bộ thay đổi mã từ bản phát hành 5.49.4 đến mã hiện tại (29 tệp, +1.093/−273, chỉ mã và test).
-- Repository `thanhnghiaplay-ai/TyZo_Sub_Project`. Nhánh `main` = `ccr-76aead9f-jp8d0r` tại `2893f0a`. Commit sửa RE4-001 mới nhất là `4c6e6ad`, **chưa đẩy** lên GitHub tại thời điểm lập báo cáo; nó nằm trong tệp patch.
+- `code-0edb82a..39510cc.patch`: toàn bộ thay đổi mã từ bản phát hành 5.49.4 đến mã hiện tại (29 tệp, +1.093/−273, chỉ mã và test).
+- Repository `thanhnghiaplay-ai/TyZo_Sub_Project`, nhánh `main` tại `39510cc`. Mã đã chốt là `4c6e6ad`. Hai commit `2893f0a` (đứng trước) và `39510cc` (đứng sau) chỉ chứa tài liệu và graph.
+- Đường dẫn cố định: `https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/blob/39510cc/<tệp>`, ví dụ `src/lib/billing/run-gate.ts`.
 - Bằng chứng trong kho: `docs/kiem-toan/claude/` (Claude) và `docs/kiem-toan/codex/` (Codex).
 
 ## 1. Bối cảnh sản phẩm
@@ -32,9 +35,15 @@ Khách trả bằng **Token dịch**. 1 Token bằng giá gốc 1 giây Whisper 
 |---|---|---|
 | v5.49 → 5.49.4 | 80 mục (MAIN/SPLIT/REF/AZ/DEEP/R3–R8/NEW), RE2 (6 mục), RE3 (8 mục) | Đã phát hành 5.49.4 (`0edb82a`) |
 | RE4 (Codex) | 6 mục RE4-001…006 + sửa đóng gói và khôi phục | Đã lên main trong lần đẩy này |
-| Claude tiếp quản | Tái nghiệm thu, soak, RE4-001 vòng 2, RE4-006 | Đã lên main, trừ `4c6e6ad` |
+| Claude tiếp quản | Tái nghiệm thu, soak, RE4-001 vòng 2 và 3, RE4-006 | Đã lên main (`39510cc`) |
 
-## 3. Các commit mã đã lên main (từ `0edb82a`)
+## 3. Các commit mã đã lên main (từ `0edb82a` đến `39510cc`)
+
+Thứ tự lên main có hai lần đẩy:
+- lần 1 đến `2893f0a` (các commit Codex, `c5e9db0` và `c899afd`);
+- lần 2 đến `39510cc` (`4c6e6ad` và tài liệu).
+
+Giữa hai lần đẩy, bản chính thức có lỗ hổng ở mục 4, RE4-001, v3. Commit tài liệu và graph (`aec2add`, `c415289`, `2893f0a`, `39510cc`) không có trong bảng.
 
 | Commit | Tác giả | Mục | Tệp mã chính |
 |---|---|---|---|
@@ -47,7 +56,7 @@ Khách trả bằng **Token dịch**. 1 Token bằng giá gốc 1 giây Whisper 
 | `b829fd9` | Codex | CODEX-RESTORE-TOC: đọc hết mục lục `pg_restore -l` dưới `pipefail` | `deploy/vps/tyzo.sh` |
 | `c5e9db0` | Claude | RE4-001 v2: giữ theo cận byte thay cho cả cửa sổ | `run-gate.ts`, `gate-reserve.test.ts` |
 | `c899afd` | Claude | Test R7-004 | `src/lib/pipeline/translate-edit.test.ts` |
-| `4c6e6ad` | Claude | RE4-001 v3: chặn nội dung không phải chữ (**chưa đẩy**) | `run-gate.ts`, `gate-reserve.test.ts` |
+| `4c6e6ad` | Claude | RE4-001 v3: chặn nội dung không phải chữ | `run-gate.ts`, `gate-reserve.test.ts` |
 
 Migration mới duy nhất là `0056`. Nó chỉ `create or replace function tyzo_admit(...)`, giữ nguyên chữ ký hàm, không xóa hay sửa bảng. Vercel tự chạy migration khi dựng (`npm run build` gồm `db:migrate`).
 
@@ -158,7 +167,8 @@ Môi trường: Node 22.23.5, PostgreSQL **16.15** loopback (máy không có 17.
 2. Staging Vercel/Neon/VPS: cutover/restore (RE4-004), chống đói khi có độ trễ mạng thật.
 3. Máy Android thật.
 4. PostgreSQL 17 (Claude dùng 16.15; Codex dùng 17.12).
-5. Bản 5.49.5 đã lên main nhưng **chưa ai xác nhận Vercel dựng thành công** và migration 0056 đã chạy trên Neon.
+5. Bản 5.49.5 đã lên main (`39510cc`) nhưng **chưa ai xác nhận Vercel dựng thành công**, migration 0056 đã chạy trên Neon, hay VPS đã cập nhật cầu nối (`tyzo` → 2).
+6. Trong khoảng giữa hai lần đẩy, chưa kiểm có yêu cầu nào gửi ảnh/âm thanh/tệp qua cửa trả theo lượt không. Đề nghị truy `run_gate_calls` trạng thái `can-doi-soat` trong khoảng thời gian đó.
 
 ## 7. Điểm Claude tự thấy yếu — đề nghị kiểm trước
 
@@ -173,5 +183,5 @@ Môi trường: Node 22.23.5, PostgreSQL **16.15** loopback (máy không có 17.
 ## 8. Rollback
 
 - Mỗi commit tách riêng; revert theo thứ tự ngược, sau khi các lệnh đang chạy đã xong và sổ đã đối soát.
-- Main có thể quay về `0edb82a`. Hàm 0056 để lại không gây hại, vì chữ ký giống 0055.
+- Main có thể quay về `0edb82a` (trước toàn bộ đợt này) hoặc `2893f0a` (không nên dùng: thiếu bản vá RE4-001 v3). Hàm 0056 để lại không gây hại, vì chữ ký giống 0055.
 - Không sửa migration đã áp dụng; nếu cần thì viết migration tiến tới.
