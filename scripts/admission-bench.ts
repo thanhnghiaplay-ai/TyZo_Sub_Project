@@ -130,6 +130,8 @@ async function cohort(clients: number, durationMs: number) {
   const errors: string[] = [];
   const stopAt = performance.now() + durationMs;
   const sampler = sampleViolations(stopAt + 300);
+  const perClient = new Array<number>(clients).fill(0);
+  const t0 = performance.now();
   await Promise.all(
     Array.from({ length: clients }, async (_, i) => {
       const sql = sqls[i % INSTANCES];
@@ -143,6 +145,7 @@ async function cohort(clients: number, durationMs: number) {
           });
           lat.push(entered - t);
           out.ok += 1;
+          perClient[i] += 1;
         } catch (e) {
           classify(e, out, errors);
           lat.push(performance.now() - t);
@@ -152,7 +155,17 @@ async function cohort(clients: number, durationMs: number) {
     }),
   );
   const s = await sampler;
-  return { clients, ...out, p50: pct(lat, 50), p95: pct(lat, 95), p99: pct(lat, 99), max: pct(lat, 100), errors, ...s };
+  const seconds = (performance.now() - t0) / 1000;
+  // RE2-004: công bằng — mỗi khách được nhận bao nhiêu lượt; 0 lượt = bị «đói».
+  const fairness = {
+    starved: perClient.filter((n) => n === 0).length,
+    min: Math.min(...perClient),
+    p10: pct(perClient, 10),
+    median: pct(perClient, 50),
+    admissionsPerSecond: +(out.ok / seconds).toFixed(1),
+    attemptsPerSecond: +((out.ok + out.busy + out.uncertain + out.error) / seconds).toFixed(1),
+  };
+  return { clients, ...out, p50: pct(lat, 50), p95: pct(lat, 95), p99: pct(lat, 99), max: pct(lat, 100), fairness, errors, ...s };
 }
 
 async function burst(n: number) {

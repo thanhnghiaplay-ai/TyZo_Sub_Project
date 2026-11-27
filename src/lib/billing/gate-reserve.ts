@@ -56,8 +56,7 @@ export async function reserveGateCall(
   });
 }
 
-/** An expired lease cannot be revived by a delayed heartbeat. */
-/** RE3-003: timeout thật ở CSDL; RETURNING để biết lease còn (mảng rỗng = đã mất). */
+/** An expired lease cannot be revived by a delayed heartbeat. RE3-003: timeout thật ở CSDL; RETURNING rỗng = đã mất lease. */
 export function beatGateCall(sql: Sql, callId: string) {
   return boundedBeat(
     sql,

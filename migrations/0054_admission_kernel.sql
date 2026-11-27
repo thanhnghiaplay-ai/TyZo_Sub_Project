@@ -17,8 +17,8 @@ create or replace function tyzo_admit(
 declare
   cfg jsonb; lim jsonb;
   n_lane integer; n_own integer; n_provider integer; n_model integer; n_uncertain integer;
-  c_lane integer; c_user integer; c_provider integer; c_model integer; c_reserve integer;
-begin
+  -- Từ khóa mở thân hàm để cuối dòng: migrate.mjs từ chối dòng mở đầu bằng BEGIN/COMMIT/ROLLBACK.
+  c_lane integer; c_user integer; c_provider integer; c_model integer; c_reserve integer; begin
   perform pg_advisory_xact_lock(84201912);
   select value::jsonb into cfg from room_settings where key = 'work_admission';
   lim := p_defaults || coalesce(cfg, '{}'::jsonb);
