@@ -25,13 +25,13 @@
       58,
       108
     ],
-    "status": "BLOCKED",
+    "status": "PASS",
     "cause": "await beat có thể không kết thúc; kiểm tra deadline và stop phụ thuộc promise.",
     "fix": "Deadline độc lập, timeout pool/connect, fencing, hủy hoặc cách ly kết quả muộn; không tạo heartbeat chồng.",
     "acceptance": "Mock promise không resolve, mất mạng, pool cạn, DB restart, stop hữu hạn; không hồi sinh lease cũ.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-002/REPORT.md"
   },
   {
     "id": "RE4-003",

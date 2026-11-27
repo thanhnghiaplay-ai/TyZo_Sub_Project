@@ -2,6 +2,7 @@
 // Chạy: npm run live:bridge   (cần DATABASE_URL, LIVE_BRIDGE_SECRET; Workspace ID qua ALIBABA_WORKSPACE_ID hoặc cài đặt phòng)
 import { createServer } from "node:http";
 import pg from "pg";
+import { createPgPool, withPgTransaction } from "../src/lib/pg-pool.server.ts";
 import type { Sql } from "../src/lib/db.ts";
 import { attachLiveBridge } from "../src/lib/live/live-bridge.ts";
 import { createLiveBilling } from "../src/lib/live/live-billing.ts";
@@ -27,7 +28,7 @@ const port = Number(process.env.PORT ?? process.env.LIVE_BRIDGE_PORT ?? 8787);
 pg.types.setTypeParser(20, Number);
 pg.types.setTypeParser(1082, (value: string) => value);
 pg.types.setTypeParser(1186, (value: string) => value);
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
+const pool = createPgPool({ connectionString: process.env.DATABASE_URL, max: 5 });
 function wrapSql(run: (text: string, values: unknown[]) => Promise<unknown[]>): Sql {
   const sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
     let text = strings[0];
@@ -38,20 +39,12 @@ function wrapSql(run: (text: string, values: unknown[]) => Promise<unknown[]>): 
   return sql;
 }
 const sql = wrapSql(async (text, values) => (await pool.query(text, values)).rows);
-sql.begin = async (fn) => {
-  const conn = await pool.connect();
-  try {
-    await conn.query("BEGIN");
+sql.begin = (fn, signal) =>
+  withPgTransaction(pool, async (conn) => {
     const tx = wrapSql(async (text, values) => (await conn.query(text, values)).rows);
     tx.begin = (inner) => inner(tx);
-    const result = await fn(tx);
-    await conn.query("COMMIT");
-    return result;
-  } catch (error) {
-    await conn.query("ROLLBACK").catch(() => undefined);
-    throw error;
-  } finally { conn.release(); }
-};
+    return fn(tx);
+  }, signal);
 
 const server = createServer((request, response) => {
   if (request.url === "/health") {
@@ -77,7 +70,6 @@ async function refreshTurbo() {
 
 // Lỗi quên bắt chỉ ghi nhật ký; Node 22 mặc định thoát, cắt mọi phiên đang dịch.
 process.on("unhandledRejection", (reason) => console.log(new Date().toISOString(), `lỗi chưa bắt (cầu nối vẫn chạy): ${String(reason)}`));
-pool.on("error", (error) => console.log(new Date().toISOString(), `kết nối cơ sở dữ liệu lỗi: ${String(error)}`));
 
 attachLiveBridge(server, {
   secret,

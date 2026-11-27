@@ -1,0 +1,56 @@
+TAP version 13
+# Subtest: RE4-002: deadline báo mất lease ngay cả khi truy vấn treo; phản hồi muộn bị bỏ qua
+not ok 1 - RE4-002: deadline báo mất lease ngay cả khi truy vấn treo; phản hồi muộn bị bỏ qua
+  ---
+  duration_ms: 201.978385
+  type: 'test'
+  location: 'baseline-fixture/work-lease.test.ts:97:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + undefined
+    - 'deadline'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'deadline'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://baseline-fixture/work-lease.test.ts:109:12)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: RE4-002: stop có hạn khi truy vấn không trả về, phát tín hiệu hủy một lần
+not ok 2 - RE4-002: stop có hạn khi truy vấn không trả về, phát tín hiệu hủy một lần
+  ---
+  duration_ms: 205.398109
+  type: 'test'
+  location: 'baseline-fixture/work-lease.test.ts:120:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + undefined
+    - 'stopped'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'stopped'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://baseline-fixture/work-lease.test.ts:133:12)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 480.868793

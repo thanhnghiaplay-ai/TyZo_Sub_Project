@@ -57,11 +57,12 @@ export async function reserveGateCall(
 }
 
 /** An expired lease cannot be revived by a delayed heartbeat. RE3-003: timeout thật ở CSDL; RETURNING rỗng = đã mất lease. */
-export function beatGateCall(sql: Sql, callId: string) {
+export function beatGateCall(sql: Sql, callId: string, signal?: AbortSignal) {
   return boundedBeat(
     sql,
     (tx) => tx`update run_gate_calls set heartbeat_at = clock_timestamp()
     where id = ${callId} and status = 'dang-chay' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`,
+    { signal },
   );
 }
 

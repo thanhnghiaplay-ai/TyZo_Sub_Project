@@ -200,11 +200,12 @@ export async function beginWork(
 
 function startLease(sql: Sql, id: string) {
   const stop = startBeat(
-    () =>
+    (signal) =>
       boundedBeat(
         sql,
         (tx) => tx`update work_admissions set heartbeat_at = clock_timestamp()
     where id = ${id} and status = 'running' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`,
+        { signal },
       ),
     // RE3-003: mất lease = suất đã bị đánh unknown (vẫn giữ chỗ, không gửi trùng). Ghi lại để đối soát.
     { onLost: (why) => console.warn("lease-lost", "admission", id, why) },

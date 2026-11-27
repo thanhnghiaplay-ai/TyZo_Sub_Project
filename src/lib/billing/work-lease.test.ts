@@ -93,3 +93,47 @@ test("RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc"
   assert.equal(nextDelay(30_000, 0.5), 30_000);
   assert.equal(nextDelay(30_000, 0.999999), 32_999);
 });
+
+test("RE4-002: deadline báo mất lease ngay cả khi truy vấn treo; phản hồi muộn bị bỏ qua", async () => {
+  let release!: (rows: unknown[]) => void;
+  const pending = new Promise<unknown[]>((r) => (release = r));
+  let report!: (why: lease.LeaseLost) => void;
+  const lost = new Promise<lease.LeaseLost>((r) => (report = r));
+  let attempts = 0;
+  const beatsBefore = lease.leaseMetrics().beats;
+  const stop = lease.startBeat(() => {
+    attempts++;
+    return pending;
+  }, { everyMs: 5, staleMs: 40, onLost: report });
+  try {
+    assert.equal(await Promise.race([lost, wait(200)]), "deadline");
+    await stop();
+  } finally {
+    release([{ id: "late" }]);
+    await stop();
+  }
+  await wait(20);
+  assert.equal(attempts, 1);
+  assert.equal(lease.leaseMetrics().beats, beatsBefore);
+});
+
+test("RE4-002: stop có hạn khi truy vấn không trả về, phát tín hiệu hủy một lần", async () => {
+  let started!: () => void;
+  const onStart = new Promise<void>((r) => (started = r));
+  let complete!: () => void;
+  const pending = new Promise<void>((r) => (complete = r));
+  let aborted = 0;
+  const stop = lease.startBeat((signal) => {
+    started();
+    signal?.addEventListener("abort", () => aborted++, { once: true });
+    return pending;
+  }, { everyMs: 5, staleMs: 500, stopGraceMs: 20 });
+  await onStart;
+  try {
+    assert.equal(await Promise.race([stop().then(() => "stopped"), wait(200)]), "stopped");
+    assert.equal(aborted, 1);
+  } finally {
+    complete();
+    await stop();
+  }
+});

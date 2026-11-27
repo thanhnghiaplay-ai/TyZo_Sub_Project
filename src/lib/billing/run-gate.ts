@@ -256,7 +256,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
         const { tagWork } = await import("./work-admission.ts");
         await tagWork(sql, input.admissionId, held.callId);
       }
-      stopBeat = startBeat(() => beatGateCall(sql, held.callId), {
+      stopBeat = startBeat((signal) => beatGateCall(sql, held.callId, signal), {
         everyMs: input.beatMs,
         onLost: (why) => console.warn("lease-lost", "gate", held.callId, why),
       });
@@ -390,7 +390,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     await tagWork(sql, input.admissionId, callId);
   }
 
-  const stopBeat = startBeat(() => beatGateCall(sql, callId), {
+  const stopBeat = startBeat((signal) => beatGateCall(sql, callId, signal), {
     everyMs: input.beatMs,
     onLost: (why) => console.warn("lease-lost", "gate", callId, why),
   });

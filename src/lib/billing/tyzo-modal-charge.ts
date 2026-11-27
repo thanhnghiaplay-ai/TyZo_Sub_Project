@@ -127,11 +127,12 @@ export async function runModalPartWith(
 
   // RE-001: ghi nhịp sống trong suốt lúc GPU chạy (có thể quá 15 phút); phiếu chỉ đóng khi đoạn hết nhịp hoặc xong.
   const stopBeat = startBeat(
-    () =>
+    (signal) =>
       boundedBeat(
         sql,
         (tx) =>
           tx`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning 1`,
+        { signal },
       ),
     {
       everyMs: input.beatMs,

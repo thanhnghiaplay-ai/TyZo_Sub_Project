@@ -4,6 +4,7 @@
  * mỗi lần chạy tạo một schema riêng tên `thu_…` rồi bỏ đi.
  */
 import { readdirSync, readFileSync } from "node:fs";
+import { createPgPool, withPgTransaction } from "./pg-pool.server.ts";
 import type { Sql } from "./db.ts";
 
 const MIGRATIONS = new URL("../../migrations/", import.meta.url);
@@ -27,11 +28,14 @@ export async function pgliteSql(): Promise<Sql> {
   const db = new PGlite();
   for (const file of migrationFiles()) await db.exec(readFileSync(new URL(file, MIGRATIONS), "utf8"));
   const sql = wrap(async (text, params) => (await db.query(text, params)).rows);
-  sql.begin = (fn) =>
+  sql.begin = (fn, signal) =>
     db.transaction(async (t) => {
+      signal?.throwIfAborted();
       const tx = wrap(async (text, params) => (await t.query(text, params)).rows);
       tx.begin = (inner) => inner(tx);
-      return fn(tx);
+      const result = await fn(tx);
+      signal?.throwIfAborted();
+      return result;
     });
   return sql;
 }
@@ -43,26 +47,16 @@ export async function realPgSql(): Promise<{ sql: Sql; end: () => Promise<void> 
   const { default: pg } = await import("pg");
   pg.types.setTypeParser(20, Number);
   const schema = `thu_${process.pid}_${Math.floor(Math.random() * 1e9)}`;
-  const pool = new pg.Pool({ connectionString: url, max: 12, options: `-c search_path=${schema}` });
+  const pool = createPgPool({ connectionString: url, max: 12, options: `-c search_path=${schema}` });
   await pool.query(`create schema ${schema}`);
   for (const file of migrationFiles()) await pool.query(readFileSync(new URL(file, MIGRATIONS), "utf8"));
   const sql = wrap(async (text, params) => (await pool.query(text, params)).rows);
-  sql.begin = async (fn) => {
-    const conn = await pool.connect();
-    try {
-      await conn.query("BEGIN");
+  sql.begin = (fn, signal) =>
+    withPgTransaction(pool, async (conn) => {
       const tx = wrap(async (text, params) => (await conn.query(text, params)).rows);
       tx.begin = (inner) => inner(tx);
-      const out = await fn(tx);
-      await conn.query("COMMIT");
-      return out;
-    } catch (error) {
-      await conn.query("ROLLBACK").catch(() => undefined);
-      throw error;
-    } finally {
-      conn.release();
-    }
-  };
+      return fn(tx);
+    }, signal);
   return {
     sql,
     end: async () => {

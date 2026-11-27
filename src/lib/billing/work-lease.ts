@@ -16,6 +16,8 @@ export type BeatOptions = {
   /** Quá thời gian này không có nhịp thành công thì coi là mất lease. Mặc định LEASE_STALE − 1 nhịp. */
   staleMs?: number;
   onLost?: (why: LeaseLost) => void;
+  /** Thời gian chờ nhịp đang chạy khi đóng bình thường. */
+  stopGraceMs?: number;
 };
 
 /** RE3-003: số đo toàn tiến trình (đọc từ trang trạng thái/nhật ký). */
@@ -29,27 +31,31 @@ export function nextDelay(everyMs: number, r = Math.random()): number {
   return Math.floor(everyMs * (0.9 + 0.2 * r));
 }
 
-/**
- * Gọi `beat` đều đặn cho tới khi `stop()`.
- * - Single-flight: nhịp sau chỉ được lên lịch khi nhịp trước đã xong (CSDL chậm không làm chồng truy vấn).
- * - Nhịp trả mảng rỗng (UPDATE … RETURNING không trúng dòng) = mất lease → `onLost("fenced")`, ngừng nhịp.
- * - Lỗi được đếm; quá `staleMs` không có nhịp thành công → `onLost("deadline")`, ngừng nhịp.
- * - `stop()` trả promise chờ nhịp đang chạy (nếu có) xong; không bao giờ reject.
- */
+/** A stalled driver cannot postpone the lease deadline or schedule another heartbeat. */
 export function startBeat(
-  beat: () => Promise<unknown>,
+  beat: (signal: AbortSignal) => Promise<unknown>,
   options: number | BeatOptions = LEASE_BEAT_MS,
 ): () => Promise<void> {
   const opts = typeof options === "number" ? { everyMs: options } : options;
   const everyMs = opts.everyMs ?? LEASE_BEAT_MS;
   const staleMs = opts.staleMs ?? Math.max(everyMs, LEASE_STALE_SECONDS * 1000 - everyMs);
+  const stopGraceMs = opts.stopGraceMs ?? 1_000;
   let stopped = false;
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  let inFlight: Promise<void> | null = null;
-  let lastOk = Date.now();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let deadline: ReturnType<typeof setTimeout> | undefined;
+  let expiresAt = 0;
+  let inFlight: { controller: AbortController; drained: Promise<void> } | undefined;
+  let closing: Promise<void> | undefined;
+
+  const stopScheduling = () => {
+    stopped = true;
+    clearTimeout(timer);
+    clearTimeout(deadline);
+  };
   const lose = (why: LeaseLost) => {
     if (stopped) return;
-    stopped = true;
+    stopScheduling();
+    inFlight?.controller.abort();
     metrics.lost += 1;
     try {
       opts.onLost?.(why);
@@ -57,51 +63,78 @@ export function startBeat(
       /* người nghe lỗi không được làm hỏng việc chính */
     }
   };
+  const armDeadline = () => {
+    clearTimeout(deadline);
+    expiresAt = performance.now() + staleMs;
+    deadline = setTimeout(() => lose("deadline"), staleMs);
+  };
   const schedule = () => {
-    if (stopped) return;
-    timer = setTimeout(run, nextDelay(everyMs));
+    if (!stopped) timer = setTimeout(run, nextDelay(everyMs));
   };
   const run = () => {
-    timer = null;
     if (stopped) return;
-    const started = Date.now();
+    if (performance.now() >= expiresAt) return lose("deadline");
+    const started = performance.now();
+    const controller = new AbortController();
     metrics.inFlight += 1;
-    inFlight = (async () => {
-      try {
-        const result = await beat();
-        metrics.beats += 1;
-        if (Array.isArray(result) && result.length === 0) return lose("fenced");
-        lastOk = Date.now();
-      } catch {
-        metrics.failures += 1;
-      } finally {
+    const drained = Promise.resolve()
+      .then(() => beat(controller.signal))
+      .then(
+        (result) => {
+          if (stopped) return;
+          if (performance.now() >= expiresAt) return lose("deadline");
+          metrics.beats += 1;
+          if (Array.isArray(result) && result.length === 0) return lose("fenced");
+          armDeadline();
+        },
+        () => {
+          if (!stopped) metrics.failures += 1;
+        },
+      )
+      .finally(() => {
         metrics.inFlight -= 1;
-        metrics.slowestMs = Math.max(metrics.slowestMs, Date.now() - started);
-      }
-      if (Date.now() - lastOk >= staleMs) return lose("deadline");
-    })().finally(() => {
-      inFlight = null;
-      schedule();
-    });
+        metrics.slowestMs = Math.max(metrics.slowestMs, Math.round(performance.now() - started));
+        inFlight = undefined;
+        schedule();
+      });
+    inFlight = { controller, drained };
   };
+
+  armDeadline();
   schedule();
   return () => {
-    stopped = true;
-    if (timer) clearTimeout(timer);
-    timer = null;
-    return inFlight ?? Promise.resolve();
+    if (closing) return closing;
+    if (stopped) return Promise.resolve();
+    stopScheduling();
+    const pending = inFlight;
+    if (!pending) return Promise.resolve();
+    closing = new Promise<void>((resolve) => {
+      const grace = setTimeout(() => {
+        pending.controller.abort();
+        resolve();
+      }, stopGraceMs);
+      void pending.drained.then(() => {
+        clearTimeout(grace);
+        resolve();
+      });
+    });
+    return closing;
   };
 }
 
-/**
- * Chạy một câu nhịp với timeout THẬT ở máy chủ CSDL: giao dịch ngắn `SET LOCAL statement_timeout`.
- * Kết nối không hỗ trợ giao dịch (fixture) thì chạy thẳng.
- */
-export function boundedBeat<T>(sql: Sql, run: (tx: Sql) => Promise<T>, timeoutMs = BEAT_STATEMENT_TIMEOUT_MS) {
+/** Bound SQL execution on the server and cancel stalled PostgreSQL transactions via their connection. */
+export function boundedBeat<T>(
+  sql: Sql,
+  run: (tx: Sql) => Promise<T>,
+  { timeoutMs = BEAT_STATEMENT_TIMEOUT_MS, signal }: { timeoutMs?: number; signal?: AbortSignal } = {},
+) {
+  signal?.throwIfAborted();
   if (!sql.begin) return run(sql);
   const ms = Math.max(100, Math.floor(timeoutMs));
   return sql.begin(async (tx) => {
+    signal?.throwIfAborted();
     await tx`select set_config('statement_timeout', ${String(ms)}, true)`;
+    signal?.throwIfAborted();
     return run(tx);
-  });
+  }, signal);
 }

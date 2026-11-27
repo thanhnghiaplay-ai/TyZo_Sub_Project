@@ -42,7 +42,7 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
   const failuresBefore = leaseMetrics().failures;
   const t0 = Date.now();
   const stop = startBeat(
-    async () => {
+    async (signal) => {
       calls += 1;
       running += 1;
       peak = Math.max(peak, running);
@@ -50,7 +50,7 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
         return await boundedBeat(
           sql,
           (tx) => tx`update work_admissions set heartbeat_at = clock_timestamp() where id = 'stall' returning id`,
-          150,
+          { timeoutMs: 150, signal },
         );
       } finally {
         running -= 1;

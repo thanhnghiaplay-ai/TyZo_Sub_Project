@@ -1,6 +1,6 @@
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 import { destructiveGate, previewGate } from "../../scripts/migration-gate.mjs";
-import { createPgPool } from "./pg-pool.server";
+import { createPgPool, withPgTransaction } from "./pg-pool.server";
 
 /** Which database backend is active. */
 type DbSource = "neon" | "pglite";
@@ -41,7 +41,7 @@ export interface Sql {
    * Chạy nhiều lệnh trong MỘT giao dịch trên cùng một kết nối: lỗi ở bất kỳ lệnh nào thì không lệnh nào có hiệu lực.
    * Gọi lồng trên `tx` thì dùng lại giao dịch đang mở. Dùng qua `inTransaction` (db-tx.ts).
    */
-  begin?: <R>(fn: (tx: Sql) => Promise<R>) => Promise<R>;
+  begin?: <R>(fn: (tx: Sql) => Promise<R>, signal?: AbortSignal) => Promise<R>;
 }
 
 /**
@@ -153,26 +153,12 @@ function createNeonSql(): Promise<Sql> {
       const res = await pool.query(text, params);
       return res.rows as T[];
     });
-    sql.begin = async <R>(fn: (tx: Sql) => Promise<R>): Promise<R> => {
-      const conn = await pool.connect();
-      try {
-        await conn.query("BEGIN");
+    sql.begin = (fn, signal) =>
+      withPgTransaction(pool, async (conn) => {
         const tx = toSql(async <T>(text: string, params: unknown[]) => (await conn.query(text, params)).rows as T[]);
         tx.begin = (inner) => inner(tx);
-        const out = await fn(tx);
-        await conn.query("COMMIT");
-        return out;
-      } catch (error) {
-        try {
-          await conn.query("ROLLBACK");
-        } catch {
-          /* giữ lỗi gốc */
-        }
-        throw error;
-      } finally {
-        conn.release();
-      }
-    };
+        return fn(tx);
+      }, signal);
     void import("@/lib/glossary-seed.server")
       .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
       .catch(() => undefined);
@@ -244,11 +230,14 @@ async function createPgliteSql(): Promise<Sql> {
     return result.rows;
   });
   // PGLite chỉ có một phiên: giao dịch nguyên tử (lỗi thì quay lại) nhưng không cô lập với lệnh ngoài giao dịch.
-  sql.begin = <R>(fn: (tx: Sql) => Promise<R>): Promise<R> =>
+  sql.begin = (fn, signal) =>
     pg.transaction(async (t) => {
+      signal?.throwIfAborted();
       const tx = toSql(async <T>(text: string, params: unknown[]) => (await t.query<T>(text, params)).rows);
       tx.begin = (inner) => inner(tx);
-      return fn(tx);
+      const result = await fn(tx);
+      signal?.throwIfAborted();
+      return result;
     });
   void import("@/lib/glossary-seed.server")
     .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
