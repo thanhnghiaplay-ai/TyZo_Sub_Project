@@ -7,7 +7,6 @@ import { createFileRoute } from "@tanstack/react-router";
  * - Key của khách (x-user-key): chỉ chuyển tiếp tới nhà cho những nhà trình duyệt không gọi thẳng được. Không lưu key, không tính tiền.
  * Đầu vào: x-provider (mã nhà), x-path (phải đúng đường dịch nhà khai), x-run-ticket (phiếu, cửa phòng).
  */
-const BODY_LIMIT = 512 * 1024;
 const RATE_PER_MINUTE = 240;
 const UPSTREAM_TIMEOUT_MS = 100_000;
 
@@ -64,10 +63,14 @@ export const Route = createFileRoute("/api/model-call")({
           if (error instanceof RateLimitError) return fail(429, error.message, { "retry-after": String(error.retryAfter) });
           throw error;
         }
-        const declared = Number(request.headers.get("content-length") || 0);
-        if (declared > BODY_LIMIT) return fail(413, "Nội dung gửi lên quá lớn.");
-        const body = await request.arrayBuffer();
-        if (body.byteLength > BODY_LIMIT) return fail(413, "Nội dung gửi lên quá lớn.");
+        const { MODEL_BODY_LIMIT, readRequestBytes, requestBodyFailure } = await import("@/lib/request-body.server");
+        let body: ArrayBuffer;
+        try { body = await readRequestBytes(request, MODEL_BODY_LIMIT); }
+        catch (error) {
+          const rejected = requestBodyFailure(error);
+          if (rejected) return rejected;
+          throw error;
+        }
         const contentType = request.headers.get("content-type");
         const target = `${providerApi(provider)}${chat.path}`;
         const headersWith = (key: string) => {

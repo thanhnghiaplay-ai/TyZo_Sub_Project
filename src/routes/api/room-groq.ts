@@ -2,12 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 
 const ALLOWED = new Set(["/models", "/audio/transcriptions", "/chat/completions", "/audio/speech"]);
 
-/** Trần kích thước body theo đường dẫn, tính bằng byte. */
-const BODY_LIMIT: Record<string, number> = {
-  "/audio/transcriptions": 25 * 1024 * 1024,
-  "/chat/completions": 512 * 1024,
-  "/audio/speech": 20 * 1024,
-};
 /** Số yêu cầu tối đa mỗi phút cho một tài khoản. */
 const RATE_PER_MINUTE = 240;
 /**
@@ -55,13 +49,16 @@ export const Route = createFileRoute("/api/room-groq")({
           throw error;
         }
 
-        const limit = BODY_LIMIT[path] ?? 0;
+        const { GROQ_BODY_LIMITS, readRequestBytes, requestBodyFailure } = await import("@/lib/request-body.server");
+        const limit = GROQ_BODY_LIMITS[path] ?? 0;
         let body: ArrayBuffer | undefined;
         if (path !== "/models") {
-          const declared = Number(request.headers.get("content-length") || 0);
-          if (declared > limit) return fail(413, "Nội dung gửi lên quá lớn.");
-          body = await request.arrayBuffer();
-          if (body.byteLength > limit) return fail(413, "Nội dung gửi lên quá lớn.");
+          try { body = await readRequestBytes(request, limit); }
+          catch (error) {
+            const rejected = requestBodyFailure(error);
+            if (rejected) return rejected;
+            throw error;
+          }
         }
 
         const { getSql } = await import("@/lib/db");
