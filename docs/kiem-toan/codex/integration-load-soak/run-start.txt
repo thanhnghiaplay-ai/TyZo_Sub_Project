@@ -1,0 +1,5 @@
+head=aaba2aab1b2d4faa38b5249bb967f658269fc1ab
+node=v22.23.5
+k6 v1.2.3 (commit/e4a5a88f7c, go1.24.6, linux/amd64)
+start=2026-11-27T14:59:59Z
+{"start":"2026-11-27T15:00:02Z","seconds":3600,"head":"aaba2aab1b2d4faa38b5249bb967f658269fc1ab"}

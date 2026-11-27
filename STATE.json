@@ -9,5 +9,13 @@
     "integration/load/soak",
     "RE4-006"
   ],
-  "parentCommit": "604bf08471c6c0dcfa1e11430f65b13cc87f570b"
+  "parentCommit": "604bf08471c6c0dcfa1e11430f65b13cc87f570b",
+  "activeSoak": {
+    "snapshot": "aaba2aab1b2d4faa38b5249bb967f658269fc1ab",
+    "startedUtc": "2026-11-27T15:00:02Z",
+    "minContinuousSeconds": 3600,
+    "status": "RUNNING",
+    "runtimeArtifacts": "/workspace/tyzo-audit-mixed-run",
+    "evidence": "docs/kiem-toan/codex/integration-load-soak/run-start.txt"
+  }
 }

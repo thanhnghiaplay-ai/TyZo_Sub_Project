@@ -100,5 +100,13 @@
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
     "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+  },
+  {
+    "id": "INTEGRATION-SOAK",
+    "priority": "GATE",
+    "status": "PARTIAL",
+    "title": "Soak liên tục 60 phút, API/Web/AI và streaming",
+    "checkpointEvidence": "docs/kiem-toan/codex/integration-load-soak/run-start.txt",
+    "remaining": "Chờ kết quả 3600 giây liên tục; upstream và GPU thật, thiết bị Android thật và staging chưa được cấp."
   }
 ]
