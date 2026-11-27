@@ -16,6 +16,7 @@ import { RunDeskBoard } from "@/components/run-desk-board";
 import { ServicePackBoard } from "@/components/service-pack-board";
 import { ServiceStatusBoard } from "@/components/service-status-board";
 import { WorkCapacityBoard } from "@/components/work-capacity-board";
+import { ChatReconciliationBoard } from "@/components/chat-reconciliation-board";
 import { SupportBoard } from "@/components/support-board";
 
 /** Một trang con: chỉ ẩn khi không chọn, không gỡ khỏi trang, nên ô đang nhập dở không mất khi chuyển qua lại. */
@@ -48,6 +49,7 @@ export function ConfigTab() {
       <Page id="trang-thai" current={page}>
         <ServiceStatusBoard />
         <WorkCapacityBoard />
+        <ChatReconciliationBoard />
         <SupportBoard />
       </Page>
       <Page id="nha-cung-cap" current={page}>

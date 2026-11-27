@@ -1,18 +1,14 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "audit/v5.49.7-codex-re6",
-  "previous_checkpoint_sha": "56a2d40544f7e1c2750b4ef2dc2ddf43ca823f91",
-  "effort": "Medium",
-  "requested_effort": "High",
+  "previous_checkpoint_sha": "dba1a054ba34cb21f1ab4894bf574f57cd13f16e",
+  "effort": "High",
   "status": "PAUSED_AWAITING_OWNER",
-  "active_item": "RE6-001",
-  "item_status": "PARTIAL",
+  "completed_item": "RE6-001",
+  "item_status": "PASS_LOCAL_POLICY_PENDING",
   "tests": {
     "postgres": "18.7",
-    "targeted_pass": 57,
-    "targeted_fail": 0,
-    "targeted_skip": 0,
-    "mock_missing_usage_responses": 100
+    "evidence": "RE6-001/REPORT.md"
   },
-  "next": "Tiếp tục RE6-001 ở mức High sau khi Chủ xác nhận."
+  "next": "RE6-002 ở mức High khi Chủ giao nhiệm vụ."
 }

@@ -341,6 +341,7 @@ export async function wipeTestData(sql: Sql) {
     await tx`delete from token_slices`;
     await tx`delete from token_grants`;
     await tx`delete from run_tickets`;
+    await tx`delete from run_chat_obligations`;
     await tx`delete from pay_orders`;
     await tx`delete from pay_seen`;
     await tx`delete from room_ledger`;

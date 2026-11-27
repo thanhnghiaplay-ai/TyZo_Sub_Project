@@ -393,6 +393,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     };
   const estimatedSeconds = probed;
   const isAsr = path === "/audio/transcriptions";
+  const tokenChat = tokenUnit && path === "/chat/completions";
   const outCap = input.outCap ?? MAX_COMPLETION_TOKENS;
   // RE4-001: giữ theo cận byte của chính yêu cầu (gồm khung nhà và schema công cụ), không theo cả cửa sổ
   // ngữ cảnh, để phiếu nhỏ vẫn chạy được. Cửa sổ đã biết chỉ làm cận chặt hơn. Không trừ outCap khỏi cận vào.
@@ -420,7 +421,11 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     estimate,
     provider: input.provider ?? "groq",
     model,
+    chatRate: tokenChat ? book.rate : undefined,
   });
+  if (held.kind === "reconciliation-limit") return {
+    kind: "reject", status: 429, message: "Đang có lượt dịch cần đối soát. Hãy liên hệ hỗ trợ nếu chưa chạy tiếp được.",
+  };
   if (held.kind === "busy")
     return {
       kind: "reject",
@@ -429,11 +434,6 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     };
   if (held.kind === "none") return { kind: "reject", status: 402, message: spent };
   const callId = held.callId;
-  if (input.admissionId) {
-    const { tagWork } = await import("./work-admission.ts");
-    await tagWork(sql, input.admissionId, callId);
-  }
-
   const stopBeat = startBeat((signal) => beatGateCall(sql, callId, signal), {
     everyMs: input.beatMs,
     onLost: (why) => console.warn("lease-lost", "gate", callId, why),
@@ -443,6 +443,10 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
   return finishGateCall(
     async () => {
       try {
+        if (input.admissionId) {
+          const { tagWork } = await import("./work-admission.ts");
+          await tagWork(sql, input.admissionId, callId);
+        }
         if (input.signal?.aborted) throw input.signal.reason;
         sent = true;
         const response = await input.send();
@@ -542,6 +546,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           rate: book.rate,
           reconcile: needsReconciliation,
           deferDebit,
+          chat: tokenChat,
         });
         const out = new Headers();
         const type = response.headers.get("content-type");

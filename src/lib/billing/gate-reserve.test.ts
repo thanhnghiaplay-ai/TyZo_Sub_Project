@@ -3,6 +3,7 @@
  * Đặt TYZO_TEST_PG_URL để chạy trên Postgres thật nhiều kết nối.
  */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { after, before, beforeEach, describe, it } from "node:test";
 import type { Sql } from "../db.ts";
 import { pgliteSql, realPgSql } from "../test-sql.ts";
@@ -12,6 +13,9 @@ import { chatCost } from "./run-bill.ts";
 import { giayForBaseCost } from "./token-math.ts";
 import { buyGiayWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
 import type { GroqLiveRow } from "../sub/groq-board.ts";
+import { reapGateCalls, reserveGateCall, settleGateCall } from "./gate-reserve.ts";
+import { listChatReviews, readChatReview, readChatReviewCursor, reviewChatObligation } from "./chat-reconciliation.ts";
+import { drainSpendJournal } from "../provider-spend-journal.ts";
 
 let sql: Sql;
 let end: (() => Promise<void>) | undefined;
@@ -43,6 +47,7 @@ const enc = (body: unknown) => {
 };
 
 async function openTicket(hold: number) {
+  await sql`delete from run_chat_obligations`;
   await sql`delete from run_gate_calls`;
   await sql`delete from token_slices`;
   await sql`delete from run_tickets`;
@@ -222,7 +227,7 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
       ["usage có chuỗi số", () => Response.json({ usage: { prompt_tokens: 100, completion_tokens: "100" } })],
       ["thân không phải JSON", () => new Response("không phải json")],
     ] as const) {
-      it(`${name}: trừ 0, ghi nghĩa vụ chờ đối soát, nhả phần giữ, ghi chi phí nhà`, async () => {
+      it(`${name}: trừ 0, nhả phần giữ, ghi ước tính riêng khỏi chi phí nhà`, async () => {
         const out = await run(reply);
         assert.equal(out.kind, "pass");
         const t = await ticket();
@@ -231,11 +236,15 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
         const [c] = await calls();
         assert.equal(c.status, "can-doi-soat");
         assert.equal(Number(c.charged_units), 0);
-        assert.ok(Number(c.actual_units) > 0);
-        assert.equal(Number(c.short_units), Number(c.actual_units));
+        assert.equal(Number(c.actual_units), 0);
+        assert.equal(Number(c.short_units), 0);
         assert.equal(Number(c.reserved), 0);
+        const [debt] = await sql<{ estimated_units: string; status: string }>`
+          select estimated_units, status from run_chat_obligations where call_id = ${c.id}`;
+        assert.equal(debt.status, "pending");
+        assert.ok(Number(debt.estimated_units) > 0);
         const spend = await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`;
-        assert.equal(spend[0].n, 1);
+        assert.equal(spend[0].n, 0);
       });
     }
 
@@ -244,6 +253,7 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
       assert.equal(out.kind, "pass");
       const [c] = await calls();
       assert.deepEqual([c.status, Number(c.short_units), Number(c.charged_units)], ["xong", 0, 0]);
+      assert.deepEqual(await sql`select 1 from run_chat_obligations`, []);
     });
 
     it("quyết toán lại cùng lệnh (replay) không trừ thêm và không ghi chi phí lần hai", async () => {
@@ -253,7 +263,7 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
       const again = await settleGateCall(sql, { callId: c.id, ticketId: TID, userId: "k", units: 50, base: 1, provider: "groq", model: "chat", rate: 25_000, reconcile: false });
       assert.deepEqual(again, { taken: 0, replay: true });
       assert.equal((await ticket()).charged, 0);
-      assert.equal((await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`)[0].n, 1);
+      assert.equal((await sql<{ n: number }>`select coalesce(sum(calls), 0)::int as n from provider_spend`)[0].n, 0);
     });
 
     it("6 lệnh đồng thời thiếu usage: không trừ, phần giữ về 0, mỗi lệnh một nghĩa vụ", async () => {
@@ -264,8 +274,9 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
       const t = await ticket();
       assert.equal(t.charged, 0);
       assert.equal(Number(t.modal_reserved), 0);
-      const rows = await calls();
-      assert.equal(rows.filter((r) => r.status === "can-doi-soat" && Number(r.short_units) > 0).length, passed);
+      const rows = await sql`select o.call_id from run_chat_obligations o join run_gate_calls c on c.id = o.call_id
+        where o.status = 'pending' and o.estimated_units > 0 and c.status = 'can-doi-soat'`;
+      assert.equal(rows.length, passed);
       assert.ok(passed >= 1);
     });
 
@@ -371,4 +382,184 @@ describe("RE-005: nhà luôn nhận yêu cầu có trần token", () => {
     });
     assert.equal(seen!.max_tokens, DEFAULT_COMPLETION_TOKENS);
   });
+});
+
+describe("RE6-001: nghĩa vụ Token khi không xác minh được usage", () => {
+  const second = "d".repeat(24);
+  const other = "e".repeat(24);
+  const open = (id: string, userId: string) =>
+    openGiayWith(sql, { id, userId, fileName: "fixture", seconds: 600, rate: 1, hold: 100, chatModel: "chat" });
+  const missingUsage = (ticketId: string, userId = "k", send = async () => Response.json({})) =>
+    chargeWith({ sql, book, path: "/chat/completions", model: "chat", chars: 0, userId, ticketId,
+      body: new ArrayBuffer(300), cap: 0, outCap: 1000, send });
+  const review = (id: string, usd = "0.00125") => readChatReview({ id, usd, evidence: "Đã đối chiếu chứng từ fixture." });
+  const list = async () => (await listChatReviews(sql, "owner", null)).items;
+
+  beforeEach(async () => {
+    await sql`delete from room_settings where key = 'chat_obligation_budget'`;
+    await sql`delete from room_staff`;
+    await sql`delete from room_audit`;
+    await sql`delete from provider_spend_events`;
+    await openTicket(100);
+    await sql`insert into room_staff (user_id, role) values ('owner', 'chu'), ('manager', 'quan-ly')`;
+  });
+
+  it("ngân sách tắt mặc định: 100 phản hồi thiếu usage, giữ hồ sơ xuyên phiếu và phân trang", async (ctx) => {
+    for (let i = 0; i < 100; i += 1) assert.equal((await missingUsage(TID)).kind, "pass");
+    await closeTokenWith(sql, TID, "k", false);
+    assert.equal((await open(second, "k") as { id?: string }).id, second);
+    await sql`delete from run_tickets where id = ${TID}`;
+    const [total] = await sql<{ n: number; estimate: string }>`
+      select count(*)::int as n, sum(estimated_units)::text as estimate from run_chat_obligations
+      where user_id = 'k' and ticket_id = ${TID} and status = 'pending'`;
+    const ids = new Set<string>();
+    let cursor: ReturnType<typeof readChatReviewCursor> = null;
+    do {
+      const page = await listChatReviews(sql, "owner", cursor);
+      for (const item of page.items) {
+        assert.ok(!ids.has(item.id), "không trùng hồ sơ giữa các trang");
+        ids.add(item.id);
+      }
+      cursor = readChatReviewCursor(page.nextCursor ?? undefined);
+    } while (cursor);
+    assert.equal(total.n, 100);
+    assert.equal(ids.size, 100);
+    assert.equal((await ticketFor(second)).charged, 0);
+    assert.equal((await sql`select 1 from provider_spend`).length, 0);
+    ctx.diagnostic(`Mặc định tắt: ${total.n} hồ sơ, tổng mức giữ ước tính ${total.estimate} Token.`);
+  });
+
+  it("cấu hình thử: hai phiếu cùng khách và khách thứ hai tranh ngân sách nguyên tử", async (ctx) => {
+    assert.equal((await open(second, "k") as { id?: string }).id, second);
+    await sql`insert into token_grants (id, user_id, tokens, left_tokens, price_vnd, expires_at)
+      values ('other', 'other', 100, 100, 1, now() + interval '1 day')`;
+    assert.equal((await open(other, "other") as { id?: string }).id, other);
+    const estimate = giayForBaseCost(book, chatCost(book, "chat", 100, 1000)!)!;
+    const limits = JSON.stringify({ perUser: estimate * 2, total: estimate * 3 });
+    await sql`insert into room_settings (key, value) values ('chat_obligation_budget', ${limits})`;
+    let sent = 0;
+    const send = async () => {
+      sent += 1;
+      return Response.json({});
+    };
+    const firstUser = await Promise.all(Array.from({ length: 100 }, (_, i) => missingUsage(i % 2 ? second : TID, "k", send)));
+    assert.equal(firstUser.filter((result) => result.kind === "pass").length, 2);
+    const secondUser = await Promise.all(Array.from({ length: 4 }, () => missingUsage(other, "other", send)));
+    assert.equal(secondUser.filter((result) => result.kind === "pass").length, 1);
+    assert.equal(sent, 3);
+    assert.equal((await sql`select 1 from run_chat_obligations where status = 'pending'`).length, 3);
+    for (const id of [TID, second, other]) {
+      const t = await ticketFor(id);
+      assert.deepEqual([Number(t.modal_reserved), t.charged], [0, 0]);
+    }
+    const first = (await list()).find((item) => item.userId === "k")!;
+    assert.equal(await reviewChatObligation(sql, "owner", review(first.id, "0")), "reviewed");
+    assert.equal((await missingUsage(second)).kind, "pass");
+    ctx.diagnostic(`Cấu hình thử: ${sent} lệnh gửi nhà trong 104 lần tranh ngân sách, mức giữ mỗi lệnh ${estimate} Token.`);
+  });
+
+  it("phân quyền, rollback khi ghi audit lỗi, replay và chi phí nhà chỉ ghi một lần", async () => {
+    await missingUsage(TID);
+    const [debt] = await list();
+    const input = review(debt.id);
+    await assert.rejects(listChatReviews(sql, "manager", null), /Không đủ quyền/);
+    await assert.rejects(reviewChatObligation(sql, "manager", input), /Không đủ quyền/);
+    await assert.rejects(reviewChatObligation(sql, "customer", input), /Không đủ quyền/);
+    await sql.query(`
+      create function fixture_audit_fault() returns trigger language plpgsql as $$
+      begin raise exception 'synthetic audit failure'; end $$;
+      create trigger fixture_audit_fault before insert on room_audit for each row execute function fixture_audit_fault()`);
+    try {
+      await assert.rejects(reviewChatObligation(sql, "owner", input), /synthetic audit failure/);
+      assert.equal((await list()).length, 1);
+      assert.equal((await sql`select 1 from provider_spend_events`).length, 0);
+    } finally {
+      await sql.query("drop trigger fixture_audit_fault on room_audit; drop function fixture_audit_fault()");
+    }
+    const applied = await Promise.all(Array.from({ length: 8 }, () => reviewChatObligation(sql, "owner", input)));
+    assert.equal(applied.filter((result) => result === "reviewed").length, 1);
+    assert.equal(applied.filter((result) => result === "replay").length, 7);
+    assert.equal(await reviewChatObligation(sql, "owner", review(debt.id, "0.002")), "conflict");
+    assert.equal((await list()).length, 0);
+    assert.equal((await sql`select 1 from room_audit where action = 'doi-soat-chi-phi-dich'`).length, 1);
+    assert.deepEqual((await sql<{ usd: string; vnd: string }>`select usd_micro::text as usd, base_vnd::text as vnd from provider_spend_events`)
+      .map(({ usd, vnd }) => [Number(usd), Number(vnd)]), [[1250, 31.25]]);
+    await Promise.all([drainSpendJournal(sql), drainSpendJournal(sql)]);
+    assert.deepEqual((await sql<{ calls: number; usd: string }>`select calls, usd_micro::text as usd from provider_spend`)
+      .map(({ calls, usd }) => [Number(calls), Number(usd)]), [[1, 1250]]);
+    assert.equal((await ticket()).charged, 0);
+    assert.equal((await ticket()).held, 100);
+  });
+
+  it("lệnh mất nhịp giữ nghĩa vụ sau khi đóng phiếu, kết quả đến muộn không ghi thêm chi phí", async () => {
+    const funded = await reserveGateCall(sql, { ticketId: TID, userId: "k", estimate: 10, provider: "groq", model: "chat", chatRate: 25_000 });
+    assert.equal(funded.kind, "ok");
+    if (funded.kind !== "ok") return;
+    const input = review(funded.callId);
+    assert.equal(await reviewChatObligation(sql, "owner", input), "unavailable");
+    assert.deepEqual(await list(), []);
+    await sql`update run_gate_calls set heartbeat_at = now() - interval '1 hour' where id = ${funded.callId}`;
+    assert.equal((await list())[0]?.id, funded.callId);
+    await reapGateCalls(sql, TID);
+    await closeTokenWith(sql, TID, "k", false);
+    assert.equal((await ticket()).held, 0);
+    const [reviewed, late] = await Promise.all([
+      reviewChatObligation(sql, "owner", input),
+      settleGateCall(sql, {
+        callId: funded.callId, ticketId: TID, userId: "k", units: 10, base: 5, provider: "groq", model: "chat",
+        chat: true, rate: 25_000, reconcile: false,
+      }),
+    ]);
+    assert.equal(reviewed, "reviewed");
+    assert.deepEqual(late, { taken: 0, replay: false });
+    assert.equal((await ticket()).charged, 0);
+    assert.equal((await sql`select 1 from provider_spend`).length, 0);
+    assert.equal((await sql`select 1 from provider_spend_events`).length, 1);
+    assert.deepEqual(await list(), []);
+  });
+
+  it("nhà từ chối rõ ràng thì nhả ngân sách, trạng thái không rõ thì giữ hồ sơ", async () => {
+    const refused = await missingUsage(TID, "k", async () => new Response(null, { status: 429 }));
+    assert.equal(refused.kind, "pass");
+    assert.deepEqual(await sql`select 1 from run_chat_obligations`, []);
+    const uncertain = await missingUsage(TID, "k", async () => new Response(null, { status: 503 }));
+    assert.equal(uncertain.kind, "pass");
+    assert.equal((await list()).length, 1);
+    assert.equal(Number((await ticket()).modal_reserved), 0);
+    assert.equal((await ticket()).charged, 0);
+  });
+
+  it("0059 lưu hồ sơ cũ như bằng chứng riêng và chạy lặp không nhân bản", async () => {
+    const id = "f".repeat(24);
+    await sql`insert into run_gate_calls (id, ticket_id, reserved, status, short_units, actual_units, observed_at)
+      values (${id}, ${TID}, 0, 'can-doi-soat', 11, 11, now())`;
+    const migration = readFileSync(new URL("../../../migrations/0059_chat_obligations.sql", import.meta.url), "utf8");
+    await sql.query(migration);
+    await sql.query(migration);
+    const items = await list();
+    assert.deepEqual(items.map((row) => [row.id, row.legacy, Number(row.estimatedUnits)]), [[id, true, 11]]);
+    assert.equal(await reviewChatObligation(sql, "owner", review(id)), "reviewed");
+    assert.equal((await sql`select 1 from provider_spend_events`).length, 0);
+  });
+
+  it("mất kết nối trước commit hủy cả giữ phiếu và nghĩa vụ", { skip: !process.env.TYZO_TEST_PG_URL }, async () => {
+    const input = { ticketId: TID, userId: "k", estimate: 10, provider: "groq", model: "chat", chatRate: 25_000 };
+    const outcome = sql.begin!(async (tx) => {
+      const [backend] = await tx<{ pid: number }>`select pg_backend_pid() as pid`;
+      const held = await reserveGateCall(tx, input);
+      assert.equal(held.kind, "ok");
+      const [killed] = await sql<{ stopped: boolean }>`select pg_terminate_backend(${backend.pid}, 1000) as stopped`;
+      assert.equal(killed.stopped, true);
+    });
+    await assert.rejects(outcome, /connection|terminat/i);
+    assert.equal(Number((await ticket()).modal_reserved), 0);
+    assert.deepEqual(await sql`select 1 from run_gate_calls`, []);
+    assert.deepEqual(await sql`select 1 from run_chat_obligations`, []);
+    assert.equal((await reserveGateCall(sql, input)).kind, "ok");
+  });
+
+  function ticketFor(id: string) {
+    return sql<{ charged: number; modal_reserved: string }>`select charged, modal_reserved from run_tickets where id = ${id}`
+      .then((rows) => rows[0]);
+  }
 });

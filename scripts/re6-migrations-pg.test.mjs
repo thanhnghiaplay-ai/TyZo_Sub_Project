@@ -12,8 +12,9 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const files = readdirSync(join(root, "migrations")).filter((name) => name.endsWith(".sql")).sort();
 const sharedCap = "0057_admission_shared_cap_fairness.sql";
 const modalUsd = "0058_modal_settlement_usd.sql";
+const obligations = "0059_chat_obligations.sql";
 
-test("RE6-006: PG18 fresh, 0056 → 0058, rollback and repeat", { skip: !target }, async (t) => {
+test("PG18: fresh, 0056 → 0059, rollback and repeat", { skip: !target }, async (t) => {
   const url = new URL(target);
   assert.ok(["127.0.0.1", "[::1]"].includes(url.hostname), "Use an isolated loopback PostgreSQL");
   for (const key of url.searchParams.keys()) assert.equal(key, "sslmode");
@@ -115,5 +116,16 @@ test("RE6-006: PG18 fresh, 0056 → 0058, rollback and repeat", { skip: !target 
   assert.deepEqual((await client.query("select attempt, provider_usd from run_modal_settlements")).rows,
     [{ attempt: "fixture", provider_usd: null }]);
   succeeded(migrate(upgrade.dbUrl, work), /up to date/);
-  assert.deepEqual(await names(client), files);
+  assert.deepEqual(await names(client), files.filter((name) => name <= modalUsd));
+
+  await client.query(`
+    update run_tickets set unit = 'token' where id = 'fixture';
+    insert into run_gate_calls (id, ticket_id, reserved, status, actual_units, short_units)
+      values ('fixture', 'fixture', 0, 'can-doi-soat', 11, 11);
+  `);
+  stage(obligations);
+  succeeded(migrate(upgrade.dbUrl, work), /1 migration/);
+  assert.deepEqual((await client.query("select legacy, status, estimated_units::text from run_chat_obligations")).rows,
+    [{ legacy: true, status: "pending", estimated_units: "11" }]);
+  succeeded(migrate(upgrade.dbUrl, work), /up to date/);
 });

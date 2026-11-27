@@ -6,9 +6,9 @@
     "location": "src/lib/billing/run-gate.ts; routes model-call/room-groq",
     "hypothesis": "Missing usage trả kết quả nhưng nhả giữ; nghĩa vụ tích lũy",
     "acceptance": "Test 100 lượt thiếu usage, concurrent/replay/crash, nghĩa vụ bền, giới hạn rủi ro nguyên tử; admin đối soát có audit/RBAC/idempotency. Không tự trừ ước tính hay đổi quyền lợi; xin duyệt chính sách trước khi bật.",
-    "status": "PARTIAL",
-    "evidence": "HANDOFF.md",
-    "remaining": "Nghĩa vụ bền, giới hạn nguyên tử, đối soát Admin và phê duyệt chính sách trước khi bật"
+    "status": "PASS_LOCAL_POLICY_PENDING",
+    "evidence": "RE6-001/REPORT.md",
+    "remaining": "Chờ Chủ duyệt ngưỡng và chính sách ảnh hưởng khách hàng trước khi bật."
   },
   {
     "id": "RE6-002",

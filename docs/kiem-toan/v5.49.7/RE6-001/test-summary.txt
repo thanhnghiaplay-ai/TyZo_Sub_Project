@@ -1,0 +1,35 @@
+Targeted PostgreSQL 18.7 and project PGLite fixtures
+▶ RE6-001: nghĩa vụ Token khi không xác minh được usage
+  ℹ Mặc định tắt: 100 hồ sơ, tổng mức giữ ước tính 1100 Token.
+  ℹ Cấu hình thử: 3 lệnh gửi nhà trong 104 lần tranh ngân sách, mức giữ mỗi lệnh 11 Token.
+  ✔ phân quyền, rollback khi ghi audit lỗi, replay và chi phí nhà chỉ ghi một lần (70.491626ms)
+  ✔ lệnh mất nhịp giữ nghĩa vụ sau khi đóng phiếu, kết quả đến muộn không ghi thêm chi phí (33.386097ms)
+  ✔ nhà từ chối rõ ràng thì nhả ngân sách, trạng thái không rõ thì giữ hồ sơ (56.568503ms)
+  ✔ 0059 lưu hồ sơ cũ như bằng chứng riêng và chạy lặp không nhân bản (24.044934ms)
+  ✔ mất kết nối trước commit hủy cả giữ phiếu và nghĩa vụ (126.592474ms)
+✔ RE6-001: nghĩa vụ Token khi không xác minh được usage (3290.218734ms)
+ℹ tests 101
+ℹ pass 101
+ℹ fail 0
+ℹ skipped 0
+
+Migration using scripts/migrate.mjs on PostgreSQL 18.7
+✔ PG18: fresh, 0056 → 0059, rollback and repeat (2797.742721ms)
+ℹ tests 1
+ℹ pass 1
+ℹ fail 0
+ℹ skipped 0
+
+Full npm test, PostgreSQL 18.7 where supported
+ℹ tests 238
+ℹ pass 231
+ℹ fail 0
+ℹ skipped 7
+ℹ tests 1482
+ℹ pass 1482
+ℹ fail 0
+ℹ skipped 0
+ℹ tests 101
+ℹ pass 101
+ℹ fail 0
+ℹ skipped 0

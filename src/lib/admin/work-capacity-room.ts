@@ -60,7 +60,9 @@ export const getWorkCapacity = createServerFn({ method: "GET" })
       select unit, sum(calls)::int as calls, sum(short)::float8 as short from (
         select t.unit, count(*)::int as calls, coalesce(sum(c.short_units),0) as short
         from run_gate_calls c join run_tickets t on t.id = c.ticket_id
-        where c.status in ('mat-phan-hoi', 'can-doi-soat') group by t.unit
+        where c.status in ('mat-phan-hoi', 'can-doi-soat')
+          and not exists (select 1 from run_chat_obligations o where o.call_id = c.id)
+        group by t.unit
         union all
         select 'token', count(*)::int, coalesce(sum(short_tokens),0)
         from run_modal_settlements where status in ('mat-phan-hoi', 'can-doi-soat') having count(*) > 0

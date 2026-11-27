@@ -14,7 +14,7 @@ export const CHANGELOG: ReleaseNote[] = [
     version: "5.49.7",
     time: "27/11/2026",
     title: "Kiểm tra số liệu sử dụng khi tính Token dịch.",
-    points: ["Lượt dịch có số liệu sử dụng sai định dạng được đưa vào đối soát trước khi tính Token dịch."],
+    points: ["Lượt dịch có số liệu sử dụng sai định dạng được đưa vào đối soát và chưa trừ Token dịch."],
   },
   {
     version: "5.49.6",
