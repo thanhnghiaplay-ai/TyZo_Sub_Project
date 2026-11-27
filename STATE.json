@@ -51,7 +51,7 @@
   },
   "sourceBranch": "codex/tyzo-v5.49.4-audit",
   "sourceHead": "b829fd9c9a2f5ca6b19d90832cbf181650802a7c",
-  "codeHead": "c899afd3838b84f1cb896be8b6f7c6236e08a9bd",
+  "codeHead": "4c6e6ad9af085f42fc0f8bbfed3bc594af429e28",
   "gates": {
     "head": "c899afd",
     "npmTest": {
@@ -65,6 +65,14 @@
     "lint": "0 lỗi / 23 cảnh báo",
     "buildVercel": "PASS",
     "buildNode": "PASS",
-    "chromium": "PASS desktop+mobile"
-  }
+    "chromium": "PASS desktop+mobile",
+    "npmTestFinal": {
+      "head": "4c6e6ad",
+      "pass": 1763,
+      "skip": 7,
+      "fail": 0
+    }
+  },
+  "mainPushed": "2893f0a88cd0744f7ccfc66c00ccb077657ffd3b",
+  "auditPack": "docs/kiem-toan/claude/chatgpt/BAO_CAO_KIEM_TOAN.md"
 }

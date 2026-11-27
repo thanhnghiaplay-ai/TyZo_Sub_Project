@@ -1,3 +1,5 @@
+> **Claude · bổ sung (27/11/2026).** main = `2893f0a` (Chủ yêu cầu đẩy). Sau đó sửa thêm RE4-001 `4c6e6ad`: cửa trả theo lượt chỉ nhận nội dung chữ (ảnh/âm thanh/tệp phá cận byte); npm test 1.763/7/0. Hồ sơ kiểm toán cho ChatGPT: docs/kiem-toan/claude/chatgpt/. `4c6e6ad` chưa đẩy.
+
 > **Claude Code · checkpoint tiếp quản 1 (27/11/2026).** Nhánh `ccr-76aead9f-jp8d0r` từ `b829fd9`; mã chốt `c899afd`. npm test đầy đủ UID thường 1.762 đạt/7 bỏ qua/0 lỗi; tsc, lint, build Vercel+Node, Chromium đạt. Soak một mạch 3.614 s PASS. RE4-001 cận byte (còn usage thật), RE4-006 PASS. 80 mục: 69 PASS, 3 PASS_LOCAL, 5 PARTIAL, 1 BLOCKED, 2 BY_DESIGN. Đọc docs/kiem-toan/claude/REPORT.md và NEXT_PROMPT.md. Trạng thái tổng PARTIAL; chưa merge/deploy.
 
 > **Bàn giao Claude Code · TyZo 5.49.5.** Lấy nhánh `codex/tyzo-v5.49.4-audit`. Mục cuối CODEX-RESTORE-TOC đạt 22/22 ca restore/cutover trên PostgreSQL cô lập. Đọc NEXT_PROMPT.md và docs/kiem-toan/codex/claude-handoff/REPORT.md trước. Trạng thái tổng PARTIAL.

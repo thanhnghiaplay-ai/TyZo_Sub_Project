@@ -1,8 +1,8 @@
 # RE4-006 · PASS (provenance)
 
-Graph được dựng từ mã chốt `c899afd3838b84f1cb896be8b6f7c6236e08a9bd`, cây `provenance.json → sourceTree`. Cách làm: `git archive c899afd`, giải nén vào thư mục sạch rồi chạy `graphify update . --force`. Bản graphify 0.9.119 chỉ đọc AST, không gọi AI (0 token). Kết quả có 6.833 nút, 19.008 cạnh và 266 cụm. SHA-256 của `graph.json`, `GRAPH_REPORT.md` và `manifest.json` nằm trong `provenance.json`.
+Graph được dựng từ mã chốt `4c6e6ad` (xem `provenance.json`), cây `provenance.json → sourceTree`. Cách làm: `git archive 4c6e6ad`, giải nén vào thư mục sạch rồi chạy `graphify update . --force`. Bản graphify 0.9.119 chỉ đọc AST, không gọi AI (0 token). Số nút, cạnh, cụm ghi trong `provenance.json`. SHA-256 của `graph.json`, `GRAPH_REPORT.md` và `manifest.json` nằm trong `provenance.json`.
 
-Graph không tự ghi SHA của commit chứa nó: commit tài liệu nằm sau `c899afd`, còn `sourceCommit` là mã đã chốt.
+Graph không tự ghi SHA của commit chứa nó: commit tài liệu nằm sau mã nguồn, còn `sourceCommit` là mã đã chốt.
 
 ## Parser và tệp không biểu diễn
 

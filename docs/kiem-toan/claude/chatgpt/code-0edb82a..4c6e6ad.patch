@@ -1,0 +1,2073 @@
+diff --git a/deploy/vps/tyzo.sh b/deploy/vps/tyzo.sh
+index 2714ab6..daf1751 100755
+--- a/deploy/vps/tyzo.sh
++++ b/deploy/vps/tyzo.sh
+@@ -713,6 +713,7 @@ set datestyle = 'ISO, YMD';
+ set intervalstyle = 'postgres';
+ set extra_float_digits = 1;
+ set bytea_output = 'hex';
++begin isolation level repeatable read read only;
+ select format('select %L || ''|'' || count(*) || ''|'' || coalesce(md5(string_agg(h, '''' order by h)), ''-'') from (select md5(t::text) as h from %I.%I t) x',
+               'bang|' || tablename, schemaname, tablename)
+ from pg_tables where schemaname = 'public' order by tablename
+@@ -725,6 +726,7 @@ from pg_constraint c join pg_namespace n on n.oid = c.connamespace where n.nspna
+ select format('select ''migration|'' || count(*) || ''|'' || coalesce(md5(string_agg(name, '','' order by name)), ''-'') from %I._migrations', schemaname)
+ from pg_tables where schemaname = 'public' and tablename = '_migrations'
+ \gexec
++commit;
+ SQL
+ }
+ 
+@@ -755,7 +757,9 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ
+   pg_sys "drop database if exists tyzo_moi" >/dev/null && pg_sys "create database tyzo_moi owner tyzo" >/dev/null || { do_ "✘ Không tạo được CSDL tạm."; return 1; }
+   # Bản chép từ Neon (pg_dump -n public) có lệnh CREATE SCHEMA public; CSDL mới đã sẵn schema public trống nên
+   # --exit-on-error dừng ngay ("schema public already exists"). Chỉ khi tệp có mục đó: bỏ schema trống của CSDL TẠM vừa tạo.
+-  if docker exec -i tyzo-db pg_restore -l < "$f" 2>/dev/null | grep -qE '^[0-9]+; [0-9]+ [0-9]+ SCHEMA - public '; then
++  # Keep reading the TOC after a match. With pipefail, grep -q can close the
++  # pipe early and make pg_restore fail with SIGPIPE even on a valid backup.
++  if docker exec -i tyzo-db pg_restore -l < "$f" 2>/dev/null | grep -E '^[0-9]+; [0-9]+ [0-9]+ SCHEMA - public ' >/dev/null; then
+     docker exec tyzo-db psql -U tyzo -d tyzo_moi -v ON_ERROR_STOP=1 -qtAc "drop schema public" >/dev/null || { do_ "✘ Không chuẩn bị được CSDL tạm."; pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1; }
+   fi
+   # Dừng ghi trước khi nạp: dữ liệu ghi trong lúc nạp sẽ không bị bỏ lại trong CSDL cũ mà không ai biết.
+@@ -833,73 +837,158 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v
+   rm -f /tmp/tyzo-neon.dump "$ky"
+ }
+ 
+-chep_len_neon() { # chép dữ liệu trên VPS lên một Neon TRỐNG (khi quay lại Vercel)
+-  local url="$1" n can ma=0 thu dung=0
+-  # Private, unique paths prevent symlink/clobber attacks and concurrent restore collisions.
++trang_thai_web_vps() {
++  docker ps --format '{{.Names}}' | awk '/^tyzo-(web|bridge)$/ { sub(/^tyzo-/, ""); print }' | LC_ALL=C sort | paste -sd ' ' -
++}
++
++dung_web_vps() {
++  local running
++  dc stop web bridge >/dev/null 2>&1 &&
++    running="$(trang_thai_web_vps)" && [ -z "$running" ]
++}
++
++mo_lai_web_vps() {
++  local expected="$1" actual
++  local -a services
++  [ -z "$expected" ] && return 0
++  read -r -a services <<< "$expected"
++  if ! dc up -d --no-build --no-deps "${services[@]}" >/dev/null 2>&1 ||
++    ! actual="$(trang_thai_web_vps)" || [ "$actual" != "$expected" ]; then
++    do_ "✘ Chưa khôi phục được các dịch vụ VPS: $expected. Kiểm tra trước khi thử lại."
++    return 1
++  fi
++}
++
++khoa_quy_trinh_neon() {
++  if ! exec 9>"${CONF}.neon.lock" || ! flock -n 9; then
++    do_ "✘ Đang có lần chép hoặc chuyển nguồn khác, hoặc không mở được khóa."
++    return 1
++  fi
++}
++
++tom_tat_nguon_da_khoa() {
++  # Mở đúng một phiên quản trị để đọc nguồn sau khi chặn mọi kết nối mới.
++  # Lệnh ALTER chạy autocommit. Nếu còn phiên khác (kể cả ngoài Compose), dừng ngay.
++  {
++    cat <<'SQL'
++\! PGOPTIONS='-c lock_timeout=5000' psql -X -q -v ON_ERROR_STOP=1 -U tyzo -d postgres -c 'ALTER DATABASE tyzo WITH ALLOW_CONNECTIONS false'
++\if :SHELL_ERROR
++DO $$ BEGIN RAISE EXCEPTION 'Không khóa được kết nối vào nguồn VPS'; END $$;
++\endif
++DO $fence$
++BEGIN
++  IF EXISTS (
++    SELECT 1 FROM pg_stat_activity
++    WHERE datname = current_database() AND pid <> pg_backend_pid()
++      AND backend_type <> 'autovacuum worker'
++  ) OR EXISTS (SELECT 1 FROM pg_prepared_xacts WHERE database = current_database()) THEN
++    RAISE EXCEPTION 'Nguồn VPS còn phiên kết nối hoặc giao dịch đang chờ';
++  END IF;
++END;
++$fence$;
++SQL
++    sql_bang_ke
++  } | docker exec -i tyzo-db psql -X -q -tA -v ON_ERROR_STOP=1 -U tyzo -d tyzo -f - |
++    sed '/^$/d' | LC_ALL=C sort
++}
++
++khoi_phuc_nguon_vps() {
++  if ! pg_sys "alter database tyzo with allow_connections true" >/dev/null 2>&1 ||
++    [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
++    do_ "✘ Chưa mở lại được kết nối CSDL VPS. Dịch vụ VPS vẫn phải dừng cho tới khi kiểm tra xong."
++    return 1
++  fi
++  mo_lai_web_vps "$1"
++}
++
++chep_len_neon() ( # Chép VPS lên Neon trống. Mục 14 khóa CSDL khi chuyển nguồn.
++  local url="$1" n thu dung
++  khoa_quy_trinh_neon || return 1
+   thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-restore.XXXXXXXX")" || return 1
+-  n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')"
+-  [[ "$n" =~ ^[0-9]+$ ]] || { do_ "✘ Không kết nối được Neon."; rmdir "$thu"; return 1; }
+-  [ "$n" = "0" ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG."; rmdir "$thu"; return 1; }
+-  # RE3-007: khóa ghi trên VPS trong lúc chép (dừng web và cầu nối), bật lại khi xong; bảng kê trước và sau phải khớp.
+-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
+-  dc stop web bridge >/dev/null 2>&1 || true
+-  echo "Đang chép từ VPS lên Neon (web trên VPS tạm dừng để không phát sinh ghi)..."
+-  bang_ke_vps tyzo > "$thu/nguon.txt" 2>/dev/null
+-  if ! grep -q '^bang|' "$thu/nguon.txt"; then
+-    do_ "✘ Không lập được bảng kê dữ liệu trên VPS. Hồ sơ: $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
++  if ! n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')" ||
++    ! [[ "$n" =~ ^[0-9]+$ ]]; then
++    do_ "✘ Không kết nối được Neon."; rmdir "$thu"; return 1
++  fi
++  [ "$n" = 0 ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG."; rmdir "$thu"; return 1; }
++  if ! dung="$(trang_thai_web_vps)"; then
++    do_ "✘ Không kiểm tra được dịch vụ VPS."; rmdir "$thu"; return 1
++  fi
++  if ! dung_web_vps; then
++    do_ "✘ Không xác nhận được web và cầu nối đã dừng. Không chép dữ liệu."
++    mo_lai_web_vps "$dung"; rmdir "$thu"; return 1
++  fi
++  echo "Đang chép từ VPS lên Neon (web và cầu nối VPS đã dừng)..."
++  local kq=0
++  chep_len_neon_da_dung "$url" "$thu" || kq=$?
++  mo_lai_web_vps "$dung" || return 1
++  [ "$kq" = 0 ] || return 1
++  xanh "✔ Đã nạp lên Neon, khớp bảng kê VPS: số dòng, mã băm từng bảng, sequence, migration. Chưa chuyển nguồn."
++  echo "   Mục 14 sẽ khóa kết nối vào nguồn VPS và đối soát lần cuối."
++  rm -f "$thu/source.dump" "$thu/restore.err" "$thu/nguon.txt" "$thu/dich.txt" "$thu/nguon-lai.txt"
++  rmdir "$thu"
++)
++
++chep_len_neon_da_dung() {
++  local url="$1" thu="$2" n can ma=0
++  if ! bang_ke_vps tyzo > "$thu/nguon.txt" 2>/dev/null || ! grep -q '^bang|' "$thu/nguon.txt"; then
++    do_ "✘ Không lập được bảng kê dữ liệu trên VPS. Hồ sơ: $thu"; return 1
+   fi
+   (umask 077; docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > "$thu/source.dump") || {
+-    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1;
++    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; return 1
+   }
+   can="$(so_bang_tep "$thu/source.dump")"
+-  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1; }
++  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; return 1; }
+   docker run --rm -i --network host postgres:17 pg_restore --exit-on-error --single-transaction --no-owner --no-privileges -d "$url" < "$thu/source.dump" 2>"$thu/restore.err" || ma=$?
+-  # Exit status is authoritative. Matching table counts cannot validate a failed restore.
+   if [ "$ma" != 0 ]; then
+-    do_ "✘ Nạp thất bại (mã $ma); không chuyển nguồn dữ liệu. Bản sao và log riêng: $thu"
+-    [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
+-    return 1
++    do_ "✘ Nạp thất bại (mã $ma); không chuyển nguồn dữ liệu. Bản sao và log riêng: $thu"; return 1
+   fi
+-  bang_ke_xa "$url" > "$thu/dich.txt" 2>/dev/null
+-  bang_ke_vps tyzo > "$thu/nguon-lai.txt" 2>/dev/null
+-  [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
+-  n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')"
+-  if ! [[ "$n" =~ ^[0-9]+$ ]] || [ "$n" != "$can" ]; then
++  if ! bang_ke_xa "$url" > "$thu/dich.txt" 2>/dev/null ||
++    ! bang_ke_vps tyzo > "$thu/nguon-lai.txt" 2>/dev/null ||
++    ! n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')" ||
++    [ "$n" != "$can" ]; then
+     do_ "✘ Kiểm tra sau nạp không đạt (${n:-0}/$can bảng); không chuyển nguồn. Giữ bản sao tại $thu"
+     return 1
+   fi
+   if ! khop_bang_ke "$thu/nguon.txt" "$thu/dich.txt"; then
+-    do_ "✘ Neon không khớp bảng kê VPS (số dòng/mã băm); không chuyển nguồn. Neon đích đã có dữ liệu chưa khớp: xóa schema public trên Neon (Neon → SQL Editor) trước khi thử lại. Hồ sơ: $thu"
++    do_ "✘ Neon không khớp bảng kê VPS (số dòng/mã băm); không chuyển nguồn. Giữ dữ liệu đích và hồ sơ tại $thu"
+     return 1
+   fi
+   if ! khop_bang_ke "$thu/nguon.txt" "$thu/nguon-lai.txt"; then
+     do_ "✘ Dữ liệu VPS thay đổi trong lúc chép; không chuyển nguồn. Hồ sơ: $thu"
+     return 1
+   fi
+-  xanh "✔ Đã nạp lên Neon ($n bảng), khớp bảng kê VPS: số dòng, mã băm từng bảng, sequence, migration. Chưa chuyển nguồn."
+-  echo "   Khi chuyển sang Vercel, mục 14 sẽ đối soát lại một lần nữa (khóa ghi trên VPS) trước khi đưa lên."
+-  rm -f "$thu/source.dump" "$thu/restore.err" "$thu/nguon.txt" "$thu/dich.txt" "$thu/nguon-lai.txt"
+-  rmdir "$thu"
+ }
+ 
+-# RE3-007: cổng chuyển nguồn VPS → Neon (mục 14). Khóa ghi trên VPS, đối soát, Chủ xác nhận. Trả 0 = được chuyển
+-# (web VPS để dừng để không ghi tách đôi), 1 = không chuyển (web VPS bật lại nếu trước đó đang chạy).
+ khoa_va_doi_soat_chuyen() {
+-  local url="$1" a ky dich dung=0
++  local url="$1" a thu dung
+   [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ] || return 0
+-  vang "Dữ liệu đang ở Postgres trên VPS. Trước khi đưa lên Vercel, máy dừng web VPS để khóa ghi và so dữ liệu VPS với Neon."
++  if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
++    do_ "✘ CSDL nguồn chưa sẵn sàng hoặc đang bị khóa. Kiểm tra lần chuyển trước."; return 1
++  fi
++  vang "Trước khi chuyển, máy sẽ dừng web và cầu nối VPS, rồi khóa kết nối vào CSDL nguồn."
+   read -rp "Gõ dong-y để dừng web VPS và đối soát: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy, không chuyển."; return 1; }
+-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
+-  dc stop web bridge >/dev/null 2>&1 || true
+-  ky="$(umask 077; mktemp)"; dich="$(umask 077; mktemp)"
+-  bang_ke_vps tyzo > "$ky" 2>/dev/null; bang_ke_xa "$url" > "$dich" 2>/dev/null
+-  if ! khop_bang_ke "$ky" "$dich"; then
+-    do_ "✘ Neon chưa khớp dữ liệu VPS. Không chuyển. Chạy mục 13 → chép VPS lên Neon trống, rồi thử lại."
+-    rm -f "$ky" "$dich"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+-  fi
+-  rm -f "$ky" "$dich"
+-  xanh "✔ Neon khớp dữ liệu VPS. Web VPS giữ ở trạng thái dừng để không ghi tách đôi."
+-  CHUYEN_DUNG_WEB="$dung"
++  thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-cutover.XXXXXXXX")" || return 1
++  if ! dung="$(trang_thai_web_vps)"; then
++    do_ "✘ Không kiểm tra được dịch vụ VPS."; rmdir "$thu"; return 1
++  fi
++  if ! dung_web_vps; then
++    do_ "✘ Không xác nhận được web và cầu nối đã dừng. Không chuyển nguồn."
++    mo_lai_web_vps "$dung"; rmdir "$thu"; return 1
++  fi
++  if ! tom_tat_nguon_da_khoa > "$thu/nguon.txt" 2> "$thu/loi-nguon.txt" ||
++    ! bang_ke_xa "$url" > "$thu/dich.txt" 2> "$thu/loi-dich.txt" ||
++    ! khop_bang_ke "$thu/nguon.txt" "$thu/dich.txt" ||
++    [ "$(pg_sys "select not datallowconn and not exists (
++      select 1 from pg_stat_activity where datname='tyzo' and backend_type <> 'autovacuum worker'
++    ) from pg_database where datname='tyzo'")" != t ]; then
++    do_ "✘ Chưa khóa được nguồn hoặc Neon chưa khớp. Không chuyển. Hồ sơ: $thu"
++    khoi_phuc_nguon_vps "$dung"
++    return 1
++  fi
++  rm -f "$thu/nguon.txt" "$thu/dich.txt" "$thu/loi-nguon.txt" "$thu/loi-dich.txt"
++  rmdir "$thu"
++  xanh "✔ Neon khớp dữ liệu VPS. CSDL nguồn tiếp tục chặn kết nối."
++  CHUYEN_DA_KHOA=1
+   return 0
+ }
+ 
+@@ -1430,7 +1519,7 @@ kiem_tra_web() {
+ # =====================================================================
+ # Đưa web lên một tài khoản Vercel (mới hoặc khác)
+ # =====================================================================
+-dua_len_vercel() {
++dua_len_vercel() (
+   tieu_de "Đưa web lên tài khoản Vercel"
+   cat <<'TXT'
+ Dùng khi muốn chuyển web sang tài khoản Vercel khác (hoặc quay lại Vercel từ VPS).
+@@ -1438,6 +1527,9 @@ Cần: Docker trên VPS này (máy tự cài), mã truy cập Vercel, cơ sở d
+ Lấy mã truy cập: vercel.com (đăng nhập tài khoản đích) → ảnh đại diện → Account Settings → Tokens → Create → chép.
+ TXT
+   hoi_co "Tiếp tục?" || return 0
++  if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
++    khoa_quy_trinh_neon || return 1
++  fi
+   co_lenh docker || cai_nen || return 1
+   [ -d "$DIR/.git" ] || lay_ma || return 1
+   git -C "$DIR" fetch -q origin main && git -C "$DIR" reset -q --hard origin/main
+@@ -1457,8 +1549,7 @@ TXT
+   echo "Cơ sở dữ liệu cho Vercel phải là Neon (Neon → Connect → Show password → Copy snippet)."
+   v=""; while [[ "$v" != postgres://* && "$v" != postgresql://* ]] || [[ "$v" == *"@db:"* ]]; do v="$(hoi_an 'Dán DATABASE_URL của Neon (chữ không hiện): ')"; done
+   dat_bien DATABASE_URL "$v"
+-  CHUYEN_DUNG_WEB=0
+-  khoa_va_doi_soat_chuyen "$v" || return 1
++  local neon_url="$v" CHUYEN_DA_KHOA=0
+   hoi_bi_mat_dang_nhap
+   dat_bien VITE_AUTH_ENABLED true
+   if [ -n "$dom" ]; then dat_bien BETTER_AUTH_URL "https://$dom"; else
+@@ -1478,28 +1569,33 @@ TXT
+   hoi_bien_web "$f"
+ 
+   echo "Đang đưa lên Vercel (5–10 phút)..."
+-  mkdir -p /tmp/tyzo-vc; chmod 700 /tmp/tyzo-vc
+-  cp "$f" /tmp/tyzo-vc/env
+-  cat > /tmp/tyzo-vc/chay.sh <<'SH'
+-set -u
++  local thu_vercel
++  thu_vercel="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-vercel.XXXXXXXX")" || return 1
++  trap 'rm -f "$thu_vercel/env" "$thu_vercel/chay.sh"; rmdir "$thu_vercel"' EXIT
++  cp "$f" "$thu_vercel/env" || return 1
++  cat > "$thu_vercel/chay.sh" <<'SH'
++set -uo pipefail
+ V="npx -y vercel@latest --token $TOK ${SCOPE:+--scope $SCOPE}"
+ $V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
+ while IFS= read -r line; do
+   [ -z "$line" ] && continue
+   k="${line%%=*}"; val="${line#*=}"
+   $V env rm "$k" production --yes >/dev/null 2>&1 || true
+-  printf '%s' "$val" | $V env add "$k" production >/dev/null 2>&1 && echo "  đã đặt $k" || echo "  LOI khi đặt $k"
++  printf '%s' "$val" | $V env add "$k" production >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
+ done < /x/env
+-$V deploy --prod --yes 2>&1 | tail -n 5
++$V deploy --prod --yes 2>&1 | tail -n 5 || exit 1
+ if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
+ SH
+-  docker run --rm -v "$DIR":/app -v /tmp/tyzo-vc:/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
++  if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
++    khoa_va_doi_soat_chuyen "$neon_url" || return 1
++  fi
++  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
+   local kq=$?
+-  rm -rf /tmp/tyzo-vc
+   if [ "$kq" != 0 ]; then
+     do_ "✘ Chưa đưa lên được. Chụp màn hình gửi Claude."
+-    # RE3-007: chuyển hỏng thì trả web VPS về như trước (nguồn cũ vẫn nguyên).
+-    [ "${CHUYEN_DUNG_WEB:-0}" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1 && vang "Đã bật lại web trên VPS (nguồn dữ liệu cũ)."
++    if [ "$CHUYEN_DA_KHOA" = 1 ]; then
++      vang "Nguồn VPS vẫn khóa. Kiểm tra trạng thái Vercel và các ghi trên Neon trước khi quyết định mở nguồn cũ."
++    fi
+     return 1
+   fi
+   cat <<TXT
+@@ -1518,7 +1614,7 @@ TXT
+   5. Sepay/Casso: đổi địa chỉ nhận báo chuyển khoản sang https://<tên miền>/api/pay/sepay (hoặc /casso).
+ TXT
+   echo "Mã truy cập Vercel không được lưu trên VPS. Nên xóa token đó trên Vercel nếu không dùng nữa."
+-}
++)
+ 
+ # =====================================================================
+ # Khóa ký ứng dụng Android (để bản mới cài đè được bản cũ, và để GitHub tự đăng bản phát hành)
+diff --git a/migrations/0056_admission_lane_fairness.sql b/migrations/0056_admission_lane_fairness.sql
+new file mode 100644
+index 0000000..a7f43ca
+--- /dev/null
++++ b/migrations/0056_admission_lane_fairness.sql
+@@ -0,0 +1,133 @@
++-- RE4-003: retain the 0055 signature and waiters, but allocate protection only
++-- to eligible older waiters and only against resources they can actually use.
++create or replace function tyzo_admit(
++  p_id text, p_user text, p_provider text, p_model text, p_lane text,
++  p_defaults jsonb, p_stale_seconds integer, p_ref text
++) returns text language plpgsql as $$
++declare
++  cfg jsonb; lim jsonb; my_since timestamptz; now_at timestamptz; ahead integer; free integer;
++  ahead_lane integer := 0; ahead_nonlive integer := 0; free_nonlive integer;
++  n_lane integer; n_own integer; n_provider integer; n_model integer; n_uncertain integer;
++  n_batch integer; n_live integer; n_modal integer; n_provider_nonlive integer;
++  -- Từ khóa mở thân hàm để cuối dòng: migrate.mjs từ chối dòng mở đầu bằng BEGIN/COMMIT/ROLLBACK.
++  c_lane integer; c_user integer; c_provider integer; c_model integer; c_reserve integer; wait_live integer := 6; starve integer := 3; begin
++  perform pg_advisory_xact_lock(84201912);
++  now_at := clock_timestamp();
++  select value::jsonb into cfg from room_settings where key = 'work_admission';
++  lim := p_defaults || coalesce(cfg, '{}'::jsonb);
++  if not coalesce((lim->>'enabled')::boolean, true) then return 'disabled'; end if;
++  c_lane := (lim->>p_lane)::int;
++  c_user := (lim->>(case when p_lane = 'modal' then 'perUserModal' else 'perUser' end))::int;
++  c_provider := (lim->>'perProvider')::int;
++  c_model := (lim->>'perModel')::int;
++  c_reserve := greatest(0, coalesce((lim->>'liveReserve')::int, 0));
++  if c_lane is null or c_user is null or c_provider is null or c_model is null then
++    raise exception 'Cấu hình nhận việc không hợp lệ.';
++  end if;
++  update work_admissions set status = 'unknown', finished_at = clock_timestamp()
++    where status = 'running' and heartbeat_at <= now_at - make_interval(secs => p_stale_seconds);
++  with active as (
++    select lane, user_id, provider, model, status = 'unknown' as uncertain
++    from work_admissions where status in ('running', 'unknown')
++    union all
++    select 'batch', j.user_id, j.provider, j.model, j.state = 'unknown'
++    from run_async_asr_jobs j
++    where j.state in ('pending', 'running', 'unknown') and j.deadline_at > now_at
++      and not exists (select 1 from work_admissions w where w.ref = j.call_id and w.status in ('running', 'unknown'))
++  )
++  select
++    count(*) filter (where lane = 'batch'),
++    count(*) filter (where lane = 'live'),
++    count(*) filter (where lane = 'modal'),
++    count(*) filter (where provider = p_provider and lane <> 'live'),
++    count(*) filter (where lane = p_lane and user_id = p_user),
++    count(*) filter (where provider = p_provider),
++    count(*) filter (where provider = p_provider and model = p_model),
++    count(*) filter (where lane = p_lane and user_id = p_user and provider = p_provider and uncertain)
++  into n_batch, n_live, n_modal, n_provider_nonlive, n_own, n_provider, n_model, n_uncertain
++  from active;
++  n_lane := case p_lane when 'batch' then n_batch when 'live' then n_live when 'modal' then n_modal end;
++  if n_uncertain > 0 then return 'uncertain'; end if;
++  -- Khách đã dùng đủ suất riêng: chờ chính mình, không xếp hàng chặn người khác.
++  if n_own >= c_user then return 'busy'; end if;
++  free := least(c_lane - n_lane, c_provider - n_provider, c_model - n_model);
++  -- The reserved slice limits admitted non-live work. Live already using its
++  -- slice does not consume it again when a batch slot is released.
++  free_nonlive := c_provider - c_reserve - n_provider_nonlive;
++  if p_lane <> 'live' then free := least(free, free_nonlive); end if;
++  if free <= 0 then
++    -- Hết suất: chỉ ghi chỗ chờ và tính vị trí (đường bận ngắn nhất dưới khóa).
++    insert into work_waiters (user_id, provider, model, lane) values (p_user, p_provider, p_model, p_lane)
++      on conflict (provider, model, lane, user_id) do update set seen_at = now_at,
++        -- Đã rời hàng (nhận suất rồi, hoặc bỏ đi quá wait_live) thì xếp lại từ cuối.
++        since = case when work_waiters.seen_at <= now_at - make_interval(secs => wait_live)
++                     then now_at else work_waiters.since end
++      returning since into my_since;
++    select count(*) into ahead from work_waiters w
++      where w.provider = p_provider and w.model = p_model and w.lane = p_lane and w.user_id <> p_user
++        and w.seen_at > now_at - make_interval(secs => wait_live)
++        and (w.since, w.user_id) < (my_since, p_user);
++    return 'busy:' || (ahead + 1);
++  end if;
++  select since into my_since from work_waiters
++    where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user
++      and seen_at > now_at - make_interval(secs => wait_live);
++  -- Aged customers retain priority for the same provider/model. Clip claims
++  -- by the actual lane and non-live capacities before counting shared slots.
++  with rivals as (
++    select w.user_id, w.lane, w.since,
++      case w.lane
++        when 'batch' then (lim->>'batch')::int - n_batch
++        when 'live' then (lim->>'live')::int - n_live
++        when 'modal' then (lim->>'modal')::int - n_modal
++        else 0
++      end as lane_free,
++      (lim->>(case when w.lane = 'modal' then 'perUserModal' else 'perUser' end))::int as user_cap
++    from work_waiters w
++    where w.provider = p_provider and w.model = p_model and w.user_id <> p_user
++      and w.seen_at > now_at - make_interval(secs => wait_live)
++      and w.since <= now_at - make_interval(secs => starve)
++      and (my_since is null or (w.since, w.user_id) < (my_since, p_user))
++      and (w.lane = 'live' or free_nonlive > 0)
++  ), eligible as (
++    select r.*, row_number() over (partition by r.lane order by r.since, r.user_id) as lane_rank
++    from rivals r
++    cross join lateral (
++      select count(*) as own, coalesce(bool_or(a.uncertain), false) as uncertain
++      from (
++        select w.status = 'unknown' and w.provider = p_provider as uncertain
++        from work_admissions w where w.lane = r.lane and w.user_id = r.user_id
++          and w.status in ('running', 'unknown')
++        union all
++        select j.state = 'unknown' and j.provider = p_provider
++        from run_async_asr_jobs j where r.lane = 'batch' and j.user_id = r.user_id
++          and j.state in ('pending', 'running', 'unknown') and j.deadline_at > now_at
++          and not exists (select 1 from work_admissions w where w.ref = j.call_id and w.status in ('running', 'unknown'))
++      ) a
++    ) per_user
++    where r.lane_free > 0 and per_user.own < r.user_cap and not per_user.uncertain
++  ), claims as (
++    select lane, count(*) filter (where lane <> 'live') over (
++      order by since, user_id, lane rows unbounded preceding
++    ) as nonlive_rank
++    from eligible where lane_rank <= lane_free
++  )
++  select count(*), count(*) filter (where lane = p_lane), count(*) filter (where lane <> 'live')
++    into ahead, ahead_lane, ahead_nonlive
++    from claims where lane = 'live' or nonlive_rank <= free_nonlive;
++  if least(c_lane - n_lane - ahead_lane, c_provider - n_provider - ahead, c_model - n_model - ahead) <= 0
++    or (p_lane <> 'live' and free_nonlive <= ahead_nonlive) then
++    insert into work_waiters (user_id, provider, model, lane) values (p_user, p_provider, p_model, p_lane)
++      on conflict (provider, model, lane, user_id) do update set seen_at = now_at,
++        -- Đã rời hàng (nhận suất rồi, hoặc bỏ đi quá wait_live) thì xếp lại từ cuối.
++        since = case when work_waiters.seen_at <= now_at - make_interval(secs => wait_live)
++                     then now_at else work_waiters.since end;
++    return 'busy:' || (ahead + 1);
++  end if;
++  if my_since is not null then
++    update work_waiters set seen_at = '-infinity' where provider = p_provider and model = p_model and lane = p_lane and user_id = p_user;
++  end if;
++  insert into work_admissions (id, user_id, provider, model, lane, ref)
++  values (p_id, p_user, p_provider, p_model, p_lane, p_ref);
++  return p_id;
++end $$;
+diff --git a/package.json b/package.json
+index 7a4853a..237ee1e 100644
+--- a/package.json
++++ b/package.json
+@@ -19,7 +19,7 @@
+     "typecheck": "tsc --noEmit",
+     "check:auth": "node scripts/check-auth-invariant.mjs",
+     "check:layout": "vite build && node scripts/studio-layout-matrix.mjs",
+-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/pg-pool.test.ts src/lib/request-body.test.ts src/lib/sub/asr-test.test.ts src/lib/sub/asr-score.test.ts src/lib/sub/sparse-note.test.ts src/lib/sub/asr-score-view.test.ts src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/admin/admin-groups.test.ts src/lib/dock.test.ts src/lib/tool-wheel.test.ts src/lib/customer-menu.test.ts src/lib/admin/admin-bottom-tabs.test.ts src/lib/admin/admin-config-pages.test.ts src/lib/sub/glossary.test.ts src/lib/sub/ali-filetrans.test.ts src/lib/sub/ali-asr-to-segs.test.ts src/lib/sub/genre-prompts.test.ts src/lib/sub/polish.test.ts src/lib/polish/polish-prompts.test.ts src/lib/polish/polish-estimate.test.ts src/lib/polish/polish-models.test.ts src/lib/polish/polish-hold.test.ts src/lib/polish/polish-review.test.ts src/lib/sub/cast-voice.test.ts src/lib/sub/narration-sync.test.ts src/lib/sub/audio-playback.test.ts src/lib/room-plan-prices.test.ts src/lib/sub/pitch-voice.test.ts src/lib/sub/diagnostics.test.ts src/lib/sub/translate-batch.test.ts src/lib/sub/analyze.test.ts src/lib/sub/asr-retry.test.ts src/lib/sub/lang-check.test.ts src/lib/sub/quality.test.ts src/lib/theme/theme.test.ts src/lib/theme/future-look.test.ts src/lib/theme/accent.test.ts src/lib/sub/key-check.test.ts src/lib/sub/http-deadline.test.ts src/lib/sub/media-sniff.test.ts src/lib/quality-board.test.ts src/lib/sub/overlap.test.ts src/lib/sub/silence.test.ts src/lib/sub/gap-scan.test.ts src/lib/sub/vad-eval.test.ts src/lib/sub/vad.test.ts src/lib/sub/chunk-plan.test.ts src/lib/sub/filter-retry.test.ts src/lib/sub/groq-board.test.ts src/lib/sub/alibaba-price.test.ts src/lib/run-desk.test.ts src/lib/app-version.test.ts src/lib/affiliate.test.ts src/lib/affiliate-payout.test.ts src/lib/glossary-share.test.ts src/lib/glossary-import.test.ts src/lib/glossary-review.test.ts src/lib/sub/speech-index.test.ts src/lib/sub/stage-progress.test.ts src/lib/room-plans.test.ts src/lib/guard.test.ts src/lib/retry-load.test.ts src/lib/sub/raw-srt.test.ts src/lib/sub/word-time.test.ts src/lib/sub/whisper-split.test.ts src/lib/billing/run-bill.test.ts src/lib/billing/token-math.test.ts src/lib/token-desk.test.ts src/lib/billing/token-flow.test.ts src/lib/billing/tyzo-modal-charge.test.ts src/lib/billing/tyzo-modal-race.test.ts src/lib/billing/token-balance-race.test.ts src/lib/billing/gate-reserve.test.ts src/lib/billing/re2-regression.test.ts src/lib/sub/merge-interjections.test.ts src/lib/billing/run-ticket.test.ts src/lib/payment/pay-confirm.test.ts src/lib/payment/money-flow.test.ts src/lib/auth/mailer.test.ts src/lib/auth/changed-letter.test.ts src/lib/staff-role.test.ts src/lib/admin/admin-allow.test.ts src/lib/payment/pay-match.test.ts src/lib/mail-domains.test.ts src/lib/link-check.test.ts src/lib/overview-data.test.ts src/lib/mask-file-name.test.ts src/lib/cost-estimate.test.ts src/lib/sub/asr-house.test.ts src/lib/sub/room-models.test.ts src/lib/room-turn.test.ts src/lib/rights-consent.test.ts src/lib/payment/pay-status.test.ts src/lib/sub/link-asr-note.test.ts src/lib/sub/provider.test.ts src/lib/client-bundle.test.ts src/lib/sub/poll-loop.test.ts src/lib/sub/r2-sign.test.ts src/lib/sub/r2-key.test.ts src/lib/sub/wav-stream.test.ts src/lib/sub/r2-put.test.ts src/lib/sub/r2-guide.test.ts src/lib/packs/pack-assign.test.ts src/lib/rent-show.test.ts src/lib/audit-note.test.ts src/lib/turn-pack.test.ts src/lib/service-pack.test.ts src/lib/admin/admin-tabs.test.ts src/lib/payment/money-extra.test.ts src/lib/payment/money-profit.test.ts src/lib/payment/money-extra-data.test.ts src/components/studio-layout.test.ts src/components/review-continue.test.ts src/components/info-tip.test.ts src/components/entry-gate.test.ts src/components/version-mark.test.ts src/lib/home-state.test.ts src/lib/home-action.test.ts src/lib/stale-build.test.ts src/lib/history-view.test.ts src/lib/ticket-line.test.ts src/lib/provider-spend.test.ts src/lib/provider-spend-journal.test.ts src/lib/saved-runs.test.ts src/lib/first-ask.test.ts src/lib/usage-tally.test.ts src/lib/palette-match.test.ts src/lib/sub/export-format.test.ts src/lib/wallet-view.test.ts src/lib/ledger-view.test.ts src/lib/sub/model-role.test.ts src/lib/sub/model-grade.test.ts src/lib/sub/grade-measure.test.ts src/lib/packs/pack-auto.test.ts src/lib/packs/pack-fit.test.ts src/lib/sub/model-short.test.ts src/lib/packs/pack-summary.test.ts src/lib/packs/pack-order.test.ts src/lib/packs/pack-status.test.ts src/lib/price-house.test.ts src/lib/sub/model-catalog.test.ts src/lib/device-caps.test.ts src/lib/live/live.test.ts src/lib/live/cumulative-usage.test.ts src/lib/live/live-bridge-audit.test.ts src/lib/live/live-settle.test.ts src/lib/live/live-settle-fault.test.ts src/lib/live/live-wire.test.ts src/lib/live/live-audio.test.ts src/lib/live/live-mic.test.ts src/lib/live/live-tab.test.ts src/lib/live/live-session.test.ts src/lib/live/live-view.test.ts src/lib/live/live-export.test.ts src/lib/support-contact.test.ts src/lib/guide-topics.test.ts src/lib/terms.test.ts src/lib/back-nav.test.ts src/lib/ticket-name.test.ts src/lib/service-status.test.ts src/lib/provider-doors.test.ts src/lib/packs/pack-books.test.ts src/lib/payment/money-format.test.ts src/components/provider-admin-board.test.ts src/lib/rent-rows.test.ts src/lib/asr-picker.test.ts src/lib/sub/key-list.test.ts src/lib/sub/model-total.test.ts src/lib/live/live-show.test.ts src/lib/live/live-caption.test.ts src/lib/no-native-dialog.test.ts src/lib/payment/pay-ending.test.ts src/lib/app-api.test.ts src/lib/app-link.test.ts src/lib/request-ip.test.ts src/components/tap-align.test.ts src/lib/risk-rules.test.ts src/components/rail-layer.test.ts src/lib/live/caption-layout.test.ts src/lib/live/live-gate.test.ts src/lib/live/live-history.test.ts src/lib/live/voice-filter.test.ts src/lib/mail-desk.test.ts src/lib/mail-letter.test.ts src/lib/studio-steps.test.ts src/lib/sub/voice-lane.test.ts src/lib/usd-fix.test.ts && node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/upstream-outcome.test.ts src/lib/pipeline/translate-claim.test.ts src/lib/sub/r2-upload-run.test.ts src/lib/backend-audit.test.ts src/lib/billing/async-asr.test.ts src/lib/sub/mp4-range.test.ts src/lib/sub/media-lifecycle.test.ts src/lib/pipeline/job-race.test.ts src/lib/pipeline/recognize-race.test.ts src/lib/billing/run-gate.test.ts src/lib/billing/audio-probe.test.ts src/lib/billing/work-lease.test.ts src/lib/billing/work-lease-pg.test.ts src/lib/billing/work-admission-pg.test.ts",
++    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/pg-pool.test.ts src/lib/request-body.test.ts src/lib/sub/asr-test.test.ts src/lib/sub/asr-score.test.ts src/lib/sub/sparse-note.test.ts src/lib/sub/asr-score-view.test.ts src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/admin/admin-groups.test.ts src/lib/dock.test.ts src/lib/tool-wheel.test.ts src/lib/customer-menu.test.ts src/lib/admin/admin-bottom-tabs.test.ts src/lib/admin/admin-config-pages.test.ts src/lib/sub/glossary.test.ts src/lib/sub/ali-filetrans.test.ts src/lib/sub/ali-asr-to-segs.test.ts src/lib/sub/genre-prompts.test.ts src/lib/sub/polish.test.ts src/lib/polish/polish-prompts.test.ts src/lib/polish/polish-estimate.test.ts src/lib/polish/polish-models.test.ts src/lib/polish/polish-hold.test.ts src/lib/polish/polish-review.test.ts src/lib/sub/cast-voice.test.ts src/lib/sub/narration-sync.test.ts src/lib/sub/audio-playback.test.ts src/lib/room-plan-prices.test.ts src/lib/sub/pitch-voice.test.ts src/lib/sub/diagnostics.test.ts src/lib/sub/translate-batch.test.ts src/lib/sub/analyze.test.ts src/lib/sub/asr-retry.test.ts src/lib/sub/lang-check.test.ts src/lib/sub/quality.test.ts src/lib/theme/theme.test.ts src/lib/theme/future-look.test.ts src/lib/theme/accent.test.ts src/lib/sub/key-check.test.ts src/lib/sub/http-deadline.test.ts src/lib/sub/media-sniff.test.ts src/lib/quality-board.test.ts src/lib/sub/overlap.test.ts src/lib/sub/silence.test.ts src/lib/sub/gap-scan.test.ts src/lib/sub/vad-eval.test.ts src/lib/sub/vad.test.ts src/lib/sub/chunk-plan.test.ts src/lib/sub/filter-retry.test.ts src/lib/sub/groq-board.test.ts src/lib/sub/alibaba-price.test.ts src/lib/run-desk.test.ts src/lib/app-version.test.ts src/lib/affiliate.test.ts src/lib/affiliate-payout.test.ts src/lib/glossary-share.test.ts src/lib/glossary-import.test.ts src/lib/glossary-review.test.ts src/lib/sub/speech-index.test.ts src/lib/sub/stage-progress.test.ts src/lib/room-plans.test.ts src/lib/guard.test.ts src/lib/retry-load.test.ts src/lib/sub/raw-srt.test.ts src/lib/sub/word-time.test.ts src/lib/sub/whisper-split.test.ts src/lib/billing/run-bill.test.ts src/lib/billing/token-math.test.ts src/lib/token-desk.test.ts src/lib/billing/token-flow.test.ts src/lib/billing/tyzo-modal-charge.test.ts src/lib/billing/tyzo-modal-race.test.ts src/lib/billing/token-balance-race.test.ts src/lib/billing/gate-reserve.test.ts src/lib/billing/re2-regression.test.ts src/lib/sub/merge-interjections.test.ts src/lib/billing/run-ticket.test.ts src/lib/payment/pay-confirm.test.ts src/lib/payment/money-flow.test.ts src/lib/auth/mailer.test.ts src/lib/auth/changed-letter.test.ts src/lib/staff-role.test.ts src/lib/admin/admin-allow.test.ts src/lib/payment/pay-match.test.ts src/lib/mail-domains.test.ts src/lib/link-check.test.ts src/lib/overview-data.test.ts src/lib/mask-file-name.test.ts src/lib/cost-estimate.test.ts src/lib/sub/asr-house.test.ts src/lib/sub/room-models.test.ts src/lib/room-turn.test.ts src/lib/rights-consent.test.ts src/lib/payment/pay-status.test.ts src/lib/sub/link-asr-note.test.ts src/lib/sub/provider.test.ts src/lib/client-bundle.test.ts src/lib/sub/poll-loop.test.ts src/lib/sub/r2-sign.test.ts src/lib/sub/r2-key.test.ts src/lib/sub/wav-stream.test.ts src/lib/sub/r2-put.test.ts src/lib/sub/r2-guide.test.ts src/lib/packs/pack-assign.test.ts src/lib/rent-show.test.ts src/lib/audit-note.test.ts src/lib/turn-pack.test.ts src/lib/service-pack.test.ts src/lib/admin/admin-tabs.test.ts src/lib/payment/money-extra.test.ts src/lib/payment/money-profit.test.ts src/lib/payment/money-extra-data.test.ts src/components/studio-layout.test.ts src/components/review-continue.test.ts src/components/info-tip.test.ts src/components/entry-gate.test.ts src/components/version-mark.test.ts src/lib/home-state.test.ts src/lib/home-action.test.ts src/lib/stale-build.test.ts src/lib/history-view.test.ts src/lib/ticket-line.test.ts src/lib/provider-spend.test.ts src/lib/provider-spend-journal.test.ts src/lib/saved-runs.test.ts src/lib/first-ask.test.ts src/lib/usage-tally.test.ts src/lib/palette-match.test.ts src/lib/sub/export-format.test.ts src/lib/wallet-view.test.ts src/lib/ledger-view.test.ts src/lib/sub/model-role.test.ts src/lib/sub/model-grade.test.ts src/lib/sub/grade-measure.test.ts src/lib/packs/pack-auto.test.ts src/lib/packs/pack-fit.test.ts src/lib/sub/model-short.test.ts src/lib/packs/pack-summary.test.ts src/lib/packs/pack-order.test.ts src/lib/packs/pack-status.test.ts src/lib/price-house.test.ts src/lib/sub/model-catalog.test.ts src/lib/device-caps.test.ts src/lib/live/live.test.ts src/lib/live/cumulative-usage.test.ts src/lib/live/live-bridge-audit.test.ts src/lib/live/live-settle.test.ts src/lib/live/live-settle-fault.test.ts src/lib/live/live-wire.test.ts src/lib/live/live-audio.test.ts src/lib/live/live-mic.test.ts src/lib/live/live-tab.test.ts src/lib/live/live-session.test.ts src/lib/live/live-view.test.ts src/lib/live/live-export.test.ts src/lib/support-contact.test.ts src/lib/guide-topics.test.ts src/lib/terms.test.ts src/lib/back-nav.test.ts src/lib/ticket-name.test.ts src/lib/service-status.test.ts src/lib/provider-doors.test.ts src/lib/packs/pack-books.test.ts src/lib/payment/money-format.test.ts src/components/provider-admin-board.test.ts src/lib/rent-rows.test.ts src/lib/asr-picker.test.ts src/lib/sub/key-list.test.ts src/lib/sub/model-total.test.ts src/lib/live/live-show.test.ts src/lib/live/live-caption.test.ts src/lib/no-native-dialog.test.ts src/lib/payment/pay-ending.test.ts src/lib/app-api.test.ts src/lib/app-link.test.ts src/lib/request-ip.test.ts src/components/tap-align.test.ts src/lib/risk-rules.test.ts src/components/rail-layer.test.ts src/lib/live/caption-layout.test.ts src/lib/live/live-gate.test.ts src/lib/live/live-history.test.ts src/lib/live/voice-filter.test.ts src/lib/mail-desk.test.ts src/lib/mail-letter.test.ts src/lib/studio-steps.test.ts src/lib/sub/voice-lane.test.ts src/lib/usd-fix.test.ts && node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test src/lib/billing/upstream-outcome.test.ts src/lib/pipeline/translate-claim.test.ts src/lib/pipeline/translate-edit.test.ts src/lib/sub/r2-upload-run.test.ts src/lib/backend-audit.test.ts src/lib/billing/async-asr.test.ts src/lib/sub/mp4-range.test.ts src/lib/sub/media-lifecycle.test.ts src/lib/pipeline/job-race.test.ts src/lib/pipeline/recognize-race.test.ts src/lib/billing/run-gate.test.ts src/lib/billing/audio-probe.test.ts src/lib/billing/work-lease.test.ts src/lib/billing/work-lease-pg.test.ts src/lib/billing/work-admission-pg.test.ts",
+     "lint": "eslint .",
+     "format": "prettier --write .",
+     "asr:score": "node --experimental-strip-types --import ./scripts/register-ts.mjs scripts/asr-bench.ts score",
+diff --git a/scripts/live-bridge.ts b/scripts/live-bridge.ts
+index 4b1bb27..8936123 100644
+--- a/scripts/live-bridge.ts
++++ b/scripts/live-bridge.ts
+@@ -2,6 +2,7 @@
+ // Chạy: npm run live:bridge   (cần DATABASE_URL, LIVE_BRIDGE_SECRET; Workspace ID qua ALIBABA_WORKSPACE_ID hoặc cài đặt phòng)
+ import { createServer } from "node:http";
+ import pg from "pg";
++import { createPgPool, withPgTransaction } from "../src/lib/pg-pool.server.ts";
+ import type { Sql } from "../src/lib/db.ts";
+ import { attachLiveBridge } from "../src/lib/live/live-bridge.ts";
+ import { createLiveBilling } from "../src/lib/live/live-billing.ts";
+@@ -27,7 +28,7 @@ const port = Number(process.env.PORT ?? process.env.LIVE_BRIDGE_PORT ?? 8787);
+ pg.types.setTypeParser(20, Number);
+ pg.types.setTypeParser(1082, (value: string) => value);
+ pg.types.setTypeParser(1186, (value: string) => value);
+-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
++const pool = createPgPool({ connectionString: process.env.DATABASE_URL, max: 5 });
+ function wrapSql(run: (text: string, values: unknown[]) => Promise<unknown[]>): Sql {
+   const sql = (async (strings: TemplateStringsArray, ...values: unknown[]) => {
+     let text = strings[0];
+@@ -38,20 +39,12 @@ function wrapSql(run: (text: string, values: unknown[]) => Promise<unknown[]>):
+   return sql;
+ }
+ const sql = wrapSql(async (text, values) => (await pool.query(text, values)).rows);
+-sql.begin = async (fn) => {
+-  const conn = await pool.connect();
+-  try {
+-    await conn.query("BEGIN");
++sql.begin = (fn, signal) =>
++  withPgTransaction(pool, async (conn) => {
+     const tx = wrapSql(async (text, values) => (await conn.query(text, values)).rows);
+     tx.begin = (inner) => inner(tx);
+-    const result = await fn(tx);
+-    await conn.query("COMMIT");
+-    return result;
+-  } catch (error) {
+-    await conn.query("ROLLBACK").catch(() => undefined);
+-    throw error;
+-  } finally { conn.release(); }
+-};
++    return fn(tx);
++  }, signal);
+ 
+ const server = createServer((request, response) => {
+   if (request.url === "/health") {
+@@ -77,7 +70,6 @@ async function refreshTurbo() {
+ 
+ // Lỗi quên bắt chỉ ghi nhật ký; Node 22 mặc định thoát, cắt mọi phiên đang dịch.
+ process.on("unhandledRejection", (reason) => console.log(new Date().toISOString(), `lỗi chưa bắt (cầu nối vẫn chạy): ${String(reason)}`));
+-pool.on("error", (error) => console.log(new Date().toISOString(), `kết nối cơ sở dữ liệu lỗi: ${String(error)}`));
+ 
+ attachLiveBridge(server, {
+   secret,
+diff --git a/scripts/re2-restore.test.mjs b/scripts/re2-restore.test.mjs
+index 3810886..cc453e4 100644
+--- a/scripts/re2-restore.test.mjs
++++ b/scripts/re2-restore.test.mjs
+@@ -4,11 +4,12 @@ import { spawnSync } from "node:child_process";
+ import { test } from "node:test";
+ 
+ const text = readFileSync(new URL("../deploy/vps/tyzo.sh", import.meta.url), "utf8");
+-const fn = text.slice(text.indexOf("chep_len_neon() {"), text.indexOf("\nsao_luu() {"));
++const fn = text.slice(text.indexOf("trang_thai_web_vps() {"), text.indexOf("\nsao_luu() {"));
+ const compare = text.slice(text.indexOf("khop_bang_ke() {"), text.indexOf("\nnap_dump() {"));
+ function drill(code, { destManifest = "bang|a|1|x" } = {}) {
+   const shim = `
+ n=0
++CONF="$(mktemp)"
+ pg_tu_xa() { n=$((n+1)); if [ -f "$fixture_counter" ]; then echo 8; else touch "$fixture_counter"; echo 0; fi; }
+ do_() { echo "$*"; }
+ xanh() { echo "SUCCESS $*"; }
+@@ -31,7 +32,7 @@ ${compare}
+ ${fn}
+ chep_len_neon fixture-target
+ rc=$?
+-rm -f "$fixture_counter"
++rm -f "$fixture_counter" "$CONF" "$CONF.neon.lock"
+ exit "$rc"
+ `;
+   return spawnSync("bash", ["-c", shim], {
+diff --git a/scripts/re3-restore-pg.test.mjs b/scripts/re3-restore-pg.test.mjs
+index 4a5a3d6..41358cb 100644
+--- a/scripts/re3-restore-pg.test.mjs
++++ b/scripts/re3-restore-pg.test.mjs
+@@ -79,6 +79,14 @@ run_cmd() {
+       if fault write-during-neon && [[ "$*" == *r3_neon* ]]; then pgq r3_neon "insert into room_ledger (user_id, kind, amount, note) values ('late','nap',1,'ghi phát sinh')"; fi
+       return $rc ;;
+     pg_restore)
++      if fault toc-stream && [ "$1" = "-l" ]; then
++        "$cmd" "$@" || return
++        # Keep producing enough valid TOC comments to fill the pipe after grep finds the schema.
++        for ((i=0; i<2048; i++)); do
++          printf '; synthetic pg_restore list stream for checking the complete pipeline\n' || return 1
++        done
++        return 0
++      fi
+       "$cmd" "$@"; local rc=$?
+       if [ $rc = 0 ] && fault missing-rows; then
+         if [[ "$*" == *tyzo_moi* ]]; then pgq tyzo_moi "delete from room_ledger where id = (select min(id) from room_ledger)"; fi
+@@ -86,6 +94,15 @@ run_cmd() {
+       fi
+       return $rc ;;
+     psql)
++      if fault post-snapshot-writer && [[ "$*" == *r3_neon* ]]; then
++        if pgq tyzo "insert into room_ledger (user_id, kind, amount, note) values ('late','nap',1,'ghi phát sinh')"; then
++          echo writer-ran > "$F/post-snapshot-writer"
++        else
++          echo writer-blocked > "$F/post-snapshot-writer"
++        fi
++      fi
++      if fault neon-network && [[ "$*" == *r3_neon* ]]; then return 1; fi
++      if fault rollback-db-fail && [[ "$*" == *"allow_connections true"* ]]; then return 1; fi
+       if fault rename-fail && [[ "$*" == *"alter database tyzo_moi rename to tyzo"* ]]; then echo "ERROR: synthetic rename failure" >&2; return 1; fi
+       "$cmd" "$@" ;;
+     *) "$cmd" "$@" ;;
+@@ -96,6 +113,11 @@ case "$1" in
+   image|pull) exit 0 ;;
+   compose)
+     echo "$*" >> "$F/compose.log"
++    if [[ " $* " == *" stop "* ]]; then
++      if fault stop-fail; then exit 1; fi
++      if fault still-running; then exit 0; fi
++    fi
++    if [[ " $* " == *" up "* ]] && fault rollback-web-fail; then exit 1; fi
+     for a in "$@"; do [ "$a" = stop ] && rm -f "$F/web_running"; [ "$a" = up ] && touch "$F/web_running"; done
+     exit 0 ;;
+   exec)
+@@ -250,6 +272,87 @@ pgTest("RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyể
+   assert.equal(r.status, 0, r.stdout + r.stderr);
+   assert.match(r.stdout, /Neon khớp dữ liệu VPS/);
+   assert.ok(!existsSync(join(work, "web_running")), "web VPS phải dừng để không ghi tách đôi");
++  assert.deepEqual(await adminQ("select datallowconn from pg_database where datname='tyzo'"), [{ datallowconn: false }]);
++  await assert.rejects(q("tyzo", "select 1"), { code: "55000" });
+   r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { input: "khong\n" });
+   assert.notEqual(r.status, 0, "không xác nhận thì không chuyển");
+ });
++
++
++pgTest("RE4-004: lỗi dừng Compose phải chặn chuyển dù hai bảng kê khớp", async () => {
++  await freshVps();
++  await freshNeon(false);
++  const copied = sh(`chep_len_neon "${NEON}"`);
++  assert.equal(copied.status, 0, copied.stdout + copied.stderr);
++  writeFileSync(join(work, "web_running"), "");
++  const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { fault: "stop-fail", input: "dong-y\n" });
++  assert.notEqual(r.status, 0, r.stdout + r.stderr);
++  assert.ok(existsSync(join(work, "web_running")));
++});
++
++
++pgTest("RE4-004: phiên ngoài Compose chặn chuyển và nguồn được mở lại", async () => {
++  await freshVps();
++  await freshNeon(false);
++  const copied = sh(`chep_len_neon "${NEON}"`);
++  assert.equal(copied.status, 0, copied.stdout + copied.stderr);
++  writeFileSync(join(work, "web_running"), "");
++  const writer = new pg.Client({ connectionString: "postgresql://tyzo@127.0.0.1:55439/tyzo" });
++  await writer.connect();
++  try {
++    const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { input: "dong-y\n" });
++    assert.notEqual(r.status, 0, r.stdout + r.stderr);
++    assert.match(r.stdout, /Chưa khóa được nguồn/);
++    assert.deepEqual(await q("tyzo", "select 1 as ok"), [{ ok: 1 }]);
++    assert.ok(existsSync(join(work, "web_running")));
++  } finally {
++    await writer.end();
++  }
++});
++
++for (const [fault, allows, message] of [
++  ["neon-network", true, /Chưa khóa được nguồn hoặc Neon chưa khớp/],
++  ["neon-network,rollback-web-fail", true, /Chưa khôi phục được các dịch vụ VPS/],
++  ["neon-network,rollback-db-fail", false, /Chưa mở lại được kết nối CSDL VPS/],
++]) {
++  pgTest(`RE4-004: ${fault} không chuyển và báo trạng thái phục hồi thật`, async () => {
++    await freshVps();
++    await freshNeon(false);
++    writeFileSync(join(work, "web_running"), "");
++    const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { fault, input: "dong-y\n" });
++    assert.notEqual(r.status, 0, r.stdout + r.stderr);
++    assert.match(r.stdout, message);
++    assert.equal(existsSync(join(work, "web_running")), fault === "neon-network");
++    assert.deepEqual(await adminQ("select datallowconn from pg_database where datname='tyzo'"), [{ datallowconn: allows }]);
++  });
++}
++
++
++pgTest("RE4-004: writer sau snapshot bị PostgreSQL chặn trong lúc đối soát đích", async () => {
++  await freshVps();
++  await freshNeon(false);
++  const copied = sh(`chep_len_neon "${NEON}"`);
++  assert.equal(copied.status, 0, copied.stdout + copied.stderr);
++  const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { fault: "post-snapshot-writer", input: "dong-y\n" });
++  assert.equal(r.status, 0, r.stdout + r.stderr);
++  assert.equal(readFileSync(join(work, "post-snapshot-writer"), "utf8").trim(), "writer-blocked");
++});
++
++pgTest("RE4-004: Compose trả thành công nhưng web còn chạy thì không chép lên Neon", async () => {
++  await freshVps();
++  await freshNeon(false);
++  writeFileSync(join(work, "web_running"), "");
++  const r = sh(`chep_len_neon "${NEON}"`, { fault: "still-running" });
++  assert.notEqual(r.status, 0, r.stdout + r.stderr);
++  assert.match(r.stdout, /Không xác nhận được web và cầu nối đã dừng/);
++  assert.deepEqual(await q("r3_neon", "select count(*)::int as n from pg_tables where schemaname='public'"), [{ n: 0 }]);
++});
++
++
++pgTest("RE3-007: đọc hết mục lục pg_restore khi stdout lớn và có schema public", async () => {
++  await freshVps();
++  await freshNeon(true);
++  const r = sh(`chep_tu_neon "${NEON}"`, { fault: "toc-stream", input: "dong-y\n" });
++  assert.equal(r.status, 0, r.stdout + r.stderr);
++  assert.equal(manifest("tyzo"), manifest(NEON));
++});
+diff --git a/src/lib/admin/admin-log.server.ts b/src/lib/admin/admin-log.server.ts
+index 24c2cc4..3c9aa4a 100644
+--- a/src/lib/admin/admin-log.server.ts
++++ b/src/lib/admin/admin-log.server.ts
+@@ -7,6 +7,12 @@ type AdminNote = {
+ 
+ /** Nhật ký nội bộ. Không import từ giao diện khách. */
+ export const ADMIN_LOG: AdminNote[] = [
++  {
++    version: "5.49.5",
++    time: "27/11/2026",
++    area: "tien",
++    text: "Ứng viên kiểm toán Codex. RE4-001: giữ theo cận byte của yêu cầu (2×byte + 512, không quá cửa sổ đã biết) và trần một câu trả lời; quyết toán theo usage. Phiếu nhỏ và qwen-turbo chạy lại được. Chưa so usage thật với nhà.",
++  },
+   {
+     version: "5.49.4",
+     time: "20:42 27/11/2026",
+diff --git a/src/lib/app-version.ts b/src/lib/app-version.ts
+index 1ccfb44..3de47c8 100644
+--- a/src/lib/app-version.ts
++++ b/src/lib/app-version.ts
+@@ -1,5 +1,5 @@
+ /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
+-export const APP_VERSION = "5.49.4";
++export const APP_VERSION = "5.49.5";
+ 
+ type ReleaseNote = {
+   version: string;
+@@ -10,6 +10,16 @@ type ReleaseNote = {
+ 
+ /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
+ export const CHANGELOG: ReleaseNote[] = [
++  {
++    version: "5.49.5",
++    time: "27/11/2026",
++    title: "Kiểm tra phần đã giữ trước khi dịch.",
++    points: [
++      "Hệ thống kiểm tra phần đã giữ trước khi gửi yêu cầu dịch.",
++      "Khi có số liệu từ nhà cung cấp, số Token dịch trừ theo lượng đã dùng.",
++      "Phần dịch trực tiếp dùng suất trống khi các đoạn đang chờ không thể dùng suất đó.",
++    ],
++  },
+   {
+     version: "5.49.4",
+     time: "20:42 27/11/2026",
+@@ -304,15 +314,5 @@ export const CHANGELOG: ReleaseNote[] = [
+       "Key ElevenLabs dán thiếu hay thừa ký tự được báo ngay khi lưu.",
+     ],
+   },
+-  {
+-    version: "5.35.0",
+-    time: "05:53 22/11/2026",
+-    title: "Thuyết minh bằng giọng ElevenLabs, đọc được tiếng Việt.",
+-    points: [
+-      "Ở mục Thuyết minh, chọn ElevenLabs rồi chọn giọng nam hoặc nữ theo danh sách giọng của key.",
+-      "Trả theo lượt trừ Token dịch theo số chữ đọc. Thuê phòng dùng key ElevenLabs của bạn.",
+-      "Nhận dạng ElevenLabs xong thì bản nhận dạng được xóa ở ElevenLabs.",
+-    ],
+-  },
+ ];
+ 
+diff --git a/src/lib/billing/audio-probe.test.ts b/src/lib/billing/audio-probe.test.ts
+index b3d370b..383c9ae 100644
+--- a/src/lib/billing/audio-probe.test.ts
++++ b/src/lib/billing/audio-probe.test.ts
+@@ -234,3 +234,47 @@ test("RE3-002: TOC Opus — bảng thời lượng theo RFC 6716", () => {
+   assert.equal(opusPacketSamples(Uint8Array.of((19 << 3) | 3, 7)), null); // 7 × 20 ms > 120 ms
+   assert.equal(opusPacketSamples(new Uint8Array(0)), 5760);
+ });
++
++test("RE4-005: cấu trúc WebM sai cấp bị từ chối dù có gói Opus đọc được", () => {
++  const tracks = el("1654AE6B", track(1, "A_OPUS"));
++  const cluster = el("1F43B675", simple(1, 0x80, opus20(5)));
++  const invalid = [
++    cat(el("1654AE6B", tracks), cluster),
++    cat(tracks, el("A0", cluster)),
++    cat(tracks, el("1F43B675", cat(el("1654AE6B", new Uint8Array()), simple(1, 0x80, opus20(5))))),
++  ];
++  for (const body of invalid) {
++    assert.equal(probeAudioBytes(cat(ebmlHead, el("18538067", body))).ok, false);
++  }
++});
++
++test("RE4-005: khai kích thước vượt cha, cụt Segment hoặc unknown-size ngoài Cluster bị từ chối", () => {
++  const tracks = el("1654AE6B", track(1, "A_OPUS"));
++  const block = simple(1, 0x80, opus20(5));
++  const invalid = [
++    el("18538067", cat(tracks, idb("1F43B675"), size8(block.length - 1), block)),
++    cat(idb("18538067"), size8(tracks.length + 1), tracks),
++    el("18538067", cat(idb("1654AE6B"), UNKNOWN, track(1, "A_OPUS"), el("1F43B675", block))),
++  ];
++  for (const segment of invalid) {
++    assert.equal(probeAudioBytes(cat(ebmlHead, segment)).ok, false);
++  }
++});
++
++test("RE4-005: biến thiên cấu trúc trả kết quả có kiểm soát, không ném lỗi", async () => {
++  const valid = cat(ebmlHead, el("18538067", cat(
++    el("1654AE6B", track(1, "A_OPUS")),
++    el("1F43B675", simple(1, 0x80, opus20(5))),
++  )));
++  for (let i = 0; i < valid.length; i++) {
++    for (const mask of [0x01, 0x80, 0xff]) {
++      const changed = valid.slice();
++      changed[i] ^= mask;
++      const result = probeAudioBytes(changed);
++      if (result.ok) assert.ok(Number.isFinite(result.seconds) && result.seconds > 0);
++    }
++  }
++  const nested = el("1654AE6B", el("1654AE6B", track(1, "A_OPUS")));
++  const invalid = cat(ebmlHead, el("18538067", cat(nested, el("1F43B675", simple(1, 0x80, opus20(5))))));
++  assert.equal(await estimate(new Blob([invalid]), "malformed.webm"), null);
++});
+diff --git a/src/lib/billing/audio-probe.ts b/src/lib/billing/audio-probe.ts
+index 7cb7bba..6e8fecc 100644
+--- a/src/lib/billing/audio-probe.ts
++++ b/src/lib/billing/audio-probe.ts
+@@ -86,12 +86,12 @@ function probeWav(b: Uint8Array): AudioProbe {
+ }
+ 
+ /** Đọc số nguyên độ dài thay đổi của EBML. `marker` true = giữ bit đánh dấu (ID). */
+-function vint(b: Uint8Array, at: number, marker: boolean): { value: number; len: number; unknown: boolean } | null {
++function vint(b: Uint8Array, at: number, marker: boolean, end: number): { value: number; len: number; unknown: boolean } | null {
+   const first = b[at];
+-  if (first === undefined || first === 0) return null;
++  if (at >= end || first === undefined || first === 0) return null;
+   let len = 1;
+   while (len <= 8 && !(first & (0x80 >> (len - 1)))) len += 1;
+-  if (len > 8 || at + len > b.length) return null;
++  if (len > (marker ? 4 : 8) || at + len > end) return null;
+   let value = marker ? first : first & (0xff >> len);
+   let allOnes = value === (0xff >> len);
+   for (let i = 1; i < len; i += 1) {
+@@ -114,18 +114,7 @@ const SEGMENT = 0x18538067,
+ const LEVEL1 = new Set([0x114d9b74, 0x1549a966, TRACKS, CLUSTER, 0x1c53bb6b, 0x1941a469, 0x1043a770, 0x1254c367]);
+ 
+ function probeWebm(b: Uint8Array): AudioProbe {
+-  const head = vint(b, 0, true);
+-  const headSize = head && vint(b, head.len, false);
+-  if (!head || head.value !== 0x1a45dfa3 || !headSize) return fail("webm: thiếu EBML");
+-  const docEnd = head.len + headSize.len + headSize.value;
+-  const doc = new TextDecoder().decode(b.subarray(head.len + headSize.len, docEnd));
+-  if (!doc.includes("webm") && !doc.includes("matroska")) return fail("webm: DocType lạ");
+-  const seg = vint(b, docEnd, true);
+-  const segSize = seg && vint(b, docEnd + seg.len, false);
+-  if (!seg || seg.value !== SEGMENT || !segSize) return fail("webm: thiếu Segment");
+-  const segStart = docEnd + seg.len + segSize.len;
+-  const segEnd = segSize.unknown ? b.length : Math.min(b.length, segStart + segSize.value);
+-
++  if (b.length > 25 * 1024 * 1024) return fail("webm: tệp quá lớn");
+   let audioTrack = -1;
+   let tracks = 0;
+   let samples = 0;
+@@ -133,7 +122,44 @@ function probeWebm(b: Uint8Array): AudioProbe {
+   let elements = 0;
+   let bad: string | null = null;
+ 
++  const readElement = (at: number, end: number) => {
++    if (++elements > MAX_ELEMENTS) {
++      bad = "webm: quá nhiều phần tử";
++      return null;
++    }
++    const id = vint(b, at, true, end);
++    const size = id && vint(b, at + id.len, false, end);
++    if (!id || !size) {
++      bad = "webm: phần tử hỏng";
++      return null;
++    }
++    const body = at + id.len + size.len;
++    if (!size.unknown && (!Number.isSafeInteger(size.value) || size.value > end - body)) {
++      bad = "webm: phần tử vượt biên cha";
++      return null;
++    }
++    return { id: id.value, body, stop: size.unknown ? end : body + size.value, unknown: size.unknown };
++  };
++
++  const head = readElement(0, b.length);
++  if (!head || head.id !== 0x1a45dfa3 || head.unknown) return fail(bad ?? "webm: thiếu EBML");
++  const decoder = new TextDecoder();
++  let docType = "";
++  for (let at = head.body; at < head.stop;) {
++    const field = readElement(at, head.stop);
++    if (!field || field.unknown) return fail(bad ?? "webm: EBML hỏng");
++    if (field.id === 0x4282) {
++      if (docType || field.stop - field.body > 8) return fail("webm: DocType lạ");
++      docType = decoder.decode(b.subarray(field.body, field.stop));
++    }
++    at = field.stop;
++  }
++  if (docType !== "webm" && docType !== "matroska") return fail("webm: DocType lạ");
++  const seg = readElement(head.stop, b.length);
++  if (!seg || seg.id !== SEGMENT || seg.stop !== b.length) return fail(bad ?? "webm: Segment hỏng");
++
+   const addPacket = (data: Uint8Array) => {
++    if (packets >= MAX_PACKETS) return void (bad = "webm: quá nhiều gói");
+     const s = opusPacketSamples(data);
+     if (s === null) bad = "webm: gói Opus hỏng";
+     else samples += s;
+@@ -141,13 +167,14 @@ function probeWebm(b: Uint8Array): AudioProbe {
+   };
+ 
+   const readBlock = (at: number, end: number) => {
+-    const track = vint(b, at, false);
++    const track = vint(b, at, false, end);
+     if (!track || at + track.len + 3 > end) return void (bad = "webm: block hỏng");
+     if (track.value !== audioTrack) return void (bad = "webm: block của track lạ");
+     const flags = b[at + track.len + 2];
+     let p = at + track.len + 3;
+     const lacing = (flags >> 1) & 3;
+     if (lacing === 0) return addPacket(b.subarray(p, end));
++    if (p >= end || b[p] === 0) return void (bad = "webm: lacing hỏng");
+     const count = b[p] + 1;
+     p += 1;
+     const sizes: number[] = [];
+@@ -167,14 +194,14 @@ function probeWebm(b: Uint8Array): AudioProbe {
+       if (!Number.isInteger(each)) return void (bad = "webm: lacing cố định hỏng");
+       for (let i = 0; i < count - 1; i += 1) sizes.push(each);
+     } else {
+-      const first = vint(b, p, false);
+-      if (!first) return void (bad = "webm: lacing EBML hỏng");
++      const first = vint(b, p, false, end);
++      if (!first || first.value > end - p) return void (bad = "webm: lacing EBML hỏng");
+       p += first.len;
+       let size = first.value;
+       sizes.push(size);
+       for (let i = 1; i < count - 1; i += 1) {
+-        const d = vint(b, p, false);
+-        if (!d) return void (bad = "webm: lacing EBML hỏng");
++        const d = vint(b, p, false, end);
++        if (!d || !Number.isSafeInteger(d.value)) return void (bad = "webm: lacing EBML hỏng");
+         p += d.len;
+         size += d.value - (2 ** (7 * d.len - 1) - 1);
+         if (size < 0) return void (bad = "webm: lacing EBML hỏng");
+@@ -185,70 +212,78 @@ function probeWebm(b: Uint8Array): AudioProbe {
+     if (p + used > end) return void (bad = "webm: lacing vượt block");
+     sizes.push(end - p - used);
+     for (const size of sizes) {
++      if (bad) break;
+       addPacket(b.subarray(p, p + size));
+       p += size;
+     }
+   };
+ 
+   const readTrackEntry = (at: number, end: number) => {
+-    let codec = "",
+-      number = -1,
+-      type = -1;
++    let codec = "";
++    let number = -1;
++    let type = -1;
+     while (at < end) {
+-      const id = vint(b, at, true);
+-      const size = id && vint(b, at + id.len, false);
+-      if (!id || !size || size.unknown) return void (bad = "webm: track hỏng");
+-      const body = at + id.len + size.len;
+-      const data = b.subarray(body, Math.min(end, body + size.value));
+-      const uint = () => data.reduce((n, x) => n * 256 + x, 0);
+-      if (id.value === CODEC_ID) codec = new TextDecoder().decode(data);
+-      else if (id.value === TRACK_NUMBER) number = uint();
+-      else if (id.value === TRACK_TYPE) type = uint();
+-      at = body + size.value;
++      const field = readElement(at, end);
++      if (!field || field.unknown) return void (bad ??= "webm: track hỏng");
++      const { id, body, stop } = field;
++      if (id === CODEC_ID) {
++        if (codec || stop - body !== 6) return void (bad = "webm: codec lạ");
++        codec = decoder.decode(b.subarray(body, stop));
++      } else if (id === TRACK_NUMBER || id === TRACK_TYPE) {
++        if (stop - body < 1 || stop - body > 6) return void (bad = "webm: track hỏng");
++        const value = b.subarray(body, stop).reduce((n, byte) => n * 256 + byte, 0);
++        if (id === TRACK_NUMBER && number < 0) number = value;
++        else if (id === TRACK_TYPE && type < 0) type = value;
++        else return void (bad = "webm: trùng trường track");
++      } else if (structural(id)) {
++        return void (bad = "webm: phần tử sai cấp");
++      }
++      at = stop;
+     }
+     tracks += 1;
+-    if (type !== 2 || codec !== "A_OPUS") bad = "webm: không phải track Opus duy nhất";
++    if (type !== 2 || codec !== "A_OPUS" || number <= 0) bad = "webm: không phải track Opus duy nhất";
+     else audioTrack = number;
+   };
+ 
+-  // Đi theo cây phần tử, chỉ vào Segment / Tracks / TrackEntry / Cluster / BlockGroup.
+-  const walk = (at: number, end: number, depth: number): number => {
++  const structural = (id: number) =>
++    id === SEGMENT || id === 0x1a45dfa3 || id === TRACK_ENTRY || id === SIMPLE_BLOCK ||
++    id === BLOCK_GROUP || id === BLOCK || LEVEL1.has(id);
++
++  // Only Segment → Tracks → TrackEntry or Segment → Cluster → BlockGroup
++  // is traversed. Extra masters cannot increase the call stack.
++  type Parent = "segment" | "tracks" | "cluster" | "open-cluster" | "block-group";
++  const walk = (at: number, end: number, parent: Parent): number => {
+     while (at < end && !bad) {
+-      if (++elements > MAX_ELEMENTS || packets > MAX_PACKETS) {
+-        bad = "webm: quá nhiều phần tử";
+-        break;
+-      }
+-      const id = vint(b, at, true);
+-      const size = id && vint(b, at + id.len, false);
+-      if (!id || !size) {
+-        bad = "webm: phần tử hỏng";
+-        break;
++      const field = readElement(at, end);
++      if (!field) break;
++      const { id, body, stop, unknown } = field;
++      const inCluster = parent === "cluster" || parent === "open-cluster";
++      if (parent === "open-cluster" && LEVEL1.has(id)) return at;
++      if (parent === "segment" && id === CLUSTER) {
++        if (audioTrack < 0) {
++          bad = "webm: cluster trước track";
++          break;
++        }
++        const resume = walk(body, stop, unknown ? "open-cluster" : "cluster");
++        at = unknown ? resume : stop;
++        continue;
+       }
+-      // Cluster kích thước «không rõ» (MediaRecorder): kéo tới phần tử cấp 1 kế tiếp.
+-      if (depth === 2 && LEVEL1.has(id.value)) return at;
+-      const body = at + id.len + size.len;
+-      const stop = size.unknown ? end : body + size.value;
+-      if (stop > b.length) {
+-        bad = "webm: tệp cụt";
++      if (unknown) {
++        bad = "webm: không được để trống kích thước phần tử này";
+         break;
+       }
+-      if (id.value === TRACKS) walk(body, stop, 1);
+-      else if (id.value === TRACK_ENTRY && depth === 1) readTrackEntry(body, stop);
+-      else if (id.value === CLUSTER) {
+-        if (audioTrack < 0) bad = "webm: cluster trước track";
+-        else {
+-          const resume = walk(body, stop, 2);
+-          at = size.unknown ? resume : stop;
+-          continue;
+-        }
+-      } else if (id.value === SIMPLE_BLOCK && depth === 2) readBlock(body, stop);
+-      else if (id.value === BLOCK_GROUP && depth === 2) walk(body, stop, 3);
+-      else if (id.value === BLOCK && depth === 3) readBlock(body, stop);
++      if (parent === "segment" && id === TRACKS) walk(body, stop, "tracks");
++      else if (parent === "tracks" && id === TRACK_ENTRY) readTrackEntry(body, stop);
++      else if (inCluster && id === SIMPLE_BLOCK) readBlock(body, stop);
++      else if (inCluster && id === BLOCK_GROUP) walk(body, stop, "block-group");
++      else if (parent === "block-group" && id === BLOCK) readBlock(body, stop);
++      else if (structural(id) && !(parent === "segment" && LEVEL1.has(id)))
++        bad = "webm: phần tử sai cấp";
+       at = stop;
+     }
+     return end;
+   };
+-  walk(segStart, segEnd, 0);
++  walk(seg.body, seg.stop, "segment");
+   if (bad) return fail(bad);
+   if (tracks !== 1 || audioTrack < 0) return fail("webm: cần đúng một track Opus");
+   if (!packets) return fail("webm: không có gói");
+diff --git a/src/lib/billing/gate-reserve.test.ts b/src/lib/billing/gate-reserve.test.ts
+index f8f71fa..162bc69 100644
+--- a/src/lib/billing/gate-reserve.test.ts
++++ b/src/lib/billing/gate-reserve.test.ts
+@@ -7,7 +7,7 @@ import { after, before, beforeEach, describe, it } from "node:test";
+ import type { Sql } from "../db.ts";
+ import { pgliteSql, realPgSql } from "../test-sql.ts";
+ import type { PriceBook } from "./run-bill.ts";
+-import { chargeWith, DEFAULT_COMPLETION_TOKENS, readRequest } from "./run-gate.ts";
++import { chargeWith, DEFAULT_COMPLETION_TOKENS, PROMPT_FRAME_TOKENS, promptTokenBound, readRequest } from "./run-gate.ts";
+ import { chatCost } from "./run-bill.ts";
+ import { giayForBaseCost } from "./token-math.ts";
+ import { buyGiayWith, closeTokenWith, openGiayWith } from "./token-flow.ts";
+@@ -32,7 +32,7 @@ const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
+ const book: PriceBook = {
+   rate: 25_000,
+   desk: { markup: 0, custom: {} },
+-  rows: [row({ id: "whisper-large-v3-turbo", usdPerHour: 0.04 }), row({ id: "chat", usdIn: 0.1, usdOut: 0.1 })],
++  rows: [row({ id: "whisper-large-v3-turbo", usdPerHour: 0.04 }), row({ id: "chat", usdIn: 0.1, usdOut: 0.1, contextTokens: 100 })],
+ };
+ const TID = "c".repeat(24);
+ /** Số Token một lệnh 100 vào + 3.233 ra (tính bằng đúng hàm của app). */
+@@ -96,6 +96,116 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
+     assert.equal(Number(spend[0].n), sends);
+   });
+ 
++  it("RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà", async () => {
++    // ~6 KB tiếng Việt/CJK/emoji + schema: cận 2×byte + khung vượt phần giữ 100 Token.
++    const body = enc({
++      model: "chat",
++      messages: [{ role: "user", content: "Tiếng Việt 中文 🎬 ".repeat(300) }],
++      tools: [{ type: "function", function: { name: "caption", parameters: { type: "object" } } }],
++    });
++    const priced = {
++      ...book,
++      rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: 40_000 } : r),
++    };
++    let sends = 0;
++    const out = await chargeWith({
++      sql, book: priced, path: "/chat/completions", model: "chat", chars: 0,
++      userId: "k", ticketId: TID, body, cap: 0, outCap: 200,
++      send: async () => {
++        sends++;
++        return Response.json({ usage: { prompt_tokens: 100, completion_tokens: 100 } });
++      },
++    });
++    assert.ok(promptTokenBound(body.byteLength, 40_000) > 10_000);
++    assert.equal(sends, 0);
++    assert.equal(out.kind === "reject" && out.status, 402);
++    assert.equal((await ticket()).charged, 0);
++    assert.equal((await sql`select 1 from run_gate_calls`).length, 0);
++  });
++
++  it("RE4-001: cận theo byte không phụ thuộc cửa sổ chưa xác minh; cửa sổ đã biết chỉ làm cận chặt hơn", () => {
++    assert.equal(promptTokenBound(1000, null), 2 * 1000 + PROMPT_FRAME_TOKENS);
++    assert.equal(promptTokenBound(1000, 1_000_000), 2 * 1000 + PROMPT_FRAME_TOKENS);
++    assert.equal(promptTokenBound(1000, 300), 300);
++    assert.equal(promptTokenBound(1000, 0), 2 * 1000 + PROMPT_FRAME_TOKENS);
++  });
++
++  it("RE4-001: phiếu nhỏ chạy được với model cửa sổ 1 triệu token; quyết toán theo usage thật", async () => {
++    const priced = {
++      ...book,
++      rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: 1_000_000 } : r),
++    };
++    const body = enc({ model: "chat", messages: [{ role: "user", content: "Xin chào 你好 🎬" }], max_tokens: 200 });
++    // Theo cả cửa sổ: 1.000.000 vào + 200 ra ≈ 9.000 Token > phần giữ 100 → bị chặn oan.
++    assert.ok(giayForBaseCost(book, chatCost(book, "chat", 1_000_000, 200)!)! > 100);
++    let sends = 0;
++    const out = await chargeWith({
++      sql, book: priced, unitBook: book, path: "/chat/completions", model: "chat", chars: 0,
++      userId: "k", ticketId: TID, body, cap: 0, outCap: 200,
++      send: async () => {
++        sends++;
++        return Response.json({ usage: { prompt_tokens: 40, completion_tokens: 30 } });
++      },
++    });
++    assert.equal(out.kind, "pass");
++    assert.equal(sends, 1);
++    const t = await ticket();
++    assert.equal(t.charged, giayForBaseCost(book, chatCost(book, "chat", 40, 30)!));
++    assert.equal(Number(t.modal_reserved), 0);
++  });
++
++  it("RE4-001: model chưa có cửa sổ (qwen-turbo) giữ theo cận byte thay vì bị chặn", async () => {
++    const priced = {
++      ...book,
++      rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: null } : r),
++    };
++    let sends = 0;
++    const out = await chargeWith({
++      sql, book: priced, unitBook: book, path: "/chat/completions", model: "chat", chars: 0,
++      userId: "k", ticketId: TID, body: enc({ model: "chat" }), cap: 0, outCap: 20,
++      send: async () => {
++        sends++;
++        return Response.json({ usage: { prompt_tokens: 5, completion_tokens: 5 } });
++      },
++    });
++    assert.equal(out.kind, "pass");
++    assert.equal(sends, 1);
++    const turbo = await readRequest("/chat/completions", "application/json", enc({ model: "qwen-turbo", max_tokens: 50 }), "max_tokens");
++    assert.equal(JSON.parse(new TextDecoder().decode(turbo!.body!)).enable_thinking, false);
++  });
++
++  it("RE4-001: ảnh, âm thanh, tệp trong tin nhắn bị chặn vì cận byte không phủ được", async () => {
++    const path = "/chat/completions";
++    for (const content of [
++      [{ type: "image_url", image_url: { url: "https://x.test/a.png" } }],
++      [{ type: "input_audio", input_audio: { data: "AAAA", format: "wav" } }],
++      [{ type: "text", text: "a" }, { type: "file", file: { file_id: "f" } }],
++      [{ type: "text", text: 1 }],
++    ]) {
++      const r = await readRequest(path, "application/json", enc({ model: "chat", messages: [{ role: "user", content }] }));
++      assert.ok(r?.problem, JSON.stringify(content));
++    }
++    assert.ok((await readRequest(path, "application/json", enc({ model: "chat", messages: "x" })))?.problem);
++    for (const content of ["chữ", [{ type: "text", text: "chữ" }], null]) {
++      const r = await readRequest(path, "application/json", enc({ model: "chat", messages: [{ role: "user", content }] }));
++      assert.equal(r?.problem, null, JSON.stringify(content));
++    }
++  });
++
++  it("RE4-001: usage vượt cận byte được đánh dấu đối soát", async () => {
++    const body = enc({ model: "chat", messages: [{ role: "user", content: "a" }] });
++    const over = promptTokenBound(body.byteLength, null) + 1;
++    const priced = { ...book, rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: null } : r) };
++    const out = await chargeWith({
++      sql, book: priced, unitBook: book, path: "/chat/completions", model: "chat", chars: 0,
++      userId: "k", ticketId: TID, body, cap: 0, outCap: 20,
++      send: async () => Response.json({ usage: { prompt_tokens: over, completion_tokens: 1 } }),
++    });
++    assert.equal(out.kind, "pass");
++    const calls = await sql<{ status: string }>`select status from run_gate_calls`;
++    assert.deepEqual(calls.map((c) => c.status), ["can-doi-soat"]);
++  });
++
+   it("nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả", async () => {
+     const out = await chargeWith({ sql, book, unitBook: book, path: "/chat/completions", model: "chat", chars: 0, userId: "k", ticketId: TID, body: new ArrayBuffer(300), cap: 0, outCap: 1000, send: async () => new Response("{}", { status: 500 }) });
+     assert.equal(out.kind, "pass");
+@@ -158,6 +268,25 @@ describe("RE-005: nhà luôn nhận yêu cầu có trần token", () => {
+     const same = await readRequest("/chat/completions", "application/json", enc({ model: "m", max_tokens: 300, max_completion_tokens: 300 }), "max_tokens");
+     assert.deepEqual([same?.problem, same?.cap, dec(same?.body).max_tokens], [null, 300, 300]);
+   });
++  it("RE4-001: Alibaba giữ trần phần dịch và không bật reasoning hoặc công cụ chạy tại nhà", async () => {
++    const path = "/chat/completions";
++    const valid = await readRequest(path, "application/json", enc({
++      model: "qwen-plus", max_tokens: 200, reasoning_effort: "none",
++      tools: [{ type: "function", function: { name: "caption" } }],
++    }), "max_tokens");
++    assert.equal(valid?.problem, null);
++    assert.equal(dec(valid?.body).enable_thinking, false);
++    assert.equal(dec(valid?.body).max_tokens, 200);
++    assert.ok(!("reasoning_effort" in dec(valid?.body)));
++    for (const extra of [
++      { enable_thinking: true }, { thinking_budget: 1024 },
++      { reasoning_effort: "high" }, { enable_search: true }, { tools: [{ type: "web_search" }] },
++    ]) {
++      const invalid = await readRequest(path, "application/json", enc({ model: "qwen-plus", ...extra }), "max_tokens");
++      assert.ok(invalid?.problem);
++    }
++  });
++
+   it("nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền", async () => {
+     await openTicket(100);
+     const parsed = await readRequest("/chat/completions", "application/json", enc({ model: "chat", messages: [] }), "max_tokens");
+diff --git a/src/lib/billing/gate-reserve.ts b/src/lib/billing/gate-reserve.ts
+index 8072bb5..614447e 100644
+--- a/src/lib/billing/gate-reserve.ts
++++ b/src/lib/billing/gate-reserve.ts
+@@ -57,11 +57,12 @@ export async function reserveGateCall(
+ }
+ 
+ /** An expired lease cannot be revived by a delayed heartbeat. RE3-003: timeout thật ở CSDL; RETURNING rỗng = đã mất lease. */
+-export function beatGateCall(sql: Sql, callId: string) {
++export function beatGateCall(sql: Sql, callId: string, signal?: AbortSignal) {
+   return boundedBeat(
+     sql,
+     (tx) => tx`update run_gate_calls set heartbeat_at = clock_timestamp()
+     where id = ${callId} and status = 'dang-chay' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`,
++    { signal },
+   );
+ }
+ 
+diff --git a/src/lib/billing/re2-regression.test.ts b/src/lib/billing/re2-regression.test.ts
+index e4332ee..c4831c0 100644
+--- a/src/lib/billing/re2-regression.test.ts
++++ b/src/lib/billing/re2-regression.test.ts
+@@ -15,7 +15,7 @@ const book: PriceBook = {
+   desk: { markup: 0, custom: {} },
+   rows: [
+     { id: "whisper-large-v3-turbo", usdPerHour: 0.04 },
+-    { id: "chat", usdIn: 0.1, usdOut: 0.1 },
++    { id: "chat", usdIn: 0.1, usdOut: 0.1, contextTokens: 100 },
+   ].map((r) => ({
+     speed: null,
+     usdIn: null,
+diff --git a/src/lib/billing/run-gate.test.ts b/src/lib/billing/run-gate.test.ts
+index b2a1d81..6bcafec 100644
+--- a/src/lib/billing/run-gate.test.ts
++++ b/src/lib/billing/run-gate.test.ts
+@@ -27,7 +27,7 @@ const book: PriceBook = {
+   desk: { markup: 100, custom: {} },
+   rows: [
+     row({ id: "asr", usdPerHour: 0.04 }),
+-    row({ id: "chat", usdIn: 0.075, usdOut: 0.3 }),
++    row({ id: "chat", usdIn: 0.075, usdOut: 0.3, contextTokens: 100_000 }),
+     row({ id: "whisper-large-v3-turbo", usdPerHour: 79.2 }),
+     row({ id: "tts", usdPerMillionChars: 22 }),
+   ],
+@@ -54,11 +54,11 @@ describe("cổng tính tiền", () => {
+   });
+ 
+   it("dịch thành công: trừ theo token thật trong usage", async () => {
+-    // vào 1.875×2=3.750 đ/triệu, ra 7.500×2=15.000 đ/triệu; 100.000 vào + 100.000 ra = 375 + 1.500
+-    const out = await call({ body: new ArrayBuffer(300_000), outCap: 100_000, send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 100_000 } }) });
++    // vào 1.875×2=3.750 đ/triệu, ra 7.500×2=15.000 đ/triệu; 100.000 vào + 8.000 ra = 375 + 120
++    const out = await call({ body: new ArrayBuffer(300_000), outCap: 8_000, send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 8_000 } }) });
+     assert.equal(out.kind, "pass");
+-    assert.equal((await t(TID)).charged, 1875);
+-    assert.equal((await t(TID)).held, 125);
++    assert.equal((await t(TID)).charged, 495);
++    assert.equal((await t(TID)).held, 1505);
+   });
+ 
+   it("Groq trả lỗi thì không tính tiền", async () => {
+@@ -146,6 +146,10 @@ describe("đọc yêu cầu", () => {
+     assert.deepEqual([plain?.model, plain?.problem, plain?.cap], ["m", null, 4096]);
+     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", stream: true })))?.problem);
+     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_completion_tokens: 999999 })))?.problem);
++    for (const n of [2, "1", 0]) {
++      assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", n })))?.problem);
++    }
++    assert.equal((await readRequest("/chat/completions", "application/json", enc({ model: "m", n: 1 })))?.problem, null);
+     // R3-002: giá trị lạ bị chặn, giá trị đúng vẫn qua.
+     for (const bad of ["abc", -1, 0, 1.5, "100", true]) {
+       assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_tokens: bad })))?.problem, String(bad));
+diff --git a/src/lib/billing/run-gate.ts b/src/lib/billing/run-gate.ts
+index 2bddda7..ed3f0fc 100644
+--- a/src/lib/billing/run-gate.ts
++++ b/src/lib/billing/run-gate.ts
+@@ -24,6 +24,21 @@ type GateOutcome =
+ 
+ /** Giới hạn token trả lời mặc định khi yêu cầu không ghi (RE-005): hữu hạn, đủ cho một lô dịch của app. */
+ export const DEFAULT_COMPLETION_TOKENS = 4096;
++
++/** RE4-001: khung cố định cho phần nhà cung cấp tự chèn (system mặc định, Harmony, lời dẫn công cụ). */
++export const PROMPT_FRAME_TOKENS = 512;
++
++/**
++ * RE4-001: cận trên số token đầu vào của một yêu cầu chat, chỉ từ số byte thân JSON đã chuẩn hóa.
++ * Tokenizer byte-level BPE (o200k/Harmony, Llama 3, Qwen) cho mỗi token ít nhất một byte UTF-8, nên
++ * token của chữ ≤ byte của chữ ≤ byte thân JSON. Lần byte thứ hai phủ khung mỗi tin nhắn và schema công cụ
++ * được nhà viết lại (khung mỗi tin nhắn < 25 byte JSON của chính nó). Đối chiếu: docs/kiem-toan/claude/RE4-001.
++ * Nếu biết cửa sổ ngữ cảnh thì lấy số nhỏ hơn (nhà từ chối yêu cầu vượt cửa sổ).
++ */
++export function promptTokenBound(bodyBytes: number, context: number | null | undefined): number {
++  const bound = 2 * Math.max(0, Math.ceil(bodyBytes)) + PROMPT_FRAME_TOKENS;
++  return Number.isSafeInteger(context) && (context as number) > 0 ? Math.min(bound, context as number) : bound;
++}
+ export type TokenField = "max_completion_tokens" | "max_tokens";
+ 
+ export type GateRequest = {
+@@ -72,6 +87,35 @@ export async function readRequest(
+     }
+     if (json.stream === true)
+       return { model, chars: 0, problem: "Cửa trả theo lượt chưa hỗ trợ stream." };
++    if (json.n != null && json.n !== 1)
++      return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ một câu trả lời." };
++    delete json.n; // Both providers default to one completion.
++    // DashScope max_tokens on legacy Qwen does not cover separate thinking tokens.
++    // The TyZo batch translator requests non-thinking mode.
++    if (tokenField === "max_tokens") {
++      if ((json.enable_thinking != null && json.enable_thinking !== false) ||
++        json.thinking_budget != null ||
++        (json.reasoning_effort != null && json.reasoning_effort !== "none"))
++        return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ dịch trực tiếp từ văn bản." };
++      delete json.reasoning_effort;
++      if (model === "qwen-plus" || model === "qwen-turbo") json.enable_thinking = false;
++    }
++    // RE4-001: cận byte chỉ đúng với chữ. Ảnh, âm thanh, tệp trong tin nhắn có thể tốn token vượt xa số byte
++    // của URL/thân yêu cầu, nên cửa trả theo lượt chỉ nhận nội dung chữ.
++    if (json.messages != null) {
++      if (!Array.isArray(json.messages)) return { model, chars: 0, problem: "Tin nhắn không hợp lệ." };
++      const textOnly = json.messages.every((m) => {
++        const c = (m as { content?: unknown } | null)?.content;
++        return c == null || typeof c === "string" ||
++          (Array.isArray(c) && c.every((part) => part?.type === "text" && typeof part.text === "string"));
++      });
++      if (!textOnly) return { model, chars: 0, problem: "Cửa trả theo lượt chỉ nhận nội dung chữ." };
++    }
++    // Only client-side function schemas have no separately billed tool execution.
++    if ((json.enable_search != null && json.enable_search !== false) ||
++      (json.tools != null && (!Array.isArray(json.tools) || json.tools.some((tool) => tool?.type !== "function"))))
++      return { model, chars: 0, problem: "Cửa trả theo lượt không hỗ trợ công cụ chạy tại nhà cung cấp." };
++
+     const a = json.max_completion_tokens;
+     const b = json.max_tokens;
+     const given = [a, b].filter((v) => v !== undefined && v !== null);
+@@ -253,7 +297,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+         const { tagWork } = await import("./work-admission.ts");
+         await tagWork(sql, input.admissionId, held.callId);
+       }
+-      stopBeat = startBeat(() => beatGateCall(sql, held.callId), {
++      stopBeat = startBeat((signal) => beatGateCall(sql, held.callId, signal), {
+         everyMs: input.beatMs,
+         onLost: (why) => console.warn("lease-lost", "gate", held.callId, why),
+       });
+@@ -344,26 +388,23 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+       message: "Không kiểm được độ dài đoạn âm thanh. Hãy tải lại trang rồi chạy lại.",
+     };
+   const estimatedSeconds = probed;
+-  const estBase =
+-    path === "/audio/transcriptions"
+-      ? (asrCost(bareBook, model, estimatedSeconds) ?? 0)
+-      : (chatCost(
+-          bareBook,
+-          model,
+-          Math.ceil(input.body.byteLength / 3),
+-          input.outCap ?? MAX_COMPLETION_TOKENS,
+-        ) ?? 0);
+-  const estCost =
+-    path === "/audio/transcriptions"
+-      ? (asrCost(book, model, estimatedSeconds) ?? 0)
+-      : (chatCost(
+-          book,
+-          model,
+-          Math.ceil(input.body.byteLength / 3),
+-          input.outCap ?? MAX_COMPLETION_TOKENS,
+-        ) ?? 0);
++  const isAsr = path === "/audio/transcriptions";
++  const outCap = input.outCap ?? MAX_COMPLETION_TOKENS;
++  // RE4-001: giữ theo cận byte của chính yêu cầu (gồm khung nhà và schema công cụ), không theo cả cửa sổ
++  // ngữ cảnh, để phiếu nhỏ vẫn chạy được. Cửa sổ đã biết chỉ làm cận chặt hơn. Không trừ outCap khỏi cận vào.
++  const promptCap = isAsr
++    ? 0
++    : promptTokenBound(input.body.byteLength, book.rows.find((row) => row.id === model)?.contextTokens);
++  if (!isAsr && capProblem(outCap))
++    return { kind: "reject", status: 422, message: "Số token trả lời tối đa không hợp lệ." };
++  const estBase = isAsr
++    ? asrCost(bareBook, model, estimatedSeconds)
++    : chatCost(bareBook, model, promptCap, outCap);
++  const estCost = isAsr
++    ? asrCost(book, model, estimatedSeconds)
++    : chatCost(book, model, promptCap, outCap);
+   const { giayForBaseCost } = await import("./token-math.ts");
+-  const estimate = tokenUnit ? (giayForBaseCost(input.unitBook ?? book, estBase) ?? 0) : estCost;
++  const estimate = tokenUnit ? (giayForBaseCost(input.unitBook ?? book, estBase ?? 0) ?? 0) : (estCost ?? 0);
+   const { reserveGateCall, releaseGateCall, beatGateCall, settleGateCall } =
+     await import("./gate-reserve.ts");
+   const { startBeat } = await import("./work-lease.ts");
+@@ -389,7 +430,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+     await tagWork(sql, input.admissionId, callId);
+   }
+ 
+-  const stopBeat = startBeat(() => beatGateCall(sql, callId), {
++  const stopBeat = startBeat((signal) => beatGateCall(sql, callId, signal), {
+     everyMs: input.beatMs,
+     onLost: (why) => console.warn("lease-lost", "gate", callId, why),
+   });
+@@ -441,7 +482,9 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
+               !Number.isSafeInteger(prompt) ||
+               prompt < 0 ||
+               !Number.isSafeInteger(completion) ||
+-              completion < 0;
++              completion < 0 ||
++              prompt > promptCap ||
++              completion > outCap;
+             const inn =
+               Number.isSafeInteger(prompt) && prompt >= 0
+                 ? prompt
+diff --git a/src/lib/billing/tyzo-modal-charge.ts b/src/lib/billing/tyzo-modal-charge.ts
+index 752b684..1850c57 100644
+--- a/src/lib/billing/tyzo-modal-charge.ts
++++ b/src/lib/billing/tyzo-modal-charge.ts
+@@ -127,11 +127,12 @@ export async function runModalPartWith(
+ 
+   // RE-001: ghi nhịp sống trong suốt lúc GPU chạy (có thể quá 15 phút); phiếu chỉ đóng khi đoạn hết nhịp hoặc xong.
+   const stopBeat = startBeat(
+-    () =>
++    (signal) =>
+       boundedBeat(
+         sql,
+         (tx) =>
+           tx`update run_modal_parts set heartbeat_at = now() where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt} and status <> 'xong' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning 1`,
++        { signal },
+       ),
+     {
+       everyMs: input.beatMs,
+diff --git a/src/lib/billing/upstream-outcome.test.ts b/src/lib/billing/upstream-outcome.test.ts
+index ea93189..1df1502 100644
+--- a/src/lib/billing/upstream-outcome.test.ts
++++ b/src/lib/billing/upstream-outcome.test.ts
+@@ -28,7 +28,7 @@ const book: PriceBook = {
+   desk: { markup: 0, custom: {} },
+   rows: [
+     { id: "whisper-large-v3-turbo", usdPerHour: 0.04 },
+-    { id: "chat", usdIn: 0.1, usdOut: 0.1 },
++    { id: "chat", usdIn: 0.1, usdOut: 0.1, contextTokens: 100 },
+     { id: "tts", usdPerMillionChars: 22 },
+   ].map((r) => ({
+     usdIn: null,
+diff --git a/src/lib/billing/work-admission-pg.test.ts b/src/lib/billing/work-admission-pg.test.ts
+index 40e3e93..8f5c0fd 100644
+--- a/src/lib/billing/work-admission-pg.test.ts
++++ b/src/lib/billing/work-admission-pg.test.ts
+@@ -207,3 +207,45 @@ pgTest("RE2-004: không bỏ trống suất — người mới chờ chưa tới
+   assert.ok(c.id, "B mới chờ dưới 3 giây: suất trống không bị giữ");
+   await releaseWork(sql, c.id!);
+ });
++
++pgTest("RE4-003: batch đã đầy không giữ mất suất live cho cùng model", async () => {
++  await limits({ perProvider: 2, perModel: 2, batch: 1, live: 1, perUser: 2, liveReserve: 0 });
++  const key = (userId: string, lane: "batch" | "live") => ({ userId, provider: "groq", model: "same", lane });
++  const active = await acquireWork(sql, key("batch-running", "batch"));
++  assert.ok(active);
++  assert.equal(await acquireWork(sql, key("older-batch", "batch")), null);
++  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='older-batch'`;
++  const live = await acquireWork(sql, key("live-new", "live"));
++  assert.ok(live, "a batch waiter cannot consume the free live slot");
++  assert.equal(await acquireWork(sql, key("live-over-cap", "live")), null);
++  await releaseWork(sql, active);
++  assert.equal(await acquireWork(sql, key("late-batch", "batch")), null);
++  assert.ok(await acquireWork(sql, key("older-batch", "batch")));
++});
++
++pgTest("RE4-003: live lấy suất dành riêng, batch chờ đủ điều kiện giữ suất chung", async () => {
++  await limits({ perProvider: 2, perModel: 2, batch: 3, live: 2, perUser: 2, liveReserve: 1 });
++  const key = (userId: string, lane: "batch" | "live") => ({ userId, provider: "groq", model: "same", lane });
++  const active = await acquireWork(sql, key("batch-running", "batch"));
++  assert.ok(active);
++  assert.equal(await acquireWork(sql, key("older-batch", "batch")), null);
++  await sql`update work_waiters set since = since - interval '4 seconds' where user_id='older-batch'`;
++  assert.ok(await acquireWork(sql, key("live-reserved", "live")));
++  await releaseWork(sql, active);
++  assert.equal(await acquireWork(sql, key("live-later", "live")), null);
++  assert.ok(await acquireWork(sql, key("older-batch", "batch")));
++});
++
++pgTest("RE4-003: nhiều người chờ batch chỉ giữ số suất lane có thể dùng", async () => {
++  await limits({ perProvider: 2, perModel: 2, batch: 1, live: 1, perUser: 2 });
++  const key = (userId: string, lane: "batch" | "live") => ({ userId, provider: "groq", model: "same", lane });
++  const active = await acquireWork(sql, key("batch-running", "batch"));
++  assert.ok(active);
++  assert.equal(await acquireWork(sql, key("older-batch-1", "batch")), null);
++  assert.equal(await acquireWork(sql, key("older-batch-2", "batch")), null);
++  await sql`update work_waiters set since = since - interval '4 seconds'`;
++  await releaseWork(sql, active);
++  assert.ok(await acquireWork(sql, key("live-new", "live")));
++  assert.equal(await acquireWork(sql, key("older-batch-2", "batch")), null);
++  assert.ok(await acquireWork(sql, key("older-batch-1", "batch")));
++});
+diff --git a/src/lib/billing/work-admission.ts b/src/lib/billing/work-admission.ts
+index 948c574..c4c2cff 100644
+--- a/src/lib/billing/work-admission.ts
++++ b/src/lib/billing/work-admission.ts
+@@ -200,11 +200,12 @@ export async function beginWork(
+ 
+ function startLease(sql: Sql, id: string) {
+   const stop = startBeat(
+-    () =>
++    (signal) =>
+       boundedBeat(
+         sql,
+         (tx) => tx`update work_admissions set heartbeat_at = clock_timestamp()
+     where id = ${id} and status = 'running' and heartbeat_at > clock_timestamp() - ${LEASE_STALE}::interval returning id`,
++        { signal },
+       ),
+     // RE3-003: mất lease = suất đã bị đánh unknown (vẫn giữ chỗ, không gửi trùng). Ghi lại để đối soát.
+     { onLost: (why) => console.warn("lease-lost", "admission", id, why) },
+diff --git a/src/lib/billing/work-lease-pg.test.ts b/src/lib/billing/work-lease-pg.test.ts
+index a1a7c67..5236fd0 100644
+--- a/src/lib/billing/work-lease-pg.test.ts
++++ b/src/lib/billing/work-lease-pg.test.ts
+@@ -42,7 +42,7 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
+   const failuresBefore = leaseMetrics().failures;
+   const t0 = Date.now();
+   const stop = startBeat(
+-    async () => {
++    async (signal) => {
+       calls += 1;
+       running += 1;
+       peak = Math.max(peak, running);
+@@ -50,7 +50,7 @@ pgTest("RE3-003: CSDL treo (khóa dòng) → nhịp bị hủy ở máy chủ, k
+         return await boundedBeat(
+           sql,
+           (tx) => tx`update work_admissions set heartbeat_at = clock_timestamp() where id = 'stall' returning id`,
+-          150,
++          { timeoutMs: 150, signal },
+         );
+       } finally {
+         running -= 1;
+diff --git a/src/lib/billing/work-lease.test.ts b/src/lib/billing/work-lease.test.ts
+index 892a5c9..5af94f0 100644
+--- a/src/lib/billing/work-lease.test.ts
++++ b/src/lib/billing/work-lease.test.ts
+@@ -93,3 +93,47 @@ test("RE3-003: nhịp có jitter ±10% để các lease không dồn cùng lúc"
+   assert.equal(nextDelay(30_000, 0.5), 30_000);
+   assert.equal(nextDelay(30_000, 0.999999), 32_999);
+ });
++
++test("RE4-002: deadline báo mất lease ngay cả khi truy vấn treo; phản hồi muộn bị bỏ qua", async () => {
++  let release!: (rows: unknown[]) => void;
++  const pending = new Promise<unknown[]>((r) => (release = r));
++  let report!: (why: lease.LeaseLost) => void;
++  const lost = new Promise<lease.LeaseLost>((r) => (report = r));
++  let attempts = 0;
++  const beatsBefore = lease.leaseMetrics().beats;
++  const stop = lease.startBeat(() => {
++    attempts++;
++    return pending;
++  }, { everyMs: 5, staleMs: 40, onLost: report });
++  try {
++    assert.equal(await Promise.race([lost, wait(200)]), "deadline");
++    await stop();
++  } finally {
++    release([{ id: "late" }]);
++    await stop();
++  }
++  await wait(20);
++  assert.equal(attempts, 1);
++  assert.equal(lease.leaseMetrics().beats, beatsBefore);
++});
++
++test("RE4-002: stop có hạn khi truy vấn không trả về, phát tín hiệu hủy một lần", async () => {
++  let started!: () => void;
++  const onStart = new Promise<void>((r) => (started = r));
++  let complete!: () => void;
++  const pending = new Promise<void>((r) => (complete = r));
++  let aborted = 0;
++  const stop = lease.startBeat((signal) => {
++    started();
++    signal?.addEventListener("abort", () => aborted++, { once: true });
++    return pending;
++  }, { everyMs: 5, staleMs: 500, stopGraceMs: 20 });
++  await onStart;
++  try {
++    assert.equal(await Promise.race([stop().then(() => "stopped"), wait(200)]), "stopped");
++    assert.equal(aborted, 1);
++  } finally {
++    complete();
++    await stop();
++  }
++});
+diff --git a/src/lib/billing/work-lease.ts b/src/lib/billing/work-lease.ts
+index cddfc70..c0d1cab 100644
+--- a/src/lib/billing/work-lease.ts
++++ b/src/lib/billing/work-lease.ts
+@@ -16,6 +16,8 @@ export type BeatOptions = {
+   /** Quá thời gian này không có nhịp thành công thì coi là mất lease. Mặc định LEASE_STALE − 1 nhịp. */
+   staleMs?: number;
+   onLost?: (why: LeaseLost) => void;
++  /** Thời gian chờ nhịp đang chạy khi đóng bình thường. */
++  stopGraceMs?: number;
+ };
+ 
+ /** RE3-003: số đo toàn tiến trình (đọc từ trang trạng thái/nhật ký). */
+@@ -29,27 +31,31 @@ export function nextDelay(everyMs: number, r = Math.random()): number {
+   return Math.floor(everyMs * (0.9 + 0.2 * r));
+ }
+ 
+-/**
+- * Gọi `beat` đều đặn cho tới khi `stop()`.
+- * - Single-flight: nhịp sau chỉ được lên lịch khi nhịp trước đã xong (CSDL chậm không làm chồng truy vấn).
+- * - Nhịp trả mảng rỗng (UPDATE … RETURNING không trúng dòng) = mất lease → `onLost("fenced")`, ngừng nhịp.
+- * - Lỗi được đếm; quá `staleMs` không có nhịp thành công → `onLost("deadline")`, ngừng nhịp.
+- * - `stop()` trả promise chờ nhịp đang chạy (nếu có) xong; không bao giờ reject.
+- */
++/** A stalled driver cannot postpone the lease deadline or schedule another heartbeat. */
+ export function startBeat(
+-  beat: () => Promise<unknown>,
++  beat: (signal: AbortSignal) => Promise<unknown>,
+   options: number | BeatOptions = LEASE_BEAT_MS,
+ ): () => Promise<void> {
+   const opts = typeof options === "number" ? { everyMs: options } : options;
+   const everyMs = opts.everyMs ?? LEASE_BEAT_MS;
+   const staleMs = opts.staleMs ?? Math.max(everyMs, LEASE_STALE_SECONDS * 1000 - everyMs);
++  const stopGraceMs = opts.stopGraceMs ?? 1_000;
+   let stopped = false;
+-  let timer: ReturnType<typeof setTimeout> | null = null;
+-  let inFlight: Promise<void> | null = null;
+-  let lastOk = Date.now();
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  let deadline: ReturnType<typeof setTimeout> | undefined;
++  let expiresAt = 0;
++  let inFlight: { controller: AbortController; drained: Promise<void> } | undefined;
++  let closing: Promise<void> | undefined;
++
++  const stopScheduling = () => {
++    stopped = true;
++    clearTimeout(timer);
++    clearTimeout(deadline);
++  };
+   const lose = (why: LeaseLost) => {
+     if (stopped) return;
+-    stopped = true;
++    stopScheduling();
++    inFlight?.controller.abort();
+     metrics.lost += 1;
+     try {
+       opts.onLost?.(why);
+@@ -57,51 +63,78 @@ export function startBeat(
+       /* người nghe lỗi không được làm hỏng việc chính */
+     }
+   };
++  const armDeadline = () => {
++    clearTimeout(deadline);
++    expiresAt = performance.now() + staleMs;
++    deadline = setTimeout(() => lose("deadline"), staleMs);
++  };
+   const schedule = () => {
+-    if (stopped) return;
+-    timer = setTimeout(run, nextDelay(everyMs));
++    if (!stopped) timer = setTimeout(run, nextDelay(everyMs));
+   };
+   const run = () => {
+-    timer = null;
+     if (stopped) return;
+-    const started = Date.now();
++    if (performance.now() >= expiresAt) return lose("deadline");
++    const started = performance.now();
++    const controller = new AbortController();
+     metrics.inFlight += 1;
+-    inFlight = (async () => {
+-      try {
+-        const result = await beat();
+-        metrics.beats += 1;
+-        if (Array.isArray(result) && result.length === 0) return lose("fenced");
+-        lastOk = Date.now();
+-      } catch {
+-        metrics.failures += 1;
+-      } finally {
++    const drained = Promise.resolve()
++      .then(() => beat(controller.signal))
++      .then(
++        (result) => {
++          if (stopped) return;
++          if (performance.now() >= expiresAt) return lose("deadline");
++          metrics.beats += 1;
++          if (Array.isArray(result) && result.length === 0) return lose("fenced");
++          armDeadline();
++        },
++        () => {
++          if (!stopped) metrics.failures += 1;
++        },
++      )
++      .finally(() => {
+         metrics.inFlight -= 1;
+-        metrics.slowestMs = Math.max(metrics.slowestMs, Date.now() - started);
+-      }
+-      if (Date.now() - lastOk >= staleMs) return lose("deadline");
+-    })().finally(() => {
+-      inFlight = null;
+-      schedule();
+-    });
++        metrics.slowestMs = Math.max(metrics.slowestMs, Math.round(performance.now() - started));
++        inFlight = undefined;
++        schedule();
++      });
++    inFlight = { controller, drained };
+   };
++
++  armDeadline();
+   schedule();
+   return () => {
+-    stopped = true;
+-    if (timer) clearTimeout(timer);
+-    timer = null;
+-    return inFlight ?? Promise.resolve();
++    if (closing) return closing;
++    if (stopped) return Promise.resolve();
++    stopScheduling();
++    const pending = inFlight;
++    if (!pending) return Promise.resolve();
++    closing = new Promise<void>((resolve) => {
++      const grace = setTimeout(() => {
++        pending.controller.abort();
++        resolve();
++      }, stopGraceMs);
++      void pending.drained.then(() => {
++        clearTimeout(grace);
++        resolve();
++      });
++    });
++    return closing;
+   };
+ }
+ 
+-/**
+- * Chạy một câu nhịp với timeout THẬT ở máy chủ CSDL: giao dịch ngắn `SET LOCAL statement_timeout`.
+- * Kết nối không hỗ trợ giao dịch (fixture) thì chạy thẳng.
+- */
+-export function boundedBeat<T>(sql: Sql, run: (tx: Sql) => Promise<T>, timeoutMs = BEAT_STATEMENT_TIMEOUT_MS) {
++/** Bound SQL execution on the server and cancel stalled PostgreSQL transactions via their connection. */
++export function boundedBeat<T>(
++  sql: Sql,
++  run: (tx: Sql) => Promise<T>,
++  { timeoutMs = BEAT_STATEMENT_TIMEOUT_MS, signal }: { timeoutMs?: number; signal?: AbortSignal } = {},
++) {
++  signal?.throwIfAborted();
+   if (!sql.begin) return run(sql);
+   const ms = Math.max(100, Math.floor(timeoutMs));
+   return sql.begin(async (tx) => {
++    signal?.throwIfAborted();
+     await tx`select set_config('statement_timeout', ${String(ms)}, true)`;
++    signal?.throwIfAborted();
+     return run(tx);
+-  });
++  }, signal);
+ }
+diff --git a/src/lib/db.ts b/src/lib/db.ts
+index c859ee5..9c14162 100644
+--- a/src/lib/db.ts
++++ b/src/lib/db.ts
+@@ -1,6 +1,6 @@
+ import { pendingMigrations } from "../../scripts/migration-plan.mjs";
+ import { destructiveGate, previewGate } from "../../scripts/migration-gate.mjs";
+-import { createPgPool } from "./pg-pool.server";
++import { createPgPool, withPgTransaction } from "./pg-pool.server";
+ 
+ /** Which database backend is active. */
+ type DbSource = "neon" | "pglite";
+@@ -41,7 +41,7 @@ export interface Sql {
+    * Chạy nhiều lệnh trong MỘT giao dịch trên cùng một kết nối: lỗi ở bất kỳ lệnh nào thì không lệnh nào có hiệu lực.
+    * Gọi lồng trên `tx` thì dùng lại giao dịch đang mở. Dùng qua `inTransaction` (db-tx.ts).
+    */
+-  begin?: <R>(fn: (tx: Sql) => Promise<R>) => Promise<R>;
++  begin?: <R>(fn: (tx: Sql) => Promise<R>, signal?: AbortSignal) => Promise<R>;
+ }
+ 
+ /**
+@@ -153,26 +153,12 @@ function createNeonSql(): Promise<Sql> {
+       const res = await pool.query(text, params);
+       return res.rows as T[];
+     });
+-    sql.begin = async <R>(fn: (tx: Sql) => Promise<R>): Promise<R> => {
+-      const conn = await pool.connect();
+-      try {
+-        await conn.query("BEGIN");
++    sql.begin = (fn, signal) =>
++      withPgTransaction(pool, async (conn) => {
+         const tx = toSql(async <T>(text: string, params: unknown[]) => (await conn.query(text, params)).rows as T[]);
+         tx.begin = (inner) => inner(tx);
+-        const out = await fn(tx);
+-        await conn.query("COMMIT");
+-        return out;
+-      } catch (error) {
+-        try {
+-          await conn.query("ROLLBACK");
+-        } catch {
+-          /* giữ lỗi gốc */
+-        }
+-        throw error;
+-      } finally {
+-        conn.release();
+-      }
+-    };
++        return fn(tx);
++      }, signal);
+     void import("@/lib/glossary-seed.server")
+       .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
+       .catch(() => undefined);
+@@ -244,11 +230,14 @@ async function createPgliteSql(): Promise<Sql> {
+     return result.rows;
+   });
+   // PGLite chỉ có một phiên: giao dịch nguyên tử (lỗi thì quay lại) nhưng không cô lập với lệnh ngoài giao dịch.
+-  sql.begin = <R>(fn: (tx: Sql) => Promise<R>): Promise<R> =>
++  sql.begin = (fn, signal) =>
+     pg.transaction(async (t) => {
++      signal?.throwIfAborted();
+       const tx = toSql(async <T>(text: string, params: unknown[]) => (await t.query<T>(text, params)).rows);
+       tx.begin = (inner) => inner(tx);
+-      return fn(tx);
++      const result = await fn(tx);
++      signal?.throwIfAborted();
++      return result;
+     });
+   void import("@/lib/glossary-seed.server")
+     .then(({ ensureGlossarySeed }) => ensureGlossarySeed(sql))
+diff --git a/src/lib/pg-pool.server.ts b/src/lib/pg-pool.server.ts
+index 7ac75fd..00efd9d 100644
+--- a/src/lib/pg-pool.server.ts
++++ b/src/lib/pg-pool.server.ts
+@@ -1,4 +1,4 @@
+-import { Pool, type PoolConfig } from "pg";
++import { Pool, type PoolClient, type PoolConfig } from "pg";
+ 
+ /** A database disconnect must fail queries, without becoming an uncaught event. */
+ export function createPgPool(config: PoolConfig): Pool {
+@@ -18,3 +18,35 @@ export function createPgPool(config: PoolConfig): Pool {
+   pool.on("connect", (client) => client.on("error", report));
+   return pool;
+ }
++
++
++/** An opted-in abort discards the checked-out socket. Statement timeout still bounds server execution. */
++export async function withPgTransaction<R>(
++  pool: Pool,
++  run: (conn: PoolClient) => Promise<R>,
++  signal?: AbortSignal,
++): Promise<R> {
++  signal?.throwIfAborted();
++  const conn = await pool.connect();
++  let discarded = false;
++  const discard = () => {
++    discarded = true;
++    conn.release(true);
++  };
++  signal?.addEventListener("abort", discard, { once: true });
++  try {
++    signal?.throwIfAborted();
++    await conn.query("BEGIN");
++    signal?.throwIfAborted();
++    const result = await run(conn);
++    signal?.throwIfAborted();
++    await conn.query("COMMIT");
++    return result;
++  } catch (error) {
++    if (!discarded && !signal?.aborted) await conn.query("ROLLBACK").catch(() => undefined);
++    throw error;
++  } finally {
++    signal?.removeEventListener("abort", discard);
++    if (!discarded) conn.release(Boolean(signal?.aborted));
++  }
++}
+diff --git a/src/lib/pg-pool.test.ts b/src/lib/pg-pool.test.ts
+index e2a5348..55db763 100644
+--- a/src/lib/pg-pool.test.ts
++++ b/src/lib/pg-pool.test.ts
+@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
+ import { once } from "node:events";
+ import test from "node:test";
+ import { Pool } from "pg";
+-import { createPgPool } from "./pg-pool.server.ts";
++import { createPgPool, withPgTransaction } from "./pg-pool.server.ts";
+ 
+ const connectionString = process.env.TYZO_TEST_PG_URL;
+ 
+@@ -65,3 +65,48 @@ test(
+     }
+   },
+ );
++
++test("RE4-002: abort drops a blocked PostgreSQL connection and releases its transaction lock", {
++  skip: !connectionString,
++  timeout: 5_000,
++}, async () => {
++  const pool = createPgPool({ connectionString, max: 1 });
++  try {
++    const controller = new AbortController();
++    let backend!: () => void;
++    const locked = new Promise<void>((resolve) => (backend = resolve));
++    const running = withPgTransaction(pool, async (conn) => {
++      await conn.query("set local statement_timeout = '600ms'");
++      await conn.query("select pg_advisory_xact_lock(84201919)");
++      backend();
++      await conn.query("select pg_sleep(20)");
++    }, controller.signal);
++    await locked;
++    controller.abort();
++    await assert.rejects(running);
++    await withPgTransaction(pool, async (conn) => {
++      await conn.query("set local statement_timeout = '2s'");
++      await conn.query("select pg_advisory_xact_lock(84201919)");
++    });
++  } finally {
++    await pool.end();
++  }
++});
++
++test("RE4-002: canceled checkout runs no SQL even when a connection becomes free", {
++  skip: !connectionString,
++  timeout: 5_000,
++}, async () => {
++  const pool = createPgPool({ connectionString, max: 1, connectionTimeoutMillis: 500 });
++  try {
++    const held = await pool.connect();
++    const controller = new AbortController();
++    const queued = withPgTransaction(pool, async () => assert.fail("ran canceled SQL"), controller.signal);
++    controller.abort();
++    held.release();
++    await assert.rejects(queued, { name: "AbortError" });
++    assert.equal((await pool.query("select 1 as ok")).rows[0].ok, 1);
++  } finally {
++    await pool.end();
++  }
++});
+diff --git a/src/lib/pipeline/translate-edit.test.ts b/src/lib/pipeline/translate-edit.test.ts
+new file mode 100644
+index 0000000..03b9167
+--- /dev/null
++++ b/src/lib/pipeline/translate-edit.test.ts
+@@ -0,0 +1,47 @@
++/**
++ * Kiểm toán R7-004: câu khách sửa tay trong lúc máy đang dịch giữ nguyên chữ của khách và không tính cho model.
++ * Chạy: node --experimental-strip-types --experimental-test-module-mocks --import ./scripts/register-ts.mjs --test <tệp>
++ */
++import assert from "node:assert/strict";
++import { mock, test } from "node:test";
++
++type Seg = { original: string; translation: string | null; start: number; end: number; busy: boolean; edited?: boolean; model?: string };
++const segs: Seg[] = Array.from({ length: 6 }, (_, i) => ({ original: `câu ${i}`, translation: null, start: i, end: i + 1, busy: false }));
++
++mock.module("../sub/groq.ts", {
++  namedExports: {
++    contextBlock: () => "",
++    sleep: (ms: number) => new Promise((r) => setTimeout(r, Math.min(ms, 5))),
++    throwIfAborted: (signal: AbortSignal) => {
++      if (signal.aborted) throw Object.assign(new Error("dừng"), { name: "AbortError" });
++    },
++    translateIndexes: async () => [],
++    translateWithRepair: async (texts: string[]) => {
++      // Khách sửa câu 2 trong khi lô đang ở nhà.
++      if (texts.includes("câu 2")) Object.assign(segs[2], { edited: true, translation: "khách sửa tay" });
++      await new Promise((r) => setTimeout(r, 10));
++      return texts.map((t) => `dịch ${t}`);
++    },
++  },
++});
++const glossary = await import("../sub/glossary.ts");
++mock.module("../sub/glossary.ts", { namedExports: { ...glossary, loadRunGlossary: async () => ({ terms: [], sources: [], error: false }) } });
++
++test("R7-004: câu sửa tay trong lúc dịch giữ chữ khách, không ghi model, không cộng vào thống kê model", async () => {
++  const { createTranslator } = await import("./translate.ts");
++  const j = { segs, runId: 1, uses: {} as Record<string, number>, cooling: new Map(), blocked: new Set(), gate: { blockedUntil: 0 } };
++  const ref = <T,>(current: T) => ({ current });
++  const { translateRemaining } = createTranslator({
++    j: j as never, my: 1, signal: new AbortController().signal, source: "ja", target: "vi", mode: "manual", chosen: "m", genre: "", gloss: "",
++    title: "", notes: "", extra: "", profile: "can-bang" as never, allowEnterprise: false, baseGloss: false, threads: 2, modelSig: "m",
++    ticket: () => "t", ticketPart: () => "chat", preRef: ref(false), reviewRef: ref(false), roomPayRef: ref(true), userTermsRef: ref([]),
++    pauseForNewBible: ref(false), chatKeyOf: () => ({}) as never, autoPool: () => [] as never, ensureAnalysis: async () => null,
++    releaseAsrTicket: async () => {}, ensureChatTicket: async () => {},
++    setReviewHold: () => {}, publish: () => {}, progress: () => {}, say: () => {}, onWait: () => {},
++  });
++  await translateRemaining(() => true);
++  assert.equal(segs[2].translation, "khách sửa tay");
++  assert.equal(segs[2].model, undefined);
++  assert.ok(segs.filter((_, i) => i !== 2).every((s) => s.translation === `dịch ${s.original}` && s.model === "m"));
++  assert.deepEqual(j.uses, { m: 5 });
++});
+diff --git a/src/lib/sub/alibaba-catalog.ts b/src/lib/sub/alibaba-catalog.ts
+index 4f29c7a..89c7a2a 100644
+--- a/src/lib/sub/alibaba-catalog.ts
++++ b/src/lib/sub/alibaba-catalog.ts
+@@ -19,9 +19,11 @@ const blank = (over: Partial<GroqLiveRow> & { id: string }): GroqLiveRow => ({
+ });
+ 
+ export const ALIBABA_ROWS: GroqLiveRow[] = [
+-  blank({ id: "qwen-turbo", usdIn: 0.05, usdOut: 0.2, contextTokens: 131_072 }),
+-  blank({ id: "qwen-plus", usdIn: 0.4, usdOut: 1.2, contextTokens: 131_072 }),
+-  blank({ id: "qwen-max", usdIn: 1.6, usdOut: 6.4, contextTokens: 32_768 }),
++  // Keep the tariff; the current model reference does not document a context bound for qwen-turbo.
++  blank({ id: "qwen-turbo", usdIn: 0.05, usdOut: 0.2 }),
++  // https://www.alibabacloud.com/help/en/model-studio/text-generation-model
++  blank({ id: "qwen-plus", usdIn: 0.4, usdOut: 1.2, contextTokens: 1_000_000 }),
++  blank({ id: "qwen-max", usdIn: 1.6, usdOut: 6.4, contextTokens: 131_072 }),
+   blank({ id: "qwen3-asr-flash", usdPerHour: null }),
+   blank({ id: "qwen-audio-3.0-asr-flash-filetrans", usdPerHour: 0.126 }),
+   blank({ id: "qwen3-tts-flash", usdPerMillionChars: 10 }),
+diff --git a/src/lib/test-sql.ts b/src/lib/test-sql.ts
+index a56ec25..b843671 100644
+--- a/src/lib/test-sql.ts
++++ b/src/lib/test-sql.ts
+@@ -4,6 +4,7 @@
+  * mỗi lần chạy tạo một schema riêng tên `thu_…` rồi bỏ đi.
+  */
+ import { readdirSync, readFileSync } from "node:fs";
++import { createPgPool, withPgTransaction } from "./pg-pool.server.ts";
+ import type { Sql } from "./db.ts";
+ 
+ const MIGRATIONS = new URL("../../migrations/", import.meta.url);
+@@ -27,11 +28,14 @@ export async function pgliteSql(): Promise<Sql> {
+   const db = new PGlite();
+   for (const file of migrationFiles()) await db.exec(readFileSync(new URL(file, MIGRATIONS), "utf8"));
+   const sql = wrap(async (text, params) => (await db.query(text, params)).rows);
+-  sql.begin = (fn) =>
++  sql.begin = (fn, signal) =>
+     db.transaction(async (t) => {
++      signal?.throwIfAborted();
+       const tx = wrap(async (text, params) => (await t.query(text, params)).rows);
+       tx.begin = (inner) => inner(tx);
+-      return fn(tx);
++      const result = await fn(tx);
++      signal?.throwIfAborted();
++      return result;
+     });
+   return sql;
+ }
+@@ -43,26 +47,16 @@ export async function realPgSql(): Promise<{ sql: Sql; end: () => Promise<void>
+   const { default: pg } = await import("pg");
+   pg.types.setTypeParser(20, Number);
+   const schema = `thu_${process.pid}_${Math.floor(Math.random() * 1e9)}`;
+-  const pool = new pg.Pool({ connectionString: url, max: 12, options: `-c search_path=${schema}` });
++  const pool = createPgPool({ connectionString: url, max: 12, options: `-c search_path=${schema}` });
+   await pool.query(`create schema ${schema}`);
+   for (const file of migrationFiles()) await pool.query(readFileSync(new URL(file, MIGRATIONS), "utf8"));
+   const sql = wrap(async (text, params) => (await pool.query(text, params)).rows);
+-  sql.begin = async (fn) => {
+-    const conn = await pool.connect();
+-    try {
+-      await conn.query("BEGIN");
++  sql.begin = (fn, signal) =>
++    withPgTransaction(pool, async (conn) => {
+       const tx = wrap(async (text, params) => (await conn.query(text, params)).rows);
+       tx.begin = (inner) => inner(tx);
+-      const out = await fn(tx);
+-      await conn.query("COMMIT");
+-      return out;
+-    } catch (error) {
+-      await conn.query("ROLLBACK").catch(() => undefined);
+-      throw error;
+-    } finally {
+-      conn.release();
+-    }
+-  };
++      return fn(tx);
++    }, signal);
+   return {
+     sql,
+     end: async () => {
+diff --git a/vite.config.ts b/vite.config.ts
+index 27ea0ee..6f0f7b4 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -193,6 +193,9 @@ export default defineConfig(({ command, isPreview }) => ({
+             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
+             // false, so removing this silently unwires /?install=1 on deploys.
+             serverDir: "./server",
++            // PGlite loads its WASM and filesystem image relative to import.meta.url.
++            // Keep the package and runtime files together in the deployed build.
++            traceDeps: ["@electric-sql/pglite*"],
+           }),
+         ]
+       : []),
