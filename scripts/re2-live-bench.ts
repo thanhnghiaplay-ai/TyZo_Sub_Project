@@ -256,8 +256,10 @@ try {
     ledgerViolations: 0,
     duplicateCharges: 0,
   };
+  // Đường ra cấu hình được (máy Codex dùng /workspace/tyzo-results); luôn in ra stdout để lưu cùng log bằng chứng.
+  console.log(JSON.stringify(result, null, 2));
   writeFileSync(
-    "/workspace/tyzo-results/evidence/live-load-results.json",
+    process.env.TYZO_BENCH_OUT ?? "/workspace/tyzo-results/evidence/live-load-results.json",
     JSON.stringify(result, null, 2),
   );
 } finally {

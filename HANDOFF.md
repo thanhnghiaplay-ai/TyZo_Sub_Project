@@ -1,3 +1,5 @@
+> **v5.49.4 — Claude, nhánh `ccr-20605d15-2nil6k` (từ 6d906ba), ĐANG LÀM.** Hồ sơ: `docs/kiem-toan/v5.49.4/` (đọc `TIEN_DO.md` trước). Không merge main/deploy. Bằng chứng: `docs/kiem-toan/v5.49.4/bang-chung/*.log`, tạo bằng `run.sh <nhãn-mới> <lệnh>` (không ghi đè). CSDL thử: Postgres 16 riêng cổng 55439 (`TYZO_TEST_PG_URL=postgres://postgres@127.0.0.1:55439/tyzo_test`).
+
 > **Phát hành5.49.3 — 17:07 27/11/2026:** Chủ đã yêu cầu «Đẩy chính thức» và xác nhận web đang phát triển, chưa phát hành cho khách; tiếp tục đưa lên main/work. Đây là phê duyệt phát hành, không phải nghiệm thu tải100–200/300khách. Xem `docs/kiem-toan/v5.49.3/PHAT_HANH_5.49.3.md`.
 
 

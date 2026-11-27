@@ -11,7 +11,8 @@ export type SpendObservation = {
   rate: number;
 };
 
-async function postObservation(sql: Sql, id: string) {
+/** Cộng một quan sát đã lưu vào tổng hợp ngày (một lần). Trả false khi đã cộng hoặc không có. */
+export async function postObservation(sql: Sql, id: string) {
   return inTransaction(sql, async (tx) => {
     const rows = await tx<{
       day: string;
@@ -33,7 +34,7 @@ async function postObservation(sql: Sql, id: string) {
   });
 }
 
-async function noteFailure(sql: Sql, id: string, error: unknown) {
+export async function noteFailure(sql: Sql, id: string, error: unknown) {
   const raw = (error as { code?: unknown })?.code;
   const code = typeof raw === "string" && /^[A-Z0-9]{5}$/.test(raw) ? raw : "POST_FAILED";
   try {

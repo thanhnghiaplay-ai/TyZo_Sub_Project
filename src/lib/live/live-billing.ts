@@ -40,6 +40,25 @@ export function createLiveBilling(sql: Sql, env: LiveBillingEnv): LiveBilling {
       // DEEP-003: chi phí nhà cung cấp nay ghi theo từng lượt usage (spend bên dưới), không quy từ Token đã thu lúc đóng.
       await closeTokenWith(sql, ticketId, userId, failed);
     },
+    async settle(args) {
+      const book = await env.book();
+      if (!book) throw new Error("Thiếu tỷ giá để quyết toán dịch trực tiếp; cần đối soát.");
+      const { settleLiveUsageWith } = await import("./live-settle.ts");
+      const { asrHouse } = await import("../sub/asr-house.ts");
+      return settleLiveUsageWith(sql, {
+        receiptId: args.receiptId,
+        userId: args.userId,
+        sessionId: args.sessionId,
+        connectionId: args.connectionId,
+        model: args.model,
+        provider: asrHouse(args.model) ?? "alibaba",
+        tickets: args.tickets,
+        cost: args.cost,
+        base: args.base,
+        supplierVnd: args.supplierBase,
+        rate: book.rate,
+      });
+    },
     async spend({ model, base, id }) {
       const book = await env.book();
       if (!(base > 0)) return;

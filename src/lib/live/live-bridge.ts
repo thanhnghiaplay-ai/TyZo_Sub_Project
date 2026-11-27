@@ -21,7 +21,7 @@ import {
 } from "./qwen-protocol.ts";
 import { mulawToPcm16 } from "./mulaw.ts";
 import { aliErrorText } from "./ali-error.ts";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 /**
  * Cầu nối dịch trực tiếp: trình duyệt ⇄ cầu nối ⇄ Alibaba.
@@ -59,7 +59,32 @@ export type LiveBilling = {
     base: number;
     id?: string;
   }): Promise<void | { duplicate: boolean }>;
+  /**
+   * RE3-001: quyết toán NGUYÊN TỬ một quan sát usage (biên nhận + chi phí nhà cung cấp + trừ phiếu trong một giao
+   * dịch). Gọi lại cùng `receiptId` trả đúng kết quả đã lưu, không trừ lần hai. Bản chạy thật luôn có hàm này
+   * (createLiveBilling); thiếu thì cầu nối dùng spend + charge rời, chỉ dành cho fixture.
+   */
+  settle?(args: LiveSettleArgs): Promise<{ taken: number; duplicate: boolean; shortfall?: number }>;
 };
+
+export type LiveSettleArgs = {
+  receiptId: string;
+  userId: string;
+  sessionId: string;
+  connectionId: string;
+  model: string;
+  /** Phiếu theo thứ tự trừ: mới nhất trước. */
+  tickets: string[];
+  cost: number;
+  base: number;
+  supplierBase: number;
+};
+
+/** Số lần gửi lại CÙNG biên nhận khi kết quả chưa rõ (lỗi mạng, mất ACK). Cùng mã nên không thể trừ hai lần. */
+const SETTLE_ATTEMPTS = 3;
+const SETTLE_BACKOFF_MS = [150, 600];
+/** Mỗi tiến trình cầu nối một mã riêng: biên nhận của hai lần chạy khác nhau không bao giờ trùng mã. */
+const BRIDGE_INSTANCE = randomBytes(8).toString("hex");
 
 type LiveBridgeDeps = {
   secret: string;
@@ -106,6 +131,16 @@ function pcmPeak(bytes: Uint8Array): number {
   }
   return peak;
 }
+
+type UsageCounter = {
+  /** Mã kết nối upstream (tiến trình + số thứ tự): biên nhận theo phiên/kết nối/quan sát. */
+  id: string;
+  /** Mức đã quyết toán xong (đã commit). */
+  latest: LiveUsage;
+  /** Mức cao nhất nhà cung cấp đã báo (có thể chưa quyết toán). */
+  seen: LiveUsage;
+  reports: number;
+};
 
 function send(ws: WebSocket, data: unknown) {
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
@@ -251,8 +286,16 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   let backlogNoted = false;
   /** DEEP-001: các lần trừ tiền đang chạy; đóng phiếu phải chờ hết. */
   const charging = new Set<Promise<unknown>>();
-  let usageSequence = 0;
   let reconciliationNeeded = false;
+  /** RE3-001: quyết toán chạy lần lượt trong phiên, theo đúng thứ tự báo cáo của nhà cung cấp. */
+  let settleQueue: Promise<void> = Promise.resolve();
+  /** Quyết toán có kết quả chưa rõ sau khi đã thử lại: không quyết toán thêm (tránh trừ đôi), giữ phiếu để đối soát. */
+  let blocked: { args: LiveSettleArgs; counter: UsageCounter; next: LiveUsage; unpriced: boolean } | null =
+    null;
+  const counters: UsageCounter[] = [];
+  /** Đang gửi lại một biên nhận lỗi: không gửi tiếng mới tới nhà cung cấp cho tới khi rõ kết quả (R08). */
+  let settleTrouble = false;
+  let connectionSeq = 0;
   let remoteFinished = false;
   const maxReconnects = deps.maxReconnects ?? 3;
   const sessionUpdate = JSON.stringify(
@@ -312,6 +355,18 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     // để không trừ vào phiếu đã đóng và không bỏ sót phiếu vừa mở.
     if (opening) await opening.catch(() => undefined);
     while (charging.size) await Promise.allSettled([...charging]);
+    // RE3-001: quyết toán chưa rõ thì KHÔNG nhả phiếu: phần giữ còn nguyên để đối soát, không mất usage của nhà cung cấp.
+    if (!(await replayBlocked().catch(() => false))) {
+      reconciliationNeeded = true;
+      log(`giữ ${tickets.length} phiếu chưa nhả vì quyết toán chưa rõ; cần đối soát`);
+      try {
+        await releaseAdmission?.("unknown");
+      } catch (error) {
+        log(`nhả chỗ phiên lỗi, cần kiểm tra lease: ${String(error)}`);
+      }
+      if (client.readyState === WebSocket.OPEN) client.close(1000, "done");
+      return;
+    }
     for (const id of tickets) {
       try {
         await deps.billing.close({ userId: ticket!.uid, ticketId: id, failed });
@@ -327,7 +382,123 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     if (client.readyState === WebSocket.OPEN) client.close(1000, "done");
   }
 
-  const handleUpstream = async (raw: RawData, counter: { latest: LiveUsage }) => {
+  const settleOnce = async (args: LiveSettleArgs) => {
+    if (deps.billing.settle) return deps.billing.settle(args);
+    // Chỉ fixture: spend + charge rời, KHÔNG nguyên tử. Bản chạy thật dùng createLiveBilling (có settle).
+    const observation = await deps.billing.spend?.({
+      userId: args.userId,
+      model: args.model,
+      base: args.supplierBase,
+      id: args.receiptId,
+    });
+    if (observation?.duplicate) return { taken: 0, duplicate: true };
+    let left = args.cost,
+      taken = 0;
+    for (const ticketId of args.tickets) {
+      if (left <= 0) break;
+      const part = await deps.billing.charge({
+        userId: args.userId,
+        ticketId,
+        cost: left,
+        base: ticketId === args.tickets[0] ? args.base : 0,
+      });
+      taken += part;
+      left -= part;
+    }
+    return { taken, duplicate: false };
+  };
+
+  /** Gửi lại đúng biên nhận khi lỗi; trả null nếu vẫn chưa rõ kết quả sau mọi lần thử. */
+  const settleWithRetry = async (args: LiveSettleArgs) => {
+    for (let attempt = 0; attempt < SETTLE_ATTEMPTS; attempt += 1) {
+      try {
+        const result = await settleOnce(args);
+        settleTrouble = false;
+        return result;
+      } catch (error) {
+        settleTrouble = true;
+        log(`ghi sổ usage lỗi (lần ${attempt + 1}/${SETTLE_ATTEMPTS}), mã ${args.receiptId}: ${String(error)}`);
+        if (attempt + 1 < SETTLE_ATTEMPTS) await new Promise((r) => setTimeout(r, SETTLE_BACKOFF_MS[attempt]));
+      }
+    }
+    return null;
+  };
+
+  const receiptFor = (counter: UsageCounter, key: string) =>
+    `live:${createHash("sha256").update(`${ticket.sid}\n${counter.id}\n${key}`).digest("hex")}`;
+
+  /** Quyết toán phần tăng của bộ đếm cộng dồn lên tới `reported`. Bộ đếm CHỈ tiến sau khi giao dịch đã commit. */
+  const settleUsage = async (event: { usage: LiveUsage; id?: string }, counter: UsageCounter) => {
+    for (const key of ["audioIn", "textIn", "imageIn", "textOut", "audioOut"] as const)
+      counter.seen[key] = Math.max(counter.seen[key], event.usage[key]);
+    if (blocked) {
+      log("usage mới chưa quyết toán vì lần trước chưa rõ kết quả; cần đối soát");
+      return;
+    }
+    const delta = cumulativeUsageDelta(counter.latest, event.usage);
+    const usage = delta.usage;
+    const priced = liveCost(book, ticket.model, usage);
+    let taken = 0;
+    if (priced && priced.base > 0) {
+      const amount = deps.toGiay ? deps.toGiay(priced.base) : priced.cost;
+      counter.reports += 1;
+      const args: LiveSettleArgs = {
+        receiptId: receiptFor(counter, event.id ? `id:${event.id}` : `seq:${counter.reports}`),
+        userId: ticket.uid,
+        sessionId: ticket.sid,
+        connectionId: counter.id,
+        model: ticket.model,
+        tickets: [...tickets].reverse(),
+        cost: amount ?? 0,
+        base: priced.base,
+        supplierBase: liveSupplierCost(book, ticket.model, usage) ?? priced.base,
+      };
+      const unpriced = amount == null || !Number.isSafeInteger(amount);
+      const result = unpriced ? null : await settleWithRetry(args);
+      if (!result) {
+        blocked = { args, counter, next: delta.next, unpriced };
+        reconciliationNeeded = true;
+        log(
+          `quyết toán chưa rõ kết quả, giữ phiếu để đối soát: mã ${args.receiptId} Token ${args.cost} giá gốc ${args.base}`,
+        );
+        send(client, {
+          type: "error",
+          message: "Dịch trực tiếp tạm dừng để đối soát chi phí. Phần đã nhận vẫn còn.",
+        });
+        stop("can-doi-soat");
+        return;
+      }
+      taken = result.taken;
+      if (result.shortfall) log(`usage vượt phần giữ ${result.shortfall}, đã ghi để đối soát (không thu thêm)`);
+    }
+    counter.latest = delta.next;
+    meter.settle(taken, usage.audioIn);
+    topUp();
+    report();
+  };
+
+  /** Lúc đóng phiên: gửi lại biên nhận chưa rõ (CSDL có thể đã hồi). Thành công thì quyết toán nốt phần còn lại. */
+  const replayBlocked = async () => {
+    const pending = blocked;
+    if (!pending) return true;
+    // Không quy được ra Token (thiếu giá): không đoán số, để đối soát.
+    if (pending.unpriced) return false;
+    const result = await settleWithRetry(pending.args);
+    if (!result) return false;
+    blocked = null;
+    pending.counter.latest = pending.next;
+    meter.settle(result.taken, 0);
+    for (const counter of counters) {
+      const tail = cumulativeUsageDelta(counter.latest, counter.seen);
+      if (Object.values(tail.usage).some((n) => n > 0)) {
+        await settleUsage({ usage: { ...counter.seen }, id: undefined }, counter);
+        if (blocked) return false;
+      }
+    }
+    return true;
+  };
+
+  const handleUpstream = async (raw: RawData, counter: UsageCounter) => {
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw.toString());
@@ -358,57 +529,13 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
           stop("can-doi-soat");
           continue;
         }
-        const delta = cumulativeUsageDelta(counter.latest, event.usage);
-        counter.latest = delta.next;
-        const usage = delta.usage;
-        const priced = liveCost(book, ticket.model, usage);
-        let taken = 0;
-        if (priced && priced.base > 0) {
-          const amount = deps.toGiay ? deps.toGiay(priced.base) : priced.cost;
-          // Trừ vào phiếu mới nhất trước; phần tràn sang phiếu cũ hơn nếu phiếu mới đã cạn.
-          let left = amount ?? 0;
-          const run = (async () => {
-            const usageId = `live:${ticket.sid}:${createHash("sha256")
-              .update(event.id || String(++usageSequence))
-              .digest("hex")}`;
-            const observation = await deps.billing.spend?.({
-              userId: ticket.uid,
-              model: ticket.model,
-              base: liveSupplierCost(book, ticket.model, usage) ?? priced.base,
-              id: usageId,
-            });
-            if (observation?.duplicate) return true;
-            for (let i = tickets.length - 1; i >= 0 && left > 0; i -= 1) {
-              const part = await deps.billing.charge({
-                userId: ticket.uid,
-                ticketId: tickets[i],
-                cost: left,
-                base: i === tickets.length - 1 ? priced.base : 0,
-              });
-              taken += part;
-              left -= part;
-            }
-            return false;
-          })();
-          charging.add(run);
-          try {
-            if (await run) continue;
-          } catch (error) {
-            reconciliationNeeded = true;
-            log(`ghi sổ usage lỗi, cần đối soát: ${String(error)}`);
-            send(client, {
-              type: "error",
-              message: "Dịch trực tiếp tạm dừng để đối soát chi phí. Phần đã nhận vẫn còn.",
-            });
-            stop("can-doi-soat");
-            continue;
-          } finally {
-            charging.delete(run);
-          }
-        }
-        meter.settle(taken, usage.audioIn);
-        topUp();
-        report();
+        // RE3-001: xếp hàng ngay (đồng bộ) để giữ thứ tự; finalize chờ hàng này xong mới nhả phiếu.
+        const task = settleQueue.then(() => settleUsage(event, counter));
+        settleQueue = task.catch(() => undefined);
+        charging.add(task);
+        void task
+          .catch((error) => log(`quyết toán usage lỗi: ${String(error)}`))
+          .finally(() => charging.delete(task));
         continue;
       }
       if (event.kind === "finished") {
@@ -440,7 +567,14 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
       ? deps.connect(route.url, route.key)
       : new WebSocket(route.url, { headers: { Authorization: `Bearer ${route.key}` } });
     // Each new upstream WebSocket has its own cumulative usage counter.
-    const counter = { latest: { audioIn: 0, textIn: 0, imageIn: 0, textOut: 0, audioOut: 0 } };
+    connectionSeq += 1;
+    const counter: UsageCounter = {
+      id: `${BRIDGE_INSTANCE}-${connectionSeq}`,
+      latest: { audioIn: 0, textIn: 0, imageIn: 0, textOut: 0, audioOut: 0 },
+      seen: { audioIn: 0, textIn: 0, imageIn: 0, textOut: 0, audioOut: 0 },
+      reports: 0,
+    };
+    counters.push(counter);
     upstream = ws;
     ws.on("open", () => ws.send(sessionUpdate));
     ws.on(
@@ -500,7 +634,7 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
     }
     if (!ready || !upstream || upstream.readyState !== WebSocket.OPEN) return;
     const bytes = pcm;
-    if (meter.mustStop()) return;
+    if (meter.mustStop() || settleTrouble || blocked) return;
     // DEEP-002: phần giữ đã hết mà lần xin giữ thêm chưa về: bỏ khung này (không gửi tiếng chưa có tiền giữ).
     if (meter.exposure() <= 0) {
       topUp();
