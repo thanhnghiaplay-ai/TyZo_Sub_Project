@@ -2,6 +2,14 @@
 
 Các mục sau được chuyển nguyên văn từ `src/lib/app-version.ts`. Các bản gần đây nằm trong ứng dụng, mục «Có gì mới» hiển thị 8 bản.
 
+## 5.35.1 · 08:31 22/11/2026
+
+Thông báo lỗi gọn trên điện thoại; lỗi key rõ ràng hơn.
+
+- Thông báo dài tự xuống dòng, không tràn ra ngoài màn hình, hiện lâu hơn để kịp đọc.
+- Key sai báo bằng tiếng Việt theo từng nhà, kèm trang lấy key, không hiện mã lỗi thô.
+- Key ElevenLabs dán thiếu hay thừa ký tự được báo ngay khi lưu.
+
 ## 5.35.0 · 05:53 22/11/2026
 
 Thuyết minh bằng giọng ElevenLabs, đọc được tiếng Việt.

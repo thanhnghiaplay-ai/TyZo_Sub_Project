@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.5";
+export const APP_VERSION = "5.49.6";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,16 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.6",
+    time: "28/11/2026",
+    title: "Dịch trực tiếp hiện chữ nhanh hơn.",
+    points: [
+      "Dịch trực tiếp mặc định dùng Qwen 3.5: chữ hiện sau khoảng nửa giây thay vì vài giây.",
+      "Bạn vẫn chọn được Qwen 3.8 trong mục Model; lựa chọn đã lưu được giữ nguyên.",
+      "Nhận dạng giọng nói trên máy TyZo phục vụ nhiều người cùng lúc nhanh hơn.",
+    ],
+  },
   {
     version: "5.49.5",
     time: "27/11/2026",
@@ -302,16 +312,6 @@ export const CHANGELOG: ReleaseNote[] = [
     points: [
       "Key ElevenLabs không có quyền đọc danh sách model vẫn lưu được, vì app không cần quyền đó.",
       "Key thiếu quyền khi nhận dạng hay đọc giọng thì báo đúng tên quyền cần bật.",
-    ],
-  },
-  {
-    version: "5.35.1",
-    time: "08:31 22/11/2026",
-    title: "Thông báo lỗi gọn trên điện thoại; lỗi key rõ ràng hơn.",
-    points: [
-      "Thông báo dài tự xuống dòng, không tràn ra ngoài màn hình, hiện lâu hơn để kịp đọc.",
-      "Key sai báo bằng tiếng Việt theo từng nhà, kèm trang lấy key, không hiện mã lỗi thô.",
-      "Key ElevenLabs dán thiếu hay thừa ký tự được báo ngay khi lưu.",
     ],
   },
 ];

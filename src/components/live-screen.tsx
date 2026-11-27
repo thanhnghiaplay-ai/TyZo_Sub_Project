@@ -53,7 +53,8 @@ const SAVED = "tyzo-live-settings";
 const LAST = "tyzo-live-last";
 
 type Saved = { model: string; target: string; source: string; audio: boolean; input: LiveInput; caption: CaptionPrefs; words: string; voice: boolean };
-const DEFAULTS: Saved = { model: LIVE_MODELS[0], target: "vi", source: "", audio: true, input: "tab", caption: CAPTION_DEFAULT, words: "", voice: true };
+// Mặc định Qwen 3.5: chữ tạm hiện sau ~0,4 s, 3.8 sau ~2,9 s (đo thật 28/11/2026, docs/kiem-toan/v5.49.6/LIVE).
+const DEFAULTS: Saved = { model: LIVE_MODEL_35, target: "vi", source: "", audio: true, input: "tab", caption: CAPTION_DEFAULT, words: "", voice: true };
 
 function readLast(): SavedLive | null {
   try {

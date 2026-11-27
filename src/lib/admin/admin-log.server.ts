@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.6",
+    time: "28/11/2026",
+    area: "tien",
+    text: "Kiểm toán RE5 (docs/kiem-toan/v5.49.6/): cận giữ trên thân gửi đi + chỉ model dịch trong danh mục; thiếu usage không trừ theo trần; migration 0057 công bằng xuyên trần chung; tyzo.sh ghi đè env Vercel + nhật ký chuyển nguồn. Dịch trực tiếp mặc định Qwen 3.5 (đo 0,4 s so với 2,9 s). Modal giữ 2 máy dự phòng khi có việc.",
+  },
+  {
     version: "5.49.5",
     time: "27/11/2026",
     area: "tien",
