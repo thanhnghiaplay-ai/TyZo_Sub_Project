@@ -65,7 +65,7 @@ export async function submitAsyncAsr(
   return withWorkAdmission(
     sql,
     { userId: input.userId, provider: input.provider, model: input.model, lane: "batch" },
-    async () => {
+    async (admission) => {
       const opened = await inTransaction(sql, async (tx) => {
         const tickets = await tx<{
           seconds: number;
@@ -99,6 +99,8 @@ export async function submitAsyncAsr(
         const id = randomBytes(12).toString("hex");
         await tx`insert into run_async_asr_jobs(id,user_id,ticket_id,request_hash,call_id,provider,model,price_book,unit_book)
         values(${id},${input.userId},${input.ticketId},${requestHash},${held.callId},${input.provider},${input.model},${JSON.stringify(bare)},${JSON.stringify(input.unitBook)})`;
+        // RE3-005: job và suất đang giữ cùng mã lệnh → cửa nhận việc không đếm hai lần trong lúc gửi.
+        await tx`update work_admissions set ref = ${held.callId} where id = ${admission.id} and status in ('running','unknown')`;
         return { id, callId: held.callId };
       });
       if ("existing" in opened) return opened.existing!;

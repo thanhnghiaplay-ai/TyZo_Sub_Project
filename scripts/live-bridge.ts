@@ -83,9 +83,15 @@ attachLiveBridge(server, {
   secret,
   upstream: (model) => loadLiveUpstream(sql, model, process.env.ALIBABA_WORKSPACE_ID),
   billing: createLiveBilling(sql, { book: () => loadLiveBook(sql) }),
-  admit: async ({ userId, model }) => {
+  admit: async ({ userId, model, sessionId }) => {
     const { beginWork } = await import("../src/lib/billing/work-admission.ts");
-    return beginWork(sql, { userId, model, provider: "alibaba", lane: "live" });
+    return beginWork(sql, {
+      userId,
+      model,
+      provider: "alibaba",
+      lane: "live",
+      ...(sessionId ? { ref: `live:${sessionId}`.slice(0, 200) } : {}),
+    });
   },
   toGiay: (base) => (turboPerSecond > 0 ? tokensForBase(base, turboPerSecond) : null),
   // Qwen 3.5: chỉnh thời gian chờ im lặng bằng biến LIVE_SILENCE_MS (200–6000), không cần sửa mã.

@@ -14,12 +14,29 @@ export type CapacitySnapshot = {
     model: string;
     lane: string;
     created: string;
+    userId: string;
+    ref: string | null;
   }[];
+  /** RE3-006: tổng số suất chưa rõ (mọi trang), con trỏ trang sau, cảnh báo khi chiếm nhiều suất. */
+  uncertainTotal: number;
+  nextCursor: string | null;
+  alert: string | null;
 };
+
+const PAGE = 20;
+function readCursor(input: unknown): { at: string; id: string } | null {
+  if (!input || typeof input !== "object") return null;
+  const after = (input as { after?: unknown }).after;
+  if (typeof after !== "string" || after.length > 80) return null;
+  const [at, id] = after.split("|");
+  if (!id || !/^[a-f0-9]{24}$/.test(id) || Number.isNaN(Date.parse(at))) return null;
+  return { at, id };
+}
 
 export const getWorkCapacity = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<CapacitySnapshot> => {
+  .validator((input: { after?: string } | undefined) => ({ cursor: readCursor(input) }))
+  .handler(async ({ context, data }): Promise<CapacitySnapshot> => {
     await requireRole(context.userId, "chu");
     const { getSql } = await import("../db");
     const { readLimits } = await import("../billing/work-admission");
@@ -49,17 +66,47 @@ export const getWorkCapacity = createServerFn({ method: "GET" })
         from run_modal_settlements where status in ('mat-phan-hoi', 'can-doi-soat') having count(*) > 0
       ) pending group by unit`;
 
-    const uncertainAdmissions = await sql<{
+    const cursor = data.cursor;
+    const page = await sql<{
       id: string;
       provider: string;
       model: string;
       lane: string;
       created: string;
+      at: string;
+      user_id: string;
+      ref: string | null;
     }>`
-      select id, provider, model, lane, created_at::text as created from work_admissions
-      where status = 'unknown' or (status = 'running' and heartbeat_at <= clock_timestamp() - interval '150 seconds')
-      order by created_at, id limit 20`;
-    return { limits: readLimits(settings[0]?.value), lanes, reconciliation, uncertainAdmissions };
+      select id, provider, model, lane, created_at::text as created, to_char(created_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') as at,
+        user_id, ref from work_admissions
+      where (status = 'unknown' or (status = 'running' and heartbeat_at <= clock_timestamp() - interval '150 seconds'))
+        and (${cursor?.at ?? null}::timestamptz is null or (created_at, id) > (${cursor?.at ?? null}::timestamptz, ${cursor?.id ?? ""}))
+      order by created_at, id limit ${PAGE + 1}`;
+    const total = await sql<{ n: number }>`select count(*)::int as n from work_admissions
+      where status = 'unknown' or (status = 'running' and heartbeat_at <= clock_timestamp() - interval '150 seconds')`;
+    const limits = readLimits(settings[0]?.value);
+    const shown = page.slice(0, PAGE);
+    const uncertainTotal = Number(total[0]?.n ?? 0);
+    const heavy = lanes.find((l) => l.unknown > 0 && l.unknown * 4 >= (limits[l.lane as "batch"] ?? Infinity));
+    return {
+      limits,
+      lanes,
+      reconciliation,
+      uncertainAdmissions: shown.map((r) => ({
+        id: r.id,
+        provider: r.provider,
+        model: r.model,
+        lane: r.lane,
+        created: r.created,
+        userId: r.user_id,
+        ref: r.ref,
+      })),
+      uncertainTotal,
+      nextCursor: page.length > PAGE ? `${shown[shown.length - 1].at}|${shown[shown.length - 1].id}` : null,
+      alert: heavy
+        ? `Việc chưa rõ đang giữ ${heavy.unknown}/${limits[heavy.lane as "batch"]} suất nhóm ${heavy.lane}. Kiểm tra nhà cung cấp và xác nhận theo bằng chứng.`
+        : null,
+    };
   });
 
 export const saveWorkCapacity = createServerFn({ method: "POST" })

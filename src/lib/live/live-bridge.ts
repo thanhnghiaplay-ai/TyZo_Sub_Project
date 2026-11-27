@@ -95,6 +95,8 @@ type LiveBridgeDeps = {
   admit?: (input: {
     userId: string;
     model: string;
+    /** RE3-006: mã phiên, gắn vào suất làm bằng chứng đối soát. */
+    sessionId?: string;
   }) => Promise<((end?: "done" | "unknown") => Promise<void>) | null>;
   now?: () => number;
   /** Đổi giá gốc (đồng) ra Token dịch. Có hàm này thì cầu nối không giữ ví đồng. */
@@ -202,7 +204,11 @@ async function runSession(client: WebSocket, token: string, deps: LiveBridgeDeps
   if (!route) return fail(4503, "Phòng chưa cấu hình Alibaba cho dịch trực tiếp.");
 
   if (gone) return;
-  const releaseAdmission = await deps.admit?.({ userId: ticket.uid, model: ticket.model });
+  const releaseAdmission = await deps.admit?.({
+    userId: ticket.uid,
+    model: ticket.model,
+    sessionId: ticket.sid,
+  });
   if (deps.admit && !releaseAdmission)
     return fail(4429, "Hệ thống đang bận. Vui lòng thử lại sau ít giây.");
   if (gone) {

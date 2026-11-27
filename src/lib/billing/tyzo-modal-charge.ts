@@ -39,7 +39,7 @@ export async function runAdmittedModalPartWith(
   return withWorkAdmission(
     sql,
     { userId: input.userId, provider: "tyzo-modal", model: input.model, lane: "modal" },
-    () => runModalPartWith(sql, input, recognize),
+    (admission) => runModalPartWith(sql, { ...input, admissionId: admission.id }, recognize),
   );
 }
 
@@ -54,6 +54,8 @@ export async function runModalPartWith(
     estimateTokens: (price: string) => number;
     /** Chỉ để test: nhịp sống (ms). Mặc định LEASE_BEAT_MS. */
     beatMs?: number;
+    /** RE3-006: suất nhận việc đang giữ, để gắn bằng chứng (đoạn Modal). */
+    admissionId?: string;
   },
   recognize: (price: string, attempt: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
 ): Promise<ModalPartResult> {
@@ -114,6 +116,10 @@ export async function runModalPartWith(
 
   try {
     await sql`insert into run_modal_settlements(attempt, ticket_id, part_hash) values (${attempt}, ${ticket}, ${partHash})`;
+    if (input.admissionId) {
+      const { tagWork } = await import("./work-admission.ts");
+      await tagWork(sql, input.admissionId, `modal:${ticket}:${partHash}:${attempt}`);
+    }
   } catch (error) {
     await releasePart(sql, ticket, userId, partHash, attempt);
     throw error;

@@ -151,6 +151,8 @@ type ChargeInput = {
   signal?: AbortSignal;
   beatMs?: number;
   bodyTimeoutMs?: number;
+  /** RE3-006: suất nhận việc đang giữ; gắn mã lệnh gọi nhà làm bằng chứng đối soát. */
+  admissionId?: string;
   /** Internal admission signal: a complete response proves remote work ended, even if DB settlement fails. */
   upstreamComplete?: () => void;
   send: () => Promise<Response>;
@@ -169,9 +171,10 @@ export async function chargeAdmittedWith(input: ChargeInput): Promise<GateOutcom
         model: input.model,
         lane: "batch",
       },
-      () =>
+      (admission) =>
         chargeWith({
           ...input,
+          admissionId: admission.id,
           send: () => {
             dispatched = true;
             return input.send();
@@ -239,6 +242,10 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
       });
       if (held.kind !== "ok") throw new Error("Chưa giữ được ngân sách đọc thuyết minh.");
       callId = held.callId;
+      if (input.admissionId) {
+        const { tagWork } = await import("./work-admission.ts");
+        await tagWork(sql, input.admissionId, held.callId);
+      }
       stopBeat = startBeat(() => beatGateCall(sql, held.callId), {
         everyMs: input.beatMs,
         onLost: (why) => console.warn("lease-lost", "gate", held.callId, why),
@@ -370,6 +377,10 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     };
   if (held.kind === "none") return { kind: "reject", status: 402, message: spent };
   const callId = held.callId;
+  if (input.admissionId) {
+    const { tagWork } = await import("./work-admission.ts");
+    await tagWork(sql, input.admissionId, callId);
+  }
 
   const stopBeat = startBeat(() => beatGateCall(sql, callId), {
     everyMs: input.beatMs,

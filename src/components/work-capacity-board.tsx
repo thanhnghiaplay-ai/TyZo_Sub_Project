@@ -15,8 +15,9 @@ const LABELS: Record<Exclude<keyof CapacityLimits, "enabled">, string> = {
   live: "Tổng phiên dịch trực tiếp",
   perUser: "Mỗi tài khoản, mỗi nhóm",
   perUserModal: "Đoạn TyZo mỗi tài khoản",
-  perProvider: "Mỗi nhà, mỗi nhóm",
-  perModel: "Mỗi model, mỗi nhóm",
+  perProvider: "Mỗi nhà, mọi nhóm",
+  perModel: "Mỗi model, mọi nhóm",
+  liveReserve: "Suất mỗi nhà chỉ dành cho dịch trực tiếp",
 };
 
 export function WorkCapacityBoard() {
@@ -26,7 +27,7 @@ export function WorkCapacityBoard() {
   const [evidence, setEvidence] = useState<Record<string, string>>({});
   const reload = useCallback(async () => {
     try {
-      const next = await getWorkCapacity();
+      const next = await getWorkCapacity({ data: {} });
       setView(next);
       setDraft(next.limits);
     } catch {
@@ -45,7 +46,24 @@ export function WorkCapacityBoard() {
       await reload();
       pushToast("Đã lưu giới hạn. Các việc đang chạy tiếp tục hoàn tất.");
     } catch {
-      pushToast("Chưa lưu được. Các giới hạn phải là số nguyên từ 1 đến 300.", "bad");
+      pushToast("Chưa lưu được. Các giới hạn phải là số nguyên từ 1 đến 300; suất dành cho trực tiếp từ 0 và nhỏ hơn suất mỗi nhà.", "bad");
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function more() {
+    if (!view?.nextCursor) return;
+    setBusy(true);
+    try {
+      const next = await getWorkCapacity({ data: { after: view.nextCursor } });
+      setView({
+        ...view,
+        uncertainAdmissions: [...view.uncertainAdmissions, ...next.uncertainAdmissions],
+        nextCursor: next.nextCursor,
+        uncertainTotal: next.uncertainTotal,
+      });
+    } catch {
+      pushToast("Chưa đọc được trang sau.", "bad");
     } finally {
       setBusy(false);
     }
@@ -101,7 +119,7 @@ export function WorkCapacityBoard() {
                 <span>{LABELS[key]}</span>
                 <input
                   type="number"
-                  min={1}
+                  min={key === "liveReserve" ? 0 : 1}
                   max={300}
                   step={1}
                   value={draft[key]}
@@ -135,6 +153,11 @@ export function WorkCapacityBoard() {
       )}
       {view && (
         <div className="space-y-1 text-sm" aria-live="polite">
+          {view.alert && (
+            <p role="alert" className="rounded-[var(--radius-ctl)] border border-line p-2 font-semibold">
+              {view.alert}
+            </p>
+          )}
           {view.lanes.length === 0 && <p>Chưa có việc đang chạy.</p>}
           {view.lanes.map((lane) => (
             <p key={lane.lane}>
@@ -151,7 +174,9 @@ export function WorkCapacityBoard() {
               <p className="font-semibold">Công việc mất nhịp đang giữ chỗ</p>
               <p className="text-muted">
                 Chưa biết công việc đã kết thúc hay chưa nên hệ thống giữ chỗ để tránh gọi thêm quá
-                mức. Kiểm tra phía nhà cung cấp trước khi xác nhận. Hiện tối đa 20 hồ sơ.
+                mức. Kiểm tra phía nhà cung cấp trước khi xác nhận. Việc đã có kết quả rõ trong sổ được hệ
+                thống tự xác nhận và ghi nhật ký. Đang hiện {view.uncertainAdmissions.length}/
+                {view.uncertainTotal} hồ sơ.
               </p>
               {view.uncertainAdmissions.map((item) => (
                 <div
@@ -162,7 +187,8 @@ export function WorkCapacityBoard() {
                     {item.provider} · {item.model}
                   </p>
                   <p className="break-all text-xs text-muted">
-                    Mã {item.id} · {item.created}
+                    Mã {item.id} · {item.created} · khách {item.userId}
+                    {item.ref ? ` · liên kết ${item.ref}` : ""}
                   </p>
                   <label className="grid min-w-0 gap-1">
                     Bằng chứng đã kiểm tra
@@ -186,6 +212,16 @@ export function WorkCapacityBoard() {
                   </button>
                 </div>
               ))}
+              {view.nextCursor && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void more()}
+                  className="min-tap rounded-[var(--radius-ctl)] border border-line px-3 text-sm disabled:opacity-50"
+                >
+                  Xem thêm hồ sơ
+                </button>
+              )}
             </div>
           )}
           {view.reconciliation.map((row) => (
