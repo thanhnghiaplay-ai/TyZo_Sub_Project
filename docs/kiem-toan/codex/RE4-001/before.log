@@ -1,0 +1,32 @@
+▶ RE-002: giữ trước từng lệnh Groq/Alibaba
+  ✖ RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà (86.14547ms)
+✖ RE-002: giữ trước từng lệnh Groq/Alibaba (3453.939056ms)
+ℹ tests 1
+ℹ suites 1
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13479.649977
+
+✖ failing tests:
+
+test at src/lib/billing/gate-reserve.test.ts:99:3
+✖ RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà (86.14547ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file://src/lib/billing/gate-reserve.test.ts:118:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Promise.all (index 1)
+      at async Suite.run (node:internal/test_runner/test:1905:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

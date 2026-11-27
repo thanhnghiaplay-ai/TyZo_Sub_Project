@@ -72,6 +72,9 @@ export async function readRequest(
     }
     if (json.stream === true)
       return { model, chars: 0, problem: "Cửa trả theo lượt chưa hỗ trợ stream." };
+    if (json.n != null && json.n !== 1)
+      return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ một câu trả lời." };
+    delete json.n; // Both providers default to one completion.
     const a = json.max_completion_tokens;
     const b = json.max_tokens;
     const given = [a, b].filter((v) => v !== undefined && v !== null);
@@ -344,26 +347,24 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
       message: "Không kiểm được độ dài đoạn âm thanh. Hãy tải lại trang rồi chạy lại.",
     };
   const estimatedSeconds = probed;
-  const estBase =
-    path === "/audio/transcriptions"
-      ? (asrCost(bareBook, model, estimatedSeconds) ?? 0)
-      : (chatCost(
-          bareBook,
-          model,
-          Math.ceil(input.body.byteLength / 3),
-          input.outCap ?? MAX_COMPLETION_TOKENS,
-        ) ?? 0);
-  const estCost =
-    path === "/audio/transcriptions"
-      ? (asrCost(book, model, estimatedSeconds) ?? 0)
-      : (chatCost(
-          book,
-          model,
-          Math.ceil(input.body.byteLength / 3),
-          input.outCap ?? MAX_COMPLETION_TOKENS,
-        ) ?? 0);
+  const isAsr = path === "/audio/transcriptions";
+  const outCap = input.outCap ?? MAX_COMPLETION_TOKENS;
+  // Use the full documented window as an upper bound for accepted prompt tokens,
+  // including provider framing and tool/schema tokens. Do not subtract outCap:
+  // prompt and generation limits need not share the same accounting.
+  const context = isAsr ? 0 : (book.rows.find((row) => row.id === model)?.contextTokens ?? 0);
+  if (!isAsr && (!Number.isSafeInteger(context) || context <= 0))
+    return { kind: "reject", status: 422, message: "Chưa xác minh được giới hạn đầu vào của model." };
+  if (!isAsr && capProblem(outCap))
+    return { kind: "reject", status: 422, message: "Số token trả lời tối đa không hợp lệ." };
+  const estBase = isAsr
+    ? asrCost(bareBook, model, estimatedSeconds)
+    : chatCost(bareBook, model, context, outCap);
+  const estCost = isAsr
+    ? asrCost(book, model, estimatedSeconds)
+    : chatCost(book, model, context, outCap);
   const { giayForBaseCost } = await import("./token-math.ts");
-  const estimate = tokenUnit ? (giayForBaseCost(input.unitBook ?? book, estBase) ?? 0) : estCost;
+  const estimate = tokenUnit ? (giayForBaseCost(input.unitBook ?? book, estBase ?? 0) ?? 0) : (estCost ?? 0);
   const { reserveGateCall, releaseGateCall, beatGateCall, settleGateCall } =
     await import("./gate-reserve.ts");
   const { startBeat } = await import("./work-lease.ts");
@@ -441,7 +442,9 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
               !Number.isSafeInteger(prompt) ||
               prompt < 0 ||
               !Number.isSafeInteger(completion) ||
-              completion < 0;
+              completion < 0 ||
+              prompt > context ||
+              completion > outCap;
             const inn =
               Number.isSafeInteger(prompt) && prompt >= 0
                 ? prompt

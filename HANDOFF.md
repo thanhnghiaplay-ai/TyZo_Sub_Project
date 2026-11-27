@@ -1,5 +1,7 @@
 > **Codex — checkpoint tiếp quản v5.49.4.** Nhánh `codex/tyzo-v5.49.4-audit` xuất phát từ `0edb82a8`; manifest khớp 2.590 tệp. Xem STATE.json, BACKLOG.json và NEXT_PROMPT.md trước khi tiếp tục. Bằng chứng tại docs/kiem-toan/codex/. Các mục dưới đây là lịch sử.
 
+- **RE4-001 PARTIAL.** Giữ theo cận ngữ cảnh và trần một câu trả lời. PostgreSQL cô lập 51/51; còn nghiệm thu metadata, usage thật và khả năng phục vụ phiếu nhỏ. Xem docs/kiem-toan/codex/RE4-001/REPORT.md.
+
 > **Phát hành 5.49.4 — 20:42 27/11/2026:** Chủ nói «Đẩy chính thức». main/work = nhánh ccr-20605d15-2nil6k. Xem `docs/kiem-toan/v5.49.4/PHAT_HANH_5.49.4.md`. VPS: `tyzo` → 2.
 
 > **v5.49.4 — Claude, nhánh `ccr-20605d15-2nil6k` (gốc 6d906ba), CHƯA merge/deploy.** Mã sản phẩm khóa cuối tại `198dd4b` (thêm hàng đợi công bằng RE2-004 theo Chủ duyệt). Đọc theo thứ tự: `docs/kiem-toan/v5.49.4/TIEN_DO.md` → `BAO_CAO_KET_QUA.md` → `RE3_KET_QUA.json`, `RE2_KET_QUA.json`, `DOI_CHIEU_80.json`. Kết quả: 8/8 RE3 PASS cục bộ (PG thật + fixture, chưa staging/nhà thật); RE2-004 PASS cục bộ (hàng đợi công bằng, 0 đói); hai soak 3600 s PASS; 80 mục: 68 PASS/8 PARTIAL/2 BLOCKED/2 BY_DESIGN. Cổng: 1732 test đạt/7 bỏ qua/1 lỗi môi trường root (R8-002); build Vercel + Node đạt. Bằng chứng `bang-chung/*.log` qua `run.sh <nhãn-mới>` (không ghi đè). CSDL thử: Postgres 16 riêng cổng 55439. Việc tiếp: xem mục «Việc tiếp theo» trong TIEN_DO.md.

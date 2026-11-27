@@ -27,7 +27,7 @@ const book: PriceBook = {
   desk: { markup: 100, custom: {} },
   rows: [
     row({ id: "asr", usdPerHour: 0.04 }),
-    row({ id: "chat", usdIn: 0.075, usdOut: 0.3 }),
+    row({ id: "chat", usdIn: 0.075, usdOut: 0.3, contextTokens: 100_000 }),
     row({ id: "whisper-large-v3-turbo", usdPerHour: 79.2 }),
     row({ id: "tts", usdPerMillionChars: 22 }),
   ],
@@ -54,11 +54,11 @@ describe("cổng tính tiền", () => {
   });
 
   it("dịch thành công: trừ theo token thật trong usage", async () => {
-    // vào 1.875×2=3.750 đ/triệu, ra 7.500×2=15.000 đ/triệu; 100.000 vào + 100.000 ra = 375 + 1.500
-    const out = await call({ body: new ArrayBuffer(300_000), outCap: 100_000, send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 100_000 } }) });
+    // vào 1.875×2=3.750 đ/triệu, ra 7.500×2=15.000 đ/triệu; 100.000 vào + 8.000 ra = 375 + 120
+    const out = await call({ body: new ArrayBuffer(300_000), outCap: 8_000, send: json({ usage: { prompt_tokens: 100_000, completion_tokens: 8_000 } }) });
     assert.equal(out.kind, "pass");
-    assert.equal((await t(TID)).charged, 1875);
-    assert.equal((await t(TID)).held, 125);
+    assert.equal((await t(TID)).charged, 495);
+    assert.equal((await t(TID)).held, 1505);
   });
 
   it("Groq trả lỗi thì không tính tiền", async () => {
@@ -146,6 +146,10 @@ describe("đọc yêu cầu", () => {
     assert.deepEqual([plain?.model, plain?.problem, plain?.cap], ["m", null, 4096]);
     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", stream: true })))?.problem);
     assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_completion_tokens: 999999 })))?.problem);
+    for (const n of [2, "1", 0]) {
+      assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", n })))?.problem);
+    }
+    assert.equal((await readRequest("/chat/completions", "application/json", enc({ model: "m", n: 1 })))?.problem, null);
     // R3-002: giá trị lạ bị chặn, giá trị đúng vẫn qua.
     for (const bad of ["abc", -1, 0, 1.5, "100", true]) {
       assert.ok((await readRequest("/chat/completions", "application/json", enc({ model: "m", max_tokens: bad })))?.problem, String(bad));

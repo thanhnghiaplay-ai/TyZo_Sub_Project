@@ -28,7 +28,7 @@ const book: PriceBook = {
   desk: { markup: 0, custom: {} },
   rows: [
     { id: "whisper-large-v3-turbo", usdPerHour: 0.04 },
-    { id: "chat", usdIn: 0.1, usdOut: 0.1 },
+    { id: "chat", usdIn: 0.1, usdOut: 0.1, contextTokens: 100 },
     { id: "tts", usdPerMillionChars: 22 },
   ].map((r) => ({
     usdIn: null,

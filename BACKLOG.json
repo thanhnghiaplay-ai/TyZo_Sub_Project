@@ -8,13 +8,13 @@
       345,
       365
     ],
-    "status": "BLOCKED",
+    "status": "PARTIAL",
     "cause": "byteLength/3 có thể đánh giá thiếu tokenizer và overhead.",
     "fix": "Dùng tokenizer đúng model và overhead; nếu không biết thì cận trên bảo thủ có chứng minh hoặc từ chối. Giữ đủ ngân sách trước gọi, quyết toán riêng; không đổi giá.",
     "acceptance": "Test tiếng Việt, CJK, emoji, JSON, tool schema, cap đầu ra, nhiều request đồng thời; không gọi khi thiếu hold; so usage thật trong ngân sách thử được duyệt.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-001/REPORT.md"
   },
   {
     "id": "RE4-002",

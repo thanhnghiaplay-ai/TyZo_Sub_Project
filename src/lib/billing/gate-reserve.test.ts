@@ -32,7 +32,7 @@ const row = (over: Partial<GroqLiveRow>): GroqLiveRow => ({
 const book: PriceBook = {
   rate: 25_000,
   desk: { markup: 0, custom: {} },
-  rows: [row({ id: "whisper-large-v3-turbo", usdPerHour: 0.04 }), row({ id: "chat", usdIn: 0.1, usdOut: 0.1 })],
+  rows: [row({ id: "whisper-large-v3-turbo", usdPerHour: 0.04 }), row({ id: "chat", usdIn: 0.1, usdOut: 0.1, contextTokens: 100 })],
 };
 const TID = "c".repeat(24);
 /** Số Token một lệnh 100 vào + 3.233 ra (tính bằng đúng hàm của app). */
@@ -94,6 +94,45 @@ describe("RE-002: giữ trước từng lệnh Groq/Alibaba", () => {
     assert.equal(Number(t.modal_reserved), 0, "phần giữ phải nhả hết");
     assert.equal(results.filter((r) => r.kind === "pass").length, sends);
     assert.equal(Number(spend[0].n), sends);
+  });
+
+  it("RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà", async () => {
+    const body = enc({
+      model: "chat",
+      messages: [{ role: "user", content: "Tiếng Việt 中文 🎬" }],
+      tools: [{ type: "function", function: { name: "caption", parameters: { type: "object" } } }],
+    });
+    const priced = {
+      ...book,
+      rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: 40_000 } : r),
+    };
+    let sends = 0;
+    const out = await chargeWith({
+      sql, book: priced, path: "/chat/completions", model: "chat", chars: 0,
+      userId: "k", ticketId: TID, body, cap: 0, outCap: 200,
+      send: async () => {
+        sends++;
+        return Response.json({ usage: { prompt_tokens: 100, completion_tokens: 100 } });
+      },
+    });
+    assert.equal(sends, 0);
+    assert.equal(out.kind === "reject" && out.status, 402);
+    assert.equal((await ticket()).charged, 0);
+    assert.equal((await sql`select 1 from run_gate_calls`).length, 0);
+  });
+
+  it("RE4-001: model thiếu giới hạn ngữ cảnh được chặn trước khi gửi", async () => {
+    const priced = {
+      ...book,
+      rows: book.rows.map((r) => r.id === "chat" ? { ...r, contextTokens: null } : r),
+    };
+    const out = await chargeWith({
+      sql, book: priced, path: "/chat/completions", model: "chat", chars: 0,
+      userId: "k", ticketId: TID, body: enc({ model: "chat" }), cap: 0, outCap: 20,
+      send: async () => assert.fail("upstream must not run"),
+    });
+    assert.equal(out.kind === "reject" && out.status, 422);
+    assert.equal((await sql`select 1 from run_gate_calls`).length, 0);
   });
 
   it("nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả", async () => {
