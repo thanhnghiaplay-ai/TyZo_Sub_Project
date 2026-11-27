@@ -1,0 +1,7 @@
+# label=soak-3600-2
+# head=198dd4be03cbe1b89bafe272bb9254d03ca46c07 dirty=1
+# fingerprint(src,scripts,migrations,server,package*)=e06e7f11bb9b58231d34b30f7afa2e5d8ed21b774c173bcdd86800910722a580
+# start=2026-11-27T12:34:47Z
+# cmd=env TYZO_TEST_PG_URL=postgres://postgres@127.0.0.1:55439/tyzo_test bash docs/kiem-toan/v5.49.4/soak.sh 3600 docs/kiem-toan/v5.49.4/soak/soak-3600-2
+{"end":"2026-11-27T13:34:58Z","elapsed":3611,"iterations":212,"status":"PASS"}
+# exit=0 seconds=3611 end=2026-11-27T13:34:58Z

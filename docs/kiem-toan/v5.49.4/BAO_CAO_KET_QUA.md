@@ -3,7 +3,7 @@
 **Không phải chứng nhận production.** Mọi số liệu đo trên máy thử cục bộ (PostgreSQL 16 riêng, upstream giả). Không merge main, không deploy, không thuê GPU, không dùng CSDL khách, không đổi giá/quyền lợi/quy tắc Token.
 
 - Repo `thanhnghiaplay-ai/TyZo_Sub_Project`, nhánh **`ccr-20605d15-2nil6k`**, gốc **`6d906ba`** (khớp 1468/1468 hash `06_SOURCE_MANIFEST.json`).
-- Mã sản phẩm khóa tại **`c5c39c7`** (sau đó chỉ tài liệu/graph/bằng chứng). Mỗi checkpoint đã push và xác minh bằng `git ls-remote`.
+- Mã sản phẩm: khóa lần 1 tại **`c5c39c7`** (soak-3600-1); sau khi Chủ duyệt hàng đợi công bằng, khóa lần cuối tại **`198dd4b`** (soak-3600-2, cổng gate-cp10*). Graph RE3-008 dựng từ c5c39c7; phần khác của 198dd4b là RE2-004 (work-admission, 0055, groq.ts, hai route). Mỗi checkpoint đã push và xác minh bằng `git ls-remote`.
 - Bằng chứng: `bang-chung/<nhãn>.log` (mỗi log ghi HEAD, độ bẩn cây, fingerprint `src+scripts+migrations+server+package*`, lệnh, mã thoát, thời gian; nhãn không ghi đè; log thất bại được giữ). Ảnh: `anh/`. Quét: `quet/`. Soak: `soak/`.
 
 ## 1. Tám phát hiện RE3
@@ -65,9 +65,8 @@ Lưu ý trung thực: cổng toàn bộ lần 1 bắt được lỗi của chín
 3. Dự toán token chữ cho chat vẫn `byteLength/3` (có thể giữ thiếu với văn bản lạ) — chưa sửa, ngoài phạm vi; quyết toán vẫn chặn ở phần giữ.
 4. `scripts/browser-smoke.mjs` không chạy được khi Playwright của dự án lệch bản Chromium cài sẵn — dùng smoke riêng có `executablePath`.
 
-## 8. Cần Chủ quyết / cung cấp
-- Giới hạn sức chứa (perModel/perProvider/live) và `liveReserve` cho 100–200 khách theo hạn mức nhà cung cấp.
-- Hàng đợi công bằng cho batch (RE2-004): có làm không, hiển thị ETA thế nào.
+## 8. Quyết định của Chủ và việc còn cần
+- Đã quyết 27/11: giới hạn sức chứa theo hạn mức Groq/Alibaba/TyZo Modal — Chủ báo khi nâng gói để chỉnh trong Admin (chưa đổi số mặc định); `liveReserve` = 0 (Dịch trực tiếp dùng mọi suất trống); làm hàng đợi công bằng nhưng vẫn tối ưu (đã làm, RE2-004).
 - Phiếu live giữ lại khi quyết toán chưa rõ: hiện tự nhả sau 6 giờ (cơ chế cũ) — giữ hay đổi.
 - Máy Android thật, backup khách ẩn danh, staging Neon/VPS, ngân sách GPU (chưa có quyền).
 - Khi phát hành: nâng APP_VERSION/ADMIN_LOG theo quy trình dự án (đợt này không tự nâng số phiên bản).
@@ -79,3 +78,9 @@ Lưu ý trung thực: cổng toàn bộ lần 1 bắt được lỗi của chín
 - PostgreSQL RSS 151→154 MB (đỉnh 191 MB), không tăng dần. Thời gian vòng ổn định 16,6–17,7 s.
 - Đói suất (RE2-004) trên mã này: tổng 2113 khách-lần không được lượt trong cửa sổ 3 s ở nhóm 200 (≈10/lần) → xác nhận cần hàng đợi công bằng (đang làm, xem TIEN_DO.md).
 - Giới hạn: upstream giả, một máy, PG cục bộ; không có Web SSR trong vòng lặp; không GPU/nhà thật.
+
+**soak-3600-2: PASS** — mã có hàng đợi công bằng `198dd4b`, 3611 s liên tục (12:34:47→13:34:58 UTC), 212 vòng, không ngắt. Thư mục `soak/soak-3600-2/`.
+- Sổ: ledgerViolations 0, duplicateCharges 0, quan sát chi phí khớp 212/212; tổng 1.016.876 Token trừ.
+- Cửa nhận việc: 0 vượt cap, 0 lỗi. 200 khách p95 trung vị 65 ms (tối đa 146), p99 trung vị 142 ms (tối đa 237); đợt 300 p99 trung vị 188 ms (tối đa 298 — sát mục tiêu 300 ms).
+- Đói trong cửa sổ 3 s ở nhóm 200: 177 khách-lần (trước hàng đợi 2113). Cửa sổ 3 s bằng đúng ngưỡng chống đói 3 s nên phần này là do thiết kế; cửa sổ 8 s: 0 (`re2-004-after-fair-queue-bench-4.log`).
+- PostgreSQL RSS 169→170 MB (đỉnh 210 MB), không tăng dần.

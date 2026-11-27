@@ -1,0 +1,200 @@
+{
+ "scope": "admission only; 4 pools x 10 connections; synthetic upstream hold 50-200 ms; local PostgreSQL 16",
+ "seconds": 3,
+ "limits": {
+  "enabled": true,
+  "batch": 48,
+  "modal": 8,
+  "live": 48,
+  "perUser": 2,
+  "perUserModal": 3,
+  "perProvider": 40,
+  "perModel": 24,
+  "liveReserve": 0
+ },
+ "historyRows": 4614,
+ "results": [
+  {
+   "clients": 25,
+   "ok": 616,
+   "busy": 0,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 0.68,
+   "p95": 2.12,
+   "p99": 64.37,
+   "max": 78.41,
+   "fairness": {
+    "starved": 0,
+    "min": 21,
+    "p10": 23,
+    "median": 24,
+    "admissionsPerSecond": 186.5,
+    "attemptsPerSecond": 186.5
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 213
+   },
+   "peaks": {
+    "lane:batch": 19,
+    "provider:groq": 17,
+    "model:groq/whisper-large-v3-turbo": 17,
+    "provider:alibaba": 6,
+    "model:alibaba/qwen3-asr-flash-filetrans": 2,
+    "lane:live": 4,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 4,
+    "lane:modal": 2,
+    "provider:tyzo": 2,
+    "model:tyzo/tyzo-gpu": 2
+   }
+  },
+  {
+   "clients": 50,
+   "ok": 1069,
+   "busy": 117,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 0.74,
+   "p95": 3.65,
+   "p99": 68.57,
+   "max": 92.35,
+   "fairness": {
+    "starved": 1,
+    "min": 0,
+    "p10": 6,
+    "median": 23,
+    "admissionsPerSecond": 322.5,
+    "attemptsPerSecond": 357.8
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 215
+   },
+   "peaks": {
+    "lane:batch": 29,
+    "provider:groq": 24,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "lane:modal": 5,
+    "lane:live": 10,
+    "provider:tyzo": 5,
+    "provider:alibaba": 15,
+    "model:tyzo/tyzo-gpu": 5,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 10,
+    "model:alibaba/qwen3-asr-flash-filetrans": 5
+   }
+  },
+  {
+   "clients": 100,
+   "ok": 1483,
+   "busy": 740,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 1.75,
+   "p95": 22.45,
+   "p99": 123.94,
+   "max": 153.51,
+   "fairness": {
+    "starved": 3,
+    "min": 0,
+    "p10": 4,
+    "median": 14,
+    "admissionsPerSecond": 449.1,
+    "attemptsPerSecond": 673.2
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 212
+   },
+   "peaks": {
+    "lane:batch": 34,
+    "lane:live": 20,
+    "provider:groq": 24,
+    "provider:alibaba": 30,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 20,
+    "lane:modal": 8,
+    "provider:tyzo": 8,
+    "model:tyzo/tyzo-gpu": 8,
+    "model:alibaba/qwen3-asr-flash-filetrans": 10
+   }
+  },
+  {
+   "clients": 200,
+   "ok": 1374,
+   "busy": 1487,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 64.15,
+   "p95": 103.88,
+   "p99": 164.18,
+   "max": 210.85,
+   "fairness": {
+    "starved": 1,
+    "min": 0,
+    "p10": 2,
+    "median": 6,
+    "admissionsPerSecond": 415.9,
+    "attemptsPerSecond": 866
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 211
+   },
+   "peaks": {
+    "lane:batch": 43,
+    "lane:modal": 8,
+    "lane:live": 24,
+    "provider:groq": 24,
+    "provider:alibaba": 40,
+    "provider:tyzo": 8,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:alibaba/qwen3-asr-flash-filetrans": 19,
+    "model:tyzo/tyzo-gpu": 8,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 24
+   }
+  },
+  {
+   "burst": 300,
+   "ok": 72,
+   "busy": 228,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 91.08,
+   "p95": 278.26,
+   "p99": 294.19,
+   "max": 297.24,
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 95
+   },
+   "peaks": {
+    "lane:live": 24,
+    "lane:batch": 40,
+    "provider:alibaba": 40,
+    "provider:groq": 24,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 24,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:alibaba/qwen3-asr-flash-filetrans": 16,
+    "lane:modal": 8,
+    "provider:tyzo": 8,
+    "model:tyzo/tyzo-gpu": 8
+   }
+  }
+ ]
+}
