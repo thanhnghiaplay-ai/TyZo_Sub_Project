@@ -58,7 +58,35 @@
     "location": "deploy/vps/tyzo.sh:1578–1599",
     "hypothesis": "Xóa rồi thêm env Vercel có thể lỗi giữa chừng; cutover cần trạng thái bền vững, xác minh deployment, không mở nguồn cũ khi chưa rõ ghi đích. Kiểm cả chiều Neon→VPS.",
     "acceptance": "Fault injection từng bước, mất mạng, kill/restart, env partial, deploy unknown, destination writer; staging thật cần duyệt.",
-    "status": "UNVERIFIED"
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "id": "RE5-004-A",
+        "status": "FIXED_LOCAL",
+        "what": "Mỗi biến: env rm rồi env add; add lỗi thì production mất biến (tái hiện: BETTER_AUTH_SECRET mất, RE5-004/before-old-script.log). vercel@latest không ghim.",
+        "fix": "chay_vercel_sh: vercel@65.14.0 ghim (đã kiểm --help: env add --force, stdin, deploy chờ xong); env add --environment production --force qua stdin, không còn env rm; deploy phải trả https://… và inspect Ready, nếu không exit 3."
+      },
+      {
+        "id": "RE5-004-B",
+        "status": "FIXED_LOCAL",
+        "what": "Trạng thái chuyển nguồn chỉ nằm trong biến shell; mất SSH/kill thì không biết đã tới bước nào.",
+        "fix": "Nhật ký bền ${CONF}.chuyen (600): khoa-nguon → vercel-bat-dau → xong | loi-env-do-dang | loi-deploy-chua-ro | loi-chua-doi-vercel; da-mo-lai khi mở lại nguồn VPS. khoa_va_doi_soat_chuyen từ chối khi nhật ký dở dang, trước khi đụng dịch vụ/CSDL. Nguồn VPS giữ khóa ở mọi nhánh lỗi."
+      },
+      {
+        "id": "RE5-004-C",
+        "status": "OPEN",
+        "what": "Neon→VPS: chỉ đối soát trước/sau, KHÔNG khóa ghi Neon. Sau khi chép xong, Vercel vẫn ghi vào Neon tới lúc đổi DNS → ghi trong khoảng đó mất.",
+        "proposal": "Sau đối soát cuối: ALTER DATABASE <neon> SET default_transaction_read_only=on + pg_terminate_backend phiên cùng role, đối soát lại, rồi mới đổi DNS; mở lại bằng RESET. Cần xác minh quyền role Neon trên staging (Chủ duyệt)."
+      },
+      {
+        "id": "RE5-004-D",
+        "status": "OPEN",
+        "what": "Sau loi-deploy-chua-ro chưa có lệnh hướng dẫn kiểm Vercel/Neon rồi mở lại nguồn VPS hoặc đóng nhật ký; hiện phải làm tay.",
+        "proposal": "Thêm mục menu đọc nhật ký, kiểm deployment (vercel inspect) và bảng kê Neon so với VPS trước khi cho mở lại."
+      }
+    ],
+    "tests": "scripts/re5-004-vercel.test.mjs 5/5 (npx giả); re3-restore-pg.test.mjs thêm khẳng định nhật ký, 27/27 cùng re2-restore; npm test 1772/7/0",
+    "remaining": "Staging thật (Vercel/Neon/VPS) cần Chủ duyệt; RE5-004-C, RE5-004-D."
   },
   {
     "id": "RE5-003",

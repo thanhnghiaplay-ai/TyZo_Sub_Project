@@ -898,6 +898,7 @@ khoi_phuc_nguon_vps() {
     do_ "✘ Chưa mở lại được kết nối CSDL VPS. Dịch vụ VPS vẫn phải dừng cho tới khi kiểm tra xong."
     return 1
   fi
+  chuyen_dang_do && ghi_chuyen da-mo-lai "nguon-vps"
   mo_lai_web_vps "$1"
 }
 
@@ -962,6 +963,11 @@ chep_len_neon_da_dung() {
 khoa_va_doi_soat_chuyen() {
   local url="$1" a thu dung
   [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ] || return 0
+  if chuyen_dang_do; then
+    do_ "✘ Lần chuyển nguồn trước chưa kết thúc. Không chuyển tiếp. Nhật ký: ${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
+    tail -n 5 "${CONF}${NHAT_KY_CHUYEN_SUFFIX}" | sed 's/^/   /'
+    return 1
+  fi
   if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
     do_ "✘ CSDL nguồn chưa sẵn sàng hoặc đang bị khóa. Kiểm tra lần chuyển trước."; return 1
   fi
@@ -987,6 +993,7 @@ khoa_va_doi_soat_chuyen() {
   fi
   rm -f "$thu/nguon.txt" "$thu/dich.txt" "$thu/loi-nguon.txt" "$thu/loi-dich.txt"
   rmdir "$thu"
+  ghi_chuyen khoa-nguon "neon-khop"
   xanh "✔ Neon khớp dữ liệu VPS. CSDL nguồn tiếp tục chặn kết nối."
   CHUYEN_DA_KHOA=1
   return 0
@@ -1516,6 +1523,54 @@ kiem_tra_web() {
   return "$loi"
 }
 
+# RE5-004: phiên bản Vercel CLI ghim (không dùng @latest). Đã kiểm: env add --force, giá trị qua stdin, deploy chờ xong.
+VERCEL_CLI_VERSION="65.14.0"
+
+# Kịch bản chạy trong container node:22 để đặt env và đưa lên Vercel. In mốc «BUOC …» để máy ghi nhật ký chuyển nguồn.
+# Không xóa biến trước khi thêm (trước đây env rm rồi env add: thêm lỗi là production mất biến); --force ghi đè một bước.
+chay_vercel_sh() {
+  cat <<'SH'
+set -uo pipefail
+V="npx -y vercel@${VERCEL_CLI_VERSION:?} --token $TOK ${SCOPE:+--scope $SCOPE}"
+ENVF="${ENVF:-/x/env}"
+$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
+echo "BUOC env-bat-dau"
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  k="${line%%=*}"; val="${line#*=}"
+  printf '%s' "$val" | $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
+done < "$ENVF"
+echo "BUOC env-xong"
+echo "BUOC deploy-bat-dau"
+url="$($V deploy --prod --yes 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; exit 3; }
+case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; exit 3 ;; esac
+$V inspect "$url" 2>&1 | grep -qi 'ready' || { echo "LOI: bản dựng $url chưa Ready"; exit 3; }
+echo "BUOC deploy-xong $url"
+if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
+SH
+}
+
+# Nhật ký chuyển nguồn bền (sống qua mất SSH, kill, khởi động lại). Mỗi dòng: thời điểm UTC, bước, ghi chú.
+NHAT_KY_CHUYEN_SUFFIX=".chuyen"
+ghi_chuyen() {
+  local f="${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
+  (umask 077; printf '%s %s %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$1" "${2:-}" >> "$f")
+}
+# 0 = có lần chuyển chưa kết thúc (bước cuối không phải «xong» hay «da-mo-lai»).
+chuyen_dang_do() {
+  local f="${CONF}${NHAT_KY_CHUYEN_SUFFIX}" last
+  [ -s "$f" ] || return 1
+  last="$(tail -n 1 "$f" | awk '{print $2}')"
+  [ "$last" != "xong" ] && [ "$last" != "da-mo-lai" ]
+}
+# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh.
+buoc_vercel() {
+  if grep -q '^BUOC deploy-xong' "$1"; then echo xong
+  elif grep -q '^BUOC deploy-bat-dau' "$1"; then echo deploy-chua-ro
+  elif grep -q '^BUOC env-bat-dau' "$1"; then echo env-do-dang
+  else echo chua-doi-vercel; fi
+}
+
 # =====================================================================
 # Đưa web lên một tài khoản Vercel (mới hoặc khác)
 # =====================================================================
@@ -1573,28 +1628,24 @@ TXT
   thu_vercel="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-vercel.XXXXXXXX")" || return 1
   trap 'rm -f "$thu_vercel/env" "$thu_vercel/chay.sh"; rmdir "$thu_vercel"' EXIT
   cp "$f" "$thu_vercel/env" || return 1
-  cat > "$thu_vercel/chay.sh" <<'SH'
-set -uo pipefail
-V="npx -y vercel@latest --token $TOK ${SCOPE:+--scope $SCOPE}"
-$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
-while IFS= read -r line; do
-  [ -z "$line" ] && continue
-  k="${line%%=*}"; val="${line#*=}"
-  $V env rm "$k" production --yes >/dev/null 2>&1 || true
-  printf '%s' "$val" | $V env add "$k" production >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
-done < /x/env
-$V deploy --prod --yes 2>&1 | tail -n 5 || exit 1
-if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
-SH
+  chay_vercel_sh > "$thu_vercel/chay.sh"
   if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
     khoa_va_doi_soat_chuyen "$neon_url" || return 1
   fi
-  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
-  local kq=$?
-  if [ "$kq" != 0 ]; then
-    do_ "✘ Chưa đưa lên được. Chụp màn hình gửi Claude."
+  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen vercel-bat-dau "$proj"
+  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" \
+    -e VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" node:22 bash /x/chay.sh | tee "$thu_vercel/ra.txt"
+  local kq=${PIPESTATUS[0]} buoc
+  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
+  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj"
+  if [ "$kq" != 0 ] || [ "$buoc" != xong ]; then
+    do_ "✘ Chưa đưa lên được (bước: $buoc). Chụp màn hình gửi Claude."
+    case "$buoc" in
+      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa: Vercel có thể đã ghi vào Neon." ;;
+      env-do-dang) vang "Một phần biến môi trường trên Vercel đã được ghi đè, bản đang chạy chưa đổi." ;;
+    esac
     if [ "$CHUYEN_DA_KHOA" = 1 ]; then
-      vang "Nguồn VPS vẫn khóa. Kiểm tra trạng thái Vercel và các ghi trên Neon trước khi quyết định mở nguồn cũ."
+      vang "Nguồn VPS vẫn khóa. Kiểm tra trạng thái Vercel và các ghi trên Neon trước khi quyết định mở nguồn cũ. Nhật ký: ${CONF}${NHAT_KY_CHUYEN_SUFFIX}"
     fi
     return 1
   fi

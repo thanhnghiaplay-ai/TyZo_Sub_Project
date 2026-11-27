@@ -138,7 +138,7 @@ function sh(body, { fault = "", input = "" } = {}) {
   const libFile = join(work, "lib.sh");
   writeFileSync(libFile, lib);
   const script = `source "${libFile}"
-CONF="${work}/tyzo.conf"; printf 'MODE=full\\nDB=local\\n' > "$CONF"
+CONF="${work}/tyzo.conf"; printf 'MODE=full\\nDB=local\\n' > "$CONF"; [ -n "\${KEEP_JOURNAL:-}" ] || rm -f "$CONF.chuyen"
 COMPOSE_FILE=/dev/null
 ${body}`;
   return spawnSync("bash", ["-c", script], {
@@ -271,6 +271,8 @@ pgTest("RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyể
   r = sh(`chep_len_neon "${NEON}" && khoa_va_doi_soat_chuyen "${NEON}"`, { input: "dong-y\n" });
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /Neon khớp dữ liệu VPS/);
+  // RE5-004: bước khóa nguồn được ghi bền để lần chạy sau (sau mất SSH/kill) nhận ra lần chuyển dở dang.
+  assert.match(readFileSync(join(work, "tyzo.conf.chuyen"), "utf8"), /^\S+ khoa-nguon neon-khop$/m);
   assert.ok(!existsSync(join(work, "web_running")), "web VPS phải dừng để không ghi tách đôi");
   assert.deepEqual(await adminQ("select datallowconn from pg_database where datname='tyzo'"), [{ datallowconn: false }]);
   await assert.rejects(q("tyzo", "select 1"), { code: "55000" });

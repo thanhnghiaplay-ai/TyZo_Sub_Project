@@ -2,6 +2,14 @@
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 
+## RE5-004 · PARTIAL (HIGH; A, B đã sửa cục bộ; C, D còn mở)
+
+- **A.** Bản cũ chạy `env rm` rồi mới `env add` cho từng biến; nếu bước thêm lỗi thì production mất biến. Đã tái hiện: `BETTER_AUTH_SECRET` mất, xem `RE5-004/before-old-script.log`. Nay `chay_vercel_sh` dùng `vercel@65.14.0` ghim và `env add --environment production --force` qua stdin (giá trị không nằm trên dòng lệnh), không còn `env rm`. Deploy phải trả địa chỉ `https://…` và `inspect` báo Ready; nếu không thì thoát mã 3 (không rõ kết quả).
+- **B.** Thêm nhật ký bền `${CONF}.chuyen`: `khoa-nguon` → `vercel-bat-dau` → `xong` hoặc `loi-env-do-dang` / `loi-deploy-chua-ro` / `loi-chua-doi-vercel`; ghi `da-mo-lai` khi mở lại nguồn VPS. Khi nhật ký còn dở dang, `khoa_va_doi_soat_chuyen` từ chối trước khi đụng dịch vụ hay CSDL. Nguồn VPS giữ khóa ở mọi nhánh lỗi.
+- **C (mở).** Chiều Neon → VPS không khóa ghi trên Neon. Ghi vào Neon sau lần đối soát cuối và trước khi đổi DNS sẽ mất. Đề xuất: `ALTER DATABASE … SET default_transaction_read_only=on`, cắt các phiên của cùng role, đối soát lại, rồi mới đổi DNS. Cần xác minh quyền trên Neon staging.
+- **D (mở).** Sau `loi-deploy-chua-ro` chưa có lệnh hướng dẫn kiểm tra rồi mở lại nguồn hoặc đóng nhật ký.
+- Test: `re5-004-vercel.test.mjs` 5/5 (npx giả); `re3-restore-pg` thêm khẳng định nhật ký, cùng `re2-restore` đạt 27/27; npm test 1.772 đạt, 7 bỏ qua, 0 lỗi.
+
 ## RE5-001 · ĐÃ SỬA CỤC BỘ (HIGH)
 
 - A: cả hai route dùng `const outbound = parsed.body ?? body` cho cận giữ trước và lệnh gửi nhà.

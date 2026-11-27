@@ -1,8 +1,12 @@
-# Tiếp v5.49.6
+# Tiếp v5.49.6 ở mức MEDIUM
 
-Nhánh `audit/v5.49.6-claude-re5`. RE5-001 đã sửa cục bộ (xem HANDOFF.md). Kiểm `git ls-remote` khớp với `git log`.
+Nhánh `audit/v5.49.6-claude-re5`. RE5-001 đã sửa cục bộ. RE5-004: A và B đã sửa; C và D còn mở, cần HIGH và staging. Kiểm `git ls-remote` khớp với `git log`; đọc `docs/kiem-toan/v5.49.6/STATE.json` và `HANDOFF.md`.
 
-Mức HIGH: RE5-004. Đọc `deploy/vps/tyzo.sh` quanh đoạn đổi env Vercel và chuyển nguồn, cùng `scripts/re3-restore-pg.test.mjs`. Thêm test giả lập lỗi từng bước: xóa env xong nhưng thêm env lỗi, mất mạng, kill/restart, không rõ kết quả deploy, đích đã nhận ghi. Cả hai chiều Neon↔VPS. Dùng Docker/Vercel giả, PG 55439. Staging thật cần Chủ duyệt.
+Mức MEDIUM, theo thứ tự:
+1. RE5-002 (`run-gate.ts`, phần fallback khi thiếu usage): kiểm replay, crash, quyết toán đồng thời, đối soát; không tự tăng tiền trừ khách.
+2. MAIN-040 (`src/lib/tyzo-modal-call.ts`, `billing/tyzo-modal-charge.ts`): test hành vi ghi chi phí Modal (success, failure, retry, duplicate, unknown).
+3. RE5-003 (0056 trên PG thật): A đến liên tục, B chờ; nhiều model/provider/lane, live reserve, waiter hết hạn. Không sửa migration đã áp dụng.
+4. RE5-005: đo admission theo lane và cửa sổ; không nới cap.
 
-Sau đó xin MEDIUM cho RE5-002, MAIN-040, RE5-003, RE5-005; LOW cho RE5-006 tài liệu, graph và đóng gói.
+Gặp invariant tài chính không rõ hoặc race khó thì dừng, xin HIGH. Xong thì LOW: RE5-006 tài liệu, graph từ SHA sạch, đóng gói ZIP.
 Không push main, không deploy, không gọi API trả phí, không đổi giá.
