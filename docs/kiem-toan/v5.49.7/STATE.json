@@ -1,14 +1,14 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "30ed3ba2913d7a3ff06fb8914a5d18ffad8077a4",
+  "previous_checkpoint_sha": "8b733b5ea9d78aa270ebe2e93de6d0851cde50ae",
   "effort": "Medium",
   "status": "IN_PROGRESS",
-  "completed_item": "RE6-004",
-  "item_status": "PASS_LOCAL",
+  "completed_item": "RE6-005",
+  "item_status": "PARTIAL",
   "tests": {
-    "modal_fake": "8/8",
-    "evidence": "RE6-004/REPORT.md"
+    "live_fake": "7/7 + leftover 6/6",
+    "evidence": "RE6-005/REPORT.md"
   },
-  "next": "RE6-005"
+  "next": "RE6-007"
 }

@@ -50,7 +50,9 @@
     "location": "deploy/vps/do-live; leftover-script.ts; client Web/Android",
     "hypothesis": "Benchmark ít mẫu, hardcode 3.8, không đo render; lọc chữ có thể mất ý",
     "acceptance": "Chọn model, monotonic clock, cleanup timer khi close, lỗi/thiếu mẫu tính riêng, P50/95/99 onset→render và final, corpus đa ngôn ngữ, delta/final không mất tên riêng; mock trước, real cần duyệt.",
-    "status": "OPEN_VERIFY"
+    "status": "PARTIAL",
+    "evidence": "RE6-005/REPORT.md",
+    "remaining": "Chính sách tên riêng CJK trong bản dịch chờ Chủ; đo render Web/Android thật và đo thật cần duyệt."
   },
   {
     "id": "RE6-006",

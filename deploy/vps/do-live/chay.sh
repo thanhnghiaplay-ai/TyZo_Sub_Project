@@ -8,5 +8,5 @@ read -rp "Email tài khoản TyZo dùng để thử (bị trừ Token như dùng
 docker exec tyzo-bridge mkdir -p /app/deploy/vps
 docker cp deploy/vps/do-live tyzo-bridge:/app/deploy/vps/
 docker cp deploy/vps/do-modal tyzo-bridge:/app/deploy/vps/
-docker exec tyzo-bridge node --experimental-strip-types --import ./scripts/register-ts.mjs deploy/vps/do-live/do-live.ts "$email" "${1:-wss://realtimehub.tyzo.site/live}"
+docker exec tyzo-bridge node --experimental-strip-types --import ./scripts/register-ts.mjs deploy/vps/do-live/do-live.ts "$email" "${1:-wss://realtimehub.tyzo.site/live}" "${2:-vi}" "${3:-3.5}" "${4:-1}"
 docker exec tyzo-bridge rm -rf /app/deploy/vps/do-live /app/deploy/vps/do-modal

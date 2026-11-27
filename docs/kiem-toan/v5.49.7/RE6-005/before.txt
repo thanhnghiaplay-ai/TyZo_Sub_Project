@@ -1,0 +1,8 @@
+Trước sửa (deploy/vps/do-live/do-live.ts tại 8b733b5):
+- Model cứng LIVE_MODEL_38, trong khi app mặc định 3.5 từ v5.49.6. Không chọn được model, chỉ 1 vòng × 4 đoạn (n=4).
+- Dùng Date.now(), là đồng hồ tường, có thể nhảy khi NTP chỉnh giờ.
+- setInterval gửi khung chỉ dừng khi gửi hết. Cầu nối đóng sớm thì bộ đếm vẫn chạy và gọi ws.send trên socket đã đóng.
+- Lượt lỗi hoặc thiếu mốc vẫn trộn vào thống kê. Math.max(...[]) trả -Infinity, nên JSON ghi null hoặc sai khi không có mẫu.
+- Chỉ có p50 và max, không có P95/P99. Mốc là lúc máy đo nhận, nhưng nhãn không nói rõ là chưa đo lúc giao diện vẽ.
+- Đoạn im lặng làm speechSpan trả onset 0 và offset sai, vì findIndex trả -1.
+- Bộ lọc chữ sót chỉ có 6 ca, không có corpus đa ngôn ngữ, chưa kiểm delta ghép bằng final, chưa ghi việc mất tên riêng chữ Hán.
