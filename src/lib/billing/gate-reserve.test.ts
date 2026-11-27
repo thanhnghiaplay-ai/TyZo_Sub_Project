@@ -197,6 +197,25 @@ describe("RE-005: nhà luôn nhận yêu cầu có trần token", () => {
     const same = await readRequest("/chat/completions", "application/json", enc({ model: "m", max_tokens: 300, max_completion_tokens: 300 }), "max_tokens");
     assert.deepEqual([same?.problem, same?.cap, dec(same?.body).max_tokens], [null, 300, 300]);
   });
+  it("RE4-001: Alibaba giữ trần phần dịch và không bật reasoning hoặc công cụ chạy tại nhà", async () => {
+    const path = "/chat/completions";
+    const valid = await readRequest(path, "application/json", enc({
+      model: "qwen-plus", max_tokens: 200, reasoning_effort: "none",
+      tools: [{ type: "function", function: { name: "caption" } }],
+    }), "max_tokens");
+    assert.equal(valid?.problem, null);
+    assert.equal(dec(valid?.body).enable_thinking, false);
+    assert.equal(dec(valid?.body).max_tokens, 200);
+    assert.ok(!("reasoning_effort" in dec(valid?.body)));
+    for (const extra of [
+      { enable_thinking: true }, { thinking_budget: 1024 },
+      { reasoning_effort: "high" }, { enable_search: true }, { tools: [{ type: "web_search" }] },
+    ]) {
+      const invalid = await readRequest(path, "application/json", enc({ model: "qwen-plus", ...extra }), "max_tokens");
+      assert.ok(invalid?.problem);
+    }
+  });
+
   it("nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền", async () => {
     await openTicket(100);
     const parsed = await readRequest("/chat/completions", "application/json", enc({ model: "chat", messages: [] }), "max_tokens");

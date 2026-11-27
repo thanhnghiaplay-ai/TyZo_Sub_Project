@@ -14,7 +14,8 @@
     "acceptance": "Test tiếng Việt, CJK, emoji, JSON, tool schema, cap đầu ra, nhiều request đồng thời; không gọi khi thiếu hold; so usage thật trong ngân sách thử được duyệt.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "docs/kiem-toan/codex/RE4-001/REPORT.md"
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-001/REPORT.md",
+    "providerFollowup": "docs/kiem-toan/codex/integration-recovery/REPORT.md"
   },
   {
     "id": "RE4-002",
@@ -106,7 +107,14 @@
     "priority": "GATE",
     "status": "PARTIAL",
     "title": "Soak liên tục 60 phút, API/Web/AI và streaming",
-    "checkpointEvidence": "docs/kiem-toan/codex/integration-load-soak/run-start.txt",
-    "remaining": "Chờ kết quả 3600 giây liên tục; upstream và GPU thật, thiết bị Android thật và staging chưa được cấp."
+    "checkpointEvidence": "docs/kiem-toan/codex/integration-recovery/REPORT.md",
+    "remaining": "Lượt đầu dừng tại lỗi đóng gói; chạy lại và đợi kết quả đủ 3.600 giây."
+  },
+  {
+    "id": "CODEX-PGLITE-BUILD",
+    "priority": "P1",
+    "status": "PASS",
+    "title": "Bản Node thiếu PGlite runtime assets",
+    "checkpointEvidence": "docs/kiem-toan/codex/integration-recovery/REPORT.md"
   }
 ]

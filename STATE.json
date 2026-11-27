@@ -2,20 +2,20 @@
   "repository": "thanhnghiaplay-ai/TyZo_Sub_Project",
   "branch": "codex/tyzo-v5.49.4-audit",
   "baseline": "0edb82a8d2115e86d025d9f51f36f033bb55bbd4",
-  "checkpoint": "RE4-005",
-  "evidence": "docs/kiem-toan/codex/RE4-005",
+  "checkpoint": "integration-recovery",
+  "evidence": "docs/kiem-toan/codex/integration-recovery",
   "next": [
     "RE2/RE3/80",
     "integration/load/soak",
     "RE4-006"
   ],
-  "parentCommit": "604bf08471c6c0dcfa1e11430f65b13cc87f570b",
-  "activeSoak": {
+  "parentCommit": "c41528963a16cb9a790d587c357782fca4f81fbb",
+  "previousSoak": {
     "snapshot": "aaba2aab1b2d4faa38b5249bb967f658269fc1ab",
     "startedUtc": "2026-11-27T15:00:02Z",
     "minContinuousSeconds": 3600,
-    "status": "RUNNING",
+    "status": "ABORTED",
     "runtimeArtifacts": "/workspace/tyzo-audit-mixed-run",
-    "evidence": "docs/kiem-toan/codex/integration-load-soak/run-start.txt"
+    "evidence": "docs/kiem-toan/codex/integration-recovery/initial-soak-exit.txt"
   }
 }

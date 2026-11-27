@@ -1,6 +1,6 @@
 > **Codex — checkpoint tiếp quản v5.49.4.** Nhánh `codex/tyzo-v5.49.4-audit` xuất phát từ `0edb82a8`; manifest khớp 2.590 tệp. Xem STATE.json, BACKLOG.json và NEXT_PROMPT.md trước khi tiếp tục. Bằng chứng tại docs/kiem-toan/codex/. Các mục dưới đây là lịch sử.
 
-- **Soak đang chạy.** Snapshot `aaba2aa`, bắt đầu 15:00:02 UTC; local Node 22, PostgreSQL 17, upstream giả, k6 300 VU Web. Trạng thái RUNNING chỉ xác nhận đã khởi chạy. Xem STATE.json.
+- **Soak lượt đầu dừng.** Lỗi PGlite ở bản Node và changelog đã được sửa, hồi quy 48/48. Xem docs/kiem-toan/codex/integration-recovery/REPORT.md.
 
 - **RE4-005 PASS.** WebM sai cấp và vượt biên bị từ chối; Node 22 đạt 29/29 và Chromium/FFprobe cùng đo 2,22 s. Xem docs/kiem-toan/codex/RE4-005/REPORT.md.
 

@@ -13,8 +13,12 @@ export const CHANGELOG: ReleaseNote[] = [
   {
     version: "5.49.5",
     time: "27/11/2026",
-    title: "Kiểm tra phần Token đã giữ trước khi dịch.",
-    points: ["Hệ thống kiểm tra đủ phần đã giữ trước khi gửi yêu cầu dịch. Khi có số liệu từ nhà cung cấp, số Token trừ vẫn tính theo lượng đã dùng."],
+    title: "Kiểm tra phần đã giữ trước khi dịch.",
+    points: [
+      "Hệ thống kiểm tra phần đã giữ trước khi gửi yêu cầu dịch.",
+      "Khi có số liệu từ nhà cung cấp, số Token dịch trừ theo lượng đã dùng.",
+      "Phần dịch trực tiếp dùng suất trống khi các đoạn đang chờ không thể dùng suất đó.",
+    ],
   },
   {
     version: "5.49.4",
@@ -308,16 +312,6 @@ export const CHANGELOG: ReleaseNote[] = [
       "Thông báo dài tự xuống dòng, không tràn ra ngoài màn hình, hiện lâu hơn để kịp đọc.",
       "Key sai báo bằng tiếng Việt theo từng nhà, kèm trang lấy key, không hiện mã lỗi thô.",
       "Key ElevenLabs dán thiếu hay thừa ký tự được báo ngay khi lưu.",
-    ],
-  },
-  {
-    version: "5.35.0",
-    time: "05:53 22/11/2026",
-    title: "Thuyết minh bằng giọng ElevenLabs, đọc được tiếng Việt.",
-    points: [
-      "Ở mục Thuyết minh, chọn ElevenLabs rồi chọn giọng nam hoặc nữ theo danh sách giọng của key.",
-      "Trả theo lượt trừ Token dịch theo số chữ đọc. Thuê phòng dùng key ElevenLabs của bạn.",
-      "Nhận dạng ElevenLabs xong thì bản nhận dạng được xóa ở ElevenLabs.",
     ],
   },
 ];

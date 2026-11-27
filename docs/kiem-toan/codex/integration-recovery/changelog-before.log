@@ -1,0 +1,4 @@
+      error: '5.49.5: «Hệ thống kiểm tra đủ phần đã giữ trước khi gửi yêu cầu dịch. Khi có số liệu từ nhà cung cấp, số Token trừ vẫn tính theo lượng đã dùng.» quá 100 ký tự'
+      error: 'CHANGELOG có 31 bản: chuyển bản cũ sang docs/lich-su/CHANGELOG-cu.md'
+      error: '5.49.5: «Kiểm tra phần Token đã giữ trước khi dịch.»'
+not ok 64 - CHANGELOG cho khách

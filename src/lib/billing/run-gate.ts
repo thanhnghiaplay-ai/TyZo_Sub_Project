@@ -75,6 +75,21 @@ export async function readRequest(
     if (json.n != null && json.n !== 1)
       return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ một câu trả lời." };
     delete json.n; // Both providers default to one completion.
+    // DashScope max_tokens on legacy Qwen does not cover separate thinking tokens.
+    // The TyZo batch translator requests non-thinking mode.
+    if (tokenField === "max_tokens") {
+      if ((json.enable_thinking != null && json.enable_thinking !== false) ||
+        json.thinking_budget != null ||
+        (json.reasoning_effort != null && json.reasoning_effort !== "none"))
+        return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ dịch trực tiếp từ văn bản." };
+      delete json.reasoning_effort;
+      if (model === "qwen-plus") json.enable_thinking = false;
+    }
+    // Only client-side function schemas have no separately billed tool execution.
+    if ((json.enable_search != null && json.enable_search !== false) ||
+      (json.tools != null && (!Array.isArray(json.tools) || json.tools.some((tool) => tool?.type !== "function"))))
+      return { model, chars: 0, problem: "Cửa trả theo lượt không hỗ trợ công cụ chạy tại nhà cung cấp." };
+
     const a = json.max_completion_tokens;
     const b = json.max_tokens;
     const given = [a, b].filter((v) => v !== undefined && v !== null);

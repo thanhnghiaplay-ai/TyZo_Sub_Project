@@ -1,6 +1,6 @@
 # Tiếp tục kiểm toán TyZo
 
-Soak đang chạy theo STATE.json. Nếu workspace cũ còn hoạt động, kiểm tra thư mục kết quả; nếu mất runtime, chạy lại 3.600 giây liên tục trên cùng snapshot. Đừng cộng dồn hoặc gán PASS theo thời gian đã hẹn.
+Soak lượt đầu bị dừng có chủ đích khi phát hiện lỗi bản dựng. Chỉ tính lượt sau nếu liên tục đủ thời lượng và khớp snapshot đã kiểm.
 
 Checkpoint hiện tại RE4-005 (PASS). Tiếp theo RE2/RE3/80.
 

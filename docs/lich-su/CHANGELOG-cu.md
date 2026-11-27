@@ -1,6 +1,14 @@
 # Lịch sử cập nhật cũ (CHANGELOG cho khách)
 
-Chép từ `src/lib/app-version.ts` ngày 23/11/2026. Ứng dụng chỉ giữ 20 bản gần nhất (màn «có gì mới» chỉ hiện 8). Đây là 214 bản cũ hơn, nguyên văn, mới trước cũ sau.
+Các mục sau được chuyển nguyên văn từ `src/lib/app-version.ts`. Các bản gần đây nằm trong ứng dụng, mục «Có gì mới» hiển thị 8 bản.
+
+## 5.35.0 · 05:53 22/11/2026
+
+Thuyết minh bằng giọng ElevenLabs, đọc được tiếng Việt.
+
+- Ở mục Thuyết minh, chọn ElevenLabs rồi chọn giọng nam hoặc nữ theo danh sách giọng của key.
+- Trả theo lượt trừ Token dịch theo số chữ đọc. Thuê phòng dùng key ElevenLabs của bạn.
+- Nhận dạng ElevenLabs xong thì bản nhận dạng được xóa ở ElevenLabs.
 
 ## 5.34.0 · 03:59 22/11/2026
 

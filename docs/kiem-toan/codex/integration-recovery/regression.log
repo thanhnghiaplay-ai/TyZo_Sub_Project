@@ -1,0 +1,342 @@
+TAP version 13
+# Subtest: CHANGELOG cho khách
+    # Subtest: dòng đầu khớp APP_VERSION
+    ok 1 - dòng đầu khớp APP_VERSION
+      ---
+      duration_ms: 1.253452
+      type: 'test'
+      ...
+    # Subtest: đủ 3 lớp, ngắn gọn
+    ok 2 - đủ 3 lớp, ngắn gọn
+      ---
+      duration_ms: 0.720725
+      type: 'test'
+      ...
+    # Subtest: giữ gọn: tối đa 30 bản trong ứng dụng (bản cũ chuyển sang docs/lich-su/CHANGELOG-cu.md)
+    ok 3 - giữ gọn: tối đa 30 bản trong ứng dụng (bản cũ chuyển sang docs/lich-su/CHANGELOG-cu.md)
+      ---
+      duration_ms: 0.221927
+      type: 'test'
+      ...
+    # Subtest: không có từ nội bộ
+    ok 4 - không có từ nội bộ
+      ---
+      duration_ms: 1.653758
+      type: 'test'
+      ...
+    1..4
+ok 1 - CHANGELOG cho khách
+  ---
+  duration_ms: 6.927991
+  type: 'suite'
+  ...
+# Subtest: RE-002: giữ trước từng lệnh Groq/Alibaba
+    # Subtest: 8 lệnh cùng lúc, mỗi lệnh ~30 Token, giữ 100 → phần giữ không bao giờ vượt held, nhà chỉ được gọi khi còn phần giữ
+    ok 1 - 8 lệnh cùng lúc, mỗi lệnh ~30 Token, giữ 100 → phần giữ không bao giờ vượt held, nhà chỉ được gọi khi còn phần giữ
+      ---
+      duration_ms: 704.141113
+      type: 'test'
+      ...
+    # SAU: nhà được gọi 3 lần (≈99 Token), cùng lúc tối đa 3, khách bị trừ 99 Token (phần giữ 100).
+    # Subtest: RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà
+    ok 2 - RE4-001: yêu cầu thiếu phần giữ theo trần input bị chặn trước khi gọi nhà
+      ---
+      duration_ms: 98.984683
+      type: 'test'
+      ...
+    # Subtest: RE4-001: model thiếu giới hạn ngữ cảnh được chặn trước khi gửi
+    ok 3 - RE4-001: model thiếu giới hạn ngữ cảnh được chặn trước khi gửi
+      ---
+      duration_ms: 23.371488
+      type: 'test'
+      ...
+    # Subtest: nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả
+    ok 4 - nhà trả 500: nhả phần giữ, không trừ, giữ dấu đối soát vì chưa xác minh kết quả
+      ---
+      duration_ms: 78.999803
+      type: 'test'
+      ...
+    # Subtest: mất trả lời (hết giờ): nhả phần giữ, ghi «mat-phan-hoi» để đối soát
+    ok 5 - mất trả lời (hết giờ): nhả phần giữ, ghi «mat-phan-hoi» để đối soát
+      ---
+      duration_ms: 89.647508
+      type: 'test'
+      ...
+    # Subtest: tiến trình chết giữa chừng (mất nhịp): lệnh sau dọn phần giữ của lệnh chết rồi chạy được
+    ok 6 - tiến trình chết giữa chừng (mất nhịp): lệnh sau dọn phần giữ của lệnh chết rồi chạy được
+      ---
+      duration_ms: 175.114989
+      type: 'test'
+      ...
+    # Subtest: khách đóng phiếu khi lệnh đang gọi nhà → chờ lệnh xong mới trả phần dư; lệnh vẫn được trừ
+    ok 7 - khách đóng phiếu khi lệnh đang gọi nhà → chờ lệnh xong mới trả phần dư; lệnh vẫn được trừ
+      ---
+      duration_ms: 215.16078
+      type: 'test'
+      ...
+    1..7
+ok 2 - RE-002: giữ trước từng lệnh Groq/Alibaba
+  ---
+  duration_ms: 2074.627076
+  type: 'suite'
+  ...
+# Subtest: RE-005: nhà luôn nhận yêu cầu có trần token
+    # Subtest: không ghi hoặc null → trần mặc định, đúng trường của nhà
+    ok 1 - không ghi hoặc null → trần mặc định, đúng trường của nhà
+      ---
+      duration_ms: 0.854097
+      type: 'test'
+      ...
+    # Subtest: âm, chuỗi, thập phân, 0, 8193, hai trường khác nhau → từ chối; hai trường bằng nhau → nhận
+    ok 2 - âm, chuỗi, thập phân, 0, 8193, hai trường khác nhau → từ chối; hai trường bằng nhau → nhận
+      ---
+      duration_ms: 0.411235
+      type: 'test'
+      ...
+    # Subtest: RE4-001: Alibaba giữ trần phần dịch và không bật reasoning hoặc công cụ chạy tại nhà
+    ok 3 - RE4-001: Alibaba giữ trần phần dịch và không bật reasoning hoặc công cụ chạy tại nhà
+      ---
+      duration_ms: 0.567202
+      type: 'test'
+      ...
+    # Subtest: nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền
+    ok 4 - nhà giả nhận đúng thân đã chuẩn hóa qua cửa tính tiền
+      ---
+      duration_ms: 89.16599
+      type: 'test'
+      ...
+    1..4
+ok 3 - RE-005: nhà luôn nhận yêu cầu có trần token
+  ---
+  duration_ms: 91.3021
+  type: 'suite'
+  ...
+# Subtest: RE2-001: 10 held versus 100 estimate rejects before upstream
+ok 4 - RE2-001: 10 held versus 100 estimate rejects before upstream
+  ---
+  duration_ms: 600.545555
+  type: 'test'
+  ...
+# Subtest: RE2-001: invalid estimates fail closed without creating calls
+ok 5 - RE2-001: invalid estimates fail closed without creating calls
+  ---
+  duration_ms: 15.700249
+  type: 'test'
+  ...
+# Subtest: RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+ok 6 - RE2-001: 100 concurrent reservations cannot oversubscribe 100 held
+  ---
+  duration_ms: 1234.065628
+  type: 'test'
+  ...
+# Subtest: RE2-006: close intent rejects a new reservation while an old call drains
+ok 7 - RE2-006: close intent rejects a new reservation while an old call drains
+  ---
+  duration_ms: 66.416473
+  type: 'test'
+  ...
+# Subtest: RE2-002: cost above own reservation cannot spend another call's 40
+ok 8 - RE2-002: cost above own reservation cannot spend another call's 40
+  ---
+  duration_ms: 21.094392
+  type: 'test'
+  ...
+# Subtest: RE2-002: reaped late response cannot debit after lease lost
+ok 9 - RE2-002: reaped late response cannot debit after lease lost
+  ---
+  duration_ms: 171.288574
+  type: 'test'
+  ...
+# Subtest: RE2-003: heartbeat continues while response body is being read
+ok 10 - RE2-003: heartbeat continues while response body is being read
+  ---
+  duration_ms: 136.128305
+  type: 'test'
+  ...
+# Subtest: RE2-003: failed response body releases into reconciliation
+ok 11 - RE2-003: failed response body releases into reconciliation
+  ---
+  duration_ms: 149.87205
+  type: 'test'
+  ...
+# Subtest: RE2-002: release replay is a no-op
+ok 12 - RE2-002: release replay is a no-op
+  ---
+  duration_ms: 26.69481
+  type: 'test'
+  ...
+# Subtest: RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+ok 13 - RE2-002 cross-provider: Modal overrun leaves Groq's 40 reserved
+  ---
+  duration_ms: 91.725129
+  type: 'test'
+  ...
+# Subtest: RE2-002: settlement replay and rollback retain one debit and one provider observation
+ok 14 - RE2-002: settlement replay and rollback retain one debit and one provider observation
+  ---
+  duration_ms: 130.749827
+  type: 'test'
+  ...
+# Subtest: RE2-003: body deadline cancels a stuck stream and releases its budget
+ok 15 - RE2-003: body deadline cancels a stuck stream and releases its budget
+  ---
+  duration_ms: 94.988307
+  type: 'test'
+  ...
+# Subtest: RE2-003: expired heartbeat cannot revive an old call
+ok 16 - RE2-003: expired heartbeat cannot revive an old call
+  ---
+  duration_ms: 68.343349
+  type: 'test'
+  ...
+# Admission: 200 contenders, accepted 24, rejected 176, 470ms total
+# Subtest: SCALE: 200 contenders across connections obey global/model caps and release replay
+ok 17 - SCALE: 200 contenders across connections obey global/model caps and release replay
+  ---
+  duration_ms: 543.264307
+  type: 'test'
+  ...
+# Subtest: SCALE: per-user limits, independent live lane, expired leases and kill switch
+ok 18 - SCALE: per-user limits, independent live lane, expired leases and kill switch
+  ---
+  duration_ms: 68.887651
+  type: 'test'
+  ...
+# Subtest: SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+ok 19 - SCALE: admitted endpoint returns 429 without invoking upstream, and finishes failed slots
+  ---
+  duration_ms: 21.068885
+  type: 'test'
+  ...
+# Subtest: RE2-002: Modal late result retains actual cost evidence after reaping
+ok 20 - RE2-002: Modal late result retains actual cost evidence after reaping
+  ---
+  duration_ms: 60.770061
+  type: 'test'
+  ...
+# Subtest: RE2-002 root: unreserved charging paths cannot consume another call's reservation
+ok 21 - RE2-002 root: unreserved charging paths cannot consume another call's reservation
+  ---
+  duration_ms: 13.898421
+  type: 'test'
+  ...
+# Subtest: SCALE: expired live work retains admission until its late completion releases it
+ok 22 - SCALE: expired live work retains admission until its late completion releases it
+  ---
+  duration_ms: 18.346336
+  type: 'test'
+  ...
+# Subtest: cổng tính tiền
+    # Subtest: dịch thành công: trừ theo token thật trong usage
+    ok 1 - dịch thành công: trừ theo token thật trong usage
+      ---
+      duration_ms: 296.506834
+      type: 'test'
+      ...
+    # Subtest: Groq trả lỗi thì không tính tiền
+    ok 2 - Groq trả lỗi thì không tính tiền
+      ---
+      duration_ms: 118.867708
+      type: 'test'
+      ...
+    # Subtest: nhận dạng: trừ theo duration thật, tối thiểu 10 giây
+    ok 3 - nhận dạng: trừ theo duration thật, tối thiểu 10 giây
+      ---
+      duration_ms: 343.753287
+      type: 'test'
+      ...
+    # Subtest: R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát
+    ok 4 - R3-009: thiếu duration và segments thì dùng ước tính âm thanh, ghi cờ đối soát
+      ---
+      duration_ms: 90.341917
+      type: 'test'
+      ...
+    # Subtest: RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà
+    ok 5 - RE3-002: audio không xác minh được độ dài → 422, không giữ, không gọi nhà
+      ---
+      duration_ms: 55.759064
+      type: 'test'
+      ...
+    # Subtest: thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq
+    ok 6 - thiếu phiếu, phiếu của người khác, phiếu hết giữ đều bị từ chối trước khi gọi Groq
+      ---
+      duration_ms: 12.600154
+      type: 'test'
+      ...
+    # Subtest: model chưa có giá bị từ chối, không gọi Groq
+    ok 7 - model chưa có giá bị từ chối, không gọi Groq
+      ---
+      duration_ms: 41.435614
+      type: 'test'
+      ...
+    # Subtest: đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi
+    ok 8 - đọc thuyết minh: trừ Token dịch theo giá gốc, hoàn khi Groq lỗi
+      ---
+      duration_ms: 180.619132
+      type: 'test'
+      ...
+    1..8
+ok 23 - cổng tính tiền
+  ---
+  duration_ms: 7033.336183
+  type: 'suite'
+  ...
+# Subtest: đọc yêu cầu
+    # Subtest: chat: lấy model, chặn stream và token trả lời quá lớn
+    ok 1 - chat: lấy model, chặn stream và token trả lời quá lớn
+      ---
+      duration_ms: 7.736901
+      type: 'test'
+      ...
+    # Subtest: speech: đếm ký tự; nhận dạng: lấy model từ form
+    ok 2 - speech: đếm ký tự; nhận dạng: lấy model từ form
+      ---
+      duration_ms: 4.407036
+      type: 'test'
+      ...
+    # Subtest: body hỏng thì null
+    ok 3 - body hỏng thì null
+      ---
+      duration_ms: 0.241491
+      type: 'test'
+      ...
+    1..3
+ok 24 - đọc yêu cầu
+  ---
+  duration_ms: 12.822738
+  type: 'suite'
+  ...
+# Subtest: giá Alibaba vùng Singapore
+    # Subtest: lấy Singapore, không lấy giá Trung Quốc, không nhầm model dài hơn
+    ok 1 - lấy Singapore, không lấy giá Trung Quốc, không nhầm model dài hơn
+      ---
+      duration_ms: 3.028911
+      type: 'test'
+      ...
+    # Subtest: giá lệch quá xa thì bỏ, model chưa có giá dự phòng nhận mức hợp lý
+    ok 2 - giá lệch quá xa thì bỏ, model chưa có giá dự phòng nhận mức hợp lý
+      ---
+      duration_ms: 0.505062
+      type: 'test'
+      ...
+    # Subtest: đọc bảng đã lưu: giá hợp lệ phủ dự phòng, hỏng hoặc lệch thì giữ
+    ok 3 - đọc bảng đã lưu: giá hợp lệ phủ dự phòng, hỏng hoặc lệch thì giữ
+      ---
+      duration_ms: 0.465026
+      type: 'test'
+      ...
+    1..3
+ok 25 - giá Alibaba vùng Singapore
+  ---
+  duration_ms: 5.428736
+  type: 'suite'
+  ...
+1..25
+# tests 48
+# suites 6
+# pass 48
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25688.324393

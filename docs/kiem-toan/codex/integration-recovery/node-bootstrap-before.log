@@ -1,0 +1,20 @@
+➜ Listening on: http://127.0.0.1:17750/
+[db] PGLite bootstrap failed: Error: ENOENT: no such file or directory, open '.output/server/_libs/pglite.data'
+    at async open (node:internal/fs/promises:639:25)
+    at async Module.readFile (node:internal/fs/promises:1252:14)
+    at async Object.w$2 (file://.output/server/_libs/electric-sql__pglite.mjs:114:16) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '.output/server/_libs/pglite.data'
+}
+[unhandledRejection] Error: ENOENT: no such file or directory, open '.output/server/_libs/pglite.data'
+    at async open (node:internal/fs/promises:639:25)
+    at async Module.readFile (node:internal/fs/promises:1252:14)
+    at async Object.w$2 (file://.output/server/_libs/electric-sql__pglite.mjs:114:16) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '.output/server/_libs/pglite.data'
+}
+[Omitted repetitive entries. 2086 ENOENT occurrences in the captured log.]
