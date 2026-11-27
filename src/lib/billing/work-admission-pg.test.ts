@@ -21,6 +21,8 @@ beforeEach(async () => {
   if (!sql) return;
   await sql`delete from work_admissions`;
   await sql`delete from run_async_asr_jobs`;
+  // Yêu cầu bị từ chối ở test trước vẫn «đang chờ» 6 giây và được xếp trước (đúng thiết kế RE2-004): dọn giữa các test.
+  await sql`delete from work_waiters`;
   await sql`delete from room_settings where key = 'work_admission'`;
 });
 const limits = (v: Record<string, unknown>) =>
@@ -149,6 +151,8 @@ pgTest("RE2-004: hàng chờ công bằng — suất trống trao cho người x
   const c = await acquireWorkInfo(sql, key("C"));
   assert.deepEqual([b.id, b.position, c.id, c.position], [null, 1, null, 2]);
   await releaseWork(sql, a.id!);
+  // B và C đã chờ quá ngưỡng chống đói (3 giây): suất trống giữ theo thứ tự xếp.
+  await sql`update work_waiters set since = since - interval '10 seconds'`;
   // C thử lại trước B: vẫn phải nhường B (B đang chờ, xếp trước).
   const c2 = await acquireWorkInfo(sql, key("C"));
   assert.deepEqual([c2.id, c2.position], [null, 2]);
@@ -167,6 +171,7 @@ pgTest("RE2-004: người xếp trước đã bỏ đi (quá 6 giây không th�
   const a = await acquireWorkInfo(sql, key("A"));
   await acquireWorkInfo(sql, key("GONE"));
   await releaseWork(sql, a.id!);
+  await sql`update work_waiters set since = since - interval '10 seconds'`;
   await sql`update work_waiters set seen_at = clock_timestamp() - interval '7 seconds' where user_id = 'GONE'`;
   const d = await acquireWorkInfo(sql, key("D"));
   assert.ok(d.id, "suất trống không được giữ cho người đã bỏ đi");
@@ -188,4 +193,17 @@ pgTest("RE2-004: khách đã dùng đủ suất riêng không xếp hàng chặn
   const positions = many.filter((x) => !x.id).map((x) => x.position).sort((p, q) => p - q);
   assert.equal(new Set(positions).size, positions.length, "mỗi người một vị trí khác nhau");
   await releaseWork(sql, own.id!);
+});
+
+pgTest("RE2-004: không bỏ trống suất — người mới chờ chưa tới 3 giây không chặn người đến lấy suất trống", async () => {
+  await sql`delete from work_waiters`;
+  await limits({ perProvider: 50, perModel: 1, batch: 50, live: 50, perUser: 5 });
+  const key = (u: string) => ({ userId: u, provider: "groq", model: "w", lane: "batch" as const });
+  const a = await acquireWorkInfo(sql, key("A"));
+  const b = await acquireWorkInfo(sql, key("B"));
+  assert.equal(b.position, 1);
+  await releaseWork(sql, a.id!);
+  const c = await acquireWorkInfo(sql, key("C"));
+  assert.ok(c.id, "B mới chờ dưới 3 giây: suất trống không bị giữ");
+  await releaseWork(sql, c.id!);
 });
