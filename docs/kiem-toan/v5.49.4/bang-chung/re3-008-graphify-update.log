@@ -1,0 +1,7 @@
+# label=re3-008-graphify-update
+# head=c5c39c7af360aaf208211af51dc56ec4a3fe953d dirty=1
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:23:51Z
+# cmd=env -u ANTHROPIC_API_KEY -u OPENAI_API_KEY graphify update . --force --no-label
+error: unknown update option: --no-label
+# exit=2 seconds=0 end=2026-11-27T11:23:51Z

@@ -1,0 +1,30 @@
+# label=re3-008-graphify-update-2
+# head=c5c39c7af360aaf208211af51dc56ec4a3fe953d dirty=2
+# fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
+# start=2026-11-27T11:23:54Z
+# cmd=env -u ANTHROPIC_API_KEY -u OPENAI_API_KEY graphify update . --force
+Updating code graph in . (no LLM needed)...
+[graphify watch] 161 file(s) not classified (no supported extension or shebang), skipped: .dockerignore, .gitignore, .gitleaks.toml, .gitleaksignore, .node_modules.lock, .prettierrc (+155 more)
+  AST cache: 197/1132 files served from cache (17%); 935 to extract
+  AST extraction: 100/935 uncached files (10%) [4 workers]
+  AST extraction: 200/935 uncached files (21%) [4 workers]
+  AST extraction: 300/935 uncached files (32%) [4 workers]
+  AST extraction: 400/935 uncached files (42%) [4 workers]
+  AST extraction: 500/935 uncached files (53%) [4 workers]
+  AST extraction: 600/935 uncached files (64%) [4 workers]
+  AST extraction: 700/935 uncached files (74%) [4 workers]
+  AST extraction: 800/935 uncached files (85%) [4 workers]
+  AST extraction: 900/935 uncached files (96%) [4 workers]
+  AST extraction: 935/935 uncached files (100%) [4 workers]
+  warning: 55 .sql file(s) contributed nothing to the graph because a dependency is missing: tree_sitter_sql not installed. Install it with: pip install "graphifyy[sql]" (#1745)
+  warning: 3 file(s) had syntax errors and may be partially extracted: android/app/src/main/java/vn/tyzo/sub/MainActivity.kt (error region at line 36, 10 symbol(s) extracted), src/lib/payment/pay-confirm.test.ts (error region at line 26, no symbols extracted), src/lib/usage-tally.test.ts (error region at line 40, no symbols extracted)
+  warning: 92 code file(s) yielded no symbols (0.18 MB) — a data file, or source this extractor models no symbols for: .dependency-cruiser.cjs, android/app/build.gradle.kts, android/build.gradle.kts, android/settings.gradle.kts, docs/kiem-toan/v5.49.1/bang-chung/codex/browser_checks.py (+87 more)
+[graphify watch] community set changed since labeling (0 saved labels, 248 communities now; renamed 50 community(ies) by their hub). Run `graphify label` to refresh names with the LLM.
+Graph has 6762 nodes (above 5000 limit). Building aggregated community view...
+graph.html written (aggregated: 248 community nodes, 1328 cross-community edges)
+Tip: run with --obsidian for full node-level detail.
+[graphify watch] Rebuilt: 6762 nodes, 18933 edges, 248 communities
+[graphify watch] graph.json, graph.html and GRAPH_REPORT.md updated in graphify-out
+Code graph updated. For doc/paper/image changes run /graphify --update in your AI assistant.
+Tip: set GEMINI_API_KEY or GOOGLE_API_KEY to use Gemini for semantic extraction.
+# exit=0 seconds=14 end=2026-11-27T11:24:08Z
