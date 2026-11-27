@@ -224,3 +224,21 @@ test("SCALE: resolving uncertain capacity needs Admin evidence, is audited atomi
   assert.equal(await call(capacity.resolveWorkAdmission,{...data,id:live}),false);
   assert.equal((await sql`select status from work_admissions where id=${live}`)[0].status,"running");
 });
+
+mock.module("./app-release.server.ts", { namedExports: { androidRelease: async () => ({code:12,name:"0.12",url:""}) } });
+
+test("AZ-002: app link/me identity is derived from authenticated device, never client input", async (t) => {
+  if (!sql) return t.skip("Requires explicitly isolated TYZO_TEST_PG_URL");
+  const links = await import("./app-link.server.ts");
+  await person("identity-a");await person("identity-b");
+  const code=await links.createLinkCode("identity-a");
+  const post=(await import("../routes/api/app-link.ts")).Route as unknown as {server:{handlers:{POST:(args:{request:Request})=>Promise<Response>}}};
+  request=new Request("http://fixture.test/api/app-link",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({code:code.code,name:"identity fixture",userId:"identity-b"})});
+  const linked=await post.server.handlers.POST({request});assert.equal(linked.status,200);
+  const identity=await linked.json();assert.equal(identity.userId,"identity-a");
+  const me=(await import("../routes/api/app-me.ts")).Route as unknown as {server:{handlers:{GET:()=>Promise<Response>}}};
+  request=new Request("http://fixture.test/api/app-me",{headers:{authorization:`Bearer ${identity.token}`}});
+  const mine=await me.server.handlers.GET();assert.equal(mine.status,200);const value=await mine.json();assert.equal(value.userId,"identity-a");assert.equal(value.email,"identity-a@example.invalid");
+  request=new Request("http://fixture.test/api/app-me");
+  const denied=await me.server.handlers.GET();assert.equal(denied.status,401);assert.equal((await denied.json()).userId,undefined);
+});

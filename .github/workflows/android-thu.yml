@@ -41,6 +41,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
         with:
           gradle-version: "8.14.3"
+      - name: Kiểm tra cách ly tài khoản và đồng bộ phiên (JVM)
+        run: bash tools/check-session-ci.sh
       - name: Lấy khóa ký (nếu có)
         id: key
         env:

@@ -76,6 +76,11 @@ class LiveService : Service() {
 
     private val main = Handler(Looper.getMainLooper())
     private lateinit var prefs: Prefs
+    private lateinit var runAccess: AccountAccess
+    private var runModel = ""
+    private var runTarget = ""
+    private var runSource = ""
+    private var runWords = ""
     private var overlay: CaptionOverlay? = null
     private var projection: MediaProjection? = null
     private var recorder: AudioRecord? = null
@@ -113,10 +118,21 @@ class LiveService : Service() {
         mulaw = false
         LiveState.paused = false
         lastError = ""
-        LiveState.unlinked = false
+        LiveState.unlinked = null
         LiveState.phase = LiveState.Phase.STARTING
         LiveState.status = "Đang mở phiên dịch…"
         LiveState.startedAtMs = 0L
+
+        val access = prefs.access()
+        if (access?.owner == null) {
+            finish("Chưa xác minh được tài khoản của bản lưu. Cập nhật web rồi tải lại tài khoản trước khi bắt đầu.")
+            return START_NOT_STICKY
+        }
+        runAccess = access
+        runModel = prefs.model
+        runTarget = prefs.target
+        runSource = prefs.source
+        runWords = prefs.words
 
         val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, Activity.RESULT_CANCELED)
         val data: Intent? = if (Build.VERSION.SDK_INT >= 33) {
@@ -265,9 +281,9 @@ class LiveService : Service() {
     /** first = lần mở đầu (lỗi thì dừng hẳn); lần nối lại thì lỗi mạng được thử tiếp. */
     private fun openSession(first: Boolean = true) {
         val ticket = try {
-            Api.ticket(prefs.web, prefs.token, prefs.model, prefs.target, prefs.source, Hotwords.parse(prefs.words))
+            Api.ticket(runAccess.web, runAccess.token, runModel, runTarget, runSource, Hotwords.parse(runWords))
         } catch (e: ApiError) {
-            if (e.status == 401) LiveState.unlinked = true
+            if (e.status == 401) LiveState.unlinked = runAccess
             // Lỗi mạng (status 0) lúc nối lại thì thử tiếp; lỗi của web (hết Token, bảo trì…) thì dừng và báo đúng câu.
             if (!first && e.status == 0) main.post { reconnect("không gọi được web") }
             else main.post { finish(e.message ?: "Chưa mở được phiên dịch.") }
@@ -487,11 +503,12 @@ class LiveService : Service() {
         stopReading()
         // Lưu chữ của phiên vừa rồi trên máy, như web (xuất SRT, VTT, TXT sau).
         if (sessionStartMs > 0) {
-            Session.save(this, transcript.cues(), sessionStartMs, prefs.model, prefs.target)
+            val owner = runAccess.owner!!
+            val saved = Session.save(this, owner, transcript.cues(), sessionStartMs, runModel, runTarget)
+            if (!saved) lastError = "Chưa lưu được bản phụ đề trên máy. Hãy kiểm tra dung lượng trống."
             val app = applicationContext
-            val web = prefs.web
-            val token = prefs.token
-            Thread { runCatching { Session.sync(app, web, token) } }.start()
+            val token = runAccess.token
+            if (saved) Thread { runCatching { Session.sync(app, owner, token) } }.start()
         }
         socket?.let { runCatching { it.close(1000, null) } }
         socket = null
@@ -501,7 +518,7 @@ class LiveService : Service() {
         overlay?.hide()
         overlay = null
         LiveState.phase = LiveState.Phase.IDLE
-        LiveState.status = message.ifBlank { "Đã dừng." }
+        LiveState.status = message.ifBlank { lastError.ifBlank { "Đã dừng." } }
         main.removeCallbacksAndMessages(null)
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()

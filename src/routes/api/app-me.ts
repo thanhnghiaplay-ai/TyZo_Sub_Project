@@ -21,6 +21,7 @@ export const Route = createFileRoute("/api/app-me")({
           const shown = await sql<{ value: string }>`select value from room_settings where key = 'live_show'`;
           const { androidRelease } = await import("@/lib/app-release.server");
           return json(200, {
+            userId,
             email: users[0]?.email ?? "",
             app: await androidRelease(),
             balance: await giayBalance(sql, userId),

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 /**
  * Ứng dụng Android đổi mã liên kết (lấy ở trang Tài khoản) lấy khóa máy.
- * POST {code, name} → {token, email}. DELETE (kèm khóa máy) → gỡ liên kết máy này.
+ * POST {code, name} → {token, email, userId}. DELETE (kèm khóa máy) → gỡ liên kết máy này.
  */
 export const Route = createFileRoute("/api/app-link")({
   server: {
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/api/app-link")({
           const { getSql } = await import("@/lib/db");
           const sql = await getSql();
           const rows = await sql<{ email: string | null }>`select email from "user" where id = ${linked.userId}`;
-          return json(200, { token: linked.token, email: rows[0]?.email ?? "" });
+          return json(200, { token: linked.token, email: rows[0]?.email ?? "", userId: linked.userId });
         } catch (error) {
           return failFrom(error);
         }

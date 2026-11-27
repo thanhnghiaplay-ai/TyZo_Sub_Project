@@ -14,7 +14,8 @@ class ApiError(val status: Int, message: String) : Exception(message)
 /** Bản ứng dụng mới nhất web đang phát (code 0 = web chưa báo). */
 data class AppRelease(val code: Int, val name: String, val url: String)
 
-data class Me(val email: String, val balance: Long, val models: List<String>, val app: AppRelease)
+data class Me(val email: String, val balance: Long, val models: List<String>, val app: AppRelease, val userId: String)
+data class LinkedAccount(val token: String, val email: String, val userId: String)
 data class Ticket(val url: String, val perMinute: Long, val balance: Long)
 /** Một phiên trong lịch sử chung với web. via: "web" hoặc "app". */
 data class HistoryItem(val id: String, val via: String, val startedAt: String, val durationMs: Long, val lines: Int, val preview: String)
@@ -66,9 +67,11 @@ object Api {
         }
     }
 
-    fun link(web: String, code: String, name: String): Pair<String, String> {
+    fun link(web: String, code: String, name: String): LinkedAccount {
         val json = call(web, "/api/app-link", "POST", null, JSONObject().put("code", code).put("name", name))
-        return json.getString("token") to json.optString("email")
+        val userId = json.optString("userId")
+        if (userId.isBlank()) throw ApiError(409, "Web cần cập nhật để xác minh tài khoản của bản lưu. Chưa thay đổi liên kết trên máy.")
+        return LinkedAccount(json.getString("token"), json.optString("email"), userId)
     }
 
     fun me(web: String, token: String): Me {
@@ -77,7 +80,7 @@ object Api {
         val models = if (arr == null) emptyList() else List(arr.length()) { arr.getString(it) }
         val app = json.optJSONObject("app")
         val release = AppRelease(app?.optInt("code") ?: 0, app?.optString("name").orEmpty(), app?.optString("url").orEmpty())
-        return Me(json.optString("email"), json.optLong("balance"), models, release)
+        return Me(json.optString("email"), json.optLong("balance"), models, release, json.optString("userId"))
     }
 
     fun ticket(web: String, token: String, model: String, target: String, source: String, words: Map<String, String>): Ticket {
@@ -92,7 +95,9 @@ object Api {
         val arr = JSONArray()
         cues.forEach { arr.put(JSONObject().put("s", it.start).put("e", it.end).put("o", it.original).put("t", it.translation ?: JSONObject.NULL)) }
         val body = JSONObject().put("clientId", clientId).put("model", model).put("target", target).put("startedAt", startedAtMs).put("cues", arr)
-        call(web, "/api/app-history", "POST", token, body)
+        val result = call(web, "/api/app-history", "POST", token, body)
+        if (!result.optBoolean("saved", false) || result.optString("id").isBlank())
+            throw ApiError(422, "Máy chủ chưa xác nhận lưu phiên. Bản trên máy vẫn được giữ để gửi lại.")
     }
 
     fun historyList(web: String, token: String): List<HistoryItem> {
@@ -120,6 +125,7 @@ object Api {
     }
 
     fun unlink(web: String, token: String) {
-        runCatching { call(web, "/api/app-link", "DELETE", token, null) }
+        val result = call(web, "/api/app-link", "DELETE", token, null)
+        if (!result.optBoolean("ok", false)) throw ApiError(409, "Máy chủ chưa xác nhận gỡ khóa. Hãy thử lại.")
     }
 }

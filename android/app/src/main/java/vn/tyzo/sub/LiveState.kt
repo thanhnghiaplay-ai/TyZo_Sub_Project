@@ -11,7 +11,7 @@ object LiveState {
     @Volatile var balance = 0L
     @Volatile var startedAtMs = 0L
     /** Máy chủ báo khóa máy không còn hiệu lực: màn hình đưa về bước liên kết. */
-    @Volatile var unlinked = false
+    @Volatile var unlinked: AccountAccess? = null
     /** Khách bấm Tạm dừng trên khung phụ đề: giữ phiên, không gửi tiếng (không trừ Token). */
     @Volatile var paused = false
 

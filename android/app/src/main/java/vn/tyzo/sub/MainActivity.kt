@@ -205,11 +205,11 @@ class MainActivity : Activity() {
             val name = "${Build.MANUFACTURER} ${Build.MODEL}"
             Thread {
                 try {
-                    val (token, email) = Api.link(base, code.text.toString(), name)
+                    val account = Api.link(base, code.text.toString(), name)
                     runOnUiThread {
-                        prefs.web = base
-                        prefs.token = token
-                        prefs.email = email
+                        prefs.link(base, account)
+                        history = null
+                        me = null
                         note = ""
                         loadMe()
                         render()
@@ -300,7 +300,14 @@ class MainActivity : Activity() {
         cap.addView(ui.muted("Áp dụng từ lần Bắt đầu sau.", 12f), ui.full(4))
 
         // Phiên gần nhất.
-        Session.load(this)?.let { (at, cues) -> sessionCard(col, at, cues) }
+        prefs.access()?.owner?.let { owner ->
+            val saved = Session.load(this, owner)
+            if (saved != null) sessionCard(col, owner, saved.first, saved.second)
+            else if (Session.hasSaved(this, owner)) col.addView(ui.muted(
+                "Chưa đọc được bản lưu của tài khoản này. Tệp vẫn được giữ; chưa báo đồng bộ thành công."), ui.full(8))
+        }
+        if (Session.hasUnscopedLegacy(this)) col.addView(ui.muted(
+            "Bản lưu từ ứng dụng cũ chưa có thông tin tài khoản nên chưa tự hiển thị hoặc gửi đi. Tệp vẫn được giữ trên máy."), ui.full(8))
 
         // Lịch sử chung với web (máy chủ giữ 30 phiên gần nhất trong 30 ngày).
         val hist = section(col, "Lịch sử (web và ứng dụng)", "ĐỒNG BỘ")
@@ -316,20 +323,28 @@ class MainActivity : Activity() {
         more.addView(ui.secondary("Điều khoản và chính sách") { openWeb(prefs.web, "/dieu-khoan") }, ui.full(8))
         more.addView(ui.danger("Gỡ liên kết máy này") {
             if (LiveState.running) LiveService.stop(this)
-            val web = prefs.web
-            val token = prefs.token
-            Thread { Api.unlink(web, token) }.start()
-            prefs.unlink()
-            history = null
-            me = null
-            note = "Đã gỡ liên kết."
+            val access = prefs.access() ?: return@danger
+            note = "Đang gỡ khóa trên máy chủ…"
             render()
+            Thread {
+                val result = runCatching { Api.unlink(access.web, access.token) }
+                runOnUiThread {
+                    if (!prefs.matches(access)) return@runOnUiThread
+                    result.onSuccess {
+                        prefs.unlink()
+                        history = null
+                        me = null
+                        note = "Đã gỡ liên kết."
+                    }.onFailure { note = it.message ?: "Chưa gỡ được khóa trên máy chủ. Hãy thử lại." }
+                    render()
+                }
+            }.start()
         }, ui.full(8))
     }
 
     private var wordsBox: TextView? = null
 
-    private fun sessionCard(col: LinearLayout, at: Long, cues: List<Cue>) {
+    private fun sessionCard(col: LinearLayout, owner: Session.Owner, at: Long, cues: List<Cue>) {
         val card = section(col, "Phiên gần nhất", "LƯU TRÊN MÁY")
         val time = SimpleDateFormat("HH:mm dd/MM", Locale.ROOT).format(Date(at))
         card.addView(ui.muted("${cues.size} câu, bắt đầu lúc $time. Tải về thư mục Tải xuống hoặc gửi sang ứng dụng khác."), ui.full(4))
@@ -341,20 +356,22 @@ class MainActivity : Activity() {
         card.addView(row, ui.full(10))
         card.addView(ui.secondary("Gửi SRT sang ứng dụng khác") { sendSrt(cues, at) }, ui.full(8))
         card.addView(ui.danger("Xóa bản lưu") {
-            Session.clear(this)
+            Session.clear(this, owner)
             render()
         }, ui.full(8))
     }
 
     /** Gửi phiên gần nhất nếu chưa gửi, rồi tải danh sách lịch sử. */
     private fun loadHistory() {
-        val web = prefs.web
-        val token = prefs.token
+        val access = prefs.access() ?: return
+        val web = access.web
+        val token = access.token
         val app = applicationContext
         Thread {
-            runCatching { Session.sync(app, web, token) }
+            access.owner?.let { owner -> runCatching { Session.sync(app, owner, token) } }
             val result = runCatching { Api.historyList(web, token) }
             runOnUiThread {
+                if (!prefs.matches(access)) return@runOnUiThread
                 result.onSuccess { history = it; historyError = "" }
                     .onFailure { historyError = it.message ?: "Chưa tải được lịch sử." }
                 fillHistory()
@@ -407,13 +424,15 @@ class MainActivity : Activity() {
 
     /** Tải chữ của một phiên từ máy chủ rồi làm việc [then] trên luồng giao diện. */
     private fun withHistory(item: HistoryItem, then: (Long, List<Cue>) -> Unit) {
-        val web = prefs.web
-        val token = prefs.token
+        val access = prefs.access() ?: return
+        val web = access.web
+        val token = access.token
         LiveState.status = "Đang tải phiên…"
         refreshLive()
         Thread {
             val result = runCatching { Api.historyRead(web, token, item.id) }
             runOnUiThread {
+                if (!prefs.matches(access)) return@runOnUiThread
                 result.onSuccess { (at, cues) -> then(at, cues) }
                     .onFailure { LiveState.status = it.message ?: "Chưa tải được phiên này."; refreshLive() }
             }
@@ -421,11 +440,13 @@ class MainActivity : Activity() {
     }
 
     private fun removeHistory(id: String?) {
-        val web = prefs.web
-        val token = prefs.token
+        val access = prefs.access() ?: return
+        val web = access.web
+        val token = access.token
         Thread {
             val result = runCatching { Api.historyDelete(web, token, id) }
             runOnUiThread {
+                if (!prefs.matches(access)) return@runOnUiThread
                 result.onFailure { LiveState.status = it.message ?: "Chưa xóa được."; refreshLive() }
                 loadHistory()
             }
@@ -490,8 +511,9 @@ class MainActivity : Activity() {
     }
 
     private fun refreshLive() {
-        if (LiveState.unlinked && prefs.linked) {
-            LiveState.unlinked = false
+        val revoked = LiveState.unlinked
+        if (revoked != null) LiveState.unlinked = null
+        if (revoked != null && prefs.matches(revoked)) {
             prefs.unlink()
             history = null
             note = "Máy này đã bị gỡ liên kết hoặc lâu không dùng. Hãy lấy mã mới ở trang Tài khoản."
@@ -532,20 +554,24 @@ class MainActivity : Activity() {
     }
 
     private fun loadMe() {
-        val web = prefs.web
-        val token = prefs.token
+        val access = prefs.access() ?: return
+        val web = access.web
+        val token = access.token
         if (web.isBlank() || token.isBlank()) return
         Thread {
             try {
                 val got = Api.me(web, token)
                 runOnUiThread {
+                    if (!prefs.matches(access)) return@runOnUiThread
                     val changed = me?.models != got.models || me?.app != got.app || me == null
                     me = got
+                    if (got.userId.isNotBlank()) prefs.userId = got.userId
                     if (got.email.isNotBlank()) prefs.email = got.email
                     if (changed && !LiveState.running) render() else refreshLive()
                 }
             } catch (e: ApiError) {
                 runOnUiThread {
+                    if (!prefs.matches(access)) return@runOnUiThread
                     if (e.status == 401) {
                         prefs.unlink()
                         history = null

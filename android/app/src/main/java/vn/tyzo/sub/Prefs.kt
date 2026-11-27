@@ -18,6 +18,26 @@ class Prefs(context: Context) {
     var email: String
         get() = str("email", "")
         set(v) = put("email", v)
+    var userId: String
+        get() = str("user_id", "")
+        set(v) = put("user_id", v)
+
+    /** One SharedPreferences snapshot, so an account switch cannot mix keys. */
+    fun access(): AccountAccess? {
+        val values = p.all
+        val web = values["web"] as? String ?: BuildConfig.WEB_URL
+        val token = values["token"] as? String ?: ""
+        if (web.isBlank() || token.isBlank()) return null
+        return AccountAccess(web, token, values["user_id"] as? String ?: "")
+    }
+
+    fun matches(account: AccountAccess): Boolean = access()?.let {
+        it.web == account.web && it.token == account.token
+    } == true
+
+    fun link(web: String, account: LinkedAccount) = p.edit().putString("web", web)
+        .putString("token", account.token).putString("email", account.email)
+        .putString("user_id", account.userId).apply()
     var model: String
         get() = str("model", Models.DEFAULT)
         set(v) = put("model", v)
@@ -63,7 +83,12 @@ class Prefs(context: Context) {
 
     val linked get() = token.isNotBlank() && web.isNotBlank()
 
-    fun unlink() = p.edit().remove("token").remove("email").apply()
+    fun unlink() = p.edit().remove("token").remove("email").remove("user_id").apply()
+}
+
+/** No generated toString(): never expose the device token in diagnostics. */
+class AccountAccess(val web: String, val token: String, val userId: String) {
+    val owner: Session.Owner? get() = if (userId.isBlank()) null else Session.Owner(web, userId)
 }
 
 object Models {
