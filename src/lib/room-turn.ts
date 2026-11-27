@@ -6,7 +6,7 @@
  */
 import { chatPerMillion, type PriceBook } from "./billing/run-bill.ts";
 import { bareBookOf, type ProviderRows } from "./price-rows.ts";
-import { catalogFor, modelKindOf, type ModelKind } from "./sub/model-catalog.ts";
+import { catalogFor, modelKindOf, payPerTurnChat, type ModelKind } from "./sub/model-catalog.ts";
 import { KEY_LIST_TRUSTED, roomListHas } from "./sub/key-list.ts";
 import { PROVIDER_IDS, PROVIDERS, providerHas, type ProviderCap, type ProviderId } from "./sub/provider.ts";
 import { providerOfModel, roomRefusal, type RoomOffer } from "./sub/room-models.ts";
@@ -44,7 +44,8 @@ export function roomChatModels(houses: RoomHouses): RoomPick[] {
     if (!house?.key || !house.models) continue;
     const ids = new Set([...house.models, ...catalogFor(provider, "chat").map((model) => model.id)]);
     for (const id of ids) {
-      if (modelKindOf(provider, id) !== "chat") continue;
+      // RE5-001: cùng quy tắc với cửa trả theo lượt — chỉ model dịch trong danh mục.
+      if (!payPerTurnChat(provider, id)) continue;
       if (roomListHas(provider, id, house.models) === false) continue;
       out.push({ provider, model: id });
     }

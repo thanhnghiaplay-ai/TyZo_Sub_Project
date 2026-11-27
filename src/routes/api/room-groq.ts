@@ -101,6 +101,13 @@ export const Route = createFileRoute("/api/room-groq")({
         const models = parseModelList(offered[0]?.value);
         if (!models) return fail(503, "Phòng chưa đồng bộ danh sách model.");
         if (!models.includes(parsed.model)) return fail(403, `Model ${parsed.model} không có trong cửa trả theo lượt (key phòng chưa có model này).`);
+        if (path === "/chat/completions") {
+          const { payPerTurnChat } = await import("@/lib/sub/model-catalog");
+          // RE5-001: chỉ model dịch trong danh mục (không model lạ, không Groq compound chạy công cụ tại nhà).
+          if (!payPerTurnChat("groq", parsed.model)) return fail(403, `Model ${parsed.model} chưa mở cho cửa trả theo lượt.`);
+        }
+        // RE5-001: cận giữ trước và lệnh gửi nhà dùng CÙNG một thân (đã chuẩn hóa).
+        const outbound = parsed.body ?? body!;
         const book = await loadPriceBook(sql);
         if (!book) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
 
@@ -115,13 +122,13 @@ export const Route = createFileRoute("/api/room-groq")({
             chars: parsed.chars,
             userId: user.id,
             ticketId: request.headers.get("x-run-ticket") || "",
-            body: body!,
+            body: outbound,
             cap: desk.cap,
             outCap: parsed.cap,
             contentType,
             signal: request.signal,
             send: () =>
-              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: parsed.body ?? body!, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
+              fetch(`https://api.groq.com/openai/v1${path}`, { method: "POST", headers, body: outbound, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
           });
         } catch (error) {
           if (isTimeout(error)) return fail(504, TIMEOUT_TEXT);

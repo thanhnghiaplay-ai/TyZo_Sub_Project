@@ -1,13 +1,13 @@
 /**
  * RE5-001 (v5.49.6): tái hiện các đường vượt cận 2×byte+512 của cửa trả theo lượt.
- * Test `todo` = lỗi đã tái hiện, chờ sửa ở mức HIGH; khi sửa xong bỏ `todo` để thành hồi quy.
+ * Đã tái hiện ở 0ef9539 (todo), sửa sau đó; nay là hồi quy.
  * Bằng chứng tokenizer: docs/kiem-toan/v5.49.6/RE5-001/.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { promptTokenBound, readRequest } from "./run-gate.ts";
-import { modelKindOf } from "../sub/model-catalog.ts";
+import { payPerTurnChat } from "../sub/model-catalog.ts";
 
 const enc = (s: string) => {
   const u = new TextEncoder().encode(s);
@@ -29,14 +29,26 @@ describe("RE5-001: cận đầu vào phải tính trên đúng thân gửi cho n
   });
 
   for (const route of ["src/routes/api/model-call.ts", "src/routes/api/room-groq.ts"]) {
-    it(`${route}: chargeWith nhận thân đã chuẩn hóa (cùng thân gửi nhà)`, { todo: "RE5-001: chờ sửa mức HIGH" }, () => {
+    it(`${route}: cận giữ trước và lệnh gửi nhà dùng cùng một thân đã chuẩn hóa`, () => {
       const src = readFileSync(route, "utf8");
-      const call = src.slice(src.indexOf("await chargeWith({"), src.indexOf("send:", src.indexOf("await chargeWith({")));
-      assert.match(call, /body: parsed\.body \?\? body/);
+      assert.match(src, /const outbound = parsed\.body \?\? body!?;/);
+      const start = src.indexOf("await chargeWith({");
+      const call = src.slice(start, src.indexOf("});", src.indexOf("send:", start)));
+      const bodies = [...call.matchAll(/\bbody(?::\s*([^,}]+))?[,}]/g)].map((m) => (m[1] ?? "body").trim());
+      assert.deepEqual(bodies, ["outbound", "outbound"], call);
     });
   }
 
-  it("model có công cụ chạy tại nhà (Groq compound) không được xem là model dịch trả theo lượt", { todo: "RE5-001: chờ sửa mức HIGH" }, () => {
-    for (const id of ["groq/compound", "groq/compound-mini"]) assert.notEqual(modelKindOf("groq", id), "chat", id);
+  it("chỉ model dịch trong danh mục đi cửa trả theo lượt: chặn Groq compound và model lạ", () => {
+    for (const id of ["groq/compound", "groq/compound-mini", "some-new-model", "meta-llama/llama-4-scout-17b-16e-instruct"])
+      assert.equal(payPerTurnChat("groq", id), false, id);
+    assert.equal(payPerTurnChat("alibaba", "qwen-long"), false);
+    for (const id of ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]) assert.equal(payPerTurnChat("groq", id), true, id);
+    for (const id of ["qwen-turbo", "qwen-plus", "qwen-max"]) assert.equal(payPerTurnChat("alibaba", id), true, id);
+    for (const route of ["src/routes/api/model-call.ts", "src/routes/api/room-groq.ts"]) {
+      const src = readFileSync(route, "utf8");
+      const check = src.indexOf("payPerTurnChat(");
+      assert.ok(check > 0 && check < src.indexOf("await chargeWith({"), `${route}: kiểm danh mục trước khi giữ/gọi nhà`);
+    }
   });
 });

@@ -55,6 +55,15 @@ export function catalogModel(provider: ProviderId, id: string): CatalogModel | n
   return BY_KEY.get(`${provider}:${id}`) ?? null;
 }
 
+/**
+ * RE5-001: cửa trả theo lượt (key phòng) chỉ nhận model dịch có trong danh mục. Cận giữ trước 2×byte+512 chỉ được
+ * chứng minh cho model chữ có tokenizer đã biết; model lạ hoặc model chạy công cụ tại nhà (Groq compound: tìm web,
+ * chạy mã, kết quả thành token đầu vào) có thể tốn vượt xa số byte yêu cầu. Key riêng của khách không qua cửa này.
+ */
+export function payPerTurnChat(provider: ProviderId, id: string): boolean {
+  return catalogModel(provider, id)?.kind === "chat";
+}
+
 /** Model của một nhà, có thể lọc theo loại. */
 export function catalogFor(provider: ProviderId, kind?: ModelKind): CatalogModel[] {
   return MODEL_CATALOG.filter((model) => model.provider === provider && (!kind || model.kind === kind));

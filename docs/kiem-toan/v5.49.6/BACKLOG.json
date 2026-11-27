@@ -6,21 +6,23 @@
     "location": "src/lib/billing/run-gate.ts:38–40,81–142,395–405",
     "hypothesis": "Cận 2*bytes+512 chưa được bảo đảm cho mọi template/provider. Kiểm allowlist theo model, schema, tool, model lạ; không quay lại giữ toàn context một cách mặc định.",
     "acceptance": "Test trường lạ, schema sâu, Unicode, tool, multimodal, output cap, phiếu nhỏ, usage vượt cận; provider thật chỉ khi được phép.",
-    "status": "REPRODUCED",
+    "status": "FIXED_LOCAL",
     "findings": [
       {
         "id": "RE5-001-A",
-        "status": "REPRODUCED",
+        "status": "FIXED_LOCAL",
         "what": "model-call.ts và room-groq.ts truyền thân GỐC cho chargeWith (cận), gửi nhà thân CHUẨN HÓA. JSON.parse/stringify khai triển 1e20 (4 byte) thành 21 chữ số; Qwen tách từng chữ số.",
         "evidence": "RE5-001/re5-001-numbers.log: 20.211 byte gốc → 88.235 byte gửi; Qwen 92.149 token > cận gốc 40.934; < cận chuẩn hóa 176.982.",
-        "fixProposal": "Truyền parsed.body cho chargeWith ở cả hai route (hoặc chargeWith tự chuẩn hóa và dùng một thân cho cả cận và gửi)."
+        "fixProposal": "Truyền parsed.body cho chargeWith ở cả hai route (hoặc chargeWith tự chuẩn hóa và dùng một thân cho cả cận và gửi).",
+        "fix": "model-call.ts, room-groq.ts: const outbound = parsed.body ?? body; dùng cho cả chargeWith (cận) và fetch (gửi nhà)."
       },
       {
         "id": "RE5-001-B",
-        "status": "REPRODUCED_STATIC",
+        "status": "FIXED_LOCAL",
         "what": "modelKindOf xếp groq/compound, groq/compound-mini và mọi model lạ là chat; room-groq.ts không kiểm loại model. Compound chạy công cụ tại nhà, token không bị cận byte chặn.",
         "evidence": "re5-001.test.ts todo; chưa xác minh bảng giá Groq có niêm yết compound (cần đọc price book production, chỉ đọc, chờ duyệt).",
-        "fixProposal": "Allowlist model dịch cho cửa trả theo lượt (catalog), từ chối model lạ/compound; cân nhắc tắt room-groq (app không gọi)."
+        "fixProposal": "Allowlist model dịch cho cửa trả theo lượt (catalog), từ chối model lạ/compound; cân nhắc tắt room-groq (app không gọi).",
+        "fix": "payPerTurnChat(provider,id) = có trong danh mục với kind chat; kiểm ở cả hai route trước chargeWith; roomChatModels (danh sách và dearestRoomChat) dùng cùng quy tắc. Key riêng của khách không đổi."
       },
       {
         "id": "RE5-001-C",
@@ -28,7 +30,8 @@
         "what": "Trường lạ không vào prompt; mọi thứ vào prompt đều nằm trong thân → bị cận phủ nếu tính trên thân gửi đi. Multimodal đã chặn ở 4c6e6ad; output cap chuẩn hóa ≤8192; phiếu nhỏ và usage vượt cận có test (gate-reserve.test.ts)."
       }
     ],
-    "tests": "src/lib/billing/re5-001.test.ts (1 pass, 3 todo)"
+    "tests": "src/lib/billing/re5-001.test.ts 4/4 (hỏng 3/4 trên mã cũ, đã thử); npm test 1767/7 skip/0 todo/0 fail; build Vercel PASS",
+    "remaining": "Chưa so usage thật với nhà (RE4-001). Phòng có model ngoài danh mục: không còn đi cửa trả theo lượt; phần giữ Tự động có thể giảm nếu model đắt nhất trước đây nằm ngoài danh mục."
   },
   {
     "id": "RE5-002",

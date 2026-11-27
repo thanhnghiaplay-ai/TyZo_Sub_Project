@@ -96,6 +96,7 @@ export const Route = createFileRoute("/api/model-call")({
         const { loadPriceBook } = await import("@/lib/run-board.server");
         const { loadRoomHouses, loadProviderRows } = await import("@/lib/price-books.server");
         const { roomUse } = await import("@/lib/room-turn");
+        const { payPerTurnChat } = await import("@/lib/sub/model-catalog");
         const { rowsOf } = await import("@/lib/price-rows");
         const sql = await getSql();
         const desk = parseRunDesk((await sql<{ value: string }>`select value from room_settings where key = 'run_desk'`)[0]?.value);
@@ -108,6 +109,10 @@ export const Route = createFileRoute("/api/model-call")({
         const use = roomUse(houses, parsed.model, "chat");
         if ("error" in use) return fail(403, use.error);
         if (use.provider !== provider) return fail(400, `Model ${parsed.model} không thuộc ${label}.`);
+        // RE5-001: chỉ model dịch trong danh mục mới đi cửa trả theo lượt (cận giữ trước đã chứng minh cho chúng).
+        if (!payPerTurnChat(provider, parsed.model)) return fail(403, `Model ${parsed.model} chưa mở cho cửa trả theo lượt.`);
+        // RE5-001: cận giữ trước và lệnh gửi nhà dùng CÙNG một thân (đã chuẩn hóa), không lệch nhau được.
+        const outbound = parsed.body ?? body;
         const groq = await loadPriceBook(sql);
         if (!groq) return fail(503, "Chưa có bảng giá để tính tiền. Hãy thử lại sau.");
         const rows = await loadProviderRows(sql);
@@ -125,12 +130,12 @@ export const Route = createFileRoute("/api/model-call")({
             chars: parsed.chars,
             userId: user.id,
             ticketId: request.headers.get("x-run-ticket") || "",
-            body,
+            body: outbound,
             cap: desk.cap,
             outCap: parsed.cap,
             contentType,
             signal: request.signal,
-            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: parsed.body ?? body, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
+            send: () => fetch(target, { method: "POST", headers: headersWith(key), body: outbound, signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]) }),
           });
           if (outcome.kind === "reject") {
             const rejected = fail(outcome.status, outcome.message);
