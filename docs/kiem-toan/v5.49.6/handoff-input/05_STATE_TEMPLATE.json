@@ -1,0 +1,10 @@
+{
+  "baseline": "39510ccae1196b283e794976d6e99fe5158c0786",
+  "branch": "audit/v5.49.6-claude-re5",
+  "effort": "MEDIUM",
+  "next": "Verify baseline and RE5-001",
+  "status": "NOT_STARTED",
+  "local_sha": null,
+  "remote_sha": null,
+  "tests": []
+}

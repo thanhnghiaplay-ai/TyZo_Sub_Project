@@ -1,0 +1,87 @@
+[
+  {
+    "id": "RE5-001",
+    "priority": "P0",
+    "effort": "HIGH",
+    "location": "src/lib/billing/run-gate.ts:38–40,81–142,395–405",
+    "hypothesis": "Cận 2*bytes+512 chưa được bảo đảm cho mọi template/provider. Kiểm allowlist theo model, schema, tool, model lạ; không quay lại giữ toàn context một cách mặc định.",
+    "acceptance": "Test trường lạ, schema sâu, Unicode, tool, multimodal, output cap, phiếu nhỏ, usage vượt cận; provider thật chỉ khi được phép.",
+    "status": "REPRODUCED",
+    "findings": [
+      {
+        "id": "RE5-001-A",
+        "status": "REPRODUCED",
+        "what": "model-call.ts và room-groq.ts truyền thân GỐC cho chargeWith (cận), gửi nhà thân CHUẨN HÓA. JSON.parse/stringify khai triển 1e20 (4 byte) thành 21 chữ số; Qwen tách từng chữ số.",
+        "evidence": "RE5-001/re5-001-numbers.log: 20.211 byte gốc → 88.235 byte gửi; Qwen 92.149 token > cận gốc 40.934; < cận chuẩn hóa 176.982.",
+        "fixProposal": "Truyền parsed.body cho chargeWith ở cả hai route (hoặc chargeWith tự chuẩn hóa và dùng một thân cho cả cận và gửi)."
+      },
+      {
+        "id": "RE5-001-B",
+        "status": "REPRODUCED_STATIC",
+        "what": "modelKindOf xếp groq/compound, groq/compound-mini và mọi model lạ là chat; room-groq.ts không kiểm loại model. Compound chạy công cụ tại nhà, token không bị cận byte chặn.",
+        "evidence": "re5-001.test.ts todo; chưa xác minh bảng giá Groq có niêm yết compound (cần đọc price book production, chỉ đọc, chờ duyệt).",
+        "fixProposal": "Allowlist model dịch cho cửa trả theo lượt (catalog), từ chối model lạ/compound; cân nhắc tắt room-groq (app không gọi)."
+      },
+      {
+        "id": "RE5-001-C",
+        "status": "CHECKED_OK",
+        "what": "Trường lạ không vào prompt; mọi thứ vào prompt đều nằm trong thân → bị cận phủ nếu tính trên thân gửi đi. Multimodal đã chặn ở 4c6e6ad; output cap chuẩn hóa ≤8192; phiếu nhỏ và usage vượt cận có test (gate-reserve.test.ts)."
+      }
+    ],
+    "tests": "src/lib/billing/re5-001.test.ts (1 pass, 3 todo)"
+  },
+  {
+    "id": "RE5-002",
+    "priority": "P1",
+    "effort": "MEDIUM",
+    "location": "src/lib/billing/run-gate.ts:479–529",
+    "hypothesis": "Fallback byteLength/3 khi thiếu usage; phân biệt giữ, quyết toán, nghĩa vụ chưa rõ; chống lặp sai lệch, không tự tăng tiền khách.",
+    "acceptance": "Missing/invalid usage, replay, crash, concurrent settle, reconciliation; kiểm sổ cái và chi phí nhà.",
+    "status": "UNVERIFIED"
+  },
+  {
+    "id": "MAIN-040",
+    "priority": "P1",
+    "effort": "MEDIUM",
+    "location": "src/lib/billing/tyzo-modal* (xác định đường dẫn thật)",
+    "hypothesis": "Thiếu test hành vi ghi chi phí GPU Modal; truy đường gọi và ghi journal.",
+    "acceptance": "Success/failure/retry/duplicate/unknown; chi phí khớp journal, không trừ trùng.",
+    "status": "UNVERIFIED"
+  },
+  {
+    "id": "RE5-004",
+    "priority": "P1",
+    "effort": "HIGH",
+    "location": "deploy/vps/tyzo.sh:1578–1599",
+    "hypothesis": "Xóa rồi thêm env Vercel có thể lỗi giữa chừng; cutover cần trạng thái bền vững, xác minh deployment, không mở nguồn cũ khi chưa rõ ghi đích. Kiểm cả chiều Neon→VPS.",
+    "acceptance": "Fault injection từng bước, mất mạng, kill/restart, env partial, deploy unknown, destination writer; staging thật cần duyệt.",
+    "status": "UNVERIFIED"
+  },
+  {
+    "id": "RE5-003",
+    "priority": "P1",
+    "effort": "MEDIUM",
+    "location": "migrations/0056_admission_lane_fairness.sql:87–118",
+    "hypothesis": "Waiter cùng provider/model mới được bảo vệ trong khi cap provider/lane dùng chung. Kiểm xuyên model/provider/lane, eligibility và reserve. Không sửa migration đã áp dụng.",
+    "acceptance": "PG thật: A liên tục đến, B chờ; nhiều model/provider, live reserve, cap, unknown, waiter hết hạn, mixed version migration.",
+    "status": "UNVERIFIED"
+  },
+  {
+    "id": "RE5-005",
+    "priority": "P1",
+    "effort": "MEDIUM",
+    "location": "admission/live benchmark",
+    "hypothesis": "P95 admission 630ms ở 200 khách theo báo cáo; chưa chứng minh live E2E. Đo riêng lane, tối ưu có bằng chứng, không nới cap để làm đẹp số.",
+    "acceptance": "25/50/100/200 khách, burst web 300, mixed 60–120 phút, P50/P95/P99, starvation, RSS, journal; upstream giả ghi rõ.",
+    "status": "UNVERIFIED"
+  },
+  {
+    "id": "RE5-006",
+    "priority": "P2",
+    "effort": "LOW",
+    "location": "migration 0056 và tài liệu rollback",
+    "hypothesis": "Rollback app không rollback hành vi SQL. Mô tả tương thích và migration tiến tới nếu cần.",
+    "acceptance": "Nâng từ 0055, chạy lặp, lỗi giữa chừng, rollback app, kiểm hành vi SQL.",
+    "status": "UNVERIFIED"
+  }
+]
