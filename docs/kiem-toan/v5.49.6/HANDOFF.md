@@ -2,6 +2,18 @@
 
 Nhánh `audit/v5.49.6-claude-re5` tách từ `6bbf292`. Commit này là baseline `39510cc` cộng một commit tài liệu của Claude (làm mới hồ sơ ChatGPT, trước đây chưa đẩy). Main không đổi, vẫn ở `39510cc`. Đầu vào bàn giao: `handoff-input/`.
 
+## RE5-005 · PASS_LOCAL (MEDIUM, upstream giả)
+
+Soak hỗn hợp một mạch trên 0057: 3.614 s, 203 vòng, PASS. Kết quả:
+- 0 vượt trần.
+- Khoảng chờ dài nhất của một khách, tệ nhất ở mọi lane: 3,57 s; không ai bị bỏ đói quá ngưỡng.
+- Admission p95 dưới 100 ms tới mức 100 khách; khoảng 200 ms ở mức 200 khách do khóa advisory toàn cục.
+- Web p95 10,3 ms, 0% lỗi.
+- Live: 0 vi phạm sổ cái.
+- RSS bản Node ổn định.
+
+Chi tiết: `RE5-005/REPORT.md`. Chưa đo: âm thanh → chữ với nhà thật, staging, GPU.
+
 ## RE5-003 · ĐÃ SỬA CỤC BỘ (HIGH, migration 0057)
 
 `migrations/0057_admission_shared_cap_fairness.sql` nạp lại `tyzo_admit`: giữ chữ ký, bảng và mọi trần; 0056 không sửa.

@@ -1,4 +1,4 @@
-# Tiếp v5.49.6 ở mức MEDIUM (RE5-005), rồi LOW
+# Tiếp v5.49.6 ở mức LOW (RE5-005 đã xong)
 
 Nhánh `audit/v5.49.6-claude-re5`. Kiểm `git ls-remote` khớp với `git log`; đọc `docs/kiem-toan/v5.49.6/STATE.json` và `HANDOFF.md`.
 

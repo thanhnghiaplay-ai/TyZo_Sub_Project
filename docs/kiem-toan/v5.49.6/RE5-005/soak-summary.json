@@ -1,0 +1,463 @@
+{
+ "meta": [
+  "head=742459a6b4926bdb19cb0e86f6df14befdaf33ea",
+  "node=v22.23.5",
+  "k6 v0.55.0 (commit/90bb9415d0, go1.23.3, linux/amd64)",
+  "start=2026-11-27T18:03:43Z",
+  ""
+ ],
+ "exit": [
+  "ai_exit=0",
+  "web_exit=0",
+  "end=2026-11-27T19:04:51Z"
+ ],
+ "result": {
+  "end": "2026-11-27T19:04:00Z",
+  "elapsed": 3614,
+  "iterations": 203,
+  "status": "PASS"
+ },
+ "iterations": 203,
+ "iterationMs": {
+  "median": 17786,
+  "max": 18523
+ },
+ "nonZeroExits": [],
+ "pgRssKb": {
+  "first": 152512,
+  "last": 155400,
+  "max": 155400
+ },
+ "admission": {
+  "clients=25": {
+   "runs": 203,
+   "ok": 117359,
+   "busy": 0,
+   "uncertain": 0,
+   "error": 0,
+   "p95": {
+    "median": 17.13,
+    "worst": 94.11
+   },
+   "p99": {
+    "median": 137.88,
+    "worst": 237.33
+   },
+   "max": {
+    "median": 166.09,
+    "worst": 266.16
+   },
+   "starved": 0,
+   "violations": 0
+  },
+  "clients=50": {
+   "runs": 203,
+   "ok": 208297,
+   "busy": 22910,
+   "uncertain": 0,
+   "error": 0,
+   "p95": {
+    "median": 27.06,
+    "worst": 122.14
+   },
+   "p99": {
+    "median": 115.38,
+    "worst": 233.29
+   },
+   "max": {
+    "median": 155.76,
+    "worst": 692.55
+   },
+   "starved": 7,
+   "violations": 0
+  },
+  "clients=100": {
+   "runs": 203,
+   "ok": 272642,
+   "busy": 123840,
+   "uncertain": 0,
+   "error": 0,
+   "p95": {
+    "median": 62.18,
+    "worst": 448.52
+   },
+   "p99": {
+    "median": 148.11,
+    "worst": 563.45
+   },
+   "max": {
+    "median": 182.79,
+    "worst": 588.93
+   },
+   "starved": 2,
+   "violations": 0
+  },
+  "clients=200": {
+   "runs": 203,
+   "ok": 189498,
+   "busy": 202775,
+   "uncertain": 0,
+   "error": 0,
+   "p95": {
+    "median": 200.96,
+    "worst": 616.59
+   },
+   "p99": {
+    "median": 259.21,
+    "worst": 658.47
+   },
+   "max": {
+    "median": 306.19,
+    "worst": 678.71
+   },
+   "starved": 402,
+   "violations": 0
+  },
+  "burst=300": {
+   "runs": 203,
+   "ok": 14567,
+   "busy": 46333,
+   "uncertain": 0,
+   "error": 0,
+   "p95": {
+    "median": 348.22,
+    "worst": 516.35
+   },
+   "p99": {
+    "median": 367.31,
+    "worst": 540.51
+   },
+   "max": {
+    "median": 372.01,
+    "worst": 545.44
+   },
+   "starved": 0,
+   "violations": 0
+  }
+ },
+ "admissionByLane": {
+  "clients=25/batch": {
+   "runs": 203,
+   "p95": {
+    "median": 18.04,
+    "worst": 97.06
+   },
+   "p99": {
+    "median": 138.43,
+    "worst": 237.33
+   },
+   "maxGapMax": {
+    "median": 302.46,
+    "worst": 315.42
+   }
+  },
+  "clients=25/live": {
+   "runs": 203,
+   "p95": {
+    "median": 13.54,
+    "worst": 98.73
+   },
+   "p99": {
+    "median": 143.73,
+    "worst": 263.27
+   },
+   "maxGapMax": {
+    "median": 290.25,
+    "worst": 314
+   }
+  },
+  "clients=25/modal": {
+   "runs": 203,
+   "p95": {
+    "median": 6.83,
+    "worst": 105.71
+   },
+   "p99": {
+    "median": 137.47,
+    "worst": 212.07
+   },
+   "maxGapMax": {
+    "median": 266.51,
+    "worst": 316.29
+   }
+  },
+  "clients=50/batch": {
+   "runs": 203,
+   "p95": {
+    "median": 32.25,
+    "worst": 130.75
+   },
+   "p99": {
+    "median": 108.4,
+    "worst": 585.38
+   },
+   "maxGapMax": {
+    "median": 2290.1,
+    "worst": 3309.01
+   }
+  },
+  "clients=50/modal": {
+   "runs": 203,
+   "p95": {
+    "median": 28.04,
+    "worst": 134.07
+   },
+   "p99": {
+    "median": 137.58,
+    "worst": 236.79
+   },
+   "maxGapMax": {
+    "median": 290.58,
+    "worst": 315.09
+   }
+  },
+  "clients=50/live": {
+   "runs": 203,
+   "p95": {
+    "median": 25.63,
+    "worst": 144.23
+   },
+   "p99": {
+    "median": 137.28,
+    "worst": 242.86
+   },
+   "maxGapMax": {
+    "median": 299.45,
+    "worst": 313.8
+   }
+  },
+  "clients=100/batch": {
+   "runs": 203,
+   "p95": {
+    "median": 63.67,
+    "worst": 460
+   },
+   "p99": {
+    "median": 149.5,
+    "worst": 558.37
+   },
+   "maxGapMax": {
+    "median": 1841.45,
+    "worst": 3314.26
+   }
+  },
+  "clients=100/modal": {
+   "runs": 203,
+   "p95": {
+    "median": 65.63,
+    "worst": 468.97
+   },
+   "p99": {
+    "median": 161.21,
+    "worst": 569.61
+   },
+   "maxGapMax": {
+    "median": 961.88,
+    "worst": 2438.27
+   }
+  },
+  "clients=100/live": {
+   "runs": 203,
+   "p95": {
+    "median": 60.44,
+    "worst": 444.1
+   },
+   "p99": {
+    "median": 148.32,
+    "worst": 567.67
+   },
+   "maxGapMax": {
+    "median": 302.7,
+    "worst": 589.38
+   }
+  },
+  "clients=200/batch": {
+   "runs": 203,
+   "p95": {
+    "median": 203.39,
+    "worst": 611.99
+   },
+   "p99": {
+    "median": 266.49,
+    "worst": 661.84
+   },
+   "maxGapMax": {
+    "median": 3331.92,
+    "worst": 3571.05
+   }
+  },
+  "clients=200/modal": {
+   "runs": 203,
+   "p95": {
+    "median": 212.78,
+    "worst": 509.79
+   },
+   "p99": {
+    "median": 296.94,
+    "worst": 619.21
+   },
+   "maxGapMax": {
+    "median": 2130.16,
+    "worst": 3356.07
+   }
+  },
+  "clients=200/live": {
+   "runs": 203,
+   "p95": {
+    "median": 200.39,
+    "worst": 639.15
+   },
+   "p99": {
+    "median": 269.44,
+    "worst": 658.47
+   },
+   "maxGapMax": {
+    "median": 1282.86,
+    "worst": 2575.37
+   }
+  }
+ },
+ "live": {
+  "scope": "native local WebSocket + real isolated PostgreSQL, synthetic cumulative usage with replays; no GPU/provider/browser audio",
+  "byConcurrency": {
+   "1": {
+    "runs": 203,
+    "statuses": {
+     "200": 203
+    },
+    "peakSockets": 1,
+    "acceptedP95Ms": {
+     "median": 105.37,
+     "worst": 163.74
+    }
+   },
+   "5": {
+    "runs": 203,
+    "statuses": {
+     "200": 1015
+    },
+    "peakSockets": 5,
+    "acceptedP95Ms": {
+     "median": 103.08,
+     "worst": 257.51
+    }
+   },
+   "25": {
+    "runs": 203,
+    "statuses": {
+     "200": 4872,
+     "429": 203
+    },
+    "peakSockets": 24,
+    "acceptedP95Ms": {
+     "median": 270.15,
+     "worst": 395.68
+    }
+   },
+   "50": {
+    "runs": 203,
+    "statuses": {
+     "200": 4872,
+     "429": 5278
+    },
+    "peakSockets": 24,
+    "acceptedP95Ms": {
+     "median": 244.07,
+     "worst": 372.73
+    }
+   },
+   "100": {
+    "runs": 203,
+    "statuses": {
+     "200": 4902,
+     "429": 15398
+    },
+    "peakSockets": 24,
+    "acceptedP95Ms": {
+     "median": 245.93,
+     "worst": 424.97
+    }
+   },
+   "200": {
+    "runs": 203,
+    "statuses": {
+     "200": 6851,
+     "429": 33749
+    },
+    "peakSockets": 24,
+    "acceptedP95Ms": {
+     "median": 385.94,
+     "worst": 586.96
+    }
+   },
+   "300": {
+    "runs": 203,
+    "statuses": {
+     "200": 6521,
+     "429": 54379
+    },
+    "peakSockets": 24,
+    "acceptedP95Ms": {
+     "median": 418.85,
+     "worst": 597.14
+    }
+   }
+  },
+  "ledger": {
+   "runs": 203,
+   "ledgerViolations": 0,
+   "duplicateCharges": 0,
+   "supplierCallsMismatch": 0,
+   "accepted": 29236
+  }
+ },
+ "web": {
+  "http_req_duration": {
+   "min": 1.84324,
+   "med": 4.129709,
+   "max": 1057.303924,
+   "p(90)": 8.133209200000001,
+   "p(95)": 10.2982405,
+   "avg": 5.576885173734619,
+   "thresholds": {
+    "p(95)<300": false
+   }
+  },
+  "http_req_failed": {
+   "fails": 313127,
+   "passes": 0,
+   "thresholds": {
+    "rate<0.01": false
+   },
+   "value": 0
+  },
+  "checks": {
+   "passes": 313127,
+   "fails": 0,
+   "thresholds": {
+    "rate>0.99": false
+   },
+   "value": 1
+  },
+  "http_reqs": {
+   "count": 313127,
+   "rate": 85.4471524291866
+  },
+  "iterations": {
+   "count": 313127,
+   "rate": 85.4471524291866
+  }
+ },
+ "runtime": {
+  "samples": 364,
+  "pgConnectionsMax": 42.0,
+  "pgLockWaitsMax": 39.0,
+  "nodeWebRssKb": {
+   "first": 639380.0,
+   "last": 722512.0,
+   "max": 722512.0
+  },
+  "nodeWebCpuMedian": 34.3,
+  "k6RssKbMax": 244412.0
+ }
+}

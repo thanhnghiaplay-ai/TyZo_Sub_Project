@@ -131,7 +131,13 @@ async function cohort(clients: number, durationMs: number) {
   const stopAt = performance.now() + durationMs;
   const sampler = sampleViolations(stopAt + 300);
   const perClient = new Array<number>(clients).fill(0);
+  // RE5-005: theo lane, và thời gian dài nhất một khách không được nhận (không phụ thuộc độ dài cửa sổ).
+  const byLane = new Map<string, { lat: number[]; ok: number; busy: number }>();
+  const laneOf = (i: number) => keyFor(i).lane;
+  const lastOk = new Array<number>(clients).fill(0);
+  const maxGap = new Array<number>(clients).fill(0);
   const t0 = performance.now();
+  lastOk.fill(t0);
   await Promise.all(
     Array.from({ length: clients }, async (_, i) => {
       const sql = sqls[i % INSTANCES];
@@ -146,16 +152,30 @@ async function cohort(clients: number, durationMs: number) {
           lat.push(entered - t);
           out.ok += 1;
           perClient[i] += 1;
+          const L = byLane.get(laneOf(i)) ?? { lat: [], ok: 0, busy: 0 };
+          L.lat.push(entered - t); L.ok += 1; byLane.set(laneOf(i), L);
+          maxGap[i] = Math.max(maxGap[i], entered - lastOk[i]);
+          lastOk[i] = performance.now();
         } catch (e) {
           classify(e, out, errors);
           lat.push(performance.now() - t);
+          const L = byLane.get(laneOf(i)) ?? { lat: [], ok: 0, busy: 0 };
+          L.busy += 1; byLane.set(laneOf(i), L);
           await new Promise((r) => setTimeout(r, 100 + Math.random() * 100)); // Retry-After thu nhỏ
         }
       }
     }),
   );
   const s = await sampler;
-  const seconds = (performance.now() - t0) / 1000;
+  const end = performance.now();
+  const seconds = (end - t0) / 1000;
+  // Khách chưa được nhận lần nào: khoảng chờ tính tới cuối đợt.
+  for (let i = 0; i < clients; i++) maxGap[i] = Math.max(maxGap[i], end - lastOk[i]);
+  const lanes = Object.fromEntries([...byLane].map(([lane, v]) => {
+    const gaps = maxGap.filter((_, i) => laneOf(i) === lane);
+    return [lane, { clients: gaps.length, ok: v.ok, busy: v.busy, p50: pct(v.lat, 50), p95: pct(v.lat, 95), p99: pct(v.lat, 99),
+      maxGapMs: { p50: pct(gaps, 50), p95: pct(gaps, 95), max: pct(gaps, 100) } }];
+  }));
   // RE2-004: công bằng — mỗi khách được nhận bao nhiêu lượt; 0 lượt = bị «đói».
   const fairness = {
     starved: perClient.filter((n) => n === 0).length,
@@ -165,7 +185,7 @@ async function cohort(clients: number, durationMs: number) {
     admissionsPerSecond: +(out.ok / seconds).toFixed(1),
     attemptsPerSecond: +((out.ok + out.busy + out.uncertain + out.error) / seconds).toFixed(1),
   };
-  return { clients, ...out, p50: pct(lat, 50), p95: pct(lat, 95), p99: pct(lat, 99), max: pct(lat, 100), fairness, errors, ...s };
+  return { clients, ...out, p50: pct(lat, 50), p95: pct(lat, 95), p99: pct(lat, 99), max: pct(lat, 100), fairness, lanes, errors, ...s };
 }
 
 async function burst(n: number) {

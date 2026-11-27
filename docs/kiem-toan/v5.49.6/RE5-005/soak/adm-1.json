@@ -1,0 +1,364 @@
+{
+ "scope": "admission only; 4 pools x 10 connections; synthetic upstream hold 50-200 ms; local PostgreSQL 16",
+ "seconds": 3,
+ "limits": {
+  "enabled": true,
+  "batch": 48,
+  "modal": 8,
+  "live": 48,
+  "perUser": 2,
+  "perUserModal": 3,
+  "perProvider": 40,
+  "perModel": 24,
+  "liveReserve": 0
+ },
+ "historyRows": 4107,
+ "results": [
+  {
+   "clients": 25,
+   "ok": 588,
+   "busy": 0,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 1.47,
+   "p95": 17.88,
+   "p99": 128.4,
+   "max": 155.77,
+   "fairness": {
+    "starved": 0,
+    "min": 20,
+    "p10": 22,
+    "median": 23,
+    "admissionsPerSecond": 178,
+    "attemptsPerSecond": 178
+   },
+   "lanes": {
+    "batch": {
+     "clients": 19,
+     "ok": 445,
+     "busy": 0,
+     "p50": 1.48,
+     "p95": 6.34,
+     "p99": 115.3,
+     "maxGapMs": {
+      "p50": 240.55,
+      "p95": 297.56,
+      "max": 297.56
+     }
+    },
+    "live": {
+     "clients": 4,
+     "ok": 95,
+     "busy": 0,
+     "p50": 1.46,
+     "p95": 36,
+     "p99": 145.45,
+     "maxGapMs": {
+      "p50": 240.59,
+      "p95": 278.65,
+      "max": 278.65
+     }
+    },
+    "modal": {
+     "clients": 2,
+     "ok": 48,
+     "busy": 0,
+     "p50": 1.41,
+     "p95": 23.81,
+     "p99": 144.92,
+     "maxGapMs": {
+      "p50": 208.02,
+      "p95": 268.54,
+      "max": 268.54
+     }
+    }
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 208
+   },
+   "peaks": {
+    "lane:batch": 19,
+    "provider:groq": 17,
+    "model:groq/whisper-large-v3-turbo": 17,
+    "lane:live": 4,
+    "provider:alibaba": 6,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 4,
+    "model:alibaba/qwen3-asr-flash-filetrans": 2,
+    "lane:modal": 2,
+    "provider:tyzo": 2,
+    "model:tyzo/tyzo-gpu": 2
+   }
+  },
+  {
+   "clients": 50,
+   "ok": 1034,
+   "busy": 113,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 1.68,
+   "p95": 22.16,
+   "p99": 93.57,
+   "max": 139.4,
+   "fairness": {
+    "starved": 0,
+    "min": 6,
+    "p10": 13,
+    "median": 22,
+    "admissionsPerSecond": 311.9,
+    "attemptsPerSecond": 346
+   },
+   "lanes": {
+    "batch": {
+     "clients": 35,
+     "ok": 680,
+     "busy": 113,
+     "p50": 1.63,
+     "p95": 22.38,
+     "p99": 93.57,
+     "maxGapMs": {
+      "p50": 297.63,
+      "p95": 1992.23,
+      "max": 2337.21
+     }
+    },
+    "modal": {
+     "clients": 5,
+     "ok": 122,
+     "busy": 0,
+     "p50": 1.74,
+     "p95": 21.9,
+     "p99": 92.01,
+     "maxGapMs": {
+      "p50": 293.29,
+      "p95": 300.55,
+      "max": 300.55
+     }
+    },
+    "live": {
+     "clients": 10,
+     "ok": 232,
+     "busy": 0,
+     "p50": 1.64,
+     "p95": 22.16,
+     "p99": 129.77,
+     "maxGapMs": {
+      "p50": 233.18,
+      "p95": 292.97,
+      "max": 292.97
+     }
+    }
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 210
+   },
+   "peaks": {
+    "lane:batch": 29,
+    "lane:live": 10,
+    "provider:groq": 24,
+    "provider:alibaba": 15,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 10,
+    "lane:modal": 5,
+    "provider:tyzo": 5,
+    "model:tyzo/tyzo-gpu": 5,
+    "model:alibaba/qwen3-asr-flash-filetrans": 5
+   }
+  },
+  {
+   "clients": 100,
+   "ok": 1420,
+   "busy": 688,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 4.32,
+   "p95": 39.11,
+   "p99": 152.29,
+   "max": 185.08,
+   "fairness": {
+    "starved": 0,
+    "min": 1,
+    "p10": 6,
+    "median": 13,
+    "admissionsPerSecond": 430.1,
+    "attemptsPerSecond": 638.5
+   },
+   "lanes": {
+    "batch": {
+     "clients": 70,
+     "ok": 788,
+     "busy": 651,
+     "p50": 4.34,
+     "p95": 46.83,
+     "p99": 154.75,
+     "maxGapMs": {
+      "p50": 853.53,
+      "p95": 1780.69,
+      "max": 2725.45
+     }
+    },
+    "modal": {
+     "clients": 10,
+     "ok": 184,
+     "busy": 37,
+     "p50": 4.28,
+     "p95": 35.31,
+     "p99": 163.57,
+     "maxGapMs": {
+      "p50": 287.23,
+      "p95": 1094.49,
+      "max": 1094.49
+     }
+    },
+    "live": {
+     "clients": 20,
+     "ok": 448,
+     "busy": 0,
+     "p50": 4.16,
+     "p95": 37.32,
+     "p99": 155.93,
+     "maxGapMs": {
+      "p50": 198.33,
+      "p95": 293.79,
+      "max": 297.19
+     }
+    }
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 210
+   },
+   "peaks": {
+    "lane:batch": 34,
+    "lane:modal": 8,
+    "lane:live": 20,
+    "provider:groq": 24,
+    "provider:tyzo": 8,
+    "provider:alibaba": 30,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:tyzo/tyzo-gpu": 8,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 20,
+    "model:alibaba/qwen3-asr-flash-filetrans": 10
+   }
+  },
+  {
+   "clients": 200,
+   "ok": 993,
+   "busy": 1049,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 127.13,
+   "p95": 238.79,
+   "p99": 279.12,
+   "max": 291.54,
+   "fairness": {
+    "starved": 3,
+    "min": 0,
+    "p10": 2,
+    "median": 4,
+    "admissionsPerSecond": 295.7,
+    "attemptsPerSecond": 608
+   },
+   "lanes": {
+    "batch": {
+     "clients": 140,
+     "ok": 564,
+     "busy": 900,
+     "p50": 127.7,
+     "p95": 245.54,
+     "p99": 279.1,
+     "maxGapMs": {
+      "p50": 1320.74,
+      "p95": 2693.02,
+      "max": 3358.43
+     }
+    },
+    "modal": {
+     "clients": 20,
+     "ok": 118,
+     "busy": 82,
+     "p50": 128.24,
+     "p95": 272.63,
+     "p99": 289.47,
+     "maxGapMs": {
+      "p50": 722.54,
+      "p95": 1752.2,
+      "max": 2197.51
+     }
+    },
+    "live": {
+     "clients": 40,
+     "ok": 311,
+     "busy": 67,
+     "p50": 126.08,
+     "p95": 254.29,
+     "p99": 277.33,
+     "maxGapMs": {
+      "p50": 478.34,
+      "p95": 859.69,
+      "max": 939.27
+     }
+    }
+   },
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 210
+   },
+   "peaks": {
+    "lane:batch": 41,
+    "lane:live": 24,
+    "provider:groq": 24,
+    "provider:alibaba": 40,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 24,
+    "lane:modal": 8,
+    "provider:tyzo": 8,
+    "model:alibaba/qwen3-asr-flash-filetrans": 18,
+    "model:tyzo/tyzo-gpu": 8
+   }
+  },
+  {
+   "burst": 300,
+   "ok": 72,
+   "busy": 228,
+   "uncertain": 0,
+   "error": 0,
+   "p50": 118.27,
+   "p95": 322.33,
+   "p99": 338.67,
+   "max": 342.92,
+   "errors": [],
+   "violations": {
+    "lane": 0,
+    "provider": 0,
+    "model": 0,
+    "samples": 95
+   },
+   "peaks": {
+    "lane:batch": 40,
+    "lane:live": 24,
+    "provider:groq": 24,
+    "provider:alibaba": 40,
+    "model:groq/whisper-large-v3-turbo": 24,
+    "model:alibaba/qwen3-livetranslate-flash-realtime": 24,
+    "model:alibaba/qwen3-asr-flash-filetrans": 16,
+    "lane:modal": 8,
+    "provider:tyzo": 8,
+    "model:tyzo/tyzo-gpu": 8
+   }
+  }
+ ]
+}

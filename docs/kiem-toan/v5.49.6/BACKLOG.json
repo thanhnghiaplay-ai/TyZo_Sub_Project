@@ -126,7 +126,11 @@
     "location": "admission/live benchmark",
     "hypothesis": "P95 admission 630ms ở 200 khách theo báo cáo; chưa chứng minh live E2E. Đo riêng lane, tối ưu có bằng chứng, không nới cap để làm đẹp số.",
     "acceptance": "25/50/100/200 khách, burst web 300, mixed 60–120 phút, P50/P95/P99, starvation, RSS, journal; upstream giả ghi rõ.",
-    "status": "UNVERIFIED"
+    "status": "PASS_LOCAL",
+    "report": "docs/kiem-toan/v5.49.6/RE5-005/REPORT.md",
+    "summary": "Soak 3614 s/203 vòng PASS trên 0057; 0 vượt trần; maxGap tệ nhất 3,57 s (không bỏ đói quá ngưỡng); p95 admission <100 ms tới 100 khách, ~200–225 ms ở 200 khách (khóa advisory toàn cục); web p95 10,3 ms 0% lỗi; live 0 vi phạm sổ cái; RSS ổn định.",
+    "notMeasured": "audio→chữ với nhà thật; staging; GPU thật",
+    "toolChange": "scripts/admission-bench.ts: thêm lanes{p50,p95,p99,maxGapMs} — không đổi mã sản phẩm"
   },
   {
     "id": "RE5-006",
