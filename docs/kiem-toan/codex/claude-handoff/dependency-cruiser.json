@@ -1,0 +1,364 @@
+{
+  "totalCruised": 729,
+  "totalDependenciesCruised": 2860,
+  "error": 0,
+  "warn": 10,
+  "info": 0,
+  "advisedExitCode": 0,
+  "violations": [
+    {
+      "from": "src/lib/admin/admin-room.ts",
+      "to": "src/lib/auth/middleware.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/auth/middleware.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/auth/verify.server.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/auth/server.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/mail-runtime.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/admin/admin-room.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/affiliate-flow.ts",
+      "to": "src/lib/giay-room.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/giay-room.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/payment/pay-flow.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/affiliate-flow.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/auth/mailer.ts",
+      "to": "src/lib/auth/smtp.server.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/auth/smtp.server.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/auth/mailer.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/auth/middleware.ts",
+      "to": "src/lib/auth/verify.server.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/auth/verify.server.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/auth/server.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/mail-runtime.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/auth/middleware.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/db.ts",
+      "to": "src/lib/glossary-seed.server.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/glossary-seed.server.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/db.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "type-only",
+            "import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/giay-room.ts",
+      "to": "src/lib/payment/pay-store.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/payment/pay-store.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/payment/pay-confirm.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/payment/pay-flow.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/affiliate-flow.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/giay-room.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/glossary-import.ts",
+      "to": "src/lib/sub/glossary.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/sub/glossary.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/glossary-room.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/glossary-import.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/payment/pay-store.ts",
+      "to": "src/lib/payment/pay-flow.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/payment/pay-flow.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/affiliate-flow.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/giay-room.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        },
+        {
+          "name": "src/lib/payment/pay-store.ts",
+          "dependencyTypes": [
+            "aliased",
+            "aliased-tsconfig",
+            "aliased-tsconfig-paths",
+            "local",
+            "dynamic-import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/sub/vad-runtime.ts",
+      "to": "src/lib/sub/vad.ts",
+      "rule": {
+        "severity": "warn",
+        "name": "khong-vong-tron"
+      },
+      "cycle": [
+        {
+          "name": "src/lib/sub/vad.ts",
+          "dependencyTypes": [
+            "local",
+            "import"
+          ]
+        },
+        {
+          "name": "src/lib/sub/vad-runtime.ts",
+          "dependencyTypes": [
+            "local",
+            "dynamic-import"
+          ]
+        }
+      ]
+    },
+    {
+      "from": "src/lib/error-component.tsx",
+      "to": "src/components/ui/icon.tsx",
+      "rule": {
+        "severity": "warn",
+        "name": "lib-khong-import-giao-dien"
+      }
+    }
+  ]
+}

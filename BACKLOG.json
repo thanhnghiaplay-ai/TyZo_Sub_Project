@@ -107,8 +107,8 @@
     "priority": "GATE",
     "status": "PARTIAL",
     "title": "Soak liên tục 60 phút, API/Web/AI và streaming",
-    "checkpointEvidence": "docs/kiem-toan/codex/integration-recovery/REPORT.md",
-    "remaining": "Lượt đầu dừng tại lỗi đóng gói; chạy lại và đợi kết quả đủ 3.600 giây."
+    "checkpointEvidence": "docs/kiem-toan/codex/claude-handoff/soak-progress.json",
+    "remaining": "Lượt 2 đang chạy khi bàn giao. Kiểm artifact cuối và thời lượng liên tục; nếu mất runtime thì chạy lại."
   },
   {
     "id": "CODEX-PGLITE-BUILD",
@@ -116,5 +116,13 @@
     "status": "PASS",
     "title": "Bản Node thiếu PGlite runtime assets",
     "checkpointEvidence": "docs/kiem-toan/codex/integration-recovery/REPORT.md"
+  },
+  {
+    "id": "CODEX-RESTORE-TOC",
+    "priority": "P1",
+    "status": "PASS",
+    "title": "Đọc đủ mục lục restore để nhận biết schema public",
+    "path": "deploy/vps/tyzo.sh",
+    "checkpointEvidence": "docs/kiem-toan/codex/claude-handoff/REPORT.md"
   }
 ]

@@ -1,3 +1,5 @@
+> **Bàn giao Claude Code · TyZo 5.49.5.** Lấy nhánh `codex/tyzo-v5.49.4-audit`. Mục cuối CODEX-RESTORE-TOC đạt 22/22 ca restore/cutover trên PostgreSQL cô lập. Đọc NEXT_PROMPT.md và docs/kiem-toan/codex/claude-handoff/REPORT.md trước. Trạng thái tổng PARTIAL.
+
 > **Codex — checkpoint tiếp quản v5.49.4.** Nhánh `codex/tyzo-v5.49.4-audit` xuất phát từ `0edb82a8`; manifest khớp 2.590 tệp. Xem STATE.json, BACKLOG.json và NEXT_PROMPT.md trước khi tiếp tục. Bằng chứng tại docs/kiem-toan/codex/. Các mục dưới đây là lịch sử.
 
 - **Soak lượt đầu dừng.** Lỗi PGlite ở bản Node và changelog đã được sửa, hồi quy 48/48. Xem docs/kiem-toan/codex/integration-recovery/REPORT.md.

@@ -1,0 +1,10 @@
+PASS account+origin namespace isolation
+PASS late sync cannot overwrite newer save or another account
+PASS rejected sync remains retryable and successful acknowledgement is durable
+PASS clear wins over old completion
+PASS legacy retained, corrupt file not reported synced, failed write reported
+PASS SRT/VTT/TXT export unchanged
+PASS history requires saved=true and receipt id
+PASS unlink rejects server/network failure and requires acknowledgement
+PASS stable authenticated account identity parsed; old server fails closed
+PASS offline unlink reports failure

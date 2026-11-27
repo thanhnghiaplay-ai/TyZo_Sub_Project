@@ -1,0 +1,3 @@
+fix-css-ref: styles-missing.css không có, trỏ sang styles-actual.css ([fixture-dir]/server/fixture.mjs).
+fix-css-ref: thấy 2 tệp styles-*.css và mã máy chủ trỏ tới tệp không có: styles-missing.css. Dừng.
+PASS NEW-008: unique match repaired; ambiguous bundle with missing reference blocked, file preserved

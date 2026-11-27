@@ -1,0 +1,7 @@
+{"name":"desktop","path":"/gioi-thieu","status":200,"textCharacters":6389,"overflow":false,"css":true,"pageErrors":[],"blockedExternalHosts":["fonts.googleapis.com","grok.com"]}
+{"name":"desktop","path":"/login","status":200,"textCharacters":234,"overflow":false,"css":true,"pageErrors":[],"blockedExternalHosts":["fonts.googleapis.com","grok.com"]}
+{"name":"desktop","path":"/api/app-me","withoutDevice":401}
+{"name":"mobile","path":"/gioi-thieu","status":200,"textCharacters":6370,"overflow":false,"css":true,"pageErrors":[],"blockedExternalHosts":["fonts.googleapis.com","grok.com"]}
+{"name":"mobile","path":"/login","status":200,"textCharacters":234,"overflow":false,"css":true,"pageErrors":[],"blockedExternalHosts":["fonts.googleapis.com","grok.com"]}
+{"name":"mobile","path":"/api/app-me","withoutDevice":401}
+{"audit":"R5-008/R5-009","completed":1,"readBeforeCommit":false,"own":"fixture-a","other":null,"abortPreserved":true,"browser":"156.0.8078.79"}

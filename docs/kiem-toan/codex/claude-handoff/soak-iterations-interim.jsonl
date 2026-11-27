@@ -1,0 +1,14 @@
+{"iter": 1, "t": 20, "ms": 20101, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 99524}
+{"iter": 2, "t": 41, "ms": 20452, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 99528}
+{"iter": 3, "t": 68, "ms": 27505, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 137704}
+{"iter": 4, "t": 94, "ms": 25759, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 115268}
+{"iter": 5, "t": 121, "ms": 26724, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 149460}
+{"iter": 6, "t": 149, "ms": 28208, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 156420}
+{"iter": 7, "t": 176, "ms": 26901, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 127644}
+{"iter": 8, "t": 201, "ms": 25609, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 127632}
+{"iter": 9, "t": 225, "ms": 23807, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 128356}
+{"iter": 10, "t": 250, "ms": 25000, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 128308}
+{"iter": 11, "t": 274, "ms": 23417, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 128180}
+{"iter": 12, "t": 301, "ms": 27014, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 127736}
+{"iter": 13, "t": 324, "ms": 22823, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 142876}
+{"iter": 14, "t": 350, "ms": 26792, "live_exit": 0, "adm_exit": 0, "pg_rss_kb": 153420}

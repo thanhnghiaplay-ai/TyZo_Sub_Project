@@ -1,0 +1,8 @@
+ok 142 - R8-002: unreadable migrations directory fails before any database connection
+not ok 171 - RE3-007: Neon → VPS: khớp bảng kê, bản VPS cũ giữ dưới tyzo_cu_*
+not ok 178 - RE4-004: phiên ngoài Compose chặn chuyển và nguồn được mở lại
+not ok 179 - RE4-004: neon-network không chuyển và báo trạng thái phục hồi thật
+# tests 225
+# pass 215
+# fail 3
+# skipped 7

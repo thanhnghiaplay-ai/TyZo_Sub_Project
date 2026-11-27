@@ -2,14 +2,14 @@
   "repository": "thanhnghiaplay-ai/TyZo_Sub_Project",
   "branch": "codex/tyzo-v5.49.4-audit",
   "baseline": "0edb82a8d2115e86d025d9f51f36f033bb55bbd4",
-  "checkpoint": "integration-recovery",
-  "evidence": "docs/kiem-toan/codex/integration-recovery",
+  "checkpoint": "claude-handoff",
+  "evidence": "docs/kiem-toan/codex/claude-handoff",
   "next": [
     "RE2/RE3/80",
     "integration/load/soak",
     "RE4-006"
   ],
-  "parentCommit": "c41528963a16cb9a790d587c357782fca4f81fbb",
+  "parentCommit": "aa73aca5f02944627392e0b3d7673dc83a2344e5",
   "previousSoak": {
     "snapshot": "aaba2aab1b2d4faa38b5249bb967f658269fc1ab",
     "startedUtc": "2026-11-27T15:00:02Z",
@@ -17,5 +17,41 @@
     "status": "ABORTED",
     "runtimeArtifacts": "/workspace/tyzo-audit-mixed-run",
     "evidence": "docs/kiem-toan/codex/integration-recovery/initial-soak-exit.txt"
+  },
+  "overall": "PARTIAL",
+  "currentSmallItem": {
+    "id": "CODEX-RESTORE-TOC",
+    "status": "PASS",
+    "tests": 22,
+    "report": "docs/kiem-toan/codex/claude-handoff/REPORT.md"
+  },
+  "activeSoak": {
+    "start": "2026-11-27T15:07:33Z",
+    "seconds": 3600,
+    "head": "aa73aca5f02944627392e0b3d7673dc83a2344e5",
+    "completion": "RUNNING_AT_CAPTURE",
+    "lastRecordedIteration": {
+      "iter": 14,
+      "t": 350,
+      "ms": 26792,
+      "live_exit": 0,
+      "adm_exit": 0,
+      "pg_rss_kb": 153420
+    },
+    "totalCompletedIterations": 14,
+    "database": "PostgreSQL 17.12 loopback",
+    "upstream": "synthetic",
+    "web": "k6 300 virtual users, localhost",
+    "workspaceArtifacts": "/workspace/tyzo-audit-mixed-final"
+  },
+  "staging": {
+    "status": "BLOCKED",
+    "permissionGranted": true,
+    "unavailable": [
+      "verified URL",
+      "secret binding",
+      "approved spending or usage limit",
+      "Android device"
+    ]
   }
 }

@@ -79,6 +79,14 @@ run_cmd() {
       if fault write-during-neon && [[ "$*" == *r3_neon* ]]; then pgq r3_neon "insert into room_ledger (user_id, kind, amount, note) values ('late','nap',1,'ghi phát sinh')"; fi
       return $rc ;;
     pg_restore)
+      if fault toc-stream && [ "$1" = "-l" ]; then
+        "$cmd" "$@" || return
+        # Keep producing enough valid TOC comments to fill the pipe after grep finds the schema.
+        for ((i=0; i<2048; i++)); do
+          printf '; synthetic pg_restore list stream for checking the complete pipeline\n' || return 1
+        done
+        return 0
+      fi
       "$cmd" "$@"; local rc=$?
       if [ $rc = 0 ] && fault missing-rows; then
         if [[ "$*" == *tyzo_moi* ]]; then pgq tyzo_moi "delete from room_ledger where id = (select min(id) from room_ledger)"; fi
@@ -338,4 +346,13 @@ pgTest("RE4-004: Compose trả thành công nhưng web còn chạy thì không c
   assert.notEqual(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /Không xác nhận được web và cầu nối đã dừng/);
   assert.deepEqual(await q("r3_neon", "select count(*)::int as n from pg_tables where schemaname='public'"), [{ n: 0 }]);
+});
+
+
+pgTest("RE3-007: đọc hết mục lục pg_restore khi stdout lớn và có schema public", async () => {
+  await freshVps();
+  await freshNeon(true);
+  const r = sh(`chep_tu_neon "${NEON}"`, { fault: "toc-stream", input: "dong-y\n" });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.equal(manifest("tyzo"), manifest(NEON));
 });

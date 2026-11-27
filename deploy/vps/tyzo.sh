@@ -757,7 +757,9 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
   pg_sys "drop database if exists tyzo_moi" >/dev/null && pg_sys "create database tyzo_moi owner tyzo" >/dev/null || { do_ "✘ Không tạo được CSDL tạm."; return 1; }
   # Bản chép từ Neon (pg_dump -n public) có lệnh CREATE SCHEMA public; CSDL mới đã sẵn schema public trống nên
   # --exit-on-error dừng ngay ("schema public already exists"). Chỉ khi tệp có mục đó: bỏ schema trống của CSDL TẠM vừa tạo.
-  if docker exec -i tyzo-db pg_restore -l < "$f" 2>/dev/null | grep -qE '^[0-9]+; [0-9]+ [0-9]+ SCHEMA - public '; then
+  # Keep reading the TOC after a match. With pipefail, grep -q can close the
+  # pipe early and make pg_restore fail with SIGPIPE even on a valid backup.
+  if docker exec -i tyzo-db pg_restore -l < "$f" 2>/dev/null | grep -E '^[0-9]+; [0-9]+ [0-9]+ SCHEMA - public ' >/dev/null; then
     docker exec tyzo-db psql -U tyzo -d tyzo_moi -v ON_ERROR_STOP=1 -qtAc "drop schema public" >/dev/null || { do_ "✘ Không chuẩn bị được CSDL tạm."; pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1; }
   fi
   # Dừng ghi trước khi nạp: dữ liệu ghi trong lúc nạp sẽ không bị bỏ lại trong CSDL cũ mà không ai biết.

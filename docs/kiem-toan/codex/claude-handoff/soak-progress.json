@@ -1,0 +1,19 @@
+{
+  "start": "2026-11-27T15:07:33Z",
+  "seconds": 3600,
+  "head": "aa73aca5f02944627392e0b3d7673dc83a2344e5",
+  "completion": "RUNNING_AT_CAPTURE",
+  "lastRecordedIteration": {
+    "iter": 14,
+    "t": 350,
+    "ms": 26792,
+    "live_exit": 0,
+    "adm_exit": 0,
+    "pg_rss_kb": 153420
+  },
+  "totalCompletedIterations": 14,
+  "database": "PostgreSQL 17.12 loopback",
+  "upstream": "synthetic",
+  "web": "k6 300 virtual users, localhost",
+  "workspaceArtifacts": "/workspace/tyzo-audit-mixed-final"
+}

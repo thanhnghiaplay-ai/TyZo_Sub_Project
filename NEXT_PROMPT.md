@@ -1,9 +1,9 @@
-# Tiếp tục kiểm toán TyZo
+# Tiếp quản TyZo 5.49.5 từ Codex
 
-Soak lượt đầu bị dừng có chủ đích khi phát hiện lỗi bản dựng. Chỉ tính lượt sau nếu liên tục đủ thời lượng và khớp snapshot đã kiểm.
+Repository `thanhnghiaplay-ai/TyZo_Sub_Project`. Fetch và checkout nhánh `codex/tyzo-v5.49.4-audit` từ origin. Mốc đối chiếu là `0edb82a8d2115e86d025d9f51f36f033bb55bbd4`. Kiểm SHA bằng `git ls-remote`, đọc `STATE.json`, `BACKLOG.json`, `HANDOFF.md` và `docs/kiem-toan/codex/claude-handoff/REPORT.md`. Bảo toàn commit đã có và xác nhận chỉ một agent ghi nhánh tại một thời điểm.
 
-Checkpoint hiện tại RE4-005 (PASS). Tiếp theo RE2/RE3/80.
-
-Lấy HEAD của nhánh `codex/tyzo-v5.49.4-audit` và xác minh với GitHub. Đọc STATE.json, BACKLOG.json, HANDOFF.md, docs/kiem-toan/codex/ và hồ sơ gốc trong docs/kiem-toan/v5.49.4/. Baseline đầy đủ nằm trong STATE.json. Ưu tiên theo mảng next.
-
-Mỗi checkpoint ghi nguyên nhân, nguồn, bằng chứng trước/sau, test thực chạy, rollback và trạng thái. Commit, push riêng rồi đối chiếu SHA trên remote trước khi mở rộng phạm vi. Dùng PostgreSQL cô lập và dữ liệu tổng hợp. Không merge main, deploy, phát sinh chi phí, đổi giá hoặc quy tắc Token. Đo độ trễ streaming từ audio đến UI, tách admission khỏi chỉ số này.
+1. Mục cuối CODEX-RESTORE-TOC đã sửa và đạt 22/22 ca trên PostgreSQL 17.12 thử, Docker giả. Không lặp lại phần đã đạt. Chạy lại `npm test` đầy đủ dưới UID thường, Node 22 với PostgreSQL thử, không chạy song song hai lệnh restore vì fixture dùng tên CSDL cố định. Xem thêm báo cáo và vị trí log đã có.
+2. Kiểm kết quả soak lượt 2 nếu runtime còn: `/workspace/tyzo-audit-mixed-final`, snapshot `aa73aca5f02944627392e0b3d7673dc83a2344e5`. Lấy `exit.txt`, `ai/result.json`, k6 và runtime CSV. Nếu runtime mất hoặc kết quả thiếu, chạy lại một mạch bằng `docs/kiem-toan/codex/integration-load-soak/mixed-soak.sh` với Node 22, PostgreSQL loopback port 55439 và bản Node web loopback port 17750. Không cộng thời gian hai lượt. Báo riêng admission, web và latency audio đến chữ hiển thị.
+3. Tái nghiệm thu RE2, RE3 và từng mục trong `docs/kiem-toan/v5.49.4/DOI_CHIEU_80.json`. Tiếp RE4-001: cận hiện tại giữ theo toàn bộ ngữ cảnh, có thể chặn phiếu nhỏ; qwen-turbo chưa có cận đã xác minh. Tìm phương án xác thực tokenizer/template hoặc giới hạn nhà cung cấp, kiểm tra định giá actual usage. RE4-004 cần diễn tập staging ngoài fixture.
+4. Chốt Semgrep, đối chiếu dependency warnings, dựng Graphify trên code chốt. Lưu SHA nguồn, SHA graph, file bị bỏ qua và kết quả parser cho RE4-006. Tiếp nghiệm thu Android máy thật và qua nhà cung cấp khi có định danh staging, Secret và giới hạn thử đã duyệt; hiện Chủ chưa biết vị trí cấu hình.
+5. Mỗi checkpoint cập nhật bốn tệp bàn giao, lưu log đã che và push nhánh phát triển. So SHA remote sau push. Nếu push lỗi, ngừng mở rộng sửa và giữ patch. Không merge main, deploy production, dùng DB production, phát sinh chi phí, đổi giá/quy tắc Token hoặc sửa migration đã áp dụng.

@@ -1,0 +1,38 @@
+TAP version 13
+# Subtest: RE3-007: đọc hết mục lục pg_restore khi stdout lớn và có schema public
+not ok 1 - RE3-007: đọc hết mục lục pg_restore khi stdout lớn và có schema public
+  ---
+  duration_ms: 7936.77052
+  type: 'test'
+  location: 'scripts/re3-restore-pg.test.mjs:352:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Cơ sở dữ liệu trên VPS đang có 52 bảng. Chép từ Neon sẽ THAY dữ liệu trên VPS (bản cũ được giữ lại để quay về; Neon không bị đụng).
+    Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển.
+    ✘ Nạp không trọn vẹn (mã 1; có: 0 0 0 0; cần: 52 11 60 46 — bảng, khóa ngoại, ràng buộc, chỉ mục). Dữ liệu đang chạy KHÔNG bị đụng.
+       pg_restore: error: could not execute query: ERROR:  schema "public" already exists
+    NOTICE:  database "tyzo_moi" does not exist, skipping
+
+
+    1 !== 0
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://scripts/re3-restore-pg.test.mjs:356:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8904.478592
