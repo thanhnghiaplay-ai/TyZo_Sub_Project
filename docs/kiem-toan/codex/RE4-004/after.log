@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: RE2-005: restore error despite matching table counts cannot report success
+ok 1 - RE2-005: restore error despite matching table counts cannot report success
+  ---
+  duration_ms: 33.936653
+  type: 'test'
+  ...
+# Subtest: RE2-005: restore success requires atomic fail-fast flags
+ok 2 - RE2-005: restore success requires atomic fail-fast flags
+  ---
+  duration_ms: 40.776094
+  type: 'test'
+  ...
+# Subtest: RE3-007: restore exit 0 and equal table counts but different rows cannot report success
+ok 3 - RE3-007: restore exit 0 and equal table counts but different rows cannot report success
+  ---
+  duration_ms: 53.6571
+  type: 'test'
+  ...
+# Subtest: RE3-007: bảng kê ổn định, phân biệt khác một dòng
+ok 4 - RE3-007: bảng kê ổn định, phân biệt khác một dòng
+  ---
+  duration_ms: 491.329891
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon trống: khớp bảng kê, web VPS bật lại, thành công
+ok 5 - RE3-007: VPS → Neon trống: khớp bảng kê, web VPS bật lại, thành công
+  ---
+  duration_ms: 841.71256
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon với lỗi dump-fail → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+ok 6 - RE3-007: VPS → Neon với lỗi dump-fail → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+  ---
+  duration_ms: 710.478066
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon với lỗi missing-rows → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+ok 7 - RE3-007: VPS → Neon với lỗi missing-rows → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+  ---
+  duration_ms: 866.433713
+  type: 'test'
+  ...
+# Subtest: RE3-007: VPS → Neon với lỗi write-during-vps → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+ok 8 - RE3-007: VPS → Neon với lỗi write-during-vps → không báo thành công, nguồn VPS giữ nguyên, web bật lại
+  ---
+  duration_ms: 1104.859513
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS: khớp bảng kê, bản VPS cũ giữ dưới tyzo_cu_*
+ok 9 - RE3-007: Neon → VPS: khớp bảng kê, bản VPS cũ giữ dưới tyzo_cu_*
+  ---
+  duration_ms: 1464.398998
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi missing-rows → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 10 - RE3-007: Neon → VPS với lỗi missing-rows → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 1792.24586
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi write-during-neon → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 11 - RE3-007: Neon → VPS với lỗi write-during-neon → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 1474.716888
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi rename-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 12 - RE3-007: Neon → VPS với lỗi rename-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 1152.027178
+  type: 'test'
+  ...
+# Subtest: RE3-007: Neon → VPS với lỗi dump-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+ok 13 - RE3-007: Neon → VPS với lỗi dump-fail → VPS giữ nguyên dữ liệu đang chạy, không báo thành công
+  ---
+  duration_ms: 958.242511
+  type: 'test'
+  ...
+# Subtest: RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyển và bật lại web VPS; khớp thì giữ web dừng
+ok 14 - RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyển và bật lại web VPS; khớp thì giữ web dừng
+  ---
+  duration_ms: 1138.35455
+  type: 'test'
+  ...
+# Subtest: RE4-004: lỗi dừng Compose phải chặn chuyển dù hai bảng kê khớp
+ok 15 - RE4-004: lỗi dừng Compose phải chặn chuyển dù hai bảng kê khớp
+  ---
+  duration_ms: 879.117182
+  type: 'test'
+  ...
+# Subtest: RE4-004: phiên ngoài Compose chặn chuyển và nguồn được mở lại
+ok 16 - RE4-004: phiên ngoài Compose chặn chuyển và nguồn được mở lại
+  ---
+  duration_ms: 1061.698638
+  type: 'test'
+  ...
+# Subtest: RE4-004: neon-network không chuyển và báo trạng thái phục hồi thật
+ok 17 - RE4-004: neon-network không chuyển và báo trạng thái phục hồi thật
+  ---
+  duration_ms: 637.462743
+  type: 'test'
+  ...
+# Subtest: RE4-004: neon-network,rollback-web-fail không chuyển và báo trạng thái phục hồi thật
+ok 18 - RE4-004: neon-network,rollback-web-fail không chuyển và báo trạng thái phục hồi thật
+  ---
+  duration_ms: 597.833052
+  type: 'test'
+  ...
+# Subtest: RE4-004: neon-network,rollback-db-fail không chuyển và báo trạng thái phục hồi thật
+ok 19 - RE4-004: neon-network,rollback-db-fail không chuyển và báo trạng thái phục hồi thật
+  ---
+  duration_ms: 562.933827
+  type: 'test'
+  ...
+# Subtest: RE4-004: writer sau snapshot bị PostgreSQL chặn trong lúc đối soát đích
+ok 20 - RE4-004: writer sau snapshot bị PostgreSQL chặn trong lúc đối soát đích
+  ---
+  duration_ms: 998.898231
+  type: 'test'
+  ...
+# Subtest: RE4-004: Compose trả thành công nhưng web còn chạy thì không chép lên Neon
+ok 21 - RE4-004: Compose trả thành công nhưng web còn chạy thì không chép lên Neon
+  ---
+  duration_ms: 496.645595
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17687.718869

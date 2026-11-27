@@ -713,6 +713,7 @@ set datestyle = 'ISO, YMD';
 set intervalstyle = 'postgres';
 set extra_float_digits = 1;
 set bytea_output = 'hex';
+begin isolation level repeatable read read only;
 select format('select %L || ''|'' || count(*) || ''|'' || coalesce(md5(string_agg(h, '''' order by h)), ''-'') from (select md5(t::text) as h from %I.%I t) x',
               'bang|' || tablename, schemaname, tablename)
 from pg_tables where schemaname = 'public' order by tablename
@@ -725,6 +726,7 @@ from pg_constraint c join pg_namespace n on n.oid = c.connamespace where n.nspna
 select format('select ''migration|'' || count(*) || ''|'' || coalesce(md5(string_agg(name, '','' order by name)), ''-'') from %I._migrations', schemaname)
 from pg_tables where schemaname = 'public' and tablename = '_migrations'
 \gexec
+commit;
 SQL
 }
 
@@ -833,73 +835,158 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v�
   rm -f /tmp/tyzo-neon.dump "$ky"
 }
 
-chep_len_neon() { # chép dữ liệu trên VPS lên một Neon TRỐNG (khi quay lại Vercel)
-  local url="$1" n can ma=0 thu dung=0
-  # Private, unique paths prevent symlink/clobber attacks and concurrent restore collisions.
-  thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-restore.XXXXXXXX")" || return 1
-  n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')"
-  [[ "$n" =~ ^[0-9]+$ ]] || { do_ "✘ Không kết nối được Neon."; rmdir "$thu"; return 1; }
-  [ "$n" = "0" ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG."; rmdir "$thu"; return 1; }
-  # RE3-007: khóa ghi trên VPS trong lúc chép (dừng web và cầu nối), bật lại khi xong; bảng kê trước và sau phải khớp.
-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
-  dc stop web bridge >/dev/null 2>&1 || true
-  echo "Đang chép từ VPS lên Neon (web trên VPS tạm dừng để không phát sinh ghi)..."
-  bang_ke_vps tyzo > "$thu/nguon.txt" 2>/dev/null
-  if ! grep -q '^bang|' "$thu/nguon.txt"; then
-    do_ "✘ Không lập được bảng kê dữ liệu trên VPS. Hồ sơ: $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
-  fi
-  (umask 077; docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > "$thu/source.dump") || {
-    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1;
-  }
-  can="$(so_bang_tep "$thu/source.dump")"
-  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1; }
-  docker run --rm -i --network host postgres:17 pg_restore --exit-on-error --single-transaction --no-owner --no-privileges -d "$url" < "$thu/source.dump" 2>"$thu/restore.err" || ma=$?
-  # Exit status is authoritative. Matching table counts cannot validate a failed restore.
-  if [ "$ma" != 0 ]; then
-    do_ "✘ Nạp thất bại (mã $ma); không chuyển nguồn dữ liệu. Bản sao và log riêng: $thu"
-    [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
+trang_thai_web_vps() {
+  docker ps --format '{{.Names}}' | awk '/^tyzo-(web|bridge)$/ { sub(/^tyzo-/, ""); print }' | LC_ALL=C sort | paste -sd ' ' -
+}
+
+dung_web_vps() {
+  local running
+  dc stop web bridge >/dev/null 2>&1 &&
+    running="$(trang_thai_web_vps)" && [ -z "$running" ]
+}
+
+mo_lai_web_vps() {
+  local expected="$1" actual
+  local -a services
+  [ -z "$expected" ] && return 0
+  read -r -a services <<< "$expected"
+  if ! dc up -d --no-build --no-deps "${services[@]}" >/dev/null 2>&1 ||
+    ! actual="$(trang_thai_web_vps)" || [ "$actual" != "$expected" ]; then
+    do_ "✘ Chưa khôi phục được các dịch vụ VPS: $expected. Kiểm tra trước khi thử lại."
     return 1
   fi
-  bang_ke_xa "$url" > "$thu/dich.txt" 2>/dev/null
-  bang_ke_vps tyzo > "$thu/nguon-lai.txt" 2>/dev/null
-  [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
-  n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')"
-  if ! [[ "$n" =~ ^[0-9]+$ ]] || [ "$n" != "$can" ]; then
+}
+
+khoa_quy_trinh_neon() {
+  if ! exec 9>"${CONF}.neon.lock" || ! flock -n 9; then
+    do_ "✘ Đang có lần chép hoặc chuyển nguồn khác, hoặc không mở được khóa."
+    return 1
+  fi
+}
+
+tom_tat_nguon_da_khoa() {
+  # Mở đúng một phiên quản trị để đọc nguồn sau khi chặn mọi kết nối mới.
+  # Lệnh ALTER chạy autocommit. Nếu còn phiên khác (kể cả ngoài Compose), dừng ngay.
+  {
+    cat <<'SQL'
+\! PGOPTIONS='-c lock_timeout=5000' psql -X -q -v ON_ERROR_STOP=1 -U tyzo -d postgres -c 'ALTER DATABASE tyzo WITH ALLOW_CONNECTIONS false'
+\if :SHELL_ERROR
+DO $$ BEGIN RAISE EXCEPTION 'Không khóa được kết nối vào nguồn VPS'; END $$;
+\endif
+DO $fence$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_stat_activity
+    WHERE datname = current_database() AND pid <> pg_backend_pid()
+      AND backend_type <> 'autovacuum worker'
+  ) OR EXISTS (SELECT 1 FROM pg_prepared_xacts WHERE database = current_database()) THEN
+    RAISE EXCEPTION 'Nguồn VPS còn phiên kết nối hoặc giao dịch đang chờ';
+  END IF;
+END;
+$fence$;
+SQL
+    sql_bang_ke
+  } | docker exec -i tyzo-db psql -X -q -tA -v ON_ERROR_STOP=1 -U tyzo -d tyzo -f - |
+    sed '/^$/d' | LC_ALL=C sort
+}
+
+khoi_phuc_nguon_vps() {
+  if ! pg_sys "alter database tyzo with allow_connections true" >/dev/null 2>&1 ||
+    [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
+    do_ "✘ Chưa mở lại được kết nối CSDL VPS. Dịch vụ VPS vẫn phải dừng cho tới khi kiểm tra xong."
+    return 1
+  fi
+  mo_lai_web_vps "$1"
+}
+
+chep_len_neon() ( # Chép VPS lên Neon trống. Mục 14 khóa CSDL khi chuyển nguồn.
+  local url="$1" n thu dung
+  khoa_quy_trinh_neon || return 1
+  thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-restore.XXXXXXXX")" || return 1
+  if ! n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')" ||
+    ! [[ "$n" =~ ^[0-9]+$ ]]; then
+    do_ "✘ Không kết nối được Neon."; rmdir "$thu"; return 1
+  fi
+  [ "$n" = 0 ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG."; rmdir "$thu"; return 1; }
+  if ! dung="$(trang_thai_web_vps)"; then
+    do_ "✘ Không kiểm tra được dịch vụ VPS."; rmdir "$thu"; return 1
+  fi
+  if ! dung_web_vps; then
+    do_ "✘ Không xác nhận được web và cầu nối đã dừng. Không chép dữ liệu."
+    mo_lai_web_vps "$dung"; rmdir "$thu"; return 1
+  fi
+  echo "Đang chép từ VPS lên Neon (web và cầu nối VPS đã dừng)..."
+  local kq=0
+  chep_len_neon_da_dung "$url" "$thu" || kq=$?
+  mo_lai_web_vps "$dung" || return 1
+  [ "$kq" = 0 ] || return 1
+  xanh "✔ Đã nạp lên Neon, khớp bảng kê VPS: số dòng, mã băm từng bảng, sequence, migration. Chưa chuyển nguồn."
+  echo "   Mục 14 sẽ khóa kết nối vào nguồn VPS và đối soát lần cuối."
+  rm -f "$thu/source.dump" "$thu/restore.err" "$thu/nguon.txt" "$thu/dich.txt" "$thu/nguon-lai.txt"
+  rmdir "$thu"
+)
+
+chep_len_neon_da_dung() {
+  local url="$1" thu="$2" n can ma=0
+  if ! bang_ke_vps tyzo > "$thu/nguon.txt" 2>/dev/null || ! grep -q '^bang|' "$thu/nguon.txt"; then
+    do_ "✘ Không lập được bảng kê dữ liệu trên VPS. Hồ sơ: $thu"; return 1
+  fi
+  (umask 077; docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > "$thu/source.dump") || {
+    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; return 1
+  }
+  can="$(so_bang_tep "$thu/source.dump")"
+  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; return 1; }
+  docker run --rm -i --network host postgres:17 pg_restore --exit-on-error --single-transaction --no-owner --no-privileges -d "$url" < "$thu/source.dump" 2>"$thu/restore.err" || ma=$?
+  if [ "$ma" != 0 ]; then
+    do_ "✘ Nạp thất bại (mã $ma); không chuyển nguồn dữ liệu. Bản sao và log riêng: $thu"; return 1
+  fi
+  if ! bang_ke_xa "$url" > "$thu/dich.txt" 2>/dev/null ||
+    ! bang_ke_vps tyzo > "$thu/nguon-lai.txt" 2>/dev/null ||
+    ! n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')" ||
+    [ "$n" != "$can" ]; then
     do_ "✘ Kiểm tra sau nạp không đạt (${n:-0}/$can bảng); không chuyển nguồn. Giữ bản sao tại $thu"
     return 1
   fi
   if ! khop_bang_ke "$thu/nguon.txt" "$thu/dich.txt"; then
-    do_ "✘ Neon không khớp bảng kê VPS (số dòng/mã băm); không chuyển nguồn. Neon đích đã có dữ liệu chưa khớp: xóa schema public trên Neon (Neon → SQL Editor) trước khi thử lại. Hồ sơ: $thu"
+    do_ "✘ Neon không khớp bảng kê VPS (số dòng/mã băm); không chuyển nguồn. Giữ dữ liệu đích và hồ sơ tại $thu"
     return 1
   fi
   if ! khop_bang_ke "$thu/nguon.txt" "$thu/nguon-lai.txt"; then
     do_ "✘ Dữ liệu VPS thay đổi trong lúc chép; không chuyển nguồn. Hồ sơ: $thu"
     return 1
   fi
-  xanh "✔ Đã nạp lên Neon ($n bảng), khớp bảng kê VPS: số dòng, mã băm từng bảng, sequence, migration. Chưa chuyển nguồn."
-  echo "   Khi chuyển sang Vercel, mục 14 sẽ đối soát lại một lần nữa (khóa ghi trên VPS) trước khi đưa lên."
-  rm -f "$thu/source.dump" "$thu/restore.err" "$thu/nguon.txt" "$thu/dich.txt" "$thu/nguon-lai.txt"
-  rmdir "$thu"
 }
 
-# RE3-007: cổng chuyển nguồn VPS → Neon (mục 14). Khóa ghi trên VPS, đối soát, Chủ xác nhận. Trả 0 = được chuyển
-# (web VPS để dừng để không ghi tách đôi), 1 = không chuyển (web VPS bật lại nếu trước đó đang chạy).
 khoa_va_doi_soat_chuyen() {
-  local url="$1" a ky dich dung=0
+  local url="$1" a thu dung
   [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ] || return 0
-  vang "Dữ liệu đang ở Postgres trên VPS. Trước khi đưa lên Vercel, máy dừng web VPS để khóa ghi và so dữ liệu VPS với Neon."
-  read -rp "Gõ dong-y để dừng web VPS và đối soát: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy, không chuyển."; return 1; }
-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
-  dc stop web bridge >/dev/null 2>&1 || true
-  ky="$(umask 077; mktemp)"; dich="$(umask 077; mktemp)"
-  bang_ke_vps tyzo > "$ky" 2>/dev/null; bang_ke_xa "$url" > "$dich" 2>/dev/null
-  if ! khop_bang_ke "$ky" "$dich"; then
-    do_ "✘ Neon chưa khớp dữ liệu VPS. Không chuyển. Chạy mục 13 → chép VPS lên Neon trống, rồi thử lại."
-    rm -f "$ky" "$dich"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+  if [ "$(pg_sys "select datallowconn from pg_database where datname='tyzo'")" != t ]; then
+    do_ "✘ CSDL nguồn chưa sẵn sàng hoặc đang bị khóa. Kiểm tra lần chuyển trước."; return 1
   fi
-  rm -f "$ky" "$dich"
-  xanh "✔ Neon khớp dữ liệu VPS. Web VPS giữ ở trạng thái dừng để không ghi tách đôi."
-  CHUYEN_DUNG_WEB="$dung"
+  vang "Trước khi chuyển, máy sẽ dừng web và cầu nối VPS, rồi khóa kết nối vào CSDL nguồn."
+  read -rp "Gõ dong-y để dừng web VPS và đối soát: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy, không chuyển."; return 1; }
+  thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-cutover.XXXXXXXX")" || return 1
+  if ! dung="$(trang_thai_web_vps)"; then
+    do_ "✘ Không kiểm tra được dịch vụ VPS."; rmdir "$thu"; return 1
+  fi
+  if ! dung_web_vps; then
+    do_ "✘ Không xác nhận được web và cầu nối đã dừng. Không chuyển nguồn."
+    mo_lai_web_vps "$dung"; rmdir "$thu"; return 1
+  fi
+  if ! tom_tat_nguon_da_khoa > "$thu/nguon.txt" 2> "$thu/loi-nguon.txt" ||
+    ! bang_ke_xa "$url" > "$thu/dich.txt" 2> "$thu/loi-dich.txt" ||
+    ! khop_bang_ke "$thu/nguon.txt" "$thu/dich.txt" ||
+    [ "$(pg_sys "select not datallowconn and not exists (
+      select 1 from pg_stat_activity where datname='tyzo' and backend_type <> 'autovacuum worker'
+    ) from pg_database where datname='tyzo'")" != t ]; then
+    do_ "✘ Chưa khóa được nguồn hoặc Neon chưa khớp. Không chuyển. Hồ sơ: $thu"
+    khoi_phuc_nguon_vps "$dung"
+    return 1
+  fi
+  rm -f "$thu/nguon.txt" "$thu/dich.txt" "$thu/loi-nguon.txt" "$thu/loi-dich.txt"
+  rmdir "$thu"
+  xanh "✔ Neon khớp dữ liệu VPS. CSDL nguồn tiếp tục chặn kết nối."
+  CHUYEN_DA_KHOA=1
   return 0
 }
 
@@ -1430,7 +1517,7 @@ kiem_tra_web() {
 # =====================================================================
 # Đưa web lên một tài khoản Vercel (mới hoặc khác)
 # =====================================================================
-dua_len_vercel() {
+dua_len_vercel() (
   tieu_de "Đưa web lên tài khoản Vercel"
   cat <<'TXT'
 Dùng khi muốn chuyển web sang tài khoản Vercel khác (hoặc quay lại Vercel từ VPS).
@@ -1438,6 +1525,9 @@ Cần: Docker trên VPS này (máy tự cài), mã truy cập Vercel, cơ sở d
 Lấy mã truy cập: vercel.com (đăng nhập tài khoản đích) → ảnh đại diện → Account Settings → Tokens → Create → chép.
 TXT
   hoi_co "Tiếp tục?" || return 0
+  if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
+    khoa_quy_trinh_neon || return 1
+  fi
   co_lenh docker || cai_nen || return 1
   [ -d "$DIR/.git" ] || lay_ma || return 1
   git -C "$DIR" fetch -q origin main && git -C "$DIR" reset -q --hard origin/main
@@ -1457,8 +1547,7 @@ TXT
   echo "Cơ sở dữ liệu cho Vercel phải là Neon (Neon → Connect → Show password → Copy snippet)."
   v=""; while [[ "$v" != postgres://* && "$v" != postgresql://* ]] || [[ "$v" == *"@db:"* ]]; do v="$(hoi_an 'Dán DATABASE_URL của Neon (chữ không hiện): ')"; done
   dat_bien DATABASE_URL "$v"
-  CHUYEN_DUNG_WEB=0
-  khoa_va_doi_soat_chuyen "$v" || return 1
+  local neon_url="$v" CHUYEN_DA_KHOA=0
   hoi_bi_mat_dang_nhap
   dat_bien VITE_AUTH_ENABLED true
   if [ -n "$dom" ]; then dat_bien BETTER_AUTH_URL "https://$dom"; else
@@ -1478,28 +1567,33 @@ TXT
   hoi_bien_web "$f"
 
   echo "Đang đưa lên Vercel (5–10 phút)..."
-  mkdir -p /tmp/tyzo-vc; chmod 700 /tmp/tyzo-vc
-  cp "$f" /tmp/tyzo-vc/env
-  cat > /tmp/tyzo-vc/chay.sh <<'SH'
-set -u
+  local thu_vercel
+  thu_vercel="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-vercel.XXXXXXXX")" || return 1
+  trap 'rm -f "$thu_vercel/env" "$thu_vercel/chay.sh"; rmdir "$thu_vercel"' EXIT
+  cp "$f" "$thu_vercel/env" || return 1
+  cat > "$thu_vercel/chay.sh" <<'SH'
+set -uo pipefail
 V="npx -y vercel@latest --token $TOK ${SCOPE:+--scope $SCOPE}"
 $V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
 while IFS= read -r line; do
   [ -z "$line" ] && continue
   k="${line%%=*}"; val="${line#*=}"
   $V env rm "$k" production --yes >/dev/null 2>&1 || true
-  printf '%s' "$val" | $V env add "$k" production >/dev/null 2>&1 && echo "  đã đặt $k" || echo "  LOI khi đặt $k"
+  printf '%s' "$val" | $V env add "$k" production >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
 done < /x/env
-$V deploy --prod --yes 2>&1 | tail -n 5
+$V deploy --prod --yes 2>&1 | tail -n 5 || exit 1
 if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
 SH
-  docker run --rm -v "$DIR":/app -v /tmp/tyzo-vc:/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
+  if [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ]; then
+    khoa_va_doi_soat_chuyen "$neon_url" || return 1
+  fi
+  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
   local kq=$?
-  rm -rf /tmp/tyzo-vc
   if [ "$kq" != 0 ]; then
     do_ "✘ Chưa đưa lên được. Chụp màn hình gửi Claude."
-    # RE3-007: chuyển hỏng thì trả web VPS về như trước (nguồn cũ vẫn nguyên).
-    [ "${CHUYEN_DUNG_WEB:-0}" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1 && vang "Đã bật lại web trên VPS (nguồn dữ liệu cũ)."
+    if [ "$CHUYEN_DA_KHOA" = 1 ]; then
+      vang "Nguồn VPS vẫn khóa. Kiểm tra trạng thái Vercel và các ghi trên Neon trước khi quyết định mở nguồn cũ."
+    fi
     return 1
   fi
   cat <<TXT
@@ -1518,7 +1612,7 @@ TXT
   5. Sepay/Casso: đổi địa chỉ nhận báo chuyển khoản sang https://<tên miền>/api/pay/sepay (hoặc /casso).
 TXT
   echo "Mã truy cập Vercel không được lưu trên VPS. Nên xóa token đó trên Vercel nếu không dùng nữa."
-}
+)
 
 # =====================================================================
 # Khóa ký ứng dụng Android (để bản mới cài đè được bản cũ, và để GitHub tự đăng bản phát hành)

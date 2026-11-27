@@ -59,13 +59,13 @@
       840,
       900
     ],
-    "status": "BLOCKED",
+    "status": "PARTIAL",
     "cause": "dc stop web bridge || true cho phép tiếp tục khi dừng lỗi; hash không thay thế write fence.",
     "fix": "Fail closed, xác minh container và mọi writer, khóa ghi đến khi chuyển nguồn; đối soát snapshot, rollback có kiểm chứng; không thao tác production.",
     "acceptance": "Giả lập stop fail, writer ngoài compose, ghi sau snapshot, restore fail, mất mạng, rollback fail; không cutover khi bất kỳ gate lỗi.",
     "rollback": "Revert checkpoint riêng sau drain và đối soát; migration đã áp dụng không sửa/xóa, dùng migration tiến tới; giữ dữ liệu và log.",
     "priorStatus": "OPEN_STATIC_RISK",
-    "checkpointEvidence": "Chưa nghiệm thu trên nhánh Codex tại checkpoint tiếp quản."
+    "checkpointEvidence": "docs/kiem-toan/codex/RE4-004/REPORT.md"
   },
   {
     "id": "RE4-005",

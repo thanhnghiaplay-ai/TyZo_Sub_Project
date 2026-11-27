@@ -86,6 +86,15 @@ run_cmd() {
       fi
       return $rc ;;
     psql)
+      if fault post-snapshot-writer && [[ "$*" == *r3_neon* ]]; then
+        if pgq tyzo "insert into room_ledger (user_id, kind, amount, note) values ('late','nap',1,'ghi phát sinh')"; then
+          echo writer-ran > "$F/post-snapshot-writer"
+        else
+          echo writer-blocked > "$F/post-snapshot-writer"
+        fi
+      fi
+      if fault neon-network && [[ "$*" == *r3_neon* ]]; then return 1; fi
+      if fault rollback-db-fail && [[ "$*" == *"allow_connections true"* ]]; then return 1; fi
       if fault rename-fail && [[ "$*" == *"alter database tyzo_moi rename to tyzo"* ]]; then echo "ERROR: synthetic rename failure" >&2; return 1; fi
       "$cmd" "$@" ;;
     *) "$cmd" "$@" ;;
@@ -96,6 +105,11 @@ case "$1" in
   image|pull) exit 0 ;;
   compose)
     echo "$*" >> "$F/compose.log"
+    if [[ " $* " == *" stop "* ]]; then
+      if fault stop-fail; then exit 1; fi
+      if fault still-running; then exit 0; fi
+    fi
+    if [[ " $* " == *" up "* ]] && fault rollback-web-fail; then exit 1; fi
     for a in "$@"; do [ "$a" = stop ] && rm -f "$F/web_running"; [ "$a" = up ] && touch "$F/web_running"; done
     exit 0 ;;
   exec)
@@ -250,6 +264,78 @@ pgTest("RE3-007: cổng chuyển sang Vercel — Neon lệch thì không chuyể
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /Neon khớp dữ liệu VPS/);
   assert.ok(!existsSync(join(work, "web_running")), "web VPS phải dừng để không ghi tách đôi");
+  assert.deepEqual(await adminQ("select datallowconn from pg_database where datname='tyzo'"), [{ datallowconn: false }]);
+  await assert.rejects(q("tyzo", "select 1"), { code: "55000" });
   r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { input: "khong\n" });
   assert.notEqual(r.status, 0, "không xác nhận thì không chuyển");
+});
+
+
+pgTest("RE4-004: lỗi dừng Compose phải chặn chuyển dù hai bảng kê khớp", async () => {
+  await freshVps();
+  await freshNeon(false);
+  const copied = sh(`chep_len_neon "${NEON}"`);
+  assert.equal(copied.status, 0, copied.stdout + copied.stderr);
+  writeFileSync(join(work, "web_running"), "");
+  const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { fault: "stop-fail", input: "dong-y\n" });
+  assert.notEqual(r.status, 0, r.stdout + r.stderr);
+  assert.ok(existsSync(join(work, "web_running")));
+});
+
+
+pgTest("RE4-004: phiên ngoài Compose chặn chuyển và nguồn được mở lại", async () => {
+  await freshVps();
+  await freshNeon(false);
+  const copied = sh(`chep_len_neon "${NEON}"`);
+  assert.equal(copied.status, 0, copied.stdout + copied.stderr);
+  writeFileSync(join(work, "web_running"), "");
+  const writer = new pg.Client({ connectionString: "postgresql://tyzo@127.0.0.1:55439/tyzo" });
+  await writer.connect();
+  try {
+    const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { input: "dong-y\n" });
+    assert.notEqual(r.status, 0, r.stdout + r.stderr);
+    assert.match(r.stdout, /Chưa khóa được nguồn/);
+    assert.deepEqual(await q("tyzo", "select 1 as ok"), [{ ok: 1 }]);
+    assert.ok(existsSync(join(work, "web_running")));
+  } finally {
+    await writer.end();
+  }
+});
+
+for (const [fault, allows, message] of [
+  ["neon-network", true, /Chưa khóa được nguồn hoặc Neon chưa khớp/],
+  ["neon-network,rollback-web-fail", true, /Chưa khôi phục được các dịch vụ VPS/],
+  ["neon-network,rollback-db-fail", false, /Chưa mở lại được kết nối CSDL VPS/],
+]) {
+  pgTest(`RE4-004: ${fault} không chuyển và báo trạng thái phục hồi thật`, async () => {
+    await freshVps();
+    await freshNeon(false);
+    writeFileSync(join(work, "web_running"), "");
+    const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { fault, input: "dong-y\n" });
+    assert.notEqual(r.status, 0, r.stdout + r.stderr);
+    assert.match(r.stdout, message);
+    assert.equal(existsSync(join(work, "web_running")), fault === "neon-network");
+    assert.deepEqual(await adminQ("select datallowconn from pg_database where datname='tyzo'"), [{ datallowconn: allows }]);
+  });
+}
+
+
+pgTest("RE4-004: writer sau snapshot bị PostgreSQL chặn trong lúc đối soát đích", async () => {
+  await freshVps();
+  await freshNeon(false);
+  const copied = sh(`chep_len_neon "${NEON}"`);
+  assert.equal(copied.status, 0, copied.stdout + copied.stderr);
+  const r = sh(`khoa_va_doi_soat_chuyen "${NEON}"`, { fault: "post-snapshot-writer", input: "dong-y\n" });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.equal(readFileSync(join(work, "post-snapshot-writer"), "utf8").trim(), "writer-blocked");
+});
+
+pgTest("RE4-004: Compose trả thành công nhưng web còn chạy thì không chép lên Neon", async () => {
+  await freshVps();
+  await freshNeon(false);
+  writeFileSync(join(work, "web_running"), "");
+  const r = sh(`chep_len_neon "${NEON}"`, { fault: "still-running" });
+  assert.notEqual(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /Không xác nhận được web và cầu nối đã dừng/);
+  assert.deepEqual(await q("r3_neon", "select count(*)::int as n from pg_tables where schemaname='public'"), [{ n: 0 }]);
 });

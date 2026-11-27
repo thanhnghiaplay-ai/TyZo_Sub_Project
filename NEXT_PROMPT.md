@@ -1,6 +1,6 @@
 # Tiếp tục kiểm toán TyZo
 
-Checkpoint hiện tại RE4-001 (PARTIAL). Tiếp theo RE4-004.
+Checkpoint hiện tại RE4-004 (PARTIAL). Tiếp theo RE4-002.
 
 Lấy HEAD của nhánh `codex/tyzo-v5.49.4-audit` và xác minh với GitHub. Đọc STATE.json, BACKLOG.json, HANDOFF.md, docs/kiem-toan/codex/ và hồ sơ gốc trong docs/kiem-toan/v5.49.4/. Baseline đầy đủ nằm trong STATE.json. Ưu tiên theo mảng next.
 

@@ -1,0 +1,32 @@
+TAP version 13
+# Subtest: RE4-004: lỗi dừng Compose phải chặn chuyển dù hai bảng kê khớp
+not ok 1 - RE4-004: lỗi dừng Compose phải chặn chuyển dù hai bảng kê khớp
+  ---
+  duration_ms: 1090.758254
+  type: 'test'
+  location: 'scripts/re3-restore-pg.test.mjs:259:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    [33mDữ liệu đang ở Postgres trên VPS. Trước khi đưa lên Vercel, máy dừng web VPS để khóa ghi và so dữ liệu VPS với Neon.[0m
+    [32m✔ Neon khớp dữ liệu VPS. Web VPS giữ ở trạng thái dừng để không ghi tách đôi.[0m
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 0
+  operator: 'notStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://scripts/re3-restore-pg.test.mjs:266:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1771.140301

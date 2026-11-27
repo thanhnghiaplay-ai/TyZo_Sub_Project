@@ -1,5 +1,7 @@
 > **Codex — checkpoint tiếp quản v5.49.4.** Nhánh `codex/tyzo-v5.49.4-audit` xuất phát từ `0edb82a8`; manifest khớp 2.590 tệp. Xem STATE.json, BACKLOG.json và NEXT_PROMPT.md trước khi tiếp tục. Bằng chứng tại docs/kiem-toan/codex/. Các mục dưới đây là lịch sử.
 
+- **RE4-004 PARTIAL.** Đã có fence ở PostgreSQL; 21/21 ca thật trên DB thử với Docker giả. Còn staging Vercel/Neon/VPS. Xem docs/kiem-toan/codex/RE4-004/REPORT.md.
+
 - **RE4-001 PARTIAL.** Giữ theo cận ngữ cảnh và trần một câu trả lời. PostgreSQL cô lập 51/51; còn nghiệm thu metadata, usage thật và khả năng phục vụ phiếu nhỏ. Xem docs/kiem-toan/codex/RE4-001/REPORT.md.
 
 > **Phát hành 5.49.4 — 20:42 27/11/2026:** Chủ nói «Đẩy chính thức». main/work = nhánh ccr-20605d15-2nil6k. Xem `docs/kiem-toan/v5.49.4/PHAT_HANH_5.49.4.md`. VPS: `tyzo` → 2.

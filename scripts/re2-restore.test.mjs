@@ -4,11 +4,12 @@ import { spawnSync } from "node:child_process";
 import { test } from "node:test";
 
 const text = readFileSync(new URL("../deploy/vps/tyzo.sh", import.meta.url), "utf8");
-const fn = text.slice(text.indexOf("chep_len_neon() {"), text.indexOf("\nsao_luu() {"));
+const fn = text.slice(text.indexOf("trang_thai_web_vps() {"), text.indexOf("\nsao_luu() {"));
 const compare = text.slice(text.indexOf("khop_bang_ke() {"), text.indexOf("\nnap_dump() {"));
 function drill(code, { destManifest = "bang|a|1|x" } = {}) {
   const shim = `
 n=0
+CONF="$(mktemp)"
 pg_tu_xa() { n=$((n+1)); if [ -f "$fixture_counter" ]; then echo 8; else touch "$fixture_counter"; echo 0; fi; }
 do_() { echo "$*"; }
 xanh() { echo "SUCCESS $*"; }
@@ -31,7 +32,7 @@ ${compare}
 ${fn}
 chep_len_neon fixture-target
 rc=$?
-rm -f "$fixture_counter"
+rm -f "$fixture_counter" "$CONF" "$CONF.neon.lock"
 exit "$rc"
 `;
   return spawnSync("bash", ["-c", shim], {
