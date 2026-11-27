@@ -1,16 +1,14 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
-  "branch": "audit/v5.49.7-codex-re6",
-  "previous_checkpoint_sha": "017cad371595f641d681da7f79eeeb62d617b40b",
-  "effort": "High",
-  "status": "PAUSED_FOR_HANDOFF",
-  "completed_item": "RE6-002",
+  "branch": "ccr-654dbe0e-978ok7",
+  "previous_checkpoint_sha": "c0bcf6fc3b7c1a3766679b0707c580b8ec4a8abe",
+  "effort": "Medium",
+  "status": "IN_PROGRESS",
+  "completed_item": "RE6-003",
   "item_status": "PASS_LOCAL",
   "tests": {
-    "postgres": "18.7",
-    "restore_regression_pass": 33,
-    "final_targeted_pass": 8,
-    "evidence": "RE6-002/REPORT.md"
+    "vercel_fake": "24/24",
+    "evidence": "RE6-003/REPORT.md"
   },
-  "next": "Phiên sau thực hiện RE6-003 ở mức High."
+  "next": "RE6-004"
 }

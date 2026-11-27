@@ -1,0 +1,5 @@
+Trước sửa (017cad3..c0bcf6f): chay_vercel_sh dùng 'vercel inspect | grep -qi ready'.
+status ● Not Ready -> coi là Ready
+readyState: NOT_READY -> coi là Ready
+status ● Ready -> coi là Ready
+Không kiểm ID deployment, project, target, phiên bản mã, DATABASE_URL đã ghi trên Vercel; không có giới hạn thời gian cho từng lệnh CLI.

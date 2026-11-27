@@ -28,7 +28,9 @@
     "location": "deploy/vps/tyzo.sh: chay_vercel_sh",
     "hypothesis": "grep ready có thể khớp not ready; env partial",
     "acceptance": "Mock not ready, unknown deploy, wrong ID/DB/version, env partial; trạng thái cấu trúc, health check, recovery không lộ bí mật.",
-    "status": "OPEN_VERIFY"
+    "status": "PASS_LOCAL",
+    "evidence": "RE6-003/REPORT.md",
+    "remaining": "Vercel staging thật chỉ khi Chủ duyệt; biến sensitive bị chặn (fail closed)."
   },
   {
     "id": "RE6-004",

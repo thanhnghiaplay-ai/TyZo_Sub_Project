@@ -1,0 +1,29 @@
+RE6-003 · Vercel giả (CLI + REST API) · node v22.23.5
+ok 1 - RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin
+ok 2 - RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang
+ok 3 - RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang
+ok 4 - RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong
+ok 5 - RE5-004: nhật ký dở dang từ lần trước (mất SSH/kill) được nhận ra; «da-mo-lai» hoặc «xong» kết thúc
+ok 6 - RE6-003: không còn đọc chữ ready từ CLI
+ok 7 - RE6-003: lượt đúng → kiểm env theo băm, deployment đúng ID/project/target/mã, tên miền, trang trả lời
+ok 8 - RE6-003: not-ready → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 9 - RE6-003: error → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 10 - RE6-003: wrong-project → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 11 - RE6-003: wrong-target → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 12 - RE6-003: wrong-sha → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 13 - RE6-003: wrong-url → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 14 - RE6-003: alias-other → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 15 - RE6-003: api-down-after-deploy → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
+ok 16 - RE6-003: deploy mất kết nối → tra theo tyzo_run tìm ra deployment, ghi ID vào nhật ký
+ok 17 - RE6-003: deploy treo → cắt theo giới hạn thời gian, không coi là xong
+ok 18 - RE6-003: env-drop-DATABASE_URL → dừng trước deploy
+ok 19 - RE6-003: sensitive-BETTER_AUTH_SECRET → dừng trước deploy
+ok 20 - RE6-003: dup-DATABASE_URL → dừng trước deploy
+ok 21 - RE6-003: add-hang-LIVE_BRIDGE_URL → dừng trước deploy
+ok 22 - RE6-003: link-noid → dừng trước deploy
+ok 23 - RE6-003: api-down → dừng trước deploy
+ok 24 - RE6-003: Ready và đã nhận tên miền nhưng trang không trả lời → kiem-chua-dat, giữ dở dang
+# tests 24
+# pass 24
+# fail 0
+# skipped 0

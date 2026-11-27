@@ -1710,25 +1710,120 @@ VERCEL_CLI_VERSION="65.14.0"
 
 # Kịch bản chạy trong container node:22 để đặt env và đưa lên Vercel. In mốc «BUOC …» để máy ghi nhật ký chuyển nguồn.
 # Không xóa biến trước khi thêm (trước đây env rm rồi env add: thêm lỗi là production mất biến); --force ghi đè một bước.
+# RE6-003: không đọc chữ «ready» từ đầu ra CLI. Sau mỗi tác động, kiểm bằng Vercel REST API (JSON): giá trị env đã ghi
+# (so băm, không in giá trị), đúng project/target/ID/mã phiên bản (meta tyzo_sha, tyzo_run), readyState READY,
+# tên miền production trỏ đúng deployment và trang trả lời. Mỗi lệnh có giới hạn thời gian. Hết giờ hoặc lỗi giữa chừng
+# thì tra deployment theo tyzo_run để phục hồi, coi là chưa rõ và giữ nguồn cũ khóa.
 chay_vercel_sh() {
   cat <<'SH'
 set -uo pipefail
 V="npx -y vercel@${VERCEL_CLI_VERSION:?} --token $TOK ${SCOPE:+--scope $SCOPE}"
 ENVF="${ENVF:-/x/env}"
-$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
+T_CLI="${T_CLI:-180}"; T_DEPLOY="${T_DEPLOY:-1500}"
+export VERCEL_API="${VERCEL_API:-https://api.vercel.com}" T_READY="${T_READY:-900}" T_POLL="${T_POLL:-5}"
+RUN="${RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$-$RANDOM}"; MA="${SHA:-}"
+KIEM="$(mktemp)"; trap 'rm -f "$KIEM"' EXIT
+cat > "$KIEM" <<'JS'
+const [mode, ...a] = process.argv.slice(2);
+const api = process.env.VERCEL_API.replace(/\/$/, "");
+const cfg = JSON.parse(require("fs").readFileSync(".vercel/project.json", "utf8"));
+const team = String(cfg.orgId || "").startsWith("team_") ? `teamId=${encodeURIComponent(cfg.orgId)}` : "";
+const q = (p, extra = "") => `${api}${p}${p.includes("?") ? "&" : "?"}${[team, extra].filter(Boolean).join("&")}`;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function get(p) {
+  const r = await fetch(q(p), { headers: { Authorization: `Bearer ${process.env.TOK}` }, signal: AbortSignal.timeout(20000) });
+  if (!r.ok) throw new Error(`API ${r.status}`);
+  const j = await r.json();
+  if (!j || typeof j !== "object") throw new Error("API không trả JSON");
+  return j;
+}
+const hash = (s) => require("crypto").createHash("sha256").update(s).digest("hex");
+const fail = (code, msg) => { console.log(msg); process.exit(code); };
+async function envCheck(file) {
+  const want = new Map();
+  for (const line of require("fs").readFileSync(file, "utf8").split("\n")) {
+    if (!line) continue;
+    const i = line.indexOf("=");
+    want.set(i < 0 ? line : line.slice(0, i), i < 0 ? "" : line.slice(i + 1));
+  }
+  const list = await get(`/v10/projects/${encodeURIComponent(cfg.projectId)}/env?decrypt=true`);
+  if (!Array.isArray(list.envs)) throw new Error("API env sai cấu trúc");
+  let bad = 0;
+  for (const [k, v] of want) {
+    const rows = list.envs.filter((e) => e && e.key === k && Array.isArray(e.target) && e.target.includes("production") && !e.gitBranch);
+    let why = "";
+    if (rows.length !== 1) why = rows.length ? "nhiều bản production" : "thiếu";
+    else {
+      let e = rows[0];
+      if (e.type === "sensitive") why = "không đọc lại được (sensitive)";
+      else {
+        if (!(e.decrypted && typeof e.value === "string")) e = await get(`/v1/projects/${encodeURIComponent(cfg.projectId)}/env/${encodeURIComponent(e.id)}`);
+        if (typeof e.value !== "string") why = "không đọc lại được";
+        else if (hash(e.value) !== hash(v)) why = "giá trị không khớp";
+      }
+    }
+    if (why) { bad++; console.log(`  LOI kiểm ${k}: ${why}`); } else console.log(`  khớp ${k}`);
+  }
+  if (bad) process.exit(1);
+}
+function mine(d, run, sha) {
+  const m = d.meta || {};
+  return d.projectId === cfg.projectId && d.target === "production" && m.tyzo_run === run && (!sha || m.tyzo_sha === sha);
+}
+async function deployCheck(url, run, sha) {
+  const host = String(url).replace(/^https:\/\//, "").replace(/\/.*$/, "");
+  const end = Date.now() + Number(process.env.T_READY) * 1000;
+  let d, said = "";
+  for (;;) {
+    d = await get(`/v13/deployments/${encodeURIComponent(host)}`).catch((e) => ({ _err: e.message }));
+    if (!d._err) {
+      if (typeof d.id !== "string" || d.url !== host) fail(4, `LOI: API trả deployment khác ${host}`);
+      if (!mine(d, run, sha)) fail(4, `LOI: deployment ${d.id} sai project, target, lượt chạy hoặc mã phiên bản`);
+      if (said !== d.id) { console.log(`BUOC deploy-id ${d.id}`); said = d.id; }
+      if (d.readyState === "READY" && d.aliasAssigned === true) break;
+      if (["ERROR", "CANCELED", "DELETED"].includes(d.readyState)) fail(4, `LOI: deployment ${d.id} ${d.readyState}`);
+      if (d.aliasError) fail(4, `LOI: deployment ${d.id} không gán được tên miền production`);
+    }
+    if (Date.now() > end) fail(5, `LOI: hết giờ chờ deployment (${d._err || d.readyState || "?"})`);
+    await sleep(Number(process.env.T_POLL) * 1000);
+  }
+  const alias = (Array.isArray(d.alias) ? d.alias : []).filter((x) => typeof x === "string");
+  if (!alias.length) fail(4, `LOI: deployment ${d.id} không có tên miền production`);
+  for (const x of alias) {
+    const al = await get(`/v4/aliases/${encodeURIComponent(x)}`);
+    if (al.deploymentId !== d.id) fail(4, `LOI: ${x} chưa trỏ tới ${d.id}`);
+  }
+  console.log(`BUOC deploy-xong https://${host} ${d.id}`);
+  const r = await fetch(`${process.env.PROBE_BASE || "https://"}${alias[0]}/`, { redirect: "manual", signal: AbortSignal.timeout(20000) }).catch(() => null);
+  if (!r || r.status >= 400) fail(6, `LOI: ${alias[0]} không trả lời (${r ? r.status : "mất kết nối"})`);
+  console.log(`BUOC kiem-xong ${d.id} ${sha || "-"}`);
+}
+async function find(run) {
+  const j = await get(`/v6/deployments?projectId=${encodeURIComponent(cfg.projectId)}&target=production&limit=50`);
+  if (!Array.isArray(j.deployments)) throw new Error("API deployments sai cấu trúc");
+  const hit = j.deployments.filter((d) => (d.meta || {}).tyzo_run === run);
+  console.log(hit.length ? hit.map((d) => `TIM ${d.uid} ${d.readyState || d.state || "?"} https://${d.url}`).join("\n") : "TIM khong-thay");
+}
+(mode === "env" ? envCheck(a[0]) : mode === "deploy" ? deployCheck(a[0], a[1], a[2]) : find(a[0]))
+  .catch((e) => fail(7, `LOI: không kiểm được qua API (${e.message})`));
+JS
+kiem() { node "$KIEM" "$@"; }
+tim() { echo "Tra deployment của lượt $RUN:"; kiem tim "$RUN" || echo "TIM khong-ro"; }
+timeout "$T_CLI" $V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
+[ -s .vercel/project.json ] || { echo "LOI: không có định danh project sau khi nối"; exit 1; }
 echo "BUOC env-bat-dau"
 while IFS= read -r line; do
   [ -z "$line" ] && continue
   k="${line%%=*}"; val="${line#*=}"
-  printf '%s' "$val" | $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
+  printf '%s' "$val" | timeout "$T_CLI" $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
 done < "$ENVF"
+kiem env "$ENVF" || { echo "LOI: env trên Vercel chưa khớp, chưa deploy"; exit 1; }
 echo "BUOC env-xong"
-echo "BUOC deploy-bat-dau"
-url="$($V deploy --prod --yes 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; exit 3; }
-case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; exit 3 ;; esac
-$V inspect "$url" 2>&1 | grep -qi 'ready' || { echo "LOI: bản dựng $url chưa Ready"; exit 3; }
-echo "BUOC deploy-xong $url"
-if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
+echo "BUOC deploy-bat-dau $RUN ${MA:--}"
+url="$(timeout "$T_DEPLOY" $V deploy --prod --yes --meta "tyzo_run=$RUN" ${MA:+--meta "tyzo_sha=$MA"} 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; tim; exit 3; }
+case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; tim; exit 3 ;; esac
+kiem deploy "$url" "$RUN" "$MA" || { tim; exit 3; }
+if [ -n "${DOM:-}" ]; then timeout "$T_CLI" $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3 || echo "  Chưa thêm được tên miền $DOM, thêm tay trên Vercel."; fi
 SH
 }
 
@@ -1748,13 +1843,16 @@ chuyen_dang_do() {
   last="$(buoc_chuyen_cuoi)" || return 0
   [ "$last" != "xong" ] && [ "$last" != "da-mo-lai" ]
 }
-# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh.
+# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh. Chỉ «xong» khi có mốc kiem-xong (API + trang trả lời).
 buoc_vercel() {
-  if grep -q '^BUOC deploy-xong' "$1"; then echo xong
+  if grep -q '^BUOC kiem-xong' "$1"; then echo xong
+  elif grep -q '^BUOC deploy-xong' "$1"; then echo kiem-chua-dat
   elif grep -q '^BUOC deploy-bat-dau' "$1"; then echo deploy-chua-ro
   elif grep -q '^BUOC env-bat-dau' "$1"; then echo env-do-dang
   else echo chua-doi-vercel; fi
 }
+# ID deployment cuối cùng ghi được (để nhật ký và phục hồi), không có thì «-».
+id_vercel() { awk '/^BUOC deploy-id /{d=$3} /^TIM /&&$2!~/^khong-/{d=$2} END{print (d==""?"-":d)}' "$1"; }
 
 # =====================================================================
 # Đưa web lên một tài khoản Vercel (mới hoặc khác)
@@ -1818,15 +1916,19 @@ TXT
     khoa_va_doi_soat_chuyen "$neon_url" || return 1
   fi
   if [ "$CHUYEN_DA_KHOA" = 1 ]; then ghi_chuyen vercel-bat-dau "$proj" || return 1; fi
-  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" \
+  local ma_sha; ma_sha="$(git -C "$DIR" rev-parse HEAD 2>/dev/null)" || ma_sha=""
+  # Giới hạn cả lượt (CLI treo, mạng treo); bị cắt giữa chừng thì đầu ra thiếu mốc và được coi là chưa rõ.
+  timeout --kill-after=30 "${TYZO_VERCEL_TIMEOUT:-3600}" docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app \
+    -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" -e SHA="$ma_sha" \
     -e VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" node:22 bash /x/chay.sh | tee "$thu_vercel/ra.txt"
-  local kq=${PIPESTATUS[0]} buoc
-  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
-  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj"
+  local kq=${PIPESTATUS[0]} buoc dep
+  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; dep="$(id_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
+  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj $dep ${ma_sha:--}"
   if [ "$kq" != 0 ] || [ "$buoc" != xong ]; then
     do_ "✘ Chưa đưa lên được (bước: $buoc). Chụp màn hình gửi Claude."
     case "$buoc" in
-      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa: Vercel có thể đã ghi vào Neon." ;;
+      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa (deployment: $dep): Vercel có thể đã ghi vào Neon." ;;
+      kiem-chua-dat) vang "Bản $dep đã Ready và nhận tên miền nhưng trang chưa trả lời: web mới có thể đã ghi vào Neon." ;;
       env-do-dang) vang "Một phần biến môi trường trên Vercel đã được ghi đè, bản đang chạy chưa đổi." ;;
     esac
     if [ "$CHUYEN_DA_KHOA" = 1 ]; then
