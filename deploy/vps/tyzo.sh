@@ -702,17 +702,62 @@ cho_trong_du() { # cho_trong_du <tệp>: ổ đĩa của Postgres còn ít nhấ
   [ -n "$con" ] && [ "$con" -ge "$can" ]
 }
 
+# RE3-007: «bảng kê» một CSDL để đối soát trước khi chuyển nguồn dữ liệu. Chỉ số đếm và mã băm, không in dữ liệu.
+# Mỗi bảng: số dòng + băm toàn bộ dòng (sắp theo băm dòng); mỗi sequence: giá trị; ràng buộc; danh sách migration.
+# Đặt múi giờ/định dạng cố định để hai máy chủ in cùng một chữ cho cùng dữ liệu.
+sql_bang_ke() {
+  cat <<'SQL'
+\set ON_ERROR_STOP 1
+set timezone = 'UTC';
+set datestyle = 'ISO, YMD';
+set intervalstyle = 'postgres';
+set extra_float_digits = 1;
+set bytea_output = 'hex';
+select format('select %L || ''|'' || count(*) || ''|'' || coalesce(md5(string_agg(h, '''' order by h)), ''-'') from (select md5(t::text) as h from %I.%I t) x',
+              'bang|' || tablename, schemaname, tablename)
+from pg_tables where schemaname = 'public' order by tablename
+\gexec
+select format('select %L || ''|'' || coalesce(last_value::text, ''null'') || ''|'' || is_called from %I.%I', 'seq|' || sequencename, schemaname, sequencename)
+from pg_sequences where schemaname = 'public' order by sequencename
+\gexec
+select 'rang-buoc|' || count(*) filter (where contype = 'f') || '|' || count(*) filter (where contype in ('p','u','x')) || '|chua-kiem=' || count(*) filter (where not convalidated)
+from pg_constraint c join pg_namespace n on n.oid = c.connamespace where n.nspname = 'public';
+select format('select ''migration|'' || count(*) || ''|'' || coalesce(md5(string_agg(name, '','' order by name)), ''-'') from %I._migrations', schemaname)
+from pg_tables where schemaname = 'public' and tablename = '_migrations'
+\gexec
+SQL
+}
+
+# bang_ke_vps <csdl> | bang_ke_xa <url>: in bảng kê (đã sắp) ra stdout.
+bang_ke_vps() { sql_bang_ke | docker exec -i tyzo-db psql -X -q -tA -U tyzo -d "$1" -f - | sed '/^$/d' | LC_ALL=C sort; }
+bang_ke_xa() { sql_bang_ke | docker run --rm -i --network host postgres:17 psql -X -q -tA "$1" -f - | sed '/^$/d' | LC_ALL=C sort; }
+
+# khop_bang_ke <a> <b>: 0 khi trùng khớp và có bảng; in tên mục lệch (không in dữ liệu).
+khop_bang_ke() {
+  [ -s "$1" ] && [ -s "$2" ] || { echo "   (bảng kê rỗng: không đọc được CSDL)"; return 1; }
+  grep -q '^bang|' "$1" || { echo "   (bảng kê không có bảng nào)"; return 1; }
+  if cmp -s "$1" "$2"; then return 0; fi
+  LC_ALL=C diff "$1" "$2" | grep '^[<>]' | cut -c3- | cut -d'|' -f1-2 | LC_ALL=C sort -u | head -n 12 | sed 's/^/   lệch: /'
+  return 1
+}
+
 nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ DỪNG (RE-003; trước đó R8-001, REF-013, AZ-001)
   # Không xóa gì trước. Nạp vào CSDL tạm «tyzo_moi» bằng MỘT giao dịch, dừng ở lỗi đầu tiên; kiểm đủ bảng, khóa ngoại,
   # ràng buộc và chỉ mục theo mục lục tệp; đạt hết mới đổi chỗ. Không còn đường «dong-y» để dùng bản nạp có lỗi.
   # CSDL đang chạy giữ nguyên dưới tên tyzo_cu_<giờ> để quay về. Web và cầu nối dừng trong lúc nạp (không ghi mất).
-  local f="$1" can fk ct ix co cu dung=0 ma=0
+  # RE3-007: $2 = bảng kê nguồn (tệp), $3 = tên hàm in lại bảng kê nguồn (phát hiện ghi phát sinh trong lúc chép).
+  local f="$1" ky="${2:-}" kiem_lai="${3:-}" can fk ct ix co cu dung=0 ma=0
   [ -s "$f" ] || { do_ "✘ Tệp dữ liệu trống hoặc không có."; return 1; }
   can="$(so_muc_tep "$f" TABLE)"
   [ "${can:-0}" -gt 5 ] || { do_ "✘ Tệp dữ liệu hỏng hoặc chỉ có ${can:-0} bảng. Không nạp, dữ liệu đang chạy không bị đụng."; return 1; }
   cho_trong_du "$f" || { do_ "✘ Ổ đĩa không đủ chỗ (cần khoảng 4 lần dung lượng tệp). Không nạp, dữ liệu đang chạy không bị đụng."; return 1; }
   fk="$(so_muc_tep "$f" 'FK CONSTRAINT')"; ct="$(so_muc_tep "$f" CONSTRAINT)"; ix="$(so_muc_tep "$f" INDEX)"
   pg_sys "drop database if exists tyzo_moi" >/dev/null && pg_sys "create database tyzo_moi owner tyzo" >/dev/null || { do_ "✘ Không tạo được CSDL tạm."; return 1; }
+  # Bản chép từ Neon (pg_dump -n public) có lệnh CREATE SCHEMA public; CSDL mới đã sẵn schema public trống nên
+  # --exit-on-error dừng ngay ("schema public already exists"). Chỉ khi tệp có mục đó: bỏ schema trống của CSDL TẠM vừa tạo.
+  if docker exec -i tyzo-db pg_restore -l < "$f" 2>/dev/null | grep -qE '^[0-9]+; [0-9]+ [0-9]+ SCHEMA - public '; then
+    docker exec tyzo-db psql -U tyzo -d tyzo_moi -v ON_ERROR_STOP=1 -qtAc "drop schema public" >/dev/null || { do_ "✘ Không chuẩn bị được CSDL tạm."; pg_sys "drop database if exists tyzo_moi" >/dev/null; return 1; }
+  fi
   # Dừng ghi trước khi nạp: dữ liệu ghi trong lúc nạp sẽ không bị bỏ lại trong CSDL cũ mà không ai biết.
   if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
   dc stop web bridge >/dev/null 2>&1 || true
@@ -725,6 +770,24 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
     [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
     return 1
   fi
+  if [ -n "$ky" ]; then
+    local moi lai; moi="$(mktemp)"; lai="$(mktemp)"
+    bang_ke_vps tyzo_moi > "$moi" 2>/dev/null
+    if ! khop_bang_ke "$ky" "$moi"; then
+      do_ "✘ Dữ liệu nạp không khớp bảng kê nguồn (số dòng/mã băm). Không chuyển. Dữ liệu đang chạy KHÔNG bị đụng."
+      rm -f "$moi" "$lai"; pg_sys "drop database if exists tyzo_moi" >/dev/null
+      [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+    fi
+    if [ -n "$kiem_lai" ]; then
+      "$kiem_lai" > "$lai" 2>/dev/null
+      if ! khop_bang_ke "$ky" "$lai"; then
+        do_ "✘ Nguồn đã có ghi mới trong lúc chép. Không chuyển. Tạm dừng nơi đang ghi (bảo trì/tắt web nguồn) rồi chạy lại."
+        rm -f "$moi" "$lai"; pg_sys "drop database if exists tyzo_moi" >/dev/null
+        [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+      fi
+    fi
+    rm -f "$moi" "$lai"
+  fi
   cu="tyzo_cu_$(date '+%Y%m%d_%H%M%S')"
   pg_sys "select pg_terminate_backend(pid) from pg_stat_activity where datname in ('tyzo','tyzo_moi') and pid <> pg_backend_pid()" >/dev/null || true
   if ! pg_sys "alter database tyzo rename to $cu" >/dev/null; then
@@ -736,14 +799,18 @@ nap_dump() { # nap_dump <tệp .dump>: nạp vào Postgres trên VPS, LỖI LÀ 
     else do_ "✘ Đổi chỗ lỗi và chưa trả về được: dữ liệu cũ đang ở CSDL $cu, bản mới ở tyzo_moi. Gõ: docker exec tyzo-db psql -U tyzo -d postgres -c 'alter database $cu rename to tyzo'"; fi
     [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
   fi
-  # Kiểm lại sau khi đổi chỗ: CSDL «tyzo» phải đúng bản vừa nạp.
-  if [ "$(so_muc_csdl tyzo)" != "$can $fk $ct $ix" ]; then
+  # Kiểm lại sau khi đổi chỗ: CSDL «tyzo» phải đúng bản vừa nạp (và đúng bảng kê nguồn nếu có).
+  local sau_ok=1
+  if [ -n "$ky" ]; then local sau; sau="$(mktemp)"; bang_ke_vps tyzo > "$sau" 2>/dev/null; khop_bang_ke "$ky" "$sau" >/dev/null || sau_ok=0; rm -f "$sau"; fi
+  if [ "$sau_ok" != 1 ] || [ "$(so_muc_csdl tyzo)" != "$can $fk $ct $ix" ]; then
     pg_sys "alter database tyzo rename to tyzo_hong_$(date '+%H%M%S')" >/dev/null && pg_sys "alter database $cu rename to tyzo" >/dev/null
     do_ "✘ Kiểm sau đổi chỗ không khớp, đã trả CSDL cũ về."; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
   fi
-  xanh "✔ Đã nạp trọn vẹn: $can bảng, $fk khóa ngoại, $ct ràng buộc, $ix chỉ mục. Dữ liệu trước đó giữ ở CSDL $cu."
+  xanh "✔ Đã nạp trọn vẹn: $can bảng, $fk khóa ngoại, $ct ràng buộc, $ix chỉ mục${ky:+, khớp bảng kê nguồn (số dòng, mã băm, sequence, migration)}. Dữ liệu trước đó giữ ở CSDL $cu."
   echo "   Khi chắc chắn bản mới đúng, xóa bản cũ để lấy lại ổ đĩa: docker exec tyzo-db psql -U tyzo -d postgres -c 'drop database $cu'"
 }
+
+bang_ke_nguon_neon() { bang_ke_xa "$NGUON_NEON"; }
 
 chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon về Postgres trên VPS (Neon chỉ bị đọc)
   local url="$1" n
@@ -755,38 +822,85 @@ chep_tu_neon() { # chep_tu_neon <url Neon>: chép toàn bộ dữ liệu Neon v�
   fi
   # Đọc Neon xong mới đụng VPS (trước đây xóa dữ liệu VPS rồi mới đọc Neon: Neon lỗi là mất cả hai).
   docker image inspect postgres:17 >/dev/null 2>&1 || chay_cho "Tải công cụ postgres:17 (lần đầu)" /tmp/tyzo-pull.log docker pull postgres:17 || true
-  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump; return 1; }
-  nap_dump /tmp/tyzo-neon.dump || { rm -f /tmp/tyzo-neon.dump; return 1; }
-  rm -f /tmp/tyzo-neon.dump
+  # RE3-007: bảng kê Neon trước khi đọc; nạp xong phải khớp, và Neon đọc lại vẫn khớp (không có ghi phát sinh).
+  vang "Trong lúc chép, hãy để web Vercel ở chế độ bảo trì hoặc tạm dừng: có ghi mới thì máy sẽ từ chối chuyển."
+  local ky; ky="$(umask 077; mktemp)"
+  bang_ke_xa "$url" > "$ky" 2>/dev/null
+  grep -q '^bang|' "$ky" || { do_ "✘ Không lập được bảng kê Neon. Dữ liệu trên VPS không bị đụng."; rm -f "$ky"; return 1; }
+  chay_cho "Đọc dữ liệu từ Neon (chỉ đọc)" /tmp/tyzo-dump.log bash -c "$(declare -f pg_tu_xa chay_cho xanh do_); pg_tu_xa pg_dump --no-owner --no-privileges -n public -Fc \"\$1\" > /tmp/tyzo-neon.dump" _ "$url" || { tail -n 5 /tmp/tyzo-dump.log | sed 's/^/   /'; do_ "✘ Không đọc được Neon. Kiểm chuỗi kết nối. Dữ liệu trên VPS không bị đụng."; rm -f /tmp/tyzo-neon.dump "$ky"; return 1; }
+  NGUON_NEON="$url"
+  nap_dump /tmp/tyzo-neon.dump "$ky" bang_ke_nguon_neon || { rm -f /tmp/tyzo-neon.dump "$ky"; return 1; }
+  rm -f /tmp/tyzo-neon.dump "$ky"
 }
 
 chep_len_neon() { # chép dữ liệu trên VPS lên một Neon TRỐNG (khi quay lại Vercel)
-  local url="$1" n can ma=0 thu
+  local url="$1" n can ma=0 thu dung=0
   # Private, unique paths prevent symlink/clobber attacks and concurrent restore collisions.
   thu="$(umask 077; mktemp -d "${TMPDIR:-/tmp}/tyzo-neon-restore.XXXXXXXX")" || return 1
   n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from information_schema.tables where table_schema='public'" | tr -d '[:space:]')"
   [[ "$n" =~ ^[0-9]+$ ]] || { do_ "✘ Không kết nối được Neon."; rmdir "$thu"; return 1; }
   [ "$n" = "0" ] || { do_ "✘ Neon đích đang có $n bảng. Chỉ chép vào Neon TRỐNG."; rmdir "$thu"; return 1; }
-  echo "Đang chép từ VPS lên Neon..."
+  # RE3-007: khóa ghi trên VPS trong lúc chép (dừng web và cầu nối), bật lại khi xong; bảng kê trước và sau phải khớp.
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
+  dc stop web bridge >/dev/null 2>&1 || true
+  echo "Đang chép từ VPS lên Neon (web trên VPS tạm dừng để không phát sinh ghi)..."
+  bang_ke_vps tyzo > "$thu/nguon.txt" 2>/dev/null
+  if ! grep -q '^bang|' "$thu/nguon.txt"; then
+    do_ "✘ Không lập được bảng kê dữ liệu trên VPS. Hồ sơ: $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+  fi
   (umask 077; docker exec tyzo-db pg_dump -U tyzo --no-owner --no-privileges -Fc tyzo > "$thu/source.dump") || {
-    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; return 1;
+    do_ "✘ Không đọc được dữ liệu trên VPS. Hồ sơ lỗi: $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1;
   }
   can="$(so_bang_tep "$thu/source.dump")"
-  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; return 1; }
+  [[ "$can" =~ ^[0-9]+$ ]] && [ "$can" -gt 0 ] || { do_ "✘ Không đọc được mục lục bản sao. Giữ tại $thu"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1; }
   docker run --rm -i --network host postgres:17 pg_restore --exit-on-error --single-transaction --no-owner --no-privileges -d "$url" < "$thu/source.dump" 2>"$thu/restore.err" || ma=$?
   # Exit status is authoritative. Matching table counts cannot validate a failed restore.
   if [ "$ma" != 0 ]; then
     do_ "✘ Nạp thất bại (mã $ma); không chuyển nguồn dữ liệu. Bản sao và log riêng: $thu"
+    [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
     return 1
   fi
+  bang_ke_xa "$url" > "$thu/dich.txt" 2>/dev/null
+  bang_ke_vps tyzo > "$thu/nguon-lai.txt" 2>/dev/null
+  [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1
   n="$(pg_tu_xa psql "$url" -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_tables where schemaname='public'" | tr -d '[:space:]')"
-  if [[ "$n" =~ ^[0-9]+$ ]] && [ "$n" = "$can" ]; then
-    xanh "✔ Đã nạp lên Neon ($n bảng). Chưa chuyển nguồn; cần đối soát dữ liệu trước khi chuyển."
-    rm -f "$thu/source.dump" "$thu/restore.err"; rmdir "$thu"
-  else
+  if ! [[ "$n" =~ ^[0-9]+$ ]] || [ "$n" != "$can" ]; then
     do_ "✘ Kiểm tra sau nạp không đạt (${n:-0}/$can bảng); không chuyển nguồn. Giữ bản sao tại $thu"
     return 1
   fi
+  if ! khop_bang_ke "$thu/nguon.txt" "$thu/dich.txt"; then
+    do_ "✘ Neon không khớp bảng kê VPS (số dòng/mã băm); không chuyển nguồn. Neon đích đã có dữ liệu chưa khớp: xóa schema public trên Neon (Neon → SQL Editor) trước khi thử lại. Hồ sơ: $thu"
+    return 1
+  fi
+  if ! khop_bang_ke "$thu/nguon.txt" "$thu/nguon-lai.txt"; then
+    do_ "✘ Dữ liệu VPS thay đổi trong lúc chép; không chuyển nguồn. Hồ sơ: $thu"
+    return 1
+  fi
+  xanh "✔ Đã nạp lên Neon ($n bảng), khớp bảng kê VPS: số dòng, mã băm từng bảng, sequence, migration. Chưa chuyển nguồn."
+  echo "   Khi chuyển sang Vercel, mục 14 sẽ đối soát lại một lần nữa (khóa ghi trên VPS) trước khi đưa lên."
+  rm -f "$thu/source.dump" "$thu/restore.err" "$thu/nguon.txt" "$thu/dich.txt" "$thu/nguon-lai.txt"
+  rmdir "$thu"
+}
+
+# RE3-007: cổng chuyển nguồn VPS → Neon (mục 14). Khóa ghi trên VPS, đối soát, Chủ xác nhận. Trả 0 = được chuyển
+# (web VPS để dừng để không ghi tách đôi), 1 = không chuyển (web VPS bật lại nếu trước đó đang chạy).
+khoa_va_doi_soat_chuyen() {
+  local url="$1" a ky dich dung=0
+  [ "$(che_do)" = "full" ] && [ "$(conf_get DB)" = "local" ] || return 0
+  vang "Dữ liệu đang ở Postgres trên VPS. Trước khi đưa lên Vercel, máy dừng web VPS để khóa ghi và so dữ liệu VPS với Neon."
+  read -rp "Gõ dong-y để dừng web VPS và đối soát: " a; [ "$a" = "dong-y" ] || { echo "Đã hủy, không chuyển."; return 1; }
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -qE 'tyzo-(web|bridge)'; then dung=1; fi
+  dc stop web bridge >/dev/null 2>&1 || true
+  ky="$(umask 077; mktemp)"; dich="$(umask 077; mktemp)"
+  bang_ke_vps tyzo > "$ky" 2>/dev/null; bang_ke_xa "$url" > "$dich" 2>/dev/null
+  if ! khop_bang_ke "$ky" "$dich"; then
+    do_ "✘ Neon chưa khớp dữ liệu VPS. Không chuyển. Chạy mục 13 → chép VPS lên Neon trống, rồi thử lại."
+    rm -f "$ky" "$dich"; [ "$dung" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1; return 1
+  fi
+  rm -f "$ky" "$dich"
+  xanh "✔ Neon khớp dữ liệu VPS. Web VPS giữ ở trạng thái dừng để không ghi tách đôi."
+  CHUYEN_DUNG_WEB="$dung"
+  return 0
 }
 
 sao_luu() {
@@ -1343,6 +1457,8 @@ TXT
   echo "Cơ sở dữ liệu cho Vercel phải là Neon (Neon → Connect → Show password → Copy snippet)."
   v=""; while [[ "$v" != postgres://* && "$v" != postgresql://* ]] || [[ "$v" == *"@db:"* ]]; do v="$(hoi_an 'Dán DATABASE_URL của Neon (chữ không hiện): ')"; done
   dat_bien DATABASE_URL "$v"
+  CHUYEN_DUNG_WEB=0
+  khoa_va_doi_soat_chuyen "$v" || return 1
   hoi_bi_mat_dang_nhap
   dat_bien VITE_AUTH_ENABLED true
   if [ -n "$dom" ]; then dat_bien BETTER_AUTH_URL "https://$dom"; else
@@ -1380,7 +1496,12 @@ SH
   docker run --rm -v "$DIR":/app -v /tmp/tyzo-vc:/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" node:22 bash /x/chay.sh
   local kq=$?
   rm -rf /tmp/tyzo-vc
-  if [ "$kq" != 0 ]; then do_ "✘ Chưa đưa lên được. Chụp màn hình gửi Claude."; return 1; fi
+  if [ "$kq" != 0 ]; then
+    do_ "✘ Chưa đưa lên được. Chụp màn hình gửi Claude."
+    # RE3-007: chuyển hỏng thì trả web VPS về như trước (nguồn cũ vẫn nguyên).
+    [ "${CHUYEN_DUNG_WEB:-0}" = 1 ] && dc up -d --no-build web bridge >/dev/null 2>&1 && vang "Đã bật lại web trên VPS (nguồn dữ liệu cũ)."
+    return 1
+  fi
   cat <<TXT
 
 Xong phần máy làm. Việc còn lại:
