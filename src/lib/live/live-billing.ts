@@ -40,16 +40,13 @@ export function createLiveBilling(sql: Sql, env: LiveBillingEnv): LiveBilling {
       // DEEP-003: chi phí nhà cung cấp nay ghi theo từng lượt usage (spend bên dưới), không quy từ Token đã thu lúc đóng.
       await closeTokenWith(sql, ticketId, userId, failed);
     },
-    async spend({ model, base }) {
-      try {
-        const book = await env.book();
-        if (!book || !(base > 0)) return;
-        const { recordSpendWith } = await import("../provider-spend.ts");
-        const { asrHouse } = await import("../sub/asr-house.ts");
-        await recordSpendWith(sql, { provider: asrHouse(model) ?? "alibaba", model, baseVnd: base, rate: book.rate });
-      } catch {
-        /* ghi sổ hỏng không làm hỏng phiên */
-      }
+    async spend({ model, base, id }) {
+      const book = await env.book();
+      if (!(base > 0)) return;
+      if (!book) throw new Error("Thiếu tỷ giá để ghi chi phí dịch trực tiếp; cần đối soát.");
+      const { recordSpendDurablyWith } = await import("../provider-spend-journal.ts");
+      const { asrHouse } = await import("../sub/asr-house.ts");
+      return recordSpendDurablyWith(sql, { id, provider: asrHouse(model) ?? "alibaba", model, baseVnd: base, rate: book.rate });
     },
   };
 }

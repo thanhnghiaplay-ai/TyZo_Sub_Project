@@ -57,6 +57,7 @@ export function ProfitVerdict({ span }: { span: "day" | "week" | "month" | "year
         )}
       </div>
 
+      {view.spend.pending>0 && <p role="status" className="text-sm text-warning">Có {nf.format(view.spend.pending)} khoản chi phí chờ ghi tổng hợp; đã tính trong số phải trả bên dưới.</p>}
       <ul className="grid gap-1 text-sm">
         <li className="flex justify-between gap-2"><span>Tiền vào (chuyển khoản đã xác nhận)</span><span className="shrink-0 whitespace-nowrap font-semibold tabular-nums">{dong(view.revenue)}</span></li>
         <li className="flex justify-between gap-2"><span>Phải trả các nhà cung cấp ({usd(view.spend.total.usd)})</span><span className="shrink-0 whitespace-nowrap font-semibold tabular-nums text-danger">{minus(view.providers)}</span></li>

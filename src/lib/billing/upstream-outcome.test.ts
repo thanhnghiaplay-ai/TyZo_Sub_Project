@@ -184,6 +184,10 @@ pgTest("TTS waits for the audio body and observes/debits exactly once", async ()
     Number((await sql<{ n: number }>`select sum(calls)::int n from provider_spend`)[0].n),
     1,
   );
+  assert.equal(
+    Number((await sql`select usd_micro from provider_spend where model='tts'`)[0].usd_micro),
+    22,
+  );
 });
 
 pgTest("TTS body timeout refunds its unused hold and retains uncertain capacity", async () => {
@@ -362,3 +366,18 @@ pgTest("completed history is excluded by the active-admission index", async () =
   );
   assert.match(JSON.stringify(plan), /Index Only Scan|Index Scan|Bitmap Index Scan/);
 });
+
+pgTest(
+  "supplier USD uses raw model usage while customer Token rounding stays unchanged",
+  async () => {
+    await call({
+      send: async () => Response.json({ usage: { prompt_tokens: 80, completion_tokens: 80 } }),
+    });
+    assert.equal(await charged(), 4);
+    const expense = await sql`select calls,base_vnd,usd_micro from provider_spend`;
+    assert.equal(expense.length, 1);
+    assert.equal(expense[0].calls, 1);
+    assert.ok(Math.abs(Number(expense[0].base_vnd) - 0.4) < 1e-9);
+    assert.equal(Number(expense[0].usd_micro), 16);
+  },
+);

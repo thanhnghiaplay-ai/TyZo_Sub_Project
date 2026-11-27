@@ -13,6 +13,7 @@ import { closeTicketWith, ticketLive } from "./run-ticket.ts";
 import { tokensForBase, TURBO_ASR } from "./token-math.ts";
 import { closeTokenWith, openGiayWith } from "./token-flow.ts";
 import { randomBytes } from "node:crypto";
+import { supplierBaseCost } from "./supplier-cost.ts";
 import { definitiveProviderRejection } from "./upstream-outcome.ts";
 
 const MAX_COMPLETION_TOKENS = 8192;
@@ -199,6 +200,15 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     if (!(base > 0) || turbo == null || speechPerMillionChars(bare, model) == null) {
       return { kind: "reject", status: 422, message: "Model này chưa có giá niêm yết." };
     }
+    const providerBase = supplierBaseCost(
+      book,
+      model,
+      "speech",
+      { chars: input.chars },
+      input.provider,
+    );
+    if (providerBase == null)
+      return { kind: "reject", status: 422, message: "Chưa có giá chi phí nhà cung cấp." };
     const tokens = tokensForBase(base, turbo);
     if (tokens == null || tokens < 1)
       return { kind: "reject", status: 422, message: "Chưa tính được số Token dịch." };
@@ -257,6 +267,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
         userId,
         units: tokens,
         base,
+        providerBase,
         provider: input.provider ?? "groq",
         model,
         rate: book.rate,
@@ -374,6 +385,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
         input.upstreamComplete?.();
         let cost: number | null = null;
         let base = 0;
+        let providerBase: number | null = null;
         let needsReconciliation = false;
         const bare = { ...book, desk: { markup: 0, custom: {} } };
         try {
@@ -390,6 +402,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
             const seconds = needsReconciliation ? estimatedSeconds : reportedSeconds;
             cost = asrCost(book, model, seconds);
             base = asrCost(bare, model, seconds) ?? 0;
+            providerBase = supplierBaseCost(book, model, "asr", { seconds }, input.provider);
           } else {
             const prompt = Number(data.usage?.prompt_tokens);
             const completion = Number(data.usage?.completion_tokens);
@@ -408,6 +421,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
                 : (input.outCap ?? MAX_COMPLETION_TOKENS);
             cost = chatCost(book, model, inn, out);
             base = chatCost(bare, model, inn, out) ?? 0;
+            providerBase = supplierBaseCost(book, model, "chat", { inn, out }, input.provider);
           }
         } catch {
           needsReconciliation = true;
@@ -430,6 +444,19 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
                   input.outCap ?? MAX_COMPLETION_TOKENS,
                 ) ?? 0);
         }
+        providerBase ??= supplierBaseCost(
+          book,
+          model,
+          path === "/audio/transcriptions" ? "asr" : "chat",
+          {
+            seconds: estimatedSeconds,
+            inn: Math.ceil(input.body.byteLength / 3),
+            out: input.outCap ?? MAX_COMPLETION_TOKENS,
+          },
+          input.provider,
+        );
+        if (providerBase == null)
+          throw new Error("Chưa tính được chi phí nhà cung cấp; cần đối soát.");
         const units = tokenUnit ? giayForBaseCost(input.unitBook ?? book, base) : cost;
         if (units == null) throw new Error("Chưa tính được số Token quyết toán.");
         await settleGateCall(sql, {
@@ -438,6 +465,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           userId,
           units,
           base,
+          providerBase,
           provider: input.provider ?? "groq",
           model,
           rate: book.rate,

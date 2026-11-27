@@ -6,6 +6,7 @@ import type { Sql } from "../src/lib/db.ts";
 import { realPgSql } from "../src/lib/test-sql.ts";
 import { chargeAdmittedWith } from "../src/lib/billing/run-gate.ts";
 import { AdmissionBusy, withWorkAdmission } from "../src/lib/billing/work-admission.ts";
+import { createLiveBilling } from "../src/lib/live/live-billing.ts";
 import type { PriceBook } from "../src/lib/billing/run-bill.ts";
 
 const url = new URL(process.env.TYZO_TEST_PG_URL ?? "postgresql://invalid");
@@ -25,6 +26,7 @@ const book: PriceBook = { rate: 25000, desk: { markup: 0, custom: {} }, rows: [
   { id: "whisper-large-v3-turbo", usdPerHour: 0.04 },
   { id: "chat", usdIn: 0.1, usdOut: 0.1 },
 ].map((r) => ({ speed: null, usdIn: null, usdOut: null, usdPerHour: null, usdPerMillionChars: null, unlisted: false, limits: [], contextTokens: null, maxCompletionTokens: null, maxFile: null, ...r })) };
+const liveBilling=createLiveBilling(sql,{book:async()=>({rate:book.rate,rows:[]})});
 const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const reports = [];
 const quantile = (sorted: number[], q: number) => Number(sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * q) - 1)].toFixed(2));
@@ -54,7 +56,11 @@ try {
             send: async () => { await pause(40); return new Response('{"usage":{"prompt_tokens":100,"completion_tokens":1000}}'); } });
           if (result.kind === "reject") status = result.status;
         } else {
-          try { await withWorkAdmission(sql, { userId: ids[i].user_id, provider: "alibaba", model: "fixture-live", lane: "live" }, () => pause(40)); }
+          try { await withWorkAdmission(sql, { userId: ids[i].user_id, provider: "alibaba", model: "fixture-live", lane: "live" }, async () => {
+            await pause(40);
+            await liveBilling.spend!({id:`fixture-live:${mode}:${concurrency}:${i}`,userId:ids[i].user_id,model:"fixture-live",base:1.25});
+            await liveBilling.charge({userId:ids[i].user_id,ticketId:ids[i].id,cost:10,base:1.25});
+          }); }
           catch (error) { if (error instanceof AdmissionBusy) status = 429; else throw error; }
         }
         statuses[status] = (statuses[status] ?? 0) + 1;
@@ -71,15 +77,16 @@ try {
         or held <> (select coalesce(sum(left_tokens),0) from token_slices s where s.ticket_id=t.id)`;
       assert.equal(ledger[0].bad, 0);
       assert.equal((await sql`select 1 from work_admissions where status='running'`).length, 0);
-      const record = { mode: mode === "live" ? "live-admission-simulation" : mode, concurrency, fixtureUpstreamMs: 40,
+      const record = { mode: mode === "live" ? "live-billing-simulation-no-audio" : mode, concurrency, fixtureUpstreamMs: 40,
         p50Ms: quantile(samples,.50), p95Ms: quantile(samples,.95), p99Ms: quantile(samples,.99), statuses, acceptedP95Ms: successTimes.length ? quantile(successTimes,.95) : null, rejectedP95Ms: rejectedTimes.length ? quantile(rejectedTimes,.95) : null, acceptedPerSecond: Number(((statuses[200]??0)/elapsed*1000).toFixed(2)),
         elapsedMs: Number(elapsed.toFixed(2)), sqlStatements: requestStatements, ledgerViolations: ledger[0].bad };
       reports.push(record); console.log(JSON.stringify(record));
     }
   }
   assert.equal((await sql`select 1 from run_tickets where modal_reserved<>0`).length, 0);
-  const observed = Number((await sql<{ n: number }>`select count(*)::int n from run_gate_calls where observed_at is not null`)[0].n);
+  const observed = Number((await sql<{ n: number }>`select ((select count(*) from run_gate_calls where observed_at is not null)+(select count(*) from provider_spend_events))::int n`)[0].n);
   const spends = Number((await sql<{ n: number }>`select coalesce(sum(calls),0)::int n from provider_spend`)[0].n);
   assert.equal(observed, spends);
+  assert.equal((await sql`select 1 from provider_spend_events where posted_at is null`).length,0);
   writeFileSync('/workspace/tyzo-results/evidence/load-results.json', JSON.stringify({ postgres: '17.12 local', poolMax: 12, noGpu: true, upstream: 'synthetic', scenarios: reports, observed, spends },null,2));
 } finally { await db.end(); }

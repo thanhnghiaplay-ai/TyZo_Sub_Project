@@ -360,10 +360,12 @@ describe("RE-004, R4-003: reset chỉ trên CSDL thử đã khai báo", () => {
   });
 
   it("R4-003: reset trên CSDL thử xóa cả sổ phải trả nhà cung cấp, giữ nhật ký thao tác", async () => {
+    await sql`insert into provider_spend_events(id,provider,model,base_vnd,usd_micro) values('pending-reset-fixture','groq','m',100,4)`;
     await sql`insert into provider_spend (day, provider, model, calls, base_vnd, usd_micro) values (current_date, 'groq', 'm', 1, 100, 4)`;
     await sql`insert into room_audit (actor_id, action, note) values ('chu', 'thu', 'giu')`;
     await wipeTestData(sql);
     assert.equal((await sql`select 1 from provider_spend`).length, 0);
+    assert.equal((await sql`select 1 from provider_spend_events`).length, 0);
     assert.ok((await sql`select 1 from room_audit where note = 'giu'`).length === 1);
   });
 });

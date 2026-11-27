@@ -92,13 +92,18 @@ export async function settleGateCall(
     userId: string;
     units: number;
     base: number;
+    /** Supplier expense before customer/currency rounding. */
+    providerBase?: number;
     provider: string;
     model: string;
     rate: number;
     reconcile: boolean;
   },
 ) {
+  const providerBase = input.providerBase ?? input.base;
   if (
+    !Number.isFinite(providerBase) ||
+    providerBase < 0 ||
     ![input.units, input.base, input.rate].every(Number.isFinite) ||
     input.units < 0 ||
     input.base < 0 ||
@@ -146,17 +151,17 @@ export async function settleGateCall(
             )
         : 0;
     // Financial evidence must commit with the debit. Do not use the best-effort spend logger here.
-    const base = Math.round(input.base);
-    if (base > 0)
+    const base = providerBase;
+    if (providerBase > 0)
       await tx`
       insert into provider_spend (day, provider, model, calls, base_vnd, usd_micro)
-      values ((now() at time zone 'Asia/Ho_Chi_Minh')::date, ${input.provider}, ${input.model}, 1, ${base}, ${Math.round((base / input.rate) * 1_000_000)})
+      values ((now() at time zone 'Asia/Ho_Chi_Minh')::date, ${input.provider}, ${input.model}, 1, ${base}, ${Math.round((providerBase / input.rate) * 1_000_000)})
       on conflict (day, provider, model) do update set calls = provider_spend.calls + 1,
         base_vnd = provider_spend.base_vnd + excluded.base_vnd, usd_micro = provider_spend.usd_micro + excluded.usd_micro`;
     const status = input.reconcile || taken < units || !owned ? "can-doi-soat" : "xong";
     await tx`update run_gate_calls set status = ${status}, reserved = 0, observed_at = clock_timestamp(),
       actual_units = ${units}, charged_units = ${taken}, short_units = ${Math.max(0, units - taken)},
-      base_vnd = ${input.base}, provider = ${input.provider}, model = ${input.model} where id = ${input.callId}`;
+      base_vnd = ${providerBase}, provider = ${input.provider}, model = ${input.model} where id = ${input.callId}`;
     if (c.status === "dang-chay")
       await tx`update run_tickets set modal_reserved = greatest(0, modal_reserved - ${reserved}::numeric) where id = ${input.ticketId}`;
     return { taken, replay: false };

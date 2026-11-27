@@ -4,6 +4,7 @@ import type { Sql } from "../db.ts";
 import { inTransaction } from "../db-tx.ts";
 import { asrCost, type PriceBook } from "./run-bill.ts";
 import { giayForBaseCost } from "./token-math.ts";
+import { supplierBaseCost } from "./supplier-cost.ts";
 import { reserveGateCall, releaseGateCall, settleGateCall } from "./gate-reserve.ts";
 import { closeTicketWith } from "./run-ticket.ts";
 import { withWorkAdmission } from "./work-admission.ts";
@@ -171,6 +172,7 @@ export async function finishAsyncAsr(sql: Sql, job: Job, seconds: number) {
       userId: job.user_id,
       units,
       base,
+      providerBase: supplierBaseCost(book, job.model, "asr", { seconds }, job.provider) ?? base,
       provider: job.provider,
       model: job.model,
       rate: book.rate,

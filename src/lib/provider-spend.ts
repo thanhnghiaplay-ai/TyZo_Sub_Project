@@ -28,16 +28,19 @@ export async function recordSpendWith(sql: Sql, input: SpendInput): Promise<void
 
 type SpendRow = { provider: string; model: string; calls: number; vnd: number; usd: number };
 
-export type SpendSummary = { total: { calls: number; vnd: number; usd: number }; providers: { provider: string; calls: number; vnd: number; usd: number; models: SpendRow[] }[]; since: string | null };
+export type SpendSummary = { total: { calls: number; vnd: number; usd: number }; providers: { provider: string; calls: number; vnd: number; usd: number; models: SpendRow[] }[]; since: string | null; pending: number };
 
 /** Tổng theo nhà và model trong khoảng ngày (cùng khoảng với trang Doanh thu). */
 export async function spendSummaryWith(sql: Sql, window: string): Promise<SpendSummary> {
   const rows = await sql.query<{ provider: string; model: string; calls: number; vnd: number; usd_micro: number }>(
-    `select provider, model, sum(calls)::int as calls, sum(base_vnd)::bigint as vnd, sum(usd_micro)::bigint as usd_micro
-     from provider_spend where day > ${TODAY} - $1::interval group by provider, model order by vnd desc`,
+    `select provider, model, sum(calls)::int as calls, sum(base_vnd)::numeric as vnd, sum(usd_micro)::bigint as usd_micro
+     from (select day,provider,model,calls,base_vnd,usd_micro from provider_spend
+       union all select day,provider,model,1 as calls,base_vnd,usd_micro from provider_spend_events where posted_at is null) observations
+     where day > ${TODAY} - $1::interval group by provider, model order by vnd desc`,
     [window],
   );
-  const first = await sql.query<{ day: unknown }>(`select min(day) as day from provider_spend`);
+  const first = await sql.query<{ day: unknown }>(`select min(day) as day from (select day from provider_spend union all select day from provider_spend_events where posted_at is null) observations`);
+  const pending = await sql.query<{n:number}>(`select count(*)::int as n from provider_spend_events where posted_at is null and day > ${TODAY} - $1::interval`, [window]);
   const map = new Map<string, SpendSummary["providers"][number]>();
   let calls = 0;
   let vnd = 0;
@@ -56,6 +59,7 @@ export async function spendSummaryWith(sql: Sql, window: string): Promise<SpendS
   }
   const day = first[0]?.day;
   return {
+    pending: Number(pending[0]?.n??0),
     total: { calls, vnd, usd },
     providers: [...map.values()].sort((a, b) => b.vnd - a.vnd),
     since: day == null ? null : day instanceof Date ? day.toISOString().slice(0, 10) : String(day).slice(0, 10),

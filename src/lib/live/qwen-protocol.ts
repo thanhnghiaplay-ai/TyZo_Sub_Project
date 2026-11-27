@@ -100,7 +100,7 @@ type LiveEvent =
   | { kind: "pair"; translationId: string; sourceId: string }
   | { kind: "speaker"; sourceId: string; speakerId: string }
   | { kind: "audio"; base64: string }
-  | { kind: "usage"; usage: LiveUsage; ok: boolean }
+  | { kind: "usage"; usage: LiveUsage; ok: boolean; id?: string }
   | { kind: "error"; message: string }
   | { kind: "finished" };
 
@@ -159,7 +159,8 @@ export function parseServerEvent(raw: unknown): ParsedEvent[] {
     }
     case "response.done": {
       const response = (event.response ?? {}) as Raw;
-      return [{ kind: "usage", usage: readUsage(response.usage), ok: str(response.status) === "completed" }];
+      const id = str(response.id);
+      return [{ kind: "usage", usage: readUsage(response.usage), ok: str(response.status) === "completed", ...(id ? {id}: {}) }];
     }
     default:
       return [];

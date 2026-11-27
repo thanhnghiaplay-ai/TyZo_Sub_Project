@@ -38,7 +38,7 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
       partHash: createHash("sha256").update(wav).digest("hex"),
       // Ước tính đoạn này theo giá chụp trên phiếu (giờ phim × giá GPU × hệ số bù × tỉ lệ giữ); phải còn giữ đủ mới gọi GPU.
       estimateTokens: price => toTokens(holdUsdPerFilmHour(parseModalPrice(JSON.parse(price)), data.profile)*seconds/3600),
-    }, async price => {
+    }, async (price, attempt) => {
       // Không gắn với kết nối của trình duyệt: khách bấm hủy hay mất mạng thì đoạn đã gửi vẫn chạy xong, được tính và lưu lại;
       // gửi lại cùng đoạn sẽ nhận kết quả đã lưu, không trừ lần hai. Chỉ khi nhà từ chối 429 trước khi nhận việc mới thử lại một lần; mất phản hồi phải đối soát.
       const run = () => recognizeModalWav(wav,data.language,data.profile,0,new AbortController().signal,parseModalPrice(JSON.parse(price)));
@@ -51,8 +51,13 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
       }
       const merged = mergeInterjections(out.segments.map(s=>({text:s.original,start:s.start,end:s.end})), data.language);
       // Chi phí GPU thật (cộng phí mô hình chữ nếu có) vào sổ «Phải trả nhà cung cấp» để trang Doanh thu tính đúng lời lỗ.
-      const {recordSpendWith} = await import("./provider-spend");
-      await recordSpendWith(sql, { provider: "tyzo-modal", model, baseVnd: out.usd * book.rate, rate: book.rate });
+      const {recordSpendDurablyWith} = await import("./provider-spend-journal");
+      try {
+        await recordSpendDurablyWith(sql, { id: "modal:"+attempt, provider: "tyzo-modal", model, baseVnd: out.usd * book.rate, rate: book.rate });
+      } catch(error) {
+        const {UncertainUpstreamError} = await import("./billing/upstream-outcome");
+        throw new UncertainUpstreamError(error);
+      }
       return {segments: merged, tokens: toTokens(out.usd)};
     });
     return {segments: result.segments};

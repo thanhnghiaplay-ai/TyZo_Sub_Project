@@ -33,6 +33,8 @@ export const getProfitView = createServerFn({ method: "POST" })
     const { turboBasePerSecond } = await import("@/lib/token-cost.server");
     const sql = await getSql();
     const window = WINDOW[data];
+    const {drainSpendJournal} = await import("@/lib/provider-spend-journal");
+    await drainSpendJournal(sql,5);
     const spend = await spendSummaryWith(sql, window);
     const turbo = (await turboBasePerSecond(sql)) ?? 0;
     const money = await sql.query<{ revenue: number }>(`select coalesce(sum(amount), 0)::bigint as revenue from room_ledger where kind = 'nap' and created_at > now() - $1::interval`, [window]);

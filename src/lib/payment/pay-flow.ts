@@ -354,6 +354,7 @@ export async function wipeTestData(sql: Sql) {
     await tx`delete from room_presence`;
     await tx`delete from rate_hits`;
     // R4-003 (Chủ duyệt 27/11/2026): CSDL thử reset cả sổ «Phải trả nhà cung cấp» cho khớp doanh thu đã xóa.
+    await tx`delete from provider_spend_events`;
     await tx`delete from provider_spend`;
     // RE-004: GIỮ nhật ký thao tác (room_audit); trước đây bị xóa cùng số liệu thử nên không còn dấu vết lần reset.
     await tx`

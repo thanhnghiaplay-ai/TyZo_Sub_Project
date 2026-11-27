@@ -1,9 +1,19 @@
-import { AUDIO_IN_TOKENS_PER_SEC, AUDIO_OUT_TOKENS_PER_SEC, type LivePriceRow } from "./live-price.ts";
+import {
+  AUDIO_IN_TOKENS_PER_SEC,
+  AUDIO_OUT_TOKENS_PER_SEC,
+  type LivePriceRow,
+} from "./live-price.ts";
 
 export type LiveBook = { rate: number; rows: LivePriceRow[] };
 
 /** Token thật Alibaba trả trong response.done. */
-export type LiveUsage = { audioIn: number; textIn: number; imageIn: number; textOut: number; audioOut: number };
+export type LiveUsage = {
+  audioIn: number;
+  textIn: number;
+  imageIn: number;
+  textOut: number;
+  audioOut: number;
+};
 
 function num(value: unknown): number {
   const n = Number(value);
@@ -35,6 +45,12 @@ function usdOf(row: LivePriceRow, usage: LiveUsage): number {
   );
 }
 
+/** Expense before rounding; customer quote/debit continues to use liveCost. */
+export function liveSupplierCost(book: LiveBook, model: string, usage: LiveUsage): number | null {
+  const row = book.rows.find((r) => r.id === model);
+  return row && book.rate > 0 ? usdOf(row, usage) * book.rate : null;
+}
+
 /** Làm tròn lên đồng nguyên, có dùng thì tối thiểu 1 đ. */
 function ceilVnd(amount: number) {
   if (!(amount > 0)) return 0;
@@ -42,7 +58,11 @@ function ceilVnd(amount: number) {
 }
 
 /** Tiền một lần dùng. Từ v5.2.1 không còn cộng chênh nên `cost` bằng `base` (giữ cả hai để chỗ gọi cũ không đổi). null khi chưa có giá. */
-export function liveCost(book: LiveBook, model: string, usage: LiveUsage): { cost: number; base: number } | null {
+export function liveCost(
+  book: LiveBook,
+  model: string,
+  usage: LiveUsage,
+): { cost: number; base: number } | null {
   const row = book.rows.find((item) => item.id === model);
   if (!row || !(book.rate > 0)) return null;
   const base = usdOf(row, usage) * book.rate;
@@ -69,7 +89,13 @@ export function usageForSeconds(seconds: number, audioOut: boolean): LiveUsage {
 }
 
 /** Số tiền giữ cho một khoảng ngắn, đã nhân đệm. null khi chưa có giá. */
-export function liveHold(book: LiveBook, model: string, audioOut: boolean, seconds: number, buffer = 1.5) {
+export function liveHold(
+  book: LiveBook,
+  model: string,
+  audioOut: boolean,
+  seconds: number,
+  buffer = 1.5,
+) {
   const quote = liveCost(book, model, usageForSeconds(seconds * buffer, audioOut));
   return quote;
 }

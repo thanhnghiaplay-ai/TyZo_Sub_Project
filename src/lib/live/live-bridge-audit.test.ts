@@ -16,7 +16,12 @@ const book: LiveBook = { rate: 26000, rows: LIVE_FALLBACK_ROWS };
 
 type Ev = { t: number; kind: string; id: string; n?: number };
 
-function slowBilling(opts: { openDelay?: (n: number) => number; chargeDelay?: number; bookDelay?: number; stock?: number }) {
+function slowBilling(opts: {
+  openDelay?: (n: number) => number;
+  chargeDelay?: number;
+  bookDelay?: number;
+  stock?: number;
+}) {
   const events: Ev[] = [];
   let money = opts.stock ?? 1e9;
   const held = new Map<string, number>();
@@ -38,10 +43,15 @@ function slowBilling(opts: { openDelay?: (n: number) => number; chargeDelay?: nu
     charge: async ({ ticketId, cost }) => {
       await wait(opts.chargeDelay ?? 0);
       const isClosed = events.some((e) => e.kind === "close" && e.id === ticketId);
-      const h = isClosed ? 0 : held.get(ticketId) ?? 0;
+      const h = isClosed ? 0 : (held.get(ticketId) ?? 0);
       const taken = Math.min(h, cost);
       held.set(ticketId, h - taken);
-      events.push({ t: Date.now(), kind: isClosed ? "charge-sau-dong" : "charge", id: ticketId, n: taken });
+      events.push({
+        t: Date.now(),
+        kind: isClosed ? "charge-sau-dong" : "charge",
+        id: ticketId,
+        n: taken,
+      });
       return taken;
     },
     close: async ({ ticketId }) => {
@@ -54,7 +64,9 @@ function slowBilling(opts: { openDelay?: (n: number) => number; chargeDelay?: nu
 }
 
 /** Alibaba giả. `onAudio` quyết định trả gì khi nhận âm thanh. Đếm số kết nối. */
-function fakeAli(behaviour: { onAudio?: (ws: WebSocket, n: number) => void; closeAfterUpdate?: boolean } = {}) {
+function fakeAli(
+  behaviour: { onAudio?: (ws: WebSocket, n: number) => void; closeAfterUpdate?: boolean } = {},
+) {
   const wss = new WebSocketServer({ port: 0 });
   const seen = { connections: 0, audioBytes: 0, chunks: 0 };
   wss.on("connection", (ws) => {
@@ -78,14 +90,42 @@ function fakeAli(behaviour: { onAudio?: (ws: WebSocket, n: number) => void; clos
 }
 
 const usage = (audioTokens: number) =>
-  JSON.stringify({ type: "response.done", response: { status: "completed", usage: { input_tokens_details: { audio_tokens: audioTokens }, output_tokens_details: { text_tokens: 5, audio_tokens: 0 } } } });
+  JSON.stringify({
+    type: "response.done",
+    response: {
+      status: "completed",
+      usage: {
+        input_tokens_details: { audio_tokens: audioTokens },
+        output_tokens_details: { text_tokens: 5, audio_tokens: 0 },
+      },
+    },
+  });
 
-async function session(ali: ReturnType<typeof fakeAli>, billing: LiveBilling, extra: Record<string, unknown> = {}) {
+async function session(
+  ali: ReturnType<typeof fakeAli>,
+  billing: LiveBilling,
+  extra: Record<string, unknown> = {},
+) {
   const server = createServer();
-  attachLiveBridge(server, { secret: "k", upstream: async () => ({ url: ali.url, key: "K" }), billing, blockSeconds: 120, drainMs: 800, ...extra });
+  attachLiveBridge(server, {
+    secret: "k",
+    upstream: async () => ({ url: ali.url, key: "K" }),
+    billing,
+    blockSeconds: 120,
+    drainMs: 800,
+    ...extra,
+  });
   await new Promise<void>((r) => server.listen(0, r));
   const port = (server.address() as { port: number }).port;
-  const token = signLiveTicket("k", { uid: "u1", sid: `s${Math.random()}`, model: LIVE_MODEL_38, target: "en", source: "", audio: false, exp: Date.now() + 60_000 });
+  const token = signLiveTicket("k", {
+    uid: "u1",
+    sid: `s${Math.random()}`,
+    model: LIVE_MODEL_38,
+    target: "en",
+    source: "",
+    audio: false,
+    exp: Date.now() + 60_000,
+  });
   const client = new WebSocket(`ws://127.0.0.1:${port}/live?ticket=${encodeURIComponent(token)}`);
   const msgs: Array<{ type: string }> = [];
   client.on("message", (d, bin) => {
@@ -151,8 +191,14 @@ describe("cầu nối Dịch trực tiếp: vòng đời phiên và tiền", () 
     await s.closed;
     await wait(800);
     s.done();
-    const opened = bill.events.filter((e) => e.kind === "open").map((e) => e.id).sort();
-    const closed = bill.events.filter((e) => e.kind === "close").map((e) => e.id).sort();
+    const opened = bill.events
+      .filter((e) => e.kind === "open")
+      .map((e) => e.id)
+      .sort();
+    const closed = bill.events
+      .filter((e) => e.kind === "close")
+      .map((e) => e.id)
+      .sort();
     assert.ok(opened.length >= 2, `chỉ mở ${opened.length} phiếu`);
     assert.deepEqual(closed, opened);
   });
@@ -194,7 +240,11 @@ describe("cầu nối Dịch trực tiếp: vòng đời phiên và tiền", () 
     const bill = slowBilling({});
     const spent: number[] = [];
     // Sổ giả trừ tối đa 1 đơn vị mỗi lần: khách bị thu thiếu so với giá thật.
-    const billing = { ...bill.billing, charge: async () => 1, spend: async ({ base }: { base: number }) => void spent.push(base) };
+    const billing = {
+      ...bill.billing,
+      charge: async () => 1,
+      spend: async ({ base }: { base: number }) => void spent.push(base),
+    };
     const s = await session(ali, billing);
     await s.ready();
     s.client.send(Buffer.alloc(3200));
@@ -202,33 +252,51 @@ describe("cầu nối Dịch trực tiếp: vòng đời phiên và tiền", () 
     s.client.send(JSON.stringify({ type: "stop" }));
     await s.closed;
     s.done();
-    const { liveCost } = await import("./live-cost.ts");
-    const want = liveCost(book, LIVE_MODEL_38, { audioIn: 5000, textIn: 0, imageIn: 0, textOut: 5, audioOut: 0 })!.base;
+    const { liveSupplierCost } = await import("./live-cost.ts");
+    const want = liveSupplierCost(book, LIVE_MODEL_38, {
+      audioIn: 5000,
+      textIn: 0,
+      imageIn: 0,
+      textOut: 5,
+      audioOut: 0,
+    })!;
     assert.deepEqual(spent, [want]);
   });
 });
 
-
-it("DEEP-008: upstream backlog drops audio and recovers after draining", {timeout:5000}, async () => {
-  const ali=fakeAli(); const bill=slowBilling({}); const s=await session(ali,bill.billing);
-  const previous=Object.getOwnPropertyDescriptor(WebSocket.prototype,"bufferedAmount")!;
-  let congested=true;
-  try {
-    await s.ready();
-    Object.defineProperty(WebSocket.prototype,"bufferedAmount",{configurable:true,get:function(this:WebSocket){
-      if(congested && this.url?.includes("/realtime")) return 2*1024*1024;
-      return previous.get?.call(this) ?? 0;
-    }});
-    s.client.send(Buffer.alloc(3200,1));await wait(100);
-    assert.equal(ali.seen.audioBytes,0);
-    congested=false;s.client.send(Buffer.alloc(3200,1));
-    for(let i=0;i<100&&!ali.seen.audioBytes;i++)await wait(10);
-    assert.ok(ali.seen.audioBytes>0);
-    s.client.send(JSON.stringify({type:"stop"}));await s.closed;
-  } finally {
-    Object.defineProperty(WebSocket.prototype,"bufferedAmount",previous);s.done();
-  }
-});
+it(
+  "DEEP-008: upstream backlog drops audio and recovers after draining",
+  { timeout: 5000 },
+  async () => {
+    const ali = fakeAli();
+    const bill = slowBilling({});
+    const s = await session(ali, bill.billing);
+    const previous = Object.getOwnPropertyDescriptor(WebSocket.prototype, "bufferedAmount")!;
+    let congested = true;
+    try {
+      await s.ready();
+      Object.defineProperty(WebSocket.prototype, "bufferedAmount", {
+        configurable: true,
+        get: function (this: WebSocket) {
+          if (congested && this.url?.includes("/realtime")) return 2 * 1024 * 1024;
+          return previous.get?.call(this) ?? 0;
+        },
+      });
+      s.client.send(Buffer.alloc(3200, 1));
+      await wait(100);
+      assert.equal(ali.seen.audioBytes, 0);
+      congested = false;
+      s.client.send(Buffer.alloc(3200, 1));
+      for (let i = 0; i < 100 && !ali.seen.audioBytes; i++) await wait(10);
+      assert.ok(ali.seen.audioBytes > 0);
+      s.client.send(JSON.stringify({ type: "stop" }));
+      await s.closed;
+    } finally {
+      Object.defineProperty(WebSocket.prototype, "bufferedAmount", previous);
+      s.done();
+    }
+  },
+);
 
 it("SCALE: denied live admission never opens a billing ticket or upstream", async () => {
   const ali = fakeAli();
@@ -238,18 +306,22 @@ it("SCALE: denied live admission never opens a billing ticket or upstream", asyn
     assert.equal(await s.closed, 4429);
     assert.equal(ali.seen.connections, 0);
     assert.equal(bill.events.length, 0);
-  } finally { s.done(); }
+  } finally {
+    s.done();
+  }
 });
 
 it("SCALE: live admission is retained until pending debits and closes finish", async () => {
   const ali = fakeAli({ onAudio: (ws) => ws.send(usage(500)) });
   const bill = slowBilling({ chargeDelay: 100 });
   let releases = 0;
-  const s = await session(ali, bill.billing, { admit: async () => async () => {
-    assert.ok(bill.events.some((e) => e.kind === "close"));
-    assert.ok(!bill.events.some((e) => e.kind === "charge-sau-dong"));
-    releases++;
-  } });
+  const s = await session(ali, bill.billing, {
+    admit: async () => async () => {
+      assert.ok(bill.events.some((e) => e.kind === "close"));
+      assert.ok(!bill.events.some((e) => e.kind === "charge-sau-dong"));
+      releases++;
+    },
+  });
   try {
     await s.ready();
     s.client.send(Buffer.alloc(3200, 10));
@@ -258,5 +330,127 @@ it("SCALE: live admission is retained until pending debits and closes finish", a
     await s.closed;
     await wait(250);
     assert.equal(releases, 1);
-  } finally { s.done(); }
+  } finally {
+    s.done();
+  }
+});
+
+it("R08: finalization waits for supplier-cost persistence before releasing the ticket", async () => {
+  let release!: () => void, enter!: () => void;
+  const entered = new Promise<void>((r) => {
+    enter = r;
+  });
+  const gate = new Promise<void>((r) => {
+    release = r;
+  });
+  const ali = fakeAli({
+    onAudio: (ws, n) => {
+      if (n === 1) ws.send(usage(5000));
+    },
+  });
+  const bill = slowBilling({});
+  const s = await session(ali, {
+    ...bill.billing,
+    spend: async () => {
+      enter();
+      await gate;
+    },
+  });
+  let closedEarly = false;
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    await entered;
+    s.client.send(JSON.stringify({ type: "stop" }));
+    await wait(150);
+    closedEarly = bill.events.some((e) => e.kind === "close");
+  } finally {
+    release();
+    await s.closed;
+    s.done();
+  }
+  assert.equal(closedEarly, false);
+  const charge = bill.events.findIndex((e) => e.kind === "charge"),
+    close = bill.events.findIndex((e) => e.kind === "close");
+  assert.ok(charge >= 0 && close > charge);
+});
+it("R08: failed persistence stops new audio, exposes the fault, and retains uncertain admission", async () => {
+  const ali = fakeAli({
+    onAudio: (ws, n) => {
+      if (n === 1) ws.send(usage(5000));
+    },
+  });
+  const bill = slowBilling({});
+  const errors: string[] = [],
+    states: unknown[] = [];
+  const logs: string[] = [];
+  const s = await session(
+    ali,
+    {
+      ...bill.billing,
+      spend: async () => {
+        throw new Error("synthetic observation fault");
+      },
+    },
+    {
+      admit: async () => async (end: unknown) => {
+        states.push(end);
+      },
+      log: (text: string) => {
+        logs.push(text);
+      },
+    },
+  );
+  s.client.on("message", (raw) => {
+    const event = JSON.parse(raw.toString());
+    if (event.type === "error") errors.push(event.message);
+  });
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    await wait(50);
+    if (s.client.readyState === WebSocket.OPEN) s.client.send(Buffer.alloc(3200));
+    await s.closed;
+    assert.equal(ali.seen.chunks, 1);
+    assert.equal(bill.events.filter((e) => e.kind === "charge").length, 0);
+    assert.deepEqual(states, ["unknown"]);
+    assert.ok(errors.some((e) => e.includes("đối soát")));
+    assert.ok(logs.some((e) => e.includes("synthetic observation fault")));
+  } finally {
+    s.done();
+  }
+});
+it("R08: duplicate provider response IDs do not repeat the debit", async () => {
+  const response = JSON.parse(usage(5000));
+  response.response.id = "same-provider-response";
+  const ali = fakeAli({
+    onAudio: (ws, n) => {
+      if (n === 1) {
+        ws.send(JSON.stringify(response));
+        ws.send(JSON.stringify(response));
+      }
+    },
+  });
+  const bill = slowBilling({});
+  const seen = new Set<string>();
+  const s = await session(ali, {
+    ...bill.billing,
+    spend: async ({ id }) => {
+      assert.ok(id);
+      const duplicate = seen.has(id);
+      seen.add(id);
+      return { duplicate };
+    },
+  });
+  try {
+    await s.ready();
+    s.client.send(Buffer.alloc(3200));
+    await wait(100);
+    s.client.send(JSON.stringify({ type: "stop" }));
+    await s.closed;
+    assert.equal(seen.size, 1);
+    assert.equal(bill.events.filter((e) => e.kind === "charge").length, 1);
+  } finally {
+    s.done();
+  }
 });

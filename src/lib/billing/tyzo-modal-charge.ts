@@ -33,7 +33,7 @@ export async function runAdmittedModalPartWith(
     /** Chỉ để test: nhịp sống (ms). Mặc định LEASE_BEAT_MS. */
     beatMs?: number;
   },
-  recognize: (price: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
+  recognize: (price: string, attempt: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
 ): Promise<ModalPartResult> {
   const { withWorkAdmission } = await import("./work-admission.ts");
   return withWorkAdmission(
@@ -55,7 +55,7 @@ export async function runModalPartWith(
     /** Chỉ để test: nhịp sống (ms). Mặc định LEASE_BEAT_MS. */
     beatMs?: number;
   },
-  recognize: (price: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
+  recognize: (price: string, attempt: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
 ): Promise<ModalPartResult> {
   const { ticket, userId, model, partHash, seconds } = input;
   const own = await sql<{ modal_price: string | null; held: number }>`
@@ -128,7 +128,7 @@ export async function runModalPartWith(
   try {
     let result: Awaited<ReturnType<typeof recognize>>;
     try {
-      result = await recognize(price);
+      result = await recognize(price, attempt);
     } catch (error) {
       await releasePart(sql, ticket, userId, partHash, attempt);
       throw error;

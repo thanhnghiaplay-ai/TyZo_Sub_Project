@@ -65,8 +65,8 @@ describe("mọi cửa tính tiền bằng key phòng đều ghi sổ từng nhà
       ["../routes/api/model-call.ts", /unitBook: groq,\s*provider,/],
       ["../routes/api/room-groq.ts", /provider: "groq",/],
       ["./billing/room-asr.server.ts", /recordSpendWith\(sql, \{ provider: asrHouse\(input\.model\)/],
-      ["./live/live-billing.ts", /recordSpendWith\(sql, \{ provider: asrHouse\(model\)/],
-      ["./tyzo-modal-call.ts", /recordSpendWith\(sql, \{ provider: "tyzo-modal", model, baseVnd: out\.usd \* book\.rate/],
+      ["./live/live-billing.ts", /recordSpendDurablyWith\(sql,/],
+      ["./tyzo-modal-call.ts", /recordSpendDurablyWith\(sql,/],
     ] as const) {
       assert.match(readFileSync(new URL(file, import.meta.url), "utf8"), mark, file);
     }

@@ -46,6 +46,8 @@ export const Route = createFileRoute("/api/risk-sweep")({
           const after = typeof body.after === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(body.after) ? body.after : undefined;
           const { sweepRisk } = await import("@/lib/risk.server");
           const r = await sweepRisk(sql, { after, budgetMs: 8000 });
+          const {drainSpendJournal} = await import("@/lib/provider-spend-journal");
+          const providerCosts = await drainSpendJournal(sql,25);
           // Ghi kết quả đêm (cộng dồn theo đợt) để tab Rủi ro hiện «Quét đêm gần nhất».
           const prev = after ? await sql<{ value: string }>`select value from room_settings where key = 'risk_sweep_night'` : [];
           let acc = { at: new Date().toISOString(), checked: 0, made: 0, rounds: 0 };
@@ -57,7 +59,7 @@ export const Route = createFileRoute("/api/risk-sweep")({
           acc = { ...acc, checked: acc.checked + r.checked, made: acc.made + r.made, rounds: acc.rounds + 1 };
           const value = JSON.stringify(acc);
           await sql`insert into room_settings (key, value) values ('risk_sweep_night', ${value}) on conflict (key) do update set value = ${value}`;
-          return json(200, r);
+          return json(200, {...r,providerCosts});
         } catch (error) {
           return failFrom(error);
         }
