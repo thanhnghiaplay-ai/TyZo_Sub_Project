@@ -1,0 +1,100 @@
+{
+  "scope": "native local WebSocket + real isolated PostgreSQL, synthetic cumulative usage with replays; no GPU/provider/browser audio",
+  "reports": [
+    {
+      "concurrency": 1,
+      "statuses": {
+        "200": 1
+      },
+      "peakUpstreamSockets": 1,
+      "p50Ms": 90.17,
+      "p95Ms": 90.17,
+      "p99Ms": 90.17,
+      "acceptedP95Ms": 90.17,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 5,
+      "statuses": {
+        "200": 5
+      },
+      "peakUpstreamSockets": 5,
+      "p50Ms": 82.84,
+      "p95Ms": 83.58,
+      "p99Ms": 83.58,
+      "acceptedP95Ms": 83.58,
+      "rejectedP95Ms": null
+    },
+    {
+      "concurrency": 25,
+      "statuses": {
+        "200": 24,
+        "429": 1
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 131.09,
+      "p95Ms": 140.51,
+      "p99Ms": 141.3,
+      "acceptedP95Ms": 140.51,
+      "rejectedP95Ms": 44.7
+    },
+    {
+      "concurrency": 50,
+      "statuses": {
+        "200": 24,
+        "429": 26
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 40.33,
+      "p95Ms": 126.19,
+      "p99Ms": 126.53,
+      "acceptedP95Ms": 126.29,
+      "rejectedP95Ms": 40.33
+    },
+    {
+      "concurrency": 100,
+      "statuses": {
+        "200": 24,
+        "429": 76
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 65.41,
+      "p95Ms": 122.62,
+      "p99Ms": 124.99,
+      "acceptedP95Ms": 124.99,
+      "rejectedP95Ms": 90.56
+    },
+    {
+      "concurrency": 200,
+      "statuses": {
+        "200": 48,
+        "429": 152
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 140.38,
+      "p95Ms": 263.71,
+      "p99Ms": 267.64,
+      "acceptedP95Ms": 267.64,
+      "rejectedP95Ms": 185.83
+    },
+    {
+      "concurrency": 300,
+      "statuses": {
+        "200": 48,
+        "429": 252
+      },
+      "peakUpstreamSockets": 24,
+      "p50Ms": 205.32,
+      "p95Ms": 312,
+      "p99Ms": 318.89,
+      "acceptedP95Ms": 321.05,
+      "rejectedP95Ms": 282.15
+    }
+  ],
+  "accepted": 174,
+  "charged": 4872,
+  "supplierCalls": 348,
+  "expectedObservations": 348,
+  "ledgerViolations": 0,
+  "duplicateCharges": 0
+}
