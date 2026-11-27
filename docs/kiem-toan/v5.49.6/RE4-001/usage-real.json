@@ -1,0 +1,272 @@
+[
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-20b",
+  "input": "vi",
+  "http": 200,
+  "sentBytes": 1943,
+  "bound": 4398,
+  "prompt": 448,
+  "completion": 64,
+  "ratio": 0.102,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-20b",
+  "input": "cjk",
+  "http": 200,
+  "sentBytes": 2463,
+  "bound": 5438,
+  "prompt": 567,
+  "completion": 64,
+  "ratio": 0.104,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-20b",
+  "input": "emoji_tool",
+  "http": 200,
+  "sentBytes": 1937,
+  "bound": 4386,
+  "prompt": 705,
+  "completion": 64,
+  "ratio": 0.161,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-20b",
+  "input": "numbers_tool",
+  "http": 413,
+  "sentBytes": 33232,
+  "bound": 66976,
+  "prompt": null,
+  "completion": null,
+  "ratio": null,
+  "overBound": null,
+  "error": "Request too large for model `openai/gpt-oss-20b` in organization `org_[che]` service tier `on_deman"
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-120b",
+  "input": "vi",
+  "http": 200,
+  "sentBytes": 1944,
+  "bound": 4400,
+  "prompt": 448,
+  "completion": 64,
+  "ratio": 0.102,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-120b",
+  "input": "cjk",
+  "http": 200,
+  "sentBytes": 2464,
+  "bound": 5440,
+  "prompt": 567,
+  "completion": 64,
+  "ratio": 0.104,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-120b",
+  "input": "emoji_tool",
+  "http": 200,
+  "sentBytes": 1938,
+  "bound": 4388,
+  "prompt": 705,
+  "completion": 64,
+  "ratio": 0.161,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "openai/gpt-oss-120b",
+  "input": "numbers_tool",
+  "http": 413,
+  "sentBytes": 33233,
+  "bound": 66978,
+  "prompt": null,
+  "completion": null,
+  "ratio": null,
+  "overBound": null,
+  "error": "Request too large for model `openai/gpt-oss-120b` in organization `org_[che]` service tier `on_dema"
+ },
+ {
+  "house": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "input": "vi",
+  "http": 200,
+  "sentBytes": 1941,
+  "bound": 4394,
+  "prompt": 387,
+  "completion": 10,
+  "ratio": 0.088,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "input": "cjk",
+  "http": 200,
+  "sentBytes": 2461,
+  "bound": 5434,
+  "prompt": 467,
+  "completion": 22,
+  "ratio": 0.086,
+  "overBound": false
+ },
+ {
+  "house": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "input": "emoji_tool",
+  "http": 400,
+  "sentBytes": 1935,
+  "bound": 4382,
+  "prompt": null,
+  "completion": null,
+  "ratio": null,
+  "overBound": null,
+  "error": "Failed to call a function. Please adjust your prompt. See 'failed_generation' for more details."
+ },
+ {
+  "house": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "input": "numbers_tool",
+  "http": 413,
+  "sentBytes": 33230,
+  "bound": 66972,
+  "prompt": null,
+  "completion": null,
+  "ratio": null,
+  "overBound": null,
+  "error": "Request too large for model `qwen/qwen3.8-27b` in organization `org_[che]` service tier `on_demand`"
+ },
+ {
+  "house": "groq",
+  "model": "llama-3.3-70b-versatile",
+  "skip": "key không có model"
+ },
+ {
+  "house": "groq",
+  "model": "llama-3.1-8b-instant",
+  "skip": "key không có model"
+ },
+ {
+  "house": "groq",
+  "model": "meta-models/muse-spark-open",
+  "skip": "key không có model"
+ },
+ {
+  "house": "groq",
+  "model": "minimaxai/minimax-m2.7",
+  "skip": "key không có model"
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-plus",
+  "input": "vi",
+  "http": 200,
+  "sentBytes": 1947,
+  "bound": 4406,
+  "prompt": 425,
+  "completion": 10,
+  "ratio": 0.096,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-plus",
+  "input": "cjk",
+  "http": 200,
+  "sentBytes": 2467,
+  "bound": 5446,
+  "prompt": 464,
+  "completion": 19,
+  "ratio": 0.085,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-plus",
+  "input": "emoji_tool",
+  "http": 200,
+  "sentBytes": 1941,
+  "bound": 4394,
+  "prompt": 705,
+  "completion": 64,
+  "ratio": 0.16,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-plus",
+  "input": "numbers_tool",
+  "http": 200,
+  "sentBytes": 33236,
+  "bound": 66984,
+  "prompt": 10638,
+  "completion": 16,
+  "ratio": 0.159,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-max",
+  "input": "vi",
+  "http": 200,
+  "sentBytes": 1922,
+  "bound": 4356,
+  "prompt": 425,
+  "completion": 64,
+  "ratio": 0.098,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-max",
+  "input": "cjk",
+  "http": 200,
+  "sentBytes": 2442,
+  "bound": 5396,
+  "prompt": 464,
+  "completion": 22,
+  "ratio": 0.086,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-max",
+  "input": "emoji_tool",
+  "http": 200,
+  "sentBytes": 1916,
+  "bound": 4344,
+  "prompt": 783,
+  "completion": 64,
+  "ratio": 0.18,
+  "overBound": false
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-max",
+  "input": "numbers_tool",
+  "http": 400,
+  "sentBytes": 33211,
+  "bound": 66934,
+  "prompt": null,
+  "completion": null,
+  "ratio": null,
+  "overBound": null,
+  "error": "<400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 30720]"
+ },
+ {
+  "house": "alibaba",
+  "model": "qwen-turbo",
+  "skip": "key không có model"
+ }
+]

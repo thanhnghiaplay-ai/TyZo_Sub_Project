@@ -26,6 +26,7 @@
   "limits": "Chưa gọi nhà thật; chưa biết bảng giá Groq production có compound; PG 16 thay 17.",
   "productionChecks": {
     "neonMigrations": "0057 đã áp dụng (đọc trên bản sao 27/11)",
-    "canDoiSoatBetweenPushes": "0 (run_gate_calls trống)"
+    "canDoiSoatBetweenPushes": "0 (run_gate_calls trống)",
+    "RE4-001": "PASS_REAL 15/15 lệnh usage ≤ cận (tỷ lệ max 0,18); 5 model danh mục không có trong key"
   }
 }
