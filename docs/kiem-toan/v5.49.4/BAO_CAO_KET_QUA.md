@@ -73,4 +73,9 @@ Lưu ý trung thực: cổng toàn bộ lần 1 bắt được lỗi của chín
 - Khi phát hành: nâng APP_VERSION/ADMIN_LOG theo quy trình dự án (đợt này không tự nâng số phiên bản).
 
 ## 9. Soak
-(điền ở dưới khi có kết quả)
+**soak-3600-1: PASS** — 3600 s liên tục (11:24:47→12:24:47 UTC), 212 vòng, mã khóa `c5c39c7`, không ngắt, không cộng dồn. Mỗi vòng: cầu nối live WS thật + PG thật quyết toán (1…300) và cửa nhận việc 25/50/100/200 + đợt 300 (3 s/nhóm). Thư mục `soak/soak-3600-1/` (từng vòng JSON).
+- Sổ: ledgerViolations 0, duplicateCharges 0, số quan sát chi phí = kỳ vọng ở 212/212 vòng; tổng 1.052.128 Token trừ.
+- Cửa nhận việc: 0 vượt cap, 0 lỗi/deadlock. 200 khách p95 trung vị 14 ms (tối đa 132), p99 trung vị 98 ms (tối đa 184); đợt 300 p99 trung vị 127 ms (tối đa 225).
+- PostgreSQL RSS 151→154 MB (đỉnh 191 MB), không tăng dần. Thời gian vòng ổn định 16,6–17,7 s.
+- Đói suất (RE2-004) trên mã này: tổng 2113 khách-lần không được lượt trong cửa sổ 3 s ở nhóm 200 (≈10/lần) → xác nhận cần hàng đợi công bằng (đang làm, xem TIEN_DO.md).
+- Giới hạn: upstream giả, một máy, PG cục bộ; không có Web SSR trong vòng lặp; không GPU/nhà thật.

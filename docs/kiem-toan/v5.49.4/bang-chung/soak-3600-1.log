@@ -3,3 +3,5 @@
 # fingerprint(src,scripts,migrations,server,package*)=b2791af43f1af53010bc05afab194418bf10589c33933e3e55b7234e57c5ef4a
 # start=2026-11-27T11:24:47Z
 # cmd=env TYZO_TEST_PG_URL=postgres://postgres@127.0.0.1:55439/tyzo_test bash docs/kiem-toan/v5.49.4/soak.sh 3600 docs/kiem-toan/v5.49.4/soak/soak-3600-1
+{"end":"2026-11-27T12:24:47Z","elapsed":3600,"iterations":212,"status":"PASS"}
+# exit=0 seconds=3600 end=2026-11-27T12:24:47Z
