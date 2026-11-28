@@ -5,6 +5,20 @@ import {
 import { modalCostUsd, type ModalPrice } from "./tyzo-modal-price.ts";
 import { modalRequest, modalSegments, type TyzoProfile } from "./tyzo-modal.ts";
 
+/**
+ * RE8-010: token proxy Modal (requires_proxy_auth). Chỉ đọc biến môi trường phía máy chủ TYZO_PROXY_KEY /
+ * TYZO_PROXY_SECRET (Vercel); không có trong mã khách, ứng dụng Android hay nhật ký. Chưa đặt cả hai → không gửi
+ * (endpoint chưa bật xác thực vẫn chạy như cũ). Đặt một nửa hoặc sai dạng → lỗi cấu hình, KHÔNG gọi GPU. Lỗi không in giá trị.
+ */
+export function modalProxyHeaders(env: Record<string, string | undefined> = process.env): Record<string, string> {
+  const key = env.TYZO_PROXY_KEY ?? "";
+  const secret = env.TYZO_PROXY_SECRET ?? "";
+  if (!key && !secret) return {};
+  const ok = (v: string) => v.length > 0 && v.length <= 200 && !/\s/.test(v);
+  if (!ok(key) || !ok(secret)) throw new Error("Cấu hình xác thực TyZo Modal chưa đủ hoặc sai dạng.");
+  return { "Modal-Key": key, "Modal-Secret": secret };
+}
+
 // URL và chuỗi bảo vệ do quản trị đặt trên máy chủ.
 export async function recognizeModalWav(
   audio: Uint8Array,
@@ -26,6 +40,7 @@ export async function recognizeModalWav(
   ) {
     throw new Error("Địa chỉ TyZo Modal của phòng không hợp lệ.");
   }
+  const auth = modalProxyHeaders();
   const deadline = AbortSignal.any([signal, AbortSignal.timeout(1800000)]);
   const payload = modalRequest(token, Buffer.from(audio).toString("base64"), language, profile);
   let dispatched = false;
@@ -34,7 +49,7 @@ export async function recognizeModalWav(
     dispatched = true;
     let response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...auth },
       redirect: "manual",
       body: JSON.stringify(payload),
       signal: deadline,
@@ -52,7 +67,8 @@ export async function recognizeModalWav(
         throw new Error("Địa chỉ lấy kết quả Modal không hợp lệ.");
       }
       void response.body?.cancel().catch(() => undefined);
-      response = await fetch(next, { redirect: "manual", signal: deadline });
+      // Hỏi lại kết quả cũng qua proxy Modal: phải gửi lại header (chỉ tới đúng *.modal.run đã kiểm ở trên).
+      response = await fetch(next, { headers: auth, redirect: "manual", signal: deadline });
     }
     if (!response.ok) {
       complete = definitiveProviderRejection(response.status);

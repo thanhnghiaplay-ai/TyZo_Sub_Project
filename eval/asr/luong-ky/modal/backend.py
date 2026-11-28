@@ -16,6 +16,7 @@ import numpy as np
 import soundfile as sf
 from faster_whisper import WhisperModel
 import pml
+pml_proxy_headers = pml._proxy_headers   # RE8-010: header proxy Modal khi gọi máy model chữ
 import qwen_engine
 
 CFG = json.load(open(os.path.join(HERE, "cau-hinh.json")))
@@ -97,7 +98,8 @@ class LlmReady:
         t0 = time.time()
         while not self.stop and (self.ok or time.time() - t0 < 1500):
             try:
-                if urllib.request.urlopen(base.rstrip("/") + "/health", timeout=20).status == 200:
+                req = urllib.request.Request(base.rstrip("/") + "/health", headers=pml_proxy_headers())   # RE8-010
+                if urllib.request.urlopen(req, timeout=20).status == 200:
                     if not self.ok:
                         self.ok = True; BOOT.setdefault("model_chu_san_sang_sau_s", round(time.time() - t0, 1))
                     # giữ máy chữ bật trong lúc còn nhận dạng (máy chữ tự tắt sau tat_may_chu_sau_giay rảnh)

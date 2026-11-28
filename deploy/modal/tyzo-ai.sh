@@ -91,12 +91,27 @@ hoi_ali() {
   fi
 }
 
+# RE8-010: token proxy Modal (Modal → Settings → Proxy Auth Tokens → New token: ID «wk-…», Secret «ws-…»).
+# Chỉ lưu trong $CONF (chmod 600) và bí mật Modal tyzo-asr; không in ra màn hình, không ghi nhật ký.
+nhap_proxy() {
+  tieu_de "Token xác thực proxy Modal (RE8-010)"
+  echo "Tạo trên modal.com: Settings → Proxy Auth Tokens → New token. Chép Token ID và Token Secret."
+  local k s; k="$(hoi_an '  Token ID (wk-..., không hiện chữ, Enter = xóa): ')"
+  if [ -z "$k" ]; then conf_set TYZO_PROXY_KEY ""; conf_set TYZO_PROXY_SECRET ""; vang "Đã xóa token proxy."; return 0; fi
+  s="$(hoi_an '  Token Secret (ws-..., không hiện chữ): ')"
+  [ -n "$s" ] || { do_ "Thiếu Token Secret."; return 1; }
+  conf_set TYZO_PROXY_KEY "$k"; conf_set TYZO_PROXY_SECRET "$s"
+  xanh "Đã lưu token proxy. Nhớ đặt CÙNG hai giá trị trên Vercel (TYZO_PROXY_KEY, TYZO_PROXY_SECRET) trước khi bật xac_thuc_proxy."
+}
+
 ma_moi() { conf_set TYZO_ASR_TOKEN "$(openssl rand -hex 32)"; xanh "Đã tạo chuỗi bảo vệ mới (lưu trong $CONF, xem bằng mục «Địa chỉ và chuỗi bảo vệ»)."; }
 
 luu_bi_mat() {
   local args=("TYZO_ASR_TOKEN=$(conf_get TYZO_ASR_TOKEN)" "TYZO_FUSE=$(conf_get TYZO_FUSE)")
   [ -n "$(conf_get ALI_API_KEY)" ] && args+=("ALI_API_KEY=$(conf_get ALI_API_KEY)")
   [ -n "$(conf_get ALI_WORKSPACE)" ] && args+=("ALI_WORKSPACE=$(conf_get ALI_WORKSPACE)")
+  # RE8-010: máy nhận dạng cần token proxy để gọi máy model chữ khi bật xac_thuc_proxy.
+  [ -n "$(conf_get TYZO_PROXY_KEY)" ] && args+=("TYZO_PROXY_KEY=$(conf_get TYZO_PROXY_KEY)" "TYZO_PROXY_SECRET=$(conf_get TYZO_PROXY_SECRET)")
   "$MODAL" secret create --force "$SECRET_NAME" "${args[@]}" >/dev/null || { do_ "Lưu key lên Modal lỗi."; return 1; }
   xanh "Đã lưu key và cài đặt lên Modal."
 }
@@ -365,6 +380,7 @@ menu() {
     echo "37. Thử bản chụp máy chữ: bật 4 lần, mỗi lần cách 3 phút để máy tự tắt (tốn GPU, hỏi trước)"
     echo "38. Thử phim thật: cắt một đoạn, nhận dạng và dịch sang tiếng Việt (tốn GPU, hỏi trước từng bước)"
     echo "39. Soi thứ tự giờ và câu lặp trong kết quả mục 38 (CPU, không gọi Modal)"
+    echo "40. Token xác thực proxy Modal (RE8-010; nhập xong tự lưu bí mật và đưa lên lại)"
     echo " 0. Thoát"
     local c; read -rp "Chọn: " c
     case "$c" in
@@ -407,6 +423,7 @@ menu() {
       18) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --noi-chong ;;
       17) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" --nhac-nen ;;
       16) cai_cham_diem && "$PY" "$CODE/eval/asr/mau-da-ra-soat/so_sanh_en.py" "$CODE" ;;
+      40) nhap_proxy && luu_bi_mat && trien_khai ;;
       0|q) exit 0 ;;
       *) vang "Chọn số trong menu." ;;
     esac
@@ -420,6 +437,11 @@ if ! da_cai; then
   cai_dat
   da_cai && exec /usr/local/bin/tyzo-ai
   exit 1
+fi
+
+# RE8-010: các script thử (goi_thu, bat_may_chu, dịch…) đọc token proxy từ môi trường; chỉ xuất khi đã nhập.
+if [ -n "$(conf_get TYZO_PROXY_KEY)" ]; then
+  export TYZO_PROXY_KEY="$(conf_get TYZO_PROXY_KEY)" TYZO_PROXY_SECRET="$(conf_get TYZO_PROXY_SECRET)"
 fi
 
 case "${1:-}" in

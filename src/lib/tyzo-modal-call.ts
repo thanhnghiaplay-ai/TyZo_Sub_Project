@@ -10,7 +10,9 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
     const {getSql} = await import("./db");
     const {requireOpenAccount,takeRate} = await import("./guard.server");
     const {parseModalPrice, holdUsdPerFilmHour} = await import("./sub/tyzo-modal-price");
-    const {recognizeModalWav, isTransientModalError} = await import("./sub/tyzo-modal.server");
+    const {recognizeModalWav, isTransientModalError, modalProxyHeaders} = await import("./sub/tyzo-modal.server");
+    // RE8-010: cấu hình token proxy dở dang thì dừng TRƯỚC khi giữ Token hay gọi GPU.
+    modalProxyHeaders();
     const {mergeInterjections} = await import("./sub/merge-interjections");
     const {loadPriceBook} = await import("./run-board.server");
     const {giayForBaseCost} = await import("./billing/token-math");

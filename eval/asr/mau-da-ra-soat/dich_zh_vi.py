@@ -9,6 +9,7 @@ import urllib.request
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "luong-ky" / "modal"))
 from dia_chi_llm import llm_url  # noqa: E402
+from modal_auth import proxy_headers  # noqa: E402  RE8-010
 
 DATA = Path(__file__).resolve().parent
 
@@ -47,7 +48,7 @@ def translate(source, url, token, model, merge=False, mobile=False):
                             {"role": "user", "content": json.dumps(lines, ensure_ascii=False)}]}
     req = urllib.request.Request(url.rstrip("/") + "/v1/chat/completions",
                                  json.dumps(payload).encode(),
-                                 {"Authorization": "Bearer " + token, "Content-Type": "application/json"})
+                                 {"Authorization": "Bearer " + token, "Content-Type": "application/json", **proxy_headers()})
     with urllib.request.urlopen(req, timeout=1500) as response:
         result = json.load(response)
     translations = json.loads(result["choices"][0]["message"]["content"])

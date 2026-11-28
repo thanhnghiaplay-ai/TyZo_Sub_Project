@@ -11,6 +11,7 @@ from pathlib import Path
 from run import write_json
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "luong-ky" / "modal"))
 from dia_chi_llm import llm_url  # noqa: E402
+from modal_auth import proxy_headers  # noqa: E402  RE8-010
 
 HERE = Path(__file__).resolve().parent
 PROMPT = ("Dịch toàn bộ lời chép tiếng Hàn sau sang tiếng Việt tự nhiên. "
@@ -34,7 +35,7 @@ def request(text, model, out, clip_id, sha, url=None, tag="", system=PROMPT):
         import modal
         url = llm_url()
     req = urllib.request.Request(url + "/v1/chat/completions", body, {
-        "Content-Type": "application/json", "Authorization": "Bearer " + token})
+        "Content-Type": "application/json", "Authorization": "Bearer " + token, **proxy_headers()})
     start = time.monotonic()
     with urllib.request.urlopen(req, timeout=1500) as response:
         result = json.load(response)

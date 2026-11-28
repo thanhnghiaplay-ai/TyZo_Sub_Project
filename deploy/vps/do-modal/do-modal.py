@@ -32,11 +32,14 @@ def finite_nonneg(v):
 
 class Meter:
     def __init__(self, url, token, profile, budget=BUDGET_USD, deadline=CALL_DEADLINE_S, gpu_rate=GPU_USD_PER_HOUR,
-                 model_cap=MODEL_CAP_USD, max_redirects=MAX_REDIRECTS, max_bytes=MAX_RESPONSE_BYTES, read_clip=None, log=print):
+                 model_cap=MODEL_CAP_USD, max_redirects=MAX_REDIRECTS, max_bytes=MAX_RESPONSE_BYTES, read_clip=None, log=print,
+                 proxy=None):
         for name, v in (("budget", budget), ("deadline", deadline), ("gpu_rate", gpu_rate), ("model_cap", model_cap)):
             if not finite_nonneg(v):
                 raise ValueError(f"{name} phải là số hữu hạn không âm")
         self.url, self.token, self.profile = url, token, profile
+        # RE8-010: {"Modal-Key", "Modal-Secret"} khi endpoint bật requires_proxy_auth; chỉ trong bộ nhớ, không ghi ra tệp.
+        self.proxy = dict(proxy or {})
         self.budget, self.deadline, self.max_redirects, self.max_bytes = budget, deadline, max_redirects, max_bytes
         self.reserve = deadline / 3600 * gpu_rate + model_cap
         self.gpu_rate, self.model_cap = gpu_rate, model_cap
@@ -91,7 +94,8 @@ class Meter:
             conn.connect(); held.append(conn.sock)
             if fired.is_set():
                 raise TimeoutError("hết hạn chót lệnh")
-            conn.request(method, path, body=body, headers={"Content-Type": "application/json"} if body is not None else {})
+            headers = {**self.proxy, **({"Content-Type": "application/json"} if body is not None else {})}
+            conn.request(method, path, body=body, headers=headers)
             r = conn.getresponse()
             n = r.getheader("content-length")
             if n is not None and (not n.isdigit() or int(n) > self.max_bytes):
@@ -229,7 +233,12 @@ def main():
     profile = (input("Hồ sơ [nhanh/ky, Enter = nhanh]: ").strip() or "nhanh")
     if profile not in ("nhanh", "ky"):
         sys.exit("✘ Hồ sơ chỉ nhận nhanh hoặc ky")
-    m = Meter(url, token, profile)
+    # RE8-010: token proxy Modal (tùy chọn; bắt buộc khi Chủ đã bật xac_thuc_proxy). Lấy từ biến môi trường hoặc hỏi ẩn.
+    pk = os.environ.get("TYZO_PROXY_KEY") or getpass.getpass("Token ID proxy Modal (wk-…, Enter nếu chưa bật): ").strip()
+    ps = os.environ.get("TYZO_PROXY_SECRET") or (getpass.getpass("Token Secret proxy Modal (ws-…): ").strip() if pk else "")
+    if bool(pk) != bool(ps):
+        sys.exit("✘ Cần cả Token ID và Token Secret proxy")
+    m = Meter(url, token, profile, proxy={"Modal-Key": pk, "Modal-Secret": ps} if pk else None)
     print(f"Trần ước tính: {m.budget} USD (giữ chỗ {m.reserve:.4f} USD/lệnh; không phải trần tuyệt đối của Modal). Bắt đầu đo…")
     summary = m.run()
     out = f"/opt/tyzo-do-modal-{time.strftime('%Y%m%d-%H%M%S')}.json"

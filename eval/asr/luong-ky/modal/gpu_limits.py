@@ -22,9 +22,32 @@ def _clamp(value, low, high):
     return max(low, min(high, value))
 
 
+# Hồ sơ cấu hình (RE8-001/RE8-008, Chủ đồng ý chuẩn bị 28/11): «hien_tai» = như cũ, dùng để rollback;
+# «thu_nghiem» = máy chữ tối đa 2, nhận dạng tối đa 9, 1 máy dự phòng, máy nhận dạng tắt sau 30 s rảnh.
+# Máy model chữ GIỮ 60 s chờ tắt: máy nhận dạng gọi /health 30 s một lần để giữ máy chữ bật trong lúc làm việc.
+PROFILES = {
+    "hien_tai": {},
+    "thu_nghiem": {"may_chu_toi_da": 2, "may_nhan_dang_toi_da": 9, "may_du_phong_nhan_dang": 1,
+                   "tat_may_nhan_dang_sau_giay": 30},
+}
+
+
+def profile_name(cfg):
+    g = cfg.get("gpu") if isinstance(cfg, dict) else None
+    name = g.get("ho_so_gpu") if isinstance(g, dict) else None
+    return name if name in PROFILES else "hien_tai"
+
+
 def _gpu(cfg):
     g = cfg.get("gpu") if isinstance(cfg, dict) else None
-    return g if isinstance(g, dict) else {}
+    g = dict(g) if isinstance(g, dict) else {}
+    g.update(PROFILES[profile_name(cfg)])
+    return g
+
+
+def proxy_auth(cfg):
+    """RE8-010: chỉ bật khi cau-hinh.json ghi đúng `true` (không coi "true", 1… là bật). Mặc định tắt = như cũ."""
+    return _gpu(cfg).get("xac_thuc_proxy") is True
 
 
 # Cửa nhận việc của app (src/lib/billing/work-admission.ts DEFAULT_ADMISSION.modal) cho tối đa 8 đoạn GPU cùng lúc.

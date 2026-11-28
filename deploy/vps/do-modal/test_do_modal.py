@@ -6,6 +6,7 @@ spec = importlib.util.spec_from_file_location("do_modal", os.path.join(os.path.d
 dm = importlib.util.module_from_spec(spec); spec.loader.exec_module(dm)
 
 MODE = {"v": "ok"}
+SEEN = []
 INFLIGHT = {"now": 0, "max": 0}
 L = threading.Lock()
 
@@ -23,6 +24,7 @@ class H(BaseHTTPRequestHandler):
 
     def do_POST(self):
         n = int(self.headers.get("Content-Length", 0)); self.rfile.read(n)
+        SEEN.append((self.headers.get("Modal-Key"), self.headers.get("Modal-Secret")))
         with L:
             INFLIGHT["now"] += 1; INFLIGHT["max"] = max(INFLIGHT["max"], INFLIGHT["now"])
         try:
@@ -78,6 +80,7 @@ class H(BaseHTTPRequestHandler):
             pass
 
     def do_GET(self):
+        SEEN.append((self.headers.get("Modal-Key"), self.headers.get("Modal-Secret")))
         if self.path == "/done":
             return self._send(200, {"segs": [1], "stats": {"giay_xu_ly": 36, "tien_model_chu_usd": 0}})
         return self._send(303, loc="/wait")
@@ -186,6 +189,16 @@ class T(unittest.TestCase):
             with self.subTest(mode=mode):
                 m = self.meter(mode, budget=1.0); m.call("zh", "nong-1")
                 self.assertEqual(m.rows[0]["cost_status"], st); self.assertAlmostEqual(m.unknown, m.reserve)
+
+    def test_proxy_headers_on_post_and_redirect(self):
+        SEEN.clear()
+        m = self.meter("redirect-once", budget=1.0, proxy={"Modal-Key": "wk-k", "Modal-Secret": "ws-s"})
+        m.call("zh", "nong-1")
+        self.assertEqual(m.rows[0]["http"], 200)
+        self.assertEqual(SEEN, [("wk-k", "ws-s"), ("wk-k", "ws-s")], "POST và lần hỏi lại 303 đều có header")
+        self.assertNotIn("ws-s", json.dumps({"s": m.summary(), "r": m.rows}))
+        SEEN.clear(); self.meter("ok", budget=1.0).call("zh", "lanh")
+        self.assertEqual(SEEN, [(None, None)], "chưa cấu hình thì không gửi")
 
 
 if __name__ == "__main__":

@@ -136,6 +136,16 @@ def ali(messages, model, tries=4):
             print("  [ali]", e, flush=True); time.sleep(4)
     raise RuntimeError("ali")
 
+def _proxy_headers():
+    """RE8-010: header proxy Modal cho máy model chữ (bí mật tyzo-asr: TYZO_PROXY_KEY/SECRET). modal_auth.py ở luong-ky/modal."""
+    import sys
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modal")
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    from modal_auth import proxy_headers
+    return proxy_headers()
+
+
 def local_chat(messages, model, timeout=None):
     """Model chữ tự chạy (vLLM trên GPU Modal hay bất kỳ máy chủ dạng OpenAI): LLM_BASE, LLM_KEY, LLM_EXTRA (JSON)."""
     import urllib.request
@@ -143,7 +153,8 @@ def local_chat(messages, model, timeout=None):
     body = json.dumps({"model": model, "messages": messages, "temperature": 0, "max_tokens": 1024,
                        "response_format": {"type": "json_object"}, **extra}).encode()
     req = urllib.request.Request(os.environ["LLM_BASE"].rstrip("/") + "/v1/chat/completions", body,
-                                 {"Authorization": "Bearer " + os.environ.get("LLM_KEY", "x"), "Content-Type": "application/json", "User-Agent": "tyzo-asr/1.0"})
+                                 {"Authorization": "Bearer " + os.environ.get("LLM_KEY", "x"), "Content-Type": "application/json", "User-Agent": "tyzo-asr/1.0",
+                                  **_proxy_headers()})
     r = json.load(urllib.request.urlopen(req, timeout=timeout or float(os.environ.get("LLM_TIMEOUT", "90"))))
     _count("gpu:" + model, r)
     return r["choices"][0]["message"]["content"]

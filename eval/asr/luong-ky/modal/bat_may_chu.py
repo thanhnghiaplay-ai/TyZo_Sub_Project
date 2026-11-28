@@ -10,6 +10,7 @@ import time
 import urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from dia_chi_llm import llm_url  # noqa: E402
+from modal_auth import proxy_headers  # noqa: E402  RE8-010
 
 
 def ask_once(url, token, model):
@@ -17,7 +18,7 @@ def ask_once(url, token, model):
                            chat_template_kwargs={"enable_thinking": False},
                            messages=[dict(role="user", content="Trả lời đúng một chữ: OK")])).encode()
     req = urllib.request.Request(url + "/v1/chat/completions", body, {
-        "Content-Type": "application/json", "Authorization": "Bearer " + token})
+        "Content-Type": "application/json", "Authorization": "Bearer " + token, **proxy_headers()})
     start = time.monotonic()
     print("Bắt đầu lúc " + time.strftime("%H:%M:%S", time.gmtime()) + " UTC, đang chờ...", flush=True)
     with urllib.request.urlopen(req, timeout=1500) as response:

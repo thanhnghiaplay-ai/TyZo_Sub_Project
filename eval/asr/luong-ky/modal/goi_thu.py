@@ -6,6 +6,8 @@
     Video thử có sẵn: eval/asr/luong-ky/modal/mau/zh_thu_38s.mp4 (tiếng Trung, 38 giây, giọng máy tự dựng).
 """
 import base64, json, os, sys, time, urllib.request, urllib.error
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from modal_auth import proxy_headers  # noqa: E402  RE8-010
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,7 +32,7 @@ if path.startswith("http://") or path.startswith("https://"):   # link tải tr�
     urllib.request.urlretrieve(path, local); path = local
 body = json.dumps({"token": TOKEN, "audio_b64": base64.b64encode(open(path, "rb").read()).decode(), "ext": path.rsplit(".", 1)[-1],
                    "lang": lang, **({"profile": profile} if profile else {})}).encode()
-req = urllib.request.Request(URL, body, {"Content-Type": "application/json", "User-Agent": "tyzo-asr-client/1.0"})
+req = urllib.request.Request(URL, body, {"Content-Type": "application/json", "User-Agent": "tyzo-asr-client/1.0", **proxy_headers()})
 
 # Modal: việc quá 150 giây được trả 303 về một địa chỉ hỏi lại kết quả, lặp tới khi xong → cho phép hỏi lại nhiều lần.
 class Doi(urllib.request.HTTPRedirectHandler):

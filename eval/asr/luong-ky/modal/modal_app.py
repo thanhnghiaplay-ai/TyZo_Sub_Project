@@ -23,10 +23,13 @@ LLM_MODEL = CFG["hop_nhat"]["gpu"]["model"]
 for _p in (HERE, "/root/luong-ky/modal"):
     if os.path.exists(os.path.join(_p, "gpu_limits.py")) and _p not in sys.path:
         sys.path.insert(0, _p)
-from gpu_limits import asr_limits, llm_concurrency, llm_limits   # RE8-008: trần GPU tính thuần, có test
+from gpu_limits import asr_limits, llm_concurrency, llm_limits, proxy_auth   # RE8-008/010: tính thuần, có test
 ASR_LIM = asr_limits(CFG, os.environ.get("TYZO_ASR_WARM"))
 LLM_LIM = llm_limits(CFG, os.environ.get("TYZO_LLM_WARM"))
 LLM_CONC = llm_concurrency(CFG)
+# RE8-010: bật thì Modal chỉ nhận yêu cầu có Modal-Key/Modal-Secret (token proxy của workspace). Người gọi lấy từ
+# TYZO_PROXY_KEY/TYZO_PROXY_SECRET (Vercel, VPS, bí mật tyzo-asr). Rollback: xac_thuc_proxy=false rồi «Cập nhật».
+PROXY_AUTH = proxy_auth(CFG)
 
 asr_image = (
     modal.Image.debian_slim(python_version="3.12")
@@ -130,7 +133,7 @@ if LLM_SNAPSHOT:
             import time
             print(f"[tyzo] may chu nhan viec {time.strftime('%H:%M:%S', time.gmtime())} UTC; GPU {_gpu_name()}", flush=True)
 
-        @modal.web_server(port=8000, startup_timeout=1500)
+        @modal.web_server(port=8000, startup_timeout=1500, requires_proxy_auth=PROXY_AUTH)
         def serve(self):
             """Máy model chữ: cổng 8000 do vLLM mở trong start()."""
 
@@ -139,7 +142,7 @@ if LLM_SNAPSHOT:
 else:
     @app.function(**LLM_KW)
     @modal.concurrent(max_inputs=LLM_CONC["max_inputs"], target_inputs=LLM_CONC["target_inputs"])
-    @modal.web_server(port=8000, startup_timeout=1500)
+    @modal.web_server(port=8000, startup_timeout=1500, requires_proxy_auth=PROXY_AUTH)
     def llm():
         """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi có yêu cầu, tắt khi rảnh quá `tat_may_chu_sau_giay`."""
         import threading
@@ -206,7 +209,7 @@ class Asr:
         B["nhan_viec_luc"] = time.strftime("%H:%M:%S", time.gmtime())
         print(f"[tyzo] may nhan dang nhan viec {B['nhan_viec_luc']} UTC; tu ban chup {B['khoi_phuc_tu_ban_chup']}", flush=True)
 
-    @modal.fastapi_endpoint(method="POST")
+    @modal.fastapi_endpoint(method="POST", requires_proxy_auth=PROXY_AUTH)
     def run(self, item: dict):
         """Nhận JSON {"token", "audio_b64", "ext", "lang", "profile"}; việc quá 150 s thì Modal trả 303 để hỏi lại kết quả."""
         import base64, hmac, tempfile, traceback
