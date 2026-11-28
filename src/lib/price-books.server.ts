@@ -45,6 +45,7 @@ export async function loadRoomHouses(sql: Sql): Promise<Record<ProviderId, RoomH
     const names = PROVIDERS[id].settings;
     out[id] = { key: map.get(names.key)?.trim() || null, models: parseModelList(map.get(names.models)) };
   }
-  out["tyzo-modal"] = { key: process.env.TYZO_ASR_TOKEN && process.env.TYZO_ASR_URL ? "configured" : null, models: PROVIDERS["tyzo-modal"].fixedModels ?? null };
+  const { modalAsrConfigured } = await import("./sub/tyzo-modal.server");
+  out["tyzo-modal"] = { key: modalAsrConfigured() ? "configured" : null, models: PROVIDERS["tyzo-modal"].fixedModels ?? null };
   return out;
 }

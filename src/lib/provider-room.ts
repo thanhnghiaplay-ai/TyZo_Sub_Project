@@ -8,7 +8,7 @@ import { isProviderId, keyShapeProblem, PROVIDERS, type ProviderId } from "@/lib
  * Key phòng theo từng nhà cung cấp, dùng chung cho mọi nhà trong `PROVIDERS` (xem PROVIDERS.md bước 6).
  * Tên dòng trong `room_settings` lấy từ `PROVIDERS[id].settings`, không viết tay.
  */
-type ProviderKeyView = { keyTail: string; models: string[] | null };
+type ProviderKeyView = { keyTail: string; configured: boolean; models: string[] | null };
 
 function checkProviderId(input: unknown): ProviderId {
   const id = typeof input === "string" ? input : "";
@@ -26,6 +26,10 @@ export const getProviderKey = createServerFn({ method: "GET" })
   .validator((input: ProviderId) => checkProviderId(input))
   .handler(async ({ context, data }): Promise<ProviderKeyView> => {
     await requireRole(context.userId, "chu");
+    if (data === "tyzo-modal") {
+      const { modalAsrConfigured } = await import("./sub/tyzo-modal.server");
+      return { keyTail: "", configured: modalAsrConfigured(), models: PROVIDERS[data].fixedModels ?? null };
+    }
     const names = PROVIDERS[data].settings;
     const sql = await openSql();
     const rows = await sql<{ key: string; value: string }>`
@@ -33,7 +37,7 @@ export const getProviderKey = createServerFn({ method: "GET" })
     `;
     const map = new Map(rows.map((row) => [row.key, row.value]));
     const key = map.get(names.key) || "";
-    return { keyTail: key ? key.slice(-4) : "", models: parseModelList(map.get(names.models)) };
+    return { keyTail: key ? key.slice(-4) : "", configured: Boolean(key.trim()), models: parseModelList(map.get(names.models)) };
   });
 
 export const saveProviderKey = createServerFn({ method: "POST" })

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getProviderKey } from "@/lib/provider-room";
 import { getModalPrice, saveModalPrice } from "@/lib/tyzo-modal-settings";
 import { HOLD_RATIO, MODAL_PRICE_DEFAULT } from "@/lib/sub/tyzo-modal-price";
 
@@ -10,8 +11,14 @@ export function TyzoModalPriceBoard() {
   const [saved, setSaved] = useState(false);
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
+  const [connection, setConnection] = useState<"loading" | "configured" | "missing" | "error">("loading");
   useEffect(() => {
     let active = true;
+    void getProviderKey({ data: "tyzo-modal" }).then(({ configured }) => {
+      if (active) setConnection(configured ? "configured" : "missing");
+    }).catch(() => {
+      if (active) setConnection("error");
+    });
     getModalPrice()
       .then((price) => {
         if (!active) return;
@@ -33,13 +40,21 @@ export function TyzoModalPriceBoard() {
   const perHour = Number.isFinite(g) && Number.isFinite(k) ? g * k : 0;
   return (
     <section className="admin-card grid content-start gap-2">
-      <h3 className="text-sm font-semibold">Giá TyZo Modal</h3>
+      <h3 className="text-sm font-semibold">Nhận dạng TyZo (Modal)</h3>
+      <p className="text-sm">Model Nhanh và Kỹ · Trả theo lượt</p>
+      <p className="text-sm text-muted">
+        {connection === "loading" && "Đang đọc cấu hình máy chủ…"}
+        {connection === "configured" && "Máy chủ đã có địa chỉ và mã kết nối Modal."}
+        {connection === "missing" && "Máy chủ thiếu địa chỉ hoặc mã kết nối Modal."}
+        {connection === "error" && "Chưa đọc được cấu hình kết nối Modal."}
+      </p>
+      <h4 className="text-sm font-semibold">Giá TyZo Modal</h4>
       <p className="text-sm text-muted">
         Tính theo chi phí GPU thật: giây máy nhận dạng xử lý × giá GPU × hệ số bù, cộng phí Alibaba nếu có. Quy ra Token dịch như các nhà khác, nên lời
         nằm ở giá Token dịch (giá 1 giây Turbo + % chênh lệch). Hệ số bù gồm bật máy, máy chạy không, CPU, RAM và máy mô hình chữ: đối chiếu hóa đơn Modal rồi chỉnh.
         Chỉ dùng ở cửa Trả theo lượt. Đổi giá chỉ áp dụng cho lượt mở sau.
       </p>
-      <p className="text-sm">{!ready ? "Đang đọc…" : saved ? "Đã lưu giá. Khách dùng được TyZo khi gói có TyZo." : "Chưa lưu giá: khách chưa dùng được TyZo."}</p>
+      <p className="text-sm">{!ready ? "Đang đọc…" : saved ? "Đã lưu giá. Chọn TyZo ở mục Nhận dạng trong Gói dịch." : "Chưa lưu giá: khách chưa dùng được TyZo."}</p>
       <form
         className="grid gap-2"
         onSubmit={async (event) => {

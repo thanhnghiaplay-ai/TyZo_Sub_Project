@@ -2,6 +2,14 @@
 
 Các mục sau được chuyển nguyên văn từ `src/lib/app-version.ts`. Các bản gần đây nằm trong ứng dụng, mục «Có gì mới» hiển thị 8 bản.
 
+## 5.37.1 · 12:35 22/11/2026
+
+Hướng dẫn ứng dụng Android; mã liên kết đếm từng giây.
+
+- Trang Hướng dẫn có mục Ứng dụng Android: cài, liên kết, cho phép hiện phụ đề, dùng và gỡ máy.
+- Mã liên kết đếm ngược từng giây; app nối xong thì trang báo tên máy vừa liên kết.
+- Ứng dụng bản 0.3 có các bước dùng ngay trên màn hình và nút mở hướng dẫn trên web.
+
 ## 5.37.0 · 12:06 22/11/2026
 
 Ứng dụng Android: phụ đề dịch nổi trên video ở Bilibili, YouTube, TikTok.

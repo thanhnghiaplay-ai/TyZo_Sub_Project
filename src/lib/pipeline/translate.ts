@@ -8,6 +8,7 @@
 import { addressLock, BATCH, glossaryHit, untranslated } from "@/lib/sub/text";
 import { contextBlock, sleep, throwIfAborted, translateIndexes, translateWithRepair, type ChatKey } from "@/lib/sub/groq";
 import { loadRunGlossary, mergeIntoGloss, overlayUserTerms, protectTerms, restoreTerms, settleGlossaryLines, stripLeftoverPlaceholders, type GlossaryTerm } from "@/lib/sub/glossary";
+import { PaidRoomCallError } from "@/lib/sub/http-deadline";
 import { pickAutoModel } from "@/lib/sub/models";
 import type { AutoProfile, ModelMode, Seg } from "@/lib/sub/types";
 import type { Job } from "./job";
@@ -97,8 +98,9 @@ export function createTranslator(ctx: TranslateContext) {
       }
       return out;
     };
+    let stopped = false;
     const worker = async () => {
-      for (;;) {
+      while (!stopped) {
         throwIfAborted(signal);
         if (my !== j.runId) return;
         const done = asrDone();
@@ -177,6 +179,7 @@ export function createTranslator(ctx: TranslateContext) {
           let lastError: Error | undefined;
           const attempts = mode === "manual" ? 1 : 3;
           for (let attempt = 0; attempt < attempts; attempt++) {
+            if (stopped) return;
             const picked =
               mode === "manual"
                 ? { id: chosen, via: "chọn tay" }
@@ -211,7 +214,7 @@ export function createTranslator(ctx: TranslateContext) {
               );
               break;
             } catch (error) {
-              if ((error as Error)?.name === "AbortError") throw error;
+              if ((error as Error)?.name === "AbortError" || error instanceof PaidRoomCallError) throw error;
               lastError = error as Error;
               const message = lastError.message || "";
               if (/429|giới hạn/.test(message)) j.cooling.set(used, Date.now() + 20000);
@@ -222,7 +225,7 @@ export function createTranslator(ctx: TranslateContext) {
           if (!translated) throw lastError || new Error("Dịch văn bản thất bại.");
           const settled = settleGlossaryLines(protectedOrigs, translated, restoreMap);
           translated = settled.lines;
-          if (settled.retryIndexes.length) {
+          if (!stopped && settled.retryIndexes.length) {
             try {
               const again = protectTerms(origs, packTerms, source);
               const redo = await translateIndexes(
@@ -286,7 +289,18 @@ export function createTranslator(ctx: TranslateContext) {
       }
     };
     const translators = Math.min(4, Math.max(2, threads));
-    await Promise.all(Array.from({ length: translators }, worker));
+    if (!roomPayRef.current) {
+      await Promise.all(Array.from({ length: translators }, worker));
+      return;
+    }
+    // A sibling refusal does not cancel calls already sent on a paid ticket.
+    // Collect their results before the outer pipeline closes the ticket.
+    let firstFailure: { error: unknown } | undefined;
+    await Promise.all(Array.from({ length: translators }, () => worker().catch((error: unknown) => {
+      stopped = true;
+      firstFailure ??= { error };
+    })));
+    if (firstFailure) throw firstFailure.error;
   };
 
   return { translateRemaining };

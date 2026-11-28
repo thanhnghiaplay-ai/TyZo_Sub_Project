@@ -141,7 +141,8 @@ export function buildAutoPack(input: { id: string; levels: AutoInput["levels"]; 
   }
   const head = AUTO_LEVEL_LABEL[input.levels.translate && input.levels.translate !== "off" ? input.levels.translate : "balanced"];
   const note = `Tự động${input.lang === "cjk" ? " (Trung, Nhật, Hàn)" : ""}. ${parts.join(" · ")}`.slice(0, 180);
-  return { id: input.id, name: `Gói tự động · ${head}`, note, enabled: false, doors: ["turn", "rent"], roles: { ...input.roles } };
+  const doors: ServicePack["doors"] = input.roles.asr.provider === "tyzo-modal" ? ["turn"] : ["turn", "rent"];
+  return { id: input.id, name: `Gói tự động · ${head}`, note, enabled: false, doors, roles: { ...input.roles } };
 }
 
 /** Chỉ giữ model Chủ đã mở cho thuê phòng. show = null (Chủ chưa lưu danh sách) thì không lọc. */

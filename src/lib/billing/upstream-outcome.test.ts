@@ -7,6 +7,7 @@ import { openGiayWith } from "./token-flow.ts";
 import { resolveAdmissionWith, withWorkAdmission } from "./work-admission.ts";
 import { UncertainUpstreamError } from "./upstream-outcome.ts";
 import { requestWithRetry, API } from "../sub/groq.ts";
+import { PaidRoomCallError } from "../sub/http-deadline.ts";
 import {
   recognizeModalWav,
   isTransientModalError,
@@ -274,6 +275,22 @@ pgTest(
     assert.equal(await charged(), 4);
   },
 );
+
+test("paid room 402 and 409 stop retries and model fallback", async () => {
+  for (const status of [402, 409]) {
+    let sends = 0;
+    globalThis.fetch = async () => {
+      sends++;
+      return Response.json({ error: { message: "fixture refusal" } }, { status });
+    };
+    await assert.rejects(
+      requestWithRetry(API + "/chat/completions", () => ({ headers: { Authorization: "Bearer room" } }),
+        "fixture", undefined, { blockedUntil: 0 }, undefined, "chat", tid, (r) => r.json()),
+      PaidRoomCallError,
+    );
+    assert.equal(sends, 1);
+  }
+});
 
 pgTest("paid room 5xx is not automatically submitted as another paid request", async () => {
   let sends = 0;

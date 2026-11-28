@@ -22,6 +22,11 @@ describe("Admin: ô key các nhà sinh từ bảng PROVIDERS", () => {
   it("ProviderKeyBoards lặp theo PROVIDER_IDS", () => {
     assert.match(board, /PROVIDER_IDS\.map/);
   });
+  it("mục Nhà cung cấp có thẻ nhận dạng TyZo riêng và gói đọc trạng thái máy chủ", () => {
+    assert.match(config, /<Page id="nha-cung-cap"[\s\S]*?<TyzoModalPriceBoard \/>/);
+    assert.match(read("./tyzo-modal-price-board.tsx"), /getProviderKey\(\{ data: "tyzo-modal" \}\)/);
+    assert.match(read("./service-pack-board.tsx"), /view\.configured/);
+  });
   it("ô key chung giữ nút Dán của ô Groq cũ", () => {
     assert.match(board, /navigator\.clipboard\.readText/);
   });

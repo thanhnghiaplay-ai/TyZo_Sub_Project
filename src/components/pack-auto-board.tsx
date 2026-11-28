@@ -30,7 +30,7 @@ export function PackAutoBoard({
   books: Partial<Record<ProviderId, PriceBook>> | null;
   /** Danh sách model Chủ đã mở cho thuê phòng. null = chưa lưu, ẩn ô lọc. */
   rentShow?: RentShow | null;
-  /** Nhà nào đã lưu key phòng. null = chưa đọc được, không lọc và ẩn ô lọc. */
+  /** Nhà đã cấu hình cho Trả theo lượt. null = chưa đọc được, ẩn ô lọc. */
   keyed?: Partial<Record<ProviderId, boolean>> | null;
   /** Báo bản nháp hiện tại cho bên ngoài (để nút Tạo gói dùng ở bước sau). */
   onDraft?: (draft: AutoDraft) => void;
@@ -54,9 +54,10 @@ export function PackAutoBoard({
   );
   const quote = useMemo(() => {
     if (!books || !result) return null;
-    const pack: ServicePack = { id: "pack_preview0", name: "Xem trước", note: "", enabled: false, doors: ["turn", "rent"], roles: result.roles };
+    const doors: ServicePack["doors"] = result.roles.asr?.provider === "tyzo-modal" ? ["turn"] : ["turn", "rent"];
+    const pack: ServicePack = { id: "pack_preview0", name: "Xem trước", note: "", enabled: false, doors, roles: result.roles };
     const input = { pack, seconds: 600, narration: Boolean(result.roles.narration), books };
-    return { turn: quotePack({ ...input, door: "turn" }), rent: quotePack({ ...input, door: "rent" }) };
+    return { turn: quotePack({ ...input, door: "turn" }), rent: doors.includes("rent") ? quotePack({ ...input, door: "rent" }) : null };
   }, [books, result]);
 
   function pick(role: PackRole, choice: AutoChoice) {
@@ -88,7 +89,7 @@ export function PackAutoBoard({
       {keyed && (
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={keyedOnly} onChange={(event) => setKeyedOnly(event.target.checked)} />
-          Chỉ dùng nhà đã có key
+          Chỉ dùng nhà đã cấu hình
         </label>
       )}
 

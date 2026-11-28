@@ -76,3 +76,12 @@ export async function withDeadlines<T>(
     signal?.removeEventListener("abort", relay);
   }
 }
+
+
+/** A paid room request must stop fallback to another model on budget or uncertain outcomes. */
+export class PaidRoomCallError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PaidRoomCallError";
+  }
+}

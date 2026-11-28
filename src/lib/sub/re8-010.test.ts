@@ -9,7 +9,7 @@ import { promisify } from "node:util";
 import { readFileSync } from "node:fs";
 import { after, beforeEach, describe, it } from "node:test";
 import { UncertainUpstreamError } from "../billing/upstream-outcome.ts";
-import { modalProxyHeaders, recognizeModalWav, isTransientModalError } from "./tyzo-modal.server.ts";
+import { modalAsrConfigured, modalProxyHeaders, recognizeModalWav, isTransientModalError } from "./tyzo-modal.server.ts";
 
 const exec = promisify(execFile);
 const KEY = "wk-fixture-key-123";
@@ -48,6 +48,14 @@ after(() => {
 });
 
 describe("RE8-010 · header proxy Modal phía máy chủ", () => {
+  it("Admin nhận trạng thái Modal từ cấu hình máy chủ mà không liên hệ GPU", () => {
+    assert.equal(modalAsrConfigured({}), false);
+    assert.equal(modalAsrConfigured({ TYZO_ASR_URL: "https://example.modal.run" }), false);
+    assert.equal(modalAsrConfigured({ TYZO_ASR_URL: "https://example.modal.run", TYZO_ASR_TOKEN: " " }), false);
+    assert.equal(modalAsrConfigured({ TYZO_ASR_URL: "https://example.modal.run", TYZO_ASR_TOKEN: "fixture" }), true);
+    assert.equal(calls.length, 0);
+  });
+
   it("chưa cấu hình: không gửi header (endpoint chưa bật xác thực chạy như cũ)", async () => {
     fakeModal(1);
     const r = await run();

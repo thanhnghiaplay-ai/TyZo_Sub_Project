@@ -15,7 +15,7 @@ import {
 import type { AsrModel } from "@/lib/sub/types";
 import { roomTicketId } from "@/lib/sub/room-ticket";
 import type { KeyProbe } from "@/lib/sub/key-check";
-import { BODY_TIMEOUT_MS, DeadlineError, HEADER_TIMEOUT_MS, withDeadlines } from "@/lib/sub/http-deadline";
+import { BODY_TIMEOUT_MS, DeadlineError, HEADER_TIMEOUT_MS, PaidRoomCallError, withDeadlines } from "@/lib/sub/http-deadline";
 import { PolishRefusal, type PolishCall } from "@/lib/sub/polish";
 import { analyzeMessages, parseBible } from "@/lib/sub/analyze";
 
@@ -205,7 +205,7 @@ export async function requestWithRetry<T>(
     } catch (error) {
       if (signal?.aborted || (error as { name?: string })?.name === "AbortError") throw abortError();
       if (paidRoomCall && (error instanceof DeadlineError || error instanceof TypeError))
-        throw new Error(`${label}: chưa xác minh được kết quả. Không tự gửi lại để tránh tính phí hai lần; hãy kiểm tra trước khi tiếp tục.`);
+        throw new PaidRoomCallError(`${label}: chưa xác minh được kết quả. Không tự gửi lại để tránh tính phí hai lần; hãy kiểm tra trước khi tiếp tục.`);
       if (error instanceof DeadlineError) {
         lastError = new Error(
           error.phase === "header"
@@ -220,10 +220,11 @@ export async function requestWithRetry<T>(
     }
     if (outcome?.done) return outcome.value;
     if (outcome) {
+      // A room 5xx can happen after a successful debit/COMMIT. Budget and
+      // reconciliation refusals also apply to another model on the same run.
+      if (paidRoomCall && (outcome.status === 402 || outcome.status === 409 || outcome.status >= 500))
+        throw new PaidRoomCallError(outcome.error.message);
       if (outcome.status !== 429 && outcome.status < 500) throw outcome.error;
-      // A room 5xx can happen after a successful debit/COMMIT. Retrying a new
-      // request without a durable request ID would create a second paid call.
-      if (paidRoomCall && outcome.status >= 500) throw outcome.error;
       lastError = outcome.error;
       // RE2-004: đang trong hàng chờ công bằng của phòng: thử lại đúng nhịp máy chủ báo để giữ chỗ,
       // không tính vào 5 lần thử; quá 15 phút thì dừng như lỗi thường.
@@ -452,7 +453,7 @@ async function translateOnce(
       }
       return parseTranslations(content, texts.length);
     } catch (error) {
-      if ((error as { name?: string })?.name === "AbortError") throw error;
+      if ((error as { name?: string })?.name === "AbortError" || error instanceof PaidRoomCallError) throw error;
       lastError = error as Error;
       const canFallback =
         index === 0 && /400|reasoning|response_format|json_schema|not supported|unsupported|unknown parameter/i.test(lastError.message || "");
@@ -507,7 +508,7 @@ async function translateBatch(
         ticket,
       );
     } catch (error) {
-      if ((error as { name?: string })?.name === "AbortError") throw error;
+      if ((error as { name?: string })?.name === "AbortError" || error instanceof PaidRoomCallError) throw error;
       const message = (error as Error).message || "";
       if (/401|403|429|không hợp lệ|giới hạn|chưa được cấp/.test(message)) throw error;
       right = texts.slice(mid).map(() => "");

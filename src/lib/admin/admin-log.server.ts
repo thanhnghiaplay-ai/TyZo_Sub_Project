@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.10",
+    time: "28/11/2026",
+    area: "ha-tang",
+    text: "Dịch trả theo lượt: 402/409 hoặc phản hồi chưa xác minh dừng đổi model. Khi lỗi một lô, không giao lô mới và chờ các lô đã gửi trả về trước khi đóng phiếu. Admin có thẻ nhận dạng TyZo Modal, gói tự động đọc trạng thái cấu hình và đặt đúng cửa Trả theo lượt.",
+  },
+  {
     version: "5.49.9",
     time: "28/11/2026",
     area: "ha-tang",

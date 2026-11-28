@@ -53,8 +53,8 @@ export function ConfigTab() {
         <SupportBoard />
       </Page>
       <Page id="nha-cung-cap" current={page}>
-        <ProviderKeyBoards />
         <TyzoModalPriceBoard />
+        <ProviderKeyBoards />
         <R2Board />
       </Page>
       <Page id="gia" current={page}>

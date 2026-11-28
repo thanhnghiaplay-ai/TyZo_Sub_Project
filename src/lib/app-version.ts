@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.9";
+export const APP_VERSION = "5.49.10";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,12 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.10",
+    time: "28/11/2026",
+    title: "Giữ bản dịch đang trả về khi một nhóm câu gặp lỗi.",
+    points: ["Khi cần dừng lượt trả theo lượt, TyZo giữ thêm các câu đang được dịch xong."],
+  },
   {
     version: "5.49.9",
     time: "28/11/2026",
@@ -294,16 +300,6 @@ export const CHANGELOG: ReleaseNote[] = [
       "Phiên gần nhất lưu trên điện thoại, tải SRT, VTT, TXT hoặc gửi sang ứng dụng khác.",
       "Đổi mật khẩu thì máy đã liên kết phải liên kết lại; máy bỏ không 90 ngày cũng vậy.",
       "Điều khoản ghi thêm phần ứng dụng lưu trên điện thoại; bạn đồng ý lại một lần.",
-    ],
-  },
-  {
-    version: "5.37.1",
-    time: "12:35 22/11/2026",
-    title: "Hướng dẫn ứng dụng Android; mã liên kết đếm từng giây.",
-    points: [
-      "Trang Hướng dẫn có mục Ứng dụng Android: cài, liên kết, cho phép hiện phụ đề, dùng và gỡ máy.",
-      "Mã liên kết đếm ngược từng giây; app nối xong thì trang báo tên máy vừa liên kết.",
-      "Ứng dụng bản 0.3 có các bước dùng ngay trên màn hình và nút mở hướng dẫn trên web.",
     ],
   },
 ];

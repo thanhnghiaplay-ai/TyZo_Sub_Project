@@ -61,10 +61,10 @@ export function ServicePackBoard() {
     void getRentShow().then(setRentShow).catch(() => undefined);
   }, []);
 
-  // Nhà nào đã lưu key phòng. null = chưa đọc xong hoặc có nhà đọc lỗi (khi đó không lọc theo key).
+  // Nhà đã cấu hình cho Trả theo lượt. Modal đọc cấu hình máy chủ, các nhà khác đọc key phòng.
   const [keyed, setKeyed] = useState<Partial<Record<ProviderId, boolean>> | null>(null);
   useEffect(() => {
-    void Promise.all(PROVIDER_IDS.map((id) => getProviderKey({ data: id }).then((view) => [id, view.keyTail.length > 0] as const)))
+    void Promise.all(PROVIDER_IDS.map((id) => getProviderKey({ data: id }).then((view) => [id, view.configured] as const)))
       .then((entries) => setKeyed(Object.fromEntries(entries)))
       .catch(() => setKeyed(null));
   }, []);
@@ -131,7 +131,8 @@ export function ServicePackBoard() {
         const roles = { ...pack.roles };
         if (!provider || !model) delete roles[role];
         else roles[role] = { provider, model };
-        return { ...pack, roles };
+        const doors: ServicePack["doors"] = roles.asr?.provider === "tyzo-modal" ? ["turn"] : pack.doors;
+        return { ...pack, roles, doors };
       }),
     );
   }
@@ -216,6 +217,7 @@ export function ServicePackBoard() {
                     <input
                       type="checkbox"
                       checked={pack.doors.includes(door)}
+                      disabled={door === "rent" && pack.roles.asr?.provider === "tyzo-modal" && !pack.doors.includes("rent")}
                       onChange={(event) => {
                         const doors = event.target.checked ? [...pack.doors, door] : pack.doors.filter((item) => item !== door);
                         patchPack(pack.id, { doors: doors.length ? doors : pack.doors });

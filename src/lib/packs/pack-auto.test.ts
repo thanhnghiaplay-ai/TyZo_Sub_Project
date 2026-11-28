@@ -104,6 +104,21 @@ test("buildAutoPack: gói nháp (tắt), hợp lệ với checkServicePack, ghi 
   assert.deepEqual(checkServicePack(pack).roles, roles);
 });
 
+test("Modal đã cấu hình được chọn làm nhận dạng; gói tự động lưu được ở cửa Trả theo lượt", () => {
+  const modal = C("tyzo-modal", "tyzo-modal-ky");
+  assert.deepEqual(onlyKeyed([modal], { "tyzo-modal": true }), [modal]);
+  assert.deepEqual(onlyKeyed([modal], { "tyzo-modal": false }), []);
+  const pack = buildAutoPack({
+    id: "pack_abc123def456",
+    levels: {},
+    roles: {
+      asr: { provider: modal.provider, model: modal.model },
+      translate: { provider: "groq", model: "openai/gpt-oss-120b" },
+    },
+  })!;
+  assert.deepEqual(checkServicePack(pack).doors, ["turn"]);
+});
+
 test("buildAutoPack: thiếu nhận dạng hoặc dịch thì không dựng gói", () => {
   assert.equal(buildAutoPack({ id: "pack_abc123def456", levels: {}, roles: { translate: { provider: "groq", model: "openai/gpt-oss-120b" } } }), null);
 });

@@ -5,6 +5,11 @@ import {
 import { modalCostUsd, type ModalPrice } from "./tyzo-modal-price.ts";
 import { modalRequest, modalSegments, type TyzoProfile } from "./tyzo-modal.ts";
 
+/** Whether the server has the endpoint and application token. This does not contact Modal. */
+export function modalAsrConfigured(env: Record<string, string | undefined> = process.env): boolean {
+  return Boolean(env.TYZO_ASR_URL?.trim() && env.TYZO_ASR_TOKEN?.trim());
+}
+
 /**
  * RE8-010: token proxy Modal (requires_proxy_auth). Chỉ đọc biến môi trường phía máy chủ TYZO_PROXY_KEY /
  * TYZO_PROXY_SECRET (Vercel); không có trong mã khách, ứng dụng Android hay nhật ký. Chưa đặt cả hai → không gửi
