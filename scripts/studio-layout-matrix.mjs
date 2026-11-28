@@ -60,6 +60,7 @@ const MEASURE = () => {
     player: box(".aspect-video"),
     cues: box(".studio-cues"),
     tools: box(".studio-tools"),
+    toolsFloat: (() => { const t = document.querySelector(".studio-tools"); return !!t && getComputedStyle(t).position === "fixed"; })(),
     xOverflow: document.documentElement.scrollWidth > innerWidth,
   };
 };
@@ -71,8 +72,11 @@ export function problems(m, mode, shellViewport) {
   const out = [];
   const [w, h] = shellViewport;
   if (hit(m.video, m.cues)) out.push("video chồng bản dịch");
-  if (hit(m.video, m.tools)) out.push("video chồng công cụ");
-  if (hit(m.cues, m.tools)) out.push("bản dịch chồng công cụ");
+  // Tab công cụ đang mở trên điện thoại là thẻ nổi (position: fixed) phủ lên video và bản dịch theo thiết kế, không tính là chồng lỗi.
+  if (!m.toolsFloat) {
+    if (hit(m.video, m.tools)) out.push("video chồng công cụ");
+    if (hit(m.cues, m.tools)) out.push("bản dịch chồng công cụ");
+  }
   if (m.xOverflow) out.push("tràn ngang");
   if (m.player) {
     if (m.player.h < 70) out.push(`video quá thấp (${Math.round(m.player.h)}px)`);
@@ -94,8 +98,12 @@ export function widePageHtml(css, kind) {
   const card = (n, tall) => `<section class="grid gap-3 rounded-2xl border p-4"><h2 class="font-semibold">Thẻ ${n}</h2>${Array.from({ length: tall ? 9 : 3 }, (_, i) => `<label class="grid gap-1 text-sm">Trường dài để thử xuống dòng ${i}<input class="min-tap rounded-xl border px-3"/></label>`).join("")}<button class="min-tap rounded-full border px-4">Lưu</button></section>`;
   const grid = kind === "admin" ? "admin-grid" : "account-grid";
   const wide = kind === "admin" ? "admin-wide" : "account-wide";
+  // Tài khoản: khung cuộn cao cố định bọc ngoài, `.account-grid` cao tự động bên trong (đúng account-panel.tsx).
+  // Đặt account-grid thẳng lên khung bị ép chiều cao thì cột nhiều cột tràn sang bên phải, không giống trang thật.
+  const open = kind === "admin" ? `<div class="${grid} min-h-0 flex-1 overflow-y-auto px-1 py-2">` : `<div class="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-1 py-2"><div class="${grid}">`;
+  const close = kind === "admin" ? "</div>" : "</div></div>";
   const stats = `<section class="grid gap-2"><div class="stat-grid">${Array.from({ length: 7 }, (_, i) => `<div class="rounded-xl border p-3">Chỉ số ${i}<b>12</b></div>`).join("")}</div></section>`;
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body><main class="room-wide mx-auto flex h-dvh flex-col px-4"><header class="py-3"><h1>Trang</h1></header><div class="${grid} min-h-0 flex-1 overflow-y-auto px-1 py-2">${card(1, true)}${stats}${card(2, false)}<div class="${wide} space-y-3">${card(3, true)}</div>${card(4, false)}${card(5, true)}</div></main></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body><main class="room-wide mx-auto flex h-dvh flex-col px-4"><header class="py-3"><h1>Trang</h1></header>${open}${card(1, true)}${stats}${card(2, false)}${kind === "admin" ? "" : card(6, false) + card(7, false) + card(8, true)}<div class="${wide} space-y-3">${card(3, true)}</div>${card(4, false)}${card(5, true)}${close}</main></body></html>`;
 }
 
 const PAGE_MEASURE = () => {
@@ -117,7 +125,9 @@ async function checkWidePages(browser, css) {
       const want = w < 720 ? 1 : w < 1090 ? 2 : 3;
       const list = [];
       if (m.xOverflow) list.push("tràn ngang");
-      if (m.columns !== want) list.push(`${m.columns} cột, cần ${want}`);
+      // Tài khoản dùng column-width: 22rem; styles.css ghi «3 đến 5 cột trên màn rộng», nên màn rộng chấp nhận 3–5 cột.
+      const range = kind === "account" && w >= 1090;
+      if (range ? m.columns < 3 || m.columns > 5 : m.columns !== want) list.push(`${m.columns} cột, cần ${range ? "3–5" : want}`);
       if (list.length) bad += 1;
       console.log(`${list.length ? "LỖI " : "ok   "} ${kind.padEnd(7)} ${w}x${h}  ${m.columns} cột${list.length ? "  <- " + list.join("; ") : ""}`);
     }
