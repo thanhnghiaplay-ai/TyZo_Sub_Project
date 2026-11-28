@@ -12,7 +12,7 @@
 | TZ-009 | P1 | Cập nhật phiên bản, stale-build-guard | PASS_LOCAL một phần: B-08 (nút Tải lại ở thông báo bản mới hỏi xác nhận khi đang chạy); R8-004 (preloadError) đã có từ trước; chưa có test trình duyệt (BLOCKED) |
 | TZ-010 | P0/P1 | Bảo mật và GPU | IN_PROGRESS: quét mẫu bí mật trên diff nhánh so baseline: không thấy (regex, chưa có gitleaks); header Modal chỉ gửi tới host gốc (test TZ-004); semgrep (bao-mat) 94 phát hiện WARNING, không phát hiện mức bảo mật mới (xem TESTS.md); dependency-cruiser 0 lỗi; gitleaks BLOCKED (mạng chặn proxy.golang.org); rà tĩnh quyền endpoint GPU xong (B-12, không lỗi); còn: kiểm lại quyền các endpoint admin/GPU khác nếu cần |
 | TZ-011 | P1 | Chức năng dùng chung | TODO |
-| TZ-012 | P0 | Kiểm thử tích hợp | TODO |
+| TZ-012 | P0 | Kiểm thử tích hợp | IN_PROGRESS: hồi quy src 1680 test, 0 fail (PASS_LOCAL); còn: nhóm scripts, test PG (BLOCKED), build, check:auth, trình duyệt (BLOCKED) |
 | TZ-013 | P0 | Kiểm toán độc lập (phiên mới, đọc diff so baseline) | TODO |
 | TZ-014 | — | Nghiệm thu, bàn giao, rollback | TODO |
 
