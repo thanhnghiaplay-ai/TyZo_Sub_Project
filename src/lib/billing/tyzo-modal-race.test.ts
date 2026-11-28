@@ -10,6 +10,7 @@ import { buyGiayWith, closeTokenWith, giayBalance, openGiayWith } from "./token-
 import { submitModalChunk } from "../sub/tyzo-modal.ts";
 import { runAdmittedModalPartWith, runModalPartWith } from "./tyzo-modal-charge.ts";
 import { sweepAdmissions, tagWorkBeforeSend } from "./work-admission.ts";
+import { UncertainUpstreamError } from "./upstream-outcome.ts";
 
 let sql: Sql;
 let end: (() => Promise<void>) | undefined;
@@ -335,4 +336,53 @@ describe("TyZo Modal: cửa nhận việc và tiếp tục", () => {
     const rows = await sql<{ id: string; ref: string | null }>`select id, ref from work_admissions order by id`;
     assert.deepEqual(rows, [{ id: "da-mat", ref: null }, { id: "dang-chay", ref: "modal:t1:x:a" }]);
   });
+});
+
+describe("TZ-005: bất biến tiền khi đoạn thành công, lỗi và đóng phiếu chạy lẫn nhau", () => {
+  // Bộ sinh số giả ngẫu nhiên có hạt giống: lỗi nào xuất hiện cũng tái hiện được.
+  const rng = (seed: number) => () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+
+  for (let seed = 1; seed <= 12; seed++) {
+    it(`hạt giống ${seed}: số dư + đã trừ = số ban đầu, không còn phần giữ treo, không trừ trùng`, async () => {
+      await open(100);
+      const rand = rng(seed);
+      const outcomes = Array.from({ length: 8 }, () => rand());
+      const charged: number[] = [];
+      const runs = outcomes.map((roll, i) => runModalPartWith(sql, part(`s${seed}-p${i}`, 30, 30), async () => {
+        await new Promise((resolve) => setTimeout(resolve, Math.floor(rand() * 40)));
+        if (roll < 0.25) throw new Error("nhà từ chối dứt khoát");
+        if (roll < 0.45) throw new UncertainUpstreamError(new Error("mất phản hồi"));
+        return { segments: SEG, tokens: 5 + Math.floor(roll * 40) };
+      }).then((r) => { if (!r.reused) charged.push(r.tokens); }, () => undefined));
+      const closeAfter = Math.floor(rand() * 60);
+      const closer = seed % 2 ? [] : [new Promise<void>((resolve) => setTimeout(resolve, closeAfter))
+        .then(() => closeTokenWith(sql, "t1", "k", false)).then(() => undefined, () => undefined)];
+      await Promise.all([...runs, ...closer]);
+      // Chưa đóng phiếu: mọi đoạn đã xong hoặc lỗi thì không được còn phần giữ hay thời lượng treo của đoạn lỗi.
+      const before = await ticket();
+      if (before.status === "dang-giu") {
+        const done = await sql<{ n: number; seconds: string }>`
+          select count(*)::int n, coalesce(sum(seconds), 0) seconds from run_modal_parts where status = 'xong'`;
+        assert.equal(Number(before.modal_reserved ?? 0), 0, "đoạn lỗi phải trả phần giữ ngay, không chờ đóng phiếu");
+        assert.equal(Number((before as { modal_seconds?: number }).modal_seconds ?? 0), Number(done[0].seconds), "thời lượng chỉ còn của đoạn đã xong");
+      }
+      await closeTokenWith(sql, "t1", "k", false);
+
+      const t = await ticket();
+      const parts = await sql<{ n: number; reserved: string; tokens: number }>`
+        select count(*)::int n, coalesce(sum(reserved), 0) reserved, coalesce(sum(tokens), 0)::int tokens from run_modal_parts`;
+      const sum = charged.reduce((a, b) => a + b, 0);
+      assert.notEqual(t.status, "dang-giu", "phiếu phải đóng được");
+      assert.equal(Number(t.modal_reserved ?? 0), 0, "không còn phần giữ treo");
+      assert.equal(Number(parts[0].reserved), 0);
+      assert.equal(t.charged, sum, "số đã trừ trên phiếu bằng tổng các đoạn trừ");
+      assert.equal(parts[0].tokens, sum, "tổng token lưu trên đoạn bằng số đã trừ (không trừ trùng)");
+      assert.equal(await giayBalance(sql, "k"), 1000 - sum, "tiền không mất, không thừa");
+    });
+  }
 });

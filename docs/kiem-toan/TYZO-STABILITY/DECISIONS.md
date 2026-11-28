@@ -2,3 +2,4 @@
 - 2026-11-28: không sửa hàng đợi 429 vì mã main (5.49.8+) đã đúng và có test; chỉ ghi nhận ALREADY_FIXED để tránh sửa trùng.
 - 2026-11-28 (TZ-002): nhả suất unknown chỉ khi có bằng chứng 'chưa gửi' (ref null + lane modal + quá lease) hoặc bằng chứng quyết toán; không dùng TTL chung. Fencing bằng `tagWorkBeforeSend` để bằng chứng 'chưa gửi' đáng tin. Không thêm migration (tránh rủi ro triển khai); tyzo_admit giữ nguyên.
 - 2026-11-28 (TZ-004): không đổi mã HTTP Modal vì đã đúng; P2-a/b/c ghi lại, không sửa khi chưa xác minh hành vi Modal thật hoặc chưa có quyết định của Chủ.
+- 2026-11-28 (TZ-005): không sửa mã tài chính (không thấy lỗi); chỉ thêm test. Không kết luận về 8.234 token khi chưa có dữ liệu phiếu/sổ cái.
