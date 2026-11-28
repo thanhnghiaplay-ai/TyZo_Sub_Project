@@ -81,8 +81,9 @@ before(async () => {
       upstream.inFlight -= 1;
     }
   }) as typeof fetch;
-  roomGroq = (await import("../../routes/api/room-groq.ts")).Route.options.server!.handlers!.POST as unknown as Handler;
-  modelCall = (await import("../../routes/api/model-call.ts")).Route.options.server!.handlers!.POST as unknown as Handler;
+  const post = (route: { options: unknown }) => (route.options as { server: { handlers: { POST: Handler } } }).server.handlers.POST;
+  roomGroq = post((await import("../../routes/api/room-groq.ts")).Route);
+  modelCall = post((await import("../../routes/api/model-call.ts")).Route);
 });
 after(async () => {
   globalThis.fetch = originalFetch;
