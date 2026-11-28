@@ -4,7 +4,7 @@
 | TZ-001 | P0 | Baseline: phiên bản, quy định, kiểm tra v5.49.8/9, script build/test | PASS_LOCAL (baseline test xong; chưa chạy build) |
 | TZ-002 | P0 | Admission/409: AdmissionUncertain, tyzo_admit, lease, fencing, đối soát | IN_PROGRESS: B-04 PASS_LOCAL (PGlite); còn: race nhiều replica trên PG thật, rà các lane batch/live | 
 | TZ-003 | P0 | Worker/429: 9 đoạn FE vs 3 suất BE, backpressure, Retry-After | PASS_LOCAL cho lõi (ALREADY_FIXED trong mã main); còn mở: Retry-After phía server, nhiều tài khoản đồng thời |
-| TZ-004 | P0 | Modal HTTP: POST/303/GET, timeout, mã lỗi, không phát lại POST | TODO |
+| TZ-004 | P0 | Modal HTTP: POST/303/GET, timeout, mã lỗi, không phát lại POST | PASS_LOCAL (mã đã đúng, bổ sung test); còn 3 ghi nhận P2 trong BUGS.md |
 | TZ-005 | P0 | Token/tài chính: hold/charge/settle/refund, đóng phiếu, 8.234 token | TODO |
 | TZ-006 | P1 | Nút Tiếp tục, saved-runs, checkpoint | TODO |
 | TZ-007 | P1 | Android/media, MP4 135 MB | TODO |

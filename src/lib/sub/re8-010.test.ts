@@ -151,3 +151,76 @@ describe("RE8-010 · header proxy Modal phía máy chủ", () => {
     assert.equal(values, "", "không có giá trị token thật trong kho");
   });
 });
+
+describe("TZ-004 · nhánh lỗi HTTP của lời gọi Modal", () => {
+  const POST_URL = "https://tyzo--asr-run.modal.run";
+  const redirectTo = (location: string | null) => {
+    const res = new Response(null, { status: 303, headers: location ? { location } : {} });
+    Object.defineProperty(res, "url", { value: POST_URL });
+    return res;
+  };
+
+  // Chỉ các mã từ chối dứt khoát (trước khi nhận việc) mới không phải đối soát; còn lại có thể Modal đã nhận.
+  for (const status of [409, 500, 502, 503, 504]) {
+    it(`POST trả HTTP ${status}: coi là chưa rõ, không thử lại, không phải lỗi tạm`, async () => {
+      let sends = 0;
+      globalThis.fetch = (async () => { sends++; return new Response(null, { status }); }) as typeof fetch;
+      await assert.rejects(run(), (error: unknown) =>
+        error instanceof UncertainUpstreamError && !isTransientModalError(error));
+      assert.equal(sends, 1);
+    });
+  }
+
+  for (const status of [400, 401, 404, 413, 415, 422]) {
+    it(`POST trả HTTP ${status}: từ chối dứt khoát, không phải chưa rõ và không thử lại`, async () => {
+      let sends = 0;
+      globalThis.fetch = (async () => { sends++; return new Response(null, { status }); }) as typeof fetch;
+      await assert.rejects(run(), (error: unknown) =>
+        !(error instanceof UncertainUpstreamError) && !isTransientModalError(error));
+      assert.equal(sends, 1);
+    });
+  }
+
+  it("303 trỏ sang host lạ: không gửi gì sang đó (kể cả header proxy) và cần đối soát", async () => {
+    process.env.TYZO_PROXY_KEY = KEY;
+    process.env.TYZO_PROXY_SECRET = SECRET;
+    const urls: string[] = [];
+    globalThis.fetch = (async (input: string | URL, init?: RequestInit) => {
+      urls.push(`${init?.method ?? "GET"} ${String(input)}`);
+      return redirectTo("https://evil.example.com/steal");
+    }) as typeof fetch;
+    await assert.rejects(run(), (error: unknown) =>
+      error instanceof UncertainUpstreamError && !isTransientModalError(error));
+    assert.deepEqual(urls, [`POST ${POST_URL}/`]);
+  });
+
+  for (const location of ["http://tyzo--asr-run.modal.run/result/abc", "https://user:pw@tyzo--asr-run.modal.run/r", null]) {
+    it(`303 với địa chỉ không hợp lệ (${location ?? "thiếu"}): không hỏi lại, cần đối soát`, async () => {
+      let sends = 0;
+      globalThis.fetch = (async () => { sends++; return redirectTo(location); }) as typeof fetch;
+      await assert.rejects(run(), (error: unknown) => error instanceof UncertainUpstreamError);
+      assert.equal(sends, 1);
+    });
+  }
+
+  it("mất kết nối hoặc hủy giữa lúc hỏi kết quả: cần đối soát, không gửi lại POST", async () => {
+    const methods: string[] = [];
+    const controller = new AbortController();
+    globalThis.fetch = (async (_url: URL, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      if (init?.method === "POST") return redirectTo("/result/abc");
+      controller.abort();
+      throw new DOMException("aborted", "AbortError");
+    }) as typeof fetch;
+    await assert.rejects(
+      recognizeModalWav(new Uint8Array(64), "zh", "nhanh", 0, controller.signal, PRICE),
+      (error: unknown) => error instanceof UncertainUpstreamError && !isTransientModalError(error),
+    );
+    assert.deepEqual(methods, ["POST", "GET"]);
+  });
+
+  it("kết quả 200 nhưng không phải JSON phụ đề hợp lệ: không trả phụ đề rỗng giả", async () => {
+    globalThis.fetch = (async () => Response.json({ ok: true })) as typeof fetch;
+    await assert.rejects(run(), /không hợp lệ/);
+  });
+});
