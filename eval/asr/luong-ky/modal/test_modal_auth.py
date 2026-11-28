@@ -71,7 +71,9 @@ class T(unittest.TestCase):
             self.assertNotIn(SECRET, str(cm.exception)); self.assertNotIn(KEY, str(cm.exception))
 
     def test_flag_default_off_and_only_true_enables(self):
-        self.assertIs(gl.proxy_auth(CFG), False, "mặc định tắt = như cũ")
+        # G7 (28/11): Chủ đã đặt token proxy ở web VPS và tyzo-ai → nhánh làm việc bật xác thực; main vẫn tắt (rollback).
+        self.assertIs(gl.proxy_auth(CFG), CFG["gpu"]["xac_thuc_proxy"] is True)
+        self.assertIs(gl.proxy_auth({"gpu": {}}), False, "thiếu khóa = tắt như cũ")
         for v, want in ((True, True), ("true", False), (1, False), (None, False), (False, False)):
             self.assertIs(gl.proxy_auth({"gpu": {"xac_thuc_proxy": v}}), want, repr(v))
 

@@ -231,9 +231,9 @@
     "location": "eval/asr/luong-ky/modal/modal_app.py (LLM_KW)",
     "hypothesis": "Máy model chữ không có max_containers, timeout 24 giờ",
     "acceptance": "Đặt trần và đo lại (G5), Chủ deploy.",
-    "status": "PASS_LOCAL_NOT_DEPLOYED",
+    "status": "DEPLOYED_VERIFIED",
     "evidence": "RE8-008/REPORT.md",
-    "remaining": "Hồ sơ thu_nghiem đã chuẩn bị (ho_so_gpu); deploy + đo G5/G8 khi Chủ duyệt; hạn mức Spend limit (P0)."
+    "remaining": "Đo chi phí thật G5/G8 khi duyệt."
   },
   {
     "id": "RE8-009",
@@ -252,9 +252,9 @@
     "location": "eval/asr/luong-ky/modal/modal_app.py (Asr.run, máy model chữ)",
     "hypothesis": "Endpoint web công khai: yêu cầu không có khóa có thể đánh thức GPU",
     "acceptance": "Đo G7; nếu đúng, bật requires_proxy_auth + bí mật Modal cho Vercel và máy nhận dạng (Chủ duyệt, deploy).",
-    "status": "PASS_LOCAL_NOT_DEPLOYED",
+    "status": "P0_DONE_G7_READY",
     "evidence": "RE8-010/REPORT.md",
-    "remaining": "Chủ làm P0 (token, Vercel, VPS) rồi G7 (bật xac_thuc_proxy, đo 401 và máy không bật). Hướng dẫn: RE8-010/HUONG_DAN.md."
+    "remaining": "G7 theo RE8-010/G7.md trên nhánh làm việc; đạt thì Chủ quyết đưa lên main."
   },
   {
     "id": "RE8-011",

@@ -92,7 +92,7 @@
     "tat_may_nhan_dang_sau_giay": 60,
     "ho_so_gpu": "hien_tai",
     "_ghi_chu_ho_so_gpu": "ho_so_gpu: «hien_tai» (như cũ, dùng để rollback) hoặc «thu_nghiem» (máy chữ tối đa 2, nhận dạng tối đa 9, 1 máy dự phòng, máy nhận dạng tắt sau 30 s rảnh; RE8-001). Hồ sơ ghi đè các khóa cùng tên ở trên. Đổi xong chọn «Cập nhật».",
-    "xac_thuc_proxy": false,
+    "xac_thuc_proxy": true,
     "_ghi_chu_xac_thuc_proxy": "xac_thuc_proxy (RE8-010): true = endpoint nhận dạng và máy model chữ chỉ nhận yêu cầu có Modal-Key/Modal-Secret. CHỈ bật sau khi đã đặt TYZO_PROXY_KEY/TYZO_PROXY_SECRET trên Vercel, VPS và bí mật tyzo-asr (xem docs/kiem-toan/v5.49.7/RE8-010/HUONG_DAN.md). Rollback: false rồi «Cập nhật»."
   },
   "gia_gpu_usd_gio": {

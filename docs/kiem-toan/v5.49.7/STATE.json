@@ -13,7 +13,7 @@
     "android_ci": "xem RE8-007/REPORT.md",
     "plan": "RE6-009/ACCEPTANCE_PLAN.md (gói tách, tổng 6,87 USD; tối thiểu 0,60 USD)"
   },
-  "next": "Chờ Chủ: xác minh Vercel deploy và log migrate 0059; checklist điện thoại trên bản 0.14 đã phát hành; duyệt gói nghiệm thu. RE6-010 chưa làm.",
+  "next": "G7: Chủ chuyển tyzo-ai sang nhánh ccr-654dbe0e-978ok7 theo RE8-010/G7.md, kiểm 401 + Containers 0, rồi chạy có khóa.",
   "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
   "items": {
     "RE6-001": "PASS_LOCAL_POLICY_PENDING",
@@ -38,9 +38,9 @@
     "RE8-005": "BLOCKED",
     "RE8-006": "ANALYZED",
     "RE8-007": "BUILD_PASS_RELEASED_DEVICE_BLOCKED",
-    "RE8-008": "PASS_LOCAL_NOT_DEPLOYED (hồ sơ thu_nghiem sẵn, đang hien_tai)",
+    "RE8-008": "DEPLOYED_VERIFIED (Modal Details: Llm max 2)",
     "RE8-009": "PASS_LOCAL",
-    "RE8-010": "PASS_LOCAL_NOT_DEPLOYED",
+    "RE8-010": "P0_DONE_G7_READY (nhánh làm việc xac_thuc_proxy=true; main false)",
     "RE8-011": "ANALYZED_SIM"
   },
   "main_sha": "5742608e2efca0e3f1194dfc19e1e58d3543fd15",
@@ -56,5 +56,10 @@
     "edges": 20226,
     "communities": 304,
     "report": "MAIN-5742608/CHATGPT_AUDIT.md"
+  },
+  "deploy_28_11": {
+    "tyzo": "web VPS sub.tyzo.site cập nhật main 75510a3; migrate up to date (0059)",
+    "tyzo_ai": "Modal cập nhật main 75510a3; Llm max 2, Asr max 9/buffer 2/60 s; máy nhận dạng chạy đúng",
+    "p0": "token proxy đặt ở web VPS và tyzo-ai (VPS thứ hai), mã băm khớp"
   }
 }
