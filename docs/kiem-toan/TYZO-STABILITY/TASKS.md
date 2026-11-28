@@ -10,7 +10,7 @@
 | TZ-007 | P1 | Android/media, MP4 135 MB | NOT_REPRODUCED (rà tĩnh): đường đọc theo đoạn (openStream) có dự phòng giải mã toàn tệp (decodeTo16k), trần 1 GB/120 phút; thử trên thiết bị Android thật = BLOCKED |
 | TZ-008 | P1 | Giao diện/tiến độ, 320–430 px | IN_PROGRESS: B-09 PASS_LOCAL (nút «Đang chuẩn bị…», khóa bấm lúc chuẩn bị); chống bấm đúp lõi (startJobOnce) ALREADY_FIXED; còn: bố cục 320–430 px = BLOCKED (sandbox thiếu Chromium cho check:layout), hiển thị tiến độ đoạn x/6 đã rà tĩnh: computeStages đúng (cắt xong=5%, nhận dạng 0/6 khớp sự cố), không lỗi |
 | TZ-009 | P1 | Cập nhật phiên bản, stale-build-guard | PASS_LOCAL một phần: B-08 (nút Tải lại ở thông báo bản mới hỏi xác nhận khi đang chạy); R8-004 (preloadError) đã có từ trước; chưa có test trình duyệt (BLOCKED) |
-| TZ-010 | P0/P1 | Bảo mật và GPU | IN_PROGRESS: quét mẫu bí mật trên diff nhánh so baseline: không thấy (regex, chưa có gitleaks); header Modal chỉ gửi tới host gốc (test TZ-004); còn: bi-mat/bao-mat/phu-thuoc bằng công cụ, rà quyền endpoint GPU |
+| TZ-010 | P0/P1 | Bảo mật và GPU | IN_PROGRESS: quét mẫu bí mật trên diff nhánh so baseline: không thấy (regex, chưa có gitleaks); header Modal chỉ gửi tới host gốc (test TZ-004); semgrep (bao-mat) 94 phát hiện WARNING, không phát hiện mức bảo mật mới (xem TESTS.md); dependency-cruiser 0 lỗi; gitleaks BLOCKED (mạng chặn proxy.golang.org); còn: rà quyền endpoint GPU |
 | TZ-011 | P1 | Chức năng dùng chung | TODO |
 | TZ-012 | P0 | Kiểm thử tích hợp | TODO |
 | TZ-013 | P0 | Kiểm toán độc lập (phiên mới, đọc diff so baseline) | TODO |

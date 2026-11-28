@@ -1,7 +1,7 @@
 # CHECKPOINT
 - Repo: thanhnghiaplay-ai/TyZo_Sub_Project. Nhánh: fix/tyzo-stability.
 - Baseline: main f73e02d (APP_VERSION 5.49.9; 5.49.8 và 5.49.9 đã nằm trên main).
-- Đang làm: TZ-010 (còn công cụ bi-mat/bao-mat/phu-thuoc, rà quyền GPU). TZ-007 rà tĩnh xong (B-11 không lỗi). TZ-008: B-09 đã sửa, tiến độ đã rà (B-10 không lỗi); bố cục 320–430 px = BLOCKED do thiếu Chromium. TZ-009 PASS_LOCAL một phần (B-08 đã sửa). TZ-006 B-07 đã sửa, còn test trình duyệt (BLOCKED). TZ-002 IN_PROGRESS (B-04 đã sửa), TZ-004 và TZ-005 PASS_LOCAL (8.234 token BLOCKED chờ dữ liệu). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
+- Đang làm: TZ-010 (phu-thuoc và bao-mat đã chạy; bi-mat BLOCKED vì thiếu gitleaks; còn rà quyền endpoint GPU). TZ-007 rà tĩnh xong (B-11 không lỗi). TZ-008: B-09 đã sửa, tiến độ đã rà (B-10 không lỗi); bố cục 320–430 px = BLOCKED do thiếu Chromium. TZ-009 PASS_LOCAL một phần (B-08 đã sửa). TZ-006 B-07 đã sửa, còn test trình duyệt (BLOCKED). TZ-002 IN_PROGRESS (B-04 đã sửa), TZ-004 và TZ-005 PASS_LOCAL (8.234 token BLOCKED chờ dữ liệu). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
 - Đã xong: clone, tạo nhánh, đọc CLAUDE.md, thiết lập thư mục này, npm ci.
 - Test đã chạy: xem TESTS.md (tsc OK, lint 0 lỗi, 3 nhóm npm test: không lỗi mã; 1 fail do môi trường root).
 - Chưa chạy: test PG (cần Postgres cô lập), build.
