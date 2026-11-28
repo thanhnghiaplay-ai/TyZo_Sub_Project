@@ -15,7 +15,7 @@ Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `
 | RE6-009 | Chưa làm (Medium, sau RE6-008) | — |
 | RE6-010 | Chưa làm, cần **Low** | — |
 
-Hồi quy toàn phần: [REGRESSION.md](REGRESSION.md). Gói kiểm toán: `audit-bundle/` (patch theo commit, manifest SHA-256).
+Hồi quy toàn phần: [REGRESSION.md](REGRESSION.md). Hồ sơ cho kiểm toán độc lập: [CHATGPT_AUDIT.md](CHATGPT_AUDIT.md). Gói kiểm toán: `audit-bundle/` (patch theo commit, manifest SHA-256).
 
 Việc chờ Chủ:
 - Duyệt chính sách RE6-001.
