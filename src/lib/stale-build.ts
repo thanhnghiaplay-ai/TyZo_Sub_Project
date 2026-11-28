@@ -42,3 +42,24 @@ export function sessionStore(): Store | null {
     return null;
   }
 }
+
+export const UPDATE_RELOAD_WARNING = {
+  title: "Đang có việc chạy trong trang này",
+  text: "Tải lại lúc này sẽ mất tiến độ chưa lưu của tệp đang xử lý (nhận dạng, dịch, nút Tiếp tục). Hãy đợi xong rồi lưu hoặc xuất phụ đề trước. Vẫn tải lại?",
+  confirmLabel: "Vẫn tải lại",
+  cancelLabel: "Đợi xong đã",
+  danger: true,
+} as const;
+
+/** Bấm «Tải lại» ở thông báo bản mới: có việc đang chạy thì phải được khách đồng ý. Không hỏi được = không tải. */
+export async function confirmUpdateReload(
+  active: boolean,
+  ask: (options: typeof UPDATE_RELOAD_WARNING) => Promise<boolean>,
+): Promise<boolean> {
+  if (!active) return true;
+  try {
+    return (await ask(UPDATE_RELOAD_WARNING)) === true;
+  } catch {
+    return false;
+  }
+}

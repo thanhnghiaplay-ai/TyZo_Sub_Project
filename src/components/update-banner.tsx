@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { APP_VERSION } from "@/lib/app-version";
 import { getLiveVersion } from "@/lib/live-version";
+import { askConfirm } from "@/lib/confirm";
+import { hasPageActivity } from "@/lib/page-activity";
+import { confirmUpdateReload } from "@/lib/stale-build";
 
 export function UpdateBanner() {
   const [live, setLive] = useState(APP_VERSION);
@@ -35,7 +38,7 @@ export function UpdateBanner() {
     <div className="fixed inset-x-3 bottom-3 z-40 grid gap-2 rounded-[var(--radius-card)] border border-line bg-card p-3 shadow-lg">
       <p className="text-sm">Đã có bản v{live}. Hãy tải lại trang để dùng bản vừa cập nhật. Việc đang làm vẫn giữ nếu bạn chọn để sau.</p>
       <div className="flex gap-2">
-        <button type="button" className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink" onClick={() => window.location.reload()}>
+        <button type="button" className="min-tap rounded-full bg-accent px-4 text-sm font-semibold text-ink" onClick={() => { void confirmUpdateReload(hasPageActivity(), askConfirm).then((ok) => { if (ok) window.location.reload(); }); }}>
           Tải lại
         </button>
         <button type="button" className="min-tap rounded-full border border-line px-4 text-sm" onClick={() => setLater(true)}>

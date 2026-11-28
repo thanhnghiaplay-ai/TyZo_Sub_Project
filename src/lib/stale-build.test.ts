@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { RELOAD_GAP_MS, RELOAD_KEY, claimAutoReload, isStaleBuildError } from "./stale-build.ts";
+import { RELOAD_GAP_MS, RELOAD_KEY, UPDATE_RELOAD_WARNING, claimAutoReload, confirmUpdateReload, isStaleBuildError } from "./stale-build.ts";
 import { holdPageActivity, hasPageActivity } from "./page-activity.ts";
 
 function memory() {
@@ -46,5 +46,22 @@ describe("trang mở từ bản cũ sau khi web lên bản mới", () => {
     assert.match(view, /Tải lại trang/);
     const root = readFileSync(new URL("../routes/__root.tsx", import.meta.url), "utf8");
     assert.match(root, /<StaleBuildGuard \/>/);
+  });
+
+  it("TZ-009: nút Tải lại của thông báo bản mới không bỏ mất việc đang chạy", async () => {
+    let asked = 0;
+    const yes = async () => { asked++; return true; };
+    const no = async () => { asked++; return false; };
+    const boom = async () => { throw new Error("x"); };
+    assert.equal(await confirmUpdateReload(false, no), true);
+    assert.equal(asked, 0);
+    assert.equal(await confirmUpdateReload(true, yes), true);
+    assert.equal(await confirmUpdateReload(true, no), false);
+    assert.equal(await confirmUpdateReload(true, boom), false);
+    assert.equal(asked, 2);
+    assert.equal(UPDATE_RELOAD_WARNING.danger, true);
+    const banner = readFileSync(new URL("../components/update-banner.tsx", import.meta.url), "utf8");
+    assert.match(banner, /confirmUpdateReload\(hasPageActivity\(\), askConfirm\)/);
+    assert.doesNotMatch(banner, /onClick=\{\(\) => window\.location\.reload\(\)\}/);
   });
 });
