@@ -10,3 +10,4 @@
 - fix(TZ-002/B-14): lane batch gắn ref chỉ khi suất còn running và dừng trước khi gửi nếu mất; sweep nhả suất batch unknown không ref; test batch-admission.test.ts.
 - docs: TZ-012 build vite PASS_LOCAL, check:layout chạy được (22 lỗi có sẵn trên baseline, B-15); TZ-013 rà độc lập diff mã, không thấy lỗi mới. Không đổi mã.
 - fix(TZ-008/B-15): scripts/studio-layout-matrix.mjs khớp giao diện thật (thẻ công cụ nổi, account-grid trong khung cuộn, 3–5 cột); check:layout 0 lỗi; đột biến vẫn bị bắt. Không đổi CSS/giao diện.
+- docs: TZ-011/TZ-014 PASS_LOCAL; REPORT.md nghiệm thu, đối chiếu tiêu chí, còn mở, rollback. Không đổi mã.

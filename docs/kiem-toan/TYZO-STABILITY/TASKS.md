@@ -11,9 +11,9 @@
 | TZ-008 | P1 | Giao diện/tiến độ, 320–430 px | IN_PROGRESS: B-09 PASS_LOCAL (nút «Đang chuẩn bị…», khóa bấm lúc chuẩn bị); chống bấm đúp lõi (startJobOnce) ALREADY_FIXED; còn: bố cục 320–430 px: check:layout PASS_LOCAL (0 lỗi với Chromium sẵn có qua CHROMIUM_PATH, sau khi sửa script lỗi thời B-15; giao diện thật không đổi). Chưa có ảnh chụp trang thật/thiết bị Android, hiển thị tiến độ đoạn x/6 đã rà tĩnh: computeStages đúng (cắt xong=5%, nhận dạng 0/6 khớp sự cố), không lỗi |
 | TZ-009 | P1 | Cập nhật phiên bản, stale-build-guard | PASS_LOCAL một phần: B-08 (nút Tải lại ở thông báo bản mới hỏi xác nhận khi đang chạy); R8-004 (preloadError) đã có từ trước; chưa có test trình duyệt (BLOCKED) |
 | TZ-010 | P0/P1 | Bảo mật và GPU | IN_PROGRESS: quét mẫu bí mật trên diff nhánh so baseline: không thấy (regex, chưa có gitleaks); header Modal chỉ gửi tới host gốc (test TZ-004); semgrep (bao-mat) 94 phát hiện WARNING, không phát hiện mức bảo mật mới (xem TESTS.md); dependency-cruiser 0 lỗi; gitleaks BLOCKED (mạng chặn proxy.golang.org); rà tĩnh quyền endpoint GPU xong (B-12, không lỗi); còn: kiểm lại quyền các endpoint admin/GPU khác nếu cần |
-| TZ-011 | P1 | Chức năng dùng chung | TODO |
+| TZ-011 | P1 | Chức năng dùng chung | PASS_LOCAL (không có việc riêng; hồi quy chung đã chạy trong TZ-012: 1680 test src, 0 fail; tsc 0 lỗi tại HEAD) |
 | TZ-012 | P0 | Kiểm thử tích hợp | IN_PROGRESS: hồi quy src 1680 test, 0 fail (PASS_LOCAL); nhóm scripts xong, check:auth N/A, vite build PASS_LOCAL (chưa chạy db:migrate), check:layout PASS_LOCAL (22 lỗi cũ là script lỗi thời, đã sửa, B-15); còn: test PG (BLOCKED), trình duyệt thật (reload, mất mạng) |
 | TZ-013 | P0 | Kiểm toán độc lập (phiên mới, đọc diff so baseline) | PASS_LOCAL (đọc mã 9 file nguồn, không thấy lỗi mới; xem TESTS.md); còn: chạy lại test PG khi có Postgres cô lập |
-| TZ-014 | — | Nghiệm thu, bàn giao, rollback | TODO |
+| TZ-014 | — | Nghiệm thu, bàn giao, rollback | PASS_LOCAL: REPORT.md (đối chiếu tiêu chí, còn mở, rollback). PASS_CI/PASS_PRODUCTION chưa có; chờ Chủ quyết định đưa lên |
 
 Điều kiện nghiệm thu: theo mục X của MASTER.md; nhiệm vụ chỉ đóng khi mọi nhiệm vụ con quan trọng đã có bằng chứng.
