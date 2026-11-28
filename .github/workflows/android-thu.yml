@@ -78,15 +78,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          digest() { "$bt/apksigner" verify --print-certs "$1" 2>&1 | grep -iE "certificate SHA-256 digest" | head -1 | awk '{print $NF}'; }
           sha256sum tyzo-sub.apk | tee tyzo-sub.sha256
-          "$bt/apksigner" verify --verbose --print-certs tyzo-sub.apk | grep -E "Verified|Signer #1 certificate (DN|SHA-256)" | tee tyzo-sub-chu-ky.txt
-          "$bt/aapt2" dump badging tyzo-sub.apk | head -1 | tee -a tyzo-sub-chu-ky.txt
-          new=$(grep -m1 "certificate SHA-256 digest" tyzo-sub-chu-ky.txt | awk '{print $NF}')
+          { "$bt/apksigner" verify --verbose --print-certs tyzo-sub.apk 2>&1 | grep -iE "^Verified using v[0-9]|certificate (SHA-256|SHA-1) digest|certificate DN"
+            "$bt/aapt2" dump badging tyzo-sub.apk | head -1; } | tee tyzo-sub-chu-ky.txt
+          new=$(digest tyzo-sub.apk)
           prev=$(gh release list -R "$GITHUB_REPOSITORY" --limit 30 --json tagName -q '[.[].tagName | select(startswith("android-v"))][0]' || true)
           if [ -n "$prev" ] && gh release download "$prev" -R "$GITHUB_REPOSITORY" -p tyzo-sub.apk -O prev.apk; then
-            old=$(("$bt/apksigner" verify --print-certs prev.apk || true) | grep -m1 "certificate SHA-256 digest" | awk '{print $NF}')
-            "$bt/aapt2" dump badging prev.apk | head -1 | sed "s/^/Bản phát hành $prev: /" | tee -a tyzo-sub-chu-ky.txt
-            if [ -n "$new" ] && [ "$new" = "$old" ]; then echo "CÙNG KHÓA KÝ với $prev: cài đè được (versionCode phải lớn hơn)" | tee -a tyzo-sub-chu-ky.txt
+            old=$(digest prev.apk)
+            { echo "Bản phát hành $prev: $("$bt/aapt2" dump badging prev.apk | head -1)"; echo "SHA-256 chứng chỉ $prev: ${old:-không đọc được}"; } | tee -a tyzo-sub-chu-ky.txt
+            if [ -z "$new" ] || [ -z "$old" ]; then echo "KHÔNG XÁC ĐỊNH: chưa đọc được chứng chỉ để so" | tee -a tyzo-sub-chu-ky.txt
+            elif [ "$new" = "$old" ]; then echo "CÙNG KHÓA KÝ với $prev: cài đè được (versionCode phải lớn hơn)" | tee -a tyzo-sub-chu-ky.txt
             else echo "KHÁC KHÓA KÝ với $prev: phải gỡ bản cũ trước khi cài" | tee -a tyzo-sub-chu-ky.txt; fi
           else echo "Chưa có bản phát hành android-v* để so khóa ký" | tee -a tyzo-sub-chu-ky.txt; fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
