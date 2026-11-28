@@ -93,7 +93,9 @@
     "location": "modal-work.ts; modal_app.py; Android",
     "hypothesis": "Chi phí unknown/idle buffer, chất lượng và Android chưa nghiệm thu",
     "acceptance": "Đối soát 0058, crash giữa ghi USD và journal, idle/cold/warm cost; Android thiết bị thật và chất lượng 3.5/3.8 cần chủ hỗ trợ.",
-    "status": "OPEN_VERIFY"
+    "status": "PASS_LOCAL_DEVICE_BLOCKED",
+    "evidence": "RE6-009/REPORT.md",
+    "remaining": "BLOCKED: hóa đơn Modal thật (G1–G6), thiết bị Android thật (D1–D6), R3-006, trần máy model chữ. Kế hoạch và dự toán: RE6-009/ACCEPTANCE_PLAN.md."
   },
   {
     "id": "RE6-010",
@@ -144,5 +146,77 @@
     "status": "PASS_LOCAL_PROMPT_BLOCKED",
     "evidence": "RE7/REPORT.md",
     "remaining": "Chất lượng prompt/phiên âm và hỗ trợ trường hướng dẫn của Qwen cần phiên thật có phí; cầu nối cần cập nhật để có hiệu lực."
+  },
+  {
+    "id": "RE8-001",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "src/lib/sub/tyzo-modal-price.ts (hệ số bù 3)",
+    "hypothesis": "Việc ngắn/lẻ/khách rải rác: chi phí lạnh + máy dự phòng + máy chờ vượt hệ số 3 (mô hình 7,5–35,7×; phim dài 2,7× khớp đo 2,5×)",
+    "acceptance": "Đối chiếu hóa đơn Modal (G1–G4) rồi Chủ quyết hệ số/phí tối thiểu. Không tự đổi giá.",
+    "status": "OPEN_BLOCKED_REAL"
+  },
+  {
+    "id": "RE8-002",
+    "priority": "P2",
+    "effort": "Medium",
+    "location": "run-gate.ts / provider_spend",
+    "hypothesis": "Token cache tính đủ giá: sổ chi phí nhà có thể cao hơn hóa đơn (khách không bị trừ quá mức giữ)",
+    "acceptance": "Đo cached_tokens và hóa đơn (A4), Chủ quyết cách ghi.",
+    "status": "OPEN_BLOCKED_REAL"
+  },
+  {
+    "id": "RE8-003",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "model-catalog / RE4-001",
+    "hypothesis": "5 model chưa đo usage thật: llama-3.3-70b, llama-3.1-8b, muse-spark-open, minimax-m2.7, qwen-turbo",
+    "acceptance": "Đo A1 khi Chủ duyệt; enterprise chưa có giá giữ 422.",
+    "status": "OPEN_BLOCKED_REAL"
+  },
+  {
+    "id": "RE8-004",
+    "priority": "P2",
+    "effort": "Low",
+    "location": "alibaba-catalog.ts / FLAT_PRICE_INPUT_LIMIT",
+    "hypothesis": "Giá bậc qwen-turbo và qwen-max quốc tế chưa xác minh",
+    "acceptance": "Xác minh tài liệu giá (A3), thêm ngưỡng nếu có bậc.",
+    "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE8-005",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "run-gate.ts readChatUsage (Groq)",
+    "hypothesis": "Token suy luận Groq: có nằm trong completion_tokens và max_completion_tokens không chưa xác minh",
+    "acceptance": "Đo A2 khi Chủ duyệt.",
+    "status": "OPEN_BLOCKED_REAL"
+  },
+  {
+    "id": "RE8-006",
+    "priority": "P2",
+    "effort": "Medium",
+    "location": "run-gate.ts (mức giữ)",
+    "hypothesis": "Mức giữ Token cao khoảng 4 lần usage ước tính (phần lớn do trần đầu ra 4.096)",
+    "acceptance": "Chỉ đề xuất sau khi có số đo thật A1/A6; không đổi mức giữ khi chưa có chỉ đạo.",
+    "status": "OPEN_BLOCKED_REAL"
+  },
+  {
+    "id": "RE8-007",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "android/app/src/main/java/vn/tyzo/sub/Updater.kt",
+    "hypothesis": "R3-006: receiver đăng ký sau enqueue, không truy vấn lại khi lỡ tin tải xong → kẹt «Đang tải…»",
+    "acceptance": "Sửa theo ACCEPTANCE_PLAN (D4), cần Android SDK/CI + thiết bị, nâng versionCode.",
+    "status": "OPEN_BLOCKED_REAL"
+  },
+  {
+    "id": "RE8-008",
+    "priority": "P2",
+    "effort": "Medium",
+    "location": "eval/asr/luong-ky/modal/modal_app.py (LLM_KW)",
+    "hypothesis": "Máy model chữ không có max_containers, timeout 24 giờ",
+    "acceptance": "Đặt trần và đo lại (G5), Chủ deploy.",
+    "status": "OPEN_BLOCKED_REAL"
   }
 ]

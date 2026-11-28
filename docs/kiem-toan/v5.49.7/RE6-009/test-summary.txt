@@ -1,0 +1,51 @@
+RE6-009 · PG 18.7 (Debian 18.7-1.pgdg12+5) · node v22.23.5 · mã a344532 · GPU GIẢ, KHÔNG gọi Modal
+    ok 1 - thành công: một chứng từ chi phí modal:<attempt> đúng số tiền, trừ đúng Token
+    ok 2 - nhà từ chối tạm thời (429) rồi chạy: GPU gọi hai lần, chi phí ghi một lần
+    ok 3 - lỗi hẳn: không ghi chi phí, không trừ, nhả phần giữ, giữ dấu lượt mất phản hồi
+    ok 4 - gửi lại cùng đoạn sau khi xong: dùng kết quả đã lưu, không gọi GPU, không ghi chi phí, không trừ lần hai
+    ok 5 - ghi chứng từ chi phí lỗi: báo «không chắc», không trừ khách, lượt giữ dấu mất phản hồi KÈM số USD thật (MAIN-040-B)
+    ok 6 - thành công: lượt cũng lưu số USD GPU (khớp chứng từ)
+    ok 7 - cùng lượt ghi chi phí hai lần (thử lại sau mất kết nối DB) không nhân đôi chứng từ
+ok 1 - MAIN-040: ghi chi phí GPU Modal
+    ok 1 - crash giữa ghi USD và chứng từ: khách không bị trừ; lượt sau ghi bù đúng một lần, tổng hợp ngày đúng tổng USD
+    ok 2 - 10 lần bù đồng thời cho cùng các lượt: mỗi lượt đúng một chứng từ
+    ok 3 - số USD GPU không hợp lệ (NaN, âm, vô hạn, không phải số): không chắc, không ghi USD, không chứng từ, không trừ
+    ok 4 - chi phí 0 hợp lệ (đoạn im lặng) vẫn có chứng từ 0, không bị coi là thiếu
+ok 2 - RE6-009 · chứng từ chi phí GPU: không sót, không trùng
+    ok 1 - cửa nhận việc lane modal không vượt số máy nhận dạng tối đa; khách riêng không chiếm hết
+    ok 2 - ĐÃ BIẾT: máy model chữ (LLM_KW) không có max_containers, timeout 24 giờ — cần Chủ duyệt trần khi nghiệm thu thật
+    ok 3 - phần giữ Token theo giờ phim đủ phủ chi phí tính cho mọi hồ sơ (giữ ≥ trừ khi RTF ≤ tỉ lệ giữ)
+ok 3 - RE6-009 · giới hạn tài nguyên và ngân sách (cấu hình)
+    ok 1 - bảng kịch bản và ngưỡng hệ số bù
+    # 1 đoạn 30 s, máy lạnh: tính tiền 288 s máy / 9 s xử lý = 30.7× (hệ số 3 → THIẾU) | phim 5 phút (10 đoạn nối tiếp): tính tiền 705 s máy / 94 s xử lý = 7.5× (hệ số 3 → THIẾU) | phim 74 phút (148 đoạn, 3 luồng): tính tiền 3804 s máy / 1391 s xử lý = 2.7× (hệ số 3 → đủ) | 8 khách cùng lúc, mỗi khách 1 đoạn: tính tiền 886 s máy / 75 s xử lý = 11.8× (hệ số 3 → THIẾU) | khách rải rác: 1 đoạn mỗi 90 s × 10: tính tiền 3353 s máy / 94 s xử lý = 35.7× (hệ số 3 → THIẾU)
+    ok 2 - không có máy dự phòng: chi phí chờ máy tắt vẫn là phần lớn của đoạn lẻ
+ok 4 - RE6-009 · mô hình giả lập vòng đời GPU (lạnh / chạy / chờ / tắt) — KHÔNG phải số thiết bị thật
+    ok 1 - trừ đúng số thực của đoạn
+    ok 2 - gửi lại cùng đoạn sau khi đã xong: trả kết quả cũ, không gọi GPU, không trừ lần hai
+    ok 3 - gửi trùng khi đoạn đang chạy thì từ chối, không trừ
+    ok 4 - Modal lỗi: trả lại thời lượng, không trừ, gửi lại được
+    ok 5 - chín đoạn chạy cùng lúc: trừ đúng tổng, không vượt số giữ
+    ok 6 - không còn giữ đủ cho ước tính thì từ chối trước khi gọi GPU
+    ok 7 - vượt thời lượng phiếu thì từ chối
+    ok 8 - số thực vượt phần giữ riêng: không chiếm ngân sách khác, ghi phần thiếu
+    ok 9 - đóng phiếu trả lại phần chưa dùng; sau đó không chạy thêm đoạn được
+    ok 10 - phiếu của người khác hoặc model khác thì từ chối
+ok 5 - thu tiền từng đoạn TyZo Modal
+    ok 1 - MAIN-023: 9 đoạn ước 30 Token, giữ 100 → tối đa 3 đoạn được gọi GPU cùng lúc
+    ok 2 - MAIN-024: lỗi khi lưu kết quả thì không trừ Token (không có tiền mà không có chữ)
+    ok 3 - MAIN-036: khách đóng phiếu khi đoạn đang chạy → đoạn vẫn được trừ, phần dư trả về sau đó
+    ok 4 - đóng phiếu khi không có đoạn nào chạy vẫn trả hết ngay như cũ
+    ok 5 - đoạn mất nhịp (tiến trình chết) không giữ phiếu mãi: đóng được ngay
+    ok 6 - RE-001: đoạn GPU chạy quá 15 phút (gửi từ 20 phút trước, vẫn còn nhịp) → đóng phiếu phải chờ, không trả phần giữ trước quyết toán
+    ok 7 - RE-001: tiến trình chết (mất nhịp) → đóng phiếu được ngay, phần giữ trả đủ; gửi lại đoạn đó chạy và trừ một lần
+    ok 8 - RE-001: lượt cũ bị coi là chết rồi mới xong → không trừ lần hai (mã lượt chặn)
+    ok 9 - RE-001: nhịp sống được ghi đều trong lúc GPU chạy
+ok 6 - TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song
+# tests 35
+# pass 35
+# fail 0
+
+== PGlite (không TYZO_TEST_PG_URL)
+# tests 9
+# pass 9
+# fail 0

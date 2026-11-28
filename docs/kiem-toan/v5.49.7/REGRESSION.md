@@ -53,3 +53,18 @@ PostgreSQL 18.7 (Docker loopback), `TYZO_TEST_PG_URL` trỏ vào cụm thử.
 | `npm run build:dev` (không có `DATABASE_URL`) | đạt |
 
 Lỗi duy nhất là R8-002, do máy thử chạy bằng root; test này đạt khi chạy bằng user thường (`RE7/test-summary.txt`).
+
+## Lượt RE6-009 (mã ở `a344532`)
+
+PostgreSQL 18.7 (Docker loopback).
+
+| Lệnh | Kết quả |
+|---|---|
+| `npx tsc --noEmit -p .` | đạt |
+| `node --test 'scripts/**/*.test.mjs'` (root) | 242 đạt · 1 lỗi · 38 bỏ qua |
+| Nhóm `src/lib/**` (có `re6-009.test.ts`) | 1498/1498 |
+| Nhóm module-mocks (PG18.7) | 118/118 |
+| `npm run build:dev` (không có `DATABASE_URL`) | đạt |
+| Android JVM: `check-session.sh` + `CaptionLayoutCheck` + `VoiceFilterCheck` | 28/28 (giả lập, không phải thiết bị thật) |
+
+Lỗi duy nhất là R8-002, do chạy bằng root; test này đạt khi chạy bằng user thường.

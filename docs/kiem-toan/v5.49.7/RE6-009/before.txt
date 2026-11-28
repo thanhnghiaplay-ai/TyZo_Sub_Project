@@ -1,0 +1,11 @@
+Trước sửa (modal-work.ts tại 73923cd):
+- modalPartWork ghi run_modal_settlements.provider_usd (0058), RỒI mới ghi chứng từ provider_spend_events
+  `modal:<attempt>`. Nếu tiến trình chết hoặc CSDL lỗi giữa hai lần ghi:
+  - lượt chuyển «mat-phan-hoi» và giữ số USD;
+  - KHÔNG có đường nào đọc lại provider_usd. Ngoài test, chỉ work-capacity-room đếm số lượt theo trạng thái;
+  - chi phí GPU thật bị sót khỏi sổ «Phải trả nhà cung cấp» và khỏi tổng hợp ngày, nếu không đối soát tay.
+- Số USD trả về từ run() không được kiểm tại modalPartWork. Hiện modalCostUsd đã kiểm stats; còn ngay trong
+  modalPartWork, NaN hoặc số âm sẽ đi vào cột numeric rồi mới bị chứng từ từ chối.
+- Chưa có số liệu nào so chi phí vòng đời máy Modal (khởi động lạnh, máy dự phòng, máy chờ trước khi tắt) với hệ số
+  bù 3. Ghi chú trong tyzo-modal-price.ts chỉ nói phim ngắn có hệ số cao hơn.
+- Android: các bộ kiểm JVM chưa chạy lại ở v5.49.7. R3-006 (Updater đăng ký receiver sau enqueue) vẫn còn trong mã.
