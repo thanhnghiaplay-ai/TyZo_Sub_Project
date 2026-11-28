@@ -3,13 +3,25 @@
   "branch": "ccr-654dbe0e-978ok7",
   "previous_checkpoint_sha": "0a1c405a6863be23958306505fc0942c57756c47",
   "effort": "Medium",
-  "status": "IN_PROGRESS",
+  "status": "PAUSED_FOR_EFFORT_CHANGE",
   "completed_item": "RE6-007",
   "item_status": "PASS_LOCAL",
   "tests": {
     "postgres": "18.7",
-    "admission_pg": "7/7",
-    "evidence": "RE6-007/REPORT.md"
+    "regression": "REGRESSION.md"
   },
-  "next": "RE6-008 (High) — dừng chờ Chủ chuyển mức"
+  "next": "RE6-008 cần High: dừng chờ Chủ chuyển mức.",
+  "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
+  "items": {
+    "RE6-001": "PASS_LOCAL_POLICY_PENDING",
+    "RE6-002": "PASS_LOCAL",
+    "RE6-003": "PASS_LOCAL",
+    "RE6-004": "PASS_LOCAL",
+    "RE6-005": "PARTIAL",
+    "RE6-006": "PASS_LOCAL",
+    "RE6-007": "PASS_LOCAL",
+    "RE6-008": "OPEN_VERIFY",
+    "RE6-009": "OPEN_VERIFY",
+    "RE6-010": "OPEN_VERIFY"
+  }
 }

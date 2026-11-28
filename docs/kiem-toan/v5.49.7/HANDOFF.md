@@ -1,7 +1,24 @@
-# Bàn giao RE6-002 · High
+# Bàn giao sau RE6-007 · Medium
 
-Nhánh `audit/v5.49.7-codex-re6`. Phát triển từ `017cad371595f641d681da7f79eeeb62d617b40b`. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu trên GitHub trước khi làm tiếp.
+Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `work` và `audit/v5.49.7-codex-re6`). Bản RE6-003 chưa push của Codex không có trên remote, nên RE6-003 đã được làm lại từ đầu. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu SHA trên GitHub.
 
-RE6-002 đã qua nghiệm thu cục bộ với API giả và PG18.7. Bản sửa dùng trạng thái chính xác từ Neon API, ghi intent trước thao tác, giữ khóa khi kết quả chưa rõ và bảo toàn bản cũ. [Hồ sơ RE6-002](RE6-002/REPORT.md)
+| Mục | Trạng thái | Hồ sơ |
+|---|---|---|
+| RE6-001 | PASS_LOCAL_POLICY_PENDING (giới hạn vẫn TẮT) | [RE6-001](RE6-001/REPORT.md) |
+| RE6-002 | PASS_LOCAL | [RE6-002](RE6-002/REPORT.md) |
+| RE6-003 | PASS_LOCAL | [RE6-003](RE6-003/REPORT.md) |
+| RE6-004 | PASS_LOCAL | [RE6-004](RE6-004/REPORT.md) |
+| RE6-005 | PARTIAL | [RE6-005](RE6-005/REPORT.md) |
+| RE6-006 | PASS_LOCAL | [RE6-006](RE6-006/REPORT.md) |
+| RE6-007 | PASS_LOCAL (không tối ưu) | [RE6-007](RE6-007/REPORT.md) |
+| RE6-008 | Chưa làm, cần **High** | — |
+| RE6-009 | Chưa làm (Medium, sau RE6-008) | — |
+| RE6-010 | Chưa làm, cần **Low** | — |
 
-Theo chỉ đạo mới nhất, dừng ở RE6-002 để phiên sau làm RE6-003. Khuyến nghị **High** để kiểm API Vercel có cấu trúc, đối chiếu deployment, DB và phiên bản, giữ nhật ký theo các bước env/deploy/promote, rồi thử timeout và phục hồi. Không dùng Vercel, Neon hay VPS thật trong test. RE6-001 giữ giới hạn ở trạng thái tắt, chờ duyệt chính sách. [Hồ sơ RE6-001](RE6-001/REPORT.md)
+Hồi quy toàn phần: [REGRESSION.md](REGRESSION.md). Gói kiểm toán: `audit-bundle/` (patch theo commit, manifest SHA-256).
+
+Việc chờ Chủ:
+- Duyệt chính sách RE6-001.
+- Quyết cách xử lý tên riêng chữ Hán, kana, Hangul trong bản dịch Việt/Anh (RE6-005).
+- Duyệt staging Vercel thật (RE6-003), Modal thật (RE6-004) và live thật (RE6-005).
+- Chuyển sang mức High để làm RE6-008.
