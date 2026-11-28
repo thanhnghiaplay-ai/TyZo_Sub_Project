@@ -1,0 +1,449 @@
+From b2cadf021b37b026e8f3ac1283cdbf8b6e5fc87c Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 27 Nov 2026 23:57:06 +0000
+Subject: [PATCH 4/5] test(RE6-007): verify and benchmark tyzo_admit on
+ PostgreSQL 18.7
+
+Odd-character keys, 1k/5k waiters eligibility, shared caps, live reserve,
+burst 300 cap safety; latency by waiter count and 25-200 concurrency.
+No optimization: evidence shows the waiter loop is minor at current scale.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01L7y9fx1XD2LbcfzYLtA2ic
+---
+ docs/kiem-toan/v5.49.7/BACKLOG.json           |   4 +-
+ docs/kiem-toan/v5.49.7/RE6-007/REPORT.md      |  41 +++++
+ docs/kiem-toan/v5.49.7/RE6-007/benchmark.json | 131 +++++++++++++
+ .../v5.49.7/RE6-007/test-summary.txt          |  11 ++
+ docs/kiem-toan/v5.49.7/STATE.json             |  13 +-
+ scripts/re6-007-admission-pg.test.mjs         | 172 ++++++++++++++++++
+ 6 files changed, 365 insertions(+), 7 deletions(-)
+ create mode 100644 docs/kiem-toan/v5.49.7/RE6-007/REPORT.md
+ create mode 100644 docs/kiem-toan/v5.49.7/RE6-007/benchmark.json
+ create mode 100644 docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt
+ create mode 100644 scripts/re6-007-admission-pg.test.mjs
+
+diff --git a/docs/kiem-toan/v5.49.7/BACKLOG.json b/docs/kiem-toan/v5.49.7/BACKLOG.json
+index 1373987..25aed3e 100644
+--- a/docs/kiem-toan/v5.49.7/BACKLOG.json
++++ b/docs/kiem-toan/v5.49.7/BACKLOG.json
+@@ -71,7 +71,9 @@
+     "location": "migrations/0057_admission_shared_cap_fairness.sql",
+     "hypothesis": "Vòng lặp dưới global lock, nhiều waiter, khóa JSON và lane không cap",
+     "acceptance": "Test 1k/5k waiter, ký tự lạ, eligibility, shared caps, live reserve, benchmark 25/50/100/200 và burst 300; chỉ tối ưu khi có bằng chứng.",
+-    "status": "OPEN_VERIFY"
++    "status": "PASS_LOCAL",
++    "evidence": "RE6-007/REPORT.md",
++    "remaining": "Không tối ưu (bằng chứng: 1k chờ +2.9 ms/lượt); theo dõi work_waiters > 1000."
+   },
+   {
+     "id": "RE6-008",
+diff --git a/docs/kiem-toan/v5.49.7/RE6-007/REPORT.md b/docs/kiem-toan/v5.49.7/RE6-007/REPORT.md
+new file mode 100644
+index 0000000..4d25fa1
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-007/REPORT.md
+@@ -0,0 +1,41 @@
++# RE6-007 · Hiệu năng và đúng đắn của tyzo_admit (0057)
++
++Baseline `0a1c405`. Chạy trên PostgreSQL 18.7 (`postgres:18.7-bookworm`, Docker, loopback, `max_connections=500`), 4 CPU, Node 22.23.5. CSDL thử được tạo bằng `scripts/migrate.mjs` (59 migration), dữ liệu tổng hợp. Không sửa migration.
++
++## Đúng đắn (7/7 đạt)
++
++`TYZO_TEST_PG_URL=… node --test scripts/re6-007-admission-pg.test.mjs`. Xem [test-summary.txt](test-summary.txt).
++
++- **Ký tự lạ:** mã khách, nhà và model có `"`, `,`, `[]`, `{}`, `\`, emoji, dấu tiếng Việt, khoảng trắng hoặc `'`. Khóa mảng JSON không bị lẫn. Ví dụ `u1","batch` và `u1` có suất riêng độc lập.
++- **Điều kiện được xét:** 5k khách đã rời đi (quá 6 s), 5k khách mới chờ dưới 3 s và 5k khách không chung tài nguyên đều không chặn khách mới.
++- **Thứ tự và vị trí:** 1k khách chờ đủ điều kiện, chung lane, trần lane 10. Khách mới nhận `busy:11` và khách chờ đầu tiên được nhận.
++- **Không giữ chỗ khi chính khách chờ không nhận được suất:** model của họ đã đầy thì khách mới vẫn vào.
++- **Phần dành cho live:** batch dừng ở `perProvider − liveReserve`. 1k khách chờ batch không giữ phần dành cho live.
++- **Burst 300 đồng thời**, trộn 3 lane × 3 nhà × 4 model với 1k khách chờ: không vượt trần lane, nhà, model, suất riêng hay phần không-live.
++
++## Đo (ms) · [benchmark.json](benchmark.json)
++
++| Khách chờ chung lane, không ai giữ chỗ (xấu nhất) | p50 | p99 |
++|---|---|---|
++| 0 | 1.57 | 4.51 |
++| 1 000 | 4.42 | 4.84 |
++| 5 000 | 17.72 | 23.92 |
++
++| Burst 300 (kết nối mở sẵn) | Tổng thời gian | p99 |
++|---|---|---|
++| 0 khách chờ | 958 | 946 |
++| 1 000 | 1 102 | 1 090 |
++| 5 000 | 1 784 | 1 771 |
++
++| Đồng thời (1k khách chờ, 10 lượt mỗi luồng) | lượt/s | p50 | p99 |
++|---|---|---|---|
++| 25 | 198 | 123 | 142 |
++| 50 | 201 | 244 | 294 |
++| 100 | 293 | 205 | 619 |
++| 200 | 475 | 398 | 559 |
++
++## Kết luận: chưa tối ưu
++
++Khóa toàn cục làm các lượt nhận việc chạy nối tiếp, khoảng 1,6–3 ms mỗi lượt khi không có khách chờ. Vòng lặp khách chờ cộng thêm khoảng 2,9 ms mỗi 1k khách. Ở 1k khách chờ, burst 300 chỉ chậm hơn 15% (0,96 → 1,10 s). Chỉ từ khoảng 5k khách chờ cùng lúc thì vòng lặp mới chiếm phần lớn thời gian, khoảng 18 ms mỗi lượt và tối đa khoảng 55 lượt/s. Mức đó vượt xa quy mô hiện tại: tổng trần mặc định khoảng 104 suất và `MAX_PENDING_ADMISSIONS=32` mỗi tiến trình. Theo tiêu chí «chỉ tối ưu khi có bằng chứng», giữ nguyên 0057.
++
++Khuyến nghị: theo dõi số dòng `work_waiters` có `seen_at` trong 6 s. Nếu thường xuyên vượt 1 000 thì mở việc tối ưu, ví dụ dừng vòng lặp sớm khi tài nguyên của khách mới đã hết và tính vị trí bằng truy vấn đếm. Cách này đổi ngữ nghĩa vị trí nên cần Chủ duyệt.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-007/benchmark.json b/docs/kiem-toan/v5.49.7/RE6-007/benchmark.json
+new file mode 100644
+index 0000000..62b97eb
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-007/benchmark.json
+@@ -0,0 +1,131 @@
++{
++ "burst300": {
++  "admitted": 44,
++  "wall_ms": 2903.9,
++  "latency_ms": {
++   "n": 300,
++   "p50": 1603.3,
++   "p95": 2756.52,
++   "p99": 2866.51,
++   "max": 2901.95
++  },
++  "waiters": 1000
++ },
++ "env": "PostgreSQL 18.7 (Debian 18.7-1.pgdg12+5) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
++ "byWaiters": {
++  "0": {
++   "n": 50,
++   "p50": 1.57,
++   "p95": 3.39,
++   "p99": 4.51,
++   "max": 4.51
++  },
++  "1000": {
++   "n": 50,
++   "p50": 4.42,
++   "p95": 4.78,
++   "p99": 4.84,
++   "max": 4.84
++  },
++  "5000": {
++   "n": 50,
++   "p50": 17.72,
++   "p95": 19.29,
++   "p99": 23.92,
++   "max": 23.92
++  }
++ },
++ "burst300ByWaiters": {
++  "0": {
++   "admitted": 72,
++   "wall_ms": 958,
++   "latency_ms": {
++    "n": 300,
++    "p50": 506.93,
++    "p95": 909.13,
++    "p99": 946.18,
++    "max": 956.01
++   }
++  },
++  "1000": {
++   "admitted": 72,
++   "wall_ms": 1102,
++   "latency_ms": {
++    "n": 300,
++    "p50": 605.78,
++    "p95": 1040.59,
++    "p99": 1089.73,
++    "max": 1100.91
++   }
++  },
++  "5000": {
++   "admitted": 72,
++   "wall_ms": 1784,
++   "latency_ms": {
++    "n": 300,
++    "p50": 1232.77,
++    "p95": 1725.87,
++    "p99": 1770.82,
++    "max": 1782.51
++   }
++  }
++ },
++ "concurrency": {
++  "25": {
++   "calls": 250,
++   "admitted": 230,
++   "wall_ms": 1264,
++   "calls_per_s": 198,
++   "latency_ms": {
++    "n": 250,
++    "p50": 123.39,
++    "p95": 139.77,
++    "p99": 141.75,
++    "max": 142.35
++   },
++   "waiters": 1000
++  },
++  "50": {
++   "calls": 500,
++   "admitted": 460,
++   "wall_ms": 2487,
++   "calls_per_s": 201,
++   "latency_ms": {
++    "n": 500,
++    "p50": 243.96,
++    "p95": 287.23,
++    "p99": 294.44,
++    "max": 296.99
++   },
++   "waiters": 1000
++  },
++  "100": {
++   "calls": 1000,
++   "admitted": 930,
++   "wall_ms": 3409,
++   "calls_per_s": 293,
++   "latency_ms": {
++    "n": 1000,
++    "p50": 204.59,
++    "p95": 606.41,
++    "p99": 619.26,
++    "max": 624.02
++   },
++   "waiters": 1000
++  },
++  "200": {
++   "calls": 2000,
++   "admitted": 1860,
++   "wall_ms": 4206,
++   "calls_per_s": 475,
++   "latency_ms": {
++    "n": 2000,
++    "p50": 397.94,
++    "p95": 540.62,
++    "p99": 558.53,
++    "max": 561.49
++   },
++   "waiters": 1000
++  }
++ }
++}
+\ No newline at end of file
+diff --git a/docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt b/docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt
+new file mode 100644
+index 0000000..19cd23d
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt
+@@ -0,0 +1,11 @@
++RE6-007 · PostgreSQL 18.7 (Debian 18.7-1.pgdg12+5) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit · node v22.23.5 · 4 CPU
++ok 1 - RE6-007: ký tự lạ trong mã khách/nhà/model không làm lẫn khóa JSON
++ok 2 - RE6-007: 5k khách chờ cũ/mới/không chung tài nguyên không chặn khách mới
++ok 3 - RE6-007: 1k khách chờ đủ điều kiện, chung lane, được nhường theo thứ tự đến; vị trí đúng
++ok 4 - RE6-007: khách chờ không nhận được suất trên tài nguyên của chính họ thì không giữ chỗ
++ok 5 - RE6-007: phần dành cho live: batch không lấy, khách chờ batch không giữ phần dành riêng
++ok 6 - RE6-007: burst 300 đồng thời, trộn lane/nhà/model, không vượt trần nào
++ok 7 - RE6-007: đo độ trễ theo số khách chờ (0/1k/5k) và đồng thời 25/50/100/200
++# tests 7
++# pass 7
++# fail 0
+diff --git a/docs/kiem-toan/v5.49.7/STATE.json b/docs/kiem-toan/v5.49.7/STATE.json
+index 2f85965..526888d 100644
+--- a/docs/kiem-toan/v5.49.7/STATE.json
++++ b/docs/kiem-toan/v5.49.7/STATE.json
+@@ -1,14 +1,15 @@
+ {
+   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
+   "branch": "ccr-654dbe0e-978ok7",
+-  "previous_checkpoint_sha": "8b733b5ea9d78aa270ebe2e93de6d0851cde50ae",
++  "previous_checkpoint_sha": "0a1c405a6863be23958306505fc0942c57756c47",
+   "effort": "Medium",
+   "status": "IN_PROGRESS",
+-  "completed_item": "RE6-005",
+-  "item_status": "PARTIAL",
++  "completed_item": "RE6-007",
++  "item_status": "PASS_LOCAL",
+   "tests": {
+-    "live_fake": "7/7 + leftover 6/6",
+-    "evidence": "RE6-005/REPORT.md"
++    "postgres": "18.7",
++    "admission_pg": "7/7",
++    "evidence": "RE6-007/REPORT.md"
+   },
+-  "next": "RE6-007"
++  "next": "RE6-008 (High) — dừng chờ Chủ chuyển mức"
+ }
+diff --git a/scripts/re6-007-admission-pg.test.mjs b/scripts/re6-007-admission-pg.test.mjs
+new file mode 100644
+index 0000000..8e29f3f
+--- /dev/null
++++ b/scripts/re6-007-admission-pg.test.mjs
+@@ -0,0 +1,172 @@
++/**
++ * RE6-007: tyzo_admit (0057) trên PostgreSQL thật riêng (TYZO_TEST_PG_URL, CSDL đã chạy migrate). Dữ liệu tổng hợp.
++ * Đúng đắn: 1k/5k khách chờ, ký tự lạ trong khóa JSON, điều kiện được xét, trần dùng chung, phần dành cho live,
++ * burst 300 không vượt trần. Đo: độ trễ theo số khách chờ, đồng thời 25/50/100/200, burst 300.
++ * RE6_BENCH_OUT=<tệp> để ghi kết quả đo dạng JSON.
++ */
++import assert from "node:assert/strict";
++import { writeFileSync } from "node:fs";
++import { after, before, beforeEach, test } from "node:test";
++import pg from "pg";
++
++const URL_ = process.env.TYZO_TEST_PG_URL;
++const pgTest = URL_ ? test : test.skip;
++const DEF = { enabled: true, batch: 48, modal: 8, live: 48, perUser: 2, perUserModal: 3, perProvider: 40, perModel: 24, liveReserve: 0 };
++let pool;
++const bench = {};
++before(() => { if (URL_) pool = new pg.Pool({ connectionString: URL_, max: 320 }); });
++after(async () => {
++  if (process.env.RE6_BENCH_OUT && Object.keys(bench).length) writeFileSync(process.env.RE6_BENCH_OUT, JSON.stringify(bench, null, 1));
++  await pool?.end();
++});
++const q = (text, values) => pool.query(text, values);
++beforeEach(async () => {
++  if (!pool) return;
++  await q("delete from work_admissions"); await q("delete from run_async_asr_jobs"); await q("delete from work_waiters");
++  await q("delete from room_settings where key = 'work_admission'");
++});
++const limits = (v) => q(`insert into room_settings (key, value) values ('work_admission', $1)
++  on conflict (key) do update set value = excluded.value`, [JSON.stringify({ ...DEF, ...v })]);
++let seq = 0;
++async function admit(user, provider, model, lane, client = pool) {
++  const id = `a${++seq}`;
++  const t = performance.now();
++  const r = (await client.query("select tyzo_admit($1,$2,$3,$4,$5,$6::jsonb,60,null) r", [id, user, provider, model, lane, JSON.stringify(DEF)])).rows[0].r;
++  return { ok: r === id, r, ms: performance.now() - t };
++}
++/** Khách chờ: eligible = đã chờ ≥ 3 s và còn hiện diện; stale = bỏ đi quá 6 s; fresh = mới chờ < 3 s. */
++async function seedWaiters(n, { kind = "eligible", provider = "p2", model = "m2", lane = "batch", prefix = "w" } = {}) {
++  const since = kind === "fresh" ? "clock_timestamp()" : "clock_timestamp() - interval '20 seconds'";
++  const seen = kind === "stale" ? "clock_timestamp() - interval '10 seconds'" : "clock_timestamp()";
++  await q(`insert into work_waiters (user_id, provider, model, lane, since, seen_at)
++    select $1 || g, $2, $3, $4, ${since} + g * interval '1 microsecond', ${seen} from generate_series(1, $5) g`, [prefix, provider, model, lane, n]);
++}
++async function running(provider, model, lane, n, prefix = "r") {
++  await q(`insert into work_admissions (id, user_id, provider, model, lane) select $1 || g, $1 || g, $2, $3, $4 from generate_series(1, $5) g`, [prefix + provider + lane, provider, model, lane, n]);
++}
++const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? +s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)].toFixed(2) : null; };
++const dist = (xs) => ({ n: xs.length, p50: pct(xs, 50), p95: pct(xs, 95), p99: pct(xs, 99), max: pct(xs, 100) });
++
++pgTest("RE6-007: ký tự lạ trong mã khách/nhà/model không làm lẫn khóa JSON", async () => {
++  await limits({ perUser: 1 });
++  const odd = ['u1","batch', 'u1', 'a\\"b', "[]", "{,}", "Nguyễn\u0000x".replace("\u0000", ""), "😀", " ", "a'b;--"];
++  for (const u of odd) assert.equal((await admit(u, 'p"[1]', 'm,"x', "batch")).ok, true, `lượt đầu ${JSON.stringify(u)}`);
++  for (const u of odd) assert.equal((await admit(u, 'p"[1]', 'm,"x', "batch")).r, "busy", `suất riêng ${JSON.stringify(u)}`);
++  // Nhà/model khác nhau chỉ ở dấu nháy và phẩy: trần model đếm riêng.
++  await limits({ perUser: 5, perModel: 1 });
++  assert.equal((await admit("x1", "p", 'a","b', "batch")).ok, true);
++  assert.equal((await admit("x2", 'p","a', "b", "batch")).ok, true);
++  assert.equal((await admit("x3", "p", 'a","b', "batch")).r.startsWith("busy:"), true);
++});
++
++pgTest("RE6-007: 5k khách chờ cũ/mới/không chung tài nguyên không chặn khách mới", async () => {
++  await seedWaiters(5000, { kind: "stale", provider: "p1", lane: "batch", prefix: "s" });
++  await seedWaiters(5000, { kind: "fresh", provider: "p1", lane: "batch", prefix: "f" });
++  await seedWaiters(5000, { kind: "eligible", provider: "p9", lane: "modal", prefix: "o" });
++  const r = await admit("new", "p1", "m1", "batch");
++  assert.equal(r.ok, true, r.r);
++});
++
++pgTest("RE6-007: 1k khách chờ đủ điều kiện, chung lane, được nhường theo thứ tự đến; vị trí đúng", async () => {
++  await limits({ batch: 10, perProvider: 100, perModel: 100 });
++  await seedWaiters(1000, { provider: "p2", lane: "batch" });
++  const r = await admit("new", "p1", "m1", "batch");
++  assert.equal(r.ok, false);
++  assert.equal(r.r, "busy:11", "10 suất trống nhường 10 người đầu, khách mới đứng thứ 11");
++  // Khách chờ thứ nhất đến lượt thì nhận được.
++  assert.equal((await admit("w1", "p2", "m2", "batch")).ok, true);
++});
++
++pgTest("RE6-007: khách chờ không nhận được suất trên tài nguyên của chính họ thì không giữ chỗ", async () => {
++  await limits({ batch: 10, perProvider: 100, perModel: 2 });
++  await running("p2", "m2", "batch", 2);
++  await seedWaiters(1000, { provider: "p2", model: "m2", lane: "batch" });
++  assert.equal((await admit("new", "p1", "m1", "batch")).ok, true);
++});
++
++pgTest("RE6-007: phần dành cho live: batch không lấy, khách chờ batch không giữ phần dành riêng", async () => {
++  await limits({ perProvider: 10, liveReserve: 4, perModel: 50, perUser: 50 });
++  let ok = 0;
++  for (let i = 0; i < 12; i++) ok += (await admit(`b${i}`, "ali", "asr", "batch")).ok;
++  assert.equal(ok, 6);
++  await seedWaiters(1000, { provider: "ali", model: "asr", lane: "batch", prefix: "bw" });
++  let live = 0;
++  for (let i = 0; i < 6; i++) live += (await admit(`l${i}`, "ali", "lt", "live")).ok;
++  assert.equal(live, 4);
++});
++
++function counts(rows) {
++  const by = (f) => rows.reduce((m, r) => m.set(f(r), (m.get(f(r)) ?? 0) + 1), new Map());
++  return { lane: by((r) => r.lane), prov: by((r) => r.provider), model: by((r) => `${r.provider}|${r.model}`), user: by((r) => `${r.user_id}|${r.lane}`), nonlive: by((r) => (r.lane === "live" ? "-" : r.provider)) };
++}
++
++pgTest("RE6-007: burst 300 đồng thời, trộn lane/nhà/model, không vượt trần nào", async () => {
++  const L = { batch: 20, modal: 6, live: 30, perUser: 2, perUserModal: 3, perProvider: 25, perModel: 12, liveReserve: 5 };
++  await limits(L);
++  await seedWaiters(1000, { provider: "ali", lane: "batch", prefix: "bw" });
++  const lanes = ["batch", "modal", "live"]; const provs = ["ali", "groq", "modal"];
++  const t0 = performance.now();
++  const res = await Promise.all(Array.from({ length: 300 }, (_, i) => admit(`u${i % 120}`, provs[i % 3], `m${i % 4}`, lanes[(i >> 1) % 3])));
++  const wall = performance.now() - t0;
++  const rows = (await q("select user_id, provider, model, lane from work_admissions where status = 'running'")).rows;
++  assert.equal(rows.length, res.filter((r) => r.ok).length);
++  const c = counts(rows);
++  for (const [k, n] of c.lane) assert.ok(n <= L[k], `lane ${k}=${n}`);
++  for (const [k, n] of c.prov) assert.ok(n <= L.perProvider, `nhà ${k}=${n}`);
++  for (const [k, n] of c.model) assert.ok(n <= L.perModel, `model ${k}=${n}`);
++  for (const [k, n] of c.user) assert.ok(n <= (k.endsWith("|modal") ? L.perUserModal : L.perUser), `khách ${k}=${n}`);
++  for (const [k, n] of c.nonlive) if (k !== "-") assert.ok(n <= L.perProvider - L.liveReserve, `không-live ${k}=${n}`);
++  bench.burst300 = { admitted: rows.length, wall_ms: +wall.toFixed(1), latency_ms: dist(res.map((r) => r.ms)), waiters: 1000 };
++});
++
++pgTest("RE6-007: đo độ trễ theo số khách chờ (0/1k/5k) và đồng thời 25/50/100/200", { timeout: 600_000 }, async () => {
++  bench.env = (await q("select version() v")).rows[0].v;
++  bench.byWaiters = {};
++  for (const w of [0, 1000, 5000]) {
++    await q("delete from work_waiters"); await q("delete from work_admissions");
++    await limits({ perModel: 0 > 1 ? 1 : 24 });
++    // Khách chờ chung lane batch, nhà p2 đã đầy model → duyệt hết vòng lặp mà không ai giữ chỗ (trường hợp xấu nhất).
++    await running("p2", "m2", "batch", 24);
++    if (w) await seedWaiters(w, { provider: "p2", model: "m2", lane: "batch" });
++    const xs = [];
++    for (let i = 0; i < 60; i++) {
++      const r = await admit(`n${i}`, "p1", "m1", "batch");
++      assert.equal(r.ok, true);
++      await q("delete from work_admissions where user_id = $1", [`n${i}`]);
++      if (i >= 10) xs.push(r.ms);
++    }
++    bench.byWaiters[w] = dist(xs);
++  }
++  bench.burst300ByWaiters = {};
++  // Mở sẵn 300 kết nối để burst chỉ đo tyzo_admit, không đo bắt tay kết nối.
++  const warm = await Promise.all(Array.from({ length: 300 }, () => pool.connect())); warm.forEach((c) => c.release());
++  for (const w of [0, 1000, 5000]) {
++    await q("delete from work_waiters"); await q("delete from work_admissions");
++    await running("p2", "m2", "batch", 24);
++    if (w) await seedWaiters(w, { provider: "p2", model: "m2", lane: "batch" });
++    const t0 = performance.now();
++    const res = await Promise.all(Array.from({ length: 300 }, (_, i) => admit(`b${w}_${i}`, `p${i % 3}`, `m${i % 5}`, i % 4 === 0 ? "live" : "batch")));
++    bench.burst300ByWaiters[w] = { admitted: res.filter((r) => r.ok).length, wall_ms: +(performance.now() - t0).toFixed(0), latency_ms: dist(res.map((r) => r.ms)) };
++  }
++  bench.concurrency = {};
++  await q("delete from work_waiters"); await q("delete from work_admissions");
++  await seedWaiters(1000, { provider: "p2", model: "m2", lane: "batch" });
++  await running("p2", "m2", "batch", 24);
++  for (const c of [25, 50, 100, 200]) {
++    const xs = []; let ok = 0; const each = 10;
++    const t0 = performance.now();
++    await Promise.all(Array.from({ length: c }, async (_, k) => {
++      const cl = await pool.connect();
++      try {
++        for (let i = 0; i < each; i++) {
++          const u = `c${c}_${k}_${i}`;
++          const r = await admit(u, `p${k % 3}`, `m${k % 5}`, k % 4 === 0 ? "live" : "batch", cl);
++          xs.push(r.ms); ok += r.ok;
++          if (r.ok) await cl.query("delete from work_admissions where user_id = $1", [u]);
++        }
++      } finally { cl.release(); }
++    }));
++    const wall = performance.now() - t0;
++    bench.concurrency[c] = { calls: c * each, admitted: ok, wall_ms: +wall.toFixed(0), calls_per_s: +((c * each) / (wall / 1000)).toFixed(0), latency_ms: dist(xs), waiters: 1000 };
++  }
++});
+-- 
+2.43.0
+

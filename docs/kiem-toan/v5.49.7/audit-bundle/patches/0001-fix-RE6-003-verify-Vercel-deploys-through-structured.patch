@@ -1,0 +1,698 @@
+From 30ed3ba2913d7a3ff06fb8914a5d18ffad8077a4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 27 Nov 2026 23:48:29 +0000
+Subject: [PATCH 1/5] fix(RE6-003): verify Vercel deploys through structured
+ API state
+
+Replace grep ready with REST API checks of env values (hash), deployment
+id/project/target/run/sha, READY + alias, promote target and page health.
+Bound every CLI call; on unclear results look the deployment up by run id
+and journal it, keeping the old source fenced.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01L7y9fx1XD2LbcfzYLtA2ic
+---
+ deploy/vps/tyzo.sh                            | 132 +++++++++++++++--
+ docs/kiem-toan/v5.49.7/BACKLOG.json           |   4 +-
+ docs/kiem-toan/v5.49.7/RE6-003/REPORT.md      |  26 ++++
+ docs/kiem-toan/v5.49.7/RE6-003/before.txt     |   5 +
+ .../v5.49.7/RE6-003/test-summary.txt          |  29 ++++
+ docs/kiem-toan/v5.49.7/STATE.json             |  18 ++-
+ scripts/re5-004-vercel.test.mjs               |  85 ++---------
+ scripts/re6-003-vercel.test.mjs               |  97 +++++++++++++
+ scripts/vercel-fake-harness.mjs               | 133 ++++++++++++++++++
+ 9 files changed, 430 insertions(+), 99 deletions(-)
+ create mode 100644 docs/kiem-toan/v5.49.7/RE6-003/REPORT.md
+ create mode 100644 docs/kiem-toan/v5.49.7/RE6-003/before.txt
+ create mode 100644 docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt
+ create mode 100644 scripts/re6-003-vercel.test.mjs
+ create mode 100644 scripts/vercel-fake-harness.mjs
+
+diff --git a/deploy/vps/tyzo.sh b/deploy/vps/tyzo.sh
+index 7d2594a..162619a 100755
+--- a/deploy/vps/tyzo.sh
++++ b/deploy/vps/tyzo.sh
+@@ -1710,25 +1710,120 @@ VERCEL_CLI_VERSION="65.14.0"
+ 
+ # Kịch bản chạy trong container node:22 để đặt env và đưa lên Vercel. In mốc «BUOC …» để máy ghi nhật ký chuyển nguồn.
+ # Không xóa biến trước khi thêm (trước đây env rm rồi env add: thêm lỗi là production mất biến); --force ghi đè một bước.
++# RE6-003: không đọc chữ «ready» từ đầu ra CLI. Sau mỗi tác động, kiểm bằng Vercel REST API (JSON): giá trị env đã ghi
++# (so băm, không in giá trị), đúng project/target/ID/mã phiên bản (meta tyzo_sha, tyzo_run), readyState READY,
++# tên miền production trỏ đúng deployment và trang trả lời. Mỗi lệnh có giới hạn thời gian. Hết giờ hoặc lỗi giữa chừng
++# thì tra deployment theo tyzo_run để phục hồi, coi là chưa rõ và giữ nguồn cũ khóa.
+ chay_vercel_sh() {
+   cat <<'SH'
+ set -uo pipefail
+ V="npx -y vercel@${VERCEL_CLI_VERSION:?} --token $TOK ${SCOPE:+--scope $SCOPE}"
+ ENVF="${ENVF:-/x/env}"
+-$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
++T_CLI="${T_CLI:-180}"; T_DEPLOY="${T_DEPLOY:-1500}"
++export VERCEL_API="${VERCEL_API:-https://api.vercel.com}" T_READY="${T_READY:-900}" T_POLL="${T_POLL:-5}"
++RUN="${RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$-$RANDOM}"; MA="${SHA:-}"
++KIEM="$(mktemp)"; trap 'rm -f "$KIEM"' EXIT
++cat > "$KIEM" <<'JS'
++const [mode, ...a] = process.argv.slice(2);
++const api = process.env.VERCEL_API.replace(/\/$/, "");
++const cfg = JSON.parse(require("fs").readFileSync(".vercel/project.json", "utf8"));
++const team = String(cfg.orgId || "").startsWith("team_") ? `teamId=${encodeURIComponent(cfg.orgId)}` : "";
++const q = (p, extra = "") => `${api}${p}${p.includes("?") ? "&" : "?"}${[team, extra].filter(Boolean).join("&")}`;
++const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
++async function get(p) {
++  const r = await fetch(q(p), { headers: { Authorization: `Bearer ${process.env.TOK}` }, signal: AbortSignal.timeout(20000) });
++  if (!r.ok) throw new Error(`API ${r.status}`);
++  const j = await r.json();
++  if (!j || typeof j !== "object") throw new Error("API không trả JSON");
++  return j;
++}
++const hash = (s) => require("crypto").createHash("sha256").update(s).digest("hex");
++const fail = (code, msg) => { console.log(msg); process.exit(code); };
++async function envCheck(file) {
++  const want = new Map();
++  for (const line of require("fs").readFileSync(file, "utf8").split("\n")) {
++    if (!line) continue;
++    const i = line.indexOf("=");
++    want.set(i < 0 ? line : line.slice(0, i), i < 0 ? "" : line.slice(i + 1));
++  }
++  const list = await get(`/v10/projects/${encodeURIComponent(cfg.projectId)}/env?decrypt=true`);
++  if (!Array.isArray(list.envs)) throw new Error("API env sai cấu trúc");
++  let bad = 0;
++  for (const [k, v] of want) {
++    const rows = list.envs.filter((e) => e && e.key === k && Array.isArray(e.target) && e.target.includes("production") && !e.gitBranch);
++    let why = "";
++    if (rows.length !== 1) why = rows.length ? "nhiều bản production" : "thiếu";
++    else {
++      let e = rows[0];
++      if (e.type === "sensitive") why = "không đọc lại được (sensitive)";
++      else {
++        if (!(e.decrypted && typeof e.value === "string")) e = await get(`/v1/projects/${encodeURIComponent(cfg.projectId)}/env/${encodeURIComponent(e.id)}`);
++        if (typeof e.value !== "string") why = "không đọc lại được";
++        else if (hash(e.value) !== hash(v)) why = "giá trị không khớp";
++      }
++    }
++    if (why) { bad++; console.log(`  LOI kiểm ${k}: ${why}`); } else console.log(`  khớp ${k}`);
++  }
++  if (bad) process.exit(1);
++}
++function mine(d, run, sha) {
++  const m = d.meta || {};
++  return d.projectId === cfg.projectId && d.target === "production" && m.tyzo_run === run && (!sha || m.tyzo_sha === sha);
++}
++async function deployCheck(url, run, sha) {
++  const host = String(url).replace(/^https:\/\//, "").replace(/\/.*$/, "");
++  const end = Date.now() + Number(process.env.T_READY) * 1000;
++  let d, said = "";
++  for (;;) {
++    d = await get(`/v13/deployments/${encodeURIComponent(host)}`).catch((e) => ({ _err: e.message }));
++    if (!d._err) {
++      if (typeof d.id !== "string" || d.url !== host) fail(4, `LOI: API trả deployment khác ${host}`);
++      if (!mine(d, run, sha)) fail(4, `LOI: deployment ${d.id} sai project, target, lượt chạy hoặc mã phiên bản`);
++      if (said !== d.id) { console.log(`BUOC deploy-id ${d.id}`); said = d.id; }
++      if (d.readyState === "READY" && d.aliasAssigned === true) break;
++      if (["ERROR", "CANCELED", "DELETED"].includes(d.readyState)) fail(4, `LOI: deployment ${d.id} ${d.readyState}`);
++      if (d.aliasError) fail(4, `LOI: deployment ${d.id} không gán được tên miền production`);
++    }
++    if (Date.now() > end) fail(5, `LOI: hết giờ chờ deployment (${d._err || d.readyState || "?"})`);
++    await sleep(Number(process.env.T_POLL) * 1000);
++  }
++  const alias = (Array.isArray(d.alias) ? d.alias : []).filter((x) => typeof x === "string");
++  if (!alias.length) fail(4, `LOI: deployment ${d.id} không có tên miền production`);
++  for (const x of alias) {
++    const al = await get(`/v4/aliases/${encodeURIComponent(x)}`);
++    if (al.deploymentId !== d.id) fail(4, `LOI: ${x} chưa trỏ tới ${d.id}`);
++  }
++  console.log(`BUOC deploy-xong https://${host} ${d.id}`);
++  const r = await fetch(`${process.env.PROBE_BASE || "https://"}${alias[0]}/`, { redirect: "manual", signal: AbortSignal.timeout(20000) }).catch(() => null);
++  if (!r || r.status >= 400) fail(6, `LOI: ${alias[0]} không trả lời (${r ? r.status : "mất kết nối"})`);
++  console.log(`BUOC kiem-xong ${d.id} ${sha || "-"}`);
++}
++async function find(run) {
++  const j = await get(`/v6/deployments?projectId=${encodeURIComponent(cfg.projectId)}&target=production&limit=50`);
++  if (!Array.isArray(j.deployments)) throw new Error("API deployments sai cấu trúc");
++  const hit = j.deployments.filter((d) => (d.meta || {}).tyzo_run === run);
++  console.log(hit.length ? hit.map((d) => `TIM ${d.uid} ${d.readyState || d.state || "?"} https://${d.url}`).join("\n") : "TIM khong-thay");
++}
++(mode === "env" ? envCheck(a[0]) : mode === "deploy" ? deployCheck(a[0], a[1], a[2]) : find(a[0]))
++  .catch((e) => fail(7, `LOI: không kiểm được qua API (${e.message})`));
++JS
++kiem() { node "$KIEM" "$@"; }
++tim() { echo "Tra deployment của lượt $RUN:"; kiem tim "$RUN" || echo "TIM khong-ro"; }
++timeout "$T_CLI" $V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
++[ -s .vercel/project.json ] || { echo "LOI: không có định danh project sau khi nối"; exit 1; }
+ echo "BUOC env-bat-dau"
+ while IFS= read -r line; do
+   [ -z "$line" ] && continue
+   k="${line%%=*}"; val="${line#*=}"
+-  printf '%s' "$val" | $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
++  printf '%s' "$val" | timeout "$T_CLI" $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
+ done < "$ENVF"
++kiem env "$ENVF" || { echo "LOI: env trên Vercel chưa khớp, chưa deploy"; exit 1; }
+ echo "BUOC env-xong"
+-echo "BUOC deploy-bat-dau"
+-url="$($V deploy --prod --yes 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; exit 3; }
+-case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; exit 3 ;; esac
+-$V inspect "$url" 2>&1 | grep -qi 'ready' || { echo "LOI: bản dựng $url chưa Ready"; exit 3; }
+-echo "BUOC deploy-xong $url"
+-if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
++echo "BUOC deploy-bat-dau $RUN ${MA:--}"
++url="$(timeout "$T_DEPLOY" $V deploy --prod --yes --meta "tyzo_run=$RUN" ${MA:+--meta "tyzo_sha=$MA"} 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; tim; exit 3; }
++case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; tim; exit 3 ;; esac
++kiem deploy "$url" "$RUN" "$MA" || { tim; exit 3; }
++if [ -n "${DOM:-}" ]; then timeout "$T_CLI" $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3 || echo "  Chưa thêm được tên miền $DOM, thêm tay trên Vercel."; fi
+ SH
+ }
+ 
+@@ -1748,13 +1843,16 @@ chuyen_dang_do() {
+   last="$(buoc_chuyen_cuoi)" || return 0
+   [ "$last" != "xong" ] && [ "$last" != "da-mo-lai" ]
+ }
+-# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh.
++# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh. Chỉ «xong» khi có mốc kiem-xong (API + trang trả lời).
+ buoc_vercel() {
+-  if grep -q '^BUOC deploy-xong' "$1"; then echo xong
++  if grep -q '^BUOC kiem-xong' "$1"; then echo xong
++  elif grep -q '^BUOC deploy-xong' "$1"; then echo kiem-chua-dat
+   elif grep -q '^BUOC deploy-bat-dau' "$1"; then echo deploy-chua-ro
+   elif grep -q '^BUOC env-bat-dau' "$1"; then echo env-do-dang
+   else echo chua-doi-vercel; fi
+ }
++# ID deployment cuối cùng ghi được (để nhật ký và phục hồi), không có thì «-».
++id_vercel() { awk '/^BUOC deploy-id /{d=$3} /^TIM /&&$2!~/^khong-/{d=$2} END{print (d==""?"-":d)}' "$1"; }
+ 
+ # =====================================================================
+ # Đưa web lên một tài khoản Vercel (mới hoặc khác)
+@@ -1818,15 +1916,19 @@ TXT
+     khoa_va_doi_soat_chuyen "$neon_url" || return 1
+   fi
+   if [ "$CHUYEN_DA_KHOA" = 1 ]; then ghi_chuyen vercel-bat-dau "$proj" || return 1; fi
+-  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" \
++  local ma_sha; ma_sha="$(git -C "$DIR" rev-parse HEAD 2>/dev/null)" || ma_sha=""
++  # Giới hạn cả lượt (CLI treo, mạng treo); bị cắt giữa chừng thì đầu ra thiếu mốc và được coi là chưa rõ.
++  timeout --kill-after=30 "${TYZO_VERCEL_TIMEOUT:-3600}" docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app \
++    -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" -e SHA="$ma_sha" \
+     -e VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" node:22 bash /x/chay.sh | tee "$thu_vercel/ra.txt"
+-  local kq=${PIPESTATUS[0]} buoc
+-  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
+-  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj"
++  local kq=${PIPESTATUS[0]} buoc dep
++  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; dep="$(id_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
++  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj $dep ${ma_sha:--}"
+   if [ "$kq" != 0 ] || [ "$buoc" != xong ]; then
+     do_ "✘ Chưa đưa lên được (bước: $buoc). Chụp màn hình gửi Claude."
+     case "$buoc" in
+-      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa: Vercel có thể đã ghi vào Neon." ;;
++      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa (deployment: $dep): Vercel có thể đã ghi vào Neon." ;;
++      kiem-chua-dat) vang "Bản $dep đã Ready và nhận tên miền nhưng trang chưa trả lời: web mới có thể đã ghi vào Neon." ;;
+       env-do-dang) vang "Một phần biến môi trường trên Vercel đã được ghi đè, bản đang chạy chưa đổi." ;;
+     esac
+     if [ "$CHUYEN_DA_KHOA" = 1 ]; then
+diff --git a/docs/kiem-toan/v5.49.7/BACKLOG.json b/docs/kiem-toan/v5.49.7/BACKLOG.json
+index d06bc9a..d424d2f 100644
+--- a/docs/kiem-toan/v5.49.7/BACKLOG.json
++++ b/docs/kiem-toan/v5.49.7/BACKLOG.json
+@@ -28,7 +28,9 @@
+     "location": "deploy/vps/tyzo.sh: chay_vercel_sh",
+     "hypothesis": "grep ready có thể khớp not ready; env partial",
+     "acceptance": "Mock not ready, unknown deploy, wrong ID/DB/version, env partial; trạng thái cấu trúc, health check, recovery không lộ bí mật.",
+-    "status": "OPEN_VERIFY"
++    "status": "PASS_LOCAL",
++    "evidence": "RE6-003/REPORT.md",
++    "remaining": "Vercel staging thật chỉ khi Chủ duyệt; biến sensitive bị chặn (fail closed)."
+   },
+   {
+     "id": "RE6-004",
+diff --git a/docs/kiem-toan/v5.49.7/RE6-003/REPORT.md b/docs/kiem-toan/v5.49.7/RE6-003/REPORT.md
+new file mode 100644
+index 0000000..cb58dae
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-003/REPORT.md
+@@ -0,0 +1,26 @@
++# RE6-003 · Xác minh Vercel có cấu trúc
++
++Baseline `c0bcf6f` (RE6-002). Bản sửa chưa push của Codex không truy cập được nên làm lại từ đầu. Mọi phép thử dùng CLI Vercel giả và REST API giả trên loopback. Không gọi Vercel, Neon hay VPS thật. Không cần PostgreSQL cho mục này.
++
++## Lỗi trước sửa
++
++`vercel inspect | grep -qi ready` coi «Not Ready» là Ready. Không kiểm ID deployment, project, target, mã phiên bản hay env đã ghi, và các lệnh CLI không có giới hạn thời gian. Xem [before.txt](before.txt).
++
++## Thay đổi (`deploy/vps/tyzo.sh`)
++
++- **Env:** sau khi `env add --force`, đọc lại qua `GET /v10/projects/{id}/env` (và `/v1/.../env/{id}` khi cần). So băm SHA-256 với giá trị mong muốn. Mỗi khóa phải có đúng một bản production. Bản thiếu, trùng, `sensitive` (không đọc lại được) hoặc lệch giá trị sẽ dừng trước deploy (`env-do-dang`). Chỉ in tên khóa.
++- **Danh tính deployment:** deploy gắn `--meta tyzo_run=<lượt>` và `--meta tyzo_sha=<HEAD>`. `GET /v13/deployments/{url}` phải trả đúng URL, `projectId` từ `.vercel/project.json`, `target=production`, đúng lượt và SHA. Sau đó chờ `readyState=READY` và `aliasAssigned=true`. `ERROR`, `CANCELED`, `aliasError` hoặc hết `T_READY` đều fail closed.
++- **Promote:** mỗi alias production qua `GET /v4/aliases/{alias}` phải có `deploymentId` trùng ID vừa dựng. Health check là trang production trả mã dưới 400.
++- **Mốc:** `BUOC deploy-id`, `deploy-xong <url> <id>`, `kiem-xong <id> <sha>`. `buoc_vercel` chỉ trả `xong` khi có `kiem-xong`. Trạng thái mới `kiem-chua-dat` nghĩa là Ready và nhận tên miền nhưng trang không trả lời, nên web mới có thể đã ghi Neon.
++- **Timeout:** `T_CLI`=180 s cho từng lệnh CLI và `T_DEPLOY`=1500 s. `TYZO_VERCEL_TIMEOUT`=3600 s cho cả lượt `docker run`. Bị cắt thì thiếu mốc và được coi là chưa rõ.
++- **Phục hồi:** khi deploy lỗi hoặc chưa rõ, tra `GET /v6/deployments` theo `tyzo_run` và in `TIM <id> <state> <url>`. Nhật ký chuyển nguồn ghi `loi-<bước> <project> <deployment-id> <sha>`. Nguồn VPS vẫn khóa ở mọi trạng thái khác `xong` theo RE6-002. Token chỉ ở header API và không có giá trị env nào trong đầu ra, nhật ký hay dòng lệnh.
++
++## Kiểm thử
++
++`node --test scripts/re6-003-vercel.test.mjs scripts/re5-004-vercel.test.mjs`: 24/24 đạt. Các ca gồm not-ready, ERROR, sai project, target, SHA hoặc URL, alias trỏ bản cũ, API sập sau deploy, mất kết nối khi deploy (tìm lại `dpl_1`), deploy treo, env bị bỏ qua, sensitive, trùng, lệnh env treo, thiếu ID project, API sập trước deploy và trang không trả lời. Mọi ca đều kiểm không lộ bí mật. Xem [test-summary.txt](test-summary.txt). Harness dùng chung nằm ở `scripts/vercel-fake-harness.mjs`.
++
++## Còn lại
++
++Chưa nghiệm thu Vercel thật. Cần token và project staging do Chủ duyệt để xác nhận tên trường API v13/v10/v4/v6 và hành vi `decrypt` trên CLI 65.14.0. Biến loại `sensitive` sẽ luôn chặn deploy theo hướng fail closed. Nếu team bắt buộc sensitive, cần Chủ quyết cách kiểm khác. Thêm tên miền riêng vẫn không chặn kết quả.
++
++[Vercel REST API · deployments](https://vercel.com/docs/rest-api/reference/endpoints/deployments/get-a-deployment-by-id-or-url)
+diff --git a/docs/kiem-toan/v5.49.7/RE6-003/before.txt b/docs/kiem-toan/v5.49.7/RE6-003/before.txt
+new file mode 100644
+index 0000000..f304c1b
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-003/before.txt
+@@ -0,0 +1,5 @@
++Trước sửa (017cad3..c0bcf6f): chay_vercel_sh dùng 'vercel inspect | grep -qi ready'.
++status ● Not Ready -> coi là Ready
++readyState: NOT_READY -> coi là Ready
++status ● Ready -> coi là Ready
++Không kiểm ID deployment, project, target, phiên bản mã, DATABASE_URL đã ghi trên Vercel; không có giới hạn thời gian cho từng lệnh CLI.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt b/docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt
+new file mode 100644
+index 0000000..070430c
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt
+@@ -0,0 +1,29 @@
++RE6-003 · Vercel giả (CLI + REST API) · node v22.23.5
++ok 1 - RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin
++ok 2 - RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang
++ok 3 - RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang
++ok 4 - RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong
++ok 5 - RE5-004: nhật ký dở dang từ lần trước (mất SSH/kill) được nhận ra; «da-mo-lai» hoặc «xong» kết thúc
++ok 6 - RE6-003: không còn đọc chữ ready từ CLI
++ok 7 - RE6-003: lượt đúng → kiểm env theo băm, deployment đúng ID/project/target/mã, tên miền, trang trả lời
++ok 8 - RE6-003: not-ready → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 9 - RE6-003: error → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 10 - RE6-003: wrong-project → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 11 - RE6-003: wrong-target → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 12 - RE6-003: wrong-sha → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 13 - RE6-003: wrong-url → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 14 - RE6-003: alias-other → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 15 - RE6-003: api-down-after-deploy → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 16 - RE6-003: deploy mất kết nối → tra theo tyzo_run tìm ra deployment, ghi ID vào nhật ký
++ok 17 - RE6-003: deploy treo → cắt theo giới hạn thời gian, không coi là xong
++ok 18 - RE6-003: env-drop-DATABASE_URL → dừng trước deploy
++ok 19 - RE6-003: sensitive-BETTER_AUTH_SECRET → dừng trước deploy
++ok 20 - RE6-003: dup-DATABASE_URL → dừng trước deploy
++ok 21 - RE6-003: add-hang-LIVE_BRIDGE_URL → dừng trước deploy
++ok 22 - RE6-003: link-noid → dừng trước deploy
++ok 23 - RE6-003: api-down → dừng trước deploy
++ok 24 - RE6-003: Ready và đã nhận tên miền nhưng trang không trả lời → kiem-chua-dat, giữ dở dang
++# tests 24
++# pass 24
++# fail 0
++# skipped 0
+diff --git a/docs/kiem-toan/v5.49.7/STATE.json b/docs/kiem-toan/v5.49.7/STATE.json
+index 89929b0..72d0768 100644
+--- a/docs/kiem-toan/v5.49.7/STATE.json
++++ b/docs/kiem-toan/v5.49.7/STATE.json
+@@ -1,16 +1,14 @@
+ {
+   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
+-  "branch": "audit/v5.49.7-codex-re6",
+-  "previous_checkpoint_sha": "017cad371595f641d681da7f79eeeb62d617b40b",
+-  "effort": "High",
+-  "status": "PAUSED_FOR_HANDOFF",
+-  "completed_item": "RE6-002",
++  "branch": "ccr-654dbe0e-978ok7",
++  "previous_checkpoint_sha": "c0bcf6fc3b7c1a3766679b0707c580b8ec4a8abe",
++  "effort": "Medium",
++  "status": "IN_PROGRESS",
++  "completed_item": "RE6-003",
+   "item_status": "PASS_LOCAL",
+   "tests": {
+-    "postgres": "18.7",
+-    "restore_regression_pass": 33,
+-    "final_targeted_pass": 8,
+-    "evidence": "RE6-002/REPORT.md"
++    "vercel_fake": "24/24",
++    "evidence": "RE6-003/REPORT.md"
+   },
+-  "next": "Phiên sau thực hiện RE6-003 ở mức High."
++  "next": "RE6-004"
+ }
+diff --git a/scripts/re5-004-vercel.test.mjs b/scripts/re5-004-vercel.test.mjs
+index 531f110..763b8ae 100644
+--- a/scripts/re5-004-vercel.test.mjs
++++ b/scripts/re5-004-vercel.test.mjs
+@@ -3,88 +3,27 @@
+  * trong deploy/vps/tyzo.sh với một «npx» giả lưu env vào tệp và chèn lỗi theo FAKE_FAULT. Không gọi Vercel thật.
+  */
+ import assert from "node:assert/strict";
+-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
++import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import { spawnSync } from "node:child_process";
+ import { test } from "node:test";
++import { lib, run, text } from "./vercel-fake-harness.mjs";
+ 
+-const root = new URL("..", import.meta.url).pathname;
+-const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
+-const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
+-
+-// npx giả: «vercel env add K --environment production [--force]» đọc giá trị từ stdin; không --force mà đã có thì lỗi.
+-const fakeNpx = `#!/usr/bin/env bash
+-F="$FAKE_DIR"; echo "$*" >> "$F/calls.log"
+-fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
+-args=("$@"); i=0; while [[ "\${args[$i]}" != vercel@* ]]; do i=$((i+1)); done
+-[ "\${args[$i]}" = "vercel@$EXPECT_VERSION" ] || { echo "sai phiên bản \${args[$i]}" >&2; exit 9; }
+-rest=("\${args[@]:$((i+1))}")
+-sub=""; for a in "\${rest[@]}"; do case "$a" in link|env|deploy|inspect|domains) sub="$a"; break ;; esac; done
+-case "$sub" in
+-  link) exit 0 ;;
+-  env)
+-    act=""; k=""; force=0; take=0
+-    for a in "\${rest[@]}"; do
+-      if [ "$take" = 1 ]; then k="$a"; take=0; continue; fi
+-      case "$a" in add|rm) act="$a"; take=1 ;; --force) force=1 ;; esac
+-    done
+-    if [ "$act" = rm ]; then rm -f "$F/env/$k"; exit 0; fi
+-    val="$(cat)"
+-    if fault "add-fail-$k"; then exit 1; fi
+-    if [ -f "$F/env/$k" ] && [ "$force" != 1 ]; then echo "exists" >&2; exit 1; fi
+-    printf '%s' "$val" > "$F/env/$k"; exit 0 ;;
+-  deploy)
+-    if fault deploy-lost; then exit 1; fi
+-    cp -r "$F/env" "$F/deployed-env"; echo "Building..."; echo "https://tyzo-abc.vercel.app"; exit 0 ;;
+-  inspect) if fault not-ready; then echo "status ● Error"; else echo "status ● Ready"; fi; exit 0 ;;
+-  domains) exit 0 ;;
+-esac
+-exit 2
+-`;
+-
+-function run(fault = "", { journal = "" } = {}) {
+-  const work = mkdtempSync(join(tmpdir(), "re5-004-"));
+-  mkdirSync(join(work, "bin")); mkdirSync(join(work, "env"));
+-  writeFileSync(join(work, "bin", "npx"), fakeNpx); chmodSync(join(work, "bin", "npx"), 0o755);
+-  // Vercel đang có giá trị cũ cho mọi biến.
+-  for (const k of ["DATABASE_URL", "BETTER_AUTH_SECRET", "LIVE_BRIDGE_URL"]) writeFileSync(join(work, "env", k), `old-${k}`);
+-  writeFileSync(join(work, "vars"), "DATABASE_URL=postgres://neon/new\nBETTER_AUTH_SECRET=new-secret\nLIVE_BRIDGE_URL=wss://x/live\n");
+-  if (journal) writeFileSync(join(work, "tyzo.conf.chuyen"), journal);
+-  const script = `source "${join(work, "lib.sh")}"
+-CONF="${work}/tyzo.conf"
+-chay_vercel_sh > "${work}/chay.sh"
+-ghi_chuyen vercel-bat-dau tyzo-sub
+-VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" ENVF="${work}/vars" TOK=t PROJ=tyzo-sub SCOPE= DOM= bash "${work}/chay.sh" > "${work}/ra.txt" 2>&1
+-kq=$?
+-b="$(buoc_vercel "${work}/ra.txt")"
+-ghi_chuyen "$([ "$kq" = 0 ] && [ "$b" = xong ] && echo xong || echo "loi-$b")" tyzo-sub
+-echo "kq=$kq buoc=$b"
+-if chuyen_dang_do; then echo dang-do; else echo da-ket-thuc; fi`;
+-  writeFileSync(join(work, "lib.sh"), lib);
+-  const r = spawnSync("bash", ["-c", script], {
+-    encoding: "utf8",
+-    env: { PATH: `${work}/bin:${process.env.PATH}`, HOME: work, TMPDIR: work, FAKE_DIR: work, FAKE_FAULT: fault, EXPECT_VERSION: /VERCEL_CLI_VERSION="([^"]+)"/.exec(text)[1] },
+-    timeout: 60_000,
+-  });
+-  const env = (k) => readFileSync(join(work, "env", k), "utf8");
+-  return { r, work, env, calls: readFileSync(join(work, "calls.log"), "utf8"), journal: readFileSync(join(work, "tyzo.conf.chuyen"), "utf8") };
+-}
+-
+-test("RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin", () => {
++test("RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin", async () => {
+   assert.match(text, /^VERCEL_CLI_VERSION="\d+\.\d+\.\d+"$/m);
+   assert.doesNotMatch(text, /vercel@latest/);
+-  const { r, env, calls, journal } = run();
++  const { r, env, calls, journal } = await run();
+   assert.match(r.stdout, /kq=0 buoc=xong/);
+   assert.match(r.stdout, /da-ket-thuc/);
+   assert.doesNotMatch(calls, /\benv rm\b/);
+   assert.equal(env("DATABASE_URL"), "postgres://neon/new");
+   assert.doesNotMatch(calls, /postgres:\/\/neon\/new|new-secret/, "giá trị bí mật không nằm trên dòng lệnh");
+-  assert.match(journal, /vercel-bat-dau tyzo-sub\n.* xong tyzo-sub\n$/);
++  assert.match(journal, /vercel-bat-dau tyzo-sub\n.* xong tyzo-sub dpl_1 a{40}\n$/);
+ });
+ 
+-test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang", () => {
+-  const { r, env, calls, journal, work } = run("add-fail-BETTER_AUTH_SECRET");
++test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang", async () => {
++  const { r, env, calls, journal, work } = await run("add-fail-BETTER_AUTH_SECRET");
+   assert.match(r.stdout, /kq=1 buoc=env-do-dang/);
+   assert.match(r.stdout, /dang-do/);
+   assert.equal(env("DATABASE_URL"), "postgres://neon/new");
+@@ -92,18 +31,18 @@ test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (khô
+   assert.equal(env("LIVE_BRIDGE_URL"), "old-LIVE_BRIDGE_URL");
+   assert.doesNotMatch(calls, / deploy /);
+   assert.equal(existsSync(join(work, "deployed-env")), false);
+-  assert.match(journal, / loi-env-do-dang tyzo-sub\n$/);
++  assert.match(journal, / loi-env-do-dang tyzo-sub - a{40}\n$/);
+ });
+ 
+-test("RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang", () => {
+-  const { r, journal } = run("deploy-lost");
++test("RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang", async () => {
++  const { r, journal } = await run("deploy-lost");
+   assert.match(r.stdout, /kq=3 buoc=deploy-chua-ro/);
+   assert.match(r.stdout, /dang-do/);
+   assert.match(journal, / loi-deploy-chua-ro /);
+ });
+ 
+-test("RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong", () => {
+-  const { r } = run("not-ready");
++test("RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong", async () => {
++  const { r } = await run("not-ready");
+   assert.match(r.stdout, /kq=3 buoc=deploy-chua-ro/);
+ });
+ 
+diff --git a/scripts/re6-003-vercel.test.mjs b/scripts/re6-003-vercel.test.mjs
+new file mode 100644
+index 0000000..f919bcc
+--- /dev/null
++++ b/scripts/re6-003-vercel.test.mjs
+@@ -0,0 +1,97 @@
++/**
++ * RE6-003: xác minh Vercel có cấu trúc (REST API JSON), danh tính deployment, project/target, mã phiên bản, env đã ghi,
++ * tên miền production, trang trả lời, giới hạn thời gian và dữ liệu phục hồi không lộ bí mật. Chỉ dùng Vercel giả.
++ */
++import assert from "node:assert/strict";
++import { existsSync } from "node:fs";
++import { join } from "node:path";
++import { test } from "node:test";
++import { run, SECRETS, SHA, text } from "./vercel-fake-harness.mjs";
++
++const noLeak = (res) => {
++  for (const s of SECRETS) {
++    assert.ok(!res.out.includes(s), `đầu ra lộ ${s}`);
++    assert.ok(!res.journal.includes(s), `nhật ký lộ ${s}`);
++    assert.ok(!res.r.stdout.includes(s), `stdout lộ ${s}`);
++  }
++  assert.ok(!res.calls.includes("postgres://neon/new") && !res.calls.includes("new-secret"), "giá trị env không nằm trên dòng lệnh");
++};
++
++test("RE6-003: không còn đọc chữ ready từ CLI", () => {
++  assert.doesNotMatch(text, /grep -qi 'ready'/);
++  assert.doesNotMatch(text, /\$V inspect/);
++});
++
++test("RE6-003: lượt đúng → kiểm env theo băm, deployment đúng ID/project/target/mã, tên miền, trang trả lời", async () => {
++  const res = await run();
++  assert.match(res.r.stdout, /kq=0 buoc=xong dep=dpl_1/);
++  assert.match(res.r.stdout, /da-ket-thuc/);
++  assert.match(res.out, /khớp DATABASE_URL/);
++  assert.match(res.out, /^BUOC deploy-id dpl_1$/m);
++  assert.match(res.out, new RegExp(`^BUOC kiem-xong dpl_1 ${SHA}$`, "m"));
++  assert.match(res.calls, new RegExp(`--meta tyzo_sha=${SHA}`));
++  assert.match(res.journal, new RegExp(` xong tyzo-sub dpl_1 ${SHA}\\n$`));
++  noLeak(res);
++});
++
++for (const [fault, why] of [
++  ["not-ready", /hết giờ chờ deployment \(BUILDING\)/],
++  ["error", /dpl_1 ERROR/],
++  ["wrong-project", /sai project/],
++  ["wrong-target", /sai project, target/],
++  ["wrong-sha", /mã phiên bản/],
++  ["wrong-url", /deployment khác/],
++  ["alias-other", /chưa trỏ tới dpl_1/],
++  ["api-down-after-deploy", /hết giờ chờ deployment \(API 500\)/],
++]) {
++  test(`RE6-003: ${fault} → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi`, async () => {
++    const res = await run(fault);
++    assert.match(res.r.stdout, /kq=3 buoc=deploy-chua-ro/);
++    assert.match(res.r.stdout, /dang-do/);
++    assert.match(res.out, why);
++    assert.match(res.out, /^TIM (dpl_1 |khong-ro|khong-thay)/m);
++    assert.match(res.journal, / loi-deploy-chua-ro tyzo-sub /);
++    noLeak(res);
++  });
++}
++
++test("RE6-003: deploy mất kết nối → tra theo tyzo_run tìm ra deployment, ghi ID vào nhật ký", async () => {
++  const res = await run("deploy-lost");
++  assert.match(res.r.stdout, /kq=3 buoc=deploy-chua-ro dep=dpl_1/);
++  assert.match(res.out, /^TIM dpl_1 READY https:\/\/tyzo-abc\.vercel\.app$/m);
++  assert.match(res.journal, / loi-deploy-chua-ro tyzo-sub dpl_1 /);
++  noLeak(res);
++});
++
++test("RE6-003: deploy treo → cắt theo giới hạn thời gian, không coi là xong", async () => {
++  const res = await run("deploy-hang");
++  assert.match(res.r.stdout, /kq=3 buoc=deploy-chua-ro dep=dpl_1/);
++  assert.ok(res.ms < 20_000, `mất ${res.ms}ms`);
++});
++
++for (const [fault, why] of [
++  ["env-drop-DATABASE_URL", /LOI kiểm DATABASE_URL: giá trị không khớp/],
++  ["sensitive-BETTER_AUTH_SECRET", /LOI kiểm BETTER_AUTH_SECRET: không đọc lại được/],
++  ["dup-DATABASE_URL", /LOI kiểm DATABASE_URL: nhiều bản production/],
++  ["add-hang-LIVE_BRIDGE_URL", /LOI khi đặt LIVE_BRIDGE_URL/],
++  ["link-noid", /không có định danh project/],
++  ["api-down", /không kiểm được qua API \(API 500\)/],
++]) {
++  test(`RE6-003: ${fault} → dừng trước deploy`, async () => {
++    const res = await run(fault);
++    assert.match(res.r.stdout, /kq=1 buoc=(env-do-dang|chua-doi-vercel)/);
++    assert.match(res.out, why);
++    assert.doesNotMatch(res.calls, / deploy /);
++    assert.equal(existsSync(join(res.work, "deployed-env")), false);
++    noLeak(res);
++  });
++}
++
++test("RE6-003: Ready và đã nhận tên miền nhưng trang không trả lời → kiem-chua-dat, giữ dở dang", async () => {
++  const res = await run("site-down");
++  assert.match(res.r.stdout, /buoc=kiem-chua-dat dep=dpl_1/);
++  assert.match(res.r.stdout, /dang-do/);
++  assert.match(res.out, /^BUOC deploy-xong https:\/\/tyzo-abc\.vercel\.app dpl_1$/m);
++  assert.match(res.journal, / loi-kiem-chua-dat tyzo-sub dpl_1 /);
++  noLeak(res);
++});
+diff --git a/scripts/vercel-fake-harness.mjs b/scripts/vercel-fake-harness.mjs
+new file mode 100644
+index 0000000..efa0e5c
+--- /dev/null
++++ b/scripts/vercel-fake-harness.mjs
+@@ -0,0 +1,133 @@
++/**
++ * Giả lập Vercel cho RE5-004 / RE6-003: «npx vercel» giả (CLI) + máy chủ HTTP giả (REST API, tên miền production).
++ * Chạy đúng chay_vercel_sh / buoc_vercel / id_vercel / ghi_chuyen / chuyen_dang_do trong deploy/vps/tyzo.sh.
++ * Lỗi được chèn qua danh sách FAKE_FAULT. Không gọi Vercel thật, không dùng thông tin xác thực thật.
++ */
++import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
++import { createServer } from "node:http";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { execFile } from "node:child_process";
++
++const root = new URL("..", import.meta.url).pathname;
++export const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
++export const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
++export const cliVersion = /VERCEL_CLI_VERSION="([^"]+)"/.exec(text)[1];
++export const SECRETS = ["postgres://neon/new", "new-secret", "tok-secret-123"];
++export const SHA = "a".repeat(40);
++
++const fakeNpx = `#!/usr/bin/env bash
++F="$FAKE_DIR"; echo "$*" >> "$F/calls.log"
++fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
++args=("$@"); i=0; while [[ "\${args[$i]}" != vercel@* ]]; do i=$((i+1)); done
++[ "\${args[$i]}" = "vercel@$EXPECT_VERSION" ] || { echo "sai phiên bản \${args[$i]}" >&2; exit 9; }
++rest=("\${args[@]:$((i+1))}")
++sub=""; for a in "\${rest[@]}"; do case "$a" in link|env|deploy|inspect|domains) sub="$a"; break ;; esac; done
++case "$sub" in
++  link) fault link-noid || { mkdir -p .vercel; echo '{"projectId":"prj_1","orgId":"team_1"}' > .vercel/project.json; }; exit 0 ;;
++  env)
++    act=""; k=""; force=0; take=0
++    for a in "\${rest[@]}"; do
++      if [ "$take" = 1 ]; then k="$a"; take=0; continue; fi
++      case "$a" in add|rm) act="$a"; take=1 ;; --force) force=1 ;; esac
++    done
++    if [ "$act" = rm ]; then rm -f "$F/env/$k"; exit 0; fi
++    val="$(cat)"
++    if fault "add-hang-$k"; then sleep 30; fi
++    if fault "add-fail-$k"; then exit 1; fi
++    if fault "env-drop-$k"; then exit 0; fi
++    if [ -f "$F/env/$k" ] && [ "$force" != 1 ]; then echo "exists" >&2; exit 1; fi
++    printf '%s' "$val" > "$F/env/$k"; exit 0 ;;
++  deploy)
++    run=""; sha=""; nx=0
++    for a in "\${rest[@]}"; do
++      if [ "$nx" = 1 ]; then case "$a" in tyzo_run=*) run="\${a#tyzo_run=}" ;; tyzo_sha=*) sha="\${a#tyzo_sha=}" ;; esac; nx=0; continue; fi
++      [ "$a" = --meta ] && nx=1
++    done
++    cp -r "$F/env" "$F/deployed-env"
++    printf '{"id":"dpl_1","url":"tyzo-abc.vercel.app","run":"%s","sha":"%s"}' "$run" "$sha" > "$F/deploy.json"
++    if fault deploy-lost; then exit 1; fi
++    if fault deploy-hang; then sleep 30; fi
++    echo "Building..."; echo "https://tyzo-abc.vercel.app"; exit 0 ;;
++  inspect) echo "status ● Not Ready"; exit 0 ;;
++  domains) exit 0 ;;
++esac
++exit 2
++`;
++
++function startApi(work, faults) {
++  const has = (f) => faults.includes(f);
++  let polls = 0;
++  const server = createServer((req, res) => {
++    const u = new URL(req.url, "http://x");
++    const send = (code, body) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(body)); };
++    const site = /^\/site\/([^/]+)\/$/.exec(u.pathname);
++    if (site) { res.writeHead(has("site-down") ? 503 : 200); return res.end("ok"); }
++    if (has("api-down") || (has("api-down-after-deploy") && existsSync(join(work, "deploy.json")))) return send(500, { error: "down" });
++    if (req.headers.authorization !== "Bearer tok-secret-123" || u.searchParams.get("teamId") !== "team_1") return send(403, { error: "forbidden" });
++    const dep = existsSync(join(work, "deploy.json")) ? JSON.parse(readFileSync(join(work, "deploy.json"), "utf8")) : null;
++    const view = () => {
++      polls++;
++      const state = has("not-ready") ? "BUILDING" : has("error") ? "ERROR" : polls < 2 ? "BUILDING" : "READY";
++      return {
++        id: dep.id, url: has("wrong-url") ? "other.vercel.app" : dep.url,
++        projectId: has("wrong-project") ? "prj_other" : "prj_1", target: has("wrong-target") ? null : "production",
++        meta: { tyzo_run: dep.run, tyzo_sha: has("wrong-sha") ? "b".repeat(40) : dep.sha },
++        readyState: state, aliasAssigned: state === "READY", alias: ["tyzo-sub.vercel.app"],
++      };
++    };
++    let m;
++    if ((m = /^\/v10\/projects\/prj_1\/env$/.exec(u.pathname))) {
++      const envs = [];
++      for (const k of readdirSync(join(work, "env"))) {
++        const v = readFileSync(join(work, "env", k), "utf8");
++        const sensitive = has(`sensitive-${k}`);
++        envs.push({ id: `env_${k}`, key: k, target: ["production"], type: sensitive ? "sensitive" : "encrypted", ...(sensitive ? {} : { value: v, decrypted: true }) });
++        if (has(`dup-${k}`)) envs.push({ id: `env_${k}_2`, key: k, target: ["production", "preview"], type: "encrypted", value: v, decrypted: true });
++      }
++      return send(200, { envs });
++    }
++    if ((m = /^\/v13\/deployments\/([^/]+)$/.exec(u.pathname))) return dep && decodeURIComponent(m[1]) === dep.url ? send(200, view()) : send(404, { error: "not_found" });
++    if (u.pathname === "/v6/deployments") return send(200, { deployments: dep ? [{ uid: dep.id, url: dep.url, readyState: has("not-ready") ? "BUILDING" : "READY", meta: { tyzo_run: dep.run } }] : [] });
++    if ((m = /^\/v4\/aliases\/([^/]+)$/.exec(u.pathname))) return send(200, { alias: m[1], deploymentId: has("alias-other") ? "dpl_old" : dep && dep.id });
++    send(404, { error: "no route" });
++  });
++  return new Promise((r) => server.listen(0, "127.0.0.1", () => r(server)));
++}
++
++export async function run(fault = "", { journal = "", env: extraEnv = {} } = {}) {
++  const faults = fault.split(",").filter(Boolean);
++  const work = mkdtempSync(join(tmpdir(), "re6-003-"));
++  mkdirSync(join(work, "bin")); mkdirSync(join(work, "env"));
++  writeFileSync(join(work, "bin", "npx"), fakeNpx); chmodSync(join(work, "bin", "npx"), 0o755);
++  for (const k of ["DATABASE_URL", "BETTER_AUTH_SECRET", "LIVE_BRIDGE_URL"]) writeFileSync(join(work, "env", k), `old-${k}`);
++  writeFileSync(join(work, "vars"), "DATABASE_URL=postgres://neon/new\nBETTER_AUTH_SECRET=new-secret\nLIVE_BRIDGE_URL=wss://x/live\n");
++  if (journal) writeFileSync(join(work, "tyzo.conf.chuyen"), journal);
++  writeFileSync(join(work, "lib.sh"), lib);
++  const server = await startApi(work, faults);
++  const port = server.address().port;
++  const script = `source "${work}/lib.sh"
++CONF="${work}/tyzo.conf"
++chay_vercel_sh > "${work}/chay.sh"
++ghi_chuyen vercel-bat-dau tyzo-sub
++cd "${work}"
++VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" ENVF="${work}/vars" TOK=tok-secret-123 PROJ=tyzo-sub SCOPE= DOM= SHA=${SHA} bash "${work}/chay.sh" > "${work}/ra.txt" 2>&1
++kq=$?
++b="$(buoc_vercel "${work}/ra.txt")"; dep="$(id_vercel "${work}/ra.txt")"
++ghi_chuyen "$([ "$kq" = 0 ] && [ "$b" = xong ] && echo xong || echo "loi-$b")" "tyzo-sub $dep ${SHA}"
++echo "kq=$kq buoc=$b dep=$dep"
++if chuyen_dang_do; then echo dang-do; else echo da-ket-thuc; fi`;
++  const t0 = Date.now();
++  const r = await new Promise((resolve) => execFile("bash", ["-c", script], {
++    encoding: "utf8", timeout: 60_000,
++    env: {
++      PATH: `${work}/bin:${process.env.PATH}`, HOME: work, TMPDIR: work, FAKE_DIR: work, FAKE_FAULT: fault, EXPECT_VERSION: cliVersion,
++      VERCEL_CLI_VERSION: cliVersion, VERCEL_API: `http://127.0.0.1:${port}`, PROBE_BASE: `http://127.0.0.1:${port}/site/`,
++      T_CLI: "2", T_DEPLOY: "2", T_READY: "2", T_POLL: "0.1", ...extraEnv,
++    },
++  }, (error, stdout, stderr) => resolve({ error, stdout, stderr })));
++  server.close();
++  const ms = Date.now() - t0;
++  const read = (f) => (existsSync(join(work, f)) ? readFileSync(join(work, f), "utf8") : "");
++  return { r, ms, work, out: read("ra.txt"), env: (k) => read(join("env", k)), calls: read("calls.log"), journal: read("tyzo.conf.chuyen") };
++}
+-- 
+2.43.0
+

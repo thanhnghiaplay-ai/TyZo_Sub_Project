@@ -1,0 +1,2087 @@
+diff --git a/deploy/vps/do-live/chay.sh b/deploy/vps/do-live/chay.sh
+index f45b132..8b20c5c 100755
+--- a/deploy/vps/do-live/chay.sh
++++ b/deploy/vps/do-live/chay.sh
+@@ -8,5 +8,5 @@ read -rp "Email tài khoản TyZo dùng để thử (bị trừ Token như dùng
+ docker exec tyzo-bridge mkdir -p /app/deploy/vps
+ docker cp deploy/vps/do-live tyzo-bridge:/app/deploy/vps/
+ docker cp deploy/vps/do-modal tyzo-bridge:/app/deploy/vps/
+-docker exec tyzo-bridge node --experimental-strip-types --import ./scripts/register-ts.mjs deploy/vps/do-live/do-live.ts "$email" "${1:-wss://realtimehub.tyzo.site/live}"
++docker exec tyzo-bridge node --experimental-strip-types --import ./scripts/register-ts.mjs deploy/vps/do-live/do-live.ts "$email" "${1:-wss://realtimehub.tyzo.site/live}" "${2:-vi}" "${3:-3.5}" "${4:-1}"
+ docker exec tyzo-bridge rm -rf /app/deploy/vps/do-live /app/deploy/vps/do-modal
+diff --git a/deploy/vps/do-live/do-live.ts b/deploy/vps/do-live/do-live.ts
+index d9289fe..6a31a01 100644
+--- a/deploy/vps/do-live/do-live.ts
++++ b/deploy/vps/do-live/do-live.ts
+@@ -1,14 +1,18 @@
+ // Đo Dịch trực tiếp thật: âm thanh → chữ gốc tạm → bản dịch tạm → câu chốt, qua cầu nối thật và Alibaba thật.
+ // Chạy TRONG container cầu nối (có sẵn LIVE_BRIDGE_SECRET, DATABASE_URL, thư viện) — xem deploy/vps/do-live/chay.sh.
+-// Gửi 4 đoạn mẫu 30 s (zh/ja/ko/en) theo nhịp thời gian thực 100 ms/khung. Trừ Token của tài khoản được nhập như dùng thật.
++// Cách dùng: do-live.ts <email> [cầu nối] [đích] [3.5|3.8] [số vòng]. Gửi 4 đoạn mẫu 30 s (zh/ja/ko/en) theo nhịp thời gian thực 100 ms/khung. Trừ Token của tài khoản được nhập như dùng thật.
+ // Không in khóa; kết quả JSON không chứa vé hay khóa.
+ import { readFileSync, writeFileSync } from "node:fs";
+ import pg from "pg";
+-import WebSocket from "ws";
+ import { signLiveTicket } from "../../../src/lib/live/live-ticket.ts";
+-import { LIVE_MODEL_38 } from "../../../src/lib/live/live-price.ts";
++import { LIVE_MODEL_35, LIVE_MODEL_38 } from "../../../src/lib/live/live-price.ts";
++import { measure, summarize, type Row } from "./live-measure.ts";
+ 
+-const [, , email, bridge = "wss://realtimehub.tyzo.site/live", target = "vi"] = process.argv;
++const [, , email, bridge = "wss://realtimehub.tyzo.site/live", target = "vi", modelArg = "3.5", roundsArg = "1"] = process.argv;
++// RE6-005: chọn model (3.5 hoặc 3.8, mặc định theo app là 3.5), số vòng 1–10 để có đủ mẫu cho P95/P99.
++const model = ({ "3.5": LIVE_MODEL_35, "3.8": LIVE_MODEL_38 } as Record<string, string>)[modelArg] ?? "";
++const rounds = Number(roundsArg);
++if (!model || !Number.isInteger(rounds) || rounds < 1 || rounds > 10) { console.error("Model chỉ nhận 3.5 hoặc 3.8; số vòng 1–10."); process.exit(1); }
+ const secret = (process.env.LIVE_BRIDGE_SECRET ?? "").trim();
+ if (!email || !secret || !process.env.DATABASE_URL) {
+   console.error("Cách dùng: do-live.ts <email tài khoản> [địa chỉ cầu nối] [đích=vi]; cần LIVE_BRIDGE_SECRET và DATABASE_URL.");
+@@ -22,82 +26,16 @@ if (!found.rows.length) { console.error("✘ Không thấy tài khoản có emai
+ const uid = String(found.rows[0].id);
+ 
+ const HERE = new URL(".", import.meta.url).pathname;
+-const pct = (xs: number[], p: number) => (xs.length ? [...xs].sort((a, b) => a - b)[Math.min(xs.length - 1, Math.round((p / 100) * (xs.length - 1)))] : null);
+-const r1 = (x: number | null | undefined) => (x == null ? null : Math.round(x) / 1000);
+-
+-/** Mốc có tiếng nói đầu và cuối (năng lượng khung 100 ms vượt ngưỡng), tính bằng ms từ đầu đoạn. */
+-function speechSpan(pcm: Buffer) {
+-  const frame = 3200; const rms: number[] = [];
+-  for (let o = 0; o + frame <= pcm.length; o += frame) {
+-    let s = 0; for (let i = o; i < o + frame; i += 2) { const v = pcm.readInt16LE(i); s += v * v; }
+-    rms.push(Math.sqrt(s / (frame / 2)));
+-  }
+-  const thr = Math.max(300, (pct(rms, 90) ?? 0) * 0.15);
+-  const first = rms.findIndex((v) => v > thr); const last = rms.length - 1 - [...rms].reverse().findIndex((v) => v > thr);
+-  return { onsetMs: Math.max(0, first) * 100, offsetMs: (last + 1) * 100 };
+-}
+-
+-async function measure(lang: string) {
+-  const wav = readFileSync(`${HERE}../do-modal/${lang}.wav`);
+-  const pcm = wav.subarray(44);
+-  const { onsetMs, offsetMs } = speechSpan(pcm);
+-  const ticket = signLiveTicket(secret, { uid, sid: `do${Date.now().toString(36)}${lang}`, model: LIVE_MODEL_38, target, source: "", audio: false, exp: Date.now() + 60_000 });
+-  return new Promise<Record<string, unknown>>((resolve) => {
+-    const ws = new WebSocket(`${bridge}?ticket=${ticket}`);
+-    let t0 = 0; let sentEnd = 0;
+-    const srcT: number[] = []; const trT: number[] = []; const finals: number[] = []; const errors: string[] = [];
+-    let usage: unknown = null; let opened = 0; const tOpen = Date.now();
+-    const done = (why: string) => {
+-      const gaps = (ts: number[]) => ts.slice(1).map((t, i) => t - ts[i]);
+-      resolve({
+-        lang, why, connectMs: opened ? opened - tOpen : null, audioMs: Math.round(pcm.length / 32), onsetMs, offsetMs,
+-        firstSourcePartial_s: srcT.length ? r1(srcT[0] - onsetMs) : null,
+-        firstTranslationPartial_s: trT.length ? r1(trT[0] - onsetMs) : null,
+-        sourceUpdateGap_s: { p50: r1(pct(gaps(srcT), 50)), p95: r1(pct(gaps(srcT), 95)) },
+-        translationUpdateGap_s: { p50: r1(pct(gaps(trT), 50)), p95: r1(pct(gaps(trT), 95)) },
+-        finals: finals.length, lastFinalAfterSpeechEnd_s: finals.length ? r1(finals[finals.length - 1] - offsetMs) : null,
+-        sendEndToClose_s: sentEnd ? r1(Date.now() - t0 - sentEnd) : null, usage, errors,
+-      });
+-    };
+-    const kill = setTimeout(() => { ws.terminate(); done("het-gio"); }, 120_000);
+-    ws.on("message", (data, isBinary) => {
+-      if (isBinary) return;
+-      const m = JSON.parse(data.toString()) as { type: string; event?: { kind: string; final?: boolean; usage?: unknown; message?: string }; message?: string };
+-      const now = () => Date.now() - t0;
+-      if (m.type === "ready") {
+-        opened = Date.now(); t0 = Date.now(); let off = 0;
+-        const timer = setInterval(() => {
+-          if (off >= pcm.length) { clearInterval(timer); sentEnd = Date.now() - t0; ws.send(JSON.stringify({ type: "stop" })); return; }
+-          ws.send(pcm.subarray(off, off + 3200)); off += 3200;
+-        }, 100);
+-      } else if (m.type === "event" && m.event) {
+-        const k = m.event.kind;
+-        if (k === "source" || k === "source-delta") srcT.push(now());
+-        if (k === "translation" || k === "translation-delta") { trT.push(now()); if (m.event.final) finals.push(now()); }
+-        if (k === "usage") usage = m.event.usage;
+-        if (k === "error") errors.push(String(m.event.message).slice(0, 160));
+-      } else if (m.type === "error") errors.push(String(m.message).slice(0, 160));
+-    });
+-    ws.on("close", (code) => { clearTimeout(kill); done(`dong-${code}`); });
+-    ws.on("error", (e) => errors.push(String(e).slice(0, 160)));
+-  });
+-}
+-
+-const rows = [];
+-for (const lang of ["zh", "ja", "ko", "en"]) {
+-  const r = await measure(lang);
++const rows: Row[] = [];
++for (let round = 0; round < rounds; round++) for (const lang of ["zh", "ja", "ko", "en"]) {
++  const pcm = readFileSync(`${HERE}../do-modal/${lang}.wav`).subarray(44);
++  const ticket = signLiveTicket(secret, { uid, sid: `do${Date.now().toString(36)}${lang}${round}`, model, target, source: "", audio: false, exp: Date.now() + 60_000 });
++  const r = await measure({ url: `${bridge}?ticket=${ticket}`, lang, pcm });
+   rows.push(r);
+-  console.log(`  ${lang}: chữ gốc đầu ${r.firstSourcePartial_s} s · bản dịch đầu ${r.firstTranslationPartial_s} s · câu cuối sau khi hết tiếng ${r.lastFinalAfterSpeechEnd_s} s · câu chốt ${r.finals} · ${(r.errors as string[]).join("; ") || "không lỗi"}`);
++  console.log(`  ${lang}#${round + 1}: chữ gốc đầu ${r.firstSource_s} s · bản dịch đầu ${r.firstTranslation_s} s · câu cuối sau khi hết tiếng ${r.lastFinalAfterSpeechEnd_s} s · câu chốt ${r.finals} · ${r.ok ? "đạt" : r.errors.join("; ") || r.why}`);
+   await new Promise((res) => setTimeout(res, 3000));
+ }
+-const col = (k: string) => rows.map((r) => r[k] as number | null).filter((x): x is number => x != null);
+-const summary = {
+-  bridge, target, model: LIVE_MODEL_38, clips: rows.length,
+-  firstSourcePartial_s: { p50: pct(col("firstSourcePartial_s"), 50), max: Math.max(...col("firstSourcePartial_s")) },
+-  firstTranslationPartial_s: { p50: pct(col("firstTranslationPartial_s"), 50), max: Math.max(...col("firstTranslationPartial_s")) },
+-  lastFinalAfterSpeechEnd_s: { p50: pct(col("lastFinalAfterSpeechEnd_s"), 50), max: Math.max(...col("lastFinalAfterSpeechEnd_s")) },
+-  errors: rows.flatMap((r) => r.errors as string[]),
+-};
++const summary = { bridge, target, model, rounds, ...summarize(rows) };
+ const out = `/tmp/do-live-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+ writeFileSync(out, JSON.stringify({ summary, rows }, null, 1));
+ console.log(JSON.stringify(summary, null, 1));
+diff --git a/deploy/vps/do-live/live-measure.ts b/deploy/vps/do-live/live-measure.ts
+new file mode 100644
+index 0000000..2042a58
+--- /dev/null
++++ b/deploy/vps/do-live/live-measure.ts
+@@ -0,0 +1,98 @@
++// RE6-005: phần đo dùng chung cho do-live.ts, tách để kiểm thử với cầu nối giả.
++// Đồng hồ monotonic (performance.now). Dọn bộ đếm gửi khung khi đóng/lỗi/hết giờ. Lượt lỗi hoặc thiếu mốc được đếm riêng,
++// không trộn vào phân vị. Mốc đo là lúc MÁY ĐO NHẬN sự kiện (onset→nhận), chưa phải lúc giao diện Web/Android vẽ chữ.
++import WebSocket from "ws";
++
++export const pct = (xs: number[], p: number) =>
++  xs.length ? [...xs].sort((a, b) => a - b)[Math.min(xs.length - 1, Math.ceil((p / 100) * xs.length) - 1)] : null;
++const s3 = (ms: number | null | undefined) => (ms == null ? null : Math.round(ms) / 1000);
++
++/** Mốc có tiếng nói đầu và cuối (năng lượng khung 100 ms vượt ngưỡng), tính bằng ms từ đầu đoạn. */
++export function speechSpan(pcm: Buffer) {
++  const frame = 3200; const rms: number[] = [];
++  for (let o = 0; o + frame <= pcm.length; o += frame) {
++    let s = 0; for (let i = o; i < o + frame; i += 2) { const v = pcm.readInt16LE(i); s += v * v; }
++    rms.push(Math.sqrt(s / (frame / 2)));
++  }
++  const thr = Math.max(300, (pct(rms, 90) ?? 0) * 0.15);
++  const first = rms.findIndex((v) => v > thr);
++  if (first < 0) return null;
++  const last = rms.length - 1 - [...rms].reverse().findIndex((v) => v > thr);
++  return { onsetMs: first * 100, offsetMs: (last + 1) * 100 };
++}
++
++export type Row = {
++  lang: string; why: string; ok: boolean; connectMs: number | null; onsetMs: number | null; offsetMs: number | null;
++  firstSource_s: number | null; firstTranslation_s: number | null; lastFinalAfterSpeechEnd_s: number | null;
++  finals: number; framesAfterClose: number; errors: string[]; usage: unknown;
++};
++
++export function measure(o: { url: string; lang: string; pcm: Buffer; timeoutMs?: number; frameMs?: number; now?: () => number }): Promise<Row> {
++  const now = o.now ?? (() => performance.now());
++  const span = speechSpan(o.pcm);
++  const frameMs = o.frameMs ?? 100;
++  return new Promise((resolve) => {
++    const ws = new WebSocket(o.url);
++    const tOpen = now(); let t0 = -1; let opened: number | null = null; let closed = false; let afterClose = 0;
++    const src: number[] = []; const tr: number[] = []; const finals: number[] = []; const errors: string[] = [];
++    let usage: unknown = null; let timer: ReturnType<typeof setInterval> | null = null; let settled = false;
++    const stopTimer = () => { if (timer) { clearInterval(timer); timer = null; } };
++    const done = (why: string) => {
++      if (settled) return; settled = true;
++      stopTimer(); clearTimeout(kill); closed = true;
++      const onset = span?.onsetMs ?? null; const offset = span?.offsetMs ?? null;
++      const rel = (ts: number[], base: number | null) => (ts.length && base != null ? s3(ts[0] - base) : null);
++      const row: Row = {
++        lang: o.lang, why, ok: false, connectMs: opened == null ? null : Math.round(opened - tOpen), onsetMs: onset, offsetMs: offset,
++        firstSource_s: rel(src, onset), firstTranslation_s: rel(tr, onset),
++        lastFinalAfterSpeechEnd_s: finals.length && offset != null ? s3(finals[finals.length - 1] - offset) : null,
++        finals: finals.length, framesAfterClose: afterClose, errors, usage,
++      };
++      row.ok = !errors.length && why === "dong-1000" && row.firstSource_s != null && row.firstTranslation_s != null && row.finals > 0;
++      resolve(row);
++    };
++    const kill = setTimeout(() => { ws.terminate(); done("het-gio"); }, o.timeoutMs ?? 120_000);
++    ws.on("message", (data, isBinary) => {
++      if (isBinary) return;
++      let m: { type: string; event?: { kind: string; final?: boolean; usage?: unknown; message?: string }; message?: string };
++      try { m = JSON.parse(data.toString()); } catch { errors.push("tin không phải JSON"); return; }
++      const at = () => now() - t0;
++      if (m.type === "ready" && t0 < 0) {
++        opened = now(); t0 = opened; let off = 0;
++        timer = setInterval(() => {
++          if (closed || ws.readyState !== WebSocket.OPEN) { if (closed) afterClose++; stopTimer(); return; }
++          if (off >= o.pcm.length) { stopTimer(); ws.send(JSON.stringify({ type: "stop" })); return; }
++          ws.send(o.pcm.subarray(off, off + 3200)); off += 3200;
++        }, frameMs);
++      } else if (m.type === "event" && m.event && t0 >= 0) {
++        const k = m.event.kind;
++        if (k === "source" || k === "source-delta") src.push(at());
++        if (k === "translation" || k === "translation-delta") { tr.push(at()); if (m.event.final) finals.push(at()); }
++        if (k === "usage") usage = m.event.usage;
++        if (k === "error") errors.push(String(m.event.message).slice(0, 160));
++      } else if (m.type === "error") errors.push(String(m.message).slice(0, 160));
++    });
++    ws.on("close", (code) => done(`dong-${code}`));
++    ws.on("error", (e) => { errors.push(String(e).slice(0, 160)); });
++  });
++}
++
++/** Phân vị chỉ trên lượt đạt; lượt lỗi/thiếu mốc đếm riêng theo lý do. */
++export function summarize(rows: Row[]) {
++  const ok = rows.filter((r) => r.ok);
++  const dist = (k: "firstSource_s" | "firstTranslation_s" | "lastFinalAfterSpeechEnd_s") => {
++    const xs = ok.map((r) => r[k]).filter((x): x is number => x != null);
++    return { n: xs.length, p50: pct(xs, 50), p95: pct(xs, 95), p99: pct(xs, 99), max: xs.length ? Math.max(...xs) : null };
++  };
++  const failed: Record<string, number> = {};
++  for (const r of rows) if (!r.ok) {
++    const why = r.errors.length ? "loi" : r.why !== "dong-1000" ? r.why : r.firstSource_s == null ? "thieu-chu-goc" : r.firstTranslation_s == null ? "thieu-ban-dich" : "thieu-cau-chot";
++    failed[why] = (failed[why] ?? 0) + 1;
++  }
++  return {
++    samples: rows.length, ok: ok.length, failed,
++    onsetToSourceReceive_s: dist("firstSource_s"), onsetToTranslationReceive_s: dist("firstTranslation_s"),
++    speechEndToFinalReceive_s: dist("lastFinalAfterSpeechEnd_s"),
++    note: "Mốc nhận tại máy đo, chưa gồm thời gian vẽ trên Web/Android.",
++  };
++}
+diff --git a/deploy/vps/do-modal/do-modal.py b/deploy/vps/do-modal/do-modal.py
+index b4dcfd7..c835644 100644
+--- a/deploy/vps/do-modal/do-modal.py
++++ b/deploy/vps/do-modal/do-modal.py
+@@ -3,90 +3,193 @@
+ 
+ Hỏi địa chỉ (TYZO_ASR_URL) và token (TYZO_ASR_TOKEN, chữ không hiện) — lấy trên Vercel → Settings → Environment Variables.
+ Token chỉ nằm trong bộ nhớ khi chạy, không ghi ra tệp. Gửi đúng định dạng app (WAV mono 16 kHz, base64 trong JSON).
+-Đo: lần đầu (máy GPU khởi động lạnh), các lần sau (máy nóng), 4 lệnh song song. Dừng ngay khi chi ước tính chạm trần.
++Đo: lần đầu (máy GPU khởi động lạnh), các lần sau (máy nóng), 4 lệnh song song.
++
++RE6-004 · trần chi là TRẦN ƯỚC TÍNH CỦA SCRIPT, không phải trần tuyệt đối của Modal:
++- Trước mỗi lệnh giữ chỗ chi phí xấu nhất (hạn chót × giá GPU + trần tiền model). Lệnh nào không đủ chỗ trong trần thì
++  không gửi, kể cả khi chạy song song.
++- Lệnh lỗi, hết giờ hoặc stats không hợp lệ (không hữu hạn, âm) → chi phí KHÔNG RÕ, tính bằng toàn bộ phần giữ chỗ.
++- Mỗi lệnh có hạn chót tổng (CALL_DEADLINE_S) cho cả chuỗi chuyển hướng, tối đa MAX_REDIRECTS lần, chỉ cùng máy https.
++- Modal vẫn tính tiền máy chờ (scaledown) và khởi động sau lệnh cuối; script không thấy phần đó. Xem hóa đơn Modal.
+ Kết quả: /opt/tyzo-do-modal-<giờ>.json (không có token) — gửi tệp này cho Claude.
+ """
+-import base64, getpass, json, os, statistics, sys, threading, time, urllib.error, urllib.parse, urllib.request
++import base64, getpass, json, math, os, statistics, sys, threading, time, urllib.error, urllib.parse, urllib.request
+ 
+ HERE = os.path.dirname(os.path.abspath(__file__))
+ CLIPS = ["zh", "ja", "ko", "en"]
+-GPU_USD_PER_HOUR = 0.8  # L40 theo Chủ; chỉ để chặn trần, số thật lấy từ stats
++GPU_USD_PER_HOUR = float(os.environ.get("GPU_USD_PER_HOUR", "0.8"))  # L40 theo Chủ; chỉ để chặn trần, số thật lấy từ stats
+ BUDGET_USD = float(os.environ.get("TRAN_USD", "1.0"))
++CALL_DEADLINE_S = float(os.environ.get("CALL_DEADLINE_S", "600"))
++MODEL_CAP_USD = float(os.environ.get("MODEL_CAP_USD", "0.02"))  # trần tiền model chữ mỗi lệnh
++MAX_REDIRECTS = int(os.environ.get("MAX_REDIRECTS", "20"))
+ 
+-url = input("Dán TYZO_ASR_URL (https://….modal.run): ").strip()
+-u = urllib.parse.urlparse(url)
+-if u.scheme != "https" or not u.hostname or not u.hostname.endswith(".modal.run") or u.username or u.password:
+-    sys.exit("✘ Địa chỉ phải là https://….modal.run")
+-token = getpass.getpass("Dán TYZO_ASR_TOKEN (chữ không hiện): ").strip()
+-if not token:
+-    sys.exit("✘ Chưa có token")
+-profile = (input("Hồ sơ [nhanh/ky, Enter = nhanh]: ").strip() or "nhanh")
+-if profile not in ("nhanh", "ky"):
+-    sys.exit("✘ Hồ sơ chỉ nhận nhanh hoặc ky")
+-
+-spent = 0.0
+-rows = []
+-lock = threading.Lock()
+-
+-
+-def call(lang, tag):
+-    global spent
+-    with lock:
+-        if spent >= BUDGET_USD:
+-            return None
+-    audio = open(os.path.join(HERE, f"{lang}.wav"), "rb").read()
+-    body = json.dumps({"token": token, "audio_b64": base64.b64encode(audio).decode(), "ext": "wav", "lang": lang, "profile": profile}).encode()
+-    t0 = time.time()
+-    row = {"tag": tag, "lang": lang, "audio_s": round((len(audio) - 44) / 32000, 1)}
+-    try:
+-        req = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"}, method="POST")
+-        target = url
+-        while True:  # Modal trả 303 khi việc dài; đi theo như app
++
++def finite_nonneg(v):
++    return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and v >= 0
++
++
++class _NoRedirect(urllib.request.HTTPRedirectHandler):
++    def redirect_request(self, *a, **k):
++        return None  # tự đi theo 303 để giới hạn số lần, hạn chót và máy đích
++
++
++class Meter:
++    def __init__(self, url, token, profile, budget=BUDGET_USD, deadline=CALL_DEADLINE_S, gpu_rate=GPU_USD_PER_HOUR,
++                 model_cap=MODEL_CAP_USD, max_redirects=MAX_REDIRECTS, read_clip=None, log=print):
++        for name, v in (("budget", budget), ("deadline", deadline), ("gpu_rate", gpu_rate), ("model_cap", model_cap)):
++            if not finite_nonneg(v):
++                raise ValueError(f"{name} phải là số hữu hạn không âm")
++        self.url, self.token, self.profile = url, token, profile
++        self.budget, self.deadline, self.max_redirects = budget, deadline, max_redirects
++        self.reserve = deadline / 3600 * gpu_rate + model_cap
++        self.gpu_rate, self.model_cap = gpu_rate, model_cap
++        self.spent = 0.0      # đã biết + không rõ (tính đủ phần giữ chỗ)
++        self.unknown = 0.0    # phần trong spent là không rõ
++        self.held = 0.0       # đang giữ chỗ cho lệnh đang chạy
++        self.skipped = 0
++        self.rows = []
++        self.lock = threading.Lock()
++        self.read_clip = read_clip or (lambda lang: open(os.path.join(HERE, f"{lang}.wav"), "rb").read())
++        self.log = log
++        self.opener = urllib.request.build_opener(_NoRedirect)
++        self.host = urllib.parse.urlparse(url).hostname
++
++    def _take(self):
++        with self.lock:
++            if self.spent + self.held + self.reserve > self.budget + 1e-12:
++                self.skipped += 1
++                return False
++            self.held += self.reserve
++            return True
++
++    def _settle(self, usd):
++        with self.lock:
++            self.held -= self.reserve
++            if usd is None:
++                self.spent += self.reserve; self.unknown += self.reserve
++            else:
++                self.spent += usd
++
++    def _request(self, row):
++        end = time.monotonic() + self.deadline
++        body = json.dumps({"token": self.token, "audio_b64": base64.b64encode(row.pop("_audio")).decode(), "ext": "wav",
++                           "lang": row["lang"], "profile": self.profile}).encode()
++        req = urllib.request.Request(self.url, data=body, headers={"Content-Type": "application/json"}, method="POST")
++        target, hops = self.url, 0
++        while True:
++            left = end - time.monotonic()
++            if left <= 0:
++                raise TimeoutError("hết hạn chót lệnh")
+             try:
+-                with urllib.request.urlopen(req, timeout=1800) as r:
+-                    data = json.loads(r.read()); row["http"] = r.status; break
++                with self.opener.open(req, timeout=left) as r:
++                    row["http"] = r.status
++                    return json.loads(r.read())
+             except urllib.error.HTTPError as e:
+-                if e.code == 303 and e.headers.get("location"):
+-                    target = urllib.parse.urljoin(target, e.headers["location"])
+-                    req = urllib.request.Request(target, method="GET"); continue
+-                row["http"] = e.code; data = None; break
+-        row["seconds"] = round(time.time() - t0, 2)
+-        if data:
+-            st = data.get("stats") or {}
+-            row["stats"] = {k: v for k, v in st.items() if isinstance(v, (int, float, str))}
+-            row["segments"] = len(data.get("segs") or [])
+-            usd = (st.get("giay_xu_ly", 0) / 3600) * GPU_USD_PER_HOUR + st.get("tien_model_chu_usd", 0)
+-            row["usd_est"] = round(usd, 5)
+-            with lock:
+-                spent += usd
+-    except Exception as e:  # mạng, timeout
+-        row["seconds"] = round(time.time() - t0, 2); row["error"] = str(e)[:160]
+-    with lock:
+-        rows.append(row)
+-    print(f"  {tag:10} {lang} {row.get('http','—')} {row['seconds']} s  câu={row.get('segments','—')}  ~{row.get('usd_est','?')} USD", flush=True)
+-    return row
+-
+-
+-print(f"Trần chi: {BUDGET_USD} USD. Bắt đầu đo…")
+-call("zh", "lanh")                      # lần đầu: máy GPU khởi động lạnh
+-for rnd in range(3):                     # máy nóng: 3 vòng × 4 ngôn ngữ
+-    for lang in CLIPS:
+-        call(lang, f"nong-{rnd + 1}")
+-threads = [threading.Thread(target=call, args=(lang, "song-song")) for lang in CLIPS]
+-[t.start() for t in threads]; [t.join() for t in threads]
+-
+-warm = [r["seconds"] for r in rows if r["tag"].startswith("nong") and r.get("http") == 200]
+-par = [r["seconds"] for r in rows if r["tag"] == "song-song" and r.get("http") == 200]
+-pct = lambda xs, p: sorted(xs)[min(len(xs) - 1, int(round(p / 100 * (len(xs) - 1))))] if xs else None
+-summary = {
+-    "profile": profile, "budget_usd": BUDGET_USD, "spent_usd_est": round(spent, 4), "calls": len(rows),
+-    "cold_s": next((r["seconds"] for r in rows if r["tag"] == "lanh"), None),
+-    "warm_s": {"n": len(warm), "p50": pct(warm, 50), "p95": pct(warm, 95), "max": max(warm) if warm else None},
+-    "parallel4_s": {"n": len(par), "max": max(par) if par else None},
+-    "realtime_factor_warm": round(statistics.median(warm) / 30, 3) if warm else None,
+-    "errors": [r for r in rows if r.get("http") != 200],
+-}
+-out = f"/opt/tyzo-do-modal-{time.strftime('%Y%m%d-%H%M%S')}.json"
+-json.dump({"summary": summary, "rows": rows}, open(out, "w"), ensure_ascii=False, indent=1)
+-print(json.dumps(summary, ensure_ascii=False, indent=1))
+-print(f"✔ Đã lưu {out} — gửi tệp này (hoặc ảnh phần trên) cho Claude.")
++                if e.code in (301, 302, 303, 307, 308) and e.headers.get("location"):
++                    hops += 1
++                    if hops > self.max_redirects:
++                        raise RuntimeError(f"quá {self.max_redirects} lần chuyển hướng")
++                    nxt = urllib.parse.urljoin(target, e.headers["location"])
++                    p = urllib.parse.urlparse(nxt)
++                    if p.hostname != self.host or p.scheme != urllib.parse.urlparse(self.url).scheme:
++                        raise RuntimeError("chuyển hướng sang máy khác")
++                    target = nxt
++                    req = urllib.request.Request(target, method="GET")
++                    continue
++                row["http"] = e.code
++                return None
++
++    def cost_of(self, data):
++        """Chi phí từ stats; None nếu không rõ (thiếu hoặc không hợp lệ)."""
++        st = (data or {}).get("stats")
++        if not isinstance(st, dict):
++            return None
++        g, m = st.get("giay_xu_ly"), st.get("tien_model_chu_usd", 0)
++        if not finite_nonneg(g) or not finite_nonneg(m):
++            return None
++        return g / 3600 * self.gpu_rate + m
++
++    def call(self, lang, tag):
++        if not self._take():
++            return None
++        row = {"tag": tag, "lang": lang}
++        t0 = time.monotonic()
++        usd = None
++        try:
++            audio = self.read_clip(lang)
++            row["audio_s"] = round((len(audio) - 44) / 32000, 1)
++            row["_audio"] = audio
++            data = self._request(row)
++            row["seconds"] = round(time.monotonic() - t0, 2)
++            if data is not None:
++                st = data.get("stats") or {}
++                row["stats"] = {k: v for k, v in st.items() if isinstance(v, (int, float, str))} if isinstance(st, dict) else {}
++                row["segments"] = len(data.get("segs") or [])
++                usd = self.cost_of(data)
++                if usd is not None:
++                    row["usd_est"] = round(usd, 5)
++                    if usd > self.reserve:
++                        row["vuot_giu_cho"] = True
++        except Exception as e:  # mạng, timeout, chuyển hướng
++            row["error"] = str(e)[:160]
++        finally:
++            row.pop("_audio", None)
++            row.setdefault("seconds", round(time.monotonic() - t0, 2))
++            if usd is None:
++                row["usd_unknown"] = True
++            self._settle(usd)
++            with self.lock:
++                self.rows.append(row)
++        self.log(f"  {tag:10} {lang} {row.get('http','—')} {row['seconds']} s  câu={row.get('segments','—')}  "
++                 f"~{row.get('usd_est','không rõ')} USD")
++        return row
++
++    def run(self):
++        self.call("zh", "lanh")
++        for rnd in range(3):
++            for lang in CLIPS:
++                self.call(lang, f"nong-{rnd + 1}")
++        threads = [threading.Thread(target=self.call, args=(lang, "song-song")) for lang in CLIPS]
++        [t.start() for t in threads]; [t.join() for t in threads]
++        return self.summary()
++
++    def summary(self):
++        rows = self.rows
++        warm = [r["seconds"] for r in rows if r["tag"].startswith("nong") and r.get("http") == 200]
++        par = [r["seconds"] for r in rows if r["tag"] == "song-song" and r.get("http") == 200]
++        pct = lambda xs, p: sorted(xs)[min(len(xs) - 1, int(round(p / 100 * (len(xs) - 1))))] if xs else None
++        return {
++            "profile": self.profile, "budget_usd": self.budget, "budget_kind": "trần ước tính của script, không tuyệt đối",
++            "reserve_per_call_usd": round(self.reserve, 5), "spent_usd_est": round(self.spent, 5),
++            "unknown_usd_reserved": round(self.unknown, 5), "calls": len(rows), "skipped_for_budget": self.skipped,
++            "cold_s": next((r["seconds"] for r in rows if r["tag"] == "lanh"), None),
++            "warm_s": {"n": len(warm), "p50": pct(warm, 50), "p95": pct(warm, 95), "max": max(warm) if warm else None},
++            "parallel4_s": {"n": len(par), "max": max(par) if par else None},
++            "realtime_factor_warm": round(statistics.median(warm) / 30, 3) if warm else None,
++            "errors": [r for r in rows if r.get("http") != 200],
++            "not_counted": "Thời gian máy chờ/khởi động Modal sau lệnh; đối chiếu hóa đơn Modal.",
++        }
++
++
++def main():
++    url = input("Dán TYZO_ASR_URL (https://….modal.run): ").strip()
++    u = urllib.parse.urlparse(url)
++    if u.scheme != "https" or not u.hostname or not u.hostname.endswith(".modal.run") or u.username or u.password:
++        sys.exit("✘ Địa chỉ phải là https://….modal.run")
++    token = getpass.getpass("Dán TYZO_ASR_TOKEN (chữ không hiện): ").strip()
++    if not token:
++        sys.exit("✘ Chưa có token")
++    profile = (input("Hồ sơ [nhanh/ky, Enter = nhanh]: ").strip() or "nhanh")
++    if profile not in ("nhanh", "ky"):
++        sys.exit("✘ Hồ sơ chỉ nhận nhanh hoặc ky")
++    m = Meter(url, token, profile)
++    print(f"Trần ước tính: {m.budget} USD (giữ chỗ {m.reserve:.4f} USD/lệnh; không phải trần tuyệt đối của Modal). Bắt đầu đo…")
++    summary = m.run()
++    out = f"/opt/tyzo-do-modal-{time.strftime('%Y%m%d-%H%M%S')}.json"
++    json.dump({"summary": summary, "rows": m.rows}, open(out, "w"), ensure_ascii=False, indent=1)
++    print(json.dumps(summary, ensure_ascii=False, indent=1))
++    print(f"✔ Đã lưu {out} — gửi tệp này (hoặc ảnh phần trên) cho Claude.")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/deploy/vps/do-modal/test_do_modal.py b/deploy/vps/do-modal/test_do_modal.py
+new file mode 100644
+index 0000000..e4813c1
+--- /dev/null
++++ b/deploy/vps/do-modal/test_do_modal.py
+@@ -0,0 +1,135 @@
++"""RE6-004: kiểm Meter trong do-modal.py với máy chủ Modal giả trên loopback. Không gọi Modal thật."""
++import importlib.util, json, os, threading, time, unittest
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++
++spec = importlib.util.spec_from_file_location("do_modal", os.path.join(os.path.dirname(__file__), "do-modal.py"))
++dm = importlib.util.module_from_spec(spec); spec.loader.exec_module(dm)
++
++MODE = {"v": "ok"}
++INFLIGHT = {"now": 0, "max": 0}
++L = threading.Lock()
++
++
++class H(BaseHTTPRequestHandler):
++    def log_message(self, *a):
++        pass
++
++    def _send(self, code, body=None, loc=None):
++        self.send_response(code)
++        if loc:
++            self.send_header("Location", loc)
++        b = json.dumps(body).encode() if body is not None else b""
++        self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
++
++    def do_POST(self):
++        n = int(self.headers.get("Content-Length", 0)); self.rfile.read(n)
++        with L:
++            INFLIGHT["now"] += 1; INFLIGHT["max"] = max(INFLIGHT["max"], INFLIGHT["now"])
++        try:
++            m = MODE["v"]
++            if m == "slow":
++                time.sleep(0.3)
++            if m == "hang":
++                time.sleep(3); return self._send(200, {"stats": {"giay_xu_ly": 1}})
++            if m == "loop":
++                return self._send(303, loc="/wait")
++            if m == "offhost":
++                return self._send(303, loc="http://evil.example/x")
++            if m == "redirect-once":
++                return self._send(303, loc="/done")
++            stats = {"ok": {"giay_xu_ly": 36, "tien_model_chu_usd": 0.001}, "slow": {"giay_xu_ly": 36},
++                     "nan": {"giay_xu_ly": float("nan")}, "neg": {"giay_xu_ly": -5}, "str": {"giay_xu_ly": "36"},
++                     "nostats": None, "500": None}[m]
++            if m == "500":
++                return self._send(500, {"error": "x"})
++            # json.dumps(nan) → NaN (Python json.loads đọc lại được), mô phỏng stats hỏng
++            self._send(200, {"segs": [1, 2], **({"stats": stats} if stats is not None else {})})
++        finally:
++            with L:
++                INFLIGHT["now"] -= 1
++
++    def do_GET(self):
++        if self.path == "/done":
++            return self._send(200, {"segs": [1], "stats": {"giay_xu_ly": 36}})
++        return self._send(303, loc="/wait")
++
++
++class T(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
++        threading.Thread(target=cls.srv.serve_forever, daemon=True).start()
++        cls.url = f"http://127.0.0.1:{cls.srv.server_address[1]}/run"
++
++    @classmethod
++    def tearDownClass(cls):
++        cls.srv.shutdown()
++
++    def meter(self, mode, **kw):
++        MODE["v"] = mode; INFLIGHT.update(now=0, max=0)
++        kw.setdefault("deadline", 36); kw.setdefault("gpu_rate", 1.0); kw.setdefault("model_cap", 0.0)
++        return dm.Meter(self.url, "tok-secret", "nhanh", read_clip=lambda lang: b"\0" * 32044, log=lambda *_: None, **kw)
++
++    def test_known_cost_counts(self):
++        m = self.meter("ok", budget=1.0)  # giữ chỗ 0.01/lệnh, thực 0.011
++        m.call("zh", "lanh")
++        self.assertAlmostEqual(m.spent, 0.011)
++        self.assertEqual(m.held, 0)
++        self.assertTrue(m.rows[0].get("vuot_giu_cho"))
++
++    def test_parallel_cannot_exceed_budget(self):
++        m = self.meter("slow", budget=0.025)  # chỉ đủ chỗ cho 2 lệnh 0.01
++        ts = [threading.Thread(target=m.call, args=(lang, "song-song")) for lang in dm.CLIPS]
++        [t.start() for t in ts]; [t.join() for t in ts]
++        self.assertEqual(len(m.rows), 2); self.assertEqual(m.skipped, 2)
++        self.assertLessEqual(INFLIGHT["max"], 2)
++        self.assertLessEqual(m.spent, 0.025)
++
++    def test_full_run_stays_under_budget(self):
++        m = self.meter("ok", budget=0.05, model_cap=0.001)  # giữ chỗ 0.011 → tối đa 4 lệnh
++        s = m.run()
++        self.assertLessEqual(s["spent_usd_est"], 0.05 + 1e-9)
++        self.assertEqual(s["calls"], 4); self.assertEqual(s["skipped_for_budget"], 13)
++        self.assertIn("không tuyệt đối", s["budget_kind"])
++
++    def test_timeout_charges_reserve_as_unknown(self):
++        m = self.meter("hang", budget=1.0, deadline=0.5)
++        t0 = time.monotonic(); m.call("ja", "nong-1")
++        self.assertLess(time.monotonic() - t0, 2.5)
++        r = m.rows[0]
++        self.assertIn("error", r); self.assertTrue(r["usd_unknown"])
++        self.assertAlmostEqual(m.unknown, m.reserve); self.assertAlmostEqual(m.spent, m.reserve)
++
++    def test_invalid_stats_are_unknown(self):
++        for mode in ("nan", "neg", "str", "nostats", "500"):
++            with self.subTest(mode=mode):
++                m = self.meter(mode, budget=1.0)
++                m.call("ko", "nong-1")
++                self.assertTrue(m.rows[0]["usd_unknown"]); self.assertAlmostEqual(m.spent, m.reserve)
++
++    def test_redirect_cap_and_deadline(self):
++        m = self.meter("loop", budget=1.0, max_redirects=5)
++        m.call("en", "nong-1")
++        self.assertIn("chuyển hướng", m.rows[0]["error"]); self.assertTrue(m.rows[0]["usd_unknown"])
++        m = self.meter("loop", budget=1.0, max_redirects=10**6, deadline=0.3)
++        t0 = time.monotonic(); m.call("en", "nong-1")
++        self.assertLess(time.monotonic() - t0, 2); self.assertIn("hạn chót", m.rows[0]["error"])
++
++    def test_redirect_same_host_followed_offhost_refused(self):
++        m = self.meter("redirect-once", budget=1.0)
++        m.call("zh", "nong-1")
++        self.assertEqual(m.rows[0]["http"], 200); self.assertAlmostEqual(m.spent, 0.01)
++        m = self.meter("offhost", budget=1.0)
++        m.call("zh", "nong-1")
++        self.assertIn("máy khác", m.rows[0]["error"])
++
++    def test_bad_config_rejected_and_token_not_in_rows(self):
++        for bad in (float("nan"), -1.0, float("inf")):
++            with self.assertRaises(ValueError):
++                self.meter("ok", budget=bad)
++        m = self.meter("ok", budget=1.0); m.call("zh", "lanh")
++        self.assertNotIn("tok-secret", json.dumps({"s": m.summary(), "r": m.rows}))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/deploy/vps/tyzo.sh b/deploy/vps/tyzo.sh
+index 7d2594a..162619a 100755
+--- a/deploy/vps/tyzo.sh
++++ b/deploy/vps/tyzo.sh
+@@ -1710,25 +1710,120 @@ VERCEL_CLI_VERSION="65.14.0"
+ 
+ # Kịch bản chạy trong container node:22 để đặt env và đưa lên Vercel. In mốc «BUOC …» để máy ghi nhật ký chuyển nguồn.
+ # Không xóa biến trước khi thêm (trước đây env rm rồi env add: thêm lỗi là production mất biến); --force ghi đè một bước.
++# RE6-003: không đọc chữ «ready» từ đầu ra CLI. Sau mỗi tác động, kiểm bằng Vercel REST API (JSON): giá trị env đã ghi
++# (so băm, không in giá trị), đúng project/target/ID/mã phiên bản (meta tyzo_sha, tyzo_run), readyState READY,
++# tên miền production trỏ đúng deployment và trang trả lời. Mỗi lệnh có giới hạn thời gian. Hết giờ hoặc lỗi giữa chừng
++# thì tra deployment theo tyzo_run để phục hồi, coi là chưa rõ và giữ nguồn cũ khóa.
+ chay_vercel_sh() {
+   cat <<'SH'
+ set -uo pipefail
+ V="npx -y vercel@${VERCEL_CLI_VERSION:?} --token $TOK ${SCOPE:+--scope $SCOPE}"
+ ENVF="${ENVF:-/x/env}"
+-$V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
++T_CLI="${T_CLI:-180}"; T_DEPLOY="${T_DEPLOY:-1500}"
++export VERCEL_API="${VERCEL_API:-https://api.vercel.com}" T_READY="${T_READY:-900}" T_POLL="${T_POLL:-5}"
++RUN="${RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$-$RANDOM}"; MA="${SHA:-}"
++KIEM="$(mktemp)"; trap 'rm -f "$KIEM"' EXIT
++cat > "$KIEM" <<'JS'
++const [mode, ...a] = process.argv.slice(2);
++const api = process.env.VERCEL_API.replace(/\/$/, "");
++const cfg = JSON.parse(require("fs").readFileSync(".vercel/project.json", "utf8"));
++const team = String(cfg.orgId || "").startsWith("team_") ? `teamId=${encodeURIComponent(cfg.orgId)}` : "";
++const q = (p, extra = "") => `${api}${p}${p.includes("?") ? "&" : "?"}${[team, extra].filter(Boolean).join("&")}`;
++const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
++async function get(p) {
++  const r = await fetch(q(p), { headers: { Authorization: `Bearer ${process.env.TOK}` }, signal: AbortSignal.timeout(20000) });
++  if (!r.ok) throw new Error(`API ${r.status}`);
++  const j = await r.json();
++  if (!j || typeof j !== "object") throw new Error("API không trả JSON");
++  return j;
++}
++const hash = (s) => require("crypto").createHash("sha256").update(s).digest("hex");
++const fail = (code, msg) => { console.log(msg); process.exit(code); };
++async function envCheck(file) {
++  const want = new Map();
++  for (const line of require("fs").readFileSync(file, "utf8").split("\n")) {
++    if (!line) continue;
++    const i = line.indexOf("=");
++    want.set(i < 0 ? line : line.slice(0, i), i < 0 ? "" : line.slice(i + 1));
++  }
++  const list = await get(`/v10/projects/${encodeURIComponent(cfg.projectId)}/env?decrypt=true`);
++  if (!Array.isArray(list.envs)) throw new Error("API env sai cấu trúc");
++  let bad = 0;
++  for (const [k, v] of want) {
++    const rows = list.envs.filter((e) => e && e.key === k && Array.isArray(e.target) && e.target.includes("production") && !e.gitBranch);
++    let why = "";
++    if (rows.length !== 1) why = rows.length ? "nhiều bản production" : "thiếu";
++    else {
++      let e = rows[0];
++      if (e.type === "sensitive") why = "không đọc lại được (sensitive)";
++      else {
++        if (!(e.decrypted && typeof e.value === "string")) e = await get(`/v1/projects/${encodeURIComponent(cfg.projectId)}/env/${encodeURIComponent(e.id)}`);
++        if (typeof e.value !== "string") why = "không đọc lại được";
++        else if (hash(e.value) !== hash(v)) why = "giá trị không khớp";
++      }
++    }
++    if (why) { bad++; console.log(`  LOI kiểm ${k}: ${why}`); } else console.log(`  khớp ${k}`);
++  }
++  if (bad) process.exit(1);
++}
++function mine(d, run, sha) {
++  const m = d.meta || {};
++  return d.projectId === cfg.projectId && d.target === "production" && m.tyzo_run === run && (!sha || m.tyzo_sha === sha);
++}
++async function deployCheck(url, run, sha) {
++  const host = String(url).replace(/^https:\/\//, "").replace(/\/.*$/, "");
++  const end = Date.now() + Number(process.env.T_READY) * 1000;
++  let d, said = "";
++  for (;;) {
++    d = await get(`/v13/deployments/${encodeURIComponent(host)}`).catch((e) => ({ _err: e.message }));
++    if (!d._err) {
++      if (typeof d.id !== "string" || d.url !== host) fail(4, `LOI: API trả deployment khác ${host}`);
++      if (!mine(d, run, sha)) fail(4, `LOI: deployment ${d.id} sai project, target, lượt chạy hoặc mã phiên bản`);
++      if (said !== d.id) { console.log(`BUOC deploy-id ${d.id}`); said = d.id; }
++      if (d.readyState === "READY" && d.aliasAssigned === true) break;
++      if (["ERROR", "CANCELED", "DELETED"].includes(d.readyState)) fail(4, `LOI: deployment ${d.id} ${d.readyState}`);
++      if (d.aliasError) fail(4, `LOI: deployment ${d.id} không gán được tên miền production`);
++    }
++    if (Date.now() > end) fail(5, `LOI: hết giờ chờ deployment (${d._err || d.readyState || "?"})`);
++    await sleep(Number(process.env.T_POLL) * 1000);
++  }
++  const alias = (Array.isArray(d.alias) ? d.alias : []).filter((x) => typeof x === "string");
++  if (!alias.length) fail(4, `LOI: deployment ${d.id} không có tên miền production`);
++  for (const x of alias) {
++    const al = await get(`/v4/aliases/${encodeURIComponent(x)}`);
++    if (al.deploymentId !== d.id) fail(4, `LOI: ${x} chưa trỏ tới ${d.id}`);
++  }
++  console.log(`BUOC deploy-xong https://${host} ${d.id}`);
++  const r = await fetch(`${process.env.PROBE_BASE || "https://"}${alias[0]}/`, { redirect: "manual", signal: AbortSignal.timeout(20000) }).catch(() => null);
++  if (!r || r.status >= 400) fail(6, `LOI: ${alias[0]} không trả lời (${r ? r.status : "mất kết nối"})`);
++  console.log(`BUOC kiem-xong ${d.id} ${sha || "-"}`);
++}
++async function find(run) {
++  const j = await get(`/v6/deployments?projectId=${encodeURIComponent(cfg.projectId)}&target=production&limit=50`);
++  if (!Array.isArray(j.deployments)) throw new Error("API deployments sai cấu trúc");
++  const hit = j.deployments.filter((d) => (d.meta || {}).tyzo_run === run);
++  console.log(hit.length ? hit.map((d) => `TIM ${d.uid} ${d.readyState || d.state || "?"} https://${d.url}`).join("\n") : "TIM khong-thay");
++}
++(mode === "env" ? envCheck(a[0]) : mode === "deploy" ? deployCheck(a[0], a[1], a[2]) : find(a[0]))
++  .catch((e) => fail(7, `LOI: không kiểm được qua API (${e.message})`));
++JS
++kiem() { node "$KIEM" "$@"; }
++tim() { echo "Tra deployment của lượt $RUN:"; kiem tim "$RUN" || echo "TIM khong-ro"; }
++timeout "$T_CLI" $V link --yes --project "$PROJ" >/dev/null 2>&1 || { echo "LOI: không tạo hoặc nối được project (kiểm mã truy cập, tên nhóm)"; exit 1; }
++[ -s .vercel/project.json ] || { echo "LOI: không có định danh project sau khi nối"; exit 1; }
+ echo "BUOC env-bat-dau"
+ while IFS= read -r line; do
+   [ -z "$line" ] && continue
+   k="${line%%=*}"; val="${line#*=}"
+-  printf '%s' "$val" | $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
++  printf '%s' "$val" | timeout "$T_CLI" $V env add "$k" --environment production --force >/dev/null 2>&1 && echo "  đã đặt $k" || { echo "  LOI khi đặt $k"; exit 1; }
+ done < "$ENVF"
++kiem env "$ENVF" || { echo "LOI: env trên Vercel chưa khớp, chưa deploy"; exit 1; }
+ echo "BUOC env-xong"
+-echo "BUOC deploy-bat-dau"
+-url="$($V deploy --prod --yes 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; exit 3; }
+-case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; exit 3 ;; esac
+-$V inspect "$url" 2>&1 | grep -qi 'ready' || { echo "LOI: bản dựng $url chưa Ready"; exit 3; }
+-echo "BUOC deploy-xong $url"
+-if [ -n "${DOM:-}" ]; then $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3; fi
++echo "BUOC deploy-bat-dau $RUN ${MA:--}"
++url="$(timeout "$T_DEPLOY" $V deploy --prod --yes --meta "tyzo_run=$RUN" ${MA:+--meta "tyzo_sha=$MA"} 2>/dev/null | tail -n 1)" || { echo "LOI: deploy không xác nhận được kết quả"; tim; exit 3; }
++case "$url" in https://*) ;; *) echo "LOI: deploy không trả địa chỉ"; tim; exit 3 ;; esac
++kiem deploy "$url" "$RUN" "$MA" || { tim; exit 3; }
++if [ -n "${DOM:-}" ]; then timeout "$T_CLI" $V domains add "$DOM" "$PROJ" 2>&1 | tail -n 3 || echo "  Chưa thêm được tên miền $DOM, thêm tay trên Vercel."; fi
+ SH
+ }
+ 
+@@ -1748,13 +1843,16 @@ chuyen_dang_do() {
+   last="$(buoc_chuyen_cuoi)" || return 0
+   [ "$last" != "xong" ] && [ "$last" != "da-mo-lai" ]
+ }
+-# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh.
++# Bước cuối Vercel đạt được, đọc từ đầu ra của chay.sh. Chỉ «xong» khi có mốc kiem-xong (API + trang trả lời).
+ buoc_vercel() {
+-  if grep -q '^BUOC deploy-xong' "$1"; then echo xong
++  if grep -q '^BUOC kiem-xong' "$1"; then echo xong
++  elif grep -q '^BUOC deploy-xong' "$1"; then echo kiem-chua-dat
+   elif grep -q '^BUOC deploy-bat-dau' "$1"; then echo deploy-chua-ro
+   elif grep -q '^BUOC env-bat-dau' "$1"; then echo env-do-dang
+   else echo chua-doi-vercel; fi
+ }
++# ID deployment cuối cùng ghi được (để nhật ký và phục hồi), không có thì «-».
++id_vercel() { awk '/^BUOC deploy-id /{d=$3} /^TIM /&&$2!~/^khong-/{d=$2} END{print (d==""?"-":d)}' "$1"; }
+ 
+ # =====================================================================
+ # Đưa web lên một tài khoản Vercel (mới hoặc khác)
+@@ -1818,15 +1916,19 @@ TXT
+     khoa_va_doi_soat_chuyen "$neon_url" || return 1
+   fi
+   if [ "$CHUYEN_DA_KHOA" = 1 ]; then ghi_chuyen vercel-bat-dau "$proj" || return 1; fi
+-  docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" \
++  local ma_sha; ma_sha="$(git -C "$DIR" rev-parse HEAD 2>/dev/null)" || ma_sha=""
++  # Giới hạn cả lượt (CLI treo, mạng treo); bị cắt giữa chừng thì đầu ra thiếu mốc và được coi là chưa rõ.
++  timeout --kill-after=30 "${TYZO_VERCEL_TIMEOUT:-3600}" docker run --rm -v "$DIR":/app -v "$thu_vercel":/x -w /app \
++    -e TOK="$tok" -e PROJ="$proj" -e SCOPE="$scope" -e DOM="$dom" -e SHA="$ma_sha" \
+     -e VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" node:22 bash /x/chay.sh | tee "$thu_vercel/ra.txt"
+-  local kq=${PIPESTATUS[0]} buoc
+-  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
+-  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj"
++  local kq=${PIPESTATUS[0]} buoc dep
++  buoc="$(buoc_vercel "$thu_vercel/ra.txt")"; dep="$(id_vercel "$thu_vercel/ra.txt")"; rm -f "$thu_vercel/ra.txt"
++  [ "$CHUYEN_DA_KHOA" = 1 ] && ghi_chuyen "$([ "$kq" = 0 ] && [ "$buoc" = xong ] && echo xong || echo "loi-$buoc")" "$proj $dep ${ma_sha:--}"
+   if [ "$kq" != 0 ] || [ "$buoc" != xong ]; then
+     do_ "✘ Chưa đưa lên được (bước: $buoc). Chụp màn hình gửi Claude."
+     case "$buoc" in
+-      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa: Vercel có thể đã ghi vào Neon." ;;
++      deploy-chua-ro) vang "Không rõ bản dựng Vercel đã chạy chưa (deployment: $dep): Vercel có thể đã ghi vào Neon." ;;
++      kiem-chua-dat) vang "Bản $dep đã Ready và nhận tên miền nhưng trang chưa trả lời: web mới có thể đã ghi vào Neon." ;;
+       env-do-dang) vang "Một phần biến môi trường trên Vercel đã được ghi đè, bản đang chạy chưa đổi." ;;
+     esac
+     if [ "$CHUYEN_DA_KHOA" = 1 ]; then
+diff --git a/docs/kiem-toan/v5.49.7/BACKLOG.json b/docs/kiem-toan/v5.49.7/BACKLOG.json
+index d06bc9a..25aed3e 100644
+--- a/docs/kiem-toan/v5.49.7/BACKLOG.json
++++ b/docs/kiem-toan/v5.49.7/BACKLOG.json
+@@ -28,7 +28,9 @@
+     "location": "deploy/vps/tyzo.sh: chay_vercel_sh",
+     "hypothesis": "grep ready có thể khớp not ready; env partial",
+     "acceptance": "Mock not ready, unknown deploy, wrong ID/DB/version, env partial; trạng thái cấu trúc, health check, recovery không lộ bí mật.",
+-    "status": "OPEN_VERIFY"
++    "status": "PASS_LOCAL",
++    "evidence": "RE6-003/REPORT.md",
++    "remaining": "Vercel staging thật chỉ khi Chủ duyệt; biến sensitive bị chặn (fail closed)."
+   },
+   {
+     "id": "RE6-004",
+@@ -37,7 +39,9 @@
+     "location": "deploy/vps/do-modal/do-modal.py",
+     "hypothesis": "Kiểm trần trước nhưng cộng sau; timeout không ghi chi phí",
+     "acceptance": "Giữ ngân sách đồng thời, unknown cost, deadline/redirect cap, kiểm finite/nonnegative, mock 4 luồng và timeout; không quảng cáo trần tuyệt đối nếu provider không bảo đảm.",
+-    "status": "OPEN_VERIFY"
++    "status": "PASS_LOCAL",
++    "evidence": "RE6-004/REPORT.md",
++    "remaining": "Đo Modal thật cần Chủ duyệt chi GPU."
+   },
+   {
+     "id": "RE6-005",
+@@ -46,7 +50,9 @@
+     "location": "deploy/vps/do-live; leftover-script.ts; client Web/Android",
+     "hypothesis": "Benchmark ít mẫu, hardcode 3.8, không đo render; lọc chữ có thể mất ý",
+     "acceptance": "Chọn model, monotonic clock, cleanup timer khi close, lỗi/thiếu mẫu tính riêng, P50/95/99 onset→render và final, corpus đa ngôn ngữ, delta/final không mất tên riêng; mock trước, real cần duyệt.",
+-    "status": "OPEN_VERIFY"
++    "status": "PARTIAL",
++    "evidence": "RE6-005/REPORT.md",
++    "remaining": "Chính sách tên riêng CJK trong bản dịch chờ Chủ; đo render Web/Android thật và đo thật cần duyệt."
+   },
+   {
+     "id": "RE6-006",
+@@ -65,7 +71,9 @@
+     "location": "migrations/0057_admission_shared_cap_fairness.sql",
+     "hypothesis": "Vòng lặp dưới global lock, nhiều waiter, khóa JSON và lane không cap",
+     "acceptance": "Test 1k/5k waiter, ký tự lạ, eligibility, shared caps, live reserve, benchmark 25/50/100/200 và burst 300; chỉ tối ưu khi có bằng chứng.",
+-    "status": "OPEN_VERIFY"
++    "status": "PASS_LOCAL",
++    "evidence": "RE6-007/REPORT.md",
++    "remaining": "Không tối ưu (bằng chứng: 1k chờ +2.9 ms/lượt); theo dõi work_waiters > 1000."
+   },
+   {
+     "id": "RE6-008",
+diff --git a/docs/kiem-toan/v5.49.7/HANDOFF.md b/docs/kiem-toan/v5.49.7/HANDOFF.md
+index 9fdc6e3..b88344a 100644
+--- a/docs/kiem-toan/v5.49.7/HANDOFF.md
++++ b/docs/kiem-toan/v5.49.7/HANDOFF.md
+@@ -1,7 +1,24 @@
+-# Bàn giao RE6-002 · High
++# Bàn giao sau RE6-007 · Medium
+ 
+-Nhánh `audit/v5.49.7-codex-re6`. Phát triển từ `017cad371595f641d681da7f79eeeb62d617b40b`. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu trên GitHub trước khi làm tiếp.
++Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `work` và `audit/v5.49.7-codex-re6`). Bản RE6-003 chưa push của Codex không có trên remote, nên RE6-003 đã được làm lại từ đầu. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu SHA trên GitHub.
+ 
+-RE6-002 đã qua nghiệm thu cục bộ với API giả và PG18.7. Bản sửa dùng trạng thái chính xác từ Neon API, ghi intent trước thao tác, giữ khóa khi kết quả chưa rõ và bảo toàn bản cũ. [Hồ sơ RE6-002](RE6-002/REPORT.md)
++| Mục | Trạng thái | Hồ sơ |
++|---|---|---|
++| RE6-001 | PASS_LOCAL_POLICY_PENDING (giới hạn vẫn TẮT) | [RE6-001](RE6-001/REPORT.md) |
++| RE6-002 | PASS_LOCAL | [RE6-002](RE6-002/REPORT.md) |
++| RE6-003 | PASS_LOCAL | [RE6-003](RE6-003/REPORT.md) |
++| RE6-004 | PASS_LOCAL | [RE6-004](RE6-004/REPORT.md) |
++| RE6-005 | PARTIAL | [RE6-005](RE6-005/REPORT.md) |
++| RE6-006 | PASS_LOCAL | [RE6-006](RE6-006/REPORT.md) |
++| RE6-007 | PASS_LOCAL (không tối ưu) | [RE6-007](RE6-007/REPORT.md) |
++| RE6-008 | Chưa làm, cần **High** | — |
++| RE6-009 | Chưa làm (Medium, sau RE6-008) | — |
++| RE6-010 | Chưa làm, cần **Low** | — |
+ 
+-Theo chỉ đạo mới nhất, dừng ở RE6-002 để phiên sau làm RE6-003. Khuyến nghị **High** để kiểm API Vercel có cấu trúc, đối chiếu deployment, DB và phiên bản, giữ nhật ký theo các bước env/deploy/promote, rồi thử timeout và phục hồi. Không dùng Vercel, Neon hay VPS thật trong test. RE6-001 giữ giới hạn ở trạng thái tắt, chờ duyệt chính sách. [Hồ sơ RE6-001](RE6-001/REPORT.md)
++Hồi quy toàn phần: [REGRESSION.md](REGRESSION.md). Gói kiểm toán: `audit-bundle/` (patch theo commit, manifest SHA-256).
++
++Việc chờ Chủ:
++- Duyệt chính sách RE6-001.
++- Quyết cách xử lý tên riêng chữ Hán, kana, Hangul trong bản dịch Việt/Anh (RE6-005).
++- Duyệt staging Vercel thật (RE6-003), Modal thật (RE6-004) và live thật (RE6-005).
++- Chuyển sang mức High để làm RE6-008.
+diff --git a/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md b/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md
+index 8a11881..f286425 100644
+--- a/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md
++++ b/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md
+@@ -1 +1 @@
+-Tiếp tục RE6-003 ở mức High trên nhánh `audit/v5.49.7-codex-re6` từ checkpoint RE6-002 đã xác minh GitHub. Đọc `docs/kiem-toan/v5.49.7/HANDOFF.md` và mục RE6-003 trong `BACKLOG.json`. Sửa xác minh Vercel có cấu trúc, danh tính deployment, DB và phiên bản, nhật ký trước các tác động env/deploy/promote, và xử lý kết quả chưa rõ. Kiểm API giả, PG18.7 dữ liệu giả, trạng thái chưa Ready, sai ID/DB/version, timeout và env ghi một phần. Giữ nguồn cũ khóa nếu đích có thể đã ghi. Không triển khai thật, dùng thông tin xác thực thật hay bật giới hạn RE6-001. Commit, push và xác minh SHA GitHub sau nghiệm thu rồi dừng chờ Chủ chuyển Medium.
++Tiếp tục RE6-008 ở mức High trên nhánh `ccr-654dbe0e-978ok7` từ checkpoint sau RE6-007 đã xác minh GitHub. Đọc `docs/kiem-toan/v5.49.7/HANDOFF.md` và mục RE6-008 trong `BACKLOG.json`. Test hành vi route model-call/room-groq (không regex): allowlist trường/model, schema/tool/output cap, Unicode, phiếu nhỏ, usage vượt cận, không giữ toàn context mặc định. Model chưa đo thật thì ghi BLOCKED. Dùng PG18.7 Docker và provider giả. Không gọi API trả phí, không bật giới hạn RE6-001. Sau đó làm RE6-009 (Medium) rồi RE6-010 (Low, chỉ hồ sơ). Commit, push, xác minh SHA sau mỗi mục.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-003/REPORT.md b/docs/kiem-toan/v5.49.7/RE6-003/REPORT.md
+new file mode 100644
+index 0000000..cb58dae
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-003/REPORT.md
+@@ -0,0 +1,26 @@
++# RE6-003 · Xác minh Vercel có cấu trúc
++
++Baseline `c0bcf6f` (RE6-002). Bản sửa chưa push của Codex không truy cập được nên làm lại từ đầu. Mọi phép thử dùng CLI Vercel giả và REST API giả trên loopback. Không gọi Vercel, Neon hay VPS thật. Không cần PostgreSQL cho mục này.
++
++## Lỗi trước sửa
++
++`vercel inspect | grep -qi ready` coi «Not Ready» là Ready. Không kiểm ID deployment, project, target, mã phiên bản hay env đã ghi, và các lệnh CLI không có giới hạn thời gian. Xem [before.txt](before.txt).
++
++## Thay đổi (`deploy/vps/tyzo.sh`)
++
++- **Env:** sau khi `env add --force`, đọc lại qua `GET /v10/projects/{id}/env` (và `/v1/.../env/{id}` khi cần). So băm SHA-256 với giá trị mong muốn. Mỗi khóa phải có đúng một bản production. Bản thiếu, trùng, `sensitive` (không đọc lại được) hoặc lệch giá trị sẽ dừng trước deploy (`env-do-dang`). Chỉ in tên khóa.
++- **Danh tính deployment:** deploy gắn `--meta tyzo_run=<lượt>` và `--meta tyzo_sha=<HEAD>`. `GET /v13/deployments/{url}` phải trả đúng URL, `projectId` từ `.vercel/project.json`, `target=production`, đúng lượt và SHA. Sau đó chờ `readyState=READY` và `aliasAssigned=true`. `ERROR`, `CANCELED`, `aliasError` hoặc hết `T_READY` đều fail closed.
++- **Promote:** mỗi alias production qua `GET /v4/aliases/{alias}` phải có `deploymentId` trùng ID vừa dựng. Health check là trang production trả mã dưới 400.
++- **Mốc:** `BUOC deploy-id`, `deploy-xong <url> <id>`, `kiem-xong <id> <sha>`. `buoc_vercel` chỉ trả `xong` khi có `kiem-xong`. Trạng thái mới `kiem-chua-dat` nghĩa là Ready và nhận tên miền nhưng trang không trả lời, nên web mới có thể đã ghi Neon.
++- **Timeout:** `T_CLI`=180 s cho từng lệnh CLI và `T_DEPLOY`=1500 s. `TYZO_VERCEL_TIMEOUT`=3600 s cho cả lượt `docker run`. Bị cắt thì thiếu mốc và được coi là chưa rõ.
++- **Phục hồi:** khi deploy lỗi hoặc chưa rõ, tra `GET /v6/deployments` theo `tyzo_run` và in `TIM <id> <state> <url>`. Nhật ký chuyển nguồn ghi `loi-<bước> <project> <deployment-id> <sha>`. Nguồn VPS vẫn khóa ở mọi trạng thái khác `xong` theo RE6-002. Token chỉ ở header API và không có giá trị env nào trong đầu ra, nhật ký hay dòng lệnh.
++
++## Kiểm thử
++
++`node --test scripts/re6-003-vercel.test.mjs scripts/re5-004-vercel.test.mjs`: 24/24 đạt. Các ca gồm not-ready, ERROR, sai project, target, SHA hoặc URL, alias trỏ bản cũ, API sập sau deploy, mất kết nối khi deploy (tìm lại `dpl_1`), deploy treo, env bị bỏ qua, sensitive, trùng, lệnh env treo, thiếu ID project, API sập trước deploy và trang không trả lời. Mọi ca đều kiểm không lộ bí mật. Xem [test-summary.txt](test-summary.txt). Harness dùng chung nằm ở `scripts/vercel-fake-harness.mjs`.
++
++## Còn lại
++
++Chưa nghiệm thu Vercel thật. Cần token và project staging do Chủ duyệt để xác nhận tên trường API v13/v10/v4/v6 và hành vi `decrypt` trên CLI 65.14.0. Biến loại `sensitive` sẽ luôn chặn deploy theo hướng fail closed. Nếu team bắt buộc sensitive, cần Chủ quyết cách kiểm khác. Thêm tên miền riêng vẫn không chặn kết quả.
++
++[Vercel REST API · deployments](https://vercel.com/docs/rest-api/reference/endpoints/deployments/get-a-deployment-by-id-or-url)
+diff --git a/docs/kiem-toan/v5.49.7/RE6-003/before.txt b/docs/kiem-toan/v5.49.7/RE6-003/before.txt
+new file mode 100644
+index 0000000..f304c1b
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-003/before.txt
+@@ -0,0 +1,5 @@
++Trước sửa (017cad3..c0bcf6f): chay_vercel_sh dùng 'vercel inspect | grep -qi ready'.
++status ● Not Ready -> coi là Ready
++readyState: NOT_READY -> coi là Ready
++status ● Ready -> coi là Ready
++Không kiểm ID deployment, project, target, phiên bản mã, DATABASE_URL đã ghi trên Vercel; không có giới hạn thời gian cho từng lệnh CLI.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt b/docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt
+new file mode 100644
+index 0000000..070430c
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-003/test-summary.txt
+@@ -0,0 +1,29 @@
++RE6-003 · Vercel giả (CLI + REST API) · node v22.23.5
++ok 1 - RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin
++ok 2 - RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang
++ok 3 - RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang
++ok 4 - RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong
++ok 5 - RE5-004: nhật ký dở dang từ lần trước (mất SSH/kill) được nhận ra; «da-mo-lai» hoặc «xong» kết thúc
++ok 6 - RE6-003: không còn đọc chữ ready từ CLI
++ok 7 - RE6-003: lượt đúng → kiểm env theo băm, deployment đúng ID/project/target/mã, tên miền, trang trả lời
++ok 8 - RE6-003: not-ready → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 9 - RE6-003: error → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 10 - RE6-003: wrong-project → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 11 - RE6-003: wrong-target → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 12 - RE6-003: wrong-sha → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 13 - RE6-003: wrong-url → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 14 - RE6-003: alias-other → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 15 - RE6-003: api-down-after-deploy → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi
++ok 16 - RE6-003: deploy mất kết nối → tra theo tyzo_run tìm ra deployment, ghi ID vào nhật ký
++ok 17 - RE6-003: deploy treo → cắt theo giới hạn thời gian, không coi là xong
++ok 18 - RE6-003: env-drop-DATABASE_URL → dừng trước deploy
++ok 19 - RE6-003: sensitive-BETTER_AUTH_SECRET → dừng trước deploy
++ok 20 - RE6-003: dup-DATABASE_URL → dừng trước deploy
++ok 21 - RE6-003: add-hang-LIVE_BRIDGE_URL → dừng trước deploy
++ok 22 - RE6-003: link-noid → dừng trước deploy
++ok 23 - RE6-003: api-down → dừng trước deploy
++ok 24 - RE6-003: Ready và đã nhận tên miền nhưng trang không trả lời → kiem-chua-dat, giữ dở dang
++# tests 24
++# pass 24
++# fail 0
++# skipped 0
+diff --git a/docs/kiem-toan/v5.49.7/RE6-004/REPORT.md b/docs/kiem-toan/v5.49.7/RE6-004/REPORT.md
+new file mode 100644
+index 0000000..a37866f
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-004/REPORT.md
+@@ -0,0 +1,23 @@
++# RE6-004 · Trần chi của công cụ đo Modal
++
++Baseline `30ed3ba`. Công cụ `deploy/vps/do-modal/do-modal.py` chỉ chạy tay từ VPS và không nằm trong luồng tính tiền khách. Mọi phép thử dùng máy chủ Modal giả trên loopback. Không gọi Modal hay GPU thật.
++
++## Lỗi trước sửa
++
++Script kiểm trần trước nhưng chỉ cộng chi phí sau khi có kết quả, nên 4 lệnh song song đều vượt qua phép kiểm. Lệnh hết giờ hoặc lỗi tính bằng 0. Không có hạn chót tổng hay giới hạn số lần chuyển hướng, và stats không được kiểm. Xem [before.txt](before.txt).
++
++## Thay đổi
++
++- Tách lớp `Meter` có thể kiểm thử. Hỏi URL và token chỉ trong `main()`.
++- **Giữ chỗ:** trước mỗi lệnh giữ phần chi xấu nhất, bằng `CALL_DEADLINE_S/3600 × GPU_USD_PER_HOUR + MODEL_CAP_USD`, dưới khóa. Lệnh chỉ được gửi khi `đã chi + đang giữ + giữ chỗ ≤ trần`. Lệnh không đủ chỗ thì bỏ qua và được đếm trong `skipped_for_budget`.
++- **Chi phí không rõ:** lỗi mạng, hết giờ, HTTP khác 200, thiếu stats hoặc stats không hữu hạn, âm hay không phải số đều tính bằng toàn bộ phần giữ chỗ. Phần này cũng được ghi riêng ở `unknown_usd_reserved`. Lệnh vượt phần giữ chỗ được đánh dấu `vuot_giu_cho`.
++- **Hạn chót và chuyển hướng:** hạn chót tổng theo đồng hồ monotonic cho cả chuỗi 303, tối đa `MAX_REDIRECTS` lần. Chỉ đi theo chuyển hướng cùng máy và cùng scheme. Token chỉ nằm trong thân POST đầu tiên.
++- **Ghi rõ giới hạn:** `budget_kind` là «trần ước tính của script, không tuyệt đối». `not_counted` nêu thời gian máy chờ và khởi động Modal sau lệnh. Cấu hình NaN, âm hoặc vô hạn bị từ chối.
++
++## Kiểm thử
++
++`python3 -I -B deploy/vps/do-modal/test_do_modal.py`, và bản bọc `node --test scripts/re6-004-do-modal.test.mjs`: 8/8 đạt. Các ca gồm chi phí biết trước, 4 luồng với trần đủ 2 lệnh (tối đa 2 lệnh chạy cùng lúc), lượt đầy đủ 17 lệnh dừng ở 4 lệnh, timeout tính phần giữ chỗ, NaN, số âm, chuỗi, thiếu stats, HTTP 500, vòng 303 bị giới hạn theo số lần và hạn chót, 303 cùng máy được đi theo còn khác máy bị từ chối, cấu hình xấu và token không xuất hiện trong kết quả. Xem [test-summary.txt](test-summary.txt).
++
++## Còn lại
++
++Đo Modal thật cần Chủ duyệt chi GPU. Giá `GPU_USD_PER_HOUR=0.8` và `MODEL_CAP_USD=0.02` là tham số ước tính cần đối chiếu hóa đơn Modal.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-004/before.txt b/docs/kiem-toan/v5.49.7/RE6-004/before.txt
+new file mode 100644
+index 0000000..ccc3322
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-004/before.txt
+@@ -0,0 +1,8 @@
++Trước sửa (deploy/vps/do-modal/do-modal.py tại 30ed3ba):
++- call(): kiểm `spent >= BUDGET_USD` dưới khóa rồi nhả khóa, gửi lệnh; chỉ cộng `spent` sau khi có stats.
++  4 luồng song song đều thấy spent cũ → cả 4 lệnh được gửi dù trần chỉ đủ 1 (kiểm trước, cộng sau).
++- Lỗi mạng / timeout / HTTP lỗi / thiếu stats → không cộng gì (chi phí bị coi là 0 dù GPU có thể đã chạy).
++- `urlopen(timeout=1800)` là timeout từng lần đọc socket, không phải hạn chót tổng; vòng 303 không giới hạn số lần,
++  không kiểm máy đích của Location.
++- stats không kiểm hữu hạn/không âm: giay_xu_ly âm hoặc NaN làm giảm/hỏng `spent`.
++- Nhãn «Dừng ngay khi chi ước tính chạm trần» ngụ ý trần tuyệt đối; tiền máy chờ Modal sau lệnh không được tính.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-004/test-summary.txt b/docs/kiem-toan/v5.49.7/RE6-004/test-summary.txt
+new file mode 100644
+index 0000000..40f3428
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-004/test-summary.txt
+@@ -0,0 +1,18 @@
++RE6-004 · Modal giả trên loopback · Python 3.13.18
++test_bad_config_rejected_and_token_not_in_rows (__main__.T.test_bad_config_rejected_and_token_not_in_rows) ... ok
++test_full_run_stays_under_budget (__main__.T.test_full_run_stays_under_budget) ... ok
++test_invalid_stats_are_unknown (__main__.T.test_invalid_stats_are_unknown) ... ok
++test_known_cost_counts (__main__.T.test_known_cost_counts) ... ok
++test_parallel_cannot_exceed_budget (__main__.T.test_parallel_cannot_exceed_budget) ... ok
++test_redirect_cap_and_deadline (__main__.T.test_redirect_cap_and_deadline) ... ok
++test_redirect_same_host_followed_offhost_refused (__main__.T.test_redirect_same_host_followed_offhost_refused) ... ok
++test_timeout_charges_reserve_as_unknown (__main__.T.test_timeout_charges_reserve_as_unknown) ... ok
++
++----------------------------------------------------------------------
++Ran 8 tests in 1.231s
++
++OK
++ok 1 - RE6-004: do-modal giữ ngân sách, chi phí không rõ, hạn chót và chuyển hướng
++# tests 1
++# pass 1
++# fail 0
+diff --git a/docs/kiem-toan/v5.49.7/RE6-005/REPORT.md b/docs/kiem-toan/v5.49.7/RE6-005/REPORT.md
+new file mode 100644
+index 0000000..d240711
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-005/REPORT.md
+@@ -0,0 +1,27 @@
++# RE6-005 · Đo độ trễ Dịch trực tiếp và bộ lọc chữ sót
++
++Baseline `8b733b5`. Mọi phép thử dùng cầu nối WebSocket giả trên loopback. Không gọi Alibaba hay cầu nối thật, và không trừ Token.
++
++## Lỗi trước sửa
++
++Xem [before.txt](before.txt).
++
++## Thay đổi
++
++- `deploy/vps/do-live/live-measure.ts` là phần đo dùng chung và có thể kiểm thử:
++  - Dùng `performance.now()`.
++  - Dọn `setInterval` và hẹn giờ hết hạn khi đóng, lỗi hoặc hết giờ. Đếm `framesAfterClose`.
++  - Bỏ qua tin không phải JSON thay vì làm sập lượt đo.
++  - `speechSpan` trả `null` cho đoạn im lặng.
++- `summarize` chỉ tính phân vị trên lượt đạt. Lượt đạt cần đóng 1000, không lỗi và có chữ gốc, bản dịch và câu chốt. Lượt lỗi hoặc thiếu mốc được đếm riêng theo lý do (`failed`). Có `n/p50/p95/p99/max` cho onset→chữ gốc, onset→bản dịch và hết tiếng→câu chốt. Nhãn ghi rõ đây là mốc nhận tại máy đo, chưa gồm thời gian vẽ.
++- `do-live.ts` và `chay.sh` có thêm tham số model (`3.5`|`3.8`, mặc định 3.5 như app) và số vòng 1–10, để đủ mẫu cho P95/P99. Ví dụ: `bash chay.sh wss://… vi 3.8 5`.
++- Corpus đa ngôn ngữ kiểm bộ lọc. Chữ Latin có dấu, Cyrillic, Ả Rập, Thái và tên phiên âm giữ nguyên. Đích ja giữ nguyên. Delta đã lọc rồi ghép lại phải bằng câu chốt đã lọc.
++
++## Kiểm thử
++
++`node --test scripts/re6-005-live-measure.test.mjs src/lib/live/leftover-script.test.ts`: 7 + 6 ca đạt. Xem [test-summary.txt](test-summary.txt). `tsc --noEmit` đạt.
++
++## Còn lại (PARTIAL)
++
++- **Cần Chủ quyết chính sách:** tên riêng viết bằng chữ Hán, kana hoặc Hangul trong bản dịch tiếng Việt hoặc tiếng Anh vẫn bị bỏ (`Tôi gặp 王小明 hôm qua.` → `Tôi gặp hôm qua.`). Test ghi lại hành vi này. Không tự đổi vì đây là đầu ra khách thấy. Hai hướng: giữ chuỗi ngắn có dạng tên, hoặc yêu cầu model phiên âm trong prompt.
++- **BLOCKED:** muốn đo onset→vẽ trên Web hoặc Android thật thì cần gắn mốc ở client và có thiết bị thật. Đo thật cần Chủ duyệt vì có trừ Token và chi Alibaba.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-005/before.txt b/docs/kiem-toan/v5.49.7/RE6-005/before.txt
+new file mode 100644
+index 0000000..5999a41
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-005/before.txt
+@@ -0,0 +1,8 @@
++Trước sửa (deploy/vps/do-live/do-live.ts tại 8b733b5):
++- Model cứng LIVE_MODEL_38, trong khi app mặc định 3.5 từ v5.49.6. Không chọn được model, chỉ 1 vòng × 4 đoạn (n=4).
++- Dùng Date.now(), là đồng hồ tường, có thể nhảy khi NTP chỉnh giờ.
++- setInterval gửi khung chỉ dừng khi gửi hết. Cầu nối đóng sớm thì bộ đếm vẫn chạy và gọi ws.send trên socket đã đóng.
++- Lượt lỗi hoặc thiếu mốc vẫn trộn vào thống kê. Math.max(...[]) trả -Infinity, nên JSON ghi null hoặc sai khi không có mẫu.
++- Chỉ có p50 và max, không có P95/P99. Mốc là lúc máy đo nhận, nhưng nhãn không nói rõ là chưa đo lúc giao diện vẽ.
++- Đoạn im lặng làm speechSpan trả onset 0 và offset sai, vì findIndex trả -1.
++- Bộ lọc chữ sót chỉ có 6 ca, không có corpus đa ngôn ngữ, chưa kiểm delta ghép bằng final, chưa ghi việc mất tên riêng chữ Hán.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-005/test-summary.txt b/docs/kiem-toan/v5.49.7/RE6-005/test-summary.txt
+new file mode 100644
+index 0000000..06f6603
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-005/test-summary.txt
+@@ -0,0 +1,19 @@
++RE6-005 · cầu nối giả (ws loopback) · node v22.23.5
++ok 1 - RE6-005: phân vị dùng cách làm tròn lên, không trả -Infinity khi rỗng
++ok 2 - RE6-005: lượt đủ mốc đo theo đồng hồ monotonic, tính từ lúc bắt đầu có tiếng
++ok 3 - RE6-005: cầu nối đóng sớm → dừng bộ đếm, không gửi khung sau khi đóng, lượt bị đếm là lỗi riêng
++ok 4 - RE6-005: hết giờ → terminate, dọn bộ đếm, lượt het-gio
++ok 5 - RE6-005: summarize tách lỗi/thiếu mốc khỏi phân vị và có P50/P95/P99
++ok 6 - RE6-005: corpus đa ngôn ngữ — chữ Latin/Cyrillic/Ả Rập/Thái và tên riêng phiên âm không bị mất; delta khớp final
++ok 7 - RE6-005: GIỚI HẠN ĐÃ BIẾT — tên riêng viết bằng chữ Hán/kana/Hangul trong bản dịch tiếng Việt bị bỏ
++    ok 1 - bỏ chữ Hán sót khi dịch sang tiếng Việt (ca thật 28/11/2026)
++    ok 2 - bỏ kana, Hangul; đổi dấu câu toàn khổ
++    ok 3 - giữ nguyên khi đích là Trung, Nhật, Hàn, Quảng Đông
++    ok 4 - mẩu tạm: chỉ bỏ ký tự, không cắt khoảng trắng đầu/cuối
++    ok 5 - chữ Việt có dấu, số và chữ Latin không bị đụng
++ok 8 - Dịch trực tiếp: bỏ chữ gốc sót trong bản dịch
++    ok 1 - translation (câu, phần chờ) và translation-delta đều qua dropLeftoverScript với đích của vé
++ok 9 - cầu nối dùng bộ lọc cho mọi chữ dịch gửi xuống
++# tests 13
++# pass 13
++# fail 0
+diff --git a/docs/kiem-toan/v5.49.7/RE6-007/REPORT.md b/docs/kiem-toan/v5.49.7/RE6-007/REPORT.md
+new file mode 100644
+index 0000000..4d25fa1
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-007/REPORT.md
+@@ -0,0 +1,41 @@
++# RE6-007 · Hiệu năng và đúng đắn của tyzo_admit (0057)
++
++Baseline `0a1c405`. Chạy trên PostgreSQL 18.7 (`postgres:18.7-bookworm`, Docker, loopback, `max_connections=500`), 4 CPU, Node 22.23.5. CSDL thử được tạo bằng `scripts/migrate.mjs` (59 migration), dữ liệu tổng hợp. Không sửa migration.
++
++## Đúng đắn (7/7 đạt)
++
++`TYZO_TEST_PG_URL=… node --test scripts/re6-007-admission-pg.test.mjs`. Xem [test-summary.txt](test-summary.txt).
++
++- **Ký tự lạ:** mã khách, nhà và model có `"`, `,`, `[]`, `{}`, `\`, emoji, dấu tiếng Việt, khoảng trắng hoặc `'`. Khóa mảng JSON không bị lẫn. Ví dụ `u1","batch` và `u1` có suất riêng độc lập.
++- **Điều kiện được xét:** 5k khách đã rời đi (quá 6 s), 5k khách mới chờ dưới 3 s và 5k khách không chung tài nguyên đều không chặn khách mới.
++- **Thứ tự và vị trí:** 1k khách chờ đủ điều kiện, chung lane, trần lane 10. Khách mới nhận `busy:11` và khách chờ đầu tiên được nhận.
++- **Không giữ chỗ khi chính khách chờ không nhận được suất:** model của họ đã đầy thì khách mới vẫn vào.
++- **Phần dành cho live:** batch dừng ở `perProvider − liveReserve`. 1k khách chờ batch không giữ phần dành cho live.
++- **Burst 300 đồng thời**, trộn 3 lane × 3 nhà × 4 model với 1k khách chờ: không vượt trần lane, nhà, model, suất riêng hay phần không-live.
++
++## Đo (ms) · [benchmark.json](benchmark.json)
++
++| Khách chờ chung lane, không ai giữ chỗ (xấu nhất) | p50 | p99 |
++|---|---|---|
++| 0 | 1.57 | 4.51 |
++| 1 000 | 4.42 | 4.84 |
++| 5 000 | 17.72 | 23.92 |
++
++| Burst 300 (kết nối mở sẵn) | Tổng thời gian | p99 |
++|---|---|---|
++| 0 khách chờ | 958 | 946 |
++| 1 000 | 1 102 | 1 090 |
++| 5 000 | 1 784 | 1 771 |
++
++| Đồng thời (1k khách chờ, 10 lượt mỗi luồng) | lượt/s | p50 | p99 |
++|---|---|---|---|
++| 25 | 198 | 123 | 142 |
++| 50 | 201 | 244 | 294 |
++| 100 | 293 | 205 | 619 |
++| 200 | 475 | 398 | 559 |
++
++## Kết luận: chưa tối ưu
++
++Khóa toàn cục làm các lượt nhận việc chạy nối tiếp, khoảng 1,6–3 ms mỗi lượt khi không có khách chờ. Vòng lặp khách chờ cộng thêm khoảng 2,9 ms mỗi 1k khách. Ở 1k khách chờ, burst 300 chỉ chậm hơn 15% (0,96 → 1,10 s). Chỉ từ khoảng 5k khách chờ cùng lúc thì vòng lặp mới chiếm phần lớn thời gian, khoảng 18 ms mỗi lượt và tối đa khoảng 55 lượt/s. Mức đó vượt xa quy mô hiện tại: tổng trần mặc định khoảng 104 suất và `MAX_PENDING_ADMISSIONS=32` mỗi tiến trình. Theo tiêu chí «chỉ tối ưu khi có bằng chứng», giữ nguyên 0057.
++
++Khuyến nghị: theo dõi số dòng `work_waiters` có `seen_at` trong 6 s. Nếu thường xuyên vượt 1 000 thì mở việc tối ưu, ví dụ dừng vòng lặp sớm khi tài nguyên của khách mới đã hết và tính vị trí bằng truy vấn đếm. Cách này đổi ngữ nghĩa vị trí nên cần Chủ duyệt.
+diff --git a/docs/kiem-toan/v5.49.7/RE6-007/benchmark.json b/docs/kiem-toan/v5.49.7/RE6-007/benchmark.json
+new file mode 100644
+index 0000000..62b97eb
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-007/benchmark.json
+@@ -0,0 +1,131 @@
++{
++ "burst300": {
++  "admitted": 44,
++  "wall_ms": 2903.9,
++  "latency_ms": {
++   "n": 300,
++   "p50": 1603.3,
++   "p95": 2756.52,
++   "p99": 2866.51,
++   "max": 2901.95
++  },
++  "waiters": 1000
++ },
++ "env": "PostgreSQL 18.7 (Debian 18.7-1.pgdg12+5) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit",
++ "byWaiters": {
++  "0": {
++   "n": 50,
++   "p50": 1.57,
++   "p95": 3.39,
++   "p99": 4.51,
++   "max": 4.51
++  },
++  "1000": {
++   "n": 50,
++   "p50": 4.42,
++   "p95": 4.78,
++   "p99": 4.84,
++   "max": 4.84
++  },
++  "5000": {
++   "n": 50,
++   "p50": 17.72,
++   "p95": 19.29,
++   "p99": 23.92,
++   "max": 23.92
++  }
++ },
++ "burst300ByWaiters": {
++  "0": {
++   "admitted": 72,
++   "wall_ms": 958,
++   "latency_ms": {
++    "n": 300,
++    "p50": 506.93,
++    "p95": 909.13,
++    "p99": 946.18,
++    "max": 956.01
++   }
++  },
++  "1000": {
++   "admitted": 72,
++   "wall_ms": 1102,
++   "latency_ms": {
++    "n": 300,
++    "p50": 605.78,
++    "p95": 1040.59,
++    "p99": 1089.73,
++    "max": 1100.91
++   }
++  },
++  "5000": {
++   "admitted": 72,
++   "wall_ms": 1784,
++   "latency_ms": {
++    "n": 300,
++    "p50": 1232.77,
++    "p95": 1725.87,
++    "p99": 1770.82,
++    "max": 1782.51
++   }
++  }
++ },
++ "concurrency": {
++  "25": {
++   "calls": 250,
++   "admitted": 230,
++   "wall_ms": 1264,
++   "calls_per_s": 198,
++   "latency_ms": {
++    "n": 250,
++    "p50": 123.39,
++    "p95": 139.77,
++    "p99": 141.75,
++    "max": 142.35
++   },
++   "waiters": 1000
++  },
++  "50": {
++   "calls": 500,
++   "admitted": 460,
++   "wall_ms": 2487,
++   "calls_per_s": 201,
++   "latency_ms": {
++    "n": 500,
++    "p50": 243.96,
++    "p95": 287.23,
++    "p99": 294.44,
++    "max": 296.99
++   },
++   "waiters": 1000
++  },
++  "100": {
++   "calls": 1000,
++   "admitted": 930,
++   "wall_ms": 3409,
++   "calls_per_s": 293,
++   "latency_ms": {
++    "n": 1000,
++    "p50": 204.59,
++    "p95": 606.41,
++    "p99": 619.26,
++    "max": 624.02
++   },
++   "waiters": 1000
++  },
++  "200": {
++   "calls": 2000,
++   "admitted": 1860,
++   "wall_ms": 4206,
++   "calls_per_s": 475,
++   "latency_ms": {
++    "n": 2000,
++    "p50": 397.94,
++    "p95": 540.62,
++    "p99": 558.53,
++    "max": 561.49
++   },
++   "waiters": 1000
++  }
++ }
++}
+\ No newline at end of file
+diff --git a/docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt b/docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt
+new file mode 100644
+index 0000000..19cd23d
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/RE6-007/test-summary.txt
+@@ -0,0 +1,11 @@
++RE6-007 · PostgreSQL 18.7 (Debian 18.7-1.pgdg12+5) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit · node v22.23.5 · 4 CPU
++ok 1 - RE6-007: ký tự lạ trong mã khách/nhà/model không làm lẫn khóa JSON
++ok 2 - RE6-007: 5k khách chờ cũ/mới/không chung tài nguyên không chặn khách mới
++ok 3 - RE6-007: 1k khách chờ đủ điều kiện, chung lane, được nhường theo thứ tự đến; vị trí đúng
++ok 4 - RE6-007: khách chờ không nhận được suất trên tài nguyên của chính họ thì không giữ chỗ
++ok 5 - RE6-007: phần dành cho live: batch không lấy, khách chờ batch không giữ phần dành riêng
++ok 6 - RE6-007: burst 300 đồng thời, trộn lane/nhà/model, không vượt trần nào
++ok 7 - RE6-007: đo độ trễ theo số khách chờ (0/1k/5k) và đồng thời 25/50/100/200
++# tests 7
++# pass 7
++# fail 0
+diff --git a/docs/kiem-toan/v5.49.7/REGRESSION.md b/docs/kiem-toan/v5.49.7/REGRESSION.md
+new file mode 100644
+index 0000000..d57a9a6
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/REGRESSION.md
+@@ -0,0 +1,16 @@
++# Hồi quy toàn phần sau RE6-003 → RE6-007
++
++Mã ở `b2cadf0`, Node v22.23.5. PostgreSQL 18.7 (Docker, loopback, dữ liệu tổng hợp, CSDL tạo bằng migrate 59 mục).
++
++| Lệnh | Kết quả |
++|---|---|
++| `npx tsc --noEmit -p .` | đạt |
++| `node --test 'scripts/**/*.test.mjs'` | 231 đạt · 1 lỗi · 46 bỏ qua (cần Docker/PG CLI riêng) |
++| Nhóm `src/lib/**` (strip-types) | 1483/1483 đạt |
++| Nhóm module-mocks, có `TYZO_TEST_PG_URL` PG18.7 (gồm work-admission-pg, work-lease-pg) | 101/101 đạt |
++| `scripts/re6-migrations-pg.test.mjs` trên PG18.7 | 1/1 đạt |
++| `scripts/re6-007-admission-pg.test.mjs` trên PG18.7 | 7/7 đạt |
++
++Lỗi duy nhất là `R8-002: unreadable migrations directory…` (`scripts/migration-read-permission.test.mjs`). Môi trường chạy bằng root (uid 0) nên `chmod 000` không chặn được việc đọc. Lỗi này không do thay đổi trong phiên: `scripts/migrate.mjs` và `migrations/` không đổi kể từ `c0bcf6f`. Chạy bằng user thường thì sẽ đạt.
++
++Chưa chạy `npm run build`, vì phiên không sửa mã ứng dụng trong `src/`, chỉ thêm test và công cụ VPS. Bộ hồi quy khôi phục RE6-002 (`re3-restore-pg`) cần pg_dump 18 trên máy chạy test nên không chạy lại. Phần `tyzo.sh` RE6-002 dùng không bị sửa, chỉ đổi khối Vercel.
+diff --git a/docs/kiem-toan/v5.49.7/STATE.json b/docs/kiem-toan/v5.49.7/STATE.json
+index 89929b0..504a7fc 100644
+--- a/docs/kiem-toan/v5.49.7/STATE.json
++++ b/docs/kiem-toan/v5.49.7/STATE.json
+@@ -1,16 +1,27 @@
+ {
+   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
+-  "branch": "audit/v5.49.7-codex-re6",
+-  "previous_checkpoint_sha": "017cad371595f641d681da7f79eeeb62d617b40b",
+-  "effort": "High",
+-  "status": "PAUSED_FOR_HANDOFF",
+-  "completed_item": "RE6-002",
++  "branch": "ccr-654dbe0e-978ok7",
++  "previous_checkpoint_sha": "0a1c405a6863be23958306505fc0942c57756c47",
++  "effort": "Medium",
++  "status": "PAUSED_FOR_EFFORT_CHANGE",
++  "completed_item": "RE6-007",
+   "item_status": "PASS_LOCAL",
+   "tests": {
+     "postgres": "18.7",
+-    "restore_regression_pass": 33,
+-    "final_targeted_pass": 8,
+-    "evidence": "RE6-002/REPORT.md"
++    "regression": "REGRESSION.md"
+   },
+-  "next": "Phiên sau thực hiện RE6-003 ở mức High."
++  "next": "RE6-008 cần High: dừng chờ Chủ chuyển mức.",
++  "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
++  "items": {
++    "RE6-001": "PASS_LOCAL_POLICY_PENDING",
++    "RE6-002": "PASS_LOCAL",
++    "RE6-003": "PASS_LOCAL",
++    "RE6-004": "PASS_LOCAL",
++    "RE6-005": "PARTIAL",
++    "RE6-006": "PASS_LOCAL",
++    "RE6-007": "PASS_LOCAL",
++    "RE6-008": "OPEN_VERIFY",
++    "RE6-009": "OPEN_VERIFY",
++    "RE6-010": "OPEN_VERIFY"
++  }
+ }
+diff --git a/scripts/re5-004-vercel.test.mjs b/scripts/re5-004-vercel.test.mjs
+index 531f110..763b8ae 100644
+--- a/scripts/re5-004-vercel.test.mjs
++++ b/scripts/re5-004-vercel.test.mjs
+@@ -3,88 +3,27 @@
+  * trong deploy/vps/tyzo.sh với một «npx» giả lưu env vào tệp và chèn lỗi theo FAKE_FAULT. Không gọi Vercel thật.
+  */
+ import assert from "node:assert/strict";
+-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
++import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import { join } from "node:path";
+ import { spawnSync } from "node:child_process";
+ import { test } from "node:test";
++import { lib, run, text } from "./vercel-fake-harness.mjs";
+ 
+-const root = new URL("..", import.meta.url).pathname;
+-const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
+-const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
+-
+-// npx giả: «vercel env add K --environment production [--force]» đọc giá trị từ stdin; không --force mà đã có thì lỗi.
+-const fakeNpx = `#!/usr/bin/env bash
+-F="$FAKE_DIR"; echo "$*" >> "$F/calls.log"
+-fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
+-args=("$@"); i=0; while [[ "\${args[$i]}" != vercel@* ]]; do i=$((i+1)); done
+-[ "\${args[$i]}" = "vercel@$EXPECT_VERSION" ] || { echo "sai phiên bản \${args[$i]}" >&2; exit 9; }
+-rest=("\${args[@]:$((i+1))}")
+-sub=""; for a in "\${rest[@]}"; do case "$a" in link|env|deploy|inspect|domains) sub="$a"; break ;; esac; done
+-case "$sub" in
+-  link) exit 0 ;;
+-  env)
+-    act=""; k=""; force=0; take=0
+-    for a in "\${rest[@]}"; do
+-      if [ "$take" = 1 ]; then k="$a"; take=0; continue; fi
+-      case "$a" in add|rm) act="$a"; take=1 ;; --force) force=1 ;; esac
+-    done
+-    if [ "$act" = rm ]; then rm -f "$F/env/$k"; exit 0; fi
+-    val="$(cat)"
+-    if fault "add-fail-$k"; then exit 1; fi
+-    if [ -f "$F/env/$k" ] && [ "$force" != 1 ]; then echo "exists" >&2; exit 1; fi
+-    printf '%s' "$val" > "$F/env/$k"; exit 0 ;;
+-  deploy)
+-    if fault deploy-lost; then exit 1; fi
+-    cp -r "$F/env" "$F/deployed-env"; echo "Building..."; echo "https://tyzo-abc.vercel.app"; exit 0 ;;
+-  inspect) if fault not-ready; then echo "status ● Error"; else echo "status ● Ready"; fi; exit 0 ;;
+-  domains) exit 0 ;;
+-esac
+-exit 2
+-`;
+-
+-function run(fault = "", { journal = "" } = {}) {
+-  const work = mkdtempSync(join(tmpdir(), "re5-004-"));
+-  mkdirSync(join(work, "bin")); mkdirSync(join(work, "env"));
+-  writeFileSync(join(work, "bin", "npx"), fakeNpx); chmodSync(join(work, "bin", "npx"), 0o755);
+-  // Vercel đang có giá trị cũ cho mọi biến.
+-  for (const k of ["DATABASE_URL", "BETTER_AUTH_SECRET", "LIVE_BRIDGE_URL"]) writeFileSync(join(work, "env", k), `old-${k}`);
+-  writeFileSync(join(work, "vars"), "DATABASE_URL=postgres://neon/new\nBETTER_AUTH_SECRET=new-secret\nLIVE_BRIDGE_URL=wss://x/live\n");
+-  if (journal) writeFileSync(join(work, "tyzo.conf.chuyen"), journal);
+-  const script = `source "${join(work, "lib.sh")}"
+-CONF="${work}/tyzo.conf"
+-chay_vercel_sh > "${work}/chay.sh"
+-ghi_chuyen vercel-bat-dau tyzo-sub
+-VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" ENVF="${work}/vars" TOK=t PROJ=tyzo-sub SCOPE= DOM= bash "${work}/chay.sh" > "${work}/ra.txt" 2>&1
+-kq=$?
+-b="$(buoc_vercel "${work}/ra.txt")"
+-ghi_chuyen "$([ "$kq" = 0 ] && [ "$b" = xong ] && echo xong || echo "loi-$b")" tyzo-sub
+-echo "kq=$kq buoc=$b"
+-if chuyen_dang_do; then echo dang-do; else echo da-ket-thuc; fi`;
+-  writeFileSync(join(work, "lib.sh"), lib);
+-  const r = spawnSync("bash", ["-c", script], {
+-    encoding: "utf8",
+-    env: { PATH: `${work}/bin:${process.env.PATH}`, HOME: work, TMPDIR: work, FAKE_DIR: work, FAKE_FAULT: fault, EXPECT_VERSION: /VERCEL_CLI_VERSION="([^"]+)"/.exec(text)[1] },
+-    timeout: 60_000,
+-  });
+-  const env = (k) => readFileSync(join(work, "env", k), "utf8");
+-  return { r, work, env, calls: readFileSync(join(work, "calls.log"), "utf8"), journal: readFileSync(join(work, "tyzo.conf.chuyen"), "utf8") };
+-}
+-
+-test("RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin", () => {
++test("RE5-004: CLI ghim phiên bản, không còn env rm, ghi đè bằng --force qua stdin", async () => {
+   assert.match(text, /^VERCEL_CLI_VERSION="\d+\.\d+\.\d+"$/m);
+   assert.doesNotMatch(text, /vercel@latest/);
+-  const { r, env, calls, journal } = run();
++  const { r, env, calls, journal } = await run();
+   assert.match(r.stdout, /kq=0 buoc=xong/);
+   assert.match(r.stdout, /da-ket-thuc/);
+   assert.doesNotMatch(calls, /\benv rm\b/);
+   assert.equal(env("DATABASE_URL"), "postgres://neon/new");
+   assert.doesNotMatch(calls, /postgres:\/\/neon\/new|new-secret/, "giá trị bí mật không nằm trên dòng lệnh");
+-  assert.match(journal, /vercel-bat-dau tyzo-sub\n.* xong tyzo-sub\n$/);
++  assert.match(journal, /vercel-bat-dau tyzo-sub\n.* xong tyzo-sub dpl_1 a{40}\n$/);
+ });
+ 
+-test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang", () => {
+-  const { r, env, calls, journal, work } = run("add-fail-BETTER_AUTH_SECRET");
++test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (không mất biến), không deploy, nhật ký dở dang", async () => {
++  const { r, env, calls, journal, work } = await run("add-fail-BETTER_AUTH_SECRET");
+   assert.match(r.stdout, /kq=1 buoc=env-do-dang/);
+   assert.match(r.stdout, /dang-do/);
+   assert.equal(env("DATABASE_URL"), "postgres://neon/new");
+@@ -92,18 +31,18 @@ test("RE5-004: thêm biến lỗi giữa chừng → biến cũ vẫn còn (khô
+   assert.equal(env("LIVE_BRIDGE_URL"), "old-LIVE_BRIDGE_URL");
+   assert.doesNotMatch(calls, / deploy /);
+   assert.equal(existsSync(join(work, "deployed-env")), false);
+-  assert.match(journal, / loi-env-do-dang tyzo-sub\n$/);
++  assert.match(journal, / loi-env-do-dang tyzo-sub - a{40}\n$/);
+ });
+ 
+-test("RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang", () => {
+-  const { r, journal } = run("deploy-lost");
++test("RE5-004: mất kết nối lúc deploy → không rõ kết quả, nhật ký giữ dở dang", async () => {
++  const { r, journal } = await run("deploy-lost");
+   assert.match(r.stdout, /kq=3 buoc=deploy-chua-ro/);
+   assert.match(r.stdout, /dang-do/);
+   assert.match(journal, / loi-deploy-chua-ro /);
+ });
+ 
+-test("RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong", () => {
+-  const { r } = run("not-ready");
++test("RE5-004: deploy trả địa chỉ nhưng bản dựng chưa Ready → không coi là xong", async () => {
++  const { r } = await run("not-ready");
+   assert.match(r.stdout, /kq=3 buoc=deploy-chua-ro/);
+ });
+ 
+diff --git a/scripts/re6-003-vercel.test.mjs b/scripts/re6-003-vercel.test.mjs
+new file mode 100644
+index 0000000..f919bcc
+--- /dev/null
++++ b/scripts/re6-003-vercel.test.mjs
+@@ -0,0 +1,97 @@
++/**
++ * RE6-003: xác minh Vercel có cấu trúc (REST API JSON), danh tính deployment, project/target, mã phiên bản, env đã ghi,
++ * tên miền production, trang trả lời, giới hạn thời gian và dữ liệu phục hồi không lộ bí mật. Chỉ dùng Vercel giả.
++ */
++import assert from "node:assert/strict";
++import { existsSync } from "node:fs";
++import { join } from "node:path";
++import { test } from "node:test";
++import { run, SECRETS, SHA, text } from "./vercel-fake-harness.mjs";
++
++const noLeak = (res) => {
++  for (const s of SECRETS) {
++    assert.ok(!res.out.includes(s), `đầu ra lộ ${s}`);
++    assert.ok(!res.journal.includes(s), `nhật ký lộ ${s}`);
++    assert.ok(!res.r.stdout.includes(s), `stdout lộ ${s}`);
++  }
++  assert.ok(!res.calls.includes("postgres://neon/new") && !res.calls.includes("new-secret"), "giá trị env không nằm trên dòng lệnh");
++};
++
++test("RE6-003: không còn đọc chữ ready từ CLI", () => {
++  assert.doesNotMatch(text, /grep -qi 'ready'/);
++  assert.doesNotMatch(text, /\$V inspect/);
++});
++
++test("RE6-003: lượt đúng → kiểm env theo băm, deployment đúng ID/project/target/mã, tên miền, trang trả lời", async () => {
++  const res = await run();
++  assert.match(res.r.stdout, /kq=0 buoc=xong dep=dpl_1/);
++  assert.match(res.r.stdout, /da-ket-thuc/);
++  assert.match(res.out, /khớp DATABASE_URL/);
++  assert.match(res.out, /^BUOC deploy-id dpl_1$/m);
++  assert.match(res.out, new RegExp(`^BUOC kiem-xong dpl_1 ${SHA}$`, "m"));
++  assert.match(res.calls, new RegExp(`--meta tyzo_sha=${SHA}`));
++  assert.match(res.journal, new RegExp(` xong tyzo-sub dpl_1 ${SHA}\\n$`));
++  noLeak(res);
++});
++
++for (const [fault, why] of [
++  ["not-ready", /hết giờ chờ deployment \(BUILDING\)/],
++  ["error", /dpl_1 ERROR/],
++  ["wrong-project", /sai project/],
++  ["wrong-target", /sai project, target/],
++  ["wrong-sha", /mã phiên bản/],
++  ["wrong-url", /deployment khác/],
++  ["alias-other", /chưa trỏ tới dpl_1/],
++  ["api-down-after-deploy", /hết giờ chờ deployment \(API 500\)/],
++]) {
++  test(`RE6-003: ${fault} → deploy-chua-ro, nguồn cũ vẫn khóa, có dữ liệu phục hồi`, async () => {
++    const res = await run(fault);
++    assert.match(res.r.stdout, /kq=3 buoc=deploy-chua-ro/);
++    assert.match(res.r.stdout, /dang-do/);
++    assert.match(res.out, why);
++    assert.match(res.out, /^TIM (dpl_1 |khong-ro|khong-thay)/m);
++    assert.match(res.journal, / loi-deploy-chua-ro tyzo-sub /);
++    noLeak(res);
++  });
++}
++
++test("RE6-003: deploy mất kết nối → tra theo tyzo_run tìm ra deployment, ghi ID vào nhật ký", async () => {
++  const res = await run("deploy-lost");
++  assert.match(res.r.stdout, /kq=3 buoc=deploy-chua-ro dep=dpl_1/);
++  assert.match(res.out, /^TIM dpl_1 READY https:\/\/tyzo-abc\.vercel\.app$/m);
++  assert.match(res.journal, / loi-deploy-chua-ro tyzo-sub dpl_1 /);
++  noLeak(res);
++});
++
++test("RE6-003: deploy treo → cắt theo giới hạn thời gian, không coi là xong", async () => {
++  const res = await run("deploy-hang");
++  assert.match(res.r.stdout, /kq=3 buoc=deploy-chua-ro dep=dpl_1/);
++  assert.ok(res.ms < 20_000, `mất ${res.ms}ms`);
++});
++
++for (const [fault, why] of [
++  ["env-drop-DATABASE_URL", /LOI kiểm DATABASE_URL: giá trị không khớp/],
++  ["sensitive-BETTER_AUTH_SECRET", /LOI kiểm BETTER_AUTH_SECRET: không đọc lại được/],
++  ["dup-DATABASE_URL", /LOI kiểm DATABASE_URL: nhiều bản production/],
++  ["add-hang-LIVE_BRIDGE_URL", /LOI khi đặt LIVE_BRIDGE_URL/],
++  ["link-noid", /không có định danh project/],
++  ["api-down", /không kiểm được qua API \(API 500\)/],
++]) {
++  test(`RE6-003: ${fault} → dừng trước deploy`, async () => {
++    const res = await run(fault);
++    assert.match(res.r.stdout, /kq=1 buoc=(env-do-dang|chua-doi-vercel)/);
++    assert.match(res.out, why);
++    assert.doesNotMatch(res.calls, / deploy /);
++    assert.equal(existsSync(join(res.work, "deployed-env")), false);
++    noLeak(res);
++  });
++}
++
++test("RE6-003: Ready và đã nhận tên miền nhưng trang không trả lời → kiem-chua-dat, giữ dở dang", async () => {
++  const res = await run("site-down");
++  assert.match(res.r.stdout, /buoc=kiem-chua-dat dep=dpl_1/);
++  assert.match(res.r.stdout, /dang-do/);
++  assert.match(res.out, /^BUOC deploy-xong https:\/\/tyzo-abc\.vercel\.app dpl_1$/m);
++  assert.match(res.journal, / loi-kiem-chua-dat tyzo-sub dpl_1 /);
++  noLeak(res);
++});
+diff --git a/scripts/re6-004-do-modal.test.mjs b/scripts/re6-004-do-modal.test.mjs
+new file mode 100644
+index 0000000..5d9357f
+--- /dev/null
++++ b/scripts/re6-004-do-modal.test.mjs
+@@ -0,0 +1,11 @@
++/** RE6-004: chạy bộ test Python của do-modal.py (Modal giả trên loopback). */
++import assert from "node:assert/strict";
++import { spawnSync } from "node:child_process";
++import { test } from "node:test";
++
++test("RE6-004: do-modal giữ ngân sách, chi phí không rõ, hạn chót và chuyển hướng", () => {
++  const dir = new URL("../deploy/vps/do-modal/", import.meta.url).pathname;
++  const r = spawnSync("python3", ["-I", "-B", "test_do_modal.py", "-v"], { cwd: dir, encoding: "utf8", timeout: 60_000 });
++  assert.equal(r.status, 0, r.stderr);
++  assert.match(r.stderr, /Ran 8 tests[\s\S]*OK/);
++});
+diff --git a/scripts/re6-005-live-measure.test.mjs b/scripts/re6-005-live-measure.test.mjs
+new file mode 100644
+index 0000000..92e558d
+--- /dev/null
++++ b/scripts/re6-005-live-measure.test.mjs
+@@ -0,0 +1,124 @@
++/**
++ * RE6-005: đo Dịch trực tiếp với cầu nối giả (ws trên loopback). Kiểm đồng hồ monotonic, dọn bộ đếm khi đóng sớm,
++ * lượt lỗi/thiếu mốc tách khỏi phân vị, P50/95/99. Corpus đa ngôn ngữ cho bộ lọc chữ sót (delta = final, tên riêng).
++ */
++import assert from "node:assert/strict";
++import { test } from "node:test";
++import { WebSocketServer } from "ws";
++import { measure, pct, speechSpan, summarize } from "../deploy/vps/do-live/live-measure.ts";
++import { dropLeftoverScript } from "../src/lib/live/leftover-script.ts";
++
++function tone(ms, startMs = 500, endMs = ms - 500) {
++  const pcm = Buffer.alloc((ms / 1000) * 32000);
++  for (let i = 0; i < pcm.length / 2; i++) {
++    const t = (i / 16000) * 1000;
++    pcm.writeInt16LE(t >= startMs && t < endMs ? Math.round(8000 * Math.sin(i / 3)) : 0, i * 2);
++  }
++  return pcm;
++}
++
++async function bridge(behaviour) {
++  const wss = new WebSocketServer({ port: 0, host: "127.0.0.1" });
++  const got = { frames: 0, afterStop: 0 };
++  wss.on("connection", (ws) => {
++    let stopped = false;
++    ws.send(JSON.stringify({ type: "ready" }));
++    ws.on("message", (d, bin) => {
++      if (bin) { got.frames++; if (stopped) got.afterStop++; return; }
++      if (JSON.parse(d.toString()).type === "stop") {
++        stopped = true;
++        ws.send(JSON.stringify({ type: "event", event: { kind: "translation", final: true, text: "x" } }));
++        ws.close(1000);
++      }
++    });
++    behaviour(ws, got);
++  });
++  await new Promise((r) => wss.on("listening", r));
++  return { url: `ws://127.0.0.1:${wss.address().port}/live`, got, close: () => new Promise((r) => wss.close(r)) };
++}
++
++test("RE6-005: phân vị dùng cách làm tròn lên, không trả -Infinity khi rỗng", () => {
++  assert.equal(pct([], 50), null);
++  const xs = Array.from({ length: 100 }, (_, i) => i + 1);
++  assert.deepEqual([pct(xs, 50), pct(xs, 95), pct(xs, 99)], [50, 95, 99]);
++  assert.equal(speechSpan(Buffer.alloc(32000)), null, "đoạn im lặng không bịa mốc tiếng nói");
++});
++
++test("RE6-005: lượt đủ mốc đo theo đồng hồ monotonic, tính từ lúc bắt đầu có tiếng", async () => {
++  const b = await bridge((ws) => {
++    setTimeout(() => ws.send(JSON.stringify({ type: "event", event: { kind: "source-delta" } })), 40);
++    setTimeout(() => ws.send(JSON.stringify({ type: "event", event: { kind: "translation-delta" } })), 80);
++  });
++  let fake = 1_000_000; // đồng hồ giả chỉ tăng, độc lập Date.now
++  const r = await measure({ url: b.url, lang: "zh", pcm: tone(1000, 100, 900), frameMs: 20, now: () => (fake += 1) });
++  await b.close();
++  assert.equal(r.ok, true, JSON.stringify(r));
++  assert.equal(r.onsetMs, 100);
++  assert.ok(r.firstSource_s != null && r.finals === 1);
++});
++
++test("RE6-005: cầu nối đóng sớm → dừng bộ đếm, không gửi khung sau khi đóng, lượt bị đếm là lỗi riêng", async () => {
++  const b = await bridge((ws) => setTimeout(() => ws.close(1011, "boom"), 60));
++  const r = await measure({ url: b.url, lang: "ja", pcm: tone(3000), frameMs: 10 });
++  const framesAtClose = b.got.frames;
++  await new Promise((res) => setTimeout(res, 200));
++  await b.close();
++  assert.equal(r.ok, false);
++  assert.equal(r.why, "dong-1011");
++  assert.equal(b.got.frames, framesAtClose, "không còn khung nào sau khi đóng");
++  assert.equal(r.framesAfterClose, 0);
++  const s = summarize([r]);
++  assert.deepEqual(s.failed, { "dong-1011": 1 });
++  assert.equal(s.onsetToSourceReceive_s.n, 0);
++  assert.equal(s.onsetToSourceReceive_s.p99, null);
++});
++
++test("RE6-005: hết giờ → terminate, dọn bộ đếm, lượt het-gio", async () => {
++  const b = await bridge(() => {});
++  const r = await measure({ url: b.url, lang: "ko", pcm: tone(30000), frameMs: 10, timeoutMs: 150 });
++  const n = b.got.frames;
++  await new Promise((res) => setTimeout(res, 150));
++  await b.close();
++  assert.equal(r.why, "het-gio");
++  assert.equal(b.got.frames, n);
++});
++
++test("RE6-005: summarize tách lỗi/thiếu mốc khỏi phân vị và có P50/P95/P99", () => {
++  const base = { connectMs: 1, onsetMs: 0, offsetMs: 0, finals: 1, framesAfterClose: 0, errors: [], usage: null, why: "dong-1000" };
++  const rows = [
++    ...Array.from({ length: 20 }, (_, i) => ({ ...base, lang: "zh", ok: true, firstSource_s: (i + 1) / 10, firstTranslation_s: 1, lastFinalAfterSpeechEnd_s: 2 })),
++    { ...base, lang: "en", ok: false, firstSource_s: null, firstTranslation_s: null, lastFinalAfterSpeechEnd_s: null },
++    { ...base, lang: "en", ok: false, firstSource_s: 0.1, firstTranslation_s: 0.2, lastFinalAfterSpeechEnd_s: null, finals: 0 },
++    { ...base, lang: "en", ok: false, firstSource_s: 9, firstTranslation_s: 9, lastFinalAfterSpeechEnd_s: 9, errors: ["x"] },
++  ];
++  const s = summarize(rows);
++  assert.equal(s.samples, 23); assert.equal(s.ok, 20);
++  assert.deepEqual(s.failed, { "thieu-chu-goc": 1, "thieu-cau-chot": 1, loi: 1 });
++  assert.deepEqual(s.onsetToSourceReceive_s, { n: 20, p50: 1, p95: 1.9, p99: 2, max: 2 });
++  assert.match(s.note, /chưa gồm thời gian vẽ/);
++});
++
++// Corpus đa ngôn ngữ: (đích, câu chốt từ model, các mẩu delta, kỳ vọng).
++const CORPUS = [
++  ["vi", "Anh Nguyễn Văn An đến Hà Nội năm 2026.", ["Anh Nguyễn ", "Văn An đến ", "Hà Nội năm 2026."], "Anh Nguyễn Văn An đến Hà Nội năm 2026."],
++  ["vi", "Bạn phải luôn如一.", ["Bạn phải ", "luôn如", "一."], "Bạn phải luôn."],
++  ["en", "Mr. Müller met Sørensen in Zürich.", ["Mr. Müller ", "met Sørensen ", "in Zürich."], "Mr. Müller met Sørensen in Zürich."],
++  ["en", "Привет, Иван! Hello, Yusuf — مرحبا.", ["Привет, Иван! ", "Hello, Yusuf — مرحبا."], "Привет, Иван! Hello, Yusuf — مرحبا."],
++  ["vi", "Cô ấy nói สวัสดี với tôi.", ["Cô ấy nói ", "สวัสดี với tôi."], "Cô ấy nói สวัสดี với tôi."],
++  ["vi", "Tôi gặp Tanaka-san ở Tokyo。", ["Tôi gặp Tanaka-san ", "ở Tokyo。"], "Tôi gặp Tanaka-san ở Tokyo."],
++  ["ja", "田中さんは東京に行きました。", ["田中さんは", "東京に行きました。"], "田中さんは東京に行きました。"],
++];
++
++test("RE6-005: corpus đa ngôn ngữ — chữ Latin/Cyrillic/Ả Rập/Thái và tên riêng phiên âm không bị mất; delta khớp final", () => {
++  for (const [target, final, deltas, want] of CORPUS) {
++    assert.equal(dropLeftoverScript(final, target), want, final);
++    const joined = deltas.map((d) => dropLeftoverScript(d, target, false)).join("");
++    assert.equal(dropLeftoverScript(joined, target), want, `delta ${final}`);
++  }
++});
++
++test("RE6-005: GIỚI HẠN ĐÃ BIẾT — tên riêng viết bằng chữ Hán/kana/Hangul trong bản dịch tiếng Việt bị bỏ", () => {
++  // Ghi lại hành vi hiện tại để Chủ quyết chính sách; không tự đổi đầu ra khách hàng.
++  assert.equal(dropLeftoverScript("Tôi gặp 王小明 hôm qua.", "vi"), "Tôi gặp hôm qua.");
++  assert.equal(dropLeftoverScript("Ca sĩ 아이유 hát.", "vi"), "Ca sĩ hát.");
++});
+diff --git a/scripts/re6-007-admission-pg.test.mjs b/scripts/re6-007-admission-pg.test.mjs
+new file mode 100644
+index 0000000..8e29f3f
+--- /dev/null
++++ b/scripts/re6-007-admission-pg.test.mjs
+@@ -0,0 +1,172 @@
++/**
++ * RE6-007: tyzo_admit (0057) trên PostgreSQL thật riêng (TYZO_TEST_PG_URL, CSDL đã chạy migrate). Dữ liệu tổng hợp.
++ * Đúng đắn: 1k/5k khách chờ, ký tự lạ trong khóa JSON, điều kiện được xét, trần dùng chung, phần dành cho live,
++ * burst 300 không vượt trần. Đo: độ trễ theo số khách chờ, đồng thời 25/50/100/200, burst 300.
++ * RE6_BENCH_OUT=<tệp> để ghi kết quả đo dạng JSON.
++ */
++import assert from "node:assert/strict";
++import { writeFileSync } from "node:fs";
++import { after, before, beforeEach, test } from "node:test";
++import pg from "pg";
++
++const URL_ = process.env.TYZO_TEST_PG_URL;
++const pgTest = URL_ ? test : test.skip;
++const DEF = { enabled: true, batch: 48, modal: 8, live: 48, perUser: 2, perUserModal: 3, perProvider: 40, perModel: 24, liveReserve: 0 };
++let pool;
++const bench = {};
++before(() => { if (URL_) pool = new pg.Pool({ connectionString: URL_, max: 320 }); });
++after(async () => {
++  if (process.env.RE6_BENCH_OUT && Object.keys(bench).length) writeFileSync(process.env.RE6_BENCH_OUT, JSON.stringify(bench, null, 1));
++  await pool?.end();
++});
++const q = (text, values) => pool.query(text, values);
++beforeEach(async () => {
++  if (!pool) return;
++  await q("delete from work_admissions"); await q("delete from run_async_asr_jobs"); await q("delete from work_waiters");
++  await q("delete from room_settings where key = 'work_admission'");
++});
++const limits = (v) => q(`insert into room_settings (key, value) values ('work_admission', $1)
++  on conflict (key) do update set value = excluded.value`, [JSON.stringify({ ...DEF, ...v })]);
++let seq = 0;
++async function admit(user, provider, model, lane, client = pool) {
++  const id = `a${++seq}`;
++  const t = performance.now();
++  const r = (await client.query("select tyzo_admit($1,$2,$3,$4,$5,$6::jsonb,60,null) r", [id, user, provider, model, lane, JSON.stringify(DEF)])).rows[0].r;
++  return { ok: r === id, r, ms: performance.now() - t };
++}
++/** Khách chờ: eligible = đã chờ ≥ 3 s và còn hiện diện; stale = bỏ đi quá 6 s; fresh = mới chờ < 3 s. */
++async function seedWaiters(n, { kind = "eligible", provider = "p2", model = "m2", lane = "batch", prefix = "w" } = {}) {
++  const since = kind === "fresh" ? "clock_timestamp()" : "clock_timestamp() - interval '20 seconds'";
++  const seen = kind === "stale" ? "clock_timestamp() - interval '10 seconds'" : "clock_timestamp()";
++  await q(`insert into work_waiters (user_id, provider, model, lane, since, seen_at)
++    select $1 || g, $2, $3, $4, ${since} + g * interval '1 microsecond', ${seen} from generate_series(1, $5) g`, [prefix, provider, model, lane, n]);
++}
++async function running(provider, model, lane, n, prefix = "r") {
++  await q(`insert into work_admissions (id, user_id, provider, model, lane) select $1 || g, $1 || g, $2, $3, $4 from generate_series(1, $5) g`, [prefix + provider + lane, provider, model, lane, n]);
++}
++const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? +s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)].toFixed(2) : null; };
++const dist = (xs) => ({ n: xs.length, p50: pct(xs, 50), p95: pct(xs, 95), p99: pct(xs, 99), max: pct(xs, 100) });
++
++pgTest("RE6-007: ký tự lạ trong mã khách/nhà/model không làm lẫn khóa JSON", async () => {
++  await limits({ perUser: 1 });
++  const odd = ['u1","batch', 'u1', 'a\\"b', "[]", "{,}", "Nguyễn\u0000x".replace("\u0000", ""), "😀", " ", "a'b;--"];
++  for (const u of odd) assert.equal((await admit(u, 'p"[1]', 'm,"x', "batch")).ok, true, `lượt đầu ${JSON.stringify(u)}`);
++  for (const u of odd) assert.equal((await admit(u, 'p"[1]', 'm,"x', "batch")).r, "busy", `suất riêng ${JSON.stringify(u)}`);
++  // Nhà/model khác nhau chỉ ở dấu nháy và phẩy: trần model đếm riêng.
++  await limits({ perUser: 5, perModel: 1 });
++  assert.equal((await admit("x1", "p", 'a","b', "batch")).ok, true);
++  assert.equal((await admit("x2", 'p","a', "b", "batch")).ok, true);
++  assert.equal((await admit("x3", "p", 'a","b', "batch")).r.startsWith("busy:"), true);
++});
++
++pgTest("RE6-007: 5k khách chờ cũ/mới/không chung tài nguyên không chặn khách mới", async () => {
++  await seedWaiters(5000, { kind: "stale", provider: "p1", lane: "batch", prefix: "s" });
++  await seedWaiters(5000, { kind: "fresh", provider: "p1", lane: "batch", prefix: "f" });
++  await seedWaiters(5000, { kind: "eligible", provider: "p9", lane: "modal", prefix: "o" });
++  const r = await admit("new", "p1", "m1", "batch");
++  assert.equal(r.ok, true, r.r);
++});
++
++pgTest("RE6-007: 1k khách chờ đủ điều kiện, chung lane, được nhường theo thứ tự đến; vị trí đúng", async () => {
++  await limits({ batch: 10, perProvider: 100, perModel: 100 });
++  await seedWaiters(1000, { provider: "p2", lane: "batch" });
++  const r = await admit("new", "p1", "m1", "batch");
++  assert.equal(r.ok, false);
++  assert.equal(r.r, "busy:11", "10 suất trống nhường 10 người đầu, khách mới đứng thứ 11");
++  // Khách chờ thứ nhất đến lượt thì nhận được.
++  assert.equal((await admit("w1", "p2", "m2", "batch")).ok, true);
++});
++
++pgTest("RE6-007: khách chờ không nhận được suất trên tài nguyên của chính họ thì không giữ chỗ", async () => {
++  await limits({ batch: 10, perProvider: 100, perModel: 2 });
++  await running("p2", "m2", "batch", 2);
++  await seedWaiters(1000, { provider: "p2", model: "m2", lane: "batch" });
++  assert.equal((await admit("new", "p1", "m1", "batch")).ok, true);
++});
++
++pgTest("RE6-007: phần dành cho live: batch không lấy, khách chờ batch không giữ phần dành riêng", async () => {
++  await limits({ perProvider: 10, liveReserve: 4, perModel: 50, perUser: 50 });
++  let ok = 0;
++  for (let i = 0; i < 12; i++) ok += (await admit(`b${i}`, "ali", "asr", "batch")).ok;
++  assert.equal(ok, 6);
++  await seedWaiters(1000, { provider: "ali", model: "asr", lane: "batch", prefix: "bw" });
++  let live = 0;
++  for (let i = 0; i < 6; i++) live += (await admit(`l${i}`, "ali", "lt", "live")).ok;
++  assert.equal(live, 4);
++});
++
++function counts(rows) {
++  const by = (f) => rows.reduce((m, r) => m.set(f(r), (m.get(f(r)) ?? 0) + 1), new Map());
++  return { lane: by((r) => r.lane), prov: by((r) => r.provider), model: by((r) => `${r.provider}|${r.model}`), user: by((r) => `${r.user_id}|${r.lane}`), nonlive: by((r) => (r.lane === "live" ? "-" : r.provider)) };
++}
++
++pgTest("RE6-007: burst 300 đồng thời, trộn lane/nhà/model, không vượt trần nào", async () => {
++  const L = { batch: 20, modal: 6, live: 30, perUser: 2, perUserModal: 3, perProvider: 25, perModel: 12, liveReserve: 5 };
++  await limits(L);
++  await seedWaiters(1000, { provider: "ali", lane: "batch", prefix: "bw" });
++  const lanes = ["batch", "modal", "live"]; const provs = ["ali", "groq", "modal"];
++  const t0 = performance.now();
++  const res = await Promise.all(Array.from({ length: 300 }, (_, i) => admit(`u${i % 120}`, provs[i % 3], `m${i % 4}`, lanes[(i >> 1) % 3])));
++  const wall = performance.now() - t0;
++  const rows = (await q("select user_id, provider, model, lane from work_admissions where status = 'running'")).rows;
++  assert.equal(rows.length, res.filter((r) => r.ok).length);
++  const c = counts(rows);
++  for (const [k, n] of c.lane) assert.ok(n <= L[k], `lane ${k}=${n}`);
++  for (const [k, n] of c.prov) assert.ok(n <= L.perProvider, `nhà ${k}=${n}`);
++  for (const [k, n] of c.model) assert.ok(n <= L.perModel, `model ${k}=${n}`);
++  for (const [k, n] of c.user) assert.ok(n <= (k.endsWith("|modal") ? L.perUserModal : L.perUser), `khách ${k}=${n}`);
++  for (const [k, n] of c.nonlive) if (k !== "-") assert.ok(n <= L.perProvider - L.liveReserve, `không-live ${k}=${n}`);
++  bench.burst300 = { admitted: rows.length, wall_ms: +wall.toFixed(1), latency_ms: dist(res.map((r) => r.ms)), waiters: 1000 };
++});
++
++pgTest("RE6-007: đo độ trễ theo số khách chờ (0/1k/5k) và đồng thời 25/50/100/200", { timeout: 600_000 }, async () => {
++  bench.env = (await q("select version() v")).rows[0].v;
++  bench.byWaiters = {};
++  for (const w of [0, 1000, 5000]) {
++    await q("delete from work_waiters"); await q("delete from work_admissions");
++    await limits({ perModel: 0 > 1 ? 1 : 24 });
++    // Khách chờ chung lane batch, nhà p2 đã đầy model → duyệt hết vòng lặp mà không ai giữ chỗ (trường hợp xấu nhất).
++    await running("p2", "m2", "batch", 24);
++    if (w) await seedWaiters(w, { provider: "p2", model: "m2", lane: "batch" });
++    const xs = [];
++    for (let i = 0; i < 60; i++) {
++      const r = await admit(`n${i}`, "p1", "m1", "batch");
++      assert.equal(r.ok, true);
++      await q("delete from work_admissions where user_id = $1", [`n${i}`]);
++      if (i >= 10) xs.push(r.ms);
++    }
++    bench.byWaiters[w] = dist(xs);
++  }
++  bench.burst300ByWaiters = {};
++  // Mở sẵn 300 kết nối để burst chỉ đo tyzo_admit, không đo bắt tay kết nối.
++  const warm = await Promise.all(Array.from({ length: 300 }, () => pool.connect())); warm.forEach((c) => c.release());
++  for (const w of [0, 1000, 5000]) {
++    await q("delete from work_waiters"); await q("delete from work_admissions");
++    await running("p2", "m2", "batch", 24);
++    if (w) await seedWaiters(w, { provider: "p2", model: "m2", lane: "batch" });
++    const t0 = performance.now();
++    const res = await Promise.all(Array.from({ length: 300 }, (_, i) => admit(`b${w}_${i}`, `p${i % 3}`, `m${i % 5}`, i % 4 === 0 ? "live" : "batch")));
++    bench.burst300ByWaiters[w] = { admitted: res.filter((r) => r.ok).length, wall_ms: +(performance.now() - t0).toFixed(0), latency_ms: dist(res.map((r) => r.ms)) };
++  }
++  bench.concurrency = {};
++  await q("delete from work_waiters"); await q("delete from work_admissions");
++  await seedWaiters(1000, { provider: "p2", model: "m2", lane: "batch" });
++  await running("p2", "m2", "batch", 24);
++  for (const c of [25, 50, 100, 200]) {
++    const xs = []; let ok = 0; const each = 10;
++    const t0 = performance.now();
++    await Promise.all(Array.from({ length: c }, async (_, k) => {
++      const cl = await pool.connect();
++      try {
++        for (let i = 0; i < each; i++) {
++          const u = `c${c}_${k}_${i}`;
++          const r = await admit(u, `p${k % 3}`, `m${k % 5}`, k % 4 === 0 ? "live" : "batch", cl);
++          xs.push(r.ms); ok += r.ok;
++          if (r.ok) await cl.query("delete from work_admissions where user_id = $1", [u]);
++        }
++      } finally { cl.release(); }
++    }));
++    const wall = performance.now() - t0;
++    bench.concurrency[c] = { calls: c * each, admitted: ok, wall_ms: +wall.toFixed(0), calls_per_s: +((c * each) / (wall / 1000)).toFixed(0), latency_ms: dist(xs), waiters: 1000 };
++  }
++});
+diff --git a/scripts/vercel-fake-harness.mjs b/scripts/vercel-fake-harness.mjs
+new file mode 100644
+index 0000000..efa0e5c
+--- /dev/null
++++ b/scripts/vercel-fake-harness.mjs
+@@ -0,0 +1,133 @@
++/**
++ * Giả lập Vercel cho RE5-004 / RE6-003: «npx vercel» giả (CLI) + máy chủ HTTP giả (REST API, tên miền production).
++ * Chạy đúng chay_vercel_sh / buoc_vercel / id_vercel / ghi_chuyen / chuyen_dang_do trong deploy/vps/tyzo.sh.
++ * Lỗi được chèn qua danh sách FAKE_FAULT. Không gọi Vercel thật, không dùng thông tin xác thực thật.
++ */
++import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
++import { createServer } from "node:http";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { execFile } from "node:child_process";
++
++const root = new URL("..", import.meta.url).pathname;
++export const text = readFileSync(join(root, "deploy/vps/tyzo.sh"), "utf8");
++export const lib = text.slice(0, text.lastIndexOf('main "$@"; exit $?'));
++export const cliVersion = /VERCEL_CLI_VERSION="([^"]+)"/.exec(text)[1];
++export const SECRETS = ["postgres://neon/new", "new-secret", "tok-secret-123"];
++export const SHA = "a".repeat(40);
++
++const fakeNpx = `#!/usr/bin/env bash
++F="$FAKE_DIR"; echo "$*" >> "$F/calls.log"
++fault() { [[ ",\${FAKE_FAULT:-}," == *",$1,"* ]]; }
++args=("$@"); i=0; while [[ "\${args[$i]}" != vercel@* ]]; do i=$((i+1)); done
++[ "\${args[$i]}" = "vercel@$EXPECT_VERSION" ] || { echo "sai phiên bản \${args[$i]}" >&2; exit 9; }
++rest=("\${args[@]:$((i+1))}")
++sub=""; for a in "\${rest[@]}"; do case "$a" in link|env|deploy|inspect|domains) sub="$a"; break ;; esac; done
++case "$sub" in
++  link) fault link-noid || { mkdir -p .vercel; echo '{"projectId":"prj_1","orgId":"team_1"}' > .vercel/project.json; }; exit 0 ;;
++  env)
++    act=""; k=""; force=0; take=0
++    for a in "\${rest[@]}"; do
++      if [ "$take" = 1 ]; then k="$a"; take=0; continue; fi
++      case "$a" in add|rm) act="$a"; take=1 ;; --force) force=1 ;; esac
++    done
++    if [ "$act" = rm ]; then rm -f "$F/env/$k"; exit 0; fi
++    val="$(cat)"
++    if fault "add-hang-$k"; then sleep 30; fi
++    if fault "add-fail-$k"; then exit 1; fi
++    if fault "env-drop-$k"; then exit 0; fi
++    if [ -f "$F/env/$k" ] && [ "$force" != 1 ]; then echo "exists" >&2; exit 1; fi
++    printf '%s' "$val" > "$F/env/$k"; exit 0 ;;
++  deploy)
++    run=""; sha=""; nx=0
++    for a in "\${rest[@]}"; do
++      if [ "$nx" = 1 ]; then case "$a" in tyzo_run=*) run="\${a#tyzo_run=}" ;; tyzo_sha=*) sha="\${a#tyzo_sha=}" ;; esac; nx=0; continue; fi
++      [ "$a" = --meta ] && nx=1
++    done
++    cp -r "$F/env" "$F/deployed-env"
++    printf '{"id":"dpl_1","url":"tyzo-abc.vercel.app","run":"%s","sha":"%s"}' "$run" "$sha" > "$F/deploy.json"
++    if fault deploy-lost; then exit 1; fi
++    if fault deploy-hang; then sleep 30; fi
++    echo "Building..."; echo "https://tyzo-abc.vercel.app"; exit 0 ;;
++  inspect) echo "status ● Not Ready"; exit 0 ;;
++  domains) exit 0 ;;
++esac
++exit 2
++`;
++
++function startApi(work, faults) {
++  const has = (f) => faults.includes(f);
++  let polls = 0;
++  const server = createServer((req, res) => {
++    const u = new URL(req.url, "http://x");
++    const send = (code, body) => { res.writeHead(code, { "content-type": "application/json" }); res.end(JSON.stringify(body)); };
++    const site = /^\/site\/([^/]+)\/$/.exec(u.pathname);
++    if (site) { res.writeHead(has("site-down") ? 503 : 200); return res.end("ok"); }
++    if (has("api-down") || (has("api-down-after-deploy") && existsSync(join(work, "deploy.json")))) return send(500, { error: "down" });
++    if (req.headers.authorization !== "Bearer tok-secret-123" || u.searchParams.get("teamId") !== "team_1") return send(403, { error: "forbidden" });
++    const dep = existsSync(join(work, "deploy.json")) ? JSON.parse(readFileSync(join(work, "deploy.json"), "utf8")) : null;
++    const view = () => {
++      polls++;
++      const state = has("not-ready") ? "BUILDING" : has("error") ? "ERROR" : polls < 2 ? "BUILDING" : "READY";
++      return {
++        id: dep.id, url: has("wrong-url") ? "other.vercel.app" : dep.url,
++        projectId: has("wrong-project") ? "prj_other" : "prj_1", target: has("wrong-target") ? null : "production",
++        meta: { tyzo_run: dep.run, tyzo_sha: has("wrong-sha") ? "b".repeat(40) : dep.sha },
++        readyState: state, aliasAssigned: state === "READY", alias: ["tyzo-sub.vercel.app"],
++      };
++    };
++    let m;
++    if ((m = /^\/v10\/projects\/prj_1\/env$/.exec(u.pathname))) {
++      const envs = [];
++      for (const k of readdirSync(join(work, "env"))) {
++        const v = readFileSync(join(work, "env", k), "utf8");
++        const sensitive = has(`sensitive-${k}`);
++        envs.push({ id: `env_${k}`, key: k, target: ["production"], type: sensitive ? "sensitive" : "encrypted", ...(sensitive ? {} : { value: v, decrypted: true }) });
++        if (has(`dup-${k}`)) envs.push({ id: `env_${k}_2`, key: k, target: ["production", "preview"], type: "encrypted", value: v, decrypted: true });
++      }
++      return send(200, { envs });
++    }
++    if ((m = /^\/v13\/deployments\/([^/]+)$/.exec(u.pathname))) return dep && decodeURIComponent(m[1]) === dep.url ? send(200, view()) : send(404, { error: "not_found" });
++    if (u.pathname === "/v6/deployments") return send(200, { deployments: dep ? [{ uid: dep.id, url: dep.url, readyState: has("not-ready") ? "BUILDING" : "READY", meta: { tyzo_run: dep.run } }] : [] });
++    if ((m = /^\/v4\/aliases\/([^/]+)$/.exec(u.pathname))) return send(200, { alias: m[1], deploymentId: has("alias-other") ? "dpl_old" : dep && dep.id });
++    send(404, { error: "no route" });
++  });
++  return new Promise((r) => server.listen(0, "127.0.0.1", () => r(server)));
++}
++
++export async function run(fault = "", { journal = "", env: extraEnv = {} } = {}) {
++  const faults = fault.split(",").filter(Boolean);
++  const work = mkdtempSync(join(tmpdir(), "re6-003-"));
++  mkdirSync(join(work, "bin")); mkdirSync(join(work, "env"));
++  writeFileSync(join(work, "bin", "npx"), fakeNpx); chmodSync(join(work, "bin", "npx"), 0o755);
++  for (const k of ["DATABASE_URL", "BETTER_AUTH_SECRET", "LIVE_BRIDGE_URL"]) writeFileSync(join(work, "env", k), `old-${k}`);
++  writeFileSync(join(work, "vars"), "DATABASE_URL=postgres://neon/new\nBETTER_AUTH_SECRET=new-secret\nLIVE_BRIDGE_URL=wss://x/live\n");
++  if (journal) writeFileSync(join(work, "tyzo.conf.chuyen"), journal);
++  writeFileSync(join(work, "lib.sh"), lib);
++  const server = await startApi(work, faults);
++  const port = server.address().port;
++  const script = `source "${work}/lib.sh"
++CONF="${work}/tyzo.conf"
++chay_vercel_sh > "${work}/chay.sh"
++ghi_chuyen vercel-bat-dau tyzo-sub
++cd "${work}"
++VERCEL_CLI_VERSION="$VERCEL_CLI_VERSION" ENVF="${work}/vars" TOK=tok-secret-123 PROJ=tyzo-sub SCOPE= DOM= SHA=${SHA} bash "${work}/chay.sh" > "${work}/ra.txt" 2>&1
++kq=$?
++b="$(buoc_vercel "${work}/ra.txt")"; dep="$(id_vercel "${work}/ra.txt")"
++ghi_chuyen "$([ "$kq" = 0 ] && [ "$b" = xong ] && echo xong || echo "loi-$b")" "tyzo-sub $dep ${SHA}"
++echo "kq=$kq buoc=$b dep=$dep"
++if chuyen_dang_do; then echo dang-do; else echo da-ket-thuc; fi`;
++  const t0 = Date.now();
++  const r = await new Promise((resolve) => execFile("bash", ["-c", script], {
++    encoding: "utf8", timeout: 60_000,
++    env: {
++      PATH: `${work}/bin:${process.env.PATH}`, HOME: work, TMPDIR: work, FAKE_DIR: work, FAKE_FAULT: fault, EXPECT_VERSION: cliVersion,
++      VERCEL_CLI_VERSION: cliVersion, VERCEL_API: `http://127.0.0.1:${port}`, PROBE_BASE: `http://127.0.0.1:${port}/site/`,
++      T_CLI: "2", T_DEPLOY: "2", T_READY: "2", T_POLL: "0.1", ...extraEnv,
++    },
++  }, (error, stdout, stderr) => resolve({ error, stdout, stderr })));
++  server.close();
++  const ms = Date.now() - t0;
++  const read = (f) => (existsSync(join(work, f)) ? readFileSync(join(work, f), "utf8") : "");
++  return { r, ms, work, out: read("ra.txt"), env: (k) => read(join("env", k)), calls: read("calls.log"), journal: read("tyzo.conf.chuyen") };
++}

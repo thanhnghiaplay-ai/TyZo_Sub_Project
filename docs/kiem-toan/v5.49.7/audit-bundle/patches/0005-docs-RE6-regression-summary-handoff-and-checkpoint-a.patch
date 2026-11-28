@@ -1,0 +1,115 @@
+From 6841fa53aa1d162f777e7754aa05c66c630873ef Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sat, 28 Nov 2026 00:00:09 +0000
+Subject: [PATCH 5/5] docs(RE6): regression summary, handoff and checkpoint
+ after RE6-007
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01L7y9fx1XD2LbcfzYLtA2ic
+---
+ docs/kiem-toan/v5.49.7/HANDOFF.md     | 25 +++++++++++++++++++++----
+ docs/kiem-toan/v5.49.7/NEXT_PROMPT.md |  2 +-
+ docs/kiem-toan/v5.49.7/REGRESSION.md  | 16 ++++++++++++++++
+ docs/kiem-toan/v5.49.7/STATE.json     | 20 ++++++++++++++++----
+ 4 files changed, 54 insertions(+), 9 deletions(-)
+ create mode 100644 docs/kiem-toan/v5.49.7/REGRESSION.md
+
+diff --git a/docs/kiem-toan/v5.49.7/HANDOFF.md b/docs/kiem-toan/v5.49.7/HANDOFF.md
+index 9fdc6e3..b88344a 100644
+--- a/docs/kiem-toan/v5.49.7/HANDOFF.md
++++ b/docs/kiem-toan/v5.49.7/HANDOFF.md
+@@ -1,7 +1,24 @@
+-# Bàn giao RE6-002 · High
++# Bàn giao sau RE6-007 · Medium
+ 
+-Nhánh `audit/v5.49.7-codex-re6`. Phát triển từ `017cad371595f641d681da7f79eeeb62d617b40b`. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu trên GitHub trước khi làm tiếp.
++Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `work` và `audit/v5.49.7-codex-re6`). Bản RE6-003 chưa push của Codex không có trên remote, nên RE6-003 đã được làm lại từ đầu. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu SHA trên GitHub.
+ 
+-RE6-002 đã qua nghiệm thu cục bộ với API giả và PG18.7. Bản sửa dùng trạng thái chính xác từ Neon API, ghi intent trước thao tác, giữ khóa khi kết quả chưa rõ và bảo toàn bản cũ. [Hồ sơ RE6-002](RE6-002/REPORT.md)
++| Mục | Trạng thái | Hồ sơ |
++|---|---|---|
++| RE6-001 | PASS_LOCAL_POLICY_PENDING (giới hạn vẫn TẮT) | [RE6-001](RE6-001/REPORT.md) |
++| RE6-002 | PASS_LOCAL | [RE6-002](RE6-002/REPORT.md) |
++| RE6-003 | PASS_LOCAL | [RE6-003](RE6-003/REPORT.md) |
++| RE6-004 | PASS_LOCAL | [RE6-004](RE6-004/REPORT.md) |
++| RE6-005 | PARTIAL | [RE6-005](RE6-005/REPORT.md) |
++| RE6-006 | PASS_LOCAL | [RE6-006](RE6-006/REPORT.md) |
++| RE6-007 | PASS_LOCAL (không tối ưu) | [RE6-007](RE6-007/REPORT.md) |
++| RE6-008 | Chưa làm, cần **High** | — |
++| RE6-009 | Chưa làm (Medium, sau RE6-008) | — |
++| RE6-010 | Chưa làm, cần **Low** | — |
+ 
+-Theo chỉ đạo mới nhất, dừng ở RE6-002 để phiên sau làm RE6-003. Khuyến nghị **High** để kiểm API Vercel có cấu trúc, đối chiếu deployment, DB và phiên bản, giữ nhật ký theo các bước env/deploy/promote, rồi thử timeout và phục hồi. Không dùng Vercel, Neon hay VPS thật trong test. RE6-001 giữ giới hạn ở trạng thái tắt, chờ duyệt chính sách. [Hồ sơ RE6-001](RE6-001/REPORT.md)
++Hồi quy toàn phần: [REGRESSION.md](REGRESSION.md). Gói kiểm toán: `audit-bundle/` (patch theo commit, manifest SHA-256).
++
++Việc chờ Chủ:
++- Duyệt chính sách RE6-001.
++- Quyết cách xử lý tên riêng chữ Hán, kana, Hangul trong bản dịch Việt/Anh (RE6-005).
++- Duyệt staging Vercel thật (RE6-003), Modal thật (RE6-004) và live thật (RE6-005).
++- Chuyển sang mức High để làm RE6-008.
+diff --git a/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md b/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md
+index 8a11881..f286425 100644
+--- a/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md
++++ b/docs/kiem-toan/v5.49.7/NEXT_PROMPT.md
+@@ -1 +1 @@
+-Tiếp tục RE6-003 ở mức High trên nhánh `audit/v5.49.7-codex-re6` từ checkpoint RE6-002 đã xác minh GitHub. Đọc `docs/kiem-toan/v5.49.7/HANDOFF.md` và mục RE6-003 trong `BACKLOG.json`. Sửa xác minh Vercel có cấu trúc, danh tính deployment, DB và phiên bản, nhật ký trước các tác động env/deploy/promote, và xử lý kết quả chưa rõ. Kiểm API giả, PG18.7 dữ liệu giả, trạng thái chưa Ready, sai ID/DB/version, timeout và env ghi một phần. Giữ nguồn cũ khóa nếu đích có thể đã ghi. Không triển khai thật, dùng thông tin xác thực thật hay bật giới hạn RE6-001. Commit, push và xác minh SHA GitHub sau nghiệm thu rồi dừng chờ Chủ chuyển Medium.
++Tiếp tục RE6-008 ở mức High trên nhánh `ccr-654dbe0e-978ok7` từ checkpoint sau RE6-007 đã xác minh GitHub. Đọc `docs/kiem-toan/v5.49.7/HANDOFF.md` và mục RE6-008 trong `BACKLOG.json`. Test hành vi route model-call/room-groq (không regex): allowlist trường/model, schema/tool/output cap, Unicode, phiếu nhỏ, usage vượt cận, không giữ toàn context mặc định. Model chưa đo thật thì ghi BLOCKED. Dùng PG18.7 Docker và provider giả. Không gọi API trả phí, không bật giới hạn RE6-001. Sau đó làm RE6-009 (Medium) rồi RE6-010 (Low, chỉ hồ sơ). Commit, push, xác minh SHA sau mỗi mục.
+diff --git a/docs/kiem-toan/v5.49.7/REGRESSION.md b/docs/kiem-toan/v5.49.7/REGRESSION.md
+new file mode 100644
+index 0000000..d57a9a6
+--- /dev/null
++++ b/docs/kiem-toan/v5.49.7/REGRESSION.md
+@@ -0,0 +1,16 @@
++# Hồi quy toàn phần sau RE6-003 → RE6-007
++
++Mã ở `b2cadf0`, Node v22.23.5. PostgreSQL 18.7 (Docker, loopback, dữ liệu tổng hợp, CSDL tạo bằng migrate 59 mục).
++
++| Lệnh | Kết quả |
++|---|---|
++| `npx tsc --noEmit -p .` | đạt |
++| `node --test 'scripts/**/*.test.mjs'` | 231 đạt · 1 lỗi · 46 bỏ qua (cần Docker/PG CLI riêng) |
++| Nhóm `src/lib/**` (strip-types) | 1483/1483 đạt |
++| Nhóm module-mocks, có `TYZO_TEST_PG_URL` PG18.7 (gồm work-admission-pg, work-lease-pg) | 101/101 đạt |
++| `scripts/re6-migrations-pg.test.mjs` trên PG18.7 | 1/1 đạt |
++| `scripts/re6-007-admission-pg.test.mjs` trên PG18.7 | 7/7 đạt |
++
++Lỗi duy nhất là `R8-002: unreadable migrations directory…` (`scripts/migration-read-permission.test.mjs`). Môi trường chạy bằng root (uid 0) nên `chmod 000` không chặn được việc đọc. Lỗi này không do thay đổi trong phiên: `scripts/migrate.mjs` và `migrations/` không đổi kể từ `c0bcf6f`. Chạy bằng user thường thì sẽ đạt.
++
++Chưa chạy `npm run build`, vì phiên không sửa mã ứng dụng trong `src/`, chỉ thêm test và công cụ VPS. Bộ hồi quy khôi phục RE6-002 (`re3-restore-pg`) cần pg_dump 18 trên máy chạy test nên không chạy lại. Phần `tyzo.sh` RE6-002 dùng không bị sửa, chỉ đổi khối Vercel.
+diff --git a/docs/kiem-toan/v5.49.7/STATE.json b/docs/kiem-toan/v5.49.7/STATE.json
+index 526888d..504a7fc 100644
+--- a/docs/kiem-toan/v5.49.7/STATE.json
++++ b/docs/kiem-toan/v5.49.7/STATE.json
+@@ -3,13 +3,25 @@
+   "branch": "ccr-654dbe0e-978ok7",
+   "previous_checkpoint_sha": "0a1c405a6863be23958306505fc0942c57756c47",
+   "effort": "Medium",
+-  "status": "IN_PROGRESS",
++  "status": "PAUSED_FOR_EFFORT_CHANGE",
+   "completed_item": "RE6-007",
+   "item_status": "PASS_LOCAL",
+   "tests": {
+     "postgres": "18.7",
+-    "admission_pg": "7/7",
+-    "evidence": "RE6-007/REPORT.md"
++    "regression": "REGRESSION.md"
+   },
+-  "next": "RE6-008 (High) — dừng chờ Chủ chuyển mức"
++  "next": "RE6-008 cần High: dừng chờ Chủ chuyển mức.",
++  "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
++  "items": {
++    "RE6-001": "PASS_LOCAL_POLICY_PENDING",
++    "RE6-002": "PASS_LOCAL",
++    "RE6-003": "PASS_LOCAL",
++    "RE6-004": "PASS_LOCAL",
++    "RE6-005": "PARTIAL",
++    "RE6-006": "PASS_LOCAL",
++    "RE6-007": "PASS_LOCAL",
++    "RE6-008": "OPEN_VERIFY",
++    "RE6-009": "OPEN_VERIFY",
++    "RE6-010": "OPEN_VERIFY"
++  }
+ }
+-- 
+2.43.0
+

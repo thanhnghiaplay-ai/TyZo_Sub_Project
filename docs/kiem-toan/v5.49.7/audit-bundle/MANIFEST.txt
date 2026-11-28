@@ -1,0 +1,40 @@
+base c0bcf6fc3b7c1a3766679b0707c580b8ec4a8abe
+head 6841fa53aa1d162f777e7754aa05c66c630873ef (commit trước gói này)
+6841fa53aa1d162f777e7754aa05c66c630873ef docs(RE6): regression summary, handoff and checkpoint after RE6-007
+b2cadf021b37b026e8f3ac1283cdbf8b6e5fc87c test(RE6-007): verify and benchmark tyzo_admit on PostgreSQL 18.7
+0a1c405a6863be23958306505fc0942c57756c47 fix(RE6-005): measure live latency on a monotonic clock with clean teardown
+8b733b5ea9d78aa270ebe2e93de6d0851cde50ae fix(RE6-004): reserve worst-case Modal cost before each measure call
+30ed3ba2913d7a3ff06fb8914a5d18ffad8077a4 fix(RE6-003): verify Vercel deploys through structured API state
+
+# sha256
+08f0bde4f8e7380c96d192213becd626d078af66c2f3e5e0536f1bcfe72f2772  ./BACKLOG.json
+57331e8192884d34352e94f2b6bd361bfd2c730051ffebacbb45e491b3de1ff4  ./HANDOFF.md
+2d4527626f292928fc0b25a793d06086c0b603c5210d032da1b2b2b1562d09d3  ./NEXT_PROMPT.md
+2038fe2b9f411d3e1f1e027be56b44e211072eeb1e96c346e3b5c2a701c6472f  ./RE6-001/REPORT.md
+2e79caa1362b74757992fead2ee8c67a7f23e365bb6945969ce3049d1660fb09  ./RE6-001/test-summary.txt
+5b784554a6e5f4032c11ddbb0df9aadefe02c3372f4face0283695313f7d610a  ./RE6-002/REPORT.md
+848c24b74907f4b7816d95078cfdad7545ad282a4387e4d6d2edebf8801ddcad  ./RE6-002/before.txt
+a42bff5ad465e6b8ee0869208271511636c2c6e88ab22c995a1c4df5b0e53fd1  ./RE6-002/test-summary.txt
+02cc400138a8d4ba21ae819a0bb5cb8764bdac37b1a547983a032d4ff75efd0d  ./RE6-003/REPORT.md
+91cb7384488e1f32e210e470d32ff1d3a8ee941d8cf24082bc7b94e066a36ce7  ./RE6-003/before.txt
+c8a3c761d5142b181a2cd1b56dbd1fae9d05aa32813c5043cd8a8c5194aeffd4  ./RE6-003/test-summary.txt
+ea1d542e6ece62832420708c264b2613c68d42dd6d487894391f2d47851d1b92  ./RE6-004/REPORT.md
+dab98143966b3f4f9acd7cce8aa89c918184614d7aeec8e2f6082852b4b5ce47  ./RE6-004/before.txt
+143755000180916f6bd2289c6e5132033ca4b3a217f7c13d6bd60554d41976ca  ./RE6-004/test-summary.txt
+a1b607ccebaf305c3f0cd7380af394246af3b4be59c05a284e5659e510df605d  ./RE6-005/REPORT.md
+0ae1b45330609a5fb1e8b24088e44efc236e440e7eccae85c610ed17feb65644  ./RE6-005/before.txt
+391579908bca1a29dbcd0f10367b33b8b60777c89340fbd671105257bd16e27a  ./RE6-005/test-summary.txt
+b23543d43540c34746dfc223402805ecbcd148af421e000fb6336eae62926b96  ./RE6-006/REPORT.md
+9a6f2325fac6c7ae7a00251c5ecd7dec05dbd55242519afb982580bee48dbf91  ./RE6-006/restore-matrix.txt
+c70692676d3ceef2972623e4f8c55bbf932b97475964fbe297271294e1a08fcc  ./RE6-006/test-summary.txt
+dfbc235f549ed4cb5ca704ec46ada7ff15d04011641355137cf3e72cf63755d8  ./RE6-007/REPORT.md
+c14ee0cdcd06515af8cf4a3038f47272e9c043c18dfa25117e79461b2997e7a3  ./RE6-007/benchmark.json
+0f9bd585ae69cd170d2a80eca6ea5a6bcfb7610306734e7c099937412d40c468  ./RE6-007/test-summary.txt
+857bea6fee957ca68855899eae4e0f0994ce074be01685b162567c7e95d5bc8f  ./REGRESSION.md
+d22482f02768d13c245473e275b8c14e2699018ab42900312cb5dfdc45abbc81  ./STATE.json
+590a4cbb34175a9fb28ea4061e1da70d17f6a92499fc933eb215dd150251f2b4  ./audit-bundle/patches/0001-fix-RE6-003-verify-Vercel-deploys-through-structured.patch
+7fd865351c78b7bd4da778a3b3ee1bd0d552bb7ba827ef070fcc72bcfb21cd0c  ./audit-bundle/patches/0002-fix-RE6-004-reserve-worst-case-Modal-cost-before-eac.patch
+a7764257672941b9649360a6ffd5a5a4d5a176b03c5131f3c146aa3276fa2c27  ./audit-bundle/patches/0003-fix-RE6-005-measure-live-latency-on-a-monotonic-cloc.patch
+1e8a25eb3e370e506c683df8adf6c5248192dde33eef847ce78edcb460c26e2b  ./audit-bundle/patches/0004-test-RE6-007-verify-and-benchmark-tyzo_admit-on-Post.patch
+a0e595df29eb14266eab22a6622d56b1b5d0507298eb11cc7d6eb5e57e877a05  ./audit-bundle/patches/0005-docs-RE6-regression-summary-handoff-and-checkpoint-a.patch
+50be715eb029a721d60962f0508cf5ee90306afc610f9992131ad7b5dd64e75d  ./audit-bundle/re6-003-007.diff
