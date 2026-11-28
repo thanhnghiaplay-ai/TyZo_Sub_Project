@@ -101,5 +101,45 @@
     "hypothesis": "Hồ sơ STATE cũ và provenance",
     "acceptance": "Cập nhật trạng thái thật, graph theo source commit, lịch sử 80 mục, manifest và ZIP; không sửa logic ở Low.",
     "status": "OPEN_VERIFY"
+  },
+  {
+    "id": "RE7-001",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "deploy/vps/do-modal/do-modal.py: _once/_request",
+    "hypothesis": "timeout từng lần đọc, không hạn chót tổng; phản hồi không giới hạn",
+    "acceptance": "Hạn chót tổng, giới hạn kích thước, unknown khi timeout; test phản hồi chậm liên tục.",
+    "status": "PASS_LOCAL",
+    "evidence": "RE7/REPORT.md"
+  },
+  {
+    "id": "RE7-002",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "deploy/vps/do-modal/do-modal.py: cost_of",
+    "hypothesis": "thiếu tien_model_chu_usd bị coi là 0",
+    "acceptance": "Phân biệt 0 và thiếu; test thiếu stats.",
+    "status": "PASS_LOCAL",
+    "evidence": "RE7/REPORT.md"
+  },
+  {
+    "id": "RE7-003",
+    "priority": "P2",
+    "effort": "Medium",
+    "location": "deploy/vps/do-live/live-measure.ts",
+    "hypothesis": "sự kiện rỗng được tính là mốc phụ đề",
+    "acceptance": "Chỉ tính phụ đề có nội dung; test rỗng, delta, final.",
+    "status": "PASS_LOCAL",
+    "evidence": "RE7/REPORT.md"
+  },
+  {
+    "id": "RE7-004",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "src/lib/live/leftover-policy.ts (chưa nối)",
+    "hypothesis": "bộ lọc xóa tên riêng CJK",
+    "acceptance": "Đề xuất chính sách, test và phương án; chờ Chủ duyệt trước khi đổi hành vi.",
+    "status": "POLICY_PENDING",
+    "evidence": "RE7/REPORT.md"
   }
 ]

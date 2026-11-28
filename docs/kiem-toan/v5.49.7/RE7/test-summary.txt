@@ -1,0 +1,38 @@
+RE7 · Python 3.13.18 · node v22.23.5
+== do-modal (RE7-001/002)
+test_bad_config_rejected_and_token_not_in_rows (__main__.T.test_bad_config_rejected_and_token_not_in_rows) ... ok
+test_full_run_stays_under_budget (__main__.T.test_full_run_stays_under_budget) ... ok
+test_invalid_stats_are_unknown (__main__.T.test_invalid_stats_are_unknown) ... ok
+test_known_cost_counts (__main__.T.test_known_cost_counts) ... ok
+test_model_cost_zero_differs_from_missing (__main__.T.test_model_cost_zero_differs_from_missing) ... ok
+test_oversized_response_rejected_as_unknown (__main__.T.test_oversized_response_rejected_as_unknown) ... ok
+test_parallel_cannot_exceed_budget (__main__.T.test_parallel_cannot_exceed_budget) ... ok
+test_redirect_cap_and_deadline (__main__.T.test_redirect_cap_and_deadline) ... ok
+ok
+test_slow_drip_cut_at_total_deadline (__main__.T.test_slow_drip_cut_at_total_deadline) ... ok
+test_timeout_charges_reserve_as_unknown (__main__.T.test_timeout_charges_reserve_as_unknown) ... ok
+Ran 11 tests in 2.167s
+OK
+== live-measure (RE7-003)
+ok 1 - RE6-005: phân vị dùng cách làm tròn lên, không trả -Infinity khi rỗng
+ok 2 - RE6-005: lượt đủ mốc đo theo đồng hồ monotonic, tính từ lúc bắt đầu có tiếng
+ok 3 - RE6-005: cầu nối đóng sớm → dừng bộ đếm, không gửi khung sau khi đóng, lượt bị đếm là lỗi riêng
+ok 4 - RE6-005: hết giờ → terminate, dọn bộ đếm, lượt het-gio
+ok 5 - RE6-005: summarize tách lỗi/thiếu mốc khỏi phân vị và có P50/P95/P99
+ok 6 - RE6-005: corpus đa ngôn ngữ — chữ Latin/Cyrillic/Ả Rập/Thái và tên riêng phiên âm không bị mất; delta khớp final
+ok 7 - RE6-005: GIỚI HẠN ĐÃ BIẾT — tên riêng viết bằng chữ Hán/kana/Hangul trong bản dịch tiếng Việt bị bỏ
+ok 8 - RE7-003: hasContent — rỗng, khoảng trắng, chỉ dấu câu không phải phụ đề; chữ/số mọi hệ chữ là phụ đề
+ok 9 - RE7-003: chỉ sự kiện rỗng → không có mốc, lượt thiếu chữ gốc; câu chốt rỗng không được tính
+ok 10 - RE7-003: mốc đầu là sự kiện CÓ CHỮ đầu tiên, không phải sự kiện rỗng trước đó
+# tests 10
+# pass 10
+# fail 0
+== leftover-policy (RE7-004, chưa nối)
+# tests 10
+# pass 10
+# fail 0
+== R8-002 bằng user thường (bản sao scripts/ migrations/ package.json + node_modules, chủ sở hữu tester)
+uid=30033
+ok 1 - R8-002: unreadable migrations directory fails before any database connection
+# pass 1
+# fail 0

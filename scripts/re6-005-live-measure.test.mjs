@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { WebSocketServer } from "ws";
-import { measure, pct, speechSpan, summarize } from "../deploy/vps/do-live/live-measure.ts";
+import { hasContent, measure, pct, speechSpan, summarize, useful } from "../deploy/vps/do-live/live-measure.ts";
 import { dropLeftoverScript } from "../src/lib/live/leftover-script.ts";
 
 function tone(ms, startMs = 500, endMs = ms - 500) {
@@ -17,7 +17,7 @@ function tone(ms, startMs = 500, endMs = ms - 500) {
   return pcm;
 }
 
-async function bridge(behaviour) {
+async function bridge(behaviour, finalText = "x") {
   const wss = new WebSocketServer({ port: 0, host: "127.0.0.1" });
   const got = { frames: 0, afterStop: 0 };
   wss.on("connection", (ws) => {
@@ -27,7 +27,7 @@ async function bridge(behaviour) {
       if (bin) { got.frames++; if (stopped) got.afterStop++; return; }
       if (JSON.parse(d.toString()).type === "stop") {
         stopped = true;
-        ws.send(JSON.stringify({ type: "event", event: { kind: "translation", final: true, text: "x" } }));
+        ws.send(JSON.stringify({ type: "event", event: { kind: "translation", final: true, text: finalText } }));
         ws.close(1000);
       }
     });
@@ -46,8 +46,8 @@ test("RE6-005: phân vị dùng cách làm tròn lên, không trả -Infinity kh
 
 test("RE6-005: lượt đủ mốc đo theo đồng hồ monotonic, tính từ lúc bắt đầu có tiếng", async () => {
   const b = await bridge((ws) => {
-    setTimeout(() => ws.send(JSON.stringify({ type: "event", event: { kind: "source-delta" } })), 40);
-    setTimeout(() => ws.send(JSON.stringify({ type: "event", event: { kind: "translation-delta" } })), 80);
+    setTimeout(() => ws.send(JSON.stringify({ type: "event", event: { kind: "source-delta", delta: "你" } })), 40);
+    setTimeout(() => ws.send(JSON.stringify({ type: "event", event: { kind: "translation-delta", delta: "Xin" } })), 80);
   });
   let fake = 1_000_000; // đồng hồ giả chỉ tăng, độc lập Date.now
   const r = await measure({ url: b.url, lang: "zh", pcm: tone(1000, 100, 900), frameMs: 20, now: () => (fake += 1) });
@@ -121,4 +121,46 @@ test("RE6-005: GIỚI HẠN ĐÃ BIẾT — tên riêng viết bằng chữ Hán
   // Ghi lại hành vi hiện tại để Chủ quyết chính sách; không tự đổi đầu ra khách hàng.
   assert.equal(dropLeftoverScript("Tôi gặp 王小明 hôm qua.", "vi"), "Tôi gặp hôm qua.");
   assert.equal(dropLeftoverScript("Ca sĩ 아이유 hát.", "vi"), "Ca sĩ hát.");
+});
+
+test("RE7-003: hasContent — rỗng, khoảng trắng, chỉ dấu câu không phải phụ đề; chữ/số mọi hệ chữ là phụ đề", () => {
+  for (const v of ["", " ", "\n\t", "。", "…", "?!", "，、", null, undefined, 3]) assert.equal(useful(v), false, JSON.stringify(v));
+  for (const v of ["a", "你", "ア", "한", "7", "Đ", "ж", "ก"]) assert.equal(useful(v), true, v);
+  assert.equal(hasContent({ kind: "source-delta", delta: "" }), false);
+  assert.equal(hasContent({ kind: "source-delta", delta: " 。" }), false);
+  assert.equal(hasContent({ kind: "translation-delta", delta: "Xin" }), true);
+  assert.equal(hasContent({ kind: "source", text: "", stash: "你好", final: false }), true, "phần chờ có chữ");
+  assert.equal(hasContent({ kind: "source", text: " ", stash: "", final: false }), false);
+  assert.equal(hasContent({ kind: "translation", text: "", stash: "chờ", final: true }), false, "câu chốt rỗng không tính dù phần chờ có chữ");
+  assert.equal(hasContent({ kind: "translation", text: "Chào.", final: true }), true);
+});
+
+test("RE7-003: chỉ sự kiện rỗng → không có mốc, lượt thiếu chữ gốc; câu chốt rỗng không được tính", async () => {
+  const b = await bridge((ws) => {
+    for (const ev of [{ kind: "source-delta", delta: "" }, { kind: "source", text: " ", stash: "", final: false },
+      { kind: "translation-delta", delta: "。" }, { kind: "translation", text: "", stash: "", final: true }])
+      ws.send(JSON.stringify({ type: "event", event: ev }));
+  }, "");
+  const r = await measure({ url: b.url, lang: "zh", pcm: tone(1000, 100, 900), frameMs: 20 });
+  await b.close();
+  assert.equal(r.firstSource_s, null); assert.equal(r.firstTranslation_s, null); assert.equal(r.finals, 0);
+  assert.equal(r.emptyEvents, 5);
+  assert.equal(r.ok, false);
+  assert.deepEqual(summarize([r]).failed, { "thieu-chu-goc": 1 });
+});
+
+test("RE7-003: mốc đầu là sự kiện CÓ CHỮ đầu tiên, không phải sự kiện rỗng trước đó", async () => {
+  const b = await bridge((ws) => {
+    ws.send(JSON.stringify({ type: "event", event: { kind: "source-delta", delta: "" } }));
+    ws.send(JSON.stringify({ type: "event", event: { kind: "translation-delta", delta: " " } }));
+    setTimeout(() => {
+      ws.send(JSON.stringify({ type: "event", event: { kind: "source-delta", delta: "你好" } }));
+      ws.send(JSON.stringify({ type: "event", event: { kind: "translation-delta", delta: "Chào" } }));
+    }, 150);
+  });
+  const r = await measure({ url: b.url, lang: "zh", pcm: tone(3000, 0, 2900), frameMs: 100 });
+  await b.close();
+  assert.equal(r.ok, true, JSON.stringify(r));
+  assert.ok(r.firstSource_s >= 0.1, `mốc ${r.firstSource_s}`);
+  assert.equal(r.emptyEvents, 2);
 });

@@ -21,10 +21,20 @@ export function speechSpan(pcm: Buffer) {
   return { onsetMs: first * 100, offsetMs: (last + 1) * 100 };
 }
 
+/** RE7-003: chỉ tính chữ có nghĩa (ít nhất một chữ cái hoặc chữ số); rỗng, khoảng trắng, chỉ dấu câu thì bỏ. */
+export const useful = (s: unknown) => typeof s === "string" && /[\p{L}\p{N}]/u.test(s);
+type Ev = { kind: string; final?: boolean; usage?: unknown; message?: string; text?: unknown; stash?: unknown; delta?: unknown };
+/** Mẩu tạm: delta có chữ, hoặc text+stash có chữ. Câu chốt: chính câu chốt có chữ. */
+export function hasContent(e: Ev) {
+  if (e.kind.endsWith("-delta")) return useful(e.delta);
+  if (e.final) return useful(e.text);
+  return useful(`${typeof e.text === "string" ? e.text : ""}${typeof e.stash === "string" ? e.stash : ""}`);
+}
+
 export type Row = {
   lang: string; why: string; ok: boolean; connectMs: number | null; onsetMs: number | null; offsetMs: number | null;
   firstSource_s: number | null; firstTranslation_s: number | null; lastFinalAfterSpeechEnd_s: number | null;
-  finals: number; framesAfterClose: number; errors: string[]; usage: unknown;
+  finals: number; framesAfterClose: number; errors: string[]; usage: unknown; emptyEvents: number;
 };
 
 export function measure(o: { url: string; lang: string; pcm: Buffer; timeoutMs?: number; frameMs?: number; now?: () => number }): Promise<Row> {
@@ -35,7 +45,7 @@ export function measure(o: { url: string; lang: string; pcm: Buffer; timeoutMs?:
     const ws = new WebSocket(o.url);
     const tOpen = now(); let t0 = -1; let opened: number | null = null; let closed = false; let afterClose = 0;
     const src: number[] = []; const tr: number[] = []; const finals: number[] = []; const errors: string[] = [];
-    let usage: unknown = null; let timer: ReturnType<typeof setInterval> | null = null; let settled = false;
+    let usage: unknown = null; let empty = 0; let timer: ReturnType<typeof setInterval> | null = null; let settled = false;
     const stopTimer = () => { if (timer) { clearInterval(timer); timer = null; } };
     const done = (why: string) => {
       if (settled) return; settled = true;
@@ -46,7 +56,7 @@ export function measure(o: { url: string; lang: string; pcm: Buffer; timeoutMs?:
         lang: o.lang, why, ok: false, connectMs: opened == null ? null : Math.round(opened - tOpen), onsetMs: onset, offsetMs: offset,
         firstSource_s: rel(src, onset), firstTranslation_s: rel(tr, onset),
         lastFinalAfterSpeechEnd_s: finals.length && offset != null ? s3(finals[finals.length - 1] - offset) : null,
-        finals: finals.length, framesAfterClose: afterClose, errors, usage,
+        finals: finals.length, framesAfterClose: afterClose, errors, usage, emptyEvents: empty,
       };
       row.ok = !errors.length && why === "dong-1000" && row.firstSource_s != null && row.firstTranslation_s != null && row.finals > 0;
       resolve(row);
@@ -54,7 +64,7 @@ export function measure(o: { url: string; lang: string; pcm: Buffer; timeoutMs?:
     const kill = setTimeout(() => { ws.terminate(); done("het-gio"); }, o.timeoutMs ?? 120_000);
     ws.on("message", (data, isBinary) => {
       if (isBinary) return;
-      let m: { type: string; event?: { kind: string; final?: boolean; usage?: unknown; message?: string }; message?: string };
+      let m: { type: string; event?: Ev; message?: string };
       try { m = JSON.parse(data.toString()); } catch { errors.push("tin không phải JSON"); return; }
       const at = () => now() - t0;
       if (m.type === "ready" && t0 < 0) {
@@ -65,9 +75,12 @@ export function measure(o: { url: string; lang: string; pcm: Buffer; timeoutMs?:
           ws.send(o.pcm.subarray(off, off + 3200)); off += 3200;
         }, frameMs);
       } else if (m.type === "event" && m.event && t0 >= 0) {
-        const k = m.event.kind;
-        if (k === "source" || k === "source-delta") src.push(at());
-        if (k === "translation" || k === "translation-delta") { tr.push(at()); if (m.event.final) finals.push(at()); }
+        const k = String(m.event.kind);
+        const sub = k === "source" || k === "source-delta" ? src : k === "translation" || k === "translation-delta" ? tr : null;
+        if (sub) {
+          if (!hasContent({ ...m.event, kind: k })) empty++;
+          else { sub.push(at()); if (sub === tr && m.event.final && k === "translation") finals.push(at()); }
+        }
         if (k === "usage") usage = m.event.usage;
         if (k === "error") errors.push(String(m.event.message).slice(0, 160));
       } else if (m.type === "error") errors.push(String(m.message).slice(0, 160));

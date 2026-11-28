@@ -31,15 +31,30 @@ class H(BaseHTTPRequestHandler):
                 time.sleep(0.3)
             if m == "hang":
                 time.sleep(3); return self._send(200, {"stats": {"giay_xu_ly": 1}})
+            if m in ("drip-body", "drip-head"):
+                return self._drip(m)
+            if m == "big":
+                self.send_response(200); self.send_header("Content-Length", str(64 * 1024 * 1024)); self.end_headers(); return
+            if m == "big-chunked":
+                self.send_response(200); self.end_headers()  # HTTP/1.0: không có độ dài, đọc tới khi đóng
+                try:
+                    for _ in range(200):
+                        self.wfile.write(b" " * 65536)
+                except OSError:
+                    pass
+                return
             if m == "loop":
                 return self._send(303, loc="/wait")
             if m == "offhost":
                 return self._send(303, loc="http://evil.example/x")
             if m == "redirect-once":
                 return self._send(303, loc="/done")
-            stats = {"ok": {"giay_xu_ly": 36, "tien_model_chu_usd": 0.001}, "slow": {"giay_xu_ly": 36},
-                     "nan": {"giay_xu_ly": float("nan")}, "neg": {"giay_xu_ly": -5}, "str": {"giay_xu_ly": "36"},
-                     "nostats": None, "500": None}[m]
+            stats = {"ok": {"giay_xu_ly": 36, "tien_model_chu_usd": 0.001}, "slow": {"giay_xu_ly": 36, "tien_model_chu_usd": 0},
+                     "zero": {"giay_xu_ly": 36, "tien_model_chu_usd": 0}, "nomodel": {"giay_xu_ly": 36},
+                     "nullmodel": {"giay_xu_ly": 36, "tien_model_chu_usd": None}, "nogpu": {"tien_model_chu_usd": 0},
+                     "emptystats": {}, "liststats": [1],
+                     "nan": {"giay_xu_ly": float("nan"), "tien_model_chu_usd": 0}, "neg": {"giay_xu_ly": -5, "tien_model_chu_usd": 0},
+                     "str": {"giay_xu_ly": "36", "tien_model_chu_usd": 0}, "nostats": None, "500": None}[m]
             if m == "500":
                 return self._send(500, {"error": "x"})
             # json.dumps(nan) → NaN (Python json.loads đọc lại được), mô phỏng stats hỏng
@@ -48,9 +63,23 @@ class H(BaseHTTPRequestHandler):
             with L:
                 INFLIGHT["now"] -= 1
 
+    def _drip(self, m):
+        # Gửi từng byte mỗi 0,05 s trong 5 s: mỗi lần đọc socket đều kịp timeout, tổng thì vượt hạn chót.
+        try:
+            if m == "drip-head":
+                for c in b"HTTP/1.1 200 OK\r\nX-Slow: " + b"a" * 100:
+                    self.wfile.write(bytes([c])); self.wfile.flush(); time.sleep(0.05)
+                return
+            body = b'{"segs": [], "stats": {"giay_xu_ly": 1, "tien_model_chu_usd": 0}}' + b" " * 100
+            self.send_response(200); self.send_header("Content-Length", str(len(body))); self.end_headers()
+            for c in body:
+                self.wfile.write(bytes([c])); self.wfile.flush(); time.sleep(0.05)
+        except OSError:
+            pass
+
     def do_GET(self):
         if self.path == "/done":
-            return self._send(200, {"segs": [1], "stats": {"giay_xu_ly": 36}})
+            return self._send(200, {"segs": [1], "stats": {"giay_xu_ly": 36, "tien_model_chu_usd": 0}})
         return self._send(303, loc="/wait")
 
 
@@ -101,7 +130,7 @@ class T(unittest.TestCase):
         self.assertAlmostEqual(m.unknown, m.reserve); self.assertAlmostEqual(m.spent, m.reserve)
 
     def test_invalid_stats_are_unknown(self):
-        for mode in ("nan", "neg", "str", "nostats", "500"):
+        for mode in ("nan", "neg", "str", "nostats", "500", "nomodel", "nullmodel", "nogpu", "emptystats", "liststats"):
             with self.subTest(mode=mode):
                 m = self.meter(mode, budget=1.0)
                 m.call("ko", "nong-1")
@@ -129,6 +158,34 @@ class T(unittest.TestCase):
                 self.meter("ok", budget=bad)
         m = self.meter("ok", budget=1.0); m.call("zh", "lanh")
         self.assertNotIn("tok-secret", json.dumps({"s": m.summary(), "r": m.rows}))
+
+    def test_slow_drip_cut_at_total_deadline(self):
+        for mode in ("drip-body", "drip-head"):
+            with self.subTest(mode=mode):
+                m = self.meter(mode, budget=1.0, deadline=0.5)
+                t0 = time.monotonic(); m.call("zh", "nong-1")
+                self.assertLess(time.monotonic() - t0, 1.5, "phải cắt ở hạn chót tổng, không phải timeout từng lần đọc")
+                r = m.rows[0]
+                self.assertIn("hạn chót", r["error"]); self.assertEqual(r["cost_status"], "het-gio")
+                self.assertTrue(r["usd_unknown"]); self.assertAlmostEqual(m.unknown, m.reserve)
+
+    def test_oversized_response_rejected_as_unknown(self):
+        for mode in ("big", "big-chunked"):
+            with self.subTest(mode=mode):
+                m = self.meter(mode, budget=1.0, max_bytes=1024 * 1024)
+                m.call("zh", "nong-1")
+                self.assertIn("quá lớn", m.rows[0]["error"]); self.assertTrue(m.rows[0]["usd_unknown"])
+
+    def test_model_cost_zero_differs_from_missing(self):
+        m = self.meter("zero", budget=1.0); m.call("zh", "nong-1")
+        self.assertEqual(m.rows[0]["cost_status"], "model-0"); self.assertAlmostEqual(m.spent, 0.01); self.assertEqual(m.unknown, 0)
+        expect = {"nomodel": "thieu-tien-model", "nullmodel": "tien-model-khong-hop-le", "nogpu": "thieu-giay",
+                  "emptystats": "thieu-giay", "liststats": "thieu-stats", "nostats": "thieu-stats", "nan": "giay-khong-hop-le",
+                  "500": "khong-co-ket-qua"}
+        for mode, st in expect.items():
+            with self.subTest(mode=mode):
+                m = self.meter(mode, budget=1.0); m.call("zh", "nong-1")
+                self.assertEqual(m.rows[0]["cost_status"], st); self.assertAlmostEqual(m.unknown, m.reserve)
 
 
 if __name__ == "__main__":
