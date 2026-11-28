@@ -35,6 +35,8 @@ export function simulate(jobs, opt = {}) {
   /** máy: readyAt (bật xong), part (đoạn đang chạy hoặc null), idleSince, pinned (luôn bật), held (đã dành cho một đoạn khi đang bật) */
   const boxes = [], llm = [];
   let t = 0, asrBilled = 0, llmBilled = 0, peakAsr = 0, peakLlm = 0, next = 0, done = 0;
+  // Tách giây máy tính tiền: đang khởi động / đang xử lý / rảnh (gồm dự phòng, chờ tắt, máy luôn bật).
+  const split = { asrBoot: 0, asrBusy: 0, asrIdle: 0, llmBoot: 0, llmActive: 0, llmIdle: 0 };
   const queue = []; // đoạn đã đến, chưa chạy (FIFO)
   const runningBy = new Map(); // user → số đoạn đang chạy hoặc đã dành máy
   let running = 0, kyRunning = 0;
@@ -88,6 +90,8 @@ export function simulate(jobs, opt = {}) {
     if (kyRunning) for (const b of llm) b.idleSince = Math.max(b.idleSince, t);
     for (let i = llm.length - 1; i >= 0; i--) if (!llm[i].pinned && !kyRunning && t - llm[i].idleSince >= o.llm.window) llm.splice(i, 1);
     asrBilled += boxes.length * DT; llmBilled += llm.length * DT;
+    for (const b of boxes) split[b.readyAt > t ? "asrBoot" : b.part ? "asrBusy" : "asrIdle"] += DT;
+    for (const b of llm) split[b.readyAt > t ? "llmBoot" : kyRunning ? "llmActive" : "llmIdle"] += DT;
     peakAsr = Math.max(peakAsr, boxes.length); peakLlm = Math.max(peakLlm, llm.length);
     t += DT;
     if (done === parts.length && boxes.every((b) => b.pinned) && llm.every((b) => b.pinned)) break;
@@ -104,7 +108,8 @@ export function simulate(jobs, opt = {}) {
     costUsd: cost, asrUsd: (asrBilled * PRICE.L4) / 3600, llmUsd: (llmBilled * PRICE.L40S) / 3600,
     chargedUsd: charged, coverage: charged / cost, ratio: asrBilled / proc,
     usdPerAudioHour: cost / (audio / 3600), p50: pct(lat, 50), p95: pct(lat, 95), max: Math.max(...lat),
-    partsPerHour: parts.length / (Math.max(span, 1) / 3600), peakAsr, peakLlm,
+    partsPerHour: parts.length / (Math.max(span, 1) / 3600), peakAsr, peakLlm, split,
+    kyProcSec: parts.filter((p) => p.profile === "ky").reduce((s, p) => s + p.proc, 0),
     alwaysOnNote: o.asr.warm || o.llm.warm ? "máy luôn bật chỉ tính trong khung mô phỏng; cả ngày: warm × 24 giờ" : null,
   };
 }

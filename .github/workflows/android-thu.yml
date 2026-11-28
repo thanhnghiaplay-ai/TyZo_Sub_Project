@@ -72,12 +72,31 @@ jobs:
           printf '{"code": %s, "name": "%s"}\n' "$code" "$name" > tyzo-sub.json
           cat tyzo-sub.json
           echo "name=$name" >> "$GITHUB_OUTPUT"
+      # RE8: chỉ đọc. In SHA256, chứng chỉ ký và so khóa ký với bản phát hành gần nhất (cài đè được hay không).
+      - name: Kiểm chữ ký, SHA256 và khả năng cài đè
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          sha256sum tyzo-sub.apk | tee tyzo-sub.sha256
+          "$bt/apksigner" verify --verbose --print-certs tyzo-sub.apk | grep -E "Verified|Signer #1 certificate (DN|SHA-256)" | tee tyzo-sub-chu-ky.txt
+          "$bt/aapt2" dump badging tyzo-sub.apk | head -1 | tee -a tyzo-sub-chu-ky.txt
+          new=$(grep -m1 "certificate SHA-256 digest" tyzo-sub-chu-ky.txt | awk '{print $NF}')
+          prev=$(gh release list -R "$GITHUB_REPOSITORY" --limit 30 --json tagName -q '[.[].tagName | select(startswith("android-v"))][0]' || true)
+          if [ -n "$prev" ] && gh release download "$prev" -R "$GITHUB_REPOSITORY" -p tyzo-sub.apk -O prev.apk; then
+            old=$(("$bt/apksigner" verify --print-certs prev.apk || true) | grep -m1 "certificate SHA-256 digest" | awk '{print $NF}')
+            "$bt/aapt2" dump badging prev.apk | head -1 | sed "s/^/Bản phát hành $prev: /" | tee -a tyzo-sub-chu-ky.txt
+            if [ -n "$new" ] && [ "$new" = "$old" ]; then echo "CÙNG KHÓA KÝ với $prev: cài đè được (versionCode phải lớn hơn)" | tee -a tyzo-sub-chu-ky.txt
+            else echo "KHÁC KHÓA KÝ với $prev: phải gỡ bản cũ trước khi cài" | tee -a tyzo-sub-chu-ky.txt; fi
+          else echo "Chưa có bản phát hành android-v* để so khóa ký" | tee -a tyzo-sub-chu-ky.txt; fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: tyzo-sub-apk
           path: |
             android/tyzo-sub.apk
             android/tyzo-sub.json
+            android/tyzo-sub.sha256
+            android/tyzo-sub-chu-ky.txt
           retention-days: 30
 
   release:
