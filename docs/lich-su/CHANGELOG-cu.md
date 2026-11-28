@@ -2,6 +2,14 @@
 
 Các mục sau được chuyển nguyên văn từ `src/lib/app-version.ts`. Các bản gần đây nằm trong ứng dụng, mục «Có gì mới» hiển thị 8 bản.
 
+## 5.37.0 · 12:06 22/11/2026
+
+Ứng dụng Android: phụ đề dịch nổi trên video ở Bilibili, YouTube, TikTok.
+
+- Trang Tài khoản có mục Ứng dụng Android: lấy mã liên kết, xem và gỡ máy đã liên kết.
+- Nghe tiếng video đang phát rồi hiện phụ đề nổi, trừ Token dịch như Dịch trực tiếp.
+- Điều khoản ghi thêm phần ứng dụng Android; bạn đồng ý lại một lần.
+
 ## 5.36.0 · 11:08 22/11/2026
 
 Dịch trực tiếp: phụ đề nổi trên video, chữ lớn, giữ đúng tên nhân vật.

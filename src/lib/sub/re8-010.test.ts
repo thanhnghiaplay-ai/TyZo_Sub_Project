@@ -73,6 +73,29 @@ describe("RE8-010 · header proxy Modal phía máy chủ", () => {
     await assert.rejects(run(), (e: Error) => /HTTP 401/.test(e.message) && e.constructor.name === "ModalHttpError");
   });
 
+  it("giữ câu đầu đoạn có đệm thời gian âm trong phản hồi Modal", async () => {
+    globalThis.fetch = async () => Response.json({
+      segs: [{ text: "最初の言葉", start: 0.02 - 0.15, end: 0.7 }, { text: "次の言葉", start: 0.9, end: 1.8 }],
+      stats: { giay_xu_ly: 3.6, tien_model_chu_usd: 0 },
+    });
+    const result = await recognizeModalWav(new Uint8Array(64), "ja", "ky", 12, new AbortController().signal, PRICE);
+    assert.deepEqual(result.segments.map(({ original, start, end }) => [original, start, end]), [
+      ["最初の言葉", 12, 12.7],
+      ["次の言葉", 12.9, 13.8],
+    ]);
+    assert.ok(result.usd > 0);
+  });
+
+  it("từ chối câu có thời gian sai ngoài phần đệm đầu đoạn", async () => {
+    for (const [start, end] of [[-1, 0.5], [-0.1, -0.05], [0.6, 0.5]]) {
+      globalThis.fetch = async () => Response.json({
+        segs: [{ text: "字", start, end }],
+        stats: { giay_xu_ly: 3.6, tien_model_chu_usd: 0 },
+      });
+      await assert.rejects(run(), /thiếu chữ hoặc sai thời gian/);
+    }
+  });
+
   it("chỉ 429 của POST đầu là từ chối có thể thử gửi lại", async () => {
     globalThis.fetch = (async () => new Response(null, { status: 429 })) as typeof fetch;
     await assert.rejects(run(), isTransientModalError);

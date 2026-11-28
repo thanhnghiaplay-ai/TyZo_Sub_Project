@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.9",
+    time: "28/11/2026",
+    area: "ha-tang",
+    text: "Chuẩn hóa mốc bắt đầu âm trong giới hạn 150 ms do căn lời Modal đệm ở biên đoạn, trước khi cộng độ dời trên phim. Vẫn từ chối mốc sai ngoài khoảng đệm.",
+  },
+  {
     version: "5.49.8",
     time: "28/11/2026",
     area: "ha-tang",

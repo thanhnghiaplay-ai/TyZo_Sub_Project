@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.8";
+export const APP_VERSION = "5.49.9";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,12 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.9",
+    time: "28/11/2026",
+    title: "Sửa lỗi thời gian câu đầu khi nhận dạng TyZo.",
+    points: ["TyZo giữ được câu bắt đầu sát đầu đoạn âm thanh."],
+  },
   {
     version: "5.49.8",
     time: "28/11/2026",
@@ -298,16 +304,6 @@ export const CHANGELOG: ReleaseNote[] = [
       "Trang Hướng dẫn có mục Ứng dụng Android: cài, liên kết, cho phép hiện phụ đề, dùng và gỡ máy.",
       "Mã liên kết đếm ngược từng giây; app nối xong thì trang báo tên máy vừa liên kết.",
       "Ứng dụng bản 0.3 có các bước dùng ngay trên màn hình và nút mở hướng dẫn trên web.",
-    ],
-  },
-  {
-    version: "5.37.0",
-    time: "12:06 22/11/2026",
-    title: "Ứng dụng Android: phụ đề dịch nổi trên video ở Bilibili, YouTube, TikTok.",
-    points: [
-      "Trang Tài khoản có mục Ứng dụng Android: lấy mã liên kết, xem và gỡ máy đã liên kết.",
-      "Nghe tiếng video đang phát rồi hiện phụ đề nổi, trừ Token dịch như Dịch trực tiếp.",
-      "Điều khoản ghi thêm phần ứng dụng Android; bạn đồng ý lại một lần.",
     ],
   },
 ];

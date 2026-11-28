@@ -77,3 +77,8 @@ ROLLBACK;
 - Lượt gửi có thể hoàn tất trên máy chủ sau khi trình duyệt mất mạng trước lúc nhận phản hồi. Bản lưu phía trình duyệt chỉ giữ kết quả đã nhận. Sau khi phiếu cũ bị đóng, bản này chưa tự nối lại phản hồi GPU bị mất vào phiếu mới. Khóa cùng phiếu được kiểm thử; chưa có chứng nhận chống gọi lại xuyên phiếu trong trường hợp ấy.
 - Chưa đối chiếu khoản giữ với 6 WAV thật. Tổng thời lượng audio gửi có thể khác thời lượng video do biên chồng và lọc im lặng. Giữ nguyên trần ngân sách và thời lượng trong lần sửa này.
 - Cần kiểm trên Android thật, dùng đúng MP4 và gói báo lỗi, sau đó đối chiếu 6/6, câu dịch, số dư trước/sau, Function Calls và số lượt trong ledger. Để kiểm khôi phục, ngắt mạng hoặc tải lại sau khi đã có ít nhất một đoạn về, chọn lại cùng tệp và tiếp tục.
+
+## Kiểm lại trên production sau v5.49.8
+
+- Truy vấn VPS quanh 15:20 ngày 28/11 (GMT+7) cho thấy ba phiếu 179 giây cùng bị chặn bởi một suất Modal cũ có nhịp cuối 14:12:06, trạng thái `unknown`, quyết toán `mat-phan-hoi` và không có `observed_at`. Mỗi phiếu mới trừ 0 và nhả 8.234 Token. Modal lúc 15:23 hiển thị không còn lượt ASR chạy. Sau xử lý suất cũ, ảnh 15:26 ghi nhận 4/6 đoạn, 45 câu tiếng Nhật, dừng do thời gian câu trả về.
+- Tái hiện lỗi thời gian ở local với phản hồi tương ứng đầu ra của bộ căn lời. Modal trừ 150 ms khỏi mốc chữ đầu, có thể tạo thời điểm bắt đầu âm ở đầu đoạn. Web v5.49.8 từ chối cả đoạn nếu gặp trường hợp đó. Bản v5.49.9 cục bộ chuẩn hóa phần đệm này về 0 trước khi cộng mốc video và giữ kiểm tra các trường hợp thời gian sai khác. Ca hồi quy lỗi trước sửa, đạt sau sửa với HTTP giả. Payload thật của hai đoạn còn thiếu và lượt dịch 6/6 trên production vẫn chưa được xác minh.

@@ -30,16 +30,19 @@ export function modalRequest(token: string, audioBase64: string, language: strin
   return { token, audio_b64: audioBase64, ext: "wav", lang: language, profile };
 }
 
+// The Modal aligner pads the first matched character by 150 ms, even at the start of a chunk.
+const MODAL_ALIGNMENT_PADDING_SECONDS = 0.15;
+
 export function modalSegments(response: unknown, offset: number): Seg[] {
   if (!response || typeof response !== "object" || !("segs" in response) || !Array.isArray(response.segs)) {
     throw new Error("TyZo Modal trả về dữ liệu phụ đề không hợp lệ.");
   }
   return response.segs.map((row: unknown) => {
     if (!row || typeof row !== "object" || !("start" in row) || !("end" in row) || !("text" in row)
-      || typeof row.start !== "number" || !Number.isFinite(row.start) || row.start < 0
-      || typeof row.end !== "number" || !Number.isFinite(row.end) || row.end < row.start
+      || typeof row.start !== "number" || !Number.isFinite(row.start) || row.start < -MODAL_ALIGNMENT_PADDING_SECONDS
+      || typeof row.end !== "number" || !Number.isFinite(row.end) || row.end < Math.max(0, row.start)
       || typeof row.text !== "string") throw new Error("TyZo Modal trả về câu thiếu chữ hoặc sai thời gian.");
-    return { start: offset + row.start, end: offset + row.end, original: row.text.trim(), translation: null };
+    return { start: offset + Math.max(0, row.start), end: offset + row.end, original: row.text.trim(), translation: null };
   });
 }
 
