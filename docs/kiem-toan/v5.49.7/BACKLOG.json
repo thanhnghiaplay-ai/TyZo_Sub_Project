@@ -154,7 +154,9 @@
     "location": "src/lib/sub/tyzo-modal-price.ts (hệ số bù 3)",
     "hypothesis": "Việc ngắn/lẻ/khách rải rác: chi phí lạnh + máy dự phòng + máy chờ vượt hệ số 3 (mô hình 7,5–35,7×; phim dài 2,7× khớp đo 2,5×)",
     "acceptance": "Đối chiếu hóa đơn Modal (G1–G4) rồi Chủ quyết hệ số/phí tối thiểu. Không tự đổi giá.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "ANALYZED_SIM",
+    "evidence": "RE8-001/REPORT.md",
+    "remaining": "Chủ quyết phí tối thiểu/hệ số cho việc ngắn; đề xuất dự phòng 1 + chờ tắt 30 s chờ duyệt; hiệu chỉnh bằng hóa đơn (G1–G4)."
   },
   {
     "id": "RE8-002",
@@ -217,6 +219,8 @@
     "location": "eval/asr/luong-ky/modal/modal_app.py (LLM_KW)",
     "hypothesis": "Máy model chữ không có max_containers, timeout 24 giờ",
     "acceptance": "Đặt trần và đo lại (G5), Chủ deploy.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "PASS_LOCAL_NOT_DEPLOYED",
+    "evidence": "RE8-008/REPORT.md",
+    "remaining": "Deploy + đo G5; requires_proxy_auth; hạn mức chi workspace Modal (Chủ)."
   }
 ]

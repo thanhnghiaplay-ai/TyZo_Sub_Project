@@ -1,0 +1,17 @@
+RE8-008 · Python 3.13.18
+test_app_lane_fits_asr (__main__.T.test_app_lane_fits_asr) ... ok
+test_bad_or_hostile_values_are_clamped (__main__.T.test_bad_or_hostile_values_are_clamped) ... ok
+test_current_config_values (__main__.T.test_current_config_values) ... ok
+test_modal_app_uses_limits_everywhere (__main__.T.test_modal_app_uses_limits_everywhere) ... ok
+test_warm_never_exceeds_cap (__main__.T.test_warm_never_exceeds_cap) ... ok
+Ran 5 tests in 0.003s
+OK
+ok 1 - hiệu chỉnh: 1 đoạn lẻ = máy làm (16 + 9,3 + 60) + 2 máy dự phòng rảnh từ lúc bật xong (16 + 60); phim 74 phút gần số đo 2,5×
+ok 2 - bất biến: không vượt trần số máy, cửa nhận việc, mỗi khách; mọi đoạn đều xong; chi phí ≥ 0
+ok 3 - RE8-008: trần máy model chữ 2 giữ chi phí L40S hữu hạn; không trần thì đợt «kỹ» dồn mở nhiều máy
+ok 4 - 200 khách giờ cao điểm: cửa 8 đoạn bão hòa (P95 > 10 phút); cửa 16 + 16 máy giảm P95
+ok 5 - bảng so sánh phương án × kịch bản
+ok 6 - RE8-008: trần GPU nhận dạng và model chữ, kẹp giá trị xấu, modal_app dùng đúng trần
+# tests 6
+# pass 6
+# fail 0

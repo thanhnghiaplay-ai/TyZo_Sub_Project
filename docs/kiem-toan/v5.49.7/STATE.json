@@ -1,10 +1,10 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "a3445322621a32e710cfe84e82f6acd8f8c8f5fa",
+  "previous_checkpoint_sha": "6becccdf8555c0b05e5cc1a2e29943d2fce85a38",
   "effort": "Medium",
-  "status": "PAUSED_FOR_OWNER",
-  "completed_item": "RE6-009",
+  "status": "IN_PROGRESS",
+  "completed_item": "RE8-008, RE8-001",
   "item_status": "PASS_LOCAL_DEVICE_BLOCKED",
   "tests": {
     "postgres": "18.7",
@@ -14,7 +14,7 @@
     "evidence": "RE6-009/REPORT.md",
     "plan": "RE6-009/ACCEPTANCE_PLAN.md"
   },
-  "next": "Chờ chỉ đạo của Chủ. RE6-010 (Low) chưa làm.",
+  "next": "RE8-007 (Android Updater)",
   "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
   "items": {
     "RE6-001": "PASS_LOCAL_POLICY_PENDING",
@@ -32,13 +32,13 @@
     "RE7-003": "PASS_LOCAL",
     "RE7-004": "PASS_LOCAL_PROMPT_BLOCKED",
     "R8-002": "PASS (user thường)",
-    "RE8-001": "OPEN",
+    "RE8-001": "ANALYZED_SIM",
     "RE8-002": "OPEN",
     "RE8-003": "OPEN",
     "RE8-004": "OPEN",
     "RE8-005": "OPEN",
     "RE8-006": "OPEN",
     "RE8-007": "OPEN",
-    "RE8-008": "OPEN"
+    "RE8-008": "PASS_LOCAL_NOT_DEPLOYED"
   }
 }
