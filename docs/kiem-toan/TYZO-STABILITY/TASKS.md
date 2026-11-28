@@ -1,9 +1,9 @@
 # TASKS
 | ID | Mức | Nội dung | Trạng thái |
 |---|---|---|---|
-| TZ-001 | P0 | Baseline: phiên bản, quy định, kiểm tra v5.49.8/9, script build/test | IN_PROGRESS |
+| TZ-001 | P0 | Baseline: phiên bản, quy định, kiểm tra v5.49.8/9, script build/test | PASS_LOCAL (baseline test xong; chưa chạy build) |
 | TZ-002 | P0 | Admission/409: AdmissionUncertain, tyzo_admit, lease, fencing, đối soát | TODO |
-| TZ-003 | P0 | Worker/429: 9 đoạn FE vs 3 suất BE, backpressure, Retry-After | TODO (5.49.8 có ứng viên sửa "đợi đến lượt", chưa xác minh) |
+| TZ-003 | P0 | Worker/429: 9 đoạn FE vs 3 suất BE, backpressure, Retry-After | IN_PROGRESS: `submitModalChunk` (src/lib/sub/tyzo-modal.ts) đã có hàng đợi busy giới hạn 30 lần, chờ ≥2 s; cần xác minh nối vào tyzo.ts và test |
 | TZ-004 | P0 | Modal HTTP: POST/303/GET, timeout, mã lỗi, không phát lại POST | TODO |
 | TZ-005 | P0 | Token/tài chính: hold/charge/settle/refund, đóng phiếu, 8.234 token | TODO |
 | TZ-006 | P1 | Nút Tiếp tục, saved-runs, checkpoint | TODO |
