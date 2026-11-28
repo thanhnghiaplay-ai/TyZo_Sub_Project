@@ -22,6 +22,46 @@ function reportedChatTokens(value: unknown): number | null {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
 
+export type ChatUsage =
+  | { ok: true; prompt: number; completion: number; reasoning: number; cached: number }
+  | { ok: false; why: string };
+
+/**
+ * RE6-008: usage chat chỉ hợp lệ khi đủ và nhất quán. Thiếu prompt/completion, số không phải nguyên không âm,
+ * `total_tokens` khác prompt + completion (có token tính tiền mà không rõ loại), token suy luận lớn hơn completion,
+ * token cache lớn hơn prompt → không hợp lệ: theo RE6-001 không trừ khách, ghi nghĩa vụ chờ đối soát.
+ */
+export function readChatUsage(raw: unknown): ChatUsage {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, why: "thieu-usage" };
+  const u = raw as Record<string, unknown>;
+  const prompt = reportedChatTokens(u.prompt_tokens);
+  const completion = reportedChatTokens(u.completion_tokens);
+  if (prompt === null || completion === null) return { ok: false, why: "thieu-token" };
+  if (u.total_tokens != null) {
+    const total = reportedChatTokens(u.total_tokens);
+    if (total === null || total !== prompt + completion) return { ok: false, why: "tong-lech" };
+  }
+  const detail = (key: string, field: string) => {
+    const box = u[key];
+    if (box == null) return 0;
+    if (typeof box !== "object" || Array.isArray(box)) return null;
+    const v = (box as Record<string, unknown>)[field];
+    return v == null ? 0 : reportedChatTokens(v);
+  };
+  const reasoning = detail("completion_tokens_details", "reasoning_tokens");
+  const cached = detail("prompt_tokens_details", "cached_tokens");
+  if (reasoning === null || reasoning > completion) return { ok: false, why: "suy-luan-lech" };
+  if (cached === null || cached > prompt) return { ok: false, why: "cache-lech" };
+  return { ok: true, prompt, completion, reasoning, cached };
+}
+
+/**
+ * RE6-008: giá phẳng trong bảng chỉ đúng tới ngưỡng này (token đầu vào của MỘT yêu cầu). Alibaba quốc tế tính
+ * qwen-plus theo bậc: trên 256K đầu vào thì cả yêu cầu theo giá bậc 2 (đầu vào và đầu ra đều cao hơn). Mặc định nhà
+ * chặn đầu vào ở 262.144 token; cửa không cho `max_input_tokens` nên không nới được. Usage vượt ngưỡng → đối soát.
+ */
+export const FLAT_PRICE_INPUT_LIMIT: Record<string, number> = { "alibaba:qwen-plus": 256_000 };
+
 type GateOutcome =
   | { kind: "pass"; response: Response }
   | { kind: "reject"; status: number; message: string; retryAfter?: number; queuePosition?: number };
@@ -54,6 +94,44 @@ export type GateRequest = {
   /** Dịch: thân yêu cầu đã chuẩn hóa — PHẢI gửi bản này cho nhà, không gửi bản gốc. */
   body?: ArrayBuffer;
 };
+
+/**
+ * RE6-008: chỉ các trường đã biết cách tính tiền mới đi qua cửa trả theo lượt. Trường lạ có thể đổi giá hoặc token
+ * mà cận giữ trước không thấy: `max_input_tokens` (Qwen Plus vượt 256K đầu vào tính giá bậc 2, gấp 3 lần),
+ * `service_tier`, công cụ chạy tại nhà, đầu ra âm thanh, `prediction`... Trường hợp lệ mà app gửi: model, messages,
+ * temperature, giới hạn token, response_format, reasoning_effort/include_reasoning (Groq).
+ */
+const COMMON_FIELDS = new Set([
+  "model", "messages", "temperature", "top_p", "seed", "stop", "response_format", "max_completion_tokens", "max_tokens",
+  "n", "stream", "frequency_penalty", "presence_penalty", "user", "tools", "tool_choice", "parallel_tool_calls",
+]);
+const FIELDS_BY_TOKEN_FIELD: Record<TokenField, Set<string>> = {
+  // Groq: include_reasoning/reasoning_format chỉ đổi cách trả chữ. Tài liệu Groq định nghĩa max_completion_tokens là
+  // số token sinh ra tối đa nhưng chưa nói rõ token suy luận; usage được kiểm nhất quán ở quyết toán (readChatUsage).
+  max_completion_tokens: new Set(["reasoning_effort", "include_reasoning", "reasoning_format"]),
+  // DashScope: chỉ cho phép tắt suy luận và tắt tìm web (kiểm giá trị ở dưới).
+  max_tokens: new Set(["enable_thinking", "reasoning_effort", "enable_search"]),
+};
+const MESSAGE_FIELDS = new Set(["role", "content", "name", "tool_calls", "tool_call_id"]);
+const MESSAGE_ROLES = new Set(["system", "developer", "user", "assistant", "tool"]);
+
+function fieldProblem(json: Record<string, unknown>, tokenField: TokenField): string | null {
+  const extra = FIELDS_BY_TOKEN_FIELD[tokenField];
+  const odd = Object.keys(json).find((key) => !COMMON_FIELDS.has(key) && !extra.has(key));
+  if (odd !== undefined) return `Cửa trả theo lượt chưa hỗ trợ trường «${odd.slice(0, 40)}».`;
+  return null;
+}
+
+function messageProblem(messages: unknown[]): string | null {
+  for (const m of messages) {
+    if (!m || typeof m !== "object" || Array.isArray(m)) return "Tin nhắn không hợp lệ.";
+    const msg = m as Record<string, unknown>;
+    if (typeof msg.role !== "string" || !MESSAGE_ROLES.has(msg.role)) return "Tin nhắn không hợp lệ.";
+    const odd = Object.keys(msg).find((key) => !MESSAGE_FIELDS.has(key));
+    if (odd !== undefined) return `Cửa trả theo lượt chưa hỗ trợ trường tin nhắn «${odd.slice(0, 40)}».`;
+  }
+  return null;
+}
 
 function capProblem(raw: unknown): string | null {
   if (typeof raw !== "number" || !Number.isInteger(raw) || raw < 1)
@@ -91,6 +169,8 @@ export async function readRequest(
     }
     if (json.stream === true)
       return { model, chars: 0, problem: "Cửa trả theo lượt chưa hỗ trợ stream." };
+    const odd = fieldProblem(json, tokenField);
+    if (odd) return { model, chars: 0, problem: odd };
     if (json.n != null && json.n !== 1)
       return { model, chars: 0, problem: "Cửa trả theo lượt chỉ hỗ trợ một câu trả lời." };
     delete json.n; // Both providers default to one completion.
@@ -108,6 +188,8 @@ export async function readRequest(
     // của URL/thân yêu cầu, nên cửa trả theo lượt chỉ nhận nội dung chữ.
     if (json.messages != null) {
       if (!Array.isArray(json.messages)) return { model, chars: 0, problem: "Tin nhắn không hợp lệ." };
+      const badMessage = messageProblem(json.messages);
+      if (badMessage) return { model, chars: 0, problem: badMessage };
       const textOnly = json.messages.every((m) => {
         const c = (m as { content?: unknown } | null)?.content;
         return c == null || typeof c === "string" ||
@@ -475,7 +557,7 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
           const data = JSON.parse(text) as {
             duration?: unknown;
             segments?: Array<{ end?: unknown }>;
-            usage?: { prompt_tokens?: unknown; completion_tokens?: unknown };
+            usage?: unknown;
           };
           if (path === "/audio/transcriptions") {
             const reportedSeconds = billedSecondsOf(data);
@@ -487,10 +569,15 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
             base = asrCost(bare, model, seconds) ?? 0;
             providerBase = supplierBaseCost(book, model, "asr", { seconds }, input.provider);
           } else {
-            const prompt = reportedChatTokens(data.usage?.prompt_tokens);
-            const completion = reportedChatTokens(data.usage?.completion_tokens);
-            deferDebit = prompt === null || completion === null;
-            needsReconciliation = deferDebit || (prompt ?? 0) > promptCap || (completion ?? 0) > outCap;
+            const usage = readChatUsage(data.usage);
+            const prompt = usage.ok ? usage.prompt : null;
+            const completion = usage.ok ? usage.completion : null;
+            deferDebit = !usage.ok;
+            const flatLimit = FLAT_PRICE_INPUT_LIMIT[`${input.provider ?? "groq"}:${model}`];
+            needsReconciliation = deferDebit || (prompt ?? 0) > promptCap || (completion ?? 0) > outCap ||
+              (flatLimit !== undefined && (prompt ?? 0) > flatLimit) ||
+              // DashScope tính token suy luận theo giá riêng (cao hơn); cửa đã tắt suy luận, có thì đối soát.
+              (input.provider === "alibaba" && usage.ok && usage.reasoning > 0);
             const inn = prompt ?? Math.ceil(input.body.byteLength / 3);
             const out = completion ?? input.outCap ?? MAX_COMPLETION_TOKENS;
             cost = chatCost(book, model, inn, out);
