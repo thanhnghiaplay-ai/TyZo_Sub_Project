@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { WebSocketServer } from "ws";
 import { hasContent, measure, pct, speechSpan, summarize, useful } from "../deploy/vps/do-live/live-measure.ts";
-import { dropLeftoverScript } from "../src/lib/live/leftover-script.ts";
+import { tidyLiveText } from "../src/lib/live/leftover-script.ts";
 
 function tone(ms, startMs = 500, endMs = ms - 500) {
   const pcm = Buffer.alloc((ms / 1000) * 32000);
@@ -101,7 +101,7 @@ test("RE6-005: summarize tách lỗi/thiếu mốc khỏi phân vị và có P50
 // Corpus đa ngôn ngữ: (đích, câu chốt từ model, các mẩu delta, kỳ vọng).
 const CORPUS = [
   ["vi", "Anh Nguyễn Văn An đến Hà Nội năm 2026.", ["Anh Nguyễn ", "Văn An đến ", "Hà Nội năm 2026."], "Anh Nguyễn Văn An đến Hà Nội năm 2026."],
-  ["vi", "Bạn phải luôn如一.", ["Bạn phải ", "luôn如", "一."], "Bạn phải luôn."],
+  ["vi", "Bạn phải luôn如一.", ["Bạn phải ", "luôn如", "一."], "Bạn phải luôn如一."],
   ["en", "Mr. Müller met Sørensen in Zürich.", ["Mr. Müller ", "met Sørensen ", "in Zürich."], "Mr. Müller met Sørensen in Zürich."],
   ["en", "Привет, Иван! Hello, Yusuf — مرحبا.", ["Привет, Иван! ", "Hello, Yusuf — مرحبا."], "Привет, Иван! Hello, Yusuf — مرحبا."],
   ["vi", "Cô ấy nói สวัสดี với tôi.", ["Cô ấy nói ", "สวัสดี với tôi."], "Cô ấy nói สวัสดี với tôi."],
@@ -111,16 +111,15 @@ const CORPUS = [
 
 test("RE6-005: corpus đa ngôn ngữ — chữ Latin/Cyrillic/Ả Rập/Thái và tên riêng phiên âm không bị mất; delta khớp final", () => {
   for (const [target, final, deltas, want] of CORPUS) {
-    assert.equal(dropLeftoverScript(final, target), want, final);
-    const joined = deltas.map((d) => dropLeftoverScript(d, target, false)).join("");
-    assert.equal(dropLeftoverScript(joined, target), want, `delta ${final}`);
+    assert.equal(tidyLiveText(final, target), want, final);
+    const joined = deltas.map((d) => tidyLiveText(d, target, false)).join("");
+    assert.equal(tidyLiveText(joined, target), want, `delta ${final}`);
   }
 });
 
-test("RE6-005: GIỚI HẠN ĐÃ BIẾT — tên riêng viết bằng chữ Hán/kana/Hangul trong bản dịch tiếng Việt bị bỏ", () => {
-  // Ghi lại hành vi hiện tại để Chủ quyết chính sách; không tự đổi đầu ra khách hàng.
-  assert.equal(dropLeftoverScript("Tôi gặp 王小明 hôm qua.", "vi"), "Tôi gặp hôm qua.");
-  assert.equal(dropLeftoverScript("Ca sĩ 아이유 hát.", "vi"), "Ca sĩ hát.");
+test("RE6-005/RE7-004: tên riêng chữ Hán/Hangul trong bản dịch tiếng Việt được giữ (Chủ duyệt hướng A)", () => {
+  assert.equal(tidyLiveText("Tôi gặp 王小明 hôm qua.", "vi"), "Tôi gặp 王小明 hôm qua.");
+  assert.equal(tidyLiveText("Ca sĩ 아이유 hát.", "vi"), "Ca sĩ 아이유 hát.");
 });
 
 test("RE7-003: hasContent — rỗng, khoảng trắng, chỉ dấu câu không phải phụ đề; chữ/số mọi hệ chữ là phụ đề", () => {
