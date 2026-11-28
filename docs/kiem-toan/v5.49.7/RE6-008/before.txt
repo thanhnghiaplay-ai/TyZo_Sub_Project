@@ -1,0 +1,14 @@
+Trước sửa (run-gate.ts tại 1a43509):
+- readRequest cho đi mọi trường lạ ở cấp yêu cầu và cấp tin nhắn. Ví dụ:
+  - `max_input_tokens`: nới giới hạn đầu vào 262.144 token mặc định của qwen-plus, đẩy yêu cầu sang bậc giá 256K–1M (gấp 3 lần).
+  - `service_tier`, `modalities`/`audio`, `prediction`, `search_settings`, `documents`, `search_options`: cận giữ
+    trước (2 × byte + 512, đơn giá phẳng) không phản ánh được tác động của các trường này.
+  - Tin nhắn có khóa lạ (`audio`...) hoặc role lạ vẫn được gửi đi.
+- Usage được coi là hợp lệ chỉ cần prompt_tokens và completion_tokens là số nguyên không âm. Các trường hợp sau
+  vẫn bị trừ khách và ghi chi phí như usage đã xác nhận:
+  - total_tokens khác prompt + completion;
+  - reasoning_tokens lớn hơn completion_tokens;
+  - cached_tokens lớn hơn prompt_tokens.
+- Giá phẳng của qwen-plus chỉ đúng khi đầu vào dưới 256K. Usage trên ngưỡng đó vẫn quyết toán "xong" và
+  provider_spend ghi thấp hơn chi phí thật.
+- Test route chỉ dò mã nguồn bằng regex (re5-001.test.ts, provider-spend.test.ts), không chạy handler.

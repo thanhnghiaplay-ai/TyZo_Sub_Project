@@ -1,17 +1,18 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "386660a50a865cffd78223b639675235f2deadd9",
-  "effort": "Medium",
+  "previous_checkpoint_sha": "fe80761d2afbdf341192380f20d806d508f005cd",
+  "effort": "High",
   "status": "PAUSED_FOR_EFFORT_CHANGE",
-  "completed_item": "RE7-004 (A + D + bảng thuật ngữ)",
-  "item_status": "Medium xong",
+  "completed_item": "RE6-008",
+  "item_status": "PASS_LOCAL_PARTIAL_REAL",
   "tests": {
     "postgres": "18.7",
+    "re6_008": "17/17",
     "regression": "REGRESSION.md",
-    "re7": "RE7/test-summary.txt"
+    "evidence": "RE6-008/REPORT.md"
   },
-  "next": "RE6-008 cần High: dừng chờ Chủ chuyển mức.",
+  "next": "RE6-009 (Medium) rồi RE6-010 (Low): dừng chờ Chủ chuyển về Medium.",
   "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
   "items": {
     "RE6-001": "PASS_LOCAL_POLICY_PENDING",
@@ -21,7 +22,7 @@
     "RE6-005": "PARTIAL",
     "RE6-006": "PASS_LOCAL",
     "RE6-007": "PASS_LOCAL",
-    "RE6-008": "OPEN_VERIFY",
+    "RE6-008": "PASS_LOCAL_PARTIAL_REAL",
     "RE6-009": "OPEN_VERIFY",
     "RE6-010": "OPEN_VERIFY",
     "RE7-001": "PASS_LOCAL",

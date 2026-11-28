@@ -1,4 +1,4 @@
-# Bàn giao sau RE7 · Medium
+# Bàn giao sau RE6-008 · High
 
 Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `work` và `audit/v5.49.7-codex-re6`). Bản RE6-003 chưa push của Codex không có trên remote, nên RE6-003 đã được làm lại từ đầu. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu SHA trên GitHub.
 
@@ -16,7 +16,7 @@ Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `
 | RE7-003 | PASS_LOCAL (chỉ tính phụ đề có chữ) | [RE7](RE7/REPORT.md) |
 | RE7-004 | PASS_LOCAL (giữ tên CJK, prompt 20 cặp) · chất lượng prompt BLOCKED | [RE7](RE7/REPORT.md) |
 | R8-002 | PASS bằng user thường | [RE7](RE7/test-summary.txt) |
-| RE6-008 | Chưa làm, cần **High** | — |
+| RE6-008 | PASS_LOCAL (danh sách trường, usage nhất quán, giá bậc qwen-plus, test route hành vi); đo thật 5 model BLOCKED | [RE6-008](RE6-008/REPORT.md) |
 | RE6-009 | Chưa làm (Medium, sau RE6-008) | — |
 | RE6-010 | Chưa làm, cần **Low** | — |
 
@@ -26,4 +26,5 @@ Việc chờ Chủ:
 - Duyệt chính sách RE6-001.
 - RE7-004 đã theo hướng A + D + bảng thuật ngữ. Còn cần: duyệt phiên Alibaba thật để đo prompt/corpus; cập nhật cầu nối VPS/Fly để có hiệu lực.
 - Duyệt staging Vercel thật (RE6-003), Modal thật (RE6-004) và live thật (RE6-005).
-- Chuyển sang mức High để làm RE6-008.
+- Duyệt chi phí đo thật cho 5 model chưa đo và token suy luận Groq (RE6-008).
+- Chuyển về mức Medium để làm RE6-009, sau đó Low cho RE6-010.

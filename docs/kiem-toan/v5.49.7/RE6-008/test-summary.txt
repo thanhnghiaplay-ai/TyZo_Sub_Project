@@ -1,0 +1,34 @@
+RE6-008 · PostgreSQL 18.7 · node v22.23.5 · mã fe80761
+    ok 1 - mọi thân app thật đi qua được, cả Groq lẫn Alibaba
+    ok 2 - trường có thể đổi giá hoặc token mà cận không thấy bị từ chối
+    ok 3 - Unicode: cận tính trên thân chuẩn hóa gửi đi; \\u-escape, emoji, chữ CJK và surrogate lẻ
+ok 1 - RE6-008 · danh sách trường cho phép (readRequest)
+    ok 1 - bảng ca
+ok 2 - RE6-008 · usage thiếu, không hợp lệ, không nhất quán (readChatUsage)
+    ok 1 - usage hợp lệ: nhà nhận đúng thân chuẩn hóa (một trường trần, không n), trừ theo usage, nhả phần giữ
+    ok 2 - trường lạ, model ngoài danh mục, stream, nhiều câu trả lời → từ chối trước khi giữ hay gọi nhà
+    ok 3 - phiếu nhỏ: mức giữ ước tính lớn hơn phần còn lại → 402, không gọi nhà; trần nhỏ thì chạy được
+    ok 4 - usage vượt cận: chỉ trừ tới mức đã giữ, phần thiếu ghi short_units, lệnh cần đối soát
+    ok 5 - usage không nhất quán hoặc thiếu: không trừ khách, nghĩa vụ chờ đối soát (RE6-001)
+    ok 6 - đồng thời 30 yêu cầu trên một phiếu đủ 3,5 lệnh (mặc định 2 suất/khách): tối đa 2 lệnh tới nhà cùng lúc, nhả hết phần giữ
+    # mức giữ 44 Token/lệnh, held 154, đỉnh 2 lệnh cùng lúc, 2 lệnh tới nhà, mã trả: 429/200
+    ok 7 - đồng thời 30 yêu cầu trên một phiếu đủ 3,5 lệnh (nới suất/khách, mức giữ là giới hạn): tối đa 3 lệnh tới nhà cùng lúc, nhả hết phần giữ
+    # mức giữ 44 Token/lệnh, held 154, đỉnh 3 lệnh cùng lúc, 3 lệnh tới nhà, mã trả: 429/200
+ok 3 - RE6-008 · hành vi route /api/room-groq (Groq)
+    ok 1 - qwen-plus: gửi max_tokens và tắt suy luận; thân app thật đi qua
+    ok 2 - max_input_tokens, bật suy luận, tìm web → từ chối trước khi giữ hay gọi nhà
+    ok 3 - vượt ngưỡng giá phẳng 256K của qwen-plus hoặc có token suy luận → đối soát, vẫn trừ trong mức giữ
+    ok 4 - dưới ngưỡng, usage hợp lệ → xong
+ok 4 - RE6-008 · hành vi route /api/model-call (Alibaba)
+    ok 1 - model danh mục chưa có giá (enterprise) → 422, không giữ, không gọi nhà
+    ok 2 - bảng: mức giữ của một lô dịch 40 câu so với usage thật lớn nhất đã đo (RE4-001) và trần đầu ra
+    # groq openai/gpt-oss-20b: thân 3379 B, cận vào 7270, trần ra 4096, giữ 162 Token, ví dụ usage thật (vào 1171 theo tỷ lệ đo 0.161, ra 1200) ≈ 44 Token | groq openai/gpt-oss-120b: thân 3380 B, cận vào 7272, trần ra 4096, giữ 321 Token, ví dụ usage thật (vào 1171 theo tỷ lệ đo 0.161, ra 1200) ≈ 83 Token | groq qwen/qwen3.8-27b: thân 3377 B, cận vào 7266, trần ra 4096, giữ 1998 Token, ví dụ usage thật (vào 640 theo tỷ lệ đo 0.088, ra 1200) ≈ 479 Token | alibaba qwen-plus: thân 3383 B, cận vào 7278, trần ra 4096, giữ 706 Token, ví dụ usage thật (vào 1165 theo tỷ lệ đo 0.16, ra 1200) ≈ 173 Token | alibaba qwen-max: thân 3358 B, cận vào 7228, trần ra 4096, giữ 3402 Token, ví dụ usage thật (vào 1302 theo tỷ lệ đo 0.18, ra 1200) ≈ 882 Token | alibaba qwen-turbo: thân 3384 B, cận vào 7280, trần ra 4096, giữ 108 Token, CHƯA ĐO THẬT (BLOCKED)
+ok 5 - RE6-008 · dự toán theo từng model và nhà
+# tests 17
+# pass 17
+# fail 0
+
+== hồi quy RE6-001/RE-002/RE5-001 (PG18.7)
+# tests 59
+# pass 59
+# fail 0

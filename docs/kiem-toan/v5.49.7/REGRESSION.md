@@ -39,3 +39,17 @@ PostgreSQL 18.7 (Docker loopback). Lần chạy đầu bị lỗi kết nối v�
 | `node --test 'scripts/**/*.test.mjs'` (root) | 242 đạt · 1 lỗi (R8-002, do chạy bằng root) · 38 bỏ qua |
 | Nhóm `src/lib/**` (có name-policy, leftover-script) | 1489/1489 |
 | Nhóm module-mocks (PG18.7) | 101/101 |
+
+## Lượt RE6-008 (mã ở `fe80761`)
+
+PostgreSQL 18.7 (Docker loopback), `TYZO_TEST_PG_URL` trỏ vào cụm thử.
+
+| Lệnh | Kết quả |
+|---|---|
+| `npx tsc --noEmit -p .` | đạt |
+| `node --test 'scripts/**/*.test.mjs'` (root) | 242 đạt · 1 lỗi · 38 bỏ qua |
+| Nhóm `src/lib/**` (strip-types) | 1489/1489 |
+| Nhóm module-mocks (PG18.7, có `re6-008.test.ts`) | 118/118 |
+| `npm run build:dev` (không có `DATABASE_URL`) | đạt |
+
+Lỗi duy nhất là R8-002, do máy thử chạy bằng root; test này đạt khi chạy bằng user thường (`RE7/test-summary.txt`).

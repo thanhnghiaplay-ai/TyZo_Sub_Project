@@ -82,7 +82,9 @@
     "location": "run-gate.ts; model-call.ts; room-groq.ts",
     "hypothesis": "Cận token chưa được bảo đảm cho mọi model; route test regex",
     "acceptance": "Test route hành vi, allowlist trường/model, schema/tool/output cap, Unicode, phiếu nhỏ, usage vượt cận; không giữ toàn context mặc định; 5 model chưa đo thật ghi BLOCKED.",
-    "status": "OPEN_VERIFY"
+    "status": "PASS_LOCAL_PARTIAL_REAL",
+    "evidence": "RE6-008/REPORT.md",
+    "remaining": "BLOCKED: đo thật 5 model chưa đo (llama-3.3-70b, llama-3.1-8b, muse-spark-open, minimax-m2.7, qwen-turbo); token suy luận Groq trong usage/trần; giá bậc qwen-turbo/qwen-max; giá cache."
   },
   {
     "id": "RE6-009",
