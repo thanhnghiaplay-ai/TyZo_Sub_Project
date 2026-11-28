@@ -5,6 +5,7 @@
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { after, before, beforeEach, describe, it } from "node:test";
 import type { Sql } from "../db.ts";
 import { pgliteSql, realPgSql } from "../test-sql.ts";
@@ -124,17 +125,24 @@ describe("RE6-009 · giới hạn tài nguyên và ngân sách (cấu hình)", (
   const app = readFileSync(new URL("../../../eval/asr/luong-ky/modal/modal_app.py", import.meta.url), "utf8");
   const cfg = JSON.parse(readFileSync(new URL("../../../eval/asr/luong-ky/modal/cau-hinh.json", import.meta.url), "utf8"));
 
+  // RE8-008: trần GPU tính thuần trong gpu_limits.py (đọc cau-hinh.json), kiểm bằng chính hàm Python đó.
+  const limits = JSON.parse(execFileSync("python3", ["-I", "-B", "-c",
+    "import json,sys,importlib.util as u;s=u.spec_from_file_location('g',sys.argv[1]);m=u.module_from_spec(s);s.loader.exec_module(m);c=json.load(open(sys.argv[2]));print(json.dumps({'asr':m.asr_limits(c),'llm':m.llm_limits(c),'conc':m.llm_concurrency(c)}))",
+    new URL("../../../eval/asr/luong-ky/modal/gpu_limits.py", import.meta.url).pathname,
+    new URL("../../../eval/asr/luong-ky/modal/cau-hinh.json", import.meta.url).pathname], { encoding: "utf8" }));
+
   it("cửa nhận việc lane modal không vượt số máy nhận dạng tối đa; khách riêng không chiếm hết", () => {
-    const max = Number(/max_containers=(\d+)/.exec(app.slice(app.indexOf('@app.cls(gpu=CFG["gpu"]["nhan_dang"]')))?.[1]);
-    assert.equal(max, 9);
-    assert.ok(DEFAULT_ADMISSION.modal <= max, `${DEFAULT_ADMISSION.modal} ≤ ${max}`);
+    assert.equal(limits.asr.max_containers, 9);
+    assert.ok(DEFAULT_ADMISSION.modal <= limits.asr.max_containers, `${DEFAULT_ADMISSION.modal} ≤ ${limits.asr.max_containers}`);
     assert.ok(DEFAULT_ADMISSION.perUserModal < DEFAULT_ADMISSION.modal);
+    assert.match(app, /max_containers=ASR_LIM\["max_containers"\]/);
   });
 
-  it("ĐÃ BIẾT: máy model chữ (LLM_KW) không có max_containers, timeout 24 giờ — cần Chủ duyệt trần khi nghiệm thu thật", () => {
-    const llm = app.slice(app.indexOf("LLM_KW = dict("), app.indexOf(")", app.indexOf("min_containers", app.indexOf("LLM_KW = dict("))) + 1);
-    assert.doesNotMatch(llm, /max_containers/);
-    assert.match(llm, /timeout=24 \* 3600/);
+  it("RE8-008: máy model chữ có trần max_containers (mặc định 2), timeout giữ 24 giờ", () => {
+    assert.equal(limits.llm.max_containers, 2);
+    const llm = app.slice(app.indexOf("LLM_KW = dict("), app.indexOf("\n\n", app.indexOf("LLM_KW = dict(")));
+    assert.match(llm, /max_containers=LLM_LIM\["max_containers"\]/);
+    assert.equal(limits.llm.timeout, 24 * 3600);
   });
 
   it("phần giữ Token theo giờ phim đủ phủ chi phí tính cho mọi hồ sơ (giữ ≥ trừ khi RTF ≤ tỉ lệ giữ)", () => {

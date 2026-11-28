@@ -83,7 +83,13 @@
     "snapshot_nhan_dang": true,
     "_ghi_chu_snapshot_nhan_dang": "snapshot_nhan_dang: true = máy nhận dạng chụp bộ nhớ (cả GPU) sau khi nạp Whisper, SepFormer, Demucs (thử nghiệm alpha của Modal). false = bật máy như cũ. Đổi xong chọn «Cập nhật».",
     "may_du_phong_nhan_dang": 2,
-    "_ghi_chu_may_du_phong": "may_du_phong_nhan_dang: khi đang có việc, Modal giữ sẵn thêm N máy nhận dạng rảnh (buffer_containers, 0–8) để khách đến cùng lúc không chờ máy mới khởi động. Chỉ tốn tiền lúc đang có việc; rảnh 60 s thì tắt. 0 = như trước. Đổi xong chọn «Cập nhật»."
+    "_ghi_chu_may_du_phong": "may_du_phong_nhan_dang: khi đang có việc, Modal giữ sẵn thêm N máy nhận dạng rảnh (buffer_containers, 0–8) để khách đến cùng lúc không chờ máy mới khởi động. Chỉ tốn tiền lúc đang có việc; rảnh 60 s thì tắt. 0 = như trước. Đổi xong chọn «Cập nhật».",
+    "may_chu_toi_da": 2,
+    "_ghi_chu_may_chu_toi_da": "may_chu_toi_da (RE8-008): trần số máy model chữ L40S (1–4). Một máy nhận tối đa yeu_cau_may_chu_toi_da yêu cầu (64), autoscaler nhắm yeu_cau_may_chu_muc_tieu (64, như cũ). Trước đây không có trần. Đổi xong chọn «Cập nhật».",
+    "yeu_cau_may_chu_toi_da": 64,
+    "yeu_cau_may_chu_muc_tieu": 64,
+    "may_nhan_dang_toi_da": 9,
+    "tat_may_nhan_dang_sau_giay": 60
   },
   "gia_gpu_usd_gio": {
     "L4": 0.8,

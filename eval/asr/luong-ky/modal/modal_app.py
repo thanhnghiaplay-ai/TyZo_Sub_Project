@@ -8,7 +8,7 @@ Biến lúc deploy (tùy chọn): TYZO_ASR_WARM / TYZO_LLM_WARM = số máy luô
 Gọi: POST <địa chỉ Asr.run>  JSON {"token", "audio_b64", "ext", "lang", "profile"} → {"srt", "segs", "stats"}. Xem goi_thu.py.
 Luồng (profile) và cách hợp nhất: cau-hinh.json.
 """
-import json, os
+import json, os, sys
 import modal
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -19,6 +19,14 @@ CFG = json.load(open(_CFG_PATH)) if _CFG_PATH else {   # dự phòng: không th�
     "hop_nhat": {"gpu": {"model": "Qwen/Qwen3.8-27B-FP8"}}, "gpu": {"nhan_dang": ["L4", "A10"], "model_chu": ["L40S", "A100-80GB"]}}
 SECRET = modal.Secret.from_name("tyzo-asr")
 LLM_MODEL = CFG["hop_nhat"]["gpu"]["model"]
+# Trên máy Modal tệp này ở /root; gpu_limits.py được chép vào /root/luong-ky/modal (cả hai ảnh, xem bên dưới).
+for _p in (HERE, "/root/luong-ky/modal"):
+    if os.path.exists(os.path.join(_p, "gpu_limits.py")) and _p not in sys.path:
+        sys.path.insert(0, _p)
+from gpu_limits import asr_limits, llm_concurrency, llm_limits   # RE8-008: trần GPU tính thuần, có test
+ASR_LIM = asr_limits(CFG, os.environ.get("TYZO_ASR_WARM"))
+LLM_LIM = llm_limits(CFG, os.environ.get("TYZO_LLM_WARM"))
+LLM_CONC = llm_concurrency(CFG)
 
 asr_image = (
     modal.Image.debian_slim(python_version="3.12")
@@ -42,6 +50,7 @@ llm_image = (
     # Thử lại riêng TRITON_CACHE_DIR (bộ đệm biên dịch kernel Triton) để lần bật sau không biên dịch lại.
     .env({"HF_HOME": "/cache/hf", "VLLM_CACHE_ROOT": "/cache/vllm", "TRITON_CACHE_DIR": "/cache/triton"})
     .add_local_file(os.path.join(HERE, "cau-hinh.json"), "/root/luong-ky/modal/cau-hinh.json")
+    .add_local_file(os.path.join(HERE, "gpu_limits.py"), "/root/luong-ky/modal/gpu_limits.py")
 )
 asr_cache = modal.Volume.from_name("tyzo-asr-cache", create_if_missing=True)
 llm_cache = modal.Volume.from_name("tyzo-llm-cache", create_if_missing=True)
@@ -49,9 +58,10 @@ app = modal.App("tyzo-asr")
 
 
 LLM_SNAPSHOT = bool(CFG["gpu"].get("snapshot_may_chu", False))   # đổi trong cau-hinh.json rồi «Cập nhật»
+# RE8-008: có trần số máy model chữ (trước đây không đặt max_containers = không giới hạn).
 LLM_KW = dict(image=llm_image, gpu=CFG["gpu"]["model_chu"], volumes={"/cache": llm_cache}, secrets=[SECRET],
-              scaledown_window=int(CFG["gpu"].get("tat_may_chu_sau_giay", 300)), timeout=24 * 3600,
-              min_containers=int(os.environ.get("TYZO_LLM_WARM") or 0))
+              scaledown_window=LLM_LIM["scaledown_window"], timeout=LLM_LIM["timeout"],
+              min_containers=LLM_LIM["min_containers"], max_containers=LLM_LIM["max_containers"])
 
 
 def _count_triton():
@@ -105,7 +115,7 @@ if LLM_SNAPSHOT:
     # Chụp bộ nhớ (cả GPU) sau khi vLLM đã nạp model và sẵn sàng: lần bật sau khôi phục từ bản chụp thay vì nạp lại.
     # Modal tự chạy lại theo cách thường nếu khôi phục GPU lỗi. Bản chụp làm lại sau mỗi lần triển khai.
     @app.cls(**LLM_KW, enable_memory_snapshot=True, experimental_options={"enable_gpu_snapshot": True})
-    @modal.concurrent(max_inputs=64)
+    @modal.concurrent(max_inputs=LLM_CONC["max_inputs"], target_inputs=LLM_CONC["target_inputs"])
     class Llm:
         @modal.enter(snap=True)
         def start(self):
@@ -128,7 +138,7 @@ if LLM_SNAPSHOT:
         return Llm().serve.get_web_url()
 else:
     @app.function(**LLM_KW)
-    @modal.concurrent(max_inputs=64)
+    @modal.concurrent(max_inputs=LLM_CONC["max_inputs"], target_inputs=LLM_CONC["target_inputs"])
     @modal.web_server(port=8000, startup_timeout=1500)
     def llm():
         """Máy model chữ: vLLM dạng OpenAI, khóa bằng TYZO_ASR_TOKEN. Bật khi có yêu cầu, tắt khi rảnh quá `tat_may_chu_sau_giay`."""
@@ -144,9 +154,10 @@ ASR_SNAPSHOT = bool(CFG["gpu"].get("snapshot_nhan_dang", False))   # đổi tron
 
 
 @app.cls(gpu=CFG["gpu"]["nhan_dang"], image=asr_image, volumes={"/cache": asr_cache}, secrets=[SECRET],
-         scaledown_window=60, timeout=1800, max_containers=9, min_containers=min(9, int(os.environ.get("TYZO_ASR_WARM") or 0)),
+         scaledown_window=ASR_LIM["scaledown_window"], timeout=ASR_LIM["timeout"], max_containers=ASR_LIM["max_containers"],
+         min_containers=ASR_LIM["min_containers"],
          # Đang có việc thì giữ sẵn N máy rảnh: khách đến cùng lúc không phải xếp hàng chờ máy mới khởi động (đo 28/11: 4 lệnh song song bị xử lý lần lượt, người cuối chờ 31 s).
-         buffer_containers=max(0, min(8, int(CFG["gpu"].get("may_du_phong_nhan_dang", 2)))),
+         buffer_containers=ASR_LIM["buffer_containers"],
          enable_memory_snapshot=ASR_SNAPSHOT,
          **({"experimental_options": {"enable_gpu_snapshot": True}} if ASR_SNAPSHOT else {}))
 class Asr:
