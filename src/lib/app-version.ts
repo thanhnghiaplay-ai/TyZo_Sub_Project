@@ -1,5 +1,5 @@
 /** Số đưa lên Vercel. Đổi số cuối khi sửa chữ, số giữa khi thêm chức năng nhỏ, số đầu khi thêm chức năng lớn. */
-export const APP_VERSION = "5.49.7";
+export const APP_VERSION = "5.49.8";
 
 type ReleaseNote = {
   version: string;
@@ -10,6 +10,15 @@ type ReleaseNote = {
 
 /** Bảng khách thấy. Một câu tiêu đề, vài dòng việc. Không ghi việc nội bộ. */
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "5.49.8",
+    time: "28/11/2026",
+    title: "Ổn định nhận dạng TyZo và hiển thị lỗi đầy đủ.",
+    points: [
+      "Khi hết suất tạm thời, TyZo đợi đến lượt trước khi gửi đoạn âm thanh.",
+      "Chọn lại tệp gốc để khôi phục tiến độ nhận dạng TyZo đã lưu trên máy.",
+    ],
+  },
   {
     version: "5.49.7",
     time: "27/11/2026",
@@ -299,17 +308,6 @@ export const CHANGELOG: ReleaseNote[] = [
       "Trang Tài khoản có mục Ứng dụng Android: lấy mã liên kết, xem và gỡ máy đã liên kết.",
       "Nghe tiếng video đang phát rồi hiện phụ đề nổi, trừ Token dịch như Dịch trực tiếp.",
       "Điều khoản ghi thêm phần ứng dụng Android; bạn đồng ý lại một lần.",
-    ],
-  },
-  {
-    version: "5.36.0",
-    time: "11:08 22/11/2026",
-    title: "Dịch trực tiếp: phụ đề nổi trên video, chữ lớn, giữ đúng tên nhân vật.",
-    points: [
-      "Phụ đề nổi: khung chữ dịch luôn nằm trên video ở tab khác (Chrome, Edge máy tính).",
-      "Chữ lớn toàn màn hình cho điện thoại, có nút Bắt đầu, Dừng; chỉnh cỡ chữ, số dòng, chữ gốc.",
-      "Ô Từ cần giữ đúng cho tên nhân vật, thuật ngữ. Tải lại trang vẫn tải được phụ đề phiên trước.",
-      "Điều khoản ghi thêm việc lưu chữ phiên trước trên máy; bạn đồng ý lại một lần.",
     ],
   },
 ];

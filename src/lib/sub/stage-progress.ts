@@ -53,7 +53,7 @@ export function computeStages(input: StageInput): StageReport {
   // nếu không thanh tụt về 40% vì giai đoạn cắt và nhận dạng bị tính là chưa làm.
   const ali = input.phase === "ali" || (!running && !planned && input.segsTotal > 0);
   const asrDone = planned && input.partsDone >= input.partsTotal;
-  const transDone = input.segsTotal > 0 && input.segsDone >= input.segsTotal && (asrDone || ali || (!running && planned));
+  const transDone = input.segsTotal > 0 && input.segsDone >= input.segsTotal && (asrDone || ali);
 
   const cut: Stage = { id: "cut", label: LABEL.cut, state: "wait", done: 0, total: 0, text: "" };
   if (ali) {
@@ -108,7 +108,11 @@ export function computeStages(input: StageInput): StageReport {
     const w = WEIGHT[stage.id];
     if (stage.state === "done" || stage.state === "skip") sum += w;
     else if (stage.id === "cut" && stage.state === "active") sum += w * Math.max(0, Math.min(1, input.readRatio ?? 0));
-    else if (stage.id === "asr" || stage.id === "translate") sum += w * ratio(stage.done, stage.total);
+    else if (stage.id === "asr") sum += w * ratio(stage.done, stage.total);
+    else if (stage.id === "translate") {
+      const recognized = planned ? ratio(input.partsDone, input.partsTotal) : 1;
+      sum += w * recognized * ratio(stage.done, stage.total);
+    }
   }
   const percent = Math.round(Math.max(0, Math.min(100, sum)));
   const active = stages.find((s) => s.state === "active")?.id ?? null;

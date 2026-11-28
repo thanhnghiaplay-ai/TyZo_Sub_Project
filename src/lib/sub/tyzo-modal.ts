@@ -1,7 +1,30 @@
+import { abortableSleep } from "./poll-loop.ts";
 import type { Seg } from "./types.ts";
 
 export type TyzoProfile = "nhanh" | "ky";
 export const MAX_MODAL_PARTS = 9;
+export const DEFAULT_MODAL_USER_PARALLEL = 3;
+
+export type ModalAdmissionResult<T> =
+  | { kind: "ready"; value: T }
+  | { kind: "busy"; retryAfter: number; message: string };
+
+/** A busy response certifies that the server did not send audio upstream. Transport errors and 409 must escape. */
+export async function submitModalChunk<T>(
+  submit: () => Promise<ModalAdmissionResult<T>>,
+  signal: AbortSignal,
+  onWait?: (message: string) => void,
+  wait = abortableSleep,
+): Promise<T> {
+  for (let retries = 0; ; retries++) {
+    signal.throwIfAborted();
+    const result = await submit();
+    if (result.kind === "ready") return result.value;
+    if (retries >= 30) throw new Error(result.message);
+    onWait?.(result.message);
+    await wait(Math.max(2, result.retryAfter) * 1000, signal);
+  }
+}
 
 export function modalRequest(token: string, audioBase64: string, language: string, profile: TyzoProfile) {
   return { token, audio_b64: audioBase64, ext: "wav", lang: language, profile };

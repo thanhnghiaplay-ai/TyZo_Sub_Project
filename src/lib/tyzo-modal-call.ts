@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "./auth/middleware";
 
 export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMiddleware])
-  .validator((input: {ticket:string; audio:string; language:string; profile:"nhanh"|"ky"}) => {
+  .validator((input: {ticket:string; audio:string; language:string; profile:"nhanh"|"ky"; waitForSlot?: true}) => {
     if (!/^[a-f0-9]{24}$/.test(input.ticket) || typeof input.audio !== "string" || !input.audio.length || input.audio.length > 24_000_000 ||
       !["nhanh","ky"].includes(input.profile) || !["","zh","ja","ko","en"].includes(input.language)) throw new Error("Đoạn âm thanh hoặc phiếu Modal không hợp lệ.");
     return input;
@@ -52,5 +52,10 @@ export const callTyzoModal = createServerFn({method:"POST"}).middleware([authMid
         toTokens, rate: book.rate, model,
       });
     });
-    return {segments: result.segments};
+    if (result.kind === "busy") {
+      // Old web tabs still expect the original successful response and error contract.
+      if (data.waitForSlot !== true) throw new Error(result.message);
+      return result;
+    }
+    return {segments: result.value.segments};
   });

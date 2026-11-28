@@ -50,7 +50,7 @@ import { modelTotalText, type ModelCounts } from "@/lib/sub/model-total";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/sub/provider";
 import { readGenderMap, voiceStore, overlayCastLocks, cloneBible, readStore, writeStore, removeStore, shareUserTerms, userGlossKey, readUserTerms, safeStore } from "@/components/pipeline-store";
 import { loadBlob, waitForMetadata, decodeTo16k } from "@/components/pipeline-media";
-import { asrLanguageOf, emptyJob, commitDecodedJob, type Job } from "@/lib/pipeline/job";
+import { asrLanguageOf, emptyJob, commitDecodedJob, startJobOnce, snapshotModalProgress, restoreModalProgress, type Job } from "@/lib/pipeline/job";
 import { uploadLocalAudio } from "@/lib/pipeline/link-upload";
 import { downloadText, exportProblem, subtitleFile } from "@/lib/pipeline/export";
 import { createRecognizer } from "@/lib/pipeline/recognize";
@@ -617,44 +617,51 @@ export function usePipeline() {
     });
   }, [clearJob, say, mediaId]);
 
-  // v5.33.0: lưu phụ đề trên máy theo dấu tệp khi nhận dạng đã xong, để tải lại trang không mất phần khách đã trả.
+  // Lưu phụ đề hoàn chỉnh và tiến độ Modal đã nhận về. Tải lại cần chọn lại đúng tệp gốc.
   useEffect(() => {
     const j = job.current;
     const key = mediaId();
     if (!savedOwner || savedSessionPending) return;
-    if (!key || !segs.length || j.pcmId !== key || !j.doneSource || j.nextPart < j.parts.length) return;
-    const timer = window.setTimeout(() => {
-      if (savedOwnerRef.current !== savedOwner) return;
-      void storeSaved({
-        ownerId: savedOwner,
-        key,
-        at: new Date().toISOString(),
-        fileName: (audioFile || file)?.name || "",
-        source: j.doneSource,
-        target,
-        segs: snapshotSegs(j.segs),
-        bible: j.bible,
-      });
-    }, 1500);
+    if (!key || j.pcmId !== key || !j.doneSource) return;
+    const modalProgress = snapshotModalProgress(j, asrModel);
+    if (!modalProgress && (!segs.length || j.nextPart < j.parts.length)) return;
+    const snapshot = {
+      ownerId: savedOwner,
+      key,
+      at: new Date().toISOString(),
+      fileName: (audioFile || file)?.name || "",
+      source: j.doneSource,
+      target,
+      segs: snapshotSegs(j.segs),
+      bible: j.bible ? cloneBible(j.bible) : null,
+      modalProgress,
+    };
+    const save = () => {
+      if (savedOwnerRef.current === savedOwner) void storeSaved(snapshot);
+    };
+    if (!running) return save();
+    const timer = window.setTimeout(save, 1500);
     return () => window.clearTimeout(timer);
-  }, [segs, mediaId, target, file, audioFile, savedOwner, savedSessionPending]);
+  }, [segs, mediaId, target, file, audioFile, savedOwner, savedSessionPending, asrModel, running]);
 
   // Chọn lại đúng tệp đã làm (sau khi tải lại trang): hỏi khôi phục, không nhận dạng lại.
   const offeredSaved = useRef("");
   useEffect(() => {
     const key = mediaId();
     if (!savedOwner || savedSessionPending) return;
-    const offerKey = `${savedOwner}:${key}`;
+    const offerKey = `${savedOwner}:${key}:${source}:${asrModel}`;
     if (!key || offeredSaved.current === offerKey) return;
     offeredSaved.current = offerKey;
     if (job.current.segs.length || running) return;
     let gone = false;
     void loadSaved(savedOwner, key).then(async (saved) => {
-      if (gone || !usableSaved(saved, key, source, savedOwner)) return;
+      if (gone || !usableSaved(saved, key, source, savedOwner, asrModel)) return;
       const sum = savedSummary(saved);
       const ok = await askConfirm({
         title: "Khôi phục bản đã làm?",
-        text: `Tệp này đã nhận dạng lúc ${sum.when}: ${sum.total} câu, đã dịch ${sum.done}. Khôi phục để xem, xuất file hoặc dịch nốt, không phải nhận dạng lại.`,
+        text: saved.modalProgress
+          ? `Đã lưu ${saved.modalProgress.nextPart}/${saved.modalProgress.parts.length} đoạn và ${sum.total} câu. Khôi phục rồi bấm Tiếp tục để làm các đoạn còn lại.`
+          : `Tệp này đã nhận dạng lúc ${sum.when}: ${sum.total} câu, đã dịch ${sum.done}. Khôi phục để xem, xuất file hoặc dịch nốt, không phải nhận dạng lại.`,
         confirmLabel: "Khôi phục",
         cancelLabel: "Làm mới",
       });
@@ -670,11 +677,13 @@ export function usePipeline() {
       j.bible = (saved.bible as Bible | null) ?? null;
       j.bibleGo = true;
       j.holdPosted = true;
+      if (saved.modalProgress) restoreModalProgress(j, saved.modalProgress);
       if (j.bible) setBible(cloneBible(j.bible));
       publish(true);
       pushStages();
       say(
-        sum.done < sum.total
+        saved.modalProgress ? "Đã khôi phục tiến độ nhận dạng. Bấm Tiếp tục để làm nốt."
+        : sum.done < sum.total
           ? `Đã khôi phục ${sum.total} câu (đã dịch ${sum.done}). Bấm Tiếp tục để dịch nốt; phần nhận dạng không làm lại.`
           : `Đã khôi phục ${sum.total} câu đã dịch.`,
       );
@@ -683,7 +692,7 @@ export function usePipeline() {
       gone = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mediaId, source, savedOwner, savedSessionPending]);
+  }, [mediaId, source, asrModel, savedOwner, savedSessionPending]);
 
   const guardRoom = useCallback(async (paidOnly: string | null, allowSpentTrial = false) => {
     const session = await authClient.getSession().catch(() => null);
@@ -804,7 +813,7 @@ export function usePipeline() {
     job.current.abort?.abort();
   }, []);
 
-  const start = useCallback(async () => {
+  const startRun = useCallback(async () => {
     const token = activeKey();
     const link = url.trim();
     const chosen = modelId.trim();
@@ -1134,7 +1143,9 @@ export function usePipeline() {
       j.diagLang = source;
       const id = mediaId();
       const havePcm = Boolean((j.pcm || j.stream) && j.pcmId === id);
-      if (j.pcmId !== id || j.doneSource !== source) {
+      const newMedia = j.pcmId !== id || j.doneSource !== source;
+      const needResumeAudio = !havePcm && !newMedia && j.nextPart < j.parts.length;
+      if (newMedia || needResumeAudio) {
         if (!havePcm) {
           say("Đang đọc cấu trúc file…");
           const primary = audioFile || file;
@@ -1183,6 +1194,8 @@ export function usePipeline() {
             if (!commitDecodedJob(j, my, decoded, id)) return;
           }
         }
+      }
+      if (newMedia) {
         j.segs = [];
         j.nextPart = 0;
         j.skipped = 0;
@@ -1472,6 +1485,16 @@ export function usePipeline() {
     title,
     url,
   ]);
+
+  const startGate = useRef(false);
+  const start = useCallback(() => startJobOnce(startGate, async () => {
+    const release = holdPageActivity();
+    try {
+      await startRun();
+    } finally {
+      release();
+    }
+  }), [startRun]);
 
   const setReviewBefore = useCallback((value: boolean) => {
     reviewRef.current = value;
@@ -1968,8 +1991,9 @@ export function usePipeline() {
   });
 
   useEffect(() => {
-    if (running || analyzing || polish.phase === "running" || polish.phase === "quoting") return holdPageActivity();
-  }, [running, analyzing, polish.phase]);
+    // A paused run still has data needed by Tiếp tục in this tab.
+    if (running || analyzing || buttonLabel === "Tiếp tục" || polish.phase === "running" || polish.phase === "quoting") return holdPageActivity();
+  }, [running, analyzing, buttonLabel, polish.phase]);
 
   return {
     key,

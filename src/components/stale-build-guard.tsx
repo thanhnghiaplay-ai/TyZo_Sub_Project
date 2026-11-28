@@ -12,7 +12,7 @@ export function StaleBuildGuard() {
     let warned = false;
     const onPreload = (event: Event) => {
       if (hasPageActivity()) {
-        event.preventDefault();
+        // Let the failed import reject so the caller can show the real error and preserve its state.
         if (!warned) pushToast("Có bản mới. Hãy đợi tác vụ xong và lưu hoặc xuất phụ đề trước khi tải lại trang.");
         warned = true;
         return;

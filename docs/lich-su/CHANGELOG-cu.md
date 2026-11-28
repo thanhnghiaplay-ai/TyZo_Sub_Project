@@ -2,6 +2,15 @@
 
 Các mục sau được chuyển nguyên văn từ `src/lib/app-version.ts`. Các bản gần đây nằm trong ứng dụng, mục «Có gì mới» hiển thị 8 bản.
 
+## 5.36.0 · 11:08 22/11/2026
+
+Dịch trực tiếp: phụ đề nổi trên video, chữ lớn, giữ đúng tên nhân vật.
+
+- Phụ đề nổi: khung chữ dịch luôn nằm trên video ở tab khác (Chrome, Edge máy tính).
+- Chữ lớn toàn màn hình cho điện thoại, có nút Bắt đầu, Dừng; chỉnh cỡ chữ, số dòng, chữ gốc.
+- Ô Từ cần giữ đúng cho tên nhân vật, thuật ngữ. Tải lại trang vẫn tải được phụ đề phiên trước.
+- Điều khoản ghi thêm việc lưu chữ phiên trước trên máy; bạn đồng ý lại một lần.
+
 ## 5.35.2 · 09:59 22/11/2026
 
 Lưu được key ElevenLabs có giới hạn quyền.

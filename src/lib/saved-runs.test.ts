@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { emptyJob, restoreModalProgress, snapshotModalProgress } from "./pipeline/job.ts";
 import { SAVED_MAX, keysToDrop, savedSummary, snapshotSegs, usableSaved, type SavedRun } from "./saved-runs.ts";
 
 const run = (over: Partial<SavedRun> = {}): SavedRun => ({
@@ -44,9 +45,9 @@ describe("phụ đề lưu trên máy theo tệp (v5.33.0)", () => {
     assert.deepEqual(keysToDrop(many).sort(), ["k0", "k1"]);
   });
 
-  it("nối vào luồng chạy: lưu khi nhận dạng xong, hỏi khôi phục, Làm lại xóa bản lưu; điều khoản có nói", () => {
+  it("nối vào luồng chạy: lưu đúng tệp, hỏi khôi phục, Làm lại xóa bản lưu; điều khoản có nói", () => {
     const pipe = readFileSync(new URL("../components/use-pipeline.ts", import.meta.url), "utf8");
-    assert.match(pipe, /if \(!key \|\| !segs\.length \|\| j\.pcmId !== key \|\| !j\.doneSource \|\| j\.nextPart < j\.parts\.length\) return;/);
+    assert.match(pipe, /snapshotModalProgress\(j, asrModel\)/);
     assert.match(pipe, /title: "Khôi phục bản đã làm\?"/);
     assert.match(pipe, /j\.pcmId = key;\s*j\.doneSource = saved\.source;/);
     assert.match(pipe, /clearJob\(\);\s*void dropSaved\(savedOwnerRef\.current, mediaId\(\)\);/);
@@ -61,4 +62,28 @@ it("R5-008: cùng tệp của A không được khôi phục cho B hoặc phiên
   const saved = { ...run(), ownerId: "account-A" };
   assert.equal(check(saved, saved.key, saved.source, "account-B"), false);
   assert.equal(check(saved, saved.key, saved.source, ""), false);
+});
+
+
+it("nạp lại tiến độ Modal gồm cả câu chờ đoạn đến trước, chỉ từ đúng tệp và model", () => {
+  const job = emptyJob();
+  job.parts = [[0, 16000], [16000, 32000], [32000, 48000]];
+  job.nextPart = 1;
+  job.asrBuf.set(2, { segments: [{ text: "日本語", start: 0, end: 0.6 }] });
+  job.heardOffset.set(2, 0.2);
+  job.heard.set(2, new Float32Array([1, 2, 3]));
+  const model = "tyzo-modal-nhanh";
+  const progress = snapshotModalProgress(job, model);
+  assert.ok(progress);
+  const record = structuredClone(run({ source: "ja", segs: [], modalProgress: progress }));
+  assert.equal(usableSaved(record, record.key, "ja", record.ownerId, "tyzo-modal-ky"), false);
+  assert.equal(usableSaved(record, record.key, "ja", record.ownerId, model), true);
+  const restored = emptyJob();
+  restoreModalProgress(restored, record.modalProgress!);
+  assert.deepEqual(restored.parts, job.parts);
+  assert.equal(restored.nextPart, 1);
+  assert.deepEqual(restored.asrBuf, job.asrBuf);
+  assert.equal(restored.heardOffset.get(2), 0.2);
+  assert.equal(restored.heard.size, 0);
+  assert.equal(restored.pcm, null);
 });

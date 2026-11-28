@@ -1,6 +1,7 @@
 /** Shared PostgreSQL admission, bounded at the door: callers retry 429 instead of accumulating a polling backlog. */
 import { randomBytes } from "node:crypto";
 import type { Sql } from "../db.ts";
+import { DEFAULT_MODAL_USER_PARALLEL } from "../sub/tyzo-modal.ts";
 import { inTransaction } from "../db-tx.ts";
 import { LEASE_STALE, LEASE_STALE_SECONDS, boundedBeat, startBeat } from "./work-lease.ts";
 import { UncertainUpstreamError } from "./upstream-outcome.ts";
@@ -20,7 +21,7 @@ export const DEFAULT_ADMISSION = {
   modal: 8,
   live: 48,
   perUser: 2,
-  perUserModal: 3,
+  perUserModal: DEFAULT_MODAL_USER_PARALLEL,
   perProvider: 40,
   perModel: 24,
   /** RE3-005: số suất mỗi nhà chỉ dành cho Dịch trực tiếp (batch/modal không chiếm). 0 = như cũ; Chủ chỉnh trong Admin. */
@@ -169,6 +170,11 @@ export async function sweepAdmissions(sql: Sql, limit = 50) {
       union all
       select 'run_modal_parts:' || p.status from run_modal_parts p
         where w.ref = 'modal:' || p.ticket_id || ':' || p.part_hash || ':' || p.attempt and p.status = 'xong'
+      union all
+      select 'run_modal_settlements:' || s.status from run_modal_settlements s
+        where s.attempt = split_part(w.ref, ':', 4)
+          and w.ref = 'modal:' || s.ticket_id || ':' || s.part_hash || ':' || s.attempt
+          and s.status = 'xong' and s.observed_at is not null
       limit 1
     ) e
     where w.status = 'unknown' and w.ref is not null

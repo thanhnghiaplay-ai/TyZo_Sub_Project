@@ -746,14 +746,20 @@ export function Studio() {
       )}
 
       <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <button
-          type="button"
-          role="status"
-          className={"line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm " + (app.isError ? "text-danger" : "text-muted")}
-          onClick={() => statusRef.current?.showModal()}
-        >
-          {statusText}
-        </button>
+        {app.isError ? (
+          <p role="alert" className="min-w-0 basis-full whitespace-normal break-words text-sm text-danger">
+            {statusText}
+          </p>
+        ) : (
+          <button
+            type="button"
+            role="status"
+            className="line-clamp-2 h-10 min-w-[11rem] flex-1 text-left text-sm text-muted"
+            onClick={() => statusRef.current?.showModal()}
+          >
+            {statusText}
+          </button>
+        )}
         {!hero && (
         <>
         <span

@@ -1,8 +1,9 @@
 /**
  * Phụ đề đã làm, lưu trên máy khách theo dấu tệp (v5.33.0). Chỉ import tương đối.
  * Tải lại trang hay điện thoại xả trang không làm mất phần khách đã trả: chọn lại đúng tệp thì app hỏi khôi phục.
- * Chỉ lưu khi nhận dạng đã xong (khôi phục xong thì chỉ còn dịch nốt, không nhận dạng lại). Không gửi lên máy chủ.
+ * Lượt Modal có thể lưu cả phần nhận dạng đang làm. Chỉ lưu chữ và mốc thời gian, không lưu âm thanh.
  */
+import type { ModalCheckpoint } from "./pipeline/job.ts";
 import type { Seg } from "./sub/types.ts";
 
 const SAVED_DB = "tyzo-saved-runs-v2";
@@ -19,6 +20,7 @@ export type SavedRun = {
   target: string;
   segs: Seg[];
   bible: unknown;
+  modalProgress?: ModalCheckpoint;
 };
 
 /** Dọn câu trước khi lưu: bỏ trạng thái tạm (đang gửi), giữ chữ, giờ, cờ sửa tay, giọng. */
@@ -34,8 +36,11 @@ export function savedSummary(run: Pick<SavedRun, "segs" | "at">): { total: numbe
 }
 
 /** Bản lưu dùng được cho tệp đang chọn: đúng dấu tệp, đúng tiếng gốc, có câu. */
-export function usableSaved(run: SavedRun | null | undefined, key: string, source: string, ownerId: string): run is SavedRun {
-  return Boolean(ownerId && run?.ownerId === ownerId && run && key && run.key === key && run.source === source && Array.isArray(run.segs) && run.segs.length > 0);
+export function usableSaved(run: SavedRun | null | undefined, key: string, source: string, ownerId: string, asrModel?: string): run is SavedRun {
+  if (!ownerId || !key || run?.ownerId !== ownerId || run.key !== key || run.source !== source || !Array.isArray(run.segs)) return false;
+  const checkpoint = run.modalProgress;
+  if (!checkpoint) return run.segs.length > 0;
+  return checkpoint.model === asrModel && (run.segs.length > 0 || checkpoint.nextPart > 0 || checkpoint.buffered.length > 0);
 }
 
 /** Xếp mới nhất trước, giữ SAVED_MAX; trả các khóa cần xóa. */

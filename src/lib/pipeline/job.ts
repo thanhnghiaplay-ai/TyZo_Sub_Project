@@ -128,3 +128,61 @@ export const emptyJob = (): Job => ({
   readRatio: 0,
   heardLang: "",
 });
+
+
+/** Claim before the first await so successive taps cannot open two tickets for the same Studio. */
+export async function startJobOnce(gate: { current: boolean }, start: () => Promise<void>): Promise<void> {
+  if (gate.current) return;
+  gate.current = true;
+  try {
+    await start();
+  } finally {
+    gate.current = false;
+  }
+}
+
+
+/** Processed and buffered Modal responses. The original audio must be reselected by the user. */
+export type ModalCheckpoint = {
+  model: string;
+  parts: Job["parts"];
+  nextPart: number;
+  buffered: [number, AsrResult][];
+  offsets: [number, number][];
+  skipped: number;
+  failedParts: number[];
+  decodeFailures: RawAsrPart[];
+  appliedSig: string;
+  bibleGo: boolean;
+  holdPosted: boolean;
+};
+
+export function snapshotModalProgress(job: Job, model: string): ModalCheckpoint | undefined {
+  if (!model.startsWith("tyzo-modal-") || job.nextPart >= job.parts.length || (!job.nextPart && !job.asrBuf.size)) return undefined;
+  return {
+    model,
+    parts: job.parts.slice(),
+    nextPart: job.nextPart,
+    buffered: [...job.asrBuf],
+    offsets: [...job.heardOffset],
+    skipped: job.skipped,
+    failedParts: job.failedParts.slice(),
+    decodeFailures: job.rawParts.filter((part) => part.kind === "decode_fail"),
+    appliedSig: job.appliedSig,
+    bibleGo: job.bibleGo,
+    holdPosted: job.holdPosted,
+  };
+}
+
+export function restoreModalProgress(job: Job, saved: ModalCheckpoint): void {
+  job.parts = saved.parts;
+  job.nextPart = saved.nextPart;
+  job.asrBuf = new Map(saved.buffered);
+  job.heardOffset = new Map(saved.offsets);
+  job.skipped = saved.skipped;
+  job.failedParts = saved.failedParts;
+  job.rawParts = saved.decodeFailures;
+  job.appliedSig = saved.appliedSig;
+  job.bibleGo = saved.bibleGo;
+  job.holdPosted = saved.holdPosted;
+}

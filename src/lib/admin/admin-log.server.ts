@@ -8,6 +8,12 @@ type AdminNote = {
 /** Nhật ký nội bộ. Không import từ giao diện khách. */
 export const ADMIN_LOG: AdminNote[] = [
   {
+    version: "5.49.8",
+    time: "28/11/2026",
+    area: "ha-tang",
+    text: "TyZo Modal giới hạn ba đoạn đồng thời mỗi lượt, chỉ thử lại có giới hạn khi cửa nhận việc trả 429 trước khi gửi, giữ nguyên chặn 409. Lỗi khi hỏi lại kết quả sau 303 cần đối soát và không gửi lại POST. Studio hiển thị đầy đủ lỗi, giữ các đoạn đã nhận và khôi phục tiến độ Modal khi chọn lại tệp.",
+  },
+  {
     version: "5.49.7",
     time: "27/11/2026",
     area: "tien",

@@ -7,7 +7,9 @@ import { after, before, beforeEach, describe, it } from "node:test";
 import type { Sql } from "../db.ts";
 import { pgliteSql, realPgSql } from "../test-sql.ts";
 import { buyGiayWith, closeTokenWith, giayBalance, openGiayWith } from "./token-flow.ts";
-import { runModalPartWith } from "./tyzo-modal-charge.ts";
+import { submitModalChunk } from "../sub/tyzo-modal.ts";
+import { runAdmittedModalPartWith, runModalPartWith } from "./tyzo-modal-charge.ts";
+import { sweepAdmissions } from "./work-admission.ts";
 
 let sql: Sql;
 let end: (() => Promise<void>) | undefined;
@@ -105,6 +107,26 @@ describe("TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song"
     assert.equal(await giayBalance(sql, "k"), 1000 - 12);
   });
 
+  it("yêu cầu đóng phiếu giữa ghi đoạn và giữ ngân sách phải nhả Token ngay", async () => {
+    await sql.query(`create function thu_dong_phieu_som() returns trigger language plpgsql as $$
+      begin
+        update run_tickets set close_wanted = true, close_failed = true where id = new.ticket_id;
+        return new;
+      end $$`);
+    await sql.query(`create trigger thu_dong_phieu_som after insert on run_modal_parts
+      for each row execute function thu_dong_phieu_som()`);
+    try {
+      await assert.rejects(runModalPartWith(sql, part("closing"), async () => assert.fail("không được gọi GPU")), /Phiếu Modal đã hết/);
+      const t = await ticket();
+      assert.deepEqual([t.status, t.held, t.charged, await giayBalance(sql, "k")], ["loi", 0, 0, 1000]);
+      const jobs = await sql<{ n: number }>`select count(*)::int n from run_modal_parts where part_hash = 'closing'`;
+      assert.equal(jobs[0].n, 0);
+    } finally {
+      await sql.query(`drop trigger thu_dong_phieu_som on run_modal_parts`);
+      await sql.query(`drop function thu_dong_phieu_som()`);
+    }
+  });
+
   it("đóng phiếu khi không có đoạn nào chạy vẫn trả hết ngay như cũ", async () => {
     const closed = await closeTokenWith(sql, "t1", "k", false);
     assert.equal(closed?.freed, 100);
@@ -181,5 +203,99 @@ describe("TyZo Modal: giữ, quyết toán, đóng phiếu khi chạy song song"
     g.open();
     await running;
     assert.equal(hb[0].fresh, true);
+  });
+});
+
+
+describe("TyZo Modal: cửa nhận việc và tiếp tục", () => {
+  beforeEach(async () => {
+    await open(100);
+    await sql`delete from work_admissions`;
+    await sql`delete from work_waiters`;
+    await sql`insert into room_settings (key, value) values ('work_admission', '{"perUserModal":2}')
+      on conflict (key) do update set value = excluded.value`;
+  });
+
+  it("sáu đoạn chờ qua 429, mỗi đoạn gửi và trừ đúng một lần", async () => {
+    const calls = new Map<string, number>();
+    let active = 0;
+    let maxActive = 0;
+    let busy = 0;
+    const signal = new AbortController().signal;
+    const chunks = Array.from({ length: 6 }, (_, i) => `part-${i}`);
+    const results = await Promise.all(chunks.map((hash) => submitModalChunk(
+      () => runAdmittedModalPartWith(sql, part(hash, 29, 10), async () => {
+        calls.set(hash, (calls.get(hash) ?? 0) + 1);
+        maxActive = Math.max(maxActive, ++active);
+        await new Promise((resolve) => setTimeout(resolve, 60));
+        active--;
+        return { segments: SEG, tokens: 7 };
+      }),
+      signal,
+      () => { busy++; },
+      async () => new Promise((resolve) => setTimeout(resolve, 30)),
+    )));
+    assert.equal(results.length, 6);
+    assert.equal(maxActive, 2);
+    assert.ok(busy > 0, "cửa đã từ chối tạm thời trước khi gọi GPU");
+    assert.deepEqual(chunks.map((hash) => calls.get(hash)), [1, 1, 1, 1, 1, 1]);
+    const closed = await closeTokenWith(sql, "t1", "k", false);
+    assert.deepEqual([closed?.charged, closed?.freed, await giayBalance(sql, "k")], [42, 58, 958]);
+    const jobs = await sql<{ status: string; n: number }>`select status, count(*)::int n from run_modal_parts group by status`;
+    assert.deepEqual(jobs, [{ status: "xong", n: 6 }]);
+    const leases = await sql<{ n: number }>`select count(*)::int n from work_admissions where status <> 'done'`;
+    assert.equal(leases[0].n, 0);
+  });
+
+  it("409 giữ khóa đối soát, chỉ cho đọc đoạn đã lưu và không trừ lại", async () => {
+    const recognize = async () => ({ segments: SEG, tokens: 7 });
+    await runAdmittedModalPartWith(sql, part("saved"), recognize);
+    await sql`insert into work_admissions (id, user_id, provider, model, lane, status)
+      values ('unknown-k', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'unknown')`;
+    const noGpu = async () => assert.fail("không được gửi GPU");
+    const signal = new AbortController().signal;
+    const cached = await submitModalChunk(
+      () => runAdmittedModalPartWith(sql, part("saved"), noGpu),
+      signal,
+    );
+    assert.equal(cached.reused, true);
+    let submits = 0;
+    await assert.rejects(submitModalChunk(async () => {
+      submits++;
+      return runAdmittedModalPartWith(sql, part("new"), noGpu);
+    }, signal), { status: 409 });
+    assert.equal(submits, 1);
+    assert.equal((await ticket()).charged, 7);
+  });
+
+  it("đối soát suất Modal đã quyết toán kể cả khi phụ đề tạm đã hết hạn", async () => {
+    await runAdmittedModalPartWith(sql, part("settled"), async () => ({ segments: SEG, tokens: 7 }));
+    await sql`update work_admissions set status = 'unknown' where user_id = 'k'`;
+    await sql`delete from run_modal_parts where ticket_id = 't1' and part_hash = 'settled'`;
+    await sql`insert into run_modal_settlements (attempt, ticket_id, part_hash, status)
+      values ('lost-attempt', 't1', 'lost-part', 'mat-phan-hoi')`;
+    await sql`insert into work_admissions (id, user_id, provider, model, lane, status, ref)
+      values ('lost-k', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'unknown', 'modal:t1:lost-part:lost-attempt')`;
+    assert.equal((await sweepAdmissions(sql)).resolved, 1);
+    const leases = await sql<{ status: string }>`select status from work_admissions order by status`;
+    assert.deepEqual(leases.map((row) => row.status), ["resolved", "unknown"]);
+    const audit = await sql<{ note: string }>`select note from room_audit where action = 'tu-doi-soat-suat' and target_id = 'k'`;
+    assert.equal(JSON.parse(audit.at(-1)!.note).evidence, "run_modal_settlements:xong");
+    assert.equal((await ticket()).charged, 7);
+  });
+
+  it("hết lượt chờ và hủy chờ đều dừng gửi", async () => {
+    const controller = new AbortController();
+    const busy = { kind: "busy", message: "Hết suất.", retryAfter: 1 } as const;
+    let submits = 0;
+    const submit = async () => { submits++; return busy; };
+    await assert.rejects(submitModalChunk(submit, controller.signal, undefined, async (ms) => {
+      assert.equal(ms, 2000);
+    }), /Hết suất/);
+    assert.equal(submits, 31);
+    await assert.rejects(submitModalChunk(submit, controller.signal, undefined, async () => {
+      controller.abort();
+    }), { name: "AbortError" });
+    assert.equal(submits, 32);
   });
 });

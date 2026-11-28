@@ -4,9 +4,10 @@
  */
 import { roomTicketId } from "@/lib/sub/room-ticket";
 import type { ChunkAsr } from "./types";
+import { DEFAULT_MODAL_USER_PARALLEL, submitModalChunk } from "@/lib/sub/tyzo-modal";
 
-/** Tối đa 9 đoạn cùng lúc (gói Modal Starter cho 10 GPU, chừa 1 cho máy mô hình chữ). */
-export const TYZO_PARALLEL = 9;
+/** Khớp trần mặc định mỗi tài khoản. Trần toàn dịch vụ vẫn do máy chủ quản lý. */
+export const TYZO_PARALLEL = DEFAULT_MODAL_USER_PARALLEL;
 
 /** Đọc đoạn âm thanh thành base64. Kiểm toán R6-009: khách bấm hủy thì dừng đọc ngay, báo AbortError. */
 function toBase64(blob: Blob, signal?: AbortSignal): Promise<string> {
@@ -44,7 +45,17 @@ export const tyzoAsr: ChunkAsr = {
     const audio = await toBase64(input.packed.wav?.() ?? input.packed.blob, input.signal);
     const { callTyzoModal } = await import("@/lib/tyzo-modal-call");
     const profile = input.model === "tyzo-modal-ky" ? "ky" : "nhanh";
-    const result = await callTyzoModal({ data: { ticket: room, audio, language: input.language, profile }, signal: input.signal });
+    const result = await submitModalChunk(
+      async () => {
+        const response = await callTyzoModal({
+          data: { ticket: room, audio, language: input.language, profile, waitForSlot: true },
+          signal: input.signal,
+        });
+        return "kind" in response ? response : { kind: "ready", value: response };
+      },
+      input.signal,
+      input.onWait,
+    );
     return { segments: result.segments, language: input.language || undefined, words: undefined };
   },
 };

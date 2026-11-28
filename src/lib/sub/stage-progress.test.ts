@@ -23,7 +23,7 @@ test("đang nhận dạng và dịch song song", () => {
   assert.deepEqual(r.stages.map((s) => s.state), ["done", "active", "active", "wait"]);
   assert.equal(r.stages[1].text, "5/10 đoạn");
   assert.equal(r.stages[2].text, "20/40 câu");
-  assert.equal(r.percent, 5 + 8 + 35);
+  assert.equal(r.percent, 30);
 });
 
 test("xong, không phải sửa: bước sửa lại ghi Không cần, 100%", () => {
@@ -43,6 +43,18 @@ test("bị hủy giữa chừng: không giai đoạn nào đang chạy", () => {
   const r = computeStages({ ...base, partsTotal: 10, partsDone: 4, segsTotal: 12, segsDone: 12 });
   assert.equal(r.active, null);
   assert.equal(r.stages[1].state, "wait");
+  assert.equal(r.stages[2].state, "wait");
+  assert.equal(r.stages[3].state, "wait");
+  assert.equal(r.percent, 39);
+});
+
+test("sáu đoạn: bị chặn lúc 0/6 vẫn ở 5%, kết thúc mới lên 100%", () => {
+  const blocked = computeStages({ ...base, partsTotal: 6 });
+  assert.equal(blocked.stages[1].text, "0/6 đoạn");
+  assert.equal(blocked.percent, 5);
+  const complete = computeStages({ ...base, partsTotal: 6, partsDone: 6, segsTotal: 12, segsDone: 12 });
+  assert.equal(complete.stages[1].text, "6/6 đoạn");
+  assert.equal(complete.percent, 100);
 });
 
 test("Alibaba: bỏ qua bước cắt", () => {

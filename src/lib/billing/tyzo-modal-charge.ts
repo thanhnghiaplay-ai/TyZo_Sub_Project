@@ -9,6 +9,7 @@
  * và khách đóng phiếu lúc đoạn còn chạy thì đoạn cuối xong mới đóng (closeTokenWith).
  */
 import type { Sql } from "../db.ts";
+import type { ModalAdmissionResult } from "../sub/tyzo-modal.ts";
 import { randomBytes } from "node:crypto";
 import { inTransaction } from "../db-tx.ts";
 import { LEASE_STALE, boundedBeat, startBeat } from "./work-lease.ts";
@@ -34,13 +35,32 @@ export async function runAdmittedModalPartWith(
     beatMs?: number;
   },
   recognize: (price: string, attempt: string) => Promise<{ segments: ModalPartResult["segments"]; tokens: number }>,
-): Promise<ModalPartResult> {
-  const { withWorkAdmission } = await import("./work-admission.ts");
-  return withWorkAdmission(
-    sql,
-    { userId: input.userId, provider: "tyzo-modal", model: input.model, lane: "modal" },
-    (admission) => runModalPartWith(sql, { ...input, admissionId: admission.id }, recognize),
-  );
+): Promise<ModalAdmissionResult<ModalPartResult>> {
+  // A completed part is a read. It needs no capacity and can be recovered even while other
+  // calls are being reconciled or the ticket is closing.
+  const saved = await sql<{ segments: string; tokens: number }>`
+    select p.segments, p.tokens from run_modal_parts p
+    join run_tickets t on t.id = p.ticket_id
+    where t.id = ${input.ticket} and t.user_id = ${input.userId} and t.asr_model = ${input.model} and t.unit = 'token'
+      and p.part_hash = ${input.partHash} and p.status = 'xong' and p.segments is not null
+      and p.created_at >= now() - interval '24 hours'`;
+  if (saved[0]) {
+    return { kind: "ready", value: {
+      segments: JSON.parse(saved[0].segments), tokens: saved[0].tokens, short: 0, reused: true,
+    } };
+  }
+  const { AdmissionBusy, withWorkAdmission } = await import("./work-admission.ts");
+  try {
+    const value = await withWorkAdmission(
+      sql,
+      { userId: input.userId, provider: "tyzo-modal", model: input.model, lane: "modal" },
+      (admission) => runModalPartWith(sql, { ...input, admissionId: admission.id }, recognize),
+    );
+    return { kind: "ready", value };
+  } catch (error) {
+    if (!(error instanceof AdmissionBusy) || error.status !== 429) throw error;
+    return { kind: "busy", retryAfter: error.retryAfter, message: error.message };
+  }
 }
 
 export async function runModalPartWith(
@@ -94,6 +114,7 @@ export async function runModalPartWith(
   const rawNeed = input.estimateTokens(price);
   if (!Number.isFinite(rawNeed) || rawNeed <= 0 || !Number.isFinite(seconds) || seconds <= 0) {
     await sql`delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
+    await closeIfWantedWith(sql, ticket, userId);
     throw new Error("Ước tính đoạn nhận dạng không hợp lệ.");
   }
   const need = Math.ceil(rawNeed);
@@ -111,6 +132,7 @@ export async function runModalPartWith(
     returning 1`;
   if (!took.length) {
     await sql`delete from run_modal_parts where ticket_id = ${ticket} and part_hash = ${partHash} and attempt = ${attempt}`;
+    await closeIfWantedWith(sql, ticket, userId);
     throw new Error("Phiếu Modal đã hết, đã đóng hoặc không còn đủ Token cho đoạn này.");
   }
 

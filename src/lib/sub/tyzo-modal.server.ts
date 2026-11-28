@@ -45,6 +45,7 @@ export async function recognizeModalWav(
   const payload = modalRequest(token, Buffer.from(audio).toString("base64"), language, profile);
   let dispatched = false;
   let complete = false;
+  let polling = false;
   try {
     dispatched = true;
     let response = await fetch(url, {
@@ -55,6 +56,7 @@ export async function recognizeModalWav(
       signal: deadline,
     });
     while (response.status === 303) {
+      polling = true;
       const location = response.headers.get("location");
       if (!location) throw new Error("Modal thiếu địa chỉ lấy kết quả.");
       const next = new URL(location, response.url);
@@ -71,7 +73,8 @@ export async function recognizeModalWav(
       response = await fetch(next, { headers: auth, redirect: "manual", signal: deadline });
     }
     if (!response.ok) {
-      complete = definitiveProviderRejection(response.status);
+      // A rejection while fetching a result says nothing about whether the original POST ran.
+      complete = !polling && definitiveProviderRejection(response.status);
       throw new ModalHttpError(response.status);
     }
     const result = await response.json();

@@ -102,8 +102,9 @@ export function createRecognizer(ctx: RecognizeContext) {
     j.note = "đang chuẩn bị";
     const asrTestNote = asrTestLabel(readAsrTest());
     if (asrTestNote) say(`Chế độ thử nhận dạng đang bật: ${asrTestNote}. Mở lại app với ?asrtest=off để tắt.`);
+    let stopped = false;
     const worker = async () => {
-      for (;;) {
+      while (!stopped) {
         throwIfAborted(signal);
         if (my !== j.runId) return;
         while (j.asrBuf.has(next)) next++;
@@ -159,7 +160,20 @@ export function createRecognizer(ctx: RecognizeContext) {
         applyReady();
       }
     };
-    await Promise.all(Array.from({ length: (() => { const runner = asrRunnerOf(asrModel); return runner.intake === "chunks" && runner.parallel ? Math.min(runner.parallel, j.parts.length) : Math.max(1, threads); })() }, worker));
+    const runner = asrRunnerOf(asrModel);
+    const parallel = runner.intake === "chunks" && runner.parallel ? Math.min(runner.parallel, j.parts.length) : Math.max(1, threads);
+    if (runner.id === "tyzo-modal") {
+      // A sent Modal segment can complete and be charged after the browser aborts its request.
+      // Stop assigning new chunks on error and collect the results already in flight.
+      let firstFailure: { error: unknown } | undefined;
+      await Promise.all(Array.from({ length: parallel }, () => worker().catch((error: unknown) => {
+        stopped = true;
+        firstFailure ??= { error };
+      })));
+      if (firstFailure) throw firstFailure.error;
+    } else {
+      await Promise.all(Array.from({ length: parallel }, worker));
+    }
     const swappedN = j.langEvents.filter((e) => e.swapped).length;
     if (swappedN) say(`Đã nhận dạng lại ${swappedN} đoạn có ngôn ngữ khác ngôn ngữ đã chọn.`);
     await retryDecodeFails();

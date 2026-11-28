@@ -28,6 +28,12 @@ export async function pgliteSql(): Promise<Sql> {
   const db = new PGlite();
   for (const file of migrationFiles()) await db.exec(readFileSync(new URL(file, MIGRATIONS), "utf8"));
   const sql = wrap(async (text, params) => (await db.query(text, params)).rows);
+  // Raw, unparameterized test SQL can contain a migration or a fixture script.
+  // PGlite's prepared query protocol accepts only one statement.
+  sql.query = async <T>(text: string, params: unknown[] = []) => {
+    if (params.length) return (await db.query<T>(text, params)).rows;
+    return (await db.exec(text)).at(-1)?.rows as T[] ?? [];
+  };
   sql.begin = (fn, signal) =>
     db.transaction(async (t) => {
       signal?.throwIfAborted();

@@ -316,6 +316,7 @@ describe("Bước 7.3 — không giật khi chọn file và khi báo trạng th�
       false,
     );
     assert.match(source, /role="status"/);
+    assert.match(source, /app\.isError \? \([\s\S]*?<p role="alert" className="[^"]*whitespace-normal break-words[^"]*">\s*\{statusText\}/);
     assert.match(source, /line-clamp-2 h-10/);
     assert.match(source, /showModal\(\)/);
     assert.match(source, /currentTarget\.blur\(\)/);

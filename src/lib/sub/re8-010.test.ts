@@ -4,11 +4,14 @@
  * lỗi không lộ giá trị; bí mật không xuất hiện ở mã khách, Android hay kho.
  */
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { readFileSync } from "node:fs";
 import { after, beforeEach, describe, it } from "node:test";
-import { modalProxyHeaders, recognizeModalWav } from "./tyzo-modal.server.ts";
+import { UncertainUpstreamError } from "../billing/upstream-outcome.ts";
+import { modalProxyHeaders, recognizeModalWav, isTransientModalError } from "./tyzo-modal.server.ts";
 
+const exec = promisify(execFile);
 const KEY = "wk-fixture-key-123";
 const SECRET = "ws-fixture-secret-456";
 const PRICE = { gpuUsdPerHour: 0.8, overhead: 3 };
@@ -70,6 +73,27 @@ describe("RE8-010 · header proxy Modal phía máy chủ", () => {
     await assert.rejects(run(), (e: Error) => /HTTP 401/.test(e.message) && e.constructor.name === "ModalHttpError");
   });
 
+  it("chỉ 429 của POST đầu là từ chối có thể thử gửi lại", async () => {
+    globalThis.fetch = (async () => new Response(null, { status: 429 })) as typeof fetch;
+    await assert.rejects(run(), isTransientModalError);
+  });
+
+  for (const status of [401, 404, 429]) {
+    it(`HTTP ${status} khi hỏi kết quả 303 cần đối soát và không được gửi lại POST`, async () => {
+      const methods: string[] = [];
+      globalThis.fetch = (async (_url: URL, init?: RequestInit) => {
+        methods.push(init?.method ?? "GET");
+        if (init?.method !== "POST") return new Response(null, { status });
+        const redirect = new Response(null, { status: 303, headers: { location: "/result/abc" } });
+        Object.defineProperty(redirect, "url", { value: "https://tyzo--asr-run.modal.run" });
+        return redirect;
+      }) as typeof fetch;
+      await assert.rejects(run(), (error: unknown) =>
+        error instanceof UncertainUpstreamError && !isTransientModalError(error));
+      assert.deepEqual(methods, ["POST", "GET"]);
+    });
+  }
+
   it("cấu hình dở dang hoặc sai dạng: lỗi trước khi gọi GPU, thông báo không chứa giá trị", async () => {
     fakeModal(0);
     for (const env of [{ TYZO_PROXY_KEY: KEY }, { TYZO_PROXY_SECRET: SECRET }, { TYZO_PROXY_KEY: "wk bad", TYZO_PROXY_SECRET: SECRET },
@@ -88,17 +112,18 @@ describe("RE8-010 · header proxy Modal phía máy chủ", () => {
     assert.ok(check > 0 && check < src.indexOf("runModalPartWith(sql"), "kiểm trước runModalPartWith");
   });
 
-  it("bí mật chỉ ở phía máy chủ: không có trong mã khách, Android, workflow hay giá trị thật trong kho", () => {
+  it("bí mật chỉ ở phía máy chủ: không có trong mã khách, Android, workflow hay giá trị thật trong kho", async () => {
     const root = new URL("../../../", import.meta.url).pathname;
-    const hits = execFileSync("git", ["-C", root, "grep", "-l", "TYZO_PROXY_"], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
+    const { stdout } = await exec("git", ["-C", root, "grep", "-l", "TYZO_PROXY_", "--", ".", ":(exclude)graphify-out/**"]);
+    const hits = stdout.trim().split("\n").filter(Boolean);
     const allowed = /^(src\/lib\/sub\/tyzo-modal\.server\.ts|src\/lib\/sub\/re8-010\.test\.ts|eval\/asr\/luong-ky\/modal\/(modal_auth|modal_app|test_modal_auth)\.py|eval\/asr\/luong-ky\/modal\/cau-hinh\.json|eval\/asr\/luong-ky\/pml\.py|deploy\/modal\/tyzo-ai\.sh|deploy\/vps\/do-modal\/do-modal\.py|docs\/.*)$/;
     assert.deepEqual(hits.filter((f) => !allowed.test(f)), [], "chỉ mã máy chủ, script quản trị và hồ sơ được nhắc tới");
     assert.ok(!hits.some((f) => f.startsWith("android/") || /\.tsx$/.test(f) || f.startsWith(".github/")));
     let values = "";
     try {
-      values = execFileSync("git", ["-C", root, "grep", "-nE", "TYZO_PROXY_(KEY|SECRET)=(wk|ws)-"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+      values = (await exec("git", ["-C", root, "grep", "-nE", "TYZO_PROXY_(KEY|SECRET)=(wk|ws)-"])).stdout.trim();
     } catch (e) {
-      if ((e as { status?: number }).status !== 1) throw e; // git grep trả 1 = không có dòng nào khớp (đúng mong muốn)
+      if ((e as { code?: number }).code !== 1) throw e; // git grep trả 1 = không có dòng nào khớp (đúng mong muốn)
     }
     assert.equal(values, "", "không có giá trị token thật trong kho");
   });

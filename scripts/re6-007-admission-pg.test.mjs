@@ -124,7 +124,7 @@ pgTest("RE6-007: đo độ trễ theo số khách chờ (0/1k/5k) và đồng th
   bench.byWaiters = {};
   for (const w of [0, 1000, 5000]) {
     await q("delete from work_waiters"); await q("delete from work_admissions");
-    await limits({ perModel: 0 > 1 ? 1 : 24 });
+    await limits({ perModel: 24 });
     // Khách chờ chung lane batch, nhà p2 đã đầy model → duyệt hết vòng lặp mà không ai giữ chỗ (trường hợp xấu nhất).
     await running("p2", "m2", "batch", 24);
     if (w) await seedWaiters(w, { provider: "p2", model: "m2", lane: "batch" });

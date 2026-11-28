@@ -25,7 +25,7 @@ function abortError() {
   return error;
 }
 
-function defaultSleep(ms: number, signal: AbortSignal): Promise<void> {
+export function abortableSleep(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) return reject(abortError());
     const onAbort = () => {
@@ -49,7 +49,7 @@ export function isTransientNetworkError(error: unknown): boolean {
 }
 
 export async function pollUntilDone<T>(options: PollLoopOptions<T>): Promise<{ state: "done" } & T> {
-  const sleep = options.sleep ?? defaultSleep;
+  const sleep = options.sleep ?? abortableSleep;
   const now = options.now ?? Date.now;
   const maxRetries = options.maxNetworkRetries ?? 5;
   const started = now();
