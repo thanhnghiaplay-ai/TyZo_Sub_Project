@@ -1,4 +1,4 @@
-# Bàn giao sau RE6-007 · Medium
+# Bàn giao sau RE7 · Medium
 
 Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `work` và `audit/v5.49.7-codex-re6`). Bản RE6-003 chưa push của Codex không có trên remote, nên RE6-003 đã được làm lại từ đầu. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu SHA trên GitHub.
 
@@ -11,6 +11,11 @@ Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `
 | RE6-005 | PARTIAL | [RE6-005](RE6-005/REPORT.md) |
 | RE6-006 | PASS_LOCAL | [RE6-006](RE6-006/REPORT.md) |
 | RE6-007 | PASS_LOCAL (không tối ưu) | [RE6-007](RE6-007/REPORT.md) |
+| RE7-001 | PASS_LOCAL (hạn chót tổng, giới hạn phản hồi Modal) | [RE7](RE7/REPORT.md) |
+| RE7-002 | PASS_LOCAL (tiền model 0 ≠ thiếu) | [RE7](RE7/REPORT.md) |
+| RE7-003 | PASS_LOCAL (chỉ tính phụ đề có chữ) | [RE7](RE7/REPORT.md) |
+| RE7-004 | POLICY_PENDING (phương án B, chưa nối) | [RE7](RE7/REPORT.md) |
+| R8-002 | PASS bằng user thường | [RE7](RE7/test-summary.txt) |
 | RE6-008 | Chưa làm, cần **High** | — |
 | RE6-009 | Chưa làm (Medium, sau RE6-008) | — |
 | RE6-010 | Chưa làm, cần **Low** | — |
@@ -19,6 +24,6 @@ Hồi quy toàn phần: [REGRESSION.md](REGRESSION.md). Hồ sơ cho kiểm toá
 
 Việc chờ Chủ:
 - Duyệt chính sách RE6-001.
-- Quyết cách xử lý tên riêng chữ Hán, kana, Hangul trong bản dịch Việt/Anh (RE6-005).
+- Chọn phương án A/B/C/D cho tên riêng CJK (RE7-004, khuyến nghị B + chỉ lọc câu chốt).
 - Duyệt staging Vercel thật (RE6-003), Modal thật (RE6-004) và live thật (RE6-005).
 - Chuyển sang mức High để làm RE6-008.
