@@ -220,9 +220,9 @@
     "location": "android/app/src/main/java/vn/tyzo/sub/Updater.kt",
     "hypothesis": "R3-006: receiver đăng ký sau enqueue, không truy vấn lại khi lỡ tin tải xong → kẹt «Đang tải…»",
     "acceptance": "Sửa theo ACCEPTANCE_PLAN (D4), cần Android SDK/CI + thiết bị, nâng versionCode.",
-    "status": "BUILD_PASS_DEVICE_BLOCKED",
+    "status": "BUILD_PASS_RELEASED_DEVICE_BLOCKED",
     "evidence": "RE8-007/REPORT.md",
-    "remaining": "Chủ tự kiểm theo RE8-007/CHECKLIST_DIEN_THOAI.md (U1–U7, A1–A6); APK thử là artifact CI, chưa phát hành."
+    "remaining": "Đã phát hành android-v0.14 qua main (SHA256 1502996f…). Còn: checklist thiết bị thật CHECKLIST_DIEN_THOAI.md."
   },
   {
     "id": "RE8-008",

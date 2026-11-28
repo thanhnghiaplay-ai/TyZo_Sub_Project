@@ -1,4 +1,7 @@
-# Bàn giao sau RE8-010/011 · Medium
+# Bàn giao sau khi đẩy main `5742608` · Medium
+
+**`main` = `5742608`** (Chủ duyệt). Hệ quả: migration 0059 chạy trên production (cần Chủ xem log Vercel), web production deploy, **android-v0.14 đã phát hành**. Báo cáo kiểm toán: [MAIN-5742608/CHATGPT_AUDIT.md](MAIN-5742608/CHATGPT_AUDIT.md).
+
 
 Nhánh `ccr-654dbe0e-978ok7`, phát triển từ `c0bcf6f` (RE6-002, có trên `work` và `audit/v5.49.7-codex-re6`). Bản RE6-003 chưa push của Codex không có trên remote, nên RE6-003 đã được làm lại từ đầu. Checkpoint hiện tại là commit chứa tệp này, cần đối chiếu SHA trên GitHub.
 

@@ -1,0 +1,88 @@
+nodes 6966 -> 7510  edges 19199 -> 20226  communities 266 -> 304
+files new 68
+ + android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt 19
+ + android/tools/update-check/UpdateFlowCheck.kt 12
+ + deploy/vps/do-live/chay-direct.sh 2
+ + deploy/vps/do-live/chay.sh 2
+ + deploy/vps/do-live/do-live-direct.ts 12
+ + deploy/vps/do-live/do-live.ts 7
+ + deploy/vps/do-live/live-measure.ts 10
+ + deploy/vps/do-modal/do-modal.py 17
+ + deploy/vps/do-modal/test_do_modal.py 24
+ + docs/kiem-toan/v5.49.6/GPU-MODAL/REPORT.md 4
+ + docs/kiem-toan/v5.49.6/LIVE/REPORT.md 6
+ + docs/kiem-toan/v5.49.6/RE4-001/REPORT.md 2
+ + docs/kiem-toan/v5.49.6/RE4-001/usage-real.ts 6
+ + docs/kiem-toan/v5.49.6/RE5-004/NEON-FENCE-STAGING.md 6
+ + docs/kiem-toan/v5.49.6/RE5-006/REPORT.md 2
+ + docs/kiem-toan/v5.49.7/CHATGPT_AUDIT.md 13
+ + docs/kiem-toan/v5.49.7/HANDOFF.md 2
+ + docs/kiem-toan/v5.49.7/NEXT_PROMPT.md 1
+ + docs/kiem-toan/v5.49.7/RE6-001/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE6-002/REPORT.md 5
+ + docs/kiem-toan/v5.49.7/RE6-003/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE6-004/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE6-005/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE6-006/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE6-007/REPORT.md 5
+ + docs/kiem-toan/v5.49.7/RE6-008/REPORT.md 8
+ + docs/kiem-toan/v5.49.7/RE6-009/ACCEPTANCE_PLAN.md 9
+ + docs/kiem-toan/v5.49.7/RE6-009/REPORT.md 7
+ + docs/kiem-toan/v5.49.7/RE7/REPORT.md 13
+ + docs/kiem-toan/v5.49.7/RE8-001/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE8-001/sim-table.md 1
+ + docs/kiem-toan/v5.49.7/RE8-007/CHECKLIST_DIEN_THOAI.md 6
+ + docs/kiem-toan/v5.49.7/RE8-007/REPORT.md 7
+ + docs/kiem-toan/v5.49.7/RE8-008/REPORT.md 8
+ + docs/kiem-toan/v5.49.7/RE8-010/HUONG_DAN.md 12
+ + docs/kiem-toan/v5.49.7/RE8-010/REPORT.md 6
+ + docs/kiem-toan/v5.49.7/RE8-011/REPORT.md 7
+ + docs/kiem-toan/v5.49.7/RE8-011/bang-chi-phi.md 12
+ + docs/kiem-toan/v5.49.7/RE8-011/bang-ket-hop.md 2
+ + docs/kiem-toan/v5.49.7/RE8-REST/REPORT.md 8
+ + docs/kiem-toan/v5.49.7/REGRESSION.md 8
+ + eval/asr/luong-ky/modal/gpu_limits.py 12
+ + eval/asr/luong-ky/modal/modal_auth.py 6
+ + eval/asr/luong-ky/modal/test_gpu_limits.py 8
+ + eval/asr/luong-ky/modal/test_modal_auth.py 23
+ + scripts/gpu-pricing.mjs 13
+ + scripts/gpu-sim.mjs 9
+ + scripts/re6-003-vercel.test.mjs 2
+ + scripts/re6-004-do-modal.test.mjs 1
+ + scripts/re6-005-live-measure.test.mjs 4
+ + scripts/re6-007-admission-pg.test.mjs 11
+ + scripts/re6-migrations-pg.test.mjs 8
+ + scripts/re8-001-gpu-sim.test.mjs 2
+ + scripts/re8-008-gpu-limits.test.mjs 1
+ + scripts/re8-010-modal-auth.test.mjs 1
+ + scripts/re8-011-gpu-pricing.test.mjs 1
+ + scripts/vercel-fake-harness.mjs 8
+ + src/components/chat-reconciliation-board.tsx 5
+ + src/lib/admin/chat-reconciliation-room.ts 3
+ + src/lib/billing/chat-obligations.ts 3
+ + src/lib/billing/chat-reconciliation.ts 7
+ + src/lib/billing/re6-008.test.ts 19
+ + src/lib/billing/re6-009.test.ts 12
+ + src/lib/live/leftover-script.test.ts 1
+ + src/lib/live/leftover-script.ts 6
+ + src/lib/live/name-policy.test.ts 3
+ + src/lib/live/name-policy.ts 8
+ + src/lib/sub/re8-010.test.ts 6
+files removed 0
+files changed node count 15
+ ~ deploy/vps/tyzo.sh 106 -> 118
+ ~  219 -> 229
+ ~ src/lib/billing/run-gate.ts 17 -> 27
+ ~ android/app/src/main/java/vn/tyzo/sub/Updater.kt 7 -> 16
+ ~ scripts/re3-restore-pg.test.mjs 13 -> 16
+ ~ scripts/re5-004-vercel.test.mjs 4 -> 1
+ ~ eval/asr/luong-ky/pml.py 41 -> 43
+ ~ docs/kiem-toan/v5.49.6/HANDOFF.md 10 -> 12
+ ~ docs/lich-su/CHANGELOG-cu.md 218 -> 220
+ ~ src/lib/billing/modal-work.ts 4 -> 6
+ ~ deploy/modal/tyzo-ai.sh 38 -> 39
+ ~ src/lib/billing/gate-reserve.test.ts 7 -> 8
+ ~ src/lib/sub/tyzo-modal.server.ts 5 -> 6
+ ~ scripts/re2-restore.test.mjs 5 -> 6
+ ~ .github/workflows/android-thu.yml 48 -> 49
+edge confidence after {'EXTRACTED': 19364, 'INFERRED': 862}

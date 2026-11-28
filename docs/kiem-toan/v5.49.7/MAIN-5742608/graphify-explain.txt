@@ -1,0 +1,87 @@
+=== recoverModalSpend
+Node: recoverModalSpend()
+  ID:        src_lib_billing_modal_work_recovermodalspend
+  Source:    src/lib/billing/modal-work.ts L59
+  Type:      code
+  Community: re6-009.test.ts
+  Degree:    7
+
+Connections (7):
+  <-- re6-009.test.ts [imports] [EXTRACTED] src/lib/billing/re6-009.test.ts:L14
+  <-- modal-work.ts [contains] [EXTRACTED] src/lib/billing/modal-work.ts:L59
+  --> recordSpendDurablyWith() [calls] [EXTRACTED] src/lib/billing/modal-work.ts:L77
+  <-- modalPartWork() [calls] [EXTRACTED] src/lib/billing/modal-work.ts:L48
+  <-- recoverModalSpendNow() [calls] [EXTRACTED] src/lib/billing/modal-work.ts:L95
+  <-- 1. Ghi nhận chi phí GPU (PASS_LOCAL) [references] [INFERRED 0.95] docs/kiem-toan/v5.49.7/RE6-009/REPORT.md:L11
+  <-- Phục hồi chứng từ GPU khi lượt Modal CUỐI bị crash: PASS_LOCAL (mã `1202352`) [references] [INFERRED 0.95] docs/kiem-toan/v5.49.7/RE8-REST/REPORT.md:L10
+=== modalProxyHeaders
+Node: modalProxyHeaders()
+  ID:        src_lib_sub_tyzo_modal_server_modalproxyheaders
+  Source:    src/lib/sub/tyzo-modal.server.ts L13
+  Type:      code
+  Community: tyzo-modal.server.ts
+  Degree:    4
+
+Connections (4):
+  <-- tyzo-modal.server.ts [contains] [EXTRACTED] src/lib/sub/tyzo-modal.server.ts:L13
+  <-- re8-010.test.ts [imports] [EXTRACTED] src/lib/sub/re8-010.test.ts:L10
+  <-- recognizeModalWav() [calls] [EXTRACTED] src/lib/sub/tyzo-modal.server.ts:L43
+  <-- Thay đổi [references] [INFERRED 0.95] docs/kiem-toan/v5.49.7/RE8-010/REPORT.md:L23
+=== readChatUsage
+Node: readChatUsage()
+  ID:        src_lib_billing_run_gate_readchatusage
+  Source:    src/lib/billing/run-gate.ts L34
+  Type:      code
+  Community: run-gate.ts
+  Degree:    5
+
+Connections (5):
+  <-- run-gate.ts [contains] [EXTRACTED] src/lib/billing/run-gate.ts:L34
+  <-- re6-008.test.ts [imports] [EXTRACTED] src/lib/billing/re6-008.test.ts:L16
+  <-- chargeWith() [calls] [EXTRACTED] src/lib/billing/run-gate.ts:L577
+  <-- Thay đổi (`src/lib/billing/run-gate.ts`) [references] [INFERRED 0.95] docs/kiem-toan/v5.49.7/RE6-008/REPORT.md:L24
+  --> reportedChatTokens() [calls] [EXTRACTED] src/lib/billing/run-gate.ts:L37
+=== tidyLiveText
+Node: tidyLiveText()
+  ID:        src_lib_live_leftover_script_tidylivetext
+  Source:    src/lib/live/leftover-script.ts L19
+  Type:      code
+  Community: do-live.ts
+  Degree:    9
+
+Connections (9):
+  <-- live/live-bridge.ts [imports] [EXTRACTED] src/lib/live/live-bridge.ts:L24
+  <-- runSession() [calls] [EXTRACTED] src/lib/live/live-bridge.ts:L567
+  <-- re6-005-live-measure.test.mjs [imports] [EXTRACTED] scripts/re6-005-live-measure.test.mjs:L9
+  <-- name-policy.test.ts [imports] [EXTRACTED] src/lib/live/name-policy.test.ts:L4
+  <-- leftover-script.ts [contains] [EXTRACTED] src/lib/live/leftover-script.ts:L19
+  <-- leftover-script.test.ts [imports] [EXTRACTED] src/lib/live/leftover-script.test.ts:L3
+  --> keepsSourceScript() [calls] [EXTRACTED] src/lib/live/leftover-script.ts:L20
+  <-- D · Hướng dẫn tên riêng (`src/lib/live/name-policy.ts`) [references] [INFERRED 0.95] docs/kiem-toan/v5.49.7/RE7/REPORT.md:L78
+  <-- A · Không lọc làm mất nội dung [references] [INFERRED 0.95] docs/kiem-toan/v5.49.7/RE7/REPORT.md:L53
+=== UpdateFlow
+Node: UpdateFlow
+  ID:        android_app_src_main_java_vn_tyzo_sub_updateflow_updateflow
+  Source:    android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt L9
+  Type:      code
+  Community: UpdateFlow
+  Degree:    10
+
+Connections (10):
+  <-- .apply() [references] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/Updater.kt:L116
+  --> .decide() [method] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L36
+  --> Dl [contains] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L11
+  --> Step [contains] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L13
+  <-- .query() [references] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/Updater.kt:L34
+  --> .message() [method] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L49
+  <-- .apply() [references] [EXTRACTED] android/tools/update-check/UpdateFlowCheck.kt:L26
+  --> .fromCode() [method] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L26
+  --> .accepts() [method] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L47
+  <-- UpdateFlow.kt [contains] [EXTRACTED] android/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt:L9
+=== proxy_headers
+Ambiguous: 'proxy_headers' matches 2 nodes in different files.
+  eval/asr/luong-ky/pml.py
+    id: eval_asr_luong_ky_pml_proxy_headers
+  eval/asr/luong-ky/modal/modal_auth.py
+    id: eval_asr_luong_ky_modal_modal_auth_proxy_headers
+Retry with path::symbol using one of the paths above (e.g. <path>::_proxy_headers()) or the full node id.

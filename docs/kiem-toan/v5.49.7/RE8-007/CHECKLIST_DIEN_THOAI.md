@@ -1,6 +1,6 @@
-# Checklist tự kiểm trên điện thoại · APK thử 0.14 (RE8-007 / R3-006 và lỗi Android tồn đọng)
+# Checklist tự kiểm trên điện thoại · APK 0.14 (RE8-007 / R3-006 và lỗi Android tồn đọng)
 
-**Bản thử, không phải bản phát hành.** Chỉ cài trên điện thoại của Chủ, không gửi khách.
+**Cập nhật 28/11/2026:** Chủ đã đẩy `main`, nên **0.14 đã phát hành chính thức**. Dùng bản phát hành: https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/releases/download/android-v0.14/tyzo-sub.apk, SHA256 `1502996fcfae9a81f0c75ecb35a960eefe5004080611bff4f03637fc7d8e0bdc`. Các bước tải artifact ở mục 1 chỉ còn dùng cho bản thử trên nhánh.
 
 ## 1. Tải APK thử
 
