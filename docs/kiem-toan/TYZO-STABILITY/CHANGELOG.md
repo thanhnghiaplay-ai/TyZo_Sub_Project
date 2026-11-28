@@ -8,3 +8,4 @@
 - fix(TZ-008): nút bắt đầu báo «Đang chuẩn bị…» và khóa trong lúc chuẩn bị (use-pipeline.ts, studio.tsx); test src/components/start-gate.test.ts.
 - docs: TZ-010 chạy semgrep, dependency-cruiser; rà tĩnh quyền endpoint GPU (B-12). Không đổi mã.
 - fix(TZ-002/B-14): lane batch gắn ref chỉ khi suất còn running và dừng trước khi gửi nếu mất; sweep nhả suất batch unknown không ref; test batch-admission.test.ts.
+- docs: TZ-012 build vite PASS_LOCAL, check:layout chạy được (22 lỗi có sẵn trên baseline, B-15); TZ-013 rà độc lập diff mã, không thấy lỗi mới. Không đổi mã.
