@@ -13,3 +13,6 @@ kotlinc "$root/app/src/main/java/vn/tyzo/sub/Session.kt" "$root"/tools/session-c
 java -cp "$scratch/session.jar:$classpath" vn.tyzo.sub.SessionCheckKt
 kotlinc "$root/app/src/main/java/vn/tyzo/sub/Api.kt" "$root"/tools/api-check/*.kt -cp "$classpath" -include-runtime -d "$scratch/api.jar"
 java -cp "$scratch/api.jar:$classpath" vn.tyzo.sub.ApiCheckKt
+# RE8-007: quyết định của trình cập nhật (UpdateFlow.kt thật) với DownloadManager giả.
+kotlinc "$root/app/src/main/java/vn/tyzo/sub/UpdateFlow.kt" "$root"/tools/update-check/*.kt -include-runtime -d "$scratch/update.jar"
+java -cp "$scratch/update.jar" vn.tyzo.sub.UpdateFlowCheckKt

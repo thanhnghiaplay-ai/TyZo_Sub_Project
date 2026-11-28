@@ -76,6 +76,7 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         handler.post(tick)
+        Updater.resume(this)   // RE8-007: lượt tải đã xong/hủy trong lúc ứng dụng không mở vẫn được xử lý
         if (prefs.linked) {
             loadMe()
             loadHistory()

@@ -19,8 +19,8 @@ android {
         // Thu âm ứng dụng khác (AudioPlaybackCapture) chỉ có từ Android 10 (API 29).
         minSdk = 29
         targetSdk = 35
-        versionCode = 13
-        versionName = "0.13"
+        versionCode = 14
+        versionName = "0.14"
         buildConfigField("String", "WEB_URL", "\"$webUrl\"")
     }
 
