@@ -52,7 +52,7 @@
     "acceptance": "Chọn model, monotonic clock, cleanup timer khi close, lỗi/thiếu mẫu tính riêng, P50/95/99 onset→render và final, corpus đa ngôn ngữ, delta/final không mất tên riêng; mock trước, real cần duyệt.",
     "status": "PARTIAL",
     "evidence": "RE6-005/REPORT.md",
-    "remaining": "Chính sách tên riêng CJK trong bản dịch chờ Chủ; đo render Web/Android thật và đo thật cần duyệt."
+    "remaining": "Tên riêng CJK: đã giải quyết bởi RE7-004 (giữ nguyên). Đo render Web/Android thật và đo thật cần duyệt."
   },
   {
     "id": "RE6-006",
@@ -136,10 +136,11 @@
     "id": "RE7-004",
     "priority": "P1",
     "effort": "Medium",
-    "location": "src/lib/live/leftover-policy.ts (chưa nối)",
+    "location": "src/lib/live/leftover-script.ts (tidyLiveText), live-bridge.ts, name-policy.ts",
     "hypothesis": "bộ lọc xóa tên riêng CJK",
-    "acceptance": "Đề xuất chính sách, test và phương án; chờ Chủ duyệt trước khi đổi hành vi.",
-    "status": "POLICY_PENDING",
-    "evidence": "RE7/REPORT.md"
+    "acceptance": "Chủ duyệt A + D + bảng thuật ngữ: không xóa CJK, ưu tiên thuật ngữ, prompt 20 cặp, không gọi AI thêm trên streaming, test giả lập delta/final.",
+    "status": "PASS_LOCAL_PROMPT_BLOCKED",
+    "evidence": "RE7/REPORT.md",
+    "remaining": "Chất lượng prompt/phiên âm và hỗ trợ trường hướng dẫn của Qwen cần phiên thật có phí; cầu nối cần cập nhật để có hiệu lực."
   }
 ]

@@ -28,3 +28,14 @@ PostgreSQL 18.7 (Docker loopback), `TYZO_TEST_PG_URL` trỏ CSDL thử đã ch�
 | R8-002 bằng user thường uid 30033 | 1/1 đạt (`RE7/test-summary.txt`) |
 
 Lỗi duy nhất khi chạy bằng root là R8-002, và test này đạt khi chạy bằng user thường. Không còn lỗi nào khác.
+
+## Lượt RE7-004 (mã ở `386660a`)
+
+PostgreSQL 18.7 (Docker loopback). Lần chạy đầu bị lỗi kết nối vì container PG đã dừng (`ECONNREFUSED`). Đã bật lại và chạy lại toàn bộ.
+
+| Lệnh | Kết quả |
+|---|---|
+| `npx tsc --noEmit -p .` | đạt |
+| `node --test 'scripts/**/*.test.mjs'` (root) | 242 đạt · 1 lỗi (R8-002, do chạy bằng root) · 38 bỏ qua |
+| Nhóm `src/lib/**` (có name-policy, leftover-script) | 1489/1489 |
+| Nhóm module-mocks (PG18.7) | 101/101 |

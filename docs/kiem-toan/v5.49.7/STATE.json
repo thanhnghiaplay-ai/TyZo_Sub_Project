@@ -1,10 +1,10 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "1b1a0e6461d20e9bb8fc77db3dee48e7b1189e40",
+  "previous_checkpoint_sha": "386660a50a865cffd78223b639675235f2deadd9",
   "effort": "Medium",
   "status": "PAUSED_FOR_EFFORT_CHANGE",
-  "completed_item": "RE7-001..004",
+  "completed_item": "RE7-004 (A + D + bảng thuật ngữ)",
   "item_status": "Medium xong",
   "tests": {
     "postgres": "18.7",
@@ -27,7 +27,7 @@
     "RE7-001": "PASS_LOCAL",
     "RE7-002": "PASS_LOCAL",
     "RE7-003": "PASS_LOCAL",
-    "RE7-004": "POLICY_PENDING",
+    "RE7-004": "PASS_LOCAL_PROMPT_BLOCKED",
     "R8-002": "PASS (user thường)"
   }
 }

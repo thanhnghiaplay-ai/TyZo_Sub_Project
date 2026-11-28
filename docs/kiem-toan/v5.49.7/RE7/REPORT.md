@@ -44,30 +44,53 @@ Chỉ `du` và `model-0` được tính là chi phí đã biết. Test bao gồm
 
 Sự kiện bị bỏ được đếm vào `emptyEvents`. Lượt chỉ có sự kiện rỗng sẽ bị đếm vào `failed.thieu-chu-goc`. Test cũng xác nhận mốc đầu là sự kiện có chữ đầu tiên, không phải sự kiện rỗng trước nó.
 
-## RE7-004 · Chính sách bảo toàn tên riêng CJK: CHỜ CHỦ DUYỆT (chưa đổi hành vi)
+## RE7-004 · Tên riêng CJK: Chủ duyệt hướng A + D + bảng thuật ngữ (28/11/2026)
 
-Phương án được soạn trong `src/lib/live/leftover-policy.ts` (`preserveLeftoverScript`), kèm test `src/lib/live/leftover-policy.test.ts`. Hàm này **chưa được nối** vào `live-bridge.ts`. Cầu nối vẫn dùng `dropLeftoverScript`, nên khách không thấy thay đổi nào.
+Đã sửa mã (`386660a`). Phần bảo toàn nội dung đạt **PASS_LOCAL**. Phần chất lượng prompt thực tế là **BLOCKED**.
 
-**Phương án đề xuất (B):** chỉ bỏ chuỗi Hán, kana hoặc Hangul **dính liền** chữ của ngôn ngữ đích, như «luôn如一». Chuỗi đứng riêng thì giữ, như «Tôi gặp 王小明 hôm qua». Có danh sách `keep` cho thuật ngữ và tên đã khai báo, luôn được giữ. Hàm báo `dropped` và `kept` để theo dõi.
+### A · Không lọc làm mất nội dung
 
-| Câu | Hiện tại | Đề xuất |
-|---|---|---|
-| Bạn phải luôn如一. | Bạn phải luôn. | Bạn phải luôn. |
-| Tôi gặp 王小明 hôm qua. | Tôi gặp hôm qua. | **giữ tên** |
-| Ca sĩ 아이유 hát. / I met 田中 in Tokyo. / Công ty ソニー ra mắt. | mất tên | **giữ tên** |
-| Xin chào 你好 bạn。 | Xin chào bạn. | Xin chào 你好 bạn. (đánh đổi) |
-| Cảm ơn ありがとう，hẹn gặp 안녕！ | Cảm ơn, hẹn gặp! | giữ cả hai từ (đánh đổi) |
+- `src/lib/live/leftover-script.ts`: bỏ `dropLeftoverScript` và thay bằng `tidyLiveText`. Hàm mới **không xóa ký tự nào**, dù chữ Hán, kana hay Hangul đứng riêng hay dính liền chữ đích.
+- Với đích không dùng chữ CJK, hàm chỉ đổi dấu câu toàn khổ sang dấu thường. Với câu đầy đủ, hàm gộp khoảng trắng thừa. Đích Trung, Nhật, Hàn và Quảng Đông giữ nguyên.
+- `live-bridge.ts` dùng `tidyLiveText` cho `translation` (text và stash) và `translation-delta`.
+- Phương án B cũ (`leftover-policy.ts`) đã bị xóa vì Chủ không chọn.
+- Khách sẽ thấy khác ở hai chỗ:
+  - «Bạn phải luôn如一» và «Tôi gặp 王小明» giờ hiện đầy đủ.
+  - Chữ gốc model chưa dịch cũng sẽ hiện, đây là đánh đổi Chủ đã chấp nhận.
+- Cầu nối trên VPS/Fly cần cập nhật thì thay đổi mới có hiệu lực. Phiên này không deploy.
 
-**Đánh đổi:** từ thường đứng riêng mà model không dịch cũng được giữ. Không có từ điển thì không phân biệt được tên với từ thường.
+### Bảng thuật ngữ
 
-**Điểm phải xử lý nếu duyệt:** delta được lọc từng mẩu nên không thấy ký tự kề ở mẩu trước. Hệ quả là delta đã ghép có thể khác câu chốt. Cần một trong hai cách: cầu nối giữ một ký tự ngữ cảnh giữa các mẩu, hoặc chỉ lọc câu chốt.
+- Đường hiện có được giữ: «Từ cần giữ đúng» → vé `words` → `translation.corpus.phrases`.
+- `namePolicyPrompt` đặt bảng thuật ngữ **đầu tiên và bắt buộc**, bỏ dòng trùng hoặc rỗng, tối đa 30 dòng như `cleanHotwords`.
+- Không mở rộng hệ thống thuật ngữ.
 
-**Các phương án khác để Chủ chọn:**
-- **A:** tắt lọc hoàn toàn. Không mất chữ nào, nhưng chữ sót quay lại.
-- **C:** phiên âm. Kana và Hangul làm được bằng thuật toán, còn chữ Hán cần từ điển (thêm thư viện).
-- **D:** sửa prompt để model tự phiên âm tên. Cách này cần đo thật, tốn phí Alibaba và cần duyệt.
+### D · Hướng dẫn tên riêng (`src/lib/live/name-policy.ts`)
 
-**Khuyến nghị:** B kết hợp chỉ lọc câu chốt cho đơn giản, và theo dõi `dropped`/`kept` một tuần trước khi cân nhắc D.
+- Có đủ 20 cặp dịch có hướng giữa Anh, Trung, Nhật, Hàn và Việt, mỗi cặp một quy ước chuẩn. Ví dụ:
+  - Trung → Việt: dùng Hán-Việt khi chắc chắn.
+  - Nhật → Anh/Việt: dùng Hepburn.
+  - Hàn → Anh/Việt: dùng Revised Romanization.
+  - Trung → Nhật: giữ nguyên chữ Hán.
+  - Nhật → Hàn: phiên âm Hangul chuẩn.
+- Mọi cặp đều có quy tắc: **không chắc thì giữ nguyên tên gốc**, không bỏ, không rút gọn, không dịch nghĩa tên.
+- **Chưa gửi lên Qwen.** Tài liệu phiên realtime mới xác nhận `translation.language` và `translation.corpus.phrases`, chưa có trường hướng dẫn tự do. Gửi trường chưa xác nhận có thể làm hỏng phiên. Test bảo đảm `buildSessionUpdate` không có `instructions`.
+- Không thêm lượt gọi AI trên đường streaming. `tidyLiveText` là hàm thuần, chạy đồng bộ.
+
+### Test với dữ liệu giả lập
+
+`src/lib/live/name-policy.test.ts` (6 ca), `leftover-script.test.ts` (6 ca) và `scripts/re6-005-live-measure.test.mjs` (10 ca) đều đạt.
+
+- **Dữ liệu:** 5 đích, gồm tên nhân vật (孫悟空, 王小明, 아이유), địa danh (北京, 부산, 東京, Hà Nội), thuật ngữ (機械学習, PlayStation 6, ChatGPT) và chữ dính liền («luôn如一»).
+- **Câu chốt và phần chờ:** chữ và số giữ nguyên.
+- **Delta:** mỗi câu được cắt thành mẩu 3 ký tự, kể cả cắt ngay giữa tên. Ghép lại không mất chữ và khớp câu chốt.
+- **Prompt:** đủ 20 cặp, mỗi cặp một quy ước, bảng thuật ngữ đứng đầu.
+
+### BLOCKED · cần Chủ duyệt chi phí
+
+- Chưa biết Qwen LiveTranslate có nhận hướng dẫn tự do hay không, và có tôn trọng `corpus.phrases` không. Ghi chú v5.49.x cũng nói «chưa thử Qwen có nhận corpus.phrases không».
+- Chưa đo chất lượng phiên âm của 20 cặp.
+- Cần chạy phiên thật trên Alibaba, có phí, với bộ câu mẫu trên.
 
 ## R8-002 bằng user thường: PASS
 

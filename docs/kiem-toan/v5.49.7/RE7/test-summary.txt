@@ -36,3 +36,34 @@ uid=30033
 ok 1 - R8-002: unreadable migrations directory fails before any database connection
 # pass 1
 # fail 0
+
+== RE7-004 (386660a)
+ok 1 - RE6-005: phân vị dùng cách làm tròn lên, không trả -Infinity khi rỗng
+ok 2 - RE6-005: lượt đủ mốc đo theo đồng hồ monotonic, tính từ lúc bắt đầu có tiếng
+ok 3 - RE6-005: cầu nối đóng sớm → dừng bộ đếm, không gửi khung sau khi đóng, lượt bị đếm là lỗi riêng
+ok 4 - RE6-005: hết giờ → terminate, dọn bộ đếm, lượt het-gio
+ok 5 - RE6-005: summarize tách lỗi/thiếu mốc khỏi phân vị và có P50/P95/P99
+ok 6 - RE6-005: corpus đa ngôn ngữ — chữ Latin/Cyrillic/Ả Rập/Thái và tên riêng phiên âm không bị mất; delta khớp final
+ok 7 - RE6-005/RE7-004: tên riêng chữ Hán/Hangul trong bản dịch tiếng Việt được giữ (Chủ duyệt hướng A)
+ok 8 - RE7-003: hasContent — rỗng, khoảng trắng, chỉ dấu câu không phải phụ đề; chữ/số mọi hệ chữ là phụ đề
+ok 9 - RE7-003: chỉ sự kiện rỗng → không có mốc, lượt thiếu chữ gốc; câu chốt rỗng không được tính
+ok 10 - RE7-003: mốc đầu là sự kiện CÓ CHỮ đầu tiên, không phải sự kiện rỗng trước đó
+    ok 1 - giữ chữ Hán/kana/Hangul trong bản dịch tiếng Việt (trước đây bị xóa)
+    ok 2 - đổi dấu câu toàn khổ, giữ kana/Hangul
+    ok 3 - giữ nguyên khi đích là Trung, Nhật, Hàn, Quảng Đông
+    ok 4 - mẩu tạm: không cắt khoảng trắng đầu/cuối, không bỏ ký tự
+    ok 5 - chữ Việt có dấu, số và chữ Latin không bị đụng
+ok 11 - Dịch trực tiếp: chỉnh hình thức bản dịch, không xóa chữ (RE7-004)
+    ok 1 - translation (câu, phần chờ) và translation-delta đều qua tidyLiveText với đích của vé; không còn bộ lọc xóa chữ
+ok 12 - cầu nối dùng bộ chỉnh hình thức cho mọi chữ dịch gửi xuống
+    ok 1 - mọi chữ/số được giữ nguyên ở câu chốt, phần chờ và delta, cho cả 5 đích
+    ok 2 - ca trước đây bị xóa nay được giữ; chỉ dấu câu toàn khổ đổi khi đích không dùng chữ CJK
+    ok 3 - hàm thuần, đồng bộ: không có lượt gọi AI nào trên đường streaming
+ok 13 - RE7-004 · không lọc làm mất nội dung (hướng A)
+    ok 1 - đủ 20 cặp có hướng giữa Anh/Trung/Nhật/Hàn/Việt, mỗi cặp có quy ước riêng và quy tắc giữ nguyên
+    ok 2 - bảng thuật ngữ đứng đầu, bắt buộc, bỏ trùng/rỗng, tối đa 30
+    ok 3 - bảng thuật ngữ vẫn đi qua translation.corpus.phrases; phiên không có trường hướng dẫn chưa được xác nhận
+ok 14 - RE7-004 · hướng dẫn tên riêng (hướng D) và bảng thuật ngữ
+# tests 22
+# pass 22
+# fail 0
