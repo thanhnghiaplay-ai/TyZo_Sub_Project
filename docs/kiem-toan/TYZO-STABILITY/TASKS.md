@@ -8,7 +8,7 @@
 | TZ-005 | P0 | Token/tài chính: hold/charge/settlement/release/refund, đóng phiếu, 8.234 token | PASS_LOCAL (PGlite, bất biến tiền); còn: 8.234 token cần dữ liệu thật (BLOCKED), PG thật, idempotency hoàn tiền/ví |
 | TZ-006 | P1 | Nút Tiếp tục, saved-runs, checkpoint | IN_PROGRESS: B-07 PASS_LOCAL (hàm thuần + kiểm nguồn); rà tĩnh owner/tệp/model OK; chưa có test trình duyệt (reload, mất mạng, đổi tài khoản) = BLOCKED |
 | TZ-007 | P1 | Android/media, MP4 135 MB | TODO |
-| TZ-008 | P1 | Giao diện/tiến độ, 320–430 px | TODO |
+| TZ-008 | P1 | Giao diện/tiến độ, 320–430 px | IN_PROGRESS: B-09 PASS_LOCAL (nút «Đang chuẩn bị…», khóa bấm lúc chuẩn bị); chống bấm đúp lõi (startJobOnce) ALREADY_FIXED; còn: bố cục 320–430 px = BLOCKED (sandbox thiếu Chromium cho check:layout), hiển thị tiến độ đoạn x/6 chưa rà |
 | TZ-009 | P1 | Cập nhật phiên bản, stale-build-guard | PASS_LOCAL một phần: B-08 (nút Tải lại ở thông báo bản mới hỏi xác nhận khi đang chạy); R8-004 (preloadError) đã có từ trước; chưa có test trình duyệt (BLOCKED) |
 | TZ-010 | P0/P1 | Bảo mật và GPU | TODO |
 | TZ-011 | P1 | Chức năng dùng chung | TODO |

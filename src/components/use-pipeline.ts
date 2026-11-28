@@ -417,14 +417,18 @@ export function usePipeline() {
 
   const modelSig = mode === "auto" ? `auto:${profile}:${allowEnterprise ? 1 : 0}|${genre}${baseGloss ? "" : "|nb"}` : `${modelId}|${genre}${baseGloss ? "" : "|nb"}`;
 
+  /** Đã bấm bắt đầu nhưng chưa vào chạy (kiểm key, hỏi quyền, kiểm tra truy cập): nút báo đang chuẩn bị, không nhận bấm lần hai. */
+  const [starting, setStarting] = useState(false);
+
   const buttonLabel = useMemo(() => {
     if (running) return "Hủy";
+    if (starting) return "Đang chuẩn bị…";
     const id = mediaId();
     const known = Boolean(id) && job.current.pcmId === id;
     const unfinished = known && (job.current.nextPart < job.current.parts.length || segs.some((seg) => seg.translation === null));
     const retarget = known && segs.length > 0 && job.current.appliedSig && job.current.appliedSig !== `${target}|${modelSig}`;
     return unfinished || retarget ? "Tiếp tục" : "Tải và dịch";
-  }, [running, mediaId, segs, target, modelSig]);
+  }, [running, starting, mediaId, segs, target, modelSig]);
 
   const catalog: ChatModel[] = useMemo(() => mergeCatalog(remoteIds || []), [remoteIds]);
 
@@ -1489,9 +1493,11 @@ export function usePipeline() {
   const startGate = useRef(false);
   const start = useCallback(() => startJobOnce(startGate, async () => {
     const release = holdPageActivity();
+    setStarting(true);
     try {
       await startRun();
     } finally {
+      setStarting(false);
       release();
     }
   }), [startRun]);
@@ -2134,6 +2140,7 @@ export function usePipeline() {
     running,
     stages,
     buttonLabel,
+    starting,
     catalog,
     board,
     boardNote,

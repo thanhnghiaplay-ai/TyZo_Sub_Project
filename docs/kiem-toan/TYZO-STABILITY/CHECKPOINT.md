@@ -1,16 +1,17 @@
 # CHECKPOINT
 - Repo: thanhnghiaplay-ai/TyZo_Sub_Project. Nhánh: fix/tyzo-stability.
 - Baseline: main f73e02d (APP_VERSION 5.49.9; 5.49.8 và 5.49.9 đã nằm trên main).
-- Đang làm: TZ-008 (chống bấm đúp, tiến độ). TZ-009 PASS_LOCAL một phần (B-08 đã sửa). TZ-006 B-07 đã sửa, còn test trình duyệt (BLOCKED). TZ-002 IN_PROGRESS (B-04 đã sửa), TZ-004 và TZ-005 PASS_LOCAL (8.234 token BLOCKED chờ dữ liệu). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
+- Đang làm: TZ-008 (B-09 đã sửa; còn rà hiển thị tiến độ đoạn và bố cục 320–430 px = BLOCKED do thiếu Chromium), rồi TZ-007. TZ-009 PASS_LOCAL một phần (B-08 đã sửa). TZ-006 B-07 đã sửa, còn test trình duyệt (BLOCKED). TZ-002 IN_PROGRESS (B-04 đã sửa), TZ-004 và TZ-005 PASS_LOCAL (8.234 token BLOCKED chờ dữ liệu). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
 - Đã xong: clone, tạo nhánh, đọc CLAUDE.md, thiết lập thư mục này, npm ci.
 - Test đã chạy: xem TESTS.md (tsc OK, lint 0 lỗi, 3 nhóm npm test: không lỗi mã; 1 fail do môi trường root).
 - Chưa chạy: test PG (cần Postgres cô lập), build.
 - Workflow duy nhất: .github/workflows/android-thu.yml (chỉ khi đổi android/). Vercel dựng khi push; preview không migrate trừ khi TYZO_PREVIEW_DB=rieng.
 - Blocker: chưa có Postgres cô lập (29 test skip); chưa có video/ví production.
-- Tiếp theo: TZ-008 (chống bấm đúp, trạng thái tiến độ), TZ-007; sau đó TZ-010/011/012.
+- Tiếp theo: hoàn tất rà tiến độ TZ-008, TZ-007; sau đó TZ-010/011/012.
 - Cần đọc: BAO_CAO.md (v5.49.7/TYZO-MODAL-409), src/lib/billing/work-admission.ts, migration 0057.
 - Files đã sửa mã: src/lib/billing/work-admission.ts, src/lib/billing/tyzo-modal-charge.ts, src/lib/billing/tyzo-modal-race.test.ts.
 - Nguyên nhân gốc xác nhận: B-04 (BUGS.md).
 - Files đã sửa thêm: src/lib/sub/re8-010.test.ts (chỉ test).
 - Files sửa mã thêm: src/lib/saved-runs.ts, src/components/use-pipeline.ts, src/lib/saved-runs.test.ts.
 - Files sửa mã thêm (TZ-009): src/lib/stale-build.ts, src/components/update-banner.tsx, src/lib/stale-build.test.ts.
+- Files sửa mã thêm (TZ-008): src/components/use-pipeline.ts (state starting), src/components/studio.tsx, src/components/start-gate.test.ts.

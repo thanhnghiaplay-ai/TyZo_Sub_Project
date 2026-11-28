@@ -1006,7 +1006,7 @@ export function Studio() {
                 <button
                   type="button"
                   data-tour="run"
-                  disabled={!app.running && (!online || normalDown)}
+                  disabled={!app.running && (!online || normalDown || app.starting)}
                   title={!app.running && normalDown ? "Dịch bình thường đang bảo trì" : undefined}
                   className={"min-tap flex-1 rounded-[var(--radius-ctl)] font-semibold disabled:opacity-40 " + (app.running ? "border border-danger bg-raised text-danger" : "bg-accent text-ink")}
                   onClick={() => {

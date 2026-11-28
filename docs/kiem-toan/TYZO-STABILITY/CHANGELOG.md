@@ -5,3 +5,4 @@
 - test(TZ-005): thêm test bất biến tài chính chạy song song (tyzo-modal-race.test.ts), không đổi mã.
 - fix(TZ-006): khôi phục bản lưu khi đổi ngôn ngữ đích sẽ dịch lại (src/lib/saved-runs.ts, src/components/use-pipeline.ts).
 - TZ-009: update-banner.tsx + stale-build.ts: nút Tải lại hỏi xác nhận khi đang có việc chạy (B-08); test trong stale-build.test.ts.
+- fix(TZ-008): nút bắt đầu báo «Đang chuẩn bị…» và khóa trong lúc chuẩn bị (use-pipeline.ts, studio.tsx); test src/components/start-gate.test.ts.
