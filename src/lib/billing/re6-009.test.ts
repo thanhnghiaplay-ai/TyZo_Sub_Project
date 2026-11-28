@@ -113,6 +113,39 @@ describe("RE6-009 · chứng từ chi phí GPU: không sót, không trùng", () 
     assert.equal(Number((await sql<{ r: string }>`select modal_reserved as r from run_tickets where id = ${TID}`)[0].r), 0);
   });
 
+  // RE8 (bổ sung): lượt CUỐI bị crash, không còn lượt thành công nào sau → quét đêm / trang Doanh thu phải bù.
+  const crashed = async (attempt: string, opts: { status?: string; ageSec: number; liveBeat?: boolean }) => {
+    await sql`insert into run_modal_settlements (attempt, ticket_id, part_hash, status, provider_usd, created_at)
+      values (${attempt}, ${TID}, ${"h-" + attempt}, ${opts.status ?? "running"}, 0.004, now() - make_interval(secs => ${opts.ageSec}))`;
+    if (opts.liveBeat !== undefined) await sql`insert into run_modal_parts (ticket_id, part_hash, seconds, attempt, heartbeat_at)
+      values (${TID}, ${"h-" + attempt}, 10, ${attempt}, now() - make_interval(secs => ${opts.liveBeat ? 0 : 3600}))`;
+  };
+
+  it("lượt cuối crash (running, mất nhịp quá hạn lease): bù đúng một lần; lượt đang chạy còn nhịp KHÔNG bị đụng", async () => {
+    await crashed("dead-no-part", { ageSec: 3600 });
+    await crashed("dead-stale-beat", { ageSec: 3600, liveBeat: false });
+    await crashed("ended", { status: "mat-phan-hoi", ageSec: 5 });
+    await crashed("alive", { ageSec: 3600, liveBeat: true });
+    await crashed("young", { ageSec: 1 });
+    assert.equal(await recoverModalSpend(sql, RATE), 3);
+    assert.deepEqual((await events()).map((e) => e.id), ["modal:dead-no-part", "modal:dead-stale-beat", "modal:ended"]);
+    assert.equal(await recoverModalSpend(sql, RATE), 0, "chạy lại (quét đêm lần 2) không ghi thêm");
+    await Promise.all(Array.from({ length: 5 }, () => recoverModalSpend(sql, RATE)));
+    assert.equal((await events()).length, 3);
+    assert.equal(await charged(), 0, "không trừ thêm Token khách");
+    // Lượt đang chạy tự ghi chứng từ của mình sau đó, không bị chặn vì «số khác».
+    await modalPartWork(sql, "alive", deps(0.004));
+    assert.equal((await events()).length, 4);
+  });
+
+  it("quét đêm và trang Doanh thu gọi bù trước khi cộng sổ chi phí", () => {
+    for (const f of ["../../routes/api/risk-sweep.ts", "../profit-room.ts"]) {
+      const src = readFileSync(new URL(f, import.meta.url), "utf8");
+      const at = src.indexOf("recoverModalSpendNow(sql)");
+      assert.ok(at > 0 && at < src.indexOf("drainSpendJournal(sql"), f);
+    }
+  });
+
   it("chi phí 0 hợp lệ (đoạn im lặng) vẫn có chứng từ 0, không bị coi là thiếu", async () => {
     await runModalPartWith(sql, part("z"), (_p, a) => modalPartWork(sql, a, deps(0)));
     const ev = await events();

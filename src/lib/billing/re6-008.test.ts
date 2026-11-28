@@ -370,6 +370,15 @@ describe("RE6-008 · hành vi route /api/model-call (Alibaba)", () => {
     assert.ok(all.every((c) => Number(c.charged_units) > 0));
   });
 
+  it("RE8-004: qwen-turbo trên 256K đầu vào → đối soát (bậc giá chưa xác minh); qwen-max không có ngưỡng", async () => {
+    upstream.reply = usage(300_000, 10);
+    assert.equal((await modelCall({ request: aliReq({ model: "qwen-turbo", messages: msgs, max_tokens: 50 }) })).status, 200);
+    const [c] = await calls();
+    assert.equal(c.status, "can-doi-soat");
+    const { FLAT_PRICE_INPUT_LIMIT } = await import("./run-gate.ts");
+    assert.equal(FLAT_PRICE_INPUT_LIMIT["alibaba:qwen-max"], undefined);
+  });
+
   it("dưới ngưỡng, usage hợp lệ → xong", async () => {
     upstream.reply = usage(200_000, 10);
     const body = { model: "qwen-plus", messages: [{ role: "user", content: "x".repeat(150_000) }], max_tokens: 50 };

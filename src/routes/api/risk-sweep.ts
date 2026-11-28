@@ -47,6 +47,9 @@ export const Route = createFileRoute("/api/risk-sweep")({
           const { sweepRisk } = await import("@/lib/risk.server");
           const r = await sweepRisk(sql, { after, budgetMs: 8000 });
           const {drainSpendJournal} = await import("@/lib/provider-spend-journal");
+          // RE8 (bổ sung RE6-009): bù chứng từ GPU của lượt Modal cuối bị crash (không còn lượt thành công nào sau).
+          const {recoverModalSpendNow} = await import("@/lib/billing/modal-work");
+          const modalRecovered = await recoverModalSpendNow(sql);
           const providerCosts = await drainSpendJournal(sql,25);
           // Ghi kết quả đêm (cộng dồn theo đợt) để tab Rủi ro hiện «Quét đêm gần nhất».
           const prev = after ? await sql<{ value: string }>`select value from room_settings where key = 'risk_sweep_night'` : [];
@@ -59,7 +62,7 @@ export const Route = createFileRoute("/api/risk-sweep")({
           acc = { ...acc, checked: acc.checked + r.checked, made: acc.made + r.made, rounds: acc.rounds + 1 };
           const value = JSON.stringify(acc);
           await sql`insert into room_settings (key, value) values ('risk_sweep_night', ${value}) on conflict (key) do update set value = ${value}`;
-          return json(200, {...r,providerCosts});
+          return json(200, {...r,providerCosts,modalRecovered});
         } catch (error) {
           return failFrom(error);
         }

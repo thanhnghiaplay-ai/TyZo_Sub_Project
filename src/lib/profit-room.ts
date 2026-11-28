@@ -34,6 +34,8 @@ export const getProfitView = createServerFn({ method: "POST" })
     const sql = await getSql();
     const window = WINDOW[data];
     const {drainSpendJournal} = await import("@/lib/provider-spend-journal");
+    const {recoverModalSpendNow} = await import("@/lib/billing/modal-work");
+    await recoverModalSpendNow(sql);
     await drainSpendJournal(sql,5);
     const spend = await spendSummaryWith(sql, window);
     const turbo = (await turboBasePerSecond(sql)) ?? 0;

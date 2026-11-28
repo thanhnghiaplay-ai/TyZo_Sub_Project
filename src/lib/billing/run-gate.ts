@@ -60,7 +60,12 @@ export function readChatUsage(raw: unknown): ChatUsage {
  * qwen-plus theo bậc: trên 256K đầu vào thì cả yêu cầu theo giá bậc 2 (đầu vào và đầu ra đều cao hơn). Mặc định nhà
  * chặn đầu vào ở 262.144 token; cửa không cho `max_input_tokens` nên không nới được. Usage vượt ngưỡng → đối soát.
  */
-export const FLAT_PRICE_INPUT_LIMIT: Record<string, number> = { "alibaba:qwen-plus": 256_000 };
+export const FLAT_PRICE_INPUT_LIMIT: Record<string, number> = {
+  "alibaba:qwen-plus": 256_000,
+  // RE8-004: qwen-turbo cửa sổ 1M, bảng giá quốc tế chưa xác minh có bậc hay không → đánh dấu đối soát cho chắc.
+  // qwen-max: bảng giá quốc tế ghi không có bậc, cửa sổ 131.072 → không cần.
+  "alibaba:qwen-turbo": 256_000,
+};
 
 type GateOutcome =
   | { kind: "pass"; response: Response }
