@@ -8,7 +8,7 @@ Giá dùng để dự toán:
 - Qwen LiveTranslate: âm vào 7,5 USD/triệu token, chữ ra 20 USD/triệu (`live-price.ts`).
 - Các model chat: theo `models.ts` và `alibaba-catalog.ts`.
 
-## A. GPU Modal (tổng trần đề xuất: 5,00 USD)
+## A. GPU Modal (tổng trần đề xuất: 5,50 USD)
 
 | Mã | Việc | Cách đo | Dự toán tối đa |
 |---|---|---|---|
@@ -16,7 +16,9 @@ Giá dùng để dự toán:
 | G2 | Phim 74 phút, hồ sơ nhanh | Chạy qua app trên staging bằng tài khoản thử; so hóa đơn với tổng `provider_usd` và chứng từ `modal:*` | 1,20 USD |
 | G3 | Phim 74 phút, hồ sơ kỹ (có máy model chữ L40S) | Như G2; ghi thêm giờ L40S | 2,50 USD |
 | G4 | 8 khách cùng lúc × 1 đoạn | `do-modal.py`, chế độ song song 8 | 0,30 USD |
-| G5 | Đặt `max_containers` cho máy model chữ và đo lại G3 rút gọn | Cần sửa `modal_app.py`, Chủ deploy | 0,60 USD |
+| G5 | Deploy trần máy model chữ (RE8-008, `may_chu_toi_da` = 2, đã có trong mã `6becccd`) rồi đo lại G3 rút gọn. Xác nhận Modal không mở quá 2 máy L40S | Chủ chạy `tyzo-ai` → «Cập nhật» | 0,60 USD |
+| G7 | Endpoint không có khóa có làm máy bật không (RE8-008): gửi 3 yêu cầu sai token tới `Asr.run` và máy model chữ, xem log và số máy trên Modal | Nếu máy bật, cần bật `requires_proxy_auth` (phải thêm bí mật, deploy) | 0,10 USD |
+| G8 | Phương án RE8-001 «dự phòng 1 + chờ tắt 30 s»: chạy lại G1 và G4 sau khi đổi `cau-hinh.json` | So chi phí và P95 với mô phỏng; giữ phương án nếu P95 đợt 8 khách tăng ≤ 10% | 0,40 USD |
 | G6 | Crash giữa ghi USD và chứng từ trên staging | Dừng tiến trình đúng mốc bằng điểm ngắt thử. Không cần GPU mới nếu dùng lượt G1 | 0 USD |
 
 **Tiêu chí đạt:**
@@ -37,15 +39,11 @@ Giá dùng để dự toán:
 | D1 | Liên kết, gỡ liên kết (online và offline), đổi tài khoản | AZ-002, AZ-008: không lẫn lịch sử; gỡ khi offline phải báo lỗi | 0 |
 | D2 | Phiên Dịch trực tiếp 4 × 3 phút (zh/ja/ko/en → vi), mô hình 3.5 và 3.8 | Có phụ đề; Token trừ khớp biên nhận; xuất SRT/VTT/TXT đúng | ≈ 0,20 USD (cận 0,60) |
 | D3 | Lưu và đồng bộ khi mất mạng giữa chừng, tắt ứng dụng, khởi động lại | AZ-003, AZ-004: không báo «đã đồng bộ» khi server chưa lưu | ≈ 0,05 USD |
-| D4 | Cập nhật ứng dụng (R3-006) | Tải bản nhỏ, mạng nhanh, lặp 10 lần; tắt mạng giữa chừng; bấm lại nhiều lần. Không được kẹt «Đang tải…» | 0 |
+| D4 | Cập nhật ứng dụng (R3-006 / RE8-007): cài APK 0.13 rồi dùng APK thử 0.14 (artifact CI run 46113317257). Các ca: tải xong, lỗi mạng, hủy ở thanh thông báo, tắt ứng dụng khi đang tải rồi mở lại, bấm nhiều lần | Không bao giờ kẹt «Đang tải…»; tải xong lúc ứng dụng tắt thì mở lại phải hiện màn cài. Cần trang web thử báo có bản 0.14 (staging hoặc `ANDROID_APK_URL` thử) | 0 |
 | D5 | Quyền MediaProjection, bị thu hồi quyền, màn hình khóa, pin yếu | Báo lỗi rõ, không mất phiên đã lưu | ≈ 0,10 USD |
 | D6 | Render phụ đề (RE6-005): onset → chữ hiện, quay màn hình 60 fps | P50/P95 của độ trễ hiển thị | ≈ 0,10 USD |
 
-**Đề xuất sửa R3-006 (làm trong phiên có Android SDK và CI, cần nâng `versionCode`):**
-- Đăng ký receiver trước khi `enqueue`.
-- Khi `start()` gặp `downloadId != -1`, hỏi `DownloadManager.query`. Nếu đã xong hoặc đã lỗi thì gọi `finish`.
-- Gỡ receiver khi Activity bị hủy.
-- Có thử nghiệm D4.
+**R3-006 đã sửa ở RE8-007** (`659ddeb`, bản 0.14): CI đã dựng APK, logic đạt trên JVM. Chỉ còn D4 trên thiết bị thật.
 
 ## C. API thật (tổng trần: 2,00 USD)
 
@@ -58,10 +56,18 @@ Giá dùng để dự toán:
 | A5 | Prompt tên riêng và `corpus.phrases` (RE7-004): 20 cặp × 30 s âm thanh mẫu, kiểm tên được giữ hoặc phiên âm | 0,50 USD |
 | A6 | Usage trong cửa trả theo lượt: 10 lệnh qua staging, so dự toán, trừ và chứng từ | 0,10 USD |
 
-**Tổng trần toàn kế hoạch: 8,50 USD** (A + B + C). Chủ có thể duyệt từng gói riêng.
+**Tổng trần toàn kế hoạch: 9,00 USD** (A 5,50 + B 1,50 + C 2,00). Cập nhật sau RE8: thêm G7 và G8, G5 đã có mã. Chủ có thể duyệt từng gói riêng.
 
 **Điều kiện an toàn cho mọi gói:**
 - Chỉ dùng staging và tài khoản thử. Không dùng database production.
 - Token gửi qua biểu mẫu bảo mật hoặc proxy. Không ghi vào kho.
 - Kết quả lưu vào `docs/kiem-toan/` và che mã tổ chức.
 - Gặp lỗi bất thường thì dừng gói đó.
+
+## Cập nhật sau RE8 (28/11/2026)
+
+- **G5** dùng mã đã có (`gpu_limits.py`).
+- **G7 và G8** là gói mới.
+- **D4** dùng APK thử 0.14.
+- **Không** đề xuất đo tải 200 khách thật (quá đắt). Năng lực cửa 16 / máy 16 chỉ có số mô phỏng; nâng dần khi có tải thật.
+- **Tiền đề không tốn phí:** Chủ đặt hạn mức chi của workspace trên Modal trước mọi gói A.

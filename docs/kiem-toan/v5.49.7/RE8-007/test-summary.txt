@@ -1,0 +1,40 @@
+RE8-007 · JVM GIẢ LẬP (UpdateFlow.kt thật + DownloadManager giả) · kotlinc 2.0.21 · mã 659ddeb
+PASS account+origin namespace isolation
+PASS late sync cannot overwrite newer save or another account
+PASS rejected sync remains retryable and successful acknowledgement is durable
+PASS clear wins over old completion
+PASS legacy retained, corrupt file not reported synced, failed write reported
+PASS SRT/VTT/TXT export unchanged
+PASS history requires saved=true and receipt id
+PASS unlink rejects server/network failure and requires acknowledgement
+PASS stable authenticated account identity parsed; old server fails closed
+PASS offline unlink reports failure
+PASS không có lượt → tải mới
+PASS đang tải (STATUS 1) → chờ
+PASS đang tải (STATUS 2) → chờ
+PASS đang tải (STATUS 4) → chờ
+PASS tải xong → cài
+PASS tải lỗi → lỗi
+PASS không còn bản ghi (hủy) → quên
+PASS mã lạ → coi như không còn
+PASS tin của lượt khác bị bỏ qua
+PASS thành công: mở màn cài một lần, quên mã
+PASS tin đến sớm: vẫn mở màn cài, không kẹt «Đang tải»
+PASS lỡ tin rồi bấm lại: cài bản đã tải, không tải lần hai
+PASS bấm nhiều lần khi đang tải: chỉ một lượt tải
+PASS lỗi: xóa lượt hỏng, báo thử lại
+PASS lỗi rồi bấm lại: tải lượt mới
+PASS hủy tải: quên mã, báo tải lại
+PASS hủy rồi bấm lại: tải lượt mới
+PASS khởi động lại khi đang tải: chờ tiếp và nghe lại tin
+PASS khởi động lại rồi tải xong: mở màn cài
+PASS tải xong lúc ứng dụng đang tắt: mở màn cài khi quay lại
+PASS tin của lượt cũ không làm cài nhầm
+TẤT CẢ ĐÚNG
+
+== CI GitHub Actions «Android thử» run 46113317257 (job apk 140881464685) — head 659ddeb
+check-session-ci.sh: 10 + 19 PASS, TẤT CẢ ĐÚNG
+Ký bằng khóa cố định · gradle assembleRelease: BUILD SUCCESSFUL in 56s (compileReleaseKotlin, lintVitalRelease đạt; 2 cảnh báo deprecated có sẵn ở MainActivity.kt:103–104)
+tyzo-sub.json: {"code": 14, "name": "0.14"}
+artifact tyzo-sub-apk id 15250847257, 1.260.823 byte, sha256(zip)=33bcd93432069998067620cbba4fc7093161cb4b4801628a264688b65021777f, hết hạn 2026-12-28
+job release: SKIPPED (chỉ chạy trên main) — KHÔNG phát hành

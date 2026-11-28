@@ -68,3 +68,19 @@ PostgreSQL 18.7 (Docker loopback).
 | Android JVM: `check-session.sh` + `CaptionLayoutCheck` + `VoiceFilterCheck` | 28/28 (giả lập, không phải thiết bị thật) |
 
 Lỗi duy nhất là R8-002, do chạy bằng root; test này đạt khi chạy bằng user thường.
+
+## Lượt RE8 (mã ở `1202352`)
+
+PostgreSQL 18.7 (Docker loopback).
+
+| Lệnh | Kết quả |
+|---|---|
+| `npx tsc --noEmit -p .` | đạt |
+| `node --test 'scripts/**/*.test.mjs'` (root; có re8-008-gpu-limits, re8-001-gpu-sim) | 248 đạt · 1 lỗi · 38 bỏ qua |
+| Nhóm `src/lib/**` (có re6-009 11 ca) | 1500/1500 |
+| Nhóm module-mocks (PG18.7, re6-008 18 ca) | 119/119 |
+| `npm run build:dev` (không có `DATABASE_URL`) | đạt |
+| Android JVM (`check-session.sh`: Session/Api 10 + UpdateFlow 19) | 29/29 (giả lập) |
+| CI «Android thử» run 46113317257 | `assembleRelease` đạt, APK 0.14 ký khóa cố định, không phát hành |
+
+Lỗi duy nhất là R8-002, do chạy bằng root; test này đạt khi chạy bằng user thường.

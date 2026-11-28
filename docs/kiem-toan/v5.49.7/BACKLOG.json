@@ -165,7 +165,9 @@
     "location": "run-gate.ts / provider_spend",
     "hypothesis": "Token cache tính đủ giá: sổ chi phí nhà có thể cao hơn hóa đơn (khách không bị trừ quá mức giữ)",
     "acceptance": "Đo cached_tokens và hóa đơn (A4), Chủ quyết cách ghi.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "PARTIAL",
+    "evidence": "RE8-REST/REPORT.md",
+    "remaining": "Tài liệu: Groq cache −50%, Alibaba ẩn 20% (có trang ghi 10%). Cần lưu cached_tokens (migration chỉ thêm) + đo A4; Chủ quyết."
   },
   {
     "id": "RE8-003",
@@ -174,7 +176,9 @@
     "location": "model-catalog / RE4-001",
     "hypothesis": "5 model chưa đo usage thật: llama-3.3-70b, llama-3.1-8b, muse-spark-open, minimax-m2.7, qwen-turbo",
     "acceptance": "Đo A1 khi Chủ duyệt; enterprise chưa có giá giữ 422.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "BLOCKED",
+    "evidence": "RE8-REST/REPORT.md",
+    "remaining": "Đo A1."
   },
   {
     "id": "RE8-004",
@@ -183,7 +187,9 @@
     "location": "alibaba-catalog.ts / FLAT_PRICE_INPUT_LIMIT",
     "hypothesis": "Giá bậc qwen-turbo và qwen-max quốc tế chưa xác minh",
     "acceptance": "Xác minh tài liệu giá (A3), thêm ngưỡng nếu có bậc.",
-    "status": "OPEN_VERIFY"
+    "status": "PARTIAL",
+    "evidence": "RE8-REST/REPORT.md",
+    "remaining": "qwen-max: không bậc (bảng giá); qwen-turbo chưa xác minh, đã đánh dấu đối soát >256K. Chủ xác nhận trang giá hoặc A3."
   },
   {
     "id": "RE8-005",
@@ -192,7 +198,9 @@
     "location": "run-gate.ts readChatUsage (Groq)",
     "hypothesis": "Token suy luận Groq: có nằm trong completion_tokens và max_completion_tokens không chưa xác minh",
     "acceptance": "Đo A2 khi Chủ duyệt.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "BLOCKED",
+    "evidence": "RE8-REST/REPORT.md",
+    "remaining": "Đo A2."
   },
   {
     "id": "RE8-006",
@@ -201,7 +209,9 @@
     "location": "run-gate.ts (mức giữ)",
     "hypothesis": "Mức giữ Token cao khoảng 4 lần usage ước tính (phần lớn do trần đầu ra 4.096)",
     "acceptance": "Chỉ đề xuất sau khi có số đo thật A1/A6; không đổi mức giữ khi chưa có chỉ đạo.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "ANALYZED",
+    "evidence": "RE8-REST/REPORT.md",
+    "remaining": "63–74% mức giữ là trần đầu ra; đề xuất trần theo p99 token/câu sau A1/A6. Không đổi mức giữ."
   },
   {
     "id": "RE8-007",
@@ -210,7 +220,9 @@
     "location": "android/app/src/main/java/vn/tyzo/sub/Updater.kt",
     "hypothesis": "R3-006: receiver đăng ký sau enqueue, không truy vấn lại khi lỡ tin tải xong → kẹt «Đang tải…»",
     "acceptance": "Sửa theo ACCEPTANCE_PLAN (D4), cần Android SDK/CI + thiết bị, nâng versionCode.",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "BUILD_PASS_DEVICE_BLOCKED",
+    "evidence": "RE8-007/REPORT.md",
+    "remaining": "Thiết bị thật D4; APK thử 0.14 là artifact CI, chưa phát hành."
   },
   {
     "id": "RE8-008",
@@ -222,5 +234,24 @@
     "status": "PASS_LOCAL_NOT_DEPLOYED",
     "evidence": "RE8-008/REPORT.md",
     "remaining": "Deploy + đo G5; requires_proxy_auth; hạn mức chi workspace Modal (Chủ)."
+  },
+  {
+    "id": "RE8-009",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "src/lib/billing/modal-work.ts recoverModalSpend",
+    "hypothesis": "Lượt Modal cuối crash không có lượt thành công sau → chứng từ chờ vô hạn; bù cũ có thể tranh lượt đang chạy",
+    "acceptance": "Bù ở quét đêm/Doanh thu, chỉ lượt đã kết thúc hoặc mất nhịp quá lease, không trùng, không trừ khách.",
+    "status": "PASS_LOCAL",
+    "evidence": "RE8-REST/REPORT.md"
+  },
+  {
+    "id": "RE8-010",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "eval/asr/luong-ky/modal/modal_app.py (Asr.run, máy model chữ)",
+    "hypothesis": "Endpoint web công khai: yêu cầu không có khóa có thể đánh thức GPU",
+    "acceptance": "Đo G7; nếu đúng, bật requires_proxy_auth + bí mật Modal cho Vercel và máy nhận dạng (Chủ duyệt, deploy).",
+    "status": "OPEN_BLOCKED_REAL"
   }
 ]

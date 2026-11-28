@@ -1,20 +1,18 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "6becccdf8555c0b05e5cc1a2e29943d2fce85a38",
+  "previous_checkpoint_sha": "120235258c43c07c3cca4610ce52b108ea6f3905",
   "effort": "Medium",
-  "status": "IN_PROGRESS",
-  "completed_item": "RE8-008, RE8-001",
-  "item_status": "PASS_LOCAL_DEVICE_BLOCKED",
+  "status": "PAUSED_FOR_OWNER",
+  "completed_item": "RE8-008, RE8-001, RE8-007, RE8-002..006, RE8-009",
+  "item_status": "xem items",
   "tests": {
     "postgres": "18.7",
-    "re6_009": "9/9 (PG18.7 + PGlite)",
-    "android_jvm": "28/28 giả lập",
     "regression": "REGRESSION.md",
-    "evidence": "RE6-009/REPORT.md",
-    "plan": "RE6-009/ACCEPTANCE_PLAN.md"
+    "android_ci": "run 46113317257 assembleRelease đạt, APK 0.14 không phát hành",
+    "plan": "RE6-009/ACCEPTANCE_PLAN.md (trần 9,00 USD)"
   },
-  "next": "RE8-007 (Android Updater)",
+  "next": "Chờ chỉ đạo của Chủ. RE6-010 chưa làm; ngân sách nghiệm thu chưa duyệt.",
   "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
   "items": {
     "RE6-001": "PASS_LOCAL_POLICY_PENDING",
@@ -33,12 +31,14 @@
     "RE7-004": "PASS_LOCAL_PROMPT_BLOCKED",
     "R8-002": "PASS (user thường)",
     "RE8-001": "ANALYZED_SIM",
-    "RE8-002": "OPEN",
-    "RE8-003": "OPEN",
-    "RE8-004": "OPEN",
-    "RE8-005": "OPEN",
-    "RE8-006": "OPEN",
-    "RE8-007": "OPEN",
-    "RE8-008": "PASS_LOCAL_NOT_DEPLOYED"
+    "RE8-002": "PARTIAL",
+    "RE8-003": "BLOCKED",
+    "RE8-004": "PARTIAL",
+    "RE8-005": "BLOCKED",
+    "RE8-006": "ANALYZED",
+    "RE8-007": "BUILD_PASS_DEVICE_BLOCKED",
+    "RE8-008": "PASS_LOCAL_NOT_DEPLOYED",
+    "RE8-009": "PASS_LOCAL",
+    "RE8-010": "OPEN_BLOCKED_REAL"
   }
 }
