@@ -9,7 +9,7 @@ import { pgliteSql, realPgSql } from "../test-sql.ts";
 import { buyGiayWith, closeTokenWith, giayBalance, openGiayWith } from "./token-flow.ts";
 import { submitModalChunk } from "../sub/tyzo-modal.ts";
 import { runAdmittedModalPartWith, runModalPartWith } from "./tyzo-modal-charge.ts";
-import { sweepAdmissions } from "./work-admission.ts";
+import { sweepAdmissions, tagWorkBeforeSend } from "./work-admission.ts";
 
 let sql: Sql;
 let end: (() => Promise<void>) | undefined;
@@ -297,5 +297,42 @@ describe("TyZo Modal: cửa nhận việc và tiếp tục", () => {
       controller.abort();
     }), { name: "AbortError" });
     assert.equal(submits, 32);
+  });
+
+  it("TZ-002: suất Modal chết trước khi gắn ref (chưa gửi GPU) không chặn phiếu mới mãi mãi", async () => {
+    await sql`insert into work_admissions (id, user_id, provider, model, lane, status, finished_at)
+      values ('chet-truoc-gui', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'unknown', clock_timestamp() - interval '10 minutes')`;
+    let gpu = 0;
+    const out = await runAdmittedModalPartWith(sql, part("moi"), async () => { gpu++; return { segments: SEG, tokens: 7 }; });
+    assert.equal(out.kind, "ready", "đối soát ngay khi hỏi, không chờ chu kỳ 15 giây");
+    assert.equal(gpu, 1);
+    const row = await sql<{ status: string }>`select status from work_admissions where id = 'chet-truoc-gui'`;
+    assert.equal(row[0].status, "resolved");
+    const audit = await sql<{ note: string }>`select note from room_audit where action = 'tu-doi-soat-suat' and target_id = 'k'
+      and note like '%chet-truoc-gui%'`;
+    assert.equal(audit.length, 1);
+    assert.match(audit[0].note, /chua-gui-truoc-khi-gan-ref/);
+  });
+
+  it("TZ-002: suất unknown mới mất lease (chưa quá một chu kỳ) hoặc đã có ref mà chưa có bằng chứng vẫn giữ khóa", async () => {
+    await sql`insert into work_admissions (id, user_id, provider, model, lane, status, finished_at)
+      values ('vua-mat-lease', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'unknown', clock_timestamp())`;
+    await sql`insert into work_admissions (id, user_id, provider, model, lane, status, ref, finished_at)
+      values ('da-gui-chua-ro', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'unknown', 'modal:t1:daxa:a1', clock_timestamp() - interval '10 minutes')`;
+    await sweepAdmissions(sql);
+    const rows = await sql<{ id: string; status: string }>`select id, status from work_admissions order by id`;
+    assert.deepEqual(rows, [{ id: "da-gui-chua-ro", status: "unknown" }, { id: "vua-mat-lease", status: "unknown" }]);
+    const noGpu = async () => assert.fail("không được gửi GPU");
+    await assert.rejects(runAdmittedModalPartWith(sql, part("khac"), noGpu), { status: 409 });
+  });
+
+  it("TZ-002: gắn ref chỉ thành công khi suất còn running (mất lease thì dừng trước khi gửi)", async () => {
+    await sql`insert into work_admissions (id, user_id, provider, model, lane, status)
+      values ('dang-chay', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'running'),
+             ('da-mat', 'k', 'tyzo-modal', 'tyzo-modal-nhanh', 'modal', 'unknown')`;
+    assert.equal(await tagWorkBeforeSend(sql, "dang-chay", "modal:t1:x:a"), true);
+    assert.equal(await tagWorkBeforeSend(sql, "da-mat", "modal:t1:y:a"), false);
+    const rows = await sql<{ id: string; ref: string | null }>`select id, ref from work_admissions order by id`;
+    assert.deepEqual(rows, [{ id: "da-mat", ref: null }, { id: "dang-chay", ref: "modal:t1:x:a" }]);
   });
 });

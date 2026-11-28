@@ -1,11 +1,13 @@
 # CHECKPOINT
 - Repo: thanhnghiaplay-ai/TyZo_Sub_Project. Nhánh: fix/tyzo-stability.
 - Baseline: main f73e02d (APP_VERSION 5.49.9; 5.49.8 và 5.49.9 đã nằm trên main).
-- Đang làm: TZ-002 (IN_PROGRESS). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
+- Đang làm: TZ-002 (IN_PROGRESS; B-04 đã sửa). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
 - Đã xong: clone, tạo nhánh, đọc CLAUDE.md, thiết lập thư mục này, npm ci.
 - Test đã chạy: xem TESTS.md (tsc OK, lint 0 lỗi, 3 nhóm npm test: không lỗi mã; 1 fail do môi trường root).
 - Chưa chạy: test PG (cần Postgres cô lập), build.
 - Workflow duy nhất: .github/workflows/android-thu.yml (chỉ khi đổi android/). Vercel dựng khi push; preview không migrate trừ khi TYZO_PREVIEW_DB=rieng.
 - Blocker: chưa có Postgres cô lập (29 test skip); chưa có video/ví production.
-- Tiếp theo: TZ-002 — đọc src/lib/billing/work-admission.ts + migration 0057, tìm nhánh còn hở (suất unknown chặn phiếu mới, lease/heartbeat 150 s, nhiều replica), thêm test PGlite nếu hở.
+- Tiếp theo: TZ-002 còn lại (race nhiều replica trên PG thật cần Postgres cô lập; rà lane batch/live không có ref), rồi TZ-004 (303/GET/POST), TZ-005.
 - Cần đọc: BAO_CAO.md (v5.49.7/TYZO-MODAL-409), src/lib/billing/work-admission.ts, migration 0057.
+- Files đã sửa mã: src/lib/billing/work-admission.ts, src/lib/billing/tyzo-modal-charge.ts, src/lib/billing/tyzo-modal-race.test.ts.
+- Nguyên nhân gốc xác nhận: B-04 (BUGS.md).

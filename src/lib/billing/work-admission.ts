@@ -110,9 +110,18 @@ export async function acquireWorkInfo(sql: Sql, key: WorkKey): Promise<{ id: str
   try {
     maybeSweep(sql);
     const id = randomBytes(12).toString("hex");
-    const rows = await sql<{ r: string }>`select tyzo_admit(${id}, ${key.userId}, ${key.provider}, ${key.model},
+    const admit = () => sql<{ r: string }>`select tyzo_admit(${id}, ${key.userId}, ${key.provider}, ${key.model},
       ${key.lane}, ${JSON.stringify(DEFAULT_ADMISSION)}::jsonb, ${LEASE_STALE_SECONDS}::int, ${key.ref ?? null}::text) as r`;
-    const r = rows[0]?.r;
+    let r = (await admit())[0]?.r;
+    if (r === "uncertain") {
+      // TZ-002: suất chưa rõ có thể đã có bằng chứng định đoạt; đối soát một lần rồi hỏi lại, không chờ chu kỳ 15 giây.
+      try {
+        await sweepAdmissions(sql);
+      } catch (error) {
+        console.warn("admission-sweep-failed", String((error as { code?: string })?.code ?? "ERR"));
+      }
+      r = (await admit())[0]?.r;
+    }
     if (r === "uncertain") throw new AdmissionUncertain();
     if (r === id) return { id, position: 0 };
     return { id: null, position: r?.startsWith("busy:") ? Number(r.slice(5)) || 0 : 0 };
@@ -122,6 +131,16 @@ export async function acquireWorkInfo(sql: Sql, key: WorkKey): Promise<{ id: str
 }
 
 /** RE3-006: gắn bằng chứng (mã lệnh gọi nhà…) vào suất đang giữ. Không đổi trạng thái. */
+/**
+ * TZ-002: gắn mã bằng chứng TRƯỚC khi gửi nhà cung cấp, chỉ khi suất còn `running`. Trả false nếu suất đã mất lease
+ * (đã bị đánh unknown/resolved) — người gọi phải dừng trước khi gửi. Nhờ vậy suất `unknown` không có `ref` chứng minh
+ * được là chưa gửi gì lên nhà cung cấp.
+ */
+export async function tagWorkBeforeSend(sql: Sql, id: string, ref: string): Promise<boolean> {
+  const rows = await sql`update work_admissions set ref = ${ref} where id = ${id} and status = 'running' returning id`;
+  return rows.length > 0;
+}
+
 export async function tagWork(sql: Sql, id: string, ref: string) {
   await sql`update work_admissions set ref = ${ref} where id = ${id} and status in ('running','unknown')`;
 }
@@ -179,8 +198,19 @@ export async function sweepAdmissions(sql: Sql, limit = 50) {
     ) e
     where w.status = 'unknown' and w.ref is not null
     order by w.created_at, w.id limit ${limit}`;
+  // TZ-002: suất Modal unknown KHÔNG có ref = tiến trình chết/mất lease trước bước gắn ref, mà bước đó luôn đứng trước
+  // lần gửi GPU (tagWorkBeforeSend) → chắc chắn chưa gửi gì. Chờ thêm một chu kỳ lease rồi mới nhả.
+  const unsent = await sql<{ id: string; user_id: string }>`
+    select id, user_id from work_admissions
+    where status = 'unknown' and ref is null and lane = 'modal' and provider = 'tyzo-modal'
+      and finished_at <= clock_timestamp() - ${LEASE_STALE}::interval
+    order by created_at, id limit ${limit}`;
+  const candidates = [
+    ...proven,
+    ...unsent.map((row) => ({ id: row.id, user_id: row.user_id, ref: "", evidence: "modal:chua-gui-truoc-khi-gan-ref" })),
+  ];
   let resolved = 0;
-  for (const row of proven) {
+  for (const row of candidates) {
     const changed = await inTransaction(sql, async (tx) => {
       const done = await tx`update work_admissions set status = 'resolved', finished_at = clock_timestamp()
         where id = ${row.id} and status = 'unknown' returning id`;

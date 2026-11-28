@@ -139,8 +139,10 @@ export async function runModalPartWith(
   try {
     await sql`insert into run_modal_settlements(attempt, ticket_id, part_hash) values (${attempt}, ${ticket}, ${partHash})`;
     if (input.admissionId) {
-      const { tagWork } = await import("./work-admission.ts");
-      await tagWork(sql, input.admissionId, `modal:${ticket}:${partHash}:${attempt}`);
+      const { tagWorkBeforeSend } = await import("./work-admission.ts");
+      if (!await tagWorkBeforeSend(sql, input.admissionId, `modal:${ticket}:${partHash}:${attempt}`)) {
+        throw new Error("Suất nhận việc đã quá hạn trước khi gửi đoạn nhận dạng. Chưa gửi gì sang GPU; hãy thử lại.");
+      }
     }
   } catch (error) {
     await releasePart(sql, ticket, userId, partHash, attempt);
