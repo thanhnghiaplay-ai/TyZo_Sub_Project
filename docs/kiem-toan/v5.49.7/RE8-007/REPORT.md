@@ -59,3 +59,23 @@ Khi khởi động lại, tệp đã tải xong cũng không được mở để
 - Ứng dụng bị hệ thống tắt lúc đang tải.
 
 **APK thử:** tải ở trang run Actions (mục Artifacts). Đây là bản ký khóa cố định nên cài đè được lên bản 0.13. **Chỉ dùng cho máy thử**, không gửi khách. Bản phát hành chính thức chỉ tạo khi Chủ merge vào `main`.
+
+## APK thử 0.14 để Chủ tự kiểm (cập nhật 28/11/2026, lượt CI 46115051993, mã `0afb243`)
+
+| Mục | Giá trị |
+|---|---|
+| Trang tải (đăng nhập GitHub) | https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/46115051993/artifacts/15250788825 |
+| Lượt chạy | https://github.com/thanhnghiaplay-ai/TyZo_Sub_Project/actions/runs/46115051993 (artifact `tyzo-sub-apk`, giữ tới khoảng 27/12/2026) |
+| SHA256 của `tyzo-sub.apk` | `cf11063a90d6391f2863da7c2484c734213cc414cca212ea2ac9ffb2367054da` |
+| SHA256 của tệp zip artifact | `33dfd7ab444ded6fb969cab081e6b5048b4abaf4d490d5a1167e0c19bf4aa475` |
+| Gói / phiên bản | `vn.tyzo.sub`, versionCode **14**, versionName **0.14**, compileSdk 35 |
+| Chữ ký | APK Signature Scheme **v2: true** (v1/v3 không dùng); DN `CN=TyZo Sub, O=TyZo, C=VN` |
+| Chứng chỉ SHA-256 | `9ce40ce5f440a45d694222a1114e827e85812e3ec96af19d377423e43087f911` |
+| So với bản phát hành `android-v0.13` | **CÙNG KHÓA KÝ** (chứng chỉ trùng), versionCode 14 > 13 → **cài đè được**, không mất dữ liệu |
+| Phát hành | **Không.** Job `release` chỉ chạy trên `main` |
+
+Mỗi lần dựng, SHA256 của APK lại khác (`5ec76473…` ở lượt 46114826637), vì thời điểm đóng gói nằm trong tệp. Hãy dùng đúng tệp của lượt trên và so với `tyzo-sub.sha256` đi kèm.
+
+Bước kiểm chữ ký trong CI có một lỗi ở lượt 46114826637: nó báo «KHÁC KHÓA KÝ» chỉ vì bộ lọc không đọc được dấu chứng chỉ. Đã sửa ở `0afb243`. Bản sửa in đủ dòng chứng chỉ, và báo «KHÔNG XÁC ĐỊNH» khi đọc được rỗng.
+
+Checklist tự kiểm: [CHECKLIST_DIEN_THOAI.md](CHECKLIST_DIEN_THOAI.md).

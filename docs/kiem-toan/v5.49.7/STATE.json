@@ -1,18 +1,19 @@
 {
   "baseline": "ea38bcd448d0a728c42dc1e18d40b721f2a09e04",
   "branch": "ccr-654dbe0e-978ok7",
-  "previous_checkpoint_sha": "120235258c43c07c3cca4610ce52b108ea6f3905",
+  "previous_checkpoint_sha": "0afb2431d77544a079f61780b26649316f4c7516",
   "effort": "Medium",
   "status": "PAUSED_FOR_OWNER",
-  "completed_item": "RE8-008, RE8-001, RE8-007, RE8-002..006, RE8-009",
+  "completed_item": "RE8-010, cấu hình GPU thử nghiệm, RE8-011, APK thử 0.14, kế hoạch nghiệm thu",
   "item_status": "xem items",
   "tests": {
     "postgres": "18.7",
     "regression": "REGRESSION.md",
-    "android_ci": "run 46113317257 assembleRelease đạt, APK 0.14 không phát hành",
-    "plan": "RE6-009/ACCEPTANCE_PLAN.md (trần 9,00 USD)"
+    "re8_010": "6 TS + 9 Py + 12 do-modal",
+    "android_ci": "xem RE8-007/REPORT.md",
+    "plan": "RE6-009/ACCEPTANCE_PLAN.md (gói tách, tổng 6,87 USD; tối thiểu 0,60 USD)"
   },
-  "next": "Chờ chỉ đạo của Chủ. RE6-010 chưa làm; ngân sách nghiệm thu chưa duyệt.",
+  "next": "Chờ Chủ: P0 (Spend limit, token proxy), D-tự kiểm điện thoại, duyệt gói. RE6-010 chưa làm.",
   "checkpoint_note": "Checkpoint = commit chứa STATE này trên ccr-654dbe0e-978ok7",
   "items": {
     "RE6-001": "PASS_LOCAL_POLICY_PENDING",
@@ -37,8 +38,9 @@
     "RE8-005": "BLOCKED",
     "RE8-006": "ANALYZED",
     "RE8-007": "BUILD_PASS_DEVICE_BLOCKED",
-    "RE8-008": "PASS_LOCAL_NOT_DEPLOYED",
+    "RE8-008": "PASS_LOCAL_NOT_DEPLOYED (hồ sơ thu_nghiem sẵn, đang hien_tai)",
     "RE8-009": "PASS_LOCAL",
-    "RE8-010": "OPEN_BLOCKED_REAL"
+    "RE8-010": "PASS_LOCAL_NOT_DEPLOYED",
+    "RE8-011": "ANALYZED_SIM"
   }
 }

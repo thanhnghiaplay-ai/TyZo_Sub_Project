@@ -156,7 +156,7 @@
     "acceptance": "Đối chiếu hóa đơn Modal (G1–G4) rồi Chủ quyết hệ số/phí tối thiểu. Không tự đổi giá.",
     "status": "ANALYZED_SIM",
     "evidence": "RE8-001/REPORT.md",
-    "remaining": "Chủ quyết phí tối thiểu/hệ số cho việc ngắn; đề xuất dự phòng 1 + chờ tắt 30 s chờ duyệt; hiệu chỉnh bằng hóa đơn (G1–G4)."
+    "remaining": "Phương án giá: RE8-011. Hồ sơ thu_nghiem chờ đo G8."
   },
   {
     "id": "RE8-002",
@@ -222,7 +222,7 @@
     "acceptance": "Sửa theo ACCEPTANCE_PLAN (D4), cần Android SDK/CI + thiết bị, nâng versionCode.",
     "status": "BUILD_PASS_DEVICE_BLOCKED",
     "evidence": "RE8-007/REPORT.md",
-    "remaining": "Thiết bị thật D4; APK thử 0.14 là artifact CI, chưa phát hành."
+    "remaining": "Chủ tự kiểm theo RE8-007/CHECKLIST_DIEN_THOAI.md (U1–U7, A1–A6); APK thử là artifact CI, chưa phát hành."
   },
   {
     "id": "RE8-008",
@@ -233,7 +233,7 @@
     "acceptance": "Đặt trần và đo lại (G5), Chủ deploy.",
     "status": "PASS_LOCAL_NOT_DEPLOYED",
     "evidence": "RE8-008/REPORT.md",
-    "remaining": "Deploy + đo G5; requires_proxy_auth; hạn mức chi workspace Modal (Chủ)."
+    "remaining": "Hồ sơ thu_nghiem đã chuẩn bị (ho_so_gpu); deploy + đo G5/G8 khi Chủ duyệt; hạn mức Spend limit (P0)."
   },
   {
     "id": "RE8-009",
@@ -252,6 +252,19 @@
     "location": "eval/asr/luong-ky/modal/modal_app.py (Asr.run, máy model chữ)",
     "hypothesis": "Endpoint web công khai: yêu cầu không có khóa có thể đánh thức GPU",
     "acceptance": "Đo G7; nếu đúng, bật requires_proxy_auth + bí mật Modal cho Vercel và máy nhận dạng (Chủ duyệt, deploy).",
-    "status": "OPEN_BLOCKED_REAL"
+    "status": "PASS_LOCAL_NOT_DEPLOYED",
+    "evidence": "RE8-010/REPORT.md",
+    "remaining": "Chủ làm P0 (token, Vercel, VPS) rồi G7 (bật xac_thuc_proxy, đo 401 và máy không bật). Hướng dẫn: RE8-010/HUONG_DAN.md."
+  },
+  {
+    "id": "RE8-011",
+    "priority": "P1",
+    "effort": "Medium",
+    "location": "scripts/gpu-pricing.mjs (phân tích)",
+    "hypothesis": "Hệ số 3 lỗ ở việc ngắn/lẻ và hồ sơ kỹ",
+    "acceptance": "Phương án phí tối thiểu, hệ số theo độ dài, gói tách, chi phí theo pha, biên 10–40%; không đổi giá.",
+    "status": "ANALYZED_SIM",
+    "evidence": "RE8-011/REPORT.md",
+    "remaining": "Chủ chọn phương án; hiệu chỉnh bằng hóa đơn G2/G3."
   }
 ]

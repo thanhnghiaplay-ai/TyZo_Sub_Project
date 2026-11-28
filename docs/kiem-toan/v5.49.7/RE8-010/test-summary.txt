@@ -1,0 +1,46 @@
+RE8-010 · proxy Modal GIẢ, fetch GIẢ · mã b547cd8
+    ok 1 - chưa cấu hình: không gửi header (endpoint chưa bật xác thực chạy như cũ)
+    ok 2 - đã cấu hình: gửi ở POST và ở CẢ 3 lần hỏi lại 303; endpoint bật xác thực nhận được
+    ok 3 - endpoint đã bật xác thực mà máy chủ thiếu token: 401 rõ ràng, coi là bị từ chối (không phải mất phản hồi)
+    ok 4 - cấu hình dở dang hoặc sai dạng: lỗi trước khi gọi GPU, thông báo không chứa giá trị
+    ok 5 - server function kiểm cấu hình proxy trước khi giữ Token
+    ok 6 - bí mật chỉ ở phía máy chủ: không có trong mã khách, Android, workflow hay giá trị thật trong kho
+ok 1 - RE8-010 · header proxy Modal phía máy chủ
+# tests 6
+# pass 6
+# fail 0
+== eval/asr/luong-ky/modal/test_modal_auth.py
+test_asr_client_sends_headers_through_303 (__main__.T.test_asr_client_sends_headers_through_303) ... ok
+test_asr_client_without_token_rejected (__main__.T.test_asr_client_without_token_rejected) ... ok
+test_backend_health_poll_uses_proxy_headers (__main__.T.test_backend_health_poll_uses_proxy_headers) ... ok
+test_decorators_use_flag (__main__.T.test_decorators_use_flag) ... ok
+test_flag_default_off_and_only_true_enables (__main__.T.test_flag_default_off_and_only_true_enables) ... ok
+test_local_chat_keeps_vllm_bearer_and_adds_proxy (__main__.T.test_local_chat_keeps_vllm_bearer_and_adds_proxy) ... ok
+test_profiles_trial_and_rollback (__main__.T.test_profiles_trial_and_rollback) ... ok
+test_proxy_headers (__main__.T.test_proxy_headers) ... ok
+test_scripts_use_shared_helper (__main__.T.test_scripts_use_shared_helper) ... ok
+Ran 9 tests in 0.536s
+OK
+== eval/asr/luong-ky/modal/test_gpu_limits.py
+test_app_lane_fits_asr (__main__.T.test_app_lane_fits_asr) ... ok
+test_bad_or_hostile_values_are_clamped (__main__.T.test_bad_or_hostile_values_are_clamped) ... ok
+test_current_config_values (__main__.T.test_current_config_values) ... ok
+test_modal_app_uses_limits_everywhere (__main__.T.test_modal_app_uses_limits_everywhere) ... ok
+test_warm_never_exceeds_cap (__main__.T.test_warm_never_exceeds_cap) ... ok
+Ran 5 tests in 0.003s
+OK
+== deploy/vps/do-modal/test_do_modal.py
+test_bad_config_rejected_and_token_not_in_rows (__main__.T.test_bad_config_rejected_and_token_not_in_rows) ... ok
+test_full_run_stays_under_budget (__main__.T.test_full_run_stays_under_budget) ... ok
+test_invalid_stats_are_unknown (__main__.T.test_invalid_stats_are_unknown) ... ok
+test_known_cost_counts (__main__.T.test_known_cost_counts) ... ok
+test_model_cost_zero_differs_from_missing (__main__.T.test_model_cost_zero_differs_from_missing) ... ok
+test_oversized_response_rejected_as_unknown (__main__.T.test_oversized_response_rejected_as_unknown) ... ok
+test_parallel_cannot_exceed_budget (__main__.T.test_parallel_cannot_exceed_budget) ... ok
+test_proxy_headers_on_post_and_redirect (__main__.T.test_proxy_headers_on_post_and_redirect) ... ok
+test_redirect_cap_and_deadline (__main__.T.test_redirect_cap_and_deadline) ... ok
+test_redirect_same_host_followed_offhost_refused (__main__.T.test_redirect_same_host_followed_offhost_refused) ... Traceback (most recent call last):
+test_slow_drip_cut_at_total_deadline (__main__.T.test_slow_drip_cut_at_total_deadline) ... ok
+test_timeout_charges_reserve_as_unknown (__main__.T.test_timeout_charges_reserve_as_unknown) ... ok
+Ran 12 tests in 2.173s
+OK

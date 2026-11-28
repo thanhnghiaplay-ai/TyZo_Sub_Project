@@ -1,0 +1,12 @@
+RE8-011 · MÔ PHỎNG
+ok 1 - hiệu chỉnh: 1 đoạn lẻ = máy làm (16 + 9,3 + 60) + 2 máy dự phòng rảnh từ lúc bật xong (16 + 60); phim 74 phút gần số đo 2,5×
+ok 2 - bất biến: không vượt trần số máy, cửa nhận việc, mỗi khách; mọi đoạn đều xong; chi phí ≥ 0
+ok 3 - RE8-008: trần máy model chữ 2 giữ chi phí L40S hữu hạn; không trần thì đợt «kỹ» dồn mở nhiều máy
+ok 4 - 200 khách giờ cao điểm: cửa 8 đoạn bão hòa (P95 > 10 phút); cửa 16 + 16 máy giảm P95
+ok 5 - bảng so sánh phương án × kịch bản
+ok 6 - biên lợi nhuận: doanh thu cần = chi phí / (1 − biên), phí tối thiểu và hệ số tăng theo biên
+ok 7 - việc ngắn đơn lẻ lỗ với hệ số 3; phim dài cao điểm có lãi; kỹ có chi phí máy chữ
+ok 8 - bảng kết hợp đủ dòng và cột
+# tests 8
+# pass 8
+# fail 0

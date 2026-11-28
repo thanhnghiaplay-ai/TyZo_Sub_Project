@@ -84,3 +84,18 @@ PostgreSQL 18.7 (Docker loopback).
 | CI «Android thử» run 46113317257 | `assembleRelease` đạt, APK 0.14 ký khóa cố định, không phát hành |
 
 Lỗi duy nhất là R8-002, do chạy bằng root; test này đạt khi chạy bằng user thường.
+
+## Lượt RE8-010/011 (mã ở `752ea26`, chỉ đổi workflow sau đó)
+
+PostgreSQL 18.7 (Docker loopback).
+
+| Lệnh | Kết quả |
+|---|---|
+| `npx tsc --noEmit -p .` | đạt |
+| `node --test 'scripts/**/*.test.mjs'` (root; có re8-010, re8-011) | 249 đạt · 1 lỗi · 38 bỏ qua |
+| Nhóm `src/lib/**` (có `re8-010.test.ts`) | 1506/1506 |
+| Nhóm module-mocks (PG18.7) | 119/119 |
+| `npm run build:dev` (không có `DATABASE_URL`) | đạt |
+| CI «Android thử» run 46115051993 | `assembleRelease` đạt; chữ ký v2 hợp lệ; cùng khóa ký với 0.13; không phát hành |
+
+Lỗi duy nhất là R8-002, do chạy bằng root; test này đạt khi chạy bằng user thường.

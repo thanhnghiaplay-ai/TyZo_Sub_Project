@@ -71,3 +71,49 @@ Giá dùng để dự toán:
 - **D4** dùng APK thử 0.14.
 - **Không** đề xuất đo tải 200 khách thật (quá đắt). Năng lực cửa 16 / máy 16 chỉ có số mô phỏng; nâng dần khi có tải thật.
 - **Tiền đề không tốn phí:** Chủ đặt hạn mức chi của workspace trên Modal trước mọi gói A.
+
+## Cập nhật sau RE8-010/011 (28/11/2026): xác minh Modal và tách gói để duyệt
+
+### Đã xác minh (tìm kiếm trên tài liệu modal.com; trang không mở trực tiếp được từ môi trường này)
+
+- **Giá GPU** ([Pricing](https://modal.com/pricing)):
+  - L4 khoảng 0,000222 USD/giây ≈ 0,80 USD/giờ;
+  - L40S khoảng 0,000542 USD/giây ≈ 1,95 USD/giờ (số L40S lấy từ trang tổng hợp, cần Chủ đối chiếu trang giá);
+  - tính theo giây.
+  - **Máy rảnh trong `scaledown_window` vẫn bị tính tiền**, theo [Cold start](https://modal.com/docs/guide/cold-start) và mục FAQ của trang giá. Thời gian nạp ứng dụng lúc bật máy cũng bị tính.
+- **Hạn mức** ([Budgets](https://modal.com/docs/guide/budgets)):
+  - *Workspace budget* (usage limit) chặn tổng mức dùng trong kỳ, tính trước khi trừ credit.
+  - *Spend limit*: khi chạm, **Modal dừng các workload sẽ phát sinh thêm phí**; workload còn credit trả được thì chạy tới usage limit.
+  - Chỉ Owner hoặc Manager đặt được, tại **Usage & Billing**. Environment budget chỉ có ở gói Team/Enterprise.
+  - **Chưa thấy tài liệu nói máy đang chạy bị cắt ngay hay chỉ chặn việc mới**, nên đặt trần thấp hơn ngân sách gói.
+- **Giới hạn máy:** `max_containers`, `buffer_containers`, `scaledown_window`, `min_containers` ([Scaling out](https://modal.com/docs/guide/scale)). Trong mã: máy chữ 2, nhận dạng 9 (`gpu_limits.py`). Các giá trị này còn chỉnh được không cần deploy bằng `update_autoscaler()`, nhưng lần deploy sau ghi đè.
+
+**Điều kiện trước mọi gói A:** Chủ đặt *Spend limit* trên Modal bằng trần gói cộng 1 USD (ví dụ gói A1 thì đặt 1,50 USD) cho kỳ hiện tại. Ghi lại số dư credit trước và sau mỗi gói.
+
+### Các gói tách riêng (duyệt từng gói, theo thứ tự đề xuất)
+
+| Gói | Nội dung | Thiết bị / dịch vụ | Trần |
+|---|---|---|---|
+| **P0** | Đặt Spend limit; tạo token proxy; đặt `TYZO_PROXY_*` trên Vercel và VPS (chưa bật xác thực) | Modal, Vercel, VPS | 0 USD |
+| **D-tự kiểm** | Checklist [CHECKLIST_DIEN_THOAI.md](../RE8-007/CHECKLIST_DIEN_THOAI.md): cài APK thử 0.14; U1–U7 (trình cập nhật); A1–A5 | **Điện thoại của Chủ**, không cần máy thuê | 0 USD |
+| **D-live** | A6 và D2 rút gọn: Dịch trực tiếp 4 × 1 phút (zh/ja/ko/en → vi) trên điện thoại của Chủ | Điện thoại của Chủ, Alibaba | 0,10 USD |
+| **G7** | Bật `xac_thuc_proxy` → yêu cầu không có khóa phải trả 401 và không bật máy | Modal | 0,10 USD |
+| **G1** | Vòng đời một đoạn lẻ (cấu hình hiện tại) | Modal | 0,10 USD |
+| **G8** | Hồ sơ `thu_nghiem` (dự phòng 1, chờ tắt 30 s): lặp G1 và G4 | Modal | 0,40 USD |
+| **G4** | 8 khách cùng lúc × 1 đoạn | Modal | 0,30 USD |
+| **G5** | Máy chữ tối đa 2: phim «kỹ» rút gọn 10 phút | Modal | 0,60 USD |
+| **G2** | Phim 74 phút «nhanh»: hiệu chỉnh mô phỏng (1,9× so với 2,5×) cho RE8-011 | Modal | 1,20 USD |
+| **G3** | Phim 74 phút «kỹ» | Modal | 2,50 USD |
+| **A2** | Token suy luận Groq | Groq | 0,05 USD |
+| **A4** | Token cache qwen-plus | Alibaba | 0,02 USD |
+| **A1** | 5 model chưa đo | Groq, Alibaba | 0,50 USD |
+| **A3** | Giá bậc qwen-turbo (phần tùy chọn trên 256K) | Alibaba | 0,40 USD |
+| **A5** | Prompt tên riêng và `corpus.phrases` | Alibaba | 0,50 USD |
+| **A6** | Usage qua cửa trả theo lượt trên staging | Groq, Alibaba | 0,10 USD |
+
+**Tổng trần nếu duyệt tất cả: 6,87 USD.** Giảm so với 9,00 USD vì gói Android chuyển sang điện thoại của Chủ, và G2, G3, G5 dùng chung lượt hiệu chỉnh.
+
+**Gói tối thiểu khuyên dùng trước: P0 + D-tự kiểm + G7 + G1 + G8 = 0,60 USD.** Gói này cho biết:
+- endpoint đã được bảo vệ;
+- cấu hình thử nghiệm có rẻ hơn thật không;
+- trình cập nhật Android chạy đúng trên máy thật.
