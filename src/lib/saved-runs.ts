@@ -43,6 +43,15 @@ export function usableSaved(run: SavedRun | null | undefined, key: string, sourc
   return checkpoint.model === asrModel && (run.segs.length > 0 || checkpoint.nextPart > 0 || checkpoint.buffered.length > 0);
 }
 
+/**
+ * TZ-006: dấu "đã áp dụng" khi khôi phục bản lưu không có tiến độ Modal. Cùng ngôn ngữ đích thì để trống như cũ;
+ * khác ngôn ngữ đích thì đánh dấu khác với dấu hiện tại để lần dịch tiếp theo xóa bản dịch cũ (trừ câu sửa tay)
+ * và nút hiện «Tiếp tục», thay vì giữ bản dịch sai ngôn ngữ.
+ */
+export function restoredAppliedSig(saved: Pick<SavedRun, "target">, target: string): string {
+  return saved.target && saved.target !== target ? `${saved.target}|khoi-phuc` : "";
+}
+
 /** Xếp mới nhất trước, giữ SAVED_MAX; trả các khóa cần xóa. */
 export function keysToDrop(runs: Pick<SavedRun, "key" | "at">[], max = SAVED_MAX): string[] {
   return [...runs].sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(max).map((run) => run.key);

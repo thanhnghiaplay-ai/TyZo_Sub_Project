@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { emptyJob, restoreModalProgress, snapshotModalProgress } from "./pipeline/job.ts";
-import { SAVED_MAX, keysToDrop, savedSummary, snapshotSegs, usableSaved, type SavedRun } from "./saved-runs.ts";
+import { SAVED_MAX, keysToDrop, restoredAppliedSig, savedSummary, snapshotSegs, usableSaved, type SavedRun } from "./saved-runs.ts";
 
 const run = (over: Partial<SavedRun> = {}): SavedRun => ({
   ownerId: "account-A",
@@ -86,4 +86,26 @@ it("nạp lại tiến độ Modal gồm cả câu chờ đoạn đến trước
   assert.equal(restored.heardOffset.get(2), 0.2);
   assert.equal(restored.heard.size, 0);
   assert.equal(restored.pcm, null);
+});
+
+describe("TZ-006: khôi phục sau khi đổi ngôn ngữ đích", () => {
+  it("cùng ngôn ngữ đích: giữ như cũ (không xóa bản dịch đã có)", () => {
+    assert.equal(restoredAppliedSig(run(), "Vietnamese"), "");
+  });
+
+  it("khác ngôn ngữ đích: đánh dấu để dịch lại, và dấu khác mọi dấu hiện tại", () => {
+    const sig = restoredAppliedSig(run(), "English");
+    assert.notEqual(sig, "");
+    assert.notEqual(sig, "English|bat-ky-model");
+    assert.ok(sig.startsWith("Vietnamese|"));
+  });
+
+  it("bản lưu cũ không có ngôn ngữ đích: không đoán, giữ như cũ", () => {
+    assert.equal(restoredAppliedSig({ target: "" }, "English"), "");
+  });
+
+  it("khôi phục trong use-pipeline dùng hàm này, không đặt cứng dấu rỗng", () => {
+    const source = readFileSync(new URL("../components/use-pipeline.ts", import.meta.url), "utf8");
+    assert.match(source, /j\.appliedSig = restoredAppliedSig\(saved, target\)/);
+  });
 });

@@ -2,7 +2,7 @@ import { holdPageActivity } from "@/lib/page-activity";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { currentGenre, needsAgeConfirm } from "@/lib/home-state";
 import { askConfirm } from "@/lib/confirm";
-import { dropSaved, loadSaved, savedSummary, snapshotSegs, storeSaved, usableSaved } from "@/lib/saved-runs";
+import { dropSaved, loadSaved, restoredAppliedSig, savedSummary, snapshotSegs, storeSaved, usableSaved } from "@/lib/saved-runs";
 import { RIGHTS_CONFIRM, RIGHTS_DECLINED, RIGHTS_TEXT, RIGHTS_TITLE, rememberRights, rightsConfirmed } from "@/lib/rights-consent";
 import { TERMS_VERSION } from "@/lib/terms";
 import { usePolish } from "@/components/use-polish";
@@ -673,7 +673,7 @@ export function usePipeline() {
       j.doneSource = saved.source;
       j.parts = [];
       j.nextPart = 0;
-      j.appliedSig = "";
+      j.appliedSig = restoredAppliedSig(saved, target);
       j.bible = (saved.bible as Bible | null) ?? null;
       j.bibleGo = true;
       j.holdPosted = true;
