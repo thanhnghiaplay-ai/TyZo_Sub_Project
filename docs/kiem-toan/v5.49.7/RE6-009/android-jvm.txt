@@ -1,0 +1,33 @@
+Android · GIẢ LẬP JVM (không phải thiết bị thật) · kotlinc 2.0.21 · openjdk version "21.0.13.1" 2026-11-17
+jar test (sha256): libs/json-20240303.jar=3cf6cd6892e32e2b4c1c39e0f52f5248a2f5b37646fdfbb79a66b46b618414ed libs/okhttp-4.12.0.jar=b1050081b14bb7a3a7e55a4d3ef01b5dcfabc453b4573a4fc019767191d5f4e0 libs/okio-jvm-3.6.0.jar=67543f0736fc422ae927ed0e504b98bc5e269fda0d3500579337cb713da28412 
+== check-session.sh (Session.kt + Api.kt thật)
+PASS account+origin namespace isolation
+PASS late sync cannot overwrite newer save or another account
+PASS rejected sync remains retryable and successful acknowledgement is durable
+PASS clear wins over old completion
+PASS legacy retained, corrupt file not reported synced, failed write reported
+PASS SRT/VTT/TXT export unchanged
+PASS history requires saved=true and receipt id
+PASS unlink rejects server/network failure and requires acknowledgement
+PASS stable authenticated account identity parsed; old server fails closed
+PASS offline unlink reports failure
+== CaptionLayoutCheck.kt
+ĐÚNG tách câu
+ĐÚNG tách câu đủ dấu
+ĐÚNG chấm lửng gộp
+ĐÚNG câu dài chia đều
+ĐÚNG cắt ở dấu phẩy gần giữa, không đuôi một chữ
+ĐÚNG không khoảng trắng cắt cứng
+ĐÚNG bài hát: một câu xong + câu đang nói
+ĐÚNG chỉ câu chốt
+ĐÚNG hai mục
+ĐÚNG đã chốt hết
+ĐÚNG câu đang nói dài
+ĐÚNG rỗng
+TẤT CẢ ĐÚNG
+== VoiceFilterCheck.kt
+ĐÚNG nhạc trầm lấn giọng: sau lọc giọng trội hơn hẳn: trước 0.02777777777781437, sau 5.523726336964652
+ĐÚNG tiếng nhỏ được kéo lên: RMS 0.09974782351752691
+ĐÚNG tiếng to không vỡ, được hạ: đỉnh 0.48978681599804497, RMS 0.3498052982976942
+ĐÚNG im vẫn là im: đỉnh 0.002415694128775815
+TẤT CẢ ĐÚNG
