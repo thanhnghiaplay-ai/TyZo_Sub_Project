@@ -198,16 +198,16 @@ export async function sweepAdmissions(sql: Sql, limit = 50) {
     ) e
     where w.status = 'unknown' and w.ref is not null
     order by w.created_at, w.id limit ${limit}`;
-  // TZ-002: suất Modal unknown KHÔNG có ref = tiến trình chết/mất lease trước bước gắn ref, mà bước đó luôn đứng trước
-  // lần gửi GPU (tagWorkBeforeSend) → chắc chắn chưa gửi gì. Chờ thêm một chu kỳ lease rồi mới nhả.
+  // TZ-002: suất Modal/batch unknown KHÔNG có ref = tiến trình chết/mất lease trước bước gắn ref, mà bước đó luôn đứng trước
+  // lần gửi (tagWorkBeforeSend; async-asr gắn trong giao dịch, chỉ khi running) → chắc chắn chưa gửi gì. Lane live không áp dụng. Chờ thêm một chu kỳ lease rồi mới nhả.
   const unsent = await sql<{ id: string; user_id: string }>`
     select id, user_id from work_admissions
-    where status = 'unknown' and ref is null and lane = 'modal' and provider = 'tyzo-modal'
+    where status = 'unknown' and ref is null and lane in ('modal', 'batch')
       and finished_at <= clock_timestamp() - ${LEASE_STALE}::interval
     order by created_at, id limit ${limit}`;
   const candidates = [
     ...proven,
-    ...unsent.map((row) => ({ id: row.id, user_id: row.user_id, ref: "", evidence: "modal:chua-gui-truoc-khi-gan-ref" })),
+    ...unsent.map((row) => ({ id: row.id, user_id: row.user_id, ref: "", evidence: "chua-gui-truoc-khi-gan-ref" })),
   ];
   let resolved = 0;
   for (const row of candidates) {

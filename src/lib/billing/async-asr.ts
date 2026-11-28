@@ -100,7 +100,9 @@ export async function submitAsyncAsr(
         await tx`insert into run_async_asr_jobs(id,user_id,ticket_id,request_hash,call_id,provider,model,price_book,unit_book)
         values(${id},${input.userId},${input.ticketId},${requestHash},${held.callId},${input.provider},${input.model},${JSON.stringify(bare)},${JSON.stringify(input.unitBook)})`;
         // RE3-005: job và suất đang giữ cùng mã lệnh → cửa nhận việc không đếm hai lần trong lúc gửi.
-        await tx`update work_admissions set ref = ${held.callId} where id = ${admission.id} and status in ('running','unknown')`;
+        // TZ-002/B-14: chỉ gắn khi suất còn running; mất lease rồi thì hủy giao dịch (chưa giữ, chưa gửi gì) thay vì gửi tiếp.
+        const tagged = await tx`update work_admissions set ref = ${held.callId} where id = ${admission.id} and status = 'running' returning id`;
+        if (!tagged.length) throw new Error("Suất nhận việc đã quá hạn trước khi gửi. Chưa gửi gì sang nhà cung cấp; hãy thử lại.");
         return { id, callId: held.callId };
       });
       if ("existing" in opened) return opened.existing!;

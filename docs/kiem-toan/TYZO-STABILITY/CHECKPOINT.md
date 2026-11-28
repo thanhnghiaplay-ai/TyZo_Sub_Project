@@ -1,7 +1,7 @@
 # CHECKPOINT
 - Repo: thanhnghiaplay-ai/TyZo_Sub_Project. Nhánh: fix/tyzo-stability.
 - Baseline: main f73e02d (APP_VERSION 5.49.9; 5.49.8 và 5.49.9 đã nằm trên main).
-- Mở: B-14 (TZ-002 lane batch, P2, chưa sửa).
+- B-14 (TZ-002 lane batch) đã sửa PASS_LOCAL; còn mở: lane live chưa rà, race nhiều replica PG thật. Files sửa mã thêm: src/lib/billing/run-gate.ts, async-asr.ts, work-admission.ts, batch-admission.test.ts (+package.json).
 - Đang làm: TZ-012 (hồi quy src 1680/0 fail, nhóm scripts xong; còn build, test PG BLOCKED). Việc kế: TZ-013 kiểm toán độc lập ở phiên mới, TZ-014 nghiệm thu. TZ-011 chưa có việc cụ thể ngoài hồi quy chung. TZ-010: phu-thuoc, bao-mat, rà quyền GPU xong (B-12 không lỗi); bi-mat BLOCKED vì thiếu gitleaks. TZ-007 rà tĩnh xong (B-11 không lỗi). TZ-008: B-09 đã sửa, tiến độ đã rà (B-10 không lỗi); bố cục 320–430 px = BLOCKED do thiếu Chromium. TZ-009 PASS_LOCAL một phần (B-08 đã sửa). TZ-006 B-07 đã sửa, còn test trình duyệt (BLOCKED). TZ-002 IN_PROGRESS (B-04 đã sửa), TZ-004 và TZ-005 PASS_LOCAL (8.234 token BLOCKED chờ dữ liệu). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
 - Đã xong: clone, tạo nhánh, đọc CLAUDE.md, thiết lập thư mục này, npm ci.
 - Test đã chạy: xem TESTS.md (tsc OK, lint 0 lỗi, 3 nhóm npm test: không lỗi mã; 1 fail do môi trường root).

@@ -294,6 +294,9 @@ type ChargeInput = {
   send: () => Promise<Response>;
 };
 
+/** TZ-002/B-14: suất mất lease trước khi gắn mã lệnh thì dừng TRƯỚC khi gửi, để sweep nhả suất mà chắc chắn chưa gửi gì. */
+const ADMISSION_LAPSED = "Suất nhận việc đã quá hạn trước khi gửi. Chưa gửi gì sang nhà cung cấp; hãy thử lại.";
+
 export async function chargeAdmittedWith(input: ChargeInput): Promise<GateOutcome> {
   const { withWorkAdmission, AdmissionBusy } = await import("./work-admission.ts");
   let dispatched = false;
@@ -385,8 +388,8 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
       if (held.kind !== "ok") throw new Error("Chưa giữ được ngân sách đọc thuyết minh.");
       callId = held.callId;
       if (input.admissionId) {
-        const { tagWork } = await import("./work-admission.ts");
-        await tagWork(sql, input.admissionId, held.callId);
+        const { tagWorkBeforeSend } = await import("./work-admission.ts");
+        if (!await tagWorkBeforeSend(sql, input.admissionId, held.callId)) throw new Error(ADMISSION_LAPSED);
       }
       stopBeat = startBeat((signal) => beatGateCall(sql, held.callId, signal), {
         everyMs: input.beatMs,
@@ -531,8 +534,8 @@ export async function chargeWith(input: ChargeInput): Promise<GateOutcome> {
     async () => {
       try {
         if (input.admissionId) {
-          const { tagWork } = await import("./work-admission.ts");
-          await tagWork(sql, input.admissionId, callId);
+          const { tagWorkBeforeSend } = await import("./work-admission.ts");
+          if (!await tagWorkBeforeSend(sql, input.admissionId, callId)) throw new Error(ADMISSION_LAPSED);
         }
         if (input.signal?.aborted) throw input.signal.reason;
         sent = true;
