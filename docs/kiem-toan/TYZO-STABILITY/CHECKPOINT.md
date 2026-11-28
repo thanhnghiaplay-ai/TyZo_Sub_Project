@@ -1,11 +1,11 @@
 # CHECKPOINT
 - Repo: thanhnghiaplay-ai/TyZo_Sub_Project. Nhánh: fix/tyzo-stability.
 - Baseline: main f73e02d (APP_VERSION 5.49.9; 5.49.8 và 5.49.9 đã nằm trên main).
-- Đang làm: TZ-003 (IN_PROGRESS, xác minh hàng đợi 429). TZ-001 xong mức PASS_LOCAL.
+- Đang làm: TZ-002 (IN_PROGRESS). TZ-001 PASS_LOCAL; TZ-003 lõi PASS_LOCAL (xem BUGS B-01).
 - Đã xong: clone, tạo nhánh, đọc CLAUDE.md, thiết lập thư mục này, npm ci.
 - Test đã chạy: xem TESTS.md (tsc OK, lint 0 lỗi, 3 nhóm npm test: không lỗi mã; 1 fail do môi trường root).
 - Chưa chạy: test PG (cần Postgres cô lập), build.
 - Workflow duy nhất: .github/workflows/android-thu.yml (chỉ khi đổi android/). Vercel dựng khi push; preview không migrate trừ khi TYZO_PREVIEW_DB=rieng.
 - Blocker: chưa có Postgres cô lập (29 test skip); chưa có video/ví production.
-- Tiếp theo: xác minh src/lib/providers/tyzo.ts dùng submitModalChunk đúng cho nhiều đoạn, rồi TZ-002 (work-admission.ts, migration 0057).
+- Tiếp theo: TZ-002 — đọc src/lib/billing/work-admission.ts + migration 0057, tìm nhánh còn hở (suất unknown chặn phiếu mới, lease/heartbeat 150 s, nhiều replica), thêm test PGlite nếu hở.
 - Cần đọc: BAO_CAO.md (v5.49.7/TYZO-MODAL-409), src/lib/billing/work-admission.ts, migration 0057.

@@ -8,3 +8,4 @@ Baseline nhánh fix/tyzo-stability = main f73e02d.
 - npm test nhóm 3 (mock modules: billing/pipeline/work-lease...): 121 test, 70 pass, 0 fail, 51 skip (cần Postgres).
 - Chưa chạy: test PG (cần Postgres cô lập), build, check:auth, check:layout.
 - Lưu ý: `npm test` chạy nối && nên nhóm 1 fail sẽ chặn nhóm 2, 3; nhóm 2 mất >5 phút nếu chạy một lệnh (dùng --test-concurrency=4 theo đợt).
+- tyzo-modal-race.test.ts chạy trên PGlite (Postgres nhúng): 14/14 pass, 0 skip. Bao phủ TZ-003 (hàng đợi 429, giới hạn thử lại, hủy chờ), 409 không phát lại, đóng phiếu giữa ghi đoạn và giữ ngân sách, quyết toán sau khi kết quả tạm hết hạn (một phần TZ-002/005). Mức PASS_LOCAL.
